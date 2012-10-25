@@ -191,7 +191,8 @@ public class MixedContentEvaluator implements LatePropertyEvaluator {
                 || value.startsWith("data:"));
     }
     
-    private static final Pattern STYLE_PATTERN = Pattern.compile("(url\\(http:|@import)");
+    //private static final Pattern STYLE_PATTERN = Pattern.compile("(url\\(http:|@import)");
+    private static final Pattern STYLE_PATTERN = Pattern.compile("url\\(http:");
     private static boolean checkStyle(CharSequence value) {
         if (value == null) {
             return false;
@@ -312,6 +313,10 @@ public class MixedContentEvaluator implements LatePropertyEvaluator {
             
             if ("script".equals(localName)) {
                 this.report.unsafeElement(localName);
+                String attr = attrs.getValue("src");
+                if (checkLink(attr)) {
+                    this.report.includedContent(localName, attr);
+                }
                 return;
             }
 

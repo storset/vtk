@@ -330,7 +330,7 @@ public class BrokenLinksReport extends DocumentReporter {
             PropertyTermQuery ptq = new PropertyTermQuery(this.publishedPropDef, "true", TermOperator.NE);
             topLevelQ.add(ptq);
         } else {
-            search.setOnlyPublishedResources(true);
+            search.setUseDefaultExcludes(true);
         }
 
         return search;
@@ -360,7 +360,7 @@ public class BrokenLinksReport extends DocumentReporter {
         }
     }
 
-    public class FilterOption {
+    public static class FilterOption {
         private String name;
         private URL url;
         private boolean active;

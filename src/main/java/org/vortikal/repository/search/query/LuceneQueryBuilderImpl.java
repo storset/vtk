@@ -30,7 +30,6 @@
  */
 package org.vortikal.repository.search.query;
 
-import org.apache.lucene.document.Fieldable;
 import static org.vortikal.repository.search.query.TermOperator.EQ;
 import static org.vortikal.repository.search.query.TermOperator.NE;
 
@@ -38,16 +37,15 @@ import java.io.IOException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.lucene.document.Field;
 import org.apache.lucene.document.FieldSelector;
 import org.apache.lucene.document.FieldSelectorResult;
+import org.apache.lucene.document.Fieldable;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermDocs;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanFilter;
 import org.apache.lucene.search.CachingWrapperFilter;
-import org.apache.lucene.search.ConstantScoreQuery;
 import org.apache.lucene.search.FieldValueFilter;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.FilterClause;
@@ -104,19 +102,21 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
     private FieldValueMapper fieldValueMapper;
     private QueryAuthorizationFilterFactory queryAuthorizationFilterFactory;
     private PropertyTypeDefinition publishedPropDef;
+    private PropertyTypeDefinition obsoletedPropDef;
 
-    private Filter onlyPublishedFilter;
+    private Filter cachedOnlyPublishedFilter;
     private Filter cachedDeletedDocsFilter;
 
     @Override
     public void afterPropertiesSet() {
-        // Setup filter for published resources
+        
+        // Setup cached filter for published resources
         TermsFilter tf = new TermsFilter();
         String searchFieldName = FieldNames.getSearchFieldName(this.publishedPropDef, false);
         String searchFieldValue = this.fieldValueMapper.encodeIndexFieldValue("true", Type.BOOLEAN, false);
         Term publishedTrueTerm = new Term(searchFieldName, searchFieldValue);
         tf.addTerm(publishedTrueTerm);
-        this.onlyPublishedFilter = new CachingWrapperFilter(tf);
+        this.cachedOnlyPublishedFilter = new CachingWrapperFilter(tf);
 
         // Setup cached deleted docs filter
         this.cachedDeletedDocsFilter = new CachingWrapperFilter(new DeletedDocsFilter(), 
@@ -341,35 +341,43 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
     public Filter buildSearchFilter(String token, Search search, IndexReader reader)
             throws QueryBuilderException {
         
-        Filter filter = null;
-        
-        // Get ACL filter
-        Filter aclFilter = 
-            this.queryAuthorizationFilterFactory.authorizationQueryFilter(token, reader);
-        if (logger.isDebugEnabled()){
-            if (aclFilter == null) {
+        // Set filter to ACL filter initially. May be null.
+        Filter filter = this.queryAuthorizationFilterFactory.authorizationQueryFilter(token, reader);
+        if (logger.isDebugEnabled()) {
+            if (filter == null) {
                 logger.debug("ACL filter null for token: " + token);
             } else {
-                logger.debug("ACL filter: " +  aclFilter + " for token " + token);
+                logger.debug("ACL filter: " +  filter + " for token " + token);
             }
         }
         
-        // Set filter to ACL filter initially
-        filter = aclFilter;
-        
-        // Add published-filter if requested
-        if (search.isOnlyPublishedResources()) {
+        // Add filters for removing default excludes if requested
+        if (search.isUseDefaultExcludes()) {
+            BooleanFilter bf = buildDefaultExcludesFilter();
+            // Include ACL-filter if non-null:
             if (filter != null) {
-                BooleanFilter bf = new BooleanFilter();
-                bf.add(new FilterClause(filter, BooleanClause.Occur.MUST));
-                bf.add(new FilterClause(this.onlyPublishedFilter, BooleanClause.Occur.MUST));
-                filter = bf;
-            } else {
-                filter = this.onlyPublishedFilter;
+                bf.add(filter, BooleanClause.Occur.MUST);
             }
+            
+            filter = bf;
         }
 
         return filter;
+    }
+
+    BooleanFilter buildDefaultExcludesFilter() {
+        BooleanFilter bf = new BooleanFilter();
+
+        // Filter to include only published resources:
+        bf.add(this.cachedOnlyPublishedFilter, BooleanClause.Occur.MUST);
+
+        // Filter to exclude obsoleted resources:
+        // Avoid using cache-wrapper for FieldValueFilter, since that can lead to memory leaks
+        // in Lucene.
+        bf.add(new FieldValueFilter(FieldNames.getSearchFieldName(this.obsoletedPropDef, false), true),
+                BooleanClause.Occur.MUST);
+
+        return bf;
     }
     
     @Override
@@ -426,5 +434,11 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
     public void setPublishedPropDef(PropertyTypeDefinition publishedPropDef) {
         this.publishedPropDef = publishedPropDef;
     }
+    
+    @Required
+    public void setObsoletedPropDef(PropertyTypeDefinition obsoletedPropDef) {
+        this.obsoletedPropDef = obsoletedPropDef;
+    }
+
 
 }

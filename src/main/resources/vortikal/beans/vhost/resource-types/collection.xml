@@ -39,6 +39,7 @@
         <ref bean="collection.hideIntroductionPropDef" />
         <ref bean="collection.hideIconPropDef" />
         <ref bean="hideNumberOfCommentsPropDef" />
+        <ref bean="obsoletedPropDef" />
       </list>
     </property>
   </bean>
@@ -223,9 +224,21 @@
               </constructor-arg>
               <constructor-arg ref="TYPE_STRING" />
             </bean>
-           <bean class="org.vortikal.repository.resourcetype.Value">
+            <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="java.lang.String">
                 <value>message-listing</value>
+              </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
+            </bean>
+            <bean class="org.vortikal.repository.resourcetype.Value">
+              <constructor-arg type="java.lang.String">
+                <value>course-context</value>
+              </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
+            </bean>
+            <bean class="org.vortikal.repository.resourcetype.Value">
+              <constructor-arg type="java.lang.String">
+                <value>semester-context</value>
               </constructor-arg>
               <constructor-arg ref="TYPE_STRING" />
             </bean>

@@ -1,6 +1,7 @@
 /*
- *  Vortex - Forms
+ * Vortex - Forms
  *
+ * TODO: rename to forms-dialogs.css
  */
 
 form, fieldset, input, button, .ui-dialog .ui-dialog-buttonpane button {
@@ -299,6 +300,107 @@ input[type=text]:focus {
 
 /* ^ Textfields */
 
+/* jQuery UI dialog, datepicker, accordion etc. */
+
+.ui-widget-overlay {
+  background: #000;
+  opacity: 0.4;
+  -moz-opacity: 0.4; 
+  -webkit-opacity: 0.4;
+  filter: alpha(opacity=40); 
+}
+
+.ui-dialog {
+  background: none repeat scroll 0 0 #FFFFFF;
+  border: 2px solid #848484;
+  box-shadow: 1px 1px 5px 2px #848484;
+  border-radius: 7px 7px 7px 7px;
+  color: #000000;
+  z-index: 102;
+  position: fixed;
+  padding: 20px;
+}
+
+.ui-dialog .ui-dialog-titlebar {
+  background: url(/vrtx/__vrtx/static-resources/themes/default/images/line-dotted.gif) repeat-x scroll left bottom transparent;
+  border: none;
+  padding: 0 0 15px 0;
+}
+
+.ui-dialog .ui-dialog-titlebar.closable {
+  padding-bottom: 0px;
+  background: none;
+}
+
+.ui-dialog .ui-dialog-titlebar .ui-dialog-title {
+  font-size: 1.538em;
+  font-weight: normal;
+  margin: 0;
+}
+
+.ui-dialog .ui-dialog-titlebar-close,
+.ui-dialog .ui-dialog-titlebar-close span {
+  width: 20px;
+  height: 18px;
+  margin: 0;
+  padding: 0;
+}
+
+.ui-dialog .ui-dialog-titlebar-close {
+  right: 3px;
+  top: 3px;
+}
+
+.ui-dialog .ui-dialog-titlebar-close.ui-state-hover {
+  border: none;
+  background: none;
+}
+
+.ui-dialog .ui-dialog-titlebar-close span {
+  background: url(/vrtx/__vrtx/static-resources/themes/default/images/thickbox-close.png) no-repeat center center;
+}
+
+.ui-dialog .ui-dialog-buttonpane,
+.ui-dialog .ui-dialog-content {
+  margin: 0;
+  border: none;
+}
+
+.ui-dialog .ui-dialog-content {
+  padding: 15px 0;
+  min-height: 0 !important;
+}
+
+.ui-dialog .ui-dialog-content ul {
+  margin: 10px 0 10px 25px;
+  padding: 0;
+}
+
+.ui-dialog .ui-dialog-buttonpane {
+  padding: 0;
+}
+
+.ui-dialog .ui-dialog-buttonpane .ui-dialog-buttonset {
+  float: left;
+}
+
+.ui-widget {
+  font-size: 1em !important;
+  text-align: left;
+}
+
+.ui-widget,
+.ui-widget input, .ui-widget select,
+.ui-widget textarea, .ui-widget button {
+  font-family: Arial, Helvetica, sans-serif !important;
+}
+
+.ui-widget.ui-datepicker {
+  font-size: 0.9em !important;
+}
+
+/* ^ jQuery UI dialog, datepicker, accordion etc. */
+
 /* Mozilla hacks */
 
 form::-moz-focus-inner,
@@ -330,25 +432,19 @@ form button::-moz-focus-inner {
 
 /* ^ Mozilla hacks */
 
-/* iPhone and iPad hacks */
+/* Webkit fixes - typical apple mobile devices */
 
-@media only screen and (max-device-width: 1024px) and (min-device-width: 768px),      /* iPad      */                                     
-       only screen and (min-device-width: 1536px) and (max-device-width: 2048px) 
-                   and (-webkit-min-device-pixel-ratio: 2),                           /* iPad 3    */
-       only screen and (max-device-width: 480px),                                     /* iPhone    */
-       only screen and (-webkit-min-device-pixel-ratio: 2) {                          /* iPhone 4S */
-  input[type=button],
-  input[type=file],
-  input[type=image],
-  input[type=password],
-  input[type=reset],
-  input[type=submit],
-  input[type=text] { /* input reset */
-    -webkit-appearance: none;
-    -webkit-border-radius: 0;
-  }
+input[type=button],
+input[type=file],
+input[type=image],
+input[type=password],
+input[type=reset],
+input[type=submit],
+input[type=text] { /* input reset */
+  -webkit-appearance: none;
+  -webkit-border-radius: 0;
 }
 
-/* ^ iPhone and iPad hacks */
+/* ^ Webkit fixes - typical apple mobile devices */
 
 /* ^ Vortex - Forms */

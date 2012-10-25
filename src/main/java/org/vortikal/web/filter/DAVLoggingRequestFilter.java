@@ -24,7 +24,7 @@ public class DAVLoggingRequestFilter extends AbstractRequestFilter {
     }
 
 
-    public class DavLoggingRequestWrapper extends HttpServletRequestWrapper {
+    public static class DavLoggingRequestWrapper extends HttpServletRequestWrapper {
 
         private LoggingInputStreamWrapper streamWrapper;
 
@@ -46,7 +46,7 @@ public class DAVLoggingRequestFilter extends AbstractRequestFilter {
 
     }
 
-    class LoggingInputStreamWrapper extends ServletInputStream {
+    static class LoggingInputStreamWrapper extends ServletInputStream {
 
         private ByteArrayOutputStream streamBuffer;
         private InputStream wrappedStream;

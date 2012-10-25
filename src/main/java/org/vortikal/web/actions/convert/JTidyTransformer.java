@@ -33,11 +33,8 @@ package org.vortikal.web.actions.convert;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyType;
@@ -64,8 +61,6 @@ import org.w3c.tidy.Tidy;
  */
 public class JTidyTransformer implements Filter { 
     
-    private static Log logger = LogFactory.getLog(JTidyTransformer.class);
-
     private final static String MINIMAL_DOCUMENT = 
         "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">"
         + "<html xmlns=\"http://www.w3.org/1999/xhtml\"><head><title></title>"
@@ -93,117 +88,105 @@ public class JTidyTransformer implements Filter {
     }
     
     
-    public InputStream transform(InputStream inStream, String characterEncoding) {
-        try {
-            Tidy tidy = new Tidy();
-            
-            // Setting up Tidy (default) output
-            tidy.setTidyMark(tidyMark);
-            tidy.setMakeClean(makeClean);
-            tidy.setSmartIndent(smartIndent);
-            tidy.setShowWarnings(showWarnings);
-            tidy.setXHTML(xhtml);
-            tidy.setDocType(doctype);
-            tidy.setQuiet(quiet);
-            tidy.setInputEncoding(DEFAULT_ENCODING);
-            tidy.setOutputEncoding(DEFAULT_ENCODING);
-            
-            if (null == characterEncoding ) {
-                characterEncoding = DEFAULT_ENCODING;
-            } else if ("null".equals(characterEncoding.toLowerCase()) || "".equals(characterEncoding)) {
-                characterEncoding = DEFAULT_ENCODING;
-            }
-            
-            // Buffer the input stream:
-            byte[] buffer = StreamUtil.readInputStream(inStream);
+    public InputStream transform(InputStream inStream, String characterEncoding) throws Exception {
+        Tidy tidy = new Tidy();
 
-            // Convert stream to utf-8 encoding if necessary:
-            if (!DEFAULT_ENCODING.equals(characterEncoding)) {
-                String s = new String(buffer, characterEncoding);
-                buffer = s.getBytes(DEFAULT_ENCODING);
-            }
-            
-            if ("".equals(new String(buffer, DEFAULT_ENCODING).trim())) {
-                buffer = MINIMAL_DOCUMENT.getBytes(DEFAULT_ENCODING);
-            }
-            
-            InputStream bufferedStream = new ByteArrayInputStream(buffer);
-            tidy.setInputStreamName(bufferedStream.getClass().getName());
-            Document document = tidy.parseDOM(bufferedStream, null);
-            
-            // Handle (re)setting of doctype and encoding meta-tag
-            alterContentTypeMetaElement(document);
-            
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            tidy.pprint(document, outputStream);
-            
-            byte[] byteArrayBuffer = outputStream.toByteArray();
-            ByteArrayInputStream bais = new ByteArrayInputStream(byteArrayBuffer);
-            
-            outputStream.close();
-            bais.reset(); // must reset buffer pointer to [0]
+        // Setting up Tidy (default) output
+        tidy.setTidyMark(tidyMark);
+        tidy.setMakeClean(makeClean);
+        tidy.setSmartIndent(smartIndent);
+        tidy.setShowWarnings(showWarnings);
+        tidy.setXHTML(xhtml);
+        tidy.setDocType(doctype);
+        tidy.setQuiet(quiet);
+        tidy.setInputEncoding(DEFAULT_ENCODING);
+        tidy.setOutputEncoding(DEFAULT_ENCODING);
 
-            return bais;
-
-        } catch (IOException e) {
-            logger.error("Caught exception", e);
-            return new ByteArrayInputStream(null);
+        if (null == characterEncoding ) {
+            characterEncoding = DEFAULT_ENCODING;
+        } else if ("null".equals(characterEncoding.toLowerCase()) || "".equals(characterEncoding)) {
+            characterEncoding = DEFAULT_ENCODING;
         }
+
+        // Buffer the input stream:
+        byte[] buffer = StreamUtil.readInputStream(inStream);
+
+        // Convert stream to utf-8 encoding if necessary:
+        if (!DEFAULT_ENCODING.equals(characterEncoding)) {
+            String s = new String(buffer, characterEncoding);
+            buffer = s.getBytes(DEFAULT_ENCODING);
+        }
+
+        if ("".equals(new String(buffer, DEFAULT_ENCODING).trim())) {
+            buffer = MINIMAL_DOCUMENT.getBytes(DEFAULT_ENCODING);
+        }
+
+        InputStream bufferedStream = new ByteArrayInputStream(buffer);
+        tidy.setInputStreamName(bufferedStream.getClass().getName());
+        Document document = tidy.parseDOM(bufferedStream, null);
+
+        // Handle (re)setting of doctype and encoding meta-tag
+        alterContentTypeMetaElement(document);
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        tidy.pprint(document, outputStream);
+
+        byte[] byteArrayBuffer = outputStream.toByteArray();
+        ByteArrayInputStream bais = new ByteArrayInputStream(byteArrayBuffer);
+
+        outputStream.close();
+        bais.reset(); // must reset buffer pointer to [0]
+
+        return bais;
     }
     
     
-    public InputStream transform(InputStream inStream, Resource resource) {
-        try {
-            Tidy tidy = new Tidy();
-                        
-            // Setting up Tidy (default) output
-            tidy.setInputStreamName(inStream.getClass().getName());
-            tidy.setTidyMark(tidyMark);
-            tidy.setMakeClean(makeClean);
-            tidy.setSmartIndent(smartIndent);
-            tidy.setShowWarnings(showWarnings);
-            // tidy.setOnlyErrors(onlyErrors); // If set TRUE, then only error
-                                               // messages are written to the
-                                               // OutputStream (i.e. no file
-                                               // content is written)
-            tidy.setQuiet(quiet);
-            tidy.setXHTML(xhtml);
-            tidy.setDocType(doctype);
-            tidy.setInputEncoding(DEFAULT_ENCODING);
-            tidy.setOutputEncoding(DEFAULT_ENCODING);
+    public InputStream transform(InputStream inStream, Resource resource) throws Exception {
+        Tidy tidy = new Tidy();
 
-            byte[] buffer = StreamUtil.readInputStream(inStream);
-            String s = new String(buffer, resource.getCharacterEncoding());
-            if ("".equals(s.trim())) {
-                s = MINIMAL_DOCUMENT;
-            }
-            InputStream newStream = StreamUtil.stringToStream(s, DEFAULT_ENCODING);
+        // Setting up Tidy (default) output
+        tidy.setInputStreamName(inStream.getClass().getName());
+        tidy.setTidyMark(tidyMark);
+        tidy.setMakeClean(makeClean);
+        tidy.setSmartIndent(smartIndent);
+        tidy.setShowWarnings(showWarnings);
+        // tidy.setOnlyErrors(onlyErrors); // If set TRUE, then only error
+        // messages are written to the
+        // OutputStream (i.e. no file
+        // content is written)
+        tidy.setQuiet(quiet);
+        tidy.setXHTML(xhtml);
+        tidy.setDocType(doctype);
+        tidy.setInputEncoding(DEFAULT_ENCODING);
+        tidy.setOutputEncoding(DEFAULT_ENCODING);
 
-            Document document = tidy.parseDOM(newStream, null);
-            alterContentTypeMetaElement(document);
-            if (this.insertedCssReference != null && !"".equals(this.insertedCssReference.trim())) {
-                insertCssReference(document, this.insertedCssReference);
-            }
-            
-            resource.removeProperty(Namespace.DEFAULT_NAMESPACE, 
-                    PropertyType.CHARACTERENCODING_USER_SPECIFIED_PROP_NAME);
-
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            tidy.pprint(document, outputStream);
-            
-            byte[] byteArrayBuffer = outputStream.toByteArray();
-            ByteArrayInputStream bais = new ByteArrayInputStream(byteArrayBuffer);
-            
-            outputStream.close();
-            bais.reset(); // must reset buffer pointer to [0]
-            
-
-            return bais;
-
-        } catch (IOException e) {
-            logger.error("Caught exception", e);
-            return new ByteArrayInputStream(null);
+        byte[] buffer = StreamUtil.readInputStream(inStream);
+        String s = new String(buffer, resource.getCharacterEncoding());
+        if ("".equals(s.trim())) {
+            s = MINIMAL_DOCUMENT;
         }
+        InputStream newStream = StreamUtil.stringToStream(s, DEFAULT_ENCODING);
+
+        Document document = tidy.parseDOM(newStream, null);
+        alterContentTypeMetaElement(document);
+        if (this.insertedCssReference != null && !"".equals(this.insertedCssReference.trim())) {
+            insertCssReference(document, this.insertedCssReference);
+        }
+
+        resource.removeProperty(Namespace.DEFAULT_NAMESPACE, 
+                PropertyType.CHARACTERENCODING_USER_SPECIFIED_PROP_NAME);
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        tidy.pprint(document, outputStream);
+
+        byte[] byteArrayBuffer = outputStream.toByteArray();
+        ByteArrayInputStream bais = new ByteArrayInputStream(byteArrayBuffer);
+
+        outputStream.close();
+        bais.reset(); // must reset buffer pointer to [0]
+
+
+        return bais;
     }
 
     

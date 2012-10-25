@@ -76,7 +76,7 @@
     // Async. save i18n 
     var ajaxSaveText = "<@vrtx.msg code='editor.save-doc-ajax-loading-title' />";
 
-    // Div container display in IE
+    // Div container display
     var cssFileList = [<#if fckEditorAreaCSSURL?exists>
                          <#list fckEditorAreaCSSURL as cssURL>
                            "${cssURL?html}" <#if cssURL_has_next>,</#if>

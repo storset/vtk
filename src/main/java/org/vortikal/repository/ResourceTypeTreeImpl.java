@@ -583,13 +583,13 @@ public class ResourceTypeTreeImpl implements ResourceTypeTree, InitializingBean,
 
     private void addMixins(PrimaryResourceTypeDefinition def) {
         List<MixinResourceTypeDefinition> mixinTypes = def.getMixinTypeDefinitions();
-        
-        if (mixinTypes != null) {
-            for (MixinResourceTypeDefinition mix: mixinTypes) {
-                if (!this.namespaceUriMap.containsKey(mix.getNamespace().getUri()))
-                    this.namespaceUriMap.put(mix.getNamespace().getUri(), mix.getNamespace());                    
-            }
-        }        
+        if (mixinTypes == null) {
+            return;
+        }
+        for (MixinResourceTypeDefinition mix: mixinTypes) {
+            if (!this.namespaceUriMap.containsKey(mix.getNamespace().getUri()))
+                this.namespaceUriMap.put(mix.getNamespace().getUri(), mix.getNamespace());                    
+        }
 
         // Do something else...
         this.mixinTypeDefinitionMap.put(def, mixinTypes);
@@ -603,7 +603,6 @@ public class ResourceTypeTreeImpl implements ResourceTypeTree, InitializingBean,
             }
             set.addAll(getDescendantsAndSelf(def));
         }
-        
     }
     
     

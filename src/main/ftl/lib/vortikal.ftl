@@ -295,10 +295,10 @@
  * @param requestURL URL from the request
  *
 -->
-<#macro linkResolveFilter value baseURL requestURL >
+<#macro linkResolveFilter value baseURL requestURL protocolRelative=false>
   <#compress>
     <#if VRTX_HTML_UTIL?exists>
-        ${VRTX_HTML_UTIL.linkResolveFilter(value, baseURL, requestURL).getStringRepresentation()}
+        ${VRTX_HTML_UTIL.linkResolveFilter(value, baseURL, requestURL, protocolRelative).getStringRepresentation()}
     <#else>
       Undefined
     </#if>

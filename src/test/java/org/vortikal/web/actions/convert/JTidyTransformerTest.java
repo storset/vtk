@@ -36,8 +36,6 @@ import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
 
 import org.junit.Before;
@@ -57,108 +55,65 @@ public class JTidyTransformerTest {
     }
 
     @Test
-    public void testParseValidHtmlToXhtml() {
-        try {
-            InputStream is = this.getClass().getResourceAsStream("valid.html");
-            if (is == null) {
-                fail("InputStream containing valid HTML was not found");
-            }
-
-            assertTrue(parserTest(is));
-
-        } catch (FileNotFoundException fnfe) {
-            fail(fnfe.getMessage());
-        } catch (IOException ioe) {
-            fail(ioe.getMessage());
+    public void testParseValidHtmlToXhtml() throws Exception {
+        InputStream is = this.getClass().getResourceAsStream("valid.html");
+        if (is == null) {
+            fail("InputStream containing valid HTML was not found");
         }
+
+        assertTrue(parserTest(is));
     }
 
     @Test
-    public void testParseInvalidHtmlToXhtml() {
-        try {
-            InputStream is = this.getClass().getResourceAsStream("invalid.html");
-            if (is == null) {
-                fail("InputStream containing invalid HTML was not found");
-            }
-
-            assertTrue(parserTest(is));
-
-        } catch (FileNotFoundException fnfe) {
-            fail(fnfe.getMessage());
-        } catch (IOException ioe) {
-            fail(ioe.getMessage());
+    public void testParseInvalidHtmlToXhtml() throws Exception {
+        InputStream is = this.getClass().getResourceAsStream("invalid.html");
+        if (is == null) {
+            fail("InputStream containing invalid HTML was not found");
         }
+
+        assertTrue(parserTest(is));
     }
 
     @Test
-    public void testParseFrontpageHtmlToXhtml() {
-        try {
-            InputStream is = this.getClass().getResourceAsStream("frontpage.html");
-            if (is == null) {
-                fail("InputStream containing invalid HTML was not found");
-            }
-
-            assertTrue(parserTest(is));
-
-        } catch (FileNotFoundException fnfe) {
-            fail(fnfe.getMessage());
-        } catch (IOException ioe) {
-            fail(ioe.getMessage());
+    public void testParseFrontpageHtmlToXhtml() throws Exception {
+        InputStream is = this.getClass().getResourceAsStream("frontpage.html");
+        if (is == null) {
+            fail("InputStream containing invalid HTML was not found");
         }
+
+        assertTrue(parserTest(is));
     }
 
     // This test will fail if doctype is not set to "transitional"/"loose"
     @Test
-    public void testStrict() {
-        try {
-            InputStream is = this.getClass().getResourceAsStream("strict.html");
-            if (is == null) {
-                fail("InputStream containing invalid HTML was not found");
-            }
-
-            assertTrue(parserTest(is));
-
-        } catch (FileNotFoundException fnfe) {
-            fail(fnfe.getMessage());
-        } catch (IOException ioe) {
-            fail(ioe.getMessage());
+    public void testStrict() throws Exception {
+        InputStream is = this.getClass().getResourceAsStream("strict.html");
+        if (is == null) {
+            fail("InputStream containing invalid HTML was not found");
         }
+
+        assertTrue(parserTest(is));
     }
 
     @Test
-    public void testLoose() {
-        try {
-            InputStream is = this.getClass().getResourceAsStream("loose.html");
-            if (is == null) {
-                fail("InputStream containing invalid HTML was not found");
-            }
-
-            assertTrue(parserTest(is));
-
-        } catch (FileNotFoundException fnfe) {
-            fail(fnfe.getMessage());
-        } catch (IOException ioe) {
-            fail(ioe.getMessage());
+    public void testLoose() throws Exception {
+        InputStream is = this.getClass().getResourceAsStream("loose.html");
+        if (is == null) {
+            fail("InputStream containing invalid HTML was not found");
         }
+        assertTrue(parserTest(is));
     }
 
     @Test
-    public void testEmpty() {
-        try {
-            InputStream is = new ByteArrayInputStream("".getBytes());
-            assertTrue(parserTest(is));
-        } catch (FileNotFoundException fnfe) {
-            fail(fnfe.getMessage());
-        } catch (IOException ioe) {
-            fail(ioe.getMessage());
-        }
-
+    public void testEmpty() throws Exception {
+        InputStream is = new ByteArrayInputStream("".getBytes());
+        assertTrue(parserTest(is));
     }
 
     /*
      * Helper methods
      */
-    private boolean parserTest(InputStream isOriginal) throws FileNotFoundException, IOException {
+    private boolean parserTest(InputStream isOriginal) throws Exception {
 
         InputStream isParsed = this.jti.transform(isOriginal, "utf-8");
 

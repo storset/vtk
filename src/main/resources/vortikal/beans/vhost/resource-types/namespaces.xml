@@ -84,5 +84,15 @@
     <constructor-arg value="program-option-context" />
     <constructor-arg value="http://www.uio.no/resource-types/program-option-context" />
   </bean>
+
+  <bean id="COURSE_CONTEXT_NAMESPACE" class="org.vortikal.repository.Namespace">
+    <constructor-arg value="course-context" />
+    <constructor-arg value="http://www.uio.no/resource-types/course-context" />
+  </bean>
+
+  <bean id="SEMESTER_CONTEXT_NAMESPACE" class="org.vortikal.repository.Namespace">
+    <constructor-arg value="semester-context" />
+    <constructor-arg value="http://www.uio.no/resource-types/semester-context" />
+  </bean>
   
 </beans>

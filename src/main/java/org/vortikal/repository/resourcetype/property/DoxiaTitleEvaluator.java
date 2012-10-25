@@ -117,7 +117,7 @@ public class DoxiaTitleEvaluator implements PropertyEvaluator {
     }
     
 
-    private class TitleSink extends SinkAdapter {
+    private static class TitleSink extends SinkAdapter {
 
         boolean inTitle = false;
         String title = null;

@@ -23,6 +23,9 @@
   <#if val?matches(".*style.*")>
     <#return true />
   </#if>
+  <#if val?matches("script:.*")>
+    <#return true />
+  </#if>
   <#if val?matches("element:ssi:include:feed.*") && val?matches(".*item-picture=\\[true\\].*") && val?matches(".*url=\\[http:.*")>
     <#return true />
   </#if>
@@ -33,8 +36,15 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <title>${vrtx.getMsg('preview.sslMixedContent.title')}</title>
+    <script type="text/javascript">
+      $(document).on("click", "#vrtx-preview-popup-open", function(e) {
+        var openedPreviewPopup = openRegular(this.href, 1082, 800, "vrtx_preview_popup");
+        e.stopPropagation();
+        e.preventDefault();
+      });
+    </script>
   </head>
-  <body>
+  <body id="vrtx-preview-ssl-mixed-mode">
     <h2>${vrtx.getMsg('preview.sslMixedContent.title')}</h2>
 
     <#--
@@ -47,15 +57,18 @@
     </#if>
     -->
 
-    <p>${vrtx.getMsg('preview.sslMixedContent.desc')}</p>
+    <p class="larger-p">${vrtx.getMsg('preview.sslMixedContent.desc')}</p>
+
     <#--a class="vrtx-button" href="${resourceReference?html}" target="vrtx_preview_popup"><span>${vrtx.getMsg('preview.sslMixedContent.open')}</span></a-->
-    <a class="vrtx-button" href="${preview.popupURL?html}" target="vrtx_preview_popup"><span>${vrtx.getMsg('preview.sslMixedContent.open')}</span></a-->
-    <p class="previewUnavailableReasons">${vrtx.getMsg('preview.sslMixedContent.reasons.desc')}</p>
+    <a id="vrtx-preview-popup-open" class="vrtx-focus-button" href="${preview.popupURL?html}" target="vrtx_preview_popup"><span>${vrtx.getMsg('preview.sslMixedContent.open')}</span></a-->
+   
     <#assign prop = vrtx.getProp(resourceContext.currentResource, 'sslMixedMode') />
+    <p class="previewUnavailableReasons"><strong>${vrtx.getMsg('preview.sslMixedContent.reasons.desc')}</strong></p>
+    
+    <ul>
     <#list prop.values as v>
       <#assign val = v?string />
       <#if filter_reason(val)>
-
       <#if val?starts_with("img:")>
         <li><@vrtx.msg code="preview.sslMixedContent.reasons.img"  args=[val?substring("img:"?length, val?length)?html] /></li>
 
@@ -97,8 +110,11 @@
       <#elseif val?starts_with("element:style")>
         <li><@vrtx.msg code="preview.sslMixedContent.reasons.style" /></li>
 
+      <#elseif val?starts_with("script:")>
+        <li><@vrtx.msg code="preview.sslMixedContent.reasons.script" args=[val?substring("script:"?length, val?length)?html] /></li>
+
       <#elseif val?starts_with("element:script")>
-        <li><@vrtx.msg code="preview.sslMixedContent.reasons.script" /></li>
+        <li><@vrtx.msg code="preview.sslMixedContent.reasons.localscript" /></li>
 
       <#elseif val?starts_with("element:esi:include")>
         <li><@vrtx.msg code="preview.sslMixedContent.reasons.esi"  args=[val?substring("element:esi:include"?length, val?length)?html] /></li>

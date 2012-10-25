@@ -74,7 +74,7 @@ public class RequestURLDecoder extends AbstractRequestFilter implements Initiali
         return new URLDecodingRequestWrapper(request, this.characterEncoding);
     }
     
-    private class URLDecodingRequestWrapper extends HttpServletRequestWrapper {
+    private static class URLDecodingRequestWrapper extends HttpServletRequestWrapper {
 
         private String uri;
 

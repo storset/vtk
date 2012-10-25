@@ -9,6 +9,16 @@
   font-size: 0.75em; 
 }
 
+html#vrtx-preview-popup #vrtx-preview-popup-iframe-wrapper {
+  position: relative;
+}
+
+html#vrtx-preview-popup #vrtx-link-check-spinner {
+  top: 0px;
+  right: -2px;
+  font-size: 0.923em;
+}
+
 .vrtx-broken-links {
   background-image: none !important;
   padding-left: 10px !important;

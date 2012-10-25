@@ -312,8 +312,8 @@ public class LinksEvaluator implements LatePropertyEvaluator {
             
             if (href != null && !href.isEmpty()) {
                 LinkType type = LinkType.ANCHOR;
-                if (parent != null && "bilde".equals(parent.getName()) 
-                        || "bilde-referanse".equals(parent.getName())) {
+                if (parent != null && ("bilde".equals(parent.getName()) 
+                        || "bilde-referanse".equals(parent.getName()))) {
                     type = LinkType.IMG;
                 }
                 if (!collector.link(new Link(href, type, source))) {

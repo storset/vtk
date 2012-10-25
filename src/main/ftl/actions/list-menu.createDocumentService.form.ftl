@@ -70,7 +70,7 @@
       <div id="vrtx-div-file-name">
         <h4 class="vrtx-admin-label"><@vrtx.msg code="actions.createDocumentService.filename" default="Filename" /></h4>
         <div class="vrtx-textfield" id="vrtx-textfield-file-name">
-          <input type="text" id="${nameBind?html}" name="${nameBind?html}" value="${newDocName?html}" size="15" />
+          <input type="text" id="${nameBind?html}" name="${nameBind?html}" value="${newDocName?html}" size="15" maxlength="50" />
         </div>
       </div>
       <span id="vrtx-textfield-file-type"></span>

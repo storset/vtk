@@ -152,7 +152,11 @@ public class FileSystemContentStore implements InitializingBean, ContentStore {
         File dest = new File(fileName);
         try {
             FileOutputStream outputStream = new FileOutputStream(dest);
-            StreamUtil.pipe(inputStream, outputStream, COPY_BUF_SIZE, true);
+            if (inputStream instanceof FileInputStream) {
+                StreamUtil.fileStreamCopy((FileInputStream)inputStream, outputStream, true);
+            } else {
+                StreamUtil.pipe(inputStream, outputStream, COPY_BUF_SIZE, true);                
+            }
         } catch (IOException e) {
             throw new DataAccessException("Store content [" + uri + "] failed", e);
         }
@@ -195,7 +199,7 @@ public class FileSystemContentStore implements InitializingBean, ContentStore {
         try {
             src = new FileInputStream(from);
             dst = new FileOutputStream(to);
-            StreamUtil.pipe(src, dst, COPY_BUF_SIZE, true);
+            StreamUtil.fileStreamCopy(src, dst, false);
         } finally {
             try {
                 if (src != null) {

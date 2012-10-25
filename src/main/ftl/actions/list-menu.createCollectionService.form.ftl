@@ -48,7 +48,7 @@
 
       <h4 class="vrtx-admin-label"><@vrtx.msg code="actions.createCollectionService.collection-name" default="Folder name" /></h4>
       <div class="vrtx-textfield" id="vrtx-textfield-collection-name">
-        <input type="text" id="${nameBind?html}" name="${nameBind?html}" value="${newColName?html}" size="15"  />
+        <input type="text" id="${nameBind?html}" name="${nameBind?html}" value="${newColName?html}" size="15" maxlength="50" />
       </div>
 
       <@spring.bind "createCollectionForm" + ".hidden" />

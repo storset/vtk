@@ -109,27 +109,17 @@
     <#if !previewRefreshParameter?exists>
       <#assign previewRefreshParameter = 'vrtxPreviewForceRefresh' />
     </#if>
-    
-    <#if !previewUnpublishedParameter?exists>
-      <#assign previewUnpublishedParameter = 'vrtxPreviewUnpublished' />
-    </#if>
 
     <#assign constructor = "freemarker.template.utility.ObjectConstructor"?new() />
     <#assign dateStr = constructor("java.util.Date")?string("yyyymmddhhmmss") />
 
     <#assign url = resourceReference />
     <#if url?contains("?")>
-      <#assign url = url + "&amp;" + previewUnpublishedParameter + "="  + "true" 
-               + "&amp;link-check=" + visualizeBrokenLinks?default('false')
+      <#assign url = url + "&amp;link-check=" + visualizeBrokenLinks?default('false')
                + "&amp;" + previewRefreshParameter + "=" + dateStr + "&amp;authTarget=" + authTarget />
     <#else>
-      <#assign url = url + "?" + previewUnpublishedParameter + "=" + "true"
-               + "&amp;link-check=" + visualizeBrokenLinks?default('false')
+      <#assign url = url + "?" + "&amp;link-check=" + visualizeBrokenLinks?default('false')
                + "&amp;" + previewRefreshParameter + "=" + dateStr + "&amp;authTarget=" + authTarget />
-    </#if>
-
-    <#if workingCopy?exists>
-      <#assign url = url + "&amp;revision=WORKING_COPY" />
     </#if>
 
     <iframe class="previewView" name="previewViewIframe" id="previewViewIframe" src="${url}" marginwidth="0" marginheight="0" scrolling="auto" frameborder="0" style="overflow:visible; width:100%; ">

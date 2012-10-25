@@ -162,7 +162,7 @@ public class ResourceContextProvider implements InitializingBean, ReferenceDataP
             }
         }
         
-        if (model != null && this.getResourceFromModel) {
+        if (this.getResourceFromModel) {
             resource = (Resource) model.get(this.resourceFromModelKey);
         }
 

@@ -103,8 +103,13 @@
               <@vrtx.msg code="propertyEditor.takeOwnershipWarning"
                          default="Are you sure you want to take ownership of this resource?" />
             </#assign>
-            <form id="vrtx-admin-ownership-form" action="${ownerItem.toggleURL?html}"
-                  method="post" onsubmit="return confirm('${warning}')">
+            <script type="text/javascript"><!--
+              var confirmTakeOwnershipMsg = '${warning?js_string}',
+                  confirmTakeOwnershipTitle = '${editAction}';
+            // -->
+            </script>
+            
+            <form id="vrtx-admin-ownership-form" action="${ownerItem.toggleURL?html}" method="post">
               <div class="vrtx-button-small">
                 <input id="vrtx-admin-ownership-button" type="submit" 
                        name="confirmation" value="${editAction}" />
@@ -180,7 +185,18 @@
                propName = "contentLength"
                name = vrtx.getMsg("property.contentLength", "Size")
                value = size />
-    </#if>
+        <!-- Obsoleted for document -->
+        <#if resourceDetail.inheritedFrom?exists>
+          <@propList.defaultPropertyDisplay propName = "obsoleted" name = vrtx.getMsg("property.obsoleted") value = vrtx.getMsg("property.obsoleted.inheritedFrom") + ' ' + resourceDetail.inheritedFrom />
+        </#if>
+      <#else>
+        <!-- Obsolete for collection -->
+        <#if resourceDetail.inheritedFrom?exists>
+          <@propList.defaultPropertyDisplay propName = "obsoleted" name = vrtx.getMsg("property.obsoleted") value = vrtx.getMsg("property.obsoleted.inheritedFrom") + ' ' + resourceDetail.inheritedFrom />
+        <#else>
+          <@propList.editOrDisplayProperty modelName = 'aboutItems' propertyName = 'obsoleted' displayMacro = 'obsoletedPropertyDisplay' />
+        </#if>
+      </#if>
   </table>
 
   <#if urchinStats?exists>
@@ -310,6 +326,28 @@
 </#macro>
 
 <#macro commentsEnabledPropertyDisplay propName name value prefix=false editURL="">
+  <tr class="prop-${propName}">
+    <td class="key">
+      ${name}:
+    </td>
+    <td class="value">
+      <#if prefix?is_string>
+        ${prefix}
+      </#if>
+      ${value?trim}
+      <#compress>
+      <#if .vars['aboutItems'][propName].property?exists && .vars['aboutItems'][propName].property.inherited>
+         &nbsp;(<@vrtx.msg "resource.property.inherited"  "inherited" />)
+      </#if>
+      </#compress>
+      <#if editURL != "">
+        ${editURL}
+      </#if>
+    </td>
+  </tr>
+</#macro>
+
+<#macro obsoletedPropertyDisplay propName name value prefix=false editURL="">
   <tr class="prop-${propName}">
     <td class="key">
       ${name}:

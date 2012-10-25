@@ -63,7 +63,7 @@ public class CaptureNodeFactory implements DirectiveNodeFactory {
         return new CaptureNode(nodeList, variable);
     }
 
-    private class CaptureNode extends Node {
+    private static class CaptureNode extends Node {
         private NodeList nodeList;
         private String variable;
         

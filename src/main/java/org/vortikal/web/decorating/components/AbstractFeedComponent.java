@@ -111,7 +111,7 @@ public abstract class AbstractFeedComponent extends ViewRenderingDecoratorCompon
         return filter.getImageElement();
     }
 
-    private class RemoveImageFilter implements HtmlPageFilter {
+    private static class RemoveImageFilter implements HtmlPageFilter {
 
         private HtmlElement image = null;
 

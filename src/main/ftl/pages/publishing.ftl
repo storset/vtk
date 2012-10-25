@@ -44,7 +44,7 @@
             <#assign titleMsg = vrtx.getMsg("confirm-publish.title.unpublish") />
           </span>
           <#if unPublishUrl?exists>
-          &nbsp;<a class="vrtx-button-small thickbox" href="${unPublishUrl?html}&amp;showAsHtml=true&amp;height=80&amp;width=230" title="${titleMsg}"><span><@vrtx.msg code="publish.action.unpublish" default="Unpublish" /></span></a>
+          &nbsp;<a class="vrtx-button-small publishing-status-link" href="${unPublishUrl?html}" title="${titleMsg}"><span><@vrtx.msg code="publish.action.unpublish" default="Unpublish" /></span></a>
           </#if>
         <#else>
           <span class="unpublished">
@@ -52,7 +52,7 @@
             <#assign titleMsg = vrtx.getMsg("confirm-publish.title.publish") />      
           </span>
           <#if publishUrl?exists>
-          &nbsp;<a class="vrtx-button-small thickbox" href="${publishUrl?html}&amp;showAsHtml=true&amp;height=80&amp;width=230" title="${titleMsg}"><span><@vrtx.msg code="publish.action.publish" default="Publish" /></span></a>
+          &nbsp;<a class="vrtx-button-small publishing-status-link" href="${publishUrl?html}" title="${titleMsg}"><span><@vrtx.msg code="publish.action.publish" default="Publish" /></span></a>
           </#if>
         </#if>
         

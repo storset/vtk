@@ -88,7 +88,7 @@ public class MoveController implements ActionHandler {
         return null;
     }
 
-    private class PathComparator implements Comparator<String> {
+    private static class PathComparator implements Comparator<String> {
 
         public PathComparator() {
         }

@@ -117,8 +117,8 @@ public class BrokenLinksToTsvController implements Controller {
                     title = titleProp.getFormattedValue();
                     uri = ps.getURI().toString();
                     obj = (JSONObject) map.get(uri);
-                    brokenLinks = (ArrayList<Map<String, Object>>) obj.get("brokenLinks");
                     if (obj != null) {
+                        brokenLinks = (ArrayList<Map<String, Object>>) obj.get("brokenLinks");
                         out.print(title.replaceAll("[\\n\\r\\t]", "") + "\t" + uri + "\t" + brokenLinks.size() + "\n");
                     }
                 }
@@ -152,7 +152,7 @@ public class BrokenLinksToTsvController implements Controller {
     /**
      * Request wrapper hack to be able to manipulate page number.
      */
-    private class RequestWrapper extends HttpServletRequestWrapper {
+    private static class RequestWrapper extends HttpServletRequestWrapper {
         private HttpServletRequest request;
         private int pageNumber = 1;
 

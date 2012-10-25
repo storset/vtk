@@ -77,7 +77,6 @@ JavaScript and plain JS plugins
 │   └── md5.js
 ├── open-webdav.js
 ├── plugins
-│   ├── fixed.js
 │   ├── mustache.js
 │   ├── shortcut.js
 │   ├── tablesort-1.5.min.js

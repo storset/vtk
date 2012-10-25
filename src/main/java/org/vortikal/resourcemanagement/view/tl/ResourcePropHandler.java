@@ -97,6 +97,19 @@ public class ResourcePropHandler extends Function {
         if ("uri".equals(propName)) {
             return resource.getURI();
         }
+        if ("resourceType".equals(propName)) {
+            return resource.getResourceType();
+        }
+        if ("parentChildURIs".equals(propName)) {
+            try {
+                RequestContext requestContext = RequestContext.getRequestContext();
+                String token = requestContext.getSecurityToken();
+                Repository repository = requestContext.getRepository();
+                Resource r = repository.retrieve(token, requestContext.getResourceURI().getParent(), false);
+                return r.getChildURIs();
+            } catch (Exception e) {
+            }
+        }
 
         Property property = resource.getProperty(Namespace.STRUCTURED_RESOURCE_NAMESPACE, propName);
         if (property == null) {

@@ -15,15 +15,15 @@
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
-<head>
+<head></head>
 <body>
+
 <div class="vrtx-confirm-publish-msg">
 <#if type = "publish.unpublishResourceConfirmedService">
-${vrtx.getMsg("confirm-publish.confirmation.unpublish")}
+${vrtx.getMsg("confirm-publish.confirmation.unpublish")}?
 <#else>
-${vrtx.getMsg("confirm-publish.confirmation.publish")}
+${vrtx.getMsg("confirm-publish.confirmation.publish")}?
 </#if>
-&nbsp;<span class="vrtx-confirm-publish-name"> ${name}</span>? 
 </div>
 
 <form name="vrtx-publish-resource" id="vrtx-publish-resource" action="${url}" method="post">
@@ -33,10 +33,11 @@ ${vrtx.getMsg("confirm-publish.confirmation.publish")}
              name="publishResourceAction" value="${vrtx.getMsg("confirm-delete.ok")}" />
     </div>
     <div class="vrtx-button">
-      <input tabindex="2" type="submit" onclick="tb_remove(); return false;" id="publishResourceCancelAction"  
+      <input tabindex="2" type="submit" id="publishResourceCancelAction"  
              name="publishResourceCancelAction" value="${vrtx.getMsg("confirm-delete.cancel")}"  />
     </div>
   </div>
 </form>
+
 </body>
 </html>

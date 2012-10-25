@@ -79,13 +79,11 @@ public class IndexReaderWarmupImpl implements IndexReaderWarmup {
         // This should warm up:
         // 0. Deleted docs filter cache
         // 1. Inverted hidden-prop existence query filter cache
-        // 2. Published-prop filter cache
-        // 3. ACL filter cache for anonymous user
+        // 2. ACL filter cache for anonymous user
         // Enabling pre-building of all this caching should be very good for performance of new reader
         // after warmup.
         Search search = new Search();
         search.setLimit(5000);
-        search.setOnlyPublishedResources(true);
         PropertyExistsQuery peq = new PropertyExistsQuery(this.hiddenPropDef, true);
         search.setQuery(peq);
         luceneQuery = this.luceneQueryBuilder.buildQuery(search.getQuery(), reader);

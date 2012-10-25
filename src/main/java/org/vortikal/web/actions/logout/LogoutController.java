@@ -83,7 +83,7 @@ public class LogoutController extends SimpleFormController implements Initializi
         }
     }
     
-    public class LogoutCommand {
+    public static class LogoutCommand {
         private URL submitURL;
         private String logoutAction;
         private String useRedirectService;

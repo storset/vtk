@@ -82,5 +82,14 @@ public class LocaleHelper {
         }
         return providedResourceLocale;
     }
+    
+    public static String getPreferredLang(Locale preferredLocale) {
+        String lang = preferredLocale.toString().toLowerCase();
+        if (lang.contains("ny")) {
+            return "nn";
+        }
+        return preferredLocale.getLanguage();
+    }
+
 
 }

@@ -394,8 +394,8 @@
     <property name="viewName" value="previewViewIframe" />
     <property name="service" ref="viewService" />
     <property name="displayWorkingRevision" value="true" />
-    <property name="webProtocol" value="${webProtocol}" />
-    <property name="webProtocolRestricted" value="${webProtocolRestricted}" />
+    <property name="previewUnpublished" value="true" />
+    <property name="previewObsoleted" value="true" />
   </bean>
 
 
@@ -408,6 +408,11 @@
           <property name="parameterName" value="vrtx" />
           <property name="parameterValue" value="preview-popup" />
         </bean>
+        <bean parent="abstractResourcePrincipalPermissionAssertion">
+          <property name="requiresAuthentication" value="true" />
+          <property name="considerLocks" value="false" />
+          <property name="permission" ref="ACTION_READ_PROCESSED" />
+        </bean>
       </list>
     </property>
     <property name="handler" ref="previewPopupHandler" />
@@ -417,8 +422,8 @@
     <property name="viewName" value="previewPopup" />
     <property name="service" ref="viewService" />
     <property name="displayWorkingRevision" value="true" />
-    <property name="webProtocol" value="${webProtocol}" />
-    <property name="webProtocolRestricted" value="${webProtocolRestricted}" />
+    <property name="previewUnpublished" value="true" />
+    <property name="previewObsoleted" value="true" />
   </bean>
 
 

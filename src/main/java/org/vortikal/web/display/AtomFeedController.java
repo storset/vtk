@@ -104,12 +104,18 @@ public abstract class AtomFeedController implements Controller {
     }
 
     // To be overridden where necessary
-    protected void setFeedEntrySummary(Entry entry, PropertySet result) throws Exception {
+    protected void setFeedEntrySummary(Entry entry, PropertySet result) throws Exception{
         String type = result.getResourceType();
         if (type != null && this.introductionAsXHTMLSummaryResourceTypes.contains(type)) {
             HtmlFragment summary = this.prepareSummary(result);
             if (summary != null) {
-                entry.setSummaryAsXhtml(summary.getStringRepresentation());
+                try{
+                    entry.setSummaryAsXhtml( summary.getStringRepresentation());
+                }catch(Exception e){
+                    // Don't remove entry because of illegal characters in string. 
+                    // In the future, consider blacklist of illegal characters (VTK-300 9). 
+                    logger.error( "Could not set summery as XHTML: " + e.getMessage() );
+                }
             }
         } else {
             // ...add description as plain text else
@@ -118,8 +124,11 @@ public abstract class AtomFeedController implements Controller {
                 entry.setSummary(description);
             }
         }
+        
     }
 
+    
+    
     @Override
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
@@ -202,6 +211,7 @@ public abstract class AtomFeedController implements Controller {
 
             // Set the summary
             this.setFeedEntrySummary(entry, result);
+    
 
             Property publishDate = getPublishDate(result);
             if (publishDate != null) {
@@ -264,7 +274,7 @@ public abstract class AtomFeedController implements Controller {
         }
     }
 
-    protected HtmlFragment prepareSummary(PropertySet resource) throws Exception {
+    protected HtmlFragment prepareSummary(PropertySet resource) {
         StringBuilder sb = new StringBuilder();
 
         URL baseURL = viewService.constructURL(resource.getURI());

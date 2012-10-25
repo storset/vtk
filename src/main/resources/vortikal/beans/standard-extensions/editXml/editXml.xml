@@ -116,7 +116,6 @@
           <property name="modelDataMap">
             <map>
               <entry key="serviceCssURLs" value-ref="editCSSURLs" />
-              <entry key="serviceJsURLs" value-ref="editJSURLs" />
             </map>
           </property>
         </bean>
@@ -128,21 +127,10 @@
   <bean id="editCSSURLs" class="java.util.ArrayList">
     <constructor-arg>
       <list>
-        <!--
-        <value>${themeBaseURL}/default.css</value>
-        -->
         <value>${themeBaseURL}/edit.css</value>
       </list>
     </constructor-arg>
-  </bean>
-  
-  <bean id="editJSURLs" class="java.util.ArrayList">
-    <constructor-arg>
-      <list>
-        <value>${jsBaseURL}/plugins/fixed.js</value>
-      </list>
-    </constructor-arg>
-  </bean>
+  </bean> 
   
   
   <bean id="xmlEditMessageSource"

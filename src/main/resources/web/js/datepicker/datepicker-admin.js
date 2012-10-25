@@ -38,22 +38,22 @@ function initDatePicker(language) {
 function displayDateAsMultipleInputFields(name) {
   var hours = "";
   var minutes = "";
-  var date = new Array("");
+  var date = [];
   var fieldName = name.replace(/\./g, '\\.');
 
-  var a = $("#" + fieldName);
+  var elem = $("#" + fieldName);
 
-  if (a.length) {
-    hours = extractHoursFromDate(a[0].value);
-    minutes = extractMinutesFromDate(a[0].value)
-    date = new String(a[0].value).split(" ");
+  if (elem.length) {
+    hours = extractHoursFromDate(elem[0].value);
+    minutes = extractMinutesFromDate(elem[0].value)
+    date = new String(elem[0].value).split(" ");
   }
 
-  dateField = "<div class='vrtx-textfield vrtx-date'><input type='text' size='12' id='" + name + "-date' name='" + name + "-date' value='" + date[0] + "' class='date' /></div>";
-  hoursField = "<div class='vrtx-textfield vrtx-hours'><input type='text' size='2' id='" + name + "-hours' name='" + name + "-hours' value='" + hours + "' class='hours' /></div>";
-  minutesField = "<div class='vrtx-textfield vrtx-minutes'><input type='text' size='2' id='" + name + "-minutes' name='" + name + "-minutes' value='" + minutes + "' class='minutes' /></div>";
-  a.parent().hide();
-  a.parent().after(dateField + hoursField + "<span class='vrtx-time-seperator'>:</span>" + minutesField);
+  var dateField = "<div class='vrtx-textfield vrtx-date'><input type='text' size='12' id='" + name + "-date' value='" + date[0] + "' /></div>";
+  var hoursField = "<div class='vrtx-textfield vrtx-hours'><input type='text' size='2' id='" + name + "-hours' value='" + hours + "' /></div>";
+  var minutesField = "<div class='vrtx-textfield vrtx-minutes'><input type='text' size='2' id='" + name + "-minutes' value='" + minutes + "' /></div>";
+  elem.parent().hide();
+  elem.parent().after(dateField + hoursField + "<span class='vrtx-time-seperator'>:</span>" + minutesField);
   $("#" + fieldName + "-date").datepicker({
     dateFormat: 'yy-mm-dd'
   });
@@ -105,29 +105,24 @@ function saveDateAndTimeFields() {
 
     var fieldName = dateFieldName.replace(/\./g, '\\.');
 
-    var hours = $("#" + fieldName + "-hours");
-    var minutes = $("#" + fieldName + "-minutes");
-    var date = $("#" + fieldName + "-date");
+    var hours = $("#" + fieldName + "-hours")[0];
+    var minutes = $("#" + fieldName + "-minutes")[0];
+    var date = $("#" + fieldName + "-date")[0];
 
-    dateFields[i].value = "";
-
-    if (date[0] && date[0].value.toString().length) {
-      dateFields[i].value = date[0].value;
-      if (hours[0] && hours[0].value.toString().length) {
-        dateFields[i].value += " " + hours[0].value;
-        if (minutes[0].value && minutes[0].value.toString().length) {
-         dateFields[i].value += ":" + minutes[0].value;
+    var savedVal = "";
+    
+    if (date && date.value.toString().length) {
+      savedVal = date.value;
+      if (hours && hours.value.toString().length) {
+        savedVal += " " + hours.value;
+        if (minutes.value && minutes.value.toString().length) {
+         savedVal += ":" + minutes.value;
         }
       }
     }
-
-    // Hack fix for editor.. .must be removed!!!
-    if (typeof UNSAVED_CHANGES_CONFIRMATION !== "undefined") {
-       $("#" + fieldName + "-hours").parent().remove();
-       $("#" + fieldName + "-minutes").parent().remove();
-       $("#" + fieldName + "-date").parent().remove();
-       $(".vrtx-time-seperator").remove();
-    }
+    
+    dateFields[i].value = savedVal;
+    
   }
 }
 

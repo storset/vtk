@@ -103,7 +103,7 @@ public class DynamicDecoratorTemplateFactory implements TemplateFactory, Initial
         Set<Function> functions = new HashSet<Function>();
         functions.addAll(this.functions);
         //functions.add(new RequestURLFunction(new Symbol("request-url")));
-        functions.add(new RepositoryIDFunction(new Symbol("repo-id")));
+        functions.add(new RepositoryIDFunction(new Symbol("repo-id"), this.repository));
         functions.add(new RequestParameterFunction(new Symbol("request-param")));
         functions.add(new ResourceLocaleFunction(new Symbol("resource-locale")));
         functions.add(new TemplateParameterFunction(new Symbol("template-param")));
@@ -140,18 +140,20 @@ public class DynamicDecoratorTemplateFactory implements TemplateFactory, Initial
         this.functions = functions;
     }
 
-    private class RepositoryIDFunction extends Function {
-        public RepositoryIDFunction(Symbol symbol) {
+    private static class RepositoryIDFunction extends Function {
+        private Repository repository;
+        public RepositoryIDFunction(Symbol symbol, Repository repository) {
             super(symbol, 0);
+            this.repository = repository;
         }
         @Override
         public Object eval(Context ctx, Object... args) {
-            return repository.getId();
+            return this.repository.getId();
         }        
     }
     
     @SuppressWarnings("unused")
-    private class RequestURLFunction extends Function {
+    private static class RequestURLFunction extends Function {
         public RequestURLFunction(Symbol symbol) {
             super(symbol, 0);
         }
@@ -174,7 +176,7 @@ public class DynamicDecoratorTemplateFactory implements TemplateFactory, Initial
         }
     }
     
-    private class TemplateParameterFunction extends Function {
+    private static class TemplateParameterFunction extends Function {
         public TemplateParameterFunction(Symbol symbol) {
             super(symbol, 1);
         }
@@ -194,7 +196,7 @@ public class DynamicDecoratorTemplateFactory implements TemplateFactory, Initial
         }
     }
     
-    private class RequestParameterFunction extends Function {
+    private static class RequestParameterFunction extends Function {
         
         public RequestParameterFunction(Symbol symbol) {
             super(symbol, 1);
@@ -216,7 +218,7 @@ public class DynamicDecoratorTemplateFactory implements TemplateFactory, Initial
         
     }
     
-    private class ResourceLocaleFunction extends Function {
+    private static class ResourceLocaleFunction extends Function {
         
         public ResourceLocaleFunction(Symbol symbol) {
             super(symbol, 0);
@@ -233,7 +235,7 @@ public class DynamicDecoratorTemplateFactory implements TemplateFactory, Initial
         
     }
     
-    private class ResourceAspectFunction extends Function {
+    private static class ResourceAspectFunction extends Function {
         private PropertyAspectResolver resolver = null;
 
         public ResourceAspectFunction(Symbol symbol, PropertyTypeDefinition aspectsPropdef, PropertyAspectDescription fieldConfig, String token) {
@@ -258,7 +260,7 @@ public class DynamicDecoratorTemplateFactory implements TemplateFactory, Initial
      }
     
     
-    private class ResourcePropHandler extends Function {
+    private static class ResourcePropHandler extends Function {
 
         public ResourcePropHandler(Symbol symbol) {
             super(symbol, 2);
@@ -316,7 +318,7 @@ public class DynamicDecoratorTemplateFactory implements TemplateFactory, Initial
 
     }
     
-    private Object getObjectValue(Object obj) {        
+    private static Object getObjectValue(Object obj) {        
         if (obj instanceof Value) 
             return ((Value)obj).getObjectValue();
         

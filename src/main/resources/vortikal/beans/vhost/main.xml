@@ -76,4 +76,7 @@
   <!-- System task manager -->
   <import resource="scheduling/scheduling.xml"/>
   <import resource="simple-structured-editor.xml" />
+
+  <!-- Obsolete -->
+  <import resource="obsoleted.xml" />
 </beans>

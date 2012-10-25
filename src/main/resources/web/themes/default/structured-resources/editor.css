@@ -137,6 +137,28 @@
   display: none;
 }
 
+#editor.so .internasjonale-sokere-admin,
+#editor.so .nordiske-sokere,
+#editor.so .generelle-admin,
+#editor.so .pris,
+#editor.so .regelverk {
+  display: none;
+}
+
+#editor .undervisningssemester-bestemt-semester,
+#editor .undervisningssemester-annet,
+#editor .eksamenssemester-bestemt-semester,
+#editor .eksamenssemester-annet {
+  display: none;  
+}
+
+#editor.undervisningssemester-valgt-bestemt-semester .undervisningssemester-bestemt-semester,
+#editor.undervisningssemester-valgt-annet .undervisningssemester-annet,
+#editor.eksamenssemester-valgt-bestemt-semester .eksamenssemester-bestemt-semester,
+#editor.eksamenssemester-valgt-annet .eksamenssemester-annet {
+  display: block;
+}
+
 .ui-accordion .vrtx-string.last {
   margin-bottom: 20px;
 }

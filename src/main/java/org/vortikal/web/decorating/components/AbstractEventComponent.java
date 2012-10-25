@@ -96,7 +96,7 @@ public abstract class AbstractEventComponent extends ViewRenderingDecoratorCompo
         return filter.getImageElement();
     }
 
-    private class RemoveImageFilter implements HtmlPageFilter {
+    private static class RemoveImageFilter implements HtmlPageFilter {
 
         private HtmlElement image = null;
 

@@ -785,7 +785,7 @@ public class SchemaDocumentDefinition {
         return e;
     }
 
-    private class XSDAttributeElementFilter implements Filter {
+    private static class XSDAttributeElementFilter implements Filter {
 
         private static final long serialVersionUID = -5181435871154415499L;
 

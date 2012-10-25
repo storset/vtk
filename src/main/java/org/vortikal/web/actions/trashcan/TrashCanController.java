@@ -169,7 +169,7 @@ public class TrashCanController extends SimpleFormController {
         return repository.exists(null, path);
     }
 
-    class RecoveryObject {
+    static class RecoveryObject {
 
         List<RecoverableResource> recoverable;
         List<RecoverableResource> conflicted;

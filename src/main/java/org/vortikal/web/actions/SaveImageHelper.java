@@ -86,7 +86,9 @@ public class SaveImageHelper {
         if (iter != null && iter.hasNext()) {
             writer = (ImageWriter) iter.next();
         }
-
+        if (writer == null) {
+            return null;
+        }
         // Prepare output file
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         ImageOutputStream ios = ImageIO.createImageOutputStream(bos);

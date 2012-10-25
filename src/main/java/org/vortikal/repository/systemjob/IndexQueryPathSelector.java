@@ -32,26 +32,20 @@
 package org.vortikal.repository.systemjob;
 
 
-import org.vortikal.repository.SystemChangeContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.ResourceTypeTree;
-import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.repository.SystemChangeContext;
 import org.vortikal.repository.search.Parser;
 import org.vortikal.repository.search.PropertySelect;
-import org.vortikal.repository.search.QueryParser;
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
 import org.vortikal.repository.search.Searcher;
 import org.vortikal.repository.search.Sorting;
-import org.vortikal.repository.search.query.OrQuery;
-import org.vortikal.repository.search.query.PropertyExistsQuery;
-import org.vortikal.repository.search.query.PropertyTermQuery;
 import org.vortikal.repository.search.query.Query;
-import org.vortikal.repository.search.query.TermOperator;
 import org.vortikal.security.SecurityContext;
 
 /**
@@ -67,8 +61,8 @@ public class IndexQueryPathSelector implements PathSelector {
     
     private String queryString;
     private String sortString;
-    private boolean onlyPublishedResources = false;
-    
+    private boolean useDefaultExcludes = false;
+
     private int limit = 2000;
 
     @Override
@@ -84,7 +78,7 @@ public class IndexQueryPathSelector implements PathSelector {
         search.setQuery(query);
         search.setSorting(sort);
         search.setLimit(this.limit);
-        search.setOnlyPublishedResources(this.onlyPublishedResources);
+        search.setUseDefaultExcludes(this.useDefaultExcludes);
         search.setPropertySelect(PropertySelect.NONE);
         ResultSet results = this.searcher.execute(token, search);
 
@@ -122,11 +116,11 @@ public class IndexQueryPathSelector implements PathSelector {
     public void setParser(Parser parser) {
         this.parser = parser;
     }
-    
-    public boolean isOnlyPublishedResources() {
-        return this.onlyPublishedResources;
+
+    public boolean isUseDefaultExcludes() {
+        return useDefaultExcludes;
     }
-    
+
     public void setLimit(int limit) {
         if (limit < 1) {
             throw new IllegalArgumentException("Limit must be >= 1");
@@ -143,9 +137,9 @@ public class IndexQueryPathSelector implements PathSelector {
     public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
         this.resourceTypeTree = resourceTypeTree;
     }
-    
-    public void setOnlyPublishedResources(boolean onlyPublished) {
-        this.onlyPublishedResources = onlyPublished;
+
+    public void setUseDefaultExcludes(boolean useDefaultExcludes) {
+        this.useDefaultExcludes = useDefaultExcludes;
     }
 
 }

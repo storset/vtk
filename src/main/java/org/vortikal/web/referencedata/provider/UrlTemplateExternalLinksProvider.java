@@ -156,7 +156,7 @@ public class UrlTemplateExternalLinksProvider {
         return new UrlEncodingWrapper(node);
     }
 
-    private class RenderContext {
+    private static class RenderContext {
         Resource resource;
         Principal principal;
         Service service;
@@ -166,7 +166,7 @@ public class UrlTemplateExternalLinksProvider {
         String render(RenderContext ctx);
     }
 
-    private class StaticEncodedText implements TemplateNode {
+    private static class StaticEncodedText implements TemplateNode {
         private String text;
 
         StaticEncodedText(String text) {
@@ -178,7 +178,7 @@ public class UrlTemplateExternalLinksProvider {
         }
     }
 
-    private class ServiceUrl implements TemplateNode {
+    private static class ServiceUrl implements TemplateNode {
         public String render(RenderContext ctx) {
             return ctx.service.constructLink(ctx.resource, ctx.principal);
         }
@@ -196,8 +196,9 @@ public class UrlTemplateExternalLinksProvider {
         public String render(RenderContext ctx) {
             String retVal = "";
             Property prop = ctx.resource.getPropertyByPrefix(this.prefix, this.name);
-            if (prop == null)
+            if (prop == null) {
                 prop = ctx.resource.getPropertyByPrefix("resource", this.name); // Try structured namespace
+            }
             if (prop != null) {
                 PropertyTypeDefinition def = prop.getDefinition();
                 if (def != null) {
@@ -205,22 +206,25 @@ public class UrlTemplateExternalLinksProvider {
                         retVal = prop.getFormattedValue("flattened", null);
                     } else {
                         retVal = prop.getFormattedValue();
+                        if (!retVal.isEmpty() && def.getType() == PropertyType.Type.IMAGE_REF) { // Construct absolute URLs
+                            try {
+                                if (!retVal.startsWith("/")) {
+                                    Path currentCollection = RequestContext.getRequestContext().getCurrentCollection();
+                                    retVal = currentCollection.expand(retVal).toString();
+                                }
+                                retVal = viewService.constructLink(Path.fromString(retVal));
+                            } catch (Exception iae) {
+                                retVal = "";
+                            }
+                        }
                     }
-                }
-            }
-
-            if (!retVal.isEmpty() && this.name.equals("picture")) { // Construct absolute URLs
-                try {
-                    retVal = viewService.constructLink(Path.fromString(retVal));
-                } catch (IllegalArgumentException iae) {
-                    retVal = "";
                 }
             }
             return retVal;
         }
     }
 
-    private class UrlEncodingWrapper implements TemplateNode {
+    private static class UrlEncodingWrapper implements TemplateNode {
         private TemplateNode wrappedNode;
 
         UrlEncodingWrapper(TemplateNode wrapped) {

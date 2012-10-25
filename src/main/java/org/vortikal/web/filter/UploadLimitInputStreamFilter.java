@@ -56,7 +56,7 @@ public class UploadLimitInputStreamFilter extends AbstractRequestFilter {
         return new UploadLimitRequestWrapper(request, this.uploadLimit);
     }
     
-    private class UploadLimitRequestWrapper extends HttpServletRequestWrapper {
+    private static class UploadLimitRequestWrapper extends HttpServletRequestWrapper {
 
         private HttpServletRequest request;
         private long uploadLimit = 0;

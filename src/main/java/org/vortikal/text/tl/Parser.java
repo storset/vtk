@@ -495,7 +495,7 @@ public class Parser {
     }
     
     
-    private class PeekableReader extends LineNumberReader {
+    private static class PeekableReader extends LineNumberReader {
 
         public PeekableReader(Reader in) {
             super(in);

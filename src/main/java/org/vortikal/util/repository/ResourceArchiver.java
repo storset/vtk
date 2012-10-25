@@ -786,7 +786,7 @@ public class ResourceArchiver {
         }
     }
 
-    private class PartialZipStream extends InputStream {
+    private static class PartialZipStream extends InputStream {
         ZipInputStream in;
 
         PartialZipStream(ZipInputStream in) {

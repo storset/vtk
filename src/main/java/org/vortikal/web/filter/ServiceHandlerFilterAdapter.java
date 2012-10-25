@@ -102,7 +102,7 @@ public final class ServiceHandlerFilterAdapter implements HandlerAdapter {
         return handlerFilters;
     }
     
-    private class FilterChain implements HandlerFilterChain {
+    private static class FilterChain implements HandlerFilterChain {
         private HandlerFilter[] filters;
         private Controller controller;
         private HttpServletResponse response;
@@ -115,6 +115,7 @@ public final class ServiceHandlerFilterAdapter implements HandlerAdapter {
             this.response = response;
         }
         
+        @Override
         public HttpServletResponse getResponse() {
             return this.response;
         }

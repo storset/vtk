@@ -90,7 +90,7 @@ public class LinkCheckFilter implements HtmlPageFilter, HtmlNodeFilter {
         return content;
     }
     
-    private class SimpleAttr implements HtmlAttribute {
+    private static class SimpleAttr implements HtmlAttribute {
         private String name, value;
         private boolean singleQuotes = false;
         public SimpleAttr(String name, String value) {

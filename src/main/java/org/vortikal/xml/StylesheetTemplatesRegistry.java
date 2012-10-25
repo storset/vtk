@@ -113,7 +113,7 @@ public class StylesheetTemplatesRegistry {
     }
 
 
-    private class Item {
+    private static class Item {
 
         private Date lastModified;
         private Templates templates;

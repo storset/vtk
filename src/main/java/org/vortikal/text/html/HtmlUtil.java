@@ -177,7 +177,7 @@ public class HtmlUtil {
         this.htmlEntityMap = htmlEntityMap;
     }
 
-    private class LinkResolveFilter implements HtmlPageFilter {
+    private static class LinkResolveFilter implements HtmlPageFilter {
         private URL base;
         private URL requestURL;
         private boolean protocolRelative = false;

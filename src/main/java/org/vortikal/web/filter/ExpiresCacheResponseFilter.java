@@ -188,7 +188,7 @@ public class ExpiresCacheResponseFilter extends AbstractResponseFilter {
         DROPPED_HEADERS.add("Vary");
     }
     
-    private class CacheControlResponseWrapper extends HttpServletResponseWrapper {
+    private static class CacheControlResponseWrapper extends HttpServletResponseWrapper {
 
         private HttpServletResponse response;
         

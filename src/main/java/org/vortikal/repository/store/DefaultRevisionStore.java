@@ -525,7 +525,7 @@ public class DefaultRevisionStore extends AbstractSqlMapDataAccessor implements 
      * Duplicate of {@link org.vortikal.repository.store.db.SqlMapDataAccessor.AclHolder}
      */
     @SuppressWarnings("serial")
-    private class AclHolder extends HashMap<Privilege, Set<Principal>> {
+    private static class AclHolder extends HashMap<Privilege, Set<Principal>> {
 
         public void addEntry(Privilege action, Principal principal) {
             Set<Principal> set = this.get(action);

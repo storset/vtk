@@ -74,6 +74,14 @@ public class PrincipalSearchImpl implements PrincipalSearch {
         this.uids = uids;
     }
 
+    public PrincipalSearchImpl(Set<String> uids, String searchString, Locale preferredLocale) {
+        this(searchString);
+        this.principalType = Principal.Type.USER;
+        this.searchType = SearchType.DOCUMENT_PROPERTY_VALUE_MATCH;
+        this.preferredLocale = preferredLocale;
+        this.uids = uids;
+    }
+
     @Override
     public Type getPrincipalType() {
         return this.principalType;

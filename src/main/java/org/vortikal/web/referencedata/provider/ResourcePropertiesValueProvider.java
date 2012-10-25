@@ -300,7 +300,7 @@ public class ResourcePropertiesValueProvider
             return resource.getURI();
             
         } else if ("isCollection".equals(propertyName)) {
-            return new Boolean(resource.isCollection());
+            return resource.isCollection();
 
         } else {
             return null;

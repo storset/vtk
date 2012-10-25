@@ -654,9 +654,11 @@
     <property name="order" value="-1" />
     <property name="assertions">
       <list>
+        <!--
         <bean class="org.vortikal.web.service.RequestProtocolAssertion">
           <property name="protocol" value="https" />
         </bean>
+        -->
         <bean class="org.vortikal.web.service.OrAssertion">
           <property name="assertions">
             <list>
@@ -670,6 +672,11 @@
               <property name="name" value="sslMixedMode" />
               <!--property name="pattern" value="element:(style|script)" /-->
               <property name="pattern" value="element:style" />
+            </bean>
+            <bean class="org.vortikal.web.service.ResourcePropertyRegexpAssertion">
+              <property name="namespace" ref="DEFAULT_NAMESPACE" />
+              <property name="name" value="sslMixedMode" />
+              <property name="pattern" value="script:" />
             </bean>
             <bean class="org.vortikal.web.service.ResourcePropertyRegexpAssertion">
               <property name="namespace" ref="DEFAULT_NAMESPACE" />
@@ -848,6 +855,9 @@
         <ref bean="plaintextEditPropDef" />
         <ref bean="xhtml10TransTypePropDef" />
         <ref bean="commentsEnabledPropDef" />
+
+        <!-- Obsolete -->
+        <ref bean="obsoletedPropDef" />
 
         <!-- Collection type: -->
         <ref bean="collection.typePropDef" />
@@ -1039,6 +1049,8 @@
     <property name="service" ref="viewService" /> 
     <property name="viewName" value="previewAdminIframe" />
     <property name="displayWorkingRevision" value="true" />
+    <property name="previewUnpublished" value="true" />
+    <property name="previewObsoleted" value="true" />
   </bean>
 
   <bean id="previewImageHandler" parent="abstractPreviewIframe">
@@ -1162,7 +1174,6 @@
           <list>
             <value>${jquery.baseURL}/plugins/ui/jquery-ui-${jquery.ui.version}.custom/css/smoothness/jquery-ui-${jquery.ui.version}.custom.css</value>
             <value>${themeBaseURL}/default.css</value>
-            <value>${jsBaseURL}/plugins/thickbox-modified/thickbox.css</value>
           </list>
         </entry>
       </map>
@@ -1189,8 +1200,8 @@
             <value>${jsBaseURL}/cross-doc-com-link.js</value>
             <value>${jsBaseURL}/iframe-admin.js</value>
             <value>${jquery.baseURL}/plugins/jquery.vortexTips.js</value>
+            <value>${jsBaseURL}/vrtx-simple-dialogs.js</value>
             <value>${jsBaseURL}/admin-enhancements.js</value>
-            <value>${jsBaseURL}/plugins/thickbox-modified/thickbox.js</value>
           </list>
         </entry>
       </map>
@@ -1758,26 +1769,8 @@
             <value>${jsBaseURL}/cross-doc-com-link.js</value>
             <value>${jsBaseURL}/iframe-admin.js</value>
             <value>${jquery.baseURL}/plugins/jquery.vortexTips.js</value>
+            <value>${jsBaseURL}/vrtx-simple-dialogs.js</value>
             <value>${jsBaseURL}/admin-enhancements.js</value>
-            <value>${jsBaseURL}/plugins/thickbox-modified/thickbox.js</value>
-          </list>
-        </entry>
-      </map>
-    </property>
-  </bean>
-
-  <bean id="iframeJSProviderAlone" class="org.vortikal.web.referencedata.provider.StaticModelDataProvider">
-    <property name="modelDataMap">
-      <map>
-        <entry key="jsURLs">
-          <list>
-            <value>${jquery.baseURL}/jquery.min.js</value>
-            <value>${jsBaseURL}/cross-doc-com-link.js</value>
-            <value>${jsBaseURL}/iframe-admin.js</value>
-            <value>${jquery.baseURL}/plugins/jquery.vortexTips.js</value>
-            <value>${jsBaseURL}/admin-enhancements.js</value>
-            <value>${jsBaseURL}/iframe-admin-alone.js</value>
-            <value>${jsBaseURL}/plugins/thickbox-modified/thickbox.js</value>
           </list>
         </entry>
       </map>

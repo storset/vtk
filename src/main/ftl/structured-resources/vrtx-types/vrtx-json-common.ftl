@@ -180,6 +180,10 @@
       <#break>
 
     <#case "json">
+      <#assign cssclass =  "" />
+      <#if elem.description.edithints?exists && elem.description.edithints['class']?exists >
+        <#assign cssclass = " " + elem.description.edithints['class'] />
+      </#if>
       <@printJSONPropertyEditView
         localizedTitle
         elem.name
@@ -188,6 +192,7 @@
         ""
         locale
         form.resource.getLocalizedTooltip(elem.name, locale)
+        cssclass
       />
       <#break>
 
@@ -198,9 +203,8 @@
 
 </#macro>
 
-<#macro printJSONPropertyEditView title inputFieldName elem id tooltip locale inputFieldSize=20>
-
-  <div class="vrtx-json">
+<#macro printJSONPropertyEditView title inputFieldName elem id tooltip locale inputFieldSize=20 cssclass="">
+  <div class="vrtx-json${cssclass}">
     <div id="${id}" class="fieldset">
       <div class="header">${title}</div>
     
@@ -285,31 +289,33 @@
                });
     	     // -->
        	     </script>
+       	     
+       	     <#if cssclass = "vrtx-multiple-immovable">
+               <#if (counter > 0) >
+                 <div class="vrtx-button vrtx-move-up-button">
+                   <input type="button" value="&uarr; ${vrtx.getMsg("editor.move-up")}"  />
+                 </div>
 
-             <#if (counter > 0) >
-               <div class="vrtx-button vrtx-move-up-button">
-                 <input type="button" value="&uarr; ${vrtx.getMsg("editor.move-up")}"  />
-               </div>
+                 <script type="text/javascript"><!--
+                   $("#vrtx-json-element-${inputFieldName}-${counter}").find(".vrtx-move-up-button").click(function(){
+     		         swapContent(${counter}, ${arrayOfIds}, -1, "${inputFieldName}");
+                   });
+                 // -->
+                 </script>
+               </#if>
 
-               <script type="text/javascript"><!--
-                 $("#vrtx-json-element-${inputFieldName}-${counter}").find(".vrtx-move-up-button").click(function(){
-     		       swapContent(${counter}, ${arrayOfIds}, -1, "${inputFieldName}");
-                 });
-               // -->
-               </script>
-             </#if>
+               <#if map_has_next >
+                 <div class="vrtx-button vrtx-move-down-button">
+                   <input type="button" value="&darr; ${vrtx.getMsg("editor.move-down")}"  />
+                 </div>
 
-             <#if map_has_next >
-               <div class="vrtx-button vrtx-move-down-button">
-                 <input type="button" value="&darr; ${vrtx.getMsg("editor.move-down")}"  />
-               </div>
-
-               <script type="text/javascript"><!--
-          	     $("#vrtx-json-element-${inputFieldName}-${counter}").find(".vrtx-move-down-button").click(function(){
-	     	       swapContent(${counter}, ${arrayOfIds}, 1, "${inputFieldName}");
-	     	     });
-	     	   // -->
-               </script>
+                 <script type="text/javascript"><!--
+          	       $("#vrtx-json-element-${inputFieldName}-${counter}").find(".vrtx-move-down-button").click(function(){
+	     	         swapContent(${counter}, ${arrayOfIds}, 1, "${inputFieldName}");
+	     	       });
+	     	     // -->
+                 </script>
+               </#if>
              </#if>
 
            </div>

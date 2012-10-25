@@ -860,17 +860,9 @@ VrtxAdmin.prototype.openDialog = function openDialog(msg, title, hasOk, hasCance
   var elm = $(selector);
   if(!elm.length) {
     if(title) {
-      if(!hasOk) {
-        this.cachedBody.append("<div id='" + selector.substring(1) + "' title='" + title + "'><div id='" + selector.substring(1) + "-content'>" + msg + "</div></div>");
-      } else {
-        this.cachedBody.append("<div id='" + selector.substring(1) + "' title='" + title + "'><div id='" + selector.substring(1) + "-content'><p>" + msg + "</p></div></div>");
-      }
+      this.cachedBody.append("<div id='" + selector.substring(1) + "' title='" + title + "'><div id='" + selector.substring(1) + "-content'>" + (!hasOk ? "<p>" + msg + "</p>" : msg) + "</div></div>");
     } else {
-      if(!hasOk) {
-        this.cachedBody.append("<div id='" + selector.substring(1) + "'><div id='" + selector.substring(1) + "-content'>" + msg + "</div></div>");
-      } else {
-        this.cachedBody.append("<div id='" + selector.substring(1) + "'><div id='" + selector.substring(1) + "-content'><p>" + msg + "</p></div></div>");
-      }
+      this.cachedBody.append("<div id='" + selector.substring(1) + "'><div id='" + selector.substring(1) + "-content'>" + (!hasOk ? "<p>" + msg + "</p>" : msg) + "</div></div>");
     }
     elm = $(selector); // Re-query DOM after appending html
     var l10nButtons = {};

@@ -838,48 +838,70 @@ VrtxAdmin.prototype.closeDialog = function closeDialog(classOrId) {
   $(classOrId).dialog("close"); 
 };
 
-VrtxAdmin.prototype.openLoadingDialog = function openLoadingDialog(title, html) {
-  this.openDialog("<img src='/vrtx/__vrtx/static-resources/js/plugins/thickbox-modified/loadingAnimation.gif?width=240&height=20' alt='Loading icon' />",
-                  title, false, false, false, 208, 0, null, null, null);
+VrtxAdmin.prototype.openLoadingDialog = function openLoadingDialog(title) {
+  this.openDialog("#dialog-loading", {
+    msg: "<img src='/vrtx/__vrtx/static-resources/js/plugins/thickbox-modified/loadingAnimation.gif' alt='Loading icon' />",
+    hasHtml: true,
+    title: title,
+    unclosable: true,
+    width: 208
+  });
 };
 
 VrtxAdmin.prototype.openHtmlDialog = function openHtmlDialog(html, title) {
-  this.openDialog(html, title, false, false, true, 600, 395, null, null, null);
+  this.openDialog("#dialog-html", {
+    msg: html,
+    hasHtml: true,
+    title: title,
+    width: 600,
+    height: 395
+  });
 };
 
 VrtxAdmin.prototype.openMsgDialog = function openMsgDialog(msg, title) {
-  this.openDialog(msg, title, true, false, true, 0, 0, null, null, null);
+  this.openDialog("#dialog-message", {
+    msg: msg,
+    title: title,
+    hasOk: true
+  });
 };
 
-VrtxAdmin.prototype.openConfirmDialog = function openConfirmDialog(msg, title, funcOkComplete, funcCancelComplete, options) {
-  this.openDialog(msg, title, true, true, true, 0, 0, funcOkComplete, funcCancelComplete, options);
+VrtxAdmin.prototype.openConfirmDialog = function openConfirmDialog(msg, title, funcOkComplete, funcCancelComplete, funcOkCompleteOpts) {
+  this.openDialog("#dialog-confirm", { 
+    msg: msg,
+    title: title,
+    hasOk: true,
+    hasCancel: true,
+    funcOkComplete: funcOkComplete,
+    funcOkCompleteOpts: funcOkCompleteOpts,
+    funcCancelComplete: funcCancelComplete
+  });
 };
 
-VrtxAdmin.prototype.openDialog = function openDialog(msg, title, hasOk, hasCancel, closable, width, height, funcOkComplete, funcCancelComplete, options) {
-  var selector = !closable ?  "#dialog-loading" : (!hasOk ? "#dialog-html" : (!hasCancel ? "#dialog-message" : "#dialog-confirm"));
+VrtxAdmin.prototype.openDialog = function openDialog(selector, opts) {
   var elm = $(selector);
   if (!elm.length) {
-    if (title) {
-      this.cachedBody.append("<div id='" + selector.substring(1) + "' title='" + title + "'><div id='" + selector.substring(1) + "-content'>" + (!hasOk ? "<p>" + msg + "</p>" : msg) + "</div></div>");
+    if (opts.title) {
+      this.cachedBody.append("<div id='" + selector.substring(1) + "' title='" + opts.title + "'><div id='" + selector.substring(1) + "-content'>" + (opts.hasHtml ? "<p>" + opts.msg + "</p>" : opts.msg) + "</div></div>");
     } else {
-      this.cachedBody.append("<div id='" + selector.substring(1) + "'><div id='" + selector.substring(1) + "-content'>" + (!hasOk ? "<p>" + msg + "</p>" : msg) + "</div></div>");
+      this.cachedBody.append("<div id='" + selector.substring(1) + "'><div id='" + selector.substring(1) + "-content'>" + (opts.hasHtml ? "<p>" + opts.msg + "</p>" : opts.msg) + "</div></div>");
     }
     elm = $(selector); // Re-query DOM after appending html
     var l10nButtons = {};
-    if (hasOk) {
+    if (opts.hasOk) {
       l10nButtons["Ok"] = function() {
 	    $(this).dialog("close");
-	    if(funcOkComplete) {
-	      funcOkComplete(options);
+	    if(opts.funcOkComplete) {
+	      opts.funcOkComplete(opts.funcOkCompleteOpts);
 	    }
       };
     }
-    if (hasCancel) {
+    if (opts.hasCancel) {
       var Cancel = (typeof cancelI18n != "undefined") ? cancelI18n : "Cancel";
       l10nButtons[Cancel] = function() {
         $(this).dialog("close");
-	    if(funcCancelComplete) {
-	      funcCancelComplete();
+	    if(opts.funcCancelComplete) {
+	      opts.funcCancelComplete();
 	    }
       };
     }
@@ -888,9 +910,9 @@ VrtxAdmin.prototype.openDialog = function openDialog(msg, title, hasOk, hasCance
                            autoOpen: false,
                            resizable: false,
                            buttons: l10nButtons };
-    if (width)           { dialogOpts.width = width; }
-    if (height)          { dialogOpts.height = height; }
-    if (!closable)       { dialogOpts.closeOnEscape = false;   // TODO: used only for loading dialog yet
+    if (opts.width)      { dialogOpts.width = opts.width; }
+    if (opts.height)     { dialogOpts.height = opts.height; }
+    if (opts.unclosable) { dialogOpts.closeOnEscape = false;   // TODO: used only for loading dialog yet
                            dialogOpts.open = function(e, ui) { 
                              var ctx = $(this).parent();
                              $(".ui-dialog-titlebar-close", ctx).hide();
@@ -900,10 +922,10 @@ VrtxAdmin.prototype.openDialog = function openDialog(msg, title, hasOk, hasCance
                          
     elm.dialog(dialogOpts);
   } else {
-    if(title) {
-      elm.prev().find("#ui-dialog-title-" + selector.substring(1)).html(title); 
+    if(opts.title) {
+      elm.prev().find("#ui-dialog-title-" + selector.substring(1)).html(opts.title); 
     }
-    elm.find(selector + "-content").html("<p>" + msg + "</p>");
+    elm.find(selector + "-content").html(opts.hasHtml ? "<p>" + opts.msg + "</p>" : opts.msg);
   }
   elm.dialog("open");
 };

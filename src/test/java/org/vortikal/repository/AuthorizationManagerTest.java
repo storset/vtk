@@ -33,16 +33,19 @@ package org.vortikal.repository;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang.ArrayUtils;
-import org.junit.Before;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
 import org.junit.Test;
 import org.vortikal.repository.store.DataAccessException;
 import org.vortikal.repository.store.DataAccessor;
@@ -57,76 +60,197 @@ import org.vortikal.security.roles.RoleManager;
 
 public class AuthorizationManagerTest {
 
-    private PrincipalManager principalManager = null;
-    
-    @Before
-    public void setUp() throws Exception {
-        String users = "user@localhost";
-        
-        @SuppressWarnings("unchecked")
-        Map<String, String> groups = ArrayUtils.toMap(new String[][] { 
-                {"system-users@localhost" , "user@localhost"}
-        });
-        
-        MatchingPrincipalStore ps = new MatchingPrincipalStore();
-        ps.setPattern(users);
-        
-        MatchingGroupStore gs = new MatchingGroupStore();
-        gs.setGroupsMap(groups);
-        
-        PrincipalManagerImpl pm = new PrincipalManagerImpl();
-        pm.setPrincipalStore(ps);
-        pm.setGroupStores(Arrays.asList(new GroupStore[]{gs}));
-        
-        this.principalManager = pm;
-    }
-
-    
     @Test
-    public void testBasicAuthorization() throws Exception {
-        AuthorizationManager mgr = getAuthorizationManager("store/test-dao-01.json");
-        Principal user = new PrincipalImpl("user@localhost", Principal.Type.USER);
-        
-        Path uri = Path.fromString("/a");
-        mgr.authorizeAction(uri, RepositoryAction.READ, user);
-
-        try {
-            mgr.authorizeAction(uri, RepositoryAction.READ_WRITE, user);
-            throw new IllegalStateException("Should fail");
-        } catch (AuthorizationException e) { }
-        try {
-            mgr.authorizeAction(uri, RepositoryAction.ALL, user);
-            throw new IllegalStateException("Should fail");
-        } catch (AuthorizationException e) { }
-        try {
-            mgr.authorizeAction(uri, RepositoryAction.DELETE, user);
-            throw new IllegalStateException("Should fail");
-        } catch (AuthorizationException e) { }
+    public void test01() throws Exception {
+        TestHarness harness = new TestHarness("auth-manager-test01.json");
+        harness.run();
     }
-    
-    private AuthorizationManager getAuthorizationManager(String classPathRef) throws Exception {
-        InputStream in = getClass().getResourceAsStream(classPathRef);
-        Reader reader = new InputStreamReader(in);
-        final TestDataAccessor dao = new TestDataAccessor();
-        
-        TestResourceFactory factory = new TestResourceFactory();
 
-        factory.load(reader, new TestResourceFactory.Consumer() {
-            @Override
-            public boolean resource(ResourceImpl resource) {
-                dao.put(resource);
-                return true;
-            }
-            @Override
-            public void end() {
-            }
-        });
+    private static class TestHarness {
         
-        AuthorizationManager mgr = new AuthorizationManager();
-        mgr.setDao(dao);
-        mgr.setPrincipalManager(this.principalManager);
-        mgr.setRoleManager(new RoleManager());
-        return mgr;
+        private TestDataAccessor dao;
+        private PrincipalManager principalManager;
+        private AuthorizationManager authorizationManager;
+        private List<TestAssertion> assertions;
+        
+        public TestHarness(String classPathRef) throws Exception {
+            init(classPathRef);
+        }
+        
+        public void run() throws Exception {
+            for (TestAssertion assertion: this.assertions) {
+                assertion.test(this.authorizationManager);
+            }
+        }
+        
+        private void init(String classPathRef) throws Exception {
+            InputStream in = getClass().getResourceAsStream(classPathRef);
+            if (in == null) {
+                throw new IllegalStateException("File '" + classPathRef + "' cannot be found");
+            }
+            Reader reader = new InputStreamReader(in);
+            JSONObject toplevel = (JSONObject) JSONValue.parse(reader);
+            
+            JSONObject principalManager = (JSONObject) toplevel.get("principal-manager");
+            initPrincipalManager(principalManager.toJSONString());
+            
+            JSONObject repo = (JSONObject) toplevel.get("resources");
+            
+            List<Path> list = new ArrayList<Path>();
+            for (Object key: repo.keySet()) {
+                list.add(Path.fromString(key.toString()));
+            }
+            Collections.sort(list, new Comparator<Path>() {
+                @Override
+                public int compare(Path arg0, Path arg1) {
+                    if (arg0.isAncestorOf(arg1)) {
+                        return -1;
+                    } else if (arg0.equals(arg1)) {
+                        return 0;
+                    } else {
+                        return 1;
+                    }
+                }
+            });
+            StringBuilder sb = new StringBuilder("{");
+            for (Path key: list) {
+                sb.append('"').append(key).append('"').append(" : ");
+                sb.append(((JSONObject) repo.get(key.toString())).toJSONString()); 
+            }
+            sb.append("}");
+            
+            initDataAccessor(sb.toString());
+            
+            initAuthManager();
+            
+            JSONObject assertions = (JSONObject) toplevel.get("assertions");
+            initAssertions(assertions.toJSONString());
+
+        }
+
+        private void initPrincipalManager(String json) throws Exception {
+            JSONObject obj = (JSONObject) JSONValue.parse(json);
+
+            JSONObject principalStoreJson = (JSONObject) obj.get("matching-principal-store");
+            String users = principalStoreJson.get("pattern").toString();
+            
+            JSONObject groupStoreJson = (JSONObject) obj.get("matching-group-store");
+            @SuppressWarnings("unchecked")
+            Map<String, String> groups = 
+                    (Map<String, String>) groupStoreJson.get("map");
+            
+            
+            MatchingPrincipalStore ps = new MatchingPrincipalStore();
+            ps.setPattern(users);
+            
+            MatchingGroupStore gs = new MatchingGroupStore();
+            gs.setGroupsMap(groups);
+            
+            PrincipalManagerImpl pm = new PrincipalManagerImpl();
+            pm.setPrincipalStore(ps);
+            pm.setGroupStores(Arrays.asList(new GroupStore[]{gs}));
+            
+            this.principalManager = pm;
+        }
+        
+
+        private void initDataAccessor(String json) throws Exception {
+            Reader reader = new StringReader(json);
+            TestResourceFactory factory = new TestResourceFactory();
+            final TestDataAccessor dao = new TestDataAccessor();
+
+            factory.load(reader, new TestResourceFactory.Consumer() {
+                @Override
+                public boolean resource(ResourceImpl resource) {
+                    dao.put(resource);
+                    return true;
+                }
+                @Override
+                public void end() {
+                }
+            });
+            System.out.println(dao.load(Path.ROOT).getAcl());
+            this.dao = dao;
+        }
+        
+        private void initAuthManager() {
+            AuthorizationManager mgr = new AuthorizationManager();
+            mgr.setDao(dao);
+            mgr.setPrincipalManager(this.principalManager);
+            mgr.setRoleManager(new RoleManager());
+            this.authorizationManager = mgr;
+        }
+        
+        private void initAssertions(String json) throws Exception {
+            JSONObject object = (JSONObject) JSONValue.parse(json);
+            List<TestAssertion> assertions = new ArrayList<TestAssertion>();
+            for (Object key: object.keySet()) {
+                JSONObject val = (JSONObject) object.get(key);
+                requireFields(val, "uri", "principal", "repository-action", "expected-outcome");
+                Path uri = Path.fromString(val.get("uri").toString());
+                Object user = val.get("principal");
+                Principal principal = user != null ? 
+                        new PrincipalImpl(user.toString(), Principal.Type.USER) : null;
+                
+                if (principal != null && !principalManager.validatePrincipal(principal)) {
+                    throw new IllegalArgumentException("Invalid principal: " + principal);
+                }
+
+                RepositoryAction action = RepositoryAction.valueOf(
+                        val.get("repository-action").toString());
+                Outcome outcome = Outcome.valueOf(val.get("expected-outcome").toString());
+                TestAssertion assertion = new TestAssertion(
+                        key.toString(), uri, principal, action, outcome);
+                assertions.add(assertion);
+            }
+            this.assertions = assertions;
+        }
+
+        private static enum Outcome {
+            SUCCESS, FAILURE;
+        }
+        
+        private static class TestAssertion {
+            private String id;
+            private Path uri;
+            private Principal principal;
+            private RepositoryAction action;
+            private Outcome outcome;
+            public TestAssertion(String id, Path uri, Principal principal,
+                    RepositoryAction action, Outcome outcome) {
+                this.id = id;
+                this.uri = uri;
+                this.principal = principal;
+                this.action = action;
+                this.outcome = outcome;
+            }
+            
+            public void test(AuthorizationManager authManager) throws Exception {
+                switch (this.outcome) {
+                case SUCCESS:
+                    try {
+                        authManager.authorizeAction(this.uri, this.action, this.principal);
+                        return;
+                    } catch (Throwable t) {
+                        throw new Exception("Assertion " + this + " failed", t);
+                    }
+                case FAILURE:
+                    try {
+                        authManager.authorizeAction(this.uri, this.action, this.principal);
+                    } catch (Throwable t) {
+                        return;
+                    }
+                    throw new Exception("Assertion " + this + " should have failed");
+                    
+                default:
+                    throw new IllegalStateException("Undefined outcome: " + outcome);
+                }
+            }
+            
+            public String toString() {
+                return this.id;
+            }
+        }
     }
     
     private static class TestDataAccessor implements DataAccessor {
@@ -299,5 +423,13 @@ public class AuthorizationManagerTest {
             throw new UnsupportedOperationException();
         }
 
+    }
+    
+    private static void requireFields(JSONObject obj, String...fields) {
+        for (String field: fields) {
+            if (!obj.containsKey(field)) {
+                throw new IllegalArgumentException("Required field '" + field + "' not in object " + obj);
+            }
+        }
     }
 }

@@ -1,0 +1,73 @@
+{
+
+    "resources" : {
+
+        "/" : {
+            "type" : "collection"
+            "acl"  : {
+                "read" : [ "u:user2@localhost" ]
+                "read-write" : [ "u:user3@localhost" ]
+                "all" : [ "u:admin@localhost" ]
+            }
+            "properties" : {
+                "title" : "Root resource"
+            }
+        }
+
+        "/a" : {
+            "type" : "collection"
+            "acl"  : {
+                "read" : [ "u:user1@localhost" ]
+                "read-processed" : [ "u:user2@localhost" ]
+                "all" : [ "u:admin@localhost" ]
+            }
+        }
+
+        "/b" : {
+            "type" : "collection"
+        }
+
+        "/a/b" : {
+            "type" : "collection"
+            "acl"  : {
+                "read" : [ "u:user1@localhost" ]
+                "read-write" : [ "u:user2@localhost" ]
+                "add-comment" : [ "p:authenticated" ]
+                "all" : [ "u:admin@localhost" ]
+            }
+        }
+    }
+
+    "principal-manager" {
+        "matching-principal-store" : {
+            "pattern" : ".*@localhost"
+        }
+        
+        "matching-group-store" : {
+            "map" : {
+                "system-users@localhost" : "(root|vortex)@localhost"
+                "group1@localhost" : "(user1|user2)@localhost"
+                "admin-users@localhost" : "admin@localhost"
+            }
+        }
+    }
+
+    "assertions" : {
+
+        "user1-read" : {
+            "uri" : "/"
+            "principal" : "user1@localhost"
+            "repository-action" : "READ"
+            "expected-outcome" : "FAILURE"
+        }
+
+        "anonymous-read" : {
+            "uri" : "/a/b"
+            "principal" : null
+            "repository-action" : "READ"
+            "expected-outcome" : "FAILURE"
+        }
+    }
+
+
+}

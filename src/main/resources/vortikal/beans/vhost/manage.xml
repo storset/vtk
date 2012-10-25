@@ -1049,6 +1049,8 @@
     <property name="service" ref="viewService" /> 
     <property name="viewName" value="previewAdminIframe" />
     <property name="displayWorkingRevision" value="true" />
+    <property name="previewUnpublished" value="true" />
+    <property name="previewObsoleted" value="true" />
   </bean>
 
   <bean id="previewImageHandler" parent="abstractPreviewIframe">

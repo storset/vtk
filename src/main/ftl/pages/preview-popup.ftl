@@ -81,19 +81,16 @@
     </h1>
 
     <#assign previewRefreshParameter = 'vrtxPreviewForceRefresh' />
-    <#assign previewUnpublishedParameter = 'vrtxPreviewUnpublished' />
 
     <#assign constructor = "freemarker.template.utility.ObjectConstructor"?new() />
     <#assign dateStr = constructor("java.util.Date")?string("yyyymmddhhmmss") />
 
     <#assign url = resourceReference />
     <#if url?contains("?")>
-      <#assign url = url + "&" + previewUnpublishedParameter + "="  + "true" 
-               + "&link-check=" + visualizeBrokenLinks?default('false')
+      <#assign url = url + "&link-check=" + visualizeBrokenLinks?default('false')
                + "&" + previewRefreshParameter + "=" + dateStr + "&authTarget=" + authTarget />
     <#else>
-      <#assign url = url + "?" + previewUnpublishedParameter + "=" + "true"
-               + "&link-check=" + visualizeBrokenLinks?default('false')
+      <#assign url = url + "?link-check=" + visualizeBrokenLinks?default('false')
                + "&" + previewRefreshParameter + "=" + dateStr + "&authTarget=" + authTarget />
     </#if>
 

@@ -39,13 +39,16 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
+import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Path;
+import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.Revision;
 import org.vortikal.security.Principal;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
+import org.vortikal.web.service.URL;
 
 /**
  * Controller that provides a reference (URL) to the requested resource.
@@ -74,6 +77,8 @@ public class ResourceServiceURLController implements Controller {
     private String webProtocol;
     private String webProtocolRestricted;
     private boolean displayWorkingRevision;
+    private boolean previewUnpublished;
+    private boolean previewObsoleted;
 
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
@@ -82,10 +87,11 @@ public class ResourceServiceURLController implements Controller {
         String token = requestContext.getSecurityToken();
         Repository repository = requestContext.getRepository();
         Path uri = requestContext.getResourceURI();
+        Resource resource = repository.retrieve(token, uri, false);
+        URL resourceViewURL = this.service.constructURL(resource, principal, false);
 
         Map<String, Object> model = new HashMap<String, Object>();
 
-        Resource resource = repository.retrieve(token, uri, false);
         if (this.displayWorkingRevision) {
             Revision workingCopy = null;
             for (Revision rev : repository.getRevisions(token, uri)) {
@@ -98,11 +104,35 @@ public class ResourceServiceURLController implements Controller {
                 try {
                     resource = repository.retrieve(token, uri, false, workingCopy);
                     model.put("workingCopy", workingCopy);
+                    resourceViewURL.addParameter("revision", Revision.Type.WORKING_COPY.name());
                 } catch (Throwable t) {
                 }
             }
         }
-        String resourceURL = this.service.constructLink(resource, principal, false);
+
+        // Add parameter to preview view unpublished only if resource actually
+        // is unpublished
+        if (this.previewUnpublished) {
+
+            Property publishedProp = resource.getProperty(Namespace.DEFAULT_NAMESPACE, "published");
+            if (publishedProp != null && !publishedProp.getBooleanValue()) {
+                resourceViewURL.addParameter("vrtxPreviewUnpublished", "true");
+            }
+
+        }
+
+        // Add parameter to preview obsoleted only if resource actually is
+        // obsoleted
+        if (this.previewObsoleted) {
+
+            Property obsoletedProp = resource.getProperty(Namespace.DEFAULT_NAMESPACE, "obsoleted");
+            if (obsoletedProp != null && obsoletedProp.getBooleanValue()) {
+                resourceViewURL.addParameter("vrtxPreviewObsoleted", "true");
+            }
+
+        }
+
+        String resourceURL = resourceViewURL.toString();
 
         // Hack to ensure https for preview of direct access interfaces
         if ((request.getScheme() == "https") && (request.getServerPort() != 443) && resourceURL.startsWith("http:")) {
@@ -149,6 +179,14 @@ public class ResourceServiceURLController implements Controller {
 
     public void setDisplayWorkingRevision(boolean displayWorkingRevision) {
         this.displayWorkingRevision = displayWorkingRevision;
+    }
+
+    public void setPreviewUnpublished(boolean previewUnpublished) {
+        this.previewUnpublished = previewUnpublished;
+    }
+
+    public void setPreviewObsoleted(boolean previewObsoleted) {
+        this.previewObsoleted = previewObsoleted;
     }
 
 }

@@ -1198,6 +1198,7 @@
             <value>${jsBaseURL}/cross-doc-com-link.js</value>
             <value>${jsBaseURL}/iframe-admin.js</value>
             <value>${jquery.baseURL}/plugins/jquery.vortexTips.js</value>
+            <value>${jsBaseURL}/vrtx-simple-dialogs.js</value>
             <value>${jsBaseURL}/admin-enhancements.js</value>
           </list>
         </entry>
@@ -1766,24 +1767,8 @@
             <value>${jsBaseURL}/cross-doc-com-link.js</value>
             <value>${jsBaseURL}/iframe-admin.js</value>
             <value>${jquery.baseURL}/plugins/jquery.vortexTips.js</value>
+            <value>${jsBaseURL}/vrtx-simple-dialogs.js</value>
             <value>${jsBaseURL}/admin-enhancements.js</value>
-          </list>
-        </entry>
-      </map>
-    </property>
-  </bean>
-
-  <bean id="iframeJSProviderAlone" class="org.vortikal.web.referencedata.provider.StaticModelDataProvider">
-    <property name="modelDataMap">
-      <map>
-        <entry key="jsURLs">
-          <list>
-            <value>${jquery.baseURL}/jquery.min.js</value>
-            <value>${jsBaseURL}/cross-doc-com-link.js</value>
-            <value>${jsBaseURL}/iframe-admin.js</value>
-            <value>${jquery.baseURL}/plugins/jquery.vortexTips.js</value>
-            <value>${jsBaseURL}/admin-enhancements.js</value>
-            <value>${jsBaseURL}/iframe-admin-alone.js</value>
           </list>
         </entry>
       </map>

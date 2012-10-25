@@ -280,7 +280,7 @@
     <constructor-arg>
       <map>
         <entry key="Service tree">
-          <value>"\n" + context.getBean("requestContextInitializer").printServiceTree()</value>
+          <value>"\n" + context.getBean("requestContextInitializer").printServiceTree(true)</value>
         </entry>
       </map>
     </constructor-arg>

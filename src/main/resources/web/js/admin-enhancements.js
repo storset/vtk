@@ -751,6 +751,21 @@ VrtxAdmin.prototype.mapShortcut = function mapShortcut(selectors, reroutedSelect
   });
 };
 
+VrtxAdmin.prototype.logoutButtonAsLink = function logoutButtonAsLink() {
+  var _$ = this._$;
+
+  var btn = _$('input#logoutAction');
+  if (!btn.length) return;
+  btn.hide();
+  btn.after('&nbsp;<a id=\"logoutAction.link\" name=\"logoutAction\" href="javascript:void(0);">'
+          + btn.attr('value') + '</a>');
+  _$("#app-head-wrapper").on("click", '#logoutAction\\.link', function (e) {
+    btn.click();
+    e.stopPropagation();
+    e.preventDefault();
+  });
+};
+
 /* Create dialog tree view */
 
 function initializeTree() {
@@ -819,21 +834,6 @@ function traverseNode(treeElem, treeTravNode, lastNode) {
 
 /* Dialogs and interface to jQuery UI */
 
-VrtxAdmin.prototype.logoutButtonAsLink = function logoutButtonAsLink() {
-  var _$ = this._$;
-
-  var btn = _$('input#logoutAction');
-  if (!btn.length) return;
-  btn.hide();
-  btn.after('&nbsp;<a id=\"logoutAction.link\" name=\"logoutAction\" href="javascript:void(0);">'
-          + btn.attr('value') + '</a>');
-  _$("#app-head-wrapper").on("click", '#logoutAction\\.link', function (e) {
-    btn.click();
-    e.stopPropagation();
-    e.preventDefault();
-  });
-};
-
 VrtxAdmin.prototype.closeDialog = function closeDialog(classOrId) {
   $(classOrId).dialog("close"); 
 };
@@ -891,18 +891,14 @@ VrtxAdmin.prototype.openDialog = function openDialog(selector, opts) {
     if (opts.hasOk) {
       l10nButtons["Ok"] = function() {
 	    $(this).dialog("close");
-	    if(opts.funcOkComplete) {
-	      opts.funcOkComplete(opts.funcOkCompleteOpts);
-	    }
+	    if(opts.funcOkComplete) opts.funcOkComplete(opts.funcOkCompleteOpts);
       };
     }
     if (opts.hasCancel) {
       var Cancel = (typeof cancelI18n != "undefined") ? cancelI18n : "Cancel";
       l10nButtons[Cancel] = function() {
         $(this).dialog("close");
-	    if(opts.funcCancelComplete) {
-	      opts.funcCancelComplete();
-	    }
+	    if(opts.funcCancelComplete) opts.funcCancelComplete();
       };
     }
     

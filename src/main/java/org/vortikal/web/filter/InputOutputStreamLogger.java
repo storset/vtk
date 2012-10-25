@@ -21,6 +21,8 @@ public class InputOutputStreamLogger {
 
                 if (!headerName.equals("Authorization")) {
                     log.info(headerName + " : " + reqWrap.getHeader(headerName));
+                } else {
+                    log.info(headerName + " : *******");
                 }
             }
             LoggingInputStreamWrapper inputStreamWrapper = reqWrap.getLoggingInputStreamWrapper();
@@ -29,7 +31,16 @@ public class InputOutputStreamLogger {
 
         if (respStream != null) {
             log.info("RESPONSE:");
-            log.info(respStream.toString());
+            byte[] outputStream = respStream.toByteArray();
+            int streamSize = 2048;
+            byte[] shorterStream = new byte[streamSize];
+
+            for (int i = 0; i < streamSize; i++) {
+                shorterStream[i] = outputStream[i];
+            }
+
+            String stringRepresentation = new String(shorterStream);
+            log.info("CONTENT: " + stringRepresentation);
         }
     }
 }

@@ -891,8 +891,13 @@ VrtxAdmin.prototype.openDialog = function openDialog(msg, title, hasOk, hasCance
     if (width && height) { dialogOpts.width = width;           // Not zero than set
                            dialogOpts.height = height; }
     if (!closable)       { dialogOpts.closeOnEscape = false; 
-                           dialogOpts.open = function(e, ui) { $(".ui-dialog-titlebar-close", $(this).parent()).hide(); }}   
-                           
+                           dialogOpts.open = function(e, ui) { 
+                             var ctx = $(this).parent();
+                             $(".ui-dialog-titlebar-close", ctx).hide();
+                             $(".ui-dialog-titlebar", ctx).addClass("closable");
+                           }
+                         }       
+                         
     elm.dialog(dialogOpts);
   } else {
     if(title) {

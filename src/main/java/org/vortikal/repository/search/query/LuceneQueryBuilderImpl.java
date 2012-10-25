@@ -104,29 +104,19 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
     private PropertyTypeDefinition publishedPropDef;
     private PropertyTypeDefinition obsoletedPropDef;
 
-    private Filter useDefaultExcludesFilter;
+    private Filter cachedOnlyPublishedFilter;
     private Filter cachedDeletedDocsFilter;
 
     @Override
     public void afterPropertiesSet() {
         
-        // Setup filter for published resources
+        // Setup cached filter for published resources
         TermsFilter tf = new TermsFilter();
         String searchFieldName = FieldNames.getSearchFieldName(this.publishedPropDef, false);
         String searchFieldValue = this.fieldValueMapper.encodeIndexFieldValue("true", Type.BOOLEAN, false);
         Term publishedTrueTerm = new Term(searchFieldName, searchFieldValue);
         tf.addTerm(publishedTrueTerm);
-
-        // Setup filter for obsoleted resources
-        String obsoletedPropSearchFieldName = FieldNames.getSearchFieldName(this.obsoletedPropDef, false);
-        FieldValueFilter fvf = new FieldValueFilter(obsoletedPropSearchFieldName, true);
-
-        // Combine filter for resources to include per default (include only
-        // published and exclude obsoleted)
-        BooleanFilter bf = new BooleanFilter();
-        bf.add(new CachingWrapperFilter(tf), BooleanClause.Occur.MUST);
-        bf.add(fvf, BooleanClause.Occur.MUST);
-        this.useDefaultExcludesFilter = bf;
+        this.cachedOnlyPublishedFilter = new CachingWrapperFilter(tf);
 
         // Setup cached deleted docs filter
         this.cachedDeletedDocsFilter = new CachingWrapperFilter(new DeletedDocsFilter(), 
@@ -351,37 +341,45 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
     public Filter buildSearchFilter(String token, Search search, IndexReader reader)
             throws QueryBuilderException {
         
-        Filter filter = null;
-        
-        // Get ACL filter
-        Filter aclFilter = 
-            this.queryAuthorizationFilterFactory.authorizationQueryFilter(token, reader);
-        if (logger.isDebugEnabled()){
-            if (aclFilter == null) {
+        // Set filter to ACL filter initially. May be null.
+        Filter filter = this.queryAuthorizationFilterFactory.authorizationQueryFilter(token, reader);
+        if (logger.isDebugEnabled()) {
+            if (filter == null) {
                 logger.debug("ACL filter null for token: " + token);
             } else {
-                logger.debug("ACL filter: " +  aclFilter + " for token " + token);
+                logger.debug("ACL filter: " +  filter + " for token " + token);
             }
         }
         
-        // Set filter to ACL filter initially
-        filter = aclFilter;
-        
-        // Add published-filter if requested
+        // Add filters for removing default excludes if requested
         if (search.isUseDefaultExcludes()) {
+            BooleanFilter bf = buildDefaultExcludesFilter();
+            // Include ACL-filter if non-null:
             if (filter != null) {
-                BooleanFilter bf = new BooleanFilter();
                 bf.add(filter, BooleanClause.Occur.MUST);
-                bf.add(this.useDefaultExcludesFilter, BooleanClause.Occur.MUST);
-                filter = bf;
-            } else {
-                filter = this.useDefaultExcludesFilter;
             }
+            
+            filter = bf;
         }
 
         return filter;
     }
 
+    BooleanFilter buildDefaultExcludesFilter() {
+        BooleanFilter bf = new BooleanFilter();
+
+        // Filter to include only published resources:
+        bf.add(this.cachedOnlyPublishedFilter, BooleanClause.Occur.MUST);
+
+        // Filter to exclude obsoleted resources:
+        // Avoid using cache-wrapper for FieldValueFilter, since that can lead to memory leaks
+        // in Lucene.
+        bf.add(new FieldValueFilter(FieldNames.getSearchFieldName(this.obsoletedPropDef, false), true),
+                BooleanClause.Occur.MUST);
+
+        return bf;
+    }
+    
     @Override
     public Filter buildIterationFilter(String token, Search search, IndexReader reader) {
         Query query = search.getQuery();
@@ -442,8 +440,5 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
         this.obsoletedPropDef = obsoletedPropDef;
     }
 
-    public Filter getUseDefaultExcludesFilter() {
-        return useDefaultExcludesFilter;
-    }
 
 }

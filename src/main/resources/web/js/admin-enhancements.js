@@ -840,9 +840,9 @@ VrtxAdmin.prototype.closeDialog = function closeDialog(classOrId) {
 
 VrtxAdmin.prototype.openLoadingDialog = function openLoadingDialog(title) {
   this.openDialog("#dialog-loading", {
-    msg: "<img src='/vrtx/__vrtx/static-resources/js/plugins/thickbox-modified/loadingAnimation.gif' alt='Loading icon' />",
-    hasHtml: true,
+    msg: "<img src='/vrtx/__vrtx/static-resources/themes/default/images/loadingAnimation.gif' alt='Loading icon' />",
     title: title,
+    hasHtml: true,
     unclosable: true,
     width: 208
   });
@@ -851,8 +851,8 @@ VrtxAdmin.prototype.openLoadingDialog = function openLoadingDialog(title) {
 VrtxAdmin.prototype.openHtmlDialog = function openHtmlDialog(html, title) {
   this.openDialog("#dialog-html", {
     msg: html,
-    hasHtml: true,
     title: title,
+    hasHtml: true,
     width: 600,
     height: 395
   });

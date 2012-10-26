@@ -43,6 +43,7 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.security.Principal;
 import org.vortikal.security.Principal.Type;
+import org.vortikal.security.PrincipalFactory;
 import org.vortikal.security.PrincipalImpl;
 
 
@@ -219,18 +220,30 @@ public class TestResourceFactory {
                     if (priv == null) {
                         throw new IllegalArgumentException("Invalid privilege: " + curKey);
                     }
+                    
                     String name = value.toString();
-                    Principal.Type t = 
-                            name.startsWith("u:") ? Type.USER :
-                            name.startsWith("g:") ? Type.GROUP :
-                            name.startsWith("p:") ? Type.PSEUDO :
-                            null;
+                    Principal.Type t = null;
+                    if (name.startsWith("pseudo:")) {
+                        t = Type.PSEUDO;
+                        name = name.substring(7);
+                    } else if (name.startsWith("u:")) {
+                        t = Type.USER;
+                        name = name.substring(2);
+                    } else if (name.startsWith("g:")) {
+                        t = Type.GROUP;
+                        name = name.substring(2);
+                    }
                     if (t == null) {
                         throw new IllegalArgumentException("Invalid principal: " + value);
                     }
-                    name = name.substring(2);
-                    Principal p = new PrincipalImpl(name, t);
-
+                    
+                    Principal p = null;
+                    if (name.equals("all") && t == Type.PSEUDO) {
+                        p = PrincipalFactory.ALL;
+                    } else {
+                        p = new PrincipalImpl(name, t);
+                    }
+                    
                     acl = acl.addEntry(priv, p);
                     return true;
 

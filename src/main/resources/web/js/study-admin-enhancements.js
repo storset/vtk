@@ -56,7 +56,7 @@ $(document).ready(function () {
 
 function hideShowStudy(typeToDisplayElem) {
   var container = $("#editor");
-  switch (typeToDisplayElem.val()) { // TODO: possible use container.attr("class", "").addClass(""); instead
+  switch (typeToDisplayElem.val()) {
     case "so":
       container.removeClass("nm").removeClass("em").addClass("so");
       break;
@@ -75,7 +75,7 @@ function hideShowStudy(typeToDisplayElem) {
 function hideShowSemester(typeSemesterElem) {
   var container = $("#editor");
   var prefix = typeSemesterElem.attr("id") + "-valgt";
-  switch (typeSemesterElem.val()) { // TODO: possible use container.attr("class", "").addClass(""); instead
+  switch (typeSemesterElem.val()) {
     case "bestemt-semester":
       container.removeClass(prefix + "-annet").addClass(prefix + "-bestemt-semester");
       break;

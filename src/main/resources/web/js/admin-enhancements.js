@@ -2380,7 +2380,7 @@ VrtxAdmin.prototype.addOriginalMarkup = function addOriginalMarkup(url, results,
     return false;
   }
   var node = expanded.parent().parent();
-  if(node.is("tr")) {  // Because 'this' is tr > td > div
+  if(node.is("tr")) {  // Because 'this' can be tr > td > div
     node.replaceWith(resultHtml).show(0);
   } else {
     expanded.replaceWith(resultHtml).show(0);              

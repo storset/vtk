@@ -112,15 +112,7 @@ h2 {
 
 /* Sticky title and editor save/cancel buttons */
 
-.property-item.userTitle,
-.property-item.htmlTitle,
-.property-item.programContext\.title,
-.property-item.programOptionContext\.title,
-.vrtx-string.title,
-.vrtx-string.name,
-.vrtx-string.areacode,
-.vrtx-string.username,
-.vrtx-string.typeToDisplay {
+.properties > *:first-child {
   margin-top: 0px;
 }
 

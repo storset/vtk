@@ -48,6 +48,23 @@
     </property>
   </bean>
 
+  <bean id="displayObsoletedCollectionMessageService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="collectionListing.viewService" />
+    <property name="order" value="-3" />
+    <property name="assertions">
+      <list>
+        <ref bean="resourceIsCollection" />
+        <ref bean="isObsoletedAssertion" />
+      </list>
+    </property>
+    <property name="handler" ref="displayObsoletedPageHandler" />
+    <property name="attributes">
+      <map>
+        <entry key="decorating.servicePredicateName" value="view-obsoleted" />
+      </map>
+    </property>
+  </bean>
+
   <bean id="displayObsoletedPageHandler" class="org.vortikal.web.display.file.DisplayResourceController">
     <property name="viewName" value="displayObsoletedMessage.view" />
   </bean>
@@ -80,6 +97,17 @@
     <property name="order" value="-3" />
     <property name="assertions">
       <list>
+        <ref bean="viewObsoletedResourceAssertion" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="viewObsoletedCollectionService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="collectionListing.viewService" />
+    <property name="order" value="-4" />
+    <property name="assertions">
+      <list>
+        <ref bean="resourceIsCollection" />
         <ref bean="viewObsoletedResourceAssertion" />
       </list>
     </property>

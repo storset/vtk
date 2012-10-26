@@ -127,6 +127,7 @@ public class ResourceServiceURLController implements Controller {
 
             Property obsoletedProp = resource.getProperty(Namespace.DEFAULT_NAMESPACE, "obsoleted");
             if (obsoletedProp != null && obsoletedProp.getBooleanValue()) {
+                model.put("obsoleted", "true");
                 resourceViewURL.addParameter("vrtxPreviewObsoleted", "true");
             }
 

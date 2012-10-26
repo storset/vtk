@@ -237,6 +237,7 @@ function generateManuallyApprovedContainer(resources) {
     var manuallyApproveContainer = $("#manually-approve-container");
     manuallyApproveContainer.html(html);
     var manuallyApproveContainerTable = manuallyApproveContainer.find("table");
+    // TODO: probably faster to find all trs and then filter pseudo-selectors
     manuallyApproveContainerTable.find("tr:first-child").addClass("first");
     manuallyApproveContainerTable.find("tr:last-child").addClass("last");
     manuallyApproveContainerTable.find("tr:nth-child(even)").addClass("even");

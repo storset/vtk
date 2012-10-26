@@ -174,11 +174,14 @@ h2 {
 	2. Dimensions and explicit settings
 \*-----------------------------------------*/
 
-div.navigationTitle input,
 div.aggregation input,
 div.manually-approve-from input,
 div.cssUrl input {
   width: 485px;
+}
+
+div.navigationTitle input {
+  width: 338px;
 }
 
 div.manually-approve-from table input {

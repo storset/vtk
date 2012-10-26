@@ -1,22 +1,20 @@
 /**
- * JS for handling manually approved resources
- *
- * TODO: cleaner interfaces and easier to understand code (probably refactor more human-readable methods)
+ * Manually approved resources
  *
  */
 
-var lastVal = "",
-    manuallyApproveLocationsTxt,
-    aggregatedLocationsTxt,
-    approvedOnly = false,
-    asyncGenPagesTimer,
+var LAST_MANUALLY_APPROVED_LOCATIONS = "",
+    MANUALLY_APPROVED_LOCATIONS_TEXTFIELD,
+    AGGREGATED_LOCATIONS_TEXTFIELD,
+    APPROVED_ONLY = false,
+    ASYNC_GEN_PAGE_TIMER,
     MANUALLY_APPROVE_TEMPLATES = [];
 
 $(window).load(function() {
 
   // Retrieve initial resources
-  manuallyApproveLocationsTxt = $("#resource\\.manually-approve-from");
-  aggregatedLocationsTxt = $("#resource\\.aggregation");
+  MANUALLY_APPROVED_LOCATIONS_TEXTFIELD = $("#resource\\.manually-approve-from");
+  AGGREGATED_LOCATIONS_TEXTFIELD = $("#resource\\.aggregation");
   
   // Retrieve HTML templates
   var manuallyApprovedTemplatesRetrieved = $.Deferred();
@@ -24,14 +22,15 @@ $(window).load(function() {
                                                                ["menu", "table-start", "table-row", 
                                                                 "table-end", "navigation-next", "navigation-prev"],
                                                                 manuallyApprovedTemplatesRetrieved);
-  
-  if(manuallyApproveLocationsTxt.length) {
+                                                                
+  // Set initial locations / aggeregated locations and generate menu
+  if(MANUALLY_APPROVED_LOCATIONS_TEXTFIELD.length) {
     var locations, aggregatedlocations;
-    var value = manuallyApproveLocationsTxt.val();
-    lastVal = $.trim(value);
-    locations = lastVal.split(",");
-    if(aggregatedLocationsTxt.length) {
-      aggregatedlocations = $.trim(aggregatedLocationsTxt.val());
+    var value = MANUALLY_APPROVED_LOCATIONS_TEXTFIELD.val();
+    LAST_MANUALLY_APPROVED_LOCATIONS = $.trim(value);
+    locations = LAST_MANUALLY_APPROVED_LOCATIONS.split(",");
+    if(AGGREGATED_LOCATIONS_TEXTFIELD.length) {
+      aggregatedlocations = $.trim(AGGREGATED_LOCATIONS_TEXTFIELD.val());
       aggregatedlocations = aggregatedlocations.split(",");
     }
 
@@ -51,14 +50,14 @@ $(document).ready(function() {
       var parent = $(this).parent();
       $(this).replaceWith("<span>" + $(this).html() + "</span>");
       if(parent.hasClass("last")) {
-        approvedOnly = true;
+        APPROVED_ONLY = true;
         parent.attr("class", "active active-last");
         var parentPrev = parent.prev();
         parentPrev.attr("class", "first");
         var parentPrevSpan = parentPrev.find("span");
         parentPrevSpan.replaceWith('<a href="javascript:void(0);">' + parentPrevSpan.html() + "</a>");
       } else {
-        approvedOnly = false;
+        APPROVED_ONLY = false;
         parent.attr("class", "active active-first");
         var parentNext = parent.next();
         parentNext.attr("class", "last");
@@ -70,19 +69,19 @@ $(document).ready(function() {
     });
 
     $("#app-content").on("click", "#manually-approve-refresh", function(e) {
-      clearTimeout(asyncGenPagesTimer);
+      clearTimeout(ASYNC_GEN_PAGE_TIMER);
       $("#approve-spinner").remove();
       
-      if(manuallyApproveLocationsTxt && manuallyApproveLocationsTxt.length) {
+      if(MANUALLY_APPROVED_LOCATIONS_TEXTFIELD && MANUALLY_APPROVED_LOCATIONS_TEXTFIELD.length) {
         var locations, aggregatedlocations;
         
         saveMultipleInputFields();
       
-        var value = manuallyApproveLocationsTxt.val();
-        lastVal = $.trim(value);
-        locations = lastVal.split(",");
-        if(aggregatedLocationsTxt.length) {
-          aggregatedlocations = $.trim(aggregatedLocationsTxt.val());
+        var value = MANUALLY_APPROVED_LOCATIONS_TEXTFIELD.val();
+        LAST_MANUALLY_APPROVED_LOCATIONS = $.trim(value);
+        locations = LAST_MANUALLY_APPROVED_LOCATIONS.split(",");
+        if(AGGREGATED_LOCATIONS_TEXTFIELD.length) {
+          aggregatedlocations = $.trim(AGGREGATED_LOCATIONS_TEXTFIELD.val());
           aggregatedlocations = aggregatedlocations.split(",");
         }
 
@@ -141,12 +140,12 @@ $(document).ready(function() {
  * 
  * @param serviceUri as string
  * @param locations as array
- *
+ * @param aggregatedlocations as array
  */
 
 function retrieveResources(serviceUri, locations, aggregatedlocations) {
 
-  if(approvedOnly) {
+  if (APPROVED_ONLY) {
     var getUri = serviceUri + "/?vrtx=admin&service=manually-approve-resources&approved-only";
   } else {
     var getUri = serviceUri + "/?vrtx=admin&service=manually-approve-resources";
@@ -181,17 +180,17 @@ function retrieveResources(serviceUri, locations, aggregatedlocations) {
         $("#manually-approve-container:hidden").removeClass("hidden");
         
         generateManuallyApprovedContainer(results);
-        // TODO !spageti && !run twice
+        
         if (typeof UNSAVED_CHANGES_CONFIRMATION !== "undefined") {
           storeInitPropValues();
         }
       } else {
         $("#approve-spinner").remove();
-        if(!approvedOnly) {
+        if(!APPROVED_ONLY) {
           $("#vrtx-manually-approve-tab-menu:visible").addClass("hidden");
         } else {
           $("<p id='vrtx-manually-approve-no-approved-msg'>" + approveNoApprovedMsg + "</p>")
-          .insertAfter("#vrtx-manually-approve-tab-menu");
+            .insertAfter("#vrtx-manually-approve-tab-menu");
         }
         $("#manually-approve-container:visible").addClass("hidden");
       }
@@ -213,19 +212,20 @@ function retrieveResources(serviceUri, locations, aggregatedlocations) {
 function generateManuallyApprovedContainer(resources) {
 
   // Initial setup
-  var pages = 1, prPage = 15, len = resources.length, remainder = len % prPage, moreThanOnePage = len > prPage, totalPages = len > prPage ? (parseInt(len
-      / prPage) + 1)
-      : 1;
-
-  // Function pointers
-  var generateTableRowFunc = generateTableRow;
-  var generateTableEndAndPageInfoFunc = generateTableEndAndPageInfo;
-  var generateNavAndEndPageFunc = generateNavAndEndPage;
-  var generateStartPageAndTableHeadFunc = generateStartPageAndTableHead;
-
-  var i = 0;
+  var pages = 1,
+      prPage = 15, 
+      len = resources.length,
+      remainder = len % prPage,
+      moreThanOnePage = len > prPage,
+      totalPages = len > prPage ? (parseInt(len / prPage) + 1) : 1,
+      generateTableRowFunc = generateTableRow;
+      generateTableEndAndPageInfoFunc = generateTableEndAndPageInfo;
+      generateNavAndEndPageFunc = generateNavAndEndPage;
+      generateStartPageAndTableHeadFunc = generateStartPageAndTableHead,
+      i = 0;
 
   var html = generateStartPageAndTableHead(pages);
+  
   // If more than one page
   if (moreThanOnePage) {
     for (; i < prPage; i++) { // Generate first page synchronous
@@ -251,7 +251,7 @@ function generateManuallyApprovedContainer(resources) {
   $("#approve-spinner").html(approveGeneratingPage + " <span id='approve-spinner-generated-pages'>" + pages + "</span> " + approveOf + " " + totalPages + "...");
  
   // Generate rest of pages asynchronous
-  asyncGenPagesTimer = setTimeout(function() {
+  ASYNC_GEN_PAGE_TIMER = setTimeout(function() {
     html += generateTableRowFunc(resources[i]);
     if ((i + 1) % prPage == 0) {
       html += generateTableEndAndPageInfoFunc(pages, prPage, len, false);
@@ -274,7 +274,7 @@ function generateManuallyApprovedContainer(resources) {
     }
     i++;
     if (i < len) {
-      asyncGenPagesTimer = setTimeout(arguments.callee, 1);
+      ASYNC_GEN_PAGE_TIMER = setTimeout(arguments.callee, 1);
     } else {
       if (remainder != 0) {
         html += generateTableEndAndPageInfoFunc(pages, prPage, len, true);
@@ -357,4 +357,4 @@ function generateNavAndEndPage(i, html, prPage, remainder, pages, totalPages) {
 
 /* ^ HTML generation functions */
 
-/* ^ JS for handling manually approved resources */
+/* ^ Manually approved resources */

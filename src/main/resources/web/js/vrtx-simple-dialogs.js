@@ -10,7 +10,8 @@ var vrtxSimpleDialogs = {
       title: title,
       hasHtml: true,
       unclosable: true,
-      width: 208
+      width: 208,
+      height: 60
     });
   },
   openHtmlDialog: function openHtmlDialog(html, title) {

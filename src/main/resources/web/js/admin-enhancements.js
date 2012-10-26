@@ -2338,7 +2338,7 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(options) {
               }
             } else {
               var node = _$.single(this).parent().parent();
-              if(node.is("tr")) {  // Because 'this' is tr > td > div
+              if(node.is("tr")) {  // Because 'this' can be tr > td > div
                 node.remove();
               } else {
                 _$.single(this).remove();            

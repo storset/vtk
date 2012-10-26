@@ -1738,7 +1738,7 @@ function editorInteraction(bodyId, vrtxAdm, _$) {
 }
 
 function ctrlSEventHandler(_$, e) {
-  if(!_$("#TB_window").length) {
+  if(!_$("#dialog-loading:visible").length) {
     _$(".vrtx-focus-button:last input").click();
   }
   e.preventDefault();

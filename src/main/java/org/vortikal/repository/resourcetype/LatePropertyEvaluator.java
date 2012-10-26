@@ -31,7 +31,6 @@
 
 package org.vortikal.repository.resourcetype;
 
-import org.springframework.core.Ordered;
 
 /**
  * Marker for evaluators which should only run after normal completion of

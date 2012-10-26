@@ -33,7 +33,6 @@ package org.vortikal.web.actions.convert;
 import java.util.Map;
 
 import org.vortikal.repository.Path;
-import org.vortikal.repository.Resource;
 
 public interface CopyAction {
 

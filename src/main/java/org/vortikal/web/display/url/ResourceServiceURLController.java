@@ -140,7 +140,8 @@ public class ResourceServiceURLController implements Controller {
         }
 
         // Hack to ensure https for preview when not popup and set authTarget
-        boolean isViewSelectiveHttps = !this.webProtocol.equals(this.webProtocolRestricted);
+        boolean isViewSelectiveHttps = (this.webProtocol != null && this.webProtocolRestricted != null)
+                && !this.webProtocol.equals(this.webProtocolRestricted);
         // Exceptions (https only if readRestricted)
         boolean isPopup = "preview.displayPopupURL".equals(this.viewName) || "previewPopup".equals(this.viewName);
 

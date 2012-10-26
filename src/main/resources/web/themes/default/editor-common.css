@@ -114,6 +114,8 @@ h2 {
 
 .property-item.userTitle,
 .property-item.htmlTitle,
+.property-item.programContext\.title,
+.property-item.programOptionContext\.title,
 .vrtx-string.title,
 .vrtx-string.name,
 .vrtx-string.areacode,

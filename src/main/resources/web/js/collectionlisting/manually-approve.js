@@ -23,7 +23,7 @@ $(window).load(function() {
                                                                 "table-end", "navigation-next", "navigation-prev"],
                                                                 manuallyApprovedTemplatesRetrieved);
                                                                 
-  // Set initial locations / aggeregated locations and generate menu
+  // Set initial locations / aggregated locations and generate menu
   if(MANUALLY_APPROVED_LOCATIONS_TEXTFIELD.length) {
     var locations, aggregatedlocations;
     var value = MANUALLY_APPROVED_LOCATIONS_TEXTFIELD.val();

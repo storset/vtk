@@ -2443,10 +2443,6 @@ div.vrtx-admin-form {
   width: 100%;
 }
 
-.ac_results ul {
-  text-align: left;
-}
-
 /* Smaller font-size in resource-info tables */
 
 .resourceInfo table .vrtx-button-small input,

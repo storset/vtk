@@ -218,13 +218,12 @@ function generateManuallyApprovedContainer(resources) {
       remainder = len % prPage,
       moreThanOnePage = len > prPage,
       totalPages = len > prPage ? (parseInt(len / prPage) + 1) : 1,
-      generateTableRowFunc = generateTableRow;
-      generateTableEndAndPageInfoFunc = generateTableEndAndPageInfo;
-      generateNavAndEndPageFunc = generateNavAndEndPage;
+      generateTableRowFunc = generateTableRow,
+      generateTableEndAndPageInfoFunc = generateTableEndAndPageInfo,
+      generateNavAndEndPageFunc = generateNavAndEndPage,
       generateStartPageAndTableHeadFunc = generateStartPageAndTableHead,
-      i = 0;
-
-  var html = generateStartPageAndTableHead(pages);
+      i = 0,
+      html = generateStartPageAndTableHead(pages);
   
   // If more than one page
   if (moreThanOnePage) {

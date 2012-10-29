@@ -1858,6 +1858,25 @@ body#vrtx-permissions .addUser {
   display: block;
 }
 
+/* Autocomplete */
+
+.properties .tags input.ac_input {
+  width: 320px;
+}
+
+.expandedForm span.addGroup input.ac_input,
+.expandedForm span.addUser input.ac_input {
+  width: 200px; 
+}
+
+.vrtx-autocomplete-username .vrtx-textfield,
+#principalList .vrtx-textfield {
+  z-index: 9999;
+  position: relative;
+}
+
+/* ^ Autocomplete */
+
 ul.errors li {
   color: #ed1c24;
 }
@@ -1919,12 +1938,6 @@ ul.property {
 
 #vrtx-admin-ownership-form {
   display: inline;
-}
-
-.vrtx-autocomplete-username .vrtx-textfield,
-#principalList .vrtx-textfield {
-  z-index: 9999;
-  position: relative;
 }
 
 .ac_results {

@@ -32,8 +32,8 @@ function permissionsAutocomplete(id, service, params, returnUsername) {
         }
         returnValue = (returnValue == "") ? val : (returnValue + " " + val);
       }
-      return '<div class="vrtx-person-search-info"><span class="vrtx-person-search-name">' + returnValue + '</span>'
-           + '<span class="vrtx-person-search-position">' + desc.replace(")", "") + '</span></div>';
+      return '<div class="vrtx-autocomplete-search-info"><span class="vrtx-autocomplete-search-title">' + returnValue + '</span>'
+           + '<span class="vrtx-autocomplete-search-subtittel">' + desc.replace(")", "") + '</span></div>';
     }
   };
   if (params) {

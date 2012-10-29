@@ -3,10 +3,10 @@
     "resources" : {
 
         "/" : {
-            "type" : "collection"
+            "type" : "collection" 
             "acl"  : {
-                "read" : [ "u:user2@localhost" ]
-                "read-write" : [ "u:user3@localhost" ]
+                "read" : [ "pseudo:all" ]
+                "read-write" : [ "g:group1@localhost" ]
                 "all" : [ "u:admin@localhost" ]
             }
             "properties" : {
@@ -19,12 +19,9 @@
             "acl"  : {
                 "read" : [ "u:user1@localhost" ]
                 "read-processed" : [ "u:user2@localhost" ]
+                "read-write" : [ "u:user3@localhost" ]
                 "all" : [ "u:admin@localhost" ]
             }
-        }
-
-        "/b" : {
-            "type" : "collection"
         }
 
         "/a/b" : {
@@ -32,9 +29,13 @@
             "acl"  : {
                 "read" : [ "u:user1@localhost" ]
                 "read-write" : [ "u:user2@localhost" ]
-                "add-comment" : [ "p:authenticated" ]
+                "add-comment" : [ "pseudo:authenticated" ]
                 "all" : [ "u:admin@localhost" ]
             }
+        }
+
+        "/b" : {
+            "type" : "collection"
         }
     }
 
@@ -54,19 +55,66 @@
 
     "assertions" : {
 
-        "user1-read" : {
-            "uri" : "/"
-            "principal" : "user1@localhost"
-            "repository-action" : "READ"
+        "anonymous-read-1" : {
+            "uri" : [ "/", "/b" ]
+            "principal" : null
+            "repository-action" : [ "READ", "READ_PROCESSED" ],
+            "expected-outcome" : "SUCCESS"
+        }
+
+        "anonymous-read-2" : {
+            "uri" : [ "/a", "/a/b" ]
+            "principal" : null
+            "repository-action" : [ "READ", "READ_PROCESSED" ],
             "expected-outcome" : "FAILURE"
         }
 
-        "anonymous-read" : {
-            "uri" : "/a/b"
+        "anonymous-write" : {
+            "uri" : [ "/", "/b" ]
             "principal" : null
-            "repository-action" : "READ"
+            "repository-action" : [ "UNEDITABLE_ACTION", "CREATE",
+                                    "WRITE", "READ_WRITE", "EDIT_COMMENT",
+                                    "ADD_COMMENT", "ALL", "WRITE_ACL", 
+                                    "DELETE", "REPOSITORY_ADMIN_ROLE_ACTION",
+                                    "REPOSITORY_ROOT_ROLE_ACTION"
+                                  ],
             "expected-outcome" : "FAILURE"
         }
+
+        
+        "admin-user-delete-root" {
+            "uri" : "/"
+            "principal" : "admin@localhost"
+            "repository-action" : "DELETE"
+            "expected-outcome" : "FAILURE"
+        }
+
+        "admin-user-delete-child" {
+            "uri" : "/b"
+            "principal" : "admin@localhost"
+            "repository-action" : "DELETE"
+            "expected-outcome" : "SUCCESS"
+        }
+
+        "admin-user-allowed-operations" : {
+            "uri" : "/"
+            "principal" : "admin@localhost"
+            "repository-action" : [ "READ", "READ_PROCESSED", "CREATE",
+                                    "WRITE", "READ_WRITE", "EDIT_COMMENT",
+                                    "ADD_COMMENT", "ALL", "WRITE_ACL", 
+                                    "REPOSITORY_ADMIN_ROLE_ACTION",
+                                    "UNLOCK"
+                                  ],
+            "expected-outcome" : "SUCCESS"
+        }
+
+        "admin-user-not-root" {
+            "uri" : "/"
+            "principal" : "admin@localhost"
+            "repository-action" : "REPOSITORY_ROOT_ROLE_ACTION"
+            "expected-outcome" : "FAILURE"
+        }
+
     }
 
 

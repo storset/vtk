@@ -49,6 +49,7 @@ import org.json.simple.JSONValue;
 import org.junit.Test;
 import org.vortikal.repository.store.DataAccessException;
 import org.vortikal.repository.store.DataAccessor;
+import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.GroupStore;
 import org.vortikal.security.MatchingGroupStore;
 import org.vortikal.security.MatchingPrincipalStore;
@@ -187,20 +188,62 @@ public class AuthorizationManagerTest {
             for (Object key: object.keySet()) {
                 JSONObject val = (JSONObject) object.get(key);
                 requireFields(val, "uri", "principal", "repository-action", "expected-outcome");
-                Path uri = Path.fromString(val.get("uri").toString());
-                Object user = val.get("principal");
-                Principal principal = user != null ? 
-                        new PrincipalImpl(user.toString(), Principal.Type.USER) : null;
-                
-                if (principal != null && !principalManager.validatePrincipal(principal)) {
-                    throw new IllegalArgumentException("Invalid principal: " + principal);
-                }
 
-                RepositoryAction action = RepositoryAction.valueOf(
-                        val.get("repository-action").toString());
+                Path[] uris = null;
+
+                Object o = val.get("uri");
+                if (o == null) {
+                    throw new IllegalArgumentException("Field 'uri' of " 
+                            + val + " is NULL");
+                } else if (o instanceof List<?>) {
+                    List<Path> list = new ArrayList<Path>();
+                    for (Object elem: (List<?>) o) {
+                        list.add(Path.fromString(elem.toString()));
+                    }
+                    uris = list.toArray(new Path[list.size()]);
+                } else {
+                    uris = new Path[]{ Path.fromString(o.toString())};
+                }
+                
+                Principal[] principals = null;
+                
+                o = val.get("principal");
+                if (o == null) {
+                    principals = new Principal[] {null};
+                } else if (o instanceof List<?>) {
+                    List<Principal> list = new ArrayList<Principal>();
+                    for (Object elem: (List<?>) o) {
+                        list.add(new PrincipalImpl(elem.toString(), Principal.Type.USER));
+                    }
+                    principals = list.toArray(new Principal[list.size()]);
+                } else {
+                    principals = new Principal[] { new PrincipalImpl(o.toString(), Principal.Type.USER) };
+                }
+                for (Principal principal: principals) {
+                    if (principal != null && !principalManager.validatePrincipal(principal)) {
+                        throw new IllegalArgumentException("Invalid principal: " + principal);
+                    }
+                }
+                
+                RepositoryAction[] actions = null;
+                
+                o = val.get("repository-action");
+                if (o == null) {
+                    throw new IllegalArgumentException("Field 'repository-action' of " 
+                            + val + " is NULL");
+                } else if (o instanceof List<?>) {
+                    List<RepositoryAction> list = new ArrayList<RepositoryAction>();
+                    for (Object elem: (List<?>) o) {
+                        list.add(RepositoryAction.valueOf(elem.toString()));
+                    }
+                    actions = list.toArray(new RepositoryAction[list.size()]);
+                } else {
+                    actions = new RepositoryAction[]{ RepositoryAction.valueOf(o.toString()) };
+                }
+                
                 Outcome outcome = Outcome.valueOf(val.get("expected-outcome").toString());
                 TestAssertion assertion = new TestAssertion(
-                        key.toString(), uri, principal, action, outcome);
+                        key.toString(), uris, principals, actions, outcome);
                 assertions.add(assertion);
             }
             this.assertions = assertions;
@@ -212,38 +255,57 @@ public class AuthorizationManagerTest {
         
         private static class TestAssertion {
             private String id;
-            private Path uri;
-            private Principal principal;
-            private RepositoryAction action;
+            private Path[] uris;
+            private Principal[] principals;
+            private RepositoryAction[] actions;
             private Outcome outcome;
-            public TestAssertion(String id, Path uri, Principal principal,
-                    RepositoryAction action, Outcome outcome) {
+            
+            public TestAssertion(String id, Path[] uris, Principal[] principals,
+                    RepositoryAction[] actions, Outcome outcome) {
                 this.id = id;
-                this.uri = uri;
-                this.principal = principal;
-                this.action = action;
+                this.uris = uris;
+                this.principals = principals;
+                this.actions = actions;
                 this.outcome = outcome;
             }
             
             public void test(AuthorizationManager authManager) throws Exception {
-                switch (this.outcome) {
+                switch (outcome) {
                 case SUCCESS:
-                    try {
-                        authManager.authorizeAction(this.uri, this.action, this.principal);
+                        for (Path uri: uris) {
+                            for (Principal principal: principals) {
+                                for (RepositoryAction action: actions) {
+                                    try {
+                                        authManager.authorizeAction(uri, action, principal);
+                                    } catch (Throwable t) {
+                                        throw new Exception("Assertion " + this 
+                                                + ": combination (" + action + ", " 
+                                                + uri + ", " + principal 
+                                                + ") failed", t);
+                                    }
+                                }
+                            }
+                        }
                         return;
-                    } catch (Throwable t) {
-                        throw new Exception("Assertion " + this + " failed", t);
-                    }
                 case FAILURE:
-                    try {
-                        authManager.authorizeAction(this.uri, this.action, this.principal);
-                    } catch (Throwable t) {
+                        for (Path uri: uris) {
+                            for (Principal principal: principals) {
+                                for (RepositoryAction action: actions) {
+                                    try {
+                                        authManager.authorizeAction(uri, action, principal);
+                                        throw new Exception("Assertion " + this 
+                                                + ": combination(" + action + ", " 
+                                                + uri + ", " + principal 
+                                                + ") should have failed");
+                                    } catch (AuthenticationException t) { 
+                                    } catch (AuthorizationException t) { }
+                                }
+                            }
+                        }
                         return;
-                    }
-                    throw new Exception("Assertion " + this + " should have failed");
                     
                 default:
-                    throw new IllegalStateException("Undefined outcome: " + outcome);
+                    throw new IllegalStateException(this + ": undefined outcome: " + outcome);
                 }
             }
             

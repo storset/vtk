@@ -1,0 +1,74 @@
+resourcetype ub-mapping {
+
+  properties {
+    title : string,
+    mappings : json (
+        prefix : string,
+        mappinglink-no : string,
+        mappinglink-en : string
+    ) multiple noextract
+  }
+
+  view-components {
+
+    mappings {
+      ##
+      [resource-props "."]
+      [def document structured-document()]
+      [def mappings document.properties.mappings]
+      [if mappings != null]
+        [list mappings mapping]
+          [def prefix mapping.prefix]
+          [def mappinglink-no mapping.mappinglink-no]
+          [def mappinglink-en mapping.mappinglink-en]
+          [def number _index + 1]
+
+          <div class="vrtx-ub-mapping" id="vrtx-ub-mapping-[val number]">
+              [if prefix != null && prefix != ""]
+                <div class="vrtx-ub-mapping-prefix">
+                   <span>[val prefix]</span>
+                </div>
+              [endif]
+              [if mappinglink-no != null && mappinglink-no != ""]
+                <div class="vrtx-ub-mapping-mappinglink-no">
+                   <a href="[val mappinglink-no]">[val mappinglink-no]</a>
+                </div>
+              [endif]
+              [if mappinglink-en != null && mappinglink-en != ""]
+                <div class="vrtx-ub-mapping-mappinglink-en">
+                   <a href="[val mappinglink-en]">[val mappinglink-en]</a>
+                </div>
+              [endif]
+            </div>
+          [endif]
+        [endlist]
+      [endif]
+      ##
+    }
+
+  }
+
+  view {
+    ##
+    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+    <html xmlns="http://www.w3.org/1999/xhtml">
+      <head>
+        <title>[call "resource:property" {"id":"title"}]</title>
+      </head>
+      <body id="vrtx-ub-mappings">
+         [call "comp:mappings"]
+      </body>
+    </html>
+    ##
+  }
+
+  localization {
+    title : (en : "Title", no : "Tittel", nn : "Tittel"),
+    mappings : (en : "Mappings:", no : "Mappinger:", nn : "Mappinger:"),
+    prefix : (en : "Prefix", no : "Prefiks", nn : "Prefiks"),
+    mappinglink-no : (en : "Norwegian webaddress", no : "Norsk webadresse", nn : "Norsk webadresse"),
+    mappinglink-en : (en : "English webaddress", no : "Engelsk webadresse", nn : "Engelsk webadresse")
+  }
+
+}
+  

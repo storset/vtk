@@ -1,133 +1,187 @@
 resourcetype course-description : fellestekst-document {
 
   properties {
-    studiepoeng : string,
-    studiedesimalpoeng : string,
-    undervisningssemester : string,
-    undervisningssemester-bestemt-semester : string,
-    undervisningssemester-annet : simple_html,
-    eksamenssemester : string,
-    eksamenssemester-bestemt-semester : string,
-    eksamenssemester-annet : simple_html,
-    emnetype : string,
-    opptak-og-adgang : string,
-    opptak-metode : string
+    credits : string,
+    creditsdecimal : string defaultvalue("0"),
+    teachingsemester : string,
+    teachingsemester-particular-semester : string,
+    teachingsemester-other : simple_html,
+    examsemester : string,
+    examsemester-particular-semester : string,
+    examsemester-other : simple_html,
+    course-type : string,
+    admission-and-access : string,
+    admission-method : string
   }
 
   edit-rules {
-    studiepoeng (dropdown),
-    studiedesimalpoeng (dropdown),
-    undervisningssemester (dropdown),
-    undervisningssemester-bestemt-semester (class[if-undervisningssemester-bestemt]),
-    undervisningssemester-annet (class[if-undervisningssemester-annet]),
-    eksamenssemester (dropdown),
-    eksamenssemester-bestemt-semester (class[if-eksamenssemester-bestemt]),
-    eksamenssemester-annet (class[if-eksamenssemester-annet]),
-    emnetype (dropdown),
-    opptak-og-adgang (dropdown)
+    credits (dropdown),
+    creditsdecimal (dropdown),
+    teachingsemester (dropdown),
+    teachingsemester-particular-semester (class[if-teachingsemester-bestemt]),
+    teachingsemester-other (class[if-teachingsemester-other]),
+    examsemester (dropdown),
+    examsemester-particular-semester (class[if-examsemester-bestemt]),
+    examsemester-other (class[if-examsemester-other]),
+    course-type (dropdown),
+    admission-and-access (dropdown)
+  }
+
+  view-components {
+
+    facts {
+        ##
+        [def credits resource-prop(".", "credits")]
+        [def creditsdecimal resource-prop-obj-val(".", "creditsdecimal")]
+        [def contentLocale resource-prop-obj-val(".", "contentLocale")]
+        [def teachingsemester resource-prop-obj-val(".", "teachingsemester")]
+        [def teachingsemester-particular-semester resource-prop-obj-val(".", "teachingsemester-particular-semester")]
+        [def teachingsemester-other resource-prop-obj-val(".", "teachingsemester-other")]
+        [def examsemester resource-prop-obj-val(".", "examsemester")]
+        [def examsemester-particular-semester resource-prop-obj-val(".", "examsemester-particular-semester")]
+        [def examsemester-other resource-prop-obj-val(".", "examsemester-other")]
+        <table class="course" cellpadding="0" cellspacing="0" width="100%">
+          <tbody>
+            <tr class="vrtx-academics-course-table-title">
+              <td colspan="2"><b>Fakta om emnet:</b></td>
+            </tr>
+            <tr valign="top">
+              <td>Studiepoeng:</td>
+              <td>[val credits][if creditsdecimal != null && creditsdecimal != "" && creditsdecimal != "0"],[val creditsdecimal][endif]</td>
+            </tr>
+            <tr valign="top">
+              <td>Undervises:</td>
+              [if teachingsemester != null && teachingsemester = "particular-semester"]
+                <td>[val teachingsemester-particular-semester]</td>
+              [elseif teachingsemester != null && teachingsemester = "other"]
+                <td>[val teachingsemester-other # unescaped]</td>
+              [else]
+                <td>[val teachingsemester]</td>
+              [endif]
+            </tr>
+            <tr valign="top">
+              <td>Eksamen:</td>
+              [if examsemester != null && examsemester = "particular-semester"]
+                <td>[val examsemester-particular-semester]</td>
+              [elseif examsemester != null && examsemester = "other"]
+                <td>[val examsemester-other # unescaped]</td>
+              [else]
+                <td>[val examsemester]</td>
+              [endif]
+            </tr>
+            <tr valign="top">
+              <td>Undervisningsspråk:</td>
+              [if contentLocale != null && contentLocale = "no"]
+                <td>[localized 'locale-no']</td>
+              [elseif contentLocale != null && contentLocale = "en"]
+                <td>[localized 'locale-en']</td>
+              [elseif contentLocale != null && contentLocale = "nn"]
+                <td>[localized 'locale-nn']</td>
+              [endif]
+            </tr>
+            <tr valign="top">
+              <td>Tilbys ved:</td>
+              <td><a href="http://www.mn.uio.no/ifi/" class="vrtx-link-check">Institutt for informatikk (Ifi)</a></td>
+            </tr>
+          </tbody>
+        </table>
+        ##
+    }
+
+    semesters {
+        ##
+        <table class="master" cellpadding="5" cellspacing="5" width="100%">
+          <tbody>
+            <tr>
+              <td><b>Semestersider</b> (undervisningstider, eksamensdato, pensum m.m.):
+                <ul>
+                      <li class="vrtx-semesterside-1">
+                        placeholder h12
+                      </li>
+                </ul>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        ##
+    }
+
+    academics-course-navigation {
+        ##
+        <div class="engelsk">
+          [def uri resource-prop(".", "uri")]
+          [def uri "./index-eng.html"]
+          [def file json-resource(uri)]
+          [if file != null]
+            <a href="http://www.uio.no/studier/emner/matnat/ifi/INF1000/index-eng.xml" class="vrtx-link-check">English version</a>
+          [endif]
+        </div>
+        ##
+    }
+
+    academics-course-toc {
+        ##
+        <a href="#kort-om-emnet" class="vrtx-link-check">Kort om emnet</a>
+         - <a href="#hva-laerer-du" class="vrtx-link-check">Hva lærer du?</a>
+          - <a href="#admission-and-access" class="vrtx-link-check">Opptak og adgangsregulering</a>
+           - <a href="#forkunnskaper" class="vrtx-link-check">Forkunnskaper</a>
+            - <a href="#overlapp" class="vrtx-link-check">Overlapping</a>
+             - <a href="#undervisning" class="vrtx-link-check">Undervisning</a>
+              - <a href="#vurdering-og-eksamen" class="vrtx-link-check">Vurdering og eksamen</a>
+               - <a href="#other" class="vrtx-link-check">Annet</a>
+                - <a href="#kontaktinformasjon" class="vrtx-link-check">Kontakt oss</a>
+        ##
+    }
+
+    statusmessage {
+        ##
+        [def course-status resource-prop-obj-val(".", "courseContext.course-status")]
+        [if course-status != null && course-status = "continued-as"]
+          <h2 class="statusmessage">
+            Dette emnet er nedlagt, men det kan hende at undervisningen er videref&oslash;rt under en ny emnekode. Se oversikt over <a href="http://www.uio.no/studier/emner/" class="vrtx-link-check">emner som tilbys</a>.
+          </h2>
+        [endif]
+        ##
+    }
+
   }
 
   view {
     ##
     [resources-props "."]
-    [def emneCode resource-prop(".", "courseContext.fs-course-code")]
-    [def emneName resource-prop(".", "courseContext.course-name")]
-    [def emneStatus resource-prop(".", "courseContext.course-status")]
-    [def studiepoeng resource-prop(".", "studiepoeng")]
-    [def studiedesimalpoeng resource-prop(".", "studiedesimalpoeng")]
-    [def contentLocale resource-prop(".", "contentLocale")]
-    [def undervisningssemester resource-prop(".", "undervisningssemester")]
-    [def eksamenssemester resource-prop(".", "eksamenssemester")]
-    [def emnetype resource-prop(".", "emnetype")]
+    [def course-code resource-prop(".", "courseContext.fs-course-code")]
+    [def course-name resource-prop(".", "courseContext.course-name")]
+    [def course-type resource-prop(".", "course-type")]
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml">
       <head>
-        <title>[val emneCode] - [val emneName]</title>
+        <title>[if course-code != null][val course-code][endif][if course-code != null && course-name != null] - [endif][if course-name != null][val course-name][endif]</title>
       </head>
       <body>
       <table id="vrtx-academics-course-navigation" align="right" cellpadding="1" cellspacing="0">
         <tbody>
           <tr>
             <td class="navigasjon">
-              <div class="engelsk">
-                <a href="http://www.uio.no/studier/emner/matnat/ifi/INF1000/index-eng.xml" class="vrtx-link-check">English version</a>
-              </div>
+              [call "comp:academics-course-navigation"]
             </td>
           </tr>
         </tbody>
       </table>
-      <h1 id="hdr">[val emneCode] - [val emneName]</h1>
+      [call "comp:statusmessage"]
+      <h1 id="hdr">[if course-code != null][val course-code][endif][if course-code != null && course-name != null] - [endif][if course-name != null][val course-name][endif]</h1>
       <div id="vrtx-academics-course-toc" style="padding-top:5px;">
-        <a href="#kort-om-emnet" class="vrtx-link-check">Kort om emnet</a>
-         - <a href="#hva-laerer-du" class="vrtx-link-check">Hva lærer du?</a>
-          - <a href="#opptak-og-adgang" class="vrtx-link-check">Opptak og adgangsregulering</a>
-           - <a href="#forkunnskaper" class="vrtx-link-check">Forkunnskaper</a>
-            - <a href="#overlapp" class="vrtx-link-check">Overlapping</a>
-             - <a href="#undervisning" class="vrtx-link-check">Undervisning</a>
-              - <a href="#vurdering-og-eksamen" class="vrtx-link-check">Vurdering og eksamen</a>
-               - <a href="#annet" class="vrtx-link-check">Annet</a>
-                - <a href="#kontaktinformasjon" class="vrtx-link-check">Kontakt oss</a>
+        [call "comp:academics-course-toc"]
       </div>
       <table id="vrtx-academics-course-table" align="right" cellpadding="0" cellspacing="0" width="50%">
         <tbody>
           <tr>
             <td>
-              <table class="emner" cellpadding="0" cellspacing="0" width="100%">
-                <tbody>
-                  <tr class="vrtx-academics-course-table-title">
-                    <td colspan="2"><b>Fakta om emnet:</b></td>
-                  </tr>
-                  <tr valign="top">
-                    <td>Studiepoeng:</td><td>[val studiepoeng][if studiedesimalpoeng != null && studiedesimalpoeng != ""],[val studiedesimalpoeng][endif]</td>
-                  </tr>
-                  <tr valign="top">
-                    <td>Undervises:</td>
-                    <td>[val undervisningssemester]<br><br>
-                      <p>Trenger vise annet og bestemt felt ved valg. classer og js?</p>
-                      <p>Fra og med 2011 vil emnet kun undervises i høstsemesteret.</p>
-                    </td>
-                  </tr>
-                  <tr valign="top">
-                    <td>Eksamen:</td><td>Hvert høstsemester</td>
-                  </tr>
-                  <tr valign="top">
-                    <td>Undervisningsspråk:</td><td>[val contentLocale]</td>
-                  </tr>
-                  <tr valign="top">
-                    <td>Tilbys ved:</td>
-                    <td><a href="http://www.mn.uio.no/ifi/" class="vrtx-link-check">Institutt for informatikk (Ifi)</a><br></td>
-                  </tr>
-                  <tr>
-                    <td></td><td></td>
-                  </tr>
-                </tbody>
-              </table>
+              [call "comp:facts"]
             </td>
           </tr>
           <tr class="vrtx-academics-course-table-title">
             <td>
-              <table class="master" cellpadding="5" cellspacing="5" width="100%">
-                <tbody>
-                  <tr>
-                    <td><b>Semestersider</b> (undervisningstider, eksamensdato, pensum m.m.):
-                      <ul>
-                        [def uris resource-prop(".", "parentChildURIs")]
-                        [def count 1]
-                        [list uris uri]
-                          [def type resource-prop(uri, "resourceType")]
-                          [def title resource-prop(uri, "title")]
-                          [if type != null && type = "semester-context"]
-                            <li class="vrtx-semesterside-[val count]">
-                              <a href="[val uri]" class="vrtx-link-check">[val title] uri relevant url</a>
-                            </li>
-                            [def count count + 1]
-                          [endif]
-                        [endlist]
-                      </ul>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+              [call "comp:semesters"]
             </td>
           </tr>
         </tbody>
@@ -136,61 +190,39 @@ resourcetype course-description : fellestekst-document {
 
 
       <div>
-        Her er litt undervisningssemester: [val undervisningssemester]
-        <p>Trenger vise annet og bestemt felt ved valg. classer og js?</p>
+        Her er litt course-type: [val course-type]
       </div>
       <div>
-        Her er litt eksamenssemester: [val eksamenssemester]
-      </div>
-      <div>
-        Status ligger på mappe nivå. [val emneStatus]
-      </div>
-      <div>
-        Her er litt emnetype: [val emnetype]
-      </div>
-      <div>
-        [call "comp:vis-fellestekst" {"docType":"hvordan-soke", "propName":"opptak-metode"}]
+        [call "comp:vis-fellestekst" {"docType":"hvordan-soke", "propName":"admission-method"}]
         [call "comp:vis-fellestekst" {"docType":"hvordan-soke", "propName":"opptak-frist-frekvens"}]
       </div>
-      
-      
-      [def uris resource-prop(".", "parentChildURIs")]
-      [def count 1]
-      [list uris uri]
-        [def type resource-prop(uri, "resourceType") ]
-        [if type != null && type = "semester-context"]
-          [val count]: [val uri] - [val type]
-          [def count count + 1]
-        [endif]
-      [endlist]
-      
       </body>
     </html>
     ##
   }
   
   vocabulary {
-     studiepoeng {
+     credits {
        en : (range = "1..120"),
        no : (range = "1..120"),
        nn : (range = "1..120")
      },
-     studiedesimalpoeng {
+     creditsdecimal {
        en : ("0" = "0", "5" = "5"),
        no : ("0" = "0", "5" = "5"),
        nn : ("0" = "0", "5" = "5")
      },
-     undervisningssemester {
-       en : ("vaar-og-host" = "Autumn and spring", "hver-hoest" = "Every autumn", "hver-vaar" =  "Every spring", "bestemt-semester" = "semester", "annet" = "Other"),
-       no : ("vaar-og-host" = "Høst og vår", "hver-hoest" = "Hver høst", "hver-vaar" =  "Hver vår", "bestemt-semester" = "Bestemt semester", "annet" = "Annet"),
-       nn : ("vaar-og-host" = "Haust og vår", "hver-hoest" = "Hver haust", "hver-vaar" =  "Hver vår", "bestemt-semester" = "Bestemt semester", "annet" = "Annet")
+     teachingsemester {
+       en : ("vaar-og-host" = "Autumn and spring", "hver-hoest" = "Every autumn", "hver-vaar" =  "Every spring", "particular-semester" = "semester", "other" = "Other"),
+       no : ("vaar-og-host" = "Høst og vår", "hver-hoest" = "Hver høst", "hver-vaar" =  "Hver vår", "particular-semester" = "Bestemt semester", "other" = "Annet"),
+       nn : ("vaar-og-host" = "Haust og vår", "hver-hoest" = "Hver haust", "hver-vaar" =  "Hver vår", "particular-semester" = "Bestemt semester", "other" = "Annet")
      },
-     eksamenssemester {
-       en : ("vaar-og-host" = "Autumn and spring", "hver-hoest" = "Every autumn", "hver-vaar" =  "Every spring", "bestemt-semester" = "semester", "annet" = "Other"),
-       no : ("vaar-og-host" = "Høst og vår", "hver-hoest" = "Hver høst", "hver-vaar" =  "Hver vår", "bestemt-semester" = "Bestemt semester", "annet" = "Annet"),
-       nn : ("vaar-og-host" = "Haust og vår", "hver-hoest" = "Hver haust", "hver-vaar" =  "Hver vår", "bestemt-semester" = "Bestemt semester", "annet" = "Annet")
+     examsemester {
+       en : ("vaar-og-host" = "Autumn and spring", "hver-hoest" = "Every autumn", "hver-vaar" =  "Every spring", "particular-semester" = "semester", "other" = "Other"),
+       no : ("vaar-og-host" = "Høst og vår", "hver-hoest" = "Hver høst", "hver-vaar" =  "Hver vår", "particular-semester" = "Bestemt semester", "other" = "Annet"),
+       nn : ("vaar-og-host" = "Haust og vår", "hver-hoest" = "Hver haust", "hver-vaar" =  "Hver vår", "particular-semester" = "Bestemt semester", "other" = "Annet")
      },
-     emnetype {
+     course-type {
        en : ("redskapsemne" = "Toolcourse wtf", "grunnemne" = "Basic course", "videregaende-emne" = "Intermediate course", "avansert-emne" = "Advanced course", "phd-emne" = "Phd course", "ikke-satt" = "Not set"),
        no : ("redskapsemne" = "Redskapsemne", "grunnemne" = "Grunnemne", "videregaende-emne" = "Videregående emne", "avansert-emne" = "Avansert emne", "phd-emne" = "Phd emne", "ikke-satt" = "Ikke satt"),
        nn : ("redskapsemne" = "Redskapsemne", "grunnemne" = "Grunnemne", "videregaende-emne" = "Videregåande emne", "avansert-emne" = "Avansert emne", "phd-emne" = "Phd emne", "ikke-satt" = "Ikke satt")
@@ -205,11 +237,17 @@ resourcetype course-description : fellestekst-document {
        no : ("ja" = "Ja", "nei" = "Nei", "ikke-satt" = "Ikke satt"),
        nn : ("ja" = "Ja", "nei" = "Nei", "ikke-satt" = "Ikkje satt")
      }
-     opptak-og-adgang {
-       en : ("opptak-metode" = "Opptak metode"),
-       no : ("opptak-metode" = "Opptak metode"),
-       nn : ("opptak-metode" = "Opptak metode")
+     admission-and-access {
+       en : ("admission-method" = "Opptak metode"),
+       no : ("admission-method" = "Opptak metode"),
+       nn : ("admission-method" = "Opptak metode")
      }
+  }
+  
+  localization {  
+    locale-no : (en : "Bokmål", no : "Bokmål", nn : "Bokmål"),
+    locale-nn : (en : "Nynorsk", no : "Nynorsk", nn : "Nynorsk"),
+    locale-en : (en : "English", no : "Engelsk", nn : "Engelsk")
   }
   
 }

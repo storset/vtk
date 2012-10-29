@@ -22,7 +22,7 @@ $(document).ready(function () {
     for(var grouped = $(".vrtx-grouped"), i = grouped.length; i--;) { 
       $(grouped[i]).find("> *:not(.header)").wrapAll("<div />");
     }
-    $("#editor").accordion({ header: "> div > .header",
+    $("#editor .properties").accordion({ header: "> div > .header",
                              autoHeight: false,
                              collapsible: true,
                              active: false

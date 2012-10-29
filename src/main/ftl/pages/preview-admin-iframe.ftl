@@ -45,9 +45,11 @@
     <title>${(title.title)?default(resourceContext.currentResource.name)}</title>  
   </head>
   <body id="vrtx-preview">
-    <#if workingCopy?exists>
+
+    <#if workingCopy?exists || obsoleted?exists>
       <div class="tabMessage-big">
-        <@vrtx.rawMsg code="preview.workingCopyMsg" args=[versioning.currentVersionURL?html] />
+        <#if workingCopy?exists><@vrtx.rawMsg code="preview.workingCopyMsg" args=[versioning.currentVersionURL?html] />
+        <#elseif obsoleted?exists><@vrtx.rawMsg code="obsoleted.preview" /></#if>
       </div>
     </#if>
     

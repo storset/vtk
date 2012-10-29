@@ -1738,7 +1738,7 @@ function editorInteraction(bodyId, vrtxAdm, _$) {
 }
 
 function ctrlSEventHandler(_$, e) {
-  if(!_$("#TB_window").length) {
+  if(!_$("#dialog-loading:visible").length) {
     _$(".vrtx-focus-button:last input").click();
   }
   e.preventDefault();
@@ -2338,7 +2338,7 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(options) {
               }
             } else {
               var node = _$.single(this).parent().parent();
-              if(node.is("tr")) {  // Because 'this' is tr > td > div
+              if(node.is("tr")) {  // Because 'this' can be tr > td > div
                 node.remove();
               } else {
                 _$.single(this).remove();            
@@ -2380,7 +2380,7 @@ VrtxAdmin.prototype.addOriginalMarkup = function addOriginalMarkup(url, results,
     return false;
   }
   var node = expanded.parent().parent();
-  if(node.is("tr")) {  // Because 'this' is tr > td > div
+  if(node.is("tr")) {  // Because 'this' can be tr > td > div
     node.replaceWith(resultHtml).show(0);
   } else {
     expanded.replaceWith(resultHtml).show(0);              

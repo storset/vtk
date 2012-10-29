@@ -30,6 +30,11 @@
  */
 package org.vortikal.repository;
 
+/**
+ * Repository actions are in general more fine grained than
+ * ACL {@link org.vortikal.repository.Privilege privileges}.
+ * 
+ */
 public enum RepositoryAction {
     READ_PROCESSED("read-processed"),
     CREATE("create"),

@@ -44,9 +44,9 @@ var vrtxSimpleDialogs = {
     var elm = $(selector);
     if (!elm.length) {
       if (opts.title) {
-        $("body").append("<div id='" + selector.substring(1) + "' title='" + opts.title + "'><div id='" + selector.substring(1) + "-content'>" + (opts.hasHtml ? "<p>" + opts.msg + "</p>" : opts.msg) + "</div></div>");
+        $("body").append("<div id='" + selector.substring(1) + "' title='" + opts.title + "'><div id='" + selector.substring(1) + "-content'>" + (!opts.hasHtml ? "<p>" + opts.msg + "</p>" : opts.msg) + "</div></div>");
       } else {
-        $("body").append("<div id='" + selector.substring(1) + "'><div id='" + selector.substring(1) + "-content'>" + (opts.hasHtml ? "<p>" + opts.msg + "</p>" : opts.msg) + "</div></div>");
+        $("body").append("<div id='" + selector.substring(1) + "'><div id='" + selector.substring(1) + "-content'>" + (!opts.hasHtml ? "<p>" + opts.msg + "</p>" : opts.msg) + "</div></div>");
       }
       elm = $(selector); // Re-query DOM after appending html
       var l10nButtons = {};
@@ -83,7 +83,7 @@ var vrtxSimpleDialogs = {
       if(opts.title) {
         elm.prev().find("#ui-dialog-title-" + selector.substring(1)).html(opts.title); 
       }
-      elm.find(selector + "-content").html(opts.hasHtml ? "<p>" + opts.msg + "</p>" : opts.msg);
+      elm.find(selector + "-content").html(!opts.hasHtml ? "<p>" + opts.msg + "</p>" : opts.msg);
     }
     elm.dialog("open");
   }

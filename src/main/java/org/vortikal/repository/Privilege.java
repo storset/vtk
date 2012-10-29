@@ -35,7 +35,7 @@ import java.util.Map;
 
 
 /**
- * This class defines the privileges supported in an Acl.
+ * This class defines the privileges supported in an ACL.
  */
 public enum Privilege {
     ALL(RepositoryAction.ALL),

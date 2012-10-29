@@ -581,7 +581,6 @@ public final class AuthorizationManager {
     
             if (deleteDestination) authorizeDelete(destUri, principal);
         }
-        
     }
     
     /**

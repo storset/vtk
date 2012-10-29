@@ -168,33 +168,35 @@
   </div> 
   
   <form action="${form.submitURL?html}" method="post" id="editor"<#if form.getResource().getType().getName()?exists> class="vrtx-${form.getResource().getType().getName()}"</#if>>
-    <#list form.elements as elementBox>
-      <#if elementBox.formElements?size &gt; 1>
-        <#assign groupClass = "vrtx-grouped" />
-        <#if elementBox.metaData['horizontal']?exists>
-          <#assign groupClass = groupClass + "-horizontal" />
-        <#elseif elementBox.metaData['vertical']?exists>
-          <#assign groupClass = groupClass + "-vertical" />
+    <div class="properties">
+      <#list form.elements as elementBox>
+        <#if elementBox.formElements?size &gt; 1>
+          <#assign groupClass = "vrtx-grouped" />
+          <#if elementBox.metaData['horizontal']?exists>
+            <#assign groupClass = groupClass + "-horizontal" />
+          <#elseif elementBox.metaData['vertical']?exists>
+            <#assign groupClass = groupClass + "-vertical" />
+          </#if>
+          <#if elementBox.name?exists>
+            <#assign groupName = elementBox["name"] />
+            <#assign groupClass = groupClass + " ${groupName?string}" />
+            <div class="${groupClass}">
+              <#assign localizedHeader = form.resource.getLocalizedMsg(elementBox.name, locale, null) />
+              <div class="header">${localizedHeader}</div>
+          <#else>
+            <div class="${groupClass}">
+          </#if>
         </#if>
-        <#if elementBox.name?exists>
-          <#assign groupName = elementBox["name"] />
-          <#assign groupClass = groupClass + " ${groupName?string}" />
-          <div class="${groupClass}">
-            <#assign localizedHeader = form.resource.getLocalizedMsg(elementBox.name, locale, null) />
-            <div class="header">${localizedHeader}</div>
-        <#else>
-          <div class="${groupClass}">
-        </#if>
-      </#if>
 
-      <#list elementBox.formElements as elem>
-        <@vrtxJSONCommon.printPropertyEditView form elem locale />
-      </#list>
+        <#list elementBox.formElements as elem>
+          <@vrtxJSONCommon.printPropertyEditView form elem locale />
+        </#list>
   
-      <#if elementBox.formElements?size &gt; 1>
-        </div>
-      </#if>
-    </#list>
+        <#if elementBox.formElements?size &gt; 1>
+          </div>
+        </#if>
+      </#list>
+    </div>
     
     <div class="submit submitButtons">
     <#if !form.published && !form.workingCopy>

@@ -96,4 +96,15 @@ public class ManuallyApproveResource {
         }
         return false;
     }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 37 * hash + (this.title != null ? this.title.hashCode() : 0);
+        hash = 37 * hash + (this.url != null ? this.url.hashCode() : 0);
+        hash = 37 * hash + (this.source != null ? this.source.hashCode() : 0);
+        hash = 37 * hash + (this.approved ? 1 : 0);
+        hash = 37 * hash + (this.publishDate != null ? this.publishDate.hashCode() : 0);
+        return hash;
+    }
 }

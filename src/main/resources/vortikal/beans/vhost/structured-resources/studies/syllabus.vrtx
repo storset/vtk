@@ -22,7 +22,7 @@ resourcetype syllabus {
   
     ub-mapping (prefix){
         ##
-        [def content-locale resource-prop-obj-val(".", "content-locale")]
+        [def content-locale resource-prop-obj-val(".", "contentLocale")]
         [def uri "/vrtx/mapping/ub-mapping.html"]
         [def file json-resource(uri)]
         [if file != null]

@@ -33,7 +33,7 @@ resourcetype course-description : fellestekst-document {
         ##
         [def credits resource-prop(".", "credits")]
         [def creditsdecimal resource-prop-obj-val(".", "creditsdecimal")]
-        [def contentLocale resource-prop-obj-val(".", "contentLocale")]
+        [def content-locale resource-prop-obj-val(".", "contentLocale")]
         [def teachingsemester resource-prop-obj-val(".", "teachingsemester")]
         [def teachingsemester-particular-semester resource-prop-obj-val(".", "teachingsemester-particular-semester")]
         [def teachingsemester-other resource-prop-obj-val(".", "teachingsemester-other")]
@@ -71,11 +71,11 @@ resourcetype course-description : fellestekst-document {
             </tr>
             <tr valign="top">
               <td>Undervisningsspråk:</td>
-              [if contentLocale != null && contentLocale = "no"]
+              [if content-locale != null && content-locale = "no"]
                 <td>[localized 'locale-no']</td>
-              [elseif contentLocale != null && contentLocale = "en"]
+              [elseif content-locale != null && content-locale = "en"]
                 <td>[localized 'locale-en']</td>
-              [elseif contentLocale != null && contentLocale = "nn"]
+              [elseif content-locale != null && content-locale = "nn"]
                 <td>[localized 'locale-nn']</td>
               [endif]
             </tr>

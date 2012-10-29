@@ -1921,6 +1921,17 @@ ul.property {
   display: inline;
 }
 
+.vrtx-autocomplete-username .vrtx-textfield,
+#principalList .vrtx-textfield {
+  z-index: 9999;
+  position: relative;
+}
+
+.ac_results {
+  margin-left: -8px !important;
+  margin-top: -3px !important;
+}
+
 body#vrtx-edit-plaintext textarea {
   width: 100%;
 }

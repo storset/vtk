@@ -231,16 +231,19 @@
       var removeElementId = '#vrtx-json-element-' + name + '-' + counter;
       var removeElement = $(removeElementId);
       var removeElementParent = removeElement.parent();
-      $(removeElementId + " textarea").each(function () {
-        if (isCkEditor(this.name)) {
-          var ckInstance = getCkInstance(this.name);
+      var textAreas = removeElement.find("textarea");
+      var i = textAreas.length;
+      while(i--) {
+        var textAreaName = textAreas[i].name;
+        if (isCkEditor(textAreaName)) {
+          var ckInstance = getCkInstance(textAreaName);
           ckInstance.destroy();
           delete ckInstance;
         }
-      });
-      $(removeElementId).remove();
-      $(".vrtx-json-element:first").find(".vrtx-move-up-button").remove();
-      $(".vrtx-json-element:last").find(".vrtx-move-down-button").remove();
+      }
+      removeElement.remove();
+      removeElementParent.find(".vrtx-json-element:first .vrtx-move-up-button").remove();
+      removeElementParent.find(".vrtx-json-element:last .vrtx-move-down-button").remove();
     }
 
     function addStringField(elem, inputFieldName) {

@@ -17,7 +17,11 @@ resourcetype syllabus {
         content : html
     ) multiple noextract
   }
-
+  
+  edit-rules {
+    items (class[vrtx-json-accordion])
+  }
+  
   view-components {
   
     ub-mapping (prefix){

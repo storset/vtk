@@ -71,9 +71,39 @@
             .find(".vrtx-add-button input").data({'number': i});
         }
       });
+      
+      // Because accordion needs one content wrapper
+      for(var grouped = $(".vrtx-json-accordion .vrtx-json-element"), i = grouped.length; i--;) { 
+        var group = $(grouped[i]);
+        group.find("> *").wrapAll("<div />");
+        group.prepend('<div class="header">' + (vrtxAdmin.lang !== "en" ? "Inget innhold" : "Inget innhold") + '</div>');
+      }
+      $(".vrtx-json-accordion .fieldset").accordion({ 
+                                            header: "> div > .header",
+                                            autoHeight: false,
+                                            collapsible: true,
+                                            active: false
+                                          });
 
      $("#app-content").on("click", ".vrtx-json .vrtx-add-button input", function(e) {
         addNewJsonElement(this);
+        
+        var accordionWrapper = $(this).closest(".vrtx-json-accordion");
+        if(accordionWrapper.length) {
+          var accordionContent = accordionWrapper.find(".fieldset");
+          var active = accordionContent.accordion('option', 'active');
+          
+          var group = accordionContent.find(".vrtx-json-element:last");
+          group.find("> *").wrapAll("<div />");
+          group.prepend('<div class="header">' + (vrtxAdmin.lang !== "en" ? "Inget innhold" : "No content") + '</div>');
+          
+          accordionContent.accordion('destroy').accordion({ 
+                                                  header: "> div > .header",
+                                                  autoHeight: false,
+                                                  collapsible: true,
+                                                  active: active
+                                                });
+        }
         e.stopPropagation();
         e.preventDefault();
       });

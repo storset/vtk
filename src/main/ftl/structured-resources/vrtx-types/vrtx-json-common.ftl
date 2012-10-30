@@ -377,7 +377,7 @@
       <#break>
 
     <#case "simple_html">
-      <#assign cssclass =  tmpName + " vrtx-simple-html" />
+      <#assign cssclass = tmpName + " vrtx-simple-html" />
 
       <@vrtxHtml.printPropertyEditView
         title=jsonAttr
@@ -390,11 +390,11 @@
       <#break>
 
     <#case "html">
-      <#if elem.description.edithints?exists>
+      <#-- if elem.description.edithints?exists>
         <#list elem.description.edithints?keys as hint>
           ${hint} <br />
         </#list>
-      </#if>
+      </#if -->
 
       <@vrtxHtml.printPropertyEditView
         title=jsonAttr

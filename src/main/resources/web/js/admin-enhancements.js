@@ -74,6 +74,9 @@ function VrtxAdmin() {
   this.isWin = ((this.ua.indexOf("win") != -1) || (this.ua.indexOf("16bit") != -1));
   this.supportsFileList = window.FileList;
   
+  // Language
+  this.lang = extractLangFromCookie();
+  
   // Logging capabilities
   this.hasConsole = typeof console !== "undefined";
   this.hasConsoleLog = this.hasConsole && console.log;
@@ -119,6 +122,14 @@ if(vrtxAdmin.isMobileWebkitDevice) {
 vrtxAdmin._$.ajaxSetup({
   timeout: 300000 // 5min
 });
+
+function extractLangFromCookie() {
+  var name = "vrtx\.manage\.language=";
+  var len = name.length;
+  var cookie = document.cookie;
+  var lang = cookie.substring((cookie.indexOf(name) + len), len + 2); 
+  return lang;
+}
 
 // Global vars that probably should be put inside vrtxAdmin
 var EDITOR_SAVE_BUTTON_NAME = "",
@@ -1622,7 +1633,7 @@ function editorInteraction(bodyId, vrtxAdm, _$) {
   if(bodyId == "vrtx-editor") {
     autocompleteUsernames(".vrtx-autocomplete-username");
     autocompleteTags(".vrtx-autocomplete-tag");
-
+    
     // Aggregation and manually approved
     if(!_$("#resource\\.display-aggregation\\.true").is(":checked")) {
       _$("#vrtx-resource\\.aggregation").slideUp(0, "linear");

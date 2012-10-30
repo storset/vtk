@@ -62,7 +62,7 @@ public final class TagsHelper {
     private ResourceTypeTree resourceTypeTree;
     private boolean servesWebRoot;
 
-    public Resource getScope(String token, HttpServletRequest request) throws Exception {
+    public Resource getScopedResource(String token, HttpServletRequest request) throws Exception {
         Path requestedScope = this.getScopePath(request);
         Resource scopedResource = null;
         try {

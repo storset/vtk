@@ -60,7 +60,7 @@ public class TagsAsFeedController extends AtomFeedController {
         String token = requestContext.getSecurityToken();
         HttpServletRequest request = requestContext.getServletRequest();
 
-        Resource scope = this.tagsHelper.getScope(token, request);
+        Resource scope = this.tagsHelper.getScopedResource(token, request);
 
         String tag = request.getParameter(TagsHelper.TAG_PARAMETER);
         if (StringUtils.isBlank(tag)) {

@@ -30,7 +30,7 @@
  */
 package org.vortikal.resourcemanagement.view.tl;
 
-import org.vortikal.repository.search.QueryParserFactory;
+import org.vortikal.repository.search.Parser;
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
 import org.vortikal.repository.search.Searcher;
@@ -42,14 +42,17 @@ import org.vortikal.web.RequestContext;
 
 public class SearchResultValueProvider extends Function {
 
-    private QueryParserFactory queryParserFactory;
+    private Parser searchParser;
+    //private QueryParserFactory queryParserFactory;
     private Searcher searcher;
     
     public SearchResultValueProvider(Symbol symbol, 
-            QueryParserFactory queryParserFactory,
+            //QueryParserFactory queryParserFactory,
+            Parser searchParser,
             Searcher searcher) {
         super(symbol, 1);
-        this.queryParserFactory = queryParserFactory;
+        //this.queryParserFactory = queryParserFactory;
+        this.searchParser = searchParser;
         this.searcher = searcher;
     }
 
@@ -59,7 +62,8 @@ public class SearchResultValueProvider extends Function {
         String queryString = arg.toString();
         RequestContext requestContext = RequestContext.getRequestContext();
         String token = requestContext.getSecurityToken();
-        Query query = queryParserFactory.getParser().parse(queryString);
+        //Query query = queryParserFactory.getParser().parse(queryString);
+        Query query = this.searchParser.parse(queryString);
         Search search = new Search();
         search.setLimit(100);
         search.setQuery(query);

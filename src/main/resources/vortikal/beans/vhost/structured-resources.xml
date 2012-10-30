@@ -307,7 +307,7 @@
         <constructor-arg value="search" />
       </bean>
     </constructor-arg>
-    <constructor-arg ref="queryParserFactory" />
+    <constructor-arg ref="searchParser" />
     <constructor-arg ref="systemIndexSearcher" />
   </bean>
 

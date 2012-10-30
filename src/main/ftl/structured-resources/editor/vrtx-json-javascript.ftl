@@ -114,10 +114,7 @@
 
     function addNewJsonElement(button, hasAccordion) {
       var j = LIST_OF_JSON_ELEMENTS[parseInt($(button).data('number'))];
-      var counter = parseInt($(button).parent().prev(".vrtx-json-element").find("input.id").val()) + 1;
-      if (isNaN(counter)) {
-        counter = 0;
-      }
+      var counter = $(button).closest(".fieldset").find(".vrtx-json-element").length;
 
       var htmlTemplate = "";
       var arrayOfIds = [];
@@ -198,7 +195,7 @@
       }
       
       newElement.find(".vrtx-remove-button").click(function () {
-        removeNode(j.name, counter);
+        removeNode(j.name, counter, hasAccordion);
       });
       
       if(!isImmovable) {
@@ -236,7 +233,9 @@
       var removeElementParent = removeElement.parent();
       $(removeElementId + " textarea").each(function () {
         if (isCkEditor(this.name)) {
-          getCkInstance(this.name).destroy();
+          var ckInstance = getCkInstance(this.name);
+          ckInstance.destroy();
+          delete ckInstance;
         }
       });
       $(removeElementId).remove();

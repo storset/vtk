@@ -243,7 +243,7 @@
 
             <script type="text/javascript"><!--
        	      $("#vrtx-json-element-${inputFieldName}-${counter}").find(".vrtx-remove-button").click(function(){
-	            removeNode("${inputFieldName}", ${counter} ,  ${arrayOfIds} );
+	            removeNode("${inputFieldName}",${counter}, <#if cssclass = "vrtx-json-accordion">true<#else>false</#if>);
               });
             // -->
        	    </script>
@@ -285,12 +285,12 @@
 
        	     <script type="text/javascript"><!--
        	       $("#vrtx-json-element-${inputFieldName}-${counter}").find(".vrtx-remove-button").click(function(){
-                 removeNode("${inputFieldName}", ${counter},  ${arrayOfIds});
+                  removeNode("${inputFieldName}",${counter}, <#if cssclass = "vrtx-json-accordion">true<#else>false</#if>);
                });
     	     // -->
        	     </script>
        	     
-       	     <#if cssclass = "vrtx-multiple-immovable">
+       	     <#if cssclass != "vrtx-multiple-immovable">
                <#if (counter > 0) >
                  <div class="vrtx-button vrtx-move-up-button">
                    <input type="button" value="&uarr; ${vrtx.getMsg("editor.move-up")}"  />

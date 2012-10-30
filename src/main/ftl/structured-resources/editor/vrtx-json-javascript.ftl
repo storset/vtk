@@ -76,7 +76,7 @@
       for(var grouped = $(".vrtx-json-accordion .vrtx-json-element"), i = grouped.length; i--;) { 
         var group = $(grouped[i]);
         group.find("> *").wrapAll("<div />");
-        group.prepend('<div class="header">' + (vrtxAdmin.lang !== "en" ? "Inget innhold" : "Inget innhold") + '</div>');
+        group.prepend('<div class="header">' + (vrtxAdmin.lang !== "en" ? "Inget innhold" : "No content") + '</div>');
       }
       $(".vrtx-json-accordion .fieldset").accordion({ 
                                             header: "> div > .header",

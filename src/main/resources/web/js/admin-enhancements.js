@@ -123,14 +123,6 @@ vrtxAdmin._$.ajaxSetup({
   timeout: 300000 // 5min
 });
 
-function extractLangFromCookie() {
-  var name = "vrtx\.manage\.language=";
-  var len = name.length;
-  var cookie = document.cookie;
-  var lang = cookie.substring((cookie.indexOf(name) + len), len + 2); 
-  return lang;
-}
-
 // Global vars that probably should be put inside vrtxAdmin
 var EDITOR_SAVE_BUTTON_NAME = "",
     GET_FORM_ASYNCS_IN_PROGRESS = 0,
@@ -2955,6 +2947,14 @@ VrtxAdmin.prototype.zebraTables = function zebraTables(selector) {
    table.find("tbody tr:first-child").addClass("first");
   }
 };
+
+function extractLangFromCookie() {
+  var name = "vrtx\.manage\.language=";
+  var len = name.length;
+  var cookie = document.cookie;
+  var lang = cookie.substring((cookie.indexOf(name) + len), len + 2); 
+  return lang;
+}
 
 
 /*-------------------------------------------------------------------*\

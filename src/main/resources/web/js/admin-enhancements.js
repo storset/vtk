@@ -75,7 +75,7 @@ function VrtxAdmin() {
   this.supportsFileList = window.FileList;
   
   // Language
-  this.lang = extractLangFromCookie();
+  this.lang = readCookie("vrtx.manage.language", "no");
   
   // Logging capabilities
   this.hasConsole = typeof console !== "undefined";
@@ -2948,14 +2948,11 @@ VrtxAdmin.prototype.zebraTables = function zebraTables(selector) {
   }
 };
 
-function extractLangFromCookie() {
-  var name = "vrtx\.manage\.language=";
-  var len = name.length;
-  var cookie = document.cookie;
-  var lang = cookie.substring((cookie.indexOf(name) + len), len + 2); 
-  return lang;
+// Credits: http://www.javascripter.net/faq/readingacookie.htm
+function readCookie(cookieName, defaultVal) {
+  var match = (" "+document.cookie).match(new RegExp('[; ]'+cookieName+'=([^\\s;]*)'));
+  return match ? unescape(match[1]) : defaultVal;
 }
-
 
 /*-------------------------------------------------------------------*\
     17. Override JavaScript / jQuery

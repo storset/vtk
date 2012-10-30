@@ -86,10 +86,12 @@
                                           });
 
      $("#app-content").on("click", ".vrtx-json .vrtx-add-button input", function(e) {
-        addNewJsonElement(this);
-        
         var accordionWrapper = $(this).closest(".vrtx-json-accordion");
-        if(accordionWrapper.length) {
+        var hasAccordion = accordionWrapper.length;
+        
+        addNewJsonElement(this, hasAccordion);
+        
+        if(hasAccordion ) {
           var accordionContent = accordionWrapper.find(".fieldset");
           var active = accordionContent.accordion('option', 'active');
           
@@ -110,7 +112,7 @@
       
     });
 
-    function addNewJsonElement(button) {
+    function addNewJsonElement(button, hasAccordion) {
       var j = LIST_OF_JSON_ELEMENTS[parseInt($(button).data('number'))];
       var counter = parseInt($(button).parent().prev(".vrtx-json-element").find("input.id").val()) + 1;
       if (isNaN(counter)) {
@@ -182,7 +184,11 @@
       newElement.append(id);
     
       if (!isImmovable && counter > 0 && newElement.prev(".vrtx-json-element").length) {
-        newElement.prev(".vrtx-json-element").append(moveDownButton);
+        if(hasAccordion) {
+          newElement.prev(".vrtx-json-element").find("> div.ui-accordion-content").append(moveDownButton);
+        } else {
+          newElement.prev(".vrtx-json-element").append(moveDownButton);
+        }
       }
       
       newElement.append(removeButton);

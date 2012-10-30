@@ -230,39 +230,20 @@
       }
     }
     
-    function removeNode(name, counter) {
+    function removeNode(name, counter, hasAccordion) {
       var removeElementId = '#vrtx-json-element-' + name + '-' + counter;
       var removeElement = $(removeElementId);
-      var siblingElement;
-      if (removeElement.prev(".vrtx-json-element").length) {
-        siblingElement = removeElement.prev(".vrtx-json-element");
-      } else if (removeElement.next(".vrtx-json-element").length) {
-        siblingElement = removeElement.next(".vrtx-json-element");
-      }
-      
+      var removeElementParent = removeElement.parent();
       $(removeElementId + " textarea").each(function () {
         if (isCkEditor(this.name)) {
           getCkInstance(this.name).destroy();
         }
       });
       $(removeElementId).remove();
-      removeUnwantedButtons(siblingElement);
+      $(".vrtx-json-element:first").find(".vrtx-move-up-button").remove();
+      $(".vrtx-json-element:last").find(".vrtx-move-down-button").remove();
     }
-    
-    function removeUnwantedButtons(siblingElement) {
-      if (siblingElement) {
-        var e = siblingElement.parents(".vrtx-json").find(".vrtx-json-element");
-        while (e.prev(".vrtx-json-element").length) {
-          e = e.prev(".vrtx-json-element");
-        }
-        e.find(".vrtx-move-up-button").remove();
-        while (e.next(".vrtx-json-element").length) {
-          e = e.next(".vrtx-json-element");
-        }
-        e.find(".vrtx-move-down-button").remove();
-      }
-    }
-    
+
     function addStringField(elem, inputFieldName) {
       var json = { classes: "vrtx-string" + " " + elem.name,
                    elemTitle: elem.title,

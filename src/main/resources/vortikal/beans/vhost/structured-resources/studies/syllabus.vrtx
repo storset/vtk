@@ -13,7 +13,7 @@ resourcetype syllabus {
         link : string,
         bibsys : string,
         fulltext : string,
-        articles : simple_html,
+        articles : string,
         content : html
     ) multiple noextract
   }
@@ -32,7 +32,8 @@ resourcetype syllabus {
         [if file != null]
           [def mappings file.properties.mappings]
           [list mappings mapping]
-            [if prefix = mapping.prefix]
+            [def mapping-prefix mapping.prefix.toLowerCase()]
+            [if prefix = mapping-prefix]
               [if content-locale != null && content-locale != ""]
                 [if content-locale = "en" && mapping.mappinglink-en != null && mapping.mappinglink-en != ""]
                   [val mapping.mappinglink-en]
@@ -65,39 +66,13 @@ resourcetype syllabus {
           [def fulltext item.fulltext]
           [def articles item.articles]
           [def content item.content]
-          [def number _index + 1]
-
-          <div class="vrtx-item" id="vrtx-item-[val number]">
-            [if (author != null && author != "") || (title != null && title != "")
-              || (year != null && year != "") || (publisher != null && publisher != "") || (isbn != null && isbn != "")]
-              <div class="vrtx-box-content">
-                [if author != null && author != ""]
-                  <div class="vrtx-author">[val author]</div>
-                [endif]
-                [if title != null && title != ""]
-                  <div class="vrtx-title">[val title]</div>
-                [endif]
-                [if year != null && year != ""]
-                  <div class="vrtx-year">[val year]</div>
-                [endif]
-                [if publisher != null && publisher != ""]
-                  <div class="vrtx-publisher">[val publisher]</div>
-                [endif]
-                [if isbn != null && isbn != ""]
-                  <div class="vrtx-isbn">[val isbn]</div>
-                [endif]
-              </div>
-              [if comment != null && comment != ""]
-                <div class="vrtx-comment">
-                   <span>[val comment]</span>
-                </div>
-              [endif]
-              [if fulltext != null && fulltext != ""]
-                <div class="vrtx-fulltext">
-                   <a href="[val fulltext]">Fulltekst</a>
-                </div>
-              [endif]
-            </div>
+          [if (author != null && author != "") && (title != null && title != "")]
+            <p>
+              [if articles != null && articles != ""][val articles] i [endif][val author]: <i>[if bibsys != null && bibsys != ""]<a href="[val bibsys]">[val title]</a>[else][val title][endif]</i>[if year != null && year != ""], [val year][endif][if publisher != null && publisher != ""], [val publisher][endif][if isbn != null && isbn != ""], ISBN: [val isbn][endif][if comment != null && comment != ""], [val comment][endif][if fulltext != null && fulltext != ""], <a href="[val fulltext]">[localized 'fulltext']</a>[endif][if linktext != null && linktext != "" && link != null && link != ""], <a href="[val link]">[val linktext]</a>[endif]
+            </p>
+          [endif]
+          [if content != null && content != ""]
+            [val content # unescaped]
           [endif]
         [endlist]
       [endif]
@@ -108,14 +83,21 @@ resourcetype syllabus {
 
   view {
     ##
+    [def course-code resource-prop(".", "courseContext.fs-course-code")]
+    [def semester resource-prop(".", "semesterContext.semester")]
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml">
       <head>
         <title>[call "resource:property" {"id":"title"}]</title>
       </head>
       <body id="vrtx-syllabus">
-         [call "comp:items"]
-         [call "comp:ub-mapping" {"prefix":"inf"}]
+        <h1 id="hdr">Pensum/læringskrav ([val course-code] - [val semester])</h1>
+        [call "comp:items"]
+        [if course-code != null && course-code != ""]
+          [def prefix course-code.split('[0-9]').0]
+          [def prefix prefix.toLowerCase()]
+          [call "comp:ub-mapping" {"prefix":prefix}]
+        [endif]
       </body>
     </html>
     ##

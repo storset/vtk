@@ -19,27 +19,13 @@ resourcetype ub-mapping {
       [if mappings != null]
         [list mappings mapping]
           [def prefix mapping.prefix]
-          [def mappinglink-no mapping.mappinglink-no]
-          [def mappinglink-en mapping.mappinglink-en]
-          [def number _index + 1]
-
-          <div class="vrtx-ub-mapping" id="vrtx-ub-mapping-[val number]">
-              [if prefix != null && prefix != ""]
-                <div class="vrtx-ub-mapping-prefix">
-                   <span>[val prefix]</span>
-                </div>
-              [endif]
-              [if mappinglink-no != null && mappinglink-no != ""]
-                <div class="vrtx-ub-mapping-mappinglink-no">
-                   <a href="[val mappinglink-no]">[val mappinglink-no]</a>
-                </div>
-              [endif]
-              [if mappinglink-en != null && mappinglink-en != ""]
-                <div class="vrtx-ub-mapping-mappinglink-en">
-                   <a href="[val mappinglink-en]">[val mappinglink-en]</a>
-                </div>
-              [endif]
-            </div>
+          [def link-no mapping.mappinglink-no]
+          [def link-en mapping.mappinglink-en]
+            [if prefix != null && prefix != ""]
+              <p>
+                [localized 'prefix']: [val prefix][if link-no != null && link-no != ""], <a href="[val link-no]">[localized 'mappinglink-no']</a>[endif][if link-en != null && link-en != ""], <a href="[val link-en]">[localized 'mappinglink-en']</a>[endif]
+              </p>
+            [endif]
           [endif]
         [endlist]
       [endif]

@@ -40,10 +40,13 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.mvc.SimpleFormController;
+import org.vortikal.repository.InheritablePropertiesStoreContext;
+import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.TypeInfo;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
@@ -61,6 +64,7 @@ public class TemplateBasedCreateCollectionController extends SimpleFormControlle
     private PropertyTypeDefinition hiddenPropDef;
     private boolean downcaseCollectionNames = false;
     private Map<String, String> replaceNameChars;
+    private PropertyTypeDefinition descriptionPropDef;
 
     public void setDowncaseCollectionNames(boolean downcaseCollectionNames) {
         this.downcaseCollectionNames = downcaseCollectionNames;
@@ -73,6 +77,11 @@ public class TemplateBasedCreateCollectionController extends SimpleFormControlle
     @Required
     public void setUserTitlePropDef(PropertyTypeDefinition userTitlePropDef) {
         this.userTitlePropDef = userTitlePropDef;
+    }
+
+    @Required
+    public void setDescriptionPropDef(PropertyTypeDefinition descriptionPropDef) {
+        this.descriptionPropDef = descriptionPropDef;
     }
 
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
@@ -151,23 +160,45 @@ public class TemplateBasedCreateCollectionController extends SimpleFormControlle
         repository.copy(token, sourceURI, destinationURI, false, true);
         Resource dest = repository.retrieve(token, destinationURI, false);
 
-        dest.removeProperty(this.userTitlePropDef);
+        dest.removeProperty(userTitlePropDef);
+
+        InheritablePropertiesStoreContext sc = null;
+        Property titleProp = null, dp;
+        if ((dp = dest.getProperty(descriptionPropDef)) != null) {
+            String desc = dp.getStringValue();
+            if (desc.contains("|")) {
+                String[] split = desc.split("\\|");
+                if (split.length == 2) {
+                    TypeInfo ti = repository.getTypeInfo(dest);
+                    Namespace ns = ti.getNamespaceByPrefix(split[0]);
+                    titleProp = ti.createProperty(ns, split[1]);
+                    if (titleProp.getDefinition().isInheritable()) {
+                        sc = new InheritablePropertiesStoreContext();
+                        sc.addAffectedProperty(titleProp.getDefinition());
+                    }
+                }
+            }
+        }
+
+        dest.removeProperty(descriptionPropDef);
+
+        if (titleProp == null)
+            titleProp = userTitlePropDef.createProperty();
 
         if (title == null || "".equals(title))
             title = name.substring(0, 1).toUpperCase() + name.substring(1);
 
-        Property titleProp = this.userTitlePropDef.createProperty();
         titleProp.setStringValue(title);
         dest.addProperty(titleProp);
 
-        // hiddenPropDef can only be true or unset.
+        // hiddenPropDef can only be true or not set.
         if (createFolderCommand.getHidden()) {
-            Property hiddenProp = this.hiddenPropDef.createProperty();
+            Property hiddenProp = hiddenPropDef.createProperty();
             hiddenProp.setBooleanValue(true);
             dest.addProperty(hiddenProp);
         }
 
-        repository.store(token, dest);
+        repository.store(token, dest, sc);
         createFolderCommand.setDone(true);
     }
 
@@ -270,4 +301,5 @@ public class TemplateBasedCreateCollectionController extends SimpleFormControlle
                     "Cannot copy a collection into itself");
         }
     }
+
 }

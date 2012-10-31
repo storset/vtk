@@ -1,5 +1,10 @@
 <#ftl strip_whitespace=true>
-<#-- JSON elements interaction in new documenttypes (add, remove and move) -->
+<#-- JSON elements interaction in new documenttypes (add, remove and move) 
+
+     TODO: * Move all JS to JS-file to get syntax highlighting (I'm getting snow-blind)
+           * Too much traversal and static click handlers makes it slower
+
+-->
 
 <#macro script>
   <#assign locale = springMacroRequestContext.getLocale() />
@@ -114,6 +119,7 @@
           
           // TODO: avoid this being hardcoded here
           wrapJSONItemsLeftRight(group, ".author, .title, .year, .publisher, .isbn, .comment", ".linktext, .link, .bibsys, .fulltext, .articles");
+          items.find(".author input, .title input").addClass("header-populators");
           // ^ TODO: avoid this being hardcoded here
           
           accordionRefresh(accordionContent);
@@ -124,6 +130,18 @@
       
     });
     
+    function accordionRefresh(elem) {
+      elem.accordion('destroy').accordion({ 
+                                  header: "> div > .header",
+                                  autoHeight: false,
+                                  collapsible: true,
+                                  active: false,
+                                  change: function(e, ui) {
+                                    updateHeader(ui.oldHeader);
+                                  }  
+                                });
+    }
+    
     function wrapJSONItemsLeftRight(items, leftItems, rightItems) {
       if(items.length) {
         items.find(leftItems).wrapAll("<div class='left' />");
@@ -133,7 +151,7 @@
     
     function updateHeader(elem) {
       var str = "";
-      var jsonElm = elem.closest(".vrtx-json-accordion .vrtx-json-element");
+      var jsonElm = elem.closest(".vrtx-json-element");
       if(jsonElm.length) {
         var fields = jsonElm.find(".header-populators");
         for(var i = 0, len = fields.length, useDelimiter = (len > 1); i < len; i++) {
@@ -153,18 +171,6 @@
           header.html('<span class="ui-icon ui-icon-triangle-1-s"></span>' + str);
         }
       }
-    }
-    
-    function accordionRefresh(elem) {
-      elem.accordion('destroy').accordion({ 
-                                  header: "> div > .header",
-                                  autoHeight: false,
-                                  collapsible: true,
-                                  active: false,
-                                  change: function(e, ui) {
-                                    updateHeader(ui.oldHeader);
-                                  }  
-                                });
     }
 
     function addNewJsonElement(button, hasAccordion) {

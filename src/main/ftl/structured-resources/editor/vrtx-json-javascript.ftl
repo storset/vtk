@@ -33,8 +33,8 @@
             LIST_OF_JSON_ELEMENTS[${i}] = {};
             LIST_OF_JSON_ELEMENTS[${i}].name = "${elem.name}";
             LIST_OF_JSON_ELEMENTS[${i}].type = "${elem.description.type}";
-
             LIST_OF_JSON_ELEMENTS[${i}].a = [];
+            
             <#list elem.description.attributes as jsonAttr>
               LIST_OF_JSON_ELEMENTS[${i}].a[${j}] = {};
               LIST_OF_JSON_ELEMENTS[${i}].a[${j}].name = "${jsonAttr.name}";
@@ -73,7 +73,7 @@
           var json = { clazz: "add", buttonText: '${vrtx.getMsg("editor.add")}' }
           $("#" + LIST_OF_JSON_ELEMENTS[i].name)
             .append($.mustache(TEMPLATES["add-remove-move"], json))
-            .find(".vrtx-add-button input").data({'number': i});
+            .find(".vrtx-add-button").data({'number': i});
         }
       });
 
@@ -103,12 +103,116 @@
                                           });
                                           
        
-
-     $("#app-content").on("click", ".vrtx-json .vrtx-add-button input", function(e) {
+      var appContent = $("#app-content");
+      
+      appContent.on("click", ".vrtx-json .vrtx-add-button", function(e) {
         var accordionWrapper = $(this).closest(".vrtx-json-accordion");
         var hasAccordion = accordionWrapper.length;
+           
+        var btn = $(this);
+        var jsonParent = btn.closest(".vrtx-json");
+        var counter = jsonParent.find(".vrtx-json-element").length;
+        var j = LIST_OF_JSON_ELEMENTS[parseInt(btn.data('number'))];
+        var htmlTemplate = "";
+        var arrayOfIds = [];
+
+        // Add correct HTML for vrtx-type
+        var types = j.a;
+
+        for (var i in types) {
+          var inputFieldName = j.name + "." + types[i].name + "." + counter;
+          arrayOfIds[i] = new String(j.name + "." + types[i].name + ".").replace(/\./g, "\\.");
+          switch (types[i].type) {
+            case "string":
+              if (types[i].dropdown && types[i].valuemap) {
+                htmlTemplate += addDropdown(types[i], inputFieldName);
+              } else {
+                htmlTemplate += addStringField(types[i], inputFieldName);
+              }
+              break;
+            case "html":
+              htmlTemplate += addHtmlField(types[i], inputFieldName);
+              break;
+            case "simple_html":
+              htmlTemplate += addHtmlField(types[i], inputFieldName);
+              break;
+            case "boolean":
+              htmlTemplate += addBooleanField(types[i], inputFieldName);
+              break;
+            case "image_ref":
+              htmlTemplate += addImageRef(types[i], inputFieldName);
+              break;
+            case "resource_ref":
+              htmlTemplate += addResourceRef(types[i], inputFieldName);
+              break;
+            case "datetime":
+              htmlTemplate += addDateField(j.a[i], inputFieldName);
+              break;
+            case "media":
+              htmlTemplate += addMediaRef(types[i], inputFieldName);
+              break;
+            default:
+              htmlTemplate += "";
+              break;
+          }
+        }
+      
+        // Move up, move down, remove
+        var isImmovable = jsonParent && jsonParent.hasClass("vrtx-multiple-immovable");
+
+        if(!isImmovable) {
+          var moveDownButton = $.mustache(TEMPLATES["add-remove-move"], { clazz: 'move-down', buttonText: '&darr; ${vrtx.getMsg("editor.move-down")}' });
+          var moveUpButton = $.mustache(TEMPLATES["add-remove-move"],   { clazz: 'move-up',   buttonText: '&uarr; ${vrtx.getMsg("editor.move-up")}'   });
+        }
+        var removeButton = $.mustache(TEMPLATES["add-remove-move"],   { clazz: 'remove',    buttonText: '${vrtx.getMsg("editor.remove")}'           });
+      
+        var id = "<input type=\"hidden\" class=\"id\" value=\"" + counter + "\" \/>";
+        var newElementId = "vrtx-json-element-" + j.name + "-" + counter;
         
-        addNewJsonElement(this, hasAccordion);
+        var newElementHtml = htmlTemplate;
+        newElementHtml += id;
+        newElementHtml += removeButton;
+    
+        if (!isImmovable && counter > 0) {
+          newElementHtml += moveUpButton;
+        }
+      
+        $("#" + j.name + " .vrtx-add-button").before("<div class='vrtx-json-element' id='" + newElementId + "'>" + newElementHtml + "<\/div>");
+      
+        var newElement = $("#" + newElementId);
+        var prev = newElement.prev(".vrtx-json-element");
+      
+        if(!isImmovable && counter > 0) {
+          newElement.find(".vrtx-move-up-button").click(function () {
+            swapContent(counter, arrayOfIds, -1, j.name);
+          });
+
+          if (prev.length) {
+            if(hasAccordion) {
+              prev.find("> div.ui-accordion-content").append(moveDownButton);
+            } else {
+              prev.append(moveDownButton);
+            }
+            prev.find(".vrtx-move-down-button").click(function () {
+              swapContent(counter-1, arrayOfIds, 1, j.name);
+            });
+          }
+        }
+
+        // CK and date inputfields
+
+        for (i in types) {
+          var inputFieldName = j.name + "." + types[i].name + "." + counter;
+          if (types[i].type == "simple_html") {
+            newEditor(inputFieldName, false, false, '${resourceContext.parentURI?js_string}', '${fckeditorBase.url?html}', 
+                                                    '${fckeditorBase.documentURL?html}', '${fckBrowse.url.pathRepresentation}', '<@vrtx.requestLanguage />', "");
+          } else if (types[i].type == "html") {
+            newEditor(inputFieldName, true, false, '${resourceContext.parentURI?js_string}', '${fckeditorBase.url?html}', 
+                                                   '${fckeditorBase.documentURL?html}', '${fckBrowse.url.pathRepresentation}', '<@vrtx.requestLanguage />', "");
+          } else if (types[i].type == "datetime") {
+            displayDateAsMultipleInputFields(inputFieldName);
+          }
+        }
         
         if(hasAccordion ) {
           var accordionContent = accordionWrapper.find(".fieldset");
@@ -127,7 +231,32 @@
         e.stopPropagation();
         e.preventDefault();
       });
-      
+
+      appContent.on("click", ".vrtx-json .vrtx-remove-button", function(e) {
+        var removeElement = $(this).closest(".vrtx-json-element");
+        var accordionWrapper = removeElement.closest(".vrtx-json-accordion");
+        var hasAccordion = accordionWrapper.length;
+        
+        var removeElementParent = removeElement.parent();
+        var textAreas = removeElement.find("textarea");
+        var i = textAreas.length;
+        while(i--) {
+          var textAreaName = textAreas[i].name;
+          if (isCkEditor(textAreaName)) {
+            var ckInstance = getCkInstance(textAreaName);
+            ckInstance.destroy();
+            delete ckInstance;
+          }
+        }
+        removeElementParent.find(".vrtx-json-element:first .vrtx-move-up-button").remove();
+        removeElementParent.find(".vrtx-json-element:last .vrtx-move-down-button").remove();
+        removeElement.remove();
+        if(hasAccordion) {
+          accordionRefresh(removeElementParent.closest(".fieldset"));
+        }
+        e.stopPropagation();
+        e.preventDefault();
+      });
     });
     
     function accordionRefresh(elem) {
@@ -173,143 +302,6 @@
       }
     }
 
-    function addNewJsonElement(button, hasAccordion) {
-      var j = LIST_OF_JSON_ELEMENTS[parseInt($(button).data('number'))];
-      var counter = $(button).closest(".fieldset").find(".vrtx-json-element").length;
-
-      var htmlTemplate = "";
-      var arrayOfIds = [];
-
-      // Add correct HTML for vrtx-type
-
-      for (i in j.a) {
-        var inputFieldName = j.name + "." + j.a[i].name + "." + counter;
-        arrayOfIds[i] = new String(j.name + "." + j.a[i].name + ".").replace(/\./g, "\\.");
-        switch (j.a[i].type) {
-          case "string":
-            if (j.a[i].dropdown && j.a[i].valuemap) {
-              htmlTemplate += addDropdown(j.a[i], inputFieldName);
-              break;
-            } else {
-              htmlTemplate += addStringField(j.a[i], inputFieldName);
-              break
-            }
-          case "html":
-            htmlTemplate += addHtmlField(j.a[i], inputFieldName);
-            break
-          case "simple_html":
-            htmlTemplate += addHtmlField(j.a[i], inputFieldName);
-            break
-          case "boolean":
-            htmlTemplate += addBooleanField(j.a[i], inputFieldName);
-            break
-          case "image_ref":
-            htmlTemplate += addImageRef(j.a[i], inputFieldName);
-            break
-          case "resource_ref":
-            htmlTemplate += addResourceRef(j.a[i], inputFieldName);
-            break
-          case "datetime":
-            htmlTemplate += addDateField(j.a[i], inputFieldName);
-            break
-          case "media":
-            htmlTemplate += addMediaRef(j.a[i], inputFieldName);
-            break
-          default:
-            htmlTemplate += "";
-            break
-        }
-      }
-      
-      // Move up, move down, remove
-      
-      var jsonParent = $(button).closest(".vrtx-json");
-      var isImmovable = jsonParent && jsonParent.hasClass("vrtx-multiple-immovable");
-
-      if(!isImmovable) {
-        var moveDownButton = $.mustache(TEMPLATES["add-remove-move"], { clazz: 'move-down', buttonText: '&darr; ${vrtx.getMsg("editor.move-down")}' });
-        var moveUpButton = $.mustache(TEMPLATES["add-remove-move"],   { clazz: 'move-up',   buttonText: '&uarr; ${vrtx.getMsg("editor.move-up")}'   });
-      }
-      var removeButton = $.mustache(TEMPLATES["add-remove-move"],   { clazz: 'remove',    buttonText: '${vrtx.getMsg("editor.remove")}'           });
-      
-      var id = "<input type=\"hidden\" class=\"id\" value=\"" + counter + "\" \/>";
-      var newElementId = "vrtx-json-element-" + j.name + "-" + counter;
-    
-      $("#" + j.name + " .vrtx-add-button").before("<div class=\"vrtx-json-element\" id=\"" + newElementId + "\"><\/div>");
-    
-      var newElement = $("#" + newElementId);
-      newElement.append(htmlTemplate);
-      newElement.append(id);
-    
-      if (!isImmovable && counter > 0 && newElement.prev(".vrtx-json-element").length) {
-        if(hasAccordion) {
-          newElement.prev(".vrtx-json-element").find("> div.ui-accordion-content").append(moveDownButton);
-        } else {
-          newElement.prev(".vrtx-json-element").append(moveDownButton);
-        }
-      }
-      
-      newElement.append(removeButton);
-    
-      if (!isImmovable && counter > 0) {
-        newElement.append(moveUpButton);
-      }
-      
-      newElement.find(".vrtx-remove-button").click(function () {
-        removeNode(j.name, counter, hasAccordion);
-      });
-      
-      if(!isImmovable) {
-        newElement.find(".vrtx-move-up-button").click(function () {
-          swapContent(counter, arrayOfIds, -1, j.name);
-        });
-
-        if (newElement.prev(".vrtx-json-element").length) {
-          newElement.prev(".vrtx-json-element").find(".vrtx-move-down-button").click(function () {
-            swapContent(counter-1, arrayOfIds, 1, j.name);
-          });
-        }
-      
-      }
-
-      // CK and date inputfields
-
-      for (i in j.a) {
-        var inputFieldName = j.name + "." + j.a[i].name + "." + counter;
-        if (j.a[i].type == "simple_html") {
-          newEditor(inputFieldName, false, false, '${resourceContext.parentURI?js_string}', '${fckeditorBase.url?html}', 
-                                                  '${fckeditorBase.documentURL?html}', '${fckBrowse.url.pathRepresentation}', '<@vrtx.requestLanguage />', "");
-        } else if (j.a[i].type == "html") {
-          newEditor(inputFieldName, true, false, '${resourceContext.parentURI?js_string}', '${fckeditorBase.url?html}', 
-                                                 '${fckeditorBase.documentURL?html}', '${fckBrowse.url.pathRepresentation}', '<@vrtx.requestLanguage />', "");
-        } else if (j.a[i].type == "datetime") {
-          displayDateAsMultipleInputFields(inputFieldName);
-        }
-      }
-    }
-    
-    function removeNode(name, counter, hasAccordion) {
-      var removeElementId = '#vrtx-json-element-' + name + '-' + counter;
-      var removeElement = $(removeElementId);
-      var removeElementParent = removeElement.parent();
-      var textAreas = removeElement.find("textarea");
-      var i = textAreas.length;
-      while(i--) {
-        var textAreaName = textAreas[i].name;
-        if (isCkEditor(textAreaName)) {
-          var ckInstance = getCkInstance(textAreaName);
-          ckInstance.destroy();
-          delete ckInstance;
-        }
-      }
-      removeElement.remove();
-      removeElementParent.find(".vrtx-json-element:first .vrtx-move-up-button").remove();
-      removeElementParent.find(".vrtx-json-element:last .vrtx-move-down-button").remove();
-      if(hasAccordion) {
-        accordionRefresh(removeElementParent.closest(".fieldset"));
-      }
-    }
-
     function addStringField(elem, inputFieldName) {
       var json = { classes: "vrtx-string" + " " + elem.name,
                    elemTitle: elem.title,
@@ -338,9 +330,8 @@
       var htmlOpts = [];
       for (i in elem.valuemap) {
         var keyValuePair = elem.valuemap[i];
-        var key = keyValuePair.split("$")[0];
-        var value = keyValuePair.split("$")[1];
-        htmlOpts.push({key: key, value: value});
+        var keyValuePairSplit = keyValuePair.split("$");
+        htmlOpts.push({key: keyValuePairSplit[0], value: keyValuePairSplit[1]});
       }
       var json = { classes: "vrtx-string" + " " + elem.name,
                    elemTitle: elem.title,
@@ -404,24 +395,22 @@
     
     function swapContent(counter, arrayOfIds, move, name) {
       var thisId = "#vrtx-json-element-" + name + "-" + counter;
-      var movedId = "#";
       if (move > 0) {
-        movedId += $(thisId).next(".vrtx-json-element").attr("id");
+        var movedElm = $(thisId).next(".vrtx-json-element");
+        var movedId = "#" + movedElm.attr("id");
       } else {
-        movedId += $(thisId).prev(".vrtx-json-element").attr("id");
+        var movedElm = $(thisId).prev(".vrtx-json-element");
+        var movedId = "#" + movedElm.attr("id");
       }
-      var arrayOfIdsLength = arrayOfIds.length;
-      for (var x = 0; x < arrayOfIdsLength; x++) {
+      
+      var moveToId = movedElm.find("input.id").val();
+      
+      for (var x = 0, len = arrayOfIds.length; x < len; x++) {
         var elementId1 = '#' + arrayOfIds[x] + counter;
-        var moveToId;
-        if (move > 0) {
-          moveToId = parseInt($(elementId1).parents(".vrtx-json-element").next(".vrtx-json-element").find("input.id").val());
-        } else {
-          moveToId = parseInt($(elementId1).parents(".vrtx-json-element").prev(".vrtx-json-element").find("input.id").val());
-        }
         var elementId2 = '#' + arrayOfIds[x] + moveToId;
         
         /* We need to handle special cases like date and CK fields  */
+        
         var ckInstanceName1 = arrayOfIds[x].replace(/\\/g, '') + counter;
         var ckInstanceName2 = arrayOfIds[x].replace(/\\/g, '') + moveToId;
         if (isCkEditor(ckInstanceName1) && isCkEditor(ckInstanceName2)) {
@@ -465,7 +454,7 @@
       element1.closest(".vrtx-json-element").focusout();
       element2.closest(".vrtx-json-element").focusout();
       
-      var absPos = $(movedId).offset();
+      var absPos = movedElm.offset();
       var absPosTop = absPos.top;
       var stickyBar = $("#vrtx-editor-title-submit-buttons");
       if(stickyBar.css("position") == "fixed") {

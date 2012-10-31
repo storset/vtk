@@ -240,13 +240,6 @@
             <div class="vrtx-button vrtx-remove-button">
               <input type="button" value="${vrtx.getMsg("editor.remove")}" />
             </div>
-
-            <script type="text/javascript"><!--
-       	      $("#vrtx-json-element-${inputFieldName}-${counter}").find(".vrtx-remove-button").click(function(){
-	            removeNode("${inputFieldName}",${counter}, <#if cssclass = "vrtx-json-accordion">true<#else>false</#if>);
-              });
-            // -->
-       	    </script>
           </div>
         </#if>
 
@@ -282,13 +275,6 @@
        	     <div class="vrtx-button vrtx-remove-button">
                <input type="button" value="${vrtx.getMsg("editor.remove")}" />
              </div>
-
-       	     <script type="text/javascript"><!--
-       	       $("#vrtx-json-element-${inputFieldName}-${counter}").find(".vrtx-remove-button").click(function(){
-                  removeNode("${inputFieldName}",${counter}, <#if cssclass = "vrtx-json-accordion">true<#else>false</#if>);
-               });
-    	     // -->
-       	     </script>
        	     
        	     <#if cssclass != "vrtx-multiple-immovable">
                <#if (counter > 0) >

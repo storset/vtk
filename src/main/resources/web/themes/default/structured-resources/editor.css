@@ -110,20 +110,23 @@
 
 /* Accordion */
 
-.ui-accordion .vrtx-string.last {
-  margin-bottom: 20px;
-}
-
 .ui-accordion > div {
   margin-left: -20px;
   margin-right: -20px;
-  margin-top: 0px;
 }
 
 .ui-accordion > .header,
-.ui-accordion > .vrtx-add-button {
+.ui-accordion > .vrtx-add-button,
+.ui-accordion > .typeToDisplay,
+.ui-accordion > .studieplasser,
+.ui-accordion > .studiekode,
+.ui-accordion > .pris {
   margin-left: 0px;
   margin-right: 0px;
+}
+
+.ui-accordion .vrtx-string.last {
+  margin-bottom: 20px;
 }
 
 .ui-accordion > div > .header.ui-accordion-header {
@@ -232,16 +235,13 @@
 }
 
 #items .vrtx-json-element .left,
-#items .vrtx-json-element .right {
+#items .vrtx-json-element .right,
+#items .vrtx-json-element > div > div:first-child {
   margin-top: 0px;
 }
 
 #items .vrtx-json-element .right {
   clear: none;
-}
-
-#items .vrtx-json-element > div > div:first-child {
-  margin-top: 0px;
 }
 
 /* ^ Study enhancements */
@@ -257,6 +257,7 @@
   background-color: #eee;
 }
 
+.vrtx-json.vrtx-json-accordion .vrtx-json-element .vrtx-remove-button,
 .vrtx-json #main-content .vrtx-json-element .vrtx-remove-button,
 .vrtx-json #contact-supervisor-box .vrtx-json-element .vrtx-remove-button,
 .vrtx-json #additional-content .vrtx-json-element .vrtx-remove-button,
@@ -268,19 +269,22 @@
   float: none;
 }
 
+.vrtx-json.vrtx-json-accordion .vrtx-json-element .vrtx-move-up-button,
 .vrtx-json #main-content .vrtx-json-element .vrtx-move-up-button,
 .vrtx-json #contact-supervisor-box .vrtx-json-element .vrtx-move-up-button,
 .vrtx-json #additional-content .vrtx-json-element .vrtx-move-up-button,
 .vrtx-json #featured-items .vrtx-json-element .vrtx-move-up-button,
+.vrtx-json.vrtx-json-accordion .vrtx-json-element .vrtx-move-down-button,
 .vrtx-json #main-content .vrtx-json-element .vrtx-move-down-button,
 .vrtx-json #contact-supervisor-box .vrtx-json-element .vrtx-move-down-button,
 .vrtx-json #additional-content .vrtx-json-element .vrtx-move-down-button,
 .vrtx-json #featured-items .vrtx-json-element .vrtx-move-down-button {
   position: absolute;
   right: 0px;
-  margin-top: 0;
+  margin-top: 0 !important;
 }
 
+.vrtx-json.vrtx-json-accordion .vrtx-json-element .vrtx-move-up-button,
 .vrtx-json #main-content .vrtx-json-element .vrtx-move-up-button,
 .vrtx-json #contact-supervisor-box .vrtx-json-element .vrtx-move-up-button,
 .vrtx-json #additional-content .vrtx-json-element .vrtx-move-up-button,
@@ -288,6 +292,7 @@
   top: 10px;
 }
 
+.vrtx-json.vrtx-json-accordion .vrtx-json-element .vrtx-move-down-button,
 .vrtx-json #main-content .vrtx-json-element .vrtx-move-down-button,
 .vrtx-json #contact-supervisor-box .vrtx-json-element .vrtx-move-down-button,
 .vrtx-json #additional-content .vrtx-json-element .vrtx-move-down-button,

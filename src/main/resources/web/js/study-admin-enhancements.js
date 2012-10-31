@@ -13,7 +13,7 @@ $(document).ready(function () {
   if(typeToDisplay.length) { 
     hideShowStudy(typeToDisplay);
     $(document).on("change", "#typeToDisplay", function () {
-      hideShowStudy($(this).val());
+      hideShowStudy($(this));
       $(".ui-accordion > .vrtx-string.last").removeClass("last");
       $(".ui-accordion > .vrtx-string:visible:last").addClass("last");
     });    

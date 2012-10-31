@@ -395,36 +395,38 @@
     
     function swapContent(counter, arrayOfIds, move, name) {
       var thisId = "#vrtx-json-element-" + name + "-" + counter;
+      var thisElm = $(thisId);
       if (move > 0) {
-        var movedElm = $(thisId).next(".vrtx-json-element");
-        var movedId = "#" + movedElm.attr("id");
+        var movedElm = thisElm.next(".vrtx-json-element");
       } else {
-        var movedElm = $(thisId).prev(".vrtx-json-element");
-        var movedId = "#" + movedElm.attr("id");
+        var movedElm = thisElm.prev(".vrtx-json-element");
       }
-      
-      var moveToId = movedElm.find("input.id").val();
+      var movedId = "#" + movedElm.attr("id");
+      var moveToCounter = movedElm.find("input.id").val();
       
       for (var x = 0, len = arrayOfIds.length; x < len; x++) {
         var elementId1 = '#' + arrayOfIds[x] + counter;
-        var elementId2 = '#' + arrayOfIds[x] + moveToId;
+        var elementId2 = '#' + arrayOfIds[x] + moveToCounter;
+        var element1 = $(elementId1);
+        var element2 = $(elementId2);
         
-        /* We need to handle special cases like date and CK fields  */
+        /* We need to handle special cases like CK fields and date */
         
         var ckInstanceName1 = arrayOfIds[x].replace(/\\/g, '') + counter;
-        var ckInstanceName2 = arrayOfIds[x].replace(/\\/g, '') + moveToId;
+        var ckInstanceName2 = arrayOfIds[x].replace(/\\/g, '') + moveToCounter;
+
         if (isCkEditor(ckInstanceName1) && isCkEditor(ckInstanceName2)) {
           var val1 = getCkValue(ckInstanceName1);
           var val2 = getCkValue(ckInstanceName2);
           setCkValue(ckInstanceName1, val2);
           setCkValue(ckInstanceName2, val1);
-        } else if ($(elementId1).hasClass("date") && $(elementId2).hasClass("date")) {
-          var date1 = $(elementId1 + '-date');
-          var hours1 = $(elementId1 + '-hours');
-          var minutes1 = $(elementId1 + '-minutes');
-          var date2 = $(elementId2 + '-date');
-          var hours2 = $(elementId2 + '-hours');
-          var minutes2 = $(elementId2 + '-minutes');
+        } else if (element1.hasClass("date") && element2.hasClass("date")) {
+          var date1 = element1.find(elementId1 + '-date');
+          var hours1 = element1.find(elementId1 + '-hours');
+          var minutes1 = element1.find(elementId1 + '-minutes');
+          var date2 = element2.find(elementId2 + '-date');
+          var hours2 = element2.find(elementId2 + '-hours');
+          var minutes2 = element2.find(elementId2 + '-minutes');
           var dateVal1 = date1.val();
           var hoursVal1 = hours1.val();
           var minutesVal1 = minutes1.val();
@@ -438,8 +440,7 @@
           hours2.val(hoursVal1);
           minutes2.val(minutesVal1);
         }    
-        var element1 = $(elementId1);
-        var element2 = $(elementId2);
+        
         var val1 = element1.val();
         var val2 = element2.val();
         element1.val(val2);
@@ -451,8 +452,8 @@
         element1.change();
         element2.change();
       }
-      element1.closest(".vrtx-json-element").focusout();
-      element2.closest(".vrtx-json-element").focusout();
+      thisElm.focusout();
+      movedElm.focusout();
       
       var absPos = movedElm.offset();
       var absPosTop = absPos.top;

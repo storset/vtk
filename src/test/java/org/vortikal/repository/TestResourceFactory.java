@@ -209,17 +209,7 @@ public class TestResourceFactory {
                 switch (state) {
                 case IN_ACL_PRINCIPAL_LIST:
                     if (acl == null) acl = Acl.EMPTY_ACL;
-                    Privilege priv = 
-                            "read".equals(curKey) ?             Privilege.READ :
-                            "read-processed".equals(curKey) ?   Privilege.READ_PROCESSED :
-                            "read-write".equals(curKey) ?       Privilege.READ_WRITE :
-                            "add-comment".equals(curKey) ?      Privilege.ADD_COMMENT :
-                            "all".equals(curKey) ?              Privilege.ALL : 
-                            null;
-
-                    if (priv == null) {
-                        throw new IllegalArgumentException("Invalid privilege: " + curKey);
-                    }
+                    Privilege priv = Privilege.forName(curKey);
                     
                     String name = value.toString();
                     Principal.Type t = null;

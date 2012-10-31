@@ -208,6 +208,7 @@
       <map>
         <entry key-ref="PRIVILEGE_ALL" value-ref="repository.acl.blacklist.all" />
         <entry key-ref="PRIVILEGE_READ_WRITE" value-ref="repository.acl.blacklist.readWrite" />
+        <entry key-ref="PRIVILEGE_READ_WRITE_UNPUBLISHED" value-ref="repository.acl.blacklist.readWrite" />
         <entry key-ref="PRIVILEGE_ADD_COMMENT" value-ref="repository.acl.blacklist.addComment" />
         <!-- <entry key-ref="PRIVILEGE_BIND_TEMPLATE" value-ref="repository.acl.blacklist.bindTemplate" /> -->
         <entry key-ref="PRIVILEGE_READ" value-ref="repository.acl.blacklist.read" />

@@ -29,6 +29,12 @@
               value="org.vortikal.repository.Privilege.READ_WRITE" />
   </bean>
 
+  <bean id="PRIVILEGE_READ_WRITE_UNPUBLISHED"
+        class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
+    <property name="staticField"
+              value="org.vortikal.repository.Privilege.READ_WRITE_UNPUBLISHED" />
+  </bean>
+  
   <bean id="PRIVILEGE_ALL"
         class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
     <property name="staticField"
@@ -68,6 +74,12 @@
               value="org.vortikal.repository.RepositoryAction.READ_WRITE" />
   </bean>
 
+  <bean id="ACTION_READ_WRITE_UNPUBLISHED"
+        class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
+    <property name="staticField"
+              value="org.vortikal.repository.RepositoryAction.READ_WRITE_UNPUBLISHED" />
+  </bean>
+  
   <bean id="ACTION_CREATE"
         class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
     <property name="staticField"

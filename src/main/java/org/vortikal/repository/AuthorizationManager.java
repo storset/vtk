@@ -618,17 +618,26 @@ public final class AuthorizationManager {
     }
     
     
+    /**
+     * Mapping a single privilege P to the set of privileges A{P,..} in which
+     * all privileges shall imply permissions equal to or broader than P. The
+     * set A always includes the privilege P itself.
+     *
+     * TODO replace with EnumMap.
+     */
     private static Map<Privilege, Privilege[]> PRIVILEGE_HIERARCHY = new HashMap<Privilege, Privilege[]>();
     static {
         PRIVILEGE_HIERARCHY.put(Privilege.READ_PROCESSED, new Privilege[] {
                 Privilege.READ_PROCESSED,
                 Privilege.READ,
                 Privilege.READ_WRITE,
+                Privilege.READ_WRITE_UNPUBLISHED,
                 Privilege.ALL
         });
         PRIVILEGE_HIERARCHY.put(Privilege.READ, new Privilege[] {
                 Privilege.READ,
                 Privilege.READ_WRITE,
+                Privilege.READ_WRITE_UNPUBLISHED,
                 Privilege.ALL
         });
         PRIVILEGE_HIERARCHY.put(Privilege.READ_WRITE, new Privilege[] {
@@ -640,6 +649,12 @@ public final class AuthorizationManager {
         });
         PRIVILEGE_HIERARCHY.put(Privilege.ADD_COMMENT, new Privilege[] {
                 Privilege.ADD_COMMENT,
+                Privilege.READ_WRITE,
+                Privilege.READ_WRITE_UNPUBLISHED,
+                Privilege.ALL
+        });
+        PRIVILEGE_HIERARCHY.put(Privilege.READ_WRITE_UNPUBLISHED, new Privilege[] {
+                Privilege.READ_WRITE_UNPUBLISHED,
                 Privilege.READ_WRITE,
                 Privilege.ALL
         });

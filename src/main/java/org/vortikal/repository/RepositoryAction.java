@@ -32,7 +32,11 @@ package org.vortikal.repository;
 
 /**
  * Repository actions are in general more fine grained than
- * ACL {@link org.vortikal.repository.Privilege privileges}.
+ * ACL {@link org.vortikal.repository.Privilege privileges}. There exists
+ * one canonical <code>RepositoryAction</code> for each ACL <code>Privilege</code>.
+ * 
+ * Additional repository actions are mapped to ACL privileges according to security
+ * model. The mappings are enforced by code in {@link AuthorizationManager}.
  * 
  */
 public enum RepositoryAction {
@@ -40,6 +44,7 @@ public enum RepositoryAction {
     CREATE("create"),
     READ("read"),
     READ_WRITE("read-write"),
+    READ_WRITE_UNPUBLISHED("read-write-unpublished"),
     WRITE("write"),
     WRITE_ACL("write-acl"),
     UNLOCK("unlock"),
@@ -47,6 +52,7 @@ public enum RepositoryAction {
     COPY("copy"),
     MOVE("move"),
     ALL("all"),
+    PUBLISH_UNPUBLISH("publish-unpublish"),
     ADD_COMMENT("add-comment"),
     EDIT_COMMENT("edit-comment"),
     UNEDITABLE_ACTION("property-edit-uneditable-action"),
@@ -57,7 +63,7 @@ public enum RepositoryAction {
     private RepositoryAction(String name) {
         this.name = name;
     }
-    public String value() {
+    public String getName() {
         return this.name;
     }
     @Override

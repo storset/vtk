@@ -36,10 +36,12 @@ import java.util.Map;
 
 /**
  * This class defines the privileges supported in an ACL.
+ * Each privilege maps to one canonical repository action.
  */
 public enum Privilege {
     ALL(RepositoryAction.ALL),
     READ_WRITE(RepositoryAction.READ_WRITE),
+    READ_WRITE_UNPUBLISHED(RepositoryAction.READ_WRITE_UNPUBLISHED),
     ADD_COMMENT(RepositoryAction.ADD_COMMENT),
     READ(RepositoryAction.READ),
     READ_PROCESSED(RepositoryAction.READ_PROCESSED);
@@ -49,7 +51,7 @@ public enum Privilege {
     private final String name;
     private Privilege(RepositoryAction action) {
         this.action = action;
-        this.name = action.value();
+        this.name = action.getName();
     }
 
     private static final Map<String, Privilege> NAME_MAP = new HashMap<String, Privilege>();

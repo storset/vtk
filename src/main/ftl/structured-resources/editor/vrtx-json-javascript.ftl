@@ -72,20 +72,104 @@
         }
       });
 
+      // TODO: avoid this being hardcoded here
+      var items = $("#editor.vrtx-syllabus #items");
+      wrapJSONItemsLeftRight(items, ".author, .title, .year, .publisher, .isbn, .comment", ".linktext, .link, .bibsys, .fulltext, .articles");
+      items.find(".author input, .title input").addClass("header-populators");
+      // ^ TODO: avoid this being hardcoded here
+      
+      // Because accordion needs one content wrapper
+      for(var grouped = $(".vrtx-json-accordion .vrtx-json-element"), i = grouped.length; i--;) { 
+        var group = $(grouped[i]);
+        group.find("> *").wrapAll("<div />");
+        updateHeader(group);
+      }
+      
+
+      
+      $(".vrtx-json-accordion .fieldset").accordion({ 
+                                            header: "> div > .header",
+                                            autoHeight: false,
+                                            collapsible: true,
+                                            active: false,
+                                            change: function(e, ui) {
+                                              updateHeader(ui.oldHeader);
+                                            }  
+                                          });
+                                          
+       
+
      $("#app-content").on("click", ".vrtx-json .vrtx-add-button input", function(e) {
-        addNewJsonElement(this);
+        var accordionWrapper = $(this).closest(".vrtx-json-accordion");
+        var hasAccordion = accordionWrapper.length;
+        
+        addNewJsonElement(this, hasAccordion);
+        
+        if(hasAccordion ) {
+          var accordionContent = accordionWrapper.find(".fieldset");
+
+          var group = accordionContent.find(".vrtx-json-element:last");
+          group.find("> *").wrapAll("<div />");
+          group.prepend('<div class="header">' + (vrtxAdmin.lang !== "en" ? "Inget innhold" : "No content") + '</div>');
+          
+          // TODO: avoid this being hardcoded here
+          wrapJSONItemsLeftRight(group, ".author, .title, .year, .publisher, .isbn, .comment", ".linktext, .link, .bibsys, .fulltext, .articles");
+          // ^ TODO: avoid this being hardcoded here
+          
+          accordionRefresh(accordionContent);
+        }
         e.stopPropagation();
         e.preventDefault();
       });
       
     });
-
-    function addNewJsonElement(button) {
-      var j = LIST_OF_JSON_ELEMENTS[parseInt($(button).data('number'))];
-      var counter = parseInt($(button).parent().prev(".vrtx-json-element").find("input.id").val()) + 1;
-      if (isNaN(counter)) {
-        counter = 0;
+    
+    function wrapJSONItemsLeftRight(items, leftItems, rightItems) {
+      if(items.length) {
+        items.find(leftItems).wrapAll("<div class='left' />");
+        items.find(rightItems).wrapAll("<div class='right' />");
       }
+    }
+    
+    function updateHeader(elem) {
+      var str = "";
+      var jsonElm = elem.closest(".vrtx-json-accordion .vrtx-json-element");
+      if(jsonElm.length) {
+        var fields = jsonElm.find(".header-populators");
+        for(var i = 0, len = fields.length, useDelimiter = (len > 1); i < len; i++) {
+          if(useDelimiter && i < (len - 1)) {
+            str += $(fields[i]).val() + ", ";
+          } else {
+            str += $(fields[i]).val();
+          }
+        }
+        if(str === ", " || str === "") {
+          str = (vrtxAdmin.lang !== "en") ? "Inget innhold" : "No content";
+        }
+        var header = jsonElm.find("> .header");
+        if(!header.length) {
+          jsonElm.prepend('<div class="header">' + str + '</div>');
+        } else {
+          header.html('<span class="ui-icon ui-icon-triangle-1-s"></span>' + str);
+        }
+      }
+    }
+    
+    function accordionRefresh(elem) {
+      elem.accordion('destroy').accordion({ 
+                                  header: "> div > .header",
+                                  autoHeight: false,
+                                  collapsible: true,
+                                  active: false,
+                                  change: function(e, ui) {
+                                    updateHeader(ui.oldHeader);
+                                  }  
+                                });
+    }
+
+    function addNewJsonElement(button, hasAccordion) {
+      var j = LIST_OF_JSON_ELEMENTS[parseInt($(button).data('number'))];
+      var counter = $(button).closest(".fieldset").find(".vrtx-json-element").length;
 
       var htmlTemplate = "";
       var arrayOfIds = [];
@@ -152,7 +236,11 @@
       newElement.append(id);
     
       if (!isImmovable && counter > 0 && newElement.prev(".vrtx-json-element").length) {
-        newElement.prev(".vrtx-json-element").append(moveDownButton);
+        if(hasAccordion) {
+          newElement.prev(".vrtx-json-element").find("> div.ui-accordion-content").append(moveDownButton);
+        } else {
+          newElement.prev(".vrtx-json-element").append(moveDownButton);
+        }
       }
       
       newElement.append(removeButton);
@@ -162,7 +250,7 @@
       }
       
       newElement.find(".vrtx-remove-button").click(function () {
-        removeNode(j.name, counter);
+        removeNode(j.name, counter, hasAccordion);
       });
       
       if(!isImmovable) {
@@ -194,39 +282,28 @@
       }
     }
     
-    function removeNode(name, counter) {
+    function removeNode(name, counter, hasAccordion) {
       var removeElementId = '#vrtx-json-element-' + name + '-' + counter;
       var removeElement = $(removeElementId);
-      var siblingElement;
-      if (removeElement.prev(".vrtx-json-element").length) {
-        siblingElement = removeElement.prev(".vrtx-json-element");
-      } else if (removeElement.next(".vrtx-json-element").length) {
-        siblingElement = removeElement.next(".vrtx-json-element");
+      var removeElementParent = removeElement.parent();
+      var textAreas = removeElement.find("textarea");
+      var i = textAreas.length;
+      while(i--) {
+        var textAreaName = textAreas[i].name;
+        if (isCkEditor(textAreaName)) {
+          var ckInstance = getCkInstance(textAreaName);
+          ckInstance.destroy();
+          delete ckInstance;
+        }
       }
-      
-      $(removeElementId + " textarea").each(function () {
-        if (isCkEditor(this.name)) {
-          getCkInstance(this.name).destroy();
-        }
-      });
-      $(removeElementId).remove();
-      removeUnwantedButtons(siblingElement);
-    }
-    
-    function removeUnwantedButtons(siblingElement) {
-      if (siblingElement) {
-        var e = siblingElement.parents(".vrtx-json").find(".vrtx-json-element");
-        while (e.prev(".vrtx-json-element").length) {
-          e = e.prev(".vrtx-json-element");
-        }
-        e.find(".vrtx-move-up-button").remove();
-        while (e.next(".vrtx-json-element").length) {
-          e = e.next(".vrtx-json-element");
-        }
-        e.find(".vrtx-move-down-button").remove();
+      removeElement.remove();
+      removeElementParent.find(".vrtx-json-element:first .vrtx-move-up-button").remove();
+      removeElementParent.find(".vrtx-json-element:last .vrtx-move-down-button").remove();
+      if(hasAccordion) {
+        accordionRefresh(removeElementParent.closest(".fieldset"));
       }
     }
-    
+
     function addStringField(elem, inputFieldName) {
       var json = { classes: "vrtx-string" + " " + elem.name,
                    elemTitle: elem.title,
@@ -365,13 +442,15 @@
           date2.val(dateVal1);
           hours2.val(hoursVal1);
           minutes2.val(minutesVal1);
-        }
+        }    
         var element1 = $(elementId1);
         var element2 = $(elementId2);
         var val1 = element1.val();
         var val2 = element2.val();
         element1.val(val2);
         element2.val(val1);
+        updateHeader(element1);
+        updateHeader(element2);
         element1.blur();
         element2.blur();
         element1.change();

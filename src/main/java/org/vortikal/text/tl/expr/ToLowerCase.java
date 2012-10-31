@@ -1,4 +1,4 @@
-/* Copyright (c) 2009, University of Oslo, Norway
+/* Copyright (c) 2010, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -28,47 +28,26 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.resourcemanagement.view.tl;
+package org.vortikal.text.tl.expr;
 
-import org.vortikal.repository.search.Parser;
-import org.vortikal.repository.search.ResultSet;
-import org.vortikal.repository.search.Search;
-import org.vortikal.repository.search.Searcher;
-import org.vortikal.repository.search.query.Query;
 import org.vortikal.text.tl.Context;
 import org.vortikal.text.tl.Symbol;
-import org.vortikal.text.tl.expr.Function;
-import org.vortikal.web.RequestContext;
 
-public class SearchResultValueProvider extends Function {
+public class ToLowerCase extends Function {
 
-    private Parser searchParser;
-    //private QueryParserFactory queryParserFactory;
-    private Searcher searcher;
-    
-    public SearchResultValueProvider(Symbol symbol, 
-            //QueryParserFactory queryParserFactory,
-            Parser searchParser,
-            Searcher searcher) {
+    public ToLowerCase(Symbol symbol) {
         super(symbol, 1);
-        //this.queryParserFactory = queryParserFactory;
-        this.searchParser = searchParser;
-        this.searcher = searcher;
     }
 
     @Override
     public Object eval(Context ctx, Object... args) {
-        Object arg = args[0];
-        String queryString = arg.toString();
-        RequestContext requestContext = RequestContext.getRequestContext();
-        String token = requestContext.getSecurityToken();
-        //Query query = queryParserFactory.getParser().parse(queryString);
-        Query query = this.searchParser.parse(queryString);
-        Search search = new Search();
-        search.setLimit(100);
-        search.setQuery(query);
-        ResultSet resultSet = searcher.execute(token, search);
-        return resultSet.iterator();
+        Object o1 = args[0];
+        if (o1 == null) {
+            throw new IllegalArgumentException(getSymbol().getSymbol() 
+                    + ": argument is NULL");
+        }
+        String s = o1.toString().toLowerCase();
+        return s;
     }
 
 }

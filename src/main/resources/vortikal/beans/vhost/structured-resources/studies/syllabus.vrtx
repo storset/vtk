@@ -1,0 +1,122 @@
+resourcetype syllabus {
+
+  properties {
+    title : string,
+    items : json (
+        author : string,
+        title : string,
+        year : string,
+        publisher : string,
+        isbn : string,
+        comment : string,
+        linktext : string,
+        link : string,
+        bibsys : string,
+        fulltext : string,
+        articles : string,
+        content : html
+    ) multiple noextract
+  }
+  
+  edit-rules {
+    items (class[vrtx-json-accordion])
+  }
+  
+  view-components {
+  
+    ub-mapping (prefix){
+        ##
+        [def content-locale resource-prop-obj-val(".", "contentLocale")]
+        [def uri "/vrtx/mapping/ub-mapping.html"]
+        [def file json-resource(uri)]
+        [if file != null]
+          [def mappings file.properties.mappings]
+          [list mappings mapping]
+            [def mapping-prefix mapping.prefix.toLowerCase()]
+            [if prefix = mapping-prefix]
+              [if content-locale != null && content-locale != ""]
+                [if content-locale = "en" && mapping.mappinglink-en != null && mapping.mappinglink-en != ""]
+                  [val mapping.mappinglink-en]
+                [elseif mapping.mappinglink-no != null && mapping.mappinglink-no != ""]
+                  [val mapping.mappinglink-no]
+                [endif]
+              [endif]
+            [endif]
+          [endlist]
+        [endif]
+        ##
+    }   
+  
+    items {
+      ##
+      [resource-props "."]
+      [def document structured-document()]
+      [def items document.properties.items]
+      [if items != null]
+        [list items item]
+          [def author item.author]
+          [def title item.title]
+          [def year item.year]
+          [def publisher item.publisher]
+          [def isbn item.isbn]
+          [def comment item.comment]
+          [def linktext item.linktext]
+          [def link item.link]
+          [def bibsys item.bibsys]
+          [def fulltext item.fulltext]
+          [def articles item.articles]
+          [def content item.content]
+          [if (author != null && author != "") && (title != null && title != "")]
+            <p>
+              [if articles != null && articles != ""][val articles] i [endif][val author]: <i>[if bibsys != null && bibsys != ""]<a href="[val bibsys]">[val title]</a>[else][val title][endif]</i>[if year != null && year != ""], [val year][endif][if publisher != null && publisher != ""], [val publisher][endif][if isbn != null && isbn != ""], ISBN: [val isbn][endif][if comment != null && comment != ""], [val comment][endif][if fulltext != null && fulltext != ""], <a href="[val fulltext]">[localized 'fulltext']</a>[endif][if linktext != null && linktext != "" && link != null && link != ""], <a href="[val link]">[val linktext]</a>[endif]
+            </p>
+          [endif]
+          [if content != null && content != ""]
+            [val content # unescaped]
+          [endif]
+        [endlist]
+      [endif]
+      ##
+    }
+
+  }
+
+  view {
+    ##
+    [def course-code resource-prop(".", "courseContext.fs-course-code")]
+    [def semester resource-prop(".", "semesterContext.semester")]
+    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+    <html xmlns="http://www.w3.org/1999/xhtml">
+      <head>
+        <title>[call "resource:property" {"id":"title"}]</title>
+      </head>
+      <body id="vrtx-syllabus">
+        <h1 id="hdr">Pensum/læringskrav ([if course-code != null][val course-code][endif][if course-code != null && semester != null] - [endif][if semester != null][val semester][endif])</h1>
+        [call "comp:items"]
+        [if course-code != null && course-code != ""]
+          [def prefix course-code.split('[0-9]').0]
+          [def prefix prefix.toLowerCase()]
+          [call "comp:ub-mapping" {"prefix":prefix}]
+        [endif]
+      </body>
+    </html>
+    ##
+  }
+
+  localization {
+    title : (en : "Title", no : "Tittel", nn : "Tittel"),
+    author : (en : "Author", no : "Forfatter", nn : "Forfatter"),
+    year : (en : "Year", no : "År", nn : "År"),
+    publisher : (en : "Publisher", no : "Utgiver", nn : "Utgiver"),
+    isbn : (en : "ISBN", no : "ISBN", nn : "ISBN"),
+    comment : (en : "Comment", no : "Kommentar", nn : "Kommentar"),
+    linktext : (en : "Linktext", no : "Lenketekst", nn : "Lenketekst"),
+    link : (en : "Linkaddress", no : "Lenkeadresse", nn : "Lenkeadresse"),
+    bibsys : (en : "BIBSYS (Linked on title)", no : "BIBSYS (Lenkes oppfra tittel)", nn : "BIBSYS (Lenkes oppfra tittel)"),
+    fulltext : (en : "Fulltext link", no : "Fulltekst-lenke", nn : "Fulltekst-lenke"),
+    articles : (en : "Articles in book/journal", no : "Artikler i bok/tidsskrift", nn : "Artikler i bok/tidsskrift"),
+    content : (en : "Content", no : "Innhold", nn : "Innhald")
+  }
+
+}
+  

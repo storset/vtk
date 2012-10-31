@@ -55,6 +55,10 @@ public class MockResourceTypeTree implements ResourceTypeTree {
         return null;
     }
 
+    public Namespace getNamespaceByPrefix(String prefix) {
+        return null;
+    }
+    
     public PrimaryResourceTypeDefinition[] getPrimaryResourceTypesForPropDef(
             PropertyTypeDefinition definition) {
         return null;

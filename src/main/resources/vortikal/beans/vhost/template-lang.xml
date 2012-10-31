@@ -50,4 +50,20 @@
     </constructor-arg>
   </bean>
 
+  <bean id="templateLanguage.toLowerCaseFunction" class="org.vortikal.text.tl.expr.ToLowerCase">
+    <constructor-arg>
+      <bean class="org.vortikal.text.tl.Symbol">
+        <constructor-arg  value="toLowerCase" />
+      </bean>
+    </constructor-arg>
+  </bean>
+
+  <bean id="templateLanguage.toUpperCaseFunction" class="org.vortikal.text.tl.expr.ToUpperCase">
+    <constructor-arg>
+      <bean class="org.vortikal.text.tl.Symbol">
+        <constructor-arg  value="toUpperCase" />
+      </bean>
+    </constructor-arg>
+  </bean>
+
 </beans>

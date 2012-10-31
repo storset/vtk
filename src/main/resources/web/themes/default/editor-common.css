@@ -188,9 +188,9 @@ div.manually-approve-from table input {
   width: auto;
 }
 
-div.title input,
-div.name input,
-div.userTitle input {
+.properties > div.title input,
+.properties > div.name input,
+.properties > div.userTitle input {
   width: 473px;
 }
 

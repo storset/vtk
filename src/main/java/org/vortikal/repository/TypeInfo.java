@@ -31,6 +31,7 @@
 package org.vortikal.repository;
 
 import org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinition;
+import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.ValueFormatException;
@@ -52,6 +53,10 @@ public final class TypeInfo {
     
     public PrimaryResourceTypeDefinition getResourceType() {
         return this.resourceTypeDefinition;
+    }
+    
+    public Namespace getNamespaceByPrefix(String prefix) {
+        return this.resourceTypeTree.getNamespaceByPrefix(prefix);
     }
     
     /**

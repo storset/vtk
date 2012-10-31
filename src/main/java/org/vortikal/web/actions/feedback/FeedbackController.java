@@ -134,6 +134,7 @@ public class FeedbackController implements Controller {
             return new ModelAndView(this.viewName, model);
         }    
 
+        // TODO: Captcha?
         if (StringUtils.isBlank(yourComment)) {
             model.put("tipResponse", "FAILURE-NULL-FORM");
             return new ModelAndView(this.viewName, model);

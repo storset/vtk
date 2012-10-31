@@ -2,37 +2,37 @@ resourcetype schedule {
 
   properties {
     title : string required overrides title,
-    emnekode : string,
-    aar : string,
-    sem : string,
+    course-code : string,
+    year : string,
+    semester : string,
     path : string,
-    over : string,
-    kommentar : simple_html,
+    overview : string,
+    comment : simple_html,
     content : html noextract
   }
 
   edit-rules {
-    emnekode tooltip (en : "(Course code)", no : "(Emnekode)", nn : "(Emnekode)"),
+    course-code tooltip (en : "(Course code)", no : "(Emnekode)", nn : "(Emnekode)"),
     title (class[ui-helper-hidden]),
-    aar (class[ui-helper-hidden]),
-    sem (class[ui-helper-hidden]),
+    year (class[ui-helper-hidden]),
+    semester (class[ui-helper-hidden]),
     path (class[ui-helper-hidden]),
-    over (dropdown)
+    overview (dropdown)
   }
   
   view-components {
   
     iframe {
         ##
-        [def emnekode resource-prop(".", "emnekode")]
-        [def aar resource-prop(".", "aar")]
-        [def sem resource-prop(".", "sem")]
+        [def course-code resource-prop(".", "course-code")]
+        [def year resource-prop(".", "year")]
+        [def semester resource-prop(".", "semester")]
         [def path resource-prop(".", "path")]
-        [def over resource-prop(".", "over")]
+        [def overview resource-prop(".", "overview")]
         <iframe frameborder="0" 
             id="timeplaner" 
             scrolling="no" 
-            src="/studier/timeplaner/calendar.php?type=module&amp;embed=1&amp;ar=[val aar]&amp;sem=[val sem]&amp;id=[val emnekode]-1&amp;path=[val path][if over != null && over != ""]&amp;over=[val over][endif]" 
+            src="/studier/timeplaner/calendar.php?type=module&amp;embed=1&amp;ar=[val year]&amp;sem=[val semester]&amp;id=[val course-code]-1&amp;path=[val path][if overview != null && overview != ""]&amp;over=[val overview][endif]" 
             width="100%">
         </iframe>
         ##
@@ -58,24 +58,23 @@ resourcetype schedule {
   }
 
   vocabulary {
-     over {
+     overview {
        en : ("1" = "Regular overview", "x" = "Shortcut to anchor", "0" = "None"),
-       no : ("1" = "Vanlig oversikt", "x" = "Kun snarevei til anker", "0" = "Ingen"),
-       nn : ("1" = "vanleg oversikt", "x" = "Berre snarveg til anker", "0" = "Ingen")
+       no : ("1" = "Vanlig oversikt", "x" = "Kun snarvei til anker", "0" = "Ingen"),
+       nn : ("1" = "Vanleg oversikt", "x" = "Berre snarveg til anker", "0" = "Ingen")
      }
   }
 
   localization {
     title : (en : "Title", no : "Tittel", nn : "Tittel"),
     header : (en : "Edit schedule", no : "Rediger timeplan", nn : "Rediger timeplan"),
-    emnekode : (en : "Show schedule from", no : "Vis timeplan for", nn : "Vis timeplan for"),
-    aar : (en : "Year", no : "År", nn : "År"),
-    sem : (en : "Semester", no : "Semester", nn : "Semester"),
+    course-code : (en : "Show schedule from", no : "Vis timeplan for", nn : "Vis timeplan for"),
+    year : (en : "Year", no : "År", nn : "År"),
+    semester : (en : "Semester", no : "Semester", nn : "Semester"),
     path : (en : "Path", no : "Sti", nn : "Sti"),
-    over : (en : "Overview", no : "Oversikt", nn : "Oversikt"),
-    kommentar : (en : "Introductory comment", no : "Innledende kommentar", nn : "Innleiande kommentar"),
+    overview : (en : "Overview", no : "Oversikt", nn : "Oversikt"),
+    comment : (en : "Introductory comment", no : "Innledende kommentar", nn : "Innleiande kommentar"),
     content : (en : "Content", no : "Innhold", nn : "Innhald")
   }
 
 }
-  

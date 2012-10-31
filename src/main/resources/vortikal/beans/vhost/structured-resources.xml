@@ -227,6 +227,8 @@
         <ref bean="templateLanguage.splitFunction" />
         <ref bean="templateLanguage.lengthFunction" />
         <ref bean="templateLanguage.getFunction" />
+        <ref bean="templateLanguage.toLowerCaseFunction" />
+        <ref bean="templateLanguage.toUpperCaseFunction" />
         <ref bean="structuredResources.requestContextFunction" />
         <ref bean="structuredResources.resourceFunction" />
         <ref bean="structuredResources.jsonResourceFunction" />
@@ -305,7 +307,7 @@
         <constructor-arg value="search" />
       </bean>
     </constructor-arg>
-    <constructor-arg ref="queryParserFactory" />
+    <constructor-arg ref="searchParser" />
     <constructor-arg ref="systemIndexSearcher" />
   </bean>
 

@@ -87,11 +87,11 @@
       <#break>
 
     <#case "html">
-      <#if elem.description.edithints?exists>
+      <#--if elem.description.edithints?exists>
         <#list elem.description.edithints?keys as hint>
           ${hint} <br />
         </#list>
-      </#if>
+      </#if-->
 
       <@vrtxHtml.printPropertyEditView
         title=localizedTitle
@@ -243,7 +243,7 @@
 
             <script type="text/javascript"><!--
        	      $("#vrtx-json-element-${inputFieldName}-${counter}").find(".vrtx-remove-button").click(function(){
-	            removeNode("${inputFieldName}", ${counter} ,  ${arrayOfIds} );
+	            removeNode("${inputFieldName}",${counter}, <#if cssclass = "vrtx-json-accordion">true<#else>false</#if>);
               });
             // -->
        	    </script>
@@ -285,12 +285,12 @@
 
        	     <script type="text/javascript"><!--
        	       $("#vrtx-json-element-${inputFieldName}-${counter}").find(".vrtx-remove-button").click(function(){
-                 removeNode("${inputFieldName}", ${counter},  ${arrayOfIds});
+                  removeNode("${inputFieldName}",${counter}, <#if cssclass = "vrtx-json-accordion">true<#else>false</#if>);
                });
     	     // -->
        	     </script>
        	     
-       	     <#if cssclass = "vrtx-multiple-immovable">
+       	     <#if cssclass != "vrtx-multiple-immovable">
                <#if (counter > 0) >
                  <div class="vrtx-button vrtx-move-up-button">
                    <input type="button" value="&uarr; ${vrtx.getMsg("editor.move-up")}"  />
@@ -377,7 +377,7 @@
       <#break>
 
     <#case "simple_html">
-      <#assign cssclass =  tmpName + " vrtx-simple-html" />
+      <#assign cssclass = tmpName + " vrtx-simple-html" />
 
       <@vrtxHtml.printPropertyEditView
         title=jsonAttr
@@ -390,11 +390,11 @@
       <#break>
 
     <#case "html">
-      <#if elem.description.edithints?exists>
+      <#--if elem.description.edithints?exists>
         <#list elem.description.edithints?keys as hint>
           ${hint} <br />
         </#list>
-      </#if>
+      </#if-->
 
       <@vrtxHtml.printPropertyEditView
         title=jsonAttr

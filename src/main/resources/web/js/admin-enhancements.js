@@ -74,6 +74,9 @@ function VrtxAdmin() {
   this.isWin = ((this.ua.indexOf("win") != -1) || (this.ua.indexOf("16bit") != -1));
   this.supportsFileList = window.FileList;
   
+  // Language
+  this.lang = readCookie("vrtx.manage.language", "no");
+  
   // Logging capabilities
   this.hasConsole = typeof console !== "undefined";
   this.hasConsoleLog = this.hasConsole && console.log;
@@ -1622,7 +1625,7 @@ function editorInteraction(bodyId, vrtxAdm, _$) {
   if(bodyId == "vrtx-editor") {
     autocompleteUsernames(".vrtx-autocomplete-username");
     autocompleteTags(".vrtx-autocomplete-tag");
-
+    
     // Aggregation and manually approved
     if(!_$("#resource\\.display-aggregation\\.true").is(":checked")) {
       _$("#vrtx-resource\\.aggregation").slideUp(0, "linear");
@@ -2945,6 +2948,11 @@ VrtxAdmin.prototype.zebraTables = function zebraTables(selector) {
   }
 };
 
+// Credits: http://www.javascripter.net/faq/readingacookie.htm
+function readCookie(cookieName, defaultVal) {
+  var match = (" "+document.cookie).match(new RegExp('[; ]'+cookieName+'=([^\\s;]*)'));
+  return match ? unescape(match[1]) : defaultVal;
+}
 
 /*-------------------------------------------------------------------*\
     17. Override JavaScript / jQuery

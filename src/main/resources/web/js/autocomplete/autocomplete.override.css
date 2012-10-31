@@ -58,6 +58,7 @@
   border: medium none;
 }
 
+.ac_results .vrtx-autocomplete-search-img,
 .ac_results .vrtx-person-search-img {
   float: left;
   overflow: hidden;
@@ -65,29 +66,25 @@
   width: auto;
 }
 
+.ac_results .vrtx-autocomplete-search-img img,
 .ac_results .vrtx-person-search-img img {
   width: 40px;
 }
 
+.ac_results .vrtx-autocomplete-search-info .vrtx-autocomplete-search-title,
 .ac_results .vrtx-person-search-info .vrtx-person-search-name {
   font-size: 16px;
 }
 
+.ac_results .vrtx-autocomplete-search-info .vrtx-autocomplete-search-subtitle,
 .ac_results .vrtx-person-search-info .vrtx-person-search-position {
   font-size: 13px;
 }
 
+.ac_results .vrtx-autocomplete-search-info .vrtx-autocomplete-search-title,
+.ac_results .vrtx-autocomplete-search-info .vrtx-autocomplete-search-subtitle,
 .ac_results .vrtx-person-search-info .vrtx-person-search-name, 
 .ac_results .vrtx-person-search-info .vrtx-person-search-position,
 .ac_results .vrtx-person-search-info .vrtx-person-search-tags {
   display: block;
-}
-
-.properties .tags input.ac_input {
-  width: 320px;
-}
-
-.expandedForm span.addGroup input.ac_input,
-.expandedForm span.addUser input.ac_input {
-  width: 200px; 
 }

@@ -115,6 +115,8 @@ public interface ResourceTypeTree extends HierarchicalVocabulary<String> {
     public List<PrimaryResourceTypeDefinition> getResourceTypeDefinitionChildren(PrimaryResourceTypeDefinition def);
 
     public Namespace getNamespace(String namespaceUrl);
+    
+    public Namespace getNamespaceByPrefix(String prefix);
 
     /** 
      * Since a mixin might be included in several primary resource types, this

@@ -56,7 +56,7 @@ public class TagsEventListingController extends EventListingController {
 
         RequestContext requestContext = RequestContext.getRequestContext();
         String token = requestContext.getSecurityToken();
-        Resource resource = this.tagsHelper.getScope(token, request);
+        Resource resource = this.tagsHelper.getScopedResource(token, request);
 
         // Parameter tag is required for service invocation
         String tag = request.getParameter(TagsHelper.TAG_PARAMETER);

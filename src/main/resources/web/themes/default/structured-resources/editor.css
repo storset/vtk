@@ -108,6 +108,68 @@
   padding-left: 5px;
 }
 
+/* Accordion */
+
+.ui-accordion > div {
+  margin-left: -20px;
+  margin-right: -20px;
+}
+
+.ui-accordion > .header,
+.ui-accordion > .vrtx-add-button,
+.ui-accordion > .typeToDisplay,
+.ui-accordion > .studieplasser,
+.ui-accordion > .studiekode,
+.ui-accordion > .pris {
+  margin-left: 0px;
+  margin-right: 0px;
+}
+
+.ui-accordion .vrtx-string.last {
+  margin-bottom: 20px;
+}
+
+.ui-accordion > div > .header.ui-accordion-header {
+  padding: 15px 15px 14px 40px;
+  border-radius: 0px;
+  margin-bottom: -2px;
+  background: #f9f9f9;
+  color: inherit;
+  border-color: #d9d9d9;
+}
+
+.ui-accordion > div > .header.ui-accordion-header .ui-icon {
+  left: 11px;
+  height: 14px;
+  width: 16px;
+}
+
+.ui-accordion > div > .header.ui-accordion-header .ui-icon.ui-icon-triangle-1-s { /* Expanded */
+  background: url(../images/arrow-expanded-big.gif) no-repeat center left;
+  left: 13px;
+}
+
+.ui-accordion > div > .header.ui-accordion-header .ui-icon.ui-icon-triangle-1-e { /* Collapsed */
+  background: url(../images/arrow-collapsed-big.gif) no-repeat top left;
+}
+
+.ui-accordion .vrtx-grouped .header.ui-accordion-header.ui-state-hover {
+  background: #ecf3f9;
+}
+
+.ui-accordion > div > .header.ui-accordion-header.ui-state-active,
+.ui-accordion > div > .header.ui-accordion-header.ui-state-hover.ui-state-active {
+  background: none;
+}
+
+.ui-accordion > div > .ui-accordion-content { 
+  padding-left: 30px !important;
+  padding-top: 0px !important;
+  border: none !important;
+}
+
+/* ^ Accordion */
+
 /* Study enhancements */
 
 #editor.so .internasjonale-sokere-admin,
@@ -159,53 +221,27 @@
   display: block;
 }
 
-.ui-accordion .vrtx-string.last {
-  margin-bottom: 20px;
+#items .vrtx-json-element > div > div,
+#items .vrtx-json-element .left > div,
+#items .vrtx-json-element .right > div {
+  clear: left;
+  float: left;
+  margin-top: 20px;
 }
 
-.ui-accordion .vrtx-grouped {
-  margin-left: -20px;
-  margin-right: -20px;
+#items .vrtx-json-element .left > div:first-child,
+#items .vrtx-json-element .right > div:first-child {
   margin-top: 0px;
 }
 
-.ui-accordion .vrtx-grouped .header.ui-accordion-header {
-  padding: 15px 15px 14px 40px;
-  border-radius: 0px;
-  margin-bottom: -2px;
-  background: #f9f9f9;
-  color: inherit;
-  border-color: #d9d9d9;
+#items .vrtx-json-element .left,
+#items .vrtx-json-element .right,
+#items .vrtx-json-element > div > div:first-child {
+  margin-top: 0px;
 }
 
-.ui-accordion .vrtx-grouped .header.ui-accordion-header .ui-icon {
-  left: 11px;
-  height: 14px;
-  width: 16px;
-}
-
-.ui-accordion .vrtx-grouped .header.ui-accordion-header .ui-icon.ui-icon-triangle-1-s { /* Expanded */
-  background: url(../images/arrow-expanded-big.gif) no-repeat center left;
-  left: 13px;
-}
-
-.ui-accordion .vrtx-grouped .header.ui-accordion-header .ui-icon.ui-icon-triangle-1-e { /* Collapsed */
-  background: url(../images/arrow-collapsed-big.gif) no-repeat top left;
-}
-
-.ui-accordion .vrtx-grouped .header.ui-accordion-header.ui-state-hover {
-  background: #ecf3f9;
-}
-
-.ui-accordion .vrtx-grouped .header.ui-accordion-header.ui-state-active,
-.ui-accordion .vrtx-grouped .header.ui-accordion-header.ui-state-hover.ui-state-active {
-  background: none;
-}
-
-.ui-accordion .vrtx-grouped .ui-accordion-content { 
-  padding-left: 30px !important;
-  padding-top: 0px !important;
-  border: none !important;
+#items .vrtx-json-element .right {
+  clear: none;
 }
 
 /* ^ Study enhancements */
@@ -221,6 +257,7 @@
   background-color: #eee;
 }
 
+.vrtx-json.vrtx-json-accordion .vrtx-json-element .vrtx-remove-button,
 .vrtx-json #main-content .vrtx-json-element .vrtx-remove-button,
 .vrtx-json #contact-supervisor-box .vrtx-json-element .vrtx-remove-button,
 .vrtx-json #additional-content .vrtx-json-element .vrtx-remove-button,
@@ -232,19 +269,22 @@
   float: none;
 }
 
+.vrtx-json.vrtx-json-accordion .vrtx-json-element .vrtx-move-up-button,
 .vrtx-json #main-content .vrtx-json-element .vrtx-move-up-button,
 .vrtx-json #contact-supervisor-box .vrtx-json-element .vrtx-move-up-button,
 .vrtx-json #additional-content .vrtx-json-element .vrtx-move-up-button,
 .vrtx-json #featured-items .vrtx-json-element .vrtx-move-up-button,
+.vrtx-json.vrtx-json-accordion .vrtx-json-element .vrtx-move-down-button,
 .vrtx-json #main-content .vrtx-json-element .vrtx-move-down-button,
 .vrtx-json #contact-supervisor-box .vrtx-json-element .vrtx-move-down-button,
 .vrtx-json #additional-content .vrtx-json-element .vrtx-move-down-button,
 .vrtx-json #featured-items .vrtx-json-element .vrtx-move-down-button {
   position: absolute;
   right: 0px;
-  margin-top: 0;
+  margin-top: 0 !important;
 }
 
+.vrtx-json.vrtx-json-accordion .vrtx-json-element .vrtx-move-up-button,
 .vrtx-json #main-content .vrtx-json-element .vrtx-move-up-button,
 .vrtx-json #contact-supervisor-box .vrtx-json-element .vrtx-move-up-button,
 .vrtx-json #additional-content .vrtx-json-element .vrtx-move-up-button,
@@ -252,6 +292,7 @@
   top: 10px;
 }
 
+.vrtx-json.vrtx-json-accordion .vrtx-json-element .vrtx-move-down-button,
 .vrtx-json #main-content .vrtx-json-element .vrtx-move-down-button,
 .vrtx-json #contact-supervisor-box .vrtx-json-element .vrtx-move-down-button,
 .vrtx-json #additional-content .vrtx-json-element .vrtx-move-down-button,

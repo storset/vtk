@@ -74,7 +74,7 @@ public class TagsController implements Controller {
         RequestContext requestContext = RequestContext.getRequestContext();
         String token = requestContext.getSecurityToken();
 
-        Resource resource = this.tagsHelper.getScope(token, request);
+        Resource resource = this.tagsHelper.getScopedResource(token, request);
         String tag = request.getParameter(TagsHelper.TAG_PARAMETER);
         List<ResourceTypeDefinition> resourceTypes = this.tagsHelper.getResourceTypes(request);
         boolean displayScope = this.tagsHelper.getDisplayScope(request);

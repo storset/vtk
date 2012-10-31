@@ -60,8 +60,8 @@ resourcetype schedule {
   vocabulary {
      overview {
        en : ("1" = "Regular overview", "x" = "Shortcut to anchor", "0" = "None"),
-       no : ("1" = "Vanlig oversikt", "x" = "Kun snarevei til anker", "0" = "Ingen"),
-       nn : ("1" = "vanleg oversikt", "x" = "Berre snarveg til anker", "0" = "Ingen")
+       no : ("1" = "Vanlig oversikt", "x" = "Kun snarvei til anker", "0" = "Ingen"),
+       nn : ("1" = "Vanleg oversikt", "x" = "Berre snarveg til anker", "0" = "Ingen")
      }
   }
 

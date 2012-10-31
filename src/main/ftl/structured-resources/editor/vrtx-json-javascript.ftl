@@ -78,6 +78,11 @@
         group.find("> *").wrapAll("<div />");
         group.prepend('<div class="header">' + (vrtxAdmin.lang !== "en" ? "Inget innhold" : "No content") + '</div>');
       }
+      
+      // Check that selector exists before wrapping .left and .right
+      // TODO: avoid this being hardcoded here
+      wrapJSONItemsLeftRight($("#editor.vrtx-syllabus #items"), ".author, .title, .year, .publisher, .isbn, .comment", ".linktext, .link, .bibsys, .fulltext, .articles");
+      
       $(".vrtx-json-accordion .fieldset").accordion({ 
                                             header: "> div > .header",
                                             autoHeight: false,
@@ -93,24 +98,38 @@
         
         if(hasAccordion ) {
           var accordionContent = accordionWrapper.find(".fieldset");
-          var active = accordionContent.accordion('option', 'active');
-          
+
           var group = accordionContent.find(".vrtx-json-element:last");
           group.find("> *").wrapAll("<div />");
           group.prepend('<div class="header">' + (vrtxAdmin.lang !== "en" ? "Inget innhold" : "No content") + '</div>');
           
-          accordionContent.accordion('destroy').accordion({ 
-                                                  header: "> div > .header",
-                                                  autoHeight: false,
-                                                  collapsible: true,
-                                                  active: active
-                                                });
+          // Check that selector exists before wrapping .left and .right
+          // TODO: avoid this being hardcoded here
+          wrapJSONItemsLeftRight(group, ".author, .title, .year, .publisher, .isbn, .comment", ".linktext, .link, .bibsys, .fulltext, .articles");
+
+          accordionRefresh(accordionContent);
         }
         e.stopPropagation();
         e.preventDefault();
       });
       
     });
+    
+    function wrapJSONItemsLeftRight(items, leftItems, rightItems) {
+      if(items.length) {
+        items.find(leftItems).wrapAll("<div class='left' />");
+        items.find(rightItems).wrapAll("<div class='right' />");
+      }
+    }
+    
+    function accordionRefresh(elem) {
+      elem.accordion('destroy').accordion({ 
+                                  header: "> div > .header",
+                                  autoHeight: false,
+                                  collapsible: true,
+                                  active: false
+                                });
+    }
 
     function addNewJsonElement(button, hasAccordion) {
       var j = LIST_OF_JSON_ELEMENTS[parseInt($(button).data('number'))];
@@ -244,6 +263,9 @@
       removeElement.remove();
       removeElementParent.find(".vrtx-json-element:first .vrtx-move-up-button").remove();
       removeElementParent.find(".vrtx-json-element:last .vrtx-move-down-button").remove();
+      if(hasAccordion) {
+        accordionRefresh(removeElementParent.closest(".fieldset"));
+      }
     }
 
     function addStringField(elem, inputFieldName) {

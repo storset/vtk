@@ -217,10 +217,26 @@
   display: block;
 }
 
-#items .vrtx-json-element > div > div {
+#items .vrtx-json-element > div > div,
+#items .vrtx-json-element .left > div,
+#items .vrtx-json-element .right > div {
   clear: left;
   float: left;
   margin-top: 20px;
+}
+
+#items .vrtx-json-element .left > div:first-child,
+#items .vrtx-json-element .right > div:first-child {
+  margin-top: 0px;
+}
+
+#items .vrtx-json-element .left,
+#items .vrtx-json-element .right {
+  margin-top: 0px;
+}
+
+#items .vrtx-json-element .right {
+  clear: none;
 }
 
 #items .vrtx-json-element > div > div:first-child {

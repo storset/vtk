@@ -72,16 +72,18 @@
         }
       });
       
+      // TODO: avoid this being hardcoded here
+      var items = $("#editor.vrtx-syllabus #items");
+      wrapJSONItemsLeftRight(items, ".author, .title, .year, .publisher, .isbn, .comment", ".linktext, .link, .bibsys, .fulltext, .articles");
+      accordionHeaderListener(items, ".author input, .title input");
+      // ^ TODO: avoid this being hardcoded here
+      
       // Because accordion needs one content wrapper
       for(var grouped = $(".vrtx-json-accordion .vrtx-json-element"), i = grouped.length; i--;) { 
         var group = $(grouped[i]);
         group.find("> *").wrapAll("<div />");
-        group.prepend('<div class="header">' + (vrtxAdmin.lang !== "en" ? "Inget innhold" : "No content") + '</div>');
+        updateHeader(group);
       }
-      
-      // Check that selector exists before wrapping .left and .right
-      // TODO: avoid this being hardcoded here
-      wrapJSONItemsLeftRight($("#editor.vrtx-syllabus #items"), ".author, .title, .year, .publisher, .isbn, .comment", ".linktext, .link, .bibsys, .fulltext, .articles");
       
       $(".vrtx-json-accordion .fieldset").accordion({ 
                                             header: "> div > .header",
@@ -89,6 +91,8 @@
                                             collapsible: true,
                                             active: false
                                           });
+                                          
+       
 
      $("#app-content").on("click", ".vrtx-json .vrtx-add-button input", function(e) {
         var accordionWrapper = $(this).closest(".vrtx-json-accordion");
@@ -103,10 +107,11 @@
           group.find("> *").wrapAll("<div />");
           group.prepend('<div class="header">' + (vrtxAdmin.lang !== "en" ? "Inget innhold" : "No content") + '</div>');
           
-          // Check that selector exists before wrapping .left and .right
           // TODO: avoid this being hardcoded here
           wrapJSONItemsLeftRight(group, ".author, .title, .year, .publisher, .isbn, .comment", ".linktext, .link, .bibsys, .fulltext, .articles");
-
+          accordionHeaderListener(items, ".author input, .title input");
+          // ^ TODO: avoid this being hardcoded here
+          
           accordionRefresh(accordionContent);
         }
         e.stopPropagation();
@@ -119,6 +124,40 @@
       if(items.length) {
         items.find(leftItems).wrapAll("<div class='left' />");
         items.find(rightItems).wrapAll("<div class='right' />");
+      }
+    }
+    
+    function accordionHeaderListener(items, fieldSelector) {
+      var elm = items.find(fieldSelector);
+      if(elm.length) {
+        elm.addClass("header-listener");
+        elm.off("keyup").on("keyup", function() {
+          updateHeader($(this));
+        });
+      }
+    }
+    
+    function updateHeader(elem) {
+      var str = "";
+      var jsonElm = elem.closest(".vrtx-json-element");
+      var fields = jsonElm.find(".header-listener");
+      if(fields.length) {
+        for(var i = 0, len = fields.length, useDelimiter = (len > 1); i < len; i++) {
+          if(useDelimiter && i < (len - 1)) {
+            str += $(fields[i]).val() + ", ";
+          } else {
+            str += $(fields[i]).val();
+          }
+        }
+        if(str === ", " || str === "") {
+          str = (vrtxAdmin.lang !== "en") ? "Inget innhold" : "No content";
+        }
+        var header = jsonElm.find("> .header");
+        if(!header.length) {
+          jsonElm.prepend('<div class="header">' + str + '</div>');
+        } else {
+          header.html('<span class="ui-icon ui-icon-triangle-1-s"></span>' + str);
+        }
       }
     }
     
@@ -406,13 +445,15 @@
           date2.val(dateVal1);
           hours2.val(hoursVal1);
           minutes2.val(minutesVal1);
-        }
+        }    
         var element1 = $(elementId1);
         var element2 = $(elementId2);
         var val1 = element1.val();
         var val2 = element2.val();
         element1.val(val2);
         element2.val(val1);
+        updateHeader(element1);
+        updateHeader(element2);
         element1.blur();
         element2.blur();
         element1.change();

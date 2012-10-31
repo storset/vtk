@@ -87,11 +87,11 @@
       <#break>
 
     <#case "html">
-      <#if elem.description.edithints?exists>
+      <#--if elem.description.edithints?exists>
         <#list elem.description.edithints?keys as hint>
           ${hint} <br />
         </#list>
-      </#if>
+      </#if-->
 
       <@vrtxHtml.printPropertyEditView
         title=localizedTitle
@@ -390,11 +390,11 @@
       <#break>
 
     <#case "html">
-      <#if elem.description.edithints?exists>
+      <#--if elem.description.edithints?exists>
         <#list elem.description.edithints?keys as hint>
           ${hint} <br />
         </#list>
-      </#if>
+      </#if-->
 
       <@vrtxHtml.printPropertyEditView
         title=jsonAttr

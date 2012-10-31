@@ -39,7 +39,7 @@
         }
     },
 
-    "principal-manager" {
+    "principal-manager" : {
         "matching-principal-store" : {
             "pattern" : ".*@localhost"
         },
@@ -81,14 +81,14 @@
             "expected-outcome" : "FAILURE"
         },
 
-        "admin-user-delete-root" {
+        "admin-user-delete-root" : {
             "uri" : "/",
             "principal" : "admin@localhost",
             "repository-action" : "DELETE",
             "expected-outcome" : "FAILURE"
         },
 
-        "admin-user-delete-child" {
+        "admin-user-delete-child" : {
             "uri" : "/b",
             "principal" : "admin@localhost",
             "repository-action" : "DELETE",
@@ -107,7 +107,7 @@
             "expected-outcome" : "SUCCESS"
         },
 
-        "admin-user-not-root" {
+        "admin-user-not-root":  {
             "uri" : "/",
             "principal" : "admin@localhost",
             "repository-action" : "REPOSITORY_ROOT_ROLE_ACTION",

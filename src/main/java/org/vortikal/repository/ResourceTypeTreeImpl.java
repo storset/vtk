@@ -425,6 +425,11 @@ public class ResourceTypeTreeImpl implements ResourceTypeTree, InitializingBean,
             namespace = new Namespace(namespaceUrl);
         return namespace;
     }
+    
+    @Override
+    public Namespace getNamespaceByPrefix(String prefix) {
+        return this.namespacePrefixMap.get(prefix);
+    }
 
 
     @Override

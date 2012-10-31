@@ -71,11 +71,11 @@
             .find(".vrtx-add-button input").data({'number': i});
         }
       });
-      
+
       // TODO: avoid this being hardcoded here
       var items = $("#editor.vrtx-syllabus #items");
       wrapJSONItemsLeftRight(items, ".author, .title, .year, .publisher, .isbn, .comment", ".linktext, .link, .bibsys, .fulltext, .articles");
-      accordionHeaderListener(items, ".author input, .title input");
+      items.find(".author input, .title input").addClass("header-populators");
       // ^ TODO: avoid this being hardcoded here
       
       // Because accordion needs one content wrapper
@@ -85,11 +85,16 @@
         updateHeader(group);
       }
       
+
+      
       $(".vrtx-json-accordion .fieldset").accordion({ 
                                             header: "> div > .header",
                                             autoHeight: false,
                                             collapsible: true,
-                                            active: false
+                                            active: false,
+                                            change: function(e, ui) {
+                                              updateHeader(ui.oldHeader);
+                                            }  
                                           });
                                           
        
@@ -109,7 +114,6 @@
           
           // TODO: avoid this being hardcoded here
           wrapJSONItemsLeftRight(group, ".author, .title, .year, .publisher, .isbn, .comment", ".linktext, .link, .bibsys, .fulltext, .articles");
-          accordionHeaderListener(items, ".author input, .title input");
           // ^ TODO: avoid this being hardcoded here
           
           accordionRefresh(accordionContent);
@@ -127,21 +131,11 @@
       }
     }
     
-    function accordionHeaderListener(items, fieldSelector) {
-      var elm = items.find(fieldSelector);
-      if(elm.length) {
-        elm.addClass("header-listener");
-        elm.off("keyup").on("keyup", function() {
-          updateHeader($(this));
-        });
-      }
-    }
-    
     function updateHeader(elem) {
       var str = "";
-      var jsonElm = elem.closest(".vrtx-json-element");
-      var fields = jsonElm.find(".header-listener");
-      if(fields.length) {
+      var jsonElm = elem.closest(".vrtx-json-accordion .vrtx-json-element");
+      if(jsonElm.length) {
+        var fields = jsonElm.find(".header-populators");
         for(var i = 0, len = fields.length, useDelimiter = (len > 1); i < len; i++) {
           if(useDelimiter && i < (len - 1)) {
             str += $(fields[i]).val() + ", ";
@@ -166,7 +160,10 @@
                                   header: "> div > .header",
                                   autoHeight: false,
                                   collapsible: true,
-                                  active: false
+                                  active: false,
+                                  change: function(e, ui) {
+                                    updateHeader(ui.oldHeader);
+                                  }  
                                 });
     }
 

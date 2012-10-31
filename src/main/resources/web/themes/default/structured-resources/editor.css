@@ -120,7 +120,8 @@
   margin-top: 0px;
 }
 
-.ui-accordion > div.header {
+.ui-accordion > .header,
+.ui-accordion > .vrtx-add-button {
   margin-left: 0px;
   margin-right: 0px;
 }

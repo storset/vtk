@@ -78,19 +78,19 @@
       });
 
       // TODO: avoid this being hardcoded here
+      
       var items = $("#editor.vrtx-syllabus #items");
       wrapJSONItemsLeftRight(items, ".author, .title, .year, .publisher, .isbn, .comment", ".linktext, .link, .bibsys, .fulltext, .articles");
       items.find(".author input, .title input").addClass("header-populators");
+      
       // ^ TODO: avoid this being hardcoded here
       
       // Because accordion needs one content wrapper
       for(var grouped = $(".vrtx-json-accordion .vrtx-json-element"), i = grouped.length; i--;) { 
         var group = $(grouped[i]);
         group.find("> *").wrapAll("<div />");
-        updateHeader(group);
+        updateAccordionHeader(group);
       }
-      
-
       
       $(".vrtx-json-accordion .fieldset").accordion({ 
                                             header: "> div > .header",
@@ -98,13 +98,12 @@
                                             collapsible: true,
                                             active: false,
                                             change: function(e, ui) {
-                                              updateHeader(ui.oldHeader);
+                                              updateAccordionHeader(ui.oldHeader);
                                             }  
                                           });
                                           
        
       var appContent = $("#app-content");
-      
       appContent.on("click", ".vrtx-json .vrtx-add-button", function(e) {
         var accordionWrapper = $(this).closest(".vrtx-json-accordion");
         var hasAccordion = accordionWrapper.length;
@@ -183,8 +182,10 @@
         var prev = newElement.prev(".vrtx-json-element");
       
         if(!isImmovable && counter > 0) {
-          newElement.find(".vrtx-move-up-button").click(function () {
+          newElement.find(".vrtx-move-up-button").click(function (e) {
             swapContent(counter, arrayOfIds, -1, j.name);
+            e.stopPropagation();
+            e.preventDefault();
           });
 
           if (prev.length) {
@@ -193,8 +194,10 @@
             } else {
               prev.append(moveDownButton);
             }
-            prev.find(".vrtx-move-down-button").click(function () {
+            prev.find(".vrtx-move-down-button").click(function (e) {
               swapContent(counter-1, arrayOfIds, 1, j.name);
+              e.stopPropagation();
+              e.preventDefault();
             });
           }
         }
@@ -248,9 +251,9 @@
             delete ckInstance;
           }
         }
+        removeElement.remove();
         removeElementParent.find(".vrtx-json-element:first .vrtx-move-up-button").remove();
         removeElementParent.find(".vrtx-json-element:last .vrtx-move-down-button").remove();
-        removeElement.remove();
         if(hasAccordion) {
           accordionRefresh(removeElementParent.closest(".fieldset"));
         }
@@ -266,7 +269,7 @@
                                   collapsible: true,
                                   active: false,
                                   change: function(e, ui) {
-                                    updateHeader(ui.oldHeader);
+                                    updateAccordionHeader(ui.oldHeader);
                                   }  
                                 });
     }
@@ -278,7 +281,7 @@
       }
     }
     
-    function updateHeader(elem) {
+    function updateAccordionHeader(elem) {
       var str = "";
       var jsonElm = elem.closest(".vrtx-json-element");
       if(jsonElm.length) {
@@ -396,6 +399,10 @@
     function swapContent(counter, arrayOfIds, move, name) {
       var thisId = "#vrtx-json-element-" + name + "-" + counter;
       var thisElm = $(thisId);
+      
+      var accordionWrapper = thisElm.closest(".vrtx-json-accordion");
+      var hasAccordion = accordionWrapper.length;   
+      
       if (move > 0) {
         var movedElm = thisElm.next(".vrtx-json-element");
       } else {
@@ -445,8 +452,10 @@
         var val2 = element2.val();
         element1.val(val2);
         element2.val(val1);
-        updateHeader(element1);
-        updateHeader(element2);
+        if(hasAccordion) {
+          updateAccordionHeader(element1);
+          updateAccordionHeader(element2);
+        }
         element1.blur();
         element2.blur();
         element1.change();

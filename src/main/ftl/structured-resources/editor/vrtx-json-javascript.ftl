@@ -226,7 +226,7 @@
           items.find(".author input, .title input").addClass("header-populators");
           // ^ TODO: avoid this being hardcoded here
           
-          accordionRefresh(accordionContent);
+          accordionRefresh(accordionContent, false);
         }
         e.stopPropagation();
         e.preventDefault();
@@ -252,19 +252,20 @@
         removeElementParent.find(".vrtx-json-element:first .vrtx-move-up-button").remove();
         removeElementParent.find(".vrtx-json-element:last .vrtx-move-down-button").remove();
         if(hasAccordion) {
-          accordionRefresh(removeElementParent.closest(".fieldset"));
+          var accordionContent = accordionWrapper.find(".fieldset");
+          accordionRefresh(accordionContent, false);
         }
         e.stopPropagation();
         e.preventDefault();
       });
     });
     
-    function accordionRefresh(elem) {
+    function accordionRefresh(elem, active) {
       elem.accordion('destroy').accordion({ 
                                   header: "> div > .header",
                                   autoHeight: false,
                                   collapsible: true,
-                                  active: false,
+                                  active: active,
                                   change: function(e, ui) {
                                     updateAccordionHeader(ui.oldHeader);
                                   }  
@@ -466,6 +467,12 @@
       }
       thisElm.focusout();
       movedElm.focusout();
+
+      if(hasAccordion) {
+        var accordionContent = accordionWrapper.find(".fieldset");
+        accordionContent.accordion("option", "active", (movedElm.index() - 1));
+        accordionWrapper.accordion("option", "refresh");
+      }
       
       var absPos = movedElm.offset();
       var absPosTop = absPos.top;

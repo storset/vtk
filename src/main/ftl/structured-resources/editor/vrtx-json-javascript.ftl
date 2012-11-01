@@ -2,6 +2,7 @@
 <#-- JSON elements interaction in new documenttypes (add, remove and move) 
 
      TODO: * Move all JS to JS-file to get syntax highlighting (I'm getting snow-blind)
+           ** On the positive side so is JS in FTL nice for when developing in Vortex
            * Still a little too much traversal and i think a little slow solution for replacing id-numbers on move
 
 -->

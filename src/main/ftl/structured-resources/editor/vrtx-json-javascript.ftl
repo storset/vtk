@@ -311,8 +311,7 @@
           var field = jsonElm.find(".header-fallback-populator");
           var fieldId = field.attr("id");
           if(isCkEditor(fieldId)) { // Check if CK
-            var removeHtmlRegEx = /(<([^>]+)>)/ig;
-            str = getCkValue(fieldId).replace(removeHtmlRegEx, ""); // Get content and remove markup
+            str = getCkValue(fieldId).replace(/(<([^>]+)>)/ig, ""); // Get content and remove markup
           }else {
             str = field.val();
           }

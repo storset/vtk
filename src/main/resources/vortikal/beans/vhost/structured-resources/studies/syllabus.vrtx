@@ -32,8 +32,8 @@ resourcetype syllabus {
         [def file json-resource(uri)]
         [if file != null]
           [def mappings file.properties.mappings]
-          <div id="vrtx-syllabus-ub-mapping">
-            <h2 style="margin-top: -12px; border-top: medium none;">UB-Mapping</h2>
+          <div id="vrtx-additional-content">
+            <h2>UB-Mapping</h2>
             [list mappings mapping]
               [def mapping-prefix mapping.prefix.toLowerCase()]
               [if prefix = mapping-prefix]
@@ -95,16 +95,18 @@ resourcetype syllabus {
         <title>[call "resource:property" {"id":"title"}]</title>
       </head>
       <body id="vrtx-syllabus">
-        <div role="main" id="vrtx-syllabus-main-content">
-          <h1 id="hdr">[localized 'syllabus'] ([if course-code != null][val course-code][endif][if course-code != null && semester != null] - [endif][if semester != null][val semester][endif])</h1>
-          [call "comp:items"]
-          [call "json:field" {"select":"content"}]
+        <div id="vrtx-content">
+          <div id="vrtx-main-content">
+            <h1>[localized 'syllabus'] ([if course-code != null][val course-code][endif][if course-code != null && semester != null] - [endif][if semester != null][val semester][endif])</h1>
+            [call "comp:items"]
+            [call "json:field" {"select":"content"}]
+          </div>
+          [if course-code != null && course-code != ""]
+            [def prefix course-code.split('[0-9]').0]
+            [def prefix prefix.toLowerCase()]
+            [call "comp:ub-mapping" {"prefix":prefix}]
+          [endif]
         </div>
-        [if course-code != null && course-code != ""]
-          [def prefix course-code.split('[0-9]').0]
-          [def prefix prefix.toLowerCase()]
-          [call "comp:ub-mapping" {"prefix":prefix}]
-        [endif]
       </body>
     </html>
     ##

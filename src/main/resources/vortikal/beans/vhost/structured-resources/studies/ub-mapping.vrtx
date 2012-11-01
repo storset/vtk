@@ -50,6 +50,7 @@ resourcetype ub-mapping {
 
   localization {
     title : (en : "Title", no : "Tittel", nn : "Tittel"),
+    header : (en : "Edit UB-mapping", no : "Rediger UB-mapping", nn : "Rediger UB-mapping"),
     mappings : (en : "Mappings:", no : "Mappinger:", nn : "Mappinger:"),
     prefix : (en : "Prefix", no : "Prefiks", nn : "Prefiks"),
     mappinglink-no : (en : "Norwegian webaddress", no : "Norsk webadresse", nn : "Norsk webadresse"),

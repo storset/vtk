@@ -112,6 +112,7 @@ resourcetype syllabus {
 
   localization {
     title : (en : "Title", no : "Tittel", nn : "Tittel"),
+    header : (en : "Edit syllabus", no : "Rediger pensumliste", nn : "Rediger pensumliste"),
     author : (en : "Author", no : "Forfatter", nn : "Forfatter"),
     year : (en : "Year", no : "År", nn : "År"),
     publisher : (en : "Publisher", no : "Utgiver", nn : "Utgiver"),

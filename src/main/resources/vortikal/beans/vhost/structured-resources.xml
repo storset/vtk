@@ -72,6 +72,7 @@
         <ref bean="requiresWritePermissionAssertion" />
         <ref bean="editor.modeParameterAssertion" />
         <ref bean="editor.parameterEqualsEdit" />
+        <ref bean="editableResourcesAssertion" />
       </list>
     </property>
     <property name="categories">
@@ -88,6 +89,19 @@
       </map>
     </property>
     <property name="handler" ref="structuredResources.editHandler" />
+  </bean>
+
+  <bean id="editableResourcesAssertion" class="org.vortikal.web.service.AndAssertion">
+    <property name="assertions">
+      <list>
+        <ref bean="resourceTypeIsNotExam" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="resourceTypeIsNotExam" class="org.vortikal.web.service.ResourceTypeAssertion" parent="repositoryAware">
+    <property name="resourceType" value="exam" />
+    <property name="invert" value="true" />
   </bean>
 
   <bean id="structuredResources.workingCopyTabTitle"

@@ -13,7 +13,8 @@
    
     var TEMPLATES = [];
     var LIST_OF_JSON_ELEMENTS = [];
-
+    var REFRESH_MOVE_ACCORDION = null;
+    
     $(document).ready(function() {
 
       // Retrieve HTML templates
@@ -96,6 +97,10 @@
                                             active: false,
                                             change: function(e, ui) {
                                               updateAccordionHeader(ui.oldHeader);
+                                              if(REFRESH_MOVE_ACCORDION) {
+                                                scrollToElm(REFRESH_MOVE_ACCORDION);
+                                                REFRESH_MOVE_ACCORDION = null;
+                                              }
                                             }  
                                           });
                                           
@@ -259,7 +264,7 @@
         e.preventDefault();
       });
     });
-    
+
     function accordionRefresh(elem, active) {
       elem.accordion('destroy').accordion({ 
                                   header: "> div > .header",
@@ -268,6 +273,10 @@
                                   active: active,
                                   change: function(e, ui) {
                                     updateAccordionHeader(ui.oldHeader);
+                                    if(REFRESH_MOVE_ACCORDION) {
+                                      scrollToElm(REFRESH_MOVE_ACCORDION);
+                                      REFRESH_MOVE_ACCORDION = null;
+                                    }
                                   }  
                                 });
     }
@@ -469,11 +478,16 @@
       movedElm.focusout();
 
       if(hasAccordion) {
+        REFRESH_MOVE_ACCORDION = movedElm;
         var accordionContent = accordionWrapper.find(".fieldset");
         accordionContent.accordion("option", "active", (movedElm.index() - 1));
-        accordionWrapper.accordion("option", "refresh");
+        accordionContent.accordion("option", "refresh");
+      } else {
+        scrollToElm(movedElm);
       }
-      
+    }
+    
+    function scrollToElm(movedElm) {
       var absPos = movedElm.offset();
       var absPosTop = absPos.top;
       var stickyBar = $("#vrtx-editor-title-submit-buttons");

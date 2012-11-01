@@ -317,7 +317,7 @@
             str = field.val();
           }
           if(str.length > 30) {
-            str = str.substring(0, 30);
+            str = str.substring(0, 30) + "...";
           } else if(!str.length) {
             str = (vrtxAdmin.lang !== "en") ? "Inget innhold" : "No content";
           }

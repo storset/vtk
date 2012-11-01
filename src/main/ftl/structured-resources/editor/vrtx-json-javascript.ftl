@@ -82,6 +82,7 @@
       var items = $("#editor.vrtx-syllabus #items");
       wrapJSONItemsLeftRight(items.find(".vrtx-json-element"), ".author, .title, .year, .publisher, .isbn, .comment", ".linktext, .link, .bibsys, .fulltext, .articles");
       items.find(".author input, .title input").addClass("header-populators");
+      items.find(".vrtx-html textarea").addClass("header-secondary-populator");
       // ^ TODO: avoid this being hardcoded here
       
        // Because accordion needs one content wrapper
@@ -230,6 +231,7 @@
           // TODO: avoid this being hardcoded here
           wrapJSONItemsLeftRight(group, ".author, .title, .year, .publisher, .isbn, .comment", ".linktext, .link, .bibsys, .fulltext, .articles");
           items.find(".author input, .title input").addClass("header-populators");
+          items.find(".vrtx-html textarea").addClass("header-secondary-populator");
           // ^ TODO: avoid this being hardcoded here
           
           accordionRefresh(accordionContent, false);
@@ -296,17 +298,28 @@
     }
     
     function updateAccordionHeader(elem) {
-      var str = "";
       var jsonElm = elem.closest(".vrtx-json-element");
-      if(jsonElm.length) {
+      if(jsonElm.length) { // Prime header populators
+        var str = "";
         var fields = jsonElm.find(".header-populators");
         for(var i = 0, len = fields.length; i < len; i++) {
           var val = $(fields[i]).val(); 
           if(!val.length) continue;
-          str += (str.length) ? ", " + val  : val;
+          str += (str.length) ? ", " + val : val;
         }
-        if(str === "") {
-          str = (vrtxAdmin.lang !== "en") ? "Inget innhold" : "No content";
+        if(!str.length) { // Secondary header populator
+          var field = jsonElm.find(".header-secondary-populator");
+          var fieldId = field.attr("id");
+          if(isCkEditor(fieldId)) {
+            str = getCkValue(fieldId);
+          }else {
+            str = field.val();
+          }
+          if(str.length > 30) {
+            str = str.substring(0, 30);
+          } else if(!str.length) {
+            str = (vrtxAdmin.lang !== "en") ? "Inget innhold" : "No content";
+          }
         }
         var header = jsonElm.find("> .header");
         if(!header.length) {

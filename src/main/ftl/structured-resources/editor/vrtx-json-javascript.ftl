@@ -310,8 +310,9 @@
         if(!str.length) { // Fallback header populator
           var field = jsonElm.find(".header-fallback-populator");
           var fieldId = field.attr("id");
-          if(isCkEditor(fieldId)) {
-            str = getCkValue(fieldId);
+          if(isCkEditor(fieldId)) { // Check if CK
+            var removeHtmlRegEx = /(<([^>]+)>)/ig;
+            str = getCkValue(fieldId).replace(removeHtmlRegEx, ""); // Get content and remove markup
           }else {
             str = field.val();
           }

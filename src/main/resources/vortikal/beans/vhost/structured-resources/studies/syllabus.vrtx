@@ -94,7 +94,7 @@ resourcetype syllabus {
       <head>
         <title>[call "resource:property" {"id":"title"}]</title>
       </head>
-      <div id="vrtx-syllabus">
+      <body id="vrtx-syllabus">
         <div role="main" id="vrtx-syllabus-main-content">
           <h1 id="hdr">[localized 'syllabus'] ([if course-code != null][val course-code][endif][if course-code != null && semester != null] - [endif][if semester != null][val semester][endif])</h1>
           [call "comp:items"]
@@ -105,7 +105,7 @@ resourcetype syllabus {
           [def prefix prefix.toLowerCase()]
           [call "comp:ub-mapping" {"prefix":prefix}]
         [endif]
-      </div>
+      </body>
     </html>
     ##
   }
@@ -126,7 +126,7 @@ resourcetype syllabus {
     item-content : (en : "Content", no : "Innhold", nn : "Innhald"),
     content : (en : "Content", no : "Innhold", nn : "Innhald"),
     in : (en : "in", no : "i", nn : "i"),
-    syllabus : (en : "Syllabus/teaching requirements", no : "Pensum/læringskrav", nn : "Pensum/læringskrav")
+    syllabus : (en : "Syllabus/achievement requirements", no : "Pensum/læringskrav", nn : "Pensum/læringskrav")
   }
 
 }

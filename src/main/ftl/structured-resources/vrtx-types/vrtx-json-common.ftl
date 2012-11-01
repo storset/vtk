@@ -283,10 +283,10 @@
                  </div>
 
                  <script type="text/javascript"><!--
-                   $("#vrtx-json-element-${inputFieldName}-${counter}").find(".vrtx-move-up-button").click(function(e){
+                   $("#vrtx-json-element-${inputFieldName}-${counter}").find(".vrtx-move-up-button").off("click").click(function(e){
      		         swapContent(${counter}, ${arrayOfIds}, -1, "${inputFieldName}");
      		         e.stopPropagation();
-                     e.preventDefault();
+	     	         e.preventDefault();
                    });
                  // -->
                  </script>
@@ -298,10 +298,10 @@
                  </div>
 
                  <script type="text/javascript"><!--
-          	       $("#vrtx-json-element-${inputFieldName}-${counter}").find(".vrtx-move-down-button").click(function(e){
+          	       $("#vrtx-json-element-${inputFieldName}-${counter}").find(".vrtx-move-down-button").off("click").click(function(e){
 	     	         swapContent(${counter}, ${arrayOfIds}, 1, "${inputFieldName}");
 	     	         e.stopPropagation();
-                     e.preventDefault();
+	     	         e.preventDefault();
 	     	       });
 	     	     // -->
                  </script>

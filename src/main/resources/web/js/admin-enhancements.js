@@ -1652,7 +1652,7 @@ function editorInteraction(bodyId, vrtxAdm, _$) {
       e.stopPropagation();
     });
     
-    
+    // Course status - continued as
     vrtxAdm.cachedAppContent.on("change", "#resource\\.courseContext\\.course-status", function(e) {
       var courseStatus = _$.single(this);
       if(courseStatus.val() === "continued-as") {
@@ -1662,7 +1662,6 @@ function editorInteraction(bodyId, vrtxAdm, _$) {
       }
       e.stopPropagation();
     });
-    // Course status - continued as
     _$("#resource\\.courseContext\\.course-status").change();
 
     // Stickybar

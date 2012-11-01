@@ -1626,6 +1626,8 @@ function editorInteraction(bodyId, vrtxAdm, _$) {
     autocompleteUsernames(".vrtx-autocomplete-username");
     autocompleteTags(".vrtx-autocomplete-tag");
     
+    /* Toggle fields - TODO: should be more general (and without '.'s) but old editor need an update first */
+    
     // Aggregation and manually approved
     if(!_$("#resource\\.display-aggregation\\.true").is(":checked")) {
       _$("#vrtx-resource\\.aggregation").slideUp(0, "linear");

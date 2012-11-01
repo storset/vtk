@@ -311,9 +311,12 @@
           var field = jsonElm.find(".header-fallback-populator");
           var fieldId = field.attr("id");
           if(isCkEditor(fieldId)) { // Check if CK
-            str = $.trim(getCkValue(fieldId).replace(/(<([^>]+)>|[\t\r]+)/ig, "")); // Get CK content and remove markup
-          }else {
+            str = getCkValue(fieldId); // Get CK content
+          } else {
             str = field.val();
+          }
+          if(field.is("textarea")) { // Remove markup and tabs
+            str = $.trim(str.replace(/(<([^>]+)>|[\t\r]+)/ig, ""));
           }
           if(str.length > 30) {
             str = str.substring(0, 30) + "...";

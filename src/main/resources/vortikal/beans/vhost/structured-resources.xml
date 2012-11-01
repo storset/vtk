@@ -162,11 +162,11 @@
   </bean>
 
   <bean id="structuredResources.ifDirective" class="org.vortikal.text.tl.IfNodeFactory">
-    <property name="functions" ref="structuredResources.defaultFunctions" />
+    <property name="functions" ref="structuredResources.tlFunctions" />
   </bean>
 
   <bean id="structuredResources.valDirective" class="org.vortikal.text.tl.ValNodeFactory">
-    <property name="functions" ref="structuredResources.defaultFunctions" />
+    <property name="functions" ref="structuredResources.tlFunctions" />
     <constructor-arg>
       <map>
         <entry>
@@ -196,11 +196,11 @@
   </bean>
 
   <bean id="structuredResources.listDirective" class="org.vortikal.text.tl.ListNodeFactory">
-    <property name="functions" ref="structuredResources.defaultFunctions" />
+    <property name="functions" ref="structuredResources.tlFunctions" />
   </bean>
 
   <bean id="structuredResources.defDirective" class="org.vortikal.text.tl.DefineNodeFactory">
-    <property name="functions" ref="structuredResources.defaultFunctions" />
+    <property name="functions" ref="structuredResources.tlFunctions" />
   </bean>
 
   <bean id="structuredResources.resourcePropsDirective" class="org.vortikal.resourcemanagement.view.tl.ResourcePropsNodeFactory" />
@@ -214,11 +214,18 @@
       <bean class="org.vortikal.resourcemanagement.view.StructuredResourceDisplayController$ComponentSupport" />
     </constructor-arg>
     <constructor-arg>
-      <ref bean="structuredResources.defaultFunctions" />
+      <ref bean="structuredResources.tlFunctions" />
     </constructor-arg>
   </bean>
 
-  <bean id="structuredResources.defaultFunctions"
+
+
+  <bean id="structuredResources.tlFunctions" class="org.vortikal.context.UnionFactoryBean">
+    <property name="elements1" ref="structuredResources.builtinFunctions" />
+    <property name="elements2" ref="structuredResources.customFunctions" />
+  </bean>
+
+  <bean id="structuredResources.builtinFunctions"
         class="org.springframework.beans.factory.config.SetFactoryBean">
     <property name="sourceSet">
       <set>
@@ -242,6 +249,12 @@
         <ref bean="structuredResources.localizedFunction" />
       </set>
     </property>
+  </bean>
+
+
+  <bean id="structuredResources.customFunctions" 
+    class="org.vortikal.context.CategoryResolvingFactoryBean">
+    <property name="category" value="structuredResources.customFunction" />
   </bean>
 
   <bean id="structuredResources.requestContextFunction" class="org.vortikal.resourcemanagement.view.tl.RequestContextFunction">

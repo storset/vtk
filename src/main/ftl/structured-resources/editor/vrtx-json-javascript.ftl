@@ -77,14 +77,12 @@
       });
 
       // TODO: avoid this being hardcoded here
-      
       var items = $("#editor.vrtx-syllabus #items");
-      wrapJSONItemsLeftRight(items, ".author, .title, .year, .publisher, .isbn, .comment", ".linktext, .link, .bibsys, .fulltext, .articles");
+      wrapJSONItemsLeftRight(items.find(".vrtx-json-element"), ".author, .title, .year, .publisher, .isbn, .comment", ".linktext, .link, .bibsys, .fulltext, .articles");
       items.find(".author input, .title input").addClass("header-populators");
-      
       // ^ TODO: avoid this being hardcoded here
       
-      // Because accordion needs one content wrapper
+       // Because accordion needs one content wrapper
       for(var grouped = $(".vrtx-json-accordion .vrtx-json-element"), i = grouped.length; i--;) { 
         var group = $(grouped[i]);
         group.find("> *").wrapAll("<div />");
@@ -274,9 +272,15 @@
     }
     
     function wrapJSONItemsLeftRight(items, leftItems, rightItems) {
-      if(items.length) {
+      if(items.length == 1) {
         items.find(leftItems).wrapAll("<div class='left' />");
         items.find(rightItems).wrapAll("<div class='right' />");
+      } else if(items.length > 1) {
+         var i = items.length;
+         while(i--) {
+           $(items[i]).find(leftItems).wrapAll("<div class='left' />");
+           $(items[i]).find(rightItems).wrapAll("<div class='right' />");
+         }
       }
     }
     

@@ -300,12 +300,12 @@
       var jsonElm = elem.closest(".vrtx-json-element");
       if(jsonElm.length) {
         var fields = jsonElm.find(".header-populators");
-        for(var i = 0, len = fields.length, useDelimiter = (len > 1); i < len; i++) {
+        for(var i = 0, len = fields.length; i < len; i++) {
           var val = $(fields[i]).val(); 
           if(!val.length) continue;
-          str += (useDelimiter && i < (len - 1)) ? val + ", " : val;
+          str += (str.length) ? ", " + val  : val;
         }
-        if(str === ", " || str === "") {
+        if(str === "") {
           str = (vrtxAdmin.lang !== "en") ? "Inget innhold" : "No content";
         }
         var header = jsonElm.find("> .header");

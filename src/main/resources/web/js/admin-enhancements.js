@@ -1630,11 +1630,10 @@ function editorInteraction(bodyId, vrtxAdm, _$) {
     if(!_$("#resource\\.display-aggregation\\.true").is(":checked")) {
       _$("#vrtx-resource\\.aggregation").slideUp(0, "linear");
     }
-
     if(!_$("#resource\\.display-manually-approved\\.true").is(":checked")) {
       _$("#vrtx-resource\\.manually-approve-from").slideUp(0, "linear");
     }
- 
+
     vrtxAdm.cachedAppContent.on("click", "#resource\\.display-aggregation\\.true", function(e) {
       if(!_$.single(this).is(":checked")) {                   // If unchecked remove rows and clean prop textfield
         _$(".aggregation .vrtx-multipleinputfield").remove();
@@ -1652,6 +1651,19 @@ function editorInteraction(bodyId, vrtxAdm, _$) {
       _$("#vrtx-resource\\.manually-approve-from").slideToggle(vrtxAdm.transitionDropdownSpeed, "swing");
       e.stopPropagation();
     });
+    
+    
+    vrtxAdm.cachedAppContent.on("change", "#resource\\.courseContext\\.course-status", function(e) {
+      var courseStatus = _$.single(this);
+      if(courseStatus.val() === "continued-as") {
+        _$("#vrtx-resource\\.courseContext\\.course-continued-as:hidden").slideDown(vrtxAdm.transitionDropdownSpeed, "swing"); 
+      } else {
+        _$("#vrtx-resource\\.courseContext\\.course-continued-as:visible").slideUp(vrtxAdm.transitionDropdownSpeed, "swing"); 
+      }
+      e.stopPropagation();
+    });
+    // Course status - continued as
+    _$("#resource\\.courseContext\\.course-status").change();
 
     // Stickybar
     var titleSubmitButtons = _$("#vrtx-editor-title-submit-buttons");

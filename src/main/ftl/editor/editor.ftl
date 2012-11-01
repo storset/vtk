@@ -96,6 +96,9 @@
             var manuallyApproveButton = $("#manually-approve-container-title");
             manuallyApproveButton.parent().find("> div:first-child").append(manuallyApproveButton.remove());
           }
+          if(_$("#vrtx-resource\\.courseContext\\.course-continued-as").length) {
+          
+          }
         }); 
       }); 
 

@@ -1730,7 +1730,6 @@
   </bean>
 
   <bean id="aboutView.additionalReferenceDataProviders" class="org.vortikal.context.CategoryResolvingFactoryBean">
-    <property name="clazz" value="org.vortikal.web.referencedata.CategorizableReferenceDataProvider" />
     <property name="category" value="aboutView.referenceDataProvider" />
   </bean>
 
@@ -1815,8 +1814,7 @@
     <constructor-arg ref="collectionActionServicesFactory" />
   </bean>
 
-  <bean id="collectionActionServicesFactory" class="org.vortikal.context.CategoryResolvingFactoryBean" lazy-init="true">
-    <property name="clazz" value="org.vortikal.web.service.Service" />
+  <bean id="collectionActionServicesFactory" class="org.vortikal.context.CategoryResolvingFactoryBean" lazy-init="true" parent="ordered">
     <property name="category" value="collectionMenu" />
   </bean>
 
@@ -1828,8 +1826,7 @@
     <constructor-arg ref="resourceMenuLeft.referenceDataProviders" />
   </bean>
 
-  <bean id="resourceMenuLeftActionServicesFactory" class="org.vortikal.context.CategoryResolvingFactoryBean">
-    <property name="clazz" value="org.vortikal.web.service.Service" />
+  <bean id="resourceMenuLeftActionServicesFactory" class="org.vortikal.context.CategoryResolvingFactoryBean" parent="ordered">
     <property name="category" value="resourceMenuLeft" />
     <property name="comparator">
       <bean class="org.vortikal.web.service.ServiceAttributeComparator">
@@ -1839,7 +1836,6 @@
   </bean>
 
   <bean id="resourceMenuLeft.referenceDataProviders" class="org.vortikal.context.CategoryResolvingFactoryBean">
-    <property name="clazz" value="org.vortikal.web.referencedata.CategorizableReferenceDataProvider" />
     <property name="category" value="resourceMenuLeft.referenceDataProvider" />
   </bean>
 
@@ -1853,7 +1849,6 @@
   </bean>
 
   <bean id="resourceMenuRightActionServicesFactory" class="org.vortikal.context.CategoryResolvingFactoryBean">
-    <property name="clazz" value="org.vortikal.web.service.Service" />
     <property name="category" value="resourceMenuRight" />
     <property name="comparator">
       <bean class="org.vortikal.web.service.ServiceAttributeComparator">
@@ -1863,7 +1858,6 @@
   </bean>
 
   <bean id="resourceMenuRight.referenceDataProviders" class="org.vortikal.context.CategoryResolvingFactoryBean">
-    <property name="clazz" value="org.vortikal.web.referencedata.CategorizableReferenceDataProvider" />
     <property name="category" value="resourceMenuRight.referenceDataProvider" />
   </bean>
 

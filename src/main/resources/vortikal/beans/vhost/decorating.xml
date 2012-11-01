@@ -152,10 +152,10 @@
     <property name="aspectsPropdef" ref="resourceAspectsPropDef" />
     <property name="fieldConfig" ref="visualProfileAspect.fieldConfig" />
     <property name="token" ref="trustedToken" />
-    <property name="functions" ref="decorating.defaultFunctions" />
+    <property name="functions" ref="decorating.tlFunctions" />
   </bean>
 
-  <bean id="decorating.defaultFunctions"
+  <bean id="decorating.tlFunctions"
         class="org.springframework.beans.factory.config.SetFactoryBean">
     <property name="sourceSet">
       <set>

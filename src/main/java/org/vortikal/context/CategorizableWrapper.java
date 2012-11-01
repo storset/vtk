@@ -30,73 +30,45 @@
  */
 package org.vortikal.context;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
-import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.FactoryBean;
-import org.springframework.beans.factory.ListableBeanFactory;
-import org.springframework.beans.factory.annotation.Required;
-import org.springframework.beans.factory.config.AbstractFactoryBean;
 
 /**
- * Factory bean looking up groups of objects based on the
- * {@link Categorizable} interface.
+ * Convenience wrapper that can be used as an alternative to implementing 
+ * {@link Categorizable} in business objects.
  */
-public class CategoryResolvingFactoryBean<T> 
-    extends AbstractFactoryBean<Collection<T>> 
-    implements FactoryBean<Collection<T>> {
+public class CategorizableWrapper<T> implements Categorizable, FactoryBean<T> {
 
     private String category;
-    private Comparator<T> comparator;
-
-    @Required
-    public void setCategory(String category) {
-        this.category = category;
-    }
+    private T bean;
     
     @Override
-    public Collection<T> createInstance() throws Exception {
-        Map<String, Categorizable> matchingBeans = 
-                BeanFactoryUtils.beansOfTypeIncludingAncestors(
-                        (ListableBeanFactory) getBeanFactory(), 
-                        Categorizable.class, true, false);
-        
-        List<T> result = new ArrayList<T>();
-        
-        for (String id: matchingBeans.keySet()) {
-            Categorizable cat = matchingBeans.get(id);
-            Set<?> set = cat.getCategories();
-            if (set != null && set.contains(this.category)) {
-                @SuppressWarnings("unchecked")
-                T bean = (T) getBeanFactory().getBean(
-                        BeanFactoryUtils.transformedBeanName(id));
-                result.add(bean);
-            }
-        }
-        if (comparator != null) {
-            Collections.sort(result, comparator);
-        }
-        return result;
+    public Set<?> getCategories() {
+        return Collections.singleton(category);
+    }
+
+    @Override
+    public T getObject() throws Exception {
+        return bean;
     }
 
     @Override
     public Class<?> getObjectType() {
-        return Collection.class;
+        return bean.getClass();
     }
 
     @Override
     public boolean isSingleton() {
         return true;
-        
     }
     
-    public void setComparator(Comparator<T> comparator) {
-        this.comparator = comparator;
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public void setBean(T target) {
+        this.bean = target;
     }
 }

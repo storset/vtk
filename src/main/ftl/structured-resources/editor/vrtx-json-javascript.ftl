@@ -82,7 +82,7 @@
       var items = $("#editor.vrtx-syllabus #items");
       wrapJSONItemsLeftRight(items.find(".vrtx-json-element"), ".author, .title, .year, .publisher, .isbn, .comment", ".linktext, .link, .bibsys, .fulltext, .articles");
       items.find(".author input, .title input").addClass("header-populators");
-      items.find(".vrtx-html textarea").addClass("header-secondary-populator");
+      items.find(".vrtx-html textarea").addClass("header-fallback-populator");
       // ^ TODO: avoid this being hardcoded here
       
        // Because accordion needs one content wrapper
@@ -231,7 +231,7 @@
           // TODO: avoid this being hardcoded here
           wrapJSONItemsLeftRight(group, ".author, .title, .year, .publisher, .isbn, .comment", ".linktext, .link, .bibsys, .fulltext, .articles");
           items.find(".author input, .title input").addClass("header-populators");
-          items.find(".vrtx-html textarea").addClass("header-secondary-populator");
+          items.find(".vrtx-html textarea").addClass("header-fallback-populator");
           // ^ TODO: avoid this being hardcoded here
           
           accordionRefresh(accordionContent, false);
@@ -307,8 +307,8 @@
           if(!val.length) continue;
           str += (str.length) ? ", " + val : val;
         }
-        if(!str.length) { // Secondary header populator
-          var field = jsonElm.find(".header-secondary-populator");
+        if(!str.length) { // Fallback header populator
+          var field = jsonElm.find(".header-fallback-populator");
           var fieldId = field.attr("id");
           if(isCkEditor(fieldId)) {
             str = getCkValue(fieldId);

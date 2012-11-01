@@ -300,7 +300,7 @@
         if(!header.length) {
           jsonElm.prepend('<div class="header">' + str + '</div>');
         } else {
-          header.html('<span class="ui-icon ui-icon-triangle-1-s"></span>' + str);
+          header.html('<span class="ui-icon ui-icon-triangle-1-e"></span>' + str);
         }
       }
     }

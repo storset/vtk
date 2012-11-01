@@ -2,14 +2,13 @@
 <#-- JSON elements interaction in new documenttypes (add, remove and move) 
 
      TODO: * Move all JS to JS-file to get syntax highlighting (I'm getting snow-blind)
-           * Too much traversal and static click handlers makes it slower
+           * Still a little too much traversal and i think a little slow solution for replacing id-numbers on move
 
 -->
 
 <#macro script>
   <#assign locale = springMacroRequestContext.getLocale() />
   <script type="text/javascript" src="${webResources?html}/jquery/plugins/jquery.scrollTo-1.4.2-min.js"></script>
-
   <script type="text/javascript"><!--
    
     var TEMPLATES = [];

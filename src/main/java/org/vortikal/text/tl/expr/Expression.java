@@ -166,8 +166,7 @@ public class Expression {
         OPERATORS = Collections.unmodifiableMap(new HashMap<Symbol, Operator>(ops));
     }
     
-    private Map<Symbol, Operator> functions = new HashMap<Symbol, Operator>();
-    
+    private FunctionResolver functionResolver;
     private List<Token> tokens;
     private int pos = 0;
     private ExpressionNode exp;
@@ -178,9 +177,10 @@ public class Expression {
 
     public Expression(Set<Function> functions, List<Token> tokens) {        
        this.tokens = tokens;
+       this.functionResolver = new FunctionResolver();
        if (functions != null) {
-           for (Function f : functions) {
-               addFunction(f);
+           for (Operator f : functions) {
+               this.functionResolver.addFunction(f);
            }
        }
        this.exp = logicalExpression();
@@ -251,13 +251,13 @@ public class Expression {
                 readSymbol();
                 if (lookingAt(RP)) {
                     readSymbol();
-                    node = new FunctionCall(symbol, args, this.functions);
+                    node = new FunctionCall(symbol, args, this.functionResolver);
                     continue;
                 }
                 args.addAll(argList());
                 expect(RP);
                 readSymbol();
-                node = new FunctionCall(symbol, args, this.functions);
+                node = new FunctionCall(symbol, args, this.functionResolver);
                 continue;
             } 
             // Field accessor:
@@ -315,12 +315,12 @@ public class Expression {
         readSymbol();
         if (lookingAt(RP)) {
             readSymbol();
-            return new FunctionCall(symbol, this.functions);
+            return new FunctionCall(symbol, this.functionResolver);
         }
         List<ExpressionNode> args = argList();
         expect(RP);
         readSymbol();
-        return new FunctionCall(symbol, args, this.functions);
+        return new FunctionCall(symbol, args, this.functionResolver);
     }
     
     private List<ExpressionNode> argList() {
@@ -608,28 +608,88 @@ public class Expression {
         public String toString() {
             return this.object + "." + this.field;
         }
+    }
+
+    private static class FunctionResolver {
+        private static Symbol TYPEOF = new Symbol("typeof");
+        private Map<Symbol, Operator> functions = new HashMap<Symbol, Operator>();
         
+        public FunctionResolver() {
+            functions.put(TYPEOF,  new Operator(TYPEOF) {
+                @Override
+                public Object eval(Context ctx, ExpressionNode... args) {
+                    if (args.length != 1) {
+                        throw new IllegalStateException(TYPEOF + ": takes 1 argument");
+                    }
+                    ExpressionNode arg = args[0];
+                    
+                    if (arg instanceof VariableNode) {
+                        VariableNode node = (VariableNode) arg;
+                        if (functions.containsKey(node.symbol)) {
+                            return "function";
+                        }
+                        if (!ctx.isDefined(node.symbol.getSymbol())) {
+                            return "undefined";
+                        }
+                    }
+                    Object object = arg.eval(ctx);
+                    if (object == null) {
+                        //return "null";
+                        return "object";
+                    }
+                    if (object instanceof String) {
+                        return "string";
+                    }
+                    if (object instanceof Number) {
+                        return "number";
+                    }
+                    if (object instanceof Boolean) {
+                        return "boolean";
+                    }
+                    return "object";
+                }
+            });
+        }
+        
+        public Operator get(Symbol name) {
+            //final Map<Symbol, Operator> functions = this.functions;
+            return this.functions.get(name);
+        }
+        
+        public void addFunction(Operator function) {
+            if (function == null) {
+                throw new IllegalArgumentException("Function is NULL");
+            }
+            Symbol symbol = function.getSymbol();
+            if (symbol == null) {
+                throw new IllegalArgumentException("Function's symbol is NULL");
+            }
+            if (this.functions.containsKey(symbol)) {
+                throw new IllegalArgumentException("Cannot re-define " + symbol.getSymbol());
+            }
+            this.functions.put(symbol, function);
+        }
     }
     
     private static class FunctionCall implements ExpressionNode {
         private Symbol name;
         private List<ExpressionNode> args = null;
-        private Map<Symbol, Operator> functions;
+        private FunctionResolver resolver;
         
-        public FunctionCall(Symbol name, Map<Symbol, Operator> functions) {
+        public FunctionCall(Symbol name, FunctionResolver resolver) {
             this.name = name;
-            this.functions = functions;
+            this.resolver = resolver;
         }
 
-        public FunctionCall(Symbol name, List<ExpressionNode> args, Map<Symbol, Operator> functions) {
+        public FunctionCall(Symbol name, List<ExpressionNode> args, FunctionResolver resolver) {
             this.name = name;
             this.args = args;
-            this.functions = functions;
+            this.resolver = resolver;
         }
         
         @Override
         public Object eval(Context ctx) {
-            Operator fun = this.functions.get(this.name);
+            Operator fun = this.resolver.get(this.name);
             if (fun == null) {
                 throw new IllegalStateException("Undefined function: " + this.name);
             }
@@ -652,19 +712,6 @@ public class Expression {
         }
     }
     
-    private void addFunction(Function function) {
-        if (function == null) {
-            throw new IllegalArgumentException("Function is NULL");
-        }
-        Symbol symbol = function.getSymbol();
-        if (symbol == null) {
-            throw new IllegalArgumentException("Function's symbol is NULL");
-        }
-        if (this.functions.containsKey(symbol)) {
-            throw new IllegalArgumentException("Cannot re-define " + symbol.getSymbol());
-        }
-        this.functions.put(symbol, function);
-    }
     
     @Override
     public String toString() {

@@ -301,11 +301,9 @@
       if(jsonElm.length) {
         var fields = jsonElm.find(".header-populators");
         for(var i = 0, len = fields.length, useDelimiter = (len > 1); i < len; i++) {
-          if(useDelimiter && i < (len - 1)) {
-            str += $(fields[i]).val() + ", ";
-          } else {
-            str += $(fields[i]).val();
-          }
+          var val = $(fields[i]).val(); 
+          if(!val.length) continue;
+          str += (useDelimiter && i < (len - 1)) ? val + ", " : val;
         }
         if(str === ", " || str === "") {
           str = (vrtxAdmin.lang !== "en") ? "Inget innhold" : "No content";

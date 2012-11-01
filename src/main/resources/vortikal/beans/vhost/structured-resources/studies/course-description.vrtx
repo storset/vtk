@@ -157,45 +157,42 @@ resourcetype course-description : fellestekst-document {
       <head>
         <title>[if course-code != null][val course-code][endif][if course-code != null && course-name != null] - [endif][if course-name != null][val course-name][endif]</title>
       </head>
-      <body>
-      <table id="vrtx-academics-course-navigation" align="right" cellpadding="1" cellspacing="0">
-        <tbody>
-          <tr>
-            <td class="navigasjon">
-              [call "comp:academics-course-navigation"]
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      [call "comp:statusmessage"]
-      <h1 id="hdr">[if course-code != null][val course-code][endif][if course-code != null && course-name != null] - [endif][if course-name != null][val course-name][endif]</h1>
-      <div id="vrtx-academics-course-toc" style="padding-top:5px;">
-        [call "comp:academics-course-toc"]
-      </div>
-      <table id="vrtx-academics-course-table" align="right" cellpadding="0" cellspacing="0" width="50%">
-        <tbody>
-          <tr>
-            <td>
-              [call "comp:facts"]
-            </td>
-          </tr>
-          <tr class="vrtx-academics-course-table-title">
-            <td>
-              [call "comp:semesters"]
-            </td>
-          </tr>
-        </tbody>
-      </table>
-
-
-
-      <div>
-        Her er litt course-type: [val course-type]
-      </div>
-      <div>
-        [call "comp:vis-fellestekst" {"docType":"hvordan-soke", "propName":"admission-method"}]
-        [call "comp:vis-fellestekst" {"docType":"hvordan-soke", "propName":"opptak-frist-frekvens"}]
-      </div>
+      <body id="vrtx-course">
+        <table id="vrtx-academics-course-navigation" align="right" cellpadding="1" cellspacing="0">
+          <tbody>
+            <tr>
+              <td class="navigasjon">
+                [call "comp:academics-course-navigation"]
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        [call "comp:statusmessage"]
+        <h1>[if course-code != null][val course-code][endif][if course-code != null && course-name != null] - [endif][if course-name != null][val course-name][endif]</h1>
+        <div id="vrtx-academics-course-toc" style="padding-top:5px;">
+          [call "comp:academics-course-toc"]
+        </div>
+        <table id="vrtx-academics-course-table" align="right" cellpadding="0" cellspacing="0" width="50%">
+          <tbody>
+            <tr>
+              <td>
+                [call "comp:facts"]
+              </td>
+            </tr>
+            <tr class="vrtx-academics-course-table-title">
+              <td>
+                [call "comp:semesters"]
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <div>
+          Her er litt course-type: [val course-type]
+        </div>
+        <div>
+          [call "comp:vis-fellestekst" {"docType":"hvordan-soke", "propName":"admission-method"}]
+          [call "comp:vis-fellestekst" {"docType":"hvordan-soke", "propName":"opptak-frist-frekvens"}]
+        </div>
       </body>
     </html>
     ##

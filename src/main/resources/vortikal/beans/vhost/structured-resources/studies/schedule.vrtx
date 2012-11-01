@@ -47,11 +47,11 @@ resourcetype schedule {
       <head>
         <title>[call "resource:property" {"id":"title"}]</title>
       </head>
-      <body>
-      <h1>[call "resource:property" {"id":"title"}]</h1>
-      <div>
-        [call "comp:iframe"]
-      </div>
+      <body id="vrtx-schedule">
+        <h1>[call "resource:property" {"id":"title"}]</h1>
+        <div>
+          [call "comp:iframe"]
+        </div>
       </body>
     </html>
     ##

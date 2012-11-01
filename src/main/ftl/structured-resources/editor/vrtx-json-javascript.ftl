@@ -13,7 +13,7 @@
    
     var TEMPLATES = [];
     var LIST_OF_JSON_ELEMENTS = [];
-    var REFRESH_MOVE_ACCORDION = null;
+    var ACCORDION_MOVE_TO_AFTER_CHANGE = null;
     
     $(document).ready(function() {
 
@@ -97,9 +97,9 @@
                                             active: false,
                                             change: function(e, ui) {
                                               updateAccordionHeader(ui.oldHeader);
-                                              if(REFRESH_MOVE_ACCORDION) {
-                                                scrollToElm(REFRESH_MOVE_ACCORDION);
-                                                REFRESH_MOVE_ACCORDION = null;
+                                              if(ACCORDION_MOVE_TO_AFTER_CHANGE) {
+                                                scrollToElm(ACCORDION_MOVE_TO_AFTER_CHANGE);
+                                                ACCORDION_MOVE_TO_AFTER_CHANGE = null;
                                               }
                                             }  
                                           });
@@ -273,9 +273,9 @@
                                   active: active,
                                   change: function(e, ui) {
                                     updateAccordionHeader(ui.oldHeader);
-                                    if(REFRESH_MOVE_ACCORDION) {
-                                      scrollToElm(REFRESH_MOVE_ACCORDION);
-                                      REFRESH_MOVE_ACCORDION = null;
+                                    if(ACCORDION_MOVE_TO_AFTER_CHANGE) {
+                                      scrollToElm(ACCORDION_MOVE_TO_AFTER_CHANGE);
+                                      ACCORDION_MOVE_TO_AFTER_CHANGE = null;
                                     }
                                   }  
                                 });
@@ -478,7 +478,7 @@
       movedElm.focusout();
 
       if(hasAccordion) {
-        REFRESH_MOVE_ACCORDION = movedElm;
+        ACCORDION_MOVE_TO_AFTER_CHANGE = movedElm;
         var accordionContent = accordionWrapper.find(".fieldset");
         accordionContent.accordion("option", "active", (movedElm.index() - 1));
         accordionContent.accordion("option", "refresh");

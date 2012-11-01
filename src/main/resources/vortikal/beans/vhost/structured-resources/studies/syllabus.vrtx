@@ -14,8 +14,9 @@ resourcetype syllabus {
         bibsys : string,
         fulltext : string,
         articles : string,
-        content : html
-    ) multiple noextract
+        item-content : html
+    ) multiple noextract,
+    content : html
   }
   
   edit-rules {
@@ -31,18 +32,21 @@ resourcetype syllabus {
         [def file json-resource(uri)]
         [if file != null]
           [def mappings file.properties.mappings]
-          [list mappings mapping]
-            [def mapping-prefix mapping.prefix.toLowerCase()]
-            [if prefix = mapping-prefix]
-              [if content-locale != null && content-locale != ""]
-                [if content-locale = "en" && mapping.mappinglink-en != null && mapping.mappinglink-en != ""]
-                  [val mapping.mappinglink-en]
-                [elseif mapping.mappinglink-no != null && mapping.mappinglink-no != ""]
-                  [val mapping.mappinglink-no]
+          <div id="vrtx-syllabus-ub-mapping">
+            <h2 style="margin-top: -12px; border-top: medium none;">UB-Mapping</h2>
+            [list mappings mapping]
+              [def mapping-prefix mapping.prefix.toLowerCase()]
+              [if prefix = mapping-prefix]
+                [if content-locale != null && content-locale != ""]
+                  [if content-locale = "en" && mapping.mappinglink-en != null && mapping.mappinglink-en != ""]
+                    <p><a href="[val mapping.mappinglink-en]">[val mapping.mappinglink-en]</a></p>
+                  [elseif mapping.mappinglink-no != null && mapping.mappinglink-no != ""]
+                    <p><a href="[val mapping.mappinglink-no]">[val mapping.mappinglink-no]</a></p>
+                  [endif]
                 [endif]
               [endif]
-            [endif]
-          [endlist]
+            [endlist]
+          </div>
         [endif]
         ##
     }   
@@ -65,14 +69,14 @@ resourcetype syllabus {
           [def bibsys item.bibsys]
           [def fulltext item.fulltext]
           [def articles item.articles]
-          [def content item.content]
+          [def item-content item.item-content]
           [if (author != null && author != "") && (title != null && title != "")]
             <p>
-              [if articles != null && articles != ""][val articles] i [endif][val author]: <i>[if bibsys != null && bibsys != ""]<a href="[val bibsys]">[val title]</a>[else][val title][endif]</i>[if year != null && year != ""], [val year][endif][if publisher != null && publisher != ""], [val publisher][endif][if isbn != null && isbn != ""], ISBN: [val isbn][endif][if comment != null && comment != ""], [val comment][endif][if fulltext != null && fulltext != ""], <a href="[val fulltext]">[localized 'fulltext']</a>[endif][if linktext != null && linktext != "" && link != null && link != ""], <a href="[val link]">[val linktext]</a>[endif]
+              [if articles != null && articles != ""][val articles] [localized 'in'] [endif][val author]: <i>[if bibsys != null && bibsys != ""]<a href="[val bibsys]">[val title]</a>[else][val title][endif]</i>[if year != null && year != ""], [val year][endif][if publisher != null && publisher != ""], [val publisher][endif][if isbn != null && isbn != ""], ISBN: [val isbn][endif][if comment != null && comment != ""], [val comment][endif][if fulltext != null && fulltext != ""], <a href="[val fulltext]">[localized 'fulltext-view']</a>[endif][if linktext != null && linktext != "" && link != null && link != ""], <a href="[val link]">[val linktext]</a>[endif]
             </p>
           [endif]
-          [if content != null && content != ""]
-            [val content # unescaped]
+          [if item-content != null && item-content != ""]
+            [val item-content # unescaped]
           [endif]
         [endlist]
       [endif]
@@ -90,15 +94,18 @@ resourcetype syllabus {
       <head>
         <title>[call "resource:property" {"id":"title"}]</title>
       </head>
-      <body id="vrtx-syllabus">
-        <h1 id="hdr">Pensum/læringskrav ([if course-code != null][val course-code][endif][if course-code != null && semester != null] - [endif][if semester != null][val semester][endif])</h1>
-        [call "comp:items"]
+      <div id="vrtx-syllabus">
+        <div role="main" id="vrtx-syllabus-main-content">
+          <h1 id="hdr">[localized 'syllabus'] ([if course-code != null][val course-code][endif][if course-code != null && semester != null] - [endif][if semester != null][val semester][endif])</h1>
+          [call "comp:items"]
+          [call "json:field" {"select":"content"}]
+        </div>
         [if course-code != null && course-code != ""]
           [def prefix course-code.split('[0-9]').0]
           [def prefix prefix.toLowerCase()]
           [call "comp:ub-mapping" {"prefix":prefix}]
         [endif]
-      </body>
+      </div>
     </html>
     ##
   }
@@ -114,8 +121,12 @@ resourcetype syllabus {
     link : (en : "Linkaddress", no : "Lenkeadresse", nn : "Lenkeadresse"),
     bibsys : (en : "BIBSYS (Linked on title)", no : "BIBSYS (Lenkes oppfra tittel)", nn : "BIBSYS (Lenkes oppfra tittel)"),
     fulltext : (en : "Fulltext link", no : "Fulltekst-lenke", nn : "Fulltekst-lenke"),
+    fulltext-view : (en : "Fulltext", no : "Fulltekst", nn : "Fulltekst"),
     articles : (en : "Articles in book/journal", no : "Artikler i bok/tidsskrift", nn : "Artikler i bok/tidsskrift"),
-    content : (en : "Content", no : "Innhold", nn : "Innhald")
+    item-content : (en : "Content", no : "Innhold", nn : "Innhald"),
+    content : (en : "Content", no : "Innhold", nn : "Innhald"),
+    in : (en : "in", no : "i", nn : "i"),
+    syllabus : (en : "Syllabus/teaching requirements", no : "Pensum/læringskrav", nn : "Pensum/læringskrav")
   }
 
 }

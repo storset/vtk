@@ -19,6 +19,7 @@
  *   -> defines minimum nr of hits before scrollbar is added to dropdown
  * Added class when submit is blocked in FF for use externally (removed when intercepted in reroute-function in admin-enhancements and toggled off)
  *   -> Does not interfere with anything else
+ * Added adjustForParentWidth option
  */
 
 ;
@@ -452,7 +453,8 @@
     },
     scroll: true,
     scrollHeight: 180,
-    resultsBeforeScroll: 10
+    resultsBeforeScroll: 10,
+    adjustForParentWidth: null
   };
 
   $.Autocompleter.Cache = function(options) {
@@ -737,8 +739,12 @@
       },
       show: function() {
         var offset = $(input).offset();
+        var acWidth = (typeof options.width == "string" || options.width > 0) ? options.width : $(input).width();
+        if(options.adjustForParentWidth && (typeof options.width !== "string")) {
+          acWidth += options.adjustForParentWidth;
+        }
         element.css( {
-          width: typeof options.width == "string" || options.width > 0 ? options.width : $(input).width(),
+          width: acWidth,
           top: offset.top + input.offsetHeight,
           left: offset.left
         }).show();

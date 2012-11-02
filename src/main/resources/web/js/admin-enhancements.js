@@ -84,10 +84,10 @@ function VrtxAdmin() {
   
   // Autocomplete parameters
   this.permissionsAutocompleteParams = { minChars: 4, selectFirst: false,
-                                         max: 30, delay: 800, width: "215px" };                              
+                                         max: 30, delay: 800, adjustForParentWidth: 15 };                              
   this.usernameAutocompleteParams =    { minChars: 2, selectFirst: false,
-                                         max: 30, delay: 500, multiple: false, width: "215px"  };                                       
-  this.tagAutocompleteParams =         { minChars: 1, width: "335px" };
+                                         max: 30, delay: 500, multiple: false, adjustForParentWidth: 15 };                                       
+  this.tagAutocompleteParams =         { minChars: 1, adjustForParentWidth: 15 };
      
   // Transitions
   this.transitionSpeed = 200; // same as 'fast'

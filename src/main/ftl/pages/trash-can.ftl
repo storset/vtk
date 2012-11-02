@@ -61,9 +61,9 @@
       </#if>
 
       <#if rr.isCollection()>
-        <tr class="${rowType} <@vrtx.resourceToIconResolver rr /> true${firstLast}">  
+        <tr class="${rowType} <@vrtx.recoverableResourceToIconResolver rr /> true${firstLast}">  
       <#else>
-        <tr class="${rowType} <@vrtx.resourceToIconResolver rr />${firstLast}">
+        <tr class="${rowType} <@vrtx.recoverableResourceToIconResolver rr />${firstLast}">
       </#if>
           <td class="vrtx-trash-can-name name trash"><span class="vrtx-trash-can-name-text">${rr.name?html}</span></td>
           <td class="checkbox">

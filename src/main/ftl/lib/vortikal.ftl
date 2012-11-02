@@ -617,6 +617,17 @@
   </#compress>
 </#macro>
 
+<#-- RecoverableResource does not support propValue to get obsoleted and therefore we use this macro temporarily. -->
+<#macro recoverableResourceToIconResolver resource>
+  <#compress>
+    <#assign iconText = resource.resourceType>
+    <#if (iconText = "file" && resource.contentType = "application/octet-stream")>
+      <#assign iconText = "binary">
+    </#if>
+    ${iconText}
+  </#compress>
+</#macro>
+
 <#macro resourceToIconResolver resource>
   <#compress>
     <#assign iconText = resource.resourceType>

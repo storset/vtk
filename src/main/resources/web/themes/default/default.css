@@ -496,44 +496,67 @@ a:hover {
 
 #resource-title h1 .title-split {
   display: block;
-} 
+}
+
+#resource-title.true h1 {
+  margin-left: 42px;
+}
 
 #resource-title.true {
   background: transparent url(images/folder.gif) no-repeat 0px 5px;
 }
+
 #resource-title.true.obsoleted {
   background: transparent url(images/folder-obsoleted.png) no-repeat 0px 5px;
-}
-#resource-title.true h1 {
-  margin-left: 42px;
 }
 
 #resource-title.binary {
   background: transparent url(images/file-binary.gif) no-repeat 0px 3px;
 }
+#resource-title.binary.obsoleted { 
+ /* TODO: MISSING ICON */
+}
 
 #resource-title.doc {
-  background: transparent url(images/file-word.gif) no-repeat 0px 2px;
+  background: transparent url(images/file-doc.gif) no-repeat 0px 2px;
+}
+#resource-title.doc.obsoleted {
+  background: transparent url(images/file-doc-obsoleted.gif) no-repeat 0px 2px;
 }
 
 #resource-title.pdf {
   background: transparent url(images/file-pdf.gif) no-repeat 0px 2px;
 }
+#resource-title.pdf.obsoleted {
+  background: transparent url(images/file-pdf-obsoleted.png) no-repeat 0px 2px;
+}
 
 #resource-title.xls {
   background: transparent url(images/file-xls.gif) no-repeat 0px 2px;
+}
+#resource-title.xls.obsoleted {
+  background: transparent url(images/file-xls-obsoleted.png) no-repeat 0px 2px;
 }
 
 #resource-title.text {
   background: transparent url(images/file-txt.gif) no-repeat 0px 2px;
 }
+#resource-title.text.obsoleted { 
+ /* TODO: MISSING ICON */
+}
 
 #resource-title.ppt {
   background: transparent url(images/file-ppt.gif) no-repeat 0px 2px;
 }
+#resource-title.ppt.obsoleted {
+  background: transparent url(images/file-ppt-obsoleted.png) no-repeat 0px 2px;
+}
 
 #resource-title.image {
   background: transparent url(images/file-image.gif) no-repeat 0px 10px;
+}
+#resource-title.image.obsoleted {
+  background: transparent url(images/file-image-obsoleted.png) no-repeat 0px 10px;
 }
 #resource-title.image h1 {
   margin-left: 39px;
@@ -542,12 +565,18 @@ a:hover {
 #resource-title.audio {
   background: transparent url(images/file-audio.gif) no-repeat 0px 12px;
 }
+#resource-title.audio.obsoleted {
+  background: transparent url(images/file-audio-obsoleted.png) no-repeat 0px 12px;
+}
 #resource-title.audio h1 {
   margin-left: 26px;
 }
 
 #resource-title.video {
   background: transparent url(images/file-video.gif) no-repeat 0px 5px;
+}
+#resource-title.video.obsoleted {
+  background: transparent url(images/file-video-obsoleted.png) no-repeat 0px 5px;
 }
 #resource-title.video h1 {
   margin-left: 40px;

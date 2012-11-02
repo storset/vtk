@@ -482,7 +482,7 @@ a:hover {
 }
 
 /* Icons 
- * TODO: should override with background-image instead (FF can be uncooperative with this sometimes so later)
+ * TODO: should override with just background-image instead (FF can be uncooperative with this sometimes so later)
 */
 
 #resource-title {

@@ -1647,7 +1647,7 @@ body#vrtx-report-broken-links #directory-listing td.vrtx-report-broken-links {
 #directory-listing tr.doc td.name .unauthorizedListedResource-wrapper,
 #directory-listing tr.doc td.name span.vrtx-trash-can-name-text,
 #directory-listing tr.doc td.vrtx-report-name a {
-  background: url(images/file-word-small.gif) no-repeat center left;
+  background: url(images/file-doc-small.gif) no-repeat center left;
 }
 
 #directory-listing tr.pdf td.name a,

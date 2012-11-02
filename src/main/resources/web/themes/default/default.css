@@ -481,7 +481,9 @@ a:hover {
   position: relative;
 }
 
-/* Icons */
+/* Icons 
+ * TODO: should override with background-image instead (FF can be uncooperative with this sometimes so later)
+*/
 
 #resource-title {
   background: transparent url(images/file.gif) no-repeat 0px 3px;

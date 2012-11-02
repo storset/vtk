@@ -490,6 +490,9 @@ a:hover {
   padding-top: 8px;
   position: relative;
 }
+#resource-title.obsoleted {
+  background: transparent url(images/file-obsoleted.png) no-repeat 0px 3px;
+}
 #resource-title h1 {
   margin:  0 0 15px 36px;
   float: left;

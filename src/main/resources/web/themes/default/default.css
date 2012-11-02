@@ -1599,7 +1599,7 @@ body#vrtx-report-broken-links #directory-listing td.vrtx-report-broken-links {
 #directory-listing tr.true.obsoleted td.name .unauthorizedListedResource-wrapper,
 #directory-listing tr.true.obsoleted td.name span.vrtx-trash-can-name-text,
 #directory-listing tr.true.obsoleted td.vrtx-report-name a {
-  background: transparent url(images/folder-small-obsoleted.png) no-repeat 0px 5px;
+  background: transparent url(images/folder-small-obsoleted.png) no-repeat center left;
 }
 
 #directory-listing tr.binary td.name a,

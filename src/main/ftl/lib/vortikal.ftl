@@ -617,17 +617,14 @@
   </#compress>
 </#macro>
 
-<#macro iconResolver resourceType="" contentType="">
+<#macro resourceToIconResolver resource>
   <#compress>
-    <#if resourceType = "file">
-      <#if contentType = "application/octet-stream">
-        binary
-      <#else>
-        ${resourceType}
-      </#if>
-    <#else>
-      ${resourceType}
+    <#assign iconText = resource.resourceType>
+    <#if (iconText = "file" && resource.contentType = "application/octet-stream")>
+      <#assign iconText = "binary">
     </#if>
+    <#assign obsoleted = propValue(resource, 'obsoleted')>
+    ${iconText}<#if (obsoleted?exists && obsoleted?has_content)> obsoleted</#if>
   </#compress>
 </#macro>
 

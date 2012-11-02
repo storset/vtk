@@ -129,9 +129,9 @@
         </#if>
   
         <#if child.collection>
-          <tr class="${rowType} <@vrtx.iconResolver child.resourceType child.contentType /> true${firstLast}">  
+          <tr class="${rowType} <@vrtx.resourceToIconResolver child /> true${firstLast}">  
         <#else>
-          <tr class="${rowType} <@vrtx.iconResolver child.resourceType child.contentType />${firstLast}">
+          <tr class="${rowType} <@vrtx.resourceToIconResolver child />${firstLast}">
         </#if>
     
         <#list collectionListing.childInfoItems as item>

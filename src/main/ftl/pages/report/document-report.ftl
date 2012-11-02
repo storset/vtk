@@ -65,7 +65,6 @@
           <#assign publishedStatus = vrtx.getMsg("report.no", "No")>
         </#if>
         
-          <#assign contentType = vrtx.propValue(res, 'contentType') />
           <#assign isCollection = vrtx.propValue(res, 'collection') />
           <#assign title = vrtx.propValue(res, 'title') />
         
@@ -83,7 +82,7 @@
             <#assign firstLast = " last" />
           </#if>
           
-          <tr class="${rowType} <@vrtx.iconResolver res.resourceType contentType /> ${isCollection}${firstLast}">
+          <tr class="${rowType} <@vrtx.resourceToIconResolver res /> ${isCollection}${firstLast}">
             <td class="vrtx-report-name"><a href="${url?html}">${title?html}</a></td>
             <td class="vrtx-report-last-modified">${lastModifiedTime?html}</td>
             <td class="vrtx-report-last-modified-by">

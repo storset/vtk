@@ -501,6 +501,9 @@ a:hover {
 #resource-title.true {
   background: transparent url(images/folder.gif) no-repeat 0px 5px;
 }
+#resource-title.true.obsoleted {
+  background: transparent url(images/folder-obsoleted.png) no-repeat 0px 5px;
+}
 #resource-title.true h1 {
   margin-left: 42px;
 }
@@ -1590,6 +1593,13 @@ body#vrtx-report-broken-links #directory-listing td.vrtx-report-broken-links {
 #directory-listing tr.true td.name span.vrtx-trash-can-name-text,
 #directory-listing tr.true td.vrtx-report-name a {
   background: url(images/folder-small.gif) no-repeat center left;
+}
+
+#directory-listing tr.true.obsoleted td.name a,
+#directory-listing tr.true.obsoleted td.name .unauthorizedListedResource-wrapper,
+#directory-listing tr.true.obsoleted td.name span.vrtx-trash-can-name-text,
+#directory-listing tr.true.obsoleted td.vrtx-report-name a {
+  background: transparent url(images/folder-obsoleted-small.png) no-repeat 0px 5px;
 }
 
 #directory-listing tr.binary td.name a,

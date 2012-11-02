@@ -11,13 +11,13 @@
 function setAutoComplete(id, service, params) {
   // Default parameters, extended by 'params' if supplied
   var p = {
-    minChars :2,
-    multiple :true,
-    selectFirst :true,
-    max :20,
-    //extensions for person and cource
-    resultsBeforeScroll :0, //default behaviour when set to 0
-    cacheLength :10 //default
+    minChars: 2,
+    multiple: true,
+    selectFirst: true,
+    max: 20,
+    // Extensions for person and cource
+    resultsBeforeScroll: 0, //default behaviour when set to 0
+    cacheLength: 10 //default
   };
   if (params) {
     $.extend(p, params);

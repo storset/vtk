@@ -1870,6 +1870,7 @@ body#vrtx-permissions .addUser {
 }
 
 .vrtx-autocomplete-username .vrtx-textfield,
+.vrtx-autocomplete-tag .vrtx-textfield,
 #principalList .vrtx-textfield {
   z-index: 9999;
   position: relative;

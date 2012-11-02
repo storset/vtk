@@ -1622,6 +1622,13 @@ body#vrtx-report-broken-links #directory-listing td.vrtx-report-broken-links {
   overflow: hidden;
 }
 
+#directory-listing tr.obsoleted td.name a,
+#directory-listing tr.obsoleted td.name .unauthorizedListedResource-wrapper,
+#directory-listing tr.obsoleted td.name span.vrtx-trash-can-name-text,
+#directory-listing tr.obsoleted td.vrtx-report-name a {
+  background: url(images/file-small-obsoleted.png) no-repeat center left;
+}
+
 #directory-listing tr.true td.name a,
 #directory-listing tr.true td.name .unauthorizedListedResource-wrapper,
 #directory-listing tr.true td.name span.vrtx-trash-can-name-text,
@@ -1643,11 +1650,20 @@ body#vrtx-report-broken-links #directory-listing td.vrtx-report-broken-links {
   background: url(images/file-binary-small.gif) no-repeat center left;
 }
 
+/* Missing binary obsoleted */
+
 #directory-listing tr.doc td.name a,
 #directory-listing tr.doc td.name .unauthorizedListedResource-wrapper,
 #directory-listing tr.doc td.name span.vrtx-trash-can-name-text,
 #directory-listing tr.doc td.vrtx-report-name a {
   background: url(images/file-doc-small.gif) no-repeat center left;
+}
+
+#directory-listing tr.doc.obsoleted td.name a,
+#directory-listing tr.doc.obsoleted td.name .unauthorizedListedResource-wrapper,
+#directory-listing tr.doc.obsoleted td.name span.vrtx-trash-can-name-text,
+#directory-listing tr.doc.obsoleted td.vrtx-report-name a {
+  background: url(images/file-doc-small-obsoleted.png) no-repeat center left;
 }
 
 #directory-listing tr.pdf td.name a,
@@ -1657,11 +1673,25 @@ body#vrtx-report-broken-links #directory-listing td.vrtx-report-broken-links {
   background: url(images/file-pdf-small.gif) no-repeat center left;
 }
 
+#directory-listing tr.pdf.obsoleted td.name a,
+#directory-listing tr.pdf.obsoleted td.name .unauthorizedListedResource-wrapper,
+#directory-listing tr.pdf.obsoleted td.name span.vrtx-trash-can-name-text,
+#directory-listing tr.pdf.obsoleted td.vrtx-report-name a {
+  background: url(images/file-pdf-small-obsoleted.png) no-repeat center left;
+}
+
 #directory-listing tr.xls td.name a,
 #directory-listing tr.xls td.name .unauthorizedListedResource-wrapper,
 #directory-listing tr.xls td.name span.vrtx-trash-can-name-text,
 #directory-listing tr.xls td.vrtx-report-name a {
   background: url(images/file-xls-small.gif) no-repeat center left;
+}
+
+#directory-listing tr.xls.obsoleted td.name a,
+#directory-listing tr.xls.obsoleted td.name .unauthorizedListedResource-wrapper,
+#directory-listing tr.xls.obsoleted td.name span.vrtx-trash-can-name-text,
+#directory-listing tr.xls.obsoleted td.vrtx-report-name a {
+  background: url(images/file-xls-small-obsoleted.png) no-repeat center left;
 }
 
 #directory-listing tr.text td.name a,
@@ -1671,11 +1701,20 @@ body#vrtx-report-broken-links #directory-listing td.vrtx-report-broken-links {
   background: url(images/file-txt-small.gif) no-repeat center left;
 }
 
+/* Missing text obsoleted */
+
 #directory-listing tr.ppt td.name a,
 #directory-listing tr.ppt td.name .unauthorizedListedResource-wrapper,
 #directory-listing tr.ppt td.name span.vrtx-trash-can-name-text,
 #directory-listing tr.ppt td.vrtx-report-name a {
   background: url(images/file-ppt-small.gif) no-repeat center left;
+}
+
+#directory-listing tr.ppt.obsoleted td.name a,
+#directory-listing tr.ppt.obsoleted td.name .unauthorizedListedResource-wrapper,
+#directory-listing tr.ppt.obsoleted td.name span.vrtx-trash-can-name-text,
+#directory-listing tr.ppt.obsoleted td.vrtx-report-name a {
+  background: url(images/file-ppt-small-obsoleted.png) no-repeat center left;
 }
 
 #directory-listing tr.image td.name a,
@@ -1685,6 +1724,14 @@ body#vrtx-report-broken-links #directory-listing td.vrtx-report-broken-links {
   background: url(images/file-image-small.gif) no-repeat center left;
 }
 
+#directory-listing tr.image.obsoleted td.name a,
+#directory-listing tr.image.obsoleted td.name .unauthorizedListedResource-wrapper,
+#directory-listing tr.image.obsoleted td.name span.vrtx-trash-can-name-text,
+#directory-listing tr.image.obsoleted td.vrtx-report-name a {
+  background: url(images/file-image-small-obsoleted.png) no-repeat center left;
+}
+
+
 #directory-listing tr.audio td.name a,
 #directory-listing tr.audio td.name .unauthorizedListedResource-wrapper,
 #directory-listing tr.audio td.name span.vrtx-trash-can-name-text,
@@ -1692,11 +1739,25 @@ body#vrtx-report-broken-links #directory-listing td.vrtx-report-broken-links {
   background: url(images/file-audio-small.gif) no-repeat center left;
 }
 
+#directory-listing tr.audio.obsoleted td.name a,
+#directory-listing tr.audio.obsoleted td.name .unauthorizedListedResource-wrapper,
+#directory-listing tr.audio.obsoleted td.name span.vrtx-trash-can-name-text,
+#directory-listing tr.audio.obsoleted td.vrtx-report-name a {
+  background: url(images/file-audio-small-obsoleted.png) no-repeat center left;
+}
+
 #directory-listing tr.video td.name a,
 #directory-listing tr.video td.name .unauthorizedListedResource-wrapper,
 #directory-listing tr.video td.name span.vrtx-trash-can-name-text,
 #directory-listing tr.video td.vrtx-report-name a {
   background: url(images/file-video-small.gif) no-repeat center left;
+}
+
+#directory-listing tr.video.obsoleted td.name a,
+#directory-listing tr.video.obsoleted td.name .unauthorizedListedResource-wrapper,
+#directory-listing tr.video.obsoleted td.name span.vrtx-trash-can-name-text,
+#directory-listing tr.video.obsoleted td.vrtx-report-name a {
+  background: url(images/file-video-small-obsoleted.png) no-repeat center left;
 }
 
 /* ^ Icons */

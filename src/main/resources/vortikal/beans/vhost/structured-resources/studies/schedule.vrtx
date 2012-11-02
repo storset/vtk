@@ -32,7 +32,7 @@ resourcetype schedule {
         <iframe frameborder="0" 
             id="timeplaner" 
             scrolling="no" 
-            src="/studier/timeplaner/calendar.php?type=module&amp;embed=1&amp;ar=[val year]&amp;sem=[val semester]&amp;id=[val course-code]-1&amp;path=[val path][if overview != null && overview != ""]&amp;over=[val overview][endif]" 
+            src="/studier/timeplaner/calendar.php?type=module&amp;embed=1&amp;ar=[val year]&amp;sem=[val semester]&amp;id=[val course-code]-1&amp;path=[val path][if overview != null && overview != ""]&amp;over=[val overview][else]&amp;over=1[endif]" 
             width="100%">
         </iframe>
         ##

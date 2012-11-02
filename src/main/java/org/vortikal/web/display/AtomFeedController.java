@@ -384,7 +384,7 @@ public abstract class AtomFeedController implements Controller {
         return null;
     }
 
-    private String removeInvalid(String s) {
+    protected String removeInvalid(String s) {
         return s.replaceAll("[#%?\\[\\] ]", "");
     }
 

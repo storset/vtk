@@ -512,9 +512,9 @@
 
         // if the match is a string
         var row = {
-          value :value,
-          data :rawValue,
-          result :options.formatResult && options.formatResult(rawValue) || value
+          value: value,
+          data: rawValue,
+          result: options.formatResult && options.formatResult(rawValue) || value
         };
 
         // push the current match into the set list
@@ -545,10 +545,10 @@
     }
 
     return {
-      flush :flush,
-      add :add,
-      populate :populate,
-      load : function(q) {
+      flush: flush,
+      add: add,
+      populate: populate,
+      load: function(q) {
         if (!options.cacheLength || !length)
           return null;
         /*
@@ -704,43 +704,43 @@
         term = q;
         fillList();
       },
-      next : function() {
+      next: function() {
         moveSelect(1);
       },
-      prev : function() {
+      prev: function() {
         moveSelect(-1);
       },
-      pageUp : function() {
+      pageUp: function() {
         if (active != 0 && active - 8 < 0) {
           moveSelect(-active);
         } else {
           moveSelect(-8);
         }
       },
-      pageDown : function() {
+      pageDown: function() {
         if (active != listItems.size() - 1 && active + 8 > listItems.size()) {
           moveSelect(listItems.size() - 1 - active);
         } else {
           moveSelect(8);
         }
       },
-      hide : function() {
+      hide: function() {
         element && element.hide();
         listItems && listItems.removeClass(CLASSES.ACTIVE);
         active = -1;
       },
-      visible : function() {
+      visible: function() {
         return element && element.is(":visible");
       },
-      current : function() {
+      current: function() {
         return this.visible() && (listItems.filter("." + CLASSES.ACTIVE)[0] || options.selectFirst && listItems[0]);
       },
-      show : function() {
+      show: function() {
         var offset = $(input).offset();
         element.css( {
-          width :typeof options.width == "string" || options.width > 0 ? options.width : $(input).width(),
-          top :offset.top + input.offsetHeight,
-          left :offset.left
+          width: typeof options.width == "string" || options.width > 0 ? options.width : $(input).width(),
+          top: offset.top + input.offsetHeight,
+          left: offset.left
         }).show();
         if (options.scroll && (listItems.size() > options.resultsBeforeScroll || options.resultsBeforeScroll == 0)) {
           list.scrollTop(0);
@@ -765,8 +765,8 @@
 
 } else {
   list.css( {
-    maxHeight :'100%',
-    overflow :'hidden'
+    maxHeight: '100%',
+    overflow: 'hidden'
   });
 }
 },

@@ -87,17 +87,17 @@
       <#break>
 
     <#case "html">
-      <#--if elem.description.edithints?exists>
-        <#list elem.description.edithints?keys as hint>
-          ${hint} <br />
-        </#list>
-      </#if-->
+      <#if elem.description.edithints?exists && elem.description.edithints['class']?exists >
+        <#assign cssclass = "vrtx-html " + elem.description.edithints['class'] + " " + elem.name />
+      <#else>
+        <#assign cssclass = "vrtx-html " + elem.name />
+      </#if>
 
       <@vrtxHtml.printPropertyEditView
         title=localizedTitle
         inputFieldName=elem.name
         value=elem.value
-        classes="vrtx-html " + elem.name
+        classes=cssclass
         tooltip=form.resource.getLocalizedTooltip(elem.name, locale)
         editor=""
       />
@@ -380,12 +380,6 @@
       <#break>
 
     <#case "html">
-      <#--if elem.description.edithints?exists>
-        <#list elem.description.edithints?keys as hint>
-          ${hint} <br />
-        </#list>
-      </#if-->
-
       <@vrtxHtml.printPropertyEditView
         title=jsonAttr
         inputFieldName=tmpName

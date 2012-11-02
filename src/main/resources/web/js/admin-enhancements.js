@@ -83,11 +83,11 @@ function VrtxAdmin() {
   this.hasConsoleError = this.hasConsole && console.error;
   
   // Autocomplete parameters
-  this.permissionsAutocompleteParams = { minChars: 4, selectFirst: false, width: 300, 
-                                         max: 30, delay: 800 };                              
-  this.usernameAutocompleteParams =    { minChars: 2, selectFirst: false, width: 300,
-                                         max: 30, delay: 500, multiple: false };                                       
-  this.tagAutocompleteParams =         { minChars: 1 };
+  this.permissionsAutocompleteParams = { minChars: 4, selectFirst: false,
+                                         max: 30, delay: 800, width: "215px" };                              
+  this.usernameAutocompleteParams =    { minChars: 2, selectFirst: false,
+                                         max: 30, delay: 500, multiple: false, width: "215px"  };                                       
+  this.tagAutocompleteParams =         { minChars: 1, width: "335px" };
      
   // Transitions
   this.transitionSpeed = 200; // same as 'fast'

@@ -99,6 +99,7 @@
         <value>tags</value>
         <value>lastModified</value>
         <value>contentLocale</value>
+        <value>publish-date</value>
       </list>
     </constructor-arg>
   </bean>

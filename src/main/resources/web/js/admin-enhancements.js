@@ -1034,7 +1034,7 @@ function createFuncComplete() {
       inProgress = false;
     }
     // vrtxAdmin.log({msg:"Observing textfields in create forms @ " + new Date() + " .."});
-  }, 50);
+  }, 75);
 
 
   CREATE_RESOURCE_REPLACE_TITLE = true;

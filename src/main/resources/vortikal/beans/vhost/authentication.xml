@@ -315,6 +315,11 @@
       </bean>
     </property>
     <property name="authenticationChallenge" ref="${webAuthenticationChallenge}" />
+    <property name="attributes">
+      <map>
+        <entry key="inhibit-caching" value="true" />
+      </map>
+    </property>
   </bean>
   
   <bean id="authTarget.redirectOpenResourceServiceHttp" class="org.vortikal.web.service.ServiceImpl">
@@ -347,6 +352,11 @@
       </bean>
     </property>
     <property name="authenticationChallenge" ref="${webAuthenticationChallenge}" />
+    <property name="attributes">
+      <map>
+        <entry key="inhibit-caching" value="true" />
+      </map>
+    </property>
   </bean>
 
   <bean id="authTarget.redirectSSLServiceAuthenticated" class="org.vortikal.web.service.ServiceImpl">

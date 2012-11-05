@@ -1670,7 +1670,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
                 boolean valid = this.authorizationManager.isValidAclEntry(action, principal);
                 if (!valid) {
                     // Preserve invalid principals already in ACL
-                    if (!originalAcl.containsEntry(action, principal)) {
+                    if (!originalAcl.hasPrivilege(action, principal)) {
                         throw new InvalidPrincipalException(principal);
                     }
                 }

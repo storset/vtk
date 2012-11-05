@@ -94,7 +94,7 @@ public class CopyMoveWarningProvider implements ReferenceDataProvider {
         URL confirmURL = this.confirmationService.constructURL(destinationUri);
         
         if ("copy-resources".equals(sessionBean.getAction())) {
-            if (!(destAcl.containsEntry(Privilege.READ, PrincipalFactory.ALL) || destAcl.containsEntry(
+            if (!(destAcl.hasPrivilege(Privilege.READ, PrincipalFactory.ALL) || destAcl.hasPrivilege(
                     Privilege.READ_PROCESSED, PrincipalFactory.ALL))) {
                 return;
             }
@@ -104,7 +104,7 @@ public class CopyMoveWarningProvider implements ReferenceDataProvider {
                 for (PropertySet ps : rs.getAllResults()) {
                     Resource resource = repository.retrieve(token, ps.getURI(), false);
                     Acl acl = resource.getAcl();
-                    if (!(acl.containsEntry(Privilege.READ, PrincipalFactory.ALL) || acl.containsEntry(
+                    if (!(acl.hasPrivilege(Privilege.READ, PrincipalFactory.ALL) || acl.hasPrivilege(
                             Privilege.READ_PROCESSED, PrincipalFactory.ALL))) {
                         addWarning(model, confirmURL, sessionBean);
                         break;
@@ -118,12 +118,12 @@ public class CopyMoveWarningProvider implements ReferenceDataProvider {
             return;
         }
 
-        if (srcAcl.containsEntry(Privilege.READ, PrincipalFactory.ALL)
-                || srcAcl.containsEntry(Privilege.READ_PROCESSED, PrincipalFactory.ALL)) {
+        if (srcAcl.hasPrivilege(Privilege.READ, PrincipalFactory.ALL)
+                || srcAcl.hasPrivilege(Privilege.READ_PROCESSED, PrincipalFactory.ALL)) {
             return;
         }
 
-        if (!(destAcl.containsEntry(Privilege.READ, PrincipalFactory.ALL) || destAcl.containsEntry(
+        if (!(destAcl.hasPrivilege(Privilege.READ, PrincipalFactory.ALL) || destAcl.hasPrivilege(
                 Privilege.READ_PROCESSED, PrincipalFactory.ALL))) {
             return;
         }

@@ -285,8 +285,8 @@ public class ResourceSorter {
 
         private boolean isReadAll(Resource r) {
             Acl acl = r.getAcl();
-            return acl.containsEntry(Privilege.READ, PrincipalFactory.ALL)
-                || acl.containsEntry(Privilege.READ_PROCESSED, PrincipalFactory.ALL);
+            return acl.hasPrivilege(Privilege.READ, PrincipalFactory.ALL)
+                || acl.hasPrivilege(Privilege.READ_PROCESSED, PrincipalFactory.ALL);
         }
         
         private int compare(boolean r1ReadAll, boolean r2ReadAll) {

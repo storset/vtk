@@ -147,13 +147,13 @@ public class ProcessedContentEventDumper extends AbstractRepositoryEventDumper {
         Principal all = PrincipalFactory.ALL;
         
         try {
-            if (originalACL.containsEntry(Privilege.READ_PROCESSED, all) &&
-                newACL.containsEntry(Privilege.READ_PROCESSED, all)) {
+            if (originalACL.hasPrivilege(Privilege.READ_PROCESSED, all) &&
+                newACL.hasPrivilege(Privilege.READ_PROCESSED, all)) {
                 return;
             }
             
             Acl acl = resource.getAcl();
-            Operation op = acl.containsEntry(Privilege.READ_PROCESSED, all) ?
+            Operation op = acl.hasPrivilege(Privilege.READ_PROCESSED, all) ?
                     Operation.ACL_READ_ALL_YES : Operation.ACL_READ_ALL_NO;
 
             ChangeLogEntry entry = changeLogEntry(this.loggerId, this.loggerType, 

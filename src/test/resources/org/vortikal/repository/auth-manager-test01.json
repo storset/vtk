@@ -20,7 +20,7 @@
                 "read" : [ "u:user1@localhost" ],
                 "read-processed" : [ "u:user2@localhost" ],
                 "read-write" : [ "u:user3@localhost" ],
-                "all" : [ "u:admin@localhost" ],
+                "all" : [ "u:admin@localhost" ]
             }
         },
 

@@ -64,7 +64,14 @@ public final class Acl {
         }
         this.actionSets = copyActionSets(actionSets);
     }
-    
+
+    /**
+     * Tests if a principal U has privilege P in this ACL.
+     * 
+     * @param privilege
+     * @param principal
+     * @return 
+     */
     public boolean hasPrivilege(Privilege privilege, Principal principal) {
         Set<Principal> actionSet = this.actionSets.get(privilege);
         if (actionSet != null && actionSet.contains(principal)) { 
@@ -73,10 +80,22 @@ public final class Acl {
         return false;
     }
     
+    /**
+     * Returns all privileges present in this ACL.
+     * @return 
+     */
     public Set<Privilege> getActions() {
         return Collections.unmodifiableSet(this.actionSets.keySet());
     }
 
+    /**
+     * Returns the set of principals which have the provided privilege in
+     * this ACL.
+     * 
+     * @param action the <code>Privilege</code> to get set of principals for.
+     * @return the set of principals for the given privilege. If no principals have
+     *         the given privilege in this ACL, then the empty set is returned.
+     */
     public Set<Principal> getPrincipalSet(Privilege action) {
         Set<Principal> set = this.actionSets.get(action);
         if (set == null) {
@@ -84,15 +103,21 @@ public final class Acl {
         }
         return Collections.unmodifiableSet(set);
     }
-    
+
+    /**
+     * Returns <code>true</code> if this ACL is empty.
+     */
     public boolean isEmpty() {
         return this.actionSets.isEmpty();
     }
-    
+
+    /**
+     * Returns the total number of principals for all privileges present
+     * in this ACL.
+     */
     public int size() {
         int total = 0;
-        for (Privilege action: this.actionSets.keySet()) {
-            Set<Principal> principalSet = this.actionSets.get(action);
+        for (Set<Principal> principalSet: this.actionSets.values()) {
             total += principalSet.size();
         }
         return total;
@@ -107,8 +132,10 @@ public final class Acl {
             throw new IllegalArgumentException("Principal is NULL");
         }
         if (PrincipalFactory.ALL.equals(principal)) {
-            if (Privilege.ALL.equals(privilege) || Privilege.READ_WRITE.equals(privilege) 
-                    || Privilege.ADD_COMMENT.equals(privilege)) {
+            if (Privilege.ALL == privilege
+                    || Privilege.READ_WRITE_UNPUBLISHED == privilege
+                    || Privilege.READ_WRITE == privilege
+                    || Privilege.ADD_COMMENT == privilege) {
                 return false;
             }
         }
@@ -117,12 +144,6 @@ public final class Acl {
     
     
     public Acl addEntry(Privilege privilege, Principal principal) {
-        if (privilege == null) {
-            throw new IllegalArgumentException("Privilege is NULL");
-        }
-        if (principal == null) {
-            throw new IllegalArgumentException("Principal is NULL");
-        }
         if (!isValidEntry(privilege, principal)) {
             throw new IllegalArgumentException(
                     "Not allowed to add principal '" + principal + "' to privilege '"
@@ -191,22 +212,6 @@ public final class Acl {
         return new Acl(newAcl);
     }
 
-
-    public boolean containsEntry(Privilege privilege, Principal principal) throws IllegalArgumentException {
-        if (privilege == null) {
-            throw new IllegalArgumentException("Privilege is NULL");
-        }
-        if (principal == null) {
-            throw new IllegalArgumentException("Principal is NULL");
-        }
-            
-        Set<Principal> actionEntry = this.actionSets.get(privilege);
-        
-        if (actionEntry == null) {
-            return false;
-        }
-        return actionEntry.contains(principal);
-    }
 
 
     public Principal[] listPrivilegedUsers(Privilege privilege) {

@@ -34,7 +34,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -64,13 +63,47 @@ public final class AuthorizationManager {
     private Map<Privilege, List<Pattern>> groupsBlacklist =
             new EnumMap<Privilege, List<Pattern>>(Privilege.class);
 
-    public boolean isReadOnly() {
-        return this.readOnly;
+    /**
+     * Map of a single privilege P to the set of privileges A{P,..} in which
+     * all privileges shall imply permissions equal to or broader than P. The
+     * set A always includes the privilege P itself.
+     */
+    private static final Map<Privilege, Privilege[]> PRIVILEGE_HIERARCHY =
+                           new EnumMap<Privilege, Privilege[]>(Privilege.class);
+    static {
+        PRIVILEGE_HIERARCHY.put(Privilege.READ_PROCESSED, new Privilege[] {
+                Privilege.READ_PROCESSED,
+                Privilege.READ,
+                Privilege.READ_WRITE,
+                Privilege.READ_WRITE_UNPUBLISHED,
+                Privilege.ALL
+        });
+        PRIVILEGE_HIERARCHY.put(Privilege.READ, new Privilege[] {
+                Privilege.READ,
+                Privilege.READ_WRITE,
+                Privilege.READ_WRITE_UNPUBLISHED,
+                Privilege.ALL
+        });
+        PRIVILEGE_HIERARCHY.put(Privilege.ADD_COMMENT, new Privilege[] {
+                Privilege.ADD_COMMENT,
+                Privilege.READ_WRITE,
+                Privilege.READ_WRITE_UNPUBLISHED,
+                Privilege.ALL
+        });
+        PRIVILEGE_HIERARCHY.put(Privilege.READ_WRITE_UNPUBLISHED, new Privilege[] {
+                Privilege.READ_WRITE_UNPUBLISHED,
+                Privilege.READ_WRITE,
+                Privilege.ALL
+        });
+        PRIVILEGE_HIERARCHY.put(Privilege.READ_WRITE, new Privilege[] {
+                Privilege.READ_WRITE,
+                Privilege.ALL
+        });
+        PRIVILEGE_HIERARCHY.put(Privilege.ALL, new Privilege[] {
+                Privilege.ALL
+        });
     }
     
-    public void setReadOnly(boolean readOnly) {
-        this.readOnly = readOnly;
-    }
     
     /**
      * Authorizes a principal for a root role action. Should throw an
@@ -80,24 +113,16 @@ public final class AuthorizationManager {
     public void authorizeRootRoleAction(Principal principal) throws AuthorizationException {
         if (!this.roleManager.hasRole(principal, RoleManager.Role.ROOT)) {
             throw new AuthorizationException(
-                "Principal '" + principal
-                + "' not authorized to perform repository administration");
+                "Principal " + principal + " not authorized for root role action.");
         }
     }
     
-    private void checkReadOnly(Principal principal) throws ReadOnlyException {
-        
-        if (isReadOnly() && !this.roleManager.hasRole(principal, 
-                RoleManager.Role.ROOT)) {
-            throw new ReadOnlyException();
-        }
-    }
 
     /**
      * Authorizes a principal for a given action on a resource
      * URI. Equivalent to calling one of the <code>authorizeYYY(uri,
-     * principal)</code> methods of this interface (with
-     * <code>YYY</code> mapping to one of the actions).
+     * principal)</code> methods (with <code>YYY</code> mapping to one of
+     * the actions).
      *
      * @param uri a resource URI
      * @param action the action to perform. One of the action types
@@ -131,6 +156,7 @@ public final class AuthorizationManager {
             authorizeCreate(uri, principal);
             break;
         case WRITE:
+//        case READ_WRITE_UNPUBLISHED:
         case READ_WRITE:
             authorizeReadWrite(uri, principal);
             break;
@@ -163,10 +189,11 @@ public final class AuthorizationManager {
 
     public void authorizeReadRevision(Principal principal, Revision revision) {
         if (this.roleManager.hasRole(principal, RoleManager.Role.ROOT) ||
-                this.roleManager.hasRole(principal, RoleManager.Role.READ_EVERYTHING))
+                this.roleManager.hasRole(principal, RoleManager.Role.READ_EVERYTHING)) {
             return;
+        }
         
-        aclAuthorize(revision.getAcl(), READ_AUTH_PRIVILEGES, principal);
+        aclAuthorize(revision.getAcl(), principal, PRIVILEGE_HIERARCHY.get(Privilege.READ));
     }
 
     /*
@@ -187,12 +214,9 @@ public final class AuthorizationManager {
     }
     */
     
-    private static final Privilege[] READ_PROCESSED_AUTH_PRIVILEGES = 
-        new Privilege[] {Privilege.ALL, Privilege.READ_WRITE, Privilege.READ, Privilege.READ_PROCESSED};
-
     /**
      * <ul>
-     *   <li>Privilege READ_PROCESSED, READ, READ_WRITE or ALL in ACL
+     *   <li>Privilege READ_PROCESSED, READ, READ_WRITE, READ_WRITE_UNPUBLISHED or ALL in ACL
      *   <li>Role ROOT or READ_EVERYTHING
      * </ul>
      * @return is authorized
@@ -204,20 +228,16 @@ public final class AuthorizationManager {
         ResourceImpl resource = loadResource(uri);
 
         if (this.roleManager.hasRole(principal, RoleManager.Role.ROOT) ||
-                this.roleManager.hasRole(principal, RoleManager.Role.READ_EVERYTHING))
+                this.roleManager.hasRole(principal, RoleManager.Role.READ_EVERYTHING)) {
             return;
+        }
 
-        aclAuthorize(principal, resource, READ_PROCESSED_AUTH_PRIVILEGES);
+        aclAuthorize(resource, principal, PRIVILEGE_HIERARCHY.get(Privilege.READ_PROCESSED));
     }
-
-    
-
-    private static final Privilege[] READ_AUTH_PRIVILEGES = 
-        new Privilege[] {Privilege.ALL, Privilege.READ_WRITE, Privilege.READ};
 
     /**
      * <ul>
-     *   <li>Privilege READ, READ_WRITE or ALL in ACL
+     *   <li>Privilege READ, READ_WRITE, READ_WRITE_UNPUBLISHED or ALL in ACL
      *   <li>Role ROOT or READ_EVERYTHING
      * </ul>
      * @return is authorized
@@ -233,12 +253,8 @@ public final class AuthorizationManager {
                 this.roleManager.hasRole(principal, RoleManager.Role.READ_EVERYTHING)) {
             return;
         }
-        aclAuthorize(principal, resource, READ_AUTH_PRIVILEGES);
+        aclAuthorize(resource, principal, PRIVILEGE_HIERARCHY.get(Privilege.READ));
     }
-
-
-    private static final Privilege[] CREATE_AUTH_PRIVILEGES = 
-        new Privilege[] {Privilege.ALL, Privilege.READ_WRITE};
 
     /**
      * TODO: CREATE is used for old bind ("bare opprett") which is currently disabled
@@ -248,8 +264,6 @@ public final class AuthorizationManager {
      *   <li>Privilege READ_WRITE or ALL on resource
      *   <li>Role ROOT
      * </ul>
-     * @return is authorized
-     * @throws IOException
      */
     public void authorizeCreate(Path uri, Principal principal)
         throws AuthenticationException, AuthorizationException, ReadOnlyException, 
@@ -262,13 +276,10 @@ public final class AuthorizationManager {
         if (this.roleManager.hasRole(principal, RoleManager.Role.ROOT)) {
             return;
         }
-        aclAuthorize(principal, resource, CREATE_AUTH_PRIVILEGES);
+        aclAuthorize(resource, principal, Privilege.ALL,
+                                          Privilege.READ_WRITE);
     }
     
-
-    private static final Privilege[] READ_WRITE_AUTH_PRIVILEGES = 
-        new Privilege[] {Privilege.ALL, Privilege.READ_WRITE};
-
     /**
      * <ul>
      *   <li>Privilege READ_WRITE or ALL in ACL
@@ -288,16 +299,12 @@ public final class AuthorizationManager {
         if (this.roleManager.hasRole(principal, RoleManager.Role.ROOT)) {
             return;
         }
-        aclAuthorize(principal, resource, READ_WRITE_AUTH_PRIVILEGES);
+        aclAuthorize(resource, principal, PRIVILEGE_HIERARCHY.get(Privilege.READ_WRITE));
     }
     
-
-    private static final Privilege[] ADD_COMMENT_AUTH_PRIVILEGES = 
-        new Privilege[] {Privilege.ALL, Privilege.READ_WRITE, Privilege.ADD_COMMENT};
-
     /**
      * <ul>
-     *   <li>Privilege ALL, READ_WRITE or ADD_COMMENT in ACL
+     *   <li>Privilege ALL, READ_WRITE, READ_WRITE_UNPUBLISHED or ADD_COMMENT in ACL
      * </ul>
      * @return is authorized
      * @throws IOException
@@ -313,17 +320,12 @@ public final class AuthorizationManager {
         if (this.roleManager.hasRole(principal, RoleManager.Role.ROOT)) {
             return;
         }
-        aclAuthorize(principal, resource, ADD_COMMENT_AUTH_PRIVILEGES);
+        aclAuthorize(resource, principal, PRIVILEGE_HIERARCHY.get(Privilege.ADD_COMMENT));
     }
     
-
-
-    private static final Privilege[] EDIT_COMMENT_AUTH_PRIVILEGES = 
-        new Privilege[] {Privilege.ALL};
-
     /**
      * <ul>
-     *   <li>Privilege WRITE or ALL in ACL
+     *   <li>Privilege ALL in ACL
      *   <li>Role ROOT
      * </ul>
      * @return is authorized
@@ -340,15 +342,9 @@ public final class AuthorizationManager {
         if (this.roleManager.hasRole(principal, RoleManager.Role.ROOT)) {
             return;
         }
-        aclAuthorize(principal, resource, EDIT_COMMENT_AUTH_PRIVILEGES);
+        aclAuthorize(resource, principal, Privilege.ALL);
     }
     
-
-
-
-    private static final Privilege[] ALL_AUTH_PRIVILEGES = 
-        new Privilege[] {Privilege.ALL};
-
 
     /**
      * <ul>
@@ -369,24 +365,15 @@ public final class AuthorizationManager {
         if (this.roleManager.hasRole(principal, RoleManager.Role.ROOT)) {
             return;
         }
-        aclAuthorize(principal, resource, ALL_AUTH_PRIVILEGES);
+        aclAuthorize(resource, principal, Privilege.ALL);
     }
     
-
-
-    
-    private static final Privilege[] UNLOCK_AUTH_PRIVILEGES = 
-        new Privilege[] {Privilege.ALL};
-
-
     /**
      * <ul>
-     *   <li>principal owns lock
-     *   <li>privilege ALL in Acl 
+     *   <li>Principal owns lock
+     *   <li>Privilege ALL in Acl 
      *   <li>Role ROOT
      * </ul>
-     * @return is authorized
-     * @throws IOException
      */
     public void authorizeUnlock(Path uri, Principal principal) 
         throws AuthenticationException, AuthorizationException, ReadOnlyException,
@@ -411,22 +398,18 @@ public final class AuthorizationManager {
             return;
         }
 
-        aclAuthorize(principal, resource, UNLOCK_AUTH_PRIVILEGES);
+        aclAuthorize(resource, principal, Privilege.ALL);
     }
 
 
-    private static final Privilege[] DELETE_AUTH_PRIVILEGES = 
-        new Privilege[] {Privilege.ALL};
-
-
     /**
+     * One of:
      * <ul>
-     *   <li>Privilege ALL in ACL
-     *   <li>Action READ_WRITE on parent
-     *   <li>Resource is not the root resource '/'.
+     *   <li>Privilege READ_WRITE on parent
+     *   <li>Privilege ALL on resource to be deleted.
      * </ul>
-     * @return is authorized
-     * @throws IOException
+     * 
+     * And resource must not be root resource.
      */
     public void authorizeDelete(Path uri, Principal principal) 
         throws AuthenticationException, AuthorizationException, ReadOnlyException, 
@@ -451,19 +434,16 @@ public final class AuthorizationManager {
         } catch (AuthorizationException e) {
             // Continue to #2
         }
-        // 2. Principal has delete permission directly on the resource itself
-        aclAuthorize(principal, resource, DELETE_AUTH_PRIVILEGES);
+        // 2. Principal has privilege ALL directly on the resource itself
+        aclAuthorize(resource, principal, Privilege.ALL);
     }
     
-
-    private static final Privilege[] ADMIN_AUTH_PRIVILEGES = 
-        new Privilege[] {Privilege.ALL};
-
 
     /**
      * All of:
      * <ul>
-     *   <li>Action ALL or role ROOT
+     *   <li>Action ALL
+     *   <li>Role ROOT
      * </ul>
      * @return is authorized
      * @throws IOException
@@ -481,7 +461,7 @@ public final class AuthorizationManager {
         }
 
         Resource resource = loadResource(uri);
-        aclAuthorize(principal, resource, ADMIN_AUTH_PRIVILEGES);
+        aclAuthorize(resource, principal, Privilege.ALL);
         authorizeReadWrite(uri, principal);
         
     }
@@ -490,11 +470,8 @@ public final class AuthorizationManager {
     /**
      * All of:
      * <ul>
-     *   <li>Action WRITE
      *   <li>Role ROOT
      * </ul>
-     * @return is authorized
-     * @throws IOException
      */
     public void authorizePropertyEditRootRole(Path uri, Principal principal)
         throws AuthenticationException, AuthorizationException,
@@ -503,8 +480,8 @@ public final class AuthorizationManager {
         if (!this.roleManager.hasRole(principal, RoleManager.Role.ROOT)) {
             throw new AuthorizationException();
         }
-        authorizeReadWrite(uri, principal);
         
+        authorizeReadWrite(uri, principal);
     }
     
     /**
@@ -597,12 +574,12 @@ public final class AuthorizationManager {
      * @throws AuthorizationException if the principal is authenticated but 
      *  does not have sufficient privileges to perform the action
      */
-    private void aclAuthorize(Principal principal, Resource resource, Privilege[] privileges) 
+    private void aclAuthorize(Resource resource, Principal principal, Privilege... privileges) 
         throws AuthenticationException, AuthorizationException {
 
         Acl acl = resource.getAcl();
         try {
-            aclAuthorize(acl, privileges, principal);
+            aclAuthorize(acl, principal, privileges);
         } catch (AuthenticationException e) {
             throw new AuthenticationException(
                     "Unauthenticated principal not authorized to access " 
@@ -618,49 +595,17 @@ public final class AuthorizationManager {
     }
     
     
+
     /**
-     * Mapping a single privilege P to the set of privileges A{P,..} in which
-     * all privileges shall imply permissions equal to or broader than P. The
-     * set A always includes the privilege P itself.
-     *
-     * TODO replace with EnumMap.
+     * Tests if a principal has the provided privilege according to the provided
+     * ACL.a
+     * 
+     * @param principal The principal which shall be authorized for the privelege.
+     * @param acl       The resource ACL.
+     * @param privilege The privilege to be tested against ACL.
+     * @return Returns <code>true</code> if principal has the privilege according
+     *         to the provided ACL, <code>false</code> otherwise.
      */
-    private static Map<Privilege, Privilege[]> PRIVILEGE_HIERARCHY = new HashMap<Privilege, Privilege[]>();
-    static {
-        PRIVILEGE_HIERARCHY.put(Privilege.READ_PROCESSED, new Privilege[] {
-                Privilege.READ_PROCESSED,
-                Privilege.READ,
-                Privilege.READ_WRITE,
-                Privilege.READ_WRITE_UNPUBLISHED,
-                Privilege.ALL
-        });
-        PRIVILEGE_HIERARCHY.put(Privilege.READ, new Privilege[] {
-                Privilege.READ,
-                Privilege.READ_WRITE,
-                Privilege.READ_WRITE_UNPUBLISHED,
-                Privilege.ALL
-        });
-        PRIVILEGE_HIERARCHY.put(Privilege.READ_WRITE, new Privilege[] {
-                Privilege.READ_WRITE,
-                Privilege.ALL
-        });
-        PRIVILEGE_HIERARCHY.put(Privilege.ALL, new Privilege[] {
-                Privilege.ALL
-        });
-        PRIVILEGE_HIERARCHY.put(Privilege.ADD_COMMENT, new Privilege[] {
-                Privilege.ADD_COMMENT,
-                Privilege.READ_WRITE,
-                Privilege.READ_WRITE_UNPUBLISHED,
-                Privilege.ALL
-        });
-        PRIVILEGE_HIERARCHY.put(Privilege.READ_WRITE_UNPUBLISHED, new Privilege[] {
-                Privilege.READ_WRITE_UNPUBLISHED,
-                Privilege.READ_WRITE,
-                Privilege.ALL
-        });
-    }
-    
-    
     public boolean authorize(Principal principal, Acl acl, Privilege privilege) {
         if (this.roleManager.hasRole(principal, RoleManager.Role.ROOT)) {
             return true;
@@ -672,7 +617,7 @@ public final class AuthorizationManager {
         }
         Privilege[] privs = PRIVILEGE_HIERARCHY.get(privilege);
         try {
-            aclAuthorize(acl, privs, principal);
+            aclAuthorize(acl, principal, privs);
             return true;
         } catch (Exception e) {
             return false;
@@ -695,13 +640,13 @@ public final class AuthorizationManager {
      * <p>3) (g, privilege) is present in the resource's ACL, where g is a group
      * identifier and the user is a member of that group
      */
-    void aclAuthorize(Acl acl, Privilege[] privileges, Principal principal) {
+    private void aclAuthorize(Acl acl, Principal principal, Privilege... privileges) {
         for (int i = 0; i < privileges.length; i++) {
             Privilege privilege = privileges[i];
             Set<Principal> principalSet = acl.getPrincipalSet(privilege);
             
-            // Dont't need to test the conditions if (principalSet == null)
-            if (principalSet == null || principalSet.size() == 0) {
+            // Dont't need to test the conditions if principalSet is empty.
+            if (principalSet.isEmpty()) {
                 continue;
             }
 
@@ -742,12 +687,9 @@ public final class AuthorizationManager {
                 "Principal " + principal + " not authorized by ACL " 
                 + acl + " for any of privilege(s) " + Arrays.asList(privileges));
     }
-    
-    // Temporary fix for problems with DAO returning null for resources not found
-    // and this class does not handle it. Throw ResourceNotFoundException(Path) instead
-    // of NullPointerException.
-    private ResourceImpl loadResource(Path uri) 
-        throws ResourceNotFoundException {
+
+    // Load a resource directly from DAO.
+    private ResourceImpl loadResource(Path uri) throws ResourceNotFoundException {
         ResourceImpl resource = this.dao.load(uri);
         if (resource == null) {
             throw new ResourceNotFoundException(uri);
@@ -786,7 +728,7 @@ public final class AuthorizationManager {
     }
 
     public boolean isValidAclEntry(Privilege action, Principal principal) {
-        boolean valid = false;
+        boolean valid;
         if (principal.getType() == Principal.Type.USER) {
             valid = this.principalManager.validatePrincipal(principal);
         } else if (principal.getType() == Principal.Type.GROUP) {
@@ -800,6 +742,24 @@ public final class AuthorizationManager {
         return valid;
     }
 
+    private void checkReadOnly(Principal principal) throws ReadOnlyException {
+        if (isReadOnly() && !this.roleManager.hasRole(principal, RoleManager.Role.ROOT)) {
+            throw new ReadOnlyException();
+        }
+    }
+    
+    public boolean isReadOnly() {
+        return this.readOnly;
+    }
+
+    /**
+     * Set repository read-only state. Setting this to <code>true</code> will
+     * cause all actions that modify repository to be denied (except if principal
+     * has root role).
+     */
+    public void setReadOnly(boolean readOnly) {
+        this.readOnly = readOnly;
+    }
 
     public void setPermissionBlacklist(Map<Privilege, List<String>> blacklist) {
         for (Privilege privilege : blacklist.keySet()) {

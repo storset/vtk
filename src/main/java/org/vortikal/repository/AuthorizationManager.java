@@ -459,11 +459,9 @@ public final class AuthorizationManager {
         if (this.roleManager.hasRole(principal, RoleManager.Role.ROOT)) {
             return;
         }
-
+        checkReadOnly(principal);
         Resource resource = loadResource(uri);
         aclAuthorize(resource, principal, Privilege.ALL);
-        authorizeReadWrite(uri, principal);
-        
     }
 
 
@@ -476,12 +474,13 @@ public final class AuthorizationManager {
     public void authorizePropertyEditRootRole(Path uri, Principal principal)
         throws AuthenticationException, AuthorizationException,
         IOException {
+        // Check existence:
+        loadResource(uri);
 
-        if (!this.roleManager.hasRole(principal, RoleManager.Role.ROOT)) {
-            throw new AuthorizationException();
+        if (this.roleManager.hasRole(principal, RoleManager.Role.ROOT)) {
+            return;
         }
-        
-        authorizeReadWrite(uri, principal);
+        throw new AuthorizationException();
     }
     
     /**

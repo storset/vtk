@@ -1,15 +1,14 @@
 <#ftl strip_whitespace=true>
 <#-- JSON elements interaction in new documenttypes (add, remove and move) 
 
-     TODO: * Move all JS to JS-file to get syntax highlighting (I'm getting snow-blind)
-           ** On the positive side: JS in FTL is nice when developing in Vortex
+     TODO: * Move all JS to JS-file to get syntax highlighting
            * Still a little too much traversal and i think a little slow solution for replacing id-numbers on move
 
 -->
 
 <#macro script>
   <#assign locale = springMacroRequestContext.getLocale() />
-  <script type="text/javascript" src="${webResources?html}/jquery/plugins/jquery.scrollTo-1.4.2-min.js"></script>
+  <script type="text/javascript" src="${webResources?html}/jquery/plugins/jquery.scrollTo.min.js"></script>
   <script type="text/javascript"><!--
    
     var TEMPLATES = [];
@@ -77,32 +76,32 @@
             .find(".vrtx-add-button").data({'number': i});
         }
         // TODO: avoid this being hardcoded here
-          var items = $("#editor.vrtx-syllabus #items");
-          wrapJSONItemsLeftRight(items.find(".vrtx-json-element"), ".author, .title, .year, .publisher, .isbn, .comment", ".linktext, .link, .bibsys, .fulltext, .articles");
-          items.find(".author input, .title input").addClass("header-populators");
-          items.find(".vrtx-html textarea").addClass("header-fallback-populator");
-          // ^ TODO: avoid this being hardcoded here
+        var items = $("#editor.vrtx-syllabus #items");
+        wrapJSONItemsLeftRight(items.find(".vrtx-json-element"), ".author, .title, .year, .publisher, .isbn, .comment", ".linktext, .link, .bibsys, .fulltext, .articles");
+        items.find(".author input, .title input").addClass("header-populators");
+        items.find(".vrtx-html textarea").addClass("header-fallback-populator");
+        // ^ TODO: avoid this being hardcoded here
       
-          // Because accordion needs one content wrapper
-          for(var grouped = $(".vrtx-json-accordion .vrtx-json-element"), i = grouped.length; i--;) { 
-            var group = $(grouped[i]);
-            group.find("> *").wrapAll("<div />");
-            updateAccordionHeader(group);
-          }
+        // Because accordion needs one content wrapper
+        for(var grouped = $(".vrtx-json-accordion .vrtx-json-element"), i = grouped.length; i--;) { 
+          var group = $(grouped[i]);
+          group.find("> *").wrapAll("<div />");
+          updateAccordionHeader(group);
+        }
       
-          $(".vrtx-json-accordion .fieldset").accordion({ 
-                                                header: "> div > .header",
-                                                autoHeight: false,
-                                                collapsible: true,
-                                                active: false,
-                                                change: function(e, ui) {
-                                                  updateAccordionHeader(ui.oldHeader);
-                                                  if(ACCORDION_MOVE_TO_AFTER_CHANGE) {
-                                                    scrollToElm(ACCORDION_MOVE_TO_AFTER_CHANGE);
-                                                    ACCORDION_MOVE_TO_AFTER_CHANGE = null;
-                                                  }
-                                                }  
-                                              });
+        $(".vrtx-json-accordion .fieldset").accordion({ 
+                                              header: "> div > .header",
+                                              autoHeight: false,
+                                              collapsible: true,
+                                              active: false,
+                                              change: function(e, ui) {
+                                                updateAccordionHeader(ui.oldHeader);
+                                                if(ACCORDION_MOVE_TO_AFTER_CHANGE) {
+                                                  scrollToElm(ACCORDION_MOVE_TO_AFTER_CHANGE);
+                                                  ACCORDION_MOVE_TO_AFTER_CHANGE = null;
+                                                }
+                                              }  
+                                            });
       });
 
       
@@ -231,8 +230,8 @@
           
           // TODO: avoid this being hardcoded here
           wrapJSONItemsLeftRight(group, ".author, .title, .year, .publisher, .isbn, .comment", ".linktext, .link, .bibsys, .fulltext, .articles");
-          items.find(".author input, .title input").addClass("header-populators");
-          items.find(".vrtx-html textarea").addClass("header-fallback-populator");
+          group.find(".author input, .title input").addClass("header-populators");
+          group.find(".vrtx-html textarea").addClass("header-fallback-populator");
           // ^ TODO: avoid this being hardcoded here
           
           accordionRefresh(accordionContent, false);

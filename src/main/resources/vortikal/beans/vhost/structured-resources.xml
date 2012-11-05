@@ -95,12 +95,24 @@
     <property name="assertions">
       <list>
         <ref bean="resourceTypeIsNotExam" />
+        <ref bean="resourceTypeIsNotSamletProgram" />
+        <ref bean="resourceTypeIsNotSamletRetning" />
       </list>
     </property>
   </bean>
 
   <bean id="resourceTypeIsNotExam" class="org.vortikal.web.service.ResourceTypeAssertion" parent="repositoryAware">
     <property name="resourceType" value="exam" />
+    <property name="invert" value="true" />
+  </bean>
+
+  <bean id="resourceTypeIsNotSamletProgram" class="org.vortikal.web.service.ResourceTypeAssertion" parent="repositoryAware">
+    <property name="resourceType" value="samlet-program" />
+    <property name="invert" value="true" />
+  </bean>
+
+  <bean id="resourceTypeIsNotSamletRetning" class="org.vortikal.web.service.ResourceTypeAssertion" parent="repositoryAware">
+    <property name="resourceType" value="samlet-retning" />
     <property name="invert" value="true" />
   </bean>
 

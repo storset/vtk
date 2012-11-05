@@ -510,7 +510,7 @@
         var stickyBarHeight = stickyBar.height();
         absPosTop -= (stickyBarHeight <= absPosTop) ? stickyBarHeight : 0;
       }
-
+      
       $('body').scrollTo(absPosTop, 250, {
         easing: 'swing',
         queue: true,

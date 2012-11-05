@@ -33,19 +33,21 @@ resourcetype syllabus {
         [if file != null]
           [def mappings file.properties.mappings]
           <div id="vrtx-additional-content">
-            <h2>UB-Mapping</h2>
-            [list mappings mapping]
-              [def mapping-prefix mapping.prefix.toLowerCase()]
-              [if prefix = mapping-prefix]
-                [if content-locale != null && content-locale != ""]
-                  [if content-locale = "en" && mapping.mappinglink-en != null && mapping.mappinglink-en != ""]
-                    <p><a href="[val mapping.mappinglink-en]">[val mapping.mappinglink-en]</a></p>
-                  [elseif mapping.mappinglink-no != null && mapping.mappinglink-no != ""]
-                    <p><a href="[val mapping.mappinglink-no]">[val mapping.mappinglink-no]</a></p>
+            <div id="vrtx-related-content">
+              <h2>UB-Mapping</h2>
+              [list mappings mapping]
+                [def mapping-prefix mapping.prefix.toLowerCase()]
+                [if prefix = mapping-prefix]
+                  [if content-locale != null && content-locale != ""]
+                    [if content-locale = "en" && mapping.mappinglink-en != null && mapping.mappinglink-en != ""]
+                      <p><a href="[val mapping.mappinglink-en]">[val mapping.mappinglink-en]</a></p>
+                    [elseif mapping.mappinglink-no != null && mapping.mappinglink-no != ""]
+                      <p><a href="[val mapping.mappinglink-no]">[val mapping.mappinglink-no]</a></p>
+                    [endif]
                   [endif]
                 [endif]
-              [endif]
-            [endlist]
+              [endlist]
+            </div>
           </div>
         [endif]
         ##

@@ -46,6 +46,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.log4j.BasicConfigurator;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.junit.Test;
@@ -62,6 +63,10 @@ import org.vortikal.security.PrincipalManagerImpl;
 import org.vortikal.security.roles.RoleManager;
 
 public class AuthorizationManagerTest {
+    
+    static {
+        BasicConfigurator.configure();
+    }
 
     @Test
     public void test01() throws Exception {

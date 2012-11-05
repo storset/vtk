@@ -308,7 +308,7 @@ vrtxAdmin._$(document).ready(function () {
             .done(function(script, textStatus) {
                $.cachedScript('/vrtx/__vrtx/static-resources/jquery/plugins/jquery.treeview.async.js')
                .done(function(script, textStatus) {
-                 $.cachedScript('/vrtx/__vrtx/static-resources/jquery/plugins/jquery.scrollTo-1.4.2-min.js')
+                 $.cachedScript('/vrtx/__vrtx/static-resources/jquery/plugins/jquery.scrollTo.min.js')
                 .done(function(script, textStatus) {
                   vrtxSimpleDialogs.openHtmlDialog(dialogManageCreate.html(), link.title);
                   initializeTree();

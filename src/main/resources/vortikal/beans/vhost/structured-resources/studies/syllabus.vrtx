@@ -119,6 +119,7 @@ resourcetype syllabus {
     ub-resource : (en : "Resources for this subject", no : "Fagressurser for dette emnet", nn : "Fagressurser for dette emnet"),
     ub-mapping : (en : "At the University library ", no : "Hos Universitets biblioteket", nn : "Hjå Universitets biblioteket"),
     author : (en : "Author", no : "Forfatter", nn : "Forfatter"),
+    title : (en : "Title", no : "Tittel", nn : "Tittel"), 
     year : (en : "Year", no : "År", nn : "År"),
     publisher : (en : "Publisher", no : "Utgiver", nn : "Utgiver"),
     isbn : (en : "ISBN", no : "ISBN", nn : "ISBN"),
@@ -132,7 +133,6 @@ resourcetype syllabus {
     item-content : (en : "Content", no : "Innhold", nn : "Innhald"),
     content : (en : "Content", no : "Innhold", nn : "Innhald"),
     in : (en : "in", no : "i", nn : "i"),
-    items : (en : "List", no : "Liste", nn : "Liste"),
     syllabus : (en : "Syllabus/achievement requirements", no : "Pensum/læringskrav", nn : "Pensum/læringskrav")
   }
 

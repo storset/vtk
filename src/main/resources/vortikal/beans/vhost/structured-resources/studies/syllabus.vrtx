@@ -117,7 +117,7 @@ resourcetype syllabus {
     header : (en : "Edit syllabus", no : "Rediger pensumliste", nn : "Rediger pensumliste"),
     items : (en : "Syllabus items", no : "Pensumpunkter", nn : "Pensumpunkt"),
     ub-resource : (en : "Resources for this subject", no : "Fagressurser for dette emnet", nn : "Fagressurser for dette emnet"),
-    ub-mapping : (en : "At the University library ", no : "Hos Universitets biblioteket", nn : "Hjå Universitets biblioteket"),
+    ub-mapping : (en : "At the University library ", no : "Hos Universitets­biblioteket", nn : "Hjå Universitets­biblioteket"),
     author : (en : "Author", no : "Forfatter", nn : "Forfatter"),
     title : (en : "Title", no : "Tittel", nn : "Tittel"), 
     year : (en : "Year", no : "År", nn : "År"),

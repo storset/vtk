@@ -1,7 +1,6 @@
 resourcetype syllabus {
 
   properties {
-    title : string,
     items : json (
         author : string,
         title : string,
@@ -34,15 +33,15 @@ resourcetype syllabus {
           [def mappings file.properties.mappings]
           <div id="vrtx-additional-content">
             <div id="vrtx-related-content">
-              <h2>UB-Mapping</h2>
+              <h2>[localized 'ub-mapping']</h2>
               [list mappings mapping]
                 [def mapping-prefix mapping.prefix.toLowerCase()]
                 [if prefix = mapping-prefix]
                   [if content-locale != null && content-locale != ""]
                     [if content-locale = "en" && mapping.mappinglink-en != null && mapping.mappinglink-en != ""]
-                      <p><a href="[val mapping.mappinglink-en]">[val mapping.mappinglink-en]</a></p>
+                      <p><a href="[val mapping.mappinglink-en]">[localized 'ub-resource']</a></p>
                     [elseif mapping.mappinglink-no != null && mapping.mappinglink-no != ""]
-                      <p><a href="[val mapping.mappinglink-no]">[val mapping.mappinglink-no]</a></p>
+                      <p><a href="[val mapping.mappinglink-no]">[localized 'ub-resource']</a></p>
                     [endif]
                   [endif]
                 [endif]
@@ -94,7 +93,7 @@ resourcetype syllabus {
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml">
       <head>
-        <title>[call "resource:property" {"id":"title"}]</title>
+        <title>[localized 'syllabus'] ([if course-code != null][val course-code][endif][if course-code != null && semester != null] - [endif][if semester != null][val semester][endif])</title>
       </head>
       <body id="vrtx-syllabus">
         <div id="vrtx-content">
@@ -115,8 +114,10 @@ resourcetype syllabus {
   }
 
   localization {
-    title : (en : "Title", no : "Tittel", nn : "Tittel"),
     header : (en : "Edit syllabus", no : "Rediger pensumliste", nn : "Rediger pensumliste"),
+    items : (en : "Syllabus items", no : "Pensumpunkter", nn : "Pensumpunkt"),
+    ub-resource : (en : "Resources for this subject", no : "Fagressurser for dette emnet", nn : "Fagressurser for dette emnet"),
+    ub-mapping : (en : "At the University library ", no : "Hos Universitets biblioteket", nn : "Hjå Universitets biblioteket"),
     author : (en : "Author", no : "Forfatter", nn : "Forfatter"),
     year : (en : "Year", no : "År", nn : "År"),
     publisher : (en : "Publisher", no : "Utgiver", nn : "Utgiver"),

@@ -105,8 +105,8 @@ function VrtxAdmin() {
 var vrtxAdmin = new VrtxAdmin();
 
 // Upgrade easing algorithm from 'linear' to 'easeOutQuad' and 'easeInQuad'
-// -- if not < IE 9 (and not iPhone, iPad and Android devices)
-if(!(vrtxAdmin.isIE && vrtxAdmin.browserVersion < 9) && !vrtxAdmin.isMobileWebkitDevice) {
+// -- if not < IE 10 (and not iPhone, iPad and Android devices)
+if(!(vrtxAdmin.isIE && vrtxAdmin.browserVersion < 10) && !vrtxAdmin.isMobileWebkitDevice) {
   vrtxAdmin.transitionEasingSlideDown = "easeOutQuad";
   vrtxAdmin.transitionEasingSlideUp = "easeInQuad";
 }
@@ -336,10 +336,8 @@ vrtxAdmin._$(document).ready(function () {
           insertAfterOrReplaceClass: "#active-tab ul#tabMenuRight",
           nodeType: "div",
           funcComplete: function(p){ createFuncComplete(); },
-          simultanSliding: !vrtxAdm.isIE8,
-          transitionSpeed: (vrtxAdm.isIE8 ? 0 : null),
-          transitionEasingSlideDown: (vrtxAdm.isIE8 ? "linear" : null),
-          transitionEasingSlideUp: (vrtxAdm.isIE8 ? "linear" : null)
+          simultanSliding: true,
+          transitionSpeed: 350
         });
         vrtxAdm.completeFormAsync({ 
           selector: "form#" + tabMenuServices[i] + "-form input[type=submit]",
@@ -348,9 +346,7 @@ vrtxAdmin._$(document).ready(function () {
           errorContainerInsertAfter: "> ul",
           funcComplete: vrtxAdm.updateCollectionListingInteraction,
           post: true,
-          transitionSpeed: (vrtxAdm.isIE8 ? 0 : null),
-          transitionEasingSlideDown: (vrtxAdm.isIE8 ? "linear" : null),
-          transitionEasingSlideUp: (vrtxAdm.isIE8 ? "linear" : null)
+          transitionSpeed: 350
         });
       } else { // Half-async for file upload and create document
         if(tabMenuServices[i] == "createDocumentService") {
@@ -360,16 +356,12 @@ vrtxAdmin._$(document).ready(function () {
             insertAfterOrReplaceClass: "#active-tab ul#tabMenuRight",
             nodeType: "div",
             funcComplete: function(p){ createFuncComplete(); },
-            simultanSliding: !vrtxAdm.isIE8,
-            transitionSpeed: (vrtxAdm.isIE8 ? 0 : null),
-            transitionEasingSlideDown: (vrtxAdm.isIE8 ? "linear" : null),
-            transitionEasingSlideUp: (vrtxAdm.isIE8 ? "linear" : null)
+            simultanSliding: true,
+            transitionSpeed: 350
           });
           vrtxAdm.completeFormAsync({
             selector: "form#" + tabMenuServices[i] + "-form input[type=submit]",
-            transitionSpeed: (vrtxAdm.isIE8 ? 0 : null),
-            transitionEasingSlideDown: (vrtxAdm.isIE8 ? "linear" : null),
-            transitionEasingSlideUp: (vrtxAdm.isIE8 ? "linear" : null)
+            transitionSpeed: 350
           });
         } else {
           if(vrtxAdm.isIPhone || vrtxAdm.isIPad) { // TODO: feature detection
@@ -381,16 +373,10 @@ vrtxAdmin._$(document).ready(function () {
               insertAfterOrReplaceClass: "#active-tab ul#tabMenuRight",
               nodeType: "div",
               funcComplete: function(p){ vrtxAdm.initFileUpload() },
-              simultanSliding: !vrtxAdm.isIE8,
-              transitionSpeed: (vrtxAdm.isIE8 ? 0 : null),
-              transitionEasingSlideDown: (vrtxAdm.isIE8 ? "linear" : null),
-              transitionEasingSlideUp: (vrtxAdm.isIE8 ? "linear" : null)
+              simultanSliding: true
             });
             vrtxAdm.completeFormAsync({
-              selector: "form#" + tabMenuServices[i] + "-form input[type=submit]",
-              transitionSpeed: (vrtxAdm.isIE8 ? 0 : null),
-              transitionEasingSlideDown: (vrtxAdm.isIE8 ? "linear" : null),
-              transitionEasingSlideUp: (vrtxAdm.isIE8 ? "linear" : null)
+              selector: "form#" + tabMenuServices[i] + "-form input[type=submit]"
             });
             vrtxAdm.initFileUpload(); // when error message
           }
@@ -963,7 +949,6 @@ VrtxAdmin.prototype.adaptiveBreadcrumbs = function adaptiveBreadcrumbs() {
     }
   }
 };
-
 
 /*-------------------------------------------------------------------*\
     6. Create service
@@ -2283,7 +2268,7 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(options) {
     var selector = options.selector,
         selectorClass = options.selectorClass,
         simultanSliding = options.simultanSliding,
-        transitionSpeed = options.transitionSpeed !== null ? options.transitionSpeed : vrtxAdm.transitionSpeed,
+        transitionSpeed = options.transitionSpeed || vrtxAdm.transitionSpeed,
         transitionEasingSlideDown = options.transitionEasingSlideDown || vrtxAdm.transitionEasingSlideDown,
         transitionEasingSlideUp = options.transitionEasingSlideUp || vrtxAdm.transitionEasingSlideUp,
         modeUrl = location.href,
@@ -2461,7 +2446,7 @@ VrtxAdmin.prototype.completeFormAsync = function completeFormAsync(options) {
     var isReplacing = options.isReplacing || false,
         funcProceedCondition = options.funcProceedCondition,
         funcComplete = options.funcComplete,
-        transitionSpeed = options.transitionSpeed !== null ? options.transitionSpeed : vrtxAdm.transitionSpeed,
+        transitionSpeed = options.transitionSpeed || vrtxAdm.transitionSpeed,
         transitionEasingSlideDown = options.transitionEasingSlideDown || vrtxAdm.transitionEasingSlideDown,
         transitionEasingSlideUp = options.transitionEasingSlideUp || vrtxAdm.transitionEasingSlideUp,
         post = options.post || false,

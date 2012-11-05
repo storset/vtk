@@ -76,35 +76,36 @@
             .append($.mustache(TEMPLATES["add-remove-move"], json))
             .find(".vrtx-add-button").data({'number': i});
         }
+        // TODO: avoid this being hardcoded here
+          var items = $("#editor.vrtx-syllabus #items");
+          wrapJSONItemsLeftRight(items.find(".vrtx-json-element"), ".author, .title, .year, .publisher, .isbn, .comment", ".linktext, .link, .bibsys, .fulltext, .articles");
+          items.find(".author input, .title input").addClass("header-populators");
+          items.find(".vrtx-html textarea").addClass("header-fallback-populator");
+          // ^ TODO: avoid this being hardcoded here
+      
+          // Because accordion needs one content wrapper
+          for(var grouped = $(".vrtx-json-accordion .vrtx-json-element"), i = grouped.length; i--;) { 
+            var group = $(grouped[i]);
+            group.find("> *").wrapAll("<div />");
+            updateAccordionHeader(group);
+          }
+      
+          $(".vrtx-json-accordion .fieldset").accordion({ 
+                                                header: "> div > .header",
+                                                autoHeight: false,
+                                                collapsible: true,
+                                                active: false,
+                                                change: function(e, ui) {
+                                                  updateAccordionHeader(ui.oldHeader);
+                                                  if(ACCORDION_MOVE_TO_AFTER_CHANGE) {
+                                                    scrollToElm(ACCORDION_MOVE_TO_AFTER_CHANGE);
+                                                    ACCORDION_MOVE_TO_AFTER_CHANGE = null;
+                                                  }
+                                                }  
+                                              });
       });
 
-      // TODO: avoid this being hardcoded here
-      var items = $("#editor.vrtx-syllabus #items");
-      wrapJSONItemsLeftRight(items.find(".vrtx-json-element"), ".author, .title, .year, .publisher, .isbn, .comment", ".linktext, .link, .bibsys, .fulltext, .articles");
-      items.find(".author input, .title input").addClass("header-populators");
-      items.find(".vrtx-html textarea").addClass("header-fallback-populator");
-      // ^ TODO: avoid this being hardcoded here
       
-       // Because accordion needs one content wrapper
-      for(var grouped = $(".vrtx-json-accordion .vrtx-json-element"), i = grouped.length; i--;) { 
-        var group = $(grouped[i]);
-        group.find("> *").wrapAll("<div />");
-        updateAccordionHeader(group);
-      }
-      
-      $(".vrtx-json-accordion .fieldset").accordion({ 
-                                            header: "> div > .header",
-                                            autoHeight: false,
-                                            collapsible: true,
-                                            active: false,
-                                            change: function(e, ui) {
-                                              updateAccordionHeader(ui.oldHeader);
-                                              if(ACCORDION_MOVE_TO_AFTER_CHANGE) {
-                                                scrollToElm(ACCORDION_MOVE_TO_AFTER_CHANGE);
-                                                ACCORDION_MOVE_TO_AFTER_CHANGE = null;
-                                              }
-                                            }  
-                                          });
                                           
        
       var appContent = $("#app-content");
@@ -425,7 +426,7 @@
     // When move up or move down (+ scroll to)
     
     function swapContent(counter, arrayOfIds, move, name) {
-    
+
       var thisId = "#vrtx-json-element-" + name + "-" + counter;
       var thisElm = $(thisId);
       

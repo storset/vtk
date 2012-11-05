@@ -425,6 +425,7 @@
     // When move up or move down (+ scroll to)
     
     function swapContent(counter, arrayOfIds, move, name) {
+    
       var thisId = "#vrtx-json-element-" + name + "-" + counter;
       var thisElm = $(thisId);
       
@@ -491,7 +492,7 @@
       }
       thisElm.focusout();
       movedElm.focusout();
-
+      
       if(hasAccordion) {
         ACCORDION_MOVE_TO_AFTER_CHANGE = movedElm;
         var accordionContent = accordionWrapper.find(".fieldset");

@@ -131,6 +131,7 @@ resourcetype syllabus {
     item-content : (en : "Content", no : "Innhold", nn : "Innhald"),
     content : (en : "Content", no : "Innhold", nn : "Innhald"),
     in : (en : "in", no : "i", nn : "i"),
+    items : (en : "List", no : "Liste", nn : "Liste"),
     syllabus : (en : "Syllabus/achievement requirements", no : "Pensum/læringskrav", nn : "Pensum/læringskrav")
   }
 

@@ -75,6 +75,7 @@
             .append($.mustache(TEMPLATES["add-remove-move"], json))
             .find(".vrtx-add-button").data({'number': i});
         }
+        
         // TODO: avoid this being hardcoded here
         var items = $("#editor.vrtx-syllabus #items");
         wrapJSONItemsLeftRight(items.find(".vrtx-json-element"), ".author, .title, .year, .publisher, .isbn, .comment", ".linktext, .link, .bibsys, .fulltext, .articles");
@@ -98,15 +99,11 @@
                                                 updateAccordionHeader(ui.oldHeader);
                                                 if(ACCORDION_MOVE_TO_AFTER_CHANGE) {
                                                   scrollToElm(ACCORDION_MOVE_TO_AFTER_CHANGE);
-                                                  ACCORDION_MOVE_TO_AFTER_CHANGE = null;
                                                 }
                                               }  
                                             });
       });
 
-      
-                                          
-       
       var appContent = $("#app-content");
       appContent.on("click", ".vrtx-json .vrtx-add-button", function(e) {
         var accordionWrapper = $(this).closest(".vrtx-json-accordion");
@@ -278,7 +275,6 @@
                                     updateAccordionHeader(ui.oldHeader);
                                     if(ACCORDION_MOVE_TO_AFTER_CHANGE) {
                                       scrollToElm(ACCORDION_MOVE_TO_AFTER_CHANGE);
-                                      ACCORDION_MOVE_TO_AFTER_CHANGE = null;
                                     }
                                   }  
                                 });
@@ -422,10 +418,9 @@
       return $.mustache(TEMPLATES["browse"], json); 
     }
     
-    // When move up or move down (+ scroll to)
+    // Move up or move down
     
     function swapContent(counter, arrayOfIds, move, name) {
-
       var thisId = "#vrtx-json-element-" + name + "-" + counter;
       var thisElm = $(thisId);
       
@@ -517,6 +512,9 @@
         queue: true,
         axis: 'y'
       });
+      setTimeout(function() {
+        ACCORDION_MOVE_TO_AFTER_CHANGE = null;
+      }, 270);
     }
   
   // -->

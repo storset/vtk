@@ -28,7 +28,7 @@
   </bean>
 
   <bean id="versioning.displayPermissionAssertion" parent="abstractResourcePrincipalPermissionAssertion">
-    <property name="permission" ref="ACTION_READ_WRITE" />
+    <property name="permission" value="READ_WRITE" />
     <property name="considerLocks" value="false" />
   </bean>
 
@@ -67,7 +67,7 @@
         <ref bean="versioning.deleteActionParameter" />
         <ref bean="resourceTypeIsText" />
         <bean parent="abstractResourcePrincipalPermissionAssertion">
-          <property name="permission" ref="ACTION_READ_WRITE" />
+          <property name="permission" value="READ_WRITE" />
           <property name="considerLocks" value="true" />
         </bean>
       </list>
@@ -94,7 +94,7 @@
         <ref bean="versioning.restoreActionParameter" />
         <ref bean="resourceTypeIsText" />
         <bean parent="abstractResourcePrincipalPermissionAssertion">
-          <property name="permission" ref="ACTION_READ_WRITE" />
+          <property name="permission" value="READ_WRITE" />
           <property name="considerLocks" value="true" />
         </bean>
       </list>

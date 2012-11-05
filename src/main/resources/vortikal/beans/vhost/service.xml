@@ -358,7 +358,7 @@
         <bean class="org.vortikal.web.service.InvertAssertion">
           <property name="assertion">
             <bean parent="abstractResourcePrincipalPermissionAssertion">
-              <property name="permission" ref="ACTION_READ" />
+              <property name="permission" value="READ" />
               <property name="anonymous" value="true" />
             </bean>
           </property>
@@ -366,7 +366,7 @@
         <bean class="org.vortikal.web.service.InvertAssertion">
           <property name="assertion">
             <bean parent="abstractResourcePrincipalPermissionAssertion">
-              <property name="permission" ref="ACTION_READ_PROCESSED" />
+              <property name="permission" value="READ_PROCESSED" />
               <property name="anonymous" value="true" />
             </bean>
           </property>
@@ -411,7 +411,7 @@
         <bean parent="abstractResourcePrincipalPermissionAssertion">
           <property name="requiresAuthentication" value="true" />
           <property name="considerLocks" value="false" />
-          <property name="permission" ref="ACTION_READ_PROCESSED" />
+          <property name="permission" value="READ_PROCESSED" />
         </bean>
       </list>
     </property>

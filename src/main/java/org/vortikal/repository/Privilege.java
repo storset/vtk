@@ -33,12 +33,12 @@ package org.vortikal.repository;
 import java.util.HashMap;
 import java.util.Map;
 
-
 /**
- * This class defines the privileges supported in an ACL.
- * Each privilege maps to one canonical repository action.
+ * This class defines the privileges supported in an ACL. Each privilege maps to
+ * one canonical repository action.
  */
 public enum Privilege {
+
     ALL(RepositoryAction.ALL),
     READ_WRITE(RepositoryAction.READ_WRITE),
     READ_WRITE_UNPUBLISHED(RepositoryAction.READ_WRITE_UNPUBLISHED),
@@ -46,17 +46,17 @@ public enum Privilege {
     READ(RepositoryAction.READ),
     READ_PROCESSED(RepositoryAction.READ_PROCESSED);
     /* BIND_TEMPLATE(RepositoryAction.CREATE, "bind-template"); */
-
     private final RepositoryAction action;
     private final String name;
+
     private Privilege(RepositoryAction action) {
         this.action = action;
         this.name = action.getName();
     }
-
     private static final Map<String, Privilege> NAME_MAP = new HashMap<String, Privilege>();
+
     static {
-        for (Privilege p: values()) {
+        for (Privilege p : values()) {
             NAME_MAP.put(p.name, p);
         }
     }
@@ -68,22 +68,21 @@ public enum Privilege {
         }
         return p;
     }
-    
-    public static boolean exists(String name){
+
+    public static boolean exists(String name) {
         return NAME_MAP.containsKey(name);
     }
-    
+
     public String getName() {
         return this.name;
     }
-    
+
     public RepositoryAction getAction() {
         return this.action;
     }
-    
+
     @Override
     public String toString() {
         return this.name;
     }
-
 }

@@ -205,14 +205,14 @@
 
   <bean id="repository.acl.blacklist" class="org.springframework.beans.factory.config.MapFactoryBean">
     <property name="sourceMap">
-      <map>
-        <entry key-ref="PRIVILEGE_ALL" value-ref="repository.acl.blacklist.all" />
-        <entry key-ref="PRIVILEGE_READ_WRITE" value-ref="repository.acl.blacklist.readWrite" />
-        <entry key-ref="PRIVILEGE_READ_WRITE_UNPUBLISHED" value-ref="repository.acl.blacklist.readWrite" />
-        <entry key-ref="PRIVILEGE_ADD_COMMENT" value-ref="repository.acl.blacklist.addComment" />
-        <!-- <entry key-ref="PRIVILEGE_BIND_TEMPLATE" value-ref="repository.acl.blacklist.bindTemplate" /> -->
-        <entry key-ref="PRIVILEGE_READ" value-ref="repository.acl.blacklist.read" />
-        <entry key-ref="PRIVILEGE_READ_PROCESSED" value-ref="repository.acl.blacklist.readProcessed" />
+      <map key-type="org.vortikal.repository.Privilege">
+        <entry key="ALL" value-ref="repository.acl.blacklist.all" />
+        <entry key="READ_WRITE" value-ref="repository.acl.blacklist.readWrite" />
+        <entry key="READ_WRITE_UNPUBLISHED" value-ref="repository.acl.blacklist.readWrite" />
+        <entry key="ADD_COMMENT" value-ref="repository.acl.blacklist.addComment" />
+        <!-- <entry key="BIND_TEMPLATE" value-ref="repository.acl.blacklist.bindTemplate" /> -->
+        <entry key="READ" value-ref="repository.acl.blacklist.read" />
+        <entry key="READ_PROCESSED" value-ref="repository.acl.blacklist.readProcessed" />
       </map>
     </property>
   </bean>

@@ -99,6 +99,7 @@ public class ACLProvider implements ReferenceDataProvider {
     private LocaleResolver localeResolver;
     private DocumentPrincipalMetadataRetriever documentPrincipalMetadataRetriever;
 
+    @Override
     public void referenceData(Map<String, Object> model, HttpServletRequest request) throws Exception {
 
         Map<String, Object> aclModel = new HashMap<String, Object>();

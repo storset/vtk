@@ -1159,9 +1159,7 @@ function disableReplaceTitle(nameBind) {
   
   setCaretToPos(nameField[0], currentCaretPos - (nameFieldValBeforeReplacement.length - nameFieldVal.length));
   
-  $("#vrtx-textfield-file-name").removeClass("file-name-from-title");
-  $("#vrtx-textfield-file-type").removeClass("file-name-from-title");
-  $("#vrtx-textfield-collection-name").removeClass("file-name-from-title");
+  $(".file-name-from-title").removeClass("file-name-from-title");
 }
 
 function replaceInvalidChar(val) {

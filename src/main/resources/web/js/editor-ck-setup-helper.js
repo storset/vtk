@@ -48,6 +48,7 @@ var commentsToolbar = [['Source', 'PasteText', 'Bold',
                         'Italic', 'Strike', 'NumberedList',
                         'BulletedList', 'Link', 'Unlink']];
 
+// TODO: Remove hardcoded fields - should be class-based
 function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, baseDocumentUrl, browsePath, defaultLanguage, cssFileList, simpleHTML) {
   // File browser
   var linkBrowseUrl = baseUrl + '/plugins/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Connector=' + browsePath;
@@ -58,15 +59,24 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
   var isWithoutSubSuper = withoutSubSuper != null ? withoutSubSuper : false;
   var isSimpleHTML = simpleHTML != null ? simpleHTML : false;
 
+  // Get editor class as robust as possible before a release
+  var editorClass = "";
+  var editor = $("form#editor");
+  var editorClassAttr = editor.attr("class");
+  if(editor.length && editorClassAttr !== "undefined") {
+    editorClass = editorClassAttr;
+  }
+
   // CKEditor configurations
   if (contains(name, "introduction")
    || contains(name, "resource.description")
    || contains(name, "resource.image-description")
    || contains(name, "resource.video-description")
-   || contains(name, "resource.audio-description")) { // Introductions / descriptions
+   || contains(name, "resource.audio-description")) {
     setCKEditorConfig(name, linkBrowseUrl, null, null, defaultLanguage, cssFileList, 150, 400, 40, inlineToolbar,
                       isCompleteEditor, false, baseDocumentUrl, isSimpleHTML);
-  } else if (contains(name, "caption")) { // Caption
+  } else if (contains(name, "caption")
+         || (contains(name, "comment") && contains(editorClass, "vrtx-schedule"))) {
     setCKEditorConfig(name, linkBrowseUrl, null, null, defaultLanguage, cssFileList, 78, 400, 40, inlineToolbar, 
                       isCompleteEditor, false, baseDocumentUrl, isSimpleHTML);               
   } else if (contains(name, "frist-frekvens-fri") // Studies  

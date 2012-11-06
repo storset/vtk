@@ -109,7 +109,7 @@ public final class TagsHelper {
         String titleKey = keyBuilder.toString();
 
         RequestContext rc = new RequestContext(request);
-        if (!StringUtils.isBlank(overrideResourceTypeTitle)) {
+        if (!StringUtils.isBlank(overrideResourceTypeTitle) && !scopeUp) {
             titleKey = titleKey.concat(".overridenTitle");
         } else if (resourceParams != null && resourceParams.length == 1) {
             String tmpKey = titleKey.concat(".").concat(resourceParams[0]);

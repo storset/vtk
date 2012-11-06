@@ -34,8 +34,40 @@
             }
         },
 
+        "/a/b/c" : {
+            "type" : "collection",
+            "acl"  : {
+                "all" : [ "u:admin@localhost" ]
+            }
+        },
+
         "/b" : {
             "type" : "collection"
+        },
+
+        "/c" : {
+            "type" : "collection",
+            "acl"  : {
+                "read-write-unpublished" : [ "u:user1@localhost" ],
+                "all" : [ "u:admin@localhost" ]
+            }
+        },
+
+        "/c/d" : {
+            "type" : "file"
+        },
+
+        "/d" : {
+            "acl" : {
+                "read-write" : [ "u:user1@localhost" ],
+                "all" : [ "u:admin@localhost" ] 
+            }
+        },
+
+        "/e" : {
+            "acl" : {
+                "all" : [ "u:user4@localhost", "u:admin@localhost" ] 
+            }
         }
     },
 
@@ -99,8 +131,8 @@
             "uri" : "/",
             "principal" : "admin@localhost",
             "repository-action" : [ "READ", "READ_PROCESSED", "CREATE",
-                                    "WRITE", "READ_WRITE", "EDIT_COMMENT",
-                                    "ADD_COMMENT", "ALL", "WRITE_ACL", 
+                                    "WRITE", "READ_WRITE", "READ_WRITE_UNPUBLISHED",
+                                    "EDIT_COMMENT", "ADD_COMMENT", "ALL", "WRITE_ACL", 
                                     "REPOSITORY_ADMIN_ROLE_ACTION",
                                     "UNLOCK"
                                   ],
@@ -114,17 +146,52 @@
             "expected-outcome" : "FAILURE"
         },
 
-
         "copy-1" : {
-            "method" : [ "authorizeCopy", "/a", "/b", "user@localhost", false  ],
+            "method" : [ "authorizeCopy", "/b", "/b1", "user1@localhost", false  ],
+            "expected-outcome" : "SUCCESS"
+            "description" : "Regular copy"
+        },
+
+        "copy-2" : {
+            "method" : [ "authorizeCopy", "/a", "/a1", "user1@localhost", false  ],
+            "expected-outcome" : "FAILURE",
+            "description" : "Should fail because user1@localhost is not allowed to read /a/b/c"
+        },
+
+        "move-1" : {
+            "method" : [ "authorizeMove", "/a", "/c", "admin@localhost", false  ],
+            "expected-outcome" : "SUCCESS",
+            "description" : "Regular move"
+        },
+
+        "read-1" : {
+            "method" : [ "authorizeRead", "/c", "user1@localhost" ],
+            "expected-outcome" : "SUCCESS"
+        },
+
+        "create-1" : {
+            "method" : [ "authorizeCreate", "/c", "user1@localhost" ],
             "expected-outcome" : "FAILURE"
         },
 
-
-        "move-1" : {
-            "method" : [ "authorizeMove", "/a", "/b", "admin@localhost", false  ],
-            "expected-outcome" : "SUCCESS"
+        "delete-1" : {
+            "method" : [ "authorizeDelete", "/e", "user3@localhost" ],
+            "expected-outcome" : "FAILURE",
+            "description" : "Should fail because user3@localhost does not have either READ_WRITE on / or ALL on /e"
         },
+
+        "delete-2" : {
+            "method" : [ "authorizeDelete", "/e", "user1@localhost" ],
+            "expected-outcome" : "SUCCESS",
+            "description" : "Should succeed because user1@localhost has READ_WRITE on /"
+        },
+
+        "delete-3" : {
+            "method" : [ "authorizeDelete", "/e", "user4@localhost" ],
+            "expected-outcome" : "SUCCESS",
+            "description" : "Should succeed because user4@localhost has privilege ALL on /e"
+        }
+        
     }
 
 

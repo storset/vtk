@@ -132,7 +132,7 @@ public final class TagsHelper {
             String overrideResourceTypeTitle) {
 
         List<Object> params = new ArrayList<Object>();
-        if (!StringUtils.isBlank(overrideResourceTypeTitle)) {
+        if (!StringUtils.isBlank(overrideResourceTypeTitle) && !scopeUp) {
             params.add(overrideResourceTypeTitle);
         }
         if (scopeUp || displayScope) {

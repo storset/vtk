@@ -87,6 +87,7 @@ public class AuthorizationManagerTest {
         
         public void run() throws Exception {
             for (TestAssertion assertion: this.assertions) {
+                System.out.println("Test: " + assertion);
                 assertion.test(this.authorizationManager);
             }
         }
@@ -111,7 +112,12 @@ public class AuthorizationManagerTest {
             Collections.sort(list, new Comparator<Path>() {
                 @Override
                 public int compare(Path arg0, Path arg1) {
+                    
                     if (arg0.isAncestorOf(arg1)) {
+                        return -1;
+                    } else if (arg1.isAncestorOf(arg0)) {
+                        return 1;
+                    } else if (arg0.getDepth() < arg1.getDepth()) {
                         return -1;
                     } else if (arg0.equals(arg1)) {
                         return 0;

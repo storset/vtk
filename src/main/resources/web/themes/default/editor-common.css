@@ -112,7 +112,8 @@ h2 {
 
 /* Sticky title and editor save/cancel buttons */
 
-.properties > *:first-child {
+.properties > *:first-child,
+.properties > .first {
   margin-top: 0px;
 }
 

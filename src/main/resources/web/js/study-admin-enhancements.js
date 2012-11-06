@@ -8,6 +8,10 @@
 
 $(document).ready(function () {
 
+  // When ui-helper-hidden class is added => we need to add 'first'-class to next element (if it is not last and first of these)
+  $(".ui-helper-hidden").filter(":not(:last)").filter(":first").next().addClass("first");
+  // TODO: make sure these are first so that we can use pure CSS
+
   // 'How to search'-document
   var typeToDisplay = $("#typeToDisplay"); 
   if(typeToDisplay.length) { 

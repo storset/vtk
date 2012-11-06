@@ -968,12 +968,13 @@ function createInteraction(bodyId, vrtxAdm, _$) {
   });    
 }
 
+var OBSERVER_IN_PROGRESS = false; // in case code is not finished after interval
 function createFuncComplete() {
   var lastColTitle = "";
   var lastColName = "";
   var lastFileTitle = "";
   var lastFileName = "";
-  var inProgress = false; // in case code is not finished after 50ms
+ 
   
   if(vrtxAdmin.isIPad || vrtxAdmin.isIPhone) {
     var iOSReplaceTimer, isDueForReplacement = false;
@@ -990,8 +991,8 @@ function createFuncComplete() {
   }
 
   var observeTitleFile = setInterval(function() {
-    if(!inProgress) {
-      inProgress = true;
+    if(!OBSERVER_IN_PROGRESS) {
+      OBSERVER_IN_PROGRESS = true;
       var colTitle = $("#vrtx-textfield-collection-title:visible input"),
           colTitleVal = colTitle.val();
       if(colTitle.length && colTitleVal !== lastColTitle) {
@@ -1031,7 +1032,7 @@ function createFuncComplete() {
       if(!(colTitle.length || colName.length || fileTitle.length || fileName.length)) {
         clearInterval(observeTitleFile);
       }
-      inProgress = false;
+      OBSERVER_IN_PROGRESS = false;
     }
     // vrtxAdmin.log({msg:"Observing textfields in create forms @ " + new Date() + " .."});
   }, 75);

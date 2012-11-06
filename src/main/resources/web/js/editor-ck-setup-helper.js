@@ -62,9 +62,11 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
   // Get editor class as robust as possible before a release
   var editorClass = "";
   var editor = $("form#editor");
-  var editorClassAttr = editor.attr("class");
-  if(editor.length && editorClassAttr !== "undefined") {
-    editorClass = editorClassAttr;
+  if(editor.length) {
+    var editorClassAttr = editor.attr("class");
+    if(typeof editorClassAttr === "string") {
+      editorClass = editorClassAttr;
+    }
   }
 
   // CKEditor configurations

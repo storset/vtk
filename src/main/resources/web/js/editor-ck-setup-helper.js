@@ -48,7 +48,7 @@ var commentsToolbar = [['Source', 'PasteText', 'Bold',
                         'Italic', 'Strike', 'NumberedList',
                         'BulletedList', 'Link', 'Unlink']];
 
-// TODO: Remove hardcoded fields - should be class-based
+// TODO: Try to remove some hardcoded fields - should maybe be class-based
 function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, baseDocumentUrl, browsePath, defaultLanguage, cssFileList, simpleHTML) {
   // File browser
   var linkBrowseUrl = baseUrl + '/plugins/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Connector=' + browsePath;

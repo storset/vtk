@@ -631,7 +631,7 @@
     </#if>
 
     <#if (iconText = "file" && contentType = "application/octet-stream")>
-      <#assign iconText = "binary">
+      <#local iconText = "binary">
     </#if>
     ${iconText}
   </#compress>
@@ -648,9 +648,8 @@
     <#if resource.contentType??>
       <#local contentType = resource.contentType />
     </#if>
-
     <#if (iconText = "file" && contentType = "application/octet-stream")>
-      <#assign iconText = "binary">
+      <#local iconText = "binary">
     </#if>
     <#local obsoleted = propValue(resource, 'obsoleted')>
     ${iconText}<#if (obsoleted?? && obsoleted?has_content)> obsoleted</#if>

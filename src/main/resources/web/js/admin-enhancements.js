@@ -328,7 +328,7 @@ vrtxAdmin._$(document).ready(function () {
   switch(bodyId) {
    case "vrtx-manage-collectionlisting":
     var tabMenuServices = ["fileUploadService", "createDocumentService", "createCollectionService"];
-    var speedCreationServices = vrtxAdm.isIE8 ? 0 : 300;  
+    var speedCreationServices = vrtxAdm.isIE8 ? 0 : 350;  
     for (i = tabMenuServices.length; i--;) {
       if(tabMenuServices[i] == "createCollectionService") {
         vrtxAdm.getFormAsync({

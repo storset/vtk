@@ -974,8 +974,8 @@ function createFuncComplete() {
   var lastColName = "";
   var lastFileTitle = "";
   var lastFileName = "";
- 
-  
+  var intervalTime = vrtxAdmin.isIE8 ? 150 : 50;
+
   if(vrtxAdmin.isIPad || vrtxAdmin.isIPhone) {
     var iOSReplaceTimer, isDueForReplacement = false;
     $(document).on("keydown paste", "#vrtx-textfield-collection-name:visible input, #vrtx-textfield-file-name:visible input", function(e) {
@@ -1035,7 +1035,7 @@ function createFuncComplete() {
       OBSERVER_IN_PROGRESS = false;
     }
     // vrtxAdmin.log({msg:"Observing textfields in create forms @ " + new Date() + " .."});
-  }, 75);
+  }, intervalTime);
 
 
   CREATE_RESOURCE_REPLACE_TITLE = true;

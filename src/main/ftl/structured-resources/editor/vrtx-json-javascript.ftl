@@ -452,12 +452,14 @@
           setCkValue(ckInstanceName1, val2);
           setCkValue(ckInstanceName2, val1);
         } else if (element1.hasClass("date") && element2.hasClass("date")) {
-          var date1 = element1.find(elementId1 + '-date');
-          var hours1 = element1.find(elementId1 + '-hours');
-          var minutes1 = element1.find(elementId1 + '-minutes');
-          var date2 = element2.find(elementId2 + '-date');
-          var hours2 = element2.find(elementId2 + '-hours');
-          var minutes2 = element2.find(elementId2 + '-minutes');
+          var element1Wrapper = element1.closest(".vrtx-string");
+          var date1 = element1Wrapper.find(elementId1 + '-date');
+          var hours1 = element1Wrapper.find(elementId1 + '-hours');
+          var minutes1 = element1Wrapper.find(elementId1 + '-minutes');
+          var element2Wrapper = element2.closest(".vrtx-string");
+          var date2 = element2Wrapper.find(elementId2 + '-date');
+          var hours2 = element2Wrapper.find(elementId2 + '-hours');
+          var minutes2 = element2Wrapper.find(elementId2 + '-minutes');
           var dateVal1 = date1.val();
           var hoursVal1 = hours1.val();
           var minutesVal1 = minutes1.val();

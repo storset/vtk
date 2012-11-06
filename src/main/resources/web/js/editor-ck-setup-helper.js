@@ -58,6 +58,8 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
   var isCompleteEditor = completeEditor != null ? completeEditor : false;
   var isWithoutSubSuper = withoutSubSuper != null ? withoutSubSuper : false;
   var isSimpleHTML = simpleHTML != null ? simpleHTML : false;
+  
+  var editorElem = $("form#editor");
 
   // CKEditor configurations
   if (contains(name, "introduction")
@@ -65,7 +67,7 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
    || contains(name, "resource.image-description")
    || contains(name, "resource.video-description")
    || contains(name, "resource.audio-description")
-   || (contains(name, "comment") && $("form#editor").hasClass("vrtx-schedule"))) {
+   || (contains(name, "comment") && editorElem.hasClass("vrtx-schedule"))) {
     setCKEditorConfig(name, linkBrowseUrl, null, null, defaultLanguage, cssFileList, 150, 400, 40, inlineToolbar,
                       isCompleteEditor, false, baseDocumentUrl, isSimpleHTML);
   } else if (contains(name, "caption")) {

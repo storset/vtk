@@ -554,9 +554,8 @@ public final class AuthorizationManager {
              */
             Path destParentUri = destUri.getParent();
             authorizeCreate(destParentUri, principal);
-    
-            if (deleteDestination) authorizeDelete(destUri, principal);
         }
+        if (deleteDestination) authorizeDelete(destUri, principal);
     }
     
     /**

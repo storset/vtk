@@ -72,11 +72,11 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
    || contains(name, "resource.description")
    || contains(name, "resource.image-description")
    || contains(name, "resource.video-description")
-   || contains(name, "resource.audio-description")) {
+   || contains(name, "resource.audio-description")
+   || (contains(name, "comment") && contains(editorClass, "vrtx-schedule"))) {
     setCKEditorConfig(name, linkBrowseUrl, null, null, defaultLanguage, cssFileList, 150, 400, 40, inlineToolbar,
                       isCompleteEditor, false, baseDocumentUrl, isSimpleHTML);
-  } else if (contains(name, "caption")
-         || (contains(name, "comment") && contains(editorClass, "vrtx-schedule"))) {
+  } else if (contains(name, "caption")) {
     setCKEditorConfig(name, linkBrowseUrl, null, null, defaultLanguage, cssFileList, 78, 400, 40, inlineToolbar, 
                       isCompleteEditor, false, baseDocumentUrl, isSimpleHTML);               
   } else if (contains(name, "frist-frekvens-fri") // Studies  

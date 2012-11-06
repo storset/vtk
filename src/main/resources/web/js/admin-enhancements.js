@@ -1369,7 +1369,6 @@ VrtxAdmin.prototype.collectionListingInteraction = function collectionListingInt
 
   vrtxAdm.placeRecoverButtonInActiveTab();
   vrtxAdm.placeDeletePermanentButtonInActiveTab();
-  
   vrtxAdm.initializeCheckUncheckAll();
 }
 

@@ -328,6 +328,7 @@ vrtxAdmin._$(document).ready(function () {
   switch(bodyId) {
    case "vrtx-manage-collectionlisting":
     var tabMenuServices = ["fileUploadService", "createDocumentService", "createCollectionService"];
+    var speedCreationServices = vrtxAdm.isIE8 ? 0 : 300;  
     for (i = tabMenuServices.length; i--;) {
       if(tabMenuServices[i] == "createCollectionService") {
         vrtxAdm.getFormAsync({
@@ -337,7 +338,7 @@ vrtxAdmin._$(document).ready(function () {
           nodeType: "div",
           funcComplete: function(p){ createFuncComplete(); },
           simultanSliding: true,
-          transitionSpeed: 350
+          transitionSpeed: speedCreationServices
         });
         vrtxAdm.completeFormAsync({ 
           selector: "form#" + tabMenuServices[i] + "-form input[type=submit]",
@@ -346,7 +347,7 @@ vrtxAdmin._$(document).ready(function () {
           errorContainerInsertAfter: "> ul",
           funcComplete: vrtxAdm.updateCollectionListingInteraction,
           post: true,
-          transitionSpeed: 350
+          transitionSpeed: speedCreationServices
         });
       } else { // Half-async for file upload and create document
         if(tabMenuServices[i] == "createDocumentService") {
@@ -357,11 +358,11 @@ vrtxAdmin._$(document).ready(function () {
             nodeType: "div",
             funcComplete: function(p){ createFuncComplete(); },
             simultanSliding: true,
-            transitionSpeed: 350
+            transitionSpeed: speedCreationServices
           });
           vrtxAdm.completeFormAsync({
             selector: "form#" + tabMenuServices[i] + "-form input[type=submit]",
-            transitionSpeed: 350
+            transitionSpeed: speedCreationServices
           });
         } else {
           if(vrtxAdm.isIPhone || vrtxAdm.isIPad) { // TODO: feature detection
@@ -2268,7 +2269,7 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(options) {
     var selector = options.selector,
         selectorClass = options.selectorClass,
         simultanSliding = options.simultanSliding,
-        transitionSpeed = options.transitionSpeed || vrtxAdm.transitionSpeed,
+        transitionSpeed = ((options.transitionSpeed) != null ? options.transitionSpeed : vrtxAdm.transitionSpeed),
         transitionEasingSlideDown = options.transitionEasingSlideDown || vrtxAdm.transitionEasingSlideDown,
         transitionEasingSlideUp = options.transitionEasingSlideUp || vrtxAdm.transitionEasingSlideUp,
         modeUrl = location.href,
@@ -2446,7 +2447,7 @@ VrtxAdmin.prototype.completeFormAsync = function completeFormAsync(options) {
     var isReplacing = options.isReplacing || false,
         funcProceedCondition = options.funcProceedCondition,
         funcComplete = options.funcComplete,
-        transitionSpeed = options.transitionSpeed || vrtxAdm.transitionSpeed,
+        transitionSpeed = ((options.transitionSpeed) != null ? options.transitionSpeed : vrtxAdm.transitionSpeed),
         transitionEasingSlideDown = options.transitionEasingSlideDown || vrtxAdm.transitionEasingSlideDown,
         transitionEasingSlideUp = options.transitionEasingSlideUp || vrtxAdm.transitionEasingSlideUp,
         post = options.post || false,

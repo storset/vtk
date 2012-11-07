@@ -20,7 +20,7 @@
  * Added class when submit is blocked in FF for use externally (removed when intercepted in reroute-function in admin-enhancements and toggled off)
  *   -> Does not interfere with anything else
  * Added adjustForParentWidth option
- * Added class for 'in-action' ac field parent
+ * Added class 'ac_active_parent' for active autocomplete field (to solve stacking issues with multiple fields)
  */
 
 ;

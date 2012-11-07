@@ -304,11 +304,11 @@ vrtxAdmin._$(document).ready(function () {
             _$("body").append("<div id='" + id + "'>" + _$(results).find("#vrtx-manage-create-content").html() + "</div>");
             dialogManageCreate = $("#" + id);
             dialogManageCreate.hide();
-            $.cachedScript('/vrtx/__vrtx/static-resources/jquery/plugins/jquery.treeview.js')
+            $.cachedScript(location.protocol + '//' + location.host + '/vrtx/__vrtx/static-resources/jquery/plugins/jquery.treeview.js')
             .done(function(script, textStatus) {
-               $.cachedScript('/vrtx/__vrtx/static-resources/jquery/plugins/jquery.treeview.async.js')
+               $.cachedScript(location.protocol + '//' + location.host + '/vrtx/__vrtx/static-resources/jquery/plugins/jquery.treeview.async.js')
                .done(function(script, textStatus) {
-                 $.cachedScript('/vrtx/__vrtx/static-resources/jquery/plugins/jquery.scrollTo.min.js')
+                 $.cachedScript(location.protocol + '//' + location.host + '/vrtx/__vrtx/static-resources/jquery/plugins/jquery.scrollTo.min.js')
                 .done(function(script, textStatus) {
                   vrtxSimpleDialogs.openHtmlDialog(dialogManageCreate.html(), link.title);
                   initializeTree();
@@ -767,7 +767,7 @@ function initializeTree() {
   var pathNum = 0;
   treeElem.treeview({
     animated: "fast",
-    url: "?vrtx=admin&service=" + treeType + "-from-drop-down&uri=&ts=" + timestamp,
+    url: location.protocol + '//' + location.host + location.pathname + "?vrtx=admin&service=" + treeType + "-from-drop-down&uri=&ts=" + timestamp,
     service: treeType + "-from-drop-down",
     dataLoaded: function () { // AJAX success
       var last = false;

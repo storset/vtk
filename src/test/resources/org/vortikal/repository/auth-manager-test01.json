@@ -148,7 +148,7 @@
 
         "copy-1" : {
             "method" : [ "authorizeCopy", "/b", "/b1", "user1@localhost", false  ],
-            "expected-outcome" : "SUCCESS"
+            "expected-outcome" : "SUCCESS",
             "description" : "Regular copy"
         },
 

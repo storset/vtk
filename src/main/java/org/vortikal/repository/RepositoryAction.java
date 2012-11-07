@@ -35,11 +35,13 @@ package org.vortikal.repository;
  * ACL {@link org.vortikal.repository.Privilege privileges}. There exists
  * one canonical <code>RepositoryAction</code> for each ACL <code>Privilege</code>.
  * 
- * Additional repository actions are mapped to ACL privileges according to security
- * model. The mappings are enforced by code in {@link AuthorizationManager}.
+ * Additional repository actions require ACL privileges and/or roles according to security
+ * model. The rules are enforced by code in {@link AuthorizationManager}.
  * 
+ * Repository actions cannot be directly added to resource ACLs.
  */
 public enum RepositoryAction {
+    
     READ_PROCESSED("read-processed"),
     CREATE("create"),
     READ("read"),
@@ -52,7 +54,20 @@ public enum RepositoryAction {
     COPY("copy"),
     MOVE("move"),
     ALL("all"),
+    
+//    CREATE_UNPUBLISHED("create-unpublished"), // Not sure we really need this one. We already have CREATE, and
+                                              // when principal only has READ_WRITE_UNPUBLISHED, a normal CREATE
+                                              // will allow creation of an automatically unpublished resource.
+    
     PUBLISH_UNPUBLISH("publish-unpublish"),
+    
+    DELETE_UNPUBLISHED("delete-unpublished"),
+
+    CREATE_REVISION_UNPUBLISHED("create-revision-unpublished"),
+    DELETE_REVISION_WORKINGCOPY("delete-revision-workingcopy"),
+    CREATE_REVISION_WORKINGCOPY("create-revision-workingcopy"),
+    WRITE_REVISION_WORKINGCOPY("write-revision-workingcopy"),
+    
     ADD_COMMENT("add-comment"),
     EDIT_COMMENT("edit-comment"),
     UNEDITABLE_ACTION("property-edit-uneditable-action"),
@@ -60,12 +75,15 @@ public enum RepositoryAction {
     REPOSITORY_ROOT_ROLE_ACTION("property-edit-root-role");
 
     private String name;
+    
     private RepositoryAction(String name) {
         this.name = name;
     }
+    
     public String getName() {
         return this.name;
     }
+    
     @Override
     public String toString() {
         return this.name;

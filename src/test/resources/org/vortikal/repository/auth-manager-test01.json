@@ -1,5 +1,5 @@
 {
-
+  
     "resources" : {
 
         "/" : {
@@ -13,7 +13,7 @@
                 "title" : "Root resource"
             }
         },
-
+              
         "/a" : {
             "type" : "collection",
             "acl"  : {

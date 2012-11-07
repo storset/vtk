@@ -275,7 +275,11 @@
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="true" />
     <property name="defaultValue" ref="VALUE_TRUE" />
-    <!-- No evaluator necessary, value will never be toggled -->
+    <property name="propertyEvaluator">
+      <bean class="org.vortikal.repository.resourcetype.property.PublishDefaultValueEvaluator">
+        <property name="authorizationManager" ref="authorizationManager" />
+      </bean>
+    </property>
   </bean>
   
   <bean id="publishDatePropDef" class="org.vortikal.repository.resourcetype.OverridablePropertyTypeDefinitionImpl"

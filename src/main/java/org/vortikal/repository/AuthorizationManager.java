@@ -156,7 +156,6 @@ public final class AuthorizationManager {
             authorizeCreate(uri, principal);
             break;
         case WRITE:
-//        case READ_WRITE_UNPUBLISHED:
         case READ_WRITE:
             authorizeReadWrite(uri, principal);
             break;
@@ -176,6 +175,13 @@ public final class AuthorizationManager {
         case DELETE:
             authorizeDelete(uri, principal);
             break;
+        case READ_WRITE_UNPUBLISHED:
+            authorizeReadWriteUnpublished(uri, principal);
+            break;
+        case PUBLISH_UNPUBLISH:
+            authorizePublishUnpublish(uri, principal);
+            break;
+            
         case REPOSITORY_ADMIN_ROLE_ACTION:
             authorizePropertyEditAdminRole(uri, principal);
             break;
@@ -261,7 +267,7 @@ public final class AuthorizationManager {
      *       by not having the privilege in CREATE_AUTH_PRIVILEGES. Needs other changes
      *       as part of VTK-2135 before it can be used again
      * <ul>
-     *   <li>Privilege READ_WRITE or ALL on resource
+     *   <li>Privilege READ_WRITE, READ_WRITE_UNPUBLISHED or ALL on resource
      *   <li>Role ROOT
      * </ul>
      */
@@ -277,7 +283,8 @@ public final class AuthorizationManager {
             return;
         }
         aclAuthorize(resource, principal, Privilege.ALL,
-                                          Privilege.READ_WRITE);
+                                          Privilege.READ_WRITE,
+                                          Privilege.READ_WRITE_UNPUBLISHED);
     }
     
     /**
@@ -300,6 +307,42 @@ public final class AuthorizationManager {
             return;
         }
         aclAuthorize(resource, principal, PRIVILEGE_HIERARCHY.get(Privilege.READ_WRITE));
+    }
+    
+    /**
+     * <ul>
+     *   <li>Privilege READ_WRITE, READ_WRITE_UNPUBLISHED or ALL in ACL
+     *   <li>Role ROOT
+     * </ul>
+     * @return is authorized
+     * @throws IOException
+     */
+    public void authorizeReadWriteUnpublished(Path uri, Principal principal)
+        throws AuthenticationException, AuthorizationException, ReadOnlyException,
+        IOException, ResourceNotFoundException {
+
+        checkReadOnly(principal);
+
+        ResourceImpl resource = loadResource(uri);
+        
+        if (this.roleManager.hasRole(principal, RoleManager.Role.ROOT)) {
+            return;
+        }
+        aclAuthorize(resource, principal, PRIVILEGE_HIERARCHY.get(Privilege.READ_WRITE_UNPUBLISHED));
+    }
+    
+    /**
+     * <ul>
+     *   <li>Privilege READ_WRITE or ALL in ACL
+     *   <li>Role ROOT
+     * </ul>
+     * @return is authorized
+     * @throws IOException
+     */
+    public void authorizePublishUnpublish(Path uri, Principal principal)
+        throws AuthenticationException, AuthorizationException, ReadOnlyException,
+        IOException, ResourceNotFoundException {
+        authorizeReadWrite(uri, principal);
     }
     
     /**
@@ -438,6 +481,37 @@ public final class AuthorizationManager {
         aclAuthorize(resource, principal, Privilege.ALL);
     }
     
+    /**
+     * One of:
+     * <ul>
+     *   <li>Privilege READ_WRITE or READ_WRITE_UNPUBLISHED on parent
+     *   <li>Privilege ALL on resource to be deleted.
+     * </ul>
+     * 
+     * And resource must not be root resource.
+     */
+    public void authorizeDeleteUnpublished(Path uri, Principal principal) 
+        throws AuthenticationException, AuthorizationException, ReadOnlyException, 
+        IOException, ResourceNotFoundException {
+
+        checkReadOnly(principal);
+
+        if (uri.isRoot()) {
+            throw new AuthorizationException("Not allowed to delete root resource");
+        }
+
+        // Delete is authorized if either of these conditions hold:
+        try {
+            // 1. Principal has read-write-unpublished permission on the parent resource, or
+            authorizeReadWriteUnpublished(uri.getParent(), principal);
+            return;
+        } catch (AuthorizationException e) {
+            // Continue to #2
+        }
+        // 2. Principal has privilege ALL directly on the resource itself
+        Resource resource = loadResource(uri);
+        aclAuthorize(resource, principal, Privilege.ALL);
+    }
 
     /**
      * All of:

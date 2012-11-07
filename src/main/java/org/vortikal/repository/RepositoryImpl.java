@@ -822,7 +822,11 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         }
 
         // Regular store
-        this.authorizationManager.authorizeReadWrite(uri, principal);
+        if (original.isPublished()) {
+            this.authorizationManager.authorizeReadWrite(uri, principal);
+        } else {
+            this.authorizationManager.authorizeReadWriteUnpublished(uri, principal);
+        }
 
         try {
             ResourceImpl originalClone = (ResourceImpl) original.clone();
@@ -967,7 +971,12 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         }
 
         checkLock(r, principal);
-        this.authorizationManager.authorizeReadWrite(uri, principal);
+        if (r.isPublished()) {
+            this.authorizationManager.authorizeReadWrite(uri, principal);
+        } else {
+            this.authorizationManager.authorizeReadWriteUnpublished(uri, principal);
+        }
+        
         try {
             final Resource original = (ResourceImpl) r.clone();
 

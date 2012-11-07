@@ -34,6 +34,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Required;
+import org.vortikal.repository.AuthorizationManager;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertyEvaluationContext;
 import org.vortikal.repository.PropertyEvaluationContext.Type;
@@ -42,13 +43,23 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 
 public class PublishEvaluator implements PropertyEvaluator {
 
+    private AuthorizationManager authorizationManager;
+    
     private PropertyTypeDefinition publishDatePropDef;
     private PropertyTypeDefinition unpublishDatePropDef;
 
+    @Override
     public boolean evaluate(Property property, PropertyEvaluationContext ctx) throws PropertyEvaluationException {
 
         if (ctx.getEvaluationType() == Type.Create) {
             return false;
+        }
+        
+        // If publish-unpublish is not allowed, then we do not change the value.
+        try {
+            authorizationManager.authorizePublishUnpublish(ctx.getNewResource().getURI(), ctx.getPrincipal());
+        } catch (Exception e) {
+            return property.isValueInitialized();
         }
 
         Property publishDateProp = ctx.getNewResource().getProperty(this.publishDatePropDef);
@@ -61,6 +72,8 @@ public class PublishEvaluator implements PropertyEvaluator {
                 Date unpublishDate = unpublishDateProp.getDateValue();
                 if (publishDate.before(now) && unpublishDate.before(publishDate)) {
                     property.setBooleanValue(true);
+                    
+                    // XXX: deleting a property that is not evaluated by this evaluator:
                     ctx.getNewResource().removeProperty(this.unpublishDatePropDef);
                     return true;
                 } else if (unpublishDate.before(now)) {
@@ -76,6 +89,7 @@ public class PublishEvaluator implements PropertyEvaluator {
             return true;
         } else if (property.getBooleanValue()) {
             property.setBooleanValue(false);
+            // XXX: deleting a property that is not evaluated by this evaluator:
             ctx.getNewResource().removeProperty(this.unpublishDatePropDef);
             return true;
         }
@@ -92,6 +106,11 @@ public class PublishEvaluator implements PropertyEvaluator {
     @Required
     public void setUnpublishDatePropDef(PropertyTypeDefinition unpublishDatePropDef) {
         this.unpublishDatePropDef = unpublishDatePropDef;
+    }
+
+    @Required
+    public void setAuthorizationManager(AuthorizationManager authorizationManager) {
+        this.authorizationManager = authorizationManager;
     }
 
 }

@@ -99,6 +99,7 @@
   <bean id="publishEvaluator" class="org.vortikal.repository.resourcetype.property.PublishEvaluator">
     <property name="publishDatePropDef" ref="publishDatePropDef" />
     <property name="unpublishDatePropDef" ref="unpublishDatePropDef" />
+    <property name="authorizationManager" ref="authorizationManager" />
   </bean>
 
 </beans>

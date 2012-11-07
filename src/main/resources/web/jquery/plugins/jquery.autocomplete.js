@@ -747,7 +747,7 @@
         } else {
           var acWidth = $(input).width();
         }
-        if(options.minWidth && acWidth > options.minWidth) {
+        if(options.minWidth && acWidth < options.minWidth) {
           acWidth = options.minWidth;
         }
         if(options.adjustForParentWidth) {

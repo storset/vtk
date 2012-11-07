@@ -742,16 +742,11 @@
         var inputField = $(input);
         var offset = inputField.offset();
         var acWidth = (typeof options.width == "string" || options.width > 0) ? options.width : $(input).width();
-        if(options.adjustForParentWidth && (typeof options.width !== "string")) {
-          acWidth += options.adjustForParentWidth;
+        if(options.adjustForParentWidth) {
+          acWidth += parseInt(options.adjustForParentWidth);
         }
-        element.css( {
-          width: acWidth,
-          top: offset.top + input.offsetHeight,
-          left: offset.left
-        }).show();
         
-        // Stack down multiple fields not in action (probably should be reversed logic but need more time for it)
+        // Stack up active field
         var inputFieldParent = inputField.closest(".vrtx-textfield");
         if(inputFieldParent.length) {
           $(".ac_active_parent").removeClass("ac_active_parent");
@@ -759,7 +754,13 @@
             inputFieldParent.addClass("ac_active_parent");
           }
         }
-          
+        
+        element.css( {
+          width: acWidth,
+          top: offset.top + input.offsetHeight,
+          left: offset.left
+        }).show();
+
         if (options.scroll && (listItems.size() > options.resultsBeforeScroll || options.resultsBeforeScroll == 0)) {
           list.scrollTop(0);
           list.css( {

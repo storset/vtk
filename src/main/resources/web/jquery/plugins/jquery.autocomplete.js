@@ -20,6 +20,7 @@
  * Added class when submit is blocked in FF for use externally (removed when intercepted in reroute-function in admin-enhancements and toggled off)
  *   -> Does not interfere with anything else
  * Added adjustForParentWidth option
+ * Added class for 'in-action' ac field parent
  */
 
 ;
@@ -738,7 +739,8 @@
         return this.visible() && (listItems.filter("." + CLASSES.ACTIVE)[0] || options.selectFirst && listItems[0]);
       },
       show: function() {
-        var offset = $(input).offset();
+        var inputField = $(input);
+        var offset = inputField.offset();
         var acWidth = (typeof options.width == "string" || options.width > 0) ? options.width : $(input).width();
         if(options.adjustForParentWidth && (typeof options.width !== "string")) {
           acWidth += options.adjustForParentWidth;
@@ -748,13 +750,22 @@
           top: offset.top + input.offsetHeight,
           left: offset.left
         }).show();
+        
+        // Stack down multiple fields not in action (probably should be reversed logic but need more time for it)
+        var inputFieldParent = inputField.closest(".vrtx-textfield");
+        if(inputFieldParent.length) {
+          $(".ac_active_parent").removeClass("ac_active_parent");
+          if(!inputFieldParent.hasClass("ac_active_parent")) {
+            inputFieldParent.addClass("ac_active_parent");
+          }
+        }
+          
         if (options.scroll && (listItems.size() > options.resultsBeforeScroll || options.resultsBeforeScroll == 0)) {
           list.scrollTop(0);
           list.css( {
             maxHeight :options.scrollHeight,
             overflow :'auto'
           });
-
           if ($.browser.msie && typeof document.body.style.maxHeight === "undefined") {
             var listHeight = 0;
             listItems.each( function() {

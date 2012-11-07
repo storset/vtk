@@ -36,6 +36,13 @@ function permissionsAutocomplete(id, service, params, returnUsername) {
            + '<span class="vrtx-autocomplete-search-subtittel">' + desc.replace(")", "") + '</span></div>';
     }
   };
+  
+  // Min width
+  var field = $('#' + id);
+  if(field.width() < 190) { 
+    p.width = 190;
+  }
+
   if (params) {
     $.extend(p, params);
   }

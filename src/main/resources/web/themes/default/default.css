@@ -1986,8 +1986,11 @@ body#vrtx-permissions .addUser {
 .vrtx-autocomplete-username .vrtx-textfield,
 .vrtx-autocomplete-tag .vrtx-textfield,
 #principalList .vrtx-textfield {
-  z-index: 9999;
   position: relative;
+}
+
+.vrtx-textfield.ac_active_parent {
+  z-index: 9999;
 }
 
 /* ^ Autocomplete */

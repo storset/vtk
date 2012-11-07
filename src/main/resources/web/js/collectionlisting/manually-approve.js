@@ -49,7 +49,7 @@ $(document).ready(function() {
     $("#app-content").on("click", "#vrtx-manually-approve-tab-menu a", function(e) {
       var elem = $(this);
       var parent = elem.parent();
-      elem.replaceWith("<span>" + elem.html() + "</span>");
+      elem.replaceWith("<span>" + elem.html() + "</span>"); // todo: use wrap()
       if(parent.hasClass("last")) {
         APPROVED_ONLY = true;
         parent.attr("class", "active active-last");

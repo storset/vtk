@@ -84,10 +84,10 @@ function VrtxAdmin() {
   
   // Autocomplete parameters
   this.permissionsAutocompleteParams = { minChars: 4, selectFirst: false,
-                                         max: 30, delay: 800, adjustForParentWidth: 15 };                              
+                                         max: 30, delay: 800, minWidth: 180, adjustForParentWidth: 15 };                              
   this.usernameAutocompleteParams =    { minChars: 2, selectFirst: false,
-                                         max: 30, delay: 500, multiple: false, adjustForParentWidth: 15 };                                       
-  this.tagAutocompleteParams =         { minChars: 1, adjustForParentWidth: 15 };
+                                         max: 30, delay: 500, multiple: false, minWidth: 180, adjustForParentWidth: 15 };                                       
+  this.tagAutocompleteParams =         { minChars: 1, minWidth: 180, adjustForParentWidth: 15 };
      
   // Transitions
   this.transitionSpeed = 200; // same as 'fast'
@@ -304,11 +304,11 @@ vrtxAdmin._$(document).ready(function () {
             _$("body").append("<div id='" + id + "'>" + _$(results).find("#vrtx-manage-create-content").html() + "</div>");
             dialogManageCreate = $("#" + id);
             dialogManageCreate.hide();
-            $.cachedScript('/vrtx/__vrtx/static-resources/jquery/plugins/jquery.treeview.js')
+            $.cachedScript(location.protocol + '//' + location.host + '/vrtx/__vrtx/static-resources/jquery/plugins/jquery.treeview.js')
             .done(function(script, textStatus) {
-               $.cachedScript('/vrtx/__vrtx/static-resources/jquery/plugins/jquery.treeview.async.js')
+               $.cachedScript(location.protocol + '//' + location.host + '/vrtx/__vrtx/static-resources/jquery/plugins/jquery.treeview.async.js')
                .done(function(script, textStatus) {
-                 $.cachedScript('/vrtx/__vrtx/static-resources/jquery/plugins/jquery.scrollTo.min.js')
+                 $.cachedScript(location.protocol + '//' + location.host + '/vrtx/__vrtx/static-resources/jquery/plugins/jquery.scrollTo.min.js')
                 .done(function(script, textStatus) {
                   vrtxSimpleDialogs.openHtmlDialog(dialogManageCreate.html(), link.title);
                   initializeTree();
@@ -767,7 +767,7 @@ function initializeTree() {
   var pathNum = 0;
   treeElem.treeview({
     animated: "fast",
-    url: "?vrtx=admin&service=" + treeType + "-from-drop-down&uri=&ts=" + timestamp,
+    url: location.protocol + '//' + location.host + location.pathname + "?vrtx=admin&service=" + treeType + "-from-drop-down&uri=&ts=" + timestamp,
     service: treeType + "-from-drop-down",
     dataLoaded: function () { // AJAX success
       var last = false;
@@ -2269,7 +2269,7 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(options) {
     var selector = options.selector,
         selectorClass = options.selectorClass,
         simultanSliding = options.simultanSliding,
-        transitionSpeed = ((options.transitionSpeed) != null ? options.transitionSpeed : vrtxAdm.transitionSpeed),
+        transitionSpeed = ((options.transitionSpeed != null) ? options.transitionSpeed : vrtxAdm.transitionSpeed),
         transitionEasingSlideDown = options.transitionEasingSlideDown || vrtxAdm.transitionEasingSlideDown,
         transitionEasingSlideUp = options.transitionEasingSlideUp || vrtxAdm.transitionEasingSlideUp,
         modeUrl = location.href,
@@ -2447,7 +2447,7 @@ VrtxAdmin.prototype.completeFormAsync = function completeFormAsync(options) {
     var isReplacing = options.isReplacing || false,
         funcProceedCondition = options.funcProceedCondition,
         funcComplete = options.funcComplete,
-        transitionSpeed = ((options.transitionSpeed) != null ? options.transitionSpeed : vrtxAdm.transitionSpeed),
+        transitionSpeed = ((options.transitionSpeed != null) ? options.transitionSpeed : vrtxAdm.transitionSpeed),
         transitionEasingSlideDown = options.transitionEasingSlideDown || vrtxAdm.transitionEasingSlideDown,
         transitionEasingSlideUp = options.transitionEasingSlideUp || vrtxAdm.transitionEasingSlideUp,
         post = options.post || false,

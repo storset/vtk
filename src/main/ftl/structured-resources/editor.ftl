@@ -203,7 +203,7 @@
       <div class="vrtx-button">
         <input type="submit" id="saveAndViewButton" name="updateViewAction"  value="${vrtx.getMsg("editor.saveAndView")}" />
       </div>
-      <div class="vrtx-focus-button">
+      <div class="vrtx-focus-button"> 
         <input type="submit" id="updateAction" name="updateAction" value="${vrtx.getMsg("editor.save")}" />
       </div>
       <div class="vrtx-button">

@@ -308,10 +308,18 @@ resourcetype hvordan-soke : fellestekst-document {
 	        [val poenggrenser-aar # unescaped]
     	  </h3>
     	  <ul>
-            <li>[call "comp:vis-fellestekst" {"docType":"hvordan-soke", "propName":"poenggrenser-forstegang-alle-kvalifiserte"}]</li>
-            <li>[call "comp:forstevitnemal-kvote"]</li>
-            <li>[call "comp:vis-fellestekst" {"docType":"hvordan-soke", "propName":"poenggrenser-ordinar-alle-kvalifiserte"}]</li>
-            <li>[call "comp:ordinar-kvote-alle-kvalifiserte"]</li>
+    	  	[if (poenggrenser-forstegang-alle-kvalifiserte != null && poenggrenser-forstegang-alle-kvalifiserte != "")]
+              <li>[call "comp:vis-fellestekst" {"docType":"hvordan-soke", "propName":"poenggrenser-forstegang-alle-kvalifiserte"}]</li>
+            [endif]
+            [if (forstevitnemal-kvote-fri != null && forstevitnemal-kvote-fri != "")]
+              <li>[call "comp:forstevitnemal-kvote"]</li>
+            [endif]
+            [if (poenggrenser-ordinar-alle-kvalifiserte != null && poenggrenser-ordinar-alle-kvalifiserte != "")]
+              <li>[call "comp:vis-fellestekst" {"docType":"hvordan-soke", "propName":"poenggrenser-ordinar-alle-kvalifiserte"}]</li>
+            [endif]
+            [if (ordinar-kvote-alle-kvalifiserte-fri != null && ordinar-kvote-alle-kvalifiserte-fri != "")]
+              <li>[call "comp:ordinar-kvote-alle-kvalifiserte"]</li>
+            [endif]
           </ul>
           [call "comp:vis-fellestekst" {"docType":"hvordan-soke", "propName":"poenggrenser-poengberegning"}]
         [endif]

@@ -20,6 +20,8 @@
  * Added class when submit is blocked in FF for use externally (removed when intercepted in reroute-function in admin-enhancements and toggled off)
  *   -> Does not interfere with anything else
  * Added adjustForParentWidth option
+ * Added min-width option
+ * Added class 'ac_active_parent' for active autocomplete field (to solve stacking issues with multiple fields)
  */
 
 ;
@@ -454,6 +456,7 @@
     scroll: true,
     scrollHeight: 180,
     resultsBeforeScroll: 10,
+    minWidth: null,
     adjustForParentWidth: null
   };
 
@@ -628,7 +631,6 @@
       }).mouseup( function() {
         config.mouseDownOnSelect = false;
       });
-
       if (options.width > 0)
         element.css("width", options.width);
 
@@ -738,23 +740,40 @@
         return this.visible() && (listItems.filter("." + CLASSES.ACTIVE)[0] || options.selectFirst && listItems[0]);
       },
       show: function() {
-        var offset = $(input).offset();
-        var acWidth = (typeof options.width == "string" || options.width > 0) ? options.width : $(input).width();
-        if(options.adjustForParentWidth && (typeof options.width !== "string")) {
+        var inputField = $(input);
+        var offset = inputField.offset();
+        if(typeof options.width == "string" || options.width > 0) {
+          var acWidth = (typeof options.width == "string") ? parseInt(options.width) : options.width;
+        } else {
+          var acWidth = $(input).width();
+        }
+        if(options.minWidth && acWidth < options.minWidth) {
+          acWidth = options.minWidth;
+        }
+        if(options.adjustForParentWidth) {
           acWidth += options.adjustForParentWidth;
         }
+        // Stack up active field
+        var inputFieldParent = inputField.closest(".vrtx-textfield");
+        if(inputFieldParent.length) {
+          $(".ac_active_parent").removeClass("ac_active_parent");
+          if(!inputFieldParent.hasClass("ac_active_parent")) {
+            inputFieldParent.addClass("ac_active_parent");
+          }
+        }
+        
         element.css( {
           width: acWidth,
           top: offset.top + input.offsetHeight,
           left: offset.left
         }).show();
+
         if (options.scroll && (listItems.size() > options.resultsBeforeScroll || options.resultsBeforeScroll == 0)) {
           list.scrollTop(0);
           list.css( {
             maxHeight :options.scrollHeight,
             overflow :'auto'
           });
-
           if ($.browser.msie && typeof document.body.style.maxHeight === "undefined") {
             var listHeight = 0;
             listItems.each( function() {

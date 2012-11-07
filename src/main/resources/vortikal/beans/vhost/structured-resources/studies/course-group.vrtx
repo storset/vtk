@@ -1,0 +1,63 @@
+resourcetype course-group {
+
+  properties {
+    course-group-name : string,
+    status : string,
+    course-group-code : string,
+    course-group-scope : string,
+    about : simple_html,
+    relevant-study-programmes : html,
+    courses-in-group : html,
+    course-group-admission : simple_html,
+    other : simple_html,
+    contact : string
+  }
+
+  edit-rules {
+    status (dropdown),
+    course-group-scope (dropdown)
+  }
+
+  view {
+    ##
+    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+    <html xmlns="http://www.w3.org/1999/xhtml">
+      <head>
+        <title>[call "resource:property" {"id":"title"}]</title>
+      </head>
+      <body>
+        <h1>[call "resource:property" {"id":"title"}]</h1>
+      </body>
+    </html>
+    ##
+  }
+  
+  vocabulary {
+     status {
+       en : ("current-version" = "Current version", "discontinued-course" = "Discontinued course group"),
+       no : ("current-version" = "Gjeldende versjon", "discontinued-course" = "Nedlagt emnegruppe"),
+       nn : ("current-version" = "Gjeldande versjon", "discontinued-course" = "Nedlagd emnegruppe")
+     },
+     course-group-scope {
+       en : (range = "1..120"),
+       no : (range = "1..120"),
+       nn : (range = "1..120")
+     }
+   }
+
+  localization {
+    title : (en : "Title", no : "Tittel", nn : "Tittel"),
+    header : (en : "Edit course group", no : "Rediger emnegruppe", nn : "Rediger emnegruppe"),
+    course-group-name : (en : "Course group name", no : "Emnegruppenavn", nn : "Emnegruppenavn"),
+    status : (en : "Status", no : "Status", nn : "Status"),
+    course-group-code : (en : "Course group code", no : "Emnegruppekode", nn : "Emnegruppekode"),
+    course-group-scope : (en : "Course group scope", no : "Emnegruppeomfang", nn : "Emnegruppeomfang"),
+    about : (en : "About the course group", no : "Om emnegruppen", nn : "Om emnegruppa"),
+    relevant-study-programmes : (en : "Relevant study programmes", no : "Relevante studieprogrammer", nn : "Relevante studieprogram"),
+    courses-in-group : (en : "Courses in group", no : "Emner i emnegruppen", nn : "Emner i emnegruppa"),
+    course-group-admission : (en : "Course group admission", no : "Emnegruppeopptak", nn : "Emnegruppeopptak"),
+    other : (en : "Other", no : "Annet", nn : "Anna"),
+    contact : (en : "Contact", no : "Kontakt", nn : "Kontakt")
+  }
+
+}

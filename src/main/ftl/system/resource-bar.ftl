@@ -33,7 +33,7 @@
 
 <#macro gen resource resourceMenuLeft="" resourceMenuRight="">
   <div id="title-container">
-    <div id="resource-title" class="<@vrtx.iconResolver resource.resourceType resource.contentType /> ${resource.collection?string}">
+    <div id="resource-title" class="<@vrtx.resourceToIconResolver resource /> ${resource.collection?string}">
       <h1>
         <#if resource.URI == '/'>
           ${repositoryID?html}

@@ -32,9 +32,6 @@
           <#assign lastModifiedTime = vrtx.propValue(res, 'lastModified') />
           <#assign uri = vrtx.getUri(res) />
 
-          <#assign contentType = vrtx.propValue(res, 'contentType') />
-          <#assign resourceType = res.resourceType />
-        
           <#assign rowType = "odd" />
           <#if (res_index % 2 == 0) >
             <#assign rowType = "even" />
@@ -55,7 +52,7 @@
             <#else>
               <td class="vrtx-collection-listing-title first-col last-col">
             </#if>
-              <a class="vrtx-icon <@vrtx.iconResolver resourceType contentType />" href="${uri?html}"></a>
+              <a class="vrtx-icon <@vrtx.resourceToIconResolver res />" href="${uri?html}"></a>
               <a class="vrtx-title-link" href="${uri?html}">${title?html}</a>
             <#if editLinks?exists && editLinks[res_index]?exists && editLinks[res_index]>
               <a class="vrtx-resource-open-webdav" href="${vrtx.linkConstructor(uri, 'webdavService')}"><@vrtx.msg code="collectionListing.edit" /></a>

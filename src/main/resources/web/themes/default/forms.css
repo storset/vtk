@@ -307,7 +307,8 @@ input[type=text]:focus {
   opacity: 0.4;
   -moz-opacity: 0.4; 
   -webkit-opacity: 0.4;
-  filter: alpha(opacity=40); 
+  filter: alpha(opacity=40);
+  z-index: 99999 !important; 
 }
 
 .ui-dialog {
@@ -319,6 +320,7 @@ input[type=text]:focus {
   z-index: 102;
   position: fixed;
   padding: 20px;
+  z-index: 100000 !important;
 }
 
 .ui-dialog .ui-dialog-titlebar {

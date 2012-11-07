@@ -481,12 +481,17 @@ a:hover {
   position: relative;
 }
 
-/* Icons */
+/* Icons 
+ * TODO: should override with just background-image instead (FF can be uncooperative with this sometimes so later)
+*/
 
 #resource-title {
   background: transparent url(images/file.gif) no-repeat 0px 3px;
   padding-top: 8px;
   position: relative;
+}
+#resource-title.obsoleted {
+  background: transparent url(images/file-obsoleted.png) no-repeat 0px 3px;
 }
 #resource-title h1 {
   margin:  0 0 15px 36px;
@@ -496,48 +501,77 @@ a:hover {
 
 #resource-title h1 .title-split {
   display: block;
-} 
+}
+
+#resource-title.true h1 {
+  margin-left: 42px;
+}
 
 #resource-title.true {
   background: transparent url(images/folder.gif) no-repeat 0px 5px;
 }
-#resource-title.true h1 {
-  margin-left: 42px;
+
+#resource-title.true.obsoleted {
+  background: transparent url(images/folder-obsoleted.png) no-repeat 0px 5px;
 }
 
 #resource-title.binary {
   background: transparent url(images/file-binary.gif) no-repeat 0px 3px;
 }
+#resource-title.binary.obsoleted { 
+  background: transparent url(images/file-binary-obsoleted.png) no-repeat 0px 3px;
+}
 
 #resource-title.doc {
-  background: transparent url(images/file-word.gif) no-repeat 0px 2px;
+  background: transparent url(images/file-doc.gif) no-repeat 0px 2px;
+}
+#resource-title.doc.obsoleted {
+  background: transparent url(images/file-doc-obsoleted.gif) no-repeat 0px 2px;
 }
 
 #resource-title.pdf {
   background: transparent url(images/file-pdf.gif) no-repeat 0px 2px;
 }
+#resource-title.pdf.obsoleted {
+  background: transparent url(images/file-pdf-obsoleted.png) no-repeat 0px 2px;
+}
 
 #resource-title.xls {
   background: transparent url(images/file-xls.gif) no-repeat 0px 2px;
+}
+#resource-title.xls.obsoleted {
+  background: transparent url(images/file-xls-obsoleted.png) no-repeat 0px 2px;
 }
 
 #resource-title.text {
   background: transparent url(images/file-txt.gif) no-repeat 0px 2px;
 }
+#resource-title.text.obsoleted { 
+  background: transparent url(images/file-txt-obsoleted.png) no-repeat 0px 2px;
+}
 
 #resource-title.ppt {
   background: transparent url(images/file-ppt.gif) no-repeat 0px 2px;
 }
+#resource-title.ppt.obsoleted {
+  background: transparent url(images/file-ppt-obsoleted.png) no-repeat 0px 2px;
+}
 
 #resource-title.image {
   background: transparent url(images/file-image.gif) no-repeat 0px 10px;
+}
+#resource-title.image.obsoleted {
+  background: transparent url(images/file-image-obsoleted.png) no-repeat 0px 10px;
 }
 #resource-title.image h1 {
   margin-left: 39px;
 }
 
 #resource-title.audio {
-  background: transparent url(images/file-audio.gif) no-repeat 0px 12px;
+  background: transparent url(images/file-audio.png) no-repeat 0px 12px;
+}
+#resource-title.audio.obsoleted {
+  background: transparent url(images/file-audio-obsoleted.png) no-repeat 0px 12px;
 }
 #resource-title.audio h1 {
   margin-left: 26px;
@@ -545,6 +579,9 @@ a:hover {
 
 #resource-title.video {
   background: transparent url(images/file-video.gif) no-repeat 0px 5px;
+}
+#resource-title.video.obsoleted {
+  background: transparent url(images/file-video-obsoleted.png) no-repeat 0px 5px;
 }
 #resource-title.video h1 {
   margin-left: 40px;
@@ -1585,11 +1622,25 @@ body#vrtx-report-broken-links #directory-listing td.vrtx-report-broken-links {
   overflow: hidden;
 }
 
+#directory-listing tr.obsoleted td.name a,
+#directory-listing tr.obsoleted td.name .unauthorizedListedResource-wrapper,
+#directory-listing tr.obsoleted td.name span.vrtx-trash-can-name-text,
+#directory-listing tr.obsoleted td.vrtx-report-name a {
+  background: url(images/file-small-obsoleted.png) no-repeat center left;
+}
+
 #directory-listing tr.true td.name a,
 #directory-listing tr.true td.name .unauthorizedListedResource-wrapper,
 #directory-listing tr.true td.name span.vrtx-trash-can-name-text,
 #directory-listing tr.true td.vrtx-report-name a {
   background: url(images/folder-small.gif) no-repeat center left;
+}
+
+#directory-listing tr.true.obsoleted td.name a,
+#directory-listing tr.true.obsoleted td.name .unauthorizedListedResource-wrapper,
+#directory-listing tr.true.obsoleted td.name span.vrtx-trash-can-name-text,
+#directory-listing tr.true.obsoleted td.vrtx-report-name a {
+  background: transparent url(images/folder-small-obsoleted.png) no-repeat center left;
 }
 
 #directory-listing tr.binary td.name a,
@@ -1599,11 +1650,25 @@ body#vrtx-report-broken-links #directory-listing td.vrtx-report-broken-links {
   background: url(images/file-binary-small.gif) no-repeat center left;
 }
 
+#directory-listing tr.binary.obsoleted td.name a,
+#directory-listing tr.binary.obsoleted td.name .unauthorizedListedResource-wrapper,
+#directory-listing tr.binary.obsoleted td.name span.vrtx-trash-can-name-text,
+#directory-listing tr.binary.obsoleted td.vrtx-report-name a {
+  background: url(images/file-binary-small-obsoleted.png) no-repeat center left;
+}
+
 #directory-listing tr.doc td.name a,
 #directory-listing tr.doc td.name .unauthorizedListedResource-wrapper,
 #directory-listing tr.doc td.name span.vrtx-trash-can-name-text,
 #directory-listing tr.doc td.vrtx-report-name a {
-  background: url(images/file-word-small.gif) no-repeat center left;
+  background: url(images/file-doc-small.gif) no-repeat center left;
+}
+
+#directory-listing tr.doc.obsoleted td.name a,
+#directory-listing tr.doc.obsoleted td.name .unauthorizedListedResource-wrapper,
+#directory-listing tr.doc.obsoleted td.name span.vrtx-trash-can-name-text,
+#directory-listing tr.doc.obsoleted td.vrtx-report-name a {
+  background: url(images/file-doc-small-obsoleted.png) no-repeat center left;
 }
 
 #directory-listing tr.pdf td.name a,
@@ -1613,11 +1678,25 @@ body#vrtx-report-broken-links #directory-listing td.vrtx-report-broken-links {
   background: url(images/file-pdf-small.gif) no-repeat center left;
 }
 
+#directory-listing tr.pdf.obsoleted td.name a,
+#directory-listing tr.pdf.obsoleted td.name .unauthorizedListedResource-wrapper,
+#directory-listing tr.pdf.obsoleted td.name span.vrtx-trash-can-name-text,
+#directory-listing tr.pdf.obsoleted td.vrtx-report-name a {
+  background: url(images/file-pdf-small-obsoleted.png) no-repeat center left;
+}
+
 #directory-listing tr.xls td.name a,
 #directory-listing tr.xls td.name .unauthorizedListedResource-wrapper,
 #directory-listing tr.xls td.name span.vrtx-trash-can-name-text,
 #directory-listing tr.xls td.vrtx-report-name a {
   background: url(images/file-xls-small.gif) no-repeat center left;
+}
+
+#directory-listing tr.xls.obsoleted td.name a,
+#directory-listing tr.xls.obsoleted td.name .unauthorizedListedResource-wrapper,
+#directory-listing tr.xls.obsoleted td.name span.vrtx-trash-can-name-text,
+#directory-listing tr.xls.obsoleted td.vrtx-report-name a {
+  background: url(images/file-xls-small-obsoleted.png) no-repeat center left;
 }
 
 #directory-listing tr.text td.name a,
@@ -1627,11 +1706,25 @@ body#vrtx-report-broken-links #directory-listing td.vrtx-report-broken-links {
   background: url(images/file-txt-small.gif) no-repeat center left;
 }
 
+#directory-listing tr.text.obsoleted td.name a,
+#directory-listing tr.text.obsoleted td.name .unauthorizedListedResource-wrapper,
+#directory-listing tr.text.obsoleted td.name span.vrtx-trash-can-name-text,
+#directory-listing tr.text.obsoleted td.vrtx-report-name a {
+  background: url(images/file-txt-small-obsoleted.png) no-repeat center left;
+}
+
 #directory-listing tr.ppt td.name a,
 #directory-listing tr.ppt td.name .unauthorizedListedResource-wrapper,
 #directory-listing tr.ppt td.name span.vrtx-trash-can-name-text,
 #directory-listing tr.ppt td.vrtx-report-name a {
   background: url(images/file-ppt-small.gif) no-repeat center left;
+}
+
+#directory-listing tr.ppt.obsoleted td.name a,
+#directory-listing tr.ppt.obsoleted td.name .unauthorizedListedResource-wrapper,
+#directory-listing tr.ppt.obsoleted td.name span.vrtx-trash-can-name-text,
+#directory-listing tr.ppt.obsoleted td.vrtx-report-name a {
+  background: url(images/file-ppt-small-obsoleted.png) no-repeat center left;
 }
 
 #directory-listing tr.image td.name a,
@@ -1641,11 +1734,25 @@ body#vrtx-report-broken-links #directory-listing td.vrtx-report-broken-links {
   background: url(images/file-image-small.gif) no-repeat center left;
 }
 
+#directory-listing tr.image.obsoleted td.name a,
+#directory-listing tr.image.obsoleted td.name .unauthorizedListedResource-wrapper,
+#directory-listing tr.image.obsoleted td.name span.vrtx-trash-can-name-text,
+#directory-listing tr.image.obsoleted td.vrtx-report-name a {
+  background: url(images/file-image-small-obsoleted.png) no-repeat center left;
+}
+
 #directory-listing tr.audio td.name a,
 #directory-listing tr.audio td.name .unauthorizedListedResource-wrapper,
 #directory-listing tr.audio td.name span.vrtx-trash-can-name-text,
 #directory-listing tr.audio td.vrtx-report-name a {
-  background: url(images/file-audio-small.gif) no-repeat center left;
+  background: url(images/file-audio-small.png) no-repeat center left;
+}
+
+#directory-listing tr.audio.obsoleted td.name a,
+#directory-listing tr.audio.obsoleted td.name .unauthorizedListedResource-wrapper,
+#directory-listing tr.audio.obsoleted td.name span.vrtx-trash-can-name-text,
+#directory-listing tr.audio.obsoleted td.vrtx-report-name a {
+  background: url(images/file-audio-small-obsoleted.png) no-repeat center left;
 }
 
 #directory-listing tr.video td.name a,
@@ -1653,6 +1760,13 @@ body#vrtx-report-broken-links #directory-listing td.vrtx-report-broken-links {
 #directory-listing tr.video td.name span.vrtx-trash-can-name-text,
 #directory-listing tr.video td.vrtx-report-name a {
   background: url(images/file-video-small.gif) no-repeat center left;
+}
+
+#directory-listing tr.video.obsoleted td.name a,
+#directory-listing tr.video.obsoleted td.name .unauthorizedListedResource-wrapper,
+#directory-listing tr.video.obsoleted td.name span.vrtx-trash-can-name-text,
+#directory-listing tr.video.obsoleted td.vrtx-report-name a {
+  background: url(images/file-video-small-obsoleted.png) no-repeat center left;
 }
 
 /* ^ Icons */
@@ -1870,6 +1984,7 @@ body#vrtx-permissions .addUser {
 }
 
 .vrtx-autocomplete-username .vrtx-textfield,
+.vrtx-autocomplete-tag .vrtx-textfield,
 #principalList .vrtx-textfield {
   z-index: 9999;
   position: relative;

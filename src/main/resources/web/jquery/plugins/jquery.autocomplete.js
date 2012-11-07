@@ -19,6 +19,7 @@
  *   -> defines minimum nr of hits before scrollbar is added to dropdown
  * Added class when submit is blocked in FF for use externally (removed when intercepted in reroute-function in admin-enhancements and toggled off)
  *   -> Does not interfere with anything else
+ * Added adjustForParentWidth option
  */
 
 ;
@@ -424,35 +425,36 @@
   };
 
   $.Autocompleter.defaults = {
-    inputClass :"ac_input",
-    resultsClass :"ac_results",
-    loadingClass :"ac_loading",
-    minChars :1,
-    delay :400,
-    matchCase :false,
-    matchSubset :true,
-    matchContains :false,
-    cacheLength :10,
-    max :100,
-    mustMatch :false,
-    extraParams : {},
-    selectFirst :true,
-    formatItem : function(row) {
+    inputClass: "ac_input",
+    resultsClass: "ac_results",
+    loadingClass: "ac_loading",
+    minChars: 1,
+    delay: 400,
+    matchCase: false,
+    matchSubset: true,
+    matchContains: false,
+    cacheLength: 10,
+    max: 100,
+    mustMatch: false,
+    extraParams: {},
+    selectFirst: true,
+    formatItem: function(row) {
       return row[0];
     },
-    formatMatch :null,
-    autoFill :false,
-    width :0,
-    multiple :false,
-    multipleSeparator :", ",
-    highlight : function(value, term) {
+    formatMatch: null,
+    autoFill: false,
+    width: 0,
+    multiple: false,
+    multipleSeparator: ", ",
+    highlight: function(value, term) {
       return value.replace(new RegExp("^(?![^&;]+;)(?!<[^<>]*)("
           + term.replace(/([\^\$\(\)\[\]\{\}\*\.\+\?\|\\])/gi, "\\$1") + ")(?![^<>]*>)(?![^&;]+;)", "gi"),
           "<strong>$1</strong>");
     },
-    scroll :true,
-    scrollHeight :180,
-    resultsBeforeScroll :10
+    scroll: true,
+    scrollHeight: 180,
+    resultsBeforeScroll: 10,
+    adjustForParentWidth: null
   };
 
   $.Autocompleter.Cache = function(options) {
@@ -512,9 +514,9 @@
 
         // if the match is a string
         var row = {
-          value :value,
-          data :rawValue,
-          result :options.formatResult && options.formatResult(rawValue) || value
+          value: value,
+          data: rawValue,
+          result: options.formatResult && options.formatResult(rawValue) || value
         };
 
         // push the current match into the set list
@@ -545,10 +547,10 @@
     }
 
     return {
-      flush :flush,
-      add :add,
-      populate :populate,
-      load : function(q) {
+      flush: flush,
+      add: add,
+      populate: populate,
+      load: function(q) {
         if (!options.cacheLength || !length)
           return null;
         /*
@@ -704,43 +706,47 @@
         term = q;
         fillList();
       },
-      next : function() {
+      next: function() {
         moveSelect(1);
       },
-      prev : function() {
+      prev: function() {
         moveSelect(-1);
       },
-      pageUp : function() {
+      pageUp: function() {
         if (active != 0 && active - 8 < 0) {
           moveSelect(-active);
         } else {
           moveSelect(-8);
         }
       },
-      pageDown : function() {
+      pageDown: function() {
         if (active != listItems.size() - 1 && active + 8 > listItems.size()) {
           moveSelect(listItems.size() - 1 - active);
         } else {
           moveSelect(8);
         }
       },
-      hide : function() {
+      hide: function() {
         element && element.hide();
         listItems && listItems.removeClass(CLASSES.ACTIVE);
         active = -1;
       },
-      visible : function() {
+      visible: function() {
         return element && element.is(":visible");
       },
-      current : function() {
+      current: function() {
         return this.visible() && (listItems.filter("." + CLASSES.ACTIVE)[0] || options.selectFirst && listItems[0]);
       },
-      show : function() {
+      show: function() {
         var offset = $(input).offset();
+        var acWidth = (typeof options.width == "string" || options.width > 0) ? options.width : $(input).width();
+        if(options.adjustForParentWidth && (typeof options.width !== "string")) {
+          acWidth += options.adjustForParentWidth;
+        }
         element.css( {
-          width :typeof options.width == "string" || options.width > 0 ? options.width : $(input).width(),
-          top :offset.top + input.offsetHeight,
-          left :offset.left
+          width: acWidth,
+          top: offset.top + input.offsetHeight,
+          left: offset.left
         }).show();
         if (options.scroll && (listItems.size() > options.resultsBeforeScroll || options.resultsBeforeScroll == 0)) {
           list.scrollTop(0);
@@ -765,8 +771,8 @@
 
 } else {
   list.css( {
-    maxHeight :'100%',
-    overflow :'hidden'
+    maxHeight: '100%',
+    overflow: 'hidden'
   });
 }
 },

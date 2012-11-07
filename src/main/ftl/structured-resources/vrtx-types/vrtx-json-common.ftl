@@ -87,17 +87,17 @@
       <#break>
 
     <#case "html">
-      <#--if elem.description.edithints?exists>
-        <#list elem.description.edithints?keys as hint>
-          ${hint} <br />
-        </#list>
-      </#if-->
+      <#if elem.description.edithints?exists && elem.description.edithints['class']?exists >
+        <#assign cssclass = "vrtx-html " + elem.description.edithints['class'] + " " + elem.name />
+      <#else>
+        <#assign cssclass = "vrtx-html " + elem.name />
+      </#if>
 
       <@vrtxHtml.printPropertyEditView
         title=localizedTitle
         inputFieldName=elem.name
         value=elem.value
-        classes="vrtx-html " + elem.name
+        classes=cssclass
         tooltip=form.resource.getLocalizedTooltip(elem.name, locale)
         editor=""
       />
@@ -240,13 +240,6 @@
             <div class="vrtx-button vrtx-remove-button">
               <input type="button" value="${vrtx.getMsg("editor.remove")}" />
             </div>
-
-            <script type="text/javascript"><!--
-       	      $("#vrtx-json-element-${inputFieldName}-${counter}").find(".vrtx-remove-button").click(function(){
-	            removeNode("${inputFieldName}",${counter}, <#if cssclass = "vrtx-json-accordion">true<#else>false</#if>);
-              });
-            // -->
-       	    </script>
           </div>
         </#if>
 
@@ -282,13 +275,6 @@
        	     <div class="vrtx-button vrtx-remove-button">
                <input type="button" value="${vrtx.getMsg("editor.remove")}" />
              </div>
-
-       	     <script type="text/javascript"><!--
-       	       $("#vrtx-json-element-${inputFieldName}-${counter}").find(".vrtx-remove-button").click(function(){
-                  removeNode("${inputFieldName}",${counter}, <#if cssclass = "vrtx-json-accordion">true<#else>false</#if>);
-               });
-    	     // -->
-       	     </script>
        	     
        	     <#if cssclass != "vrtx-multiple-immovable">
                <#if (counter > 0) >
@@ -297,8 +283,10 @@
                  </div>
 
                  <script type="text/javascript"><!--
-                   $("#vrtx-json-element-${inputFieldName}-${counter}").find(".vrtx-move-up-button").click(function(){
+                   $("#vrtx-json-element-${inputFieldName}-${counter}").find(".vrtx-move-up-button").off("click").click(function(e){
      		         swapContent(${counter}, ${arrayOfIds}, -1, "${inputFieldName}");
+     		         e.stopPropagation();
+	     	         e.preventDefault();
                    });
                  // -->
                  </script>
@@ -310,8 +298,10 @@
                  </div>
 
                  <script type="text/javascript"><!--
-          	       $("#vrtx-json-element-${inputFieldName}-${counter}").find(".vrtx-move-down-button").click(function(){
+          	       $("#vrtx-json-element-${inputFieldName}-${counter}").find(".vrtx-move-down-button").off("click").click(function(e){
 	     	         swapContent(${counter}, ${arrayOfIds}, 1, "${inputFieldName}");
+	     	         e.stopPropagation();
+	     	         e.preventDefault();
 	     	       });
 	     	     // -->
                  </script>
@@ -390,12 +380,6 @@
       <#break>
 
     <#case "html">
-      <#--if elem.description.edithints?exists>
-        <#list elem.description.edithints?keys as hint>
-          ${hint} <br />
-        </#list>
-      </#if-->
-
       <@vrtxHtml.printPropertyEditView
         title=jsonAttr
         inputFieldName=tmpName

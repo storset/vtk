@@ -109,7 +109,7 @@ public final class TagsHelper {
         String titleKey = keyBuilder.toString();
 
         RequestContext rc = new RequestContext(request);
-        if (!StringUtils.isBlank(overrideResourceTypeTitle)) {
+        if (!StringUtils.isBlank(overrideResourceTypeTitle) && !scopeUp) {
             titleKey = titleKey.concat(".overridenTitle");
         } else if (resourceParams != null && resourceParams.length == 1) {
             String tmpKey = titleKey.concat(".").concat(resourceParams[0]);
@@ -132,7 +132,7 @@ public final class TagsHelper {
             String overrideResourceTypeTitle) {
 
         List<Object> params = new ArrayList<Object>();
-        if (!StringUtils.isBlank(overrideResourceTypeTitle)) {
+        if (!StringUtils.isBlank(overrideResourceTypeTitle) && !scopeUp) {
             params.add(overrideResourceTypeTitle);
         }
         if (scopeUp || displayScope) {
@@ -173,7 +173,8 @@ public final class TagsHelper {
     }
 
     public Link getScopeUpUrl(HttpServletRequest request, Resource resource, Map<String, Object> model, String tag,
-            List<ResourceTypeDefinition> resourceTypes, boolean displayScope, String overrideResourceTypeTitle, boolean sort) {
+            List<ResourceTypeDefinition> resourceTypes, boolean displayScope, String overrideResourceTypeTitle,
+            boolean sort) {
 
         if (this.servesWebRoot && !resource.getURI().equals(Path.ROOT)) {
             Link scopeUpLink = new Link();
@@ -202,8 +203,7 @@ public final class TagsHelper {
             List<String> sortFieldParams, boolean displayScope, String overrideResourceTypeTitle) {
 
         if (!StringUtils.isBlank(tag)) {
-            url.removeParameter(TagsHelper.TAG_PARAMETER);
-            url.addParameter(TagsHelper.TAG_PARAMETER, tag);
+            url.setParameter(TagsHelper.TAG_PARAMETER, tag);
         }
         if (sortFieldParams != null && sortFieldParams.size() > 0) {
             for (String param : sortFieldParams) {
@@ -216,10 +216,10 @@ public final class TagsHelper {
             }
         }
         if (displayScope) {
-            url.addParameter(TagsHelper.DISPLAY_SCOPE_PARAMETER, Boolean.TRUE.toString());
+            url.setParameter(TagsHelper.DISPLAY_SCOPE_PARAMETER, Boolean.TRUE.toString());
         }
         if (!StringUtils.isBlank(overrideResourceTypeTitle)) {
-            url.addParameter(TagsHelper.OVERRIDE_RESOURCE_TYPE_TITLE_PARAMETER, overrideResourceTypeTitle);
+            url.setParameter(TagsHelper.OVERRIDE_RESOURCE_TYPE_TITLE_PARAMETER, overrideResourceTypeTitle);
         }
 
     }

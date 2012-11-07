@@ -484,7 +484,76 @@ public class ExpressionTest extends TestCase {
                 new Symbol(")")
         );
         assertEquals(true, result);
+        
+    }
     
+    public void testTypeOf() throws Exception {
+        Context ctx = new Context(Locale.getDefault());
+        ctx.define("a", "a", true);
+
+        Object result = eval(ctx,
+                new Symbol("typeof"),
+                new Symbol("("),
+                new Literal("'abc'"),
+                new Symbol(")")
+        );
+        assertEquals("string", result);
+        
+        result = eval(ctx, 
+                new Symbol("typeof"),
+                new Symbol("("),
+                new Literal("2"),
+                new Symbol("+"),
+                new Literal("2"),
+                new Symbol(")")
+        );
+        assertEquals("number", result);
+
+        result = eval(ctx, 
+                new Symbol("typeof"),
+                new Symbol("("),
+                new Literal("true"),
+                new Symbol("&&"),
+                new Literal("false"),
+                new Symbol(")")
+        );
+        assertEquals("boolean", result);
+        
+        result = eval(ctx, 
+                new Symbol("typeof"),
+                new Symbol("("),
+                new Symbol("{"),
+                new Literal("'a'"),
+                new Symbol(":"),
+                new Literal("'b'"),
+                new Symbol("}"),
+                new Symbol(")")
+        );
+        assertEquals("object", result);
+        
+        result = eval(ctx,
+                new Symbol("typeof"),
+                new Symbol("("),
+                new Symbol("a"),
+                new Symbol(")")
+        );
+        assertEquals("string", result);
+
+        result = eval(ctx, 
+                new Symbol("typeof"),
+                new Symbol("("),
+                new Symbol("concat"),
+                new Symbol(")")
+        );
+        assertEquals("function", result);
+    
+        result = eval(ctx, 
+                new Symbol("typeof"),
+                new Symbol("("),
+                new Symbol("undefined_symbol"),
+                new Symbol(")")
+        );
+        assertEquals("undefined", result);
     }
 
     public void testUndefinedFunction() throws Exception {

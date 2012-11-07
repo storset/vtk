@@ -103,7 +103,6 @@
 
   <bean id="rootManage.tabServicesFactory"
     class="org.vortikal.context.CategoryResolvingFactoryBean">
-    <property name="clazz" value="org.vortikal.web.service.Service" />
     <property name="category" value="rootMenu" />
     <property name="comparator">
       <bean class="org.vortikal.web.service.ServiceAttributeComparator">

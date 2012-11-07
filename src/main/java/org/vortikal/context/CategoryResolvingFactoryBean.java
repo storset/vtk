@@ -1,4 +1,4 @@
-/* Copyright (c) 2005, 2006, 2007, University of Oslo, Norway
+/* Copyright (c) 2012, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -30,120 +30,73 @@
  */
 package org.vortikal.context;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.beans.factory.BeanFactoryUtils;
-import org.springframework.beans.factory.BeanInitializationException;
-import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.beans.factory.config.AbstractFactoryBean;
-import org.springframework.core.OrderComparator;
-import org.springframework.core.Ordered;
 
 /**
  * Factory bean looking up groups of objects based on the
- * Categorizable interface and Class type in the context.
- * 
- * Configurable JavaBean properties:
- * 
- * <ul>
- *   <li><code>category</code> - required {@link String} describing
- *   the category of the objects
- *   <li><code>clazz</code> - required bean {@link Class type}. Must
- *    implement {@link Categorizable}.  If the class implements {@link
- *    Ordered}, the returned set will be sorted.
- *   <li><code>comparator</code> - an optional {@link Comparator},
- *   which, if specified, is used for sorting the result set instead
- *   of the default {@link OrderComparator}.
- * </ul>
+ * {@link Categorizable} interface.
  */
-@SuppressWarnings("unchecked")
-public class CategoryResolvingFactoryBean extends AbstractFactoryBean implements InitializingBean {
-    
+public class CategoryResolvingFactoryBean<T> 
+    extends AbstractFactoryBean<Collection<T>> 
+    implements FactoryBean<Collection<T>> {
+
     private String category;
-    private Class clazz;
-    private boolean ordered;
-    private Comparator comparator;
-    
-    /**
-     * Gets a list of objects declared to belong to a certain category
-     * (this.category). The return value is an array of object with
-     * type <code>this.clazz</code>
-     *
-     * @return a list of objects belonging to the category in
-     * question. If no such objects exist, an empty list is returned.
-     */
-    @Override
-    protected Object createInstance() {
-        Map<String, Categorizable> matchingBeans = BeanFactoryUtils.beansOfTypeIncludingAncestors(
-            (ListableBeanFactory) getBeanFactory(), this.clazz, true, false);
-    
-        List<Categorizable> result = new ArrayList<Categorizable>();
-        for (Categorizable categorizable: matchingBeans.values()) {
-            if (categorizable == null) {
-                continue;
-            }
-            if (categorizable.getCategories() != null
-                && categorizable.getCategories().contains(this.category)) {
-                result.add(categorizable);
-            }
-        }
-
-        if (this.comparator != null) {
-            Collections.sort(result, this.comparator);
-        } else if (this.ordered) {
-            Collections.sort(result, new OrderComparator());
-        }
-
-        Object array = Array.newInstance(this.clazz, result.size());
-        int n = 0;
-        for (Object o: result) {
-            Array.set(array, n++, o);
-        }
-        return array;
-    }
-    
-
-    @Override
-    public Class getObjectType() {
-        if (this.clazz == null) return null;
-        
-        return Array.newInstance(this.clazz, 0).getClass();
-    }
-
-    @Override
-    public boolean isSingleton() {
-        return true;
-    }
+    private Comparator<T> comparator;
 
     @Required
     public void setCategory(String category) {
         this.category = category;
     }
-
-    @Required
-    public void setClazz(Class clazz) {
-        this.clazz = clazz;
-    }
-
-    public void setComparator(Comparator comparator) {
-        this.comparator = comparator;
-    }
     
+    @Override
+    public Collection<T> createInstance() throws Exception {
+        Map<String, Categorizable> matchingBeans = 
+                BeanFactoryUtils.beansOfTypeIncludingAncestors(
+                        (ListableBeanFactory) getBeanFactory(), 
+                        Categorizable.class, true, false);
+        
+        List<T> result = new ArrayList<T>();
+        
+        for (String id: matchingBeans.keySet()) {
+            Categorizable cat = matchingBeans.get(id);
+            Set<?> set = cat.getCategories();
+            if (set != null && set.contains(this.category)) {
+                @SuppressWarnings("unchecked")
+                T bean = (T) getBeanFactory().getBean(
+                        BeanFactoryUtils.transformedBeanName(id));
+                result.add(bean);
+            }
+        }
+        if (comparator != null) {
+            Collections.sort(result, comparator);
+        }
+        return result;
+    }
 
     @Override
-    public void afterPropertiesSet() throws Exception {
-        if (! Categorizable.class.isAssignableFrom(this.clazz))
-            throw new BeanInitializationException(
-                "Property 'clazz' must be a class implementing Categorizable");
-        this.ordered = Ordered.class.isAssignableFrom(this.clazz);
+    public Class<?> getObjectType() {
+        return Collection.class;
+    }
 
-        super.afterPropertiesSet();
+    @Override
+    public boolean isSingleton() {
+        return true;
+        
+    }
+    
+    public void setComparator(Comparator<T> comparator) {
+        this.comparator = comparator;
     }
 }

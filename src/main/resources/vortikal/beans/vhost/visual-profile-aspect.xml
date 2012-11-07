@@ -25,9 +25,19 @@
           <property name="parameterValue" value="aspects" />
         </bean>
         <ref bean="adminPermissionAssertion" />
+        <ref bean="showVisualProfileForResourceAssertion" />
       </list>
     </property>
     <property name="handler" ref="visualProfileAspect.editor" />
+  </bean>
+
+  <bean id="showVisualProfileForResourceAssertion" class="org.vortikal.web.service.AndAssertion">
+    <property name="assertions">
+      <list>
+        <ref bean="resourceTypeIsNotSamletProgram" />
+        <ref bean="resourceTypeIsNotSamletRetning" />
+      </list>
+    </property>
   </bean>
 
 

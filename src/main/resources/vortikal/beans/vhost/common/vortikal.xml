@@ -34,7 +34,11 @@
     <property name="ignoreResourceNotFound" value="true" />
   </bean>
 
-
+  <bean id="ordered" abstract="true">
+    <property name="comparator">
+      <bean class="org.springframework.core.OrderComparator" />
+    </property>
+  </bean>
 
   <!-- Context Initializers -->
   <bean id="requestContextInitializer" class="org.vortikal.web.RequestContextInitializer"
@@ -106,8 +110,7 @@
     <property name="timeoutSeconds" value="3600" />
   </bean>
   
-  <bean id="defaultRequestFilters" class="org.vortikal.context.CategoryResolvingFactoryBean">
-    <property name="clazz" value="org.vortikal.web.filter.RequestFilter" />
+  <bean id="defaultRequestFilters" class="org.vortikal.context.CategoryResolvingFactoryBean" parent="ordered">
     <property name="category" value="defaultServletRequestFilter" />
   </bean>
   
@@ -120,8 +123,7 @@
     </property>
   </bean>
   
-  <bean id="defaultResponseFilters" class="org.vortikal.context.CategoryResolvingFactoryBean">
-    <property name="clazz" value="org.vortikal.web.filter.ResponseFilter" />
+  <bean id="defaultResponseFilters" class="org.vortikal.context.CategoryResolvingFactoryBean" parent="ordered">
     <property name="category" value="defaultServletResponseFilter" />
   </bean>
   

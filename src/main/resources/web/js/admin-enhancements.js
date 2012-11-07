@@ -83,11 +83,11 @@ function VrtxAdmin() {
   this.hasConsoleError = this.hasConsole && console.error;
   
   // Autocomplete parameters
-  this.permissionsAutocompleteParams = { minChars: 4, selectFirst: false, width: 300, 
-                                         max: 30, delay: 800 };                              
-  this.usernameAutocompleteParams =    { minChars: 2, selectFirst: false, width: 300,
-                                         max: 30, delay: 500, multiple: false };                                       
-  this.tagAutocompleteParams =         { minChars: 1 };
+  this.permissionsAutocompleteParams = { minChars: 4, selectFirst: false,
+                                         max: 30, delay: 800, adjustForParentWidth: 15 };                              
+  this.usernameAutocompleteParams =    { minChars: 2, selectFirst: false,
+                                         max: 30, delay: 500, multiple: false, adjustForParentWidth: 15 };                                       
+  this.tagAutocompleteParams =         { minChars: 1, adjustForParentWidth: 15 };
      
   // Transitions
   this.transitionSpeed = 200; // same as 'fast'
@@ -105,8 +105,8 @@ function VrtxAdmin() {
 var vrtxAdmin = new VrtxAdmin();
 
 // Upgrade easing algorithm from 'linear' to 'easeOutQuad' and 'easeInQuad'
-// -- if not < IE 9 (and not iPhone, iPad and Android devices)
-if(!(vrtxAdmin.isIE && vrtxAdmin.browserVersion < 9) && !vrtxAdmin.isMobileWebkitDevice) {
+// -- if not < IE 10 (and not iPhone, iPad and Android devices)
+if(!(vrtxAdmin.isIE && vrtxAdmin.browserVersion < 10) && !vrtxAdmin.isMobileWebkitDevice) {
   vrtxAdmin.transitionEasingSlideDown = "easeOutQuad";
   vrtxAdmin.transitionEasingSlideUp = "easeInQuad";
 }
@@ -308,7 +308,7 @@ vrtxAdmin._$(document).ready(function () {
             .done(function(script, textStatus) {
                $.cachedScript('/vrtx/__vrtx/static-resources/jquery/plugins/jquery.treeview.async.js')
                .done(function(script, textStatus) {
-                 $.cachedScript('/vrtx/__vrtx/static-resources/jquery/plugins/jquery.scrollTo-1.4.2-min.js')
+                 $.cachedScript('/vrtx/__vrtx/static-resources/jquery/plugins/jquery.scrollTo.min.js')
                 .done(function(script, textStatus) {
                   vrtxSimpleDialogs.openHtmlDialog(dialogManageCreate.html(), link.title);
                   initializeTree();
@@ -328,6 +328,7 @@ vrtxAdmin._$(document).ready(function () {
   switch(bodyId) {
    case "vrtx-manage-collectionlisting":
     var tabMenuServices = ["fileUploadService", "createDocumentService", "createCollectionService"];
+    var speedCreationServices = vrtxAdm.isIE8 ? 0 : 350;  
     for (i = tabMenuServices.length; i--;) {
       if(tabMenuServices[i] == "createCollectionService") {
         vrtxAdm.getFormAsync({
@@ -336,10 +337,8 @@ vrtxAdmin._$(document).ready(function () {
           insertAfterOrReplaceClass: "#active-tab ul#tabMenuRight",
           nodeType: "div",
           funcComplete: function(p){ createFuncComplete(); },
-          simultanSliding: !vrtxAdm.isIE8,
-          transitionSpeed: (vrtxAdm.isIE8 ? 0 : null),
-          transitionEasingSlideDown: (vrtxAdm.isIE8 ? "linear" : null),
-          transitionEasingSlideUp: (vrtxAdm.isIE8 ? "linear" : null)
+          simultanSliding: true,
+          transitionSpeed: speedCreationServices
         });
         vrtxAdm.completeFormAsync({ 
           selector: "form#" + tabMenuServices[i] + "-form input[type=submit]",
@@ -348,9 +347,7 @@ vrtxAdmin._$(document).ready(function () {
           errorContainerInsertAfter: "> ul",
           funcComplete: vrtxAdm.updateCollectionListingInteraction,
           post: true,
-          transitionSpeed: (vrtxAdm.isIE8 ? 0 : null),
-          transitionEasingSlideDown: (vrtxAdm.isIE8 ? "linear" : null),
-          transitionEasingSlideUp: (vrtxAdm.isIE8 ? "linear" : null)
+          transitionSpeed: speedCreationServices
         });
       } else { // Half-async for file upload and create document
         if(tabMenuServices[i] == "createDocumentService") {
@@ -360,16 +357,12 @@ vrtxAdmin._$(document).ready(function () {
             insertAfterOrReplaceClass: "#active-tab ul#tabMenuRight",
             nodeType: "div",
             funcComplete: function(p){ createFuncComplete(); },
-            simultanSliding: !vrtxAdm.isIE8,
-            transitionSpeed: (vrtxAdm.isIE8 ? 0 : null),
-            transitionEasingSlideDown: (vrtxAdm.isIE8 ? "linear" : null),
-            transitionEasingSlideUp: (vrtxAdm.isIE8 ? "linear" : null)
+            simultanSliding: true,
+            transitionSpeed: speedCreationServices
           });
           vrtxAdm.completeFormAsync({
             selector: "form#" + tabMenuServices[i] + "-form input[type=submit]",
-            transitionSpeed: (vrtxAdm.isIE8 ? 0 : null),
-            transitionEasingSlideDown: (vrtxAdm.isIE8 ? "linear" : null),
-            transitionEasingSlideUp: (vrtxAdm.isIE8 ? "linear" : null)
+            transitionSpeed: speedCreationServices
           });
         } else {
           if(vrtxAdm.isIPhone || vrtxAdm.isIPad) { // TODO: feature detection
@@ -381,16 +374,10 @@ vrtxAdmin._$(document).ready(function () {
               insertAfterOrReplaceClass: "#active-tab ul#tabMenuRight",
               nodeType: "div",
               funcComplete: function(p){ vrtxAdm.initFileUpload() },
-              simultanSliding: !vrtxAdm.isIE8,
-              transitionSpeed: (vrtxAdm.isIE8 ? 0 : null),
-              transitionEasingSlideDown: (vrtxAdm.isIE8 ? "linear" : null),
-              transitionEasingSlideUp: (vrtxAdm.isIE8 ? "linear" : null)
+              simultanSliding: true
             });
             vrtxAdm.completeFormAsync({
-              selector: "form#" + tabMenuServices[i] + "-form input[type=submit]",
-              transitionSpeed: (vrtxAdm.isIE8 ? 0 : null),
-              transitionEasingSlideDown: (vrtxAdm.isIE8 ? "linear" : null),
-              transitionEasingSlideUp: (vrtxAdm.isIE8 ? "linear" : null)
+              selector: "form#" + tabMenuServices[i] + "-form input[type=submit]"
             });
             vrtxAdm.initFileUpload(); // when error message
           }
@@ -964,9 +951,10 @@ VrtxAdmin.prototype.adaptiveBreadcrumbs = function adaptiveBreadcrumbs() {
   }
 };
 
-
 /*-------------------------------------------------------------------*\
     6. Create service
+    TODO: optimize more and remove "observerListener"
+    (for supporting right-click=>Copy)
 \*-------------------------------------------------------------------*/
 
 function createInteraction(bodyId, vrtxAdm, _$) {  
@@ -983,13 +971,14 @@ function createInteraction(bodyId, vrtxAdm, _$) {
   });    
 }
 
+var OBSERVER_IN_PROGRESS = false; // in case code is not finished after interval
 function createFuncComplete() {
   var lastColTitle = "";
   var lastColName = "";
   var lastFileTitle = "";
   var lastFileName = "";
-  var inProgress = false; // in case code is not finished after 50ms
-  
+  var intervalTime = vrtxAdmin.isIE8 ? 150 : 50;
+
   if(vrtxAdmin.isIPad || vrtxAdmin.isIPhone) {
     var iOSReplaceTimer, isDueForReplacement = false;
     $(document).on("keydown paste", "#vrtx-textfield-collection-name:visible input, #vrtx-textfield-file-name:visible input", function(e) {
@@ -1005,8 +994,8 @@ function createFuncComplete() {
   }
 
   var observeTitleFile = setInterval(function() {
-    if(!inProgress) {
-      inProgress = true;
+    if(!OBSERVER_IN_PROGRESS) {
+      OBSERVER_IN_PROGRESS = true;
       var colTitle = $("#vrtx-textfield-collection-title:visible input"),
           colTitleVal = colTitle.val();
       if(colTitle.length && colTitleVal !== lastColTitle) {
@@ -1046,10 +1035,10 @@ function createFuncComplete() {
       if(!(colTitle.length || colName.length || fileTitle.length || fileName.length)) {
         clearInterval(observeTitleFile);
       }
-      inProgress = false;
+      OBSERVER_IN_PROGRESS = false;
     }
     // vrtxAdmin.log({msg:"Observing textfields in create forms @ " + new Date() + " .."});
-  }, 50);
+  }, intervalTime);
 
 
   CREATE_RESOURCE_REPLACE_TITLE = true;
@@ -1172,9 +1161,7 @@ function disableReplaceTitle(nameBind) {
   
   setCaretToPos(nameField[0], currentCaretPos - (nameFieldValBeforeReplacement.length - nameFieldVal.length));
   
-  $("#vrtx-textfield-file-name").removeClass("file-name-from-title");
-  $("#vrtx-textfield-file-type").removeClass("file-name-from-title");
-  $("#vrtx-textfield-collection-name").removeClass("file-name-from-title");
+  $(".file-name-from-title").removeClass("file-name-from-title");
 }
 
 function replaceInvalidChar(val) {
@@ -1384,7 +1371,6 @@ VrtxAdmin.prototype.collectionListingInteraction = function collectionListingInt
 
   vrtxAdm.placeRecoverButtonInActiveTab();
   vrtxAdm.placeDeletePermanentButtonInActiveTab();
-  
   vrtxAdm.initializeCheckUncheckAll();
 }
 
@@ -1626,15 +1612,16 @@ function editorInteraction(bodyId, vrtxAdm, _$) {
     autocompleteUsernames(".vrtx-autocomplete-username");
     autocompleteTags(".vrtx-autocomplete-tag");
     
+    /* Toggle fields - TODO: should be more general (and without '.'s) but old editor need an update first */
+    
     // Aggregation and manually approved
     if(!_$("#resource\\.display-aggregation\\.true").is(":checked")) {
       _$("#vrtx-resource\\.aggregation").slideUp(0, "linear");
     }
-
     if(!_$("#resource\\.display-manually-approved\\.true").is(":checked")) {
       _$("#vrtx-resource\\.manually-approve-from").slideUp(0, "linear");
     }
- 
+
     vrtxAdm.cachedAppContent.on("click", "#resource\\.display-aggregation\\.true", function(e) {
       if(!_$.single(this).is(":checked")) {                   // If unchecked remove rows and clean prop textfield
         _$(".aggregation .vrtx-multipleinputfield").remove();
@@ -1652,6 +1639,18 @@ function editorInteraction(bodyId, vrtxAdm, _$) {
       _$("#vrtx-resource\\.manually-approve-from").slideToggle(vrtxAdm.transitionDropdownSpeed, "swing");
       e.stopPropagation();
     });
+    
+    // Course status - continued as
+    vrtxAdm.cachedAppContent.on("change", "#resource\\.courseContext\\.course-status", function(e) {
+      var courseStatus = _$.single(this);
+      if(courseStatus.val() === "continued-as") {
+        _$("#vrtx-resource\\.courseContext\\.course-continued-as:hidden").slideDown(vrtxAdm.transitionDropdownSpeed, "swing"); 
+      } else {
+        _$("#vrtx-resource\\.courseContext\\.course-continued-as:visible").slideUp(vrtxAdm.transitionDropdownSpeed, "swing"); 
+      }
+      e.stopPropagation();
+    });
+    _$("#resource\\.courseContext\\.course-status").change();
 
     // Stickybar
     var titleSubmitButtons = _$("#vrtx-editor-title-submit-buttons");
@@ -2270,7 +2269,7 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(options) {
     var selector = options.selector,
         selectorClass = options.selectorClass,
         simultanSliding = options.simultanSliding,
-        transitionSpeed = options.transitionSpeed !== null ? options.transitionSpeed : vrtxAdm.transitionSpeed,
+        transitionSpeed = ((options.transitionSpeed) != null ? options.transitionSpeed : vrtxAdm.transitionSpeed),
         transitionEasingSlideDown = options.transitionEasingSlideDown || vrtxAdm.transitionEasingSlideDown,
         transitionEasingSlideUp = options.transitionEasingSlideUp || vrtxAdm.transitionEasingSlideUp,
         modeUrl = location.href,
@@ -2448,7 +2447,7 @@ VrtxAdmin.prototype.completeFormAsync = function completeFormAsync(options) {
     var isReplacing = options.isReplacing || false,
         funcProceedCondition = options.funcProceedCondition,
         funcComplete = options.funcComplete,
-        transitionSpeed = options.transitionSpeed !== null ? options.transitionSpeed : vrtxAdm.transitionSpeed,
+        transitionSpeed = ((options.transitionSpeed) != null ? options.transitionSpeed : vrtxAdm.transitionSpeed),
         transitionEasingSlideDown = options.transitionEasingSlideDown || vrtxAdm.transitionEasingSlideDown,
         transitionEasingSlideUp = options.transitionEasingSlideUp || vrtxAdm.transitionEasingSlideUp,
         post = options.post || false,

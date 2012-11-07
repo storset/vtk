@@ -235,7 +235,6 @@
 
   <bean id="tabServicesFactory"
     class="org.vortikal.context.CategoryResolvingFactoryBean">
-    <property name="clazz" value="org.vortikal.web.service.Service" />
     <property name="category" value="tabMenu" />
     <property name="comparator">
       <bean class="org.vortikal.web.service.ServiceAttributeComparator">
@@ -275,8 +274,7 @@
   </bean>
 
   <bean id="lockActionServicesFactory"
-    class="org.vortikal.context.CategoryResolvingFactoryBean">
-    <property name="clazz" value="org.vortikal.web.service.Service" />
+    class="org.vortikal.context.CategoryResolvingFactoryBean" parent="ordered">
     <property name="category" value="lockUnlockAction" />
   </bean>
   
@@ -287,8 +285,7 @@
   </bean>
   
   <bean id="readPermissionFactory"
-    class="org.vortikal.context.CategoryResolvingFactoryBean">
-    <property name="clazz" value="org.vortikal.web.service.Service" />
+    class="org.vortikal.context.CategoryResolvingFactoryBean" parent="ordered">
     <property name="category" value="readPermission" />
   </bean>
   
@@ -299,8 +296,7 @@
   </bean>
   
   <bean id="publishFactory"
-    class="org.vortikal.context.CategoryResolvingFactoryBean">
-    <property name="clazz" value="org.vortikal.web.service.Service" />
+    class="org.vortikal.context.CategoryResolvingFactoryBean" parent="ordered">
     <property name="category" value="publish" />
   </bean>
 

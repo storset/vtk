@@ -48,6 +48,7 @@ var commentsToolbar = [['Source', 'PasteText', 'Bold',
                         'Italic', 'Strike', 'NumberedList',
                         'BulletedList', 'Link', 'Unlink']];
 
+// TODO: Try to remove some hardcoded fields - should maybe be class-based
 function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, baseDocumentUrl, browsePath, defaultLanguage, cssFileList, simpleHTML) {
   // File browser
   var linkBrowseUrl = baseUrl + '/plugins/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Connector=' + browsePath;
@@ -57,16 +58,19 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
   var isCompleteEditor = completeEditor != null ? completeEditor : false;
   var isWithoutSubSuper = withoutSubSuper != null ? withoutSubSuper : false;
   var isSimpleHTML = simpleHTML != null ? simpleHTML : false;
+  
+  var editorElem = $("form#editor");
 
   // CKEditor configurations
   if (contains(name, "introduction")
    || contains(name, "resource.description")
    || contains(name, "resource.image-description")
    || contains(name, "resource.video-description")
-   || contains(name, "resource.audio-description")) { // Introductions / descriptions
+   || contains(name, "resource.audio-description")
+   || (contains(name, "comment") && editorElem.hasClass("vrtx-schedule"))) {
     setCKEditorConfig(name, linkBrowseUrl, null, null, defaultLanguage, cssFileList, 150, 400, 40, inlineToolbar,
                       isCompleteEditor, false, baseDocumentUrl, isSimpleHTML);
-  } else if (contains(name, "caption")) { // Caption
+  } else if (contains(name, "caption")) {
     setCKEditorConfig(name, linkBrowseUrl, null, null, defaultLanguage, cssFileList, 78, 400, 40, inlineToolbar, 
                       isCompleteEditor, false, baseDocumentUrl, isSimpleHTML);               
   } else if (contains(name, "frist-frekvens-fri") // Studies  
@@ -117,7 +121,7 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
     }
     setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, defaultLanguage, cssFileList, height, maxHeight, 50, completeTB,
                       isCompleteEditor, true, baseDocumentUrl, isSimpleHTML);
-  } else if (isWithoutSubSuper) {
+  } else if (isWithoutSubSuper) { // TODO: Oddity - the next condition code block has the corresponding toolbar
     setCKEditorConfig(name, linkBrowseUrl, null, null, defaultLanguage, null, 40, 400, 40, inlineToolbar, 
                       isCompleteEditor, true, baseDocumentUrl, isSimpleHTML);
   } else {

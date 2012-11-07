@@ -239,8 +239,7 @@
 
 
   <bean id="browseActionServicesFactory"
-    class="org.vortikal.context.CategoryResolvingFactoryBean">
-    <property name="clazz" value="org.vortikal.web.service.Service" />
+    class="org.vortikal.context.CategoryResolvingFactoryBean" parent="ordered">
     <property name="category" value="browseMenu" />
   </bean>
 

@@ -90,7 +90,7 @@ public abstract class AtomFeedController implements Controller {
     private String introductionPropDefPointer;
     private String picturePropDefPointer;
     private String mediaPropDefPointer;
-    private boolean useProtocolRelativeImages = true; 
+    private boolean useProtocolRelativeImages = true;
 
     private List<String> introductionAsXHTMLSummaryResourceTypes;
 
@@ -104,17 +104,18 @@ public abstract class AtomFeedController implements Controller {
     }
 
     // To be overridden where necessary
-    protected void setFeedEntrySummary(Entry entry, PropertySet result) throws Exception{
+    protected void setFeedEntrySummary(Entry entry, PropertySet result) throws Exception {
         String type = result.getResourceType();
         if (type != null && this.introductionAsXHTMLSummaryResourceTypes.contains(type)) {
             HtmlFragment summary = this.prepareSummary(result);
             if (summary != null) {
-                try{
-                    entry.setSummaryAsXhtml( summary.getStringRepresentation());
-                }catch(Exception e){
-                    // Don't remove entry because of illegal characters in string. 
-                    // In the future, consider blacklist of illegal characters (VTK-300 9). 
-                    logger.error( "Could not set summery as XHTML: " + e.getMessage() );
+                try {
+                    entry.setSummaryAsXhtml(summary.getStringRepresentation());
+                } catch (Exception e) {
+                    // Don't remove entry because of illegal characters in
+                    // string. In the future, consider blacklist of illegal
+                    // characters (VTK-3009).
+                    logger.error("Could not set summery as XHTML: " + e.getMessage());
                 }
             }
         } else {
@@ -124,11 +125,9 @@ public abstract class AtomFeedController implements Controller {
                 entry.setSummary(description);
             }
         }
-        
+
     }
 
-    
-    
     @Override
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
@@ -211,7 +210,6 @@ public abstract class AtomFeedController implements Controller {
 
             // Set the summary
             this.setFeedEntrySummary(entry, result);
-    
 
             Property publishDate = getPublishDate(result);
             if (publishDate != null) {
@@ -278,7 +276,7 @@ public abstract class AtomFeedController implements Controller {
         StringBuilder sb = new StringBuilder();
 
         URL baseURL = viewService.constructURL(resource.getURI());
-        
+
         Property picture = this.getProperty(resource, this.picturePropDefPointer);
         if (picture != null) {
             String imageRef = picture.getStringValue();
@@ -289,7 +287,7 @@ public abstract class AtomFeedController implements Controller {
                 } catch (Throwable t) {
                 }
             }
-            
+
             String imgPath = picture.getFormattedValue(PropertyType.THUMBNAIL_PROP_NAME, Locale.getDefault());
             String imgAlt = getImageAlt(imgPath);
             sb.append("<img src=\"" + HtmlUtil.escapeHtmlString(imgPath) + "\" alt=\""
@@ -386,7 +384,7 @@ public abstract class AtomFeedController implements Controller {
         return null;
     }
 
-    private String removeInvalid(String s) {
+    protected String removeInvalid(String s) {
         return s.replaceAll("[#%?\\[\\] ]", "");
     }
 
@@ -467,7 +465,5 @@ public abstract class AtomFeedController implements Controller {
     public void setUseProtocolRelativeImages(boolean useProtocolRelativeImages) {
         this.useProtocolRelativeImages = useProtocolRelativeImages;
     }
-    
-    
 
 }

@@ -83,7 +83,6 @@
   </bean>
 
   <bean id="saml.loginListeners" class="org.vortikal.context.CategoryResolvingFactoryBean">
-    <property name="clazz" value="org.vortikal.security.web.saml.LoginListener" />
     <property name="category" value="saml.loginListener" />
   </bean>
 

@@ -24,7 +24,7 @@
           <div class="vrtx-resource">
         </#if>
         <#if !hideIcon?exists>
-		  <a class="vrtx-icon <@vrtx.iconResolver r.resourceType r.contentType />" href="${collectionListing.urls[r.URI]?html}"></a>
+		  <a class="vrtx-icon <@vrtx.resourceToIconResolver r />" href="${collectionListing.urls[r.URI]?html}"></a>
 		</#if> 
       
 		<div class="vrtx-title">

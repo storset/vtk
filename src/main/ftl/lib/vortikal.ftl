@@ -617,17 +617,42 @@
   </#compress>
 </#macro>
 
-<#macro iconResolver resourceType="" contentType="">
+<#-- RecoverableResource does not support propValue to get obsoleted and therefore we use this macro temporarily. -->
+<#macro recoverableResourceToIconResolver resource>
   <#compress>
-    <#if resourceType = "file">
-      <#if contentType = "application/octet-stream">
-        binary
-      <#else>
-        ${resourceType}
-      </#if>
-    <#else>
-      ${resourceType}
+
+    <#local iconText = "" />
+    <#if resource.resourceType??>
+      <#local iconText = resource.resourceType />
     </#if>
+    <#local contentType = "" />
+    <#if resource.contentType??>
+      <#local contentType = resource.contentType />
+    </#if>
+
+    <#if (iconText = "file" && contentType = "application/octet-stream")>
+      <#local iconText = "binary">
+    </#if>
+    ${iconText}
+  </#compress>
+</#macro>
+
+<#macro resourceToIconResolver resource>
+  <#compress>
+
+    <#local iconText = "" />
+    <#if resource.resourceType??>
+      <#local iconText = resource.resourceType />
+    </#if>
+    <#local contentType = "" />
+    <#if resource.contentType??>
+      <#local contentType = resource.contentType />
+    </#if>
+    <#if (iconText = "file" && contentType = "application/octet-stream")>
+      <#local iconText = "binary">
+    </#if>
+    <#local obsoleted = propValue(resource, 'obsoleted')>
+    ${iconText}<#if (obsoleted?? && obsoleted?has_content)> obsoleted</#if>
   </#compress>
 </#macro>
 

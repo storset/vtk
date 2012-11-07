@@ -77,7 +77,7 @@ public class PrincipalSearchImpl implements PrincipalSearch {
     public PrincipalSearchImpl(Set<String> uids, String searchString, Locale preferredLocale) {
         this(searchString);
         this.principalType = Principal.Type.USER;
-        this.searchType = SearchType.DOCUMENT_PROPERTY_VALUE_MATCH;
+        this.searchType = SearchType.MULTIPLE_IDS_SEARCH;
         this.preferredLocale = preferredLocale;
         this.uids = uids;
     }

@@ -56,7 +56,7 @@ public class TagsEventListingController extends EventListingController {
 
         RequestContext requestContext = RequestContext.getRequestContext();
         String token = requestContext.getSecurityToken();
-        Resource resource = this.tagsHelper.getScopedResource(token, request);
+        Resource resource = tagsHelper.getScopedResource(token, request);
 
         // Parameter tag is required for service invocation
         String tag = request.getParameter(TagsHelper.TAG_PARAMETER);
@@ -65,19 +65,18 @@ public class TagsEventListingController extends EventListingController {
         }
 
         // Parameter resource type is required for service invocation
-        List<ResourceTypeDefinition> resourceTypeDefs = this.tagsHelper.getResourceTypes(request);
+        List<ResourceTypeDefinition> resourceTypeDefs = tagsHelper.getResourceTypes(request);
         String resourceType = resourceTypeDefs.get(0).getName();
         model.put(TagsHelper.RESOURCE_TYPE_MODEL_KEY, resourceType);
 
-        boolean displayScope = this.tagsHelper.getDisplayScope(request);
-        String overrideResourceTypeTitle = request.getParameter(TagsHelper.OVERRIDE_RESOURCE_TYPE_TITLE_PARAMETER);
+        boolean displayScope = tagsHelper.getDisplayScope(request);
         // Scope up link
-        Link scopeUpLink = this.tagsHelper.getScopeUpUrl(request, resource, model, tag, resourceTypeDefs, displayScope,
-                overrideResourceTypeTitle, false);
+        Link scopeUpLink = tagsHelper.getScopeUpUrl(request, resource, model, tag, resourceTypeDefs, displayScope,
+                false);
         model.put(TagsHelper.SCOPE_UP_MODEL_KEY, scopeUpLink);
 
         // Resolve Title
-        String title = this.tagsHelper.getTitle(request, resource, tag, false);
+        String title = tagsHelper.getTitle(request, resource, tag, false);
         model.put("title", title);
 
     }

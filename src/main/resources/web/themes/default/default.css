@@ -1346,9 +1346,9 @@ span.vrtx-help-step-by-step-cmd {
   color: #777 !important;
 }
 
-.vrtx-admin-form #vrtx-textfield-file-name.file-name-from-title input,
-.vrtx-admin-form #vrtx-textfield-collection-name.file-name-from-title input,
-.vrtx-admin-form #vrtx-textfield-file-type.file-name-from-title {
+.vrtx-admin-form.file-name-from-title #vrtx-textfield-file-name input,
+.vrtx-admin-form.file-name-from-title #vrtx-textfield-collection-name input,
+.vrtx-admin-form.file-name-from-title #vrtx-textfield-file-type {
   color: #555;
 }
 
@@ -1911,6 +1911,10 @@ body#vrtx-permissions ul.shortcuts li {
 
 body#vrtx-permissions ul.shortcuts li {
   margin: 0 0 5px 0;
+}
+
+#app-content .principalList.hidden { 
+  display: none;
 }
 
 body#vrtx-permissions li.groups,

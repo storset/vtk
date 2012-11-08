@@ -46,7 +46,6 @@ public enum RepositoryAction {
     CREATE("create"),
     READ("read"),
     READ_WRITE("read-write"),
-    READ_WRITE_UNPUBLISHED("read-write-unpublished"),
     WRITE("write"),
     WRITE_ACL("write-acl"),
     UNLOCK("unlock"),
@@ -55,16 +54,11 @@ public enum RepositoryAction {
     MOVE("move"),
     ALL("all"),
     
+    READ_WRITE_UNPUBLISHED("read-write-unpublished"),
     CREATE_UNPUBLISHED("create-unpublished"),
-    
     PUBLISH_UNPUBLISH("publish-unpublish"),
     DELETE_UNPUBLISHED("delete-unpublished"),
 
-    CREATE_REVISION_UNPUBLISHED("create-revision-unpublished"),
-    DELETE_REVISION_WORKINGCOPY("delete-revision-workingcopy"),
-    CREATE_REVISION_WORKINGCOPY("create-revision-workingcopy"),
-    WRITE_REVISION_WORKINGCOPY("write-revision-workingcopy"),
-    
     ADD_COMMENT("add-comment"),
     EDIT_COMMENT("edit-comment"),
     UNEDITABLE_ACTION("property-edit-uneditable-action"),

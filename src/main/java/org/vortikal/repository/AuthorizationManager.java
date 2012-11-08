@@ -198,33 +198,6 @@ public final class AuthorizationManager {
         }
     }
 
-    public void authorizeReadRevision(Principal principal, Revision revision) {
-        if (this.roleManager.hasRole(principal, RoleManager.Role.ROOT) ||
-                this.roleManager.hasRole(principal, RoleManager.Role.READ_EVERYTHING)) {
-            return;
-        }
-        
-        aclAuthorize(revision.getAcl(), principal, PRIVILEGE_HIERARCHY.get(Privilege.READ));
-    }
-
-    /*
-    public void authorizeWriteRevision(Principal principal, Revision revision) {
-        if (this.roleManager.hasRole(principal, RoleManager.Role.ROOT) ||
-                this.roleManager.hasRole(principal, RoleManager.Role.READ_EVERYTHING))
-            return;
-        
-        aclAuthorize(revision.getAcl(), READ_WRITE_AUTH_PRIVILEGES, principal);
-    }
-    
-    public void authorizeDeleteRevision(Principal principal, Revision revision) {
-        if (this.roleManager.hasRole(principal, RoleManager.Role.ROOT) ||
-                this.roleManager.hasRole(principal, RoleManager.Role.READ_EVERYTHING))
-            return;
-        
-        aclAuthorize(revision.getAcl(), READ_WRITE_AUTH_PRIVILEGES, principal);
-    }
-    */
-    
     /**
      * <ul>
      *   <li>Privilege READ_PROCESSED, READ, READ_WRITE, READ_WRITE_UNPUBLISHED or ALL in ACL
@@ -637,11 +610,9 @@ public final class AuthorizationManager {
     /**
      * All of:
      * <ul>
-     *   <li>COPY action
+     *   <li>Action COPY
      *   <li>Action DELETE on source
      * </ul>
-     * @return is authorized
-     * @throws IOException
      */
     public void authorizeMove(Path srcUri, Path destUri,
             Principal principal, boolean deleteDestination) 
@@ -663,7 +634,7 @@ public final class AuthorizationManager {
              */
             
             Path destParentUri = destUri.getParent();
-            authorizeAll(destParentUri, principal);                  
+            authorizeAll(destParentUri, principal);
         } else {
             /* Source does not contain ACLs. 
              * Only need create (and possibly delete).

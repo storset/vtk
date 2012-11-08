@@ -227,7 +227,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         }
 
         if (revision.getType() != Revision.Type.WORKING_COPY) {
-            this.authorizationManager.authorizeReadRevision(principal, revision);
+            this.authorizationManager.authorize(principal, revision.getAcl(), Privilege.READ);
         }
 
         // Evaluate revision content (as content-modification)
@@ -312,7 +312,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         if (revision.getType() == Type.WORKING_COPY) {
             this.authorizationManager.authorizeRead(uri, principal);
         } else {
-            this.authorizationManager.authorizeReadRevision(principal, revision);
+            this.authorizationManager.authorize(principal, revision.getAcl(), Privilege.READ);
         }
         return this.revisionStore.getContent(r, revision);
     }
@@ -713,11 +713,9 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         }
 
         checkLock(r, principal);
-        if (r.isPublished()) {
-            this.authorizationManager.authorizeReadWrite(uri, principal);
-        } else {
-            this.authorizationManager.authorizeReadWriteUnpublished(uri, principal);
-        }
+
+        // Principal with at least privelege READ_WRITE_UNPUBLISHED required to lock resource:
+        this.authorizationManager.authorizeReadWriteUnpublished(uri, principal);
 
         boolean refresh = lockToken != null;
 
@@ -1011,6 +1009,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
 
     /**
      * Requests that an InputStream be written to a resource.
+     * Used to update contents of working copy revision.
      */
     @Transactional
     @Override
@@ -1055,10 +1054,9 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         }
 
         checkLock(r, principal);
-
-        this.authorizationManager.authorizeReadWrite(uri, principal);
-        // this.authorizationManager.authorizeWriteRevision(principal,
-        // revision);
+        
+        // READ_WRITE_UNPUBLISHED is sufficient for updating working copy, regardless of publication status:
+        this.authorizationManager.authorizeReadWriteUnpublished(uri, principal);
 
         long revisionId = existing.getID();
         Acl acl = null; // r.getAcl();
@@ -1132,13 +1130,22 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
                     checkLock(parent, principal);
                     checkLock(resource, principal);
 
-                } else if (action == RepositoryAction.ALL || action == RepositoryAction.ADD_COMMENT
+                // Else check lock if action can modify repo:  
+                } else if (action == RepositoryAction.ALL           
+                        || action == RepositoryAction.ADD_COMMENT
                         || action == RepositoryAction.EDIT_COMMENT
                         || action == RepositoryAction.REPOSITORY_ADMIN_ROLE_ACTION
                         || action == RepositoryAction.REPOSITORY_ROOT_ROLE_ACTION
-                        || action == RepositoryAction.UNEDITABLE_ACTION || action == RepositoryAction.UNLOCK
-                        || action == RepositoryAction.CREATE || action == RepositoryAction.WRITE
-                        || action == RepositoryAction.READ_WRITE || action == RepositoryAction.WRITE_ACL) {
+                        || action == RepositoryAction.UNEDITABLE_ACTION
+                        || action == RepositoryAction.UNLOCK
+                        || action == RepositoryAction.CREATE
+                        || action == RepositoryAction.CREATE_UNPUBLISHED
+                        || action == RepositoryAction.DELETE_UNPUBLISHED
+                        || action == RepositoryAction.WRITE
+                        || action == RepositoryAction.READ_WRITE
+                        || action == RepositoryAction.PUBLISH_UNPUBLISH
+                        || action == RepositoryAction.READ_WRITE_UNPUBLISHED
+                        || action == RepositoryAction.WRITE_ACL) {
                     checkLock(resource, principal);
                 }
             }
@@ -1295,7 +1302,18 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         Principal principal = this.tokenManager.getPrincipal(token);
 
         checkLock(resource, principal);
-        this.authorizationManager.authorizeReadWrite(resource.getURI(), principal);
+        if (resource.isPublished()) {
+            if (type == Revision.Type.WORKING_COPY) {
+                // Allow for principal with only READ_WRITE_UNPUBLISHED for working copy
+                // regardless of publication status:
+                this.authorizationManager.authorizeReadWriteUnpublished(uri, principal);
+            } else {
+                this.authorizationManager.authorizeReadWrite(uri, principal);
+            }
+        } else {
+            this.authorizationManager.authorizeReadWriteUnpublished(uri, principal);
+        }
+        
         List<Revision> revs = this.revisionStore.list(resource);
 
         Revision newest = null;
@@ -1390,7 +1408,11 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         Principal principal = this.tokenManager.getPrincipal(token);
 
         checkLock(resource, principal);
-        this.authorizationManager.authorizeReadWrite(resource.getURI(), principal);
+        if (revision.getType() == Revision.Type.WORKING_COPY) {
+            this.authorizationManager.authorizeReadWriteUnpublished(resource.getURI(), principal);
+        } else {
+            this.authorizationManager.authorizeReadWrite(resource.getURI(), principal);
+        }
 
         Revision found = null;
         Revision older = null;

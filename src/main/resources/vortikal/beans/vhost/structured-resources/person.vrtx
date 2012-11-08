@@ -14,7 +14,7 @@ resourcetype person {
     visitingAddress : string multiple external:userMetadataLdapService,
     externalUserMetaData : derived external:userMetadataLdapService,
     alternativeVisitingAddress : string multiple,
- 	alternativeCellPhone : string,
+    alternativeCellPhone : string,
     title : derived (firstName, surname) eval (firstName + " " + surname)
       overrides title default username,
     room : string,

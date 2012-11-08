@@ -63,7 +63,7 @@ public final class TagsHelper {
     private boolean servesWebRoot;
 
     public Resource getScopedResource(String token, HttpServletRequest request) throws Exception {
-        Path requestedScope = this.getScopePath(request);
+        Path requestedScope = getScopePath(request);
         Resource scopedResource = null;
         try {
             scopedResource = org.vortikal.web.RequestContext.getRequestContext().getRepository()
@@ -97,7 +97,7 @@ public final class TagsHelper {
         String scopeTitle = (scopeUp && !resource.getURI().isRoot()) ? repositoryID : resource.getTitle();
         String overrideResourceTypeTitle = request.getParameter(OVERRIDE_RESOURCE_TYPE_TITLE_PARAMETER);
         String[] resourceParams = request.getParameterValues(RESOURCE_TYPE_PARAMETER);
-        boolean displayScope = this.getDisplayScope(request);
+        boolean displayScope = getDisplayScope(request);
 
         StringBuilder keyBuilder = new StringBuilder("tags.title");
         if (StringUtils.isBlank(tag)) {
@@ -121,7 +121,7 @@ public final class TagsHelper {
             }
         }
 
-        Object[] localizationParams = this.getLocalizationParams(tag, scopeUp, displayScope, scopeTitle,
+        Object[] localizationParams = getLocalizationParams(tag, scopeUp, displayScope, scopeTitle,
                 overrideResourceTypeTitle);
 
         return rc.getMessage(titleKey, localizationParams);
@@ -160,7 +160,7 @@ public final class TagsHelper {
             List<ResourceTypeDefinition> resourceTypes = new ArrayList<ResourceTypeDefinition>();
             for (String resourceType : resourcePrams) {
                 try {
-                    ResourceTypeDefinition resourceTypeDef = this.resourceTypeTree
+                    ResourceTypeDefinition resourceTypeDef = resourceTypeTree
                             .getResourceTypeDefinitionByName(resourceType);
                     resourceTypes.add(resourceTypeDef);
                 } catch (IllegalArgumentException iae) {
@@ -173,10 +173,9 @@ public final class TagsHelper {
     }
 
     public Link getScopeUpUrl(HttpServletRequest request, Resource resource, Map<String, Object> model, String tag,
-            List<ResourceTypeDefinition> resourceTypes, boolean displayScope, String overrideResourceTypeTitle,
-            boolean sort) {
+            List<ResourceTypeDefinition> resourceTypes, boolean displayScope, boolean sort) {
 
-        if (this.servesWebRoot && !resource.getURI().equals(Path.ROOT)) {
+        if (servesWebRoot && !resource.getURI().equals(Path.ROOT)) {
             Link scopeUpLink = new Link();
             Service service = org.vortikal.web.RequestContext.getRequestContext().getService();
             URL url = service.constructURL(resource.getURI());
@@ -189,8 +188,8 @@ public final class TagsHelper {
                     sortFieldParams = listing.getSortFieldParams();
                 }
             }
-            this.processUrl(url, tag, resourceTypes, sortFieldParams, displayScope, overrideResourceTypeTitle);
-            String scopeUpTitle = this.getTitle(request, resource, tag, true);
+            processUrl(url, tag, resourceTypes, sortFieldParams, displayScope, null);
+            String scopeUpTitle = getTitle(request, resource, tag, true);
             scopeUpLink.setUrl(url);
             scopeUpLink.setTitle(scopeUpTitle);
             return scopeUpLink;

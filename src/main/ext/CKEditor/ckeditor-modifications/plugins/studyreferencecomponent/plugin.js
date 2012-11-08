@@ -52,7 +52,7 @@ CKEDITOR.plugins.add( 'studyreferencecomponent',
 								{
 									data.tekstverdi = this.getValue();
 								}
-							},
+							}
 						]
 					}
 				],

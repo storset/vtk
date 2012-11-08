@@ -9,7 +9,7 @@ resourcetype research-group {
     content : html noextract,
     tags : string multiple overrides tags,
     contactInfo : html noextract,
-	participantsUsernames : string multiple,
+    participantsUsernames : string multiple,
     participantsCachedFullNames : binary external:participantsFullNameService,
     participants : json (participantName:string, participantUrl:string) multiple,
     numberOfParticipantsToDisplay : string defaultvalue("50"),        
@@ -167,6 +167,17 @@ resourcetype research-group {
       [endif]
       ##
     }
+
+    related-projects {
+      ##
+        [def document structured-document()]
+        [def listRelatedProjects document.properties.listRelatedProjects]
+        [if listRelatedProjects = "true"]
+          [call "resource:projects-related-to-group"]
+        [endif]
+      ##
+    }
+
   }
 
   view {
@@ -189,7 +200,7 @@ resourcetype research-group {
           <div id="vrtx-additional-content">
             [call "comp:contact-info"]
             [call "resource:person-list"]
-            [call "resource:projects-related-to-group"]
+            [call "comp:related-projects"]
             [call "comp:feeds"]
             [call "comp:related-content-in-additional-column"]
           </div> 

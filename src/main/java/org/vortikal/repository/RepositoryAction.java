@@ -55,12 +55,9 @@ public enum RepositoryAction {
     MOVE("move"),
     ALL("all"),
     
-//    CREATE_UNPUBLISHED("create-unpublished"), // Not sure we really need this one. We already have CREATE, and
-                                              // when principal only has READ_WRITE_UNPUBLISHED, a normal CREATE
-                                              // will allow creation of an automatically unpublished resource.
+    CREATE_UNPUBLISHED("create-unpublished"),
     
     PUBLISH_UNPUBLISH("publish-unpublish"),
-    
     DELETE_UNPUBLISHED("delete-unpublished"),
 
     CREATE_REVISION_UNPUBLISHED("create-revision-unpublished"),

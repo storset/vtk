@@ -1921,6 +1921,7 @@
   <bean id="requiresWritePermissionAssertion" parent="abstractResourcePrincipalPermissionAssertion">
     <property name="requiresAuthentication" value="true" />
     <property name="permission" value="WRITE" />
+    <property name="unpublishedPermission" value="READ_WRITE_UNPUBLISHED" />
   </bean>
 
   <bean id="deleteResourcePermissionAssertion" parent="abstractResourcePrincipalPermissionAssertion">
@@ -1930,15 +1931,17 @@
 
   <bean id="writePermissionAssertion" parent="abstractResourcePrincipalPermissionAssertion">
     <property name="permission" value="WRITE" />
+    <property name="unpublishedPermission" value="READ_WRITE_UNPUBLISHED" />
   </bean>
   
   <bean id="writeParentPermissionAssertion" parent="abstractResourcePrincipalPermissionAssertion">
     <property name="parent" value="true" />
     <property name="permission" value="WRITE" />
   </bean>
-
+  
   <bean id="bindPermissionAssertion" parent="abstractResourcePrincipalPermissionAssertion">
     <property name="permission" value="CREATE" />
+    <property name="unpublishedPermission" value="CREATE_UNPUBLISHED" />
   </bean>
 
   <bean id="writeACLPermissionAssertion" parent="abstractResourcePrincipalPermissionAssertion">
@@ -1966,6 +1969,7 @@
 
   <bean id="lockPermissionAssertion" parent="abstractResourcePrincipalPermissionAssertion">
     <property name="permission" value="WRITE" />
+    <property name="unpublishedPermission" value="READ_WRITE_UNPUBLISHED" />
   </bean>
 
   <bean id="delegateOwnershipPermissionAssertion" parent="abstractResourcePrincipalPermissionAssertion">

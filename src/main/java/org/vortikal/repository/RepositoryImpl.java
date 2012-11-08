@@ -707,7 +707,11 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         }
 
         checkLock(r, principal);
-        this.authorizationManager.authorizeReadWrite(uri, principal);
+        if (r.isPublished()) {
+            this.authorizationManager.authorizeReadWrite(uri, principal);
+        } else {
+            this.authorizationManager.authorizeReadWriteUnpublished(uri, principal);
+        }
 
         boolean refresh = lockToken != null;
 
@@ -878,7 +882,11 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     private Resource storeInheritableProps(Path uri, Resource resource, ResourceImpl original, Principal principal,
             InheritablePropertiesStoreContext context) throws IOException {
         // Normal write privilege required
-        this.authorizationManager.authorizeReadWrite(uri, principal);
+        if (original.isPublished()) {
+            this.authorizationManager.authorizeReadWrite(uri, principal);
+        } else {
+            this.authorizationManager.authorizeReadWriteUnpublished(uri, principal);
+        }
 
         try {
             ResourceImpl originalClone = (ResourceImpl) original.clone();
@@ -918,7 +926,10 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         }
 
         checkLock(parent, principal);
-        this.authorizationManager.authorizeCreate(parent.getURI(), principal);
+
+        // Allow if principal has at least privileges to create unpublished resource
+        this.authorizationManager.authorizeCreateUnpublished(parent.getURI(), principal);
+        
         checkMaxChildren(parent);
 
         try {
@@ -1085,6 +1096,10 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         }
     }
 
+    /**
+     * Delegate directly to
+     * @{link AuthorizationManager#authorize(org.vortikal.security.Principal, org.vortikal.repository.Acl, org.vortikal.repository.Privilege) }
+     */
     @Override
     public boolean authorize(Principal principal, Acl acl, Privilege privilege) {
         return this.authorizationManager.authorize(principal, acl, privilege);
@@ -1830,7 +1845,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         if (resource == null || resource.isCollection() || revision == null) {
             return null;
         }
-        final RevisionStore revisionStore = this.revisionStore;
 
         ContentStore cs = new ContentStore() {
 

@@ -178,10 +178,15 @@ public final class AuthorizationManager {
         case READ_WRITE_UNPUBLISHED:
             authorizeReadWriteUnpublished(uri, principal);
             break;
+        case CREATE_UNPUBLISHED:
+            authorizeCreateUnpublished(uri, principal);
+            break;
+        case DELETE_UNPUBLISHED:
+            authorizeDeleteUnpublished(uri, principal);
+            break;
         case PUBLISH_UNPUBLISH:
             authorizePublishUnpublish(uri, principal);
             break;
-            
         case REPOSITORY_ADMIN_ROLE_ACTION:
             authorizePropertyEditAdminRole(uri, principal);
             break;
@@ -267,7 +272,7 @@ public final class AuthorizationManager {
      *       by not having the privilege in CREATE_AUTH_PRIVILEGES. Needs other changes
      *       as part of VTK-2135 before it can be used again
      * <ul>
-     *   <li>Privilege READ_WRITE, READ_WRITE_UNPUBLISHED or ALL on resource
+     *   <li>Privilege READ_WRITE or ALL on resource
      *   <li>Role ROOT
      * </ul>
      */
@@ -283,8 +288,30 @@ public final class AuthorizationManager {
             return;
         }
         aclAuthorize(resource, principal, Privilege.ALL,
-                                          Privilege.READ_WRITE,
-                                          Privilege.READ_WRITE_UNPUBLISHED);
+                                          Privilege.READ_WRITE);
+    }
+    
+    /**
+     * TODO: CREATE is used for old bind ("bare opprett") which is currently disabled
+     *       by not having the privilege in CREATE_AUTH_PRIVILEGES. Needs other changes
+     *       as part of VTK-2135 before it can be used again
+     * <ul>
+     *   <li>Privilege READ_WRITE, READ_WRITE_UNPUBLISHED or ALL on resource
+     *   <li>Role ROOT
+     * </ul>
+     */
+    public void authorizeCreateUnpublished(Path uri, Principal principal)
+        throws AuthenticationException, AuthorizationException, ReadOnlyException, 
+        IOException, ResourceNotFoundException {
+
+        checkReadOnly(principal);
+
+        ResourceImpl resource = loadResource(uri);
+        
+        if (this.roleManager.hasRole(principal, RoleManager.Role.ROOT)) {
+            return;
+        }
+        aclAuthorize(resource, principal, PRIVILEGE_HIERARCHY.get(Privilege.READ_WRITE_UNPUBLISHED));
     }
     
     /**
@@ -561,11 +588,14 @@ public final class AuthorizationManager {
      * All of:
      * <ul>
      *   <li>Action READ on source tree
-     *   <li>Action CREATE on destination
-     *   <li>if overwrite, action DELETE on dest
+     *   <li>One of:
+     *   <ul>
+     *     <li>Action CREATE on destination if resource to copy is a collection
+     *     <li>Action CREATE_UNPUBLISHED on destination if resource to copy is not a collection.
+     *   </ul>
+     *   <li>If overwrite, action DELETE on dest.
      * </ul>
-     * @return is authorized
-     * @throws IOException
+     * 
      */
     public void authorizeCopy(Path srcUri, Path destUri, 
             Principal principal, boolean deleteDestination) 
@@ -583,12 +613,24 @@ public final class AuthorizationManager {
             for (int i = 0; i < uris.length; i++) {
                 authorizeRead(uris[i], principal);
             }
+            
+            // For copy of collection we require full CREATE at destination
+            authorizeCreate(destUri.getParent(), principal);
+        } else {
+            // If not collection, we allow if principal only has CREATE_UNPUBLISHED at minimum.
+            authorizeCreateUnpublished(destUri.getParent(), principal);
         }
 
-        Path destParentUri = destUri.getParent();
-        authorizeCreate(destParentUri, principal);
-
-        if (deleteDestination) authorizeDelete(destUri, principal);
+        if (deleteDestination) {
+            Resource dest = this.dao.load(destUri);
+            if (dest != null) {
+                if (dest.isPublished()) {
+                    authorizeDelete(destUri, principal);
+                } else {
+                    authorizeDeleteUnpublished(destUri, principal);
+                }
+            }
+        }
     }
     
 
@@ -629,7 +671,10 @@ public final class AuthorizationManager {
             Path destParentUri = destUri.getParent();
             authorizeCreate(destParentUri, principal);
         }
-        if (deleteDestination) authorizeDelete(destUri, principal);
+        
+        if (deleteDestination) {
+            authorizeDelete(destUri, principal);
+        }
     }
     
     /**

@@ -96,6 +96,7 @@ public class ResourcePrincipalPermissionAssertion
             ResourcePrincipalPermissionAssertion.class);
     
     private RepositoryAction permission = null;
+    private RepositoryAction unpublishedPermission = null;
     private boolean requiresAuthentication = false;
     private PrincipalManager principalManager = null;
     private RoleManager roleManager = null;
@@ -126,6 +127,20 @@ public class ResourcePrincipalPermissionAssertion
         this.permission = privilege.getAction();
     }
 
+    public void setUnpublishedPermission(RepositoryAction permission) {
+        if (this.unpublishedPermission != null) {
+            throw new IllegalStateException("Cannot set privilege: unpublishedPermission already set");
+        }
+        this.unpublishedPermission = permission;
+    }
+
+    public void setUnpublishedPrivilege(Privilege privilege) {
+        if (this.unpublishedPermission != null) {
+            throw new IllegalStateException("Cannot set privilege: unpublishedPermission already set");
+        }
+        this.unpublishedPermission = privilege.getAction();
+    }
+    
     public void setPrincipalManager(PrincipalManager principalManager) {
         this.principalManager = principalManager;
     }
@@ -201,6 +216,11 @@ public class ResourcePrincipalPermissionAssertion
             throw new AuthenticationException();
         }
         
+        RepositoryAction action = this.permission;
+        if (this.unpublishedPermission != null && !resource.isPublished()) {
+            action = this.unpublishedPermission;
+        }
+        
         try {
             if(this.parent) {
                 Path parent = resource.getURI().getParent();
@@ -212,14 +232,14 @@ public class ResourcePrincipalPermissionAssertion
                     return false;
                 }
                 if (this.anonymous) {
-                    return this.repository.isAuthorized(resourceParent, this.permission, null, this.considerLocks);
+                    return this.repository.isAuthorized(resourceParent, action, null, this.considerLocks);
                 }
-                return this.repository.isAuthorized(resourceParent, this.permission, principal, this.considerLocks);
+                return this.repository.isAuthorized(resourceParent, action, principal, this.considerLocks);
             } else {
                 if (this.anonymous) {
-                    return this.repository.isAuthorized(resource, this.permission, null, this.considerLocks);
+                    return this.repository.isAuthorized(resource, action, null, this.considerLocks);
                 }
-                return this.repository.isAuthorized(resource, this.permission, principal, this.considerLocks);
+                return this.repository.isAuthorized(resource, action, principal, this.considerLocks);
             }
 
         } catch (RuntimeException e) {

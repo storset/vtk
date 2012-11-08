@@ -36,7 +36,7 @@ import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 
 public abstract class AbstractRepositoryAssertion
-  extends AbstractAssertion implements RepositoryAssertion {
+                      extends AbstractAssertion implements RepositoryAssertion {
 
     public boolean processURL(URL url, Resource resource, Principal principal,
             boolean match) {

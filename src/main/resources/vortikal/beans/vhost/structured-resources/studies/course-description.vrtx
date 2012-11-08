@@ -94,19 +94,16 @@ resourcetype course-description : fellestekst-document {
           <tbody>
             <tr>
               <td><b>Semestersider</b> (undervisningstider, eksamensdato, pensum m.m.):
-                [def uri resource-prop("./", "uri")]
-                [def res search('uri=' + uri + '/* && type IN semester-context')]
-                [list res re]
-                  [def url view-url(re)]
-                  [val url]
-                  [val re]
-                  [def title resource-prop(re, "semesterContext.semester")]
-                  [val title]
-                [endlist]
                 <ul>
-                      <li class="vrtx-semesterside-1">
-                        placeholder h12
-                      </li>
+                  [def uri resource-prop("./", "uri")]
+                  [def res search('uri=' + uri + '/* && type IN semester-context')]
+                  [list res re]
+                    [def url view-url(re)]
+                    [def title resource-prop(re, "semesterContext.semester")]
+                    <li class="vrtx-semesterside-1">
+                      <a href="[val url]">[if title != null && title != ""][val title][else][val url][endif]</a>
+                    </li>
+                  [endlist]
                 </ul>
               </td>
             </tr>

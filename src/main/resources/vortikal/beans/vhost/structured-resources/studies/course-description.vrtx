@@ -94,6 +94,15 @@ resourcetype course-description : fellestekst-document {
           <tbody>
             <tr>
               <td><b>Semestersider</b> (undervisningstider, eksamensdato, pensum m.m.):
+                [def uri resource-prop("./", "uri")]
+                [def res search('uri=' + uri + '/* && type IN semester-context')]
+                [list res re]
+                  [def url view-url(re)]
+                  [val url]
+                  [val re]
+                  [def title resource-prop(re, "semesterContext.semester")]
+                  [val title]
+                [endlist]
                 <ul>
                       <li class="vrtx-semesterside-1">
                         placeholder h12
@@ -110,6 +119,9 @@ resourcetype course-description : fellestekst-document {
         ##
         <div class="engelsk">
           [def uri resource-prop(".", "uri")]
+          [def uri uri.split('/')]
+          [def len (uri.length() - 1)]
+          --[val uri.4]--[val len]--
           [def uri "./index-eng.html"]
           [def file json-resource(uri)]
           [if file != null]
@@ -241,7 +253,9 @@ resourcetype course-description : fellestekst-document {
      }
   }
   
-  localization {  
+  localization {
+    title : (en : "Title", no : "Tittel", nn : "Tittel"),
+    header : (en : "Edit course", no : "Rediger emne", nn : "Rediger emne"),
     locale-no : (en : "Bokmål", no : "Bokmål", nn : "Bokmål"),
     locale-nn : (en : "Nynorsk", no : "Nynorsk", nn : "Nynorsk"),
     locale-en : (en : "English", no : "Engelsk", nn : "Engelsk")

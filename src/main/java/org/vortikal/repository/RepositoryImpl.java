@@ -366,7 +366,9 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         }
 
         checkLock(parent, principal);
-        this.authorizationManager.authorizeCreate(parent.getURI(), principal);
+        // Allow if principal has at least CREATE_UNPUBLISHED on parent
+        this.authorizationManager.authorizeCreateUnpublished(parent.getURI(), principal);
+        
         checkMaxChildren(parent);
 
         ResourceImpl newResource = new ResourceImpl(uri);
@@ -495,7 +497,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         } else if (!overwrite) {
             throw new ResourceOverwriteException(destUri);
         }
-
+        
         // checking destParent
         ResourceImpl destParent = this.dao.load(destUri.getParent());
         if ((destParent == null) || !destParent.isCollection()) {
@@ -581,7 +583,11 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         // locking and database inter-transaction synchronization (which leads
         // to "11-iterations"-problem)
         ResourceImpl parentCollection = this.dao.load(uri.getParent());
-        this.authorizationManager.authorizeDelete(uri, principal);
+        if (resourceToDelete.isPublished()) {
+            this.authorizationManager.authorizeDelete(uri, principal);
+        } else {
+            this.authorizationManager.authorizeDeleteUnpublished(uri, principal);
+        }
         checkLock(parentCollection, principal);
         checkLock(resourceToDelete, principal);
 
@@ -741,8 +747,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         } catch (CloneNotSupportedException c) {
             throw new IOException("Failed to clone resource");
         }
-        // this.authorizationManager.lockResource(r, principal, ownerInfo,
-        // depth, requestedTimeoutSeconds, (lockToken != null));
     }
 
     private void checkLock(Resource resource, Principal principal) throws ResourceLockedException, IOException,

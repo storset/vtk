@@ -221,6 +221,10 @@
   display: block;
 }
 
+#vrtx-resource\.courseContext\.course-continued-as.hidden {
+  display: none;
+}
+
 #items .vrtx-json-element > div > div,
 #items .vrtx-json-element .left > div,
 #items .vrtx-json-element .right > div {

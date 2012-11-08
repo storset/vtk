@@ -971,75 +971,44 @@ function createInteraction(bodyId, vrtxAdm, _$) {
   });    
 }
 
-var OBSERVER_IN_PROGRESS = false; // in case code is not finished after interval
 function createFuncComplete() {
   var lastColTitle = "";
   var lastColName = "";
   var lastFileTitle = "";
   var lastFileName = "";
-  var intervalTime = vrtxAdmin.isIE8 ? 150 : 50;
-
-  if(vrtxAdmin.isIPad || vrtxAdmin.isIPhone) {
-    var iOSReplaceTimer, isDueForReplacement = false;
-    $(document).on("keydown paste", "#vrtx-textfield-collection-name:visible input, #vrtx-textfield-file-name:visible input", function(e) {
-      clearTimeout(iOSReplaceTimer);
-      var elm = $(this);
-      iOSReplaceTimer = setTimeout(function() {
-        if(isDueForReplacement) {
-          disableReplaceTitle(elm.attr("name"));
-          isDueForReplacement = false;   
-        }
-      }, 250);
-    });
-  }
-
-  var observeTitleFile = setInterval(function() {
-    if(!OBSERVER_IN_PROGRESS) {
-      OBSERVER_IN_PROGRESS = true;
-      var colTitle = $("#vrtx-textfield-collection-title:visible input"),
-          colTitleVal = colTitle.val();
-      if(colTitle.length && colTitleVal !== lastColTitle) {
-        lastColTitle = colTitleVal;
-        userTitleChange(colTitle.attr("name"), $("#vrtx-textfield-collection-name input").attr("name"), null);
-      } else {
-        var colName = $("#vrtx-textfield-collection-name:visible input"),
-            colNameVal = colName.val();
-        if(colName.length && colName.is(":focus") && colNameVal !== lastColName) {
-          lastColName = colNameVal;        
-          if(vrtxAdmin.isIPad || vrtxAdmin.isIPhone) {
-            isDueForReplacement = true;
-          } else {
-            disableReplaceTitle(colName.attr("name"));
-          }
-        }
-      }
-
-      var fileTitle = $("#vrtx-textfield-file-title:visible input"),
-          fileTitleVal = fileTitle.val();
-      if(fileTitle.length && fileTitleVal !== lastFileTitle) {
-        lastFileTitle = fileTitleVal;
-        userTitleChange(fileTitle.attr("name"), $("#vrtx-textfield-file-name input").attr("name"), $("#vrtx-checkbox-is-index input").attr("name"));
-      } else {
-        var fileName = $("#vrtx-textfield-file-name:visible input"),
-            fileNameVal = fileName.val();
-        if(fileName.length && fileName.is(":focus") && fileNameVal !== lastFileName) {
-          lastFileName = fileNameVal;
-          
-          if(vrtxAdmin.isIPad || vrtxAdmin.isIPhone) {
-            isDueForReplacement = true;
-          } else {
-            disableReplaceTitle(fileName.attr("name"));
-          }
-        }
-      }
-      if(!(colTitle.length || colName.length || fileTitle.length || fileName.length)) {
-        clearInterval(observeTitleFile);
-      }
-      OBSERVER_IN_PROGRESS = false;
+  
+  $(document).on("keyup", "#vrtx-textfield-collection-title input", function(e) {
+    var colTitle = $(this),
+        colTitleVal = colTitle.val();
+    if(colTitle.length && colTitleVal !== lastColTitle) {
+      lastColTitle = colTitleVal;
+      userTitleChange(colTitle.attr("name"), $("#vrtx-textfield-collection-name input").attr("name"), null);
     }
-    // vrtxAdmin.log({msg:"Observing textfields in create forms @ " + new Date() + " .."});
-  }, intervalTime);
-
+  });
+  $(document).on("keyup", "#vrtx-textfield-collection-name input", function(e) {
+    var colName = $(this),
+        colNameVal = colName.val();
+    if(colName.length && colName.is(":focus") && colNameVal !== lastColName) {
+      lastColName = colNameVal;       
+      disableReplaceTitle(colName.attr("name"));
+    }
+  });
+  $(document).on("keyup", "#vrtx-textfield-file-title input", function(e) {
+    var fileTitle = $(this),
+        fileTitleVal = fileTitle.val();
+    if(fileTitle.length && fileTitleVal !== lastFileTitle) {
+      lastFileTitle = fileTitleVal;
+      userTitleChange(fileTitle.attr("name"), $("#vrtx-textfield-file-name input").attr("name"), $("#vrtx-checkbox-is-index input").attr("name"));
+    }
+  });
+  $(document).on("keyup", "#vrtx-textfield-file-name input", function(e) {
+    var fileName = $(this),
+        fileNameVal = fileName.val();
+    if(fileName.length && fileName.is(":focus") && fileNameVal !== lastFileName) {
+      lastFileName = fileNameVal;
+      disableReplaceTitle(fileName.attr("name"));
+    }
+  });
 
   CREATE_RESOURCE_REPLACE_TITLE = true;
   
@@ -1098,9 +1067,7 @@ function changeTemplate(element, hasTitle) {
   growField(name, name.val(), 5, minWidth, 530);
   
   if(CREATE_RESOURCE_REPLACE_TITLE) {
-    $("#vrtx-textfield-file-name").addClass("file-name-from-title");
-    $("#vrtx-textfield-file-type").addClass("file-name-from-title");
-    $("#vrtx-textfield-collection-name").addClass("file-name-from-title");
+    $(".vrtx-admin-form").addClass("file-name-from-title");
   }
 }
 
@@ -1242,7 +1209,7 @@ function growField(input, val, comfortZone, minWidth, maxWidth) {
         letterSpacing: input.css('letterSpacing'),
         whiteSpace: 'nowrap'
       });
-
+  input.parent().find("tester").remove();
   testSubject.insertAfter(input);  
   testSubject.html(val);
  
@@ -1644,9 +1611,13 @@ function editorInteraction(bodyId, vrtxAdm, _$) {
     vrtxAdm.cachedAppContent.on("change", "#resource\\.courseContext\\.course-status", function(e) {
       var courseStatus = _$.single(this);
       if(courseStatus.val() === "continued-as") {
-        _$("#vrtx-resource\\.courseContext\\.course-continued-as:hidden").slideDown(vrtxAdm.transitionDropdownSpeed, "swing"); 
+        _$("#vrtx-resource\\.courseContext\\.course-continued-as.hidden").slideDown(vrtxAdm.transitionDropdownSpeed, "swing", function() {
+          $(this).removeClass("hidden");
+        });
       } else {
-        _$("#vrtx-resource\\.courseContext\\.course-continued-as:visible").slideUp(vrtxAdm.transitionDropdownSpeed, "swing"); 
+        _$("#vrtx-resource\\.courseContext\\.course-continued-as:not(.hidden)").slideUp(vrtxAdm.transitionDropdownSpeed, "swing", function() {
+          $(this).addClass("hidden");
+        });
       }
       e.stopPropagation();
     });
@@ -1919,7 +1890,7 @@ function saveMultipleInputFields() {
 }
 
 function formatMultipleInputFields(name) {
-  var multipleTxt = $("." + name + " input[type=text]:hidden");
+  var multipleTxt = $("." + name + " input[type=text]").filter(":hidden");;
   if (multipleTxt.val() == null) return;
 
   var allFields = $("input[type=text][id^='vrtx-" + name + "']");
@@ -1997,14 +1968,18 @@ function initSimplifiedPermissionForm() {
 function toggleConfigCustomPermissions(selectorClass) {
   var customInput = $("." + selectorClass + " ul.shortcuts label[for=custom] input");
   if (!customInput.is(":checked") && customInput.length) {
-    $("." + selectorClass).find(".principalList").hide(0);
+    $("." + selectorClass).find(".principalList").addClass("hidden");
   }
   vrtxAdmin.cachedAppContent.delegate("." + selectorClass + " ul.shortcuts label[for=custom]", "click", function (e) {
-    $(this).closest("form").find(".principalList:hidden").slideDown(vrtxAdmin.transitionCustomPermissionSpeed, vrtxAdmin.transitionEasingSlideDown);
+    $(this).closest("form").find(".principalList.hidden").slideDown(vrtxAdmin.transitionCustomPermissionSpeed, vrtxAdmin.transitionEasingSlideDown, function() {
+      $(this).removeClass("hidden");
+    });
     e.stopPropagation(); 
   });
   vrtxAdmin.cachedAppContent.delegate("." + selectorClass + " ul.shortcuts label:not([for=custom])", "click", function (e) {
-    $(this).closest("form").find(".principalList:visible").slideUp(vrtxAdmin.transitionCustomPermissionSpeed, vrtxAdmin.transitionEasingSlideUp);
+    $(this).closest("form").find(".principalList:not(.hidden)").slideUp(vrtxAdmin.transitionCustomPermissionSpeed, vrtxAdmin.transitionEasingSlideUp, function() {
+      $(this).addClass("hidden");
+    });
     e.stopPropagation(); 
   });
 }
@@ -2177,7 +2152,9 @@ function versioningInteraction(bodyId, vrtxAdm, _$) {
       vrtxAdm.serverFacade.postHtml(url, dataString, {
         success: function (results, status, resp) {
           var tr = form.closest("tr");
-          tr.prepareTableRowForSliding().hide(0).slideDown(0, "linear");
+          if(!vrtxAdm.isIE) {
+            tr.prepareTableRowForSliding().hide(0).slideDown(0, "linear");
+          }
           // Check when multiple animations are complete; credits: http://tinyurl.com/83oodnp
           var animA = tr.find("td").animate({paddingTop: '0px', paddingBottom: '0px'}, 
                                              vrtxAdm.transitionDropdownSpeed, vrtxAdm.transitionEasingSlideUp, _$.noop);
@@ -2412,7 +2389,7 @@ VrtxAdmin.prototype.addNewMarkup = function addNewMarkup(options, selectorClass,
   if(GET_FORM_ASYNCS_IN_PROGRESS) {
     GET_FORM_ASYNCS_IN_PROGRESS--;
   }
-  if(nodeType == "tr") {
+  if(nodeType == "tr" && !vrtxAdm.isIE) {
     _$(nodeType + "." + selectorClass).prepareTableRowForSliding();
   }
   _$(nodeType + "." + selectorClass).hide().slideDown(transitionSpeed, transitionEasingSlideDown, function() {
@@ -2964,6 +2941,8 @@ function readCookie(cookieName, defaultVal) {
  *  o http://www.bennadel.com/blog/1624-Ask-Ben-Overriding-Core-jQuery-Methods.htm
  */  
 
+if(!vrtxAdmin.isIE) {
+
 jQuery.fn.prepareTableRowForSliding = function() {
   $tr = this;
   $tr.children('td').wrapInner('<div style="display: none;" />');
@@ -2991,6 +2970,8 @@ jQuery.fn.slideDown = function(speed, easing, callback) {
     originalSlideDown.apply($trOrOtherElm, arguments);
   }
 };
+
+}
 
 $.cachedScript = function(url, options) {
   options = $.extend(options || {}, {

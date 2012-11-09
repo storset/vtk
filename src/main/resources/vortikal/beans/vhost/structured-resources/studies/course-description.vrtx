@@ -96,11 +96,11 @@ resourcetype course-description : fellestekst-document {
               <td><b>Semestersider</b> (undervisningstider, eksamensdato, pensum m.m.):
                 <ul>
                   [def uri resource-prop("./", "uri")]
-                  [def res search('uri=' + uri + '/* && type IN semester-context')]
-                  [list res re]
-                    [def url view-url(re)]
-                    [def title resource-prop(re, "semesterContext.semester")]
-                    <li class="vrtx-semesterside-1">
+                  [def semesters search('uri=' + uri + '/* && type IN semester-context')]
+                  [list semesters semester]
+                    [def url view-url(semester)]
+                    [def title resource-prop(semester, "semesterContext.semester")]
+                    <li>
                       <a href="[val url]">[if title != null && title != ""][val title][else][val url][endif]</a>
                     </li>
                   [endlist]
@@ -114,15 +114,30 @@ resourcetype course-description : fellestekst-document {
 
     academics-course-navigation {
         ##
-        <div class="engelsk">
-          [def uri resource-prop(".", "uri")]
-          [def uri uri.split('/')]
-          [def len (uri.length() - 1)]
-          --[val uri.4]--[val len]--
-          [def uri "./index-eng.html"]
-          [def file json-resource(uri)]
-          [if file != null]
-            <a href="http://www.uio.no/studier/emner/matnat/ifi/INF1000/index-eng.xml" class="vrtx-link-check">English version</a>
+        <div class="academics-course-navigation">
+          [def this-uri resource-prop(".", "uri")]
+          [def parent-uri resource-prop("./", "uri")]
+          [def content-locale resource-prop-obj-val(".", "contentLocale")]
+          [if content-locale != null && (content-locale = "no_NO" || content-locale = "no_NO_NY")]
+            [def resource resource(parent-uri + '/index-eng.html')]
+            [if resource != null]
+              [def resource-uri resource-prop(resource, "uri")]
+              [def resource-content-locale resource-prop-obj-val(resource, "contentLocale")]
+              [if resource-uri != this-uri && resource-content-locale = "en"]
+                [def view-eng view-url(resource)]
+                <a href="[val view-eng]" class="vrtx-link-check">[localized 'version-en']</a>
+              [endif]
+            [endif]
+          [elseif content-locale != null && content-locale = "en"]
+            [def resource resource(parent-uri + '/index.html')]
+            [if resource != null]
+              [def resource-uri resource-prop(resource, "uri")]
+              [def resource-content-locale resource-prop-obj-val(resource, "contentLocale")]
+              [if resource-uri != this-uri && (resource-content-locale = "no_NO" || resource-content-locale = "no_NO_NY")]
+                [def view-no view-url(resource)]
+                <a href="[val view-no]" class="vrtx-link-check">[localized 'version-no']</a>
+              [endif]
+            [endif]
           [endif]
         </div>
         ##
@@ -255,7 +270,9 @@ resourcetype course-description : fellestekst-document {
     header : (en : "Edit course", no : "Rediger emne", nn : "Rediger emne"),
     locale-no : (en : "Bokmål", no : "Bokmål", nn : "Bokmål"),
     locale-nn : (en : "Nynorsk", no : "Nynorsk", nn : "Nynorsk"),
-    locale-en : (en : "English", no : "Engelsk", nn : "Engelsk")
+    locale-en : (en : "English", no : "Engelsk", nn : "Engelsk"),
+    version-no : (en : "Norsk versjon", no : "Norsk versjon", nn : "Norsk versjon"),
+    version-en : (en : "English version", no : "English version", nn : "English version")
   }
   
 }

@@ -536,7 +536,7 @@ vrtxAdmin._$(document).ready(function () {
       });
     }
   
-    var privilegiesPermissionsInTable = ["add-comment", "read-processed"];
+    var privilegiesPermissionsInTable = ["add-comment", "read-processed", "read-write-unpublished"];
     for (i = privilegiesPermissionsInTable.length; i--;) {
       vrtxAdm.getFormAsync({
         selector: ".privilegeTable tr." + privilegiesPermissionsInTable[i] + " a.full-ajax",

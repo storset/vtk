@@ -533,6 +533,20 @@
     </property>
     <property name="handler" ref="editAddCommentPermissionsHandler" />
   </bean>
+  
+  <bean id="editReadWriteUnpublishedPermissionsService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="permissionsService" />
+    <property name="assertions">
+      <list>
+        <ref local="writeACLPermissionAssertion" />
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="action" />
+          <property name="parameterValue" value="edit-read-write-unpublished-permissions" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="editReadWriteUnpublishedPermissionsHandler" />
+  </bean>
 
   <!-- <bean id="editBindPermissionsService" class="org.vortikal.web.service.ServiceImpl"> <property name="parent" ref="permissionsService" 
     /> <property name="assertions"> <list> <ref local="writeACLPermissionAssertion" /> <bean class="org.vortikal.web.service.RequestParameterAssertion"> 
@@ -1025,6 +1039,12 @@
     <property name="privilege" value="ADD_COMMENT" />
     <property name="successView" value="redirectToPermissions" />
     <property name="commandName" value="permissionsForm_add-comment" />
+  </bean>
+  
+  <bean id="editReadWriteUnpublishedPermissionsHandler" parent="abstractPermissionsHandler">
+    <property name="privilege" value="READ_WRITE_UNPUBLISHED" />
+    <property name="successView" value="redirectToPermissions" />
+    <property name="commandName" value="permissionsForm_read-write-unpublished" />
   </bean>
 
   <bean id="permissionsHandler" class="org.vortikal.web.display.file.ResourceAwareParameterizableViewController">
@@ -1786,6 +1806,7 @@
         <entry key="ALL" value-ref="editAdminPermissionsService" />
         <entry key="ADD_COMMENT" value-ref="editAddCommentPermissionsService" />
         <entry key="READ_PROCESSED" value-ref="editReadProcessedPermissionsService" />
+        <entry key="READ_WRITE_UNPUBLISHED" value-ref="editReadWriteUnpublishedPermissionsService" />
       </map>
     </property>
     <property name="permissionShortcuts" ref="permissionShortcuts" />

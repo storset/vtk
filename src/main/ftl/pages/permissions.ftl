@@ -102,7 +102,13 @@
 
       <#assign commentHeading><@vrtx.msg code="permissions.privilege.add-comment" default="Add comments" /></#assign>
       <#assign readProHeading><@vrtx.msg code="permissions.privilege.read-processed" default="Read processed only" /></#assign>
-      <@permissions.editOrDisplayPrivileges privilegeList=[{"name":"add-comment", "heading":commentHeading }, {"name":"read-processed", "heading":readProHeading }] heading=groupHeading />
+      <#assign readWritePubHeading><@vrtx.msg code="permissions.privilege.read-write-publish" default="Read, write and publish" /></#assign>
+      
+      <@permissions.editOrDisplayPrivileges privilegeList=[ 
+                                 {"name":"add-comment", "heading":commentHeading }, 
+                                 {"name":"read-processed", "heading":readProHeading },
+                                 {"name":"read-write-unpublished", "heading":readWritePubHeading }
+                               ] heading=groupHeading />
 
     </div>
   </body>

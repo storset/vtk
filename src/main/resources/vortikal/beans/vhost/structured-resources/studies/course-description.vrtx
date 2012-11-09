@@ -47,26 +47,26 @@ resourcetype course-description : fellestekst-document {
             </tr>
             <tr valign="top">
               <td>Studiepoeng:</td>
-              <td>[val credits][if creditsdecimal != null && creditsdecimal != "" && creditsdecimal != "0"],[val creditsdecimal][endif]</td>
+              <td>[if credits != null][val credits][if creditsdecimal != null && creditsdecimal != "" && creditsdecimal != "0"],[val creditsdecimal][endif][endif]</td>
             </tr>
             <tr valign="top">
               <td>Undervises:</td>
               [if teachingsemester != null && teachingsemester = "particular-semester"]
-                <td>[val teachingsemester-particular-semester]</td>
+                <td>[if teachingsemester-particular-semester != null][val teachingsemester-particular-semester][endif]</td>
               [elseif teachingsemester != null && teachingsemester = "other"]
                 <td>[val teachingsemester-other # unescaped]</td>
               [else]
-                <td>[val teachingsemester]</td>
+                <td>[if teachingsemester != null][val teachingsemester][endif]</td>
               [endif]
             </tr>
             <tr valign="top">
               <td>Eksamen:</td>
               [if examsemester != null && examsemester = "particular-semester"]
-                <td>[val examsemester-particular-semester]</td>
+                <td>[if examsemester-particular-semester != null][val examsemester-particular-semester][endif]</td>
               [elseif examsemester != null && examsemester = "other"]
                 <td>[val examsemester-other # unescaped]</td>
               [else]
-                <td>[val examsemester]</td>
+                <td>[if examsemester != null][val examsemester][endif]</td>
               [endif]
             </tr>
             <tr valign="top">
@@ -97,6 +97,9 @@ resourcetype course-description : fellestekst-document {
                 <ul>
                   [def uri resource-prop("./", "uri")]
                   [def semesters search('uri=' + uri + '/* && type IN semester-context')]
+                  [if typeof(semesterSearchSort) = 'function']
+                    [def semesters semesterSearchSort(semesters)]
+                  [endif] 
                   [list semesters semester]
                     [def url view-url(semester)]
                     [def title resource-prop(semester, "semesterContext.semester")]

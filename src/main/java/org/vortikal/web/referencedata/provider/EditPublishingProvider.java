@@ -35,6 +35,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Required;
+import org.vortikal.repository.AuthorizationException;
+import org.vortikal.repository.AuthorizationManager;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
@@ -53,6 +55,7 @@ public class EditPublishingProvider implements ReferenceDataProvider {
     private Service editPublishDateService;
     private Service editUnpublishDateService;
     private PropertyTypeDefinition publishedPropDef;
+    private AuthorizationManager authorizationManager;
 
     @Override
     public void referenceData(Map<String, Object> model, HttpServletRequest request) throws Exception {
@@ -65,37 +68,47 @@ public class EditPublishingProvider implements ReferenceDataProvider {
         Property publishedProp = resource.getProperty(this.publishedPropDef);
 
         Principal principal = requestContext.getPrincipal();
+        
+		try {
+			authorizationManager.authorizePublishUnpublish(resource.getURI(), principal);
 
-        URL editPublishDateUrl = null;
-        try {
-            editPublishDateUrl = this.editPublishDateService.constructURL(resource, principal);
-        } catch (Throwable t) { }
-        model.put("editPublishDateUrl", editPublishDateUrl);
+			URL editPublishDateUrl = null;
+			try {
+				authorizationManager.authorizePublishUnpublish(
+						resource.getURI(), principal);
+				editPublishDateUrl = this.editPublishDateService.constructURL(
+						resource, principal);
+			} catch (Throwable t) {
+			}
+			model.put("editPublishDateUrl", editPublishDateUrl);
 
-        URL editUnpublishDateUrl = null;
-        try {
-            editUnpublishDateUrl = this.editUnpublishDateService.constructURL(resource, principal);
-        } catch (Throwable t) { }
-        model.put("editUnpublishDateUrl", editUnpublishDateUrl);
+			URL editUnpublishDateUrl = null;
+			try {
+				editUnpublishDateUrl = this.editUnpublishDateService.constructURL(resource, principal);
+			} catch (Throwable t) {
+			}
+			model.put("editUnpublishDateUrl", editUnpublishDateUrl);
 
-        if (publishedProp != null && publishedProp.getBooleanValue()) {
+			if (publishedProp != null && publishedProp.getBooleanValue()) {
 
-            URL unPublishUrl = null;
-            try {
-                unPublishUrl = this.unpublishResourceService.constructURL(resource, principal);
-            } catch (Throwable t) { }
-            model.put("unPublishUrl", unPublishUrl);
-        } else {
-            URL publishUrl = null;
-            try {
-                publishUrl = this.publishResourceService.constructURL(resource, principal);
-            } catch (Throwable t) { }
-            model.put("publishUrl", publishUrl);
-        }
-
+				URL unPublishUrl = null;
+				try {
+					unPublishUrl = this.unpublishResourceService.constructURL(resource, principal);
+				} catch (Throwable t) {
+				}
+				model.put("unPublishUrl", unPublishUrl);
+			} else {
+				URL publishUrl = null;
+				try {
+					publishUrl = this.publishResourceService.constructURL(resource, principal);
+				} catch (Throwable t) {
+				}
+				model.put("publishUrl", publishUrl);
+			}
+		} catch (AuthorizationException authorEx) {}
     }
 
-    @Required
+	@Required
     public void setPublishResourceService(Service publishResourceService) {
         this.publishResourceService = publishResourceService;
     }
@@ -119,5 +132,10 @@ public class EditPublishingProvider implements ReferenceDataProvider {
     public void setPublishedPropDef(PropertyTypeDefinition publishedPropDef) {
         this.publishedPropDef = publishedPropDef;
     }
+    
+    @Required
+    public void setAuthorizationManager(AuthorizationManager authorizationManager) {
+		this.authorizationManager = authorizationManager;
+	}
 
 }

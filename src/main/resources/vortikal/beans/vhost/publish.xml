@@ -385,6 +385,7 @@
     <property name="editPublishDateService" ref="editPublishDateService" />
     <property name="editUnpublishDateService" ref="editUnpublishDateService" />
     <property name="publishedPropDef" ref="publishedPropDef" />
+    <property name="authorizationManager" ref="authorizationManager" />
   </bean>
 
   <bean class="org.springframework.context.support.ResourceBundleMessageSource">

@@ -31,9 +31,11 @@
 
 package org.vortikal.repository.resourcetype.property;
 
+
 import org.springframework.beans.factory.annotation.Required;
+import org.vortikal.repository.Acl;
 import org.vortikal.repository.AuthorizationManager;
-import org.vortikal.repository.Path;
+import org.vortikal.repository.Privilege;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertyEvaluationContext;
 import org.vortikal.repository.PropertyEvaluationContext.Type;
@@ -53,14 +55,11 @@ public class PublishDefaultValueEvaluator implements PropertyEvaluator {
         if (ctx.getEvaluationType() != Type.Create) {
             return property.isValueInitialized();
         }
-        
-        Path resourceUri = ctx.getNewResource().getURI();
-        try {
-            authorizationManager.authorizePublishUnpublish(resourceUri, ctx.getPrincipal());
-            property.setBooleanValue(true);
-        } catch (Exception e) {
-            property.setBooleanValue(false);
-        }
+
+        boolean authorized = authorizationManager.authorize(ctx.getPrincipal(),
+                                                            ctx.getNewResource().getAcl(),
+                                                            Privilege.READ_WRITE);
+        property.setBooleanValue(authorized);
         
         return true;
     }

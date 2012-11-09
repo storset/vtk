@@ -371,26 +371,27 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         
         checkMaxChildren(parent);
 
-        ResourceImpl newResource = new ResourceImpl(uri);
-        newResource.setChildURIs(new ArrayList<Path>());
-        Content content = getContent(newResource);
-        newResource = this.resourceHelper.create(principal, newResource, true, content);
-
         try {
             // Content modification on parent for bind
             final ResourceImpl originalParent = (ResourceImpl) parent.clone();
             parent.addChildURI(uri);
 
-            content = getContent(parent);
+            Content content = getContent(parent);
             parent = this.resourceHelper.contentModification(parent, principal, content);
             parent = this.dao.store(parent);
             this.context.publishEvent(new ContentModificationEvent(this, (Resource) parent.clone(), originalParent));
 
-            // Store new resource
+            // Create on new collection resource
+            ResourceImpl newResource = new ResourceImpl(uri);
+            newResource.setChildURIs(new ArrayList<Path>());
+            content = getContent(newResource);
             newResource.setAcl(parent.getAcl());
             newResource.setInheritedAcl(true);
             int aclIneritedFrom = parent.isInheritedAcl() ? parent.getAclInheritedFrom() : parent.getID();
             newResource.setAclInheritedFrom(aclIneritedFrom);
+            newResource = this.resourceHelper.create(principal, newResource, true, content);
+            
+            // Store new collection resource
             newResource = this.dao.store(newResource);
             this.contentStore.createResource(newResource.getURI(), true);
 
@@ -935,27 +936,26 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         checkMaxChildren(parent);
 
         try {
-            this.contentStore.storeContent(uri, inStream);
-            ResourceImpl newResource = new ResourceImpl(uri);
-            Content content = getContent(newResource);
-            newResource = this.resourceHelper.create(principal, newResource, false, content);
-
-            // Content modification on parent
+            // Store content modification on parent
             final ResourceImpl originalParent = (ResourceImpl) parent.clone();
             parent.addChildURI(uri);
-            content = getContent(parent);
+            Content content = getContent(parent);
             parent = this.resourceHelper.contentModification(parent, principal, content);
             parent = this.dao.store(parent);
             this.context.publishEvent(new ContentModificationEvent(this, (Resource) parent.clone(), originalParent));
 
-            // Store new resource
+            // Set up new resource
+            this.contentStore.storeContent(uri, inStream);
+            ResourceImpl newResource = new ResourceImpl(uri);
+            content = getContent(newResource);
             newResource.setAcl(parent.getAcl());
             newResource.setInheritedAcl(true);
             int aclIneritedFrom = parent.isInheritedAcl() ? parent.getAclInheritedFrom() : parent.getID();
             newResource.setAclInheritedFrom(aclIneritedFrom);
-
+            newResource = this.resourceHelper.create(principal, newResource, false, content);
+            
+            // Store new resource
             newResource = this.dao.store(newResource);
-
             this.context.publishEvent(new ResourceCreationEvent(this, (Resource) newResource.clone()));
 
             return (Resource) newResource.clone();

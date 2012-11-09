@@ -72,39 +72,35 @@ public class EditPublishingProvider implements ReferenceDataProvider {
         try {
             authorizationManager.authorizePublishUnpublish(resource.getURI(), principal);
 
+            // Continue if authorized to publish and unpublished
+            
             URL editPublishDateUrl = null;
             try {
                 authorizationManager.authorizePublishUnpublish(resource.getURI(), principal);
                 editPublishDateUrl = this.editPublishDateService.constructURL(resource, principal);
-            } catch (Throwable t) {
-            }
+            } catch (Throwable t) {}
             model.put("editPublishDateUrl", editPublishDateUrl);
 
             URL editUnpublishDateUrl = null;
             try {
                 editUnpublishDateUrl = this.editUnpublishDateService.constructURL(resource, principal);
-            } catch (Throwable t) {
-            }
+            } catch (Throwable t) {}
             model.put("editUnpublishDateUrl", editUnpublishDateUrl);
 
             if (publishedProp != null && publishedProp.getBooleanValue()) {
-
                 URL unPublishUrl = null;
                 try {
                     unPublishUrl = this.unpublishResourceService.constructURL(resource, principal);
-                } catch (Throwable t) {
-                }
+                } catch (Throwable t) {}
                 model.put("unPublishUrl", unPublishUrl);
             } else {
                 URL publishUrl = null;
                 try {
                     publishUrl = this.publishResourceService.constructURL(resource, principal);
-                } catch (Throwable t) {
-                }
+                } catch (Throwable t) {}
                 model.put("publishUrl", publishUrl);
             }
-        } catch (AuthorizationException authorEx) {
-        }
+        } catch (AuthorizationException authorEx) {}
     }
 
 	@Required

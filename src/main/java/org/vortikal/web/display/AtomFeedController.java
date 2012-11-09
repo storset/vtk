@@ -213,7 +213,11 @@ public abstract class AtomFeedController implements Controller {
 
             Property publishDate = getPublishDate(result);
             if (publishDate != null) {
-                entry.setPublished(publishDate.getDateValue());
+                Date publishedDateVal = publishDate.getDateValue();
+                entry.setPublished(publishedDateVal);
+                if (publishedDateVal.after(feed.getUpdated())) {
+                    feed.setUpdated(publishedDateVal);
+                }
             }
 
             Date updated = getLastModified(result);

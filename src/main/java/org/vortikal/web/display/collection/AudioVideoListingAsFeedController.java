@@ -30,6 +30,8 @@
  */
 package org.vortikal.web.display.collection;
 
+import java.util.Date;
+
 import org.apache.abdera.Abdera;
 import org.apache.abdera.model.Entry;
 import org.apache.abdera.model.Feed;
@@ -90,7 +92,11 @@ public class AudioVideoListingAsFeedController extends CollectionListingAsAtomFe
 
             Property updated = result.getProperty(this.lastModifiedPropDef);
             if (updated != null) {
-                entry.setUpdated(updated.getDateValue());
+                Date updatedVal = updated.getDateValue();
+                entry.setUpdated(updatedVal);
+                if (updatedVal.after(feed.getUpdated())) {
+                    feed.setUpdated(updatedVal);
+                }
             }
 
             Property author = this.getProperty(result, "resource:author");

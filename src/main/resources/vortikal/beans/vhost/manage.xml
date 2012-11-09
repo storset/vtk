@@ -1961,8 +1961,7 @@
   </bean>
   
   <bean id="bindPermissionAssertion" parent="abstractResourcePrincipalPermissionAssertion">
-    <property name="permission" value="CREATE" />
-    <property name="unpublishedPermission" value="CREATE_UNPUBLISHED" />
+    <property name="permission" value="CREATE_UNPUBLISHED" />
   </bean>
 
   <bean id="writeACLPermissionAssertion" parent="abstractResourcePrincipalPermissionAssertion">

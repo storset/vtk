@@ -68,44 +68,43 @@ public class EditPublishingProvider implements ReferenceDataProvider {
         Property publishedProp = resource.getProperty(this.publishedPropDef);
 
         Principal principal = requestContext.getPrincipal();
-        
-		try {
-			authorizationManager.authorizePublishUnpublish(resource.getURI(), principal);
 
-			URL editPublishDateUrl = null;
-			try {
-				authorizationManager.authorizePublishUnpublish(
-						resource.getURI(), principal);
-				editPublishDateUrl = this.editPublishDateService.constructURL(
-						resource, principal);
-			} catch (Throwable t) {
-			}
-			model.put("editPublishDateUrl", editPublishDateUrl);
+        try {
+            authorizationManager.authorizePublishUnpublish(resource.getURI(), principal);
 
-			URL editUnpublishDateUrl = null;
-			try {
-				editUnpublishDateUrl = this.editUnpublishDateService.constructURL(resource, principal);
-			} catch (Throwable t) {
-			}
-			model.put("editUnpublishDateUrl", editUnpublishDateUrl);
+            URL editPublishDateUrl = null;
+            try {
+                authorizationManager.authorizePublishUnpublish(resource.getURI(), principal);
+                editPublishDateUrl = this.editPublishDateService.constructURL(resource, principal);
+            } catch (Throwable t) {
+            }
+            model.put("editPublishDateUrl", editPublishDateUrl);
 
-			if (publishedProp != null && publishedProp.getBooleanValue()) {
+            URL editUnpublishDateUrl = null;
+            try {
+                editUnpublishDateUrl = this.editUnpublishDateService.constructURL(resource, principal);
+            } catch (Throwable t) {
+            }
+            model.put("editUnpublishDateUrl", editUnpublishDateUrl);
 
-				URL unPublishUrl = null;
-				try {
-					unPublishUrl = this.unpublishResourceService.constructURL(resource, principal);
-				} catch (Throwable t) {
-				}
-				model.put("unPublishUrl", unPublishUrl);
-			} else {
-				URL publishUrl = null;
-				try {
-					publishUrl = this.publishResourceService.constructURL(resource, principal);
-				} catch (Throwable t) {
-				}
-				model.put("publishUrl", publishUrl);
-			}
-		} catch (AuthorizationException authorEx) {}
+            if (publishedProp != null && publishedProp.getBooleanValue()) {
+
+                URL unPublishUrl = null;
+                try {
+                    unPublishUrl = this.unpublishResourceService.constructURL(resource, principal);
+                } catch (Throwable t) {
+                }
+                model.put("unPublishUrl", unPublishUrl);
+            } else {
+                URL publishUrl = null;
+                try {
+                    publishUrl = this.publishResourceService.constructURL(resource, principal);
+                } catch (Throwable t) {
+                }
+                model.put("publishUrl", publishUrl);
+            }
+        } catch (AuthorizationException authorEx) {
+        }
     }
 
 	@Required

@@ -183,11 +183,6 @@ public abstract class AtomFeedController implements Controller {
                 feed.setLogo(val);
             }
         }
-
-        Date lastModified = getLastModified(collection);
-        if (lastModified != null) {
-            feed.setUpdated(lastModified);
-        }
         return feed;
     }
 
@@ -213,11 +208,7 @@ public abstract class AtomFeedController implements Controller {
 
             Property publishDate = getPublishDate(result);
             if (publishDate != null) {
-                Date publishedDateVal = publishDate.getDateValue();
-                entry.setPublished(publishedDateVal);
-                if (publishedDateVal.after(feed.getUpdated())) {
-                    feed.setUpdated(publishedDateVal);
-                }
+                entry.setPublished(publishDate.getDateValue());
             }
 
             Date updated = getLastModified(result);

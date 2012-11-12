@@ -90,8 +90,6 @@ public class PublishResourceController extends SimpleFormController implements I
         String token = requestContext.getSecurityToken();
         Path resourceURI = RequestContext.getRequestContext().getResourceURI();
         Resource resource = repository.retrieve(token, resourceURI, true);
-        
-        System.out.println("_______________________________________HELLO");
 
         PublishResourceCommand publishResourceCommand = (PublishResourceCommand) command;
 

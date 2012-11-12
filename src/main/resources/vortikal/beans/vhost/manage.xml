@@ -1933,6 +1933,11 @@
     <property name="permission" value="READ" />
   </bean>
   
+  <bean id="requiresPublishUnpublishPermissionAssertion" parent="abstractResourcePrincipalPermissionAssertion">
+    <property name="requiresAuthentication" value="true" />
+    <property name="permission" value="PUBLISH_UNPUBLISH" />
+  </bean>
+  
   <bean id="requiresReadParentPermissionAssertion" parent="abstractResourcePrincipalPermissionAssertion">
     <property name="parent" value="true" />
     <property name="requiresAuthentication" value="true" />

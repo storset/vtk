@@ -7,7 +7,6 @@
     <property name="parent" ref="manageService" />
     <property name="assertions">
       <list>
-        <ref bean="structuredResources.typeAssertion" />
         <ref bean="resourceIsNotPublishedAssertion" />
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
           <property name="parameterName" value="action" />
@@ -34,7 +33,6 @@
     <property name="parent" ref="manageService" />
     <property name="assertions">
       <list>
-        <ref bean="structuredResources.typeAssertion" />
         <ref bean="resourceIsPublishedAssertion" />
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
           <property name="parameterName" value="action" />
@@ -72,8 +70,7 @@
     <property name="parent" ref="manageService" />
     <property name="assertions">
       <list>
-        <ref bean="writePermissionAssertion" />
-        <ref bean="structuredResources.typeAssertion" />
+        <ref bean="requiresPublishUnpublishPermissionAssertion" />
         <ref bean="resourceIsNotPublishedAssertion" />
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
           <property name="parameterName" value="action" />
@@ -93,8 +90,7 @@
     <property name="parent" ref="manageService" />
     <property name="assertions">
       <list>
-        <ref bean="writePermissionAssertion" />
-        <ref bean="structuredResources.typeAssertion" />
+        <ref bean="requiresPublishUnpublishPermissionAssertion" />
         <ref bean="resourceIsPublishedAssertion" />
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
           <property name="parameterName" value="action" />
@@ -172,7 +168,7 @@
     <property name="order" value="480" />
     <property name="assertions">
       <list>
-        <ref bean="writePermissionAssertion" />
+        <ref bean="requiresPublishUnpublishPermissionAssertion" />
         <ref bean="manage.postRequestAssertion" />
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
           <property name="parameterName" value="action" />
@@ -188,7 +184,7 @@
     <property name="order" value="480" />
     <property name="assertions">
       <list>
-        <ref bean="writePermissionAssertion" />
+        <ref bean="requiresPublishUnpublishPermissionAssertion" />
         <ref bean="manage.postRequestAssertion" />
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
           <property name="parameterName" value="action" />
@@ -298,7 +294,7 @@
     </property>
     <property name="assertions">
       <list>
-        <ref bean="structuredResources.typeAssertion" />
+        <ref bean="requiresReadPermissionAssertion" />
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
           <property name="parameterName" value="mode" />
           <property name="parameterValue" value="publishing" />
@@ -316,7 +312,8 @@
     <property name="parent" ref="publish.editPublishingService" />
     <property name="assertions">
       <list>
-        <ref bean="writePermissionAssertion" />
+        <ref bean="requiresPublishUnpublishPermissionAssertion" />
+        <ref bean="structuredResources.typeAssertion" />
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
           <property name="parameterName" value="action" />
           <property name="parameterValue" value="edit-publish-date" />
@@ -330,7 +327,8 @@
     <property name="parent" ref="publish.editPublishingService" />
     <property name="assertions">
       <list>
-        <ref bean="writePermissionAssertion" />
+        <ref bean="requiresPublishUnpublishPermissionAssertion" />
+        <ref bean="structuredResources.typeAssertion" />
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
           <property name="parameterName" value="action" />
           <property name="parameterValue" value="edit-unpublish-date" />
@@ -385,7 +383,6 @@
     <property name="editPublishDateService" ref="editPublishDateService" />
     <property name="editUnpublishDateService" ref="editUnpublishDateService" />
     <property name="publishedPropDef" ref="publishedPropDef" />
-    <property name="authorizationManager" ref="authorizationManager" />
   </bean>
 
   <bean class="org.springframework.context.support.ResourceBundleMessageSource">

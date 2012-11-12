@@ -50,6 +50,8 @@ public class SemesterSearchSortProvider extends Function {
     @Override
     public Object eval(Context ctx, Object... args) {
         Object arg = args[0];
+        
+        @SuppressWarnings("unchecked")
         Iterator<PropertySet> it = (Iterator<PropertySet>) arg;
         List<PropertySet> sorted = new ArrayList<PropertySet>();
 

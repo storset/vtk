@@ -7,6 +7,7 @@
     <property name="parent" ref="manageService" />
     <property name="assertions">
       <list>
+        <ref bean="requiresPublishUnpublishPermissionAssertion" />
         <ref bean="resourceIsNotPublishedAssertion" />
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
           <property name="parameterName" value="action" />
@@ -33,6 +34,7 @@
     <property name="parent" ref="manageService" />
     <property name="assertions">
       <list>
+        <ref bean="requiresPublishUnpublishPermissionAssertion" />
         <ref bean="resourceIsPublishedAssertion" />
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
           <property name="parameterName" value="action" />
@@ -138,6 +140,7 @@
     <property name="order" value="490" />
     <property name="assertions">
       <list>
+        <ref bean="requiresPublishUnpublishPermissionAssertion" />
         <ref bean="manage.postRequestAssertion" />
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
           <property name="parameterName" value="action" />
@@ -153,6 +156,7 @@
     <property name="order" value="490" />
     <property name="assertions">
       <list>
+        <ref bean="requiresPublishUnpublishPermissionAssertion" />
         <ref bean="manage.postRequestAssertion" />
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
           <property name="parameterName" value="action" />

@@ -65,7 +65,7 @@
           var ok = performSave();
           if(!ok) return false;
           if(typeof vrtxImageEditor !== "undefined" && vrtxImageEditor.save && !vrtxImageEditor.savedImage) {
-            vrtxImageEditor.save(_$.single(this).attr("id"));
+            vrtxImageEditor.save(_$(this).attr("id"));
             e.preventDefault();
           }
         });

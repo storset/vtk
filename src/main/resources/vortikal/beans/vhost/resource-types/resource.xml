@@ -267,17 +267,19 @@
       </bean>
     </property>
   </bean>
-  
-  <bean id="publishedPropDef" class="org.vortikal.repository.resourcetype.OverridablePropertyTypeDefinitionImpl"
+
+  <!-- Published property. Always evaluated based on publish/unpublish-date props. Uneditable. -->  
+  <bean id="publishedPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
     parent="abstractPropDef">
     <property name="name" value="published" />
     <property name="type" value="BOOLEAN" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="true" />
-    <property name="defaultValue" ref="VALUE_TRUE" />
+    <property name="defaultValue" ref="VALUE_FALSE" />
     <property name="propertyEvaluator">
-      <bean class="org.vortikal.repository.resourcetype.property.PublishDefaultValueEvaluator">
-        <property name="authorizationManager" ref="authorizationManager" />
+      <bean class="org.vortikal.repository.resourcetype.property.PublishEvaluator">
+        <property name="publishDatePropDef" ref="publishDatePropDef" />
+        <property name="unpublishDatePropDef" ref="unpublishDatePropDef" />
       </bean>
     </property>
   </bean>
@@ -295,11 +297,13 @@
     <property name="name" value="unpublish-date" />
     <property name="type" value="TIMESTAMP" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
+    <!-- TODO: needs evaluator ! -->
   </bean>
   
   <bean id="publishDateEvaluator" class="org.vortikal.repository.resourcetype.property.PublishDateEvaluator">
-    <!-- Evaluates to creationTime on CONTENT_CHANGE (for collections on CREATE) -->
     <property name="creationTimePropDef" ref="creationTimePropDef" />
+    <property name="authorizationManager" ref="authorizationManager" />
+    <property name="removeValueOnCreate" value="false" />
   </bean>
 
   <bean id="resourceAspectsPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"

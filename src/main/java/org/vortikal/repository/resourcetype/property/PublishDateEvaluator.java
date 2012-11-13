@@ -31,6 +31,9 @@
 package org.vortikal.repository.resourcetype.property;
 
 import org.springframework.beans.factory.annotation.Required;
+import org.vortikal.repository.Acl;
+import org.vortikal.repository.AuthorizationManager;
+import org.vortikal.repository.Privilege;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertyEvaluationContext;
 import org.vortikal.repository.PropertyEvaluationContext.Type;
@@ -40,18 +43,44 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 public class PublishDateEvaluator implements PropertyEvaluator {
 
     private PropertyTypeDefinition creationTimePropDef;
+    private AuthorizationManager authorizationManager;
+    
+    private boolean removeValueOnCreate = false;
     
     @Override
     public boolean evaluate(Property property, PropertyEvaluationContext ctx)
             throws PropertyEvaluationException {
+        
         Property creationTimeProp = ctx.getNewResource().getProperty(this.creationTimePropDef);
         if (creationTimeProp == null) {
             throw new PropertyEvaluationException("creationTimePropDef needed for evaluation");
         }
+        
         if (ctx.getEvaluationType() == Type.Create) {
+            if (removeValueOnCreate) {
+                return false;
+            }
+            
+            boolean authorizedToPublish = authorizationManager.authorize(ctx.getPrincipal(),
+                                ctx.getNewResource().getAcl(), Privilege.READ_WRITE);
+            
+            if (!authorizedToPublish) {
+                return false;
+            }
+            
             property.setDateValue(creationTimeProp.getDateValue());
             return true;
         }
+
+        // Logic below for any evaluation type except Create:
+        
+        // If publish-unpublish is not allowed, then we do not change the value.
+        try {
+            authorizationManager.authorizePublishUnpublish(ctx.getNewResource().getURI(), ctx.getPrincipal());
+        } catch (Exception e) {
+            return property.isValueInitialized();
+        }
+        
         Property existing = ctx.getOriginalResource().getProperty(property.getDefinition());
         if (existing != null && ctx.getEvaluationType() == Type.ContentChange) {
             // If existing published date < creation time, update it:
@@ -70,4 +99,12 @@ public class PublishDateEvaluator implements PropertyEvaluator {
         this.creationTimePropDef = creationTimePropDef;
     }
 
+    @Required
+    public void setAuthorizationManager(AuthorizationManager authorizationManager) {
+        this.authorizationManager = authorizationManager;
+    }
+
+    public void setRemoveValueOnCreate(boolean removeValueOnCreate) {
+        this.removeValueOnCreate = removeValueOnCreate;
+    }
 }

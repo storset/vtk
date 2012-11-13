@@ -43,24 +43,11 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 
 public class PublishEvaluator implements PropertyEvaluator {
 
-    private AuthorizationManager authorizationManager;
-    
     private PropertyTypeDefinition publishDatePropDef;
     private PropertyTypeDefinition unpublishDatePropDef;
 
     @Override
     public boolean evaluate(Property property, PropertyEvaluationContext ctx) throws PropertyEvaluationException {
-
-        if (ctx.getEvaluationType() == Type.Create) {
-            return false;
-        }
-        
-        // If publish-unpublish is not allowed, then we do not change the value.
-        try {
-            authorizationManager.authorizePublishUnpublish(ctx.getNewResource().getURI(), ctx.getPrincipal());
-        } catch (Exception e) {
-            return property.isValueInitialized();
-        }
 
         Property publishDateProp = ctx.getNewResource().getProperty(this.publishDatePropDef);
         Property unpublishDateProp = ctx.getNewResource().getProperty(this.unpublishDatePropDef);
@@ -75,6 +62,7 @@ public class PublishEvaluator implements PropertyEvaluator {
                     
                     // XXX: deleting a property that is not evaluated by this evaluator:
                     ctx.getNewResource().removeProperty(this.unpublishDatePropDef);
+                    
                     return true;
                 } else if (unpublishDate.before(now)) {
                     property.setBooleanValue(false);
@@ -95,7 +83,6 @@ public class PublishEvaluator implements PropertyEvaluator {
         }
 
         return false;
-
     }
 
     @Required
@@ -106,11 +93,6 @@ public class PublishEvaluator implements PropertyEvaluator {
     @Required
     public void setUnpublishDatePropDef(PropertyTypeDefinition unpublishDatePropDef) {
         this.unpublishDatePropDef = unpublishDatePropDef;
-    }
-
-    @Required
-    public void setAuthorizationManager(AuthorizationManager authorizationManager) {
-        this.authorizationManager = authorizationManager;
     }
 
 }

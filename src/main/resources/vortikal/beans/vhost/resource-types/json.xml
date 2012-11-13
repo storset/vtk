@@ -18,7 +18,6 @@
         <ref bean="jsonOverriddenGuessedCharacterEncodingPropDef" />
         <ref bean="jsonOverriddenCharacterEncodingPropDef" />
         <ref bean="overridingPublishDatePropDef" />
-        <ref bean="overridingPublishedPropDef" />
       </list>
     </property>
   </bean>
@@ -80,26 +79,18 @@
     <property name="resourceTypeDefinition" ref="json.managedObjectResourceType" />
   </bean>
 
-
+  <!-- Override publish date prop, so we can configure a different evaluator instance
+       which defaults to no value on create.
+       Structured resources should not be published by default. -->
   <bean id="overridingPublishDatePropDef" class="org.vortikal.repository.resourcetype.OverridingPropertyTypeDefinitionImpl">
     <property name="overriddenPropDef" ref="publishDatePropDef" />
-      <!-- NullEvaluator removes the property evaluated the first time by publishDateEvaluator (on CREATE) -->
     <property name="propertyEvaluator">
-      <bean class="org.vortikal.repository.resourcetype.property.NullEvaluator">
+      <bean id="publishDateEvaluator" class="org.vortikal.repository.resourcetype.property.PublishDateEvaluator">
+        <property name="creationTimePropDef" ref="creationTimePropDef" />
+        <property name="authorizationManager" ref="authorizationManager" />
+        <property name="removeValueOnCreate" value="true" />
       </bean>
     </property>
-  </bean>
-
-  <bean id="overridingPublishedPropDef" class="org.vortikal.repository.resourcetype.OverridingPropertyTypeDefinitionImpl">
-    <property name="overriddenPropDef" ref="publishedPropDef" />
-    <property name="defaultValue" ref="VALUE_FALSE" />
-    <property name="propertyEvaluator" ref="publishEvaluator" />
-  </bean>
-
-  <bean id="publishEvaluator" class="org.vortikal.repository.resourcetype.property.PublishEvaluator">
-    <property name="publishDatePropDef" ref="publishDatePropDef" />
-    <property name="unpublishDatePropDef" ref="unpublishDatePropDef" />
-    <property name="authorizationManager" ref="authorizationManager" />
   </bean>
 
 </beans>

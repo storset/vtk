@@ -55,6 +55,8 @@ public class DeletePublishUnpublishHelper {
     protected final String unpublishMsgKey = "manage.unpublish.error.";
     
     private static Log logger = LogFactory.getLog(DeletePublishUnpublishHelper.class);
+    
+    // TODO: Refactor try-catch-stuff
 
     public void deleteResource(Repository repository, String token, Path uri, boolean recoverable,
             Map<String, List<Path>> failures) {

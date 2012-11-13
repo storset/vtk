@@ -17,7 +17,7 @@
           <property name="parameterName" value="action" />
           <property name="parameterValue" value="delete-resources" />
         </bean>
-        <ref bean="writePermissionAssertion" />
+        <ref bean="writeUnpublishedPermissionAssertion" />
         <ref bean="resourceInCollection" />
       </list>
     </property>

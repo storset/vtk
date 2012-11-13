@@ -1950,17 +1950,19 @@
     <property name="unpublishedPermission" value="READ_WRITE_UNPUBLISHED" />
   </bean>
 
-  <!-- TODO We probably require only DELETE_UNPUBLISHED here (symmetric with create), otherwise
-            this assertion does not match for published collections containing unpublished children. -->
   <bean id="deleteResourcePermissionAssertion" parent="abstractResourcePrincipalPermissionAssertion">
-    <property name="permission" value="DELETE" />
     <property name="requiresAuthentication" value="true" />
+    <property name="permission" value="DELETE" />
     <property name="unpublishedPermission" value="DELETE_UNPUBLISHED" />
   </bean>
 
   <bean id="writePermissionAssertion" parent="abstractResourcePrincipalPermissionAssertion">
     <property name="permission" value="WRITE" />
     <property name="unpublishedPermission" value="READ_WRITE_UNPUBLISHED" />
+  </bean>
+  
+  <bean id="writeUnpublishedPermissionAssertion" parent="abstractResourcePrincipalPermissionAssertion">
+    <property name="permission" value="READ_WRITE_UNPUBLISHED" />
   </bean>
   
   <bean id="writeParentPermissionAssertion" parent="abstractResourcePrincipalPermissionAssertion">

@@ -1424,6 +1424,8 @@ VrtxAdmin.prototype.placeCopyMoveButtonInActiveTab = function placeCopyMoveButto
   });
 };
 
+// TODO: Refactor delete, publish, unpublish and delete-permanently
+
 VrtxAdmin.prototype.placeDeleteButtonInActiveTab = function placeDeleteButtonInActiveTab() {
   var vrtxAdm = this, _$ = vrtxAdm._$;
 
@@ -1449,7 +1451,7 @@ VrtxAdmin.prototype.placeDeleteButtonInActiveTab = function placeDeleteButtonInA
       }
       list += "</ul>"; 
       if (boxesSize > 10) {
-        list += "... " + confirmDeleteAnd + " " + (boxesSize - 10) + " " + confirmDeleteMore;
+        list += "... " + confirmAnd + " " + (boxesSize - 10) + " " + confirmMore;
       }
       vrtxSimpleDialogs.openConfirmDialog(confirmDelete.replace("(1)", boxesSize) + '<br />' + list, confirmDeleteTitle, function() {
         vrtxAdm.cachedAppContent.find('#collectionListing\\.action\\.delete-resources').click();
@@ -1479,7 +1481,7 @@ VrtxAdmin.prototype.placePublishButtonInActiveTab = function placeDeleteButtonIn
     var boxes = vrtxAdm.cachedDirectoryListing.find('td input[type=checkbox]:checked');
     if (!boxes.length) {
       //alert(deleteUncheckedMessage);
-      vrtxSimpleDialogs.openMsgDialog(deleteUncheckedMessage, deleteTitle);
+      vrtxSimpleDialogs.openMsgDialog(publishUncheckedMessage, publishTitle);
     } else {
       var list = "<ul>";
       var boxesSize = boxes.size();
@@ -1491,9 +1493,9 @@ VrtxAdmin.prototype.placePublishButtonInActiveTab = function placeDeleteButtonIn
       }
       list += "</ul>"; 
       if (boxesSize > 10) {
-        list += "... " + confirmDeleteAnd + " " + (boxesSize - 10) + " " + confirmDeleteMore;
+        list += "... " + confirmAnd + " " + (boxesSize - 10) + " " + confirmMore;
       }
-      vrtxSimpleDialogs.openConfirmDialog(confirmDelete.replace("(1)", boxesSize) + '<br />' + list, confirmDeleteTitle, function() {
+      vrtxSimpleDialogs.openConfirmDialog(confirmPublish.replace("(1)", boxesSize) + '<br />' + list, confirmPublishTitle, function() {
         vrtxAdm.cachedAppContent.find('#collectionListing\\.action\\.publish-resources').click();
       }, null, null);
     }
@@ -1514,7 +1516,7 @@ VrtxAdmin.prototype.placeUnpublishButtonInActiveTab = function placeDeleteButton
     var boxes = vrtxAdm.cachedDirectoryListing.find('td input[type=checkbox]:checked');
     if (!boxes.length) {
       //alert(deleteUncheckedMessage);
-      vrtxSimpleDialogs.openMsgDialog(deleteUncheckedMessage, deleteTitle);
+      vrtxSimpleDialogs.openMsgDialog(unpublishUncheckedMessage, unpublishTitle);
     } else {
       var list = "<ul>";
       var boxesSize = boxes.size();
@@ -1526,9 +1528,9 @@ VrtxAdmin.prototype.placeUnpublishButtonInActiveTab = function placeDeleteButton
       }
       list += "</ul>"; 
       if (boxesSize > 10) {
-        list += "... " + confirmDeleteAnd + " " + (boxesSize - 10) + " " + confirmDeleteMore;
+        list += "... " + confirmAnd + " " + (boxesSize - 10) + " " + confirmMore;
       }
-      vrtxSimpleDialogs.openConfirmDialog(confirmDelete.replace("(1)", boxesSize) + '<br />' + list, confirmDeleteTitle, function() {
+      vrtxSimpleDialogs.openConfirmDialog(confirmUnpublish.replace("(1)", boxesSize) + '<br />' + list, confirmUnpublishTitle, function() {
         vrtxAdm.cachedAppContent.find('#collectionListing\\.action\\.unpublish-resources').click();
       }, null, null);
     }

@@ -34,15 +34,27 @@
   <script type="text/javascript"><!-- 
     var moveUncheckedMessage = '${moveUnCheckedMessage}';
     var copyUncheckedMessage = '${copyUnCheckedMessage}';
-    var deleteUncheckedMessage = '${vrtx.getMsg("tabMenuRight.deleteUnCheckedMessage")}';         
+    
+    var confirmAnd = '${vrtx.getMsg("tabMenuRight.resourcesAnd")}';
+    var confirmMore = '${vrtx.getMsg("tabMenuRight.resourcesMore")}';
+           
+    var confirmDeleteTitle = '${vrtx.getMsg("tabMenuRight.deleteConfirmTitle")}'; 
     var confirmDelete = '${vrtx.getMsg("tabMenuRight.deleteResourcesMessage")}';         
-    var confirmDeleteAnd = '${vrtx.getMsg("tabMenuRight.deleteResourcesAnd")}';
-    var confirmDeleteMore = '${vrtx.getMsg("tabMenuRight.deleteResourcesMore")}';
-    var confirmDeleteTitle = '${vrtx.getMsg("tabMenuRight.deleteConfirmTitle")}';
+    var deleteUncheckedMessage = '${vrtx.getMsg("tabMenuRight.deleteUnCheckedMessage")}';
+    
+    var confirmPublishTitle = '${vrtx.getMsg("tabMenuRight.publishConfirmTitle")}';
+    var confirmPublish = '${vrtx.getMsg("tabMenuRight.publishResourcesMessage")}';         
+    var publishUncheckedMessage = '${vrtx.getMsg("tabMenuRight.publishUnCheckedMessage")}'; 
+    
+    var confirmUnpublishTitle = '${vrtx.getMsg("tabMenuRight.unpublishConfirmTitle")}'; 
+    var confirmUnpublish = '${vrtx.getMsg("tabMenuRight.unpublishResourcesMessage")}';         
+    var unpublishUncheckedMessage = '${vrtx.getMsg("tabMenuRight.unpublishUnCheckedMessage")}'; 
     
     var copyTitle = '${copyTitle}';
     var moveTitle = '${moveTitle}';
     var deleteTitle = '${deleteTitle}';
+    var publishTitle = '${publishTitle}';
+    var unpublishTitle = '${unpublishTitle}';
     
     var multipleFilesInfoText = '<strong>${vrtx.getMsg("tabMenuRight.fileUploadMultipleInfo.line1")}</strong><br />'
                               + '${vrtx.getMsg("tabMenuRight.fileUploadMultipleInfo.line2")}';

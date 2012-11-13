@@ -305,6 +305,7 @@ vrtxAdmin._$(document).ready(function () {
             _$("body").append("<div id='" + id + "'>" + _$(results).find("#vrtx-manage-create-content").html() + "</div>");
             dialogManageCreate = $("#" + id);
             dialogManageCreate.hide();
+            // Lazy-load JS-dependency chain (cached). TODO: general API for this
             $.cachedScript(location.protocol + '//' + location.host + '/vrtx/__vrtx/static-resources/jquery/plugins/jquery.treeview.js')
             .done(function(script, textStatus) {
                $.cachedScript(location.protocol + '//' + location.host + '/vrtx/__vrtx/static-resources/jquery/plugins/jquery.treeview.async.js')

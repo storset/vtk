@@ -1357,11 +1357,11 @@ VrtxAdmin.prototype.collectionListingInteraction = function collectionListingInt
     if($(".publish\\.globalPublishService").length) {
       var menu = $("#tabMenuRight");
       var html = '<li class="more-menu">'
-             + '<div id="collection-more-menu">'
-               + '<span id="collection-more-menu-header">Mer...</span>'
-               + '<ul><li><a href="javascript:void(0);">Publiser</a></li></ul>'
-             + '</div>'
-           + '</li>';
+                 + '<div id="collection-more-menu">'
+                   + '<span id="collection-more-menu-header">Mer...</span>'
+                   + '<ul><li><a href="javascript:void(0);">Publiser</a></li></ul>'
+                 + '</div>'
+               + '</li>';
      menu.append(html);
      vrtxAdm.dropdownLanguageMenu("#collection-more-menu");
     }

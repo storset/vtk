@@ -1354,7 +1354,7 @@ VrtxAdmin.prototype.collectionListingInteraction = function collectionListingInt
     });
     vrtxAdm.placeDeleteButtonInActiveTab();
     
-    if($(".publish\\.globalPublishService a").length) {
+    if(vrtxAdm.cachedAppContent.find(".publish\\.globalPublishService a").length) {
       var menu = $("#tabMenuRight");
       var html = '<li class="more-menu">'
                  + '<div id="collection-more-menu">'

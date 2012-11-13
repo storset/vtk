@@ -1356,18 +1356,7 @@ VrtxAdmin.prototype.collectionListingInteraction = function collectionListingInt
     
     vrtxAdm.placePublishButtonInActiveTab();
     vrtxAdm.placeUnpublishButtonInActiveTab();
-    
-    if(false) { // TODO: need publishResources and unpublishResoureces as submitActions and services
-      var menu = $("#tabMenuRight");
-      var html = '<li class="more-menu">'
-                 + '<div id="collection-more-menu">'
-                   + '<span id="collection-more-menu-header">Mer...</span>'
-                   + '<ul><li><a href="javascript:void(0);">Publiser</a></li></ul>'
-                 + '</div>'
-               + '</li>';
-     menu.append(html);
-     vrtxAdm.dropdownPlain("#collection-more-menu");
-    }
+    vrtxAdm.dropdownPlain("#collection-more-menu");
   }
 
   vrtxAdm.placeRecoverButtonInActiveTab();
@@ -1442,7 +1431,8 @@ VrtxAdmin.prototype.placeDeleteButtonInActiveTab = function placeDeleteButtonInA
   if (!btn.length) return;
   btn.hide();
   var li = vrtxAdm.cachedActiveTab.find('li.deleteResourcesService');
-  li.html('<a id="deleteResourceService" href="javascript:void(0);">' + btn.attr('title') + '</a>');
+- li.html('<a id="deleteResourceService" href="javascript:void(0);">' + btn.attr('title') + '</a>');
+  
   vrtxAdm.cachedActiveTab.find('#deleteResourceService').click(function (e) {
     var boxes = vrtxAdm.cachedDirectoryListing.find('td input[type=checkbox]:checked');
     if (!boxes.length) {
@@ -1475,9 +1465,17 @@ VrtxAdmin.prototype.placePublishButtonInActiveTab = function placeDeleteButtonIn
   var btn = vrtxAdm.cachedAppContent.find('#collectionListing\\.action\\.publish-resources');
   if (!btn.length) return;
   btn.hide();
-  var li = vrtxAdm.cachedActiveTab.find('li.publishResourcesService');
-  li.html('<a id="publishResourcesService" href="javascript:void(0);">' + btn.attr('title') + '</a>');
-  vrtxAdm.cachedActiveTab.find('#publishResourcesService').click(function (e) {
+  var li = vrtxAdm.cachedActiveTab.find('li.publishResourcesService'); li.hide();
+  var menu = li.closest("#tabMenuRight");
+  var html = '<li class="more-menu">'
+                 + '<div id="collection-more-menu">'
+                   + '<span id="collection-more-menu-header">Mer...</span>'
+                   + '<ul><li><a id="publishTheResourcesService" href="javascript:void(0);">' + btn.attr('title') + '</a></li></ul>'
+                 + '</div>'
+               + '</li>';
+  
+  menu.append(html);
+  $('#publishTheResourcesService').click(function (e) {
     var boxes = vrtxAdm.cachedDirectoryListing.find('td input[type=checkbox]:checked');
     if (!boxes.length) {
       //alert(deleteUncheckedMessage);
@@ -1509,9 +1507,10 @@ VrtxAdmin.prototype.placeUnpublishButtonInActiveTab = function placeDeleteButton
   var btn = vrtxAdm.cachedAppContent.find('#collectionListing\\.action\\.unpublish-resources');
   if (!btn.length) return;
   btn.hide();
-  var li = vrtxAdm.cachedActiveTab.find('li.unpublishResourcesService');
-  li.html('<a id="unpublishResourcesService" href="javascript:void(0);">' + btn.attr('title') + '</a>');
-  vrtxAdm.cachedActiveTab.find('#unpublishResourcesService').click(function (e) {
+  var li = vrtxAdm.cachedActiveTab.find('li.unpublishResourcesService'); li.hide();
+  var menu = li.closest("#tabMenuRight")
+  menu.find("#collection-more-menu ul").append('<li><a id="unpublishTheResourcesService" href="javascript:void(0);">' + btn.attr('title') + '</a></li>');
+  $('#unpublishTheResourcesService').click(function (e) {
     var boxes = vrtxAdm.cachedDirectoryListing.find('td input[type=checkbox]:checked');
     if (!boxes.length) {
       //alert(deleteUncheckedMessage);

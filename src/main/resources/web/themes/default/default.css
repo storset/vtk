@@ -641,6 +641,10 @@ ul.manage-create li,
   display: inline;
 }
 
+#collection-more-menu ul {
+  overflow: hidden;
+}
+
 /* Dropdown */
 
 #editor-help-menu.js-on,
@@ -651,6 +655,10 @@ ul.manage-create li,
 
 #editor-help-menu {
   margin-left: 5px;
+}
+
+#tabMenuRight #collection-more-menu.js-on li {
+  float: none;
 }
 
 #tabMenuRight #collection-more-menu.js-on li a {

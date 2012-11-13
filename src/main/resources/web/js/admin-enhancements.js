@@ -1380,12 +1380,13 @@ VrtxAdmin.prototype.initializeCheckUncheckAll = function initializeCheckUncheckA
       
       $(trigger).closest("table").find("tbody tr")
                 .filter(function(idx) {
-                  var tr = $(this);
                   var name = "checked";
                   if(checkAll) {
-                    tr.filter(":not(." + name + ")").addClass(name).find("td.checkbox input").attr(name, true).change();
+                    $(this).filter(":not(." + name + ")").addClass(name)
+                      .find("td.checkbox input").attr(name, true).change();
                   } else {
-                    tr.filter("." + name).removeClass(name).find("td.checkbox input").attr(name, false).change();
+                    $(this).filter("." + name).removeClass(name)
+                      .find("td.checkbox input").attr(name, false).change();
                   }
                 })
 

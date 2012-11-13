@@ -51,38 +51,53 @@ public class PublishEvaluator implements PropertyEvaluator {
 
         Property publishDateProp = ctx.getNewResource().getProperty(this.publishDatePropDef);
         Property unpublishDateProp = ctx.getNewResource().getProperty(this.unpublishDatePropDef);
-        Date now = Calendar.getInstance().getTime();
+        final Date now = Calendar.getInstance().getTime();
+        final Date publishDate = publishDateProp != null ? publishDateProp.getDateValue() : null;
+        final Date unpublishDate = unpublishDateProp != null ? unpublishDateProp.getDateValue() : null;
 
-        if (publishDateProp != null) {
-            Date publishDate = publishDateProp.getDateValue();
-            if (unpublishDateProp != null) {
-                Date unpublishDate = unpublishDateProp.getDateValue();
-                if (publishDate.before(now) && unpublishDate.before(publishDate)) {
+        property.setBooleanValue(false);
+        
+        if (publishDate != null) {
+            if (publishDate.before(now)) {
+                if (unpublishDate == null || unpublishDate.after(now)) {
                     property.setBooleanValue(true);
-                    
-                    // XXX: deleting a property that is not evaluated by this evaluator:
-                    ctx.getNewResource().removeProperty(this.unpublishDatePropDef);
-                    
-                    return true;
-                } else if (unpublishDate.before(now)) {
-                    property.setBooleanValue(false);
-                    return true;
                 }
             }
-            if (publishDate.before(now)) {
-                property.setBooleanValue(true);
-            } else {
-                property.setBooleanValue(false);
-            }
-            return true;
-        } else if (property.getBooleanValue()) {
-            property.setBooleanValue(false);
-            // XXX: deleting a property that is not evaluated by this evaluator:
-            ctx.getNewResource().removeProperty(this.unpublishDatePropDef);
-            return true;
         }
+        
+        return true;
 
-        return false;
+// Old logic temporarily kept for reference:
+//        
+//        if (publishDateProp != null) {
+//            Date publishDate = publishDateProp.getDateValue();
+//            if (unpublishDateProp != null) {
+//                Date unpublishDate = unpublishDateProp.getDateValue();
+//                if (publishDate.before(now) && unpublishDate.before(publishDate)) {
+//                    property.setBooleanValue(true);
+//                    
+//                    // XXX: deleting a property that is not evaluated by this evaluator:
+//                    ctx.getNewResource().removeProperty(this.unpublishDatePropDef);
+//                    
+//                    return true;
+//                } else if (unpublishDate.before(now)) {
+//                    property.setBooleanValue(false);
+//                    return true;
+//                }
+//            }
+//            if (publishDate.before(now)) {
+//                property.setBooleanValue(true);
+//            } else {
+//                property.setBooleanValue(false);
+//            }
+//            return true;
+//        }
+//        
+//        property.setBooleanValue(false);
+//        
+//        ctx.getNewResource().removeProperty(this.unpublishDatePropDef);
+//        
+//        return true;
     }
 
     @Required

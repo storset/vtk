@@ -42,9 +42,11 @@
         <ref bean="commentsEnabledPropDef" /><!-- Inheritable -->
         
         <ref bean="numberOfCommentsPropDef" />
+        
         <ref bean="publishDatePropDef" />
         <ref bean="unpublishDatePropDef" />
         <ref bean="publishedPropDef" />
+        
         <ref bean="resourceAspectsPropDef" />
         <ref bean="linksPropDef" />
         <ref bean="linkCheckPropDef" />
@@ -268,7 +270,10 @@
     </property>
   </bean>
 
-  <!-- Published property. Always evaluated based on publish/unpublish-date props. Uneditable. -->  
+  <!-- Published property:
+       - Mandatory and uneditable.
+       - Always evaluated based on publish/unpublish-date props.
+       - Not overridable. -->
   <bean id="publishedPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
     parent="abstractPropDef">
     <property name="name" value="published" />
@@ -285,19 +290,19 @@
   </bean>
   
   <bean id="publishDatePropDef" class="org.vortikal.repository.resourcetype.OverridablePropertyTypeDefinitionImpl"
-    parent="abstractPropDef">
+        parent="abstractPropDef">
     <property name="name" value="publish-date" />
     <property name="type" value="TIMESTAMP" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
     <property name="propertyEvaluator" ref="publishDateEvaluator" />
   </bean>
   
-  <bean id="unpublishDatePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
-    parent="abstractPropDef">
+  <bean id="unpublishDatePropDef" class="org.vortikal.repository.resourcetype.OverridablePropertyTypeDefinitionImpl"
+        parent="abstractPropDef">
     <property name="name" value="unpublish-date" />
     <property name="type" value="TIMESTAMP" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
-    <!-- TODO: needs evaluator ! -->
+    <property name="propertyEvaluator" ref="unpublishDateEvaluator" />
   </bean>
   
   <bean id="publishDateEvaluator" class="org.vortikal.repository.resourcetype.property.PublishDateEvaluator">
@@ -306,6 +311,11 @@
     <property name="removeValueOnCreate" value="false" />
   </bean>
 
+  <bean id="unpublishDateEvaluator" class="org.vortikal.repository.resourcetype.property.UnpublishDateEvaluator">
+    <property name="publishDatePropDef" ref="publishDatePropDef" />
+    <property name="authorizationManager" ref="authorizationManager" />
+  </bean>
+  
   <bean id="resourceAspectsPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
     parent="abstractPropDef">
     <property name="name" value="aspects" />

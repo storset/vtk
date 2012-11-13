@@ -223,6 +223,7 @@ vrtxAdmin._$(document).ready(function () {
   vrtxAdm.dropdown({
     selector: "ul.manage-create"
   });
+ 
 
   // Slide up when choose something in dropdown
   vrtxAdm.cachedBody.on("click", ".dropdown-shortcut-menu li a, .dropdown-shortcut-menu-container li a", function () {
@@ -239,22 +240,9 @@ vrtxAdmin._$(document).ready(function () {
     vrtxAdm.ignoreAjaxErrors = true;
   });
 
+  // Tooltips
   $("#title-container").vortexTips("abbr", "#title-container", 200, 300, 250, 300, 20, 0, false, false);
   $("#main").vortexTips("abbr.resource-prop-info", ".vrtx-admin-form", 200, 300, 250, 300, 20, -30, false, false);
-
-  createInteraction(bodyId, vrtxAdm, _$);
-
-  // Collectionlisting interaction
-  vrtxAdm.collectionListingInteraction();
-
-  // Editor interaction
-  editorInteraction(bodyId, vrtxAdm, _$);
-
-  // Reports interaction
-  reportsInteraction(bodyId, vrtxAdm, _$);
-
-  // Versioning interaction
-  versioningInteraction(bodyId, vrtxAdm, _$);
 
   // Resource menus
   var resourceMenuLeftServices = ["renameService", "deleteResourceService", "manage\\.createArchiveService", "manage\\.expandArchiveService"];
@@ -295,7 +283,8 @@ vrtxAdmin._$(document).ready(function () {
   vrtxAdm.completeFormAsync({
     selector: "form#manage\\.unlockFormService-form input[type=submit]"
   });
-
+  
+  // Create folder chooser in global menu
   // TODO: generalize dialog jQuery UI function with AJAX markup/text
   $(document).on("click", "#global-menu-create a", function (e) {
     var link = this;
@@ -328,6 +317,23 @@ vrtxAdmin._$(document).ready(function () {
     e.stopPropagation();
     e.preventDefault();
   });
+
+  // Create dialog interaction
+  createInteraction(bodyId, vrtxAdm, _$);
+
+  // Collectionlisting interaction
+  vrtxAdm.collectionListingInteraction();
+
+  // Editor interaction
+  editorInteraction(bodyId, vrtxAdm, _$);
+
+  // Reports interaction
+  reportsInteraction(bodyId, vrtxAdm, _$);
+
+  // Versioning interaction
+  versioningInteraction(bodyId, vrtxAdm, _$);
+  
+  // Ajax initialization / listeners
 
   switch (bodyId) {
     case "vrtx-manage-collectionlisting":

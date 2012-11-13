@@ -1230,7 +1230,7 @@ function growField(input, val, comfortZone, minWidth, maxWidth) {
         letterSpacing: input.css('letterSpacing'),
         whiteSpace: 'nowrap'
       });
-  input.parent().find("tester").remove();
+  input.parent().find("tester").remove(); // Remove existing test-subjects
   testSubject.insertAfter(input);  
   testSubject.html(val);
  
@@ -1259,10 +1259,8 @@ VrtxAdmin.prototype.initFileUpload = function initFileUpload() {
 
   _$("<div class='vrtx-textfield vrtx-file-upload'><input id='fake-file' type='text' /><a class='vrtx-button vrtx-file-upload'><span>Browse...</span></a></div>'")
     .insertAfter(inputFile);
- 
-  inputFile.addClass("js-on");
 
-  inputFile.change(function(e) {
+  inputFile.addClass("js-on").change(function(e) {
     var filePath = _$(this).val();
     filePath = filePath.substring(filePath.lastIndexOf("\\")+1);
     if (vrtxAdm.supportsFileList) {
@@ -1377,49 +1375,36 @@ VrtxAdmin.prototype.initializeCheckUncheckAll = function initializeCheckUncheckA
   if(tdCheckbox.length) {
     vrtxAdm.cachedDirectoryListing.find("th.checkbox").append("<input type='checkbox' name='checkUncheckAll' />");
     vrtxAdm.cachedAppContent.on("click", "th.checkbox input", function(e) {
-      var checkAll = this.checked;
-      var checkboxes = vrtxAdm.cachedDirectoryListing.find("td.checkbox input");
-      var funcClassAddRemover = classAddRemover; 
-      for(var i = 0, len = checkboxes.length; i < len; i++) {
-        var isChecked = checkboxes[i].checked;
-        var checkbox = $(checkboxes[i]);
-        var tr = checkbox.closest("tr");
-        if(!isChecked && checkAll) {
-          checkbox.attr('checked', true).change();
-          funcClassAddRemover(tr, "checked", true);
-        }
-        if(isChecked && !checkAll) {
-          checkbox.attr('checked', false).change();
-          funcClassAddRemover(tr, "checked", false);
-        }
-      }
+      var trigger = this;
+      var checkAll = trigger.checked;
+      
+      $(trigger).closest("table").find("tbody tr")
+                .filter(function(idx) {
+                  var tr = $(this);
+                  var name = "checked";
+                  if(checkAll) {
+                    tr.filter(":not(." + name + ")").addClass(name).find("td.checkbox input").attr(name, true).change();
+                  } else {
+                    tr.filter("." + name).removeClass(name).find("td.checkbox input").attr(name, false).change();
+                  }
+                })
+
       e.stopPropagation();
     });
     vrtxAdm.cachedAppContent.on("click", "td.checkbox input", function(e) {
       var checkbox = this;
       var isChecked = checkbox.checked;
       var tr = $(checkbox).closest("tr");
+      var name = "checked";
       if(isChecked) {
-        classAddRemover(tr, "checked", true);
+        tr.filter(":not(." + name + ")").addClass(name);
       } else {
-        classAddRemover(tr, "checked", false);
+        tr.filter("." + name).removeClass(name);
       }
       e.stopPropagation();
     });
   }
 };
-
-function classAddRemover(elem, name, isAdding) {
-  if(isAdding) { // Add
-    if(!elem.hasClass(name)) {
-      elem.addClass(name);
-    }
-  } else { // Remove
-    if(elem.hasClass(name)) {
-      elem.removeClass(name);
-    }
-  }
-}
 
 // options: formName, btnId, service, msg, title
 VrtxAdmin.prototype.placeCopyMoveButtonInActiveTab = function placeCopyMoveButtonInActiveTab(options) {

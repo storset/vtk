@@ -77,8 +77,9 @@ public class DeletePublishUnpublishHelper {
             addToFailures(failures, uri, deleteMsgKey, "generic");
         }
     }
-    
-    public void publishResource( PropertyTypeDefinition publishDatePropDef, Repository repository, String token, Path uri, Map<String, List<Path>> failures) {
+
+    public void publishResource(PropertyTypeDefinition publishDatePropDef, Repository repository, String token,
+            Path uri, Map<String, List<Path>> failures) {
         try {
             Resource resource = repository.retrieve(token, uri, true);
             Property publishDateProp = resource.getProperty(publishDatePropDef);
@@ -100,8 +101,9 @@ public class DeletePublishUnpublishHelper {
             addToFailures(failures, uri, publishMsgKey, "generic");
         }
     }
-    
-    public void unpublishResource( PropertyTypeDefinition publishDatePropDef, Repository repository, String token, Path uri, Map<String, List<Path>> failures) {
+
+    public void unpublishResource(PropertyTypeDefinition publishDatePropDef, Repository repository, String token,
+            Path uri, Map<String, List<Path>> failures) {
         try {
             Resource resource = repository.retrieve(token, uri, true);
             resource.removeProperty(publishDatePropDef);

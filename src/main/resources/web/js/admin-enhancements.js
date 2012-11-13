@@ -212,7 +212,7 @@ vrtxAdmin._$(document).ready(function () {
   }
 
   // Dropdowns
-  vrtxAdm.dropdownLanguageMenu("#locale-selection");
+  vrtxAdm.dropdownPlain("#locale-selection");
   vrtxAdm.dropdown({
     selector: "#resource-title ul#resourceMenuLeft",
     proceedCondition: function (numOfListElements) {
@@ -848,7 +848,7 @@ function traverseNode(treeElem, treeTravNode, lastNode) {
     5. Dropdowns    
 \*-------------------------------------------------------------------*/
 
-VrtxAdmin.prototype.dropdownLanguageMenu = function dropdownLanguageMenu(selector) {
+VrtxAdmin.prototype.dropdownPlain = function dropdownPlain(selector) {
   var vrtxAdm = this, _$ = vrtxAdm._$;
   
   var languageMenu = _$(selector + " ul");
@@ -1363,7 +1363,7 @@ VrtxAdmin.prototype.collectionListingInteraction = function collectionListingInt
                  + '</div>'
                + '</li>';
      menu.append(html);
-     vrtxAdm.dropdownLanguageMenu("#collection-more-menu");
+     vrtxAdm.dropdownPlain("#collection-more-menu");
     }
   }
 
@@ -1532,7 +1532,7 @@ VrtxAdmin.prototype.placeDeletePermanentButtonInActiveTab = function placeDelete
 function editorInteraction(bodyId, vrtxAdm, _$) {
   if(_$("form#editor").length) { 
     // Dropdowns
-    vrtxAdm.dropdownLanguageMenu("#editor-help-menu");
+    vrtxAdm.dropdownPlain("#editor-help-menu");
     vrtxAdm.dropdown({selector: "ul#editor-menu"});
     
     // Preview image

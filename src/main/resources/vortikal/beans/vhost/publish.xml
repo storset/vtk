@@ -256,11 +256,13 @@
   <bean id="unpublishResourcesHandler" class="org.vortikal.web.actions.publish.UnpublishResourcesController">
     <property name="viewName" value="manageCollectionListing" />
     <property name="publishDatePropDef" ref="publishDatePropDef" />
+    <property name="helper" ref="deletePublishUnpublishHelper" />
   </bean>
   
   <bean id="publishResourcesHandler" class="org.vortikal.web.actions.publish.PublishResourcesController">
     <property name="viewName" value="manageCollectionListing" />
     <property name="publishDatePropDef" ref="publishDatePropDef" />
+    <property name="helper" ref="deletePublishUnpublishHelper" />
   </bean>
   
   <!--  ^ Multiple -->

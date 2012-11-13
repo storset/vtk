@@ -44,6 +44,7 @@ import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 import org.vortikal.web.RequestContext;
+import org.vortikal.web.actions.DeletePublishUnpublishHelper;
 import org.vortikal.web.service.Service;
 
 @SuppressWarnings("deprecation")
@@ -52,7 +53,7 @@ public class DeleteResourceController extends SimpleFormController {
     /* TODO: change class name to something that says it is used when standing on resource */
 
     private String cancelView;
-    private DeleteHelper deleteHelper;
+    private DeletePublishUnpublishHelper helper;
 
     protected Object cmd;
 
@@ -66,8 +67,8 @@ public class DeleteResourceController extends SimpleFormController {
         String url = service.constructLink(resource, principal);
         String name = resource.getName();
 
-        this.cmd = new DeleteCommand(name, url);
-        return this.cmd;
+        cmd = new DeleteCommand(name, url);
+        return cmd;
     }
 
     protected ModelAndView onSubmit(Object command) throws Exception {
@@ -83,7 +84,7 @@ public class DeleteResourceController extends SimpleFormController {
 
         if (deleteCommand.getCancelAction() != null) {
             deleteCommand.setDone(true);
-            return new ModelAndView(this.cancelView);
+            return new ModelAndView(cancelView);
         }
 
         Resource resource = repository.retrieve(token, uri.getParent(), false);
@@ -93,8 +94,8 @@ public class DeleteResourceController extends SimpleFormController {
         // path to resource that failed.
         Map<String, List<Path>> failures = new HashMap<String, List<Path>>();
 
-        this.deleteHelper.deleteResource(repository, token, uri, true, failures);
-        this.deleteHelper.addFailureMessages(failures, requestContext);
+        helper.deleteResource(repository, token, uri, true, failures);
+        helper.addFailureMessages(failures, requestContext);
         if (!failures.isEmpty()) {
             return new ModelAndView(super.getFormView());
         }
@@ -111,7 +112,7 @@ public class DeleteResourceController extends SimpleFormController {
     }
 
     @Required
-    public void setDeleteHelper(DeleteHelper deleteHelper) {
-        this.deleteHelper = deleteHelper;
+    public void setHelper(DeletePublishUnpublishHelper helper) {
+        this.helper = helper;
     }
 }

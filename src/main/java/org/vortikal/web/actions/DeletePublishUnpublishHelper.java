@@ -28,9 +28,10 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.actions.delete;
+package org.vortikal.web.actions;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -39,16 +40,21 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.Path;
+import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
+import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceLockedException;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.web.Message;
 import org.vortikal.web.RequestContext;
 
-public class DeleteHelper {
+public class DeletePublishUnpublishHelper {
 
-    protected final String msgKey = "manage.delete.error.";
-
-    private static Log logger = LogFactory.getLog(DeleteHelper.class);
+    protected final String deleteMsgKey = "manage.delete.error.";
+    protected final String publishMsgKey = "manage.publish.error.";
+    protected final String unpublishMsgKey = "manage.unpublish.error.";
+    
+    private static Log logger = LogFactory.getLog(DeletePublishUnpublishHelper.class);
 
     public void deleteResource(Repository repository, String token, Path uri, boolean recoverable,
             Map<String, List<Path>> failures) {
@@ -56,19 +62,60 @@ public class DeleteHelper {
             if (repository.exists(token, uri)) {
                 repository.delete(token, uri, recoverable);
             } else {
-                this.addToFailures(failures, uri, this.msgKey, "nonExisting");
+                addToFailures(failures, uri, deleteMsgKey, "nonExisting");
             }
         } catch (IllegalArgumentException iae) { // Not a path, ignore it
         } catch (AuthorizationException ae) {
-            this.addToFailures(failures, uri, this.msgKey, "unAuthorized");
+            addToFailures(failures, uri, deleteMsgKey, "unAuthorized");
         } catch (ResourceLockedException rle) {
-            this.addToFailures(failures, uri, this.msgKey, "locked");
+            addToFailures(failures, uri, deleteMsgKey, "locked");
         } catch (Exception ex) {
             StringBuilder msg = new StringBuilder("Could not perform ");
             msg.append("delete of ").append(uri);
             msg.append(": ").append(ex.getMessage());
             logger.warn(msg);
-            this.addToFailures(failures, uri, this.msgKey, "generic");
+            addToFailures(failures, uri, deleteMsgKey, "generic");
+        }
+    }
+    
+    public void publishResource( PropertyTypeDefinition publishDatePropDef, Repository repository, String token, Path uri, Map<String, List<Path>> failures) {
+        try {
+            Resource resource = repository.retrieve(token, uri, true);
+            Property publishDateProp = resource.getProperty(publishDatePropDef);
+            if (publishDateProp == null) {
+                publishDateProp = publishDatePropDef.createProperty();
+                resource.addProperty(publishDateProp);
+            }
+            publishDateProp.setDateValue(Calendar.getInstance().getTime());
+            repository.store(token, resource);
+        } catch (AuthorizationException ae) {
+            addToFailures(failures, uri, publishMsgKey, "unAuthorized");
+        } catch (ResourceLockedException rle) {
+            addToFailures(failures, uri, publishMsgKey, "locked");
+        } catch (Exception ex) {
+            StringBuilder msg = new StringBuilder("Could not perform ");
+            msg.append("publish of ").append(uri);
+            msg.append(": ").append(ex.getMessage());
+            logger.warn(msg);
+            addToFailures(failures, uri, publishMsgKey, "generic");
+        }
+    }
+    
+    public void unpublishResource( PropertyTypeDefinition publishDatePropDef, Repository repository, String token, Path uri, Map<String, List<Path>> failures) {
+        try {
+            Resource resource = repository.retrieve(token, uri, true);
+            resource.removeProperty(publishDatePropDef);
+            repository.store(token, resource);
+        } catch (AuthorizationException ae) {
+            addToFailures(failures, uri, unpublishMsgKey, "unAuthorized");
+        } catch (ResourceLockedException rle) {
+            addToFailures(failures, uri, unpublishMsgKey, "locked");
+        } catch (Exception ex) {
+            StringBuilder msg = new StringBuilder("Could not perform ");
+            msg.append("unpublish of ").append(uri);
+            msg.append(": ").append(ex.getMessage());
+            logger.warn(msg);
+            addToFailures(failures, uri, unpublishMsgKey, "generic");
         }
     }
 

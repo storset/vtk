@@ -53,6 +53,7 @@ import org.vortikal.repository.ResourceLockedException;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.web.Message;
 import org.vortikal.web.RequestContext;
+import org.vortikal.web.actions.DeletePublishUnpublishHelper;
 
 public class UnpublishResourcesController implements Controller {
     
@@ -60,6 +61,7 @@ public class UnpublishResourcesController implements Controller {
 
     private String viewName;
     private PropertyTypeDefinition publishDatePropDef;
+    private DeletePublishUnpublishHelper helper;
     
     private static Log logger = LogFactory.getLog(UnpublishResourcesController.class);
     
@@ -73,57 +75,19 @@ public class UnpublishResourcesController implements Controller {
         // key (String) that specifies type of failure and identifies list of
         // paths to resources that failed.
         Map<String, List<Path>> failures = new HashMap<String, List<Path>>();
-        
-        String msgKey = "manage.unpublish.error.";
 
         @SuppressWarnings("rawtypes")
         Enumeration e = request.getParameterNames();
         while (e.hasMoreElements()) {
             String name = (String) e.nextElement();
-            Path uri = null;
             try {
-                uri = Path.fromString(name);  
-                Resource resource = repository.retrieve(token, uri, true);
-                resource.removeProperty(this.publishDatePropDef);
-                repository.store(token, resource);
+                helper.unpublishResource(publishDatePropDef, repository, token, Path.fromString(name), failures);
             } catch (IllegalArgumentException iae) { // Not a path, ignore it
                 continue;
-            } catch (AuthorizationException ae) {
-                addToFailures(failures, uri, msgKey, "unAuthorized");
-            } catch (ResourceLockedException rle) {
-                addToFailures(failures, uri, msgKey, "locked");
-            } catch (Exception ex) {
-                StringBuilder msg = new StringBuilder("Could not perform ");
-                msg.append("unpublish of ").append(uri);
-                msg.append(": ").append(ex.getMessage());
-                logger.warn(msg);
-                addToFailures(failures, uri, msgKey, "generic");
             }
         }
 
         return new ModelAndView(this.viewName);
-    }
-    
-    public void addToFailures(Map<String, List<Path>> failures, Path fileUri, String msgKey, String failureType) {
-        String key = msgKey.concat(failureType);
-        List<Path> failedPaths = failures.get(key);
-        if (failedPaths == null) {
-            failedPaths = new ArrayList<Path>();
-            failures.put(key, failedPaths);
-        }
-        failedPaths.add(fileUri);
-    }
-
-    public void addFailureMessages(Map<String, List<Path>> failures, RequestContext requestContext) {
-        for (Entry<String, List<Path>> entry : failures.entrySet()) {
-            String key = entry.getKey();
-            List<Path> failedResources = entry.getValue();
-            Message msg = new Message(key);
-            for (Path p : failedResources) {
-                msg.addMessage(p.getName());
-            }
-            requestContext.addErrorMessage(msg);
-        }
     }
 
     public void setViewName(String viewName) {
@@ -137,5 +101,10 @@ public class UnpublishResourcesController implements Controller {
     @Required
     public void setPublishDatePropDef(PropertyTypeDefinition publishDatePropDef) {
         this.publishDatePropDef = publishDatePropDef;
+    }
+    
+    @Required
+    public void setHelper(DeletePublishUnpublishHelper helper) {
+        this.helper = helper;
     }
 }

@@ -44,11 +44,12 @@ import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.web.RequestContext;
+import org.vortikal.web.actions.DeletePublishUnpublishHelper;
 
 public class DeleteResourcesController implements Controller {
 
     private String viewName;
-    private DeleteHelper deleteHelper;
+    private DeletePublishUnpublishHelper helper;
 
     @Override
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) {
@@ -72,12 +73,12 @@ public class DeleteResourcesController implements Controller {
         while (e.hasMoreElements()) {
             String name = (String) e.nextElement();
             try {
-                this.deleteHelper.deleteResource(repository, token, Path.fromString(name), recoverable, failures);
+                this.helper.deleteResource(repository, token, Path.fromString(name), recoverable, failures);
             } catch (IllegalArgumentException iae) { // Not a path, ignore it
                 continue;
             }
         }
-        this.deleteHelper.addFailureMessages(failures, requestContext);
+        this.helper.addFailureMessages(failures, requestContext);
 
         return new ModelAndView(this.viewName);
     }
@@ -91,7 +92,7 @@ public class DeleteResourcesController implements Controller {
     }
 
     @Required
-    public void setDeleteHelper(DeleteHelper deleteHelper) {
-        this.deleteHelper = deleteHelper;
+    public void setHelper(DeletePublishUnpublishHelper helper) {
+        this.helper = helper;
     }
 }

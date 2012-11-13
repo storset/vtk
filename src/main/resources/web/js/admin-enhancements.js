@@ -1356,7 +1356,7 @@ VrtxAdmin.prototype.collectionListingInteraction = function collectionListingInt
     
     if($(".publish\\.globalPublishService").length) {
       var menu = $("#tabMenuRight");
-      html = '<li class="more-menu">'
+      var html = '<li class="more-menu">'
              + '<div id="collection-more-menu">'
                + '<span id="collection-more-menu-header">Mer...</span>'
                + '<ul><li><a href="javascript:void(0);">Publiser</a></li></ul>'

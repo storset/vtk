@@ -1392,15 +1392,7 @@ VrtxAdmin.prototype.initializeCheckUncheckAll = function initializeCheckUncheckA
       e.stopPropagation();
     });
     vrtxAdm.cachedAppContent.on("click", "td.checkbox input", function(e) {
-      var checkbox = this;
-      var isChecked = checkbox.checked;
-      var tr = $(checkbox).closest("tr");
-      var name = "checked";
-      if(isChecked) {
-        tr.filter(":not(." + name + ")").addClass(name);
-      } else {
-        tr.filter("." + name).removeClass(name);
-      }
+      $(this).closest("tr").toggleClass("checked");
       e.stopPropagation();
     });
   }

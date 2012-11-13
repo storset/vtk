@@ -170,11 +170,11 @@ vrtxAdmin._$(window).load(function() {
        readyState === "complete" || "DOMContentLoaded"-event (++)
 \*-------------------------------------------------------------------*/
 
-vrtxAdmin._$(document).ready(function () {   
+vrtxAdmin._$(document).ready(function () {
   var startReadyTime = +new Date(),
-      vrtxAdm = vrtxAdmin,
-      _$ = vrtxAdm._$;
-      
+    vrtxAdm = vrtxAdmin,
+    _$ = vrtxAdm._$;
+
   vrtxAdm.cachedBody = _$("body");
   vrtxAdm.cachedAppContent = vrtxAdm.cachedBody.find("#app-content");
   vrtxAdm.cachedContent = vrtxAdm.cachedAppContent.find("#contents");
@@ -184,7 +184,7 @@ vrtxAdmin._$(document).ready(function () {
   vrtxAdm.cachedBody.addClass("js");
 
   vrtxAdm.cachedActiveTab = vrtxAdm.cachedAppContent.find("#active-tab");
-  
+
   // Remove active tab if it has no children
   if (!vrtxAdm.cachedActiveTab.find(" > *").length) {
     vrtxAdm.cachedActiveTab.remove();
@@ -206,7 +206,7 @@ vrtxAdmin._$(document).ready(function () {
   if (resourceMenuLeft.length) {
     if (titleSplitsLength == 2) {
       resourceMenuLeft.css("marginTop", "-22px");
-    } else if(titleSplitsLength >= 3) {
+    } else if (titleSplitsLength >= 3) {
       resourceMenuLeft.css("marginTop", "0px");
     }
   }
@@ -215,33 +215,35 @@ vrtxAdmin._$(document).ready(function () {
   vrtxAdm.dropdownLanguageMenu("#locale-selection");
   vrtxAdm.dropdown({
     selector: "#resource-title ul#resourceMenuLeft",
-    proceedCondition: function(numOfListElements) {
+    proceedCondition: function (numOfListElements) {
       return numOfListElements > 1;
     },
     calcTop: true
   });
-  vrtxAdm.dropdown({selector: "ul.manage-create"});
-  
+  vrtxAdm.dropdown({
+    selector: "ul.manage-create"
+  });
+
   // Slide up when choose something in dropdown
-  vrtxAdm.cachedBody.on("click", ".dropdown-shortcut-menu li a, .dropdown-shortcut-menu-container li a", function() {
+  vrtxAdm.cachedBody.on("click", ".dropdown-shortcut-menu li a, .dropdown-shortcut-menu-container li a", function () {
     _$(".dropdown-shortcut-menu-container:visible").slideUp(vrtxAdm.transitionDropdownSpeed, "swing");
   });
 
-  vrtxAdm.cachedBody.on("click", document, function(e) {
+  vrtxAdm.cachedBody.on("click", document, function (e) {
     _$(".dropdown-shortcut-menu-container:visible").slideUp(vrtxAdm.transitionDropdownSpeed, "swing");
     _$(".tip:visible").fadeOut(vrtxAdm.transitionDropdownSpeed, "swing");
   });
-  
+
   // Ignore all AJAX errors on tab change
-  _$("#app-tabs, #vrtx-breadcrumb-wrapper").on("click", "a", function(e) {
+  _$("#app-tabs, #vrtx-breadcrumb-wrapper").on("click", "a", function (e) {
     vrtxAdm.ignoreAjaxErrors = true;
   });
 
   $("#title-container").vortexTips("abbr", "#title-container", 200, 300, 250, 300, 20, 0, false, false);
   $("#main").vortexTips("abbr.resource-prop-info", ".vrtx-admin-form", 200, 300, 250, 300, 20, -30, false, false);
- 
+
   createInteraction(bodyId, vrtxAdm, _$);
-  
+
   // Collectionlisting interaction
   vrtxAdm.collectionListingInteraction();
 
@@ -253,34 +255,34 @@ vrtxAdmin._$(document).ready(function () {
 
   // Versioning interaction
   versioningInteraction(bodyId, vrtxAdm, _$);
-  
+
   // Resource menus
   var resourceMenuLeftServices = ["renameService", "deleteResourceService", "manage\\.createArchiveService", "manage\\.expandArchiveService"];
   for (var i = resourceMenuLeftServices.length; i--;) {
     vrtxAdm.getFormAsync({
-        selector: "#title-container a#" + resourceMenuLeftServices[i],
-        selectorClass: "globalmenu",
-        insertAfterOrReplaceClass: "ul#resourceMenuLeft",
-        nodeType: "div",
-        simultanSliding: true
+      selector: "#title-container a#" + resourceMenuLeftServices[i],
+      selectorClass: "globalmenu",
+      insertAfterOrReplaceClass: "ul#resourceMenuLeft",
+      nodeType: "div",
+      simultanSliding: true
     });
     vrtxAdm.completeFormAsync({
-        selector: "form#" + resourceMenuLeftServices[i] + "-form input[type=submit]"
+      selector: "form#" + resourceMenuLeftServices[i] + "-form input[type=submit]"
     });
   }
   var resourceMenuRightServices = ["vrtx-unpublish-document", "vrtx-publish-document"];
   for (i = resourceMenuRightServices.length; i--;) {
     vrtxAdm.getFormAsync({
-        selector: "#title-container a#" + resourceMenuRightServices[i],
-        selectorClass: "globalmenu",
-        insertAfterOrReplaceClass: "ul#resourceMenuLeft",
-        nodeType: "div",
-        simultanSliding: true
+      selector: "#title-container a#" + resourceMenuRightServices[i],
+      selectorClass: "globalmenu",
+      insertAfterOrReplaceClass: "ul#resourceMenuLeft",
+      nodeType: "div",
+      simultanSliding: true
     });
     vrtxAdm.completeFormAsync({
-        selector: "form#" + resourceMenuRightServices[i] + "-form input[type=submit]",
-        updateSelectors: ["#resourceMenuRight", "#publishing-status", "#publishing-publish-date", "#publishing-unpublish-date"],
-        post: bodyId !== "vrtx-preview"
+      selector: "form#" + resourceMenuRightServices[i] + "-form input[type=submit]",
+      updateSelectors: ["#resourceMenuRight", "#publishing-status", "#publishing-publish-date", "#publishing-unpublish-date"],
+      post: bodyId !== "vrtx-preview"
     });
   }
   vrtxAdm.getFormAsync({
@@ -293,388 +295,397 @@ vrtxAdmin._$(document).ready(function () {
   vrtxAdm.completeFormAsync({
     selector: "form#manage\\.unlockFormService-form input[type=submit]"
   });
-  
-  // TODO: generalize dialog jQuery UI function with AJAX markup/text
-    $(document).on("click", "#global-menu-create a", function(e) {
-      var link = this;
-      var id = link.id + "-content";
-      var dialogManageCreate = $("#" + id);
-      if(!dialogManageCreate.length) {
-        vrtxAdm.serverFacade.getHtml(link.href, {
-          success: function (results, status, resp) {
-            _$("body").append("<div id='" + id + "'>" + _$(results).find("#vrtx-manage-create-content").html() + "</div>");
-            dialogManageCreate = $("#" + id);
-            dialogManageCreate.hide();
-            // Lazy-load JS-dependency chain (cached). TODO: general API for this and error msg
-            $.cachedScript(location.protocol + '//' + location.host + '/vrtx/__vrtx/static-resources/jquery/plugins/jquery.treeview.js')
-            .done(function(script, textStatus) {
-               $.cachedScript(location.protocol + '//' + location.host + '/vrtx/__vrtx/static-resources/jquery/plugins/jquery.treeview.async.js')
-               .done(function(script, textStatus) {
-                 $.cachedScript(location.protocol + '//' + location.host + '/vrtx/__vrtx/static-resources/jquery/plugins/jquery.scrollTo.min.js')
-                .done(function(script, textStatus) {
-                  vrtxSimpleDialogs.openHtmlDialog(dialogManageCreate.html(), link.title);
-                  initializeTree();
-                }).fail(function(jqxhr, settings, exception) {});
-              }).fail(function(jqxhr, settings, exception) {}); 
-            }).fail(function(jqxhr, settings, exception) {}); 
-          }
-        });
-      } else {
-        vrtxSimpleDialogs.openHtmlDialog(dialogManageCreate.html(), link.title);
-        initializeTree();
-      }
-      e.stopPropagation();
-      e.preventDefault();
-    });
 
-  switch(bodyId) {
-   case "vrtx-manage-collectionlisting":
-    var tabMenuServices = ["fileUploadService", "createDocumentService", "createCollectionService"];
-    var speedCreationServices = vrtxAdm.isIE8 ? 0 : 350;  
-    for (i = tabMenuServices.length; i--;) {
-      if(tabMenuServices[i] == "createCollectionService") {
-        vrtxAdm.getFormAsync({
-          selector: "ul#tabMenuRight a#" + tabMenuServices[i],
-          selectorClass: "vrtx-admin-form",
-          insertAfterOrReplaceClass: "#active-tab ul#tabMenuRight",
-          nodeType: "div",
-          funcComplete: function(p){ createFuncComplete(); },
-          simultanSliding: true,
-          transitionSpeed: speedCreationServices
-        });
-        vrtxAdm.completeFormAsync({ 
-          selector: "form#" + tabMenuServices[i] + "-form input[type=submit]",
-          updateSelectors: ["#contents"],
-          errorContainer: "errorContainer",
-          errorContainerInsertAfter: "> ul",
-          funcComplete: vrtxAdm.updateCollectionListingInteraction,
-          post: true,
-          transitionSpeed: speedCreationServices
-        });
-      } else { // Half-async for file upload and create document
-        if(tabMenuServices[i] == "createDocumentService") {
+  // TODO: generalize dialog jQuery UI function with AJAX markup/text
+  $(document).on("click", "#global-menu-create a", function (e) {
+    var link = this;
+    var id = link.id + "-content";
+    var dialogManageCreate = $("#" + id);
+    if (!dialogManageCreate.length) {
+      vrtxAdm.serverFacade.getHtml(link.href, {
+        success: function (results, status, resp) {
+          _$("body").append("<div id='" + id + "'>" + _$(results).find("#vrtx-manage-create-content").html() + "</div>");
+          dialogManageCreate = $("#" + id);
+          dialogManageCreate.hide();
+          // Lazy-load JS-dependency chain (cached). TODO: general API for this and error msg
+          $.cachedScript(location.protocol + '//' + location.host + '/vrtx/__vrtx/static-resources/jquery/plugins/jquery.treeview.js')
+            .done(function (script, textStatus) {
+            $.cachedScript(location.protocol + '//' + location.host + '/vrtx/__vrtx/static-resources/jquery/plugins/jquery.treeview.async.js')
+              .done(function (script, textStatus) {
+              $.cachedScript(location.protocol + '//' + location.host + '/vrtx/__vrtx/static-resources/jquery/plugins/jquery.scrollTo.min.js')
+                .done(function (script, textStatus) {
+                vrtxSimpleDialogs.openHtmlDialog(dialogManageCreate.html(), link.title);
+                initializeTree();
+              }).fail(function (jqxhr, settings, exception) {});
+            }).fail(function (jqxhr, settings, exception) {});
+          }).fail(function (jqxhr, settings, exception) {});
+        }
+      });
+    } else {
+      vrtxSimpleDialogs.openHtmlDialog(dialogManageCreate.html(), link.title);
+      initializeTree();
+    }
+    e.stopPropagation();
+    e.preventDefault();
+  });
+
+  switch (bodyId) {
+    case "vrtx-manage-collectionlisting":
+      var tabMenuServices = ["fileUploadService", "createDocumentService", "createCollectionService"];
+      var speedCreationServices = vrtxAdm.isIE8 ? 0 : 350;
+      for (i = tabMenuServices.length; i--;) {
+        if (tabMenuServices[i] == "createCollectionService") {
           vrtxAdm.getFormAsync({
             selector: "ul#tabMenuRight a#" + tabMenuServices[i],
             selectorClass: "vrtx-admin-form",
             insertAfterOrReplaceClass: "#active-tab ul#tabMenuRight",
             nodeType: "div",
-            funcComplete: function(p){ createFuncComplete(); },
+            funcComplete: function (p) {
+              createFuncComplete();
+            },
             simultanSliding: true,
             transitionSpeed: speedCreationServices
           });
           vrtxAdm.completeFormAsync({
             selector: "form#" + tabMenuServices[i] + "-form input[type=submit]",
+            updateSelectors: ["#contents"],
+            errorContainer: "errorContainer",
+            errorContainerInsertAfter: "> ul",
+            funcComplete: vrtxAdm.updateCollectionListingInteraction,
+            post: true,
             transitionSpeed: speedCreationServices
           });
-        } else {
-          if(vrtxAdm.isIPhone || vrtxAdm.isIPad) { // TODO: feature detection
-            $("ul#tabMenuRight li." + tabMenuServices[i]).remove();
-          } else {
+        } else { // Half-async for file upload and create document
+          if (tabMenuServices[i] == "createDocumentService") {
             vrtxAdm.getFormAsync({
               selector: "ul#tabMenuRight a#" + tabMenuServices[i],
               selectorClass: "vrtx-admin-form",
               insertAfterOrReplaceClass: "#active-tab ul#tabMenuRight",
               nodeType: "div",
-              funcComplete: function(p){ vrtxAdm.initFileUpload() },
-              simultanSliding: true
+              funcComplete: function (p) {
+                createFuncComplete();
+              },
+              simultanSliding: true,
+              transitionSpeed: speedCreationServices
             });
             vrtxAdm.completeFormAsync({
-              selector: "form#" + tabMenuServices[i] + "-form input[type=submit]"
+              selector: "form#" + tabMenuServices[i] + "-form input[type=submit]",
+              transitionSpeed: speedCreationServices
             });
-            vrtxAdm.initFileUpload(); // when error message
+          } else {
+            if (vrtxAdm.isIPhone || vrtxAdm.isIPad) { // TODO: feature detection
+              $("ul#tabMenuRight li." + tabMenuServices[i]).remove();
+            } else {
+              vrtxAdm.getFormAsync({
+                selector: "ul#tabMenuRight a#" + tabMenuServices[i],
+                selectorClass: "vrtx-admin-form",
+                insertAfterOrReplaceClass: "#active-tab ul#tabMenuRight",
+                nodeType: "div",
+                funcComplete: function (p) {
+                  vrtxAdm.initFileUpload()
+                },
+                simultanSliding: true
+              });
+              vrtxAdm.completeFormAsync({
+                selector: "form#" + tabMenuServices[i] + "-form input[type=submit]"
+              });
+              vrtxAdm.initFileUpload(); // when error message
+            }
           }
         }
       }
-    }
-    
-    tabMenuServices = ["collectionListing\\.action\\.move-resources", "collectionListing\\.action\\.copy-resources"];
-    resourceMenuServices = ["moveToSelectedFolderService", "copyToSelectedFolderService"];
-    // TODO: This map/lookup-obj is a little hacky..
-    tabMenuServicesInjectMap = { "collectionListing.action.move-resources": "moveToSelectedFolderService", 
-                                 "collectionListing.action.copy-resources": "copyToSelectedFolderService"};
-    for (i = tabMenuServices.length; i--;) {
-      vrtxAdm.cachedContent.on("click", "input#" + tabMenuServices[i], function (e) {
+
+      tabMenuServices = ["collectionListing\\.action\\.move-resources", "collectionListing\\.action\\.copy-resources"];
+      resourceMenuServices = ["moveToSelectedFolderService", "copyToSelectedFolderService"];
+      // TODO: This map/lookup-obj is a little hacky..
+      tabMenuServicesInjectMap = {
+        "collectionListing.action.move-resources": "moveToSelectedFolderService",
+          "collectionListing.action.copy-resources": "copyToSelectedFolderService"
+      };
+      for (i = tabMenuServices.length; i--;) {
+        vrtxAdm.cachedContent.on("click", "input#" + tabMenuServices[i], function (e) {
+          var input = _$(this);
+          var form = input.closest("form");
+          var url = form.attr("action");
+          var li = "li." + tabMenuServicesInjectMap[input.attr("id")];
+          var dataString = form.serialize() + "&" + input.attr("name") + "=" + input.val();
+          vrtxAdm.serverFacade.postHtml(url, dataString, {
+            success: function (results, status, resp) {
+              var resourceMenuRight = $("#resourceMenuRight");
+              var copyMoveExists = "";
+              for (var key in tabMenuServicesInjectMap) {
+                var copyMove = resourceMenuRight.find("li." + tabMenuServicesInjectMap[key]);
+                if (copyMove.length) {
+                  copyMoveExists = copyMove;
+                  break;
+                }
+              }
+              var results = _$(results);
+              if (copyMoveExists !== "") { // Reverse the belt and roll out updated baggage :)
+                baggageBeltAnimFx(copyMoveExists, {
+                  reverse: true,
+                  complete: function () {
+                    copyMoveExists.remove();
+                    resourceMenuRight.html(results.find("#resourceMenuRight").html());
+                    vrtxAdm.displayInfoMsg(results.find(".infomessage").html());
+                    if (resourceMenuRight.hasClass("smaller-seperator")) { // Instant compact => expanded
+                      resourceMenuRight.removeClass("smaller-seperator");
+                    }
+                    baggageBeltAnimFx(resourceMenuRight.find(li));
+                  }
+                });
+              } else {
+                resourceMenuRight.html(results.find("#resourceMenuRight").html());
+                vrtxAdm.displayInfoMsg(results.find(".infomessage").html());
+                if (resourceMenuRight.hasClass("smaller-seperator")) { // Instant compact => expanded
+                  resourceMenuRight.removeClass("smaller-seperator");
+                }
+                baggageBeltAnimFx(resourceMenuRight.find(li));
+              }
+            }
+          });
+          e.stopPropagation();
+          e.preventDefault();
+        });
+      }
+
+      for (i = resourceMenuServices.length; i--;) {
+        vrtxAdm.cachedAppContent.on("click", "#resourceMenuRight li." + resourceMenuServices[i] + " button", function (e) {
+          var button = _$(this);
+          var form = button.closest("form");
+          var url = form.attr("action");
+          var li = form.closest("li");
+          var dataString = form.serialize() + "&" + button.attr("name") + "=" + button.val();
+          vrtxAdm.serverFacade.postHtml(url, dataString, {
+            success: function (results, status, resp) {
+              baggageBeltAnimFx(li, {
+                reverse: true,
+                complete: function () {
+                  var result = _$(results);
+                  vrtxAdm.displayErrorMsg(result.find(".errormessage").html());
+                  vrtxAdm.cachedContent.html(_$(results).find("#contents").html());
+                  vrtxAdm.updateCollectionListingInteraction();
+                  li.remove();
+                }
+              });
+            }
+          });
+          e.stopPropagation();
+          e.preventDefault();
+        });
+      }
+
+      vrtxAdm.cachedContent.on("click", "input#collectionListing\\.action\\.delete-resources", function (e) {
         var input = _$(this);
         var form = input.closest("form");
         var url = form.attr("action");
-        var li = "li." + tabMenuServicesInjectMap[input.attr("id")];
         var dataString = form.serialize() + "&" + input.attr("name") + "=" + input.val();
         vrtxAdm.serverFacade.postHtml(url, dataString, {
           success: function (results, status, resp) {
-            var resourceMenuRight = $("#resourceMenuRight");
-            var copyMoveExists = "";
-            for(var key in tabMenuServicesInjectMap) {
-              var copyMove = resourceMenuRight.find("li." + tabMenuServicesInjectMap[key]);
-              if(copyMove.length) {
-                copyMoveExists = copyMove;
-                break;
-              }
-            }
-            var results = _$(results);
-            if(copyMoveExists !== "") { // Reverse the belt and roll out updated baggage :)
-              baggageBeltAnimFx(copyMoveExists, {
-                reverse: true,
-                complete: function() {
-                  copyMoveExists.remove();
-                  resourceMenuRight.html(results.find("#resourceMenuRight").html());
-                  vrtxAdm.displayInfoMsg(results.find(".infomessage").html());
-                  if(resourceMenuRight.hasClass("smaller-seperator")) { // Instant compact => expanded
-                    resourceMenuRight.removeClass("smaller-seperator");
-                  }
-                  baggageBeltAnimFx(resourceMenuRight.find(li));
-                }
-              });
-            } else {
-              resourceMenuRight.html(results.find("#resourceMenuRight").html());
-              vrtxAdm.displayInfoMsg(results.find(".infomessage").html());
-              if(resourceMenuRight.hasClass("smaller-seperator")) { // Instant compact => expanded
-                resourceMenuRight.removeClass("smaller-seperator");
-              }
-              baggageBeltAnimFx(resourceMenuRight.find(li));
-            }
+            var result = _$(results);
+            vrtxAdm.displayErrorMsg(result.find(".errormessage").html());
+            vrtxAdm.cachedContent.html(result.find("#contents").html());
+            vrtxAdm.updateCollectionListingInteraction();
           }
         });
         e.stopPropagation();
         e.preventDefault();
       });
-    }
-    
-    for (i = resourceMenuServices.length; i--;) {
-      vrtxAdm.cachedAppContent.on("click", "#resourceMenuRight li." + resourceMenuServices[i] + " button", function (e) {
-        var button = _$(this);
-        var form = button.closest("form");
+      break;
+    case "vrtx-trash-can":
+      vrtxAdm.cachedContent.on("click", "input.deleteResourcePermanent", function (e) {
+        if (CHECKED_TRASHCAN_FILES >= (vrtxAdm.cachedContent.find("tbody tr").length - 1)) return; // Redirect if empty trash can
+        CHECKED_TRASHCAN_FILES = 0;
+        var input = _$(this);
+        var form = input.closest("form");
         var url = form.attr("action");
-        var li = form.closest("li");
-        var dataString = form.serialize() + "&" + button.attr("name") + "=" + button.val();
+        var dataString = form.serialize() + "&" + input.attr("name");
         vrtxAdm.serverFacade.postHtml(url, dataString, {
           success: function (results, status, resp) {
-            baggageBeltAnimFx(li, {
-              reverse: true,
-              complete: function() {
-                var result = _$(results);
-                vrtxAdm.displayErrorMsg(result.find(".errormessage").html());       
-                vrtxAdm.cachedContent.html(_$(results).find("#contents").html());
-                vrtxAdm.updateCollectionListingInteraction();
-                li.remove();
-              }
-            });
+            var result = _$(results);
+            vrtxAdm.displayErrorMsg(result.find(".errormessage").html());
+            vrtxAdm.cachedContent.html(result.find("#contents").html());
+            vrtxAdm.updateCollectionListingInteraction();
           }
         });
         e.stopPropagation();
         e.preventDefault();
       });
-    }
-
-    vrtxAdm.cachedContent.on("click", "input#collectionListing\\.action\\.delete-resources", function (e) {
-      var input = _$(this);
-      var form = input.closest("form");
-      var url = form.attr("action");
-      var dataString = form.serialize() + "&" + input.attr("name") + "=" + input.val();
-      vrtxAdm.serverFacade.postHtml(url, dataString, {
-        success: function (results, status, resp) {
-          var result = _$(results);
-          vrtxAdm.displayErrorMsg(result.find(".errormessage").html());      
-          vrtxAdm.cachedContent.html(result.find("#contents").html());
-          vrtxAdm.updateCollectionListingInteraction();
-        }
-      });
-      e.stopPropagation();
-      e.preventDefault();
-    });
-    break;
-   case "vrtx-trash-can":
-    vrtxAdm.cachedContent.on("click", "input.deleteResourcePermanent", function (e) {
-      if(CHECKED_TRASHCAN_FILES >= (vrtxAdm.cachedContent.find("tbody tr").length - 1)) return; // Redirect if empty trash can
-      CHECKED_TRASHCAN_FILES = 0;
-      var input = _$(this);
-      var form = input.closest("form");
-      var url = form.attr("action");
-      var dataString = form.serialize() + "&" + input.attr("name");
-      vrtxAdm.serverFacade.postHtml(url, dataString, {
-        success: function (results, status, resp) {
-          var result = _$(results);
-          vrtxAdm.displayErrorMsg(result.find(".errormessage").html());      
-          vrtxAdm.cachedContent.html(result.find("#contents").html());
-          vrtxAdm.updateCollectionListingInteraction();
-        }
-      });
-      e.stopPropagation();
-      e.preventDefault();
-    });
-    break;
-   case "vrtx-permissions":
-    var privilegiesPermissions = ["read", "read-write", "all"];
-    for (i = privilegiesPermissions.length; i--;) {
-      vrtxAdm.getFormAsync({
-        selector: "div.permissions-" + privilegiesPermissions[i] + "-wrapper a.full-ajax",
-        selectorClass: "expandedForm-" + privilegiesPermissions[i],
-        insertAfterOrReplaceClass: "div.permissions-" + privilegiesPermissions[i] + "-wrapper",
-        isReplacing: true,
-        nodeType: "div",
-        funcComplete: initPermissionForm,
-        simultanSliding: false,
-        transitionSpeed: 0,
-        transitionEasingSlideDown: "linear",
-        transitionEasingSlideUp: "linear"
-      });
-      vrtxAdm.completeFormAsync({
-        selector: "div.permissions-" + privilegiesPermissions[i] + "-wrapper .submitButtons input",
-        isReplacing: true,
-        updateSelectors: [".permissions-" + privilegiesPermissions[i] + "-wrapper",
+      break;
+    case "vrtx-permissions":
+      var privilegiesPermissions = ["read", "read-write", "all"];
+      for (i = privilegiesPermissions.length; i--;) {
+        vrtxAdm.getFormAsync({
+          selector: "div.permissions-" + privilegiesPermissions[i] + "-wrapper a.full-ajax",
+          selectorClass: "expandedForm-" + privilegiesPermissions[i],
+          insertAfterOrReplaceClass: "div.permissions-" + privilegiesPermissions[i] + "-wrapper",
+          isReplacing: true,
+          nodeType: "div",
+          funcComplete: initPermissionForm,
+          simultanSliding: false,
+          transitionSpeed: 0,
+          transitionEasingSlideDown: "linear",
+          transitionEasingSlideUp: "linear"
+        });
+        vrtxAdm.completeFormAsync({
+          selector: "div.permissions-" + privilegiesPermissions[i] + "-wrapper .submitButtons input",
+          isReplacing: true,
+          updateSelectors: [".permissions-" + privilegiesPermissions[i] + "-wrapper",
                           ".readPermission",
                           "#global-menu-leave-admin"],
-        errorContainer: "errorContainer",
-        errorContainerInsertAfter: ".groups-wrapper",
-        funcProceedCondition: checkStillAdmin,
-        funcComplete: function() {
-          if(DO_RELOAD_FROM_SERVER) {
-            location.reload(true);
-          }
-        },
-        post: true,
-        transitionSpeed: 0,
-        transitionEasingSlideDown: "linear",
-        transitionEasingSlideUp: "linear"
-      });
-    }
-  
-    var privilegiesPermissionsInTable = ["add-comment", "read-processed", "read-write-unpublished"];
-    for (i = privilegiesPermissionsInTable.length; i--;) {
-      vrtxAdm.getFormAsync({
-        selector: ".privilegeTable tr." + privilegiesPermissionsInTable[i] + " a.full-ajax",
-        selectorClass: privilegiesPermissionsInTable[i],
-        insertAfterOrReplaceClass: "tr." + privilegiesPermissionsInTable[i],
-        isReplacing: true,
-        nodeType: "tr",
-        funcComplete: initPermissionForm,
-        simultanSliding: true
-      });
-      vrtxAdm.completeFormAsync({
-        selector: "tr." +  privilegiesPermissionsInTable[i] + " .submitButtons input",
-        isReplacing: true,
-        updateSelectors: ["tr." +  privilegiesPermissionsInTable[i],
-                          ".resource-menu.read-permissions"],
-        errorContainer: "errorContainer",
-        errorContainerInsertAfter: ".groups-wrapper",
-        post: true
-      });
-    }
-
-    // Remove/add permissions
-    vrtxAdm.removePermissionAsync("input.removePermission", ".principalList");
-    vrtxAdm.addPermissionAsync("span.addGroup", ".principalList", ".groups-wrapper", "errorContainer");
-    vrtxAdm.addPermissionAsync("span.addUser", ".principalList", ".users-wrapper", "errorContainer");
-    
-    var SUBMIT_SET_INHERITED_PERMISSIONS = false;
-    $(document).on("click", "#permissions\\.toggleInheritance\\.submit", function(e) {
-      if(!SUBMIT_SET_INHERITED_PERMISSIONS) {
-        vrtxSimpleDialogs.openConfirmDialog(confirmSetInheritedPermissionsMsg, confirmSetInheritedPermissionsTitle, function() {
-          SUBMIT_SET_INHERITED_PERMISSIONS = true;
-          $("#permissions\\.toggleInheritance\\.submit").trigger("click");
-        }, null, null);
-        e.stopPropagation();
-        e.preventDefault();
-      } else {
-        e.stopPropagation();
-      }
-    });
-    
-    break;
-   case "vrtx-publishing":
-    // TODO: generalize dialog jQuery UI function with AJAX markup/text
-    $(document).on("click", "a.publishing-status-link", function(e) {
-      var dialogTemplate = $("#vrtx-dialog-template-content");
-      if(!dialogTemplate.length) {
-        vrtxAdm.serverFacade.getHtml(this.href, {
-          success: function (results, status, resp) {
-            _$("body").append(_$(results).find("#vrtx-dialog-template-content").parent().html());
-            dialogTemplate = $("#vrtx-dialog-template-content");
-            dialogTemplate.hide();
-            
-            vrtxSimpleDialogs.openConfirmDialog("", dialogTemplate.find(".vrtx-confirm-publish-msg").html(), function() {
-              dialogTemplate.find(".vrtx-focus-button input").trigger("click");
-            }, null, null);
-          }
+          errorContainer: "errorContainer",
+          errorContainerInsertAfter: ".groups-wrapper",
+          funcProceedCondition: checkStillAdmin,
+          funcComplete: function () {
+            if (DO_RELOAD_FROM_SERVER) {
+              location.reload(true);
+            }
+          },
+          post: true,
+          transitionSpeed: 0,
+          transitionEasingSlideDown: "linear",
+          transitionEasingSlideUp: "linear"
         });
-      } else {
-        vrtxSimpleDialogs.openConfirmDialog("", dialogTemplate.find(".vrtx-confirm-publish-msg").html(), function() {
-          dialogTemplate.find(".vrtx-focus-button input").trigger("click");
-        }, null, null);
       }
-      e.stopPropagation();
-      e.preventDefault();
-    });
-      
-    break;
-   case "vrtx-about":
-    vrtxAdm.zebraTables(".resourceInfo");
-    
-    if(!vrtxAdmin.isIE7) { // Turn of tmp. in IE7
-      var propsAbout = ["contentLocale", "commentsEnabled", "userTitle",   "keywords",       "description",
-                        "verifiedDate",  "authorName",      "authorEmail", "authorURL",      "collection-type",
-                        "contentType",   "userSpecifiedCharacterEncoding", "plaintext-edit", "xhtml10-type",
-                        "obsoleted"];
-      for (i = propsAbout.length; i--;) {
+
+      var privilegiesPermissionsInTable = ["add-comment", "read-processed", "read-write-unpublished"];
+      for (i = privilegiesPermissionsInTable.length; i--;) {
         vrtxAdm.getFormAsync({
-          selector: ".prop-" + propsAbout[i] + " a.vrtx-button-small",
-          selectorClass: "expandedForm-prop-" + propsAbout[i],
-          insertAfterOrReplaceClass: "tr.prop-" + propsAbout[i],
+          selector: ".privilegeTable tr." + privilegiesPermissionsInTable[i] + " a.full-ajax",
+          selectorClass: privilegiesPermissionsInTable[i],
+          insertAfterOrReplaceClass: "tr." + privilegiesPermissionsInTable[i],
           isReplacing: true,
           nodeType: "tr",
+          funcComplete: initPermissionForm,
           simultanSliding: true
         });
         vrtxAdm.completeFormAsync({
-          selector: ".prop-" + propsAbout[i] + " form input[type=submit]",
-          isReplacing: true
+          selector: "tr." + privilegiesPermissionsInTable[i] + " .submitButtons input",
+          isReplacing: true,
+          updateSelectors: ["tr." + privilegiesPermissionsInTable[i],
+                          ".resource-menu.read-permissions"],
+          errorContainer: "errorContainer",
+          errorContainerInsertAfter: ".groups-wrapper",
+          post: true
         });
       }
-    }
-    
-    var SUBMIT_TAKE_OWNERSHIP = false;
-    $(document).on("submit", "#vrtx-admin-ownership-form", function(e) {
-      if(!SUBMIT_TAKE_OWNERSHIP) {
-        vrtxSimpleDialogs.openConfirmDialog(confirmTakeOwnershipMsg, confirmTakeOwnershipTitle, function() {
-          SUBMIT_TAKE_OWNERSHIP = true;
-          $("#vrtx-admin-ownership-form").submit();
-        }, null, null);
+
+      // Remove/add permissions
+      vrtxAdm.removePermissionAsync("input.removePermission", ".principalList");
+      vrtxAdm.addPermissionAsync("span.addGroup", ".principalList", ".groups-wrapper", "errorContainer");
+      vrtxAdm.addPermissionAsync("span.addUser", ".principalList", ".users-wrapper", "errorContainer");
+
+      var SUBMIT_SET_INHERITED_PERMISSIONS = false;
+      $(document).on("click", "#permissions\\.toggleInheritance\\.submit", function (e) {
+        if (!SUBMIT_SET_INHERITED_PERMISSIONS) {
+          vrtxSimpleDialogs.openConfirmDialog(confirmSetInheritedPermissionsMsg, confirmSetInheritedPermissionsTitle, function () {
+            SUBMIT_SET_INHERITED_PERMISSIONS = true;
+            $("#permissions\\.toggleInheritance\\.submit").trigger("click");
+          }, null, null);
+          e.stopPropagation();
+          e.preventDefault();
+        } else {
+          e.stopPropagation();
+        }
+      });
+
+      break;
+    case "vrtx-publishing":
+      // TODO: generalize dialog jQuery UI function with AJAX markup/text
+      $(document).on("click", "a.publishing-status-link", function (e) {
+        var dialogTemplate = $("#vrtx-dialog-template-content");
+        if (!dialogTemplate.length) {
+          vrtxAdm.serverFacade.getHtml(this.href, {
+            success: function (results, status, resp) {
+              _$("body").append(_$(results).find("#vrtx-dialog-template-content").parent().html());
+              dialogTemplate = $("#vrtx-dialog-template-content");
+              dialogTemplate.hide();
+
+              vrtxSimpleDialogs.openConfirmDialog("", dialogTemplate.find(".vrtx-confirm-publish-msg").html(), function () {
+                dialogTemplate.find(".vrtx-focus-button input").trigger("click");
+              }, null, null);
+            }
+          });
+        } else {
+          vrtxSimpleDialogs.openConfirmDialog("", dialogTemplate.find(".vrtx-confirm-publish-msg").html(), function () {
+            dialogTemplate.find(".vrtx-focus-button input").trigger("click");
+          }, null, null);
+        }
         e.stopPropagation();
         e.preventDefault();
-      } else {
-        e.stopPropagation();
-      }
-    });
-    
-    // Urchin stats
-    vrtxAdm.cachedBody.on("click", "#vrtx-resource-visit-tab-menu a", function(e) {
-      if(GET_STAT_ASYNC_IN_PROGRESS) {
-        return false;
-      }
-      GET_STAT_ASYNC_IN_PROGRESS = true;
-      
-      var liElm = $(this).parent();
-      if(liElm.hasClass("first")) {
-        liElm.removeClass("first").addClass("active").addClass("active-first");
-        liElm.next().removeClass("active").removeClass("active-last").addClass("last");
-      } else {
-        liElm.removeClass("last").addClass("active").addClass("active-last");
-        liElm.prev().removeClass("active").removeClass("active-first").addClass("first");
-      }
-      
-      _$("#vrtx-resource-visit-wrapper").append("<span id='urchin-loading'></span>");
-      _$("#vrtx-resource-visit-chart-stats-info").remove();
-      vrtxAdm.serverFacade.getHtml(this.href, {
-        success: function (results, status, resp) {
-          _$("#urchin-loading").remove();
-          _$("#vrtx-resource-visit").append("<div id='vrtx-resource-visit-chart-stats-info'>" + _$(results).find("#vrtx-resource-visit-chart-stats-info").html() + "</div>");
-          GET_STAT_ASYNC_IN_PROGRESS = false;
+      });
+
+      break;
+    case "vrtx-about":
+      vrtxAdm.zebraTables(".resourceInfo");
+
+      if (!vrtxAdmin.isIE7) { // Turn of tmp. in IE7
+        var propsAbout = ["contentLocale", "commentsEnabled", "userTitle", "keywords", "description",
+                        "verifiedDate", "authorName", "authorEmail", "authorURL", "collection-type",
+                        "contentType", "userSpecifiedCharacterEncoding", "plaintext-edit", "xhtml10-type",
+                        "obsoleted"];
+        for (i = propsAbout.length; i--;) {
+          vrtxAdm.getFormAsync({
+            selector: ".prop-" + propsAbout[i] + " a.vrtx-button-small",
+            selectorClass: "expandedForm-prop-" + propsAbout[i],
+            insertAfterOrReplaceClass: "tr.prop-" + propsAbout[i],
+            isReplacing: true,
+            nodeType: "tr",
+            simultanSliding: true
+          });
+          vrtxAdm.completeFormAsync({
+            selector: ".prop-" + propsAbout[i] + " form input[type=submit]",
+            isReplacing: true
+          });
         }
-      });  
-      e.stopPropagation();    
-      e.preventDefault();
-    });
-    break;
-    default: // noop
-    break;
+      }
+
+      var SUBMIT_TAKE_OWNERSHIP = false;
+      $(document).on("submit", "#vrtx-admin-ownership-form", function (e) {
+        if (!SUBMIT_TAKE_OWNERSHIP) {
+          vrtxSimpleDialogs.openConfirmDialog(confirmTakeOwnershipMsg, confirmTakeOwnershipTitle, function () {
+            SUBMIT_TAKE_OWNERSHIP = true;
+            $("#vrtx-admin-ownership-form").submit();
+          }, null, null);
+          e.stopPropagation();
+          e.preventDefault();
+        } else {
+          e.stopPropagation();
+        }
+      });
+
+      // Urchin stats
+      vrtxAdm.cachedBody.on("click", "#vrtx-resource-visit-tab-menu a", function (e) {
+        if (GET_STAT_ASYNC_IN_PROGRESS) {
+          return false;
+        }
+        GET_STAT_ASYNC_IN_PROGRESS = true;
+
+        var liElm = $(this).parent();
+        if (liElm.hasClass("first")) {
+          liElm.removeClass("first").addClass("active").addClass("active-first");
+          liElm.next().removeClass("active").removeClass("active-last").addClass("last");
+        } else {
+          liElm.removeClass("last").addClass("active").addClass("active-last");
+          liElm.prev().removeClass("active").removeClass("active-first").addClass("first");
+        }
+
+        _$("#vrtx-resource-visit-wrapper").append("<span id='urchin-loading'></span>");
+        _$("#vrtx-resource-visit-chart-stats-info").remove();
+        vrtxAdm.serverFacade.getHtml(this.href, {
+          success: function (results, status, resp) {
+            _$("#urchin-loading").remove();
+            _$("#vrtx-resource-visit").append("<div id='vrtx-resource-visit-chart-stats-info'>" + _$(results).find("#vrtx-resource-visit-chart-stats-info").html() + "</div>");
+            GET_STAT_ASYNC_IN_PROGRESS = false;
+          }
+        });
+        e.stopPropagation();
+        e.preventDefault();
+      });
+      break;
+    default:
+      // noop
+      break;
   }
 
   // Show message in IE6, IE7 and IETrident in compability mode
@@ -686,8 +697,10 @@ vrtxAdmin._$(document).ready(function () {
       vrtxAdm.cachedAppContent.prepend("<div class='infomessage'>" + outdatedBrowserText + "</div>");
     }
   }
-  
-  vrtxAdmin.log({msg: "document.ready() in " + (+new Date - startReadyTime) + "ms"});
+
+  vrtxAdmin.log({
+    msg: "document.ready() in " + (+new Date - startReadyTime) + "ms"
+  });
 
 });
 

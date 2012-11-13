@@ -334,7 +334,7 @@ vrtxAdmin._$(document).ready(function () {
   versioningInteraction(bodyId, vrtxAdm, _$);
   
   // Ajax initialization / listeners
-
+  
   switch (bodyId) {
     case "vrtx-manage-collectionlisting":
       var tabMenuServices = ["fileUploadService", "createDocumentService", "createCollectionService"];
@@ -838,7 +838,7 @@ function traverseNode(treeElem, treeTravNode, lastNode) {
         });
       }
     }
-  }, 15);
+  }, 20);
 }
 
 /* ^ Create dialog tree view */

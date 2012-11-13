@@ -1354,7 +1354,7 @@ VrtxAdmin.prototype.collectionListingInteraction = function collectionListingInt
     });
     vrtxAdm.placeDeleteButtonInActiveTab();
     
-    if(vrtxAdm.cachedAppContent.find(".publish\\.globalPublishService a").length) {
+    if(false) { // TODO: need publishResources and unpublishResoureces as submitActions and services
       var menu = $("#tabMenuRight");
       var html = '<li class="more-menu">'
                  + '<div id="collection-more-menu">'

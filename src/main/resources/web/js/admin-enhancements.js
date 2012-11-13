@@ -1354,6 +1354,9 @@ VrtxAdmin.prototype.collectionListingInteraction = function collectionListingInt
     });
     vrtxAdm.placeDeleteButtonInActiveTab();
     
+    vrtxAdm.placePublishButtonInActiveTab();
+    vrtxAdm.placeUnpublishButtonInActiveTab();
+    
     if(false) { // TODO: need publishResources and unpublishResoureces as submitActions and services
       var menu = $("#tabMenuRight");
       var html = '<li class="more-menu">'
@@ -1460,6 +1463,74 @@ VrtxAdmin.prototype.placeDeleteButtonInActiveTab = function placeDeleteButtonInA
       }
       vrtxSimpleDialogs.openConfirmDialog(confirmDelete.replace("(1)", boxesSize) + '<br />' + list, confirmDeleteTitle, function() {
         vrtxAdm.cachedAppContent.find('#collectionListing\\.action\\.delete-resources').click();
+      }, null, null);
+    }
+    e.preventDefault();
+  });
+};
+
+VrtxAdmin.prototype.placePublishButtonInActiveTab = function placeDeleteButtonInActiveTab() {
+  var vrtxAdm = this, _$ = vrtxAdm._$;
+
+  var btn = vrtxAdm.cachedAppContent.find('#collectionListing\\.action\\.publish-resources');
+  if (!btn.length) return;
+  btn.hide();
+  var li = vrtxAdm.cachedActiveTab.find('li.publishResourcesService');
+  li.html('<a id="publishResourcesService" href="javascript:void(0);">' + btn.attr('title') + '</a>');
+  vrtxAdm.cachedActiveTab.find('#publishResourcesService').click(function (e) {
+    var boxes = vrtxAdm.cachedDirectoryListing.find('td input[type=checkbox]:checked');
+    if (!boxes.length) {
+      //alert(deleteUncheckedMessage);
+      vrtxSimpleDialogs.openMsgDialog(deleteUncheckedMessage, deleteTitle);
+    } else {
+      var list = "<ul>";
+      var boxesSize = boxes.size();
+      var boxesSize = boxesSizeTmp = boxes.size();
+      boxesSizeTmp = boxesSizeTmp > 10 ? 10 : boxesSizeTmp;
+      for (var i = 0; i < boxesSizeTmp; i++) {
+        var name = boxes[i].name.split("/");
+        list += "<li>" + name[name.length-1] + "</li>";
+      }
+      list += "</ul>"; 
+      if (boxesSize > 10) {
+        list += "... " + confirmDeleteAnd + " " + (boxesSize - 10) + " " + confirmDeleteMore;
+      }
+      vrtxSimpleDialogs.openConfirmDialog(confirmDelete.replace("(1)", boxesSize) + '<br />' + list, confirmDeleteTitle, function() {
+        vrtxAdm.cachedAppContent.find('#collectionListing\\.action\\.publish-resources').click();
+      }, null, null);
+    }
+    e.preventDefault();
+  });
+};
+
+VrtxAdmin.prototype.placeUnpublishButtonInActiveTab = function placeDeleteButtonInActiveTab() {
+  var vrtxAdm = this, _$ = vrtxAdm._$;
+
+  var btn = vrtxAdm.cachedAppContent.find('#collectionListing\\.action\\.unpublish-resources');
+  if (!btn.length) return;
+  btn.hide();
+  var li = vrtxAdm.cachedActiveTab.find('li.unpublishResourcesService');
+  li.html('<a id="unpublishResourcesService" href="javascript:void(0);">' + btn.attr('title') + '</a>');
+  vrtxAdm.cachedActiveTab.find('#unpublishResourcesService').click(function (e) {
+    var boxes = vrtxAdm.cachedDirectoryListing.find('td input[type=checkbox]:checked');
+    if (!boxes.length) {
+      //alert(deleteUncheckedMessage);
+      vrtxSimpleDialogs.openMsgDialog(deleteUncheckedMessage, deleteTitle);
+    } else {
+      var list = "<ul>";
+      var boxesSize = boxes.size();
+      var boxesSize = boxesSizeTmp = boxes.size();
+      boxesSizeTmp = boxesSizeTmp > 10 ? 10 : boxesSizeTmp;
+      for (var i = 0; i < boxesSizeTmp; i++) {
+        var name = boxes[i].name.split("/");
+        list += "<li>" + name[name.length-1] + "</li>";
+      }
+      list += "</ul>"; 
+      if (boxesSize > 10) {
+        list += "... " + confirmDeleteAnd + " " + (boxesSize - 10) + " " + confirmDeleteMore;
+      }
+      vrtxSimpleDialogs.openConfirmDialog(confirmDelete.replace("(1)", boxesSize) + '<br />' + list, confirmDeleteTitle, function() {
+        vrtxAdm.cachedAppContent.find('#collectionListing\\.action\\.unpublish-resources').click();
       }, null, null);
     }
     e.preventDefault();

@@ -22,6 +22,8 @@
   <#assign copyTitle = vrtx.getMsg("tabMenuRight.copyResourcesService") />
   <#assign moveTitle = vrtx.getMsg("tabMenuRight.moveResourcesService") />
   <#assign deleteTitle = vrtx.getMsg("tabMenuRight.deleteResourcesService") />
+  <#assign publishTitle = vrtx.getMsg("tabMenuRight.publishResourcesService") />
+  <#assign unpublishTitle = vrtx.getMsg("tabMenuRight.unpublishResourcesService") />
   
   <#assign moveUnCheckedMessage = vrtx.getMsg("tabMenuRight.moveUnCheckedMessage",
          "You must check at least one element to move") />
@@ -51,6 +53,11 @@
   <@col.listCollection
      withForm=true
      action=action.submitURL?string
-     submitActions={"copy-resources":copyTitle, "move-resources":moveTitle,"delete-resources":deleteTitle}/>
+     submitActions={ "copy-resources": copyTitle,
+                     "move-resources": moveTitle,
+                     "delete-resources": deleteTitle,
+                     "publish-resources": publishTitle,
+                     "unpublish-resources": unpublishTitle
+                   }/>
 </body>
 </html>

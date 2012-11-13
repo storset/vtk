@@ -39,6 +39,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
@@ -109,6 +110,7 @@ public class PublishResourceController extends SimpleFormController implements I
             } else if (UNPUBLISH_PARAM.equals(action) || UNPUBLISH_PARAM_GLOBAL.equals(action)) {
                 resource.removeProperty(this.publishDatePropDef);
                 msgCode += "unpublish";
+                
             }
             repository.store(token, resource);
             RequestContext.getRequestContext().addInfoMessage(new Message(msgCode));
@@ -120,6 +122,7 @@ public class PublishResourceController extends SimpleFormController implements I
         this.viewName = viewName;
     }
 
+    @Required
     public void setPublishDatePropDef(PropertyTypeDefinition publishDatePropDef) {
         this.publishDatePropDef = publishDatePropDef;
     }

@@ -206,6 +206,64 @@
     <property name="viewName" value="redirectToManage" />
     <property name="publishDatePropDef" ref="publishDatePropDef" />
   </bean>
+  
+  <!--  Multiple -->
+  
+   <bean id="unpublishResourcesService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="manageCollectionListingService" />
+    <property name="order" value="-955" />
+    <property name="categories">
+      <set>
+        <value>collectionMenu</value>
+      </set>
+    </property>
+    <property name="assertions">
+      <list>
+        <ref bean="manage.postRequestAssertion" />
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="action" />
+          <property name="parameterValue" value="unpublish-resources" />
+        </bean>
+        <ref bean="requiresPublishUnpublishPermissionAssertion" />
+        <ref bean="resourceInCollection" />
+      </list>
+    </property>
+    <property name="handler" ref="unpublishResourcesHandler" />
+  </bean>
+
+  <bean id="publishResourcesService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="manageCollectionListingService" />
+    <property name="order" value="-950" />
+    <property name="categories">
+      <set>
+        <value>collectionMenu</value>
+      </set>
+    </property>
+    <property name="assertions">
+      <list>
+        <ref bean="manage.postRequestAssertion" />
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="action" />
+          <property name="parameterValue" value="publish-resources" />
+        </bean>
+        <ref bean="requiresPublishUnpublishPermissionAssertion" />
+        <ref bean="resourceInCollection" />
+      </list>
+    </property>
+    <property name="handler" ref="publishResourcesHandler" />
+  </bean>
+  
+  <bean id="unpublishResourcesHandler" class="org.vortikal.web.actions.publish.UnpublishResourcesController">
+    <property name="viewName" value="manageCollectionListing" />
+    <property name="publishDatePropDef" ref="publishDatePropDef" />
+  </bean>
+  
+  <bean id="publishResourcesHandler" class="org.vortikal.web.actions.publish.PublishResourcesController">
+    <property name="viewName" value="manageCollectionListing" />
+    <property name="publishDatePropDef" ref="publishDatePropDef" />
+  </bean>
+  
+  <!--  ^ Multiple -->
 
   <bean id="resourceIsNotPublishedAssertion" class="org.vortikal.web.service.ResourcePropertyAssertion">
     <property name="namespace" ref="DEFAULT_NAMESPACE" />

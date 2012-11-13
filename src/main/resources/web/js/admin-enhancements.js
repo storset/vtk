@@ -1353,6 +1353,18 @@ VrtxAdmin.prototype.collectionListingInteraction = function collectionListingInt
       title: copyTitle
     });
     vrtxAdm.placeDeleteButtonInActiveTab();
+    
+    if($(".publish\\.globalPublishService").length) {
+      var menu = $("#tabMenuRight");
+      html = '<li class="more-menu">'
+             + '<div id="collection-more-menu">'
+               + '<span id="collection-more-menu-header">Mer...</span>'
+               + '<ul><li><a href="javascript:void(0);">Publiser</a></li></ul>'
+             + '</div>'
+           + '</li>';
+     menu.append(html);
+     vrtxAdm.dropdownLanguageMenu("#collection-more-menu");
+    }
   }
 
   vrtxAdm.placeRecoverButtonInActiveTab();

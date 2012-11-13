@@ -10,12 +10,16 @@ resourcetype course-group {
     courses-in-group : html,
     course-group-admission : simple_html,
     other : simple_html,
-    contact : string
+    contact : json (
+        shared-text : string,
+        optional-text : html
+    ) noextract
   }
 
   edit-rules {
     status (dropdown),
-    course-group-scope (dropdown)
+    course-group-scope (dropdown),
+    contact:shared-text (dropdown)
   }
 
   view {
@@ -42,6 +46,11 @@ resourcetype course-group {
        en : (range = "1..120"),
        no : (range = "1..120"),
        nn : (range = "1..120")
+     },
+     contact:shared-text {
+       en : ("current-version" = "Current version", "discontinued-course" = "Discontinued course group"),
+       no : ("current-version" = "Gjeldende versjon", "discontinued-course" = "Nedlagt emnegruppe"),
+       nn : ("current-version" = "Gjeldande versjon", "discontinued-course" = "Nedlagd emnegruppe")
      }
    }
 

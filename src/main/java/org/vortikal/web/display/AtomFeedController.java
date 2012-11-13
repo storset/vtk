@@ -183,11 +183,6 @@ public abstract class AtomFeedController implements Controller {
                 feed.setLogo(val);
             }
         }
-
-        Date lastModified = getLastModified(collection);
-        if (lastModified != null) {
-            feed.setUpdated(lastModified);
-        }
         return feed;
     }
 

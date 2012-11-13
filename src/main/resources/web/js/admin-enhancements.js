@@ -73,6 +73,7 @@ function VrtxAdmin() {
   this.isMobileWebkitDevice = (this.isIPhone || this.isIPad || this.isAndroid);
   this.isWin = ((this.ua.indexOf("win") != -1) || (this.ua.indexOf("16bit") != -1));
   this.supportsFileList = window.FileList;
+  this.animateTableRows = !this.isIE;
   
   // Language
   this.lang = readCookie("vrtx.manage.language", "no");
@@ -2152,7 +2153,7 @@ function versioningInteraction(bodyId, vrtxAdm, _$) {
       vrtxAdm.serverFacade.postHtml(url, dataString, {
         success: function (results, status, resp) {
           var tr = form.closest("tr");
-          if(!vrtxAdm.isIE) {
+          if(vrtxAdm.animateTableRows) {
             tr.prepareTableRowForSliding().hide(0).slideDown(0, "linear");
           }
           // Check when multiple animations are complete; credits: http://tinyurl.com/83oodnp
@@ -2317,7 +2318,7 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(options) {
               }
             } else {
               var node = _$(this).parent().parent();
-              if(node.is("tr")) {  // Because 'this' can be tr > td > div
+              if(node.is("tr") && vrtxAdm.animateTableRows) {  // Because 'this' can be tr > td > div
                 node.remove();
               } else {
                 _$(this).remove();            
@@ -2359,7 +2360,7 @@ VrtxAdmin.prototype.addOriginalMarkup = function addOriginalMarkup(url, results,
     return false;
   }
   var node = expanded.parent().parent();
-  if(node.is("tr")) {  // Because 'this' can be tr > td > div
+  if(node.is("tr") && vrtxAdm.animateTableRows) {  // Because 'this' can be tr > td > div
     node.replaceWith(resultHtml).show(0);
   } else {
     expanded.replaceWith(resultHtml).show(0);              
@@ -2389,7 +2390,7 @@ VrtxAdmin.prototype.addNewMarkup = function addNewMarkup(options, selectorClass,
   if(GET_FORM_ASYNCS_IN_PROGRESS) {
     GET_FORM_ASYNCS_IN_PROGRESS--;
   }
-  if(nodeType == "tr" && !vrtxAdm.isIE) {
+  if(nodeType == "tr" && vrtxAdm.animateTableRows) {
     _$(nodeType + "." + selectorClass).prepareTableRowForSliding();
   }
   _$(nodeType + "." + selectorClass).hide().slideDown(transitionSpeed, transitionEasingSlideDown, function() {
@@ -2941,7 +2942,7 @@ function readCookie(cookieName, defaultVal) {
  *  o http://www.bennadel.com/blog/1624-Ask-Ben-Overriding-Core-jQuery-Methods.htm
  */  
 
-if(!vrtxAdmin.isIE) {
+if(vrtxAdmin.animateTableRows) {
 
 jQuery.fn.prepareTableRowForSliding = function() {
   $tr = this;

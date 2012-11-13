@@ -43,44 +43,44 @@ resourcetype course-description : fellestekst-document {
         <table class="course" cellpadding="0" cellspacing="0" width="100%">
           <tbody>
             <tr class="vrtx-academics-course-table-title">
-              <td colspan="2"><b>Fakta om emnet:</b></td>
+              <td colspan="2"><b>[localized 'facts']:</b></td>
             </tr>
             <tr valign="top">
-              <td>Studiepoeng:</td>
-              <td>[val credits][if creditsdecimal != null && creditsdecimal != "" && creditsdecimal != "0"],[val creditsdecimal][endif]</td>
+              <td>[localized 'credits']:</td>
+              <td>[if credits != null][val credits][if creditsdecimal != null && creditsdecimal != "" && creditsdecimal != "0"],[val creditsdecimal][endif][endif]</td>
             </tr>
             <tr valign="top">
-              <td>Undervises:</td>
+              <td>[localized 'teachingsemester']:</td>
               [if teachingsemester != null && teachingsemester = "particular-semester"]
-                <td>[val teachingsemester-particular-semester]</td>
+                <td>[if teachingsemester-particular-semester != null][val teachingsemester-particular-semester][endif]</td>
               [elseif teachingsemester != null && teachingsemester = "other"]
                 <td>[val teachingsemester-other # unescaped]</td>
               [else]
-                <td>[val teachingsemester]</td>
+                <td>[if teachingsemester != null][val teachingsemester][endif]</td>
               [endif]
             </tr>
             <tr valign="top">
-              <td>Eksamen:</td>
+              <td>[localized 'examsemester']:</td>
               [if examsemester != null && examsemester = "particular-semester"]
-                <td>[val examsemester-particular-semester]</td>
+                <td>[if examsemester-particular-semester != null][val examsemester-particular-semester][endif]</td>
               [elseif examsemester != null && examsemester = "other"]
                 <td>[val examsemester-other # unescaped]</td>
               [else]
-                <td>[val examsemester]</td>
+                <td>[if examsemester != null][val examsemester][endif]</td>
               [endif]
             </tr>
             <tr valign="top">
-              <td>Undervisningsspråk:</td>
-              [if content-locale != null && content-locale = "no"]
+              <td>[localized 'content-locale']:</td>
+              [if content-locale != null && content-locale = "no_NO"]
                 <td>[localized 'locale-no']</td>
               [elseif content-locale != null && content-locale = "en"]
                 <td>[localized 'locale-en']</td>
-              [elseif content-locale != null && content-locale = "nn"]
+              [elseif content-locale != null && content-locale = "no_NO_NY"]
                 <td>[localized 'locale-nn']</td>
               [endif]
             </tr>
             <tr valign="top">
-              <td>Tilbys ved:</td>
+              <td>[localized 'administrated']:</td>
               <td><a href="http://www.mn.uio.no/ifi/" class="vrtx-link-check">Institutt for informatikk (Ifi)</a></td>
             </tr>
           </tbody>
@@ -93,11 +93,20 @@ resourcetype course-description : fellestekst-document {
         <table class="master" cellpadding="5" cellspacing="5" width="100%">
           <tbody>
             <tr>
-              <td><b>Semestersider</b> (undervisningstider, eksamensdato, pensum m.m.):
+              <td>[localized 'semester']
                 <ul>
-                      <li class="vrtx-semesterside-1">
-                        placeholder h12
-                      </li>
+                  [def uri resource-prop("./", "uri")]
+                  [def semesters search('uri=' + uri + '/* && type IN semester-context')]
+                  [if typeof(semesterSearchSort) = 'function']
+                    [def semesters semesterSearchSort(semesters)]
+                  [endif] 
+                  [list semesters semester]
+                    [def url view-url(semester)]
+                    [def title resource-prop(semester, "semesterContext.semester")]
+                    <li>
+                      <a href="[val url]">[if title != null && title != ""][val title][else][val url][endif]</a>
+                    </li>
+                  [endlist]
                 </ul>
               </td>
             </tr>
@@ -108,12 +117,30 @@ resourcetype course-description : fellestekst-document {
 
     academics-course-navigation {
         ##
-        <div class="engelsk">
-          [def uri resource-prop(".", "uri")]
-          [def uri "./index-eng.html"]
-          [def file json-resource(uri)]
-          [if file != null]
-            <a href="http://www.uio.no/studier/emner/matnat/ifi/INF1000/index-eng.xml" class="vrtx-link-check">English version</a>
+        <div class="academics-course-navigation">
+          [def this-uri resource-prop(".", "uri")]
+          [def parent-uri resource-prop("./", "uri")]
+          [def content-locale resource-prop-obj-val(".", "contentLocale")]
+          [if content-locale != null && (content-locale = "no_NO" || content-locale = "no_NO_NY")]
+            [def resource resource(parent-uri + '/index-eng.html')]
+            [if resource != null]
+              [def resource-uri resource-prop(resource, "uri")]
+              [def resource-content-locale resource-prop-obj-val(resource, "contentLocale")]
+              [if resource-uri != this-uri && resource-content-locale = "en"]
+                [def view-eng view-url(resource)]
+                <a href="[val view-eng]" class="vrtx-link-check">[localized 'version-en']</a>
+              [endif]
+            [endif]
+          [elseif content-locale != null && content-locale = "en"]
+            [def resource resource(parent-uri + '/index.html')]
+            [if resource != null]
+              [def resource-uri resource-prop(resource, "uri")]
+              [def resource-content-locale resource-prop-obj-val(resource, "contentLocale")]
+              [if resource-uri != this-uri && (resource-content-locale = "no_NO" || resource-content-locale = "no_NO_NY")]
+                [def view-no view-url(resource)]
+                <a href="[val view-no]" class="vrtx-link-check">[localized 'version-no']</a>
+              [endif]
+            [endif]
           [endif]
         </div>
         ##
@@ -136,10 +163,15 @@ resourcetype course-description : fellestekst-document {
     statusmessage {
         ##
         [def course-status resource-prop-obj-val(".", "courseContext.course-status")]
-        [if course-status != null && course-status = "continued-as"]
-          <h2 class="statusmessage">
-            Dette emnet er nedlagt, men det kan hende at undervisningen er videref&oslash;rt under en ny emnekode. Se oversikt over <a href="http://www.uio.no/studier/emner/" class="vrtx-link-check">emner som tilbys</a>.
-          </h2>
+        [def course-continued-as resource-prop(".", "courseContext.course-continued-as")]
+        [if course-status != null]
+          [if course-status = "continued-as"]
+            <h2 class="statusmessage">[localized 'continued-as'] [if course-continued-as != null && course-continued-as != ""][call "include:ref" {"referencetype" : "emne", "id" : course-continued-as}][endif]</h2>
+          [elseif course-status = "discontinued-course"]
+            <h2 class="statusmessage">[localized 'discontinued-course']</h2>
+          [elseif course-status = "earlier-version"]
+            <h2 class="statusmessage">[localized 'earlier-version']</h2>
+          [endif]
         [endif]
         ##
     }
@@ -241,10 +273,28 @@ resourcetype course-description : fellestekst-document {
      }
   }
   
-  localization {  
+  localization {
+    title : (en : "Title", no : "Tittel", nn : "Tittel"),
+    header : (en : "Edit course", no : "Rediger emne", nn : "Rediger emne"),
     locale-no : (en : "Bokmål", no : "Bokmål", nn : "Bokmål"),
     locale-nn : (en : "Nynorsk", no : "Nynorsk", nn : "Nynorsk"),
-    locale-en : (en : "English", no : "Engelsk", nn : "Engelsk")
+    locale-en : (en : "English", no : "Engelsk", nn : "Engelsk"),
+    version-no : (en : "Norsk versjon", no : "Norsk versjon", nn : "Norsk versjon"),
+    version-en : (en : "English version", no : "English version", nn : "English version"),
+    continued-as : (en : "This course is continued as", no: "Dette emnet er videreført som", nn : "Dette emnet er vidareført som"),
+    discontinued-course : (en : "This course is discontinued.", no : "Dette emnet er nedlagt.", nn : "Dette emnet er nedlagt."),
+    earlier-version : (en : "This version of the course description is outdated. For up to date information about this course, please visit <a href=../>the complete course list of the department.</a>",
+                       no : "Denne versjonen av emnebeskrivelsen er ikke lenger gyldig. Se <a href=../>listen over alle emner ved insituttet</a> for oppdatert versjon av dette emnet.",
+                       nn : "Denne versjonen av emneskildringa er ikkje lenger gyldig. Sjå <a href=../>lista over alle emner ved insituttet</a> for oppdatert versjon av dette emnet."),
+    facts : (en : "Facts about this course", no : "Fakta om emnet", nn : "Fakta om emnet"),
+    credits : (en : "Credits", no : "Studiepoeng", nn : "Studiepoeng"),
+    teachingsemester : (en : "Teaching semester", no : "Undervises", nn : "Undervises"),
+    examsemester : (en : "Examination semester", no: "Eksamen", nn: "Eksamen"),
+    content-locale : (en : "Language of instruction", no : "Undervisningsspråk", nn : "Undervisningsspråk"),
+    administrated : (en : "Administrated by", no : "Tilbys ved", nn : "Tilbys ved"),
+    semester : (en : "<b>Detailed course information - Current and previous semesters:</b>",
+                no : "<b>Semestersider</b> (undervisningstider, eksamensdato, pensum m.m.):",
+                nn : "<b>Semestersider</b> (undervisningstider, eksamensdato, pensum m.m.):")
   }
   
 }

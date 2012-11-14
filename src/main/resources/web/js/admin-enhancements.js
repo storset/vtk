@@ -1462,6 +1462,7 @@ VrtxAdmin.prototype.placeDeleteButtonInActiveTab = function placeDeleteButtonInA
 };
 
 VrtxAdmin.prototype.placePublishButtonInActiveTab = function placeDeleteButtonInActiveTab() {
+  if(typeof moreTitle === "undefined") return;
   var vrtxAdm = this, _$ = vrtxAdm._$;
 
   var btn = vrtxAdm.cachedAppContent.find('#collectionListing\\.action\\.publish-resources');
@@ -1471,7 +1472,7 @@ VrtxAdmin.prototype.placePublishButtonInActiveTab = function placeDeleteButtonIn
   var menu = li.closest("#tabMenuRight");
   var html = '<li class="more-menu">'
                  + '<div id="collection-more-menu">'
-                   + '<span id="collection-more-menu-header">Mer...</span>'
+                   + '<span id="collection-more-menu-header">' + moreTitle + '...</span>'
                    + '<ul><li><a id="publishTheResourcesService" href="javascript:void(0);">' + btn.attr('title') + '</a></li></ul>'
                  + '</div>'
                + '</li>';
@@ -1504,6 +1505,7 @@ VrtxAdmin.prototype.placePublishButtonInActiveTab = function placeDeleteButtonIn
 };
 
 VrtxAdmin.prototype.placeUnpublishButtonInActiveTab = function placeDeleteButtonInActiveTab() {
+  if(typeof moreTitle === "undefined") return;
   var vrtxAdm = this, _$ = vrtxAdm._$;
 
   var btn = vrtxAdm.cachedAppContent.find('#collectionListing\\.action\\.unpublish-resources');

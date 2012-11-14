@@ -53,7 +53,6 @@ public class DeleteResourceController extends SimpleFormController {
     /* TODO: change class name to something that says it is used when standing on resource */
 
     private String cancelView;
-    private DeletePublishUnpublishHelper helper;
 
     protected Object cmd;
 
@@ -94,8 +93,8 @@ public class DeleteResourceController extends SimpleFormController {
         // path to resource that failed.
         Map<String, List<Path>> failures = new HashMap<String, List<Path>>();
 
-        helper.deleteResource(repository, token, uri, true, failures);
-        helper.addFailureMessages(failures, requestContext);
+        DeletePublishUnpublishHelper.deleteResource(repository, token, uri, true, failures);
+        DeletePublishUnpublishHelper.addFailureMessages(failures, requestContext);
         if (!failures.isEmpty()) {
             return new ModelAndView(super.getFormView());
         }
@@ -109,10 +108,5 @@ public class DeleteResourceController extends SimpleFormController {
 
     public void setCancelView(String cancelView) {
         this.cancelView = cancelView;
-    }
-
-    @Required
-    public void setHelper(DeletePublishUnpublishHelper helper) {
-        this.helper = helper;
     }
 }

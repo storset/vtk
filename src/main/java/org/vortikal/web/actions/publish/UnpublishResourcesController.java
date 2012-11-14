@@ -51,7 +51,6 @@ public class UnpublishResourcesController implements Controller {
 
     private String viewName;
     private PropertyTypeDefinition publishDatePropDef;
-    private DeletePublishUnpublishHelper helper;
     
     @Override
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) {
@@ -69,7 +68,7 @@ public class UnpublishResourcesController implements Controller {
         while (e.hasMoreElements()) {
             String name = (String) e.nextElement();
             try {
-                helper.unpublishResource(publishDatePropDef, repository, token, Path.fromString(name), failures);
+                DeletePublishUnpublishHelper.unpublishResource(publishDatePropDef, repository, token, Path.fromString(name), failures);
             } catch (IllegalArgumentException iae) { // Not a path, ignore it
                 continue;
             }
@@ -89,10 +88,5 @@ public class UnpublishResourcesController implements Controller {
     @Required
     public void setPublishDatePropDef(PropertyTypeDefinition publishDatePropDef) {
         this.publishDatePropDef = publishDatePropDef;
-    }
-    
-    @Required
-    public void setHelper(DeletePublishUnpublishHelper helper) {
-        this.helper = helper;
     }
 }

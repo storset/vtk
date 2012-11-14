@@ -49,7 +49,6 @@ import org.vortikal.web.actions.DeletePublishUnpublishHelper;
 public class DeleteResourcesController implements Controller {
 
     private String viewName;
-    private DeletePublishUnpublishHelper helper;
 
     @Override
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) {
@@ -73,12 +72,12 @@ public class DeleteResourcesController implements Controller {
         while (e.hasMoreElements()) {
             String name = (String) e.nextElement();
             try {
-                this.helper.deleteResource(repository, token, Path.fromString(name), recoverable, failures);
+                DeletePublishUnpublishHelper.deleteResource(repository, token, Path.fromString(name), recoverable, failures);
             } catch (IllegalArgumentException iae) { // Not a path, ignore it
                 continue;
             }
         }
-        this.helper.addFailureMessages(failures, requestContext);
+        DeletePublishUnpublishHelper.addFailureMessages(failures, requestContext);
 
         return new ModelAndView(this.viewName);
     }
@@ -89,10 +88,5 @@ public class DeleteResourcesController implements Controller {
 
     public String getViewName() {
         return viewName;
-    }
-
-    @Required
-    public void setHelper(DeletePublishUnpublishHelper helper) {
-        this.helper = helper;
     }
 }

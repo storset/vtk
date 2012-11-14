@@ -31,7 +31,7 @@
 package org.vortikal.web.actions;
 
 import java.util.ArrayList;
-import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -44,29 +44,25 @@ import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceLockedException;
+import org.vortikal.repository.ResourceNotFoundException;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.web.Message;
 import org.vortikal.web.RequestContext;
 
 public class DeletePublishUnpublishHelper {
 
-    protected final String deleteMsgKey = "manage.delete.error.";
-    protected final String publishMsgKey = "manage.publish.error.";
-    protected final String unpublishMsgKey = "manage.unpublish.error.";
+    private static String deleteMsgKey = "manage.delete.error.";
+    private static String publishMsgKey = "manage.publish.error.";
+    private static final String unpublishMsgKey = "manage.unpublish.error.";
     
     private static Log logger = LogFactory.getLog(DeletePublishUnpublishHelper.class);
-    
-    // TODO: Refactor try-catch-stuff
 
-    public void deleteResource(Repository repository, String token, Path uri, boolean recoverable,
+    public static void deleteResource(Repository repository, String token, Path uri, boolean recoverable,
             Map<String, List<Path>> failures) {
         try {
-            if (repository.exists(token, uri)) {
-                repository.delete(token, uri, recoverable);
-            } else {
-                addToFailures(failures, uri, deleteMsgKey, "nonExisting");
-            }
-        } catch (IllegalArgumentException iae) { // Not a path, ignore it
+            repository.delete(token, uri, recoverable);
+        } catch (ResourceNotFoundException rnfe) {       
+           addToFailures(failures, uri, deleteMsgKey, "nonExisting");
         } catch (AuthorizationException ae) {
             addToFailures(failures, uri, deleteMsgKey, "unAuthorized");
         } catch (ResourceLockedException rle) {
@@ -80,8 +76,8 @@ public class DeletePublishUnpublishHelper {
         }
     }
 
-    public void publishResource(PropertyTypeDefinition publishDatePropDef, Repository repository, String token,
-            Path uri, Map<String, List<Path>> failures) {
+    public static void publishResource(PropertyTypeDefinition publishDatePropDef, Repository repository, String token,
+            Path uri, Map<String, List<Path>> failures, Date publishedDate) {
         try {
             Resource resource = repository.retrieve(token, uri, true);
             Property publishDateProp = resource.getProperty(publishDatePropDef);
@@ -89,7 +85,7 @@ public class DeletePublishUnpublishHelper {
                 publishDateProp = publishDatePropDef.createProperty();
                 resource.addProperty(publishDateProp);
             }
-            publishDateProp.setDateValue(Calendar.getInstance().getTime());
+            publishDateProp.setDateValue(publishedDate);
             repository.store(token, resource);
         } catch (AuthorizationException ae) {
             addToFailures(failures, uri, publishMsgKey, "unAuthorized");
@@ -104,7 +100,7 @@ public class DeletePublishUnpublishHelper {
         }
     }
 
-    public void unpublishResource(PropertyTypeDefinition publishDatePropDef, Repository repository, String token,
+    public static void unpublishResource(PropertyTypeDefinition publishDatePropDef, Repository repository, String token,
             Path uri, Map<String, List<Path>> failures) {
         try {
             Resource resource = repository.retrieve(token, uri, true);
@@ -123,7 +119,7 @@ public class DeletePublishUnpublishHelper {
         }
     }
 
-    public void addToFailures(Map<String, List<Path>> failures, Path fileUri, String msgKey, String failureType) {
+    private static void addToFailures(Map<String, List<Path>> failures, Path fileUri, String msgKey, String failureType) {
         String key = msgKey.concat(failureType);
         List<Path> failedPaths = failures.get(key);
         if (failedPaths == null) {
@@ -133,7 +129,7 @@ public class DeletePublishUnpublishHelper {
         failedPaths.add(fileUri);
     }
 
-    public void addFailureMessages(Map<String, List<Path>> failures, RequestContext requestContext) {
+    public static void addFailureMessages(Map<String, List<Path>> failures, RequestContext requestContext) {
         for (Entry<String, List<Path>> entry : failures.entrySet()) {
             String key = entry.getKey();
             List<Path> failedResources = entry.getValue();

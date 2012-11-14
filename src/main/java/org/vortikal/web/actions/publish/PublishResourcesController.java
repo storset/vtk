@@ -30,6 +30,8 @@
  */
 package org.vortikal.web.actions.publish;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
@@ -51,7 +53,6 @@ public class PublishResourcesController implements Controller {
 
     private String viewName;
     private PropertyTypeDefinition publishDatePropDef;
-    private DeletePublishUnpublishHelper helper;
 
     @Override
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) {
@@ -63,13 +64,15 @@ public class PublishResourcesController implements Controller {
         // key (String) that specifies type of failure and identifies list of
         // paths to resources that failed.
         Map<String, List<Path>> failures = new HashMap<String, List<Path>>();
+        
+        Date publishedDate = Calendar.getInstance().getTime(); // Publish all resources at same time
 
         @SuppressWarnings("rawtypes")
         Enumeration e = request.getParameterNames();
         while (e.hasMoreElements()) {
             String name = (String) e.nextElement();
             try {
-                helper.publishResource(publishDatePropDef, repository, token, Path.fromString(name), failures);
+                DeletePublishUnpublishHelper.publishResource(publishDatePropDef, repository, token, Path.fromString(name), failures, publishedDate);
             } catch (IllegalArgumentException iae) { // Not a path, ignore it
                 continue;
             }
@@ -89,10 +92,5 @@ public class PublishResourcesController implements Controller {
     @Required
     public void setPublishDatePropDef(PropertyTypeDefinition publishDatePropDef) {
         this.publishDatePropDef = publishDatePropDef;
-    }
-    
-    @Required
-    public void setHelper(DeletePublishUnpublishHelper helper) {
-        this.helper = helper;
     }
 }

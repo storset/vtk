@@ -58,7 +58,7 @@ public class PublishEvaluator implements PropertyEvaluator {
         property.setBooleanValue(false);
         
         if (publishDate != null) {
-            if (publishDate.before(now)) {
+            if (publishDate.before(now) || publishDate.equals(now)) {
                 if (unpublishDate == null || unpublishDate.after(now)) {
                     property.setBooleanValue(true);
                 }

@@ -92,7 +92,7 @@ public class DeleteResourceController extends SimpleFormController {
         // key (String) that specifies type of failure and identifies
         // path to resource that failed.
         Map<String, List<Path>> failures = new HashMap<String, List<Path>>();
-
+        
         DeletePublishUnpublishHelper.deleteResource(repository, token, uri, true, failures);
         DeletePublishUnpublishHelper.addFailureMessages(failures, requestContext);
         if (!failures.isEmpty()) {

@@ -77,6 +77,7 @@ public class PublishResourcesController implements Controller {
                 continue;
             }
         }
+        DeletePublishUnpublishHelper.addFailureMessages(failures, requestContext);
 
         return new ModelAndView(this.viewName);
     }

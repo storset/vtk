@@ -72,7 +72,7 @@ public class PublishResourcesController implements Controller {
         while (e.hasMoreElements()) {
             String name = (String) e.nextElement();
             try {
-                DeletePublishUnpublishHelper.publishResource(publishDatePropDef, repository, token, Path.fromString(name), failures, publishedDate);
+                DeletePublishUnpublishHelper.publishResource(publishDatePropDef, publishedDate, repository, token, Path.fromString(name), failures);
             } catch (IllegalArgumentException iae) { // Not a path, ignore it
                 continue;
             }

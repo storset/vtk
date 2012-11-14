@@ -61,7 +61,7 @@ public class DeletePublishUnpublishHelper {
             Map<String, List<Path>> failures) {
         try {
             repository.delete(token, uri, recoverable);
-        } catch (ResourceNotFoundException rnfe) {       
+        } catch (ResourceNotFoundException rnfe) {
             addToFailures(failures, uri, deleteMsgKey, "nonExisting");
         } catch (AuthorizationException ae) {
             addToFailures(failures, uri, deleteMsgKey, "unAuthorized");
@@ -76,8 +76,8 @@ public class DeletePublishUnpublishHelper {
         }
     }
 
-    public static void publishResource(PropertyTypeDefinition publishDatePropDef, Repository repository, String token,
-            Path uri, Map<String, List<Path>> failures, Date publishedDate) {
+    public static void publishResource(PropertyTypeDefinition publishDatePropDef, Date publishedDate,
+            Repository repository, String token, Path uri, Map<String, List<Path>> failures) {
         try {
             Resource resource = repository.retrieve(token, uri, true);
             Property publishDateProp = resource.getProperty(publishDatePropDef);
@@ -87,7 +87,7 @@ public class DeletePublishUnpublishHelper {
             }
             publishDateProp.setDateValue(publishedDate);
             repository.store(token, resource);
-        } catch (ResourceNotFoundException rnfe) {       
+        } catch (ResourceNotFoundException rnfe) {
             addToFailures(failures, uri, publishMsgKey, "nonExisting");
         } catch (AuthorizationException ae) {
             addToFailures(failures, uri, publishMsgKey, "unAuthorized");
@@ -102,13 +102,13 @@ public class DeletePublishUnpublishHelper {
         }
     }
 
-    public static void unpublishResource(PropertyTypeDefinition publishDatePropDef, Repository repository, String token,
-            Path uri, Map<String, List<Path>> failures) {
+    public static void unpublishResource(PropertyTypeDefinition publishDatePropDef, Repository repository,
+            String token, Path uri, Map<String, List<Path>> failures) {
         try {
             Resource resource = repository.retrieve(token, uri, true);
             resource.removeProperty(publishDatePropDef);
             repository.store(token, resource);
-        } catch (ResourceNotFoundException rnfe) {       
+        } catch (ResourceNotFoundException rnfe) {
             addToFailures(failures, uri, unpublishMsgKey, "nonExisting");
         } catch (AuthorizationException ae) {
             addToFailures(failures, uri, unpublishMsgKey, "unAuthorized");

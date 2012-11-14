@@ -51,8 +51,8 @@ import org.vortikal.web.RequestContext;
 
 public class DeletePublishUnpublishHelper {
 
-    private static String deleteMsgKey = "manage.delete.error.";
-    private static String publishMsgKey = "manage.publish.error.";
+    private static final String deleteMsgKey = "manage.delete.error.";
+    private static final String publishMsgKey = "manage.publish.error.";
     private static final String unpublishMsgKey = "manage.unpublish.error.";
     
     private static Log logger = LogFactory.getLog(DeletePublishUnpublishHelper.class);
@@ -62,7 +62,7 @@ public class DeletePublishUnpublishHelper {
         try {
             repository.delete(token, uri, recoverable);
         } catch (ResourceNotFoundException rnfe) {       
-           addToFailures(failures, uri, deleteMsgKey, "nonExisting");
+            addToFailures(failures, uri, deleteMsgKey, "nonExisting");
         } catch (AuthorizationException ae) {
             addToFailures(failures, uri, deleteMsgKey, "unAuthorized");
         } catch (ResourceLockedException rle) {
@@ -87,6 +87,8 @@ public class DeletePublishUnpublishHelper {
             }
             publishDateProp.setDateValue(publishedDate);
             repository.store(token, resource);
+        } catch (ResourceNotFoundException rnfe) {       
+            addToFailures(failures, uri, publishMsgKey, "nonExisting");
         } catch (AuthorizationException ae) {
             addToFailures(failures, uri, publishMsgKey, "unAuthorized");
         } catch (ResourceLockedException rle) {
@@ -106,6 +108,8 @@ public class DeletePublishUnpublishHelper {
             Resource resource = repository.retrieve(token, uri, true);
             resource.removeProperty(publishDatePropDef);
             repository.store(token, resource);
+        } catch (ResourceNotFoundException rnfe) {       
+            addToFailures(failures, uri, unpublishMsgKey, "nonExisting");
         } catch (AuthorizationException ae) {
             addToFailures(failures, uri, unpublishMsgKey, "unAuthorized");
         } catch (ResourceLockedException rle) {

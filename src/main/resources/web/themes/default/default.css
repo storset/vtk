@@ -694,6 +694,7 @@ ul.manage-create li,
 
 #collection-more-menu.js-on #collection-more-menu-header {
   background-position: 100% 13px;
+  padding-left: 0px;
 }
 
 /* ^ Dropdown */

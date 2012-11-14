@@ -49,13 +49,13 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.web.Message;
 import org.vortikal.web.RequestContext;
 
-public class DeletePublishUnpublishHelper {
+public class ActionsHelper {
 
     private static final String deleteMsgKey = "manage.delete.error.";
     private static final String publishMsgKey = "manage.publish.error.";
     private static final String unpublishMsgKey = "manage.unpublish.error.";
     
-    private static Log logger = LogFactory.getLog(DeletePublishUnpublishHelper.class);
+    private static Log logger = LogFactory.getLog(ActionsHelper.class);
 
     public static void deleteResource(Repository repository, String token, Path uri, boolean recoverable,
             Map<String, List<Path>> failures) {

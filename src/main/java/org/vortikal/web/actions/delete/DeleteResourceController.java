@@ -44,7 +44,7 @@ import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 import org.vortikal.web.RequestContext;
-import org.vortikal.web.actions.DeletePublishUnpublishHelper;
+import org.vortikal.web.actions.ActionsHelper;
 import org.vortikal.web.service.Service;
 
 @SuppressWarnings("deprecation")
@@ -93,8 +93,8 @@ public class DeleteResourceController extends SimpleFormController {
         // path to resource that failed.
         Map<String, List<Path>> failures = new HashMap<String, List<Path>>();
         
-        DeletePublishUnpublishHelper.deleteResource(repository, token, uri, true, failures);
-        DeletePublishUnpublishHelper.addFailureMessages(failures, requestContext);
+        ActionsHelper.deleteResource(repository, token, uri, true, failures);
+        ActionsHelper.addFailureMessages(failures, requestContext);
         if (!failures.isEmpty()) {
             return new ModelAndView(super.getFormView());
         }

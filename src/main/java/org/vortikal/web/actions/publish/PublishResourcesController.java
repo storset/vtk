@@ -47,7 +47,7 @@ import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.web.RequestContext;
-import org.vortikal.web.actions.DeletePublishUnpublishHelper;
+import org.vortikal.web.actions.ActionsHelper;
 
 public class PublishResourcesController implements Controller {
 
@@ -72,12 +72,12 @@ public class PublishResourcesController implements Controller {
         while (e.hasMoreElements()) {
             String name = (String) e.nextElement();
             try {
-                DeletePublishUnpublishHelper.publishResource(publishDatePropDef, publishedDate, repository, token, Path.fromString(name), failures);
+                ActionsHelper.publishResource(publishDatePropDef, publishedDate, repository, token, Path.fromString(name), failures);
             } catch (IllegalArgumentException iae) { // Not a path, ignore it
                 continue;
             }
         }
-        DeletePublishUnpublishHelper.addFailureMessages(failures, requestContext);
+        ActionsHelper.addFailureMessages(failures, requestContext);
 
         return new ModelAndView(this.viewName);
     }

@@ -442,8 +442,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         if (dest != null) {
             this.dao.delete(dest);
             this.contentStore.deleteResource(dest.getURI());
-            this.context
-                    .publishEvent(new ResourceDeletionEvent(this, dest.getURI(), dest.getID(), dest.isCollection()));
+            this.context.publishEvent(new ResourceDeletionEvent(this, dest.getURI(), dest.getID(), dest.isCollection()));
         }
 
         try {
@@ -461,8 +460,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
 
             // Both new resource and destParent are stored in DAO copy call
             // Probably better to not touch destparent in DAO copy code and
-            // explicitly
-            // store it here instead (for better clarity).
+            // explicitly store it here instead (for better clarity).
             newResource = this.dao.copy(src, destParent, newResource, preserveACL, fixedProps);
             this.contentStore.copy(src.getURI(), newResource.getURI());
 

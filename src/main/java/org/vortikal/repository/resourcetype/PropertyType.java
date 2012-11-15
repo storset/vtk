@@ -142,6 +142,10 @@ public final class PropertyType {
             CONTENTMODIFIEDBY_PROP_NAME
     )));
     
+    /**
+     * Set of property names (in DEFAULT namespace) which should be removed for
+     * resources that are copied.
+     */
     public static final Set<String> UNCOPYABLE_PROPERTIES = 
         Collections.unmodifiableSet(new HashSet<String>(Arrays.asList(
             NUMBER_OF_COMMENTS_PROP_NAME

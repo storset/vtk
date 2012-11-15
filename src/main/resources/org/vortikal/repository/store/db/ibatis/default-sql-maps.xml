@@ -526,7 +526,7 @@
   
   <delete id="deleteUncopyableProperties" parameterClass="java.util.HashMap">
     delete from extra_prop_entry
-      where name = #name# and resource_id in
+      where name = #name# and name_space is null and resource_id in
         (select resource_id from vortex_resource where uri = #destUri# or uri like #uriWildcard#)
   </delete>
   

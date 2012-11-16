@@ -55,18 +55,20 @@ public class FormSubmitCommand extends UpdateCancelCommand {
     private String deleteWorkingCopyAction;
     private boolean workingCopy;
     private boolean published;
+    private boolean onlyWriteUnpublished;
     
     private StructuredResource resource;
     private List<FormElementBox> elements = new ArrayList<FormElementBox>();
     private URL listComponentServiceURL;
 
     public FormSubmitCommand(StructuredResource resource, URL url, 
-            URL listComponentServiceURL, boolean workingCopy, boolean published) {
+            URL listComponentServiceURL, boolean workingCopy, boolean published, boolean onlyWriteUnpublished) {
         super(url.toString());
         this.listComponentServiceURL = listComponentServiceURL;
         this.resource = resource;
         this.workingCopy = workingCopy;
         this.published = published;
+        this.onlyWriteUnpublished = onlyWriteUnpublished;
         StructuredResourceDescription type = resource.getType();
 
         for (PropertyDescription def : type.getAllPropertyDescriptions()) {
@@ -273,5 +275,13 @@ public class FormSubmitCommand extends UpdateCancelCommand {
     
     public void setPublished(boolean published) {
         this.published = published;
+    }
+    
+    public boolean isOnlyWriteUnpublished() {
+        return this.onlyWriteUnpublished;
+    }
+    
+    public void setOnlyWriteUnpublished(boolean onlyWriteUnpublished) {
+        this.onlyWriteUnpublished = onlyWriteUnpublished;
     }
 }

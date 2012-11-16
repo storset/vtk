@@ -48,7 +48,9 @@ import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
+import org.vortikal.repository.AuthorizationManager;
 import org.vortikal.repository.Path;
+import org.vortikal.repository.Privilege;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Repository.Depth;
@@ -75,6 +77,7 @@ public class StructuredResourceEditor extends SimpleFormController {
     private StructuredResourceManager resourceManager;
     private HtmlPageFilter safeHtmlFilter;
     private Service listComponentsService;
+    private AuthorizationManager authorizationManager;
 
     public StructuredResourceEditor() {
         super();
@@ -89,6 +92,7 @@ public class StructuredResourceEditor extends SimpleFormController {
         Path uri = requestContext.getResourceURI();
         String token = requestContext.getSecurityToken();
         Repository repository = requestContext.getRepository();
+        Principal principal = requestContext.getPrincipal();
         
         Resource resource = repository.retrieve(token, uri, false);
         boolean published = false;
@@ -106,6 +110,8 @@ public class StructuredResourceEditor extends SimpleFormController {
             }
         }
         
+        boolean onlyWriteUnpublished = !authorizationManager.authorize(principal, resource.getAcl(), Privilege.READ_WRITE);
+        
         InputStream stream = null;
 
         if (workingCopy !=  null) {
@@ -121,9 +127,9 @@ public class StructuredResourceEditor extends SimpleFormController {
 
         URL url = RequestContext.getRequestContext().getService().constructURL(uri);
         URL listComponentServiceURL = listComponentsService.constructURL(uri);
-
+        
         return new FormSubmitCommand(structuredResource, url, listComponentServiceURL, 
-                workingCopy != null, published);
+                workingCopy != null, published, onlyWriteUnpublished);
     }
 
     @Override
@@ -359,5 +365,10 @@ public class StructuredResourceEditor extends SimpleFormController {
     public Service getListComponentsService() {
         return listComponentsService;
     }
+
+    public void setAuthorizationManager(AuthorizationManager authorizationManager) {
+        this.authorizationManager = authorizationManager;
+    }
+
 
 }

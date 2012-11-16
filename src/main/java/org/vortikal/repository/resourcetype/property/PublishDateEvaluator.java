@@ -50,36 +50,34 @@ public class PublishDateEvaluator implements PropertyEvaluator {
     @Override
     public boolean evaluate(Property property, PropertyEvaluationContext ctx)
             throws PropertyEvaluationException {
-        
+
         Property creationTimeProp = ctx.getNewResource().getProperty(this.creationTimePropDef);
         if (creationTimeProp == null) {
             throw new PropertyEvaluationException("creationTimePropDef needed for evaluation");
         }
         
+        // Whether publishing is authorized, based on resource ACL
+        final boolean authorizedToPublish = authorizationManager.authorize(ctx.getPrincipal(),
+                                                                           ctx.getNewResource().getAcl(),
+                                                                           Privilege.READ_WRITE);
+        
+        // If not authorized to publish, make it unpublished.
+        if (!authorizedToPublish) {
+            return false;
+        }
+
+        // On create we either remove value if configured, or set publish date to creation-time (auto-publish)
         if (ctx.getEvaluationType() == Type.Create) {
             if (removeValueOnCreate) {
-                return false;
-            }
-            
-            boolean authorizedToPublish = authorizationManager.authorize(ctx.getPrincipal(),
-                                                                         ctx.getNewResource().getAcl(),
-                                                                         Privilege.READ_WRITE);
-            if (!authorizedToPublish) {
                 return false;
             }
             
             property.setDateValue(creationTimeProp.getDateValue());
             return true;
         }
-
-        // Logic below for any evaluation type except Type.Create:
         
-        // If publish-unpublish is not allowed, then we do not change the value.
-        try {
-            authorizationManager.authorizePublishUnpublish(ctx.getNewResource().getURI(), ctx.getPrincipal());
-        } catch (Exception e) {
-            return property.isValueInitialized();
-        }
+        // Logic below when principal is authorized to publish and evaluation type
+        // is anything but Create:
 
         Property existing = ctx.getOriginalResource().getProperty(property.getDefinition());
         if (existing != null && ctx.getEvaluationType() == Type.ContentChange) {

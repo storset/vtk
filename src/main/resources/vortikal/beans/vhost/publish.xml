@@ -228,7 +228,7 @@
         <ref bean="resourceInCollection" />
       </list>
     </property>
-    <property name="handler" ref="unpublishResourcesHandler" />
+    <property name="handler" ref="publishResourcesHandler" />
   </bean>
 
   <bean id="publishResourcesService" class="org.vortikal.web.service.ServiceImpl">
@@ -251,11 +251,6 @@
       </list>
     </property>
     <property name="handler" ref="publishResourcesHandler" />
-  </bean>
-  
-  <bean id="unpublishResourcesHandler" class="org.vortikal.web.actions.publish.UnpublishResourcesController">
-    <property name="viewName" value="manageCollectionListing" />
-    <property name="publishDatePropDef" ref="publishDatePropDef" />
   </bean>
   
   <bean id="publishResourcesHandler" class="org.vortikal.web.actions.publish.PublishResourcesController">

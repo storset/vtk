@@ -53,7 +53,10 @@ public class PublishResourcesController implements Controller {
 
     private String viewName;
     private PropertyTypeDefinition publishDatePropDef;
-
+    private static final String ACTION_PARAM = "action";
+    private static final String PUBLISH_PARAM = "publish-resources";
+    private static final String UNPUBLISH_PARAM = "unpublish-resources";
+    
     @Override
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) {
         RequestContext requestContext = RequestContext.getRequestContext();
@@ -64,18 +67,34 @@ public class PublishResourcesController implements Controller {
         // key (String) that specifies type of failure and identifies list of
         // paths to resources that failed.
         Map<String, List<Path>> failures = new HashMap<String, List<Path>>();
-        
-        Date publishedDate = Calendar.getInstance().getTime(); // Publish all resources at same time
+                
+        String action = requestContext.getServletRequest().getParameter(ACTION_PARAM);
 
-        @SuppressWarnings("rawtypes")
-        Enumeration e = request.getParameterNames();
-        while (e.hasMoreElements()) {
-            String name = (String) e.nextElement();
-            try {
-                ActionsHelper.publishResource(publishDatePropDef, publishedDate, repository, token, Path.fromString(name), failures);
-            } catch (IllegalArgumentException iae) { // Not a path, ignore it
-                continue;
-            }
+        if(action != null && !action.isEmpty()) {
+           if(PUBLISH_PARAM.equals(action)) {
+               Date publishedDate = Calendar.getInstance().getTime(); // Publish all resources at same time
+               @SuppressWarnings("rawtypes")
+               Enumeration e = request.getParameterNames();
+               while (e.hasMoreElements()) {
+                   String name = (String) e.nextElement();
+                   try {
+                       ActionsHelper.publishResource(publishDatePropDef, publishedDate, repository, token, Path.fromString(name), failures);
+                   } catch (IllegalArgumentException iae) { // Not a path, ignore it
+                       continue;
+                   }
+               }
+           } else if(UNPUBLISH_PARAM.equals(action)) {
+               @SuppressWarnings("rawtypes")
+               Enumeration e = request.getParameterNames();
+               while (e.hasMoreElements()) {
+                   String name = (String) e.nextElement();
+                   try {
+                       ActionsHelper.unpublishResource(publishDatePropDef, repository, token, Path.fromString(name), failures);
+                   } catch (IllegalArgumentException iae) { // Not a path, ignore it
+                       continue;
+                   }
+               }
+           }
         }
         ActionsHelper.addFailureMessages(failures, requestContext);
 

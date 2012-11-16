@@ -57,6 +57,9 @@ public class PublishDateEvaluator implements PropertyEvaluator {
         }
         
         // Whether publishing is authorized, based on resource ACL
+        // XXX this check might give false positive for copy with preserve ACL, if principal
+        // has full read-write on the source, but only read-write-unpublished on destination PARENT.
+        //
         final boolean authorizedToPublish = authorizationManager.authorize(ctx.getPrincipal(),
                                                                            ctx.getNewResource().getAcl(),
                                                                            Privilege.READ_WRITE);

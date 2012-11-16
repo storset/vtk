@@ -263,7 +263,7 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
         return clone;
     }
 
-    public ResourceImpl createCopy(Path newUri) {
+    ResourceImpl createCopy(Path newUri, Acl acl) {
         ResourceImpl resource = new ResourceImpl(newUri);
         resource.setResourceType(getResourceType());
         for (Property prop : this) {
@@ -271,7 +271,7 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
                 resource.addProperty(prop);
             }
         }
-        resource.setAcl(Acl.EMPTY_ACL);
+        resource.setAcl(acl);
         return resource;
     }
 

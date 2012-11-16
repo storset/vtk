@@ -68,7 +68,7 @@ public class PublishResourcesController implements Controller {
         // paths to resources that failed.
         Map<String, List<Path>> failures = new HashMap<String, List<Path>>();
                 
-        String action = requestContext.getServletRequest().getParameter(ACTION_PARAM);
+        String action = request.getParameter(ACTION_PARAM);
 
         if (action != null && !action.isEmpty()) {
             boolean isPublishAction = PUBLISH_PARAM.equals(action);

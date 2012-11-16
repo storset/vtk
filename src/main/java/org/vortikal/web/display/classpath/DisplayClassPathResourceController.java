@@ -139,12 +139,9 @@ public class DisplayClassPathResourceController
             contentLength = stream.contentLength;
             
             response.setContentType(MimeHelper.map(request.getRequestURI()));
-            if (contentLength == -1) {
-                writeChunked(inStream, response);
-                inStream = null;
-                return null;
+            if (contentLength != -1) {
+            	response.setContentLength(contentLength);
             }
-            response.setContentLength(contentLength);
             for (String header: this.headers.keySet()) {
                 response.addHeader(header, this.headers.get(header));
             }
@@ -179,39 +176,7 @@ public class DisplayClassPathResourceController
         }
         return null;
     }
-    
-    private static final byte[] CRLF = "\r\n".getBytes();
-    private static final byte[] SPACE = " ".getBytes();
-    private static final byte[] ZERO = "0".getBytes();
-    private static final int bufsize = 512;
-        
-    private void writeChunked(InputStream inStream, HttpServletResponse response) throws IOException {
-        OutputStream outStream = null;
-        try {
-            response.setHeader("Transfer-Encoding", "chunked");
-            outStream  = response.getOutputStream();
-            byte[] buffer = new byte[bufsize];
 
-            int n = 0;
-            while (((n = inStream.read(buffer, 0, bufsize)) > 0)) {
-                //outStream.write(Integer.toHexString(n).getBytes());
-                //outStream.write(SPACE);
-                //outStream.write(CRLF);
-                outStream.write(buffer, 0, n);
-                outStream.flush();
-                //outStream.write(CRLF);
-                //outStream.flush();
-            }
-            //outStream.write(ZERO);
-            //outStream.write(SPACE);
-            //outStream.write(CRLF);
-            //outStream.write(CRLF);
-            outStream.flush();
-        } finally {
-            try {inStream.close();} 
-            finally {outStream.close();}
-        }
-    }
 
     public long getLastModified(HttpServletRequest request) {
         if (!this.handleLastModified) {
@@ -233,7 +198,7 @@ public class DisplayClassPathResourceController
         return -1;
     }
 
-    private static class Stream {
+    private class Stream {
         int contentLength = -1;
         InputStream stream;
     }
@@ -241,11 +206,11 @@ public class DisplayClassPathResourceController
     
     private Stream openStream(Resource resource) throws IOException {
         Stream stream = new Stream();
-        if (resource instanceof ClassPathResource) {            
+        if (resource instanceof ClassPathResource) {
             java.net.URL url = resource.getURL();
             URLConnection connection = url.openConnection();
+            stream.contentLength = connection.getContentLength();
             stream.stream = connection.getInputStream();
-
         } else if (resource instanceof FileSystemResource) {
             File file = resource.getFile();
             stream.contentLength = (int) file.length();

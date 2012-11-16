@@ -52,8 +52,6 @@ import org.vortikal.text.html.HtmlNodeFilter;
 import org.vortikal.text.html.HtmlPage;
 import org.vortikal.text.html.HtmlPageFilter;
 import org.vortikal.text.html.HtmlText;
-import org.vortikal.text.html.HtmlTextImpl;
-import org.vortikal.text.html.HtmlUtil;
 import org.vortikal.web.RequestContext;
 
 
@@ -122,8 +120,6 @@ public class ComponentInvokingNodeFilter implements HtmlNodeFilter, HtmlPageFilt
 
     // HtmlPageFilter.filter() (invoked after parsing)
     public NodeResult filter(HtmlContent node) {
-        //System.out.println("__ci_FILTER: " + node);
-
         if (node instanceof HtmlElement) {
             HtmlElement element = (HtmlElement) node;
             HtmlContent[] childNodes = element.getChildNodes();
@@ -136,32 +132,8 @@ public class ComponentInvokingNodeFilter implements HtmlNodeFilter, HtmlPageFilt
     }
 
 
-    private Pattern esiLocations = null;
-    
-    public void setEsiLocations(String esiLocations) {
-        if (esiLocations != null && !"".equals(esiLocations.trim())) {
-            this.esiLocations = Pattern.compile(esiLocations);
-        }
-    }
-    
     // HtmlNodeFilter.filter() (invoked during parsing)
     public HtmlContent filterNode(HtmlContent node) {
-
-        if (node instanceof HtmlElement && "esi:include".equals(((HtmlElement) node).getName())) {
-            HtmlElement element = (HtmlElement) node;
-            HtmlAttribute src = element.getAttribute("src");
-            if (src != null) {
-                String ref = src.getValue();
-                if (ref != null && ref.startsWith("/") && this.esiLocations != null) {
-                    HttpServletRequest servletRequest = 
-                            RequestContext.getRequestContext().getServletRequest();
-                    if (this.esiLocations.matcher(servletRequest.getRequestURL()).matches()) {
-                        return filterNode(new HtmlTextImpl("${include:file virtual=[" + ref + "]}"));
-                    }
-                }
-            }
-        }
-        
         if (node instanceof HtmlComment) {
             ComponentInvocation ssiInvocation = buildSsiComponentInvocation(node);
             if (ssiInvocation == null) {
@@ -170,7 +142,6 @@ public class ComponentInvokingNodeFilter implements HtmlNodeFilter, HtmlPageFilt
             HtmlContent filteredNode = invokeComponentsAsContent(new ComponentInvocation[] {ssiInvocation});
             return filteredNode;
 
-            
         } else if (node instanceof HtmlElement && this.parseAttributes) {
             HtmlElement element = (HtmlElement) node;
             HtmlAttribute[] attributes = element.getAttributes();
@@ -263,7 +234,8 @@ public class ComponentInvokingNodeFilter implements HtmlNodeFilter, HtmlPageFilt
             }
         };
     }
-    
+
+
     private HtmlContent invokeComponentsAsContent(ComponentInvocation[] components) {
         final String text = invokeComponentsAsString(components);
         return new HtmlText() {
@@ -338,7 +310,7 @@ public class ComponentInvokingNodeFilter implements HtmlNodeFilter, HtmlPageFilt
                 if (msg == null) {
                     msg = t.getClass().getName();
                 }
-                result = "Error: " + HtmlUtil.escapeHtmlString(msg);
+                result = "Error: " + msg;
             }
             sb.append(result);
         }

@@ -135,13 +135,11 @@ public class ResourceServiceURLController implements Controller {
 
         String resourceURL = resourceViewURL.toString();
 
-        // XXX?
         // Hack to ensure https for preview of direct access interfaces
         if ((request.getScheme() == "https") && (request.getServerPort() != 443) && resourceURL.startsWith("http:")) {
             resourceURL = resourceURL.replaceFirst("http:", "https:");
         }
 
-        // XXX?
         // Hack to ensure https for preview when not popup and set authTarget
         boolean isViewSelectiveHttps = (this.webProtocol != null && this.webProtocolRestricted != null)
                 && !this.webProtocol.equals(this.webProtocolRestricted);

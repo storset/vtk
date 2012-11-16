@@ -21,7 +21,6 @@
       <list>
         <ref bean="contentDescriptionMixinResourceTypeDef" />
         <ref bean="headerControlMixinResourceTypeDef" />
-        <ref bean="navigationMixinResourceTypeDef" />
       </list>
     </property>
     <property name="propertyTypeDefinitions">

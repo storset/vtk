@@ -21,12 +21,6 @@ PROPERTIES
 	:	'properties';
 EDITRULES
 	:	'edit-rules';
-LISTING
-    :   'listing';
-PARAMETERS
-    :   'parameters';
-DISPLAY
-    :   'display';
 VIEWCOMPONENTS
 	:	'view-components';
 VIEW	:	'view';

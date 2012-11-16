@@ -108,13 +108,11 @@
       </list>
     </property>
     <property name="handler" ref="webdavCollectionListingHandler" />
-    <!--
     <property name="attributes">
       <map>
         <entry key-ref="system.decoratorTemplateAttribute" value="webdav-collectionlisting.html" />
       </map>
     </property>
-    -->
   </bean>
 
   <bean id="webdavCollectionListingHeadService" class="org.vortikal.web.service.ServiceImpl">
@@ -480,12 +478,17 @@
     </property>
   </bean>
 
-  <bean id="webdavCollectionListingViewResolver" parent="decoratorViewResolver">
+  <bean id="webdavCollectionListingViewResolver" parent="system.decoratingViewResolver">
     <property name="views">
       <map>
         <entry key="webdavCollectionListingHeadView" value-ref="webdavCollectionListingHeadView" />
         <entry key="webdavCollectionListingView" value-ref="webdavCollectionListingView" />
       </map>
+    </property>
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="manageLinkProvider" />
+      </list>
     </property>
   </bean>
 

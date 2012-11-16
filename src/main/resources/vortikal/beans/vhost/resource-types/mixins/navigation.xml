@@ -54,10 +54,6 @@
         </entry>
       </map>
     </property>
-    <property name="propertyEvaluator" ref="navigationHiddenPropertyEvaluator" />
-  </bean>
-
-  <bean id="navigationHiddenPropertyEvaluator" class="org.vortikal.repository.resourcetype.property.NavigationHiddenEvaluator">
   </bean>
 
   <bean id="importancePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"

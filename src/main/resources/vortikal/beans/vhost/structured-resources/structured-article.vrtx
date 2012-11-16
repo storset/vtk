@@ -132,32 +132,4 @@ resourcetype structured-article : structured-document {
     relatedContent : (en : "Related content", no : "Relatert innhold", nn : "Relatert innhald"),
     header : (en : "Edit article", no : "Rediger artikkel", nn : "Rediger artikkel")
   }
-
-  listing article-listing {
-     parameters { heading }
-     display {
-     ##
-     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-     <html lang="no" xml:lang="no" xmlns="http://www.w3.org/1999/xhtml"> 
-       <head>
-          <title>[val collection.title]</title>
-       </head>
-       <body>   
-
-      [!--def query 'uri = ${currentFolder}/* AND type IN structured-article'--]
-      [def query 'type IN structured-article']
-      [def results search(query)]
-      <ul>
-      [list results result]
-        [def url view-url(result)]
-        [def title resource-prop(result, "title")]
-        <li><a href="[val url]">[val title]</a></li>
-      [endlist]
-      </ul>
-      </body>
-      </html>
-     ##
-     }
-  }
-
 }

@@ -17,7 +17,7 @@
 
 <#function filter_reason val>
   <#-- XXX: patterns must be in sync with those defined in preview.mixedModeService assertions -->
-  <#if val?matches(".*(img|iframe|frame|embed|link|base|object|applet|property|xml:img:?):http://.*")>
+  <#if val?matches(".*(img|iframe|embed|link|base|object|applet|property|xml:img:?):http://.*")>
     <#return true />
   </#if>
   <#if val?matches(".*style.*")>

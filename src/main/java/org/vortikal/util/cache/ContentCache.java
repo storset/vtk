@@ -38,8 +38,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import net.sf.ehcache.loader.CacheLoader;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanInitializationException;
@@ -84,7 +82,6 @@ public final class ContentCache<K, V> implements InitializingBean, DisposableBea
     private String name;
     private ContentCacheLoader<K, V> loader;
     private int cacheTimeout;
-    // XXX: EHCache...?
     private ConcurrentHashMap<K, Item> cache = new ConcurrentHashMap<K, Item>();
     private boolean asynchronousRefresh = false;
     private int refreshInterval = -1;
@@ -194,9 +191,6 @@ public final class ContentCache<K, V> implements InitializingBean, DisposableBea
         if (item == null ||
             (item.getTimestamp().getTime() + this.cacheTimeout <= now)) {
             V object = this.loader.load(identifier);
-            if (object == null) {
-                throw new RuntimeException("Cache loader returned NULL for identifier " + identifier);
-            }
             this.cache.put(identifier, new Item(identifier, object));
         }
     }
@@ -208,8 +202,7 @@ public final class ContentCache<K, V> implements InitializingBean, DisposableBea
               try {
                  cacheItem(identifier);
               } catch (Exception e) {
-                 logger.info("Error refreshing object '" + identifier + "', removing", e);
-                 cache.remove(identifier);
+                 logger.info("Error refreshing object '" + identifier + "'", e);
               }
            }
         };
@@ -281,8 +274,7 @@ public final class ContentCache<K, V> implements InitializingBean, DisposableBea
                     logger.debug("Refreshed expired cache item: '" + identifier + "'");
                 }
             } catch (Throwable t) {
-                logger.warn("Unable to refresh cached object " + identifier + ", removing", t);
-                cache.remove(identifier);
+                logger.warn("Unable to refresh cached object " + identifier, t);
             }
         }
     }

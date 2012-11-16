@@ -55,7 +55,6 @@ import org.vortikal.web.RequestContext;
  *   <li>handler interceptor</li>
  *   <li>url post processor</li>
  * </ul>
- * @deprecated
  */
 public class SelectiveProtocolManager extends RequestProtocolAssertion 
     implements Assertion, HandlerInterceptor, URLPostProcessor {

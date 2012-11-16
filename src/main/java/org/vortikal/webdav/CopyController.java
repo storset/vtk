@@ -42,6 +42,7 @@ import org.vortikal.repository.IllegalOperationException;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.ReadOnlyException;
 import org.vortikal.repository.Repository;
+import org.vortikal.repository.Repository.Depth;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceLockedException;
 import org.vortikal.repository.ResourceNotFoundException;
@@ -87,12 +88,19 @@ public class CopyController extends AbstractWebdavController {
 
             Path destURI = mapToResourceURI(destHeader);
             String depthString = request.getHeader("Depth");
+            Repository.Depth depth;
             if (depthString == null) {
                 depthString = "infinity";
             }
             depthString = depthString.trim();
-            if (!(depthString.equals("0") || depthString.equals("1") 
-                    || depthString.equals("infinity"))) {
+            // XXX: Depth is ignored
+            if (depthString.equals("0")) {
+                depth = Depth.ZERO;
+            } else if (depthString.equals("1")) {
+                depth = Depth.ONE;
+            } else if (depthString.equals("infinity")) {
+                depth = Depth.INF;
+            } else {
                 throw new InvalidRequestException(
                         "Invalid depth header value: " + depthString);
             }

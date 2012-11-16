@@ -52,7 +52,6 @@ import org.vortikal.repository.resource.ResourcetreeLexer;
 import org.vortikal.repository.resource.ResourcetreeParser;
 import org.vortikal.resourcemanagement.ComponentDefinition;
 import org.vortikal.resourcemanagement.DisplayTemplate;
-import org.vortikal.resourcemanagement.Listing;
 import org.vortikal.resourcemanagement.StructuredResourceDescription;
 import org.vortikal.resourcemanagement.StructuredResourceManager;
 
@@ -186,9 +185,6 @@ public class StructuredResourceParser implements InitializingBean {
                 case ResourcetreeLexer.VOCABULARY:
                     this.vocabularyDefinitionParser.handleVocabulary(srd, descriptionEntry.getChildren());
                     break;
-                case ResourcetreeLexer.LISTING:
-                    handleListing(srd, descriptionEntry);
-                    break;
                 default:
                     throw new IllegalStateException(srd.getName() + ": unknown token type: " + descriptionEntry.getText());
                 }
@@ -197,18 +193,6 @@ public class StructuredResourceParser implements InitializingBean {
         return srd;
     }
     
-    private void handleListing(StructuredResourceDescription srd, CommonTree node) {
-        String name = node.getChild(0).getText();
-        List<String> parameters = new ArrayList<String>();
-        for (CommonTree p: (List<CommonTree>) ((CommonTree) node.getChild(1)).getChildren()) {
-            parameters.add(p.getText());
-        }
-        CommonTree displayTree = (CommonTree) node.getChild(2);
-        String display = displayTree.getChild(0).getText();
-        Listing listing = new Listing(name, srd, parameters, display);
-        srd.addListing(listing);
-    }
-
     private void handleLocalization(StructuredResourceDescription srd, List<CommonTree> propertyDescriptions) {
         if (!hasContent(propertyDescriptions)) {
             return;
@@ -252,7 +236,7 @@ public class StructuredResourceParser implements InitializingBean {
         return tree != null && tree.size() > 0;
     }
 
-    private static class ParseUnit {
+    private class ParseUnit {
         ResourcetreeParser parser;
         String description;
     }
@@ -294,7 +278,7 @@ public class StructuredResourceParser implements InitializingBean {
         this.structuredResourceManager = structuredResourceManager;
     }
 
-    private static class ParsedResourceDescription {
+    private class ParsedResourceDescription {
 
         private StructuredResourceDescription srd;
         private List<ParsedResourceDescription> children;

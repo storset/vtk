@@ -36,7 +36,6 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 
 public interface PropertySet extends Iterable<Property> {
 
-    // XXX: enum?
     public static final String NAME_IDENTIFIER = "name";
     public static final String TYPE_IDENTIFIER = "type";
     public static final String URI_IDENTIFIER = "uri";

@@ -180,7 +180,7 @@ public abstract class AbstractFeedComponent extends ViewRenderingDecoratorCompon
         // check and add
         for (int i = 0; i < order.length; i++) {
             if (order[i] != null && !getDefaultElementOrder().contains(order[i].trim())) {
-                throw new DecoratorComponentException("Illegal element '" + order[i] + "' in '" + param + "'");
+                throw new DecoratorComponentException("Illigal element '" + order[i] + "' in '" + param + "'");
             }
             if (order[i] != null) {
                 resultOrder.add(order[i].trim());

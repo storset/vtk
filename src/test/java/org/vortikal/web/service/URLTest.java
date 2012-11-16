@@ -273,10 +273,6 @@ public class URLTest extends TestCase {
 
         URL url2 = URL.parse("https://b/c");
         assertEquals("https://domain.com/img/logo.png", url2.relativeURL(url.protocolRelativeURL()).toString());
-        
-        URL url3 = URL.parse("http://b/c");
-        assertEquals("http://domain.com/img/logo.png", url3.relativeURL(url.protocolRelativeURL()).toString());
-        
     }
     
 }

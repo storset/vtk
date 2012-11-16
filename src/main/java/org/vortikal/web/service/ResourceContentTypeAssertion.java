@@ -71,14 +71,12 @@ public class ResourceContentTypeAssertion
     }
 
 
-    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("property.contentType = " + this.contentType);
         return sb.toString();
     }
 
-    @Override
     public boolean matches(Resource resource, Principal principal) {
         return resource != null &&
         this.contentType.equals(resource.getContentType());

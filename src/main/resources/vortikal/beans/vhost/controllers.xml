@@ -48,20 +48,4 @@
     <property name="ignoreLastModifiedOnCollections" value="true" />
   </bean>
 
-  <!--
-  <bean id="fooDecoratorViewResolver" class="org.vortikal.web.decorating.MappingViewResolver">
-    <property name="views">
-      <map>
-        <entry key="fooDisplayHTMLResource"  value-ref="fooDisplayResourceView" />
-      </map>
-    </property>
-    <property name="viewWrapper" ref="decoratingViewWrapper" />
-  </bean>
-
-  <bean id="fooDisplayResourceView"
-        class="org.vortikal.web.view.DisplayResourceView">
-    <property name="supportRangeRequests" value="${displayResource.supportRangeRequests}" />
-  </bean> 
--->
-
 </beans>

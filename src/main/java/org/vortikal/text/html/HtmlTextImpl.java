@@ -36,7 +36,6 @@ public class HtmlTextImpl implements HtmlText {
     private String content;
 
     public HtmlTextImpl(String content) {
-        //this.content = HtmlUtil.escapeHtmlString(content);
         this.content = content;
     }
 
@@ -44,11 +43,5 @@ public class HtmlTextImpl implements HtmlText {
         return this.content;
     }
     
-    public String toString() {
-        if (this.content.length() < 103) {
-            return this.content;
-        }
-        return this.content.substring(0, 100) + "...";
-    }
     
 }

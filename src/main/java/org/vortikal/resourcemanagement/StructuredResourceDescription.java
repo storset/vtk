@@ -49,7 +49,6 @@ public final class StructuredResourceDescription {
     private List<PropertyDescription> propertyDescriptions;
     private List<EditRule> editRules;
     private DisplayTemplate displayTemplate;
-    private List<Listing> listings = new ArrayList<Listing>();
     private List<ScriptDefinition> scripts;
     private List<ServiceDefinition> services;
 
@@ -132,18 +131,6 @@ public final class StructuredResourceDescription {
         return null;
     }
 
-    
-    
-    public void addListing(Listing listing) {
-        System.out.println("__adding_listing: " + listing.getName() + ": " 
-                + listing.getParameters() + ": " + listing.getDisplay());
-        this.listings.add(listing);
-    }
-    
-    public List<Listing> getListings() {
-        return this.listings;
-    }
-    
     public void addEditRule(EditRule editRule) {
         if (this.editRules == null) {
             this.editRules = new ArrayList<EditRule>();

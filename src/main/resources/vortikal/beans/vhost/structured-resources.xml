@@ -396,7 +396,6 @@
     <property name="formView" value="structuredResources.editView" />
     <property name="successView" value="redirectToManage" />
     <property name="listComponentsService" ref="jsonDocumentsComponentsService" />
-    <property name="authorizationManager" ref="authorizationManager" />
   </bean>
   
   <bean id="structuredResources.viewResolver" parent="decoratorViewResolver">

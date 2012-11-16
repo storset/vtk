@@ -48,7 +48,6 @@ import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
-import org.vortikal.repository.AuthorizationManager;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Privilege;
 import org.vortikal.repository.Property;
@@ -77,7 +76,6 @@ public class StructuredResourceEditor extends SimpleFormController {
     private StructuredResourceManager resourceManager;
     private HtmlPageFilter safeHtmlFilter;
     private Service listComponentsService;
-    private AuthorizationManager authorizationManager;
 
     public StructuredResourceEditor() {
         super();
@@ -110,7 +108,10 @@ public class StructuredResourceEditor extends SimpleFormController {
             }
         }
         
-        boolean onlyWriteUnpublished = !authorizationManager.authorize(principal, resource.getAcl(), Privilege.READ_WRITE);
+        boolean onlyWriteUnpublished = !repository.authorize(principal, resource.getAcl(), Privilege.READ_WRITE);
+
+        
+        repository.authorize(principal, resource.getAcl(), Privilege.READ_WRITE);
         
         InputStream stream = null;
 
@@ -365,10 +366,4 @@ public class StructuredResourceEditor extends SimpleFormController {
     public Service getListComponentsService() {
         return listComponentsService;
     }
-
-    public void setAuthorizationManager(AuthorizationManager authorizationManager) {
-        this.authorizationManager = authorizationManager;
-    }
-
-
 }

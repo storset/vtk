@@ -72,7 +72,7 @@ public class PublishResourcesController implements Controller {
 
         if(action != null && !action.isEmpty()) {
            if(PUBLISH_PARAM.equals(action)) {
-               Date publishedDate = Calendar.getInstance().getTime(); // Publish all resources at same time
+               Date publishedDate = Calendar.getInstance().getTime(); // Publish all resources at same instance of time
                @SuppressWarnings("rawtypes")
                Enumeration e = request.getParameterNames();
                while (e.hasMoreElements()) {

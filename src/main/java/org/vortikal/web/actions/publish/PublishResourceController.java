@@ -63,11 +63,13 @@ public class PublishResourceController extends SimpleFormController implements I
     private static final String UNPUBLISH_PARAM = "unpublish-confirmed";
     private static final String UNPUBLISH_PARAM_GLOBAL = "global-unpublish-confirmed";
 
+    @Override
     public void afterPropertiesSet() throws Exception {
         if (this.viewName == null)
             throw new BeanInitializationException("Property 'viewName' must be set");
     }
 
+    @Override
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
         Repository repository = requestContext.getRepository();
@@ -83,6 +85,7 @@ public class PublishResourceController extends SimpleFormController implements I
         return new PublishResourceCommand(url);
     }
 
+    @Override
     protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command,
             BindException errors) throws Exception {
         Map<String, Object> model = new HashMap<String, Object>();

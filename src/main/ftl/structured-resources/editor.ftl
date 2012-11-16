@@ -123,16 +123,14 @@
           <@genEditorHelpMenu />
         <#elseif form.workingCopy>
           <ul id="editor-button-row">
-            <#if (form.published && !form.onlyWriteUnpublished) || !form.published>
-              <li class="first">
-                <a href="javascript:void(0)" id="vrtx-save-view-shortcut">${vrtx.getMsg("editor.saveAndView")}</a>
-              </li>
-              <li><span id="vrtx-save">
-                <a href="javascript:void(0)" id="vrtx-save-working-copy-shortcut">${vrtx.getMsg("editor.save")}</a>
+            <li class="first">
+              <a href="javascript:void(0)" id="vrtx-save-view-shortcut">${vrtx.getMsg("editor.saveAndView")}</a>
+            </li>
+            <li><span id="vrtx-save">
+              <a href="javascript:void(0)" id="vrtx-save-working-copy-shortcut">${vrtx.getMsg("editor.save")}</a>
               </span>
-              </li>
-            </#if>
-            <li class="<#if form.published && form.onlyWriteUnpublished>first </#if>last">
+            </li>
+            <li class="last">
               <a href="javascript:void(0)" id="vrtx-cancel-shortcut">${vrtx.getMsg("editor.cancel")}</a>
             </li>
           </ul>
@@ -223,14 +221,12 @@
       </div>
 
     <#elseif form.workingCopy>
-      <#if (form.published && !form.onlyWriteUnpublished) || !form.published>
-        <div class="vrtx-button">
-          <input type="submit" id="saveAndViewButton" name="updateViewAction"  value="${vrtx.getMsg("editor.saveAndView")}" />
-        </div>
-        <div class="vrtx-focus-button">
-          <input type="submit" id="saveWorkingCopyAction" name="saveWorkingCopyAction" value="${vrtx.getMsg("editor.save")}" />
-        </div>
-      </#if>
+      <div class="vrtx-button">
+        <input type="submit" id="saveAndViewButton" name="updateViewAction"  value="${vrtx.getMsg("editor.saveAndView")}" />
+      </div>
+      <div class="vrtx-focus-button">
+        <input type="submit" id="saveWorkingCopyAction" name="saveWorkingCopyAction" value="${vrtx.getMsg("editor.save")}" />
+      </div>
       <div class="vrtx-button">
         <input type="submit" id="cancelAction" name="cancelAction" value="${vrtx.getMsg("editor.cancel")}" />
       </div>

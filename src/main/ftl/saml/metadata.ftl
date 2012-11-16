@@ -7,6 +7,7 @@
   - Required model data:
   -   resource
   -
+  - XXX: cleanup URL config
   -->
 <?xml version="1.0" encoding="UTF-8"?>
 <EntityDescriptor

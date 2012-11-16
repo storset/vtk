@@ -405,6 +405,15 @@ public class HtmlPageParserTest extends TestCase {
         assertNotNull(hr);
         assertEquals(hr.getEnclosedContent(), "<hr>");
     }
+    
+    public void testFoo() throws Exception {
+        String s = "<<img id=\"xss\" src=\"/vrtx/decorating/resources/dist/images/social-components-tip-a-friend-icon.png\" style=\"visibility:hidden\" onload=\"javascript:alert('XSS vector');var tag=$('#xss');tag.parent().html('En kommentar');\"/>";
+        HtmlFragment f = this.parser.parseFragment(s);
+        for (HtmlContent c : f.getContent()) {
+            System.out.println("__c: " + c.toString());
+        }
+        System.out.println("__f: " + f.getStringRepresentation());
+    }
 
     private HtmlPage parse(String content) throws Exception {
         HtmlPage page = this.parser.parse(new java.io.ByteArrayInputStream(

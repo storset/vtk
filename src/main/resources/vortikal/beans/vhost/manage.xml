@@ -665,12 +665,11 @@
             <bean class="org.vortikal.web.service.ResourcePropertyRegexpAssertion">
               <property name="namespace" ref="DEFAULT_NAMESPACE" />
               <property name="name" value="sslMixedMode" />
-              <property name="pattern" value="(img|iframe|embed|link|base|object|applet|property|xml:img:?):http://" />
+              <property name="pattern" value="(img|iframe|frame|embed|link|base|object|applet|property|xml:img:?):http://" />
             </bean>
             <bean class="org.vortikal.web.service.ResourcePropertyRegexpAssertion">
               <property name="namespace" ref="DEFAULT_NAMESPACE" />
               <property name="name" value="sslMixedMode" />
-              <!--property name="pattern" value="element:(style|script)" /-->
               <property name="pattern" value="element:style" />
             </bean>
             <bean class="org.vortikal.web.service.ResourcePropertyRegexpAssertion">

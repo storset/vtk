@@ -34,7 +34,6 @@ import java.io.ByteArrayInputStream;
 import java.util.List;
 
 import org.vortikal.repository.Path;
-import org.vortikal.resourcemanagement.StructuredResource;
 import org.vortikal.resourcemanagement.StructuredResourceDescription;
 import org.vortikal.resourcemanagement.StructuredResourceTestSetup;
 import org.vortikal.web.service.URL;
@@ -48,9 +47,8 @@ public class FormSubmitCommandTestIntegration extends StructuredResourceTestSetu
     public void testCreateForm() throws Exception {
         StructuredResourceDescription srd = srdp.getResourceDescription("person");
         URL url = new URL("http", "localhost:9321", Path.ROOT);
-        StructuredResource r = srd.buildResource(new ByteArrayInputStream("{}".getBytes()));
-        FormSubmitCommand fsc = new FormSubmitCommand(r, url,url, false, true);
-        printForm(fsc);
+        //FormSubmitCommand fsc = new FormSubmitCommand(new StructuredResource(srd), url,url, false, true);
+        //printForm(fsc);
     }
 
     private void printForm(FormSubmitCommand fsc) {

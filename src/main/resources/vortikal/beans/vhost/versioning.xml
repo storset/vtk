@@ -20,6 +20,7 @@
     <property name="assertions">
       <list>
         <ref bean="versioning.displayActionParameter" />
+        <!-- XXX: false when repo read-only: -->
         <ref bean="versioning.displayPermissionAssertion" />
         <ref bean="json.isManagedObjectResourceType" />
         <ref bean="showVersioningForResourceAssertion" />

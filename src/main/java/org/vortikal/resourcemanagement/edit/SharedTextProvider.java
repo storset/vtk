@@ -1,3 +1,6 @@
+/**
+ * XXX: Overlap with fellestekst-document.vrtx
+ */
 package org.vortikal.resourcemanagement.edit;
 
 import java.io.InputStream;
@@ -31,7 +34,7 @@ public class SharedTextProvider implements ReferenceDataProvider {
     /*TODO: Need better error handling */
     @SuppressWarnings("unchecked")
     public Map<String, JSONObject> getSharedTextValues(String docType, String propName) {
-
+        // XXX:
         Path p = Path.fromString("/vrtx/fellestekst/" + docType + "/" + propName + ".html");
         RequestContext requestContext = RequestContext.getRequestContext();
         String token = requestContext.getSecurityToken();
@@ -53,7 +56,7 @@ public class SharedTextProvider implements ReferenceDataProvider {
             String jsonString = StreamUtil.streamToString(stream, "utf-8");
             JSONObject document = JSONObject.fromObject(jsonString);
             
-            List<Object> json = (List<Object>) document.getJSONObject("properties").get("shared-text-box");
+            List<?> json = (List<?>) document.getJSONObject("properties").get("shared-text-box");
 
             for (Object obj : json) {
                 JSONObject jsonObj = JSONObject.fromObject(obj);
@@ -84,8 +87,7 @@ public class SharedTextProvider implements ReferenceDataProvider {
     }
 
     @Override
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public void referenceData(Map model, HttpServletRequest request) throws Exception {
+    public void referenceData(Map<String, Object> model, HttpServletRequest request) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
         String token = requestContext.getSecurityToken();
         Repository repository = requestContext.getRepository();
@@ -98,7 +100,7 @@ public class SharedTextProvider implements ReferenceDataProvider {
             Map<String, Map<String, JSONObject>> sharedTextPropsMap = new HashMap<String, Map<String, JSONObject>>();
             for (int i = 0; i < ptdl.length; i++) {
                 if (ptdl[i] != null) {
-                    Map editHints = (Map) ptdl[i].getMetadata().get("editingHints");
+                    Map<?, ?> editHints = (Map<?, ?>) ptdl[i].getMetadata().get("editingHints");
                     if (editHints != null && "vrtx-shared-text".equals(editHints.get("class"))) {
                         sharedTextPropsMap.put(ptdl[i].getName(), getSharedTextValues(r.getResourceType(), ptdl[i].getName()));
                     }

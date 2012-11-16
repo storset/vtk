@@ -51,20 +51,19 @@
           <#if count == 1 && count == size && menu.label != "resourceMenuRight">
             <li class="${item.label} first last">
           <#elseif count == 1>
-            <li class="${item.label} first">     
+            <li class="${item.label} first">
           <#elseif count == size && menu.label != "resourceMenuRight">
             <li class="${item.label} last">
           <#else>
             <li class="${item.label}">
           </#if>
-              <#if item_index != 0 && item_index != menu.items?size>${between}</#if>
-                <#attempt>
-                  <#include "/actions/list-menu.${item.label}.ftl" />
-                <#recover>
-
-                ${prepend}<a id="${item.label}" href="${item.url?html}">${item.title}</a>${append}
+          <#if item_index != 0 && item_index != menu.items?size>${between}</#if>
+          <#attempt>
+            <#include "/actions/list-menu.${item.label}.ftl" />
+          <#recover>
+          ${prepend}<a id="${item.label}" href="${item.url?html}">${item.title}</a>${append}
           
-                </#recover>
+          </#recover>
             </li>
             <#assign count = count+1 />
         </#if>

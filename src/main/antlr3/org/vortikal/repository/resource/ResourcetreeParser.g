@@ -45,6 +45,7 @@ resourcedef
 		(viewdefinition)?
 		(vocabulary)?
 		(localization)?
+        (listing)*
 	;
 
 vocabulary
@@ -245,4 +246,21 @@ namevaluepair
 	;
 
 namelist:	LP NAME (COMMA NAME)* RP -> ^(NAME) ^(NAME)*;
+
+listing
+    :   LISTING NAME LCB
+        listingparameters listingdisplay RCB
+        -> ^(LISTING NAME listingparameters listingdisplay) 
+    ;
+
+listingparameters
+    :   PARAMETERS LCB
+        (NAME (COMMA NAME)*)* RCB
+        ->  ^(PARAMETERS NAME+)
+    ;
+
+listingdisplay
+    :   DISPLAY LCB DEF RCB
+        ->  ^(DISPLAY DEF)
+    ;
 

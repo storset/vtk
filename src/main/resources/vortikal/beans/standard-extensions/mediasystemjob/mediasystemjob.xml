@@ -14,6 +14,7 @@
             (type IN video OR type IN audio OR type IN image) AND media-metadata-status = GENERATE
           </value>
         </property>
+        <!-- sort -->
       </bean>
     </property>
     <property name="affectedPropDefPointers">

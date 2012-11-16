@@ -79,6 +79,7 @@ public class StructuredResourceManager {
     private Namespace namespace = Namespace.STRUCTURED_RESOURCE_NAMESPACE;
 
     private Map<String, StructuredResourceDescription> types = new HashMap<String, StructuredResourceDescription>();
+    private Map<String, Listing> listings = new HashMap<String, Listing>();
     private ValueFactory valueFactory;
     private ValueFormatterRegistry valueFormatterRegistry;
     private EvaluatorResolver evaluatorResolver;
@@ -97,7 +98,7 @@ public class StructuredResourceManager {
         description.validate();
         PrimaryResourceTypeDefinition def = createResourceType(description);
         this.resourceTypeTree.registerDynamicResourceType(def);
-
+        registerListings(description);
         this.types.put(name, description);
     }
 
@@ -107,6 +108,10 @@ public class StructuredResourceManager {
         logger.info(this.resourceTypeTree.getResourceTypeTreeAsString());
     }
 
+    public Listing getListing(String name) {
+        return this.listings.get(name);
+    }
+    
     private PrimaryResourceTypeDefinition createResourceType(StructuredResourceDescription description)
             throws Exception {
         PrimaryResourceTypeDefinitionImpl def = new PrimaryResourceTypeDefinitionImpl();
@@ -354,6 +359,21 @@ public class StructuredResourceManager {
         List<StructuredResourceDescription> result = new ArrayList<StructuredResourceDescription>();
         result.addAll(this.types.values());
         return result;
+    }
+    
+    private void registerListings(StructuredResourceDescription desc) {
+        List<Listing> listings = desc.getListings();
+        if (listings == null) {
+            return;
+        }
+        for (Listing listing: listings) {
+            if (this.listings.containsKey(listing.getName())) {
+                throw new IllegalArgumentException("Unable to add listing '" + listing 
+                        + "' of resource type '" + desc.getName() 
+                        + "': a listing with this name already exists");
+            }
+            this.listings.put(listing.getName(), listing);
+        }
     }
 
     @Required

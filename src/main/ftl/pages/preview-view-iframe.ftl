@@ -56,7 +56,9 @@
   <#include "/system/css.ftl"/> 
   <#include "/system/javascript.ftl"/>
   <script type="text/javascript"><!--
+
   function linkCheckResponseLocalizer(status) {
+    // XXX: admin locale is not available here...
       switch (status) {
          case 'NOT_FOUND':
          case 'MALFORMED_URL':

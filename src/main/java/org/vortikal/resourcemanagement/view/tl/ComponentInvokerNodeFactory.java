@@ -42,6 +42,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.vortikal.resourcemanagement.view.StructuredResourceDisplayController;
 import org.vortikal.text.html.HtmlPage;
+import org.vortikal.text.html.HtmlUtil;
 import org.vortikal.text.tl.Context;
 import org.vortikal.text.tl.DirectiveNodeFactory;
 import org.vortikal.text.tl.DirectiveParseContext;
@@ -177,7 +178,7 @@ public class ComponentInvokerNodeFactory implements DirectiveNodeFactory {
                     component.render(decoratorRequest, decoratorResponse);
                     out.write(decoratorResponse.getContentAsString());
                 } catch (Throwable t) {
-                    out.write(component.getNamespace() + ":" + component.getName()+ ": " + t.getMessage());
+                    out.write(component.getNamespace() + ":" + component.getName()+ ": " + HtmlUtil.escapeHtmlString(t.getMessage()));
                     
                 } finally {
                     componentStack.pop();

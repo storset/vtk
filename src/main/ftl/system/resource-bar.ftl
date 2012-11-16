@@ -1,6 +1,7 @@
 <#ftl strip_whitespace=true />
 <#import "/lib/menu/list-menu.ftl" as listMenu />
 <#import "/lib/vortikal.ftl" as vrtx />
+<#-- XXX: remove ping from here -->
 <#import "/lib/ping.ftl" as ping />
 
 <#assign resource = resourceContext.currentResource />

@@ -301,6 +301,7 @@ public class LinkCheckJob extends RepositoryJob {
         if (schemeMatcher.find()) {
             String scheme = schemeMatcher.group(1);
             return "http".equalsIgnoreCase(scheme) || "https".equalsIgnoreCase(scheme);
+            // XXX: include check for 'unknown scheme (IANA)' and report as broken
         }
         return ! href.startsWith("#");
     }

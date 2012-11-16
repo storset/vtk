@@ -817,7 +817,7 @@ public interface Repository {
     /**
      * Execute a repository search (higher-level access to search API).
      * Searching through this method will enforce that all search results are
-     * published resources.
+     * published (and not archived) resources.
      * 
      * @param token
      * @param search

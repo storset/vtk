@@ -94,6 +94,7 @@
   <bean id="editableResourcesAssertion" class="org.vortikal.web.service.AndAssertion">
     <property name="assertions">
       <list>
+        <!-- XXX: configurify not(uneditableResourceTypes) -->
         <ref bean="resourceTypeIsNotExam" />
         <ref bean="resourceTypeIsNotSamletProgram" />
         <ref bean="resourceTypeIsNotSamletRetning" />

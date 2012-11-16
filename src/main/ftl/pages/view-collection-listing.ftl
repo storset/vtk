@@ -194,6 +194,7 @@
            <#elseif collection.resourceType = 'image-listing'>
              <@images.displayImages searchComponent collection />
            <#elseif collection.resourceType = 'blog-listing'>
+             <#-- XXX: ingress vises ikke uten minst 1 blogginnlegg -->
               <@blogs.displayBlogs searchComponent collection />
            <#elseif collection.resourceType = 'audio-video-listing' >
            	  <@audioVideo.displayCollection collectionListing=searchComponent />

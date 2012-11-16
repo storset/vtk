@@ -44,9 +44,24 @@
       <list>
         <!--ref bean="decorating.nodeLabelFilter" /-->
         <ref bean="decorating.ssiNodeFilter" />
+        <!--ref bean="decorating.esiFilter" /-->
       </list>
     </property>
   </bean>
+
+  <bean id="decorating.postFilters"
+        class="org.springframework.beans.factory.config.ListFactoryBean">
+    <property name="sourceList">
+      <list>
+      </list>
+    </property>
+  </bean>
+  
+  <!--
+  <bean id="decorating.esiFilter" class="org.vortikal.web.decorating.ESINodeFilter">
+    <property name="esiLocations" value="${decorating.esiLocations}" />
+  </bean>
+  -->
 
   <bean id="decorating.ssiNodeFilter" class="org.vortikal.web.decorating.ComponentInvokingNodeFilter">
     <property name="componentResolver" ref="decorating.defaultComponentResolver" />
@@ -64,6 +79,7 @@
     </property>
     <property name="contentComponentParser" ref="decorating.dollarSyntaxTemplateParser" />
     <property name="parseAttributes" value="true" />
+    <!--property name="esiLocations" value="${decorating.esiLocations}" /-->
   </bean>
 
   <bean id="decorating.decorationResolver"

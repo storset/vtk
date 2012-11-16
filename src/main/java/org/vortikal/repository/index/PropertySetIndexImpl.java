@@ -64,7 +64,6 @@ public class PropertySetIndexImpl implements PropertySetIndex {
                                               // accessor.
     private DocumentMapper documentMapper;
 
-    @SuppressWarnings("unchecked")
     @Override
     public void addPropertySet(PropertySet propertySet,
                                Set<Principal> aclReadPrincipals) throws IndexException {
@@ -164,8 +163,8 @@ public class PropertySetIndexImpl implements PropertySetIndex {
             throw new IndexException(io);
         } finally {
             try {
-                termEnum.close();
-                termDocs.close();
+                if (termEnum != null) termEnum.close();
+                if (termDocs != null) termDocs.close();
             } catch (IOException io) {
             }
         }

@@ -12,6 +12,11 @@ getUsage() {
     return "repo evaluate [-logfile:string] <query:string> [-properties:string...]";
 }
 
+//inheritable_store_context for legitime
+//   remove + store for falske
+
+
+
 void execute(context, args, out) {
 
     beanContext = context.get("context");
@@ -102,7 +107,7 @@ void execute(context, args, out) {
                         }
                     } catch (t) {
                         out.print(t.getMessage());
-                        return;
+                        return false;
                     }
                 }
 
@@ -113,6 +118,10 @@ void execute(context, args, out) {
                     name = prop.getDefinition().getName();
                     multi = prop.getDefinition().isMultiple();
                     old = origClone.getProperty(ns, name);
+
+                    if (name.equals("contentLocale")) {
+                        log.print("*** ");
+                    }
             
                     if (prop.getDefinition() != null) {
                         if (old == null) {

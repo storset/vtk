@@ -3,7 +3,7 @@ getDescription() {
 }
 
 getUsage() {
-    return "repo delete <uri:path>";
+    return "repo delete [-notrash:boolean] <uri:path>";
 }
 
 void execute(context, args, out) {
@@ -18,8 +18,10 @@ void execute(context, args, out) {
         return;
     }
 
+    restorable = args.get("notrash") == null ? true : !args.get("notrash");
+
     try {
-        repo.delete(token, uri, true);
+        repo.delete(token, uri, restorable);
     } catch (e) {
         out.println("Unable to delete " + uri + ": " + e.getMessage());
     }

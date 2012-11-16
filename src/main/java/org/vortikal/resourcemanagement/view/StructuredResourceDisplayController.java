@@ -35,14 +35,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.BeanInitializationException;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.repository.Path;
@@ -68,7 +68,7 @@ import org.vortikal.web.decorating.TemplateExecution;
 import org.vortikal.web.decorating.TemplateManager;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 
-public class StructuredResourceDisplayController implements Controller, InitializingBean {
+public class StructuredResourceDisplayController implements Controller, ApplicationListener<ContextRefreshedEvent> {
 
     public static final String MVC_MODEL_REQ_ATTR = "__mvc_model__";
     public static final String COMPONENT_RESOLVER = "__component_resolver__";
@@ -86,10 +86,9 @@ public class StructuredResourceDisplayController implements Controller, Initiali
 
     private List<HtmlPageFilter> postFilters;
 
-    // XXX: clean up this mess:
     private Map<StructuredResourceDescription,
-    Map<String, TemplateLanguageDecoratorComponent>> components = 
-        new ConcurrentHashMap<StructuredResourceDescription, Map<String, TemplateLanguageDecoratorComponent>>();
+        Map<String, TemplateLanguageDecoratorComponent>> components = 
+            new HashMap<StructuredResourceDescription, Map<String, TemplateLanguageDecoratorComponent>>();
 
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
@@ -126,9 +125,6 @@ public class StructuredResourceDisplayController implements Controller, Initiali
             throw new IllegalStateException("Unable to find resource type description '" 
                     + r.getResourceType() + "' for resource " + r.getURI());
         }
-        if (!desc.getComponentDefinitions().isEmpty() && !this.components.containsKey(desc)) {
-            initComponentDefs(desc);
-        }
 
         Map<String, Object> model = new HashMap<String, Object>();
         StructuredResource res = desc.buildResource(stream);
@@ -163,6 +159,7 @@ public class StructuredResourceDisplayController implements Controller, Initiali
         response.getWriter().write(content.getContent());
         return null;
     }
+    
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public PageContent renderInitialPage(StructuredResource res, Map model, HttpServletRequest request)
@@ -185,18 +182,21 @@ public class StructuredResourceDisplayController implements Controller, Initiali
         String templateRef = res.getType().getName();
         Template t = this.templateManager.getTemplate(templateRef);
         TemplateExecution execution = t.newTemplateExecution(content, request, model, new HashMap<String, Object>());
+        ComponentResolver resolver = newDynamicComponentResolver(execution, res.getType());
 
-        ComponentResolver resolver = execution.getComponentResolver();
-        Map<String, TemplateLanguageDecoratorComponent> components = this.components.get(res.getType());
-        resolver = new DynamicComponentResolver(COMPONENT_NS, resolver, components);
         execution.setComponentResolver(resolver);
         request.setAttribute(COMPONENT_RESOLVER, resolver);
         
         return execution.render();
     }
+    
+    ComponentResolver newDynamicComponentResolver(TemplateExecution execution, StructuredResourceDescription desc) {
+        ComponentResolver resolver = execution.getComponentResolver();
+        Map<String, TemplateLanguageDecoratorComponent> components = this.components.get(desc);
+        return new DynamicComponentResolver(COMPONENT_NS, resolver, components);
+    }
 
     private void initComponentDefs(StructuredResourceDescription desc) throws Exception {
-        // XXX: "concurrent initialization":
 
         Map<String, TemplateLanguageDecoratorComponent> comps = new HashMap<String, TemplateLanguageDecoratorComponent>();
 
@@ -212,7 +212,7 @@ public class StructuredResourceDisplayController implements Controller, Initiali
     }
 
     @Override
-    public void afterPropertiesSet() {
+    public void onApplicationEvent(ContextRefreshedEvent event) {
         List<StructuredResourceDescription> allDescriptions = this.resourceManager.list();
         for (StructuredResourceDescription desc : allDescriptions) {
             try {
@@ -275,5 +275,5 @@ public class StructuredResourceDisplayController implements Controller, Initiali
     public void setDirectiveHandlers(Map<String, DirectiveNodeFactory> directiveHandlers) {
         this.directiveHandlers = directiveHandlers;
     }
-    
+
 }

@@ -39,6 +39,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import net.sf.json.JSONObject;
+
 import org.vortikal.repository.resourcetype.ConstraintViolationException;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyType.Type;
@@ -48,8 +50,6 @@ import org.vortikal.repository.resourcetype.ValueFormatException;
 import org.vortikal.repository.resourcetype.ValueFormatter;
 import org.vortikal.repository.resourcetype.ValueSeparator;
 import org.vortikal.security.Principal;
-
-import net.sf.json.JSONObject;
 
 
 /**
@@ -110,22 +110,40 @@ public class PropertyImpl implements Cloneable, Property {
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
+            if ("hideAdditionalContent".equals(getDefinition().getName())) {
+                System.out.println("__foo1");
+            }
             return false;
         }
         if (getClass() != obj.getClass()) {
+            if ("hideAdditionalContent".equals(getDefinition().getName())) {
+                System.out.println("__foo2");
+            }
             return false;
         }
         final PropertyImpl other = (PropertyImpl) obj;
         if (this.propertyTypeDefinition != other.propertyTypeDefinition && (this.propertyTypeDefinition == null || !this.propertyTypeDefinition.equals(other.propertyTypeDefinition))) {
+            if ("hideAdditionalContent".equals(getDefinition().getName())) {
+                System.out.println("__foo3");
+            }
             return false;
         }
         if (this.value != other.value && (this.value == null || !this.value.equals(other.value))) {
+            if ("hideAdditionalContent".equals(getDefinition().getName())) {
+                System.out.println("__foo4");
+            }
             return false;
         }
         if (!Arrays.deepEquals(this.values, other.values)) {
+            if ("hideAdditionalContent".equals(getDefinition().getName())) {
+                System.out.println("__foo5");
+            }
             return false;
         }
         if (this.inherited != other.inherited) {
+            if ("hideAdditionalContent".equals(getDefinition().getName())) {
+                System.out.println("__foo6");
+            }
             return false;
         }
         return true;

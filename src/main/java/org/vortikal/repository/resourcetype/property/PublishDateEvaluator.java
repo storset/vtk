@@ -61,19 +61,30 @@ public class PublishDateEvaluator implements PropertyEvaluator {
                                                                            ctx.getNewResource().getAcl(),
                                                                            Privilege.READ_WRITE);
         
-        // If not authorized to publish, make it unpublished.
-        if (!authorizedToPublish) {
-            return false;
-        }
-
-        // On create we either remove value if configured, or set publish date to creation-time (auto-publish)
+        // On Create we do one of:
+        // 1. Remove value if configured to do so.
+        // 2. Remove value if not authorized to publish.
+        // 3. Set value to creation time if authorized to publish (auto-publish).
         if (ctx.getEvaluationType() == Type.Create) {
             if (removeValueOnCreate) {
                 return false;
             }
             
+            // If not authorized to publish, make new resource unpublished.
+            if (!authorizedToPublish) {
+                return false;
+            }
+            
             property.setDateValue(creationTimeProp.getDateValue());
             return true;
+        }
+
+        // On NameChange (copy/move), we remove value if not authorized to publish
+        if (ctx.getEvaluationType() == Type.NameChange) {
+            if (!authorizedToPublish) {
+                // If not authorized to publish, make copied/moved resource unpublished.
+                return false;
+            }
         }
         
         // Logic below when principal is authorized to publish and evaluation type

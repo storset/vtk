@@ -70,31 +70,31 @@ public class PublishResourcesController implements Controller {
                 
         String action = requestContext.getServletRequest().getParameter(ACTION_PARAM);
 
-        if(action != null && !action.isEmpty()) {
-           if(PUBLISH_PARAM.equals(action)) {
-               Date publishedDate = Calendar.getInstance().getTime(); // Publish all resources at same instance of time
-               @SuppressWarnings("rawtypes")
-               Enumeration e = request.getParameterNames();
-               while (e.hasMoreElements()) {
-                   String name = (String) e.nextElement();
-                   try {
-                       ActionsHelper.publishResource(publishDatePropDef, publishedDate, repository, token, Path.fromString(name), failures);
-                   } catch (IllegalArgumentException iae) { // Not a path, ignore it
-                       continue;
-                   }
-               }
-           } else if(UNPUBLISH_PARAM.equals(action)) {
-               @SuppressWarnings("rawtypes")
-               Enumeration e = request.getParameterNames();
-               while (e.hasMoreElements()) {
-                   String name = (String) e.nextElement();
-                   try {
-                       ActionsHelper.unpublishResource(publishDatePropDef, repository, token, Path.fromString(name), failures);
-                   } catch (IllegalArgumentException iae) { // Not a path, ignore it
-                       continue;
-                   }
-               }
-           }
+        if (action != null && !action.isEmpty()) {
+            boolean isPublishAction = PUBLISH_PARAM.equals(action);
+            boolean isUnpublishAction = UNPUBLISH_PARAM.equals(action);
+
+            Date publishedDate = null;
+            if (isPublishAction) {
+                Calendar.getInstance().getTime(); // Publish all resources at same instance of time
+            }
+
+            @SuppressWarnings("rawtypes")
+            Enumeration e = request.getParameterNames();
+            while (e.hasMoreElements()) {
+                String name = (String) e.nextElement();
+                try {
+                    if (isPublishAction) {
+                        ActionsHelper.publishResource(publishDatePropDef, publishedDate, repository, token,
+                                Path.fromString(name), failures);
+                    } else if (isUnpublishAction) {
+                        ActionsHelper.unpublishResource(publishDatePropDef, repository, token, Path.fromString(name),
+                                failures);
+                    }
+                } catch (IllegalArgumentException iae) { // Not a path, ignore it
+                    continue;
+                }
+            }
         }
         ActionsHelper.addFailureMessages(failures, requestContext);
 

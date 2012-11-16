@@ -170,7 +170,10 @@ resourcetype course-description : fellestekst-document {
           [elseif course-status = "discontinued-course"]
             <h2 class="statusmessage">[localized 'discontinued-course']</h2>
           [elseif course-status = "earlier-version"]
-            <h2 class="statusmessage">[localized 'earlier-version']</h2>
+            [def uri resource-prop("./../", "uri")]
+            [def resource resource(uri)]
+            [def url view-url(resource)]
+            <h2 class="statusmessage">[localized 'earlier-version-start'] <a href="[val url]">[localized 'earlier-version-link']</a> [localized 'earlier-version-end']</h2>
           [endif]
         [endif]
         ##
@@ -283,9 +286,13 @@ resourcetype course-description : fellestekst-document {
     version-en : (en : "English version", no : "English version", nn : "English version"),
     continued-as : (en : "This course is continued as", no: "Dette emnet er videreført som", nn : "Dette emnet er vidareført som"),
     discontinued-course : (en : "This course is discontinued.", no : "Dette emnet er nedlagt.", nn : "Dette emnet er nedlagt."),
-    earlier-version : (en : "This version of the course description is outdated. For up to date information about this course, please visit <a href=../>the complete course list of the department.</a>",
-                       no : "Denne versjonen av emnebeskrivelsen er ikke lenger gyldig. Se <a href=../>listen over alle emner ved insituttet</a> for oppdatert versjon av dette emnet.",
-                       nn : "Denne versjonen av emneskildringa er ikkje lenger gyldig. Sjå <a href=../>lista over alle emner ved insituttet</a> for oppdatert versjon av dette emnet."),
+    earlier-version-start : (en : "This version of the course description is outdated. For up to date information about this course, please visit",
+                       no : "Denne versjonen av emnebeskrivelsen er ikke lenger gyldig. Se",
+                       nn : "Denne versjonen av emneskildringa er ikkje lenger gyldig. Sjå"),
+    earlier-version-link : (en : "the complete course list of the department.",
+                            no : "listen over alle emner ved insituttet",
+                            nn : "lista over alle emner ved insituttet"),
+    earlier-version-end : (en : " ", no : "for oppdatert versjon av dette emnet.", nn : "for oppdatert versjon av dette emnet."),
     facts : (en : "Facts about this course", no : "Fakta om emnet", nn : "Fakta om emnet"),
     credits : (en : "Credits", no : "Studiepoeng", nn : "Studiepoeng"),
     teachingsemester : (en : "Teaching semester", no : "Undervises", nn : "Undervises"),

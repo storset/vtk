@@ -63,16 +63,19 @@ public class VShell extends AbstractConsole {
         this.securityContext = securityContext;
     }
 
+    @Override
     public void bind(String name, Object o) {
         this.context.set(name, o);
     }
 
+    @Override
     protected void evalInitFile(InputStream inStream, PrintStream out) {
     }
 
     
     
     @SuppressWarnings({ "rawtypes", "unchecked" })
+    @Override
     protected void init() {
         if (this.commands == null) {
             Map m = BeanFactoryUtils.beansOfTypeIncludingAncestors(
@@ -86,6 +89,7 @@ public class VShell extends AbstractConsole {
         addCommands();
     }
     
+    @Override
     public void eval(String line, PrintStream out) {
         if ("".equals(line.trim())) {
             return;
@@ -151,7 +155,7 @@ public class VShell extends AbstractConsole {
             }
         }
         
-        if (intermediate.size() == 0) {
+        if (intermediate.isEmpty()) {
             throw new IllegalStateException("No command specified: " + usage);
         }
 
@@ -280,14 +284,16 @@ public class VShell extends AbstractConsole {
                 out.println("Error: missing argument '" + arg.name + "'");
                 return null;
             }
-            
-            try {
-                Object val = getTypedArg(args.get(paramIdx++), arg.type);
-                result.put(arg.name, val);
-            } catch (Throwable t) {
-                out.println("Illegal value of argument '" + arg.name + "': " + t.getMessage());
-                out.println("(optional: " + arg.optional + ")");
-                return null;
+
+            if (paramIdx < args.size()) {
+                try {
+                    Object val = getTypedArg(args.get(paramIdx++), arg.type);
+                    result.put(arg.name, val);
+                } catch (Throwable t) {
+                    out.println("Illegal value of argument '" + arg.name + "': " + t.getMessage());
+                    out.println("(optional: " + arg.optional + ")");
+                    return null;
+                }
             }
         }
         if (paramIdx < args.size()) {
@@ -335,11 +341,10 @@ public class VShell extends AbstractConsole {
         st.whitespaceChars(0, ' ');
         st.quoteChar('"');
         st.quoteChar('\'');
-        int i = 0;
         try {
             boolean done = false;
             while (!done) {
-                i = st.nextToken();
+                int i = st.nextToken();
                 switch (i) {
                 case StreamTokenizer.TT_EOF:
                 case StreamTokenizer.TT_EOL:
@@ -358,14 +363,17 @@ public class VShell extends AbstractConsole {
     }
 
     private static class QuitCommand implements VCommand {
+        @Override
         public String getDescription() {
             return "Quit VShell session";
         }
         
+        @Override
         public String getUsage() {
             return "quit";
         }
         
+        @Override
         public void execute(VShellContext c, Map<String, Object> args,
                 PrintStream out) {
             out.println("Goodbye.");
@@ -375,14 +383,17 @@ public class VShell extends AbstractConsole {
     }
     
     private class HelpCommand implements VCommand {
+        @Override
         public String getDescription() {
             return "List available commands";
         }
 
+        @Override
         public String getUsage() {
-            return "help [command:string]";
+            return "help [command:string...]";
         }
 
+        @Override
         public void execute(VShellContext c, Map<String, Object> args,
                 PrintStream out) {
 

@@ -76,7 +76,7 @@ public class PublishResourcesController implements Controller {
 
             Date publishedDate = null;
             if (isPublishAction) {
-                Calendar.getInstance().getTime(); // Publish all resources at same instance of time
+                publishedDate = Calendar.getInstance().getTime(); // Publish all resources at same instance of time
             }
 
             @SuppressWarnings("rawtypes")

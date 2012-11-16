@@ -69,7 +69,7 @@
     <property name="assertions">
       <list>
         <ref bean="structuredResources.typeAssertion" />
-        <ref bean="requiresWritePermissionAssertion" />
+        <ref bean="requiresWriteUnpublishedPermissionAssertion" />
         <ref bean="editor.modeParameterAssertion" />
         <ref bean="editor.parameterEqualsEdit" />
         <ref bean="editableResourcesAssertion" />

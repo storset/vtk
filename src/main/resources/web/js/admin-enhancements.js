@@ -1435,11 +1435,10 @@ VrtxAdmin.prototype.placeDeleteButtonInActiveTab = function placeDeleteButtonInA
   
   vrtxAdm.cachedActiveTab.find('#deleteResourceService').click(function (e) {
     var boxes = vrtxAdm.cachedDirectoryListing.find('td input[type=checkbox]:checked');
-    if (!boxes.length) {
-      //alert(deleteUncheckedMessage);
+    var boxesSize = boxes.length;
+    if (!boxesSize) {
       vrtxSimpleDialogs.openMsgDialog(deleteUncheckedMessage, deleteTitle);
     } else {
-      var boxesSize = boxes.size();
       var list = buildFileList(boxes, boxesSize);
       vrtxSimpleDialogs.openConfirmDialog(confirmDelete.replace("(1)", boxesSize) + '<br />' + list, confirmDeleteTitle, function() {
         vrtxAdm.cachedAppContent.find('#collectionListing\\.action\\.delete-resources').click();
@@ -1468,11 +1467,10 @@ VrtxAdmin.prototype.placePublishButtonInActiveTab = function placeDeleteButtonIn
   menu.append(html);
   $('#publishTheResourcesService').click(function (e) {
     var boxes = vrtxAdm.cachedDirectoryListing.find('td input[type=checkbox]:checked');
-    if (!boxes.length) {
-      //alert(deleteUncheckedMessage);
+    var boxesSize = boxes.length;
+    if (!boxesSize) {
       vrtxSimpleDialogs.openMsgDialog(publishUncheckedMessage, publishTitle);
     } else {
-      var boxesSize = boxes.size();
       var list = vrtxAdm.buildFileList(boxes, boxesSize);
       vrtxSimpleDialogs.openConfirmDialog(confirmPublish.replace("(1)", boxesSize) + '<br />' + list, confirmPublishTitle, function() {
         vrtxAdm.cachedAppContent.find('#collectionListing\\.action\\.publish-resources').click();
@@ -1494,11 +1492,10 @@ VrtxAdmin.prototype.placeUnpublishButtonInActiveTab = function placeDeleteButton
   menu.find("#collection-more-menu ul").append('<li><a id="unpublishTheResourcesService" href="javascript:void(0);">' + btn.attr('title') + '</a></li>');
   $('#unpublishTheResourcesService').click(function (e) {
     var boxes = vrtxAdm.cachedDirectoryListing.find('td input[type=checkbox]:checked');
-    if (!boxes.length) {
-      //alert(deleteUncheckedMessage);
+    var boxesSize = boxes.length;
+    if (!boxesSize) {
       vrtxSimpleDialogs.openMsgDialog(unpublishUncheckedMessage, unpublishTitle);
     } else {
-      var boxesSize = boxes.size();
       var list = vrtxAdm.buildFileList(boxes, boxesSize);
       vrtxSimpleDialogs.openConfirmDialog(confirmUnpublish.replace("(1)", boxesSize) + '<br />' + list, confirmUnpublishTitle, function() {
         vrtxAdm.cachedAppContent.find('#collectionListing\\.action\\.unpublish-resources').click();
@@ -1519,11 +1516,11 @@ VrtxAdmin.prototype.placeRecoverButtonInActiveTab = function placeRecoverButtonI
                                 + btn.attr('value') + '</a></li></ul>');
   vrtxAdm.cachedActiveTab.find("#recoverResourceService").click(function (e) {
     var boxes = vrtxAdm.cachedDirectoryListing.find('td input[type=checkbox]:checked');
-    if (!boxes.length) {
-      //alert(recoverUncheckedMessage);
+    var boxesSize = boxes.length;
+    if (!boxesSize) {
       vrtxSimpleDialogs.openMsgDialog(recoverUncheckedMessage, recoverTitle);
     } else {
-      CHECKED_TRASHCAN_FILES = boxes.length;
+      CHECKED_TRASHCAN_FILES = boxesSize;
       vrtxAdm.cachedAppContent.find('.recoverResource').click();
     }
     e.preventDefault();
@@ -1541,13 +1538,11 @@ VrtxAdmin.prototype.placeDeletePermanentButtonInActiveTab = function placeDelete
           + btn.attr('value') + '</a></li>');
   vrtxAdm.cachedActiveTab.find('#deleteResourcePermanentService').click(function (e) {
     var boxes = vrtxAdm.cachedDirectoryListing.find('td input[type=checkbox]:checked');
-    
-    if (!boxes.length) {
-      //alert(deletePermanentlyUncheckedMessage);
+    var boxesSize = boxes.length;
+    if (!boxesSize) {
       vrtxSimpleDialogs.openMsgDialog(deletePermanentlyUncheckedMessage, deletePermTitle);
     } else {
-      CHECKED_TRASHCAN_FILES = boxes.length;
-      var boxesSize = boxes.size();
+      CHECKED_TRASHCAN_FILES = boxesSize;
       var list = vrtxAdm.buildFileList(boxes, boxesSize);
       vrtxSimpleDialogs.openConfirmDialog(confirmDeletePermanently.replace("(1)", boxesSize) + '<br />' + list, confirmDeletePermTitle, function() {
         vrtxAdm.cachedContent.find('.deleteResourcePermanent').click();

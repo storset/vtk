@@ -405,7 +405,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
 
     @Transactional
     @Override
-    public void copy(String token, Path srcUri, Path destUri, boolean overwrite, boolean preserveACL)
+    public void copy(String token, Path srcUri, Path destUri, boolean overwrite, boolean copyAcl)
             throws IllegalOperationException, AuthorizationException, AuthenticationException,
             FailedDependencyException, ResourceOverwriteException, ResourceLockedException, ResourceNotFoundException,
             ReadOnlyException, IOException {
@@ -448,7 +448,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         try {
             PropertySet fixedProps = this.resourceHelper.getFixedCopyProperties(src, principal, destUri);
 
-            ResourceImpl newResource = src.createCopy(destUri);
+            ResourceImpl newResource = src.createCopy(destUri, copyAcl ? src.getAcl() : destParent.getAcl());
             Content content = getContent(src);
             // XXX: why nameChange() on copy?
             newResource = this.resourceHelper.nameChange(src, newResource, principal, content);
@@ -461,7 +461,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             // Both new resource and destParent are stored in DAO copy call
             // Probably better to not touch destparent in DAO copy code and
             // explicitly store it here instead (for better clarity).
-            newResource = this.dao.copy(src, destParent, newResource, preserveACL, fixedProps);
+            newResource = this.dao.copy(src, destParent, newResource, copyAcl, fixedProps);
             this.contentStore.copy(src.getURI(), newResource.getURI());
 
             this.context.publishEvent(new ResourceCreationEvent(this, (Resource) newResource.clone()));
@@ -544,8 +544,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
                     destParentOriginal));
 
             // Process move
-            ResourceImpl newResource = src.createCopy(destUri);
-            newResource.setAcl(src.getAcl());
+            ResourceImpl newResource = src.createCopy(destUri, src.isInheritedAcl() ? destParent.getAcl() : src.getAcl());
             newResource.setInheritedAcl(src.isInheritedAcl());
             newResource.setAclInheritedFrom(src.getAclInheritedFrom());
             content = getContent(src);
@@ -1539,8 +1538,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
                     content);
             newResource = this.dao.store(newResource);
 
-            // Publish resource modification event (necessary to trigger
-            // re-indexing, since a prop is now modified)
+            // Publish resource modification event
             ResourceModificationEvent event = new ResourceModificationEvent(this, (Resource) newResource.clone(),
                     original);
             this.context.publishEvent(event);

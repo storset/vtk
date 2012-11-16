@@ -1424,8 +1424,6 @@ VrtxAdmin.prototype.placeCopyMoveButtonInActiveTab = function placeCopyMoveButto
   });
 };
 
-// TODO: Refactor delete, publish, unpublish and delete-permanently
-
 VrtxAdmin.prototype.placeDeleteButtonInActiveTab = function placeDeleteButtonInActiveTab() {
   var vrtxAdm = this, _$ = vrtxAdm._$;
 
@@ -1441,18 +1439,8 @@ VrtxAdmin.prototype.placeDeleteButtonInActiveTab = function placeDeleteButtonInA
       //alert(deleteUncheckedMessage);
       vrtxSimpleDialogs.openMsgDialog(deleteUncheckedMessage, deleteTitle);
     } else {
-      var list = "<ul>";
       var boxesSize = boxes.size();
-      var boxesSize = boxesSizeTmp = boxes.size();
-      boxesSizeTmp = boxesSizeTmp > 10 ? 10 : boxesSizeTmp;
-      for (var i = 0; i < boxesSizeTmp; i++) {
-        var name = boxes[i].name.split("/");
-        list += "<li>" + name[name.length-1] + "</li>";
-      }
-      list += "</ul>"; 
-      if (boxesSize > 10) {
-        list += "... " + confirmAnd + " " + (boxesSize - 10) + " " + confirmMore;
-      }
+      var list = buildFileList(boxes, boxesSize);
       vrtxSimpleDialogs.openConfirmDialog(confirmDelete.replace("(1)", boxesSize) + '<br />' + list, confirmDeleteTitle, function() {
         vrtxAdm.cachedAppContent.find('#collectionListing\\.action\\.delete-resources').click();
       }, null, null);
@@ -1484,18 +1472,8 @@ VrtxAdmin.prototype.placePublishButtonInActiveTab = function placeDeleteButtonIn
       //alert(deleteUncheckedMessage);
       vrtxSimpleDialogs.openMsgDialog(publishUncheckedMessage, publishTitle);
     } else {
-      var list = "<ul>";
       var boxesSize = boxes.size();
-      var boxesSize = boxesSizeTmp = boxes.size();
-      boxesSizeTmp = boxesSizeTmp > 10 ? 10 : boxesSizeTmp;
-      for (var i = 0; i < boxesSizeTmp; i++) {
-        var name = boxes[i].name.split("/");
-        list += "<li>" + name[name.length-1] + "</li>";
-      }
-      list += "</ul>"; 
-      if (boxesSize > 10) {
-        list += "... " + confirmAnd + " " + (boxesSize - 10) + " " + confirmMore;
-      }
+      var list = vrtxAdm.buildFileList(boxes, boxesSize);
       vrtxSimpleDialogs.openConfirmDialog(confirmPublish.replace("(1)", boxesSize) + '<br />' + list, confirmPublishTitle, function() {
         vrtxAdm.cachedAppContent.find('#collectionListing\\.action\\.publish-resources').click();
       }, null, null);
@@ -1520,18 +1498,8 @@ VrtxAdmin.prototype.placeUnpublishButtonInActiveTab = function placeDeleteButton
       //alert(deleteUncheckedMessage);
       vrtxSimpleDialogs.openMsgDialog(unpublishUncheckedMessage, unpublishTitle);
     } else {
-      var list = "<ul>";
       var boxesSize = boxes.size();
-      var boxesSize = boxesSizeTmp = boxes.size();
-      boxesSizeTmp = boxesSizeTmp > 10 ? 10 : boxesSizeTmp;
-      for (var i = 0; i < boxesSizeTmp; i++) {
-        var name = boxes[i].name.split("/");
-        list += "<li>" + name[name.length-1] + "</li>";
-      }
-      list += "</ul>"; 
-      if (boxesSize > 10) {
-        list += "... " + confirmAnd + " " + (boxesSize - 10) + " " + confirmMore;
-      }
+      var list = vrtxAdm.buildFileList(boxes, boxesSize);
       vrtxSimpleDialogs.openConfirmDialog(confirmUnpublish.replace("(1)", boxesSize) + '<br />' + list, confirmUnpublishTitle, function() {
         vrtxAdm.cachedAppContent.find('#collectionListing\\.action\\.unpublish-resources').click();
       }, null, null);
@@ -1579,17 +1547,8 @@ VrtxAdmin.prototype.placeDeletePermanentButtonInActiveTab = function placeDelete
       vrtxSimpleDialogs.openMsgDialog(deletePermanentlyUncheckedMessage, deletePermTitle);
     } else {
       CHECKED_TRASHCAN_FILES = boxes.length;
-      var list = "<ul>";
-      var boxesSize = boxesSizeTmp = boxes.size();
-      boxesSizeTmp = boxesSizeTmp > 10 ? 10 : boxesSizeTmp;
-      for (var i = 0; i < boxesSizeTmp; i++) {
-        var name = boxes[i].title.split("/");
-        list += "<li>" + name[name.length-1] + "</li>";
-      }
-      list += "</ul>"; 
-      if (boxesSize > 10) {
-        list += "... " + confirmDeletePermanentlyAnd + " " + (boxesSize - 10) + " " + confirmDeletePermanentlyMore;
-      }
+      var boxesSize = boxes.size();
+      var list = vrtxAdm.buildFileList(boxes, boxesSize);
       vrtxSimpleDialogs.openConfirmDialog(confirmDeletePermanently.replace("(1)", boxesSize) + '<br />' + list, confirmDeletePermTitle, function() {
         vrtxAdm.cachedContent.find('.deleteResourcePermanent').click();
       }, null, null);
@@ -1598,6 +1557,21 @@ VrtxAdmin.prototype.placeDeletePermanentButtonInActiveTab = function placeDelete
   });
 };
 
+VrtxAdmin.prototype.buildFileList = function buildFileList(boxes, boxesSize) {
+  var boxesSizeExceedsTen = boxesSize > 10;
+  var boxesSizeTmp = boxesSizeExceedsTen ? 10 : boxesSize;
+  
+  var list = "<ul>";
+  for (var i = 0; i < boxesSizeTmp; i++) {
+    var name = boxes[i].name.split("/");
+    list += "<li>" + name[name.length-1] + "</li>";
+  }
+  list += "</ul>"; 
+  if (boxesSizeExceedsTen) {
+    list += "... " + confirmAnd + " " + (boxesSize - 10) + " " + confirmMore;
+  }
+  return list;
+};
 
 /*-------------------------------------------------------------------*\
     9. Editor

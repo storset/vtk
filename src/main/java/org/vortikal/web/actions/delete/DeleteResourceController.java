@@ -50,12 +50,10 @@ import org.vortikal.web.service.Service;
 @SuppressWarnings("deprecation")
 public class DeleteResourceController extends SimpleFormController {
 
-    /* TODO: change class name to something that says it is used when standing on resource */
-
     private String cancelView;
-
     protected Object cmd;
-
+    
+    @Override
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
         Service service = requestContext.getService();
@@ -69,9 +67,9 @@ public class DeleteResourceController extends SimpleFormController {
         cmd = new DeleteCommand(name, url);
         return cmd;
     }
-
+    
+    @Override
     protected ModelAndView onSubmit(Object command) throws Exception {
-
         Map<String, Object> model = new HashMap<String, Object>();
 
         RequestContext requestContext = RequestContext.getRequestContext();
@@ -94,6 +92,7 @@ public class DeleteResourceController extends SimpleFormController {
         Map<String, List<Path>> failures = new HashMap<String, List<Path>>();
         
         ActionsHelper.deleteResource(repository, token, uri, true, failures);
+        
         ActionsHelper.addFailureMessages(failures, requestContext);
         if (!failures.isEmpty()) {
             return new ModelAndView(super.getFormView());
@@ -106,6 +105,7 @@ public class DeleteResourceController extends SimpleFormController {
         return new ModelAndView(this.getSuccessView(), model);
     }
 
+    @Required
     public void setCancelView(String cancelView) {
         this.cancelView = cancelView;
     }

@@ -31,6 +31,7 @@
 package org.vortikal.web.actions.publish;
 
 import java.util.Calendar;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,8 +39,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.beans.factory.BeanInitializationException;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
@@ -53,7 +52,8 @@ import org.vortikal.web.RequestContext;
 import org.vortikal.web.actions.ActionsHelper;
 import org.vortikal.web.service.Service;
 
-public class PublishResourceController extends SimpleFormController implements InitializingBean {
+@SuppressWarnings("deprecation")
+public class PublishResourceController extends SimpleFormController {
 
     private String viewName;
     private PropertyTypeDefinition publishDatePropDef;
@@ -62,12 +62,6 @@ public class PublishResourceController extends SimpleFormController implements I
     private static final String PUBLISH_PARAM_GLOBAL = "global-publish-confirmed";
     private static final String UNPUBLISH_PARAM = "unpublish-confirmed";
     private static final String UNPUBLISH_PARAM_GLOBAL = "global-unpublish-confirmed";
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        if (this.viewName == null)
-            throw new BeanInitializationException("Property 'viewName' must be set");
-    }
 
     @Override
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
@@ -114,7 +108,8 @@ public class PublishResourceController extends SimpleFormController implements I
         
         return new ModelAndView(this.viewName, model);
     }
-
+    
+    @Required
     public void setViewName(String viewName) {
         this.viewName = viewName;
     }

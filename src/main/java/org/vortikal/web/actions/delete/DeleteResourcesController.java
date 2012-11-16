@@ -82,6 +82,7 @@ public class DeleteResourcesController implements Controller {
         return new ModelAndView(this.viewName);
     }
 
+    @Required
     public void setViewName(String viewName) {
         this.viewName = viewName;
     }

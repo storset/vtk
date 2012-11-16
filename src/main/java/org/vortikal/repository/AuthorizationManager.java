@@ -248,6 +248,9 @@ public final class AuthorizationManager {
      *   <li>Privilege READ_WRITE or ALL on resource
      *   <li>Role ROOT
      * </ul>
+     * 
+     * @param uri Path to an existing collection in which a resource is to be created.
+     * @param principal The principal to authorize for.
      */
     public void authorizeCreate(Path uri, Principal principal)
         throws AuthenticationException, AuthorizationException, ReadOnlyException, 
@@ -272,6 +275,11 @@ public final class AuthorizationManager {
      *   <li>Privilege READ_WRITE, READ_WRITE_UNPUBLISHED or ALL on resource
      *   <li>Role ROOT
      * </ul>
+     * 
+     * @param uri Path to an existing collection in which an unpublished
+     *            resource is to be created.
+     * @param principal The principal to authorize for.
+     * 
      */
     public void authorizeCreateUnpublished(Path uri, Principal principal)
         throws AuthenticationException, AuthorizationException, ReadOnlyException, 
@@ -482,6 +490,9 @@ public final class AuthorizationManager {
     }
     
     /**
+     * XXX: what about when resource to delete is unpublished collection, but it
+     * contains sub-resources which ARE published ? Need recursive test/"discover published" ?
+     * 
      * One of:
      * <ul>
      *   <li>Privilege READ_WRITE or READ_WRITE_UNPUBLISHED on parent
@@ -621,7 +632,12 @@ public final class AuthorizationManager {
 
         checkReadOnly(principal);
 
-        authorizeDelete(srcUri, principal);
+        Resource srcResource = loadResource(srcUri);
+        if (srcResource.isPublished()) {
+            authorizeDelete(srcUri, principal);
+        } else {
+            authorizeDeleteUnpublished(srcUri, principal);
+        }
 
         boolean srcHasACLs = (this.dao.discoverACLs(srcUri).length > 0);
         if (srcHasACLs) {
@@ -639,12 +655,26 @@ public final class AuthorizationManager {
             /* Source does not contain ACLs. 
              * Only need create (and possibly delete).
              */
+            // Always require full CREATE or stronger on dest if source and dest parents aren't the same collection
             Path destParentUri = destUri.getParent();
-            authorizeCreate(destParentUri, principal);
+            if (!srcUri.getParent().equals(destParentUri)) {
+                authorizeCreate(destParentUri, principal);
+            }
+        
+            if (srcResource.isPublished()) {
+                authorizeCreate(destParentUri, principal);
+            } else {
+                authorizeCreateUnpublished(destParentUri, principal);
+            }
         }
         
         if (deleteDestination) {
-            authorizeDelete(destUri, principal);
+            Resource destResource = loadResource(destUri);
+            if (destResource.isPublished()) {
+                authorizeDelete(destUri, principal);
+            } else {
+                authorizeDeleteUnpublished(destUri, principal);
+            }
         }
     }
     

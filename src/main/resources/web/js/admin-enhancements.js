@@ -480,7 +480,7 @@ vrtxAdmin._$(document).ready(function () {
           e.preventDefault();
         });
       }
-
+      /*
       vrtxAdm.cachedContent.on("click", "input#collectionListing\\.action\\.delete-resources", function (e) {
         var input = _$(this);
         var form = input.closest("form");
@@ -497,6 +497,7 @@ vrtxAdmin._$(document).ready(function () {
         e.stopPropagation();
         e.preventDefault();
       });
+      */
       break;
     case "vrtx-trash-can":
       vrtxAdm.cachedContent.on("click", "input.deleteResourcePermanent", function (e) {

@@ -34,6 +34,7 @@
       vrtxAdm.mapShortcut("#vrtx-make-public-version-shortcut", "#makePublicVersionAction");
       vrtxAdm.mapShortcut("#vrtx-delete-working-copy-shortcut", "#deleteWorkingCopyAction");
       vrtxAdm.mapShortcut("#vrtx-save-as-working-copy-shortcut", "#saveWorkingCopyAction");
+      vrtxAdm.mapShortcut("#vrtx-send-to-approval-shortcut", "#vrtx-send-to-approval");
       
       // Cancel action
       _$("#editor").on("click", "#cancelAction", function(e) {
@@ -142,7 +143,7 @@
                 <#if (form.published && !form.onlyWriteUnpublished) || !form.published>
                   <a href="javascript:void(0)" id="vrtx-make-public-version-shortcut">${vrtx.getMsg("editor.makePublicVersion")}</a>
                 <#else>
-                  <a href="javascript:void(0)" id="vrtx-send-to-approval-shortcut"><span>Send til godkjenning</span></a>
+                  <a href="javascript:void(0)" id="vrtx-send-to-approval-shortcut">Send til godkjenning</a>
                 </#if>
               </li>
               <li class="last">
@@ -211,57 +212,57 @@
     <div class="submit submitButtons">
     <#if !form.published && !form.workingCopy>
       <div class="vrtx-button">
-        <input type="submit" id="saveAndViewButton" name="updateViewAction"  value="${vrtx.getMsg("editor.saveAndView")}" />
+        <input type="submit" id="saveAndViewButton" name="updateViewAction"  value="${vrtx.getMsg('editor.saveAndView')}" />
       </div>
       <div class="vrtx-focus-button"> 
-        <input type="submit" id="updateAction" name="updateAction" value="${vrtx.getMsg("editor.save")}" />
+        <input type="submit" id="updateAction" name="updateAction" value="${vrtx.getMsg('editor.save')}" />
       </div>
       <div class="vrtx-button">
-        <input type="submit" id="cancelAction" name="cancelAction" value="${vrtx.getMsg("editor.cancel")}" />
+        <input type="submit" id="cancelAction" name="cancelAction" value="${vrtx.getMsg('editor.cancel')}" />
       </div>
 
     <#elseif form.workingCopy>
       <div class="vrtx-button">
-        <input type="submit" id="saveAndViewButton" name="updateViewAction"  value="${vrtx.getMsg("editor.saveAndView")}" />
+        <input type="submit" id="saveAndViewButton" name="updateViewAction"  value="${vrtx.getMsg('editor.saveAndView')}" />
       </div>
       <div class="vrtx-focus-button">
-        <input type="submit" id="saveWorkingCopyAction" name="saveWorkingCopyAction" value="${vrtx.getMsg("editor.save")}" />
+        <input type="submit" id="saveWorkingCopyAction" name="saveWorkingCopyAction" value="${vrtx.getMsg('editor.save')}" />
       </div>
       <div class="vrtx-button">
-        <input type="submit" id="cancelAction" name="cancelAction" value="${vrtx.getMsg("editor.cancel")}" />
+        <input type="submit" id="cancelAction" name="cancelAction" value="${vrtx.getMsg('editor.cancel')}" />
       </div>
       <span id="buttons-or-text"><@vrtx.msg code="editor.orText" default="or" /></span>
       &nbsp;
       <#if (form.published && !form.onlyWriteUnpublished) || !form.published>
         <div class="vrtx-button">
-          <input type="submit" id="makePublicVersionAction" name="makePublicVersionAction" value="${vrtx.getMsg("editor.makePublicVersion")}" />
+          <input type="submit" id="makePublicVersionAction" name="makePublicVersionAction" value="${vrtx.getMsg('editor.makePublicVersion')}" />
         </div>
       <#else>
-        <a class="vrtx-button" href="?vrtx=admin&action=email-approval"><span id="sendToApprovalAction">Send til godkjenning</span></a>
+        <a class="vrtx-button" id="vrtx-send-to-approval" href="?vrtx=admin&action=email-approval"><span>Send til godkjenning</span></a>
       </#if>
       <div class="vrtx-button">
-        <input type="submit" id="deleteWorkingCopyAction" name="deleteWorkingCopyAction" value="${vrtx.getMsg("editor.deleteWorkingCopy")}" />
+        <input type="submit" id="deleteWorkingCopyAction" name="deleteWorkingCopyAction" value="${vrtx.getMsg('editor.deleteWorkingCopy')}" />
       </div>
     <#else>
       <#if !form.onlyWriteUnpublished>
         <div class="vrtx-button">
-          <input type="submit" id="saveAndViewButton" name="updateViewAction"  value="${vrtx.getMsg("editor.saveAndView")}" />
+          <input type="submit" id="saveAndViewButton" name="updateViewAction"  value="${vrtx.getMsg('editor.saveAndView')}" />
         </div>
         <div class="vrtx-focus-button">
-          <input type="submit" id="updateAction" name="updateAction" value="${vrtx.getMsg("editor.save")}" />
+          <input type="submit" id="updateAction" name="updateAction" value="${vrtx.getMsg('editor.save')}" />
         </div>
         <div class="vrtx-button">
-          <input type="submit" id="cancelAction" name="cancelAction" value="${vrtx.getMsg("editor.cancel")}" />
+          <input type="submit" id="cancelAction" name="cancelAction" value="${vrtx.getMsg('editor.cancel')}" />
         </div>
 
         <span id="buttons-or-text"><@vrtx.msg code="editor.orText" default="or" /></span>
         &nbsp;
         <div class="vrtx-button">
-          <input type="submit" id="saveWorkingCopyAction" name="saveWorkingCopyAction" value="${vrtx.getMsg("editor.saveAsWorkingCopy")}" />
+          <input type="submit" id="saveWorkingCopyAction" name="saveWorkingCopyAction" value="${vrtx.getMsg('editor.saveAsWorkingCopy')}" />
         </div>
       <#else>
         <div class="vrtx-button">
-          <input type="submit" id="saveWorkingCopyAction" name="saveWorkingCopyAction" value="${vrtx.getMsg("editor.createWorkingCopy")}" />
+          <input type="submit" id="saveWorkingCopyAction" name="saveWorkingCopyAction" value="${vrtx.getMsg('editor.createWorkingCopy')}" />
         </div>
       </#if>
     </#if>

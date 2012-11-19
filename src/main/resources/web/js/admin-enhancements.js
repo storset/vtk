@@ -317,6 +317,28 @@ vrtxAdmin._$(document).ready(function () {
     e.stopPropagation();
     e.preventDefault();
   });
+  
+  // Send to approval
+  // TODO: generalize dialog jQuery UI function with AJAX markup/text
+  $(document).on("click", "#vrtx-send-to-approval", function (e) {
+    var link = this;
+    var id = link.id + "-content";
+    var dialogManageCreate = $("#" + id);
+    if (!dialogManageCreate.length) {
+      vrtxAdm.serverFacade.getHtml(link.href, {
+        success: function (results, status, resp) {
+          _$("body").append("<div id='" + id + "'>" + _$(results).find("#contents").html() + "</div>");
+          dialogManageCreate = $("#" + id);
+          dialogManageCreate.hide();
+          vrtxSimpleDialogs.openHtmlDialog(dialogManageCreate.html(), link.title);
+        }
+      });
+    } else {
+      vrtxSimpleDialogs.openHtmlDialog(dialogManageCreate.html(), link.title);
+    }
+    e.stopPropagation();
+    e.preventDefault();
+  });
 
   // Create dialog interaction
   createInteraction(bodyId, vrtxAdm, _$);

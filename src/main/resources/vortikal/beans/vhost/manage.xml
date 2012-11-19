@@ -2193,4 +2193,59 @@
     name="queueCapacity" value="50" /> </bean>
   -->
   
+  <bean id="emailApprovalService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="manageService" />
+    <property name="order" value="-999" />
+    <property name="handler" ref="emailApprovalHandler" />
+    <property name="assertions">
+      <bean class="org.vortikal.web.service.RequestParameterAssertion">
+        <property name="parameterName" value="action" />
+        <property name="parameterValue" value="email-approval" />
+      </bean>
+    </property>
+  </bean>
+  
+  <bean id="emailApprovalHandler" class="org.vortikal.web.actions.publish.ApprovalViaEmailController">
+    <property name="manageService" ref="manageService" />
+    <property name="viewName" value="emailApproval.view" />
+    <property name="resourceManager" ref="resourceManager" />
+    <property name="mailExecutor" ref="email.executor" />
+    <property name="mailTemplateProvider" ref="emailApproval.mailTemplateProvider" />
+    <property name="localeResolver" ref="manageLocaleResolver" />
+  </bean>
+  
+ <bean id="emailApproval.viewResolver" parent="system.decoratingViewResolver">
+    <property name="views">
+      <map>
+        <entry key="emailApproval.view" value-ref="emailApproval.view" />
+      </map>
+    </property>
+  </bean>
+
+  <bean id="emailApproval.view" parent="freemarkerView">
+    <property name="url" value="pages/email-approval.ftl" />
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="resourceContextProvider" />
+      </list>
+    </property>
+    <property name="attributesMap">
+      <map>
+        <entry key="cssURLs">
+          <list>
+            <value>${themeBaseURL}/modals.css</value>
+          </list>
+        </entry>
+      </map>
+    </property>
+  </bean>
+  
+  <bean id="emailApproval.mailTemplateProvider" class="org.vortikal.util.mail.MailTemplateProvider">
+    <property name="view" ref="emailApproval.mailTemplateView" />
+  </bean>
+
+  <bean id="emailApproval.mailTemplateView" parent="freemarkerView">
+    <property name="url" value="pages/approval-mail-template.ftl"></property>
+  </bean>
+  
 </beans>

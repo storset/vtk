@@ -13,6 +13,17 @@
       </bean>
     </property>
   </bean>
+  
+  <bean id="emailafriendHandler" class="org.vortikal.web.actions.share.ShareViaEmailController">
+    <property name="viewService" ref="viewService" />
+    <property name="viewName" value="emailafriend.view" />
+    <property name="siteName" value="${emailAFriend.siteName}" />
+    <property name="resourceManager" ref="resourceManager" />
+    <property name="mailExecutor" ref="email.executor" />
+    <property name="mailTemplateProvider" ref="emailafriend.mailTemplateProvider" />
+    <property name="localeResolver" ref="viewServiceResourceAwareLocaleResolver" />
+    <property name="displayUpscoping" value="${displayUpscoping}" />
+  </bean>
 
   <bean id="emailafriend.viewResolver" parent="viewResolver">
     <property name="views">
@@ -40,17 +51,6 @@
     </property>
   </bean>
 
-  <bean id="emailafriendHandler" class="org.vortikal.web.actions.share.ShareViaEmailController">
-    <property name="viewService" ref="viewService" />
-    <property name="viewName" value="emailafriend.view" />
-    <property name="siteName" value="${emailAFriend.siteName}" />
-    <property name="resourceManager" ref="resourceManager" />
-    <property name="mailExecutor" ref="email.executor" />
-    <property name="mailTemplateProvider" ref="emailafriend.mailTemplateProvider" />
-    <property name="localeResolver" ref="viewServiceResourceAwareLocaleResolver" />
-    <property name="displayUpscoping" value="${displayUpscoping}" />
-  </bean>
-  
   <bean id="decorating.emailAFriendURLComponent" class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
     <property name="namespace" ref="decorating.resourceNamespace" />
     <property name="name" value="email-friend" />

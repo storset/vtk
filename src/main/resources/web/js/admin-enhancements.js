@@ -330,11 +330,11 @@ vrtxAdmin._$(document).ready(function () {
           _$("body").append("<div id='" + id + "'>" + _$(results).find("#contents").html() + "</div>");
           dialogManageCreate = $("#" + id);
           dialogManageCreate.hide();
-          vrtxSimpleDialogs.openHtmlDialog(dialogManageCreate.html(), link.title, 310, 415);
+          vrtxSimpleDialogs.openHtmlDialog(dialogManageCreate.html(), link.title, 410, 515);
         }
       });
     } else {
-      vrtxSimpleDialogs.openHtmlDialog(dialogManageCreate.html(), link.title, 310, 415);
+      vrtxSimpleDialogs.openHtmlDialog(dialogManageCreate.html(), link.title, 410, 515);
     }
     e.stopPropagation();
     e.preventDefault();

@@ -64,11 +64,12 @@ input[type=text]:focus {
 }
 
 #email-approval-form .vrtx-textfield input {
-  width: 290px;
+  width: 390px;
 }
 
 #email-approval-form textarea {
-  width: 300px;
+  width: 400px;
+  height: 220px;
 }
 
 #email-approval-form .email-help {

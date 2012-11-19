@@ -10,8 +10,36 @@ resourcetype course-description : fellestekst-document {
     examsemester-particular-semester : string,
     examsemester-other : simple_html,
     course-type : string,
-    admission-and-access : string,
-    admission-method : string
+    course-content : simple_html,
+    learning-outcomes : simple_html,
+    opptak-og-adgang-text-field : simple_html,
+    opptak-og-adgang : string defaultvalue("ingen-fellestekst"),
+    ikke-privatist-text-field : simple_html,
+    ikke-privatist : string defaultvalue("ingen-fellestekst"),
+    obligatoriske-forkunnskaper-text-field : simple_html,
+    obligatoriske-forkunnskaper : string defaultvalue("ingen-fellestekst"),
+    tidsrom-for-undervisning-text-field : simple_html,
+    tidsrom-for-undervisning : string defaultvalue("ingen-fellestekst"),
+    adgang-text-field : simple_html,
+    adgang : string defaultvalue("ingen-fellestekst"),
+    vurdering-og-eksamen-text-field : simple_html,
+    vurdering-og-eksamen : string defaultvalue("ingen-fellestekst"),
+    hjelpemidler-text-field : simple_html,
+    hjelpemidler : string defaultvalue("ingen-fellestekst"),
+    eksamensspraak-text-field : simple_html,
+    eksamensspraak : string defaultvalue("ingen-fellestekst"),
+    sensur-text-field : simple_html,
+    sensur : string defaultvalue("ingen-fellestekst"),
+    tilsynssensor-text-field : simple_html,
+    tilsynssensor : string defaultvalue("ingen-fellestekst"),
+    klage-text-field : simple_html,
+    klage : string defaultvalue("ingen-fellestekst"),
+    ny-utsatt-eksamen-text-field : simple_html,
+    ny-utsatt-eksamen : string defaultvalue("ingen-fellestekst"),
+    antall-forsok-trekk-text-field : simple_html,
+    antall-forsok-trekk : string defaultvalue("ingen-fellestekst"),
+    tilrettelagt-eksamen-text-field : simple_html,
+    tilrettelagt-eksamen : string defaultvalue("ingen-fellestekst")
   }
 
   edit-rules {
@@ -24,7 +52,20 @@ resourcetype course-description : fellestekst-document {
     examsemester-particular-semester (class[if-examsemester-bestemt]),
     examsemester-other (class[if-examsemester-other]),
     course-type (dropdown),
-    admission-and-access (dropdown)
+    opptak-og-adgang (dropdown),
+    ikke-privatist (dropdown),
+    obligatoriske-forkunnskaper (dropdown),
+    tidsrom-for-undervisning (dropdown),
+    adgang (dropdown),
+    vurdering-og-eksamen (dropdown),
+    hjelpemidler (dropdown),
+    eksamensspraak (dropdown),
+    sensur (dropdown),
+    tilsynssensor (dropdown),
+    klage (dropdown),
+    ny-utsatt-eksamen (dropdown),
+    antall-forsok-trekk (dropdown),
+    tilrettelagt-eksamen (dropdown)
   }
 
   view-components {
@@ -56,7 +97,7 @@ resourcetype course-description : fellestekst-document {
               [elseif teachingsemester != null && teachingsemester = "other"]
                 <td>[val teachingsemester-other # unescaped]</td>
               [else]
-                <td>[if teachingsemester != null][val teachingsemester][endif]</td>
+                <td>[if teachingsemester != null][localized teachingsemester][endif]</td>
               [endif]
             </tr>
             <tr valign="top">
@@ -66,7 +107,7 @@ resourcetype course-description : fellestekst-document {
               [elseif examsemester != null && examsemester = "other"]
                 <td>[val examsemester-other # unescaped]</td>
               [else]
-                <td>[if examsemester != null][val examsemester][endif]</td>
+                <td>[if examsemester != null][localized examsemester][endif]</td>
               [endif]
             </tr>
             <tr valign="top">
@@ -148,15 +189,159 @@ resourcetype course-description : fellestekst-document {
 
     academics-course-toc {
         ##
-        <a href="#kort-om-emnet" class="vrtx-link-check">Kort om emnet</a>
-         - <a href="#hva-laerer-du" class="vrtx-link-check">Hva lærer du?</a>
-          - <a href="#admission-and-access" class="vrtx-link-check">Opptak og adgangsregulering</a>
-           - <a href="#forkunnskaper" class="vrtx-link-check">Forkunnskaper</a>
-            - <a href="#overlapp" class="vrtx-link-check">Overlapping</a>
-             - <a href="#undervisning" class="vrtx-link-check">Undervisning</a>
-              - <a href="#vurdering-og-eksamen" class="vrtx-link-check">Vurdering og eksamen</a>
-               - <a href="#other" class="vrtx-link-check">Annet</a>
-                - <a href="#kontaktinformasjon" class="vrtx-link-check">Kontakt oss</a>
+        [def put-dash null]
+        [def course-content resource-prop(".", "course-content")]
+        [if course-content != null && course-content != ""]
+          [def put-dash ""]
+          <a href="#course-content" class="vrtx-link-check">[localize 'course-content']</a>
+        [endif]
+        [def learning-outcomes resource-prop(".", "learning-outcomes")]
+        [if learning-outcomes != null && learning-outcomes != ""]
+          [if put-dash != null]
+            -
+          [else]
+            [def put-dash ""]
+          [endif]
+          <a href="#learning-outcomes" class="vrtx-link-check">[localize 'learning-outcomes']</a>
+        [endif]
+        [def opptak-og-adgang resource-prop(".", "opptak-og-adgang")]
+        [def opptak-og-adgang-text-field resource-prop(".", "opptak-og-adgang-text-field")]
+        [if (opptak-og-adgang-text-field != null && opptak-og-adgang-text-field != "") || (opptak-og-adgang != null && opptak-og-adgang != "" && opptak-og-adgang != "ingen-fellestekst")]
+          [if put-dash != null]
+            -
+          [else]
+            [def put-dash ""]
+          [endif]
+          <a href="#[val opptak-og-adgang]" class="vrtx-link-check">[localized opptak-og-adgang]</a>
+        [endif]
+        [def ikke-privatist resource-prop(".", "ikke-privatist")]
+        [def ikke-privatist-text-field resource-prop(".", "ikke-privatist-text-field")]
+        [if (ikke-privatist-text-field != null && ikke-privatist-text-field != "") || (ikke-privatist != null && ikke-privatist != "" && ikke-privatist != "ingen-fellestekst")]
+          [if put-dash != null]
+            -
+          [else]
+            [def put-dash ""]
+          [endif]
+          <a href="#[val ikke-privatist]" class="vrtx-link-check">[localized ikke-privatist]</a>
+        [endif]
+        [def obligatoriske-forkunnskaper resource-prop(".", "obligatoriske-forkunnskaper")]
+        [def obligatoriske-forkunnskaper-text-field resource-prop(".", "obligatoriske-forkunnskaper-text-field")]
+        [if (obligatoriske-forkunnskaper-text-field != null && obligatoriske-forkunnskaper-text-field != "") || (obligatoriske-forkunnskaper != null && obligatoriske-forkunnskaper != "" && obligatoriske-forkunnskaper != "ingen-fellestekst")]
+          [if put-dash != null]
+            -
+          [else]
+            [def put-dash ""]
+          [endif]
+          <a href="#[val obligatoriske-forkunnskaper]" class="vrtx-link-check">[localized obligatoriske-forkunnskaper]</a>
+        [endif]
+        [def tidsrom-for-undervisning resource-prop(".", "tidsrom-for-undervisning")]
+        [def tidsrom-for-undervisning-text-field resource-prop(".", "tidsrom-for-undervisning-text-field")]
+        [if (tidsrom-for-undervisning-text-field != null && tidsrom-for-undervisning-text-field != "") || (tidsrom-for-undervisning != null && tidsrom-for-undervisning != "" && tidsrom-for-undervisning != "ingen-fellestekst")]
+          [if put-dash != null]
+            -
+          [else]
+            [def put-dash ""]
+          [endif]
+          <a href="#[val tidsrom-for-undervisning]" class="vrtx-link-check">[localized tidsrom-for-undervisning]</a>
+        [endif]
+        [def adgang resource-prop(".", "adgang")]
+        [def adgang-text-field resource-prop(".", "adgang-text-field")]
+        [if (adgang-text-field != null && adgang-text-field != "") || (adgang != null && adgang != "" && adgang != "ingen-fellestekst")]
+          [if put-dash != null]
+            -
+          [else]
+            [def put-dash ""]
+          [endif]
+          <a href="#[val adgang]" class="vrtx-link-check">[localized adgang]</a>
+        [endif]
+        [def vurdering-og-eksamen resource-prop(".", "vurdering-og-eksamen")]
+        [def vurdering-og-eksamen-text-field resource-prop(".", "vurdering-og-eksamen-text-field")]
+        [if (vurdering-og-eksamen-text-field != null && vurdering-og-eksamen-text-field != "") || (vurdering-og-eksamen != null && vurdering-og-eksamen != "" && vurdering-og-eksamen != "ingen-fellestekst")]
+          [if put-dash != null]
+            -
+          [else]
+            [def put-dash ""]
+          [endif]
+          <a href="#[val vurdering-og-eksamen]" class="vrtx-link-check">[localized vurdering-og-eksamen]</a>
+        [endif]
+        [def hjelpemidler resource-prop(".", "hjelpemidler")]
+        [def hjelpemidler-text-field resource-prop(".", "hjelpemidler-text-field")]
+        [if (hjelpemidler-text-field != null && hjelpemidler-text-field != "") || (hjelpemidler != null && hjelpemidler != "" && hjelpemidler != "ingen-fellestekst")]
+          [if put-dash != null]
+            -
+          [else]
+            [def put-dash ""]
+          [endif]
+          <a href="#[val hjelpemidler]" class="vrtx-link-check">[localized hjelpemidler]</a>
+        [endif]
+        [def eksamensspraak resource-prop(".", "eksamensspraak")]
+        [def eksamensspraak-text-field resource-prop(".", "eksamensspraak-text-field")]
+        [if (eksamensspraak-text-field != null && eksamensspraak-text-field != "") || (eksamensspraak != null && eksamensspraak != "" && eksamensspraak != "ingen-fellestekst")]
+          [if put-dash != null]
+            -
+          [else]
+            [def put-dash ""]
+          [endif]
+          <a href="#[val eksamensspraak]" class="vrtx-link-check">[localized eksamensspraak]</a>
+        [endif]
+        [def sensur resource-prop(".", "sensur")]
+        [def sensur-text-field resource-prop(".", "sensur-text-field")]
+        [if (sensur-text-field != null && sensur-text-field != "") || (sensur != null && sensur != "" && sensur != "ingen-fellestekst")]
+          [if put-dash != null]
+            -
+          [else]
+            [def put-dash ""]
+          [endif]
+          <a href="#[val sensur]" class="vrtx-link-check">[localized sensur]</a>
+        [endif]
+        [def tilsynssensor resource-prop(".", "tilsynssensor")]
+        [def tilsynssensor-text-field resource-prop(".", "tilsynssensor-text-field")]
+        [if (tilsynssensor-text-field != null && tilsynssensor-text-field != "") || (tilsynssensor != null && tilsynssensor != "" && tilsynssensor != "ingen-fellestekst")]
+          [if put-dash != null]
+            -
+          [else]
+            [def put-dash ""]
+          [endif]
+          <a href="#[val tilsynssensor]" class="vrtx-link-check">[localized tilsynssensor]</a>
+        [endif]
+        [def klage resource-prop(".", "klage")]
+        [def klage-text-field resource-prop(".", "klage-text-field")]
+        [if (klage-text-field != null && klage-text-field != "") || (klage != null && klage != "" && klage != "ingen-fellestekst")]
+          [if put-dash != null]
+            -
+          [else]
+            [def put-dash ""]
+          [endif]
+          <a href="#[val klage]" class="vrtx-link-check">[localized klage]</a>
+        [endif]
+        [def ny-utsatt-eksamen resource-prop(".", "ny-utsatt-eksamen")]
+        [def ny-utsatt-eksamen-text-field resource-prop(".", "ny-utsatt-eksamen-text-field")]
+        [if (ny-utsatt-eksamen-text-field != null && ny-utsatt-eksamen-text-field != "") || (ny-utsatt-eksamen != null && ny-utsatt-eksamen != "" && ny-utsatt-eksamen != "ingen-fellestekst")]
+          [if put-dash != null]
+            -
+          [else]
+            [def put-dash ""]
+          [endif]
+          <a href="#[val ny-utsatt-eksamen]" class="vrtx-link-check">[localized ny-utsatt-eksamen]</a>
+        [endif]
+        [def antall-forsok-trekk resource-prop(".", "antall-forsok-trekk")]
+        [def antall-forsok-trekk-text-field resource-prop(".", "antall-forsok-trekk-text-field")]
+        [if (antall-forsok-trekk-text-field != null && antall-forsok-trekk-text-field != "") || (antall-forsok-trekk != null && antall-forsok-trekk != "" && antall-forsok-trekk != "ingen-fellestekst")]
+          [if put-dash != null]
+            -
+          [else]
+            [def put-dash ""]
+          [endif]
+          <a href="#[val antall-forsok-trekk]" class="vrtx-link-check">[localized antall-forsok-trekk]</a>
+        [endif]
+        [def tilrettelagt-eksamen resource-prop(".", "tilrettelagt-eksamen")]
+        [def tilrettelagt-eksamen-text-field resource-prop(".", "tilrettelagt-eksamen-text-field")]
+        [if (tilrettelagt-eksamen-text-field != null && tilrettelagt-eksamen-text-field != "") || (tilrettelagt-eksamen != null && tilrettelagt-eksamen != "" && tilrettelagt-eksamen != "ingen-fellestekst")]
+          [if put-dash != null]
+            - 
+          [endif]
+          <a href="#[val tilrettelagt-eksamen]" class="vrtx-link-check">[localized tilrettelagt-eksamen]</a>
+        [endif]
         ##
     }
 
@@ -186,7 +371,6 @@ resourcetype course-description : fellestekst-document {
     [resources-props "."]
     [def course-code resource-prop(".", "courseContext.fs-course-code")]
     [def course-name resource-prop(".", "courseContext.course-name")]
-    [def course-type resource-prop(".", "course-type")]
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml">
       <head>
@@ -222,11 +406,20 @@ resourcetype course-description : fellestekst-document {
           </tbody>
         </table>
         <div>
-          Her er litt course-type: [val course-type]
-        </div>
-        <div>
-          [call "comp:vis-fellestekst" {"docType":"hvordan-soke", "propName":"admission-method"}]
-          [call "comp:vis-fellestekst" {"docType":"hvordan-soke", "propName":"opptak-frist-frekvens"}]
+          [call "comp:vis-fellestekst" {"docType":"emne", "propName":"opptak-og-adgang"}]
+          [call "comp:vis-fellestekst" {"docType":"emne", "propName":"ikke-privatist"}]
+          [call "comp:vis-fellestekst" {"docType":"emne", "propName":"obligatoriske-forkunnskaper"}]
+          [call "comp:vis-fellestekst" {"docType":"emne", "propName":"tidsrom-for-undervisning"}]
+          [call "comp:vis-fellestekst" {"docType":"emne", "propName":"adgang"}]
+          [call "comp:vis-fellestekst" {"docType":"emne", "propName":"vurdering-og-eksamen"}]
+          [call "comp:vis-fellestekst" {"docType":"emne", "propName":"hjelpemidler"}]
+          [call "comp:vis-fellestekst" {"docType":"emne", "propName":"eksamensspraak"}]
+          [call "comp:vis-fellestekst" {"docType":"emne", "propName":"sensur"}]
+          [call "comp:vis-fellestekst" {"docType":"emne", "propName":"tilsynssensor"}]
+          [call "comp:vis-fellestekst" {"docType":"emne", "propName":"klage"}]
+          [call "comp:vis-fellestekst" {"docType":"emne", "propName":"ny-utsatt-eksamen"}]
+          [call "comp:vis-fellestekst" {"docType":"emne", "propName":"antall-forsok-trekk"}]
+          [call "comp:vis-fellestekst" {"docType":"emne", "propName":"tilrettelagt-eksamen"}]
         </div>
       </body>
     </html>
@@ -269,10 +462,75 @@ resourcetype course-description : fellestekst-document {
        no : ("ja" = "Ja", "nei" = "Nei", "ikke-satt" = "Ikke satt"),
        nn : ("ja" = "Ja", "nei" = "Nei", "ikke-satt" = "Ikkje satt")
      }
-     admission-and-access {
-       en : ("admission-method" = "Opptak metode"),
-       no : ("admission-method" = "Opptak metode"),
-       nn : ("admission-method" = "Opptak metode")
+     opptak-og-adgang {
+       en : ("ingen-fellestekst" = "Ingen", "soknadsprosedyre-opptak" = "Opptak", "soknadsprosedyre-master" = "Master", "soknadsprosedyre-master-andre-program" = "Andre"),
+       no : ("ingen-fellestekst" = "Ingen", "soknadsprosedyre-opptak" = "Opptak", "soknadsprosedyre-master" = "Master", "soknadsprosedyre-master-andre-program" = "Andre"),
+       nn : ("ingen-fellestekst" = "Ingen", "soknadsprosedyre-opptak" = "Opptak", "soknadsprosedyre-master" = "Master", "soknadsprosedyre-master-andre-program" = "Andre")
+     }
+     ikke-privatist {
+       en : ("ingen-fellestekst" = "Ingen", "ikke-privatist" = "Ikke privatist"),
+       no : ("ingen-fellestekst" = "Ingen", "ikke-privatist" = "Ikke privatist"),
+       nn : ("ingen-fellestekst" = "Ingen", "ikke-privatist" = "Ikke privatist")
+     }
+     obligatoriske-forkunnskaper {
+       en : ("ingen-fellestekst" = "Ingen", "matnatfagkrav-generell" = "Matnat generell", "matnatfagkrav-informatikk" = "Matnat informatikk", "juskrav-15sp" = "Jus 15sp"),
+       no : ("ingen-fellestekst" = "Ingen", "matnatfagkrav-generell" = "Matnat generell", "matnatfagkrav-informatikk" = "Matnat informatikk", "juskrav-15sp" = "Jus 15sp"),
+       nn : ("ingen-fellestekst" = "Ingen", "matnatfagkrav-generell" = "Matnat generell", "matnatfagkrav-informatikk" = "Matnat informatikk", "juskrav-15sp" = "Jus 15sp")
+     }
+     tidsrom-for-undervisning {
+       en : ("ingen-fellestekst" = "Ingen", "hele-semesteret" = "Hele semesteret"),
+       no : ("ingen-fellestekst" = "Ingen", "hele-semesteret" = "Hele semesteret"),
+       nn : ("ingen-fellestekst" = "Ingen", "hele-semesteret" = "Hele semesteret")
+     }
+     adgang {
+       en : ("ingen-fellestekst" = "Ingen", "nyundervisning-ved-kapasitet" = "nyundervisning-ved-kapasitet"),
+       no : ("ingen-fellestekst" = "Ingen", "nyundervisning-ved-kapasitet" = "nyundervisning-ved-kapasitet"),
+       nn : ("ingen-fellestekst" = "Ingen", "nyundervisning-ved-kapasitet" = "nyundervisning-ved-kapasitet")
+     }
+     vurdering-og-eksamen {
+       en : ("ingen-fellestekst" = "Ingen", "hf-sitatteknikk" = "hf-sitatteknikk"),
+       no : ("ingen-fellestekst" = "Ingen", "hf-sitatteknikk" = "hf-sitatteknikk"),
+       nn : ("ingen-fellestekst" = "Ingen", "hf-sitatteknikk" = "hf-sitatteknikk")
+     }
+     hjelpemidler {
+       en : ("ingen-fellestekst" = "Ingen", "ingen-hjelpemidler" = "ingen-hjelpemidler"),
+       no : ("ingen-fellestekst" = "Ingen", "ingen-hjelpemidler" = "ingen-hjelpemidler"),
+       nn : ("ingen-fellestekst" = "Ingen", "ingen-hjelpemidler" = "ingen-hjelpemidler")
+     }
+     eksamensspraak {
+       en : ("ingen-fellestekst" = "Ingen", "eksamensspraak-norsk" = "eksamensspraak-norsk", "eksamensspraak-bokmal-nynorsk" = "eksamensspraak-bokmal-nynorsk", "eksamensspraak-engelsk" = "eksamensspraak-engelsk"),
+       no : ("ingen-fellestekst" = "Ingen", "eksamensspraak-norsk" = "eksamensspraak-norsk", "eksamensspraak-bokmal-nynorsk" = "eksamensspraak-bokmal-nynorsk", "eksamensspraak-engelsk" = "eksamensspraak-engelsk"),
+       nn : ("ingen-fellestekst" = "Ingen", "eksamensspraak-norsk" = "eksamensspraak-norsk", "eksamensspraak-bokmal-nynorsk" = "eksamensspraak-bokmal-nynorsk", "eksamensspraak-engelsk" = "eksamensspraak-engelsk")
+     }
+     sensur {
+       en : ("ingen-fellestekst" = "Ingen", "bokstavskala" = "bokstavskala", "bestaatt-ikkebestaatt" = "bestaatt-ikkebestaatt"),
+       no : ("ingen-fellestekst" = "Ingen", "bokstavskala" = "bokstavskala", "bestaatt-ikkebestaatt" = "bestaatt-ikkebestaatt"),
+       nn : ("ingen-fellestekst" = "Ingen", "bokstavskala" = "bokstavskala", "bestaatt-ikkebestaatt" = "bestaatt-ikkebestaatt")
+     }
+     tilsynssensor {
+       en : ("ingen-fellestekst" = "Ingen", "tilsynssensor" = "tilsynssensor"),
+       no : ("ingen-fellestekst" = "Ingen", "tilsynssensor" = "tilsynssensor"),
+       nn : ("ingen-fellestekst" = "Ingen", "tilsynssensor" = "tilsynssensor")
+     }
+     klage {
+       en : ("ingen-fellestekst" = "Ingen", "klage" = "klage"),
+       no : ("ingen-fellestekst" = "Ingen", "klage" = "klage"),
+       nn : ("ingen-fellestekst" = "Ingen", "klage" = "klage")
+     }
+     ny-utsatt-eksamen {
+       en : ("ingen-fellestekst" = "Ingen", "ny-utsatt-eksamen" = "ny-utsatt-eksamen"),
+       no : ("ingen-fellestekst" = "Ingen", "ny-utsatt-eksamen" = "ny-utsatt-eksamen"),
+       nn : ("ingen-fellestekst" = "Ingen", "ny-utsatt-eksamen" = "ny-utsatt-eksamen")
+     }
+     antall-forsok-trekk {
+       en : ("ingen-fellestekst" = "Ingen", "antall-forsok-trekk" = "antall-forsok-trekk", "antall-forsok-masteroppgave" = "antall-forsok-masteroppgave", "bestatt-semesteroppgave" = "bestatt-semesteroppgave"),
+       no : ("ingen-fellestekst" = "Ingen", "antall-forsok-trekk" = "antall-forsok-trekk", "antall-forsok-masteroppgave" = "antall-forsok-masteroppgave", "bestatt-semesteroppgave" = "bestatt-semesteroppgave"),
+       nn : ("ingen-fellestekst" = "Ingen", "antall-forsok-trekk" = "antall-forsok-trekk", "antall-forsok-masteroppgave" = "antall-forsok-masteroppgave", "bestatt-semesteroppgave" = "bestatt-semesteroppgave")
+     }
+     tilrettelagt-eksamen {
+       en : ("ingen-fellestekst" = "Ingen", "tilrettelagt-eksamen" = "tilrettelagt-eksamen"),
+       no : ("ingen-fellestekst" = "Ingen", "tilrettelagt-eksamen" = "tilrettelagt-eksamen"),
+       nn : ("ingen-fellestekst" = "Ingen", "tilrettelagt-eksamen" = "tilrettelagt-eksamen")
      }
   }
   
@@ -301,7 +559,12 @@ resourcetype course-description : fellestekst-document {
     administrated : (en : "Administrated by", no : "Tilbys ved", nn : "Tilbys ved"),
     semester : (en : "<b>Detailed course information - Current and previous semesters:</b>",
                 no : "<b>Semestersider</b> (undervisningstider, eksamensdato, pensum m.m.):",
-                nn : "<b>Semestersider</b> (undervisningstider, eksamensdato, pensum m.m.):")
+                nn : "<b>Semestersider</b> (undervisningstider, eksamensdato, pensum m.m.):"),
+    vaar-og-host : (en : "Spring and autumn", no : "Vår og høst", nn : "Vår og høst"),
+    hver-hoest : (en : "Every autumn semester", no : "Hvert høstsemester", nn : "Hvert høstsemester"),
+    hver-vaar : (en : "Every spring semester", no : "Hvert vårsemester", nn : "Hvert vårsemester"),
+    particular-semester : (en : "Particular semester", no : "Bestemt semester", nn : "Bestemt semester"),
+    other : (en : "Other", no : "Annet", nn : "Annet")
   }
   
 }

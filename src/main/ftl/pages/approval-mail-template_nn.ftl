@@ -9,11 +9,14 @@
 </#if>
 
 
-<p>Lenkje til dokument: <a href="${uri?html}">${uri?html}</a></p>
+<p>Lenkje til dokument: <a href="${uri?html}">${uri?html}</a><br />
+Lenkje til dokumentasjon:  <a href="${uri?html}">${uri?html}</a></p>
 
-<p>Med vennleg helsing ${mailFrom}</p>
+<p>Med vennleg helsing,<br/>
+${mailFrom}</p>
 
 <hr />
+
 <p>
 Denne meldinga er sendt på oppmoding frå ${mailFrom}.
 Di e-postadresse vert ikkje lagra.

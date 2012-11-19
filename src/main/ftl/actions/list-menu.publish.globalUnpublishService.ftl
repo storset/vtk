@@ -11,6 +11,11 @@
 <p><span class="published"><@vrtx.msg code="publish.permission.published" /></span></p>
 <#if writePermission.permissionsQueryResult = 'true'>
   <a id="vrtx-unpublish-document" class="vrtx-button-small vrtx-admin-button" title="${titleMsg}" href="${actionURL?html}"><span>${item.title?html}</span></a>
+<#else>
+  <#assign uri = vrtx.linkConstructor(resourceContext.currentResource.URI, "emailApprovalService") />
+  <#if uri?has_content> 
+    <a id="vrtx-send-to-approval-global" class="vrtx-button-small" href="${uri?html}"><span>Send til godkjenning</span></a>
+  </#if>
 </#if>
 
 <#recover>

@@ -320,7 +320,7 @@ vrtxAdmin._$(document).ready(function () {
   
   // Send to approval
   // TODO: generalize dialog jQuery UI function with AJAX markup/text
-  $(document).on("click", "#vrtx-send-to-approval", function (e) {
+  $(document).on("click", "#vrtx-send-to-approval, #vrtx-send-to-approval-global", function (e) {
     var link = this;
     var id = link.id + "-content";
     var dialogManageCreate = $("#" + id);

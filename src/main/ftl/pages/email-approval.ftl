@@ -34,8 +34,7 @@
    <#if tipResponse?has_content && tipResponse = "OK">
      <p><@vrtx.msg code="tip.form.success" args=[emailSentTo] /></p>
    <#else>
-
-    <#assign uri = vrtx.linkConstructor(resource.URI, "emailApprovalService") />
+     <#assign uri = vrtx.linkConstructor(resource.URI, "emailApprovalService") />
 
      <form id="email-approval-form" method="post" action="${uri}">
        <@vrtx.csrfPreventionToken uri />

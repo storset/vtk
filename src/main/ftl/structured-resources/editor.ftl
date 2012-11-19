@@ -165,7 +165,9 @@
           </ul>
           <span id="buttons-or-text"><@vrtx.msg code="editor.orText" default="or" /></span>
           &nbsp;
-          <a class="vrtx-button" href="javascript:void(0)" id="vrtx-save-as-working-copy-shortcut"><span>${vrtx.getMsg("editor.saveAsWorkingCopy")}</span></a>
+          <a class="vrtx-button" href="javascript:void(0)" id="vrtx-save-as-working-copy-shortcut">
+            <span>${vrtx.getMsg("editor.saveAsWorkingCopy")}</span>
+          </a>
           <@genEditorHelpMenu />
        </#if>
       </div>
@@ -254,10 +256,14 @@
 
         <span id="buttons-or-text"><@vrtx.msg code="editor.orText" default="or" /></span>
         &nbsp;
+        <div class="vrtx-button">
+          <input type="submit" id="saveWorkingCopyAction" name="saveWorkingCopyAction" value="${vrtx.getMsg("editor.saveAsWorkingCopy")}" />
+        </div>
+      <#else>
+        <div class="vrtx-button">
+          <input type="submit" id="saveWorkingCopyAction" name="saveWorkingCopyAction" value="${vrtx.getMsg("editor.createWorkingCopy")}" />
+        </div>
       </#if>
-      <div class="vrtx-button">
-        <input type="submit" id="saveWorkingCopyAction" name="saveWorkingCopyAction" value="${vrtx.getMsg("editor.saveAsWorkingCopy")}" />
-      </div>
     </#if>
     </div>
   </form>

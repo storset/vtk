@@ -303,7 +303,7 @@ vrtxAdmin._$(document).ready(function () {
               .done(function (script, textStatus) {
               $.cachedScript(location.protocol + '//' + location.host + '/vrtx/__vrtx/static-resources/jquery/plugins/jquery.scrollTo.min.js')
                 .done(function (script, textStatus) {
-                vrtxSimpleDialogs.openHtmlDialog(dialogManageCreate.html(), link.title);
+                vrtxSimpleDialogs.openHtmlDialog("global-menu-create", dialogManageCreate.html(), link.title, 600, 395);
                 initializeTree();
               }).fail(function (jqxhr, settings, exception) {});
             }).fail(function (jqxhr, settings, exception) {});
@@ -311,7 +311,7 @@ vrtxAdmin._$(document).ready(function () {
         }
       });
     } else {
-      vrtxSimpleDialogs.openHtmlDialog(dialogManageCreate.html(), link.title);
+      vrtxSimpleDialogs.openHtmlDialog("global-menu-create", dialogManageCreate.html(), link.title, 600, 395);
       initializeTree();
     }
     e.stopPropagation();
@@ -330,11 +330,11 @@ vrtxAdmin._$(document).ready(function () {
           _$("body").append("<div id='" + id + "'>" + _$(results).find("#contents").html() + "</div>");
           dialogManageCreate = $("#" + id);
           dialogManageCreate.hide();
-          vrtxSimpleDialogs.openHtmlDialog(dialogManageCreate.html(), link.title, 410, 515);
+          vrtxSimpleDialogs.openHtmlDialog("send-approval", dialogManageCreate.html(), link.title, 410, 525);
         }
       });
     } else {
-      vrtxSimpleDialogs.openHtmlDialog(dialogManageCreate.html(), link.title, 410, 515);
+      vrtxSimpleDialogs.openHtmlDialog("send-approval", dialogManageCreate.html(), link.title, 410, 525);
     }
     e.stopPropagation();
     e.preventDefault();

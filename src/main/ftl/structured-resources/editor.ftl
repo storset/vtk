@@ -170,7 +170,7 @@
        </#if>
       </div>
       <#else>
-        <h2>Opprett arbeidsversjon</h2>
+        <h2>${vrtx.getMsg("editor.createWorkingCopy")}</h2>
       </#if>
     </div>
   </div>

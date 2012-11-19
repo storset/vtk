@@ -193,7 +193,7 @@ resourcetype course-description : fellestekst-document {
         [def course-content resource-prop(".", "course-content")]
         [if course-content != null && course-content != ""]
           [def put-dash ""]
-          <a href="#course-content" class="vrtx-link-check">[localize 'course-content']</a>
+          <a href="#course-content" class="vrtx-link-check">[localized 'course-content']</a>
         [endif]
         [def learning-outcomes resource-prop(".", "learning-outcomes")]
         [if learning-outcomes != null && learning-outcomes != ""]
@@ -202,7 +202,7 @@ resourcetype course-description : fellestekst-document {
           [else]
             [def put-dash ""]
           [endif]
-          <a href="#learning-outcomes" class="vrtx-link-check">[localize 'learning-outcomes']</a>
+          <a href="#learning-outcomes" class="vrtx-link-check">[localized 'learning-outcomes']</a>
         [endif]
         [def opptak-og-adgang resource-prop(".", "opptak-og-adgang")]
         [def opptak-og-adgang-text-field resource-prop(".", "opptak-og-adgang-text-field")]
@@ -371,6 +371,8 @@ resourcetype course-description : fellestekst-document {
     [resources-props "."]
     [def course-code resource-prop(".", "courseContext.fs-course-code")]
     [def course-name resource-prop(".", "courseContext.course-name")]
+    [def course-content resource-prop(".", "course-content")]
+    [def learning-outcomes resource-prop(".", "learning-outcomes")]
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml">
       <head>
@@ -406,6 +408,16 @@ resourcetype course-description : fellestekst-document {
           </tbody>
         </table>
         <div>
+          [if course-content != null && course-content != ""]
+            <div id="course-content">
+              [val course-content # unescaped]
+            </div>
+          [endif]
+          [if learning-outcomes != null && learning-outcomes != ""]
+            <div id="learning-outcomes">
+              [val learning-outcomes # unescaped]
+            </div>
+          [endif]
           [call "comp:vis-fellestekst" {"docType":"emne", "propName":"opptak-og-adgang"}]
           [call "comp:vis-fellestekst" {"docType":"emne", "propName":"ikke-privatist"}]
           [call "comp:vis-fellestekst" {"docType":"emne", "propName":"obligatoriske-forkunnskaper"}]

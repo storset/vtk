@@ -12,9 +12,12 @@
 <#if writePermission.permissionsQueryResult = 'true'>
   <a id="vrtx-unpublish-document" class="vrtx-button-small vrtx-admin-button" title="${titleMsg}" href="${actionURL?html}"><span>${item.title?html}</span></a>
 <#else>
-  <#assign uri = vrtx.linkConstructor(resourceContext.currentResource.URI, "emailApprovalService") />
-  <#if uri?has_content> 
-    <a id="vrtx-send-to-approval-global" title="${vrtx.getMsg('send-to-approval.title')}" class="vrtx-button-small" href="${uri?html}"><span>${vrtx.getMsg('send-to-approval.title')}</span></a>
+  <#if writeUnlockedPermission.permissionsQueryResult?? && writeUnlockedPermission.permissionsQueryResult = 'false'
+    && writeUnpublishedPermission.permissionsQueryResult?? && writeUnpublishedPermission.permissionsQueryResult = 'true'>
+    <#assign uri = vrtx.relativeLinkConstructor(resourceContext.currentResource.URI, "emailApprovalService") />
+    <#if uri?has_content> 
+      <a id="vrtx-send-to-approval-global" title="${vrtx.getMsg('send-to-approval.title')}" class="vrtx-button-small" href="${uri?html}"><span>${vrtx.getMsg('send-to-approval.title')}</span></a>
+    </#if>
   </#if>
 </#if>
 

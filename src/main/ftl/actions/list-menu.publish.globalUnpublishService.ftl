@@ -14,7 +14,7 @@
 <#else>
   <#assign uri = vrtx.linkConstructor(resourceContext.currentResource.URI, "emailApprovalService") />
   <#if uri?has_content> 
-    <a id="vrtx-send-to-approval-global" class="vrtx-button-small" href="${uri?html}"><span>Send til godkjenning</span></a>
+    <a id="vrtx-send-to-approval-global" title="${vrtx.getMsg('send-to-approval.title')}" class="vrtx-button-small" href="${uri?html}"><span>${vrtx.getMsg('send-to-approval.title')}</span></a>
   </#if>
 </#if>
 

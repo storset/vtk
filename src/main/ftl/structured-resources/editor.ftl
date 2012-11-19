@@ -238,7 +238,7 @@
           <input type="submit" id="makePublicVersionAction" name="makePublicVersionAction" value="${vrtx.getMsg('editor.makePublicVersion')}" />
         </div>
       <#else>
-        <a class="vrtx-button" id="vrtx-send-to-approval" href="?vrtx=admin&action=email-approval"><span>Send til godkjenning</span></a>
+        <a class="vrtx-button" title="${vrtx.getMsg('send-to-approval.title')}" id="vrtx-send-to-approval" href="?vrtx=admin&action=email-approval"><span>${vrtx.getMsg('send-to-approval.title')}</span></a>
       </#if>
       <div class="vrtx-button">
         <input type="submit" id="deleteWorkingCopyAction" name="deleteWorkingCopyAction" value="${vrtx.getMsg('editor.deleteWorkingCopy')}" />

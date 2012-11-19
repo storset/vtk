@@ -8,7 +8,8 @@
 <pre>${comment}</pre>
 </#if>
 
-<p>Les heile artikkelen her: <a href="${uri?html}">${uri?html}</a></p>
+
+<p>Lenkje til dokument: <a href="${uri?html}">${uri?html}</a></p>
 
 <p>Med vennleg helsing ${mailFrom}</p>
 

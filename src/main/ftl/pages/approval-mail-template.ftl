@@ -8,7 +8,8 @@
 <pre>${comment}</pre>
 </#if>
 
-<p>Read the entire article here: <a href="${uri?html}">${uri?html}</a></p>
+
+<p>Link to document: <a href="${uri?html}">${uri?html}</a></p>
 
 <p>Best regards, ${mailFrom}</p>
 

@@ -2169,5 +2169,28 @@
       </map>
     </property>
   </bean>
+  
+  <!-- Email -->
+  <bean id="email.executor" class="org.vortikal.util.mail.MailExecutor">
+    <constructor-arg ref="email.taskExecutor" />
+    <constructor-arg ref="email.javaMailSender" />
+  </bean>
 
+  <bean id="email.javaMailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+    <property name="host" value="${email.mailServer}" />
+    <property name="port" value="${email.mailServerPort}" />
+    <property name="protocol" value="${email.mailServerProtocol}" />
+    <property name="defaultEncoding" value="utf-8" />
+  </bean>
+
+  <bean id="email.taskExecutor" class="org.springframework.core.task.SimpleAsyncTaskExecutor">
+    <property name="concurrencyLimit" value="${email.concurrencyLimit}" />
+  </bean>
+  
+   <!--
+    <bean id="taskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+    <property name="corePoolSize" value="10" /> <property name="maxPoolSize" value="25" /> <property
+    name="queueCapacity" value="50" /> </bean>
+  -->
+  
 </beans>

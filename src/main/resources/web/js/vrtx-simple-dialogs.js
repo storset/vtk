@@ -13,13 +13,13 @@ var vrtxSimpleDialogs = {
       width: 208
     });
   },
-  openHtmlDialog: function openHtmlDialog(html, title) {
+  openHtmlDialog: function openHtmlDialog(html, title, width, height) {
     this.openDialog("#dialog-html", {
       msg: html,
       title: title,
       hasHtml: true,
-      width: 600,
-      height: 395
+      width: ((typeof width === "undefined") ? 600 : width),
+      height: ((typeof height === "undefined") ? 395 : height)
     });
   },
   openMsgDialog: function openMsgDialog(msg, title) {

@@ -54,6 +54,27 @@ input[type=text]:focus {
   outline: 0;
 }
 
+#email-approval-form label {
+  margin: 20px 0 5px 0;
+  display: block;
+}
+
+#email-approval-form label.first {
+  margin-top: 0px;
+}
+
+#email-approval-form .vrtx-textfield input {
+  width: 290px;
+}
+
+#email-approval-form textarea {
+  width: 300px;
+}
+
+#email-approval-form .email-help {
+  margin: 5px 0 0 0;
+}
+
 /* Buttons */
 
 .vrtx-button,

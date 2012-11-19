@@ -33,53 +33,35 @@
  <body>
    <#if tipResponse?has_content && tipResponse = "OK">
      <p><@vrtx.msg code="tip.form.success" args=[emailSentTo] /></p>
-     <div class="vrtx-button">
-       <button><@vrtx.msg code="tip.form.close" default="Close" /></button>
-     </div>
    <#else>
-    <h1><@vrtx.msg code="tip.emailtitle" default="E-mail a friend" /></h1>   
-    <h2>${resource.title}</h2>
 
     <#assign uri = vrtx.linkConstructor(resource.URI, "emailApprovalService") />
-    
-    <#-- E-mail a friend form -->
-     <form id="email-a-friend-form" method="post" action="${uri}">
-       
+
+     <form id="email-approval-form" method="post" action="${uri}">
        <@vrtx.csrfPreventionToken uri />
-       
-       <#-- Email to -->
-       <label for="emailTo"><@vrtx.msg code="tip.form.emailto" default="Send e-mail to" /></label> 
-       
+       <label for="emailToField" class="first"><@vrtx.msg code="tip.form.emailto" default="Send e-mail to" /></label> 
        <div class="vrtx-textfield">  
          <#if emailSavedTo?exists && emailSavedTo?has_content>
-           <input type="text" id="emailTo" name="emailTo" value="${emailSavedTo?html}" />
+           <input type="text" id="emailToField" name="emailTo" value="${emailSavedTo?html}" />
          <#else>
-           <input type="text" id="emailTo" name="emailTo" value="" />
+           <input type="text" id="emailToField" name="emailTo" value="" />
          </#if>
        </div>
-       
        <div class="email-help"><@vrtx.msg code="tip.form.emailtomessage" default="Use comma as a separator if sending to more than one e-mail recipient" /></div> 
-       
-       <#-- Email from -->
-       <label for="emailFrom"><@vrtx.msg code="tip.form.emailfrom" default="Your e-mail address" /></label>  
-       
+       <label for="emailFromField"><@vrtx.msg code="tip.form.emailfrom" default="Your e-mail address" /></label>  
        <div class="vrtx-textfield">  
          <#if emailSavedFrom?exists && emailSavedFrom?has_content>
-           <input type="text" id="emailFrom" name="emailFrom" value="${emailSavedFrom?html}" />
+           <input type="text" id="emailFromField" name="emailFrom" value="${emailSavedFrom?html}" />
          <#else>
-           <input type="text" id="emailFrom" name="emailFrom" value="" />
+           <input type="text" id="emailFromField" name="emailFrom" value="" />
          </#if>
        </div>
-       
-       <#-- Your comment -->
-       <label for="yourComment"><@vrtx.msg code="tip.form.yourcomment" default="Your comment" /></label> 
-       
+       <label for="yourCommentTxtArea"><@vrtx.msg code="tip.form.yourcomment" default="Your comment" /></label> 
        <#if yourSavedComment?exists && yourSavedComment?has_content>
-         <textarea class="round-corners" rows="6" cols="10" id="yourComment" name="yourComment">${yourSavedComment?html}</textarea>
+         <textarea class="round-corners" rows="6" cols="10" id="yourCommentTxtArea" name="yourComment">${yourSavedComment?html}</textarea>
        <#else>
-         <textarea class="round-corners" rows="6" cols="10" id="yourComment" name="yourComment" value=""></textarea> 
+         <textarea class="round-corners" rows="6" cols="10" id="yourCommentTxtArea" name="yourComment" value=""></textarea> 
        </#if>
-
        <div id="submitButtons">
          <div class="vrtx-focus-button"> 
            <input type="submit" class="submit-email-form" value="Send" name="submit" />

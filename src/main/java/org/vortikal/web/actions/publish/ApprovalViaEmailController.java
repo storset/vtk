@@ -81,7 +81,7 @@ public class ApprovalViaEmailController implements Controller {
         Map<String, Object> model = new HashMap<String, Object>();
         String method = request.getMethod();
         
-        String emailFrom = requestContext.getPrincipal().getName();
+        String emailFrom = requestContext.getPrincipal().getQualifiedName();
         model.put("emailSavedFrom", emailFrom);
 
         if (method.equals("POST")) {

@@ -112,7 +112,7 @@ public class ApprovalViaEmailController implements Controller {
                     if (!emailFrom.endsWith("@localhost")) {
                         validAddresses = validAddresses && MailExecutor.isValidEmail(emailFrom);
                     } else {
-                        emailFrom = "vortex-core@usit.uio.no";
+                        emailFrom = "vortex-core@usit.uio.no"; // TODO: how do we handle developing environment? (xml-configured default?)
                     }
                     if (validAddresses) {
                         String url = this.manageService.constructURL(uri).toString();

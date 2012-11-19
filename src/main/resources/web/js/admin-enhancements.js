@@ -1439,7 +1439,7 @@ VrtxAdmin.prototype.placeDeleteButtonInActiveTab = function placeDeleteButtonInA
     if (!boxesSize) {
       vrtxSimpleDialogs.openMsgDialog(deleteUncheckedMessage, deleteTitle);
     } else {
-      var list = buildFileList(boxes, boxesSize);
+      var list = vrtxAdm.buildFileList(boxes, boxesSize);
       vrtxSimpleDialogs.openConfirmDialog(confirmDelete.replace("(1)", boxesSize) + '<br />' + list, confirmDeleteTitle, function() {
         vrtxAdm.cachedAppContent.find('#collectionListing\\.action\\.delete-resources').click();
       }, null, null);

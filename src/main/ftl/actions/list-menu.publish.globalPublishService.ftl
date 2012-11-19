@@ -5,7 +5,6 @@
 
 <#assign headerMsg = vrtx.getMsg("publish.header") />
 <#assign titleMsg = vrtx.getMsg("publish.title") />
-
 <#assign actionURL = item.url />
 
 <h3>${headerMsg}</h3>

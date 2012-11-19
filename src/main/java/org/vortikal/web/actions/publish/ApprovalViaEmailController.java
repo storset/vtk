@@ -80,17 +80,16 @@ public class ApprovalViaEmailController implements Controller {
 
         Map<String, Object> model = new HashMap<String, Object>();
         String method = request.getMethod();
+        
+        String emailFrom = requestContext.getPrincipal().getName();
+        model.put("emailSavedFrom", emailFrom);
 
         if (method.equals("POST")) {
             String emailTo = request.getParameter("emailTo");
-            String emailFrom = request.getParameter("emailFrom");
             String yourComment = request.getParameter("yourComment");
             if (StringUtils.isBlank(emailTo) || StringUtils.isBlank(emailFrom)) {
                 if (StringUtils.isNotBlank(emailTo)) {
                     model.put("emailSavedTo", emailTo);
-                }
-                if (StringUtils.isNotBlank(emailFrom)) {
-                    model.put("emailSavedFrom", emailFrom);
                 }
                 if (StringUtils.isNotBlank(yourComment)) {
                     model.put("yourSavedComment", yourComment);
@@ -126,7 +125,6 @@ public class ApprovalViaEmailController implements Controller {
                         model.put("tipResponse", "OK");
                     } else {
                         model.put("emailSavedTo", emailTo);
-                        model.put("emailSavedFrom", emailFrom);
 
                         if (!StringUtils.isBlank(yourComment)) {
                             model.put("yourSavedComment", yourComment);

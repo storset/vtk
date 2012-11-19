@@ -49,13 +49,7 @@
        </div>
        <div class="email-help"><@vrtx.msg code="tip.form.emailtomessage" default="Use comma as a separator if sending to more than one e-mail recipient" /></div> 
        <label for="emailFromField"><@vrtx.msg code="tip.form.emailfrom" default="Your e-mail address" /></label>  
-       <div class="vrtx-textfield">  
-         <#if emailSavedFrom?exists && emailSavedFrom?has_content>
-           <input type="text" id="emailFromField" name="emailFrom" value="${emailSavedFrom?html}" />
-         <#else>
-           <input type="text" id="emailFromField" name="emailFrom" value="" />
-         </#if>
-       </div>
+       ${emailSavedFrom?html}
        <label for="yourCommentTxtArea"><@vrtx.msg code="tip.form.yourcomment" default="Your comment" /></label> 
        <#if yourSavedComment?exists && yourSavedComment?has_content>
          <textarea class="round-corners" rows="6" cols="10" id="yourCommentTxtArea" name="yourComment">${yourSavedComment?html}</textarea>

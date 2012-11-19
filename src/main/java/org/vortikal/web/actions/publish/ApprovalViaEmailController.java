@@ -109,13 +109,16 @@ public class ApprovalViaEmailController implements Controller {
                             break;
                         }
                     }
-                    validAddresses = validAddresses && MailExecutor.isValidEmail(emailFrom);
-                    
+                    if (!emailFrom.endsWith("@localhost")) {
+                        validAddresses = validAddresses && MailExecutor.isValidEmail(emailFrom);
+                    } else {
+                        emailFrom = "vortex-core@usit.uio.no";
+                    }
                     if (validAddresses) {
                         String url = this.manageService.constructURL(uri).toString();
 
                         MimeMessage mimeMessage = mailExecutor.createMimeMessage(
-                                mailTemplateProvider, "w", url, resource.getTitle(), 
+                                mailTemplateProvider, "", url, resource.getTitle(), 
                                 emailMultipleTo,
                                 emailFrom, comment, resource.getTitle());
 

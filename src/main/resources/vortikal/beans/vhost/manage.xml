@@ -2198,10 +2198,13 @@
     <property name="order" value="-999" />
     <property name="handler" ref="emailApprovalHandler" />
     <property name="assertions">
-      <bean class="org.vortikal.web.service.RequestParameterAssertion">
-        <property name="parameterName" value="action" />
-        <property name="parameterValue" value="email-approval" />
-      </bean>
+      <list>
+        <ref bean="writeUnpublishedPermissionAssertion" />
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="action" />
+          <property name="parameterValue" value="email-approval" />
+        </bean>
+      </list> 
     </property>
   </bean>
   

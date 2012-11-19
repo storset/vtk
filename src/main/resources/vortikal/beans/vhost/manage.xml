@@ -2215,6 +2215,7 @@
     <property name="mailExecutor" ref="email.executor" />
     <property name="mailTemplateProvider" ref="emailApproval.mailTemplateProvider" />
     <property name="localeResolver" ref="manageLocaleResolver" />
+    <property name="defaultSender" value="${email.defaultSender}" />
   </bean>
   
  <bean id="emailApproval.viewResolver" parent="system.decoratingViewResolver">

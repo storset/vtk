@@ -60,6 +60,7 @@ public class ApprovalViaEmailController implements Controller {
     private MailTemplateProvider mailTemplateProvider;
     private LocaleResolver localeResolver;
     private Service manageService;
+    private String defaultSender;
 
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
@@ -112,10 +113,10 @@ public class ApprovalViaEmailController implements Controller {
                     if (!emailFrom.endsWith("@localhost")) {
                         validAddresses = validAddresses && MailExecutor.isValidEmail(emailFrom);
                     } else {
-                        emailFrom = "vortex-core@usit.uio.no"; // TODO: how do we handle developing environment? (xml-configured default?)
+                        emailFrom = defaultSender;
                     }
                     if (validAddresses) {
-                        String url = this.manageService.constructURL(uri).toString();
+                        String url = manageService.constructURL(uri).toString();
 
                         MimeMessage mimeMessage = mailExecutor.createMimeMessage(
                                 mailTemplateProvider, "", url, resource.getTitle(), 
@@ -140,44 +141,43 @@ public class ApprovalViaEmailController implements Controller {
                 }
             }
         }
-        model.put("resource", this.resourceManager.createResourceWrapper());
-        return new ModelAndView(this.viewName, model);
+        model.put("resource", resourceManager.createResourceWrapper());
+        return new ModelAndView(viewName, model);
     }
-
 
     @Required
     public void setViewName(String viewName) {
         this.viewName = viewName;
     }
 
-
     @Required
     public void setResourceManager(ResourceWrapperManager resourceManager) {
         this.resourceManager = resourceManager;
     }
-
 
     @Required
     public void setMailExecutor(MailExecutor mailExecutor) {
         this.mailExecutor = mailExecutor;
     }
 
-
     @Required
     public void setMailTemplateProvider(MailTemplateProvider mailTemplateProvider) {
         this.mailTemplateProvider = mailTemplateProvider;
     }
-
 
     @Required
     public void setLocaleResolver(LocaleResolver localeResolver) {
         this.localeResolver = localeResolver;
     }
 
-
     @Required
     public void setManageService(Service manageService) {
         this.manageService = manageService;
+    }
+    
+    @Required
+    public void setDefaultSender(String defaultSender) {
+        this.defaultSender = defaultSender;
     }
 
 }

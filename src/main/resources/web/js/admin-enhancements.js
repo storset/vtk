@@ -1889,7 +1889,7 @@ function addFormField(name, value, removeName, moveUpName, moveDownName, browseN
   }
   if (isMovable && moveUpName && i > 1) {
     moveUpButton = $.mustache(MULTIPLE_INPUT_FIELD_TEMPLATES["button"], { type: "moveup", name: "", 
-                                                                            idstr: idstr,   buttonText: "&uarr; " + moveUpName });
+                                                                          idstr: idstr,   buttonText: "&uarr; " + moveUpName });
   }
   if (isMovable && moveDownName && i < LENGTH_FOR_MULTIPLE_INPUT_FIELD[name]) {
     moveDownButton = $.mustache(MULTIPLE_INPUT_FIELD_TEMPLATES["button"], { type: "movedown", name: "", 
@@ -1924,9 +1924,9 @@ function addFormField(name, value, removeName, moveUpName, moveDownName, browseN
   COUNTER_FOR_MULTIPLE_INPUT_FIELD[name]++;   
 }
 
-function removeFormField(that) {
-  var name = that.attr("class").replace("remove ", "");
-  that.closest(".vrtx-multipleinputfield").remove();
+function removeFormField(input) {
+  var name = input.attr("class").replace("remove ", "");
+  input.closest(".vrtx-multipleinputfield").remove();
 
   LENGTH_FOR_MULTIPLE_INPUT_FIELD[name]--;
   COUNTER_FOR_MULTIPLE_INPUT_FIELD[name]--;
@@ -1941,8 +1941,8 @@ function removeFormField(that) {
   }
 }
 
-function moveUpFormField(that) {
-  var parent = that.closest(".vrtx-multipleinputfield");
+function moveUpFormField(input) {
+  var parent = input.closest(".vrtx-multipleinputfield");
   var thisInput = parent.find("input");
   var prevInput = parent.prev().find("input");
   var thisText = thisInput.val();
@@ -1951,8 +1951,8 @@ function moveUpFormField(that) {
   prevInput.val(thisText);
 }
 
-function moveDownFormField(that) {
-  var parent = that.closest(".vrtx-multipleinputfield");
+function moveDownFormField(input) {
+  var parent = input.closest(".vrtx-multipleinputfield");
   var thisInput = parent.find("input");
   var nextInput = parent.next().find("input");
   var thisText = thisInput.val();

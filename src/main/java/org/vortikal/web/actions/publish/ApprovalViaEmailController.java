@@ -48,6 +48,7 @@ import org.vortikal.edit.editor.ResourceWrapperManager;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.security.Principal;
 import org.vortikal.util.mail.MailExecutor;
 import org.vortikal.util.mail.MailTemplateProvider;
 import org.vortikal.web.RequestContext;
@@ -67,6 +68,7 @@ public class ApprovalViaEmailController implements Controller {
         String token = requestContext.getSecurityToken();
         Repository repository = requestContext.getRepository();
         Path uri = requestContext.getResourceURI();
+        Principal principal = requestContext.getPrincipal();
 
         Resource resource = repository.retrieve(token, uri, true);
         if (resource == null) {
@@ -82,7 +84,7 @@ public class ApprovalViaEmailController implements Controller {
         Map<String, Object> model = new HashMap<String, Object>();
         String method = request.getMethod();
         
-        String emailFrom = requestContext.getPrincipal().getQualifiedName();
+        String emailFrom = principal.getQualifiedName();
         model.put("emailSavedFrom", emailFrom);
 
         if (method.equals("POST")) {
@@ -117,10 +119,19 @@ public class ApprovalViaEmailController implements Controller {
                     }
                     if (validAddresses) {
                         String url = manageService.constructURL(uri).toString();
+                        String fullName = principal.getName();
 
-                        MimeMessage mimeMessage = mailExecutor.createMimeMessage(mailTemplateProvider, "", url,
-                                resource.getTitle(), emailMultipleTo, emailFrom, requestContext.getPrincipal()
-                                        .getName(), comment, resource.getTitle());
+                        MimeMessage mimeMessage = mailExecutor.createMimeMessage(
+                                mailTemplateProvider,
+                                "",
+                                url,
+                                resource.getTitle(),
+                                emailMultipleTo,
+                                emailFrom,
+                                fullName,
+                                comment,
+                                resource.getTitle()
+                        );
 
                         mailExecutor.enqueue(mimeMessage);
 

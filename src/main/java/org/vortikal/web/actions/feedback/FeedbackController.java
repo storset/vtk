@@ -144,9 +144,17 @@ public class FeedbackController implements Controller {
             org.springframework.web.servlet.support.RequestContext springRequestContext = 
                     new org.springframework.web.servlet.support.RequestContext(request);
             
-            MimeMessage mimeMessage = mailExecutor.createMimeMessage(mailTemplateProvider, this.siteName, url, title,
-                    recipients, this.sender, "", yourComment,
-                    springRequestContext.getMessage("feedback.mail.subject-header-prefix") + ": " + title);
+            MimeMessage mimeMessage = mailExecutor.createMimeMessage(
+                    mailTemplateProvider,
+                    this.siteName,
+                    url,
+                    title,
+                    recipients,
+                    this.sender,
+                    "",
+                    yourComment,
+                    springRequestContext.getMessage("feedback.mail.subject-header-prefix") + ": " + title
+            );
 
             mailExecutor.enqueue(mimeMessage);
 

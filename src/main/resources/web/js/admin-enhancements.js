@@ -1864,7 +1864,7 @@ function initMultipleInputFields() {
     e.stopPropagation();
   });
   wrapper.on("click", ".vrtx-multipleinputfield button.browse-resource-ref", function(e){
-    browseServer($(this).parent().parent().find('input').attr('id'), browseBase, browseBaseFolder, browseBasePath, 'File');
+    browseServer($(this).closest(".vrtx-multipleinputfield").find('input').attr('id'), browseBase, browseBaseFolder, browseBasePath, 'File');
     e.preventDefault();
     e.stopPropagation();
   });
@@ -1925,40 +1925,40 @@ function addFormField(name, value, removeName, moveUpName, moveDownName, browseN
 }
 
 function removeFormField(that) {
-  var name = $(that).attr("class").replace("remove ", "");
-  $(that).parent().parent().remove();
+  var name = that.attr("class").replace("remove ", "");
+  that.closest(".vrtx-multipleinputfield").remove();
 
   LENGTH_FOR_MULTIPLE_INPUT_FIELD[name]--;
   COUNTER_FOR_MULTIPLE_INPUT_FIELD[name]--;
 
-  var fields = "." + name + " div.vrtx-multipleinputfield";
+  var fields = $("." + name + " div.vrtx-multipleinputfield");
 
-  if($(fields).eq(LENGTH_FOR_MULTIPLE_INPUT_FIELD[name] - 1).has("button.movedown")) {
-    $(fields).eq(LENGTH_FOR_MULTIPLE_INPUT_FIELD[name] - 1).find("button.movedown").parent().remove();
+  if(fields.eq(LENGTH_FOR_MULTIPLE_INPUT_FIELD[name] - 1).has("button.movedown")) {
+    fields.eq(LENGTH_FOR_MULTIPLE_INPUT_FIELD[name] - 1).find("button.movedown").parent().remove();
   }
-  if($(fields).eq(0).has("button.moveup")) {
-    $(fields).eq(0).find("button.moveup").parent().remove();
+  if(fields.eq(0).has("button.moveup")) {
+    fields.eq(0).find("button.moveup").parent().remove();
   }
 }
 
 function moveUpFormField(that) {
-  var parent = $(that).closest(".vrtx-multipleinputfield");
+  var parent = that.closest(".vrtx-multipleinputfield");
   var thisInput = parent.find("input");
   var prevInput = parent.prev().find("input");
   var thisText = thisInput.val();
   var prevText = prevInput.val();
-  $(thisInput).val(prevText);
-  $(prevInput).val(thisText);
+  thisInput.val(prevText);
+  prevInput.val(thisText);
 }
 
 function moveDownFormField(that) {
-  var parent = $(that).closest(".vrtx-multipleinputfield");
+  var parent = that.closest(".vrtx-multipleinputfield");
   var thisInput = parent.find("input");
   var nextInput = parent.next().find("input");
-  var thisText = $(thisInput).val();
-  var nextText = $(nextInput).val();
-  $(thisInput).val(nextText);
-  $(nextInput).val(thisText);
+  var thisText = thisInput.val();
+  var nextText = nextInput.val();
+  thisInput.val(nextText);
+  nextInput.val(thisText);
 }
 
 function saveMultipleInputFields() {

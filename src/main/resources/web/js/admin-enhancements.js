@@ -939,10 +939,6 @@ VrtxAdmin.prototype.dropdown = function dropdown(options) {
       var area = _$(this);
       area.parent().toggleClass('unhover');
       area.prev().toggleClass('hover');
-    }, function () {
-      var area = _$(this);
-      area.parent().toggleClass('unhover');
-      area.prev().toggleClass('hover');
     });
   }
 };

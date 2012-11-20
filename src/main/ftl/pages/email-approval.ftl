@@ -24,6 +24,7 @@
 
      <form id="email-approval-form" method="post" action="${uri}">
        <@vrtx.csrfPreventionToken uri />
+      
        <label for="emailToField" class="first"><@vrtx.msg code="email.form.to" default="Send e-mail to" /></label> 
        <div class="vrtx-textfield">  
          <#if emailSavedTo?exists && emailSavedTo?has_content>
@@ -33,14 +34,17 @@
          </#if>
        </div>
        <div class="email-help"><@vrtx.msg code="email.form.to-tooltip" default="Use comma as a separator if sending to more than one e-mail recipient" /></div> 
+      
        <label for="emailFromField"><@vrtx.msg code="email.form.from" default="Your e-mail address" /></label>  
        ${emailSavedFrom?html}
+       
        <label for="yourCommentTxtArea"><@vrtx.msg code="email.form.yourcomment" default="Your comment" /></label> 
        <#if yourSavedComment?exists && yourSavedComment?has_content>
          <textarea class="round-corners" rows="6" cols="10" id="yourCommentTxtArea" name="yourComment">${yourSavedComment?html}</textarea>
        <#else>
          <textarea class="round-corners" rows="6" cols="10" id="yourCommentTxtArea" name="yourComment" value=""></textarea> 
        </#if>
+      
        <div id="submitButtons">
          <div class="vrtx-focus-button"> 
            <input type="submit" class="submit-email-form" value="Send" name="submit" />

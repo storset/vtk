@@ -61,26 +61,21 @@
       </#if>
       <@vrtx.msg code="feedback.contact-middle" default="our points of contact" /></a>&nbsp;<@vrtx.msg code="feedback.contact-post" default="if you need answers from anyone." />
       </p>
-
-       <#-- Feedback form -->
        <#if !like?exists || (like?exists && like = "false")>
          <form id="feedback-form" method="post" action="?vrtx=send-feedback">
-           <#-- Your comment -->
+           
            <label for="yourComment" style="display: none;"><@vrtx.msg code="feedback.form.yourcomment" default="Your comment" /></label> 
            <#if yourSavedComment?exists && yourSavedComment?has_content>
              <textarea class="round-corners" rows="15" cols="10" id="yourComment" name="yourComment">${yourSavedComment?html}</textarea>
            <#else>
              <textarea class="round-corners" rows="15" cols="10" id="yourComment" name="yourComment"></textarea> 
            </#if>
-       
            <#if mailto?has_content>
              <input type="hidden" name="mailto" value="${mailto?html}" />
            </#if>
-         
            <#if contacturl?has_content>
              <input type="hidden" name="contacturl" value="${contacturl?html}" />
            </#if>
-       
            <div id="submitButtons">
              <div class="vrtx-focus-button"> 
                <input type="submit" class="submit-email-form" value="Send" name="submit" />
@@ -93,7 +88,6 @@
        </#if>
        
        <#-- Postback from Controller -->
-       
        <#if tipResponse?has_content>
          <div id="email-response"> 
            <#if tipResponse = "FAILURE-NULL-FORM">

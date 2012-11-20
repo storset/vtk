@@ -37,13 +37,9 @@
    <#else>
     <h1>Send to approval</h1>   
     <h2>${resource.title}</h2>
-
-    <#-- E-mail a friend form -->
      <form id="email-a-friend-form" method="post" action="?vrtx=email-a-friend">
        
-       <#-- Email to -->
        <label for="emailTo"><@vrtx.msg code="email.form.to" default="Send e-mail to" /></label> 
-       
        <div class="vrtx-textfield">  
          <#if emailSavedTo?exists && emailSavedTo?has_content>
            <input type="text" id="emailTo" name="emailTo" value="${emailSavedTo?html}" />
@@ -51,12 +47,9 @@
            <input type="text" id="emailTo" name="emailTo" value="" />
          </#if>
        </div>
-       
        <div class="email-help"><@vrtx.msg code="email.form.to-tooltip" default="Use comma as a separator if sending to more than one e-mail recipient" /></div> 
-       
-       <#-- Email from -->
+      
        <label for="emailFrom"><@vrtx.msg code="email.form.from" default="Your e-mail address" /></label>  
-       
        <div class="vrtx-textfield">  
          <#if emailSavedFrom?exists && emailSavedFrom?has_content>
            <input type="text" id="emailFrom" name="emailFrom" value="${emailSavedFrom?html}" />
@@ -65,15 +58,13 @@
          </#if>
        </div>
        
-       <#-- Your comment -->
        <label for="yourComment"><@vrtx.msg code="email.form.yourcomment" default="Your comment" /></label> 
-       
        <#if yourSavedComment?exists && yourSavedComment?has_content>
          <textarea class="round-corners" rows="6" cols="10" id="yourComment" name="yourComment">${yourSavedComment?html}</textarea>
        <#else>
          <textarea class="round-corners" rows="6" cols="10" id="yourComment" name="yourComment" value=""></textarea> 
        </#if>
-
+  
        <div id="submitButtons">
          <div class="vrtx-focus-button"> 
            <input type="submit" class="submit-email-form" value="Send" name="submit" />

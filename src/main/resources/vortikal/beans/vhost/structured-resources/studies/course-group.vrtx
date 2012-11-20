@@ -39,7 +39,7 @@ resourcetype course-group : fellestekst-document {
         <title>[if course-group-scope != null && course-group-scope != ""][val course-group-scope]-[localized 'localized-group'][endif][if course-group-scope != null && course-group-scope != "" && course-group-name != null && course-group-name != ""] - [endif][if course-group-name != null && course-group-name != ""]Antikken[if course-group-code != null && course-group-code != ""] ([val course-group-code])[endif][endif]</title>
       </head>
       <body>
-        <h1>[if course-group-scope != null && course-group-scope != ""][val course-group-scope]-[localized 'group'][endif][if course-group-scope != null && course-group-scope != "" && course-group-name != null && course-group-name != ""] - [endif][if course-group-name != null && course-group-name != ""]Antikken[if course-group-code != null && course-group-code != ""] ([val course-group-code])[endif][endif]</h1>
+        <h1>[if course-group-scope != null && course-group-scope != ""][val course-group-scope]-[localized 'localized-group'][endif][if course-group-scope != null && course-group-scope != "" && course-group-name != null && course-group-name != ""] - [endif][if course-group-name != null && course-group-name != ""]Antikken[if course-group-code != null && course-group-code != ""] ([val course-group-code])[endif][endif]</h1>
         [if about != null && about != ""]
           [val about # unescaped]
         [endif]

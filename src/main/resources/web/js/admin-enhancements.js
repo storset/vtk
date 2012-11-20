@@ -1846,24 +1846,22 @@ function loadMultipleInputFields(name, addName, removeName, moveUpName, moveDown
 }
 
 function initMultipleInputFields() {
-  var wrapper = vrtxAdmin.cachedAppContent;
-
-  wrapper.on("click", ".vrtx-multipleinputfield button.remove", function(e){
+  vrtxAdmin.cachedAppContent.on("click", ".vrtx-multipleinputfield button.remove", function(e){
     removeFormField($(this));
     e.preventDefault();
     e.stopPropagation();
   });
-  wrapper.on("click", ".vrtx-multipleinputfield button.moveup", function(e){
+  vrtxAdmin.cachedAppContent.on("click", ".vrtx-multipleinputfield button.moveup", function(e){
     moveUpFormField($(this));
     e.preventDefault();
     e.stopPropagation();
   });
-  wrapper.on("click", ".vrtx-multipleinputfield button.movedown", function(e){
+  vrtxAdmin.cachedAppContent.on("click", ".vrtx-multipleinputfield button.movedown", function(e){
     moveDownFormField($(this));
     e.preventDefault();
     e.stopPropagation();
   });
-  wrapper.on("click", ".vrtx-multipleinputfield button.browse-resource-ref", function(e){
+  vrtxAdmin.cachedAppContent.on("click", ".vrtx-multipleinputfield button.browse-resource-ref", function(e){
     browseServer($(this).closest(".vrtx-multipleinputfield").find('input').attr('id'), browseBase, browseBaseFolder, browseBasePath, 'File');
     e.preventDefault();
     e.stopPropagation();

@@ -41,6 +41,7 @@ import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.Revision;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.RequestContext.RepositoryTraversal;
@@ -139,6 +140,15 @@ public class ResourceDetailProvider implements InitializingBean, ReferenceDataPr
                 resourceDetailModel.put("inheritedFrom", obsoletedResource[0].getURI().toString());
             }
         }
+        
+        boolean hasWorkingCopy = false;
+        for (Revision rev : repository.getRevisions(token, requestContext.getResourceURI())) {
+            if (rev.getType() == Revision.Type.WORKING_COPY) {
+                hasWorkingCopy = true;
+                break;
+            }
+        }
+        model.put("hasWorkingCopy", hasWorkingCopy);
 
         for (Map.Entry<String, Service> entry : this.serviceMap.entrySet()) {
             String key = entry.getKey();
@@ -154,6 +164,7 @@ public class ResourceDetailProvider implements InitializingBean, ReferenceDataPr
             }
             resourceDetailModel.put(key, url);
         }
+        
         model.put("resourceDetail", resourceDetailModel);
     }
 

@@ -1371,6 +1371,7 @@
         <ref bean="resourceMenuLeftProvider" />
         <ref bean="resourceMenuRightProvider" />
         <ref bean="manage.refreshLockURLProvider" />
+        <ref bean="resourceDetailProvider" />
         <bean class="org.vortikal.web.referencedata.provider.ResourcePrincipalPermissionsProvider">
           <property name="modelName" value="writePermission" />
           <property name="permission" value="WRITE" />

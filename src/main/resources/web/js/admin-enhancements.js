@@ -1752,8 +1752,7 @@ function editorInteraction(bodyId, vrtxAdm, _$) {
           if(!saveInjected.find("> span").length) {
             saveInjected.wrapInner("<span />");
           }
-        }
-        if(saveInjected.hasClass("vrtx-button")) {
+        } else {
           saveInjected.removeClass("vrtx-focus-button");
         }
         

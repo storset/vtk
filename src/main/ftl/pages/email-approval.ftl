@@ -69,11 +69,11 @@
     <#if tipResponse?has_content>
       <div id="tip-response">
       <#if tipResponse = "FAILURE-NULL-FORM">
-        <span class="failure"><@vrtx.msg code="tip.form.fail.null" default="You have to write something in both fields" />.</span>
+        <span class="failure"><@vrtx.msg code="tip.form.fail.null" default="One or more of the e-mail addresses are empty" />.</span>
       <#elseif tipResponse = "FAILURE-INVALID-EMAIL">
-        <span class="failure"><@vrtx.msg code="tip.form.fail.invalidate" default="One of the e-mail addresses is invalid" />.</span>
+        <span class="failure"><@vrtx.msg code="tip.form.fail.invalidate" default="One of the e-mail addresses is not valid" />.</span>
       <#elseif tipResponse = "FAILURE">
-        <span class="failure"><@vrtx.msg code="tip.form.fail.general" default="Tip was not sent" /><#if tipResponseMsg?exists && tipResponseMsg?has_content>${tipResponseMsg}</#if>.</span>
+        <span class="failure"><@vrtx.msg code="tip.form.fail.general" default="E-mail was not sent" /><#if tipResponseMsg?exists && tipResponseMsg?has_content>${tipResponseMsg}</#if>.</span>
       </#if> 
       </div>
     </#if>  

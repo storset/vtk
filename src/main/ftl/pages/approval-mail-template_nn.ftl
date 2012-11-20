@@ -1,6 +1,6 @@
 <p>Hei!</p>
 
-<p>Kan du godkjenna denne?</p>
+<p>Kan du godkjenna denne arbeidsversjonen/for publisering?</p>
 
 <h2>${title}</h2>
 
@@ -9,17 +9,7 @@
 </#if>
 
 
-<p>Lenkje til dokument: <a href="${uri?html}">${uri?html}</a><br />
-Lenkje til dokumentasjon:  <a href="${uri?html}">${uri?html}</a></p>
+<p>Lenkje til dokument: <a href="${uri?html}">${uri?html}</a></p>
+<p>Lenkje til dokumentasjon:  <a href="${uri?html}">${uri?html}</a></p>
 
-<p>Med vennleg helsing,<br/>
-${mailFrom}</p>
-
-<hr />
-
-<p>
-Denne meldinga er sendt på oppmoding frå ${mailFrom}.
-Di e-postadresse vert ikkje lagra.
-Du vil ikkje få tilsendt fleire meldinger som denne,
-med mindre nokon sender deg andre dokumentar for godkjenning.
-</p>
+<p>Med vennleg helsing, ${mailFrom}</p>

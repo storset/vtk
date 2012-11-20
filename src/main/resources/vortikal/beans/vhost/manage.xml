@@ -1922,7 +1922,7 @@
         <bean parent="abstractResourcePrincipalPermissionAssertion">
           <property name="requiresAuthentication" value="true" />
           <property name="considerLocks" value="false" />
-          <property name="permission" value="READ_WRITE" />
+          <property name="permission" value="READ_WRITE_UNPUBLISHED" />
         </bean>
         <bean parent="abstractResourcePrincipalPermissionAssertion">
           <property name="requiresAuthentication" value="true" />

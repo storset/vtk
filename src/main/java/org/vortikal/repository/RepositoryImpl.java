@@ -1119,7 +1119,8 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         }
         try {
             if (considerLocks) {
-                if (action == RepositoryAction.DELETE) {
+                if (action == RepositoryAction.DELETE
+                     || action == RepositoryAction.DELETE_UNPUBLISHED) {
                     if (resource.getURI().isRoot()) {
                         return false;
                     }
@@ -1137,13 +1138,10 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
                         || action == RepositoryAction.UNLOCK
                         || action == RepositoryAction.CREATE
                         || action == RepositoryAction.CREATE_UNPUBLISHED
-                        || action == RepositoryAction.DELETE_UNPUBLISHED
                         || action == RepositoryAction.WRITE
                         || action == RepositoryAction.READ_WRITE
                         || action == RepositoryAction.PUBLISH_UNPUBLISH
                         || action == RepositoryAction.READ_WRITE_UNPUBLISHED
-                        || action == RepositoryAction.DELETE_UNPUBLISHED
-                        || action == RepositoryAction.CREATE_UNPUBLISHED
                         || action == RepositoryAction.WRITE_ACL) {
                     checkLock(resource, principal);
                 }

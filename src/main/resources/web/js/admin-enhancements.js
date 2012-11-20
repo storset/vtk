@@ -1942,8 +1942,9 @@ function removeFormField(that) {
 }
 
 function moveUpFormField(that) {
-  var thisInput = $(that).parent().parent().find("input");
-  var prevInput = $(that).parent().parent().prev().find("input");
+  var parent = $(that).closest(".vrtx-multipleinputfield");
+  var thisInput = parent.find("input");
+  var prevInput = parent.prev().find("input");
   var thisText = thisInput.val();
   var prevText = prevInput.val();
   $(thisInput).val(prevText);
@@ -1951,8 +1952,9 @@ function moveUpFormField(that) {
 }
 
 function moveDownFormField(that) {
-  var thisInput = $(that).parent().parent().find("input");
-  var nextInput = $(that).parent().parent().next().find("input");
+  var parent = $(that).closest(".vrtx-multipleinputfield");
+  var thisInput = parent.find("input");
+  var nextInput = parent.next().find("input");
   var thisText = $(thisInput).val();
   var nextText = $(nextInput).val();
   $(thisInput).val(nextText);

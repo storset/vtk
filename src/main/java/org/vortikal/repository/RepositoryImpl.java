@@ -1142,6 +1142,8 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
                         || action == RepositoryAction.READ_WRITE
                         || action == RepositoryAction.PUBLISH_UNPUBLISH
                         || action == RepositoryAction.READ_WRITE_UNPUBLISHED
+                        || action == RepositoryAction.DELETE_UNPUBLISHED
+                        || action == RepositoryAction.CREATE_UNPUBLISHED
                         || action == RepositoryAction.WRITE_ACL) {
                     checkLock(resource, principal);
                 }

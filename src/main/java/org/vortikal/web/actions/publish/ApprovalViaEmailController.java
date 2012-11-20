@@ -118,10 +118,9 @@ public class ApprovalViaEmailController implements Controller {
                     if (validAddresses) {
                         String url = manageService.constructURL(uri).toString();
 
-                        MimeMessage mimeMessage = mailExecutor.createMimeMessage(
-                                mailTemplateProvider, "", url, resource.getTitle(), 
-                                emailMultipleTo, emailFrom, requestContext.getPrincipal().getName(),
-                                comment, resource.getTitle());
+                        MimeMessage mimeMessage = mailExecutor.createMimeMessage(mailTemplateProvider, "", url,
+                                resource.getTitle(), emailMultipleTo, emailFrom, requestContext.getPrincipal()
+                                        .getName(), comment, resource.getTitle());
 
                         mailExecutor.enqueue(mimeMessage);
 

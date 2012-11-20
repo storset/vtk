@@ -121,9 +121,8 @@ public class ShareViaEmailController implements Controller {
                     if (validAddresses) {
                         String url = this.viewService.constructURL(uri).toString();
 
-                        MimeMessage mimeMessage = mailExecutor.createMimeMessage(
-                                mailTemplateProvider, this.siteName, url, resource.getTitle(), 
-                                emailMultipleTo, emailFrom, "", comment, resource.getTitle());
+                        MimeMessage mimeMessage = mailExecutor.createMimeMessage(mailTemplateProvider, this.siteName,
+                                url, resource.getTitle(), emailMultipleTo, emailFrom, "", comment, resource.getTitle());
 
                         mailExecutor.enqueue(mimeMessage);
 

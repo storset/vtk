@@ -148,7 +148,7 @@ public class ResourceDetailProvider implements InitializingBean, ReferenceDataPr
                 break;
             }
         }
-        model.put("hasWorkingCopy", hasWorkingCopy);
+        resourceDetailModel.put("hasWorkingCopy", hasWorkingCopy);
 
         for (Map.Entry<String, Service> entry : this.serviceMap.entrySet()) {
             String key = entry.getKey();

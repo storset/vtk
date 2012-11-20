@@ -15,7 +15,7 @@
   <#-- Not READ_WRITE (not considering locks) and have READ_WRITE_UNPUBLISHED (considering locks) TODO: and have a WORKING_COPY -->
   <#if writeUnlockedPermission.permissionsQueryResult?? && writeUnlockedPermission.permissionsQueryResult = 'false'
     && writeUnpublishedPermission.permissionsQueryResult?? && writeUnpublishedPermission.permissionsQueryResult = 'true'
-    && hasWorkingCopy?? && hasWorkingCopy>
+    && resourceDetail?? && resourceDetail.hasWorkingCopy?? && resourceDetail.hasWorkingCopy>
     <#assign uri = vrtx.relativeLinkConstructor(resourceContext.currentResource.URI, "emailApprovalService") />
     <#if uri?has_content> 
       <a id="vrtx-send-to-approval-global" title="${vrtx.getMsg('send-to-approval.title')}" class="vrtx-button-small" href="${uri?html}"><span>${vrtx.getMsg('send-to-approval.title')}</span></a>

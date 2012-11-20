@@ -70,12 +70,14 @@
            <#else>
              <textarea class="round-corners" rows="15" cols="10" id="yourComment" name="yourComment"></textarea> 
            </#if>
+           
            <#if mailto?has_content>
              <input type="hidden" name="mailto" value="${mailto?html}" />
            </#if>
            <#if contacturl?has_content>
              <input type="hidden" name="contacturl" value="${contacturl?html}" />
            </#if>
+           
            <div id="submitButtons">
              <div class="vrtx-focus-button"> 
                <input type="submit" class="submit-email-form" value="Send" name="submit" />

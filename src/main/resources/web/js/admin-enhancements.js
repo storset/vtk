@@ -2272,6 +2272,7 @@ function versioningInteraction(bodyId, vrtxAdm, _$) {
       e.stopPropagation();
       e.preventDefault();
     });
+    
     // Make working copy into current version
     contents.on("click", "#vrtx-revisions-make-current-form input[type=submit]", function(e) {
       var form = _$(this).closest("form")

@@ -119,7 +119,7 @@ public class ApprovalViaEmailController implements Controller {
                     }
                     if (validAddresses) {
                         String url = manageService.constructURL(uri).toString();
-                        String fullName = principal.getName();
+                        String fullName = principal.getName(); // Use DAO-object?
 
                         MimeMessage mimeMessage = mailExecutor.createMimeMessage(
                                 mailTemplateProvider,

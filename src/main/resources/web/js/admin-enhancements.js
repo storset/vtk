@@ -2223,7 +2223,9 @@ function versioningInteraction(bodyId, vrtxAdm, _$) {
 
   if(bodyId == "vrtx-revisions") {
     var contents = _$("#contents");
-    contents.on("click", ".vrtx-revisions-delete-form input[type=submit]", function(e) { // Delete revisions
+    
+    // Delete revisions
+    contents.on("click", ".vrtx-revisions-delete-form input[type=submit]", function(e) {
       var form = _$(this).closest("form")
       var url = form.attr("action");
       var dataString = form.serialize();
@@ -2246,7 +2248,9 @@ function versioningInteraction(bodyId, vrtxAdm, _$) {
       e.stopPropagation();
       e.preventDefault();
     });
-    contents.on("click", ".vrtx-revisions-restore-form input[type=submit]", function(e) { // Restore revisions
+    
+    // Restore revisions
+    contents.on("click", ".vrtx-revisions-restore-form input[type=submit]", function(e) {
       var form = _$(this).closest("form")
       var url = form.attr("action");
       var dataString = form.serialize();
@@ -2268,7 +2272,8 @@ function versioningInteraction(bodyId, vrtxAdm, _$) {
       e.stopPropagation();
       e.preventDefault();
     });
-    contents.on("click", "#vrtx-revisions-make-current-form input[type=submit]", function(e) { // Make working copy into current version
+    // Make working copy into current version
+    contents.on("click", "#vrtx-revisions-make-current-form input[type=submit]", function(e) {
       var form = _$(this).closest("form")
       var url = form.attr("action");
       var dataString = form.serialize();

@@ -13,21 +13,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-  <title><@vrtx.msg code="tip.emailtitle" default="E-mail a friend" /> - ${resource.title}</title>
-  <#if cssURLs?exists>
-    <#list cssURLs as cssUrl>
-      <link href="${cssUrl}" type="text/css" rel="stylesheet" />
-    </#list>
-  </#if> 
-  <#if (displayUpscoping?exists && displayUpscoping = "true") || resourceContext.repositoryId = "uio.no">
-    <link href="/vrtx/__vrtx/static-resources/themes/default/forms.css" type="text/css" rel="stylesheet" />
-    <!--[if lte IE 7]>
-      <link rel="stylesheet" href="/vrtx/__vrtx/static-resources/themes/default/default-ie7.css" type="text/css" /> 
-    <![endif]--> 
-    <!--[if lte IE 6]>
-      <link rel="stylesheet" href="/vrtx/__vrtx/static-resources/themes/default/default-ie6.css" type="text/css" /> 
-    <![endif]--> 
-  </#if>
+  <title>${resource.title}</title>
   <meta name="robots" content="noindex"/> 
  </head>
  <body>

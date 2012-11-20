@@ -2245,15 +2245,6 @@
         <ref bean="resourceContextProvider" />
       </list>
     </property>
-    <property name="attributesMap">
-      <map>
-        <entry key="cssURLs">
-          <list>
-            <value>${themeBaseURL}/modals.css</value>
-          </list>
-        </entry>
-      </map>
-    </property>
   </bean>
   
   <bean id="emailApproval.mailTemplateProvider" class="org.vortikal.util.mail.MailTemplateProvider">

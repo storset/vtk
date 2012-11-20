@@ -264,6 +264,7 @@ vrtxAdmin._$(document).ready(function () {
       selector: "#title-container a#" + resourceMenuRightServices[i],
       selectorClass: "globalmenu",
       insertAfterOrReplaceClass: "ul#resourceMenuLeft",
+      secondaryInsertAfterOrReplaceClass: "ul#resourceMenuRight",
       nodeType: "div",
       simultanSliding: true
     });
@@ -2447,18 +2448,24 @@ VrtxAdmin.prototype.addOriginalMarkup = function addOriginalMarkup(url, results,
 VrtxAdmin.prototype.addNewMarkup = function addNewMarkup(options, selectorClass, transitionSpeed, transitionEasingSlideDown, transitionEasingSlideUp, form) {
   var vrtxAdm = this,
       insertAfterOrReplaceClass = options.insertAfterOrReplaceClass,
+      secondaryInsertAfterOrReplaceClass = options.secondaryInsertAfterOrReplaceClass,
       isReplacing = options.isReplacing || false,
       nodeType = options.nodeType,
       funcComplete = options.funcComplete,
       _$ = vrtxAdm._$;
+   
+  var inject = _$(insertAfterOrReplaceClass);
+  if(!inject.length) {
+    inject = _$(secondaryInsertAfterOrReplaceClass);
+  }
 
   if (isReplacing) {
-    var classes = _$(insertAfterOrReplaceClass).attr("class");
-    _$(insertAfterOrReplaceClass).replaceWith(vrtxAdm.wrap(nodeType, "expandedForm expandedFormIsReplaced nodeType"
+    var classes = inject.attr("class");
+    inject.replaceWith(vrtxAdm.wrap(nodeType, "expandedForm expandedFormIsReplaced nodeType"
                                                          + nodeType + " " + selectorClass + " " + classes, form));
   } else {
     _$(vrtxAdm.wrap(nodeType, "expandedForm nodeType" + nodeType + " " + selectorClass, form))
-      .insertAfter(insertAfterOrReplaceClass);
+      .insertAfter(inject);
   }
   if(funcComplete) {
     funcComplete(selectorClass);

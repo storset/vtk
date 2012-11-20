@@ -69,13 +69,13 @@ form#email-a-friend-form div.email-help {
   line-height: 1.3;
 }
       
-div#tip-response {
+div#email-response {
   margin-top: 10px;
   font-style: italic;
   font-size: 80%;
 }
     
-div#tip-response span.failure {
+div#email-response span.failure {
   color: #cc0000;
 }
     

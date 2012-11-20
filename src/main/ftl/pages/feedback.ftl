@@ -39,7 +39,7 @@
     <#if tipResponse?has_content && tipResponse = "OK">
       <p><@vrtx.msg code="feedback.form.success" args=[emailSentTo] /></p>
       <div class="vrtx-button">
-        <button onclick="javascript:window.parent.tb_remove();"><@vrtx.msg code="tip.form.close" default="Close" /></button>
+        <button onclick="javascript:window.parent.tb_remove();"><@vrtx.msg code="email.form.close" default="Close" /></button>
       </div>
       <script type="text/javascript"><!--
         $(function() {
@@ -95,7 +95,7 @@
        <#-- Postback from Controller -->
        
        <#if tipResponse?has_content>
-         <div id="tip-response"> 
+         <div id="email-response"> 
            <#if tipResponse = "FAILURE-NULL-FORM">
              <span class="failure"><@vrtx.msg code="feedback.form.fail.null" default="You have to write a comment" />.</span>
            <#elseif tipResponse = "FAILURE-INVALID-EMAIL">

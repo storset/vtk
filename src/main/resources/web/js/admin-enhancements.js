@@ -893,8 +893,8 @@ VrtxAdmin.prototype.dropdownPlain = function dropdownPlain(selector) {
   vrtxAdm.cachedBody.on("click", selector + "-header", function (e) {
     _$(".dropdown-shortcut-menu-container:visible").slideUp(vrtxAdm.transitionDropdownSpeed, "swing");
     _$(this).next(".dropdown-shortcut-menu-container").not(":visible").slideDown(vrtxAdm.transitionDropdownSpeed, "swing");
-    e.preventDefault();
     e.stopPropagation();
+    e.preventDefault();
   });
 };
 
@@ -936,13 +936,13 @@ VrtxAdmin.prototype.dropdown = function dropdown(options) {
     });
 
     list.find("li.dropdown-init #dropdown-shortcut-menu-click-area").hover(function () {
-      var $this = _$(this);
-      $this.parent().toggleClass('unhover');
-      $this.prev().toggleClass('hover');
+      var area = _$(this);
+      area.parent().toggleClass('unhover');
+      area.prev().toggleClass('hover');
     }, function () {
-      var $this = _$(this);
-      $this.parent().toggleClass('unhover');
-      $this.prev().toggleClass('hover');
+      var area = _$(this);
+      area.parent().toggleClass('unhover');
+      area.prev().toggleClass('hover');
     });
   }
 };
@@ -1468,6 +1468,7 @@ VrtxAdmin.prototype.placeDeleteButtonInActiveTab = function placeDeleteButtonInA
         vrtxAdm.cachedAppContent.find('#collectionListing\\.action\\.delete-resources').click();
       }, null, null);
     }
+    e.stopPropagation();
     e.preventDefault();
   });
 };
@@ -1500,6 +1501,7 @@ VrtxAdmin.prototype.placePublishButtonInActiveTab = function placeDeleteButtonIn
         vrtxAdm.cachedAppContent.find('#collectionListing\\.action\\.publish-resources').click();
       }, null, null);
     }
+    e.stopPropagation();
     e.preventDefault();
   });
 };
@@ -1525,6 +1527,7 @@ VrtxAdmin.prototype.placeUnpublishButtonInActiveTab = function placeDeleteButton
         vrtxAdm.cachedAppContent.find('#collectionListing\\.action\\.unpublish-resources').click();
       }, null, null);
     }
+    e.stopPropagation();
     e.preventDefault();
   });
 };
@@ -1547,6 +1550,7 @@ VrtxAdmin.prototype.placeRecoverButtonInActiveTab = function placeRecoverButtonI
       CHECKED_TRASHCAN_FILES = boxesSize;
       vrtxAdm.cachedAppContent.find('.recoverResource').click();
     }
+    e.stopPropagation();
     e.preventDefault();
   });
 };
@@ -1572,6 +1576,7 @@ VrtxAdmin.prototype.placeDeletePermanentButtonInActiveTab = function placeDelete
         vrtxAdm.cachedContent.find('.deleteResourcePermanent').click();
       }, null, null);
     }
+    e.stopPropagation();
     e.preventDefault();
   });
 };
@@ -1737,7 +1742,7 @@ function editorInteraction(bodyId, vrtxAdm, _$) {
       stickyBar.hide();
          
       var ckInject = _$(this).closest(".cke_skin_kama")
-                                    .find(".cke_toolbar_end:last");
+                             .find(".cke_toolbar_end:last");
                                
       if(!ckInject.find("#editor-help-menu").length) {  
         var shortcuts = stickyBar.find(".submit-extra-buttons");

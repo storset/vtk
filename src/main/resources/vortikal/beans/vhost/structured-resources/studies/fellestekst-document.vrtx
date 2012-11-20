@@ -11,7 +11,7 @@ resourcetype fellestekst-document {
           [if published]
             [def key resource-prop-obj-val(".", propName)]
             [if key != null && key != ""]
-              <div>
+              <div id="[val key]">
               [def liste f.properties.shared-text-box]
               [def locale resource-locale()]       
               [list liste item]

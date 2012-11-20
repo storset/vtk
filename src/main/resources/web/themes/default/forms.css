@@ -76,6 +76,11 @@ input[type=text]:focus {
   margin: 5px 0 0 0;
 }
 
+#emailFromUneditable {
+  font-style: italic;
+  color: #777;
+}
+
 /* Buttons */
 
 .vrtx-button,

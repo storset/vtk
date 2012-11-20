@@ -57,9 +57,9 @@ public final class MailExecutor {
     
     public MimeMessage createMimeMessage(MailTemplateProvider mailTemplateProvider,
             String siteName, String uri, String title, String[] mailMultipleTo, String emailFrom,
-            String comment, String subject) throws Exception {
+            String emailFromFullName, String comment, String subject) throws Exception {
         
-        String mailBody = mailTemplateProvider.generateMailBody(title, uri, emailFrom, comment, siteName);
+        String mailBody = mailTemplateProvider.generateMailBody(title, uri, emailFrom, emailFromFullName, comment, siteName);
 
         MimeMessage mimeMessage = this.mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage);

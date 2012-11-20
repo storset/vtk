@@ -146,7 +146,7 @@ public class FeedbackController implements Controller {
             
             MimeMessage mimeMessage = mailExecutor.createMimeMessage(
                     mailTemplateProvider, this.siteName, url, title, 
-                    recipients, this.sender, yourComment, springRequestContext
+                    recipients, this.sender, "", yourComment, springRequestContext
                     .getMessage("feedback.mail.subject-header-prefix")
                     + ": " + title);
 

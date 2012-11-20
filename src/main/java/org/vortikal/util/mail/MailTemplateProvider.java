@@ -47,11 +47,12 @@ public class MailTemplateProvider {
     private View view;
     
     public String generateMailBody(String title, String url, String mailFrom, 
-            String comment, String site) throws Exception {
+           String mailFromFullName, String comment, String site) throws Exception {
 
         Map<String, Object> model = new HashMap<String, Object>();
         model.put("title", title);
         model.put("mailFrom", mailFrom);
+        model.put("mailFromFullName", mailFromFullName);
         model.put("comment", comment);
         model.put("site", site);
         model.put("uri", url);

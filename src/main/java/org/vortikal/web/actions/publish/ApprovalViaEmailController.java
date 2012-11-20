@@ -120,8 +120,8 @@ public class ApprovalViaEmailController implements Controller {
 
                         MimeMessage mimeMessage = mailExecutor.createMimeMessage(
                                 mailTemplateProvider, "", url, resource.getTitle(), 
-                                emailMultipleTo,
-                                emailFrom, comment, resource.getTitle());
+                                emailMultipleTo, emailFrom, requestContext.getPrincipal().getName(),
+                                comment, resource.getTitle());
 
                         mailExecutor.enqueue(mimeMessage);
 

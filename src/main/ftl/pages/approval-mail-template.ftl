@@ -12,4 +12,4 @@
 <p>Link to document: <a href="${uri?html}">${uri?html}</a></p>
 <p>Link til documentation: <a href="${uri?html}">${uri?html}</a></p>
 
-<p>Best regards, ${mailFrom}</p>
+<p>Best regards, ${mailFromFullName}</p>

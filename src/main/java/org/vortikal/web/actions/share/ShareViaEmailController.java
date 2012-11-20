@@ -123,8 +123,7 @@ public class ShareViaEmailController implements Controller {
 
                         MimeMessage mimeMessage = mailExecutor.createMimeMessage(
                                 mailTemplateProvider, this.siteName, url, resource.getTitle(), 
-                                emailMultipleTo,
-                                emailFrom, comment, resource.getTitle());
+                                emailMultipleTo, emailFrom, "", comment, resource.getTitle());
 
                         mailExecutor.enqueue(mimeMessage);
 

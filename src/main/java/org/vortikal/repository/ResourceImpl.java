@@ -228,7 +228,22 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
     public boolean isPublished() {
         return getBooleanPropValue(PropertyType.PUBLISHED_PROP_NAME);
     }
+    
+    @Override
+    public Date getPublishDate() {
+        return getDatePropValue(PropertyType.PUBLISH_DATE_PROP_NAME);
+    }
 
+    @Override
+    public boolean hasPublishDate() {
+        return getDatePropValue(PropertyType.PUBLISH_DATE_PROP_NAME) != null;
+    }
+    
+    @Override
+    public Date getUnpublishDate() {
+        return getDatePropValue(PropertyType.UNPUBLISH_DATE_PROP_NAME);
+    }
+    
     @Override
     public Object clone() throws CloneNotSupportedException {
         LockImpl lock = null;
@@ -325,45 +340,6 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
         }
     }
 
-    // XXX Where is hashCode impl ??
-    // TODO remove, good enough to differentiate on object instance only
-    //      (this method is probably never called in practice).
-//    public boolean equals(Object obj) {
-//        if (!(obj instanceof ResourceImpl))
-//            return false;
-//        if (!super.equals(obj))
-//            return false;
-//        ResourceImpl other = (ResourceImpl) obj;
-//        if (!this.acl.equals(other.acl))
-//            return false;
-//        if (this.lock == null && other.lock != null)
-//            return false;
-//        if (this.lock != null && other.lock == null)
-//            return false;
-//        if (this.lock != null && !this.lock.equals(other.lock))
-//            return false;
-//
-//        // Copy refs to current child URI list objects, because 'this.childURIs'
-//        // is not a stable reference.
-//        // It might be swapped to new list while this method is executing.
-//        List<Path> thisChildURIs = this.childURIs;
-//        List<Path> otherChildURIs = other.childURIs;
-//
-//        if ((thisChildURIs == null && otherChildURIs != null) || (thisChildURIs != null && otherChildURIs == null))
-//            return false;
-//
-//        if (thisChildURIs != null && otherChildURIs != null) {
-//            if (thisChildURIs.size() != otherChildURIs.size())
-//                return false;
-//            for (int i = 0; i < thisChildURIs.size(); i++) {
-//                if (!thisChildURIs.get(i).equals(otherChildURIs.get(i)))
-//                    return false;
-//            }
-//        }
-//
-//        return true;
-//    }
-
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -407,6 +383,10 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
         return prop.getPrincipalValue();
     }
 
+    /**
+     * Get a property by name. Default namespace is tried first, then
+     * structured resources namespace.
+     */
     private Property getProp(String name) {
         Map<String, Property> props = this.propertyMap.get(Namespace.DEFAULT_NAMESPACE);
         if (props != null) {

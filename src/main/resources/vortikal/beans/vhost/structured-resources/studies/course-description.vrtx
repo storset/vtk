@@ -45,6 +45,7 @@ resourcetype course-description : fellestekst-document {
   edit-rules {
     credits (dropdown),
     creditsdecimal (dropdown),
+    group credits (credits, creditsdecimal) (before teachingsemester) horizontal,
     teachingsemester (dropdown),
     teachingsemester-particular-semester (class[if-teachingsemester-bestemt]),
     teachingsemester-other (class[if-teachingsemester-other]),
@@ -53,19 +54,33 @@ resourcetype course-description : fellestekst-document {
     examsemester-other (class[if-examsemester-other]),
     course-type (dropdown),
     opptak-og-adgang (dropdown),
+    group opptak-og-adgang (opptak-og-adgang-text-field, opptak-og-adgang) vertical,
     ikke-privatist (dropdown),
+    group ikke-privatist (ikke-privatist-text-field, ikke-privatist) vertical,
     obligatoriske-forkunnskaper (dropdown),
+    group obligatoriske-forkunnskaper (obligatoriske-forkunnskaper-text-field, obligatoriske-forkunnskaper) vertical,
     tidsrom-for-undervisning (dropdown),
+    group tidsrom-for-undervisning (tidsrom-for-undervisning-text-field, tidsrom-for-undervisning) vertical,
     adgang (dropdown),
+    group adgang (adgang-text-field, adgang) vertical,
     vurdering-og-eksamen (dropdown),
+    group vurdering-og-eksamen (vurdering-og-eksamen-text-field, vurdering-og-eksamen) vertical,
     hjelpemidler (dropdown),
+    group hjelpemidler (hjelpemidler-text-field, hjelpemidler) vertical,
     eksamensspraak (dropdown),
+    group eksamensspraak (eksamensspraak-text-field, eksamensspraak) vertical,
     sensur (dropdown),
+    group sensur (sensur-text-field, sensur) vertical,
     tilsynssensor (dropdown),
+    group tilsynssensor (tilsynssensor-text-field, tilsynssensor) vertical,
     klage (dropdown),
+    group klage (klage-text-field, klage) vertical,
     ny-utsatt-eksamen (dropdown),
+    group ny-utsatt-eksamen (ny-utsatt-eksamen-text-field, ny-utsatt-eksamen) vertical,
     antall-forsok-trekk (dropdown),
-    tilrettelagt-eksamen (dropdown)
+    group antall-forsok-trekk (antall-forsok-trekk-text-field, antall-forsok-trekk) vertical,
+    tilrettelagt-eksamen (dropdown),
+    group tilrettelagt-eksamen (tilrettelagt-eksamen-text-field, tilrettelagt-eksamen) vertical
   }
 
   view-components {

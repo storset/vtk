@@ -469,6 +469,8 @@ public class PropertyEditController extends SimpleFormController implements Refe
             String format = null;
             String toggleURL = null;
             String toggleValue = null;
+            
+            // XXX might need check for publishing status here (prop protection levels etc.)
 
             if (repository.isAuthorized(resource, def.getProtectionLevel(), requestContext.getPrincipal(), true)) {
 

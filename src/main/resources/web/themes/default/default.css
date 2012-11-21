@@ -998,7 +998,7 @@ div.dropdown-shortcut-menu-container form .vrtx-button button {
 #resourceMenuRight.smaller-seperator li {
   background-image: url(images/seperator-grey-gradient.png);
   background-repeat: no-repeat;
-  background-position: 100% 5px;
+  background-position: 100% 0px;
   min-height: 65px;
 }
 

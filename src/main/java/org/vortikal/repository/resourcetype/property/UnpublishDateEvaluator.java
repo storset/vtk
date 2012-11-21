@@ -31,7 +31,6 @@
 
 package org.vortikal.repository.resourcetype.property;
 
-import java.util.Calendar;
 import java.util.Date;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.AuthorizationManager;

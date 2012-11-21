@@ -31,7 +31,6 @@
 package org.vortikal.repository.resourcetype.property;
 
 import org.springframework.beans.factory.annotation.Required;
-import org.vortikal.repository.Acl;
 import org.vortikal.repository.AuthorizationManager;
 import org.vortikal.repository.Privilege;
 import org.vortikal.repository.Property;

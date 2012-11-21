@@ -34,10 +34,8 @@ import java.util.Calendar;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Required;
-import org.vortikal.repository.AuthorizationManager;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertyEvaluationContext;
-import org.vortikal.repository.PropertyEvaluationContext.Type;
 import org.vortikal.repository.resourcetype.PropertyEvaluator;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 

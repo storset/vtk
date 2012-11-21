@@ -653,6 +653,12 @@ ul.manage-create li,
   position: relative;
 }
 
+#collection-more-menu.js-on {
+  background: url("images/seperator-grey-gradient.png") no-repeat scroll left top transparent;
+  margin: -10px 0 0 25px;
+  padding-left: 15px;
+}
+
 #editor-help-menu {
   margin-left: 5px;
 }
@@ -661,6 +667,7 @@ ul.manage-create li,
   float: none;
 }
 
+#tabMenuRight #collection-more-menu.js-on > a,
 #tabMenuRight #collection-more-menu.js-on li a {
   margin: 0;
 }
@@ -673,6 +680,10 @@ ul.manage-create li,
   left: auto;
   right: 0;
   /* right: -72px; */
+}
+
+#collection-more-menu.js-on ul.dropdown-shortcut-menu-container {
+  top: 34px;
 }
 
 #locale-selection.js-on ul.dropdown-shortcut-menu-container li a,
@@ -693,7 +704,7 @@ ul.manage-create li,
 }
 
 #collection-more-menu.js-on #collection-more-menu-header {
-  background-position: 100% 13px;
+  background-position: 100% 23px;
   padding-left: 0px;
 }
 
@@ -1243,7 +1254,7 @@ form#editor .tip ul a {
 /* 3.4 Tab Menus */
 
 #active-tab {
-  margin: 0 0 15px 0;
+  margin: 0 0 5px 0;
 }
 
 #active-tab  ul.list-menu a {
@@ -1275,8 +1286,8 @@ form#editor .tip ul a {
 
 #tabMenuRight li a {
   display: block;
-  margin: 0 0 0 30px;
-  padding: 5px 0 7px 30px;
+  margin: -10px 0 0 30px;
+  padding: 15px 0 16px 30px;
 }
 
 #tabMenuRight li.deleteResourcesService a {

@@ -56,7 +56,7 @@
     var publishTitle = '${publishTitle}';
     var unpublishTitle = '${unpublishTitle}';
     
-    var moreTitle = '${vrtx.getMsg("tabMenuRight.moreTitle")}';  
+    var moreTitle = '${vrtx.getMsg("tabMenuRight.moreTitle")}';
     
     var multipleFilesInfoText = '<strong>${vrtx.getMsg("tabMenuRight.fileUploadMultipleInfo.line1")}</strong><br />'
                               + '${vrtx.getMsg("tabMenuRight.fileUploadMultipleInfo.line2")}';

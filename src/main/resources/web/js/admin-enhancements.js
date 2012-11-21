@@ -1480,7 +1480,7 @@ VrtxAdmin.prototype.placePublishButtonInActiveTab = function placeDeleteButtonIn
   var menu = li.closest("#tabMenuRight");
   var html = '<li class="more-menu">'
                  + '<div id="collection-more-menu">'
-                   + '<span id="collection-more-menu-header">' + moreTitle + '...</span>'
+                   + '<span id="collection-more-menu-header">' + moreTitle + '</span>'
                    + '<ul><li><a id="publishTheResourcesService" href="javascript:void(0);">' + btn.attr('title') + '</a></li></ul>'
                  + '</div>'
                + '</li>';

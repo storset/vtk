@@ -68,7 +68,7 @@ public class ApprovalViaEmailController implements Controller {
     private String defaultSender;
     private PropertyTypeDefinition editorialContactsPropDef;
 
-	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
         String token = requestContext.getSecurityToken();
         Repository repository = requestContext.getRepository();
@@ -91,19 +91,19 @@ public class ApprovalViaEmailController implements Controller {
         
         String emailFrom = principal.getQualifiedName();
         model.put("emailSavedFrom", emailFrom);
-        
+
         Property editorialContactsProp = resource.getProperty(editorialContactsPropDef);
-		if (editorialContactsProp != null) {
-			Value[] editorialContactsVals = editorialContactsProp.getValues();
-			StringBuilder sb = new StringBuilder();
-			for (Value editorialContactsVal : editorialContactsVals) {
-				sb.append(editorialContactsVal.getStringValue() + ", ");
-			}
-			String editorialContacts = sb.toString();
-			if (editorialContacts != "") {
-				model.put("editorialContacts", editorialContacts.substring(0, editorialContacts.length()-2));
-			}
-		}
+        if (editorialContactsProp != null) {
+            Value[] editorialContactsVals = editorialContactsProp.getValues();
+            StringBuilder sb = new StringBuilder();
+            for (Value editorialContactsVal : editorialContactsVals) {
+                sb.append(editorialContactsVal.getStringValue() + ", ");
+            }
+            String editorialContacts = sb.toString();
+            if (editorialContacts != "") {
+                model.put("editorialContacts", editorialContacts.substring(0, editorialContacts.length() - 2));
+            }
+        }
 
         if (method.equals("POST")) {
             String emailTo = request.getParameter("emailTo");

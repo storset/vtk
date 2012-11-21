@@ -186,13 +186,13 @@
                name = vrtx.getMsg("property.contentLength", "Size")
                value = size />
         <!-- Obsoleted for document -->
-        <#if resourceDetail.inheritedFrom?exists>
-          <@propList.defaultPropertyDisplay propName = "obsoleted" name = vrtx.getMsg("property.obsoleted") value = vrtx.getMsg("property.obsoleted.inheritedFrom") + ' ' + resourceDetail.inheritedFrom />
+        <#if resourceDetail.propertyInheritanceMap.obsoleted?exists>
+          <@propList.defaultPropertyDisplay propName = "obsoleted" name = vrtx.getMsg("property.obsoleted") value = vrtx.getMsg("property.obsoleted.inheritedFrom") + ' ' + resourceDetail.propertyInheritanceMap.obsoleted />
         </#if>
       <#else>
         <!-- Obsolete for collection -->
-        <#if resourceDetail.inheritedFrom?exists>
-          <@propList.defaultPropertyDisplay propName = "obsoleted" name = vrtx.getMsg("property.obsoleted") value = vrtx.getMsg("property.obsoleted.inheritedFrom") + ' ' + resourceDetail.inheritedFrom />
+        <#if resourceDetail.propertyInheritanceMap.obsoleted?exists>
+          <@propList.defaultPropertyDisplay propName = "obsoleted" name = vrtx.getMsg("property.obsoleted") value = vrtx.getMsg("property.obsoleted.inheritedFrom") + ' ' + resourceDetail.propertyInheritanceMap.obsoleted />
         <#else>
           <@propList.editOrDisplayProperty modelName = 'aboutItems' propertyName = 'obsoleted' displayMacro = 'obsoletedPropertyDisplay' />
         </#if>

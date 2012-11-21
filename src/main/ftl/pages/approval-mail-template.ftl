@@ -1,6 +1,10 @@
 <p>Hi!</p>
 
-<p>Can you approve this working copy/for publish?</p>
+<#if resourceDetail?? && resourceDetail.hasWorkingCopy?? && resourceDetail.hasWorkingCopy>
+  <p>Can you make this working copy into the public version?</p>
+<#else>
+  <p>Can you publish this document?</p>
+</#if>
 
 <h2>${title}</h2>
 

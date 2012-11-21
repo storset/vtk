@@ -1,6 +1,10 @@
 <p>Hei!</p>
 
-<p>Kan du godkjenna denne arbeidsversjonen/for publisering?</p>
+<#if resourceDetail?? && resourceDetail.hasWorkingCopy?? && resourceDetail.hasWorkingCopy>
+  <p>Kan du sette denne arbeidsversjonen til gjeldande versjon?</p>
+<#else>
+  <p>Kan du publisere dette dokumentet?</p>
+</#if>
 
 <h2>${title}</h2>
 

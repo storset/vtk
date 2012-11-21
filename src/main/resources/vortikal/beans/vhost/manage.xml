@@ -872,8 +872,11 @@
 
         <!-- Obsolete -->
         <ref bean="obsoletedPropDef" />
+        
+        <!--  Editorial contacts -->
+        <ref bean="editorialContactsPropDef" />
 
-        <!-- Collection type: -->
+        <!-- Collection type -->
         <ref bean="collection.typePropDef" />
       </list>
     </property>

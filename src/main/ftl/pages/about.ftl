@@ -170,7 +170,7 @@
       <@propList.editOrDisplayProperty modelName='aboutItems' propertyName = 'contentLocale' displayMacro = 'languagePropertyDisplay' />
 
       <!-- Comments -->
-      <@propList.editOrDisplayProperty modelName='aboutItems' propertyName = 'commentsEnabled' displayMacro = 'commentsEnabledPropertyDisplay' />
+      <@propList.editOrDisplayProperty modelName='aboutItems' propertyName = 'commentsEnabled' displayMacro = 'generalInheritedPropertyDisplay' />
 
       <#if !resource.collection>
         <!-- Size -->
@@ -194,8 +194,10 @@
         <#if resourceDetail.propertyInheritanceMap.obsoleted?exists>
           <@propList.defaultPropertyDisplay propName = "obsoleted" name = vrtx.getMsg("property.obsoleted") value = vrtx.getMsg("property.obsoleted.inheritedFrom") + ' ' + resourceDetail.propertyInheritanceMap.obsoleted />
         <#else>
-          <@propList.editOrDisplayProperty modelName = 'aboutItems' propertyName = 'obsoleted' displayMacro = 'obsoletedPropertyDisplay' />
+          <@propList.editOrDisplayProperty modelName = 'aboutItems' propertyName = 'obsoleted' displayMacro = 'generalInheritedPropertyDisplay' />
         </#if>
+        <!-- Editorial contacts -->
+        <@propList.editOrDisplayProperty modelName = 'aboutItems' propertyName = 'editorial-contacts' displayMacro = 'generalInheritedPropertyDisplay' />
       </#if>
   </table>
 
@@ -325,29 +327,7 @@
   </tr>
 </#macro>
 
-<#macro commentsEnabledPropertyDisplay propName name value prefix=false editURL="">
-  <tr class="prop-${propName}">
-    <td class="key">
-      ${name}:
-    </td>
-    <td class="value">
-      <#if prefix?is_string>
-        ${prefix}
-      </#if>
-      ${value?trim}
-      <#compress>
-      <#if .vars['aboutItems'][propName].property?exists && .vars['aboutItems'][propName].property.inherited>
-         &nbsp;(<@vrtx.msg "resource.property.inherited"  "inherited" />)
-      </#if>
-      </#compress>
-      <#if editURL != "">
-        ${editURL}
-      </#if>
-    </td>
-  </tr>
-</#macro>
-
-<#macro obsoletedPropertyDisplay propName name value prefix=false editURL="">
+<#macro generalInheritedPropertyDisplay propName name value prefix=false editURL="">
   <tr class="prop-${propName}">
     <td class="key">
       ${name}:

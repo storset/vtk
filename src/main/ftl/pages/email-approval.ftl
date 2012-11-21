@@ -33,7 +33,7 @@
          <#if emailSavedTo?exists && emailSavedTo?has_content>
            <input type="text" id="emailToField" name="emailTo" value="${emailSavedTo?html}" />
          <#else>
-           <input type="text" id="emailToField" name="emailTo" value="" />
+           <input type="text" id="emailToField" name="emailTo" value="<#if editorialContacts??>${editorialContacts}</#if>" />
          </#if>
        </div>
        <div class="email-help"><@vrtx.msg code="email.form.to-tooltip" default="Use comma as a separator if sending to more than one e-mail recipient" /></div> 

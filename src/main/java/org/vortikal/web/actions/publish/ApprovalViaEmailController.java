@@ -45,9 +45,13 @@ import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.edit.editor.ResourceWrapperManager;
+import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Path;
+import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.security.Principal;
 import org.vortikal.util.mail.MailExecutor;
 import org.vortikal.util.mail.MailTemplateProvider;
@@ -62,8 +66,9 @@ public class ApprovalViaEmailController implements Controller {
     private LocaleResolver localeResolver;
     private Service manageService;
     private String defaultSender;
+    private PropertyTypeDefinition editorialContactsPropDef;
 
-    public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
+	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
         String token = requestContext.getSecurityToken();
         Repository repository = requestContext.getRepository();
@@ -86,6 +91,19 @@ public class ApprovalViaEmailController implements Controller {
         
         String emailFrom = principal.getQualifiedName();
         model.put("emailSavedFrom", emailFrom);
+        
+        Property editorialContactsProp = resource.getProperty(editorialContactsPropDef);
+		if (editorialContactsProp != null) {
+			Value[] editorialContactsVals = editorialContactsProp.getValues();
+			StringBuilder sb = new StringBuilder();
+			for (Value editorialContactsVal : editorialContactsVals) {
+				sb.append(editorialContactsVal.getStringValue() + ", ");
+			}
+			String editorialContacts = sb.toString();
+			if (editorialContacts != "") {
+				model.put("editorialContacts", editorialContacts.substring(0, editorialContacts.length()-2));
+			}
+		}
 
         if (method.equals("POST")) {
             String emailTo = request.getParameter("emailTo");
@@ -189,5 +207,10 @@ public class ApprovalViaEmailController implements Controller {
     public void setDefaultSender(String defaultSender) {
         this.defaultSender = defaultSender;
     }
+    
+    @Required
+    public void setEditorialContactsPropDef(PropertyTypeDefinition editorialContactsPropDef) {
+		this.editorialContactsPropDef = editorialContactsPropDef;
+	}
 
 }

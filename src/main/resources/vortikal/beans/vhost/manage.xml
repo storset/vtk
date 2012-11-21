@@ -2232,6 +2232,7 @@
     <property name="mailTemplateProvider" ref="emailApproval.mailTemplateProvider" />
     <property name="localeResolver" ref="manageLocaleResolver" />
     <property name="defaultSender" value="${email.defaultSender}" />
+    <property name="editorialContactsPropDef" ref="editorialContactsPropDef" />
   </bean>
   
  <bean id="emailApproval.viewResolver" parent="system.decoratingViewResolver">

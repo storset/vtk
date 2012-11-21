@@ -1192,7 +1192,7 @@ form#editor .tip ul a {
   position: absolute;
   bottom: 0;
   left: 0;
-  width: 73em; /* a width is required for Opera, older Mozilla browsers, and Konqueror browsers */
+  width: 75em; /* a width is required for Opera, older Mozilla browsers, and Konqueror browsers */
   /* Width is also required for IE 6.0. Can be reduced when we shorten some of the text on the tabs */
   border-left: 1px solid #d8d8d8;
 }

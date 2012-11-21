@@ -81,6 +81,13 @@ input[type=text]:focus {
   color: #777;
 }
 
+div#email-response { 
+  font-size: 0.923em;
+  font-style: italic;
+  color: #ed1c24;
+  margin: 10px 0 0 0;
+}
+
 /* Buttons */
 
 .vrtx-button,

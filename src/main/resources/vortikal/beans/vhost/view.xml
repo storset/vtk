@@ -189,7 +189,6 @@
         <entry key="audioPlayerService" value-ref="audioPlayerService" />
       </map>
     </property>
-    <property name="obsoletedPropDef" ref="obsoletedPropDef" />
   </bean>
 
   <bean id="redirectToAboutProvider" 

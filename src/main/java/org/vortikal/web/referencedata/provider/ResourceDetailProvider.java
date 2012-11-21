@@ -30,17 +30,24 @@
  */
 package org.vortikal.web.referencedata.provider;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.Revision;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.RequestContext.RepositoryTraversal;
@@ -50,6 +57,10 @@ import org.vortikal.web.service.Service;
 import org.vortikal.web.service.ServiceUnlinkableException;
 
 /**
+ * XXX This provider is named something generic, and as a result now contains
+ *     different unrelated concepts. Split out into separate providers or re-model
+ *     things.
+ * 
  * Model builder that retrieves various resource detail about the current
  * resource. The information is made available in the model as a submodel of the
  * name <code>resourceDetail</code>.
@@ -69,6 +80,12 @@ import org.vortikal.web.service.ServiceUnlinkableException;
  * parameter and the URLs that results from invoking
  * <code>Service.constructLink()</code> with the target services on the current
  * resource and principal.
+ * <li>A map, named 'propertyInheritanceMap' in submodel, with keys for any inheritable
+ *    properties set on resource, and values being paths to where the properties
+ *    are inherited from. Only property names are used for keys in map, namespace
+ *    is ignored.
+ * <li>A boolean named 'hasWorkingCopy' in submodel, flagging if the resource
+ *     as a working copy revision or not.
  * </ul>
  * 
  * <p>
@@ -79,25 +96,9 @@ import org.vortikal.web.service.ServiceUnlinkableException;
  * respectively.
  * 
  */
-public class ResourceDetailProvider implements InitializingBean, ReferenceDataProvider {
+public class ResourceDetailProvider implements ReferenceDataProvider {
 
     private Map<String, Service> serviceMap = null;
-
-    public void setServiceMap(Map<String, Service> serviceMap) {
-        this.serviceMap = serviceMap;
-    }
-
-    private PropertyTypeDefinition obsoletedPropDef;
-
-    public void setObsoletedPropDef(PropertyTypeDefinition obsoletedPropDef) {
-        this.obsoletedPropDef = obsoletedPropDef;
-    }
-
-    public void afterPropertiesSet() throws Exception {
-        if (this.serviceMap == null) {
-            throw new BeanInitializationException("Bean property 'serviceMap' must be set");
-        }
-    }
 
     @Override
     public void referenceData(Map<String, Object> model, HttpServletRequest request) throws Exception {
@@ -113,33 +114,17 @@ public class ResourceDetailProvider implements InitializingBean, ReferenceDataPr
         } catch (Throwable t) {
         }
 
-        Property obsoleted = resource.getProperty(obsoletedPropDef);
-        if (obsoleted != null && obsoleted.isInherited()) {
-            final Resource[] obsoletedResource = new Resource[1];
-
-            RepositoryTraversal traversal = requestContext.rootTraversal(token, resource.getURI());
-            traversal.traverse(new TraversalCallback() {
-                @Override
-                public boolean callback(Resource resource) {
-                    Property obsoleted = resource.getProperty(obsoletedPropDef);
-                    if (obsoleted != null && !obsoleted.isInherited()) {
-                        obsoletedResource[0] = resource;
-                        return false;
-                    }
-                    return true;
-                }
-
-                @Override
-                public boolean error(Path uri, Throwable error) {
-                    return false;
-                }
-            });
-
-            if (obsoletedResource[0] != null) {
-                resourceDetailModel.put("inheritedFrom", obsoletedResource[0].getURI().toString());
+        // Detect workingcopy
+        boolean hasWorkingCopy = false;
+        for (Revision rev : repository.getRevisions(token, requestContext.getResourceURI())) {
+            if (rev.getType() == Revision.Type.WORKING_COPY) {
+                hasWorkingCopy = true;
+                break;
             }
         }
+        resourceDetailModel.put("hasWorkingCopy", hasWorkingCopy);
 
+        // Resolve service links
         for (Map.Entry<String, Service> entry : this.serviceMap.entrySet()) {
             String key = entry.getKey();
             Service service = (Service) entry.getValue();
@@ -154,7 +139,69 @@ public class ResourceDetailProvider implements InitializingBean, ReferenceDataPr
             }
             resourceDetailModel.put(key, url);
         }
+        
+        // Resolve inheritable props inheritance
+        if (resource != null) {
+            Map<String,Path> inheritanceMap = resolvePropertyInheritance(resource);
+            resourceDetailModel.put("propertyInheritanceMap", inheritanceMap);
+        } else {
+            resourceDetailModel.put("propertyInheritanceMap", Collections.EMPTY_MAP);
+        }
+        
         model.put("resourceDetail", resourceDetailModel);
     }
+    
+    /**
+     * Resolve from <em>where</em> each inherited property is inherited for resource.
+     * 
+     * @param resource
+     * @return A map where keys are names of inherited properties and values
+     *         are paths to the resource from which they are inherited. Inheritable
+     *         properties directly set on the resource will not be part of this map.
+     */
+    private Map<String, Path> resolvePropertyInheritance(Resource resource) {
+        if (resource.getURI().isRoot()) {
+            // Nothing can be inherited for root resource except pre-configured default values,
+            // which we don't provide as "source" here.
+            return Collections.emptyMap();
+        }
+        
+        final List<PropertyTypeDefinition> inheritedPropDefs = new ArrayList<PropertyTypeDefinition>();
+        for (Property prop: resource) {
+            if (prop.isInherited()) {
+                inheritedPropDefs.add(prop.getDefinition());
+            }
+        }
 
+        RequestContext requestContext = RequestContext.getRequestContext();
+        String token = requestContext.getSecurityToken();
+        final Map<String, Path> propInheritanceMap = new HashMap<String, Path>();
+        RepositoryTraversal traversal = requestContext.rootTraversal(token, resource.getURI().getParent());
+        traversal.traverse(new TraversalCallback() {
+            @Override
+            public boolean callback(Resource resource) {
+                for (Iterator<PropertyTypeDefinition> it = inheritedPropDefs.iterator(); it.hasNext();) {
+                    PropertyTypeDefinition def = it.next();
+                    Property prop = resource.getProperty(def);
+                    if (prop != null && !prop.isInherited()) {
+                        propInheritanceMap.put(def.getName(), resource.getURI());
+                        it.remove();
+                    }
+                }
+                
+                return !inheritedPropDefs.isEmpty();
+            }
+            @Override
+            public boolean error(Path uri, Throwable error) {
+                return false;
+            }
+        });
+
+        return propInheritanceMap;
+    }
+
+    @Required
+    public void setServiceMap(Map<String, Service> serviceMap) {
+        this.serviceMap = serviceMap;
+    }
 }

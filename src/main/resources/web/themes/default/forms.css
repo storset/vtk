@@ -55,8 +55,9 @@ input[type=text]:focus {
 }
 
 #email-approval-form label {
-  margin: 20px 0 5px 0;
+  margin: 15px 0px 5px;
   display: block;
+  font-size: 1.154em;
 }
 
 #email-approval-form label.first {
@@ -74,11 +75,13 @@ input[type=text]:focus {
 
 #email-approval-form .email-help {
   margin: 5px 0 0 0;
+  color: #888;
+  font-size: 0.923em;
 }
 
 #emailFromUneditable {
   font-style: italic;
-  color: #777;
+  color: #666;
 }
 
 div#email-response { 

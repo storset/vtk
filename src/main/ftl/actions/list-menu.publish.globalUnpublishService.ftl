@@ -12,11 +12,11 @@
 <#if writePermission.permissionsQueryResult = 'true'>
   <a id="vrtx-unpublish-document" class="vrtx-button-small vrtx-admin-button" title="${titleMsg}" href="${actionURL?html}"><span>${item.title?html}</span></a>
 <#else>
-  <#-- Not READ_WRITE (not considering locks) and have READ_WRITE_UNPUBLISHED (considering locks) TODO: and have a WORKING_COPY -->
+  <#-- !READ_WRITE (not considering locks) AND READ_WRITE_UNPUBLISHED (considering locks) AND WORKING_COPY -->
   <#if writeUnlockedPermission.permissionsQueryResult?? && writeUnlockedPermission.permissionsQueryResult = 'false'
     && writeUnpublishedPermission.permissionsQueryResult?? && writeUnpublishedPermission.permissionsQueryResult = 'true'
     && resourceDetail?? && resourceDetail.hasWorkingCopy?? && resourceDetail.hasWorkingCopy>
-    <#assign uri = vrtx.relativeLinkConstructor(resourceContext.currentResource.URI, "emailApprovalService") />
+    <#assign uri = vrtx.relativeLinkConstructor("", "emailApprovalService") />
     <#if uri?has_content> 
       <a id="vrtx-send-to-approval-global" title="${vrtx.getMsg('send-to-approval.title')}" class="vrtx-button-small" href="${uri?html}"><span>${vrtx.getMsg('send-to-approval.title')}</span></a>
     </#if>

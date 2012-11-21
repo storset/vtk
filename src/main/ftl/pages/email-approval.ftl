@@ -23,7 +23,7 @@
        <button onclick="javascript:vrtxSimpleDialogs.closeDialog('#dialog-html-send-approval');"><@vrtx.msg code="email.form.close" default="Close" /></button>
      </div>
    <#else>
-     <#assign uri = vrtx.linkConstructor(resource.URI, "emailApprovalService") />
+     <#assign uri = vrtx.linkConstructor("", "emailApprovalService") />
 
      <form id="email-approval-form" method="post" action="${uri}">
        <@vrtx.csrfPreventionToken uri />

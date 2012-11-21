@@ -34,20 +34,23 @@
 
   <table  id="directory-listing" class="trash-can-listing">
     <@spring.bind "trashcan.sortLinks" />
-    <tr id="vrtx-trash-can-header" class="directoryListingHeader">
-      <@setHeader "name" "trash-can.name" />
-      <th class="checkbox"></th>
-      <@setHeader "deleted-by" "trash-can.deletedBy" />
-      <@setHeader "deleted-time" "trash-can.deletedTime" />
-    </tr>
-
+    <thead>
+      <tr id="vrtx-trash-can-header" class="directoryListingHeader">
+        <@setHeader "name" "trash-can.name" />
+        <th class="checkbox"></th>
+        <@setHeader "deleted-by" "trash-can.deletedBy" />
+        <@setHeader "deleted-time" "trash-can.deletedTime" />
+      </tr>
+    </thead>
     <@spring.bind "trashcan.trashCanObjects" />
     
     <#assign rowType = "odd">
     <#assign collectionSize = spring.status.value?size />
     
-    <#if (collectionSize > 0) >
+    <tbody>
     
+    <#if (collectionSize > 0)>
+
     <#list spring.status.value as tco>
       <#assign rr = tco.recoverableResource />
       
@@ -89,6 +92,8 @@
         <td colspan="4"><@vrtx.msg code="trash-can.empty" default="The trash can contains no garbage" /></td>
       </tr>
     </#if>
+    
+    </tbody>
 
   </table>
 

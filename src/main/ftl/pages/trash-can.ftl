@@ -29,10 +29,10 @@
 <#setting number_format="0">
 
 <@spring.bind "trashcan.trashCanObjects" />
-  <@spring.bind "trashcan.submitURL" />
-  <form class="trashcan" action="${spring.status.value?html}" method="post">
-
-  <table  id="directory-listing" class="trash-can-listing">
+<@spring.bind "trashcan.submitURL" />
+<form class="trashcan" action="${spring.status.value?html}" method="post">
+  <table id="directory-listing" class="trash-can-listing">
+  
     <@spring.bind "trashcan.sortLinks" />
     <thead>
       <tr id="vrtx-trash-can-header" class="directoryListingHeader">
@@ -42,59 +42,53 @@
         <@setHeader "deleted-time" "trash-can.deletedTime" />
       </tr>
     </thead>
+    
     <@spring.bind "trashcan.trashCanObjects" />
-    
-    <#assign rowType = "odd">
     <#assign collectionSize = spring.status.value?size />
-    
     <tbody>
-    
-    <#if (collectionSize > 0)>
-
-    <#list spring.status.value as tco>
-      <#assign rr = tco.recoverableResource />
-      
-      <#assign firstLast = ""  />
-      <#if (tco_index == 0) && (tco_index == (collectionSize - 1))>
-        <#assign firstLast = " first last" />  
-      <#elseif (tco_index == 0)>
-        <#assign firstLast = " first" />
-      <#elseif (tco_index == (collectionSize - 1))>    
-        <#assign firstLast = " last" />     
-      </#if>
-
-      <#if rr.isCollection()>
-        <tr class="${rowType} <@vrtx.recoverableResourceToIconResolver rr /> true${firstLast}">  
-      <#else>
-        <tr class="${rowType} <@vrtx.recoverableResourceToIconResolver rr />${firstLast}">
-      </#if>
-          <td class="vrtx-trash-can-name name trash"><span class="vrtx-trash-can-name-text">${rr.name?html}</span></td>
-          <td class="checkbox">
-          <@spring.bind "trashcan.trashCanObjects[${tco_index}].selectedForRecovery" />
-          <#assign checked = "" />
-          <#if spring.status.value?string = 'true' >
-            <input type="checkbox" name="${spring.status.expression}" title="${rr.name?html}" value="true" checked="checked" />
-          <#else>
-            <input type="checkbox" name="${spring.status.expression}" title="${rr.name?html}" value="true" />
-          </#if>
-          </td>
-          <td class="vrtx-trash-can-deleted-by">${rr.deletedBy}</td>
-          <td class="vrtx-trash-can-deleted-time"><@printDeletedTime tco.recoverableResource.deletedTime /></td>
-        </tr>
-      <#if rowType = "even">
+      <#if (collectionSize > 0)>
         <#assign rowType = "odd">
+        <#list spring.status.value as tco>
+          <#assign rr = tco.recoverableResource />
+          <#assign firstLast = ""  />
+          <#if (tco_index == 0) && (tco_index == (collectionSize - 1))>
+            <#assign firstLast = " first last" />  
+          <#elseif (tco_index == 0)>
+            <#assign firstLast = " first" />
+          <#elseif (tco_index == (collectionSize - 1))>    
+            <#assign firstLast = " last" />     
+          </#if>
+        
+          <#if rr.isCollection()>
+            <tr class="${rowType} <@vrtx.recoverableResourceToIconResolver rr /> true${firstLast}">  
+          <#else>
+            <tr class="${rowType} <@vrtx.recoverableResourceToIconResolver rr />${firstLast}">
+          </#if>
+              <td class="vrtx-trash-can-name name trash"><span class="vrtx-trash-can-name-text">${rr.name?html}</span></td>
+              <td class="checkbox">
+                <@spring.bind "trashcan.trashCanObjects[${tco_index}].selectedForRecovery" />
+                <#assign checked = "" />
+                <#if spring.status.value?string = 'true' >
+                  <input type="checkbox" name="${spring.status.expression}" title="${rr.name?html}" value="true" checked="checked" />
+                <#else>
+                  <input type="checkbox" name="${spring.status.expression}" title="${rr.name?html}" value="true" />
+                </#if>
+              </td>
+              <td class="vrtx-trash-can-deleted-by">${rr.deletedBy}</td>
+              <td class="vrtx-trash-can-deleted-time"><@printDeletedTime tco.recoverableResource.deletedTime /></td>
+            </tr>
+          <#if rowType = "even">
+            <#assign rowType = "odd">
+          <#else>
+            <#assign rowType = "even">
+          </#if>
+        </#list>
       <#else>
-        <#assign rowType = "even">
-      </#if>
-    </#list>
-    <#else>
-      <tr id="trash-can-empty" class="first last">
-        <td colspan="4"><@vrtx.msg code="trash-can.empty" default="The trash can contains no garbage" /></td>
-      </tr>
-    </#if>
-    
+        <tr id="trash-can-empty" class="first last">
+          <td colspan="4"><@vrtx.msg code="trash-can.empty" default="The trash can contains no garbage" /></td>
+        </tr>
+      </#if>    
     </tbody>
-
   </table>
 
   <input class="recoverResource" type="submit" name="recoverAction"

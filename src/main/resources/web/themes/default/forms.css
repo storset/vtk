@@ -23,6 +23,7 @@ textarea.round-corners {
   -webkit-border-radius: 5px;
   -moz-border-radius: 5px;
   border-radius: 5px; 
+  padding: 7px;
 }
 
 input[type=button],
@@ -69,7 +70,7 @@ input[type=text]:focus {
 }
 
 #email-approval-form textarea {
-  width: 400px;
+  width: 386px;
   height: 220px;
 }
 

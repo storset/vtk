@@ -321,7 +321,7 @@ vrtxAdmin._$(document).ready(function () {
   
   // Send to approval
   // TODO: generalize dialog jQuery UI function with AJAX markup/text
-  $(document).on("click", "#vrtx-send-to-approval, #vrtx-send-to-approval-global", function (e) {
+  _$(document).on("click", "#vrtx-send-to-approval, #vrtx-send-to-approval-global", function (e) {
     var link = this;
     var id = link.id + "-content";
     var dialogManageCreate = $("#" + id);
@@ -337,6 +337,19 @@ vrtxAdmin._$(document).ready(function () {
     } else {
       vrtxSimpleDialogs.openHtmlDialog("send-approval", dialogManageCreate.html(), link.title, 410, 525);
     }
+    e.stopPropagation();
+    e.preventDefault();
+  });
+  _$(document).on("click", "#dialog-html-send-approval-content .vrtx-focus-button", function(e) {
+    var btn = $(this);
+    var form = btn.closest("form");
+    var url = form.attr("action");
+    var dataString = form.serialize();
+    vrtxAdm.serverFacade.postHtml(url, dataString, {
+      success: function (results, status, resp) {      
+        form.parent().html(_$(results).find("#contents").html());
+      }
+    });
     e.stopPropagation();
     e.preventDefault();
   });

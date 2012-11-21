@@ -12,7 +12,6 @@
 <pre>${comment}</pre>
 </#if>
 
-
 <p>Lenke til dokument: <a href="${uri?html}">${uri?html}</a></p>
 <p>Lenke til dokumentasjon: <a href="${uri?html}">${uri?html}</a></p>
 

@@ -12,7 +12,6 @@
 <pre>${comment}</pre>
 </#if>
 
-
 <p>Link to document: <a href="${uri?html}">${uri?html}</a></p>
 <p>Link til documentation: <a href="${uri?html}">${uri?html}</a></p>
 

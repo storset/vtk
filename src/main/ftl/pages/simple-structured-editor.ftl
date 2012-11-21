@@ -26,7 +26,7 @@
     </#if>
   </#if>
   <#include "/system/javascript.ftl" />
-  <script type="text/javascript"><!-- // Div container display
+  <script type="text/javascript"><!-- // CKEditor CSS
     var cssFileList = [<#if fckEditorAreaCSSURL?exists>
                          <#list fckEditorAreaCSSURL as cssURL>
                            "${cssURL?html}" <#if cssURL_has_next>,</#if>

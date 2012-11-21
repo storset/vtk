@@ -142,7 +142,7 @@
           browseBaseFolder = '${baseFolder}',
           browseBasePath = '${fckBrowse.url.pathRepresentation}';
 
-      // Div container display
+      // CKEditor CSS
       var cssFileList = [<#if fckEditorAreaCSSURL?exists>
                            <#list fckEditorAreaCSSURL as cssURL>
                              "${cssURL?html}" <#if cssURL_has_next>,</#if>

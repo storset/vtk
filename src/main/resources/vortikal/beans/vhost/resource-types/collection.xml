@@ -40,6 +40,7 @@
         <ref bean="collection.hideIconPropDef" />
         <ref bean="hideNumberOfCommentsPropDef" />
         <ref bean="obsoletedPropDef" />
+        <ref bean="editorialContactsPropDef" />
       </list>
     </property>
   </bean>
@@ -586,6 +587,15 @@
     </property>
   </bean>
 
+  <bean id="editorialContactsPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+    <property name="namespace" ref="DEFAULT_NAMESPACE" />
+    <property name="name" value="editorial-contacts" />
+    <property name="inheritable" value="true" />
+    <property name="multiple" value="true" />
+    <property name="type" value="STRING" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_ADMIN" />
+  </bean>
+  
   <bean id="resourceInCollection" class="org.vortikal.web.service.ResourceTypeAssertion" parent="repositoryAware">
     <property name="resourceTypeDefinition" ref="collectionResourceTypeDefinition" />
   </bean>

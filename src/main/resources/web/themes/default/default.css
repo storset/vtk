@@ -653,9 +653,8 @@ ul.manage-create li,
   position: relative;
 }
 
-#collection-more-menu.js-on {
+#tabMenuRight li.more-menu {
   background: url("images/seperator-grey-gradient.png") no-repeat scroll left top transparent;
-  margin: -10px 0 0 25px;
   padding-left: 15px;
 }
 
@@ -682,10 +681,6 @@ ul.manage-create li,
   /* right: -72px; */
 }
 
-#collection-more-menu.js-on ul.dropdown-shortcut-menu-container {
-  top: 34px;
-}
-
 #locale-selection.js-on ul.dropdown-shortcut-menu-container li a,
 #locale-selection.js-on ul.dropdown-shortcut-menu-container li span {
   padding-left: 28px !important;
@@ -704,7 +699,7 @@ ul.manage-create li,
 }
 
 #collection-more-menu.js-on #collection-more-menu-header {
-  background-position: 100% 23px;
+  background-position: 100% 13px;
   padding-left: 0px;
 }
 
@@ -1282,12 +1277,13 @@ form#editor .tip ul a {
 
 #tabMenuRight li {
   float: left;
+  margin: -10px 0 0 30px;
+  padding: 10px 0 10px;
 }
 
 #tabMenuRight li a {
   display: block;
-  margin: -10px 0 0 30px;
-  padding: 15px 0 16px 30px;
+  padding: 5px 0 6px 30px;
 }
 
 #tabMenuRight li.deleteResourcesService a {

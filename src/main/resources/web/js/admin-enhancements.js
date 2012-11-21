@@ -1472,7 +1472,7 @@ VrtxAdmin.prototype.placeDeleteButtonInActiveTab = function placeDeleteButtonInA
     if (!boxesSize) {
       vrtxSimpleDialogs.openMsgDialog(deleteUncheckedMessage, deleteTitle);
     } else {
-      var list = vrtxAdm.buildFileList(boxes, boxesSize);
+      var list = vrtxAdm.buildFileList(boxes, boxesSize, false);
       vrtxSimpleDialogs.openConfirmDialog(confirmDelete.replace("(1)", boxesSize) + '<br />' + list, confirmDeleteTitle, function() {
         vrtxAdm.cachedAppContent.find('#collectionListing\\.action\\.delete-resources').click();
       }, null, null);
@@ -1505,7 +1505,7 @@ VrtxAdmin.prototype.placePublishButtonInActiveTab = function placeDeleteButtonIn
     if (!boxesSize) {
       vrtxSimpleDialogs.openMsgDialog(publishUncheckedMessage, publishTitle);
     } else {
-      var list = vrtxAdm.buildFileList(boxes, boxesSize);
+      var list = vrtxAdm.buildFileList(boxes, boxesSize, false);
       vrtxSimpleDialogs.openConfirmDialog(confirmPublish.replace("(1)", boxesSize) + '<br />' + list, confirmPublishTitle, function() {
         vrtxAdm.cachedAppContent.find('#collectionListing\\.action\\.publish-resources').click();
       }, null, null);
@@ -1531,7 +1531,7 @@ VrtxAdmin.prototype.placeUnpublishButtonInActiveTab = function placeDeleteButton
     if (!boxesSize) {
       vrtxSimpleDialogs.openMsgDialog(unpublishUncheckedMessage, unpublishTitle);
     } else {
-      var list = vrtxAdm.buildFileList(boxes, boxesSize);
+      var list = vrtxAdm.buildFileList(boxes, boxesSize, false);
       vrtxSimpleDialogs.openConfirmDialog(confirmUnpublish.replace("(1)", boxesSize) + '<br />' + list, confirmUnpublishTitle, function() {
         vrtxAdm.cachedAppContent.find('#collectionListing\\.action\\.unpublish-resources').click();
       }, null, null);
@@ -1580,7 +1580,7 @@ VrtxAdmin.prototype.placeDeletePermanentButtonInActiveTab = function placeDelete
       vrtxSimpleDialogs.openMsgDialog(deletePermanentlyUncheckedMessage, deletePermTitle);
     } else {
       CHECKED_TRASHCAN_FILES = boxesSize;
-      var list = vrtxAdm.buildFileList(boxes, boxesSize);
+      var list = vrtxAdm.buildFileList(boxes, boxesSize, true);
       vrtxSimpleDialogs.openConfirmDialog(confirmDeletePermanently.replace("(1)", boxesSize) + '<br />' + list, confirmDeletePermTitle, function() {
         vrtxAdm.cachedContent.find('.deleteResourcePermanent').click();
       }, null, null);
@@ -1590,13 +1590,15 @@ VrtxAdmin.prototype.placeDeletePermanentButtonInActiveTab = function placeDelete
   });
 };
 
-VrtxAdmin.prototype.buildFileList = function buildFileList(boxes, boxesSize) {
+VrtxAdmin.prototype.buildFileList = function buildFileList(boxes, boxesSize, useTitle) {
   var boxesSizeExceedsTen = boxesSize > 10;
   var boxesSizeTmp = boxesSizeExceedsTen ? 10 : boxesSize;
   
+  var fileNameAttr = useTitle ? "title" : "name";
+  
   var list = "<ul>";
   for (var i = 0; i < boxesSizeTmp; i++) {
-    var name = boxes[i].name.split("/");
+    var name = boxes[i][fileNameAttr].split("/");
     list += "<li>" + name[name.length-1] + "</li>";
   }
   list += "</ul>"; 

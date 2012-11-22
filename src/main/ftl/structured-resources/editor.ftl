@@ -121,6 +121,11 @@
             <a class="vrtx-focus-button" href="javascript:void(0)" id="vrtx-save-shortcut"><span>${vrtx.getMsg("editor.save")}</span></a>
           </span>
           <a class="vrtx-button" href="javascript:void(0)" id="vrtx-cancel-shortcut"><span>${vrtx.getMsg("editor.cancel")}</span></a>
+          <#if form.onlyWriteUnpublished>
+            <span id="buttons-or-text"><@vrtx.msg code="editor.orText" default="or" /></span>
+            &nbsp;
+            <a class="vrtx-button" href="javascript:void(0)" id="vrtx-send-to-approval-shortcut"><span>${vrtx.getMsg('send-to-approval.title')}</span></a>
+         </#if>
           <@genEditorHelpMenu />
         <#elseif form.workingCopy>
           <ul id="editor-button-row">
@@ -143,7 +148,7 @@
                 <#if (form.published && !form.onlyWriteUnpublished) || !form.published>
                   <a href="javascript:void(0)" id="vrtx-make-public-version-shortcut">${vrtx.getMsg("editor.makePublicVersion")}</a>
                 <#else>
-                  <a href="javascript:void(0)" id="vrtx-send-to-approval-shortcut">Send til godkjenning</a>
+                  <a href="javascript:void(0)" id="vrtx-send-to-approval-shortcut">${vrtx.getMsg('send-to-approval.title')}</a>
                 </#if>
               </li>
               <li class="last">
@@ -220,7 +225,11 @@
       <div class="vrtx-button">
         <input type="submit" id="cancelAction" name="cancelAction" value="${vrtx.getMsg('editor.cancel')}" />
       </div>
-
+      <#if form.onlyWriteUnpublished>
+        <span id="buttons-or-text"><@vrtx.msg code="editor.orText" default="or" /></span>
+        &nbsp;
+        <a class="vrtx-button" title="${vrtx.getMsg('send-to-approval.title')}" id="vrtx-send-to-approval" href="?vrtx=admin&action=email-approval"><span>${vrtx.getMsg('send-to-approval.title')}</span></a>
+      </#if>
     <#elseif form.workingCopy>
       <div class="vrtx-button">
         <input type="submit" id="saveAndViewButton" name="updateViewAction"  value="${vrtx.getMsg('editor.saveAndView')}" />

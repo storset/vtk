@@ -49,6 +49,7 @@ import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.util.mail.MailExecutor;
+import org.vortikal.util.mail.MailHelper;
 import org.vortikal.util.mail.MailTemplateProvider;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
@@ -122,7 +123,7 @@ public class FeedbackController implements Controller {
         }
 
         if (!validAddresses) {
-            model.put("tipResponse", "FAILURE-INVALID-EMAIL");
+            model.put(MailHelper.RESPONSE_MODEL, MailHelper.RESPONSE_INVALID_EMAILS);
             model.put("yourSavedComment", yourComment);
             return new ModelAndView(this.viewName, model);
         }
@@ -136,7 +137,7 @@ public class FeedbackController implements Controller {
 
         // TODO: Captcha?
         if (StringUtils.isBlank(yourComment)) {
-            model.put("tipResponse", "FAILURE-NULL-FORM");
+            model.put(MailHelper.RESPONSE_MODEL, MailHelper.RESPONSE_EMPTY_FIELDS);
             return new ModelAndView(this.viewName, model);
         }
 
@@ -159,10 +160,10 @@ public class FeedbackController implements Controller {
             mailExecutor.enqueue(mimeMessage);
 
             model.put("emailSentTo", recipientsStr);
-            model.put("tipResponse", "OK");
+            model.put(MailHelper.RESPONSE_MODEL, MailHelper.RESPONSE_OK);
         } catch (Exception mtex) { // Unreachable because of thread / executor
-            model.put("tipResponse", "FAILURE");
-            model.put("tipResponseMsg", mtex.getMessage());
+            model.put(MailHelper.RESPONSE_MODEL, MailHelper.RESPONSE_GENERAL_FAILURE);
+            model.put(MailHelper.RESPONSE_MODEL + "Msg", mtex.getMessage());
         }
         return new ModelAndView(this.viewName, model);
     }

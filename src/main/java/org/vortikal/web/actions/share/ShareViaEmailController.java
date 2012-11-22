@@ -49,6 +49,7 @@ import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.util.mail.MailExecutor;
+import org.vortikal.util.mail.MailHelper;
 import org.vortikal.util.mail.MailTemplateProvider;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
@@ -101,7 +102,7 @@ public class ShareViaEmailController implements Controller {
                 if (StringUtils.isNotBlank(yourComment)) {
                     model.put("yourSavedComment", yourComment);
                 }
-                model.put("tipResponse", "FAILURE-NULL-FORM");
+                model.put(MailHelper.RESPONSE_MODEL, MailHelper.RESPONSE_EMPTY_FIELDS);
             } else {
                 try {
                     String comment = "";
@@ -136,7 +137,7 @@ public class ShareViaEmailController implements Controller {
                         mailExecutor.enqueue(mimeMessage);
 
                         model.put("emailSentTo", emailTo);
-                        model.put("tipResponse", "OK");
+                        model.put(MailHelper.RESPONSE_MODEL, MailHelper.RESPONSE_OK);
                     } else {
                         model.put("emailSavedTo", emailTo);
                         model.put("emailSavedFrom", emailFrom);
@@ -144,11 +145,11 @@ public class ShareViaEmailController implements Controller {
                         if (!StringUtils.isBlank(yourComment)) {
                             model.put("yourSavedComment", yourComment);
                         }
-                        model.put("tipResponse", "FAILURE-INVALID-EMAIL");
+                        model.put(MailHelper.RESPONSE_MODEL, MailHelper.RESPONSE_INVALID_EMAILS);
                     }
                 } catch (Exception mtex) { // Unreachable because of thread
-                    model.put("tipResponse", "FAILURE");
-                    model.put("tipResponseMsg", mtex.getMessage());
+                    model.put(MailHelper.RESPONSE_MODEL, MailHelper.RESPONSE_GENERAL_FAILURE);
+                    model.put(MailHelper.RESPONSE_MODEL + "Msg", mtex.getMessage());
                 }
             }
         }

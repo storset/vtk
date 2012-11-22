@@ -53,6 +53,7 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.security.Principal;
 import org.vortikal.util.mail.MailExecutor;
+import org.vortikal.util.mail.MailHelper;
 import org.vortikal.util.mail.MailTemplateProvider;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
@@ -66,12 +67,6 @@ public class ApprovalViaEmailController implements Controller {
     private Service manageService;
     private String defaultSender;
     private PropertyTypeDefinition editorialContactsPropDef;
-    
-    private final static String RESPONSE_MODEL = "mailResponse";
-    private final static String RESPONSE_OK = "OK";
-    private final static String RESPONSE_EMPTY_FIELDS = "empty-fields";
-    private final static String RESPONSE_INVALID_EMAILS = "invalid-emails";
-    private final static String RESPONSE_GENERAL_FAILURE = "general-failure" ;
 
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
@@ -120,7 +115,7 @@ public class ApprovalViaEmailController implements Controller {
                 if (StringUtils.isNotBlank(yourComment)) {
                     model.put("yourSavedComment", yourComment);
                 }
-                model.put(RESPONSE_MODEL, RESPONSE_EMPTY_FIELDS);
+                model.put(MailHelper.RESPONSE_MODEL, MailHelper.RESPONSE_EMPTY_FIELDS);
             } else {
                 try {
                     String comment = "";
@@ -159,18 +154,18 @@ public class ApprovalViaEmailController implements Controller {
                         mailExecutor.enqueue(mimeMessage);
 
                         model.put("emailSentTo", emailTo);
-                        model.put(RESPONSE_MODEL, RESPONSE_OK);
+                        model.put(MailHelper.RESPONSE_MODEL, MailHelper.RESPONSE_OK);
                     } else {
                         model.put("emailSavedTo", emailTo);
 
                         if (!StringUtils.isBlank(yourComment)) {
                             model.put("yourSavedComment", yourComment);
                         }
-                        model.put(RESPONSE_MODEL, RESPONSE_INVALID_EMAILS);
+                        model.put(MailHelper.RESPONSE_MODEL, MailHelper.RESPONSE_INVALID_EMAILS);
                     }
                 } catch (Exception mtex) { // Unreachable because of thread
-                    model.put(RESPONSE_MODEL, RESPONSE_GENERAL_FAILURE);
-                    model.put(RESPONSE_MODEL + "Msg", mtex.getMessage());
+                    model.put(MailHelper.RESPONSE_MODEL, MailHelper.RESPONSE_GENERAL_FAILURE);
+                    model.put(MailHelper.RESPONSE_MODEL + "Msg", mtex.getMessage());
                 }
             }
         }

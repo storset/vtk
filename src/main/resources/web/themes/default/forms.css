@@ -55,13 +55,6 @@ input[type=text]:focus {
   outline: 0;
 }
 
-div#email-response { 
-  font-size: 0.923em;
-  font-style: italic;
-  color: #ed1c24;
-  margin: 10px 0 0 0;
-}
-
 /* Buttons */
 
 .vrtx-button,
@@ -411,11 +404,12 @@ div#email-response {
 
 /* ^ jQuery UI dialog, datepicker, accordion etc. */
 
-/* Explicit settings */
+/* Email forms */
 
 #email-approval-form label {
-  margin: 20px 0 5px 0;
+  margin: 15px 0px 5px;
   display: block;
+  font-size: 1.154em;
 }
 
 #email-approval-form label.first {
@@ -433,14 +427,23 @@ div#email-response {
 
 #email-approval-form .email-help {
   margin: 5px 0 0 0;
-}
+  color: #888;
+  font-size: 0.923em;
+ }
 
 #emailFromUneditable {
   font-style: italic;
-  color: #777;
+  color: #666;
 }
 
-/* ^ Explicit settings */
+div#email-response { 
+  font-size: 0.923em;
+  font-style: italic;
+  color: #ed1c24;
+  margin: 10px 0 0 0;
+}
+
+/* ^ Email forms */
 
 /* Mozilla hacks */
 

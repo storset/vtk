@@ -34,73 +34,72 @@
     </#list>
   </#if>
   <meta name="robots" content="noindex"/> 
- </head>
- <body>
-    <#if tipResponse?has_content && tipResponse = "OK">
-      <p><@vrtx.msg code="feedback.form.success" args=[emailSentTo] /></p>
-      <div class="vrtx-button">
-        <button onclick="javascript:window.parent.tb_remove();"><@vrtx.msg code="email.form.close" default="Close" /></button>
-      </div>
-      <script type="text/javascript"><!--
-        $(function() {
-          var TBTitle = window.parent.document.getElementById("TB_ajaxWindowTitle");
-          $(TBTitle).text('<@vrtx.msg code="feedback.thanks" default="Thank you for giving us feedback" />');
-        });
-      // -->
-      </script>
-    <#else>
-      <h1><@vrtx.msg code="feedback.title" default="Give feedback" /></h1> 
+</head>
+<body>
+  <#if mailResponse?has_content && mailResponse = "OK">
+    <p><@vrtx.msg code="feedback.form.success" args=[emailSentTo] /></p>
+    <div class="vrtx-button">
+      <button onclick="javascript:window.parent.tb_remove();"><@vrtx.msg code="email.form.close" default="Close" /></button>
+    </div>
+    <script type="text/javascript"><!--
+      $(function() {
+        var TBTitle = window.parent.document.getElementById("TB_ajaxWindowTitle");
+        $(TBTitle).text('<@vrtx.msg code="feedback.thanks" default="Thank you for giving us feedback" />');
+      });
+    // -->
+    </script>
+  <#else>
+    <h1><@vrtx.msg code="feedback.title" default="Give feedback" /></h1> 
 
-      <p><@vrtx.msg code="feedback.cant-respond" default="We can unfortunately not respond directly." /></p>
-      <p>
-      <@vrtx.msg code="feedback.contact-pre" default="See" />
-      <#if contacturl?has_content>
-        <a id="vrtx-feedback-contact" target="_top" href='${contacturl?html}'>
-      <#else>
-        <a id="vrtx-feedback-contact" target="_top" href='<@vrtx.msg code="feedback.contact-link" default="http://www.uio.no/english/about/contact/" />'>
-      </#if>
-      <@vrtx.msg code="feedback.contact-middle" default="our points of contact" /></a>&nbsp;<@vrtx.msg code="feedback.contact-post" default="if you need answers from anyone." />
-      </p>
-       <#if !like?exists || (like?exists && like = "false")>
-         <form id="feedback-form" method="post" action="?vrtx=send-feedback">
-           
-           <label for="yourComment" style="display: none;"><@vrtx.msg code="feedback.form.yourcomment" default="Your comment" /></label> 
-           <#if yourSavedComment?exists && yourSavedComment?has_content>
-             <textarea class="round-corners" rows="15" cols="10" id="yourComment" name="yourComment">${yourSavedComment?html}</textarea>
-           <#else>
-             <textarea class="round-corners" rows="15" cols="10" id="yourComment" name="yourComment"></textarea> 
-           </#if>
-           
-           <#if mailto?has_content>
-             <input type="hidden" name="mailto" value="${mailto?html}" />
-           </#if>
-           <#if contacturl?has_content>
-             <input type="hidden" name="contacturl" value="${contacturl?html}" />
-           </#if>
-           
-           <div id="submitButtons">
-             <div class="vrtx-focus-button"> 
-               <input type="submit" class="submit-email-form" value="Send" name="submit" />
-             </div>
-             <div class="vrtx-button"> 
-               <input type="button" class="cancel-email-form" value="${vrtx.getMsg('editor.cancel')}" name="cancel" onclick="javascript:window.parent.tb_remove();" />
-             </div>  
-           </div>
-         </form>
-       </#if>
-       
-       <#-- Postback from Controller -->
-       <#if tipResponse?has_content>
-         <div id="email-response"> 
-           <#if tipResponse = "FAILURE-NULL-FORM">
-             <span class="failure"><@vrtx.msg code="feedback.form.fail.null" default="You have to write a comment" />.</span>
-           <#elseif tipResponse = "FAILURE-INVALID-EMAIL">
-             <span class="failure"><@vrtx.msg code="feedback.form.fail.invalidate" default="One of the e-mail addresses is invalid" />.</span>
-           <#elseif tipResponse = "FAILURE">
-             <span class="failure"><@vrtx.msg code="feedback.form.fail.general" default="Feedback was not sent" /><#if tipResponseMsg?exists && tipResponseMsg?has_content>${tipResponseMsg}</#if>.</span>
-           </#if>
-         </div>
-       </#if>
+    <p><@vrtx.msg code="feedback.cant-respond" default="We can unfortunately not respond directly." /></p>
+    <p>
+    <@vrtx.msg code="feedback.contact-pre" default="See" />
+    <#if contacturl?has_content>
+      <a id="vrtx-feedback-contact" target="_top" href='${contacturl?html}'>
+    <#else>
+      <a id="vrtx-feedback-contact" target="_top" href='<@vrtx.msg code="feedback.contact-link" default="http://www.uio.no/english/about/contact/" />'>
     </#if>
+    <@vrtx.msg code="feedback.contact-middle" default="our points of contact" /></a>&nbsp;<@vrtx.msg code="feedback.contact-post" default="if you need answers from anyone." />
+    </p>
+    <#if !like?exists || (like?exists && like = "false")>
+      <form id="feedback-form" method="post" action="?vrtx=send-feedback">
+           
+        <label for="yourComment" style="display: none;"><@vrtx.msg code="feedback.form.yourcomment" default="Your comment" /></label> 
+        <#if yourSavedComment?exists && yourSavedComment?has_content>
+          <textarea class="round-corners" rows="15" cols="10" id="yourComment" name="yourComment">${yourSavedComment?html}</textarea>
+        <#else>
+          <textarea class="round-corners" rows="15" cols="10" id="yourComment" name="yourComment"></textarea> 
+        </#if>
+           
+        <#if mailto?has_content>
+          <input type="hidden" name="mailto" value="${mailto?html}" />
+        </#if>
+        <#if contacturl?has_content>
+          <input type="hidden" name="contacturl" value="${contacturl?html}" />
+        </#if>
+           
+        <div id="submitButtons">
+          <div class="vrtx-focus-button"> 
+            <input type="submit" class="submit-email-form" value="Send" name="submit" />
+          </div>
+          <div class="vrtx-button"> 
+            <input type="button" class="cancel-email-form" value="${vrtx.getMsg('editor.cancel')}" name="cancel" onclick="javascript:window.parent.tb_remove();" />
+          </div>  
+        </div>
+      </form>
+    </#if>
+       
+    <#if mailResponse?has_content>
+      <div id="email-response"> 
+        <#if mailResponse = "failure-empty-fields">
+          <span class="failure"><@vrtx.msg code="feedback.form.fail.null" default="You have to write a comment" />.</span>
+        <#elseif mailResponse = "failure-invalid-emails">
+          <span class="failure"><@vrtx.msg code="feedback.form.fail.invalidate" default="One of the e-mail addresses is invalid" />.</span>
+        <#elseif mailResponse = "failure-general">
+          <span class="failure"><@vrtx.msg code="feedback.form.fail.general" default="Feedback was not sent" /><#if mailResponseMsg?has_content>${mailResponseMsg}</#if>.</span>
+        </#if>
+      </div>
+    </#if>
+  </#if>
 </body>
 </html>

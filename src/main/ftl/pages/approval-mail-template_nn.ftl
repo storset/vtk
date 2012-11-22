@@ -1,9 +1,9 @@
 <p>Hei!</p>
 
 <#if resourceDetail?? && resourceDetail.hasWorkingCopy?? && resourceDetail.hasWorkingCopy>
-  <p>Kan du sette arbeidsversjonen for "${title}" til gjeldande versjon?</p>
+  <p>Kan du sette arbeidsversjonen for &laquo;${title}&raquo; til gjeldande versjon?</p>
 <#else>
-  <p>Kan du publisere "${title}"?</p>
+  <p>Kan du publisere &laquo;${title}&raquo;?</p>
 </#if>
 
 <p>Lenkje: <a href="${uri?html}">${uri?html}</a></p>

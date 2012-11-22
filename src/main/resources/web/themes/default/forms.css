@@ -23,7 +23,7 @@ textarea.round-corners {
   -webkit-border-radius: 5px;
   -moz-border-radius: 5px;
   border-radius: 5px; 
-  padding: 7px;
+  padding: 8px 10px;
 }
 
 input[type=button],
@@ -406,6 +406,10 @@ input[type=text]:focus {
 
 /* Email forms */
 
+#email-approval-form {
+  width: 400px;
+}
+
 #email-approval-form label {
   margin: 15px 0px 5px;
   display: block;
@@ -417,11 +421,11 @@ input[type=text]:focus {
 }
 
 #email-approval-form .vrtx-textfield input {
-  width: 390px;
+  width: 385px;
 }
 
 #email-approval-form textarea {
-  width: 390px;
+  width: 380px;
   height: 200px;
 }
 

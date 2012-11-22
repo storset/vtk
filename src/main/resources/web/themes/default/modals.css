@@ -30,18 +30,24 @@ form#feedback-form {
   text-align: left;
 }
 
-form#email-a-friend-form,
+form#email-a-friend-form {
+  width: 328px;
+}
+
 form#email-a-friend-form textarea {
-  width: 314px;
+  width: 308px;
 }
 
 form#email-a-friend-form .vrtx-textfield input {
   width: 313px;
 }
 
-form#feedback-form,
+form#feedback-form {
+  width: 353px;
+}
+
 form#feedback-form textarea {
-  width: 339px;
+  width: 333px;
 }
 
 form#feedback-form .vrtx-textfield input {

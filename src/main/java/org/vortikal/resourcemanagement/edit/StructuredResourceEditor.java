@@ -91,11 +91,11 @@ public class StructuredResourceEditor extends SimpleFormController {
         String token = requestContext.getSecurityToken();
         Repository repository = requestContext.getRepository();
         Principal principal = requestContext.getPrincipal();
-        
         Resource resource = repository.retrieve(token, uri, false);
-        boolean published = resource.hasPublishDate();
-        StructuredResourceDescription description = this.resourceManager.get(resource.getResourceType());
-
+        
+        boolean published = resource.isPublished();
+        boolean onlyWriteUnpublished = !repository.authorize(principal, resource.getAcl(), Privilege.READ_WRITE);
+        
         Revision workingCopy = null;
         for (Revision rev: repository.getRevisions(token, uri)) {
             if (rev.getType() == Revision.Type.WORKING_COPY) {
@@ -103,14 +103,7 @@ public class StructuredResourceEditor extends SimpleFormController {
                 break;
             }
         }
-        
-        boolean onlyWriteUnpublished = !repository.authorize(principal, resource.getAcl(), Privilege.READ_WRITE);
-
-        
-        repository.authorize(principal, resource.getAcl(), Privilege.READ_WRITE);
-        
         InputStream stream = null;
-
         if (workingCopy !=  null) {
             stream = repository.getInputStream(token, uri, true, workingCopy);
         } else {
@@ -120,6 +113,7 @@ public class StructuredResourceEditor extends SimpleFormController {
         if (encoding == null) {
             encoding = "utf-8";
         }
+        StructuredResourceDescription description = this.resourceManager.get(resource.getResourceType());
         StructuredResource structuredResource = description.buildResource(stream);
 
         URL url = RequestContext.getRequestContext().getService().constructURL(uri);

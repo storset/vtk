@@ -17,7 +17,7 @@
   <meta name="robots" content="noindex"/> 
  </head>
  <body>
-   <#if tipResponse?has_content && tipResponse = "OK">
+   <#if mailResponse?has_content && mailResponse = "OK">
      <p><@vrtx.msg code="email.form.success" args=[emailSentTo] /></p>
      <div class="vrtx-button">
        <button onclick="javascript:vrtxSimpleDialogs.closeDialog('#dialog-html-send-approval');"><@vrtx.msg code="email.form.close" default="Close" /></button>
@@ -59,14 +59,14 @@
     </form>
        
     <#-- Postback from Controller -->
-    <#if tipResponse?has_content>
+    <#if mailResponse?has_content>
       <div id="email-response">
-      <#if tipResponse = "FAILURE-NULL-FORM">
+      <#if mailResponse = "empty-fields">
         <span class="failure"><@vrtx.msg code="email.form.fail.null" default="One or more of the e-mail addresses are empty" />.</span>
-      <#elseif tipResponse = "FAILURE-INVALID-EMAIL">
+      <#elseif mailResponse = "invalid-emails">
         <span class="failure"><@vrtx.msg code="email.form.fail.invalidate" default="One of the e-mail addresses is not valid" />.</span>
-      <#elseif tipResponse = "FAILURE">
-        <span class="failure"><@vrtx.msg code="email.form.fail.general" default="E-mail was not sent" /><#if tipResponseMsg?exists && tipResponseMsg?has_content>${tipResponseMsg}</#if>.</span>
+      <#elseif mailResponse = "general-failure">
+        <span class="failure"><@vrtx.msg code="email.form.fail.general" default="E-mail was not sent" /><#if mailResponseMsg?exists && mailResponseMsg?has_content>${mailResponseMsg}</#if>.</span>
       </#if> 
       </div>
     </#if>  

@@ -2254,15 +2254,11 @@
   
   <bean id="emailApproval.mailTemplateProvider" class="org.vortikal.util.mail.MailTemplateProvider">
     <property name="view" ref="emailApproval.mailTemplateView" />
+    <property name="resourceDetailProvider" ref="resourceDetailProvider" />
   </bean>
 
   <bean id="emailApproval.mailTemplateView" parent="freemarkerView">
     <property name="url" value="pages/approval-mail-template.ftl"></property>
-    <property name="referenceDataProviders">
-      <list>
-        <ref bean="resourceDetailProvider" />
-      </list>
-    </property>
   </bean>
   
 </beans>

@@ -39,12 +39,14 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.View;
 import org.vortikal.web.RequestContext;
+import org.vortikal.web.referencedata.provider.ResourceDetailProvider;
 import org.vortikal.web.servlet.BufferedResponse;
 
 
 public class MailTemplateProvider {
 
     private View view;
+    private ResourceDetailProvider resourceDetailProvider;
     
     public String generateMailBody(String title, String url, String mailFrom, 
            String mailFromFullName, String comment, String site) throws Exception {
@@ -62,6 +64,10 @@ public class MailTemplateProvider {
         RequestContext ctx = RequestContext.getRequestContext();
         HttpServletRequest request = ctx.getServletRequest();
         
+        if (resourceDetailProvider != null) {
+            resourceDetailProvider.referenceData(model, request);
+        }
+        
         this.view.render(model, request, response);
         String mailMessage = response.getContentString();
         return mailMessage;
@@ -70,6 +76,10 @@ public class MailTemplateProvider {
     @Required
     public void setView(View view) {
         this.view = view;
+    }
+    
+    public void setResourceDetailProvider(ResourceDetailProvider resourceDetailProvider) {
+        this.resourceDetailProvider = resourceDetailProvider;
     }
 
 }

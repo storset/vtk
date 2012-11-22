@@ -189,6 +189,13 @@
         <#if resourceDetail.propertyInheritanceMap.obsoleted?exists>
           <@propList.defaultPropertyDisplay propName = "obsoleted" name = vrtx.getMsg("property.obsoleted") value = vrtx.getMsg("property.obsoleted.inheritedFrom") + ' ' + resourceDetail.propertyInheritanceMap.obsoleted />
         </#if>
+
+        <!-- Editorial contacts for document (can only be inherited) -->
+        <#if resourceDetail.propertyInheritanceMap["editorial-contacts"]?exists>
+           <@propList.defaultPropertyDisplay propName = 'editorial-contacts' 
+                                             name = vrtx.getMsg("property.editorial-contacts")
+                                             value = vrtx.getPropValue(resource, "editorial-contacts") />
+        </#if>        
       <#else>
         <!-- Obsolete for collection -->
         <#if resourceDetail.propertyInheritanceMap.obsoleted?exists>
@@ -327,6 +334,8 @@
   </tr>
 </#macro>
 
+<#-- XXX: this macro only works for props in aboutItems, which excludes props
+          that are inherited, but do not belong the current resource type. -->
 <#macro generalInheritedPropertyDisplay propName name value prefix=false editURL="">
   <tr class="prop-${propName}">
     <td class="key">

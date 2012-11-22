@@ -93,11 +93,7 @@ public class StructuredResourceEditor extends SimpleFormController {
         Principal principal = requestContext.getPrincipal();
         
         Resource resource = repository.retrieve(token, uri, false);
-        boolean published = false;
-        Property p = resource.getPropertyByPrefix(null, "published");
-        if (p != null && p.getBooleanValue()) {
-            published = true;
-        }
+        boolean published = resource.hasPublishDate();
         StructuredResourceDescription description = this.resourceManager.get(resource.getResourceType());
 
         Revision workingCopy = null;

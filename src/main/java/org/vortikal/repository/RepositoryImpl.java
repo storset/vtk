@@ -581,7 +581,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         // locking and database inter-transaction synchronization (which leads
         // to "11-iterations"-problem)
         ResourceImpl parentCollection = this.dao.load(uri.getParent());
-        if (resourceToDelete.isPublished()) {
+        if (resourceToDelete.hasPublishDate()) {
             this.authorizationManager.authorizeDelete(uri, principal);
         } else {
             this.authorizationManager.authorizeDeleteUnpublished(uri, principal);
@@ -826,7 +826,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         }
 
         // Regular store
-        if (original.isPublished()) {
+        if (original.hasPublishDate()) {
             this.authorizationManager.authorizeReadWrite(uri, principal);
         } else {
             this.authorizationManager.authorizeReadWriteUnpublished(uri, principal);
@@ -882,7 +882,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     private Resource storeInheritableProps(Path uri, Resource resource, ResourceImpl original, Principal principal,
             InheritablePropertiesStoreContext context) throws IOException {
         // Normal write privilege required
-        if (original.isPublished()) {
+        if (original.hasPublishDate()) {
             this.authorizationManager.authorizeReadWrite(uri, principal);
         } else {
             this.authorizationManager.authorizeReadWriteUnpublished(uri, principal);
@@ -981,7 +981,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         }
 
         checkLock(r, principal);
-        if (r.isPublished()) {
+        if (r.hasPublishDate()) {
             this.authorizationManager.authorizeReadWrite(uri, principal);
         } else {
             this.authorizationManager.authorizeReadWriteUnpublished(uri, principal);
@@ -1299,7 +1299,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         Principal principal = this.tokenManager.getPrincipal(token);
 
         checkLock(resource, principal);
-        if (resource.isPublished()) {
+        if (resource.hasPublishDate()) {
             if (type == Revision.Type.WORKING_COPY) {
                 // Allow for principal with only READ_WRITE_UNPUBLISHED for working copy
                 // regardless of publication status:

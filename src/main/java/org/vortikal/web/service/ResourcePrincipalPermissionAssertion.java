@@ -217,7 +217,7 @@ public class ResourcePrincipalPermissionAssertion
         }
         
         RepositoryAction action = this.permission;
-        if (this.unpublishedPermission != null && !resource.isPublished()) {
+        if (this.unpublishedPermission != null && !resource.hasPublishDate()) {
             action = this.unpublishedPermission;
         }
         

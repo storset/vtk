@@ -608,7 +608,7 @@ public final class AuthorizationManager {
         if (deleteDestination) {
             Resource dest = this.dao.load(destUri);
             if (dest != null) {
-                if (dest.isPublished()) {
+                if (dest.hasPublishDate()) {
                     authorizeDelete(destUri, principal);
                 } else {
                     authorizeDeleteUnpublished(destUri, principal);
@@ -633,7 +633,7 @@ public final class AuthorizationManager {
         checkReadOnly(principal);
 
         Resource srcResource = loadResource(srcUri);
-        if (srcResource.isPublished()) {
+        if (srcResource.hasPublishDate()) {
             authorizeDelete(srcUri, principal);
         } else {
             authorizeDeleteUnpublished(srcUri, principal);
@@ -661,7 +661,7 @@ public final class AuthorizationManager {
                 authorizeCreate(destParentUri, principal);
             }
         
-            if (srcResource.isPublished()) {
+            if (srcResource.hasPublishDate()) {
                 authorizeCreate(destParentUri, principal);
             } else {
                 authorizeCreateUnpublished(destParentUri, principal);
@@ -670,7 +670,7 @@ public final class AuthorizationManager {
         
         if (deleteDestination) {
             Resource destResource = loadResource(destUri);
-            if (destResource.isPublished()) {
+            if (destResource.hasPublishDate()) {
                 authorizeDelete(destUri, principal);
             } else {
                 authorizeDeleteUnpublished(destUri, principal);

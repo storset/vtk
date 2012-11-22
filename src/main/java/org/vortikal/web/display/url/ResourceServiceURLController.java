@@ -113,12 +113,9 @@ public class ResourceServiceURLController implements Controller {
         // Add parameter to preview view unpublished only if resource actually
         // is unpublished
         if (this.previewUnpublished) {
-
-            Property publishedProp = resource.getProperty(Namespace.DEFAULT_NAMESPACE, "published");
-            if (publishedProp != null && !publishedProp.getBooleanValue()) {
+            if (!resource.isPublished()) {
                 resourceViewURL.addParameter("vrtxPreviewUnpublished", "true");
             }
-
         }
 
         // Add parameter to preview obsoleted only if resource actually is

@@ -9,6 +9,22 @@ resourcetype exam {
     title (class[ui-helper-hidden]),
     content (class[ui-helper-hidden])
   }
+  
+  view-components {
+
+    semester-folder {
+      ##
+      [def resource resource("./../")]
+      [if resource != null]
+        [def url view-url(resource)]
+        [def course-code resource-prop-obj-val(".", "courseContext.fs-course-code")]
+        [def semester resource-prop-obj-val(".", "semesterContext.semester")]
+        <a href="[val url]">[if course-code != null && course-code != ""][val course-code][endif][if course-code != null && course-code != "" && semester != null && semester != ""] - [endif][if semester != null && semester != ""][val semester][endif]</a>
+      [endif]
+      ##
+    }
+
+  }
 
   view {
     ##
@@ -18,6 +34,7 @@ resourcetype exam {
         <title>[call "resource:property" {"id":"title"}]</title>
       </head>
       <body id="vrtx-exam">
+        [call "comp:semester-folder"]
         <h1>[call "resource:property" {"id":"title"}]</h1>
         [call "json:field" {"select":"content"}]
       </body>

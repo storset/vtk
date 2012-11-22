@@ -63,7 +63,6 @@ public class FeedbackController implements Controller {
     private LocaleResolver localeResolver;
     private Service viewService;
     private String displayUpscoping;
-
     private String[] recipients;
     private String recipientsStr;
     
@@ -173,7 +172,6 @@ public class FeedbackController implements Controller {
         this.viewName = viewName;
     }
 
-
     @Required
     public void setResourceManager(ResourceWrapperManager resourceManager) {
         this.resourceManager = resourceManager;
@@ -185,24 +183,15 @@ public class FeedbackController implements Controller {
         this.mailExecutor = mailExecutor;
     }
 
-
     @Required
     public void setMailTemplateProvider(MailTemplateProvider mailTemplateProvider) {
         this.mailTemplateProvider = mailTemplateProvider;
     }
 
-
-    @Required
-    public void setLocaleResolver(LocaleResolver localeResolver) {
-        this.localeResolver = localeResolver;
-    }
-
-
     @Required
     public void setViewService(Service viewService) {
         this.viewService = viewService;
     }
-
 
     @Required
     public void setSiteName(String siteName) {

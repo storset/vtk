@@ -32,7 +32,6 @@
 package org.vortikal.web.actions.share;
 
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 import javax.mail.internet.MimeMessage;
@@ -41,7 +40,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Required;
-import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.edit.editor.ResourceWrapperManager;
@@ -60,7 +58,6 @@ public class ShareViaEmailController implements Controller {
     private ResourceWrapperManager resourceManager;
     private MailExecutor mailExecutor;
     private MailTemplateProvider mailTemplateProvider;
-    private LocaleResolver localeResolver;
     private Service viewService;
     private String displayUpscoping;
 
@@ -73,12 +70,6 @@ public class ShareViaEmailController implements Controller {
         Resource resource = repository.retrieve(token, uri, true);
         if (resource == null) {
             return null;
-        }
-
-        String language = resource.getContentLanguage();
-        if (language == null) {
-            Locale locale = localeResolver.resolveLocale(request);
-            language = locale.toString();
         }
 
         Map<String, Object> model = new HashMap<String, Object>();
@@ -157,42 +148,30 @@ public class ShareViaEmailController implements Controller {
         return new ModelAndView(this.viewName, model);
     }
 
-
     @Required
     public void setViewName(String viewName) {
         this.viewName = viewName;
     }
-
 
     @Required
     public void setResourceManager(ResourceWrapperManager resourceManager) {
         this.resourceManager = resourceManager;
     }
 
-
     @Required
     public void setMailExecutor(MailExecutor mailExecutor) {
         this.mailExecutor = mailExecutor;
     }
-
 
     @Required
     public void setMailTemplateProvider(MailTemplateProvider mailTemplateProvider) {
         this.mailTemplateProvider = mailTemplateProvider;
     }
 
-
-    @Required
-    public void setLocaleResolver(LocaleResolver localeResolver) {
-        this.localeResolver = localeResolver;
-    }
-
-
     @Required
     public void setViewService(Service viewService) {
         this.viewService = viewService;
     }
-
 
     @Required
     public void setSiteName(String siteName) {

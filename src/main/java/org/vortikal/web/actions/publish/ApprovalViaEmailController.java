@@ -32,7 +32,6 @@
 package org.vortikal.web.actions.publish;
 
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 import javax.mail.internet.MimeMessage;
@@ -41,7 +40,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Required;
-import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.edit.editor.ResourceWrapperManager;
@@ -63,7 +61,6 @@ public class ApprovalViaEmailController implements Controller {
     private ResourceWrapperManager resourceManager;
     private MailExecutor mailExecutor;
     private MailTemplateProvider mailTemplateProvider;
-    private LocaleResolver localeResolver;
     private Service manageService;
     private String defaultSender;
     private PropertyTypeDefinition editorialContactsPropDef;
@@ -78,12 +75,6 @@ public class ApprovalViaEmailController implements Controller {
         Resource resource = repository.retrieve(token, uri, true);
         if (resource == null) {
             return null;
-        }
-
-        String language = resource.getContentLanguage();
-        if (language == null) {
-            Locale locale = localeResolver.resolveLocale(request);
-            language = locale.toString();
         }
 
         Map<String, Object> model = new HashMap<String, Object>();
@@ -138,6 +129,7 @@ public class ApprovalViaEmailController implements Controller {
                     if (validAddresses) {
                         String url = manageService.constructURL(uri).toString();
                         String fullName = principal.getDescription();
+                        String[] subjectParams = {resource.getTitle()};
 
                         MimeMessage mimeMessage = mailExecutor.createMimeMessage(
                                 mailTemplateProvider,
@@ -148,7 +140,7 @@ public class ApprovalViaEmailController implements Controller {
                                 emailFrom,
                                 fullName,
                                 comment,
-                                resource.getTitle()
+                                getLocalizedMsg(request, "send-to-approval.subject", subjectParams)
                         );
 
                         mailExecutor.enqueue(mimeMessage);
@@ -172,6 +164,15 @@ public class ApprovalViaEmailController implements Controller {
         model.put("resource", resourceManager.createResourceWrapper());
         return new ModelAndView(viewName, model);
     }
+    
+    private String getLocalizedMsg(HttpServletRequest request, String key, Object[] params) {
+        org.springframework.web.servlet.support.RequestContext springRequestContext = new org.springframework.web.servlet.support.RequestContext(
+                request);
+        if (params != null) {
+            return springRequestContext.getMessage(key, params);
+        }
+        return springRequestContext.getMessage(key);
+    }
 
     @Required
     public void setViewName(String viewName) {
@@ -191,11 +192,6 @@ public class ApprovalViaEmailController implements Controller {
     @Required
     public void setMailTemplateProvider(MailTemplateProvider mailTemplateProvider) {
         this.mailTemplateProvider = mailTemplateProvider;
-    }
-
-    @Required
-    public void setLocaleResolver(LocaleResolver localeResolver) {
-        this.localeResolver = localeResolver;
     }
 
     @Required

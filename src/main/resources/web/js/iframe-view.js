@@ -7,7 +7,7 @@
  */
  
 var crossDocComLink = new CrossDocComLink();
- 
+
 $(document).ready(function () {
   if ($.browser.msie) {
     // iframe load event not firing in IE8 / IE9 when page w. iframe is inside another iframe

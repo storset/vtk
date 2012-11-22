@@ -206,10 +206,10 @@ public class ApprovalViaEmailController implements Controller {
     public void setDefaultSender(String defaultSender) {
         this.defaultSender = defaultSender;
     }
-    
+
     @Required
     public void setEditorialContactsPropDef(PropertyTypeDefinition editorialContactsPropDef) {
-		this.editorialContactsPropDef = editorialContactsPropDef;
-	}
+        this.editorialContactsPropDef = editorialContactsPropDef;
+    }
 
 }

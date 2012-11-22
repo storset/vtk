@@ -1,12 +1,10 @@
 <p>Hei!</p>
 
 <#if resourceDetail?? && resourceDetail.hasWorkingCopy?? && resourceDetail.hasWorkingCopy>
-  <p>Kan du sette denne arbeidsversjonen til gjeldande versjon?</p>
+  <p>Kan du sette arbeidsversjonen for "${title}" til gjeldande versjon?</p>
 <#else>
-  <p>Kan du publisere dette dokumentet?</p>
+  <p>Kan du publisere dokumentet "${title}"?</p>
 </#if>
-
-<h2>${title}</h2>
 
 <#if comment?has_content>
 <pre>${comment}</pre>
@@ -15,4 +13,5 @@
 <p>Lenkje til dokument: <a href="${uri?html}">${uri?html}</a></p>
 <p>Lenkje til dokumentasjon: <a href="${uri?html}">${uri?html}</a></p>
 
-<p>Med vennleg helsing, ${mailFromFullName}</p>
+<#t /><p>Med vennleg helsing,<br/><#t />
+<#t />${mailFromFullName}</p><#t />

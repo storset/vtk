@@ -26,9 +26,7 @@ resourcetype syllabus {
   
     ub-mapping (prefix){
         ##
-        [def content-locale resource-prop-obj-val(".", "contentLocale")]
-        [def uri "/vrtx/mapping/ub-mapping.html"]
-        [def file json-resource(uri)]
+        [def file json-resource("/vrtx/mapping/ub-mapping.html")]
         [if file != null]
           [def mappings file.properties.mappings]
           <div id="vrtx-additional-content">
@@ -37,6 +35,7 @@ resourcetype syllabus {
               [list mappings mapping]
                 [def mapping-prefix mapping.prefix.toLowerCase()]
                 [if prefix = mapping-prefix]
+                  [def content-locale resource-prop-obj-val(".", "contentLocale")]
                   [if content-locale != null && content-locale != ""]
                     [if content-locale = "en" && mapping.mappinglink-en != null && mapping.mappinglink-en != ""]
                       <p><a href="[val mapping.mappinglink-en]">[localized 'ub-resource']</a></p>

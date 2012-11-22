@@ -207,17 +207,17 @@
   display: none;
 }
 
-#editor .undervisningssemester-bestemt-semester,
-#editor .undervisningssemester-annet,
-#editor .eksamenssemester-bestemt-semester,
-#editor .eksamenssemester-annet {
+#editor .teachingsemester-particular-semester,
+#editor .teachingsemester-other,
+#editor .examsemester-particular-semester,
+#editor .examsemester-other {
   display: none;  
 }
 
-#editor.undervisningssemester-valgt-bestemt-semester .undervisningssemester-bestemt-semester,
-#editor.undervisningssemester-valgt-annet .undervisningssemester-annet,
-#editor.eksamenssemester-valgt-bestemt-semester .eksamenssemester-bestemt-semester,
-#editor.eksamenssemester-valgt-annet .eksamenssemester-annet {
+#editor.teachingsemester-selected-particular-semester .teachingsemester-particular-semester,
+#editor.teachingsemester-selected-other .teachingsemester-other,
+#editor.examsemester-selected-particular-semester .examsemester-particular-semester,
+#editor.examsemester-selected-other .examsemester-other {
   display: block;
 }
 

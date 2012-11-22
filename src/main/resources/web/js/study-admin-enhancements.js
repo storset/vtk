@@ -35,8 +35,8 @@ $(document).ready(function () {
   }
   
   // Course description - hide/show semesters
-  for(var semesters = ["undervisning", "eksamen"], i = semesters.length, semesterId, semesterType; i--;) {
-    semesterId = "#" + semesters[i] + "ssemester";
+  for(var semesters = ["teaching", "exam"], i = semesters.length, semesterId, semesterType; i--;) {
+    semesterId = "#" + semesters[i] + "semester";
     semesterType = $(semesterId);
     if(semesterType.length) {
       hideShowSemester(semesterType);
@@ -78,16 +78,16 @@ function hideShowStudy(typeToDisplayElem) {
 
 function hideShowSemester(typeSemesterElem) {
   var container = $("#editor");
-  var prefix = typeSemesterElem.attr("id") + "-valgt";
+  var prefix = typeSemesterElem.attr("id") + "-selected";
   switch (typeSemesterElem.val()) {
-    case "bestemt-semester":
-      container.removeClass(prefix + "-annet").addClass(prefix + "-bestemt-semester");
+    case "particular-semester":
+      container.removeClass(prefix + "-other").addClass(prefix + "-particular-semester");
       break;
-    case "annet":
-      container.removeClass(prefix + "-bestemt-semester").addClass(prefix + "-annet");
+    case "other":
+      container.removeClass(prefix + "-particular-semester").addClass(prefix + "-other");
       break;
     default:
-      container.removeClass(prefix + "-annet").removeClass(prefix + "-bestemt-semester");
+      container.removeClass(prefix + "-other").removeClass(prefix + "-particular-semester");
       break;
   }
 }

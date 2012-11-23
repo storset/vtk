@@ -42,6 +42,7 @@ crossDocComLink.setUpReceiveDataHandler(function(cmdParams, source) {
           main.animate({height: (newHeight + surplus) + "px"}, surplusAnimationSpeed, function() {
             previewIframe.style.height = newHeight + "px";
             previewLoading.fadeOut(surplusAnimationSpeed, function() {
+              previewLoading.remove();
               appContent.removeAttr('style');
               main.removeAttr('style');
               contents.removeAttr('style');
@@ -50,6 +51,7 @@ crossDocComLink.setUpReceiveDataHandler(function(cmdParams, source) {
         } else { // TODO
           previewIframe.style.height = newHeight + "px";
           previewLoading.fadeOut(surplusAnimationSpeed, function() {
+            previewLoading.remove();
             appContent.removeAttr('style');
             main.removeAttr('style');
             contents.removeAttr('style');

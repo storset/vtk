@@ -1776,6 +1776,10 @@ body#vrtx-report-broken-links #directory-listing td.vrtx-report-broken-links {
 
 /* 3.6 Permissions / About / Publishing / View / Plaintext-edit / Visual profile / Versioning  */
 
+body#vrtx-preview {
+  overflow-y: scroll;
+}
+
 body#vrtx-preview #app-content #contents iframe#previewIframe {
   border: 1px solid #d9d9d9;
 }
@@ -1788,6 +1792,16 @@ p.previewUnavailableReasons {
   margin-top: 15px;
   padding-top: 15px;
   background: url(images/line-dotted.gif) repeat-x 0 2px;
+}
+
+#preview-loading {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: #fff;
+  display: block;
+  width: 100%;
+  padding: 2px;
 }
 
 /* Preview popup */

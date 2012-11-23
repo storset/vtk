@@ -62,7 +62,7 @@ public final class PropertyType {
     
     // Minimum write privilege needed to edit prop
     public static final RepositoryAction PROTECTION_LEVEL_ACL_WRITE =
-        RepositoryAction.READ_WRITE_UNPUBLISHED;
+        RepositoryAction.READ_WRITE;
 
     // Principals with admin permissions can edit property
     public static final RepositoryAction PROTECTION_LEVEL_ACL_ADMIN =

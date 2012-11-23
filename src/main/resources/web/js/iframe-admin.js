@@ -34,9 +34,9 @@ crossDocComLink.setUpReceiveDataHandler(function(cmdParams, source) {
         }
         var diff = newHeight - previewIframeMinHeight;
         var surplus = appFooterHeight + 20 + 12;
-        var h = appContent.height();
+        var appContentHeight = appContent.height();
         if(diff > surplus) {
-          appContent.animate({height: (h + surplus) + "px"}, surplusAnimationSpeed);
+          appContent.animate({height: (appContentHeight + surplus) + "px"}, surplusAnimationSpeed);
           contents.animate({height: (newHeight + surplus) + "px"}, surplusAnimationSpeed);
           previewLoading.animate({height: (newHeight + surplus) + "px"}, surplusAnimationSpeed);
           main.animate({height: (newHeight + surplus) + "px"}, surplusAnimationSpeed, function() {

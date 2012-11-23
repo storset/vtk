@@ -75,7 +75,7 @@ $(document).ready(function() {
 
     appContent.css({ height: ((appContentHeight + previewIframeMinHeight) - 150 - 38 - 12 - 4) + "px" }); // TODO
           main.css({ height: previewIframeMinHeight + "px" });
-    contents.append("<span id='preview-loading' />")
+    contents.append("<span id='preview-loading'><span>" + previewLoadingMsg + "...</span></span>")
               .css({ position: "relative",
                      height: previewIframeMinHeight + "px" });
                      

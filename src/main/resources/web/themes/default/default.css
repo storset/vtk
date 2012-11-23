@@ -1804,6 +1804,17 @@ p.previewUnavailableReasons {
   padding: 2px;
 }
 
+#preview-loading span {
+  background: #fff url(images/ajax-loader.gif) no-repeat center left;
+  display: block;
+  padding: 10px 5px 10px 42px;
+  font-size: 1.154em;
+  position: relative;
+  position: absolute;
+  top: 20%;
+  left: 43%;
+}
+
 /* Preview popup */
 
 html#vrtx-preview-popup,

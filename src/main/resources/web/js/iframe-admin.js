@@ -40,18 +40,20 @@ crossDocComLink.setUpReceiveDataHandler(function(cmdParams, source) {
           contents.animate({height: (newHeight + surplus) + "px"}, surplusAnimationSpeed);
           previewLoading.animate({height: (newHeight + surplus) + "px"}, surplusAnimationSpeed);
           main.animate({height: (newHeight + surplus) + "px"}, surplusAnimationSpeed, function() {
-            previewLoading.remove();
+            previewIframe.style.height = newHeight + "px";
+            previewLoading.fadeOut(surplusAnimationSpeed, function() {
+              appContent.removeAttr('style');
+              main.removeAttr('style');
+              contents.removeAttr('style');
+            });
+          });  
+        } else { // TODO
+          previewIframe.style.height = newHeight + "px";
+          previewLoading.fadeOut(surplusAnimationSpeed, function() {
             appContent.removeAttr('style');
             main.removeAttr('style');
             contents.removeAttr('style');
-            previewIframe.style.height = newHeight + "px";
-          });  
-        } else { // TODO
-          previewLoading.remove();
-          appContent.removeAttr('style');
-          main.removeAttr('style');
-          contents.removeAttr('style');
-          previewIframe.style.height = newHeight + "px";
+          });
         }
       }
         

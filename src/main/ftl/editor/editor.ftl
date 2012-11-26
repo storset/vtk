@@ -193,7 +193,7 @@
             <a class="vrtx-focus-button" id="vrtx-save-shortcut" href="javascript:void(0)"><span>${vrtx.getMsg("editor.save")}</span></a>
           </span>
             <a class="vrtx-button" id="vrtx-cancel-shortcut" href="javascript:void(0)"><span>${vrtx.getMsg("editor.cancel")}</span></a>
-            <#if !published && onlyWriteUnpublished>
+            <#if !hasPublishDate && onlyWriteUnpublished>
               <span id="buttons-or-text"><@vrtx.msg code="editor.orText" default="or" /></span>
               &nbsp;
               <a class="vrtx-button" href="javascript:void(0)" id="vrtx-send-to-approval-shortcut"><span>${vrtx.getMsg('send-to-approval.title')}</span></a>
@@ -248,7 +248,7 @@
         <div class="vrtx-button">
           <input type="submit" id="cancel" name="cancel" value="${vrtx.getMsg("editor.cancel")}" />
         </div>
-        <#if !published && onlyWriteUnpublished>
+        <#if !hasPublishDate && onlyWriteUnpublished>
           <span id="buttons-or-text"><@vrtx.msg code="editor.orText" default="or" /></span>
           &nbsp;
           <a class="vrtx-button" title="${vrtx.getMsg('send-to-approval.title')}" id="vrtx-send-to-approval" href="?vrtx=admin&action=email-approval"><span>${vrtx.getMsg('send-to-approval.title')}</span></a>

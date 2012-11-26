@@ -175,6 +175,7 @@ public class ResourceEditController extends SimpleFormController {
         }
         
         model.put("published", resource.isPublished());
+        model.put("hasPublishDate", resource.hasPublishDate());
         model.put("onlyWriteUnpublished", !repository.authorize(principal, resource.getAcl(), Privilege.READ_WRITE));
         model.put("tooltips", resolveTooltips(resource, principal));
         model = addImageEditorServices(model, resource, principal);

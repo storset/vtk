@@ -49,7 +49,7 @@ public class FormSubmitCommandTestIntegration extends StructuredResourceTestSetu
         StructuredResourceDescription srd = srdp.getResourceDescription("person");
         URL url = new URL("http", "localhost:9321", Path.ROOT);
         StructuredResource r = srd.buildResource(new ByteArrayInputStream("{}".getBytes()));
-        FormSubmitCommand fsc = new FormSubmitCommand(r, url,url, false, true, false);
+        FormSubmitCommand fsc = new FormSubmitCommand(r, url,url, false, true, true, false);
         printForm(fsc);
     }
 

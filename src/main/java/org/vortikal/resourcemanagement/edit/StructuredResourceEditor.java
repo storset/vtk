@@ -94,6 +94,7 @@ public class StructuredResourceEditor extends SimpleFormController {
         Resource resource = repository.retrieve(token, uri, false);
         
         boolean published = resource.isPublished();
+        boolean hasPublishDate = resource.hasPublishDate();
         boolean onlyWriteUnpublished = !repository.authorize(principal, resource.getAcl(), Privilege.READ_WRITE);
         
         Revision workingCopy = null;
@@ -120,7 +121,7 @@ public class StructuredResourceEditor extends SimpleFormController {
         URL listComponentServiceURL = listComponentsService.constructURL(uri);
         
         return new FormSubmitCommand(structuredResource, url, listComponentServiceURL, 
-                workingCopy != null, published, onlyWriteUnpublished);
+                workingCopy != null, published, hasPublishDate, onlyWriteUnpublished);
     }
 
     @Override

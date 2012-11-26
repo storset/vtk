@@ -56,18 +56,21 @@ public class FormSubmitCommand extends UpdateCancelCommand {
     private boolean workingCopy;
     private boolean published;
     private boolean onlyWriteUnpublished;
+    private boolean hasPublishDate;
     
     private StructuredResource resource;
     private List<FormElementBox> elements = new ArrayList<FormElementBox>();
     private URL listComponentServiceURL;
 
     public FormSubmitCommand(StructuredResource resource, URL url, 
-            URL listComponentServiceURL, boolean workingCopy, boolean published, boolean onlyWriteUnpublished) {
+            URL listComponentServiceURL, boolean workingCopy, boolean published, boolean hasPublishDate,
+            boolean onlyWriteUnpublished) {
         super(url.toString());
         this.listComponentServiceURL = listComponentServiceURL;
         this.resource = resource;
         this.workingCopy = workingCopy;
         this.published = published;
+        this.hasPublishDate = hasPublishDate;
         this.onlyWriteUnpublished = onlyWriteUnpublished;
         StructuredResourceDescription type = resource.getType();
 
@@ -277,6 +280,14 @@ public class FormSubmitCommand extends UpdateCancelCommand {
         this.published = published;
     }
     
+    public boolean isHasPublishDate() {
+        return hasPublishDate;
+    }
+
+    public void setHasPublishDate(boolean hasPublishDate) {
+        this.hasPublishDate = hasPublishDate;
+    }
+
     public boolean isOnlyWriteUnpublished() {
         return this.onlyWriteUnpublished;
     }

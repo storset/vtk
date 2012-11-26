@@ -112,10 +112,10 @@
 
   <div id="vrtx-editor-title-submit-buttons">
     <div id="vrtx-editor-title-submit-buttons-inner-wrapper">
-      <#if form.workingCopy || (!form.onlyWriteUnpublished && form.published) || !form.published>
+      <#if form.workingCopy || !form.onlyWriteUnpublished || !form.hasPublishDate>
       <h2>${header}</h2>
       <div class="submitButtons submit-extra-buttons" id="editor-shortcuts">  
-        <#if !form.published && !form.workingCopy>
+        <#if !form.hasPublishDate && !form.workingCopy>
           <a class="vrtx-button" href="javascript:void(0)" id="vrtx-save-view-shortcut"><span>${vrtx.getMsg("editor.saveAndView")}</span></a>
           <span id="vrtx-save">
             <a class="vrtx-focus-button" href="javascript:void(0)" id="vrtx-save-shortcut"><span>${vrtx.getMsg("editor.save")}</span></a>
@@ -125,7 +125,7 @@
             <span id="buttons-or-text"><@vrtx.msg code="editor.orText" default="or" /></span>
             &nbsp;
             <a class="vrtx-button" href="javascript:void(0)" id="vrtx-send-to-approval-shortcut"><span>${vrtx.getMsg('send-to-approval.title')}</span></a>
-         </#if>
+          </#if>
           <@genEditorHelpMenu />
         <#elseif form.workingCopy>
           <ul id="editor-button-row">
@@ -145,7 +145,7 @@
           <div id="editor-menu-wrapper">
             <ul id="editor-menu">
               <li class="first">
-                <#if (form.published && !form.onlyWriteUnpublished) || !form.published>
+                <#if (form.hasPublishDate && !form.onlyWriteUnpublished) || !form.hasPublishDate>
                   <a href="javascript:void(0)" id="vrtx-make-public-version-shortcut">${vrtx.getMsg("editor.makePublicVersion")}</a>
                 <#else>
                   <a href="javascript:void(0)" id="vrtx-send-to-approval-shortcut">${vrtx.getMsg('send-to-approval.title')}</a>
@@ -184,7 +184,7 @@
   </div>
 
   <form action="${form.submitURL?html}" method="post" id="editor"<#if form.getResource().getType().getName()?exists> class="vrtx-${form.getResource().getType().getName()}"</#if>>
-    <div class="properties <#if (!form.workingCopy && form.published && form.onlyWriteUnpublished)>hidden-props</#if>">
+    <div class="properties <#if (!form.workingCopy && form.hasPublishDate && form.onlyWriteUnpublished)>hidden-props</#if>">
       <#list form.elements as elementBox>
         <#if elementBox.formElements?size &gt; 1>
           <#assign groupClass = "vrtx-grouped" />
@@ -215,7 +215,7 @@
     </div>
 
     <div class="submit submitButtons">
-    <#if !form.published && !form.workingCopy>
+    <#if !form.hasPublishDate && !form.workingCopy>
       <div class="vrtx-button">
         <input type="submit" id="saveAndViewButton" name="updateViewAction"  value="${vrtx.getMsg('editor.saveAndView')}" />
       </div>
@@ -242,7 +242,7 @@
       </div>
       <span id="buttons-or-text"><@vrtx.msg code="editor.orText" default="or" /></span>
       &nbsp;
-      <#if (form.published && !form.onlyWriteUnpublished) || !form.published>
+      <#if (form.hasPublishDate && !form.onlyWriteUnpublished) || !form.hasPublishDate>
         <div class="vrtx-button">
           <input type="submit" id="makePublicVersionAction" name="makePublicVersionAction" value="${vrtx.getMsg('editor.makePublicVersion')}" />
         </div>

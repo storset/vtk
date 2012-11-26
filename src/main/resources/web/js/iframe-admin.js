@@ -35,16 +35,10 @@
             contents.animate({height: (newHeight + surplus) + "px"}, surplusAnimationSpeed);
             previewLoading.animate({height: (newHeight + surplus) + "px"}, surplusAnimationSpeed);
             main.animate({height: (newHeight + surplus) + "px"}, surplusAnimationSpeed, function() {
-              previewIframe.style.height = newHeight + "px";
-              previewLoading.fadeOut(surplusAnimationSpeed, function() {
-                removePreview(previewLoading, appContent, main, contents);
-              });
+              removePreview(previewIframe, newHeight, previewLoading, appContent, main, contents);
             });  
           } else {
-            previewIframe.style.height = newHeight + "px";
-            previewLoading.fadeOut(surplusAnimationSpeed, function() {
-              removePreview(previewLoading, appContent, main, contents);
-            });
+            removePreview(previewIframe, newHeight, previewLoading, appContent, main, contents);
           }
         }
         
@@ -53,11 +47,14 @@
     }
   });
 
-  function removePreview(previewLoading, appContent, main, contents) {
-    previewLoading.remove();
-    appContent.removeAttr('style');
-    main.removeAttr('style');
-    contents.removeAttr('style');
+  function removePreview(previewIframe, newHeight, previewLoading, appContent, main, contents) {
+    previewIframe.style.height = newHeight + "px";
+    previewLoading.fadeOut(surplusAnimationSpeed, function() {
+      previewLoading.remove();
+      appContent.removeAttr('style');
+      main.removeAttr('style');
+      contents.removeAttr('style');
+    });
   }
 
   $(document).ready(function() {

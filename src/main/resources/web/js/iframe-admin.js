@@ -31,7 +31,7 @@
           var surplus = appFooterHeight + 20 + 12; // TODO: Avoid hardcoded padding/margins
           var appContentHeight = appContent.height();
           if(diff > 0 && diff > surplus) {
-            // TODO: need to take into account travelling distance
+            // TODO: need to take into account speed vs. travelling distance
             appContent.animate({height: (appContentHeight + surplus) + "px"}, surplusAnimationSpeed);
             contents.animate({height: (previewIframeMinHeight + surplus) + "px"}, surplusAnimationSpeed);
             previewLoading.animate({height: (previewIframeMinHeight + surplus) + "px"}, surplusAnimationSpeed);
@@ -39,7 +39,7 @@
               previewLoadingComplete(previewIframe, newHeight, previewLoading, appContent, main, contents);
             });  
           } else {
-            // TODO: need to take into account travelling distance
+            // TODO: need to take into account speed vs. travelling distance
             appContent.animate({height: (appContentHeight + diff) + "px"}, surplusAnimationSpeed);
             contents.animate({height: newHeight + "px"}, surplusAnimationSpeed);
             previewLoading.animate({height: newHeight + "px"}, surplusAnimationSpeed);

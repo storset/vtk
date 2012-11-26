@@ -44,20 +44,18 @@
         ${header}
       </#if>
   
-        <#assign message><@vrtx.msg code="commenting.deleteall" default="delete all" /></#assign>
-        <#assign confirmation>
-          <@vrtx.msg code="commenting.deleteall.confirmation" 
-                     default="Are you sure you want to delete all ${comments?size} comments?" 
-                     args=[comments?size] />
-        </#assign>  
+      <#assign message><@vrtx.msg code="commenting.deleteall" default="delete all" /></#assign>
+      <#assign confirmation>
+        <@vrtx.msg code="commenting.deleteall.confirmation" 
+                   default="Are you sure you want to delete all ${comments?size} comments?" 
+                   args=[comments?size] />
+      </#assign>  
   
-      <#if deleteAllCommentsURL?exists>
+      <#if (deleteAllCommentsURL?exists && comments?size > 0)>
         <form class="vrtx-comments-delete-all" action="${deleteAllCommentsURL?html}" method="post">
           <@vrtx.csrfPreventionToken url=deleteAllCommentsURL />
           <button type="submit" id="vrtx-comments-delete-all" name="delete-all-comments-button"
-                  onclick="return confirm('${confirmation}');">
-            ${message?html}
-          </button>
+                  onclick="return confirm('${confirmation}');"><span>${message?html}</span></button>
         </form>
       </#if>
     </div>
@@ -109,7 +107,7 @@
           </#assign>
           <form class="vrtx-comments-delete" action="${deleteCommentURLs[comment.ID]?html}" method="post">
             <@vrtx.csrfPreventionToken url=deleteCommentURLs[comment.ID] />
-            <button class="comment-delete-button" type="submit" onclick="return confirm('${confirmation}');">${message?html}</button>
+            <button class="comment-delete-button" type="submit" onclick="return confirm('${confirmation}');"><span>${message?html}</span></button>
           </form>
         </#if>
       </div>
@@ -125,11 +123,9 @@
                   default="Commenting is disabled on this resource." /></p>
     <#elseif !principal?exists>
       <#assign completeLoginURL>${loginURL?html}&amp;anchor=comment-form</#assign>
-      <#assign defaultMsg>
-        To comment on this resource you have to <a href="${completeLoginURL}">log in</a>
-      </#assign>
-      <p><@vrtx.rawMsg code="commenting.not-logged-in" default=defaultMsg args=[completeLoginURL] /></p>
-
+      <#assign defaultMsg><a href="${completeLoginURL}"><span>Log in</span></a> to comment</#assign>
+      <span id="add-comment-login"><@vrtx.rawMsg code="commenting.not-logged-in" default=defaultMsg args=[completeLoginURL] /></span>
+      <span id="add-comment-webid"><@vrtx.rawMsg code="commenting.not-logged-in.webid" default="" /></span>
     <#elseif repositoryReadOnly>
        <p><@vrtx.msg code="commenting.read.only"
                     default="You cannot add comments because the system is currently in read only mode." /></p>

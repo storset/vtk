@@ -23,12 +23,22 @@ resourcetype syllabus {
   }
   
   view-components {
+
+    semester-folder {
+      ##
+      [def resource resource("./../")]
+      [if resource != null]
+        [def url view-url(resource)]
+        [def course-code resource-prop-obj-val(".", "courseContext.fs-course-code")]
+        [def semester resource-prop-obj-val(".", "semesterContext.semester")]
+        <a href="[val url]">[if course-code != null && course-code != ""][val course-code][endif][if course-code != null && course-code != "" && semester != null && semester != ""] - [endif][if semester != null && semester != ""][val semester][endif]</a>
+      [endif]
+      ##
+    }
   
     ub-mapping (prefix){
         ##
-        [def content-locale resource-prop-obj-val(".", "contentLocale")]
-        [def uri "/vrtx/mapping/ub-mapping.html"]
-        [def file json-resource(uri)]
+        [def file json-resource("/vrtx/mapping/ub-mapping.html")]
         [if file != null]
           [def mappings file.properties.mappings]
           <div id="vrtx-additional-content">
@@ -37,6 +47,7 @@ resourcetype syllabus {
               [list mappings mapping]
                 [def mapping-prefix mapping.prefix.toLowerCase()]
                 [if prefix = mapping-prefix]
+                  [def content-locale resource-prop-obj-val(".", "contentLocale")]
                   [if content-locale != null && content-locale != ""]
                     [if content-locale = "en" && mapping.mappinglink-en != null && mapping.mappinglink-en != ""]
                       <p><a href="[val mapping.mappinglink-en]">[localized 'ub-resource']</a></p>
@@ -97,6 +108,7 @@ resourcetype syllabus {
       </head>
       <body id="vrtx-syllabus">
         <div id="vrtx-content">
+          [call "comp:semester-folder"]
           <div id="vrtx-main-content">
             <h1>[localized 'syllabus'] ([if course-code != null][val course-code][endif][if course-code != null && semester != null] - [endif][if semester != null][val semester][endif])</h1>
             [call "comp:items"]

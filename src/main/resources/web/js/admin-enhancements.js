@@ -274,6 +274,7 @@ vrtxAdmin._$(document).ready(function () {
       post: bodyId !== "vrtx-preview"
     });
   }
+  // Unlock
   vrtxAdm.getFormAsync({
     selector: "#title-container a#manage\\.unlockFormService",
     selectorClass: "globalmenu",
@@ -283,6 +284,11 @@ vrtxAdmin._$(document).ready(function () {
   });
   vrtxAdm.completeFormAsync({
     selector: "form#manage\\.unlockFormService-form input[type=submit]"
+  });
+  vrtxAdm.completeFormAsync({
+    selector: "li.manage\\.unlockFormService form[name=unlockForm]",
+    updateSelectors: ["#resourceMenuRight", "#contents"],
+    post: bodyId !== "vrtx-editor"
   });
   
   // Create folder chooser in global menu

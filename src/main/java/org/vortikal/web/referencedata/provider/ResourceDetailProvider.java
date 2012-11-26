@@ -40,6 +40,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Required;
+import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
@@ -78,9 +79,8 @@ import org.vortikal.web.service.ServiceUnlinkableException;
  * <code>Service.constructLink()</code> with the target services on the current
  * resource and principal.
  * <li>A map, named 'propertyInheritanceMap' in submodel, with keys for any inheritable
- *    properties set on resource, and values being paths to where the properties
- *    are inherited from. Only property names are used for keys in map, namespace
- *    is ignored.
+ *    properties set on resource (prefix:name), and values being paths to where the properties
+ *    are inherited from.
  * <li>A boolean named 'hasWorkingCopy' in submodel, flagging if the resource
  *     as a working copy revision or not.
  * </ul>
@@ -181,7 +181,12 @@ public class ResourceDetailProvider implements ReferenceDataProvider {
                     PropertyTypeDefinition def = it.next();
                     Property prop = resource.getProperty(def);
                     if (prop != null && !prop.isInherited()) {
-                        propInheritanceMap.put(def.getName(), resource.getURI());
+                        if (def.getNamespace() == Namespace.DEFAULT_NAMESPACE) {
+                            propInheritanceMap.put(def.getName(), resource.getURI());
+                        } else {
+                            propInheritanceMap.put(def.getNamespace().getPrefix() + ":" + def.getName(), resource.getURI());
+                        }
+                        
                         it.remove();
                     }
                 }

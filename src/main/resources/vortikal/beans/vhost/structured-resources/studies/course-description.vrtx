@@ -54,35 +54,35 @@ resourcetype course-description : fellestekst-document {
     examsemester-particular-semester (class[if-examsemester-bestemt]),
     examsemester-other (class[if-examsemester-other]),
     course-type (dropdown),
-    opptak-og-adgang (dropdown),
+    opptak-og-adgang (class[vrtx-shared-text]),
     group opptak-og-adgang (opptak-og-adgang-text-field, opptak-og-adgang) vertical,
-    ikke-privatist (dropdown),
+    ikke-privatist (class[vrtx-shared-text]),
     group ikke-privatist (ikke-privatist-text-field, ikke-privatist) vertical,
-    obligatoriske-forkunnskaper (dropdown),
+    obligatoriske-forkunnskaper (class[vrtx-shared-text]),
     group obligatoriske-forkunnskaper (obligatoriske-forkunnskaper-text-field, obligatoriske-forkunnskaper) vertical,
-    tidsrom-for-undervisning (dropdown),
+    tidsrom-for-undervisning (class[vrtx-shared-text]),
     group tidsrom-for-undervisning (tidsrom-for-undervisning-text-field, tidsrom-for-undervisning) vertical,
-    adgang (dropdown),
+    adgang (class[vrtx-shared-text]),
     group adgang (adgang-text-field, adgang) vertical,
-    vurdering-og-eksamen (dropdown),
+    vurdering-og-eksamen (class[vrtx-shared-text]),
     group vurdering-og-eksamen (vurdering-og-eksamen-text-field, vurdering-og-eksamen) vertical,
-    hjelpemidler (dropdown),
+    hjelpemidler (class[vrtx-shared-text]),
     group hjelpemidler (hjelpemidler-text-field, hjelpemidler) vertical,
-    eksamensspraak (dropdown),
+    eksamensspraak (class[vrtx-shared-text]),
     group eksamensspraak (eksamensspraak-text-field, eksamensspraak) vertical,
-    sensur (dropdown),
+    sensur (class[vrtx-shared-text]),
     group sensur (sensur-text-field, sensur) vertical,
-    tilsynssensor (dropdown),
+    tilsynssensor (class[vrtx-shared-text]),
     group tilsynssensor (tilsynssensor-text-field, tilsynssensor) vertical,
-    klage (dropdown),
+    klage (class[vrtx-shared-text]),
     group klage (klage-text-field, klage) vertical,
-    ny-utsatt-eksamen (dropdown),
+    ny-utsatt-eksamen (class[vrtx-shared-text]),
     group ny-utsatt-eksamen (ny-utsatt-eksamen-text-field, ny-utsatt-eksamen) vertical,
-    antall-forsok-trekk (dropdown),
+    antall-forsok-trekk (class[vrtx-shared-text]),
     group antall-forsok-trekk (antall-forsok-trekk-text-field, antall-forsok-trekk) vertical,
-    tilrettelagt-eksamen (dropdown),
+    tilrettelagt-eksamen (class[vrtx-shared-text]),
     group tilrettelagt-eksamen (tilrettelagt-eksamen-text-field, tilrettelagt-eksamen) vertical,
-    studinfo-kontakt (dropdown)
+    studinfo-kontakt (class[vrtx-shared-text])
   }
 
   view-components {
@@ -372,10 +372,11 @@ resourcetype course-description : fellestekst-document {
           [elseif course-status = "discontinued-course"]
             <h2 class="statusmessage">[localized 'discontinued-course']</h2>
           [elseif course-status = "earlier-version"]
-            [def uri resource-prop("./../", "uri")]
-            [def resource resource(uri)]
-            [def url view-url(resource)]
-            <h2 class="statusmessage">[localized 'earlier-version-start'] <a href="[val url]">[localized 'earlier-version-link']</a> [localized 'earlier-version-end']</h2>
+            [def resource resource("./../")]
+            [if resource != null]
+              [def url view-url(resource)]
+              <h2 class="statusmessage">[localized 'earlier-version-start'] <a href="[val url]">[localized 'earlier-version-link']</a> [localized 'earlier-version-end']</h2>
+            [endif]
           [endif]
         [endif]
         ##
@@ -385,7 +386,6 @@ resourcetype course-description : fellestekst-document {
 
   view {
     ##
-    [resources-props "."]
     [def course-code resource-prop-obj-val(".", "courseContext.fs-course-code")]
     [def course-name resource-prop-obj-val(".", "courseContext.course-name")]
     [def course-content resource-prop-obj-val(".", "course-content")]

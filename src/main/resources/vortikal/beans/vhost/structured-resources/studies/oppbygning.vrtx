@@ -54,6 +54,7 @@ view-components {
       ##
       [resource-props "."]
       [def document structured-document()]
+      [def vitnemaal document.properties.vitnemaal]
       [def locale resource-locale()]       
           [if locale = "no_NO"]
              [def grad-fri document.properties.gradsnavn-no]
@@ -62,7 +63,7 @@ view-components {
           [else]
              [def grad-fri document.properties.gradsnavn-en]
          [endif]
-      [if (grad-fri != null && grad-fri != "") || (gradsnavn != null && gradsnavn != "")]
+      [if (grad-fri != null && grad-fri != "") || (gradsnavn != null && gradsnavn != "") || (vitnemaal != null && vitnemaal != "")]
       <h2>[localized 'grader']</h2>
       [endif]
       [if grad-fri != null && grad-fri != ""]

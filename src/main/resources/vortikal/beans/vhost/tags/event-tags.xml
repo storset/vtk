@@ -31,7 +31,7 @@
 
   <bean id="tags.eventListing.handler" class="org.vortikal.web.display.collection.event.TagsEventListingController"
     parent="eventListing.handler">
-    <property name="viewName" value="tags.tagsView" />
+    <property name="viewName" value="tags.tags" />
     <property name="tagsHelper" ref="tagsHelper" />
     <property name="searcher" ref="tags.eventListing.eventListingSearcher" />
     <property name="alternativeRepresentations">

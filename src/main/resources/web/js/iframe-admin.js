@@ -35,10 +35,10 @@
             contents.animate({height: (newHeight + surplus) + "px"}, surplusAnimationSpeed);
             previewLoading.animate({height: (newHeight + surplus) + "px"}, surplusAnimationSpeed);
             main.animate({height: (newHeight + surplus) + "px"}, surplusAnimationSpeed, function() {
-              removePreview(previewIframe, newHeight, previewLoading, appContent, main, contents);
+              previewLoadingComplete(previewIframe, newHeight, previewLoading, appContent, main, contents);
             });  
           } else {
-            removePreview(previewIframe, newHeight, previewLoading, appContent, main, contents);
+            previewLoadingComplete(previewIframe, newHeight, previewLoading, appContent, main, contents);
           }
         }
         
@@ -47,7 +47,7 @@
     }
   });
 
-  function removePreview(previewIframe, newHeight, previewLoading, appContent, main, contents) {
+  function previewLoadingComplete(previewIframe, newHeight, previewLoading, appContent, main, contents) {
     previewIframe.style.height = newHeight + "px";
     previewLoading.fadeOut(surplusAnimationSpeed, function() {
       previewLoading.remove();

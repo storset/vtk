@@ -1,6 +1,8 @@
 /*  Need to use postMessage for iframe resizing since cross domain is typical case now.
  *  Not essential functionality. Only works in browsers which support postMessage.
  *
+ *  TODO: the animation could be improved/simplified with less "overflow: hidden" on wrappers/containers
+ *
  */
  
 (function ($) {

@@ -394,8 +394,7 @@ resourcetype person {
     webPage : (en : "Web page", no : "Webside", nn : "Webside"),
     phone : (en : "Phone", no : "Telefon", nn : "Telefon"),
     mobile : (en : "Mobile phone", no : "Mobiltelefon", nn : "Mobiltelefon"),
-    fax : (en : "Fax", no : "Faks", nn : "Faks"),
-    officeNumber : (en : "Office number", no : "Kontor", nn : "Kontor"),
+    fax : (en : "Fax", no : "Faks", nn : "Faks")
     availableHours : (en : "Available hours", no : "Treffetider", nn : "Treffetider"),
     picture : (en : "Webpage image", no : "Nettsidebilde", nn : "Nettsidebilete"),
     picture-alt : (en : "Image", no : "Bilde", nn : "Bilete"),

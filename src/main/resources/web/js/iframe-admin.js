@@ -42,19 +42,13 @@ crossDocComLink.setUpReceiveDataHandler(function(cmdParams, source) {
           main.animate({height: (newHeight + surplus) + "px"}, surplusAnimationSpeed, function() {
             previewIframe.style.height = newHeight + "px";
             previewLoading.fadeOut(surplusAnimationSpeed, function() {
-              previewLoading.remove();
-              appContent.removeAttr('style');
-              main.removeAttr('style');
-              contents.removeAttr('style');
+              removePreview(previewLoading, appContent, main, contents);
             });
           });  
         } else { // TODO
           previewIframe.style.height = newHeight + "px";
           previewLoading.fadeOut(surplusAnimationSpeed, function() {
-            previewLoading.remove();
-            appContent.removeAttr('style');
-            main.removeAttr('style');
-            contents.removeAttr('style');
+            removePreview(previewLoading, appContent, main, contents);
           });
         }
       }
@@ -63,6 +57,13 @@ crossDocComLink.setUpReceiveDataHandler(function(cmdParams, source) {
     default:
   }
 });
+
+function removePreview(previewLoading, appContent, main, contents) {
+  previewLoading.remove();
+  appContent.removeAttr('style');
+  main.removeAttr('style');
+  contents.removeAttr('style');
+}
 
 $(document).ready(function() {
   if($("#vrtx-preview").length) {

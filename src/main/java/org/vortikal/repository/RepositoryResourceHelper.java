@@ -374,8 +374,16 @@ public class RepositoryResourceHelper {
             if (property != null) {
                 if (propDef.getProtectionLevel() != null) {
                     try {
-                        this.authorizationManager.authorizeAction(ctx.getOriginalResource().getURI(), propDef
+                        if (propDef.getProtectionLevel() == RepositoryAction.READ_WRITE
+                                && !ctx.getOriginalResource().hasPublishDate()) {
+                            // Authorize for READ_WRITE_UNPUBLISHED instead, if original resource is
+                            // unpublished and protection level is READ_WRITE
+                            this.authorizationManager.authorizeAction(ctx.getOriginalResource().getURI(),
+                                RepositoryAction.READ_WRITE_UNPUBLISHED, ctx.getPrincipal());
+                        } else {
+                            this.authorizationManager.authorizeAction(ctx.getOriginalResource().getURI(), propDef
                                 .getProtectionLevel(), ctx.getPrincipal());
+                        }
                     } catch (AuthorizationException e) {
                         throw new AuthorizationException("Principal " + ctx.getPrincipal()
                                 + " not authorized to set property " + property + " (protectionLevel="

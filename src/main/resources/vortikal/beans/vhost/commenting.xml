@@ -220,12 +220,12 @@
 
   <bean id="commenting.commentsAllowed"
         parent="abstractResourcePrincipalPermissionAssertion">
-    <property name="privilege" ref="PRIVILEGE_ADD_COMMENT" />
+    <property name="privilege" value="ADD_COMMENT" />
   </bean>
 
   <bean id="commenting.hasDeletePermission"
         parent="abstractResourcePrincipalPermissionAssertion">
-    <property name="privilege" ref="PRIVILEGE_ALL" />
+    <property name="privilege" value="ALL" />
   </bean>
 
   <bean id="commenting.viewResolver" parent="viewResolver">

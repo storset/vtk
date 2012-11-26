@@ -241,5 +241,27 @@ public interface Resource extends PropertySet, Cloneable {
      * @return Boolean indicating if the resource is published
      */
     public boolean isPublished();
+    
+    /**
+     * Get date/time for when resource is set to be published or, if already
+     * published, the time of publishing.
+     * @return A date object representing the local publish time or <code>null</code>
+     *         if not publish date is set.
+     */
+    public Date getPublishDate();
+    
+    /**
+     * Returns <code>true</code> if resource has a set publish date. This can either
+     * mean that it has a future date for when resource should be publish, or that
+     * the resource is already published at a past date.
+     */
+    public boolean hasPublishDate();
+
+    /**
+     * Get date/time for when resource is set to be unpublished.
+     * @return A date object representing the unpublish time or <code>null</code>
+     *         if no unpublish time is set.
+     */
+    public Date getUnpublishDate();
 
 }

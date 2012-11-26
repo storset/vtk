@@ -23,6 +23,7 @@ textarea.round-corners {
   -webkit-border-radius: 5px;
   -moz-border-radius: 5px;
   border-radius: 5px; 
+  padding: 8px 10px;
 }
 
 input[type=button],
@@ -402,6 +403,51 @@ input[type=text]:focus {
 }
 
 /* ^ jQuery UI dialog, datepicker, accordion etc. */
+
+/* Email forms */
+
+#email-approval-form {
+  width: 400px;
+}
+
+#email-approval-form label {
+  margin: 15px 0px 5px;
+  display: block;
+  font-size: 1.154em;
+}
+
+#email-approval-form label.first {
+  margin-top: 0px;
+}
+
+#email-approval-form .vrtx-textfield input {
+  width: 385px;
+}
+
+#email-approval-form textarea {
+  width: 380px;
+  height: 200px;
+}
+
+#email-approval-form .email-help {
+  margin: 5px 0 0 0;
+  color: #888;
+  font-size: 0.923em;
+}
+
+#emailFromUneditable {
+  font-style: italic;
+  color: #666;
+}
+
+div#email-response { 
+  font-size: 0.923em;
+  font-style: italic;
+  color: #ed1c24;
+  margin: 10px 0 0 0;
+}
+
+/* ^ Email forms */
 
 /* Mozilla hacks */
 

@@ -22,6 +22,8 @@
   <#assign copyTitle = vrtx.getMsg("tabMenuRight.copyResourcesService") />
   <#assign moveTitle = vrtx.getMsg("tabMenuRight.moveResourcesService") />
   <#assign deleteTitle = vrtx.getMsg("tabMenuRight.deleteResourcesService") />
+  <#assign publishTitle = vrtx.getMsg("tabMenuRight.publishResourcesService") />
+  <#assign unpublishTitle = vrtx.getMsg("tabMenuRight.unpublishResourcesService") />
   
   <#assign moveUnCheckedMessage = vrtx.getMsg("tabMenuRight.moveUnCheckedMessage",
          "You must check at least one element to move") />
@@ -32,15 +34,29 @@
   <script type="text/javascript"><!-- 
     var moveUncheckedMessage = '${moveUnCheckedMessage}';
     var copyUncheckedMessage = '${copyUnCheckedMessage}';
-    var deleteUncheckedMessage = '${vrtx.getMsg("tabMenuRight.deleteUnCheckedMessage")}';         
+    
+    var confirmAnd = '${vrtx.getMsg("tabMenuRight.resourcesAnd")}';
+    var confirmMore = '${vrtx.getMsg("tabMenuRight.resourcesMore")}';
+           
+    var confirmDeleteTitle = '${vrtx.getMsg("tabMenuRight.deleteConfirmTitle")}'; 
     var confirmDelete = '${vrtx.getMsg("tabMenuRight.deleteResourcesMessage")}';         
-    var confirmDeleteAnd = '${vrtx.getMsg("tabMenuRight.deleteResourcesAnd")}';
-    var confirmDeleteMore = '${vrtx.getMsg("tabMenuRight.deleteResourcesMore")}';
-    var confirmDeleteTitle = '${vrtx.getMsg("tabMenuRight.deleteConfirmTitle")}';
+    var deleteUncheckedMessage = '${vrtx.getMsg("tabMenuRight.deleteUnCheckedMessage")}';
+    
+    var confirmPublishTitle = '${vrtx.getMsg("tabMenuRight.publishConfirmTitle")}';
+    var confirmPublish = '${vrtx.getMsg("tabMenuRight.publishResourcesMessage")}';         
+    var publishUncheckedMessage = '${vrtx.getMsg("tabMenuRight.publishUnCheckedMessage")}'; 
+    
+    var confirmUnpublishTitle = '${vrtx.getMsg("tabMenuRight.unpublishConfirmTitle")}'; 
+    var confirmUnpublish = '${vrtx.getMsg("tabMenuRight.unpublishResourcesMessage")}';         
+    var unpublishUncheckedMessage = '${vrtx.getMsg("tabMenuRight.unpublishUnCheckedMessage")}'; 
     
     var copyTitle = '${copyTitle}';
     var moveTitle = '${moveTitle}';
     var deleteTitle = '${deleteTitle}';
+    var publishTitle = '${publishTitle}';
+    var unpublishTitle = '${unpublishTitle}';
+    
+    var moreTitle = '${vrtx.getMsg("tabMenuRight.moreTitle")}';
     
     var multipleFilesInfoText = '<strong>${vrtx.getMsg("tabMenuRight.fileUploadMultipleInfo.line1")}</strong><br />'
                               + '${vrtx.getMsg("tabMenuRight.fileUploadMultipleInfo.line2")}';
@@ -51,6 +67,11 @@
   <@col.listCollection
      withForm=true
      action=action.submitURL?string
-     submitActions={"copy-resources":copyTitle, "move-resources":moveTitle,"delete-resources":deleteTitle}/>
+     submitActions={ "copy-resources": copyTitle,
+                     "move-resources": moveTitle,
+                     "delete-resources": deleteTitle,
+                     "publish-resources": publishTitle,
+                     "unpublish-resources": unpublishTitle
+                   }/>
 </body>
 </html>

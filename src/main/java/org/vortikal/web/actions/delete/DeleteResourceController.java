@@ -44,18 +44,16 @@ import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 import org.vortikal.web.RequestContext;
+import org.vortikal.web.actions.ActionsHelper;
 import org.vortikal.web.service.Service;
 
 @SuppressWarnings("deprecation")
 public class DeleteResourceController extends SimpleFormController {
 
-    /* TODO: change class name to something that says it is used when standing on resource */
-
     private String cancelView;
-    private DeleteHelper deleteHelper;
-
     protected Object cmd;
-
+    
+    @Override
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
         Service service = requestContext.getService();
@@ -66,12 +64,12 @@ public class DeleteResourceController extends SimpleFormController {
         String url = service.constructLink(resource, principal);
         String name = resource.getName();
 
-        this.cmd = new DeleteCommand(name, url);
-        return this.cmd;
+        cmd = new DeleteCommand(name, url);
+        return cmd;
     }
-
+    
+    @Override
     protected ModelAndView onSubmit(Object command) throws Exception {
-
         Map<String, Object> model = new HashMap<String, Object>();
 
         RequestContext requestContext = RequestContext.getRequestContext();
@@ -83,7 +81,7 @@ public class DeleteResourceController extends SimpleFormController {
 
         if (deleteCommand.getCancelAction() != null) {
             deleteCommand.setDone(true);
-            return new ModelAndView(this.cancelView);
+            return new ModelAndView(cancelView);
         }
 
         Resource resource = repository.retrieve(token, uri.getParent(), false);
@@ -92,9 +90,10 @@ public class DeleteResourceController extends SimpleFormController {
         // key (String) that specifies type of failure and identifies
         // path to resource that failed.
         Map<String, List<Path>> failures = new HashMap<String, List<Path>>();
-
-        this.deleteHelper.deleteResource(repository, token, uri, true, failures);
-        this.deleteHelper.addFailureMessages(failures, requestContext);
+        
+        ActionsHelper.deleteResource(repository, token, uri, true, failures);
+        
+        ActionsHelper.addFailureMessages(failures, requestContext);
         if (!failures.isEmpty()) {
             return new ModelAndView(super.getFormView());
         }
@@ -106,12 +105,8 @@ public class DeleteResourceController extends SimpleFormController {
         return new ModelAndView(this.getSuccessView(), model);
     }
 
+    @Required
     public void setCancelView(String cancelView) {
         this.cancelView = cancelView;
-    }
-
-    @Required
-    public void setDeleteHelper(DeleteHelper deleteHelper) {
-        this.deleteHelper = deleteHelper;
     }
 }

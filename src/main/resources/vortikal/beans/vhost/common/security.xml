@@ -190,13 +190,6 @@
     </property>
   </bean>
 
-  <!-- Pseudo principals: -->
-  <bean id="PRINCIPAL_ALL"
-        class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
-    <property name="staticField"
-              value="org.vortikal.security.PrincipalFactory.ALL" />
-  </bean>
-
   <!-- Principal factory and related beans -->
   <bean id="principalFactory" class="org.vortikal.security.PrincipalFactory" />
 

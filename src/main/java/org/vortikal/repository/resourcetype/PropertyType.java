@@ -60,9 +60,9 @@ public final class PropertyType {
      *  Protection levels
      */
     
-    // Write privilege needed to edit prop
+    // Minimum write privilege needed to edit prop
     public static final RepositoryAction PROTECTION_LEVEL_ACL_WRITE =
-        RepositoryAction.WRITE;
+        RepositoryAction.READ_WRITE;
 
     // Principals with admin permissions can edit property
     public static final RepositoryAction PROTECTION_LEVEL_ACL_ADMIN =
@@ -93,6 +93,7 @@ public final class PropertyType {
     public static final String THUMBNAIL_PROP_NAME = "thumbnail";
     public static final String NUMBER_OF_COMMENTS_PROP_NAME = "numberOfComments";
     public static final String PUBLISH_DATE_PROP_NAME = "publish-date";
+    public static final String UNPUBLISH_DATE_PROP_NAME = "unpublish-date";
     public static final String PUBLISHED_PROP_NAME = "published";
     public static final String TAGS_PROP_NAME = "tags";
     
@@ -142,6 +143,10 @@ public final class PropertyType {
             CONTENTMODIFIEDBY_PROP_NAME
     )));
     
+    /**
+     * Set of property names (in DEFAULT namespace) which should be removed for
+     * resources that are copied.
+     */
     public static final Set<String> UNCOPYABLE_PROPERTIES = 
         Collections.unmodifiableSet(new HashSet<String>(Arrays.asList(
             NUMBER_OF_COMMENTS_PROP_NAME

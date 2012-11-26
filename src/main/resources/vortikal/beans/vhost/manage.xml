@@ -533,6 +533,20 @@
     </property>
     <property name="handler" ref="editAddCommentPermissionsHandler" />
   </bean>
+  
+  <bean id="editReadWriteUnpublishedPermissionsService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="permissionsService" />
+    <property name="assertions">
+      <list>
+        <ref local="writeACLPermissionAssertion" />
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="action" />
+          <property name="parameterValue" value="edit-read-write-unpublished-permissions" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="editReadWriteUnpublishedPermissionsHandler" />
+  </bean>
 
   <!-- <bean id="editBindPermissionsService" class="org.vortikal.web.service.ServiceImpl"> <property name="parent" ref="permissionsService" 
     /> <property name="assertions"> <list> <ref local="writeACLPermissionAssertion" /> <bean class="org.vortikal.web.service.RequestParameterAssertion"> 
@@ -639,7 +653,7 @@
             <bean parent="abstractResourcePrincipalPermissionAssertion">
               <property name="requiresAuthentication" value="true" />
               <property name="considerLocks" value="false" />
-              <property name="permission" ref="ACTION_READ_WRITE" />
+              <property name="permission" value="READ_WRITE" />
             </bean>
           </list>
         </property>
@@ -858,8 +872,11 @@
 
         <!-- Obsolete -->
         <ref bean="obsoletedPropDef" />
+        
+        <!--  Editorial contacts -->
+        <ref bean="editorialContactsPropDef" />
 
-        <!-- Collection type: -->
+        <!-- Collection type -->
         <ref bean="collection.typePropDef" />
       </list>
     </property>
@@ -998,33 +1015,39 @@
   </bean>
 
   <bean id="editReadPermissionsHandler" parent="abstractPermissionsHandler">
-    <property name="privilege" ref="PRIVILEGE_READ" />
+    <property name="privilege" value="READ" />
     <property name="successView" value="redirectToPermissions" />
     <property name="commandName" value="permissionsForm_read" />
   </bean>
 
   <bean id="editReadWritePermissionsHandler" parent="abstractPermissionsHandler">
-    <property name="privilege" ref="PRIVILEGE_READ_WRITE" />
+    <property name="privilege" value="READ_WRITE" />
     <property name="successView" value="redirectToPermissions" />
     <property name="commandName" value="permissionsForm_read-write" />
   </bean>
 
   <bean id="editAdminPermissionsHandler" parent="abstractPermissionsHandler">
-    <property name="privilege" ref="PRIVILEGE_ALL" />
+    <property name="privilege" value="ALL" />
     <property name="successView" value="redirectToPermissions" />
     <property name="commandName" value="permissionsForm_all" />
   </bean>
 
   <bean id="editReadProcessedPermissionsHandler" parent="abstractPermissionsHandler">
-    <property name="privilege" ref="PRIVILEGE_READ_PROCESSED" />
+    <property name="privilege" value="READ_PROCESSED" />
     <property name="successView" value="redirectToPermissions" />
     <property name="commandName" value="permissionsForm_read-processed" />
   </bean>
 
   <bean id="editAddCommentPermissionsHandler" parent="abstractPermissionsHandler">
-    <property name="privilege" ref="PRIVILEGE_ADD_COMMENT" />
+    <property name="privilege" value="ADD_COMMENT" />
     <property name="successView" value="redirectToPermissions" />
     <property name="commandName" value="permissionsForm_add-comment" />
+  </bean>
+  
+  <bean id="editReadWriteUnpublishedPermissionsHandler" parent="abstractPermissionsHandler">
+    <property name="privilege" value="READ_WRITE_UNPUBLISHED" />
+    <property name="successView" value="redirectToPermissions" />
+    <property name="commandName" value="permissionsForm_read-write-unpublished" />
   </bean>
 
   <bean id="permissionsHandler" class="org.vortikal.web.display.file.ResourceAwareParameterizableViewController">
@@ -1353,13 +1376,13 @@
         <ref bean="manage.refreshLockURLProvider" />
         <bean class="org.vortikal.web.referencedata.provider.ResourcePrincipalPermissionsProvider">
           <property name="modelName" value="writePermission" />
-          <property name="permission" ref="ACTION_WRITE" />
+          <property name="permission" value="WRITE" />
           <property name="anonymous" value="false" />
           <property name="considerLocks" value="true" />
         </bean>
         <bean class="org.vortikal.web.referencedata.provider.ResourcePrincipalPermissionsProvider">
           <property name="modelName" value="unlockPermission" />
-          <property name="permission" ref="ACTION_UNLOCK" />
+          <property name="permission" value="UNLOCK" />
           <property name="anonymous" value="false" />
           <property name="considerLocks" value="false" />
         </bean>
@@ -1524,12 +1547,12 @@
         <ref bean="iframeJSProvider" />
         <bean class="org.vortikal.web.referencedata.provider.ResourcePrincipalPermissionsProvider">
           <property name="modelName" value="permissions_ACTION_READ" />
-          <property name="permission" ref="ACTION_READ" />
+          <property name="permission" value="READ" />
           <property name="anonymous" value="true" />
         </bean>
         <bean class="org.vortikal.web.referencedata.provider.ResourcePrincipalPermissionsProvider">
           <property name="modelName" value="permissions_ACTION_READ_PROCESSED" />
-          <property name="permission" ref="ACTION_READ_PROCESSED" />
+          <property name="permission" value="READ_PROCESSED" />
           <property name="anonymous" value="true" />
         </bean>
         <bean class="org.vortikal.web.referencedata.provider.StaticModelDataProvider">
@@ -1553,12 +1576,12 @@
         <ref bean="iframeJSProvider" />
         <bean class="org.vortikal.web.referencedata.provider.ResourcePrincipalPermissionsProvider">
           <property name="modelName" value="permissions_ACTION_READ" />
-          <property name="permission" ref="ACTION_READ" />
+          <property name="permission" value="READ" />
           <property name="anonymous" value="true" />
         </bean>
         <bean class="org.vortikal.web.referencedata.provider.ResourcePrincipalPermissionsProvider">
           <property name="modelName" value="permissions_ACTION_READ_PROCESSED" />
-          <property name="permission" ref="ACTION_READ_PROCESSED" />
+          <property name="permission" value="READ_PROCESSED" />
           <property name="anonymous" value="true" />
         </bean>
         <bean class="org.vortikal.web.referencedata.provider.StaticModelDataProvider">
@@ -1586,12 +1609,12 @@
         <ref bean="resourceContextProvider" />
         <bean class="org.vortikal.web.referencedata.provider.ResourcePrincipalPermissionsProvider">
           <property name="modelName" value="permissions_ACTION_READ" />
-          <property name="permission" ref="ACTION_READ" />
+          <property name="permission" value="READ" />
           <property name="anonymous" value="true" />
         </bean>
         <bean class="org.vortikal.web.referencedata.provider.ResourcePrincipalPermissionsProvider">
           <property name="modelName" value="permissions_ACTION_READ_PROCESSED" />
-          <property name="permission" ref="ACTION_READ_PROCESSED" />
+          <property name="permission" value="READ_PROCESSED" />
           <property name="anonymous" value="true" />
         </bean>
         <bean class="org.vortikal.web.referencedata.provider.StaticModelDataProvider">
@@ -1667,11 +1690,11 @@
 
   <bean id="permissionShortcuts" class="org.springframework.beans.factory.config.MapFactoryBean">
     <property name="sourceMap">
-      <map>
-        <entry key-ref="PRIVILEGE_READ" value-ref="permissionShortcutsProvider.readShortcuts" />
-        <entry key-ref="PRIVILEGE_READ_WRITE" value-ref="permissionShortcutsProvider.readWriteShortcuts" />
-        <entry key-ref="PRIVILEGE_ADD_COMMENT" value-ref="permissionShortcutsProvider.addCommentShortcuts" />
-        <entry key-ref="PRIVILEGE_READ_PROCESSED" value-ref="permissionShortcutsProvider.readProcessedShortcuts" />
+      <map key-type="org.vortikal.repository.Privilege">
+        <entry key="READ" value-ref="permissionShortcutsProvider.readShortcuts" />
+        <entry key="READ_WRITE" value-ref="permissionShortcutsProvider.readWriteShortcuts" />
+        <entry key="ADD_COMMENT" value-ref="permissionShortcutsProvider.addCommentShortcuts" />
+        <entry key="READ_PROCESSED" value-ref="permissionShortcutsProvider.readProcessedShortcuts" />
       </map>
     </property>
   </bean>
@@ -1781,11 +1804,12 @@
     <property name="aclInheritanceService" ref="aclInheritanceService" />
     <property name="aclEditServices">
       <map>
-        <entry key-ref="PRIVILEGE_READ" value-ref="editReadPermissionsService" />
-        <entry key-ref="PRIVILEGE_READ_WRITE" value-ref="editReadWritePermissionsService" />
-        <entry key-ref="PRIVILEGE_ALL" value-ref="editAdminPermissionsService" />
-        <entry key-ref="PRIVILEGE_ADD_COMMENT" value-ref="editAddCommentPermissionsService" />
-        <entry key-ref="PRIVILEGE_READ_PROCESSED" value-ref="editReadProcessedPermissionsService" />
+        <entry key="READ" value-ref="editReadPermissionsService" />
+        <entry key="READ_WRITE" value-ref="editReadWritePermissionsService" />
+        <entry key="ALL" value-ref="editAdminPermissionsService" />
+        <entry key="ADD_COMMENT" value-ref="editAddCommentPermissionsService" />
+        <entry key="READ_PROCESSED" value-ref="editReadProcessedPermissionsService" />
+        <entry key="READ_WRITE_UNPUBLISHED" value-ref="editReadWriteUnpublishedPermissionsService" />
       </map>
     </property>
     <property name="permissionShortcuts" ref="permissionShortcuts" />
@@ -1888,12 +1912,12 @@
         <bean parent="abstractResourcePrincipalPermissionAssertion">
           <property name="requiresAuthentication" value="true" />
           <property name="considerLocks" value="false" />
-          <property name="permission" ref="ACTION_READ_WRITE" />
+          <property name="permission" value="READ_WRITE_UNPUBLISHED" />
         </bean>
         <bean parent="abstractResourcePrincipalPermissionAssertion">
           <property name="requiresAuthentication" value="true" />
           <property name="considerLocks" value="false" />
-          <property name="permission" ref="ACTION_ALL" />
+          <property name="permission" value="ALL" />
         </bean>
         <bean class="org.vortikal.web.service.GroupMembershipAssertion">
           <property name="principalManager" ref="principalManager" />
@@ -1909,52 +1933,69 @@
 
   <bean id="requiresReadPermissionAssertion" parent="abstractResourcePrincipalPermissionAssertion">
     <property name="requiresAuthentication" value="true" />
-    <property name="permission" ref="ACTION_READ" />
+    <property name="permission" value="READ" />
+  </bean>
+  
+  <bean id="requiresPublishUnpublishPermissionAssertion" parent="abstractResourcePrincipalPermissionAssertion">
+    <property name="requiresAuthentication" value="true" />
+    <property name="permission" value="PUBLISH_UNPUBLISH" />
   </bean>
   
   <bean id="requiresReadParentPermissionAssertion" parent="abstractResourcePrincipalPermissionAssertion">
     <property name="parent" value="true" />
     <property name="requiresAuthentication" value="true" />
-    <property name="permission" ref="ACTION_READ" />
+    <property name="permission" value="READ" />
   </bean>
 
   <bean id="requiresWritePermissionAssertion" parent="abstractResourcePrincipalPermissionAssertion">
     <property name="requiresAuthentication" value="true" />
-    <property name="permission" ref="ACTION_WRITE" />
+    <property name="permission" value="WRITE" />
+    <property name="unpublishedPermission" value="READ_WRITE_UNPUBLISHED" />
   </bean>
 
   <bean id="deleteResourcePermissionAssertion" parent="abstractResourcePrincipalPermissionAssertion">
-    <property name="permission" ref="ACTION_DELETE" />
     <property name="requiresAuthentication" value="true" />
+    <property name="permission" value="DELETE" />
+    <property name="unpublishedPermission" value="DELETE_UNPUBLISHED" />
   </bean>
 
   <bean id="writePermissionAssertion" parent="abstractResourcePrincipalPermissionAssertion">
-    <property name="permission" ref="ACTION_WRITE" />
+    <property name="permission" value="WRITE" />
+    <property name="unpublishedPermission" value="READ_WRITE_UNPUBLISHED" />
+  </bean>
+  
+  <bean id="requiresWriteUnpublishedPermissionAssertion" parent="abstractResourcePrincipalPermissionAssertion">
+    <property name="permission" value="READ_WRITE_UNPUBLISHED" />
+    <property name="requiresAuthentication" value="true" />
+  </bean>
+
+  <bean id="writeUnpublishedPermissionAssertion" parent="abstractResourcePrincipalPermissionAssertion">
+    <property name="permission" value="READ_WRITE_UNPUBLISHED" />
   </bean>
   
   <bean id="writeParentPermissionAssertion" parent="abstractResourcePrincipalPermissionAssertion">
     <property name="parent" value="true" />
-    <property name="permission" ref="ACTION_WRITE" />
+    <property name="permission" value="WRITE" />
   </bean>
-
+  
   <bean id="bindPermissionAssertion" parent="abstractResourcePrincipalPermissionAssertion">
-    <property name="permission" ref="ACTION_CREATE" />
+    <property name="permission" value="CREATE_UNPUBLISHED" />
   </bean>
 
   <bean id="writeACLPermissionAssertion" parent="abstractResourcePrincipalPermissionAssertion">
-    <property name="permission" ref="ACTION_WRITE_ACL" />
+    <property name="permission" value="WRITE_ACL" />
   </bean>
 
   <bean id="readProcessedPermissionAssertion" parent="abstractResourcePrincipalPermissionAssertion">
     <property name="requiresAuthentication" value="true" />
-    <property name="permission" ref="ACTION_READ_PROCESSED" />
+    <property name="permission" value="READ_PROCESSED" />
   </bean>
 
   <bean id="unlockPermissionAssertion" class="org.vortikal.web.service.OrAssertion">
     <property name="assertions">
       <list>
         <bean parent="abstractResourcePrincipalPermissionAssertion">
-          <property name="permission" ref="ACTION_ALL" />
+          <property name="permission" value="ALL" />
           <property name="considerLocks" value="false" />
         </bean>
         <bean class="org.vortikal.web.service.ResourceLockedAssertion">
@@ -1965,15 +2006,16 @@
   </bean>
 
   <bean id="lockPermissionAssertion" parent="abstractResourcePrincipalPermissionAssertion">
-    <property name="permission" ref="ACTION_WRITE" />
+    <property name="permission" value="WRITE" />
+    <property name="unpublishedPermission" value="READ_WRITE_UNPUBLISHED" />
   </bean>
 
   <bean id="delegateOwnershipPermissionAssertion" parent="abstractResourcePrincipalPermissionAssertion">
-    <property name="permission" ref="ACTION_WRITE_ACL" />
+    <property name="permission" value="WRITE_ACL" />
   </bean>
 
   <bean id="adminPermissionAssertion" parent="abstractResourcePrincipalPermissionAssertion">
-    <property name="permission" ref="ACTION_ALL" />
+    <property name="permission" value="ALL" />
   </bean>
 
   <bean id="resourceNotRootAssertion" class="org.vortikal.web.service.ResourceURIAssertion">
@@ -2130,5 +2172,79 @@
       </map>
     </property>
   </bean>
+  
+  <!-- Email -->
+  <bean id="email.executor" class="org.vortikal.util.mail.MailExecutor">
+    <constructor-arg ref="email.taskExecutor" />
+    <constructor-arg ref="email.javaMailSender" />
+  </bean>
 
+  <bean id="email.javaMailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+    <property name="host" value="${email.mailServer}" />
+    <property name="port" value="${email.mailServerPort}" />
+    <property name="protocol" value="${email.mailServerProtocol}" />
+    <property name="defaultEncoding" value="utf-8" />
+  </bean>
+
+  <bean id="email.taskExecutor" class="org.springframework.core.task.SimpleAsyncTaskExecutor">
+    <property name="concurrencyLimit" value="${email.concurrencyLimit}" />
+  </bean>
+  
+   <!--
+    <bean id="taskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+    <property name="corePoolSize" value="10" /> <property name="maxPoolSize" value="25" /> <property
+    name="queueCapacity" value="50" /> </bean>
+  -->
+  
+  <bean id="emailApprovalService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="manageService" />
+    <property name="order" value="-999" />
+    <property name="handler" ref="emailApprovalHandler" />
+    <property name="assertions">
+      <list>
+        <ref bean="writeUnpublishedPermissionAssertion" />
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="action" />
+          <property name="parameterValue" value="email-approval" />
+        </bean>
+      </list> 
+    </property>
+  </bean>
+  
+  <bean id="emailApprovalHandler" class="org.vortikal.web.actions.publish.ApprovalViaEmailController">
+    <property name="manageService" ref="manageService" />
+    <property name="viewName" value="emailApproval.view" />
+    <property name="resourceManager" ref="resourceManager" />
+    <property name="mailExecutor" ref="email.executor" />
+    <property name="mailTemplateProvider" ref="emailApproval.mailTemplateProvider" />
+    <property name="defaultSender" value="${email.defaultSender}" />
+    <property name="editorialContactsPropDef" ref="editorialContactsPropDef" />
+  </bean>
+  
+ <bean id="emailApproval.viewResolver" parent="system.decoratingViewResolver">
+    <property name="views">
+      <map>
+        <entry key="emailApproval.view" value-ref="emailApproval.view" />
+      </map>
+    </property>
+  </bean>
+
+  <bean id="emailApproval.view" parent="freemarkerView">
+    <property name="url" value="pages/email-approval.ftl" />
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="resourceContextProvider" />
+      </list>
+    </property>
+  </bean>
+  
+  <bean id="emailApproval.mailTemplateProvider" class="org.vortikal.util.mail.MailTemplateProvider">
+    <property name="view" ref="emailApproval.mailTemplateView" />
+    <property name="resourceDetailProvider" ref="resourceDetailProvider" />
+  </bean>
+
+  <bean id="emailApproval.mailTemplateView" parent="freemarkerView">
+    <property name="url" value="pages/approval-mail-template.ftl"></property>
+  </bean>
+  
 </beans>

@@ -45,6 +45,7 @@ import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Privilege;
 import org.vortikal.repository.Repository;
+import org.vortikal.repository.RepositoryAction;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.Revision;
 import org.vortikal.repository.store.Revisions;
@@ -129,6 +130,19 @@ public class DisplayRevisionsController implements Controller {
             if (haveDeleteURL) {
                 rev.put("deleteURL", new URL(deleteURL)
                    .setParameter("revision", revision.getName()));
+            }
+            
+            else if (revision.getType() == Revision.Type.WORKING_COPY) {
+
+                if (repository.isAuthorized(resource, RepositoryAction.READ_WRITE_UNPUBLISHED,
+                        principal, true)) {
+                    try {
+                        URL u = this.deleteService.constructURL(resource, principal, false);
+                        rev.put("deleteURL", new URL(u)
+                        .setParameter("revision", revision.getName()));
+                        
+                    } catch (Throwable t) { }
+                }
             }
             
             boolean haveRestoreURL = restoreURL != null 

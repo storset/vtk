@@ -593,16 +593,25 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
         storeProperties(created);
 
         // Remove uncopyable properties
-        // @see PropertyType.UNCOPYABLE_PROPERTIES
-        removeUncopyableProperties(created);
+        deleteUncopyablePropertiesRecursively(created.getURI());
 
         // Re-load and return newly written destination ResourceImpl
-        return load(newResource.getURI());
+        return load(created.getURI());
     }
 
-    private void removeUncopyableProperties(ResourceImpl r) {
-        final String destUri = r.getURI().toString();
-        final String uriWildcard = SqlDaoUtils.getUriSqlWildcard(r.getURI(), SQL_ESCAPE_CHAR);
+    /**
+     * Removes all properties found in PropertyType.UNCOPYABLE_PROPERTIES, by name, from
+     * resource at path (recursively for all sub-resources as well if resource is collection).
+     * Only properties in DEFAULT (null) namespace are deleted.
+     * 
+     * Alters only database with no other side effects.
+     * 
+     * @param uri The path to the resource.
+     * @see PropertyType#UNCOPYABLE_PROPERTIES
+     */
+    private void deleteUncopyablePropertiesRecursively(Path uri) {
+        final String destUri = uri.toString();
+        final String uriWildcard = SqlDaoUtils.getUriSqlWildcard(uri, SQL_ESCAPE_CHAR);
         final String batchSqlMap = getSqlMap("deleteUncopyableProperties");
         getSqlMapClientTemplate().execute(new SqlMapClientCallback() {
             @Override

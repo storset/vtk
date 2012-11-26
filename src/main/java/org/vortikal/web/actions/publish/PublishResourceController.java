@@ -31,28 +31,29 @@
 package org.vortikal.web.actions.publish;
 
 import java.util.Calendar;
+
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.beans.factory.BeanInitializationException;
-import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.vortikal.repository.Path;
-import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.Principal;
-import org.vortikal.web.Message;
 import org.vortikal.web.RequestContext;
+import org.vortikal.web.actions.ActionsHelper;
 import org.vortikal.web.service.Service;
 
-public class PublishResourceController extends SimpleFormController implements InitializingBean {
+@SuppressWarnings("deprecation")
+public class PublishResourceController extends SimpleFormController {
 
     private String viewName;
     private PropertyTypeDefinition publishDatePropDef;
@@ -62,11 +63,7 @@ public class PublishResourceController extends SimpleFormController implements I
     private static final String UNPUBLISH_PARAM = "unpublish-confirmed";
     private static final String UNPUBLISH_PARAM_GLOBAL = "global-unpublish-confirmed";
 
-    public void afterPropertiesSet() throws Exception {
-        if (this.viewName == null)
-            throw new BeanInitializationException("Property 'viewName' must be set");
-    }
-
+    @Override
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
         Repository repository = requestContext.getRepository();
@@ -82,6 +79,7 @@ public class PublishResourceController extends SimpleFormController implements I
         return new PublishResourceCommand(url);
     }
 
+    @Override
     protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command,
             BindException errors) throws Exception {
         Map<String, Object> model = new HashMap<String, Object>();
@@ -89,37 +87,34 @@ public class PublishResourceController extends SimpleFormController implements I
         Repository repository = requestContext.getRepository();
         String token = requestContext.getSecurityToken();
         Path resourceURI = RequestContext.getRequestContext().getResourceURI();
-        Resource resource = repository.retrieve(token, resourceURI, true);
 
         PublishResourceCommand publishResourceCommand = (PublishResourceCommand) command;
 
         String action = request.getParameter(ACTION_PARAM);
-
+        
+        // Map of files that for some reason failed on publish. Separated by a
+        // key (String) that specifies type of failure and identifies list of
+        // paths to resources that failed.
+        Map<String, List<Path>> failures = new HashMap<String, List<Path>>();
+        
         if (publishResourceCommand.getPublishResourceAction() != null) {
-            String msgCode = "publish.permission.";
-
             if (PUBLISH_PARAM.equals(action) || PUBLISH_PARAM_GLOBAL.equals(action)) {
-                Property publishDateProp = resource.getProperty(this.publishDatePropDef);
-                if (publishDateProp == null) {
-                    publishDateProp = this.publishDatePropDef.createProperty();
-                    resource.addProperty(publishDateProp);
-                }
-                publishDateProp.setDateValue(Calendar.getInstance().getTime());
-                msgCode += "publish";
+                ActionsHelper.publishResource(publishDatePropDef, Calendar.getInstance().getTime(), repository, token, resourceURI, failures);
             } else if (UNPUBLISH_PARAM.equals(action) || UNPUBLISH_PARAM_GLOBAL.equals(action)) {
-                resource.removeProperty(this.publishDatePropDef);
-                msgCode += "unpublish";
+                ActionsHelper.unpublishResource(publishDatePropDef, repository, token, resourceURI, failures);
             }
-            repository.store(token, resource);
-            RequestContext.getRequestContext().addInfoMessage(new Message(msgCode));
         }
+        ActionsHelper.addFailureMessages(failures, requestContext);
+        
         return new ModelAndView(this.viewName, model);
     }
-
+    
+    @Required
     public void setViewName(String viewName) {
         this.viewName = viewName;
     }
 
+    @Required
     public void setPublishDatePropDef(PropertyTypeDefinition publishDatePropDef) {
         this.publishDatePropDef = publishDatePropDef;
     }

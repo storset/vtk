@@ -42,8 +42,9 @@ package org.vortikal.repository.resourcetype;
  * 
  * Perhaps also introduce constraint on props with late-evaluators, that they cannot
  * be overridden, nor override anything (within the same line of type inheritance in resource type tree).
+ * 
+ * @see PropertyEvaluator
  */
 public interface LatePropertyEvaluator extends PropertyEvaluator  {
-    
 
 }

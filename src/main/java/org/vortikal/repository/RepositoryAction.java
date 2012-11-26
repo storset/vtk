@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, 2007, University of Oslo, Norway
+/* Copyright (c) 2006-2012, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -30,7 +30,18 @@
  */
 package org.vortikal.repository;
 
+/**
+ * Repository actions are in general more fine grained than
+ * ACL {@link org.vortikal.repository.Privilege privileges}. There exists
+ * one canonical <code>RepositoryAction</code> for each ACL <code>Privilege</code>.
+ * 
+ * Additional repository actions require ACL privileges and/or roles according to security
+ * model. The rules are enforced by code in {@link AuthorizationManager}.
+ * 
+ * Repository actions cannot be directly added to resource ACLs.
+ */
 public enum RepositoryAction {
+    
     READ_PROCESSED("read-processed"),
     CREATE("create"),
     READ("read"),
@@ -42,6 +53,12 @@ public enum RepositoryAction {
     COPY("copy"),
     MOVE("move"),
     ALL("all"),
+    
+    READ_WRITE_UNPUBLISHED("read-write-unpublished"),
+    CREATE_UNPUBLISHED("create-unpublished"),
+    PUBLISH_UNPUBLISH("publish-unpublish"),
+    DELETE_UNPUBLISHED("delete-unpublished"),
+
     ADD_COMMENT("add-comment"),
     EDIT_COMMENT("edit-comment"),
     UNEDITABLE_ACTION("property-edit-uneditable-action"),
@@ -49,12 +66,15 @@ public enum RepositoryAction {
     REPOSITORY_ROOT_ROLE_ACTION("property-edit-root-role");
 
     private String name;
+    
     private RepositoryAction(String name) {
         this.name = name;
     }
-    public String value() {
+    
+    public String getName() {
         return this.name;
     }
+    
     @Override
     public String toString() {
         return this.name;

@@ -138,7 +138,7 @@
         </bean>
         <bean class="org.vortikal.web.referencedata.provider.ResourcePrincipalPermissionsProvider">
           <property name="modelName" value="permissions_ACTION_READ" />
-          <property name="permission" ref="ACTION_READ" />
+          <property name="permission" value="READ" />
           <property name="anonymous" value="true" />
         </bean>  
       </list>
@@ -165,7 +165,7 @@
         </bean>
         <bean class="org.vortikal.web.referencedata.provider.ResourcePrincipalPermissionsProvider">
           <property name="modelName" value="permissions_ACTION_READ" />
-          <property name="permission" ref="ACTION_READ" />
+          <property name="permission" value="READ" />
           <property name="anonymous" value="true" />
         </bean>  
       </list>

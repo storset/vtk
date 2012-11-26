@@ -59,7 +59,6 @@
     <property name="resourceManager" ref="resourceManager" />
     <property name="mailExecutor" ref="feedback.mailExecutor" />
     <property name="mailTemplateProvider" ref="feedback.mailTemplateProvider" />
-    <property name="localeResolver" ref="viewServiceResourceAwareLocaleResolver" />
     <property name="recipients" value="${mailFeedback.recipients}" />
     <property name="sender" value="${mailFeedback.sender}" />
     <property name="displayUpscoping" value="${displayUpscoping}" />

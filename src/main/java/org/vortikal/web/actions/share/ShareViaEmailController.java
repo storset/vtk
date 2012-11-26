@@ -32,7 +32,6 @@
 package org.vortikal.web.actions.share;
 
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 import javax.mail.internet.MimeMessage;
@@ -41,7 +40,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Required;
-import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.edit.editor.ResourceWrapperManager;
@@ -49,6 +47,7 @@ import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.util.mail.MailExecutor;
+import org.vortikal.util.mail.MailHelper;
 import org.vortikal.util.mail.MailTemplateProvider;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
@@ -59,7 +58,6 @@ public class ShareViaEmailController implements Controller {
     private ResourceWrapperManager resourceManager;
     private MailExecutor mailExecutor;
     private MailTemplateProvider mailTemplateProvider;
-    private LocaleResolver localeResolver;
     private Service viewService;
     private String displayUpscoping;
 
@@ -72,12 +70,6 @@ public class ShareViaEmailController implements Controller {
         Resource resource = repository.retrieve(token, uri, true);
         if (resource == null) {
             return null;
-        }
-
-        String language = resource.getContentLanguage();
-        if (language == null) {
-            Locale locale = localeResolver.resolveLocale(request);
-            language = locale.toString();
         }
 
         Map<String, Object> model = new HashMap<String, Object>();
@@ -101,7 +93,7 @@ public class ShareViaEmailController implements Controller {
                 if (StringUtils.isNotBlank(yourComment)) {
                     model.put("yourSavedComment", yourComment);
                 }
-                model.put("tipResponse", "FAILURE-NULL-FORM");
+                model.put(MailHelper.RESPONSE_MODEL, MailHelper.RESPONSE_EMPTY_FIELDS);
             } else {
                 try {
                     String comment = "";
@@ -122,14 +114,21 @@ public class ShareViaEmailController implements Controller {
                         String url = this.viewService.constructURL(uri).toString();
 
                         MimeMessage mimeMessage = mailExecutor.createMimeMessage(
-                                mailTemplateProvider, this.siteName, url, resource.getTitle(), 
+                                mailTemplateProvider,
+                                this.siteName,
+                                url,
+                                resource.getTitle(),
                                 emailMultipleTo,
-                                emailFrom, comment, resource.getTitle());
+                                emailFrom,
+                                "",
+                                comment,
+                                resource.getTitle()
+                        );
 
                         mailExecutor.enqueue(mimeMessage);
 
                         model.put("emailSentTo", emailTo);
-                        model.put("tipResponse", "OK");
+                        model.put(MailHelper.RESPONSE_MODEL, MailHelper.RESPONSE_OK);
                     } else {
                         model.put("emailSavedTo", emailTo);
                         model.put("emailSavedFrom", emailFrom);
@@ -137,11 +136,11 @@ public class ShareViaEmailController implements Controller {
                         if (!StringUtils.isBlank(yourComment)) {
                             model.put("yourSavedComment", yourComment);
                         }
-                        model.put("tipResponse", "FAILURE-INVALID-EMAIL");
+                        model.put(MailHelper.RESPONSE_MODEL, MailHelper.RESPONSE_INVALID_EMAILS);
                     }
                 } catch (Exception mtex) { // Unreachable because of thread
-                    model.put("tipResponse", "FAILURE");
-                    model.put("tipResponseMsg", mtex.getMessage());
+                    model.put(MailHelper.RESPONSE_MODEL, MailHelper.RESPONSE_GENERAL_FAILURE);
+                    model.put(MailHelper.RESPONSE_MODEL + "Msg", mtex.getMessage());
                 }
             }
         }
@@ -149,42 +148,30 @@ public class ShareViaEmailController implements Controller {
         return new ModelAndView(this.viewName, model);
     }
 
-
     @Required
     public void setViewName(String viewName) {
         this.viewName = viewName;
     }
-
 
     @Required
     public void setResourceManager(ResourceWrapperManager resourceManager) {
         this.resourceManager = resourceManager;
     }
 
-
     @Required
     public void setMailExecutor(MailExecutor mailExecutor) {
         this.mailExecutor = mailExecutor;
     }
-
 
     @Required
     public void setMailTemplateProvider(MailTemplateProvider mailTemplateProvider) {
         this.mailTemplateProvider = mailTemplateProvider;
     }
 
-
-    @Required
-    public void setLocaleResolver(LocaleResolver localeResolver) {
-        this.localeResolver = localeResolver;
-    }
-
-
     @Required
     public void setViewService(Service viewService) {
         this.viewService = viewService;
     }
-
 
     @Required
     public void setSiteName(String siteName) {

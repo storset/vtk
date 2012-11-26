@@ -227,7 +227,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         }
 
         if (revision.getType() != Revision.Type.WORKING_COPY) {
-            this.authorizationManager.authorizeReadRevision(principal, revision);
+            this.authorizationManager.authorize(principal, revision.getAcl(), Privilege.READ);
         }
 
         // Evaluate revision content (as content-modification)
@@ -312,7 +312,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         if (revision.getType() == Type.WORKING_COPY) {
             this.authorizationManager.authorizeRead(uri, principal);
         } else {
-            this.authorizationManager.authorizeReadRevision(principal, revision);
+            this.authorizationManager.authorize(principal, revision.getAcl(), Privilege.READ);
         }
         return this.revisionStore.getContent(r, revision);
     }
@@ -366,29 +366,32 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         }
 
         checkLock(parent, principal);
-        this.authorizationManager.authorizeCreate(parent.getURI(), principal);
+        // Allow if principal has at least CREATE_UNPUBLISHED on parent
+        this.authorizationManager.authorizeCreateUnpublished(parent.getURI(), principal);
+        
         checkMaxChildren(parent);
-
-        ResourceImpl newResource = new ResourceImpl(uri);
-        newResource.setChildURIs(new ArrayList<Path>());
-        Content content = getContent(newResource);
-        newResource = this.resourceHelper.create(principal, newResource, true, content);
 
         try {
             // Content modification on parent for bind
             final ResourceImpl originalParent = (ResourceImpl) parent.clone();
             parent.addChildURI(uri);
 
-            content = getContent(parent);
+            Content content = getContent(parent);
             parent = this.resourceHelper.contentModification(parent, principal, content);
             parent = this.dao.store(parent);
             this.context.publishEvent(new ContentModificationEvent(this, (Resource) parent.clone(), originalParent));
 
-            // Store new resource
+            // Create on new collection resource
+            ResourceImpl newResource = new ResourceImpl(uri);
+            newResource.setChildURIs(new ArrayList<Path>());
+            content = getContent(newResource);
             newResource.setAcl(parent.getAcl());
             newResource.setInheritedAcl(true);
             int aclIneritedFrom = parent.isInheritedAcl() ? parent.getAclInheritedFrom() : parent.getID();
             newResource.setAclInheritedFrom(aclIneritedFrom);
+            newResource = this.resourceHelper.create(principal, newResource, true, content);
+            
+            // Store new collection resource
             newResource = this.dao.store(newResource);
             this.contentStore.createResource(newResource.getURI(), true);
 
@@ -402,7 +405,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
 
     @Transactional
     @Override
-    public void copy(String token, Path srcUri, Path destUri, boolean overwrite, boolean preserveACL)
+    public void copy(String token, Path srcUri, Path destUri, boolean overwrite, boolean copyAcl)
             throws IllegalOperationException, AuthorizationException, AuthenticationException,
             FailedDependencyException, ResourceOverwriteException, ResourceLockedException, ResourceNotFoundException,
             ReadOnlyException, IOException {
@@ -439,14 +442,13 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         if (dest != null) {
             this.dao.delete(dest);
             this.contentStore.deleteResource(dest.getURI());
-            this.context
-                    .publishEvent(new ResourceDeletionEvent(this, dest.getURI(), dest.getID(), dest.isCollection()));
+            this.context.publishEvent(new ResourceDeletionEvent(this, dest.getURI(), dest.getID(), dest.isCollection()));
         }
 
         try {
             PropertySet fixedProps = this.resourceHelper.getFixedCopyProperties(src, principal, destUri);
 
-            ResourceImpl newResource = src.createCopy(destUri);
+            ResourceImpl newResource = src.createCopy(destUri, copyAcl ? src.getAcl() : destParent.getAcl());
             Content content = getContent(src);
             // XXX: why nameChange() on copy?
             newResource = this.resourceHelper.nameChange(src, newResource, principal, content);
@@ -458,9 +460,8 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
 
             // Both new resource and destParent are stored in DAO copy call
             // Probably better to not touch destparent in DAO copy code and
-            // explicitly
-            // store it here instead (for better clarity).
-            newResource = this.dao.copy(src, destParent, newResource, preserveACL, fixedProps);
+            // explicitly store it here instead (for better clarity).
+            newResource = this.dao.copy(src, destParent, newResource, copyAcl, fixedProps);
             this.contentStore.copy(src.getURI(), newResource.getURI());
 
             this.context.publishEvent(new ResourceCreationEvent(this, (Resource) newResource.clone()));
@@ -495,7 +496,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         } else if (!overwrite) {
             throw new ResourceOverwriteException(destUri);
         }
-
+        
         // checking destParent
         ResourceImpl destParent = this.dao.load(destUri.getParent());
         if ((destParent == null) || !destParent.isCollection()) {
@@ -543,8 +544,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
                     destParentOriginal));
 
             // Process move
-            ResourceImpl newResource = src.createCopy(destUri);
-            newResource.setAcl(src.getAcl());
+            ResourceImpl newResource = src.createCopy(destUri, src.isInheritedAcl() ? destParent.getAcl() : src.getAcl());
             newResource.setInheritedAcl(src.isInheritedAcl());
             newResource.setAclInheritedFrom(src.getAclInheritedFrom());
             content = getContent(src);
@@ -581,7 +581,11 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         // locking and database inter-transaction synchronization (which leads
         // to "11-iterations"-problem)
         ResourceImpl parentCollection = this.dao.load(uri.getParent());
-        this.authorizationManager.authorizeDelete(uri, principal);
+        if (resourceToDelete.hasPublishDate()) {
+            this.authorizationManager.authorizeDelete(uri, principal);
+        } else {
+            this.authorizationManager.authorizeDeleteUnpublished(uri, principal);
+        }
         checkLock(parentCollection, principal);
         checkLock(resourceToDelete, principal);
 
@@ -707,7 +711,9 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         }
 
         checkLock(r, principal);
-        this.authorizationManager.authorizeReadWrite(uri, principal);
+
+        // Principal with at least privelege READ_WRITE_UNPUBLISHED required to lock resource:
+        this.authorizationManager.authorizeReadWriteUnpublished(uri, principal);
 
         boolean refresh = lockToken != null;
 
@@ -737,8 +743,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         } catch (CloneNotSupportedException c) {
             throw new IOException("Failed to clone resource");
         }
-        // this.authorizationManager.lockResource(r, principal, ownerInfo,
-        // depth, requestedTimeoutSeconds, (lockToken != null));
     }
 
     private void checkLock(Resource resource, Principal principal) throws ResourceLockedException, IOException,
@@ -822,7 +826,11 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         }
 
         // Regular store
-        this.authorizationManager.authorizeReadWrite(uri, principal);
+        if (original.hasPublishDate()) {
+            this.authorizationManager.authorizeReadWrite(uri, principal);
+        } else {
+            this.authorizationManager.authorizeReadWriteUnpublished(uri, principal);
+        }
 
         try {
             ResourceImpl originalClone = (ResourceImpl) original.clone();
@@ -874,7 +882,11 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     private Resource storeInheritableProps(Path uri, Resource resource, ResourceImpl original, Principal principal,
             InheritablePropertiesStoreContext context) throws IOException {
         // Normal write privilege required
-        this.authorizationManager.authorizeReadWrite(uri, principal);
+        if (original.hasPublishDate()) {
+            this.authorizationManager.authorizeReadWrite(uri, principal);
+        } else {
+            this.authorizationManager.authorizeReadWriteUnpublished(uri, principal);
+        }
 
         try {
             ResourceImpl originalClone = (ResourceImpl) original.clone();
@@ -914,31 +926,33 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         }
 
         checkLock(parent, principal);
-        this.authorizationManager.authorizeCreate(parent.getURI(), principal);
+
+        // Allow if principal has at least privileges to create unpublished resource
+        this.authorizationManager.authorizeCreateUnpublished(parent.getURI(), principal);
+        
         checkMaxChildren(parent);
 
         try {
-            this.contentStore.storeContent(uri, inStream);
-            ResourceImpl newResource = new ResourceImpl(uri);
-            Content content = getContent(newResource);
-            newResource = this.resourceHelper.create(principal, newResource, false, content);
-
-            // Content modification on parent
+            // Store content modification on parent
             final ResourceImpl originalParent = (ResourceImpl) parent.clone();
             parent.addChildURI(uri);
-            content = getContent(parent);
+            Content content = getContent(parent);
             parent = this.resourceHelper.contentModification(parent, principal, content);
             parent = this.dao.store(parent);
             this.context.publishEvent(new ContentModificationEvent(this, (Resource) parent.clone(), originalParent));
 
-            // Store new resource
+            // Set up new resource
+            this.contentStore.storeContent(uri, inStream);
+            ResourceImpl newResource = new ResourceImpl(uri);
+            content = getContent(newResource);
             newResource.setAcl(parent.getAcl());
             newResource.setInheritedAcl(true);
             int aclIneritedFrom = parent.isInheritedAcl() ? parent.getAclInheritedFrom() : parent.getID();
             newResource.setAclInheritedFrom(aclIneritedFrom);
-
+            newResource = this.resourceHelper.create(principal, newResource, false, content);
+            
+            // Store new resource
             newResource = this.dao.store(newResource);
-
             this.context.publishEvent(new ResourceCreationEvent(this, (Resource) newResource.clone()));
 
             return (Resource) newResource.clone();
@@ -967,7 +981,12 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         }
 
         checkLock(r, principal);
-        this.authorizationManager.authorizeReadWrite(uri, principal);
+        if (r.hasPublishDate()) {
+            this.authorizationManager.authorizeReadWrite(uri, principal);
+        } else {
+            this.authorizationManager.authorizeReadWriteUnpublished(uri, principal);
+        }
+        
         try {
             final Resource original = (ResourceImpl) r.clone();
 
@@ -987,6 +1006,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
 
     /**
      * Requests that an InputStream be written to a resource.
+     * Used to update contents of working copy revision.
      */
     @Transactional
     @Override
@@ -1031,10 +1051,9 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         }
 
         checkLock(r, principal);
-
-        this.authorizationManager.authorizeReadWrite(uri, principal);
-        // this.authorizationManager.authorizeWriteRevision(principal,
-        // revision);
+        
+        // READ_WRITE_UNPUBLISHED is sufficient for updating working copy, regardless of publication status:
+        this.authorizationManager.authorizeReadWriteUnpublished(uri, principal);
 
         long revisionId = existing.getID();
         Acl acl = null; // r.getAcl();
@@ -1076,6 +1095,10 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         }
     }
 
+    /**
+     * Delegate directly to
+     * @{link AuthorizationManager#authorize(org.vortikal.security.Principal, org.vortikal.repository.Acl, org.vortikal.repository.Privilege) }
+     */
     @Override
     public boolean authorize(Principal principal, Acl acl, Privilege privilege) {
         return this.authorizationManager.authorize(principal, acl, privilege);
@@ -1096,7 +1119,8 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         }
         try {
             if (considerLocks) {
-                if (action == RepositoryAction.DELETE) {
+                if (action == RepositoryAction.DELETE
+                     || action == RepositoryAction.DELETE_UNPUBLISHED) {
                     if (resource.getURI().isRoot()) {
                         return false;
                     }
@@ -1104,13 +1128,21 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
                     checkLock(parent, principal);
                     checkLock(resource, principal);
 
-                } else if (action == RepositoryAction.ALL || action == RepositoryAction.ADD_COMMENT
+                // Else check lock if action can modify repo:  
+                } else if (action == RepositoryAction.ALL           
+                        || action == RepositoryAction.ADD_COMMENT
                         || action == RepositoryAction.EDIT_COMMENT
                         || action == RepositoryAction.REPOSITORY_ADMIN_ROLE_ACTION
                         || action == RepositoryAction.REPOSITORY_ROOT_ROLE_ACTION
-                        || action == RepositoryAction.UNEDITABLE_ACTION || action == RepositoryAction.UNLOCK
-                        || action == RepositoryAction.CREATE || action == RepositoryAction.WRITE
-                        || action == RepositoryAction.READ_WRITE || action == RepositoryAction.WRITE_ACL) {
+                        || action == RepositoryAction.UNEDITABLE_ACTION
+                        || action == RepositoryAction.UNLOCK
+                        || action == RepositoryAction.CREATE
+                        || action == RepositoryAction.CREATE_UNPUBLISHED
+                        || action == RepositoryAction.WRITE
+                        || action == RepositoryAction.READ_WRITE
+                        || action == RepositoryAction.PUBLISH_UNPUBLISH
+                        || action == RepositoryAction.READ_WRITE_UNPUBLISHED
+                        || action == RepositoryAction.WRITE_ACL) {
                     checkLock(resource, principal);
                 }
             }
@@ -1267,7 +1299,18 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         Principal principal = this.tokenManager.getPrincipal(token);
 
         checkLock(resource, principal);
-        this.authorizationManager.authorizeReadWrite(resource.getURI(), principal);
+        if (resource.hasPublishDate()) {
+            if (type == Revision.Type.WORKING_COPY) {
+                // Allow for principal with only READ_WRITE_UNPUBLISHED for working copy
+                // regardless of publication status:
+                this.authorizationManager.authorizeReadWriteUnpublished(uri, principal);
+            } else {
+                this.authorizationManager.authorizeReadWrite(uri, principal);
+            }
+        } else {
+            this.authorizationManager.authorizeReadWriteUnpublished(uri, principal);
+        }
+        
         List<Revision> revs = this.revisionStore.list(resource);
 
         Revision newest = null;
@@ -1362,7 +1405,11 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         Principal principal = this.tokenManager.getPrincipal(token);
 
         checkLock(resource, principal);
-        this.authorizationManager.authorizeReadWrite(resource.getURI(), principal);
+        if (revision.getType() == Revision.Type.WORKING_COPY) {
+            this.authorizationManager.authorizeReadWriteUnpublished(resource.getURI(), principal);
+        } else {
+            this.authorizationManager.authorizeReadWrite(resource.getURI(), principal);
+        }
 
         Revision found = null;
         Revision older = null;
@@ -1491,8 +1538,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
                     content);
             newResource = this.dao.store(newResource);
 
-            // Publish resource modification event (necessary to trigger
-            // re-indexing, since a prop is now modified)
+            // Publish resource modification event
             ResourceModificationEvent event = new ResourceModificationEvent(this, (Resource) newResource.clone(),
                     original);
             this.context.publishEvent(event);
@@ -1670,7 +1716,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
                 boolean valid = this.authorizationManager.isValidAclEntry(action, principal);
                 if (!valid) {
                     // Preserve invalid principals already in ACL
-                    if (!originalAcl.containsEntry(action, principal)) {
+                    if (!originalAcl.hasPrivilege(action, principal)) {
                         throw new InvalidPrincipalException(principal);
                     }
                 }
@@ -1821,7 +1867,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         if (resource == null || resource.isCollection() || revision == null) {
             return null;
         }
-        final RevisionStore revisionStore = this.revisionStore;
 
         ContentStore cs = new ContentStore() {
 

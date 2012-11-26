@@ -45,6 +45,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
 import org.vortikal.repository.Path;
+import org.vortikal.repository.Privilege;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceWrapper;
@@ -165,12 +166,16 @@ public class ResourceEditController extends SimpleFormController {
         Resource resource = ((ResourceWrapper) command).getResource();
         RequestContext requestContext = RequestContext.getRequestContext();
         Principal principal = requestContext.getPrincipal();
+        Repository repository = requestContext.getRepository();
         
         Map model = super.referenceData(request, command, errors);
 
         if (model == null) {
             model = new HashMap();
         }
+        
+        model.put("published", resource.isPublished());
+        model.put("onlyWriteUnpublished", !repository.authorize(principal, resource.getAcl(), Privilege.READ_WRITE));
         model.put("tooltips", resolveTooltips(resource, principal));
         model = addImageEditorServices(model, resource, principal);
         

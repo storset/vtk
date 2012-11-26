@@ -49,7 +49,7 @@
   </bean>
 
   <bean id="reports.viewPermissionAssertion" parent="abstractResourcePrincipalPermissionAssertion">
-    <property name="permission" ref="ACTION_READ_WRITE" />
+    <property name="permission" value="READ_WRITE" />
     <property name="considerLocks" value="false" />
   </bean>
 

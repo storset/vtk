@@ -40,7 +40,7 @@
   </bean>
 
   <bean id="versioning.displayPermissionAssertion" parent="abstractResourcePrincipalPermissionAssertion">
-    <property name="permission" ref="ACTION_READ_WRITE" />
+    <property name="permission" value="READ_WRITE_UNPUBLISHED" />
     <property name="considerLocks" value="false" />
   </bean>
 
@@ -68,7 +68,7 @@
   </bean>
 
 
-  <bean id="versioning.deleteRevisionService" class="org.vortikal.web.service.ServiceImpl">
+  <bean id="versioning.deleteWorkingCopyService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="manageService" />
     <property name="order" value="-100" />
     <property name="assertions">
@@ -78,8 +78,12 @@
         </bean>
         <ref bean="versioning.deleteActionParameter" />
         <ref bean="resourceTypeIsText" />
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="revision" />
+          <property name="parameterValue" value="WORKING_COPY" />
+        </bean>
         <bean parent="abstractResourcePrincipalPermissionAssertion">
-          <property name="permission" ref="ACTION_READ_WRITE" />
+          <property name="permission" value="READ_WRITE_UNPUBLISHED" />
           <property name="considerLocks" value="true" />
         </bean>
       </list>
@@ -88,6 +92,30 @@
       <ref bean="versioning.deleteRevisionHandler" />
     </property>
   </bean>
+
+  <bean id="versioning.deleteRevisionService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="manageService" />
+    <property name="order" value="-99" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestMethodAssertion">
+          <property name="method" value="POST" />
+        </bean>
+        <ref bean="versioning.deleteActionParameter" />
+        <ref bean="resourceTypeIsText" />
+        <bean parent="abstractResourcePrincipalPermissionAssertion">
+          <property name="permission" value="READ_WRITE" />
+          <property name="unpublishedPermission" value="READ_WRITE_UNPUBLISHED" />
+          <property name="considerLocks" value="true" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler">
+      <ref bean="versioning.deleteRevisionHandler" />
+    </property>
+  </bean>
+
+
 
   <bean id="versioning.deleteRevisionHandler"
         class="org.vortikal.web.actions.versioning.DeleteRevisionController">
@@ -106,7 +134,8 @@
         <ref bean="versioning.restoreActionParameter" />
         <ref bean="resourceTypeIsText" />
         <bean parent="abstractResourcePrincipalPermissionAssertion">
-          <property name="permission" ref="ACTION_READ_WRITE" />
+          <property name="permission" value="READ_WRITE" />
+          <property name="unpublishedPermission" value="READ_WRITE_UNPUBLISHED" />
           <property name="considerLocks" value="true" />
         </bean>
       </list>

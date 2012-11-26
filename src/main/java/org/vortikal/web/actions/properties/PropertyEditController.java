@@ -57,6 +57,7 @@ import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
+import org.vortikal.repository.RepositoryAction;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.TypeInfo;
 import org.vortikal.repository.Vocabulary;
@@ -469,8 +470,13 @@ public class PropertyEditController extends SimpleFormController implements Refe
             String format = null;
             String toggleURL = null;
             String toggleValue = null;
-
-            if (repository.isAuthorized(resource, def.getProtectionLevel(), requestContext.getPrincipal(), true)) {
+            
+            RepositoryAction protectionLevel = def.getProtectionLevel();
+            if (protectionLevel == RepositoryAction.READ_WRITE && !resource.hasPublishDate()) {
+                // Authorize for READ_WRITE_UNPUBLISHED instead:
+                protectionLevel = RepositoryAction.READ_WRITE_UNPUBLISHED;
+            }
+            if (repository.isAuthorized(resource, protectionLevel, requestContext.getPrincipal(), true)) {
 
                 Map<String, String> urlParameters = new HashMap<String, String>();
                 String namespaceURI = def.getNamespace().getUri();

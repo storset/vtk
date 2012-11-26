@@ -122,6 +122,10 @@ h2 {
   background: transparent url("images/line-dotted.gif") repeat-x left top;
 }
 
+#vrtx-editor #editor .properties.hidden-props {
+  display: none;
+}
+
 #vrtx-editor-title-submit-buttons-inner-wrapper {
   padding-top: 10px;
   background: #fff;

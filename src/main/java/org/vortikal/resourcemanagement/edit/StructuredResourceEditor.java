@@ -49,6 +49,7 @@ import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.vortikal.repository.Path;
+import org.vortikal.repository.Privilege;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Repository.Depth;
@@ -89,15 +90,12 @@ public class StructuredResourceEditor extends SimpleFormController {
         Path uri = requestContext.getResourceURI();
         String token = requestContext.getSecurityToken();
         Repository repository = requestContext.getRepository();
-        
+        Principal principal = requestContext.getPrincipal();
         Resource resource = repository.retrieve(token, uri, false);
-        boolean published = false;
-        Property p = resource.getPropertyByPrefix(null, "published");
-        if (p != null && p.getBooleanValue()) {
-            published = true;
-        }
-        StructuredResourceDescription description = this.resourceManager.get(resource.getResourceType());
-
+        
+        boolean published = resource.isPublished();
+        boolean onlyWriteUnpublished = !repository.authorize(principal, resource.getAcl(), Privilege.READ_WRITE);
+        
         Revision workingCopy = null;
         for (Revision rev: repository.getRevisions(token, uri)) {
             if (rev.getType() == Revision.Type.WORKING_COPY) {
@@ -105,9 +103,7 @@ public class StructuredResourceEditor extends SimpleFormController {
                 break;
             }
         }
-        
         InputStream stream = null;
-
         if (workingCopy !=  null) {
             stream = repository.getInputStream(token, uri, true, workingCopy);
         } else {
@@ -117,13 +113,14 @@ public class StructuredResourceEditor extends SimpleFormController {
         if (encoding == null) {
             encoding = "utf-8";
         }
+        StructuredResourceDescription description = this.resourceManager.get(resource.getResourceType());
         StructuredResource structuredResource = description.buildResource(stream);
 
         URL url = RequestContext.getRequestContext().getService().constructURL(uri);
         URL listComponentServiceURL = listComponentsService.constructURL(uri);
-
+        
         return new FormSubmitCommand(structuredResource, url, listComponentServiceURL, 
-                workingCopy != null, published);
+                workingCopy != null, published, onlyWriteUnpublished);
     }
 
     @Override
@@ -359,5 +356,4 @@ public class StructuredResourceEditor extends SimpleFormController {
     public Service getListComponentsService() {
         return listComponentsService;
     }
-
 }

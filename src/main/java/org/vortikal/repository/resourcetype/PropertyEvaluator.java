@@ -36,6 +36,16 @@ import org.vortikal.repository.resourcetype.property.PropertyEvaluationException
 
 public interface PropertyEvaluator {
 
+    /**
+     * Evaluate managed property value.
+     * 
+     * @param property The property instance to evaluate. Value may not be initialized, depending
+     *                 on whether the property existed before or not.
+     * @param ctx      The evaluation context.
+     * @return Return <code>true</code> if evaluation was performed and property should be changed. Return
+     *         <code>false</code> if no evaluation was performed.
+     * @throws PropertyEvaluationException 
+     */
     public boolean evaluate(Property property, PropertyEvaluationContext ctx) throws PropertyEvaluationException;
 
 }

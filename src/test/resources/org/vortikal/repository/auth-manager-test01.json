@@ -1,0 +1,198 @@
+{
+  
+    "resources" : {
+
+        "/" : {
+            "type" : "collection",
+            "acl"  : {
+                "read" : [ "pseudo:all" ],
+                "read-write" : [ "g:group1@localhost" ],
+                "all" : [ "u:admin@localhost" ]
+            },
+            "properties" : {
+                "title" : "Root resource"
+            }
+        },
+              
+        "/a" : {
+            "type" : "collection",
+            "acl"  : {
+                "read" : [ "u:user1@localhost" ],
+                "read-processed" : [ "u:user2@localhost" ],
+                "read-write" : [ "u:user3@localhost" ],
+                "all" : [ "u:admin@localhost" ]
+            }
+        },
+
+        "/a/b" : {
+            "type" : "collection",
+            "acl"  : {
+                "read" : [ "u:user1@localhost" ],
+                "read-write" : [ "u:user2@localhost" ],
+                "add-comment" : [ "pseudo:authenticated" ],
+                "all" : [ "u:admin@localhost" ]
+            }
+        },
+
+        "/a/b/c" : {
+            "type" : "collection",
+            "acl"  : {
+                "all" : [ "u:admin@localhost" ]
+            }
+        },
+
+        "/b" : {
+            "type" : "collection"
+        },
+
+        "/c" : {
+            "type" : "collection",
+            "acl"  : {
+                "read-write-unpublished" : [ "u:user1@localhost" ],
+                "all" : [ "u:admin@localhost" ]
+            }
+        },
+
+        "/c/d" : {
+            "type" : "file"
+        },
+
+        "/d" : {
+            "acl" : {
+                "read-write" : [ "u:user1@localhost" ],
+                "all" : [ "u:admin@localhost" ] 
+            }
+        },
+
+        "/e" : {
+            "acl" : {
+                "all" : [ "u:user4@localhost", "u:admin@localhost" ] 
+            }
+        }
+    },
+
+    "principal-manager" : {
+        "matching-principal-store" : {
+            "pattern" : ".*@localhost"
+        },
+        
+        "matching-group-store" : {
+            "map" : {
+                "system-users@localhost" : "(root|vortex)@localhost",
+                "group1@localhost" : "(user1|user2)@localhost",
+                "admin-users@localhost" : "admin@localhost"
+            }
+        }
+    },
+
+    "assertions" : {
+
+        "anonymous-read-1" : {
+            "uri" : [ "/", "/b" ],
+            "principal" : null,
+            "repository-action" : [ "READ", "READ_PROCESSED" ],
+            "expected-outcome" : "SUCCESS"
+        },
+
+        "anonymous-read-2" : {
+            "uri" : [ "/a", "/a/b" ],
+            "principal" : null,
+            "repository-action" : [ "READ", "READ_PROCESSED" ],
+            "expected-outcome" : "FAILURE"
+        },
+
+        "anonymous-write" : {
+            "uri" : [ "/", "/b" ],
+            "principal" : null,
+            "repository-action" : [ "UNEDITABLE_ACTION", "CREATE",
+                                    "WRITE", "READ_WRITE", "EDIT_COMMENT",
+                                    "ADD_COMMENT", "ALL", "WRITE_ACL", 
+                                    "DELETE", "REPOSITORY_ADMIN_ROLE_ACTION",
+                                    "REPOSITORY_ROOT_ROLE_ACTION"
+                                  ],
+            "expected-outcome" : "FAILURE"
+        },
+
+        "admin-user-delete-root" : {
+            "uri" : "/",
+            "principal" : "admin@localhost",
+            "repository-action" : "DELETE",
+            "expected-outcome" : "FAILURE"
+        },
+
+        "admin-user-delete-child" : {
+            "uri" : "/b",
+            "principal" : "admin@localhost",
+            "repository-action" : "DELETE",
+            "expected-outcome" : "SUCCESS"
+        },
+
+        "admin-user-allowed-operations" : {
+            "uri" : "/",
+            "principal" : "admin@localhost",
+            "repository-action" : [ "READ", "READ_PROCESSED", "CREATE",
+                                    "WRITE", "READ_WRITE", "READ_WRITE_UNPUBLISHED",
+                                    "EDIT_COMMENT", "ADD_COMMENT", "ALL", "WRITE_ACL", 
+                                    "REPOSITORY_ADMIN_ROLE_ACTION",
+                                    "UNLOCK"
+                                  ],
+            "expected-outcome" : "SUCCESS"
+        },
+
+        "admin-user-not-root":  {
+            "uri" : "/",
+            "principal" : "admin@localhost",
+            "repository-action" : "REPOSITORY_ROOT_ROLE_ACTION",
+            "expected-outcome" : "FAILURE"
+        },
+
+        "copy-1" : {
+            "method" : [ "authorizeCopy", "/b", "/b1", "user1@localhost", false  ],
+            "expected-outcome" : "SUCCESS",
+            "description" : "Regular copy"
+        },
+
+        "copy-2" : {
+            "method" : [ "authorizeCopy", "/a", "/a1", "user1@localhost", false  ],
+            "expected-outcome" : "FAILURE",
+            "description" : "Should fail because user1@localhost is not allowed to read /a/b/c"
+        },
+
+        "move-1" : {
+            "method" : [ "authorizeMove", "/a", "/c", "admin@localhost", false  ],
+            "expected-outcome" : "SUCCESS",
+            "description" : "Regular move"
+        },
+
+        "read-1" : {
+            "method" : [ "authorizeRead", "/c", "user1@localhost" ],
+            "expected-outcome" : "SUCCESS"
+        },
+
+        "create-1" : {
+            "method" : [ "authorizeCreate", "/c", "user1@localhost" ],
+            "expected-outcome" : "FAILURE"
+        },
+
+        "delete-1" : {
+            "method" : [ "authorizeDelete", "/e", "user3@localhost" ],
+            "expected-outcome" : "FAILURE",
+            "description" : "Should fail because user3@localhost does not have either READ_WRITE on / or ALL on /e"
+        },
+
+        "delete-2" : {
+            "method" : [ "authorizeDelete", "/e", "user1@localhost" ],
+            "expected-outcome" : "SUCCESS",
+            "description" : "Should succeed because user1@localhost has READ_WRITE on /"
+        },
+
+        "delete-3" : {
+            "method" : [ "authorizeDelete", "/e", "user4@localhost" ],
+            "expected-outcome" : "SUCCESS",
+            "description" : "Should succeed because user4@localhost has privilege ALL on /e"
+        }
+        
+    }
+
+
+}

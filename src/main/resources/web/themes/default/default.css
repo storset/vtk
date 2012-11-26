@@ -604,6 +604,8 @@ ul.manage-create,
 ul.manage-create li,
 #locale-selection ul,
 #locale-selection ul li,
+#collection-more-menu ul,
+#collection-more-menu ul li,
 #editor-help-menu ul,
 #editor-help-menu ul li {
   list-style: none;
@@ -612,6 +614,7 @@ ul.manage-create li,
 }
 
 #editor-help-menu,
+#collection-more-menu,
 #editor-menu-wrapper,
 #editor-button-row {
   display: inline-block;
@@ -631,23 +634,45 @@ ul.manage-create li,
 
 #locale-selection ul,
 #locale-selection ul li,
+#collection-more-menu ul,
+#collection-more-menu ul li,
 #editor-help-menu ul,
 #editor-help-menu ul li {
   display: inline;
 }
 
+#collection-more-menu ul {
+  overflow: hidden;
+}
+
 /* Dropdown */
 
 #editor-help-menu.js-on,
+#collection-more-menu.js-on,
 #locale-selection.js-on {
   position: relative;
+}
+
+#tabMenuRight li.more-menu {
+  background: url("images/seperator-grey-gradient.png") no-repeat scroll left top transparent;
+  padding-left: 15px;
 }
 
 #editor-help-menu {
   margin-left: 5px;
 }
 
+#tabMenuRight #collection-more-menu.js-on li {
+  float: none;
+}
+
+#tabMenuRight #collection-more-menu.js-on > a,
+#tabMenuRight #collection-more-menu.js-on li a {
+  margin: 0;
+}
+
 #editor-help-menu.js-on ul.dropdown-shortcut-menu-container,
+#collection-more-menu.js-on ul.dropdown-shortcut-menu-container,
 #locale-selection.js-on ul.dropdown-shortcut-menu-container {
   display: none;
   top: 24px;
@@ -666,10 +691,16 @@ ul.manage-create li,
 }
 
 #locale-selection.js-on #locale-selection-header,
+#collection-more-menu.js-on #collection-more-menu-header,
 #editor-help-menu.js-on #editor-help-menu-header {
   background: url(images/arrow-down.png) no-repeat 100% 8px;
   padding-right: 12px;
   display: inline-block;
+}
+
+#collection-more-menu.js-on #collection-more-menu-header {
+  background-position: 100% 13px;
+  padding-left: 0px;
 }
 
 /* ^ Dropdown */
@@ -967,7 +998,7 @@ div.dropdown-shortcut-menu-container form .vrtx-button button {
 #resourceMenuRight.smaller-seperator li {
   background-image: url(images/seperator-grey-gradient.png);
   background-repeat: no-repeat;
-  background-position: 100% 5px;
+  background-position: 100% 0px;
   min-height: 65px;
 }
 
@@ -1145,7 +1176,6 @@ form#editor .tip ul a {
   position: relative;
   top: 1px;
   left: 0px;
-  width: 73em; /* a width is required for Opera, older Mozilla browsers, and Konqueror browsers */
   height: 34px;
 }
 
@@ -1156,8 +1186,6 @@ form#editor .tip ul a {
   position: absolute;
   bottom: 0;
   left: 0;
-  width: 73em; /* a width is required for Opera, older Mozilla browsers, and Konqueror browsers */
-  /* Width is also required for IE 6.0. Can be reduced when we shorten some of the text on the tabs */
   border-left: 1px solid #d8d8d8;
 }
 
@@ -1218,7 +1246,7 @@ form#editor .tip ul a {
 /* 3.4 Tab Menus */
 
 #active-tab {
-  margin: 0 0 15px 0;
+  margin: 0 0 5px 0;
 }
 
 #active-tab  ul.list-menu a {
@@ -1246,12 +1274,13 @@ form#editor .tip ul a {
 
 #tabMenuRight li {
   float: left;
+  margin: -10px 0 0 30px;
+  padding: 10px 0 10px;
 }
 
 #tabMenuRight li a {
   display: block;
-  margin: 0 0 0 30px;
-  padding: 5px 0 7px 30px;
+  padding: 5px 0 6px 30px;
 }
 
 #tabMenuRight li.deleteResourcesService a {

@@ -43,7 +43,7 @@
             <@vrtx.msg code=publishedStatusMsgKey default="" />
             <#assign titleMsg = vrtx.getMsg("confirm-publish.title.unpublish") />
           </span>
-          <#if unPublishUrl?exists>
+          <#if unPublishUrl?has_content>
           &nbsp;<a class="vrtx-button-small publishing-status-link" href="${unPublishUrl?html}" title="${titleMsg}"><span><@vrtx.msg code="publish.action.unpublish" default="Unpublish" /></span></a>
           </#if>
         <#else>
@@ -51,7 +51,7 @@
             <@vrtx.msg code=publishedStatusMsgKey default="" />
             <#assign titleMsg = vrtx.getMsg("confirm-publish.title.publish") />      
           </span>
-          <#if publishUrl?exists>
+          <#if publishUrl?has_content>
           &nbsp;<a class="vrtx-button-small publishing-status-link" href="${publishUrl?html}" title="${titleMsg}"><span><@vrtx.msg code="publish.action.publish" default="Publish" /></span></a>
           </#if>
         </#if>
@@ -107,7 +107,7 @@
       <#else>
         <@vrtx.msg code="publishing.date.not-set" default="Not set" />
       </#if>
-      <#if editUrl != "">
+      <#if editUrl?has_content>
       &nbsp;<a class="vrtx-button-small" href="${editUrl?html}"><span><@vrtx.msg code="publishing.edit" default="edit" /></span></a>
       </#if>
       </div>

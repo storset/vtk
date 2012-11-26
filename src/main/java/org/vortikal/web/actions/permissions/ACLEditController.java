@@ -470,7 +470,7 @@ public class ACLEditController extends SimpleFormController implements Initializ
             if (principal == null) {
                 principal = principalFactory.getPrincipal(value, ACLEditValidationHelper.typePseudoUser(type, value));
             }
-            if (!acl.containsEntry(this.privilege, principal)) {
+            if (!acl.hasPrivilege(this.privilege, principal)) {
                 acl = acl.addEntry(this.privilege, principal);
             }
         }

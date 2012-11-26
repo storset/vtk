@@ -82,20 +82,17 @@
       <bean class="org.vortikal.repository.systemjob.IndexQueryPathSelector" parent="repository.systemjob.indexPathSelector">
         <property name="queryString">
           <value>
-            type IN json-resource AND (
-            (published = false AND publish-date &lt; {$currentTime}
-            AND (unpublish-date
-            !exists OR unpublish-date &gt; {$currentTime}))
-            OR
-            (published = true AND unpublish-date &lt; {$currentTime})
-            )
+               (published = false AND publish-date &lt; {$currentTime}
+                     AND (unpublish-date !exists OR unpublish-date &gt; {$currentTime}))
+                 OR
+               (published = true AND unpublish-date &lt; {$currentTime})
           </value>
         </property>
       </bean>
     </property>
     <property name="affectedPropDefPointers">
       <list>
-        <value>json-resource::published</value>
+        <value>published</value>
       </list>
     </property>
   </bean>

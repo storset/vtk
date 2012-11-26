@@ -298,6 +298,21 @@ public class ResourceWrapper implements Resource {
     }
 
     @Override
+    public Date getPublishDate() {
+        return this.resource.getPublishDate();
+    }
+
+    @Override
+    public boolean hasPublishDate() {
+        return this.resource.hasPublishDate();
+    }
+    
+    @Override
+    public Date getUnpublishDate() {
+        return this.resource.getUnpublishDate();
+    }
+
+    @Override
     public void addProperty(Property property) {
         this.resource.addProperty(property);
     }

@@ -102,12 +102,13 @@
 
       <#assign commentHeading><@vrtx.msg code="permissions.privilege.add-comment" default="Add comments" /></#assign>
       <#assign readProHeading><@vrtx.msg code="permissions.privilege.read-processed" default="Read processed only" /></#assign>
-      <#if resource.collection>
-        <#assign privilegeList = [{"name":"add-comment", "heading":commentHeading }, {"name":"read-processed", "heading":readProHeading }] />
-      <#else>
-        <#assign privilegeList = [{"name":"add-comment", "heading":commentHeading }, {"name":"read-processed", "heading":readProHeading }] />
-      </#if>        
-      <@permissions.editOrDisplayPrivileges privilegeList=privilegeList heading=groupHeading />
+      <#assign readWritePubHeading><@vrtx.msg code="permissions.privilege.read-write-unpublished" default="Read and write unpublished" /></#assign>
+      
+      <@permissions.editOrDisplayPrivileges privilegeList=[ 
+                                 {"name":"add-comment", "heading":commentHeading }, 
+                                 {"name":"read-processed", "heading":readProHeading },
+                                 {"name":"read-write-unpublished", "heading":readWritePubHeading }
+                               ] heading=groupHeading />
 
     </div>
   </body>

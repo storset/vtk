@@ -13,23 +13,23 @@ var vrtxSimpleDialogs = {
       width: 208
     });
   },
-  openHtmlDialog: function openHtmlDialog(html, title) {
-    this.openDialog("#dialog-html", {
+  openHtmlDialog: function (name, html, title, width, height) {
+    this.openDialog("#dialog-html-" + name, {
       msg: html,
       title: title,
       hasHtml: true,
-      width: 600,
-      height: 395
+      width: width,
+      height: height
     });
   },
-  openMsgDialog: function openMsgDialog(msg, title) {
+  openMsgDialog: function (msg, title) {
     this.openDialog("#dialog-message", {
       msg: msg,
       title: title,
       hasOk: true
     });
   },
-  openConfirmDialog: function openConfirmDialog(msg, title, funcOkComplete, funcCancelComplete, funcOkCompleteOpts) {
+  openConfirmDialog: function (msg, title, funcOkComplete, funcCancelComplete, funcOkCompleteOpts) {
     this.openDialog("#dialog-confirm", { 
       msg: msg,
       title: title,
@@ -40,7 +40,7 @@ var vrtxSimpleDialogs = {
       funcCancelComplete: funcCancelComplete
     });
   },
-  openDialog: function openDialog(selector, opts) {
+  openDialog: function (selector, opts) {
     var elm = $(selector);
     if (!elm.length) {
       if (opts.title) {

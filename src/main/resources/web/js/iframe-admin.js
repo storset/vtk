@@ -45,7 +45,7 @@ crossDocComLink.setUpReceiveDataHandler(function(cmdParams, source) {
               removePreview(previewLoading, appContent, main, contents);
             });
           });  
-        } else { // TODO
+        } else {
           previewIframe.style.height = newHeight + "px";
           previewLoading.fadeOut(surplusAnimationSpeed, function() {
             removePreview(previewLoading, appContent, main, contents);

@@ -222,10 +222,10 @@ public class EventComponent extends AbstractEventComponent {
                     eprop = ps.getProperty(Namespace.DEFAULT_NAMESPACE, "end-date");
                 }
 
-                if (eprop == null) {
-                    psList.add(new PropertySetTmp(ps, sprop.getDateValue()));
-                } else {
+                if (eprop != null && sprop != null) {
                     psList.add(new PropertySetTmp(ps, sprop.getDateValue(), eprop.getDateValue()));
+                } else if (sprop != null) {
+                    psList.add(new PropertySetTmp(ps, sprop.getDateValue()));
                 }
             }
 

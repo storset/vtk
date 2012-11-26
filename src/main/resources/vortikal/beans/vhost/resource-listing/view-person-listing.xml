@@ -93,6 +93,7 @@
         <value>resource:postalAddress</value>
         <value>resource:visitingAddress</value>
         <value>resource:alternativeVisitingAddress</value>
+        <value>resource:alternativeCellPhone</value>
         <value>resource:room</value>
         <value>resource:availableHours</value>
         <value>title</value>

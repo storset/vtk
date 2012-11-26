@@ -28,6 +28,7 @@
       <#local picture = vrtx.propValue(person, 'picture')  />
       <#local position = vrtx.propValue(person, 'position')  />
       <#local phonenumbers = vrtx.propValue(person, 'phone')  />
+      <#local alternativephonenumber = vrtx.propValue(person, 'alternativeCellPhone')  />
       <#local mobilenumbers = vrtx.propValue(person, 'mobile')  />
       <#local emails = vrtx.propValue(person, 'email')  />
       <#local tags = vrtx.propValue(person, 'tags') />
@@ -65,6 +66,9 @@
             <#list mobilenumbers?split(",") as mobile>
               <span>${mobile?html}</span>
             </#list>
+          </#if>
+          <#if alternativephonenumber??>
+            ${alternativephonenumber}
           </#if>
         </td>
         <td class="vrtx-person-listing-email">

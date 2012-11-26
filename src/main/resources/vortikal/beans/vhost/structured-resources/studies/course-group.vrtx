@@ -18,7 +18,7 @@ resourcetype course-group : fellestekst-document {
     status (dropdown),
     course-group-scope (dropdown),
     group contact (studinfo-kontakt, studinfo-kontakt-text-field) vertical,
-    studinfo-kontakt (class[vrtx-shared-text])
+    studinfo-kontakt (dropdown)
   }
 
   view {

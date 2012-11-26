@@ -82,7 +82,7 @@ resourcetype course-description : fellestekst-document {
     group antall-forsok-trekk (antall-forsok-trekk-text-field, antall-forsok-trekk) vertical,
     tilrettelagt-eksamen (class[vrtx-shared-text]),
     group tilrettelagt-eksamen (tilrettelagt-eksamen-text-field, tilrettelagt-eksamen) vertical,
-    studinfo-kontakt (class[vrtx-shared-text])
+    studinfo-kontakt (dropdown)
   }
 
   view-components {
@@ -470,9 +470,9 @@ resourcetype course-description : fellestekst-document {
        nn : (range = "1..120")
      },
      creditsdecimal {
-       en : ("0" = "0", "5" = "5"),
-       no : ("0" = "0", "5" = "5"),
-       nn : ("0" = "0", "5" = "5")
+       en : ("0" = ",0", "5" = ",5"),
+       no : ("0" = ",0", "5" = ",5"),
+       nn : ("0" = ",0", "5" = ",5")
      },
      teachingsemester {
        en : ("vaar-og-host" = "Autumn and spring", "hver-hoest" = "Every autumn", "hver-vaar" =  "Every spring", "particular-semester" = "semester", "other" = "Other"),
@@ -485,19 +485,9 @@ resourcetype course-description : fellestekst-document {
        nn : ("vaar-og-host" = "Haust og vår", "hver-hoest" = "Hver haust", "hver-vaar" =  "Hver vår", "particular-semester" = "Bestemt semester", "other" = "Annet")
      },
      course-type {
-       en : ("redskapsemne" = "Toolcourse wtf", "grunnemne" = "Basic course", "videregaende-emne" = "Intermediate course", "avansert-emne" = "Advanced course", "phd-emne" = "Phd course", "ikke-satt" = "Not set"),
+       en : ("redskapsemne" = "Toolcourse", "grunnemne" = "Basic course", "videregaende-emne" = "Intermediate course", "avansert-emne" = "Advanced course", "phd-emne" = "Phd course", "ikke-satt" = "Not set"),
        no : ("redskapsemne" = "Redskapsemne", "grunnemne" = "Grunnemne", "videregaende-emne" = "Videregående emne", "avansert-emne" = "Avansert emne", "phd-emne" = "Phd emne", "ikke-satt" = "Ikke satt"),
        nn : ("redskapsemne" = "Redskapsemne", "grunnemne" = "Grunnemne", "videregaende-emne" = "Videregåande emne", "avansert-emne" = "Avansert emne", "phd-emne" = "Phd emne", "ikke-satt" = "Ikke satt")
-     },
-     undervisning-kveldstid-eller-helg {
-       en : ("ja" = "Yes", "nei" = "No", "ikke-satt" = "Not set"),
-       no : ("ja" = "Ja", "nei" = "Nei", "ikke-satt" = "Ikke satt"),
-       nn : ("ja" = "Ja", "nei" = "Nei", "ikke-satt" = "Ikkje satt")
-     },
-     nettbasert-undervisning {
-       en : ("ja" = "Yes", "nei" = "No", "ikke-satt" = "Not set"),
-       no : ("ja" = "Ja", "nei" = "Nei", "ikke-satt" = "Ikke satt"),
-       nn : ("ja" = "Ja", "nei" = "Nei", "ikke-satt" = "Ikkje satt")
      },
      opptak-og-adgang {
        en : ("ingen-fellestekst" = "Ingen", "soknadsprosedyre-opptak" = "Opptak", "soknadsprosedyre-master" = "Master", "soknadsprosedyre-master-andre-program" = "Andre"),

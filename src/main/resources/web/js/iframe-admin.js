@@ -76,10 +76,10 @@ $(document).ready(function() {
     appFooterHeight = body.find("#app-footer").outerHeight(true);
     windowHeight = $(window).height();
     previewIframeMinHeight = (windowHeight - (appContentHeight + appWrapperHeight + appFooterHeight)) + 150; //+ iframe default height
-
+   
     appContent.css({ height: ((appContentHeight + previewIframeMinHeight) - 150 - 38 - 12 - 4) + "px" }); // TODO
           main.css({ height: previewIframeMinHeight + "px" });
-    contents.append("<span id='preview-loading'><span>" + previewLoadingMsg + "...</span></span>")
+      contents.append("<span id='preview-loading'><span>" + previewLoadingMsg + "...</span></span>")
               .css({ position: "relative",
                      height: previewIframeMinHeight + "px" });
                      

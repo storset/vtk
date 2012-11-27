@@ -2,7 +2,6 @@ resourcetype course-description : fellestekst-document {
 
   properties {
     credits : string,
-    creditsdecimal : string defaultvalue("0"),
     teachingsemester : string,
     teachingsemester-particular-semester : string,
     teachingsemester-other : simple_html,
@@ -13,40 +12,39 @@ resourcetype course-description : fellestekst-document {
     course-content : simple_html,
     learning-outcomes : simple_html,
     opptak-og-adgang-text-field : simple_html,
-    opptak-og-adgang : string defaultvalue("ingen-fellestekst"),
+    opptak-og-adgang : string,
     ikke-privatist-text-field : simple_html,
-    ikke-privatist : string defaultvalue("ingen-fellestekst"),
+    ikke-privatist : string,
     obligatoriske-forkunnskaper-text-field : simple_html,
-    obligatoriske-forkunnskaper : string defaultvalue("ingen-fellestekst"),
+    obligatoriske-forkunnskaper : string,
     tidsrom-for-undervisning-text-field : simple_html,
-    tidsrom-for-undervisning : string defaultvalue("ingen-fellestekst"),
+    tidsrom-for-undervisning : string,
     adgang-text-field : simple_html,
-    adgang : string defaultvalue("ingen-fellestekst"),
+    adgang : string,
     vurdering-og-eksamen-text-field : simple_html,
-    vurdering-og-eksamen : string defaultvalue("ingen-fellestekst"),
+    vurdering-og-eksamen : string,
     hjelpemidler-text-field : simple_html,
-    hjelpemidler : string defaultvalue("ingen-fellestekst"),
+    hjelpemidler : string,
     eksamensspraak-text-field : simple_html,
-    eksamensspraak : string defaultvalue("ingen-fellestekst"),
+    eksamensspraak : string,
     sensur-text-field : simple_html,
-    sensur : string defaultvalue("ingen-fellestekst"),
+    sensur : string,
     tilsynssensor-text-field : simple_html,
-    tilsynssensor : string defaultvalue("ingen-fellestekst"),
+    tilsynssensor : string,
     klage-text-field : simple_html,
-    klage : string defaultvalue("ingen-fellestekst"),
+    klage : string,
     ny-utsatt-eksamen-text-field : simple_html,
-    ny-utsatt-eksamen : string defaultvalue("ingen-fellestekst"),
+    ny-utsatt-eksamen : string,
     antall-forsok-trekk-text-field : simple_html,
-    antall-forsok-trekk : string defaultvalue("ingen-fellestekst"),
+    antall-forsok-trekk : string,
     tilrettelagt-eksamen-text-field : simple_html,
-    tilrettelagt-eksamen : string defaultvalue("ingen-fellestekst"),
-    studinfo-kontakt : string defaultvalue("ingen-fellestekst")
+    tilrettelagt-eksamen : string,
+    studinfo-kontakt-text-field : simple_html,
+    studinfo-kontakt : string
   }
 
   edit-rules {
     credits (dropdown),
-    creditsdecimal (dropdown),
-    group credits (credits, creditsdecimal) (before teachingsemester) horizontal,
     teachingsemester (dropdown),
     teachingsemester-particular-semester (class[if-teachingsemester-bestemt]),
     teachingsemester-other (class[if-teachingsemester-other]),
@@ -55,34 +53,35 @@ resourcetype course-description : fellestekst-document {
     examsemester-other (class[if-examsemester-other]),
     course-type (dropdown),
     opptak-og-adgang (class[vrtx-shared-text]),
-    group opptak-og-adgang (opptak-og-adgang-text-field, opptak-og-adgang) vertical,
+    group opptak-og-adgang-group (opptak-og-adgang-text-field, opptak-og-adgang) vertical,
     ikke-privatist (class[vrtx-shared-text]),
-    group ikke-privatist (ikke-privatist-text-field, ikke-privatist) vertical,
+    group ikke-privatist-group (ikke-privatist-text-field, ikke-privatist) vertical,
     obligatoriske-forkunnskaper (class[vrtx-shared-text]),
-    group obligatoriske-forkunnskaper (obligatoriske-forkunnskaper-text-field, obligatoriske-forkunnskaper) vertical,
+    group obligatoriske-forkunnskaper-group (obligatoriske-forkunnskaper-text-field, obligatoriske-forkunnskaper) vertical,
     tidsrom-for-undervisning (class[vrtx-shared-text]),
-    group tidsrom-for-undervisning (tidsrom-for-undervisning-text-field, tidsrom-for-undervisning) vertical,
+    group tidsrom-for-undervisning-group (tidsrom-for-undervisning-text-field, tidsrom-for-undervisning) vertical,
     adgang (class[vrtx-shared-text]),
-    group adgang (adgang-text-field, adgang) vertical,
+    group adgang-group (adgang-text-field, adgang) vertical,
     vurdering-og-eksamen (class[vrtx-shared-text]),
-    group vurdering-og-eksamen (vurdering-og-eksamen-text-field, vurdering-og-eksamen) vertical,
+    group vurdering-og-eksamen-group (vurdering-og-eksamen-text-field, vurdering-og-eksamen) vertical,
     hjelpemidler (class[vrtx-shared-text]),
-    group hjelpemidler (hjelpemidler-text-field, hjelpemidler) vertical,
+    group hjelpemidler-group (hjelpemidler-text-field, hjelpemidler) vertical,
     eksamensspraak (class[vrtx-shared-text]),
-    group eksamensspraak (eksamensspraak-text-field, eksamensspraak) vertical,
+    group eksamensspraak-group (eksamensspraak-text-field, eksamensspraak) vertical,
     sensur (class[vrtx-shared-text]),
-    group sensur (sensur-text-field, sensur) vertical,
+    group sensur-group (sensur-text-field, sensur) vertical,
     tilsynssensor (class[vrtx-shared-text]),
-    group tilsynssensor (tilsynssensor-text-field, tilsynssensor) vertical,
+    group tilsynssensor-group (tilsynssensor-text-field, tilsynssensor) vertical,
     klage (class[vrtx-shared-text]),
-    group klage (klage-text-field, klage) vertical,
+    group klage-group (klage-text-field, klage) vertical,
     ny-utsatt-eksamen (class[vrtx-shared-text]),
-    group ny-utsatt-eksamen (ny-utsatt-eksamen-text-field, ny-utsatt-eksamen) vertical,
+    group ny-utsatt-eksamen-group (ny-utsatt-eksamen-text-field, ny-utsatt-eksamen) vertical,
     antall-forsok-trekk (class[vrtx-shared-text]),
-    group antall-forsok-trekk (antall-forsok-trekk-text-field, antall-forsok-trekk) vertical,
+    group antall-forsok-trekk-group (antall-forsok-trekk-text-field, antall-forsok-trekk) vertical,
     tilrettelagt-eksamen (class[vrtx-shared-text]),
-    group tilrettelagt-eksamen (tilrettelagt-eksamen-text-field, tilrettelagt-eksamen) vertical,
-    studinfo-kontakt (dropdown)
+    group tilrettelagt-eksamen-group (tilrettelagt-eksamen-text-field, tilrettelagt-eksamen) vertical,
+    studinfo-kontakt (class[vrtx-shared-text]),
+    group studinfo-kontakt-group (studinfo-kontakt, studinfo-kontakt-text-field) vertical
   }
 
   view-components {
@@ -443,20 +442,20 @@ resourcetype course-description : fellestekst-document {
               [val learning-outcomes # unescaped]
             </div>
           [endif]
-          [call "comp:vis-fellestekst" {"docType":"emne", "propName":"opptak-og-adgang"}]
-          [call "comp:vis-fellestekst" {"docType":"emne", "propName":"ikke-privatist"}]
-          [call "comp:vis-fellestekst" {"docType":"emne", "propName":"obligatoriske-forkunnskaper"}]
-          [call "comp:vis-fellestekst" {"docType":"emne", "propName":"tidsrom-for-undervisning"}]
-          [call "comp:vis-fellestekst" {"docType":"emne", "propName":"adgang"}]
-          [call "comp:vis-fellestekst" {"docType":"emne", "propName":"vurdering-og-eksamen"}]
-          [call "comp:vis-fellestekst" {"docType":"emne", "propName":"hjelpemidler"}]
-          [call "comp:vis-fellestekst" {"docType":"emne", "propName":"eksamensspraak"}]
-          [call "comp:vis-fellestekst" {"docType":"emne", "propName":"sensur"}]
-          [call "comp:vis-fellestekst" {"docType":"emne", "propName":"tilsynssensor"}]
-          [call "comp:vis-fellestekst" {"docType":"emne", "propName":"klage"}]
-          [call "comp:vis-fellestekst" {"docType":"emne", "propName":"ny-utsatt-eksamen"}]
-          [call "comp:vis-fellestekst" {"docType":"emne", "propName":"antall-forsok-trekk"}]
-          [call "comp:vis-fellestekst" {"docType":"emne", "propName":"tilrettelagt-eksamen"}]
+          [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"opptak-og-adgang"}]
+          [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"ikke-privatist"}]
+          [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"obligatoriske-forkunnskaper"}]
+          [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"tidsrom-for-undervisning"}]
+          [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"adgang"}]
+          [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"vurdering-og-eksamen"}]
+          [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"hjelpemidler"}]
+          [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"eksamensspraak"}]
+          [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"sensur"}]
+          [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"tilsynssensor"}]
+          [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"klage"}]
+          [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"ny-utsatt-eksamen"}]
+          [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"antall-forsok-trekk"}]
+          [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"tilrettelagt-eksamen"}]
         </div>
       </body>
     </html>
@@ -465,14 +464,9 @@ resourcetype course-description : fellestekst-document {
   
   vocabulary {
      credits {
-       en : (range = "1..120"),
-       no : (range = "1..120"),
-       nn : (range = "1..120")
-     },
-     creditsdecimal {
-       en : ("0" = ",0", "5" = ",5"),
-       no : ("0" = ",0", "5" = ",5"),
-       nn : ("0" = ",0", "5" = ",5")
+       en : ("1" = "1", "2" = "2", "3" = "3", "4" = "4", "5" = "5", "6" = "6", "7" = "7", "7,5" = "7,5", "8" = "8", "9" = "9", "10" = "10", "11" = "11", "12" = "12", "13" = "13", "14" = "14", "15" = "15", "16" = "16", "17" = "17", "18" = "18", "19" = "19", "20" = "20", "21" = "21", "22" = "22", "23" = "23", "24" = "24", "25" = "25", "26" = "26", "27" = "27", "28" = "28", "29" = "29", "30" = "30", "31" = "31", "32" = "32", "33" = "33", "34" = "34", "35" = "35", "36" = "36", "37" = "37", "38" = "38", "39" = "39", "40" = "40", "41" = "41", "42" = "42", "43" = "43", "44" = "44", "45" = "45", "46" = "46", "47" = "47", "48" = "48", "49" = "49", "50" = "50", "51" = "51", "52" = "52", "53" = "53", "54" = "54", "55" = "55", "56" = "56", "57" = "57", "58" = "58", "59" = "59", "60" = "60", "61" = "61", "62" = "62", "63" = "63", "64" = "64", "65" = "65", "66" = "66", "67" = "67", "68" = "68", "69" = "69", "70" = "70", "71" = "71", "72" = "72", "73" = "73", "74" = "74", "75" = "75", "76" = "76", "77" = "77", "78" = "78", "79" = "79", "80" = "80", "81" = "81", "82" = "82", "83" = "83", "84" = "84", "85" = "85", "86" = "86", "87" = "87", "88" = "88", "89" = "89", "90" = "90", "91" = "91", "92" = "92", "93" = "93", "94" = "94", "95" = "95", "96" = "96", "97" = "97", "98" = "98", "99" = "99", "100" = "100", "101" = "101", "102" = "102", "103" = "103", "104" = "104", "105" = "105", "106" = "106", "107" = "107", "108" = "108", "109" = "109", "110" = "110", "111" = "111", "112" = "112", "113" = "113", "114" = "114", "115" = "115", "116" = "116", "117" = "117", "118" = "118", "119" = "119", "120" = "120"),
+       no : ("1" = "1", "2" = "2", "3" = "3", "4" = "4", "5" = "5", "6" = "6", "7" = "7", "7,5" = "7,5", "8" = "8", "9" = "9", "10" = "10", "11" = "11", "12" = "12", "13" = "13", "14" = "14", "15" = "15", "16" = "16", "17" = "17", "18" = "18", "19" = "19", "20" = "20", "21" = "21", "22" = "22", "23" = "23", "24" = "24", "25" = "25", "26" = "26", "27" = "27", "28" = "28", "29" = "29", "30" = "30", "31" = "31", "32" = "32", "33" = "33", "34" = "34", "35" = "35", "36" = "36", "37" = "37", "38" = "38", "39" = "39", "40" = "40", "41" = "41", "42" = "42", "43" = "43", "44" = "44", "45" = "45", "46" = "46", "47" = "47", "48" = "48", "49" = "49", "50" = "50", "51" = "51", "52" = "52", "53" = "53", "54" = "54", "55" = "55", "56" = "56", "57" = "57", "58" = "58", "59" = "59", "60" = "60", "61" = "61", "62" = "62", "63" = "63", "64" = "64", "65" = "65", "66" = "66", "67" = "67", "68" = "68", "69" = "69", "70" = "70", "71" = "71", "72" = "72", "73" = "73", "74" = "74", "75" = "75", "76" = "76", "77" = "77", "78" = "78", "79" = "79", "80" = "80", "81" = "81", "82" = "82", "83" = "83", "84" = "84", "85" = "85", "86" = "86", "87" = "87", "88" = "88", "89" = "89", "90" = "90", "91" = "91", "92" = "92", "93" = "93", "94" = "94", "95" = "95", "96" = "96", "97" = "97", "98" = "98", "99" = "99", "100" = "100", "101" = "101", "102" = "102", "103" = "103", "104" = "104", "105" = "105", "106" = "106", "107" = "107", "108" = "108", "109" = "109", "110" = "110", "111" = "111", "112" = "112", "113" = "113", "114" = "114", "115" = "115", "116" = "116", "117" = "117", "118" = "118", "119" = "119", "120" = "120"),
+       nn : ("1" = "1", "2" = "2", "3" = "3", "4" = "4", "5" = "5", "6" = "6", "7" = "7", "7,5" = "7,5", "8" = "8", "9" = "9", "10" = "10", "11" = "11", "12" = "12", "13" = "13", "14" = "14", "15" = "15", "16" = "16", "17" = "17", "18" = "18", "19" = "19", "20" = "20", "21" = "21", "22" = "22", "23" = "23", "24" = "24", "25" = "25", "26" = "26", "27" = "27", "28" = "28", "29" = "29", "30" = "30", "31" = "31", "32" = "32", "33" = "33", "34" = "34", "35" = "35", "36" = "36", "37" = "37", "38" = "38", "39" = "39", "40" = "40", "41" = "41", "42" = "42", "43" = "43", "44" = "44", "45" = "45", "46" = "46", "47" = "47", "48" = "48", "49" = "49", "50" = "50", "51" = "51", "52" = "52", "53" = "53", "54" = "54", "55" = "55", "56" = "56", "57" = "57", "58" = "58", "59" = "59", "60" = "60", "61" = "61", "62" = "62", "63" = "63", "64" = "64", "65" = "65", "66" = "66", "67" = "67", "68" = "68", "69" = "69", "70" = "70", "71" = "71", "72" = "72", "73" = "73", "74" = "74", "75" = "75", "76" = "76", "77" = "77", "78" = "78", "79" = "79", "80" = "80", "81" = "81", "82" = "82", "83" = "83", "84" = "84", "85" = "85", "86" = "86", "87" = "87", "88" = "88", "89" = "89", "90" = "90", "91" = "91", "92" = "92", "93" = "93", "94" = "94", "95" = "95", "96" = "96", "97" = "97", "98" = "98", "99" = "99", "100" = "100", "101" = "101", "102" = "102", "103" = "103", "104" = "104", "105" = "105", "106" = "106", "107" = "107", "108" = "108", "109" = "109", "110" = "110", "111" = "111", "112" = "112", "113" = "113", "114" = "114", "115" = "115", "116" = "116", "117" = "117", "118" = "118", "119" = "119", "120" = "120")
      },
      teachingsemester {
        en : ("vaar-og-host" = "Autumn and spring", "hver-hoest" = "Every autumn", "hver-vaar" =  "Every spring", "particular-semester" = "semester", "other" = "Other"),
@@ -558,11 +552,6 @@ resourcetype course-description : fellestekst-document {
        en : ("ingen-fellestekst" = "Ingen", "tilrettelagt-eksamen" = "tilrettelagt-eksamen"),
        no : ("ingen-fellestekst" = "Ingen", "tilrettelagt-eksamen" = "tilrettelagt-eksamen"),
        nn : ("ingen-fellestekst" = "Ingen", "tilrettelagt-eksamen" = "tilrettelagt-eksamen")
-     },
-     studinfo-kontakt {
-       en : ("mn-studinfo-kontakt" = "mn", "mn-astro-studinfo-kontakt" = "MN, astro", "mn-ibv-studinfo-kontakt" = "MN, ibv", "mn-ifi-studinfo-kontakt" = "MN, ifi", "mn-kjemi-studinfo-kontakt" = "MN, kjemi", "mn-math-studinfo-kontakt" = "MN, math", "mn-geo-studinfo-kontakt" = "MN, geo", "mn-farmasi-studinfo-kontakt" = "MN, farmasi", "mn-fysikk-studinfo-kontakt" = "MN, fysikk", "mn-sfe-studinfo-kontakt" = "MN, sfe", "hf-studinfo-kontakt" = "HF", "hf-iakh-studinfo-kontakt" = "HF, iakh", "hf-ifikk-studinfo-kontakt" = "HF, ifikk", "hf-ikos-studinfo-kontakt" = "HF, ikos", "hf-iln-studinfo-kontakt" = "HF, iln", "hf-ilos-studinfo-kontakt" = "HF, ilos", "hf-imk-studinfo-kontakt" = "HF, imk", "hf-imv-studinfo-kontakt" = "HF, imv", "hf-ibsen-studinfo-kontakt" = "HF, ibsen", "tf-studinfo-kontakt" = "TF", "jus-studinfo-kontakt" = "JUS", "jus-ikrs-studinfo-kontakt" = "JUS, ikrs", "jus-afin-studinfo-kontakt" = "JUS, afin", "jus-humanrights-studinfo-kontakt" = "JUS, humanrights", "uv-studinfo-kontakt" = "UV", "uv-isp-studinfo-kontakt" = "UV, isp", "uv-pfi-studinfo-kontakt" = "UV, pfi", "uv-ils-studinfo-kontakt" = "UV, ils", "med-studinfo-kontakt" = "MED", "med-nutri-studinfo-kontakt" = "MED, nutri", "med-helsefag-studinfo-kontakt" = "MED, helsefag", "med-helseadm-studinfo-kontakt" = "MED, helseadm", "med-inthealth-studinfo-kontakt" = "MED, inthealth", "med-ipsy-studinfo-kontakt" = "MED, ipsy", "med-isv-studinfo-kontakt" = "MED, isv", "odont-studinfo-kontakt" = "ODONT", "odont-tannlege-studinfo-kontakt" = "ODONT, tannlege", "odont-tannpleie-studinfo-kontakt" = "ODONT, tannpleie", "stk-studinfo-kontakt" = "STK", "SUM-studinfo-kontakt" = "SUM", "sv-studinfo-kontakt" = "SV", "sv-iss-studinfo-kontakt" = "SV, iss", "sv-isv-studinfo-kontakt" = "SV, isv", "sv-psi-studinfo-kontakt" = "SV, psi", "sv-sai-studinfo-kontakt" = "SV, sai", "sv-tik-studinfo-kontakt" = "SV, tik", "sv-econ-studinfo-kontakt" = "SV, econ", "ingen-fellestekst" = "Ingen"),
-       no : ("mn-studinfo-kontakt" = "mn", "mn-astro-studinfo-kontakt" = "MN, astro", "mn-ibv-studinfo-kontakt" = "MN, ibv", "mn-ifi-studinfo-kontakt" = "MN, ifi", "mn-kjemi-studinfo-kontakt" = "MN, kjemi", "mn-math-studinfo-kontakt" = "MN, math", "mn-geo-studinfo-kontakt" = "MN, geo", "mn-farmasi-studinfo-kontakt" = "MN, farmasi", "mn-fysikk-studinfo-kontakt" = "MN, fysikk", "mn-sfe-studinfo-kontakt" = "MN, sfe", "hf-studinfo-kontakt" = "HF", "hf-iakh-studinfo-kontakt" = "HF, iakh", "hf-ifikk-studinfo-kontakt" = "HF, ifikk", "hf-ikos-studinfo-kontakt" = "HF, ikos", "hf-iln-studinfo-kontakt" = "HF, iln", "hf-ilos-studinfo-kontakt" = "HF, ilos", "hf-imk-studinfo-kontakt" = "HF, imk", "hf-imv-studinfo-kontakt" = "HF, imv", "hf-ibsen-studinfo-kontakt" = "HF, ibsen", "tf-studinfo-kontakt" = "TF", "jus-studinfo-kontakt" = "JUS", "jus-ikrs-studinfo-kontakt" = "JUS, ikrs", "jus-afin-studinfo-kontakt" = "JUS, afin", "jus-humanrights-studinfo-kontakt" = "JUS, humanrights", "uv-studinfo-kontakt" = "UV", "uv-isp-studinfo-kontakt" = "UV, isp", "uv-pfi-studinfo-kontakt" = "UV, pfi", "uv-ils-studinfo-kontakt" = "UV, ils", "med-studinfo-kontakt" = "MED", "med-nutri-studinfo-kontakt" = "MED, nutri", "med-helsefag-studinfo-kontakt" = "MED, helsefag", "med-helseadm-studinfo-kontakt" = "MED, helseadm", "med-inthealth-studinfo-kontakt" = "MED, inthealth", "med-ipsy-studinfo-kontakt" = "MED, ipsy", "med-isv-studinfo-kontakt" = "MED, isv", "odont-studinfo-kontakt" = "ODONT", "odont-tannlege-studinfo-kontakt" = "ODONT, tannlege", "odont-tannpleie-studinfo-kontakt" = "ODONT, tannpleie", "stk-studinfo-kontakt" = "STK", "SUM-studinfo-kontakt" = "SUM", "sv-studinfo-kontakt" = "SV", "sv-iss-studinfo-kontakt" = "SV, iss", "sv-isv-studinfo-kontakt" = "SV, isv", "sv-psi-studinfo-kontakt" = "SV, psi", "sv-sai-studinfo-kontakt" = "SV, sai", "sv-tik-studinfo-kontakt" = "SV, tik", "sv-econ-studinfo-kontakt" = "SV, econ", "ingen-fellestekst" = "Ingen"),
-       nn : ("mn-studinfo-kontakt" = "mn", "mn-astro-studinfo-kontakt" = "MN, astro", "mn-ibv-studinfo-kontakt" = "MN, ibv", "mn-ifi-studinfo-kontakt" = "MN, ifi", "mn-kjemi-studinfo-kontakt" = "MN, kjemi", "mn-math-studinfo-kontakt" = "MN, math", "mn-geo-studinfo-kontakt" = "MN, geo", "mn-farmasi-studinfo-kontakt" = "MN, farmasi", "mn-fysikk-studinfo-kontakt" = "MN, fysikk", "mn-sfe-studinfo-kontakt" = "MN, sfe", "hf-studinfo-kontakt" = "HF", "hf-iakh-studinfo-kontakt" = "HF, iakh", "hf-ifikk-studinfo-kontakt" = "HF, ifikk", "hf-ikos-studinfo-kontakt" = "HF, ikos", "hf-iln-studinfo-kontakt" = "HF, iln", "hf-ilos-studinfo-kontakt" = "HF, ilos", "hf-imk-studinfo-kontakt" = "HF, imk", "hf-imv-studinfo-kontakt" = "HF, imv", "hf-ibsen-studinfo-kontakt" = "HF, ibsen", "tf-studinfo-kontakt" = "TF", "jus-studinfo-kontakt" = "JUS", "jus-ikrs-studinfo-kontakt" = "JUS, ikrs", "jus-afin-studinfo-kontakt" = "JUS, afin", "jus-humanrights-studinfo-kontakt" = "JUS, humanrights", "uv-studinfo-kontakt" = "UV", "uv-isp-studinfo-kontakt" = "UV, isp", "uv-pfi-studinfo-kontakt" = "UV, pfi", "uv-ils-studinfo-kontakt" = "UV, ils", "med-studinfo-kontakt" = "MED", "med-nutri-studinfo-kontakt" = "MED, nutri", "med-helsefag-studinfo-kontakt" = "MED, helsefag", "med-helseadm-studinfo-kontakt" = "MED, helseadm", "med-inthealth-studinfo-kontakt" = "MED, inthealth", "med-ipsy-studinfo-kontakt" = "MED, ipsy", "med-isv-studinfo-kontakt" = "MED, isv", "odont-studinfo-kontakt" = "ODONT", "odont-tannlege-studinfo-kontakt" = "ODONT, tannlege", "odont-tannpleie-studinfo-kontakt" = "ODONT, tannpleie", "stk-studinfo-kontakt" = "STK", "SUM-studinfo-kontakt" = "SUM", "sv-studinfo-kontakt" = "SV", "sv-iss-studinfo-kontakt" = "SV, iss", "sv-isv-studinfo-kontakt" = "SV, isv", "sv-psi-studinfo-kontakt" = "SV, psi", "sv-sai-studinfo-kontakt" = "SV, sai", "sv-tik-studinfo-kontakt" = "SV, tik", "sv-econ-studinfo-kontakt" = "SV, econ", "ingen-fellestekst" = "Ingen")
      }
   }
   
@@ -596,7 +585,55 @@ resourcetype course-description : fellestekst-document {
     hver-hoest : (en : "Every autumn semester", no : "Hvert høstsemester", nn : "Hvert høstsemester"),
     hver-vaar : (en : "Every spring semester", no : "Hvert vårsemester", nn : "Hvert vårsemester"),
     particular-semester : (en : "Particular semester", no : "Bestemt semester", nn : "Bestemt semester"),
-    other : (en : "Other", no : "Annet", nn : "Annet")
+    other : (en : "Other", no : "Annet", nn : "Annet"),
+    course-type : (en : "Course type", no : "Emnetype", nn : "Emnetype"),
+    course-content : (en : "Course content", no : "Kort om emnet", nn : "Kort om emnet"),
+    learning-outcomes : (en : "Learning outcome", no : "Hva lærer du", nn : "Hva lærer du"),
+    opptak-og-adgang-text-field : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
+    opptak-og-adgang : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
+    opptak-og-adgang-group : (en : "", no : "Opptak og adgangsregulering", nn : "Opptak og adgangsregulering"),
+    ikke-privatist-text-field : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
+    ikke-privatist : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
+    ikke-privatist-group : (en : "External candidates", no : "Privatist", nn : "Privatist"),
+    obligatoriske-forkunnskaper-text-field : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
+    obligatoriske-forkunnskaper : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
+    obligatoriske-forkunnskaper-group : (en : "Formal prerequisites", no : "Obligatoriske forkunnskaper", nn : "Obligatoriske forkunnskaper"),
+    tidsrom-for-undervisning-text-field : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
+    tidsrom-for-undervisning : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
+    tidsrom-for-undervisning-group : (en : "Teaching period", no : "Tidsrom for undervisning", nn : "Tidsrom for undervisning"),
+    adgang-text-field : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
+    adgang : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
+    adgang-group : (en : "Admission", no : "Adgang", nn : "Adgang"),
+    vurdering-og-eksamen-text-field : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
+    vurdering-og-eksamen : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
+    vurdering-og-eksamen-group : (en : "Assessment and grading", no : "Vurdering og eksamen", nn : "Vurdering og eksamen"),
+    hjelpemidler-text-field : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
+    hjelpemidler : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
+    hjelpemidler-group : (en : "Exam resources", no : "Hjelpemidler", nn : "Hjelpemidler"),
+    eksamensspraak-text-field : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
+    eksamensspraak : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
+    eksamensspraak-group : (en : "Language of examination", no : "Eksamensspråk", nn : "Eksamensspråk"),
+    sensur-text-field : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
+    sensur : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
+    sensur-group : (en : "Assessment and grading", no : "Sensur", nn : "Sensur"),
+    tilsynssensor-text-field : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
+    tilsynssensor : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
+    tilsynssensor-group : (en : "Course Auditor", no : "Tilsynssensor", nn : "Tilsynssensor"),
+    klage-text-field : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
+    klage : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
+    klage-group : (en : "Explanations and appeals", no : "Begrunnelse og klage", nn : "Begrunnelse og klage"),
+    ny-utsatt-eksamen-text-field : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
+    ny-utsatt-eksamen : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
+    ny-utsatt-eksamen-group : (en : "Possibility of make-up exams and re-takes", no : "Adgang til utsatt eller ny eksamen/vurdering", nn : "Adgang til utsatt eller ny eksamen/vurdering"),
+    antall-forsok-trekk-text-field : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
+    antall-forsok-trekk : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
+    antall-forsok-trekk-group : (en : "Withdrawing from exams and limits on re-takes", no : "Trekk fra eksamen og antall eksamensforsøk", nn : "Trekk fra eksamen og antall eksamensforsøk"),
+    tilrettelagt-eksamen-text-field : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
+    tilrettelagt-eksamen : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
+    tilrettelagt-eksamen-group : (en : "Exam options for students with special needs", no : "Tilrettelagt eksamen/vurdering", nn : "Tilrettelagt eksamen/vurdering"),
+    studinfo-kontakt-text-field : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
+    studinfo-kontakt : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
+    studinfo-kontakt-group : (en : "Contact", no : "Kontakt", nn : "Kontakt")
   }
   
 }

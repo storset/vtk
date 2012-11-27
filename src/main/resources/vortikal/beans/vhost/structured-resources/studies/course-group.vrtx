@@ -10,15 +10,15 @@ resourcetype course-group : fellestekst-document {
     relevant-study-programmes : html,
     course-group-admission : simple_html,
     other : simple_html,
-    studinfo-kontakt : string,
-    studinfo-kontakt-text-field : html
+    studinfo-kontakt-text-field : simple_html,
+    studinfo-kontakt : string
   }
 
   edit-rules {
     status (dropdown),
     course-group-scope (dropdown),
-    group contact (studinfo-kontakt, studinfo-kontakt-text-field) vertical,
-    studinfo-kontakt (dropdown)
+    group studinfo-kontakt-group (studinfo-kontakt, studinfo-kontakt-text-field) vertical,
+    studinfo-kontakt (class[vrtx-shared-text])
   }
 
   view {
@@ -36,10 +36,10 @@ resourcetype course-group : fellestekst-document {
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml">
       <head>
-        <title>[if course-group-scope != null && course-group-scope != ""][val course-group-scope]-[localized 'localized-group'][endif][if course-group-scope != null && course-group-scope != "" && course-group-name != null && course-group-name != ""] - [endif][if course-group-name != null && course-group-name != ""]Antikken[if course-group-code != null && course-group-code != ""] ([val course-group-code])[endif][endif]</title>
+        <title>[if course-group-scope != null && course-group-scope != ""][val course-group-scope]-[localized 'localized-group'][endif][if course-group-scope != null && course-group-scope != "" && course-group-name != null && course-group-name != ""] - [endif][if course-group-name != null && course-group-name != ""][val course-group-name][if course-group-code != null && course-group-code != ""] ([val course-group-code])[endif][endif]</title>
       </head>
       <body>
-        <h1>[if course-group-scope != null && course-group-scope != ""][val course-group-scope]-[localized 'localized-group'][endif][if course-group-scope != null && course-group-scope != "" && course-group-name != null && course-group-name != ""] - [endif][if course-group-name != null && course-group-name != ""]Antikken[if course-group-code != null && course-group-code != ""] ([val course-group-code])[endif][endif]</h1>
+        <h1>[if course-group-scope != null && course-group-scope != ""][val course-group-scope]-[localized 'localized-group'][endif][if course-group-scope != null && course-group-scope != "" && course-group-name != null && course-group-name != ""] - [endif][if course-group-name != null && course-group-name != ""][val course-group-name][if course-group-code != null && course-group-code != ""] ([val course-group-code])[endif][endif]</h1>
         [if about != null && about != ""]
           [val about # unescaped]
         [endif]
@@ -76,11 +76,6 @@ resourcetype course-group : fellestekst-document {
       en : (range = "1..120"),
       no : (range = "1..120"),
       nn : (range = "1..120")
-    },
-    studinfo-kontakt {
-      en : ("mn-studinfo-kontakt" = "mn", "mn-astro-studinfo-kontakt" = "MN, astro", "mn-ibv-studinfo-kontakt" = "MN, ibv", "mn-ifi-studinfo-kontakt" = "MN, ifi", "mn-kjemi-studinfo-kontakt" = "MN, kjemi", "mn-math-studinfo-kontakt" = "MN, math", "mn-geo-studinfo-kontakt" = "MN, geo", "mn-farmasi-studinfo-kontakt" = "MN, farmasi", "mn-fysikk-studinfo-kontakt" = "MN, fysikk", "mn-sfe-studinfo-kontakt" = "MN, sfe", "hf-studinfo-kontakt" = "HF", "hf-iakh-studinfo-kontakt" = "HF, iakh", "hf-ifikk-studinfo-kontakt" = "HF, ifikk", "hf-ikos-studinfo-kontakt" = "HF, ikos", "hf-iln-studinfo-kontakt" = "HF, iln", "hf-ilos-studinfo-kontakt" = "HF, ilos", "hf-imk-studinfo-kontakt" = "HF, imk", "hf-imv-studinfo-kontakt" = "HF, imv", "hf-ibsen-studinfo-kontakt" = "HF, ibsen", "tf-studinfo-kontakt" = "TF", "jus-studinfo-kontakt" = "JUS", "jus-ikrs-studinfo-kontakt" = "JUS, ikrs", "jus-afin-studinfo-kontakt" = "JUS, afin", "jus-humanrights-studinfo-kontakt" = "JUS, humanrights", "uv-studinfo-kontakt" = "UV", "uv-isp-studinfo-kontakt" = "UV, isp", "uv-pfi-studinfo-kontakt" = "UV, pfi", "uv-ils-studinfo-kontakt" = "UV, ils", "med-studinfo-kontakt" = "MED", "med-nutri-studinfo-kontakt" = "MED, nutri", "med-helsefag-studinfo-kontakt" = "MED, helsefag", "med-helseadm-studinfo-kontakt" = "MED, helseadm", "med-inthealth-studinfo-kontakt" = "MED, inthealth", "med-ipsy-studinfo-kontakt" = "MED, ipsy", "med-isv-studinfo-kontakt" = "MED, isv", "odont-studinfo-kontakt" = "ODONT", "odont-tannlege-studinfo-kontakt" = "ODONT, tannlege", "odont-tannpleie-studinfo-kontakt" = "ODONT, tannpleie", "stk-studinfo-kontakt" = "STK", "SUM-studinfo-kontakt" = "SUM", "sv-studinfo-kontakt" = "SV", "sv-iss-studinfo-kontakt" = "SV, iss", "sv-isv-studinfo-kontakt" = "SV, isv", "sv-psi-studinfo-kontakt" = "SV, psi", "sv-sai-studinfo-kontakt" = "SV, sai", "sv-tik-studinfo-kontakt" = "SV, tik", "sv-econ-studinfo-kontakt" = "SV, econ", "ingen-fellestekst" = "Ingen"),
-      no : ("mn-studinfo-kontakt" = "mn", "mn-astro-studinfo-kontakt" = "MN, astro", "mn-ibv-studinfo-kontakt" = "MN, ibv", "mn-ifi-studinfo-kontakt" = "MN, ifi", "mn-kjemi-studinfo-kontakt" = "MN, kjemi", "mn-math-studinfo-kontakt" = "MN, math", "mn-geo-studinfo-kontakt" = "MN, geo", "mn-farmasi-studinfo-kontakt" = "MN, farmasi", "mn-fysikk-studinfo-kontakt" = "MN, fysikk", "mn-sfe-studinfo-kontakt" = "MN, sfe", "hf-studinfo-kontakt" = "HF", "hf-iakh-studinfo-kontakt" = "HF, iakh", "hf-ifikk-studinfo-kontakt" = "HF, ifikk", "hf-ikos-studinfo-kontakt" = "HF, ikos", "hf-iln-studinfo-kontakt" = "HF, iln", "hf-ilos-studinfo-kontakt" = "HF, ilos", "hf-imk-studinfo-kontakt" = "HF, imk", "hf-imv-studinfo-kontakt" = "HF, imv", "hf-ibsen-studinfo-kontakt" = "HF, ibsen", "tf-studinfo-kontakt" = "TF", "jus-studinfo-kontakt" = "JUS", "jus-ikrs-studinfo-kontakt" = "JUS, ikrs", "jus-afin-studinfo-kontakt" = "JUS, afin", "jus-humanrights-studinfo-kontakt" = "JUS, humanrights", "uv-studinfo-kontakt" = "UV", "uv-isp-studinfo-kontakt" = "UV, isp", "uv-pfi-studinfo-kontakt" = "UV, pfi", "uv-ils-studinfo-kontakt" = "UV, ils", "med-studinfo-kontakt" = "MED", "med-nutri-studinfo-kontakt" = "MED, nutri", "med-helsefag-studinfo-kontakt" = "MED, helsefag", "med-helseadm-studinfo-kontakt" = "MED, helseadm", "med-inthealth-studinfo-kontakt" = "MED, inthealth", "med-ipsy-studinfo-kontakt" = "MED, ipsy", "med-isv-studinfo-kontakt" = "MED, isv", "odont-studinfo-kontakt" = "ODONT", "odont-tannlege-studinfo-kontakt" = "ODONT, tannlege", "odont-tannpleie-studinfo-kontakt" = "ODONT, tannpleie", "stk-studinfo-kontakt" = "STK", "SUM-studinfo-kontakt" = "SUM", "sv-studinfo-kontakt" = "SV", "sv-iss-studinfo-kontakt" = "SV, iss", "sv-isv-studinfo-kontakt" = "SV, isv", "sv-psi-studinfo-kontakt" = "SV, psi", "sv-sai-studinfo-kontakt" = "SV, sai", "sv-tik-studinfo-kontakt" = "SV, tik", "sv-econ-studinfo-kontakt" = "SV, econ", "ingen-fellestekst" = "Ingen"),
-      nn : ("mn-studinfo-kontakt" = "mn", "mn-astro-studinfo-kontakt" = "MN, astro", "mn-ibv-studinfo-kontakt" = "MN, ibv", "mn-ifi-studinfo-kontakt" = "MN, ifi", "mn-kjemi-studinfo-kontakt" = "MN, kjemi", "mn-math-studinfo-kontakt" = "MN, math", "mn-geo-studinfo-kontakt" = "MN, geo", "mn-farmasi-studinfo-kontakt" = "MN, farmasi", "mn-fysikk-studinfo-kontakt" = "MN, fysikk", "mn-sfe-studinfo-kontakt" = "MN, sfe", "hf-studinfo-kontakt" = "HF", "hf-iakh-studinfo-kontakt" = "HF, iakh", "hf-ifikk-studinfo-kontakt" = "HF, ifikk", "hf-ikos-studinfo-kontakt" = "HF, ikos", "hf-iln-studinfo-kontakt" = "HF, iln", "hf-ilos-studinfo-kontakt" = "HF, ilos", "hf-imk-studinfo-kontakt" = "HF, imk", "hf-imv-studinfo-kontakt" = "HF, imv", "hf-ibsen-studinfo-kontakt" = "HF, ibsen", "tf-studinfo-kontakt" = "TF", "jus-studinfo-kontakt" = "JUS", "jus-ikrs-studinfo-kontakt" = "JUS, ikrs", "jus-afin-studinfo-kontakt" = "JUS, afin", "jus-humanrights-studinfo-kontakt" = "JUS, humanrights", "uv-studinfo-kontakt" = "UV", "uv-isp-studinfo-kontakt" = "UV, isp", "uv-pfi-studinfo-kontakt" = "UV, pfi", "uv-ils-studinfo-kontakt" = "UV, ils", "med-studinfo-kontakt" = "MED", "med-nutri-studinfo-kontakt" = "MED, nutri", "med-helsefag-studinfo-kontakt" = "MED, helsefag", "med-helseadm-studinfo-kontakt" = "MED, helseadm", "med-inthealth-studinfo-kontakt" = "MED, inthealth", "med-ipsy-studinfo-kontakt" = "MED, ipsy", "med-isv-studinfo-kontakt" = "MED, isv", "odont-studinfo-kontakt" = "ODONT", "odont-tannlege-studinfo-kontakt" = "ODONT, tannlege", "odont-tannpleie-studinfo-kontakt" = "ODONT, tannpleie", "stk-studinfo-kontakt" = "STK", "SUM-studinfo-kontakt" = "SUM", "sv-studinfo-kontakt" = "SV", "sv-iss-studinfo-kontakt" = "SV, iss", "sv-isv-studinfo-kontakt" = "SV, isv", "sv-psi-studinfo-kontakt" = "SV, psi", "sv-sai-studinfo-kontakt" = "SV, sai", "sv-tik-studinfo-kontakt" = "SV, tik", "sv-econ-studinfo-kontakt" = "SV, econ", "ingen-fellestekst" = "Ingen")
     }
   }
 
@@ -96,9 +91,9 @@ resourcetype course-group : fellestekst-document {
     courses-in-group : (en : "Courses in group", no : "Emner i emnegruppen", nn : "Emner i emnegruppa"),
     course-group-admission : (en : "Course group admission", no : "Emnegruppeopptak", nn : "Emnegruppeopptak"),
     other : (en : "Other", no : "Annet", nn : "Anna"),
-    contact : (en : "Contact", no : "Kontakt", nn : "Kontakt"),
+    studinfo-kontakt-text-field : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
     studinfo-kontakt : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
-    studinfo-kontakt-text-field : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst")
+    studinfo-kontakt-group : (en : "Contact", no : "Kontakt", nn : "Kontakt")
   }
 
 }

@@ -32,10 +32,10 @@ function resize(minHeight) {
   var runTimes = 0;
   var waitForIframeLoaded = setTimeout(function() {
     if(LOADED) {
-      var computedHeight = document.body.offsetHeight + 45;
+      var computedHeight = document.body.offsetHeight;
       if(computedHeight > setHeight) {
         setHeight = computedHeight;
-        crossDocComLink.postCmdToParent("preview-height|" + setHeight);
+        crossDocComLink.postCmdToParent("preview-height|" + (setHeight + 45));
       } else { // Computed height is less than or below minimum height
         crossDocComLink.postCmdToParent("keep-min-height");
       }

@@ -3,9 +3,9 @@
  *  Based loosely on code found on the web page "http://sonspring.com/journal/jquery-iframe-sizing" which
  *  was written by Nathan Smith (http://technorati.com/people/technorati/nathansmith/)
  *
- *  - Pass inner iframe height to parent with postMessage if larger than minimum height (otherwise unchanged command)
  *  - Receives minimum height from top (available v.space in window)
- *  - Timeouts after ca. 6s and sends unchanged command if inner iframe is not loaded yet
+ *  - Pass inner iframe height to parent with postMessage if larger than minimum height (otherwise unchanged command)
+ *  - Timeouts after ca. 6s and sends unchanged command if inner iframe is not loaded yet (independent of communication)
  *  - Also sends unchanged command on error getting height
  *  - Should work as before with regard to the previewViewIframe (served from the view domain)
  *  - Resizing the outer iframe (served from the admin domain) only works on browsers which support postMessage

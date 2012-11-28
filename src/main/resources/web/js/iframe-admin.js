@@ -39,7 +39,7 @@
           }
         }
         break;
-      case "preview-height-same-or-error":
+      case "preview-height-keep-or-error":
         previewLoadingComplete(previewIframe, previewIframeMinHeight, previewLoading, contents);
         break;
       default:

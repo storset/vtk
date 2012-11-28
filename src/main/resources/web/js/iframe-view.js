@@ -48,7 +48,7 @@ function resize(iframe, minHeight) {
         if(computedHeight > setHeight) {
           crossDocComLink.postCmdToParent("preview-height|" + computedHeight);
         } else {
-          crossDocComLink.postCmdToParent("preview-height-same-or-error");
+          crossDocComLink.postCmdToParent("preview-height-keep-or-error");
         }
         iframe.style.height = setHeight + "px";
       } else {
@@ -56,7 +56,7 @@ function resize(iframe, minHeight) {
         if(runTimes < 400) { // Wait max ca. 6s (http://ejohn.org/blog/accuracy-of-javascript-time/)
           setTimeout(arguments.callee, 15);
         } else {
-          crossDocComLink.postCmdToParent("preview-height-same-or-error");
+          crossDocComLink.postCmdToParent("preview-height-keep-or-error");
         }
       }
     }, 15); 
@@ -65,6 +65,6 @@ function resize(iframe, minHeight) {
       console.log("Error in getting iframe height or posting to parent: " + e.message);
     }
     iframe.style.height = setHeight + "px";
-    crossDocComLink.postCmdToParent("preview-height-same-or-error");
+    crossDocComLink.postCmdToParent("preview-height-keep-or-error");
   }
 }

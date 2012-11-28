@@ -7,7 +7,8 @@
  
 (function ($) {
 
-  var appContentHeight, appWrapperHeight,
+  var isPreviewMode,
+      appContentHeight, appWrapperHeight,
       appFooterHeight, windowHeight,
       previewIframeMinHeight, appContent,
       main, contents, previewLoading,
@@ -67,7 +68,8 @@
   }
 
   $(document).ready(function() {
-    if($("#vrtx-preview").length) {
+    isPreviewMode = $("#vrtx-preview").length;
+    if(isPreviewMode) {
       var body = $("body");
       appContent = body.find("#app-content");
       main = appContent.find("#main");
@@ -92,7 +94,7 @@
   });
   
   $(window).load(function() {
-    if($("#vrtx-preview").length) {
+    if(isPreviewMode) {
       crossDocComLink.postCmdToIframe($("iframe#previewIframe")[0], "min-height|" + previewIframeMinHeight);
     }
   });

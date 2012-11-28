@@ -35,13 +35,15 @@
           if(diff > 0 && diff > surplus) {
             previewLoading.animate({height: (previewIframeMinHeight + surplus) + "px"}, surplusAnimationSpeed);
             contents.animate({height: (previewIframeMinHeight + surplus) + "px"}, surplusAnimationSpeed, function() {
-              previewLoadingComplete(previewIframe, newHeight, previewLoading, appContent, main, contents);
+              previewLoadingComplete(previewIframe, newHeight, previewLoading, contents);
             });  
-          } else {
+          } else if(diff > 0 && diff < surplus) {
             previewLoading.animate({height: newHeight + "px"}, surplusAnimationSpeed);
             contents.animate({height: newHeight + "px"}, surplusAnimationSpeed, function() {
-              previewLoadingComplete(previewIframe, newHeight, previewLoading, appContent, main, contents);
+              previewLoadingComplete(previewIframe, newHeight, previewLoading, contents);
             });  
+          } else {
+            previewLoadingComplete(previewIframe, newHeight, previewLoading, contents);
           }
         }
         
@@ -50,7 +52,7 @@
     }
   });
 
-  function previewLoadingComplete(previewIframe, newHeight, previewLoading, appContent, main, contents) {
+  function previewLoadingComplete(previewIframe, newHeight, previewLoading, contents) {
     previewIframe.style.height = newHeight + "px";
     previewLoading.fadeOut(surplusAnimationSpeed, function() {
       previewLoading.remove();

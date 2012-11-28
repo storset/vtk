@@ -10,7 +10,7 @@ var crossDocComLink = new CrossDocComLink();
 crossDocComLink.setUpReceiveDataHandler(function(cmdParams, source) {
   switch(cmdParams[0]) {
     case "min-height":
-      var minHeight = (cmdParams.length === 2) ? cmdParams[1] : 0;
+      var minHeight = (cmdParams.length === 2) ? cmdParams[1] : 350;
       resize($("iframe#previewViewIframe")[0], minHeight); 
       break;
     default:

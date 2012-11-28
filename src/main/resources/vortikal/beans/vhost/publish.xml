@@ -452,6 +452,7 @@
     <property name="publishedPropDef" ref="publishedPropDef" />
   </bean>
   
+  <!-- Possible temporary assertion to minimize concept impact -->
   <bean id="displayPublishUnpublishAssertion" class="org.vortikal.web.service.OrAssertion">
     <property name="assertions">
       <list>

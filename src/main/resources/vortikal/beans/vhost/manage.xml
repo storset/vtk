@@ -1974,6 +1974,7 @@
     <property name="permission" value="READ_WRITE_UNPUBLISHED" />
   </bean>
   
+  <!-- Possible temporary assertion to minimize concept impact -->
   <bean id="hasWriteUnpublishedPermissionPrincipalsAssertion" class="org.vortikal.web.service.ResourceHasWriteUnpublishedPermissionPrincipalsAssertion" />
   
   <bean id="writeParentPermissionAssertion" parent="abstractResourcePrincipalPermissionAssertion">

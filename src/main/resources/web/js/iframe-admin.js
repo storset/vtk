@@ -7,7 +7,7 @@
  
 (function ($) {
 
-  var isPreviewMode,
+  var isPreviewMode, body,
       appContentHeight, appHeadWrapperHeight,
       appFooterHeight, windowHeight,
       previewIframeMinHeight, appContent,
@@ -27,19 +27,19 @@
             if (dataHeight <= previewIframeMaxHeight) {
               newHeight = dataHeight;
             } else {
-            newHeight = previewIframeMaxHeight;
+              newHeight = previewIframeMaxHeight;
             }
           }
           var diff = newHeight - previewIframeMinHeight;
-          var surplus = appFooterHeight; // TODO: Avoid hardcoded padding/margins
+          var surplus = body.find("#app-head-wrapper").outerHeight(true);; // TODO: Avoid hardcoded padding/margins
           if(diff > 0 && diff > surplus) {
             previewLoading.animate({height: (previewIframeMinHeight + surplus) + "px"}, surplusAnimationSpeed);
-            main.animate({height: (previewIframeMinHeight + surplus) + "px"}, surplusAnimationSpeed, function() {
+            contents.animate({height: (previewIframeMinHeight + surplus) + "px"}, surplusAnimationSpeed, function() {
               previewLoadingComplete(previewIframe, newHeight, previewLoading, appContent, main, contents);
             });  
           } else {
             previewLoading.animate({height: newHeight + "px"}, surplusAnimationSpeed);
-            main.animate({height: newHeight + "px"}, surplusAnimationSpeed, function() {
+            contents.animate({height: newHeight + "px"}, surplusAnimationSpeed, function() {
               previewLoadingComplete(previewIframe, newHeight, previewLoading, appContent, main, contents);
             });  
           }
@@ -54,8 +54,6 @@
     previewIframe.style.height = newHeight + "px";
     previewLoading.fadeOut(surplusAnimationSpeed, function() {
       previewLoading.remove();
-      appContent.removeAttr('style');
-      main.removeAttr('style');
       contents.removeAttr('style');
     });
   }
@@ -63,14 +61,14 @@
   $(document).ready(function() {
     isPreviewMode = $("#vrtx-preview").length;
     if(isPreviewMode) {
-      var body = $("body");
+      body = $("body");
       appContent = body.find("#app-content");
       main = appContent.find("#main");
       contents = main.find("#contents");
     
       appContentHeight = appContent.height();
       appHeadWrapperHeight = body.find("#app-head-wrapper").outerHeight(true);
-      appFooterHeight = body.find("#app-footer-wrapper").outerHeight(true);
+      appFooterHeight = body.find("#app-footer").outerHeight(true);
       windowHeight = $(window).outerHeight(true);
 
       previewIframeMinHeight = (windowHeight - (appContentHeight + appHeadWrapperHeight + appFooterHeight)) + 150; // + iframe default height

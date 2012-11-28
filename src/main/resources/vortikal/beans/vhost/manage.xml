@@ -547,6 +547,7 @@
     </property>
     <property name="handler" ref="editReadWriteUnpublishedPermissionsHandler" />
   </bean>
+  
 
   <!-- <bean id="editBindPermissionsService" class="org.vortikal.web.service.ServiceImpl"> <property name="parent" ref="permissionsService" 
     /> <property name="assertions"> <list> <ref local="writeACLPermissionAssertion" /> <bean class="org.vortikal.web.service.RequestParameterAssertion"> 
@@ -1972,6 +1973,8 @@
   <bean id="writeUnpublishedPermissionAssertion" parent="abstractResourcePrincipalPermissionAssertion">
     <property name="permission" value="READ_WRITE_UNPUBLISHED" />
   </bean>
+  
+  <bean id="hasWriteUnpublishedPermissionPrincipalsAssertion" class="org.vortikal.web.service.ResourceHasWriteUnpublishedPermissionPrincipalsAssertion" />
   
   <bean id="writeParentPermissionAssertion" parent="abstractResourcePrincipalPermissionAssertion">
     <property name="parent" value="true" />

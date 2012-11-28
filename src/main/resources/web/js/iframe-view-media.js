@@ -5,7 +5,7 @@
  *
  *  - Pass iframe height to parent with postMessage if larger than minimum height (otherwise unchanged command)
  *  - Receives minimum height from top (available v.space in window)
- *  - Timeouts after ca. 6s and sends unchanged command if iframe is not loaded yet
+ *  - Timeouts after ca. 6s and sends unchanged command if iframe is not loaded yet (detects it before/independent of communication)
  *  - Should work as before with regard to the previewViewIframe (served from the view domain)
  *  - Resizing the outer iframe (served from the admin domain) only works on browsers which support postMessage
  */

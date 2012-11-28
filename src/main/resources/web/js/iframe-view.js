@@ -64,5 +64,7 @@ function resize(iframe, minHeight) {
     if(typeof console !== "undefined" && console.log) {
       console.log("Error in getting iframe height or posting to parent: " + e.message);
     }
+    iframe.style.height = setHeight + "px";
+    crossDocComLink.postCmdToParent("preview-height|" + setHeight);
   }
 }

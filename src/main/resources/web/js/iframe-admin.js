@@ -22,7 +22,7 @@
         if (previewIframe) {
           var dataHeight = (cmdParams.length === 2) ? cmdParams[1] : 0;
           
-          var newHeight = Math.min(Math.max(dataHeight, previewIframeMinHeight), 20000) - 1;
+          var newHeight = Math.min(Math.max(dataHeight, previewIframeMinHeight), 20000);
           var diff = newHeight - previewIframeMinHeight;
           var surplus = body.find("#app-head-wrapper").outerHeight(true);
           

@@ -1840,7 +1840,7 @@ p.previewUnavailableReasons {
   font-size: 1.308em;
   position: relative;
   position: absolute;
-  top: 40%;
+  top: 150px;
   left: 41%;
   color: #5e5e5e;
 }

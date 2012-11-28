@@ -52,14 +52,14 @@ function resize(iframe, minHeight) {
         crossDocComLink.postCmdToParent("preview-height|" + setHeight);
       } else {
         runTimes++;
-        if(runTimes < 400) { // Wait max 6s
+        if(runTimes < 400) { // Wait max ca. 6s (http://ejohn.org/blog/accuracy-of-javascript-time/)
           setTimeout(arguments.callee, 15);
         } else { // Otherwise just post back min height
           iframe.style.height = setHeight + "px";
           crossDocComLink.postCmdToParent("preview-height|" + setHeight);
         }
       }
-    }, 0);
+    }, 15); 
   } catch(e) {
     if(typeof console !== "undefined" && console.log) {
       console.log("Error in getting iframe height or posting to parent: " + e.message);

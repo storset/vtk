@@ -5,7 +5,7 @@
  * - Sends available window v.space to iframe (minimum height)
  * - Receives computed height from inner iframes or unchanged command
  * - Shows loading overlay while rendering/loading
- * - Animates changed height
+ * - Animates changed height visible in window
  *
  */
  

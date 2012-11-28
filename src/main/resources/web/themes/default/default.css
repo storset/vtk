@@ -471,7 +471,6 @@ a:hover {
 #app-content #main {
   padding: 19px;
   border: 1px solid #d9d9d9;
-  overflow: hidden;
 }
 
 /* ^ 3.1 App content grid */
@@ -2543,9 +2542,6 @@ body#vrtx-preview .tabMessage-big {
   max-width: 1200px;
   padding-left: 50px;
   padding-right: 50px;
-
-  /* TODO: remove scrollbars when not needed */
-  overflow: hidden;
 }
 
 .app-fluid #app-footer {

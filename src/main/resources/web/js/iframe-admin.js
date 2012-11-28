@@ -8,7 +8,7 @@
 (function ($) {
 
   var isPreviewMode,
-      appContentHeight, appWrapperHeight,
+      appContentHeight, appHeadWrapperHeight,
       appFooterHeight, windowHeight,
       previewIframeMinHeight, appContent,
       main, contents, previewLoading,
@@ -32,19 +32,12 @@
           }
           var diff = newHeight - previewIframeMinHeight;
           var surplus = appFooterHeight; // TODO: Avoid hardcoded padding/margins
-          var appContentHeight = appContent.height();
           if(diff > 0 && diff > surplus) {
-            // TODO: need to take into account speed vs. travelling distance
-            appContent.animate({height: (appContentHeight + surplus) + "px"}, surplusAnimationSpeed);
-            contents.animate({height: (previewIframeMinHeight + surplus) + "px"}, surplusAnimationSpeed);
             previewLoading.animate({height: (previewIframeMinHeight + surplus) + "px"}, surplusAnimationSpeed);
             main.animate({height: (previewIframeMinHeight + surplus) + "px"}, surplusAnimationSpeed, function() {
               previewLoadingComplete(previewIframe, newHeight, previewLoading, appContent, main, contents);
             });  
           } else {
-            // TODO: need to take into account speed vs. travelling distance
-            appContent.animate({height: (appContentHeight + diff) + "px"}, surplusAnimationSpeed);
-            contents.animate({height: newHeight + "px"}, surplusAnimationSpeed);
             previewLoading.animate({height: newHeight + "px"}, surplusAnimationSpeed);
             main.animate({height: newHeight + "px"}, surplusAnimationSpeed, function() {
               previewLoadingComplete(previewIframe, newHeight, previewLoading, appContent, main, contents);
@@ -76,17 +69,15 @@
       contents = main.find("#contents");
     
       appContentHeight = appContent.height();
-      appWrapperHeight = body.find("#app-head-wrapper").height();
-      appFooterHeight = body.find("#app-footer").outerHeight(true);
-      windowHeight = $(window).height();
-      
-      previewIframeMinHeight = (windowHeight - (appContentHeight + appWrapperHeight + appFooterHeight)) + 150; // + iframe default height
+      appHeadWrapperHeight = body.find("#app-head-wrapper").outerHeight(true);
+      appFooterHeight = body.find("#app-footer-wrapper").outerHeight(true);
+      windowHeight = $(window).outerHeight(true);
+
+      previewIframeMinHeight = (windowHeight - (appContentHeight + appHeadWrapperHeight + appFooterHeight)) + 150; // + iframe default height
    
-      appContent.css({ height: ((appContentHeight + previewIframeMinHeight) - 150) + "px" }); // - iframe default height and padding/margin
-            main.css({ height: previewIframeMinHeight + "px" });
-        contents.append("<span id='preview-loading'><span>" + previewLoadingMsg + "...</span></span>")
-                .css({ position: "relative",
-                       height: previewIframeMinHeight + "px" });
+      contents.append("<span id='preview-loading'><span>" + previewLoadingMsg + "...</span></span>")
+              .css({ position: "relative",
+                     height: previewIframeMinHeight + "px" });
                      
       previewLoading = contents.find("#preview-loading");
       previewLoading.css({ height: previewIframeMinHeight + "px" });

@@ -85,16 +85,19 @@ public class ResourceEditController extends SimpleFormController {
         Resource resource = wrapper.getResource();
         RequestContext requestContext = RequestContext.getRequestContext();
         Principal principal = requestContext.getPrincipal();
+        Repository repository = requestContext.getRepository();
         
         if (wrapper.hasErrors()) {
             Map<String, Object> model = new HashMap<String, Object>();
             model.put(getCommandName(), command);
+            model.put("published", resource.isPublished());
+            model.put("hasPublishDate", resource.hasPublishDate());
+            model.put("onlyWriteUnpublished", !repository.authorize(principal, resource.getAcl(), Privilege.READ_WRITE));
             model = addImageEditorServices(model, resource, principal);
             return new ModelAndView(getFormView(), model);
         }
  
         if(wrapper.isSaveCopy() && this.editImageService != null && this.copyHelper != null && this.saveImageHelper != null) { 
-            Repository repository = requestContext.getRepository();
             String token = requestContext.getSecurityToken();               
             InputStream is = saveImageHelper.saveImage(resource, repository, token, resource.getURI(),
                                                        wrapper.getCropX(), wrapper.getCropY(), wrapper.getCropWidth(),
@@ -118,7 +121,6 @@ public class ResourceEditController extends SimpleFormController {
         this.resourceManager.store(wrapper);
         
         if(this.editImageService != null && this.copyHelper != null && this.saveImageHelper != null) {
-            Repository repository = requestContext.getRepository();
             String token = requestContext.getSecurityToken(); 
             
             InputStream is = saveImageHelper.saveImage(resource, repository, token, resource.getURI(),
@@ -133,6 +135,9 @@ public class ResourceEditController extends SimpleFormController {
             Map<String, Object> model = new HashMap<String, Object>();
             model.put(getCommandName(), command);
             wrapper.setSave(false);
+            model.put("published", resource.isPublished());
+            model.put("hasPublishDate", resource.hasPublishDate());
+            model.put("onlyWriteUnpublished", !repository.authorize(principal, resource.getAcl(), Privilege.READ_WRITE));
             model = addImageEditorServices(model, resource, principal);
             return new ModelAndView(getFormView(), model);
         }

@@ -26,21 +26,21 @@
           var diff = newHeight - previewIframeMinHeight;
           var surplus = body.find("#app-head-wrapper").outerHeight(true);
           
-          if(diff > 0 && diff > surplus) {
+          if(diff > surplus) {
             previewLoading.animate({height: (previewIframeMinHeight + surplus) + "px"}, surplusAnimationSpeed);
             contents.animate({height: (previewIframeMinHeight + surplus) + "px"}, surplusAnimationSpeed, function() {
               previewLoadingComplete(previewIframe, newHeight, previewLoading, contents);
             });  
-          } else if(diff > 0 && diff < surplus) {
+          } else {
             previewLoading.animate({height: newHeight + "px"}, surplusAnimationSpeed);
             contents.animate({height: newHeight + "px"}, surplusAnimationSpeed, function() {
               previewLoadingComplete(previewIframe, newHeight, previewLoading, contents);
             });  
-          } else {
-            previewLoadingComplete(previewIframe, newHeight, previewLoading, contents);
           }
         }
-        
+        break;
+      case "preview-height-same-or-error":
+        previewLoadingComplete(previewIframe, previewIframeMinHeight, previewLoading, contents);
         break;
       default:
     }

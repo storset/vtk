@@ -44,19 +44,19 @@ function resize(iframe, minHeight) {
     var runTimes = 0;
     var waitForIframeLoaded = setTimeout(function() {
       if(typeof iframe.contentWindow !== "undefined" && typeof iframe.contentWindow.document !== "undefined" && IFRAME_LOADED) {
-      
-        var computedHeight = Math.ceil(iframe.contentWindow.document.body.offsetHeight) + 45; 
-        setHeight = Math.max(setHeight, computedHeight);
-        
+        var computedHeight = Math.ceil(iframe.contentWindow.document.body.offsetHeight) + 45;
+        if(computedHeight > setHeight) {
+          crossDocComLink.postCmdToParent("preview-height|" + computedHeight);
+        } else {
+          crossDocComLink.postCmdToParent("preview-height-same-or-error");
+        }
         iframe.style.height = setHeight + "px";
-        crossDocComLink.postCmdToParent("preview-height|" + setHeight);
       } else {
         runTimes++;
         if(runTimes < 400) { // Wait max ca. 6s (http://ejohn.org/blog/accuracy-of-javascript-time/)
           setTimeout(arguments.callee, 15);
-        } else { // Otherwise just post back min height
-          iframe.style.height = setHeight + "px";
-          crossDocComLink.postCmdToParent("preview-height|" + setHeight);
+        } else {
+          crossDocComLink.postCmdToParent("preview-height-same-or-error");
         }
       }
     }, 15); 
@@ -65,6 +65,6 @@ function resize(iframe, minHeight) {
       console.log("Error in getting iframe height or posting to parent: " + e.message);
     }
     iframe.style.height = setHeight + "px";
-    crossDocComLink.postCmdToParent("preview-height|" + setHeight);
+    crossDocComLink.postCmdToParent("preview-height-same-or-error");
   }
 }

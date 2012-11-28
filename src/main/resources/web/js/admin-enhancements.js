@@ -615,8 +615,7 @@ vrtxAdmin._$(document).ready(function () {
           selector: "tr." + privilegiesPermissionsInTable[i] + " .submitButtons input",
           isReplacing: true,
           updateSelectors: ["tr." + privilegiesPermissionsInTable[i],
-                            "#resourceMenuRight",
-                            "#global-menu-leave-admin"],
+                            "#resourceMenuRight"],
           errorContainer: "errorContainer",
           errorContainerInsertAfter: ".groups-wrapper",
           post: true

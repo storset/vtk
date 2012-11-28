@@ -30,7 +30,7 @@
             }
           }
           var diff = newHeight - previewIframeMinHeight;
-          var surplus = appFooterHeight + 20 + 12; // TODO: Avoid hardcoded padding/margins
+          var surplus = appFooterHeight; // TODO: Avoid hardcoded padding/margins
           var appContentHeight = appContent.height();
           if(diff > 0 && diff > surplus) {
             // TODO: need to take into account speed vs. travelling distance
@@ -77,9 +77,10 @@
       appWrapperHeight = body.find("#app-head-wrapper").height();
       appFooterHeight = body.find("#app-footer").outerHeight(true);
       windowHeight = $(window).height();
+      
       previewIframeMinHeight = (windowHeight - (appContentHeight + appWrapperHeight + appFooterHeight)) + 150; // + iframe default height
    
-      appContent.css({ height: ((appContentHeight + previewIframeMinHeight) - 150 - 35) + "px" }); // - iframe default height and padding/margin
+      appContent.css({ height: ((appContentHeight + previewIframeMinHeight) - 150 - 25) + "px" }); // - iframe default height and padding/margin
             main.css({ height: previewIframeMinHeight + "px" });
         contents.append("<span id='preview-loading'><span>" + previewLoadingMsg + "...</span></span>")
                 .css({ position: "relative",
@@ -87,6 +88,12 @@
                      
       previewLoading = contents.find("#preview-loading");
       previewLoading.css({ height: previewIframeMinHeight + "px" });
+    }
+  });
+  
+  $(window).load(function() {
+    if($("#vrtx-preview").length) {
+      crossDocComLink.postCmdToIframe($("iframe#previewIframe")[0], "min-height|" + previewIframeMinHeight);
     }
   });
 

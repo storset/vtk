@@ -7,46 +7,59 @@
  */
  
 var crossDocComLink = new CrossDocComLink();
-
-$(document).ready(function () {
-  if ($.browser.msie) {
-    // iframe load event not firing in IE8 / IE9 when page w. iframe is inside another iframe
-    // Setting the iframe src seems to fix the problem
-    var previewViewIframe = $("iframe#previewViewIframe")[0];
-    if (previewViewIframe) {
-      var iSource = previewViewIframe.src;
-      previewViewIframe.src = '';
-      previewViewIframe.src = iSource; 
-    } 
+crossDocComLink.setUpReceiveDataHandler(function(cmdParams, source) {
+  switch(cmdParams[0]) {
+    case "min-height":
+      var minHeight = (cmdParams.length === 2) ? cmdParams[1] : 0;
+      resize($("iframe#previewViewIframe")[0], minHeight); 
+      break;
+    default:
   }
-  $('iframe#previewViewIframe').load(function (e) {
-    resize(this); 
-  });
+});
+      
+var IFRAME_LOADED = false;
+$(document).ready(function () {
+  var previewViewIframe = $("iframe#previewViewIframe");
+  if (previewViewIframe.length) {
+    if ($.browser.msie) {
+      // Iframe load event not firing in IE8 / IE9 when page with iframe is inside another iframe
+      // Setting the iframe src seems to fix the problem
+      var previewViewIframeElm = previewViewIframe[0];
+      var iSource = previewViewIframeElm.src;
+      previewViewIframeElm.src = '';
+      previewViewIframeElm.src = iSource;
+    } 
+    previewViewIframe.load(function() {
+      IFRAME_LOADED = true; 
+    });
+  }
 });
 
-function resize(iframe) {
-  $(document).ready(function() {
-    var setHeight = 700; // If iframe.contentWindow.document is undefined / restricted
-    try {
-      if(typeof iframe.contentWindow.document !== "undefined") {
+function resize(iframe, minHeight) {
+  var setHeight = minHeight;
+  try {
+    var runTimes = 0;
+    var waitForDocument = setTimeout(function() {
+      if(typeof iframe.contentWindow !== "undefined" && typeof iframe.contentWindow.document !== "undefined" && IFRAME_LOADED) {
         var computedHeight = Math.ceil(iframe.contentWindow.document.body.offsetHeight) + 45; 
-        setHeight = 350;  // Set inline style to equal the body height of the iframed content, when body content is at least 350px height
         if (computedHeight > setHeight) {
           setHeight = computedHeight;
         }
+        iframe.style.height = setHeight + "px";
+        crossDocComLink.postCmdToParent("preview-height|" + setHeight);
+      } else {
+        runTimes++;
+        if(runTimes < 400) { // Wait max 6s
+          setTimeout(arguments.callee, 15);
+        } else { // Otherwise just post back min height
+          iframe.style.height = setHeight + "px";
+          crossDocComLink.postCmdToParent("preview-height|" + setHeight);
+        }
       }
-    } catch(e) {
-      if(typeof console !== "undefined" && console.log) {
-        console.log("Error in getting iframe height: " + e.message);
-      }
+    }, 15);
+  } catch(e) {
+    if(typeof console !== "undefined" && console.log) {
+      console.log("Error in getting iframe height or posting to parent: " + e.message);
     }
-    try {
-      iframe.style.height = setHeight + "px";
-      crossDocComLink.postCmdToParent("preview-height|" + setHeight);
-    } catch(e) {
-      if(typeof console !== "undefined" && console.log) {
-        console.log("Error in posting iframe height to parent: " + e.message);
-      }
-    }
-  });
+  }
 }

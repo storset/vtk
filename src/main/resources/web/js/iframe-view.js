@@ -48,20 +48,21 @@ function resize(iframe, minHeight) {
         if(computedHeight > setHeight) {
           setHeight = computedHeight;
           crossDocComLink.postCmdToParent("preview-height|" + setHeight);
-        } else {
+        } else { // Computed height is less than or below minimum height
           crossDocComLink.postCmdToParent("keep-min-height");
         }
         iframe.style.height = setHeight + "px";
       } else {
         runTimes++;
-        if(runTimes < 400) { // Wait max ca. 6s (http://ejohn.org/blog/accuracy-of-javascript-time/)
+        if(runTimes < 400) {
           setTimeout(arguments.callee, 15);
-        } else {
+        } else {  // Timeout after ca. 6s (http://ejohn.org/blog/accuracy-of-javascript-time/)
+          iframe.style.height = setHeight + "px";
           crossDocComLink.postCmdToParent("keep-min-height");
         }
       }
     }, 15); 
-  } catch(e) {
+  } catch(e) { // Error
     if(typeof console !== "undefined" && console.log) {
       console.log("Error in getting iframe height or posting to parent: " + e.message);
     }

@@ -7,21 +7,47 @@
  */
  
 var crossDocComLink = new CrossDocComLink();
+crossDocComLink.setUpReceiveDataHandler(function(cmdParams, source) {
+  switch(cmdParams[0]) {
+    case "min-height":
+      var minHeight = (cmdParams.length === 2) ? cmdParams[1] : 0;
+      resize(minHeight); 
+      break;
+    default:
+  }
+});
  
+var LOADED = false;
 $(document).ready(function () {
-  $(window).load(function (e) {  // Set inline style to equal the body height of the iframed content,                     
-    var setHeight = 350;         // when body content is at least 350px height
-    var computedHeight = document.body.offsetHeight;
-    if (computedHeight > setHeight) {
-      setHeight = computedHeight;
-    }
-    document.body.style.height = setHeight + "px"; 
-    
-    // Pass our height to parent since it is typically cross domain (and can't access it directly)
-    crossDocComLink.postCmdToParent("preview-height|" + setHeight);
-    
+  $(window).load(function (e) {
+    LOADED = true;                
     for (var i = 0, links = $("a"), len = links.length; i < len; i++) {
       $(links[i]).attr("target", "_top");
     }
   });
 });
+
+function resize(minHeight) {
+  var setHeight = minHeight;
+  var runTimes = 0;
+  var waitForIframeLoaded = setTimeout(function() {
+    if(LOADED) {
+      var computedHeight = document.body.offsetHeight + 45;
+      if(computedHeight > setHeight) {
+        setHeight = computedHeight;
+        crossDocComLink.postCmdToParent("preview-height|" + setHeight);
+      } else { // Computed height is less than or below minimum height
+        crossDocComLink.postCmdToParent("keep-min-height");
+      }
+      document.body.style.height = setHeight + "px"; 
+    } else {
+      runTimes++;
+      if(runTimes < 400) {
+        setTimeout(arguments.callee, 15);
+      } else {  // Timeout after ca. 6s (http://ejohn.org/blog/accuracy-of-javascript-time/)
+        document.body.style.height = setHeight + "px";
+        crossDocComLink.postCmdToParent("keep-min-height");
+      }
+    }
+  }, 15); 
+}

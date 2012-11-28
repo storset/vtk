@@ -22,7 +22,7 @@ crossDocComLink.setUpReceiveDataHandler(function(cmdParams, source) {
   }
 });
       
-var IFRAME_LOADED = false;
+var INNER_IFRAME_LOADED = false;
 $(document).ready(function () {
   var previewViewIframe = $("iframe#previewViewIframe");
   if (previewViewIframe.length) {
@@ -38,7 +38,7 @@ $(document).ready(function () {
       
     } 
     previewViewIframe.load(function() {
-      IFRAME_LOADED = true; 
+      INNER_IFRAME_LOADED = true; 
     });
   }
 });
@@ -48,7 +48,7 @@ function resize(iframe, minHeight) {
   try {
     var runTimes = 0;
     var waitForIframeLoaded = setTimeout(function() {
-      if(typeof iframe.contentWindow !== "undefined" && typeof iframe.contentWindow.document !== "undefined" && IFRAME_LOADED) {
+      if(typeof iframe.contentWindow !== "undefined" && typeof iframe.contentWindow.document !== "undefined" && INNER_IFRAME_LOADED) {
         var computedHeight = Math.ceil(iframe.contentWindow.document.body.offsetHeight) + 45;
         if(computedHeight > setHeight) {
           setHeight = computedHeight;

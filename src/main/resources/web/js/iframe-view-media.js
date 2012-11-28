@@ -21,10 +21,10 @@ crossDocComLink.setUpReceiveDataHandler(function(cmdParams, source) {
   }
 });
  
-var LOADED = false;
+var IFRAME_LOADED = false;
 $(document).ready(function () {
   $(window).load(function (e) {
-    LOADED = true;                
+    IFRAME_LOADED = true;                
     for (var i = 0, links = $("a"), len = links.length; i < len; i++) {
       $(links[i]).attr("target", "_top");
     }
@@ -35,7 +35,7 @@ function resize(minHeight) {
   var setHeight = minHeight;
   var runTimes = 0;
   var waitForIframeLoaded = setTimeout(function() {
-    if(LOADED) {
+    if(IFRAME_LOADED) {
       var computedHeight = document.body.offsetHeight;
       if(computedHeight > setHeight) {
         setHeight = computedHeight;

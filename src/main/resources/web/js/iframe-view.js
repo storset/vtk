@@ -46,7 +46,7 @@ function resize(iframe, minHeight) {
       if(typeof iframe.contentWindow !== "undefined" && typeof iframe.contentWindow.document !== "undefined" && IFRAME_LOADED) {
       
         var computedHeight = Math.ceil(iframe.contentWindow.document.body.offsetHeight) + 45; 
-        setHeight = Math.max(setHeight, previewIframeMinHeight);
+        setHeight = Math.max(setHeight, computedHeight);
         
         iframe.style.height = setHeight + "px";
         crossDocComLink.postCmdToParent("preview-height|" + setHeight);

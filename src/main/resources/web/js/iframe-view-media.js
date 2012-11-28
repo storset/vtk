@@ -1,4 +1,5 @@
-/*  Iframe resizing for cross domain (view for media files)
+/*  
+ *  Iframe resizing for cross domain (view for media files)
  *
  *  Based loosely on code found on the web page "http://sonspring.com/journal/jquery-iframe-sizing" which
  *  was written by Nathan Smith (http://technorati.com/people/technorati/nathansmith/)

@@ -20,18 +20,12 @@
       case "preview-height":
         var previewIframe = $("iframe#previewIframe")[0];
         if (previewIframe) {
-          var newHeight = previewIframeMinHeight;
-          var previewIframeMaxHeight = 20000;
           var dataHeight = (cmdParams.length === 2) ? cmdParams[1] : 0;
-          if (dataHeight > previewIframeMinHeight) {
-            if (dataHeight <= previewIframeMaxHeight) {
-              newHeight = dataHeight;
-            } else {
-              newHeight = previewIframeMaxHeight;
-            }
-          }
+          
+          var newHeight = Math.min(Math.max(dataHeight, previewIframeMinHeight), 20000);
           var diff = newHeight - previewIframeMinHeight;
           var surplus = body.find("#app-head-wrapper").outerHeight(true);
+          
           if(diff > 0 && diff > surplus) {
             previewLoading.animate({height: (previewIframeMinHeight + surplus) + "px"}, surplusAnimationSpeed);
             contents.animate({height: (previewIframeMinHeight + surplus) + "px"}, surplusAnimationSpeed, function() {

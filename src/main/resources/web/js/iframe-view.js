@@ -10,7 +10,7 @@ var crossDocComLink = new CrossDocComLink();
 crossDocComLink.setUpReceiveDataHandler(function(cmdParams, source) {
   switch(cmdParams[0]) {
     case "min-height":
-      var minHeight = (cmdParams.length === 2) ? cmdParams[1] : 350;
+      var minHeight = (cmdParams.length === 2) ? cmdParams[1] : 0;
       resize($("iframe#previewViewIframe")[0], minHeight); 
       break;
     default:
@@ -44,10 +44,10 @@ function resize(iframe, minHeight) {
     var runTimes = 0;
     var waitForIframeLoaded = setTimeout(function() {
       if(typeof iframe.contentWindow !== "undefined" && typeof iframe.contentWindow.document !== "undefined" && IFRAME_LOADED) {
+      
         var computedHeight = Math.ceil(iframe.contentWindow.document.body.offsetHeight) + 45; 
-        if (computedHeight > setHeight) {
-          setHeight = computedHeight;
-        }
+        setHeight = Math.max(setHeight, previewIframeMinHeight);
+        
         iframe.style.height = setHeight + "px";
         crossDocComLink.postCmdToParent("preview-height|" + setHeight);
       } else {

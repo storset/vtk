@@ -66,7 +66,7 @@
    
       contents.append("<span id='preview-loading'><span>" + previewLoadingMsg + "...</span></span>")
               .css({ position: "relative",
-                     height: previewIframeMinHeight + "px" });
+                     height: (previewIframeMinHeight + 2) + "px" });
                      
       previewLoading = contents.find("#preview-loading");
       previewLoading.css({ height: previewIframeMinHeight + "px" });

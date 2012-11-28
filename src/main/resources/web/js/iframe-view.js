@@ -4,7 +4,7 @@
  *  was written by Nathan Smith (http://technorati.com/people/technorati/nathansmith/)
  *
  *  - Receives minimum height from top (available v.space in window)
- *  - Pass inner iframe height to parent with postMessage if larger than minimum height (otherwise unchanged command)
+ *  - Pass inner iframe height to parent with postMessage if loaded and if larger than minimum height (otherwise unchanged command)
  *  - Timeouts after ca. 6s and sends unchanged command if inner iframe is not loaded yet (checking it before/independent of communication)
  *  - Also sends unchanged command on error getting height
  *  - Should work as before with regard to the previewViewIframe (served from the view domain)

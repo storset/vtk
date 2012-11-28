@@ -26,9 +26,7 @@ var IFRAME_LOADED = false;
 $(document).ready(function () {
   $(window).load(function (e) {
     IFRAME_LOADED = true;                
-    for (var i = 0, links = $("a"), len = links.length; i < len; i++) {
-      $(links[i]).attr("target", "_top");
-    }
+    $("a").attr("target", "_top");
   });
 });
 

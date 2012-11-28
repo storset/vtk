@@ -46,7 +46,8 @@ function resize(iframe, minHeight) {
       if(typeof iframe.contentWindow !== "undefined" && typeof iframe.contentWindow.document !== "undefined" && IFRAME_LOADED) {
         var computedHeight = Math.ceil(iframe.contentWindow.document.body.offsetHeight) + 45;
         if(computedHeight > setHeight) {
-          crossDocComLink.postCmdToParent("preview-height|" + computedHeight);
+          setHeight = computedHeight;
+          crossDocComLink.postCmdToParent("preview-height|" + setHeight);
         } else {
           crossDocComLink.postCmdToParent("preview-height-keep-or-error");
         }

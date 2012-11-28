@@ -16,27 +16,25 @@
 
   var crossDocComLink = new CrossDocComLink();
   crossDocComLink.setUpReceiveDataHandler(function(cmdParams, source) {
+    var previewIframe = $("iframe#previewIframe")[0];
     switch(cmdParams[0]) {
       case "preview-height":
-        var previewIframe = $("iframe#previewIframe")[0];
-        if (previewIframe) {
-          var dataHeight = (cmdParams.length === 2) ? cmdParams[1] : 0;
+        var dataHeight = (cmdParams.length === 2) ? cmdParams[1] : 0;
+        
+        var newHeight = Math.min(Math.max(dataHeight, previewIframeMinHeight), 20000);
+        var diff = newHeight - previewIframeMinHeight;
+        var surplus = body.find("#app-head-wrapper").outerHeight(true);
           
-          var newHeight = Math.min(Math.max(dataHeight, previewIframeMinHeight), 20000);
-          var diff = newHeight - previewIframeMinHeight;
-          var surplus = body.find("#app-head-wrapper").outerHeight(true);
-          
-          if(diff > surplus) {
-            previewLoading.animate({height: (previewIframeMinHeight + surplus) + "px"}, surplusAnimationSpeed);
-            contents.animate({height: (previewIframeMinHeight + surplus) + "px"}, surplusAnimationSpeed, function() {
-              previewLoadingComplete(previewIframe, newHeight, previewLoading, contents);
-            });  
-          } else {
-            previewLoading.animate({height: newHeight + "px"}, surplusAnimationSpeed);
-            contents.animate({height: newHeight + "px"}, surplusAnimationSpeed, function() {
-              previewLoadingComplete(previewIframe, newHeight, previewLoading, contents);
-            });  
-          }
+        if(diff > surplus) {
+          previewLoading.animate({height: (previewIframeMinHeight + surplus) + "px"}, surplusAnimationSpeed);
+          contents.animate({height: (previewIframeMinHeight + surplus) + "px"}, surplusAnimationSpeed, function() {
+            previewLoadingComplete(previewIframe, newHeight, previewLoading, contents);
+          });  
+        } else {
+          previewLoading.animate({height: newHeight + "px"}, surplusAnimationSpeed);
+          contents.animate({height: newHeight + "px"}, surplusAnimationSpeed, function() {
+            previewLoadingComplete(previewIframe, newHeight, previewLoading, contents);
+          });  
         }
         break;
       case "preview-height-keep-or-error":
@@ -58,10 +56,8 @@
     isPreviewMode = $("#vrtx-preview").length;
     if(isPreviewMode) {
       body = $("body");
-      contents = main.find("#contents");
-      var appContent = body.find("#app-content");
-      var main = appContent.find("#main");
-      var appContentHeight = appContent.height();
+      contents = body.find("#contents");
+      var appContentHeight = body.find("#app-content").height();
       var appHeadWrapperHeight = body.find("#app-head-wrapper").outerHeight(true);
       var appFooterHeight = body.find("#app-footer").outerHeight(true);
       var windowHeight = $(window).outerHeight(true);

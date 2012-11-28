@@ -37,7 +37,7 @@
           });  
         }
         break;
-      case "preview-height-keep-or-error":
+      case "keep-min-height":
         previewLoadingComplete(previewIframe, previewIframeMinHeight, previewLoading, contents);
         break;
       default:

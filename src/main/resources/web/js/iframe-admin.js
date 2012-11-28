@@ -82,7 +82,7 @@
       
       previewIframeMinHeight = (windowHeight - (appContentHeight + appWrapperHeight + appFooterHeight)) + 150; // + iframe default height
    
-      appContent.css({ height: ((appContentHeight + previewIframeMinHeight) - 150 - 25) + "px" }); // - iframe default height and padding/margin
+      appContent.css({ height: ((appContentHeight + previewIframeMinHeight) - 150) + "px" }); // - iframe default height and padding/margin
             main.css({ height: previewIframeMinHeight + "px" });
         contents.append("<span id='preview-loading'><span>" + previewLoadingMsg + "...</span></span>")
                 .css({ position: "relative",

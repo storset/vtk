@@ -172,6 +172,10 @@
 
 /* Study enhancements */
 
+#editor.vrtx-hvordan-soke .vrtx-grouped {
+  margin-top: 0px;
+}
+
 #editor.so .internasjonale-sokere-admin,
 #editor.so .nordiske-sokere,
 #editor.so .generelle-admin,

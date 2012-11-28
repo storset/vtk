@@ -26,7 +26,7 @@ $(document).ready(function () {
       // Setting the iframe src seems to fix the problem
       var previewViewIframeElm = previewViewIframe[0];
       
-      // TODO: make sure .load() does not fire twice (need to test which IEs where load does not fire more presicely)
+      // TODO: make sure .load() does not fire twice (need to test more presicely which IEs where load does not fire at init)
       var iSource = previewViewIframeElm.src;
       previewViewIframeElm.src = '';
       previewViewIframeElm.src = iSource;

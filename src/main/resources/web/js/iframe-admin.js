@@ -31,7 +31,7 @@
             }
           }
           var diff = newHeight - previewIframeMinHeight;
-          var surplus = body.find("#app-head-wrapper").outerHeight(true);; // TODO: Avoid hardcoded padding/margins
+          var surplus = body.find("#app-head-wrapper").outerHeight(true);
           if(diff > 0 && diff > surplus) {
             previewLoading.animate({height: (previewIframeMinHeight + surplus) + "px"}, surplusAnimationSpeed);
             contents.animate({height: (previewIframeMinHeight + surplus) + "px"}, surplusAnimationSpeed, function() {

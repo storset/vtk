@@ -7,11 +7,11 @@
  
 (function ($) {
 
-  var isPreviewMode, body,
-      appContentHeight, appHeadWrapperHeight,
-      appFooterHeight, windowHeight,
-      previewIframeMinHeight, appContent,
-      main, contents, previewLoading,
+  var isPreviewMode,
+      body,
+      contents,
+      previewIframeMinHeight,
+      previewLoading,
       surplusAnimationSpeed = 200;
 
   var crossDocComLink = new CrossDocComLink();
@@ -58,14 +58,13 @@
     isPreviewMode = $("#vrtx-preview").length;
     if(isPreviewMode) {
       body = $("body");
-      appContent = body.find("#app-content");
-      main = appContent.find("#main");
       contents = main.find("#contents");
-    
-      appContentHeight = appContent.height();
-      appHeadWrapperHeight = body.find("#app-head-wrapper").outerHeight(true);
-      appFooterHeight = body.find("#app-footer").outerHeight(true);
-      windowHeight = $(window).outerHeight(true);
+      var appContent = body.find("#app-content");
+      var main = appContent.find("#main");
+      var appContentHeight = appContent.height();
+      var appHeadWrapperHeight = body.find("#app-head-wrapper").outerHeight(true);
+      var appFooterHeight = body.find("#app-footer").outerHeight(true);
+      var windowHeight = $(window).outerHeight(true);
 
       previewIframeMinHeight = (windowHeight - (appContentHeight + appHeadWrapperHeight + appFooterHeight)) + 150; // + iframe default height
    

@@ -1,4 +1,4 @@
-/*  Based on code found on the web page "http://sonspring.com/journal/jquery-iframe-sizing" which
+/*  Based somewhat on code found on the web page "http://sonspring.com/journal/jquery-iframe-sizing" which
  *  was written by Nathan Smith (http://technorati.com/people/technorati/nathansmith/)
  *
  *  Changed to only process specific frame and pass height to parent with postMessage.

@@ -1,7 +1,11 @@
-/*  Need to use postMessage for iframe resizing since cross domain is typical case now.
- *  Not essential functionality. Only works in browsers which support postMessage.
+/*  Iframe resizing for cross domain (admin)
  *
- *  TODO: the animation could be improved/simplified with less "overflow: hidden" on wrappers/containers
+ *  Not essential functionality. Only works in browsers which support postMessage (>IE7).
+ *
+ * - Sends available window v.space to iframe (minimum height)
+ * - Receives computed height from inner iframes or unchanged command
+ * - Shows loading overlay while rendering/loading
+ * - Animates changed height
  *
  */
  

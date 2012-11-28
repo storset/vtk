@@ -1,9 +1,14 @@
-/*  Based somewhat on code found on the web page "http://sonspring.com/journal/jquery-iframe-sizing" which
+/*  Iframe resizing for cross domain (view except media files)
+ *
+ *  Based loosely on code found on the web page "http://sonspring.com/journal/jquery-iframe-sizing" which
  *  was written by Nathan Smith (http://technorati.com/people/technorati/nathansmith/)
  *
- *  Changed to only process specific frame and pass height to parent with postMessage.
- *  Should work as before with regard to the previewViewIframe (served from the view domain). 
- *  Resizing the outer iframe (served from the admin domain) only works on browsers which support postMessage.
+ *  - Pass inner iframe height to parent with postMessage if larger than minimum height (otherwise unchanged command)
+ *  - Receives minimum height from top (available v.space in window)
+ *  - Timeouts after ca. 6s and sends unchanged command if inner iframe is not loaded yet
+ *  - Also sends unchanged command on error getting height
+ *  - Should work as before with regard to the previewViewIframe (served from the view domain)
+ *  - Resizing the outer iframe (served from the admin domain) only works on browsers which support postMessage
  */
  
 var crossDocComLink = new CrossDocComLink();
@@ -64,7 +69,7 @@ function resize(iframe, minHeight) {
     }, 15); 
   } catch(e) { // Error
     if(typeof console !== "undefined" && console.log) {
-      console.log("Error in getting iframe height or posting to parent: " + e.message);
+      console.log("Error in getting iframe height: " + e.message); // implied that we always can post to parent as parent initiate with a post to iframe
     }
     iframe.style.height = setHeight + "px";
     crossDocComLink.postCmdToParent("keep-min-height");

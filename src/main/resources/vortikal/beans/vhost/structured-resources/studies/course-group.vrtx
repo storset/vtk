@@ -4,6 +4,7 @@ resourcetype course-group : fellestekst-document {
     course-group-name : string,
     status : string,
     course-group-code : string,
+    title : derived (course-group-name, course-group-code) eval (course-group-name + " (" + course-group-code + ")") overrides title,
     course-group-scope : string,
     about : simple_html,
     courses-in-group : html,
@@ -68,9 +69,9 @@ resourcetype course-group : fellestekst-document {
   
   vocabulary {
     status {
-      en : ("current-version" = "Current version", "discontinued-course" = "Discontinued course group"),
-      no : ("current-version" = "Gjeldende versjon", "discontinued-course" = "Nedlagt emnegruppe"),
-      nn : ("current-version" = "Gjeldande versjon", "discontinued-course" = "Nedlagd emnegruppe")
+      en : ("current-version" = "Current version", "discontinued-course-group" = "Discontinued course group"),
+      no : ("current-version" = "Gjeldende versjon", "discontinued-course-group" = "Nedlagt emnegruppe"),
+      nn : ("current-version" = "Gjeldande versjon", "discontinued-course-group" = "Nedlagd emnegruppe")
     },
     course-group-scope {
       en : (range = "1..120"),

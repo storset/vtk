@@ -23,6 +23,7 @@
             <value>PROPFIND</value>
           </property>
         </bean>
+        <bean class="org.vortikal.web.service.IEAssertion" />
         <ref bean="resourceInCollection" />
       </list>
     </property>

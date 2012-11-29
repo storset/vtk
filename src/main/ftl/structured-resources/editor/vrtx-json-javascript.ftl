@@ -77,10 +77,13 @@
         }
         
         // TODO: avoid this being hardcoded here
-        var items = $("#editor.vrtx-syllabus #items");
-        wrapJSONItemsLeftRight(items.find(".vrtx-json-element"), ".author, .title, .year, .publisher, .isbn, .comment", ".linktext, .link, .bibsys, .fulltext, .articles");
-        items.find(".author input, .title input").addClass("header-populators");
-        items.find(".vrtx-html textarea").addClass("header-fallback-populator");
+        var syllbausItems = $("#editor.vrtx-syllabus #items");
+        wrapJSONItemsLeftRight(syllbausItems.find(".vrtx-json-element"), ".author, .title, .year, .publisher, .isbn, .comment", ".linktext, .link, .bibsys, .fulltext, .articles");
+        syllbausItems.find(".author input, .title input").addClass("header-populators");
+        syllbausItems.find(".vrtx-html textarea").addClass("header-fallback-populator");
+        
+        var sharedTextItems = $("#editor.vrtx-shared-text #shared-text-box");
+        sharedTextItems.find(".title input").addClass("header-populators");
         // ^ TODO: avoid this being hardcoded here
       
         // Because accordion needs one content wrapper
@@ -226,9 +229,13 @@
           group.prepend('<div class="header">' + (vrtxAdmin.lang !== "en" ? "Inget innhold" : "No content") + '</div>');
           
           // TODO: avoid this being hardcoded here
-          wrapJSONItemsLeftRight(group, ".author, .title, .year, .publisher, .isbn, .comment", ".linktext, .link, .bibsys, .fulltext, .articles");
-          group.find(".author input, .title input").addClass("header-populators");
-          group.find(".vrtx-html textarea").addClass("header-fallback-populator");
+          var lastSyllabusItem = $("#editor.vrtx-syllabus #items .vrtx-json-element:last");
+          wrapJSONItemsLeftRight(lastSyllabusItem, ".author, .title, .year, .publisher, .isbn, .comment", ".linktext, .link, .bibsys, .fulltext, .articles");
+          lastSyllabusItem.find(".author input, .title input").addClass("header-populators");
+          lastSyllabusItem.find(".vrtx-html textarea").addClass("header-fallback-populator");
+          
+          var lastSharedTextItem = $("#editor.vrtx-shared-text #shared-text-box .vrtx-json-element:last");
+          lastSharedTextItem.find(".title input").addClass("header-populators");
           // ^ TODO: avoid this being hardcoded here
           
           accordionRefresh(accordionContent, false);
@@ -305,18 +312,24 @@
         }
         if(!str.length) { // Fallback header populator
           var field = jsonElm.find(".header-fallback-populator");
-          var fieldId = field.attr("id");
-          if(isCkEditor(fieldId)) { // Check if CK
-            str = getCkValue(fieldId); // Get CK content
+          if(field.length) {
+            var fieldId = field.attr("id");
+            if(isCkEditor(fieldId)) { // Check if CK
+              str = getCkValue(fieldId); // Get CK content
+            } else {
+              str = field.val();
+            }
+            if(field.is("textarea")) { // Remove markup and tabs
+              str = $.trim(str.replace(/(<([^>]+)>|[\t\r]+)/ig, ""));
+            }
+            if(typeof str !== "undefined") {
+              if(str.length > 30) {
+                str = str.substring(0, 30) + "...";
+              } else if(!str.length) {
+                str = (vrtxAdmin.lang !== "en") ? "Inget innhold" : "No content";
+              }
+            }
           } else {
-            str = field.val();
-          }
-          if(field.is("textarea")) { // Remove markup and tabs
-            str = $.trim(str.replace(/(<([^>]+)>|[\t\r]+)/ig, ""));
-          }
-          if(str.length > 30) {
-            str = str.substring(0, 30) + "...";
-          } else if(!str.length) {
             str = (vrtxAdmin.lang !== "en") ? "Inget innhold" : "No content";
           }
         }

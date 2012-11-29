@@ -5,6 +5,7 @@ resourcetype shared-text {
   }
 
   edit-rules {
+    shared-text-box (class[vrtx-json-accordion]),
     description-en (size[small]),
     description-nn (size[small]),
     description-no (size[small]),
@@ -13,7 +14,6 @@ resourcetype shared-text {
 
  view-components {    
 
- 
       shared-text-box {
         ##
         [resource-props "."]

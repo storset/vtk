@@ -451,7 +451,7 @@ function unsavedChangesInEditor() {
   if (typeof CKEDITOR !== "undefined") {
     for (i = 0, len = currentStateOfTextFields.length; i < len; i++) {
       var ckInstance = getCkInstance(currentStateOfTextFields[i].name);
-      if (ckInstance && ckInstance.checkDirty()) {
+      if (ckInstance && ckInstance.checkDirty() && ckInstance.getData() !== "") {
         return true  // unsaved textarea
       }
     }

@@ -51,7 +51,18 @@ resourcetype structured-master{
       [def document structured-document()]
       [def available document.properties.status-available]
       [if (available = "false")]
-           ([localized "completed"])
+        ([localized "completed"])
+      [endif]
+      ##
+    }
+    
+    completed-msg {
+      ##
+      [resource-props "."]
+      [def document structured-document()]
+      [def available document.properties.status-available]
+      [if (available = "false")]
+        <div class="vrtx-context-message-box">[localized "completedMsg"]</div>
       [endif]
       ##
     }
@@ -149,9 +160,10 @@ resourcetype structured-master{
         <title>[call "json:field" {"select":"title"}] [call "comp:completed"]</title>
       </head>
       <body id="vrtx-structured-project">
+        [call "comp:completed-msg"]
         <div id="vrtx-content">
           <div id="vrtx-main-content">
-            <h1>[call "json:field" {"select":"title"}] [call "comp:completed"]</h1>
+            <h1>[call "json:field" {"select":"title"}]</h1>
             [call "comp:introduction"]
             [call "comp:introduction-image"]
             [call "json:field" {"select":"content"}]
@@ -212,6 +224,7 @@ resourcetype structured-master{
       en : "Number of supervisors to show",
       no : "Antall veiledere som skal vises",
       nn : "Antall veiledarar som skal visast"),
-    completed : (en : "not available", no : "ikke tilgjengelig", nn : "ikkje tilgjengeleg")
+    completed : (en : "not available", no : "ikke tilgjengelig", nn : "ikkje tilgjengeleg"),
+    completedMsg : (en : "The project is no longer available", no : "Oppgaven er ikke lenger tilgjengelig", nn : "Oppgaven er ikkje lenger tilgjengeleg")
   }
 }

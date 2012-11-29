@@ -1,0 +1,166 @@
+resourcetype semester-page : fellestekst-document {
+
+  properties {
+    fronter : boolean defaultvalue("false"),
+    messages-placement : string defaultvalue("right"),
+    schedule : resource_ref,
+    exam : resource_ref,
+    syllabus : resource_ref,
+    link-box-one-title : string,
+    link-box-one-links : json (link-box-one-linktitle : string, link-box-one-link : string) multiple,
+    teachers : json (teacher : string) multiple,
+    studinfo-kontakt-text-field : simple_html,
+    studinfo-kontakt : string
+  }
+
+  edit-rules {
+    messages-placement (dropdown),
+    group sec (schedule, exam, syllabus) (before link-box-one-title) horizontal,
+    group link-box-one (link-box-one-title, link-box-one-links),
+    teachers (after link-box-one),
+    studinfo-kontakt (class[vrtx-shared-text]),
+    group studinfo-kontakt-group (studinfo-kontakt, studinfo-kontakt-text-field)
+  }
+
+  view-components {
+
+    course-folder {
+      ##
+      [def resource resource("./../")]
+      [if resource != null]
+        [def url view-url(resource)]
+        [def course-code resource-prop-obj-val(".", "courseContext.fs-course-code")]
+        [def course-name resource-prop-obj-val(".", "courseContext.course-name")]
+        <a href="[val url]">[if course-code != null && course-code != ""][val course-code][endif][if course-code != null && course-code != "" && course-name != null && course-name != ""] - [endif][if course-name != null && course-name != ""][val course-name][endif]</a>
+      [endif]
+      ##
+    }
+
+    show-if-published (prop) {
+      ##
+      [def uri resource-prop(".", prop)]
+      [if uri != null && uri != ""]
+        [def resource resource(uri)]
+        [if resource != null]
+          [def published resource-prop-obj-val(resource, "published") ]
+          [if published]
+            [def localization prop]
+            [def url view-url(resource)]
+            <a href="[val url]">[localized localization]</a>
+          [endif]
+        [endif]
+      [endif]
+      ##
+    }
+    
+  }
+
+  view {
+    ##
+    [def course-code resource-prop-obj-val(".", "courseContext.fs-course-code")]
+    [def semester resource-prop-obj-val(".", "semesterContext.semester")]
+    [def messages-placement resource-prop-obj-val(".", "messages-placement")]
+    [def fronter resource-prop-obj-val(".", "fronter")]
+    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+    <html xmlns="http://www.w3.org/1999/xhtml">
+      <head>
+        <title>[localized 'semesterpage-for'] [if course-code != null && course-code != ""][val course-code][endif][if course-code != null && course-code != "" && semester != null && semester != ""] - [endif][if semester != null && semester != ""][val semester][endif]</title>
+      </head>
+      <body>
+        <div class="main">
+          [call "comp:course-folder"]
+          <h1>[localized 'semesterpage-for'] [if course-code != null && course-code != ""][val course-code][endif][if course-code != null && course-code != "" && semester != null && semester != ""] - [endif][if semester != null && semester != ""][val semester][endif]</h1>
+          <div>
+            [call "comp:show-if-published"{"prop":"schedule"}]
+            [call "comp:show-if-published"{"prop":"exam"}]
+            [call "comp:show-if-published"{"prop":"syllabus"}]
+          </div>
+          [if messages-placement != null && messages-placement = "middle"]
+            <div>
+              <h2>Beskjeder</h2>
+              <div class="vrtx-introduction">
+                <a id="vrtx-message-listing-create" class="button" href="/studier/emner/inf1000/h12/beskjeder?mode=simple-editor&vrtx=admin&action=edit">
+                  <span>[localized 'new-message']</span>
+                </a>
+              </div>
+              <div>
+                [call "include:feed" {"url" : "/studier/emner/inf1000/h12/beskjeder?vrtx=feed"}]
+              </div>
+            </div>
+          [endif]
+          [if fronter]
+            <div>
+              <h2>[localized 'fronter']</h2>
+              <p>[localized 'fronter-text']</p>
+              [localized 'log-into-fronter']
+            </div>
+          [endif]
+        </div>
+        <div class="right-column">
+          <div>
+            <h2>Faglærere</h2>
+            [def document structured-document()]
+            [def teachers document.properties.teachers]
+            [if teachers != null]
+              [list teachers teacher]
+                [if teacher.teacher != null]
+                  <p>[val teacher.teacher]</p>
+                [endif]
+              [endlist]
+            [endif]
+          </div>
+          <div>
+            <h2>Kontakt</h2>
+            [call "comp:vis-fellestekst" {"docType":"studinfo-kontakt", "propName":"studinfo-kontakt"}]
+          </div>
+          [if messages-placement = null || messages-placement = "right"]
+            <div>
+              <h2>Beskjeder</h2>
+              <div class="vrtx-introduction">
+                <a id="vrtx-message-listing-create" class="button" href="/studier/emner/inf1000/h12/beskjeder?mode=simple-editor&vrtx=admin&action=edit">
+                  <span>[localized 'new-message']</span>
+                </a>
+              </div>
+              <div>
+                [call "include:feed" {"url" : "/studier/emner/inf1000/h12/beskjeder?vrtx=feed"}]
+              </div>
+            </div>
+          [endif]
+        </div>
+      </body>
+    </html>
+    ##
+  }
+  
+  vocabulary {
+    messages-placement {
+       en : ("middle" = "Show in middle", "right" = "Show in right column"),
+       no : ("middle" = "Vis i midten", "right" = "Vis i høyrespalten"),
+       nn : ("middle" = "Vis i midten", "right" = "Vis i høyrespalten")
+     },
+     fronter {
+      en : ("true" = "Yes", "false" = "No"),
+      no : ("true" = "Ja", "false" = "Nei"),
+      nn : ("true" = "Ja", "false" = "Nei")
+    }
+  }
+
+  localization {
+    header : (en : "Edit semester", no : "Rediger semester", nn : "Rediger semester"),
+    localized-group : (en : "group", no : "gruppe", nn : "gruppe"),
+    semesterpage-for : (en : "Semester page for", no : "Semesterside for", nn : "Semesterside for"),
+    schedule : (en : "Schedule", no : "Timeplan", nn : "Timeplan"),
+    exam : (en : "Exam", no : "Eksamen", nn : "Eksamen"),
+    syllabus : (en : "Syllabus", no : "Pensumliste", nn : "Pensumliste"),
+    fronter : (en : "Fronter", no : "Fronter", nn : "Fronter"),
+    fronter-text : (en : "This course is using Fronter as a part of the education.", no : "Dette kurset benytter Fronter som verktøy i undervisningen.", nn : "Dette kurset nytte Fronter som verktøy i undervisninga."),
+    log-into-fronter: (en : "Log into Fronter", no : "Logg inn i Fronter", nn : "Logg inn i Fronter"),
+    studinfo-kontakt-text-field : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
+    studinfo-kontakt : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
+    studinfo-kontakt-group : (en : "Contact", no : "Kontakt", nn : "Kontakt"),
+    messages-placement : (en : "Placement of messages", no : "Plassering av beskjeder", nn : "Plassering av beskjeder"),
+    teachers : (en : "Teachers", no : "Lærere", nn : "Lærere"),
+    teacher : (en : "Teacher", no : "Lærer", nn : "Lærer")
+  }
+
+}

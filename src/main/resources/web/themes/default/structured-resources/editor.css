@@ -163,9 +163,11 @@
 }
 
 .ui-accordion > div > .ui-accordion-content { 
-  padding-left: 30px !important;
+  padding-left: 40px !important;
   padding-top: 0px !important;
-  border: none !important;
+  border: 1px solid #d9d9d9 !important;
+  border-bottom: none !important;
+  border-top: none !important;
 }
 
 /* ^ Accordion */

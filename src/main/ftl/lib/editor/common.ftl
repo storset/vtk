@@ -23,7 +23,7 @@
 <#macro addCommonScripts language oldEditor=false>
 
   <script type="text/javascript"><!--
-    var editors = [];
+    var EDITORS_AT_INIT = [];
     
     var datePickerLang = "${language}";
     var tooLongFieldPre = "<@vrtx.msg code='editor.too-long-field-pre' />";
@@ -54,10 +54,9 @@
   <script type="text/javascript"><!--
       if (CKEDITOR.env.isCompatible) {
         try {
-          editors.push(['${content}', ${completeEditor?string}, ${withoutSubSuper?string}, 
-	                             '${baseFolder?js_string}', '${fckeditorBase.url?html}', '${fckeditorBase.documentURL?html}', 
-	                             '${fckBrowse.url.pathRepresentation}', '<@vrtx.requestLanguage />', cssFileList, ${simpleHTML?string}]);
-
+          EDITORS_AT_INIT.push(['${content}', ${completeEditor?string}, ${withoutSubSuper?string}, 
+	                            '${baseFolder?js_string}', '${fckeditorBase.url?html}', '${fckeditorBase.documentURL?html}', 
+	                            '${fckBrowse.url.pathRepresentation}', '<@vrtx.requestLanguage />', cssFileList, ${simpleHTML?string}]);
 	    } catch (e) {
 	      vrtxAdmin.log({msg: e});
 	    }

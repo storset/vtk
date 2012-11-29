@@ -643,15 +643,8 @@
     <#if resource.resourceType??>
       <#local iconText = resource.resourceType />
     </#if>
-    
-    <#local contentType = "" />
-    <#if resource.contentType??>
-      <#local contentType = resource.contentType /> 
-    <#else>
-      <#local contentType = propValue(resource, "contentType") />
-    </#if>
-    
-    <#if (iconText = "file" && contentType?has_content && contentType = "application/octet-stream")>
+    <#local contentType = propValue(resource, "contentType") />
+    <#if iconText = "file" && contentType?has_content && contentType = "application/octet-stream">
       <#local iconText = "binary" />
     </#if>
     <#local obsoleted = propValue(resource, 'obsoleted')>

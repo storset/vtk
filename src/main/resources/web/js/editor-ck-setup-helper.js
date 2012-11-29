@@ -255,37 +255,33 @@ var INITIAL_INPUT_FIELDS = [];
 var INITIAL_SELECTS = [];
 var INITIAL_CHECKBOXES = [];
 var INITIAL_RADIO_BUTTONS = [];
+var INITIAL_CHECK_COMPLETE = false;
 
 var NEED_TO_CONFIRM = true;
 var UNSAVED_CHANGES_CONFIRMATION;
+var EDITORS_MAX_SYNC_AT_INIT = 15;
+var EDITORS_ASYNC_INIT_INTERVAL = 15;
 
 $(document).ready(function() {
-  // Initiate <=25 CKEditors
-  var len = EDITORS_AT_INIT.length;
-  if(typeof EDITORS_AT_INIT !== "undefined" && len) {
-    for(var i = 0; i < len && i < 25; i++) {
+  if(typeof EDITORS_AT_INIT !== "undefined") {
+    var len = EDITORS_AT_INIT.length;
+    for(var i = 0; i < len && i < EDITORS_MAX_SYNC_AT_INIT; i++) { // Initiate <=25 CKEditors
       newEditor(EDITORS_AT_INIT[i]);
+    }
+    if(len > EDITORS_MAX_SYNC_AT_INIT) {
+      var ckEditorInitLoadTimer = setTimeout(function() { // Initiate >25 CKEditors
+        newEditor(EDITORS_AT_INIT[i]);
+        i++;
+        if(i < len) {
+          setTimeout(arguments.callee, EDITORS_ASYNC_INIT_INTERVAL);
+        }
+      }, EDITORS_ASYNC_INIT_INTERVAL);
     }
   }
 });
 
 $(window).load(function () {
-  // Initiate >25 CKEditors
-  var len = EDITORS_AT_INIT.length;
-  if(typeof EDITORS_AT_INIT !== "undefined" && len > 25) {
-    var i = 25;
-    var ckEditorInitLoadTimer = setTimeout(function() {
-      newEditor(EDITORS_AT_INIT[i]);
-      i++;
-      if(i < len) {
-        setTimeout(arguments.callee, 15);
-      } else {
-        storeInitPropValues();
-      }
-    }, 15);
-  } else {
-    storeInitPropValues();
-  }
+  storeInitPropValues();
   if (typeof CKEDITOR !== "undefined") {
     CKEDITOR.on('instanceReady', function() {
       $(".cke_contents iframe").contents().find("body").bind('keydown', 'ctrl+s', function(e) {
@@ -319,7 +315,7 @@ function storeInitPropValues() {
   for(var i = 0, len = radioButtons.length; i < len; i++) {
     INITIAL_RADIO_BUTTONS[i] = radioButtons[i].name + " " + radioButtons[i].value;
   }
-   
+  INITIAL_CHECK_COMPLETE = true; 
 }
 
 function validTextLengthsInEditor(isOldEditor) {
@@ -388,7 +384,7 @@ function validTextLengthsInEditorError(elm, isOldEditor) {
 }
 
 function unsavedChangesInEditor() {
-  if (!NEED_TO_CONFIRM) return false;
+  if (!NEED_TO_CONFIRM || !INITIAL_CHECK_COMPLETE) return false;
   
   var contents = $("#contents");
 
@@ -452,8 +448,8 @@ function unsavedChangesInEditor() {
 
   // Textareas (CK->checkDirty())
   var currentStateOfTextFields = contents.find("textarea");
-  for (i = 0, len = currentStateOfTextFields.length; i < len; i++) {
-    if (typeof CKEDITOR !== "undefined") {
+  if (typeof CKEDITOR !== "undefined") {
+    for (i = 0, len = currentStateOfTextFields.length; i < len; i++) {
       var ckInstance = getCkInstance(currentStateOfTextFields[i].name);
       if (ckInstance && ckInstance.checkDirty()) {
         return true  // unsaved textarea

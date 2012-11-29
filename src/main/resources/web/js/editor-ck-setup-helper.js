@@ -260,15 +260,32 @@ var NEED_TO_CONFIRM = true;
 var UNSAVED_CHANGES_CONFIRMATION;
 
 $(document).ready(function() {
-  if(typeof EDITORS_AT_INIT !== "undefined" && EDITORS_AT_INIT.length) {
-    for(var i = 0, len = EDITORS_AT_INIT.length; i < len && i < 25; i++) {
+  // Initiate <=25 CKEditors
+  var len = EDITORS_AT_INIT.length;
+  if(typeof EDITORS_AT_INIT !== "undefined" && len) {
+    for(var i = 0; i < len && i < 25; i++) {
       newEditor(EDITORS_AT_INIT[i]);
     }
   }
 });
 
 $(window).load(function () {
-  storeInitPropValues();
+  // Initiate >25 CKEditors
+  var len = EDITORS_AT_INIT.length;
+  if(typeof EDITORS_AT_INIT !== "undefined" && len > 25) {
+    var i = 25;
+    var ckEditorInitLoadTimer = setTimeout(function() {
+      newEditor(EDITORS_AT_INIT[i]);
+      i++;
+      if(i < len) {
+        setTimeout(arguments.callee, 15);
+      } else {
+        storeInitPropValues();
+      }
+    }, 15);
+  } else {
+    storeInitPropValues();
+  }
   if (typeof CKEDITOR !== "undefined") {
     CKEDITOR.on('instanceReady', function() {
       $(".cke_contents iframe").contents().find("body").bind('keydown', 'ctrl+s', function(e) {

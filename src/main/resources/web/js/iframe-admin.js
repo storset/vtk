@@ -69,12 +69,14 @@
 
       previewIframeMinHeight = (windowHeight - (appContentHeight + appHeadWrapperHeight + appFooterHeight)) + 150; // + iframe default height
    
-      contents.append("<span id='preview-loading'><span>" + previewLoadingMsg + "...</span></span>")
+      contents.append("<span id='preview-loading'><span id='preview-loading-inner'><span>" + previewLoadingMsg + "...</span></span></span>")
               .css({ position: "relative",
                      height: (previewIframeMinHeight + 2) + "px" });
                      
       previewLoading = contents.find("#preview-loading");
       previewLoading.css({ height: previewIframeMinHeight + "px" });
+      previewLoading.find("#preview-loading-inner")
+                    .css({ height: previewIframeMinHeight + "px" });
     }
   });
   

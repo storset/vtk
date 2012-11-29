@@ -4,7 +4,7 @@ resourcetype course-group : fellestekst-document {
     course-group-name : string,
     status : string,
     course-group-code : string,
-    title : derived (course-group-name, course-group-code) eval (course-group-name + " (" + course-group-code + ")") overrides title,
+    title : derived (course-group-name, course-group-code) eval (course-group-name + " (" + course-group-code + ")") overrides title default course-group-name,
     course-group-scope : string,
     about : simple_html,
     courses-in-group : html,
@@ -24,8 +24,7 @@ resourcetype course-group : fellestekst-document {
 
   view {
     ##
-    [def course-group-name resource-prop-obj-val(".", "course-group-name")]
-    [def course-group-code resource-prop-obj-val(".", "course-group-code")]
+    [def title resource-prop-obj-val(".", "title")]
     [def course-group-scope resource-prop-obj-val(".", "course-group-scope")]
     [def about resource-prop-obj-val(".", "about")]
     [def courses-in-group resource-prop-obj-val(".", "courses-in-group")]
@@ -37,10 +36,10 @@ resourcetype course-group : fellestekst-document {
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml">
       <head>
-        <title>[if course-group-scope != null && course-group-scope != ""][val course-group-scope]-[localized 'localized-group'][endif][if course-group-scope != null && course-group-scope != "" && course-group-name != null && course-group-name != ""] - [endif][if course-group-name != null && course-group-name != ""][val course-group-name][if course-group-code != null && course-group-code != ""] ([val course-group-code])[endif][endif]</title>
+        <title>[if course-group-scope != null && course-group-scope != ""][val course-group-scope]-[localized 'localized-group'][endif][if title != null && title != ""] - [val title][endif]</title>
       </head>
       <body>
-        <h1>[if course-group-scope != null && course-group-scope != ""][val course-group-scope]-[localized 'localized-group'][endif][if course-group-scope != null && course-group-scope != "" && course-group-name != null && course-group-name != ""] - [endif][if course-group-name != null && course-group-name != ""][val course-group-name][if course-group-code != null && course-group-code != ""] ([val course-group-code])[endif][endif]</h1>
+        <h1>[if course-group-scope != null && course-group-scope != ""][val course-group-scope]-[localized 'localized-group'][endif][if title != null && title != ""] - [val title][endif]</h1>
         [if about != null && about != ""]
           [val about # unescaped]
         [endif]

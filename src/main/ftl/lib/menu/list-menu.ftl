@@ -35,50 +35,50 @@
 
   <#if (menu.items?size > 0 || menu.label == "resourceMenuRight")>
 
-    <#-- Output the menu links: -->
-    <ul class="list-menu" id="${menu.label}">
-
       <#assign size = 0 />
       <#list menu.items as item> 
         <#if item.url?exists>
           <#assign size = size+1 />
         </#if>
       </#list>
-  
-      <#assign count = 1 />
-      <#list menu.items as item> 
-        <#if item.url?exists>
-          <#if count == 1 && count == size && menu.label != "resourceMenuRight">
-            <li class="${item.label} first last">
-          <#elseif count == 1>
-            <li class="${item.label} first">     
-          <#elseif count == size && menu.label != "resourceMenuRight">
-            <li class="${item.label} last">
-          <#else>
-            <li class="${item.label}">
-          </#if>
-              <#if item_index != 0 && item_index != menu.items?size>${between}</#if>
-                <#attempt>
-                  <#include "/actions/list-menu.${item.label}.ftl" />
-                <#recover>
 
-                ${prepend}<a id="${item.label}" href="${item.url?html}">${item.title}</a>${append}
+      <#if (size > 0)>
+        <ul class="list-menu" id="${menu.label}">
+        <#assign count = 1 />
+        <#list menu.items as item> 
+          <#if item.url?exists>
+            <#if count == 1 && count == size && menu.label != "resourceMenuRight">
+              <li class="${item.label} first last">
+            <#elseif count == 1>
+              <li class="${item.label} first">     
+            <#elseif count == size && menu.label != "resourceMenuRight">
+              <li class="${item.label} last">
+            <#else>
+              <li class="${item.label}">
+            </#if>
+                <#if item_index != 0 && item_index != menu.items?size>${between}</#if>
+                  <#attempt>
+                    <#include "/actions/list-menu.${item.label}.ftl" />
+                  <#recover>
+
+                  ${prepend}<a id="${item.label}" href="${item.url?html}">${item.title}</a>${append}
           
-                </#recover>
-            </li>
-            <#assign count = count+1 />
-        </#if>
-      </#list>
+                  </#recover>
+              </li>
+              <#assign count = count+1 />
+          </#if>
+        </#list>  
+      </#if>
       
       <#if menu.label == "resourceMenuRight">
         <#assign size = size+1 />
         <#if size == 1>
-          <li class="readPermission first last">
+          <ul class="list-menu" id="${menu.label}">
+            <li class="readPermission first last">
         <#else>
           <li class="readPermission last">
         </#if>
             <h3>${vrtx.getMsg("collectionListing.permissions")}</h3>
-        
             <#if !resourceContext.currentResource.readRestricted >
               <p><span class="allowed-for-all">${vrtx.getMsg("collectionListing.permissions.readAll")}</span></p>
             <#else>
@@ -86,9 +86,12 @@
             </#if>
           </li>
       </#if>
-    </ul>
-
-    <#-- Output the form if it exists: -->
+      
+     <#if (size > 0)>
+       </ul>
+     </#if> 
+     
+    <#-- Output the form if it exists -->
     <#if displayForms && menu.activeItem?exists>
       <#attempt>
         <#include "/actions/list-menu.${menu.activeItem.label}.form.ftl" />

@@ -33,7 +33,11 @@
 
 <#macro gen resource resourceMenuLeft="" resourceMenuRight="">
   <div id="title-container">
-    <div id="resource-title" class="<@vrtx.resourceToIconResolver resource /> ${resource.collection?string}">
+    <#local compactClass = "" />
+    <#if resourceMenuLeftServicesLinkable == 0 && (resourceMenuRightServicesLinkable == 0 || (resourceMenuRightServicesLinkable == 1 && unlockPermission.permissionsQueryResult = 'false'))>
+      <#local compactClass = " smaller-seperator" />    
+    </#if>
+    <div id="resource-title" class="<@vrtx.resourceToIconResolver resource /> ${resource.collection?string}${compactClass}">
       <h1>
         <#if resource.URI == '/'>
           ${repositoryID?html}
@@ -48,6 +52,7 @@
           </li>
         </ul>
       </#if>
+
       <#if resourceMenuRight != "">
         <@listMenu.listMenu menu=resourceMenuRight displayForms=true prepend="" append=""/>
       </#if>

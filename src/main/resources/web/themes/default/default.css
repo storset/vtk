@@ -985,16 +985,16 @@ div.dropdown-shortcut-menu-container form .vrtx-button button {
   min-height: 86px;
 }
 
-#resourceMenuRight.smaller-seperator {
+.smaller-seperator #resourceMenuRight {
   min-height: 65px;
   margin-bottom: 0px;
 }
 
-#resourceMenuRight.smaller-seperator {
+.smaller-seperator #resourceMenuRight {
   background-image: url(images/seperator-grey-gradient.png);
 }
 
-#resourceMenuRight.smaller-seperator li {
+.smaller-seperator #resourceMenuRight li {
   background-image: url(images/seperator-grey-gradient.png);
   background-repeat: no-repeat;
   background-position: 100% 0px;
@@ -1002,7 +1002,7 @@ div.dropdown-shortcut-menu-container form .vrtx-button button {
 }
 
 #resourceMenuRight li.last,
-#resourceMenuRight.smaller-seperator li.last {
+.smaller-seperator #resourceMenuRight li.last {
   background: none;
   margin: 0;
   padding: 0;

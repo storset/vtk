@@ -169,6 +169,8 @@ public class DefaultListMenuProvider implements ReferenceDataProvider {
         Service currentService = requestContext.getService();
 
         MenuItem<String> activeItem = null;
+        
+        int servicesLinkableCounts = 0;
 
         for (Service service : this.services) {
             String label = service.getName();
@@ -176,6 +178,7 @@ public class DefaultListMenuProvider implements ReferenceDataProvider {
             URL url = null;
             try {
                 url = service.constructURL(resource, principal, this.matchAssertions);
+                servicesLinkableCounts++;
             } catch (ServiceUnlinkableException ex) {
                 // ok
             }
@@ -192,9 +195,10 @@ public class DefaultListMenuProvider implements ReferenceDataProvider {
 
             menu.addItem(item);
         }
-
+        
         menu.setActiveItem(activeItem);
         model.put(this.modelName, menu);
+        model.put(this.modelName + "ServicesLinkable", servicesLinkableCounts);
 
         if (this.referenceDataProviders != null) {
             for (ReferenceDataProvider provider : this.referenceDataProviders) {

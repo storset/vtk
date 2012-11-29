@@ -23,6 +23,7 @@
 <#macro addCommonScripts language oldEditor=false>
 
   <script type="text/javascript"><!--
+    var editorCount = 0;
     var datePickerLang = "${language}";
     var tooLongFieldPre = "<@vrtx.msg code='editor.too-long-field-pre' />";
     var tooLongFieldPost = "<@vrtx.msg code='editor.too-long-field-post' />";
@@ -50,17 +51,26 @@
 
 <#macro createEditor content completeEditor=false withoutSubSuper=false simpleHTML=false>
   <script type="text/javascript"><!--
-    $(document).ready(function() {
       if (CKEDITOR.env.isCompatible) {
         try {
-          newEditor('${content}', ${completeEditor?string}, ${withoutSubSuper?string}, 
-	                '${baseFolder?js_string}', '${fckeditorBase.url?html}', '${fckeditorBase.documentURL?html}', 
-	                '${fckBrowse.url.pathRepresentation}', '<@vrtx.requestLanguage />', cssFileList, ${simpleHTML?string});
+          if(editorCount < 25) {
+            $(document).ready(function() {
+              newEditor('${content}', ${completeEditor?string}, ${withoutSubSuper?string}, 
+	                    '${baseFolder?js_string}', '${fckeditorBase.url?html}', '${fckeditorBase.documentURL?html}', 
+	                    '${fckBrowse.url.pathRepresentation}', '<@vrtx.requestLanguage />', cssFileList, ${simpleHTML?string});
+	        });
+	      } else {
+	        $(window).load(function() {
+              newEditor('${content}', ${completeEditor?string}, ${withoutSubSuper?string}, 
+	                    '${baseFolder?js_string}', '${fckeditorBase.url?html}', '${fckeditorBase.documentURL?html}', 
+	                    '${fckBrowse.url.pathRepresentation}', '<@vrtx.requestLanguage />', cssFileList, ${simpleHTML?string});
+	        });
+	      }
+	      editorCount++;
 	    } catch (e) {
 	      vrtxAdmin.log({msg: e});
 	    }
       }
-    });
   //-->
   </script>
 </#macro>

@@ -213,9 +213,11 @@
           if (types[i].type == "simple_html") {
             newEditor(inputFieldName, false, false, '${resourceContext.parentURI?js_string}', '${fckeditorBase.url?html}', 
                                                     '${fckeditorBase.documentURL?html}', '${fckBrowse.url.pathRepresentation}', '<@vrtx.requestLanguage />', cssFileList, "true");
+	        editorCount++;
           } else if (types[i].type == "html") {
             newEditor(inputFieldName, true, false, '${resourceContext.parentURI?js_string}', '${fckeditorBase.url?html}', 
                                                    '${fckeditorBase.documentURL?html}', '${fckBrowse.url.pathRepresentation}', '<@vrtx.requestLanguage />', cssFileList, "false");
+            editorCount++;
           } else if (types[i].type == "datetime") {
             displayDateAsMultipleInputFields(inputFieldName);
           }

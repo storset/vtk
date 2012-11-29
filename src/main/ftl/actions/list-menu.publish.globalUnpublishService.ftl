@@ -9,7 +9,7 @@
 
 <h3>${headerMsg}</h3>
 <p><span class="published"><@vrtx.msg code="publish.permission.published" /></span></p>
-<#if writePermission.permissionsQueryResult = 'true'>
+<#if writePermission.permissionsQueryResult = 'true' && unpublishLink.url??>
   <a id="vrtx-unpublish-document" class="vrtx-button-small vrtx-admin-button" title="${titleMsg}" href="${actionURL?html}"><span>${item.title?html}</span></a>
 </#if>
 

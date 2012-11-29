@@ -1375,6 +1375,19 @@
         <ref bean="resourceMenuLeftProvider" />
         <ref bean="resourceMenuRightProvider" />
         <ref bean="manage.refreshLockURLProvider" />
+        <!-- Possible temporary assertion via service construct link to minimize concept impact -->
+        <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
+          <property name="modelName" value="publishLink" />
+          <property name="urlName" value="url" />
+          <property name="service" ref="publish.publishResourceService" />
+          <property name="matchAssertions" value="true" />
+        </bean>
+        <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
+          <property name="modelName" value="unpublishLink" />
+          <property name="urlName" value="url" />
+          <property name="service" ref="publish.unpublishResourceService" />
+          <property name="matchAssertions" value="true" />
+        </bean>
         <bean class="org.vortikal.web.referencedata.provider.ResourcePrincipalPermissionsProvider">
           <property name="modelName" value="writePermission" />
           <property name="permission" value="WRITE" />

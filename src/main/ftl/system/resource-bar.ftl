@@ -34,10 +34,15 @@
 <#macro gen resource resourceMenuLeft="" resourceMenuRight="">
   <div id="title-container">
     <#local compactClass = "" />
-    <#if resourceMenuLeftServicesLinkable == 0 && (resourceMenuRightServicesLinkable == 0
-     || (resourceMenuRightServicesLinkable == 1 && unlockPermission.permissionsQueryResult = 'false'))
-     || (resourceMenuRightServicesLinkable == 1 && writePermission.permissionsQueryResult = 'false')
-     || (resourceMenuRightServicesLinkable == 2 && writePermission.permissionsQueryResult = 'false' && unlockPermission.permissionsQueryResult = 'false')>
+    ${resourceMenuRightServicesLinkable}
+    <#if resourceMenuLeftServicesLinkable == 0
+       && (resourceMenuRightServicesLinkable == 0
+       || (resourceMenuRightServicesLinkable == 1 && unlockPermission.permissionsQueryResult = 'false')
+       || (resourceMenuRightServicesLinkable == 1 && writePermission.permissionsQueryResult = 'false')
+       || (resourceMenuRightServicesLinkable == 1 && !unpublishLink.url??)
+       || (resourceMenuRightServicesLinkable == 1 && !publishLink.url??)
+       || (resourceMenuRightServicesLinkable == 2 && writePermission.permissionsQueryResult = 'false' && unlockPermission.permissionsQueryResult = 'false')
+       )>
       <#local compactClass = " smaller-seperator" />    
     </#if>
     <div id="resource-title" class="<@vrtx.resourceToIconResolver resource /> ${resource.collection?string}${compactClass}">

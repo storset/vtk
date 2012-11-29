@@ -470,8 +470,9 @@ vrtxAdmin._$(document).ready(function () {
                     copyMoveExists.remove();
                     resourceMenuRight.html(results.find("#resourceMenuRight").html());
                     vrtxAdm.displayInfoMsg(results.find(".infomessage").html());
-                    if (resourceMenuRight.hasClass("smaller-seperator")) { // Instant compact => expanded
-                      resourceMenuRight.removeClass("smaller-seperator");
+                    var resourceTitle = resourceMenuRight.closest("#resource-title");
+                    if (resourceTitle.hasClass("compact")) { // Instant compact => expanded
+                      resourceTitle.removeClass("compact");
                     }
                     baggageBeltAnimFx(resourceMenuRight.find(li));
                   }
@@ -479,8 +480,9 @@ vrtxAdmin._$(document).ready(function () {
               } else {
                 resourceMenuRight.html(results.find("#resourceMenuRight").html());
                 vrtxAdm.displayInfoMsg(results.find(".infomessage").html());
-                if (resourceMenuRight.hasClass("smaller-seperator")) { // Instant compact => expanded
-                  resourceMenuRight.removeClass("smaller-seperator");
+                var resourceTitle = resourceMenuRight.closest("#resource-title");
+                if (resourceTitle.hasClass("compact")) { // Instant compact => expanded
+                  resourceTitle.removeClass("compact");
                 }
                 baggageBeltAnimFx(resourceMenuRight.find(li));
               }

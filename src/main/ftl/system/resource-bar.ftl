@@ -43,7 +43,7 @@
        || (resourceMenuRightServicesLinkable == 1 && !publishLink.url??)
        || (resourceMenuRightServicesLinkable == 2 && writePermission.permissionsQueryResult = 'false' && unlockPermission.permissionsQueryResult = 'false')
        )>
-      <#local compactClass = " smaller-seperator" />    
+      <#local compactClass = " compact" />    
     </#if>
     <div id="resource-title" class="<@vrtx.resourceToIconResolver resource /> ${resource.collection?string}${compactClass}">
       <h1>

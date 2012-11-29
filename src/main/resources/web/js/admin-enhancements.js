@@ -147,16 +147,7 @@ var EDITOR_SAVE_BUTTON_NAME = "",
                                             
 vrtxAdmin._$(window).load(function() {
   var _$ = vrtxAdmin._$;
-  
-  // More compact when no left resource menu and no buttons in right resource menu
-  // Should never occur in IE because of "Show in file explorer" in root-folder 
-  var resourceMenuRight = _$("#resourceMenuRight"); 
-  var resourceMenuRightListElements = resourceMenuRight.find("li");
-  var buttonsInResourceMenuRightListElements = resourceMenuRightListElements.find(".vrtx-button-small");
-  if(!_$("ul#resourceMenuLeft li").length && !buttonsInResourceMenuRightListElements.length) {
-    resourceMenuRight.addClass("smaller-seperator");
-  }
-  
+
   // Make breadcrumbs play along when you minimize window and have multiple rows of it
   vrtxAdmin.cachedBreadcrumbs = _$("#vrtx-breadcrumb > span");
   vrtxAdmin.adaptiveBreadcrumbs();

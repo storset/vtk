@@ -639,20 +639,23 @@
 
 <#macro resourceToIconResolver resource>
   <#compress>
-
     <#local iconText = "" />
     <#if resource.resourceType??>
       <#local iconText = resource.resourceType />
     </#if>
+    
     <#local contentType = "" />
     <#if resource.contentType??>
-      <#local contentType = resource.contentType />
+      <#local contentType = resource.contentType /> 
+    <#else>
+      <#local contentType = propValue(resource, "contentType") />
     </#if>
-    <#if (iconText = "file" && contentType = "application/octet-stream")>
-      <#local iconText = "binary">
+    
+    <#if (iconText = "file" && contentType?has_content && contentType = "application/octet-stream")>
+      <#local iconText = "binary" />
     </#if>
     <#local obsoleted = propValue(resource, 'obsoleted')>
-    ${iconText}<#if (obsoleted?? && obsoleted?has_content)> obsoleted</#if>
+    ${iconText}<#if obsoleted?has_content> obsoleted</#if>
   </#compress>
 </#macro>
 

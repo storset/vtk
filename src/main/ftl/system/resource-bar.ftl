@@ -34,15 +34,13 @@
 <#macro gen resource resourceMenuLeft="" resourceMenuRight="">
   <div id="title-container">
     <#local compactClass = "" />
+    
+    ${resourceMenuRightServicesLinkable}
+
     <#-- Account for buttons in resourceMenuRight taking more v.space -->
-    <#if resourceMenuLeftServicesLinkable == 0
-       && (resourceMenuRightServicesLinkable == 0
-       || (resourceMenuRightServicesLinkable == 1 && unlockPermission.permissionsQueryResult = 'false')
-       || (resourceMenuRightServicesLinkable == 1 && writePermission.permissionsQueryResult = 'false')
-       || (resourceMenuRightServicesLinkable == 1 && !unpublishLink.url??)
-       || (resourceMenuRightServicesLinkable == 1 && !publishLink.url??)
-       || (resourceMenuRightServicesLinkable == 2 && writePermission.permissionsQueryResult = 'false' && unlockPermission.permissionsQueryResult = 'false')
-       )>
+    <#if (resourceMenuLeftServicesLinkable == 0
+      && ((resourceMenuRightServicesLinkable < 2 && !unpublishLink.url?? && !publishLink.url??)
+       || (resourceMenuRightServicesLinkable < 3 && !unpublishLink.url?? && !publishLink.url?? && unlockPermission.permissionsQueryResult = 'false')))>
       <#local compactClass = " compact" />    
     </#if>
     <div id="resource-title" class="<@vrtx.resourceToIconResolver resource /> ${resource.collection?string}${compactClass}">

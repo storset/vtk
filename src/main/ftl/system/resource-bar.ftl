@@ -33,11 +33,9 @@
 
 <#macro gen resource resourceMenuLeft="" resourceMenuRight="">
   <div id="title-container">
+  
+    <#-- Compact when no items in resourceLeftMenu and no items with buttons (taking more v.space) in resourceMenuRight -->
     <#local compactClass = "" />
-    
-    ${resourceMenuRightServicesLinkable}
-
-    <#-- Account for buttons in resourceMenuRight taking more v.space -->
     <#if (resourceMenuLeftServicesLinkable == 0
       && ((resourceMenuRightServicesLinkable < 2 && !unpublishLink.url?? && !publishLink.url??)
        || (resourceMenuRightServicesLinkable < 3 && !unpublishLink.url?? && !publishLink.url?? && unlockPermission.permissionsQueryResult = 'false')))>

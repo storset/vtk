@@ -73,6 +73,10 @@ public class EventCalendarQueryBuilder implements SearchComponentQueryBuilder, I
         Calendar startCal = this.helper.getCurrentMonth();
         long start = startCal.getTimeInMillis();
 
+        // Base query -> requires existence of start date
+        AndQuery baseQuery = new AndQuery();
+        baseQuery.add(new PropertyExistsQuery(startPropDef, false));
+
         // Start time is not yet passed
         Query notYetStarted = new PropertyTermQuery(this.startPropDef, String.valueOf(start), TermOperator.GT);
 
@@ -92,18 +96,14 @@ public class EventCalendarQueryBuilder implements SearchComponentQueryBuilder, I
         noEndDate.add(new PropertyTermQuery(this.startPropDef, String.valueOf(oneHourEarlier), TermOperator.GE));
         noEndDate.add(new PropertyExistsQuery(this.endPropDef, true));
 
-        // No start date, and end date is within start of desired period
-        AndQuery noStartDate = new AndQuery();
-        noStartDate.add(new PropertyTermQuery(this.endPropDef, String.valueOf(start), TermOperator.GE));
-        noStartDate.add(new PropertyExistsQuery(this.startPropDef, true));
+        OrQuery calendarQueryConditions = new OrQuery();
+        calendarQueryConditions.add(notYetStarted);
+        calendarQueryConditions.add(notYetEnded);
+        calendarQueryConditions.add(noEndDate);
 
-        OrQuery query = new OrQuery();
-        query.add(notYetStarted);
-        query.add(notYetEnded);
-        query.add(noEndDate);
-        query.add(noStartDate);
+        baseQuery.add(calendarQueryConditions);
 
-        return query;
+        return baseQuery;
 
     }
 

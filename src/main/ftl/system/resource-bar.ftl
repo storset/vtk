@@ -34,7 +34,7 @@
 <#macro gen resource resourceMenuLeft="" resourceMenuRight="">
   <div id="title-container">
     <#local compactClass = "" />
-    ${resourceMenuRightServicesLinkable}
+    <#-- Account for buttons in resourceMenuRight taking more v.space -->
     <#if resourceMenuLeftServicesLinkable == 0
        && (resourceMenuRightServicesLinkable == 0
        || (resourceMenuRightServicesLinkable == 1 && unlockPermission.permissionsQueryResult = 'false')

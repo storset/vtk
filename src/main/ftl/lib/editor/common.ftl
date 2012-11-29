@@ -23,7 +23,7 @@
 <#macro addCommonScripts language oldEditor=false>
 
   <script type="text/javascript"><!--
-    var editorsAtInitCount = 0;
+    var editors = [];
     
     var datePickerLang = "${language}";
     var tooLongFieldPre = "<@vrtx.msg code='editor.too-long-field-pre' />";
@@ -54,22 +54,10 @@
   <script type="text/javascript"><!--
       if (CKEDITOR.env.isCompatible) {
         try {
-          if(editorsAtInitCount < 25) {
-            $(document).ready(function() {
-              newEditor('${content}', ${completeEditor?string}, ${withoutSubSuper?string}, 
-	                    '${baseFolder?js_string}', '${fckeditorBase.url?html}', '${fckeditorBase.documentURL?html}', 
-	                    '${fckBrowse.url.pathRepresentation}', '<@vrtx.requestLanguage />', cssFileList, ${simpleHTML?string}); 
-	        });
-	        editorsAtInitCount++;
-	      } else {
-	        $(window).load(function() {
-	          setTimeout(function() {
-                newEditor('${content}', ${completeEditor?string}, ${withoutSubSuper?string}, 
-	                      '${baseFolder?js_string}', '${fckeditorBase.url?html}', '${fckeditorBase.documentURL?html}', 
-	                      '${fckBrowse.url.pathRepresentation}', '<@vrtx.requestLanguage />', cssFileList, ${simpleHTML?string});
-	          }, Math.round(Math.random() * 500));
-	        });
-	      }
+          editors.push(['${content}', ${completeEditor?string}, ${withoutSubSuper?string}, 
+	                             '${baseFolder?js_string}', '${fckeditorBase.url?html}', '${fckeditorBase.documentURL?html}', 
+	                             '${fckBrowse.url.pathRepresentation}', '<@vrtx.requestLanguage />', cssFileList, ${simpleHTML?string}]);
+
 	    } catch (e) {
 	      vrtxAdmin.log({msg: e});
 	    }

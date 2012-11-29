@@ -50,6 +50,22 @@ var commentsToolbar = [['Source', 'PasteText', 'Bold',
 
 // TODO: Try to remove some hardcoded fields - should maybe be class-based
 function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, baseDocumentUrl, browsePath, defaultLanguage, cssFileList, simpleHTML) {
+  if(typeof name === "object") {
+    var obj = name;
+    name = obj[0];
+    completeEditor = obj[1];
+    withoutSubSuper = obj[2];
+    baseFolder = obj[3];
+    baseUrl = obj[4];
+    baseDocumentUrl = obj[5];
+    browsePath = obj[6];
+    defaultLanguage = obj[7];
+    cssFileList = obj[8];
+    simpleHTML = obj[9];
+    obj = null; // Avoid any mem leak
+  }
+
+
   // File browser
   var linkBrowseUrl = baseUrl + '/plugins/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Connector=' + browsePath;
   var imageBrowseUrl = baseUrl + '/plugins/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Type=Image&Connector=' + browsePath;
@@ -242,6 +258,14 @@ var INITIAL_RADIO_BUTTONS = [];
 
 var NEED_TO_CONFIRM = true;
 var UNSAVED_CHANGES_CONFIRMATION;
+
+$(document).ready(function() {
+  if(typeof EDITORS_AT_INIT !== "undefined" && EDITORS_AT_INIT.length) {
+    for(var i = 0, len = EDITORS_AT_INIT.length; i < len && i < 25; i++) {
+      newEditor(EDITORS_AT_INIT[i]);
+    }
+  }
+});
 
 $(window).load(function () {
   storeInitPropValues();

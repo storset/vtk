@@ -58,16 +58,15 @@
             $(document).ready(function() {
               newEditor('${content}', ${completeEditor?string}, ${withoutSubSuper?string}, 
 	                    '${baseFolder?js_string}', '${fckeditorBase.url?html}', '${fckeditorBase.documentURL?html}', 
-	                    '${fckBrowse.url.pathRepresentation}', '<@vrtx.requestLanguage />', cssFileList, ${simpleHTML?string});
-	          editorsAtInitCount++;
+	                    '${fckBrowse.url.pathRepresentation}', '<@vrtx.requestLanguage />', cssFileList, ${simpleHTML?string}); 
 	        });
+	        editorsAtInitCount++;
 	      } else {
 	        $(window).load(function() {
 	          setTimeout(function() {
                 newEditor('${content}', ${completeEditor?string}, ${withoutSubSuper?string}, 
 	                      '${baseFolder?js_string}', '${fckeditorBase.url?html}', '${fckeditorBase.documentURL?html}', 
 	                      '${fckBrowse.url.pathRepresentation}', '<@vrtx.requestLanguage />', cssFileList, ${simpleHTML?string});
-	            editorsAtInitCount++;
 	          }, Math.round(Math.random() * 500));
 	        });
 	      }

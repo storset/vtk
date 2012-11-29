@@ -23,7 +23,8 @@
 <#macro addCommonScripts language oldEditor=false>
 
   <script type="text/javascript"><!--
-    var editorCount = 0;
+    var editorsAtInitCount = 0;
+    
     var datePickerLang = "${language}";
     var tooLongFieldPre = "<@vrtx.msg code='editor.too-long-field-pre' />";
     var tooLongFieldPost = "<@vrtx.msg code='editor.too-long-field-post' />";
@@ -53,20 +54,23 @@
   <script type="text/javascript"><!--
       if (CKEDITOR.env.isCompatible) {
         try {
-          if(editorCount < 25) {
+          if(editorsAtInitCount < 25) {
             $(document).ready(function() {
               newEditor('${content}', ${completeEditor?string}, ${withoutSubSuper?string}, 
 	                    '${baseFolder?js_string}', '${fckeditorBase.url?html}', '${fckeditorBase.documentURL?html}', 
 	                    '${fckBrowse.url.pathRepresentation}', '<@vrtx.requestLanguage />', cssFileList, ${simpleHTML?string});
+	          editorsAtInitCount++;
 	        });
 	      } else {
 	        $(window).load(function() {
-              newEditor('${content}', ${completeEditor?string}, ${withoutSubSuper?string}, 
-	                    '${baseFolder?js_string}', '${fckeditorBase.url?html}', '${fckeditorBase.documentURL?html}', 
-	                    '${fckBrowse.url.pathRepresentation}', '<@vrtx.requestLanguage />', cssFileList, ${simpleHTML?string});
+	          setTimeout(function() {
+                newEditor('${content}', ${completeEditor?string}, ${withoutSubSuper?string}, 
+	                      '${baseFolder?js_string}', '${fckeditorBase.url?html}', '${fckeditorBase.documentURL?html}', 
+	                      '${fckBrowse.url.pathRepresentation}', '<@vrtx.requestLanguage />', cssFileList, ${simpleHTML?string});
+	            editorsAtInitCount++;
+	          }, Math.round(Math.random() * 500));
 	        });
 	      }
-	      editorCount++;
 	    } catch (e) {
 	      vrtxAdmin.log({msg: e});
 	    }

@@ -47,7 +47,14 @@ import org.vortikal.resourcemanagement.edit.SimpleStructuredEditor;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.search.collectionlisting.CollectionListingSearchComponent;
 
-public class MessageListingSearchComponent extends CollectionListingSearchComponent {
+/**
+ * A "hack" implementation of the default collection listing search component
+ * for message listing. After initial search has been run, do explicit lookup in
+ * local repository for current changes that might yet not be visible in index
+ * due to write delay. Lookup is performed depending on a given action (request
+ * parameter).
+ */
+public class MessageListingLocalRepositoryLookupSearchComponent extends CollectionListingSearchComponent {
 
     private final static String URI_PARAM = "uri";
     private final static String ACTION_PARAM = "action";

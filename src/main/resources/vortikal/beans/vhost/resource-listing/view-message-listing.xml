@@ -18,12 +18,13 @@
     <property name="helper" ref="messageListing.helper" />
     <property name="searchComponents">
       <list>
-        <ref bean="messageListing.searchComponent" />
+        <ref bean="messageListing.localRepoLookupSearchComponent" />
       </list>
     </property>
   </bean>
 
-  <bean id="messageListing.searchComponent" class="org.vortikal.web.search.messagelisting.MessageListingSearchComponent" parent="collectionListing.searchComponent">
+  <!-- ## Default search component for message listing ## -->
+  <bean id="messageListing.searchComponent" parent="collectionListing.searchComponent">
     <property name="name" value="messageListing.defaultListing" />
     <property name="queryBuilders">
       <list>
@@ -41,8 +42,21 @@
         <value>resource:listingDisplayedMessage</value>
         <value>lastModified</value>
         <value>contentLocale</value>
+        <value>numberOfComments</value>
       </list>
     </property>
+  </bean>
+
+  <!-- ##
+    Hack message listing search component to work around delay in
+    index update on create/delete/update operations on messages.
+    Will do extra lookup in local repo for changes depending on
+    action performed (resolved by checking request parameters).
+  ## -->
+  <bean id="messageListing.localRepoLookupSearchComponent"
+    class="org.vortikal.web.search.messagelisting.MessageListingLocalRepositoryLookupSearchComponent"
+    parent="messageListing.searchComponent">
+    <property name="name" value="messageListing.localRepoLookupSearchComponent" />
   </bean>
 
   <bean id="messageListing.helper" class="org.vortikal.web.decorating.components.CollectionListingHelper">
@@ -66,7 +80,7 @@
   </bean>
 
   <bean id="messageListing.feedHandler" class="org.vortikal.web.display.collection.message.MessageListingAsAtomFeed"
-        parent="viewAsFeedHandler">
+    parent="viewAsFeedHandler">
     <property name="searchComponent" ref="messageListing.searchComponent" />
   </bean>
 

@@ -271,12 +271,13 @@ vrtxAdmin._$(document).ready(function () {
         ajaxSave();
         $.when(EDITOR_ASYNC_SAVING_DEFERRED)
           .done(function() { // Publish
+            vrtxAdmin.removeMsg("error");
             COMPLETE_FORM_ASYNC_BYPASS = true;
             link.trigger("click");
           })
           .fail(function(err) {
             if(err !== "INIT") {
-              // TODO: show error msg
+              vrtxAdmin.displayErrorMsg(err);
             }
           });
         return false;
@@ -1473,7 +1474,6 @@ VrtxAdmin.prototype.placeCopyMoveButtonInActiveTab = function placeCopyMoveButto
   li.html("<a id='" + options.service + "' href='javascript:void(0);'>" + btn.attr('title') + "</a>");
   vrtxAdm.cachedActiveTab.find("#" + options.service).click(function (e) {
     if (!vrtxAdm.cachedDirectoryListing.find("td input[type=checkbox]:checked").length) {
-      //alert(options.msg);
       vrtxSimpleDialogs.openMsgDialog(options.msg, options.title);
     } else {
       vrtxAdm.cachedAppContent.find("#" + options.btnId).click();
@@ -1657,10 +1657,11 @@ function editorInteraction(bodyId, vrtxAdm, _$) {
       ajaxSave();
       $.when(EDITOR_ASYNC_SAVING_DEFERRED)
           .done(function() { // TODO: show status saved msg
+            vrtxAdmin.removeMsg("error");
           })
           .fail(function(err) {
             if(err !== "INIT") {
-              // TODO: show error msg
+              vrtxAdmin.displayErrorMsg(err);
             }
           });
       e.stopPropagation();
@@ -2848,6 +2849,16 @@ VrtxAdmin.prototype.displayMsg = function displayMsg(msg, type) {
       }); */
       otherMsg.remove();
     }
+  }
+};
+
+VrtxAdmin.prototype.removeMsg = function removeMsg(type) {
+  var vrtxAdm = this, _$ = vrtxAdm._$;
+  
+  var current = (type === "info") ? "infomessage" : "errormessage";
+  var currentMsg = vrtxAdm.cachedAppContent.find("> ." + current);
+  if(currentMsg.length) {
+    currentMsg.remove();
   }
 };
 

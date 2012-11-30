@@ -15,6 +15,7 @@
   var isPreviewMode,
       body,
       contents,
+      appFooterHeight,
       previewIframeMinHeight,
       previewLoading,
       surplusAnimationSpeed = 200;
@@ -28,7 +29,7 @@
         
         var newHeight = Math.min(Math.max(dataHeight, previewIframeMinHeight), 20000); // Keep height between available window pixels and 20000 pixels
         var diff = newHeight - previewIframeMinHeight;
-        var surplus = body.find("#app-footer-wrapper").outerHeight(true) + 13 + 20; // footerHeight+contentBottomMargin+border+contentBottomPadding+border
+        var surplus = appFooterHeight + 13 + 20; // +contentBottomMargin+border+contentBottomPadding+border
         
         var animatedPixels = (diff > surplus) ? surplus : newHeight;
      
@@ -59,7 +60,7 @@
       contents = body.find("#contents");
       var appContentHeight = body.find("#app-content").height();
       var appHeadWrapperHeight = body.find("#app-head-wrapper").outerHeight(true);
-      var appFooterHeight = body.find("#app-footer").outerHeight(true);
+      appFooterHeight = body.find("#app-footer").outerHeight(true);
       var windowHeight = $(window).outerHeight(true);
 
       previewIframeMinHeight = (windowHeight - (appContentHeight + appHeadWrapperHeight + appFooterHeight)) + 150; // + iframe default height

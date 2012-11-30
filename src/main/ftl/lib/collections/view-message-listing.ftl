@@ -13,14 +13,14 @@
         <h2>${collectionListing.title?html}</h2>
       </#if>
 
-      <@displayMessages messages />
+      <@displayMessages messages editLinks />
 
     </div>
   </#if>
 
 </#macro>
 
-<#macro displayMessages messages>
+<#macro displayMessages messages editLinks=[] >
   <#local i = 1 />
   <#list messages as message>
     <#local locale = vrtx.getLocale(message) />

@@ -53,8 +53,7 @@
     Will do extra lookup in local repo for changes depending on
     action performed (resolved by checking request parameters).
   ## -->
-  <bean id="messageListing.localRepoLookupSearchComponent"
-    class="org.vortikal.web.search.messagelisting.MessageListingLocalRepositoryLookupSearchComponent"
+  <bean id="messageListing.localRepoLookupSearchComponent" class="org.vortikal.web.search.messagelisting.MessageListingLocalRepositoryLookupSearchComponent"
     parent="messageListing.searchComponent">
     <property name="name" value="messageListing.localRepoLookupSearchComponent" />
   </bean>
@@ -92,6 +91,26 @@
     </property>
     <property name="resourceTypeTree" ref="resourceTypeTree" />
     <property name="defaultSortOrder" ref="SORT_ORDER.DESC" />
+  </bean>
+
+  <!-- ## Component for inclusion of messages ## -->
+  <bean id="decorating.messageComponent" class="org.vortikal.web.decorating.components.MessageComponent">
+    <property name="namespace" ref="decorating.includeNamespace" />
+    <property name="name" value="messages" />
+    <property name="view" ref="decorating.messageComponent.view" />
+    <property name="searchComponent" ref="messageListing.searchComponent" />
+    <property name="helper" ref="messageListing.helper" />
+    <property name="pageLimitPropDef" ref="pageLimitPropDef" />
+    <property name="examples">
+      <map>
+        <entry key="uri=[/messages/to/display/] max-number-of-messages=[15]"
+          value="Display message for a given message listing, set by prameter uri" />
+      </map>
+    </property>
+  </bean>
+
+  <bean id="decorating.messageComponent.view" parent="freemarkerView">
+    <property name="url" value="layouts/message-listing.ftl" />
   </bean>
 
 </beans>

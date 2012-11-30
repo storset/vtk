@@ -28,8 +28,7 @@
         
         var newHeight = Math.min(Math.max(dataHeight, previewIframeMinHeight), 20000); // Keep height between available window pixels and 20000 pixels
         var diff = newHeight - previewIframeMinHeight;
-        var surplus = body.find("#app-head-wrapper").outerHeight(true);
-          
+        var surplus = body.find("#app-footer-wrapper").outerHeight(true) + 13 + 20; // footerHeight+contentBottomMargin+border+contentBottomPadding+border
         if(diff > surplus) {
           previewLoading.animate({height: (previewIframeMinHeight + surplus) + "px"}, surplusAnimationSpeed);
           contents.animate({height: (previewIframeMinHeight + surplus) + "px"}, surplusAnimationSpeed, function() {

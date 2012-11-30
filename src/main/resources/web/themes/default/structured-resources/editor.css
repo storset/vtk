@@ -183,6 +183,7 @@
 
 .vrtx-shared-text .shared-text-description a {
   color: #005aab;
+  text-decoration: underline;
 }
 
 #editor.vrtx-hvordan-soke .vrtx-grouped {

@@ -333,9 +333,9 @@ vrtxAdmin._$(document).ready(function () {
                 .done(function (script, textStatus) {
                 vrtxSimpleDialogs.openHtmlDialog("global-menu-create", dialogManageCreate.html(), link.title, 600, 395);
                 initializeTree();
-              }).fail(function (jqxhr, settings, exception) {});
-            }).fail(function (jqxhr, settings, exception) {});
-          }).fail(function (jqxhr, settings, exception) {});
+              }).fail(function (jqxhr, settings, exception) { vrtxAdmin.displayErrorMsg(exception + ": jquery.scrollTo.min.js"); });
+            }).fail(function (jqxhr, settings, exception) { vrtxAdmin.displayErrorMsg(exception + ": jquery.treeview.async.js"); });
+          }).fail(function (jqxhr, settings, exception) { vrtxAdmin.displayErrorMsg(exception + ": jquery.treeview.js"); });
         }
       });
     } else {

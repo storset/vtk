@@ -68,7 +68,7 @@ public class IndexReaderWarmupImpl implements IndexReaderWarmup {
         Query luceneQuery = getWarmupQuery();
         Sort luceneSorting = getWarmupSorting();
         Filter luceneFilter = null;
-        TopFieldDocs docs = searcher.search(luceneQuery, luceneFilter, 5000, luceneSorting);
+        TopFieldDocs docs = searcher.search(luceneQuery, luceneFilter, 2500, luceneSorting);
         int max = Math.min(500, docs.scoreDocs.length);
         for (int i = 0; i < max; i++) {
             searcher.doc(docs.scoreDocs[i].doc);
@@ -83,13 +83,12 @@ public class IndexReaderWarmupImpl implements IndexReaderWarmup {
         // Enabling pre-building of all this caching should be very good for performance of new reader
         // after warmup.
         Search search = new Search();
-        search.setLimit(5000);
+        search.setLimit(2500);
         PropertyExistsQuery peq = new PropertyExistsQuery(this.hiddenPropDef, true);
         search.setQuery(peq);
         luceneQuery = this.luceneQueryBuilder.buildQuery(search.getQuery(), reader);
-        luceneSorting = this.luceneQueryBuilder.buildSort(search.getSorting());
         luceneFilter = this.luceneQueryBuilder.buildSearchFilter(null, search, reader);
-        searcher.search(luceneQuery, luceneFilter, search.getLimit(), luceneSorting);
+        searcher.search(luceneQuery, luceneFilter, search.getLimit());
     }
 
     private Query getWarmupQuery() {

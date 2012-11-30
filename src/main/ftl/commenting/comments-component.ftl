@@ -139,6 +139,16 @@
                     default="You are not allowed to comment on this resource." /></p>
 
     <#elseif commentsAllowed && postCommentURL?exists>
+      <script type="text/javascript"><!--
+          // CKEditor CSS
+          var cssFileList = [<#if fckEditorAreaCSSURL?exists>
+                               <#list fckEditorAreaCSSURL as cssURL>
+                                 "${cssURL?html}" <#if cssURL_has_next>,</#if>
+                               </#list>
+                             </#if>]; 
+      //-->
+      </script>
+    
       <div id="comment-syntax-desc" class="comment-syntax-desc">
         <div class="syntax-head"><@vrtx.msg code="commenting.form.syntax-description" default="Allowed HTML syntax" />:</div>
         <p>

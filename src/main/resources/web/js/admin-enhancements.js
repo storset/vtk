@@ -127,7 +127,6 @@ vrtxAdmin._$.ajaxSetup({
 // Global vars that probably should be put inside vrtxAdmin
 var EDITOR_SAVE_BUTTON_NAME = "",
     EDITOR_ASYNC_SAVING_DEFERRED,
-    COMPLETE_FORM_ASYNC_BYPASS = false,
     GET_FORM_ASYNCS_IN_PROGRESS = 0,
     GET_STAT_ASYNC_IN_PROGRESS = false,
     CREATE_RESOURCE_REPLACE_TITLE = true,
@@ -265,29 +264,37 @@ vrtxAdmin._$(document).ready(function () {
     
     // Ajax save before publish if editing
     var isSavingBeforePublish = publishUnpublishService === "vrtx-publish-document" && bodyId === "vrtx-editor";
-    var saveFuncComplete = isSavingBeforePublish ?
-      function(link) {
-        EDITOR_SAVE_BUTTON_NAME = _$(".vrtx-focus-button:last input").attr("name");
-        ajaxSave();
-        $.when(EDITOR_ASYNC_SAVING_DEFERRED)
-          .done(function() { // Publish
-            vrtxAdmin.removeMsg("error");
-            COMPLETE_FORM_ASYNC_BYPASS = true;
-            link.trigger("click");
-          })
-          .fail(function(err) {
-            if(err !== "INIT") {
-              vrtxAdmin.displayErrorMsg(err);
-            }
-          });
-        return false;
-      }
-     : null;
     
     vrtxAdm.completeFormAsync({
       selector: "form#" + publishUnpublishService + "-form input[type=submit]",
       updateSelectors: ["#resourceMenuRight", "#publishing-status", "#publishing-publish-date", "#publishing-unpublish-date"],
-      funcComplete: saveFuncComplete,
+      funcComplete: (isSavingBeforePublish ? 
+        function(link) {
+          // Save
+          EDITOR_SAVE_BUTTON_NAME = _$(".vrtx-focus-button:last input").attr("name");
+          ajaxSave();
+          $.when(EDITOR_ASYNC_SAVING_DEFERRED)
+            .done(function() {
+              vrtxAdmin.removeMsg("error");
+              // Publish
+              vrtxAdm.completeFormAsyncPost({
+                updateSelectors: ["#resourceMenuRight"],
+                link: link,
+                form: $("#vrtx-publish-document-form"),
+                funcComplete: function() {
+                  // Unlock
+                  $("li.manage\\.unlockFormService input[name=unlock]").trigger("click"); 
+                }
+              }); 
+            })
+            .fail(function(err) {
+              if(err !== "INIT") {
+                vrtxAdmin.displayErrorMsg(err);
+              }
+            });
+          return false;
+        } : null
+      ),
       post: (bodyId !== "vrtx-preview" && !isSavingBeforePublish)
     });
   }
@@ -305,7 +312,7 @@ vrtxAdmin._$(document).ready(function () {
   vrtxAdm.completeFormAsync({
     selector: "li.manage\\.unlockFormService form[name=unlockForm]",
     updateSelectors: ["#resourceMenuRight", "#contents"],
-    post: (bodyId !== "vrtx-editor" && bodyId !== "vrtx-edit-plaintext")
+    post: (bodyId !== "vrtx-editor" && bodyId !== "vrtx-edit-plaintext" && bodyId !== "vrtx-manage-collectionlisting")
   });
   
   // Create folder chooser in global menu
@@ -2572,7 +2579,6 @@ VrtxAdmin.prototype.completeFormAsync = function completeFormAsync(options) {
       _$ = vrtxAdm._$;   
       
   vrtxAdm.cachedBody.dynClick(options.selector, function (e) {
-    if(COMPLETE_FORM_ASYNC_BYPASS) return;
   
     var isReplacing = options.isReplacing || false,
         funcProceedCondition = options.funcProceedCondition,
@@ -2617,7 +2623,7 @@ VrtxAdmin.prototype.completeFormAsyncPost = function completeFormAsyncPost(optio
     var vrtxAdm = vrtxAdmin,
         _$ = vrtxAdm._$,
         selector = options.selector,
-        isReplacing = options.isReplacing,
+        isReplacing = options.isReplacing || false,
         updateSelectors = options.updateSelectors,
         errorContainer = options.errorContainer,
         errorContainerInsertAfter = options.errorContainerInsertAfter,

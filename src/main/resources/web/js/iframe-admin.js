@@ -29,17 +29,13 @@
         var newHeight = Math.min(Math.max(dataHeight, previewIframeMinHeight), 20000); // Keep height between available window pixels and 20000 pixels
         var diff = newHeight - previewIframeMinHeight;
         var surplus = body.find("#app-footer-wrapper").outerHeight(true) + 13 + 20; // footerHeight+contentBottomMargin+border+contentBottomPadding+border
-        if(diff > surplus) {
-          previewLoading.animate({height: (previewIframeMinHeight + surplus) + "px"}, surplusAnimationSpeed);
-          contents.animate({height: (previewIframeMinHeight + surplus) + "px"}, surplusAnimationSpeed, function() {
-            previewLoadingComplete(previewIframe, newHeight, previewLoading, contents);
-          });  
-        } else {
-          previewLoading.animate({height: newHeight + "px"}, surplusAnimationSpeed);
-          contents.animate({height: newHeight + "px"}, surplusAnimationSpeed, function() {
-            previewLoadingComplete(previewIframe, newHeight, previewLoading, contents);
-          });  
-        }
+        
+        var animatedPixels = (diff > surplus) ? surplus : newHeight;
+     
+        previewLoading.animate({height: (previewIframeMinHeight + animatedPixels) + "px"}, surplusAnimationSpeed);
+        contents.animate({height: (previewIframeMinHeight + animatedPixels) + "px"}, surplusAnimationSpeed, function() {
+          previewLoadingComplete(previewIframe, newHeight, previewLoading, contents);
+        });
         break;
       case "keep-min-height":
         previewLoadingComplete(previewIframe, previewIframeMinHeight, previewLoading, contents);

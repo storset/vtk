@@ -127,7 +127,7 @@ vrtxAdmin._$.ajaxSetup({
 // Global vars that probably should be put inside vrtxAdmin
 var EDITOR_SAVE_BUTTON_NAME = "",
     EDITOR_ASYNC_SAVING_DEFERRED,
-    COMPLETE_FORM_BYPASS = false,
+    COMPLETE_FORM_ASYNC_BYPASS = false,
     GET_FORM_ASYNCS_IN_PROGRESS = 0,
     GET_STAT_ASYNC_IN_PROGRESS = false,
     CREATE_RESOURCE_REPLACE_TITLE = true,
@@ -268,15 +268,17 @@ vrtxAdmin._$(document).ready(function () {
     var saveFuncComplete = isSavingBeforePublish ?
       function(link) {
         EDITOR_SAVE_BUTTON_NAME = _$(".vrtx-focus-button:last input").attr("name");
-        var beforeSaveOk = ajaxSave();
-        if(beforeSaveOk) {
-          $.when(EDITOR_ASYNC_SAVING_DEFERRED).done(function() {
-            COMPLETE_FORM_BYPASS = true;
-            link.trigger("click"); // Publish
+        ajaxSave();
+        $.when(EDITOR_ASYNC_SAVING_DEFERRED)
+          .done(function() { // Publish
+            COMPLETE_FORM_ASYNC_BYPASS = true;
+            link.trigger("click");
+          })
+          .fail(function(err) {
+            if(err !== "INIT") {
+              // TODO: show error msg
+            }
           });
-        } else {
-          // TODO: dialog msg
-        }
         return false;
       }
      : null;
@@ -1653,6 +1655,14 @@ function editorInteraction(bodyId, vrtxAdm, _$) {
     vrtxAdm.cachedAppContent.on("click", ".vrtx-focus-button:last input", function(e) {
       EDITOR_SAVE_BUTTON_NAME = _$(this).attr("name");
       ajaxSave();
+      $.when(EDITOR_ASYNC_SAVING_DEFERRED)
+          .done(function() { // TODO: show status saved msg
+          })
+          .fail(function(err) {
+            if(err !== "INIT") {
+              // TODO: show error msg
+            }
+          });
       e.stopPropagation();
       e.preventDefault();
     });
@@ -1794,6 +1804,7 @@ function editorInteraction(bodyId, vrtxAdm, _$) {
 
 function ajaxSave() {
   EDITOR_ASYNC_SAVING_DEFERRED = $.Deferred();
+
   if(typeof CKEDITOR !== "undefined") { 
     for (instance in CKEDITOR.instances) {
       CKEDITOR.instances[instance].updateElement();
@@ -1810,7 +1821,7 @@ function ajaxSave() {
      var ok = performSave();
      if(!ok) {
        vrtxSimpleDialogs.closeDialog("#dialog-loading");
-       EDITOR_ASYNC_SAVING_DEFERRED.resolve();
+       EDITOR_ASYNC_SAVING_DEFERRED.rejectWith(this, ["INIT"]);
        return false;
      }
    }
@@ -1830,11 +1841,9 @@ function ajaxSave() {
      },
      error: function(xhr, statusText, errMsg) {
        vrtxSimpleDialogs.closeDialog("#dialog-loading");
-       alert("Ajax save failed: " + errMsg);
-       EDITOR_ASYNC_SAVING_DEFERRED.resolve(); // reject
+       EDITOR_ASYNC_SAVING_DEFERRED.rejectWith(this, [errMsg]);
      }
   });
-  return true;
 }
 
 function ctrlSEventHandler(_$, e) {
@@ -2562,7 +2571,7 @@ VrtxAdmin.prototype.completeFormAsync = function completeFormAsync(options) {
       _$ = vrtxAdm._$;   
       
   vrtxAdm.cachedBody.dynClick(options.selector, function (e) {
-    if(COMPLETE_FORM_BYPASS) return;
+    if(COMPLETE_FORM_ASYNC_BYPASS) return;
   
     var isReplacing = options.isReplacing || false,
         funcProceedCondition = options.funcProceedCondition,

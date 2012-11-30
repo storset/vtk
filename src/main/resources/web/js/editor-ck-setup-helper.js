@@ -50,6 +50,8 @@ var commentsToolbar = [['Source', 'PasteText', 'Bold',
 
 // TODO: Try to remove some hardcoded fields - should maybe be class-based
 function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, baseDocumentUrl, browsePath, defaultLanguage, cssFileList, simpleHTML) {
+  
+  // If pregenerated parameters is used for init
   if(typeof name === "object") {
     var obj = name;
     name = obj[0];

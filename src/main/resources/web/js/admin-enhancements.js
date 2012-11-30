@@ -269,20 +269,17 @@ vrtxAdmin._$(document).ready(function () {
       selector: "form#" + publishUnpublishService + "-form input[type=submit]",
       updateSelectors: ["#resourceMenuRight", "#publishing-status", "#publishing-publish-date", "#publishing-unpublish-date"],
       funcComplete: (isSavingBeforePublish ? 
-        function(link) {
-          // Save
+        function(link) { // Save async
           EDITOR_SAVE_BUTTON_NAME = _$(".vrtx-focus-button:last input").attr("name");
           ajaxSave();
           $.when(EDITOR_ASYNC_SAVING_DEFERRED)
             .done(function() {
               vrtxAdmin.removeMsg("error");
-              // Publish
-              vrtxAdm.completeFormAsyncPost({
+              vrtxAdm.completeFormAsyncPost({  // Publish async
                 updateSelectors: ["#resourceMenuRight"],
                 link: link,
                 form: $("#vrtx-publish-document-form"),
-                funcComplete: function() {
-                  // Unlock
+                funcComplete: function() { // Unlock regulary
                   $("li.manage\\.unlockFormService input[name=unlock]").trigger("click"); 
                 }
               }); 

@@ -26,7 +26,7 @@
       case "preview-height":
         var dataHeight = (cmdParams.length === 2) ? cmdParams[1] : 0;
         
-        var newHeight = Math.min(Math.max(dataHeight, previewIframeMinHeight), 20000);
+        var newHeight = Math.min(Math.max(dataHeight, previewIframeMinHeight), 20000); // Keep height between available window pixels and 20000 pixels
         var diff = newHeight - previewIframeMinHeight;
         var surplus = body.find("#app-head-wrapper").outerHeight(true);
           
@@ -72,11 +72,13 @@
       contents.append("<span id='preview-loading'><span id='preview-loading-inner'><span>" + previewLoadingMsg + "...</span></span></span>")
               .css({ position: "relative",
                      height: (previewIframeMinHeight + 2) + "px" });
-                     
+      
+      
       previewLoading = contents.find("#preview-loading");
-      previewLoading.css({ height: previewIframeMinHeight + "px" });
+      var previewLoadingHeightCSS = { height: previewIframeMinHeight + "px" };  
+      previewLoading.css(previewLoadingHeightCSS); 
       previewLoading.find("#preview-loading-inner")
-                    .css({ height: previewIframeMinHeight + "px" });
+                    .css(previewLoadingHeightCSS);
     }
   });
   

@@ -231,6 +231,7 @@
   display: none;
 }
 
+/* TODO: generalize JSON-element-accordion */
 #items .vrtx-json-element > div > div,
 #items .vrtx-json-element .left > div,
 #items .vrtx-json-element .right > div {

@@ -239,14 +239,12 @@
   margin-top: 20px;
 }
 
-#items .vrtx-json-element .left > div:first-child,
-#items .vrtx-json-element .right > div:first-child {
-  margin-top: 0px;
-}
-
 #items .vrtx-json-element .left,
 #items .vrtx-json-element .right,
-#items .vrtx-json-element > div > div:first-child {
+#items .vrtx-json-element .left > div:first-child,
+#items .vrtx-json-element .right > div:first-child,
+#items .vrtx-json-element > div > div:first-child,
+.vrtx-grouped .ui-accordion-content > div:first-child {
   margin-top: 0px;
 }
 

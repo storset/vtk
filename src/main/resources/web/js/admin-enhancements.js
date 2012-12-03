@@ -359,6 +359,7 @@ vrtxAdmin._$(document).ready(function () {
           dialogManageCreate = $("#" + id);
           dialogManageCreate.hide();
           vrtxSimpleDialogs.openHtmlDialog("send-approval", dialogManageCreate.html(), link.title, 410, 525);
+          // TODO: need to save and send to view after approved
           if($(".ui-dialog #emailToField").val().length > 0) {
             $(".ui-dialog #yourCommentTxtArea")[0].focus();
           }

@@ -68,9 +68,9 @@ $(document).ready(function () {
               }
               iframe.style.height = setHeight + "px";
             } else {
-              if(runTimes <= 400) {
+              if(runTimes <= 100) {
                 setTimeout(arguments.callee, 15);
-              } else {  // Timeout after ca. 6s (http://ejohn.org/blog/accuracy-of-javascript-time/)
+              } else {  // Timeout after ca. 1.5s (http://ejohn.org/blog/accuracy-of-javascript-time/)
                 iframe.style.height = setHeight + "px";
                 logMe("TIMED OUT - TRY TO SEND KEEP MIN HEIGHT CMD");
                 crossDocComLink.postCmdToParent("keep-min-height");

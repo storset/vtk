@@ -99,9 +99,9 @@
       var waitForResponse = setTimeout(function() {
         runTimes++;
         if(!postback) {
-          if(runTimes <= 420) {
+          if(runTimes <= 333) { 
             setTimeout(arguments.callee, 15);
-          } else {
+          } else {  // Timeout after ca. 5s (http://ejohn.org/blog/accuracy-of-javascript-time/)
             vrtxAdmin.log({ msg: "WAITED TOO LONG FOR RESPONSE FROM IFRAME - USE MIN HEIGHT" });
             previewLoadingComplete(previewIframe, previewIframeMinHeight, previewLoading, contents);
           }

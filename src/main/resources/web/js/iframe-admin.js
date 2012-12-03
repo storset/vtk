@@ -18,10 +18,12 @@
       appFooterHeight,
       previewIframeMinHeight,
       previewLoading,
-      surplusAnimationSpeed = 200;
+      surplusAnimationSpeed = 200,
+      postback = false;
 
   var crossDocComLink = new CrossDocComLink();
   crossDocComLink.setUpReceiveDataHandler(function(cmdParams, source) {
+    postback = true;
     var previewIframe = $("iframe#previewIframe")[0];
     switch(cmdParams[0]) {
       case "preview-height":
@@ -86,6 +88,19 @@
     if(isPreviewMode) {
       vrtxAdmin.log({ msg: "TRY TO SEND MIN HEIGHT" });
       crossDocComLink.postCmdToIframe($("iframe#previewIframe")[0], "min-height|" + previewIframeMinHeight);
+      
+      var runTimes = 0;
+      var waitForResponse = setTimeout(function() {
+        runTimes++;
+        if(!postback) {
+          if(runTimes <= 400) {
+            setTimeout(arguments.callee, 15);
+          } else {
+            vrtxAdmin.log({ msg: "WAITED TOO LONG FOR RESPONSE FROM IFRAME - USE MIN HEIGHT" });
+            previewLoadingComplete(previewIframe, previewIframeMinHeight, previewLoading, contents);
+          }
+        }
+      }, 15);
     }
   });
 

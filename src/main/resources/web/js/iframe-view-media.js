@@ -35,6 +35,8 @@ $(document).ready(function () {
     var setHeight = MIN_HEIGHT_FALLBACK;
     var runTimes = 0;
     var waitForIframeLoaded = setTimeout(function() {
+      runTimes++;
+    
       if(MIN_HEIGHT) {
         setHeight = MIN_HEIGHT;
         var computedHeight = document.body.offsetHeight;
@@ -48,8 +50,7 @@ $(document).ready(function () {
         }
         document.body.style.height = setHeight + "px"; 
       } else {
-        runTimes++;
-        if(runTimes < 400) {
+        if(runTimes <= 400) {
           logMe("CALL TIMER " + runTimes);
           setTimeout(arguments.callee, 15);
         } else {  // Timeout after ca. 6s (http://ejohn.org/blog/accuracy-of-javascript-time/)

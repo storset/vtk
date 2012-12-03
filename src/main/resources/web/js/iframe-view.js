@@ -50,6 +50,8 @@ $(document).ready(function () {
       var runTimes = 0;
       var waitForIframeLoaded = setTimeout(function() {
         try {
+          runTimes++;
+        
           var iframe = previewViewIframe[0];
           if(typeof iframe.contentWindow !== "undefined" && typeof iframe.contentWindow.document !== "undefined" && MIN_HEIGHT) {
             setHeight = MIN_HEIGHT;
@@ -65,8 +67,7 @@ $(document).ready(function () {
             }
             iframe.style.height = setHeight + "px";
           } else {
-            runTimes++;
-            if(runTimes < 400) {
+            if(runTimes <= 400) {
               logMe("CALL TIMER " + runTimes);
               setTimeout(arguments.callee, 15);
             } else {  // Timeout after ca. 6s (http://ejohn.org/blog/accuracy-of-javascript-time/)

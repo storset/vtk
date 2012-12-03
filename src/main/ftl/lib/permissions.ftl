@@ -135,6 +135,7 @@
       <#compress>${group.name}</#compress><#t/>
       <#if group_index &lt; groups?size - 1>,<#t/></#if>
     </#list>
+    - <@displayAboutPropShortcut privilegeName "read-write-unpublished" "editorial-contacts" true />
   <#else>
     <#if shortcut != "">
       <@vrtx.msg code="permissions.shortcut.${shortcut}" default="${shortcut}" /> <#t/>
@@ -179,6 +180,7 @@
       <@editACLFormGroupsOrUsers "user" privilegeName submitUrl />
       <li class="still-admin" style="display:none;">${(!losingPrivileges)?string}</li>
     </ul>
+    <p><@displayAboutPropShortcut privilegeName "read-write-unpublished" "editorial-contacts" true true /></p>
     <div id="submitButtons" class="submitButtons">
       <div class="vrtx-focus-button">
         <input type="submit" name="saveAction" value="<@vrtx.msg code="permissions.save" default="Save"/>" />
@@ -188,6 +190,18 @@
       </div>
     </div>
   </form>
+</#macro>
+
+<#macro displayAboutPropShortcut privilegeName matchPrivilegeName propName onlyCollection=false capFirst=false>
+  <#if privilegeName = matchPrivilegeName>
+    <#if (!onlyCollection || resourceContext.currentResource.isCollection()) && aclInfo.aclEditURLs[privilegeName]?exists>
+      <#local editLinkText = vrtx.getMsg("permissions.privilege.${privilegeName}.${propName}.edit") />
+      <a href="?name=${propName}&vrtx=admin&mode=about"><#if !capFirst>${editLinkText}<#else>${editLinkText?cap_first}</#if></a>
+    <#else>
+      <#local viewLinkText = vrtx.getMsg("permissions.privilege.${privilegeName}.${propName}.view") />
+      <a href="?vrtx=admin&mode=about"><@vrtx.msg code="" /><#if !capFirst>${viewLinkText}<#else>${viewLinkText?cap_first}</#if></a>
+    </#if>
+  </#if>
 </#macro>
 
 <#--

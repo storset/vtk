@@ -53,27 +53,32 @@ $(document).ready(function () {
           runTimes++;
         
           var iframe = previewViewIframe[0];
-          if(typeof iframe.contentWindow !== "undefined" && typeof iframe.contentWindow.document !== "undefined" && MIN_HEIGHT) {
-            setHeight = MIN_HEIGHT;
-            logMe("TIMER STOPPED AFTER " + runTimes + " RUNS");
-            var computedHeight = Math.ceil(iframe.contentWindow.document.body.offsetHeight) + 45;
-            if(computedHeight > setHeight) {
-              setHeight = computedHeight;
-              logMe("TRY TO SEND PREVIEW HEIGHT");
-              crossDocComLink.postCmdToParent("preview-height|" + setHeight);
-            } else { // Computed height is less than or below minimum height
-              logMe("TRY TO SEND MIN HEIGHT");
-              crossDocComLink.postCmdToParent("keep-min-height");
-            }
-            iframe.style.height = setHeight + "px";
-          } else {
-            if(runTimes <= 400) {
-              setTimeout(arguments.callee, 15);
-            } else {  // Timeout after ca. 6s (http://ejohn.org/blog/accuracy-of-javascript-time/)
+          if(typeof iframe.contentWindow !== "undefined" && typeof iframe.contentWindow.document !== "undefined") {
+            if(MIN_HEIGHT) {
+              setHeight = MIN_HEIGHT;
+              logMe("TIMER STOPPED AFTER " + runTimes + " RUNS");
+              var computedHeight = Math.ceil(iframe.contentWindow.document.body.offsetHeight) + 45;
+              if(computedHeight > setHeight) {
+                setHeight = computedHeight;
+                logMe("TRY TO SEND PREVIEW HEIGHT");
+                crossDocComLink.postCmdToParent("preview-height|" + setHeight);
+              } else { // Computed height is less than or below minimum height
+                logMe("TRY TO SEND MIN HEIGHT");
+                crossDocComLink.postCmdToParent("keep-min-height");
+              }
               iframe.style.height = setHeight + "px";
-              logMe("TIMED OUT - TRY TO SEND KEEP MIN HEIGHT CMD");
-              crossDocComLink.postCmdToParent("keep-min-height");
+            } else {
+              if(runTimes <= 400) {
+                setTimeout(arguments.callee, 15);
+              } else {  // Timeout after ca. 6s (http://ejohn.org/blog/accuracy-of-javascript-time/)
+                iframe.style.height = setHeight + "px";
+                logMe("TIMED OUT - TRY TO SEND KEEP MIN HEIGHT CMD");
+                crossDocComLink.postCmdToParent("keep-min-height");
+              }
             }
+          } else {
+            logMe("IFRAME INACCESSIBLE - TRY TO SEND KEEP MIN HEIGHT CMD");
+            crossDocComLink.postCmdToParent("keep-min-height");
           }
         } catch(e) { // Error
           logMe("ERROR: " + e.message);

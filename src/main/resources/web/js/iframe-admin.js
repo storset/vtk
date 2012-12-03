@@ -31,17 +31,19 @@
         vrtxAdmin.log({ msg: "PREVIEW HEIGHT RECEIVED" });
         
         var dataHeight = (cmdParams.length === 2) ? cmdParams[1] : 0;
-        
         var newHeight = Math.min(Math.max(dataHeight, previewIframeMinHeight), 20000); // Keep height between available window pixels and 20000 pixels
-        var diff = newHeight - previewIframeMinHeight;
-        var surplus = appFooterHeight + 13 + 20; // +contentBottomMargin+border+contentBottomPadding+border
         
-        var animatedPixels = (diff > surplus) ? surplus : newHeight;
-     
-        previewLoading.animate({height: (previewIframeMinHeight + animatedPixels) + "px"}, surplusAnimationSpeed);
-        contents.animate({height: (previewIframeMinHeight + animatedPixels) + "px"}, surplusAnimationSpeed, function() {
+        if(!vrtxAdmin.isIE8) {
+          var diff = newHeight - previewIframeMinHeight;
+          var surplus = appFooterHeight + 13 + 20; // +contentBottomMargin+border+contentBottomPadding+border
+          var animatedPixels = (diff > surplus) ? surplus : newHeight;
+          previewLoading.animate({height: (previewIframeMinHeight + animatedPixels) + "px"}, surplusAnimationSpeed);
+          contents.animate({height: (previewIframeMinHeight + animatedPixels) + "px"}, surplusAnimationSpeed, function() {
+            previewLoadingComplete(previewIframe, newHeight, previewLoading, contents);
+          });
+        } else {
           previewLoadingComplete(previewIframe, newHeight, previewLoading, contents);
-        });
+        }
         break;
       case "keep-min-height":
         vrtxAdmin.log({ msg: "KEEP MIN HEIGHT CMD RECEIVED" });
@@ -55,11 +57,16 @@
     if(!completed) {
       completed = true;
       previewIframe.style.height = newHeight + "px";
-      previewLoading.find("#preview-loading-inner").remove();
-      previewLoading.fadeOut(surplusAnimationSpeed, function() {
-        previewLoading.remove();
+      if(!vrtxAdmin.isIE8) {
+        previewLoading.find("#preview-loading-inner").remove();
+        previewLoading.fadeOut(surplusAnimationSpeed, function() {
+          contents.removeAttr('style');
+          previewLoading.remove();
+        });
+      } else {
         contents.removeAttr('style');
-      });
+        previewLoading.remove();
+      }
     }
   }
 
@@ -95,19 +102,20 @@
       var previewIframe = $("iframe#previewIframe")[0];
       crossDocComLink.postCmdToIframe(previewIframe, "min-height|" + previewIframeMinHeight);
       
-      // TODO: this should not be necessary - but keep it for robustness
+      /* TODO: this should not be necessary - but keep it for robustness
       var runTimes = 0;
       var waitForResponse = setTimeout(function() {
         runTimes++;
         if(!postback) {
           if(runTimes <= 333) { 
             setTimeout(arguments.callee, 15);
-          } else {  // Timeout after ca. 5s (http://ejohn.org/blog/accuracy-of-javascript-time/)
+          } else { // Timeout after ca. 5s (http://ejohn.org/blog/accuracy-of-javascript-time/)
             vrtxAdmin.log({ msg: "WAITED TOO LONG FOR RESPONSE FROM IFRAME - USE MIN HEIGHT" });
             previewLoadingComplete(previewIframe, previewIframeMinHeight, previewLoading, contents);
           }
         }
       }, 15);
+      */
     }
   });
 

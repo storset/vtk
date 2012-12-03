@@ -55,6 +55,7 @@
     if(!completed) {
       completed = true;
       previewIframe.style.height = newHeight + "px";
+      previewLoading.find("#preview-loading-inner").remove();
       previewLoading.fadeOut(surplusAnimationSpeed, function() {
         previewLoading.remove();
         contents.removeAttr('style');

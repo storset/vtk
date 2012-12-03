@@ -25,8 +25,8 @@
     var previewIframe = $("iframe#previewIframe")[0];
     switch(cmdParams[0]) {
       case "preview-height":
-        console.log("PREVIEW HEIGHT RECEIVED");
-      
+        vrtxAdmin.log({ msg: "PREVIEW HEIGHT RECEIVED" });
+        
         var dataHeight = (cmdParams.length === 2) ? cmdParams[1] : 0;
         
         var newHeight = Math.min(Math.max(dataHeight, previewIframeMinHeight), 20000); // Keep height between available window pixels and 20000 pixels
@@ -41,7 +41,7 @@
         });
         break;
       case "keep-min-height":
-        console.log("MIN HEIGHT RECEIVED");
+        vrtxAdmin.log({ msg: "KEEP MIN HEIGHT CMD RECEIVED" });
       
         previewLoadingComplete(previewIframe, previewIframeMinHeight, previewLoading, contents);
         break;
@@ -84,7 +84,7 @@
   
   $(window).load(function() {
     if(isPreviewMode) {
-      console.log("TRY TO SEND MIN HEIGHT" + $("iframe#previewIframe").length);
+      vrtxAdmin.log({ msg: "TRY TO SEND MIN HEIGHT" });
       crossDocComLink.postCmdToIframe($("iframe#previewIframe")[0], "min-height|" + previewIframeMinHeight);
     }
   });

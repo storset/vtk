@@ -12,12 +12,14 @@
  *  - Resizing the outer iframe (served from the admin domain) only works on browsers which support postMessage
  */
  
- var MIN_HEIGHT = 0;
+var MIN_HEIGHT = 0;
+var CAN_LOG = (typeof console !== "undefined" && console.log);
+
 var crossDocComLink = new CrossDocComLink();
 crossDocComLink.setUpReceiveDataHandler(function(cmdParams, source) {
   switch(cmdParams[0]) {
     case "min-height":
-      console.log("MIN HEIGHT RECEIVED");
+      logMe("MIN HEIGHT RECEIVED: " + minHeight);
       var minHeight = (cmdParams.length === 2) ? cmdParams[1] : 0;
       MIN_HEIGHT = minHeight; 
       break;
@@ -48,41 +50,44 @@ $(document).ready(function () {
           var iframe = previewViewIframe[0];
           if(typeof iframe.contentWindow !== "undefined" && typeof iframe.contentWindow.document !== "undefined" && MIN_HEIGHT) {
             setHeight = MIN_HEIGHT;
-            console.log("TIMER STOPPED");
+            logMe("TIMER STOPPED AFTER " + runTimes + " RUNS");
             var computedHeight = Math.ceil(iframe.contentWindow.document.body.offsetHeight) + 45;
             if(computedHeight > setHeight) {
               setHeight = computedHeight;
-              console.log("TRY TO SEND HEIGHT");
+              logMe("TRY TO SEND PREVIEW HEIGHT");
               crossDocComLink.postCmdToParent("preview-height|" + setHeight);
             } else { // Computed height is less than or below minimum height
-              console.log("TRY TO SEND MIN HEIGHT");
+              logMe("TRY TO SEND MIN HEIGHT");
               crossDocComLink.postCmdToParent("keep-min-height");
             }
             iframe.style.height = setHeight + "px";
           } else {
             runTimes++;
             if(runTimes < 400) {
-              console.log("CALL TIMER");
+              logMe("CALL TIMER " + runTimes);
               setTimeout(arguments.callee, 15);
             } else {  // Timeout after ca. 6s (http://ejohn.org/blog/accuracy-of-javascript-time/)
               iframe.style.height = setHeight + "px";
-              console.log("TRY TO SEND MIN HEIGHT");
+              logMe("TRY TO SEND MIN HEIGHT");
               crossDocComLink.postCmdToParent("keep-min-height");
             }
           }
         } catch(e) { // Error
-          console.log("ERROR");
-          if(typeof console !== "undefined" && console.log) {
-            console.log("Error in getting iframe height: " + e.message); // implied that we always can post to parent as parent initiate with a post to iframe
-          }
+          logMe("ERROR: " + e.message);
           iframe.style.height = setHeight + "px";
-          console.log("TRY TO SEND MIN HEIGHT");
+          logMe("TRY TO SEND MIN HEIGHT");
           crossDocComLink.postCmdToParent("keep-min-height");
         }
       }, 15);
     });
   } else {
-    console.log("IFRAME 404 - TRY TO SEND MIN HEIGHT");
+    logMe("IFRAME 404 - TRY TO SEND MIN HEIGHT");
     crossDocComLink.postCmdToParent("keep-min-height");
   }
 });
+
+function logMe(msg) {
+  if(CAN_LOG) {
+    console.log("IFRAME 404 - TRY TO SEND MIN HEIGHT");
+  }
+}

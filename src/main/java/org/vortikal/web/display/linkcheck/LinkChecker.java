@@ -162,17 +162,18 @@ public class LinkChecker {
     
     private Status validateURL(URL url, URL referrer) {
         HttpURLConnection urlConnection = null;
+        int httpResponseCode = -1;
         try {
             urlConnection = createHeadRequest(url, referrer);
             urlConnection.connect();
-            int responseCode = urlConnection.getResponseCode();
-            if (responseCode == HttpURLConnection.HTTP_MOVED_PERM
-                    || responseCode == HttpURLConnection.HTTP_MOVED_TEMP
-                    || responseCode == HttpURLConnection.HTTP_SEE_OTHER) {
-                responseCode = checkMoved(urlConnection, responseCode, referrer);
+            httpResponseCode = urlConnection.getResponseCode();
+            if (httpResponseCode == HttpURLConnection.HTTP_MOVED_PERM
+                    || httpResponseCode == HttpURLConnection.HTTP_MOVED_TEMP
+                    || httpResponseCode == HttpURLConnection.HTTP_SEE_OTHER) {
+                httpResponseCode = checkMoved(urlConnection, httpResponseCode, referrer);
             }
-            if (responseCode == HttpURLConnection.HTTP_NOT_FOUND 
-                || responseCode == HttpURLConnection.HTTP_GONE) {
+            if (httpResponseCode == HttpURLConnection.HTTP_NOT_FOUND 
+                || httpResponseCode == HttpURLConnection.HTTP_GONE) {
                 return Status.NOT_FOUND;
             }
             return Status.OK;
@@ -181,7 +182,8 @@ public class LinkChecker {
         } catch (UnknownHostException e) {
             return Status.NOT_FOUND;
         } catch (Exception e) {
-            return Status.ERROR;
+            // Don't asses generic exception as error
+            return httpResponseCode != -1 ? Status.ERROR : Status.OK;
         } finally {
             if (urlConnection != null) {
                 urlConnection.disconnect();

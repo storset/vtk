@@ -66,7 +66,7 @@ public final class MailExecutor {
         helper.setFrom(emailFrom);
         helper.setTo(mailMultipleTo);
         if (sendCopyToSender) {
-            helper.setBcc(emailFrom);
+            helper.setCc(emailFrom);
         }
 
         helper.setText(mailBody, true); // send HTML

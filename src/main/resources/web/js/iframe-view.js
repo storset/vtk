@@ -13,15 +13,15 @@
  */
  
 var MIN_HEIGHT = 0;
+var MIN_HEIGHT_FALLBACK = 550;
 var CAN_LOG = (typeof console !== "undefined" && console.log);
 
 var crossDocComLink = new CrossDocComLink();
 crossDocComLink.setUpReceiveDataHandler(function(cmdParams, source) {
   switch(cmdParams[0]) {
     case "min-height":
-      logMe("MIN HEIGHT RECEIVED: " + minHeight);
-      var minHeight = (cmdParams.length === 2) ? cmdParams[1] : 0;
-      MIN_HEIGHT = minHeight; 
+      MIN_HEIGHT = (cmdParams.length === 2) ? cmdParams[1] : MIN_HEIGHT_FALLBACK;
+      logMe("MIN HEIGHT RECEIVED: " + MIN_HEIGHT);
       break;
     default:
   }
@@ -41,9 +41,12 @@ $(document).ready(function () {
       previewViewIframeElm.src = '';
       previewViewIframeElm.src = iSource;
       
+      logMe("INNER IFRAME UPDATED SRC");
     } 
     previewViewIframe.load(function() {
-      var setHeight = 600;
+      logMe("INNER IFRAME LOADED");
+    
+      var setHeight = MIN_HEIGHT_FALLBACK;
       var runTimes = 0;
       var waitForIframeLoaded = setTimeout(function() {
         try {
@@ -68,26 +71,26 @@ $(document).ready(function () {
               setTimeout(arguments.callee, 15);
             } else {  // Timeout after ca. 6s (http://ejohn.org/blog/accuracy-of-javascript-time/)
               iframe.style.height = setHeight + "px";
-              logMe("TRY TO SEND MIN HEIGHT");
+              logMe("TRY TO SEND KEEP MIN HEIGHT CMD");
               crossDocComLink.postCmdToParent("keep-min-height");
             }
           }
         } catch(e) { // Error
           logMe("ERROR: " + e.message);
           iframe.style.height = setHeight + "px";
-          logMe("TRY TO SEND MIN HEIGHT");
+          logMe("TRY TO SEND KEEP MIN HEIGHT CMD");
           crossDocComLink.postCmdToParent("keep-min-height");
         }
       }, 15);
     });
   } else {
-    logMe("IFRAME 404 - TRY TO SEND MIN HEIGHT");
+    logMe("IFRAME 404 - TRY TO SEND KEEP MIN HEIGHT CMD");
     crossDocComLink.postCmdToParent("keep-min-height");
   }
 });
 
 function logMe(msg) {
   if(CAN_LOG) {
-    console.log("IFRAME 404 - TRY TO SEND MIN HEIGHT");
+    console.log(msg);
   }
 }

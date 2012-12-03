@@ -385,19 +385,11 @@ vrtxAdmin._$(document).ready(function () {
     e.preventDefault();
   });
 
-  // Create dialog interaction
+  // Interactions initialization
   createInteraction(bodyId, vrtxAdm, _$);
-
-  // Collectionlisting interaction
   vrtxAdm.collectionListingInteraction();
-
-  // Editor interaction
   editorInteraction(bodyId, vrtxAdm, _$);
-
-  // Reports interaction
   reportsInteraction(bodyId, vrtxAdm, _$);
-
-  // Versioning interaction
   versioningInteraction(bodyId, vrtxAdm, _$);
   
   // Ajax initialization / listeners

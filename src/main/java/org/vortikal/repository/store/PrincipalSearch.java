@@ -64,4 +64,7 @@ public interface PrincipalSearch {
      * Preferred Locale (may be <code>null</code>).
      */
     public Locale getPreferredLocale();
+    
+    @Override
+    public String toString();
 }

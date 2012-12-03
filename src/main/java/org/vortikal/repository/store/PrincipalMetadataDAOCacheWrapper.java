@@ -30,6 +30,7 @@
  */
 package org.vortikal.repository.store;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -94,7 +95,7 @@ public class PrincipalMetadataDAOCacheWrapper implements PrincipalMetadataDAO, I
         }
         CacheItem item = this.cache.get(cacheKey);
         if (item != null) {
-            return item.value;
+            return item.values.get(0);
         }
 
         // Ignore any unchecked exceptions, let them propagate to caller.
@@ -109,7 +110,17 @@ public class PrincipalMetadataDAOCacheWrapper implements PrincipalMetadataDAO, I
 
     @Override
     public List<PrincipalMetadata> search(PrincipalSearch search, Locale preferredLocale) {
-        return this.wrappedDao.search(search, preferredLocale);
+
+        String cacheKey = search.toString();
+        CacheItem item = this.cache.get(cacheKey);
+        if (item != null) {
+            return item.values;
+        }
+
+        List<PrincipalMetadata> result = this.wrappedDao.search(search, preferredLocale);
+        this.cache.put(cacheKey, new CacheItem(result));
+        return result;
+
     }
 
     @Override
@@ -118,11 +129,18 @@ public class PrincipalMetadataDAOCacheWrapper implements PrincipalMetadataDAO, I
     }
 
     private static final class CacheItem {
-        PrincipalMetadata value;
+
+        List<PrincipalMetadata> values;
+
+        CacheItem(List<PrincipalMetadata> values) {
+            this.values = values;
+        }
 
         CacheItem(PrincipalMetadata value) {
-            this.value = value;
+            this.values = new ArrayList<PrincipalMetadata>();
+            this.values.add(value);
         }
+
     }
 
     @Required

@@ -120,6 +120,14 @@ public class PrincipalSearchImpl implements PrincipalSearch {
             code = 31 * code + this.preferredLocale.hashCode();
         }
 
+        if (this.searchType != null) {
+            code = 31 * code + this.searchType.hashCode();
+        }
+
+        if (this.uids != null) {
+            code = 31 * code + this.uids.hashCode();
+        }
+
         return code;
     }
 
@@ -146,11 +154,45 @@ public class PrincipalSearchImpl implements PrincipalSearch {
                 return false;
         }
 
+        if (this.searchType != null && !this.searchType.equals(po.searchType)) {
+            return false;
+        }
+
+        if (this.uids == null) {
+            return po.uids == null ? true : po.uids.equals(this.uids);
+        }
+
         if (this.searchString == null) {
             return (po.searchString == null);
         } else {
             return this.searchString.equals(po.searchString);
         }
+
+    }
+
+    @Override
+    public String toString() {
+
+        StringBuilder sb = new StringBuilder(this.principalType.toString());
+
+        if (this.preferredLocale != null) {
+            sb.append("-").append(this.preferredLocale.toString());
+        }
+
+        if (this.searchType != null) {
+            sb.append("-").append(this.searchType.toString());
+        }
+
+        if (this.searchString != null) {
+            sb.append("-").append(this.searchString);
+        }
+
+        if (this.uids != null) {
+            sb.append("-").append(uids.toString());
+        }
+
+        return sb.toString();
+
     }
 
 }

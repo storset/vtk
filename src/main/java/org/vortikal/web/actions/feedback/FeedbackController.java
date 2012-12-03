@@ -151,6 +151,7 @@ public class FeedbackController implements Controller {
                     title,
                     recipients,
                     this.sender,
+                    false,
                     "",
                     yourComment,
                     springRequestContext.getMessage("feedback.mail.subject-header-prefix") + ": " + title

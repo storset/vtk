@@ -138,6 +138,7 @@ public class ApprovalViaEmailController implements Controller {
                                 resource.getTitle(),
                                 emailMultipleTo,
                                 emailFrom,
+                                true,
                                 fullName,
                                 comment,
                                 getLocalizedMsg(request, "send-to-approval.subject", subjectParams)

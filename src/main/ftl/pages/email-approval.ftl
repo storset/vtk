@@ -50,7 +50,7 @@
       
       <div id="submitButtons">
         <div class="vrtx-focus-button"> 
-          <input type="submit" class="submit-email-form" value="Send" name="submit" />
+          <input type="submit" class="submit-email-form" value="${vrtx.getMsg('send-to-approval.submit')}" name="submit" />
         </div>
         <div class="vrtx-button"> 
           <input type="button" onclick="javascript:vrtxSimpleDialogs.closeDialog('#dialog-html-send-approval');" class="cancel-email-form" value="${vrtx.getMsg('editor.cancel')}" name="cancel" />

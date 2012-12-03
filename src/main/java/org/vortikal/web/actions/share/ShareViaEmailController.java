@@ -120,6 +120,7 @@ public class ShareViaEmailController implements Controller {
                                 resource.getTitle(),
                                 emailMultipleTo,
                                 emailFrom,
+                                false,
                                 "",
                                 comment,
                                 resource.getTitle()

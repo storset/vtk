@@ -600,6 +600,11 @@
     <property name="resourceTypeDefinition" ref="collectionResourceTypeDefinition" />
   </bean>
 
+  <bean id="resourceNotInCollection" class="org.vortikal.web.service.ResourceTypeAssertion" parent="repositoryAware">
+    <property name="resourceTypeDefinition" ref="collectionResourceTypeDefinition" />
+    <property name="invert" value="true" />
+  </bean>
+
   <bean id="resourceIsCollection" class="org.vortikal.web.service.ResourceTypeAssertion" parent="repositoryAware">
     <property name="resourceTypeDefinition" ref="collectionResourceTypeDefinition" />
     <property name="exactMatch" value="true" />

@@ -3,12 +3,9 @@
 <p><a href="${uri?html}">${uri?html}</a></p>
 
 <#if comment?has_content>
-Comment:
+<p>Comment:</p>
 <pre>${comment}</pre>
 </#if>
 
-Read more about approval here:
-http://www.uio.no/tjenester/it/web/vortex/hjelp/admin/rettigheter/godkjenning/
-
-<#t /><p>Best regards,<br/><#t />
-<#t />${mailFromFullName}</p><#t />
+<#t /><p>Read more about approving here:<br/><#t />
+<#t />http://www.uio.no/english/services/it/web/vortex/help/getting-started/permissions.html</p><#t />

@@ -1,14 +1,11 @@
-<p>Følgande ressurs er endra. Endringa må godkjennas før den blir synleg på nettstaden.</p>
+<p>Følgjande ressurs er endra. Endringa må godkjennast før den blir synleg på nettstaden.</p>
 
 <p><a href="${uri?html}">${uri?html}</a></p>
 
 <#if comment?has_content>
-Kommentar:
+<p>Kommentar:</p>
 <pre>${comment}</pre>
 </#if>
 
-Les meir om godkjenning her:
-http://www.uio.no/tjenester/it/web/vortex/hjelp/admin/rettigheter/godkjenning/
-
-<#t /><p>Med venleg helsing,<br/><#t />
-<#t />${mailFromFullName}</p><#t />
+<#t /><p>Les meir om godkjenning her:<br/><#t />
+<#t />http://www.uio.no/tjenester/it/web/vortex/hjelp/admin/rettigheter/godkjenning/</p><#t />

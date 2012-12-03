@@ -3,12 +3,9 @@
 <p><a href="${uri?html}">${uri?html}</a></p>
 
 <#if comment?has_content>
-Kommentar:
+<p>Kommentar:</p>
 <pre>${comment}</pre>
 </#if>
 
-Les mer om godkjenning her:
-http://www.uio.no/tjenester/it/web/vortex/hjelp/admin/rettigheter/godkjenning/
-
-<#t /><p>Med vennlig hilsen,<br/><#t />
-<#t />${mailFromFullName}</p><#t />
+<#t /><p>Les mer om godkjenning her:<br/><#t />
+<#t />http://www.uio.no/tjenester/it/web/vortex/hjelp/admin/rettigheter/godkjenning/</p><#t />

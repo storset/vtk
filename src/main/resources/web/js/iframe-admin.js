@@ -20,7 +20,8 @@
       previewLoading,
       surplusAnimationSpeed = 200,
       postback = false,
-      completed = false;
+      completed = false,
+      totalRenderingCalculationTime = +new Date();
 
   var crossDocComLink = new CrossDocComLink();
   crossDocComLink.setUpReceiveDataHandler(function(cmdParams, source) {
@@ -62,10 +63,12 @@
         previewLoading.fadeOut(surplusAnimationSpeed, function() {
           contents.removeAttr('style');
           previewLoading.remove();
+          vrtxAdmin.log({ msg: "PREVIEW RENDERING AND ANIMATION TOOK: " + ((new Date() - totalRenderingCalculationTime)/1000) + "s"});
         });
       } else {
         contents.removeAttr('style');
         previewLoading.remove();
+        vrtxAdmin.log({ msg: "PREVIEW RENDERING AND ANIMATION TOOK: " + ((new Date() - totalRenderingCalculationTime)/1000) + "s"});
       }
     }
   }

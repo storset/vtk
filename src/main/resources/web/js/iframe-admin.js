@@ -94,6 +94,7 @@
       var previewIframe = $("iframe#previewIframe")[0];
       crossDocComLink.postCmdToIframe(previewIframe, "min-height|" + previewIframeMinHeight);
       
+      // TODO: this should not be necessary - but keep it for robustness
       var runTimes = 0;
       var waitForResponse = setTimeout(function() {
         runTimes++;

@@ -19,7 +19,8 @@
       previewIframeMinHeight,
       previewLoading,
       surplusAnimationSpeed = 200,
-      postback = false;
+      postback = false,
+      completed = false;
 
   var crossDocComLink = new CrossDocComLink();
   crossDocComLink.setUpReceiveDataHandler(function(cmdParams, source) {
@@ -44,7 +45,6 @@
         break;
       case "keep-min-height":
         vrtxAdmin.log({ msg: "KEEP MIN HEIGHT CMD RECEIVED" });
-      
         previewLoadingComplete(previewIframe, previewIframeMinHeight, previewLoading, contents);
         break;
       default:
@@ -52,11 +52,14 @@
   });
 
   function previewLoadingComplete(previewIframe, newHeight, previewLoading, contents) {
-    previewIframe.style.height = newHeight + "px";
-    previewLoading.fadeOut(surplusAnimationSpeed, function() {
-      previewLoading.remove();
-      contents.removeAttr('style');
-    });
+    if(!completed) {
+      completed = true;
+      previewIframe.style.height = newHeight + "px";
+      previewLoading.fadeOut(surplusAnimationSpeed, function() {
+        previewLoading.remove();
+        contents.removeAttr('style');
+      });
+    }
   }
 
   $(document).ready(function() {
@@ -87,13 +90,15 @@
   $(window).load(function() {
     if(isPreviewMode) {
       vrtxAdmin.log({ msg: "TRY TO SEND MIN HEIGHT" });
-      crossDocComLink.postCmdToIframe($("iframe#previewIframe")[0], "min-height|" + previewIframeMinHeight);
+      
+      var previewIframe = $("iframe#previewIframe")[0];
+      crossDocComLink.postCmdToIframe(previewIframe, "min-height|" + previewIframeMinHeight);
       
       var runTimes = 0;
       var waitForResponse = setTimeout(function() {
         runTimes++;
         if(!postback) {
-          if(runTimes <= 400) {
+          if(runTimes <= 420) {
             setTimeout(arguments.callee, 15);
           } else {
             vrtxAdmin.log({ msg: "WAITED TOO LONG FOR RESPONSE FROM IFRAME - USE MIN HEIGHT" });

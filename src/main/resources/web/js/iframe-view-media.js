@@ -51,11 +51,10 @@ $(document).ready(function () {
         document.body.style.height = setHeight + "px"; 
       } else {
         if(runTimes <= 400) {
-          logMe("CALL TIMER " + runTimes);
           setTimeout(arguments.callee, 15);
         } else {  // Timeout after ca. 6s (http://ejohn.org/blog/accuracy-of-javascript-time/)
           document.body.style.height = setHeight + "px";
-          logMe("TRY TO SEND KEEP MIN HEIGHT CMD: " + setHeight);
+          logMe("TIMED OUT - TRY TO SEND KEEP MIN HEIGHT CMD: " + setHeight);
           crossDocComLink.postCmdToParent("keep-min-height");
         }
       }

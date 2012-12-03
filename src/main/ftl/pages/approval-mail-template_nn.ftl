@@ -1,18 +1,14 @@
-<p>Hei!</p>
+<p>Følgande ressurs er endra. Endringa må godkjennas før den blir synleg på nettstaden.</p>
 
-<#if resourceDetail?? && resourceDetail.hasWorkingCopy?? && resourceDetail.hasWorkingCopy>
-  <p>Kan du sette arbeidsversjonen for &laquo;${title}&raquo; til gjeldande versjon?</p>
-<#else>
-  <p>Kan du publisere &laquo;${title}&raquo;?</p>
-</#if>
-
-<p>Lenkje: <a href="${uri?html}">${uri?html}</a></p>
+<p><a href="${uri?html}">${uri?html}</a></p>
 
 <#if comment?has_content>
+Kommentar:
 <pre>${comment}</pre>
 </#if>
 
-<p>Lenkje til dokumentasjon: <a href="${uri?html}">${uri?html}</a></p>
+Les meir om godkjenning her:
+http://www.uio.no/tjenester/it/web/vortex/hjelp/admin/rettigheter/godkjenning/
 
-<#t /><p>Med vennleg helsing,<br/><#t />
+<#t /><p>Med venleg helsing,<br/><#t />
 <#t />${mailFromFullName}</p><#t />

@@ -55,11 +55,9 @@ public final class MailExecutor {
         taskExecutor.execute(new SendMailTask(this.mailSender, msg));
     }
     
-    public MimeMessage createMimeMessage(MailTemplateProvider mailTemplateProvider,
-            String siteName, String uri, String title, String[] mailMultipleTo, String emailFrom, boolean sendCopyToSender,
-            String emailFromFullName, String comment, String subject) throws Exception {
-        
-        String mailBody = mailTemplateProvider.generateMailBody(title, uri, emailFrom, emailFromFullName, comment, siteName);
+    public MimeMessage createMimeMessage(String mailBody,
+            String[] mailMultipleTo, String emailFrom,
+            boolean sendCopyToSender, String subject) throws Exception {
 
         MimeMessage mimeMessage = this.mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage);
@@ -67,10 +65,10 @@ public final class MailExecutor {
         helper.setSubject(subject);
         helper.setFrom(emailFrom);
         helper.setTo(mailMultipleTo);
-        if(sendCopyToSender) {
-            helper.setCc(emailFrom);
+        if (sendCopyToSender) {
+            helper.setBcc(emailFrom);
         }
-        
+
         helper.setText(mailBody, true); // send HTML
 
         return mimeMessage;

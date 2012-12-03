@@ -95,6 +95,10 @@ public class ApprovalViaEmailController implements Controller {
                 model.put("editorialContacts", editorialContacts.substring(0, editorialContacts.length() - 2));
             }
         }
+        
+        String title = resource.getTitle();
+        String url = manageService.constructURL(uri).toString();
+        String mailBody = mailTemplateProvider.generateMailBody(title, url, emailFrom, "", "");
 
         if (method.equals("POST")) {
             String emailTo = request.getParameter("emailTo");
@@ -127,20 +131,15 @@ public class ApprovalViaEmailController implements Controller {
                         emailFrom = defaultSender;
                     }
                     if (validAddresses) {
-                        String url = manageService.constructURL(uri).toString();
-                        String fullName = principal.getDescription();
                         String[] subjectParams = {resource.getTitle()};
+                        
+                        mailBody = mailTemplateProvider.generateMailBody(title, url, emailFrom, comment, "");
 
                         MimeMessage mimeMessage = mailExecutor.createMimeMessage(
-                                mailTemplateProvider,
-                                "",
-                                url,
-                                resource.getTitle(),
+                                mailBody,
                                 emailMultipleTo,
                                 emailFrom,
                                 true,
-                                fullName,
-                                comment,
                                 getLocalizedMsg(request, "send-to-approval.subject", subjectParams)
                         );
 
@@ -162,6 +161,7 @@ public class ApprovalViaEmailController implements Controller {
                 }
             }
         }
+        model.put("emailBody", mailBody);
         model.put("resource", resourceManager.createResourceWrapper());
         return new ModelAndView(viewName, model);
     }

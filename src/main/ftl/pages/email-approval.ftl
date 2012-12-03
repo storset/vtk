@@ -40,6 +40,11 @@
       
       <label for="emailFromField"><@vrtx.msg code="email.form.from" default="Your e-mail address" /></label>  
       <span id="emailFromUneditable">${emailSavedFrom?html}</span>
+      
+      <#if emailBody?has_content>
+        <label><@vrtx.msg code="email.form.text" default="E-mail text" /></label>
+        <div id="emailBody">${emailBody}</div>
+      </#if>
        
       <label for="yourCommentTxtArea"><@vrtx.msg code="email.form.yourcomment" default="Your comment" /></label> 
       <#if yourSavedComment?exists && yourSavedComment?has_content>

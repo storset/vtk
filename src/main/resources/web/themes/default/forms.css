@@ -426,7 +426,7 @@ input[type=text]:focus {
 
 #email-approval-form textarea {
   width: 380px;
-  height: 200px;
+  height: 70px;
 }
 
 #email-approval-form .email-help {
@@ -438,6 +438,20 @@ input[type=text]:focus {
 #emailFromUneditable {
   font-style: italic;
   color: #666;
+}
+
+#emailFromUneditable,
+#emailBody {
+  color: #666;
+}
+
+#emailBody {
+  overflow: hidden;
+}
+
+#emailBody a {
+  color: #005aab;
+  text-decoration: underline;
 }
 
 div#email-response { 

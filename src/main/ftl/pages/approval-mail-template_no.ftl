@@ -8,4 +8,4 @@
 </#if>
 
 <#t /><p>Les mer om godkjenning her:<br/><#t />
-<#t />http://www.uio.no/tjenester/it/web/vortex/hjelp/admin/rettigheter/godkjenning/</p><#t />
+<#t /><a href="http://www.uio.no/tjenester/it/web/vortex/hjelp/admin/rettigheter/godkjenning/">http://www.uio.no/tjenester/it/web/vortex/hjelp/admin/rettigheter/godkjenning/</a></p><#t />

@@ -8,4 +8,4 @@
 </#if>
 
 <#t /><p>Read more about approving here:<br/><#t />
-<#t />http://www.uio.no/english/services/it/web/vortex/help/getting-started/permissions.html</p><#t />
+<#t /><a href="http://www.uio.no/english/services/it/web/vortex/help/getting-started/permissions.html">http://www.uio.no/english/services/it/web/vortex/help/getting-started/permissions.html</a></p><#t />

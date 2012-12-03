@@ -48,26 +48,25 @@ public class MailTemplateProvider {
     private View view;
     private ResourceDetailProvider resourceDetailProvider;
     
-    public String generateMailBody(String title, String url, String mailFrom, 
-           String mailFromFullName, String comment, String site) throws Exception {
+    public String generateMailBody(String title, String url, String mailFrom,
+            String comment, String site) throws Exception {
 
         Map<String, Object> model = new HashMap<String, Object>();
         model.put("title", title);
         model.put("mailFrom", mailFrom);
-        model.put("mailFromFullName", mailFromFullName);
         model.put("comment", comment);
         model.put("site", site);
         model.put("uri", url);
 
         BufferedResponse response = new BufferedResponse();
-        
+
         RequestContext ctx = RequestContext.getRequestContext();
         HttpServletRequest request = ctx.getServletRequest();
-        
+
         if (resourceDetailProvider != null) {
             resourceDetailProvider.referenceData(model, request);
         }
-        
+
         this.view.render(model, request, response);
         String mailMessage = response.getContentString();
         return mailMessage;

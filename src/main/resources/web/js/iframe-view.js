@@ -53,7 +53,7 @@ $(document).ready(function () {
           runTimes++;
         
           var iframe = previewViewIframe[0];
-          if(typeof iframe.contentWindow !== "undefined" && typeof iframe.contentWindow.document !== "undefined") {
+          if(typeof iframe.contentWindow !== "undefined" && typeof iframe.contentWindow.document !== "undefined" && typeof iframe.contentWindow.document.body !== "undefined") {
             if(MIN_HEIGHT) {
               setHeight = MIN_HEIGHT;
               logMe("TIMER STOPPED AFTER " + runTimes + " RUNS");

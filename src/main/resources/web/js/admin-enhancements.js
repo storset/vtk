@@ -270,25 +270,14 @@ vrtxAdmin._$(document).ready(function () {
       updateSelectors: ["#resourceMenuRight", "#publishing-status", "#publishing-publish-date", "#publishing-unpublish-date"],
       funcComplete: (isSavingBeforePublish ? 
         function(link) { // Save async
-          EDITOR_SAVE_BUTTON_NAME = _$(".vrtx-focus-button:last input").attr("name");
-          ajaxSave();
-          $.when(EDITOR_ASYNC_SAVING_DEFERRED)
-            .done(function() {
-              vrtxAdmin.removeMsg("error");
-              vrtxAdm.completeFormAsyncPost({  // Publish async
-                updateSelectors: ["#resourceMenuRight"],
-                link: link,
-                form: $("#vrtx-publish-document-form"),
-                funcComplete: function() { // Unlock regulary
-                  $("li.manage\\.unlockFormService input[name=unlock]").trigger("click"); 
-                }
-              }); 
-            })
-            .fail(function(err) {
-              if(err !== "INIT") {
-                vrtxAdmin.displayErrorMsg(err);
-              }
-            });
+          vrtxAdm.completeFormAsyncPost({  // Publish async
+            updateSelectors: ["#resourceMenuRight"],
+            link: link,
+            form: $("#vrtx-publish-document-form"),
+            funcComplete: function() { // Save and unlock to view regulary
+              _$("#vrtx-save-view-shortcut").trigger("click");
+            }
+          });
           return false;
         } : null
       ),
@@ -377,8 +366,16 @@ vrtxAdmin._$(document).ready(function () {
     var url = form.attr("action");
     var dataString = form.serialize();
     vrtxAdm.serverFacade.postHtml(url, dataString, {
-      success: function (results, status, resp) {      
-        form.parent().html(_$(results).find("#contents").html());
+      success: function (results, status, resp) {
+        var formParent = form.parent();
+        formParent.html(_$(results).find("#contents").html());
+        var successWrapper = formParent.find("#email-approval-success");
+        if(successWrapper.length) {  // Save async if sent mail
+          successWrapper.trigger("click");
+          setTimeout(function() {
+            _$("#vrtx-save-view-shortcut").trigger("click");
+          }, 250);
+        }
       }
     });
     e.stopPropagation();

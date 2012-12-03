@@ -20,7 +20,7 @@
   <#if mailResponse?has_content && mailResponse = "OK">
      <p><@vrtx.msg code="email.form.success" args=[emailSentTo] /></p>
      <div class="vrtx-button">
-       <button onclick="javascript:vrtxSimpleDialogs.closeDialog('#dialog-html-send-approval');"><@vrtx.msg code="email.form.close" default="Close" /></button>
+       <button id="email-approval-success" onclick="javascript:vrtxSimpleDialogs.closeDialog('#dialog-html-send-approval');"><@vrtx.msg code="email.form.close" default="Close" /></button>
      </div>
   <#else>
     <#assign uri = vrtx.linkConstructor("", "emailApprovalService") />

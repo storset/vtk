@@ -1,10 +1,8 @@
 <#if resourceDetail?? && resourceDetail.hasWorkingCopy?? && resourceDetail.hasWorkingCopy>
-  <p>${title} er endra. Endringa må godkjennast før den blir synleg på nettstaden.</p>
+  <p><a href="${uri?html}">${uri?html}</a> er endra. Endringa må godkjennast før den blir synleg på nettstaden.</p>
 <#else>
-  <p>${title} er klar for publisering. Publiseringa må godkjennast før ressursen blir synleg på nettstaden.</p>
+  <p><a href="${uri?html}">${uri?html}</a> er klar for publisering. Publiseringa må godkjennast før ressursen blir synleg på nettstaden.</p>
 </#if>
-
-<p><a href="${uri?html}">${uri?html}</a></p>
 
 <#if comment?has_content>
 <p>Kommentar:</p>

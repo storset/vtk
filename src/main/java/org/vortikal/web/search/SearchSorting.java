@@ -37,14 +37,22 @@ import java.util.Map;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Namespace;
+import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.search.PropertySortField;
 import org.vortikal.repository.search.SortField;
 import org.vortikal.repository.search.SortFieldDirection;
+import org.vortikal.repository.search.TypedSortField;
 import org.vortikal.web.service.URL;
 
+/**
+ * XXX This class needs fixing, it treats "name" as a common property, which is wrong.
+ *     It happens to work because resource type tree cannot find any registered prop def with name "name",
+ *     and so returns a generated fallback PropertyTypeDefinition instance. And the resulting property field name happens to
+ *     match the index URI name field name. Lucky.
+ */
 public class SearchSorting implements InitializingBean {
 
     private SortFieldDirection defaultSortOrder;
@@ -55,6 +63,7 @@ public class SearchSorting implements InitializingBean {
 
     private ResourceTypeTree resourceTypeTree;
 
+    @Override
     public void afterPropertiesSet() {
         this.sortOrderPropDefs = new ArrayList<PropertyTypeDefinition>();
         if (this.sortOrderPropDefPointers != null) {
@@ -84,18 +93,29 @@ public class SearchSorting implements InitializingBean {
 
         List<SortField> sortFields = new ArrayList<SortField>();
         if (sortProp != null) {
-            sortFields.add(new PropertySortField(sortProp, sortFieldDirection));
+            // XXX: "name" is not a property, and should use TypedSortField, not PropertySortField.
+            // Hack fix here, needs proper fix later:
+            if ("name".equals(sortProp.getName()) && Namespace.DEFAULT_NAMESPACE == sortProp.getNamespace()) {
+                sortFields.add(new TypedSortField(PropertySet.NAME_IDENTIFIER, sortFieldDirection));
+            } else {
+                sortFields.add(new PropertySortField(sortProp, sortFieldDirection));                
+            }
         } else {
             if (sortOrderPropDefs != null) {
                 for (PropertyTypeDefinition p : sortOrderPropDefs) {
-                    SortFieldDirection sortOrder = null;
-                    if (sortOrderMapping != null){
-                        sortOrder = sortOrderMapping.get(p.getName());
+                    SortFieldDirection sortOrder = defaultSortOrder;
+                    if (sortOrderMapping != null) {
+                        SortFieldDirection mappedDirection = sortOrderMapping.get(p.getName());
+                        if (mappedDirection != null) {
+                            sortOrder = mappedDirection;
+                        }
                     }
-                    if (sortOrder != null) {
-                        sortFields.add(new PropertySortField(p, sortOrder));
+                    
+                    // XXX: "name" is treated as a property, fix me properly.
+                    if ("name".equals(p.getName()) && Namespace.DEFAULT_NAMESPACE == p.getNamespace()) {
+                        sortFields.add(new TypedSortField(PropertySet.NAME_IDENTIFIER, sortOrder));
                     } else {
-                        sortFields.add(new PropertySortField(p, defaultSortOrder));
+                        sortFields.add(new PropertySortField(p, sortOrder));
                     }
                 }
             }
@@ -130,7 +150,12 @@ public class SearchSorting implements InitializingBean {
                 } else {
                     sortDirection = this.defaultSortOrder;
                 }
-                sortFields.add(new PropertySortField(propDef, sortDirection));
+                // XXX: "name" treated as property, hack fix here:
+                if ("name".equals(propDef.getName()) && Namespace.DEFAULT_NAMESPACE == propDef.getNamespace()) {
+                    sortFields.add(new TypedSortField(PropertySet.NAME_IDENTIFIER, sortDirection));
+                } else {
+                    sortFields.add(new PropertySortField(propDef, sortDirection));
+                }
             }
         }
         return sortFields;

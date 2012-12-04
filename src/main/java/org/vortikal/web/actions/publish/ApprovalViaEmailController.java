@@ -98,7 +98,7 @@ public class ApprovalViaEmailController implements Controller {
         
         String title = resource.getTitle();
         String url = manageService.constructURL(uri).toString();
-        String[] subjectParams = {resource.getResourceType()};
+        String[] subjectParams = {getLocalizedMsg(request, "resourcetype.name." + resource.getResourceType(), new Object[0])};
         String subject = getLocalizedMsg(request, "send-to-approval.subject", subjectParams);
         String mailBody = mailTemplateProvider.generateMailBody(title, url, emailFrom, "", "");
 

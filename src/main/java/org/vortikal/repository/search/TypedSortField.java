@@ -53,12 +53,6 @@ public class TypedSortField extends AbstractSortField {
         this.type = type;
     }
     
-    public TypedSortField(String type, SortFieldDirection direction, Locale locale) {
-        super(direction, locale);
-        validateType(type);
-        this.type = type;
-    }
-
     private void validateType(String type) throws IllegalArgumentException {
         if (!(PropertySet.NAME_IDENTIFIER.equals(type)
                 || PropertySet.URI_IDENTIFIER.equals(type)

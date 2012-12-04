@@ -84,10 +84,15 @@ public class SortBuilderImpl implements SortBuilder {
                 } else {
                     throw new SortBuilderException("Unknown typed sort field type: " + tsf.getType());
                 }
+//                luceneSortFields[j] = new org.apache.lucene.search.SortField(
+//                                            fieldName, sortField.getLocale(), reverse);
                 
-                // Special fields, do locale-sensitive lexicographic sorting (uri, name or type) 
-                luceneSortFields[j] = new org.apache.lucene.search.SortField(
-                                            fieldName, sortField.getLocale(), reverse);
+                // Special fields, do standard non-locale-specific lexicographic sorting (uri, name or type)
+                luceneSortFields[j] =
+                        new org.apache.lucene.search.SortField(fieldName,
+                                                               org.apache.lucene.search.SortField.STRING,
+                                                               reverse);
+
             } else if (sortField instanceof PropertySortField) {
                 PropertySortField psf = (PropertySortField)sortField;
                 PropertyTypeDefinition def = psf.getDefinition();

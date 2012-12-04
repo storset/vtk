@@ -38,9 +38,6 @@
       </div>
       <div class="email-help"><@vrtx.msg code="email.form.to-tooltip" default="Use comma as a separator if sending to more than one e-mail recipient" /></div> 
       
-      <label for="emailFromField"><@vrtx.msg code="email.form.from" default="Your e-mail address" /></label>  
-      <span id="emailFromUneditable">${emailSavedFrom?html}</span>
-      
       <#if emailBody?has_content>
         <label><@vrtx.msg code="email.form.text" default="E-mail text" /></label>
         <div id="emailBody">${emailBody}</div>

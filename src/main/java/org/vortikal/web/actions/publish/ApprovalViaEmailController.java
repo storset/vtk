@@ -81,7 +81,6 @@ public class ApprovalViaEmailController implements Controller {
         String method = request.getMethod();
         
         String emailFrom = principal.getQualifiedName();
-        model.put("emailSavedFrom", emailFrom);
 
         Property editorialContactsProp = resource.getProperty(editorialContactsPropDef);
         if (editorialContactsProp != null) {
@@ -103,7 +102,7 @@ public class ApprovalViaEmailController implements Controller {
         if (method.equals("POST")) {
             String emailTo = request.getParameter("emailTo");
             String yourComment = request.getParameter("yourComment");
-            if (StringUtils.isBlank(emailTo) || StringUtils.isBlank(emailFrom)) {
+            if (StringUtils.isBlank(emailTo)) {
                 if (StringUtils.isNotBlank(emailTo)) {
                     model.put("emailSavedTo", emailTo);
                 }

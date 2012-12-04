@@ -435,12 +435,6 @@ input[type=text]:focus {
   font-size: 0.923em;
 }
 
-#emailFromUneditable {
-  font-style: italic;
-  color: #666;
-}
-
-#emailFromUneditable,
 #emailBody {
   color: #666;
 }

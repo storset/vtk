@@ -183,6 +183,7 @@ public class LinkChecker {
             return Status.NOT_FOUND;
         } catch (Exception e) {
             // Don't asses generic exception as error
+            // XXX Introduce new Status code? e.g. Status.UNKNOWN|INCOMPLETE etc...
             return httpResponseCode != -1 ? Status.ERROR : Status.OK;
         } finally {
             if (urlConnection != null) {

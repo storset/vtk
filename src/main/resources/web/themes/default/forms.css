@@ -436,10 +436,7 @@ input[type=text]:focus {
 }
 
 #emailBody {
-  color: #666;
-}
-
-#emailBody {
+  color:	 #666;
   overflow: hidden;
 }
 

@@ -76,9 +76,12 @@ public class MailTemplateProvider {
     public void setView(View view) {
         this.view = view;
     }
-    
+
     public void setResourceDetailProvider(ResourceDetailProvider resourceDetailProvider) {
         this.resourceDetailProvider = resourceDetailProvider;
     }
-
+    
+    public ResourceDetailProvider getResourceDetailProvider() {
+        return this.resourceDetailProvider;
+    }
 }

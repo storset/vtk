@@ -1,4 +1,8 @@
-<p>Følgjande ressurs er endra. Endringa må godkjennast før den blir synleg på nettstaden.</p>
+<#if resourceDetail?? && resourceDetail.hasWorkingCopy?? && resourceDetail.hasWorkingCopy>
+  <p>${title} er endra. Endringa må godkjennast før den blir synleg på nettstaden.</p>
+<#else>
+  <p>${title} er klar for publisering. Publiseringa må godkjennast før ressursen blir synleg på nettstaden.</p>
+</#if>
 
 <p><a href="${uri?html}">${uri?html}</a></p>
 
@@ -7,5 +11,5 @@
 <pre>${comment}</pre>
 </#if>
 
-<#t /><p>Les meir om godkjenning her:<br/><#t />
+<#t /><p>Meir om korleis du godkjenner:<br/><#t />
 <#t /><a href="http://www.uio.no/tjenester/it/web/vortex/hjelp/admin/rettigheter/godkjenning/">http://www.uio.no/tjenester/it/web/vortex/hjelp/admin/rettigheter/godkjenning/</a></p><#t />

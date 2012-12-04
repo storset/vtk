@@ -426,7 +426,7 @@ input[type=text]:focus {
 
 #email-approval-form textarea {
   width: 380px;
-  height: 70px;
+  height: 90px;
 }
 
 #email-approval-form .email-help {
@@ -436,7 +436,7 @@ input[type=text]:focus {
 }
 
 #emailBody {
-  color:	 #666;
+  color: #666;
   overflow: hidden;
 }
 

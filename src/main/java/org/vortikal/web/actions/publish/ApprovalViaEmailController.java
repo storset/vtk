@@ -47,6 +47,7 @@ import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.Revision;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.security.Principal;
@@ -97,6 +98,8 @@ public class ApprovalViaEmailController implements Controller {
         
         String title = resource.getTitle();
         String url = manageService.constructURL(uri).toString();
+        String[] subjectParams = {title};
+        String subject = getLocalizedMsg(request, "send-to-approval.subject", subjectParams);
         String mailBody = mailTemplateProvider.generateMailBody(title, url, emailFrom, "", "");
 
         if (method.equals("POST")) {
@@ -130,16 +133,16 @@ public class ApprovalViaEmailController implements Controller {
                         emailFrom = defaultSender;
                     }
                     if (validAddresses) {
-                        String[] subjectParams = {resource.getTitle()};
-                        
                         mailBody = mailTemplateProvider.generateMailBody(title, url, emailFrom, comment, "");
+                        
+                        
 
                         MimeMessage mimeMessage = mailExecutor.createMimeMessage(
                                 mailBody,
                                 emailMultipleTo,
                                 emailFrom,
                                 true,
-                                getLocalizedMsg(request, "send-to-approval.subject", subjectParams)
+                                subject
                         );
 
                         mailExecutor.enqueue(mimeMessage);
@@ -160,6 +163,7 @@ public class ApprovalViaEmailController implements Controller {
                 }
             }
         }
+        model.put("emailSubject", subject);
         model.put("emailBody", mailBody);
         model.put("resource", resourceManager.createResourceWrapper());
         return new ModelAndView(viewName, model);

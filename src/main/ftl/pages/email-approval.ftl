@@ -40,7 +40,10 @@
       
       <#if emailBody?has_content>
         <label><@vrtx.msg code="email.form.text" default="E-mail text" /></label>
-        <div id="emailBody">${emailBody}</div>
+        <div id="emailBody">
+          <strong>${emailSubject}</strong>
+          ${emailBody}
+        </div>
       </#if>
        
       <label for="yourCommentTxtArea"><@vrtx.msg code="email.form.yourcomment" default="Your comment" /></label> 

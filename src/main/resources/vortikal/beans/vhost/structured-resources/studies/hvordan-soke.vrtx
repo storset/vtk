@@ -1,4 +1,3 @@
-
 resourcetype hvordan-soke : fellestekst-document {
 
   properties {
@@ -33,7 +32,9 @@ resourcetype hvordan-soke : fellestekst-document {
     innpassing-tidl-utdanning: string,
     innpassing-tidl-utdanning-fri: html noextract,
     relatert-innhold-regelverk: string,
-    regelverk-fri: html noextract
+    regelverk-fri: html noextract,
+    tittel : string,
+    title : derived (tittel) eval ("title"?localized) overrides title
  }
 
   edit-rules {
@@ -68,7 +69,9 @@ resourcetype hvordan-soke : fellestekst-document {
     group innpassing-tidl-utdanning-admin (innpassing-tidl-utdanning, innpassing-tidl-utdanning-fri),
     innpassing-tidl-utdanning (class[vrtx-shared-text]),
     group regelverk (relatert-innhold-regelverk, regelverk-fri),
-    relatert-innhold-regelverk (class[vrtx-shared-text])
+    relatert-innhold-regelverk (class[vrtx-shared-text]),
+    tittel (size[1]),
+    tittel (class[ui-helper-hidden])
   }
 
 
@@ -473,4 +476,3 @@ view {
     relatert-innhold-regelverk : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst")
   }
 }
-

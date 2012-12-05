@@ -253,18 +253,25 @@ vrtxAdmin._$(document).ready(function () {
   var resourceMenuRightServices = ["vrtx-unpublish-document", "vrtx-publish-document"];
   for (i = resourceMenuRightServices.length; i--;) {
     var publishUnpublishService = resourceMenuRightServices[i];
+
+    // Ajax save before publish if editing
+    var isSavingBeforePublish = publishUnpublishService === "vrtx-publish-document" && (bodyId === "vrtx-editor" || bodyId === "vrtx-edit-plaintext");
+    
     vrtxAdm.getFormAsync({
       selector: "#title-container a#" + publishUnpublishService,
       selectorClass: "globalmenu",
       insertAfterOrReplaceClass: "ul#resourceMenuLeft",
       secondaryInsertAfterOrReplaceClass: "ul#resourceMenuRight",
       nodeType: "div",
-      simultanSliding: true
+      simultanSliding: true,
+      funcComplete: (isSavingBeforePublish ? function(p) {
+        if(vrtxAdm.lang === "en") {
+          $("#vrtx-publish-document-form h3").text("Are you sure you want to save and publish?");
+        } else {
+          $("#vrtx-publish-document-form h3").text("Er du sikker på at du vil lagre og publisere?");
+        }
+      } : null)
     });
-    
-    // Ajax save before publish if editing
-    var isSavingBeforePublish = publishUnpublishService === "vrtx-publish-document" && (bodyId === "vrtx-editor" || bodyId === "vrtx-edit-plaintext");
-    
     vrtxAdm.completeFormAsync({
       selector: "form#" + publishUnpublishService + "-form input[type=submit]",
       updateSelectors: ["#resourceMenuRight", "#publishing-status", "#publishing-publish-date", "#publishing-unpublish-date"],

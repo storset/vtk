@@ -33,25 +33,21 @@
         <#if downcase>
           <#assign name = name?lower_case/>
         </#if>
-        <#if elem.URL?exists>
-          <#if (elem_index == (crumbsSize - 2))>
-            <span class="vrtx-breadcrumb-level-${counter?html} vrtx-breadcrumb-before-active"><a href="${elem.URL?html}">${name?html}</a>     
+        <#if (elem_index < (crumbsSize - 1))>
+          <#if elem.URL??>
+            <span class="vrtx-breadcrumb-level vrtx-breadcrumb-level-${counter?html}<#if (elem_index == (crumbsSize - 2))> vrtx-breadcrumb-before-active</#if>">
+            <a href="${elem.URL?html}">${name?html}</a>
           <#else>
-            <span class="vrtx-breadcrumb-level-${counter?html}"><a href="${elem.URL?html}">${name?html}</a> 
+            <span class="vrtx-breadcrumb-level-no-url vrtx-breadcrumb-level-${counter?html}<#if (elem_index == (crumbsSize - 2))> vrtx-breadcrumb-before-active</#if>">
+            <span class="vrtx-no-url">${name?html}</span>
           </#if>
-            <#if elem.delimiter?exists>
-      	      <span class="vrtx-breadcrumb-delimiter">${elem.delimiter?html}</span>
-            </#if>
-            </span>
         <#else>
-          <#if (elem_index == (crumbsSize - 1))>
-            <span class="vrtx-breadcrumb-level-${counter?html} vrtx-breadcrumb-active">${name?html}
-            <#if elem.delimiter?exists>
-      	      <span class="vrtx-breadcrumb-delimiter">${elem.delimiter?html}</span>
-            </#if>
-            </span>
-          </#if>
+          <span class="vrtx-breadcrumb-level vrtx-breadcrumb-level-${counter?html} vrtx-breadcrumb-active">${name?html}
         </#if>
+        <#if elem.delimiter?exists>
+      	  <span class="vrtx-breadcrumb-delimiter">${elem.delimiter?html}</span>
+        </#if>
+        </span>
         <#if counter = stopLevel>
           <#break>
         </#if>

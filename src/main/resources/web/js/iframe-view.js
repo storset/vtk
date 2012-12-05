@@ -8,13 +8,11 @@
  *  - Resizing the outer iframe (served from the admin domain) only works on browsers which support postMessage
  */
  
-var MIN_HEIGHT = 0;
-
 var crossDocComLink = new CrossDocComLink();
 crossDocComLink.setUpReceiveDataHandler(function(cmdParams, source) {
   switch(cmdParams[0]) {
     case "admin-min-height":
-      var setHeight = (cmdParams.length === 2) ? cmdParams[1] : 0;
+      var setHeight = (cmdParams.length === 2) ? cmdParams[1] : 450;
       
       var previewViewIframe = $("iframe#previewViewIframe");
       var iframe = previewViewIframe[0];
@@ -32,7 +30,9 @@ crossDocComLink.setUpReceiveDataHandler(function(cmdParams, source) {
         }
         iframe.style.height = setHeight + "px";
       } catch(e) { // Error
-        logMe("ERROR: " + e.message);
+        if(typeof console !== "undefined" && console.log) {
+          console.log("Error finding preview height: " + e.message);
+        }
         iframe.style.height = setHeight + "px";
         crossDocComLink.postCmdToParent("preview-keep-min-height");
       }

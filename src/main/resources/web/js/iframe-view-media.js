@@ -8,13 +8,11 @@
  *  - Resizing the outer iframe (served from the admin domain) only works on browsers which support postMessage
  */
  
-var MIN_HEIGHT = 0;
-
 var crossDocComLink = new CrossDocComLink();
 crossDocComLink.setUpReceiveDataHandler(function(cmdParams, source) {
   switch(cmdParams[0]) {
     case "admin-min-height":
-      var setHeight = (cmdParams.length === 2) ? cmdParams[1] : 0;
+      var setHeight = (cmdParams.length === 2) ? cmdParams[1] : 450;
       var computedHeight = document.body.offsetHeight;
       if(computedHeight > setHeight) {
         setHeight = computedHeight;

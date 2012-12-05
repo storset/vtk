@@ -217,7 +217,7 @@
     
     <#if (!onlyCollection || resource.isCollection()) && aclInfo.aclEditURLs[privilegeName]??>
       ${pre}<a href="?name=${propName}&vrtx=admin&mode=about"><#if !capFirst>${editLinkText}<#else>${editLinkText?cap_first}</#if></a>${post}
-    <#elseif propVal != "">
+    <#elseif propVal?has_content>
       ${pre}<a href="?vrtx=admin&mode=about"><#if !capFirst>${viewLinkText}<#else>${viewLinkText?cap_first}</#if></a>${post}
     <#else>
       ${pre}<#if !capFirst>${otherText}<#else>${otherText?cap_first}</#if>${post}

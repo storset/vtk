@@ -56,7 +56,7 @@ public class IEAssertion implements Assertion {
 
     @Override
     public boolean processURL(URL url, Resource resource, Principal principal, boolean match) {
-        return false;
+        return true;
     }
 
     @Override

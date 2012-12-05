@@ -13,14 +13,13 @@ crossDocComLink.setUpReceiveDataHandler(function(cmdParams, source) {
   switch(cmdParams[0]) {
     case "admin-min-height":
       var setHeight = (cmdParams.length === 2) ? cmdParams[1] : 450;
-      var computedHeight = document.body.offsetHeight;
+      var computedHeight = document.body.offsetHeight + 45;
       if(computedHeight > setHeight) {
         setHeight = computedHeight;
-        crossDocComLink.postCmdToParent("preview-height|" + (setHeight + 45));
+        crossDocComLink.postCmdToParent("preview-height|" + setHeight);
       } else { // Computed height is less than or below minimum height
         crossDocComLink.postCmdToParent("preview-keep-min-height");
       }
-      document.body.style.height = setHeight + "px"; 
       break;
     default:
   }

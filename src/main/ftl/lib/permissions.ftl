@@ -192,6 +192,21 @@
   </form>
 </#macro>
 
+<#--
+ * displayAboutPropShortcut
+ *
+ * Macro for displaying a link for editing or viewing about prop
+ *
+ * @param privilegeName - the current privilege
+ * @param matchPrivilegeName - which privilege to match
+ * @param propName - the name of the prop
+ * @param onlyCollection - if only can edit the prop on collection
+ * @param capFirst - if should capitalize first letter in text
+ * @param pre - markup before
+ * @param post - markup after
+ *
+-->
+
 <#macro displayAboutPropShortcut privilegeName matchPrivilegeName propName onlyCollection=false capFirst=false pre="" post="">
   <#if privilegeName = matchPrivilegeName>
     <#local resource = resourceContext.currentResource />

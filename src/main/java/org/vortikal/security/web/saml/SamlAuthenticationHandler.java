@@ -239,7 +239,8 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
     public static boolean browserIsIE(HttpServletRequest request) {
         String userAgent = request.getHeader("User-Agent");
         if (ieCookieHandlingEnabled
-                && (userAgent.contains("MSIE 7.0") || (userAgent.contains("MSIE") && userAgent.contains("Trident")))) {
+                && (userAgent != null && (userAgent.contains("MSIE 7.0") || (userAgent.contains("MSIE") && userAgent
+                        .contains("Trident"))))) {
             return true;
         } else {
             return false;

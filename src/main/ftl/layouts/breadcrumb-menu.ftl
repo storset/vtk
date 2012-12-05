@@ -37,7 +37,7 @@
 		      <#if elem.URL?exists>
 			    <li class="vrtx-child" ><a class="vrtx-marked" href="${elem.URL}"><span>${elem.title?html}</span></a></li>
 			  <#else>
-			    <li class="vrtx-child" ><span class="vrtx-marked">${elem.title?html}</span></li>
+			    <li class="vrtx-child" ><span class="vrtx-no-url vrtx-marked"><span>${elem.title?html}</span></span></li>
 			  </#if>
 		    </ul>
 		  </#if>

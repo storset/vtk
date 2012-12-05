@@ -194,7 +194,8 @@
 
 <#macro displayAboutPropShortcut privilegeName matchPrivilegeName propName onlyCollection=false capFirst=false pre="" post="">
   <#if privilegeName = matchPrivilegeName>
-    <#if (!onlyCollection || resourceContext.currentResource.isCollection()) && aclInfo.aclEditURLs[privilegeName]?exists>
+    <#local resource = resourceContext.currentResource />
+    <#if (!onlyCollection || resource.isCollection()) && aclInfo.aclEditURLs[privilegeName]?exists>
       <#local editLinkText = vrtx.getMsg("permissions.privilege.${privilegeName}.${propName}.edit") />
       ${pre}<a href="?name=${propName}&vrtx=admin&mode=about"><#if !capFirst>${editLinkText}<#else>${editLinkText?cap_first}</#if></a>${post}
     <#else>

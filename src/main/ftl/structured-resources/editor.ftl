@@ -133,7 +133,7 @@
               <a href="javascript:void(0)" id="vrtx-save-view-shortcut">${vrtx.getMsg("editor.saveAndView")}</a>
             </li>
             <li><span id="vrtx-save">
-              <a href="javascript:void(0)" id="vrtx-save-working-copy-shortcut">${vrtx.getMsg("editor.save")}</a>
+              <a class="vrtx-focus-button" href="javascript:void(0)" id="vrtx-save-working-copy-shortcut">${vrtx.getMsg("editor.save")}</a>
               </span>
             </li>
             <li class="last">
@@ -163,7 +163,7 @@
               <a href="javascript:void(0)" id="vrtx-save-view-shortcut">${vrtx.getMsg("editor.saveAndView")}</a>
             </li>
             <li><span id="vrtx-save">
-              <a href="javascript:void(0)" id="vrtx-save-shortcut">${vrtx.getMsg("editor.save")}</span></a>
+              <a class="vrtx-focus-button" href="javascript:void(0)" id="vrtx-save-shortcut">${vrtx.getMsg("editor.save")}</span></a>
             </li>
             <li class="last">
               <a href="javascript:void(0)" id="vrtx-cancel-shortcut">${vrtx.getMsg("editor.cancel")}</a>

@@ -34,23 +34,24 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
-import org.vortikal.security.web.saml.SamlAuthenticationHandler;
 
 public class IEAssertion implements Assertion {
 
     @Override
     public boolean conflicts(Assertion assertion) {
-        // TODO Auto-generated method stub
         return false;
     }
 
     @Override
     public boolean matches(HttpServletRequest request, Resource resource, Principal principal) {
-        if (SamlAuthenticationHandler.browserIsIE(request)) {
-            return true;
-        } else {
-            return false;
+        String userAgent = request.getHeader("User-Agent");
+        if (userAgent != null) {
+            userAgent = userAgent.toLowerCase(); 
+            if (userAgent.contains("msie 7.0")  || (userAgent.contains("msie") && userAgent.contains("trident"))) {
+              return true;
+            }
         }
+        return false;
     }
 
     @Override

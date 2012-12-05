@@ -47,9 +47,6 @@
     <h3 class="${privilegeName}">${privilegeHeading}</h3>
     <div class="${privilegeName}">
       <@listPrincipals privilegeName=privilegeName />
-      <#if aclInfo.aclEditURLs[privilegeName]?exists>
-        &nbsp;<a class="vrtx-button-small full-ajax" href="${aclInfo.aclEditURLs[privilegeName]?html}"><span><@vrtx.msg code="permissions.privilege.edit" default="edit" /></span></a>
-      </#if>
     </div>
   </#if>
 </#macro>
@@ -93,9 +90,6 @@
         <td class="key">${privilegeHeading}</td>
         <td>
           <@listPrincipals privilegeName = privilegeName />
-          <#if aclInfo.aclEditURLs[privilegeName]?exists>
-            &nbsp;<a class="vrtx-button-small full-ajax" href="${aclInfo.aclEditURLs[privilegeName]?html}"><span><@vrtx.msg code="permissions.privilege.edit" default="edit" /></span></a>
-          </#if>
         </td>
       </#if>
       </tr>
@@ -135,12 +129,18 @@
       <#compress>${group.name}</#compress><#t/>
       <#if group_index &lt; groups?size - 1>,<#t/></#if>
     </#list>
-    <@displayAboutPropShortcut privilegeName "read-write-unpublished" "editorial-contacts" true false "- " />
+    <#if aclInfo.aclEditURLs[privilegeName]?exists>
+      &nbsp;<a class="vrtx-button-small full-ajax" href="${aclInfo.aclEditURLs[privilegeName]?html}"><span><@vrtx.msg code="permissions.privilege.edit" default="edit" /></span></a>&nbsp;&nbsp;
+    </#if>
+    <@displayAboutPropShortcut privilegeName "read-write-unpublished" "editorial-contacts" true true "- " />
   <#else>
     <#if shortcut != "">
       <@vrtx.msg code="permissions.shortcut.${shortcut}" default="${shortcut}" /> <#t/>
     <#else>
       <@vrtx.msg code="permissions.not.assigned" default="Not assigned" /> <#t/>
+    </#if>
+    <#if aclInfo.aclEditURLs[privilegeName]?exists>
+      &nbsp;<a class="vrtx-button-small full-ajax" href="${aclInfo.aclEditURLs[privilegeName]?html}"><span><@vrtx.msg code="permissions.privilege.edit" default="edit" /></span></a>&nbsp;&nbsp;
     </#if>
   </#if>
 </#macro>
@@ -213,14 +213,11 @@
     <#local propVal = vrtx.propValue(resource, propName) />
     <#local editLinkText = vrtx.getMsg("permissions.privilege.${privilegeName}.${propName}.edit") />
     <#local viewLinkText = vrtx.getMsg("permissions.privilege.${privilegeName}.${propName}.view") />
-    <#local otherText = vrtx.getMsg("permissions.privilege.${privilegeName}.${propName}.other") />
     
     <#if (!onlyCollection || resource.isCollection()) && aclInfo.aclEditURLs[privilegeName]??>
       ${pre}<a href="?name=${propName}&vrtx=admin&mode=about"><#if !capFirst>${editLinkText}<#else>${editLinkText?cap_first}</#if></a>${post}
     <#elseif propVal?has_content>
-      ${pre}<a href="?vrtx=admin&mode=about"><#if !capFirst>${viewLinkText}<#else>${viewLinkText?cap_first}</#if></a>${post}
-    <#else>
-      ${pre}<#if !capFirst>${otherText}<#else>${otherText?cap_first}</#if>${post}
+      ${pre}<#if !capFirst>${viewLinkText}: ${propVal}<#else>${viewLinkText?cap_first}: ${propVal}</#if>${post}
     </#if>
   </#if>
 </#macro>

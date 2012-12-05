@@ -6,7 +6,23 @@ resourcetype structured-message {
     listingDisplayedMessage : derived (message) eval (message?truncate),
     isTruncated : derived (message) eval (message?istruncated)
   }
-
+  
+  view-components {
+    vrtx-date-info {
+      ##
+      [resource-props "."]
+      [if publish-date != null]
+        <div class="vrtx-date-info">
+        <span class="published-date-label">[localized "publishedDate"]</span> <span class="published-date">[val publish-date] </span>
+        [if publish-date < lastModified]
+          - <span class="last-modified-date">[localized "lastModifiedDate"]</span> <span class="last-modified-date">[val lastModified]</span>
+        [endif]
+        </div>
+      [endif]
+      ##
+    }
+  }
+  
   view {
     ##
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -15,10 +31,15 @@ resourcetype structured-message {
         <title>[call "resource:property" {"id":"title"}]</title>
       </head>
       <body>
-      <h1>[call "resource:property" {"id":"title"}]</h1>
-      <div>
-        [call "json:field" {"select":"message"}]
-      </div>
+        <h1>[call "resource:property" {"id":"title"}]</h1>
+        <div>
+          [call "json:field" {"select":"message"}]
+        </div>
+        [call "comp:vrtx-date-info"]
+        <div class="vrtx-social-components">
+          [call "resource:email-friend"]
+          [call "resource:share-at"]
+        </div>
       </body>
     </html>
     ##
@@ -27,8 +48,8 @@ resourcetype structured-message {
   localization {
     title : (en : "Title", no : "Tittel", nn : "Tittel"),
     message : (en : "Message", no : "Beskjed", nn : "Beskjed"),
-    header : (en : "Edit message", no : "Rediger beskjed", nn : "Rediger beskjed")
+    header : (en : "Edit message", no : "Rediger beskjed", nn : "Rediger beskjed"),
+    publishedDate : (en : "Published", no :"Publisert", nn:"Publisert"),
+    lastModifiedDate : (en : "Last modified", no : "Sist endret", nn : "Sist endra")
   }
-
 }
-  

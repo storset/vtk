@@ -54,11 +54,21 @@
   <script type="text/javascript"><!--
       if (CKEDITOR.env.isCompatible) {
         try {
-          EDITORS_AT_INIT.push(['${content}', ${completeEditor?string}, ${withoutSubSuper?string}, 
-	                            '${baseFolder?js_string}', '${fckeditorBase.url?html}', '${fckeditorBase.documentURL?html}', 
-	                            '${fckBrowse.url.pathRepresentation}', '<@vrtx.requestLanguage />', cssFileList, ${simpleHTML?string}]);
+          if (typeof EDITORS_AT_INIT !== "undefined") {
+            EDITORS_AT_INIT.push(['${content}', ${completeEditor?string}, ${withoutSubSuper?string}, 
+	                              '${baseFolder?js_string}', '${fckeditorBase.url?html}', '${fckeditorBase.documentURL?html}', 
+	                              '${fckBrowse.url.pathRepresentation}', '<@vrtx.requestLanguage />', cssFileList, ${simpleHTML?string}]);
+	      } else {
+	        $(document).ready(function() {
+	          newEditor('${content}', ${completeEditor?string}, ${withoutSubSuper?string}, 
+	                    '${baseFolder?js_string}', '${fckeditorBase.url?html}', '${fckeditorBase.documentURL?html}', 
+	                    '${fckBrowse.url.pathRepresentation}', '<@vrtx.requestLanguage />', cssFileList, ${simpleHTML?string});
+	        });
+	      }
 	    } catch (e) {
-	      vrtxAdmin.log({msg: e});
+	      if(typeof console !== "undefined" && console.log) {
+	        console.log(e);
+	      }
 	    }
       }
   //-->

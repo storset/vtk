@@ -135,7 +135,7 @@
       <#compress>${group.name}</#compress><#t/>
       <#if group_index &lt; groups?size - 1>,<#t/></#if>
     </#list>
-    - <@displayAboutPropShortcut privilegeName "read-write-unpublished" "editorial-contacts" true />
+    <@displayAboutPropShortcut privilegeName "read-write-unpublished" "editorial-contacts" true false "- " />
   <#else>
     <#if shortcut != "">
       <@vrtx.msg code="permissions.shortcut.${shortcut}" default="${shortcut}" /> <#t/>
@@ -180,7 +180,7 @@
       <@editACLFormGroupsOrUsers "user" privilegeName submitUrl />
       <li class="still-admin" style="display:none;">${(!losingPrivileges)?string}</li>
     </ul>
-    <p><@displayAboutPropShortcut privilegeName "read-write-unpublished" "editorial-contacts" true true /></p>
+    <@displayAboutPropShortcut privilegeName "read-write-unpublished" "editorial-contacts" true true "<p>" "</p>" />
     <div id="submitButtons" class="submitButtons">
       <div class="vrtx-focus-button">
         <input type="submit" name="saveAction" value="<@vrtx.msg code="permissions.save" default="Save"/>" />
@@ -192,14 +192,14 @@
   </form>
 </#macro>
 
-<#macro displayAboutPropShortcut privilegeName matchPrivilegeName propName onlyCollection=false capFirst=false>
+<#macro displayAboutPropShortcut privilegeName matchPrivilegeName propName onlyCollection=false capFirst=false pre="" post="">
   <#if privilegeName = matchPrivilegeName>
     <#if (!onlyCollection || resourceContext.currentResource.isCollection()) && aclInfo.aclEditURLs[privilegeName]?exists>
       <#local editLinkText = vrtx.getMsg("permissions.privilege.${privilegeName}.${propName}.edit") />
-      <a href="?name=${propName}&vrtx=admin&mode=about"><#if !capFirst>${editLinkText}<#else>${editLinkText?cap_first}</#if></a>
+      ${pre}<a href="?name=${propName}&vrtx=admin&mode=about"><#if !capFirst>${editLinkText}<#else>${editLinkText?cap_first}</#if></a>${post}
     <#else>
       <#local viewLinkText = vrtx.getMsg("permissions.privilege.${privilegeName}.${propName}.view") />
-      <a href="?vrtx=admin&mode=about"><@vrtx.msg code="" /><#if !capFirst>${viewLinkText}<#else>${viewLinkText?cap_first}</#if></a>
+      ${pre}<a href="?vrtx=admin&mode=about"><@vrtx.msg code="" /><#if !capFirst>${viewLinkText}<#else>${viewLinkText?cap_first}</#if></a>${post}
     </#if>
   </#if>
 </#macro>

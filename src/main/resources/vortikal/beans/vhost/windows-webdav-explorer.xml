@@ -23,7 +23,10 @@
             <value>PROPFIND</value>
           </property>
         </bean>
-        <bean class="org.vortikal.web.service.IEAssertion" />
+        <bean class="org.vortikal.web.service.RequestHeaderRegexpAssertion">
+          <property name="header" value="User-Agent" />
+          <property name="pattern" value=".*MSIE.*" />
+        </bean>
         <ref bean="resourceInCollection" />
       </list>
     </property>

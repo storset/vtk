@@ -215,5 +215,5 @@ view-components {
     header : (en : "Edit Programme structure", no : "Rediger Oppbygging og gjennomføring", nn : "Rediger Oppbygging og gjennomføring"),
     publishedDate : (en : "Published", no :"Publisert", nn:"Publisert"),
     lastModifiedDate : (en : "Last modified", no : "Sist endret", nn : "Sist endra")
-    }
+  }
 }

@@ -29,12 +29,12 @@ if(window !== top) {
           } else {
             crossDocComLink.postCmdToParent("preview-keep-min-height");
           }
-          iframe.style.height = setHeight + "px";
+          iframe.style.height = (setHeight - ($.browser.msie ? 4 : 0)) + "px";
         } catch(e) { // Error
           if(typeof console !== "undefined" && console.log) {
             console.log("Error finding preview height: " + e.message);
           }
-          iframe.style.height = setHeight + "px";
+          iframe.style.height = (setHeight - ($.browser.msie ? 4 : 0)) + "px";
           crossDocComLink.postCmdToParent("preview-keep-min-height");
         }
         break;

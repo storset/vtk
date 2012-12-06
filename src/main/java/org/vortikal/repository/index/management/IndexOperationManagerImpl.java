@@ -39,6 +39,7 @@ import org.vortikal.repository.index.IndirectReindexer;
 import org.vortikal.repository.index.PropertySetIndex;
 import org.vortikal.repository.index.PropertySetIndexReindexer;
 import org.vortikal.repository.index.consistency.ConsistencyCheck;
+import org.vortikal.repository.index.consistency.TooManyErrorsException;
 import org.vortikal.repository.store.IndexDao;
 
 /**
@@ -134,6 +135,10 @@ public class IndexOperationManagerImpl implements IndexOperationManager {
                 ConsistencyCheck.run(
                     IndexOperationManagerImpl.this.index,
                     IndexOperationManagerImpl.this.indexDao);
+        } catch (TooManyErrorsException tme) {
+            LOG.info("Consistency check found too many errors");
+            this.lastConsistencyCheck = tme.getPartialCheck();
+            this.lastConsistencyCheckException = tme;
         } catch (Exception e) {
             LOG.info("Error running consistency check", e);
             this.lastConsistencyCheckException = e;

@@ -485,7 +485,7 @@ public class ConsistencyCheck {
 
         if (this.errors.size() > ERROR_LIMIT) {
             this.completed = true;
-            throw new ConsistencyCheckException("Too many errors, please consider re-indexing.");
+            throw new TooManyErrorsException("Too many errors, limit is " + ERROR_LIMIT + ", consider re-indexing.", this);
         }
 
         this.errors.add(error);

@@ -140,8 +140,14 @@ public class IndexOperationManagerImpl implements IndexOperationManager {
             this.lastConsistencyCheck = tme.getPartialCheck();
             this.lastConsistencyCheckException = tme;
         } catch (Exception e) {
-            LOG.info("Error running consistency check", e);
-            this.lastConsistencyCheckException = e;
+            if (e.getCause() instanceof TooManyErrorsException) {
+                LOG.info("Consistency check found too many errors");
+                this.lastConsistencyCheck = ((TooManyErrorsException)e.getCause()).getPartialCheck();
+                this.lastConsistencyCheckException = (TooManyErrorsException)e.getCause();
+            } else {
+                LOG.info("Error running consistency check", e);
+                this.lastConsistencyCheckException = e;
+            }
         } finally {
             this.index.unlock();
             LOG.info("Lock released");

@@ -8,7 +8,7 @@
  *  - Resizing the outer iframe (served from the admin domain) only works on browsers which support postMessage
  */
  
-if(window !== top) {
+if(window != top) { // Obs IE bug: http://stackoverflow.com/questions/4850978/ie-bug-window-top-false
   var crossDocComLink = new CrossDocComLink();
   crossDocComLink.setUpReceiveDataHandler(function(cmdParams, source) {
     switch(cmdParams[0]) {
@@ -58,21 +58,24 @@ $(document).ready(function () {
       previewViewIframeElm.src = iSource;
     } 
     previewViewIframe.load(function() {
-      if(window !== top) {
+      if(window != top) { // Obs IE bug: http://stackoverflow.com/questions/4850978/ie-bug-window-top-false
         crossDocComLink.postCmdToParent("preview-loaded");
       } else {
         var previewViewIframeElm = previewViewIframe[0];
         try {
           if(typeof previewViewIframeElm.contentWindow !== "undefined" && typeof previewViewIframeElm.contentWindow.document !== "undefined" && typeof previewViewIframeElm.contentWindow.document.body !== "undefined") {
-            previewViewIframeElm.style.height = (Math.ceil(previewViewIframeElm.contentWindow.document.body.offsetHeight) + 45) + "px";
+            var previewHeight = (Math.ceil(previewViewIframeElm.contentWindow.document.body.offsetHeight) + 45);
+            previewViewIframeElm.style.height = previewHeight + "px";
           } else {
-            previewViewIframeElm.style.height = ($(window).outerHeight(true) - $("h1").outerHeight(true) - 40) + "px";
+            var winHeight = ($(window).outerHeight(true) - $("h1").outerHeight(true) - 40);
+            previewViewIframeElm.style.height = winHeight  + "px";
           }
         } catch(e) { // Error
           if(typeof console !== "undefined" && console.log) {
             console.log("Error finding preview height: " + e.message);
           }
-          previewViewIframeElm.style.height = ($(window).outerHeight(true) - $("h1").outerHeight(true) - 40) + "px";
+          var winHeight = ($(window).outerHeight(true) - $("h1").outerHeight(true) - 40);
+          previewViewIframeElm.style.height = winHeight + "px";
         }
       }
     });

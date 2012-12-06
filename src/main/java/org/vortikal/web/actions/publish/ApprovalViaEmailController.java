@@ -83,17 +83,32 @@ public class ApprovalViaEmailController implements Controller {
         Map<String, Object> model = new HashMap<String, Object>();
         String method = request.getMethod();
 
+        /* Get e-mail from LDAP if UiO-user. Otherwise use defaultSender (and if all fails)
+         * 
+         * TODO: Own method and unit-test
+         * 
+         */
         
         String emailFrom = principal.getQualifiedName();
-        if (StringUtils.isNotBlank(emailFrom) && emailFrom.endsWith("uio.no")) { // If UiO-user => get e-mail from LDAP
+        boolean isUiOUserWithValidEmailFromLDAP = false;
+        
+        if (emailFrom.endsWith("@uio.no")) {
             Principal p = principalFactory.getPrincipal(emailFrom, Principal.Type.USER);
             List<Object> emails = p.getMetadata().getValues("email");
-            if (emails == null) {
-                return null;
+            if (emails != null && !emails.isEmpty()) {
+                String emailUiO = emails.get(0).toString();
+                if (MailExecutor.isValidEmail(emailUiO)) {
+                    isUiOUserWithValidEmailFromLDAP = true;
+                    emailFrom = emailUiO;
+                }
             }
-            emailFrom = emails.get(0).toString();
         }
-
+        
+        /* TODO: Add field for putting your own e-mail address */
+        if(!isUiOUserWithValidEmailFromLDAP) {
+            emailFrom = "No-Reply " + emailFrom + " <" + defaultSender + ">";
+        }
+        
         Property editorialContactsProp = resource.getProperty(editorialContactsPropDef);
         if (editorialContactsProp != null) {
             Value[] editorialContactsVals = editorialContactsProp.getValues();
@@ -139,16 +154,12 @@ public class ApprovalViaEmailController implements Controller {
                             break;
                         }
                     }
-                    if (!emailFrom.endsWith("@localhost")) {
-                        validAddresses = validAddresses && MailExecutor.isValidEmail(emailFrom);
-                    } else {
-                        emailFrom = defaultSender;
-                    }
+
                     if (validAddresses) {
                         mailBody = mailTemplateProvider.generateMailBody(title, url, emailFrom, comment, "");
 
                         MimeMessage mimeMessage = mailExecutor.createMimeMessage(mailBody, emailMultipleTo, emailFrom,
-                                true, subject);
+                                isUiOUserWithValidEmailFromLDAP, subject);
 
                         mailExecutor.enqueue(mimeMessage);
 
@@ -164,7 +175,7 @@ public class ApprovalViaEmailController implements Controller {
                     }
                 } catch (Exception mtex) { // Unreachable because of thread
                     model.put(MailHelper.RESPONSE_MODEL, MailHelper.RESPONSE_GENERAL_FAILURE);
-                    model.put(MailHelper.RESPONSE_MODEL + "Msg", mtex.getMessage());
+                    model.put(MailHelper.RESPONSE_MODEL + "Msg", ": " + mtex.getMessage());
                 }
             }
         }

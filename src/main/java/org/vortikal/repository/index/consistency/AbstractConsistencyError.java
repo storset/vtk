@@ -47,12 +47,15 @@ public abstract class AbstractConsistencyError implements ConsistencyError {
         this.uri = uri;
     }
     
+    @Override
     public Path getUri() {
         return this.uri;
     }
     
+    @Override
     public abstract String getDescription();
 
+    @Override
     public abstract boolean canRepair();
     
     protected abstract void repair(PropertySetIndex index) throws IndexException;

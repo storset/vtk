@@ -488,6 +488,8 @@ public class ConsistencyCheck {
             throw new TooManyErrorsException("Too many errors, limit is " + ERROR_LIMIT + ", consider re-indexing.", this);
         }
 
+        LOG.warn("Error found: " + error);
+        
         this.errors.add(error);
     }
 

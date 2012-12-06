@@ -354,15 +354,17 @@ vrtxAdmin._$(document).ready(function () {
           _$("body").append("<div id='" + id + "'>" + _$(results).find("#contents").html() + "</div>");
           dialogManageCreate = $("#" + id);
           dialogManageCreate.hide();
-          vrtxSimpleDialogs.openHtmlDialog("send-approval", dialogManageCreate.html(), link.title, 410, 495);
-          // TODO: need to save and send to view after approved
+          vrtxSimpleDialogs.openHtmlDialog("send-approval", dialogManageCreate.html(), link.title, 410, 520);
           if($(".ui-dialog #emailToField").val().length > 0) {
             $(".ui-dialog #yourCommentTxtArea")[0].focus();
           }
         }
       });
     } else {
-      vrtxSimpleDialogs.openHtmlDialog("send-approval", dialogManageCreate.html(), link.title, 410, 525);
+      vrtxSimpleDialogs.openHtmlDialog("send-approval", dialogManageCreate.html(), link.title, 410, 520);
+      if($(".ui-dialog #emailToField").val().length > 0) {
+        $(".ui-dialog #yourCommentTxtArea")[0].focus();
+      }
     }
     e.stopPropagation();
     e.preventDefault();

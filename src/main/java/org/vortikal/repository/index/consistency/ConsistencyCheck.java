@@ -32,6 +32,7 @@ package org.vortikal.repository.index.consistency;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -50,6 +51,7 @@ import org.vortikal.repository.index.PropertySetIndexRandomAccessor;
 import org.vortikal.repository.index.PropertySetIndexRandomAccessor.PropertySetInternalData;
 import org.vortikal.repository.index.StorageCorruptionException;
 import org.vortikal.repository.index.mapping.DocumentMappingException;
+import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.store.IndexDao;
 import org.vortikal.repository.store.PropertySetHandler;
 import org.vortikal.security.Principal;
@@ -290,7 +292,7 @@ public class ConsistencyCheck {
             for (Property indexProp: indexPropSet) {
                 Property repoProp = repoPropSet.getProperty(indexProp.getDefinition());
                 if (repoProp != null) {
-                    if (!indexProp.equals(repoProp)) {
+                    if (!propertyValuesEqual(indexProp, repoProp)) {
                         addError(new PropertyValueInconsistency(indexUri, repoPropSet, repoAclReadPrincipals,
                                                                 indexProp, repoProp));
                         return;
@@ -308,6 +310,24 @@ public class ConsistencyCheck {
             addError(new UnmappableConsistencyError(indexUri, dme, repoPropSet, repoAclReadPrincipals));
         }
     
+    }
+    
+    private boolean propertyValuesEqual(Property p1, Property p2) {
+        if (p1.getDefinition().isMultiple()) {
+            if (!p2.getDefinition().isMultiple()) {
+                return false;
+            }
+            
+            if (!Arrays.deepEquals(p1.getValues(), p2.getValues())) {
+                return false;
+            }
+            
+            return true;
+        } else {
+            if (p2.getDefinition().isMultiple()) return false;
+            
+            return p1.getValue().equals(p2.getValue());
+        }
     }
 
 

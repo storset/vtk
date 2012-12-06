@@ -224,8 +224,8 @@
             
              <#case "published">
                <#if published?exists 
-                 && child.collection?string == "false"
-                 && child.contentType == "application/json">
+                 && ((child.collection?string == "false" && child.contentType == "application/json")
+                     || hasWriteUnpublished)>
                  <#if published == "true">
                    ${vrtx.getMsg("publish.permission.published")}
                  <#else>

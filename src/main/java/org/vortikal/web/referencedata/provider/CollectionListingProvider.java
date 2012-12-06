@@ -41,6 +41,7 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.BeanInitializationException;
+import org.vortikal.repository.Acl;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Privilege;
 import org.vortikal.repository.Repository;
@@ -258,6 +259,19 @@ public class CollectionListingProvider implements ReferenceDataProvider {
             }
         }
         collectionListingModel.put("parentURL", parentURL);
+        
+        // Check if resource has READ_WRITE_UNPUBLISHED principals
+        Acl acl = resource.getAcl();
+        boolean hasWriteUnpublished = false;
+        if (acl != null) {
+            Set<Principal> principals = acl.getPrincipalSet(Privilege.READ_WRITE_UNPUBLISHED);
+            if (principals != null && !principals.isEmpty()) {
+                hasWriteUnpublished = true;
+
+            }
+        }
+        model.put("hasWriteUnpublished", hasWriteUnpublished);
+        
         model.put("collectionListing", collectionListingModel);
     }
 

@@ -83,10 +83,10 @@ public class ApprovalViaEmailController implements Controller {
         Map<String, Object> model = new HashMap<String, Object>();
         String method = request.getMethod();
 
-        /* Get e-mail from LDAP if UiO-user. Otherwise use defaultSender (and if all fails)
+        /* Get e-mail from LDAP if UiO-user.
+         * Otherwise use defaultSender (and if all fails)
          * 
          * TODO: Own method and unit-test
-         * 
          */
         
         String emailFrom = principal.getQualifiedName();

@@ -1,21 +1,21 @@
 /* Copyright (c) 2012 University of Oslo, Norway
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
  * met:
- * 
+ *
  *  * Redistributions of source code must retain the above copyright
  *    notice, this list of conditions and the following disclaimer.
- * 
+ *
  *  * Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
- * 
+ *
  *  * Neither the name of the University of Oslo nor the names of its
  *    contributors may be used to endorse or promote products derived from
  *    this software without specific prior written permission.
- *      
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
  * IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
  * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
@@ -32,6 +32,7 @@
 package org.vortikal.web.actions.publish;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.mail.internet.MimeMessage;
@@ -47,10 +48,10 @@ import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
-import org.vortikal.repository.Revision;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.security.Principal;
+import org.vortikal.security.PrincipalFactory;
 import org.vortikal.util.mail.MailExecutor;
 import org.vortikal.util.mail.MailHelper;
 import org.vortikal.util.mail.MailTemplateProvider;
@@ -65,6 +66,7 @@ public class ApprovalViaEmailController implements Controller {
     private Service manageService;
     private String defaultSender;
     private PropertyTypeDefinition editorialContactsPropDef;
+    private PrincipalFactory principalFactory;
 
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
@@ -80,8 +82,17 @@ public class ApprovalViaEmailController implements Controller {
 
         Map<String, Object> model = new HashMap<String, Object>();
         String method = request.getMethod();
+
         
         String emailFrom = principal.getQualifiedName();
+        if (StringUtils.isNotBlank(emailFrom) && emailFrom.endsWith("uio.no")) { // If UiO-user => get e-mail from LDAP
+            Principal p = principalFactory.getPrincipal(emailFrom, Principal.Type.USER);
+            List<Object> emails = p.getMetadata().getValues("email");
+            if (emails == null) {
+                return null;
+            }
+            emailFrom = emails.get(0).toString();
+        }
 
         Property editorialContactsProp = resource.getProperty(editorialContactsPropDef);
         if (editorialContactsProp != null) {
@@ -95,10 +106,11 @@ public class ApprovalViaEmailController implements Controller {
                 model.put("editorialContacts", editorialContacts.substring(0, editorialContacts.length() - 2));
             }
         }
-        
+
         String title = resource.getTitle();
         String url = manageService.constructURL(uri).toString();
-        String[] subjectParams = {getLocalizedMsg(request, "resourcetype.name." + resource.getResourceType(), new Object[0])};
+        String[] subjectParams = { getLocalizedMsg(request, "resourcetype.name." + resource.getResourceType(),
+                new Object[0]) };
         String subject = getLocalizedMsg(request, "send-to-approval.subject", subjectParams);
         String mailBody = mailTemplateProvider.generateMailBody(title, url, emailFrom, "", "");
 
@@ -121,7 +133,7 @@ public class ApprovalViaEmailController implements Controller {
                     }
                     boolean validAddresses = true;
                     String[] emailMultipleTo = emailTo.split(",");
-                    for (String addr: emailMultipleTo) {
+                    for (String addr : emailMultipleTo) {
                         if (!MailExecutor.isValidEmail(addr)) {
                             validAddresses = false;
                             break;
@@ -134,16 +146,9 @@ public class ApprovalViaEmailController implements Controller {
                     }
                     if (validAddresses) {
                         mailBody = mailTemplateProvider.generateMailBody(title, url, emailFrom, comment, "");
-                        
-                        
 
-                        MimeMessage mimeMessage = mailExecutor.createMimeMessage(
-                                mailBody,
-                                emailMultipleTo,
-                                emailFrom,
-                                true,
-                                subject
-                        );
+                        MimeMessage mimeMessage = mailExecutor.createMimeMessage(mailBody, emailMultipleTo, emailFrom,
+                                true, subject);
 
                         mailExecutor.enqueue(mimeMessage);
 
@@ -168,7 +173,7 @@ public class ApprovalViaEmailController implements Controller {
         model.put("resource", resourceManager.createResourceWrapper());
         return new ModelAndView(viewName, model);
     }
-    
+
     private String getLocalizedMsg(HttpServletRequest request, String key, Object[] params) {
         org.springframework.web.servlet.support.RequestContext springRequestContext = new org.springframework.web.servlet.support.RequestContext(
                 request);
@@ -202,7 +207,7 @@ public class ApprovalViaEmailController implements Controller {
     public void setManageService(Service manageService) {
         this.manageService = manageService;
     }
-    
+
     @Required
     public void setDefaultSender(String defaultSender) {
         this.defaultSender = defaultSender;
@@ -211,6 +216,11 @@ public class ApprovalViaEmailController implements Controller {
     @Required
     public void setEditorialContactsPropDef(PropertyTypeDefinition editorialContactsPropDef) {
         this.editorialContactsPropDef = editorialContactsPropDef;
+    }
+
+    @Required
+    public void setPrincipalFactory(PrincipalFactory principalFactory) {
+        this.principalFactory = principalFactory;
     }
 
 }

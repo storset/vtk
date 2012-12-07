@@ -29,7 +29,7 @@ public class SharedTextProvider implements ReferenceDataProvider {
     private HtmlPageFilter safeHtmlFilter;
     private HtmlPageParser htmlParser;
 
-    /*TODO: Need better error handling */
+    /* TODO: Need better error handling */
     @SuppressWarnings("unchecked")
     public Map<String, JSONObject> getSharedTextValues(String docType, String propName) {
 
@@ -37,9 +37,9 @@ public class SharedTextProvider implements ReferenceDataProvider {
         RequestContext requestContext = RequestContext.getRequestContext();
         String token = requestContext.getSecurityToken();
         Repository repository = requestContext.getRepository();
-        
+
         Map<String, JSONObject> sharedTextValuesMap = new LinkedHashMap<String, JSONObject>();
-        
+
         try {
             Resource r = repository.retrieve(token, p, false);
             if (!r.isPublished()) {
@@ -49,11 +49,11 @@ public class SharedTextProvider implements ReferenceDataProvider {
             return sharedTextValuesMap;
         }
         try {
-            
+
             InputStream stream = repository.getInputStream(token, p, false);
             String jsonString = StreamUtil.streamToString(stream, "utf-8");
             JSONObject document = JSONObject.fromObject(jsonString);
-            
+
             List<Object> json = (List<Object>) document.getJSONObject("properties").get("shared-text-box");
 
             for (Object obj : json) {
@@ -65,21 +65,21 @@ public class SharedTextProvider implements ReferenceDataProvider {
             return sharedTextValuesMap;
         }
     }
-    
-    private JSONObject filterDescription(JSONObject j){
-        
-        String[] list = {"description-no","description-nn","description-en"};
-        
-        for(String descriptionKey : list){
+
+    private JSONObject filterDescription(JSONObject j) {
+
+        String[] list = { "description-no", "description-nn", "description-en" };
+
+        for (String descriptionKey : list) {
             HtmlFragment fragment;
             try {
                 fragment = htmlParser.parseFragment(j.getString(descriptionKey));
                 fragment.filter(safeHtmlFilter);
-                j.put(descriptionKey,fragment.getStringRepresentation());
+                j.put(descriptionKey, fragment.getStringRepresentation());
             } catch (Exception e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
-            } 
+            }
         }
         return j;
     }
@@ -101,7 +101,8 @@ public class SharedTextProvider implements ReferenceDataProvider {
                 if (ptdl[i] != null) {
                     Map editHints = (Map) ptdl[i].getMetadata().get("editingHints");
                     if (editHints != null && "vrtx-shared-text".equals(editHints.get("class"))) {
-                        sharedTextPropsMap.put(ptdl[i].getName(), getSharedTextValues(r.getResourceType(), ptdl[i].getName()));
+                        sharedTextPropsMap.put(ptdl[i].getName(),
+                                getSharedTextValues(r.getResourceType(), ptdl[i].getName()));
                     }
                 }
             }
@@ -121,7 +122,7 @@ public class SharedTextProvider implements ReferenceDataProvider {
     public void setSafeHtmlFilter(HtmlPageFilter safeHtmlFilter) {
         this.safeHtmlFilter = safeHtmlFilter;
     }
-    
+
     public void setHtmlParser(HtmlPageParser htmlParser) {
         this.htmlParser = htmlParser;
     }

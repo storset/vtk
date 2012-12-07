@@ -37,9 +37,6 @@
     <#-- Compact when no items in resourceLeftMenu and no items with buttons (taking more v.space) in resourceMenuRight -->
     <#local compactClass = "" />
     
-    ${resourceMenuLeftServicesLinkable}
-    ${resourceMenuRightServicesLinkable}
-    
     <#if (resourceMenuLeftServicesLinkable?? && resourceMenuRightServicesLinkable??)>
       <#if (resourceMenuLeftServicesLinkable == 0
         && ((writePermission.permissionsQueryResult = 'false' || (!unpublishLink.url?? && !publishLink.url?? && resourceMenuRightServicesLinkable == 0))

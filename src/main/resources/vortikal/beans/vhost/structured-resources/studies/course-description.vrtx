@@ -3,18 +3,24 @@ resourcetype course-description : fellestekst-document {
   properties {
     credits : string,
     teachingsemester : string,
-    teachingsemester-particular-semester : string,
+    teachingsemester-particular-semester : json (term : string, year : string) multiple,
+    teachingsemester-every-other-semester-term : string,
+    teachingsemester-every-other-semester-startyear : string,
     teachingsemester-other : simple_html,
     examsemester : string,
-    examsemester-particular-semester : string,
+    examsemester-particular-semester : json (term : string, year : string) multiple,
+    examsemester-every-other-semester-term : string,
+    examsemester-every-other-semester-startyear : string,
     examsemester-other : simple_html,
     course-type : string,
+    course-fee : boolean defaultvalue("false"),
+    course-fee-amount : string,
     course-content : simple_html,
     learning-outcomes : simple_html,
     opptak-og-adgang-text-field : simple_html,
     opptak-og-adgang : string,
     ikke-privatist-text-field : simple_html,
-    ikke-privatist : string,
+    ikke-privatist : string
     obligatoriske-forkunnskaper-text-field : simple_html,
     obligatoriske-forkunnskaper : string,
     tidsrom-for-undervisning-text-field : simple_html,
@@ -46,11 +52,19 @@ resourcetype course-description : fellestekst-document {
   edit-rules {
     credits (dropdown),
     teachingsemester (dropdown),
-    teachingsemester-particular-semester (class[if-teachingsemester-bestemt]),
-    teachingsemester-other (class[if-teachingsemester-other]),
+    teachingsemester-particular-semester (class[if-teachingsemester-particular]),
+    teachingsemester-particular-semester:term (dropdown),
+    teachingsemester-particular-semester:year (dropdown),
+    teachingsemester-every-other-semester-term (dropdown),
+    teachingsemester-every-other-semester-startyear (dropdown),
+    group teachingsemester-every-other-semester (teachingsemester-every-other-semester-term, teachingsemester-every-other-semester-startyear) (after teachingsemester-particular-semester) horizontal,
     examsemester (dropdown),
-    examsemester-particular-semester (class[if-examsemester-bestemt]),
-    examsemester-other (class[if-examsemester-other]),
+    examsemester-particular-semester (class[if-examsemester-particular]),
+    examsemester-particular-semester:term (dropdown),
+    examsemester-particular-semester:year (dropdown),
+    examsemester-every-other-semester-term (dropdown),
+    examsemester-every-other-semester-startyear (dropdown),
+    group examsemester-every-other-semester (examsemester-every-other-semester-term, examsemester-every-other-semester-startyear) (after examsemester-particular-semester) horizontal,
     course-type (dropdown),
     opptak-og-adgang (class[vrtx-shared-text]),
     group opptak-og-adgang-group (opptak-og-adgang-text-field, opptak-og-adgang) vertical,
@@ -89,14 +103,15 @@ resourcetype course-description : fellestekst-document {
     facts {
         ##
         [def credits resource-prop(".", "credits")]
+        [def course-type resource-prop-obj-val(".", "course-type")]
         [def creditsdecimal resource-prop-obj-val(".", "creditsdecimal")]
         [def content-locale resource-prop-obj-val(".", "contentLocale")]
         [def teachingsemester resource-prop-obj-val(".", "teachingsemester")]
-        [def teachingsemester-particular-semester resource-prop-obj-val(".", "teachingsemester-particular-semester")]
         [def teachingsemester-other resource-prop-obj-val(".", "teachingsemester-other")]
         [def examsemester resource-prop-obj-val(".", "examsemester")]
-        [def examsemester-particular-semester resource-prop-obj-val(".", "examsemester-particular-semester")]
         [def examsemester-other resource-prop-obj-val(".", "examsemester-other")]
+        [def course-fee resource-prop-obj-val(".", "course-fee")]
+        [def course-fee-amount resource-prop-obj-val(".", "course-fee-amount")]
         <table class="course" cellpadding="0" cellspacing="0" width="100%">
           <tbody>
             <tr class="vrtx-academics-course-table-title">
@@ -106,12 +121,38 @@ resourcetype course-description : fellestekst-document {
               <td>[localized 'credits']:</td>
               <td>[if credits != null][val credits][if creditsdecimal != null && creditsdecimal != "" && creditsdecimal != "0"],[val creditsdecimal][endif][endif]</td>
             </tr>
+            [if course-type != null && course-type != "" && course-type != "ikke-satt"]
+              <tr valign="top">
+                <td>[localized 'course-type']:</td>
+                <td>[localized course-type]</td>
+              </tr>
+            [endif]
             <tr valign="top">
               <td>[localized 'teachingsemester']:</td>
               [if teachingsemester != null && teachingsemester = "particular-semester"]
-                <td>[if teachingsemester-particular-semester != null][val teachingsemester-particular-semester][endif]</td>
+                <td>
+                  [def document structured-document()]
+                  [def teachingsemesters document.properties.teachingsemester-particular-semester]
+                  [if teachingsemesters != null]
+                    [list teachingsemesters teachingsemester]
+                      [if teachingsemester.term != null && teachingsemester.year != null]
+                        [def term teachingsemester.term]
+                        <p>[localized term] [val teachingsemester.year]</p>
+                      [endif]
+                    [endlist]
+                  [endif]
+                </td>
+              [elseif teachingsemester != null && teachingsemester = "every-other"]
+                <td>
+                  [def term 'every-other-' + resource-prop-obj-val(".", "teachingsemester-every-other-semester-term")]
+                  [def startyear resource-prop-obj-val(".", "teachingsemester-every-other-semester-startyear")]
+                  [if term != null && startyear != null]
+                    <p>[localized term]</p>
+                    <p>[localized 'every-other-start'] [val startyear] [localized 'teaching-every-other-end']</p>
+                  [endif]
+                </td>
               [elseif teachingsemester != null && teachingsemester = "other"]
-                <td>[val teachingsemester-other # unescaped]</td>
+                <td>[if teachingsemester-other != null][val teachingsemester-other # unescaped][endif]</td>
               [else]
                 <td>[if teachingsemester != null][localized teachingsemester][endif]</td>
               [endif]
@@ -119,9 +160,29 @@ resourcetype course-description : fellestekst-document {
             <tr valign="top">
               <td>[localized 'examsemester']:</td>
               [if examsemester != null && examsemester = "particular-semester"]
-                <td>[if examsemester-particular-semester != null][val examsemester-particular-semester][endif]</td>
+                <td>
+                  [def document structured-document()]
+                  [def examsemesters document.properties.examsemester-particular-semester]
+                  [if examsemesters != null]
+                    [list examsemesters examsemester]
+                      [if examsemester.term != null && examsemester.year != null]
+                        [def term examsemester.term]
+                        <p>[localized term] [val examsemester.year]</p>
+                      [endif]
+                    [endlist]
+                  [endif]
+                </td>
+              [elseif examsemester != null && examsemester = "every-other"]
+                <td>
+                  [def term 'every-other-' + resource-prop-obj-val(".", "examsemester-every-other-semester-term")]
+                  [def startyear resource-prop-obj-val(".", "examsemester-every-other-semester-startyear")]
+                  [if term != null && startyear != null]
+                    <p>[localized term]</p>
+                    <p>[localized 'every-other-start'] [val startyear] [localized 'exam-every-other-end']</p>
+                  [endif]
+                </td>
               [elseif examsemester != null && examsemester = "other"]
-                <td>[val examsemester-other # unescaped]</td>
+                <td>[if examsemester-other != null][val examsemester-other # unescaped][endif]</td>
               [else]
                 <td>[if examsemester != null][localized examsemester][endif]</td>
               [endif]
@@ -136,10 +197,12 @@ resourcetype course-description : fellestekst-document {
                 <td>[localized 'locale-nn']</td>
               [endif]
             </tr>
-            <tr valign="top">
-              <td>[localized 'administrated']:</td>
-              <td><a href="http://www.mn.uio.no/ifi/" class="vrtx-link-check">Institutt for informatikk (Ifi)</a></td>
-            </tr>
+            [if course-fee != null && course-fee && course-fee-amount != null && course-fee-amount != ""]
+              <tr valign="top">
+                <td>[localized 'course-fee']:</td>
+                <td>[val course-fee-amount]</td>
+              </tr>
+            [endif]
           </tbody>
         </table>
         ##
@@ -150,21 +213,24 @@ resourcetype course-description : fellestekst-document {
         <table class="master" cellpadding="5" cellspacing="5" width="100%">
           <tbody>
             <tr>
-              <td>[localized 'semester']
-                <ul>
-                  [def uri resource-prop("./", "uri")]
-                  [def semesters search('uri=' + uri + '/* && type IN semester-context')]
-                  [if typeof(semesterSearchSort) = 'function']
-                    [def semesters semesterSearchSort(semesters)]
-                  [endif] 
-                  [list semesters semester]
-                    [def url view-url(semester)]
-                    [def title resource-prop(semester, "semesterContext.semester")]
-                    <li>
-                      <a href="[val url]">[if title != null && title != ""][val title][else][val url][endif]</a>
-                    </li>
-                  [endlist]
-                </ul>
+              <td>
+                <b>[localized 'semester']</b>
+                <p>
+                  <ul>
+                    [def uri resource-prop("./", "uri")]
+                    [def semesters search('uri=' + uri + '/* && type IN semester-page && published=true')]
+                    [if typeof(semesterSearchSort) = 'function']
+                      [def semesters semesterSearchSort(semesters)]
+                    [endif]
+                    [list semesters semester]
+                      [def url view-url(semester)]
+                      [def title resource-prop(semester, "semesterContext.semesterTitle")]
+                      <li>
+                        <a href="[val url]">[if title != null && title != ""][val title][else][val url][endif]</a>
+                      </li>
+                    [endlist]
+                  </ul>
+                <p>
               </td>
             </tr>
           </tbody>
@@ -228,7 +294,7 @@ resourcetype course-description : fellestekst-document {
           [else]
             [def put-dash ""]
           [endif]
-          <a href="#[val opptak-og-adgang]" class="vrtx-link-check">[localized opptak-og-adgang]</a>
+          <a href="#opptak-og-adgang" class="vrtx-link-check">[localized opptak-og-adgang]</a>
         [endif]
         [def ikke-privatist resource-prop-obj-val(".", "ikke-privatist")]
         [def ikke-privatist-text-field resource-prop-obj-val(".", "ikke-privatist-text-field")]
@@ -238,7 +304,7 @@ resourcetype course-description : fellestekst-document {
           [else]
             [def put-dash ""]
           [endif]
-          <a href="#[val ikke-privatist]" class="vrtx-link-check">[localized ikke-privatist]</a>
+          <a href="#ikke-privatist" class="vrtx-link-check">[localized ikke-privatist]</a>
         [endif]
         [def obligatoriske-forkunnskaper resource-prop-obj-val(".", "obligatoriske-forkunnskaper")]
         [def obligatoriske-forkunnskaper-text-field resource-prop-obj-val(".", "obligatoriske-forkunnskaper-text-field")]
@@ -248,7 +314,7 @@ resourcetype course-description : fellestekst-document {
           [else]
             [def put-dash ""]
           [endif]
-          <a href="#[val obligatoriske-forkunnskaper]" class="vrtx-link-check">[localized obligatoriske-forkunnskaper]</a>
+          <a href="#obligatoriske-forkunnskaper" class="vrtx-link-check">[localized obligatoriske-forkunnskaper]</a>
         [endif]
         [def tidsrom-for-undervisning resource-prop-obj-val(".", "tidsrom-for-undervisning")]
         [def tidsrom-for-undervisning-text-field resource-prop-obj-val(".", "tidsrom-for-undervisning-text-field")]
@@ -258,7 +324,7 @@ resourcetype course-description : fellestekst-document {
           [else]
             [def put-dash ""]
           [endif]
-          <a href="#[val tidsrom-for-undervisning]" class="vrtx-link-check">[localized tidsrom-for-undervisning]</a>
+          <a href="#tidsrom-for-undervisning" class="vrtx-link-check">[localized tidsrom-for-undervisning]</a>
         [endif]
         [def adgang resource-prop-obj-val(".", "adgang")]
         [def adgang-text-field resource-prop-obj-val(".", "adgang-text-field")]
@@ -268,7 +334,7 @@ resourcetype course-description : fellestekst-document {
           [else]
             [def put-dash ""]
           [endif]
-          <a href="#[val adgang]" class="vrtx-link-check">[localized adgang]</a>
+          <a href="#adgang" class="vrtx-link-check">[localized adgang]</a>
         [endif]
         [def vurdering-og-eksamen resource-prop-obj-val(".", "vurdering-og-eksamen")]
         [def vurdering-og-eksamen-text-field resource-prop-obj-val(".", "vurdering-og-eksamen-text-field")]
@@ -278,7 +344,7 @@ resourcetype course-description : fellestekst-document {
           [else]
             [def put-dash ""]
           [endif]
-          <a href="#[val vurdering-og-eksamen]" class="vrtx-link-check">[localized vurdering-og-eksamen]</a>
+          <a href="#vurdering-og-eksamen" class="vrtx-link-check">[localized vurdering-og-eksamen]</a>
         [endif]
         [def hjelpemidler resource-prop-obj-val(".", "hjelpemidler")]
         [def hjelpemidler-text-field resource-prop-obj-val(".", "hjelpemidler-text-field")]
@@ -288,7 +354,7 @@ resourcetype course-description : fellestekst-document {
           [else]
             [def put-dash ""]
           [endif]
-          <a href="#[val hjelpemidler]" class="vrtx-link-check">[localized hjelpemidler]</a>
+          <a href="#hjelpemidler" class="vrtx-link-check">[localized hjelpemidler]</a>
         [endif]
         [def eksamensspraak resource-prop-obj-val(".", "eksamensspraak")]
         [def eksamensspraak-text-field resource-prop-obj-val(".", "eksamensspraak-text-field")]
@@ -298,7 +364,7 @@ resourcetype course-description : fellestekst-document {
           [else]
             [def put-dash ""]
           [endif]
-          <a href="#[val eksamensspraak]" class="vrtx-link-check">[localized eksamensspraak]</a>
+          <a href="#eksamensspraak" class="vrtx-link-check">[localized eksamensspraak]</a>
         [endif]
         [def sensur resource-prop-obj-val(".", "sensur")]
         [def sensur-text-field resource-prop-obj-val(".", "sensur-text-field")]
@@ -308,7 +374,7 @@ resourcetype course-description : fellestekst-document {
           [else]
             [def put-dash ""]
           [endif]
-          <a href="#[val sensur]" class="vrtx-link-check">[localized sensur]</a>
+          <a href="#sensur" class="vrtx-link-check">[localized sensur]</a>
         [endif]
         [def tilsynssensor resource-prop-obj-val(".", "tilsynssensor")]
         [def tilsynssensor-text-field resource-prop-obj-val(".", "tilsynssensor-text-field")]
@@ -318,7 +384,7 @@ resourcetype course-description : fellestekst-document {
           [else]
             [def put-dash ""]
           [endif]
-          <a href="#[val tilsynssensor]" class="vrtx-link-check">[localized tilsynssensor]</a>
+          <a href="#tilsynssensor" class="vrtx-link-check">[localized tilsynssensor]</a>
         [endif]
         [def klage resource-prop-obj-val(".", "klage")]
         [def klage-text-field resource-prop-obj-val(".", "klage-text-field")]
@@ -328,7 +394,7 @@ resourcetype course-description : fellestekst-document {
           [else]
             [def put-dash ""]
           [endif]
-          <a href="#[val klage]" class="vrtx-link-check">[localized klage]</a>
+          <a href="#klage" class="vrtx-link-check">[localized klage]</a>
         [endif]
         [def ny-utsatt-eksamen resource-prop-obj-val(".", "ny-utsatt-eksamen")]
         [def ny-utsatt-eksamen-text-field resource-prop-obj-val(".", "ny-utsatt-eksamen-text-field")]
@@ -338,7 +404,7 @@ resourcetype course-description : fellestekst-document {
           [else]
             [def put-dash ""]
           [endif]
-          <a href="#[val ny-utsatt-eksamen]" class="vrtx-link-check">[localized ny-utsatt-eksamen]</a>
+          <a href="#ny-utsatt-eksamen" class="vrtx-link-check">[localized ny-utsatt-eksamen]</a>
         [endif]
         [def antall-forsok-trekk resource-prop-obj-val(".", "antall-forsok-trekk")]
         [def antall-forsok-trekk-text-field resource-prop-obj-val(".", "antall-forsok-trekk-text-field")]
@@ -348,7 +414,7 @@ resourcetype course-description : fellestekst-document {
           [else]
             [def put-dash ""]
           [endif]
-          <a href="#[val antall-forsok-trekk]" class="vrtx-link-check">[localized antall-forsok-trekk]</a>
+          <a href="#antall-forsok-trekk" class="vrtx-link-check">[localized antall-forsok-trekk]</a>
         [endif]
         [def tilrettelagt-eksamen resource-prop-obj-val(".", "tilrettelagt-eksamen")]
         [def tilrettelagt-eksamen-text-field resource-prop(".", "tilrettelagt-eksamen-text-field")]
@@ -356,7 +422,164 @@ resourcetype course-description : fellestekst-document {
           [if put-dash != null]
             - 
           [endif]
-          <a href="#[val tilrettelagt-eksamen]" class="vrtx-link-check">[localized tilrettelagt-eksamen]</a>
+          <a href="#tilrettelagt-eksamen" class="vrtx-link-check">[localized tilrettelagt-eksamen]</a>
+        [endif]
+        ##
+    }
+
+    academics-course {
+        ##
+        [def course-content resource-prop-obj-val(".", "course-content")]
+        [if course-content != null && course-content != ""]
+          <div id="course-content">
+            [val course-content # unescaped]
+          </div>
+        [endif]
+        [def learning-outcomes resource-prop-obj-val(".", "learning-outcomes")]
+        [if learning-outcomes != null && learning-outcomes != ""]
+          <div id="learning-outcomes">
+            [val learning-outcomes # unescaped]
+          </div>
+        [endif]
+        [def opptak-og-adgang resource-prop-obj-val(".", "opptak-og-adgang")]
+        [def opptak-og-adgang-text-field resource-prop-obj-val(".", "opptak-og-adgang-text-field")]
+        [if (opptak-og-adgang-text-field != null && opptak-og-adgang-text-field != "") || (opptak-og-adgang != null && opptak-og-adgang != "" && opptak-og-adgang != "ingen-fellestekst")]
+          <div id="opptak-og-adgang">[localized opptak-og-adgang]</a>
+            [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"opptak-og-adgang"}]
+            [if opptak-og-adgang-text-field != null && opptak-og-adgang-text-field != ""]
+              [val opptak-og-adgang-text-field # unescaped]
+            [endif]
+          </div>
+        [endif]
+        [def ikke-privatist resource-prop-obj-val(".", "ikke-privatist")]
+        [def ikke-privatist-text-field resource-prop-obj-val(".", "ikke-privatist-text-field")]
+        [if (ikke-privatist-text-field != null && ikke-privatist-text-field != "") || (ikke-privatist != null && ikke-privatist != "" && ikke-privatist != "ingen-fellestekst")]
+          <div id="ikke-privatist">
+            [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"ikke-privatist"}]
+            [if ikke-privatist-text-field != null && ikke-privatist-text-field != ""]
+              [val ikke-privatist-text-field # unescaped]
+            [endif]
+          </div>
+        [endif]
+        [def obligatoriske-forkunnskaper resource-prop-obj-val(".", "obligatoriske-forkunnskaper")]
+        [def obligatoriske-forkunnskaper-text-field resource-prop-obj-val(".", "obligatoriske-forkunnskaper-text-field")]
+        [if (obligatoriske-forkunnskaper-text-field != null && obligatoriske-forkunnskaper-text-field != "") || (obligatoriske-forkunnskaper != null && obligatoriske-forkunnskaper != "" && obligatoriske-forkunnskaper != "ingen-fellestekst")]
+          <div id="obligatoriske-forkunnskaper">
+            [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"obligatoriske-forkunnskaper"}]
+            [if obligatoriske-forkunnskaper-text-field != null && obligatoriske-forkunnskaper-text-field != ""]
+              [val obligatoriske-forkunnskaper-text-field # unescaped]
+            [endif]
+          </div>
+        [endif]
+        [def tidsrom-for-undervisning resource-prop-obj-val(".", "tidsrom-for-undervisning")]
+        [def tidsrom-for-undervisning-text-field resource-prop-obj-val(".", "tidsrom-for-undervisning-text-field")]
+        [if (tidsrom-for-undervisning-text-field != null && tidsrom-for-undervisning-text-field != "") || (tidsrom-for-undervisning != null && tidsrom-for-undervisning != "" && tidsrom-for-undervisning != "ingen-fellestekst")]
+          <div id="tidsrom-for-undervisning">
+            [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"tidsrom-for-undervisning"}]
+            [if tidsrom-for-undervisning-text-field != null && tidsrom-for-undervisning-text-field != ""]
+              [val tidsrom-for-undervisning-text-field # unescaped]
+            [endif]
+          </div>
+        [endif]
+        [def adgang resource-prop-obj-val(".", "adgang")]
+        [def adgang-text-field resource-prop-obj-val(".", "adgang-text-field")]
+        [if (adgang-text-field != null && adgang-text-field != "") || (adgang != null && adgang != "" && adgang != "ingen-fellestekst")]
+          <div id="adgang">
+            [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"adgang"}]
+            [if adgang-text-field != null && adgang-text-field != ""]
+              [val adgang-text-field # unescaped]
+            [endif]
+          </div>
+        [endif]
+        [def vurdering-og-eksamen resource-prop-obj-val(".", "vurdering-og-eksamen")]
+        [def vurdering-og-eksamen-text-field resource-prop-obj-val(".", "vurdering-og-eksamen-text-field")]
+        [if (vurdering-og-eksamen-text-field != null && vurdering-og-eksamen-text-field != "") || (vurdering-og-eksamen != null && vurdering-og-eksamen != "" && vurdering-og-eksamen != "ingen-fellestekst")]
+          <div id="vurdering-og-eksamen">
+            [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"vurdering-og-eksamen"}]
+            [if vurdering-og-eksamen-text-field != null && vurdering-og-eksamen-text-field != ""]
+              [val vurdering-og-eksamen-text-field # unescaped]
+            [endif]
+          </div
+        [endif]
+        [def hjelpemidler resource-prop-obj-val(".", "hjelpemidler")]
+        [def hjelpemidler-text-field resource-prop-obj-val(".", "hjelpemidler-text-field")]
+        [if (hjelpemidler-text-field != null && hjelpemidler-text-field != "") || (hjelpemidler != null && hjelpemidler != "" && hjelpemidler != "ingen-fellestekst")]
+          <div id="hjelpemidler">
+            [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"hjelpemidler"}]
+            [if hjelpemidler-text-field != null && hjelpemidler-text-field != ""]
+              [val hjelpemidler-text-field # unescaped]
+            [endif]
+          </div>
+        [endif]
+        [def eksamensspraak resource-prop-obj-val(".", "eksamensspraak")]
+        [def eksamensspraak-text-field resource-prop-obj-val(".", "eksamensspraak-text-field")]
+        [if (eksamensspraak-text-field != null && eksamensspraak-text-field != "") || (eksamensspraak != null && eksamensspraak != "" && eksamensspraak != "ingen-fellestekst")]
+          <div id="eksamensspraak">
+            [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"eksamensspraak"}]
+            [if eksamensspraak-text-field != null && eksamensspraak-text-field != ""]
+              [val eksamensspraak-text-field # unescaped]
+            [endif]
+          </div>
+        [endif]
+        [def sensur resource-prop-obj-val(".", "sensur")]
+        [def sensur-text-field resource-prop-obj-val(".", "sensur-text-field")]
+        [if (sensur-text-field != null && sensur-text-field != "") || (sensur != null && sensur != "" && sensur != "ingen-fellestekst")]
+          <div id="sensur">
+            [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"sensur"}]
+            [if sensur-text-field != null && sensur-text-field != ""]
+              [val sensur-text-field # unescaped]
+            [endif]
+          </div>
+        [endif]
+        [def tilsynssensor resource-prop-obj-val(".", "tilsynssensor")]
+        [def tilsynssensor-text-field resource-prop-obj-val(".", "tilsynssensor-text-field")]
+        [if (tilsynssensor-text-field != null && tilsynssensor-text-field != "") || (tilsynssensor != null && tilsynssensor != "" && tilsynssensor != "ingen-fellestekst")]
+          <div id="tilsynssensor">
+            [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"tilsynssensor"}]
+            [if tilsynssensor-text-field != null && tilsynssensor-text-field != ""]
+              [val tilsynssensor-text-field # unescaped]
+            [endif]
+          </div>
+        [endif]
+        [def klage resource-prop-obj-val(".", "klage")]
+        [def klage-text-field resource-prop-obj-val(".", "klage-text-field")]
+        [if (klage-text-field != null && klage-text-field != "") || (klage != null && klage != "" && klage != "ingen-fellestekst")]
+          <div id="klage">
+            [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"klage"}]
+            [if klage-text-field != null && klage-text-field != ""]
+              [val klage-text-field # unescaped]
+            [endif]
+          </div>
+        [endif]
+        [def ny-utsatt-eksamen resource-prop-obj-val(".", "ny-utsatt-eksamen")]
+        [def ny-utsatt-eksamen-text-field resource-prop-obj-val(".", "ny-utsatt-eksamen-text-field")]
+        [if (ny-utsatt-eksamen-text-field != null && ny-utsatt-eksamen-text-field != "") || (ny-utsatt-eksamen != null && ny-utsatt-eksamen != "" && ny-utsatt-eksamen != "ingen-fellestekst")]
+          <div id="ny-utsatt-eksamen">
+            [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"ny-utsatt-eksamen"}]
+            [if ny-utsatt-eksamen-text-field != null && ny-utsatt-eksamen-text-field != ""]
+              [val ny-utsatt-eksamen-text-field # unescaped]
+            [endif]
+          </div>
+        [endif]
+        [def antall-forsok-trekk resource-prop-obj-val(".", "antall-forsok-trekk")]
+        [def antall-forsok-trekk-text-field resource-prop-obj-val(".", "antall-forsok-trekk-text-field")]
+        [if (antall-forsok-trekk-text-field != null && antall-forsok-trekk-text-field != "") || (antall-forsok-trekk != null && antall-forsok-trekk != "" && antall-forsok-trekk != "ingen-fellestekst")]
+          <div id="antall-forsok-trekk">
+            [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"antall-forsok-trekk"}]
+            [if antall-forsok-trekk-text-field != null && antall-forsok-trekk-text-field != ""]
+              [val antall-forsok-trekk-text-field # unescaped]
+            [endif]
+          </div>
+        [endif]
+        [def tilrettelagt-eksamen resource-prop-obj-val(".", "tilrettelagt-eksamen")]
+        [def tilrettelagt-eksamen-text-field resource-prop(".", "tilrettelagt-eksamen-text-field")]
+        [if (tilrettelagt-eksamen-text-field != null && tilrettelagt-eksamen-text-field != "") || (tilrettelagt-eksamen != null && tilrettelagt-eksamen != "" && tilrettelagt-eksamen != "ingen-fellestekst")]
+          <div id="tilrettelagt-eksamen">
+            [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"tilrettelagt-eksamen"}]
+            [if tilrettelagt-eksamen-text-field != null && tilrettelagt-eksamen-text-field != ""]
+              [val tilrettelagt-eksamen-text-field # unescaped]
+            [endif]
+          </div>
         [endif]
         ##
     }
@@ -387,9 +610,8 @@ resourcetype course-description : fellestekst-document {
     ##
     [def course-code resource-prop-obj-val(".", "courseContext.fs-course-code")]
     [def course-name resource-prop-obj-val(".", "courseContext.course-name")]
-    [def course-content resource-prop-obj-val(".", "course-content")]
-    [def learning-outcomes resource-prop-obj-val(".", "learning-outcomes")]
     [def studinfo-kontakt resource-prop-obj-val(".", "studinfo-kontakt")]
+    [def studinfo-kontakt-text-field resource-prop-obj-val(".", "studinfo-kontakt-text-field")]
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml">
       <head>
@@ -420,7 +642,11 @@ resourcetype course-description : fellestekst-document {
             [if studinfo-kontakt != null && studinfo-kontakt != "" && studinfo-kontakt != "ingen-fellestekst"]
               <tr>
                 <td>
+                  <b>[localized 'contact']</b>
                   [call "comp:vis-fellestekst" {"docType":"studinfo-kontakt", "propName":"studinfo-kontakt"}]
+                  [if studinfo-kontakt-text-field != null && studinfo-kontakt-text-field != ""]
+                    [val studinfo-kontakt-text-field # unescaped]
+                  [endif]
                 </td>
               </tr>
             [endif]
@@ -432,30 +658,7 @@ resourcetype course-description : fellestekst-document {
           </tbody>
         </table>
         <div>
-          [if course-content != null && course-content != ""]
-            <div id="course-content">
-              [val course-content # unescaped]
-            </div>
-          [endif]
-          [if learning-outcomes != null && learning-outcomes != ""]
-            <div id="learning-outcomes">
-              [val learning-outcomes # unescaped]
-            </div>
-          [endif]
-          [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"opptak-og-adgang"}]
-          [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"ikke-privatist"}]
-          [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"obligatoriske-forkunnskaper"}]
-          [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"tidsrom-for-undervisning"}]
-          [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"adgang"}]
-          [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"vurdering-og-eksamen"}]
-          [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"hjelpemidler"}]
-          [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"eksamensspraak"}]
-          [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"sensur"}]
-          [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"tilsynssensor"}]
-          [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"klage"}]
-          [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"ny-utsatt-eksamen"}]
-          [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"antall-forsok-trekk"}]
-          [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"tilrettelagt-eksamen"}]
+          [call "comp:academics-course"]
         </div>
       </body>
     </html>
@@ -469,89 +672,64 @@ resourcetype course-description : fellestekst-document {
        nn : ("1" = "1", "2" = "2", "3" = "3", "4" = "4", "5" = "5", "6" = "6", "7" = "7", "7,5" = "7,5", "8" = "8", "9" = "9", "10" = "10", "11" = "11", "12" = "12", "13" = "13", "14" = "14", "15" = "15", "16" = "16", "17" = "17", "18" = "18", "19" = "19", "20" = "20", "21" = "21", "22" = "22", "23" = "23", "24" = "24", "25" = "25", "26" = "26", "27" = "27", "28" = "28", "29" = "29", "30" = "30", "31" = "31", "32" = "32", "33" = "33", "34" = "34", "35" = "35", "36" = "36", "37" = "37", "38" = "38", "39" = "39", "40" = "40", "41" = "41", "42" = "42", "43" = "43", "44" = "44", "45" = "45", "46" = "46", "47" = "47", "48" = "48", "49" = "49", "50" = "50", "51" = "51", "52" = "52", "53" = "53", "54" = "54", "55" = "55", "56" = "56", "57" = "57", "58" = "58", "59" = "59", "60" = "60", "61" = "61", "62" = "62", "63" = "63", "64" = "64", "65" = "65", "66" = "66", "67" = "67", "68" = "68", "69" = "69", "70" = "70", "71" = "71", "72" = "72", "73" = "73", "74" = "74", "75" = "75", "76" = "76", "77" = "77", "78" = "78", "79" = "79", "80" = "80", "81" = "81", "82" = "82", "83" = "83", "84" = "84", "85" = "85", "86" = "86", "87" = "87", "88" = "88", "89" = "89", "90" = "90", "91" = "91", "92" = "92", "93" = "93", "94" = "94", "95" = "95", "96" = "96", "97" = "97", "98" = "98", "99" = "99", "100" = "100", "101" = "101", "102" = "102", "103" = "103", "104" = "104", "105" = "105", "106" = "106", "107" = "107", "108" = "108", "109" = "109", "110" = "110", "111" = "111", "112" = "112", "113" = "113", "114" = "114", "115" = "115", "116" = "116", "117" = "117", "118" = "118", "119" = "119", "120" = "120")
      },
      teachingsemester {
-       en : ("vaar-og-host" = "Autumn and spring", "hver-hoest" = "Every autumn", "hver-vaar" =  "Every spring", "particular-semester" = "semester", "other" = "Other"),
-       no : ("vaar-og-host" = "Høst og vår", "hver-hoest" = "Hver høst", "hver-vaar" =  "Hver vår", "particular-semester" = "Bestemt semester", "other" = "Annet"),
-       nn : ("vaar-og-host" = "Haust og vår", "hver-hoest" = "Hver haust", "hver-vaar" =  "Hver vår", "particular-semester" = "Bestemt semester", "other" = "Annet")
+       en : ("vaar-og-host" = "Autumn and spring", "hver-hoest" = "Every autumn", "hver-vaar" =  "Every spring", "particular-semester" = "Particular semester", "every-other" = "Every other year", "other" = "Other"),
+       no : ("vaar-og-host" = "Høst og vår", "hver-hoest" = "Hver høst", "hver-vaar" =  "Hver vår", "particular-semester" = "Bestemt semester", "every-other" = "Annen hvert år", "other" = "Annet"),
+       nn : ("vaar-og-host" = "Haust og vår", "hver-hoest" = "Hver haust", "hver-vaar" =  "Hver vår", "particular-semester" = "Bestemt semester", "every-other" = "Anna kvart år", "other" = "Annet")
      },
      examsemester {
-       en : ("vaar-og-host" = "Autumn and spring", "hver-hoest" = "Every autumn", "hver-vaar" =  "Every spring", "particular-semester" = "semester", "other" = "Other"),
-       no : ("vaar-og-host" = "Høst og vår", "hver-hoest" = "Hver høst", "hver-vaar" =  "Hver vår", "particular-semester" = "Bestemt semester", "other" = "Annet"),
-       nn : ("vaar-og-host" = "Haust og vår", "hver-hoest" = "Hver haust", "hver-vaar" =  "Hver vår", "particular-semester" = "Bestemt semester", "other" = "Annet")
+       en : ("vaar-og-host" = "Autumn and spring", "hver-hoest" = "Every autumn", "hver-vaar" =  "Every spring", "particular-semester" = "Particular semester", "every-other" = "Every other year", "other" = "Other"),
+       no : ("vaar-og-host" = "Høst og vår", "hver-hoest" = "Hver høst", "hver-vaar" =  "Hver vår", "particular-semester" = "Bestemt semester", "every-other" = "Annen hvert år", "other" = "Annet"),
+       nn : ("vaar-og-host" = "Haust og vår", "hver-hoest" = "Hver haust", "hver-vaar" =  "Hver vår", "particular-semester" = "Bestemt semester", "every-other" = "Anna kvart år", "other" = "Annet")
+     },
+     teachingsemester-particular-semester:term {
+       en : ("autumn" = "Autumn", "spring" = "Spring"),
+       no : ("autumn" = "Høst", "spring" = "Vår"),
+       nn : ("autumn" = "Høst", "spring" = "Vår")
+     },
+     teachingsemester-particular-semester:year {
+       en : ("1990" = "1990", "1991" = "1991", "1992" = "1992", "1993" = "1993", "1994" = "1994", "1995" = "1995", "1996" = "1996", "1997" = "1997", "1998" = "1998", "1999" = "1999", "2000" = "2000", "2001" = "2001", "2002" = "2002", "2003" = "2003", "2004" = "2004", "2005" = "2005", "2006" = "2006", "2007" = "2007", "2008" = "2008", "2009" = "2009", "2010" = "2010", "2011" = "2011", "2012" = "2012", "2013" = "2013", "2014" = "2014", "2015" = "2015", "2016" = "2016", "2017" = "2017", "2018" = "2018", "2019" = "2019", "2020" = "2020"),
+       no : ("1990" = "1990", "1991" = "1991", "1992" = "1992", "1993" = "1993", "1994" = "1994", "1995" = "1995", "1996" = "1996", "1997" = "1997", "1998" = "1998", "1999" = "1999", "2000" = "2000", "2001" = "2001", "2002" = "2002", "2003" = "2003", "2004" = "2004", "2005" = "2005", "2006" = "2006", "2007" = "2007", "2008" = "2008", "2009" = "2009", "2010" = "2010", "2011" = "2011", "2012" = "2012", "2013" = "2013", "2014" = "2014", "2015" = "2015", "2016" = "2016", "2017" = "2017", "2018" = "2018", "2019" = "2019", "2020" = "2020"),
+       nn : ("1990" = "1990", "1991" = "1991", "1992" = "1992", "1993" = "1993", "1994" = "1994", "1995" = "1995", "1996" = "1996", "1997" = "1997", "1998" = "1998", "1999" = "1999", "2000" = "2000", "2001" = "2001", "2002" = "2002", "2003" = "2003", "2004" = "2004", "2005" = "2005", "2006" = "2006", "2007" = "2007", "2008" = "2008", "2009" = "2009", "2010" = "2010", "2011" = "2011", "2012" = "2012", "2013" = "2013", "2014" = "2014", "2015" = "2015", "2016" = "2016", "2017" = "2017", "2018" = "2018", "2019" = "2019", "2020" = "2020")
+     },
+     teachingsemester-every-other-semester-term {
+       en : ("autumn" = "Autumn", "spring" = "Spring"),
+       no : ("autumn" = "Høst", "spring" = "Vår"),
+       nn : ("autumn" = "Høst", "spring" = "Vår")
+     },
+     teachingsemester-every-other-semester-startyear {
+       en : ("1990" = "1990", "1991" = "1991", "1992" = "1992", "1993" = "1993", "1994" = "1994", "1995" = "1995", "1996" = "1996", "1997" = "1997", "1998" = "1998", "1999" = "1999", "2000" = "2000", "2001" = "2001", "2002" = "2002", "2003" = "2003", "2004" = "2004", "2005" = "2005", "2006" = "2006", "2007" = "2007", "2008" = "2008", "2009" = "2009", "2010" = "2010", "2011" = "2011", "2012" = "2012", "2013" = "2013", "2014" = "2014", "2015" = "2015", "2016" = "2016", "2017" = "2017", "2018" = "2018", "2019" = "2019", "2020" = "2020"),
+       no : ("1990" = "1990", "1991" = "1991", "1992" = "1992", "1993" = "1993", "1994" = "1994", "1995" = "1995", "1996" = "1996", "1997" = "1997", "1998" = "1998", "1999" = "1999", "2000" = "2000", "2001" = "2001", "2002" = "2002", "2003" = "2003", "2004" = "2004", "2005" = "2005", "2006" = "2006", "2007" = "2007", "2008" = "2008", "2009" = "2009", "2010" = "2010", "2011" = "2011", "2012" = "2012", "2013" = "2013", "2014" = "2014", "2015" = "2015", "2016" = "2016", "2017" = "2017", "2018" = "2018", "2019" = "2019", "2020" = "2020"),
+       nn : ("1990" = "1990", "1991" = "1991", "1992" = "1992", "1993" = "1993", "1994" = "1994", "1995" = "1995", "1996" = "1996", "1997" = "1997", "1998" = "1998", "1999" = "1999", "2000" = "2000", "2001" = "2001", "2002" = "2002", "2003" = "2003", "2004" = "2004", "2005" = "2005", "2006" = "2006", "2007" = "2007", "2008" = "2008", "2009" = "2009", "2010" = "2010", "2011" = "2011", "2012" = "2012", "2013" = "2013", "2014" = "2014", "2015" = "2015", "2016" = "2016", "2017" = "2017", "2018" = "2018", "2019" = "2019", "2020" = "2020")
+     },
+     examsemester-particular-semester:term {
+       en : ("autumn" = "Autumn", "spring" = "Spring"),
+       no : ("autumn" = "Høst", "spring" = "Vår"),
+       nn : ("autumn" = "Høst", "spring" = "Vår")
+     },
+     examsemester-particular-semester:year {
+       en : ("1990" = "1990", "1991" = "1991", "1992" = "1992", "1993" = "1993", "1994" = "1994", "1995" = "1995", "1996" = "1996", "1997" = "1997", "1998" = "1998", "1999" = "1999", "2000" = "2000", "2001" = "2001", "2002" = "2002", "2003" = "2003", "2004" = "2004", "2005" = "2005", "2006" = "2006", "2007" = "2007", "2008" = "2008", "2009" = "2009", "2010" = "2010", "2011" = "2011", "2012" = "2012", "2013" = "2013", "2014" = "2014", "2015" = "2015", "2016" = "2016", "2017" = "2017", "2018" = "2018", "2019" = "2019", "2020" = "2020"),
+       no : ("1990" = "1990", "1991" = "1991", "1992" = "1992", "1993" = "1993", "1994" = "1994", "1995" = "1995", "1996" = "1996", "1997" = "1997", "1998" = "1998", "1999" = "1999", "2000" = "2000", "2001" = "2001", "2002" = "2002", "2003" = "2003", "2004" = "2004", "2005" = "2005", "2006" = "2006", "2007" = "2007", "2008" = "2008", "2009" = "2009", "2010" = "2010", "2011" = "2011", "2012" = "2012", "2013" = "2013", "2014" = "2014", "2015" = "2015", "2016" = "2016", "2017" = "2017", "2018" = "2018", "2019" = "2019", "2020" = "2020"),
+       nn : ("1990" = "1990", "1991" = "1991", "1992" = "1992", "1993" = "1993", "1994" = "1994", "1995" = "1995", "1996" = "1996", "1997" = "1997", "1998" = "1998", "1999" = "1999", "2000" = "2000", "2001" = "2001", "2002" = "2002", "2003" = "2003", "2004" = "2004", "2005" = "2005", "2006" = "2006", "2007" = "2007", "2008" = "2008", "2009" = "2009", "2010" = "2010", "2011" = "2011", "2012" = "2012", "2013" = "2013", "2014" = "2014", "2015" = "2015", "2016" = "2016", "2017" = "2017", "2018" = "2018", "2019" = "2019", "2020" = "2020")
+     },
+     examsemester-every-other-semester-term {
+       en : ("autumn" = "Autumn", "spring" = "Spring"),
+       no : ("autumn" = "Høst", "spring" = "Vår"),
+       nn : ("autumn" = "Høst", "spring" = "Vår")
+     },
+     examsemester-every-other-semester-startyear {
+       en : ("1990" = "1990", "1991" = "1991", "1992" = "1992", "1993" = "1993", "1994" = "1994", "1995" = "1995", "1996" = "1996", "1997" = "1997", "1998" = "1998", "1999" = "1999", "2000" = "2000", "2001" = "2001", "2002" = "2002", "2003" = "2003", "2004" = "2004", "2005" = "2005", "2006" = "2006", "2007" = "2007", "2008" = "2008", "2009" = "2009", "2010" = "2010", "2011" = "2011", "2012" = "2012", "2013" = "2013", "2014" = "2014", "2015" = "2015", "2016" = "2016", "2017" = "2017", "2018" = "2018", "2019" = "2019", "2020" = "2020"),
+       no : ("1990" = "1990", "1991" = "1991", "1992" = "1992", "1993" = "1993", "1994" = "1994", "1995" = "1995", "1996" = "1996", "1997" = "1997", "1998" = "1998", "1999" = "1999", "2000" = "2000", "2001" = "2001", "2002" = "2002", "2003" = "2003", "2004" = "2004", "2005" = "2005", "2006" = "2006", "2007" = "2007", "2008" = "2008", "2009" = "2009", "2010" = "2010", "2011" = "2011", "2012" = "2012", "2013" = "2013", "2014" = "2014", "2015" = "2015", "2016" = "2016", "2017" = "2017", "2018" = "2018", "2019" = "2019", "2020" = "2020"),
+       nn : ("1990" = "1990", "1991" = "1991", "1992" = "1992", "1993" = "1993", "1994" = "1994", "1995" = "1995", "1996" = "1996", "1997" = "1997", "1998" = "1998", "1999" = "1999", "2000" = "2000", "2001" = "2001", "2002" = "2002", "2003" = "2003", "2004" = "2004", "2005" = "2005", "2006" = "2006", "2007" = "2007", "2008" = "2008", "2009" = "2009", "2010" = "2010", "2011" = "2011", "2012" = "2012", "2013" = "2013", "2014" = "2014", "2015" = "2015", "2016" = "2016", "2017" = "2017", "2018" = "2018", "2019" = "2019", "2020" = "2020")
      },
      course-type {
-       en : ("redskapsemne" = "Toolcourse", "grunnemne" = "Basic course", "videregaende-emne" = "Intermediate course", "avansert-emne" = "Advanced course", "phd-emne" = "Phd course", "ikke-satt" = "Not set"),
-       no : ("redskapsemne" = "Redskapsemne", "grunnemne" = "Grunnemne", "videregaende-emne" = "Videregående emne", "avansert-emne" = "Avansert emne", "phd-emne" = "Phd emne", "ikke-satt" = "Ikke satt"),
-       nn : ("redskapsemne" = "Redskapsemne", "grunnemne" = "Grunnemne", "videregaende-emne" = "Videregåande emne", "avansert-emne" = "Avansert emne", "phd-emne" = "Phd emne", "ikke-satt" = "Ikke satt")
+       en : ("redskapsemne" = "Introductory or brush-up course", "grunnemne" = "Foundation course at bachelor's level", "videregaende-emne" = "Advanced course at bachelor's level", "avansert-emne" = "Advanced course at master's level", "phd-emne" = "Ph.D. level course", "ikke-satt" = "Not set"),
+       no : ("redskapsemne" = "Redskap- eller innføringsemne", "grunnemne" = "Grunnemne på bachelornivå", "videregaende-emne" = "Videregående emne på bachelornivå", "avansert-emne" = "Avansert emne på masternivå", "phd-emne" = "Doktorgradsemne", "ikke-satt" = "Ikke satt"),
+       nn : ("redskapsemne" = "Redskap- eller innføringsemne", "grunnemne" = "Grunnemne på bachelornivå", "videregaende-emne" = "Videregående emne på bachelornivå", "avansert-emne" = "Avansert emne på masternivå", "phd-emne" = "Doktorgradsemne", "ikke-satt" = "Ikke satt")
      },
-     opptak-og-adgang {
-       en : ("ingen-fellestekst" = "Ingen", "soknadsprosedyre-opptak" = "Opptak", "soknadsprosedyre-master" = "Master", "soknadsprosedyre-master-andre-program" = "Andre"),
-       no : ("ingen-fellestekst" = "Ingen", "soknadsprosedyre-opptak" = "Opptak", "soknadsprosedyre-master" = "Master", "soknadsprosedyre-master-andre-program" = "Andre"),
-       nn : ("ingen-fellestekst" = "Ingen", "soknadsprosedyre-opptak" = "Opptak", "soknadsprosedyre-master" = "Master", "soknadsprosedyre-master-andre-program" = "Andre")
-     },
-     ikke-privatist {
-       en : ("ingen-fellestekst" = "Ingen", "ikke-privatist" = "Ikke privatist"),
-       no : ("ingen-fellestekst" = "Ingen", "ikke-privatist" = "Ikke privatist"),
-       nn : ("ingen-fellestekst" = "Ingen", "ikke-privatist" = "Ikke privatist")
-     },
-     obligatoriske-forkunnskaper {
-       en : ("ingen-fellestekst" = "Ingen", "matnatfagkrav-generell" = "Matnat generell", "matnatfagkrav-informatikk" = "Matnat informatikk", "juskrav-15sp" = "Jus 15sp"),
-       no : ("ingen-fellestekst" = "Ingen", "matnatfagkrav-generell" = "Matnat generell", "matnatfagkrav-informatikk" = "Matnat informatikk", "juskrav-15sp" = "Jus 15sp"),
-       nn : ("ingen-fellestekst" = "Ingen", "matnatfagkrav-generell" = "Matnat generell", "matnatfagkrav-informatikk" = "Matnat informatikk", "juskrav-15sp" = "Jus 15sp")
-     },
-     tidsrom-for-undervisning {
-       en : ("ingen-fellestekst" = "Ingen", "hele-semesteret" = "Hele semesteret"),
-       no : ("ingen-fellestekst" = "Ingen", "hele-semesteret" = "Hele semesteret"),
-       nn : ("ingen-fellestekst" = "Ingen", "hele-semesteret" = "Hele semesteret")
-     },
-     adgang {
-       en : ("ingen-fellestekst" = "Ingen", "nyundervisning-ved-kapasitet" = "nyundervisning-ved-kapasitet"),
-       no : ("ingen-fellestekst" = "Ingen", "nyundervisning-ved-kapasitet" = "nyundervisning-ved-kapasitet"),
-       nn : ("ingen-fellestekst" = "Ingen", "nyundervisning-ved-kapasitet" = "nyundervisning-ved-kapasitet")
-     },
-     vurdering-og-eksamen {
-       en : ("ingen-fellestekst" = "Ingen", "hf-sitatteknikk" = "hf-sitatteknikk"),
-       no : ("ingen-fellestekst" = "Ingen", "hf-sitatteknikk" = "hf-sitatteknikk"),
-       nn : ("ingen-fellestekst" = "Ingen", "hf-sitatteknikk" = "hf-sitatteknikk")
-     },
-     hjelpemidler {
-       en : ("ingen-fellestekst" = "Ingen", "ingen-hjelpemidler" = "ingen-hjelpemidler"),
-       no : ("ingen-fellestekst" = "Ingen", "ingen-hjelpemidler" = "ingen-hjelpemidler"),
-       nn : ("ingen-fellestekst" = "Ingen", "ingen-hjelpemidler" = "ingen-hjelpemidler")
-     },
-     eksamensspraak {
-       en : ("ingen-fellestekst" = "Ingen", "eksamensspraak-norsk" = "eksamensspraak-norsk", "eksamensspraak-bokmal-nynorsk" = "eksamensspraak-bokmal-nynorsk", "eksamensspraak-engelsk" = "eksamensspraak-engelsk"),
-       no : ("ingen-fellestekst" = "Ingen", "eksamensspraak-norsk" = "eksamensspraak-norsk", "eksamensspraak-bokmal-nynorsk" = "eksamensspraak-bokmal-nynorsk", "eksamensspraak-engelsk" = "eksamensspraak-engelsk"),
-       nn : ("ingen-fellestekst" = "Ingen", "eksamensspraak-norsk" = "eksamensspraak-norsk", "eksamensspraak-bokmal-nynorsk" = "eksamensspraak-bokmal-nynorsk", "eksamensspraak-engelsk" = "eksamensspraak-engelsk")
-     },
-     sensur {
-       en : ("ingen-fellestekst" = "Ingen", "bokstavskala" = "bokstavskala", "bestaatt-ikkebestaatt" = "bestaatt-ikkebestaatt"),
-       no : ("ingen-fellestekst" = "Ingen", "bokstavskala" = "bokstavskala", "bestaatt-ikkebestaatt" = "bestaatt-ikkebestaatt"),
-       nn : ("ingen-fellestekst" = "Ingen", "bokstavskala" = "bokstavskala", "bestaatt-ikkebestaatt" = "bestaatt-ikkebestaatt")
-     },
-     tilsynssensor {
-       en : ("ingen-fellestekst" = "Ingen", "tilsynssensor" = "tilsynssensor"),
-       no : ("ingen-fellestekst" = "Ingen", "tilsynssensor" = "tilsynssensor"),
-       nn : ("ingen-fellestekst" = "Ingen", "tilsynssensor" = "tilsynssensor")
-     },
-     klage {
-       en : ("ingen-fellestekst" = "Ingen", "klage" = "klage"),
-       no : ("ingen-fellestekst" = "Ingen", "klage" = "klage"),
-       nn : ("ingen-fellestekst" = "Ingen", "klage" = "klage")
-     },
-     ny-utsatt-eksamen {
-       en : ("ingen-fellestekst" = "Ingen", "ny-utsatt-eksamen" = "ny-utsatt-eksamen"),
-       no : ("ingen-fellestekst" = "Ingen", "ny-utsatt-eksamen" = "ny-utsatt-eksamen"),
-       nn : ("ingen-fellestekst" = "Ingen", "ny-utsatt-eksamen" = "ny-utsatt-eksamen")
-     },
-     antall-forsok-trekk {
-       en : ("ingen-fellestekst" = "Ingen", "antall-forsok-trekk" = "antall-forsok-trekk", "antall-forsok-masteroppgave" = "antall-forsok-masteroppgave", "bestatt-semesteroppgave" = "bestatt-semesteroppgave"),
-       no : ("ingen-fellestekst" = "Ingen", "antall-forsok-trekk" = "antall-forsok-trekk", "antall-forsok-masteroppgave" = "antall-forsok-masteroppgave", "bestatt-semesteroppgave" = "bestatt-semesteroppgave"),
-       nn : ("ingen-fellestekst" = "Ingen", "antall-forsok-trekk" = "antall-forsok-trekk", "antall-forsok-masteroppgave" = "antall-forsok-masteroppgave", "bestatt-semesteroppgave" = "bestatt-semesteroppgave")
-     },
-     tilrettelagt-eksamen {
-       en : ("ingen-fellestekst" = "Ingen", "tilrettelagt-eksamen" = "tilrettelagt-eksamen"),
-       no : ("ingen-fellestekst" = "Ingen", "tilrettelagt-eksamen" = "tilrettelagt-eksamen"),
-       nn : ("ingen-fellestekst" = "Ingen", "tilrettelagt-eksamen" = "tilrettelagt-eksamen")
+     course-fee {
+       en : ("true" = "Yes", "false" = "No"),
+       no : ("true" = "Ja", "false" = "Nei"),
+       nn : ("true" = "Ja", "false" = "Nei")
      }
   }
   
@@ -575,18 +753,37 @@ resourcetype course-description : fellestekst-document {
     facts : (en : "Facts about this course", no : "Fakta om emnet", nn : "Fakta om emnet"),
     credits : (en : "Credits", no : "Studiepoeng", nn : "Studiepoeng"),
     teachingsemester : (en : "Teaching semester", no : "Undervises", nn : "Undervises"),
+    teachingsemester-particular-semester : (en : "Particular semester", no : "Bestemt semester", nn : "Bestemt semester"),
+    teachingsemester-every-other-semester : (en : "Every other semester", no : "Annen hvert semester", nn : "Anna kvart semester"),
+    teachingsemester-every-other-semester-term : (en : "Term", no : "Semester", nn : "Semester"),
+    teachingsemester-every-other-semester-startyear : (en : "Start year", no : "Oppstartsår", nn : "Oppstartsår"),
+    teachingsemester-other : (en : "Other", no : "Annet", nn : "Annet"),
     examsemester : (en : "Examination semester", no: "Eksamen", nn: "Eksamen"),
+    examsemester-particular-semester : (en : "Particular semester", no : "Bestemt semester", nn : "Bestemt semester"),
+    examsemester-every-other-semester : (en : "Every other semester", no : "Annen hvert semester", nn : "Anna kvart semester"),
+    examsemester-every-other-semester-term : (en : "Term", no : "Semester", nn : "Semester"),
+    examsemester-every-other-semester-startyear : (en : "Start year", no : "Oppstartsår", nn : "Oppstartsår"),
+    examsemester-other : (en : "Other", no : "Annet", nn : "Annet"),
+    term : (en : "Term", no : "Semester", nn : "Semester"),
+    autumn : (en : "Autumn", no : "Høst", nn : "Høst"),
+    spring : (en : "Spring", no : "Vår", nn : "Vår"),
+    year : (en : "Year", no : "År", nn : "År"),
     content-locale : (en : "Language of instruction", no : "Undervisningsspråk", nn : "Undervisningsspråk"),
     administrated : (en : "Administrated by", no : "Tilbys ved", nn : "Tilbys ved"),
-    semester : (en : "<b>Detailed course information - Current and previous semesters:</b>",
-                no : "<b>Semestersider</b> (undervisningstider, eksamensdato, pensum m.m.):",
-                nn : "<b>Semestersider</b> (undervisningstider, eksamensdato, pensum m.m.):"),
+    semester : (en : "Detailed course information - Current and previous semesters:",
+                no : "Semestersider (undervisningstider, eksamensdato, pensum m.m.):",
+                nn : "Semestersider (undervisningstider, eksamensdato, pensum m.m.):"),
     vaar-og-host : (en : "Spring and autumn", no : "Vår og høst", nn : "Vår og høst"),
-    hver-hoest : (en : "Every autumn semester", no : "Hvert høstsemester", nn : "Hvert høstsemester"),
-    hver-vaar : (en : "Every spring semester", no : "Hvert vårsemester", nn : "Hvert vårsemester"),
-    particular-semester : (en : "Particular semester", no : "Bestemt semester", nn : "Bestemt semester"),
-    other : (en : "Other", no : "Annet", nn : "Annet"),
+    hver-hoest : (en : "Every autumn semester", no : "Hvert høstsemester", nn : "Kvart høstsemester"),
+    hver-vaar : (en : "Every spring semester", no : "Hvert vårsemester", nn : "Kvart vårsemester"),
+    every-other-autumn : (en : "Every other autumn semester", no : "Annen hvert høstsemester", nn : "Anna kvart høstsemester"),
+    every-other-spring : (en : "Every other spring semester", no : "Annen hvert vårsemester", nn : "Anna kvart vårsemester"),
+    every-other-start : (en : "From", no : "Fra", nn : "Fra"),
+    teaching-every-other-end : (en : "this course will be taught every other autumn semester.", no : "vil dette emnet vil undervises annet hvert høstsemester", nn : "vil dette emnet vil undervises anna kvart semester."),
+    exam-every-other-end : (en : "this course will have an exam every other autumn semester.", no : "vil dette emnet ha eksamen annet hvert høstsemester", nn : "vil dette emnet vil ha eksamen anna kvart semester."),
     course-type : (en : "Course type", no : "Emnetype", nn : "Emnetype"),
+    course-fee : (en : "Course fee", no : "Kursavgift", nn : "Kursavgift"),
+    course-fee-amount : (en : "Course fee amount", no : "Kursavgift sum", nn : "Kursavgift sum"),
     course-content : (en : "Course content", no : "Kort om emnet", nn : "Kort om emnet"),
     learning-outcomes : (en : "Learning outcome", no : "Hva lærer du", nn : "Hva lærer du"),
     opptak-og-adgang-text-field : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
@@ -633,7 +830,13 @@ resourcetype course-description : fellestekst-document {
     tilrettelagt-eksamen-group : (en : "Exam options for students with special needs", no : "Tilrettelagt eksamen/vurdering", nn : "Tilrettelagt eksamen/vurdering"),
     studinfo-kontakt-text-field : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
     studinfo-kontakt : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
-    studinfo-kontakt-group : (en : "Contact", no : "Kontakt", nn : "Kontakt")
+    studinfo-kontakt-group : (en : "Contact", no : "Kontakt", nn : "Kontakt"),
+    contact : (en : "Contact", no : "Kontakt", nn : "Kontakt"),
+    redskapsemne : (en : "Introductory or brush-up course", no : "Redskap- eller innføringsemne", nn : "Redskap- eller innføringsemne"),
+    grunnemne : (en : "Foundation course at bachelor's level", no : "Grunnemne på bachelornivå", nn : "Grunnemne på bachelornivå"),
+    videregaende-emne : (en : "Advanced course at bachelor's level", no : "Videregående emne på bachelornivå", nn : "Videregående emne på bachelornivå"),
+    avansert-emne : (en : "Advanced course at master's level", no : "Avansert emne på masternivå", nn : "Avansert emne på masternivå"),
+    phd-emne : (en : "Ph.D. level course", no : "Doktorgradsemne", nn : "Doktorgradsemne")
   }
   
 }

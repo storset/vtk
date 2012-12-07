@@ -36,11 +36,15 @@
   
     <#-- Compact when no items in resourceLeftMenu and no items with buttons (taking more v.space) in resourceMenuRight -->
     <#local compactClass = "" />
-    <#if (resourceMenuLeftServicesLinkable == 0
-      && ((resourceMenuRightServicesLinkable < 2 && !unpublishLink.url?? && !publishLink.url??)
-       || (resourceMenuRightServicesLinkable < 3 && !unpublishLink.url?? && !publishLink.url?? && unlockPermission.permissionsQueryResult = 'false')))>
-      <#local compactClass = " compact" />    
+    
+    <#if (resourceMenuLeftServicesLinkable?? && resourceMenuRightServicesLinkable??)>
+      <#if (resourceMenuLeftServicesLinkable == 0
+        && ((resourceMenuRightServicesLinkable < 2 && !unpublishLink.url?? && !publishLink.url??)
+         || (resourceMenuRightServicesLinkable < 3 && !unpublishLink.url?? && !publishLink.url?? && unlockPermission.permissionsQueryResult = 'false')))>
+        <#local compactClass = " compact" />    
+      </#if>
     </#if>
+    
     <div id="resource-title" class="<@vrtx.resourceToIconResolver resource /> ${resource.collection?string}${compactClass}">
       <h1>
         <#if resource.URI == '/'>

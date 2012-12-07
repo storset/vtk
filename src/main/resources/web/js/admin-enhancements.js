@@ -355,7 +355,7 @@ vrtxAdmin._$(document).ready(function () {
           dialogManageCreate = $("#" + id);
           dialogManageCreate.hide();
           var hasEmailFrom = dialogManageCreate.find("#emailFrom");
-          vrtxSimpleDialogs.openHtmlDialog("send-approval", dialogManageCreate.html(), link.title, 410, (hasEmailFrom ? 570 : 525));
+          vrtxSimpleDialogs.openHtmlDialog("send-approval", dialogManageCreate.html(), link.title, 410, (hasEmailFrom ? 590 : 535));
           var dialog = $(".ui-dialog");
           if(dialog.find("#emailTo").val().length > 0) {
             if(hasEmailFrom) {
@@ -368,7 +368,7 @@ vrtxAdmin._$(document).ready(function () {
       });
     } else {
       var hasEmailFrom = dialogManageCreate.find("#emailFrom");
-      vrtxSimpleDialogs.openHtmlDialog("send-approval", dialogManageCreate.html(), link.title, 410, (hasEmailFrom ? 570 : 525));
+      vrtxSimpleDialogs.openHtmlDialog("send-approval", dialogManageCreate.html(), link.title, 410, (hasEmailFrom ? 590 : 535));
       var dialog = $(".ui-dialog");
       if(dialog.find("#emailTo").val().length > 0) {
         if(hasEmailFrom) {

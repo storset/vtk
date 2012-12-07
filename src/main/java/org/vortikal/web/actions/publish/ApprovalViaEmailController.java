@@ -145,7 +145,8 @@ public class ApprovalViaEmailController implements Controller {
                         model.put(MailHelper.RESPONSE_MODEL, MailHelper.RESPONSE_OK);
                     } else {
                         model.put("emailSavedTo", emailTo);
-
+                        model.put("emailSavedFrom", emailFrom);
+                        
                         if (!StringUtils.isBlank(yourComment)) {
                             model.put("yourSavedComment", yourComment);
                         }

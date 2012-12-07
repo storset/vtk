@@ -30,7 +30,7 @@
       
       <label for="emailTo" class="first"><@vrtx.msg code="email.form.to" default="Send e-mail to" /></label> 
       <div class="vrtx-textfield">  
-        <#if emailSavedTo?exists && emailSavedTo?has_content>
+        <#if emailSavedTo?has_content>
           <input type="text" id="emailTo" name="emailTo" value="${emailSavedTo?html}" />
         <#else>
           <input type="text" id="emailTo" name="emailTo" value="<#if editorialContacts??>${editorialContacts}</#if>" />

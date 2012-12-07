@@ -33,6 +33,15 @@ package org.vortikal.web.actions.publish;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.vortikal.repository.IllegalOperationException;
+import org.vortikal.repository.Path;
+import org.vortikal.repository.Property;
+import org.vortikal.repository.PropertyImpl;
+import org.vortikal.repository.PropertySetImpl;
+import org.vortikal.repository.ResourceImpl;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.repository.resourcetype.Value;
+import org.vortikal.repository.resourcetype.PropertyType.Type;
 import org.vortikal.repository.store.PrincipalMetadata;
 import org.vortikal.repository.store.PrincipalMetadataImpl;
 import org.vortikal.security.InvalidPrincipalException;
@@ -50,16 +59,43 @@ public class ApprovalViaEmailControllerTest extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
         approvalViaEmailController = new ApprovalViaEmailController();
+        approvalViaEmailController.setEditorialContactsPropDef(null);
         approvalViaEmailController.setPrincipalFactory(new MockPrincipalFactory());
     }
 
-    public void testPrincipalLDAPEmail() {
+    public void testGetPrincipalLDAPEmail() {
         boolean principalEmailLDAPFound = false;
-
-        assertEquals("oyvind.hatland@usit.uio.no", approvalViaEmailController.getPrincipalLDAPEmail("oyvihatl@uio.no", principalEmailLDAPFound));
-        assertEquals("geir@ntnu.no", approvalViaEmailController.getPrincipalLDAPEmail("geir@ntnu.no", principalEmailLDAPFound));
+        assertEquals("oyvind.hatland@usit.uio.no", 
+                     approvalViaEmailController.getPrincipalLDAPEmail("oyvihatl@uio.no", principalEmailLDAPFound));
+        assertEquals("geir@ntnu.no", 
+                     approvalViaEmailController.getPrincipalLDAPEmail("geir@ntnu.no", principalEmailLDAPFound));
     }
-    
+
+    public void testGetEditorialContactEmails() {
+        assertEquals("vortex-core@usit.uio.no",
+                approvalViaEmailController.getEditorialContactEmails(new MockResource(Path.ROOT)));
+    }
+}
+
+class MockResource extends ResourceImpl {
+    public MockResource(Path uri) {
+        super(uri);
+    }
+    public Property getProperty(PropertyTypeDefinition type) {
+        if(type == null) {
+           return new MockPropertyImpl();
+        }
+        return null;
+    }
+}
+
+class MockPropertyImpl extends PropertyImpl {
+    @Override
+    public Value[] getValues() {
+        Value[] vs = new Value[1];
+        vs[0] = new Value("vortex-core@usit.uio.no", Type.STRING);
+        return vs;
+    }
 }
 
 class MockPrincipalFactory extends PrincipalFactory {
@@ -87,7 +123,7 @@ class MockPrincipalMetadata extends PrincipalMetadataImpl {
     }
     @Override
     public List<Object> getValues(String attributeName) {
-        if ("email".equals(attributeName)) {
+        if ("email".equals(attributeName)) { // TODO: maybe dig a little deeper into DAO-code etc. to make the test better
             List<Object> emails = new ArrayList<Object>();
             if ("oyvihatl@uio.no".equals(super.getQualifiedName())) {
                 emails.add(new String("oyvind.hatland@usit.uio.no"));

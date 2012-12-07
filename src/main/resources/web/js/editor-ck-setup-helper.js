@@ -30,6 +30,16 @@ var studyToolbar = [['Source', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo'
                         'JustifyCenter', 'JustifyRight', 
                         'Maximize']];
                         
+var courseGroupToolbar = [['Source', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo', '-', 'Replace',
+                        'RemoveFormat', '-', 'Link', 'Unlink', 'Studyreferencecomponent', 'Anchor',
+                        'Image', 'CreateDiv', 'MediaEmbed', 'Table',
+                        'HorizontalRule', 'SpecialChar'
+                    ], ['Format', 'Bold', 'Italic', 
+                        'Subscript', 'Superscript', 'NumberedList',
+                        'BulletedList', 'Outdent', 'Indent', 'JustifyLeft',
+                        'JustifyCenter', 'JustifyRight', 
+                        'Maximize']];
+                        
 var messageToolbar = [['PasteText', 'Bold', 'Italic', 'Strike', '-', 'Undo', 'Redo', '-', 'Link', 'Unlink',
                        'Subscript', 'Superscript', 'NumberedList', 'BulletedList', 'Outdent', 'Indent']];
 
@@ -127,7 +137,9 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
       maxHeight = 300;
     } else if (name == "content"
             || name == "resource.content"
-            || name == "content-study") {
+            || name == "content-study"
+            || name == "courses-in-group"
+            || name == "relevant-study-programmes") {
       height = 400;
       maxHeight = 800;
       if (name == "resource.content") { // Old editor
@@ -135,6 +147,10 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
       } 
       if (name == "content-study") { // Study toolbar
         completeTB = studyToolbar;
+      } 
+      if (name == "courses-in-group"
+          || name == "relevant-study-programmes") { // CourseGroup toolbar
+        completeTB = courseGroupToolbar;
       }
     }
     setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, defaultLanguage, cssFileList, height, maxHeight, 50, completeTB,

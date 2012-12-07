@@ -72,8 +72,8 @@ public class ApprovalViaEmailControllerTest extends TestCase {
     }
 
     public void testGetEditorialContactEmails() {
-        assertEquals("vortex-core@usit.uio.no",
-                approvalViaEmailController.getEditorialContactEmails(new MockResource(Path.ROOT)));
+        assertEquals("vortex-core@usit.uio.no, resin@ulrik.uio.no",
+                     approvalViaEmailController.getEditorialContactEmails(new MockResource(Path.ROOT)));
     }
 }
 
@@ -92,8 +92,9 @@ class MockResource extends ResourceImpl {
 class MockPropertyImpl extends PropertyImpl {
     @Override
     public Value[] getValues() {
-        Value[] vs = new Value[1];
+        Value[] vs = new Value[2];
         vs[0] = new Value("vortex-core@usit.uio.no", Type.STRING);
+        vs[1] = new Value("resin@ulrik.uio.no", Type.STRING);
         return vs;
     }
 }

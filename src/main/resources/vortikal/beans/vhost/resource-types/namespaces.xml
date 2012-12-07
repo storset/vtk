@@ -94,5 +94,10 @@
     <constructor-arg value="semester-context" />
     <constructor-arg value="http://www.uio.no/resource-types/semester-context" />
   </bean>
+
+  <bean id="COURSE_GROUP_LISTING_NAMESPACE" class="org.vortikal.repository.Namespace">
+    <constructor-arg value="course-group-listing" />
+    <constructor-arg value="http://www.uio.no/resource-types/course-group-listing" />
+  </bean>
   
 </beans>

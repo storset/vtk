@@ -61,12 +61,12 @@ public class ApprovalViaEmailControllerTest extends TestCase {
         approvalViaEmailController.setPrincipalFactory(new MockPrincipalFactory());
     }
 
-    public void testGetPrincipalLDAPEmail() {
-        boolean principalEmailLDAPFound = false;
+    public void testGetUserEmail() {
+        boolean userEmailFound = false;
         assertEquals("oyvind.hatland@usit.uio.no", 
-                     approvalViaEmailController.getPrincipalLDAPEmail("oyvihatl@uio.no", principalEmailLDAPFound));
+                     approvalViaEmailController.getUserEmail("oyvihatl@uio.no", userEmailFound));
         assertEquals("geir@ntnu.no", 
-                     approvalViaEmailController.getPrincipalLDAPEmail("geir@ntnu.no", principalEmailLDAPFound));
+                     approvalViaEmailController.getUserEmail("geir@ntnu.no", userEmailFound));
     }
 
     public void testGetEditorialContactEmails() {

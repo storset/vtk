@@ -83,9 +83,9 @@ public class ApprovalViaEmailController implements Controller {
         Map<String, Object> model = new HashMap<String, Object>();
         String method = request.getMethod();
 
-        boolean principalLDAPEmailFound = false; // Send copy to principal if true
-        String emailFrom = getPrincipalLDAPEmail(principal.getQualifiedName(), principalLDAPEmailFound);
-        if(!principalLDAPEmailFound) {
+        boolean userEmailFound = false;
+        String emailFrom = getUserEmail(principal.getQualifiedName(), userEmailFound);
+        if(!userEmailFound) {
             model.put("userEmailFrom", true);
         }
         
@@ -103,12 +103,12 @@ public class ApprovalViaEmailController implements Controller {
 
         if (method.equals("POST")) {
             String emailTo = request.getParameter("emailTo");
-            if (!principalLDAPEmailFound) {
+            if (!userEmailFound) {
                 emailFrom = request.getParameter("emailFrom");
             }
             String yourComment = request.getParameter("yourComment");
             
-            if (StringUtils.isBlank(emailTo) || (!principalLDAPEmailFound && StringUtils.isBlank(emailFrom))) {
+            if (StringUtils.isBlank(emailTo) || (!userEmailFound && StringUtils.isBlank(emailFrom))) {
                 if (StringUtils.isNotBlank(emailTo)) {
                     model.put("emailSavedTo", emailTo);
                 }
@@ -180,7 +180,7 @@ public class ApprovalViaEmailController implements Controller {
         return null;
     }
 
-    public String getPrincipalLDAPEmail(String qualifiedName, boolean principalEmailLDAPFound) {
+    public String getUserEmail(String qualifiedName, boolean principalEmailLDAPFound) {
         if (qualifiedName.endsWith("@uio.no")) {
             Principal principal = principalFactory.getPrincipal(qualifiedName, Principal.Type.USER);
             PrincipalMetadata principalMetaData = principal.getMetadata();

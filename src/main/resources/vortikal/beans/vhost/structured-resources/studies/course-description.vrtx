@@ -129,8 +129,8 @@ resourcetype course-description : fellestekst-document {
             [endif]
             <tr valign="top">
               <td>[localized 'teachingsemester']:</td>
-              [if teachingsemester != null && teachingsemester = "particular-semester"]
-                <td>
+              <td>
+                [if teachingsemester != null && teachingsemester = "particular-semester"]
                   [def document structured-document()]
                   [def teachingsemesters document.properties.teachingsemester-particular-semester]
                   [if teachingsemesters != null]
@@ -141,26 +141,23 @@ resourcetype course-description : fellestekst-document {
                       [endif]
                     [endlist]
                   [endif]
-                </td>
-              [elseif teachingsemester != null && teachingsemester = "every-other"]
-                <td>
+                [elseif teachingsemester != null && teachingsemester = "every-other"]
                   [def term 'every-other-' + resource-prop-obj-val(".", "teachingsemester-every-other-semester-term")]
                   [def startyear resource-prop-obj-val(".", "teachingsemester-every-other-semester-startyear")]
                   [if term != null && startyear != null]
                     <p>[localized term]</p>
                     <p>[localized 'every-other-start'] [val startyear] [localized 'teaching-every-other-end']</p>
                   [endif]
-                </td>
-              [elseif teachingsemester != null && teachingsemester = "other"]
-                <td>[if teachingsemester-other != null][val teachingsemester-other # unescaped][endif]</td>
-              [else]
-                <td>[if teachingsemester != null][localized teachingsemester][endif]</td>
-              [endif]
+                [else]
+                  [if teachingsemester != null][localized teachingsemester][endif]
+                [endif]
+                [if teachingsemester-other != null][val teachingsemester-other # unescaped][endif]
+              </td>
             </tr>
             <tr valign="top">
               <td>[localized 'examsemester']:</td>
-              [if examsemester != null && examsemester = "particular-semester"]
-                <td>
+              <td>
+                [if examsemester != null && examsemester = "particular-semester"]
                   [def document structured-document()]
                   [def examsemesters document.properties.examsemester-particular-semester]
                   [if examsemesters != null]
@@ -171,21 +168,18 @@ resourcetype course-description : fellestekst-document {
                       [endif]
                     [endlist]
                   [endif]
-                </td>
-              [elseif examsemester != null && examsemester = "every-other"]
-                <td>
+                [elseif examsemester != null && examsemester = "every-other"]
                   [def term 'every-other-' + resource-prop-obj-val(".", "examsemester-every-other-semester-term")]
                   [def startyear resource-prop-obj-val(".", "examsemester-every-other-semester-startyear")]
                   [if term != null && startyear != null]
                     <p>[localized term]</p>
                     <p>[localized 'every-other-start'] [val startyear] [localized 'exam-every-other-end']</p>
                   [endif]
-                </td>
-              [elseif examsemester != null && examsemester = "other"]
-                <td>[if examsemester-other != null][val examsemester-other # unescaped][endif]</td>
-              [else]
-                <td>[if examsemester != null][localized examsemester][endif]</td>
-              [endif]
+                [else]
+                  [if examsemester != null][localized examsemester][endif]
+                [endif]
+                [if examsemester-other != null][val examsemester-other # unescaped][endif]
+              </td>
             </tr>
             <tr valign="top">
               <td>[localized 'content-locale']:</td>

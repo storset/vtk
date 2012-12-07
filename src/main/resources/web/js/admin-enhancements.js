@@ -539,6 +539,10 @@ vrtxAdmin._$(document).ready(function () {
                   vrtxAdm.cachedContent.html(_$(results).find("#contents").html());
                   vrtxAdm.updateCollectionListingInteraction();
                   li.remove();
+                  var resourceTitle = _$(results).find("#resource-title");
+                  if (resourceTitle.hasClass("compact")) { // Instant compact => expanded
+                    $("#resource-title").addClass("compact");
+                  }
                 }
               });
             }
@@ -2644,6 +2648,15 @@ VrtxAdmin.prototype.completeFormAsyncPost = function completeFormAsyncPost(optio
               var outer = vrtxAdm.outerHTML(results, updateSelectors[i]);
               vrtxAdm.cachedBody.find(updateSelectors[i]).replaceWith(outer);
             }
+            var resultsResourceTitle = _$(results).find("#resource-title");
+            var currentResourceTitle = vrtxAdm.cachedBody.find("#resource-title");
+            if(resultsResourceTitle.length && currentResourceTitle.length) {
+              if(resultsResourceTitle.hasClass("compact") && !currentResourceTitle.hasClass("compact")) {
+                currentResourceTitle.addClass("compact");
+              } else if(!resultsResourceTitle.hasClass("compact") && currentResourceTitle.hasClass("compact")) {
+                currentResourceTitle.removeClass("compact");
+              }
+            }
             if (funcComplete) {
               funcComplete();
             }
@@ -2662,6 +2675,15 @@ VrtxAdmin.prototype.completeFormAsyncPost = function completeFormAsyncPost(optio
                   var outer = vrtxAdm.outerHTML(results, updateSelectors[i]);
                   vrtxAdm.cachedBody.find(updateSelectors[i]).replaceWith(outer);
                 }
+                var resultsResourceTitle = _$(results).find("#resource-title");
+                var currentResourceTitle = vrtxAdm.cachedBody.find("#resource-title");
+                if(resultsResourceTitle.length && currentResourceTitle.length) {
+                  if(resultsResourceTitle.hasClass("compact") && !currentResourceTitle.hasClass("compact")) {
+                    currentResourceTitle.addClass("compact");
+                  } else if(!resultsResourceTitle.hasClass("compact") && currentResourceTitle.hasClass("compact")) {
+                    currentResourceTitle.removeClass("compact");
+                  }
+                }
                 if (funcComplete) {
                   funcComplete();
                 }
@@ -2674,6 +2696,15 @@ VrtxAdmin.prototype.completeFormAsyncPost = function completeFormAsyncPost(optio
             for (var i = updateSelectors.length; i--;) {
               var outer = vrtxAdm.outerHTML(results, updateSelectors[i]);
               vrtxAdm.cachedBody.find(updateSelectors[i]).replaceWith(outer);
+            }
+            var resultsResourceTitle = _$(results).find("#resource-title");
+            var currentResourceTitle = vrtxAdm.cachedBody.find("#resource-title");
+            if(resultsResourceTitle.length && currentResourceTitle.length) {
+              if(resultsResourceTitle.hasClass("compact") && !currentResourceTitle.hasClass("compact")) {
+                currentResourceTitle.addClass("compact");
+              } else if(!resultsResourceTitle.hasClass("compact") && currentResourceTitle.hasClass("compact")) {
+                currentResourceTitle.removeClass("compact");
+              }
             }
             if (funcComplete) {
               funcComplete();

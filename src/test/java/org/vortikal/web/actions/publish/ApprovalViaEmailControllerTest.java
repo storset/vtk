@@ -33,11 +33,9 @@ package org.vortikal.web.actions.publish;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.vortikal.repository.IllegalOperationException;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertyImpl;
-import org.vortikal.repository.PropertySetImpl;
 import org.vortikal.repository.ResourceImpl;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;

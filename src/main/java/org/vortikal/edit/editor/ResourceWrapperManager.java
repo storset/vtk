@@ -33,6 +33,8 @@ package org.vortikal.edit.editor;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.InheritablePropertiesStoreContext;
@@ -58,7 +60,7 @@ public class ResourceWrapperManager {
     private ResourceTypeDefinition contentResourceType;
     private final static String defaultCharacterEncoding = "utf-8";
     private boolean allowInheritablePropertiesStore = false;
-    
+    private List<PropertyTypeDefinition> explicitlyStoredInheritableProperties = new ArrayList<PropertyTypeDefinition>();
 
     public HtmlPageParser getHtmlParser() {
         return this.htmlParser;
@@ -73,7 +75,7 @@ public class ResourceWrapperManager {
         populateWrapper(wrapper, resource, true);
         return wrapper;
     }
-    
+
     public ResourceWrapper createResourceWrapper(Path uri) throws Exception {
         ResourceWrapper wrapper = new ResourceWrapper(this);
         populateWrapper(wrapper, uri, true);
@@ -98,7 +100,6 @@ public class ResourceWrapperManager {
         Resource resource = requestContext.getRepository().retrieve(token, uri, forProcessing);
         populateWrapper(wrapper, resource, forProcessing);
     }
-
 
     private void populateWrapper(ResourceWrapper wrapper, Resource resource, boolean forProcessing) throws Exception {
         if (resource == null) {
@@ -127,12 +128,10 @@ public class ResourceWrapperManager {
                 }
                 editWrapper.setContent(content);
             }
-            editWrapper.setPreContentProperties(
-                    this.editPropertyProvider.getPreContentProperties(resource, type));
-            editWrapper.setPostContentProperties(
-                    this.editPropertyProvider.getPostContentProperties(resource, type));
+            editWrapper.setPreContentProperties(this.editPropertyProvider.getPreContentProperties(resource, type));
+            editWrapper.setPostContentProperties(this.editPropertyProvider.getPostContentProperties(resource, type));
         }
-    }    
+    }
 
     public void store(ResourceEditWrapper wrapper) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
@@ -140,7 +139,7 @@ public class ResourceWrapperManager {
         Path uri = requestContext.getResourceURI();
         Resource resource = wrapper.getResource();
         Repository repository = requestContext.getRepository();
-        
+
         if (wrapper.isPropChange()) {
             if (this.allowInheritablePropertiesStore) {
                 InheritablePropertiesStoreContext sc = new InheritablePropertiesStoreContext();
@@ -157,15 +156,20 @@ public class ResourceWrapperManager {
                     }
                 }
 
-                if (! sc.getAffectedProperties().isEmpty()) {
+                if (explicitlyStoredInheritableProperties != null) {
+                    for (PropertyTypeDefinition def : explicitlyStoredInheritableProperties) {
+                        sc.addAffectedProperty(def);
+                    }
+                }
+
+                if (!sc.getAffectedProperties().isEmpty()) {
                     resource = repository.store(token, resource, sc);
                 } else {
                     resource = repository.store(token, resource);
                 }
-                
+
             } else {
-                
-                resource = repository.store(token, resource);                
+                resource = repository.store(token, resource);
             }
         }
 
@@ -224,9 +228,14 @@ public class ResourceWrapperManager {
     public void setEditPropertyProvider(EditablePropertyProvider editPropertyProvider) {
         this.editPropertyProvider = editPropertyProvider;
     }
-    
+
     public void setAllowInheritablePropertiesStore(boolean allow) {
         this.allowInheritablePropertiesStore = allow;
+    }
+
+    public void setExplicitlyStoredInheritableProperties(
+            List<PropertyTypeDefinition> explicitlyStoredInheritableProperties) {
+        this.explicitlyStoredInheritableProperties = explicitlyStoredInheritableProperties;
     }
 
 }

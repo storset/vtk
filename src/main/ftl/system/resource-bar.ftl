@@ -38,9 +38,9 @@
     <#local compactClass = "" />
     
     <#if (resourceMenuLeftServicesLinkable?? && resourceMenuRightServicesLinkable??)>
-      <#if (resourceMenuLeftServicesLinkable == 0
-        && ((writePermission.permissionsQueryResult = 'false' || (!unpublishLink.url?? && !publishLink.url?? && resourceMenuRightServicesLinkable == 0))
-        && !(resourceMenuRightServicesLinkable >= 1 && unlockPermission.permissionsQueryResult = 'true' && !unpublishLink.url?? && !publishLink.url??)))>
+      <#if (resourceMenuLeftServicesLinkable == 0 
+         && (writePermission.permissionsQueryResult = 'false' || resourceMenuRightServicesLinkable == 0))
+         && !(resourceMenuRightServicesLinkable >= 1 && unlockPermission.permissionsQueryResult = 'true' && writePermission.permissionsQueryResult = 'false' && !publishLink.url?? && !unpublishLink.url??)>
         <#local compactClass = " compact" />    
       </#if>
     </#if>

@@ -28,15 +28,26 @@
     <form id="email-approval-form" method="post" action="${uri}">
       <@vrtx.csrfPreventionToken uri />
       
-      <label for="emailToField" class="first"><@vrtx.msg code="email.form.to" default="Send e-mail to" /></label> 
+      <label for="emailTo" class="first"><@vrtx.msg code="email.form.to" default="Send e-mail to" /></label> 
       <div class="vrtx-textfield">  
         <#if emailSavedTo?exists && emailSavedTo?has_content>
-          <input type="text" id="emailToField" name="emailTo" value="${emailSavedTo?html}" />
+          <input type="text" id="emailTo" name="emailTo" value="${emailSavedTo?html}" />
         <#else>
-          <input type="text" id="emailToField" name="emailTo" value="<#if editorialContacts??>${editorialContacts}</#if>" />
+          <input type="text" id="emailTo" name="emailTo" value="<#if editorialContacts??>${editorialContacts}</#if>" />
         </#if>
       </div>
       <div class="email-help"><@vrtx.msg code="email.form.to-tooltip" default="Use comma as a separator if sending to more than one e-mail recipient" /></div> 
+      
+      <#if userEmailFrom??>
+        <label for="emailFrom"><@vrtx.msg code="email.form.from" default="Your e-mail address" /></label>  
+        <div class="vrtx-textfield">  
+          <#if emailSavedFrom?has_content>
+            <input type="text" id="emailFrom" name="emailFrom" value="${emailSavedFrom?html}" />
+          <#else>
+            <input type="text" id="emailFrom" name="emailFrom" value="" />
+          </#if>
+        </div>
+      </#if>
       
       <#if emailBody?has_content>
         <label><@vrtx.msg code="email.form.text" default="E-mail text" /></label>
@@ -47,7 +58,7 @@
       </#if>
        
       <label for="yourCommentTxtArea"><@vrtx.msg code="email.form.yourcomment" default="Your comment" /></label> 
-      <#if yourSavedComment?exists && yourSavedComment?has_content>
+      <#if yourSavedComment?has_content>
         <textarea class="round-corners" rows="6" cols="10" id="yourCommentTxtArea" name="yourComment">${yourSavedComment?html}</textarea>
       <#else>
         <textarea class="round-corners" rows="6" cols="10" id="yourCommentTxtArea" name="yourComment" value=""></textarea> 

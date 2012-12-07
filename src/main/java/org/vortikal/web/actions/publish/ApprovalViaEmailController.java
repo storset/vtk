@@ -50,6 +50,7 @@ import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
+import org.vortikal.repository.store.PrincipalMetadata;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalFactory;
 import org.vortikal.util.mail.MailExecutor;
@@ -64,7 +65,6 @@ public class ApprovalViaEmailController implements Controller {
     private MailExecutor mailExecutor;
     private MailTemplateProvider mailTemplateProvider;
     private Service manageService;
-    private String defaultSender;
     private PropertyTypeDefinition editorialContactsPropDef;
     private PrincipalFactory principalFactory;
 
@@ -83,43 +83,15 @@ public class ApprovalViaEmailController implements Controller {
         Map<String, Object> model = new HashMap<String, Object>();
         String method = request.getMethod();
 
-        /* Get e-mail from LDAP if UiO-user.
-         * Otherwise use defaultSender (and if all fails)
-         * 
-         * TODO: Own method and unit-test
-         */
-        
-        String emailFrom = principal.getQualifiedName();
-        boolean isUiOUserWithValidEmailFromLDAP = false;
-        
-        if (emailFrom.endsWith("@uio.no")) {
-            Principal p = principalFactory.getPrincipal(emailFrom, Principal.Type.USER);
-            List<Object> emails = p.getMetadata().getValues("email");
-            if (emails != null && !emails.isEmpty()) {
-                String emailUiO = emails.get(0).toString();
-                if (MailExecutor.isValidEmail(emailUiO)) {
-                    isUiOUserWithValidEmailFromLDAP = true;
-                    emailFrom = emailUiO;
-                }
-            }
+        boolean principalLDAPEmailFound = false; // Send copy to principal if true
+        String emailFrom = getPrincipalLDAPEmail(principal.getQualifiedName(), principalLDAPEmailFound);
+        if(!principalLDAPEmailFound) {
+            model.put("userEmailFrom", true);
         }
         
-        /* TODO: Add field for putting your own e-mail address */
-        if(!isUiOUserWithValidEmailFromLDAP) {
-            emailFrom = "No-Reply " + emailFrom + " <" + defaultSender + ">";
-        }
-        
-        Property editorialContactsProp = resource.getProperty(editorialContactsPropDef);
-        if (editorialContactsProp != null) {
-            Value[] editorialContactsVals = editorialContactsProp.getValues();
-            StringBuilder sb = new StringBuilder();
-            for (Value editorialContactsVal : editorialContactsVals) {
-                sb.append(editorialContactsVal.getStringValue() + ", ");
-            }
-            String editorialContacts = sb.toString();
-            if (editorialContacts.length() > 2) {
-                model.put("editorialContacts", editorialContacts.substring(0, editorialContacts.length() - 2));
-            }
+        String editorialContacts = getEditorialContactEmails(resource);
+        if(editorialContacts != null) {
+            model.put("editorialContacts", editorialContacts);
         }
 
         String title = resource.getTitle();
@@ -131,10 +103,17 @@ public class ApprovalViaEmailController implements Controller {
 
         if (method.equals("POST")) {
             String emailTo = request.getParameter("emailTo");
+            if (!principalLDAPEmailFound) {
+                emailFrom = request.getParameter("emailFrom");
+            }
             String yourComment = request.getParameter("yourComment");
-            if (StringUtils.isBlank(emailTo)) {
+            
+            if (StringUtils.isBlank(emailTo) || (!principalLDAPEmailFound && StringUtils.isBlank(emailFrom))) {
                 if (StringUtils.isNotBlank(emailTo)) {
                     model.put("emailSavedTo", emailTo);
+                }
+                if (StringUtils.isNotBlank(emailFrom)) {
+                    model.put("emailSavedFrom", emailFrom);
                 }
                 if (StringUtils.isNotBlank(yourComment)) {
                     model.put("yourSavedComment", yourComment);
@@ -154,12 +133,11 @@ public class ApprovalViaEmailController implements Controller {
                             break;
                         }
                     }
-
-                    if (validAddresses) {
+                    if (validAddresses && MailExecutor.isValidEmail(emailFrom)) {
                         mailBody = mailTemplateProvider.generateMailBody(title, url, emailFrom, comment, "");
 
                         MimeMessage mimeMessage = mailExecutor.createMimeMessage(mailBody, emailMultipleTo, emailFrom,
-                                isUiOUserWithValidEmailFromLDAP, subject);
+                                true, subject);
 
                         mailExecutor.enqueue(mimeMessage);
 
@@ -183,6 +161,40 @@ public class ApprovalViaEmailController implements Controller {
         model.put("emailBody", mailBody);
         model.put("resource", resourceManager.createResourceWrapper());
         return new ModelAndView(viewName, model);
+    }
+
+    public String getEditorialContactEmails(Resource resource) {
+        Property editorialContactsProp = resource.getProperty(editorialContactsPropDef);
+        if (editorialContactsProp != null) {
+            Value[] editorialContactsVals = editorialContactsProp.getValues();
+            StringBuilder sb = new StringBuilder();
+            for (Value editorialContactsVal : editorialContactsVals) {
+                sb.append(editorialContactsVal.getStringValue() + ", ");
+            }
+            String editorialContacts = sb.toString();
+            if (editorialContacts.length() > 2) {
+               return editorialContacts.substring(0, editorialContacts.length() - 2); 
+            }
+        }
+        return null;
+    }
+
+    public String getPrincipalLDAPEmail(String qualifiedName, boolean principalEmailLDAPFound) {
+        if (qualifiedName.endsWith("@uio.no")) {
+            Principal principal = principalFactory.getPrincipal(qualifiedName, Principal.Type.USER);
+            PrincipalMetadata principalMetaData = principal.getMetadata();
+            if (principalMetaData != null) {
+                List<Object> emails = principalMetaData.getValues("email");
+                if (emails != null && !emails.isEmpty()) {
+                    String email = emails.get(0).toString();
+                    if (MailExecutor.isValidEmail(email)) {
+                        principalEmailLDAPFound = true;
+                        return email;
+                    }
+                }
+            }
+        }
+        return qualifiedName;
     }
 
     private String getLocalizedMsg(HttpServletRequest request, String key, Object[] params) {
@@ -217,11 +229,6 @@ public class ApprovalViaEmailController implements Controller {
     @Required
     public void setManageService(Service manageService) {
         this.manageService = manageService;
-    }
-
-    @Required
-    public void setDefaultSender(String defaultSender) {
-        this.defaultSender = defaultSender;
     }
 
     @Required

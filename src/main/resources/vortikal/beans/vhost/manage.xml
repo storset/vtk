@@ -2233,7 +2233,6 @@
     <property name="resourceManager" ref="resourceManager" />
     <property name="mailExecutor" ref="email.executor" />
     <property name="mailTemplateProvider" ref="emailApproval.mailTemplateProvider" />
-    <property name="defaultSender" value="${email.defaultSender}" />
     <property name="editorialContactsPropDef" ref="editorialContactsPropDef" />
     <property name="principalFactory" ref="principalFactory" />
   </bean>

@@ -354,16 +354,28 @@ vrtxAdmin._$(document).ready(function () {
           _$("body").append("<div id='" + id + "'>" + _$(results).find("#contents").html() + "</div>");
           dialogManageCreate = $("#" + id);
           dialogManageCreate.hide();
-          vrtxSimpleDialogs.openHtmlDialog("send-approval", dialogManageCreate.html(), link.title, 410, 520);
-          if($(".ui-dialog #emailToField").val().length > 0) {
-            $(".ui-dialog #yourCommentTxtArea")[0].focus();
+          var hasEmailFrom = dialogManageCreate.find("#emailFrom");
+          vrtxSimpleDialogs.openHtmlDialog("send-approval", dialogManageCreate.html(), link.title, 410, (hasEmailFrom ? 570 : 525));
+          var dialog = $(".ui-dialog");
+          if(dialog.find("#emailTo").val().length > 0) {
+            if(hasEmailFrom) {
+              dialog.find("#emailFrom")[0].focus();
+            } else {
+              dialog.find("#yourCommentTxtArea")[0].focus();
+            } 
           }
         }
       });
     } else {
-      vrtxSimpleDialogs.openHtmlDialog("send-approval", dialogManageCreate.html(), link.title, 410, 520);
-      if($(".ui-dialog #emailToField").val().length > 0) {
-        $(".ui-dialog #yourCommentTxtArea")[0].focus();
+      var hasEmailFrom = dialogManageCreate.find("#emailFrom");
+      vrtxSimpleDialogs.openHtmlDialog("send-approval", dialogManageCreate.html(), link.title, 410, (hasEmailFrom ? 570 : 525));
+      var dialog = $(".ui-dialog");
+      if(dialog.find("#emailTo").val().length > 0) {
+        if(hasEmailFrom) {
+          dialog.find("#emailFrom")[0].focus();
+        } else {
+          dialog.find("#yourCommentTxtArea")[0].focus();
+        }
       }
     }
     e.stopPropagation();

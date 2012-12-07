@@ -39,8 +39,7 @@
     
     <#if (resourceMenuLeftServicesLinkable?? && resourceMenuRightServicesLinkable??)>
       <#if (resourceMenuLeftServicesLinkable == 0
-        && ((resourceMenuRightServicesLinkable < 2 && !unpublishLink.url?? && !publishLink.url??)
-         || (resourceMenuRightServicesLinkable < 3 && !unpublishLink.url?? && !publishLink.url?? && unlockPermission.permissionsQueryResult = 'false')))>
+        && (writePermission.permissionsQueryResult = 'false' || (!unpublishLink.url?? && !publishLink.url?? && resourceMenuRightServicesLinkable == 0)))>
         <#local compactClass = " compact" />    
       </#if>
     </#if>

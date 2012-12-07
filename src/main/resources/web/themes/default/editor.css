@@ -344,10 +344,10 @@ body#vrtx-simple-editor #vrtx-message-delete {
   left: 173px;
 }
 
-body#vrtx-simple-editor .vrtx-back {
-  background: transparent url("https://www.uio.no/vrtx/decorating/resources/dist/images/arrow-back-red.gif") no-repeat left center;
-  padding-left: 14px;
-  margin: 0 0 10px 0;
+body#vrtx-simple-editor h3 {
+  background: url("/vrtx/__vrtx/static-resources/themes/default/images/line-dotted.gif") repeat-x scroll left bottom transparent;
+  padding: 0 0 5px 0;
+  margin: 0 0 15px 0;
 }
 
 body#vrtx-simple-editor #vrtx-close-simple-structured-editor {
@@ -356,6 +356,7 @@ body#vrtx-simple-editor #vrtx-close-simple-structured-editor {
   width: 20px;
   height: 20px;
   float: right;
+  margin-top: 2px;
 }
 
 /* ^ Simple editor */

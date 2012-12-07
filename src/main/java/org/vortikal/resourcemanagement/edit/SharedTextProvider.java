@@ -2,6 +2,7 @@ package org.vortikal.resourcemanagement.edit;
 
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -37,7 +38,7 @@ public class SharedTextProvider implements ReferenceDataProvider {
         String token = requestContext.getSecurityToken();
         Repository repository = requestContext.getRepository();
         
-        Map<String, JSONObject> sharedTextValuesMap = new HashMap<String, JSONObject>();
+        Map<String, JSONObject> sharedTextValuesMap = new LinkedHashMap<String, JSONObject>();
         
         try {
             Resource r = repository.retrieve(token, p, false);

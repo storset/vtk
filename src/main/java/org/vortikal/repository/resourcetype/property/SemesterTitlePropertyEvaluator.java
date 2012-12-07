@@ -30,6 +30,8 @@
  */
 package org.vortikal.repository.resourcetype.property;
 
+import java.util.Locale;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
@@ -64,13 +66,14 @@ public class SemesterTitlePropertyEvaluator implements PropertyEvaluator {
 
         Property year = ctx.getSuppliedResource().getProperty(semesterYearPropDef);
         Property term = ctx.getSuppliedResource().getProperty(semesterTermPropDef);
+        Locale locale = ctx.getSuppliedResource().getContentLocale();
 
         if (term == null || year == null) {
             logger.warn("Property term or Property year is null.");
             return false;
         }
 
-        property.setStringValue(term.getFormattedValue() + " " + year.getFormattedValue());
+        property.setStringValue(term.getFormattedValue("localized", locale) + " " + year.getFormattedValue());
         return true;
     }
 

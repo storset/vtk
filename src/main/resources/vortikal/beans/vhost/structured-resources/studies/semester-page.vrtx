@@ -7,7 +7,17 @@ resourcetype semester-page : fellestekst-document {
     exam : resource_ref,
     syllabus : resource_ref,
     link-box-one-title : string,
-    link-box-one-links : json (link-box-one-linktitle : string, link-box-one-link : string) multiple,
+    link-box-one-links : json (linktitle : string, link : string) multiple,
+    link-box-two-title : string,
+    link-box-two-links : json (linktitle : string, link : string) multiple,
+    link-box-three-title : string,
+    link-box-three-links : json (linktitle : string, link : string) multiple,
+    link-box-four-title : string,
+    link-box-four-links : json (linktitle : string, link : string) multiple,
+    link-box-five-title : string,
+    link-box-five-links : json (linktitle : string, link : string) multiple,
+    link-box-six-title : string,
+    link-box-six-links : json (linktitle : string, link : string) multiple,
     teachers : json (teacher : string) multiple,
     studinfo-kontakt-text-field : simple_html,
     studinfo-kontakt : string
@@ -16,8 +26,7 @@ resourcetype semester-page : fellestekst-document {
   edit-rules {
     messages-placement (dropdown),
     group sec (schedule, exam, syllabus) (before link-box-one-title) horizontal,
-    group link-box-one (link-box-one-title, link-box-one-links),
-    teachers (after link-box-one),
+    teachers (after link-box-six),
     studinfo-kontakt (class[vrtx-shared-text]),
     group studinfo-kontakt-group (studinfo-kontakt, studinfo-kontakt-text-field)
   }
@@ -58,7 +67,7 @@ resourcetype semester-page : fellestekst-document {
   view {
     ##
     [def course-code resource-prop-obj-val(".", "courseContext.fs-course-code")]
-    [def semester resource-prop-obj-val(".", "semesterContext.semester")]
+    [def semester resource-prop-obj-val(".", "semesterContext.semesterTitle")]
     [def messages-placement resource-prop-obj-val(".", "messages-placement")]
     [def fronter resource-prop-obj-val(".", "fronter")]
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">

@@ -15,8 +15,8 @@
   <script type="text/javascript"><!-- 
     var deletePermanentlyUncheckedMessage = '${vrtx.getMsg("trash-can.permanent.delete.unchecked-message")}';
     var confirmDeletePermanently = '${vrtx.getMsg("trash-can.permanent.delete.confirm")}';
-    var confirmDeletePermanentlyAnd = '${vrtx.getMsg("trash-can.permanent.delete.confirm.and")}';
-    var confirmDeletePermanentlyMore = '${vrtx.getMsg("trash-can.permanent.delete.confirm.more")}';
+    var confirmAnd = '${vrtx.getMsg("trash-can.permanent.delete.confirm.and")}';
+    var confirmMore = '${vrtx.getMsg("trash-can.permanent.delete.confirm.more")}';
     var confirmDeletePermTitle = '${vrtx.getMsg("trash-can.delete-permanent.confirm")}';
     var recoverUncheckedMessage = '${vrtx.getMsg("trash-can.recovery.unchecked-message")}'; 
     

@@ -167,10 +167,10 @@ view-components {
       <head>
         <title>[call "json:field" {"select":"title"}]</title>
       </head>
-      <body id="vrtx-structured-project">
+      <body id="vrtx-structured-article">
         <div id="vrtx-content">
           [resources-props "."]
-        [def document structured-document()]
+          [def document structured-document()]
           <div id="vrtx-main-content" class="vrtx-hide-additional-content-true"> 
             <h1>[localized 'oppbygning']</h1>
             [call "comp:introduction"]

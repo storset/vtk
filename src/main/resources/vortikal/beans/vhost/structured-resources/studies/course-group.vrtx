@@ -38,7 +38,7 @@ resourcetype course-group : fellestekst-document {
       <head>
         <title>[if course-group-scope != null && course-group-scope != ""][val course-group-scope]-[localized 'localized-group'][endif][if title != null && title != ""] - [val title][endif]</title>
       </head>
-      <body>
+      <body id="vrtx-course-group">
         <h1>[if course-group-scope != null && course-group-scope != ""][val course-group-scope]-[localized 'localized-group'][endif][if title != null && title != ""] - [val title][endif]</h1>
         [if about != null && about != ""]
           [val about # unescaped]

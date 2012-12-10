@@ -32,10 +32,6 @@ public class SharedTextProvider implements ReferenceDataProvider {
     /* TODO: Need better error handling */
     @SuppressWarnings("unchecked")
     public Map<String, JSONObject> getSharedTextValues(String docType, String propName) {
-        
-        if (propName.equals("studinfo-kontakt")) {
-            docType = "studinfo-kontakt";
-        }
 
         Path p = Path.fromString("/vrtx/fellestekst/" + docType + "/" + propName + ".html");
         RequestContext requestContext = RequestContext.getRequestContext();

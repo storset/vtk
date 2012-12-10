@@ -225,17 +225,17 @@
   display: none;
 }
 
-#editor .teachingsemester-particular-semester,
-#editor .teachingsemester-other,
-#editor .examsemester-particular-semester,
-#editor .examsemester-other {
+#editor .if-teachingsemester-particular,
+#editor .if-examsemester-particular,
+#editor .teachingsemester-every-other-semester,
+#editor .examsemester-every-other-semester {
   display: none;  
 }
 
-#editor.teachingsemester-selected-particular-semester .teachingsemester-particular-semester,
-#editor.teachingsemester-selected-other .teachingsemester-other,
-#editor.examsemester-selected-particular-semester .examsemester-particular-semester,
-#editor.examsemester-selected-other .examsemester-other {
+#editor.teachingsemester-selected-particular .if-teachingsemester-particular,
+#editor.examsemester-selected-particular .if-examsemester-particular,
+#editor.teachingsemester-selected-every-other .teachingsemester-every-other-semester,
+#editor.examsemester-selected-every-other .examsemester-every-other-semester {
   display: block;
 }
 

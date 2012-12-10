@@ -81,13 +81,13 @@ function hideShowSemester(typeSemesterElem) {
   var prefix = typeSemesterElem.attr("id") + "-selected";
   switch (typeSemesterElem.val()) {
     case "particular-semester":
-      container.removeClass(prefix + "-other").addClass(prefix + "-particular-semester");
+      container.removeClass(prefix + "-every-other").addClass(prefix + "-particular");
       break;
-    case "other":
-      container.removeClass(prefix + "-particular-semester").addClass(prefix + "-other");
-      break;
+    case "every-other":
+      container.removeClass(prefix + "-particular").addClass(prefix + "-every-other");
+      break;  
     default:
-      container.removeClass(prefix + "-other").removeClass(prefix + "-particular-semester");
+      container.removeClass(prefix + "-particular").removeClass(prefix + "-every-other");
       break;
   }
 }

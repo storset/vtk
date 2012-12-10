@@ -47,6 +47,19 @@ $(document).ready(function () {
   }
   setShowHide('course-fee', ["course-fee-amount"], false);
   
+  // Semester page
+  if($("#editor.vrtx-semester-page").length) {
+    for(var grouped = $(".vrtx-grouped[class*=link-box]"), i = grouped.length; i--;) { 
+      $(grouped[i]).find("> *:not(.header)").wrapAll("<div />");
+    }
+    grouped.wrapAll("<div id='link-boxes' />");
+    $("#editor #link-boxes").accordion({ header: "> div[class*=link-box] > .header",
+                             autoHeight: false,
+                             collapsible: true,
+                             active: false
+                           });
+  }
+  
   // 'Samlet program'-document
   var samletElm = $(".samlet-element");
   if(samletElm.length) {

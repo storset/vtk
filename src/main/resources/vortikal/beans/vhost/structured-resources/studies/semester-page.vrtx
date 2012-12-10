@@ -25,7 +25,13 @@ resourcetype semester-page : fellestekst-document {
 
   edit-rules {
     messages-placement (dropdown),
-    group sec (schedule, exam, syllabus) (before link-box-one-title) horizontal,
+    group sec (schedule, exam, syllabus) (before link-box-one-title),
+    group link-box-one (link-box-one-title, link-box-one-links),
+    group link-box-two (link-box-two-title, link-box-two-links),
+    group link-box-three (link-box-three-title, link-box-three-links),
+    group link-box-four (link-box-four-title, link-box-four-links),
+    group link-box-five (link-box-five-title, link-box-five-links),
+    group link-box-six (link-box-six-title, link-box-six-links),
     teachers (after link-box-six),
     studinfo-kontakt (class[vrtx-shared-text]),
     group studinfo-kontakt-group (studinfo-kontakt, studinfo-kontakt-text-field)

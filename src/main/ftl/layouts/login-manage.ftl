@@ -54,7 +54,7 @@
             <#if opt = "logout">
               <form action="${url?html}" method="post" class="vrtx-dropdown-form">
                 <@vrtx.csrfPreventionToken url=url />
-                <button type="submit" id="logoutAction" name="logoutAction">
+                <button type="submit" name="logoutAction">
                   <@vrtx.msg code="decoration.${type}.${opt?html}" />
                 </button>
               </form>

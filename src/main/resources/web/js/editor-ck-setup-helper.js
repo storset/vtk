@@ -149,7 +149,7 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
         completeTB = studyToolbar;
       } 
       if (name == "courses-in-group"
-          || name == "relevant-study-programmes") { // CourseGroup toolbar
+       || name == "relevant-study-programmes") { // CourseGroup toolbar
         completeTB = courseGroupToolbar;
       }
     }

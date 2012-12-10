@@ -156,7 +156,7 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
     setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, defaultLanguage, cssFileList, height, maxHeight, 50, completeTB,
                       isCompleteEditor, true, baseDocumentUrl, isSimpleHTML);
   } else {
-    setCKEditorConfig(name, linkBrowseUrl, null, null, defaultLanguage, cssFileList, 40, 400, 40, withoutSubSuperToolbar, 
+    setCKEditorConfig(name, linkBrowseUrl, null, null, defaultLanguage, cssFileList, 90, 400, 40, withoutSubSuperToolbar, 
                       isCompleteEditor, true, baseDocumentUrl, isSimpleHTML);
   }
 

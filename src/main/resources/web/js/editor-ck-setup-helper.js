@@ -155,9 +155,6 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
     }
     setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, defaultLanguage, cssFileList, height, maxHeight, 50, completeTB,
                       isCompleteEditor, true, baseDocumentUrl, isSimpleHTML);
-  } else if (isWithoutSubSuper) { // TODO: Oddity - the next condition code block has the corresponding toolbar
-    setCKEditorConfig(name, linkBrowseUrl, null, null, defaultLanguage, cssFileList, 40, 400, 40, inlineToolbar, 
-                      isCompleteEditor, true, baseDocumentUrl, isSimpleHTML);
   } else {
     setCKEditorConfig(name, linkBrowseUrl, null, null, defaultLanguage, cssFileList, 40, 400, 40, withoutSubSuperToolbar, 
                       isCompleteEditor, true, baseDocumentUrl, isSimpleHTML);

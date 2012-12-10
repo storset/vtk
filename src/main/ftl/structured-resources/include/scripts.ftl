@@ -6,9 +6,6 @@
 <#macro includeScripts scripts>
   <#local containsShowHideScripts = containsScripts(scripts, 'SHOWHIDE') />
   <#local containsMultipleInputFieldScripts = containsScripts(scripts, 'MULTIPLEINPUTFIELDS') />
-  <#if containsShowHideScripts>
-    <@showhide.addShowHideScripts srcBase="${jsBaseURL?html}"/>
-  </#if>
   <script type="text/javascript"><!--
     $(document).ready(function() {
       <#list scripts as script>

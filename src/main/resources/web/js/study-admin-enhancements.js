@@ -45,6 +45,7 @@ $(document).ready(function () {
       });
     }
   }
+  setShowHide('course-fee', ["course-fee-amount"], false);
   
   // 'Samlet program'-document
   var samletElm = $(".samlet-element");

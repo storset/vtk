@@ -484,6 +484,35 @@ function unsavedChangesInEditorMessage() {
   }
 }
 
+function setShowHide(name, parameters, hideTrues) {
+  toggle(name, parameters, hideTrues);
+  $("#editor").on("click", '[name=' + name + ']', function () {
+    toggle(name, parameters, hideTrues);
+  });
+}
+
+function toggle(name, parameters, hideTrues) {
+  var hide = hideTrues ? '-true' : '-false';
+  var show = hideTrues ? '-false' : '-true';
+
+  var trues = $('#' + name + hide);
+  for(var i = 0, truesLen = trues.length; i < truesLen; i++) {
+    if (trues[i].checked) {
+      for (var k = 0, parametersLen = parameters.length; k < parametersLen; k++) {
+        $('div.' + parameters[k]).hide("fast");
+      }
+    }
+  }
+  var falses = $('#' + name + show);
+  for(i = 0, falsesLen = falses.length; i < falsesLen; i++) {
+    if (falses[i].checked) {
+      for (k = 0, parametersLength = parameters.length; k < parametersLength; k++) {
+        $('div.' + parameters[k]).show("fast");
+      }
+    }
+  }
+}
+
 /* Helper functions */
 
 function getCkValue(instanceName) {

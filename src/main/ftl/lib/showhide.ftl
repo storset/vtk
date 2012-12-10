@@ -1,9 +1,5 @@
 <#ftl strip_whitespace=true>
-<#-- Adds the default required scripts necessary to use show and hide functionality -->
-
-<#macro addShowHideScripts srcBase>
-  <script type="text/javascript" src="${srcBase}/editor-showhide.js"></script>
-</#macro>
+<#-- Show and hide functionality -->
 
 <#macro addShowHide script>
   <#local parameters = '' />
@@ -16,5 +12,5 @@
    	  </#if>
    	</#list>
   </#list>
-  setShowHide('${script.name}', [${parameters}]);
+  setShowHide('${script.name}', [${parameters}], true);
 </#macro>

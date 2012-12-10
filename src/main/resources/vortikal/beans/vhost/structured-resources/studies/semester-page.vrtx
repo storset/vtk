@@ -81,66 +81,50 @@ resourcetype semester-page : fellestekst-document {
       <head>
         <title>[localized 'semesterpage-for'] [if course-code != null && course-code != ""][val course-code][endif][if course-code != null && course-code != "" && semester != null && semester != ""] - [endif][if semester != null && semester != ""][val semester][endif]</title>
       </head>
-      <body>
-        <div class="main">
-          [call "comp:course-folder"]
-          <h1>[localized 'semesterpage-for'] [if course-code != null && course-code != ""][val course-code][endif][if course-code != null && course-code != "" && semester != null && semester != ""] - [endif][if semester != null && semester != ""][val semester][endif]</h1>
-          <div>
+      <body id="vrtx-semester">
+        <div id="vrtx-content">
+          <div id="vrtx-main-content">
+            [call "comp:course-folder"]
+            <h1>[localized 'semesterpage-for'] [if course-code != null && course-code != ""][val course-code][endif][if course-code != null && course-code != "" && semester != null && semester != ""] - [endif][if semester != null && semester != ""][val semester][endif]</h1>
             [call "comp:show-if-published"{"prop":"schedule"}]
             [call "comp:show-if-published"{"prop":"exam"}]
             [call "comp:show-if-published"{"prop":"syllabus"}]
-          </div>
-          [if messages-placement != null && messages-placement = "middle"]
-            <div>
+            [if messages-placement != null && messages-placement = "middle"]
               <h2>Beskjeder</h2>
-              <div class="vrtx-introduction">
-                <a id="vrtx-message-listing-create" class="button" href="/studier/emner/inf1000/h12/beskjeder?mode=simple-editor&vrtx=admin&action=edit">
-                  <span>[localized 'new-message']</span>
-                </a>
-              </div>
-              <div>
-                [call "include:feed" {"url" : "/studier/emner/inf1000/h12/beskjeder?vrtx=feed"}]
-              </div>
-            </div>
-          [endif]
-          [if fronter]
-            <div>
+              <a id="vrtx-message-listing-create" class="button" href="/studier/emner/inf1000/h12/beskjeder?mode=simple-editor&vrtx=admin&action=edit">
+                <span>[localized 'new-message']</span>
+              </a>
+              [call "include:feed" {"url" : "/studier/emner/inf1000/h12/beskjeder?vrtx=feed"}]
+            [endif]
+            [if fronter]
               <h2>[localized 'fronter']</h2>
               <p>[localized 'fronter-text']</p>
               [localized 'log-into-fronter']
-            </div>
-          [endif]
-        </div>
-        <div class="right-column">
-          <div>
-            <h2>Faglærere</h2>
-            [def document structured-document()]
-            [def teachers document.properties.teachers]
-            [if teachers != null]
-              [list teachers teacher]
-                [if teacher.teacher != null]
-                  <p>[val teacher.teacher]</p>
-                [endif]
-              [endlist]
             [endif]
           </div>
-          <div>
-            <h2>Kontakt</h2>
-            [call "comp:vis-fellestekst" {"docType":"studinfo-kontakt", "propName":"studinfo-kontakt"}]
-          </div>
-          [if messages-placement = null || messages-placement = "right"]
-            <div>
-              <h2>Beskjeder</h2>
-              <div class="vrtx-introduction">
+          <div id="vrtx-additional-content">
+            <div id="vrtx-related-content">
+              <h2>Faglærere</h2>
+              [def document structured-document()]
+              [def teachers document.properties.teachers]
+              [if teachers != null]
+                [list teachers teacher]
+                  [if teacher.teacher != null]
+                    <p>[val teacher.teacher]</p>
+                  [endif]
+                [endlist]
+              [endif]
+              <h2>Kontakt</h2>
+              [call "comp:vis-fellestekst" {"docType":"studinfo-kontakt", "propName":"studinfo-kontakt"}]
+              [if messages-placement = null || messages-placement = "right"]
+                <h2>Beskjeder</h2>
                 <a id="vrtx-message-listing-create" class="button" href="/studier/emner/inf1000/h12/beskjeder?mode=simple-editor&vrtx=admin&action=edit">
                   <span>[localized 'new-message']</span>
                 </a>
-              </div>
-              <div>
                 [call "include:feed" {"url" : "/studier/emner/inf1000/h12/beskjeder?vrtx=feed"}]
-              </div>
+              [endif]
             </div>
-          [endif]
+          </div>
         </div>
       </body>
     </html>

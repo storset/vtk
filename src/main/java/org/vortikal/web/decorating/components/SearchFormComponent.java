@@ -48,25 +48,16 @@ public class SearchFormComponent extends ViewRenderingDecoratorComponent {
     protected void processModel(Map<String, Object> model, DecoratorRequest request, DecoratorResponse response)
             throws Exception {
 
-        Path resourceURI = RequestContext.getRequestContext().getCurrentCollection();
+        Path scopeUri = RequestContext.getRequestContext().getCurrentCollection();
 
-        String uri = request.getStringParameter("uri");
-        if (isValidPath(uri)) {
-            resourceURI = Path.fromString(uri);
-        }
-
-        URL searchURL = service.constructURL(resourceURI);
+        String uriParam = request.getStringParameter("uri");
+        try {
+            scopeUri = Path.fromString(uriParam);
+        } catch (IllegalArgumentException iae) {}
+        
+        URL searchURL = service.constructURL(scopeUri);
         model.put("url", searchURL);
 
-    }
-
-    private boolean isValidPath(String uri) {
-        try {
-            Path.fromString(uri);
-            return true;
-        } catch (IllegalArgumentException iae) {
-        }
-        return false;
     }
 
     @Required

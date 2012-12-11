@@ -322,24 +322,14 @@ function storeInitPropValues() {
 
   var inputFields = contents.find("input").not("[type=submit]").not("[type=button]")
                                           .not("[type=checkbox]").not("[type=radio]");
-  for(var i = 0, len = inputFields.length; i < len; i++) {
-    INITIAL_INPUT_FIELDS[i] = inputFields[i].value;
-  }
-  
   var selects = contents.find("select");
-  for(var i = 0, len = selects.length; i < len; i++) {
-    INITIAL_SELECTS[i] = selects[i].value;
-  }
-  
   var checkboxes = contents.find("input[type=checkbox]:checked");
-  for(var i = 0, len = checkboxes.length; i < len; i++) {
-    INITIAL_CHECKBOXES[i] = checkboxes[i].name;
-  }
-  
   var radioButtons = contents.find("input[type=radio]:checked");
-  for(var i = 0, len = radioButtons.length; i < len; i++) {
-    INITIAL_RADIO_BUTTONS[i] = radioButtons[i].name + " " + radioButtons[i].value;
-  }
+  
+  for(var i = 0, len = inputFields.length; i < len; i++)  INITIAL_INPUT_FIELDS[i] = inputFields[i].value;
+  for(    i = 0, len = selects.length; i < len; i++)      INITIAL_SELECTS[i] = selects[i].value;
+  for(    i = 0, len = checkboxes.length; i < len; i++)   INITIAL_CHECKBOXES[i] = checkboxes[i].name;
+  for(    i = 0, len = radioButtons.length; i < len; i++) INITIAL_RADIO_BUTTONS[i] = radioButtons[i].name + " " + radioButtons[i].value;
 }
 
 function validTextLengthsInEditor(isOldEditor) {
@@ -409,74 +399,37 @@ function validTextLengthsInEditorError(elm, isOldEditor) {
 
 function unsavedChangesInEditor() {
   if (!NEED_TO_CONFIRM) return false;
-  
   var contents = $("#contents");
 
-  // Inputfields (not submit and button)
   var currentStateOfInputFields = contents.find("input").not("[type=submit]").not("[type=button]")
                                                         .not("[type=checkbox]").not("[type=radio]");
   var textLen = currentStateOfInputFields.length;
-  if(textLen != INITIAL_INPUT_FIELDS.length) { // if something is removed or added
-    return true;
-  }
-
-  // Selects
   var currentStateOfSelects = contents.find("select");
   var selectsLen = currentStateOfSelects.length;
-  if(selectsLen != INITIAL_SELECTS.length) { // if something is removed or added
-    return true;
-  }
-  
-  // Checkboxes
   var currentStateOfCheckboxes = contents.find("input[type=checkbox]:checked");
   var checkboxLen = currentStateOfCheckboxes.length;
-  if(checkboxLen != INITIAL_CHECKBOXES.length) { // if something is removed or added
-    return true;
-  }
-  
-  // Radio buttons
   var currentStateOfRadioButtons = contents.find("input[type=radio]:checked");
   var radioLen = currentStateOfRadioButtons.length;
-  if(radioLen != INITIAL_RADIO_BUTTONS.length) { // if something is removed or added
-    return true;
-  }
   
+  // Check if count has changed
+  if(selectsLen != INITIAL_SELECTS.length
+  || checkboxLen != INITIAL_CHECKBOXES.length
+  || radioLen != INITIAL_RADIO_BUTTONS.length
+  || textLen != INITIAL_INPUT_FIELDS.length) return true;
+
   // Check if values have changed
-  
-  for (var i = 0; i < textLen; i++) {
-    if (currentStateOfInputFields[i].value !== INITIAL_INPUT_FIELDS[i]) {
-      return true; // unsaved textfield
-    }
-  }
-  
-  for (var i = 0; i < selectsLen; i++) {
-    if (currentStateOfSelects[i].value !== INITIAL_SELECTS[i]) {
-      return true; // unsaved select value
-    }
-  }
-  
-  for (var i = 0; i < checkboxLen; i++) {
-    if (currentStateOfCheckboxes[i].name !== INITIAL_CHECKBOXES[i]) {
-      return true; // unsaved checked checkbox
-    }
-  }
+  for (var i = 0; i < textLen; i++)     if(currentStateOfInputFields[i].value !== INITIAL_INPUT_FIELDS[i])   return true;
+  for (    i = 0; i < selectsLen; i++)  if(currentStateOfSelects[i].value !== INITIAL_SELECTS[i])            return true;
+  for (    i = 0; i < checkboxLen; i++) if(currentStateOfCheckboxes[i].name !== INITIAL_CHECKBOXES[i])       return true;
+  for (    i = 0; i < radioLen; i++)    if(currentStateOfRadioButtons[i].name + " "
+                                         + currentStateOfRadioButtons[i].value !== INITIAL_RADIO_BUTTONS[i]) return true;
 
-  for (var i = 0; i < radioLen; i++) {
-    var currentStateOfRadioButton = currentStateOfRadioButtons[i].name + " " + currentStateOfRadioButtons[i].value;
-    if (currentStateOfRadioButton !== INITIAL_RADIO_BUTTONS[i]) {
-      return true; // unsaved checked radio button
-    }
-  }
-  
-  //---
-
-  // Textareas (CK->checkDirty())
-  var currentStateOfTextFields = contents.find("textarea");
+  var currentStateOfTextFields = contents.find("textarea"); // CK->checkDirty()
   if (typeof CKEDITOR !== "undefined") {
     for (i = 0, len = currentStateOfTextFields.length; i < len; i++) {
       var ckInstance = getCkInstance(currentStateOfTextFields[i].name);
       if (ckInstance && ckInstance.checkDirty() && ckInstance.getData() !== "") {
-        return true  // unsaved textarea
+        return true;
       }
     }
   }

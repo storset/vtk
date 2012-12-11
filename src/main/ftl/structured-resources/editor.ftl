@@ -18,7 +18,6 @@
   <#assign language = vrtx.getMsg("eventListing.calendar.lang", "en") />
   
   <script type="text/javascript"><!-- 
-
     $(window).load(function() {
       initDatePicker(datePickerLang); // TODO: this would never run if resources hangs
     });

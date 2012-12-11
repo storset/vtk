@@ -296,7 +296,18 @@ $(document).ready(function() {
 });
 
 $(window).load(function () {
-  storeInitPropValues();
+  // Store initial counts and values when all is initialized in editor
+  var nullDeferred = $.Deferred();
+      nullDeferred.resolve();
+  $.when(((typeof MANUALLY_APPROVE_INITIALIZED === "object") ? MANUALLY_APPROVE_INITIALIZED : nullDeferred),
+         ((typeof MULTIPLE_INPUT_FIELD_INITIALIZED === "object") ? MULTIPLE_INPUT_FIELD_INITIALIZED : nullDeferred),
+         ((typeof JSON_ELEMENTS_INITIALIZED === "object") ? JSON_ELEMENTS_INITIALIZED : nullDeferred),
+         ((typeof DATE_PICKER_INITIALIZED === "object") ? DATE_PICKER_INITIALIZED : nullDeferred),
+         ((typeof IMAGE_EDITOR_INITIALIZED === "object") ? IMAGE_EDITOR_INITIALIZED : nullDeferred)).done(function() {
+    vrtxAdmin.log({msg: "All initialized."});
+    storeInitPropValues();
+  });
+  
   if (typeof CKEDITOR !== "undefined") {
     CKEDITOR.on('instanceReady', function() {
       $(".cke_contents iframe").contents().find("body").bind('keydown', 'ctrl+s', function(e) {
@@ -306,7 +317,6 @@ $(window).load(function () {
   }
 });
 
-/* Store initial values of inputfields */
 function storeInitPropValues() {
   var contents = $("#contents");
 
@@ -330,7 +340,6 @@ function storeInitPropValues() {
   for(var i = 0, len = radioButtons.length; i < len; i++) {
     INITIAL_RADIO_BUTTONS[i] = radioButtons[i].name + " " + radioButtons[i].value;
   }
-  INITIAL_CHECK_COMPLETE = true; 
 }
 
 function validTextLengthsInEditor(isOldEditor) {
@@ -399,7 +408,7 @@ function validTextLengthsInEditorError(elm, isOldEditor) {
 }
 
 function unsavedChangesInEditor() {
-  if (!NEED_TO_CONFIRM || !INITIAL_CHECK_COMPLETE) return false;
+  if (!NEED_TO_CONFIRM) return false;
   
   var contents = $("#contents");
 
@@ -414,7 +423,7 @@ function unsavedChangesInEditor() {
   // Selects
   var currentStateOfSelects = contents.find("select");
   var selectsLen = currentStateOfSelects.length;
-  if( selectsLen != INITIAL_SELECTS.length) { // if something is removed or added
+  if(selectsLen != INITIAL_SELECTS.length) { // if something is removed or added
     return true;
   }
   

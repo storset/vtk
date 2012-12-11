@@ -19,6 +19,8 @@
  *
  */
 
+var IMAGE_EDITOR_INITIALIZED = $.Deferred();
+
 function VrtxImageEditor() {
   var instance; // Class-like singleton pattern (p.145 JavaScript Patterns)
   VrtxImageEditor = function VrtxImageEditor() {
@@ -277,10 +279,7 @@ VrtxImageEditor.prototype.displayDimensions = function displayDimensions(w, h) {
     $(dimensionHtml).insertBefore("#vrtx-image-editor-preview");
     $("#resource-width").attr("autocomplete", "off");
     $("#resource-height").attr("autocomplete", "off");
-    // TODO !spageti && !run twice
-    if (typeof UNSAVED_CHANGES_CONFIRMATION !== "undefined") {
-      storeInitPropValues();
-    }
+    IMAGE_EDITOR_INITIALIZED.resolve();
   }
 };
 

@@ -3,6 +3,7 @@
  *
  */
 
+var DATE_PICKER_INITIALIZED = $.Deferred();
 function initDatePicker(language) {
 
   // i18n (default english)
@@ -17,11 +18,6 @@ function initDatePicker(language) {
     displayDateAsMultipleInputFields(dateFields[i].name);
   }
 
-  // TODO !spageti && !run twice
-  if (typeof UNSAVED_CHANGES_CONFIRMATION !== "undefined") {
-    storeInitPropValues();
-  }
-
   // Specific for start and end date
   if (!$("#start-date-date").length || !$("#end-date-date").length) {
     return;
@@ -33,6 +29,8 @@ function initDatePicker(language) {
   $("#start-date-date").change(function () {
     setDefaultEndDate();
   });
+  
+  DATE_PICKER_INITIALIZED.resolve();
 }
 
 function displayDateAsMultipleInputFields(name) {

@@ -42,6 +42,7 @@
      </#if>
 
     <script type="text/javascript"><!--
+      var MULTIPLE_INPUT_FIELD_INITIALIZED = $.Deferred();
       $(window).load(function() {
         initDatePicker(datePickerLang); // TODO: this would never run if resources hangs
       });
@@ -97,6 +98,7 @@
             var manuallyApproveButton = $("#manually-approve-container-title");
             manuallyApproveButton.parent().find("> div:first-child").append(manuallyApproveButton.remove());
           }
+          MULTIPLE_INPUT_FIELD_INITIALIZED.resolve();
         }); 
       }); 
 

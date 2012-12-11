@@ -8,7 +8,8 @@ var LAST_MANUALLY_APPROVED_LOCATIONS = "",
     AGGREGATED_LOCATIONS_TEXTFIELD,
     APPROVED_ONLY = false,
     ASYNC_GEN_PAGE_TIMER,
-    MANUALLY_APPROVE_TEMPLATES = [];
+    MANUALLY_APPROVE_TEMPLATES = [],
+    MANUALLY_APPROVE_INITIALIZED = $.Deferred();
 
 $(window).load(function() {
 
@@ -35,7 +36,7 @@ $(window).load(function() {
     }
 
     $.when(manuallyApprovedTemplatesRetrieved).done(function() {
-      retrieveResources(".", locations, aggregatedlocations);
+      retrieveResources(".", locations, aggregatedlocations, true);
       var html = $.mustache(MANUALLY_APPROVE_TEMPLATES["menu"], { approveShowAll: approveShowAll, 
                                                                   approveShowApprovedOnly: approveShowApprovedOnly });  
     
@@ -86,7 +87,7 @@ $(document).ready(function() {
           aggregatedlocations = aggregatedlocations.split(",");
         }
 
-        retrieveResources(".", locations, aggregatedlocations);  
+        retrieveResources(".", locations, aggregatedlocations, false);  
       }
       e.stopPropagation();
       e.preventDefault();
@@ -144,7 +145,7 @@ $(document).ready(function() {
  * @param aggregatedlocations as array
  */
 
-function retrieveResources(serviceUri, locations, aggregatedlocations) {
+function retrieveResources(serviceUri, locations, aggregatedlocations, isInit) {
 
   if (APPROVED_ONLY) {
     var getUri = serviceUri + "/?vrtx=admin&service=manually-approve-resources&approved-only";
@@ -181,10 +182,6 @@ function retrieveResources(serviceUri, locations, aggregatedlocations) {
         $("#manually-approve-container:hidden").removeClass("hidden");
         
         generateManuallyApprovedContainer(results);
-        
-        if (typeof UNSAVED_CHANGES_CONFIRMATION !== "undefined") {
-          storeInitPropValues();
-        }
       } else {
         $("#approve-spinner").remove();
         if(!APPROVED_ONLY) {
@@ -194,6 +191,9 @@ function retrieveResources(serviceUri, locations, aggregatedlocations) {
             .insertAfter("#vrtx-manually-approve-tab-menu");
         }
         $("#manually-approve-container:visible").addClass("hidden");
+        if(isInit) {
+          MANUALLY_APPROVE_INITIALIZED.resolve();
+        }
       }
     }
   });
@@ -311,10 +311,9 @@ function generateManuallyApprovedContainer(resources) {
       if (len > prPage) {
         $("#manually-approve-container #approve-page-" + pages).hide();
       }
-      // TODO !spageti && !run twice
-     if (typeof UNSAVED_CHANGES_CONFIRMATION !== "undefined") {
-       storeInitPropValues();
-     }
+      if(isInit) {
+        MANUALLY_APPROVE_INITIALIZED.resolve();
+      }
     }
   }, 1);
 

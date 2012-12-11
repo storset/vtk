@@ -14,6 +14,7 @@
     var TEMPLATES = [];
     var LIST_OF_JSON_ELEMENTS = [];
     var ACCORDION_MOVE_TO_AFTER_CHANGE = null;
+    var JSON_ELEMENTS_INITIALIZED = $.Deferred(); 
     
     $(document).ready(function() {
 
@@ -105,6 +106,7 @@
                                                 }
                                               }  
                                             });
+        JSON_ELEMENTS_INITIALIZED.resolve();
       });
 
       var appContent = $("#app-content");

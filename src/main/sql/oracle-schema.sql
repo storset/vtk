@@ -406,7 +406,6 @@ values (
 
 
 -- Insert title property for root resource:
-
 insert into extra_prop_entry 
 select extra_prop_entry_seq_pk.nextval,
        resource_id,
@@ -416,6 +415,32 @@ select extra_prop_entry_seq_pk.nextval,
        '/',
        null,
        null
+from vortex_resource where uri = '/';
+
+-- Insert publish-date prop for root resource
+insert into extra_prop_entry 
+select extra_prop_entry_seq_pk.nextval,
+       resource_id,
+       3,
+       null,
+       'publish-date',
+       current_timestamp,
+       null,
+       null,
+       'N'
+from vortex_resource where uri = '/';
+
+-- Insert published prop for root resource
+insert into extra_prop_entry 
+select extra_prop_entry_seq_pk.nextval,
+       resource_id,
+       4,
+       null,
+       'published',
+       'true',
+       null,
+       null,
+       'N'
 from vortex_resource where uri = '/';
 
 

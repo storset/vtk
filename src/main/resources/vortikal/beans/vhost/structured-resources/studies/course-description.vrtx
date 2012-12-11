@@ -206,7 +206,7 @@ resourcetype course-description : fellestekst-document {
         ##
         <table class="master" cellpadding="5" cellspacing="5" width="100%">
           <tbody>
-            <tr>
+            <tr valign="top">
               <td>
                 <b>[localized 'semester']</b>
                 <p>
@@ -636,11 +636,19 @@ resourcetype course-description : fellestekst-document {
             [if studinfo-kontakt != null && studinfo-kontakt != "" && studinfo-kontakt != "ingen-fellestekst"]
               <tr>
                 <td>
-                  <b>[localized 'contact']</b>
-                  [call "comp:vis-fellestekst" {"docType":"studinfo-kontakt", "propName":"studinfo-kontakt"}]
-                  [if studinfo-kontakt-text-field != null && studinfo-kontakt-text-field != ""]
-                    [val studinfo-kontakt-text-field # unescaped]
-                  [endif]
+                  <table class="contact" cellpadding="5" cellspacing="5" width="100%">
+                    <tbody>
+                      <tr valign="top">
+                        <td>
+                          <b>[localized 'contact']</b>
+                          [call "comp:vis-fellestekst" {"docType":"studinfo-kontakt", "propName":"studinfo-kontakt"}]
+                          [if studinfo-kontakt-text-field != null && studinfo-kontakt-text-field != ""]
+                            [val studinfo-kontakt-text-field # unescaped]
+                          [endif]
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
                 </td>
               </tr>
             [endif]

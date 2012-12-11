@@ -67,6 +67,43 @@ resourcetype semester-page : fellestekst-document {
       [endif]
       ##
     }
+
+    resource-links (title) {
+      ##
+      [def link-box-title resource-prop(".", title)]
+      [if link-box-title != null && link-box-title != ""]
+        <div>
+          <h2>[val link-box-title]</h2>
+          [def document structured-document()]
+          [def links null]
+          [if title = "link-box-one-title"]
+            [def links document.properties.link-box-one-links]
+          [elseif title = "link-box-two-title"]
+            [def links document.properties.link-box-two-links]
+          [elseif title = "link-box-three-title"]
+            [def links document.properties.link-box-three-links]
+          [elseif title = "link-box-four-title"]
+            [def links document.properties.link-box-four-links]
+          [elseif title = "link-box-five-title"]
+            [def links document.properties.link-box-five-links]
+          [elseif title = "link-box-six-title"]
+            [def links document.properties.link-box-six-links]
+          [endif]
+          [if links != null]
+            [list links link]
+              <ul>
+                [if link.link != null && link.link != "" && link.linktitle != null && link.linktitle != ""]
+                  <li>
+                    <a href="[val link.link]">[val link.linktitle]</a>
+                  </li>
+                [endif]
+              </ul>
+            [endlist]
+          [endif]
+        </div>
+      [endif]
+      ##
+    }
     
   }
 
@@ -84,23 +121,37 @@ resourcetype semester-page : fellestekst-document {
       <body id="vrtx-semester">
         <div id="vrtx-content">
           <div id="vrtx-main-content">
+            <div>
             [call "comp:course-folder"]
             <h1>[localized 'semesterpage-for'] [if course-code != null && course-code != ""][val course-code][endif][if course-code != null && course-code != "" && semester != null && semester != ""] - [endif][if semester != null && semester != ""][val semester][endif]</h1>
             [call "comp:show-if-published"{"prop":"schedule"}]
             [call "comp:show-if-published"{"prop":"exam"}]
             [call "comp:show-if-published"{"prop":"syllabus"}]
+            </div>
             [if messages-placement != null && messages-placement = "middle"]
-              <h2>Beskjeder</h2>
-              <a id="vrtx-message-listing-create" class="button" href="/studier/emner/inf1000/h12/beskjeder?mode=simple-editor&vrtx=admin&action=edit">
-                <span>[localized 'new-message']</span>
-              </a>
-              [call "include:feed" {"url" : "/studier/emner/inf1000/h12/beskjeder?vrtx=feed"}]
+              <div>
+                <h2>Beskjeder</h2>
+                <a id="vrtx-message-listing-create" class="button" href="/studier/emner/inf1000/h12/beskjeder?mode=simple-editor&vrtx=admin&action=edit">
+                  <span>[localized 'new-message']</span>
+                </a>
+                [call "include:feed" {"url" : "/studier/emner/inf1000/h12/beskjeder?vrtx=feed"}]
+              </div>
             [endif]
             [if fronter]
-              <h2>[localized 'fronter']</h2>
-              <p>[localized 'fronter-text']</p>
-              [localized 'log-into-fronter']
+              <div>
+                <h2>[localized 'fronter']</h2>
+                <p>[localized 'fronter-text']</p>
+                [localized 'log-into-fronter']
+              </div>
             [endif]
+            <div>
+              [call "comp:resource-links"{"title":"link-box-one-title"}]
+              [call "comp:resource-links"{"title":"link-box-two-title"}]
+              [call "comp:resource-links"{"title":"link-box-three-title"}]
+              [call "comp:resource-links"{"title":"link-box-four-title"}]
+              [call "comp:resource-links"{"title":"link-box-five-title"}]
+              [call "comp:resource-links"{"title":"link-box-six-title"}]
+            </div>
           </div>
           <div id="vrtx-additional-content">
             <div id="vrtx-related-content">
@@ -109,7 +160,7 @@ resourcetype semester-page : fellestekst-document {
               [def teachers document.properties.teachers]
               [if teachers != null]
                 [list teachers teacher]
-                  [if teacher.teacher != null]
+                  [if teacher.teacher != null && teacher.teacher != ""]
                     <p>[val teacher.teacher]</p>
                   [endif]
                 [endlist]
@@ -151,6 +202,27 @@ resourcetype semester-page : fellestekst-document {
     schedule : (en : "Schedule", no : "Timeplan", nn : "Timeplan"),
     exam : (en : "Exam", no : "Eksamen", nn : "Eksamen"),
     syllabus : (en : "Syllabus", no : "Pensumliste", nn : "Pensumliste"),
+    sec : (en : "Fixed elements", no : "Faste elementer", nn : "Faste elementer"),
+    link-box-one : (en : "Resource links 1", no : "Ressurslenker 1", nn : "Ressurslenker 1"),
+    link-box-two : (en : "Resource links 2", no : "Ressurslenker 2", nn : "Ressurslenker 2"),
+    link-box-three : (en : "Resource links 3", no : "Ressurslenker 3", nn : "Ressurslenker 3"),
+    link-box-four : (en : "Resource links 4", no : "Ressurslenker 4", nn : "Ressurslenker 4"),
+    link-box-five : (en : "Resource links 5", no : "Ressurslenker 5", nn : "Ressurslenker 5"),
+    link-box-six : (en : "Resource links 6", no : "Ressurslenker 6", nn : "Ressurslenker 6"),
+    link-box-one-title : (en : "Title", no : "Tittel", nn : "Tittel"),
+    link-box-two-title : (en : "Title", no : "Tittel", nn : "Tittel"),
+    link-box-three-title : (en : "Title", no : "Tittel", nn : "Tittel"),
+    link-box-four-title : (en : "Title", no : "Tittel", nn : "Tittel"),
+    link-box-five-title : (en : "Title", no : "Tittel", nn : "Tittel"),
+    link-box-six-title : (en : "Title", no : "Tittel", nn : "Tittel"),
+    link-box-one-links : (en : "Links", no : "Lenker", nn : "Lenker"),
+    link-box-two-links : (en : "Links", no : "Lenker", nn : "Lenker"),
+    link-box-three-links : (en : "Links", no : "Lenker", nn : "Lenker"),
+    link-box-four-links : (en : "Links", no : "Lenker", nn : "Lenker"),
+    link-box-five-links : (en : "Links", no : "Lenker", nn : "Lenker"),
+    link-box-six-links : (en : "Links", no : "Lenker", nn : "Lenker"),
+    linktitle : (en : "Link title", no : "Lenketittel", nn : "Lenketittel"),
+    link : (en : "Link", no : "Lenke", nn : "Lenke"),
     fronter : (en : "Fronter", no : "Fronter", nn : "Fronter"),
     fronter-text : (en : "This course is using Fronter as a part of the education.", no : "Dette kurset benytter Fronter som verktøy i undervisningen.", nn : "Dette kurset nytte Fronter som verktøy i undervisninga."),
     log-into-fronter: (en : "Log into Fronter", no : "Logg inn i Fronter", nn : "Logg inn i Fronter"),

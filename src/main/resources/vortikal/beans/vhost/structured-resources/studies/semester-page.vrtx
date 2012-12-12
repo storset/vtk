@@ -19,7 +19,7 @@ resourcetype semester-page : fellestekst-document {
     link-box-six-title : string,
     link-box-six-links : json (linktitle : string, link : string) multiple,
     teachers : json (teacher : string) multiple,
-    studinfo-kontakt-text-field : simple_html,
+    studinfo-kontakt-text-field : simple_html noextract,
     studinfo-kontakt : string
   }
 

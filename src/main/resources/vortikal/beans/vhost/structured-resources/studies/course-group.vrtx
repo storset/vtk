@@ -6,12 +6,12 @@ resourcetype course-group : fellestekst-document {
     course-group-code : string,
     title : derived (course-group-name, course-group-code) eval (course-group-name + " (" + course-group-code + ")") overrides title default course-group-name,
     course-group-scope : string,
-    about : simple_html,
-    courses-in-group : html,
-    relevant-study-programmes : html,
-    course-group-admission : simple_html,
-    other : simple_html,
-    studinfo-kontakt-text-field : simple_html,
+    about : html noextract,
+    courses-in-group : html noextract,
+    relevant-study-programmes : html noextract,
+    course-group-admission : html noextract,
+    other : simple_html noextract,
+    studinfo-kontakt-text-field : simple_html noextract,
     studinfo-kontakt : string
   }
 
@@ -26,13 +26,7 @@ resourcetype course-group : fellestekst-document {
     ##
     [def title resource-prop-obj-val(".", "title")]
     [def course-group-scope resource-prop-obj-val(".", "course-group-scope")]
-    [def about resource-prop-obj-val(".", "about")]
-    [def courses-in-group resource-prop-obj-val(".", "courses-in-group")]
-    [def relevant-study-programmes resource-prop-obj-val(".", "relevant-study-programmes")]
-    [def course-group-admission resource-prop-obj-val(".", "course-group-admission")]
-    [def other resource-prop-obj-val(".", "other")]
     [def studinfo-kontakt resource-prop-obj-val(".", "studinfo-kontakt")]
-    [def studinfo-kontakt-text-field resource-prop-obj-val(".", "studinfo-kontakt-text-field")]
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml">
       <head>
@@ -40,27 +34,15 @@ resourcetype course-group : fellestekst-document {
       </head>
       <body id="vrtx-course-group">
         <h1>[if course-group-scope != null && course-group-scope != ""][val course-group-scope]-[localized 'localized-group'][endif][if title != null && title != ""] - [val title][endif]</h1>
-        [if about != null && about != ""]
-          [val about # unescaped]
-        [endif]
-        [if courses-in-group != null && courses-in-group != ""]
-          [val courses-in-group # unescaped]
-        [endif]
-        [if relevant-study-programmes != null && relevant-study-programmes != ""]
-          [val relevant-study-programmes # unescaped]
-        [endif]
-        [if course-group-admission != null && course-group-admission != ""]
-          [val course-group-admission # unescaped]
-        [endif]
-        [if other != null && other != ""]
-          [val other # unescaped]
-        [endif]
-        [if studinfo-kontakt-text-field != null && studinfo-kontakt-text-field != ""]
-          [val studinfo-kontakt-text-field # unescaped]
-        [endif]
+        [call "json:field" {"select":"about"}]
+        [call "json:field" {"select":"courses-in-group"}]
+        [call "json:field" {"select":"relevant-study-programmes"}]
+        [call "json:field" {"select":"course-group-admission"}]
+        [call "json:field" {"select":"other"}]
         [if studinfo-kontakt != null && studinfo-kontakt != "" && studinfo-kontakt != "ingen-fellestekst"]
           [call "comp:vis-fellestekst" {"docType":"studinfo-kontakt", "propName":"studinfo-kontakt"}]
         [endif]
+        [call "json:field" {"select":"studinfo-kontakt-text-field"}]
       </body>
     </html>
     ##

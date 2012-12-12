@@ -6,46 +6,46 @@ resourcetype course-description : fellestekst-document {
     teachingsemester-particular-semester : json (term : string, year : string) multiple,
     teachingsemester-every-other-semester-term : string,
     teachingsemester-every-other-semester-startyear : string,
-    teachingsemester-other : simple_html,
+    teachingsemester-other : simple_html noextract,
     examsemester : string,
     examsemester-particular-semester : json (term : string, year : string) multiple,
     examsemester-every-other-semester-term : string,
     examsemester-every-other-semester-startyear : string,
-    examsemester-other : simple_html,
-    course-type : string,
+    examsemester-other : simple_html noextract,
+    level : string,
     course-fee : boolean defaultvalue("false"),
     course-fee-amount : string,
     course-content : simple_html,
     learning-outcomes : simple_html,
-    opptak-og-adgang-text-field : simple_html,
+    opptak-og-adgang-text-field : simple_html noextract,
     opptak-og-adgang : string,
-    ikke-privatist-text-field : simple_html,
+    ikke-privatist-text-field : simple_html noextract,
     ikke-privatist : string
-    obligatoriske-forkunnskaper-text-field : simple_html,
+    obligatoriske-forkunnskaper-text-field : simple_html noextract,
     obligatoriske-forkunnskaper : string,
-    tidsrom-for-undervisning-text-field : simple_html,
+    tidsrom-for-undervisning-text-field : simple_html noextract,
     tidsrom-for-undervisning : string,
-    adgang-text-field : simple_html,
+    adgang-text-field : simple_html noextract,
     adgang : string,
-    vurdering-og-eksamen-text-field : simple_html,
+    vurdering-og-eksamen-text-field : simple_html noextract,
     vurdering-og-eksamen : string,
-    hjelpemidler-text-field : simple_html,
+    hjelpemidler-text-field : simple_html noextract,
     hjelpemidler : string,
-    eksamensspraak-text-field : simple_html,
+    eksamensspraak-text-field : simple_html noextract,
     eksamensspraak : string,
-    sensur-text-field : simple_html,
+    sensur-text-field : simple_html noextract,
     sensur : string,
-    tilsynssensor-text-field : simple_html,
+    tilsynssensor-text-field : simple_html noextract,
     tilsynssensor : string,
-    klage-text-field : simple_html,
+    klage-text-field : simple_html noextract,
     klage : string,
-    ny-utsatt-eksamen-text-field : simple_html,
+    ny-utsatt-eksamen-text-field : simple_html noextract,
     ny-utsatt-eksamen : string,
-    antall-forsok-trekk-text-field : simple_html,
+    antall-forsok-trekk-text-field : simple_html noextract,
     antall-forsok-trekk : string,
-    tilrettelagt-eksamen-text-field : simple_html,
+    tilrettelagt-eksamen-text-field : simple_html noextract,
     tilrettelagt-eksamen : string,
-    studinfo-kontakt-text-field : simple_html,
+    studinfo-kontakt-text-field : simple_html noextract,
     studinfo-kontakt : string
   }
 
@@ -65,7 +65,7 @@ resourcetype course-description : fellestekst-document {
     examsemester-every-other-semester-term (dropdown),
     examsemester-every-other-semester-startyear (dropdown),
     group examsemester-every-other-semester (examsemester-every-other-semester-term, examsemester-every-other-semester-startyear) (after examsemester-particular-semester) horizontal,
-    course-type (dropdown),
+    level (dropdown),
     opptak-og-adgang (class[vrtx-shared-text]),
     group opptak-og-adgang-group (opptak-og-adgang-text-field, opptak-og-adgang) vertical,
     ikke-privatist (class[vrtx-shared-text]),
@@ -103,7 +103,7 @@ resourcetype course-description : fellestekst-document {
     facts {
         ##
         [def credits resource-prop(".", "credits")]
-        [def course-type resource-prop-obj-val(".", "course-type")]
+        [def level resource-prop-obj-val(".", "level")]
         [def creditsdecimal resource-prop-obj-val(".", "creditsdecimal")]
         [def content-locale resource-prop-obj-val(".", "contentLocale")]
         [def teachingsemester resource-prop-obj-val(".", "teachingsemester")]
@@ -121,10 +121,10 @@ resourcetype course-description : fellestekst-document {
               <td>[localized 'credits']:</td>
               <td>[if credits != null][val credits][if creditsdecimal != null && creditsdecimal != "" && creditsdecimal != "0"],[val creditsdecimal][endif][endif]</td>
             </tr>
-            [if course-type != null && course-type != "" && course-type != "ikke-satt"]
+            [if level != null && level != "" && level != "not-set"]
               <tr valign="top">
-                <td>[localized 'course-type']:</td>
-                <td>[localized course-type]</td>
+                <td>[localized 'level']:</td>
+                <td>[localized level]</td>
               </tr>
             [endif]
             <tr valign="top">
@@ -723,10 +723,10 @@ resourcetype course-description : fellestekst-document {
        no : ("1990" = "1990", "1991" = "1991", "1992" = "1992", "1993" = "1993", "1994" = "1994", "1995" = "1995", "1996" = "1996", "1997" = "1997", "1998" = "1998", "1999" = "1999", "2000" = "2000", "2001" = "2001", "2002" = "2002", "2003" = "2003", "2004" = "2004", "2005" = "2005", "2006" = "2006", "2007" = "2007", "2008" = "2008", "2009" = "2009", "2010" = "2010", "2011" = "2011", "2012" = "2012", "2013" = "2013", "2014" = "2014", "2015" = "2015", "2016" = "2016", "2017" = "2017", "2018" = "2018", "2019" = "2019", "2020" = "2020"),
        nn : ("1990" = "1990", "1991" = "1991", "1992" = "1992", "1993" = "1993", "1994" = "1994", "1995" = "1995", "1996" = "1996", "1997" = "1997", "1998" = "1998", "1999" = "1999", "2000" = "2000", "2001" = "2001", "2002" = "2002", "2003" = "2003", "2004" = "2004", "2005" = "2005", "2006" = "2006", "2007" = "2007", "2008" = "2008", "2009" = "2009", "2010" = "2010", "2011" = "2011", "2012" = "2012", "2013" = "2013", "2014" = "2014", "2015" = "2015", "2016" = "2016", "2017" = "2017", "2018" = "2018", "2019" = "2019", "2020" = "2020")
      },
-     course-type {
-       en : ("redskapsemne" = "Introductory or brush-up course", "grunnemne" = "Foundation course at bachelor's level", "videregaende-emne" = "Advanced course at bachelor's level", "avansert-emne" = "Advanced course at master's level", "phd-emne" = "Ph.D. level course", "ikke-satt" = "Not set"),
-       no : ("redskapsemne" = "Redskap- eller innføringsemne", "grunnemne" = "Grunnemne på bachelornivå", "videregaende-emne" = "Videregående emne på bachelornivå", "avansert-emne" = "Avansert emne på masternivå", "phd-emne" = "Doktorgradsemne", "ikke-satt" = "Ikke satt"),
-       nn : ("redskapsemne" = "Redskap- eller innføringsemne", "grunnemne" = "Grunnemne på bachelornivå", "videregaende-emne" = "Videregående emne på bachelornivå", "avansert-emne" = "Avansert emne på masternivå", "phd-emne" = "Doktorgradsemne", "ikke-satt" = "Ikke satt")
+     level {
+       en : ("course" = "Course", "bachelor" = "Bachelor", "master" = "Master", "phd" = "PhD", "not-set" = "Not set"),
+       no : ("course" = "Kurs", "bachelor" = "Bachelor", "master" = "Master", "phd" = "PhD", "not-set" = "Ikke satt"),
+       nn : ("course" = "Kurs", "bachelor" = "Bachelor", "master" = "Master", "phd" = "PhD", "not-set" = "Ikke satt")
      },
      course-fee {
        en : ("true" = "Yes", "false" = "No"),
@@ -783,7 +783,7 @@ resourcetype course-description : fellestekst-document {
     every-other-start : (en : "From", no : "Fra", nn : "Fra"),
     teaching-every-other-end : (en : "this course will be taught every other autumn semester.", no : "vil dette emnet vil undervises annet hvert høstsemester", nn : "vil dette emnet vil undervises anna kvart semester."),
     exam-every-other-end : (en : "this course will have an exam every other autumn semester.", no : "vil dette emnet ha eksamen annet hvert høstsemester", nn : "vil dette emnet vil ha eksamen anna kvart semester."),
-    course-type : (en : "Course type", no : "Emnetype", nn : "Emnetype"),
+    level : (en : "Level", no : "Nivå", nn : "Nivå"),
     course-fee : (en : "Course fee", no : "Kursavgift", nn : "Kursavgift"),
     course-fee-amount : (en : "Course fee amount", no : "Kursavgift sum", nn : "Kursavgift sum"),
     course-content : (en : "Course content", no : "Kort om emnet", nn : "Kort om emnet"),
@@ -834,11 +834,10 @@ resourcetype course-description : fellestekst-document {
     studinfo-kontakt : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
     studinfo-kontakt-group : (en : "Contact", no : "Kontakt", nn : "Kontakt"),
     contact : (en : "Contact", no : "Kontakt", nn : "Kontakt"),
-    redskapsemne : (en : "Introductory or brush-up course", no : "Redskap- eller innføringsemne", nn : "Redskap- eller innføringsemne"),
-    grunnemne : (en : "Foundation course at bachelor's level", no : "Grunnemne på bachelornivå", nn : "Grunnemne på bachelornivå"),
-    videregaende-emne : (en : "Advanced course at bachelor's level", no : "Videregående emne på bachelornivå", nn : "Videregående emne på bachelornivå"),
-    avansert-emne : (en : "Advanced course at master's level", no : "Avansert emne på masternivå", nn : "Avansert emne på masternivå"),
-    phd-emne : (en : "Ph.D. level course", no : "Doktorgradsemne", nn : "Doktorgradsemne")
+    course : (en : "Course", no : "Kurs", nn : "Kurs"),
+    bachelor : (en : "Bachelor", no : "Bachelor", nn : "Bachelor"),
+    master : (en : "Master", no : "Master", nn : "Master"),
+    phd : (en : "PhD", no : "PhD", nn : "PhD")
   }
   
 }

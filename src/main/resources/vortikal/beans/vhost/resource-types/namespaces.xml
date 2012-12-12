@@ -99,5 +99,10 @@
     <constructor-arg value="course-group-listing" />
     <constructor-arg value="http://www.uio.no/resource-types/course-group-listing" />
   </bean>
+
+  <bean id="COURSE_DESCRIPTION_LISTING_NAMESPACE" class="org.vortikal.repository.Namespace">
+    <constructor-arg value="course-description-listing" />
+    <constructor-arg value="http://www.uio.no/resource-types/course-description-listing" />
+  </bean>
   
 </beans>

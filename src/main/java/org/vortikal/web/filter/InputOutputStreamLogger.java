@@ -15,6 +15,7 @@ public class InputOutputStreamLogger {
     public static void util(DavLoggingRequestWrapper reqWrap, ByteArrayOutputStream respStream) {
         if (reqWrap != null) {
             log.info("REQUEST:");
+            log.info("METHOD: " + reqWrap.getMethod());
             Enumeration<String> headerNames = reqWrap.getHeaderNames();
             while (headerNames.hasMoreElements()) {
                 String headerName = headerNames.nextElement();

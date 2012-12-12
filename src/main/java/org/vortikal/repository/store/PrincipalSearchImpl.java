@@ -147,19 +147,33 @@ public class PrincipalSearchImpl implements PrincipalSearch {
             return false;
 
         if (this.preferredLocale != null) {
-            if (!this.preferredLocale.equals(po.preferredLocale))
+            if (!this.preferredLocale.equals(po.preferredLocale)) {
                 return false;
+            }
         } else {
-            if (po.preferredLocale != null)
+            if (po.preferredLocale != null) {
                 return false;
+            }
         }
 
-        if (this.searchType != null && !this.searchType.equals(po.searchType)) {
-            return false;
+        if (this.searchType != null) {
+            if (!this.searchType.equals(po.searchType)) {
+                return false;
+            }
+        } else {
+            if (po.searchType != null) {
+                return false;
+            }
         }
 
-        if (this.uids == null) {
-            return po.uids == null ? true : po.uids.equals(this.uids);
+        if (this.uids != null) {
+            if (!this.uids.equals(po.uids)) {
+                return false;
+            }
+        } else {
+            if (po.uids != null) {
+                return false;
+            }
         }
 
         if (this.searchString == null) {

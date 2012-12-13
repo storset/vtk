@@ -23,9 +23,8 @@ resourcetype course-description : fellestekst-document {
     ikke-privatist : string
     obligatoriske-forkunnskaper-text-field : html noextract,
     obligatoriske-forkunnskaper : string,
-    tidsrom-for-undervisning-text-field : simple_html noextract,
+    teaching-text-field : html noextract,
     tidsrom-for-undervisning : string,
-    adgang-text-field : simple_html noextract,
     adgang : string,
     vurdering-og-eksamen-text-field : html noextract,
     vurdering-og-eksamen : string,
@@ -45,6 +44,9 @@ resourcetype course-description : fellestekst-document {
     antall-forsok-trekk : string,
     tilrettelagt-eksamen-text-field : simple_html noextract,
     tilrettelagt-eksamen : string,
+    evaluering-av-emnet-text-field : html noextract,
+    evaluering-av-emnet : string,
+    other-text-field : html noextract,
     studinfo-kontakt-text-field : simple_html noextract,
     studinfo-kontakt : string
   }
@@ -73,9 +75,8 @@ resourcetype course-description : fellestekst-document {
     obligatoriske-forkunnskaper (class[vrtx-shared-text]),
     group obligatoriske-forkunnskaper-group (obligatoriske-forkunnskaper-text-field, obligatoriske-forkunnskaper) vertical,
     tidsrom-for-undervisning (class[vrtx-shared-text]),
-    group tidsrom-for-undervisning-group (tidsrom-for-undervisning-text-field, tidsrom-for-undervisning) vertical,
     adgang (class[vrtx-shared-text]),
-    group adgang-group (adgang-text-field, adgang) vertical,
+    group teaching-group (teaching-text-field, tidsrom-for-undervisning, adgang) vertical,
     vurdering-og-eksamen (class[vrtx-shared-text]),
     group vurdering-og-eksamen-group (vurdering-og-eksamen-text-field, vurdering-og-eksamen) vertical,
     hjelpemidler (class[vrtx-shared-text]),
@@ -94,6 +95,9 @@ resourcetype course-description : fellestekst-document {
     group antall-forsok-trekk-group (antall-forsok-trekk-text-field, antall-forsok-trekk) vertical,
     tilrettelagt-eksamen (class[vrtx-shared-text]),
     group tilrettelagt-eksamen-group (tilrettelagt-eksamen-text-field, tilrettelagt-eksamen) vertical,
+    evaluering-av-emnet (class[vrtx-shared-text]),
+    group evaluering-av-emnet-group (evaluering-av-emnet-text-field, evaluering-av-emnet) vertical,
+    other-text-field (after evaluering-av-emnet-group),
     studinfo-kontakt (class[vrtx-shared-text]),
     group studinfo-kontakt-group (studinfo-kontakt, studinfo-kontakt-text-field) vertical
   }
@@ -288,7 +292,7 @@ resourcetype course-description : fellestekst-document {
           [else]
             [def put-dash ""]
           [endif]
-          <a href="#opptak-og-adgang" class="vrtx-link-check">[localized opptak-og-adgang]</a>
+          <a href="#opptak-og-adgang" class="vrtx-link-check">[localized 'opptak-og-adgang-group']</a>
         [endif]
         [def ikke-privatist resource-prop-obj-val(".", "ikke-privatist")]
         [def ikke-privatist-text-field resource-prop-obj-val(".", "ikke-privatist-text-field")]
@@ -298,7 +302,7 @@ resourcetype course-description : fellestekst-document {
           [else]
             [def put-dash ""]
           [endif]
-          <a href="#ikke-privatist" class="vrtx-link-check">[localized ikke-privatist]</a>
+          <a href="#ikke-privatist" class="vrtx-link-check">[localized 'ikke-privatist-group']</a>
         [endif]
         [def obligatoriske-forkunnskaper resource-prop-obj-val(".", "obligatoriske-forkunnskaper")]
         [def obligatoriske-forkunnskaper-text-field resource-prop-obj-val(".", "obligatoriske-forkunnskaper-text-field")]
@@ -308,27 +312,18 @@ resourcetype course-description : fellestekst-document {
           [else]
             [def put-dash ""]
           [endif]
-          <a href="#obligatoriske-forkunnskaper" class="vrtx-link-check">[localized obligatoriske-forkunnskaper]</a>
+          <a href="#obligatoriske-forkunnskaper" class="vrtx-link-check">[localized 'obligatoriske-forkunnskaper-group']</a>
         [endif]
         [def tidsrom-for-undervisning resource-prop-obj-val(".", "tidsrom-for-undervisning")]
-        [def tidsrom-for-undervisning-text-field resource-prop-obj-val(".", "tidsrom-for-undervisning-text-field")]
-        [if (tidsrom-for-undervisning-text-field != null && tidsrom-for-undervisning-text-field != "") || (tidsrom-for-undervisning != null && tidsrom-for-undervisning != "" && tidsrom-for-undervisning != "ingen-fellestekst")]
-          [if put-dash != null]
-            -
-          [else]
-            [def put-dash ""]
-          [endif]
-          <a href="#tidsrom-for-undervisning" class="vrtx-link-check">[localized tidsrom-for-undervisning]</a>
-        [endif]
+        [def teaching-text-field resource-prop-obj-val(".", "teaching-text-field")]
         [def adgang resource-prop-obj-val(".", "adgang")]
-        [def adgang-text-field resource-prop-obj-val(".", "adgang-text-field")]
-        [if (adgang-text-field != null && adgang-text-field != "") || (adgang != null && adgang != "" && adgang != "ingen-fellestekst")]
+        [if (teaching-text-field != null && teaching-text-field != "") || (tidsrom-for-undervisning != null && tidsrom-for-undervisning != "" && tidsrom-for-undervisning != "ingen-fellestekst") || (adgang != null && adgang != "" && adgang != "ingen-fellestekst")]
           [if put-dash != null]
             -
           [else]
             [def put-dash ""]
           [endif]
-          <a href="#adgang" class="vrtx-link-check">[localized adgang]</a>
+          <a href="#teaching" class="vrtx-link-check">[localized 'teaching-group']</a>
         [endif]
         [def vurdering-og-eksamen resource-prop-obj-val(".", "vurdering-og-eksamen")]
         [def vurdering-og-eksamen-text-field resource-prop-obj-val(".", "vurdering-og-eksamen-text-field")]
@@ -338,7 +333,7 @@ resourcetype course-description : fellestekst-document {
           [else]
             [def put-dash ""]
           [endif]
-          <a href="#vurdering-og-eksamen" class="vrtx-link-check">[localized vurdering-og-eksamen]</a>
+          <a href="#vurdering-og-eksamen" class="vrtx-link-check">[localized 'vurdering-og-eksamen-group']</a>
         [endif]
         [def hjelpemidler resource-prop-obj-val(".", "hjelpemidler")]
         [def hjelpemidler-text-field resource-prop-obj-val(".", "hjelpemidler-text-field")]
@@ -348,7 +343,7 @@ resourcetype course-description : fellestekst-document {
           [else]
             [def put-dash ""]
           [endif]
-          <a href="#hjelpemidler" class="vrtx-link-check">[localized hjelpemidler]</a>
+          <a href="#hjelpemidler" class="vrtx-link-check">[localized 'hjelpemidler-group']</a>
         [endif]
         [def eksamensspraak resource-prop-obj-val(".", "eksamensspraak")]
         [def eksamensspraak-text-field resource-prop-obj-val(".", "eksamensspraak-text-field")]
@@ -358,7 +353,7 @@ resourcetype course-description : fellestekst-document {
           [else]
             [def put-dash ""]
           [endif]
-          <a href="#eksamensspraak" class="vrtx-link-check">[localized eksamensspraak]</a>
+          <a href="#eksamensspraak" class="vrtx-link-check">[localized 'eksamensspraak-group']</a>
         [endif]
         [def sensur resource-prop-obj-val(".", "sensur")]
         [def sensur-text-field resource-prop-obj-val(".", "sensur-text-field")]
@@ -368,7 +363,7 @@ resourcetype course-description : fellestekst-document {
           [else]
             [def put-dash ""]
           [endif]
-          <a href="#sensur" class="vrtx-link-check">[localized sensur]</a>
+          <a href="#sensur" class="vrtx-link-check">[localized 'sensur-group']</a>
         [endif]
         [def tilsynssensor resource-prop-obj-val(".", "tilsynssensor")]
         [def tilsynssensor-text-field resource-prop-obj-val(".", "tilsynssensor-text-field")]
@@ -378,7 +373,7 @@ resourcetype course-description : fellestekst-document {
           [else]
             [def put-dash ""]
           [endif]
-          <a href="#tilsynssensor" class="vrtx-link-check">[localized tilsynssensor]</a>
+          <a href="#tilsynssensor" class="vrtx-link-check">[localized 'tilsynssensor-group']</a>
         [endif]
         [def klage resource-prop-obj-val(".", "klage")]
         [def klage-text-field resource-prop-obj-val(".", "klage-text-field")]
@@ -388,17 +383,17 @@ resourcetype course-description : fellestekst-document {
           [else]
             [def put-dash ""]
           [endif]
-          <a href="#klage" class="vrtx-link-check">[localized klage]</a>
+          <a href="#klage" class="vrtx-link-check">[localized 'klage-group']</a>
         [endif]
         [def ny-utsatt-eksamen resource-prop-obj-val(".", "ny-utsatt-eksamen")]
         [def ny-utsatt-eksamen-text-field resource-prop-obj-val(".", "ny-utsatt-eksamen-text-field")]
         [if (ny-utsatt-eksamen-text-field != null && ny-utsatt-eksamen-text-field != "") || (ny-utsatt-eksamen != null && ny-utsatt-eksamen != "" && ny-utsatt-eksamen != "ingen-fellestekst")]
           [if put-dash != null]
-            -
+            - 
           [else]
             [def put-dash ""]
           [endif]
-          <a href="#ny-utsatt-eksamen" class="vrtx-link-check">[localized ny-utsatt-eksamen]</a>
+          <a href="#ny-utsatt-eksamen" class="vrtx-link-check">[localized 'ny-utsatt-eksamen-group']</a>
         [endif]
         [def antall-forsok-trekk resource-prop-obj-val(".", "antall-forsok-trekk")]
         [def antall-forsok-trekk-text-field resource-prop-obj-val(".", "antall-forsok-trekk-text-field")]
@@ -408,15 +403,34 @@ resourcetype course-description : fellestekst-document {
           [else]
             [def put-dash ""]
           [endif]
-          <a href="#antall-forsok-trekk" class="vrtx-link-check">[localized antall-forsok-trekk]</a>
+          <a href="#antall-forsok-trekk" class="vrtx-link-check">[localized 'antall-forsok-trekk-group']</a>
         [endif]
         [def tilrettelagt-eksamen resource-prop-obj-val(".", "tilrettelagt-eksamen")]
         [def tilrettelagt-eksamen-text-field resource-prop(".", "tilrettelagt-eksamen-text-field")]
         [if (tilrettelagt-eksamen-text-field != null && tilrettelagt-eksamen-text-field != "") || (tilrettelagt-eksamen != null && tilrettelagt-eksamen != "" && tilrettelagt-eksamen != "ingen-fellestekst")]
           [if put-dash != null]
-            - 
+            -
+          [else]
+            [def put-dash ""]
           [endif]
-          <a href="#tilrettelagt-eksamen" class="vrtx-link-check">[localized tilrettelagt-eksamen]</a>
+          <a href="#tilrettelagt-eksamen" class="vrtx-link-check">[localized 'tilrettelagt-eksamen-group']</a>
+        [endif]
+        [def evaluering-av-emnet resource-prop-obj-val(".", "evaluering-av-emnet")]
+        [def evaluering-av-emnet-text-field resource-prop(".", "evaluering-av-emnet-text-field")]
+        [if (evaluering-av-emnet-text-field != null && evaluering-av-emnet-text-field != "") || (evaluering-av-emnet != null && evaluering-av-emnet != "" && evaluering-av-emnet != "ingen-fellestekst")]
+          [if put-dash != null]
+            -
+          [else]
+            [def put-dash ""]
+          [endif]
+          <a href="#evaluering-av-emnet" class="vrtx-link-check">[localized 'evaluering-av-emnet-group']</a>
+        [endif]
+        [def other-text-field resource-prop(".", "other-text-field")]
+        [if other-text-field != null && evaluering-av-emnet-text-field != ""]
+          [if put-dash != null]
+            -
+          [endif]
+          <a href="#other" class="vrtx-link-check">[localized 'other-text-field']</a>
         [endif]
         ##
     }
@@ -466,22 +480,14 @@ resourcetype course-description : fellestekst-document {
           </div>
         [endif]
         [def tidsrom-for-undervisning resource-prop-obj-val(".", "tidsrom-for-undervisning")]
-        [def tidsrom-for-undervisning-text-field resource-prop-obj-val(".", "tidsrom-for-undervisning-text-field")]
-        [if (tidsrom-for-undervisning-text-field != null && tidsrom-for-undervisning-text-field != "") || (tidsrom-for-undervisning != null && tidsrom-for-undervisning != "" && tidsrom-for-undervisning != "ingen-fellestekst")]
-          <div id="tidsrom-for-undervisning">
-            [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"tidsrom-for-undervisning"}]
-            [if tidsrom-for-undervisning-text-field != null && tidsrom-for-undervisning-text-field != ""]
-              [val tidsrom-for-undervisning-text-field # unescaped]
-            [endif]
-          </div>
-        [endif]
+        [def teaching-text-field resource-prop-obj-val(".", "teaching-text-field")]
         [def adgang resource-prop-obj-val(".", "adgang")]
-        [def adgang-text-field resource-prop-obj-val(".", "adgang-text-field")]
-        [if (adgang-text-field != null && adgang-text-field != "") || (adgang != null && adgang != "" && adgang != "ingen-fellestekst")]
-          <div id="adgang">
+        [if (teaching-text-field != null && teaching-text-field != "") || (tidsrom-for-undervisning != null && tidsrom-for-undervisning != "" && tidsrom-for-undervisning != "ingen-fellestekst") || (adgang != null && adgang != "" && adgang != "ingen-fellestekst")]
+          <div id="teaching">
+            [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"tidsrom-for-undervisning"}]
             [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"adgang"}]
-            [if adgang-text-field != null && adgang-text-field != ""]
-              [val adgang-text-field # unescaped]
+            [if teaching-text-field != null && teaching-text-field != ""]
+              [val teaching-text-field # unescaped]
             [endif]
           </div>
         [endif]
@@ -573,6 +579,22 @@ resourcetype course-description : fellestekst-document {
             [if tilrettelagt-eksamen-text-field != null && tilrettelagt-eksamen-text-field != ""]
               [val tilrettelagt-eksamen-text-field # unescaped]
             [endif]
+          </div>
+        [endif]
+        [def evaluering-av-emnet resource-prop-obj-val(".", "evaluering-av-emnet")]
+        [def evaluering-av-emnet-text-field resource-prop(".", "evaluering-av-emnet-text-field")]
+        [if (evaluering-av-emnet-text-field != null && evaluering-av-emnet-text-field != "") || (evaluering-av-emnet != null && evaluering-av-emnet != "" && evaluering-av-emnet != "ingen-fellestekst")]
+          <div id="evaluering-av-emnet">
+            [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"evaluering-av-emnet"}]
+            [if evaluering-av-emnet-text-field != null && evaluering-av-emnet-text-field != ""]
+              [val evaluering-av-emnet-text-field # unescaped]
+            [endif]
+          </div>
+        [endif]
+        [def other-text-field resource-prop(".", "other-text-field")]
+        [if other-text-field != null && other-text-field != ""]
+          <div id="other">
+            [val other-text-field # unescaped]
           </div>
         [endif]
         ##
@@ -790,19 +812,17 @@ resourcetype course-description : fellestekst-document {
     learning-outcomes : (en : "Learning outcome", no : "Hva lærer du", nn : "Hva lærer du"),
     opptak-og-adgang-text-field : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
     opptak-og-adgang : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
-    opptak-og-adgang-group : (en : "", no : "Opptak og adgangsregulering", nn : "Opptak og adgangsregulering"),
+    opptak-og-adgang-group : (en : "Admission regulation", no : "Opptak og adgangsregulering", nn : "Opptak og adgangsregulering"),
     ikke-privatist-text-field : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
     ikke-privatist : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
     ikke-privatist-group : (en : "External candidates", no : "Privatist", nn : "Privatist"),
     obligatoriske-forkunnskaper-text-field : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
     obligatoriske-forkunnskaper : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
     obligatoriske-forkunnskaper-group : (en : "Formal prerequisites", no : "Obligatoriske forkunnskaper", nn : "Obligatoriske forkunnskaper"),
-    tidsrom-for-undervisning-text-field : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
-    tidsrom-for-undervisning : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
-    tidsrom-for-undervisning-group : (en : "Teaching period", no : "Tidsrom for undervisning", nn : "Tidsrom for undervisning"),
-    adgang-text-field : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
-    adgang : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
-    adgang-group : (en : "Admission", no : "Adgang", nn : "Adgang"),
+    teaching-text-field : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
+    tidsrom-for-undervisning : (en : "Teaching period shared text", no : "Tidsrom for undervisning fellestekst", nn : "Tidsrom for undervisning fellestekst"),
+    adgang : (en : "Admission shared text", no : "Adgang fellestekst", nn : "Adgang fellestekst"),
+    teaching-group : (en : "Teaching", no : "Undervisning", nn : "Undervisning"),
     vurdering-og-eksamen-text-field : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
     vurdering-og-eksamen : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
     vurdering-og-eksamen-group : (en : "Assessment and grading", no : "Vurdering og eksamen", nn : "Vurdering og eksamen"),
@@ -830,6 +850,10 @@ resourcetype course-description : fellestekst-document {
     tilrettelagt-eksamen-text-field : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
     tilrettelagt-eksamen : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
     tilrettelagt-eksamen-group : (en : "Exam options for students with special needs", no : "Tilrettelagt eksamen/vurdering", nn : "Tilrettelagt eksamen/vurdering"),
+    evaluering-av-emnet-text-field : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
+    evaluering-av-emnet : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
+    evaluering-av-emnet-group : (en : "Evaluation of course", no : "Evaluering av emnet", nn : "Evaluering av emnet"),
+    other-text-field : (en : "Other", no : "Annet", nn : "Anna"),
     studinfo-kontakt-text-field : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
     studinfo-kontakt : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
     studinfo-kontakt-group : (en : "Contact", no : "Kontakt", nn : "Kontakt"),

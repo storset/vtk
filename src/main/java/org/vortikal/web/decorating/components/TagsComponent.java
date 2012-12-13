@@ -54,7 +54,7 @@ import org.vortikal.web.tags.TagsHelper;
  */
 public class TagsComponent extends ViewRenderingDecoratorComponent implements InitializingBean {
 
-    private static final String DESCRIPTION = "Renders a tags as an alphabetically sorted list.";
+    private static final String DESCRIPTION = "Renders tags as an alphabetically sorted list.";
 
     private static final String PARAMETER_SCOPE = TagsHelper.SCOPE_PARAMETER;
     private static final String PARAMETER_SCOPE_DESC = "Set the URI scope for the tag cloud. Relative URIs are allowed. "

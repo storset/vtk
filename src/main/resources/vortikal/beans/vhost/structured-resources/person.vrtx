@@ -243,6 +243,7 @@ resourcetype person {
         [else]
           [def selectedPublications document.properties.selectedPublications]
           [if (selectedPublications != null && selectedPublications != "")]
+            <h2>[localized 'combinedPublications']</h2>
             [val selectedPublications # unescaped]
           [endif]
         [endif]

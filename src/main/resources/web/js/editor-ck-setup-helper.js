@@ -261,19 +261,7 @@ function commentsCkEditor() {
   });
 }
 
-/*
- * Check if inputfields or textareas (CK) have changes
- *
- */
 
-var INITIAL_INPUT_FIELDS = [];
-var INITIAL_SELECTS = [];
-var INITIAL_CHECKBOXES = [];
-var INITIAL_RADIO_BUTTONS = [];
-var INITIAL_CHECK_COMPLETE = false;
-
-var NEED_TO_CONFIRM = true;
-var UNSAVED_CHANGES_CONFIRMATION;
 var EDITORS_MAX_SYNC_AT_INIT = 15;
 var EDITORS_ASYNC_INIT_INTERVAL = 15;
 
@@ -294,6 +282,18 @@ $(document).ready(function() {
     }
   }
 });
+
+var NEED_TO_CONFIRM = true;
+var UNSAVED_CHANGES_CONFIRMATION;
+var INITIAL_INPUT_FIELDS = [];
+var INITIAL_SELECTS = [];
+var INITIAL_CHECKBOXES = [];
+var INITIAL_RADIO_BUTTONS = [];
+
+/*
+ * Check if inputfields or textareas (CK) have changes
+ *
+ */
 
 $(window).load(function () {
   // Store initial counts and values when all is initialized in editor

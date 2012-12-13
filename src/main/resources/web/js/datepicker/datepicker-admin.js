@@ -20,6 +20,7 @@ function initDatePicker(language) {
 
   // Specific for start and end date
   if (!$("#start-date-date").length || !$("#end-date-date").length) {
+    DATE_PICKER_INITIALIZED.resolve();
     return;
   }
   var startDate = $("#start-date-date").datepicker('getDate');

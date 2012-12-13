@@ -267,15 +267,15 @@ resourcetype course-description : fellestekst-document {
         ##
     }
 
-    academics-course-toc {
+    academics-course-toc (document) {
         ##
         [def put-dash null]
-        [def course-content resource-prop-obj-val(".", "course-content")]
+        [def course-content document.properties.course-content]
         [if course-content != null && course-content != ""]
           [def put-dash ""]
           <a href="#course-content" class="vrtx-link-check">[localized 'course-content']</a>
         [endif]
-        [def learning-outcomes resource-prop-obj-val(".", "learning-outcomes")]
+        [def learning-outcomes document.properties.learning-outcomes]
         [if learning-outcomes != null && learning-outcomes != ""]
           [if put-dash != null]
             -
@@ -284,8 +284,8 @@ resourcetype course-description : fellestekst-document {
           [endif]
           <a href="#learning-outcomes" class="vrtx-link-check">[localized 'learning-outcomes']</a>
         [endif]
-        [def opptak-og-adgang resource-prop-obj-val(".", "opptak-og-adgang")]
-        [def opptak-og-adgang-text-field resource-prop-obj-val(".", "opptak-og-adgang-text-field")]
+        [def opptak-og-adgang document.properties.opptak-og-adgang]
+        [def opptak-og-adgang-text-field document.properties.opptak-og-adgang-text-field]
         [if (opptak-og-adgang-text-field != null && opptak-og-adgang-text-field != "") || (opptak-og-adgang != null && opptak-og-adgang != "" && opptak-og-adgang != "ingen-fellestekst")]
           [if put-dash != null]
             -
@@ -294,8 +294,8 @@ resourcetype course-description : fellestekst-document {
           [endif]
           <a href="#opptak-og-adgang" class="vrtx-link-check">[localized 'opptak-og-adgang-group']</a>
         [endif]
-        [def ikke-privatist resource-prop-obj-val(".", "ikke-privatist")]
-        [def ikke-privatist-text-field resource-prop-obj-val(".", "ikke-privatist-text-field")]
+        [def ikke-privatist document.properties.ikke-privatist]
+        [def ikke-privatist-text-field document.properties.ikke-privatist-text-field]
         [if (ikke-privatist-text-field != null && ikke-privatist-text-field != "") || (ikke-privatist != null && ikke-privatist != "" && ikke-privatist != "ingen-fellestekst")]
           [if put-dash != null]
             -
@@ -304,8 +304,8 @@ resourcetype course-description : fellestekst-document {
           [endif]
           <a href="#ikke-privatist" class="vrtx-link-check">[localized 'ikke-privatist-group']</a>
         [endif]
-        [def obligatoriske-forkunnskaper resource-prop-obj-val(".", "obligatoriske-forkunnskaper")]
-        [def obligatoriske-forkunnskaper-text-field resource-prop-obj-val(".", "obligatoriske-forkunnskaper-text-field")]
+        [def obligatoriske-forkunnskaper document.properties.obligatoriske-forkunnskaper]
+        [def obligatoriske-forkunnskaper-text-field document.properties.obligatoriske-forkunnskaper-text-field]
         [if (obligatoriske-forkunnskaper-text-field != null && obligatoriske-forkunnskaper-text-field != "") || (obligatoriske-forkunnskaper != null && obligatoriske-forkunnskaper != "" && obligatoriske-forkunnskaper != "ingen-fellestekst")]
           [if put-dash != null]
             -
@@ -314,9 +314,9 @@ resourcetype course-description : fellestekst-document {
           [endif]
           <a href="#obligatoriske-forkunnskaper" class="vrtx-link-check">[localized 'obligatoriske-forkunnskaper-group']</a>
         [endif]
-        [def tidsrom-for-undervisning resource-prop-obj-val(".", "tidsrom-for-undervisning")]
-        [def teaching-text-field resource-prop-obj-val(".", "teaching-text-field")]
-        [def adgang resource-prop-obj-val(".", "adgang")]
+        [def tidsrom-for-undervisning document.properties.tidsrom-for-undervisning]
+        [def teaching-text-field document.properties.teaching-text-field]
+        [def adgang document.properties.adgang]
         [if (teaching-text-field != null && teaching-text-field != "") || (tidsrom-for-undervisning != null && tidsrom-for-undervisning != "" && tidsrom-for-undervisning != "ingen-fellestekst") || (adgang != null && adgang != "" && adgang != "ingen-fellestekst")]
           [if put-dash != null]
             -
@@ -325,8 +325,8 @@ resourcetype course-description : fellestekst-document {
           [endif]
           <a href="#teaching" class="vrtx-link-check">[localized 'teaching-group']</a>
         [endif]
-        [def vurdering-og-eksamen resource-prop-obj-val(".", "vurdering-og-eksamen")]
-        [def vurdering-og-eksamen-text-field resource-prop-obj-val(".", "vurdering-og-eksamen-text-field")]
+        [def vurdering-og-eksamen document.properties.vurdering-og-eksamen]
+        [def vurdering-og-eksamen-text-field document.properties.vurdering-og-eksamen-text-field]
         [if (vurdering-og-eksamen-text-field != null && vurdering-og-eksamen-text-field != "") || (vurdering-og-eksamen != null && vurdering-og-eksamen != "" && vurdering-og-eksamen != "ingen-fellestekst")]
           [if put-dash != null]
             -
@@ -335,8 +335,8 @@ resourcetype course-description : fellestekst-document {
           [endif]
           <a href="#vurdering-og-eksamen" class="vrtx-link-check">[localized 'vurdering-og-eksamen-group']</a>
         [endif]
-        [def hjelpemidler resource-prop-obj-val(".", "hjelpemidler")]
-        [def hjelpemidler-text-field resource-prop-obj-val(".", "hjelpemidler-text-field")]
+        [def hjelpemidler document.properties.hjelpemidler]
+        [def hjelpemidler-text-field document.properties.hjelpemidler-text-field]
         [if (hjelpemidler-text-field != null && hjelpemidler-text-field != "") || (hjelpemidler != null && hjelpemidler != "" && hjelpemidler != "ingen-fellestekst")]
           [if put-dash != null]
             -
@@ -345,8 +345,8 @@ resourcetype course-description : fellestekst-document {
           [endif]
           <a href="#hjelpemidler" class="vrtx-link-check">[localized 'hjelpemidler-group']</a>
         [endif]
-        [def eksamensspraak resource-prop-obj-val(".", "eksamensspraak")]
-        [def eksamensspraak-text-field resource-prop-obj-val(".", "eksamensspraak-text-field")]
+        [def eksamensspraak document.properties.eksamensspraak]
+        [def eksamensspraak-text-field document.properties.eksamensspraak-text-field]
         [if (eksamensspraak-text-field != null && eksamensspraak-text-field != "") || (eksamensspraak != null && eksamensspraak != "" && eksamensspraak != "ingen-fellestekst")]
           [if put-dash != null]
             -
@@ -355,8 +355,8 @@ resourcetype course-description : fellestekst-document {
           [endif]
           <a href="#eksamensspraak" class="vrtx-link-check">[localized 'eksamensspraak-group']</a>
         [endif]
-        [def sensur resource-prop-obj-val(".", "sensur")]
-        [def sensur-text-field resource-prop-obj-val(".", "sensur-text-field")]
+        [def sensur document.properties.sensur]
+        [def sensur-text-field document.properties.sensur-text-field]
         [if (sensur-text-field != null && sensur-text-field != "") || (sensur != null && sensur != "" && sensur != "ingen-fellestekst")]
           [if put-dash != null]
             -
@@ -365,8 +365,8 @@ resourcetype course-description : fellestekst-document {
           [endif]
           <a href="#sensur" class="vrtx-link-check">[localized 'sensur-group']</a>
         [endif]
-        [def tilsynssensor resource-prop-obj-val(".", "tilsynssensor")]
-        [def tilsynssensor-text-field resource-prop-obj-val(".", "tilsynssensor-text-field")]
+        [def tilsynssensor document.properties.tilsynssensor]
+        [def tilsynssensor-text-field document.properties.tilsynssensor-text-field]
         [if (tilsynssensor-text-field != null && tilsynssensor-text-field != "") || (tilsynssensor != null && tilsynssensor != "" && tilsynssensor != "ingen-fellestekst")]
           [if put-dash != null]
             -
@@ -375,8 +375,8 @@ resourcetype course-description : fellestekst-document {
           [endif]
           <a href="#tilsynssensor" class="vrtx-link-check">[localized 'tilsynssensor-group']</a>
         [endif]
-        [def klage resource-prop-obj-val(".", "klage")]
-        [def klage-text-field resource-prop-obj-val(".", "klage-text-field")]
+        [def klage document.properties.klage]
+        [def klage-text-field document.properties.klage-text-field]
         [if (klage-text-field != null && klage-text-field != "") || (klage != null && klage != "" && klage != "ingen-fellestekst")]
           [if put-dash != null]
             -
@@ -385,8 +385,8 @@ resourcetype course-description : fellestekst-document {
           [endif]
           <a href="#klage" class="vrtx-link-check">[localized 'klage-group']</a>
         [endif]
-        [def ny-utsatt-eksamen resource-prop-obj-val(".", "ny-utsatt-eksamen")]
-        [def ny-utsatt-eksamen-text-field resource-prop-obj-val(".", "ny-utsatt-eksamen-text-field")]
+        [def ny-utsatt-eksamen document.properties.ny-utsatt-eksamen]
+        [def ny-utsatt-eksamen-text-field document.properties.ny-utsatt-eksamen-text-field]
         [if (ny-utsatt-eksamen-text-field != null && ny-utsatt-eksamen-text-field != "") || (ny-utsatt-eksamen != null && ny-utsatt-eksamen != "" && ny-utsatt-eksamen != "ingen-fellestekst")]
           [if put-dash != null]
             - 
@@ -395,8 +395,8 @@ resourcetype course-description : fellestekst-document {
           [endif]
           <a href="#ny-utsatt-eksamen" class="vrtx-link-check">[localized 'ny-utsatt-eksamen-group']</a>
         [endif]
-        [def antall-forsok-trekk resource-prop-obj-val(".", "antall-forsok-trekk")]
-        [def antall-forsok-trekk-text-field resource-prop-obj-val(".", "antall-forsok-trekk-text-field")]
+        [def antall-forsok-trekk document.properties.antall-forsok-trekk]
+        [def antall-forsok-trekk-text-field document.properties.antall-forsok-trekk-text-field]
         [if (antall-forsok-trekk-text-field != null && antall-forsok-trekk-text-field != "") || (antall-forsok-trekk != null && antall-forsok-trekk != "" && antall-forsok-trekk != "ingen-fellestekst")]
           [if put-dash != null]
             -
@@ -405,8 +405,8 @@ resourcetype course-description : fellestekst-document {
           [endif]
           <a href="#antall-forsok-trekk" class="vrtx-link-check">[localized 'antall-forsok-trekk-group']</a>
         [endif]
-        [def tilrettelagt-eksamen resource-prop-obj-val(".", "tilrettelagt-eksamen")]
-        [def tilrettelagt-eksamen-text-field resource-prop(".", "tilrettelagt-eksamen-text-field")]
+        [def tilrettelagt-eksamen document.properties.tilrettelagt-eksamen]
+        [def tilrettelagt-eksamen-text-field document.properties.tilrettelagt-eksamen-text-field]
         [if (tilrettelagt-eksamen-text-field != null && tilrettelagt-eksamen-text-field != "") || (tilrettelagt-eksamen != null && tilrettelagt-eksamen != "" && tilrettelagt-eksamen != "ingen-fellestekst")]
           [if put-dash != null]
             -
@@ -415,8 +415,8 @@ resourcetype course-description : fellestekst-document {
           [endif]
           <a href="#tilrettelagt-eksamen" class="vrtx-link-check">[localized 'tilrettelagt-eksamen-group']</a>
         [endif]
-        [def evaluering-av-emnet resource-prop-obj-val(".", "evaluering-av-emnet")]
-        [def evaluering-av-emnet-text-field resource-prop(".", "evaluering-av-emnet-text-field")]
+        [def evaluering-av-emnet document.properties.evaluering-av-emnet]
+        [def evaluering-av-emnet-text-field document.properties.evaluering-av-emnet-text-field]
         [if (evaluering-av-emnet-text-field != null && evaluering-av-emnet-text-field != "") || (evaluering-av-emnet != null && evaluering-av-emnet != "" && evaluering-av-emnet != "ingen-fellestekst")]
           [if put-dash != null]
             -
@@ -425,7 +425,7 @@ resourcetype course-description : fellestekst-document {
           [endif]
           <a href="#evaluering-av-emnet" class="vrtx-link-check">[localized 'evaluering-av-emnet-group']</a>
         [endif]
-        [def other-text-field resource-prop(".", "other-text-field")]
+        [def other-text-field document.properties.other-text-field]
         [if other-text-field != null && evaluering-av-emnet-text-field != ""]
           [if put-dash != null]
             -
@@ -435,22 +435,22 @@ resourcetype course-description : fellestekst-document {
         ##
     }
 
-    academics-course {
+    academics-course (document) {
         ##
-        [def course-content resource-prop-obj-val(".", "course-content")]
+        [def course-content document.properties.course-content]
         [if course-content != null && course-content != ""]
           <div id="course-content">
             [val course-content # unescaped]
           </div>
         [endif]
-        [def learning-outcomes resource-prop-obj-val(".", "learning-outcomes")]
+        [def learning-outcomes document.properties.learning-outcomes]
         [if learning-outcomes != null && learning-outcomes != ""]
           <div id="learning-outcomes">
             [val learning-outcomes # unescaped]
           </div>
         [endif]
-        [def opptak-og-adgang resource-prop-obj-val(".", "opptak-og-adgang")]
-        [def opptak-og-adgang-text-field resource-prop-obj-val(".", "opptak-og-adgang-text-field")]
+        [def opptak-og-adgang document.properties.opptak-og-adgang]
+        [def opptak-og-adgang-text-field document.properties.opptak-og-adgang-text-field]
         [if (opptak-og-adgang-text-field != null && opptak-og-adgang-text-field != "") || (opptak-og-adgang != null && opptak-og-adgang != "" && opptak-og-adgang != "ingen-fellestekst")]
           <div id="opptak-og-adgang">[localized opptak-og-adgang]</a>
             [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"opptak-og-adgang"}]
@@ -459,8 +459,8 @@ resourcetype course-description : fellestekst-document {
             [endif]
           </div>
         [endif]
-        [def ikke-privatist resource-prop-obj-val(".", "ikke-privatist")]
-        [def ikke-privatist-text-field resource-prop-obj-val(".", "ikke-privatist-text-field")]
+        [def ikke-privatist document.properties.ikke-privatist]
+        [def ikke-privatist-text-field document.properties.ikke-privatist-text-field]
         [if (ikke-privatist-text-field != null && ikke-privatist-text-field != "") || (ikke-privatist != null && ikke-privatist != "" && ikke-privatist != "ingen-fellestekst")]
           <div id="ikke-privatist">
             [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"ikke-privatist"}]
@@ -469,8 +469,8 @@ resourcetype course-description : fellestekst-document {
             [endif]
           </div>
         [endif]
-        [def obligatoriske-forkunnskaper resource-prop-obj-val(".", "obligatoriske-forkunnskaper")]
-        [def obligatoriske-forkunnskaper-text-field resource-prop-obj-val(".", "obligatoriske-forkunnskaper-text-field")]
+        [def obligatoriske-forkunnskaper document.properties.obligatoriske-forkunnskaper]
+        [def obligatoriske-forkunnskaper-text-field document.properties.obligatoriske-forkunnskaper-text-field]
         [if (obligatoriske-forkunnskaper-text-field != null && obligatoriske-forkunnskaper-text-field != "") || (obligatoriske-forkunnskaper != null && obligatoriske-forkunnskaper != "" && obligatoriske-forkunnskaper != "ingen-fellestekst")]
           <div id="obligatoriske-forkunnskaper">
             [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"obligatoriske-forkunnskaper"}]
@@ -479,9 +479,9 @@ resourcetype course-description : fellestekst-document {
             [endif]
           </div>
         [endif]
-        [def tidsrom-for-undervisning resource-prop-obj-val(".", "tidsrom-for-undervisning")]
-        [def teaching-text-field resource-prop-obj-val(".", "teaching-text-field")]
-        [def adgang resource-prop-obj-val(".", "adgang")]
+        [def tidsrom-for-undervisning document.properties.tidsrom-for-undervisning]
+        [def teaching-text-field document.properties.teaching-text-field]
+        [def adgang document.properties.adgang]
         [if (teaching-text-field != null && teaching-text-field != "") || (tidsrom-for-undervisning != null && tidsrom-for-undervisning != "" && tidsrom-for-undervisning != "ingen-fellestekst") || (adgang != null && adgang != "" && adgang != "ingen-fellestekst")]
           <div id="teaching">
             [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"tidsrom-for-undervisning"}]
@@ -491,8 +491,8 @@ resourcetype course-description : fellestekst-document {
             [endif]
           </div>
         [endif]
-        [def vurdering-og-eksamen resource-prop-obj-val(".", "vurdering-og-eksamen")]
-        [def vurdering-og-eksamen-text-field resource-prop-obj-val(".", "vurdering-og-eksamen-text-field")]
+        [def vurdering-og-eksamen document.properties.vurdering-og-eksamen]
+        [def vurdering-og-eksamen-text-field document.properties.vurdering-og-eksamen-text-field]
         [if (vurdering-og-eksamen-text-field != null && vurdering-og-eksamen-text-field != "") || (vurdering-og-eksamen != null && vurdering-og-eksamen != "" && vurdering-og-eksamen != "ingen-fellestekst")]
           <div id="vurdering-og-eksamen">
             [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"vurdering-og-eksamen"}]
@@ -501,8 +501,8 @@ resourcetype course-description : fellestekst-document {
             [endif]
           </div
         [endif]
-        [def hjelpemidler resource-prop-obj-val(".", "hjelpemidler")]
-        [def hjelpemidler-text-field resource-prop-obj-val(".", "hjelpemidler-text-field")]
+        [def hjelpemidler document.properties.hjelpemidler]
+        [def hjelpemidler-text-field document.properties.hjelpemidler-text-field]
         [if (hjelpemidler-text-field != null && hjelpemidler-text-field != "") || (hjelpemidler != null && hjelpemidler != "" && hjelpemidler != "ingen-fellestekst")]
           <div id="hjelpemidler">
             [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"hjelpemidler"}]
@@ -511,8 +511,8 @@ resourcetype course-description : fellestekst-document {
             [endif]
           </div>
         [endif]
-        [def eksamensspraak resource-prop-obj-val(".", "eksamensspraak")]
-        [def eksamensspraak-text-field resource-prop-obj-val(".", "eksamensspraak-text-field")]
+        [def eksamensspraak document.properties.eksamensspraak]
+        [def eksamensspraak-text-field document.properties.eksamensspraak-text-field]
         [if (eksamensspraak-text-field != null && eksamensspraak-text-field != "") || (eksamensspraak != null && eksamensspraak != "" && eksamensspraak != "ingen-fellestekst")]
           <div id="eksamensspraak">
             [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"eksamensspraak"}]
@@ -521,8 +521,8 @@ resourcetype course-description : fellestekst-document {
             [endif]
           </div>
         [endif]
-        [def sensur resource-prop-obj-val(".", "sensur")]
-        [def sensur-text-field resource-prop-obj-val(".", "sensur-text-field")]
+        [def sensur document.properties.sensur]
+        [def sensur-text-field document.properties.sensur-text-field]
         [if (sensur-text-field != null && sensur-text-field != "") || (sensur != null && sensur != "" && sensur != "ingen-fellestekst")]
           <div id="sensur">
             [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"sensur"}]
@@ -531,8 +531,8 @@ resourcetype course-description : fellestekst-document {
             [endif]
           </div>
         [endif]
-        [def tilsynssensor resource-prop-obj-val(".", "tilsynssensor")]
-        [def tilsynssensor-text-field resource-prop-obj-val(".", "tilsynssensor-text-field")]
+        [def tilsynssensor document.properties.tilsynssensor]
+        [def tilsynssensor-text-field document.properties.tilsynssensor-text-field]
         [if (tilsynssensor-text-field != null && tilsynssensor-text-field != "") || (tilsynssensor != null && tilsynssensor != "" && tilsynssensor != "ingen-fellestekst")]
           <div id="tilsynssensor">
             [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"tilsynssensor"}]
@@ -541,8 +541,8 @@ resourcetype course-description : fellestekst-document {
             [endif]
           </div>
         [endif]
-        [def klage resource-prop-obj-val(".", "klage")]
-        [def klage-text-field resource-prop-obj-val(".", "klage-text-field")]
+        [def klage document.properties.klage]
+        [def klage-text-field document.properties.klage-text-field]
         [if (klage-text-field != null && klage-text-field != "") || (klage != null && klage != "" && klage != "ingen-fellestekst")]
           <div id="klage">
             [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"klage"}]
@@ -551,8 +551,8 @@ resourcetype course-description : fellestekst-document {
             [endif]
           </div>
         [endif]
-        [def ny-utsatt-eksamen resource-prop-obj-val(".", "ny-utsatt-eksamen")]
-        [def ny-utsatt-eksamen-text-field resource-prop-obj-val(".", "ny-utsatt-eksamen-text-field")]
+        [def ny-utsatt-eksamen document.properties.ny-utsatt-eksamen]
+        [def ny-utsatt-eksamen-text-field document.properties.ny-utsatt-eksamen-text-field]
         [if (ny-utsatt-eksamen-text-field != null && ny-utsatt-eksamen-text-field != "") || (ny-utsatt-eksamen != null && ny-utsatt-eksamen != "" && ny-utsatt-eksamen != "ingen-fellestekst")]
           <div id="ny-utsatt-eksamen">
             [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"ny-utsatt-eksamen"}]
@@ -561,8 +561,8 @@ resourcetype course-description : fellestekst-document {
             [endif]
           </div>
         [endif]
-        [def antall-forsok-trekk resource-prop-obj-val(".", "antall-forsok-trekk")]
-        [def antall-forsok-trekk-text-field resource-prop-obj-val(".", "antall-forsok-trekk-text-field")]
+        [def antall-forsok-trekk document.properties.antall-forsok-trekk]
+        [def antall-forsok-trekk-text-field document.properties.antall-forsok-trekk-text-field]
         [if (antall-forsok-trekk-text-field != null && antall-forsok-trekk-text-field != "") || (antall-forsok-trekk != null && antall-forsok-trekk != "" && antall-forsok-trekk != "ingen-fellestekst")]
           <div id="antall-forsok-trekk">
             [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"antall-forsok-trekk"}]
@@ -571,8 +571,8 @@ resourcetype course-description : fellestekst-document {
             [endif]
           </div>
         [endif]
-        [def tilrettelagt-eksamen resource-prop-obj-val(".", "tilrettelagt-eksamen")]
-        [def tilrettelagt-eksamen-text-field resource-prop(".", "tilrettelagt-eksamen-text-field")]
+        [def tilrettelagt-eksamen document.properties.tilrettelagt-eksamen]
+        [def tilrettelagt-eksamen-text-field document.properties.tilrettelagt-eksamen-text-field]
         [if (tilrettelagt-eksamen-text-field != null && tilrettelagt-eksamen-text-field != "") || (tilrettelagt-eksamen != null && tilrettelagt-eksamen != "" && tilrettelagt-eksamen != "ingen-fellestekst")]
           <div id="tilrettelagt-eksamen">
             [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"tilrettelagt-eksamen"}]
@@ -581,8 +581,8 @@ resourcetype course-description : fellestekst-document {
             [endif]
           </div>
         [endif]
-        [def evaluering-av-emnet resource-prop-obj-val(".", "evaluering-av-emnet")]
-        [def evaluering-av-emnet-text-field resource-prop(".", "evaluering-av-emnet-text-field")]
+        [def evaluering-av-emnet document.properties.evaluering-av-emnet]
+        [def evaluering-av-emnet-text-field document.properties.evaluering-av-emnet-text-field]
         [if (evaluering-av-emnet-text-field != null && evaluering-av-emnet-text-field != "") || (evaluering-av-emnet != null && evaluering-av-emnet != "" && evaluering-av-emnet != "ingen-fellestekst")]
           <div id="evaluering-av-emnet">
             [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"evaluering-av-emnet"}]
@@ -591,7 +591,7 @@ resourcetype course-description : fellestekst-document {
             [endif]
           </div>
         [endif]
-        [def other-text-field resource-prop(".", "other-text-field")]
+        [def other-text-field document.properties.other-text-field]
         [if other-text-field != null && other-text-field != ""]
           <div id="other">
             [val other-text-field # unescaped]
@@ -624,6 +624,8 @@ resourcetype course-description : fellestekst-document {
 
   view {
     ##
+    [resource-props "."]
+    [def document structured-document()]
     [def course-code resource-prop-obj-val(".", "courseContext.fs-course-code")]
     [def course-name resource-prop-obj-val(".", "courseContext.course-name")]
     [def studinfo-kontakt resource-prop-obj-val(".", "studinfo-kontakt")]
@@ -646,7 +648,7 @@ resourcetype course-description : fellestekst-document {
         [call "comp:statusmessage"]
         <h1>[if course-code != null][val course-code][endif][if course-code != null && course-name != null] - [endif][if course-name != null][val course-name][endif]</h1>
         <div id="vrtx-academics-course-toc" style="padding-top:5px;">
-          [call "comp:academics-course-toc"]
+          [call "comp:academics-course-toc" {"document" : document}]
         </div>
         <table id="vrtx-academics-course-table" align="right" cellpadding="0" cellspacing="0" width="50%">
           <tbody>
@@ -682,7 +684,7 @@ resourcetype course-description : fellestekst-document {
           </tbody>
         </table>
         <div>
-          [call "comp:academics-course"]
+          [call "comp:academics-course" {"document" : document}]
         </div>
       </body>
     </html>

@@ -344,6 +344,22 @@ div#vrtx-resource\.picture iframe {
   width: 331px !important;
 }
 
+div.introImageAndCaption .hidePicture {
+  left: 0;
+  position: absolute;
+  top: 259px;
+  width: 355px;
+}
+
+div.introImageAndCaption .hidePicture .vrtx-radio-buttons label {
+  display: inline !important; 
+}
+
+#editor.vrtx-structured-article div.introduction textarea,
+#editor.vrtx-structured-article div.introduction iframe {
+  height: 220px !important;
+}
+
 div.introImageAndCaption div.vrtx-image-ref-browse,
 div#vrtx-resource\.picture div.input-and-button-container {
   float: left;

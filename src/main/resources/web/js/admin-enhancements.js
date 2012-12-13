@@ -909,10 +909,10 @@ function traverseNode(treeElem, treeTravNode, lastNode) {
       hit.click();
       if (lastNode) { // If last: scroll to node
         treeElem.css("background", "none");
+        var scrollToLink = (link.position().top - 145);
+        scrollToLink = scrollToLink < 0 ? 0 : scrollToLink;
         treeElem.fadeIn(200, function () {
-          var scrollToLink = (link.position().top - 145);
-          scrollToLink = scrollToLink < 0 ? 0 : scrollToLink;
-          $(".ui-dialog #dialog-html").scrollTo(scrollToLink, 250, {
+          $(".ui-dialog:visible .ui-dialog-content").scrollTo(scrollToLink, 250, {
             easing: "swing",
             queue: true,
             axis: 'y',

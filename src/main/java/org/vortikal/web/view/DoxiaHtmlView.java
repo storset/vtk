@@ -58,10 +58,12 @@ public class DoxiaHtmlView implements View {
     private String contentType = "text/html";
     private String characterEncoding = "utf-8";
     
+    @Override
     public String getContentType() {
         return this.contentType + ";charset=" + this.characterEncoding;
     }
 
+    @Override
     public void render(Map<String, ?> model, HttpServletRequest request,
             HttpServletResponse response) throws Exception {
 
@@ -96,7 +98,8 @@ public class DoxiaHtmlView implements View {
         out.close();
     }
 
-    @Required public void setStreamKey(String streamKey) {
+    @Required
+    public void setStreamKey(String streamKey) {
         this.streamKey = streamKey;
     }
 
@@ -104,7 +107,8 @@ public class DoxiaHtmlView implements View {
     	this.resourceKey = resourceKey;
     }
     
-    @Required public void setParserClass(Class<AbstractParser> parserClass) {
+    @Required
+    public void setParserClass(Class<AbstractParser> parserClass) {
         this.parserClass = parserClass;
     }
 
@@ -125,6 +129,7 @@ public class DoxiaHtmlView implements View {
     		this.title = title;
     	}
     	
+        @Override
     	public void head_() {
     	    if (!this.wroteTitle) {
     	        if (this.title != null) {
@@ -136,11 +141,13 @@ public class DoxiaHtmlView implements View {
     	    super.head_();
     	}
     	
+        @Override
     	public void title() {
     	    super.title();
     	    this.wroteTitle = true;
     	}
     	
+        @Override
         public void body() {
         	super.body();
         	if (this.title != null) {

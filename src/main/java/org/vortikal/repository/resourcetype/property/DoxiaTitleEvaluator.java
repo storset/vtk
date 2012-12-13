@@ -63,6 +63,7 @@ public class DoxiaTitleEvaluator implements PropertyEvaluator {
     }
 
 
+    @Override
     public boolean evaluate(Property property, PropertyEvaluationContext ctx) throws PropertyEvaluationException {
         if (ctx.getContent() != null) {
             return false;

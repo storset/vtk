@@ -58,6 +58,7 @@ public class TagElement extends Tag implements Comparable<TagElement> {
 
     // VTK-1107: Sets the text to compare to lowercase,
     // thus avoiding problem with sorting.
+    @Override
     public int compareTo(TagElement other) {
         return this.getText().toLowerCase().compareTo(other.getText().toLowerCase());
     }

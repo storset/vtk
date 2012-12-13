@@ -83,14 +83,16 @@ public class ApprovalViaEmailController implements Controller {
         Map<String, Object> model = new HashMap<String, Object>();
         String method = request.getMethod();
 
-        boolean userEmailFound = false;
-        String emailFrom = getUserEmail(principal.getQualifiedName(), userEmailFound);
-        if(!userEmailFound) {
+        boolean userEmailFound = true;
+        String emailFrom = getUserEmail(principal.getQualifiedName());
+        if (StringUtils.isBlank(emailFrom)) {
             model.put("userEmailFrom", true);
+            emailFrom = principal.getQualifiedName();
+            userEmailFound = false;
         }
-        
+
         String editorialContacts = getEditorialContactEmails(resource);
-        if(editorialContacts != null) {
+        if (editorialContacts != null) {
             model.put("editorialContacts", editorialContacts);
         }
 
@@ -107,8 +109,8 @@ public class ApprovalViaEmailController implements Controller {
                 emailFrom = request.getParameter("emailFrom");
             }
             String yourComment = request.getParameter("yourComment");
-            
-            if (StringUtils.isBlank(emailTo) || (!userEmailFound && StringUtils.isBlank(emailFrom))) {
+
+            if (StringUtils.isBlank(emailTo) || !userEmailFound) {
                 if (StringUtils.isNotBlank(emailTo)) {
                     model.put("emailSavedTo", emailTo);
                 }
@@ -146,7 +148,7 @@ public class ApprovalViaEmailController implements Controller {
                     } else {
                         model.put("emailSavedTo", emailTo);
                         model.put("emailSavedFrom", emailFrom);
-                        
+
                         if (!StringUtils.isBlank(yourComment)) {
                             model.put("yourSavedComment", yourComment);
                         }
@@ -174,13 +176,13 @@ public class ApprovalViaEmailController implements Controller {
             }
             String editorialContacts = sb.toString();
             if (editorialContacts.length() > 2) {
-               return editorialContacts.substring(0, editorialContacts.length() - 2); 
+                return editorialContacts.substring(0, editorialContacts.length() - 2);
             }
         }
         return null;
     }
 
-    public String getUserEmail(String qualifiedName, boolean principalEmailLDAPFound) {
+    public String getUserEmail(String qualifiedName) {
         if (qualifiedName.endsWith("@uio.no")) {
             Principal principal = principalFactory.getPrincipal(qualifiedName, Principal.Type.USER);
             PrincipalMetadata principalMetaData = principal.getMetadata();
@@ -189,13 +191,12 @@ public class ApprovalViaEmailController implements Controller {
                 if (emails != null && !emails.isEmpty()) {
                     String email = emails.get(0).toString();
                     if (MailExecutor.isValidEmail(email)) {
-                        principalEmailLDAPFound = true;
                         return email;
                     }
                 }
             }
         }
-        return qualifiedName;
+        return null;
     }
 
     private String getLocalizedMsg(HttpServletRequest request, String key, Object[] params) {

@@ -77,7 +77,7 @@ public interface PrincipalMetadataDAO {
      *         each principal that satisfies the search criteria or
      *         <code>null</code> if nothing suitable was found.
      */
-    List<PrincipalMetadata> search(PrincipalSearch search, Locale preferredLocale);
+    List<PrincipalMetadata> search(PrincipalSearch search);
 
     /**
      * Return set of supported principal domains for this DAO.

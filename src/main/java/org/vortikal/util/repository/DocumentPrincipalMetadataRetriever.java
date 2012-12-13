@@ -69,8 +69,7 @@ public class DocumentPrincipalMetadataRetriever {
         if (this.personDocumentPrincipalMetadataDao != null && uids != null && !uids.isEmpty()) {
 
             PrincipalSearchImpl ps = new PrincipalSearchImpl(uids, preferredLocale);
-            List<PrincipalMetadata> principalDocuments = this.personDocumentPrincipalMetadataDao.search(ps,
-                    preferredLocale);
+            List<PrincipalMetadata> principalDocuments = this.personDocumentPrincipalMetadataDao.search(ps);
 
             if (principalDocuments != null && principalDocuments.size() > 0) {
                 for (PrincipalMetadata metadata : principalDocuments) {

@@ -122,7 +122,7 @@ public class PrincipalFactory {
             }
 
             try {
-                List<PrincipalMetadata> results = this.principalMetadataDao.search(search, null);
+                List<PrincipalMetadata> results = this.principalMetadataDao.search(search);
                 if (results != null) {
                     retval = new ArrayList<Principal>(results.size());
                     for (PrincipalMetadata metadata : results) {

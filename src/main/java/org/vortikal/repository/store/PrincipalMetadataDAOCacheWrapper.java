@@ -109,7 +109,7 @@ public class PrincipalMetadataDAOCacheWrapper implements PrincipalMetadataDAO, I
     }
 
     @Override
-    public List<PrincipalMetadata> search(PrincipalSearch search, Locale preferredLocale) {
+    public List<PrincipalMetadata> search(PrincipalSearch search) {
 
         String cacheKey = search.toString();
         CacheItem item = this.cache.get(cacheKey);
@@ -117,7 +117,7 @@ public class PrincipalMetadataDAOCacheWrapper implements PrincipalMetadataDAO, I
             return item.values;
         }
 
-        List<PrincipalMetadata> result = this.wrappedDao.search(search, preferredLocale);
+        List<PrincipalMetadata> result = this.wrappedDao.search(search);
         this.cache.put(cacheKey, new CacheItem(result));
         return result;
 

@@ -125,7 +125,19 @@
   margin-right: 0px;
 }
 
-.ui-accordion .vrtx-string.last {
+.ui-accordion > .vrtx-grouped {
+  margin-top: 0px;
+}
+
+.ui-accordion > .vrtx-json-element {
+  margin-bottom: 0px;
+}
+
+.ui-accordion > .vrtx-grouped:first-child {
+  margin-top: 20px;
+}
+
+.ui-accordion > .vrtx-json-element.last {
   margin-bottom: 20px;
 }
 
@@ -184,10 +196,6 @@
 .vrtx-shared-text .shared-text-description a {
   color: #005aab;
   text-decoration: underline;
-}
-
-#editor.vrtx-hvordan-soke .vrtx-grouped {
-  margin-top: 0px;
 }
 
 #editor.so .internasjonale-sokere-admin,

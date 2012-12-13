@@ -186,6 +186,8 @@
       
         var newElement = $("#" + newElementId);
         var prev = newElement.prev(".vrtx-json-element");
+        newElement.addClass("last");
+        prev.removeClass("last");
       
         if(!isImmovable && counter > 0) {
           newElement.find(".vrtx-move-up-button").click(function (e) {

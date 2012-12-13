@@ -217,7 +217,7 @@
 
       <#if !elem.value?exists >
     	  <#assign arrayOfIds = "new Array(" />
-          <div class="vrtx-json-element" id="vrtx-json-element-${inputFieldName}-${counter}">
+          <div class="vrtx-json-element last" id="vrtx-json-element-${inputFieldName}-${counter}">
             <#list elem.description.attributes as jsonAttr>
               <#assign attrName = jsonAttr.name />
               <#assign tmpName = inputFieldName + "." + attrName + "." + counter />
@@ -247,7 +247,7 @@
 
        <#if elem.value?exists && elem.value?is_enumerable>
          <#list elem.value as map>
-           <div class="vrtx-json-element" id="vrtx-json-element-${inputFieldName}-${counter}">
+           <div class="vrtx-json-element<#if (counter == (elem.value?size - 1))> last</#if>" id="vrtx-json-element-${inputFieldName}-${counter}">
              <#assign arrayOfIds = "new Array(" />
              <#list elem.description.attributes as jsonAttr>
                <#assign attrName = jsonAttr.name />

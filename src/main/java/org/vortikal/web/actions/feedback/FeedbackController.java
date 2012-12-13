@@ -55,6 +55,7 @@ import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 
 public class FeedbackController implements Controller {
+
     private String viewName;
     private String siteName;
     private ResourceWrapperManager resourceManager;
@@ -207,6 +208,11 @@ public class FeedbackController implements Controller {
             throw new IllegalArgumentException("Invalid 'sender' field: '" + sender + "'");
         }
         this.sender = sender;
+    }
+
+    @Required
+    public void setLocaleResolver(LocaleResolver localeResolver) {
+        this.localeResolver = localeResolver;
     }
 
     public void setRecipients(String str) {

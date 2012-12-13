@@ -304,7 +304,7 @@ $(window).load(function () {
          ((typeof JSON_ELEMENTS_INITIALIZED === "object") ? JSON_ELEMENTS_INITIALIZED : nullDeferred),
          ((typeof DATE_PICKER_INITIALIZED === "object") ? DATE_PICKER_INITIALIZED : nullDeferred),
          ((typeof IMAGE_EDITOR_INITIALIZED === "object") ? IMAGE_EDITOR_INITIALIZED : nullDeferred)).done(function() {
-    vrtxAdmin.log({msg: "All initialized."});
+    vrtxAdmin.log({msg: "Editor initialized."});
     storeInitPropValues();
   });
   

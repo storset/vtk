@@ -42,6 +42,8 @@ $(window).load(function() {
     
       $(html).insertAfter("#manually-approve-container-title"); 
     });
+  } else {
+    MANUALLY_APPROVE_INITIALIZED.resolve();
   }
 });
 

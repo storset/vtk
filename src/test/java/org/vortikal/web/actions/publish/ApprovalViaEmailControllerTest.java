@@ -50,9 +50,9 @@ import org.vortikal.security.PrincipalImpl;
 import junit.framework.TestCase;
 
 public class ApprovalViaEmailControllerTest extends TestCase {
-    
+
     private ApprovalViaEmailController approvalViaEmailController;
-    
+
     @Override
     protected void setUp() throws Exception {
         super.setUp();
@@ -62,16 +62,13 @@ public class ApprovalViaEmailControllerTest extends TestCase {
     }
 
     public void testGetUserEmail() {
-        boolean userEmailFound = false;
-        assertEquals("oyvind.hatland@usit.uio.no", 
-                     approvalViaEmailController.getUserEmail("oyvihatl@uio.no", userEmailFound));
-        assertEquals("geir@ntnu.no", 
-                     approvalViaEmailController.getUserEmail("geir@ntnu.no", userEmailFound));
+        assertEquals("oyvind.hatland@usit.uio.no", approvalViaEmailController.getUserEmail("oyvihatl@uio.no"));
+        assertNull(approvalViaEmailController.getUserEmail("geir@ntnu.no"));
     }
 
     public void testGetEditorialContactEmails() {
         assertEquals("vortex-core@usit.uio.no, resin@ulrik.uio.no",
-                     approvalViaEmailController.getEditorialContactEmails(new MockResource(Path.ROOT)));
+                approvalViaEmailController.getEditorialContactEmails(new MockResource(Path.ROOT)));
     }
 }
 
@@ -79,9 +76,10 @@ class MockResource extends ResourceImpl {
     public MockResource(Path uri) {
         super(uri);
     }
+
     public Property getProperty(PropertyTypeDefinition type) {
-        if(type == null) {
-           return new MockPropertyImpl();
+        if (type == null) {
+            return new MockPropertyImpl();
         }
         return null;
     }
@@ -99,8 +97,7 @@ class MockPropertyImpl extends PropertyImpl {
 
 class MockPrincipalFactory extends PrincipalFactory {
     @Override
-    public Principal getPrincipal(String id, Principal.Type type)
-            throws InvalidPrincipalException {
+    public Principal getPrincipal(String id, Principal.Type type) throws InvalidPrincipalException {
         return new MockPrincipalImpl(id, type);
     }
 }
@@ -110,9 +107,10 @@ class MockPrincipalImpl extends PrincipalImpl {
     public MockPrincipalImpl(String id, Type type) throws InvalidPrincipalException {
         super(id, type);
     }
+
     @Override
     public PrincipalMetadata getMetadata() {
-       return new MockPrincipalMetadata(super.getQualifiedName());
+        return new MockPrincipalMetadata(super.getQualifiedName());
     }
 }
 
@@ -120,9 +118,12 @@ class MockPrincipalMetadata extends PrincipalMetadataImpl {
     public MockPrincipalMetadata(String qualifiedName) {
         super(qualifiedName);
     }
+
     @Override
     public List<Object> getValues(String attributeName) {
-        if ("email".equals(attributeName)) { // TODO: maybe dig a little deeper into DAO-code etc. to make the test better
+        if ("email".equals(attributeName)) { // TODO: maybe dig a little deeper
+                                             // into DAO-code etc. to make the
+                                             // test better
             List<Object> emails = new ArrayList<Object>();
             if ("oyvihatl@uio.no".equals(super.getQualifiedName())) {
                 emails.add(new String("oyvind.hatland@usit.uio.no"));

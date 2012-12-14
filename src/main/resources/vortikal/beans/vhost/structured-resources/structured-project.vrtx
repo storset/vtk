@@ -194,6 +194,7 @@ resourcetype structured-project {
       </head>
       <body id="vrtx-structured-project">
         <div id="vrtx-content">
+          [def document structured-document()]
           <div id="vrtx-main-content">
             <h1>[call "json:field" {"select":"name"}] [call "comp:completed"]</h1>
             [call "comp:introduction"]

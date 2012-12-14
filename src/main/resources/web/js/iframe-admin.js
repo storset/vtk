@@ -90,7 +90,6 @@
               .css({ position: "relative",
                      height: (previewIframeMinHeight + extras + 2) + "px" });
       
-      
       previewLoading = contents.find("#preview-loading");
       previewLoading.css({
         height: previewIframeMinHeight + "px",

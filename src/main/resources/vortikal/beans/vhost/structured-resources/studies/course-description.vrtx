@@ -104,18 +104,17 @@ resourcetype course-description : fellestekst-document {
 
   view-components {
 
-    facts {
+    facts (document) {
         ##
-        [def credits resource-prop(".", "credits")]
-        [def level resource-prop-obj-val(".", "level")]
-        [def creditsdecimal resource-prop-obj-val(".", "creditsdecimal")]
-        [def content-locale resource-prop-obj-val(".", "contentLocale")]
-        [def teachingsemester resource-prop-obj-val(".", "teachingsemester")]
-        [def teachingsemester-other resource-prop-obj-val(".", "teachingsemester-other")]
-        [def examsemester resource-prop-obj-val(".", "examsemester")]
-        [def examsemester-other resource-prop-obj-val(".", "examsemester-other")]
-        [def course-fee resource-prop-obj-val(".", "course-fee")]
-        [def course-fee-amount resource-prop-obj-val(".", "course-fee-amount")]
+        [def credits document.properties.credits]
+        [def level document.properties.level]
+        [def content-locale document.properties.contentLocale]
+        [def teachingsemester document.properties.teachingsemester]
+        [def teachingsemester-other document.properties.teachingsemester-other]
+        [def examsemester document.properties.examsemester]
+        [def examsemester-other document.properties.examsemester-other]
+        [def course-fee document.properties.course-fee]
+        [def course-fee-amount document.properties.course-fee-amount]
         <table class="course" cellpadding="0" cellspacing="0" width="100%">
           <tbody>
             <tr class="vrtx-academics-course-table-title">
@@ -123,7 +122,7 @@ resourcetype course-description : fellestekst-document {
             </tr>
             <tr valign="top">
               <td>[localized 'credits']:</td>
-              <td>[if credits != null][val credits][if creditsdecimal != null && creditsdecimal != "" && creditsdecimal != "0"],[val creditsdecimal][endif][endif]</td>
+              <td>[if credits != null][val credits][endif]</td>
             </tr>
             [if level != null && level != "" && level != "not-set"]
               <tr valign="top">
@@ -135,7 +134,6 @@ resourcetype course-description : fellestekst-document {
               <td>[localized 'teachingsemester']:</td>
               <td>
                 [if teachingsemester != null && teachingsemester = "particular-semester"]
-                  [def document structured-document()]
                   [def teachingsemesters document.properties.teachingsemester-particular-semester]
                   [if teachingsemesters != null]
                     [list teachingsemesters teachingsemester]
@@ -146,8 +144,8 @@ resourcetype course-description : fellestekst-document {
                     [endlist]
                   [endif]
                 [elseif teachingsemester != null && teachingsemester = "every-other"]
-                  [def term 'every-other-' + resource-prop-obj-val(".", "teachingsemester-every-other-semester-term")]
-                  [def startyear resource-prop-obj-val(".", "teachingsemester-every-other-semester-startyear")]
+                  [def term 'every-other-' + document.properties.teachingsemester-every-other-semester-term]
+                  [def startyear document.properties.teachingsemester-every-other-semester-startyear]
                   [if term != null && startyear != null]
                     <p>[localized term]</p>
                     <p>[localized 'every-other-start'] [val startyear] [localized 'teaching-every-other-end']</p>
@@ -162,7 +160,6 @@ resourcetype course-description : fellestekst-document {
               <td>[localized 'examsemester']:</td>
               <td>
                 [if examsemester != null && examsemester = "particular-semester"]
-                  [def document structured-document()]
                   [def examsemesters document.properties.examsemester-particular-semester]
                   [if examsemesters != null]
                     [list examsemesters examsemester]
@@ -173,8 +170,8 @@ resourcetype course-description : fellestekst-document {
                     [endlist]
                   [endif]
                 [elseif examsemester != null && examsemester = "every-other"]
-                  [def term 'every-other-' + resource-prop-obj-val(".", "examsemester-every-other-semester-term")]
-                  [def startyear resource-prop-obj-val(".", "examsemester-every-other-semester-startyear")]
+                  [def term 'every-other-' + document.properties.examsemester-every-other-semester-term]
+                  [def startyear document.properties.examsemester-every-other-semester-startyear]
                   [if term != null && startyear != null]
                     <p>[localized term]</p>
                     <p>[localized 'every-other-start'] [val startyear] [localized 'exam-every-other-end']</p>
@@ -628,8 +625,8 @@ resourcetype course-description : fellestekst-document {
     [def document structured-document()]
     [def course-code resource-prop-obj-val(".", "courseContext.fs-course-code")]
     [def course-name resource-prop-obj-val(".", "courseContext.course-name")]
-    [def studinfo-kontakt resource-prop-obj-val(".", "studinfo-kontakt")]
-    [def studinfo-kontakt-text-field resource-prop-obj-val(".", "studinfo-kontakt-text-field")]
+    [def studinfo-kontakt document.properties.studinfo-kontakt]
+    [def studinfo-kontakt-text-field document.properties.studinfo-kontakt-text-field]
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml">
       <head>
@@ -654,10 +651,10 @@ resourcetype course-description : fellestekst-document {
           <tbody>
             <tr>
               <td>
-                [call "comp:facts"]
+                [call "comp:facts" {"document" : document}]
               </td>
             </tr>
-            [if studinfo-kontakt != null && studinfo-kontakt != "" && studinfo-kontakt != "ingen-fellestekst"]
+            [if (studinfo-kontakt != null && studinfo-kontakt != "" && studinfo-kontakt != "ingen-fellestekst") || (studinfo-kontakt-text-field != null && studinfo-kontakt-text-field != "")]
               <tr>
                 <td>
                   <table class="contact" cellpadding="5" cellspacing="5" width="100%">

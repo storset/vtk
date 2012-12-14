@@ -31,49 +31,47 @@ resourcetype structured-document {
       [def style null]
       
       [if img-uri != null]
-         [def img resource(img-uri)]
+        [def img resource(img-uri)]
       [endif]
       [if img != null]
         [def pixel-width resource-prop(img-uri, "pixelWidth")]
         [def photographer resource-prop(img-uri, "photographer")]
-       [endif]
-       [if pixel-width != null]
+      [endif]
+      [if pixel-width != null]
         [def style concat("width:", pixel-width, "px")]
-     [endif]
+      [endif]
      
-     [if img-uri != null]
-       [if pixel-width != null]  
-        <div class="vrtx-introduction-image" style="[val style]">
-       [else]
-        <div class="vrtx-introduction-image">
-       [endif]
+      [if img-uri != null]
+        [if pixel-width != null]  
+          <div class="vrtx-introduction-image" style="[val style]">
+        [else]
+          <div class="vrtx-introduction-image">
+        [endif]
         
-       [if caption != null]
-        <img src="[val img-uri]" alt="[val caption # unescaped 'flattened']"/>
-       [else]
-        <img src="[val img-uri]" alt="[localized 'introduction-image-alt']"/>
-       [endif]
+         [if caption != null]
+           <img src="[val img-uri]" alt="[val caption # unescaped 'flattened']"/>
+         [else]
+           <img src="[val img-uri]" alt="[localized 'introduction-image-alt']"/>
+         [endif]
      
-       [if caption != null]
-         <div class="vrtx-imagetext">
-           <div class="vrtx-imagedescription">[val caption # unescaped]</div>
-           [if photographer != null]
+         [if caption != null]
+           <div class="vrtx-imagetext">
+             <div class="vrtx-imagedescription">[val caption # unescaped]</div>
+             [if photographer != null]
+               <span class="vrtx-photo">
+                 <span class="vrtx-photo-prefix">[localized "photo-prefix"]: </span>[val photographer]
+               </span>
+             [endif]
+           </div>
+         [elseif photographer != null]
+           <div class="vrtx-imagetext">
              <span class="vrtx-photo">
                <span class="vrtx-photo-prefix">[localized "photo-prefix"]: </span>[val photographer]
              </span>
-           [endif]
+           </div> 
+         [endif]
          </div>
-       [elseif photographer != null]
-         <div class="vrtx-imagetext">
-           [if photographer != null]
-             <span class="vrtx-photo">
-               <span class="vrtx-photo-prefix">[localized "photo-prefix"]: </span>[val photographer]
-             </span>
-           [endif]
-         </div> 
-       [endif]
-       </div>
-     [endif]
+      [endif]
       ##
     }
     
@@ -91,10 +89,10 @@ resourcetype structured-document {
       [resource-props "."]
       [if publish-date != null]
         <div class="vrtx-date-info">
-        <span class="published-date-label">[localized "publishedDate"]</span> <span class="published-date">[val publish-date] </span>
-        [if publish-date < lastModified]
-          - <span class="last-modified-date">[localized "lastModifiedDate"]</span> <span class="last-modified-date">[val lastModified]</span>
-        [endif]
+          <span class="published-date-label">[localized "publishedDate"]</span> <span class="published-date">[val publish-date] </span>
+          [if publish-date < lastModified]
+           - <span class="last-modified-date">[localized "lastModifiedDate"]</span> <span class="last-modified-date">[val lastModified]</span>
+          [endif]
         </div>
       [endif]
       ##
@@ -127,6 +125,7 @@ resourcetype structured-document {
     introduction-image-alt : (en : "Image", no : "Bilde", nn : "Bilete"),
     photo-prefix : (en : "Photo", no : "Foto", nn : "Photo"),
     caption : (en : "Image caption", no : "Bildetekst", nn : "Bilettekst"),
+    preview : (en : "Preview", no : "Forhåndsvisning", nn : "Førehandsvisning"),
     content : (en : "Content", no : "Innhold", nn : "Innhald"),
     share-link : (en : "Share at...", no : "Del på...", nn : "Del på..."),
     share-close : (en : "Close", no : "Lukk", nn : "Lukk"),

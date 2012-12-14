@@ -108,7 +108,7 @@ resourcetype course-description : fellestekst-document {
         ##
         [def credits document.properties.credits]
         [def level document.properties.level]
-        [def content-locale document.properties.contentLocale]
+        [def content-locale resource-prop-obj-val(".", "contentLocale")]
         [def teachingsemester document.properties.teachingsemester]
         [def teachingsemester-other document.properties.teachingsemester-other]
         [def examsemester document.properties.examsemester]

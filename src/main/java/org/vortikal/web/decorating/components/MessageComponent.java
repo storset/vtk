@@ -31,12 +31,15 @@
 package org.vortikal.web.decorating.components;
 
 import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
+import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
@@ -46,6 +49,7 @@ import org.vortikal.web.decorating.DecoratorRequest;
 import org.vortikal.web.decorating.DecoratorResponse;
 import org.vortikal.web.search.Listing;
 import org.vortikal.web.search.SearchComponent;
+import org.vortikal.web.servlet.ResourceAwareLocaleResolver;
 
 public class MessageComponent extends ViewRenderingDecoratorComponent {
 
@@ -59,8 +63,9 @@ public class MessageComponent extends ViewRenderingDecoratorComponent {
     private static final String PARAMETER_TITLE_DESC = "Title to set on messages list.";
 
     private SearchComponent searchComponent;
-    protected CollectionListingHelper helper;
+    private CollectionListingHelper helper;
     private PropertyTypeDefinition pageLimitPropDef;
+    private ResourceAwareLocaleResolver localeResolver;
 
     @Override
     protected void processModel(Map<String, Object> model, DecoratorRequest request, DecoratorResponse response)
@@ -113,9 +118,13 @@ public class MessageComponent extends ViewRenderingDecoratorComponent {
         }
 
         Listing result = searchComponent.execute(request.getServletRequest(), requestedMessageFolder, 1, pageLimit, 0);
-        model.put("messages", result.getFiles());
+        List<PropertySet> files = result.getFiles();
+        model.put("messages", files);
         model.put("editMessageFolder", helper.checkResourceForEditLink(repository, requestedMessageFolder, principal));
         model.put("messageFolder", requestedMessageFolder);
+
+        Locale preferredLocale = localeResolver.resolveResourceLocale(requestedMessageFolder);
+        model.put("locale", preferredLocale);
 
         if (pageLimit < result.getTotalHits()) {
             model.put("moreMessages", true);
@@ -145,6 +154,11 @@ public class MessageComponent extends ViewRenderingDecoratorComponent {
     @Required
     public void setPageLimitPropDef(PropertyTypeDefinition pageLimitPropDef) {
         this.pageLimitPropDef = pageLimitPropDef;
+    }
+
+    @Required
+    public void setLocaleResolver(ResourceAwareLocaleResolver localeResolver) {
+        this.localeResolver = localeResolver;
     }
 
 }

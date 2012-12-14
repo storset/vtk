@@ -40,6 +40,7 @@ resourcetype structured-message {
           [call "resource:email-friend"]
           [call "resource:share-at"]
         </div>
+        [call "resource:comments"]
       </body>
     </html>
     ##

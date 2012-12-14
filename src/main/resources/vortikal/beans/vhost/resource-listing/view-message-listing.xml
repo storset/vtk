@@ -101,6 +101,7 @@
     <property name="searchComponent" ref="messageListing.searchComponent" />
     <property name="helper" ref="messageListing.helper" />
     <property name="pageLimitPropDef" ref="pageLimitPropDef" />
+    <property name="localeResolver" ref="viewServiceResourceAwareLocaleResolver" />
     <property name="examples">
       <map>
         <entry key="uri=[/messages/to/display/] max-number-of-messages=[15]"

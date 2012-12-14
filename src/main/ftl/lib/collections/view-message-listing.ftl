@@ -23,8 +23,10 @@
 <#macro displayMessages messages editLinks=[] >
   <#local i = 1 />
   <#list messages as message>
+
     <#local locale = vrtx.getLocale(message) />
     <#local uri = vrtx.getUri(message) />
+
     <div id="vrtx-result-${i}" class="vrtx-resource">
       <div class="vrtx-title">
         <#assign title = vrtx.propValue(message, "title") />
@@ -36,6 +38,7 @@
           <a class="vrtx-message-listing-edit" href="${vrtx.relativeLinkConstructor(uri, 'simpleMessageEditor')}"><@vrtx.msg code="collectionListing.editlink" /></a>
         </#if> 
       </div>
+
       <div class="published-date">
         <span class="published-date-prefix">
           <@vrtx.localizeMessage code="viewCollectionListing.publishedDate" default="" args=[] locale=locale />
@@ -43,6 +46,15 @@
         <#local publishDateProp = vrtx.prop(message, 'publish-date') />
         <@vrtx.date value=publishDateProp.dateValue format='long' locale=locale />
       </div>
+
+      <#local numberOfComments = vrtx.prop(message, "numberOfComments") />
+      <#if numberOfComments?has_content >
+      <div class="vrtx-number-of-comments-add-event-container">
+        <@viewutils.displayNumberOfComments message locale />
+      </div>
+      </#if>
+
+
       <div class="description introduction">
         <#assign messageIntro = vrtx.propValue(message, "listingDisplayedMessage", "", "") />
         <#if messageIntro?exists>
@@ -57,6 +69,7 @@
           </#if>
         </#if>
       </div>
+
     </div>
     <#local i = i + 1 />
   </#list>

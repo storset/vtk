@@ -133,8 +133,8 @@ resourcetype semester-page : fellestekst-document {
               <div>
                 <h2>Beskjeder</h2>
                 [def uri resource-prop("./", "uri")]
-                [def uri uri + "/beskjeder?vrtx=feed"]
-                [call "include:feed" {"url" : uri}]
+                [def uri uri + "/beskjeder"]
+                [call "include:messages" {"uri" : uri}]
               </div>
             [endif]
             [if fronter]
@@ -173,8 +173,8 @@ resourcetype semester-page : fellestekst-document {
               [if messages-placement = null || messages-placement = "right"]
                 <h2>Beskjeder</h2>
                 [def uri resource-prop("./", "uri")]
-                [def uri uri + "/beskjeder?vrtx=feed"]
-                [call "include:feed" {"url" : uri}]
+                [def uri uri + "/beskjeder"]
+                [call "include:messages" {"uri" : uri}]
               [endif]
             </div>
           </div>

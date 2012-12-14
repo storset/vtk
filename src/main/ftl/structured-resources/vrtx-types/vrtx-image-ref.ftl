@@ -6,14 +6,15 @@
 	</div>
 	<div class="vrtx-image-ref-browse">
 	  <div class="vrtx-textfield">
-	    <input type="text" id="${inputFieldName}" name="${inputFieldName}" value="${name?html}" onblur="previewImage($(this).parent().find('input').attr('id'));" size="30" />
+	    <input type="text" id="${inputFieldName}" name="${inputFieldName}" value="${name?html}" onblur="previewImage($(this).attr('id'));" size="30" />
 	  </div>
 	  <div class="vrtx-button">
         <button type="button" onclick="browseServer('${inputFieldName}', '${fckeditorBase.url?html}', '${baseFolder}','${fckBrowse.url.pathRepresentation}');"><@vrtx.msg code="editor.browseImages"/></button>
       </div>
 	</div>
-	<div id="${inputFieldName}.preview">
+	<div id="${inputFieldName}.preview"<#if !value?has_content> class="no-preview"</#if>>
 	  <label for="${inputFieldName}.preview"><@vrtx.msg code="editor.image.preview-title"/></label>
+	  <span><@vrtx.msg code="editor.image.no-preview-text"/></span>
 	  <div id="${inputFieldName}.preview-inner">
 	  <#if value?has_content >
 	    <img src="${value?html}" alt="preview" />

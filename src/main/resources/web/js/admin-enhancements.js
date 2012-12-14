@@ -2980,13 +2980,17 @@ VrtxAdmin.prototype.serverFacade = {
 
 var urlobj;
 function previewImage(urlobj) {
-  var previewNode = document.getElementById(urlobj + '.preview-inner');
-  if (previewNode) {
-    var url = document.getElementById(urlobj).value;
+  urlobj = urlobj.replace(".", "\\.");
+  var previewNode = $("#" + urlobj + '\\.preview-inner');
+  if (previewNode.length) {
+    var url = $("#" + urlobj).val();
+    var parentPreviewNode = previewNode.parent();
     if (url && url != "") {
-      previewNode.innerHTML = '<img src="' + url + '?vrtx=thumbnail" alt="thumbnail" />';
+      previewNode.html('<img src="' + url + '?vrtx=thumbnail" alt="thumbnail" />');
+      parentPreviewNode.removeClass("no-preview");
     } else {
-      previewNode.innerHTML = '<img src="/vrtx/__vrtx/static-resources/themes/default/images/no-preview-image.png" alt="no thumbnail" />';
+      previewNode.html('<img src="/vrtx/__vrtx/static-resources/themes/default/images/no-preview-image.png" alt="no thumbnail" />');
+      parentPreviewNode.addClass("no-preview");
     }
   }
 }

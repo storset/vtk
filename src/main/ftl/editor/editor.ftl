@@ -368,11 +368,12 @@
                       '${fckBrowse.url.pathRepresentation}');"><@vrtx.msg code="editor.browseImages"/></button>
             </div>
           </div>
-          <div id="resource.${name}.preview">
+          <div id="resource.${name}.preview"<#if !value?has_content> class="no-preview"</#if>>
             <div class="resource.${name}.preview-inner property-label"><@vrtx.msg code="editor.image.preview-title"/></div>
+            <span><@vrtx.msg code="editor.image.no-preview-text"/></span>
             <div id="resource.${name}.preview-inner">
               <#local thumbnail = '' />
-              <#if value?exists && value != "">
+              <#if value?has_content>
                 <#if  vrtx.linkConstructor(value, 'displayThumbnailService')?exists >
                   <#local thumbnail = vrtx.linkConstructor(value, 'displayThumbnailService').getPathRepresentation() />
                 <#else>

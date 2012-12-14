@@ -312,7 +312,7 @@ form.vrtx-program-option-frontpage #additional-content .header {
 
 div.introImageAndCaption,
 div#vrtx-resource\.picture {
-  width: 500px;
+  width: 547px;
   position: relative;
   margin-bottom: 20px;
   height: 243px;
@@ -368,6 +368,33 @@ div#vrtx-resource\.picture div.input-and-button-container .vrtx-textfield {
 div.introImageAndCaption div#picture\.preview,
 div#vrtx-resource\.picture div#resource\.picture\.preview {
   margin: -29px 0 0 375px;
+}
+
+div#picture\.preview,
+div#pressPhoto\.preview,
+div#resource\.picture\.preview {
+  position: relative;
+  float: left;
+}
+
+div#picture\.preview span,
+div#pressPhoto\.preview span,
+div#resource\.picture\.preview span {
+  color: #9d9d9d;
+  font-size: 1.15em;
+  font-weight: bold;
+  text-align: center;
+  white-space: nowrap;
+  position: relative;
+  top: 77px;
+  margin-top: -20px;
+  display: none;
+}
+
+div#picture\.preview.no-preview span,
+div#pressPhoto\.preview.no-preview span,
+div#resource\.picture\.preview.no-preview span {
+  display: block;
 }
 
 div.introImageAndCaption div#picture\.preview-inner,

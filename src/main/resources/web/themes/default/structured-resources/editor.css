@@ -40,7 +40,8 @@
   padding-top: 20px;
 }
 
-.vrtx-image-ref #picture\.preview {
+.vrtx-image-ref #picture\.preview,
+.vrtx-image-ref #pressPhoto\.preview {
   margin-top: 20px;
 }
 

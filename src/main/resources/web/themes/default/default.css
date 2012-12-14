@@ -1828,8 +1828,8 @@ p.previewUnavailableReasons {
 
 #preview-loading {
   position: absolute;
-  top: 0;
-  left: 0;
+  top: 0px;
+  left: 0px;
   background: #fff;
   display: block;
   width: 100%;
@@ -1842,10 +1842,11 @@ p.previewUnavailableReasons {
   left: 0px;
   width: 100%;
   display: block;
+  background: transparent;
 }
 
 #preview-loading-inner span {
-  background: #fff url(images/ajax-loader.gif) no-repeat center left;
+  background: transparent url(images/ajax-loader.gif) no-repeat center left;
   display: block;
   padding: 10px 5px 10px 42px;
   font-size: 1.308em;

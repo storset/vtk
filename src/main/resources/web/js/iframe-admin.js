@@ -17,6 +17,7 @@
       contents,
       appFooterHeight,
       extras = 0,
+      surplusReduce,
       previewIframeMinHeight,
       previewLoading,
       surplusAnimationSpeed = 200;
@@ -35,13 +36,16 @@
         
         if(!vrtxAdmin.isIE8) {
           var diff = newHeight - previewIframeMinHeight;
-          var surplus = appFooterHeight + 13 + 20; // +contentBottomMargin+border+contentBottomPadding+border
-          var animatedPixels = (diff > surplus) ? (previewIframeMinHeight + surplus) : newHeight;
-
-          previewLoading.animate({height: animatedPixels + "px"}, surplusAnimationSpeed);
-          contents.animate({height: (animatedPixels + extras) + "px"}, surplusAnimationSpeed, function() {
+          var surplus = (appFooterHeight + 13 + 20) - surplusReduce; // +contentBottomMargin+border+contentBottomPadding+border
+          if(surplus <= 0) { // If surplus have been swallowed by minimum height
             previewLoadingComplete(previewIframe, newHeight, previewLoading, contents);
-          });
+          } else {
+            var animatedPixels = (diff > surplus) ? (previewIframeMinHeight + surplus) : newHeight;
+            previewLoading.animate({height: animatedPixels + "px"}, surplusAnimationSpeed);
+            contents.animate({height: (animatedPixels + extras) + "px"}, surplusAnimationSpeed, function() {
+              previewLoadingComplete(previewIframe, newHeight, previewLoading, contents);
+            });
+          }
         } else {
           previewLoadingComplete(previewIframe, newHeight, previewLoading, contents);
         }
@@ -83,9 +87,15 @@
       if(msg.length) {
         extras = msg.outerHeight(true);
       }
-
-      previewIframeMinHeight = (windowHeight - (appContentHeight + appHeadWrapperHeight + appFooterHeight)) + 150; // + iframe default height
-   
+      var absMinHeight = 150;
+      var availWinHeight = (windowHeight - (appContentHeight + appHeadWrapperHeight + appFooterHeight)) + absMinHeight; // + iframe height
+      if(availWinHeight < absMinHeight) {
+        surplusReduce = absMinHeight - availWinHeight;
+        previewIframeMinHeight = absMinHeight;
+      } else {
+        previewIframeMinHeight = availWinHeight;
+      }
+      
       contents.append("<span id='preview-loading'><span id='preview-loading-inner'><span>" + previewLoadingMsg + "...</span></span></span>")
               .css({ position: "relative",
                      height: (previewIframeMinHeight + extras + 2) + "px" });
@@ -93,11 +103,12 @@
       previewLoading = contents.find("#preview-loading");
       previewLoading.css({
         height: previewIframeMinHeight + "px",
-        top: extras + "px",
-        left: 0
-      }); 
-      previewLoading.find("#preview-loading-inner")
-                    .css({height: previewIframeMinHeight + "px"});
+        top: extras + "px"
+      });
+      
+      previewLoading.find("#preview-loading-inner").css({
+        height: availWinHeight + "px"
+      });
     }
   });
 

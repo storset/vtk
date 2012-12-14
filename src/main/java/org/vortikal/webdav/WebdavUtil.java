@@ -70,8 +70,6 @@ public final class WebdavUtil {
     
     /**
      * Utility method for parsing date values of controlled properties for WebDAV.  
-     * @param dateValue
-     * @return
      */
     public static Date parsePropertyDateValue(String dateValue) 
        throws ParseException {
@@ -87,8 +85,6 @@ public final class WebdavUtil {
 
     /**
      * Utility method for formatting date values of controlled properties for WebDAV.
-     * @param date
-     * @return
      */
     public static String formatPropertyDateValue(Date date) {
 

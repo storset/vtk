@@ -49,12 +49,10 @@ import org.vortikal.security.roles.RoleManager;
 
 
 /**
- * XXX: implement this.
- * 
  * <p>Assert that the current principal has the permission 'permission'
  * on the current resource.
  *
- * <p>Principals having the {@link RoleManager#ROOT root role} are
+ * <p>Principals having the {@link RoleManager.Role#ROOT root role} are
  * treated especially. In general, these principals will produce a
  * match, unless the permission in question is one of <code>(write,
  * write-acl)</code> and the resource is locked by another principal.

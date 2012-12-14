@@ -303,8 +303,8 @@ public class SimpleMethodInvokingTriggerBean implements BeanNameAware,
     }
     
     /**
-     * Check whether triggering is enabled or not
-     * @return
+     * Check whether triggering is enabled or not.
+     * @return <code>true</code> if triggering is enabled.
      */
     public synchronized boolean isEnabled() {
         return this.triggerThread != null && this.triggerThread.isAlive();

@@ -67,6 +67,10 @@ public class RepositorySearchResourceTemplateLocator implements ResourceTemplate
     
     private ResourceTypeTree resourceTypeTree; 
     
+    /**
+     * @see ResourceTemplateLocator#findTemplates(java.lang.String, java.util.Set, java.util.Set) 
+     */
+    @Override
     public List<ResourceTemplate> findTemplates(String token, 
                                                 Set<Path> baseUris,
                                                 Set<ResourceTypeDefinition> resourceTypes) {
@@ -75,8 +79,9 @@ public class RepositorySearchResourceTemplateLocator implements ResourceTemplate
     }
     
     /**
-     * @see org.vortikal.web.templates.ResourceTemplateLocator#findTemplates(java.lang.String, java.util.Set, int, org.vortikal.repository.resourcetype.ResourceTypeDefinition)
+     * @see ResourceTemplateLocator#findTemplatesNonRecursively(java.lang.String, java.util.Set, java.util.Set) 
      */
+    @Override
     public List<ResourceTemplate> findTemplatesNonRecursively(String token,
                                                       Set<Path> baseUris, 
                                                       Set<ResourceTypeDefinition> resourceTypes) {
@@ -85,9 +90,6 @@ public class RepositorySearchResourceTemplateLocator implements ResourceTemplate
         
     }
     
-    /**
-     * @see ResourceTemplateLocator#findTemplates(String, String, Set, ResourceTypeDefinition)
-     */
     private List<ResourceTemplate> findTemplatesInternal(String token, 
                                                 Set<Path> baseUris,
                                                 Set<ResourceTypeDefinition> resourceTypes,

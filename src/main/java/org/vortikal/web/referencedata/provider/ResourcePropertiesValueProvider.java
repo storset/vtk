@@ -56,7 +56,7 @@ import org.vortikal.web.referencedata.ReferenceDataProvider;
  * <p>Configurable properties:
  * <ul>
  *  <li> <code>modelNames</code> - a {@link Map} from {@link
- *      Property#getNamespace namespaces} to submodel names that are
+ *      PropertyTypeDefinition#getNamespace() namespaces} to submodel names that are
  *      generated. For every namespace in the <code>properties</code>
  *      configuration property there must exist a mapping in this map,
  *      including the namespace for the standard properties
@@ -333,6 +333,7 @@ public class ResourcePropertiesValueProvider
         }
     }
 
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder(this.getClass().getName());
         sb.append(" [ ");

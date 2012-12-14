@@ -78,8 +78,8 @@ import freemarker.template.TemplateException;
  *  <code>FreemarkerConfigurationFactory</code> (the super class of
  *  <code>FreeMarkerConfigurer</code>)
  *  
- *  @see org.springframework.ui.freemarker.FreeMarkerConfigurer
- *  @see org.springframework.ui.freemarker.FreeMarkerConfigurationFactory
+ *  @see FreeMarkerConfigurationFactory
+ *  @see FreeMarkerConfigurer
  *  @see freemarker.cache.MultiTemplateLoader
  *  @see FreeMarkerTemplateLocation
  */

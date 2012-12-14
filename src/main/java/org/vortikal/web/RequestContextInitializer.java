@@ -71,8 +71,8 @@ import org.vortikal.web.service.URL;
  *   repository}
  *   <li><code>trustedToken</code> - required token used for initial
  *   resource retrieval. This token should be able to read
- *   every resource (see {@link TokenManager#getRegisteredToken} and
- *   {@link org.vortikal.security.roles.RoleManager#READ_EVERYTHING}
+ *   every resource (see {@link TokenManager#getRegisteredToken(org.vortikal.security.Principal)} and
+ *   {@link org.vortikal.security.roles.RoleManager.Role#READ_EVERYTHING})
  *   <li><code>services</code> - a list of {@link Service services}
  *   to construct a service tree of.
  *   <li><code>indexFileResolver</code> - an optional {@link IndexFileResolver}

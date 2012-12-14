@@ -75,7 +75,8 @@ import org.vortikal.repository.search.query.Query;
  * @throws org.vortikal.repository.search.QueryException
  *             If the query could not be executed.
  * 
- * @see Query, ResultSet
+ * @see Query
+ * @see ResultSet
  */
 public final class Search {
 

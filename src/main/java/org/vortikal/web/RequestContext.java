@@ -192,7 +192,7 @@ public class RequestContext {
 
     /**
      * Gets the index file URI.
-     * @returns the index file URI, or <code>null</code> if this is
+     * @return the index file URI, or <code>null</code> if this is
      * not an index file request.
      */
     public Path getIndexFileURI() {
@@ -239,7 +239,6 @@ public class RequestContext {
     /**
      * This flag will be set to <code>true</code> if request should be
      * processed for viewing as unauthenticated principal.
-     * @return 
      */
     public boolean isViewUnauthenticated() {
         return this.viewUnauthenticated;

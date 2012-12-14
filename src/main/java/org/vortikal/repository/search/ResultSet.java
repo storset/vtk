@@ -84,7 +84,7 @@ public interface ResultSet extends Iterable<PropertySet> {
      * Get a subset of the result-set (fromIndex inclusive, toIndex exclusive).
      * @param fromIndex
      * @param toIndex
-     * @return
+     * @return a list with a subset of the results in this result set.
      * @throws IndexOutOfBoundsException
      */
     public List<PropertySet> getResults(int fromIndex, int toIndex)
@@ -108,7 +108,7 @@ public interface ResultSet extends Iterable<PropertySet> {
  
     /**
      * Iterate over results.
-     * @return
+     * @see Iterable#iterator() 
      */
     @Override
     public Iterator<PropertySet> iterator();

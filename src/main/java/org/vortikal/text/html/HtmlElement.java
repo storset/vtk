@@ -77,7 +77,7 @@ public interface HtmlElement extends EnclosingHtmlContent {
     /**
      * Gets named child elements of this element.
      *
-     * @parameter name the element name 
+     * @param name the element name 
      */
     public HtmlElement[] getChildElements(String name);
 

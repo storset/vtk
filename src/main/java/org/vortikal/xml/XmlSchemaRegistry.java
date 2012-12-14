@@ -38,13 +38,10 @@ import org.vortikal.util.cache.ContentCache;
  * Document} objects for a configurable period to avoid unnecessary
  * network traffic and XML parsing before being refreshed.
  *
- * <p>The method {@link #refresh()} needs to be called periodically in
- * order for the cache mechanism to work.
- *
  * <p>Configurable JavaBean properties:
  * <ul>
- *   <li><code>cacheTimeoutSeconds</code> - the number of seconds to
- *   cache schemas before refreshing.
+ *   <li><code>schemaCache</code> - The <code>ContentCache</code> instance to
+ *       use for caching schemas.
  * </ul>
  */
 public class XmlSchemaRegistry {

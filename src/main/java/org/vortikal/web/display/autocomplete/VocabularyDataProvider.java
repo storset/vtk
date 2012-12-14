@@ -42,7 +42,6 @@ public interface VocabularyDataProvider<T> {
      * @param input
      * @param contextUri
      * @param token
-     * @return
      */
     public List<T> getCompletions(String input, CompletionContext context);
 
@@ -52,7 +51,6 @@ public interface VocabularyDataProvider<T> {
      * 
      * @param contextUri
      * @param token
-     * @return
      */
     public List<T> getCompletions(CompletionContext context);
 

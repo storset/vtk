@@ -52,7 +52,9 @@ import org.vortikal.web.servlet.ConfigurableRequestWrapper;
  * before the wrapped view is run (and the necessary model is available),
  * wrapping the view in an optional {@link ViewWrapper}
  * 
- * @see AbstractWrappingViewResolver, ViewWrapper, ReferenceDataProvider, 
+ * @see AbstractWrappingViewResolver
+ * @see ViewWrapper
+ * @see ReferenceDataProvider
  * @see ReferenceDataProviding
  */
 public class WrappingView implements View, InitializingBean {
@@ -70,17 +72,18 @@ public class WrappingView implements View, InitializingBean {
      * @param referenceDataProviders - the set of reference data
      * providers for this view
      */
-    public WrappingView(View view, ReferenceDataProvider[] resolverProviders,
+    public WrappingView(View view, ReferenceDataProvider[] referenceDataProviders,
                      ViewWrapper viewWrapper) {
 
         this.view = view;
         this.viewWrapper = viewWrapper;
-        this.referenceDataProviders = resolverProviders;
+        this.referenceDataProviders = referenceDataProviders;
 
         afterPropertiesSet();
     }
 
     @SuppressWarnings("rawtypes")
+    @Override
     public void render(Map model, HttpServletRequest request,
             HttpServletResponse response) throws Exception {
         if (model == null) {
@@ -116,14 +119,16 @@ public class WrappingView implements View, InitializingBean {
         }
     }
 
+    @Override
     public String toString() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append(this.getClass().getName()).append(":");
         sb.append(" [view = ").append(this.view);
         sb.append(", viewWrapper = ").append(this.viewWrapper).append("]");
         return sb.toString();
     }
 
+    @Override
     public String getContentType() {
         return null;
     }
@@ -141,7 +146,8 @@ public class WrappingView implements View, InitializingBean {
         this.viewWrapper = viewWrapper;
     }
 
-    public void afterPropertiesSet() {
+    @Override
+    public final void afterPropertiesSet() {
         if (this.view == null)
             throw new IllegalArgumentException(
                     "The wrapped view cannot be null");
@@ -155,7 +161,7 @@ public class WrappingView implements View, InitializingBean {
         if (this.viewWrapper != null
             && (this.viewWrapper instanceof ReferenceDataProviding)) {
 
-            ReferenceDataProvider[] wrapperProviders = null;
+            ReferenceDataProvider[] wrapperProviders;
 
             wrapperProviders = ((ReferenceDataProviding) this.viewWrapper)
                     .getReferenceDataProviders();
@@ -165,7 +171,7 @@ public class WrappingView implements View, InitializingBean {
         }
         
         if (this.view instanceof ReferenceDataProviding) {
-            ReferenceDataProvider[] viewProviders = null;
+            ReferenceDataProvider[] viewProviders;
 
             viewProviders = ((ReferenceDataProviding) this.view)
                     .getReferenceDataProviders();

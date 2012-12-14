@@ -52,7 +52,7 @@ public interface AggregationResolver {
     public CollectionListingAggregatedResources getAggregatedResources(PropertySet collection);
 
     /**
-     * @see #getAggregatedResources(Resource)
+     * @see #getAggregatedResources(org.vortikal.repository.PropertySet) 
      */
     public CollectionListingAggregatedResources getAggregatedResources(URL url);
 

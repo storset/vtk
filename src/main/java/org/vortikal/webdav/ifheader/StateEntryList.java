@@ -29,12 +29,7 @@ public interface StateEntryList {
      * Matches the resource, token, and etag against this
      * <code>IfHeaderInterface</code> instance.
      *
-     * @param resource The resource to match this instance against. This
-     *      must be absolute URI of the resource as defined in Section 3
-     *      (URI Syntactic Components) of RFC 2396 Uniform Resource
-     *      Identifiers (URI): Generic Syntax.
-     * @param token The resource's lock token to match
-     * @param etag The resource's etag to match
+     * @param resource The resource to match this instance against.
      *
      * @return <code>true</code> if the header matches the resource with
      *      token and etag, which means that the request is applicable

@@ -72,7 +72,7 @@ public class Mutex {
      * 
      * @param timeout
      * @param unit
-     * @return
+     * @return <code>true</code> if lock was successfully obtained.
      */
     public boolean tryLock(long timeout, TimeUnit unit) {
         try {

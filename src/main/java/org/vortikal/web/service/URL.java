@@ -1153,7 +1153,7 @@ public class URL implements Serializable {
     /**
      * Verify whether a given string is URL encoded or not
      * 
-     * @param original
+     * @param value
      *            given characters
      * @return true if the given character array is 7 bit ASCII-compatible.
      */

@@ -128,7 +128,7 @@ public class IPv4SubnetMatcher extends AbstractIPv4Matcher implements IPv4Matche
      * trailing 0's with no mixing. It must be 32 bits wide (4 octets).
      * 
      * @param maskOctets
-     * @return
+     * @return <code>true</code> if mask is valid.
      */
     private final boolean isValidMask(int[] maskOctets) {
         
@@ -167,8 +167,9 @@ public class IPv4SubnetMatcher extends AbstractIPv4Matcher implements IPv4Matche
         return true;
     }
     
+    @Override
     public String toString() {
-        StringBuffer buffer = new StringBuffer("IPv4SubnetMatcher[");
+        StringBuilder buffer = new StringBuilder("IPv4SubnetMatcher[");
         
         for (int i=0; i<4; i++) {
             buffer.append(this.networkOctets[i]);

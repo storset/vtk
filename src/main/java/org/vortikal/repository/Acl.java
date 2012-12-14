@@ -70,7 +70,7 @@ public final class Acl {
      * 
      * @param privilege
      * @param principal
-     * @return 
+     * @return <code>true</code> if principal has privilege.
      */
     public boolean hasPrivilege(Privilege privilege, Principal principal) {
         Set<Principal> actionSet = this.actionSets.get(privilege);
@@ -82,7 +82,7 @@ public final class Acl {
     
     /**
      * Returns all privileges present in this ACL.
-     * @return 
+     * @return set of all privileges present in this ACL.
      */
     public Set<Privilege> getActions() {
         return Collections.unmodifiableSet(this.actionSets.keySet());

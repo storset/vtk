@@ -44,7 +44,6 @@ public class IfNoneMatchHeader {
      * Assume resource exists and is not null
      * 
      * @param request
-     * @return
      */
     public boolean matches(final Resource resource) {
 		boolean match;

@@ -70,11 +70,6 @@ public class IfHeaderImpl implements IfHeader {
      * etag is found if at least one of the <em>IfList</em> entries match the
      * token and etag tupel.
      *
-     * @param tag The tag to identify the <em>IfList</em> to match the token
-     * and etag against.
-     * @param token The token to compare.
-     * @param etag The ETag value to compare.
-     *
      * @return If the <em>If</em> header is of untagged type the result is
      *      <code>true</code> if any of the <em>IfList</em> entries matches
      *      the token and etag values. For tagged type <em>If</em> header the
@@ -164,9 +159,6 @@ public class IfHeaderImpl implements IfHeader {
      * <pre>
          Tagged = { "<" Word ">" Untagged } .
      * </pre>
-     *
-     * @param reader
-     * @return
      */
     private IfHeaderMap parseTagged(StringReader reader) {
         IfHeaderMap map = new IfHeaderMap();

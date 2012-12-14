@@ -35,11 +35,9 @@ package org.vortikal.util.cache;
  * Abstract implementation of {@link ReusableObjectCache}. Uses an array-based
  * stack internally for minimum overhead in {@link #getInstance()} and 
  * {@link #putInstance(Object)}. It has a maximum capacity which can
- * optionally be set using constructor {@link #AbstractReusableObjectStackCache(int)}.  
+ * optionally be set using constructor {@link #ReusableObjectArrayStackCache(int) }.
  *  
  * @see org.vortikal.util.cache.ReusableObjectCache
- * 
- * @author oyviste
  */
 public class ReusableObjectArrayStackCache<T> implements ReusableObjectCache<T> {
 
@@ -49,7 +47,7 @@ public class ReusableObjectArrayStackCache<T> implements ReusableObjectCache<T> 
     private T[] stack;
     
     /**
-     * Construct an instance with a default maximum capacity
+     * Construct an instance with a default maximum capacity.
      *
      */
     @SuppressWarnings("unchecked")

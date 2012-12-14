@@ -55,7 +55,7 @@ public class ResourceAwareLocaleResolver extends AbstractLocaleResolver {
     /**
      * @see LocaleResolver#resolveLocale(javax.servlet.http.HttpServletRequest) 
      * @param request
-     * @return 
+     * @return The @{link Locale locale} object for the current resource being requested.
      */
     @Override
     public Locale resolveLocale(HttpServletRequest request) {
@@ -68,7 +68,7 @@ public class ResourceAwareLocaleResolver extends AbstractLocaleResolver {
      * Resolve locale for resource at URI. If no locale is set, the default
      * locale is returned.
      * @param uri
-     * @return 
+     * @return The @{link Locale locale} object for resource at URI.
      */
     public Locale resolveResourceLocale(Path uri) {
         Locale locale = null;
@@ -88,70 +88,13 @@ public class ResourceAwareLocaleResolver extends AbstractLocaleResolver {
      * Resolve locale for resource. If resource has no locale set, the default
      * locale is returned.
      * @param resource
-     * @return 
+     * @return The resource @{link Locale locale} object.
      */
     public Locale resolveResourceLocale(Resource resource) {
         Locale locale = resource.getContentLocale();
         return locale != null ? locale : getDefaultLocale();
     }
     
-//    public Locale resolveResourceLocaleOld(Path uri) {
-//        RequestContext requestContext = RequestContext.getRequestContext();
-//        Locale locale = this.defaultLocale;
-//        try {
-//            RepositoryTraversal traversal = requestContext.rootTraversal(this.trustedToken, uri);
-//            final StringBuilder lang = new StringBuilder();
-//
-//            traversal.traverse(new TraversalCallback() {
-//                @Override
-//                public boolean callback(Resource resource) {
-//                    String s = resource.getContentLanguage();
-//                    if (s == null) {
-//                        return true;
-//                    }
-//                    lang.insert(0, s);
-//                    return false;
-//                }
-//
-//                @Override
-//                public boolean error(Path uri, Throwable error) {
-//                    return false;
-//                }
-//            });
-//            if (lang.length() == 0) {
-//                return this.defaultLocale;
-//            }
-//            Locale l = LocaleHelper.getLocale(lang.toString());
-//            if (l != null) {
-//                locale = l;
-//            }
-//        } catch (Exception e) {
-//        }
-//        return locale;
-//    }
-
-//    public Locale getNearestAncestorLocale(Path uri) {
-//        Path parentUri = uri.getParent();
-//
-//        Locale locale = null;
-//        while (parentUri != null) {
-//            try {
-//                Resource parent = repository.retrieve(this.trustedToken, parentUri, true);
-//                if (StringUtils.isNotBlank(parent.getContentLanguage())) {
-//                    locale = LocaleHelper.getLocale(parent.getContentLanguage());
-//                    break;
-//                }
-//                parentUri = parentUri.getParent();
-//            } catch (Exception e) {
-//                return this.defaultLocale;
-//            }
-//        }
-//        if (locale == null) {
-//            locale = this.defaultLocale;
-//        }
-//        return locale;
-//    }
-
     @Override
     public void setLocale(HttpServletRequest request, HttpServletResponse response, Locale locale) {
         throw new UnsupportedOperationException(

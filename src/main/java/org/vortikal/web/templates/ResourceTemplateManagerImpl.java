@@ -71,8 +71,9 @@ public class ResourceTemplateManagerImpl implements ResourceTemplateManager {
     private Path folderTemplatesDefaultUri;
     
     /**
-     * @see ResourceTemplateManager#getDocumentTemplates(String, String) 
+     * @see ResourceTemplateManager#getDocumentTemplates(java.lang.String, org.vortikal.repository.Path) 
      */
+    @Override
     public List<ResourceTemplate> getDocumentTemplates(String token, Path uri) {
 
     	Set <Path> baseUris = this.getDocumentTemplateBaseUris(uri);
@@ -82,8 +83,9 @@ public class ResourceTemplateManagerImpl implements ResourceTemplateManager {
     }
 
     /**
-     * @see ResourceTemplateManager#getFolderTemplates(String, String)
+     * @see ResourceTemplateManager#getFolderTemplates(java.lang.String, org.vortikal.repository.Path) 
      */
+    @Override
     public List<ResourceTemplate> getFolderTemplates(String token, Path uri) {
         
         Set<Path> baseUris = this.getFolderTemplateBaseUris(uri);
@@ -196,6 +198,4 @@ public class ResourceTemplateManagerImpl implements ResourceTemplateManager {
         this.folderTemplatesDefaultUri = Path.fromString(folderTemplatesDefaultUri);
     }
     
-    
-
 }

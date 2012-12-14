@@ -582,8 +582,6 @@ public class PropfindView implements View, InitializingBean {
    
     /**
      * Make a simple XML-list structure out of a multi-valued property.
-     * @param property
-     * @return
      */
     private Element buildMultiValueCustomPropertyElement(Property property) {
         Value[] values = property.getValues();

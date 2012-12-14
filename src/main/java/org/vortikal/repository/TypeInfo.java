@@ -31,7 +31,7 @@
 package org.vortikal.repository;
 
 import org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinition;
-import org.vortikal.repository.resourcetype.PropertyType;
+import org.vortikal.repository.resourcetype.PropertyType.Type;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.ValueFormatException;
@@ -101,7 +101,7 @@ public final class TypeInfo {
     /**
      * Creates a property with a given namespace, name and value. The
      * type is set according to its {@link PropertyTypeDefinition property
-     * definition}, or {@link PropertyType.TYPE_STRING} if it is a "dead" property
+     * definition}, or {@link Type#STRING } if it is a "dead" property
      * 
      * @param namespace the namespace
      * @param name the name

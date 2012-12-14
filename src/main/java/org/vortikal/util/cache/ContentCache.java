@@ -48,7 +48,7 @@ import org.springframework.beans.factory.InitializingBean;
  * Utility class for caching content that is potentially expensive to
  * load for certain periods of time before refreshing it. Typical
  * examples of such content include network resources, compiled XML
- * stylesheets, etc. A {@link ContentLoader} is responsible for
+ * stylesheets, etc. A {@link ContentCacheLoader} is responsible for
  * loading the actual items.
  *
  * <p>Note: This cache is not meant as a generalized read/write cache,
@@ -57,7 +57,7 @@ import org.springframework.beans.factory.InitializingBean;
  *
  * <p>Configurable JavaBean properties:
  * <ul>
- *   <li><code>cacheLoader</code> - the {@link CacheLoader content loader}
+ *   <li><code>cacheLoader</code> - the {@link ContentCacheLoader}
  *   <li><code>cacheSeconds</code> - the cache timeout in seconds
  *   <li><code>cacheMilliseconds</code> - the cache timeout in milliseconds
  *   <li><code>asynchronousRefresh</code> - if an item is expired and
@@ -72,8 +72,8 @@ import org.springframework.beans.factory.InitializingBean;
  *   in the cache. A negative number means no limit (the default).
  * </ul>
  *
- * @param<K> key of the cached objects
- * @param<V> value of the cached objects
+ * @param <K> key of the cached objects
+ * @param <V> value of the cached objects
  */
 public final class ContentCache<K, V> implements InitializingBean, DisposableBean {
     

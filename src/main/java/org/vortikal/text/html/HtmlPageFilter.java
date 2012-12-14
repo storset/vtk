@@ -40,9 +40,9 @@ public interface HtmlPageFilter {
     /**
      * Determines whether this filter can be applied to the HTML page.
      * 
-     * @param the HTML page to filter
+     * @param page the HTML page to filter
      * @return <code>true</code> if the page can be filtered, 
-     * <code>false</code> otherwise.
+     *         <code>false</code> otherwise.
      */
     public boolean match(HtmlPage page);
     

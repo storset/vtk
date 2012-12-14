@@ -114,8 +114,8 @@ public class PathLockManager {
      * the locks.
      *
      * @param uris the URIs to unlock.
-     * @param if the lock in question was claimed with exclusive access, then
-     *        it should also be unlocked with the same access.
+     * @param exclusive if the lock in question was claimed with exclusive access, then
+     *                  it should also be unlocked with the same access.
      * @see #lock(org.vortikal.repository.Path, boolean) 
      * 
      */

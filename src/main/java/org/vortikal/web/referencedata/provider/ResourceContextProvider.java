@@ -66,7 +66,7 @@ import org.vortikal.web.service.ServiceUnlinkableException;
  * the key to use when looking up the resource from the model. Default is <code>resource</code>.
  * <li><code>modelName</code> - the name to use for the submodel (default is <code>resourceContext</code>).
  * <li><code>resourceWrapperManager</code> - optional resource wrapper manager. If set, the resource will be wrapped in
- * a {@ref ResourceWrapper}
+ * a {@link ResourceWrapper}
  * </ul>
  * 
  * <p>

@@ -145,7 +145,7 @@ public class TagsReportingComponent {
      * @param limit
      * @param tagOccurenceMin
      * @param token
-     * @return
+     * @return a list of {@link TagFrequency} objects.
      * @throws QueryException
      */
     @SuppressWarnings("unchecked")

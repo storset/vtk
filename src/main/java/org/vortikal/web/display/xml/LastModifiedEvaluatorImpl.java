@@ -50,8 +50,7 @@ public class LastModifiedEvaluatorImpl implements LastModifiedEvaluator {
     /**
      * @param lookupList
      *            A list of the values we want (or do not want) to handle lastModified for. The
-     *            values in the list are compared with the value for the selected property, see
-     *            {@link setPropertyNamespace} and {@link #setPropertyName}.
+     *            values in the list are compared with the value for the selected property.
      */
     public void setLookupList(List<String> lookupList) {
         this.lookupList = lookupList;
@@ -69,17 +68,18 @@ public class LastModifiedEvaluatorImpl implements LastModifiedEvaluator {
     /**
      * 
      * @param propertyDefinition
-     *            The property type definition we want to look for
+     *            The property type definition we want to look for.
      */
     public void setPropertyDefinition(PropertyTypeDefinition propertyDefinition) {
         this.propertyDefinition = propertyDefinition;
     }
 
+    @Override
     public boolean reportLastModified(Resource resource) throws IllegalArgumentException {
         if (resource == null) {
             throw new IllegalArgumentException("resource can't be null");
         }
-        if (lookupList == null || lookupList.size() == 0) {
+        if (lookupList == null || lookupList.isEmpty()) {
             return !handleLastModifiedForValuesInList;
         }
 

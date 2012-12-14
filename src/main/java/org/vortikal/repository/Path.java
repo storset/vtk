@@ -108,7 +108,6 @@ public final class Path implements Comparable<Path>, Serializable {
      * @see #fromString(String)
      * 
      * Handles trailing slash if provided path string contains any
-     * 
      */
     public static Path fromStringWithTrailingSlash(String path) {
         if (!"/".equals(path) && path.endsWith("/")) {
@@ -222,7 +221,7 @@ public final class Path implements Comparable<Path>, Serializable {
      * {@link #getPaths} except that the last element (the path itself) is
      * omitted.
      * 
-     * @return
+     * @return list of paths to all ancestors
      */
     public List<Path> getAncestors() {
         if (this == ROOT) {

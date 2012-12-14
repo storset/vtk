@@ -46,10 +46,10 @@ public class Xml {
      * Get text nodes by running provided XPath expression on provided
      * {@link Document}.
      * 
-     * XXX: Uses unsafe conversion, assuming expression only returns text nodes!
+     * XXX Uses unsafe conversion, assuming expression only returns text nodes!
      * 
      * @param doc
-     * @return
+     * @return a list of strings with text content.
      * @throws JDOMException
      */
     public static List<String> getNodesByXPath(Document doc, XPath expression) throws JDOMException {

@@ -48,7 +48,9 @@ import org.springframework.web.servlet.View;
  * This mechanism intercepts the specific Spring MVC view rendering, giving acces to the Spring
  * <code>View</code> and <code>model</code> and running in the specific excecution context.
  * 
- * @see WrappingView, AbstractWrappingViewResolver, javax.servlet.Filter
+ * @see WrappingView
+ * @see AbstractWrappingViewResolver
+ * @see javax.servlet.Filter
  * 
  */
 public interface ViewWrapper {

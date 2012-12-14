@@ -1097,7 +1097,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
 
     /**
      * Delegate directly to
-     * @{link AuthorizationManager#authorize(org.vortikal.security.Principal, org.vortikal.repository.Acl, org.vortikal.repository.Privilege) }
+     * {@link AuthorizationManager#authorize(org.vortikal.security.Principal, org.vortikal.repository.Acl, org.vortikal.repository.Privilege)  }
      */
     @Override
     public boolean authorize(Principal principal, Acl acl, Privilege privilege) {

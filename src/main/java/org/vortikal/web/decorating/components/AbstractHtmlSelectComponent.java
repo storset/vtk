@@ -75,7 +75,7 @@ public abstract class AbstractHtmlSelectComponent
      * Output rendered content to the response.
      * @param content the rendered HTML content  
      * @param request the decorator request
-     * @param request the decorator response
+     * @param response the decorator response
      */
     protected void outputContent(List<HtmlContent> content,
             DecoratorRequest request, DecoratorResponse response) throws Exception {

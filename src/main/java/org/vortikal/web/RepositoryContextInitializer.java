@@ -35,10 +35,12 @@ import javax.servlet.http.HttpServletRequest;
 
 public class RepositoryContextInitializer implements ContextInitializer {
 
+    @Override
     public void createContext(HttpServletRequest request) throws Exception {
         RepositoryContext.setRepositoryContext(new RepositoryContext());
     }
 
+    @Override
     public void destroyContext() {
         RepositoryContext.setRepositoryContext(null);
     }

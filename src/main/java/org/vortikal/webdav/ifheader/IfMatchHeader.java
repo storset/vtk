@@ -39,9 +39,7 @@ public class IfMatchHeader {
     /**
      * Assume resource exists and is not null
      * 
-     * @param request
      * @param resource
-     * @return
      */
     public boolean matches(final Resource resource) {
         boolean match;

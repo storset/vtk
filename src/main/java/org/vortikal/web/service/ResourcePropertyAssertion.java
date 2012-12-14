@@ -34,6 +34,7 @@ import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.Principal;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.RequestContext.RepositoryTraversal;
@@ -45,11 +46,11 @@ import org.vortikal.web.RequestContext.TraversalCallback;
  *
  * <p>Configurable JavaBean properties:
  * <ul>
- *   <li><code>namespace</code> - the {@link Property#getNamespace
+ *   <li><code>namespace</code> - the {@link PropertyTypeDefinition#getNamespace() 
  *   namespace} of the property to match
- *   <li><code>name</code> - the {@link Property#getName name} of
+ *   <li><code>name</code> - the {@link PropertyTypeDefinition#getName()  name} of
  *   the property to match
- *   <li><code>value</code> - the {@link Property#getValue value}
+ *   <li><code>value</code> - the {@link Property#getValue()  value}
  *   of the property to match
  *   <li><code>checkExistenceOnly</code> - whether to only check if
  *   the property exists on the resource.
@@ -102,6 +103,7 @@ public class ResourcePropertyAssertion
         this.token = token;
     }
     
+    @Override
     public boolean conflicts(Assertion assertion) {
         if (assertion instanceof ResourcePropertyAssertion) {
             ResourcePropertyAssertion other = (ResourcePropertyAssertion) assertion;

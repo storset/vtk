@@ -37,6 +37,7 @@ import java.util.List;
 import org.vortikal.repository.search.QueryException;
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
+import org.vortikal.repository.search.Searcher;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
 
@@ -446,7 +447,7 @@ public interface Repository {
      *            identifies the client's authenticated session
      * @param uri
      *            identifies the resource to delete
-     * @param restorable
+     * @param restoreable
      *            whether or not resource is to be permanently deleted or just
      *            moved to trash can
      * 
@@ -504,13 +505,13 @@ public interface Repository {
             throws ResourceNotFoundException, AuthorizationException, AuthenticationException, Exception;
 
     /**
-     * Permanently delete a resource from trash can
+     * Permanently delete a resource from trash can.
      * 
      * @param token
      *            client's authenticated session
      * @param parentUri
      *            path of resource containing the recoverable resource
-     * @param recoverableResources
+     * @param recoverableResource
      *            the recoverable resource to delete permanently
      * @throws Exception
      */
@@ -821,7 +822,9 @@ public interface Repository {
      * 
      * @param token
      * @param search
-     * @return
+     * @return A search result set.
+     * @see Searcher#execute(java.lang.String, org.vortikal.repository.search.Search) 
+     * 
      * @throws QueryException
      */
     public ResultSet search(String token, Search search) throws QueryException;

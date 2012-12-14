@@ -98,6 +98,7 @@ public abstract class AbstractPathBasedURIResolver implements StylesheetURIResol
      * @param stylesheetIdentifier a <code>String</code> value
      * @return a <code>boolean</code>
      */
+    @Override
     public final boolean matches(String stylesheetIdentifier) {
         if (stylesheetIdentifier.startsWith("/")) {
             return true;
@@ -108,9 +109,10 @@ public abstract class AbstractPathBasedURIResolver implements StylesheetURIResol
     /**
      * Gets the last modified date for a path based resource.
      *
-     * @param path a <code>String</code> value
-     * @exception Exception if an error occurs
+     * @param identifier a <code>String</code> value
+     * @throws Exception if an error occurs
      */
+    @Override
     public final Date getLastModified(String identifier) throws Exception {
         if (identifier.endsWith("/") && !identifier.equals("/"))
             identifier = identifier.substring(0, identifier.length() - 1);
@@ -119,6 +121,7 @@ public abstract class AbstractPathBasedURIResolver implements StylesheetURIResol
         return getLastModifiedInternal(path);
     }
     
+    @Override
     public final Source resolve(String href, String base) 
         throws TransformerException {
         if (this.logger.isDebugEnabled()) {
@@ -174,7 +177,7 @@ public abstract class AbstractPathBasedURIResolver implements StylesheetURIResol
     }
 
     private String getAbsolutePath(String href, String base) {
-        String uri = null;
+        String uri;
 		if (href == null || href.trim().equals("")) {
 			return null;
 		} else if (href.startsWith("/")) {

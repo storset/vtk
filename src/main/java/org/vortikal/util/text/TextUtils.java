@@ -55,11 +55,9 @@ public class TextUtils {
     /**
      * Extracts a field from a string using the character <code>,</code> as field delimiter.
      * 
-     * @param header
-     *            the string in question
-     * @param name
-     *            the name of the field wanted
-     * @return the value of the field, or <code>null</code> if not found
+     * @param string the string in question
+     * @param name   the name of the field wanted
+     * @return the value of the field, or <code>null</code> if not found.
      */
     public static String extractField(String string, String name) {
         return extractField(string, name, ",");
@@ -69,13 +67,10 @@ public class TextUtils {
     /**
      * Extracts a field from a string using a given field delimiter.
      * 
-     * @param the
-     *            string in question
-     * @param name
-     *            the name of the field wanted
-     * @param fieldDelimiter
-     *            the field delimiter
-     * @return the value of the field, or <code>null</code> if not found
+     * @param string the string in question
+     * @param name the name of the field wanted
+     * @param fieldDelimiter the field delimiter
+     * @return the value of the field, or <code>null</code> if not found.
      */
     public static String extractField(String string, String name, String fieldDelimiter) {
 

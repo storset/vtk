@@ -110,7 +110,7 @@ public interface ResourceTypeTree extends HierarchicalVocabulary<String> {
     /**
      * Return a <code>List</code> of the immediate children of the given resource type.
      * @param def
-     * @return
+     * @return a <code>List</code> of the immediate children of the given resource type.
      */
     public List<PrimaryResourceTypeDefinition> getResourceTypeDefinitionChildren(PrimaryResourceTypeDefinition def);
 

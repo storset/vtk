@@ -46,8 +46,7 @@ import org.vortikal.web.service.Service;
 /**
  * Looks up locale resolvers in the service tree up towards the root,
  * and delegates to the locale resolver found. Locale resolvers are
- * associated with a service using {@link Service#getAttributes
- * service attributes}.
+ * associated with a service using {@link Service#getAttribute(java.lang.String)  service attributes}.
  */
 public class ServiceDelegatingLocaleResolver implements LocaleResolver {
 

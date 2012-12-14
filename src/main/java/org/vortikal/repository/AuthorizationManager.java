@@ -125,8 +125,7 @@ public final class AuthorizationManager {
      * the actions).
      *
      * @param uri a resource URI
-     * @param action the action to perform. One of the action types
-     * defined in {@link #ACTION_AUTHORIZATIONS}.
+     * @param action the {@link RepositoryAction action} to perform.
      * @param principal the principal performing the action
      */
     public void authorizeAction(Path uri, RepositoryAction action, 
@@ -203,7 +202,6 @@ public final class AuthorizationManager {
      *   <li>Privilege READ_PROCESSED, READ, READ_WRITE, READ_WRITE_UNPUBLISHED or ALL in ACL
      *   <li>Role ROOT or READ_EVERYTHING
      * </ul>
-     * @return is authorized
      * @throws IOException
      */
     public void authorizeReadProcessed(Path uri, Principal principal) 
@@ -224,7 +222,6 @@ public final class AuthorizationManager {
      *   <li>Privilege READ, READ_WRITE, READ_WRITE_UNPUBLISHED or ALL in ACL
      *   <li>Role ROOT or READ_EVERYTHING
      * </ul>
-     * @return is authorized
      * @throws IOException
      */
     public void authorizeRead(Path uri, Principal principal) 
@@ -300,7 +297,6 @@ public final class AuthorizationManager {
      *   <li>Privilege READ_WRITE or ALL in ACL
      *   <li>Role ROOT
      * </ul>
-     * @return is authorized
      * @throws IOException
      */
     public void authorizeReadWrite(Path uri, Principal principal)
@@ -322,7 +318,6 @@ public final class AuthorizationManager {
      *   <li>Privilege READ_WRITE, READ_WRITE_UNPUBLISHED or ALL in ACL
      *   <li>Role ROOT
      * </ul>
-     * @return is authorized
      * @throws IOException
      */
     public void authorizeReadWriteUnpublished(Path uri, Principal principal)
@@ -344,7 +339,6 @@ public final class AuthorizationManager {
      *   <li>Privilege READ_WRITE or ALL in ACL
      *   <li>Role ROOT
      * </ul>
-     * @return is authorized
      * @throws IOException
      */
     public void authorizePublishUnpublish(Path uri, Principal principal)
@@ -357,7 +351,6 @@ public final class AuthorizationManager {
      * <ul>
      *   <li>Privilege ALL, READ_WRITE, READ_WRITE_UNPUBLISHED or ADD_COMMENT in ACL
      * </ul>
-     * @return is authorized
      * @throws IOException
      */
     public void authorizeAddComment(Path uri, Principal principal)
@@ -379,7 +372,6 @@ public final class AuthorizationManager {
      *   <li>Privilege ALL in ACL
      *   <li>Role ROOT
      * </ul>
-     * @return is authorized
      * @throws IOException
      */
     public void authorizeEditComment(Path uri, Principal principal)
@@ -402,7 +394,6 @@ public final class AuthorizationManager {
      *   <li>Privilege ALL in ACL
      *   <li>Role ROOT
      * </ul>
-     * @return is authorized
      * @throws IOException
      */
     public void authorizeAll(Path uri, Principal principal)
@@ -530,7 +521,6 @@ public final class AuthorizationManager {
      *   <li>Action ALL
      *   <li>Role ROOT
      * </ul>
-     * @return is authorized
      * @throws IOException
      */
     public void authorizePropertyEditAdminRole(Path uri, Principal principal) 
@@ -816,7 +806,6 @@ public final class AuthorizationManager {
     }
 
     private boolean groupMatch(Set<Principal> principalList, Principal principal) {
-
         for (Principal p: principalList) {
             if (p.getType() == Principal.Type.GROUP) {
                 if (this.principalManager.isMember(principal, p)) {

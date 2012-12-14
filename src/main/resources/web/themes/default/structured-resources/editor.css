@@ -40,7 +40,7 @@
   padding-top: 20px;
 }
 
-.vrtx-image-ref img {
+.vrtx-image-ref #picture\.preview {
   margin-top: 20px;
 }
 
@@ -138,6 +138,10 @@
 }
 
 .ui-accordion > .vrtx-json-element.last {
+  margin-bottom: 20px;
+}
+
+#editor.vrtx-hvordan-soke .vrtx-string.last {
   margin-bottom: 20px;
 }
 

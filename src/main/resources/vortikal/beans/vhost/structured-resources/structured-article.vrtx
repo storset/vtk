@@ -5,13 +5,12 @@ resourcetype structured-article : structured-document {
     media : media_ref,
     tags : string multiple overrides tags,
     related-content : html noextract,
-    hidePicture : boolean defaultvalue("false"),
     showAdditionalContent : boolean defaultvalue("true")
   }
 
   edit-rules {
     caption (size[small]),
-    group introImageAndCaption (picture, caption, hidePicture) (after introduction) vertical,
+    group introImageAndCaption (picture, caption, hidePicture) (after introduction),
     group relatedContent (showAdditionalContent, related-content) (after tags),
     author (after introImageAndCaption),
     title (size[large]),
@@ -97,7 +96,6 @@ resourcetype structured-article : structured-document {
             [if theHidePicture = "false" || theHidePicture = null] 
               [call "comp:introduction-image"]
             [endif]
-            
             [call "resource:media-player"]
             [call "json:field" {"select":"content"}]
             [call "comp:related-content-in-main-column"]
@@ -122,22 +120,17 @@ resourcetype structured-article : structured-document {
       en : ("true" = "Yes", "false" = "No"),
       no : ("true" = "Ja", "false" = "Nei"),
       nn : ("true" = "Ja", "false" = "Nei")
-    },
-    hidePicture {
-      en : ("true" = "Yes", "false" = "No"),
-      no : ("true" = "Ja", "false" = "Nei"),
-      nn : ("true" = "Ja", "false" = "Nei")
     }
   }
 
   localization {
+    hidePicture : (en : "Hide in article", no : "Skjul i artikkel", nn : "Skjul i artikkel"),
     by-line : (en : "By", no : "Av", nn : "Av"),
     published : (en : "Published", no : "Publisert", nn : "Publisert"),
     download-media-file : (en : "Download media file", no : "Last ned mediefil", nn : "Last ned mediefil"),
     media: (en : "Mediafile (audio or video)", no : "Mediefil (lyd eller video)", nn : "Mediefil (lyd eller video)"),
     author: (en : "Author", no : "Forfatter", nn : "Forfattar"),
     tags : (en : "Tags", no : "Emneord", nn : "Emneord"),
-    hidePicture : (en : "Hide image in article view", no : "Skjul bildet i artikkelvisning", nn : "Skjul bilete i artikkelvising"), 
     showAdditionalContent : (en : "Show in right-column", no : "Vis i høyrekolonne", nn : "Vis i høgrekolonne"),
     related-content : (en : "Content", no : "Innhold", nn : "Innhold"),
     relatedContent : (en : "Related content", no : "Relatert innhold", nn : "Relatert innhald"),

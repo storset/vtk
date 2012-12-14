@@ -21,7 +21,7 @@ resourcetype oppbygning : fellestekst-document{
     tittel (size[1]),
     tittel (class[ui-helper-hidden])
     caption (size[small]),
-    group introImageAndCaption (picture, caption) (after introduction) vertical,
+    group introImageAndCaption (picture, caption) (after introduction),
     gradsnavn (class[vrtx-shared-text]),
     group grader (gradsnavn, gradsnavn-no, gradsnavn-nn, gradsnavn-en, vitnemaal) (after content-study),
     vitnemaal (class[vrtx-shared-text]),

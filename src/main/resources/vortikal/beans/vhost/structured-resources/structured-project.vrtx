@@ -7,6 +7,7 @@ resourcetype structured-project {
     introduction : simple_html,
     picture : image_ref,
     caption : simple_html,
+    hidePicture : boolean defaultvalue("false"),
     content : html noextract,
     tags : string multiple overrides tags,
     contactInfo : html noextract,
@@ -23,7 +24,7 @@ resourcetype structured-project {
     participantsUsernames (class[vrtx-autocomplete-username]),
     caption (size[small]),
     numberOfParticipantsToDisplay (dropdown),
-    group introImageAndCaption (picture, caption) (after introduction) vertical,
+    group introImageAndCaption (picture, caption, hidePicture) (after introduction),
     tags tooltip (en : "(Tag1, Tag2, ...)", no : "(Emneord1, Emneord2, ...)", nn : "(Emneord1, Emneord2, ...)"),
     tags (class[vrtx-autocomplete-tag])
   }
@@ -196,7 +197,10 @@ resourcetype structured-project {
           <div id="vrtx-main-content">
             <h1>[call "json:field" {"select":"name"}] [call "comp:completed"]</h1>
             [call "comp:introduction"]
-            [call "comp:introduction-image"]
+            [def theHidePicture document.properties.hidePicture]
+            [if theHidePicture = "false" || theHidePicture = null] 
+              [call "comp:introduction-image"]
+            [endif]
             [call "json:field" {"select":"content"}]
             [call "resource:tags"]
             [call "comp:vrtx-date-info"]
@@ -220,11 +224,15 @@ resourcetype structured-project {
        no : ("true" = "Pågående", "false" = "Avsluttet"),
        nn : ("true" = "Pågående", "false" = "Avslutta")
      }
-     
-    numberOfParticipantsToDisplay {
+     numberOfParticipantsToDisplay {
        en : (range = "0..25,30,35,40,45,50"),
        no : (range = "0..25,30,35,40,45,50"),
        nn : (range = "0..25,30,35,40,45,50")
+     },
+     hidePicture {
+       en : ("true" = "Yes", "false" = "No"),
+       no : ("true" = "Ja", "false" = "Nei"),
+       nn : ("true" = "Ja", "false" = "Nei")
      }
   }
   
@@ -236,6 +244,7 @@ resourcetype structured-project {
     introduction-image-alt : (en: "Image", en: "Bilde", en: "Bilete"),
     caption : (en : "Image caption", no : "Bildetekst", nn : "Bilettekst"),
     photo-prefix : (en : "Photo", no : "Foto", nn : "Photo"),
+    hidePicture : (en : "Hide in project", no : "Skjul i prosjekt", nn : "Skjul i prosjekt"),
     related-content : (en : "Related content (right column)", no : "Relatert innhold (vises i høyre kolonne)", nn : "Relatert innhald (visast i høgre kolonne)"),
     participantsHeader : (en : "Participants", no : "Deltakere", nn : "Deltakarar"),
     participantsUsernames : (en : "Participants from UiO (enter the participant username)",no : "Deltakere fra UiO (fyll inn deltakerens brukernavn)", nn :"Deltakarar fra UiO (fyll inn deltakarens brukernavn)"),

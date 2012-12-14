@@ -18,7 +18,7 @@ resourcetype structured-master{
     supervisorsUsernames (class[vrtx-autocomplete-username]),
     caption (size[small]),
     credits (dropdown),
-    group introImageAndCaption (picture, caption) (after introduction) vertical,
+    group introImageAndCaption (picture, caption) (after introduction),
     tags tooltip (en : "(Tag1, Tag2, ...)", no : "(Emneord1, Emneord2, ...)", nn : "(Emneord1, Emneord2, ...)"),
     tags (class[vrtx-autocomplete-tag])
   }

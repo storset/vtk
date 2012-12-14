@@ -1662,11 +1662,7 @@ function editorInteraction(bodyId, vrtxAdm, _$) {
     // Dropdowns
     vrtxAdm.dropdownPlain("#editor-help-menu");
     vrtxAdm.dropdown({selector: "ul#editor-menu"});
-    
-    // Preview image
-    vrtxAdm.adjustImageAndCaptionContainer("#vrtx-resource\\.picture #resource\\.picture\\.preview");
-    vrtxAdm.adjustImageAndCaptionContainer(".introImageAndCaption #picture\\.preview");
-    
+
     // Save shortcut and AJAX
     $(document).bind('keydown', 'ctrl+s', function(e) {
       ctrlSEventHandler(_$, e);
@@ -2984,46 +2980,16 @@ VrtxAdmin.prototype.serverFacade = {
 
 var urlobj;
 function previewImage(urlobj) {
-  var previewNode = document.getElementById(urlobj + '.preview');
+  var previewNode = document.getElementById(urlobj + '.preview-inner');
   if (previewNode) {
     var url = document.getElementById(urlobj).value;
     if (url && url != "") {
       previewNode.innerHTML = '<img src="' + url + '?vrtx=thumbnail" alt="thumbnail" />';
-      vrtxAdmin.adjustImageAndCaptionContainer(previewNode);
     } else {
-      previewNode.innerHTML = '';
+      previewNode.innerHTML = '<img src="/vrtx/__vrtx/static-resources/themes/default/images/no-preview-image.png" alt="no thumbnail" />';
     }
   }
 }
-
-// Make sure these is space below previewed image
-VrtxAdmin.prototype.adjustImageAndCaptionContainer = function adjustImageAndCaptionContainer(previewNode) {
-  var _$ = this._$;
-  var previewNd = _$(previewNode);
-  previewNd.find("img").load(function() {
-    var previewNodeImg = _$(this);
-    var container = previewNd.parent().parent();
-    if(typeof container.attr("class") !== "undefined") {
-      if(container.attr("id") == "vrtx-resource.picture") { // old
-        var origHeight = 241;
-        var extraMarginHeight = 29;
-      } else if(container.attr("class").indexOf("introImageAndCaption") != -1) { // new
-        var origHeight = 260;
-        var extraMarginHeight = 49;
-      } else {
-        return;
-      }
-    } else {
-      return;
-    }
- 
-    if((previewNodeImg.height() + extraMarginHeight) > origHeight) {
-      container.css("height", (previewNodeImg.height() + extraMarginHeight) + "px");
-    } else {
-      container.css("height", origHeight + "px");
-    }
-  });
-};
 
 function browseServer(obj, editorBase, baseFolder, editorBrowseUrl, type) {
   urlobj = obj; // NB: store to global var

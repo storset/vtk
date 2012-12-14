@@ -200,7 +200,7 @@ div.manually-approve-from table input {
 .properties > div.title input,
 .properties > div.name input,
 .properties > div.userTitle input {
-  width: 473px;
+  width: 522px;
 }
 
 div.additionalContent,
@@ -209,7 +209,7 @@ div.image-description,
 div.video-description,
 div.audio-description,
 div.description {
-  width: 500px;
+  width: 547px;
 }
 
 div.additionalContent iframe {
@@ -221,9 +221,6 @@ div.image-description,
 div.video-description,
 div.audio-description,
 div.description {
-  clear: left;
-  float: left;
-  margin-right: 20px;
   margin-bottom: 20px;
 }
 
@@ -232,7 +229,7 @@ div.image-description textarea,
 div.video-description textarea,
 div.audio-description textarea,
 div.description textarea {
-  height: 200px;
+  height: 120px;
 }
 
 div.content textarea,
@@ -266,7 +263,7 @@ div.image-description iframe,
 div.video-description iframe,
 div.audio-description iframe,
 div.description iframe {
-  width: 476px !important;
+  width: 522px !important;
 }
 
 div.introduction textarea,
@@ -274,7 +271,7 @@ div.image-description textarea,
 div.video-description textarea,
 div.audio-description textarea,
 div.description textarea {
-  width: 497px !important;
+  width: 543px !important;
 }
 
 /* Event - explicit settings */
@@ -315,12 +312,10 @@ form.vrtx-program-option-frontpage #additional-content .header {
 
 div.introImageAndCaption,
 div#vrtx-resource\.picture {
-  float: left;
-  clear: none;
   width: 500px;
   position: relative;
   margin-bottom: 20px;
-  height: 260px;
+  height: 243px;
 }
 
 div#vrtx-resource\.picture {
@@ -330,9 +325,10 @@ div#vrtx-resource\.picture {
 div.introImageAndCaption .caption,
 div#vrtx-resource\.picture .caption {
   position: absolute;
-  top: 92px;
+  top: 75px;
   left: 0px;
   width: 355px;
+  margin-bottom: 0px;
 }
 
 div#vrtx-resource\.picture .caption {
@@ -345,23 +341,18 @@ div#vrtx-resource\.picture iframe {
 }
 
 div.introImageAndCaption .hidePicture {
-  left: 0;
+  left: 374px;
   position: absolute;
-  top: 259px;
-  width: 355px;
+  top: 170px;
 }
 
 div.introImageAndCaption .hidePicture .vrtx-radio-buttons label {
   display: inline !important; 
 }
 
-#editor.vrtx-structured-article div.introduction textarea,
-#editor.vrtx-structured-article div.introduction iframe {
-  height: 220px !important;
-}
-
 div.introImageAndCaption div.vrtx-image-ref-browse,
-div#vrtx-resource\.picture div.input-and-button-container {
+div#vrtx-resource\.picture div.input-and-button-container,
+div#vrtx-resource\.picture div.picture-and-caption {
   float: left;
 }
 
@@ -376,12 +367,21 @@ div#vrtx-resource\.picture div.input-and-button-container .vrtx-textfield {
 
 div.introImageAndCaption div#picture\.preview,
 div#vrtx-resource\.picture div#resource\.picture\.preview {
-  margin: 0 0 0 375px;
+  margin: -29px 0 0 375px;
+}
+
+div.introImageAndCaption div#picture\.preview-inner,
+div#vrtx-resource\.picture div#resource\.picture\.preview-inner {
+  width: 170px;
+  height: 136px;
+  overflow: hidden;
+  border: 1px solid #D3D3D3;
 }
 
 div.introImageAndCaption img,
 div#vrtx-resource\.picture img {
   margin-top: 0px;
+  max-width: 170px;
 }
 
 .vrtx-grouped .related-content label {

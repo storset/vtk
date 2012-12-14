@@ -5,6 +5,7 @@ resourcetype structured-document {
     introduction : simple_html,
     picture : image_ref,
     caption : simple_html,
+    hidePicture : boolean defaultvalue("false"),
     content : html noextract,
     hasBodyContent : derived (content) eval (content?exists)
   }
@@ -116,6 +117,14 @@ resourcetype structured-document {
       </body>
     </html>
     ##
+  }
+  
+  vocabulary {
+    hidePicture {
+      en : ("true" = "Yes", "false" = "No"),
+      no : ("true" = "Ja", "false" = "Nei"),
+      nn : ("true" = "Ja", "false" = "Nei")
+    }
   }
   
   localization {

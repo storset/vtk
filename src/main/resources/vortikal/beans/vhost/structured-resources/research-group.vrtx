@@ -6,6 +6,7 @@ resourcetype research-group {
     introduction : simple_html,
     picture : image_ref,
     caption : simple_html,
+    hidePicture : boolean defaultvalue("false"),
     content : html noextract,
     tags : string multiple overrides tags,
     contactInfo : html noextract,
@@ -22,7 +23,7 @@ resourcetype research-group {
     participantsUsernames (class[vrtx-autocomplete-username]),
     caption (size[small]),
     numberOfParticipantsToDisplay (dropdown),
-    group introImageAndCaption (picture, caption) (after introduction) vertical,
+    group introImageAndCaption (picture, caption, hidePicture) (after introduction),
     tags tooltip (en : "(Tag1, Tag2, ...)", no : "(Emneord1, Emneord2, ...)", nn : "(Emneord1, Emneord2, ...)"),
     tags (class[vrtx-autocomplete-tag])
   }
@@ -192,7 +193,10 @@ resourcetype research-group {
           <div id="vrtx-main-content">
             <h1>[call "json:field" {"select":"name"}]</h1>
             [call "comp:introduction"]
-            [call "comp:introduction-image"]
+            [def theHidePicture document.properties.hidePicture]
+            [if theHidePicture = "false" || theHidePicture = null] 
+              [call "comp:introduction-image"]
+            [endif]
             [call "json:field" {"select":"content"}]
             [call "resource:tags"]
             [call "comp:vrtx-date-info"]
@@ -212,15 +216,20 @@ resourcetype research-group {
   
   vocabulary {
     numberOfParticipantsToDisplay {
-       en : (range = "0..25,30,35,40,45,50"),
-       no : (range = "0..25,30,35,40,45,50"),
-       nn : (range = "0..25,30,35,40,45,50")
-     }
-     listRelatedProjects{
+      en : (range = "0..25,30,35,40,45,50"),
+      no : (range = "0..25,30,35,40,45,50"),
+      nn : (range = "0..25,30,35,40,45,50")
+    }
+    listRelatedProjects{
       en : ("true" = "Yes", "false" = "No"),
       no : ("true" = "Ja", "false" = "Nei"),
       nn : ("true" = "Ja", "false" = "Nei")
-     }
+    },
+    hidePicture {
+      en : ("true" = "Yes", "false" = "No"),
+      no : ("true" = "Ja", "false" = "Nei"),
+      nn : ("true" = "Ja", "false" = "Nei")
+    }
   }
   
     
@@ -231,6 +240,7 @@ resourcetype research-group {
     introduction-image-alt : (en: "Image", en: "Bilde", en: "Bilete"),
     caption : (en : "Image caption", no : "Bildetekst", nn : "Bilettekst"),
     photo-prefix : (en : "Photo", no : "Foto", nn : "Photo"),
+    hidePicture : (en : "Hide in research group", no : "Skjul i forskergruppe", nn : "Skjul i forskargruppe"),
     related-content : (en : "Related content (right column)", no : "Relatert innhold (vises i høyre kolonne)", nn : "Relatert innhald (visast i høgre kolonne)"),
     participantsHeader : (en : "Participants", no : "Deltakere", nn : "Deltakarar"),
     participantsUsernames : (en : "Participants from UiO (enter the participant username)",no : "Deltakere fra UiO (fyll inn deltakerens brukernavn)", nn :"Deltakarar fra UiO (fyll inn deltakarens brukernavn)"),

@@ -13,9 +13,14 @@
       </div>
 	</div>
 	<div id="${inputFieldName}.preview">
+	  <label for="${inputFieldName}.preview"><@vrtx.msg code="editor.image.preview-title"/></label>
+	  <div id="${inputFieldName}.preview-inner">
 	  <#if value?has_content >
-	    <img src="${value?html}" alt=""/>
+	    <img src="${value?html}" alt="preview" />
+	  <#else>
+	    <img src="/vrtx/__vrtx/static-resources/themes/default/images/no-preview-image.png" alt="no preview"/>
 	  </#if>
+	  </div>
 	</div>
   </div>
 </#macro>

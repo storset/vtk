@@ -15,7 +15,7 @@ resourcetype frontpage {
     caption (size[small]),
     main-content:boxCssSizeAndPlacement (dropdown),
     main-content:boxCssColor (dropdown),
-    group introImageAndCaption (picture, caption) (after introduction) vertical,
+    group introImageAndCaption (picture, caption) (after introduction),
     group relatedContent (showAdditionalContent, additional-content) (after main-content)
   }
 

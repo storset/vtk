@@ -94,8 +94,10 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
    || contains(name, "resource.description")
    || contains(name, "resource.image-description")
    || contains(name, "resource.video-description")
-   || contains(name, "resource.audio-description")
-   || (contains(name, "comment") && editorElem.hasClass("vrtx-schedule"))) {
+   || contains(name, "resource.audio-description")) {
+    setCKEditorConfig(name, linkBrowseUrl, null, null, defaultLanguage, cssFileList, 100, 400, 40, inlineToolbar,
+                      isCompleteEditor, false, baseDocumentUrl, isSimpleHTML);
+  } else if (contains(name, "comment") && editorElem.hasClass("vrtx-schedule")) {
     setCKEditorConfig(name, linkBrowseUrl, null, null, defaultLanguage, cssFileList, 150, 400, 40, inlineToolbar,
                       isCompleteEditor, false, baseDocumentUrl, isSimpleHTML);
   } else if (contains(name, "caption")) {

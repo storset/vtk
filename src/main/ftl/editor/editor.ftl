@@ -369,20 +369,22 @@
             </div>
           </div>
           <div id="resource.${name}.preview">
-          
-            <#local thumbnail = '' />
-            <#if value?exists && value != "">
-              <#if  vrtx.linkConstructor(value, 'displayThumbnailService')?exists >
-                <#local thumbnail = vrtx.linkConstructor(value, 'displayThumbnailService').getPathRepresentation() />
+            <div class="resource.${name}.preview-inner property-label"><@vrtx.msg code="editor.image.preview-title"/></div>
+            <div id="resource.${name}.preview-inner">
+              <#local thumbnail = '' />
+              <#if value?exists && value != "">
+                <#if  vrtx.linkConstructor(value, 'displayThumbnailService')?exists >
+                  <#local thumbnail = vrtx.linkConstructor(value, 'displayThumbnailService').getPathRepresentation() />
+                <#else>
+                  <#local thumbnail = value />
+                </#if> 
+              </#if>
+              <#if thumbnail != ''>
+                <img src="${thumbnail?html}" alt="preview" />
               <#else>
-                <#local thumbnail = value />
-              </#if> 
-            </#if>          
-            <#if thumbnail != ''>
-              <img src="${thumbnail?html}" alt="preview" />
-            <#else>
-              <img src="" alt="no-image" style="visibility: hidden; width: 10px;" />
-            </#if>
+                <img src="/vrtx/__vrtx/static-resources/themes/default/images/no-preview-image.png" alt="no preview" />
+              </#if>
+            </div>
           </div>
         <#else>
         

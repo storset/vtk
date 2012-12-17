@@ -3,8 +3,7 @@ README
 
 The files in this folder are Mustache templates (HTML) for JS.
 
-The purpose is to separate presentation (HTML) from logic (JS)
-and (in the long term) try to make them more readable.
+The purpose is to separate presentation (HTML) from logic (JS).
 
 A template-file can be retrieved as a hash array splitted on ###
 with each template assigned to a template-name:

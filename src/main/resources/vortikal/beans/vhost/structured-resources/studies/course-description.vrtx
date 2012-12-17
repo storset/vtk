@@ -134,7 +134,7 @@ resourcetype course-description : fellestekst-document {
             <td>[localized 'teachingsemester']:</td>
             <td>
               [if teachingsemester != null && teachingsemester = "particular-semester"]
-               [def teachingsemesters document.properties.teachingsemester-particular-semester]
+                [def teachingsemesters document.properties.teachingsemester-particular-semester]
                 [if teachingsemesters != null]
                   [list teachingsemesters teachingsemester]
                     [if teachingsemester.term != null && teachingsemester.year != null]

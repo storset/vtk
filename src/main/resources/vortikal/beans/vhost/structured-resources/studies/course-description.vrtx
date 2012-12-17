@@ -105,516 +105,516 @@ resourcetype course-description : fellestekst-document {
   view-components {
 
     facts (document) {
-        ##
-        [def credits document.properties.credits]
-        [def level document.properties.level]
-        [def content-locale resource-prop-obj-val(".", "contentLocale")]
-        [def teachingsemester document.properties.teachingsemester]
-        [def teachingsemester-other document.properties.teachingsemester-other]
-        [def examsemester document.properties.examsemester]
-        [def examsemester-other document.properties.examsemester-other]
-        [def course-fee document.properties.course-fee]
-        [def course-fee-amount document.properties.course-fee-amount]
-        <table class="course" cellpadding="0" cellspacing="0" width="100%">
-          <tbody>
-            <tr class="vrtx-academics-course-table-title">
-              <td colspan="2"><b>[localized 'facts']:</b></td>
-            </tr>
+      ##
+      [def credits document.properties.credits]
+      [def level document.properties.level]
+      [def content-locale resource-prop-obj-val(".", "contentLocale")]
+      [def teachingsemester document.properties.teachingsemester]
+      [def teachingsemester-other document.properties.teachingsemester-other]
+      [def examsemester document.properties.examsemester]
+      [def examsemester-other document.properties.examsemester-other]
+      [def course-fee document.properties.course-fee]
+      [def course-fee-amount document.properties.course-fee-amount]
+      <table class="course" cellpadding="0" cellspacing="0" width="100%">
+        <tbody>
+          <tr class="vrtx-academics-course-table-title">
+            <td colspan="2"><b>[localized 'facts']:</b></td>
+          </tr>
+          <tr valign="top">
+            <td>[localized 'credits']:</td>
+            <td>[if credits != null][val credits][endif]</td>
+          </tr>
+          [if level != null && level != "" && level != "not-set"]
             <tr valign="top">
-              <td>[localized 'credits']:</td>
-              <td>[if credits != null][val credits][endif]</td>
-            </tr>
-            [if level != null && level != "" && level != "not-set"]
-              <tr valign="top">
-                <td>[localized 'level']:</td>
-                <td>[localized level]</td>
-              </tr>
-            [endif]
-            <tr valign="top">
-              <td>[localized 'teachingsemester']:</td>
-              <td>
-                [if teachingsemester != null && teachingsemester = "particular-semester"]
-                  [def teachingsemesters document.properties.teachingsemester-particular-semester]
-                  [if teachingsemesters != null]
-                    [list teachingsemesters teachingsemester]
-                      [if teachingsemester.term != null && teachingsemester.year != null]
-                        [def term teachingsemester.term]
-                        <p>[localized term] [val teachingsemester.year]</p>
-                      [endif]
-                    [endlist]
-                  [endif]
-                [elseif teachingsemester != null && teachingsemester = "every-other"]
-                  [def term 'every-other-' + document.properties.teachingsemester-every-other-semester-term]
-                  [def startyear document.properties.teachingsemester-every-other-semester-startyear]
-                  [if term != null && startyear != null]
-                    <p>[localized term]</p>
-                    <p>[localized 'every-other-start'] [val startyear] [localized 'teaching-every-other-end']</p>
-                  [endif]
-                [else]
-                  [if teachingsemester != null][localized teachingsemester][endif]
+              <td>[localized 'level']:</td>
+              <td>[localized level]</td>
+             </tr>
+          [endif]
+          <tr valign="top">
+            <td>[localized 'teachingsemester']:</td>
+            <td>
+              [if teachingsemester != null && teachingsemester = "particular-semester"]
+               [def teachingsemesters document.properties.teachingsemester-particular-semester]
+                [if teachingsemesters != null]
+                  [list teachingsemesters teachingsemester]
+                    [if teachingsemester.term != null && teachingsemester.year != null]
+                      [def term teachingsemester.term]
+                      <p>[localized term] [val teachingsemester.year]</p>
+                    [endif]
+                  [endlist]
                 [endif]
-                [if teachingsemester-other != null][val teachingsemester-other # unescaped][endif]
-              </td>
-            </tr>
-            <tr valign="top">
-              <td>[localized 'examsemester']:</td>
-              <td>
-                [if examsemester != null && examsemester = "particular-semester"]
-                  [def examsemesters document.properties.examsemester-particular-semester]
-                  [if examsemesters != null]
-                    [list examsemesters examsemester]
-                      [if examsemester.term != null && examsemester.year != null]
-                        [def term examsemester.term]
-                        <p>[localized term] [val examsemester.year]</p>
-                      [endif]
-                    [endlist]
-                  [endif]
-                [elseif examsemester != null && examsemester = "every-other"]
-                  [def term 'every-other-' + document.properties.examsemester-every-other-semester-term]
-                  [def startyear document.properties.examsemester-every-other-semester-startyear]
-                  [if term != null && startyear != null]
-                    <p>[localized term]</p>
-                    <p>[localized 'every-other-start'] [val startyear] [localized 'exam-every-other-end']</p>
-                  [endif]
-                [else]
-                  [if examsemester != null][localized examsemester][endif]
+              [elseif teachingsemester != null && teachingsemester = "every-other"]
+                [def term 'every-other-' + document.properties.teachingsemester-every-other-semester-term]
+                [def startyear document.properties.teachingsemester-every-other-semester-startyear]
+                [if term != null && startyear != null]
+                  <p>[localized term]</p>
+                  <p>[localized 'every-other-start'] [val startyear] [localized 'teaching-every-other-end']</p>
                 [endif]
-                [if examsemester-other != null][val examsemester-other # unescaped][endif]
-              </td>
-            </tr>
-            <tr valign="top">
-              <td>[localized 'content-locale']:</td>
-              [if content-locale != null && content-locale = "no_NO"]
-                <td>[localized 'locale-no']</td>
-              [elseif content-locale != null && content-locale = "en"]
-                <td>[localized 'locale-en']</td>
-              [elseif content-locale != null && content-locale = "no_NO_NY"]
-                <td>[localized 'locale-nn']</td>
+              [else]
+                [if teachingsemester != null][localized teachingsemester][endif]
               [endif]
-            </tr>
-            [if course-fee != null && course-fee && course-fee-amount != null && course-fee-amount != ""]
-              <tr valign="top">
-                <td>[localized 'course-fee']:</td>
-                <td>[val course-fee-amount]</td>
-              </tr>
+              [if teachingsemester-other != null][val teachingsemester-other # unescaped][endif]
+            </td>
+          </tr>
+          <tr valign="top">
+            <td>[localized 'examsemester']:</td>
+            <td>
+              [if examsemester != null && examsemester = "particular-semester"]
+                [def examsemesters document.properties.examsemester-particular-semester]
+                [if examsemesters != null]
+                  [list examsemesters examsemester]
+                    [if examsemester.term != null && examsemester.year != null]
+                      [def term examsemester.term]
+                      <p>[localized term] [val examsemester.year]</p>
+                    [endif]
+                  [endlist]
+                [endif]
+              [elseif examsemester != null && examsemester = "every-other"]
+                [def term 'every-other-' + document.properties.examsemester-every-other-semester-term]
+                [def startyear document.properties.examsemester-every-other-semester-startyear]
+                [if term != null && startyear != null]
+                  <p>[localized term]</p>
+                  <p>[localized 'every-other-start'] [val startyear] [localized 'exam-every-other-end']</p>
+                [endif]
+              [else]
+                [if examsemester != null][localized examsemester][endif]
+              [endif]
+              [if examsemester-other != null][val examsemester-other # unescaped][endif]
+            </td>
+          </tr>
+          <tr valign="top">
+            <td>[localized 'content-locale']:</td>
+            [if content-locale != null && content-locale = "no_NO"]
+              <td>[localized 'locale-no']</td>
+            [elseif content-locale != null && content-locale = "en"]
+              <td>[localized 'locale-en']</td>
+            [elseif content-locale != null && content-locale = "no_NO_NY"]
+              <td>[localized 'locale-nn']</td>
             [endif]
-          </tbody>
-        </table>
-        ##
+          </tr>
+          [if course-fee != null && course-fee && course-fee-amount != null && course-fee-amount != ""]
+            <tr valign="top">
+              <td>[localized 'course-fee']:</td>
+              <td>[val course-fee-amount]</td>
+            </tr>
+          [endif]
+        </tbody>
+      </table>
+      ##
     }
 
     semesters {
-        ##
-        <table class="master" cellpadding="5" cellspacing="5" width="100%">
-          <tbody>
-            <tr valign="top">
-              <td>
-                <b>[localized 'semester']</b>
-                <p>
-                  <ul>
-                    [def uri resource-prop("./", "uri")]
-                    [def semesters search('uri=' + uri + '/* && type IN semester-page && published=true')]
-                    [if typeof(semesterSearchSort) = 'function']
-                      [def semesters semesterSearchSort(semesters)]
-                    [endif]
-                    [list semesters semester]
-                      [def url view-url(semester)]
-                      [def title resource-prop(semester, "semesterContext.semesterTitle")]
-                      <li>
-                        <a href="[val url]">[if title != null && title != ""][val title][else][val url][endif]</a>
-                      </li>
-                    [endlist]
-                  </ul>
-                <p>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        ##
+      ##
+      <table class="master" cellpadding="5" cellspacing="5" width="100%">
+        <tbody>
+          <tr valign="top">
+            <td>
+              <b>[localized 'semester']</b>
+              <p>
+                <ul>
+                  [def uri resource-prop("./", "uri")]
+                  [def semesters search('uri=' + uri + '/* && type IN semester-page && published=true')]
+                  [if typeof(semesterSearchSort) = 'function']
+                    [def semesters semesterSearchSort(semesters)]
+                  [endif]
+                  [list semesters semester]
+                    [def url view-url(semester)]
+                    [def title resource-prop(semester, "semesterContext.semesterTitle")]
+                    <li>
+                      <a href="[val url]">[if title != null && title != ""][val title][else][val url][endif]</a>
+                    </li>
+                  [endlist]
+                </ul>
+              <p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      ##
     }
 
     academics-course-navigation {
-        ##
-        <div class="academics-course-navigation">
-          [def this-uri resource-prop(".", "uri")]
-          [def parent-uri resource-prop("./", "uri")]
-          [def content-locale resource-prop-obj-val(".", "contentLocale")]
-          [if content-locale != null && (content-locale = "no_NO" || content-locale = "no_NO_NY")]
-            [def resource resource(parent-uri + '/index-eng.html')]
-            [if resource != null]
-              [def resource-uri resource-prop(resource, "uri")]
-              [def resource-content-locale resource-prop-obj-val(resource, "contentLocale")]
-              [if resource-uri != this-uri && resource-content-locale = "en"]
-                [def view-eng view-url(resource)]
-                <a href="[val view-eng]" class="vrtx-link-check">[localized 'version-en']</a>
-              [endif]
-            [endif]
-          [elseif content-locale != null && content-locale = "en"]
-            [def resource resource(parent-uri + '/index.html')]
-            [if resource != null]
-              [def resource-uri resource-prop(resource, "uri")]
-              [def resource-content-locale resource-prop-obj-val(resource, "contentLocale")]
-              [if resource-uri != this-uri && (resource-content-locale = "no_NO" || resource-content-locale = "no_NO_NY")]
-                [def view-no view-url(resource)]
-                <a href="[val view-no]" class="vrtx-link-check">[localized 'version-no']</a>
-              [endif]
+      ##
+      <div class="academics-course-navigation">
+        [def this-uri resource-prop(".", "uri")]
+        [def parent-uri resource-prop("./", "uri")]
+        [def content-locale resource-prop-obj-val(".", "contentLocale")]
+        [if content-locale != null && (content-locale = "no_NO" || content-locale = "no_NO_NY")]
+          [def resource resource(parent-uri + '/index-eng.html')]
+          [if resource != null]
+            [def resource-uri resource-prop(resource, "uri")]
+            [def resource-content-locale resource-prop-obj-val(resource, "contentLocale")]
+            [if resource-uri != this-uri && resource-content-locale = "en"]
+              [def view-eng view-url(resource)]
+              <a href="[val view-eng]" class="vrtx-link-check">[localized 'version-en']</a>
             [endif]
           [endif]
-        </div>
-        ##
+        [elseif content-locale != null && content-locale = "en"]
+          [def resource resource(parent-uri + '/index.html')]
+          [if resource != null]
+            [def resource-uri resource-prop(resource, "uri")]
+            [def resource-content-locale resource-prop-obj-val(resource, "contentLocale")]
+            [if resource-uri != this-uri && (resource-content-locale = "no_NO" || resource-content-locale = "no_NO_NY")]
+              [def view-no view-url(resource)]
+              <a href="[val view-no]" class="vrtx-link-check">[localized 'version-no']</a>
+            [endif]
+          [endif]
+        [endif]
+      </div>
+      ##
     }
 
     academics-course-toc (document) {
-        ##
-        [def put-dash null]
-        [def course-content document.properties.course-content]
-        [if course-content != null && course-content != ""]
+      ##
+      [def put-dash null]
+      [def course-content document.properties.course-content]
+      [if course-content != null && course-content != ""]
+        [def put-dash ""]
+        <a href="#course-content" class="vrtx-link-check">[localized 'course-content']</a>
+      [endif]
+      [def learning-outcomes document.properties.learning-outcomes]
+      [if learning-outcomes != null && learning-outcomes != ""]
+        [if put-dash != null]
+          -
+        [else]
           [def put-dash ""]
-          <a href="#course-content" class="vrtx-link-check">[localized 'course-content']</a>
         [endif]
-        [def learning-outcomes document.properties.learning-outcomes]
-        [if learning-outcomes != null && learning-outcomes != ""]
-          [if put-dash != null]
-            -
-          [else]
-            [def put-dash ""]
-          [endif]
-          <a href="#learning-outcomes" class="vrtx-link-check">[localized 'learning-outcomes']</a>
+        <a href="#learning-outcomes" class="vrtx-link-check">[localized 'learning-outcomes']</a>
+      [endif]
+      [def opptak-og-adgang document.properties.opptak-og-adgang]
+      [def opptak-og-adgang-text-field document.properties.opptak-og-adgang-text-field]
+      [if (opptak-og-adgang-text-field != null && opptak-og-adgang-text-field != "") || (opptak-og-adgang != null && opptak-og-adgang != "" && opptak-og-adgang != "ingen-fellestekst")]
+        [if put-dash != null]
+          -
+        [else]
+          [def put-dash ""]
         [endif]
-        [def opptak-og-adgang document.properties.opptak-og-adgang]
-        [def opptak-og-adgang-text-field document.properties.opptak-og-adgang-text-field]
-        [if (opptak-og-adgang-text-field != null && opptak-og-adgang-text-field != "") || (opptak-og-adgang != null && opptak-og-adgang != "" && opptak-og-adgang != "ingen-fellestekst")]
-          [if put-dash != null]
-            -
-          [else]
-            [def put-dash ""]
-          [endif]
-          <a href="#opptak-og-adgang" class="vrtx-link-check">[localized 'opptak-og-adgang-group']</a>
+        <a href="#opptak-og-adgang" class="vrtx-link-check">[localized 'opptak-og-adgang-group']</a>
+      [endif]
+      [def ikke-privatist document.properties.ikke-privatist]
+      [def ikke-privatist-text-field document.properties.ikke-privatist-text-field]
+      [if (ikke-privatist-text-field != null && ikke-privatist-text-field != "") || (ikke-privatist != null && ikke-privatist != "" && ikke-privatist != "ingen-fellestekst")]
+        [if put-dash != null]
+          -
+        [else]
+          [def put-dash ""]
         [endif]
-        [def ikke-privatist document.properties.ikke-privatist]
-        [def ikke-privatist-text-field document.properties.ikke-privatist-text-field]
-        [if (ikke-privatist-text-field != null && ikke-privatist-text-field != "") || (ikke-privatist != null && ikke-privatist != "" && ikke-privatist != "ingen-fellestekst")]
-          [if put-dash != null]
-            -
-          [else]
-            [def put-dash ""]
-          [endif]
-          <a href="#ikke-privatist" class="vrtx-link-check">[localized 'ikke-privatist-group']</a>
+        <a href="#ikke-privatist" class="vrtx-link-check">[localized 'ikke-privatist-group']</a>
+      [endif]
+      [def obligatoriske-forkunnskaper document.properties.obligatoriske-forkunnskaper]
+      [def obligatoriske-forkunnskaper-text-field document.properties.obligatoriske-forkunnskaper-text-field]
+      [if (obligatoriske-forkunnskaper-text-field != null && obligatoriske-forkunnskaper-text-field != "") || (obligatoriske-forkunnskaper != null && obligatoriske-forkunnskaper != "" && obligatoriske-forkunnskaper != "ingen-fellestekst")]
+        [if put-dash != null]
+          -
+        [else]
+          [def put-dash ""]
         [endif]
-        [def obligatoriske-forkunnskaper document.properties.obligatoriske-forkunnskaper]
-        [def obligatoriske-forkunnskaper-text-field document.properties.obligatoriske-forkunnskaper-text-field]
-        [if (obligatoriske-forkunnskaper-text-field != null && obligatoriske-forkunnskaper-text-field != "") || (obligatoriske-forkunnskaper != null && obligatoriske-forkunnskaper != "" && obligatoriske-forkunnskaper != "ingen-fellestekst")]
-          [if put-dash != null]
-            -
-          [else]
-            [def put-dash ""]
-          [endif]
-          <a href="#obligatoriske-forkunnskaper" class="vrtx-link-check">[localized 'obligatoriske-forkunnskaper-group']</a>
+        <a href="#obligatoriske-forkunnskaper" class="vrtx-link-check">[localized 'obligatoriske-forkunnskaper-group']</a>
+      [endif]
+      [def tidsrom-for-undervisning document.properties.tidsrom-for-undervisning]
+      [def teaching-text-field document.properties.teaching-text-field]
+      [def adgang document.properties.adgang]
+      [if (teaching-text-field != null && teaching-text-field != "") || (tidsrom-for-undervisning != null && tidsrom-for-undervisning != "" && tidsrom-for-undervisning != "ingen-fellestekst") || (adgang != null && adgang != "" && adgang != "ingen-fellestekst")]
+        [if put-dash != null]
+          -
+        [else]
+          [def put-dash ""]
         [endif]
-        [def tidsrom-for-undervisning document.properties.tidsrom-for-undervisning]
-        [def teaching-text-field document.properties.teaching-text-field]
-        [def adgang document.properties.adgang]
-        [if (teaching-text-field != null && teaching-text-field != "") || (tidsrom-for-undervisning != null && tidsrom-for-undervisning != "" && tidsrom-for-undervisning != "ingen-fellestekst") || (adgang != null && adgang != "" && adgang != "ingen-fellestekst")]
-          [if put-dash != null]
-            -
-          [else]
-            [def put-dash ""]
-          [endif]
-          <a href="#teaching" class="vrtx-link-check">[localized 'teaching-group']</a>
+        <a href="#teaching" class="vrtx-link-check">[localized 'teaching-group']</a>
+      [endif]
+      [def vurdering-og-eksamen document.properties.vurdering-og-eksamen]
+      [def vurdering-og-eksamen-text-field document.properties.vurdering-og-eksamen-text-field]
+      [if (vurdering-og-eksamen-text-field != null && vurdering-og-eksamen-text-field != "") || (vurdering-og-eksamen != null && vurdering-og-eksamen != "" && vurdering-og-eksamen != "ingen-fellestekst")]
+        [if put-dash != null]
+          -
+        [else]
+          [def put-dash ""]
         [endif]
-        [def vurdering-og-eksamen document.properties.vurdering-og-eksamen]
-        [def vurdering-og-eksamen-text-field document.properties.vurdering-og-eksamen-text-field]
-        [if (vurdering-og-eksamen-text-field != null && vurdering-og-eksamen-text-field != "") || (vurdering-og-eksamen != null && vurdering-og-eksamen != "" && vurdering-og-eksamen != "ingen-fellestekst")]
-          [if put-dash != null]
-            -
-          [else]
-            [def put-dash ""]
-          [endif]
-          <a href="#vurdering-og-eksamen" class="vrtx-link-check">[localized 'vurdering-og-eksamen-group']</a>
+        <a href="#vurdering-og-eksamen" class="vrtx-link-check">[localized 'vurdering-og-eksamen-group']</a>
+      [endif]
+      [def hjelpemidler document.properties.hjelpemidler]
+      [def hjelpemidler-text-field document.properties.hjelpemidler-text-field]
+      [if (hjelpemidler-text-field != null && hjelpemidler-text-field != "") || (hjelpemidler != null && hjelpemidler != "" && hjelpemidler != "ingen-fellestekst")]
+        [if put-dash != null]
+          -
+        [else]
+          [def put-dash ""]
         [endif]
-        [def hjelpemidler document.properties.hjelpemidler]
-        [def hjelpemidler-text-field document.properties.hjelpemidler-text-field]
-        [if (hjelpemidler-text-field != null && hjelpemidler-text-field != "") || (hjelpemidler != null && hjelpemidler != "" && hjelpemidler != "ingen-fellestekst")]
-          [if put-dash != null]
-            -
-          [else]
-            [def put-dash ""]
-          [endif]
-          <a href="#hjelpemidler" class="vrtx-link-check">[localized 'hjelpemidler-group']</a>
+        <a href="#hjelpemidler" class="vrtx-link-check">[localized 'hjelpemidler-group']</a>
+      [endif]
+      [def eksamensspraak document.properties.eksamensspraak]
+      [def eksamensspraak-text-field document.properties.eksamensspraak-text-field]
+      [if (eksamensspraak-text-field != null && eksamensspraak-text-field != "") || (eksamensspraak != null && eksamensspraak != "" && eksamensspraak != "ingen-fellestekst")]
+        [if put-dash != null]
+          -
+        [else]
+          [def put-dash ""]
         [endif]
-        [def eksamensspraak document.properties.eksamensspraak]
-        [def eksamensspraak-text-field document.properties.eksamensspraak-text-field]
-        [if (eksamensspraak-text-field != null && eksamensspraak-text-field != "") || (eksamensspraak != null && eksamensspraak != "" && eksamensspraak != "ingen-fellestekst")]
-          [if put-dash != null]
-            -
-          [else]
-            [def put-dash ""]
-          [endif]
-          <a href="#eksamensspraak" class="vrtx-link-check">[localized 'eksamensspraak-group']</a>
+        <a href="#eksamensspraak" class="vrtx-link-check">[localized 'eksamensspraak-group']</a>
+      [endif]
+      [def sensur document.properties.sensur]
+      [def sensur-text-field document.properties.sensur-text-field]
+      [if (sensur-text-field != null && sensur-text-field != "") || (sensur != null && sensur != "" && sensur != "ingen-fellestekst")]
+        [if put-dash != null]
+          -
+        [else]
+          [def put-dash ""]
         [endif]
-        [def sensur document.properties.sensur]
-        [def sensur-text-field document.properties.sensur-text-field]
-        [if (sensur-text-field != null && sensur-text-field != "") || (sensur != null && sensur != "" && sensur != "ingen-fellestekst")]
-          [if put-dash != null]
-            -
-          [else]
-            [def put-dash ""]
-          [endif]
-          <a href="#sensur" class="vrtx-link-check">[localized 'sensur-group']</a>
+        <a href="#sensur" class="vrtx-link-check">[localized 'sensur-group']</a>
+      [endif]
+      [def tilsynssensor document.properties.tilsynssensor]
+      [def tilsynssensor-text-field document.properties.tilsynssensor-text-field]
+      [if (tilsynssensor-text-field != null && tilsynssensor-text-field != "") || (tilsynssensor != null && tilsynssensor != "" && tilsynssensor != "ingen-fellestekst")]
+        [if put-dash != null]
+          -
+        [else]
+          [def put-dash ""]
         [endif]
-        [def tilsynssensor document.properties.tilsynssensor]
-        [def tilsynssensor-text-field document.properties.tilsynssensor-text-field]
-        [if (tilsynssensor-text-field != null && tilsynssensor-text-field != "") || (tilsynssensor != null && tilsynssensor != "" && tilsynssensor != "ingen-fellestekst")]
-          [if put-dash != null]
-            -
-          [else]
-            [def put-dash ""]
-          [endif]
-          <a href="#tilsynssensor" class="vrtx-link-check">[localized 'tilsynssensor-group']</a>
+        <a href="#tilsynssensor" class="vrtx-link-check">[localized 'tilsynssensor-group']</a>
+      [endif]
+      [def klage document.properties.klage]
+      [def klage-text-field document.properties.klage-text-field]
+      [if (klage-text-field != null && klage-text-field != "") || (klage != null && klage != "" && klage != "ingen-fellestekst")]
+        [if put-dash != null]
+          -
+        [else]
+          [def put-dash ""]
         [endif]
-        [def klage document.properties.klage]
-        [def klage-text-field document.properties.klage-text-field]
-        [if (klage-text-field != null && klage-text-field != "") || (klage != null && klage != "" && klage != "ingen-fellestekst")]
-          [if put-dash != null]
-            -
-          [else]
-            [def put-dash ""]
-          [endif]
-          <a href="#klage" class="vrtx-link-check">[localized 'klage-group']</a>
+        <a href="#klage" class="vrtx-link-check">[localized 'klage-group']</a>
+      [endif]
+      [def ny-utsatt-eksamen document.properties.ny-utsatt-eksamen]
+      [def ny-utsatt-eksamen-text-field document.properties.ny-utsatt-eksamen-text-field]
+      [if (ny-utsatt-eksamen-text-field != null && ny-utsatt-eksamen-text-field != "") || (ny-utsatt-eksamen != null && ny-utsatt-eksamen != "" && ny-utsatt-eksamen != "ingen-fellestekst")]
+        [if put-dash != null]
+          - 
+        [else]
+          [def put-dash ""]
         [endif]
-        [def ny-utsatt-eksamen document.properties.ny-utsatt-eksamen]
-        [def ny-utsatt-eksamen-text-field document.properties.ny-utsatt-eksamen-text-field]
-        [if (ny-utsatt-eksamen-text-field != null && ny-utsatt-eksamen-text-field != "") || (ny-utsatt-eksamen != null && ny-utsatt-eksamen != "" && ny-utsatt-eksamen != "ingen-fellestekst")]
-          [if put-dash != null]
-            - 
-          [else]
-            [def put-dash ""]
-          [endif]
-          <a href="#ny-utsatt-eksamen" class="vrtx-link-check">[localized 'ny-utsatt-eksamen-group']</a>
+        <a href="#ny-utsatt-eksamen" class="vrtx-link-check">[localized 'ny-utsatt-eksamen-group']</a>
+      [endif]
+      [def antall-forsok-trekk document.properties.antall-forsok-trekk]
+      [def antall-forsok-trekk-text-field document.properties.antall-forsok-trekk-text-field]
+      [if (antall-forsok-trekk-text-field != null && antall-forsok-trekk-text-field != "") || (antall-forsok-trekk != null && antall-forsok-trekk != "" && antall-forsok-trekk != "ingen-fellestekst")]
+        [if put-dash != null]
+          -
+        [else]
+          [def put-dash ""]
         [endif]
-        [def antall-forsok-trekk document.properties.antall-forsok-trekk]
-        [def antall-forsok-trekk-text-field document.properties.antall-forsok-trekk-text-field]
-        [if (antall-forsok-trekk-text-field != null && antall-forsok-trekk-text-field != "") || (antall-forsok-trekk != null && antall-forsok-trekk != "" && antall-forsok-trekk != "ingen-fellestekst")]
-          [if put-dash != null]
-            -
-          [else]
-            [def put-dash ""]
-          [endif]
-          <a href="#antall-forsok-trekk" class="vrtx-link-check">[localized 'antall-forsok-trekk-group']</a>
+        <a href="#antall-forsok-trekk" class="vrtx-link-check">[localized 'antall-forsok-trekk-group']</a>
+      [endif]
+      [def tilrettelagt-eksamen document.properties.tilrettelagt-eksamen]
+      [def tilrettelagt-eksamen-text-field document.properties.tilrettelagt-eksamen-text-field]
+      [if (tilrettelagt-eksamen-text-field != null && tilrettelagt-eksamen-text-field != "") || (tilrettelagt-eksamen != null && tilrettelagt-eksamen != "" && tilrettelagt-eksamen != "ingen-fellestekst")]
+        [if put-dash != null]
+          -
+        [else]
+          [def put-dash ""]
         [endif]
-        [def tilrettelagt-eksamen document.properties.tilrettelagt-eksamen]
-        [def tilrettelagt-eksamen-text-field document.properties.tilrettelagt-eksamen-text-field]
-        [if (tilrettelagt-eksamen-text-field != null && tilrettelagt-eksamen-text-field != "") || (tilrettelagt-eksamen != null && tilrettelagt-eksamen != "" && tilrettelagt-eksamen != "ingen-fellestekst")]
-          [if put-dash != null]
-            -
-          [else]
-            [def put-dash ""]
-          [endif]
-          <a href="#tilrettelagt-eksamen" class="vrtx-link-check">[localized 'tilrettelagt-eksamen-group']</a>
+        <a href="#tilrettelagt-eksamen" class="vrtx-link-check">[localized 'tilrettelagt-eksamen-group']</a>
+      [endif]
+      [def evaluering-av-emnet document.properties.evaluering-av-emnet]
+      [def evaluering-av-emnet-text-field document.properties.evaluering-av-emnet-text-field]
+      [if (evaluering-av-emnet-text-field != null && evaluering-av-emnet-text-field != "") || (evaluering-av-emnet != null && evaluering-av-emnet != "" && evaluering-av-emnet != "ingen-fellestekst")]
+        [if put-dash != null]
+          -
+        [else]
+          [def put-dash ""]
         [endif]
-        [def evaluering-av-emnet document.properties.evaluering-av-emnet]
-        [def evaluering-av-emnet-text-field document.properties.evaluering-av-emnet-text-field]
-        [if (evaluering-av-emnet-text-field != null && evaluering-av-emnet-text-field != "") || (evaluering-av-emnet != null && evaluering-av-emnet != "" && evaluering-av-emnet != "ingen-fellestekst")]
-          [if put-dash != null]
-            -
-          [else]
-            [def put-dash ""]
-          [endif]
-          <a href="#evaluering-av-emnet" class="vrtx-link-check">[localized 'evaluering-av-emnet-group']</a>
+        <a href="#evaluering-av-emnet" class="vrtx-link-check">[localized 'evaluering-av-emnet-group']</a>
+      [endif]
+      [def other-text-field document.properties.other-text-field]
+      [if other-text-field != null && evaluering-av-emnet-text-field != ""]
+        [if put-dash != null]
+          -
         [endif]
-        [def other-text-field document.properties.other-text-field]
-        [if other-text-field != null && evaluering-av-emnet-text-field != ""]
-          [if put-dash != null]
-            -
-          [endif]
-          <a href="#other" class="vrtx-link-check">[localized 'other-text-field']</a>
-        [endif]
-        ##
+        <a href="#other" class="vrtx-link-check">[localized 'other-text-field']</a>
+      [endif]
+      ##
     }
 
     academics-course (document) {
-        ##
-        [def course-content document.properties.course-content]
-        [if course-content != null && course-content != ""]
-          <div id="course-content">
-            [val course-content # unescaped]
-          </div>
-        [endif]
-        [def learning-outcomes document.properties.learning-outcomes]
-        [if learning-outcomes != null && learning-outcomes != ""]
-          <div id="learning-outcomes">
-            [val learning-outcomes # unescaped]
-          </div>
-        [endif]
-        [def opptak-og-adgang document.properties.opptak-og-adgang]
-        [def opptak-og-adgang-text-field document.properties.opptak-og-adgang-text-field]
-        [if (opptak-og-adgang-text-field != null && opptak-og-adgang-text-field != "") || (opptak-og-adgang != null && opptak-og-adgang != "" && opptak-og-adgang != "ingen-fellestekst")]
-          <div id="opptak-og-adgang">[localized opptak-og-adgang]</a>
-            [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"opptak-og-adgang"}]
-            [if opptak-og-adgang-text-field != null && opptak-og-adgang-text-field != ""]
-              [val opptak-og-adgang-text-field # unescaped]
-            [endif]
-          </div>
-        [endif]
-        [def ikke-privatist document.properties.ikke-privatist]
-        [def ikke-privatist-text-field document.properties.ikke-privatist-text-field]
-        [if (ikke-privatist-text-field != null && ikke-privatist-text-field != "") || (ikke-privatist != null && ikke-privatist != "" && ikke-privatist != "ingen-fellestekst")]
-          <div id="ikke-privatist">
-            [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"ikke-privatist"}]
-            [if ikke-privatist-text-field != null && ikke-privatist-text-field != ""]
-              [val ikke-privatist-text-field # unescaped]
-            [endif]
-          </div>
-        [endif]
-        [def obligatoriske-forkunnskaper document.properties.obligatoriske-forkunnskaper]
-        [def obligatoriske-forkunnskaper-text-field document.properties.obligatoriske-forkunnskaper-text-field]
-        [if (obligatoriske-forkunnskaper-text-field != null && obligatoriske-forkunnskaper-text-field != "") || (obligatoriske-forkunnskaper != null && obligatoriske-forkunnskaper != "" && obligatoriske-forkunnskaper != "ingen-fellestekst")]
-          <div id="obligatoriske-forkunnskaper">
-            [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"obligatoriske-forkunnskaper"}]
-            [if obligatoriske-forkunnskaper-text-field != null && obligatoriske-forkunnskaper-text-field != ""]
-              [val obligatoriske-forkunnskaper-text-field # unescaped]
-            [endif]
-          </div>
-        [endif]
-        [def tidsrom-for-undervisning document.properties.tidsrom-for-undervisning]
-        [def teaching-text-field document.properties.teaching-text-field]
-        [def adgang document.properties.adgang]
-        [if (teaching-text-field != null && teaching-text-field != "") || (tidsrom-for-undervisning != null && tidsrom-for-undervisning != "" && tidsrom-for-undervisning != "ingen-fellestekst") || (adgang != null && adgang != "" && adgang != "ingen-fellestekst")]
-          <div id="teaching">
-            [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"tidsrom-for-undervisning"}]
-            [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"adgang"}]
-            [if teaching-text-field != null && teaching-text-field != ""]
-              [val teaching-text-field # unescaped]
-            [endif]
-          </div>
-        [endif]
-        [def vurdering-og-eksamen document.properties.vurdering-og-eksamen]
-        [def vurdering-og-eksamen-text-field document.properties.vurdering-og-eksamen-text-field]
-        [if (vurdering-og-eksamen-text-field != null && vurdering-og-eksamen-text-field != "") || (vurdering-og-eksamen != null && vurdering-og-eksamen != "" && vurdering-og-eksamen != "ingen-fellestekst")]
-          <div id="vurdering-og-eksamen">
-            [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"vurdering-og-eksamen"}]
-            [if vurdering-og-eksamen-text-field != null && vurdering-og-eksamen-text-field != ""]
-              [val vurdering-og-eksamen-text-field # unescaped]
-            [endif]
-          </div
-        [endif]
-        [def hjelpemidler document.properties.hjelpemidler]
-        [def hjelpemidler-text-field document.properties.hjelpemidler-text-field]
-        [if (hjelpemidler-text-field != null && hjelpemidler-text-field != "") || (hjelpemidler != null && hjelpemidler != "" && hjelpemidler != "ingen-fellestekst")]
-          <div id="hjelpemidler">
-            [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"hjelpemidler"}]
-            [if hjelpemidler-text-field != null && hjelpemidler-text-field != ""]
-              [val hjelpemidler-text-field # unescaped]
-            [endif]
-          </div>
-        [endif]
-        [def eksamensspraak document.properties.eksamensspraak]
-        [def eksamensspraak-text-field document.properties.eksamensspraak-text-field]
-        [if (eksamensspraak-text-field != null && eksamensspraak-text-field != "") || (eksamensspraak != null && eksamensspraak != "" && eksamensspraak != "ingen-fellestekst")]
-          <div id="eksamensspraak">
-            [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"eksamensspraak"}]
-            [if eksamensspraak-text-field != null && eksamensspraak-text-field != ""]
-              [val eksamensspraak-text-field # unescaped]
-            [endif]
-          </div>
-        [endif]
-        [def sensur document.properties.sensur]
-        [def sensur-text-field document.properties.sensur-text-field]
-        [if (sensur-text-field != null && sensur-text-field != "") || (sensur != null && sensur != "" && sensur != "ingen-fellestekst")]
-          <div id="sensur">
-            [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"sensur"}]
-            [if sensur-text-field != null && sensur-text-field != ""]
-              [val sensur-text-field # unescaped]
-            [endif]
-          </div>
-        [endif]
-        [def tilsynssensor document.properties.tilsynssensor]
-        [def tilsynssensor-text-field document.properties.tilsynssensor-text-field]
-        [if (tilsynssensor-text-field != null && tilsynssensor-text-field != "") || (tilsynssensor != null && tilsynssensor != "" && tilsynssensor != "ingen-fellestekst")]
-          <div id="tilsynssensor">
-            [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"tilsynssensor"}]
-            [if tilsynssensor-text-field != null && tilsynssensor-text-field != ""]
-              [val tilsynssensor-text-field # unescaped]
-            [endif]
-          </div>
-        [endif]
-        [def klage document.properties.klage]
-        [def klage-text-field document.properties.klage-text-field]
-        [if (klage-text-field != null && klage-text-field != "") || (klage != null && klage != "" && klage != "ingen-fellestekst")]
-          <div id="klage">
-            [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"klage"}]
-            [if klage-text-field != null && klage-text-field != ""]
-              [val klage-text-field # unescaped]
-            [endif]
-          </div>
-        [endif]
-        [def ny-utsatt-eksamen document.properties.ny-utsatt-eksamen]
-        [def ny-utsatt-eksamen-text-field document.properties.ny-utsatt-eksamen-text-field]
-        [if (ny-utsatt-eksamen-text-field != null && ny-utsatt-eksamen-text-field != "") || (ny-utsatt-eksamen != null && ny-utsatt-eksamen != "" && ny-utsatt-eksamen != "ingen-fellestekst")]
-          <div id="ny-utsatt-eksamen">
-            [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"ny-utsatt-eksamen"}]
-            [if ny-utsatt-eksamen-text-field != null && ny-utsatt-eksamen-text-field != ""]
-              [val ny-utsatt-eksamen-text-field # unescaped]
-            [endif]
-          </div>
-        [endif]
-        [def antall-forsok-trekk document.properties.antall-forsok-trekk]
-        [def antall-forsok-trekk-text-field document.properties.antall-forsok-trekk-text-field]
-        [if (antall-forsok-trekk-text-field != null && antall-forsok-trekk-text-field != "") || (antall-forsok-trekk != null && antall-forsok-trekk != "" && antall-forsok-trekk != "ingen-fellestekst")]
-          <div id="antall-forsok-trekk">
-            [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"antall-forsok-trekk"}]
-            [if antall-forsok-trekk-text-field != null && antall-forsok-trekk-text-field != ""]
-              [val antall-forsok-trekk-text-field # unescaped]
-            [endif]
-          </div>
-        [endif]
-        [def tilrettelagt-eksamen document.properties.tilrettelagt-eksamen]
-        [def tilrettelagt-eksamen-text-field document.properties.tilrettelagt-eksamen-text-field]
-        [if (tilrettelagt-eksamen-text-field != null && tilrettelagt-eksamen-text-field != "") || (tilrettelagt-eksamen != null && tilrettelagt-eksamen != "" && tilrettelagt-eksamen != "ingen-fellestekst")]
-          <div id="tilrettelagt-eksamen">
-            [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"tilrettelagt-eksamen"}]
-            [if tilrettelagt-eksamen-text-field != null && tilrettelagt-eksamen-text-field != ""]
-              [val tilrettelagt-eksamen-text-field # unescaped]
-            [endif]
-          </div>
-        [endif]
-        [def evaluering-av-emnet document.properties.evaluering-av-emnet]
-        [def evaluering-av-emnet-text-field document.properties.evaluering-av-emnet-text-field]
-        [if (evaluering-av-emnet-text-field != null && evaluering-av-emnet-text-field != "") || (evaluering-av-emnet != null && evaluering-av-emnet != "" && evaluering-av-emnet != "ingen-fellestekst")]
-          <div id="evaluering-av-emnet">
-            [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"evaluering-av-emnet"}]
-            [if evaluering-av-emnet-text-field != null && evaluering-av-emnet-text-field != ""]
-              [val evaluering-av-emnet-text-field # unescaped]
-            [endif]
-          </div>
-        [endif]
-        [def other-text-field document.properties.other-text-field]
-        [if other-text-field != null && other-text-field != ""]
-          <div id="other">
-            [val other-text-field # unescaped]
-          </div>
-        [endif]
-        ##
+      ##
+      [def course-content document.properties.course-content]
+      [if course-content != null && course-content != ""]
+        <div id="course-content">
+          [val course-content # unescaped]
+        </div>
+      [endif]
+      [def learning-outcomes document.properties.learning-outcomes]
+      [if learning-outcomes != null && learning-outcomes != ""]
+        <div id="learning-outcomes">
+          [val learning-outcomes # unescaped]
+        </div>
+      [endif]
+      [def opptak-og-adgang document.properties.opptak-og-adgang]
+      [def opptak-og-adgang-text-field document.properties.opptak-og-adgang-text-field]
+      [if (opptak-og-adgang-text-field != null && opptak-og-adgang-text-field != "") || (opptak-og-adgang != null && opptak-og-adgang != "" && opptak-og-adgang != "ingen-fellestekst")]
+        <div id="opptak-og-adgang">[localized opptak-og-adgang]</a>
+          [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"opptak-og-adgang"}]
+          [if opptak-og-adgang-text-field != null && opptak-og-adgang-text-field != ""]
+            [val opptak-og-adgang-text-field # unescaped]
+          [endif]
+        </div>
+      [endif]
+      [def ikke-privatist document.properties.ikke-privatist]
+      [def ikke-privatist-text-field document.properties.ikke-privatist-text-field]
+      [if (ikke-privatist-text-field != null && ikke-privatist-text-field != "") || (ikke-privatist != null && ikke-privatist != "" && ikke-privatist != "ingen-fellestekst")]
+        <div id="ikke-privatist">
+          [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"ikke-privatist"}]
+          [if ikke-privatist-text-field != null && ikke-privatist-text-field != ""]
+            [val ikke-privatist-text-field # unescaped]
+          [endif]
+        </div>
+      [endif]
+      [def obligatoriske-forkunnskaper document.properties.obligatoriske-forkunnskaper]
+      [def obligatoriske-forkunnskaper-text-field document.properties.obligatoriske-forkunnskaper-text-field]
+      [if (obligatoriske-forkunnskaper-text-field != null && obligatoriske-forkunnskaper-text-field != "") || (obligatoriske-forkunnskaper != null && obligatoriske-forkunnskaper != "" && obligatoriske-forkunnskaper != "ingen-fellestekst")]
+        <div id="obligatoriske-forkunnskaper">
+          [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"obligatoriske-forkunnskaper"}]
+          [if obligatoriske-forkunnskaper-text-field != null && obligatoriske-forkunnskaper-text-field != ""]
+            [val obligatoriske-forkunnskaper-text-field # unescaped]
+          [endif]
+        </div>
+      [endif]
+      [def tidsrom-for-undervisning document.properties.tidsrom-for-undervisning]
+      [def teaching-text-field document.properties.teaching-text-field]
+      [def adgang document.properties.adgang]
+      [if (teaching-text-field != null && teaching-text-field != "") || (tidsrom-for-undervisning != null && tidsrom-for-undervisning != "" && tidsrom-for-undervisning != "ingen-fellestekst") || (adgang != null && adgang != "" && adgang != "ingen-fellestekst")]
+        <div id="teaching">
+          [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"tidsrom-for-undervisning"}]
+          [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"adgang"}]
+          [if teaching-text-field != null && teaching-text-field != ""]
+            [val teaching-text-field # unescaped]
+          [endif]
+        </div>
+      [endif]
+      [def vurdering-og-eksamen document.properties.vurdering-og-eksamen]
+      [def vurdering-og-eksamen-text-field document.properties.vurdering-og-eksamen-text-field]
+      [if (vurdering-og-eksamen-text-field != null && vurdering-og-eksamen-text-field != "") || (vurdering-og-eksamen != null && vurdering-og-eksamen != "" && vurdering-og-eksamen != "ingen-fellestekst")]
+        <div id="vurdering-og-eksamen">
+          [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"vurdering-og-eksamen"}]
+          [if vurdering-og-eksamen-text-field != null && vurdering-og-eksamen-text-field != ""]
+            [val vurdering-og-eksamen-text-field # unescaped]
+          [endif]
+        </div
+      [endif]
+      [def hjelpemidler document.properties.hjelpemidler]
+      [def hjelpemidler-text-field document.properties.hjelpemidler-text-field]
+      [if (hjelpemidler-text-field != null && hjelpemidler-text-field != "") || (hjelpemidler != null && hjelpemidler != "" && hjelpemidler != "ingen-fellestekst")]
+        <div id="hjelpemidler">
+          [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"hjelpemidler"}]
+          [if hjelpemidler-text-field != null && hjelpemidler-text-field != ""]
+            [val hjelpemidler-text-field # unescaped]
+          [endif]
+        </div>
+      [endif]
+      [def eksamensspraak document.properties.eksamensspraak]
+      [def eksamensspraak-text-field document.properties.eksamensspraak-text-field]
+      [if (eksamensspraak-text-field != null && eksamensspraak-text-field != "") || (eksamensspraak != null && eksamensspraak != "" && eksamensspraak != "ingen-fellestekst")]
+        <div id="eksamensspraak">
+          [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"eksamensspraak"}]
+          [if eksamensspraak-text-field != null && eksamensspraak-text-field != ""]
+            [val eksamensspraak-text-field # unescaped]
+          [endif]
+        </div>
+      [endif]
+      [def sensur document.properties.sensur]
+      [def sensur-text-field document.properties.sensur-text-field]
+      [if (sensur-text-field != null && sensur-text-field != "") || (sensur != null && sensur != "" && sensur != "ingen-fellestekst")]
+        <div id="sensur">
+          [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"sensur"}]
+          [if sensur-text-field != null && sensur-text-field != ""]
+            [val sensur-text-field # unescaped]
+          [endif]
+        </div>
+      [endif]
+      [def tilsynssensor document.properties.tilsynssensor]
+      [def tilsynssensor-text-field document.properties.tilsynssensor-text-field]
+      [if (tilsynssensor-text-field != null && tilsynssensor-text-field != "") || (tilsynssensor != null && tilsynssensor != "" && tilsynssensor != "ingen-fellestekst")]
+        <div id="tilsynssensor">
+          [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"tilsynssensor"}]
+          [if tilsynssensor-text-field != null && tilsynssensor-text-field != ""]
+            [val tilsynssensor-text-field # unescaped]
+          [endif]
+        </div>
+      [endif]
+      [def klage document.properties.klage]
+      [def klage-text-field document.properties.klage-text-field]
+      [if (klage-text-field != null && klage-text-field != "") || (klage != null && klage != "" && klage != "ingen-fellestekst")]
+         <div id="klage">
+          [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"klage"}]
+          [if klage-text-field != null && klage-text-field != ""]
+            [val klage-text-field # unescaped]
+          [endif]
+        </div>
+      [endif]
+      [def ny-utsatt-eksamen document.properties.ny-utsatt-eksamen]
+      [def ny-utsatt-eksamen-text-field document.properties.ny-utsatt-eksamen-text-field]
+      [if (ny-utsatt-eksamen-text-field != null && ny-utsatt-eksamen-text-field != "") || (ny-utsatt-eksamen != null && ny-utsatt-eksamen != "" && ny-utsatt-eksamen != "ingen-fellestekst")]
+        <div id="ny-utsatt-eksamen">
+           [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"ny-utsatt-eksamen"}]
+          [if ny-utsatt-eksamen-text-field != null && ny-utsatt-eksamen-text-field != ""]
+            [val ny-utsatt-eksamen-text-field # unescaped]
+          [endif]
+        </div>
+      [endif]
+      [def antall-forsok-trekk document.properties.antall-forsok-trekk]
+      [def antall-forsok-trekk-text-field document.properties.antall-forsok-trekk-text-field]
+      [if (antall-forsok-trekk-text-field != null && antall-forsok-trekk-text-field != "") || (antall-forsok-trekk != null && antall-forsok-trekk != "" && antall-forsok-trekk != "ingen-fellestekst")]
+        <div id="antall-forsok-trekk">
+          [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"antall-forsok-trekk"}]
+          [if antall-forsok-trekk-text-field != null && antall-forsok-trekk-text-field != ""]
+            [val antall-forsok-trekk-text-field # unescaped]
+          [endif]
+        </div>
+      [endif]
+      [def tilrettelagt-eksamen document.properties.tilrettelagt-eksamen]
+      [def tilrettelagt-eksamen-text-field document.properties.tilrettelagt-eksamen-text-field]
+      [if (tilrettelagt-eksamen-text-field != null && tilrettelagt-eksamen-text-field != "") || (tilrettelagt-eksamen != null && tilrettelagt-eksamen != "" && tilrettelagt-eksamen != "ingen-fellestekst")]
+        <div id="tilrettelagt-eksamen">
+          [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"tilrettelagt-eksamen"}]
+          [if tilrettelagt-eksamen-text-field != null && tilrettelagt-eksamen-text-field != ""]
+            [val tilrettelagt-eksamen-text-field # unescaped]
+          [endif]
+        </div>
+      [endif]
+      [def evaluering-av-emnet document.properties.evaluering-av-emnet]
+      [def evaluering-av-emnet-text-field document.properties.evaluering-av-emnet-text-field]
+      [if (evaluering-av-emnet-text-field != null && evaluering-av-emnet-text-field != "") || (evaluering-av-emnet != null && evaluering-av-emnet != "" && evaluering-av-emnet != "ingen-fellestekst")]
+        <div id="evaluering-av-emnet">
+          [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"evaluering-av-emnet"}]
+          [if evaluering-av-emnet-text-field != null && evaluering-av-emnet-text-field != ""]
+            [val evaluering-av-emnet-text-field # unescaped]
+          [endif]
+        </div>
+      [endif]
+      [def other-text-field document.properties.other-text-field]
+      [if other-text-field != null && other-text-field != ""]
+        <div id="other">
+          [val other-text-field # unescaped]
+        </div>
+      [endif]
+      ##
     }
 
     statusmessage {
-        ##
-        [def course-status resource-prop-obj-val(".", "courseContext.course-status")]
-        [def course-continued-as resource-prop(".", "courseContext.course-continued-as")]
-        [if course-status != null]
-          [if course-status = "continued-as"]
-            <h2 class="statusmessage">[localized 'continued-as'] [if course-continued-as != null && course-continued-as != ""][call "include:ref" {"referencetype" : "emne", "id" : course-continued-as}][endif]</h2>
-          [elseif course-status = "discontinued-course"]
-            <h2 class="statusmessage">[localized 'discontinued-course']</h2>
-          [elseif course-status = "earlier-version"]
-            [def resource resource("./../")]
-            [if resource != null]
-              [def url view-url(resource)]
-              <h2 class="statusmessage">[localized 'earlier-version-start'] <a href="[val url]">[localized 'earlier-version-link']</a> [localized 'earlier-version-end']</h2>
-            [endif]
+      ##
+      [def course-status resource-prop-obj-val(".", "courseContext.course-status")]
+      [def course-continued-as resource-prop(".", "courseContext.course-continued-as")]
+      [if course-status != null]
+        [if course-status = "continued-as"]
+          <h2 class="statusmessage">[localized 'continued-as'] [if course-continued-as != null && course-continued-as != ""][call "include:ref" {"referencetype" : "emne", "id" : course-continued-as}][endif]</h2>
+        [elseif course-status = "discontinued-course"]
+          <h2 class="statusmessage">[localized 'discontinued-course']</h2>
+        [elseif course-status = "earlier-version"]
+          [def resource resource("./../")]
+          [if resource != null]
+            [def url view-url(resource)]
+            <h2 class="statusmessage">[localized 'earlier-version-start'] <a href="[val url]">[localized 'earlier-version-link']</a> [localized 'earlier-version-end']</h2>
           [endif]
         [endif]
-        ##
+      [endif]
+      ##
     }
 
   }

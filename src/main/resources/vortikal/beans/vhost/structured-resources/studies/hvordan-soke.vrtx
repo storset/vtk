@@ -388,6 +388,7 @@ view {
 		nn: ("all" = "Alle", "so" = "Grunnstudium", "nm" = "Norsk master", "em" = "Engelsk master")
 	}
   }
+  
   localization {
   
   	typeToDisplay : (en : "Programme type", no : "Programtype", nn : "Programtype"),

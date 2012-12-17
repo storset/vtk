@@ -13,7 +13,6 @@ resourcetype ub-mapping {
 
     mappings {
       ##
-      [resource-props "."]
       [def document structured-document()]
       [def mappings document.properties.mappings]
       [if mappings != null]
@@ -42,7 +41,7 @@ resourcetype ub-mapping {
         <title>[call "resource:property" {"id":"title"}]</title>
       </head>
       <body id="vrtx-ub-mappings">
-         [call "comp:mappings"]
+        [call "comp:mappings"]
       </body>
     </html>
     ##

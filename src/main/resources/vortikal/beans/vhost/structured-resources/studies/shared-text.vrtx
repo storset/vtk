@@ -10,61 +10,60 @@ resourcetype shared-text {
     description-nn (size[small]),
     description-no (size[small]),
     group descriptions (description-en, description-no, description-nn) (after id) horizontal
-   }
+  }
 
- view-components {    
+  view-components {    
 
-      shared-text-box {
-        ##
-        [resource-props "."]
-        [def document structured-document()]
-        [def boxes document.properties.shared-text-box]
-        [if boxes != null]
+    shared-text-box {
+      ##
+      [def document structured-document()]
+      [def boxes document.properties.shared-text-box]
+      [if boxes != null]
         
-          [list boxes box]
-             [def title box.title]
-             [def description-en box.description-en]
-             [def description-no box.description-no]
-             [def description-nn box.description-nn]
-             [def id box.id]
+        [list boxes box]
+          [def title box.title]
+          [def description-en box.description-en]
+          [def description-no box.description-no]
+          [def description-nn box.description-nn]
+          [def id box.id]
              
-             [def number _index + 1]
-             <div class="vrtx-shared-text-title">
-             [if title != null && title != ""]
-               <h2>[val title # unescaped]</h2>
-             [endif]  
-             </div>          
+          [def number _index + 1]
+          <div class="vrtx-shared-text-title">
+            [if title != null && title != ""]
+              <h2>[val title # unescaped]</h2>
+            [endif]
+          </div>
 
-             [if id != null && id != ""]
-               <div class="vrtx-shared-text-box" id="[val id]">
-               (ID: [val id])
-             [else]
-             <div class="vrtx-shared-text-box">
-             [endif]
-
-             <div class="vrtx-shared-text-description">
-               [if description-en != null && description-en != ""]
-                 [val description-en # unescaped]
-               [endif]
-             </div>
+          [if id != null && id != ""]
+            <div class="vrtx-shared-text-box" id="[val id]">
+            (ID: [val id])
+          [else]
+            <div class="vrtx-shared-text-box">
+          [endif]
              
-             <div class="vrtx-shared-text-description">
-               [if description-no != null && description-no != ""]
-                 [val description-no # unescaped]
-               [endif]
-             </div>
+            <div class="vrtx-shared-text-description">
+              [if description-en != null && description-en != ""]
+                [val description-en # unescaped]
+              [endif]
+            </div>
              
-             <div class="vrtx-shared-text-description">
-               [if description-nn != null && description-nn != ""]
-                 [val description-nn # unescaped]
-               [endif]
-             </div>
+            <div class="vrtx-shared-text-description">
+              [if description-no != null && description-no != ""]
+                [val description-no # unescaped]
+              [endif]
+            </div>
              
-             </div>
-          [endlist]
-        [endif]
-        ##
-      }
+            <div class="vrtx-shared-text-description">
+              [if description-nn != null && description-nn != ""]
+                [val description-nn # unescaped]
+              [endif]
+            </div>
+               
+          </div>
+       [endlist]
+    [endif]
+    ##
+    }
   }
   
   view {
@@ -75,11 +74,11 @@ resourcetype shared-text {
         <title></title>
       </head>
       <body id="vrtx-shared-text">
-          <div id="vrtx-content">
-            <div id="vrtx-main-content">
-              [call "comp:shared-text-box"]
-            </div>
+        <div id="vrtx-content">
+          <div id="vrtx-main-content">
+            [call "comp:shared-text-box"]
           </div>
+        </div>
       </body>
     </html>
     ##

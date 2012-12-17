@@ -104,7 +104,7 @@ resourcetype semester-page : fellestekst-document {
       [endif]
       ##
     }
-    
+
   }
 
   view {
@@ -186,11 +186,11 @@ resourcetype semester-page : fellestekst-document {
   
   vocabulary {
     messages-placement {
-       en : ("middle" = "Show in middle", "right" = "Show in right column"),
-       no : ("middle" = "Vis i midten", "right" = "Vis i høyrespalten"),
-       nn : ("middle" = "Vis i midten", "right" = "Vis i høyrespalten")
-     },
-     fronter {
+      en : ("middle" = "Show in middle", "right" = "Show in right column"),
+      no : ("middle" = "Vis i midten", "right" = "Vis i høyrespalten"),
+      nn : ("middle" = "Vis i midten", "right" = "Vis i høyrespalten")
+    },
+    fronter {
       en : ("true" = "Yes", "false" = "No"),
       no : ("true" = "Ja", "false" = "Nei"),
       nn : ("true" = "Ja", "false" = "Nei")

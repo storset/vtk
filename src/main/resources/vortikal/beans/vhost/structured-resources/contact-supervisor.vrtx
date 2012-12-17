@@ -6,50 +6,48 @@ resourcetype contact-supervisor {
   }
   
   view-components {
-      title {
-        ##
-        [def v resource-prop(".", "title")]
+    title {
+      ##
+      [def v resource-prop(".", "title")]
+      [if v != null]
         [val v]
-        ##
-      }
+      [endif]
+      ##
+    }
       
-      contact-supervisor-box {
-        ##
-        [resource-props "."]
-        [def document structured-document()]
-        [def boxes document.properties.contact-supervisor-box]
-        [if boxes != null]
-        
-          [list boxes box]
-             [def title box.boxTitle]
-             [def description box.description]
-             [def contactInfo box.contactInfo]
-             [def id box.id]
+    contact-supervisor-box {
+      ##
+      [def document structured-document()]
+      [def boxes document.properties.contact-supervisor-box]
+      [if boxes != null]
+        [list boxes box]
+          [def title box.boxTitle]
+          [def description box.description]
+          [def contactInfo box.contactInfo]
+          [def id box.id]
              
-             [def number _index + 1]
+          [def number _index + 1]
              
-             [if id != null && id != ""]
-               <div class="vrtx-contact-supervisor-box" id="[val id]">
-             [else]
-              <div class="vrtx-contact-supervisor-box">
-             [endif]
-
-             <div class="vrtx-contact-supervisor-description" id="vrtx-contact-supervisor-description-[val number]">
-               [if description != null && description != ""]
-                 [val description # unescaped]
-               [endif]
-             </div>
-               
-             <div class="vrtx-contact-supervisor-contact-info" id="vrtx-contact-supervisor-contact-info-[val number]">
-               [if contactInfo != null && contactInfo != ""]
-                 [val contactInfo # unescaped]
-               [endif]
-             </div>
-             </div>
-          [endlist]
-        [endif]
-        ##
-      }
+          [if id != null && id != ""]
+            <div class="vrtx-contact-supervisor-box" id="[val id]">
+          [else]
+            <div class="vrtx-contact-supervisor-box">
+          [endif]
+              <div class="vrtx-contact-supervisor-description" id="vrtx-contact-supervisor-description-[val number]">
+                [if description != null && description != ""]
+                  [val description # unescaped]
+                [endif]
+              </div>
+              <div class="vrtx-contact-supervisor-contact-info" id="vrtx-contact-supervisor-contact-info-[val number]">
+                [if contactInfo != null && contactInfo != ""]
+                [val contactInfo # unescaped]
+                [endif]
+              </div>
+          </div>
+        [endlist]
+      [endif]
+      ##
+    }
   }
   
   view {
@@ -60,12 +58,12 @@ resourcetype contact-supervisor {
         <title>[call "comp:title"]</title>
       </head>
       <body id="vrtx-contact-supervisor">
-          <div id="vrtx-content">
-            <div id="vrtx-main-content">
-              <h1>[call "comp:title"]</h1>
-              [call "comp:contact-supervisor-box"]
-            </div>
+        <div id="vrtx-content">
+          <div id="vrtx-main-content">
+            <h1>[call "comp:title"]</h1>
+            [call "comp:contact-supervisor-box"]
           </div>
+        </div>
       </body>
     </html>
     ##

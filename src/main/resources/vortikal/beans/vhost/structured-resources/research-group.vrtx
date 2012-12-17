@@ -49,7 +49,6 @@ resourcetype research-group {
     
    related-content-in-additional-column {
       ##
-      [resource-props "."]
       [def document structured-document()]
       [def theRelated-content document.properties.related-content]
       [if theRelated-content != null]
@@ -70,28 +69,28 @@ resourcetype research-group {
       [def photographer null]
       [def style null]
       
-     [if img-uri != null]   
-         [def img resource(img-uri)]      
+      [if img-uri != null]   
+        [def img resource(img-uri)]      
       [endif]
       [if img != null] 
         [def pixel-width resource-prop(img-uri, "pixelWidth")]
         [def photographer resource-prop(img-uri, "photographer")]
-       [endif]
-       [if pixel-width != null]
+      [endif]
+      [if pixel-width != null]
         [def style concat("width:", pixel-width, "px")]
-     [endif]
+      [endif]
      
-     [if img-uri != null]
+      [if img-uri != null]
         [if pixel-width != null]  
-        <div class="vrtx-introduction-image" style="[val style]">
+          <div class="vrtx-introduction-image" style="[val style]">
         [else]
-        <div class="vrtx-introduction-image">
+          <div class="vrtx-introduction-image">
         [endif]
         
         [if caption != null]
-        <img src="[val img-uri]" alt="[val caption # unescaped 'flattened']"/>
+          <img src="[val img-uri]" alt="[val caption # unescaped 'flattened']"/>
         [else]
-         <img src="[val img-uri]" alt="[localized 'introduction-image-alt']"/>
+          <img src="[val img-uri]" alt="[localized 'introduction-image-alt']"/>
         [endif]
      
         [if caption != null]
@@ -105,29 +104,27 @@ resourcetype research-group {
           </div>
         [elseif photographer != null]
           <div class="vrtx-imagetext">
-          [if photographer != null]
-             <span class="vrtx-photo">
-               <span class="vrtx-photo-prefix">[localized "photo-prefix"]: </span>[val photographer]
-             </span>
-          [endif]
+            <span class="vrtx-photo">
+              <span class="vrtx-photo-prefix">[localized "photo-prefix"]: </span>[val photographer]
+            </span>
           </div> 
         [endif]
         </div>
-     [endif]
+      [endif]
       ##
     }
     
     contact-info {
-       ##
-       [resource-props "."]
-       [def document structured-document()]
-       [def contactinfo document.properties.contactInfo]
-       [if contactinfo != null]
-         <div class="vrtx-research-contactinfo vrtx-frontpage-box">
-           <h2>[localized "contactInfoView"]</h2>
-            [val contactinfo # unescaped]
-         </div>
-       [endif]
+      ##
+      [resource-props "."]
+      [def document structured-document()]
+      [def contactinfo document.properties.contactInfo]
+      [if contactinfo != null]
+        <div class="vrtx-research-contactinfo vrtx-frontpage-box">
+          <h2>[localized "contactInfoView"]</h2>
+          [val contactinfo # unescaped]
+        </div>
+      [endif]
       ##
     }
     
@@ -139,16 +136,16 @@ resourcetype research-group {
         [def feeds document.properties.rssFeeds]
         [if feeds != null]
           [list feeds feed]
-              [def thetitle feed.rssTitle]
-              [def theurl feed.rssUrl]
+            [def thetitle feed.rssTitle]
+            [def theurl feed.rssUrl]
               
-              [if theurl != null && theurl != ""]         
-                [if thetitle != null && thetitle != ""]
-                  [call "include:feed" {"url":theurl, "override-feed-title":thetitle, "feed-title":true, "max-messages":3, "include-if-empty":false}]
-                [else]
-                  [call "include:feed" {"url":theurl, "feed-title":true, "max-messages":3, "include-if-empty":false}]
-                [endif]
+            [if theurl != null && theurl != ""]         
+              [if thetitle != null && thetitle != ""]
+                [call "include:feed" {"url":theurl, "override-feed-title":thetitle, "feed-title":true, "max-messages":3, "include-if-empty":false}]
+              [else]
+                [call "include:feed" {"url":theurl, "feed-title":true, "max-messages":3, "include-if-empty":false}]
               [endif]
+            [endif]
           [endlist]
         [endif]
       [endif]
@@ -171,11 +168,11 @@ resourcetype research-group {
 
     related-projects {
       ##
-        [def document structured-document()]
-        [def listRelatedProjects document.properties.listRelatedProjects]
-        [if listRelatedProjects = "true"]
-          [call "resource:projects-related-to-group"]
-        [endif]
+      [def document structured-document()]
+      [def listRelatedProjects document.properties.listRelatedProjects]
+      [if listRelatedProjects = "true"]
+        [call "resource:projects-related-to-group"]
+      [endif]
       ##
     }
 
@@ -220,7 +217,7 @@ resourcetype research-group {
       en : (range = "0..25,30,35,40,45,50"),
       no : (range = "0..25,30,35,40,45,50"),
       nn : (range = "0..25,30,35,40,45,50")
-    }
+    },
     listRelatedProjects{
       en : ("true" = "Yes", "false" = "No"),
       no : ("true" = "Ja", "false" = "Nei"),

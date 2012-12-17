@@ -67,74 +67,75 @@ resourcetype organizational-unit {
     
     contact-information {
       ##
-        [resource-props "."]
+      [resource-props "."]
 
-        [def getExternal resource-prop-obj-val(".", "getExternalUnitInfo")]
-        [if getExternal = true && externalUnitMetaData = null]
-          [localized 'no-external-unit-metadata']
-        [else]
+      [def getExternal resource-prop-obj-val(".", "getExternalUnitInfo")]
+      [if getExternal = true && externalUnitMetaData = null]
+        [localized 'no-external-unit-metadata']
+      [else]
+        <div class="vcard">
+          [if title != null]
+            <span class="fn org" style="display:none">[val title]</span>
+          [endif]
         
-          <div class="vcard">
-            [if title != null]
-              <span class="fn org" style="display:none">[val title]</span>
-            [endif]
-            [if postalAddress != null && postalAddress != ""]
-              <span class="vrtx-organizational-unit-postal-address adr">
-                <span class="vrtx-label">[localized "postalAddress"]</span>
-                [list postalAddress postalAddressLine]
-                  <span class="vrtx-address-line">[if postalAddressLine != null][val postalAddressLine][endif]</span>
-                [endlist]
-              </span>
-            [endif]
-            [if visitingAddress != null && visitingAddress != ""]
-              <span class="vrtx-organizational-unit-visiting-address adr">
-                <span class="vrtx-label">[localized "visitingAddress"]</span>
-                [list visitingAddress visitingAddressLine]
-                  <span class="vrtx-address-line">[if visitingAddressLine != null][val visitingAddressLine][endif]</span>
-                [endlist]
-              </span>
-            [endif]
+          [if postalAddress != null && postalAddress != ""]
+            <span class="vrtx-organizational-unit-postal-address adr">
+            <span class="vrtx-label">[localized "postalAddress"]</span>
+            [list postalAddress postalAddressLine]
+              <span class="vrtx-address-line">[if postalAddressLine != null][val postalAddressLine][endif]</span>
+            [endlist]
+            </span>
+          [endif]
+        
+          [if visitingAddress != null && visitingAddress != ""]
+            <span class="vrtx-organizational-unit-visiting-address adr">
+              <span class="vrtx-label">[localized "visitingAddress"]</span>
+              [list visitingAddress visitingAddressLine]
+                <span class="vrtx-address-line">[if visitingAddressLine != null][val visitingAddressLine][endif]</span>
+              [endlist]
+            </span>
+          [endif]
             
-            [if (phone != null && phone != "") || (fax != null && fax != "")]
-              <span class="vrtx-organizational-unit-phone-fax">
-                [if phone != null && phone != ""]
-                  <span class="vrtx-organizational-unit-phone">
-                    <span class="vrtx-label">[localized 'phone']:</span> <span class="tel"><span class="type" style="display: none">Work</span><span class="value">[val phone]</span></span>
-                  </span>
-                [endif]
-                [if fax != null && fax != ""]
-                  <span class="vrtx-organizational-unit-fax">
-                    <span class="vrtx-label">[localized 'fax']:</span> <span class="tel"><span class="type" style="display: none">Fax</span><span class="value">[val fax]</span></span>
-                  </span>
-                [endif]
-              </span>
-            [endif]
+          [if (phone != null && phone != "") || (fax != null && fax != "")]
+            <span class="vrtx-organizational-unit-phone-fax">
+              [if phone != null && phone != ""]
+                <span class="vrtx-organizational-unit-phone">
+                  <span class="vrtx-label">[localized 'phone']:</span> <span class="tel"><span class="type" style="display: none">Work</span><span class="value">[val phone]</span></span>
+                </span>
+              [endif]
+              [if fax != null && fax != ""]
+                <span class="vrtx-organizational-unit-fax">
+                  <span class="vrtx-label">[localized 'fax']:</span> <span class="tel"><span class="type" style="display: none">Fax</span><span class="value">[val fax]</span></span>
+                </span>
+              [endif]
+            </span>
+          [endif]
               
-            [if email != null]
-              <span class="vrtx-organizational-unit-email">
-                <span class="vrtx-label">[localized 'email']:</span> 
-                [list email anEmail]
-                  [if anEmail.length() < 25]
-                     <a href="mailto:[val anEmail]"><span class="email">[val anEmail]</span></a>
+          [if email != null]
+            <span class="vrtx-organizational-unit-email">
+              <span class="vrtx-label">[localized 'email']:</span> 
+              [list email anEmail]
+                [if anEmail.length() < 25]
+                  <a href="mailto:[val anEmail]"><span class="email">[val anEmail]</span></a>
+                [else]
+                  [def emailSplit anEmail.split("@")]
+                  [if emailSplit.length() = 2]
+                    <a href="mailto:[val anEmail]"><span class="email">[val emailSplit.0]@ [val emailSplit.1]</span></a>
                   [else]
-                    [def emailSplit anEmail.split("@")]
-                    [if emailSplit.length() = 2]
-                       <a href="mailto:[val anEmail]"><span class="email">[val emailSplit.0]@ [val emailSplit.1]</span></a>
-                    [else]
-                       <a href="mailto:[val anEmail]"><span class="email">[val emailSplit.0]</span></a>
-                    [endif]
+                    <a href="mailto:[val anEmail]"><span class="email">[val emailSplit.0]</span></a>
                   [endif]
-                [endlist]
-              </span>
-            [endif]
-        
-            [if areacode != null && areacode != ""]
-              <span class="vrtx-organizational-unit-areacode">
-                <span class="vrtx-label">[localized 'areacode']:</span> <span class="areacode">[val areacode]</span>
-              </span>
-            [endif]
-          </div>
-        [endif]
+                [endif]
+              [endlist]
+            </span>
+          [endif]
+       
+          [if areacode != null && areacode != ""]
+            <span class="vrtx-organizational-unit-areacode">
+              <span class="vrtx-label">[localized 'areacode']:</span> <span class="areacode">[val areacode]</span>
+            </span>
+          [endif]
+        </div>
+      [endif]
       ##
     }
     
@@ -169,25 +170,25 @@ resourcetype organizational-unit {
       [def style null]
       
       [if img-uri != null]
-         [def img resource(img-uri)]
+        [def img resource(img-uri)]
       [endif]
       [if img != null]
-         [def pixel-width resource-prop(img-uri, "pixelWidth")]
-         [def photographer resource-prop(img-uri, "photographer")]
+        [def pixel-width resource-prop(img-uri, "pixelWidth")]
+        [def photographer resource-prop(img-uri, "photographer")]
       [endif]
       [if pixel-width != null]
-         [def style concat("width:", pixel-width, "px")]
+        [def style concat("width:", pixel-width, "px")]
       [endif]
      
-     [if img-uri != null]
+      [if img-uri != null]
         [if pixel-width != null]
-         <div class="vrtx-introduction-image" style="[val style]">
+          <div class="vrtx-introduction-image" style="[val style]">
         [else]
-         <div class="vrtx-introduction-image">
+          <div class="vrtx-introduction-image">
         [endif]
-        <img src="[val img-uri]" alt="[localized 'introduction-image-alt']"/>
+          <img src="[val img-uri]" alt="[localized 'introduction-image-alt']"/>
         </div>
-     [endif]
+      [endif]
       ##
     }
 
@@ -228,15 +229,14 @@ resourcetype organizational-unit {
     
     subunits {
       ##
-      [resource-props "."]
       [def areacode resource-prop(".", "areacode")]
       [def document structured-document()]
       [def subsubunits document.properties.showExtendedUnitList]
-      	[if subsubunits = "false" || subsubunits = null]
-	       [call "resource:org-unit-subunits" {"areacode":areacode} ]
-	    [else]
-	       [call "resource:org-unit-subunits" {"areacode":areacode, "display-subsubunits":"true"} ]
-	    [endif]
+      [if subsubunits = "false" || subsubunits = null]
+	    [call "resource:org-unit-subunits" {"areacode":areacode} ]
+	  [else]
+	    [call "resource:org-unit-subunits" {"areacode":areacode, "display-subsubunits":"true"} ]
+	  [endif]
       ##
     }
     
@@ -255,9 +255,6 @@ resourcetype organizational-unit {
       <body id="vrtx-organizational-unit">
         <div id="vrtx-content">
         [resources-props "."]
-        [def introduction resource-prop(".", "introduction")]
-        [def responsibilities resource-prop(".", "responsibilities")]
-        [def picture resource-prop(".", "picture")]
         [def document structured-document()]
         [def subsubunits document.properties.showExtendedUnitList]
         [if subsubunits = "true"]
@@ -268,11 +265,11 @@ resourcetype organizational-unit {
               [call "comp:contact-information"]
             </div>
             [if introduction != null || responsibilities != null || picture != null]
-            <div class="vrtx-frontpage-box white-box" id="vrtx-organizational-unit-main">  
-              [call "comp:introduction-image"]
-              [call "comp:introduction"]
-              [call "comp:responsibilities"]
-            </div>
+              <div class="vrtx-frontpage-box white-box" id="vrtx-organizational-unit-main">  
+                [call "comp:introduction-image"]
+                [call "comp:introduction"]
+                [call "comp:responsibilities"]
+              </div>
             [endif]
             [call "comp:subunits"]
             [call "comp:employees"]
@@ -320,7 +317,7 @@ resourcetype organizational-unit {
        en : ("true" = "Yes", "false" = "No"),
        no : ("true" = "Ja", "false" = "Nei"),
        nn : ("true" = "Ja", "false" = "Nei")
-     }
+     },
      displayEmployees {
        en : ("true" = "Yes", "false" = "No"),
        no : ("true" = "Ja", "false" = "Nei"),

@@ -61,11 +61,11 @@ resourcetype structured-article : structured-document {
       [def theRelated-content document.properties.related-content]
       
       [if (theshowAdditionalContent = "false")]
-          [if theRelated-content != null]
-            <div id="vrtx-related-content">
-              [val theRelated-content # unescaped]
-            </div>
-          [endif]
+        [if theRelated-content != null]
+          <div id="vrtx-related-content">
+            [val theRelated-content # unescaped]
+          </div>
+        [endif]
       [endif]
       ##
     }

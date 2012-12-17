@@ -23,7 +23,6 @@ resourcetype frontpage {
   
     main-content(document) {
       ##
-      [resource-props "."]
       [def boxes document.properties.main-content]
       [if boxes != null]
         [list boxes box]
@@ -104,21 +103,21 @@ resourcetype frontpage {
                 [endif]
               [endif]
             </div>
-            [endif]
-            [if content != null && content != ""]
-              <div class="vrtx-box-content">
-                [val content # unescaped]
-              </div>
-            [endif]
-            [if urlText != null && urlText != ""]
-              <div class="vrtx-more">
+          [endif]
+          [if content != null && content != ""]
+            <div class="vrtx-box-content">
+              [val content # unescaped]
+            </div>
+          [endif]
+          [if urlText != null && urlText != ""]
+            <div class="vrtx-more">
               [if url != null && url != ""]
                 <span><a href="[val url]">[val urlText]</a></span>
               [else]
                 <span>[val urlText]</span>
               [endif]
-              </div>
-            [endif]
+            </div>
+          [endif]
           </div>
         [endlist]
       [endif]
@@ -127,108 +126,107 @@ resourcetype frontpage {
     
     additional-content(document, main-content) {
       ##
-      [resource-props "."]
       [def boxes document.properties.additional-content]
       [def theShowAdditionalContent document.properties.showAdditionalContent]
       [if (theShowAdditionalContent = "true" && main-content = "false")
        || (theShowAdditionalContent = null && main-content = "false")  
        || (theShowAdditionalContent = "false" && main-content = "true")]
-      [if boxes != null]
-        [if main-content = "false"]
-          <div id="vrtx-additional-content">
-        [endif]
-          [list boxes box]
-            [def type box.boxType]
-            [def title box.boxTitle]
-            [def picture box.boxPicture]
-            [def content box.boxContent]
-            [def url box.boxUrl]
-            [def urlText box.boxUrlText]
-            [def number _index + 1]
-             
-            [def cssClasses ""]
+        [if boxes != null]
+          [if main-content = "false"]
+            <div id="vrtx-additional-content">
+          [endif]
+            [list boxes box]
+              [def type box.boxType]
+              [def title box.boxTitle]
+              [def picture box.boxPicture]
+              [def content box.boxContent]
+              [def url box.boxUrl]
+              [def urlText box.boxUrlText]
+              [def number _index + 1]
+              
+              [def cssClasses ""]
 
-            [if urlText != null && urlText != ""]
-            [else]
-              [def cssClasses concat(cssClasses, "vrtx-more-false")]
-            [endif]
-            [if main-content = "true"]
-              [if cssClasses != ""] [def cssClasses concat(cssClasses, " ")] [endif]
-              [def cssClasses concat(cssClasses, "white-box")]
-            [endif]
-            [if title != null && title != ""]
-            [else]
-              [if cssClasses != ""] [def cssClasses concat(cssClasses, " ")] [endif]
-              [def cssClasses concat(cssClasses, "vrtx-header-false")]
-            [endif]
-            [if (urlText = "" || urlText = null) && (content = "" || content = null) 
-             && (picture = "" || picture = null) && (title != null && title != "")]
-              [if cssClasses != ""] [def cssClasses concat(cssClasses, " ")] [endif]
-              [def cssClasses concat(cssClasses, "vrtx-only-title")]
-            [endif]
-            [if type != null && type != ""]
-              [if cssClasses != ""] [def cssClasses concat(cssClasses, " ")] [endif]
-              [def cssClasses concat(cssClasses, type)]
-            [endif]
-            [if number = 1]
-              [if cssClasses != ""] [def cssClasses concat(cssClasses, " ")] [endif]
-              [def cssClasses concat(cssClasses, "vrtx-additional-content-first")]           
-            [endif]
-            [if number = _size]
-              [if cssClasses != ""] [def cssClasses concat(cssClasses, " ")] [endif]
-              [def cssClasses concat(cssClasses, "vrtx-additional-content-last")]
-            [endif]    
-
-            [if cssClasses != null && cssClasses != ""]
-              <div class="vrtx-frontpage-box [val cssClasses]" id="vrtx-additional-content-[val number]">
-            [else]
-              <div class="vrtx-frontpage-box" id="vrtx-additional-content-[val number]">
-            [endif]
-              [if title != null && title != ""]
-                [if url != null && url != ""]
-                  <h2><a href="[val url]">[val title]</a></h2>
-                [else]
-                  <h2>[val title]</h2>
-                [endif]
+              [if urlText != null && urlText != ""]
+              [else]
+                [def cssClasses concat(cssClasses, "vrtx-more-false")]
               [endif]
-              [if picture != null && picture != ""]
-                <div class="vrtx-frontpage-box-picture">
+              [if main-content = "true"]
+                [if cssClasses != ""] [def cssClasses concat(cssClasses, " ")] [endif]
+                [def cssClasses concat(cssClasses, "white-box")]
+              [endif]
+              [if title != null && title != ""]
+              [else]
+                [if cssClasses != ""] [def cssClasses concat(cssClasses, " ")] [endif]
+                [def cssClasses concat(cssClasses, "vrtx-header-false")]
+              [endif]
+              [if (urlText = "" || urlText = null) && (content = "" || content = null) 
+               && (picture = "" || picture = null) && (title != null && title != "")]
+                [if cssClasses != ""] [def cssClasses concat(cssClasses, " ")] [endif]
+                [def cssClasses concat(cssClasses, "vrtx-only-title")]
+              [endif]
+              [if type != null && type != ""]
+                [if cssClasses != ""] [def cssClasses concat(cssClasses, " ")] [endif]
+                [def cssClasses concat(cssClasses, type)]
+              [endif]
+              [if number = 1]
+                [if cssClasses != ""] [def cssClasses concat(cssClasses, " ")] [endif]
+                [def cssClasses concat(cssClasses, "vrtx-additional-content-first")]           
+              [endif]
+              [if number = _size]
+                [if cssClasses != ""] [def cssClasses concat(cssClasses, " ")] [endif]
+                [def cssClasses concat(cssClasses, "vrtx-additional-content-last")]
+              [endif]    
+
+              [if cssClasses != null && cssClasses != ""]
+                <div class="vrtx-frontpage-box [val cssClasses]" id="vrtx-additional-content-[val number]">
+              [else]
+                <div class="vrtx-frontpage-box" id="vrtx-additional-content-[val number]">
+              [endif]
+                [if title != null && title != ""]
                   [if url != null && url != ""]
-                    <a href="[val url]">
+                    <h2><a href="[val url]">[val title]</a></h2>
+                  [else]
+                    <h2>[val title]</h2>
+                  [endif]
+                [endif]
+                [if picture != null && picture != ""]
+                  <div class="vrtx-frontpage-box-picture">
+                    [if url != null && url != ""]
+                      <a href="[val url]">
+                        [if title != null && title != ""]
+                          <img src="[val picture]" alt="[val title]" />
+                        [else]
+                          <img src="[val picture]" alt="[val picture]" />
+                        [endif]
+                      </a>
+                    [else]
                       [if title != null && title != ""]
                         <img src="[val picture]" alt="[val title]" />
                       [else]
                         <img src="[val picture]" alt="[val picture]" />
                       [endif]
-                    </a>
-                  [else]
-                    [if title != null && title != ""]
-                      <img src="[val picture]" alt="[val title]" />
-                    [else]
-                      <img src="[val picture]" alt="[val picture]" />
                     [endif]
-                  [endif]
-                </div>
-              [endif]
-              [if content != null && content != ""]
-                <div class="vrtx-box-content">
-                  [val content # unescaped]
-                </div>
-              [endif]
-              [if urlText != null && urlText != ""]
-                <div class="vrtx-more">
-                [if url != null && url != ""]
-                  <span><a href="[val url]">[val urlText]</a></span>
-                [else]
-                  <span>[val urlText]</span>
+                  </div>
                 [endif]
-                </div>
-              [endif]
+                [if content != null && content != ""]
+                  <div class="vrtx-box-content">
+                    [val content # unescaped]
+                  </div>
+                [endif]
+                [if urlText != null && urlText != ""]
+                  <div class="vrtx-more">
+                  [if url != null && url != ""]
+                    <span><a href="[val url]">[val urlText]</a></span>
+                  [else]
+                   <span>[val urlText]</span>
+                  [endif]
+                  </div>
+                [endif]
+              </div>
+            [endlist]
+          [if main-content = "false"]
             </div>
-          [endlist]
-        [if main-content = "false"]
-        </div>
-        [endif]
+          [endif]
         [endif]
       [endif]
       ##
@@ -254,28 +252,18 @@ resourcetype frontpage {
     
     frontpage-introduction {
       ##
-      [def intro resource-prop(".", "introduction")]
-      [def img-uri resource-prop(".", "picture")]
-      [def caption resource-prop(".", "caption")]
-      
-      [if (img-uri != null && img-uri != "") || (intro != null && intro != "")]
-      
-      <div id="vrtx-frontpage-introduction">
-            
-        [if img-uri != null]
-          [def img resource(img-uri)]
-        
+      [resource-props "."]
+      [if (picture != null && picture != "") || (introduction != null && introduction != "")]
+        <div id="vrtx-frontpage-introduction">  
+        [if picture != null]
+          [def img resource(picture)] 
           [if img != null]
-        
-            [def pixel-width resource-prop(img-uri, "pixelWidth")]
-          
+            [def pixel-width resource-prop(picture, "pixelWidth")]
             [if pixel-width != null]
               [def style concat("width:", pixel-width, "px")]
-              [def photographer resource-prop(img-uri, "photographer")]
-        
               [if caption != null]
                 <div class="vrtx-introduction-image" style="[val style]">
-                  <img src="[val img-uri]" alt="[val caption # unescaped 'flattened']"/>
+                  <img src="[val picture]" alt="[val caption # unescaped 'flattened']"/>
                   <div class="vrtx-imagetext">
                     <div class="vrtx-imagedescription">[val caption # unescaped]</div>
                     [if photographer != null]
@@ -288,7 +276,7 @@ resourcetype frontpage {
               [else]
                 [if photographer != null]
                   <div class="vrtx-introduction-image" style="[val style]">
-                    <img src="[val img-uri]" alt="[localized 'introduction-image-alt']" />
+                    <img src="[val picture]" alt="[localized 'introduction-image-alt']" />
                     <div class="vrtx-imagetext">
                       <span class="vrtx-photo">
                         <span class="vrtx-photo-prefix">[localized "photo-prefix"]: </span>[val photographer]
@@ -296,22 +284,21 @@ resourcetype frontpage {
                     </div>
                   </div>
                 [else]
-                  <img class="vrtx-introduction-image" src="[val img-uri]" alt="[localized 'introduction-image-alt']" />
+                  <img class="vrtx-introduction-image" src="[val picture]" alt="[localized 'introduction-image-alt']" />
                 [endif]
               [endif]
             [else]
-              <img class="vrtx-introduction-image" src="[val img-uri]" alt="[localized 'introduction-image-alt']" />
+              <img class="vrtx-introduction-image" src="[val picture]" alt="[localized 'introduction-image-alt']" />
             [endif]
           [else]
-            <img class="vrtx-introduction-image" src="[val img-uri]" alt="[localized 'introduction-image-alt']" />
+            <img class="vrtx-introduction-image" src="[val picture]" alt="[localized 'introduction-image-alt']" />
           [endif]
         [endif]
       
-        [if intro != null]
-          <div class="vrtx-introduction">[val intro # unescaped]</div>
+        [if introduction != null]
+          <div class="vrtx-introduction">[val introduction # unescaped]</div>
         [endif]
-
-      </div>
+        </div>
       [endif]
       ##
     }
@@ -327,7 +314,6 @@ resourcetype frontpage {
         <title>[call "comp:title"]</title>
       </head>
       <body id="vrtx-frontpage">
-        [resources-props "."]
         [def document structured-document()]
         [def theShowAdditionalContent document.properties.showAdditionalContent]
         [if theShowAdditionalContent = "true" || theShowAdditionalContent = null]

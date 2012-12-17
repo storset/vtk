@@ -36,7 +36,7 @@ resourcetype structured-master{
       [endif]
       ##
     }
-      introduction {
+    introduction {
       ##
       [def intro resource-prop(".", "introduction")]
       [if intro != null]
@@ -47,7 +47,6 @@ resourcetype structured-master{
   
     completed {
       ##
-      [resource-props "."]
       [def document structured-document()]
       [def available document.properties.status-available]
       [if (available = "false")]
@@ -58,7 +57,6 @@ resourcetype structured-master{
     
     completed-msg {
       ##
-      [resource-props "."]
       [def document structured-document()]
       [def available document.properties.status-available]
       [if (available = "false")]
@@ -69,7 +67,6 @@ resourcetype structured-master{
 
     related-content-in-additional-column {
       ##
-      [resource-props "."]
       [def document structured-document()]
       [def theRelated-content document.properties.related-content]
       [if theRelated-content != null]
@@ -125,11 +122,9 @@ resourcetype structured-master{
 	      </div>
 	    [elseif photographer != null]
 	      <div class="vrtx-imagetext">
-	        [if photographer != null]
-	          <span class="vrtx-photo">
-	            <span class="vrtx-photo-prefix">[localized "photo-prefix"]: </span>[val photographer]
-	          </span>
-	        [endif]
+	        <span class="vrtx-photo">
+	          <span class="vrtx-photo-prefix">[localized "photo-prefix"]: </span>[val photographer]
+	        </span>
 	      </div> 
 	    [endif]
 	    </div>
@@ -137,7 +132,7 @@ resourcetype structured-master{
       ##
     }
     
-     vrtx-date-info{
+    vrtx-date-info{
       ##
       [resource-props "."]
       [if publish-date != null]
@@ -185,17 +180,16 @@ resourcetype structured-master{
   }
   
   vocabulary {
-     status-available {
-       en : ("true" = "Available", "false" = "Not available"),
-       no : ("true" = "Tilgjengelig", "false" = "Ikke tilgjengelig"),
-       nn : ("true" = "Tilgjengeleg", "false" = "Ikkje tilgjengeleg")
-     }
+    status-available {
+      en : ("true" = "Available", "false" = "Not available"),
+      no : ("true" = "Tilgjengelig", "false" = "Ikke tilgjengelig"),
+      nn : ("true" = "Tilgjengeleg", "false" = "Ikkje tilgjengeleg")
+    },
 	credits {
-       en : (range = "60,45,30"),
-       no : (range = "60,45,30"),
-       nn : (range = "60,45,30")
-     }
-
+      en : (range = "60,45,30"),
+      no : (range = "60,45,30"),
+      nn : (range = "60,45,30")
+    }
   }
   
   localization {

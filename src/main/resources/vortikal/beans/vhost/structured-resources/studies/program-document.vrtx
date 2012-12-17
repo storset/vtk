@@ -30,13 +30,13 @@ resourcetype program-document {
       [def thestatus document.properties.status]
       [if thestatus != null && thestatus != "aktivt"]
         <div class="vrtx-program-status">
-        [if thestatus = "under-arbeid"]
-          [localized 'status-under-arbeid']
-		[elseif thestatus = "nedlagt"]
-          [localized 'status-nedlagt']
-        [else]
-	      [localized 'status-inactive']
-	    [endif]
+          [if thestatus = "under-arbeid"]
+            [localized 'status-under-arbeid']
+		  [elseif thestatus = "nedlagt"]
+            [localized 'status-nedlagt']
+          [else]
+	        [localized 'status-inactive']
+	      [endif]
         </div>
       [endif]
       ##
@@ -45,7 +45,7 @@ resourcetype program-document {
     introduction {      
       ##
       [def locale resource-locale()]  
-      [def thispath resource-prop("./","uri")]
+      [def thispath resource-prop("./", "uri")]
       [if locale = "en"]
         [def uri thispath + '/why-choose/index.html']
       [else]
@@ -158,28 +158,24 @@ resourcetype program-document {
     contact-box {
       ##
       [resource-props "."]
-      [def title resource-prop(".", "contactTitle")]
-      [def content resource-prop(".", "contactContent")]
-      [def urlText resource-prop(".", "contactLinkText")]
-      [def url resource-prop(".", "contactUrl")]         
-      [if title != null && title != ""]
+      [if contactTitle != null && contactTitle != ""]
         [if url != null && url != ""]
-          <h2><a href="[val url]">[val title]</a></h2>
+          <h2><a href="[val url]">[val contactTitle]</a></h2>
         [else]
-          <h2>[val title]</h2>
+          <h2>[val contactTitle]</h2>
         [endif]
       [endif]
-      [if content != null && content != ""]
+      [if contactContent != null && contactContent != ""]
         <div class="vrtx-box-content">
-          [val content # unescaped]
+          [val contactContent # unescaped]
         </div>
       [endif]
-      [if urlText != null && urlText != ""]
+      [if contactLinkText != null && contactLinkText != ""]
         <div class="vrtx-more">
           [if url != null && url != ""]
-            <span><a href="[val url]">[val urlText]</a></span>
+            <span><a href="[val url]">[val contactLinkText]</a></span>
           [else]
-            <span>[val urlText]</span>
+            <span>[val contactLinkText]</span>
           [endif]
         </div>
       [endif]
@@ -199,94 +195,94 @@ resourcetype program-document {
 
     additional-content(document, main-content) {
       ##
-      [resource-props "."]
       [def boxes document.properties.additional-content]
       [if boxes != null]
-          [list boxes box]
-            [def type box.boxType]
-            [def title box.boxTitle]
-            [def picture box.boxPicture]
-            [def content box.boxContent]
-            [def url box.boxUrl]
-            [def urlText box.boxUrlText]
-            [def number _index + 1]
-            [def cssClasses ""]
-            [if urlText != null && urlText != ""]
-            [else]
-              [def cssClasses concat(cssClasses, "vrtx-more-false")]
-            [endif]
-            [if main-content = "true"]
-              [if cssClasses != ""] [def cssClasses concat(cssClasses, " ")] [endif]
-              [def cssClasses concat(cssClasses, "white-box")]
-            [endif]
-            [if title != null && title != ""]
-            [else]
-              [if cssClasses != ""] [def cssClasses concat(cssClasses, " ")] [endif]
-              [def cssClasses concat(cssClasses, "vrtx-header-false")]
-            [endif]
-            [if (urlText = "" || urlText = null) && (content = "" || content = null) 
-             && (picture = "" || picture = null) && (title != null && title != "")]
-              [if cssClasses != ""] [def cssClasses concat(cssClasses, " ")] [endif]
-              [def cssClasses concat(cssClasses, "vrtx-only-title")]
-            [endif]
-            [if type != null && type != ""]
-              [if cssClasses != ""] [def cssClasses concat(cssClasses, " ")] [endif]
-              [def cssClasses concat(cssClasses, type)]
-            [endif]
-            [if number = 1]
-              [if cssClasses != ""] [def cssClasses concat(cssClasses, " ")] [endif]
-              [def cssClasses concat(cssClasses, "vrtx-additional-content-first")]           
-            [endif]
-            [if number = _size]
-              [if cssClasses != ""] [def cssClasses concat(cssClasses, " ")] [endif]
-              [def cssClasses concat(cssClasses, "vrtx-additional-content-last")]
-            [endif]    
+        [list boxes box]
+          [def type box.boxType]
+          [def title box.boxTitle]
+          [def picture box.boxPicture]
+          [def content box.boxContent]
+          [def url box.boxUrl]
+          [def urlText box.boxUrlText]
+          [def number _index + 1]
+          [def cssClasses ""]
+          
+          [if urlText != null && urlText != ""]
+          [else]
+            [def cssClasses concat(cssClasses, "vrtx-more-false")]
+          [endif]
+          [if main-content = "true"]
+            [if cssClasses != ""] [def cssClasses concat(cssClasses, " ")] [endif]
+            [def cssClasses concat(cssClasses, "white-box")]
+          [endif]
+          [if title != null && title != ""]
+          [else]
+            [if cssClasses != ""] [def cssClasses concat(cssClasses, " ")] [endif]
+            [def cssClasses concat(cssClasses, "vrtx-header-false")]
+          [endif]
+          [if (urlText = "" || urlText = null) && (content = "" || content = null) 
+           && (picture = "" || picture = null) && (title != null && title != "")]
+            [if cssClasses != ""] [def cssClasses concat(cssClasses, " ")] [endif]
+            [def cssClasses concat(cssClasses, "vrtx-only-title")]
+          [endif]
+          [if type != null && type != ""]
+            [if cssClasses != ""] [def cssClasses concat(cssClasses, " ")] [endif]
+            [def cssClasses concat(cssClasses, type)]
+          [endif]
+          [if number = 1]
+            [if cssClasses != ""] [def cssClasses concat(cssClasses, " ")] [endif]
+            [def cssClasses concat(cssClasses, "vrtx-additional-content-first")]           
+          [endif]
+          [if number = _size]
+            [if cssClasses != ""] [def cssClasses concat(cssClasses, " ")] [endif]
+            [def cssClasses concat(cssClasses, "vrtx-additional-content-last")]
+          [endif]    
 
-            [if cssClasses != null && cssClasses != ""]
-              <div class="vrtx-frontpage-box [val cssClasses]" id="vrtx-additional-content-[val number]">
-            [else]
-              <div class="vrtx-frontpage-box" id="vrtx-additional-content-[val number]">
-            [endif]
-              [if title != null && title != ""]
-                [if url != null && url != ""]
-                  <h2><a href="[val url]">[val title]</a></h2>
-                [else]
-                  <h2>[val title]</h2>
-                [endif]
+          [if cssClasses != null && cssClasses != ""]
+            <div class="vrtx-frontpage-box [val cssClasses]" id="vrtx-additional-content-[val number]">
+          [else]
+            <div class="vrtx-frontpage-box" id="vrtx-additional-content-[val number]">
+          [endif]
+            [if title != null && title != ""]
+              [if url != null && url != ""]
+                <h2><a href="[val url]">[val title]</a></h2>
+              [else]
+                <h2>[val title]</h2>
               [endif]
-              [if picture != null && picture != ""]
-                <div class="vrtx-frontpage-box-picture">
-                  [if url != null && url != ""]
-                    <a href="[val url]">
-                      [if title != null && title != ""]
-                        <img src="[val picture]" alt="[val title]" />
-                      [else]
-                        <img src="[val picture]" alt="[val picture]" />
-                      [endif]
-                    </a>
-                  [else]
+            [endif]
+            [if picture != null && picture != ""]
+              <div class="vrtx-frontpage-box-picture">
+                [if url != null && url != ""]
+                  <a href="[val url]">
                     [if title != null && title != ""]
                       <img src="[val picture]" alt="[val title]" />
                     [else]
                       <img src="[val picture]" alt="[val picture]" />
                     [endif]
+                  </a>
+                [else]
+                  [if title != null && title != ""]
+                    <img src="[val picture]" alt="[val title]" />
+                  [else]
+                    <img src="[val picture]" alt="[val picture]" />
                   [endif]
-                </div>
-              [endif]
-              [if content != null && content != ""]
-                <div class="vrtx-box-content">
-                  [val content # unescaped]
-                </div>
-              [endif]
-              [if urlText != null && urlText != ""]
-                <div class="vrtx-more">
+                [endif]
+              </div>
+            [endif]
+            [if content != null && content != ""]
+              <div class="vrtx-box-content">
+               [val content # unescaped]
+              </div>
+            [endif]
+            [if urlText != null && urlText != ""]
+              <div class="vrtx-more">
                 [if url != null && url != ""]
                   <span><a href="[val url]">[val urlText]</a></span>
                 [else]
                   <span>[val urlText]</span>
                 [endif]
-                </div>
-              [endif]
+              </div>
+            [endif]
             </div>
           [endlist]
         [endif]

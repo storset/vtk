@@ -24,32 +24,32 @@ resourcetype structured-event : structured-document {
   }
   
   view-components {
+  
     organizer {
       ##
-      [resource-props "."]
       [def document structured-document()]
       [def organizers document.properties.organizers]
       [if organizers != null]
         <div class="vrtx-event-organizers">
-        <h2>[localized 'organizers']</h2>
-        [list organizers organizer]
-          [def organizerName organizer.organizer]
-          [def organizerUrl organizer.organizer-url]
-          [def count _index + 1]
-          [def size _size]
-          [def beforeLast size - 1]
+          <h2>[localized 'organizers']</h2>
+          [list organizers organizer]
+            [def organizerName organizer.organizer]
+            [def organizerUrl organizer.organizer-url]
+            [def count _index + 1]
+            [def size _size]
+            [def beforeLast size - 1]
           
-          [if organizerUrl != null && organizerUrl != ""]
-            <a href="[val organizerUrl]"><span class="organizer">[val organizerName]</span></a>[if count != beforeLast && count != size && size > 1],[endif]
-          [else]
-            <span class="organizer">[val organizerName][if count != beforeLast && count != size && size > 1],[endif]</span>
-          [endif]
+            [if organizerUrl != null && organizerUrl != ""]
+              <a href="[val organizerUrl]"><span class="organizer">[val organizerName]</span></a>[if count != beforeLast && count != size && size > 1],[endif]
+            [else]
+              <span class="organizer">[val organizerName][if count != beforeLast && count != size && size > 1],[endif]</span>
+            [endif]
 
-          [if count = beforeLast && size > 1]
-            [localized 'organizer-and']
-          [endif]
+            [if count = beforeLast && size > 1]
+              [localized 'organizer-and']
+            [endif]
 
-        [endlist]
+          [endlist]
         </div>
       [endif]
       ##
@@ -57,7 +57,6 @@ resourcetype structured-event : structured-document {
     
     related-content-in-additional-column {
       ##
-      [resource-props "."]
       [def document structured-document()]
       [def theshowAdditionalContent document.properties.showAdditionalContent]
       [def theRelated-content document.properties.related-content]
@@ -76,7 +75,6 @@ resourcetype structured-event : structured-document {
     
     related-content-in-main-column {
       ##
-      [resource-props "."]
       [def document structured-document()]
       [def theshowAdditionalContent document.properties.showAdditionalContent]
       [def theRelated-content document.properties.related-content]
@@ -101,37 +99,37 @@ resourcetype structured-event : structured-document {
         <title>[call "comp:title"]</title>
       </head>
       <body id="vrtx-structured-event">
-       <div id="vrtx-content">
-       [resources-props "."]
-        [def document structured-document()]
-        [def theShowAdditionalContent document.properties.showAdditionalContent]
-        [if theShowAdditionalContent = "true" || theShowAdditionalContent = null]
-          <div id="vrtx-main-content" class="vrtx-hide-additional-content-false">
-        [else]
-          <div id="vrtx-main-content" class="vrtx-hide-additional-content-true">
-        [endif]
-            <h1>[call "comp:title"]</h1>
-            [call "comp:introduction"]
-            <div class="vrtx-byline">
-              [call "resource:time-and-place"]
-            </div>
-            [def theHidePicture document.properties.hidePicture]
-            [if theHidePicture = "false" || theHidePicture = null] 
-              [call "comp:introduction-image"]
-            [endif]
-            [call "json:field" {"select":"content"}]
-            [call "comp:organizer"]
-            [call "comp:related-content-in-main-column"]
-            [call "resource:tags"]
-            [call "comp:vrtx-date-info"]
-            <div class="vrtx-social-components">
-              [call "resource:email-friend"]
-              [call "resource:share-at" {"use-facebook-api": true}]
-            </div>
-            [call "resource:comments"]
+        <div id="vrtx-content">
+          [resources-props "."]
+          [def document structured-document()]
+          [def theShowAdditionalContent document.properties.showAdditionalContent]
+          [if theShowAdditionalContent = "true" || theShowAdditionalContent = null]
+            <div id="vrtx-main-content" class="vrtx-hide-additional-content-false">
+          [else]
+            <div id="vrtx-main-content" class="vrtx-hide-additional-content-true">
+          [endif]
+              <h1>[call "comp:title"]</h1>
+              [call "comp:introduction"]
+              <div class="vrtx-byline">
+                [call "resource:time-and-place"]
+              </div>
+              [def theHidePicture document.properties.hidePicture]
+              [if theHidePicture = "false" || theHidePicture = null] 
+                [call "comp:introduction-image"]
+              [endif]
+              [call "json:field" {"select":"content"}]
+              [call "comp:organizer"]
+              [call "comp:related-content-in-main-column"]
+              [call "resource:tags"]
+              [call "comp:vrtx-date-info"]
+              <div class="vrtx-social-components">
+                [call "resource:email-friend"]
+                [call "resource:share-at" {"use-facebook-api": true}]
+              </div>
+              [call "resource:comments"]
           </div>
           [call "comp:related-content-in-additional-column"]
-       </div>
+        </div>
       </body>
     </html>
     ##

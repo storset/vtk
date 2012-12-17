@@ -31,23 +31,15 @@ jQuery library and jQuery plugins
 │       ├── license.txt
 │       ├── README.txt
 │       └── ui
-│           ├── jquery-ui-1.8.19.custom
+│           ├── jquery-ui-*.custom
 │           │   ├── css
 │           │   │   └── smoothness
-│           │   │       └── jquery-ui-1.8.19.custom.css
+│           │   │       └── jquery-ui-*.custom.css
 │           │   ├── development-bundle
 │           │   └── js
-│           │       ├── jquery-ui-1.8.19.custom.min.js
+│           │       ├── jquery-ui-*.custom.min.js
 │           │       ├── jquery.ui.datepicker-nn.js
 │           │       └── jquery.ui.datepicker-no.js
-│           ├── jquery-ui-1.8.8.custom
-│           └── jquery-ui-tabs-customized
-│               ├── css
-│               │   └── ui-lightness
-│               │       ├── images
-│               │       └── jquery-ui-1.7.2.custom.css
-│               └── js
-│                   └── jquery-ui-1.7.2.custom.min.js
 ..
 
 
@@ -105,7 +97,7 @@ CSS and icons
         ├── default-ie7.css
         ├── editor-common.css
         ├── editor.css
-        ├── icons
+        ├── icons (TODO: this should be combined with images/)
         ├── images
         ├── report
         │   ├── images

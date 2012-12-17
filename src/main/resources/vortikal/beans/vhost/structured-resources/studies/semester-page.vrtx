@@ -235,5 +235,4 @@ resourcetype semester-page : fellestekst-document {
     teachers : (en : "Teachers", no : "Lærere", nn : "Lærere"),
     teacher : (en : "Teacher", no : "Lærer", nn : "Lærer")
   }
-
 }

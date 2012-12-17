@@ -74,9 +74,9 @@ resourcetype frontpage {
           [endif]      
 
           [if cssClasses != null && cssClasses != ""]
-              <div class="vrtx-frontpage-box [val cssClasses]" id="vrtx-main-content-[val number]">
+            <div class="vrtx-frontpage-box [val cssClasses]" id="vrtx-main-content-[val number]">
           [else]
-              <div class="vrtx-frontpage-box" id="vrtx-main-content-[val number]">
+            <div class="vrtx-frontpage-box" id="vrtx-main-content-[val number]">
           [endif]
           
           [if title != null && title != ""]
@@ -95,7 +95,7 @@ resourcetype frontpage {
                 [else]
                   <img src="[val picture]" alt="[val picture]" />
                 [endif]
-                 </a>
+                </a>
               [else]
                 [if title != null && title != ""]
                   <img src="[val picture]" alt="[val title]" />

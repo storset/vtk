@@ -147,6 +147,4 @@ resourcetype syllabus {
     in : (en : "in", no : "i", nn : "i"),
     syllabus : (en : "Syllabus/achievement requirements", no : "Pensum/læringskrav", nn : "Pensum/læringskrav")
   }
-
 }
-  

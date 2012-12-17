@@ -89,5 +89,4 @@ resourcetype schedule {
     comment : (en : "Introductory comment", no : "Innledende kommentar", nn : "Innleiande kommentar"),
     content : (en : "Content", no : "Innhold", nn : "Innhald")
   }
-
 }

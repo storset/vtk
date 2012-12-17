@@ -382,5 +382,4 @@ resourcetype organizational-unit {
                                  nn : "Kan ikkje hente opplysningar om eining frå ekstern kilde"),
     combinedPublications : (en : "Publications", no : "Publikasjoner", nn : "Publikasjonar")
   }
-  
 }

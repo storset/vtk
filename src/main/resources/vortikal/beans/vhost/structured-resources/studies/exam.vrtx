@@ -47,5 +47,4 @@ resourcetype exam {
     header : (en : "Edit exam", no : "Rediger eksamen", nn : "Rediger eksamen"),
     content : (en : "Content", no : "Innhold", nn : "Innhald")
   }
-
 }

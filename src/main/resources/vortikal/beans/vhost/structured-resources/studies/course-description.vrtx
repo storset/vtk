@@ -862,5 +862,4 @@ resourcetype course-description : fellestekst-document {
     master : (en : "Master", no : "Master", nn : "Master"),
     phd : (en : "PhD", no : "PhD", nn : "PhD")
   }
-  
 }

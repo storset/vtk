@@ -77,5 +77,4 @@ resourcetype course-group : fellestekst-document {
     studinfo-kontakt : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
     studinfo-kontakt-group : (en : "Contact", no : "Kontakt", nn : "Kontakt")
   }
-
 }

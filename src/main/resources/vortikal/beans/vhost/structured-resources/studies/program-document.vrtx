@@ -334,5 +334,4 @@ resourcetype program-document {
     erfaringsbasert-master : (en : "master's - experience based", no : "master - erfaringsbasert", nn : "master - erfaringsbasert"), 
     profesjon : (en : "programme of professional study", en : "profesjonsstudium", en : "profesjonsstudium")
   }
-  
 }

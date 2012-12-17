@@ -105,7 +105,7 @@
     <property name="examples">
       <map>
         <entry key="uri=[/messages/to/display/] max-number-of-messages=[15]"
-          value="Display message for a given message listing, set by prameter uri" />
+               value="Display messages from a message listing, given by prameter uri." />
       </map>
     </property>
   </bean>

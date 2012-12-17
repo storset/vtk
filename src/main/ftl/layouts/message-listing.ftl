@@ -18,7 +18,7 @@
 
 <div class="vrtx-messages-list">
 <#if messages??>
-  <@messageListing.displayMessages messages />
+  <@messageListing.displayMessages messages nullArg compactView/>
   <#if moreMessages?? && moreMessages>
     <a href="${messageFolder.URI}"><@vrtx.msg code="" default="See all messages"/></a>
   </#if>

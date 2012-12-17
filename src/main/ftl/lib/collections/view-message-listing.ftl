@@ -20,7 +20,7 @@
 
 </#macro>
 
-<#macro displayMessages messages editLinks=[] >
+<#macro displayMessages messages editLinks=[] compactView=false>
   <#local i = 1 />
   <#list messages as message>
 

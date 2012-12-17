@@ -62,6 +62,9 @@ public class MessageComponent extends ViewRenderingDecoratorComponent {
     private static final String PARAMETER_TITLE = "title";
     private static final String PARAMETER_TITLE_DESC = "Title to set on messages list.";
 
+    private static final String PARAMETER_COMPACT_VIEW = "compact-view";
+    private final static String PARAMETER_COMPACT_VIEW_DESCRIPTION = "Set to 'true' to show compact view. Default is false";
+
     private SearchComponent searchComponent;
     private CollectionListingHelper helper;
     private PropertyTypeDefinition pageLimitPropDef;
@@ -112,6 +115,10 @@ public class MessageComponent extends ViewRenderingDecoratorComponent {
             }
         }
 
+        String compactView = request.getStringParameter(PARAMETER_COMPACT_VIEW);
+        boolean isCompactView = StringUtils.equalsIgnoreCase(compactView, "true");
+        model.put("compactView", isCompactView);
+
         String title = request.getStringParameter(PARAMETER_TITLE);
         if (StringUtils.isNotBlank(title)) {
             model.put("title", title);
@@ -138,6 +145,7 @@ public class MessageComponent extends ViewRenderingDecoratorComponent {
         map.put(PARAMETER_URI, PARAMETER_URI_DESC);
         map.put(PARAMETER_MAX_NUMBER_OF_MESSAGES, PARAMETER_MAX_NUMBER_OF_MESSAGES_DESC);
         map.put(PARAMETER_TITLE, PARAMETER_TITLE_DESC);
+        map.put(PARAMETER_COMPACT_VIEW, PARAMETER_COMPACT_VIEW_DESCRIPTION);
         return map;
     }
 

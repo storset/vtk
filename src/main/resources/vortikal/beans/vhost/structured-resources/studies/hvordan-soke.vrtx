@@ -309,9 +309,9 @@ resourcetype hvordan-soke : fellestekst-document {
 	    [if (forstevitnemal-kvote-fri != null && forstevitnemal-kvote-fri != "") || (poenggrenser-forstegang-alle-kvalifiserte != null && poenggrenser-forstegang-alle-kvalifiserte != "") || (poenggrenser-ordinar-alle-kvalifiserte != null && poenggrenser-ordinar-alle-kvalifiserte != "") || (ordinar-kvote-alle-kvalifiserte-fri != null && ordinar-kvote-alle-kvalifiserte-fri != "") || (poenggrenser-poengberegning != null && poenggrenser-poengberegning != "")]
     	  <h3>[localized 'poenggrenser-view'] 
 	        [val poenggrenser-aar # unescaped]
-    	  </h3>
+          </h3>
     	  <ul>
-    	  	[if (poenggrenser-forstegang-alle-kvalifiserte != null && poenggrenser-forstegang-alle-kvalifiserte != "")]
+    	    [if (poenggrenser-forstegang-alle-kvalifiserte != null && poenggrenser-forstegang-alle-kvalifiserte != "")]
               <li>[call "comp:vis-fellestekst" {"docType":"hvordan-soke", "propName":"poenggrenser-forstegang-alle-kvalifiserte"}]</li>
             [endif]
             [if (forstevitnemal-kvote-fri != null && forstevitnemal-kvote-fri != "")]
@@ -340,10 +340,9 @@ resourcetype hvordan-soke : fellestekst-document {
       </head>
       <body id="vrtx-structured-article">
         <div id="vrtx-content">
-        
-        [def document structured-document()]
-        [def relatert-innhold-regelverk document.properties.relatert-innhold-regelverk]
-        [def regelverk-fri document.properties.regelverk-fri]
+          [def document structured-document()]
+          [def relatert-innhold-regelverk document.properties.relatert-innhold-regelverk]
+          [def regelverk-fri document.properties.regelverk-fri]
           <div id="vrtx-main-content" class="vrtx-hide-additional-content-false">      
             <h1>[localized 'title']</h1>
             <h2>[localized 'opptak']</h2>
@@ -373,7 +372,7 @@ resourcetype hvordan-soke : fellestekst-document {
                 [endif]
                 [call "comp:regelverk-in-additional-column"] 
               </div> 
-          </div>
+            </div>
           [endif]
         </div>
       </body>
@@ -381,11 +380,11 @@ resourcetype hvordan-soke : fellestekst-document {
     ##
   }
 
-  vocabulary{
+  vocabulary {
 	typeToDisplay{
-		en: ("all" = "All", "so" = "SO programme", "nm" = "Norwegian master", "em" = "English master"),
-		no: ("all" = "Alle", "so" = "Grunnstudier", "nm" = "Norsk master", "em" = "Engelsk master"),
-		nn: ("all" = "Alle", "so" = "Grunnstudium", "nm" = "Norsk master", "em" = "Engelsk master")
+	  en: ("all" = "All", "so" = "SO programme", "nm" = "Norwegian master", "em" = "English master"),
+	  no: ("all" = "Alle", "so" = "Grunnstudier", "nm" = "Norsk master", "em" = "Engelsk master"),
+	  nn: ("all" = "Alle", "so" = "Grunnstudium", "nm" = "Norsk master", "em" = "Engelsk master")
 	}
   }
   

@@ -2980,7 +2980,7 @@ VrtxAdmin.prototype.serverFacade = {
 
 var urlobj;
 function previewImage(urlobj) {
-  urlobj = urlobj.replace(".", "\\.");
+  urlobj = urlobj.replace(/\./g,'\\.')
   var previewNode = $("#" + urlobj + '\\.preview-inner');
   if (previewNode.length) {
     var url = $("#" + urlobj).val();

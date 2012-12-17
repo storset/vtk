@@ -259,6 +259,7 @@ resourcetype frontpage {
           [def img resource(picture)] 
           [if img != null]
             [def pixel-width resource-prop(picture, "pixelWidth")]
+            [def photographer resource-prop(picture, "photographer")]
             [if pixel-width != null]
               [def style concat("width:", pixel-width, "px")]
               [if caption != null]

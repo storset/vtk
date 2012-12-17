@@ -209,22 +209,6 @@
             });
           }
         }
-
-        // CK and date inputfields
-
-        for (i in types) {
-          var inputFieldName = j.name + "." + types[i].name + "." + counter;
-          if (types[i].type == "simple_html") {
-            newEditor(inputFieldName, false, false, '${resourceContext.parentURI?js_string}', '${fckeditorBase.url?html}', 
-                                                    '${fckeditorBase.documentURL?html}', '${fckBrowse.url.pathRepresentation}', '<@vrtx.requestLanguage />', cssFileList, "true");
-	        editorCount++;
-          } else if (types[i].type == "html") {
-            newEditor(inputFieldName, true, false, '${resourceContext.parentURI?js_string}', '${fckeditorBase.url?html}', 
-                                                   '${fckeditorBase.documentURL?html}', '${fckBrowse.url.pathRepresentation}', '<@vrtx.requestLanguage />', cssFileList, "false");
-          } else if (types[i].type == "datetime") {
-            displayDateAsMultipleInputFields(inputFieldName);
-          }
-        }
         
         if(hasAccordion ) {
           var accordionContent = accordionWrapper.find(".fieldset");
@@ -245,6 +229,22 @@
           
           accordionRefresh(accordionContent, false);
         }
+
+        // CK and date inputfields
+
+        for (i in types) {
+          var inputFieldName = j.name + "." + types[i].name + "." + counter;
+          if (types[i].type == "simple_html") {
+            newEditor(inputFieldName, false, false, '${resourceContext.parentURI?js_string}', '${fckeditorBase.url?html}', 
+                                                    '${fckeditorBase.documentURL?html}', '${fckBrowse.url.pathRepresentation}', '<@vrtx.requestLanguage />', cssFileList, "true");
+          } else if (types[i].type == "html") {
+            newEditor(inputFieldName, true, false, '${resourceContext.parentURI?js_string}', '${fckeditorBase.url?html}', 
+                                                   '${fckeditorBase.documentURL?html}', '${fckBrowse.url.pathRepresentation}', '<@vrtx.requestLanguage />', cssFileList, "false");
+          } else if (types[i].type == "datetime") {
+            displayDateAsMultipleInputFields(inputFieldName);
+          }
+        }
+
         e.stopPropagation();
         e.preventDefault();
       });

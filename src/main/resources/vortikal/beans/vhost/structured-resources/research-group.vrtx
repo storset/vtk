@@ -29,11 +29,11 @@ resourcetype research-group {
   }
 
   scripts {
-    participantsUsernames multipleinputfields
+    psarticipantsUsernames multipleinputfields
   }
     
   services {
-      participantsUsernames participantsFullNameService
+    participantsUsernames participantsFullNameService
   }
 
   view-components {

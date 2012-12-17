@@ -42,6 +42,7 @@
 
 .vrtx-image-ref #picture\.preview,
 .vrtx-image-ref #pressPhoto\.preview {
+  float: left;
   margin-top: 20px;
 }
 
@@ -92,6 +93,10 @@
 .vrtx-grouped-horizontal,
 .vrtx-string.author {
   clear: left;
+}
+
+.vrtx-grouped .related-content label {
+  display: none;
 }
 
 .getExternalPersonInfo label,

@@ -350,12 +350,6 @@ div.introImageAndCaption .hidePicture .vrtx-radio-buttons label {
   display: inline !important; 
 }
 
-div.introImageAndCaption div.vrtx-image-ref-browse,
-div#vrtx-resource\.picture div.input-and-button-container,
-div#vrtx-resource\.picture div.picture-and-caption {
-  float: left;
-}
-
 div.introImageAndCaption div.vrtx-image-ref-browse .vrtx-textfield input#picture,
 div#vrtx-resource\.picture div.input-and-button-container .vrtx-textfield input {
   width: 200px;
@@ -367,14 +361,14 @@ div#vrtx-resource\.picture div.input-and-button-container .vrtx-textfield {
 
 div.introImageAndCaption div#picture\.preview,
 div#vrtx-resource\.picture div#resource\.picture\.preview {
-  margin: -29px 0 0 375px;
+  margin: -57px 0 0 375px;
+  float: none;
 }
 
 div#picture\.preview,
 div#pressPhoto\.preview,
 div#resource\.picture\.preview {
   position: relative;
-  float: left;
 }
 
 div#picture\.preview span,
@@ -397,12 +391,12 @@ div#resource\.picture\.preview.no-preview span {
   display: block;
 }
 
-div.introImageAndCaption div#picture\.preview-inner,
-div#vrtx-resource\.picture div#resource\.picture\.preview-inner {
-  width: 170px;
-  height: 136px;
+div#picture\.preview-inner,
+div#pressPhoto\.preview-inner,
+div#resource\.picture\.preview-inner {
+  max-width: 170px;
+  max-height: 170px;
   overflow: hidden;
-  border: 1px solid #D3D3D3;
 }
 
 div.introImageAndCaption img,
@@ -411,8 +405,12 @@ div#vrtx-resource\.picture img {
   max-width: 170px;
 }
 
-.vrtx-grouped .related-content label {
-  display: none;
+div#picture\.preview.no-preview img,
+div#pressPhoto\.preview.no-preview img,
+div#resource\.picture\.preview.no-preview img {
+  width: 169px;
+  height: 136px;
+  border: 1px solid #D3D3D3;
 }
 
 /* ^ Image and caption */

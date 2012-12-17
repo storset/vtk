@@ -166,7 +166,6 @@ resourcetype organizational-unit {
       [def pixel-width null]
       [def img null]
       [def pixel-width null]
-      [def photographer null]
       [def style null]
       
       [if img-uri != null]
@@ -174,7 +173,6 @@ resourcetype organizational-unit {
       [endif]
       [if img != null]
         [def pixel-width resource-prop(img-uri, "pixelWidth")]
-        [def photographer resource-prop(img-uri, "photographer")]
       [endif]
       [if pixel-width != null]
         [def style concat("width:", pixel-width, "px")]

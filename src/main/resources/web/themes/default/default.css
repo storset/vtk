@@ -2219,7 +2219,7 @@ h3.resourceInfoHeader {
   padding: 5px 15px;
 }
 
-/*
+/* 
 #vrtx-resource-visit-tab-menu li.first {
   background: url(images/report-tab-fade-to-left.png) no-repeat bottom left;
   margin-right: 0;
@@ -2228,7 +2228,7 @@ h3.resourceInfoHeader {
 #vrtx-resource-visit-tab-menu li.last {
   background: url(images/report-tab-fade-to-right.png) no-repeat bottom right;
   margin-left: 0;
-}
+} 
 */
 
 #vrtx-resource-visit-tab-menu li a,
@@ -2289,14 +2289,12 @@ h3.resourceInfoHeader {
   width: 35%;
 }
 
-/* TMP overview */  
 #vrtx-resource-visit-wrapper ul {
   margin: 0 0 10px 0;
   padding: 0;
   list-style: none;
   float: left;
 }
-/* ^ TMP overview */
 
 /* Responsive design */
 

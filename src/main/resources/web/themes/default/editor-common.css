@@ -365,14 +365,12 @@ div#vrtx-resource\.picture div#resource\.picture\.preview {
   float: none;
 }
 
-div#picture\.preview,
-div#pressPhoto\.preview,
+.vrtx-image-ref-preview,
 div#resource\.picture\.preview {
   position: relative;
 }
 
-div#picture\.preview span,
-div#pressPhoto\.preview span,
+.vrtx-image-ref-preview span,
 div#resource\.picture\.preview span {
   color: #9d9d9d;
   font-size: 1.15em;
@@ -385,28 +383,25 @@ div#resource\.picture\.preview span {
   display: none;
 }
 
-div#picture\.preview.no-preview span,
-div#pressPhoto\.preview.no-preview span,
+.vrtx-image-ref-preview.no-preview span,
 div#resource\.picture\.preview.no-preview span {
   display: block;
 }
 
-div#picture\.preview-inner,
-div#pressPhoto\.preview-inner,
+.vrtx-image-ref-preview-inner,
 div#resource\.picture\.preview-inner {
   max-width: 170px;
   max-height: 170px;
   overflow: hidden;
 }
 
-div.introImageAndCaption img,
+.vrtx-image-ref-preview-inner img,
 div#vrtx-resource\.picture img {
   margin-top: 0px;
   max-width: 170px;
 }
 
-div#picture\.preview.no-preview img,
-div#pressPhoto\.preview.no-preview img,
+.vrtx-image-ref-preview.no-preview img,
 div#resource\.picture\.preview.no-preview img {
   width: 168px;
   height: 136px;

@@ -12,10 +12,10 @@
         <button type="button" onclick="browseServer('${inputFieldName}', '${fckeditorBase.url?html}', '${baseFolder}','${fckBrowse.url.pathRepresentation}');"><@vrtx.msg code="editor.browseImages"/></button>
       </div>
 	</div>
-	<div id="${inputFieldName}.preview"<#if !value?has_content> class="no-preview"</#if>>
+	<div id="${inputFieldName}.preview" class="vrtx-image-ref-preview<#if !value?has_content> no-preview</#if>">
 	  <label for="${inputFieldName}.preview"><@vrtx.msg code="editor.image.preview-title"/></label>
 	  <span><@vrtx.msg code="editor.image.no-preview-text"/></span>
-	  <div id="${inputFieldName}.preview-inner">
+	  <div id="${inputFieldName}.preview-inner" class="vrtx-image-ref-preview-inner">
 	  <#if value?has_content >
 	    <img src="${value?html}" alt="preview" />
 	  <#else>

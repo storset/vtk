@@ -1,7 +1,11 @@
-/* Need to override classes from default.css */
+/*
+ *
+ *  Vortex - XML - Browser
+ *
+ */
 
 .browse-actions {
-	display: inline;
+  display: inline;
 }
 
 body,
@@ -49,3 +53,5 @@ div#resource-title {
   margin: 0 0 0 20px !important;
   clear: none !important;
 }
+
+/* ^ Vortex - XML - Browser */

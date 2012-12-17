@@ -99,7 +99,7 @@ resourcetype research-group {
             [if photographer != null]
               <span class="vrtx-photo">
                 <span class="vrtx-photo-prefix">[localized "photo-prefix"]: </span>[val photographer]
-             </span>
+              </span>
             [endif]
           </div>
         [elseif photographer != null]
@@ -116,7 +116,6 @@ resourcetype research-group {
     
     contact-info {
       ##
-      [resource-props "."]
       [def document structured-document()]
       [def contactinfo document.properties.contactInfo]
       [if contactinfo != null]

@@ -30,7 +30,7 @@ resourcetype structured-message {
       <head>
         <title>[call "resource:property" {"id":"title"}]</title>
       </head>
-      <body>
+      <body id="vrtx-message">
         <h1>[call "resource:property" {"id":"title"}]</h1>
         <div>
           [call "json:field" {"select":"message"}]

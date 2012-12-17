@@ -66,22 +66,22 @@ resourcetype person {
   
     title {
       ##
-        [def titleValue resource-prop(".", "title")]
-        [if titleValue != null]
-          [val titleValue]
-        [endif]
+      [def titleValue resource-prop(".", "title")]
+      [if titleValue != null]
+        [val titleValue]
+      [endif]
       ##
     }
 
     contact-information {
       ##
-        [resource-props "."]
-        <div class="vrtx-person-contactinfo">
+      [resource-props "."]
+      <div class="vrtx-person-contactinfo">
           
-          [def getExternal resource-prop-obj-val(".", "getExternalPersonInfo")]
-          [if getExternal = true && externalUserMetaData = null]
-            [localized 'no-external-user-metadata']
-          [else]
+        [def getExternal resource-prop-obj-val(".", "getExternalPersonInfo")]
+        [if getExternal = true && externalUserMetaData = null]
+          [localized 'no-external-user-metadata']
+        [else]
           
           [call "resource:person-language-link"]
         
@@ -97,20 +97,20 @@ resourcetype person {
               <span class="vrtx-label">[localized "phone"]</span>
               [list phone phoneLine]
                 <span class="vrtx-value">[val phoneLine]</span>
-             [endlist]
+              [endlist]
             </div>
           [endif]
           [if (mobile != null && mobile != "") || (alternativeCellPhone != null && alternativeCellPhone != "")]
             <div class="vrtx-person-contact-info-line vrtx-mobile">
               <span class="vrtx-label">[localized "mobile"]</span>
-                [if mobile != null && mobile != ""]
-                	[list mobile mobileLine]
-                  	<span class="vrtx-value">[val mobileLine]</span>
-                	[endlist]
-              	[endif]
-                [if alternativeCellPhone != null && alternativeCellPhone != ""]
-                	<span class="vrtx-value">[val alternativeCellPhone]</span>
-                [endif]
+              [if mobile != null && mobile != ""]
+                [list mobile mobileLine]
+                  <span class="vrtx-value">[val mobileLine]</span>
+                [endlist]
+              [endif]
+              [if alternativeCellPhone != null && alternativeCellPhone != ""]
+                <span class="vrtx-value">[val alternativeCellPhone]</span>
+              [endif]
             </div>
           [endif]
           [if fax != null && fax != ""]
@@ -174,7 +174,6 @@ resourcetype person {
 
     related-content-in-additional-column {
       ##
-      [resource-props "."]
       [def document structured-document()]
       [def theRelated-content document.properties.related-content]
       [if theRelated-content != null]
@@ -187,24 +186,24 @@ resourcetype person {
     
     feeds {
       ##
-        [resource-props "."]
-        [if rssFeeds != null]
-          [def document structured-document()]
-          [def feeds document.properties.rssFeeds]
-          [if feeds != null]
-            [list feeds feed]
-              [def thetitle feed.rssTitle]
-              [def theurl feed.rssUrl]
-              [if theurl != null && theurl != ""]
-                [if thetitle != null && thetitle != ""]
-                  [call "include:feed" {"url":theurl, "override-feed-title":thetitle, "feed-title":true, "max-messages":3, "include-if-empty":false}]
-                [else]
-                  [call "include:feed" {"url":theurl, "feed-title":true, "max-messages":3, "include-if-empty":false}]
-                [endif]
+      [resource-props "."]
+      [if rssFeeds != null]
+        [def document structured-document()]
+        [def feeds document.properties.rssFeeds]
+        [if feeds != null]
+          [list feeds feed]
+            [def thetitle feed.rssTitle]
+            [def theurl feed.rssUrl]
+            [if theurl != null && theurl != ""]
+              [if thetitle != null && thetitle != ""]
+                [call "include:feed" {"url":theurl, "override-feed-title":thetitle, "feed-title":true, "max-messages":3, "include-if-empty":false}]
+              [else]
+                [call "include:feed" {"url":theurl, "feed-title":true, "max-messages":3, "include-if-empty":false}]
               [endif]
-            [endlist]
-          [endif]
+            [endif]
+          [endlist]
         [endif]
+      [endif]
       ##
     }
     
@@ -277,7 +276,6 @@ resourcetype person {
     hcard {
       ##
       [resource-props "."]
-      [def titleValue resource-prop(".", "title")]
       [if (firstName != null && surname != null)]
         <div class="vcard">
           <span class="fn n">

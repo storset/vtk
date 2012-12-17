@@ -51,18 +51,16 @@ resourcetype structured-project {
   
     completed {
       ##
-      [resource-props "."]
       [def document structured-document()]
       [def ongoing document.properties.status-ongoing]
       [if (ongoing = "false")]
-           ([localized "completed"])
+         ([localized "completed"])
       [endif]
       ##
     }
    
    related-content-in-additional-column {
       ##
-      [resource-props "."]
       [def document structured-document()]
       [def theRelated-content document.properties.related-content]
       [if theRelated-content != null]

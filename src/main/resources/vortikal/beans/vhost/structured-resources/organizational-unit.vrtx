@@ -80,10 +80,10 @@ resourcetype organizational-unit {
         
           [if postalAddress != null && postalAddress != ""]
             <span class="vrtx-organizational-unit-postal-address adr">
-            <span class="vrtx-label">[localized "postalAddress"]</span>
-            [list postalAddress postalAddressLine]
-              <span class="vrtx-address-line">[if postalAddressLine != null][val postalAddressLine][endif]</span>
-            [endlist]
+              <span class="vrtx-label">[localized "postalAddress"]</span>
+              [list postalAddress postalAddressLine]
+                <span class="vrtx-address-line">[if postalAddressLine != null][val postalAddressLine][endif]</span>
+              [endlist]
             </span>
           [endif]
         
@@ -197,7 +197,6 @@ resourcetype organizational-unit {
       ##
       [def document structured-document()]
       [def theRelated-content document.properties.related-content]
-      [def subsubunits document.properties.showExtendedUnitList]
       [if theRelated-content != null]
         <div id="vrtx-related-content">
           [val theRelated-content # unescaped]
@@ -244,9 +243,6 @@ resourcetype organizational-unit {
 
   view {
     ##
-    [resources-props "."]
-	[def document structured-document()]
-	[def subsubunits document.properties.showExtendedUnitList]
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml">
       <head>

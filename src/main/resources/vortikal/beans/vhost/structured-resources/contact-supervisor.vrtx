@@ -40,7 +40,7 @@ resourcetype contact-supervisor {
               </div>
               <div class="vrtx-contact-supervisor-contact-info" id="vrtx-contact-supervisor-contact-info-[val number]">
                 [if contactInfo != null && contactInfo != ""]
-                [val contactInfo # unescaped]
+                  [val contactInfo # unescaped]
                 [endif]
               </div>
           </div>
@@ -70,14 +70,14 @@ resourcetype contact-supervisor {
   }
 
   localization {
-     title : (en : "Title", no : "Tittel", nn : "Tittel"),
-     id : (en : "Identifier", no : "Identifikator", nn : "Identifikator"),
-     contact-supervisor-box : (en : "Content", no : "Innhold", nn : "Innhold"),
-     boxTitle : (en : "Title", no : "Tittel", nn : "Tittel"),
-     boxType : (en : "Type", no : "Type", nn : "Type"),
-     contactInfo : (en : "Contact Info", no : "Kontaktinformasjon", nn : "Kontaktinformasjon"),
-     description : (en : "Description", no : "Beskrivelse", nn : "Beskrivelse"),
-     boxUrl : (en : "Webaddress", no : "Webadresse", nn : "Webadresse"),
-     header : (en : "Edit contact supervisor", no : "Rediger kontaktveileder", nn : "Rediger kontaktveileder")
+    title : (en : "Title", no : "Tittel", nn : "Tittel"),
+    id : (en : "Identifier", no : "Identifikator", nn : "Identifikator"),
+    contact-supervisor-box : (en : "Content", no : "Innhold", nn : "Innhold"),
+    boxTitle : (en : "Title", no : "Tittel", nn : "Tittel"),
+    boxType : (en : "Type", no : "Type", nn : "Type"),
+    contactInfo : (en : "Contact Info", no : "Kontaktinformasjon", nn : "Kontaktinformasjon"),
+    description : (en : "Description", no : "Beskrivelse", nn : "Beskrivelse"),
+    boxUrl : (en : "Webaddress", no : "Webadresse", nn : "Webadresse"),
+    header : (en : "Edit contact supervisor", no : "Rediger kontaktveileder", nn : "Rediger kontaktveileder")
   }
 }

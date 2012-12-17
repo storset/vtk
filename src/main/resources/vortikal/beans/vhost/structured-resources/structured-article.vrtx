@@ -36,11 +36,9 @@ resourcetype structured-article : structured-document {
     
     related-content-in-additional-column {
       ##
-      [resource-props "."]
       [def document structured-document()]
       [def theshowAdditionalContent document.properties.showAdditionalContent]
       [def theRelated-content document.properties.related-content]
-
       [if (theshowAdditionalContent = "true") || (theshowAdditionalContent = null)]
         [if theRelated-content != null]
           <div id="vrtx-additional-content">
@@ -55,11 +53,9 @@ resourcetype structured-article : structured-document {
     
     related-content-in-main-column {
       ##
-      [resource-props "."]
       [def document structured-document()]
       [def theshowAdditionalContent document.properties.showAdditionalContent]
       [def theRelated-content document.properties.related-content]
-      
       [if (theshowAdditionalContent = "false")]
         [if theRelated-content != null]
           <div id="vrtx-related-content">

@@ -49,16 +49,16 @@ resourcetype unit-publications {
 
     publications {
       ##
-        [def document structured-document()]
-        [def areacode document.properties.areacode]
-        [if areacode != null]
-          [call "unit:publications"]
-        [else]
-          [def selectedPublications document.properties.selectedPublications]
-          [if (selectedPublications != null && selectedPublications != "")]
-            [val selectedPublications # unescaped]
-          [endif]
+      [def document structured-document()]
+      [def areacode document.properties.areacode]
+      [if areacode != null]
+        [call "unit:publications"]
+      [else]
+        [def selectedPublications document.properties.selectedPublications]
+        [if (selectedPublications != null && selectedPublications != "")]
+          [val selectedPublications # unescaped]
         [endif]
+      [endif]
       ##
     }
 

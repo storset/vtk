@@ -368,7 +368,7 @@ resourcetype person {
        en : ("true" = "Yes", "false" = "No"),
        no : ("true" = "Ja", "false" = "Nei"),
        nn : ("true" = "Ja", "false" = "Nei")
-     }
+     },
      getRelatedGroups {
        en : ("true" = "Yes", "false" = "No"),
        no : ("true" = "Ja", "false" = "Nei"),

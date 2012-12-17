@@ -228,7 +228,6 @@ resourcetype research-group {
       nn : ("true" = "Ja", "false" = "Nei")
     }
   }
-  
     
   localization {
     name : (en : "Name", no : "Navn", nn : "Navn"),

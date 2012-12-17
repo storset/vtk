@@ -54,7 +54,7 @@ resourcetype structured-project {
       [def document structured-document()]
       [def ongoing document.properties.status-ongoing]
       [if (ongoing = "false")]
-         ([localized "completed"])
+        ([localized "completed"])
       [endif]
       ##
     }

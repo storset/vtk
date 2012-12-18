@@ -2980,14 +2980,13 @@ VrtxAdmin.prototype.serverFacade = {
 
 var urlobj;
 $(document).ready(function() {
-  correctHidePicPropPos($(".introImageAndCaption input.preview-image-inputfield"));
   $(document).on("blur", "input.preview-image-inputfield", function(e) {
     previewImage(this.id)
   });
 });
 
-function previewImage(obj) {
-  urlobj = obj.replace(/\./g,'\\.')
+function previewImage(urlobj) {
+  urlobj = urlobj.replace(/\./g,'\\.')
   var previewNode = $("#" + urlobj + '\\.preview-inner');
   if (previewNode.length) {
     var url = $("#" + urlobj).val();
@@ -2998,24 +2997,6 @@ function previewImage(obj) {
     } else {
       previewNode.html('<img src="/vrtx/__vrtx/static-resources/themes/default/images/no-preview-image.png" alt="no thumbnail" />');
       parentPreviewNode.addClass("no-preview");
-    }
-    correctHidePicPropPos($("#" + urlobj));
-  }
-}
-
-function correctHidePicPropPos(obj) {
-  if(typeof obj !== "undefined") {
-    var parent = obj.closest(".introImageAndCaption");
-    if(parent.length) {
-      var hidePic = parent.find(".hidePicture");
-      if(hidePic.length) {
-        var imgMaxHeight = 138;
-        var img = parent.find("img");
-        var imgHeight = img.height();
-        var topMax = 170;
-        var diff = imgMaxHeight - imgHeight;
-        hidePic.css("top", (topMax - diff) + "px");
-      }
     }
   }
 }

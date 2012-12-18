@@ -396,8 +396,8 @@ div#resource\.picture\.preview.no-preview span {
 
 .vrtx-image-ref-preview-inner,
 div#resource\.picture\.preview-inner {
-  width: 170px;
-  height: 138px;
+  max-width: 170px;
+  max-height: 138px;
   overflow: hidden;
 }
 

@@ -401,7 +401,14 @@
                    browseButtonText: '<@vrtx.msg code="editor.browseImages" />',
                    type: '',
                    size: 30,
-                   preview: "<div id='" + inputFieldName + ".preview'></div>" }
+                   preview: "<div id='" + inputFieldName + ".preview' class='vrtx-image-ref-preview no-preview'> \
+                               <label for='" + inputFieldName + ".preview'><@vrtx.msg code='editor.image.preview-title'/></label> \
+	                           <span><@vrtx.msg code='editor.image.no-preview-text'/></span> \
+                               <div id='" + inputFieldName + ".preview-inner' class='vrtx-image-ref-preview-inner'> \
+                                 <img src='/vrtx/__vrtx/static-resources/themes/default/images/no-preview-image.png' alt='no preview' /> \
+                               </div> \
+                            </div>" 
+                 }
       return $.mustache(TEMPLATES["browse"], json); 
     }
     

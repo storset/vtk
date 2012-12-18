@@ -401,7 +401,6 @@
                    browseButtonText: '<@vrtx.msg code="editor.browseImages" />',
                    type: '',
                    size: 30,
-                   onBlur: "previewImage('" + inputFieldName + "');",
                    preview: "<div id='" + inputFieldName + ".preview'></div>" }
       return $.mustache(TEMPLATES["browse"], json); 
     }

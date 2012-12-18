@@ -350,6 +350,10 @@ div.introImageAndCaption .hidePicture .vrtx-radio-buttons label {
   display: inline !important; 
 }
 
+div.introImageAndCaption .hidePicture > label {
+  white-space: nowrap;
+}
+
 div.introImageAndCaption div.vrtx-image-ref-browse .vrtx-textfield input#picture,
 div#vrtx-resource\.picture div.input-and-button-container .vrtx-textfield input {
   width: 200px;

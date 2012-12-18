@@ -241,7 +241,7 @@ resourcetype structured-project {
     introduction-image-alt : (en: "Image", en: "Bilde", en: "Bilete"),
     caption : (en : "Image caption", no : "Bildetekst", nn : "Bilettekst"),
     photo-prefix : (en : "Photo", no : "Foto", nn : "Photo"),
-    hidePicture : (en : "Hide in project", no : "Skjul i prosjekt", nn : "Skjul i prosjekt"),
+    hidePicture : (en : "Hide image in project", no : "Skjul bilde i prosjekt", nn : "Skjul bilete i prosjekt"),
     related-content : (en : "Related content (right column)", no : "Relatert innhold (vises i høyre kolonne)", nn : "Relatert innhald (visast i høgre kolonne)"),
     participantsHeader : (en : "Participants", no : "Deltakere", nn : "Deltakarar"),
     participantsUsernames : (en : "Participants from UiO (enter the participant username)",no : "Deltakere fra UiO (fyll inn deltakerens brukernavn)", nn :"Deltakarar fra UiO (fyll inn deltakarens brukernavn)"),

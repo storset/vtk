@@ -120,7 +120,7 @@ resourcetype structured-article : structured-document {
   }
 
   localization {
-    hidePicture : (en : "Hide in article", no : "Skjul i artikkel", nn : "Skjul i artikkel"),
+    hidePicture : (en : "Hide image in article", no : "Skjul bilde i artikkel", nn : "Skjul bilete i artikkel"),
     by-line : (en : "By", no : "Av", nn : "Av"),
     published : (en : "Published", no : "Publisert", nn : "Publisert"),
     download-media-file : (en : "Download media file", no : "Last ned mediefil", nn : "Last ned mediefil"),

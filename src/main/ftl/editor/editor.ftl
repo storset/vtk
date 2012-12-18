@@ -361,7 +361,7 @@
         <div class="picture-and-caption">
           <div class="input-and-button-container">
             <div class="vrtx-textfield">
-              <input type="text" id="resource.${name}" onblur="previewImage(id);" name="resource.${name}" value="${value?html}" />
+              <input type="text" class="preview-image-inputfield" id="resource.${name}" name="resource.${name}" value="${value?html}" />
             </div>
             <div class="vrtx-button">
               <button type="button" onclick="browseServer('resource.${name}', '${fckeditorBase.url?html}', '${baseFolder}',
@@ -392,7 +392,7 @@
           <div class="image-ref vrtx-image-ref.${name}">
             <div class="input-and-button-container.${name}">
               <div class="vrtx-textfield">
-                <input type="text" id="resource.${name}" onblur="previewImage(id);" name="resource.${name}" value="${value?html}" />
+                <input type="text" class="preview-image-inputfield" id="resource.${name}" name="resource.${name}" value="${value?html}" />
               </div>
               <div class="vrtx-button">
                 <button type="button" onclick="browseServer('resource.${name}', '${fckeditorBase.url?html}', '${baseFolder}',

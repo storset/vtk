@@ -38,7 +38,11 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Required;
+import org.vortikal.repository.Property;
+import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.ResourceTypeTree;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.display.collection.AbstractCollectionListingController;
 import org.vortikal.web.display.listing.ListingPager;
@@ -57,6 +61,8 @@ import org.vortikal.web.service.URL;
 public class EventListingController extends AbstractCollectionListingController {
 
     protected EventListingSearcher searcher;
+    private ResourceTypeTree resourceTypeTree;
+    private String startPropDefPointer;
 
     @Override
     public void runSearch(HttpServletRequest request, Resource collection, Map<String, Object> model, int pageLimit)
@@ -80,8 +86,40 @@ public class EventListingController extends AbstractCollectionListingController 
             totalHits += upcoming.getTotalHits();
             totalUpcomingHits = upcoming.getTotalHits();
             if (upcoming.size() > 0) {
-                results.add(upcoming);
                 atLeastOneUpcoming = true;
+
+                // Split upcoming into ongoing and upcoming
+                /* 
+                 * Quickest way[hack] to avoid:
+                 * 
+                 * 1. extra search component with rewrite of search for upcoming and new search for ongoing
+                 * 2. extra index search, potentially with aggregation and manual approval
+                 * 3. rewrite of paging scheme to handle multiple listings (recalculation of offsets and pagenr)
+                 */
+                List<PropertySet> events = upcoming.getFiles();
+                int ongoingLastIdx = getOngoingLastIdx(events);
+
+                if (ongoingLastIdx != -1) {
+
+                    String ongoingSearchCompName = "eventListing.ongoingEvents";
+                    org.springframework.web.servlet.support.RequestContext springRequestContext = new org.springframework.web.servlet.support.RequestContext(
+                            request);
+                    String title = springRequestContext.getMessage(ongoingSearchCompName, (String) null);
+
+                    int splitIdx = ongoingLastIdx + 1;
+                    Listing ongoing = new Listing(resourceManager.createResourceWrapper(collection), title,
+                            ongoingSearchCompName, 0);
+                    ongoing.setFiles(events.subList(0, splitIdx));
+                    ongoing.setUrls(upcoming.getUrls());
+                    ongoing.setDisplayPropDefs(upcoming.getDisplayPropDefs());
+                    results.add(ongoing);
+
+                    upcoming.setFiles(events.subList(splitIdx, events.size()));
+                    ongoing.setEditLinkAuthorized(new boolean[0]);
+                }
+
+                results.add(upcoming);
+
             }
         } else {
             atLeastOneUpcoming = this.searcher.searchUpcoming(request, collection, 1, 1, 0).size() > 0;
@@ -136,9 +174,45 @@ public class EventListingController extends AbstractCollectionListingController 
 
     }
 
+    private int getOngoingLastIdx(List<PropertySet> files) {
+        int ongoingLastIdx = -1;
+        long now = Calendar.getInstance().getTimeInMillis();
+        PropertyTypeDefinition startDatePropDef = resourceTypeTree.getPropertyDefinitionByPointer(startPropDefPointer);
+        for (int i = 0; i < files.size(); i++) {
+            PropertySet event = files.get(i);
+            Property startProp = event.getProperty(startDatePropDef);
+            if (startProp == null) {
+                // Event without startprops should not be a part of search
+                // result. If you however should happen to run into one, just
+                // forget this whole thing. The consequences of what might
+                // happen if you try and tweak you way out of it are dark.
+                return -1;
+            }
+            long start = startProp.getDateValue().getTime();
+            if (now > start) {
+                ongoingLastIdx = i;
+            } else {
+                // Original list is sorted on start date. Once you no longer
+                // have an event with start date that has passed, just return.
+                return ongoingLastIdx;
+            }
+        }
+        return ongoingLastIdx;
+    }
+
     @Required
     public void setSearcher(EventListingSearcher searcher) {
         this.searcher = searcher;
+    }
+
+    @Required
+    public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
+        this.resourceTypeTree = resourceTypeTree;
+    }
+
+    @Required
+    public void setStartPropDefPointer(String startPropDefPointer) {
+        this.startPropDefPointer = startPropDefPointer;
     }
 
 }

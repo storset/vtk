@@ -26,7 +26,15 @@ resourcetype course-group : fellestekst-document {
     ##
     [def title resource-prop-obj-val(".", "title")]
     [def course-group-scope resource-prop-obj-val(".", "course-group-scope")]
-    [def studinfo-kontakt resource-prop-obj-val(".", "studinfo-kontakt")]
+    [resource-props "."]
+    [def document structured-document()]
+    [def about document.properties.about]
+    [def courses-in-group document.properties.courses-in-group]
+    [def relevant-study-programmes document.properties.relevant-study-programmes]
+    [def course-group-admission document.properties.course-group-admission]
+    [def other document.properties.other]
+    [def studinfo-kontakt document.properties.studinfo-kontakt]
+    [def studinfo-kontakt-text-field document.properties.studinfo-kontakt-text-field]
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml">
       <head>
@@ -34,15 +42,33 @@ resourcetype course-group : fellestekst-document {
       </head>
       <body id="vrtx-course-group">
         <h1>[if course-group-scope != null && course-group-scope != ""][val course-group-scope]-[localized 'localized-group'][endif][if title != null && title != ""] - [val title][endif]</h1>
-        [call "json:field" {"select":"about"}]
-        [call "json:field" {"select":"courses-in-group"}]
-        [call "json:field" {"select":"relevant-study-programmes"}]
-        [call "json:field" {"select":"course-group-admission"}]
-        [call "json:field" {"select":"other"}]
-        [if studinfo-kontakt != null && studinfo-kontakt != "" && studinfo-kontakt != "ingen-fellestekst"]
-          [call "comp:vis-fellestekst" {"docType":"studinfo-kontakt", "propName":"studinfo-kontakt"}]
+        [if about != null && about != ""]
+          <h2>[localized 'about']</h2>
+          [val about # unescaped]
         [endif]
-        [call "json:field" {"select":"studinfo-kontakt-text-field"}]
+        [if courses-in-group != null && courses-in-group != ""]
+          <h2>[localized 'courses-in-group']</h2>
+          [val courses-in-group # unescaped]
+        [endif]
+        [if relevant-study-programmes != null && relevant-study-programmes != ""]
+          <h2>[localized 'relevant-study-programmes']</h2>
+          [val relevant-study-programmes # unescaped]
+        [endif]
+        [if course-group-admission != null && course-group-admission != ""]
+          <h2>[localized 'course-group-admission']</h2>
+          [val course-group-admission # unescaped]
+        [endif]
+        [if other != null && other != ""]
+          <h2>[localized 'other']</h2>
+          [val other # unescaped]
+        [endif]
+        [if (studinfo-kontakt != null && studinfo-kontakt != "" && studinfo-kontakt != "ingen-fellestekst") || (studinfo-kontakt-text-field != null && studinfo-kontakt-text-field != "")]
+          <h2>[localized 'studinfo-kontakt-group']</h2>
+          [call "comp:vis-fellestekst" {"docType":"studinfo-kontakt", "propName":"studinfo-kontakt"}]
+          [if studinfo-kontakt-text-field != null && studinfo-kontakt-text-field != ""]
+            [val studinfo-kontakt-text-field # unescaped]
+          [endif]
+        [endif]
       </body>
     </html>
     ##

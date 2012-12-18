@@ -390,15 +390,16 @@ div#resource\.picture\.preview.no-preview span {
 
 .vrtx-image-ref-preview-inner,
 div#resource\.picture\.preview-inner {
-  max-width: 170px;
-  max-height: 170px;
+  width: 170px;
+  height: 138px;
   overflow: hidden;
 }
 
 .vrtx-image-ref-preview-inner img,
 div#vrtx-resource\.picture img {
-  margin-top: 0px;
   max-width: 170px;
+  max-height: 138px;
+  margin-top: 0px;
 }
 
 .vrtx-image-ref-preview.no-preview img,

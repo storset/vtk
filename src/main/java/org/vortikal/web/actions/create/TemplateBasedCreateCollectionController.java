@@ -171,8 +171,10 @@ public class TemplateBasedCreateCollectionController extends SimpleFormControlle
                 if (split.length == 2) {
                     TypeInfo ti = repository.getTypeInfo(dest);
                     Namespace ns = ti.getNamespaceByPrefix(split[0]);
-                    titleProp = ti.createProperty(ns, split[1]);
-                    if (titleProp.getDefinition().isInheritable()) {
+                    if (ns != null) {
+                        titleProp = ti.createProperty(ns, split[1]);
+                    }
+                    if (titleProp != null && titleProp.getDefinition().isInheritable()) {
                         sc = new InheritablePropertiesStoreContext();
                         sc.addAffectedProperty(titleProp.getDefinition());
                     }

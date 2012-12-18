@@ -75,6 +75,7 @@ public class EventListingController extends AbstractCollectionListingController 
 
         int totalHits = 0;
         int totalUpcomingHits = 0;
+        int upcomingAndOngoingSize = 0;
 
         boolean atLeastOneUpcoming = false;
 
@@ -85,7 +86,9 @@ public class EventListingController extends AbstractCollectionListingController 
             upcoming = this.searcher.searchUpcoming(request, collection, upcomingEventPage, pageLimit, 0);
             totalHits += upcoming.getTotalHits();
             totalUpcomingHits = upcoming.getTotalHits();
-            if (upcoming.size() > 0) {
+            upcomingAndOngoingSize = upcoming.size();
+            
+            if (upcomingAndOngoingSize > 0) {
                 atLeastOneUpcoming = true;
 
                 // Split upcoming into ongoing and upcoming
@@ -127,11 +130,12 @@ public class EventListingController extends AbstractCollectionListingController 
                 upcoming = this.searcher.searchUpcoming(request, collection, upcomingEventPage, 0, 0);
                 totalHits += upcoming.getTotalHits();
                 totalUpcomingHits = upcoming.getTotalHits();
+                upcomingAndOngoingSize = upcoming.size();
                 upcoming = null;
             }
         }
 
-        if (upcoming == null || upcoming.size() == 0) {
+        if (upcoming == null || upcomingAndOngoingSize == 0) {
             // Searching only in previous events
             int upcomingOffset = getIntParameter(request, ListingPager.PREV_BASE_OFFSET_PARAM, 0);
             if (upcomingOffset > pageLimit)
@@ -147,9 +151,9 @@ public class EventListingController extends AbstractCollectionListingController 
             } else {
                 userDisplayPage = prevEventPage;
             }
-        } else if (upcoming.size() < pageLimit) {
+        } else if (upcomingAndOngoingSize < pageLimit) {
             // Fill up the rest of the page with previous events
-            int upcomingOffset = pageLimit - upcoming.size();
+            int upcomingOffset = pageLimit - upcomingAndOngoingSize;
             Listing previous = this.searcher.searchPrevious(request, collection, 1, upcomingOffset, 0);
             totalHits += previous.getTotalHits();
             if (previous.size() > 0) {

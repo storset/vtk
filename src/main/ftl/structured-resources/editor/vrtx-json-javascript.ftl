@@ -21,7 +21,7 @@
       // Retrieve HTML templates
       var templatesRetrieved = $.Deferred();
       TEMPLATES = vrtxAdmin.retrieveHTMLTemplates("templates",
-                                                  ["string", "html", "radio", "dropdown", "date", "browse", "add-remove-move"],
+                                                  ["string", "html", "radio", "dropdown", "date", "browse", "browse-images", "add-remove-move"],
                                                    templatesRetrieved);
 
       // Build JSON elements
@@ -401,15 +401,10 @@
                    browseButtonText: '<@vrtx.msg code="editor.browseImages" />',
                    type: '',
                    size: 30,
-                   preview: "<div id='" + inputFieldName + ".preview' class='vrtx-image-ref-preview no-preview'> \
-                               <label for='" + inputFieldName + ".preview'><@vrtx.msg code='editor.image.preview-title'/></label> \
-	                           <span><@vrtx.msg code='editor.image.no-preview-text'/></span> \
-                               <div id='" + inputFieldName + ".preview-inner' class='vrtx-image-ref-preview-inner'> \
-                                 <img src='/vrtx/__vrtx/static-resources/themes/default/images/no-preview-image.png' alt='no preview' /> \
-                               </div> \
-                            </div>" 
+                   previewTitle: '<@vrtx.msg code="editor.image.preview-title" />',
+                   previewNoImageText: '<@vrtx.msg code="editor.image.no-preview-text" />'
                  }
-      return $.mustache(TEMPLATES["browse"], json); 
+      return $.mustache(TEMPLATES["browse-images"], json); 
     }
     
     function addResourceRef(elem, inputFieldName) {
@@ -421,9 +416,7 @@
                    fckBrowsePath: '${fckBrowse.url.pathRepresentation}',
                    browseButtonText: '<@vrtx.msg code="editor.browseImages" />',
                    type: 'File',
-                   size: 40,
-                   onBlur: "",
-                   preview: "" }
+                   size: 40 }
       return $.mustache(TEMPLATES["browse"], json); 
     }
     
@@ -436,9 +429,7 @@
                    fckBrowsePath: '${fckBrowse.url.pathRepresentation}',
                    browseButtonText: '<@vrtx.msg code="editor.browseImages" />',
                    type: 'Media',
-                   size: 30,
-                   onBlur: "",
-                   preview: "" }      
+                   size: 30 }      
       return $.mustache(TEMPLATES["browse"], json); 
     }
     

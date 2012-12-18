@@ -53,7 +53,7 @@
 ### {{! BROWSE }}
 
 <div class="{{ clazz }}">
-  <div class="{{ class }}-label">
+  <div class="{{ clazz }}-label">
     <label for="{{ inputFieldName }}">{{ elemTitle }}</label>
   </div>
   <div class="{{ clazz }}-browse">
@@ -67,6 +67,31 @@
     </div>
   </div>
   {{{ preview }}}
+</div>
+
+### {{! BROWSE IMAGES }}
+
+<div class="{{ clazz }}">
+  <div class="{{ clazz }}-label">
+    <label for="{{ inputFieldName }}">{{ elemTitle }}</label>
+  </div>
+  <div class="{{ clazz }}-browse">
+    <div class="vrtx-textfield">
+      <input type="text" name="{{ inputFieldName }}" id="{{ inputFieldName }}" onblur="{{ onBlur }}" value="" size="{{ size }}" />
+    </div>
+    <div class="vrtx-button">
+      <button type="button" onclick="browseServer('{{ inputFieldName }}', '{{ fckEditorBaseUrl }}', '{{ parentURI }}', '{{ fckBrowsePath }}', '{{ type }}');">
+        {{ browseButtonText }}
+      </button>
+    </div>
+  </div>
+  <div id="{{ inputFieldName }}.preview" class="vrtx-image-ref-preview no-preview">
+    <label for="{{ inputFieldName }}.preview">{{ previewTitle }}</label>
+	<span>{{ previewNoImageText }}</span>
+    <div id="{{ inputFieldName }}.preview-inner" class="vrtx-image-ref-preview-inner">
+      <img src="/vrtx/__vrtx/static-resources/themes/default/images/no-preview-image.png" alt="{{ previewNoImageText }}" />
+    </div>
+  </div>
 </div>
 
 ### {{! ADD, REMOVE, MOVE UP, MOVE DOWN }}

@@ -100,7 +100,6 @@ resourcetype structured-event : structured-document {
       </head>
       <body id="vrtx-structured-event">
         <div id="vrtx-content">
-          [resources-props "."]
           [def document structured-document()]
           [def theShowAdditionalContent document.properties.showAdditionalContent]
           [if theShowAdditionalContent = "true" || theShowAdditionalContent = null]

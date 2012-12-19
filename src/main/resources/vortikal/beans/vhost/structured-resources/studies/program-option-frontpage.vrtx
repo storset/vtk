@@ -82,7 +82,6 @@ resourcetype program-option-frontpage : program-document {
       </head>
       <body id="vrtx-program-option">
         <div id="vrtx-content">
-          [resources-props "."]
           [def locale resource-locale()]  
           <div id="vrtx-main-content">
             <div id="vrtx-program-option-main" class="vrtx-frontpage-box white-box">

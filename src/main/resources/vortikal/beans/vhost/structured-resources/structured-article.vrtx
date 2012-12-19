@@ -78,7 +78,6 @@ resourcetype structured-article : structured-document {
       </head>
       <body id="vrtx-structured-article">
         <div id="vrtx-content">
-        [resources-props "."]
         [def document structured-document()]
         [def theShowAdditionalContent document.properties.showAdditionalContent]
         [if theShowAdditionalContent = "true" || theShowAdditionalContent = null]

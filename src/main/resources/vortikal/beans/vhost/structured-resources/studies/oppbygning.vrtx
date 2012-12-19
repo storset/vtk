@@ -172,7 +172,6 @@ resourcetype oppbygning : fellestekst-document{
       </head>
       <body id="vrtx-structured-article">
         <div id="vrtx-content">
-          [resources-props "."]
           [def document structured-document()]
           <div id="vrtx-main-content" class="vrtx-hide-additional-content-true"> 
             <h1>[localized 'oppbygning']</h1>

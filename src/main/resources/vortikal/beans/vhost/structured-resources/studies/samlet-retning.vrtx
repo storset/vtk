@@ -49,8 +49,6 @@ resourcetype samlet-retning : samlet {
       </head>
       <body id="vrtx-structured-article">
         <div id="vrtx-content">
-          [resources-props "."]
-          [def document structured-document()]
           <div id="vrtx-main-content" class="vrtx-hide-additional-content-true"> 
           	<h1>[call "comp:title"]</h1>
             [def progpath resource-prop("./", "uri")]

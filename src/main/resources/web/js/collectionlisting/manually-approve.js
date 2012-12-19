@@ -313,7 +313,7 @@ function generateManuallyApprovedContainer(resources, isInit) {
       if (len > prPage) {
         $("#manually-approve-container #approve-page-" + pages).hide();
       }
-      if(isInit) {
+      if(isInit) { // TODO (or feature): user will get unsaved msg until all pages with checkboxes is loaded async (difficult to avoid without running some code twice)
         MANUALLY_APPROVE_INITIALIZED.resolve();
       }
     }

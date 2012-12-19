@@ -471,6 +471,20 @@ span.cke_skin_kama .cke_wrapper {
   margin-left: 20px !important;
 }
 
+.cke_skin_kama .vrtx-button.vrtx-focus-button {
+  background: url(images/focus-button-left.gif) no-repeat 0 0 !important;
+}
+
+.cke_skin_kama .vrtx-button:hover,
+.cke_skin_kama .vrtx-button.hover {
+  background: url(images/focus-button-left.gif) no-repeat 0 0 !important;
+}
+
+.cke_skin_kama .vrtx-button.vrtx-focus-button:hover,
+.cke_skin_kama .vrtx-button.vrtx-focus-button.hover {
+  background: url(images/focus-button-left-rollover.gif) no-repeat 0 0 !important;
+}
+
 .cke_skin_kama .vrtx-button span,
 .cke_skin_kama #editor-help-menu a {
   font: normal 13px/1.3 Arial, sans-serif !important;

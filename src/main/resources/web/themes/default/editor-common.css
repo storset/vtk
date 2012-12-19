@@ -203,6 +203,10 @@ div.manually-approve-from table input {
   width: 522px;
 }
 
+#vrtx-simple-editor > div.title input {
+  width: 474px;
+}
+
 div.additionalContent,
 div.introduction,
 div.image-description,

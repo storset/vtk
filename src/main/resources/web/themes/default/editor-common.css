@@ -373,11 +373,6 @@ div#vrtx-resource\.picture div#resource\.picture\.preview {
   float: none;
 }
 
-.vrtx-image-ref-preview,
-div#resource\.picture\.preview {
-  position: relative;
-}
-
 .vrtx-image-ref-preview span,
 div#resource\.picture\.preview span {
   color: #9d9d9d;

@@ -1874,7 +1874,9 @@ function ctrlSEventHandler(_$, e) {
 
 function loadMultipleInputFields(name, addName, removeName, moveUpName, moveDownName, browseName, isMovable, isBrowsable) { // TODO: simplify
   var inputField = $("." + name + " input[type=text]");
-  if (inputField.val() == null) return;
+  if (inputField.val() == null) {
+    MULTIPLE_INPUT_FIELD_INITIALIZED.resolve();
+  }
 
   var formFields = inputField.val().split(",");
 
@@ -1920,6 +1922,8 @@ function loadMultipleInputFields(name, addName, removeName, moveUpName, moveDown
   }
       
   autocompleteUsernames(".vrtx-autocomplete-username");
+  
+  MULTIPLE_INPUT_FIELD_INITIALIZED.resolve();
 }
 
 function initMultipleInputFields() {

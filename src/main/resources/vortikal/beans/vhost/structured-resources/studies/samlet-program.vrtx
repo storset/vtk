@@ -75,7 +75,6 @@ resourcetype samlet-program : samlet {
       </head>
       <body id="vrtx-structured-project">
         <div id="vrtx-content">
-          [resources-props "."]
           [def document structured-document()]
           <div id="vrtx-main-content" class="vrtx-hide-additional-content-true">
             <div>[localized 'samlet']<span class="programkode">[call "comp:programkode"]</span></div>    

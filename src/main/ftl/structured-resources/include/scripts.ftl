@@ -7,6 +7,7 @@
   <#local containsShowHideScripts = containsScripts(scripts, 'SHOWHIDE') />
   <#local containsMultipleInputFieldScripts = containsScripts(scripts, 'MULTIPLEINPUTFIELDS') />
   <script type="text/javascript"><!--
+    var MULTIPLE_INPUT_FIELD_INITIALIZED;
     $(document).ready(function() {
       <#list scripts as script>
         <#if script.type == 'SHOWHIDE' >
@@ -14,6 +15,7 @@
         </#if>
       </#list>
       <#if containsMultipleInputFieldScripts>
+        MULTIPLE_INPUT_FIELD_INITIALIZED = $.Deferred();
         $.when(MULTIPLE_INPUT_FIELD_TEMPLATES_DEFERRED).done(function() {
           browseBase = '${fckeditorBase.url?html}';
           browseBaseFolder = '${baseFolder}';

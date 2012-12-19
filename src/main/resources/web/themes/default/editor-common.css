@@ -203,7 +203,7 @@ div.manually-approve-from table input {
   width: 522px;
 }
 
-#vrtx-simple-editor > div.userTitle input {
+#vrtx-simple-editor div.userTitle .vrtx-textfield input {
   width: 474px;
 }
 

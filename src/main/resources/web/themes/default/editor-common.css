@@ -203,7 +203,7 @@ div.manually-approve-from table input {
   width: 522px;
 }
 
-#vrtx-simple-editor div.userTitle .vrtx-textfield input {
+#vrtx-simple-editor div.userTitle input {
   width: 474px;
 }
 
@@ -414,6 +414,7 @@ div#vrtx-resource\.picture img {
   max-width: 170px;
   max-height: 138px;
   margin-top: 0px;
+  overflow: hidden;
 }
 
 .vrtx-image-ref-preview.no-preview img,

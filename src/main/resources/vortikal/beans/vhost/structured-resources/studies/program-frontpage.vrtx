@@ -127,7 +127,7 @@ resourcetype program-frontpage : program-document {
       ##
       [resource-props "."]
       <h2>[localized 'facts']</h2>
-      [def org org + 'check'] 
+      [def org full-time + 'check'] 
       <table id="vrtx-program-facts">
         <tbody> 
           [if study-points != null]

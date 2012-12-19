@@ -241,9 +241,6 @@ resourcetype organizational-unit {
 
   view {
     ##
-    [resources-props "."]
-    [def document structured-document()]
-    [def subsubunits document.properties.showExtendedUnitList]
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml">
       <head>
@@ -251,6 +248,9 @@ resourcetype organizational-unit {
       </head>
       <body id="vrtx-organizational-unit">
         <div id="vrtx-content">
+        [resources-props "."]
+        [def document structured-document()]
+        [def subsubunits document.properties.showExtendedUnitList]
         [if subsubunits = "true"]
           <div id="vrtx-main-content" class="vrtx-hide-additional-content-true">         
             <div class="vrtx-frontpage-box white-box">

@@ -103,7 +103,7 @@ resourcetype course-description : fellestekst-document {
     tilrettelagt-eksamen (class[vrtx-shared-text]),
     group tilrettelagt-eksamen-group (tilrettelagt-eksamen-text-field, tilrettelagt-eksamen) vertical,
     evaluering-av-emnet (class[vrtx-shared-text]),
-    group evaluering-av-emnet-group (evaluering-av-emnet-text-field, evaluering-av-emnet) vertical,
+    group evaluering-av-emnet-group (evaluering-av-emnet, evaluering-av-emnet-text-field) vertical,
     other-text-field (after evaluering-av-emnet-group),
     studinfo-kontakt (class[vrtx-shared-text]),
     group studinfo-kontakt-group (studinfo-kontakt, studinfo-kontakt-text-field) vertical
@@ -469,7 +469,7 @@ resourcetype course-description : fellestekst-document {
       [def opptak-og-adgang document.properties.opptak-og-adgang]
       [def opptak-og-adgang-text-field document.properties.opptak-og-adgang-text-field]
       [if (opptak-og-adgang-text-field != null && opptak-og-adgang-text-field != "") || (opptak-og-adgang != null && opptak-og-adgang != "" && opptak-og-adgang != "ingen-fellestekst")]
-        <div id="opptak-og-adgang">[localized opptak-og-adgang]</a>
+        <div id="opptak-og-adgang">
           [if opptak-og-adgang-text-field != null && opptak-og-adgang-text-field != ""]
             [val opptak-og-adgang-text-field # unescaped]
           [endif]

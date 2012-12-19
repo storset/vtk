@@ -464,7 +464,7 @@ public class ResourceTypeTreeImpl implements ResourceTypeTree, InitializingBean,
         }
         return sb.toString();
     }
-
+    
     private String[] getPrimaryResourceTypeNames() {
         List<String> list = new ArrayList<String>();
         for (PrimaryResourceTypeDefinition def : this.primaryTypes) {
@@ -763,6 +763,17 @@ public class ResourceTypeTreeImpl implements ResourceTypeTree, InitializingBean,
             sb.append(" (mixin)");
         }
         sb.append("\n");
+        
+        if (def instanceof PrimaryResourceTypeDefinition) {
+            PrimaryResourceTypeDefinition pdef = (PrimaryResourceTypeDefinition) def;
+            if (pdef.getAssertions() != null) {
+                for (Object a: pdef.getAssertions()) {
+                    for (int j = 0; j < level; j++)
+                        sb.append("  ");
+                    sb.append("  assertion: ").append(a).append('\n');
+                }
+            }
+        }
 
         List<MixinResourceTypeDefinition> mixins = this.mixinTypeDefinitionMap.get(def);
         if (mixins != null) {

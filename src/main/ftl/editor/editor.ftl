@@ -81,20 +81,25 @@
         
         // Load HTML/Mustache templates for multiple inputfields
         $.when(MULTIPLE_INPUT_FIELD_TEMPLATES_DEFERRED).done(function() {
-          if(_$("#resource\\.featured-articles").length) {
-            MULTIPLE_INPUT_FIELD_INITIALIZED = $.Deferred();
+          var hasFeaturedArticles = _$("#resource\\.featured-articles").length;
+          var hasAggregation = _$("#resource\\.aggregation").length;
+          var hasManuallyApprove = _$("#resource\\.manually-approve-from").length;
+          
+          if(hasFeaturedArticles || hasAggregation || hasManuallyApprove) {
+            MULTIPLE_INPUT_FIELD_INITIALIZED = $.Deferred();  
+          }
+        
+          if(hasFeaturedArticles) {
             loadMultipleInputFields("featured-articles",'${vrtx.getMsg("editor.add")}',
                                     '${vrtx.getMsg("editor.remove")}', '${vrtx.getMsg("editor.move-up")}',
                                     '${vrtx.getMsg("editor.move-down")}', '${vrtx.getMsg("editor.browseImages")}', true, true);
           }   
-          if(_$("#resource\\.aggregation").length) {   
-            MULTIPLE_INPUT_FIELD_INITIALIZED = $.Deferred();               
+          if(hasAggregation) {               
             loadMultipleInputFields("aggregation", '${vrtx.getMsg("editor.add")}',
                                     '${vrtx.getMsg("editor.remove")}', '${vrtx.getMsg("editor.move-up")}',
                                     '${vrtx.getMsg("editor.move-down")}', '${vrtx.getMsg("editor.browseImages")}', false, false);
           } 
-          if(_$("#resource\\.manually-approve-from").length) {
-            MULTIPLE_INPUT_FIELD_INITIALIZED = $.Deferred();  
+          if(hasManuallyApprove) {
             loadMultipleInputFields("manually-approve-from", '${vrtx.getMsg("editor.add")}',
                                     '${vrtx.getMsg("editor.remove")}', '${vrtx.getMsg("editor.move-up")}',
                                     '${vrtx.getMsg("editor.move-down")}', '${vrtx.getMsg("editor.browseImages")}', false, false);

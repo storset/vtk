@@ -136,7 +136,7 @@ resourcetype program-frontpage : program-document {
           [if duration != null]
             <tr><td class="vrtx-program-fact-header">[localized 'duration']:</td><td><strong>[val duration] [call "comp:years"]</strong></td></tr>
           [endif]
-          [if full-time = 'falsecheck']
+          [if org = 'falsecheck']
           	<tr><td class="vrtx-program-fact-header">[localized 'organization']:</td><td><strong>[localized 'parttime']</strong></td></tr>
           [endif]
         </tbody>

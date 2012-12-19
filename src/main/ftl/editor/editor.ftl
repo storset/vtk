@@ -51,7 +51,7 @@
         var vrtxAdm = vrtxAdmin, _$ = vrtxAdm._$;
       
         // Sticky bar shortcuts
-        vrtxAdm.mapShorcut("#vrtx-save-view-shortcut", "#saveAndViewButton");
+        vrtxAdm.mapShortcut("#vrtx-save-view-shortcut", "#saveAndViewButton");
         vrtxAdm.mapShortcut("#vrtx-save-copy-shortcut", "#saveCopyButton");
         vrtxAdm.mapShortcut("#vrtx-save-shortcut", "#saveButton");
         vrtxAdm.mapShortcut("#vrtx-cancel-shortcut", "#cancel");

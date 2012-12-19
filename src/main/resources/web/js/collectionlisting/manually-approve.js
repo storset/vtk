@@ -183,7 +183,7 @@ function retrieveResources(serviceUri, locations, aggregatedlocations, isInit) {
         $("#vrtx-manually-approve-tab-menu:hidden").removeClass("hidden");
         $("#manually-approve-container:hidden").removeClass("hidden");
         
-        generateManuallyApprovedContainer(results);
+        generateManuallyApprovedContainer(results, isInit);
       } else {
         $("#approve-spinner").remove();
         if(!APPROVED_ONLY) {
@@ -212,7 +212,7 @@ function retrieveResources(serviceUri, locations, aggregatedlocations, isInit) {
  * 
  */
 
-function generateManuallyApprovedContainer(resources) {
+function generateManuallyApprovedContainer(resources, isInit) {
 
   // Initial setup
   var pages = 1,

@@ -78,7 +78,7 @@ resourcetype course-description : fellestekst-document {
     ikke-privatist (class[vrtx-shared-text]),
     group ikke-privatist-group (ikke-privatist-text-field, ikke-privatist) vertical,
     obligatoriske-forkunnskaper (class[vrtx-shared-text]),
-    group obligatoriske-forkunnskaper-group (obligatoriske-forkunnskaper-text-field, obligatoriske-forkunnskaper, recommended-prerequisites-text-field) vertical,
+    group prerequisites-group (obligatoriske-forkunnskaper-text-field, obligatoriske-forkunnskaper, recommended-prerequisites-text-field) vertical,
     overlapping-courses:credits (dropdown),
     group overlapping-courses-group (overlapping-courses, overlapping-courses-text-field) vertical,
     tidsrom-for-undervisning (class[vrtx-shared-text]),
@@ -310,16 +310,29 @@ resourcetype course-description : fellestekst-document {
       [endif]
       [def obligatoriske-forkunnskaper document.properties.obligatoriske-forkunnskaper]
       [def obligatoriske-forkunnskaper-text-field document.properties.obligatoriske-forkunnskaper-text-field]
-      [if (obligatoriske-forkunnskaper-text-field != null && obligatoriske-forkunnskaper-text-field != "") || (obligatoriske-forkunnskaper != null && obligatoriske-forkunnskaper != "" && obligatoriske-forkunnskaper != "ingen-fellestekst")]
+      [def recommended-prerequisites-text-field document.properties.recommended-prerequisites-text-field]
+      [if (obligatoriske-forkunnskaper-text-field != null && obligatoriske-forkunnskaper-text-field != "") || (obligatoriske-forkunnskaper != null && obligatoriske-forkunnskaper != "" && obligatoriske-forkunnskaper != "ingen-fellestekst") || (recommended-prerequisites-text-field != null && recommended-prerequisites-text-field != "")]
         [if put-dash != null]
           -
         [else]
           [def put-dash ""]
         [endif]
-        <a href="#obligatoriske-forkunnskaper" class="vrtx-link-check">[localized 'obligatoriske-forkunnskaper-group']</a>
+        <a href="#prerequisites" class="vrtx-link-check">[localized 'prerequisites-group']</a>
       [endif]
+      [def overlapping-courses document.properties.overlapping-courses]
+      [def overlapping-courses-text-field document.properties.overlapping-courses-text-field]
+      [if overlapping-courses != null || (overlapping-courses-text-field != null && overlapping-courses-text-field != "")]
+        [if put-dash != null]
+          -
+        [else]
+          [def put-dash ""]
+        [endif]
+        <a href="#overlapping-courses" class="vrtx-link-check">[localized 'overlapping-courses-group']</a>
+      [endif]
+      [def tidsrom-for-undervisning-text-field document.properties.tidsrom-for-undervisning-text-field]
       [def tidsrom-for-undervisning document.properties.tidsrom-for-undervisning]
       [def teaching-text-field document.properties.teaching-text-field]
+      [def adgang-text-field document.properties.adgang-text-field]
       [def adgang document.properties.adgang]
       [if (teaching-text-field != null && teaching-text-field != "") || (tidsrom-for-undervisning != null && tidsrom-for-undervisning != "" && tidsrom-for-undervisning != "ingen-fellestekst") || (adgang != null && adgang != "" && adgang != "ingen-fellestekst")]
         [if put-dash != null]
@@ -475,23 +488,51 @@ resourcetype course-description : fellestekst-document {
       [endif]
       [def obligatoriske-forkunnskaper document.properties.obligatoriske-forkunnskaper]
       [def obligatoriske-forkunnskaper-text-field document.properties.obligatoriske-forkunnskaper-text-field]
-      [if (obligatoriske-forkunnskaper-text-field != null && obligatoriske-forkunnskaper-text-field != "") || (obligatoriske-forkunnskaper != null && obligatoriske-forkunnskaper != "" && obligatoriske-forkunnskaper != "ingen-fellestekst")]
-        <div id="obligatoriske-forkunnskaper">
-          [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"obligatoriske-forkunnskaper"}]
+      [def recommended-prerequisites-text-field document.properties.recommended-prerequisites-text-field]
+      [if (obligatoriske-forkunnskaper-text-field != null && obligatoriske-forkunnskaper-text-field != "") || (obligatoriske-forkunnskaper != null && obligatoriske-forkunnskaper != "" && obligatoriske-forkunnskaper != "ingen-fellestekst") || (recommended-prerequisites-text-field != null && recommended-prerequisites-text-field != "")]
+        <div id="prerequisites">
           [if obligatoriske-forkunnskaper-text-field != null && obligatoriske-forkunnskaper-text-field != ""]
             [val obligatoriske-forkunnskaper-text-field # unescaped]
           [endif]
+          [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"obligatoriske-forkunnskaper"}]
+          [if recommended-prerequisites-text-field != null && recommended-prerequisites-text-field != ""]
+            [val recommended-prerequisites-text-field # unescaped]
+          [endif]
         </div>
       [endif]
-      [def tidsrom-for-undervisning document.properties.tidsrom-for-undervisning]
+      [def overlapping-courses document.properties.overlapping-courses]
+      [def overlapping-courses-text-field document.properties.overlapping-courses-text-field]
+      [if overlapping-courses != null || (overlapping-courses-text-field != null && overlapping-courses-text-field != "")]
+        <div id="overlapping-courses">
+          [if overlapping-courses != null]
+            [list overlapping-courses overlapping-course]
+              [if (overlapping-course.credits != null && overlapping-course.credits != "") && (overlapping-course.fs-course-code != null && overlapping-course.fs-course-code != "")]
+                [val overlapping-course.credits] poeng for [val overlapping-course.fs-course-code]
+              [endif]
+            [endlist]
+          [endif]
+          [if overlapping-courses-text-field != null && overlapping-courses-text-field != ""]
+            [val overlapping-courses-text-field # unescaped]
+          [endif]
+        </div>
+      [endif]
       [def teaching-text-field document.properties.teaching-text-field]
+      [def tidsrom-for-undervisning-text-field document.properties.tidsrom-for-undervisning-text-field]
+      [def tidsrom-for-undervisning document.properties.tidsrom-for-undervisning]
+      [def adgang-text-field document.properties.adgang-text-field]
       [def adgang document.properties.adgang]
-      [if (teaching-text-field != null && teaching-text-field != "") || (tidsrom-for-undervisning != null && tidsrom-for-undervisning != "" && tidsrom-for-undervisning != "ingen-fellestekst") || (adgang != null && adgang != "" && adgang != "ingen-fellestekst")]
+      [if (teaching-text-field != null && teaching-text-field != "") || (tidsrom-for-undervisning != null && tidsrom-for-undervisning != "" && tidsrom-for-undervisning != "ingen-fellestekst") || (tidsrom-for-undervisning-text-field != null && tidsrom-for-undervisning-text-field != "") || (adgang != null && adgang != "" && adgang != "ingen-fellestekst") || (adgang-text-field != null && adgang-text-field != "")]
         <div id="teaching">
-          [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"tidsrom-for-undervisning"}]
-          [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"adgang"}]
           [if teaching-text-field != null && teaching-text-field != ""]
             [val teaching-text-field # unescaped]
+          [endif]
+          [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"tidsrom-for-undervisning"}]
+          [if tidsrom-for-undervisning-text-field != null && tidsrom-for-undervisning-text-field != ""]
+            [val tidsrom-for-undervisning-text-field # unescaped]
+          [endif]
+          [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"adgang"}]
+          [if adgang-text-field != null && adgang-text-field != ""]
+            [val adgang-text-field # unescaped]
           [endif]
         </div>
       [endif]
@@ -827,11 +868,18 @@ resourcetype course-description : fellestekst-document {
     ikke-privatist-text-field : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
     ikke-privatist : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
     ikke-privatist-group : (en : "External candidates", no : "Privatist", nn : "Privatist"),
-    obligatoriske-forkunnskaper-text-field : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
-    obligatoriske-forkunnskaper : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
-    obligatoriske-forkunnskaper-group : (en : "Formal prerequisites", no : "Obligatoriske forkunnskaper", nn : "Obligatoriske forkunnskaper"),
+    obligatoriske-forkunnskaper-text-field : (en : "Formal prerequisites optional text", no : "Obligatoriske forkunnskaper valgfri tekst", nn : "Obligatoriske forkunnskaper valfri tekst"),
+    obligatoriske-forkunnskaper : (en : "Formal prerequisites shared text", no : "Obligatoriske forkunnskaper fellestekst", nn : "Obligatoriske forkunnskaper fellestekst"),
+    recommended-prerequisites-text-field : (en : "Recommended prerequisites optional text", no : "Anbefalte forkunnskaper valgfri tekst", nn : "Anbefalte forkunnskaper valfri tekst"),
+    prerequisites-group : (en : "Prerequisites", no : "Forkunnskaper", nn : "Forkunnskaper"),
+    overlapping-courses : (en : "Courses", no : "Kurs", nn : "Kurs"),
+    overlapping-courses-text-field : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
+    overlapping-courses-group : (en : "Overlapping courses", no : "Overlappende kurs", nn : "Overlappende kurs"),
+    fs-course-code : (en : "Course code", no : "Kurskode", nn : "Kurskode"),
     teaching-text-field : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
+    tidsrom-for-undervisning-text-field : (en : "Teaching period optional text", no : "Tidsrom for undervisning valgfri tekst", nn : "Tidsrom for undervisning valfri tekst"),
     tidsrom-for-undervisning : (en : "Teaching period shared text", no : "Tidsrom for undervisning fellestekst", nn : "Tidsrom for undervisning fellestekst"),
+    adgang-text-field : (en : "Admission optional text", no : "Adgang valgfri tekst", nn : "Adgang valfri tekst"),
     adgang : (en : "Admission shared text", no : "Adgang fellestekst", nn : "Adgang fellestekst"),
     teaching-group : (en : "Teaching", no : "Undervisning", nn : "Undervisning"),
     vurdering-og-eksamen-text-field : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
@@ -872,6 +920,6 @@ resourcetype course-description : fellestekst-document {
     course : (en : "Course", no : "Kurs", nn : "Kurs"),
     bachelor : (en : "Bachelor", no : "Bachelor", nn : "Bachelor"),
     master : (en : "Master", no : "Master", nn : "Master"),
-    phd : (en : "PhD", no : "PhD", nn : "PhD")
+    phd : (en : "PhD", no : "ph.d.", nn : "ph.d.")
   }
 }

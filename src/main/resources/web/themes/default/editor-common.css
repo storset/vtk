@@ -414,6 +414,7 @@ div#vrtx-resource\.picture img {
   max-width: 170px;
   max-height: 138px;
   margin-top: 0px;
+  overflow: hidden;
 }
 
 .vrtx-image-ref-preview.no-preview img,

@@ -29,7 +29,7 @@ resourcetype research-group {
   }
 
   scripts {
-    psarticipantsUsernames multipleinputfields
+    participantsUsernames multipleinputfields
   }
     
   services {

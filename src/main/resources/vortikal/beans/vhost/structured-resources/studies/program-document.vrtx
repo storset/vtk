@@ -159,8 +159,8 @@ resourcetype program-document {
       ##
       [resource-props "."]
       [if contactTitle != null && contactTitle != ""]
-        [if url != null && url != ""]
-          <h2><a href="[val url]">[val contactTitle]</a></h2>
+        [if contactUrl != null && contactUrl != ""]
+          <h2><a href="[val contactUrl]">[val contactTitle]</a></h2>
         [else]
           <h2>[val contactTitle]</h2>
         [endif]
@@ -172,8 +172,8 @@ resourcetype program-document {
       [endif]
       [if contactLinkText != null && contactLinkText != ""]
         <div class="vrtx-more">
-          [if url != null && url != ""]
-            <span><a href="[val url]">[val contactLinkText]</a></span>
+          [if contactUrl != null && contactUrl != ""]
+            <span><a href="[val contactUrl]">[val contactLinkText]</a></span>
           [else]
             <span>[val contactLinkText]</span>
           [endif]

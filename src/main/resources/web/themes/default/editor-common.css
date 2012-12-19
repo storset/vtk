@@ -373,6 +373,10 @@ div#vrtx-resource\.picture div#resource\.picture\.preview {
   float: none;
 }
 
+div.introImageAndCaption .vrtx-image-ref-preview {
+  display: block;
+}
+
 .vrtx-image-ref-preview,
 div#resource\.picture\.preview {
   position: relative;

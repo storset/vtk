@@ -236,7 +236,7 @@ resourcetype course-description : fellestekst-document {
 
     course-navigation {
       ##
-      <div class="vrtx-course-navigation">
+      <div id="vrtx-course-navigation">
         [def this-uri resource-prop(".", "uri")]
         [def parent-uri resource-prop("./", "uri")]
         [def content-locale resource-prop-obj-val(".", "contentLocale")]

@@ -212,31 +212,25 @@ resourcetype course-description : fellestekst-document {
 
     semesters {
       ##
-      <table id="vrtx-course-semesters" cellpadding="0" cellspacing="0">
-        <tbody>
-          <tr>
-            <td>
-              <b>[localized 'semester']</b>
-              <p>
-                <ul>
-                  [def uri resource-prop("./", "uri")]
-                  [def semesters search('uri=' + uri + '/* && type IN semester-page && published=true')]
-                  [if typeof(semesterSearchSort) = 'function']
-                    [def semesters semesterSearchSort(semesters)]
-                  [endif]
-                  [list semesters semester]
-                    [def url view-url(semester)]
-                    [def title resource-prop(semester, "semesterContext.semesterTitle")]
-                    <li>
-                      <a href="[val url]">[if title != null && title != ""][val title][else][val url][endif]</a>
-                    </li>
-                  [endlist]
-                </ul>
-              <p>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <div id="vrtx-course-semesters">
+        <b>[localized 'semester']</b>
+        <p>
+          <ul>
+            [def uri resource-prop("./", "uri")]
+            [def semesters search('uri=' + uri + '/* && type IN semester-page && published=true')]
+            [if typeof(semesterSearchSort) = 'function']
+              [def semesters semesterSearchSort(semesters)]
+             [endif]
+             [list semesters semester]
+               [def url view-url(semester)]
+               [def title resource-prop(semester, "semesterContext.semesterTitle")]
+               <li>
+                 <a href="[val url]">[if title != null && title != ""][val title][else][val url][endif]</a>
+               </li>
+             [endlist]
+           </ul>
+        </p>
+      </div>
       ##
     }
 
@@ -687,26 +681,20 @@ resourcetype course-description : fellestekst-document {
         <div id="vrtx-course-toc">
           [call "comp:course-toc" {"document" : document}]
         </div>
-        [call "comp:facts" {"document" : document}]
-        [if (studinfo-kontakt != null && studinfo-kontakt != "" && studinfo-kontakt != "ingen-fellestekst") || (studinfo-kontakt-text-field != null && studinfo-kontakt-text-field != "")]
-          <table id="vrtx-course-contact" cellpadding="0" cellspacing="0">
-            <tbody>
-              <tr>
-                <td>
-                  <b>[localized 'contact']</b>
-                  [call "comp:vis-fellestekst" {"docType":"studinfo-kontakt", "propName":"studinfo-kontakt"}]
-                  [if studinfo-kontakt-text-field != null && studinfo-kontakt-text-field != ""]
-                    [val studinfo-kontakt-text-field # unescaped]
-                  [endif]
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        [endif]
-        [call "comp:semesters"]
-        <div>
-          [call "comp:course-content" {"document" : document}]
+        <div id="vrtx-course-data">
+          [call "comp:facts" {"document" : document}]
+          [if (studinfo-kontakt != null && studinfo-kontakt != "" && studinfo-kontakt != "ingen-fellestekst") || (studinfo-kontakt-text-field != null && studinfo-kontakt-text-field != "")]
+            <div id="vrtx-course-contact">
+              <b>[localized 'contact']</b>
+              [call "comp:vis-fellestekst" {"docType":"studinfo-kontakt", "propName":"studinfo-kontakt"}]
+              [if studinfo-kontakt-text-field != null && studinfo-kontakt-text-field != ""]
+                [val studinfo-kontakt-text-field # unescaped]
+              [endif]
+            </div>
+          [endif]
+          [call "comp:semesters"]
         </div>
+        [call "comp:course-content" {"document" : document}]
       </body>
     </html>
     ##

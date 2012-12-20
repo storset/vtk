@@ -1874,11 +1874,13 @@ function ctrlSEventHandler(_$, e) {
 
 function loadMultipleInputFields(name, addName, removeName, moveUpName, moveDownName, browseName, isMovable, isBrowsable) { // TODO: simplify
   var inputField = $("." + name + " input[type=text]");
-  if (inputField.val() == null) {
+  var inputFieldVal = inputField.val();
+  if (inputFieldVal == null) {
     MULTIPLE_INPUT_FIELD_INITIALIZED.resolve();
+    return;
   }
 
-  var formFields = inputField.val().split(",");
+  var formFields = inputFieldVal.split(",");
 
   COUNTER_FOR_MULTIPLE_INPUT_FIELD[name] = 1; // 1-index
   LENGTH_FOR_MULTIPLE_INPUT_FIELD[name] = formFields.length;

@@ -191,16 +191,16 @@ resourcetype course-description : fellestekst-document {
           </tr>
           [if course-fee != null && course-fee && course-fee-amount != null && course-fee-amount != ""]
             <tr>
-          [else}
+          [else]
             <tr class="last">
-              <td>[localized 'content-locale']:</td>
-              [if content-locale != null && content-locale = "no_NO"]
-                <td>[localized 'locale-no']</td>
-              [elseif content-locale != null && content-locale = "en"]
-                <td>[localized 'locale-en']</td>
-              [elseif content-locale != null && content-locale = "no_NO_NY"]
-                <td>[localized 'locale-nn']</td>
-              [endif]
+          [endif]
+            <td>[localized 'content-locale']:</td>
+            [if content-locale != null && content-locale = "no_NO"]
+              <td>[localized 'locale-no']</td>
+            [elseif content-locale != null && content-locale = "en"]
+              <td>[localized 'locale-en']</td>
+            [elseif content-locale != null && content-locale = "no_NO_NY"]
+              <td>[localized 'locale-nn']</td>
             [endif]
           </tr>
           [if course-fee != null && course-fee && course-fee-amount != null && course-fee-amount != ""]

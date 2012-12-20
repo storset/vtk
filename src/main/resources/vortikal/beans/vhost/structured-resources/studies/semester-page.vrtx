@@ -122,15 +122,15 @@ resourcetype semester-page : fellestekst-document {
       <body id="vrtx-semester">
         <div id="vrtx-content">
           <div id="vrtx-main-content">
-            <div>
-            [call "comp:course-folder"]
-            <h1>[localized 'semesterpage-for'] [if course-code != null && course-code != ""][val course-code][endif][if course-code != null && course-code != "" && semester != null && semester != ""] - [endif][if semester != null && semester != ""][val semester][endif]</h1>
-            [call "comp:show-if-published"{"prop":"schedule"}]
-            [call "comp:show-if-published"{"prop":"exam"}]
-            [call "comp:show-if-published"{"prop":"syllabus"}]
+            <div class="vrtx-frontpage-box white-box">
+              [call "comp:course-folder"]
+              <h1>[localized 'semesterpage-for'] [if course-code != null && course-code != ""][val course-code][endif][if course-code != null && course-code != "" && semester != null && semester != ""] - [endif][if semester != null && semester != ""][val semester][endif]</h1>
+              [call "comp:show-if-published"{"prop":"schedule"}]
+              [call "comp:show-if-published"{"prop":"exam"}]
+              [call "comp:show-if-published"{"prop":"syllabus"}]
             </div>
             [if messages-placement != null && messages-placement = "middle"]
-              <div>
+              <div class="vrtx-frontpage-box white-box">
                 <h2>Beskjeder</h2>
                 [def uri resource-prop("./", "uri")]
                 [def uri uri + "/beskjeder"]
@@ -138,13 +138,13 @@ resourcetype semester-page : fellestekst-document {
               </div>
             [endif]
             [if fronter]
-              <div>
+              <div class="vrtx-frontpage-box white-box">
                 <h2>[localized 'fronter']</h2>
                 <p>[localized 'fronter-text']</p>
                 [localized 'log-into-fronter']
               </div>
             [endif]
-            <div>
+            <div class="vrtx-frontpage-box white-box">
               [call "comp:resource-links"{"title":"link-box-one-title"}]
               [call "comp:resource-links"{"title":"link-box-two-title"}]
               [call "comp:resource-links"{"title":"link-box-three-title"}]
@@ -154,7 +154,7 @@ resourcetype semester-page : fellestekst-document {
             </div>
           </div>
           <div id="vrtx-additional-content">
-            <div id="vrtx-related-content">
+            <div class="vrtx-frontpage-box white-box vrtx-distach-bottom">
               <h2>Faglærere</h2>
               [def document structured-document()]
               [def teachers document.properties.teachers]
@@ -165,18 +165,21 @@ resourcetype semester-page : fellestekst-document {
                   [endif]
                 [endlist]
               [endif]
+            <div class="vrtx-frontpage-box white-box vrtx-distach-bottom">
               <h2>Kontakt</h2>
               [call "comp:vis-fellestekst" {"docType":"studinfo-kontakt", "propName":"studinfo-kontakt"}]
               [if studinfo-kontakt-text-field != null && studinfo-kontakt-text-field != ""]
                 [val studinfo-kontakt-text-field # unescaped]
               [endif]
-              [if messages-placement = null || messages-placement = "right"]
+            </div>
+            [if messages-placement = null || messages-placement = "right"]
+              <div class="vrtx-frontpage-box white-box">
                 <h2>Beskjeder</h2>
                 [def uri resource-prop("./", "uri")]
                 [def uri uri + "/beskjeder"]
                 [call "include:messages" {"uri" : uri}]
-              [endif]
-            </div>
+              </div>
+            [endif]
           </div>
         </div>
       </body>

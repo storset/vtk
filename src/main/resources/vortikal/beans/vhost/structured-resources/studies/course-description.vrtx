@@ -124,7 +124,7 @@ resourcetype course-description : fellestekst-document {
       [def course-fee-amount document.properties.course-fee-amount]
       <table id="vrtx-course-facts" cellpadding="0" cellspacing="0" class="vrtx-course-data">
         <tbody>
-          <tr class="vrtx-course-data-title">
+          <tr class="first">
             <td colspan="2"><b>[localized 'facts']:</b></td>
           </tr>
           <tr>
@@ -132,7 +132,7 @@ resourcetype course-description : fellestekst-document {
             <td>[if credits != null][val credits][endif]</td>
           </tr>
           [if level != null && level != "" && level != "not-set"]
-            <tr valign="top">
+            <tr>
               <td>[localized 'level']:</td>
               <td>[localized level]</td>
              </tr>
@@ -189,18 +189,22 @@ resourcetype course-description : fellestekst-document {
               [if examsemester-other != null][val examsemester-other # unescaped][endif]
             </td>
           </tr>
-          <tr>
-            <td>[localized 'content-locale']:</td>
-            [if content-locale != null && content-locale = "no_NO"]
-              <td>[localized 'locale-no']</td>
-            [elseif content-locale != null && content-locale = "en"]
-              <td>[localized 'locale-en']</td>
-            [elseif content-locale != null && content-locale = "no_NO_NY"]
-              <td>[localized 'locale-nn']</td>
+          [if course-fee != null && course-fee && course-fee-amount != null && course-fee-amount != ""]
+            <tr>
+          [else}
+            <tr class="last">
+              <td>[localized 'content-locale']:</td>
+              [if content-locale != null && content-locale = "no_NO"]
+                <td>[localized 'locale-no']</td>
+              [elseif content-locale != null && content-locale = "en"]
+                <td>[localized 'locale-en']</td>
+              [elseif content-locale != null && content-locale = "no_NO_NY"]
+                <td>[localized 'locale-nn']</td>
+              [endif]
             [endif]
           </tr>
           [if course-fee != null && course-fee && course-fee-amount != null && course-fee-amount != ""]
-            <tr valign="top">
+            <tr class="last">
               <td>[localized 'course-fee']:</td>
               <td>[val course-fee-amount]</td>
             </tr>

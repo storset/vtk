@@ -39,20 +39,6 @@ resourcetype semester-page : fellestekst-document {
 
   view-components {
 
-    course-folder {
-      ##
-      [def resource resource("./../")]
-      [if resource != null]
-        [def url view-url(resource)]
-        [def course-code resource-prop-obj-val(".", "courseContext.fs-course-code")]
-        [def course-name resource-prop-obj-val(".", "courseContext.course-name")]
-        <div class="vrtx-context-linked"> 
-          <a href="[val url]">[if course-code != null && course-code != ""][val course-code][endif][if course-code != null && course-code != "" && course-name != null && course-name != ""] - [endif][if course-name != null && course-name != ""][val course-name][endif]</a>
-        </div>
-      [endif]
-      ##
-    }
-
     show-if-published (prop) {
       ##
       [def uri resource-prop(".", prop)]
@@ -123,7 +109,6 @@ resourcetype semester-page : fellestekst-document {
         <div id="vrtx-content">
           <div id="vrtx-main-content">
             <div class="vrtx-frontpage-box white-box">
-              [call "comp:course-folder"]
               <h1>[localized 'semesterpage-for'] [if course-code != null && course-code != ""][val course-code][endif][if course-code != null && course-code != "" && semester != null && semester != ""] - [endif][if semester != null && semester != ""][val semester][endif]</h1>
               [call "comp:show-if-published"{"prop":"schedule"}]
               [call "comp:show-if-published"{"prop":"exam"}]
@@ -178,7 +163,7 @@ resourcetype semester-page : fellestekst-document {
                 <h2>Beskjeder</h2>
                 [def uri resource-prop("./", "uri")]
                 [def uri uri + "/beskjeder"]
-                [call "include:messages" {"uri" : uri}]
+                [call "include:messages" {"uri" : uri, "compact-view" : "true"}]
               </div>
             [endif]
           </div>

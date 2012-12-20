@@ -23,18 +23,6 @@ resourcetype syllabus {
   }
   
   view-components {
-
-    semester-folder {
-      ##
-      [def resource resource("./../")]
-      [if resource != null]
-        [def url view-url(resource)]
-        [def course-code resource-prop-obj-val(".", "courseContext.fs-course-code")]
-        [def semester resource-prop-obj-val(".", "semesterContext.semesterTitle")]
-        <a href="[val url]">[if course-code != null && course-code != ""][val course-code][endif][if course-code != null && course-code != "" && semester != null && semester != ""] - [endif][if semester != null && semester != ""][val semester][endif]</a>
-      [endif]
-      ##
-    }
   
     ub-mapping (prefix){
       ##
@@ -107,7 +95,6 @@ resourcetype syllabus {
       </head>
       <body id="vrtx-syllabus">
         <div id="vrtx-content">
-          [call "comp:semester-folder"]
           <div id="vrtx-main-content">
             <h1>[localized 'syllabus'] ([if course-code != null][val course-code][endif][if course-code != null && semester != null] - [endif][if semester != null][val semester][endif])</h1>
             [call "comp:items"]

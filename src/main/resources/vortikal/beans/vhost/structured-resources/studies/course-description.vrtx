@@ -251,7 +251,7 @@ resourcetype course-description : fellestekst-document {
             [def resource-content-locale resource-prop-obj-val(resource, "contentLocale")]
             [if resource-uri != this-uri && resource-content-locale = "en"]
               [def view-eng view-url(resource)]
-              <a href="[val view-eng]" class="vrtx-link-check">[localized 'version-en']</a>
+              <a href="[val view-eng]">[localized 'version-en']</a>
             [endif]
           [endif]
         [elseif content-locale != null && content-locale = "en"]
@@ -261,7 +261,7 @@ resourcetype course-description : fellestekst-document {
             [def resource-content-locale resource-prop-obj-val(resource, "contentLocale")]
             [if resource-uri != this-uri && (resource-content-locale = "no_NO" || resource-content-locale = "no_NO_NY")]
               [def view-no view-url(resource)]
-              <a href="[val view-no]" class="vrtx-link-check">[localized 'version-no']</a>
+              <a href="[val view-no]">[localized 'version-no']</a>
             [endif]
           [endif]
         [endif]
@@ -589,26 +589,6 @@ resourcetype course-description : fellestekst-document {
       ##
     }
 
-    statusmessage {
-      ##
-      [def course-status resource-prop-obj-val(".", "courseContext.course-status")]
-      [def course-continued-as resource-prop(".", "courseContext.course-continued-as")]
-      [if course-status != null]
-        [if course-status = "continued-as"]
-          <div class="vrtx-context-message-box">[localized 'continued-as'] [if course-continued-as != null && course-continued-as != ""][call "include:ref" {"referencetype" : "emne", "id" : course-continued-as}][endif]</div>
-        [elseif course-status = "discontinued-course"]
-          <div class="vrtx-context-message-box">[localized 'discontinued-course']</div>
-        [elseif course-status = "earlier-version"]
-          [def resource resource("./../")]
-          [if resource != null]
-            [def url view-url(resource)]
-            <div class="vrtx-context-message-box">[localized 'earlier-version-start'] <a href="[val url]">[localized 'earlier-version-link']</a> [localized 'earlier-version-end']</div>
-          [endif]
-        [endif]
-      [endif]
-      ##
-    }
-
   }
 
   view {
@@ -625,7 +605,6 @@ resourcetype course-description : fellestekst-document {
         <title>[if course-code != null][val course-code][endif][if course-code != null && course-name != null] - [endif][if course-name != null][val course-name][endif]</title>
       </head>
       <body id="vrtx-course-description">
-        [call "comp:statusmessage"]
         [call "comp:course-navigation"]
         <h1>[if course-code != null][val course-code][endif][if course-code != null && course-name != null] - [endif][if course-name != null][val course-name][endif]</h1>
         <div id="vrtx-course-toc">

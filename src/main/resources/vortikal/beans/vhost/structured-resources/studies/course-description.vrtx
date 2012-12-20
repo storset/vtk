@@ -595,14 +595,14 @@ resourcetype course-description : fellestekst-document {
       [def course-continued-as resource-prop(".", "courseContext.course-continued-as")]
       [if course-status != null]
         [if course-status = "continued-as"]
-          <h2 class="statusmessage">[localized 'continued-as'] [if course-continued-as != null && course-continued-as != ""][call "include:ref" {"referencetype" : "emne", "id" : course-continued-as}][endif]</h2>
+          <div class="vrtx-context-message-box">[localized 'continued-as'] [if course-continued-as != null && course-continued-as != ""][call "include:ref" {"referencetype" : "emne", "id" : course-continued-as}][endif]</div>
         [elseif course-status = "discontinued-course"]
-          <h2 class="statusmessage">[localized 'discontinued-course']</h2>
+          <div class="vrtx-context-message-box">[localized 'discontinued-course']</div>
         [elseif course-status = "earlier-version"]
           [def resource resource("./../")]
           [if resource != null]
             [def url view-url(resource)]
-            <h2 class="statusmessage">[localized 'earlier-version-start'] <a href="[val url]">[localized 'earlier-version-link']</a> [localized 'earlier-version-end']</h2>
+            <div class="vrtx-context-message-box">[localized 'earlier-version-start'] <a href="[val url]">[localized 'earlier-version-link']</a> [localized 'earlier-version-end']</div>
           [endif]
         [endif]
       [endif]

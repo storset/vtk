@@ -403,16 +403,14 @@ function unsavedChangesInEditor() {
   var contents = $("#contents");
 
   var currentStateOfInputFields = contents.find("input").not("[type=submit]").not("[type=button]")
-                                                        .not("[type=checkbox]").not("[type=radio]");
-  var textLen = currentStateOfInputFields.length;
-  var currentStateOfSelects = contents.find("select");
-  
-  var selectsLen = currentStateOfSelects.length;
-  var currentStateOfCheckboxes = contents.find("input[type=checkbox]:checked");
-  
-  var checkboxLen = currentStateOfCheckboxes.length;
-  var currentStateOfRadioButtons = contents.find("input[type=radio]:checked");
-  var radioLen = currentStateOfRadioButtons.length;
+                                                        .not("[type=checkbox]").not("[type=radio]"),
+      textLen = currentStateOfInputFields.length,
+      currentStateOfSelects = contents.find("select"),
+      selectsLen = currentStateOfSelects.length,
+      currentStateOfCheckboxes = contents.find("input[type=checkbox]:checked"),
+      checkboxLen = currentStateOfCheckboxes.length,
+      currentStateOfRadioButtons = contents.find("input[type=radio]:checked"),
+      radioLen = currentStateOfRadioButtons.length;
   
   // Check if count has changed
   if(selectsLen != INITIAL_SELECTS.length

@@ -122,12 +122,12 @@ resourcetype course-description : fellestekst-document {
       [def examsemester-other document.properties.examsemester-other]
       [def course-fee document.properties.course-fee]
       [def course-fee-amount document.properties.course-fee-amount]
-      <table class="course" cellpadding="0" cellspacing="0" width="100%">
+      <table id="vrtx-course-facts" cellpadding="0" cellspacing="0" class="vrtx-course-data">
         <tbody>
-          <tr class="vrtx-academics-course-table-title">
+          <tr class="vrtx-course-data-title">
             <td colspan="2"><b>[localized 'facts']:</b></td>
           </tr>
-          <tr valign="top">
+          <tr>
             <td>[localized 'credits']:</td>
             <td>[if credits != null][val credits][endif]</td>
           </tr>
@@ -137,7 +137,7 @@ resourcetype course-description : fellestekst-document {
               <td>[localized level]</td>
              </tr>
           [endif]
-          <tr valign="top">
+          <tr>
             <td>[localized 'teachingsemester']:</td>
             <td>
               [if teachingsemester != null && teachingsemester = "particular-semester"]
@@ -163,7 +163,7 @@ resourcetype course-description : fellestekst-document {
               [if teachingsemester-other != null][val teachingsemester-other # unescaped][endif]
             </td>
           </tr>
-          <tr valign="top">
+          <tr>
             <td>[localized 'examsemester']:</td>
             <td>
               [if examsemester != null && examsemester = "particular-semester"]
@@ -189,7 +189,7 @@ resourcetype course-description : fellestekst-document {
               [if examsemester-other != null][val examsemester-other # unescaped][endif]
             </td>
           </tr>
-          <tr valign="top">
+          <tr>
             <td>[localized 'content-locale']:</td>
             [if content-locale != null && content-locale = "no_NO"]
               <td>[localized 'locale-no']</td>
@@ -212,9 +212,9 @@ resourcetype course-description : fellestekst-document {
 
     semesters {
       ##
-      <table class="master" cellpadding="5" cellspacing="5" width="100%">
+      <table id="vrtx-course-semesters" cellpadding="0" cellspacing="0">
         <tbody>
-          <tr valign="top">
+          <tr>
             <td>
               <b>[localized 'semester']</b>
               <p>
@@ -240,9 +240,9 @@ resourcetype course-description : fellestekst-document {
       ##
     }
 
-    academics-course-navigation {
+    course-navigation {
       ##
-      <div class="academics-course-navigation">
+      <div class="vrtx-course-navigation">
         [def this-uri resource-prop(".", "uri")]
         [def parent-uri resource-prop("./", "uri")]
         [def content-locale resource-prop-obj-val(".", "contentLocale")]
@@ -271,7 +271,7 @@ resourcetype course-description : fellestekst-document {
       ##
     }
 
-    academics-course-toc (document) {
+    course-toc (document) {
       ##
       [def put-dash null]
       [def course-content document.properties.course-content]
@@ -452,7 +452,7 @@ resourcetype course-description : fellestekst-document {
       ##
     }
 
-    academics-course (document) {
+    course-content (document) {
       ##
       [def course-content document.properties.course-content]
       [if course-content != null && course-content != ""]
@@ -681,55 +681,31 @@ resourcetype course-description : fellestekst-document {
         <title>[if course-code != null][val course-code][endif][if course-code != null && course-name != null] - [endif][if course-name != null][val course-name][endif]</title>
       </head>
       <body id="vrtx-course-description">
-        <table id="vrtx-academics-course-navigation" align="right" cellpadding="1" cellspacing="0">
-          <tbody>
-            <tr>
-              <td class="navigasjon">
-                [call "comp:academics-course-navigation"]
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        [call "comp:course-navigation"]
         [call "comp:statusmessage"]
         <h1>[if course-code != null][val course-code][endif][if course-code != null && course-name != null] - [endif][if course-name != null][val course-name][endif]</h1>
-        <div id="vrtx-academics-course-toc" style="padding-top:5px;">
-          [call "comp:academics-course-toc" {"document" : document}]
+        <div id="vrtx-course-toc">
+          [call "comp:course-toc" {"document" : document}]
         </div>
-        <table id="vrtx-academics-course-table" align="right" cellpadding="0" cellspacing="0" width="50%">
-          <tbody>
-            <tr>
-              <td>
-                [call "comp:facts" {"document" : document}]
-              </td>
-            </tr>
-            [if (studinfo-kontakt != null && studinfo-kontakt != "" && studinfo-kontakt != "ingen-fellestekst") || (studinfo-kontakt-text-field != null && studinfo-kontakt-text-field != "")]
+        [call "comp:facts" {"document" : document}]
+        [if (studinfo-kontakt != null && studinfo-kontakt != "" && studinfo-kontakt != "ingen-fellestekst") || (studinfo-kontakt-text-field != null && studinfo-kontakt-text-field != "")]
+          <table id="vrtx-course-contact" cellpadding="0" cellspacing="0">
+            <tbody>
               <tr>
                 <td>
-                  <table class="contact" cellpadding="5" cellspacing="5" width="100%">
-                    <tbody>
-                      <tr valign="top">
-                        <td>
-                          <b>[localized 'contact']</b>
-                          [call "comp:vis-fellestekst" {"docType":"studinfo-kontakt", "propName":"studinfo-kontakt"}]
-                          [if studinfo-kontakt-text-field != null && studinfo-kontakt-text-field != ""]
-                            [val studinfo-kontakt-text-field # unescaped]
-                          [endif]
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
+                  <b>[localized 'contact']</b>
+                  [call "comp:vis-fellestekst" {"docType":"studinfo-kontakt", "propName":"studinfo-kontakt"}]
+                  [if studinfo-kontakt-text-field != null && studinfo-kontakt-text-field != ""]
+                    [val studinfo-kontakt-text-field # unescaped]
+                  [endif]
                 </td>
               </tr>
-            [endif]
-            <tr class="vrtx-academics-course-table-title">
-              <td>
-                [call "comp:semesters"]
-              </td>
-            </tr>
-          </tbody>
-        </table>
+            </tbody>
+          </table>
+        [endif]
+        [call "comp:semesters"]
         <div>
-          [call "comp:academics-course" {"document" : document}]
+          [call "comp:course-content" {"document" : document}]
         </div>
       </body>
     </html>

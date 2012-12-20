@@ -26,6 +26,7 @@
                                       '${vrtx.getMsg("editor.move-down")}', '${vrtx.getMsg("editor.browseImages")}', true, false);
             </#if>
           </#list>
+          MULTIPLE_INPUT_FIELD_INITIALIZED.resolve();
         });
       </#if>
     });

@@ -86,7 +86,7 @@
           var hasManuallyApprove = _$("#resource\\.manually-approve-from").length;
           
           if(hasFeaturedArticles || hasAggregation || hasManuallyApprove) {
-            MULTIPLE_INPUT_FIELD_INITIALIZED = $.Deferred();  
+            MULTIPLE_INPUT_FIELD_INITIALIZED = $.Deferred();
           }
         
           if(hasFeaturedArticles) {
@@ -106,6 +106,7 @@
             var manuallyApproveButton = $("#manually-approve-container-title");
             manuallyApproveButton.parent().find("> div:first-child").append(manuallyApproveButton.remove());
           }
+          MULTIPLE_INPUT_FIELD_INITIALIZED.resolve();
         }); 
       }); 
 

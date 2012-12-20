@@ -1876,7 +1876,6 @@ function loadMultipleInputFields(name, addName, removeName, moveUpName, moveDown
   var inputField = $("." + name + " input[type=text]");
   var inputFieldVal = inputField.val();
   if (inputFieldVal == null) {
-    MULTIPLE_INPUT_FIELD_INITIALIZED.resolve();
     return;
   }
 
@@ -1924,8 +1923,6 @@ function loadMultipleInputFields(name, addName, removeName, moveUpName, moveDown
   }
       
   autocompleteUsernames(".vrtx-autocomplete-username");
-  
-  MULTIPLE_INPUT_FIELD_INITIALIZED.resolve();
 }
 
 function initMultipleInputFields() {
@@ -2323,8 +2320,9 @@ function versioningInteraction(bodyId, vrtxAdm, _$) {
                                              vrtxAdm.transitionDropdownSpeed, vrtxAdm.transitionEasingSlideUp, _$.noop);
           var animB = tr.slideUp(vrtxAdm.transitionDropdownSpeed, vrtxAdm.transitionEasingSlideUp, _$.noop);
           _$.when(animA, animB).done(function() {
-            contents.html(_$(results).find("#contents").html());
-            _$("#app-tabs").html(_$(results).find("#app-tabs").html());
+            var result = _$(results);
+            contents.html(result.find("#contents").html());
+            _$("#app-tabs").html(result.find("#app-tabs").html());
           });
         }
       });

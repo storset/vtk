@@ -297,8 +297,7 @@ var INITIAL_RADIO_BUTTONS = [];
  *
  */
 
-$(window).load(function () {
-  // Store initial counts and values when all is initialized in editor
+$(window).load(function () { // Store initial counts and values when all is initialized in editor
   var nullDeferred = $.Deferred();
       nullDeferred.resolve();
   $.when(((typeof MANUALLY_APPROVE_INITIALIZED === "object") ? MANUALLY_APPROVE_INITIALIZED : nullDeferred),
@@ -407,8 +406,10 @@ function unsavedChangesInEditor() {
                                                         .not("[type=checkbox]").not("[type=radio]");
   var textLen = currentStateOfInputFields.length;
   var currentStateOfSelects = contents.find("select");
+  
   var selectsLen = currentStateOfSelects.length;
   var currentStateOfCheckboxes = contents.find("input[type=checkbox]:checked");
+  
   var checkboxLen = currentStateOfCheckboxes.length;
   var currentStateOfRadioButtons = contents.find("input[type=radio]:checked");
   var radioLen = currentStateOfRadioButtons.length;
@@ -420,12 +421,11 @@ function unsavedChangesInEditor() {
   || textLen != INITIAL_INPUT_FIELDS.length) return true;
 
   // Check if values have changed
-  for (var i = 0; i < textLen; i++)     if(currentStateOfInputFields[i].value !== INITIAL_INPUT_FIELDS[i])   return true;
-  for (    i = 0; i < selectsLen; i++)  if(currentStateOfSelects[i].value !== INITIAL_SELECTS[i])            return true;
-  for (    i = 0; i < checkboxLen; i++) if(currentStateOfCheckboxes[i].name !== INITIAL_CHECKBOXES[i])       return true;
-  for (    i = 0; i < radioLen; i++)    if(currentStateOfRadioButtons[i].name + " "
-                                         + currentStateOfRadioButtons[i].value !== INITIAL_RADIO_BUTTONS[i]) return true;
-
+  for (var i = 0; i < textLen; i++) if(currentStateOfInputFields[i].value !== INITIAL_INPUT_FIELDS[i]) return true;
+  for (    i = 0; i < selectsLen; i++) if(currentStateOfSelects[i].value !== INITIAL_SELECTS[i]) return true;
+  for (    i = 0; i < checkboxLen; i++) if(currentStateOfCheckboxes[i].name !== INITIAL_CHECKBOXES[i]) return true;
+  for (    i = 0; i < radioLen; i++) if(currentStateOfRadioButtons[i].name + " " + currentStateOfRadioButtons[i].value !== INITIAL_RADIO_BUTTONS[i]) return true;
+  
   var currentStateOfTextFields = contents.find("textarea"); // CK->checkDirty()
   if (typeof CKEDITOR !== "undefined") {
     for (i = 0, len = currentStateOfTextFields.length; i < len; i++) {

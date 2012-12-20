@@ -165,6 +165,7 @@ resourcetype semester-page : fellestekst-document {
                   [endif]
                 [endlist]
               [endif]
+            </div>   
             <div class="vrtx-frontpage-box white-box vrtx-distach-bottom">
               <h2>Kontakt</h2>
               [call "comp:vis-fellestekst" {"docType":"studinfo-kontakt", "propName":"studinfo-kontakt"}]

@@ -46,7 +46,7 @@ resourcetype semester-page : fellestekst-document {
         [def url view-url(resource)]
         [def course-code resource-prop-obj-val(".", "courseContext.fs-course-code")]
         [def course-name resource-prop-obj-val(".", "courseContext.course-name")]
-        <div class="vrtx-context-linked">
+        <div class="vrtx-context-linked"> 
           <a href="[val url]">[if course-code != null && course-code != ""][val course-code][endif][if course-code != null && course-code != "" && course-name != null && course-name != ""] - [endif][if course-name != null && course-name != ""][val course-name][endif]</a>
         </div>
       [endif]
@@ -74,35 +74,33 @@ resourcetype semester-page : fellestekst-document {
       ##
       [def link-box-title resource-prop(".", title)]
       [if link-box-title != null && link-box-title != ""]
-        <div>
-          <h2>[val link-box-title]</h2>
-          [def document structured-document()]
-          [def links null]
-          [if title = "link-box-one-title"]
-            [def links document.properties.link-box-one-links]
-          [elseif title = "link-box-two-title"]
-            [def links document.properties.link-box-two-links]
-          [elseif title = "link-box-three-title"]
-            [def links document.properties.link-box-three-links]
-          [elseif title = "link-box-four-title"]
-            [def links document.properties.link-box-four-links]
-          [elseif title = "link-box-five-title"]
-            [def links document.properties.link-box-five-links]
-          [elseif title = "link-box-six-title"]
-            [def links document.properties.link-box-six-links]
-          [endif]
-          [if links != null]
-            [list links link]
-              <ul>
-                [if link.link != null && link.link != "" && link.linktitle != null && link.linktitle != ""]
-                  <li>
-                    <a href="[val link.link]">[val link.linktitle]</a>
-                  </li>
-                [endif]
-              </ul>
-            [endlist]
-          [endif]
-        </div>
+        <h2>[val link-box-title]</h2>
+        [def document structured-document()]
+        [def links null]
+        [if title = "link-box-one-title"]
+          [def links document.properties.link-box-one-links]
+        [elseif title = "link-box-two-title"]
+          [def links document.properties.link-box-two-links]
+        [elseif title = "link-box-three-title"]
+          [def links document.properties.link-box-three-links]
+        [elseif title = "link-box-four-title"]
+          [def links document.properties.link-box-four-links]
+        [elseif title = "link-box-five-title"]
+          [def links document.properties.link-box-five-links]
+        [elseif title = "link-box-six-title"]
+          [def links document.properties.link-box-six-links]
+        [endif]
+        [if links != null]
+          [list links link]
+            <ul>
+              [if link.link != null && link.link != "" && link.linktitle != null && link.linktitle != ""]
+                <li>
+                  <a href="[val link.link]">[val link.linktitle]</a>
+                </li>
+              [endif]
+            </ul>
+          [endlist]
+        [endif]
       [endif]
       ##
     }

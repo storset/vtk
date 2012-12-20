@@ -625,8 +625,8 @@ resourcetype course-description : fellestekst-document {
         <title>[if course-code != null][val course-code][endif][if course-code != null && course-name != null] - [endif][if course-name != null][val course-name][endif]</title>
       </head>
       <body id="vrtx-course-description">
-        [call "comp:course-navigation"]
         [call "comp:statusmessage"]
+        [call "comp:course-navigation"]
         <h1>[if course-code != null][val course-code][endif][if course-code != null && course-name != null] - [endif][if course-name != null][val course-name][endif]</h1>
         <div id="vrtx-course-toc">
           [call "comp:course-toc" {"document" : document}]

@@ -100,6 +100,13 @@ resourcetype semester-page : fellestekst-document {
     [def messages-placement resource-prop-obj-val(".", "messages-placement")]
     [def fronter resource-prop-obj-val(".", "fronter")]
     [def studinfo-kontakt-text-field resource-prop-obj-val(".", "studinfo-kontakt-text-field")]
+    [def locale resource-locale()]
+    [def messages-uri resource-prop("./", "uri")]
+    [if locale != null && (locale = "no_NO" || locale = "nn")]
+      [def messages-uri messages-uri + "/beskjeder"]
+    [else]
+      [def messages-uri messages-uri + "/messages"]
+    [endif]
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml">
       <head>
@@ -116,10 +123,8 @@ resourcetype semester-page : fellestekst-document {
             </div>
             [if messages-placement != null && messages-placement = "middle"]
               <div class="vrtx-frontpage-box white-box">
-                <h2>Beskjeder</h2>
-                [def uri resource-prop("./", "uri")]
-                [def uri uri + "/beskjeder"]
-                [call "include:messages" {"uri" : uri}]
+                <h2>[localized 'messages']</h2>
+                [call "include:messages" {"uri" : messages-uri}]
               </div>
             [endif]
             [if fronter]
@@ -140,7 +145,7 @@ resourcetype semester-page : fellestekst-document {
           </div>
           <div id="vrtx-additional-content">
             <div class="vrtx-frontpage-box white-box vrtx-distach-bottom">
-              <h2>Faglærere</h2>
+              <h2>[localized 'teachers']</h2>
               [def document structured-document()]
               [def teachers document.properties.teachers]
               [if teachers != null]
@@ -152,7 +157,7 @@ resourcetype semester-page : fellestekst-document {
               [endif]
             </div>   
             <div class="vrtx-frontpage-box white-box vrtx-distach-bottom">
-              <h2>Kontakt</h2>
+              <h2>[localized 'studinfo-kontakt-group']</h2>
               [call "comp:vis-fellestekst" {"docType":"studinfo-kontakt", "propName":"studinfo-kontakt"}]
               [if studinfo-kontakt-text-field != null && studinfo-kontakt-text-field != ""]
                 [val studinfo-kontakt-text-field # unescaped]
@@ -160,10 +165,8 @@ resourcetype semester-page : fellestekst-document {
             </div>
             [if messages-placement = null || messages-placement = "right"]
               <div class="vrtx-frontpage-box white-box">
-                <h2>Beskjeder</h2>
-                [def uri resource-prop("./", "uri")]
-                [def uri uri + "/beskjeder"]
-                [call "include:messages" {"uri" : uri, "compact-view" : "true"}]
+                <h2>[localized 'messages']</h2>
+                [call "include:messages" {"uri" : messages-uri, "compact-view" : "true"}]
               </div>
             [endif]
           </div>
@@ -221,6 +224,7 @@ resourcetype semester-page : fellestekst-document {
     studinfo-kontakt : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
     studinfo-kontakt-group : (en : "Contact", no : "Kontakt", nn : "Kontakt"),
     messages-placement : (en : "Placement of messages", no : "Plassering av beskjeder", nn : "Plassering av beskjeder"),
+    messages : (en : "Messages", no : "Beskjeder", nn : "Beskjeder"),
     teachers : (en : "Teachers", no : "Lærere", nn : "Lærere"),
     teacher : (en : "Teacher", no : "Lærer", nn : "Lærer")
   }

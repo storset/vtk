@@ -57,7 +57,7 @@
 
       <div class="description introduction">
         <#assign messageIntro = vrtx.propValue(message, "listingDisplayedMessage", "", "") />
-        <#if messageIntro?exists>
+        <#if messageIntro?exists && !compactView>
           ${messageIntro}
           <#assign isTruncated = vrtx.propValue(message, "isTruncated", "", "") />
           <#if isTruncated?exists && isTruncated = 'true'>

@@ -12,6 +12,8 @@ resourcetype course-description : fellestekst-document {
     examsemester-every-other-semester-term : string,
     examsemester-every-other-semester-startyear : string,
     examsemester-other : simple_html noextract,
+    teaching-language : string,
+    teaching-language-text-field : simple_html noextract,
     level : string,
     course-fee : boolean defaultvalue("false"),
     course-fee-amount : string,
@@ -72,6 +74,7 @@ resourcetype course-description : fellestekst-document {
     examsemester-every-other-semester-term (dropdown),
     examsemester-every-other-semester-startyear (dropdown),
     group examsemester-every-other-semester (examsemester-every-other-semester-term, examsemester-every-other-semester-startyear) (after examsemester-particular-semester) horizontal,
+    teaching-language (dropdown),
     level (dropdown),
     opptak-og-adgang (class[vrtx-shared-text]),
     group opptak-og-adgang-group (opptak-og-adgang-text-field, opptak-og-adgang) vertical,
@@ -691,6 +694,11 @@ resourcetype course-description : fellestekst-document {
        no : ("2003" = "2003", "2004" = "2004", "2005" = "2005", "2006" = "2006", "2007" = "2007", "2008" = "2008", "2009" = "2009", "2010" = "2010", "2011" = "2011", "2012" = "2012", "2013" = "2013", "2014" = "2014", "2015" = "2015", "2016" = "2016", "2017" = "2017", "2018" = "2018", "2019" = "2019", "2020" = "2020"),
        nn : ("2003" = "2003", "2004" = "2004", "2005" = "2005", "2006" = "2006", "2007" = "2007", "2008" = "2008", "2009" = "2009", "2010" = "2010", "2011" = "2011", "2012" = "2012", "2013" = "2013", "2014" = "2014", "2015" = "2015", "2016" = "2016", "2017" = "2017", "2018" = "2018", "2019" = "2019", "2020" = "2020")
      },
+     teaching-language {
+       en : ("norwegian" = "Norwegian", "english" = "English", "english-by-need" = "English by need", "other" = "Other"),
+       no : ("norwegian" = "Norsk", "english" = "Engelsk", "english-by-need" = "Engelsk ved behov", "other" = "Annet"),
+       nn : ("norwegian" = "Norsk", "english" = "Engelsk", "english-by-need" = "Engelsk ved behov", "other" = "Anna")
+     },
      level {
        en : ("course" = "Course", "bachelor" = "Bachelor", "master" = "Master", "phd" = "PhD", "not-set" = "Not set"),
        no : ("course" = "Kurs", "bachelor" = "Bachelor", "master" = "Master", "phd" = "PhD", "not-set" = "Ikke satt"),
@@ -739,6 +747,8 @@ resourcetype course-description : fellestekst-document {
     examsemester-every-other-semester-term : (en : "Term", no : "Semester", nn : "Semester"),
     examsemester-every-other-semester-startyear : (en : "Start year", no : "Oppstartsår", nn : "Oppstartsår"),
     examsemester-other : (en : "Other", no : "Annet", nn : "Annet"),
+    teaching-language : (en : "Teaching language", no : "Undervisningsspråk", nn : "Undervisningsspråk"),
+    teaching-language-text-field : (en : "Teaching language text field", no : "Undervisningsspråk tekstfelt", nn : "Undervisningsspråk tekstfelt"),
     term : (en : "Term", no : "Semester", nn : "Semester"),
     autumn : (en : "Autumn", no : "Høst", nn : "Høst"),
     spring : (en : "Spring", no : "Vår", nn : "Vår"),

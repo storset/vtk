@@ -2990,6 +2990,8 @@ $(document).ready(function() {
 });
 
 function previewImage(urlobj) {
+  if(typeof urlobj === "undefined") return;
+  
   urlobj = urlobj.replace(/\./g,'\\.')
   var previewNode = $("#" + urlobj + '\\.preview-inner');
   if (previewNode.length) {

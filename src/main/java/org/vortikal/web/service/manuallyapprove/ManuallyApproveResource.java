@@ -30,12 +30,15 @@
  */
 package org.vortikal.web.service.manuallyapprove;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.vortikal.web.service.URL;
 
-public class ManuallyApproveResource {
+public class ManuallyApproveResource implements Serializable {
+
+    private static final long serialVersionUID = -8296957318941539258L;
 
     private String title;
     private URL url;

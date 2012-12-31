@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
 
   <bean id="editor.collection.manuallyApproveResourcesService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="manageService" />
@@ -23,6 +23,18 @@
     <property name="manuallyApprovedResourcesPropDef" ref="manuallyApprovedResourcesPropDef" />
     <property name="aggregationPropDef" ref="aggregationPropDef" />
     <property name="multiHostSearcher" ref="multiHostSearcher" />
+    <property name="cache" ref="ehCache.EDITOR_MANUALLY_APPROVE_SEARCH_CACHE" />
+  </bean>
+
+  <bean id="ehCache.EDITOR_MANUALLY_APPROVE_SEARCH_CACHE" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+    <property name="cacheManager" ref="ehCacheManager" />
+    <property name="cacheName" value="org.vortikal.EDITOR_MANUALLY_APPROVE_SEARCH_CACHE" />
+    <property name="maxElementsInMemory" value="100" />
+    <property name="maxElementsOnDisk" value="10000" />
+    <property name="eternal" value="false" />
+    <property name="overflowToDisk" value="true" />
+    <property name="timeToIdle" value="0" />
+    <property name="timeToLive" value="600" /> <!-- 10mins -->
   </bean>
 
   <bean id="editor.collection.manuallyApproveResourcesSearcher" class="org.vortikal.web.service.manuallyapprove.ManuallyApproveResourcesSearcher">

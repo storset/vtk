@@ -38,6 +38,8 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import net.sf.ehcache.Ehcache;
+import net.sf.ehcache.Element;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
@@ -67,8 +69,10 @@ public class ManuallyApproveResourcesHandler implements Controller {
     private PropertyTypeDefinition manuallyApprovedResourcesPropDef;
     private PropertyTypeDefinition aggregationPropDef;
     private MultiHostSearcher multiHostSearcher;
+    private Ehcache cache;
 
     @Override
+    @SuppressWarnings("unchecked")
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
         Repository repository = RequestContext.getRequestContext().getRepository();
@@ -139,11 +143,17 @@ public class ManuallyApproveResourcesHandler implements Controller {
             return null;
         }
 
-        // That's it... we now have a set of resources to manually approve from,
-        // along with a set of resources that are already manually approved...
-        // Let's search!
-        List<ManuallyApproveResource> result = this.searcher.getManuallyApproveResources(currentCollection, locations,
-                alreadyApproved);
+        String cacheKey = getCacheKey(locations, alreadyApproved);
+        Element cached = cache.get(cacheKey);
+        Object cachedObj = cached != null ? cached.getObjectValue() : null;
+
+        List<ManuallyApproveResource> result = null;
+        if (cachedObj != null) {
+            result = (List<ManuallyApproveResource>) cachedObj;
+        } else {
+            result = this.searcher.getManuallyApproveResources(currentCollection, locations, alreadyApproved);
+            cache.put(new Element(cacheKey, result));
+        }
 
         if (result == null || result.size() == 0) {
             return null;
@@ -171,6 +181,17 @@ public class ManuallyApproveResourcesHandler implements Controller {
         writer.close();
 
         return null;
+    }
+
+    private String getCacheKey(Set<String> locations, Set<String> alreadyApproved) {
+        StringBuilder cacheKey = new StringBuilder();
+        if (locations.size() != 0) {
+            cacheKey.append(locations.toString().hashCode());
+        }
+        if (alreadyApproved.size() != 0) {
+            cacheKey.append(alreadyApproved.toString().hashCode());
+        }
+        return cacheKey.toString();
     }
 
     private boolean isValid(String location, Path currentCollectionPath, Repository repository, String token) {
@@ -231,6 +252,11 @@ public class ManuallyApproveResourcesHandler implements Controller {
     @Required
     public void setMultiHostSearcher(MultiHostSearcher multiHostSearcher) {
         this.multiHostSearcher = multiHostSearcher;
+    }
+
+    @Required
+    public void setCache(Ehcache cache) {
+        this.cache = cache;
     }
 
 }

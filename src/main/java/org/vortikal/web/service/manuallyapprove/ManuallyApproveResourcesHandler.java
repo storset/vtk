@@ -79,9 +79,9 @@ public class ManuallyApproveResourcesHandler implements Controller {
         Path currentCollectionPath = RequestContext.getRequestContext().getCurrentCollection();
         String token = SecurityContext.getSecurityContext().getToken();
         Resource currentCollection = repository.retrieve(token, currentCollectionPath, false);
-        Property manuallyApproveFromProp = currentCollection.getProperty(this.manuallyApproveFromPropDef);
-        Property manuallyApprovedResourcesProp = currentCollection.getProperty(this.manuallyApprovedResourcesPropDef);
-        Property aggregationProp = currentCollection.getProperty(this.aggregationPropDef);
+        Property manuallyApproveFromProp = currentCollection.getProperty(manuallyApproveFromPropDef);
+        Property manuallyApprovedResourcesProp = currentCollection.getProperty(manuallyApprovedResourcesPropDef);
+        Property aggregationProp = currentCollection.getProperty(aggregationPropDef);
         String[] manuallyApproveFromParam = request.getParameterValues(LOCATIONS_PARAM);
         String[] aggregateParam = request.getParameterValues(AGGREGATE_PARAM);
 
@@ -96,7 +96,7 @@ public class ManuallyApproveResourcesHandler implements Controller {
         // content and update service before storing resource
         if (manuallyApproveFromParam != null) {
             for (String location : manuallyApproveFromParam) {
-                if (this.isValid(location, currentCollectionPath, repository, token)) {
+                if (isValid(location, currentCollectionPath, repository, token)) {
                     locations.add(location);
                 }
             }
@@ -104,7 +104,7 @@ public class ManuallyApproveResourcesHandler implements Controller {
             Value[] manuallyApproveFromValues = manuallyApproveFromProp.getValues();
             for (Value manuallyApproveFromValue : manuallyApproveFromValues) {
                 String location = manuallyApproveFromValue.getStringValue();
-                if (this.isValid(location, currentCollectionPath, repository, token)) {
+                if (isValid(location, currentCollectionPath, repository, token)) {
                     locations.add(location);
                 }
             }
@@ -151,7 +151,7 @@ public class ManuallyApproveResourcesHandler implements Controller {
         if (cachedObj != null) {
             result = (List<ManuallyApproveResource>) cachedObj;
         } else {
-            result = this.searcher.getManuallyApproveResources(currentCollection, locations, alreadyApproved);
+            result = searcher.getManuallyApproveResources(currentCollection, locations, alreadyApproved);
             cache.put(new Element(cacheKey, result));
         }
 
@@ -198,8 +198,8 @@ public class ManuallyApproveResourcesHandler implements Controller {
 
         try {
             URL url = URL.parse(location);
-            if (this.multiHostSearcher.isMultiHostSearchEnabled()) {
-                PropertySet ps = this.multiHostSearcher.retrieve(token, url);
+            if (multiHostSearcher.isMultiHostSearchEnabled()) {
+                PropertySet ps = multiHostSearcher.retrieve(token, url);
                 if (ps == null) {
                     return false;
                 }

@@ -286,14 +286,16 @@ $(document).ready(function() {
 
   // Stickybar
   var titleSubmitButtons = _$("#vrtx-editor-title-submit-buttons");
+  var thisWindow = _$(window);
+  
   // TODO: also check minimum device height (with high density displays on new devices accounted for)
   if(titleSubmitButtons.length && !vrtxAdm.isIPhone) { // Turn off for iPhone. 
     var titleSubmitButtonsPos = titleSubmitButtons.offset();
     if(vrtxAdm.isIE8) {
       titleSubmitButtons.append("<span id='sticky-bg-ie8-below'></span>");
     }
-    _$(window).on("scroll", function() {
-      if(_$(window).scrollTop() >= titleSubmitButtonsPos.top) {
+    thisWindow.on("scroll", function() {
+      if(thisWindow.scrollTop() >= titleSubmitButtonsPos.top) {
         if(!titleSubmitButtons.hasClass("vrtx-sticky-editor-title-submit-buttons")) {
           titleSubmitButtons.addClass("vrtx-sticky-editor-title-submit-buttons");
           _$("#contents").css("paddingTop", titleSubmitButtons.outerHeight(true) + "px");
@@ -307,8 +309,8 @@ $(document).ready(function() {
         }
       }
     });
-    _$(window).on("resize", function() {
-      if(_$(window).scrollTop() >= titleSubmitButtonsPos.top) {
+    thisWindow.on("resize", function() {
+      if(thisWindow.scrollTop() >= titleSubmitButtonsPos.top) {
         titleSubmitButtons.css("width", (_$("#main").outerWidth(true) - 2) + "px");
       }
     });
@@ -363,7 +365,7 @@ $(document).ready(function() {
   vrtxAdm.cachedAppContent.on("click", "#resource\\.display-aggregation\\.true", function(e) {
     if(!_$(this).is(":checked")) {                   // If unchecked remove rows and clean prop textfield
       _$(".aggregation .vrtx-multipleinputfield").remove();
-       _$("#resource\\.aggregation").val("");
+      _$("#resource\\.aggregation").val("");
     }
     _$("#vrtx-resource\\.aggregation").slideToggle(vrtxAdm.transitionDropdownSpeed, "swing");
     e.stopPropagation();
@@ -672,37 +674,10 @@ function toggle(name, parameters, hideTrues) {
   }
 }
 
-/* Helper functions */
+/* Dropdown show/hide mappings
+ * TODO: need to do some refactoring of show/hide for dropdowns
+ */
 
-function getCkValue(instanceName) {
-  var oEditor = getCkInstance(instanceName);
-  return oEditor.getData();
-}
-
-function getCkInstance(instanceName) {
-  for (var i in CKEDITOR.instances) {
-    if (CKEDITOR.instances[i].name == instanceName) {
-      return CKEDITOR.instances[i];
-    }
-  }
-  return null;
-}
-
-function setCkValue(instanceName, data) {
-  var oEditor = getCkInstance(instanceName);
-  oEditor.setData(data);
-}
-
-function isCkEditor(instanceName) {
-  var oEditor = getCkInstance(instanceName);
-  return oEditor != null;
-}
-
-/* ^ Helper functions */
-
-/* Study enhancements */
-
-/* TODO: need to do some refactoring of show/hide for dropdowns */
 function hideShowStudy(container, typeToDisplayElem) {
   switch (typeToDisplayElem.val()) {
     case "so":
@@ -738,13 +713,39 @@ function hideShowSemester(container, typeSemesterElem) {
   }
 }
 
+/* Helper functions */
+
+function getCkValue(instanceName) {
+  var oEditor = getCkInstance(instanceName);
+  return oEditor.getData();
+}
+
+function getCkInstance(instanceName) {
+  for (var i in CKEDITOR.instances) {
+    if (CKEDITOR.instances[i].name == instanceName) {
+      return CKEDITOR.instances[i];
+    }
+  }
+  return null;
+}
+
+function setCkValue(instanceName, data) {
+  var oEditor = getCkInstance(instanceName);
+  oEditor.setData(data);
+}
+
+function isCkEditor(instanceName) {
+  var oEditor = getCkInstance(instanceName);
+  return oEditor != null;
+}
+
 function replaceTag(selector, tag, replaceTag) {
   selector.find(tag).replaceWith(function() {
     return "<" + replaceTag + ">" + $(this).text() + "</" + replaceTag + ">";
   });
 }
 
-/* ^ Study enhancements */
+/* ^ Helper functions */
 
 /* ^ Check if inputfields or textareas (CK) have changes */
 

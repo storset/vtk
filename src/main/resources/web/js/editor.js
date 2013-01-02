@@ -15,24 +15,36 @@ function VrtxEditor() {
   instance = new VrtxEditor();
   instance.constructor = VrtxEditor;
   
-  this.CK_Toolbars = {};
-
+  this.CKEditorToolbars = {};
+  
+  this.CKEditorsInit = [];
+  this.CKEditorsInitSyncMax = 15;
+  this.CKEditorsInitAsyncInterval = 15;
+  
+  this.editorInitInputFields = [];
+  this.editorInitSelects = [];
+  this.editorInitCheckboxes = [];
+  this.editorInitRadios = [];
+  
+  this.needToConfirm = true;
+  
   return instance;
 };
 
 
 var vrtxEditor = new VrtxEditor();
+var UNSAVED_CHANGES_CONFIRMATION;
 
 /* CK toolbars */
 
-vrtxEditor.CK_Toolbars.inlineToolbar = [['Source', 'PasteText', 'Link', 'Unlink', 'Bold',
+vrtxEditor.CKEditorToolbars.inlineToolbar = [['Source', 'PasteText', 'Link', 'Unlink', 'Bold',
                                          'Italic', 'Strike', 'Subscript', 'Superscript',
                                          'SpecialChar']];
 
-vrtxEditor.CK_Toolbars.withoutSubSuperToolbar = [['Source', 'PasteText', 'Link', 'Unlink', 'Bold',
+vrtxEditor.CKEditorToolbars.withoutSubSuperToolbar = [['Source', 'PasteText', 'Link', 'Unlink', 'Bold',
                                                   'Italic', 'Strike', 'SpecialChar']];
 
-vrtxEditor.CK_Toolbars.completeToolbar = [['Source', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo', '-', 'Replace',
+vrtxEditor.CKEditorToolbars.completeToolbar = [['Source', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo', '-', 'Replace',
                                            'RemoveFormat', '-', 'Link', 'Unlink', 'Anchor',
                                            'Image', 'CreateDiv', 'MediaEmbed', 'Table',
                                            'HorizontalRule', 'SpecialChar'
@@ -42,7 +54,7 @@ vrtxEditor.CK_Toolbars.completeToolbar = [['Source', 'PasteText', 'PasteFromWord
                                             'JustifyCenter', 'JustifyRight', 'TextColor',
                                             'Maximize']];
                         
-vrtxEditor.CK_Toolbars.studyToolbar = [['Source', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo', '-', 'Replace',
+vrtxEditor.CKEditorToolbars.studyToolbar = [['Source', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo', '-', 'Replace',
                                         'RemoveFormat', '-', 'Link', 'Unlink', 'Studyreferencecomponent', 'Anchor',
                                         'Image', 'CreateDiv', 'MediaEmbed', 'Table', 'Studytable',
                                         'HorizontalRule', 'SpecialChar'
@@ -52,7 +64,7 @@ vrtxEditor.CK_Toolbars.studyToolbar = [['Source', 'PasteText', 'PasteFromWord', 
                                         'JustifyCenter', 'JustifyRight', 
                                         'Maximize']];
                         
-vrtxEditor.CK_Toolbars.courseGroupToolbar = [['Source', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo', '-', 'Replace',
+vrtxEditor.CKEditorToolbars.courseGroupToolbar = [['Source', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo', '-', 'Replace',
                                               'RemoveFormat', '-', 'Link', 'Unlink', 'Studyreferencecomponent', 'Anchor',
                                               'Image', 'CreateDiv', 'MediaEmbed', 'Table',
                                               'HorizontalRule', 'SpecialChar'
@@ -62,11 +74,11 @@ vrtxEditor.CK_Toolbars.courseGroupToolbar = [['Source', 'PasteText', 'PasteFromW
                                               'JustifyCenter', 'JustifyRight', 
                                               'Maximize']];
                         
-vrtxEditor.CK_Toolbars.messageToolbar = [['PasteText', 'Bold', 'Italic', 'Strike', '-', 'Undo', 'Redo', '-', 'Link', 'Unlink',
+vrtxEditor.CKEditorToolbars.messageToolbar = [['PasteText', 'Bold', 'Italic', 'Strike', '-', 'Undo', 'Redo', '-', 'Link', 'Unlink',
                                           'Subscript', 'Superscript', 'NumberedList', 'BulletedList', 'Outdent', 'Indent']];
 
 
-vrtxEditor.CK_Toolbars.completeToolbarOld = [['Source', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo', '-', 'Replace',
+vrtxEditor.CKEditorToolbars.completeToolbarOld = [['Source', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo', '-', 'Replace',
                                               'RemoveFormat', '-', 'Link', 'Unlink', 'Anchor',
                                               'Image', 'CreateDiv', 'MediaEmbed', 'Table',
                                               'HorizontalRule', 'SpecialChar'
@@ -76,7 +88,7 @@ vrtxEditor.CK_Toolbars.completeToolbarOld = [['Source', 'PasteText', 'PasteFromW
                                               'JustifyCenter', 'JustifyRight', 'TextColor',
                                               'Maximize']];
 
-vrtxEditor.CK_Toolbars.commentsToolbar = [['Source', 'PasteText', 'Bold',
+vrtxEditor.CKEditorToolbars.commentsToolbar = [['Source', 'PasteText', 'Bold',
                                            'Italic', 'Strike', 'NumberedList',
                                            'BulletedList', 'Link', 'Unlink']];
 
@@ -118,13 +130,13 @@ VrtxEditor.prototype.newEditor = function newEditor(name, completeEditor, withou
    || vrtxEdit.contains(name, "resource.image-description")
    || vrtxEdit.contains(name, "resource.video-description")
    || vrtxEdit.contains(name, "resource.audio-description")) {
-    vrtxEdit.setCKEditorConfig(name, linkBrowseUrl, null, null, defaultLanguage, cssFileList, 100, 400, 40, vrtxEdit.CK_Toolbars.inlineToolbar,
+    vrtxEdit.setCKEditorConfig(name, linkBrowseUrl, null, null, defaultLanguage, cssFileList, 100, 400, 40, vrtxEdit.CKEditorToolbars.inlineToolbar,
                                isCompleteEditor, false, baseDocumentUrl, isSimpleHTML);
   } else if (vrtxEdit.contains(name, "comment") && editorElem.hasClass("vrtx-schedule")) {
-    vrtxEdit.setCKEditorConfig(name, linkBrowseUrl, null, null, defaultLanguage, cssFileList, 150, 400, 40, vrtxEdit.CK_Toolbars.inlineToolbar,
+    vrtxEdit.setCKEditorConfig(name, linkBrowseUrl, null, null, defaultLanguage, cssFileList, 150, 400, 40, vrtxEdit.CKEditorToolbars.inlineToolbar,
                                isCompleteEditor, false, baseDocumentUrl, isSimpleHTML);
   } else if (vrtxEdit.contains(name, "caption")) {
-    vrtxEdit.setCKEditorConfig(name, linkBrowseUrl, null, null, defaultLanguage, cssFileList, 78, 400, 40, vrtxEdit.CK_Toolbars.inlineToolbar, 
+    vrtxEdit.setCKEditorConfig(name, linkBrowseUrl, null, null, defaultLanguage, cssFileList, 78, 400, 40, vrtxEdit.CKEditorToolbars.inlineToolbar, 
                                isCompleteEditor, false, baseDocumentUrl, isSimpleHTML);               
   } else if (vrtxEdit.contains(name, "frist-frekvens-fri") // Studies  
           || vrtxEdit.contains(name, "metode-fri")
@@ -144,19 +156,19 @@ VrtxEditor.prototype.newEditor = function newEditor(name, completeEditor, withou
           || vrtxEdit.contains(name, "description-no")) {
     isSimpleHTML = false;
     isCompleteEditor = true;
-    vrtxEdit.setCKEditorConfig(name, linkBrowseUrl, null, null, defaultLanguage, cssFileList, 150, 400, 40, vrtxEdit.CK_Toolbars.studyToolbar, 
+    vrtxEdit.setCKEditorConfig(name, linkBrowseUrl, null, null, defaultLanguage, cssFileList, 150, 400, 40, vrtxEdit.CKEditorToolbars.studyToolbar, 
                                isCompleteEditor, false, baseDocumentUrl, isSimpleHTML);
   } else if (vrtxEdit.contains(name, "message")) {
-    vrtxEdit.setCKEditorConfig(name, null, null, null, defaultLanguage, cssFileList, 250, 400, 40, vrtxEdit.CK_Toolbars.messageToolbar, 
+    vrtxEdit.setCKEditorConfig(name, null, null, null, defaultLanguage, cssFileList, 250, 400, 40, vrtxEdit.CKEditorToolbars.messageToolbar, 
                                isCompleteEditor, false, null, isSimpleHTML);           
   } else if (vrtxEdit.contains(name, "additional-content")
           || vrtxEdit.contains(name, "additionalContents")) { // Additional content
     vrtxEdit.setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, defaultLanguage, cssFileList, 150, 400, 40, 
-                               vrtxEdit.CK_Toolbars.completeToolbar, true, false, baseDocumentUrl, isSimpleHTML);
+                               vrtxEdit.CKEditorToolbars.completeToolbar, true, false, baseDocumentUrl, isSimpleHTML);
   } else if (isCompleteEditor) { // Complete editor 
     var height = 220;
     var maxHeight = 400;
-    var completeTB = vrtxEdit.CK_Toolbars.completeToolbar;   
+    var completeTB = vrtxEdit.CKEditorToolbars.completeToolbar;   
     if (vrtxEdit.contains("supervisor-box")) {
       height = 130;
       maxHeight = 300;
@@ -168,20 +180,20 @@ VrtxEditor.prototype.newEditor = function newEditor(name, completeEditor, withou
       height = 400;
       maxHeight = 800;
       if (name == "resource.content") { // Old editor
-        completeTB = vrtxEdit.CK_Toolbars.completeToolbarOld;
+        completeTB = vrtxEdit.CKEditorToolbars.completeToolbarOld;
       } 
       if (name == "content-study") { // Study toolbar
-        completeTB = vrtxEdit.CK_Toolbars.studyToolbar;
+        completeTB = vrtxEdit.CKEditorToolbars.studyToolbar;
       } 
       if (name == "courses-in-group"
        || name == "relevant-study-programmes") { // CourseGroup toolbar
-        completeTB = vrtxEdit.CK_Toolbars.courseGroupToolbar;
+        completeTB = vrtxEdit.CKEditorToolbars.courseGroupToolbar;
       }
     }
     vrtxEdit.setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, defaultLanguage, cssFileList, height, maxHeight, 50, completeTB,
                                isCompleteEditor, true, baseDocumentUrl, isSimpleHTML);
   } else {
-    vrtxEdit.setCKEditorConfig(name, linkBrowseUrl, null, null, defaultLanguage, cssFileList, 90, 400, 40, vrtxEdit.CK_Toolbars.withoutSubSuperToolbar, 
+    vrtxEdit.setCKEditorConfig(name, linkBrowseUrl, null, null, defaultLanguage, cssFileList, 90, 400, 40, vrtxEdit.CKEditorToolbars.withoutSubSuperToolbar, 
                                isCompleteEditor, true, baseDocumentUrl, isSimpleHTML);
   }
 
@@ -271,21 +283,12 @@ function commentsCkEditor() {
   document.getElementById("comment-syntax-desc").style.display = "none";
   document.getElementById("comments-text-div").style.margin = "0";
   $("#comments-text").click(function () {
-    vrtxEditor.setCKEditorConfig("comments-text", null, null, null, null, cssFileList, 150, 400, 40, vrtxEditor.CK_Toolbars.commentsToolbar, false, true, null);
+    vrtxEditor.setCKEditorConfig("comments-text", null, null, null, null, cssFileList, 150, 400, 40, vrtxEditor.CKEditorToolbars.commentsToolbar, false, true, null);
   });
 }
 
-var EDITORS_MAX_SYNC_AT_INIT = 15;
-var EDITORS_ASYNC_INIT_INTERVAL = 15;
-var NEED_TO_CONFIRM = true;
-var UNSAVED_CHANGES_CONFIRMATION;
-var INITIAL_INPUT_FIELDS = [];
-var INITIAL_SELECTS = [];
-var INITIAL_CHECKBOXES = [];
-var INITIAL_RADIO_BUTTONS = [];
-
 $(document).ready(function() { 
-  var vrtxAdm = vrtxAdmin, _$ = vrtxAdm._$;
+  var vrtxAdm = vrtxAdmin, _$ = vrtxAdm._$, vrtxEdit = vrtxEditor;
 
   var editor = $("#editor");
   if(!editor.length) return;
@@ -486,20 +489,18 @@ $(document).ready(function() {
   
   /* Initialize CKEditors */
   
-  if(typeof EDITORS_AT_INIT !== "undefined") {
-    var len = EDITORS_AT_INIT.length;
-    for(var i = 0; i < len && i < EDITORS_MAX_SYNC_AT_INIT; i++) { // Initiate <=25 CKEditors
-      vrtxEditor.newEditor(EDITORS_AT_INIT[i]);
-    }
-    if(len > EDITORS_MAX_SYNC_AT_INIT) {
-      var ckEditorInitLoadTimer = setTimeout(function() { // Initiate >25 CKEditors
-        vrtxEditor.newEditor(EDITORS_AT_INIT[i]);
-        i++;
-        if(i < len) {
-          setTimeout(arguments.callee, EDITORS_ASYNC_INIT_INTERVAL);
-        }
-      }, EDITORS_ASYNC_INIT_INTERVAL);
-    }
+  var len = vrtxEdit.CKEditorsInit.length;
+  for(var i = 0; i < len && i < vrtxEdit.CKEditorsInitSyncMax; i++) { // Initiate <=CKEditorsInitSyncMax CKEditors sync
+    vrtxEditor.newEditor(vrtxEdit.CKEditorsInit[i]);
+  }
+  if(len > vrtxEdit.CKEditorsInitSyncMax) {
+    var ckEditorInitLoadTimer = setTimeout(function() { // Initiate >CKEditorsInitSyncMax CKEditors async
+      vrtxEditor.newEditor(vrtxEdit.CKEditorsInit[i]);
+      i++;
+      if(i < len) {
+        setTimeout(arguments.callee, vrtxEdit.CKEditorsInitAsyncInterval);
+      }
+    }, vrtxEdit.CKEditorsInitAsyncInterval);
   }
 });
 
@@ -527,6 +528,7 @@ $(window).load(function () { // Store initial counts and values when all is init
 });
 
 function storeInitPropValues() {
+  var vrtxEdit = vrtxEditor;
   var contents = $("#contents");
 
   var inputFields = contents.find("input").not("[type=submit]").not("[type=button]")
@@ -535,14 +537,16 @@ function storeInitPropValues() {
   var checkboxes = contents.find("input[type=checkbox]:checked");
   var radioButtons = contents.find("input[type=radio]:checked");
   
-  for(var i = 0, len = inputFields.length; i < len; i++)  INITIAL_INPUT_FIELDS[i] = inputFields[i].value;
-  for(    i = 0, len = selects.length; i < len; i++)      INITIAL_SELECTS[i] = selects[i].value;
-  for(    i = 0, len = checkboxes.length; i < len; i++)   INITIAL_CHECKBOXES[i] = checkboxes[i].name;
-  for(    i = 0, len = radioButtons.length; i < len; i++) INITIAL_RADIO_BUTTONS[i] = radioButtons[i].name + " " + radioButtons[i].value;
+  for(var i = 0, len = inputFields.length; i < len; i++)  vrtxEdit.editorInitInputFields[i] = inputFields[i].value;
+  for(    i = 0, len = selects.length; i < len; i++)      vrtxEdit.editorInitSelects[i] = selects[i].value;
+  for(    i = 0, len = checkboxes.length; i < len; i++)   vrtxEdit.editorInitCheckboxes[i] = checkboxes[i].name;
+  for(    i = 0, len = radioButtons.length; i < len; i++) vrtxEdit.editorInitRadios[i] = radioButtons[i].name + " " + radioButtons[i].value;
 }
 
 function unsavedChangesInEditor() {
-  if (!NEED_TO_CONFIRM) return false;
+  if (!vrtxEditor.needToConfirm) return false;
+  
+  var vrtxEdit = vrtxEditor;
   var contents = $("#contents");
 
   var currentStateOfInputFields = contents.find("input").not("[type=submit]").not("[type=button]")
@@ -556,16 +560,16 @@ function unsavedChangesInEditor() {
       radioLen = currentStateOfRadioButtons.length;
   
   // Check if count has changed
-  if(selectsLen != INITIAL_SELECTS.length
-  || checkboxLen != INITIAL_CHECKBOXES.length
-  || radioLen != INITIAL_RADIO_BUTTONS.length
-  || textLen != INITIAL_INPUT_FIELDS.length) return true;
+  if(textLen != vrtxEdit.editorInitInputFields.length
+  || selectsLen != vrtxEdit.editorInitSelects.length
+  || checkboxLen != vrtxEdit.editorInitCheckboxes.length
+  || radioLen != vrtxEdit.editorInitRadios.length) return true;
 
   // Check if values have changed
-  for (var i = 0; i < textLen; i++) if(currentStateOfInputFields[i].value !== INITIAL_INPUT_FIELDS[i]) return true;
-  for (    i = 0; i < selectsLen; i++) if(currentStateOfSelects[i].value !== INITIAL_SELECTS[i]) return true;
-  for (    i = 0; i < checkboxLen; i++) if(currentStateOfCheckboxes[i].name !== INITIAL_CHECKBOXES[i]) return true;
-  for (    i = 0; i < radioLen; i++) if(currentStateOfRadioButtons[i].name + " " + currentStateOfRadioButtons[i].value !== INITIAL_RADIO_BUTTONS[i]) return true;
+  for (var i = 0; i < textLen; i++) if(currentStateOfInputFields[i].value !== vrtxEdit.editorInitInputFields[i]) return true;
+  for (    i = 0; i < selectsLen; i++) if(currentStateOfSelects[i].value !== vrtxEdit.editorInitSelects[i]) return true;
+  for (    i = 0; i < checkboxLen; i++) if(currentStateOfCheckboxes[i].name !== vrtxEdit.editorInitCheckboxes[i]) return true;
+  for (    i = 0; i < radioLen; i++) if(currentStateOfRadioButtons[i].name + " " + currentStateOfRadioButtons[i].value !== vrtxEdit.editorInitRadios[i]) return true;
   
   var currentStateOfTextFields = contents.find("textarea"); // CK->checkDirty()
   if (typeof CKEDITOR !== "undefined") {

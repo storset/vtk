@@ -23,8 +23,6 @@
 <#macro addCommonScripts language oldEditor=false>
 
   <script type="text/javascript"><!--
-    var EDITORS_AT_INIT = [];
-    
     var datePickerLang = "${language}";
     var tooLongFieldPre = "<@vrtx.msg code='editor.too-long-field-pre' />";
     var tooLongFieldPost = "<@vrtx.msg code='editor.too-long-field-post' />";
@@ -54,10 +52,10 @@
   <script type="text/javascript"><!--
       if (CKEDITOR.env.isCompatible) {
         try {
-          if (typeof EDITORS_AT_INIT !== "undefined") {
-            EDITORS_AT_INIT.push(['${content}', ${completeEditor?string}, ${withoutSubSuper?string}, 
-	                              '${baseFolder?js_string}', '${fckeditorBase.url?html}', '${fckeditorBase.documentURL?html}', 
-	                              '${fckBrowse.url.pathRepresentation}', '<@vrtx.requestLanguage />', cssFileList, ${simpleHTML?string}]);
+          if (typeof vrtxEditor !== "undefined") {
+            vrtxEditor.CKEditorsInit.push(['${content}', ${completeEditor?string}, ${withoutSubSuper?string}, 
+	                                      '${baseFolder?js_string}', '${fckeditorBase.url?html}', '${fckeditorBase.documentURL?html}', 
+	                                      '${fckBrowse.url.pathRepresentation}', '<@vrtx.requestLanguage />', cssFileList, ${simpleHTML?string}]);
 	      } else {
 	        $(document).ready(function() {
 	          vrtxEditor.newEditor('${content}', ${completeEditor?string}, ${withoutSubSuper?string}, 

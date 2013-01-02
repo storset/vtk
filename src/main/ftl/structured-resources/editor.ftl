@@ -37,7 +37,7 @@
       
       // Cancel action
       _$("#editor").on("click", "#cancelAction", function(e) {
-        NEED_TO_CONFIRM = false;
+        vrtxEditor.needToConfirm = false;
       });
       
       // Save and versioning
@@ -66,7 +66,7 @@
         var boxUrlTextField = vrtxAdmin._$(boxUrlTextFields[i]);
         boxUrlTextField.val(vrtxAdmin._$.trim(boxUrlTextField.val()));
       }
-      NEED_TO_CONFIRM = false;  
+      vrtxEditor.needToConfirm = false;
       
       return true;
     }

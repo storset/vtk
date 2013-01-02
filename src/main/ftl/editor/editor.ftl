@@ -59,7 +59,7 @@
         
         // Cancel action
         _$("#editor").on("click", "#cancel", function(e) {
-          NEED_TO_CONFIRM = false;
+          vrtxEditor.needToConfirm = false;
         });
         
         // Save and copy
@@ -119,7 +119,7 @@
         if(!ok) return false;
       
         saveMultipleInputFields();
-        NEED_TO_CONFIRM = false;
+        vrtxEditor.needToConfirm = false;
         return true;
       } 
       

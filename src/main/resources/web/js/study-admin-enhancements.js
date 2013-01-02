@@ -7,12 +7,13 @@
  */
 
 $(document).ready(function () {
+  var editor = $("#editor");
 
   // When ui-helper-hidden class is added => we need to add 'first'-class to next element (if it is not last and first of these)
-  $(".ui-helper-hidden").filter(":not(:last)").filter(":first").next().addClass("first");
+  editor.find(".ui-helper-hidden").filter(":not(:last)").filter(":first").next().addClass("first");
   // TODO: make sure these are NOT first so that we can use pure CSS
   
-  var editor = $("#editor");
+  
   var docType = editor[0].className;
 
   if(docType && docType !== "") {

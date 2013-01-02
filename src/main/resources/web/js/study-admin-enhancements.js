@@ -76,6 +76,7 @@ $(document).ready(function () {
   }
 });
 
+/* TODO: need to do some refactoring of show/hide for dropdowns */
 function hideShowStudy(container, typeToDisplayElem) {
   switch (typeToDisplayElem.val()) {
     case "so":

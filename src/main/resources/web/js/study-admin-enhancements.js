@@ -15,55 +15,63 @@ $(document).ready(function () {
   var editor = $("#editor");
   var docType = editor[0].className;
 
-  if(docType === "vrtx-hvordan-soke") {
-    hideShowStudy(editor, $("#typeToDisplay"));
-    $(document).on("change", "#typeToDisplay", function () {
-      hideShowStudy(editor, $(this));
-      editor.find(".ui-accordion > .vrtx-string.last").removeClass("last");
-      editor.find(".ui-accordion > .vrtx-string:visible:last").addClass("last");
-    });    
+  if(docType && docType !== "") {
+    switch(docType) {
+      case "vrtx-hvordan-soke":
+        hideShowStudy(editor, $("#typeToDisplay"));
+        $(document).on("change", "#typeToDisplay", function () {
+          hideShowStudy(editor, $(this));
+          editor.find(".ui-accordion > .vrtx-string.last").removeClass("last");
+          editor.find(".ui-accordion > .vrtx-string:visible:last").addClass("last");
+        });    
      
-    // Because accordion needs one content wrapper
-    for(var grouped = editor.find(".vrtx-grouped"), i = grouped.length; i--;) { 
-      $(grouped[i]).find("> *:not(.header)").wrapAll("<div />");
+        // Because accordion needs one content wrapper
+        for(var grouped = editor.find(".vrtx-grouped"), i = grouped.length; i--;) { 
+          $(grouped[i]).find("> *:not(.header)").wrapAll("<div />");
+        }
+        editor.find(".properties").accordion({ header: "> div > .header",
+                                 autoHeight: false,
+                                 collapsible: true,
+                                 active: false
+                               });
+        editor.find(".ui-accordion > .vrtx-string:visible:last").addClass("last");
+        break;
+      case "vrtx-course-description":
+        for(var semesters = ["teaching", "exam"], i = semesters.length, semesterId, semesterType; i--;) {
+          semesterId = "#" + semesters[i] + "semester";
+          semesterType = $(semesterId);
+          if(semesterType.length) {
+            hideShowSemester(editor, semesterType);
+            $(document).on("change", semesterId, function () {
+              hideShowSemester(editor, $(this));
+            });
+          }
+        }
+        setShowHide('course-fee', ["course-fee-amount"], false);
+        break;
+      case "vrtx-semester-page":
+        for(var grouped = editor.find(".vrtx-grouped[class*=link-box]"), i = grouped.length; i--;) { 
+          $(grouped[i]).find("> *:not(.header)").wrapAll("<div />");
+        }
+        grouped.wrapAll("<div id='link-boxes' />");
+        editor.find("#link-boxes").accordion({ header: "> div > .header",
+                                               autoHeight: false,
+                                               collapsible: true,
+                                               active: false
+                                             });
+        break;
+      case "vrtx-samlet-program":
+        var samletElm = editor.find(".samlet-element");
+        replaceTag(samletElm, "h6", "strong");
+        replaceTag(samletElm, "h5", "h6");  
+        replaceTag(samletElm, "h4", "h5");
+        replaceTag(samletElm, "h3", "h4");
+        replaceTag(samletElm, "h2", "h3");
+        replaceTag(samletElm, "h1", "h2");
+        break;
+      default:
+        break;
     }
-    editor.find(".properties").accordion({ header: "> div > .header",
-                               autoHeight: false,
-                               collapsible: true,
-                               active: false
-                             });
-    editor.find(".ui-accordion > .vrtx-string:visible:last").addClass("last");
-    
-  } else if(docType === "vrtx-course-description") { 
-    for(var semesters = ["teaching", "exam"], i = semesters.length, semesterId, semesterType; i--;) {
-      semesterId = "#" + semesters[i] + "semester";
-      semesterType = $(semesterId);
-      if(semesterType.length) {
-        hideShowSemester(editor, semesterType);
-        $(document).on("change", semesterId, function () {
-          hideShowSemester(editor, $(this));
-        });
-      }
-    }
-    setShowHide('course-fee', ["course-fee-amount"], false);
-  } else if(docType === "vrtx-semester-page") {
-    for(var grouped = editor.find(".vrtx-grouped[class*=link-box]"), i = grouped.length; i--;) { 
-      $(grouped[i]).find("> *:not(.header)").wrapAll("<div />");
-    }
-    grouped.wrapAll("<div id='link-boxes' />");
-    editor.find("#link-boxes").accordion({ header: "> div > .header",
-                                     autoHeight: false,
-                                     collapsible: true,
-                                     active: false
-                                   });
-  } else if(docType === "vrtx-samlet-program") {
-    var samletElm = editor.find(".samlet-element");
-    replaceTag(samletElm, "h6", "strong");
-    replaceTag(samletElm, "h5", "h6");  
-    replaceTag(samletElm, "h4", "h5");
-    replaceTag(samletElm, "h3", "h4");
-    replaceTag(samletElm, "h2", "h3");
-    replaceTag(samletElm, "h1", "h2");
   }
 });
 

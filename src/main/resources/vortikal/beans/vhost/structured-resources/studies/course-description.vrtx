@@ -118,7 +118,8 @@ resourcetype course-description : fellestekst-document {
       ##
       [def credits document.properties.credits]
       [def level document.properties.level]
-      [def content-locale resource-prop-obj-val(".", "contentLocale")]
+      [def teaching-language document.properties.teaching-language]
+      [def teaching-language-text-field document.properties.teaching-language-text-field]
       [def teachingsemester document.properties.teachingsemester]
       [def teachingsemester-other document.properties.teachingsemester-other]
       [def examsemester document.properties.examsemester]
@@ -197,13 +198,11 @@ resourcetype course-description : fellestekst-document {
           [else]
             <tr class="last">
           [endif]
-            <td>[localized 'content-locale']:</td>
-            [if content-locale != null && content-locale = "no_NO"]
-              <td>[localized 'locale-no']</td>
-            [elseif content-locale != null && content-locale = "en"]
-              <td>[localized 'locale-en']</td>
-            [elseif content-locale != null && content-locale = "no_NO_NY"]
-              <td>[localized 'locale-nn']</td>
+            <td>[localized 'teaching-language']:</td>
+            [if teaching-language != null && teaching-language != "" && teaching-language != "other"]
+              <td>[localized teaching-language]</td>
+            [elseif teaching-language != null && teaching-language = "other" && teaching-language-text-field != null]
+              <td>[val teaching-language-text-field # unescaped]</td>
             [endif]
           </tr>
           [if course-fee != null && course-fee && course-fee-amount != null && course-fee-amount != ""]
@@ -719,9 +718,6 @@ resourcetype course-description : fellestekst-document {
   localization {
     title : (en : "Title", no : "Tittel", nn : "Tittel"),
     header : (en : "Edit course", no : "Rediger emne", nn : "Rediger emne"),
-    locale-no : (en : "Bokmål", no : "Bokmål", nn : "Bokmål"),
-    locale-nn : (en : "Nynorsk", no : "Nynorsk", nn : "Nynorsk"),
-    locale-en : (en : "English", no : "Engelsk", nn : "Engelsk"),
     version-no : (en : "Norsk versjon", no : "Norsk versjon", nn : "Norsk versjon"),
     version-en : (en : "English version", no : "English version", nn : "English version"),
     continued-as : (en : "This course is continued as", no: "Dette emnet er videreført som", nn : "Dette emnet er vidareført som"),
@@ -749,11 +745,13 @@ resourcetype course-description : fellestekst-document {
     examsemester-other : (en : "Other", no : "Annet", nn : "Annet"),
     teaching-language : (en : "Teaching language", no : "Undervisningsspråk", nn : "Undervisningsspråk"),
     teaching-language-text-field : (en : "Teaching language text field", no : "Undervisningsspråk tekstfelt", nn : "Undervisningsspråk tekstfelt"),
+    norwegian : (en : "Norwegian", no : "Norsk", nn : "Norsk"),
+    english : (en : "English", no : "Engelsk", nn : "Engelsk"),
+    english-by-need : (en : "English by need", no : "Engelsk ved nødvendighet", nn : "Engelsk ved nødvendigheit"),
     term : (en : "Term", no : "Semester", nn : "Semester"),
     autumn : (en : "Autumn", no : "Høst", nn : "Høst"),
     spring : (en : "Spring", no : "Vår", nn : "Vår"),
     year : (en : "Year", no : "År", nn : "År"),
-    content-locale : (en : "Language of instruction", no : "Undervisningsspråk", nn : "Undervisningsspråk"),
     administrated : (en : "Administrated by", no : "Tilbys ved", nn : "Tilbys ved"),
     semester : (en : "Detailed course information - Current and previous semesters:",
                 no : "Semestersider (undervisningstider, eksamensdato, pensum m.m.):",
@@ -831,6 +829,6 @@ resourcetype course-description : fellestekst-document {
     bachelor : (en : "Bachelor", no : "Bachelor", nn : "Bachelor"),
     master : (en : "Master", no : "Master", nn : "Master"),
     phd : (en : "PhD", no : "ph.d.", nn : "ph.d."),
-    admission : (en : "Admission", no : "Adgang", nn : "")
+    admission : (en : "Admission", no : "Adgang", nn : "Adgang")
   }
 }

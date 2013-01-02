@@ -54,7 +54,7 @@
          $(document).ready(function() {
            var nameBind = "${nameBind}";
            var nameField = $("#" + nameBind);
-           CREATE_DOCUMENT_FILE_NAME = nameField.val();
+           vrtxAdmin.createDocumentFileName = nameField.val();
            isIndexFile("${nameBind}", "${isIndexBind}");
          });
        // -->

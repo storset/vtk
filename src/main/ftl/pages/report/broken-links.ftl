@@ -35,7 +35,7 @@
         // Multiple fields interaction
         initMultipleInputFields();
         
-        $.when(MULTIPLE_INPUT_FIELD_TEMPLATES_DEFERRED).done(function() {
+        $.when(vrtxAdmin.multipleCommaSeperatedInputFieldDeferred).done(function() {
           if($(".report-filters-folders-exclude").length) {
             loadMultipleInputFields("report-filters-folders-exclude", '${vrtx.getMsg("editor.add")}',
                                     '${vrtx.getMsg("editor.remove")}', '${vrtx.getMsg("editor.move-up")}',

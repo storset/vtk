@@ -161,8 +161,8 @@ $.fn.ajaxSubmit = function(options) {
 	var shouldUseFrame = (hasFileInputs || multipart) && !fileAPI;
 
         // USIT added name of clicked button
-        if(typeof EDITOR_SAVE_BUTTON_NAME !== "undefined" && EDITOR_SAVE_BUTTON_NAME != "") {
-          options.data += "&" + EDITOR_SAVE_BUTTON_NAME;
+        if(typeof vrtxAdmin !== "undefined" && vrtxAdmin.EDITOR_SAVE_BUTTON_NAME != "") {
+          options.data += "&" + vrtxAdmin.EDITOR_SAVE_BUTTON_NAME;
         }
 
 	// options.iframe allows user to force iframe mode

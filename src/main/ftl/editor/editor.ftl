@@ -80,7 +80,7 @@
         initMultipleInputFields();
         
         // Load HTML/Mustache templates for multiple inputfields
-        $.when(MULTIPLE_INPUT_FIELD_TEMPLATES_DEFERRED).done(function() {
+        $.when(vrtxAdm.multipleCommaSeperatedInputFieldDeferred).done(function() {
           var hasFeaturedArticles = _$("#resource\\.featured-articles").length;
           var hasAggregation = _$("#resource\\.aggregation").length;
           var hasManuallyApprove = _$("#resource\\.manually-approve-from").length;

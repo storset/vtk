@@ -1,9 +1,12 @@
 /*
  *  Vortex Editor
  *
+ *  TODO: encapsulate in VrtxEditor
+ *  TODO: JSDoc
+ *
  */
 
-/* Editor CK toolbars */
+/* CK toolbars */
 
 var inlineToolbar = [['Source', 'PasteText', 'Link', 'Unlink', 'Bold',
                       'Italic', 'Strike', 'Subscript', 'Superscript',
@@ -61,6 +64,7 @@ var commentsToolbar = [['Source', 'PasteText', 'Bold',
                         'BulletedList', 'Link', 'Unlink']];
 
 // TODO: Try to remove some hardcoded fields - should maybe be class-based
+/* Create new CK editor */
 function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, baseDocumentUrl, browsePath, defaultLanguage, cssFileList, simpleHTML) {
   
   // If pregenerated parameters is used for init

@@ -178,7 +178,7 @@ VrtxEditor.prototype.newEditor = function newEditor(name, completeEditor, withou
         completeTB = vrtxEdit.CK_Toolbars.courseGroupToolbar;
       }
     }
-    vrtxEdit.setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, defaultLanguage, cssFileList, height, maxHeight, 50, vrtxEdit.CK_Toolbars.completeTB,
+    vrtxEdit.setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, defaultLanguage, cssFileList, height, maxHeight, 50, completeTB,
                                isCompleteEditor, true, baseDocumentUrl, isSimpleHTML);
   } else {
     vrtxEdit.setCKEditorConfig(name, linkBrowseUrl, null, null, defaultLanguage, cssFileList, 90, 400, 40, vrtxEdit.CK_Toolbars.withoutSubSuperToolbar, 

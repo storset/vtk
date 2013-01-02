@@ -89,19 +89,19 @@ public class RepositoryOperationLogInterceptor implements MethodInterceptor {
         }
         
         // Reduce avg. overhead by putting most common ops early in list ..
-        if (operation == RepositoryOperation.RETRIEVE                ||
-                operation == RepositoryOperation.LIST_CHILDREN       ||
-                operation == RepositoryOperation.GET_INPUTSTREAM     ||
-                operation == RepositoryOperation.LOCK                ||
-                operation == RepositoryOperation.UNLOCK              ||
-                operation == RepositoryOperation.CREATE_DOCUMENT     ||
-                operation == RepositoryOperation.CREATE_COLLECTION   ||
-                operation == RepositoryOperation.CREATE              ||
-                operation == RepositoryOperation.DELETE              ||
-                operation == RepositoryOperation.STORE_CONTENT       ||
-                operation == RepositoryOperation.STORE_ACL           ||
-                operation == RepositoryOperation.DELETE_ACL          ||
-                operation == RepositoryOperation.GET_REVISIONS       ||
+        if (operation == RepositoryOperation.RETRIEVE                      ||
+                operation == RepositoryOperation.LIST_CHILDREN             ||
+                operation == RepositoryOperation.GET_INPUTSTREAM           ||
+                operation == RepositoryOperation.LOCK                      ||
+                operation == RepositoryOperation.UNLOCK                    ||
+                operation == RepositoryOperation.CREATE_DOCUMENT           ||
+                operation == RepositoryOperation.CREATE_COLLECTION         ||
+                operation == RepositoryOperation.CREATE                    ||
+                operation == RepositoryOperation.STORE_CONTENT             ||
+                operation == RepositoryOperation.STORE_ACL                 ||
+                operation == RepositoryOperation.DELETE_ACL                ||
+                operation == RepositoryOperation.GET_RECOVERABLE_RESOURCES ||
+                operation == RepositoryOperation.GET_REVISIONS             ||
                 operation == RepositoryOperation.DELETE_REVISION) {            
 
             Path uri = (Path)args[1];
@@ -114,6 +114,18 @@ public class RepositoryOperationLogInterceptor implements MethodInterceptor {
             Path uri = (Path) args[1];
             Revision.Type type = (Revision.Type) args[2];
             params = "(" + uri + ", " + type + ")";
+            
+        } else if (RepositoryOperation.DELETE == operation) {
+            Path uri = (Path) args[1];
+            boolean recoverable = (Boolean) args[2];
+            params = "(" + uri + ", " + recoverable + ")";
+            
+        } else if (RepositoryOperation.DELETE_RECOVERABLE == operation || 
+                   RepositoryOperation.RECOVER == operation) {
+            
+            Path parentUri = (Path) args[1];
+            RecoverableResource recoverable = (RecoverableResource) args[2];
+            params = "(" + parentUri + ", " + recoverable.getTrashUri() + ")";
             
         } else if (RepositoryOperation.COPY == operation ||
                    RepositoryOperation.MOVE == operation) {

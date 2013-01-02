@@ -46,6 +46,10 @@ public enum RepositoryOperation {
     DELETE("delete", true),
     EXISTS("exists", false),
     
+    GET_RECOVERABLE_RESOURCES("getRecoverableResources", false),
+    RECOVER("recover", true),
+    DELETE_RECOVERABLE("deleteRecoverable", true),
+    
     GET_REVISIONS("getRevisions", false),
     CREATE_REVISION("createRevision", true),
     DELETE_REVISION("deleteRevision", true),

@@ -16,6 +16,7 @@ function VrtxEditor() {
   instance.constructor = VrtxEditor;
   
   this.CKEditorToolbars = {};
+  this.CKEditorDivContainerStylesSet = [{}];
   
   this.CKEditorsInit = [];
   this.CKEditorsInitSyncMax = 15;
@@ -35,7 +36,7 @@ function VrtxEditor() {
 var vrtxEditor = new VrtxEditor();
 var UNSAVED_CHANGES_CONFIRMATION;
 
-/* CK toolbars */
+/* CKEditor toolbars */
 
 vrtxEditor.CKEditorToolbars.inlineToolbar = [['Source', 'PasteText', 'Link', 'Unlink', 'Bold',
                                          'Italic', 'Strike', 'Subscript', 'Superscript',
@@ -91,6 +92,111 @@ vrtxEditor.CKEditorToolbars.completeToolbarOld = [['Source', 'PasteText', 'Paste
 vrtxEditor.CKEditorToolbars.commentsToolbar = [['Source', 'PasteText', 'Bold',
                                            'Italic', 'Strike', 'NumberedList',
                                            'BulletedList', 'Link', 'Unlink']];
+                                           
+/* CKEditor Div containers */
+
+vrtxEditor.CKEditorDivContainerStylesSet = [{
+    name: 'Facts left',
+    element: 'div',
+    attributes: { 'class': 'vrtx-facts-container vrtx-container-left' }
+  }, {
+    name: 'Facts right',
+    element: 'div',
+    attributes: { 'class': 'vrtx-facts-container vrtx-container-right' }
+  }, {
+    name: 'Image left',
+    element: 'div',
+    attributes: { 'class': 'vrtx-img-container vrtx-container-left' }
+  }, {
+    name: 'Image center',
+    element: 'div',
+    attributes: { 'class': 'vrtx-img-container vrtx-container-middle vrtx-img-container-middle-ie' }
+  }, {
+    name: 'Image right',
+    element: 'div',
+    attributes: { 'class': 'vrtx-img-container vrtx-container-right' }
+  }, {
+    name: 'Img & capt left (800px)',
+    element: 'div',
+    attributes: { 'class': 'vrtx-container vrtx-container-size-xxl vrtx-container-left' }
+  }, {
+    name: 'Img & capt left (700px)',
+    element: 'div',
+    attributes: { 'class': 'vrtx-container vrtx-container-size-xl vrtx-container-left' }
+  }, {
+    name: 'Img & capt left (600px)',
+    element: 'div',
+    attributes: { 'class': 'vrtx-container vrtx-container-size-l vrtx-container-left' }
+  }, {
+    name: 'Img & capt left (500px)',
+    element: 'div',
+    attributes: { 'class': 'vrtx-container vrtx-container-size-m vrtx-container-left' }
+  }, {
+    name: 'Img & capt left (400px)',
+    element: 'div',
+    attributes: { 'class': 'vrtx-container vrtx-container-size-s vrtx-container-left' }
+  }, {
+    name: 'Img & capt left (300px)',
+    element: 'div',
+    attributes: { 'class': 'vrtx-container vrtx-container-size-xs vrtx-container-left' }
+  }, {
+    name: 'Img & capt left (200px)',
+    element: 'div',
+    attributes: { 'class': 'vrtx-container vrtx-container-size-xxs vrtx-container-left' }
+  }, {
+    name: 'Img & capt center (full)',
+    element: 'div',
+    attributes: { 'class': 'vrtx-container vrtx-container-size-full vrtx-container-middle' }
+  }, {
+    name: 'Img & capt center (800px)',
+    element: 'div',
+    attributes: { 'class': 'vrtx-container vrtx-container-size-xxl vrtx-container-middle' }
+  }, {
+    name: 'Img & capt center (700px) ',
+    element: 'div',
+    attributes: { 'class': 'vrtx-container vrtx-container-size-xl vrtx-container-middle' }
+  }, {
+    name: 'Img & capt center (600px) ',
+    element: 'div',
+    attributes: { 'class': 'vrtx-container vrtx-container-size-l vrtx-container-middle' }
+  }, {
+    name: 'Img & capt center (500px) ',
+    element: 'div',
+    attributes: { 'class': 'vrtx-container vrtx-container-size-m vrtx-container-middle' }
+  }, {
+    name: 'Img & capt center (400px) ',
+    element: 'div',
+    attributes: { 'class': 'vrtx-container vrtx-container-size-s vrtx-container-middle' }
+  }, {
+    name: 'Img & capt right (800px) ',
+    element: 'div',
+    attributes: { 'class': 'vrtx-container vrtx-container-size-xxl vrtx-container-right' }
+  }, {
+    name: 'Img & capt right (700px) ',
+    element: 'div',
+    attributes: { 'class': 'vrtx-container vrtx-container-size-xl vrtx-container-right' }
+  }, {
+    name: 'Img & capt right (600px) ',
+    element: 'div',
+    attributes: { 'class': 'vrtx-container vrtx-container-size-l vrtx-container-right' }
+  }, {
+    name: 'Img & capt right (500px) ',
+    element: 'div',
+    attributes: { 'class': 'vrtx-container vrtx-container-size-m vrtx-container-right' }
+  }, {
+    name: 'Img & capt right (400px) ',
+    element: 'div',
+    attributes: { 'class': 'vrtx-container vrtx-container-size-s vrtx-container-right' }
+  }, {
+    name: 'Img & capt right (300px) ',
+    element: 'div',
+    attributes: { 'class': 'vrtx-container vrtx-container-size-xs vrtx-container-right' }
+  }, {
+    name: 'Img & capt right (200px) ',
+    element: 'div',
+    attributes: { 'class': 'vrtx-container vrtx-container-size-xxs vrtx-container-right'
+  }
+}];
 
 // TODO: Try to remove some hardcoded fields - should maybe be class-based
 /* Create new CK editor */
@@ -223,7 +329,7 @@ VrtxEditor.prototype.setCKEditorConfig = function setCKEditorConfig(name, linkBr
     config.filebrowserImageBrowseUrl = imageBrowseUrl;
     config.filebrowserFlashBrowseUrl = flashBrowseUrl;
     config.extraPlugins = 'mediaembed,studyreferencecomponent,htmlbuttons';
-    config.stylesSet = divContainerStylesSet;
+    config.stylesSet = vrtxEdit.CKEditorDivContainerStylesSet;
     if (name == "resource.content" && simple) { // XHTML
       config.format_tags = 'p;h1;h2;h3;h4;h5;h6;pre;div';
     } else {
@@ -758,158 +864,5 @@ function replaceTag(selector, tag, replaceTag) {
     return "<" + replaceTag + ">" + $(this).text() + "</" + replaceTag + ">";
   });
 }
-
-/* CK Div containers */
-
-var divContainerStylesSet = [{
-  name: 'Facts left',
-  element: 'div',
-  attributes: { 'class': 'vrtx-facts-container vrtx-container-left'
-  }
-},
-  {
-  name: 'Facts right',
-  element: 'div',
-  attributes: { 'class': 'vrtx-facts-container vrtx-container-right'
-  }
-},
-  {
-  name: 'Image left',
-  element: 'div',
-  attributes: { 'class': 'vrtx-img-container vrtx-container-left'
-  }
-},
-  {
-  name: 'Image center',
-  element: 'div',
-  attributes: { 'class': 'vrtx-img-container vrtx-container-middle vrtx-img-container-middle-ie'
-  }
-},
-  {
-  name: 'Image right',
-  element: 'div',
-  attributes: { 'class': 'vrtx-img-container vrtx-container-right'
-  }
-},
-  {
-  name: 'Img & capt left (800px)',
-  element: 'div',
-  attributes: { 'class': 'vrtx-container vrtx-container-size-xxl vrtx-container-left'
-  }
-},
-  {
-  name: 'Img & capt left (700px)',
-  element: 'div',
-  attributes: { 'class': 'vrtx-container vrtx-container-size-xl vrtx-container-left'
-  }
-},
-  {
-  name: 'Img & capt left (600px)',
-  element: 'div',
-  attributes: { 'class': 'vrtx-container vrtx-container-size-l vrtx-container-left'
-  }
-},
-  {
-  name: 'Img & capt left (500px)',
-  element: 'div',
-  attributes: { 'class': 'vrtx-container vrtx-container-size-m vrtx-container-left'
-  }
-},
-  {
-  name: 'Img & capt left (400px)',
-  element: 'div',
-  attributes: { 'class': 'vrtx-container vrtx-container-size-s vrtx-container-left'
-  }
-},
-  {
-  name: 'Img & capt left (300px)',
-  element: 'div',
-  attributes: { 'class': 'vrtx-container vrtx-container-size-xs vrtx-container-left'
-  }
-},
-  {
-  name: 'Img & capt left (200px)',
-  element: 'div',
-  attributes: { 'class': 'vrtx-container vrtx-container-size-xxs vrtx-container-left'
-  }
-},
-  {
-  name: 'Img & capt center (full)',
-  element: 'div',
-  attributes: { 'class': 'vrtx-container vrtx-container-size-full vrtx-container-middle'
-  }
-},
-  {
-  name: 'Img & capt center (800px)',
-  element: 'div',
-  attributes: { 'class': 'vrtx-container vrtx-container-size-xxl vrtx-container-middle'
-  }
-},
-  {
-  name: 'Img & capt center (700px) ',
-  element: 'div',
-  attributes: { 'class': 'vrtx-container vrtx-container-size-xl vrtx-container-middle'
-  }
-},
-  {
-  name: 'Img & capt center (600px) ',
-  element: 'div',
-  attributes: { 'class': 'vrtx-container vrtx-container-size-l vrtx-container-middle'
-  }
-},
-  {
-  name: 'Img & capt center (500px) ',
-  element: 'div',
-  attributes: { 'class': 'vrtx-container vrtx-container-size-m vrtx-container-middle'
-  }
-},
-  {
-  name: 'Img & capt center (400px) ',
-  element: 'div',
-  attributes: { 'class': 'vrtx-container vrtx-container-size-s vrtx-container-middle'
-  }
-},
-  {
-  name: 'Img & capt right (800px) ',
-  element: 'div',
-  attributes: { 'class': 'vrtx-container vrtx-container-size-xxl vrtx-container-right'
-  }
-},
-  {
-  name: 'Img & capt right (700px) ',
-  element: 'div',
-  attributes: { 'class': 'vrtx-container vrtx-container-size-xl vrtx-container-right'
-  }
-},
-  {
-  name: 'Img & capt right (600px) ',
-  element: 'div',
-  attributes: { 'class': 'vrtx-container vrtx-container-size-l vrtx-container-right'
-  }
-},
-  {
-  name: 'Img & capt right (500px) ',
-  element: 'div',
-  attributes: { 'class': 'vrtx-container vrtx-container-size-m vrtx-container-right'
-  }
-},
-  {
-  name: 'Img & capt right (400px) ',
-  element: 'div',
-  attributes: { 'class': 'vrtx-container vrtx-container-size-s vrtx-container-right'
-  }
-},
-  {
-  name: 'Img & capt right (300px) ',
-  element: 'div',
-  attributes: { 'class': 'vrtx-container vrtx-container-size-xs vrtx-container-right'
-  }
-},
-  {
-  name: 'Img & capt right (200px) ',
-  element: 'div',
-  attributes: { 'class': 'vrtx-container vrtx-container-size-xxs vrtx-container-right'
-  }
-}];
 
 /* ^ Vortex Editor */

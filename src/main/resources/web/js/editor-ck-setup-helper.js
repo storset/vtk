@@ -333,6 +333,51 @@ function storeInitPropValues() {
   for(    i = 0, len = radioButtons.length; i < len; i++) INITIAL_RADIO_BUTTONS[i] = radioButtons[i].name + " " + radioButtons[i].value;
 }
 
+function unsavedChangesInEditor() {
+  if (!NEED_TO_CONFIRM) return false;
+  var contents = $("#contents");
+
+  var currentStateOfInputFields = contents.find("input").not("[type=submit]").not("[type=button]")
+                                                        .not("[type=checkbox]").not("[type=radio]"),
+      textLen = currentStateOfInputFields.length,
+      currentStateOfSelects = contents.find("select"),
+      selectsLen = currentStateOfSelects.length,
+      currentStateOfCheckboxes = contents.find("input[type=checkbox]:checked"),
+      checkboxLen = currentStateOfCheckboxes.length,
+      currentStateOfRadioButtons = contents.find("input[type=radio]:checked"),
+      radioLen = currentStateOfRadioButtons.length;
+  
+  // Check if count has changed
+  if(selectsLen != INITIAL_SELECTS.length
+  || checkboxLen != INITIAL_CHECKBOXES.length
+  || radioLen != INITIAL_RADIO_BUTTONS.length
+  || textLen != INITIAL_INPUT_FIELDS.length) return true;
+
+  // Check if values have changed
+  for (var i = 0; i < textLen; i++) if(currentStateOfInputFields[i].value !== INITIAL_INPUT_FIELDS[i]) return true;
+  for (    i = 0; i < selectsLen; i++) if(currentStateOfSelects[i].value !== INITIAL_SELECTS[i]) return true;
+  for (    i = 0; i < checkboxLen; i++) if(currentStateOfCheckboxes[i].name !== INITIAL_CHECKBOXES[i]) return true;
+  for (    i = 0; i < radioLen; i++) if(currentStateOfRadioButtons[i].name + " " + currentStateOfRadioButtons[i].value !== INITIAL_RADIO_BUTTONS[i]) return true;
+  
+  var currentStateOfTextFields = contents.find("textarea"); // CK->checkDirty()
+  if (typeof CKEDITOR !== "undefined") {
+    for (i = 0, len = currentStateOfTextFields.length; i < len; i++) {
+      var ckInstance = getCkInstance(currentStateOfTextFields[i].name);
+      if (ckInstance && ckInstance.checkDirty() && ckInstance.getData() !== "") {
+        return true;
+      }
+    }
+  }
+
+  return false;
+}
+
+function unsavedChangesInEditorMessage() {
+  if (unsavedChangesInEditor()) {
+    return UNSAVED_CHANGES_CONFIRMATION;
+  }
+}
+
 function validTextLengthsInEditor(isOldEditor) {
   var MAX_LENGTH = 1500, // Back-end limits it to 2048
       // NEW starts on wrapper and OLD starts on field (because of slightly different semantic/markup build-up)
@@ -395,51 +440,6 @@ function validTextLengthsInEditorError(elm, isOldEditor) {
     if(lbl.length) {
       vrtxSimpleDialogs.openMsgDialog(tooLongFieldPre + lbl.text() + tooLongFieldPost, "");
     }
-  }
-}
-
-function unsavedChangesInEditor() {
-  if (!NEED_TO_CONFIRM) return false;
-  var contents = $("#contents");
-
-  var currentStateOfInputFields = contents.find("input").not("[type=submit]").not("[type=button]")
-                                                        .not("[type=checkbox]").not("[type=radio]"),
-      textLen = currentStateOfInputFields.length,
-      currentStateOfSelects = contents.find("select"),
-      selectsLen = currentStateOfSelects.length,
-      currentStateOfCheckboxes = contents.find("input[type=checkbox]:checked"),
-      checkboxLen = currentStateOfCheckboxes.length,
-      currentStateOfRadioButtons = contents.find("input[type=radio]:checked"),
-      radioLen = currentStateOfRadioButtons.length;
-  
-  // Check if count has changed
-  if(selectsLen != INITIAL_SELECTS.length
-  || checkboxLen != INITIAL_CHECKBOXES.length
-  || radioLen != INITIAL_RADIO_BUTTONS.length
-  || textLen != INITIAL_INPUT_FIELDS.length) return true;
-
-  // Check if values have changed
-  for (var i = 0; i < textLen; i++) if(currentStateOfInputFields[i].value !== INITIAL_INPUT_FIELDS[i]) return true;
-  for (    i = 0; i < selectsLen; i++) if(currentStateOfSelects[i].value !== INITIAL_SELECTS[i]) return true;
-  for (    i = 0; i < checkboxLen; i++) if(currentStateOfCheckboxes[i].name !== INITIAL_CHECKBOXES[i]) return true;
-  for (    i = 0; i < radioLen; i++) if(currentStateOfRadioButtons[i].name + " " + currentStateOfRadioButtons[i].value !== INITIAL_RADIO_BUTTONS[i]) return true;
-  
-  var currentStateOfTextFields = contents.find("textarea"); // CK->checkDirty()
-  if (typeof CKEDITOR !== "undefined") {
-    for (i = 0, len = currentStateOfTextFields.length; i < len; i++) {
-      var ckInstance = getCkInstance(currentStateOfTextFields[i].name);
-      if (ckInstance && ckInstance.checkDirty() && ckInstance.getData() !== "") {
-        return true;
-      }
-    }
-  }
-
-  return false;
-}
-
-function unsavedChangesInEditorMessage() {
-  if (unsavedChangesInEditor()) {
-    return UNSAVED_CHANGES_CONFIRMATION;
   }
 }
 

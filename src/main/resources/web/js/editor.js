@@ -594,9 +594,7 @@ $(document).ready(function() {
   }
   
   /* Initialize CKEditors */
-  
-  var len = vrtxEdit.CKEditorsInit.length;
-  for(var i = 0; i < len && i < vrtxEdit.CKEditorsInitSyncMax; i++) { // Initiate <=CKEditorsInitSyncMax CKEditors sync
+  for(var i = 0, len = vrtxEdit.CKEditorsInit.length; i < len && i < vrtxEdit.CKEditorsInitSyncMax; i++) { // Initiate <=CKEditorsInitSyncMax CKEditors sync
     vrtxEditor.newEditor(vrtxEdit.CKEditorsInit[i]);
   }
   if(len > vrtxEdit.CKEditorsInitSyncMax) {

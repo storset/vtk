@@ -77,7 +77,6 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
     obj = null; // Avoid any mem leak
   }
 
-
   // File browser
   var linkBrowseUrl = baseUrl + '/plugins/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Connector=' + browsePath;
   var imageBrowseUrl = baseUrl + '/plugins/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Type=Image&Connector=' + browsePath;
@@ -263,11 +262,217 @@ function commentsCkEditor() {
   });
 }
 
-
 var EDITORS_MAX_SYNC_AT_INIT = 15;
 var EDITORS_ASYNC_INIT_INTERVAL = 15;
+var NEED_TO_CONFIRM = true;
+var UNSAVED_CHANGES_CONFIRMATION;
+var INITIAL_INPUT_FIELDS = [];
+var INITIAL_SELECTS = [];
+var INITIAL_CHECKBOXES = [];
+var INITIAL_RADIO_BUTTONS = [];
 
-$(document).ready(function() {
+$(document).ready(function() { 
+  var vrtxAdm = vrtxAdmin, _$ = vrtxAdm._$;
+
+  var editor = $("#editor");
+  if(!editor.length) return;
+  
+  // When ui-helper-hidden class is added => we need to add 'first'-class to next element (if it is not last and first of these)
+  editor.find(".ui-helper-hidden").filter(":not(:last)").filter(":first").next().addClass("first");
+  // TODO: make sure these are NOT first so that we can use pure CSS
+
+  autocompleteUsernames(".vrtx-autocomplete-username");
+  autocompleteTags(".vrtx-autocomplete-tag");
+
+  // Stickybar
+  var titleSubmitButtons = _$("#vrtx-editor-title-submit-buttons");
+  // TODO: also check minimum device height (with high density displays on new devices accounted for)
+  if(titleSubmitButtons.length && !vrtxAdm.isIPhone) { // Turn off for iPhone. 
+    var titleSubmitButtonsPos = titleSubmitButtons.offset();
+    if(vrtxAdm.isIE8) {
+      titleSubmitButtons.append("<span id='sticky-bg-ie8-below'></span>");
+    }
+    _$(window).on("scroll", function() {
+      if(_$(window).scrollTop() >= titleSubmitButtonsPos.top) {
+        if(!titleSubmitButtons.hasClass("vrtx-sticky-editor-title-submit-buttons")) {
+          titleSubmitButtons.addClass("vrtx-sticky-editor-title-submit-buttons");
+          _$("#contents").css("paddingTop", titleSubmitButtons.outerHeight(true) + "px");
+        }
+        titleSubmitButtons.css("width", (_$("#main").outerWidth(true) - 2) + "px");
+      } else {
+        if(titleSubmitButtons.hasClass("vrtx-sticky-editor-title-submit-buttons")) {
+          titleSubmitButtons.removeClass("vrtx-sticky-editor-title-submit-buttons");
+          titleSubmitButtons.css("width", "auto");
+          _$("#contents").css("paddingTop", "0px");
+        }
+      }
+    });
+    _$(window).on("resize", function() {
+      if(_$(window).scrollTop() >= titleSubmitButtonsPos.top) {
+        titleSubmitButtons.css("width", (_$("#main").outerWidth(true) - 2) + "px");
+      }
+    });
+  }
+
+  // Add save/help when CK is maximized
+  vrtxAdm.cachedAppContent.on("click", ".cke_button_maximize.cke_on", function(e) { 
+    var stickyBar = _$("#vrtx-editor-title-submit-buttons");          
+    stickyBar.hide();
+         
+    var ckInject = _$(this).closest(".cke_skin_kama")
+                           .find(".cke_toolbar_end:last");
+                               
+    if(!ckInject.find("#editor-help-menu").length) {  
+      var shortcuts = stickyBar.find(".submit-extra-buttons");
+      var save = shortcuts.find("#vrtx-save").html();
+      var helpMenu = "<div id='editor-help-menu' class='js-on'>" + shortcuts.find("#editor-help-menu").html() + "</div>";
+      ckInject.append("<div class='ck-injected-save-help'>" + save + helpMenu + "</div>");
+        
+      // Fix markup
+      var saveInjected = ckInject.find(".ck-injected-save-help > a");
+      if(!saveInjected.hasClass("vrtx-button")) {
+        saveInjected.addClass("vrtx-button");
+        if(!saveInjected.find("> span").length) {
+          saveInjected.wrapInner("<span />");
+        }
+      } else {
+        saveInjected.removeClass("vrtx-focus-button");
+      }
+        
+    } else {
+      ckInject.find(".ck-injected-save-help").show();
+    }
+  }); 
+
+  vrtxAdm.cachedAppContent.on("click", ".cke_button_maximize.cke_off", function(e) {    
+    var stickyBar = _$("#vrtx-editor-title-submit-buttons");          
+    stickyBar.show();
+    var ckInject = _$(this).closest(".cke_skin_kama").find(".ck-injected-save-help").hide();
+  }); 
+  
+  /* Toggle fields - TODO: should be more general (and without '.'s) but old editor need an update first */
+    
+  // Aggregation and manually approved
+  if(!_$("#resource\\.display-aggregation\\.true").is(":checked")) {
+    _$("#vrtx-resource\\.aggregation").slideUp(0, "linear");
+  }
+  if(!_$("#resource\\.display-manually-approved\\.true").is(":checked")) {
+    _$("#vrtx-resource\\.manually-approve-from").slideUp(0, "linear");
+  }
+
+  vrtxAdm.cachedAppContent.on("click", "#resource\\.display-aggregation\\.true", function(e) {
+    if(!_$(this).is(":checked")) {                   // If unchecked remove rows and clean prop textfield
+      _$(".aggregation .vrtx-multipleinputfield").remove();
+       _$("#resource\\.aggregation").val("");
+    }
+    _$("#vrtx-resource\\.aggregation").slideToggle(vrtxAdm.transitionDropdownSpeed, "swing");
+    e.stopPropagation();
+  });
+
+  vrtxAdm.cachedAppContent.on("click", "#resource\\.display-manually-approved\\.true", function(e) {
+    if(!_$(this).is(":checked")) {                   // If unchecked remove rows and clean prop textfield
+      _$(".manually-approve-from .vrtx-multipleinputfield").remove();
+      _$("#resource\\.manually-approve-from").val("");
+    }
+    _$("#vrtx-resource\\.manually-approve-from").slideToggle(vrtxAdm.transitionDropdownSpeed, "swing");
+    e.stopPropagation();
+  });
+  
+  // Course status - continued as
+  vrtxAdm.cachedAppContent.on("change", "#resource\\.courseContext\\.course-status", function(e) {
+    var courseStatus = _$(this);
+    if(courseStatus.val() === "continued-as") {
+      _$("#vrtx-resource\\.courseContext\\.course-continued-as.hidden").slideDown(vrtxAdm.transitionDropdownSpeed, "swing", function() {
+        $(this).removeClass("hidden");
+      });
+    } else {
+      _$("#vrtx-resource\\.courseContext\\.course-continued-as:not(.hidden)").slideUp(vrtxAdm.transitionDropdownSpeed, "swing", function() {
+        $(this).addClass("hidden");
+      });
+    }
+    e.stopPropagation();
+  });
+  _$("#resource\\.courseContext\\.course-status").change();
+
+  // Show/hide multiple properties (initalization / config)
+  // TODO: better / easier to understand interface (and remove old "." in CSS-ids / classes)
+  showHide(["#resource\\.recursive-listing\\.false", "#resource\\.recursive-listing\\.unspecified"], // radioIds
+            "#resource\\.recursive-listing\\.false:checked",                                         // conditionHide
+            'false',                                                                                 // conditionHideEqual
+            ["#vrtx-resource\\.recursive-listing-subfolders"]);                                      // showHideProps
+
+  showHide(["#resource\\.display-type\\.unspecified", "#resource\\.display-type\\.calendar"],
+            "#resource\\.display-type\\.calendar:checked",
+            null,
+            ["#vrtx-resource\\.event-type-title"]);
+
+  showHide(["#resource\\.display-type\\.unspecified", "#resource\\.display-type\\.calendar"],
+            "#resource\\.display-type\\.calendar:checked",
+            'calendar',
+            ["#vrtx-resource\\.hide-additional-content"]);
+   
+  var docType = editor[0].className;
+  if(docType && docType !== "") {
+    switch(docType) {
+      case "vrtx-hvordan-soke":
+        hideShowStudy(editor, _$("#typeToDisplay"));
+        _$(document).on("change", "#typeToDisplay", function () {
+          hideShowStudy(editor, $(this));
+          editor.find(".ui-accordion > .vrtx-string.last").removeClass("last");
+          editor.find(".ui-accordion > .vrtx-string:visible:last").addClass("last");
+        });    
+     
+        // Because accordion needs one content wrapper
+        for(var grouped = editor.find(".vrtx-grouped"), i = grouped.length; i--;) { 
+          _$(grouped[i]).find("> *:not(.header)").wrapAll("<div />");
+        }
+        editor.find(".properties").accordion({ header: "> div > .header",
+                                 autoHeight: false,
+                                 collapsible: true,
+                                 active: false
+                               });
+        editor.find(".ui-accordion > .vrtx-string:visible:last").addClass("last");
+        break;
+      case "vrtx-course-description":
+        for(var semesters = ["teaching", "exam"], i = semesters.length, semesterId, semesterType; i--;) {
+          semesterId = "#" + semesters[i] + "semester";
+          semesterType = _$(semesterId);
+          if(semesterType.length) {
+            hideShowSemester(editor, semesterType);
+            _$(document).on("change", semesterId, function () {
+              hideShowSemester(editor, $(this));
+            });
+          }
+        }
+        setShowHide('course-fee', ["course-fee-amount"], false);
+        break;
+      case "vrtx-semester-page":
+        for(var grouped = editor.find(".vrtx-grouped[class*=link-box]"), i = grouped.length; i--;) { 
+          _$(grouped[i]).find("> *:not(.header)").wrapAll("<div />");
+        }
+        grouped.wrapAll("<div id='link-boxes' />");
+        editor.find("#link-boxes").accordion({ header: "> div > .header",
+                                               autoHeight: false,
+                                               collapsible: true,
+                                               active: false
+                                             });
+        break;
+      case "vrtx-samlet-program":
+        var samletElm = editor.find(".samlet-element");
+        replaceTag(samletElm, "h6", "strong");
+        replaceTag(samletElm, "h5", "h6");  
+        replaceTag(samletElm, "h4", "h5");
+        replaceTag(samletElm, "h3", "h4");
+        replaceTag(samletElm, "h2", "h3");
+        replaceTag(samletElm, "h1", "h2");
+        break;
+      default:
+        break;
+    }
+  }
+  
+  /* Initialize CKEditors */
+  
   if(typeof EDITORS_AT_INIT !== "undefined") {
     var len = EDITORS_AT_INIT.length;
     for(var i = 0; i < len && i < EDITORS_MAX_SYNC_AT_INIT; i++) { // Initiate <=25 CKEditors
@@ -284,13 +489,6 @@ $(document).ready(function() {
     }
   }
 });
-
-var NEED_TO_CONFIRM = true;
-var UNSAVED_CHANGES_CONFIRMATION;
-var INITIAL_INPUT_FIELDS = [];
-var INITIAL_SELECTS = [];
-var INITIAL_CHECKBOXES = [];
-var INITIAL_RADIO_BUTTONS = [];
 
 /*
  * Check if inputfields or textareas (CK) have changes
@@ -501,6 +699,52 @@ function isCkEditor(instanceName) {
 }
 
 /* ^ Helper functions */
+
+/* Study enhancements */
+
+/* TODO: need to do some refactoring of show/hide for dropdowns */
+function hideShowStudy(container, typeToDisplayElem) {
+  switch (typeToDisplayElem.val()) {
+    case "so":
+      container.removeClass("nm").removeClass("em").addClass("so");
+      break;
+    case "nm":
+      container.removeClass("so").removeClass("em").addClass("nm");
+      break;
+    case "em":
+      container.removeClass("so").removeClass("nm").addClass("em");
+      break;
+    default:
+      container.removeClass("so").removeClass("nm").removeClass("em");
+      break;
+  }
+}
+
+function hideShowSemester(container, typeSemesterElem) {
+  var prefix = typeSemesterElem.attr("id") + "-selected";
+  switch (typeSemesterElem.val()) {
+    case "particular-semester":
+      container.removeClass(prefix + "-every-other").removeClass(prefix + "-other").addClass(prefix + "-particular");
+      break;
+    case "every-other":
+      container.removeClass(prefix + "-particular").removeClass(prefix + "-other").addClass(prefix + "-every-other");
+      break;
+    case "other":
+      container.removeClass(prefix + "-every-other").removeClass(prefix + "-particular").addClass(prefix + "-other");
+      break;  
+    default:
+      container.removeClass(prefix + "-particular").removeClass(prefix + "-every-other").removeClass(prefix + "-other");
+      break;
+  }
+}
+
+function replaceTag(selector, tag, replaceTag) {
+  selector.find(tag).replaceWith(function() {
+    return "<" + replaceTag + ">" + $(this).text() + "</" + replaceTag + ">";
+  });
+}
+
+/* ^ Study enhancements */
 
 /* ^ Check if inputfields or textareas (CK) have changes */
 

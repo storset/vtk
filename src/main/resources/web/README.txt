@@ -55,7 +55,7 @@ JavaScript and plain JS plugins
 │   └── manually-approve.js
 ├── cross-doc-com-link.js
 ├── datepicker
-├── editor-ck-setup-helper.js
+├── editor.js
 ├── editor-showhide.js
 ├── gallery.js
 ├── iframe-admin.js
@@ -76,7 +76,6 @@ JavaScript and plain JS plugins
 │   └── thickbox-modified
 ├── shared-text-extension.js
 ├── share-subscribe.js
-├── study-admin-enhancements.js
 ├── templates
 │   ├── manually-approve.mustache
 │   ├── multiple-inputfields.mustache

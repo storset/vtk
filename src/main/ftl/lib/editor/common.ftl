@@ -60,9 +60,9 @@
 	                              '${fckBrowse.url.pathRepresentation}', '<@vrtx.requestLanguage />', cssFileList, ${simpleHTML?string}]);
 	      } else {
 	        $(document).ready(function() {
-	          newEditor('${content}', ${completeEditor?string}, ${withoutSubSuper?string}, 
-	                    '${baseFolder?js_string}', '${fckeditorBase.url?html}', '${fckeditorBase.documentURL?html}', 
-	                    '${fckBrowse.url.pathRepresentation}', '<@vrtx.requestLanguage />', cssFileList, ${simpleHTML?string});
+	          vrtxEditor.newEditor('${content}', ${completeEditor?string}, ${withoutSubSuper?string}, 
+	                               '${baseFolder?js_string}', '${fckeditorBase.url?html}', '${fckeditorBase.documentURL?html}', 
+	                               '${fckBrowse.url.pathRepresentation}', '<@vrtx.requestLanguage />', cssFileList, ${simpleHTML?string});
 	        });
 	      }
 	    } catch (e) {

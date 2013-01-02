@@ -3,7 +3,7 @@
   <div class="vrtx-string ${classes}">
     <label for="${inputFieldName}">${title}</label>
     <div class="inputfield vrtx-textfield">
-      <input size="20" type="text" name="${inputFieldName}" id="${inputFieldName}" value="${value?html}" class="date" />
+      <input size="12" type="text" name="${inputFieldName}" id="${inputFieldName}" value="${value?html}" class="date" />
     </div>
     <#if "${tooltip}" != ""><div class="tooltip">${tooltip}</div></#if>
   </div>

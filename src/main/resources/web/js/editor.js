@@ -6,66 +6,84 @@
  *
  */
 
+function VrtxEditor() {
+  var instance; // Class-like singleton pattern (p.145 JavaScript Patterns)
+  VrtxEditor = function VrtxEditor() {
+    return instance;
+  };
+  VrtxEditor.prototype = this;
+  instance = new VrtxEditor();
+  instance.constructor = VrtxEditor;
+  
+  this.CK_Toolbars = {};
+
+  return instance;
+};
+
+
+var vrtxEditor = new VrtxEditor();
+
 /* CK toolbars */
 
-var inlineToolbar = [['Source', 'PasteText', 'Link', 'Unlink', 'Bold',
-                      'Italic', 'Strike', 'Subscript', 'Superscript',
-                      'SpecialChar']];
+vrtxEditor.CK_Toolbars.inlineToolbar = [['Source', 'PasteText', 'Link', 'Unlink', 'Bold',
+                                         'Italic', 'Strike', 'Subscript', 'Superscript',
+                                         'SpecialChar']];
 
-var withoutSubSuperToolbar = [['Source', 'PasteText', 'Link', 'Unlink', 'Bold',
-                               'Italic', 'Strike', 'SpecialChar']];
+vrtxEditor.CK_Toolbars.withoutSubSuperToolbar = [['Source', 'PasteText', 'Link', 'Unlink', 'Bold',
+                                                  'Italic', 'Strike', 'SpecialChar']];
 
-var completeToolbar = [['Source', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo', '-', 'Replace',
-                        'RemoveFormat', '-', 'Link', 'Unlink', 'Anchor',
-                        'Image', 'CreateDiv', 'MediaEmbed', 'Table',
-                        'HorizontalRule', 'SpecialChar'
-                    ], ['Format', 'Bold', 'Italic', 'Strike',
-                        'Subscript', 'Superscript', 'NumberedList',
-                        'BulletedList', 'Outdent', 'Indent', 'JustifyLeft',
-                        'JustifyCenter', 'JustifyRight', 'TextColor',
-                        'Maximize']];
+vrtxEditor.CK_Toolbars.completeToolbar = [['Source', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo', '-', 'Replace',
+                                           'RemoveFormat', '-', 'Link', 'Unlink', 'Anchor',
+                                           'Image', 'CreateDiv', 'MediaEmbed', 'Table',
+                                           'HorizontalRule', 'SpecialChar'
+                                          ], ['Format', 'Bold', 'Italic', 'Strike',
+                                            'Subscript', 'Superscript', 'NumberedList',
+                                            'BulletedList', 'Outdent', 'Indent', 'JustifyLeft',
+                                            'JustifyCenter', 'JustifyRight', 'TextColor',
+                                            'Maximize']];
                         
-var studyToolbar = [['Source', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo', '-', 'Replace',
-                        'RemoveFormat', '-', 'Link', 'Unlink', 'Studyreferencecomponent', 'Anchor',
-                        'Image', 'CreateDiv', 'MediaEmbed', 'Table', 'Studytable',
-                        'HorizontalRule', 'SpecialChar'
-                    ], ['Format', 'Bold', 'Italic', 
-                        'Subscript', 'Superscript', 'NumberedList',
-                        'BulletedList', 'Outdent', 'Indent', 'JustifyLeft',
-                        'JustifyCenter', 'JustifyRight', 
-                        'Maximize']];
+vrtxEditor.CK_Toolbars.studyToolbar = [['Source', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo', '-', 'Replace',
+                                        'RemoveFormat', '-', 'Link', 'Unlink', 'Studyreferencecomponent', 'Anchor',
+                                        'Image', 'CreateDiv', 'MediaEmbed', 'Table', 'Studytable',
+                                        'HorizontalRule', 'SpecialChar'
+                                       ], ['Format', 'Bold', 'Italic', 
+                                        'Subscript', 'Superscript', 'NumberedList',
+                                        'BulletedList', 'Outdent', 'Indent', 'JustifyLeft',
+                                        'JustifyCenter', 'JustifyRight', 
+                                        'Maximize']];
                         
-var courseGroupToolbar = [['Source', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo', '-', 'Replace',
-                        'RemoveFormat', '-', 'Link', 'Unlink', 'Studyreferencecomponent', 'Anchor',
-                        'Image', 'CreateDiv', 'MediaEmbed', 'Table',
-                        'HorizontalRule', 'SpecialChar'
-                    ], ['Format', 'Bold', 'Italic', 
-                        'Subscript', 'Superscript', 'NumberedList',
-                        'BulletedList', 'Outdent', 'Indent', 'JustifyLeft',
-                        'JustifyCenter', 'JustifyRight', 
-                        'Maximize']];
+vrtxEditor.CK_Toolbars.courseGroupToolbar = [['Source', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo', '-', 'Replace',
+                                              'RemoveFormat', '-', 'Link', 'Unlink', 'Studyreferencecomponent', 'Anchor',
+                                              'Image', 'CreateDiv', 'MediaEmbed', 'Table',
+                                              'HorizontalRule', 'SpecialChar'
+                                             ], ['Format', 'Bold', 'Italic', 
+                                              'Subscript', 'Superscript', 'NumberedList',
+                                              'BulletedList', 'Outdent', 'Indent', 'JustifyLeft',
+                                              'JustifyCenter', 'JustifyRight', 
+                                              'Maximize']];
                         
-var messageToolbar = [['PasteText', 'Bold', 'Italic', 'Strike', '-', 'Undo', 'Redo', '-', 'Link', 'Unlink',
-                       'Subscript', 'Superscript', 'NumberedList', 'BulletedList', 'Outdent', 'Indent']];
+vrtxEditor.CK_Toolbars.messageToolbar = [['PasteText', 'Bold', 'Italic', 'Strike', '-', 'Undo', 'Redo', '-', 'Link', 'Unlink',
+                                          'Subscript', 'Superscript', 'NumberedList', 'BulletedList', 'Outdent', 'Indent']];
 
 
-var completeToolbarOld = [['Source', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo', '-', 'Replace',
-                           'RemoveFormat', '-', 'Link', 'Unlink', 'Anchor',
-                           'Image', 'CreateDiv', 'MediaEmbed', 'Table',
-                           'HorizontalRule', 'SpecialChar'
-                         ], ['Format', 'Bold', 'Italic', 'Strike',
-                             'Subscript', 'Superscript', 'NumberedList',
-                             'BulletedList', 'Outdent', 'Indent', 'JustifyLeft',
-                             'JustifyCenter', 'JustifyRight', 'TextColor',
-                             'Maximize']];
+vrtxEditor.CK_Toolbars.completeToolbarOld = [['Source', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo', '-', 'Replace',
+                                              'RemoveFormat', '-', 'Link', 'Unlink', 'Anchor',
+                                              'Image', 'CreateDiv', 'MediaEmbed', 'Table',
+                                              'HorizontalRule', 'SpecialChar'
+                                             ], ['Format', 'Bold', 'Italic', 'Strike',
+                                              'Subscript', 'Superscript', 'NumberedList',
+                                              'BulletedList', 'Outdent', 'Indent', 'JustifyLeft',
+                                              'JustifyCenter', 'JustifyRight', 'TextColor',
+                                              'Maximize']];
 
-var commentsToolbar = [['Source', 'PasteText', 'Bold',
-                        'Italic', 'Strike', 'NumberedList',
-                        'BulletedList', 'Link', 'Unlink']];
+vrtxEditor.CK_Toolbars.commentsToolbar = [['Source', 'PasteText', 'Bold',
+                                           'Italic', 'Strike', 'NumberedList',
+                                           'BulletedList', 'Link', 'Unlink']];
 
 // TODO: Try to remove some hardcoded fields - should maybe be class-based
 /* Create new CK editor */
-function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, baseDocumentUrl, browsePath, defaultLanguage, cssFileList, simpleHTML) {
+VrtxEditor.prototype.newEditor = function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, baseDocumentUrl, browsePath, defaultLanguage, cssFileList, simpleHTML) {
+  var vrtxEdit = this;
   
   // If pregenerated parameters is used for init
   if(typeof name === "object") {
@@ -95,51 +113,51 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
   var editorElem = $("form#editor");
 
   // CKEditor configurations
-  if (contains(name, "introduction")
-   || contains(name, "resource.description")
-   || contains(name, "resource.image-description")
-   || contains(name, "resource.video-description")
-   || contains(name, "resource.audio-description")) {
-    setCKEditorConfig(name, linkBrowseUrl, null, null, defaultLanguage, cssFileList, 100, 400, 40, inlineToolbar,
-                      isCompleteEditor, false, baseDocumentUrl, isSimpleHTML);
-  } else if (contains(name, "comment") && editorElem.hasClass("vrtx-schedule")) {
-    setCKEditorConfig(name, linkBrowseUrl, null, null, defaultLanguage, cssFileList, 150, 400, 40, inlineToolbar,
-                      isCompleteEditor, false, baseDocumentUrl, isSimpleHTML);
-  } else if (contains(name, "caption")) {
-    setCKEditorConfig(name, linkBrowseUrl, null, null, defaultLanguage, cssFileList, 78, 400, 40, inlineToolbar, 
-                      isCompleteEditor, false, baseDocumentUrl, isSimpleHTML);               
-  } else if (contains(name, "frist-frekvens-fri") // Studies  
-          || contains(name, "metode-fri")
-          || contains(name, "internasjonale-sokere-fri")
-          || contains(name, "nordiske-sokere-fri")
-          || contains(name, "opptakskrav-fri")
-          || contains(name, "generelle-fri")
-          || contains(name, "spesielle-fri")
-          || contains(name, "politiattest-fri")
-          || contains(name, "rangering-sokere-fri")
-          || contains(name, "forstevitnemal-kvote-fri")
-          || contains(name, "ordinar-kvote-alle-kvalifiserte-fri")
-          || contains(name, "innpassing-tidl-utdanning-fri")
-          || contains(name, "regelverk-fri")
-          || contains(name, "description-en")
-          || contains(name, "description-nn")
-          || contains(name, "description-no")) {
+  if (vrtxEdit.contains(name, "introduction")
+   || vrtxEdit.contains(name, "resource.description")
+   || vrtxEdit.contains(name, "resource.image-description")
+   || vrtxEdit.contains(name, "resource.video-description")
+   || vrtxEdit.contains(name, "resource.audio-description")) {
+    vrtxEdit.setCKEditorConfig(name, linkBrowseUrl, null, null, defaultLanguage, cssFileList, 100, 400, 40, vrtxEdit.CK_Toolbars.inlineToolbar,
+                               isCompleteEditor, false, baseDocumentUrl, isSimpleHTML);
+  } else if (vrtxEdit.contains(name, "comment") && editorElem.hasClass("vrtx-schedule")) {
+    vrtxEdit.setCKEditorConfig(name, linkBrowseUrl, null, null, defaultLanguage, cssFileList, 150, 400, 40, vrtxEdit.CK_Toolbars.inlineToolbar,
+                               isCompleteEditor, false, baseDocumentUrl, isSimpleHTML);
+  } else if (vrtxEdit.contains(name, "caption")) {
+    vrtxEdit.setCKEditorConfig(name, linkBrowseUrl, null, null, defaultLanguage, cssFileList, 78, 400, 40, vrtxEdit.CK_Toolbars.inlineToolbar, 
+                               isCompleteEditor, false, baseDocumentUrl, isSimpleHTML);               
+  } else if (vrtxEdit.contains(name, "frist-frekvens-fri") // Studies  
+          || vrtxEdit.contains(name, "metode-fri")
+          || vrtxEdit.contains(name, "internasjonale-sokere-fri")
+          || vrtxEdit.contains(name, "nordiske-sokere-fri")
+          || vrtxEdit.contains(name, "opptakskrav-fri")
+          || vrtxEdit.contains(name, "generelle-fri")
+          || vrtxEdit.contains(name, "spesielle-fri")
+          || vrtxEdit.contains(name, "politiattest-fri")
+          || vrtxEdit.contains(name, "rangering-sokere-fri")
+          || vrtxEdit.contains(name, "forstevitnemal-kvote-fri")
+          || vrtxEdit.contains(name, "ordinar-kvote-alle-kvalifiserte-fri")
+          || vrtxEdit.contains(name, "innpassing-tidl-utdanning-fri")
+          || vrtxEdit.contains(name, "regelverk-fri")
+          || vrtxEdit.contains(name, "description-en")
+          || vrtxEdit.contains(name, "description-nn")
+          || vrtxEdit.contains(name, "description-no")) {
     isSimpleHTML = false;
     isCompleteEditor = true;
-    setCKEditorConfig(name, linkBrowseUrl, null, null, defaultLanguage, cssFileList, 150, 400, 40, studyToolbar, 
-                      isCompleteEditor, false, baseDocumentUrl, isSimpleHTML);
-  } else if (contains(name, "message")) {
-    setCKEditorConfig(name, null, null, null, defaultLanguage, cssFileList, 250, 400, 40, messageToolbar, 
-                      isCompleteEditor, false, null, isSimpleHTML);           
-  } else if (contains(name, "additional-content")
-          || contains(name, "additionalContents")) { // Additional content
-    setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, defaultLanguage, cssFileList, 150, 400, 40, 
-                      completeToolbar, true, false, baseDocumentUrl, isSimpleHTML);
+    vrtxEdit.setCKEditorConfig(name, linkBrowseUrl, null, null, defaultLanguage, cssFileList, 150, 400, 40, vrtxEdit.CK_Toolbars.studyToolbar, 
+                               isCompleteEditor, false, baseDocumentUrl, isSimpleHTML);
+  } else if (vrtxEdit.contains(name, "message")) {
+    vrtxEdit.setCKEditorConfig(name, null, null, null, defaultLanguage, cssFileList, 250, 400, 40, vrtxEdit.CK_Toolbars.messageToolbar, 
+                               isCompleteEditor, false, null, isSimpleHTML);           
+  } else if (vrtxEdit.contains(name, "additional-content")
+          || vrtxEdit.contains(name, "additionalContents")) { // Additional content
+    vrtxEdit.setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, defaultLanguage, cssFileList, 150, 400, 40, 
+                               vrtxEdit.CK_Toolbars.completeToolbar, true, false, baseDocumentUrl, isSimpleHTML);
   } else if (isCompleteEditor) { // Complete editor 
     var height = 220;
     var maxHeight = 400;
-    var completeTB = completeToolbar;   
-    if (name.indexOf("supervisor-box") != -1) {
+    var completeTB = vrtxEdit.CK_Toolbars.completeToolbar;   
+    if (vrtxEdit.contains("supervisor-box")) {
       height = 130;
       maxHeight = 300;
     } else if (name == "content"
@@ -150,39 +168,37 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
       height = 400;
       maxHeight = 800;
       if (name == "resource.content") { // Old editor
-        completeTB = completeToolbarOld;
+        completeTB = vrtxEdit.CK_Toolbars.completeToolbarOld;
       } 
       if (name == "content-study") { // Study toolbar
-        completeTB = studyToolbar;
+        completeTB = vrtxEdit.CK_Toolbars.studyToolbar;
       } 
       if (name == "courses-in-group"
        || name == "relevant-study-programmes") { // CourseGroup toolbar
-        completeTB = courseGroupToolbar;
+        completeTB = vrtxEdit.CK_Toolbars.courseGroupToolbar;
       }
     }
-    setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, defaultLanguage, cssFileList, height, maxHeight, 50, completeTB,
-                      isCompleteEditor, true, baseDocumentUrl, isSimpleHTML);
+    vrtxEdit.setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, defaultLanguage, cssFileList, height, maxHeight, 50, vrtxEdit.CK_Toolbars.completeTB,
+                               isCompleteEditor, true, baseDocumentUrl, isSimpleHTML);
   } else {
-    setCKEditorConfig(name, linkBrowseUrl, null, null, defaultLanguage, cssFileList, 90, 400, 40, withoutSubSuperToolbar, 
-                      isCompleteEditor, true, baseDocumentUrl, isSimpleHTML);
+    vrtxEdit.setCKEditorConfig(name, linkBrowseUrl, null, null, defaultLanguage, cssFileList, 90, 400, 40, vrtxEdit.CK_Toolbars.withoutSubSuperToolbar, 
+                               isCompleteEditor, true, baseDocumentUrl, isSimpleHTML);
   }
 
-}
+};
 
-function contains(string, substring) {
+VrtxEditor.prototype.contains = function contains(string, substring) {
   return string.indexOf(substring) != -1; 
-}
+};
 
-function setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, defaultLanguage, cssFileList, height, 
-                           maxHeight, minHeight, toolbar, complete, resizable, baseDocumentUrl, simple) {
-
+VrtxEditor.prototype.setCKEditorConfig = function setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, defaultLanguage, cssFileList, height, 
+                                                                    maxHeight, minHeight, toolbar, complete, resizable, baseDocumentUrl, simple) {
+  var vrtxEdit = this;                                                                 
   var config = [{}];
 
   config.baseHref = baseDocumentUrl;
   config.contentsCss = cssFileList;
-  
-  // Don't use HTML-entities for structured-documents
-  if (name.indexOf("resource.") != 0) {
+  if (vrtxEdit.contains(name, "resource.")) { // Don't use HTML-entities for structured-documents
     config.entities = false;
   }
 
@@ -196,8 +212,7 @@ function setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, 
     config.filebrowserFlashBrowseUrl = flashBrowseUrl;
     config.extraPlugins = 'mediaembed,studyreferencecomponent,htmlbuttons';
     config.stylesSet = divContainerStylesSet;
-    // XHTML
-    if (name == "resource.content" && simple) {
+    if (name == "resource.content" && simple) { // XHTML
       config.format_tags = 'p;h1;h2;h3;h4;h5;h6;pre;div';
     } else {
       config.format_tags = 'p;h2;h3;h4;h5;h6;pre;div';
@@ -206,11 +221,7 @@ function setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, 
     config.removePlugins = 'elementspath';
   }
 
-  if (resizable) {
-    config.resize_enabled = true;
-  } else {
-    config.resize_enabled = false;
-  }
+  config.resize_enabled = resizable;
   config.toolbarCanCollapse = false;
   config.defaultLanguage = 'no';
   if (defaultLanguage) {
@@ -220,19 +231,17 @@ function setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, 
   config.height = height + 'px';
   config.autoGrow_maxHeight = maxHeight + 'px';
   config.autoGrow_minHeight = minHeight + 'px';
-
+  
   config.forcePasteAsPlainText = false;
-
+  
   config.disableObjectResizing = true;
-
+  
   config.disableNativeSpellChecker = false;
 
   // Configure tag formatting in source
   config.on = {
     instanceReady: function (ev) {
-
       var tags = ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'];
-
       for (var key in tags) {
         this.dataProcessor.writer.setRules(tags[key], {
           indent: false,
@@ -242,9 +251,7 @@ function setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, 
           breakAfterClose: true
         });
       }
-
       tags = ['ol', 'ul', 'li'];
-
       for (key in tags) {
         this.dataProcessor.writer.setRules(tags[key], {
           indent: true,
@@ -258,13 +265,13 @@ function setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, 
   }
 
   CKEDITOR.replace(name, config);
-}
+};
 
 function commentsCkEditor() {
   document.getElementById("comment-syntax-desc").style.display = "none";
   document.getElementById("comments-text-div").style.margin = "0";
   $("#comments-text").click(function () {
-    setCKEditorConfig("comments-text", null, null, null, null, cssFileList, 150, 400, 40, commentsToolbar, false, true, null);
+    vrtxEditor.setCKEditorConfig("comments-text", null, null, null, null, cssFileList, 150, 400, 40, vrtxEditor.CK_Toolbars.commentsToolbar, false, true, null);
   });
 }
 
@@ -293,8 +300,6 @@ $(document).ready(function() {
   // Stickybar
   var titleSubmitButtons = _$("#vrtx-editor-title-submit-buttons");
   var thisWindow = _$(window);
-  
-  // TODO: also check minimum device height (with high density displays on new devices accounted for)
   if(titleSubmitButtons.length && !vrtxAdm.isIPhone) { // Turn off for iPhone. 
     var titleSubmitButtonsPos = titleSubmitButtons.offset();
     if(vrtxAdm.isIE8) {
@@ -369,7 +374,7 @@ $(document).ready(function() {
   }
 
   vrtxAdm.cachedAppContent.on("click", "#resource\\.display-aggregation\\.true", function(e) {
-    if(!_$(this).is(":checked")) {                   // If unchecked remove rows and clean prop textfield
+    if(!_$(this).is(":checked")) { // If unchecked remove rows and clean prop textfield
       _$(".aggregation .vrtx-multipleinputfield").remove();
       _$("#resource\\.aggregation").val("");
     }
@@ -378,7 +383,7 @@ $(document).ready(function() {
   });
 
   vrtxAdm.cachedAppContent.on("click", "#resource\\.display-manually-approved\\.true", function(e) {
-    if(!_$(this).is(":checked")) {                   // If unchecked remove rows and clean prop textfield
+    if(!_$(this).is(":checked")) { // If unchecked remove rows and clean prop textfield
       _$(".manually-approve-from .vrtx-multipleinputfield").remove();
       _$("#resource\\.manually-approve-from").val("");
     }
@@ -425,7 +430,7 @@ $(document).ready(function() {
       case "vrtx-hvordan-soke":
         hideShowStudy(editor, _$("#typeToDisplay"));
         _$(document).on("change", "#typeToDisplay", function () {
-          hideShowStudy(editor, $(this));
+          hideShowStudy(editor, _$(this));
           editor.find(".ui-accordion > .vrtx-string.last").removeClass("last");
           editor.find(".ui-accordion > .vrtx-string:visible:last").addClass("last");
         });    
@@ -448,7 +453,7 @@ $(document).ready(function() {
           if(semesterType.length) {
             hideShowSemester(editor, semesterType);
             _$(document).on("change", semesterId, function () {
-              hideShowSemester(editor, $(this));
+              hideShowSemester(editor, _$(this));
             });
           }
         }
@@ -484,11 +489,11 @@ $(document).ready(function() {
   if(typeof EDITORS_AT_INIT !== "undefined") {
     var len = EDITORS_AT_INIT.length;
     for(var i = 0; i < len && i < EDITORS_MAX_SYNC_AT_INIT; i++) { // Initiate <=25 CKEditors
-      newEditor(EDITORS_AT_INIT[i]);
+      vrtxEditor.newEditor(EDITORS_AT_INIT[i]);
     }
     if(len > EDITORS_MAX_SYNC_AT_INIT) {
       var ckEditorInitLoadTimer = setTimeout(function() { // Initiate >25 CKEditors
-        newEditor(EDITORS_AT_INIT[i]);
+        vrtxEditor.newEditor(EDITORS_AT_INIT[i]);
         i++;
         if(i < len) {
           setTimeout(arguments.callee, EDITORS_ASYNC_INIT_INTERVAL);

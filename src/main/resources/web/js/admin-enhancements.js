@@ -1920,7 +1920,7 @@ function moveDownFormField(input) {
 
 function saveMultipleInputFields() {
   var formatMultipleInputFieldsFunc = formatMultipleInputFields;
-  for(var i = 0, len = vrtxAdmin.multipleCommaSeperatedInputFieldNames.length; i < vrtxAdmin.multipleCommaSeperatedInputFieldNames_LENGTH; i++){
+  for(var i = 0, len = vrtxAdmin.multipleCommaSeperatedInputFieldNames.length; i < len; i++){
     formatMultipleInputFields(vrtxAdmin.multipleCommaSeperatedInputFieldNames[i]);
   }
 }

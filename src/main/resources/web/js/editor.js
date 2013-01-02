@@ -1,7 +1,9 @@
 /*
- * Editor CK setup
+ *  Vortex Editor
  *
  */
+
+/* Editor CK toolbars */
 
 var inlineToolbar = [['Source', 'PasteText', 'Link', 'Unlink', 'Bold',
                       'Italic', 'Strike', 'Subscript', 'Superscript',
@@ -492,10 +494,7 @@ $(document).ready(function() {
   }
 });
 
-/*
- * Check if inputfields or textareas (CK) have changes
- *
- */
+/* Store and check if inputfields or textareas (CK) have changed onbeforeunload */
 
 $(window).load(function () { // Store initial counts and values when all is initialized in editor
   var nullDeferred = $.Deferred();
@@ -577,6 +576,8 @@ function unsavedChangesInEditorMessage() {
     return UNSAVED_CHANGES_CONFIRMATION;
   }
 }
+
+/* Validate length for 2048 bytes fields */
 
 function validTextLengthsInEditor(isOldEditor) {
   var MAX_LENGTH = 1500, // Back-end limits it to 2048
@@ -745,9 +746,7 @@ function replaceTag(selector, tag, replaceTag) {
   });
 }
 
-/* ^ Helper functions */
-
-/* ^ Check if inputfields or textareas (CK) have changes */
+/* CK Div containers */
 
 var divContainerStylesSet = [{
   name: 'Facts left',
@@ -900,4 +899,4 @@ var divContainerStylesSet = [{
   }
 }];
 
-/* ^ Editor CK setup */
+/* ^ Vortex Editor */

@@ -443,6 +443,8 @@ function unsavedChangesInEditorMessage() {
   }
 }
 
+/* Boolean show/hide */
+
 function setShowHide(name, parameters, hideTrues) {
   toggle(name, parameters, hideTrues);
   $("#editor").on("click", '[name=' + name + ']', function () {

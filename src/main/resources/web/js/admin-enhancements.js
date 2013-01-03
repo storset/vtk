@@ -113,11 +113,11 @@ function VrtxAdmin() {
   
   this.trashcanCheckedFiles = 0;
   
+  /* TODO: Need some rewrite of data structure to use 1 instead of 3 variables */
   this.multipleCommaSeperatedInputFieldNames = [];
-  /* Could probable be removed after some refactoring */
   this.multipleCommaSeperatedInputFieldCounter = [];
   this.multipleCommaSeperatedInputFieldLength = [];
-  /* ^ Could probable be removed after some refactoring */
+  
   this.multipleCommaSeperatedInputFieldTemplates = [];
   this.multipleCommaSeperatedInputFieldDeferred;
   

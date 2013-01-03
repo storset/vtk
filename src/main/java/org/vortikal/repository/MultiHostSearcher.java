@@ -34,7 +34,6 @@ import java.util.Set;
 
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
-import org.vortikal.web.search.collectionlisting.CollectionListingSearchProperties;
 import org.vortikal.web.service.URL;
 
 public class MultiHostSearcher {
@@ -47,29 +46,22 @@ public class MultiHostSearcher {
     private MultiHostSearchComponent multiHostSearchComponent;
 
     public ResultSet search(String token, Search search) {
-        if (this.multiHostSearchComponent != null) {
-            return this.multiHostSearchComponent.search(token, search);
+        if (multiHostSearchComponent != null) {
+            return multiHostSearchComponent.search(token, search);
         }
         return null;
     }
 
     public PropertySet retrieve(String token, URL url) {
-        if (this.multiHostSearchComponent != null) {
-            return this.multiHostSearchComponent.retrieve(token, url);
+        if (multiHostSearchComponent != null) {
+            return multiHostSearchComponent.retrieve(token, url);
         }
         return null;
     }
 
     public Set<PropertySet> retrieve(String token, Set<URL> urls) {
-        if (this.multiHostSearchComponent != null) {
-            return this.multiHostSearchComponent.retrieve(token, urls);
-        }
-        return null;
-    }
-
-    public ResultSet collectionListing(CollectionListingSearchProperties collectionListingSearchProps) {
-        if (this.multiHostSearchComponent != null) {
-            return this.multiHostSearchComponent.collectionListing(collectionListingSearchProps);
+        if (multiHostSearchComponent != null) {
+            return multiHostSearchComponent.retrieve(token, urls);
         }
         return null;
     }

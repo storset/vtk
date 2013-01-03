@@ -30,10 +30,7 @@
 package org.vortikal.web.search.collectionlisting;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -60,8 +57,9 @@ import org.vortikal.web.RequestContext;
 import org.vortikal.web.display.collection.aggregation.AggregationResolver;
 import org.vortikal.web.display.collection.aggregation.CollectionListingAggregatedResources;
 import org.vortikal.web.search.ListingUriQueryBuilder;
-import org.vortikal.web.search.SearchComponentQueryBuilder;
 import org.vortikal.web.search.QueryPartsSearchComponent;
+import org.vortikal.web.search.SearchComponentQueryBuilder;
+import org.vortikal.web.search.VHostScopeQueryRestricter;
 import org.vortikal.web.service.URL;
 
 public class CollectionListingSearchComponent extends QueryPartsSearchComponent {
@@ -78,11 +76,11 @@ public class CollectionListingSearchComponent extends QueryPartsSearchComponent 
             int searchLimit, int offset, ConfigurablePropertySelect propertySelect) {
 
         // Check cache for aggregation set containing ref to other hosts
-        CollectionListingCacheKey cacheKey = this.getCacheKey(request, collection, token);
-        Element cached = this.cache.get(cacheKey);
+        CollectionListingCacheKey cacheKey = getCacheKey(request, collection, token);
+        Element cached = cache.get(cacheKey);
         Object cachedObj = cached != null ? cached.getObjectValue() : null;
 
-        URL localURL = this.viewService.constructURL(Path.ROOT);
+        URL localHostBaseURL = viewService.constructURL(Path.ROOT);
 
         boolean isMultiHostSearch = false;
         CollectionListingAggregatedResources clar = null;
@@ -90,18 +88,23 @@ public class CollectionListingSearchComponent extends QueryPartsSearchComponent 
             clar = (CollectionListingAggregatedResources) cachedObj;
             isMultiHostSearch = true;
         } else {
-            clar = this.aggregationResolver.getAggregatedResources(collection);
-            isMultiHostSearch = this.isMultiHostSearch(clar, localURL);
-        }
-
-        if (isMultiHostSearch) {
-            logger.info("Resolved multi host aggregation set for " + request.getRequestURI() + ": " + clar);
+            clar = aggregationResolver.getAggregatedResources(collection);
+            isMultiHostSearch = multiHostSearcher.isMultiHostSearchEnabled()
+                    && (clar != null && clar.includesResourcesFromOtherHosts(localHostBaseURL));
         }
 
         ResultSet result = null;
 
-        Query uriQuery = this.listingUriQueryBuilder.build(collection);
-        List<Query> additionalQueries = this.getAdditionalQueries(collection, request);
+        Query query = generateQuery(request, collection, clar, localHostBaseURL, isMultiHostSearch);
+
+        Search search = new Search();
+        search.setQuery(query);
+        search.setLimit(searchLimit);
+        search.setCursor(offset);
+        search.setSorting(sorting);
+        if (propertySelect != null) {
+            search.setPropertySelect(propertySelect);
+        }
 
         boolean successfulMultiHostSearch = false;
         if (isMultiHostSearch) {
@@ -109,10 +112,8 @@ public class CollectionListingSearchComponent extends QueryPartsSearchComponent 
             // Keep aggregation set in cache
             cache.put(new Element(cacheKey, clar));
 
-            CollectionListingSearchProperties collectionListingSearchProps = new CollectionListingSearchProperties(
-                    token, uriQuery, additionalQueries, clar, searchLimit, offset, sorting, null, propertySelect);
             try {
-                result = this.multiHostSearcher.collectionListing(collectionListingSearchProps);
+                result = multiHostSearcher.search(token, search);
                 if (result != null) {
                     successfulMultiHostSearch = true;
                 }
@@ -123,17 +124,6 @@ public class CollectionListingSearchComponent extends QueryPartsSearchComponent 
 
         if (!successfulMultiHostSearch) {
 
-            Query query = generateLocalQuery(uriQuery, additionalQueries, clar, localURL);
-
-            Search search = new Search();
-            search.setQuery(query);
-            search.setLimit(searchLimit);
-            search.setCursor(offset);
-            search.setSorting(sorting);
-            if (propertySelect != null) {
-                search.setPropertySelect(propertySelect);
-            }
-
             Repository repository = RequestContext.getRequestContext().getRepository();
             result = repository.search(token, search);
 
@@ -142,17 +132,60 @@ public class CollectionListingSearchComponent extends QueryPartsSearchComponent 
         return result;
     }
 
+    private Query generateQuery(HttpServletRequest request, Resource collection,
+            CollectionListingAggregatedResources clar, URL localHostBaseURL, boolean isMultiHostSearch) {
+
+        AndQuery and = new AndQuery();
+
+        Query uriQuery = listingUriQueryBuilder.build(collection);
+        if (isMultiHostSearch) {
+            uriQuery = VHostScopeQueryRestricter.vhostRestrictedQuery(uriQuery, localHostBaseURL);
+        }
+
+        Query aggregationQuery = clar.getAggregationQuery(localHostBaseURL, isMultiHostSearch);
+        OrQuery uriOr = null;
+        if (aggregationQuery == null) {
+            and.add(uriQuery);
+        } else {
+            uriOr = new OrQuery();
+            uriOr.add(uriQuery);
+            uriOr.add(aggregationQuery);
+        }
+
+        List<Query> additionalQueries = getAdditionalQueries(collection, request);
+        if (additionalQueries != null) {
+            for (Query q : additionalQueries) {
+                if (isMultiHostSearch && (q instanceof UriPrefixQuery || q instanceof UriSetQuery)) {
+                    q = VHostScopeQueryRestricter.vhostRestrictedQuery(q, localHostBaseURL);
+                    if (uriOr == null) {
+                        uriOr = new OrQuery();
+                    }
+                    uriOr.add(q);
+                } else {
+                    and.add(q);
+                }
+            }
+        }
+
+        if (uriOr != null) {
+            and.add(uriOr);
+        }
+
+        return and;
+
+    }
+
     private CollectionListingCacheKey getCacheKey(HttpServletRequest request, Resource collection, String token) {
         String lastModified = collection.getPropertiesLastModified().toString();
         String url = request.getRequestURL().toString();
-        CollectionListingCacheKey cacheKey = new CollectionListingCacheKey(lastModified, token, this.getName(), url);
+        CollectionListingCacheKey cacheKey = new CollectionListingCacheKey(lastModified, token, getName(), url);
         return cacheKey;
     }
 
     private List<Query> getAdditionalQueries(Resource collection, HttpServletRequest request) {
-        if (this.queryBuilders != null) {
+        if (queryBuilders != null) {
             List<Query> result = new ArrayList<Query>();
-            for (SearchComponentQueryBuilder queryBuilder : this.queryBuilders) {
+            for (SearchComponentQueryBuilder queryBuilder : queryBuilders) {
                 Query q = queryBuilder.build(collection, request);
                 if (q != null) {
                     result.add(q);
@@ -161,69 +194,6 @@ public class CollectionListingSearchComponent extends QueryPartsSearchComponent 
             return result;
         }
         return null;
-    }
-
-    private boolean isMultiHostSearch(CollectionListingAggregatedResources clar, URL localURL) {
-
-        Map<URL, Set<Path>> aggregationSet = clar.getAggregationSet();
-        Set<URL> manuallyApprovedSet = clar.getManuallyApproved();
-
-        if (!this.multiHostSearcher.isMultiHostSearchEnabled()) {
-            return false;
-        }
-        if ((aggregationSet == null || aggregationSet.isEmpty())
-                && (manuallyApprovedSet == null || manuallyApprovedSet.isEmpty())) {
-            return false;
-        }
-        for (URL url : aggregationSet.keySet()) {
-            if (!url.getHost().equals(localURL.getHost())) {
-                return true;
-            }
-        }
-        for (URL url : manuallyApprovedSet) {
-            if (!url.getHost().equals(localURL.getHost())) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public static Query generateLocalQuery(Query uriQuery, List<Query> additionalQueries,
-            CollectionListingAggregatedResources clar, URL localURL) {
-
-        Set<Path> aggregationSet = null;
-        Set<Path> manuallyApprovedSet = null;
-        if (clar != null) {
-            aggregationSet = clar.getHostAggregationSet(localURL);
-            manuallyApprovedSet = clar.getHostManuallyApprovedSet(localURL);
-        }
-
-        AndQuery and = new AndQuery();
-        if (aggregationSet == null && manuallyApprovedSet == null) {
-            and.add(uriQuery);
-        } else {
-            OrQuery or = new OrQuery();
-            or.add(uriQuery);
-            if (aggregationSet != null) {
-                for (Path aggregationPath : aggregationSet) {
-                    or.add(new UriPrefixQuery(aggregationPath.toString()));
-                }
-            }
-            if (manuallyApprovedSet != null) {
-                Set<String> uriSet = new HashSet<String>();
-                for (Path p : manuallyApprovedSet) {
-                    uriSet.add(p.toString());
-                }
-                or.add(new UriSetQuery(uriSet));
-            }
-            and.add(or);
-        }
-        if (additionalQueries != null) {
-            for (Query q : additionalQueries) {
-                and.add(q);
-            }
-        }
-        return and;
     }
 
     @Required

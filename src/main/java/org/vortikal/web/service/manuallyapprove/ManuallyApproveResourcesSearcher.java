@@ -41,8 +41,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.MultiHostSearcher;
 import org.vortikal.repository.Namespace;
@@ -51,12 +49,17 @@ import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.ResourceNotFoundException;
+import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.repository.search.ConfigurablePropertySelect;
 import org.vortikal.repository.search.PropertySortField;
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
 import org.vortikal.repository.search.SortFieldDirection;
 import org.vortikal.repository.search.SortingImpl;
+import org.vortikal.repository.search.query.AndQuery;
+import org.vortikal.repository.search.query.OrQuery;
 import org.vortikal.repository.search.query.Query;
 import org.vortikal.repository.search.query.TermOperator;
 import org.vortikal.repository.search.query.TypeTermQuery;
@@ -66,24 +69,24 @@ import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.display.collection.aggregation.AggregationResolver;
 import org.vortikal.web.display.collection.aggregation.CollectionListingAggregatedResources;
-import org.vortikal.web.search.collectionlisting.CollectionListingSearchComponent;
-import org.vortikal.web.search.collectionlisting.CollectionListingSearchProperties;
+import org.vortikal.web.search.VHostScopeQueryRestricter;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
 public class ManuallyApproveResourcesSearcher {
 
-    private static Log logger = LogFactory.getLog(ManuallyApproveResourcesSearcher.class.getName());
+    public static final int SEARCH_LIMIT = 1000;
 
-    public static final int RESOURCE_LIST_LIMIT = 1000;
-
-    private Map<String, String> listingResourceTypeMappingPointers;
+    private Service viewService;
     private AggregationResolver aggregationResolver;
+    private MultiHostSearcher multiHostSearcher;
+    private Map<String, String> listingResourceTypeMappingPointers;
+    private List<String> configurablePropertySelectPointers;
+    private ResourceTypeTree resourceTypeTree;
+
     private PropertyTypeDefinition titlePropDef;
     private PropertyTypeDefinition publishDatePropDef;
     private PropertyTypeDefinition creationTimePropDef;
-    private MultiHostSearcher multiHostSearcher;
-    private Service viewService;
 
     public List<ManuallyApproveResource> getManuallyApproveResources(Resource collection, Set<String> locations,
             Set<String> alreadyApproved) throws Exception {
@@ -93,8 +96,25 @@ public class ManuallyApproveResourcesSearcher {
 
         Repository repository = RequestContext.getRequestContext().getRepository();
         String token = SecurityContext.getSecurityContext().getToken();
+        URL localHostURL = viewService.constructURL(Path.ROOT);
 
-        // Resource type
+        ConfigurablePropertySelect propertySelect = null;
+        if (this.configurablePropertySelectPointers != null && this.resourceTypeTree != null) {
+            for (String propPointer : this.configurablePropertySelectPointers) {
+                PropertyTypeDefinition ptd = this.resourceTypeTree.getPropertyDefinitionByPointer(propPointer);
+                if (ptd != null) {
+                    if (propertySelect == null) {
+                        propertySelect = new ConfigurablePropertySelect();
+                    }
+                    propertySelect.addPropertyDefinition(ptd);
+                }
+            }
+        }
+
+        // Sort on publish date
+        SortingImpl sorting = new SortingImpl();
+        sorting.addSortField(new PropertySortField(this.publishDatePropDef, SortFieldDirection.DESC));
+
         String resourceTypePointer = this.listingResourceTypeMappingPointers.get(collection.getResourceType());
         Query resourceTypeQuery = new TypeTermQuery("file", TermOperator.IN);
         if (resourceTypePointer != null) {
@@ -102,29 +122,176 @@ public class ManuallyApproveResourcesSearcher {
                     : resourceTypePointer;
             resourceTypeQuery = new TypeTermQuery(resourceTypePointer, TermOperator.IN);
         }
-        List<Query> queries = new ArrayList<Query>();
-        queries.add(resourceTypeQuery);
 
-        // Sort on publish date
-        SortingImpl sorting = new SortingImpl();
-        sorting.addSortField(new PropertySortField(this.publishDatePropDef, SortFieldDirection.DESC));
+        // Get all resources that are eligible for manual approval, all
+        // separated on origin (location)
+        Map<String, List<PropertySet>> resourceSet = new HashMap<String, List<PropertySet>>();
 
-        URL localURL = this.viewService.constructURL(Path.ROOT);
+        // Get resources to manually approve
+        for (String location : locations) {
 
-        // Get the already approved resources.
+            URL locationURL = getLocaltionAsURL(location, localHostURL);
+            PropertySet resource = getResource(repository, token, locationURL, localHostURL);
+            if (resource == null) {
+                // Nothing found
+                continue;
+            }
+
+            CollectionListingAggregatedResources clar = aggregationResolver.getAggregatedResources(resource);
+
+            boolean isOtherHostLocation = isOtherHostLocation(location, localHostURL);
+            boolean isMultiHostSearch = multiHostSearcher.isMultiHostSearchEnabled()
+                    && ((clar != null && clar.includesResourcesFromOtherHosts(localHostURL)) || isOtherHostLocation);
+
+            Query query = generateQuery(locationURL, resourceTypeQuery, clar, localHostURL, isMultiHostSearch);
+
+            Search search = new Search();
+            search.setQuery(query);
+            search.setLimit(SEARCH_LIMIT);
+            search.setSorting(sorting);
+            if (propertySelect != null) {
+                search.setPropertySelect(propertySelect);
+            }
+
+            ResultSet searchResults = null;
+            if (isMultiHostSearch) {
+                searchResults = multiHostSearcher.search(token, search);
+            } else {
+                searchResults = repository.search(token, search);
+            }
+
+            resourceSet.put(location, searchResults.getAllResults());
+
+        }
+
+        // Map search results to objects for view
+        for (Entry<String, List<PropertySet>> entry : resourceSet.entrySet()) {
+            String source = entry.getKey();
+            List<PropertySet> resources = entry.getValue();
+            for (PropertySet ps : resources) {
+                URL url = getPropertySetURL(ps, localHostURL);
+                boolean approved = alreadyApproved.contains(url.toString());
+                ManuallyApproveResource m = mapPropertySetToManuallyApprovedResource(ps, localHostURL, source, approved);
+                result.add(m);
+            }
+        }
+
+        // Get any already approved resource where the source might be gone
+        // (e.g. removed)
+        Set<PropertySet> alreadyApprovedMissingSource = getAlreadyApprovedMissingSource(alreadyApproved, result,
+                repository, token, localHostURL);
+        for (PropertySet ps : alreadyApprovedMissingSource) {
+            URL url = getPropertySetURL(ps, localHostURL);
+            String source = url.relativeURL(url.getPath().getParent().toString()).toString();
+            ManuallyApproveResource m = mapPropertySetToManuallyApprovedResource(ps, localHostURL, source, true);
+            result.add(m);
+        }
+
+        // Sort and return
+        Collections.sort(result, new ManuallyApproveResourceComparator());
+        // Handle limit
+        if (result.size() > SEARCH_LIMIT) {
+            result = result.subList(0, SEARCH_LIMIT);
+        }
+        return result;
+    }
+
+    private URL getLocaltionAsURL(String location, URL localHostURL) {
+        URL url = getAsURL(location);
+        if (url == null) {
+            try {
+                Path localPath = Path.fromStringWithTrailingSlash(location);
+                url = URL.parse(localHostURL.toString());
+                url.setPath(localPath);
+            } catch (IllegalArgumentException iae) {
+                return null;
+            }
+        }
+        return url;
+    }
+
+    private Query generateQuery(URL locationURL, Query resourceTypeQuery, CollectionListingAggregatedResources clar,
+            URL localHostBaseURL, boolean isMultiHostSearch) {
+
+        AndQuery and = new AndQuery();
+        and.add(resourceTypeQuery);
+
+        Query uriQuery = new UriPrefixQuery(locationURL.getPath().toString());
+        if (isMultiHostSearch) {
+            uriQuery = VHostScopeQueryRestricter.vhostRestrictedQuery(uriQuery, locationURL);
+        }
+
+        Query aggregationQuery = clar.getAggregationQuery(localHostBaseURL, isMultiHostSearch);
+        if (aggregationQuery == null) {
+            and.add(uriQuery);
+        } else {
+            OrQuery uriOr = new OrQuery();
+            uriOr.add(uriQuery);
+            uriOr.add(aggregationQuery);
+            and.add(uriOr);
+
+        }
+
+        return and;
+
+    }
+
+    private PropertySet getResource(Repository repository, String token, URL url, URL localHostURL) {
+        try {
+
+            PropertySet resource = null;
+            Path path = null;
+            if (localHostURL.getHost().equals(url.getHost())) {
+                path = url.getPath();
+            }
+            if (path != null) {
+                resource = repository.retrieve(token, path, false);
+            } else if (this.multiHostSearcher.isMultiHostSearchEnabled()) {
+                resource = multiHostSearcher.retrieve(token, url);
+            }
+
+            if (resource == null) {
+                return null;
+            }
+            return resource;
+        } catch (ResourceNotFoundException rnfe) {
+            // resource doesn'n exist, ignore
+        } catch (Exception e) {
+            // Ignore
+        }
+        return null;
+    }
+
+    private Set<PropertySet> getAlreadyApprovedMissingSource(Set<String> alreadyApproved,
+            List<ManuallyApproveResource> result, Repository repository, String token, URL localHostURL) {
+
+        Set<String> missingAlreadyApproved = new HashSet<String>();
+        for (String s : alreadyApproved) {
+            URL url = getAsURL(s);
+            boolean found = false;
+            for (ManuallyApproveResource m : result) {
+                if (m.getUrl().equals(url)) {
+                    found = true;
+                }
+            }
+            if (!found) {
+                missingAlreadyApproved.add(s);
+            }
+        }
+
         Set<PropertySet> alreadyApprovedResources = new HashSet<PropertySet>();
-        if (alreadyApproved.size() > 0) {
+        if (missingAlreadyApproved.size() > 0) {
 
             Set<String> localPathsAsStringSet = new HashSet<String>();
             Set<URL> urls = new HashSet<URL>();
 
-            for (String approved : alreadyApproved) {
+            for (String approved : missingAlreadyApproved) {
 
-                Path localPath = this.getLocalPath(approved, localURL);
+                Path localPath = getLocalPath(approved, localHostURL);
                 if (localPath != null) {
                     localPathsAsStringSet.add(localPath.toString());
                 } else {
-                    URL url = this.getAsURL(approved);
+                    URL url = getAsURL(approved);
                     if (url != null) {
                         urls.add(url);
                     }
@@ -140,130 +307,28 @@ public class ManuallyApproveResourcesSearcher {
                 alreadyApprovedResources.addAll(rs.getAllResults());
             }
 
-            if (!urls.isEmpty() && this.multiHostSearcher.isMultiHostSearchEnabled()) {
-                Set<PropertySet> rs = this.multiHostSearcher.retrieve(token, urls);
+            if (!urls.isEmpty() && multiHostSearcher.isMultiHostSearchEnabled()) {
+
+                Set<PropertySet> rs = multiHostSearcher.retrieve(token, urls);
                 if (rs != null && rs.size() > 0) {
                     alreadyApprovedResources.addAll(rs);
                 }
             }
 
         }
-
-        // We display a maximum of 1000 resources
-        int searchLimit = RESOURCE_LIST_LIMIT - alreadyApprovedResources.size();
-
-        // Get all resources that are eligible for manual approval, all
-        // separated on origin (location)
-        Map<String, List<PropertySet>> resourceSet = new HashMap<String, List<PropertySet>>();
-
-        for (String location : locations) {
-
-            logger.info("Searching for resources to manually approve from: " + location);
-
-            // Is it a local resource ref?
-            Path localPath = this.getLocalPath(location, localURL);
-
-            CollectionListingAggregatedResources clar = null;
-            URL locationURL = this.getAsURL(location);
-            boolean multiHostSearch = false;
-
-            if (localPath != null) {
-                PropertySet ps = this.retrieveResource(repository, token, localPath);
-                clar = this.aggregationResolver.getAggregatedResources(ps);
-            } else if (this.multiHostSearcher.isMultiHostSearchEnabled() && locationURL != null) {
-                clar = this.aggregationResolver.getAggregatedResources(locationURL);
-                multiHostSearch = true;
-            }
-
-            ResultSet rs = null;
-
-            if (multiHostSearch || (clar != null && clar.includesResourcesFromOtherHosts(localURL))) {
-
-                // Resolved aggregation indicates resources from other hosts,
-                // and we have proper configuration to meet demands -> search
-                // accordingly
-
-                CollectionListingSearchProperties collectionListingSearchProps = new CollectionListingSearchProperties(
-                        token, null, queries, clar, searchLimit, 0, sorting, locationURL, null);
-                rs = this.multiHostSearcher.collectionListing(collectionListingSearchProps);
-
-                if (rs != null && rs.getSize() > 0) {
-                    resourceSet.put(location, rs.getAllResults());
-                }
-
-            } else if (localPath != null) {
-
-                // We either don't need any multihost search, or we lack the
-                // configuration to do so -> keep it local
-
-                Query uriQuery = new UriPrefixQuery(localPath.toString());
-                List<Query> additionalQueries = new ArrayList<Query>();
-                additionalQueries.add(resourceTypeQuery);
-                Query query = CollectionListingSearchComponent.generateLocalQuery(uriQuery, additionalQueries, clar,
-                        localURL);
-
-                Search search = new Search();
-                search.setSorting(sorting);
-                search.setLimit(searchLimit);
-                search.setQuery(query);
-
-                rs = repository.search(token, search);
-
-                if (rs != null && rs.getSize() > 0) {
-                    resourceSet.put(location, rs.getAllResults());
-                }
-
-            }
-
-        }
-
-        // Map search results to objects for view
-        for (Entry<String, List<PropertySet>> entry : resourceSet.entrySet()) {
-            String source = entry.getKey();
-            List<PropertySet> resources = entry.getValue();
-            for (PropertySet ps : resources) {
-                ManuallyApproveResource m = this.mapPropertySetToManuallyApprovedResource(ps, localURL, source, false);
-                result.add(m);
-            }
-        }
-
-        // Mark as approved all already approved resources, also those where
-        // the source might have been removed
-        for (PropertySet ps : alreadyApprovedResources) {
-            URL url = this.getPropertySetURL(ps, localURL);
-            String source = url.relativeURL(url.getPath().getParent().toString()).toString();
-            ManuallyApproveResource mx = this.getResource(result, url);
-            if (mx != null) {
-                mx.setApproved(true);
-            } else {
-                ManuallyApproveResource m = this.mapPropertySetToManuallyApprovedResource(ps, localURL, source, true);
-                result.add(m);
-            }
-        }
-
-        // Sort and return
-        Collections.sort(result, new ManuallyApproveResourceComparator());
-        // Handle limit
-        if (result.size() > RESOURCE_LIST_LIMIT) {
-            result = result.subList(0, RESOURCE_LIST_LIMIT);
-        }
-        return result;
+        return alreadyApprovedResources;
     }
 
-    private PropertySet retrieveResource(Repository repository, String token, Path localPath) {
-        try {
-            return repository.retrieve(token, localPath, true);
-        } catch (Exception e) {
-            logger.warn("Could not retrive resource from local repo: " + e.getMessage());
-        }
-        return null;
+    private boolean isOtherHostLocation(String location, URL localHostURL) {
+        URL url = getAsURL(location);
+        return url == null || url.getHost().equals(localHostURL.getHost()) ? false : true;
     }
 
-    private Path getLocalPath(String location, URL localURL) {
+    private Path getLocalPath(String location, URL localHostURL) {
 
         try {
             URL url = URL.parse(location);
-            if (url.getHost().equals(localURL.getHost())) {
+            if (url.getHost().equals(localHostURL.getHost())) {
                 // Is an url ref to a resource on local host
                 return url.getPath();
             } else {
@@ -287,15 +352,6 @@ public class ManuallyApproveResourcesSearcher {
         } catch (Exception e) {
             return null;
         }
-    }
-
-    private ManuallyApproveResource getResource(List<ManuallyApproveResource> result, URL url) {
-        for (ManuallyApproveResource m : result) {
-            if (m.getUrl().equals(url)) {
-                return m;
-            }
-        }
-        return null;
     }
 
     private ManuallyApproveResource mapPropertySetToManuallyApprovedResource(PropertySet ps, URL localURL,
@@ -328,11 +384,6 @@ public class ManuallyApproveResourcesSearcher {
     }
 
     @Required
-    public void setAggregationResolver(AggregationResolver aggregationResolver) {
-        this.aggregationResolver = aggregationResolver;
-    }
-
-    @Required
     public void setListingResourceTypeMappingPointers(Map<String, String> listingResourceTypeMappingPointers) {
         this.listingResourceTypeMappingPointers = listingResourceTypeMappingPointers;
     }
@@ -360,6 +411,19 @@ public class ManuallyApproveResourcesSearcher {
     @Required
     public void setViewService(Service viewService) {
         this.viewService = viewService;
+    }
+
+    @Required
+    public void setAggregationResolver(AggregationResolver aggregationResolver) {
+        this.aggregationResolver = aggregationResolver;
+    }
+
+    public void setConfigurablePropertySelectPointers(List<String> configurablePropertySelectPointers) {
+        this.configurablePropertySelectPointers = configurablePropertySelectPointers;
+    }
+
+    public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
+        this.resourceTypeTree = resourceTypeTree;
     }
 
 }

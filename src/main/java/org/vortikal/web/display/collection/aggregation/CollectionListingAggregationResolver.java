@@ -95,7 +95,7 @@ public class CollectionListingAggregationResolver implements AggregationResolver
     public CollectionListingAggregatedResources getAggregatedResources(PropertySet collection) {
 
         Map<URL, Set<Path>> aggregationSet = new HashMap<URL, Set<Path>>();
-        Set<URL> manuallyApprovedSet = new HashSet<URL>();
+        Map<URL, Set<Path>> manuallyApprovedSet = new HashMap<URL, Set<Path>>();
 
         // Keep a reference to the starting point, avoid circular references
         // to self when resolving aggregation
@@ -115,8 +115,9 @@ public class CollectionListingAggregationResolver implements AggregationResolver
         return clar;
     }
 
-    private void resolveAggregatedResources(Map<URL, Set<Path>> aggregationSet, Set<URL> manuallyApprovedSet,
-            PropertySet resource, URL currentHostURL, URL startCollectionURL, int depth) {
+    private void resolveAggregatedResources(Map<URL, Set<Path>> aggregationSet,
+            Map<URL, Set<Path>> manuallyApprovedSet, PropertySet resource, URL currentHostURL, URL startCollectionURL,
+            int depth) {
 
         // Include manually approved resources if any
         if (this.isDisplayManuallyApproved(resource)) {
@@ -126,7 +127,16 @@ public class CollectionListingAggregationResolver implements AggregationResolver
                 for (Value manApp : values) {
                     try {
                         URL url = URL.parse(manApp.getStringValue());
-                        manuallyApprovedSet.add(url);
+                        Path path = url.getPath();
+                        URL base = URL.parse(url.getBase()).relativeURL("/");
+                        Set<Path> paths = manuallyApprovedSet.get(base);
+                        if (paths != null) {
+                            paths.add(path);
+                        } else {
+                            Set<Path> pathSet = new HashSet<Path>();
+                            pathSet.add(path);
+                            manuallyApprovedSet.put(base, pathSet);
+                        }
                     } catch (Exception e) {
                         // Ignore invalid urls
                     }

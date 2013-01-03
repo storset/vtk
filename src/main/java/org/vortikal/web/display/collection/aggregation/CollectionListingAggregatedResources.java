@@ -38,6 +38,11 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.vortikal.repository.Path;
+import org.vortikal.repository.search.query.OrQuery;
+import org.vortikal.repository.search.query.Query;
+import org.vortikal.repository.search.query.UriPrefixQuery;
+import org.vortikal.repository.search.query.UriSetQuery;
+import org.vortikal.web.search.VHostScopeQueryRestricter;
 import org.vortikal.web.service.URL;
 
 public class CollectionListingAggregatedResources implements Serializable {
@@ -45,9 +50,10 @@ public class CollectionListingAggregatedResources implements Serializable {
     private static final long serialVersionUID = 1480429223516084662L;
 
     private Map<URL, Set<Path>> aggregationSet;
-    private Set<URL> manuallyApprovedSet;
+    private Map<URL, Set<Path>> manuallyApprovedSet;
 
-    public CollectionListingAggregatedResources(Map<URL, Set<Path>> aggregationSet, Set<URL> manuallyApprovedSet) {
+    public CollectionListingAggregatedResources(Map<URL, Set<Path>> aggregationSet,
+            Map<URL, Set<Path>> manuallyApprovedSet) {
         this.aggregationSet = aggregationSet;
         this.manuallyApprovedSet = manuallyApprovedSet;
     }
@@ -59,59 +65,218 @@ public class CollectionListingAggregatedResources implements Serializable {
         return null;
     }
 
-    public Set<URL> getManuallyApproved() {
+    public Map<URL, Set<Path>> getManuallyApproved() {
         if (this.manuallyApprovedSet != null) {
-            return Collections.unmodifiableSet(this.manuallyApprovedSet);
+            return Collections.unmodifiableMap(this.manuallyApprovedSet);
         }
         return null;
     }
 
     public Set<Path> getHostAggregationSet(URL host) {
-        if (this.aggregationSet != null) {
-            Set<Path> set = new HashSet<Path>();
-            for (Entry<URL, Set<Path>> entry : this.aggregationSet.entrySet()) {
-                if (host.getHost().equals(entry.getKey().getHost())) {
-                    set.addAll(entry.getValue());
-                }
-            }
-            if (!set.isEmpty()) {
-                return Collections.unmodifiableSet(set);
-            }
-        }
-        return null;
+        return getHostResolvedSet(host, aggregationSet);
     }
 
     public Set<Path> getHostManuallyApprovedSet(URL host) {
-        if (this.manuallyApprovedSet != null) {
-            Set<Path> set = new HashSet<Path>();
-            for (URL url : this.manuallyApprovedSet) {
-                if (host.getHost().equals(url.getHost())) {
-                    set.add(url.getPath());
+        return getHostResolvedSet(host, manuallyApprovedSet);
+    }
+
+    private Set<Path> getHostResolvedSet(URL host, Map<URL, Set<Path>> aggregatedResourceMap) {
+        if (aggregatedResourceMap != null) {
+            Set<Path> result = new HashSet<Path>();
+            for (Entry<URL, Set<Path>> entry : aggregatedResourceMap.entrySet()) {
+                if (host.getHost().equals(entry.getKey().getHost())) {
+                    result.addAll(entry.getValue());
                 }
             }
-            if (!set.isEmpty()) {
-                return Collections.unmodifiableSet(set);
+            if (!result.isEmpty()) {
+                return Collections.unmodifiableSet(result);
             }
         }
         return null;
     }
 
-    public boolean includesResourcesFromOtherHosts(URL currentURL) {
-        if (this.aggregationSet != null) {
-            for (URL url : this.aggregationSet.keySet()) {
-                if (!url.getHost().equals(currentURL.getHost())) {
-                    return true;
-                }
-            }
+    public boolean includesResourcesFromOtherHosts(URL host) {
+        return includesOtherHostRef(host, aggregationSet) || includesOtherHostRef(host, manuallyApprovedSet);
+    }
+
+    public int totalAggregatedResourceCount() {
+
+        int count = 0;
+
+        if ((aggregationSet == null || aggregationSet.size() == 0)
+                && (manuallyApprovedSet == null || manuallyApprovedSet.size() == 0)) {
+            return count;
         }
-        if (this.manuallyApprovedSet != null) {
-            for (URL url : this.manuallyApprovedSet) {
-                if (!url.getHost().equals(currentURL.getHost())) {
+
+        count += aggregatedResourcesCount(null, aggregationSet);
+        count += aggregatedResourcesCount(null, manuallyApprovedSet);
+
+        return count;
+    }
+
+    public int aggregatedResourcesCount(URL host, Map<URL, Set<Path>> aggregatedResourceMap) {
+
+        int count = 0;
+
+        if (aggregatedResourceMap == null) {
+            return count;
+        }
+
+        if (host != null) {
+            Set<Path> set = getHostResolvedSet(host, aggregatedResourceMap);
+            if (set != null) {
+                return set.size();
+            }
+            return count;
+        }
+
+        for (Entry<URL, Set<Path>> entry : aggregatedResourceMap.entrySet()) {
+            count += entry.getValue().size();
+        }
+
+        return count;
+    }
+
+    private boolean includesOtherHostRef(URL host, Map<URL, Set<Path>> aggregatedResourceMap) {
+        if (aggregatedResourceMap != null) {
+            for (URL url : aggregatedResourceMap.keySet()) {
+                if (!url.getHost().equals(host.getHost())) {
                     return true;
                 }
             }
         }
         return false;
+    }
+
+    /**
+     * XXX Shouldn't be here, refactor to separate class
+     */
+    public Query getAggregationQuery(URL localVhost, boolean isMultiHostSearch) {
+
+        // Nothing to generate query from
+        if ((aggregationSet == null || aggregationSet.size() == 0)
+                && (manuallyApprovedSet == null || manuallyApprovedSet.size() == 0)) {
+            return null;
+        }
+
+        Query aggregationQuery = null;
+        Query manuallyApprovedQuery = null;
+
+        // Handle simplest case first: local repo query
+        if (!isMultiHostSearch) {
+
+            // Need ref to local host if not multi host search
+            if (localVhost == null) {
+                return null;
+            }
+
+            Set<Path> localHostAggregation = getHostAggregationSet(localVhost);
+            Set<Path> localHostManuallyApproved = getHostManuallyApprovedSet(localVhost);
+
+            if (localHostAggregation == null && localHostManuallyApproved == null) {
+                return null;
+            }
+
+            aggregationQuery = aggregationQuery(null, localHostAggregation);
+            manuallyApprovedQuery = manuallyApprovedQuery(null, localHostManuallyApproved);
+
+        } else {
+
+            if (aggregationSet != null) {
+
+                if (aggregationSet.size() == 1) {
+                    Entry<URL, Set<Path>> entry = aggregationSet.entrySet().iterator().next();
+                    aggregationQuery = aggregationQuery(entry.getKey(), entry.getValue());
+                } else {
+                    OrQuery aggOr = new OrQuery();
+                    for (Entry<URL, Set<Path>> entry : aggregationSet.entrySet()) {
+                        aggOr.add(aggregationQuery(entry.getKey(), entry.getValue()));
+                    }
+                    aggregationQuery = aggOr;
+                }
+
+            }
+            
+            if (manuallyApprovedSet != null) {
+
+                if (manuallyApprovedSet.size() == 1) {
+                    Entry<URL, Set<Path>> entry = manuallyApprovedSet.entrySet().iterator().next();
+                    manuallyApprovedQuery = manuallyApprovedQuery(entry.getKey(), entry.getValue());
+                } else {
+                    OrQuery manOr = new OrQuery();
+                    for (Entry<URL, Set<Path>> entry : manuallyApprovedSet.entrySet()) {
+                        manOr.add(manuallyApprovedQuery(entry.getKey(), entry.getValue()));
+                    }
+                    manuallyApprovedQuery = manOr;
+                }
+
+            }
+
+        }
+
+        if (aggregationQuery == null && manuallyApprovedQuery == null) {
+            return null;
+        }
+
+        if (aggregationQuery != null && manuallyApprovedQuery == null) {
+            return aggregationQuery;
+        }
+
+        if (aggregationQuery == null && manuallyApprovedQuery != null) {
+            return manuallyApprovedQuery;
+        }
+
+        OrQuery or = new OrQuery();
+        or.add(aggregationQuery);
+        or.add(manuallyApprovedQuery);
+        return or;
+
+    }
+
+    private Query aggregationQuery(URL vhost, Set<Path> aggregationSet) {
+
+        if (aggregationSet == null) {
+            return null;
+        }
+
+        Query query = null;
+        if (aggregationSet.size() == 1) {
+            query = new UriPrefixQuery(aggregationSet.iterator().next().toString());
+        } else {
+            OrQuery or = new OrQuery();
+            for (Path path : aggregationSet) {
+                or.add(new UriPrefixQuery(path.toString()));
+            }
+            query = or;
+        }
+
+        if (vhost == null) {
+            return query;
+        }
+
+        return VHostScopeQueryRestricter.vhostRestrictedQuery(query, vhost);
+
+    }
+
+    private Query manuallyApprovedQuery(URL vhost, Set<Path> manuallyApprovedSet) {
+
+        if (manuallyApprovedSet == null) {
+            return null;
+        }
+
+        Query query = null;
+        Set<String> uriSet = new HashSet<String>();
+        for (Path manuallyApprovedPath : manuallyApprovedSet) {
+            uriSet.add(manuallyApprovedPath.toString());
+        }
+        query = new UriSetQuery(uriSet);
+
+        if (vhost == null) {
+            return query;
+        }
+
+        return VHostScopeQueryRestricter.vhostRestrictedQuery(query, vhost);
+
     }
 
     @Override

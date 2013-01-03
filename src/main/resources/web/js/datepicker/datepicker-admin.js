@@ -5,6 +5,7 @@
 
 var DATE_PICKER_INITIALIZED = $.Deferred();
 function initDatePicker(language) {
+  var contents = $("#contents");
 
   // i18n (default english)
   if (language == 'no') {
@@ -13,22 +14,37 @@ function initDatePicker(language) {
     $.datepicker.setDefaults($.datepicker.regional['nn']);
   }
   
-  var dateFields = $(".date");
+  var dateFields = contents.find(".date");
   for(var i = 0, len = dateFields.length; i < len; i++) {
     displayDateAsMultipleInputFields(dateFields[i].name);
   }
-
+  
+  // Help user with time
+  contents.on("change", ".vrtx-hours input", function () {
+    var hh = $(this);
+    var mm = hh.parent().nextAll(".vrtx-minutes").find("input"); // Relative to
+    timeHelp(hh, mm);
+  });
+  contents.on("change", ".vrtx-minutes input", function () {
+    var mm = $(this);
+    var hh = mm.parent().prevAll(".vrtx-hours").find("input"); // Relative to
+    timeHelp(hh, mm);
+  });
+  
   // Specific for start and end date
-  if (!$("#start-date-date").length || !$("#end-date-date").length) {
+  var startDateElm = contents.find("#start-date-date");
+  var endDateElm = contents.find("#end-date-date");
+  
+  if (!startDateElm.length || !endDateElm.length) {
     DATE_PICKER_INITIALIZED.resolve();
     return;
   }
-  var startDate = $("#start-date-date").datepicker('getDate');
-  if (startDate != null) {
-    setDefaultEndDate();
+  if (startDateElm.datepicker('getDate') != null) {
+    setDefaultEndDate(startDateElm, endDateElm);
   }
-  $("#start-date-date").change(function () {
-    setDefaultEndDate();
+  
+  contents.on("change", "#start-date-date, #end-date-date", function () {
+    setDefaultEndDate(startDateElm, endDateElm);
   });
   
   DATE_PICKER_INITIALIZED.resolve();
@@ -58,11 +74,40 @@ function displayDateAsMultipleInputFields(name) {
   });
 }
 
-function setDefaultEndDate() {
-  var endDate = $("#end-date-date").val();
-  var startDate = $("#start-date-date").datepicker('getDate');
+function setDefaultEndDate(startDateElm, endDateElm) {
+  var endDate = endDateElm.val();
+  var startDate = startDateElm.datepicker('getDate');
   if (endDate == "") {
-    $("#end-date-date").datepicker('option', 'defaultDate', startDate);
+    endDateElm.datepicker('option', 'defaultDate', startDate);
+  }
+}
+
+
+function timeHelp(hh, mm) {
+  var hhVal = hh.val();
+  var mmVal = mm.val();
+  if(hhVal.length || mmVal.length) {
+    var newHhVal = parseInt(hhVal); // Correct hours
+    if(isNaN(newHhVal)) {
+      newHhVal = "00";
+    } else {
+      newHhVal = (newHhVal > 23) ? "00" : newHhVal;
+      newHhVal = ((newHhVal < 10 && !newHhVal.length) ? "0" : "") + newHhVal;
+    }
+    var newMmVal = parseInt(mmVal); // Correct minutes
+    if(isNaN(newMmVal)) {
+      newMmVal = "00";
+    } else {
+      newMmVal = (newMmVal > 59) ? "00" : newMmVal;
+      newMmVal = ((newMmVal < 10 && !newMmVal.length) ? "0" : "") + newMmVal;
+    }
+    if((newHhVal == "00" || newHhVal == "0") && (newMmVal == "00" || newMmVal == "0")) { // If all zeroes => remove time
+      hh.val("");
+      mm.val("");
+    } else {
+      if(hhVal != newHhVal) hh.val(newHhVal);
+      if(mmVal != newMmVal) mm.val(newMmVal);
+    }
   }
 }
 

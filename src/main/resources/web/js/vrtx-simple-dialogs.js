@@ -1,4 +1,8 @@
-/* Dialogs and interface to jQuery UI */
+/*
+ *  Dialogs and interface to jQuery UI
+ *
+ */
+
 
 var vrtxSimpleDialogs = {
   closeDialog: function (classOrId) {

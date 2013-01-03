@@ -183,6 +183,8 @@ vrtxAdmin._$(document).ready(function () {
   vrtxAdm.cachedDirectoryListing = _$("#directory-listing");
 
   var bodyId = vrtxAdm.cachedBody.attr("id");
+  if(typeof bodyId === "undefined") bodyId = "";
+  
   vrtxAdm.cachedBody.addClass("js");
 
   vrtxAdm.cachedActiveTab = vrtxAdm.cachedAppContent.find("#active-tab");
@@ -312,6 +314,7 @@ vrtxAdmin._$(document).ready(function () {
   vrtxAdm.completeFormAsync({
     selector: "form#manage\\.unlockFormService-form input[type=submit]"
   });
+  
   vrtxAdm.completeFormAsync({
     selector: "li.manage\\.unlockFormService form[name=unlockForm]",
     updateSelectors: ["#resourceMenuRight", "#contents"],

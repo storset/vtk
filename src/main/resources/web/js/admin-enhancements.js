@@ -315,7 +315,7 @@ vrtxAdmin._$(document).ready(function () {
   vrtxAdm.completeFormAsync({
     selector: "li.manage\\.unlockFormService form[name=unlockForm]",
     updateSelectors: ["#resourceMenuRight", "#contents"],
-    post: (bodyId !== "vrtx-editor" && bodyId !== "vrtx-edit-plaintext" && bodyId !== "vrtx-manage-collectionlisting")
+    post: (bodyId !== "vrtx-editor" && bodyId !== "vrtx-edit-plaintext" && bodyId !== "vrtx-manage-collectionlisting" && bodyId !== "")
   });
   
   // Create folder chooser in global menu

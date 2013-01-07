@@ -75,7 +75,7 @@ vrtxEditor.CKEditorToolbars.courseGroupToolbar = [['Source', 'PasteText', 'Paste
                                               'JustifyCenter', 'JustifyRight', 
                                               'Maximize']];
                         
-vrtxEditor.CKEditorToolbars.messageToolbar = [['PasteText', 'Bold', 'Italic', 'Strike', '-', 'Undo', 'Redo', '-', 'Link', 'Unlink',
+vrtxEditor.CKEditorToolbars.messageToolbar = [['Source', 'PasteText', 'Bold', 'Italic', 'Strike', '-', 'Undo', 'Redo', '-', 'Link', 'Unlink',
                                           'Subscript', 'Superscript', 'NumberedList', 'BulletedList', 'Outdent', 'Indent']];
 
 

@@ -22,7 +22,7 @@ resourcetype course-description : fellestekst-document {
     opptak-og-adgang-text-field : html noextract,
     opptak-og-adgang : string,
     ikke-privatist-text-field : html noextract,
-    ikke-privatist : string
+    ikke-privatist : string,
     obligatoriske-forkunnskaper-text-field : html noextract,
     obligatoriske-forkunnskaper : string,
     recommended-prerequisites-text-field : html noextract,

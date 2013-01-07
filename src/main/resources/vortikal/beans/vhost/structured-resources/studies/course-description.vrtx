@@ -29,8 +29,6 @@ resourcetype course-description : fellestekst-document {
     overlapping-courses : json (credits : string, fs-course-code : string) multiple,
     overlapping-courses-text-field : html noextract,
     teaching-text-field : html noextract,
-    tidsrom-for-undervisning-text-field : html noextract,
-    tidsrom-for-undervisning : string,
     adgang-text-field : html noextract,
     adgang : string,
     vurdering-og-eksamen-text-field : html noextract,
@@ -41,8 +39,6 @@ resourcetype course-description : fellestekst-document {
     eksamensspraak : string,
     sensur-text-field : simple_html noextract,
     sensur : string,
-    tilsynssensor-text-field : simple_html noextract,
-    tilsynssensor : string,
     klage-text-field : html noextract,
     klage : string,
     ny-utsatt-eksamen-text-field : html noextract,
@@ -84,9 +80,8 @@ resourcetype course-description : fellestekst-document {
     group prerequisites-group (obligatoriske-forkunnskaper-text-field, obligatoriske-forkunnskaper, recommended-prerequisites-text-field) vertical,
     overlapping-courses:credits (dropdown),
     group overlapping-courses-group (overlapping-courses, overlapping-courses-text-field) vertical,
-    tidsrom-for-undervisning (class[vrtx-shared-text]),
     adgang (class[vrtx-shared-text]),
-    group teaching-group (teaching-text-field, tidsrom-for-undervisning-text-field, tidsrom-for-undervisning, adgang-text-field, adgang) vertical,
+    group teaching-group (teaching-text-field, adgang-text-field, adgang) vertical,
     vurdering-og-eksamen (class[vrtx-shared-text]),
     group vurdering-og-eksamen-group (vurdering-og-eksamen-text-field, vurdering-og-eksamen) vertical,
     hjelpemidler (class[vrtx-shared-text]),
@@ -95,8 +90,6 @@ resourcetype course-description : fellestekst-document {
     group eksamensspraak-group (eksamensspraak-text-field, eksamensspraak) vertical,
     sensur (class[vrtx-shared-text]),
     group sensur-group (sensur-text-field, sensur) vertical,
-    tilsynssensor (class[vrtx-shared-text]),
-    group tilsynssensor-group (tilsynssensor-text-field, tilsynssensor) vertical,
     klage (class[vrtx-shared-text]),
     group klage-group (klage-text-field, klage) vertical,
     ny-utsatt-eksamen (class[vrtx-shared-text]),
@@ -321,12 +314,10 @@ resourcetype course-description : fellestekst-document {
         [endif]
         <a href="#overlapping-courses" class="vrtx-link-check">[localized 'overlapping-courses-group']</a>
       [endif]
-      [def tidsrom-for-undervisning-text-field document.properties.tidsrom-for-undervisning-text-field]
-      [def tidsrom-for-undervisning document.properties.tidsrom-for-undervisning]
       [def teaching-text-field document.properties.teaching-text-field]
       [def adgang-text-field document.properties.adgang-text-field]
       [def adgang document.properties.adgang]
-      [if (teaching-text-field != null && teaching-text-field != "") || (tidsrom-for-undervisning != null && tidsrom-for-undervisning != "" && tidsrom-for-undervisning != "ingen-fellestekst") || (adgang != null && adgang != "" && adgang != "ingen-fellestekst")]
+      [if (teaching-text-field != null && teaching-text-field != "") || (adgang != null && adgang != "" && adgang != "ingen-fellestekst")]
         [if put-dash != null]
           -
         [else]
@@ -342,8 +333,6 @@ resourcetype course-description : fellestekst-document {
       [def eksamensspraak-text-field document.properties.eksamensspraak-text-field]
       [def sensur document.properties.sensur]
       [def sensur-text-field document.properties.sensur-text-field]
-      [def tilsynssensor document.properties.tilsynssensor]
-      [def tilsynssensor-text-field document.properties.tilsynssensor-text-field]
       [def klage document.properties.klage]
       [def klage-text-field document.properties.klage-text-field]
       [def ny-utsatt-eksamen document.properties.ny-utsatt-eksamen]
@@ -356,7 +345,6 @@ resourcetype course-description : fellestekst-document {
           (hjelpemidler-text-field != null && hjelpemidler-text-field != "") || (hjelpemidler != null && hjelpemidler != "" && hjelpemidler != "ingen-fellestekst") ||
           (eksamensspraak-text-field != null && eksamensspraak-text-field != "") || (eksamensspraak != null && eksamensspraak != "" && eksamensspraak != "ingen-fellestekst") ||
           (sensur-text-field != null && sensur-text-field != "") || (sensur != null && sensur != "" && sensur != "ingen-fellestekst") ||
-          (tilsynssensor-text-field != null && tilsynssensor-text-field != "") || (tilsynssensor != null && tilsynssensor != "" && tilsynssensor != "ingen-fellestekst") ||
           (klage-text-field != null && klage-text-field != "") || (klage != null && klage != "" && klage != "ingen-fellestekst") ||
           (ny-utsatt-eksamen-text-field != null && ny-utsatt-eksamen-text-field != "") || (ny-utsatt-eksamen != null && ny-utsatt-eksamen != "" && ny-utsatt-eksamen != "ingen-fellestekst") ||
           (antall-forsok-trekk-text-field != null && antall-forsok-trekk-text-field != "") || (antall-forsok-trekk != null && antall-forsok-trekk != "" && antall-forsok-trekk != "ingen-fellestekst") || 
@@ -458,20 +446,14 @@ resourcetype course-description : fellestekst-document {
         </div>
       [endif]
       [def teaching-text-field document.properties.teaching-text-field]
-      [def tidsrom-for-undervisning-text-field document.properties.tidsrom-for-undervisning-text-field]
-      [def tidsrom-for-undervisning document.properties.tidsrom-for-undervisning]
       [def adgang-text-field document.properties.adgang-text-field]
       [def adgang document.properties.adgang]
-      [if (teaching-text-field != null && teaching-text-field != "") || (tidsrom-for-undervisning != null && tidsrom-for-undervisning != "" && tidsrom-for-undervisning != "ingen-fellestekst") || (tidsrom-for-undervisning-text-field != null && tidsrom-for-undervisning-text-field != "") || (adgang != null && adgang != "" && adgang != "ingen-fellestekst") || (adgang-text-field != null && adgang-text-field != "")]
+      [if (teaching-text-field != null && teaching-text-field != "") || (adgang != null && adgang != "" && adgang != "ingen-fellestekst") || (adgang-text-field != null && adgang-text-field != "")]
         <div id="teaching">
           <h2>[localized 'teaching-group']</h2>
           [if teaching-text-field != null && teaching-text-field != ""]
             [val teaching-text-field # unescaped]
           [endif]
-          [if tidsrom-for-undervisning-text-field != null && tidsrom-for-undervisning-text-field != ""]
-            [val tidsrom-for-undervisning-text-field # unescaped]
-          [endif]
-          [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"tidsrom-for-undervisning"}]
           [if (adgang != null && adgang != "" && adgang != "ingen-fellestekst") || (adgang-text-field != null && adgang-text-field != "")]
             <h3>[localized 'teaching-admission']</h3>
           [endif]
@@ -489,8 +471,6 @@ resourcetype course-description : fellestekst-document {
       [def eksamensspraak-text-field document.properties.eksamensspraak-text-field]
       [def sensur document.properties.sensur]
       [def sensur-text-field document.properties.sensur-text-field]
-      [def tilsynssensor document.properties.tilsynssensor]
-      [def tilsynssensor-text-field document.properties.tilsynssensor-text-field]
       [def klage document.properties.klage]
       [def klage-text-field document.properties.klage-text-field]
       [def ny-utsatt-eksamen document.properties.ny-utsatt-eksamen]
@@ -503,7 +483,6 @@ resourcetype course-description : fellestekst-document {
           (hjelpemidler-text-field != null && hjelpemidler-text-field != "") || (hjelpemidler != null && hjelpemidler != "" && hjelpemidler != "ingen-fellestekst") ||
           (eksamensspraak-text-field != null && eksamensspraak-text-field != "") || (eksamensspraak != null && eksamensspraak != "" && eksamensspraak != "ingen-fellestekst") ||
           (sensur-text-field != null && sensur-text-field != "") || (sensur != null && sensur != "" && sensur != "ingen-fellestekst") ||
-          (tilsynssensor-text-field != null && tilsynssensor-text-field != "") || (tilsynssensor != null && tilsynssensor != "" && tilsynssensor != "ingen-fellestekst") ||
           (klage-text-field != null && klage-text-field != "") || (klage != null && klage != "" && klage != "ingen-fellestekst") ||
           (ny-utsatt-eksamen-text-field != null && ny-utsatt-eksamen-text-field != "") || (ny-utsatt-eksamen != null && ny-utsatt-eksamen != "" && ny-utsatt-eksamen != "ingen-fellestekst") ||
           (antall-forsok-trekk-text-field != null && antall-forsok-trekk-text-field != "") || (antall-forsok-trekk != null && antall-forsok-trekk != "" && antall-forsok-trekk != "ingen-fellestekst") || 
@@ -528,18 +507,13 @@ resourcetype course-description : fellestekst-document {
             [val eksamensspraak-text-field # unescaped]
           [endif]
           [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"eksamensspraak"}]
-          [if (sensur-text-field != null && sensur-text-field != "") || (sensur != null && sensur != "" && sensur != "ingen-fellestekst") ||
-              (tilsynssensor-text-field != null && tilsynssensor-text-field != "") || (tilsynssensor != null && tilsynssensor != "" && tilsynssensor != "ingen-fellestekst")]
+          [if (sensur-text-field != null && sensur-text-field != "") || (sensur != null && sensur != "" && sensur != "ingen-fellestekst")]
             <h3>[localized 'sensur-group']</h3>
           [endif]
           [if sensur-text-field != null && sensur-text-field != ""]
             [val sensur-text-field # unescaped]
           [endif]
           [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"sensur"}]
-          [if tilsynssensor-text-field != null && tilsynssensor-text-field != ""]
-            [val tilsynssensor-text-field # unescaped]
-          [endif]
-          [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"tilsynssensor"}]
           [if (klage-text-field != null && klage-text-field != "") || (klage != null && klage != "" && klage != "ingen-fellestekst")]
             <h3>[localized 'klage-group']</h3>
           [endif]
@@ -781,11 +755,9 @@ resourcetype course-description : fellestekst-document {
     prerequisites-group : (en : "Prerequisites", no : "Forkunnskaper", nn : "Forkunnskaper"),
     overlapping-courses : (en : "Courses", no : "Kurs", nn : "Kurs"),
     overlapping-courses-text-field : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
-    overlapping-courses-group : (en : "Overlapping courses", no : "Overlappende kurs", nn : "Overlappende kurs"),
-    fs-course-code : (en : "Course code", no : "Kurskode", nn : "Kurskode"),
+    overlapping-courses-group : (en : "Overlapping courses", no : "Overlappende emne", nn : "Overlappende emne"),
+    fs-course-code : (en : "Course code", no : "Emnekode", nn : "Emnekode"),
     teaching-text-field : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
-    tidsrom-for-undervisning-text-field : (en : "Teaching period optional text", no : "Tidsrom for undervisning valgfri tekst", nn : "Tidsrom for undervisning valfri tekst"),
-    tidsrom-for-undervisning : (en : "Teaching period shared text", no : "Tidsrom for undervisning fellestekst", nn : "Tidsrom for undervisning fellestekst"),
     adgang-text-field : (en : "Admission optional text", no : "Adgang valgfri tekst", nn : "Adgang valfri tekst"),
     adgang : (en : "Admission shared text", no : "Adgang fellestekst", nn : "Adgang fellestekst"),
     teaching-group : (en : "Teaching", no : "Undervisning", nn : "Undervisning"),
@@ -802,9 +774,6 @@ resourcetype course-description : fellestekst-document {
     sensur-text-field : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
     sensur : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
     sensur-group : (en : "Assessment and grading", no : "Sensur", nn : "Sensur"),
-    tilsynssensor-text-field : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
-    tilsynssensor : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
-    tilsynssensor-group : (en : "Course Auditor", no : "Tilsynssensor", nn : "Tilsynssensor"),
     klage-text-field : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
     klage : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
     klage-group : (en : "Explanations and appeals", no : "Begrunnelse og klage", nn : "Begrunnelse og klage"),

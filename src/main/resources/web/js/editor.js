@@ -394,11 +394,11 @@ function commentsCkEditor() {
 }
 
 $(document).ready(function() { 
-  var vrtxAdm = vrtxAdmin, _$ = vrtxAdm._$, vrtxEdit = vrtxEditor;
-
   var editor = $("#editor");
   if(!editor.length) return;
   
+   var vrtxAdm = vrtxAdmin, _$ = vrtxAdm._$, vrtxEdit = vrtxEditor;
+   
   // When ui-helper-hidden class is added => we need to add 'first'-class to next element (if it is not last and first of these)
   editor.find(".ui-helper-hidden").filter(":not(:last)").filter(":first").next().addClass("first");
   // TODO: make sure these are NOT first so that we can use pure CSS
@@ -611,6 +611,9 @@ $(document).ready(function() {
 /* Store and check if inputfields or textareas (CK) have changed onbeforeunload */
 
 $(window).load(function () { // Store initial counts and values when all is initialized in editor
+  var editor = $("#editor");
+  if(!editor.length) return;
+
   var nullDeferred = $.Deferred();
       nullDeferred.resolve();
   $.when(((typeof MANUALLY_APPROVE_INITIALIZED === "object") ? MANUALLY_APPROVE_INITIALIZED : nullDeferred),

@@ -142,7 +142,7 @@ public class CollectionListingSearchComponent extends QueryPartsSearchComponent 
             uriQuery = VHostScopeQueryRestricter.vhostRestrictedQuery(uriQuery, localHostBaseURL);
         }
 
-        Query aggregationQuery = clar.getAggregationQuery(localHostBaseURL, isMultiHostSearch);
+        Query aggregationQuery = clar == null ? null : clar.getAggregationQuery(localHostBaseURL, isMultiHostSearch);
         OrQuery uriOr = null;
         if (aggregationQuery == null) {
             and.add(uriQuery);

@@ -11,14 +11,12 @@ resourcetype course-group : fellestekst-document {
     relevant-study-programmes : html noextract,
     course-group-admission : html noextract,
     course-group-other : html noextract,
-    studinfo-kontakt-text-field : simple_html noextract,
     studinfo-kontakt : string
   }
 
   edit-rules {
     status (dropdown),
     course-group-scope (dropdown),
-    group studinfo-kontakt-group (studinfo-kontakt, studinfo-kontakt-text-field) vertical,
     studinfo-kontakt (class[vrtx-shared-text])
   }
 
@@ -34,7 +32,6 @@ resourcetype course-group : fellestekst-document {
     [def course-group-admission document.properties.course-group-admission]
     [def course-group-other document.properties.course-group-other]
     [def studinfo-kontakt document.properties.studinfo-kontakt]
-    [def studinfo-kontakt-text-field document.properties.studinfo-kontakt-text-field]
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml">
       <head>
@@ -62,12 +59,9 @@ resourcetype course-group : fellestekst-document {
           <h2>[localized 'course-group-other']</h2>
           [val course-group-other # unescaped]
         [endif]
-        [if (studinfo-kontakt != null && studinfo-kontakt != "" && studinfo-kontakt != "ingen-fellestekst") || (studinfo-kontakt-text-field != null && studinfo-kontakt-text-field != "")]
-          <h2>[localized 'studinfo-kontakt-group']</h2>
+        [if studinfo-kontakt != null && studinfo-kontakt != "" && studinfo-kontakt != "ingen-fellestekst"]
+          <h2>[localized 'studinfo-kontakt']</h2>
           [call "comp:vis-fellestekst" {"docType":"studinfo-kontakt", "propName":"studinfo-kontakt"}]
-          [if studinfo-kontakt-text-field != null && studinfo-kontakt-text-field != ""]
-            [val studinfo-kontakt-text-field # unescaped]
-          [endif]
         [endif]
       </body>
     </html>
@@ -99,8 +93,6 @@ resourcetype course-group : fellestekst-document {
     courses-in-group : (en : "Courses in group", no : "Emner i emnegruppen", nn : "Emner i emnegruppa"),
     course-group-admission : (en : "Course group admission", no : "Emnegruppeopptak", nn : "Emnegruppeopptak"),
     course-group-other : (en : "Other", no : "Annet", nn : "Anna"),
-    studinfo-kontakt-text-field : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
-    studinfo-kontakt : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
-    studinfo-kontakt-group : (en : "Contact", no : "Kontakt", nn : "Kontakt")
+    studinfo-kontakt : (en : "Contact", no : "Kontakt", nn : "Kontakt")
   }
 }

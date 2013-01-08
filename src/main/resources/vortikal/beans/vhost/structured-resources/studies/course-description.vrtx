@@ -50,7 +50,6 @@ resourcetype course-description : fellestekst-document {
     evaluering-av-emnet : string,
     evaluering-av-emnet-text-field : html noextract,
     other-text-field : html noextract,
-    studinfo-kontakt-text-field : simple_html noextract,
     studinfo-kontakt : string
   }
 
@@ -101,8 +100,7 @@ resourcetype course-description : fellestekst-document {
     evaluering-av-emnet (class[vrtx-shared-text]),
     group evaluering-av-emnet-group (evaluering-av-emnet, evaluering-av-emnet-text-field) vertical,
     other-text-field (after evaluering-av-emnet-group),
-    studinfo-kontakt (class[vrtx-shared-text]),
-    group studinfo-kontakt-group (studinfo-kontakt, studinfo-kontakt-text-field) vertical
+    studinfo-kontakt (class[vrtx-shared-text])
   }
 
   view-components {
@@ -589,7 +587,6 @@ resourcetype course-description : fellestekst-document {
       [def course-name resource-prop-obj-val(".", "courseContext.course-name-english")]
     [endif]
     [def studinfo-kontakt document.properties.studinfo-kontakt]
-    [def studinfo-kontakt-text-field document.properties.studinfo-kontakt-text-field]
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml">
       <head>
@@ -603,13 +600,10 @@ resourcetype course-description : fellestekst-document {
         </div>
         <div id="vrtx-course-data">
           [call "comp:facts" {"document" : document}]
-          [if (studinfo-kontakt != null && studinfo-kontakt != "" && studinfo-kontakt != "ingen-fellestekst") || (studinfo-kontakt-text-field != null && studinfo-kontakt-text-field != "")]
+          [if studinfo-kontakt != null && studinfo-kontakt != "" && studinfo-kontakt != "ingen-fellestekst"]
             <div id="vrtx-course-contact">
-              <b>[localized 'contact']</b>
+              <b>[localized 'studinfo-kontakt']</b>
               [call "comp:vis-fellestekst" {"docType":"studinfo-kontakt", "propName":"studinfo-kontakt"}]
-              [if studinfo-kontakt-text-field != null && studinfo-kontakt-text-field != ""]
-                [val studinfo-kontakt-text-field # unescaped]
-              [endif]
             </div>
           [endif]
           [call "comp:semesters"]
@@ -749,7 +743,7 @@ resourcetype course-description : fellestekst-document {
     course-fee : (en : "Course fee", no : "Kursavgift", nn : "Kursavgift"),
     course-fee-amount : (en : "Course fee amount", no : "Kursavgift sum", nn : "Kursavgift sum"),
     course-content : (en : "Course content", no : "Kort om emnet", nn : "Kort om emnet"),
-    learning-outcomes : (en : "Learning outcome", no : "Hva lærer du", nn : "Kva lærer du"),
+    learning-outcomes : (en : "Learning outcomes", no : "Hva lærer du?", nn : "Kva lærer du?"),
     opptak-og-adgang-text-field : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
     opptak-og-adgang : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
     opptak-og-adgang-group : (en : "Admission regulation", no : "Opptak og adgangsregulering", nn : "Opptak og adgangsregulering"),
@@ -799,10 +793,7 @@ resourcetype course-description : fellestekst-document {
     evaluering-av-emnet : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
     evaluering-av-emnet-group : (en : "Evaluation of course", no : "Evaluering av emnet", nn : "Evaluering av emnet"),
     other-text-field : (en : "Other", no : "Annet", nn : "Anna"),
-    studinfo-kontakt-text-field : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
-    studinfo-kontakt : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
-    studinfo-kontakt-group : (en : "Contact", no : "Kontakt", nn : "Kontakt"),
-    contact : (en : "Contact", no : "Kontakt", nn : "Kontakt"),
+    studinfo-kontakt : (en : "Contact", no : "Kontakt", nn : "Kontakt"),
     course : (en : "Course", no : "Kurs", nn : "Kurs"),
     bachelor : (en : "Bachelor", no : "Bachelor", nn : "Bachelor"),
     master : (en : "Master", no : "Master", nn : "Master"),

@@ -39,20 +39,28 @@ resourcetype semester-page : fellestekst-document {
 
   view-components {
 
-    show-if-published (prop) {
+    show-static-links-if-published {
       ##
-      [def uri resource-prop(".", prop)]
-      [if uri != null && uri != ""]
-        [def resource resource(uri)]
-        [if resource != null]
-          [def published resource-prop-obj-val(resource, "published") ]
-          [if published]
-            [def localization prop]
-            [def url view-url(resource)]
-            <a href="[val url]">[localized localization]</a>
+      [def props #({"prop": "schedule"}, {"prop" : "exam"}, {"prop" : "syllabus"})]
+      [def count 0]
+      [list props link]
+        [def thelink link.prop]
+        [def uri resource-prop(".", thelink)]
+        [if uri != null && uri != ""]
+          [def resource resource(uri)]
+          [if resource != null]
+            [def published resource-prop-obj-val(resource, "published") ]
+            [if published]
+              [if count = 0]<ul>[endif]
+              [def localization thelink]
+              [def url view-url(resource)]
+              [def count count + 1]
+              <li><a href="[val url]">[localized localization]</a></li>
+            [endif]
           [endif]
         [endif]
-      [endif]
+      [endlist]
+      [if count > 0]</ul>[endif]
       ##
     }
 
@@ -76,6 +84,7 @@ resourcetype semester-page : fellestekst-document {
         [elseif title = "link-box-six-title"]
           [def links document.properties.link-box-six-links]
         [endif]
+        [val links]
         [if links != null]
           [list links link]
             <ul>
@@ -117,9 +126,7 @@ resourcetype semester-page : fellestekst-document {
           <div id="vrtx-main-content">
             <div class="vrtx-frontpage-box white-box">
               <h1>[localized 'semesterpage-for'] [if course-code != null && course-code != ""][val course-code][endif][if course-code != null && course-code != "" && semester != null && semester != ""] - [endif][if semester != null && semester != ""][val semester][endif]</h1>
-              [call "comp:show-if-published"{"prop":"schedule"}]
-              [call "comp:show-if-published"{"prop":"exam"}]
-              [call "comp:show-if-published"{"prop":"syllabus"}]
+              [call "comp:show-static-links-if-published"]
             </div>
             [if messages-placement != null && messages-placement = "middle"]
               <div class="vrtx-frontpage-box white-box">

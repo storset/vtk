@@ -131,7 +131,7 @@ resourcetype semester-page : fellestekst-document {
               <div class="vrtx-frontpage-box white-box">
                 <h2>[localized 'fronter']</h2>
                 <p>[localized 'fronter-text']</p>
-                [localized 'log-into-fronter']
+                <a href="https://fronter.uio.no/" class="button"><span>[localized 'log-into-fronter']</span></a>
               </div>
             [endif]
             <div class="vrtx-frontpage-box white-box">

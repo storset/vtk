@@ -33,14 +33,17 @@ package org.vortikal.web.display.collection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Property;
+import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
@@ -105,13 +108,6 @@ public class CollectionListingController extends AbstractCollectionListingContro
                 this.helper.checkListingsForEditLinks(repository, token, principal, Arrays.asList(listing));
             }
 
-            if (this.resolvePrincipalLink && numberOfFiles > 0) {
-                Locale preferredLocale = this.localeResolver.resolveResourceLocale(collection);
-                Map<String, Principal> principalDocuments = this.helper.getExistingPrincipalDocuments(
-                        listing.getFiles(), preferredLocale);
-                model.put("principalDocuments", principalDocuments);
-            }
-
             // We have more results to display for this listing
             if (listing.hasMoreResults()) {
                 break;
@@ -121,6 +117,19 @@ public class CollectionListingController extends AbstractCollectionListingContro
                 limit -= listing.getFiles().size();
             }
 
+        }
+        
+        if (this.resolvePrincipalLink && results.size() > 0) {
+            Locale preferredLocale = this.localeResolver.resolveResourceLocale(collection);
+            
+            Set<PropertySet> allFiles = new HashSet<PropertySet>();
+            for (Listing l : results) {
+                allFiles.addAll(l.getFiles());
+            }
+            
+            Map<String, Principal> principalDocuments = this.helper.getExistingPrincipalDocuments(
+                    allFiles, preferredLocale, null);
+            model.put("principalDocuments", principalDocuments);
         }
 
         URL baseURL = service.constructURL(RequestContext.getRequestContext().getResourceURI());

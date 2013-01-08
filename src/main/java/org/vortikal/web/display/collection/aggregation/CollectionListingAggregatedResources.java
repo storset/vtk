@@ -182,7 +182,7 @@ public class CollectionListingAggregatedResources implements Serializable {
 
         } else {
 
-            if (aggregationSet != null) {
+            if (aggregationSet != null && aggregationSet.size() > 0) {
 
                 if (aggregationSet.size() == 1) {
                     Entry<URL, Set<Path>> entry = aggregationSet.entrySet().iterator().next();
@@ -196,8 +196,8 @@ public class CollectionListingAggregatedResources implements Serializable {
                 }
 
             }
-            
-            if (manuallyApprovedSet != null) {
+
+            if (manuallyApprovedSet != null && manuallyApprovedSet.size() > 0) {
 
                 if (manuallyApprovedSet.size() == 1) {
                     Entry<URL, Set<Path>> entry = manuallyApprovedSet.entrySet().iterator().next();

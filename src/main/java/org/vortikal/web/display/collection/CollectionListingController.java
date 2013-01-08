@@ -84,7 +84,7 @@ public class CollectionListingController extends AbstractCollectionListingContro
 
         List<Listing> results = new ArrayList<Listing>();
 
-        for (SearchComponent component : this.searchComponents) {
+        for (SearchComponent component : searchComponents) {
 
             Listing listing = component.execute(request, collection, page, limit, 0);
             totalHits += listing.getTotalHits();
@@ -104,8 +104,8 @@ public class CollectionListingController extends AbstractCollectionListingContro
                 }
             }
 
-            if (this.displayEditLinks) {
-                this.helper.checkListingsForEditLinks(repository, token, principal, Arrays.asList(listing));
+            if (displayEditLinks && helper != null) {
+                helper.checkListingsForEditLinks(repository, token, principal, Arrays.asList(listing));
             }
 
             // We have more results to display for this listing
@@ -118,17 +118,17 @@ public class CollectionListingController extends AbstractCollectionListingContro
             }
 
         }
-        
-        if (this.resolvePrincipalLink && results.size() > 0) {
-            Locale preferredLocale = this.localeResolver.resolveResourceLocale(collection);
-            
+
+        if (resolvePrincipalLink && results.size() > 0 && helper != null) {
+            Locale preferredLocale = localeResolver.resolveResourceLocale(collection);
+
             Set<PropertySet> allFiles = new HashSet<PropertySet>();
             for (Listing l : results) {
                 allFiles.addAll(l.getFiles());
             }
-            
-            Map<String, Principal> principalDocuments = this.helper.getExistingPrincipalDocuments(
-                    allFiles, preferredLocale, null);
+
+            Map<String, Principal> principalDocuments = helper.getExistingPrincipalDocuments(allFiles, preferredLocale,
+                    null);
             model.put("principalDocuments", principalDocuments);
         }
 
@@ -138,7 +138,7 @@ public class CollectionListingController extends AbstractCollectionListingContro
             model.put("hideIcon", true);
         }
 
-        if (this.displayEditLinks) {
+        if (displayEditLinks && helper != null) {
             model.put("editCurrentResource", helper.checkResourceForEditLink(repository, collection, principal));
         }
 
@@ -161,16 +161,15 @@ public class CollectionListingController extends AbstractCollectionListingContro
     }
 
     protected boolean getHideIcon(Resource collection) {
-        if (this.hideIcon == null)
+        if (hideIcon == null)
             return false;
-        Property p = collection.getProperty(this.hideIcon);
+        Property p = collection.getProperty(hideIcon);
         if (p == null) {
             return false;
         }
         return p.getBooleanValue();
     }
 
-    @Required
     public void setHelper(CollectionListingHelper helper) {
         this.helper = helper;
     }

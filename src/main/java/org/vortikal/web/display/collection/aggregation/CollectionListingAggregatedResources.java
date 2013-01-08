@@ -52,12 +52,6 @@ public class CollectionListingAggregatedResources implements Serializable {
     private Map<URL, Set<Path>> aggregationSet;
     private Map<URL, Set<Path>> manuallyApprovedSet;
 
-    public CollectionListingAggregatedResources(Map<URL, Set<Path>> aggregationSet,
-            Map<URL, Set<Path>> manuallyApprovedSet) {
-        this.aggregationSet = aggregationSet;
-        this.manuallyApprovedSet = manuallyApprovedSet;
-    }
-
     public Map<URL, Set<Path>> getAggregationSet() {
         if (this.aggregationSet != null) {
             return Collections.unmodifiableMap(this.aggregationSet);
@@ -65,11 +59,19 @@ public class CollectionListingAggregatedResources implements Serializable {
         return null;
     }
 
+    public void setAggregationSet(Map<URL, Set<Path>> aggregationSet) {
+        this.aggregationSet = aggregationSet;
+    }
+
     public Map<URL, Set<Path>> getManuallyApproved() {
         if (this.manuallyApprovedSet != null) {
             return Collections.unmodifiableMap(this.manuallyApprovedSet);
         }
         return null;
+    }
+
+    public void setManuallyApprovedSet(Map<URL, Set<Path>> manuallyApprovedSet) {
+        this.manuallyApprovedSet = manuallyApprovedSet;
     }
 
     public Set<Path> getHostAggregationSet(URL host) {

@@ -109,8 +109,9 @@ public class CollectionListingAggregationResolver implements AggregationResolver
         this.resolveAggregatedResources(aggregationSet, manuallyApprovedSet, collection, currentHostURL,
                 startCollectionURL, 0);
 
-        CollectionListingAggregatedResources clar = new CollectionListingAggregatedResources(aggregationSet,
-                manuallyApprovedSet);
+        CollectionListingAggregatedResources clar = new CollectionListingAggregatedResources();
+        clar.setAggregationSet(aggregationSet);
+        clar.setManuallyApprovedSet(manuallyApprovedSet);
 
         return clar;
     }

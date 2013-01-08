@@ -91,13 +91,15 @@ public class CollectionListingAggregatedResourcesTest {
         manuallyApprovedSet.put(MAN_APPR_TEST_HOST, MAN_APPR_TEST_HOST_PATHS);
         manuallyApprovedSet.put(OTHER_TEST_HOST, OTHER_TEST_HOST_MAN_APPR_PATHS);
 
-        CLAR = new CollectionListingAggregatedResources(aggregationSet, manuallyApprovedSet);
+        CLAR = new CollectionListingAggregatedResources();
+        CLAR.setAggregationSet(aggregationSet);
+        CLAR.setManuallyApprovedSet(manuallyApprovedSet);
     }
 
     @Test
     public void testAggregationQuery() {
 
-        CollectionListingAggregatedResources empty = new CollectionListingAggregatedResources(null, null);
+        CollectionListingAggregatedResources empty = new CollectionListingAggregatedResources();
 
         Query nullQueryLocal = empty.getAggregationQuery(null, false);
         assertNull(nullQueryLocal);

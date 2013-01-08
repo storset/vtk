@@ -183,6 +183,10 @@ h2 {
 	2. Dimensions and explicit settings
 \*-----------------------------------------*/
 
+resource\.programContext\.title input,
+resource\.programOptionContext\.title input,
+resource\.courseContext\.course-name input,
+resource\.courseContext\.course-name-english input,
 div.aggregation input,
 div.manually-approve-from input,
 div.cssUrl input {

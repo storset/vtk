@@ -434,12 +434,17 @@ resourcetype course-description : fellestekst-document {
         <div id="overlapping-courses">
           <h2>[localized 'overlapping-courses-group']</h2>
           [if overlapping-courses != null]
-            [def list-length overlapping-courses.length()]
+            [def list-length 0]
+            [list overlapping-courses overlapping-course]
+              [if (overlapping-course.credits != null && overlapping-course.credits != "") && (overlapping-course.fs-course-code != null && overlapping-course.fs-course-code != "")]
+                [def list-length list-length + 1]
+              [endif]
+            [endlist]
             [def list-count 0]
             [list overlapping-courses overlapping-course]
-              [def list-count list-count + 1]
               [if (overlapping-course.credits != null && overlapping-course.credits != "") && (overlapping-course.fs-course-code != null && overlapping-course.fs-course-code != "")]
-                [val overlapping-course.credits] poeng for [call "include:ref" {"id" : overlapping-course.fs-course-code, "type" : "emne"}][if list-count = list-length - 1] og[elseif list-count = list-length].[else],[endif]
+                [def list-count list-count + 1]
+                [val overlapping-course.credits] [localized 'points-for'] [call "include:ref" {"id" : overlapping-course.fs-course-code, "type" : "emne"}][if list-count = list-length - 1] [localized 'and'][elseif list-count = list-length].[else],[endif]
               [endif]
             [endlist]
           [endif]
@@ -801,6 +806,8 @@ resourcetype course-description : fellestekst-document {
     bachelor : (en : "Bachelor", no : "Bachelor", nn : "Bachelor"),
     master : (en : "Master", no : "Master", nn : "Master"),
     phd : (en : "PhD", no : "ph.d.", nn : "ph.d."),
-    admission : (en : "Admission", no : "Adgang", nn : "Adgang")
+    admission : (en : "Admission", no : "Adgang", nn : "Adgang"),
+    points-for : (en : "points for", no : "poeng for", nn : "poeng for"),
+    and : (en : "and", no : "og", nn : "og")
   }
 }

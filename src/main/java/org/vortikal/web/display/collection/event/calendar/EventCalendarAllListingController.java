@@ -44,10 +44,9 @@ import org.vortikal.web.search.Listing;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
-public abstract class EventCalendarAllListingController extends EventCalendarListingController {
+public class EventCalendarAllListingController extends EventCalendarListingController {
 
-    protected abstract Listing getSearchResult(HttpServletRequest request, Resource collection,
-            Map<String, Object> model, int page, int pageLimit) throws Exception;
+    private boolean upcoming = true;
 
     @Override
     public void runSearch(HttpServletRequest request, Resource collection, Map<String, Object> model, int pageLimit)
@@ -56,26 +55,40 @@ public abstract class EventCalendarAllListingController extends EventCalendarLis
         int page = ListingPager.getPage(request, ListingPager.UPCOMING_PAGE_PARAM);
         model.put(MODEL_KEY_PAGE, page);
 
-        Listing result = this.getSearchResult(request, collection, model, page, pageLimit);
+        Listing result = null;
+        if (upcoming) {
+            result = searcher.searchUpcoming(request, collection, page, pageLimit, 0);
+            if (result.getTotalHits() > 0) {
+                model.put(EventListingHelper.DISPLAY_LISTING_ICAL_LINK, true);
+            }
+        } else {
+            model.put(MODEL_KEY_HIDE_ALTERNATIVE_REP, Boolean.TRUE);
+            result = searcher.searchPrevious(request, collection, page, pageLimit, 0);
+        }
 
         Service service = RequestContext.getRequestContext().getService();
         URL serviceURL = service.constructURL(collection.getURI());
         String viewType = serviceURL.getParameter(EventListingHelper.REQUEST_PARAMETER_VIEW);
 
         model.put(viewType, result);
-        String title = this.helper.getEventTypeTitle(request, collection, "eventListing." + viewType, false);
+        String title = helper.getEventTypeTitle(request, collection, "eventListing." + viewType, false);
         String titleKey = viewType + "Title";
         model.put(titleKey, title);
 
         if (result == null || result.getFiles().isEmpty()) {
-            String noPlannedTitle = this.helper.getEventTypeTitle(request, collection, "eventListing.noPlanned."
-                    + viewType, false);
+            String noPlannedTitle = helper.getEventTypeTitle(request, collection, "eventListing.noPlanned." + viewType,
+                    false);
             String noPlannedTitleKey = viewType + "NoPlannedTitle";
             model.put(noPlannedTitleKey, noPlannedTitle);
         } else {
-            List<ListingPagingLink> urls = ListingPager.generatePageThroughUrls(result.getTotalHits(), pageLimit, serviceURL, page);
+            List<ListingPagingLink> urls = ListingPager.generatePageThroughUrls(result.getTotalHits(), pageLimit,
+                    serviceURL, page);
             model.put(MODEL_KEY_PAGE_THROUGH_URLS, urls);
         }
+    }
+
+    public void setUpcoming(boolean upcoming) {
+        this.upcoming = upcoming;
     }
 
 }

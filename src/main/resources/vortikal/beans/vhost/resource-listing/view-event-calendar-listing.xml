@@ -124,12 +124,13 @@
     <property name="serviceNameProvider" ref="collectionListing.viewService.serviceNameProvider" />
   </bean>
 
-  <bean id="eventListing.calendarAllPreviousHandler" class="org.vortikal.web.display.collection.event.calendar.EventCalendarAllPreviousListingController"
+  <bean id="eventListing.calendarAllPreviousHandler" class="org.vortikal.web.display.collection.event.calendar.EventCalendarAllListingController"
     parent="eventListing.calendarHandler">
     <property name="viewName" value="eventListingCalendarWithWidgetContextProvider.view" />
+    <property name="upcoming" value="false" />
   </bean>
 
-  <bean id="eventListing.calendarAllUpcomingHandler" class="org.vortikal.web.display.collection.event.calendar.EventCalendarAllUpcomingListingController"
+  <bean id="eventListing.calendarAllUpcomingHandler" class="org.vortikal.web.display.collection.event.calendar.EventCalendarAllListingController"
     parent="eventListing.calendarHandler">
     <property name="viewName" value="eventListingCalendarWithWidgetContextProvider.view" />
   </bean>

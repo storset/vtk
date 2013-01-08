@@ -15,6 +15,8 @@ function VrtxEditor() {
   instance = new VrtxEditor();
   instance.constructor = VrtxEditor;
   
+  this.editorForm = null;
+  
   this.CKEditorToolbars = {};
   this.CKEditorDivContainerStylesSet = [{}];
   
@@ -28,6 +30,15 @@ function VrtxEditor() {
   this.editorInitRadios = [];
   
   this.needToConfirm = true;
+  
+  this.selectMappings = { "teachingsemester":                    { "particular-semester":   ".if-teachingsemester-particular",
+                                                                   "every-other":           ".teachingsemester-every-other-semester",
+                                                                   "other":                 ".teachingsemester-other"                 },
+                          "examsemester":                        { "particular-semester":   ".examsemester-every-other-semester",
+                                                                   "every-other":           ".if-examsemester-particular",
+                                                                   "other":                 ".examsemester-other"                     },
+                          "teaching-language":                   { "other":                 ".teaching-language-text-field"           }
+                        };
   
   return instance;
 };
@@ -228,7 +239,7 @@ VrtxEditor.prototype.newEditor = function newEditor(name, completeEditor, withou
   var isWithoutSubSuper = withoutSubSuper != null ? withoutSubSuper : false;
   var isSimpleHTML = (simpleHTML != null && simpleHTML == "true") ? true : false;
   
-  var editorElem = $("form#editor");
+  var editorElem = this.editorForm;
 
   // CKEditor configurations
   if (vrtxEdit.contains(name, "introduction")
@@ -283,9 +294,8 @@ VrtxEditor.prototype.newEditor = function newEditor(name, completeEditor, withou
             || name == "content-study"
             || name == "course-group-about"
             || name == "courses-in-group"
-            || name == "course-group-admission"
             || name == "relevant-study-programmes"
-            || name == "course-group-other") {
+            || name == "course-group-about") {
       height = 400;
       maxHeight = 800;
       if (name == "resource.content") { // Old editor
@@ -294,11 +304,9 @@ VrtxEditor.prototype.newEditor = function newEditor(name, completeEditor, withou
       if (name == "content-study") { // Study toolbar
         completeTB = vrtxEdit.CKEditorToolbars.studyToolbar;
       } 
-      if (name == "course-group-about"
-       || name == "courses-in-group"
-       || name == "course-group-admission"
+      if (name == "courses-in-group"
        || name == "relevant-study-programmes"
-       || name == "course-group-other") { // CourseGroup toolbar
+       || name == "course-group-about") { // CourseGroup toolbar
         completeTB = vrtxEdit.CKEditorToolbars.courseGroupToolbar;
       }
     }
@@ -314,6 +322,12 @@ VrtxEditor.prototype.newEditor = function newEditor(name, completeEditor, withou
 VrtxEditor.prototype.contains = function contains(string, substring) {
   return string.indexOf(substring) != -1; 
 };
+
+VrtxEditor.prototype.replaceTag = function replaceTag(selector, tag, replaceTag) {
+  selector.find(tag).replaceWith(function() {
+    return "<" + replaceTag + ">" + $(this).text() + "</" + replaceTag + ">";
+  });
+}
 
 VrtxEditor.prototype.setCKEditorConfig = function setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, defaultLanguage, cssFileList, height, 
                                                                     maxHeight, minHeight, toolbar, complete, resizable, baseDocumentUrl, simple) {
@@ -399,14 +413,15 @@ function commentsCkEditor() {
   });
 }
 
-$(document).ready(function() { 
-  var editor = $("#editor");
-  if(!editor.length) return;
-  
-   var vrtxAdm = vrtxAdmin, _$ = vrtxAdm._$, vrtxEdit = vrtxEditor;
-   
+$(document).ready(function() {
+  var vrtxEdit = vrtxEditor;
+  vrtxEdit.editorForm = $("#editor");
+  if(!vrtxEdit.editorForm.length) return;
+
+  var vrtxAdm = vrtxAdmin, _$ = vrtxAdm._$;
+
   // When ui-helper-hidden class is added => we need to add 'first'-class to next element (if it is not last and first of these)
-  editor.find(".ui-helper-hidden").filter(":not(:last)").filter(":first").next().addClass("first");
+  vrtxEdit.editorForm.find(".ui-helper-hidden").filter(":not(:last)").filter(":first").next().addClass("first");
   // TODO: make sure these are NOT first so that we can use pure CSS
 
   autocompleteUsernames(".vrtx-autocomplete-username");
@@ -538,61 +553,63 @@ $(document).ready(function() {
             "#resource\\.display-type\\.calendar:checked",
             'calendar',
             ["#vrtx-resource\\.hide-additional-content"]);
-   
-  var docType = editor[0].className;
+            
+  // Hide/show mappings for select
+  for(var select in vrtxEdit.selectMappings) {
+    var selectElm = _$("#" + select);
+    if(selectElm.length) {
+      vrtxEdit.hideShowSelect(selectElm);
+      _$(document).on("change", "#" + select, function () {
+        vrtxEdit.hideShowSelect(_$(this));
+      });
+    }
+  }
+  
+  var docType = vrtxEdit.editorForm[0].className;
+
   if(docType && docType !== "") {
     switch(docType) {
       case "vrtx-hvordan-soke":
-        hideShowStudy(editor, _$("#typeToDisplay"));
+        hideShowStudy(vrtxEdit.editorForm, _$("#typeToDisplay"));
         _$(document).on("change", "#typeToDisplay", function () {
-          hideShowStudy(editor, _$(this));
-          editor.find(".ui-accordion > .vrtx-string.last").removeClass("last");
-          editor.find(".ui-accordion > .vrtx-string:visible:last").addClass("last");
+          hideShowStudy(vrtxEdit.editorForm, _$(this));
+          vrtxEdit.editorForm.find(".ui-accordion > .vrtx-string.last").removeClass("last");
+          vrtxEdit.editorForm.find(".ui-accordion > .vrtx-string:visible:last").addClass("last");
         });    
      
         // Because accordion needs one content wrapper
-        for(var grouped = editor.find(".vrtx-grouped"), i = grouped.length; i--;) { 
+        for(var grouped = vrtxEdit.editorForm.find(".vrtx-grouped"), i = grouped.length; i--;) { 
           _$(grouped[i]).find("> *:not(.header)").wrapAll("<div />");
         }
-        editor.find(".properties").accordion({ header: "> div > .header",
-                                 autoHeight: false,
-                                 collapsible: true,
-                                 active: false
-                               });
-        editor.find(".ui-accordion > .vrtx-string:visible:last").addClass("last");
+        vrtxEdit.editorForm.find(".properties").accordion({ header: "> div > .header",
+                                                            autoHeight: false,
+                                                            collapsible: true,
+                                                            active: false
+                                                          });
+        vrtxEdit.editorForm.find(".ui-accordion > .vrtx-string:visible:last").addClass("last");
         break;
       case "vrtx-course-description":
-        for(var semesters = ["teaching", "exam"], i = semesters.length, semesterId, semesterType; i--;) {
-          semesterId = "#" + semesters[i] + "semester";
-          semesterType = _$(semesterId);
-          if(semesterType.length) {
-            hideShowSemester(editor, semesterType);
-            _$(document).on("change", semesterId, function () {
-              hideShowSemester(editor, _$(this));
-            });
-          }
-        }
         setShowHide('course-fee', ["course-fee-amount"], false);
         break;
       case "vrtx-semester-page":
-        for(var grouped = editor.find(".vrtx-grouped[class*=link-box]"), i = grouped.length; i--;) { 
+        for(var grouped = vrtxEdit.editorForm.find(".vrtx-grouped[class*=link-box]"), i = grouped.length; i--;) { 
           _$(grouped[i]).find("> *:not(.header)").wrapAll("<div />");
         }
         grouped.wrapAll("<div id='link-boxes' />");
-        editor.find("#link-boxes").accordion({ header: "> div > .header",
-                                               autoHeight: false,
-                                               collapsible: true,
-                                               active: false
-                                             });
+        vrtxEdit.editorForm.find("#link-boxes").accordion({ header: "> div > .header",
+                                                            autoHeight: false,
+                                                            collapsible: true,
+                                                            active: false
+                                                         });
         break;
       case "vrtx-samlet-program":
-        var samletElm = editor.find(".samlet-element");
-        replaceTag(samletElm, "h6", "strong");
-        replaceTag(samletElm, "h5", "h6");  
-        replaceTag(samletElm, "h4", "h5");
-        replaceTag(samletElm, "h3", "h4");
-        replaceTag(samletElm, "h2", "h3");
-        replaceTag(samletElm, "h1", "h2");
+        var samletElm = vrtxEdit.editorForm.find(".samlet-element");
+        vrtxEdit.replaceTag(samletElm, "h6", "strong");
+        vrtxEdit.replaceTag(samletElm, "h5", "h6");  
+        vrtxEdit.replaceTag(samletElm, "h4", "h5");
+        vrtxEdit.replaceTag(samletElm, "h3", "h4");
+        vrtxEdit.replaceTag(samletElm, "h2", "h3");
+        vrtxEdit.replaceTag(samletElm, "h1", "h2");
         break;
       default:
         break;
@@ -601,11 +618,11 @@ $(document).ready(function() {
   
   /* Initialize CKEditors */
   for(var i = 0, len = vrtxEdit.CKEditorsInit.length; i < len && i < vrtxEdit.CKEditorsInitSyncMax; i++) { // Initiate <=CKEditorsInitSyncMax CKEditors sync
-    vrtxEditor.newEditor(vrtxEdit.CKEditorsInit[i]);
+    vrtxEdit.newEditor(vrtxEdit.CKEditorsInit[i]);
   }
   if(len > vrtxEdit.CKEditorsInitSyncMax) {
     var ckEditorInitLoadTimer = setTimeout(function() { // Initiate >CKEditorsInitSyncMax CKEditors async
-      vrtxEditor.newEditor(vrtxEdit.CKEditorsInit[i]);
+      vrtxEdit.newEditor(vrtxEdit.CKEditorsInit[i]);
       i++;
       if(i < len) {
         setTimeout(arguments.callee, vrtxEdit.CKEditorsInitAsyncInterval);
@@ -617,8 +634,7 @@ $(document).ready(function() {
 /* Store and check if inputfields or textareas (CK) have changed onbeforeunload */
 
 $(window).load(function () { // Store initial counts and values when all is initialized in editor
-  var editor = $("#editor");
-  if(!editor.length) return;
+  if(!vrtxEditor.editorForm.length) return;
 
   var nullDeferred = $.Deferred();
       nullDeferred.resolve();
@@ -802,8 +818,24 @@ function toggle(name, parameters, hideTrues) {
 }
 
 /* Dropdown show/hide mappings
- * TODO: need to do some refactoring of show/hide for dropdowns
  */
+ 
+ /* General function for show/hide with mappings */
+VrtxEditor.prototype.hideShowSelect = function hideShowSelect(select) {
+  var vrtxEdit = this;
+  var selected = select.val();
+  var id = select.attr("id");
+  if(vrtxEdit.selectMappings.hasOwnProperty(id)) {
+    var mappings = vrtxEdit.selectMappings[id];
+    for(var item in mappings) {
+      if(item === selected) {
+        vrtxEdit.editorForm.find(mappings[item]).filter(":hidden").show();
+      } else {
+        vrtxEdit.editorForm.find(mappings[item]).filter(":visible").hide();
+      }
+    }
+  }
+};
 
 function hideShowStudy(container, typeToDisplayElem) {
   switch (typeToDisplayElem.val()) {
@@ -818,24 +850,6 @@ function hideShowStudy(container, typeToDisplayElem) {
       break;
     default:
       container.removeClass("so").removeClass("nm").removeClass("em");
-      break;
-  }
-}
-
-function hideShowSemester(container, typeSemesterElem) {
-  var prefix = typeSemesterElem.attr("id") + "-selected";
-  switch (typeSemesterElem.val()) {
-    case "particular-semester":
-      container.removeClass(prefix + "-every-other").removeClass(prefix + "-other").addClass(prefix + "-particular");
-      break;
-    case "every-other":
-      container.removeClass(prefix + "-particular").removeClass(prefix + "-other").addClass(prefix + "-every-other");
-      break;
-    case "other":
-      container.removeClass(prefix + "-every-other").removeClass(prefix + "-particular").addClass(prefix + "-other");
-      break;  
-    default:
-      container.removeClass(prefix + "-particular").removeClass(prefix + "-every-other").removeClass(prefix + "-other");
       break;
   }
 }
@@ -864,12 +878,6 @@ function setCkValue(instanceName, data) {
 function isCkEditor(instanceName) {
   var oEditor = getCkInstance(instanceName);
   return oEditor != null;
-}
-
-function replaceTag(selector, tag, replaceTag) {
-  selector.find(tag).replaceWith(function() {
-    return "<" + replaceTag + ">" + $(this).text() + "</" + replaceTag + ">";
-  });
 }
 
 /* ^ Vortex Editor */

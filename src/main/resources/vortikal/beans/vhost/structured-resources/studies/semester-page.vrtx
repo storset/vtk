@@ -114,7 +114,6 @@ resourcetype semester-page : fellestekst-document {
         [elseif title = "link-box-six-title"]
           [def links document.properties.link-box-six-links]
         [endif]
-        [val links]
         [if links != null]
           [list links link]
             <ul>

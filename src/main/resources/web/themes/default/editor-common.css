@@ -299,7 +299,8 @@ div.caption textarea {
 }
 
 .introImageAndCaption .header,
-#additional-content .header {
+#additional-content .header,
+.vrtx-grouped .vrtx-json .header {
   display: none;
 }
 

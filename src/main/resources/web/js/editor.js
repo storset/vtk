@@ -281,8 +281,11 @@ VrtxEditor.prototype.newEditor = function newEditor(name, completeEditor, withou
     } else if (name == "content"
             || name == "resource.content"
             || name == "content-study"
+            || name == "course-group-about"
             || name == "courses-in-group"
-            || name == "relevant-study-programmes") {
+            || name == "course-group-admission"
+            || name == "relevant-study-programmes"
+            || name == "course-group-other") {
       height = 400;
       maxHeight = 800;
       if (name == "resource.content") { // Old editor
@@ -291,8 +294,11 @@ VrtxEditor.prototype.newEditor = function newEditor(name, completeEditor, withou
       if (name == "content-study") { // Study toolbar
         completeTB = vrtxEdit.CKEditorToolbars.studyToolbar;
       } 
-      if (name == "courses-in-group"
-       || name == "relevant-study-programmes") { // CourseGroup toolbar
+      if (name == "course-group-about"
+       || name == "courses-in-group"
+       || name == "course-group-admission"
+       || name == "relevant-study-programmes"
+       || name == "course-group-other") { // CourseGroup toolbar
         completeTB = vrtxEdit.CKEditorToolbars.courseGroupToolbar;
       }
     }

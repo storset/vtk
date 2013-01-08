@@ -6,11 +6,11 @@ resourcetype course-group : fellestekst-document {
     course-group-code : string,
     title : derived (course-group-name, course-group-code) eval (course-group-name + " (" + course-group-code + ")") overrides title default course-group-name,
     course-group-scope : string,
-    about : html noextract,
+    course-group-about : html noextract,
     courses-in-group : html noextract,
     relevant-study-programmes : html noextract,
     course-group-admission : html noextract,
-    other : simple_html noextract,
+    course-group-other : html noextract,
     studinfo-kontakt-text-field : simple_html noextract,
     studinfo-kontakt : string
   }
@@ -28,11 +28,11 @@ resourcetype course-group : fellestekst-document {
     [def course-group-scope resource-prop-obj-val(".", "course-group-scope")]
     [resource-props "."]
     [def document structured-document()]
-    [def about document.properties.about]
+    [def course-group-about document.properties.course-group-about]
     [def courses-in-group document.properties.courses-in-group]
     [def relevant-study-programmes document.properties.relevant-study-programmes]
     [def course-group-admission document.properties.course-group-admission]
-    [def other document.properties.other]
+    [def course-group-other document.properties.course-group-other]
     [def studinfo-kontakt document.properties.studinfo-kontakt]
     [def studinfo-kontakt-text-field document.properties.studinfo-kontakt-text-field]
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -42,9 +42,9 @@ resourcetype course-group : fellestekst-document {
       </head>
       <body id="vrtx-course-group">
         <h1>[if course-group-scope != null && course-group-scope != ""][val course-group-scope]-[localized 'localized-group'][endif][if title != null && title != ""] - [val title][endif]</h1>
-        [if about != null && about != ""]
-          <h2>[localized 'about']</h2>
-          [val about # unescaped]
+        [if course-group-about != null && course-group-about != ""]
+          <h2>[localized 'course-group-about']</h2>
+          [val course-group-about # unescaped]
         [endif]
         [if courses-in-group != null && courses-in-group != ""]
           <h2>[localized 'courses-in-group']</h2>
@@ -58,9 +58,9 @@ resourcetype course-group : fellestekst-document {
           <h2>[localized 'course-group-admission']</h2>
           [val course-group-admission # unescaped]
         [endif]
-        [if other != null && other != ""]
-          <h2>[localized 'other']</h2>
-          [val other # unescaped]
+        [if course-group-other != null && course-group-other != ""]
+          <h2>[localized 'course-group-other']</h2>
+          [val course-group-other # unescaped]
         [endif]
         [if (studinfo-kontakt != null && studinfo-kontakt != "" && studinfo-kontakt != "ingen-fellestekst") || (studinfo-kontakt-text-field != null && studinfo-kontakt-text-field != "")]
           <h2>[localized 'studinfo-kontakt-group']</h2>
@@ -94,11 +94,11 @@ resourcetype course-group : fellestekst-document {
     status : (en : "Status", no : "Status", nn : "Status"),
     course-group-code : (en : "Course group code", no : "Emnegruppekode", nn : "Emnegruppekode"),
     course-group-scope : (en : "Course group scope", no : "Emnegruppeomfang", nn : "Emnegruppeomfang"),
-    about : (en : "About the course group", no : "Om emnegruppen", nn : "Om emnegruppa"),
+    course-group-about : (en : "About the course group", no : "Om emnegruppen", nn : "Om emnegruppa"),
     relevant-study-programmes : (en : "Relevant study programmes", no : "Relevante studieprogrammer", nn : "Relevante studieprogram"),
     courses-in-group : (en : "Courses in group", no : "Emner i emnegruppen", nn : "Emner i emnegruppa"),
     course-group-admission : (en : "Course group admission", no : "Emnegruppeopptak", nn : "Emnegruppeopptak"),
-    other : (en : "Other", no : "Annet", nn : "Anna"),
+    course-group-other : (en : "Other", no : "Annet", nn : "Anna"),
     studinfo-kontakt-text-field : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
     studinfo-kontakt : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
     studinfo-kontakt-group : (en : "Contact", no : "Kontakt", nn : "Kontakt")

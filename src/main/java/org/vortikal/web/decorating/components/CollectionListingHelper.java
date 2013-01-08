@@ -15,6 +15,7 @@ import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyType;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.Principal;
 import org.vortikal.util.repository.DocumentPrincipalMetadataRetriever;
 import org.vortikal.web.search.Listing;
@@ -62,14 +63,19 @@ public class CollectionListingHelper {
         }
     }
 
-    public Map<String, Principal> getExistingPrincipalDocuments(List<PropertySet> propertySets, Locale preferredLocale) {
+    public Map<String, Principal> getExistingPrincipalDocuments(Set<PropertySet> propertySets, Locale preferredLocale,
+            PropertyTypeDefinition principalTypePropDef) {
 
         Set<String> uids = new HashSet<String>();
         for (PropertySet ps : propertySets) {
-            Property modifiedBy = ps.getProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.MODIFIEDBY_PROP_NAME);
-            if (modifiedBy != null) {
-                uids.add(modifiedBy.getPrincipalValue().getName());
+
+            Property principalTypeProp = principalTypePropDef != null ? ps.getProperty(principalTypePropDef) : ps
+                    .getProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.MODIFIEDBY_PROP_NAME);
+
+            if (principalTypeProp != null) {
+                uids.add(principalTypeProp.getPrincipalValue().getName());
             }
+
         }
 
         return this.documentPrincipalMetadataRetriever.getPrincipalDocumentsMapByUid(uids, preferredLocale);

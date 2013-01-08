@@ -32,6 +32,7 @@ package org.vortikal.web.decorating.components;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -39,6 +40,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.Path;
+import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceNotFoundException;
@@ -139,8 +141,8 @@ public class CollectionListingComponent extends ViewRenderingDecoratorComponent 
         this.helper.checkListingsForEditLinks(repository, token, principal, Arrays.asList(listing));
 
         Locale preferredLocale = this.localeResolver.resolveResourceLocale(res);
-        Map<String, Principal> principalDocuments = this.helper.getExistingPrincipalDocuments(listing.getFiles(),
-                preferredLocale);
+        Map<String, Principal> principalDocuments = this.helper.getExistingPrincipalDocuments(new HashSet<PropertySet>(
+                listing.getFiles()), preferredLocale, null);
         model.put("principalDocuments", principalDocuments);
 
         model.put("editLinks", listing.getEditLinkAuthorized());

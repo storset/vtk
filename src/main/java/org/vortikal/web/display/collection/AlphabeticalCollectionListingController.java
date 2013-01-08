@@ -68,7 +68,7 @@ public class AlphabeticalCollectionListingController extends CollectionListingCo
 
         Property type = collection.getProperty(displayTypePropDef);
         if (type != null && "alphabetical".equals(type.getStringValue())) {
-            getAlphabeticalOrdredProjects(request, collection, model, pageLimit);
+            getAlphabeticalOrdredListing(request, collection, model, pageLimit);
         } else {
             super.runSearch(request, collection, model, pageLimit);
         }
@@ -81,8 +81,9 @@ public class AlphabeticalCollectionListingController extends CollectionListingCo
      * value that is a list of files starting with the key char. The key is
      * upper case.
      */
-    public void getAlphabeticalOrdredProjects(HttpServletRequest request, Resource collection,
+    public void getAlphabeticalOrdredListing(HttpServletRequest request, Resource collection,
             Map<String, Object> model, int pageLimit) throws Exception {
+
         int page = ListingPager.getPage(request, ListingPager.UPCOMING_PAGE_PARAM);
         int limit = pageLimit;
         int totalHits = 0;

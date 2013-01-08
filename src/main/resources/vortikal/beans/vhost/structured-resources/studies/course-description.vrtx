@@ -56,6 +56,7 @@ resourcetype course-description : fellestekst-document {
 
   edit-rules {
     credits (dropdown),
+    level (dropdown),
     teachingsemester (dropdown),
     teachingsemester-particular-semester (class[if-teachingsemester-particular]),
     teachingsemester-particular-semester:term (dropdown),
@@ -71,7 +72,6 @@ resourcetype course-description : fellestekst-document {
     examsemester-every-other-semester-startyear (dropdown),
     group examsemester-every-other-semester (examsemester-every-other-semester-term, examsemester-every-other-semester-startyear) (after examsemester-particular-semester) horizontal,
     teaching-language (dropdown),
-    level (dropdown),
     opptak-og-adgang (class[vrtx-shared-text]),
     group opptak-og-adgang-group (opptak-og-adgang-text-field, opptak-og-adgang) vertical,
     ikke-privatist (class[vrtx-shared-text]),
@@ -222,9 +222,10 @@ resourcetype course-description : fellestekst-document {
              [endif]
              [list semesters semester]
                [def url view-url(semester)]
-               [def title resource-prop(semester, "semesterContext.semesterTitle")]
+               [def term resource-prop-obj-val(semester, "semesterContext.semesterTerm")]
+               [def year resource-prop-obj-val(semester, "semesterContext.semesterYear")]
                <li>
-                 <a href="[val url]">[if title != null && title != ""][val title][else][val url][endif]</a>
+                 <a href="[val url]">[if term != null && term != "" && year != null && year != ""][if term = "v"][localized 'spring'][else][localized 'autumn'][endif] [val year][else][val url][endif]</a>
                </li>
              [endlist]
            </ul>
@@ -627,13 +628,13 @@ resourcetype course-description : fellestekst-document {
      },
      teachingsemester {
        en : ("vaar-og-host" = "Autumn and spring", "hver-hoest" = "Every autumn", "hver-vaar" =  "Every spring", "particular-semester" = "Particular semester", "every-other" = "Every other year", "other" = "Other"),
-       no : ("vaar-og-host" = "Høst og vår", "hver-hoest" = "Hver høst", "hver-vaar" =  "Hver vår", "particular-semester" = "Bestemt semester", "every-other" = "Annen hvert år", "other" = "Annet"),
+       no : ("vaar-og-host" = "Høst og vår", "hver-hoest" = "Hver høst", "hver-vaar" =  "Hver vår", "particular-semester" = "Bestemt semester", "every-other" = "Annethvert år", "other" = "Annet"),
        nn : ("vaar-og-host" = "Haust og vår", "hver-hoest" = "Hver haust", "hver-vaar" =  "Hver vår", "particular-semester" = "Bestemt semester", "every-other" = "Anna kvart år", "other" = "Annet")
      },
      examsemester {
        en : ("vaar-og-host" = "Autumn and spring", "hver-hoest" = "Every autumn", "hver-vaar" =  "Every spring", "particular-semester" = "Particular semester", "every-other" = "Every other year", "other" = "Other"),
-       no : ("vaar-og-host" = "Høst og vår", "hver-hoest" = "Hver høst", "hver-vaar" =  "Hver vår", "particular-semester" = "Bestemt semester", "every-other" = "Annen hvert år", "other" = "Annet"),
-       nn : ("vaar-og-host" = "Haust og vår", "hver-hoest" = "Hver haust", "hver-vaar" =  "Hver vår", "particular-semester" = "Bestemt semester", "every-other" = "Anna kvart år", "other" = "Annet")
+       no : ("vaar-og-host" = "Høst og vår", "hver-hoest" = "Hver høst", "hver-vaar" =  "Hver vår", "particular-semester" = "Bestemt semester", "every-other" = "Annethvert år", "other" = "Annet"),
+       nn : ("vaar-og-host" = "Haust og vår", "hver-hoest" = "Kvar haust", "hver-vaar" =  "Kvar vår", "particular-semester" = "Bestemt semester", "every-other" = "Anna kvart år", "other" = "Anna")
      },
      teachingsemester-particular-semester:term {
        en : ("autumn" = "Autumn", "spring" = "Spring"),
@@ -682,8 +683,8 @@ resourcetype course-description : fellestekst-document {
      },
      level {
        en : ("course" = "Course", "bachelor" = "Bachelor", "master" = "Master", "phd" = "PhD", "not-set" = "Not set"),
-       no : ("course" = "Kurs", "bachelor" = "Bachelor", "master" = "Master", "phd" = "PhD", "not-set" = "Ikke satt"),
-       nn : ("course" = "Kurs", "bachelor" = "Bachelor", "master" = "Master", "phd" = "PhD", "not-set" = "Ikke satt")
+       no : ("course" = "Kurs", "bachelor" = "Bachelor", "master" = "Master", "phd" = "Ph.d.", "not-set" = "Ikke satt"),
+       nn : ("course" = "Kurs", "bachelor" = "Bachelor", "master" = "Master", "phd" = "Ph.d.", "not-set" = "Ikke satt")
      },
      course-fee {
        en : ("true" = "Yes", "false" = "No"),
@@ -721,7 +722,7 @@ resourcetype course-description : fellestekst-document {
     teachingsemester-other : (en : "Other", no : "Annet", nn : "Annet"),
     examsemester : (en : "Examination semester", no: "Eksamen", nn: "Eksamen"),
     examsemester-particular-semester : (en : "Particular semester", no : "Bestemt semester", nn : "Bestemt semester"),
-    examsemester-every-other-semester : (en : "Every other semester", no : "Annen hvert semester", nn : "Anna kvart semester"),
+    examsemester-every-other-semester : (en : "Every other semester", no : "Annethvert semester", nn : "Anna kvart semester"),
     examsemester-every-other-semester-term : (en : "Term", no : "Semester", nn : "Semester"),
     examsemester-every-other-semester-startyear : (en : "Start year", no : "Oppstartsår", nn : "Oppstartsår"),
     examsemester-other : (en : "Other", no : "Annet", nn : "Annet"),
@@ -731,7 +732,7 @@ resourcetype course-description : fellestekst-document {
     english : (en : "English", no : "Engelsk", nn : "Engelsk"),
     english-by-need : (en : "English by need", no : "Engelsk ved nødvendighet", nn : "Engelsk ved nødvendigheit"),
     term : (en : "Term", no : "Semester", nn : "Semester"),
-    autumn : (en : "Autumn", no : "Høst", nn : "Høst"),
+    autumn : (en : "Autumn", no : "Høst", nn : "Haust"),
     spring : (en : "Spring", no : "Vår", nn : "Vår"),
     year : (en : "Year", no : "År", nn : "År"),
     administrated : (en : "Administrated by", no : "Tilbys ved", nn : "Tilbys ved"),
@@ -743,12 +744,12 @@ resourcetype course-description : fellestekst-document {
     hver-vaar : (en : "Every spring semester", no : "Hvert vårsemester", nn : "Kvart vårsemester"),
     every-other-autumn : (en : "Every other autumn semester", no : "Annethvert høstsemester", nn : "Annakvart høstsemester"),
     every-other-spring : (en : "Every other spring semester", no : "Annethvert vårsemester", nn : "Annakvart vårsemester"),
-    every-other-start : (en : "Starting with", no : "Fra og med", nn : "Fra og med"),
+    every-other-start : (en : "starting", no : "fra", nn : "fra"),
     level : (en : "Level", no : "Nivå", nn : "Nivå"),
     course-fee : (en : "Course fee", no : "Kursavgift", nn : "Kursavgift"),
     course-fee-amount : (en : "Course fee amount", no : "Kursavgift sum", nn : "Kursavgift sum"),
     course-content : (en : "Course content", no : "Kort om emnet", nn : "Kort om emnet"),
-    learning-outcomes : (en : "Learning outcome", no : "Hva lærer du", nn : "Hva lærer du"),
+    learning-outcomes : (en : "Learning outcome", no : "Hva lærer du", nn : "Kva lærer du"),
     opptak-og-adgang-text-field : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
     opptak-og-adgang : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
     opptak-og-adgang-group : (en : "Admission regulation", no : "Opptak og adgangsregulering", nn : "Opptak og adgangsregulering"),
@@ -784,13 +785,13 @@ resourcetype course-description : fellestekst-document {
     sensur-group : (en : "Assessment and grading", no : "Sensur", nn : "Sensur"),
     klage-text-field : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
     klage : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
-    klage-group : (en : "Explanations and appeals", no : "Begrunnelse og klage", nn : "Begrunnelse og klage"),
+    klage-group : (en : "Explanations and appeals", no : "Begrunnelse og klage", nn : "Grunngjeving og klage"),
     ny-utsatt-eksamen-text-field : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
     ny-utsatt-eksamen : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
     ny-utsatt-eksamen-group : (en : "Possibility of make-up exams and re-takes", no : "Adgang til utsatt eller ny eksamen/vurdering", nn : "Adgang til utsatt eller ny eksamen/vurdering"),
     antall-forsok-trekk-text-field : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
     antall-forsok-trekk : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
-    antall-forsok-trekk-group : (en : "Withdrawing from exams and limits on re-takes", no : "Trekk fra eksamen og antall eksamensforsøk", nn : "Trekk fra eksamen og antall eksamensforsøk"),
+    antall-forsok-trekk-group : (en : "Withdrawing from exams and limits on re-takes", no : "Trekk fra eksamen og antall eksamensforsøk", nn : "Trekk frå eksamen og antall eksamensforsøk"),
     tilrettelagt-eksamen-text-field : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
     tilrettelagt-eksamen : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
     tilrettelagt-eksamen-group : (en : "Exam options for students with special needs", no : "Tilrettelagt eksamen/vurdering", nn : "Tilrettelagt eksamen/vurdering"),
@@ -805,7 +806,7 @@ resourcetype course-description : fellestekst-document {
     course : (en : "Course", no : "Kurs", nn : "Kurs"),
     bachelor : (en : "Bachelor", no : "Bachelor", nn : "Bachelor"),
     master : (en : "Master", no : "Master", nn : "Master"),
-    phd : (en : "PhD", no : "ph.d.", nn : "ph.d."),
+    phd : (en : "PhD", no : "Ph.d.", nn : "Ph.d."),
     admission : (en : "Admission", no : "Adgang", nn : "Adgang"),
     points-for : (en : "points for", no : "poeng for", nn : "poeng for"),
     and : (en : "and", no : "og", nn : "og")

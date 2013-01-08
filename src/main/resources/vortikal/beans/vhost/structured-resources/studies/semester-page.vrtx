@@ -185,11 +185,13 @@ resourcetype semester-page : fellestekst-document {
               [def document structured-document()]
               [def teachers document.properties.teachers]
               [if teachers != null]
+                <ul>
                 [list teachers teacher]
                   [if teacher.teacher != null && teacher.teacher != ""]
-                    <p>[val teacher.teacher]</p>
+                    <li>[val teacher.teacher]</li>
                   [endif]
                 [endlist]
+                </ul>
               [endif]
             </div>   
             <div class="vrtx-frontpage-box white-box vrtx-distach-bottom">

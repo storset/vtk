@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+
+  <bean id="filteredListing.abstract.handler" abstract="true" class="org.vortikal.web.display.collection.FilteredCollectionListingController"> 
+    <property name="viewName" value="filteredListing.view" />
+    <property name="searcher" ref="systemIndexSearcher" />
+    <property name="defaultSearchSorting" ref="filteredListing.defaultSearchSorting" />
+    <property name="resourceTypeTree" ref="resourceTypeTree" />
+  </bean>
+
+  <bean id="filteredListing.defaultSearchSorting" class="org.vortikal.web.search.SearchSorting" depends-on="resourceTypeTree">
+    <property name="sortOrderPropDefPointers">
+      <list>
+        <value>title</value>
+      </list>
+    </property>
+    <property name="resourceTypeTree" ref="resourceTypeTree" />
+    <property name="defaultSortOrder" ref="SORT_ORDER.ASC" />
+  </bean>
+
+  <bean id="filteredListing.viewResolver" parent="decoratorViewResolver">
+    <property name="views">
+      <map>
+        <entry key="filteredListing.view" value-ref="filteredListing.view" />
+      </map>
+    </property>
+  </bean>
+
+  <bean id="filteredListing.view" parent="freemarkerView">
+    <property name="url" value="pages/view-filtered-listing.ftl" />
+  </bean>
+
+</beans>

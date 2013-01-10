@@ -29,7 +29,7 @@
       <div>
         <#list result as res>
           <#assign title = vrtx.propValue(res, 'title') />
-          <#assign uri = vrtx.propValue(res, 'uri') />
+          <#assign uri = vrtx.getUri(res) />
           <p>
             <a href="${uri}">${title}</a>
           </p>

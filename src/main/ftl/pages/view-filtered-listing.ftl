@@ -10,7 +10,7 @@
   <body id="vrtx-${resource.resourceType}">
 
     <#if filters?exists>
-      <div id="vrtx-listing-filters">
+      <div id="vrtx-listing-filters" class="vrtx-listing-filters-${filters?size}-col">
         <#list filters?keys as filterKey>
           <#assign filter = filters[filterKey]>
           <div class="vrtx-listing-filters-section" id="vrtx-listing-filters-section-${filterKey}">
@@ -19,7 +19,7 @@
             <#list filter?keys as parameterKey>
               <#assign url = filter[parameterKey].url>
               <#assign marked = filter[parameterKey].marked>
-              <li id="vrtx-filter-parameter-${filterKey}-${parameterKey}" class="vrtx-filter-parameter<#if parameterKey = "all"> vrtx-filter-parameter-all</#if><#if marked> vrtx-filter-parameter-selected</#if>"><a href="${url}">${parameterKey}</a></li>
+              <li id="vrtx-listing-filter-parameter-${filterKey}-${parameterKey}" class="vrtx-listing-filter-parameter<#if parameterKey = "all"> vrtx-listing-filter-parameter-all</#if><#if marked> vrtx-listing-filter-parameter-selected</#if>"><a href="${url}">${parameterKey}</a></li>
             </#list>
             </ul>
           </div>

@@ -14,12 +14,24 @@
         <#list filters?keys as filterKey>
           <#assign filter = filters[filterKey]>
           <div class="vrtx-listing-filters-section <#if (filterKey_index = (filters?size - 1))>vrtx-listing-filters-section-last</#if>" id="vrtx-listing-filters-section-${filterKey}">
-            <h2>${filterKey}</h2>
+            <h2>${vrtx.getMsg("listing-filters.${filterKey}.title")}</h2>
             <ul>
             <#list filter?keys as parameterKey>
               <#assign url = filter[parameterKey].url>
               <#assign marked = filter[parameterKey].marked>
-              <li id="vrtx-listing-filter-parameter-${filterKey}-${parameterKey}" class="vrtx-listing-filter-parameter<#if parameterKey = "all"> vrtx-listing-filter-parameter-all</#if><#if marked> vrtx-listing-filter-parameter-selected</#if>"><a href="${url}">${parameterKey}</a></li>
+              <li id="vrtx-listing-filter-parameter-${filterKey}-${parameterKey}" class="vrtx-listing-filter-parameter<#if parameterKey = "all"> vrtx-listing-filter-parameter-all</#if><#if marked> vrtx-listing-filter-parameter-selected</#if>">
+                <#if parameterKey = "all"> 
+                  <a href="${url}">${vrtx.getMsg("listing-filters.filter.all")}</a>
+                <#elseif filterKey = "semester"><#-- TODO: Hack to avoid year in i18n-->
+                  <#if parameterKey?starts_with("v")>
+                    <a href="${url}">${vrtx.getMsg("listing-filters.${filterKey}.filter.v")} 20${parameterKey?substring(1)}</a>
+                  <#else>
+                    <a href="${url}">${vrtx.getMsg("listing-filters.${filterKey}.filter.h")} 20${parameterKey?substring(1)}</a>
+                  </#if>
+                <#else>
+                  <a href="${url}">${vrtx.getMsg("listing-filters.${filterKey}.filter.${parameterKey}")}</a>
+                </#if>
+              </li>
             </#list>
             </ul>
           </div>

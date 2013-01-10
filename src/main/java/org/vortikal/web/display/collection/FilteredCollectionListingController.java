@@ -64,20 +64,22 @@ public abstract class FilteredCollectionListingController implements ListingCont
     protected SearchSorting defaultSearchSorting;
     protected ResourceTypeTree resourceTypeTree;
 
-    protected void explicitlySetFilters() {
+    protected Map<String, List<String>> explicitlySetFilters() {
         // By default this does nothing. Can be overridden to handle special
         // filters that cannot be created with beans.
-    }
-
-    protected List<String> explicitlyAddFilter(String key, List<String> value) {
-        return filters.put(key, value);
+        return null;
     }
 
     @Override
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
         Map<String, Object> model = new HashMap<String, Object>();
 
-        explicitlySetFilters();
+        Map<String, List<String>> explicitFilters = explicitlySetFilters();
+        if (explicitFilters != null) {
+            explicitFilters.putAll(filters);
+        } else {
+            explicitFilters = filters;
+        }
 
         Repository repository = RequestContext.getRequestContext().getRepository();
         String token = RequestContext.getRequestContext().getSecurityToken();
@@ -85,14 +87,14 @@ public abstract class FilteredCollectionListingController implements ListingCont
 
         model.put("resource", collection);
 
-        if (filters != null) {
+        if (explicitFilters != null) {
             Map<String, Map<String, FilterURL>> urlFilters = new LinkedHashMap<String, Map<String, FilterURL>>();
             Map<String, FilterURL> urlList;
             FilterURL filterUrl;
 
             String parameterKey;
-            for (String filter : filters.keySet()) {
-                List<String> parameterValues = filters.get(filter);
+            for (String filter : explicitFilters.keySet()) {
+                List<String> parameterValues = explicitFilters.get(filter);
                 urlList = new LinkedHashMap<String, FilterURL>();
                 parameterKey = filterNamespace + filter;
 

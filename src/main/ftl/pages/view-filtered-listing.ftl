@@ -10,16 +10,18 @@
   <body id="vrtx-${resource.resourceType}">
 
     <#if filters?exists>
-      <div id="filters">
+      <div id="vrtx-listing-filters">
         <#list filters?keys as filterKey>
           <#assign filter = filters[filterKey]>
-          <div class="filters-section">
+          <div class="vrtx-listing-filters-section" id="vrtx-listing-filters-section-${filterKey}">
             <h2>${filterKey}</h2>
+            <ul>
             <#list filter?keys as parameterKey>
               <#assign url = filter[parameterKey].url>
               <#assign marked = filter[parameterKey].marked>
-              <#if marked>[x]<#else>[ ]</#if> <a href="${url}" class="filters-parameter ${marked?string}">${parameterKey}</a>
+              <li id="vrtx-filter-parameter-${filterKey}-${parameterKey}" class="vrtx-filter-parameter<#if parameterKey = "all"> vrtx-filter-parameter-all</#if><#if marked> vrtx-filter-parameter-selected</#if>"><a href="${url}">${parameterKey}</a></li>
             </#list>
+            </ul>
           </div>
         </#list>
       </div>

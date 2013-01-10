@@ -326,9 +326,9 @@ VrtxEditor.prototype.contains = function contains(string, substring) {
   return string.indexOf(substring) != -1; 
 };
 
-VrtxEditor.prototype.replaceTag = function replaceTag(selector, tag, replaceTag) {
+VrtxEditor.prototype.replaceTag = function replaceTag(selector, tag, replacementTag) {
   selector.find(tag).replaceWith(function() {
-    return "<" + replaceTag + ">" + $(this).text() + "</" + replaceTag + ">";
+    return "<" + replacementTag + ">" + $(this).text() + "</" + replacementTag + ">";
   });
 }
 

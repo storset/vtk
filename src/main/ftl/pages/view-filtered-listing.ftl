@@ -13,7 +13,7 @@
       <div id="vrtx-listing-filters" class="vrtx-listing-filters-${filters?size}-col">
         <#list filters?keys as filterKey>
           <#assign filter = filters[filterKey]>
-          <div class="vrtx-listing-filters-section" id="vrtx-listing-filters-section-${filterKey}">
+          <div class="vrtx-listing-filters-section <#if (filterKey_index = (filters?size - 1))>vrtx-listing-filters-section-last</#if>" id="vrtx-listing-filters-section-${filterKey}">
             <h2>${filterKey}</h2>
             <ul>
             <#list filter?keys as parameterKey>

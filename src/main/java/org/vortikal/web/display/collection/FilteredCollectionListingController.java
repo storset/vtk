@@ -59,7 +59,7 @@ public abstract class FilteredCollectionListingController implements ListingCont
     private final String filterNamespace = "filter.";
 
     protected String viewName;
-    protected int defaultPageLimit = 25;
+    protected int pageLimit = 25;
     protected Searcher searcher;
     protected SearchSorting defaultSearchSorting;
     protected ResourceTypeTree resourceTypeTree;
@@ -130,7 +130,7 @@ public abstract class FilteredCollectionListingController implements ListingCont
             model.put("filters", urlFilters);
         }
 
-        runSearch(request, collection, model, defaultPageLimit);
+        runSearch(request, collection, model, pageLimit);
 
         return new ModelAndView(viewName, model);
     }
@@ -191,10 +191,10 @@ public abstract class FilteredCollectionListingController implements ListingCont
         this.viewName = viewName;
     }
 
-    public void setDefaultPageLimit(int defaultPageLimit) {
-        if (defaultPageLimit <= 0)
+    public void setPageLimit(int pageLimit) {
+        if (pageLimit <= 0)
             throw new IllegalArgumentException("Argument must be a positive integer");
-        this.defaultPageLimit = defaultPageLimit;
+        this.pageLimit = pageLimit;
     }
 
     @Required

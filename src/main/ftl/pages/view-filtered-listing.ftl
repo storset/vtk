@@ -60,6 +60,10 @@
         <a href="${currentUrl}">Current</a>
       </div>
     </#if>
+    
+    <#if pageThroughUrls?exists>
+      <@viewutils.displayPageThroughUrls pageThroughUrls page />
+    </#if>
 
   </body>
 </html>

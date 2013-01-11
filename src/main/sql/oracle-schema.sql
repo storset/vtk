@@ -418,6 +418,7 @@ select extra_prop_entry_seq_pk.nextval,
 from vortex_resource where uri = '/';
 
 -- Insert publish-date prop for root resource
+-- FIXME: Timestamp format becomes incorrect:
 insert into extra_prop_entry 
 select extra_prop_entry_seq_pk.nextval,
        resource_id,

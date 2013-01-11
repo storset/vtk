@@ -64,37 +64,33 @@ public abstract class FilteredCollectionListingController implements ListingCont
     protected SearchSorting defaultSearchSorting;
     protected ResourceTypeTree resourceTypeTree;
 
-    protected Map<String, List<String>> explicitlySetFilters() {
+    protected Map<String, List<String>> explicitlySetFilters(Resource collection, Map<String, List<String>> filters) {
         // By default this does nothing. Can be overridden to handle special
         // filters that cannot be created with beans.
-        return null;
+        return filters;
     }
 
     @Override
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
         Map<String, Object> model = new HashMap<String, Object>();
 
-        Map<String, List<String>> explicitFilters = explicitlySetFilters();
-        if (explicitFilters != null) {
-            explicitFilters.putAll(filters);
-        } else {
-            explicitFilters = filters;
-        }
-
         Repository repository = RequestContext.getRequestContext().getRepository();
         String token = RequestContext.getRequestContext().getSecurityToken();
         Resource collection = repository.retrieve(token, URL.toPath(request), true);
 
+        Map<String, List<String>> currentFilters = new LinkedHashMap<String, List<String>>(filters);
+        currentFilters = explicitlySetFilters(collection, currentFilters);
+
         model.put("resource", collection);
 
-        if (explicitFilters != null) {
+        if (currentFilters != null) {
             Map<String, Map<String, FilterURL>> urlFilters = new LinkedHashMap<String, Map<String, FilterURL>>();
             Map<String, FilterURL> urlList;
             FilterURL filterUrl;
 
             String parameterKey;
-            for (String filter : explicitFilters.keySet()) {
-                List<String> parameterValues = explicitFilters.get(filter);
+            for (String filter : currentFilters.keySet()) {
+                List<String> parameterValues = currentFilters.get(filter);
                 urlList = new LinkedHashMap<String, FilterURL>();
                 parameterKey = filterNamespace + filter;
 

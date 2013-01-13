@@ -1,8 +1,7 @@
 /*
  *  Vortex Admin enhancements
  *
- *
- *  Some patterns used: 
+ *  Some patterns used:
  *
  *    * Flyweight (http://addyosmani.com/resources/essentialjsdesignpatterns/book/#detailflyweight)
  *    * DRY       (http://addyosmani.com/resources/essentialjsdesignpatterns/book/#drypatternjavascript
@@ -46,10 +45,7 @@ var startLoadTime = +new Date();
 
 /**
  * Creates an instance of VrtxAdmin
- *
  * @constructor
- * @this {VrtxAdmin}
- * @return {VrtxAdmin} The new VrtxAdmin object.
  */
 function VrtxAdmin() {
 
@@ -62,9 +58,10 @@ function VrtxAdmin() {
   instance = new VrtxAdmin(); // instance
   instance.constructor = VrtxAdmin; // reset construction pointer
 
-  // Cache jQuery instance internally
+  /** Cache jQuery instance internally
+    * @type object */
   this._$ = $;
-  
+
   // Browser info: used for progressive enhancement and performance scaling based on knowledge of current JS-engine
   this.ua = navigator.userAgent.toLowerCase();
   this.isIE = this._$.browser.msie;
@@ -84,14 +81,13 @@ function VrtxAdmin() {
   this.supportsFileList = window.FileList;
   this.animateTableRows = !this.isIE;
   
-  // Language
+  /** Language extracted from cookie */
   this.lang = readCookie("vrtx.manage.language", "no");
   
-  // Logging capabilities
   this.hasConsole = typeof console !== "undefined";
   this.hasConsoleLog = this.hasConsole && console.log;
   this.hasConsoleError = this.hasConsole && console.error;
-  
+
   // Autocomplete parameters
   this.permissionsAutocompleteParams = { minChars: 4, selectFirst: false,
                                          max: 30, delay: 800, minWidth: 180, adjustForParentWidth: 15 };                              
@@ -2967,25 +2963,69 @@ VrtxAdmin.prototype.removeMsg = function removeMsg(type) {
 
 /**
  * Server facade (Async=>Ajax)
- *
- * @this {VrtxAdmin}
+ * @namespace
  */
 VrtxAdmin.prototype.serverFacade = {
+/**
+ * GET text
+ *
+ * @this {serverFacade}
+ * @param {string} url The URL
+ * @param {object} callbacks The callbacks
+ */
   getText: function(url, callbacks) {
     this.get(url, callbacks, "text");
   },
+/**
+ * GET HTML
+ *
+ * @this {serverFacade}
+ * @param {string} url The URL
+ * @param {object} callbacks The callback functions
+ */
   getHtml: function(url, callbacks) {
     this.get(url, callbacks, "html");
   },
+/**
+ * GET JSON
+ *
+ * @this {serverFacade}
+ * @param {string} url The URL
+ * @param {object} callbacks The callback functions
+ */
   getJSON: function(url, callbacks) {
     this.get(url, callbacks, "json");
   },
+/**
+ * POST HTML
+ *
+ * @this {serverFacade}
+ * @param {string} url The URL
+ * @param {string} params The data
+ * @param {object} callbacks The callback functions
+ */
   postHtml: function(url, params, callbacks) {
     this.post(url, params, callbacks, "html", "application/x-www-form-urlencoded;charset=UTF-8");
   },
+/**
+ * POST JSON
+ *
+ * @this {serverFacade}
+ * @param {string} url The URL
+ * @param {string} params The data
+ * @param {object} callbacks The callback functions
+ */
   postJSON: function(url, params, callbacks) {
     this.post(url, params, callbacks, "json", "text/plain;charset=utf-8");
   },
+/**
+ * GET Ajax <data type>
+ *
+ * @this {serverFacade}
+ * @param {string} url The URL
+ * @param {object} callbacks The callback functions
+ * @param {string} type The data type
+ */
   get: function(url, callbacks, type) {
     vrtxAdmin._$.ajax({
       type: "GET",
@@ -3005,6 +3045,16 @@ VrtxAdmin.prototype.serverFacade = {
       }
     });
   },
+/**
+ * POST Ajax <data type>
+ *
+ * @this {serverFacade}
+ * @param {string} url The URL
+ * @param {string} params The data
+ * @param {object} callbacks The callback functions
+ * @param {string} type The data type
+ * @param {string} contentType The content type
+ */
   post: function(url, params, callbacks, type, contentType) {
     vrtxAdmin._$.ajax({
       type: "POST",
@@ -3026,6 +3076,14 @@ VrtxAdmin.prototype.serverFacade = {
       }
     });
   },
+/**
+ * Error Ajax handler
+ *
+ * @this {serverFacade}
+ * @param {object} xhr The XMLHttpRequest object
+ * @param {string} textStatus The text status
+ * @return {string} The messsage
+ */
   error: function(xhr, textStatus) { // TODO: detect function origin
     var status = xhr.status;
     if (xhr.readyState == 4 && status == 200) {

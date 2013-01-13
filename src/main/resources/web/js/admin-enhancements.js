@@ -44,6 +44,13 @@
  
 var startLoadTime = +new Date();
 
+/**
+ * Creates an instance of VrtxAdmin
+ *
+ * @constructor
+ * @this {VrtxAdmin}
+ * @return {VrtxAdmin} The new VrtxAdmin object.
+ */
 function VrtxAdmin() {
 
   // Class-like singleton pattern (p.145 JavaScript Patterns)
@@ -54,7 +61,6 @@ function VrtxAdmin() {
   VrtxAdmin.prototype = this; // carry over properties
   instance = new VrtxAdmin(); // instance
   instance.constructor = VrtxAdmin; // reset construction pointer
-  //--
 
   // Cache jQuery instance internally
   this._$ = $;
@@ -944,6 +950,12 @@ function traverseNode(treeElem, treeTravNode, lastNode) {
     5. Dropdowns    
 \*-------------------------------------------------------------------*/
 
+/**
+ * Dropdown with links
+ *
+ * @param {string} selector The selector for container
+ * @this {VrtxAdmin}
+ */
 VrtxAdmin.prototype.dropdownPlain = function dropdownPlain(selector) {
   var vrtxAdm = this, _$ = vrtxAdm._$;
   
@@ -970,6 +982,16 @@ VrtxAdmin.prototype.dropdownPlain = function dropdownPlain(selector) {
   });
 };
 
+/**
+ * Dropdown with button-row
+ *
+ * @param {object} options selector: The selector for the containter (list)
+ *                         proceedCondition: Callback function that uses number of list elements as parameter
+ *                         start: Specify a starting point otherwise first
+ *                         calcTop: Wheter or not to calculate absolute top position
+ *                          
+ * @this {VrtxAdmin}
+ */
 VrtxAdmin.prototype.dropdown = function dropdown(options) {
   var vrtxAdm = this, _$ = vrtxAdm._$;
 
@@ -1022,6 +1044,11 @@ function closeDropdowns() {
   }
 }
 
+/**
+ * Update breadcrumbs
+ *
+ * @this {VrtxAdmin}
+ */
 VrtxAdmin.prototype.adaptiveBreadcrumbs = function adaptiveBreadcrumbs() {
   var _$ = this._$;
   var breadcrumbs = this.cachedBreadcrumbs, 
@@ -1343,6 +1370,11 @@ function growField(input, val, comfortZone, minWidth, maxWidth) {
     7. File upload service
 \*-------------------------------------------------------------------*/
 
+/**
+ * Initialize file upload
+ *
+ * @this {VrtxAdmin}
+ */
 VrtxAdmin.prototype.initFileUpload = function initFileUpload() {
   var vrtxAdm = vrtxAdmin, _$ = vrtxAdm._$;
   var form = _$("form[name=fileUploadService]");
@@ -1384,12 +1416,23 @@ VrtxAdmin.prototype.initFileUpload = function initFileUpload() {
     }
   }
 };
-
-// Credits: http://miketaylr.com/code/input-type-attr.html (MIT license)
+ 
+/**
+ * Check if browser supports 'multiple' attribute
+ * Credits: http://miketaylr.com/code/input-type-attr.html (MIT license)
+ *
+ * @this {VrtxAdmin}
+ */
 VrtxAdmin.prototype.supportsMultipleAttribute = function supportsMultipleAttribute(inputfield) {
   return (!!(inputfield.multiple === false) && !!(inputfield.multiple !== "undefined"));
 };
 
+/**
+ * Check if browser supports 'readOnly' attribute
+ * Credits: http://miketaylr.com/code/input-type-attr.html (MIT license)
+ *
+ * @this {VrtxAdmin}
+ */
 VrtxAdmin.prototype.supportsReadOnly = function supportsReadOnly(inputfield) {
   return (!!(inputfield.readOnly === false) && !!(inputfield.readOnly !== "undefined"));
 };
@@ -1400,6 +1443,11 @@ VrtxAdmin.prototype.supportsReadOnly = function supportsReadOnly(inputfield) {
        TODO: dynamic event handlers for tab-menu links
 \*-------------------------------------------------------------------*/
 
+/**
+ * Initialize collection listing interaction
+ *
+ * @this {VrtxAdmin}
+ */
 VrtxAdmin.prototype.collectionListingInteraction = function collectionListingInteraction() {
   var vrtxAdm = this, _$ = vrtxAdm._$;
 
@@ -1456,6 +1504,11 @@ VrtxAdmin.prototype.collectionListingInteraction = function collectionListingInt
   vrtxAdm.initializeCheckUncheckAll();
 }
 
+/**
+ * Update collection listing interaction
+ *
+ * @this {VrtxAdmin}
+ */
 VrtxAdmin.prototype.updateCollectionListingInteraction = function updateCollectionListingInteraction() {
   var vrtxAdm = vrtxAdmin;
   vrtxAdm.cachedContent = vrtxAdm.cachedAppContent.find("#contents");
@@ -1464,6 +1517,11 @@ VrtxAdmin.prototype.updateCollectionListingInteraction = function updateCollecti
   vrtxAdm.cachedContent.find("input[type=submit]").hide();
 };
 
+/**
+ * Check / uncheck all initialization
+ *
+ * @this {VrtxAdmin}
+ */
 VrtxAdmin.prototype.initializeCheckUncheckAll = function initializeCheckUncheckAll() {
   var vrtxAdm = this, _$ = vrtxAdm._$;
   
@@ -1495,7 +1553,15 @@ VrtxAdmin.prototype.initializeCheckUncheckAll = function initializeCheckUncheckA
   }
 };
 
-// options: formName, btnId, service, msg, title
+/**
+ * Places Copy or Move button in active tab as link and setup dialog
+ *
+ * @this {VrtxAdmin}
+ * @param {object} options service: The className for service
+ *                           btnId: The id for button
+ *                             msg: The dialog message
+ *                           title: The dialog title
+ */
 VrtxAdmin.prototype.placeCopyMoveButtonInActiveTab = function placeCopyMoveButtonInActiveTab(options) {
   var vrtxAdm = this, _$ = vrtxAdm._$;
   
@@ -1515,6 +1581,11 @@ VrtxAdmin.prototype.placeCopyMoveButtonInActiveTab = function placeCopyMoveButto
   });
 };
 
+/**
+ * Places Delete button in active tab as link and setup dialog
+ *
+ * @this {VrtxAdmin}
+ */
 VrtxAdmin.prototype.placeDeleteButtonInActiveTab = function placeDeleteButtonInActiveTab() {
   var vrtxAdm = this, _$ = vrtxAdm._$;
 
@@ -1540,6 +1611,11 @@ VrtxAdmin.prototype.placeDeleteButtonInActiveTab = function placeDeleteButtonInA
   });
 };
 
+/**
+ * Places Publish button in active tab as link and setup dialog
+ *
+ * @this {VrtxAdmin}
+ */
 VrtxAdmin.prototype.placePublishButtonInActiveTab = function placeDeleteButtonInActiveTab() {
   if(typeof moreTitle === "undefined") return;
   var vrtxAdm = this, _$ = vrtxAdm._$;
@@ -1573,6 +1649,11 @@ VrtxAdmin.prototype.placePublishButtonInActiveTab = function placeDeleteButtonIn
   });
 };
 
+/**
+ * Places Unpublish button in active tab as link and setup dialog
+ *
+ * @this {VrtxAdmin}
+ */
 VrtxAdmin.prototype.placeUnpublishButtonInActiveTab = function placeDeleteButtonInActiveTab() {
   if(typeof moreTitle === "undefined") return;
   var vrtxAdm = this, _$ = vrtxAdm._$;
@@ -1599,6 +1680,11 @@ VrtxAdmin.prototype.placeUnpublishButtonInActiveTab = function placeDeleteButton
   });
 };
 
+/**
+ * Places Recover button in active tab as link and setup dialog
+ *
+ * @this {VrtxAdmin}
+ */
 VrtxAdmin.prototype.placeRecoverButtonInActiveTab = function placeRecoverButtonInActiveTab() {
   var vrtxAdm = this, _$ = vrtxAdm._$;
 
@@ -1622,6 +1708,11 @@ VrtxAdmin.prototype.placeRecoverButtonInActiveTab = function placeRecoverButtonI
   });
 };
 
+/**
+ * Places Delete Permanent button in active tab as link and setup dialog
+ *
+ * @this {VrtxAdmin}
+ */
 VrtxAdmin.prototype.placeDeletePermanentButtonInActiveTab = function placeDeletePermanentButtonInActiveTab() {
   var vrtxAdm = this, _$ = vrtxAdm._$;
   
@@ -1648,6 +1739,15 @@ VrtxAdmin.prototype.placeDeletePermanentButtonInActiveTab = function placeDelete
   });
 };
 
+/**
+ * Builds a file list with ten items based on name- or title-attribute
+ *
+ * @this {VrtxAdmin}
+ * @param {array} boxes The items
+ * @param {number} boxesSize The size of the boxes
+ * @param {boolean} useTitle Whether to use title- instead of name-attribute
+ * @return {string} The builded HTML
+ */
 VrtxAdmin.prototype.buildFileList = function buildFileList(boxes, boxesSize, useTitle) {
   var boxesSizeExceedsTen = boxesSize > 10;
   var boxesSizeTmp = boxesSizeExceedsTen ? 10 : boxesSize;
@@ -2261,21 +2361,21 @@ function versioningInteraction(bodyId, vrtxAdm, _$) {
 \*-------------------------------------------------------------------*/
 
 /**
- * Retrieve form async
+ * Retrieve a form async
  *
- * @param options: selector: selector for links that should GET asynchronous form
- *                 selectorClass: selector for form
- *                 insertAfterOrReplaceClass: where to put the form
- *                 isReplacing: replace instead of insert after
- *                 nodeType: node type that should be replaced or inserted
- *                 funcComplete: callback function(selectorClass) to run when AJAX is completed and form is visible
- *                 simultanSliding: whether to slideUp existing form at the same time slideDown new form 
- *                                  (only when there is an existing form)
- *                 transitionSpeed: transition speed in ms
- *                 transitionEasingSlideDown: transition easing algorithm for slideDown()
- *                 transitionEasingSlideUp: transition easing algorithm for slideUp()
+ * @this {VrtxAdmin}
+ * @param {object} options selector: Selector for links that should retrieve a form async
+ *                         selectorClass: Selector for form
+ *                         insertAfterOrReplaceClass: Where to put the form
+ *                         isReplacing: Whether to replace instead of insert after
+ *                         nodeType: Node type that should be replaced or inserted
+ *                         funcComplete: Callback function to run on success
+ *                         simultanSliding: Whether to slideUp existing form at the same time slideDown new form (only when there is an existing form)
+ *                         transitionSpeed: Transition speed in ms
+ *                         transitionEasingSlideDown: Transition easing algorithm for slideDown()
+ *                         transitionEasingSlideUp: Transition easing algorithm for slideUp()
+ * @return {boolean} Whether  or not to proceed with regular link operation
  */
-
 VrtxAdmin.prototype.getFormAsync = function getFormAsync(options) {
   var args = arguments,       // this function
       vrtxAdm = this,         // use prototypal hierarchy 
@@ -2395,6 +2495,16 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(options) {
   });
 };
 
+/**
+ * Add original form markup after async retrieve
+ *
+ * @this {VrtxAdmin}
+ * @param {string} url The URL for original markup
+ * @param {object} results The results
+ * @param {string} resultSelectorClass Selector for original form markup
+ * @param {object} expanded The expanded form
+ * @return {boolean} Whether it succeeded or not
+ */
 VrtxAdmin.prototype.addOriginalMarkup = function addOriginalMarkup(url, results, resultSelectorClass, expanded) {
   var args = arguments,
       vrtxAdm = this;
@@ -2413,6 +2523,17 @@ VrtxAdmin.prototype.addOriginalMarkup = function addOriginalMarkup(url, results,
   return true;
 };
 
+/**
+ * Add new form markup after async retrieve
+ *
+ * @this {VrtxAdmin}
+ * @param {object} options The options
+ * @param {string} selectorClass The selector for form
+ * @param {string} transitionSpeed Transition speed in ms
+ * @param {string} transitionEasingSlideDown Transition easing algorithm for slideDown()
+ * @param {string} transitionEasingSlideUp Transition easing algorithm for slideUp()
+ * @param {object} form The form
+ */
 VrtxAdmin.prototype.addNewMarkup = function addNewMarkup(options, selectorClass, transitionSpeed, transitionEasingSlideDown, transitionEasingSlideUp, form) {
   var vrtxAdm = this,
       insertAfterOrReplaceClass = options.insertAfterOrReplaceClass,
@@ -2450,22 +2571,22 @@ VrtxAdmin.prototype.addNewMarkup = function addNewMarkup(options, selectorClass,
 };
 
 /**
- * Complete form async
+ * Complete a form async
  *
- * @param option: selector: selector for links that should POST asynchronous form
- *                isReplacing: replace instead of insert after
- *                updateSelectors: one or more selectors for markup that should update after POST (Array)
- *                errorContainer: selector for error container
- *                errorContainerInsertAfter: selector for where error container should be inserted after
- *                funcProceedCondition: function that proceedes with completeFormAsyncPost(options)
- *                funcComplete: callback function to run when AJAX is completed
- *                transitionSpeed: transition speed in ms
- *                transitionEasing: transition easing algorithm
- *                transitionEasingSlideDown: transition easing algorithm for slideDown()
- *                transitionEasingSlideUp: transition easing algorithm for slideUp()
- *                post: post also or only cancel
+ * @this {VrtxAdmin}
+ * @param {object} options selector: Selector for links that should complete a form async
+ *                         isReplacing: Whether to replace instead of insert after
+ *                         updateSelectors: One or more containers that should update after POST
+ *                         errorContainerInsertAfter: Selector where to place the new error container
+ *                         errorContainer: The className of the error container
+ *                         funcProceedCondition: Callback function that proceedes with completeFormAsyncPost(options)
+ *                         funcComplete: Callback function to run on success
+ *                         transitionSpeed: Transition speed in ms
+ *                         transitionEasingSlideDown: Transition easing algorithm for slideDown()
+ *                         transitionEasingSlideUp: Transition easing algorithm for slideUp()
+ *                         post: POST or only cancel
+ * @return {boolean} Whether  or not to proceed with regular link operation
  */
-
 VrtxAdmin.prototype.completeFormAsync = function completeFormAsync(options) {
   var args = arguments,
       vrtxAdm = this,
@@ -2512,6 +2633,13 @@ VrtxAdmin.prototype.completeFormAsync = function completeFormAsync(options) {
   });
 };
 
+/**
+ * Complete a form async POST
+ *
+ * @this {VrtxAdmin}
+ * @param {object} options form: The form
+ *                         link: The action link
+ */
 VrtxAdmin.prototype.completeFormAsyncPost = function completeFormAsyncPost(options) {
     var vrtxAdm = vrtxAdmin,
         _$ = vrtxAdm._$,
@@ -2613,12 +2741,12 @@ VrtxAdmin.prototype.completeFormAsyncPost = function completeFormAsyncPost(optio
 };
 
 /**
- * Remove permission async (value is in the name)
- * 
- * @param selector: selector for links that should post asynchronous
- * @param updateSelector: selector for markup to update
+ * Remove permission async
+ *
+ * @this {VrtxAdmin}
+ * @param {string} selector Selector for links that should do removal async
+ * @param {string} updateSelector The selector for container to be updated on success
  */
-
 VrtxAdmin.prototype.removePermissionAsync = function removePermissionAsync(selector, updateSelector) {
   var args = arguments,
       vrtxAdm = this,
@@ -2644,13 +2772,14 @@ VrtxAdmin.prototype.removePermissionAsync = function removePermissionAsync(selec
 };
 
 /**
- * Add permission async (values is in the textfield)
- * 
- * @param selector: selector for links that should post asynchronous
- * @param updateSelector: selector for markup to update
- * @param errorContainer: selector for error container
+ * Add permission async
+ *
+ * @this {VrtxAdmin}
+ * @param {string} selector Selector for links that should do add async
+ * @param {string} updateSelector The selector for container to be updated on success
+ * @param {string} errorContainerInsertAfter Selector where to place the new error container
+ * @param {string} errorContainer The className of the error container
  */
-
 VrtxAdmin.prototype.addPermissionAsync = function addPermissionAsync(selector, updateSelector, errorContainerInsertAfter, errorContainer) {
   var args = arguments,
       vrtxAdm = this,
@@ -2693,11 +2822,13 @@ VrtxAdmin.prototype.addPermissionAsync = function addPermissionAsync(selector, u
 };
 
 /**
- * Retrieve Mustache template file (HTML)
- * 
- * @param fileName: fileName
- * @param templateNames: array with names of templates
- * @param templatesIsRetrieved: resolve deferred on success
+ * Retrieves HTML templates in a Mustache file seperated by ###
+ *
+ * @this {VrtxAdmin}
+ * @param {string} fileName The filename for the Mustache file
+ * @param {array} templateNames Preferred name of the templates
+ * @param {object} templatesIsRetrieved Deferred
+ * @return {array} Templates with templateName as hash
  */
 VrtxAdmin.prototype.retrieveHTMLTemplates = function retrieveHTMLTemplates(fileName, templateNames, templatesIsRetrieved) { 
   var templatesHashArray = [];
@@ -2718,12 +2849,29 @@ VrtxAdmin.prototype.retrieveHTMLTemplates = function retrieveHTMLTemplates(fileN
     14. Async helper functions and AJAX server façade   
 \*-------------------------------------------------------------------*/
 
+/**
+ * Check if results has error container
+ *
+ * @this {VrtxAdmin}
+ * @param {object} results The results
+ * @param {string} errorContainer The className of the error container
+ * @return {boolean} Whether it exists or not
+ */
 VrtxAdmin.prototype.hasErrorContainers = function hasErrorContainers(results, errorContainer) {
   return this._$(results).find("div." + errorContainer).length > 0;
 };
 
 /* TODO: support for multiple errorContainers
   (place the correct one in correct place (e.g. users and groups)) */
+/**
+ * Display error containers
+ *
+ * @this {VrtxAdmin}
+ * @param {object} results The results
+ * @param {string} form The open form
+ * @param {string} errorContainerInsertAfter Selector where to place the new error container
+ * @param {string} errorContainer The className of the error container
+ */
 VrtxAdmin.prototype.displayErrorContainers = function displayErrorContainers(results, form, errorContainerInsertAfter, errorContainer) {
   var wrapper = form.find(errorContainerInsertAfter).parent(), _$ = this._$;
   if (wrapper.find("div." + errorContainer).length) {
@@ -2734,6 +2882,12 @@ VrtxAdmin.prototype.displayErrorContainers = function displayErrorContainers(res
   }
 }; 
 
+/**
+ * Display error message
+ *
+ * @this {VrtxAdmin}
+ * @param {string} msg The message
+ */
 VrtxAdmin.prototype.displayErrorMsg = function displayErrorMsg(msg) {
   var vrtxAdm = this;
   if(!vrtxAdm.ignoreAjaxErrors) {
@@ -2741,10 +2895,23 @@ VrtxAdmin.prototype.displayErrorMsg = function displayErrorMsg(msg) {
   }
 };
 
+/**
+ * Display info message
+ *
+ * @this {VrtxAdmin}
+ * @param {string} msg The message
+ */
 VrtxAdmin.prototype.displayInfoMsg = function displayInfoMsg(msg) {
   this.displayMsg(msg, "info");
 };
 
+/**
+ * Display message
+ *
+ * @this {VrtxAdmin}
+ * @param {string} msg The message
+ * @param {string} type "info" or "error" message
+ */
 VrtxAdmin.prototype.displayMsg = function displayMsg(msg, type) {
   var vrtxAdm = this, _$ = vrtxAdm._$;
 
@@ -2778,6 +2945,12 @@ VrtxAdmin.prototype.displayMsg = function displayMsg(msg, type) {
   }
 };
 
+/**
+ * Remove message
+ *
+ * @this {VrtxAdmin}
+ * @param {string} type "info" or "error" message
+ */
 VrtxAdmin.prototype.removeMsg = function removeMsg(type) {
   var vrtxAdm = this, _$ = vrtxAdm._$;
   
@@ -2788,6 +2961,11 @@ VrtxAdmin.prototype.removeMsg = function removeMsg(type) {
   }
 };
 
+/**
+ * Server facade (Async=>Ajax)
+ *
+ * @this {VrtxAdmin}
+ */
 VrtxAdmin.prototype.serverFacade = {
   getText: function(url, callbacks) {
     this.get(url, callbacks, "text");
@@ -2943,14 +3121,29 @@ function SetUrl(url) {
     16. Utils
 \*-------------------------------------------------------------------*/
 
-// Use our own wrap function
+/**
+ * Wrap HTML in node
+ *
+ * @this {VrtxAdmin}
+ * @param {string} node The node type
+ * @param {string} cls The className(s)
+ * @param {string} html The node HTML
+ * @return {string} HTML node
+ */
 VrtxAdmin.prototype.wrap = function wrap(node, cls, html) {
   return "<" + node + " class='" + cls + "'>" 
          + html 
          + "</" + node + ">";
 };
 
-// jQuery outerHTML (because FF don't support regular outerHTML)
+/**
+ * jQuery outerHTML (because FF don't support regular outerHTML) 
+ *
+ * @this {VrtxAdmin}
+ * @param {string} selector Context selector
+ * @param {string} subselector The node to get outer HTML from
+ * @return {string} outer HTML
+ */
 VrtxAdmin.prototype.outerHTML = function outerHTML(selector, subselector) {
   var _$ = this._$;
 
@@ -2963,6 +3156,13 @@ VrtxAdmin.prototype.outerHTML = function outerHTML(selector, subselector) {
   }
 };
 
+/**
+ * Load script Async / lazy-loading
+ *
+ * @this {VrtxAdmin}
+ * @param {string} url The url to the script
+ * @param {function} callback Callback function to run on success
+ */
 VrtxAdmin.prototype.loadScript = function loadScript(url, callback) {
   $.getScript(url).done(function() {
     callback();
@@ -2971,6 +3171,12 @@ VrtxAdmin.prototype.loadScript = function loadScript(url, callback) {
   });
 };
 
+/**
+ * Log to console with calle.name if exists (Function name)
+ *
+ * @this {VrtxAdmin}
+ * @param {object} options Msg and args
+ */
 VrtxAdmin.prototype.log = function log(options) {
   if(vrtxAdmin.hasConsoleLog) {
     var msgMid = options.args ? " -> " + options.args.callee.name : "";
@@ -2978,16 +3184,28 @@ VrtxAdmin.prototype.log = function log(options) {
   }
 };
 
+/**
+ * Error to console with calle.name if exists (Function name)
+ * with fallback to regular log
+ *
+ * @this {VrtxAdmin}
+ * @param {object} options Msg and args
+ */
 VrtxAdmin.prototype.error = function error(options) {
   if(vrtxAdmin.hasConsoleError) {
     var msgMid = options.args ? " -> " + options.args.callee.name : "";
     console.error("Vortex admin error" + msgMid + ": " + options.msg);
-  } else if(vrtxAdmin.hasConsoleLog) {
-    var msgMid = options.args ? " -> " + options.args.callee.name : "";
-    console.log("Vortex admin error" + msgMid + ": " + options.msg);
+  } else {
+    this.log(options);
   }
 };
 
+/**
+ * Generate zebra rows in table (PE)
+ *
+ * @this {VrtxAdmin}
+ * @param {string} selector The table selector
+ */
 VrtxAdmin.prototype.zebraTables = function zebraTables(selector) {
   var _$ = this._$;
   var table = _$("table" + selector);

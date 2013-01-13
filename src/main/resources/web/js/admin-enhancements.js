@@ -953,8 +953,8 @@ function traverseNode(treeElem, treeTravNode, lastNode) {
 /**
  * Dropdown with links
  *
- * @param {string} selector The selector for container
  * @this {VrtxAdmin}
+ * @param {string} selector The selector for container
  */
 VrtxAdmin.prototype.dropdownPlain = function dropdownPlain(selector) {
   var vrtxAdm = this, _$ = vrtxAdm._$;
@@ -985,12 +985,12 @@ VrtxAdmin.prototype.dropdownPlain = function dropdownPlain(selector) {
 /**
  * Dropdown with button-row
  *
- * @param {object} options selector: The selector for the containter (list)
- *                         proceedCondition: Callback function that uses number of list elements as parameter
- *                         start: Specify a starting point otherwise first
- *                         calcTop: Wheter or not to calculate absolute top position
- *                          
  * @this {VrtxAdmin}
+ * @param {object} options Configuration
+ * @param {string} options.selector The selector for the containter (list)
+ * @param {function} options.proceedCondition Callback function that uses number of list elements as parameter
+ * @param {number} options.start Specify a starting point otherwise first
+ * @param {boolean} options.calcTop Wheter or not to calculate absolute top position
  */
 VrtxAdmin.prototype.dropdown = function dropdown(options) {
   var vrtxAdm = this, _$ = vrtxAdm._$;
@@ -1557,10 +1557,11 @@ VrtxAdmin.prototype.initializeCheckUncheckAll = function initializeCheckUncheckA
  * Places Copy or Move button in active tab as link and setup dialog
  *
  * @this {VrtxAdmin}
- * @param {object} options service: The className for service
- *                           btnId: The id for button
- *                             msg: The dialog message
- *                           title: The dialog title
+ * @param {object} options Configuration
+ * @param {string} options.service The className for service
+ * @param {string} options.btnId The id for button
+ * @param {string} options.msg The dialog message
+ * @param {string} options.title The dialog title
  */
 VrtxAdmin.prototype.placeCopyMoveButtonInActiveTab = function placeCopyMoveButtonInActiveTab(options) {
   var vrtxAdm = this, _$ = vrtxAdm._$;
@@ -2364,17 +2365,18 @@ function versioningInteraction(bodyId, vrtxAdm, _$) {
  * Retrieve a form async
  *
  * @this {VrtxAdmin}
- * @param {object} options selector: Selector for links that should retrieve a form async
- *                         selectorClass: Selector for form
- *                         insertAfterOrReplaceClass: Where to put the form
- *                         isReplacing: Whether to replace instead of insert after
- *                         nodeType: Node type that should be replaced or inserted
- *                         funcComplete: Callback function to run on success
- *                         simultanSliding: Whether to slideUp existing form at the same time slideDown new form (only when there is an existing form)
- *                         transitionSpeed: Transition speed in ms
- *                         transitionEasingSlideDown: Transition easing algorithm for slideDown()
- *                         transitionEasingSlideUp: Transition easing algorithm for slideUp()
- * @return {boolean} Whether  or not to proceed with regular link operation
+ * @param {object} options Configuration
+ * @param {string} options.selector Selector for links that should retrieve a form async
+ * @param {string} options.selectorClass Selector for form
+ * @param {string} options.insertAfterOrReplaceClass Where to put the form
+ * @param {boolean} options.isReplacing Whether to replace instead of insert after
+ * @param {string} options.nodeType Node type that should be replaced or inserted
+ * @param {function} options.funcComplete Callback function to run on success
+ * @param {boolean} options.simultanSliding Whether to slideUp existing form at the same time slideDown new form (only when there is an existing form)
+ * @param {number} options.transitionSpeed Transition speed in ms
+ * @param {string} options.transitionEasingSlideDown Transition easing algorithm for slideDown()
+ * @param {string} options.transitionEasingSlideUp Transition easing algorithm for slideUp()
+ * @return {boolean} Whether or not to proceed with regular link operation
  */
 VrtxAdmin.prototype.getFormAsync = function getFormAsync(options) {
   var args = arguments,       // this function
@@ -2527,7 +2529,7 @@ VrtxAdmin.prototype.addOriginalMarkup = function addOriginalMarkup(url, results,
  * Add new form markup after async retrieve
  *
  * @this {VrtxAdmin}
- * @param {object} options The options
+ * @param {object} options Configuration
  * @param {string} selectorClass The selector for form
  * @param {string} transitionSpeed Transition speed in ms
  * @param {string} transitionEasingSlideDown Transition easing algorithm for slideDown()
@@ -2574,23 +2576,24 @@ VrtxAdmin.prototype.addNewMarkup = function addNewMarkup(options, selectorClass,
  * Complete a form async
  *
  * @this {VrtxAdmin}
- * @param {object} options selector: Selector for links that should complete a form async
- *                         isReplacing: Whether to replace instead of insert after
- *                         updateSelectors: One or more containers that should update after POST
- *                         errorContainerInsertAfter: Selector where to place the new error container
- *                         errorContainer: The className of the error container
- *                         funcProceedCondition: Callback function that proceedes with completeFormAsyncPost(options)
- *                         funcComplete: Callback function to run on success
- *                         transitionSpeed: Transition speed in ms
- *                         transitionEasingSlideDown: Transition easing algorithm for slideDown()
- *                         transitionEasingSlideUp: Transition easing algorithm for slideUp()
- *                         post: POST or only cancel
- * @return {boolean} Whether  or not to proceed with regular link operation
+ * @param {object} options Configuration
+ * @param {string} options.selector Selector for links that should complete a form async
+ * @param {boolean} options.isReplacing Whether to replace instead of insert after
+ * @param {string} options.updateSelectors One or more containers that should update after POST
+ * @param {string} options.errorContainerInsertAfter Selector where to place the new error container
+ * @param {string} options.errorContainer The className of the error container
+ * @param {function} options.funcProceedCondition Callback function that proceedes with completeFormAsyncPost(options)
+ * @param {function} options.funcComplete Callback function to run on success
+ * @param {number} options.transitionSpeed Transition speed in ms
+ * @param {string} options.transitionEasingSlideDown Transition easing algorithm for slideDown()
+ * @param {string} options.transitionEasingSlideUp Transition easing algorithm for slideUp()
+ * @param {boolean} options.post POST or only cancel
+ * @return {boolean} Whether or not to proceed with regular link operation
  */
 VrtxAdmin.prototype.completeFormAsync = function completeFormAsync(options) {
   var args = arguments,
       vrtxAdm = this,
-      _$ = vrtxAdm._$;   
+      _$ = vrtxAdm._$;
       
   vrtxAdm.cachedBody.dynClick(options.selector, function (e) {
   
@@ -2637,8 +2640,9 @@ VrtxAdmin.prototype.completeFormAsync = function completeFormAsync(options) {
  * Complete a form async POST
  *
  * @this {VrtxAdmin}
- * @param {object} options form: The form
- *                         link: The action link
+ * @param {object} options Configuration
+ * @param {object} options.form The form
+ * @param {object} options.link The action link
  */
 VrtxAdmin.prototype.completeFormAsyncPost = function completeFormAsyncPost(options) {
     var vrtxAdm = vrtxAdmin,
@@ -3175,7 +3179,9 @@ VrtxAdmin.prototype.loadScript = function loadScript(url, callback) {
  * Log to console with calle.name if exists (Function name)
  *
  * @this {VrtxAdmin}
- * @param {object} options Msg and args
+ * @param {object} options Configuraton
+ * @param {string} options.msg The message
+ * @param {array} options.args Arguments
  */
 VrtxAdmin.prototype.log = function log(options) {
   if(vrtxAdmin.hasConsoleLog) {
@@ -3189,7 +3195,9 @@ VrtxAdmin.prototype.log = function log(options) {
  * with fallback to regular log
  *
  * @this {VrtxAdmin}
- * @param {object} options Msg and args
+ * @param {object} options Configuraton
+ * @param {string} options.msg The message
+ * @param {array} options.args Arguments
  */
 VrtxAdmin.prototype.error = function error(options) {
   if(vrtxAdmin.hasConsoleError) {

@@ -983,9 +983,9 @@ VrtxAdmin.prototype.dropdownPlain = function dropdownPlain(selector) {
  *
  * @this {VrtxAdmin}
  * @param {object} options Configuration
- * @param {string} options.selector The selector for the containter (list)
- * @param {function} options.proceedCondition Callback function that uses number of list elements as parameter
- * @param {number} options.start Specify a starting point otherwise first
+ * @param {string} options.selector The selector for the container (list)
+ * @param {function} options.proceedCondition Callback function before proceeding that uses number of list elements as parameter
+ * @param {number} options.start Specify a starting point otherwise first is used
  * @param {boolean} options.calcTop Wheter or not to calculate absolute top position
  */
 VrtxAdmin.prototype.dropdown = function dropdown(options) {

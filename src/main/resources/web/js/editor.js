@@ -6,7 +6,11 @@
  *  TODO: use RegExp where we need to match multiple text strings
  *
  */
-
+ 
+/**
+ * Creates an instance of VrtxEditor
+ * @constructor
+ */
 function VrtxEditor() {
   var instance; // Class-like singleton pattern (p.145 JavaScript Patterns)
   VrtxEditor = function VrtxEditor() {

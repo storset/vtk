@@ -44,12 +44,14 @@ function VrtxEditor() {
                                                                    "other":                 ".examsemester-other"                     },
                           "teaching-language":                   { "other":                 ".teaching-language-text-field"           }
                         };
+                        
+  this.isInAdmin = typeof vrtxAdmin !== "undefined";
   
   return instance;
 };
 
-
 var vrtxEditor = new VrtxEditor();
+
 var UNSAVED_CHANGES_CONFIRMATION;
 
 /* CKEditor toolbars */
@@ -423,10 +425,11 @@ function commentsCkEditor() {
 
 $(document).ready(function() {
   var vrtxEdit = vrtxEditor;
-  vrtxEdit.editorForm = $("#editor");
-  if(!vrtxEdit.editorForm.length) return;
+  if(!vrtxEditor.isInAdmin) return;
 
   var vrtxAdm = vrtxAdmin, _$ = vrtxAdm._$;
+
+  vrtxEdit.editorForm = _$("#editor");
 
   // When ui-helper-hidden class is added => we need to add 'first'-class to next element (if it is not last and first of these)
   vrtxEdit.editorForm.find(".ui-helper-hidden").filter(":not(:last)").filter(":first").next().addClass("first");
@@ -642,23 +645,25 @@ $(document).ready(function() {
 /* Store and check if inputfields or textareas (CK) have changed onbeforeunload */
 
 $(window).load(function () { // Store initial counts and values when all is initialized in editor
-  if(!vrtxEditor.editorForm.length) return;
+  if(!vrtxEditor.isInAdmin) return;
+  
+  var vrtxAdm = vrtxAdmin, _$ = vrtxAdm._$;
 
-  var nullDeferred = $.Deferred();
+  var nullDeferred = _$.Deferred();
       nullDeferred.resolve();
-  $.when(((typeof MANUALLY_APPROVE_INITIALIZED === "object") ? MANUALLY_APPROVE_INITIALIZED : nullDeferred),
-         ((typeof MULTIPLE_INPUT_FIELD_INITIALIZED === "object") ? MULTIPLE_INPUT_FIELD_INITIALIZED : nullDeferred),
-         ((typeof JSON_ELEMENTS_INITIALIZED === "object") ? JSON_ELEMENTS_INITIALIZED : nullDeferred),
-         ((typeof DATE_PICKER_INITIALIZED === "object") ? DATE_PICKER_INITIALIZED : nullDeferred),
-         ((typeof IMAGE_EDITOR_INITIALIZED === "object") ? IMAGE_EDITOR_INITIALIZED : nullDeferred)).done(function() {
-    vrtxAdmin.log({msg: "Editor initialized."});
+  _$.when(((typeof MANUALLY_APPROVE_INITIALIZED === "object") ? MANUALLY_APPROVE_INITIALIZED : nullDeferred),
+          ((typeof MULTIPLE_INPUT_FIELD_INITIALIZED === "object") ? MULTIPLE_INPUT_FIELD_INITIALIZED : nullDeferred),
+          ((typeof JSON_ELEMENTS_INITIALIZED === "object") ? JSON_ELEMENTS_INITIALIZED : nullDeferred),
+          ((typeof DATE_PICKER_INITIALIZED === "object") ? DATE_PICKER_INITIALIZED : nullDeferred),
+          ((typeof IMAGE_EDITOR_INITIALIZED === "object") ? IMAGE_EDITOR_INITIALIZED : nullDeferred)).done(function() {
+    vrtxAdm.log({msg: "Editor initialized."});
     storeInitPropValues();
   });
   
   if (typeof CKEDITOR !== "undefined") {
     CKEDITOR.on('instanceReady', function() {
-      $(".cke_contents iframe").contents().find("body").bind('keydown', 'ctrl+s', function(e) {
-        ctrlSEventHandler($, e);
+      _$(".cke_contents iframe").contents().find("body").bind('keydown', 'ctrl+s', function(e) {
+        ctrlSEventHandler(_$, e);
       });
     });
   }

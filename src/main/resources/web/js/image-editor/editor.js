@@ -63,7 +63,6 @@ function VrtxImageEditor() {
 
 var vrtxImageEditor = new VrtxImageEditor();
 
-
 VrtxImageEditor.prototype.init = function init(imageEditorElm, imageURL, imageSupported) {
   var editor = this;
   

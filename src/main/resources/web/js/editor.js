@@ -425,7 +425,23 @@ function commentsCkEditor() {
 
 $(document).ready(function() {
   var vrtxEdit = vrtxEditor;
-  if(!vrtxEditor.isInAdmin) return;
+  
+  /* Initialize CKEditors */
+  for(var i = 0, len = vrtxEdit.CKEditorsInit.length; i < len && i < vrtxEdit.CKEditorsInitSyncMax; i++) { // Initiate <=CKEditorsInitSyncMax CKEditors sync
+    vrtxEdit.newEditor(vrtxEdit.CKEditorsInit[i]);
+  }
+  if(len > vrtxEdit.CKEditorsInitSyncMax) {
+    var ckEditorInitLoadTimer = setTimeout(function() { // Initiate >CKEditorsInitSyncMax CKEditors async
+      vrtxEdit.newEditor(vrtxEdit.CKEditorsInit[i]);
+      i++;
+      if(i < len) {
+        setTimeout(arguments.callee, vrtxEdit.CKEditorsInitAsyncInterval);
+      }
+    }, vrtxEdit.CKEditorsInitAsyncInterval);
+  }
+  
+  /* Exit if not is in admin */
+  if(!vrtxEdit.isInAdmin) return;
 
   var vrtxAdm = vrtxAdmin, _$ = vrtxAdm._$;
 
@@ -626,25 +642,11 @@ $(document).ready(function() {
         break;
     }
   }
-  
-  /* Initialize CKEditors */
-  for(var i = 0, len = vrtxEdit.CKEditorsInit.length; i < len && i < vrtxEdit.CKEditorsInitSyncMax; i++) { // Initiate <=CKEditorsInitSyncMax CKEditors sync
-    vrtxEdit.newEditor(vrtxEdit.CKEditorsInit[i]);
-  }
-  if(len > vrtxEdit.CKEditorsInitSyncMax) {
-    var ckEditorInitLoadTimer = setTimeout(function() { // Initiate >CKEditorsInitSyncMax CKEditors async
-      vrtxEdit.newEditor(vrtxEdit.CKEditorsInit[i]);
-      i++;
-      if(i < len) {
-        setTimeout(arguments.callee, vrtxEdit.CKEditorsInitAsyncInterval);
-      }
-    }, vrtxEdit.CKEditorsInitAsyncInterval);
-  }
 });
 
 /* Store and check if inputfields or textareas (CK) have changed onbeforeunload */
-
-$(window).load(function () { // Store initial counts and values when all is initialized in editor
+$(window).load(function () { 
+  /* Exit if not is in admin */
   if(!vrtxEditor.isInAdmin) return;
   
   var vrtxAdm = vrtxAdmin, _$ = vrtxAdm._$;
@@ -657,7 +659,7 @@ $(window).load(function () { // Store initial counts and values when all is init
           ((typeof DATE_PICKER_INITIALIZED === "object") ? DATE_PICKER_INITIALIZED : nullDeferred),
           ((typeof IMAGE_EDITOR_INITIALIZED === "object") ? IMAGE_EDITOR_INITIALIZED : nullDeferred)).done(function() {
     vrtxAdm.log({msg: "Editor initialized."});
-    storeInitPropValues();
+    storeInitPropValues(); // Store initial counts and values when all is initialized in editor
   });
   
   if (typeof CKEDITOR !== "undefined") {

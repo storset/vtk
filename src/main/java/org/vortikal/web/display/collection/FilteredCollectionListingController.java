@@ -45,6 +45,7 @@ import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.repository.search.ConfigurablePropertySelect;
 import org.vortikal.repository.search.Searcher;
 import org.vortikal.repository.search.Sorting;
 import org.vortikal.repository.search.SortingImpl;
@@ -63,6 +64,7 @@ public abstract class FilteredCollectionListingController implements ListingCont
     protected Searcher searcher;
     protected SearchSorting defaultSearchSorting;
     protected ResourceTypeTree resourceTypeTree;
+    protected List<String> configurablePropertySelectPointers;
 
     protected Map<String, List<String>> explicitlySetFilters(Resource collection, Map<String, List<String>> filters) {
         // By default this does nothing. Can be overridden to handle special
@@ -178,6 +180,22 @@ public abstract class FilteredCollectionListingController implements ListingCont
         return resourceTypeTree.getPropertyTypeDefinition(ns, propertyName);
     }
 
+    protected ConfigurablePropertySelect getPropertySelect() {
+        ConfigurablePropertySelect propertySelect = null;
+        if (configurablePropertySelectPointers != null && resourceTypeTree != null) {
+            for (String propPointer : configurablePropertySelectPointers) {
+                PropertyTypeDefinition ptd = resourceTypeTree.getPropertyDefinitionByPointer(propPointer);
+                if (ptd != null) {
+                    if (propertySelect == null) {
+                        propertySelect = new ConfigurablePropertySelect();
+                    }
+                    propertySelect.addPropertyDefinition(ptd);
+                }
+            }
+        }
+        return propertySelect;
+    }
+
     protected Sorting getDefaultSearchSorting(Resource collection) {
         return new SortingImpl(this.defaultSearchSorting.getSortFields(collection));
     }
@@ -210,6 +228,10 @@ public abstract class FilteredCollectionListingController implements ListingCont
     @Required
     public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
         this.resourceTypeTree = resourceTypeTree;
+    }
+
+    public void setConfigurablePropertySelectPointers(List<String> configurablePropertySelectPointers) {
+        this.configurablePropertySelectPointers = configurablePropertySelectPointers;
     }
 
 }

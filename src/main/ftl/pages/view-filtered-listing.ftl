@@ -31,6 +31,7 @@
     </#if>
   </head>
   <body id="vrtx-${collection.resourceType}">
+    <h1>${collection.title?html}</h1>
 
     <#if filters?exists>
       <div id="vrtx-listing-filters" class="vrtx-listing-filters-${filters?size}-col">

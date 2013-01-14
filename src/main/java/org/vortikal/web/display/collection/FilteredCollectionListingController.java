@@ -76,12 +76,12 @@ public abstract class FilteredCollectionListingController implements ListingCont
 
         Repository repository = RequestContext.getRequestContext().getRepository();
         String token = RequestContext.getRequestContext().getSecurityToken();
-        Resource collection = repository.retrieve(token, URL.toPath(request), true);
+        Resource collection = repository.retrieve(token, URL.toPath(request), false);
 
         Map<String, List<String>> currentFilters = new LinkedHashMap<String, List<String>>(filters);
         currentFilters = explicitlySetFilters(collection, currentFilters);
 
-        model.put("resource", collection);
+        model.put("collection", collection);
 
         if (currentFilters != null) {
             Map<String, Map<String, FilterURL>> urlFilters = new LinkedHashMap<String, Map<String, FilterURL>>();
@@ -152,12 +152,16 @@ public abstract class FilteredCollectionListingController implements ListingCont
     abstract public void runSearch(HttpServletRequest request, Resource collection, Map<String, Object> model,
             int pageLimit) throws Exception;
 
-    protected boolean valueExistsInFilters(String parameterKey, String parameterValue) {
+    protected boolean valueExistsInFilters(Resource collection, String parameterKey, String parameterValue)
+            throws Exception {
+        Map<String, List<String>> currentFilters = new LinkedHashMap<String, List<String>>(filters);
+        currentFilters = explicitlySetFilters(collection, currentFilters);
+
         if (parameterKey != null && parameterKey.startsWith(filterNamespace)) {
             parameterKey = parameterKey.substring(filterNamespace.length());
         }
 
-        List<String> filter = filters.get(parameterKey);
+        List<String> filter = currentFilters.get(parameterKey);
         if (filter != null) {
             return filter.contains(parameterValue);
         }

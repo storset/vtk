@@ -3,6 +3,7 @@
  *
  *  TODO: encapsulate in VrtxEditor
  *  TODO: JSDoc
+ *  TODO: use RegExp where we need to match multiple text strings
  *
  */
 

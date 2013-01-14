@@ -426,22 +426,10 @@ function commentsCkEditor() {
 $(document).ready(function() {
   var vrtxEdit = vrtxEditor;
   
-  /* Initialize CKEditors */
-  for(var i = 0, len = vrtxEdit.CKEditorsInit.length; i < len && i < vrtxEdit.CKEditorsInitSyncMax; i++) { // Initiate <=CKEditorsInitSyncMax CKEditors sync
-    vrtxEdit.newEditor(vrtxEdit.CKEditorsInit[i]);
+  if(!vrtxEdit.isInAdmin) {
+    vrtxEdit.initCKEditors();
+    return; /* Exit if not is in admin */
   }
-  if(len > vrtxEdit.CKEditorsInitSyncMax) {
-    var ckEditorInitLoadTimer = setTimeout(function() { // Initiate >CKEditorsInitSyncMax CKEditors async
-      vrtxEdit.newEditor(vrtxEdit.CKEditorsInit[i]);
-      i++;
-      if(i < len) {
-        setTimeout(arguments.callee, vrtxEdit.CKEditorsInitAsyncInterval);
-      }
-    }, vrtxEdit.CKEditorsInitAsyncInterval);
-  }
-  
-  /* Exit if not is in admin */
-  if(!vrtxEdit.isInAdmin) return;
 
   var vrtxAdm = vrtxAdmin, _$ = vrtxAdm._$;
 
@@ -642,7 +630,27 @@ $(document).ready(function() {
         break;
     }
   }
+  
+  vrtxEdit.initCKEditors();
 });
+
+VrtxEditor.prototype.initCKEditors = function initCKEditors() {
+  var vrtxEdit = this;
+
+  /* Initialize CKEditors */
+  for(var i = 0, len = vrtxEdit.CKEditorsInit.length; i < len && i < vrtxEdit.CKEditorsInitSyncMax; i++) { // Initiate <=CKEditorsInitSyncMax CKEditors sync
+    vrtxEdit.newEditor(vrtxEdit.CKEditorsInit[i]);
+  }
+  if(len > vrtxEdit.CKEditorsInitSyncMax) {
+    var ckEditorInitLoadTimer = setTimeout(function() { // Initiate >CKEditorsInitSyncMax CKEditors async
+      vrtxEdit.newEditor(vrtxEdit.CKEditorsInit[i]);
+      i++;
+      if(i < len) {
+        setTimeout(arguments.callee, vrtxEdit.CKEditorsInitAsyncInterval);
+      }
+    }, vrtxEdit.CKEditorsInitAsyncInterval);
+  }
+};
 
 /* Store and check if inputfields or textareas (CK) have changed onbeforeunload */
 $(window).load(function () { 

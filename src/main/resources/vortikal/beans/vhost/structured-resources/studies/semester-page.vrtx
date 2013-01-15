@@ -185,10 +185,12 @@ resourcetype semester-page : fellestekst-document {
             </div>
           </div>
           <div id="vrtx-additional-content">
-            <div class="vrtx-frontpage-box white-box vrtx-distach-bottom">
-              [call "resource:teacher-list"]
-            </div>   
-            <div class="vrtx-frontpage-box white-box vrtx-distach-bottom">
+            [call "resource:teacher-list"{"cssClass":"vrtx-distach-bottom"}]
+            [if messages-placement = null || messages-placement = "right"]
+              <div class="vrtx-frontpage-box white-box vrtx-distach-bottom">
+            [else]
+              <div class="vrtx-frontpage-box white-box">
+            [endif]
               <h2>[localized 'studinfo-kontakt-group']</h2>
               [call "comp:vis-fellestekst" {"docType":"studinfo-kontakt", "propName":"studinfo-kontakt"}]
               [if studinfo-kontakt-text-field != null && studinfo-kontakt-text-field != ""]

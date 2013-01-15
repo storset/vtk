@@ -197,7 +197,7 @@ public abstract class FilteredCollectionListingController implements ListingCont
     }
 
     protected Sorting getDefaultSearchSorting(Resource collection) {
-        return new SortingImpl(this.defaultSearchSorting.getSortFields(collection));
+        return new SortingImpl(defaultSearchSorting.getSortFields(collection));
     }
 
     public void setFilters(Map<String, List<String>> filters) {

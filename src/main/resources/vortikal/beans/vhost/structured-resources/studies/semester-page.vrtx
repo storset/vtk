@@ -18,7 +18,8 @@ resourcetype semester-page : fellestekst-document {
     link-box-five-links : json (linktitle : string, link : resource_ref) multiple,
     link-box-six-title : string,
     link-box-six-links : json (linktitle : string, link : resource_ref) multiple,
-    teachers : json (teacher : string) multiple,
+    teachersUsernames : string multiple,
+    teachers : json (teacherName : string, teacherUrl : string) multiple,
     studinfo-kontakt-text-field : simple_html noextract,
     studinfo-kontakt : string
   }
@@ -32,9 +33,13 @@ resourcetype semester-page : fellestekst-document {
     group link-box-four (link-box-four-title, link-box-four-links),
     group link-box-five (link-box-five-title, link-box-five-links),
     group link-box-six (link-box-six-title, link-box-six-links),
-    teachers (after link-box-six),
+    teachersUsernames (class[vrtx-autocomplete-username]),
     studinfo-kontakt (class[vrtx-shared-text]),
     group studinfo-kontakt-group (studinfo-kontakt, studinfo-kontakt-text-field)
+  }
+
+  scripts {
+    teachersUsernames multipleinputfields
   }
 
   view-components {
@@ -181,18 +186,7 @@ resourcetype semester-page : fellestekst-document {
           </div>
           <div id="vrtx-additional-content">
             <div class="vrtx-frontpage-box white-box vrtx-distach-bottom">
-              <h2>[localized 'teachers']</h2>
-              [def document structured-document()]
-              [def teachers document.properties.teachers]
-              [if teachers != null]
-                <ul>
-                [list teachers teacher]
-                  [if teacher.teacher != null && teacher.teacher != ""]
-                    <li>[val teacher.teacher]</li>
-                  [endif]
-                [endlist]
-                </ul>
-              [endif]
+              [call "resource:teacher-list"]
             </div>   
             <div class="vrtx-frontpage-box white-box vrtx-distach-bottom">
               <h2>[localized 'studinfo-kontakt-group']</h2>
@@ -263,7 +257,9 @@ resourcetype semester-page : fellestekst-document {
     studinfo-kontakt-group : (en : "Contact", no : "Kontakt", nn : "Kontakt"),
     messages-placement : (en : "Placement of messages", no : "Plassering av beskjeder", nn : "Plassering av beskjeder"),
     messages : (en : "Messages", no : "Beskjeder", nn : "Beskjeder"),
-    teachers : (en : "Teachers", no : "Lærere", nn : "Lærere"),
-    teacher : (en : "Teacher", no : "Lærer", nn : "Lærer")
+    teachersUsernames : (en : "Teachers (enter the teachers username)", no : "Lærere (fyll inn lærerens brukernavn)", nn : "Lærarar (fyll inn lærarens brukernavn)"),
+    teachers : (en : "Other teachers", no : "Andre lærere", nn : "Andre lærarar"),
+    teacherName : (en : "Name",no : "Navn", nn :"Namn"),
+    teacherUrl : (en : "Webaddress",no : "Webadresse", nn :"Webadresse")
   }
 }

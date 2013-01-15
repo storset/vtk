@@ -208,7 +208,8 @@ public class ProppatchController extends AbstractWebdavController  {
     private void writeDavErrorResponse(HttpServletResponse response, Integer status, Exception e) throws Exception { 
         Element error = new Element("error", WebdavConstants.DAV_NAMESPACE);
         Element errormsg = new Element("errormsg", WebdavConstants.DEFAULT_NAMESPACE);
-        errormsg.setText(HtmlUtil.escapeHtmlString(e.getMessage()));
+        String message = e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName();
+        errormsg.setText(HtmlUtil.escapeHtmlString(message));
         error.addContent(errormsg);
 
         Document doc = new Document(error);

@@ -42,13 +42,15 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTimeZone;
 import org.springframework.beans.factory.annotation.Required;
+import org.vortikal.repository.MultiHostSearcher;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.HtmlValueFormatter;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
-import org.vortikal.util.net.NetUtils;
+import org.vortikal.web.RequestContext;
+import org.vortikal.web.service.URL;
 
 public final class EventAsICalHelper {
 
@@ -59,8 +61,6 @@ public final class EventAsICalHelper {
     private PropertyTypeDefinition titlePropDef;
 
     public String getAsICal(List<PropertySet> events) {
-        
-        System.out.println("Generating iCal...");
 
         if (events == null || events.size() < 1) {
             return null;
@@ -72,8 +72,9 @@ public final class EventAsICalHelper {
         ical.append("METHOD:PUBLISH\n");
         ical.append("PRODID:-//UiO//Vortikal//NONSGML v1.0//NO\n");
 
+        String repositoryId = RequestContext.getRequestContext().getRepository().getId();
         for (PropertySet event : events) {
-            String iCalEntry = this.createICalEntryFromEvent(event);
+            String iCalEntry = createICalEntryFromEvent(event, repositoryId);
             ical.append(iCalEntry);
         }
 
@@ -82,7 +83,6 @@ public final class EventAsICalHelper {
         return ical.toString();
     }
 
-    // XXX Better naming?
     public String getICalFileName(Resource event) {
         String name = event.getName();
         if (name.contains(".")) {
@@ -99,7 +99,7 @@ public final class EventAsICalHelper {
         out.close();
     }
 
-    private String createICalEntryFromEvent(PropertySet event) {
+    private String createICalEntryFromEvent(PropertySet event, String repositoryId) {
 
         // Spec: http://www.ietf.org/rfc/rfc2445.txt
         // PRODID (4.7.3) & UID (4.8.4.7) added as recommended by spec. DTEND is
@@ -108,33 +108,33 @@ public final class EventAsICalHelper {
         // stated in spec (4.6.1).
 
         // We don't create anything unless we have the startdate
-        Property startDate = this.getProperty(event, this.startDatePropDef);
+        Property startDate = getProperty(event, startDatePropDef);
         if (startDate == null) {
             return null;
         }
 
         StringBuilder iCalEntry = new StringBuilder();
         iCalEntry.append("BEGIN:VEVENT\n");
-        iCalEntry.append("DTSTAMP:" + this.getDtstamp() + "\n");
-        iCalEntry.append("UID:" + this.getUiD(Calendar.getInstance().getTime()) + "\n");
-        iCalEntry.append("DTSTART:" + this.getICalDate(startDate.getDateValue()) + "Z\n");
+        iCalEntry.append("DTSTAMP:" + getDtstamp() + "\n");
+        iCalEntry.append("UID:" + getUiD(event, repositoryId) + "\n");
+        iCalEntry.append("DTSTART:" + getICalDate(startDate.getDateValue()) + "Z\n");
 
-        Property endDate = this.getProperty(event, this.endDatePropDef);
+        Property endDate = getProperty(event, endDatePropDef);
         if (endDate != null) {
-            iCalEntry.append("DTEND:" + this.getICalDate(endDate.getDateValue()) + "Z\n");
+            iCalEntry.append("DTEND:" + getICalDate(endDate.getDateValue()) + "Z\n");
         }
 
-        Property location = this.getProperty(event, this.locationPropDef);
+        Property location = getProperty(event, locationPropDef);
         if (location != null) {
             iCalEntry.append("LOCATION:" + location.getStringValue() + "\n");
         }
 
-        Property description = this.getProperty(event, this.introductionPropDef);
+        Property description = getProperty(event, introductionPropDef);
         if (description != null && StringUtils.isNotBlank(description.getStringValue())) {
-            iCalEntry.append("DESCRIPTION:" + this.getDescription(description) + "\n");
+            iCalEntry.append("DESCRIPTION:" + getDescription(description) + "\n");
         }
 
-        String summary = event.getProperty(this.titlePropDef).getStringValue();
+        String summary = event.getProperty(titlePropDef).getStringValue();
         iCalEntry.append("SUMMARY:" + summary + "\n");
         iCalEntry.append("END:VEVENT\n");
         return iCalEntry.toString();
@@ -154,9 +154,21 @@ public final class EventAsICalHelper {
         return sdf.format(Calendar.getInstance().getTime());
     }
 
-    private String getUiD(Date currenttime) {
-        return getICalDate(currenttime) + "-" + Calendar.getInstance().getTimeInMillis() + "@"
-                + NetUtils.guessHostName();
+    private String getUiD(PropertySet event, String repositoryId) {
+
+        String at = repositoryId;
+        Property urlProp = event.getProperty(Namespace.DEFAULT_NAMESPACE, MultiHostSearcher.URL_PROP_NAME);
+        if (urlProp != null) {
+            URL url = URL.parse(urlProp.getStringValue());
+            at = url.getHost();
+        }
+
+        StringBuilder uid = new StringBuilder();
+        uid.append(getICalDate(Calendar.getInstance().getTime())).append("-");
+        uid.append(String.valueOf(event.getURI().hashCode()).replace("-", "0"));
+        uid.append("@").append(at);
+
+        return uid.toString();
     }
 
     private String getICalDate(Date date) {

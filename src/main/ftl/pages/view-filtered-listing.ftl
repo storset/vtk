@@ -88,7 +88,9 @@
     </#if>
 
     <#if pageThroughUrls?exists>
-      <@viewutils.displayPageThroughUrls pageThroughUrls page />
+      <div class="vrtx-paging-feed-wrapper">
+        <@viewutils.displayPageThroughUrls pageThroughUrls page />
+      </div>
     </#if>
     
     <#if conf?exists && collection.resourceType = 'course-group-listing'>

@@ -1,4 +1,6 @@
 <#ftl strip_whitespace=true>
+<#import "/lib/vortikal.ftl" as vrtx />
+
 <#macro printPropertyEditView title inputFieldName value="" tooltip="" classes="" inputFieldSize=20 valuemap="" dropdown=false defaultValue="">
 <div class="vrtx-string ${classes}">
   <label for="${inputFieldName}">${title}</label>
@@ -14,15 +16,19 @@
 	  </select>
 	  <div id="${inputFieldName}Descriptions">
 	       <#list sharedTextProps[inputFieldName]?keys as y >
-    	       <div class="${sharedTextProps[inputFieldName][y]['id']} shared-text-description">
-    	              <#assign language >${resourceLocaleResolver.resolveLocale(null)}</#assign>
-    	              <#if language == "no_NO">
-    	              <#assign language = "no" />
-    	              </#if>
-    	              <#if sharedTextProps[inputFieldName][y]['description-' + language]?exists>
-    	                 ${sharedTextProps[inputFieldName][y]['description-' + language]}
-    	              </#if>
-    	       </div>
+    	       <#assign language >${resourceLocaleResolver.resolveLocale(null)}</#assign>
+    	       <#if language == "no_NO">
+    	       <#assign language = "no" />
+    	       </#if>
+    	       <#if sharedTextProps[inputFieldName][y]['description-' + language]?exists>
+    	         <div class="${sharedTextProps[inputFieldName][y]['id']} shared-text-description">
+    	           ${sharedTextProps[inputFieldName][y]['description-' + language]}
+                 </div>
+    	       <#else>
+    	         <div class="${sharedTextProps[inputFieldName][y]['id']} shared-text-description">
+    	           <@vrtx.msg code="shared-text.not-available" default="This shared text is not available in" /> <@vrtx.msg code="language.${language}" default="${language}" />.
+    	         </div>
+    	       </#if>
 	       </#list>
 	  </div>
     <#if "${tooltip}" != ""><div class="tooltip">${tooltip}</div></#if>

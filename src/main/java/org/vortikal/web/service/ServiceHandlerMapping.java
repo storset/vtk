@@ -60,6 +60,7 @@ public class ServiceHandlerMapping implements HandlerMapping {
      * @param request current HTTP request
      * @return the looked up handler instance, or the default handler
      */
+    @Override
     public final HandlerExecutionChain getHandler(HttpServletRequest request)
         throws Exception {
 

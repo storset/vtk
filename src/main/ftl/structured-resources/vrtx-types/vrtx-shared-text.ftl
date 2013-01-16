@@ -25,7 +25,7 @@
     	           ${sharedTextProps[inputFieldName][y]['description-' + language]}
                  </div>
     	       <#else>
-    	         <div class="${sharedTextProps[inputFieldName][y]['id']} shared-text-description">
+    	         <div class="${sharedTextProps[inputFieldName][y]['id']} shared-text-description unavailable">
     	           <@vrtx.msg code="shared-text.not-available" default="This shared text is not available in" /> <@vrtx.msg code="language.${language}" default="${language}" />.
     	         </div>
     	       </#if>

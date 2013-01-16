@@ -228,8 +228,21 @@ vrtxEditor.CKEditorDivContainerStylesSet = [{
   }
 }];
 
-// TODO: Try to remove some hardcoded fields - should maybe be class-based
-/* Create new CK editor */
+/**
+ * Create new CKEditor instance
+ *
+ * @this {VrtxEditor}
+ * @param {string} name Name of textarea (or object with the other parameters)
+ * @param {boolean} completeEditor Use complete toolbar
+ * @param {boolean} withoutSubSuper Don't display sub and sup buttons in toolbar
+ * @param {string} baseFolder Current folder URL for browse integration
+ * @param {string} baseUrl Base URL for browse integration
+ * @param {string} baseDocumentUrl URL to current document
+ * @param {string} browsePath Browse integration URL
+ * @param {string} defaultLanguage Language in editor
+ * @param {array} cssFileList List of CSS-files to style content in editor
+ * @param {string} simpleHTML Make h1 format available (for old document types)
+ */
 VrtxEditor.prototype.newEditor = function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, baseDocumentUrl, browsePath, defaultLanguage, cssFileList, simpleHTML) {
   var vrtxEdit = this;
   
@@ -341,16 +354,51 @@ VrtxEditor.prototype.newEditor = function newEditor(name, completeEditor, withou
 
 };
 
+/**
+ * Check if string contains substring
+ *
+ * @this {VrtxEditor}
+ * @param {string} string The string
+ * @param {string} substring The substring
+ * @return {boolean} Existance 
+ */
 VrtxEditor.prototype.contains = function contains(string, substring) {
   return string.indexOf(substring) != -1; 
 };
 
+/**
+ * Replace tags
+ *
+ * @this {VrtxEditor}
+ * @param {string} selector The context selector
+ * @param {string} tag The selector for tags to be replaced
+ * @param {string} replacementTag The replacement tag name
+ */
 VrtxEditor.prototype.replaceTag = function replaceTag(selector, tag, replacementTag) {
   selector.find(tag).replaceWith(function() {
     return "<" + replacementTag + ">" + $(this).text() + "</" + replacementTag + ">";
   });
 }
 
+/**
+ * Set CKEditor config for an instance
+ *
+ * @this {VrtxEditor}
+ * @param {string} name Name of textarea
+ * @param {string} linkBrowseUrl Link browse integration URL
+ * @param {string} imageBrowseUrl Image browse integration URL
+ * @param {string} flashBrowseUrl Flash browse integration URL
+ * @param {string} defaultLanguage Language in editor 
+ * @param {string} cssFileList List of CSS-files to style content in editor
+ * @param {number} height Height of editor
+ * @param {number} maxHeight Max height of editor
+ * @param {number} minHeight Min height of editor
+ * @param {object} toolbar The toolbar config
+ * @param {string} complete Use complete toolbar
+ * @param {boolean} resizable Possible to resize editor
+ * @param {string} baseDocumentUrl URL to current document 
+ * @param {string} simple Make h1 format available (for old document types)
+ */
 VrtxEditor.prototype.setCKEditorConfig = function setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, defaultLanguage, cssFileList, height, 
                                                                     maxHeight, minHeight, toolbar, complete, resizable, baseDocumentUrl, simple) {
   var vrtxEdit = this;                                                                 
@@ -646,6 +694,10 @@ $(document).ready(function() {
   vrtxEdit.initCKEditors();
 });
 
+/**
+ * Initialize CKEditors sync and async from CKEditorsInit array
+ *
+ */
 VrtxEditor.prototype.initCKEditors = function initCKEditors() {
   var vrtxEdit = this;
 
@@ -855,7 +907,12 @@ function toggle(name, parameters, hideTrues) {
 /* Dropdown show/hide mappings
  */
  
- /* General function for show/hide with mappings */
+/**
+ * Select field show/hide with mappings
+ *
+ * @this {VrtxEditor}
+ * @param {object} select The select field
+ */
 VrtxEditor.prototype.hideShowSelect = function hideShowSelect(select) {
   var vrtxEdit = this;
   var selected = select.val();

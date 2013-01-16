@@ -22,20 +22,31 @@ function VrtxEditor() {
   
   this.editorForm = null;
   
+  /** CKEditor toolbars */
   this.CKEditorToolbars = {};
+  /** CKEditor div-container styles */
   this.CKEditorDivContainerStylesSet = [{}];
   
+  /** CKEditors at init that should be created */
   this.CKEditorsInit = [];
+  /** CKEditors created sync */
   this.CKEditorsInitSyncMax = 15;
+  /** CKEditors async creation interval in ms */
   this.CKEditorsInitAsyncInterval = 15;
   
+  /** Text input fields at init */
   this.editorInitInputFields = [];
+  /** Select fields at init */
   this.editorInitSelects = [];
+  /** Checkboxes at init */
   this.editorInitCheckboxes = [];
+  /** Radios at init */
   this.editorInitRadios = [];
   
+  /** Initial state for the need to confirm navigation away from editor */
   this.needToConfirm = true;
   
+  /** Select fields show/hide mappings */
   this.selectMappings = { "teachingsemester":                    { "particular-semester":   ".if-teachingsemester-particular",
                                                                    "every-other":           ".teachingsemester-every-other-semester",
                                                                    "other":                 ".teachingsemester-other"                 },
@@ -44,7 +55,8 @@ function VrtxEditor() {
                                                                    "other":                 ".examsemester-other"                     },
                           "teaching-language":                   { "other":                 ".teaching-language-text-field"           }
                         };
-                        
+  
+  /** Check if this script is in admin or not */                      
   this.isInAdmin = typeof vrtxAdmin !== "undefined";
   
   return instance;

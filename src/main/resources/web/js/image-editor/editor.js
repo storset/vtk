@@ -21,6 +21,15 @@
 
 var IMAGE_EDITOR_INITIALIZED = $.Deferred();
 
+/**
+ * Creates an instance of VrtxImageEditor
+ *
+ * Vortex HTML5 Canvas image editor
+ *
+ * @author <a href="mailto:oyvind.hatland@usit.uio.no">Øyvind Hatland</a> - University Of Oslo / USIT
+ * @license GPL3
+ * @constructor
+ */
 function VrtxImageEditor() {
   var instance; // Class-like singleton pattern (p.145 JavaScript Patterns)
   VrtxImageEditor = function VrtxImageEditor() {
@@ -63,6 +72,14 @@ function VrtxImageEditor() {
 
 var vrtxImageEditor = new VrtxImageEditor();
 
+/**
+ * Initialize image editor
+ *
+ * @this {VrtxImageEditor}
+ * @param {object} imageEditorElm <deprecated>
+ * @param {string} imageURL The URL to the image
+ * @param {string} imageSupported Image supported by canvas
+ */
 VrtxImageEditor.prototype.init = function init(imageEditorElm, imageURL, imageSupported) {
   var editor = this;
   
@@ -240,10 +257,24 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm, imageURL, imageSu
   }
 };
 
+/**
+ * Find greatest common divisor (GCD) of two numbers
+ *
+ * @this {VrtxImageEditor}
+ * @param {number} a The first number
+ * @param {number} b The second number
+ */
 VrtxImageEditor.prototype.gcd = function gcd(a, b) {
   return (b == 0) ? a : this.gcd (b, a%b);
 }
 
+/**
+ * Update dimension in textfields and canvas
+ *
+ * @this {VrtxImageEditor}
+ * @param {number} w The width
+ * @param {number} h The height
+ */
 VrtxImageEditor.prototype.updateDimensions = function updateDimensions(w, h) {
   var editor = this;
   editor.canvas.setAttribute('width', w);
@@ -255,6 +286,13 @@ VrtxImageEditor.prototype.updateDimensions = function updateDimensions(w, h) {
   editor.displayDimensions(w, h);
 };
 
+/**
+ * Display dimension in textfields (add if not exists)
+ *
+ * @this {VrtxImageEditor}
+ * @param {number} w The width
+ * @param {number} h The height
+ */
 VrtxImageEditor.prototype.displayDimensions = function displayDimensions(w, h) {
   if ($("#vrtx-image-dimensions-crop").length) {
     $("#resource-width").val(w);
@@ -282,6 +320,12 @@ VrtxImageEditor.prototype.displayDimensions = function displayDimensions(w, h) {
   }
 };
 
+/**
+ * Save image (add crop and dimension as params to server)
+ *
+ * @this {VrtxImageEditor}
+ * @param {string} buttonId Which save button to click
+ */
 VrtxImageEditor.prototype.save = function save(buttonId) {
   var editor = this;
   
@@ -303,6 +347,13 @@ VrtxImageEditor.prototype.save = function save(buttonId) {
    }
 };
 
+/**
+ * Draw scaled image in canvas
+ *
+ * @this {VrtxImageEditor}
+ * @param {number} newWidth The new width
+ * @param {number} newHeight The new height
+ */
 VrtxImageEditor.prototype.scale = function scale(newWidth, newHeight) {
   var editor = this;
   editor.scaleRatio = newWidth / editor.cropWidth;
@@ -314,17 +365,15 @@ VrtxImageEditor.prototype.scale = function scale(newWidth, newHeight) {
                                               0,            0,        editor.rw,        editor.rh);      
 };
 
-/*
- * Crop plugin
+ /**
+ * Creates an instance of Selection (crop plugin)
  *
  * Credits: http://www.script-tutorials.com/demos/197/index.html
  *
  * Modified slightly by USIT
  *
- * TODO: Optimize
- *
+ * @constructor
  */
-
 function Selection(x, y, w, h) {
   this.x = x; // initial positions
   this.y = y;
@@ -340,6 +389,11 @@ function Selection(x, y, w, h) {
   this.bDragAll = false; // drag whole selection
 }
 
+/**
+ * Draw crop selection
+ *
+ * @this {VrtxImageEditor}
+ */
 VrtxImageEditor.prototype.draw = function draw() {
   var editor = this;
   var selection = editor.selection;
@@ -368,6 +422,11 @@ VrtxImageEditor.prototype.draw = function draw() {
   $("#vrtx-image-crop-coordinates-height").text(selection.h);
 };
 
+/**
+ * Draw crop selection with background
+ *
+ * @this {VrtxImageEditor}
+ */
 VrtxImageEditor.prototype.drawScene = function drawScene() { // Main drawScene function
   var editor = this;
 
@@ -382,6 +441,15 @@ VrtxImageEditor.prototype.drawScene = function drawScene() { // Main drawScene f
   editor.draw();
 };
 
+/**
+ * Initialize crop selection and background
+ *
+ * @this {VrtxImageEditor}
+ * @param {number} x X-coordinate
+ * @param {number} y Y-coordinate
+ * @param {number} w The width
+ * @param {number} h The height
+ */
 VrtxImageEditor.prototype.initSelection = function initSelection(x, y, w, h) {
   var editor = this;
 
@@ -513,6 +581,11 @@ VrtxImageEditor.prototype.initSelection = function initSelection(x, y, w, h) {
   editor.drawScene();
 };
 
+/**
+ * Remove crop selection
+ *
+ * @this {VrtxImageEditor}
+ */
 VrtxImageEditor.prototype.cropNone = function cropNone() {
   var editor = this;
   editor.selection.x = 0;
@@ -522,6 +595,11 @@ VrtxImageEditor.prototype.cropNone = function cropNone() {
   $("#vrtx-image-crop").click();
 };
 
+/**
+ * Remove crop selection from editor and unbind canvas mouse events
+ *
+ * @this {VrtxImageEditor}
+ */
 VrtxImageEditor.prototype.resetCropPlugin = function resetCropPlugin() {
   var editor = this;
   editor.selection = null;

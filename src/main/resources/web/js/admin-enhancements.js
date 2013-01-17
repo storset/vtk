@@ -3181,21 +3181,13 @@ function previewImage(urlobj) {
     var url = elm.val();
     var parentPreviewNode = previewNode.parent();
     if (url && url != "") {
-      /*
-      previewNode.html('<img src="' + url + '?vrtx=thumbnail" alt="thumbnail" />');
-      */
       previewNode.find("img").attr("src", url + "?vrtx=thumbnail");
       if(parentPreviewNode.hasClass("no-preview")) {
         parentPreviewNode.removeClass("no-preview");
+        previewNode.find("img").attr("alt", "thumbnail");
       }
       showImagePreviewCaption(elm);
     } else {
-      /*
-      previewNode.html('<img src="/vrtx/__vrtx/static-resources/themes/default/images/no-preview-image.png" alt="no thumbnail" />');
-      if(!parentPreviewNode.hasClass("no-preview")) {
-        parentPreviewNode.addClass("no-preview");
-      }
-      */
       hideImagePreviewCaption(elm, false);
     }
   }

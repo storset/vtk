@@ -69,7 +69,7 @@ public class ImageServiceImplTestIntegration extends TestCase {
         assertEquals("Wrong format", format, scaledImage.getOriginalFormat());
         
         if (width != ImageService.WIDTH_ANY) {
-            assertEquals("Scaling did not return widht as expected", width, scaledImage.getImage().getWidth());
+            assertEquals("Scaling did not return width as expected", width, scaledImage.getImage().getWidth());
         } else if (height != ImageService.HEIGHT_ANY) {
             assertEquals("Scaling did not return height as expected", height, scaledImage.getImage().getHeight());
         } else {
@@ -77,7 +77,7 @@ public class ImageServiceImplTestIntegration extends TestCase {
         	int scaledWidth = scaledImage.getImage().getWidth();
         	int originalHeight= originalImage.getHeight();
         	int scaledHeight= scaledImage.getImage().getHeight();
-        	assertEquals("Scaling did not return widht as expected", scaledWidth, originalWidth);
+        	assertEquals("Scaling did not return width as expected", scaledWidth, originalWidth);
         	assertEquals("Scaling did not return height as expected", scaledHeight, originalHeight);
         }
         

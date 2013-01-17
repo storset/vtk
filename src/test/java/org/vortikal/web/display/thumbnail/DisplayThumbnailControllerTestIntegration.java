@@ -138,6 +138,7 @@ public class DisplayThumbnailControllerTestIntegration extends AbstractControlle
 
     private Resource getImage(boolean withThumbnail) throws IOException {
         ResourceImpl image = new ResourceImpl(requestPath);
+        image.setResourceType("image");
 
         if (withThumbnail) {
             final PropertyTypeDefinitionImpl thumbnailPropDef = new PropertyTypeDefinitionImpl();

@@ -3104,12 +3104,16 @@ VrtxAdmin.prototype.serverFacade = {
 
 var urlobj;
 $(document).ready(function() {
+
+  /* Hide image previews on init (unobtrusive) */
   var previewInputFields = $("input.preview-image-inputfield");
   for(var i = previewInputFields.length; i--;) {
     if(previewInputFields[i].value === "") {
       hideImagePreviewCaption($(previewInputFields[i]), true);
     }
   } 
+  
+  /* Inputfield events for image preview */
   $(document).on("blur", "input.preview-image-inputfield", function(e) {
     previewImage(this.id)
   });

@@ -3123,9 +3123,10 @@ $(document).ready(function() {
   $(document).on("blur", "input.preview-image-inputfield", function(e) {
     previewImage(this.id)
   });
-  $(document).on("keyup", "input.preview-image-inputfield", function(e) { // ENTER-key
+  $(document).on("keydown", "input.preview-image-inputfield", function(e) { // ENTER-key
     if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
       previewImage(this.id);
+      e.preventDefault();
     }
   });
 });
@@ -3190,14 +3191,21 @@ function previewImage(urlobj) {
     var url = elm.val();
     var parentPreviewNode = previewNode.parent();
     if (url && url != "") {
+      /*
       previewNode.html('<img src="' + url + '?vrtx=thumbnail" alt="thumbnail" />');
-      parentPreviewNode.removeClass("no-preview");
+      */
+      previewNode.find("img").attr("src", url + "?vrtx=thumbnail");
+      if(parentPreviewNode.hasClass("no-preview")) {
+        parentPreviewNode.removeClass("no-preview");
+      }
       showImagePreviewCaption(elm);
     } else {
+      /*
       previewNode.html('<img src="/vrtx/__vrtx/static-resources/themes/default/images/no-preview-image.png" alt="no thumbnail" />');
       if(!parentPreviewNode.hasClass("no-preview")) {
         parentPreviewNode.addClass("no-preview");
       }
+      */
       hideImagePreviewCaption(elm, false);
     }
   }

@@ -30,7 +30,6 @@
  */
 package org.vortikal.repository.systemjob;
 
-import org.vortikal.repository.SystemChangeContext;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
@@ -59,6 +58,7 @@ import org.vortikal.repository.Repository.Depth;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceLockedException;
 import org.vortikal.repository.ResourceNotFoundException;
+import org.vortikal.repository.SystemChangeContext;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.util.text.JSONDefaultHandler;
@@ -231,6 +231,10 @@ public class LinkCheckJob extends RepositoryJob {
                         this.field = this.url = this.type = null;
                         return true;
                     }
+                    if ("PROPERTY".equals(this.type)) {
+                        this.url = base.relativeURL(this.url).toString();
+                    }
+                    
                     LinkCheckResult result = linkChecker.validate(this.url, base, !resource.isReadRestricted());
                     switch (result.getStatus()) {
                     case OK:

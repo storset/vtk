@@ -14,6 +14,24 @@
     </property>
   </bean>
 
+  <bean id="feedback.postService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="feedbackService" />
+    <property name="handler" ref="feedbackHandler" />
+    <property name="assertions">
+      <bean class="org.vortikal.web.service.RequestMethodAssertion">
+        <property name="method" value="POST" />
+      </bean>
+    </property>
+    <property name="handlerInterceptors">
+      <list>
+        <bean class="org.vortikal.web.IntervalThrottleHandlerInterceptor">
+          <property name="limit" value="${mailFeedback.throttle.window}" />
+          <property name="window" value="${mailFeedback.throttle.requestsInWindow}" />
+        </bean>
+      </list>
+    </property>
+  </bean>
+
   <bean id="feedback.viewResolver" parent="viewResolver">
     <property name="views">
       <map>

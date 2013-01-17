@@ -3132,6 +3132,7 @@ function hideImagePreviewCaption(input, isInit) {
   var fadeSpeed = isInit ? 0 : "fast";
   
   previewImg.fadeOut(fadeSpeed);
+  
   var captionWrp = input.closest(".introImageAndCaption");
   if(!captionWrp.length) {
     var captionWrp = input.closest(".picture-and-caption");
@@ -3155,6 +3156,7 @@ function showImagePreviewCaption(input) {
   if(!previewImg.length) return;
   
   previewImg.fadeIn("fast");
+  
   var captionWrp = input.closest(".introImageAndCaption");
   if(!captionWrp.length) {
     var captionWrp = input.closest(".picture-and-caption");

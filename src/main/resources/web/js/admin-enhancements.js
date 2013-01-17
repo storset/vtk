@@ -1,18 +1,12 @@
 /*
  *  Vortex Admin enhancements
  *
- *  Some patterns used:
- *
- *    * Flyweight (http://addyosmani.com/resources/essentialjsdesignpatterns/book/#detailflyweight)
- *    * DRY       (http://addyosmani.com/resources/essentialjsdesignpatterns/book/#drypatternjavascript
- *    * Façade    (http://addyosmani.com/resources/essentialjsdesignpatterns/book/#facadepatternjavascript)
- *    * Observer  (http://addyosmani.com/resources/essentialjsdesignpatterns/book/#observerpatternjquery)
- *
  *  TODO: i18n/more specific AJAX error messages
  *  TODO: CPU usage in ready() vs. wait for it in load()
  *  TODO: Add more functions as prototype to vrtxAdmin (with maybe some exceptions)
  *  TODO: JSDoc functions
- *  TODO: Better/revisit architecture for Async code regarding Deferred/Promise (http://net.tutsplus.com/tutorials/javascript-ajax/wrangle-async-tasks-with-jquery-promises/)
+ *  TODO: Better/revisit architecture for Async code regarding Deferred/Promise 
+ *        (http://net.tutsplus.com/tutorials/javascript-ajax/wrangle-async-tasks-with-jquery-promises/)
  *  TODO: Better seperation of business logic and DOM interaction
  *
  *  ToC: 

@@ -648,34 +648,15 @@ $(document).ready(function() {
         hideShowStudy(vrtxEdit.editorForm, _$("#typeToDisplay"));
         _$(document).on("change", "#typeToDisplay", function () {
           hideShowStudy(vrtxEdit.editorForm, _$(this));
-          vrtxEdit.editorForm.find(".ui-accordion > .vrtx-string.last").removeClass("last");
-          vrtxEdit.editorForm.find(".ui-accordion > .vrtx-string:visible:last").addClass("last");
         });    
-     
-        // Because accordion needs one content wrapper
-        for(var grouped = vrtxEdit.editorForm.find(".vrtx-grouped"), i = grouped.length; i--;) { 
-          _$(grouped[i]).find("> *:not(.header)").wrapAll("<div />");
-        }
-        vrtxEdit.editorForm.find(".properties").accordion({ header: "> div > .header",
-                                                            autoHeight: false,
-                                                            collapsible: true,
-                                                            active: false
-                                                          });
-        vrtxEdit.editorForm.find(".ui-accordion > .vrtx-string:visible:last").addClass("last");
+        vrtxEdit.initAccordionGrouped();
         break;
       case "vrtx-course-description":
         setShowHide('course-fee', ["course-fee-amount"], false);
+        vrtxEdit.initAccordionGrouped();
         break;
       case "vrtx-semester-page":
-        for(var grouped = vrtxEdit.editorForm.find(".vrtx-grouped[class*=link-box]"), i = grouped.length; i--;) { 
-          _$(grouped[i]).find("> *:not(.header)").wrapAll("<div />");
-        }
-        grouped.wrapAll("<div id='link-boxes' />");
-        vrtxEdit.editorForm.find("#link-boxes").accordion({ header: "> div > .header",
-                                                            autoHeight: false,
-                                                            collapsible: true,
-                                                            active: false
-                                                         });
+        initAccordionGrouped("[class*=link-box]")
         break;
       case "vrtx-samlet-program":
         var samletElm = vrtxEdit.editorForm.find(".samlet-element");
@@ -693,6 +674,28 @@ $(document).ready(function() {
   
   vrtxEdit.initCKEditors();
 });
+
+/**
+ * Initialize .vrtx-grouped elements as accordions
+ *
+ */
+VrtxEditor.prototype.initAccordionGrouped = function initAccordionGrouped(subGroupedSelector) { /* param name pending */
+  var vrtxEdit = this, _$ = vrtxAdmin._$;
+
+  var accordionWrpId = "accordion-grouped"; // TODO: multiple accordion group pr. page
+  var groupedSelector = ".vrtx-grouped" + ((typeof subGroupedSelector !== "undefined") ? subGroupedSelector : "");
+
+  // Because accordion needs one content wrapper
+  for(var grouped = vrtxEdit.editorForm.find(groupedSelector), i = grouped.length; i--;) { 
+    _$(grouped[i]).find("> *:not(.header)").wrapAll("<div />");
+  }
+  grouped.wrapAll("<div id='" + accordionWrpId + "' />");
+  vrtxEdit.editorForm.find("#" + accordionWrpId).accordion({ header: "> div > .header",
+                                                           autoHeight: false,
+                                                           collapsible: true,
+                                                           active: false
+                                                         });
+};
 
 /**
  * Initialize CKEditors sync and async from CKEditorsInit array

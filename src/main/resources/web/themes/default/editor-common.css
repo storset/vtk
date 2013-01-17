@@ -323,6 +323,7 @@ div.introImageAndCaption,
 div#vrtx-resource\.picture {
   width: 547px;
   position: relative;
+  overflow: visible !important;
   margin-bottom: 20px;
   height: 243px;
 }

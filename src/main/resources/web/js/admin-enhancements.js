@@ -3100,29 +3100,105 @@ VrtxAdmin.prototype.serverFacade = {
 
 /*-------------------------------------------------------------------*\
     15. CK browse server integration
+    
+if preview image field is empty
+  if .picture-and-caption .introImageAndCaption exists
+    find .caption => hide
+  find .preview => hide
+else if .preview is hidden
+  if .picture-and-caption .introImageAndCaption exists
+    find .caption => show
+  find .preview => show
+  
 \*-------------------------------------------------------------------*/
 
 var urlobj;
 $(document).ready(function() {
+  var previewInputFields = $("input.preview-image-inputfield");
+  for(var i = previewInputFields.length; i--;) {
+    if(previewInputFields[i].value === "") {
+      hideImagePreviewCaption($(previewInputFields[i]), true);
+    }
+  } 
   $(document).on("blur", "input.preview-image-inputfield", function(e) {
     previewImage(this.id)
   });
+  $(document).on("keyup", "input.preview-image-inputfield", function(e) { // ENTER-key
+    if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
+      previewImage(this.id);
+    }
+  });
 });
+
+function hideImagePreviewCaption(input, isInit) {
+  var previewImg = $("div#" + input[0].id.replace(/\./g,'\\.') + '\\.preview:visible');
+  if(!previewImg.length) return;
+  
+  var fadeSpeed = isInit ? 0 : "fast";
+  
+  previewImg.fadeOut(fadeSpeed);
+  var captionWrp = input.closest(".introImageAndCaption");
+  if(!captionWrp.length) {
+    var captionWrp = input.closest(".picture-and-caption");
+    if(captionWrp.length) {
+      captionWrp = captionWrp.parent();
+    }
+  } else {
+    var hidePicture = captionWrp.find(".hidePicture");
+    if(hidePicture.length) {
+      hidePicture.fadeOut(fadeSpeed);
+    }
+  }
+  if(captionWrp.length) {
+    captionWrp.find(".caption").fadeOut(fadeSpeed);
+    captionWrp.animate({height: "58px"}, fadeSpeed);
+  }
+}
+
+function showImagePreviewCaption(input) {
+  var previewImg = $("div#" + input[0].id.replace(/\./g,'\\.') + '\\.preview:hidden');
+  if(!previewImg.length) return;
+  
+  previewImg.fadeIn("fast");
+  var captionWrp = input.closest(".introImageAndCaption");
+  if(!captionWrp.length) {
+    var captionWrp = input.closest(".picture-and-caption");
+    if(captionWrp.length) {
+      captionWrp = captionWrp.parent();
+      var oldHeight = 241;
+    }
+  } else {
+    var oldHeight = 243;
+    var hidePicture = captionWrp.find(".hidePicture");
+    if(hidePicture.length) {
+      hidePicture.fadeIn("fast");
+    }
+  }
+  if(captionWrp.length) {
+    captionWrp.find(".caption").fadeIn("fast");
+    captionWrp.animate({height: oldHeight + "px"}, "fast");
+  }
+}
 
 function previewImage(urlobj) {
   if(typeof urlobj === "undefined") return;
   
-  urlobj = urlobj.replace(/\./g,'\\.')
+  urlobj = urlobj.replace(/\./g,'\\.');
   var previewNode = $("#" + urlobj + '\\.preview-inner');
   if (previewNode.length) {
-    var url = $("#" + urlobj).val();
+    var elm = $("#" + urlobj);
+    var url = elm.val();
     var parentPreviewNode = previewNode.parent();
     if (url && url != "") {
       previewNode.html('<img src="' + url + '?vrtx=thumbnail" alt="thumbnail" />');
       parentPreviewNode.removeClass("no-preview");
+      showImagePreviewCaption(elm);
     } else {
       previewNode.html('<img src="/vrtx/__vrtx/static-resources/themes/default/images/no-preview-image.png" alt="no thumbnail" />');
-      parentPreviewNode.addClass("no-preview");
+      if(!parentPreviewNode.hasClass("no-preview")) {
+        parentPreviewNode.addClass("no-preview");
+      }
+      hideImagePreviewCaption(elm, false);
     }
   }
 }

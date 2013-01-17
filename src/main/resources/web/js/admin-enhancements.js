@@ -3100,16 +3100,6 @@ VrtxAdmin.prototype.serverFacade = {
 
 /*-------------------------------------------------------------------*\
     15. CK browse server integration
-    
-if preview image field is empty
-  if .picture-and-caption .introImageAndCaption exists
-    find .caption => hide
-  find .preview => hide
-else if .preview is hidden
-  if .picture-and-caption .introImageAndCaption exists
-    find .caption => show
-  find .preview => show
-  
 \*-------------------------------------------------------------------*/
 
 var urlobj;

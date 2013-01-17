@@ -1,6 +1,11 @@
 /*
  *  Vortex Admin enhancements
  *
+ *  Note(s):
+ *
+ *  Iterating-method for jQuery elements based on: http://jsperf.com/loop-through-jquery-elements/2 (among multiple tests)
+ *   -> Backwards for-loop is in most cases even faster but not always desirable
+ *
  *  TODO: i18n/more specific AJAX error messages
  *  TODO: CPU usage in ready() vs. wait for it in load()
  *  TODO: Add more functions as prototype to vrtxAdmin (with maybe some exceptions)

@@ -656,7 +656,7 @@ $(document).ready(function() {
         vrtxEdit.initAccordionGrouped();
         break;
       case "vrtx-semester-page":
-        initAccordionGrouped("[class*=link-box]")
+        vrtxEdit.initAccordionGrouped("[class*=link-box]")
         break;
       case "vrtx-samlet-program":
         var samletElm = vrtxEdit.editorForm.find(".samlet-element");

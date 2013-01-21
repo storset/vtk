@@ -364,19 +364,19 @@ vrtxAdmin._$(document).ready(function () {
   
   // Send to approval
   // TODO: generalize dialog jQuery UI function with AJAX markup/text
+  // XXX: HTML content should set height (not hardcoded)
   _$(document).on("click", "#vrtx-send-to-approval, #vrtx-send-to-approval-global", function (e) {
     var link = this;
     var id = link.id + "-content";
     var dialogManageCreate = $("#" + id);
-    var hasEmailFrom = false;
     if (!dialogManageCreate.length) {
       vrtxAdm.serverFacade.getHtml(link.href, {
         success: function (results, status, resp) {
           _$("body").append("<div id='" + id + "'>" + _$(results).find("#contents").html() + "</div>");
           dialogManageCreate = $("#" + id);
           dialogManageCreate.hide();
-          hasEmailFrom = dialogManageCreate.find("#emailFrom").length;
-          vrtxSimpleDialogs.openHtmlDialog("send-approval", dialogManageCreate.html(), link.title, 410, (hasEmailFrom ? 590 : 535));
+          var hasEmailFrom = dialogManageCreate.find("#emailFrom").length;
+          vrtxSimpleDialogs.openHtmlDialog("send-approval", dialogManageCreate.html(), link.title, 410, (hasEmailFrom ? 620 : 545));
           var dialog = $(".ui-dialog");
           if(dialog.find("#emailTo").val().length > 0) {
             if(hasEmailFrom) {
@@ -388,8 +388,8 @@ vrtxAdmin._$(document).ready(function () {
         }
       });
     } else {
-      var hasEmailFrom = dialogManageCreate.find("#emailFrom");
-      vrtxSimpleDialogs.openHtmlDialog("send-approval", dialogManageCreate.html(), link.title, 410, (hasEmailFrom ? 590 : 535));
+      var hasEmailFrom = dialogManageCreate.find("#emailFrom").length;
+      vrtxSimpleDialogs.openHtmlDialog("send-approval", dialogManageCreate.html(), link.title, 410, (hasEmailFrom ? 620 : 545));
       var dialog = $(".ui-dialog");
       if(dialog.find("#emailTo").val().length > 0) {
         if(hasEmailFrom) {

@@ -1,6 +1,6 @@
 /*
  *  Dialogs and interface to jQuery UI
- *
+ *  XXX: This should not be a singleton/module but function/class as it is used for different dialogs..
  */
 
 
@@ -17,7 +17,7 @@ var vrtxSimpleDialogs = {
       width: 208
     });
   },
-  openHtmlDialog: function (name, html, title, width, height) {
+  openHtmlDialog: function (name, html, title, width, height) { // XXX: HTML content should set height (not hardcoded)
     this.openDialog("#dialog-html-" + name, {
       msg: html,
       title: title,

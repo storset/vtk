@@ -489,7 +489,7 @@ $(document).ready(function() {
   
   if(!vrtxEdit.isInAdmin || !vrtxEdit.editorForm.length) {
     vrtxEdit.initCKEditors();
-    return; /* Exit if not is in admin */
+    return; /* Exit if not is in admin or have regular editor */
   }
 
   var vrtxAdm = vrtxAdmin, _$ = vrtxAdm._$;
@@ -736,7 +736,7 @@ $(window).load(function () {
     storeInitPropValues($("#contents")); // Store initial counts and values when all is initialized in editor
   });
   
-  if (typeof CKEDITOR !== "undefined" && vrtxEditor.editorForm.length) {
+  if (typeof CKEDITOR !== "undefined" && vrtxEditor.editorForm.length) { // Don't add event if not regular editor
     CKEDITOR.on('instanceReady', function() {
       _$(".cke_contents iframe").contents().find("body").bind('keydown', 'ctrl+s', function(e) {
         ctrlSEventHandler(_$, e);

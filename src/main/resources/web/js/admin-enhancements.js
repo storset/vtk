@@ -368,13 +368,14 @@ vrtxAdmin._$(document).ready(function () {
     var link = this;
     var id = link.id + "-content";
     var dialogManageCreate = $("#" + id);
+    var hasEmailFrom = false;
     if (!dialogManageCreate.length) {
       vrtxAdm.serverFacade.getHtml(link.href, {
         success: function (results, status, resp) {
           _$("body").append("<div id='" + id + "'>" + _$(results).find("#contents").html() + "</div>");
           dialogManageCreate = $("#" + id);
           dialogManageCreate.hide();
-          var hasEmailFrom = dialogManageCreate.find("#emailFrom");
+          hasEmailFrom = dialogManageCreate.find("#emailFrom").length;
           vrtxSimpleDialogs.openHtmlDialog("send-approval", dialogManageCreate.html(), link.title, 410, (hasEmailFrom ? 590 : 535));
           var dialog = $(".ui-dialog");
           if(dialog.find("#emailTo").val().length > 0) {

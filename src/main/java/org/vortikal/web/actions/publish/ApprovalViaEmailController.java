@@ -110,11 +110,11 @@ public class ApprovalViaEmailController implements Controller {
             }
             String yourComment = request.getParameter("yourComment");
 
-            if (StringUtils.isBlank(emailTo) || !userEmailFound) {
+            if (StringUtils.isBlank(emailTo) || (!userEmailFound && StringUtils.isBlank(emailFrom))) {
                 if (StringUtils.isNotBlank(emailTo)) {
                     model.put("emailSavedTo", emailTo);
                 }
-                if (StringUtils.isNotBlank(emailFrom)) {
+                if (StringUtils.isNotBlank(emailFrom) && !userEmailFound) {
                     model.put("emailSavedFrom", emailFrom);
                 }
                 if (StringUtils.isNotBlank(yourComment)) {

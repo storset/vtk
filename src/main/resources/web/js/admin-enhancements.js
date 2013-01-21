@@ -129,6 +129,8 @@ function VrtxAdmin() {
   
   this.ignoreAjaxErrors = false;
   
+  this.runReadyLoad = true;
+  
   return instance;
 };
 
@@ -159,6 +161,8 @@ vrtxAdmin._$.ajaxSetup({
                                             
 vrtxAdmin._$(window).load(function() {
   var _$ = vrtxAdmin._$;
+  
+  if(vrtxAdmin.runReadyLoad === false) return;
 
   // Make breadcrumbs play along when you minimize window and have multiple rows of it
   vrtxAdmin.cachedBreadcrumbs = _$("#vrtx-breadcrumb > span");
@@ -189,6 +193,8 @@ vrtxAdmin._$(document).ready(function () {
   vrtxAdm.cachedBody.addClass("js");
 
   vrtxAdm.cachedActiveTab = vrtxAdm.cachedAppContent.find("#active-tab");
+
+  if(vrtxAdm.runReadyLoad === false) return;
 
   // Remove active tab if it has no children
   if (!vrtxAdm.cachedActiveTab.find(" > *").length) {

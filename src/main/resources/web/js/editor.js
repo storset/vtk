@@ -308,7 +308,7 @@ VrtxEditor.prototype.newEditor = function newEditor(name, completeEditor, withou
     vrtxEdit.setCKEditorConfig(name, linkBrowseUrl, null, null, defaultLanguage, cssFileList, 150, 400, 40, vrtxEdit.CKEditorToolbars.studyToolbar, 
                                isCompleteEditor, false, baseDocumentUrl, isSimpleHTML);
   } else if (vrtxEdit.contains(name, "message")) {
-    vrtxEdit.setCKEditorConfig(name, null, null, null, defaultLanguage, cssFileList, 250, 400, 40, vrtxEdit.CKEditorToolbars.messageToolbar, 
+    vrtxEdit.setCKEditorConfig(name, linkBrowseUrl, null, null, defaultLanguage, cssFileList, 250, 400, 40, vrtxEdit.CKEditorToolbars.messageToolbar, 
                                isCompleteEditor, false, null, isSimpleHTML);           
   } else if (vrtxEdit.contains(name, "additional-content")
           || vrtxEdit.contains(name, "additionalContents")) { // Additional content
@@ -485,16 +485,15 @@ function commentsCkEditor() {
 
 $(document).ready(function() {
   var vrtxEdit = vrtxEditor;
+  vrtxEdit.editorForm = $("#editor");
   
-  if(!vrtxEdit.isInAdmin) {
+  if(!vrtxEdit.isInAdmin || !vrtxEdit.editorForm.length) {
     vrtxEdit.initCKEditors();
     return; /* Exit if not is in admin */
   }
 
   var vrtxAdm = vrtxAdmin, _$ = vrtxAdm._$;
-
-  vrtxEdit.editorForm = _$("#editor");
-
+  
   // When ui-helper-hidden class is added => we need to add 'first'-class to next element (if it is not last and first of these)
   vrtxEdit.editorForm.find(".ui-helper-hidden").filter(":not(:last)").filter(":first").next().addClass("first");
   // TODO: make sure these are NOT first so that we can use pure CSS
@@ -734,10 +733,10 @@ $(window).load(function () {
           ((typeof DATE_PICKER_INITIALIZED === "object") ? DATE_PICKER_INITIALIZED : nullDeferred),
           ((typeof IMAGE_EDITOR_INITIALIZED === "object") ? IMAGE_EDITOR_INITIALIZED : nullDeferred)).done(function() {
     vrtxAdm.log({msg: "Editor initialized."});
-    storeInitPropValues(); // Store initial counts and values when all is initialized in editor
+    storeInitPropValues($("#contents")); // Store initial counts and values when all is initialized in editor
   });
   
-  if (typeof CKEDITOR !== "undefined") {
+  if (typeof CKEDITOR !== "undefined" && vrtxEditor.editorForm.length) {
     CKEDITOR.on('instanceReady', function() {
       _$(".cke_contents iframe").contents().find("body").bind('keydown', 'ctrl+s', function(e) {
         ctrlSEventHandler(_$, e);
@@ -746,9 +745,10 @@ $(window).load(function () {
   }
 });
 
-function storeInitPropValues() {
+function storeInitPropValues(contents) {
+  if(!contents.length) return;
+
   var vrtxEdit = vrtxEditor;
-  var contents = $("#contents");
 
   var inputFields = contents.find("input").not("[type=submit]").not("[type=button]")
                                           .not("[type=checkbox]").not("[type=radio]");

@@ -37,6 +37,9 @@
   <@editor.addCkScripts />
   <@editor.createEditor 'message' false false />
   <script type="text/javascript"><!--
+    if(typeof vrtxAdmin !== "undefined") {
+      vrtxAdmin.runReadyLoad = false;
+    }
     $(function() {
       var centerFromTop = (($(window).outerHeight() / 2) - $("#app-content").outerHeight());
       centerFromTop = !isNaN(centerFromTop) ? centerFromTop : 20;

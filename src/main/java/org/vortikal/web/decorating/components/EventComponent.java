@@ -99,6 +99,12 @@ public class EventComponent extends AbstractEventComponent {
     private static final String PARAMETER_ALL_EVENTS_TEXT = "override-all-events-link-text";
     private static final String PARAMETER_ALL_EVENTS_TEXT_DESC = "Sets text to be shown instead of go to all events link.";
 
+    private static final String PARAMETER_SHOW_ONLY_ONGOING = "show-only-ongoing";
+    private static final String PARAMETER_SHOW_ONLY_ONGOING_DESC = "Set to true if you only want to display ongoing events. Default is 'false'";
+
+    private static final String PARAMETER_SHOW_DATE = "show-date";
+    private static final String PARAMETER_SHOW_DATE_DESC = "Set to false if you want to hide date on events. Default is 'true'";
+
     private SearchComponent search;
     private Service viewService;
 
@@ -147,6 +153,9 @@ public class EventComponent extends AbstractEventComponent {
         conf.put("showEndTime", !parameterHasValue(PARAMETER_SHOW_END_TIME, "false", request) && listOnlyOnce);
         conf.put("addToCalendar", parameterHasValue(PARAMETER_ADD_TO_CALENDAR, "true", request));
 
+        boolean showOnlyOngoing = parameterHasValue(PARAMETER_SHOW_ONLY_ONGOING, "true", request);
+        conf.put("showDate", !parameterHasValue(PARAMETER_SHOW_DATE, "false", request));
+
         String emptyMsg = request.getStringParameter(PARAMETER_EVENTS_EMPTY_MSG);
         if (emptyMsg != null) {
             conf.put("emptyMsg", emptyMsg);
@@ -192,6 +201,30 @@ public class EventComponent extends AbstractEventComponent {
 
         Listing events = search.execute(RequestContext.getRequestContext().getServletRequest(), resource, 1, maxEvents,
                 0);
+
+        if (showOnlyOngoing) {
+            Calendar startDate, now = Calendar.getInstance();
+            List<PropertySet> tmpEvents = new ArrayList<PropertySet>(events.getFiles());
+
+            for (PropertySet ps : events.getFiles()) {
+
+                Property sprop = ps.getProperty(Namespace.STRUCTURED_RESOURCE_NAMESPACE, "start-date");
+                if (sprop == null) {
+                    sprop = ps.getProperty(Namespace.DEFAULT_NAMESPACE, "start-date");
+                }
+
+                if (sprop != null) {
+                    startDate = Calendar.getInstance();
+                    startDate.setTimeInMillis(sprop.getDateValue().getTime());
+
+                    if (!startDate.before(now)) {
+                        tmpEvents.remove(ps);
+                    }
+                }
+            }
+
+            events.setFiles(tmpEvents);
+        }
 
         /*
          * If events will just be listed once we can use the search result,
@@ -412,6 +445,8 @@ public class EventComponent extends AbstractEventComponent {
         map.put(PARAMETER_SHOW_LOCATION, PARAMETER_SHOW_LOCATION_DESC);
         map.put(PARAMETER_SHOW_PICTURE, PARAMETER_SHOW_PICTURE_DESC);
         map.put(PARAMETER_URI, PARAMETER_URI_DESC);
+        map.put(PARAMETER_SHOW_ONLY_ONGOING, PARAMETER_SHOW_ONLY_ONGOING_DESC);
+        map.put(PARAMETER_SHOW_DATE, PARAMETER_SHOW_DATE_DESC);
         return map;
     }
 

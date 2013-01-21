@@ -108,11 +108,11 @@
         </div>
 
         <div class="vrtx-event-component-misc">
-          <#if conf.dateIcon && showTime>
+          <#if conf.dateIcon && showTime && conf.showDate>
             <span class="vrtx-event-component-start-time">
               <@vrtx.date value=startdate format='HH:mm' /><#if conf.showLocation && (location != "")>,</#if>
             </span>
-          <#elseif showTime>
+          <#elseif showTime && conf.showDate>
             <span class="vrtx-event-component-start-time">
               <@vrtx.date value=startdate format='dd' />. 
               <@vrtx.date value=startdate format='MMM' />. 
@@ -187,28 +187,30 @@
       <a class="vrtx-event-component-title summary vrtx-link-check" href="${uri?html}">${title?html}</a>
     </div>
 
-    <#local startiso8601 = vrtx.propValue(event, "start-date", "iso-8601") />
-    <#local endiso8601 = vrtx.propValue(event, "end-date", "iso-8601") />
-    <#local isostarthour = "" />
-    <#if startiso8601 != "" >
-      <#local isostarthour = startiso8601?substring(11, 16) />
-    </#if>
-    <#local isoendhour = "" />
-    <#if endiso8601 != "" >
-      <#local isoendhour = endiso8601?substring(11, 16) />
-    </#if>
-    <#local isostartdate = "" />
-    <#if startiso8601 != "" >
-      <#local isostartdate = startiso8601?substring(0, 10) />
-    </#if>
-    <#local isoenddate = "" />
-    <#if endiso8601 != "" >
-      <#local isoenddate = endiso8601?substring(0, 10) />
-    </#if>
     <div class="vrtx-event-component-misc">
-      <span class="vrtx-event-component-start<#if conf.showEndTime>-and-end</#if>-time">
-            <#if isostarthour != "00:00">${startDate}<#else>${startDateShort}</#if><#if conf.showEndTime && endiso8601 != ""><#if isoendhour != "00:00" &&  isostartdate != isoenddate> - ${endDate}<#elseif isostartdate != isoenddate> - ${endDateShort}<#elseif isoendhour != "00:00"> - ${endDateTime}</#if></#if><#if conf.showLocation && (location != "")>,</#if>
-      </span>
+      <#if conf.showDate>
+        <#local startiso8601 = vrtx.propValue(event, "start-date", "iso-8601") />
+        <#local endiso8601 = vrtx.propValue(event, "end-date", "iso-8601") />
+        <#local isostarthour = "" />
+        <#if startiso8601 != "" >
+          <#local isostarthour = startiso8601?substring(11, 16) />
+        </#if>
+        <#local isoendhour = "" />
+        <#if endiso8601 != "" >
+          <#local isoendhour = endiso8601?substring(11, 16) />
+        </#if>
+        <#local isostartdate = "" />
+        <#if startiso8601 != "" >
+          <#local isostartdate = startiso8601?substring(0, 10) />
+        </#if>
+        <#local isoenddate = "" />
+        <#if endiso8601 != "" >
+          <#local isoenddate = endiso8601?substring(0, 10) />
+        </#if>
+        <span class="vrtx-event-component-start<#if conf.showEndTime>-and-end</#if>-time">
+          <#if isostarthour != "00:00">${startDate}<#else>${startDateShort}</#if><#if conf.showEndTime && endiso8601 != ""><#if isoendhour != "00:00" &&  isostartdate != isoenddate> - ${endDate}<#elseif isostartdate != isoenddate> - ${endDateShort}<#elseif isoendhour != "00:00"> - ${endDateTime}</#if></#if><#if conf.showLocation && (location != "")>,</#if>
+        </span>
+      </#if>
 
       <#if conf.showLocation && (location != "")>
         <span class="vrtx-event-component-location">${location}</span>

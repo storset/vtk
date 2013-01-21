@@ -162,7 +162,7 @@ vrtxAdmin._$.ajaxSetup({
 vrtxAdmin._$(window).load(function() {
   var _$ = vrtxAdmin._$;
   
-  if(vrtxAdmin.runReadyLoad === false) return;
+  if(vrtxAdmin.runReadyLoad === false) return; // XXX: return if should not run load() code
 
   // Make breadcrumbs play along when you minimize window and have multiple rows of it
   vrtxAdmin.cachedBreadcrumbs = _$("#vrtx-breadcrumb > span");
@@ -194,7 +194,7 @@ vrtxAdmin._$(document).ready(function () {
 
   vrtxAdm.cachedActiveTab = vrtxAdm.cachedAppContent.find("#active-tab");
 
-  if(vrtxAdm.runReadyLoad === false) return;
+  if(vrtxAdm.runReadyLoad === false) return; // XXX: return if should not run all of ready() code
 
   // Remove active tab if it has no children
   if (!vrtxAdm.cachedActiveTab.find(" > *").length) {

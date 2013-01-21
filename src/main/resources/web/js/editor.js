@@ -489,14 +489,14 @@ $(document).ready(function() {
   
   if(!vrtxEdit.isInAdmin || !vrtxEdit.editorForm.length) {
     vrtxEdit.initCKEditors();
-    return; /* Exit if not is in admin or have regular editor */
+    return; /* XXX: Exit if not is in admin or have regular editor */
   }
 
   var vrtxAdm = vrtxAdmin, _$ = vrtxAdm._$;
   
   // When ui-helper-hidden class is added => we need to add 'first'-class to next element (if it is not last and first of these)
   vrtxEdit.editorForm.find(".ui-helper-hidden").filter(":not(:last)").filter(":first").next().addClass("first");
-  // TODO: make sure these are NOT first so that we can use pure CSS
+  // XXX: make sure these are NOT first so that we can use pure CSS
 
   autocompleteUsernames(".vrtx-autocomplete-username");
   autocompleteTags(".vrtx-autocomplete-tag");
@@ -720,7 +720,7 @@ VrtxEditor.prototype.initCKEditors = function initCKEditors() {
 
 /* Store and check if inputfields or textareas (CK) have changed onbeforeunload */
 $(window).load(function () { 
-  /* Exit if not is in admin */
+  /* XXX: Exit if not is in admin */
   if(!vrtxEditor.isInAdmin) return;
   
   var vrtxAdm = vrtxAdmin, _$ = vrtxAdm._$;
@@ -736,7 +736,7 @@ $(window).load(function () {
     storeInitPropValues($("#contents")); // Store initial counts and values when all is initialized in editor
   });
   
-  if (typeof CKEDITOR !== "undefined" && vrtxEditor.editorForm.length) { // Don't add event if not regular editor
+  if (typeof CKEDITOR !== "undefined" && vrtxEditor.editorForm.length) { // XXX: Don't add event if not regular editor
     CKEDITOR.on('instanceReady', function() {
       _$(".cke_contents iframe").contents().find("body").bind('keydown', 'ctrl+s', function(e) {
         ctrlSEventHandler(_$, e);

@@ -62,14 +62,13 @@
         </#list>
       </div>
     </#if>
-    
-    <#if from?exists && to?exists && total?exists>
-      <div>
-        <@vrtx.msg code="listing-filters.${collection.resourceType}.from-to-total" args=[from, to, total] default="Listing results " + from + " - " +  to + " of total " + total + " resources" />
-      </div>
-    </#if>
 
     <#if (result?exists && result?has_content)>
+      <#if from?exists && to?exists && total?exists>
+        <div>
+          <@vrtx.msg code="listing-filters.${collection.resourceType}.from-to-total" args=[from, to, total] default="Listing results " + from + " - " +  to + " of total " + total + " resources" />
+        </div>
+      </#if>
       <#if collection.resourceType = 'course-group-listing'>
         <@courseGroup.displayResult result />
       <#elseif collection.resourceType = 'course-description-listing'>

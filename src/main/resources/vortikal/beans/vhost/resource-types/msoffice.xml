@@ -61,19 +61,19 @@
   </bean>
   
   <bean id="contentTypeMatchesOoXml" class="org.vortikal.web.service.ResourceContentTypeRegexpAssertion">
-    <property name="pattern" value="application/(vnd\.ms-excel|msword|vnd\.ms-word\.document|ms-excel|x-msexcel|ms-ppt|vnd\.ms-powerpoint|vnd\.openxmlformats-officedocument\.(wordprocessingml\.document|wordprocessingml\.template|spreadsheetml\.sheet|spreadsheetml\.template|presentationml\.presentation|presentationml\.template|presentationml\.slideshow))" />
+    <property name="pattern" value="application/(msword|ms-excel|x-msexcel|ms-ppt|vnd\.((ms-word(|\.(document|template)\.macroEnabled\.12)|ms-excel(|\.(sheet(|\.binary)|template|addin|)\.macroEnabled\.12)|ms-powerpoint(|\.(addin|presentation|template|slideshow)\.macroEnabled\.12))|(openxmlformats-officedocument\.(wordprocessingml\.(document|template)|spreadsheetml\.(sheet|template)|presentationml\.(presentation|template|slideshow)))))" />
   </bean>
 
   <bean id="contentTypeMatchesDoc" class="org.vortikal.web.service.ResourceContentTypeRegexpAssertion">
-    <property name="pattern" value="application/(msword|vnd\.ms-word\.document|vnd\.openxmlformats-officedocument\.wordprocessingml\.document|vnd\.openxmlformats-officedocument\.wordprocessingml\.template)" />
+    <property name="pattern" value="application/(msword|vnd\.(ms-word(|\.(document|template)\.macroEnabled\.12)|openxmlformats-officedocument\.wordprocessingml\.(document|template)))" />
   </bean>
   
   <bean id="contentTypeMatchesXls" class="org.vortikal.web.service.ResourceContentTypeRegexpAssertion">
-    <property name="pattern" value="application/(vnd\.ms-excel|x-msexcel|vnd\.openxmlformats-officedocument\.spreadsheetml\.sheet|vnd\.openxmlformats-officedocument\.spreadsheetml\.template)" />
+    <property name="pattern" value="application/(ms-excel|x-msexcel|vnd\.(ms-excel(|\.(sheet(|\.binary)|template|addin)\.macroEnabled\.12)|openxmlformats-officedocument\.spreadsheetml\.(sheet|template)))" />
   </bean>
   
   <bean id="contentTypeMatchesPpt" class="org.vortikal.web.service.ResourceContentTypeRegexpAssertion">
-    <property name="pattern" value="application/(ms-ppt|vnd\.ms-powerpoint|vnd\.openxmlformats-officedocument\.presentationml\.presentation|vnd\.openxmlformats-officedocument\.presentationml\.template|vnd\.openxmlformats-officedocument\.presentationml\.slideshow)" />
+    <property name="pattern" value="application/(ms-ppt|vnd\.(ms-powerpoint(|\.(addin|presentation|template|slideshow)\.macroEnabled\.12)|openxmlformats-officedocument\.presentationml\.(presentation|template|slideshow)))" />
   </bean>
 
 </beans>

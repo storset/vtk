@@ -18,14 +18,16 @@ public class ResourceContentTypeRegexpAssertionTest extends TestCase {
     
     /* MSOffice 2007+: http://filext.com/faq/office_mime_types.php */
     
-    private String[] testWordContentTypes = {"application/msword",
+    private String[] testWordContentTypes = {
+            "application/msword",
             "application/vnd.ms-word",
             "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
             "application/vnd.openxmlformats-officedocument.wordprocessingml.template",
             "application/vnd.ms-word.document.macroEnabled.12",
-            "application/vnd.ms-word.template.macroEnabled.12"};
-    
-    private String[] testExcelContentTypes = {"application/ms-excel",
+            "application/vnd.ms-word.template.macroEnabled.12" };
+
+    private String[] testExcelContentTypes = {
+            "application/ms-excel",
             "application/x-msexcel",
             "application/vnd.ms-excel",
             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
@@ -33,9 +35,10 @@ public class ResourceContentTypeRegexpAssertionTest extends TestCase {
             "application/vnd.ms-excel.sheet.macroEnabled.12",
             "application/vnd.ms-excel.template.macroEnabled.12",
             "application/vnd.ms-excel.addin.macroEnabled.12",
-            "application/vnd.ms-excel.sheet.binary.macroEnabled.12"};
-    
-    private String[] testPowerpointContentTypes = {"application/ms-ppt",
+            "application/vnd.ms-excel.sheet.binary.macroEnabled.12" };
+
+    private String[] testPowerpointContentTypes = {
+            "application/ms-ppt",
             "application/vnd.ms-powerpoint",
             "application/vnd.openxmlformats-officedocument.presentationml.presentation",
             "application/vnd.openxmlformats-officedocument.presentationml.template",
@@ -43,7 +46,7 @@ public class ResourceContentTypeRegexpAssertionTest extends TestCase {
             "application/vnd.ms-powerpoint.addin.macroEnabled.12",
             "application/vnd.ms-powerpoint.presentation.macroEnabled.12",
             "application/vnd.ms-powerpoint.template.macroEnabled.12",
-            "application/vnd.ms-powerpoint.slideshow.macroEnabled.12"};
+            "application/vnd.ms-powerpoint.slideshow.macroEnabled.12" };
     
     // And all together..
     private String[] testOoXmlContentTypes = (String[]) ArrayUtils.addAll(testWordContentTypes, (String[]) ArrayUtils.addAll(testExcelContentTypes, testPowerpointContentTypes));

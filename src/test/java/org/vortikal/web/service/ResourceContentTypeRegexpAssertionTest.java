@@ -14,11 +14,10 @@ public class ResourceContentTypeRegexpAssertionTest extends TestCase {
     @Test
     public void testResourceWordMacro() {
         String testContentType = "application/vnd.ms-word.document.macroEnabled.12";
+        String pattern = "application/(msword|vnd\\.ms-word(\\.(document|(document|template)\\.macroEnabled\\.12))|vnd\\.openxmlformats-officedocument\\.wordprocessingml\\.(document|template))";
         
         ResourceContentTypeRegexpAssertion r = new ResourceContentTypeRegexpAssertion();
-
-        r.setPattern("application/(msword|vnd\\.ms-word\\.document|vnd\\.openxmlformats-officedocument\\.wordprocessingml\\.(document|template)).*");
-        
+        r.setPattern(pattern);
         MockResource mr = new MockResource(testContentType);
         assertTrue(r.matches(mr, new MockPrincipalImpl("user", Type.USER)));
     }
@@ -26,11 +25,10 @@ public class ResourceContentTypeRegexpAssertionTest extends TestCase {
     @Test
     public void testResourcePowerpointMacro() {
         String testContentType = "application/vnd.ms-powerpoint.presentation.macroEnabled.12";
+        String pattern = "application/(ms-ppt|vnd\\.ms-powerpoint(\\.(addin|presentation|template|slideshow)\\.macroEnabled\\.12)|vnd\\.openxmlformats-officedocument\\.presentationml\\.(presentation|template|slideshow))";
         
         ResourceContentTypeRegexpAssertion r = new ResourceContentTypeRegexpAssertion();
-
-        r.setPattern("application/(ms-ppt|vnd\\.ms-powerpoint|vnd\\.openxmlformats-officedocument\\.presentationml\\.(presentation|template|slideshow)).*");
-        
+        r.setPattern(pattern);
         MockResource mr = new MockResource(testContentType);
         assertTrue(r.matches(mr, new MockPrincipalImpl("user", Type.USER)));
     }
@@ -38,11 +36,10 @@ public class ResourceContentTypeRegexpAssertionTest extends TestCase {
     @Test
     public void testResourceExcelMacro() {
         String testContentType = "application/vnd.ms-excel.sheet.macroEnabled.12";
+        String pattern = "application/(vnd\\.ms-excel(\\.(sheet(|\\.binary)|template|addin|)\\.macroEnabled\\.12)|x-msexcel|vnd\\.openxmlformats-officedocument\\.spreadsheetml\\.(sheet|template))";
         
         ResourceContentTypeRegexpAssertion r = new ResourceContentTypeRegexpAssertion();
-
-        r.setPattern("application/(vnd\\.ms-excel|x-msexcel|vnd\\.openxmlformats-officedocument\\.spreadsheetml\\.(sheet|template)).*");
-        
+        r.setPattern(pattern);
         MockResource mr = new MockResource(testContentType);
         assertTrue(r.matches(mr, new MockPrincipalImpl("user", Type.USER)));
     }

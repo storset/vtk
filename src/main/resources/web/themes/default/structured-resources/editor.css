@@ -38,6 +38,7 @@
   /* Fix a clearing problem */
   margin-top: 0px;
   padding-top: 20px;
+  overflow: hidden; /* IE collision fix */
 }
 
 .vrtx-image-ref .vrtx-image-ref-preview {

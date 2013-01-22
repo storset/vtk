@@ -12,11 +12,38 @@ import org.vortikal.security.PrincipalImpl;
 public class ResourceContentTypeRegexpAssertionTest extends TestCase {
 
     @Test
-    public void testResourceExcelMacro() {
+    public void testResourceWordMacro() {
+        String testContentType = "application/vnd.ms-word.document.macroEnabled.12";
+        
         ResourceContentTypeRegexpAssertion r = new ResourceContentTypeRegexpAssertion();
-        // Proposed change in msoffice.xml with ^ and .*
-        r.setPattern("^application/(vnd\\.ms-excel|x-msexcel|vnd\\.openxmlformats-officedocument\\.spreadsheetml\\.sheet|vnd\\.openxmlformats-officedocument\\.spreadsheetml\\.template).*");
-        MockResource mr = new MockResource(Path.fromString("/"));
+
+        r.setPattern("application/(msword|vnd\\.ms-word\\.document|vnd\\.openxmlformats-officedocument\\.wordprocessingml\\.(document|template)).*");
+        
+        MockResource mr = new MockResource(testContentType);
+        assertTrue(r.matches(mr, new MockPrincipalImpl("user", Type.USER)));
+    }
+    
+    @Test
+    public void testResourcePowerpointMacro() {
+        String testContentType = "application/vnd.ms-powerpoint.presentation.macroEnabled.12";
+        
+        ResourceContentTypeRegexpAssertion r = new ResourceContentTypeRegexpAssertion();
+
+        r.setPattern("application/(ms-ppt|vnd\\.ms-powerpoint|vnd\\.openxmlformats-officedocument\\.presentationml\\.(presentation|template|slideshow)).*");
+        
+        MockResource mr = new MockResource(testContentType);
+        assertTrue(r.matches(mr, new MockPrincipalImpl("user", Type.USER)));
+    }
+    
+    @Test
+    public void testResourceExcelMacro() {
+        String testContentType = "application/vnd.ms-excel.sheet.macroEnabled.12";
+        
+        ResourceContentTypeRegexpAssertion r = new ResourceContentTypeRegexpAssertion();
+
+        r.setPattern("application/(vnd\\.ms-excel|x-msexcel|vnd\\.openxmlformats-officedocument\\.spreadsheetml\\.(sheet|template)).*");
+        
+        MockResource mr = new MockResource(testContentType);
         assertTrue(r.matches(mr, new MockPrincipalImpl("user", Type.USER)));
     }
 
@@ -30,11 +57,19 @@ class MockPrincipalImpl extends PrincipalImpl {
 }
 
 class MockResource extends ResourceImpl {
+    
+    private String testContentType = "";
+    
     public MockResource(Path uri) {
         super(uri);
+    };
+    
+    public MockResource(String testContentType) {
+        super(Path.fromString("/"));
+        this.testContentType = testContentType.toString();
     }
 
     public String getContentType() {
-        return "application/vnd.ms-excel.sheet.macroEnabled.12";
+        return testContentType;
     }
 }

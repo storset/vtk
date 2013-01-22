@@ -88,14 +88,14 @@ function timeHelp(hh, mm) {
   var mmVal = mm.val();
   if(hhVal.length || mmVal.length) {
     var newHhVal = parseInt(hhVal); // Correct hours
-    if(isNaN(newHhVal)) {
+    if(isNaN(newHhVal) || newHhVal < 0) {
       newHhVal = "00";
     } else {
       newHhVal = (newHhVal > 23) ? "00" : newHhVal;
       newHhVal = ((newHhVal < 10 && !newHhVal.length) ? "0" : "") + newHhVal;
     }
     var newMmVal = parseInt(mmVal); // Correct minutes
-    if(isNaN(newMmVal)) {
+    if(isNaN(newMmVal) || newMmVal < 0) {
       newMmVal = "00";
     } else {
       newMmVal = (newMmVal > 59) ? "00" : newMmVal;

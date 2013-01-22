@@ -3469,7 +3469,7 @@ jQuery.fn.extend({
 })(jQuery);
 
 vrtxAdmin._$(window).on("debouncedresize", function() {
-  if(vrtxAdmin.cachedBreadcrumbs && vrtxAdmin.resizeDebouncedWait) {
+  if(vrtxAdmin.runReadyLoad && vrtxAdmin.cachedBreadcrumbs && vrtxAdmin.resizeDebouncedWait) {
     vrtxAdmin.adaptiveBreadcrumbs();
     vrtxAdmin.resizeDebouncedWait = false;
     setTimeout(function() {

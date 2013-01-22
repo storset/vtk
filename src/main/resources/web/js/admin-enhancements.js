@@ -3172,7 +3172,7 @@ function showImagePreviewCaption(input) {
       var oldHeight = 241;
     }
   } else {
-    var oldHeight = 243;
+    var oldHeight = 244;
     var hidePicture = captionWrp.find(".hidePicture");
     if(hidePicture.length) {
       hidePicture.fadeIn("fast");

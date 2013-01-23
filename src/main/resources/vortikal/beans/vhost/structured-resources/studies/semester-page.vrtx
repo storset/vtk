@@ -3,6 +3,7 @@ resourcetype semester-page : fellestekst-document {
   properties {
     fronter : boolean defaultvalue("false"),
     messages-placement : string defaultvalue("right"),
+    max-number-of-messages : string,
     schedule : resource_ref,
     exam : resource_ref,
     syllabus : resource_ref,
@@ -26,6 +27,7 @@ resourcetype semester-page : fellestekst-document {
 
   edit-rules {
     messages-placement (dropdown),
+    max-number-of-messages (dropdown),
     group sec (schedule, exam, syllabus) (before link-box-one-title),
     group link-box-one (link-box-one-title, link-box-one-links),
     group link-box-two (link-box-two-title, link-box-two-links),
@@ -141,6 +143,7 @@ resourcetype semester-page : fellestekst-document {
     [def course-code resource-prop-obj-val(".", "courseContext.fs-course-code")]
     [def semester resource-prop-obj-val(".", "semesterContext.semesterTitle")]
     [def messages-placement resource-prop-obj-val(".", "messages-placement")]
+    [def max-number-of-messages resource-prop-obj-val(".", "max-number-of-messages")]
     [def fronter resource-prop-obj-val(".", "fronter")]
     [def studinfo-kontakt-text-field resource-prop-obj-val(".", "studinfo-kontakt-text-field")]
     [def locale resource-locale()]
@@ -165,7 +168,11 @@ resourcetype semester-page : fellestekst-document {
             [if messages-placement != null && messages-placement = "middle"]
               <div class="vrtx-frontpage-box white-box">
                 <h2>[localized 'messages']</h2>
-                [call "include:messages" {"uri" : messages-uri}]
+                [if max-number-of-messages != null && max-number-of-messages != ""]
+                  [call "include:messages" {"uri" : messages-uri, "max-number-of-messages" : max-number-of-messages}]
+                [else]
+                  [call "include:messages" {"uri" : messages-uri}]
+                [endif]
               </div>
             [endif]
             [if fronter]
@@ -200,7 +207,11 @@ resourcetype semester-page : fellestekst-document {
             [if messages-placement = null || messages-placement = "right"]
               <div class="vrtx-frontpage-box white-box">
                 <h2>[localized 'messages']</h2>
-                [call "include:messages" {"uri" : messages-uri, "compact-view" : "true"}]
+                [if max-number-of-messages != null && max-number-of-messages != ""]
+                  [call "include:messages" {"uri" : messages-uri, "compact-view" : "true", "max-number-of-messages" : max-number-of-messages}]
+                [else]
+                  [call "include:messages" {"uri" : messages-uri, "compact-view" : "true"}]
+                [endif]
               </div>
             [endif]
           </div>
@@ -215,6 +226,11 @@ resourcetype semester-page : fellestekst-document {
       en : ("middle" = "Show in middle", "right" = "Show in right column"),
       no : ("middle" = "Vis i midten", "right" = "Vis i høyrespalten"),
       nn : ("middle" = "Vis i midten", "right" = "Vis i høyrespalten")
+    },
+    max-number-of-messages {
+      en : (range = "1..20"),
+      no : (range = "1..20"),
+      nn : (range = "1..20")
     },
     fronter {
       en : ("true" = "Yes", "false" = "No"),
@@ -258,6 +274,7 @@ resourcetype semester-page : fellestekst-document {
     studinfo-kontakt : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
     studinfo-kontakt-group : (en : "Contact", no : "Kontakt", nn : "Kontakt"),
     messages-placement : (en : "Placement of messages", no : "Plassering av beskjeder", nn : "Plassering av beskjeder"),
+    max-number-of-messages : (en : "Number of messages", no : "Antall beskjeder", nn : "Talet på beskjedar"),
     messages : (en : "Messages", no : "Beskjeder", nn : "Beskjeder"),
     teachersUsernames : (en : "Teachers (enter the teachers username)", no : "Lærere (fyll inn lærerens brukernavn)", nn : "Lærarar (fyll inn lærarens brukernavn)"),
     teachers : (en : "Other teachers", no : "Andre lærere", nn : "Andre lærarar"),

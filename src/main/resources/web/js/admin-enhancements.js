@@ -12,7 +12,7 @@
  *  TODO: JSDoc functions
  *  TODO: Better/revisit architecture for Async code regarding Deferred/Promise 
  *        (http://net.tutsplus.com/tutorials/javascript-ajax/wrangle-async-tasks-with-jquery-promises/)
- *  TODO: Better seperation of business logic and DOM interaction
+ *  TODO: Better seperation of business logic, events, Async/AJAX and DOM interaction (and write tests for easier refactoring)
  *
  *  ToC: 
  *
@@ -160,14 +160,10 @@ vrtxAdmin._$.ajaxSetup({
 \*-------------------------------------------------------------------*/
                                             
 vrtxAdmin._$(window).load(function() {
-  var _$ = vrtxAdmin._$;
-  
   if(vrtxAdmin.runReadyLoad === false) return; // XXX: return if should not run load() code
-
-  // Make breadcrumbs play along when you minimize window and have multiple rows of it
-  vrtxAdmin.cachedBreadcrumbs = _$("#vrtx-breadcrumb > span");
-  vrtxAdmin.adaptiveBreadcrumbs();
-
+  
+  vrtxAdmin.initAdaptiveBreadcrumbs();
+  
   vrtxAdmin.log({msg: "window.load() in " + (+new Date - startLoadTime) + "ms"});
 });
 
@@ -1047,7 +1043,18 @@ function closeDropdowns() {
 }
 
 /**
- * Update breadcrumbs
+ * Init adaptive breadcrumbs
+ *
+ * @this {VrtxAdmin}
+ */
+VrtxAdmin.prototype.initAdaptiveBreadcrumbs = function initAdaptiveBreadcrumbs() {
+  var vrtxAdm = this, _$ = this._$;
+  vrtxAdm.cachedBreadcrumbs = _$("#vrtx-breadcrumb > span");
+  vrtxAdm.adaptiveBreadcrumbs();
+}
+
+/**
+ * Update adaptive breadcrumbs
  *
  * @this {VrtxAdmin}
  */

@@ -213,20 +213,8 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
       resourceMenuLeft.css("marginTop", "0px");
     }
   }
-
-  // Dropdowns
-  vrtxAdm.dropdownPlain("#locale-selection");
-  vrtxAdm.dropdown({
-    selector: "#resource-title ul#resourceMenuLeft",
-    proceedCondition: function (numOfListElements) {
-      return numOfListElements > 1;
-    },
-    calcTop: true
-  });
-  vrtxAdm.dropdown({
-    selector: "ul.manage-create"
-  });
- 
+  
+  vrtxAdm.initDropdowns();
 
   // Slide up when choose something in dropdown
   vrtxAdm.cachedBody.on("click", ".dropdown-shortcut-menu li a, .dropdown-shortcut-menu-container li a", function () {
@@ -938,6 +926,25 @@ function traverseNode(treeElem, treeTravNode, lastNode) {
 /*-------------------------------------------------------------------*\
     5. Dropdowns    
 \*-------------------------------------------------------------------*/
+
+/**
+ * Initialize dropdowns
+ *
+ * @this {VrtxAdmin}
+ */
+VrtxAdmin.prototype.initDropdowns = function initDropdowns() {
+  this.dropdownPlain("#locale-selection");
+  this.dropdown({
+    selector: "#resource-title ul#resourceMenuLeft",
+    proceedCondition: function (numOfListElements) {
+      return numOfListElements > 1;
+    },
+    calcTop: true
+  });
+  this.dropdown({
+    selector: "ul.manage-create"
+  });
+};
 
 /**
  * Dropdown with links

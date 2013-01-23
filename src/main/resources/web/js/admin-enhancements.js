@@ -106,34 +106,28 @@ function VrtxAdmin() {
   // Application logic
   this.editorSaveButtonName = "";
   this.asyncEditorSavedDeferred;
-  
   this.asyncGetFormsInProgress = 0;
   this.asyncGetStatInProgress = false;
-  
   this.createResourceReplaceTitle = true;
   this.createDocumentFileName = "";
-  
   this.trashcanCheckedFiles = 0;
   
   /* TODO: Need some rewrite of data structure to use 1 instead of 3 variables */
   this.multipleCommaSeperatedInputFieldNames = [];
   this.multipleCommaSeperatedInputFieldCounter = [];
   this.multipleCommaSeperatedInputFieldLength = [];
-  
   this.multipleCommaSeperatedInputFieldTemplates = [];
   this.multipleCommaSeperatedInputFieldDeferred;
   
   this.breadcrumbsLastPosLeft = -999;
   this.resizeDebouncedWait = true;
-  
   this.reloadFromServer = false; // changed by funcProceedCondition and used by funcComplete in completeFormAsync for admin-permissions
-  
   this.ignoreAjaxErrors = false;
   this._$.ajaxSetup({
     timeout: 300000 // 5min
   });
-  
   this.runReadyLoad = true;
+  this.bodyId = "";
   
   return instance;
 };
@@ -145,11 +139,13 @@ var vrtxAdmin = new VrtxAdmin();
 \*-------------------------------------------------------------------*/
                                             
 vrtxAdmin._$(window).load(function() {
-  if(vrtxAdmin.runReadyLoad === false) return; // XXX: return if should not run load() code
+  var vrtxAdm = vrtxAdmin;
   
-  vrtxAdmin.initAdaptiveBreadcrumbs();
+  if(vrtxAdm.runReadyLoad === false) return; // XXX: return if should not run load() code
   
-  vrtxAdmin.log({msg: "window.load() in " + (+new Date - startLoadTime) + "ms"});
+  vrtxAdm.initAdaptiveBreadcrumbs();
+  
+  vrtxAdm.log({msg: "Window.load() in " + (+new Date - startLoadTime) + "ms."});
 });
 
 
@@ -160,22 +156,37 @@ vrtxAdmin._$(window).load(function() {
 
 vrtxAdmin._$(document).ready(function () {
   var startReadyTime = +new Date(),
-    vrtxAdm = vrtxAdmin,
-    _$ = vrtxAdm._$;
+      vrtxAdm = vrtxAdmin;
 
+  vrtxAdm.cacheDOMNodesForReuse();
+  
+  vrtxAdm.cachedBody.addClass("js");
+  
+  if(vrtxAdm.runReadyLoad === false) return; // XXX: return if should not run all of ready() code
+  
+  vrtxAdm.initFunctionalityDocReady();
+
+  vrtxAdm.log({
+    msg: "Document.ready() in " + (+new Date - startReadyTime) + "ms."
+  });
+});
+
+VrtxAdmin.prototype.cacheDOMNodesForReuse = function cacheDOMNodesForReuse() {
+  var vrtxAdm = this, _$ = vrtxAdm._$;
+  
   vrtxAdm.cachedBody = _$("body");
   vrtxAdm.cachedAppContent = vrtxAdm.cachedBody.find("#app-content");
   vrtxAdm.cachedContent = vrtxAdm.cachedAppContent.find("#contents");
   vrtxAdm.cachedDirectoryListing = _$("#directory-listing");
-
-  var bodyId = vrtxAdm.cachedBody.attr("id");
-  if(typeof bodyId === "undefined") bodyId = "";
-  
-  vrtxAdm.cachedBody.addClass("js");
-
   vrtxAdm.cachedActiveTab = vrtxAdm.cachedAppContent.find("#active-tab");
+};
 
-  if(vrtxAdm.runReadyLoad === false) return; // XXX: return if should not run all of ready() code
+// TODO: these function needs a lot of seperation of concerns
+VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocReady() {
+  var vrtxAdm = this, _$ = vrtxAdm._$;
+  
+  var bodyId = vrtxAdm.cachedBody.attr("id");
+  vrtxAdm.bodyId = (typeof bodyId !== "undefined") ? bodyId : "";
 
   // Remove active tab if it has no children
   if (!vrtxAdm.cachedActiveTab.find(" > *").length) {
@@ -788,12 +799,7 @@ vrtxAdmin._$(document).ready(function () {
       vrtxAdm.cachedAppContent.prepend("<div class='infomessage'>" + outdatedBrowserText + "</div>");
     }
   }
-
-  vrtxAdmin.log({
-    msg: "document.ready() in " + (+new Date - startReadyTime) + "ms"
-  });
-
-});
+};
 
 /*-------------------------------------------------------------------*\
     4. General interaction / dialogs

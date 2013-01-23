@@ -216,16 +216,6 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
   
   vrtxAdm.initDropdowns();
 
-  // Slide up when choose something in dropdown
-  vrtxAdm.cachedBody.on("click", ".dropdown-shortcut-menu li a, .dropdown-shortcut-menu-container li a", function () {
-    _$(".dropdown-shortcut-menu-container:visible").slideUp(vrtxAdm.transitionDropdownSpeed, "swing");
-  });
-
-  vrtxAdm.cachedBody.on("click", document, function (e) {
-    _$(".dropdown-shortcut-menu-container:visible").slideUp(vrtxAdm.transitionDropdownSpeed, "swing");
-    _$(".tip:visible").fadeOut(vrtxAdm.transitionDropdownSpeed, "swing");
-  });
-
   // Ignore all AJAX errors on tab change
   _$("#app-tabs, #vrtx-breadcrumb-wrapper").on("click", "a", function (e) {
     vrtxAdm.ignoreAjaxErrors = true;
@@ -924,7 +914,7 @@ function traverseNode(treeElem, treeTravNode, lastNode) {
 
 
 /*-------------------------------------------------------------------*\
-    5. Dropdowns    
+    5. Dropdowns XXX: etc.
 \*-------------------------------------------------------------------*/
 
 /**
@@ -943,6 +933,14 @@ VrtxAdmin.prototype.initDropdowns = function initDropdowns() {
   });
   this.dropdown({
     selector: "ul.manage-create"
+  });
+  var vrtxAdm = this;
+  this.cachedBody.on("click", ".dropdown-shortcut-menu li a, .dropdown-shortcut-menu-container li a", function () {
+    vrtxAdm.closeDropdowns();
+  });
+  this.cachedBody.on("click", document, function (e) {
+    vrtxAdm.closeDropdowns();
+    vrtxAdm.hideTips();
   });
 };
 
@@ -1033,12 +1031,23 @@ VrtxAdmin.prototype.dropdown = function dropdown(options) {
   }
 };
 
-function closeDropdowns() {
-  var dropdowns = vrtxAdmin._$(".dropdown-shortcut-menu-container:visible");
-  if(dropdowns.length) {
-    dropdowns.slideUp(vrtxAdmin.transitionDropdownSpeed, "swing");
-  }
-}
+/**
+ * Close all dropdowns (slide up)
+ *
+ * @this {VrtxAdmin}
+ */
+VrtxAdmin.prototype.closeDropdowns = function closeDropdowns() {
+  this._$(".dropdown-shortcut-menu-container:visible").slideUp(this.transitionDropdownSpeed, "swing");
+};
+
+/**
+ * Hide tips (fade out)
+ *
+ * @this {VrtxAdmin}
+ */
+VrtxAdmin.prototype.hideTips = function hideTips() {
+  this._$(".tip:visible").fadeOut(this.transitionDropdownSpeed, "swing");
+};
 
 /**
  * Init adaptive breadcrumbs

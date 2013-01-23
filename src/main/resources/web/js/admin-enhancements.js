@@ -1109,8 +1109,7 @@ VrtxAdmin.prototype.adaptiveBreadcrumbs = function adaptiveBreadcrumbs() {
 
 /*-------------------------------------------------------------------*\
     6. Create service
-    TODO: optimize more and remove "observerListener"
-    (for supporting right-click=>Copy)
+    XXX: optimize more and needs more seperation
 \*-------------------------------------------------------------------*/
 
 function createInteraction(bodyId, vrtxAdm, _$) {  

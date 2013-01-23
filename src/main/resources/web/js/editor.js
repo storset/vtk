@@ -639,6 +639,8 @@ $(document).ready(function() {
     }
   }
   
+  vrtxEdit.initCKEditors();
+  
   var docType = vrtxEdit.editorForm[0].className;
 
   if(docType && docType !== "") {
@@ -670,8 +672,6 @@ $(document).ready(function() {
         break;
     }
   }
-  
-  vrtxEdit.initCKEditors();
 });
 
 /**

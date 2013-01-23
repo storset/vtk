@@ -95,12 +95,12 @@ function VrtxAdmin() {
   this.tagAutocompleteParams =         { minChars: 1, minWidth: 180, adjustForParentWidth: 15 };
      
   // Transitions
-  this.transitionSpeed = vrtxAdmin.isMobileWebkitDevice ? 0 : 200; // same as 'fast'
-  this.transitionCustomPermissionSpeed = vrtxAdmin.isMobileWebkitDevice ? 0 : 200; // same as 'fast'
-  this.transitionPropSpeed = vrtxAdmin.isMobileWebkitDevice ? 0 : 100;
-  this.transitionDropdownSpeed = vrtxAdmin.isMobileWebkitDevice ? 0 : 100;
-  this.transitionEasingSlideDown = (!(vrtxAdmin.isIE && vrtxAdmin.browserVersion < 10) && !vrtxAdmin.isMobileWebkitDevice) ?  "easeOutQuad" : "linear";
-  this.transitionEasingSlideUp = (!(vrtxAdmin.isIE && vrtxAdmin.browserVersion < 10) && !vrtxAdmin.isMobileWebkitDevice) ?  "easeInQuad" : "linear";
+  this.transitionSpeed = this.isMobileWebkitDevice ? 0 : 200; // same as 'fast'
+  this.transitionCustomPermissionSpeed = this.isMobileWebkitDevice ? 0 : 200; // same as 'fast'
+  this.transitionPropSpeed = this.isMobileWebkitDevice ? 0 : 100;
+  this.transitionDropdownSpeed = this.isMobileWebkitDevice ? 0 : 100;
+  this.transitionEasingSlideDown = (!(this.isIE && this.browserVersion < 10) && !this.isMobileWebkitDevice) ?  "easeOutQuad" : "linear";
+  this.transitionEasingSlideUp = (!(this.sIE && this.browserVersion < 10) && !this.isMobileWebkitDevice) ?  "easeInQuad" : "linear";
   
   // Application logic
   this.editorSaveButtonName = "";

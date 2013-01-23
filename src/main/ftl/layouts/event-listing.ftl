@@ -31,6 +31,8 @@
     <#elseif (include = "true")>
       <#if conf.emptyMsg?exists>
         ${conf.emptyMsg}
+      <#elseif conf.showOnlyOngoing?exists && conf.showOnlyOngoing>
+        <@vrtx.msg code="eventListing.noOngoing" />
       <#else>
         <@vrtx.msg code="eventListing.noPlanned.allupcoming" />
       </#if>

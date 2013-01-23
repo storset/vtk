@@ -224,6 +224,7 @@ public class EventComponent extends AbstractEventComponent {
             }
 
             events.setFiles(tmpEvents);
+            conf.put("showOnlyOngoing", showOnlyOngoing);
         }
 
         /*

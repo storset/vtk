@@ -95,12 +95,12 @@ function VrtxAdmin() {
   this.tagAutocompleteParams =         { minChars: 1, minWidth: 180, adjustForParentWidth: 15 };
      
   // Transitions
-  this.transitionSpeed = 200; // same as 'fast'
-  this.transitionCustomPermissionSpeed = 200; // same as 'fast'
-  this.transitionPropSpeed = 100;
-  this.transitionDropdownSpeed = 100;
-  this.transitionEasingSlideDown = "linear";
-  this.transitionEasingSlideUp = "linear";
+  this.transitionSpeed = vrtxAdmin.isMobileWebkitDevice ? 0 : 200; // same as 'fast'
+  this.transitionCustomPermissionSpeed = vrtxAdmin.isMobileWebkitDevice ? 0 : 200; // same as 'fast'
+  this.transitionPropSpeed = vrtxAdmin.isMobileWebkitDevice ? 0 : 100;
+  this.transitionDropdownSpeed = vrtxAdmin.isMobileWebkitDevice ? 0 : 100;
+  this.transitionEasingSlideDown = (!(vrtxAdmin.isIE && vrtxAdmin.browserVersion < 10) && !vrtxAdmin.isMobileWebkitDevice) ?  "easeOutQuad" : "linear";
+  this.transitionEasingSlideUp = (!(vrtxAdmin.isIE && vrtxAdmin.browserVersion < 10) && !vrtxAdmin.isMobileWebkitDevice) ?  "easeInQuad" : "linear";
   
   // Application logic
   this.editorSaveButtonName = "";
@@ -128,6 +128,9 @@ function VrtxAdmin() {
   this.reloadFromServer = false; // changed by funcProceedCondition and used by funcComplete in completeFormAsync for admin-permissions
   
   this.ignoreAjaxErrors = false;
+  this._$.ajaxSetup({
+    timeout: 300000 // 5min
+  });
   
   this.runReadyLoad = true;
   
@@ -135,25 +138,6 @@ function VrtxAdmin() {
 };
 
 var vrtxAdmin = new VrtxAdmin();
-
-// Upgrade easing algorithm from 'linear' to 'easeOutQuad' and 'easeInQuad'
-// -- if not < IE 10 (and not iPhone, iPad and Android devices)
-if(!(vrtxAdmin.isIE && vrtxAdmin.browserVersion < 10) && !vrtxAdmin.isMobileWebkitDevice) {
-  vrtxAdmin.transitionEasingSlideDown = "easeOutQuad";
-  vrtxAdmin.transitionEasingSlideUp = "easeInQuad";
-}
-
-// Turn off animation in iPhone, iPad and Android (consider when iOS 5)
-if(vrtxAdmin.isMobileWebkitDevice) {
-  vrtxAdmin.transitionSpeed = 0;
-  vrtxAdmin.transitionCustomPermissionSpeed = 0;
-  vrtxAdmin.transitionPropSpeed = 0;
-  vrtxAdmin.transitionDropdownSpeed = 0;
-}
-
-vrtxAdmin._$.ajaxSetup({
-  timeout: 300000 // 5min
-});
 
 /*-------------------------------------------------------------------*\
     2. DOM is fully loaded ("load"-event) 

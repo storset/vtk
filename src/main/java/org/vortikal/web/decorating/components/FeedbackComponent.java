@@ -42,7 +42,7 @@ public class FeedbackComponent extends ViewRenderingDecoratorComponent {
 
         String emailTo = request.getStringParameter("mail-to");
         if(emailTo != null && !emailTo.equals("")) {
-            model.put("mailTo", emailTo);
+            model.put("mailto", emailTo);
         }
 
         String contactUrl = request.getStringParameter("contact-url");

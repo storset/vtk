@@ -471,8 +471,9 @@ VrtxEditor.prototype.setCKEditorConfig = function setCKEditorConfig(name, linkBr
       }
     }
   }
-
-  CKEDITOR.replace(name, config);
+  if(!isCkEditor(name)) {
+    CKEDITOR.replace(name, config);
+  }
 };
 
 function commentsCkEditor() {
@@ -639,8 +640,6 @@ $(document).ready(function() {
     }
   }
   
-  vrtxEdit.initCKEditors();
-  
   var docType = vrtxEdit.editorForm[0].className;
 
   if(docType && docType !== "") {
@@ -657,7 +656,7 @@ $(document).ready(function() {
         vrtxEdit.initAccordionGrouped();
         break;
       case "vrtx-semester-page":
-        vrtxEdit.initAccordionGrouped("[class*=link-box]")
+        vrtxEdit.initAccordionGrouped("[class*=link-box]");
         break;
       case "vrtx-samlet-program":
         var samletElm = vrtxEdit.editorForm.find(".samlet-element");
@@ -672,6 +671,8 @@ $(document).ready(function() {
         break;
     }
   }
+  
+  vrtxEdit.initCKEditors();
 });
 
 /**

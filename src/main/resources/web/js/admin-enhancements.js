@@ -969,8 +969,10 @@ VrtxAdmin.prototype.dropdownPlain = function dropdownPlain(selector) {
   languageMenu.addClass("dropdown-shortcut-menu-container");
 
   vrtxAdm.cachedBody.on("click", selector + "-header", function (e) {
-    _$(".dropdown-shortcut-menu-container:visible").slideUp(vrtxAdm.transitionDropdownSpeed, "swing");
+    vrtxAdm.closeDropdowns();
+    
     _$(this).next(".dropdown-shortcut-menu-container").not(":visible").slideDown(vrtxAdm.transitionDropdownSpeed, "swing");
+    
     e.stopPropagation();
     e.preventDefault();
   });
@@ -1017,8 +1019,10 @@ VrtxAdmin.prototype.dropdown = function dropdown(options) {
     list.find("li" + dropdownClickArea).addClass("dropdown-init");
     
     list.find("li.dropdown-init #dropdown-shortcut-menu-click-area").click(function (e) {
-      _$(".dropdown-shortcut-menu-container:visible").slideUp(vrtxAdm.transitionDropdownSpeed, "swing");
-      shortcutMenu.not(":visible").slideDown(vrtxAdm.transitionDropdownSpeed, "swing");   
+      vrtxAdm.closeDropdowns();
+      
+      shortcutMenu.not(":visible").slideDown(vrtxAdm.transitionDropdownSpeed, "swing");
+      
       e.stopPropagation();
       e.preventDefault();
     });

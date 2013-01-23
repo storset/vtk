@@ -66,11 +66,11 @@
 
   <div class="vrtx-feedback">
     <span class="vrtx-feedback-title"><@vrtx.msg code="feedback.title" default="Did you find what you were looking for?" /></span>
-    <#if mailTo?has_content>
-      <#assign link = link + "&mailto=" + mailTo?url('UTF-8') />
+    <#if mailto?has_content>
+      <#assign link = link + "&mailto=" + mailto?url('UTF-8') />
     </#if>
-    <#if contactUrl?has_content>
-      <#assign link = link + "&contacturl=" + contactUrl?url('UTF-8') />
+    <#if contacturl?has_content>
+      <#assign link = link + "&contacturl=" + contacturl?url('UTF-8') />
     </#if>
     <ul>
       <li>

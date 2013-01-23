@@ -40,6 +40,8 @@ public class FeedbackComponent extends ViewRenderingDecoratorComponent {
     protected void processModel(Map<String, Object> model, DecoratorRequest request, DecoratorResponse response)
             throws Exception {
 
+        /* NB: popup-box has another controller and ftl */
+        
         String emailTo = request.getStringParameter("mail-to");
         if(emailTo != null && !emailTo.equals("")) {
             model.put("mailto", emailTo);
@@ -47,7 +49,7 @@ public class FeedbackComponent extends ViewRenderingDecoratorComponent {
 
         String contactUrl = request.getStringParameter("contact-url");
         if(contactUrl != null && !contactUrl.equals("")) {
-            model.put("contactUrl", contactUrl);
+            model.put("contacturl", contactUrl);
         }
         
         super.processModel(model, request, response);

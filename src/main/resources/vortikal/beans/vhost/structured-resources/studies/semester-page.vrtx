@@ -1,6 +1,8 @@
 resourcetype semester-page : fellestekst-document {
 
   properties {
+    cloned-course : boolean defaultvalue("false"),
+    cloned-course-code : string,
     fronter : boolean defaultvalue("false"),
     messages-placement : string defaultvalue("right"),
     max-number-of-messages : string,
@@ -145,6 +147,8 @@ resourcetype semester-page : fellestekst-document {
     [def messages-placement resource-prop-obj-val(".", "messages-placement")]
     [def max-number-of-messages resource-prop-obj-val(".", "max-number-of-messages")]
     [def fronter resource-prop-obj-val(".", "fronter")]
+    [def cloned-course resource-prop-obj-val(".", "cloned-course")]
+    [def cloned-course-code resource-prop-obj-val(".", "cloned-course-code")]
     [def studinfo-kontakt-text-field resource-prop-obj-val(".", "studinfo-kontakt-text-field")]
     [def locale resource-locale()]
     [def messages-uri resource-prop("./", "uri")]
@@ -175,7 +179,13 @@ resourcetype semester-page : fellestekst-document {
                 [endif]
               </div>
             [endif]
-            [if fronter]
+            [if cloned-course != null && cloned-course && cloned-course-code != null && cloned-course-code != ""]
+              <div class="vrtx-frontpage-box white-box">
+                <h2>[localized 'cloned-course']</h2>
+                <p>[localized 'cloned-course-from'] [call "include:ref" {"id" : cloned-course-code, "referencetype" : "emne"}].</p>
+              </div>
+            [endif]
+            [if fronter != null && fronter]
               <div class="vrtx-frontpage-box white-box">
                 <h2>[localized 'fronter']</h2>
                 <p>[localized 'fronter-text']</p>
@@ -232,6 +242,11 @@ resourcetype semester-page : fellestekst-document {
       no : (range = "1..20"),
       nn : (range = "1..20")
     },
+    cloned-course {
+      en : ("true" = "Yes", "false" = "No"),
+      no : ("true" = "Ja", "false" = "Nei"),
+      nn : ("true" = "Ja", "false" = "Nei")
+    },
     fronter {
       en : ("true" = "Yes", "false" = "No"),
       no : ("true" = "Ja", "false" = "Nei"),
@@ -267,6 +282,9 @@ resourcetype semester-page : fellestekst-document {
     link-box-six-links : (en : "Links", no : "Lenker", nn : "Lenker"),
     linktitle : (en : "Link title", no : "Lenketittel", nn : "Lenketittel"),
     link : (en : "Link", no : "Lenke", nn : "Lenke"),
+    cloned-course : (en : "Cloned course", no : "Klonet emne", nn : "Klona emne"),
+    cloned-course-code : (en : "Cloned from course code", no : "Klonet fra emnekode", nn : "Klona fra emnekode"),
+    cloned-course-from : (en : "This course is a clone of", no : "Dette er et klonet kurs av", nn : "Dette er eit klona kurs av"),
     fronter : (en : "Fronter", no : "Fronter", nn : "Fronter"),
     fronter-text : (en : "This course is using Fronter as a part of the education.", no : "Dette kurset benytter Fronter som verktøy i undervisningen.", nn : "Dette kurset nytte Fronter som verktøy i undervisninga."),
     log-into-fronter: (en : "Log into Fronter", no : "Logg inn i Fronter", nn : "Logg inn i Fronter"),

@@ -23,7 +23,6 @@ resourcetype semester-page : fellestekst-document {
     link-box-six-links : json (linktitle : string, link : resource_ref) multiple,
     teachersUsernames : string multiple,
     teachers : json (teacherName : string, teacherUrl : string) multiple,
-    studinfo-kontakt-text-field : simple_html noextract,
     studinfo-kontakt : string
   }
 
@@ -31,15 +30,15 @@ resourcetype semester-page : fellestekst-document {
     messages-placement (dropdown),
     max-number-of-messages (dropdown),
     group sec (schedule, exam, syllabus) (before link-box-one-title),
+    teachersUsernames (class[vrtx-autocomplete-username]),
     group link-box-one (link-box-one-title, link-box-one-links),
     group link-box-two (link-box-two-title, link-box-two-links),
     group link-box-three (link-box-three-title, link-box-three-links),
     group link-box-four (link-box-four-title, link-box-four-links),
     group link-box-five (link-box-five-title, link-box-five-links),
     group link-box-six (link-box-six-title, link-box-six-links),
-    teachersUsernames (class[vrtx-autocomplete-username]),
     studinfo-kontakt (class[vrtx-shared-text]),
-    group studinfo-kontakt-group (studinfo-kontakt, studinfo-kontakt-text-field)
+    studinfo-kontakt (after link-box-six)
   }
 
   scripts {
@@ -107,7 +106,6 @@ resourcetype semester-page : fellestekst-document {
       ##
       [def link-box-title resource-prop(".", title)]
       [if link-box-title != null && link-box-title != ""]
-        <h2>[val link-box-title]</h2>
         [def document structured-document()]
         [def links null]
         [if title = "link-box-one-title"]
@@ -124,6 +122,7 @@ resourcetype semester-page : fellestekst-document {
           [def links document.properties.link-box-six-links]
         [endif]
         [if links != null]
+          <h2>[val link-box-title]</h2>
           [list links link]
             <ul>
               [if link.link != null && link.link != "" && link.linktitle != null && link.linktitle != ""]
@@ -149,8 +148,19 @@ resourcetype semester-page : fellestekst-document {
     [def fronter resource-prop-obj-val(".", "fronter")]
     [def cloned-course resource-prop-obj-val(".", "cloned-course")]
     [def cloned-course-code resource-prop-obj-val(".", "cloned-course-code")]
-    [def studinfo-kontakt-text-field resource-prop-obj-val(".", "studinfo-kontakt-text-field")]
     [def locale resource-locale()]
+    [def link-box-one-title resource-prop-obj-val(".", "link-box-one-title")]
+    [def link-box-one-links resource-prop(".", "link-box-one-links")]
+    [def link-box-two-title resource-prop-obj-val(".", "link-box-two-title")]
+    [def link-box-two-links resource-prop(".", "link-box-two-links")]
+    [def link-box-three-title resource-prop-obj-val(".", "link-box-three-title")]
+    [def link-box-three-links resource-prop(".", "link-box-three-links")]
+    [def link-box-four-title resource-prop-obj-val(".", "link-box-four-title")]
+    [def link-box-four-links resource-prop(".", "link-box-four-links")]
+    [def link-box-five-title resource-prop-obj-val(".", "link-box-five-title")]
+    [def link-box-five-links resource-prop(".", "link-box-five-links")]
+    [def link-box-six-title resource-prop-obj-val(".", "link-box-six-title")]
+    [def link-box-six-links resource-prop(".", "link-box-six-links")]
     [def messages-uri resource-prop("./", "uri")]
     [if locale != null && (locale = "no_NO" || locale = "nn")]
       [def messages-uri messages-uri + "/beskjeder"]
@@ -192,14 +202,21 @@ resourcetype semester-page : fellestekst-document {
                 <a href="https://fronter.uio.no/" class="button"><span>[localized 'log-into-fronter']</span></a>
               </div>
             [endif]
-            <div class="vrtx-frontpage-box white-box">
-              [call "comp:resource-links"{"title":"link-box-one-title"}]
-              [call "comp:resource-links"{"title":"link-box-two-title"}]
-              [call "comp:resource-links"{"title":"link-box-three-title"}]
-              [call "comp:resource-links"{"title":"link-box-four-title"}]
-              [call "comp:resource-links"{"title":"link-box-five-title"}]
-              [call "comp:resource-links"{"title":"link-box-six-title"}]
-            </div>
+            [if (link-box-one-title != null && link-box-one-title != "" && link-box-one-links != null) ||
+                (link-box-two-title != null && link-box-two-title != "" && link-box-two-links != null) ||
+                (link-box-three-title != null && link-box-three-title != "" && link-box-three-links != null) ||
+                (link-box-four-title != null && link-box-four-title != "" && link-box-four-links != null) ||
+                (link-box-five-title != null && link-box-five-title != "" && link-box-five-links != null) ||
+                (link-box-six-title != null && link-box-six-title != "" && link-box-six-links != null)]
+              <div class="vrtx-frontpage-box white-box">
+                [call "comp:resource-links"{"title":"link-box-one-title"}]
+                [call "comp:resource-links"{"title":"link-box-two-title"}]
+                [call "comp:resource-links"{"title":"link-box-three-title"}]
+                [call "comp:resource-links"{"title":"link-box-four-title"}]
+                [call "comp:resource-links"{"title":"link-box-five-title"}]
+                [call "comp:resource-links"{"title":"link-box-six-title"}]
+              </div>
+            [endif]
           </div>
           <div id="vrtx-additional-content">
             [call "resource:teacher-list"{"cssClass":"vrtx-distach-bottom"}]
@@ -208,11 +225,8 @@ resourcetype semester-page : fellestekst-document {
             [else]
               <div class="vrtx-frontpage-box white-box">
             [endif]
-              <h2>[localized 'studinfo-kontakt-group']</h2>
+              <h2>[localized 'studinfo-kontakt']</h2>
               [call "comp:vis-fellestekst" {"docType":"studinfo-kontakt", "propName":"studinfo-kontakt"}]
-              [if studinfo-kontakt-text-field != null && studinfo-kontakt-text-field != ""]
-                [val studinfo-kontakt-text-field # unescaped]
-              [endif]
             </div>
             [if messages-placement = null || messages-placement = "right"]
               <div class="vrtx-frontpage-box white-box">
@@ -288,9 +302,7 @@ resourcetype semester-page : fellestekst-document {
     fronter : (en : "Fronter", no : "Fronter", nn : "Fronter"),
     fronter-text : (en : "This course is using Fronter as a part of the education.", no : "Dette kurset benytter Fronter som verktøy i undervisningen.", nn : "Dette kurset nytte Fronter som verktøy i undervisninga."),
     log-into-fronter: (en : "Log into Fronter", no : "Logg inn i Fronter", nn : "Logg inn i Fronter"),
-    studinfo-kontakt-text-field : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
-    studinfo-kontakt : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
-    studinfo-kontakt-group : (en : "Contact", no : "Kontakt", nn : "Kontakt"),
+    studinfo-kontakt : (en : "Contact", no : "Kontakt", nn : "Kontakt"),
     messages-placement : (en : "Placement of messages", no : "Plassering av beskjeder", nn : "Plassering av beskjeder"),
     max-number-of-messages : (en : "Number of messages", no : "Antall beskjeder", nn : "Talet på beskjedar"),
     messages : (en : "Messages", no : "Beskjeder", nn : "Beskjeder"),

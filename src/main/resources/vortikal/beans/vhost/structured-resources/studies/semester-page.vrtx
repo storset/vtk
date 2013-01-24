@@ -5,7 +5,7 @@ resourcetype semester-page : fellestekst-document {
     cloned-course-code : string,
     fronter : boolean defaultvalue("false"),
     messages-placement : string defaultvalue("right"),
-    max-number-of-messages : string,
+    max-number-of-messages : string defaultvalue("3"),
     schedule : resource_ref,
     exam : resource_ref,
     syllabus : resource_ref,
@@ -185,7 +185,7 @@ resourcetype semester-page : fellestekst-document {
                 [if max-number-of-messages != null && max-number-of-messages != ""]
                   [call "include:messages" {"uri" : messages-uri, "max-number-of-messages" : max-number-of-messages}]
                 [else]
-                  [call "include:messages" {"uri" : messages-uri}]
+                  [call "include:messages" {"uri" : messages-uri, "max-number-of-messages" : "3"}]
                 [endif]
               </div>
             [endif]
@@ -234,7 +234,7 @@ resourcetype semester-page : fellestekst-document {
                 [if max-number-of-messages != null && max-number-of-messages != ""]
                   [call "include:messages" {"uri" : messages-uri, "compact-view" : "true", "max-number-of-messages" : max-number-of-messages}]
                 [else]
-                  [call "include:messages" {"uri" : messages-uri, "compact-view" : "true"}]
+                  [call "include:messages" {"uri" : messages-uri, "compact-view" : "true", "max-number-of-messages" : "3"}]
                 [endif]
               </div>
             [endif]
@@ -273,7 +273,7 @@ resourcetype semester-page : fellestekst-document {
     localized-group : (en : "group", no : "gruppe", nn : "gruppe"),
     semesterpage-for : (en : "Semester page for", no : "Semesterside for", nn : "Semesterside for"),
     schedule : (en : "Schedule", no : "Timeplan", nn : "Timeplan"),
-    exam : (en : "Exam", no : "Eksamen", nn : "Eksamen"),
+    exam : (en : "Examination: Time and place", no : "Eksamen: Tid og sted", nn : "Eksamen: Tid og stad"),
     syllabus : (en : "Syllabus", no : "Pensumliste", nn : "Pensumliste"),
     sec : (en : "Fixed elements", no : "Faste elementer", nn : "Faste elementer"),
     link-box-one : (en : "Resource links 1", no : "Ressurslenker 1", nn : "Ressurslenker 1"),
@@ -301,7 +301,7 @@ resourcetype semester-page : fellestekst-document {
     cloned-course-from : (en : "This course is a clone of", no : "Dette er et klonet kurs av", nn : "Dette er eit klona kurs av"),
     fronter : (en : "Fronter", no : "Fronter", nn : "Fronter"),
     fronter-text : (en : "This course is using Fronter as a part of the education.", no : "Dette kurset benytter Fronter som verktøy i undervisningen.", nn : "Dette kurset nytte Fronter som verktøy i undervisninga."),
-    log-into-fronter: (en : "Log into Fronter", no : "Logg inn i Fronter", nn : "Logg inn i Fronter"),
+    log-into-fronter: (en : "Log into Fronter", no : "Logg på Fronter", nn : "Logg på Fronter"),
     studinfo-kontakt : (en : "Contact", no : "Kontakt", nn : "Kontakt"),
     messages-placement : (en : "Placement of messages", no : "Plassering av beskjeder", nn : "Plassering av beskjeder"),
     max-number-of-messages : (en : "Number of messages", no : "Antall beskjeder", nn : "Talet på beskjedar"),

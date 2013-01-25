@@ -97,7 +97,8 @@ resourcetype course-description : fellestekst-document {
     evaluering-av-emnet (class[vrtx-shared-text]),
     group evaluering-av-emnet-group (evaluering-av-emnet, evaluering-av-emnet-text-field) vertical,
     other-text-field (after evaluering-av-emnet-group),
-    studinfo-kontakt (class[vrtx-shared-text])
+    studinfo-kontakt (class[vrtx-shared-text]),
+    studinfo-kontakt (after other-text-field)
   }
 
   scripts {

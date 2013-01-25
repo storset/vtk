@@ -210,6 +210,7 @@
      <#if !isEventCalendarListing>
 	   <@viewutils.pagingSubscribeServices />
 	 </#if>
+	 <#-- XXX: this is quite hacky -->
      <#if (collection.resourceType != 'image-listing'
        && collection.resourceType != 'person-listing'
        && !isEventCalendarListing

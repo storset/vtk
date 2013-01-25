@@ -4,17 +4,13 @@
 <div class="vrtx-messages-main-content-wrapper">
 
   <div class="vrtx-messages-header">
-    <#if title??>
-      <h2>${title}
-        <#if editMessageFolder?exists && editMessageFolder >
-          <a class="vrtx-message-listing-create" href="${vrtx.relativeLinkConstructor("${messageFolder.URI}", 'simpleMessageEditor')}">
-            ${vrtx.getMsg("message-listing.new-message")}
-          </a>
-        </#if>
-      </h2>
-    <#else>  
-      <h2>${vrtx.getMsg("message-listing.title")}</h2>
-    </#if>
+    <h2><#if title??>${title}<#else>${vrtx.getMsg("message-listing.title")}</#if>
+      <#if editMessageFolder?? && editMessageFolder >
+        <a class="vrtx-message-listing-create" href="${vrtx.relativeLinkConstructor("${messageFolder.URI}", 'simpleMessageEditor')}">
+          ${vrtx.getMsg("message-listing.new-message")}
+        </a>
+      </#if>
+    </h2>
   </div>
   
   <div class="vrtx-messages">

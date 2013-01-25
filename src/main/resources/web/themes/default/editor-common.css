@@ -185,8 +185,9 @@ h2 {
 
 resource\.programContext\.title input,
 resource\.programOptionContext\.title input,
-resource\.courseContext\.course-name input,
-resource\.courseContext\.course-name-english input,
+resource\.courseContext\.course-name-no input,
+resource\.courseContext\.course-name-nn input,
+resource\.courseContext\.course-name-en input,
 div.aggregation input,
 div.manually-approve-from input,
 div.cssUrl input {

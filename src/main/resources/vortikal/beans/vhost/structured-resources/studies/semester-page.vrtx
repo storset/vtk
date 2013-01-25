@@ -161,11 +161,24 @@ resourcetype semester-page : fellestekst-document {
     [def link-box-five-links resource-prop(".", "link-box-five-links")]
     [def link-box-six-title resource-prop-obj-val(".", "link-box-six-title")]
     [def link-box-six-links resource-prop(".", "link-box-six-links")]
-    [def messages-uri resource-prop("./", "uri")]
+    [def messagelisting null]
+    [def messagelisting-uri resource-prop("./", "uri")]
     [if locale != null && (locale = "no_NO" || locale = "nn")]
-      [def messages-uri messages-uri + "/beskjeder"]
+      [def messagelisting-uri messagelisting-uri + "/beskjeder"]
+      [def messagelisting resource(messagelisting-uri)]
+      [if messagelisting = null]
+        [def messagelisting-uri resource-prop("./", "uri")]
+        [def messagelisting-uri messagelisting-uri + "/messages"]
+        [def messagelisting resource(messagelisting-uri)]
+      [endif]
     [else]
-      [def messages-uri messages-uri + "/messages"]
+      [def messagelisting-uri messagelisting-uri + "/messages"]
+      [def messagelisting resource(messagelisting-uri)]
+      [if messagelisting = null]
+        [def messagelisting-uri resource-prop("./", "uri")]
+        [def messagelisting-uri messagelisting-uri + "/beskjeder"]
+        [def messagelisting resource(messagelisting-uri)]
+      [endif]
     [endif]
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml">
@@ -183,9 +196,9 @@ resourcetype semester-page : fellestekst-document {
               <div class="vrtx-frontpage-box white-box">
                 <h2>[localized 'messages']</h2>
                 [if max-number-of-messages != null && max-number-of-messages != ""]
-                  [call "include:messages" {"uri" : messages-uri, "max-number-of-messages" : max-number-of-messages}]
+                  [call "include:messages" {"uri" : messagelisting-uri, "max-number-of-messages" : max-number-of-messages}]
                 [else]
-                  [call "include:messages" {"uri" : messages-uri, "max-number-of-messages" : "3"}]
+                  [call "include:messages" {"uri" : messagelisting-uri, "max-number-of-messages" : "3"}]
                 [endif]
               </div>
             [endif]
@@ -232,9 +245,9 @@ resourcetype semester-page : fellestekst-document {
               <div class="vrtx-frontpage-box white-box">
                 <h2>[localized 'messages']</h2>
                 [if max-number-of-messages != null && max-number-of-messages != ""]
-                  [call "include:messages" {"uri" : messages-uri, "compact-view" : "true", "max-number-of-messages" : max-number-of-messages}]
+                  [call "include:messages" {"uri" : messagelisting-uri, "compact-view" : "true", "max-number-of-messages" : max-number-of-messages}]
                 [else]
-                  [call "include:messages" {"uri" : messages-uri, "compact-view" : "true", "max-number-of-messages" : "3"}]
+                  [call "include:messages" {"uri" : messagelisting-uri, "compact-view" : "true", "max-number-of-messages" : "3"}]
                 [endif]
               </div>
             [endif]

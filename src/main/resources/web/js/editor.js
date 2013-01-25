@@ -50,8 +50,8 @@ function VrtxEditor() {
   this.selectMappings = { "teachingsemester":                    { "particular-semester":   ".if-teachingsemester-particular",
                                                                    "every-other":           ".teachingsemester-every-other-semester",
                                                                    "other":                 ".teachingsemester-other"                 },
-                          "examsemester":                        { "particular-semester":   ".examsemester-every-other-semester",
-                                                                   "every-other":           ".if-examsemester-particular",
+                          "examsemester":                        { "particular-semester":   ".if-examsemester-particular",
+                                                                   "every-other":           ".examsemester-every-other-semester",
                                                                    "other":                 ".examsemester-other"                     },
                           "teaching-language":                   { "other":                 ".teaching-language-text-field"           }
                         };

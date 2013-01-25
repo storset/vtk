@@ -14,16 +14,20 @@
       </h2>
     </#if>
   </div>
-
-  <div class="vrtx-messages-list">
-    <#if messages??>
-      <@messageListing.displayMessages messages nullArg compactView/>
-      <#if moreMessages?? && moreMessages>
-        <a href="${messageFolder.URI}"><@vrtx.msg code="" default="See all messages"/></a>
+  
+  <#if messageFolder??>
+    <div class="vrtx-messages-list">
+      <#if messages??>
+        <@messageListing.displayMessages messages nullArg compactView/>
+        <#if moreMessages?? && moreMessages>
+          <a href="${messageFolder.URI}"><@vrtx.msg code="" default="See all messages"/></a>
+        </#if>
+      <#else>
+        <@vrtx.msg code="" default="No messages were found in ${messageFolder.URI}" />
       </#if>
-    <#else>
-      <@vrtx.msg code="" default="No messages were found in ${messageFolder.URI}" />
-    </#if>
-  </div>
+    </div>
+  <#else>
+     <@vrtx.msg code="" default="No message folder was found" />
+  </#if>
 
 </div>

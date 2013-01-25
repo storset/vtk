@@ -194,7 +194,6 @@ resourcetype semester-page : fellestekst-document {
             </div>
             [if messages-placement != null && messages-placement = "middle"]
               <div class="vrtx-frontpage-box white-box">
-                <h2>[localized 'messages']</h2>
                 [if max-number-of-messages != null && max-number-of-messages != ""]
                   [call "include:messages" {"uri" : messagelisting-uri, "max-number-of-messages" : max-number-of-messages}]
                 [else]
@@ -243,7 +242,6 @@ resourcetype semester-page : fellestekst-document {
             </div>
             [if messages-placement = null || messages-placement = "right"]
               <div class="vrtx-frontpage-box white-box">
-                <h2>[localized 'messages']</h2>
                 [if max-number-of-messages != null && max-number-of-messages != ""]
                   [call "include:messages" {"uri" : messagelisting-uri, "compact-view" : "true", "max-number-of-messages" : max-number-of-messages}]
                 [else]

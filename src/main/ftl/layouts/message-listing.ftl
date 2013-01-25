@@ -7,27 +7,29 @@
     <#if title??>
       <h2>${title}
         <#if editMessageFolder?exists && editMessageFolder >
-          <a id="vrtx-message-listing-create" href="${vrtx.relativeLinkConstructor("${messageFolder.URI}", 'simpleMessageEditor')}">
+          <a class="vrtx-message-listing-create" href="${vrtx.relativeLinkConstructor("${messageFolder.URI}", 'simpleMessageEditor')}">
             ${vrtx.getMsg("message-listing.new-message")}
           </a>
         </#if>
       </h2>
+    <#else>  
+      <h2>${vrtx.getMsg("message-listing.title")}</h2>
     </#if>
   </div>
   
-  <#if messageFolder??>
-    <div class="vrtx-messages-list">
+  <div class="vrtx-messages">
+    <#if messageFolder??>
       <#if messages??>
         <@messageListing.displayMessages messages nullArg compactView/>
         <#if moreMessages?? && moreMessages>
-          <a href="${messageFolder.URI}"><@vrtx.msg code="" default="See all messages"/></a>
+          <a href="${messageFolder.URI}">${vrtx.getMsg("message-listing.more")}</a>
         </#if>
       <#else>
-        <@vrtx.msg code="" default="No messages were found in ${messageFolder.URI}" />
+        <p>${vrtx.getMsg("message-listing.no-messages")} ${messageFolder.URI}</p>
       </#if>
-    </div>
-  <#else>
-     <@vrtx.msg code="" default="No message folder was found" />
-  </#if>
-
+    <#else>
+       <p>${vrtx.getMsg("message-listing.no-message-folder")}</p>
+    </#if>
+  </div>
+  
 </div>

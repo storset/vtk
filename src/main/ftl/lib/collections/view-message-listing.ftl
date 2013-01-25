@@ -22,17 +22,26 @@
 
 <#macro displayMessages messages editLinks=[] compactView=false>
   <#local i = 1 />
+  <#if compactView><div class="vrtx-feed"><ul class="items"></#if>
   <#list messages as message>
-
+  
     <#local locale = vrtx.getLocale(message) />
     <#local uri = vrtx.getUri(message) />
+    <#assign title = vrtx.propValue(message, "title") />
+    <#if !title?has_content>
+      <#assign title = vrtx.propValue(message, "solr.name") />
+    </#if>
+    <#local publishDateProp = vrtx.prop(message, 'publish-date') />
 
-    <div id="vrtx-result-${i}" class="vrtx-resource">
+    <#if compactView> <#-- XXX: use feed-component instead (but need to avoid another search)? -->
+      <li class="item-${i}">
+        <a class="item-title" href="${uri?html}">${title?html}</a>
+        <span class="published-date"><@vrtx.date value=publishDateProp.dateValue format='long' locale=locale /></span>
+      </li>
+    <#else>
+
+    <div class="vrtx-result-${i} vrtx-resource">
       <div class="vrtx-title">
-        <#assign title = vrtx.propValue(message, "title") />
-        <#if !title?has_content>
-          <#assign title = vrtx.propValue(message, "solr.name") />
-        </#if>
         <a class="vrtx-title" href="${uri?html}">${title?html}</a>
         <#if editLinks?exists && editLinks[message_index]?exists && editLinks[message_index]>
           <a class="vrtx-message-listing-edit" href="${vrtx.relativeLinkConstructor(uri, 'simpleMessageEditor')}"><@vrtx.msg code="collectionListing.editlink" /></a>
@@ -43,34 +52,35 @@
         <span class="published-date-prefix">
           <@vrtx.localizeMessage code="viewCollectionListing.publishedDate" default="" args=[] locale=locale />
         </span>
-        <#local publishDateProp = vrtx.prop(message, 'publish-date') />
         <@vrtx.date value=publishDateProp.dateValue format='long' locale=locale />
       </div>
 
       <#local numberOfComments = vrtx.prop(message, "numberOfComments") />
       <#if numberOfComments?has_content >
-      <div class="vrtx-number-of-comments-add-event-container">
-        <@viewutils.displayNumberOfComments message locale />
-      </div>
+        <div class="vrtx-number-of-comments-add-event-container">
+          <@viewutils.displayNumberOfComments message locale />
+        </div>
       </#if>
-
 
       <div class="description introduction">
         <#assign messageIntro = vrtx.propValue(message, "listingDisplayedMessage", "", "") />
-        <#if messageIntro?exists && !compactView>
+        <#if messageIntro??>
           ${messageIntro}
           <#assign isTruncated = vrtx.propValue(message, "isTruncated", "", "") />
           <#if isTruncated?exists && isTruncated = 'true'>
             <div class="vrtx-read-more">
-            <a href="${message.URI?html}" class="more">
-              <@vrtx.localizeMessage code="viewCollectionListing.readMore" default="" args=[] locale=locale />
-            </a>
+              <a href="${message.URI?html}" class="more">
+                <@vrtx.localizeMessage code="viewCollectionListing.readMore" default="" args=[] locale=locale />
+              </a>
             </div>
           </#if>
         </#if>
       </div>
-
     </div>
+    
+    </#if>
+   
     <#local i = i + 1 />
   </#list>
+   <#if compactView></ul></div></#if>
 </#macro>

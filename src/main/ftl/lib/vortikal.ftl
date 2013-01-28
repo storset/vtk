@@ -628,13 +628,14 @@
     <#if resource.contentType??>
       <#local contentType = resource.contentType />
     </#if>
-    <#if iconText = "file" && contentType = "application/octet-stream">
-      <#local iconText = "binary">
+    <#if iconText = "file">
+      <#local iconText = resourceContentTypeToIconResolver(contentType) />
     </#if>
     ${iconText}
   </#compress>
 </#macro>
 
+<#-- XXX: can remove this when obsoleted becomes obsolete -->
 <#macro resourceToIconResolver resource>
   <#compress>
     <#local iconText = "" />
@@ -642,13 +643,31 @@
       <#local iconText = resource.resourceType />
     </#if>
     <#local contentType = propValue(resource, "contentType") />
-    <#if iconText = "file" && contentType?has_content && contentType = "application/octet-stream">
-      <#local iconText = "binary" />
+    <#if iconText = "file" && contentType?has_content>
+      <#local iconText = resourceContentTypeToIconResolver(contentType) />
     </#if>
     <#local obsoleted = propValue(resource, 'obsoleted')>
     ${iconText}<#if obsoleted?has_content> obsoleted</#if>
   </#compress>
 </#macro>
+
+<#function resourceContentTypeToIconResolver contentType>
+  <#if contentType = "application/octet-stream">
+    <#return "binary" />
+  <#elseif contentType = "application/x-apple-diskimage">
+    <#return "dmg" />
+  <#elseif contentType = "application/zip"
+        || contentType = "application/x-gzip"
+        || contentType = "application/x-bzip2"
+        || contentType = "application/x-7z-compressed"
+        || contentType = "application/x-compress">
+    <#return "zip" />
+  <#elseif contentType = "application/java-archive">
+    <#return "jar" />
+  <#else>  
+    <#return "file" />
+  </#if>
+</#function>
 
 <#function resolveInheritedProperty propertyName>
   <#assign resource = VRTX_INHERITED_PROPERTY_RESOLVER.resolve(propertyName)?default("undefined") />

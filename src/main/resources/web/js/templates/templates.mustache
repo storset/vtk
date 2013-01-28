@@ -58,7 +58,7 @@
   </div>
   <div class="{{ clazz }}-browse">
     <div class="vrtx-textfield">
-      <input type="text" name="{{ inputFieldName }}" id="{{ inputFieldName }}" onblur="{{ onBlur }}" value="" size="{{ size }}" />
+      <input type="text" name="{{ inputFieldName }}" id="{{ inputFieldName }}" value="" size="{{ size }}" />
     </div>
     <div class="vrtx-button">
       <button type="button" onclick="browseServer('{{ inputFieldName }}', '{{ fckEditorBaseUrl }}', '{{ parentURI }}', '{{ fckBrowsePath }}', '{{ type }}');">
@@ -77,7 +77,7 @@
   </div>
   <div class="{{ clazz }}-browse">
     <div class="vrtx-textfield">
-      <input type="text" name="{{ inputFieldName }}" id="{{ inputFieldName }}" onblur="{{ onBlur }}" value="" size="{{ size }}" />
+      <input type="text" class="preview-image-inputfield" name="{{ inputFieldName }}" id="{{ inputFieldName }}" value="" size="{{ size }}" />
     </div>
     <div class="vrtx-button">
       <button type="button" onclick="browseServer('{{ inputFieldName }}', '{{ fckEditorBaseUrl }}', '{{ parentURI }}', '{{ fckBrowsePath }}', '{{ type }}');">
@@ -85,7 +85,7 @@
       </button>
     </div>
   </div>
-  <div id="{{ inputFieldName }}.preview" class="vrtx-image-ref-preview no-preview">
+  <div id="{{ inputFieldName }}.preview" class="vrtx-image-ref-preview no-preview" style="display: none">
     <label for="{{ inputFieldName }}.preview">{{ previewTitle }}</label>
 	<span>{{ previewNoImageText }}</span>
     <div id="{{ inputFieldName }}.preview-inner" class="vrtx-image-ref-preview-inner">

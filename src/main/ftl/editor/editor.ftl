@@ -373,7 +373,7 @@
             </div>
             <div class="vrtx-button">
               <button type="button" onclick="browseServer('resource.${name}', '${fckeditorBase.url?html}', '${baseFolder}',
-                      '${fckBrowse.url.pathRepresentation}');"><@vrtx.msg code="editor.browseImages"/></button>
+                '${fckBrowse.url.pathRepresentation}');"><@vrtx.msg code="editor.browseImages"/></button>
             </div>
           </div>
           <div id="resource.${name}.preview"<#if !value?has_content> class="no-preview"</#if>>
@@ -405,24 +405,26 @@
               <div class="vrtx-button">
                 <button type="button" onclick="browseServer('resource.${name}', '${fckeditorBase.url?html}', '${baseFolder}',
                   '${fckBrowse.url.pathRepresentation}');"><@vrtx.msg code="editor.browseImages"/></button>
-
               </div>
             </div>
-            <div id="resource.${name}.preview">
-            
-              <#local thumbnail = '' />
-              <#if value?exists && value != "">
-                <#if  vrtx.linkConstructor(value, 'displayThumbnailService')?exists >
-                  <#local thumbnail = vrtx.linkConstructor(value, 'displayThumbnailService').getPathRepresentation() />
+            <div id="resource.${name}.preview"<#if !value?has_content> class="no-preview"</#if>>
+              <div class="resource.${name}.preview-inner property-label"><@vrtx.msg code="editor.image.preview-title"/></div>
+              <span><@vrtx.msg code="editor.image.no-preview-text"/></span>
+              <div id="resource.${name}.preview-inner">
+                <#local thumbnail = '' />
+                <#if value?exists && value != "">
+                  <#if  vrtx.linkConstructor(value, 'displayThumbnailService')?exists >
+                    <#local thumbnail = vrtx.linkConstructor(value, 'displayThumbnailService').getPathRepresentation() />
+                  <#else>
+                    <#local thumbnail = value />
+                  </#if> 
+                </#if>          
+                <#if thumbnail != ''>
+                  <img src="${thumbnail?html}" alt="preview" />
                 <#else>
-                  <#local thumbnail = value />
-                </#if> 
-              </#if>          
-              <#if thumbnail != ''>
-                <img src="${thumbnail?html}" alt="preview" />
-              <#else>
-                <img src="" alt="no-image" style="visibility: hidden; width: 10px;" />
-              </#if>
+                  <img src="/vrtx/__vrtx/static-resources/themes/default/images/no-preview-image.png" alt="no preview" />
+                </#if>
+              </div>
             </div>
           </div>
         </#if>

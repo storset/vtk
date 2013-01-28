@@ -84,8 +84,9 @@
           var hasFeaturedArticles = _$("#resource\\.featured-articles").length;
           var hasAggregation = _$("#resource\\.aggregation").length;
           var hasManuallyApprove = _$("#resource\\.manually-approve-from").length;
+          var hasMultipleInputFields = hasFeaturedArticles || hasAggregation || hasManuallyApprove;
           
-          if(hasFeaturedArticles || hasAggregation || hasManuallyApprove) {
+          if(hasMultipleInputFields) {
             MULTIPLE_INPUT_FIELD_INITIALIZED = $.Deferred();
           }
         
@@ -106,7 +107,9 @@
             var manuallyApproveButton = $("#manually-approve-container-title");
             manuallyApproveButton.parent().find("> div:first-child").append(manuallyApproveButton.remove());
           }
-          MULTIPLE_INPUT_FIELD_INITIALIZED.resolve();
+          if(hasMultipleInputFields) {
+            MULTIPLE_INPUT_FIELD_INITIALIZED.resolve();
+          }
         }); 
       }); 
 

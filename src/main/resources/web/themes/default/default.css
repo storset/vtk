@@ -525,6 +525,16 @@ a:hover {
   background: transparent url(images/file-binary-obsoleted.png) no-repeat 0px 3px;
 }
 
+#resource-title.dmg {
+  background: transparent url(images/file-dmg.png) no-repeat 0px 3px;
+}
+#resource-title.zip {
+  background: transparent url(images/file-zip.png) no-repeat 0px 3px;
+}
+#resource-title.jar {
+  background: transparent url(images/file-jar.png) no-repeat 0px 3px;
+}
+
 #resource-title.doc {
   background: transparent url(images/file-doc.gif) no-repeat 0px 2px;
 }
@@ -1687,6 +1697,25 @@ body#vrtx-report-broken-links #directory-listing td.vrtx-report-broken-links {
 #directory-listing tr.binary.obsoleted td.name span.vrtx-trash-can-name-text,
 #directory-listing tr.binary.obsoleted td.vrtx-report-name a {
   background: url(images/file-binary-small-obsoleted.png) no-repeat center left;
+}
+
+#directory-listing tr.dmg td.name a,
+#directory-listing tr.dmg td.name .unauthorizedListedResource-wrapper,
+#directory-listing tr.dmg td.name span.vrtx-trash-can-name-text,
+#directory-listing tr.dmg td.vrtx-report-name a {
+  background: url(images/file-dmg-small.png) no-repeat center left;
+}
+#directory-listing tr.zip td.name a,
+#directory-listing tr.zip td.name .unauthorizedListedResource-wrapper,
+#directory-listing tr.zip td.name span.vrtx-trash-can-name-text,
+#directory-listing tr.zip td.vrtx-report-name a {
+  background: url(images/file-zip-small.png) no-repeat center left;
+}
+#directory-listing tr.jar td.name a,
+#directory-listing tr.jar td.name .unauthorizedListedResource-wrapper,
+#directory-listing tr.jar td.name span.vrtx-trash-can-name-text,
+#directory-listing tr.jar td.vrtx-report-name a {
+  background: url(images/file-jar-small.png) no-repeat center left;
 }
 
 #directory-listing tr.doc td.name a,

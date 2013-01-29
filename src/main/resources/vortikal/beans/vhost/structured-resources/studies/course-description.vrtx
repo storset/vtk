@@ -232,16 +232,16 @@ resourcetype course-description : fellestekst-document {
             [def semesters search('uri=' + uri + '/* && type IN semester-page && published=true')]
             [if typeof(semesterSearchSort) = 'function']
               [def semesters semesterSearchSort(semesters)]
-             [endif]
-             [list semesters semester]
-               [def url view-url(semester)]
-               [def term resource-prop-obj-val(semester, "semesterContext.semesterTerm")]
-               [def year resource-prop-obj-val(semester, "semesterContext.semesterYear")]
-               <li>
-                 <a href="[val url]">[if term != null && term != "" && year != null && year != ""][if term = "v"][localized 'spring'][else][localized 'autumn'][endif] [val year][else][val url][endif]</a>
-               </li>
-             [endlist]
-           </ul>
+            [endif]
+            [list semesters semester]
+              [def url view-url(semester)]
+              [def term resource-prop-obj-val(semester, "semesterContext.semesterTerm")]
+              [def year resource-prop-obj-val(semester, "semesterContext.semesterYear")]
+              <li>
+                <a href="[val url]">[if term != null && term != "" && year != null && year != ""][if term = "v"][localized 'spring'][else][localized 'autumn'][endif] [val year][else][val url][endif]</a>
+              </li>
+            [endlist]
+          </ul>
         </p>
       </div>
       ##

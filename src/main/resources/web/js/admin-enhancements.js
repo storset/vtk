@@ -3092,9 +3092,9 @@ VrtxAdmin.prototype.serverFacade = {
           callbacks.error(xhr, textStatus);
         }
       },
-      complete: function (xhr, testStatus) {
+      complete: function (xhr, textStatus) {
         if(callbacks.complete) {
-          callbacks.complete(xhr, testStatus);
+          callbacks.complete(xhr, textStatus);
         }
       }
     });

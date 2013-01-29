@@ -140,6 +140,9 @@ resourcetype course-description : fellestekst-document {
             <td>
               [if teachingsemester != null && teachingsemester = "particular-semester"]
                 [def teachingsemesters document.properties.teachingsemesterParticularSemester]
+                [if typeof(semesterParticularSort) = 'function']
+                  [def teachingsemesters semesterParticularSort(teachingsemesters)]
+                [endif]
                 [if teachingsemesters != null]
                   [list teachingsemesters teachingsemester]
                     [if teachingsemester != null]
@@ -172,6 +175,9 @@ resourcetype course-description : fellestekst-document {
             <td>
               [if examsemester != null && examsemester = "particular-semester"]
                 [def examsemesters document.properties.examsemesterParticularSemester]
+                [if typeof(semesterParticularSort) = 'function']
+                  [def examsemesters semesterParticularSort(examsemesters)]
+                [endif]
                 [if examsemesters != null]
                   [list examsemesters examsemester]
                     [if examsemester != null]

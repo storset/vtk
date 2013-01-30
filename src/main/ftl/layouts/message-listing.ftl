@@ -16,7 +16,7 @@
   <div class="vrtx-messages">
     <#if messageFolder??>
       <#if messages??>
-        <@messageListing.displayMessages messages nullArg compactView/>
+        <@messageListing.displayMessages messages nullArg true compactView/>
         <#if moreMessages?? && moreMessages>
           <div class="vrtx-more">
             <a href="${messageFolder.URI}">${vrtx.getMsg("message-listing.more")}</a>

@@ -20,15 +20,15 @@
 
 </#macro>
 
-<#macro displayMessages messages editLinks=[] compactView=false componentView=false>
+<#macro displayMessages messages editLinks=[] componentView=false compactView=false >
   <#local i = 1 />
   <#if compactView><div class="vrtx-feed"><ul class="items"></#if>
   <#list messages as message>
     <#local locale = vrtx.getLocale(message) />
     <#local uri = vrtx.getUri(message) />
-    <#assign title = vrtx.propValue(message, "title") />
+    <#local title = vrtx.propValue(message, "title") />
     <#if !title?has_content>
-      <#assign title = vrtx.propValue(message, "solr.name") />
+      <#local title = vrtx.propValue(message, "solr.name") />
     </#if>
 
     <#if compactView> <#-- XXX: use feed-component instead (but need to avoid another search)? -->
@@ -47,7 +47,7 @@
           </#if> 
         </div>
         <#if componentView>
-          <#assign messageIntro = vrtx.propValue(message, "listingDisplayedMessage", "", "") />
+          <#local messageIntro = vrtx.propValue(message, "listingDisplayedMessage", "", "") />
           <#if messageIntro??>
             <div class="description introduction">
               ${messageIntro}
@@ -56,11 +56,25 @@
       
           <div class="vrtx-message-line">
             <span class="vrtx-message-line-last-modified-by">
-              <a href="/">Deus ex</a>
-            </span>      
+              <#-- TODO:
+              <#local modifiedBy = vrtx.prop(message, 'modifiedBy').principalValue />
+              <#if principalDocuments?? && principalDocuments[modifiedBy.name]??>
+                <#local principal = principalDocuments[modifiedBy.name] />
+                <#if principal.URL??>
+                  <#local val = val + " <a href='${principal.URL}'>${principal.description}</a>" />
+                <#else>
+                  <#local val = val + " ${principal.description}" />
+                </#if>
+              <#else>
+                <#local val = val + " " + vrtx.propValue(message, 'modifiedBy', 'link') />
+              </#if>
+              ${val}-->
+              Odd roger
+            </span>
+            <span class="vrtx-message-line-middle-fix"> - </span>
             <span class="vrtx-message-line-last-modified-date">
               <#local lastModifiedDateProp = vrtx.prop(message, 'lastModified') />
-              <@vrtx.date value=lastModifiedDatePropdateValue format='long' locale=locale />
+              <@vrtx.date value=lastModifiedDateProp.dateValue format='long' locale=locale />
             </span>
             <#local numberOfComments = vrtx.prop(message, "numberOfComments") />
             <#if numberOfComments?has_content >
@@ -70,7 +84,7 @@
             </#if>
           </div>
 
-          <#assign isTruncated = vrtx.propValue(message, "isTruncated", "", "") />
+          <#local isTruncated = vrtx.propValue(message, "isTruncated", "", "") />
           <#if isTruncated?exists && isTruncated = 'true'>
             <div class="vrtx-read-more">
               <a href="${message.URI?html}" class="more">
@@ -95,10 +109,10 @@
           </#if>
 
           <div class="description introduction">
-            <#assign messageIntro = vrtx.propValue(message, "listingDisplayedMessage", "", "") />
+            <#local messageIntro = vrtx.propValue(message, "listingDisplayedMessage", "", "") />
             <#if messageIntro??>
               ${messageIntro}
-              <#assign isTruncated = vrtx.propValue(message, "isTruncated", "", "") />
+              <#local isTruncated = vrtx.propValue(message, "isTruncated", "", "") />
               <#if isTruncated?exists && isTruncated = 'true'>
                 <div class="vrtx-read-more">
                   <a href="${message.URI?html}" class="more">

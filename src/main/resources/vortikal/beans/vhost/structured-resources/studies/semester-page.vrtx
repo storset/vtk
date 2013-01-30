@@ -195,9 +195,9 @@ resourcetype semester-page : fellestekst-document {
             [if messages-placement != null && messages-placement = "middle"]
               <div class="vrtx-frontpage-box white-box">
                 [if max-number-of-messages != null && max-number-of-messages != ""]
-                  [call "include:messages" {"uri" : messagelisting-uri, "max-number-of-messages" : max-number-of-messages, "component-view" : "true"}]
+                  [call "include:messages" {"uri" : messagelisting-uri, "max-number-of-messages" : max-number-of-messages}]
                 [else]
-                  [call "include:messages" {"uri" : messagelisting-uri, "max-number-of-messages" : "3", "component-view" : "true"}]
+                  [call "include:messages" {"uri" : messagelisting-uri, "max-number-of-messages" : "3"}]
                 [endif]
               </div>
             [endif]

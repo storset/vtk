@@ -30,6 +30,7 @@
  */
 package org.vortikal.web.decorating.components;
 
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -64,9 +65,6 @@ public class MessageComponent extends ViewRenderingDecoratorComponent {
 
     private static final String PARAMETER_COMPACT_VIEW = "compact-view";
     private final static String PARAMETER_COMPACT_VIEW_DESCRIPTION = "Set to 'true' to show compact view. Default is false";
-    
-    private static final String PARAMETER_COMPONENT_VIEW = "component-view";
-    private final static String PARAMETER_COMPONENT_VIEW_DESCRIPTION = "Set to 'true' to show the component view. Default is false";
 
     private SearchComponent searchComponent;
     private CollectionListingHelper helper;
@@ -121,10 +119,6 @@ public class MessageComponent extends ViewRenderingDecoratorComponent {
         String compactView = request.getStringParameter(PARAMETER_COMPACT_VIEW);
         boolean isCompactView = StringUtils.equalsIgnoreCase(compactView, "true");
         model.put("compactView", isCompactView);
-        
-        String componentView = request.getStringParameter(PARAMETER_COMPONENT_VIEW);
-        boolean isComponentView = StringUtils.equalsIgnoreCase(componentView, "true");
-        model.put("componentView", isComponentView);
 
         String title = request.getStringParameter(PARAMETER_TITLE);
         if (StringUtils.isNotBlank(title)) {
@@ -133,11 +127,15 @@ public class MessageComponent extends ViewRenderingDecoratorComponent {
 
         Listing result = searchComponent.execute(request.getServletRequest(), requestedMessageFolder, 1, pageLimit, 0);
         List<PropertySet> files = result.getFiles();
+        
+        Locale preferredLocale = localeResolver.resolveResourceLocale(requestedMessageFolder);
+        Map<String, Principal> principalDocuments = helper.getExistingPrincipalDocuments(new HashSet<PropertySet>(
+                files), preferredLocale, null);
+        
+        model.put("principalDocuments", principalDocuments);
         model.put("messages", files);
         model.put("editMessageFolder", helper.checkResourceForEditLink(repository, requestedMessageFolder, principal));
         model.put("messageFolder", requestedMessageFolder);
-
-        Locale preferredLocale = localeResolver.resolveResourceLocale(requestedMessageFolder);
         model.put("locale", preferredLocale);
 
         if (pageLimit < result.getTotalHits()) {
@@ -153,7 +151,6 @@ public class MessageComponent extends ViewRenderingDecoratorComponent {
         map.put(PARAMETER_MAX_NUMBER_OF_MESSAGES, PARAMETER_MAX_NUMBER_OF_MESSAGES_DESC);
         map.put(PARAMETER_TITLE, PARAMETER_TITLE_DESC);
         map.put(PARAMETER_COMPACT_VIEW, PARAMETER_COMPACT_VIEW_DESCRIPTION);
-        map.put(PARAMETER_COMPONENT_VIEW, PARAMETER_COMPONENT_VIEW_DESCRIPTION);
         return map;
     }
 

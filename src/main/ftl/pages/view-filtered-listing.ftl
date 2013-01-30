@@ -38,7 +38,9 @@
         <#list filters?keys as filterKey>
           <#assign filter = filters[filterKey]>
           <div class="vrtx-listing-filters-section <#if (filterKey_index = (filters?size - 1))>vrtx-listing-filters-section-last</#if>" id="vrtx-listing-filters-section-${filterKey}">
-            <h2>${vrtx.getMsg("listing-filters.${filterKey}.title")}</h2>
+            <#if useFilterTitle?? && useFilterTitle>
+              <h2>${vrtx.getMsg("listing-filters.${filterKey}.title")}</h2>
+            </#if>
             <ul>
             <#list filter?keys as parameterKey>
               <#assign url = filter[parameterKey].url>
@@ -66,7 +68,7 @@
     <#if (result?exists && result?has_content)>
       <#if from?exists && to?exists && total?exists>
         <div>
-          <@vrtx.msg code="listing-filters.${collection.resourceType}.from-to-total" args=[from, to, total] default="Listing results " + from + " - " +  to + " of total " + total + " resources" />
+          <@vrtx.msg code="listing-filters.${collection.resourceType}.from-to-total" args=[from, to, total] default="Showing " + from + "&ndash;" +  to + " of " + total + " resources" />
         </div>
       </#if>
       <#if collection.resourceType = 'course-group-listing'>
@@ -74,15 +76,13 @@
       <#elseif collection.resourceType = 'course-description-listing'>
         <@courseDescription.displayResult result />
       <#else>
-        <div>
+        <ul>
           <#list result as res>
             <#assign title = vrtx.propValue(res, 'title') />
             <#assign uri = vrtx.getUri(res) />
-            <p>
-              <a href="${uri}">${title}</a>
-            </p>
+            <li><a href="${uri}">${title}</a></li>
           </#list>
-        </div>
+        </ul>
       </#if>
     </#if>
 

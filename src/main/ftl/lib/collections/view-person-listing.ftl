@@ -1,5 +1,6 @@
 <#ftl strip_whitespace=true>
 <#import "../vortikal.ftl" as vrtx />
+<#-- XXX: should reuse similar FTL in person-list-util.ftl in vortex-project -->
 <#macro displayPersons personListing title="">
   <#local persons=personListing.files />
   <#if (persons?size > 0)>

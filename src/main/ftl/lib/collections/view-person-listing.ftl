@@ -68,7 +68,7 @@
             </#list>
           </#if>
           <#if alternativephonenumber??>
-            ${alternativephonenumber}
+            <span>${alternativephonenumber}</span>
           </#if>
         </td>
         <td class="vrtx-person-listing-email">

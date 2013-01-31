@@ -71,19 +71,21 @@
           <@vrtx.msg code="listing-filters.${collection.resourceType}.from-to-total" args=[from, to, total] default="Showing " + from + "&ndash;" +  to + " of " + total + " resources" />
         </div>
       </#if>
-      <#if collection.resourceType = 'course-group-listing'>
-        <@courseGroup.displayResult result />
-      <#elseif collection.resourceType = 'course-description-listing'>
-        <@courseDescription.displayResult result />
-      <#else>
-        <ul id="vrtx-listing-filter-results">
-          <#list result as res>
-            <#assign title = vrtx.propValue(res, 'title') />
-            <#assign uri = vrtx.getUri(res) />
-            <li><a href="${uri}">${title}</a></li>
-          </#list>
-        </ul>
-      </#if>
+      <div id="vrtx-listing-filter-results">
+        <#if collection.resourceType = 'course-group-listing'>
+          <@courseGroup.displayResult result />
+        <#elseif collection.resourceType = 'course-description-listing'>
+          <@courseDescription.displayResult result />
+        <#else>
+          <ul>
+            <#list result as res>
+              <#assign title = vrtx.propValue(res, 'title') />
+              <#assign uri = vrtx.getUri(res) />
+              <li><a href="${uri}">${title}</a></li>
+            </#list>
+          </ul>
+        </#if>
+      </div>
     </#if>
 
     <#if pageThroughUrls?exists && (pageThroughUrls?size > 1) >

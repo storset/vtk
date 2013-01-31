@@ -31,7 +31,7 @@
  *  12. Versioning
  *  13. Async functions
  *  14. Async helper functions and AJAX server façade
- *  15. CK browse server integration
+ *  15. Image preview and CK browse server integration
  *  16. Utils
  *  17. Override JavaScript / jQuery
  *
@@ -3123,7 +3123,7 @@ VrtxAdmin.prototype.serverFacade = {
 
 
 /*-------------------------------------------------------------------*\
-    15. CK browse server integration
+    15. Image preview and CK browse server integration
 \*-------------------------------------------------------------------*/
 
 var urlobj;

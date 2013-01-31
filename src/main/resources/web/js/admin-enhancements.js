@@ -198,20 +198,9 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
     activeTabMsg.remove();
   }
 
-  // Buttons into links
   vrtxAdm.logoutButtonAsLink();
 
-  // Move down resource menu when long title
-  var titleSplits = _$("h1 .title-split");
-  var resourceMenuLeft = _$("#resourceMenuLeft");
-  var titleSplitsLength = titleSplits.length;
-  if (resourceMenuLeft.length) {
-    if (titleSplitsLength == 2) {
-      resourceMenuLeft.css("marginTop", "-22px");
-    } else if (titleSplitsLength >= 3) {
-      resourceMenuLeft.css("marginTop", "0px");
-    }
-  }
+  vrtxAdm.adjustResourceTitle();
   
   vrtxAdm.initDropdowns();
 
@@ -329,7 +318,6 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
   });
 
   // Interactions initialization
-  createInteraction(bodyId, vrtxAdm, _$);
   vrtxAdm.collectionListingInteraction();
   editorInteraction(bodyId, vrtxAdm, _$);
   versioningInteraction(bodyId, vrtxAdm, _$);
@@ -407,7 +395,7 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
       // TODO: This map/lookup-obj is a little hacky..
       tabMenuServicesInjectMap = {
         "collectionListing.action.move-resources": "moveToSelectedFolderService",
-          "collectionListing.action.copy-resources": "copyToSelectedFolderService"
+        "collectionListing.action.copy-resources": "copyToSelectedFolderService"
       };
       for (i = tabMenuServices.length; i--;) {
         vrtxAdm.cachedContent.on("click", "input#" + tabMenuServices[i], function (e) {
@@ -994,6 +982,24 @@ VrtxAdmin.prototype.hideTips = function hideTips() {
 };
 
 /**
+ * Adjust resource title across multiple lines
+ *
+ * @this {VrtxAdmin}
+ */
+VrtxAdmin.prototype.adjustResourceTitle = function adjustResourceTitle() {
+  var resourceMenuLeft = this._$("#resourceMenuLeft");
+  if (resourceMenuLeft.length) {
+    var titleSplits = this._$("h1 .title-split");
+    var titleSplitsLength = titleSplits.length;
+    if (titleSplitsLength == 2) {
+      resourceMenuLeft.css("marginTop", "-22px");
+    } else if (titleSplitsLength >= 3) {
+      resourceMenuLeft.css("marginTop", "0px");
+    }
+  }
+};
+
+/**
  * Init adaptive breadcrumbs
  *
  * @this {VrtxAdmin}
@@ -1010,12 +1016,11 @@ VrtxAdmin.prototype.initAdaptiveBreadcrumbs = function initAdaptiveBreadcrumbs()
  * @this {VrtxAdmin}
  */
 VrtxAdmin.prototype.adaptiveBreadcrumbs = function adaptiveBreadcrumbs() {
-  var _$ = this._$;
   var breadcrumbs = this.cachedBreadcrumbs, 
       i = breadcrumbs.length,
       runnedAtStart = false;
   while(i--) {
-    var breadcrumb = _$(breadcrumbs[i]);
+    var breadcrumb = this._$(breadcrumbs[i]);
     var breadcrumbPos = breadcrumb.position();
     var breadcrumbPosTop = breadcrumbPos.top;
     var breadcrumbPosLeft = breadcrumbPos.left;
@@ -1055,20 +1060,6 @@ VrtxAdmin.prototype.adaptiveBreadcrumbs = function adaptiveBreadcrumbs() {
     6. Create service
     XXX: optimize more and needs more seperation
 \*-------------------------------------------------------------------*/
-
-function createInteraction(bodyId, vrtxAdm, _$) {  
-  vrtxAdmin.cachedAppContent.on("click", "#vrtx-checkbox-is-index input", function(e) {
-    isIndexFile($("#vrtx-textfield-file-name input").attr("name"), $(this).attr("name"));
-    e.stopPropagation();
-  });
-  vrtxAdmin.cachedAppContent.on("click", ".radio-buttons input", function(e) {
-    var focusedTextField = $(".vrtx-admin-form input[type='text']:visible:first");
-    if(focusedTextField.length && !focusedTextField.val().length) { // Only focus when empty
-      focusedTextField.focus();
-    }
-    e.stopPropagation();
-  });    
-}
 
 function createFuncComplete() {
   var lastColTitle = "";
@@ -1404,6 +1395,18 @@ VrtxAdmin.prototype.collectionListingInteraction = function collectionListingInt
   var vrtxAdm = this, _$ = vrtxAdm._$;
 
   if(!vrtxAdm.cachedDirectoryListing.length) return;
+  
+  vrtxAdmin.cachedAppContent.on("click", "#vrtx-checkbox-is-index input", function(e) {
+    isIndexFile($("#vrtx-textfield-file-name input").attr("name"), $(this).attr("name"));
+    e.stopPropagation();
+  });
+  vrtxAdmin.cachedAppContent.on("click", ".radio-buttons input", function(e) {
+    var focusedTextField = $(".vrtx-admin-form input[type='text']:visible:first");
+    if(focusedTextField.length && !focusedTextField.val().length) { // Only focus when empty
+      focusedTextField.focus();
+    }
+    e.stopPropagation();
+  });
   
   // TODO: generalize dialog jQuery UI function with AJAX markup/text
   $(document).on("click", "a.vrtx-copy-move-to-selected-folder-disclosed", function(e) {

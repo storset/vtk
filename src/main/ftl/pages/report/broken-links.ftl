@@ -19,7 +19,7 @@
         }
       </style>
     <![endif]-->
-    <script type="text/javascript" src="/vrtx/__vrtx/static-resources/js/plugins/mustache.js"></script>
+
     <script type="text/javascript"><!--
       var filtersAdvancedShow = "<@vrtx.msg code='report.broken-links.filters.advanced.show' />",
           filtersAdvancedHide = "<@vrtx.msg code='report.broken-links.filters.advanced.hide' />",
@@ -29,27 +29,17 @@
           filtersAdvancedUpdate = "<@vrtx.msg code='report.broken-links.filters.advanced.update' />",
           browseBase = '${fckeditorBase.url?html}',
           browseBaseFolder = '${baseFolder}',
-          browseBasePath = '${fckBrowse.url.pathRepresentation}';
-
-      $(document).ready(function() {
-        // Multiple fields interaction
-        initMultipleInputFields();
-        
-        $.when(vrtxAdmin.multipleCommaSeperatedInputFieldDeferred).done(function() {
-          if($(".report-filters-folders-exclude").length) {
-            loadMultipleInputFields("report-filters-folders-exclude", '${vrtx.getMsg("editor.add")}',
-                                    '${vrtx.getMsg("editor.remove")}', '${vrtx.getMsg("editor.move-up")}',
-                                    '${vrtx.getMsg("editor.move-down")}', '${vrtx.getMsg("editor.browseImages")}', false, true);
-          }   
-          if($(".report-filters-folders-include").length) {                  
-            loadMultipleInputFields("report-filters-folders-include", '${vrtx.getMsg("editor.add")}',
-                                    '${vrtx.getMsg("editor.remove")}', '${vrtx.getMsg("editor.move-up")}',
-                                    '${vrtx.getMsg("editor.move-down")}', '${vrtx.getMsg("editor.browseImages")}', false, true);
-          } 
-        }); 
-      }); 
+          browseBasePath = '${fckBrowse.url.pathRepresentation}',
+          btnAdd = '${vrtx.getMsg("editor.add")}',
+          btnRemove = '${vrtx.getMsg("editor.remove")}',
+          btnMoveUp = '${vrtx.getMsg("editor.move-up")}',
+          btnMoveDown = '${vrtx.getMsg("editor.move-down")}',
+          btnBrowse = '${vrtx.getMsg("editor.browseImages")}';
    // -->
    </script>
+   <script type="text/javascript" src="/vrtx/__vrtx/static-resources/js/plugins/mustache.js"></script>
+   <script type="text/javascript" src="/vrtx/__vrtx/static-resources/js/editor.js"></script>
+   <script type="text/javascript" src="/vrtx/__vrtx/static-resources/js/reports/broken-links.js"></script>
   </head>
   <body id="vrtx-report-broken-links">
   <#assign linkTypeLocalization>

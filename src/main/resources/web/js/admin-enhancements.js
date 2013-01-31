@@ -27,13 +27,12 @@
  *  8.  Collectionlisting
  *  9.  Editor
  *  10. Permissions
- *  11. Reports
- *  12. Versioning
- *  13. Async functions
- *  14. Async helper functions and AJAX server façade
- *  15. CK browse server integration
- *  16. Utils
- *  17. Override JavaScript / jQuery
+ *  11. Versioning
+ *  12. Async functions
+ *  13. Async helper functions and AJAX server façade
+ *  14. CK browse server integration
+ *  15. Utils
+ *  16. Override JavaScript / jQuery
  *
  */
  
@@ -395,7 +394,6 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
   createInteraction(bodyId, vrtxAdm, _$);
   vrtxAdm.collectionListingInteraction();
   editorInteraction(bodyId, vrtxAdm, _$);
-  reportsInteraction(bodyId, vrtxAdm, _$);
   versioningInteraction(bodyId, vrtxAdm, _$);
   
   // Ajax initialization / listeners
@@ -1869,209 +1867,6 @@ function ctrlSEventHandler(_$, e) {
   return false;
 }
 
-/* Multiple inputfields */
-
-function loadMultipleInputFields(name, addName, removeName, moveUpName, moveDownName, browseName, isMovable, isBrowsable) { // TODO: simplify
-  var inputField = $("." + name + " input[type=text]");
-  var inputFieldVal = inputField.val();
-  if (inputFieldVal == null) {
-    return;
-  }
-
-  var formFields = inputFieldVal.split(",");
-
-  vrtxAdmin.multipleCommaSeperatedInputFieldCounter[name] = 1; // 1-index
-  vrtxAdmin.multipleCommaSeperatedInputFieldLength[name] = formFields.length;
-  vrtxAdmin.multipleCommaSeperatedInputFieldNames.push(name);
-
-  var size = inputField.attr("size");
-
-  inputFieldParent = inputField.parent();
-    
-  var isDropdown = inputFieldParent.hasClass("vrtx-multiple-dropdown") ? true : false;
-  isMovable = isDropdown ? false : isMovable; // Turn off move-functionality tmp. if dropdown (not needed yet and needs some flicking of code)
-
-  var inputFieldParentParent = inputFieldParent.parent();
-  inputFieldParentParent.addClass("vrtx-multipleinputfields");
-
-  if(inputFieldParentParent.hasClass("vrtx-resource-ref-browse")) {
-    isBrowsable = true;
-    if(inputFieldParent.next().hasClass("vrtx-button")) {
-      inputFieldParent.next().hide();
-    } 
-  }
-
-  if (isBrowsable && (typeof browseBase === "undefined" 
-                   || typeof browseBaseFolder === "undefined"
-                   || typeof browseBasePath === "undefined")) {
-    isBrowsable = false; 
-  }
-
-  inputField.hide();
-
-  var appendHtml = $.mustache(vrtxAdmin.multipleCommaSeperatedInputFieldTemplates["add-button"], { name: name, removeName: removeName, moveUpName: moveUpName, 
-                                                                                                   moveDownName: moveDownName, browseName: browseName,
-                                                                                                   size: size, isBrowsable: isBrowsable, isMovable: isMovable,
-                                                                                                   isDropdown: isDropdown, buttonText: addName });
-
-  inputFieldParent.removeClass("vrtx-textfield").append(appendHtml);
-    
-  var addFormFieldFunc = addFormField;
-  for (var i = 0; i < vrtxAdmin.multipleCommaSeperatedInputFieldLength[name]; i++) {
-    addFormFieldFunc(name, $.trim(formFields[i]), removeName, moveUpName, moveDownName, browseName, size, isBrowsable, true, isMovable, isDropdown);
-  }
-      
-  autocompleteUsernames(".vrtx-autocomplete-username");
-}
-
-function initMultipleInputFields() {
-  vrtxAdmin.cachedAppContent.on("click", ".vrtx-multipleinputfield button.remove", function(e){
-    removeFormField($(this));
-    e.preventDefault();
-    e.stopPropagation();
-  });
-  vrtxAdmin.cachedAppContent.on("click", ".vrtx-multipleinputfield button.moveup", function(e){
-    moveUpFormField($(this));
-    e.preventDefault();
-    e.stopPropagation();
-  });
-  vrtxAdmin.cachedAppContent.on("click", ".vrtx-multipleinputfield button.movedown", function(e){
-    moveDownFormField($(this));
-    e.preventDefault();
-    e.stopPropagation();
-  });
-  vrtxAdmin.cachedAppContent.on("click", ".vrtx-multipleinputfield button.browse-resource-ref", function(e){
-    browseServer($(this).closest(".vrtx-multipleinputfield").find('input').attr('id'), browseBase, browseBaseFolder, browseBasePath, 'File');
-    e.preventDefault();
-    e.stopPropagation();
-  });
-  
-  // Retrieve HTML templates
-  vrtxAdmin.multipleCommaSeperatedInputFieldDeferred = $.Deferred();
-  vrtxAdmin.multipleCommaSeperatedInputFieldTemplates = vrtxAdmin.retrieveHTMLTemplates("multiple-inputfields",
-                                                                                        ["button", "add-button", "multiple-inputfield"],
-                                                                                        vrtxAdmin.multipleCommaSeperatedInputFieldDeferred);
-}
-
-function addFormField(name, value, removeName, moveUpName, moveDownName, browseName, size, isBrowsable, init, isMovable, isDropdown) {
-  if (value == null) value = "";
-
-  var idstr = "vrtx-" + name + "-",
-      i = vrtxAdmin.multipleCommaSeperatedInputFieldCounter[name],
-      removeButton = "", moveUpButton = "", moveDownButton = "", browseButton = "";
-
-  if (removeName) {
-    removeButton = $.mustache(vrtxAdmin.multipleCommaSeperatedInputFieldTemplates["button"], { type: "remove", name: " " + name, 
-                                                                                               idstr: idstr,   buttonText: removeName });
-  }
-  if (isMovable && moveUpName && i > 1) {
-    moveUpButton = $.mustache(vrtxAdmin.multipleCommaSeperatedInputFieldTemplates["button"], { type: "moveup", name: "", 
-                                                                                               idstr: idstr,   buttonText: "&uarr; " + moveUpName });
-  }
-  if (isMovable && moveDownName && i < vrtxAdmin.multipleCommaSeperatedInputFieldLength[name]) {
-    moveDownButton = $.mustache(vrtxAdmin.multipleCommaSeperatedInputFieldTemplates["button"], { type: "movedown", name: "", 
-                                                                                                 idstr: idstr,     buttonText: "&darr; " + moveDownName });
-  }
-  if(isBrowsable) {
-    browseButton = $.mustache(vrtxAdmin.multipleCommaSeperatedInputFieldTemplates["button"], { type: "browse", name: "-resource-ref", 
-                                                                                               idstr: idstr,   buttonText: browseName });
-  }
-    
-  var html = $.mustache(vrtxAdmin.multipleCommaSeperatedInputFieldTemplates["multiple-inputfield"], { idstr: idstr, i: i, value: value, 
-                                                                                                      size: size, browseButton: browseButton,
-                                                                                                      removeButton: removeButton, moveUpButton: moveUpButton,
-                                                                                                      moveDownButton: moveDownButton, isDropdown: isDropdown,
-                                                                                                      dropdownArray: "dropdown" + name });
-
-  $(html).insertBefore("#vrtx-" + name + "-add");
-    
-  if(!init) {
-    if(vrtxAdmin.multipleCommaSeperatedInputFieldLength[name] > 0 && isMovable) {
-      var fields = $("." + name + " div.vrtx-multipleinputfield");
-      if(fields.eq(vrtxAdmin.multipleCommaSeperatedInputFieldLength[name] - 1).not("has:button.movedown")) {
-        moveDownButton = $.mustache(vrtxAdmin.multipleCommaSeperatedInputFieldTemplates["button"], { type: "movedown", name: "", 
-                                                                                                     idstr: idstr,     buttonText: "&darr; " + moveDownName });
-        fields.eq(vrtxAdmin.multipleCommaSeperatedInputFieldLength[name] - 1).append(moveDownButton);
-      }
-    }
-    vrtxAdmin.multipleCommaSeperatedInputFieldLength[name]++;
-    autocompleteUsername(".vrtx-autocomplete-username", idstr + i);
-  }
-
-  vrtxAdmin.multipleCommaSeperatedInputFieldCounter[name]++;   
-}
-
-function removeFormField(input) {
-  var name = input.attr("class").replace("remove ", "");
-  input.closest(".vrtx-multipleinputfield").remove();
-
-  vrtxAdmin.multipleCommaSeperatedInputFieldLength[name]--;
-  vrtxAdmin.multipleCommaSeperatedInputFieldCounter[name]--;
-
-  var fields = $("." + name + " div.vrtx-multipleinputfield");
-
-  if(fields.eq(vrtxAdmin.multipleCommaSeperatedInputFieldLength[name] - 1).has("button.movedown")) {
-    fields.eq(vrtxAdmin.multipleCommaSeperatedInputFieldLength[name] - 1).find("button.movedown").parent().remove();
-  }
-  if(fields.eq(0).has("button.moveup")) {
-    fields.eq(0).find("button.moveup").parent().remove();
-  }
-}
-
-function moveUpFormField(input) {
-  var parent = input.closest(".vrtx-multipleinputfield");
-  var thisInput = parent.find("input");
-  var prevInput = parent.prev().find("input");
-  var thisText = thisInput.val();
-  var prevText = prevInput.val();
-  thisInput.val(prevText);
-  prevInput.val(thisText);
-}
-
-function moveDownFormField(input) {
-  var parent = input.closest(".vrtx-multipleinputfield");
-  var thisInput = parent.find("input");
-  var nextInput = parent.next().find("input");
-  var thisText = thisInput.val();
-  var nextText = nextInput.val();
-  thisInput.val(nextText);
-  nextInput.val(thisText);
-}
-
-function saveMultipleInputFields() {
-  var formatMultipleInputFieldsFunc = formatMultipleInputFields;
-  for(var i = 0, len = vrtxAdmin.multipleCommaSeperatedInputFieldNames.length; i < len; i++){
-    formatMultipleInputFields(vrtxAdmin.multipleCommaSeperatedInputFieldNames[i]);
-  }
-}
-
-function formatMultipleInputFields(name) {
-  var multipleTxt = $("." + name + " input[type=text]").filter(":hidden");  /*  Note: To achieve the best performance when using :hidden to select elements,
-                                                                                      first select the elements using a pure CSS selector, then use .filter(":hidden") */
-  if (multipleTxt.val() == null) return;
-
-  var allFields = $("input[type=text][id^='vrtx-" + name + "']");
-  var isDropdown = false;
-  if(!allFields.length) {
-    allFields = $("select[id^='vrtx-" + name + "']");
-    if(allFields.length) {
-      isDropdown = true;
-    } else {
-      multipleTxt.val("");
-      return;
-    }
-  }
-  
-  for (var i = 0, len = allFields.length, result = ""; i < len; i++) {
-    result += isDropdown ? $.trim($(allFields[i]).find("option:selected").val()) : $.trim(allFields[i].value);
-    if (i < (len-1)) {
-      result += ",";
-    }
-  }
-  
-  multipleTxt.val(result);
-}
-
 
 /*-------------------------------------------------------------------*\
     10. Permissions
@@ -2150,116 +1945,7 @@ function autocompleteTags(selector) {
 
 
 /*-------------------------------------------------------------------*\
-    11. Reports
-\*-------------------------------------------------------------------*/
-
-function reportsInteraction(bodyId, vrtxAdm, _$) {
-  vrtxAdm.cachedAppContent.on("click", "td.vrtx-report-broken-links-web-page a", function(e) {
-    var openedWebpageWithBrokenLinks = openRegular(this.href, 1020, 800, "DisplayWebpageBrokenLinks");
-    e.stopPropagation();
-    e.preventDefault();
-  });
-  var brokenLinksFilters = _$("#vrtx-report-filters");
-  if(brokenLinksFilters.length) {
-    brokenLinksFilters.append("<a href='#' id='vrtx-report-filters-show-hide-advanced' onclick='javascript:void(0);'>" + filtersAdvancedShow + "...</a>");
-    // TODO: Generate HTML with Mustache
-    var html = "<div id='vrtx-report-filters-folders-include-exclude' class='solidExpandedForm'>"
-               + "<h3>" + filtersAdvancedTitle + "</h3>"
-               + "<div id='vrtx-report-filters-folders-exclude' class='report-filters-folders-exclude'><h4>" + filtersAdvancedExcludeTitle + "</h4>"
-               + "<div class='vrtx-textfield'><input type='text' id='exclude-folders' size='25' /></div></div>"
-               + "<div id='vrtx-report-filters-folders-include' class='report-filters-folders-include'><h4>" + filtersAdvancedIncludeTitle + "</h4>"
-               + "<div class='vrtx-textfield'><input type='text' id='include-folders' size='25' /></div></div>"
-               + "<a class='vrtx-button'><span>" + filtersAdvancedUpdate + "</span></a>"
-            + "</div>";
-    _$(html).insertAfter(brokenLinksFilters);
-
-    var pairs = location.search.split(/\&/);
-    var pairsLen = pairs.length;
-    var includedFolders = "", excludedFolders = "", query = "", pair = "";
-    for(var i = 0; i < pairsLen; i++) { // Add include folders
-      if(pairs[i].match(/^include-path/g)) {
-        pair = decodeURIComponent(pairs[i]);
-        includedFolders += pair.split("=")[1] + ", ";
-        query += "&" + pair;
-      }
-    }
-    for(i = 0; i < pairsLen; i++) { // Add exclude folders
-      if(pairs[i].match(/^exclude-path/g)) {
-        pair = decodeURIComponent(pairs[i]);
-        excludedFolders += pair.split("=")[1] + ", ";
-        query += "&" + pair;
-      }   
-    }
-    
-    var filterLinks = _$("#vrtx-report-filters ul a");
-    i = filterLinks.length;
-    while(i--) {
-      filterLinks[i].href = filterLinks[i].href + query;
-    }
-    
-    // If any included or excluded folders show advanced settings
-    if(includedFolders.length || excludedFolders.length) { 
-      _$("#vrtx-report-filters-folders-include-exclude").slideToggle(0);
-      _$("#vrtx-report-filters-show-hide-advanced").text(filtersAdvancedHide + "...");
-    }
-    
-    _$("#include-folders").val(includedFolders.substring(0, includedFolders.lastIndexOf(",")));
-    _$("#exclude-folders").val(excludedFolders.substring(0, excludedFolders.lastIndexOf(",")));
-    
-    vrtxAdm.cachedAppContent.on("click", "#vrtx-report-filters #vrtx-report-filters-show-hide-advanced", function(e) { // Show / hide advanced settings
-      var container = _$("#vrtx-report-filters-folders-include-exclude");
-      if(container.is(":visible")) {
-        container.slideUp(vrtxAdm.transitionSpeed, vrtxAdmin.transitionEasingSlideUp, function() {
-          _$("#vrtx-report-filters-show-hide-advanced").text(filtersAdvancedShow + "...");
-        });
-      } else {
-        container.slideDown(vrtxAdm.transitionSpeed, vrtxAdmin.transitionEasingSlideDown, function() {
-          _$("#vrtx-report-filters-show-hide-advanced").text(filtersAdvancedHide + "...");
-        });
-      }
-      e.stopPropagation();
-      e.preventDefault();
-    });
-    vrtxAdm.cachedAppContent.on("click", "#vrtx-report-filters-folders-include-exclude a.vrtx-button", function(e) { // Filter exclude and include folders
-      saveMultipleInputFields(); // Multiple to comma-separated
-      // Build query string
-      var includeFolders = unique($("#include-folders").val().split(",")); // Get included folders and remove duplicates
-      var excludeFolders = unique($("#exclude-folders").val().split(",")); // Get excluded folders and remove duplicates
-      var includeFoldersLen = includeFolders.length, excludeFoldersLen = excludeFolders.length,
-          includeQueryString = "", excludeQueryString = ""; 
-      for(var i = 0; i < includeFoldersLen; i++) {
-        var theIncludeFolder = $.trim(includeFolders[i]);
-        if(theIncludeFolder.length) {
-          includeQueryString += "&include-path=" + encodeURIComponent(theIncludeFolder);
-        }     
-      }
-      for(i = 0; i < excludeFoldersLen; i++) {
-        var theExcludeFolder = $.trim(excludeFolders[i]);
-        if(theExcludeFolder.length) {
-          excludeQueryString += "&exclude-path=" + encodeURIComponent(theExcludeFolder);
-        }
-      }
-      // Update URL in address bar
-      var thehref = location.href;
-      var indexOfIncludeFolder = thehref.indexOf("&include-path"),
-          indexOfExcludeFolder = thehref.indexOf("&exclude-path"),
-          indexOfIncludeORExcludeFolder = (indexOfIncludeFolder !== -1) ? (indexOfExcludeFolder !== -1) 
-                                                                        ? Math.min(indexOfIncludeFolder, indexOfExcludeFolder)
-                                                                        : indexOfIncludeFolder : indexOfExcludeFolder;
-      if(indexOfIncludeORExcludeFolder !== -1) {
-        location.href = thehref.substring(0, indexOfIncludeORExcludeFolder) + includeQueryString + excludeQueryString;
-      } else {
-        location.href = thehref + includeQueryString + excludeQueryString;      
-      }
-      e.stopPropagation();
-      e.preventDefault();
-    });
-  }
-}
-
-
-/*-------------------------------------------------------------------*\
-    12. Versioning
+    11. Versioning
 \*-------------------------------------------------------------------*/
 
 function versioningInteraction(bodyId, vrtxAdm, _$) {
@@ -2344,7 +2030,7 @@ function versioningInteraction(bodyId, vrtxAdm, _$) {
 
 
 /*-------------------------------------------------------------------*\
-    13. Async functions  
+    12. Async functions  
 \*-------------------------------------------------------------------*/
 
 /**
@@ -2836,7 +2522,7 @@ VrtxAdmin.prototype.retrieveHTMLTemplates = function retrieveHTMLTemplates(fileN
 
 
 /*-------------------------------------------------------------------*\
-    14. Async helper functions and AJAX server façade   
+    13. Async helper functions and AJAX server façade   
 \*-------------------------------------------------------------------*/
 
 /**
@@ -3090,7 +2776,7 @@ VrtxAdmin.prototype.serverFacade = {
 
 
 /*-------------------------------------------------------------------*\
-    15. CK browse server integration
+    14. CK browse server integration
 \*-------------------------------------------------------------------*/
 
 var urlobj;
@@ -3150,7 +2836,7 @@ function SetUrl(url) {
 
 
 /*-------------------------------------------------------------------*\
-    16. Utils
+    15. Utils
 \*-------------------------------------------------------------------*/
 
 /**
@@ -3285,8 +2971,9 @@ function unique(array) {
   return r;
 }
 
+
 /*-------------------------------------------------------------------*\
-    17. Override JavaScript / jQuery
+    16. Override JavaScript / jQuery
 \*-------------------------------------------------------------------*/
     
 /*  Override slideUp() / slideDown() to animate rows in a table

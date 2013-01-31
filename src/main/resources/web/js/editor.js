@@ -1074,6 +1074,209 @@ function hideShowStudy(container, typeToDisplayElem) {
   }
 }
 
+/* Multiple inputfields */
+
+function loadMultipleInputFields(name, addName, removeName, moveUpName, moveDownName, browseName, isMovable, isBrowsable) { // TODO: simplify
+  var inputField = $("." + name + " input[type=text]");
+  var inputFieldVal = inputField.val();
+  if (inputFieldVal == null) {
+    return;
+  }
+
+  var formFields = inputFieldVal.split(",");
+
+  vrtxAdmin.multipleCommaSeperatedInputFieldCounter[name] = 1; // 1-index
+  vrtxAdmin.multipleCommaSeperatedInputFieldLength[name] = formFields.length;
+  vrtxAdmin.multipleCommaSeperatedInputFieldNames.push(name);
+
+  var size = inputField.attr("size");
+
+  inputFieldParent = inputField.parent();
+    
+  var isDropdown = inputFieldParent.hasClass("vrtx-multiple-dropdown") ? true : false;
+  isMovable = isDropdown ? false : isMovable; // Turn off move-functionality tmp. if dropdown (not needed yet and needs some flicking of code)
+
+  var inputFieldParentParent = inputFieldParent.parent();
+  inputFieldParentParent.addClass("vrtx-multipleinputfields");
+
+  if(inputFieldParentParent.hasClass("vrtx-resource-ref-browse")) {
+    isBrowsable = true;
+    if(inputFieldParent.next().hasClass("vrtx-button")) {
+      inputFieldParent.next().hide();
+    } 
+  }
+
+  if (isBrowsable && (typeof browseBase === "undefined" 
+                   || typeof browseBaseFolder === "undefined"
+                   || typeof browseBasePath === "undefined")) {
+    isBrowsable = false; 
+  }
+
+  inputField.hide();
+
+  var appendHtml = $.mustache(vrtxAdmin.multipleCommaSeperatedInputFieldTemplates["add-button"], { name: name, removeName: removeName, moveUpName: moveUpName, 
+                                                                                                   moveDownName: moveDownName, browseName: browseName,
+                                                                                                   size: size, isBrowsable: isBrowsable, isMovable: isMovable,
+                                                                                                   isDropdown: isDropdown, buttonText: addName });
+
+  inputFieldParent.removeClass("vrtx-textfield").append(appendHtml);
+    
+  var addFormFieldFunc = addFormField;
+  for (var i = 0; i < vrtxAdmin.multipleCommaSeperatedInputFieldLength[name]; i++) {
+    addFormFieldFunc(name, $.trim(formFields[i]), removeName, moveUpName, moveDownName, browseName, size, isBrowsable, true, isMovable, isDropdown);
+  }
+      
+  autocompleteUsernames(".vrtx-autocomplete-username");
+}
+
+function initMultipleInputFields() {
+  vrtxAdmin.cachedAppContent.on("click", ".vrtx-multipleinputfield button.remove", function(e){
+    removeFormField($(this));
+    e.preventDefault();
+    e.stopPropagation();
+  });
+  vrtxAdmin.cachedAppContent.on("click", ".vrtx-multipleinputfield button.moveup", function(e){
+    moveUpFormField($(this));
+    e.preventDefault();
+    e.stopPropagation();
+  });
+  vrtxAdmin.cachedAppContent.on("click", ".vrtx-multipleinputfield button.movedown", function(e){
+    moveDownFormField($(this));
+    e.preventDefault();
+    e.stopPropagation();
+  });
+  vrtxAdmin.cachedAppContent.on("click", ".vrtx-multipleinputfield button.browse-resource-ref", function(e){
+    browseServer($(this).closest(".vrtx-multipleinputfield").find('input').attr('id'), browseBase, browseBaseFolder, browseBasePath, 'File');
+    e.preventDefault();
+    e.stopPropagation();
+  });
+  
+  // Retrieve HTML templates
+  vrtxAdmin.multipleCommaSeperatedInputFieldDeferred = $.Deferred();
+  vrtxAdmin.multipleCommaSeperatedInputFieldTemplates = vrtxAdmin.retrieveHTMLTemplates("multiple-inputfields",
+                                                                                        ["button", "add-button", "multiple-inputfield"],
+                                                                                        vrtxAdmin.multipleCommaSeperatedInputFieldDeferred);
+}
+
+function addFormField(name, value, removeName, moveUpName, moveDownName, browseName, size, isBrowsable, init, isMovable, isDropdown) {
+  if (value == null) value = "";
+
+  var idstr = "vrtx-" + name + "-",
+      i = vrtxAdmin.multipleCommaSeperatedInputFieldCounter[name],
+      removeButton = "", moveUpButton = "", moveDownButton = "", browseButton = "";
+
+  if (removeName) {
+    removeButton = $.mustache(vrtxAdmin.multipleCommaSeperatedInputFieldTemplates["button"], { type: "remove", name: " " + name, 
+                                                                                               idstr: idstr,   buttonText: removeName });
+  }
+  if (isMovable && moveUpName && i > 1) {
+    moveUpButton = $.mustache(vrtxAdmin.multipleCommaSeperatedInputFieldTemplates["button"], { type: "moveup", name: "", 
+                                                                                               idstr: idstr,   buttonText: "&uarr; " + moveUpName });
+  }
+  if (isMovable && moveDownName && i < vrtxAdmin.multipleCommaSeperatedInputFieldLength[name]) {
+    moveDownButton = $.mustache(vrtxAdmin.multipleCommaSeperatedInputFieldTemplates["button"], { type: "movedown", name: "", 
+                                                                                                 idstr: idstr,     buttonText: "&darr; " + moveDownName });
+  }
+  if(isBrowsable) {
+    browseButton = $.mustache(vrtxAdmin.multipleCommaSeperatedInputFieldTemplates["button"], { type: "browse", name: "-resource-ref", 
+                                                                                               idstr: idstr,   buttonText: browseName });
+  }
+    
+  var html = $.mustache(vrtxAdmin.multipleCommaSeperatedInputFieldTemplates["multiple-inputfield"], { idstr: idstr, i: i, value: value, 
+                                                                                                      size: size, browseButton: browseButton,
+                                                                                                      removeButton: removeButton, moveUpButton: moveUpButton,
+                                                                                                      moveDownButton: moveDownButton, isDropdown: isDropdown,
+                                                                                                      dropdownArray: "dropdown" + name });
+
+  $(html).insertBefore("#vrtx-" + name + "-add");
+    
+  if(!init) {
+    if(vrtxAdmin.multipleCommaSeperatedInputFieldLength[name] > 0 && isMovable) {
+      var fields = $("." + name + " div.vrtx-multipleinputfield");
+      if(fields.eq(vrtxAdmin.multipleCommaSeperatedInputFieldLength[name] - 1).not("has:button.movedown")) {
+        moveDownButton = $.mustache(vrtxAdmin.multipleCommaSeperatedInputFieldTemplates["button"], { type: "movedown", name: "", 
+                                                                                                     idstr: idstr,     buttonText: "&darr; " + moveDownName });
+        fields.eq(vrtxAdmin.multipleCommaSeperatedInputFieldLength[name] - 1).append(moveDownButton);
+      }
+    }
+    vrtxAdmin.multipleCommaSeperatedInputFieldLength[name]++;
+    autocompleteUsername(".vrtx-autocomplete-username", idstr + i);
+  }
+
+  vrtxAdmin.multipleCommaSeperatedInputFieldCounter[name]++;   
+}
+
+function removeFormField(input) {
+  var name = input.attr("class").replace("remove ", "");
+  input.closest(".vrtx-multipleinputfield").remove();
+
+  vrtxAdmin.multipleCommaSeperatedInputFieldLength[name]--;
+  vrtxAdmin.multipleCommaSeperatedInputFieldCounter[name]--;
+
+  var fields = $("." + name + " div.vrtx-multipleinputfield");
+
+  if(fields.eq(vrtxAdmin.multipleCommaSeperatedInputFieldLength[name] - 1).has("button.movedown")) {
+    fields.eq(vrtxAdmin.multipleCommaSeperatedInputFieldLength[name] - 1).find("button.movedown").parent().remove();
+  }
+  if(fields.eq(0).has("button.moveup")) {
+    fields.eq(0).find("button.moveup").parent().remove();
+  }
+}
+
+function moveUpFormField(input) {
+  var parent = input.closest(".vrtx-multipleinputfield");
+  var thisInput = parent.find("input");
+  var prevInput = parent.prev().find("input");
+  var thisText = thisInput.val();
+  var prevText = prevInput.val();
+  thisInput.val(prevText);
+  prevInput.val(thisText);
+}
+
+function moveDownFormField(input) {
+  var parent = input.closest(".vrtx-multipleinputfield");
+  var thisInput = parent.find("input");
+  var nextInput = parent.next().find("input");
+  var thisText = thisInput.val();
+  var nextText = nextInput.val();
+  thisInput.val(nextText);
+  nextInput.val(thisText);
+}
+
+function saveMultipleInputFields() {
+  var formatMultipleInputFieldsFunc = formatMultipleInputFields;
+  for(var i = 0, len = vrtxAdmin.multipleCommaSeperatedInputFieldNames.length; i < len; i++){
+    formatMultipleInputFields(vrtxAdmin.multipleCommaSeperatedInputFieldNames[i]);
+  }
+}
+
+function formatMultipleInputFields(name) {
+  var multipleTxt = $("." + name + " input[type=text]").filter(":hidden");  /*  Note: To achieve the best performance when using :hidden to select elements,
+                                                                                      first select the elements using a pure CSS selector, then use .filter(":hidden") */
+  if (multipleTxt.val() == null) return;
+
+  var allFields = $("input[type=text][id^='vrtx-" + name + "']");
+  var isDropdown = false;
+  if(!allFields.length) {
+    allFields = $("select[id^='vrtx-" + name + "']");
+    if(allFields.length) {
+      isDropdown = true;
+    } else {
+      multipleTxt.val("");
+      return;
+    }
+  }
+  
+  for (var i = 0, len = allFields.length, result = ""; i < len; i++) {
+    result += isDropdown ? $.trim($(allFields[i]).find("option:selected").val()) : $.trim(allFields[i].value);
+    if (i < (len-1)) {
+      result += ",";
+    }
+  }
+  
+  multipleTxt.val(result);
+}
+
 /* Helper functions */
 
 function getCkValue(instanceName) {

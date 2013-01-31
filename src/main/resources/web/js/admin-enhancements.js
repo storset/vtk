@@ -3420,35 +3420,31 @@ function unique(array) {
  */  
 
 if(vrtxAdmin.animateTableRows) {
+  jQuery.fn.prepareTableRowForSliding = function() {
+    var tr = this;
+    tr.children('td').wrapInner('<div style="display: none;" />');
+    return tr;
+  };
 
-jQuery.fn.prepareTableRowForSliding = function() {
-  $tr = this;
-  $tr.children('td').wrapInner('<div style="display: none;" />');
-  return $tr;
-};
-
-var originalSlideUp = jQuery.fn.slideUp;
-jQuery.fn.slideUp = function(speed, easing, callback) {
-  $trOrOtherElm = this;
-  if($trOrOtherElm.is("tr")) {
-    $trOrOtherElm.find('td > div').animate({height: 'toggle'}, speed, easing, callback);
-  } else {
-    originalSlideUp.apply($trOrOtherElm, arguments);
-  }
-};
-
-var originalSlideDown = jQuery.fn.slideDown;
-jQuery.fn.slideDown = function(speed, easing, callback) {
-  $trOrOtherElm = this;
-  if($trOrOtherElm.is("tr")) {
-    if ($trOrOtherElm.is(':hidden')) {
-      $trOrOtherElm.show().find('td > div').animate({height: 'toggle'}, speed, easing, callback);
+  var originalSlideUp = jQuery.fn.slideUp;
+  jQuery.fn.slideUp = function(speed, easing, callback) {
+    var trOrOtherElm = this;
+    if(trOrOtherElm.is("tr")) {
+      trOrOtherElm.find('td > div').animate({height: 'toggle'}, speed, easing, callback);
+    } else {
+      originalSlideUp.apply(trOrOtherElm, arguments);
     }
-  } else {
-    originalSlideDown.apply($trOrOtherElm, arguments);
-  }
-};
+  };
 
+  var originalSlideDown = jQuery.fn.slideDown;
+  jQuery.fn.slideDown = function(speed, easing, callback) {
+    var trOrOtherElm = this;
+    if(trOrOtherElm.is("tr") && trOrOtherElm.css("display") === "none") {
+      trOrOtherElm.show().find('td > div').animate({height: 'toggle'}, speed, easing, callback);
+    } else {
+      originalSlideDown.apply(trOrOtherElm, arguments);
+    }
+  };
 }
 
 $.cachedScript = function(url, options) {

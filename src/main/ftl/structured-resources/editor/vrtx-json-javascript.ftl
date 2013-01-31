@@ -14,7 +14,9 @@
     var TEMPLATES = [];
     var LIST_OF_JSON_ELEMENTS = [];
     var ACCORDION_MOVE_TO_AFTER_CHANGE = null;
-    var JSON_ELEMENTS_INITIALIZED = $.Deferred(); 
+    var JSON_ELEMENTS_INITIALIZED = $.Deferred();
+    
+    /* XXX: combine with code in editor.js for boxes */
     
     $(document).ready(function() {
 

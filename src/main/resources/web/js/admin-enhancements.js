@@ -1720,7 +1720,7 @@ VrtxAdmin.prototype.buildFileList = function buildFileList(boxes, boxesSize, use
 };
 
 /*-------------------------------------------------------------------*\
-    9. Editor
+    9. Editor (also in use for plaintext edit and visual profile)
 \*-------------------------------------------------------------------*/
 
 function editorInteraction(bodyId, vrtxAdm, _$) {

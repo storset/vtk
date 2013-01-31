@@ -30,11 +30,14 @@
  */
 package org.vortikal.web.search;
 
+import java.util.List;
+
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl;
 import org.vortikal.repository.search.query.AndQuery;
+import org.vortikal.repository.search.query.OrQuery;
 import org.vortikal.repository.search.query.PropertyPrefixQuery;
 import org.vortikal.repository.search.query.Query;
 import org.vortikal.repository.search.query.TermOperator;
@@ -73,6 +76,27 @@ public class VHostScopeQueryRestricter {
         and.add(original);
         and.add(vhostQuery);
         return and;
+    }
+
+    /**
+     * 
+     * Restrict a query to a given list of vhosts
+     */
+    public static Query vhostRestrictedQuery(Query original, List<String> vhosts) {
+
+        if (vhosts.size() == 1) {
+            return VHostScopeQueryRestricter.vhostRestrictedQuery(original, vhosts.get(0));
+        } else {
+            OrQuery vHostOr = new OrQuery();
+            for (String vhost : vhosts) {
+                vHostOr.add(new PropertyPrefixQuery(VHostScopeQueryRestricter.vHostPropDef, vhost, TermOperator.EQ));
+            }
+            AndQuery and = new AndQuery();
+            and.add(original);
+            and.add(vHostOr);
+            return and;
+        }
+
     }
 
 }

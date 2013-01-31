@@ -30,8 +30,12 @@
  */
 package org.vortikal.web.search;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.junit.Test;
 import org.vortikal.repository.search.query.AndQuery;
+import org.vortikal.repository.search.query.OrQuery;
 import org.vortikal.repository.search.query.PropertyPrefixQuery;
 import org.vortikal.repository.search.query.Query;
 import org.vortikal.repository.search.query.TermOperator;
@@ -41,25 +45,51 @@ import org.vortikal.web.service.URL;
 import static org.junit.Assert.*;
 
 public class VHostScopeQueryRestricterTest {
-    
+
     @Test
     public void testRestrictQueryToVhost() {
-        
+
+        AndQuery expected = new AndQuery();
+        UriPrefixQuery original = new UriPrefixQuery("/test/path");
+        expected.add(original);
+
         URL url = URL.parse("http://www.usit.uio.no");
         String vhost = url.getHost();
-
-        UriPrefixQuery original = new UriPrefixQuery("/test/path");
-        AndQuery expected = new AndQuery();
-        expected.add(original);
         expected.add(new PropertyPrefixQuery(VHostScopeQueryRestricter.vHostPropDef, vhost, TermOperator.EQ));
-        
+
         Query actual = VHostScopeQueryRestricter.vhostRestrictedQuery(original, url);
         assertEquals(expected, actual);
-        
+
         actual = VHostScopeQueryRestricter.vhostRestrictedQuery(original, vhost);
         assertEquals(expected, actual);
-        
-        
+
+    }
+
+    @Test
+    public void testRestrictQueryToVhostList() {
+
+        testRestrictQueryToVhostList(Arrays.asList("www.usit.uio.no"));
+        testRestrictQueryToVhostList(Arrays.asList("www.usit.uio.no", "www.hf.uio.no"));
+
+    }
+
+    private void testRestrictQueryToVhostList(List<String> vhosts) {
+
+        AndQuery expected = new AndQuery();
+        UriPrefixQuery original = new UriPrefixQuery("/test/path");
+        expected.add(original);
+        if (vhosts.size() == 1) {
+            expected.add(new PropertyPrefixQuery(VHostScopeQueryRestricter.vHostPropDef, vhosts.get(0), TermOperator.EQ));
+        } else {
+            OrQuery vhostOr = new OrQuery();
+            for (String vhost : vhosts) {
+                vhostOr.add(new PropertyPrefixQuery(VHostScopeQueryRestricter.vHostPropDef, vhost, TermOperator.EQ));
+            }
+            expected.add(vhostOr);
+        }
+
+        Query actual = VHostScopeQueryRestricter.vhostRestrictedQuery(original, vhosts);
+        assertEquals(expected, actual);
     }
 
 }

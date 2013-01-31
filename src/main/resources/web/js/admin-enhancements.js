@@ -119,7 +119,6 @@ function VrtxAdmin() {
   this.multipleCommaSeperatedInputFieldDeferred;
   
   this.breadcrumbsLastPosLeft = -999;
-  this.resizeDebouncedWait = true;
   this.reloadFromServer = false; // changed by funcProceedCondition and used by funcComplete in completeFormAsync for admin-permissions
   this.ignoreAjaxErrors = false;
   this._$.ajaxSetup({
@@ -199,9 +198,7 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
   }
 
   vrtxAdm.logoutButtonAsLink();
-
   vrtxAdm.adjustResourceTitle();
-  
   vrtxAdm.initDropdowns();
 
   // Ignore all AJAX errors on tab change
@@ -1067,38 +1064,38 @@ function createFuncComplete() {
   var lastFileTitle = "";
   var lastFileName = "";
   
-  $(document).on("keyup", "#vrtx-textfield-collection-title input", function(e) {
+  $(document).on("keyup", "#vrtx-textfield-collection-title input", $.debounce(50, function() {
     var colTitle = $(this),
         colTitleVal = colTitle.val();
     if(colTitle.length && colTitleVal !== lastColTitle) {
       lastColTitle = colTitleVal;
       userTitleChange(colTitle.attr("name"), $("#vrtx-textfield-collection-name input").attr("name"), null);
     }
-  });
-  $(document).on("keyup", "#vrtx-textfield-collection-name input", function(e) {
+  }));
+  $(document).on("keyup", "#vrtx-textfield-collection-name input", $.debounce(50, function() {
     var colName = $(this),
         colNameVal = colName.val();
     if(colName.length && colName.is(":focus") && colNameVal !== lastColName) {
       lastColName = colNameVal;       
       disableReplaceTitle(colName.attr("name"));
     }
-  });
-  $(document).on("keyup", "#vrtx-textfield-file-title input", function(e) {
+  }));
+  $(document).on("keyup", "#vrtx-textfield-file-title input", $.debounce(50, function() {
     var fileTitle = $(this),
         fileTitleVal = fileTitle.val();
     if(fileTitle.length && fileTitleVal !== lastFileTitle) {
       lastFileTitle = fileTitleVal;
       userTitleChange(fileTitle.attr("name"), $("#vrtx-textfield-file-name input").attr("name"), $("#vrtx-checkbox-is-index input").attr("name"));
     }
-  });
-  $(document).on("keyup", "#vrtx-textfield-file-name input", function(e) {
+  }));
+  $(document).on("keyup", "#vrtx-textfield-file-name input", $.debounce(50, function() {
     var fileName = $(this),
-        fileNameVal = fileName.val();
+    fileNameVal = fileName.val();
     if(fileName.length && fileName.is(":focus") && fileNameVal !== lastFileName) {
       lastFileName = fileNameVal;
       disableReplaceTitle(fileName.attr("name"));
     }
-  });
+  }));
 
   vrtxAdmin.createResourceReplaceTitle = true;
   
@@ -1733,9 +1730,9 @@ function editorInteraction(bodyId, vrtxAdm, _$) {
     vrtxAdm.dropdown({selector: "ul#editor-menu"});
 
     // Save shortcut and AJAX
-    $(document).bind('keydown', 'ctrl+s', function(e) {
+    $(document).bind('keydown', 'ctrl+s', $.debounce(150, true, function(e) {
       ctrlSEventHandler(_$, e);
-    });
+    }));
     vrtxAdm.cachedAppContent.on("click", ".vrtx-focus-button:last input", function(e) {
       vrtxAdm.editorSaveButtonName = _$(this).attr("name");
       ajaxSave();
@@ -2970,53 +2967,21 @@ jQuery.fn.extend({
   }
 });
 
-/* debouncedresize: special jQuery event that happens once after a window resize
- *
- * latest version and complete README available on Github:
- * https://github.com/louisremi/jquery-smartresize
- *
- * Copyright 2012 @louis_remi
- * Licensed under the MIT license.
- *
- * This saved you an hour of work? 
- * Send me music http://www.amazon.co.uk/wishlist/HNTU0468LQON
+/*
+ * jQuery throttle / debounce - v1.1 - 3/7/2010
+ * http://benalman.com/projects/jquery-throttle-debounce-plugin/
+ * 
+ * Copyright (c) 2010 "Cowboy" Ben Alman
+ * Dual licensed under the MIT and GPL licenses.
+ * http://benalman.com/about/license/
  */
-(function($) {
-  var $event = $.event,
-	  $special,
-	  resizeTimeout;
+(function(b,c){var $=b.jQuery||b.Cowboy||(b.Cowboy={}),a;$.throttle=a=function(e,f,j,i){var h,d=0;if(typeof f!=="boolean"){i=j;j=f;f=c}function g(){var o=this,m=+new Date()-d,n=arguments;function l(){d=+new Date();j.apply(o,n)}function k(){h=c}if(i&&!h){l()}h&&clearTimeout(h);if(i===c&&m>e){l()}else{if(f!==true){h=setTimeout(i?k:l,i===c?e-m:e)}}}if($.guid){g.guid=j.guid=j.guid||$.guid++}return g};$.debounce=function(d,e,f){return f===c?a(d,e,false):a(d,f,e!==false)}})(this);
 
-  $special = $event.special.debouncedresize = {
-    setup: function() {
-      $(this).on("resize", $special.handler);
-    },
-    teardown: function() {
-      $(this).off("resize", $special.handler);
-    },
-    handler: function(event, execAsap) {
-	  var context = this, // Save the context
-		  args = arguments,
-		  dispatch = function() {
-		    event.type = "debouncedresize"; // set correct event type
-		    $event.dispatch.apply(context, args);
-		  };
-		  if (resizeTimeout) {
-		    clearTimeout(resizeTimeout);
-		  }
-		  execAsap ? dispatch() : resizeTimeout = setTimeout(dispatch, $special.threshold);
-	  },
-	  threshold: 150
-  };
-})(jQuery);
 
-vrtxAdmin._$(window).on("debouncedresize", function() {
-  if(vrtxAdmin.runReadyLoad && vrtxAdmin.cachedBreadcrumbs && vrtxAdmin.resizeDebouncedWait) {
+vrtxAdmin._$(window).resize(vrtxAdmin._$.throttle(100, function() {
+  if(vrtxAdmin.runReadyLoad && vrtxAdmin.cachedBreadcrumbs) {
     vrtxAdmin.adaptiveBreadcrumbs();
-    vrtxAdmin.resizeDebouncedWait = false;
-    setTimeout(function() {
-      vrtxAdmin.resizeDebouncedWait = true;
-    }, 1000);
   }
-});
+}));
 
 /* ^ Vortex Admin enhancements */

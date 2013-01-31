@@ -2072,37 +2072,6 @@ function formatMultipleInputFields(name) {
   multipleTxt.val(result);
 }
 
-/* Show and hide properties
- *
- * @param radioIds: Multiple id's for radiobuttons binding click events (Array)
- * @param conditionHide: Condition to be checked for hiding
- * @param conditionHideEqual: What it should equal
- * @param showHideProps: Multiple props / id's / classnames to show / hide (Array)
- */
-function showHide(radioIds, conditionHide, conditionHideEqual, showHideProps) {
-  var showHidePropertiesFunc = showHideProperties;
-  showHidePropertiesFunc(true, conditionHide, conditionHideEqual, showHideProps); // Init
-  for (var j = 0, len = radioIds.length; j < len; j++) {
-    $(radioIds[j]).click(function () {
-      showHidePropertiesFunc(false, conditionHide, conditionHideEqual, showHideProps);
-    });
-  }
-}
-
-function showHideProperties(init, conditionHide, conditionHideEqual, showHideProps) {
-  for (var conditionHideVal = $(conditionHide).val(), showHidePropertyFunc = showHideProperty, 
-       i = 0, len = showHideProps.length; i < len; i++) {
-    showHidePropertyFunc(showHideProps[i], init, conditionHideVal == conditionHideEqual ? false : true);
-  }
-}
-
-function showHideProperty(id, init, show) {
-  init ? show ? $(id).show() 
-              : $(id).hide()
-       : show ? $(id).slideDown(vrtxAdmin.transitionPropSpeed, vrtxAdmin.transitionEasingSlideDown)
-              : $(id).slideUp(vrtxAdmin.transitionPropSpeed, vrtxAdmin.transitionEasingSlideUp);
-}
-
 
 /*-------------------------------------------------------------------*\
     10. Permissions
@@ -3448,7 +3417,7 @@ if(vrtxAdmin.animateTableRows) {
   };
 }
 
-$.cachedScript = function(url, options) {
+jQuery.cachedScript = function(url, options) {
   options = $.extend(options || {}, {
     dataType: "script",
     cache: true,

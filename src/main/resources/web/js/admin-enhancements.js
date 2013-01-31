@@ -310,18 +310,15 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
           _$("body").append("<div id='" + id + "'>" + _$(results).find("#vrtx-manage-create-content").html() + "</div>");
           dialogManageCreate = $("#" + id);
           dialogManageCreate.hide();
-          // Lazy-load JS-dependency chain (cached). TODO: general API for this and error msg
-          $.cachedScript(location.protocol + '//' + location.host + '/vrtx/__vrtx/static-resources/jquery/plugins/jquery.treeview.js')
-            .done(function (script, textStatus) {
-            $.cachedScript(location.protocol + '//' + location.host + '/vrtx/__vrtx/static-resources/jquery/plugins/jquery.treeview.async.js')
-              .done(function (script, textStatus) {
-              $.cachedScript(location.protocol + '//' + location.host + '/vrtx/__vrtx/static-resources/jquery/plugins/jquery.scrollTo.min.js')
-                .done(function (script, textStatus) {
+          // Lazy-load JS-dependency chain (cached)
+          vrtxAdm.loadScript(location.protocol + '//' + location.host + '/vrtx/__vrtx/static-resources/jquery/plugins/jquery.treeview.js', function () {
+            vrtxAdm.loadScript(location.protocol + '//' + location.host + '/vrtx/__vrtx/static-resources/jquery/plugins/jquery.treeview.async.js', function () {
+              vrtxAdm.loadScript(location.protocol + '//' + location.host + '/vrtx/__vrtx/static-resources/jquery/plugins/jquery.scrollTo.min.js', function () {
                 vrtxSimpleDialogs.openHtmlDialog("global-menu-create", dialogManageCreate.html(), link.title, 600, 395);
                 initializeTree();
-              }).fail(function (jqxhr, settings, exception) { vrtxAdmin.displayErrorMsg(exception + ": jquery.scrollTo.min.js"); });
-            }).fail(function (jqxhr, settings, exception) { vrtxAdmin.displayErrorMsg(exception + ": jquery.treeview.async.js"); });
-          }).fail(function (jqxhr, settings, exception) { vrtxAdmin.displayErrorMsg(exception + ": jquery.treeview.js"); });
+              });
+            });
+          });
         }
       });
     } else {
@@ -3321,9 +3318,7 @@ VrtxAdmin.prototype.outerHTML = function outerHTML(selector, subselector) {
  * @param {function} callback Callback function to run on success
  */
 VrtxAdmin.prototype.loadScript = function loadScript(url, callback) {
-  $.getScript(url).done(function() {
-    callback();
-  }).fail(function(jqxhr, settings, exception) {
+  $.cachedScript(url).done(callback).fail(function(jqxhr, settings, exception) {
     vrtxAdmin.log({msg: exception});
   });
 };
@@ -3377,10 +3372,40 @@ VrtxAdmin.prototype.zebraTables = function zebraTables(selector) {
   }
 };
 
-// Credits: http://www.javascripter.net/faq/readingacookie.htm
+/* Read a cookie
+ *
+ * Credits: http://www.javascripter.net/faq/readingacookie.htm
+ *
+ */
 function readCookie(cookieName, defaultVal) {
   var match = (" "+document.cookie).match(new RegExp('[; ]'+cookieName+'=([^\\s;]*)'));
   return match ? unescape(match[1]) : defaultVal;
+}
+
+
+/* Get URL parameter
+ *
+ * Credits: http://www.netlobo.com/url_query_string_javascript.html
+ *
+ * Modified slightly
+ */
+function gup(name, url) {
+  name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
+  var regexS = "[\\?&]"+name+"=([^&#]*)";
+  var regex = new RegExp( regexS );
+  var results = regex.exec(url);
+  return (results == null) ? "" : results[1];
+}
+
+/* Remove duplicates from an array
+ *
+ * Credits: http://www.shamasis.net/2009/09/fast-algorithm-to-find-unique-items-in-javascript-array/
+ */
+function unique(array) {
+  var o = {}, i, l = array.length, r = [];
+  for(i=0; i<l;i+=1) o[array[i]] = array[i];
+  for(i in o) r.push(o[i]);
+  return r;
 }
 
 /*-------------------------------------------------------------------*\
@@ -3494,30 +3519,5 @@ vrtxAdmin._$(window).on("debouncedresize", function() {
     }, 1000);
   }
 });
-
-/* Get URL parameter
- *
- * Credits: http://www.netlobo.com/url_query_string_javascript.html
- *
- * Modified slightly
- */
-function gup(name, url) {
-  name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
-  var regexS = "[\\?&]"+name+"=([^&#]*)";
-  var regex = new RegExp( regexS );
-  var results = regex.exec(url);
-  return (results == null) ? "" : results[1];
-}
-
-/* Remove duplicates from an array
- *
- * Credits: http://www.shamasis.net/2009/09/fast-algorithm-to-find-unique-items-in-javascript-array/
- */
-function unique(array) {
-  var o = {}, i, l = array.length, r = [];
-  for(i=0; i<l;i+=1) o[array[i]] = array[i];
-  for(i in o) r.push(o[i]);
-  return r;
-}
 
 /* ^ Vortex Admin enhancements */

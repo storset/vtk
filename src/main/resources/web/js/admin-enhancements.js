@@ -2046,7 +2046,8 @@ function saveMultipleInputFields() {
 }
 
 function formatMultipleInputFields(name) {
-  var multipleTxt = $("." + name + " input[type=text]").filter(":hidden");;
+  var multipleTxt = $("." + name + " input[type=text]").filter(":hidden");  /*  Note: To achieve the best performance when using :hidden to select elements,
+                                                                                      first select the elements using a pure CSS selector, then use .filter(":hidden") */
   if (multipleTxt.val() == null) return;
 
   var allFields = $("input[type=text][id^='vrtx-" + name + "']");

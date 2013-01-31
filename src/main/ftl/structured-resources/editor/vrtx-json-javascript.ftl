@@ -1,8 +1,7 @@
 <#ftl strip_whitespace=true>
 <#-- JSON elements interaction in new documenttypes (add, remove and move) 
 
-     TODO: * Move all JS to JS-file to get syntax highlighting
-           * Still a little too much traversal and i think a little slow solution for replacing id-numbers on move
+     XXX: Move most JS and combine with code in editor.js
 
 -->
 
@@ -15,8 +14,6 @@
     var LIST_OF_JSON_ELEMENTS = [];
     var ACCORDION_MOVE_TO_AFTER_CHANGE = null;
     var JSON_ELEMENTS_INITIALIZED = $.Deferred();
-    
-    /* XXX: combine with code in editor.js for boxes */
     
     $(document).ready(function() {
 

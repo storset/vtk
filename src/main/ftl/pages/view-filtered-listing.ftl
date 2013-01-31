@@ -67,7 +67,7 @@
 
     <#if (result?exists && result?has_content)>
       <#if from?exists && to?exists && total?exists>
-        <div>
+        <div id="vrtx-listing-filter-hits">
           <@vrtx.msg code="listing-filters.${collection.resourceType}.from-to-total" args=[from, to, total] default="Showing " + from + "&ndash;" +  to + " of " + total + " resources" />
         </div>
       </#if>
@@ -76,7 +76,7 @@
       <#elseif collection.resourceType = 'course-description-listing'>
         <@courseDescription.displayResult result />
       <#else>
-        <ul>
+        <ul id="vrtx-listing-filter-results">
           <#list result as res>
             <#assign title = vrtx.propValue(res, 'title') />
             <#assign uri = vrtx.getUri(res) />
@@ -86,14 +86,14 @@
       </#if>
     </#if>
 
-    <#if pageThroughUrls?exists>
+    <#if pageThroughUrls?exists && (pageThroughUrls?size > 1) >
       <div class="vrtx-paging-feed-wrapper">
         <@viewutils.displayPageThroughUrls pageThroughUrls page />
       </div>
     </#if>
     
     <#if conf?exists && collection.resourceType = 'course-group-listing'>
-      <@courseGroup.displayStatusLink conf  /> 
+      <div id="vrtx-listing-filter-status"><@courseGroup.displayStatusLink conf  /></div>
     </#if>
 
   </body>

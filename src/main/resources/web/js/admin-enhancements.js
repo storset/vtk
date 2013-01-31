@@ -327,68 +327,6 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
     e.stopPropagation();
     e.preventDefault();
   });
-  
-  // Send to approval
-  // TODO: generalize dialog jQuery UI function with AJAX markup/text
-  // XXX: HTML content should set height (not hardcoded)
-  _$(document).on("click", "#vrtx-send-to-approval, #vrtx-send-to-approval-global", function (e) {
-    var link = this;
-    var id = link.id + "-content";
-    var dialogManageCreate = $("#" + id);
-    if (!dialogManageCreate.length) {
-      vrtxAdm.serverFacade.getHtml(link.href, {
-        success: function (results, status, resp) {
-          _$("body").append("<div id='" + id + "'>" + _$(results).find("#contents").html() + "</div>");
-          dialogManageCreate = $("#" + id);
-          dialogManageCreate.hide();
-          var hasEmailFrom = dialogManageCreate.find("#emailFrom").length;
-          vrtxSimpleDialogs.openHtmlDialog("send-approval", dialogManageCreate.html(), link.title, 410, (hasEmailFrom ? 620 : 545));
-          var dialog = $(".ui-dialog");
-          if(dialog.find("#emailTo").val().length > 0) {
-            if(hasEmailFrom) {
-              dialog.find("#emailFrom")[0].focus();
-            } else {
-              dialog.find("#yourCommentTxtArea")[0].focus();
-            } 
-          }
-        }
-      });
-    } else {
-      var hasEmailFrom = dialogManageCreate.find("#emailFrom").length;
-      vrtxSimpleDialogs.openHtmlDialog("send-approval", dialogManageCreate.html(), link.title, 410, (hasEmailFrom ? 620 : 545));
-      var dialog = $(".ui-dialog");
-      if(dialog.find("#emailTo").val().length > 0) {
-        if(hasEmailFrom) {
-          dialog.find("#emailFrom")[0].focus();
-        } else {
-          dialog.find("#yourCommentTxtArea")[0].focus();
-        }
-      }
-    }
-    e.stopPropagation();
-    e.preventDefault();
-  });
-  _$(document).on("click", "#dialog-html-send-approval-content .vrtx-focus-button", function(e) {
-    var btn = $(this);
-    var form = btn.closest("form");
-    var url = form.attr("action");
-    var dataString = form.serialize();
-    vrtxAdm.serverFacade.postHtml(url, dataString, {
-      success: function (results, status, resp) {
-        var formParent = form.parent();
-        formParent.html(_$(results).find("#contents").html());
-        var successWrapper = formParent.find("#email-approval-success");
-        if(successWrapper.length) {  // Save async if sent mail
-          successWrapper.trigger("click");
-          setTimeout(function() {
-            _$("#vrtx-save-view-shortcut").trigger("click");
-          }, 250);
-        }
-      }
-    });
-    e.stopPropagation();
-    e.preventDefault();
-  });
 
   // Interactions initialization
   createInteraction(bodyId, vrtxAdm, _$);

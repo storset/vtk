@@ -76,11 +76,10 @@ var vrtxImageEditor = new VrtxImageEditor();
  * Initialize image editor
  *
  * @this {VrtxImageEditor}
- * @param {object} imageEditorElm <deprecated>
  * @param {string} imageURL The URL to the image
  * @param {string} imageSupported Image supported by canvas
  */
-VrtxImageEditor.prototype.init = function init(imageEditorElm, imageURL, imageSupported) {
+VrtxImageEditor.prototype.init = function init(imageURL, imageSupported) {
   var editor = this;
   
   editor.canvas = document.getElementById("vrtx-image-editor");

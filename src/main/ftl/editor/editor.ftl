@@ -183,7 +183,7 @@
         $(window).load(function() {
           var imageEditorElm = $("#vrtx-image-editor-wrapper");
           if(imageEditorElm.length) {
-            vrtxImageEditor.init(imageEditorElm, "${imageURL}", "${supportedImageEditor?string}");
+            vrtxImageEditor.init("${imageURL}", "${supportedImageEditor?string}");
           }
         });
       // -->

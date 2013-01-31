@@ -31,7 +31,7 @@
  *  12. Versioning
  *  13. Async functions
  *  14. Async helper functions and AJAX server façade
- *  15. Image preview and CK browse server integration
+ *  15. CK browse server integration
  *  16. Utils
  *  17. Override JavaScript / jQuery
  *
@@ -3090,111 +3090,16 @@ VrtxAdmin.prototype.serverFacade = {
 
 
 /*-------------------------------------------------------------------*\
-    15. Image preview and CK browse server integration
+    15. CK browse server integration
 \*-------------------------------------------------------------------*/
 
 var urlobj;
-$(document).ready(function() {
-
-  /* Hide image previews on init (unobtrusive) */
-  var previewInputFields = $("input.preview-image-inputfield");
-  for(var i = previewInputFields.length; i--;) {
-    if(previewInputFields[i].value === "") {
-      hideImagePreviewCaption($(previewInputFields[i]), true);
-    }
-  } 
-  
-  /* Inputfield events for image preview */
-  $(document).on("blur", "input.preview-image-inputfield", function(e) {
-    previewImage(this.id)
-  });
-  $(document).on("keydown", "input.preview-image-inputfield", function(e) { // ENTER-key
-    if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
-      previewImage(this.id);
-      e.preventDefault();
-    }
-  });
-});
-
-function hideImagePreviewCaption(input, isInit) {
-  var previewImg = $("div#" + input[0].id.replace(/\./g,'\\.') + '\\.preview:visible');
-  if(!previewImg.length) return;
-  
-  var fadeSpeed = isInit ? 0 : "fast";
-  
-  previewImg.fadeOut(fadeSpeed);
-  
-  var captionWrp = input.closest(".introImageAndCaption");
-  if(!captionWrp.length) {
-    var captionWrp = input.closest(".picture-and-caption");
-    if(captionWrp.length) {
-      captionWrp = captionWrp.parent();
-    }
-  } else {
-    var hidePicture = captionWrp.find(".hidePicture");
-    if(hidePicture.length) {
-      hidePicture.fadeOut(fadeSpeed);
-    }
-  }
-  if(captionWrp.length) {
-    captionWrp.find(".caption").fadeOut(fadeSpeed);
-    captionWrp.animate({height: "58px"}, fadeSpeed);
-  }
-}
-
-function showImagePreviewCaption(input) {
-  var previewImg = $("div#" + input[0].id.replace(/\./g,'\\.') + '\\.preview:hidden');
-  if(!previewImg.length) return;
-  
-  previewImg.fadeIn("fast");
-  
-  var captionWrp = input.closest(".introImageAndCaption");
-  if(!captionWrp.length) {
-    var captionWrp = input.closest(".picture-and-caption");
-    if(captionWrp.length) {
-      captionWrp = captionWrp.parent();
-      var oldHeight = 241;
-    }
-  } else {
-    var oldHeight = 244;
-    var hidePicture = captionWrp.find(".hidePicture");
-    if(hidePicture.length) {
-      hidePicture.fadeIn("fast");
-    }
-  }
-  if(captionWrp.length) {
-    captionWrp.find(".caption").fadeIn("fast");
-    captionWrp.animate({height: oldHeight + "px"}, "fast");
-  }
-}
-
-function previewImage(urlobj) {
-  if(typeof urlobj === "undefined") return;
-  
-  urlobj = urlobj.replace(/\./g,'\\.');
-  var previewNode = $("#" + urlobj + '\\.preview-inner');
-  if (previewNode.length) {
-    var elm = $("#" + urlobj);
-    var url = elm.val();
-    var parentPreviewNode = previewNode.parent();
-    if (url && url != "") {
-      previewNode.find("img").attr("src", url + "?vrtx=thumbnail");
-      if(parentPreviewNode.hasClass("no-preview")) {
-        parentPreviewNode.removeClass("no-preview");
-        previewNode.find("img").attr("alt", "thumbnail");
-      }
-      showImagePreviewCaption(elm);
-    } else {
-      hideImagePreviewCaption(elm, false);
-    }
-  }
-}
-
+var typestr;
 function browseServer(obj, editorBase, baseFolder, editorBrowseUrl, type) {
-  urlobj = obj; // NB: store to global var
-  if (!type) {
-    type = 'Image';
-  }
+  urlobj = obj; // NB: store to global vars
+  if (!type)  type = 'Image';
+  typestr = type;
+  
   // Use 70% of screen dimension
   var serverBrowserWindow = openServerBrowser(editorBase + '/plugins/filemanager/browser/default/browser.html?BaseFolder=' 
                                             + baseFolder + '&Type=' + type + '&Connector=' + editorBrowseUrl,
@@ -3236,8 +3141,11 @@ function SetUrl(url) {
     document.getElementById(urlobj).value = url;
   }
   oWindow = null;
-  previewImage(urlobj);
-  urlobj = ""; // NB: reset global var
+  if(typestr === "Image" && typeof previewImage !== "undefined") {
+    previewImage(urlobj);
+  }
+  urlobj = ""; // NB: reset global vars
+  typestr = "";
 }
 
 
@@ -3351,7 +3259,6 @@ function readCookie(cookieName, defaultVal) {
   var match = (" "+document.cookie).match(new RegExp('[; ]'+cookieName+'=([^\\s;]*)'));
   return match ? unescape(match[1]) : defaultVal;
 }
-
 
 /* Get URL parameter
  *

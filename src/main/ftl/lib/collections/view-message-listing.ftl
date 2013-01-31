@@ -56,8 +56,8 @@
       
           <div class="vrtx-message-line">
             <span class="vrtx-message-line-last-modified-by">
-              <#-- TODO:
               <#local modifiedBy = vrtx.prop(message, 'modifiedBy').principalValue />
+              <#local val = "" />
               <#if principalDocuments?? && principalDocuments[modifiedBy.name]??>
                 <#local principal = principalDocuments[modifiedBy.name] />
                 <#if principal.URL??>
@@ -68,8 +68,7 @@
               <#else>
                 <#local val = val + " " + vrtx.propValue(message, 'modifiedBy', 'link') />
               </#if>
-              ${val}-->
-              Odd roger
+              ${val}
             </span>
             <span class="vrtx-message-line-middle-fix"> - </span>
             <span class="vrtx-message-line-last-modified-date">

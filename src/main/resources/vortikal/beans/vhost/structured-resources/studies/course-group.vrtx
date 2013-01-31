@@ -9,7 +9,6 @@ resourcetype course-group : fellestekst-document {
     course-group-about : html noextract,
     courses-in-group : html noextract,
     relevant-study-programmes : html noextract,
-    course-group-admission : html noextract,
     course-group-other : html noextract,
     studinfo-kontakt : string
   }
@@ -29,7 +28,6 @@ resourcetype course-group : fellestekst-document {
     [def course-group-about document.properties.course-group-about]
     [def courses-in-group document.properties.courses-in-group]
     [def relevant-study-programmes document.properties.relevant-study-programmes]
-    [def course-group-admission document.properties.course-group-admission]
     [def course-group-other document.properties.course-group-other]
     [def studinfo-kontakt document.properties.studinfo-kontakt]
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -52,10 +50,6 @@ resourcetype course-group : fellestekst-document {
             [if relevant-study-programmes != null && relevant-study-programmes != ""]
               <h2>[localized 'relevant-study-programmes']</h2>
               [val relevant-study-programmes # unescaped]
-            [endif]
-            [if course-group-admission != null && course-group-admission != ""]
-              <h2>[localized 'course-group-admission']</h2>
-              [val course-group-admission # unescaped]
             [endif]
             [if course-group-other != null && course-group-other != ""]
               <h2>[localized 'course-group-other']</h2>
@@ -99,7 +93,6 @@ resourcetype course-group : fellestekst-document {
     course-group-about : (en : "About the course group", no : "Om emnegruppen", nn : "Om emnegruppa"),
     relevant-study-programmes : (en : "Relevant study programmes", no : "Relevante studieprogrammer", nn : "Relevante studieprogram"),
     courses-in-group : (en : "Courses in group", no : "Emner i emnegruppen", nn : "Emner i emnegruppa"),
-    course-group-admission : (en : "Course group admission", no : "Emnegruppeopptak", nn : "Emnegruppeopptak"),
     course-group-other : (en : "Other", no : "Annet", nn : "Anna"),
     studinfo-kontakt : (en : "Contact", no : "Kontakt", nn : "Kontakt")
   }

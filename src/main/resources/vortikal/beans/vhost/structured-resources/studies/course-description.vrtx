@@ -70,11 +70,11 @@ resourcetype course-description : fellestekst-document {
     group examsemester-every-other-semester (examsemester-every-other-semester-term, examsemester-every-other-semester-startyear) (after examsemesterParticularSemester) horizontal,
     teaching-language (dropdown),
     opptak-og-adgang (class[vrtx-shared-text]),
-    group opptak-og-adgang-group (opptak-og-adgang-text-field, opptak-og-adgang) vertical,
+    group opptak-og-adgang-group (opptak-og-adgang, opptak-og-adgang-text-field) vertical,
     ikke-privatist (class[vrtx-shared-text]),
     group ikke-privatist-group (ikke-privatist, ikke-privatist-text-field) vertical,
     obligatoriske-forkunnskaper (class[vrtx-shared-text]),
-    group prerequisites-group (obligatoriske-forkunnskaper-text-field, obligatoriske-forkunnskaper, recommended-prerequisites-text-field) vertical,
+    group prerequisites-group (obligatoriske-forkunnskaper, obligatoriske-forkunnskaper-text-field, recommended-prerequisites-text-field) vertical,
     overlapping-courses:credits (dropdown),
     group overlapping-courses-group (overlapping-courses, overlapping-courses-text-field) vertical,
     adgang (class[vrtx-shared-text]),
@@ -418,14 +418,14 @@ resourcetype course-description : fellestekst-document {
       [if (opptak-og-adgang-text-field != null && opptak-og-adgang-text-field != "") || (opptak-og-adgang != null && opptak-og-adgang != "" && opptak-og-adgang != "ingen-fellestekst") || (ikke-privatist-text-field != null && ikke-privatist-text-field != "") || (ikke-privatist != null && ikke-privatist != "" && ikke-privatist != "ingen-fellestekst")]
         <div id="admission">
           <h2>[localized 'opptak-og-adgang-group']</h2>
+          [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"opptak-og-adgang"}]
           [if opptak-og-adgang-text-field != null && opptak-og-adgang-text-field != ""]
             [val opptak-og-adgang-text-field # unescaped]
           [endif]
-          [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"opptak-og-adgang"}]
+          [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"ikke-privatist"}]
           [if ikke-privatist-text-field != null && ikke-privatist-text-field != ""]
             [val ikke-privatist-text-field # unescaped]
           [endif]
-          [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"ikke-privatist"}]
         </div>
       [endif]
       [def obligatoriske-forkunnskaper document.properties.obligatoriske-forkunnskaper]
@@ -437,10 +437,10 @@ resourcetype course-description : fellestekst-document {
           [if (obligatoriske-forkunnskaper-text-field != null && obligatoriske-forkunnskaper-text-field != "") || (obligatoriske-forkunnskaper != null && obligatoriske-forkunnskaper != "" && obligatoriske-forkunnskaper != "ingen-fellestekst")]
             <h3>[localized 'mandatory-prerequisites']</h3>
           [endif]
+          [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"obligatoriske-forkunnskaper"}]
           [if obligatoriske-forkunnskaper-text-field != null && obligatoriske-forkunnskaper-text-field != ""]
             [val obligatoriske-forkunnskaper-text-field # unescaped]
           [endif]
-          [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"obligatoriske-forkunnskaper"}]
           [if recommended-prerequisites-text-field != null && recommended-prerequisites-text-field != ""]
             <h3>[localized 'recommended-prerequisites']</h3>
             [val recommended-prerequisites-text-field # unescaped]
@@ -484,10 +484,10 @@ resourcetype course-description : fellestekst-document {
           [if (adgang != null && adgang != "" && adgang != "ingen-fellestekst") || (adgang-text-field != null && adgang-text-field != "")]
             <h3>[localized 'teaching-admission']</h3>
           [endif]
+          [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"adgang"}]
           [if adgang-text-field != null && adgang-text-field != ""]
             [val adgang-text-field # unescaped]
           [endif]
-          [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"adgang"}]
         </div>
       [endif]
       [def assessment-and-grading document.properties.assessment-and-grading]
@@ -521,52 +521,52 @@ resourcetype course-description : fellestekst-document {
           [if (hjelpemidler-text-field != null && hjelpemidler-text-field != "") || (hjelpemidler != null && hjelpemidler != "" && hjelpemidler != "ingen-fellestekst")]
             <h3>[localized 'hjelpemidler-group']</h3>
           [endif]
+          [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"hjelpemidler"}]
           [if hjelpemidler-text-field != null && hjelpemidler-text-field != ""]
             [val hjelpemidler-text-field # unescaped]
           [endif]
-          [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"hjelpemidler"}]
           [if (eksamensspraak-text-field != null && eksamensspraak-text-field != "") || (eksamensspraak != null && eksamensspraak != "" && eksamensspraak != "ingen-fellestekst")]
             <h3>[localized 'eksamensspraak-group']</h3>
           [endif]
+          [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"eksamensspraak"}]
           [if eksamensspraak-text-field != null && eksamensspraak-text-field != ""]
             [val eksamensspraak-text-field # unescaped]
           [endif]
-          [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"eksamensspraak"}]
           [if (sensur-text-field != null && sensur-text-field != "") || (sensur != null && sensur != "" && sensur != "ingen-fellestekst")]
             <h3>[localized 'sensur-group']</h3>
           [endif]
+          [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"sensur"}]
           [if sensur-text-field != null && sensur-text-field != ""]
             [val sensur-text-field # unescaped]
           [endif]
-          [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"sensur"}]
           [if (klage-text-field != null && klage-text-field != "") || (klage != null && klage != "" && klage != "ingen-fellestekst")]
             <h3>[localized 'klage-group']</h3>
           [endif]
+          [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"klage"}]
           [if klage-text-field != null && klage-text-field != ""]
             [val klage-text-field # unescaped]
           [endif]
-          [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"klage"}]
           [if (ny-utsatt-eksamen-text-field != null && ny-utsatt-eksamen-text-field != "") || (ny-utsatt-eksamen != null && ny-utsatt-eksamen != "" && ny-utsatt-eksamen != "ingen-fellestekst")]
             <h3>[localized 'ny-utsatt-eksamen-group']</h3>
           [endif]
+          [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"ny-utsatt-eksamen"}]
           [if ny-utsatt-eksamen-text-field != null && ny-utsatt-eksamen-text-field != ""]
             [val ny-utsatt-eksamen-text-field # unescaped]
           [endif]
-          [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"ny-utsatt-eksamen"}]
           [if (antall-forsok-trekk-text-field != null && antall-forsok-trekk-text-field != "") || (antall-forsok-trekk != null && antall-forsok-trekk != "" && antall-forsok-trekk != "ingen-fellestekst")]
             <h3>[localized 'antall-forsok-trekk-group']</h3>
           [endif]
+          [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"antall-forsok-trekk"}]
           [if antall-forsok-trekk-text-field != null && antall-forsok-trekk-text-field != ""]
             [val antall-forsok-trekk-text-field # unescaped]
           [endif]
-          [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"antall-forsok-trekk"}]
           [if (tilrettelagt-eksamen-text-field != null && tilrettelagt-eksamen-text-field != "") || (tilrettelagt-eksamen != null && tilrettelagt-eksamen != "" && tilrettelagt-eksamen != "ingen-fellestekst")]
             <h3>[localized 'tilrettelagt-eksamen-group']</h3>
           [endif]
+          [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"tilrettelagt-eksamen"}]
           [if tilrettelagt-eksamen-text-field != null && tilrettelagt-eksamen-text-field != ""]
             [val tilrettelagt-eksamen-text-field # unescaped]
           [endif]
-          [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"tilrettelagt-eksamen"}]
         </div
       [endif]
       [def evaluering-av-emnet document.properties.evaluering-av-emnet]
@@ -709,22 +709,15 @@ resourcetype course-description : fellestekst-document {
     version-en : (en : "English version", no : "English version", nn : "English version"),
     continued-as : (en : "This course is continued as", no: "Dette emnet er videreført som", nn : "Dette emnet er vidareført som"),
     discontinued-course : (en : "This course is discontinued.", no : "Dette emnet er nedlagt.", nn : "Dette emnet er nedlagt."),
-    earlier-version-start : (en : "This version of the course description is outdated. For up to date information about this course, please visit",
-                       no : "Denne versjonen av emnebeskrivelsen er ikke lenger gyldig. Se",
-                       nn : "Denne versjonen av emneskildringa er ikkje lenger gyldig. Sjå"),
-    earlier-version-link : (en : "the complete course list of the department.",
-                            no : "listen over alle emner ved insituttet",
-                            nn : "lista over alle emner ved insituttet"),
-    earlier-version-end : (en : " ", no : "for oppdatert versjon av dette emnet.", nn : "for oppdatert versjon av dette emnet."),
     facts : (en : "Facts about this course", no : "Fakta om emnet", nn : "Fakta om emnet"),
     credits : (en : "Credits", no : "Studiepoeng", nn : "Studiepoeng"),
-    teachingsemester : (en : "Teaching semester", no : "Undervises", nn : "Undervises"),
+    teachingsemester : (en : "Teaching", no : "Undervisning", nn : "Undervisning"),
     teachingsemesterParticularSemester : (en : "Particular semester", no : "Bestemt semester", nn : "Bestemt semester"),
     teachingsemester-every-other-semester : (en : "Every other semester", no : "Annethvert semester", nn : "Annakvart semester"),
     teachingsemester-every-other-semester-term : (en : "Term", no : "Semester", nn : "Semester"),
     teachingsemester-every-other-semester-startyear : (en : "Start year", no : "Oppstartsår", nn : "Oppstartsår"),
     teachingsemester-other : (en : "Other", no : "Annet", nn : "Annet"),
-    examsemester : (en : "Examination semester", no: "Eksamen", nn: "Eksamen"),
+    examsemester : (en : "Examination", no: "Eksamen", nn: "Eksamen"),
     examsemesterParticularSemester : (en : "Particular semester", no : "Bestemt semester", nn : "Bestemt semester"),
     examsemester-every-other-semester : (en : "Every other semester", no : "Annethvert semester", nn : "Anna kvart semester"),
     examsemester-every-other-semester-term : (en : "Term", no : "Semester", nn : "Semester"),
@@ -740,9 +733,9 @@ resourcetype course-description : fellestekst-document {
     spring : (en : "Spring", no : "Vår", nn : "Vår"),
     year : (en : "Year", no : "År", nn : "År"),
     administrated : (en : "Administrated by", no : "Tilbys ved", nn : "Tilbys ved"),
-    semester : (en : "Detailed course information - Current and previous semesters:",
-                no : "Semestersider (undervisningstider, eksamensdato, pensum m.m.):",
-                nn : "Semestersider (undervisningstider, eksamensdato, pensum m.m.):"),
+    semester : (en : "Semester pages (time and place for teaching and examination, syllabus etc.)",
+                no : "Semestersider (undervisningstider, eksamensdato, pensum m.m.)",
+                nn : "Semestersider (undervisningstider, eksamensdato, pensum m.m.)"),
     vaar-og-host : (en : "Spring and autumn", no : "Vår og høst", nn : "Vår og haust"),
     hver-hoest : (en : "Every autumn semester", no : "Hvert høstsemester", nn : "Kvart haustsemester"),
     hver-vaar : (en : "Every spring semester", no : "Hvert vårsemester", nn : "Kvart vårsemester"),
@@ -756,53 +749,53 @@ resourcetype course-description : fellestekst-document {
     course-fee : (en : "Course fee", no : "Kursavgift", nn : "Kursavgift"),
     course-fee-amount : (en : "Course fee amount", no : "Kursavgift sum", nn : "Kursavgift sum"),
     course-content : (en : "Course content", no : "Kort om emnet", nn : "Kort om emnet"),
-    learning-outcomes : (en : "Learning outcomes", no : "Hva lærer du?", nn : "Kva lærer du?"),
+    learning-outcomes : (en : "Learning outcome", no : "Hva lærer du?", nn : "Kva lærer du?"),
     opptak-og-adgang-text-field : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
     opptak-og-adgang : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
-    opptak-og-adgang-group : (en : "Admission regulation", no : "Opptak og adgangsregulering", nn : "Opptak og adgangsregulering"),
+    opptak-og-adgang-group : (en : "Admission", no : "Opptak og adgangsregulering", nn : "Opptak og adgangsregulering"),
     ikke-privatist-text-field : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
     ikke-privatist : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
     ikke-privatist-group : (en : "External candidates", no : "Privatist", nn : "Privatist"),
-    obligatoriske-forkunnskaper-text-field : (en : "Formal prerequisites optional text", no : "Obligatoriske forkunnskaper valgfri tekst", nn : "Obligatoriske forkunnskaper valfri tekst"),
-    obligatoriske-forkunnskaper : (en : "Formal prerequisites shared text", no : "Obligatoriske forkunnskaper fellestekst", nn : "Obligatoriske forkunnskaper fellestekst"),
-    mandatory-prerequisites : (en : "Formal prerequisites", no : "Obligatoriske forkunnskaper", nn : "Obligatoriske forkunnskaper"),
-    recommended-prerequisites-text-field : (en : "Recommended prerequisites optional text", no : "Anbefalte forkunnskaper valgfri tekst", nn : "Anbefalte forkunnskaper valfri tekst"),
-    recommended-prerequisites : (en : "Recommended prerequisites", no : "Anbefalte forkunnskaper", nn : "Anbefalte forkunnskaper"),
-    prerequisites-group : (en : "Prerequisites", no : "Forkunnskaper", nn : "Forkunnskaper"),
+    obligatoriske-forkunnskaper-text-field : (en : "Formal prerequisite knowledge optional text", no : "Obligatoriske forkunnskaper valgfri tekst", nn : "Obligatoriske forkunnskap valfri tekst"),
+    obligatoriske-forkunnskaper : (en : "Formal prerequisite knowledge shared text", no : "Obligatoriske forkunnskaper fellestekst", nn : "Obligatoriske forkunnskap fellestekst"),
+    mandatory-prerequisites : (en : "Formal prerequisites", no : "Obligatoriske forkunnskaper", nn : "Obligatoriske forkunnskap"),
+    recommended-prerequisites-text-field : (en : "Recommended previous knowledge optional text", no : "Anbefalte forkunnskaper valgfri tekst", nn : "Anbefalte forkunnskap valfri tekst"),
+    recommended-prerequisites : (en : "Recommended previous knowledge", no : "Anbefalte forkunnskaper", nn : "Anbefalte forkunnskap"),
+    prerequisites-group : (en : "Prerequisites", no : "Forkunnskaper", nn : "Forkunnskap"),
     overlapping-courses : (en : "Courses", no : "Kurs", nn : "Kurs"),
     overlapping-courses-text-field : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
-    overlapping-courses-group : (en : "Overlapping courses", no : "Overlappende emner", nn : "Overlappende emner"),
+    overlapping-courses-group : (en : "Overlapping courses", no : "Overlappende emner", nn : "Overlappande emne"),
     fs-course-code : (en : "Course code", no : "Emnekode", nn : "Emnekode"),
     teaching-text-field : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
     adgang-text-field : (en : "Admission optional text", no : "Adgang valgfri tekst", nn : "Adgang valfri tekst"),
     adgang : (en : "Admission shared text", no : "Adgang fellestekst", nn : "Adgang fellestekst"),
     teaching-group : (en : "Teaching", no : "Undervisning", nn : "Undervisning"),
-    teaching-admission : (en : "Criteria for access to teaching resources", no : "Adgang til undervisning", nn : "Adgang til undervisning"),
-    assessment-and-grading : (en : "Assessment and grading", no : "Vurdering og eksamen", nn : "Vurdering og eksamen"),
+    teaching-admission : (en : "Access to teaching", no : "Adgang til undervisning", nn : "Adgang til undervisning"),
+    assessment-and-grading : (en : "Examination", no : "Eksamen", nn : "Eksamen"),
     hjelpemidler-text-field : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
     hjelpemidler : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
-    hjelpemidler-group : (en : "Exam resources", no : "Hjelpemidler", nn : "Hjelpemidler"),
+    hjelpemidler-group : (en : "Examination support material", no : "Hjelpemidler", nn : "Hjelpemiddel"),
     eksamensspraak-text-field : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
     eksamensspraak : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
     eksamensspraak-group : (en : "Language of examination", no : "Eksamensspråk", nn : "Eksamensspråk"),
     sensur-text-field : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
     sensur : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
-    sensur-group : (en : "Assessment and grading", no : "Karakterskala", nn : "Karakterskala"),
+    sensur-group : (en : "Grading scale", no : "Karakterskala", nn : "Karakterskala"),
     klage-text-field : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
     klage : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
     klage-group : (en : "Explanations and appeals", no : "Begrunnelse og klage", nn : "Grunngjeving og klage"),
     ny-utsatt-eksamen-text-field : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
     ny-utsatt-eksamen : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
-    ny-utsatt-eksamen-group : (en : "Possibility of make-up exams and re-takes", no : "Adgang til ny eller utsatt eksamen", nn : "Adgang til ny eller utsett eksamen"),
+    ny-utsatt-eksamen-group : (en : "Resit an examination", no : "Adgang til ny eller utsatt eksamen", nn : "Adgang til ny eller utsett eksamen"),
     antall-forsok-trekk-text-field : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
     antall-forsok-trekk : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
-    antall-forsok-trekk-group : (en : "Withdrawing from exams and limits on re-takes", no : "Trekk fra eksamen og antall eksamensforsøk", nn : "Trekk frå eksamen og antall eksamensforsøk"),
+    antall-forsok-trekk-group : (en : "Withdrawal from an examination", no : "Trekk fra eksamen", nn : "Trekk frå eksamen"),
     tilrettelagt-eksamen-text-field : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
     tilrettelagt-eksamen : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
-    tilrettelagt-eksamen-group : (en : "Exam options for students with special needs", no : "Tilrettelagt eksamen", nn : "Tilrettelagt eksamen"),
+    tilrettelagt-eksamen-group : (en : "Special examination arrangements", no : "Tilrettelagt eksamen", nn : "Tilrettelagt eksamen"),
     evaluering-av-emnet-text-field : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
     evaluering-av-emnet : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
-    evaluering-av-emnet-group : (en : "Evaluation of course", no : "Evaluering av emnet", nn : "Evaluering av emnet"),
+    evaluering-av-emnet-group : (en : "Evaluation", no : "Evaluering av emnet", nn : "Evaluering av emnet"),
     other-text-field : (en : "Other", no : "Annet", nn : "Anna"),
     studinfo-kontakt : (en : "Contact", no : "Kontakt", nn : "Kontakt"),
     course : (en : "Course", no : "Kurs", nn : "Kurs"),

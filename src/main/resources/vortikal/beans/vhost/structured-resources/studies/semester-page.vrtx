@@ -316,7 +316,7 @@ resourcetype semester-page : fellestekst-document {
     studinfo-kontakt : (en : "Contact", no : "Kontakt", nn : "Kontakt"),
     messages-placement : (en : "Placement of messages", no : "Plassering av beskjeder", nn : "Plassering av beskjeder"),
     max-number-of-messages : (en : "Number of messages", no : "Antall beskjeder", nn : "Talet på beskjedar"),
-    messages : (en : "Messages", no : "Beskjeder", nn : "Beskjeder"),
+    messages : (en : "Messages", no : "Beskjeder", nn : "Meldingar"),
     teachersUsernames : (en : "Teachers (enter the teachers username)", no : "Lærere (fyll inn lærerens brukernavn)", nn : "Lærarar (fyll inn lærarens brukernavn)"),
     teachers : (en : "Other teachers", no : "Andre lærere", nn : "Andre lærarar"),
     teacherName : (en : "Name",no : "Navn", nn :"Namn"),

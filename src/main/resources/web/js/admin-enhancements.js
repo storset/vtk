@@ -1736,15 +1736,13 @@ function editorInteraction(bodyId, vrtxAdm, _$) {
     vrtxAdm.cachedAppContent.on("click", ".vrtx-focus-button:last input", function(e) {
       vrtxAdm.editorSaveButtonName = _$(this).attr("name");
       ajaxSave();
-      $.when(vrtxAdm.asyncEditorSavedDeferred)
-          .done(function() { // TODO: show status saved msg
-            vrtxAdm.removeMsg("error");
-          })
-          .fail(function(err) {
-            if(err !== "INIT") {
-              vrtxAdmin.displayErrorMsg(err);
-            }
-          });
+      $.when(vrtxAdm.asyncEditorSavedDeferred).done(function() {
+        vrtxAdm.removeMsg("error");
+      }).fail(function(err) {
+         if(err !== "INIT") {
+           vrtxAdm.displayErrorMsg(err);
+         }
+      });
       e.stopPropagation();
       e.preventDefault();
     });

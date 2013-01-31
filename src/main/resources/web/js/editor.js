@@ -514,12 +514,12 @@ $(document).ready(function() {
   _$(document).on("blur", "input.preview-image-inputfield", function(e) {
     previewImage(this.id)
   });
-  _$(document).on("keydown", "input.preview-image-inputfield", function(e) { // ENTER-key
+  _$(document).on("keydown", "input.preview-image-inputfield", $.debounce(50, true, function(e) { // ENTER-key
     if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
       previewImage(this.id);
       e.preventDefault();
     }
-  });
+  }));
   
   // Send to approval
   // TODO: generalize dialog jQuery UI function with AJAX markup/text
@@ -820,9 +820,9 @@ $(window).load(function () {
   
   if (typeof CKEDITOR !== "undefined" && vrtxEditor.editorForm.length) { // XXX: Don't add event if not regular editor
     CKEDITOR.on('instanceReady', function() {
-      _$(".cke_contents iframe").contents().find("body").bind('keydown', 'ctrl+s', function(e) {
+      _$(".cke_contents iframe").contents().find("body").bind('keydown', 'ctrl+s', $.debounce(150, true, function(e) {
         ctrlSEventHandler(_$, e);
-      });
+      }));
     });
   }
 });

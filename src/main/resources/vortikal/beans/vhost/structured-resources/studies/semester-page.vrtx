@@ -192,6 +192,12 @@ resourcetype semester-page : fellestekst-document {
               <h1>[localized 'semesterpage-for'] [if course-code != null && course-code != ""][val course-code][endif][if course-code != null && course-code != "" && semester != null && semester != ""] - [endif][if semester != null && semester != ""][val semester][endif]</h1>
               [call "comp:show-static-links-if-published"]
             </div>
+            [if cloned-course != null && cloned-course && cloned-course-code != null && cloned-course-code != ""]
+              <div class="vrtx-frontpage-box white-box">
+                <h2>[localized 'cloned-course']</h2>
+                <p>[localized 'cloned-course-from'] [call "include:ref" {"id" : cloned-course-code, "referencetype" : "emne"}].</p>
+              </div>
+            [endif]
             [if messages-placement != null && messages-placement = "middle"]
               <div class="vrtx-frontpage-box white-box">
                 [if max-number-of-messages != null && max-number-of-messages != ""]
@@ -199,12 +205,6 @@ resourcetype semester-page : fellestekst-document {
                 [else]
                   [call "include:messages" {"uri" : messagelisting-uri, "max-number-of-messages" : "3"}]
                 [endif]
-              </div>
-            [endif]
-            [if cloned-course != null && cloned-course && cloned-course-code != null && cloned-course-code != ""]
-              <div class="vrtx-frontpage-box white-box">
-                <h2>[localized 'cloned-course']</h2>
-                <p>[localized 'cloned-course-from'] [call "include:ref" {"id" : cloned-course-code, "referencetype" : "emne"}].</p>
               </div>
             [endif]
             [if fronter != null && fronter]

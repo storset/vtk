@@ -1,3 +1,8 @@
+/*
+ *  Broken links report
+ *
+ */
+
 vrtxAdmin._$(document).ready(function() {
    var vrtxAdm = vrtxAdmin, _$ = vrtxAdm._$;
 
@@ -117,3 +122,5 @@ vrtxAdmin._$(document).ready(function() {
     });
   }
 });
+
+/* ^ Broken links report */

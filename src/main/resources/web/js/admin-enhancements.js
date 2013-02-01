@@ -1108,15 +1108,14 @@ function createChangeTemplate(hasTitle) {
         createCheckUncheckIndexFile($("#vrtx-textfield-file-name input"), indexCheckbox);
       }
     } else {
-      isIndex = indexCheckbox.is(":checked");
-      idx.parent().show();
+      indexCheckbox.parent().show();
+      isIndex = indexCheckbox.is(":checked");   
     }
   }
 
   if(hasTitle) {
     $("#vrtx-div-file-title").show();
-    var minWidth = vrtxAdmin.createResourceReplaceTitle ? 35 : 100;
-    minWidth = isIndex ? 35 : minWidth;
+    var minWidth = (vrtxAdmin.createResourceReplaceTitle || isIndex) ? 35 : 100;
   } else {
     $("#vrtx-div-file-title").hide();
     var minWidth = isIndex ? 35 : 100;

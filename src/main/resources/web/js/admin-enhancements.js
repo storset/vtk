@@ -1059,11 +1059,6 @@ VrtxAdmin.prototype.adaptiveBreadcrumbs = function adaptiveBreadcrumbs() {
 \*-------------------------------------------------------------------*/
 
 function createFuncComplete() {
-  var lastColTitle = "";
-  var lastColName = "";
-  var lastFileTitle = "";
-  var lastFileName = "";
-  
   $(document).on("keyup", "#vrtx-textfield-collection-title input", $.debounce(50, function() {
     userTitleChange($(this).attr("name"), $("#vrtx-textfield-collection-name input").attr("name"), null);
   }));
@@ -1085,13 +1080,9 @@ function createFuncComplete() {
     var leftPos = $(".radio-buttons label:first").position().left;
     radioDescriptions.css("marginLeft", leftPos + "px");
   }
-  
+
   $("#initChangeTemplate").trigger("click"); 
-  
-  var textFields = $(".vrtx-admin-form input[type='text']");
-  textFields.attr("autocomplete", "off");
-  textFields.attr("autocorrect", "off");
-  
+  $(".vrtx-admin-form input[type='text']").attr("autocomplete", "off").attr("autocorrect", "off");
 }
 
 function changeTemplate(element, hasTitle) {

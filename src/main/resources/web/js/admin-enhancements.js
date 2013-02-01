@@ -1060,16 +1060,16 @@ VrtxAdmin.prototype.adaptiveBreadcrumbs = function adaptiveBreadcrumbs() {
 
 function createFuncComplete() {
   $(document).on("keyup", "#vrtx-textfield-collection-title input", $.debounce(50, function() {
-    userTitleChange($(this).attr("name"), $("#vrtx-textfield-collection-name input").attr("name"), null);
+    createTitleChange($(this), $("#vrtx-textfield-collection-name input"), null);
   }));
   $(document).on("keyup", "#vrtx-textfield-collection-name input", $.debounce(50, function() {    
-    disableReplaceTitle($(this).attr("name"));
+    createFileNameChange($(this));
   }));
   $(document).on("keyup", "#vrtx-textfield-file-title input", $.debounce(50, function() {
-    userTitleChange($(this).attr("name"), $("#vrtx-textfield-file-name input").attr("name"), $("#vrtx-checkbox-is-index input").attr("name"));
+    createTitleChange($(this), $("#vrtx-textfield-file-name input"), $("#isIndex"));
   }));
   $(document).on("keyup", "#vrtx-textfield-file-name input", $.debounce(50, function() {
-    disableReplaceTitle($(this).attr("name"));
+    createFileNameChange($(this));
   }));
 
   vrtxAdmin.createResourceReplaceTitle = true;
@@ -1077,7 +1077,7 @@ function createFuncComplete() {
   // Fix margin left for radio descriptions because radio width variation on different OS-themes
   var radioDescriptions = $(".radioDescription");
   if(radioDescriptions.length) {
-    var leftPos = $(".radio-buttons label:first").position().left;
+    var leftPos = $(".radio-buttons label").filter(":first").position().left;
     radioDescriptions.css("marginLeft", leftPos + "px");
   }
 
@@ -1085,8 +1085,8 @@ function createFuncComplete() {
   $(".vrtx-admin-form input[type='text']").attr("autocomplete", "off").attr("autocorrect", "off");
 }
 
-function changeTemplate(element, hasTitle) {
-  var checked = $(".radio-buttons input:checked");
+function changeTemplate(hasTitle) {
+  var checked = $(".radio-buttons input").filter(":checked");
   if(checked.length) {
     var templateFile = checked.val();
     if(templateFile.indexOf(".") !== -1) {
@@ -1099,20 +1099,21 @@ function changeTemplate(element, hasTitle) {
   }
   var idx = $("#isIndex");
   var isIndex = idx.length;
-  if(isIndex && fileTypeEnding !== "html") {
-    isIndex = false;
-    idx.parent().hide();
-    if(idx.is(":checked")) {
-      idx.removeAttr("checked");
-      isIndexFile($("#vrtx-textfield-file-name input").attr("name"), $("#vrtx-checkbox-is-index input").attr("name"));
+  
+  if(isIndex) {
+    if(fileTypeEnding !== "html") {
+      isIndex = false;
+      idx.parent().hide();
+      if(idx.is(":checked")) {
+        idx.removeAttr("checked");
+        isIndexFile($("#vrtx-textfield-file-name input"), idx);
+      }
+    } else {
+      idx.parent().show();
+      isIndex = idx.is(":checked");
     }
-  } else if(isIndex) {
-    idx.parent().show();
-    isIndex = idx.is(":checked");
   }
 
-  var name = $("#name");
-  
   if(hasTitle) {
     $("#vrtx-div-file-title").show();
     var minWidth = vrtxAdmin.createResourceReplaceTitle ? 35 : 100;
@@ -1122,6 +1123,7 @@ function changeTemplate(element, hasTitle) {
     var minWidth = isIndex ? 35 : 100;
   }
   
+  var name = $("#name");
   growField(name, name.val(), 5, minWidth, 530);
   
   if(vrtxAdmin.createResourceReplaceTitle) {
@@ -1129,9 +1131,7 @@ function changeTemplate(element, hasTitle) {
   }
 }
 
-function isIndexFile(nameBind, indexBind) {
-  var indexCheckbox = $("#" + indexBind);
-  var nameField = $("#" + nameBind);
+function isIndexFile(nameField, indexCheckbox) {
   if (indexCheckbox.is(":checked")) {
     vrtxAdmin.createDocumentFileName = nameField.val();
     nameField.val('index');
@@ -1148,17 +1148,11 @@ function isIndexFile(nameBind, indexBind) {
   }
 }
 
-function userTitleChange(titleBind, nameBind, indexBind) {
+function createTitleChange(titleField , nameField, indexCheckbox) {
   if (vrtxAdmin.createResourceReplaceTitle) {
-    var titleField = $("#" + titleBind);
-    var nameField = $("#" + nameBind);
-    if(indexBind) {
-      var indexCheckbox = $("#" + indexBind);
-    }
-    
     var nameFieldVal = replaceInvalidChar(titleField.val());
     
-    if(!indexBind || !indexCheckbox.length || !indexCheckbox.is(":checked")) {
+    if(!indexCheckbox || !indexCheckbox.length || !indexCheckbox.is(":checked")) {
       if(nameFieldVal.length > 50) {
         nameFieldVal = nameFieldVal.substring(0, 50); 
       }
@@ -1170,13 +1164,11 @@ function userTitleChange(titleBind, nameBind, indexBind) {
   }
 }
 
-function disableReplaceTitle(nameBind) {
+function createFileNameChange(nameField) {
   if (vrtxAdmin.createResourceReplaceTitle) {
     vrtxAdmin.createResourceReplaceTitle = false;
   }
-  
-  var nameField = $("#" + nameBind);
-  
+
   var currentCaretPos = getCaretPos(nameField[0]);
 
   var nameFieldValBeforeReplacement = nameField.val();
@@ -1365,11 +1357,11 @@ VrtxAdmin.prototype.collectionListingInteraction = function collectionListingInt
   if(!vrtxAdm.cachedDirectoryListing.length) return;
   
   vrtxAdmin.cachedAppContent.on("click", "#vrtx-checkbox-is-index input", function(e) {
-    isIndexFile($("#vrtx-textfield-file-name input").attr("name"), $(this).attr("name"));
+    isIndexFile($("#vrtx-textfield-file-name input"), $(this));
     e.stopPropagation();
   });
   vrtxAdmin.cachedAppContent.on("click", ".radio-buttons input", function(e) {
-    var focusedTextField = $(".vrtx-admin-form input[type='text']:visible:first");
+    var focusedTextField = $(".vrtx-admin-form input[type='text']").filter(":visible:first");
     if(focusedTextField.length && !focusedTextField.val().length) { // Only focus when empty
       focusedTextField.focus();
     }

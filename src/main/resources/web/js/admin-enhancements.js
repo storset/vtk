@@ -1065,36 +1065,16 @@ function createFuncComplete() {
   var lastFileName = "";
   
   $(document).on("keyup", "#vrtx-textfield-collection-title input", $.debounce(50, function() {
-    var colTitle = $(this),
-        colTitleVal = colTitle.val();
-    if(colTitle.length && colTitleVal !== lastColTitle) {
-      lastColTitle = colTitleVal;
-      userTitleChange(colTitle.attr("name"), $("#vrtx-textfield-collection-name input").attr("name"), null);
-    }
+    userTitleChange($(this).attr("name"), $("#vrtx-textfield-collection-name input").attr("name"), null);
   }));
-  $(document).on("keyup", "#vrtx-textfield-collection-name input", $.debounce(50, function() {
-    var colName = $(this),
-        colNameVal = colName.val();
-    if(colName.length && colName.is(":focus") && colNameVal !== lastColName) {
-      lastColName = colNameVal;       
-      disableReplaceTitle(colName.attr("name"));
-    }
+  $(document).on("keyup", "#vrtx-textfield-collection-name input", $.debounce(50, function() {    
+    disableReplaceTitle($(this).attr("name"));
   }));
   $(document).on("keyup", "#vrtx-textfield-file-title input", $.debounce(50, function() {
-    var fileTitle = $(this),
-        fileTitleVal = fileTitle.val();
-    if(fileTitle.length && fileTitleVal !== lastFileTitle) {
-      lastFileTitle = fileTitleVal;
-      userTitleChange(fileTitle.attr("name"), $("#vrtx-textfield-file-name input").attr("name"), $("#vrtx-checkbox-is-index input").attr("name"));
-    }
+    userTitleChange($(this).attr("name"), $("#vrtx-textfield-file-name input").attr("name"), $("#vrtx-checkbox-is-index input").attr("name"));
   }));
   $(document).on("keyup", "#vrtx-textfield-file-name input", $.debounce(50, function() {
-    var fileName = $(this),
-    fileNameVal = fileName.val();
-    if(fileName.length && fileName.is(":focus") && fileNameVal !== lastFileName) {
-      lastFileName = fileNameVal;
-      disableReplaceTitle(fileName.attr("name"));
-    }
+    disableReplaceTitle($(this).attr("name"));
   }));
 
   vrtxAdmin.createResourceReplaceTitle = true;

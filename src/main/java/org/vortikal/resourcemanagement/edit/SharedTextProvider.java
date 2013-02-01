@@ -23,6 +23,12 @@ import org.vortikal.util.io.StreamUtil;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 
+/**
+ * Provides shared text values in model under key 'sharedTextProps' (a map).
+ * 
+ * Used by editor code.
+ * 
+ */
 public class SharedTextProvider implements ReferenceDataProvider {
 
     private ResourceTypeTree resourceTypeTree;
@@ -32,6 +38,7 @@ public class SharedTextProvider implements ReferenceDataProvider {
     /* TODO: Need better error handling */
     @SuppressWarnings("unchecked")
     public Map<String, JSONObject> getSharedTextValues(String docType, String propName) {
+        // XXX Hack for re-use amongst different resource-types:
         if(propName.equals("studinfo-kontakt")) {
             docType = "studinfo-kontakt";
         }
@@ -80,7 +87,7 @@ public class SharedTextProvider implements ReferenceDataProvider {
                 fragment.filter(safeHtmlFilter);
                 j.put(descriptionKey, fragment.getStringRepresentation());
             } catch (Exception e) {
-                // TODO Auto-generated catch block
+                // TODO Auto-generated catch block sucks
                 e.printStackTrace();
             }
         }

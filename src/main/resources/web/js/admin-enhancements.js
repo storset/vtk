@@ -1097,20 +1097,19 @@ function changeTemplate(hasTitle) {
       }
     }
   }
-  var idx = $("#isIndex");
-  var isIndex = idx.length;
+  var indexCheckbox = $("#isIndex");
+  var isIndex = false;
   
-  if(isIndex) {
+  if(indexCheckbox.length) {
     if(fileTypeEnding !== "html") {
-      isIndex = false;
-      idx.parent().hide();
-      if(idx.is(":checked")) {
-        idx.removeAttr("checked");
-        isIndexFile($("#vrtx-textfield-file-name input"), idx);
+      indexCheckbox.parent().hide();
+      if(indexCheckbox.is(":checked")) {
+        indexCheckbox.removeAttr("checked");
+        checkUncheckIndexFile($("#vrtx-textfield-file-name input"), indexCheckbox);
       }
     } else {
+      isIndex = indexCheckbox.is(":checked");
       idx.parent().show();
-      isIndex = idx.is(":checked");
     }
   }
 
@@ -1131,7 +1130,7 @@ function changeTemplate(hasTitle) {
   }
 }
 
-function isIndexFile(nameField, indexCheckbox) {
+function checkUncheckIndexFile(nameField, indexCheckbox) {
   if (indexCheckbox.is(":checked")) {
     vrtxAdmin.createDocumentFileName = nameField.val();
     nameField.val('index');
@@ -1357,7 +1356,7 @@ VrtxAdmin.prototype.collectionListingInteraction = function collectionListingInt
   if(!vrtxAdm.cachedDirectoryListing.length) return;
   
   vrtxAdmin.cachedAppContent.on("click", "#vrtx-checkbox-is-index input", function(e) {
-    isIndexFile($("#vrtx-textfield-file-name input"), $(this));
+    checkUncheckIndexFile($("#vrtx-textfield-file-name input"), $(this));
     e.stopPropagation();
   });
   vrtxAdmin.cachedAppContent.on("click", ".radio-buttons input", function(e) {

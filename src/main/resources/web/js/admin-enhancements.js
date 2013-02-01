@@ -1081,11 +1081,11 @@ function createFuncComplete() {
     radioDescriptions.css("marginLeft", leftPos + "px");
   }
 
-  $("#initChangeTemplate").trigger("click"); 
+  $("#initCreateChangeTemplate").trigger("click"); 
   $(".vrtx-admin-form input[type='text']").attr("autocomplete", "off").attr("autocorrect", "off");
 }
 
-function changeTemplate(hasTitle) {
+function createChangeTemplate(hasTitle) {
   var checked = $(".radio-buttons input").filter(":checked");
   if(checked.length) {
     var templateFile = checked.val();
@@ -1105,7 +1105,7 @@ function changeTemplate(hasTitle) {
       indexCheckbox.parent().hide();
       if(indexCheckbox.is(":checked")) {
         indexCheckbox.removeAttr("checked");
-        checkUncheckIndexFile($("#vrtx-textfield-file-name input"), indexCheckbox);
+        createCheckUncheckIndexFile($("#vrtx-textfield-file-name input"), indexCheckbox);
       }
     } else {
       isIndex = indexCheckbox.is(":checked");
@@ -1130,7 +1130,7 @@ function changeTemplate(hasTitle) {
   }
 }
 
-function checkUncheckIndexFile(nameField, indexCheckbox) {
+function createCheckUncheckIndexFile(nameField, indexCheckbox) {
   if (indexCheckbox.is(":checked")) {
     vrtxAdmin.createDocumentFileName = nameField.val();
     nameField.val('index');
@@ -1206,8 +1206,9 @@ function replaceInvalidChar(val) {
   return val;
 }
 
-// Taken from second comment (and jquery.autocomplete.js): 
-// http://stackoverflow.com/questions/499126/jquery-set-cursor-position-in-text-area
+/* Taken from second comment (and jquery.autocomplete.js): 
+ * http://stackoverflow.com/questions/499126/jquery-set-cursor-position-in-text-area
+ */
 function setCaretToPos(input, pos) {
   setSelectionRange(input, pos, pos);
 }
@@ -1230,8 +1231,9 @@ function setSelectionRange(field, start, end) {
   field.focus();
 }
 
-// Taken from fourth comment:
-// http://stackoverflow.com/questions/4928586/get-caret-position-in-html-input
+/* Taken from fourth comment:
+ * http://stackoverflow.com/questions/4928586/get-caret-position-in-html-input
+ */
 function getCaretPos(input) {
   if (input.setSelectionRange) {
     return input.selectionStart;
@@ -1356,7 +1358,7 @@ VrtxAdmin.prototype.collectionListingInteraction = function collectionListingInt
   if(!vrtxAdm.cachedDirectoryListing.length) return;
   
   vrtxAdmin.cachedAppContent.on("click", "#vrtx-checkbox-is-index input", function(e) {
-    checkUncheckIndexFile($("#vrtx-textfield-file-name input"), $(this));
+    createCheckUncheckIndexFile($("#vrtx-textfield-file-name input"), $(this));
     e.stopPropagation();
   });
   vrtxAdmin.cachedAppContent.on("click", ".radio-buttons input", function(e) {

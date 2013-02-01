@@ -30,7 +30,7 @@
           <ul class="radio-buttons">
             <@vrtx.formRadioButtons "createDocumentForm.sourceURI", templates, "<li>", "</li>", descriptions, titles, true />
           </ul>
-          <button id="initChangeTemplate" type="button" onclick="changeTemplate(<#if (titles?has_content && titles[sourceURIBind]?exists)>${titles[sourceURIBind]?string}<#else>false</#if>)"></button>
+          <button id="initCreateChangeTemplate" type="button" onclick="createChangeTemplate(<#if (titles?has_content && titles[sourceURIBind]?exists)>${titles[sourceURIBind]?string}<#else>false</#if>)"></button>
           
           <#-- If POST is not AJAX (otherwise it would be a funcComplete() in completeAsyncForm()) -->
           <script type="text/javascript"><!--
@@ -54,7 +54,7 @@
          $(document).ready(function() {
            var nameField = $("#" + nameBind);
            vrtxAdmin.createDocumentFileName = nameField.val();
-           checkUncheckIndexFile(nameField, $("#" + isIndexBind));
+           createCheckUncheckIndexFile(nameField, $("#" + isIndexBind));
          });
        // -->
        </script>

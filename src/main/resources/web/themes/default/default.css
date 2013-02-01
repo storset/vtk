@@ -1377,7 +1377,7 @@ span.vrtx-help-step-by-step-cmd {
   margin: 2px 0 8px 22px;
 }
 
-.vrtx-admin-form #initChangeTemplate,
+.vrtx-admin-form #initCreateChangeTemplate,
 .vrtx-admin-form #vrtx-div-file-title {
   display: none;
 }

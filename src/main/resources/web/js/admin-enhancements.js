@@ -1055,7 +1055,7 @@ VrtxAdmin.prototype.adaptiveBreadcrumbs = function adaptiveBreadcrumbs() {
 
 /*-------------------------------------------------------------------*\
     6. Create service
-    XXX: optimize more and needs more seperation
+       XXX: optimize more and needs more seperation
 \*-------------------------------------------------------------------*/
 
 function createFuncComplete() {

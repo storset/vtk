@@ -52,9 +52,9 @@
       
        <script type="text/javascript"><!--
          $(document).ready(function() {
-           var nameField = $("#" + nameBind);
+           var nameField = $("#${nameBind}");
            vrtxAdmin.createDocumentFileName = nameField.val();
-           createCheckUncheckIndexFile(nameField, $("#" + isIndexBind));
+           createCheckUncheckIndexFile(nameField, $("#${isIndexBind}"));
          });
        // -->
        </script>

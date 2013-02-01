@@ -1059,16 +1059,16 @@ VrtxAdmin.prototype.adaptiveBreadcrumbs = function adaptiveBreadcrumbs() {
 \*-------------------------------------------------------------------*/
 
 function createFuncComplete() {
-  $(document).on("keyup", "#vrtx-textfield-collection-title input", $.debounce(50, function() {
+  $(document).on("keyup", "#vrtx-textfield-collection-title input", $.debounce(50, true, function() {
     createTitleChange($(this), $("#vrtx-textfield-collection-name input"), null);
   }));
-  $(document).on("keyup", "#vrtx-textfield-collection-name input", $.debounce(50, function() {    
+  $(document).on("keyup", "#vrtx-textfield-collection-name input", $.debounce(50, true, function() {    
     createFileNameChange($(this));
   }));
-  $(document).on("keyup", "#vrtx-textfield-file-title input", $.debounce(50, function() {
+  $(document).on("keyup", "#vrtx-textfield-file-title input", $.debounce(50, true, function() {
     createTitleChange($(this), $("#vrtx-textfield-file-name input"), $("#isIndex"));
   }));
-  $(document).on("keyup", "#vrtx-textfield-file-name input", $.debounce(50, function() {
+  $(document).on("keyup", "#vrtx-textfield-file-name input", $.debounce(50, true, function() {
     createFileNameChange($(this));
   }));
 

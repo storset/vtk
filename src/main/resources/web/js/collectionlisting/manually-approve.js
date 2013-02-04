@@ -38,7 +38,7 @@ $(window).load(function() {
     $.when(manuallyApprovedTemplatesRetrieved).done(function() {
       retrieveResources(".", locations, aggregatedlocations, true);
       var html = $.mustache(MANUALLY_APPROVE_TEMPLATES["menu"], { approveShowAll: approveShowAll, 
-                                                                  approveShowApprovedOnly: approveShowApprovedOnly });  
+                                                                  approveShowApprovedOnly: approveShowApprovedOnly });  
     
       $(html).insertAfter("#manually-approve-container-title"); 
     });
@@ -331,7 +331,7 @@ function generateStartPageAndTableHead(pages) {
 }
 
 function generateTableRow(resource) {
-  return $.mustache(MANUALLY_APPROVE_TEMPLATES["table-row"], { resource: resource });  
+  return $.mustache(MANUALLY_APPROVE_TEMPLATES["table-row"], { resource: resource });  
 }
 
 function generateTableEndAndPageInfo(pages, prPage, len, lastRow) {

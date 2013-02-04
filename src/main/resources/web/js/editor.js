@@ -598,7 +598,7 @@ $(document).ready(function() {
           _$("#contents").css("paddingTop", titleSubmitButtons.outerHeight(true) + "px");
         }
         titleSubmitButtons.css("width", (_$("#main").outerWidth(true) - 2) + "px");
-      } else {
+      } else {
         if(titleSubmitButtons.hasClass("vrtx-sticky-editor-title-submit-buttons")) {
           titleSubmitButtons.removeClass("vrtx-sticky-editor-title-submit-buttons");
           titleSubmitButtons.css("width", "auto");
@@ -1196,7 +1196,7 @@ function loadMultipleInputFields(name, addName, removeName, moveUpName, moveDown
   var appendHtml = $.mustache(vrtxAdmin.multipleCommaSeperatedInputFieldTemplates["add-button"], { name: name, removeName: removeName, moveUpName: moveUpName, 
                                                                                                    moveDownName: moveDownName, browseName: browseName,
                                                                                                    size: size, isBrowsable: isBrowsable, isMovable: isMovable,
-                                                                                                   isDropdown: isDropdown, buttonText: addName });
+                                                                                                   isDropdown: isDropdown, buttonText: addName });
 
   inputFieldParent.removeClass("vrtx-textfield").append(appendHtml);
     
@@ -1246,26 +1246,26 @@ function addFormField(name, value, removeName, moveUpName, moveDownName, browseN
 
   if (removeName) {
     removeButton = $.mustache(vrtxAdmin.multipleCommaSeperatedInputFieldTemplates["button"], { type: "remove", name: " " + name, 
-                                                                                               idstr: idstr,   buttonText: removeName });
+                                                                                               idstr: idstr,   buttonText: removeName });
   }
   if (isMovable && moveUpName && i > 1) {
     moveUpButton = $.mustache(vrtxAdmin.multipleCommaSeperatedInputFieldTemplates["button"], { type: "moveup", name: "", 
-                                                                                               idstr: idstr,   buttonText: "&uarr; " + moveUpName });
+                                                                                               idstr: idstr,   buttonText: "&uarr; " + moveUpName });
   }
   if (isMovable && moveDownName && i < vrtxAdmin.multipleCommaSeperatedInputFieldLength[name]) {
     moveDownButton = $.mustache(vrtxAdmin.multipleCommaSeperatedInputFieldTemplates["button"], { type: "movedown", name: "", 
-                                                                                                 idstr: idstr,     buttonText: "&darr; " + moveDownName });
+                                                                                                 idstr: idstr,     buttonText: "&darr; " + moveDownName });
   }
   if(isBrowsable) {
     browseButton = $.mustache(vrtxAdmin.multipleCommaSeperatedInputFieldTemplates["button"], { type: "browse", name: "-resource-ref", 
-                                                                                               idstr: idstr,   buttonText: browseName });
+                                                                                               idstr: idstr,   buttonText: browseName });
   }
     
   var html = $.mustache(vrtxAdmin.multipleCommaSeperatedInputFieldTemplates["multiple-inputfield"], { idstr: idstr, i: i, value: value, 
                                                                                                       size: size, browseButton: browseButton,
                                                                                                       removeButton: removeButton, moveUpButton: moveUpButton,
                                                                                                       moveDownButton: moveDownButton, isDropdown: isDropdown,
-                                                                                                      dropdownArray: "dropdown" + name });
+                                                                                                      dropdownArray: "dropdown" + name });
 
   $(html).insertBefore("#vrtx-" + name + "-add");
     
@@ -1274,7 +1274,7 @@ function addFormField(name, value, removeName, moveUpName, moveDownName, browseN
       var fields = $("." + name + " div.vrtx-multipleinputfield");
       if(fields.eq(vrtxAdmin.multipleCommaSeperatedInputFieldLength[name] - 1).not("has:button.movedown")) {
         moveDownButton = $.mustache(vrtxAdmin.multipleCommaSeperatedInputFieldTemplates["button"], { type: "movedown", name: "", 
-                                                                                                     idstr: idstr,     buttonText: "&darr; " + moveDownName });
+                                                                                                     idstr: idstr,     buttonText: "&darr; " + moveDownName });
         fields.eq(vrtxAdmin.multipleCommaSeperatedInputFieldLength[name] - 1).append(moveDownButton);
       }
     }
@@ -1369,462 +1369,447 @@ function initJsonMovableElements(templatesRetrieved, jsonElementsBuilt) {
     var syllbausItems = $("#editor.vrtx-syllabus #items");
     wrapJSONItemsLeftRight(syllbausItems.find(".vrtx-json-element"), ".author, .title, .year, .publisher, .isbn, .comment", ".linktext, .link, .bibsys, .fulltext, .articles");
     syllbausItems.find(".author input, .title input").addClass("header-populators");
-        syllbausItems.find(".vrtx-html textarea").addClass("header-fallback-populator");
+    syllbausItems.find(".vrtx-html textarea").addClass("header-fallback-populator");
         
-        var sharedTextItems = $("#editor.vrtx-shared-text #shared-text-box");
-        sharedTextItems.find(".title input").addClass("header-populators");
-        // ^ TODO: avoid this being hardcoded here
+    var sharedTextItems = $("#editor.vrtx-shared-text #shared-text-box");
+    sharedTextItems.find(".title input").addClass("header-populators");
+    // ^ TODO: avoid this being hardcoded here
       
-        // Because accordion needs one content wrapper
-        for(var grouped = $(".vrtx-json-accordion .vrtx-json-element"), i = grouped.length; i--;) { 
-          var group = $(grouped[i]);
-          group.find("> *").wrapAll("<div />");
-          updateAccordionHeader(group);
-        }
+    // Because accordion needs one content wrapper
+    for(var grouped = $(".vrtx-json-accordion .vrtx-json-element"), i = grouped.length; i--;) { 
+      var group = $(grouped[i]);
+      group.find("> *").wrapAll("<div />");
+      updateAccordionHeader(group);
+    }
       
-        $(".vrtx-json-accordion .fieldset").accordion({ 
-                                              header: "> div > .header",
-                                              autoHeight: false,
-                                              collapsible: true,
-                                              active: false,
-                                              change: function(e, ui) {
-                                                updateAccordionHeader(ui.oldHeader);
-                                                if(ACCORDION_MOVE_TO_AFTER_CHANGE) {
-                                                  scrollToElm(ACCORDION_MOVE_TO_AFTER_CHANGE);
-                                                }
-                                              }  
-                                            });
-        JSON_ELEMENTS_INITIALIZED.resolve();
-      });
+    $(".vrtx-json-accordion .fieldset").accordion({ 
+                                                   header: "> div > .header",
+                                                   autoHeight: false,
+                                                   collapsible: true,
+                                                   active: false,
+                                                   change: function(e, ui) {
+                                                     updateAccordionHeader(ui.oldHeader);
+                                                     if(ACCORDION_MOVE_TO_AFTER_CHANGE) {
+                                                       scrollToElm(ACCORDION_MOVE_TO_AFTER_CHANGE);
+                                                     }
+                                                   }  
+                                                  });
+    JSON_ELEMENTS_INITIALIZED.resolve();
+  });
 
-      var appContent = $("#app-content");
-      appContent.on("click", ".vrtx-json .vrtx-add-button", function(e) {
-        var accordionWrapper = $(this).closest(".vrtx-json-accordion");
-        var hasAccordion = accordionWrapper.length;
+  vrtxAdmin.cachedAppContent.on("click", ".vrtx-json .vrtx-add-button", function(e) {
+    var accordionWrapper = $(this).closest(".vrtx-json-accordion");
+    var hasAccordion = accordionWrapper.length;
            
-        var btn = $(this);
-        var jsonParent = btn.closest(".vrtx-json");
-        var counter = jsonParent.find(".vrtx-json-element").length;
-        var j = LIST_OF_JSON_ELEMENTS[parseInt(btn.data('number'))];
-        var htmlTemplate = "";
-        var arrayOfIds = [];
+    var btn = $(this);
+    var jsonParent = btn.closest(".vrtx-json");
+    var counter = jsonParent.find(".vrtx-json-element").length;
+    var j = LIST_OF_JSON_ELEMENTS[parseInt(btn.data('number'))];
+    var htmlTemplate = "";
+    var arrayOfIds = [];
 
-        // Add correct HTML for vrtx-type
-        var types = j.a;
-
-        for (var i in types) {
-          var inputFieldName = j.name + "." + types[i].name + "." + counter;
-          arrayOfIds[i] = new String(j.name + "." + types[i].name + ".").replace(/\./g, "\\.");
-          switch (types[i].type) {
-            case "string":
-              if (types[i].dropdown && types[i].valuemap) {
-                htmlTemplate += addDropdown(types[i], inputFieldName);
-              } else {
-                htmlTemplate += addStringField(types[i], inputFieldName);
-              }
-              break;
-            case "html":
-              htmlTemplate += addHtmlField(types[i], inputFieldName);
-              break;
-            case "simple_html":
-              htmlTemplate += addHtmlField(types[i], inputFieldName);
-              break;
-            case "boolean":
-              htmlTemplate += addBooleanField(types[i], inputFieldName);
-              break;
-            case "image_ref":
-              htmlTemplate += addImageRef(types[i], inputFieldName);
-              break;
-            case "resource_ref":
-              htmlTemplate += addResourceRef(types[i], inputFieldName);
-              break;
-            case "datetime":
-              htmlTemplate += addDateField(j.a[i], inputFieldName);
-              break;
-            case "media":
-              htmlTemplate += addMediaRef(types[i], inputFieldName);
-              break;
-            default:
-              htmlTemplate += "";
-              break;
-          }
-        }
-      
-        // Move up, move down, remove
-        var isImmovable = jsonParent && jsonParent.hasClass("vrtx-multiple-immovable");
-
-        if(!isImmovable) {
-          var moveDownButton = $.mustache(TEMPLATES["add-remove-move"], { clazz: 'move-down', buttonText: '&darr; ' + moveDownBtn });
-          var moveUpButton = $.mustache(TEMPLATES["add-remove-move"],   { clazz: 'move-up', buttonText: '&uarr; ' + moveUpBtn   });
-        }
-        var removeButton = $.mustache(TEMPLATES["add-remove-move"],   { clazz: 'remove', buttonText: removeBtn });
-      
-        var id = "<input type=\"hidden\" class=\"id\" value=\"" + counter + "\" \/>";
-        var newElementId = "vrtx-json-element-" + j.name + "-" + counter;
-        
-        var newElementHtml = htmlTemplate;
-        newElementHtml += id;
-        newElementHtml += removeButton;
+    // Add correct HTML for vrtx-type
+    var types = j.a;
     
-        if (!isImmovable && counter > 0) {
-          newElementHtml += moveUpButton;
-        }
-      
-        $("#" + j.name + " .vrtx-add-button").before("<div class='vrtx-json-element' id='" + newElementId + "'>" + newElementHtml + "<\/div>");
-      
-        var newElement = $("#" + newElementId);
-        var prev = newElement.prev(".vrtx-json-element");
-        newElement.addClass("last");
-        prev.removeClass("last");
-      
-        if(!isImmovable && counter > 0) {
-          newElement.find(".vrtx-move-up-button").click(function (e) {
-            swapContent(counter, arrayOfIds, -1, j.name);
-            e.stopPropagation();
-            e.preventDefault();
-          });
-
-          if (prev.length) {
-            if(hasAccordion) {
-              prev.find("> div.ui-accordion-content").append(moveDownButton);
-            } else {
-              prev.append(moveDownButton);
-            }
-            prev.find(".vrtx-move-down-button").click(function (e) {
-              swapContent(counter-1, arrayOfIds, 1, j.name);
-              e.stopPropagation();
-              e.preventDefault();
-            });
+    for (var i in types) {
+      var inputFieldName = j.name + "." + types[i].name + "." + counter;
+      arrayOfIds[i] = new String(j.name + "." + types[i].name + ".").replace(/\./g, "\\.");
+      switch (types[i].type) {
+        case "string":
+          if (types[i].dropdown && types[i].valuemap) {
+            htmlTemplate += addDropdown(types[i], inputFieldName);
+          } else {
+            htmlTemplate += addStringField(types[i], inputFieldName);
           }
-        }
+          break;
+        case "html":
+          htmlTemplate += addHtmlField(types[i], inputFieldName);
+          break;
+        case "simple_html":
+          htmlTemplate += addHtmlField(types[i], inputFieldName);
+          break;
+        case "boolean":
+          htmlTemplate += addBooleanField(types[i], inputFieldName);
+          break;
+        case "image_ref":
+          htmlTemplate += addImageRef(types[i], inputFieldName);
+          break;
+        case "resource_ref":
+          htmlTemplate += addResourceRef(types[i], inputFieldName);
+          break;
+        case "datetime":
+          htmlTemplate += addDateField(j.a[i], inputFieldName);
+          break;
+        case "media":
+          htmlTemplate += addMediaRef(types[i], inputFieldName);
+          break;
+        default:
+          htmlTemplate += "";
+          break;
+      }
+    }
+      
+    // Move up, move down, remove
+    var isImmovable = jsonParent && jsonParent.hasClass("vrtx-multiple-immovable");
+    if(!isImmovable) {
+      var moveDownButton = $.mustache(TEMPLATES["add-remove-move"], { clazz: 'move-down', buttonText: '&darr; ' + moveDownBtn });
+      var moveUpButton = $.mustache(TEMPLATES["add-remove-move"],   { clazz: 'move-up', buttonText: '&uarr; ' + moveUpBtn   });
+    }
+    var removeButton = $.mustache(TEMPLATES["add-remove-move"],   { clazz: 'remove', buttonText: removeBtn });
+      
+    var id = "<input type=\"hidden\" class=\"id\" value=\"" + counter + "\" \/>";
+    var newElementId = "vrtx-json-element-" + j.name + "-" + counter;
         
-        if(hasAccordion ) {
-          var accordionContent = accordionWrapper.find(".fieldset");
-
-          var group = accordionContent.find(".vrtx-json-element:last");
-          group.find("> *").wrapAll("<div />");
-          group.prepend('<div class="header">' + (vrtxAdmin.lang !== "en" ? "Inget innhold" : "No content") + '</div>');
-          
-          // TODO: avoid this being hardcoded here
-          var lastSyllabusItem = $("#editor.vrtx-syllabus #items .vrtx-json-element:last");
-          wrapJSONItemsLeftRight(lastSyllabusItem, ".author, .title, .year, .publisher, .isbn, .comment", ".linktext, .link, .bibsys, .fulltext, .articles");
-          lastSyllabusItem.find(".author input, .title input").addClass("header-populators");
-          lastSyllabusItem.find(".vrtx-html textarea").addClass("header-fallback-populator");
-          
-          var lastSharedTextItem = $("#editor.vrtx-shared-text #shared-text-box .vrtx-json-element:last");
-          lastSharedTextItem.find(".title input").addClass("header-populators");
-          // ^ TODO: avoid this being hardcoded here
-          
-          accordionRefresh(accordionContent, false);
-        }
-
-        // CK and date inputfields
-
-        for (i in types) {
-          var inputFieldName = j.name + "." + types[i].name + "." + counter;
-          if (types[i].type == "simple_html") {
-            vrtxEditor.newEditor(inputFieldName, false, false, parentURI, ckBaseURI, ckBaseDocURI, ckBaseBrowsePath, requestLang, cssFileList, "true");
-          } else if (types[i].type == "html") {
-            vrtxEditor.newEditor(inputFieldName, true,  false, parentURI, ckBaseURI, ckBaseDocURI, ckBaseBrowsePath, requestLang, cssFileList, "false");
-          } else if (types[i].type == "datetime") {
-            displayDateAsMultipleInputFields(inputFieldName);
-          }
-        }
-
+    var newElementHtml = htmlTemplate;
+    newElementHtml += id;
+    newElementHtml += removeButton;
+  
+    if (!isImmovable && counter > 0) {
+      newElementHtml += moveUpButton;
+    }
+      
+    $("#" + j.name + " .vrtx-add-button").before("<div class='vrtx-json-element' id='" + newElementId + "'>" + newElementHtml + "<\/div>");
+      
+    var newElement = $("#" + newElementId);
+    var prev = newElement.prev(".vrtx-json-element");
+    newElement.addClass("last");
+    prev.removeClass("last");
+      
+    if(!isImmovable && counter > 0) {
+      newElement.find(".vrtx-move-up-button").click(function (e) {
+        swapContent(counter, arrayOfIds, -1, j.name);
         e.stopPropagation();
         e.preventDefault();
       });
 
-      appContent.on("click", ".vrtx-json .vrtx-remove-button", function(e) {
-        var removeElement = $(this).closest(".vrtx-json-element");
-        var accordionWrapper = removeElement.closest(".vrtx-json-accordion");
-        var hasAccordion = accordionWrapper.length;
-        
-        var removeElementParent = removeElement.parent();
-        var textAreas = removeElement.find("textarea");
-        var i = textAreas.length;
-        while(i--) {
-          var textAreaName = textAreas[i].name;
-          if (isCkEditor(textAreaName)) {
-            var ckInstance = getCkInstance(textAreaName);
-            ckInstance.destroy();
-            delete ckInstance;
-          }
-        }
-        
-        var updateLast = removeElement.hasClass("last");
-        removeElement.remove();
-        removeElementParent.find(".vrtx-json-element:first .vrtx-move-up-button").remove();
-        var newLast = removeElementParent.find(".vrtx-json-element:last");
-        newLast.find(".vrtx-move-down-button").remove();
-        if(updateLast) {
-          newLast.addClass("last");
-        }
+      if (prev.length) {
         if(hasAccordion) {
-          var accordionContent = accordionWrapper.find(".fieldset");
-          accordionRefresh(accordionContent, false);
+          prev.find("> div.ui-accordion-content").append(moveDownButton);
+        } else {
+          prev.append(moveDownButton);
         }
-        e.stopPropagation();
-        e.preventDefault();
-      });
+        prev.find(".vrtx-move-down-button").click(function (e) {
+          swapContent(counter-1, arrayOfIds, 1, j.name);
+          e.stopPropagation();
+          e.preventDefault();
+        });
+      }
+    }
+        
+    if(hasAccordion ) {
+      var accordionContent = accordionWrapper.find(".fieldset");
+      var group = accordionContent.find(".vrtx-json-element:last");
+      group.find("> *").wrapAll("<div />");
+      group.prepend('<div class="header">' + (vrtxAdmin.lang !== "en" ? "Inget innhold" : "No content") + '</div>');
+          
+      // TODO: avoid this being hardcoded here
+      var lastSyllabusItem = $("#editor.vrtx-syllabus #items .vrtx-json-element:last");
+      wrapJSONItemsLeftRight(lastSyllabusItem, ".author, .title, .year, .publisher, .isbn, .comment", ".linktext, .link, .bibsys, .fulltext, .articles");
+      lastSyllabusItem.find(".author input, .title input").addClass("header-populators");
+      lastSyllabusItem.find(".vrtx-html textarea").addClass("header-fallback-populator");
+          
+      var lastSharedTextItem = $("#editor.vrtx-shared-text #shared-text-box .vrtx-json-element:last");
+      lastSharedTextItem.find(".title input").addClass("header-populators");
+      // ^ TODO: avoid this being hardcoded here
+          
+      accordionRefresh(accordionContent, false);
+    }
+
+    // CK and date inputfields
+    for (i in types) {
+      var inputFieldName = j.name + "." + types[i].name + "." + counter;
+      if (types[i].type == "simple_html") {
+        vrtxEditor.newEditor(inputFieldName, false, false, parentURI, ckBaseURI, ckBaseDocURI, ckBaseBrowsePath, requestLang, cssFileList, "true");
+      } else if (types[i].type == "html") {
+        vrtxEditor.newEditor(inputFieldName, true,  false, parentURI, ckBaseURI, ckBaseDocURI, ckBaseBrowsePath, requestLang, cssFileList, "false");
+      } else if (types[i].type == "datetime") {
+        displayDateAsMultipleInputFields(inputFieldName);
+      }
+    }
+
+    e.stopPropagation();
+    e.preventDefault();
+  });
+
+  vrtxAdmin.cachedAppContent.on("click", ".vrtx-json .vrtx-remove-button", function(e) {
+    var removeElement = $(this).closest(".vrtx-json-element");
+    var accordionWrapper = removeElement.closest(".vrtx-json-accordion");
+    var hasAccordion = accordionWrapper.length;  
+    var removeElementParent = removeElement.parent();
+    
+    var textAreas = removeElement.find("textarea");
+    var i = textAreas.length;
+    while(i--) {
+      var textAreaName = textAreas[i].name;
+      if (isCkEditor(textAreaName)) {
+        var ckInstance = getCkInstance(textAreaName);
+        ckInstance.destroy();
+        delete ckInstance;
+      }
+    }
+        
+    var updateLast = removeElement.hasClass("last");
+    removeElement.remove();
+    removeElementParent.find(".vrtx-json-element:first .vrtx-move-up-button").remove();
+    var newLast = removeElementParent.find(".vrtx-json-element:last");
+    newLast.find(".vrtx-move-down-button").remove();
+    if(updateLast) {
+      newLast.addClass("last");
+    }
+    if(hasAccordion) {
+      var accordionContent = accordionWrapper.find(".fieldset");
+      accordionRefresh(accordionContent, false);
+    }
+    e.stopPropagation();
+    e.preventDefault();
+  });
 }
 
 function accordionRefresh(elem, active) {
-      elem.accordion('destroy').accordion({ 
-                                  header: "> div > .header",
-                                  autoHeight: false,
-                                  collapsible: true,
-                                  active: active,
-                                  change: function(e, ui) {
-                                    updateAccordionHeader(ui.oldHeader);
-                                    if(ACCORDION_MOVE_TO_AFTER_CHANGE) {
-                                      scrollToElm(ACCORDION_MOVE_TO_AFTER_CHANGE);
-                                    }
-                                  }  
-                                });
-    }
+  elem.accordion('destroy').accordion({ header: "> div > .header",
+                                        autoHeight: false,
+                                        collapsible: true,
+                                        active: active,
+                                        change: function(e, ui) {
+                                          updateAccordionHeader(ui.oldHeader);
+                                          if(ACCORDION_MOVE_TO_AFTER_CHANGE) {
+                                            scrollToElm(ACCORDION_MOVE_TO_AFTER_CHANGE);
+                                          }
+                                        }  
+                                       });
+}
     
-    function wrapJSONItemsLeftRight(items, leftItems, rightItems) {
-      if(items.length == 1) {
-        items.find(leftItems).wrapAll("<div class='left' />");
-        items.find(rightItems).wrapAll("<div class='right' />");
-      } else if(items.length > 1) {
-         var i = items.length;
-         while(i--) {
-           $(items[i]).find(leftItems).wrapAll("<div class='left' />");
-           $(items[i]).find(rightItems).wrapAll("<div class='right' />");
-         }
+function wrapJSONItemsLeftRight(items, leftItems, rightItems) {
+  if(items.length == 1) {
+    items.find(leftItems).wrapAll("<div class='left' />");
+    items.find(rightItems).wrapAll("<div class='right' />");
+  } else if(items.length > 1) {
+    var i = items.length;
+    while(i--) {
+      var item = $(items[i]);
+      item.find(leftItems).wrapAll("<div class='left' />");
+      item.find(rightItems).wrapAll("<div class='right' />");
+    }
+  }
+}
+    
+function updateAccordionHeader(elem) {
+  var jsonElm = elem.closest(".vrtx-json-element");
+  if(jsonElm.length) { // Prime header populators
+    var str = "";
+    var fields = jsonElm.find(".header-populators");
+    for(var i = 0, len = fields.length; i < len; i++) {
+      var val = $(fields[i]).val(); 
+      if(!val.length) {
+        continue;
       }
+      str += (str.length) ? ", " + val : val;
     }
-    
-    function updateAccordionHeader(elem) {
-      var jsonElm = elem.closest(".vrtx-json-element");
-      if(jsonElm.length) { // Prime header populators
-        var str = "";
-        var fields = jsonElm.find(".header-populators");
-        for(var i = 0, len = fields.length; i < len; i++) {
-          var val = $(fields[i]).val(); 
-          if(!val.length) continue;
-          str += (str.length) ? ", " + val : val;
+    if(!str.length) { // Fallback header populator
+      var field = jsonElm.find(".header-fallback-populator");
+      if(field.length) {
+        var fieldId = field.attr("id");
+        if(isCkEditor(fieldId)) { // Check if CK
+          str = getCkValue(fieldId); // Get CK content
+        } else {
+          str = field.val();
         }
-        if(!str.length) { // Fallback header populator
-          var field = jsonElm.find(".header-fallback-populator");
-          if(field.length) {
-            var fieldId = field.attr("id");
-            if(isCkEditor(fieldId)) { // Check if CK
-              str = getCkValue(fieldId); // Get CK content
-            } else {
-              str = field.val();
-            }
-            if(field.is("textarea")) { // Remove markup and tabs
-              str = $.trim(str.replace(/(<([^>]+)>|[\t\r]+)/ig, ""));
-            }
-            if(typeof str !== "undefined") {
-              if(str.length > 30) {
-                str = str.substring(0, 30) + "...";
-              } else if(!str.length) {
-                str = (vrtxAdmin.lang !== "en") ? "Inget innhold" : "No content";
-              }
-            }
-          } else {
+        if(field.is("textarea")) { // Remove markup and tabs
+          str = $.trim(str.replace(/(<([^>]+)>|[\t\r]+)/ig, ""));
+        }
+        if(typeof str !== "undefined") {
+          if(str.length > 30) {
+            str = str.substring(0, 30) + "...";
+          } else if(!str.length) {
             str = (vrtxAdmin.lang !== "en") ? "Inget innhold" : "No content";
           }
         }
-        var header = jsonElm.find("> .header");
-        if(!header.length) {
-          jsonElm.prepend('<div class="header">' + str + '</div>');
-        } else {
-          header.html('<span class="ui-icon ui-icon-triangle-1-e"></span>' + str);
-        }
-      }
-    }
-
-    function addStringField(elem, inputFieldName) {
-      var json = { classes: "vrtx-string" + " " + elem.name,
-                   elemTitle: elem.title,
-                   inputFieldName: inputFieldName }
-      return $.mustache(TEMPLATES["string"], json); 
-    }
-    
-    function addHtmlField(elem, inputFieldName) {
-      var baseclass = "vrtx-html";
-      if (elem.type == "simple_html") {
-        baseclass = "vrtx-simple-html";
-      }
-      var json = { classes: baseclass + " " + elem.name,
-                   elemTitle: elem.title,
-                   inputFieldName: inputFieldName }
-      return $.mustache(TEMPLATES["html"], json); 
-    }
-    
-    function addBooleanField(elem, inputFieldName) {
-      var json = { elemTitle: elem.title,
-                   inputFieldName: inputFieldName }
-      return $.mustache(TEMPLATES["radio"], json); 
-    }
-
-    function addDropdown(elem, inputFieldName) {
-      var htmlOpts = [];
-      for (i in elem.valuemap) {
-        var keyValuePair = elem.valuemap[i];
-        var keyValuePairSplit = keyValuePair.split("$");
-        htmlOpts.push({key: keyValuePairSplit[0], value: keyValuePairSplit[1]});
-      }
-      var json = { classes: "vrtx-string" + " " + elem.name,
-                   elemTitle: elem.title,
-                   inputFieldName: inputFieldName,
-                   options: htmlOpts }
-      return $.mustache(TEMPLATES["dropdown"], json);  
-    }
-
-    function addDateField(elem, inputFieldName) {
-      var json = { elemTitle: elem.title,
-                   inputFieldName: inputFieldName }
-      return $.mustache(TEMPLATES["date"], json); 
-    }
-    
-    function addImageRef(elem, inputFieldName) {
-      var json = { clazz: 'vrtx-image-ref',
-                   elemTitle: elem.title,
-                   inputFieldName: inputFieldName,
-                   fckEditorBaseUrl: ckBaseURI,
-                   parentURI: parentURI,
-                   fckBrowsePath: ckBaseBrowsePath,
-                   browseButtonText: browseImagesBtn,
-                   type: '',
-                   size: 30,
-                   previewTitle: browseImagesPreview,
-                   previewNoImageText: browseImagesNoPreview
-                 }
-      return $.mustache(TEMPLATES["browse-images"], json); 
-    }
-    
-    function addResourceRef(elem, inputFieldName) {
-      var json = { clazz: 'vrtx-resource-ref',
-                   elemTitle: elem.title,
-                   inputFieldName: inputFieldName,
-                   fckEditorBaseUrl: ckBaseURI,
-                   parentURI: parentURI,
-                   fckBrowsePath: ckBaseBrowsePath,
-                   browseButtonText: browseImagesBtn,
-                   type: 'File',
-                   size: 40 }
-      return $.mustache(TEMPLATES["browse"], json); 
-    }
-    
-    function addMediaRef(elem, inputFieldName) {
-      var json = { clazz: 'vrtx-media-ref',
-                   elemTitle: elem.title,
-                   inputFieldName: inputFieldName,
-                   fckEditorBaseUrl: ckBaseURI,
-                   parentURI: parentURI,
-                   fckBrowsePath: ckBaseBrowsePath,
-                   browseButtonText: browseImagesBtn,
-                   type: 'Media',
-                   size: 30 }      
-      return $.mustache(TEMPLATES["browse"], json); 
-    }
-    
-    // Move up or move down
-    
-    function swapContent(counter, arrayOfIds, move, name) {
-      var thisId = "#vrtx-json-element-" + name + "-" + counter;
-      var thisElm = $(thisId);
-      
-      var accordionWrapper = thisElm.closest(".vrtx-json-accordion");
-      var hasAccordion = accordionWrapper.length;   
-      
-      if (move > 0) {
-        var movedElm = thisElm.next(".vrtx-json-element");
       } else {
-        var movedElm = thisElm.prev(".vrtx-json-element");
+        str = (vrtxAdmin.lang !== "en") ? "Inget innhold" : "No content";
       }
-      var movedId = "#" + movedElm.attr("id");
-      var moveToCounter = movedElm.find("input.id").val();
-      
-      for (var x = 0, len = arrayOfIds.length; x < len; x++) {
-        var elementId1 = '#' + arrayOfIds[x] + counter;
-        var elementId2 = '#' + arrayOfIds[x] + moveToCounter;
-        var element1 = $(elementId1);
-        var element2 = $(elementId2);
-        
-        /* We need to handle special cases like CK fields and date */
-        
-        var ckInstanceName1 = arrayOfIds[x].replace(/\\/g, '') + counter;
-        var ckInstanceName2 = arrayOfIds[x].replace(/\\/g, '') + moveToCounter;
+    }
+    var header = jsonElm.find("> .header");
+    if(!header.length) {
+      jsonElm.prepend('<div class="header">' + str + '</div>');
+    } else {
+      header.html('<span class="ui-icon ui-icon-triangle-1-e"></span>' + str);
+    }
+  }
+}
 
-        if (isCkEditor(ckInstanceName1) && isCkEditor(ckInstanceName2)) {
-          var val1 = getCkValue(ckInstanceName1);
-          var val2 = getCkValue(ckInstanceName2);
-          setCkValue(ckInstanceName1, val2);
-          setCkValue(ckInstanceName2, val1);
-        } else if (element1.hasClass("date") && element2.hasClass("date")) {
-          var element1Wrapper = element1.closest(".vrtx-string");
-          var date1 = element1Wrapper.find(elementId1 + '-date');
-          var hours1 = element1Wrapper.find(elementId1 + '-hours');
-          var minutes1 = element1Wrapper.find(elementId1 + '-minutes');
-          var element2Wrapper = element2.closest(".vrtx-string");
-          var date2 = element2Wrapper.find(elementId2 + '-date');
-          var hours2 = element2Wrapper.find(elementId2 + '-hours');
-          var minutes2 = element2Wrapper.find(elementId2 + '-minutes');
-          var dateVal1 = date1.val();
-          var hoursVal1 = hours1.val();
-          var minutesVal1 = minutes1.val();
-          var dateVal2 = date2.val();
-          var hoursVal2 = hours2.val();
-          var minutesVal2 = minutes2.val();
-          date1.val(dateVal2);
-          hours1.val(hoursVal2);
-          minutes1.val(minutesVal2);
-          date2.val(dateVal1);
-          hours2.val(hoursVal1);
-          minutes2.val(minutesVal1);
-        }    
-        
-        var val1 = element1.val();
-        var val2 = element2.val();
-        element1.val(val2);
-        element2.val(val1);
-        if(hasAccordion) {
-          updateAccordionHeader(element1);
-          updateAccordionHeader(element2);
-        }
-        element1.blur();
-        element2.blur();
-        element1.change();
-        element2.change();
-      }
-      thisElm.focusout();
-      movedElm.focusout();
-      
-      if(hasAccordion) {
-        ACCORDION_MOVE_TO_AFTER_CHANGE = movedElm;
-        var accordionContent = accordionWrapper.find(".fieldset");
-        accordionContent.accordion("option", "active", (movedElm.index() - 1));
-        accordionContent.accordion("option", "refresh");
-      } else {
-        scrollToElm(movedElm);
-      }
-    }
+function addStringField(elem, inputFieldName) {
+  return $.mustache(TEMPLATES["string"], { classes: "vrtx-string" + " " + elem.name,
+                                           elemTitle: elem.title,
+                                           inputFieldName: inputFieldName }); 
+}
     
-    function scrollToElm(movedElm) {
-      var absPos = movedElm.offset();
-      var absPosTop = absPos.top;
-      var stickyBar = $("#vrtx-editor-title-submit-buttons");
-      if(stickyBar.css("position") == "fixed") {
-        var stickyBarHeight = stickyBar.height();
-        absPosTop -= (stickyBarHeight <= absPosTop) ? stickyBarHeight : 0;
-      }
+function addHtmlField(elem, inputFieldName) {
+  var baseclass = "vrtx-html";
+  if (elem.type == "simple_html") {
+    baseclass = "vrtx-simple-html";
+  }
+  return $.mustache(TEMPLATES["html"], { classes: baseclass + " " + elem.name,
+                                         elemTitle: elem.title,
+                                         inputFieldName: inputFieldName }); 
+}
+    
+function addBooleanField(elem, inputFieldName) {
+  return $.mustache(TEMPLATES["radio"], { elemTitle: elem.title,
+                                          inputFieldName: inputFieldName }); 
+}
+
+function addDropdown(elem, inputFieldName) {
+  var htmlOpts = [];
+  for (i in elem.valuemap) {
+    var keyValuePair = elem.valuemap[i];
+    var keyValuePairSplit = keyValuePair.split("$");
+    htmlOpts.push({key: keyValuePairSplit[0], value: keyValuePairSplit[1]});
+  }
+  return $.mustache(TEMPLATES["dropdown"], { classes: "vrtx-string" + " " + elem.name,
+                                             elemTitle: elem.title,
+                                             inputFieldName: inputFieldName,
+                                             options: htmlOpts });  
+}
+
+function addDateField(elem, inputFieldName) {
+  return $.mustache(TEMPLATES["date"], { elemTitle: elem.title,
+                                         inputFieldName: inputFieldName }); 
+}
+    
+function addImageRef(elem, inputFieldName) {
+  return $.mustache(TEMPLATES["browse-images"], { clazz: 'vrtx-image-ref',
+                                                  elemTitle: elem.title,
+                                                  inputFieldName: inputFieldName,
+                                                  fckEditorBaseUrl: ckBaseURI,
+                                                  parentURI: parentURI,
+                                                  fckBrowsePath: ckBaseBrowsePath,
+                                                  browseButtonText: browseImagesBtn,
+                                                  type: '',
+                                                  size: 30,
+                                                  previewTitle: browseImagesPreview,
+                                                  previewNoImageText: browseImagesNoPreview }); 
+}
+    
+function addResourceRef(elem, inputFieldName) {
+  return $.mustache(TEMPLATES["browse"], { clazz: 'vrtx-resource-ref',
+                                           elemTitle: elem.title,
+                                           inputFieldName: inputFieldName,
+                                           fckEditorBaseUrl: ckBaseURI,
+                                           parentURI: parentURI,
+                                           fckBrowsePath: ckBaseBrowsePath,
+                                           browseButtonText: browseImagesBtn,
+                                           type: 'File',
+                                           size: 40 }); 
+}
+    
+function addMediaRef(elem, inputFieldName) {      
+  return $.mustache(TEMPLATES["browse"], { clazz: 'vrtx-media-ref',
+                                           elemTitle: elem.title,
+                                           inputFieldName: inputFieldName,
+                                           fckEditorBaseUrl: ckBaseURI,
+                                           parentURI: parentURI,
+                                           fckBrowsePath: ckBaseBrowsePath,
+                                           browseButtonText: browseImagesBtn,
+                                           type: 'Media',
+                                           size: 30 }); 
+}
+    
+// Move up or move down  
+function swapContent(counter, arrayOfIds, move, name) {
+  var thisId = "#vrtx-json-element-" + name + "-" + counter;
+  var thisElm = $(thisId);   
+  var accordionWrapper = thisElm.closest(".vrtx-json-accordion");
+  var hasAccordion = accordionWrapper.length;   
       
-      $('body').scrollTo(absPosTop, 250, {
-        easing: 'swing',
-        queue: true,
-        axis: 'y'
-      });
-      setTimeout(function() {
-        ACCORDION_MOVE_TO_AFTER_CHANGE = null;
-      }, 270);
+  if (move > 0) {
+    var movedElm = thisElm.next(".vrtx-json-element");
+  } else {
+    var movedElm = thisElm.prev(".vrtx-json-element");
+  }
+  var movedId = "#" + movedElm.attr("id");
+  var moveToCounter = movedElm.find("input.id").val();
+      
+  for (var x = 0, len = arrayOfIds.length; x < len; x++) {
+    var elementId1 = '#' + arrayOfIds[x] + counter;
+    var elementId2 = '#' + arrayOfIds[x] + moveToCounter;
+    var element1 = $(elementId1);
+    var element2 = $(elementId2);
+        
+    /* We need to handle special cases like CK fields and date */
+    var ckInstanceName1 = arrayOfIds[x].replace(/\\/g, '') + counter;
+    var ckInstanceName2 = arrayOfIds[x].replace(/\\/g, '') + moveToCounter;
+
+    if (isCkEditor(ckInstanceName1) && isCkEditor(ckInstanceName2)) {
+      var val1 = getCkValue(ckInstanceName1);
+      var val2 = getCkValue(ckInstanceName2);
+      setCkValue(ckInstanceName1, val2);
+      setCkValue(ckInstanceName2, val1);
+    } else if (element1.hasClass("date") && element2.hasClass("date")) {
+      var element1Wrapper = element1.closest(".vrtx-string");
+      var date1 = element1Wrapper.find(elementId1 + '-date');
+      var hours1 = element1Wrapper.find(elementId1 + '-hours');
+      var minutes1 = element1Wrapper.find(elementId1 + '-minutes');
+      var element2Wrapper = element2.closest(".vrtx-string");
+      var date2 = element2Wrapper.find(elementId2 + '-date');
+      var hours2 = element2Wrapper.find(elementId2 + '-hours');
+      var minutes2 = element2Wrapper.find(elementId2 + '-minutes');
+      var dateVal1 = date1.val();
+      var hoursVal1 = hours1.val();
+      var minutesVal1 = minutes1.val();
+      var dateVal2 = date2.val();
+      var hoursVal2 = hours2.val();
+      var minutesVal2 = minutes2.val();
+      date1.val(dateVal2);
+      hours1.val(hoursVal2);
+      minutes1.val(minutesVal2);
+      date2.val(dateVal1);
+      hours2.val(hoursVal1);
+      minutes2.val(minutesVal1);
+    }    
+        
+    var val1 = element1.val();
+    var val2 = element2.val();
+    element1.val(val2);
+    element2.val(val1);
+    if(hasAccordion) {
+      updateAccordionHeader(element1);
+      updateAccordionHeader(element2);
     }
+    element1.blur();
+    element2.blur();
+    element1.change();
+    element2.change();
+  }
+  thisElm.focusout();
+  movedElm.focusout();
+      
+  if(hasAccordion) {
+    ACCORDION_MOVE_TO_AFTER_CHANGE = movedElm;
+    var accordionContent = accordionWrapper.find(".fieldset");
+    accordionContent.accordion("option", "active", (movedElm.index() - 1));
+    accordionContent.accordion("option", "refresh");
+  } else {
+    scrollToElm(movedElm);
+  }
+}
+    
+function scrollToElm(movedElm) {
+  var absPos = movedElm.offset();
+  var absPosTop = absPos.top;
+  var stickyBar = $("#vrtx-editor-title-submit-buttons");
+  if(stickyBar.css("position") == "fixed") {
+    var stickyBarHeight = stickyBar.height();
+    absPosTop -= (stickyBarHeight <= absPosTop) ? stickyBarHeight : 0;
+  }
+  $('body').scrollTo(absPosTop, 250, {
+    easing: 'swing',
+    queue: true,
+    axis: 'y'
+  });
+  setTimeout(function() {
+    ACCORDION_MOVE_TO_AFTER_CHANGE = null;
+  }, 270);
+}
 
 /* Helper functions */
 

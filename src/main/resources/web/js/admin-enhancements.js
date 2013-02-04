@@ -100,7 +100,7 @@ function VrtxAdmin() {
   this.transitionPropSpeed = this.isMobileWebkitDevice ? 0 : 100;
   this.transitionDropdownSpeed = this.isMobileWebkitDevice ? 0 : 100;
   this.transitionEasingSlideDown = (!(this.isIE && this.browserVersion < 10) && !this.isMobileWebkitDevice) ?  "easeOutQuad" : "linear";
-  this.transitionEasingSlideUp = (!(this.sIE && this.browserVersion < 10) && !this.isMobileWebkitDevice) ?  "easeInQuad" : "linear";
+  this.transitionEasingSlideUp = (!(this.isIE && this.browserVersion < 10) && !this.isMobileWebkitDevice) ?  "easeInQuad" : "linear";
   
   // Application logic
   this.editorSaveButtonName = "";

@@ -11,7 +11,6 @@
         moveUpBtn = '${vrtx.getMsg("editor.move-up")}',
         removeBtn = '${vrtx.getMsg("editor.remove")}',
         browseImagesBtn = '<@vrtx.msg code="editor.browseImages" />',
-        
         browseImagesPreview = '<@vrtx.msg code="editor.image.preview-title" />',
         browseImagesNoPreview = '<@vrtx.msg code="editor.image.no-preview-text" />';
         requestLang = '<@vrtx.requestLanguage />',

@@ -737,6 +737,7 @@ $(document).ready(function() {
         vrtxEdit.initAccordionGrouped();
         break;
       case "vrtx-semester-page":
+        setShowHide('cloned-course', ["cloned-course-code"], false);
         vrtxEdit.initAccordionGrouped("[class*=link-box]");
         break;
       case "vrtx-samlet-program":

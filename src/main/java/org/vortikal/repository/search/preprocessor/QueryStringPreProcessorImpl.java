@@ -31,6 +31,7 @@
 package org.vortikal.repository.search.preprocessor;
 
 import org.vortikal.repository.search.QueryException;
+import org.vortikal.util.text.SimpleTemplate;
 
 
 public class QueryStringPreProcessorImpl implements QueryStringPreProcessor {
@@ -46,47 +47,37 @@ public class QueryStringPreProcessorImpl implements QueryStringPreProcessor {
     
 
     public String process(String queryString) throws QueryException {
-        StringBuilder result = new StringBuilder();
-        int start = 0;
-        int pos = 0;
-        while (true) {
-            pos = queryString.indexOf(this.expressionStart, start);
-            if (pos != -1) {
-                result.append(queryString.substring(start, pos));
-                start = pos;
-                pos = queryString.indexOf(this.expressionEnd, start);
-                if (pos != -1) {
-                    String fullToken = queryString.substring(
-                        start, pos + this.expressionEnd.length());
-                    String token = queryString.substring(
-                        start + this.expressionStart.length(), pos);
-                    ExpressionEvaluator evaluator =
+        SimpleTemplate template = SimpleTemplate.
+                compile(queryString, expressionStart, expressionEnd);
+        final StringBuilder result = new StringBuilder();
+        
+        template.apply(new SimpleTemplate.Handler() {
+            
+            @Override
+            public void write(String text) {
+                result.append(text);
+            }
+            
+            @Override
+            public String resolve(String token) {
+                ExpressionEvaluator evaluator =
                         resolveExpressionEvaluator(token);
-                    if (evaluator != null) {
-                        result.append(evaluator.evaluate(token));
-                    } else {
-                        result.append(fullToken);
-                    }
-                    start = pos + this.expressionEnd.length();
+                if (evaluator != null) {
+                    return evaluator.evaluate(token);
                 }
+                return expressionStart + token + expressionEnd;
             }
-            if (pos == -1) {
-                result.append(queryString.substring(start, queryString.length()));
-                break;
-            }
-        }
+        });
         return result.toString();
     }
     
 
     private ExpressionEvaluator resolveExpressionEvaluator(String token) {
-        for (int i = 0; i < this.expressionEvaluators.length; i++) {
-            if (this.expressionEvaluators[i].matches(token)) {
-                return this.expressionEvaluators[i];
+        for (int i = 0; i < expressionEvaluators.length; i++) {
+            if (expressionEvaluators[i].matches(token)) {
+                return expressionEvaluators[i];
             }
         }
         return null;
     }
-    
-
 }

@@ -36,8 +36,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Path;
@@ -47,6 +45,7 @@ import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.Principal;
+import org.vortikal.util.text.SimpleTemplate;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 
@@ -59,13 +58,12 @@ import org.vortikal.web.service.Service;
  */
 public class UrlTemplateExternalLinksProvider {
 
-    private static final Pattern FIELD_PATTERN = Pattern.compile("(%\\{[^\\}]+\\})");
     private static final String URL_ENCODING_CHARSET = "utf-8";
 
-    private int fieldValueSizeLimit = 250;
-    private String fieldValueTruncationIndicator = "...";
-    private Map<String, UrlTemplate> urlTemplates;
-    private Map<String, UrlTemplate> altUrlTemplates;
+    private int truncateLimit = 250;
+    private String truncation = "...";
+    private Map<String, SimpleTemplate> urlTemplates;
+    private Map<String, SimpleTemplate> altUrlTemplates;
     private Service viewService;
 
     public List<ExternalLink> getTemplates(List<String> altUrls) throws Exception {
@@ -74,217 +72,133 @@ public class UrlTemplateExternalLinksProvider {
         String token = requestContext.getSecurityToken();
         Repository repository = requestContext.getRepository();
 
-        RenderContext ctx = new RenderContext();
+        final RenderContext ctx = new RenderContext();
         ctx.resource = repository.retrieve(token, requestContext.getResourceURI(), true);
         ctx.principal = requestContext.getPrincipal();
         ctx.service = requestContext.getService();
 
         List<ExternalLink> links = new ArrayList<ExternalLink>();
         for (String externalLinkName : this.urlTemplates.keySet()) {
-            UrlTemplate template;
+            SimpleTemplate template;
             if (altUrls.contains(externalLinkName)) {
                 template = this.altUrlTemplates.get(externalLinkName);
             } else {
                 template = this.urlTemplates.get(externalLinkName);
             }
             if (template != null) {
-                String encodedUrl = template.renderEncodedUrl(ctx);
+                final StringBuilder url = new StringBuilder();
+                template.apply(new SimpleTemplate.Handler() {
+                    @Override
+                    public void write(String text) {
+                        url.append(text);
+                    }
+                    @Override
+                    public String resolve(String variable) {
+                        if ("url".equals(variable)) {
+                            String s = ctx.service.constructLink(ctx.resource, ctx.principal);
+                            try {
+                                return URLEncoder.encode(s, URL_ENCODING_CHARSET);
+                            } catch (UnsupportedEncodingException e) {
+                                return "";
+                            }
+                        } else {
+                            // Assume it's a reference to a resource property
+                            String prefix = null;
+                            String name = null;
+                            int idx = variable.indexOf(":");
+                            if (idx != -1) {
+                                prefix = variable.substring(0, idx);
+                                name = variable.substring(idx + 1);
+                            } else {
+                                name = variable;
+                            }
+                            String retVal = propValue(ctx.resource, prefix, name);
+                            if (retVal.length() > truncateLimit) {
+                                retVal = retVal.substring(0, truncateLimit);
+                                retVal = retVal + truncation;
+                            }
+                            try {
+                                return URLEncoder.encode(retVal, URL_ENCODING_CHARSET);
+                            } catch (UnsupportedEncodingException e) {
+                                return "";
+                            }
+                        }
+                    }
+                });
                 ExternalLink link = new ExternalLink();
                 link.setName(externalLinkName);
-                link.setUrl(encodedUrl);
+                link.setUrl(url.toString());
                 links.add(link);
             }
         }
         return links;
     }
 
-    private class UrlTemplate {
-        private List<TemplateNode> templateNodes;
-
-        UrlTemplate(String urlTemplate) {
-            List<TemplateNode> templateNodes = new ArrayList<TemplateNode>();
-
-            Matcher fieldPatternMatcher = FIELD_PATTERN.matcher(urlTemplate);
-            int pos = 0;
-            while (fieldPatternMatcher.find()) {
-                int fieldStart = fieldPatternMatcher.start(1);
-                int fieldEnd = fieldPatternMatcher.end(1);
-
-                if (fieldStart > pos) {
-                    templateNodes.add(new StaticEncodedText(urlTemplate.substring(pos, fieldStart)));
-                }
-                String fieldId = urlTemplate.substring(fieldStart + 2, fieldEnd - 1);
-                templateNodes.add(dynamicNode(fieldId));
-
-                pos = fieldEnd;
-            }
-            if (pos < urlTemplate.length()) {
-                templateNodes.add(new StaticEncodedText(urlTemplate.substring(pos, urlTemplate.length())));
-            }
-            this.templateNodes = templateNodes;
-        }
-
-        String renderEncodedUrl(RenderContext ctx) {
-            StringBuilder url = new StringBuilder();
-            for (TemplateNode node : this.templateNodes) {
-                url.append(node.render(ctx));
-            }
-            return url.toString();
-        }
-    }
-
-    // Factory method for dynamic node renderers. Might consider making this configurable (only if need arises).
-    private TemplateNode dynamicNode(String field) {
-        TemplateNode node;
-
-        if ("url".equals(field)) {
-            node = new ServiceUrl();
-        } else {
-            // Assume it's a reference to a resource property
-            String prefix = null;
-            String name = null;
-            int idx = field.indexOf(":");
-            if (idx != -1) {
-                prefix = field.substring(0, idx);
-                name = field.substring(idx + 1);
-            } else {
-                name = field;
-            }
-
-            node = new TruncatingWrapper(new ResourcePropertyValue(prefix, name));
-        }
-        return new UrlEncodingWrapper(node);
-    }
-
+    
     private static class RenderContext {
         Resource resource;
         Principal principal;
         Service service;
     }
 
-    private interface TemplateNode {
-        String render(RenderContext ctx);
-    }
-
-    private static class StaticEncodedText implements TemplateNode {
-        private String text;
-
-        StaticEncodedText(String text) {
-            this.text = text;
+    private String propValue(Resource resource, String prefix, String name) {
+        String retVal = "";
+        Property prop = resource.getPropertyByPrefix(prefix, name);
+        if (prop == null) {
+            prop = resource.getPropertyByPrefix("resource", name); // Try structured namespace
         }
-
-        public String render(RenderContext ctx) {
-            return this.text;
-        }
-    }
-
-    private static class ServiceUrl implements TemplateNode {
-        public String render(RenderContext ctx) {
-            return ctx.service.constructLink(ctx.resource, ctx.principal);
-        }
-    }
-
-    private class ResourcePropertyValue implements TemplateNode {
-        private String prefix;
-        private String name;
-
-        ResourcePropertyValue(String prefix, String name) {
-            this.prefix = prefix;
-            this.name = name;
-        }
-
-        public String render(RenderContext ctx) {
-            String retVal = "";
-            Property prop = ctx.resource.getPropertyByPrefix(this.prefix, this.name);
-            if (prop == null) {
-                prop = ctx.resource.getPropertyByPrefix("resource", this.name); // Try structured namespace
-            }
-            if (prop != null) {
-                PropertyTypeDefinition def = prop.getDefinition();
-                if (def != null) {
-                    if (def.getType() == PropertyType.Type.HTML) {
-                        retVal = prop.getFormattedValue("flattened", null);
-                    } else {
-                        retVal = prop.getFormattedValue();
-                        if (!retVal.isEmpty() && def.getType() == PropertyType.Type.IMAGE_REF) { // Construct absolute URLs
-                            try {
-                                if (!retVal.startsWith("/")) {
-                                    Path currentCollection = RequestContext.getRequestContext().getCurrentCollection();
-                                    retVal = currentCollection.expand(retVal).toString();
-                                }
-                                retVal = viewService.constructLink(Path.fromString(retVal));
-                            } catch (Exception iae) {
-                                retVal = "";
+        if (prop != null) {
+            PropertyTypeDefinition def = prop.getDefinition();
+            if (def != null) {
+                if (def.getType() == PropertyType.Type.HTML) {
+                    retVal = prop.getFormattedValue("flattened", null);
+                } else {
+                    retVal = prop.getFormattedValue();
+                    if (!retVal.isEmpty() && def.getType() == PropertyType.Type.IMAGE_REF) { // Construct absolute URLs
+                        try {
+                            if (!retVal.startsWith("/")) {
+                                Path currentCollection = RequestContext.getRequestContext().getCurrentCollection();
+                                retVal = currentCollection.expand(retVal).toString();
                             }
+                            retVal = viewService.constructLink(Path.fromString(retVal));
+                        } catch (Exception iae) {
+                            retVal = "";
                         }
                     }
                 }
             }
-            return retVal;
         }
+        return retVal;
+        
     }
-
-    private static class UrlEncodingWrapper implements TemplateNode {
-        private TemplateNode wrappedNode;
-
-        UrlEncodingWrapper(TemplateNode wrapped) {
-            this.wrappedNode = wrapped;
-        }
-
-        public String render(RenderContext ctx) {
-            try {
-                return URLEncoder.encode(this.wrappedNode.render(ctx), URL_ENCODING_CHARSET);
-            } catch (UnsupportedEncodingException ue) {
-                return "";
-            }
-        }
-    }
-
-    private class TruncatingWrapper implements TemplateNode {
-        private TemplateNode wrappedNode;
-
-        TruncatingWrapper(TemplateNode wrapped) {
-            this.wrappedNode = wrapped;
-        }
-
-        public String render(RenderContext ctx) {
-            String retVal = this.wrappedNode.render(ctx);
-            if (retVal.length() > UrlTemplateExternalLinksProvider.this.fieldValueSizeLimit) {
-                retVal = retVal.substring(0, UrlTemplateExternalLinksProvider.this.fieldValueSizeLimit);
-                retVal = retVal + UrlTemplateExternalLinksProvider.this.fieldValueTruncationIndicator;
-            }
-            return retVal;
-        }
-
-    }
-
+    
     @Required
     public void setUrlTemplates(Map<String, String> urlTemplates) {
-        this.urlTemplates = new LinkedHashMap<String, UrlTemplate>(urlTemplates.size());
+        this.urlTemplates = new LinkedHashMap<String, SimpleTemplate>(urlTemplates.size());
         for (String name : urlTemplates.keySet()) {
             String templateValue = urlTemplates.get(name);
             if (templateValue != null) {
-                this.urlTemplates.put(name, new UrlTemplate(templateValue));
+                this.urlTemplates.put(name, SimpleTemplate.compile(templateValue, "%{", "}"));
             }
         }
     }
 
     public void setAltUrlTemplates(Map<String, String> urlTemplates) {
-        this.altUrlTemplates = new LinkedHashMap<String, UrlTemplate>(urlTemplates.size());
+        this.altUrlTemplates = new LinkedHashMap<String, SimpleTemplate>(urlTemplates.size());
         for (String name : urlTemplates.keySet()) {
             String templateValue = urlTemplates.get(name);
             if (templateValue != null) {
-                this.altUrlTemplates.put(name, new UrlTemplate(templateValue));
+                this.altUrlTemplates.put(name, SimpleTemplate.compile(templateValue, "%{", "}"));
             }
         }
     }
 
-    public void setFieldValueSizeLimit(int fieldValueSizeLimit) {
-        this.fieldValueSizeLimit = fieldValueSizeLimit;
+    public void setTruncateLimit(int truncateLimit) {
+        this.truncateLimit = truncateLimit;
     }
 
-    public void setFieldValueTruncationIndicator(String fieldValueTruncationIndicator) {
-        this.fieldValueTruncationIndicator = fieldValueTruncationIndicator;
+    public void setTruncation(String truncation) {
+        this.truncation = truncation;
     }
 
     public void setViewService(Service viewService) {

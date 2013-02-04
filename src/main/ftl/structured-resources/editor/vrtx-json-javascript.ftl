@@ -1,9 +1,5 @@
 <#ftl strip_whitespace=true>
-<#-- JSON elements interaction in new documenttypes (add, remove and move) 
-
-     XXX: Move most JS and combine with code in editor.js
-
--->
+<#-- JSON elements/boxes interaction in new documenttypes (add, remove and move etc.) -->
 
 <#macro script>
   <#assign locale = springMacroRequestContext.getLocale() />

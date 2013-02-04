@@ -264,9 +264,15 @@
             delete ckInstance;
           }
         }
+        
+        var updateLast = removeElement.hasClass("last");
         removeElement.remove();
         removeElementParent.find(".vrtx-json-element:first .vrtx-move-up-button").remove();
-        removeElementParent.find(".vrtx-json-element:last .vrtx-move-down-button").remove();
+        var newLast = removeElementParent.find(".vrtx-json-element:last");
+        newLast.find(".vrtx-move-down-button").remove();
+        if(updateLast) {
+          newLast.addClass("last");
+        }
         if(hasAccordion) {
           var accordionContent = accordionWrapper.find(".fieldset");
           accordionRefresh(accordionContent, false);

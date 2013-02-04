@@ -780,6 +780,21 @@ VrtxEditor.prototype.initAccordionGrouped = function initAccordionGrouped(subGro
 };
 
 /**
+ * Reset accordion
+ *
+ */
+VrtxEditor.prototype.resetAccordion = function resetAccordion(accordionWrpId) { /* param name pending */
+  var vrtxEdit = this, _$ = vrtxAdmin._$;
+  
+  vrtxEdit.editorForm.find("#" + accordionWrpId)
+                     .accordion( "destroy" ).accordion({ header: "> div > .header",
+                                                         autoHeight: false,
+                                                         collapsible: true,
+                                                         active: false
+                                                       });
+};
+
+/**
  * Initialize CKEditors sync and async from CKEditorsInit array
  *
  */
@@ -1135,6 +1150,7 @@ function hideShowStudy(container, typeToDisplayElem) {
       container.removeClass("so").removeClass("nm").removeClass("em");
       break;
   }
+  vrtxEditor.resetAccordion("accordion-grouped");
 }
 
 /* Multiple inputfields */

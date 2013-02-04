@@ -39,7 +39,6 @@ import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertyEvaluationContext;
 import org.vortikal.repository.resourcetype.PropertyEvaluator;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
-import org.vortikal.web.RequestContext;
 
 public class SemesterTitlePropertyEvaluator implements PropertyEvaluator {
 
@@ -75,16 +74,6 @@ public class SemesterTitlePropertyEvaluator implements PropertyEvaluator {
 
         property.setStringValue(term.getFormattedValue("localized", locale) + " " + year.getFormattedValue());
         return true;
-    }
-
-    public String getLocalizedTitle(String key, Object[] params) {
-        RequestContext rc = RequestContext.getRequestContext();
-        org.springframework.web.servlet.support.RequestContext springRequestContext = new org.springframework.web.servlet.support.RequestContext(
-                rc.getServletRequest());
-        if (params != null) {
-            return springRequestContext.getMessage(key, params);
-        }
-        return springRequestContext.getMessage(key);
     }
 
 }

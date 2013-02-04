@@ -52,8 +52,6 @@ import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.util.web.HttpUtil;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.filter.UploadLimitInputStreamFilter;
-import org.vortikal.webdav.ifheader.IfHeaderImpl;
-
 
 /**
  * Handler for PUT requests.
@@ -71,8 +69,6 @@ import org.vortikal.webdav.ifheader.IfHeaderImpl;
  */
 public class PutController extends AbstractWebdavController {
 
-    //supportIfHeaders defaults to true since we are in the webdav package
-    private boolean supportIfHeaders = true;
     private long maxUploadSize = -1;
     private String viewName = "PUT";
     private boolean obeyClientCharacterEncoding = true;
@@ -94,10 +90,6 @@ public class PutController extends AbstractWebdavController {
         this.viewName = viewName;
     }
     
-
-    public void setSupportIfHeaders(boolean supportIfHeaders) {
-        this.supportIfHeaders = supportIfHeaders;
-    }
 
     public void setObeyClientCharacterEncoding(boolean obeyClientCharacterEncoding) {
         this.obeyClientCharacterEncoding = obeyClientCharacterEncoding;
@@ -131,21 +123,6 @@ public class PutController extends AbstractWebdavController {
             if (exists) {
                 this.logger.debug("Resource '" + uri + "' already exists");
                 resource = repository.retrieve(token, uri, false);
-                this.ifHeader = new IfHeaderImpl(request);
-
-                if (this.supportIfHeaders) {
-                    // XXX: Special compatibility cases and workarounds should be handled in a more elegant way. 
-                    String userAgent = request.getHeader("User-Agent");
-                    if (userAgent != null && userAgent.startsWith("Contribute")) {
-                        if (logger.isDebugEnabled()) {
-                            logger.debug("Contribute client detected, will not verify If-headers");
-                        }
-                        // Contribute does not send if-header if already locked, don't require it.
-                        verifyIfHeader(resource, false);
-                    } else {
-                        verifyIfHeader(resource, true);
-                    }
-                }
                 
                 if (resource.isCollection()) {
                     if (this.logger.isDebugEnabled()) {

@@ -46,11 +46,8 @@ import org.jdom.Namespace;
 import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
-import org.vortikal.repository.Resource;
-import org.vortikal.repository.ResourceLockedException;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.web.service.URL;
-import org.vortikal.webdav.ifheader.IfHeader;
 
 
 /**
@@ -68,13 +65,7 @@ public abstract class AbstractWebdavController implements Controller {
 
     protected Log logger = LogFactory.getLog(this.getClass());
     private List<Pattern> deniedFileNamePatterns = new ArrayList<Pattern>();
-    protected boolean supportIfHeaders = true;
-    protected IfHeader ifHeader;
 
-    public void setSupportIfHeaders(boolean supportIfHeaders) {
-        this.supportIfHeaders = supportIfHeaders;
-    }
-    
     public void setDeniedFileNames(List<String> deniedFileNames) {
         if (deniedFileNames == null) {
             throw new IllegalArgumentException("Argument cannot be NULL");
@@ -149,43 +140,6 @@ public abstract class AbstractWebdavController implements Controller {
     	}
     }
 
-    protected void verifyIfHeader(Resource resource, boolean ifHeaderRequiredIfLocked) {
-        if (!this.supportIfHeaders) {
-            return;
-        }
-        if (this.logger.isDebugEnabled()) {
-            this.logger.debug("resource.getLock(): " + resource.getLock());
-            this.logger.debug("ifHeader.hasTokens(): " + this.ifHeader.hasTokens());
-        }
-
-        if (ifHeaderRequiredIfLocked) {
-            if (resource.getLock() != null && !this.ifHeader.hasTokens()) {
-                String msg = "Resource " + resource + " is locked and "
-                    + "If-header does not have any lock tokens";
-                if (this.logger.isDebugEnabled()) {
-                    this.logger.debug(msg);
-                }
-                throw new ResourceLockedException(msg);
-            }
-        }
-        if (!matchesIfHeader(resource, true)) {
-            String msg = "If-header did not match resource " + resource;
-            if (this.logger.isDebugEnabled()) {
-                this.logger.debug(msg);
-            }
-            throw new ResourceLockedException(msg);
-        }
-        if (this.logger.isDebugEnabled()) {
-            this.logger.debug("verifyIfHeader: matchesIfHeader true");
-        }
-    }
-  
-    protected boolean matchesIfHeader(Resource resource, boolean shouldMatchOnNoIfHeader) {
-        if (this.ifHeader == null) {
-            return shouldMatchOnNoIfHeader;
-        }
-        return this.ifHeader.matches(resource, shouldMatchOnNoIfHeader);
-    }
     
     protected boolean allowedResourceName(Path uri) {
         String name = uri.getName();

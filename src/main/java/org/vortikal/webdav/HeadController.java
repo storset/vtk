@@ -45,8 +45,6 @@ import org.vortikal.repository.ResourceNotFoundException;
 import org.vortikal.repository.ResourceNotModifiedException;
 import org.vortikal.util.web.HttpUtil;
 import org.vortikal.web.RequestContext;
-import org.vortikal.webdav.ifheader.IfMatchHeader;
-import org.vortikal.webdav.ifheader.IfNoneMatchHeader;
 
 /**
  * Handler for HEAD requests
@@ -73,17 +71,6 @@ public class HeadController extends AbstractWebdavController {
                     this.logger.debug("HEAD on collection: setting status 404");
                 }
                 throw new ResourceNotFoundException(uri);
-            }
-            if (this.supportIfHeaders) {
-                IfMatchHeader ifMatchHeader = new IfMatchHeader(request);
-                if (!ifMatchHeader.matches(resource)) {
-                    throw new PreconditionFailedException();
-                }
-
-                IfNoneMatchHeader ifNoneMatchHeader = new IfNoneMatchHeader(request);
-                if (!ifNoneMatchHeader.matches(resource)) {
-                    throw new ResourceNotModifiedException(uri);
-                }
             }
             model.put(WebdavConstants.WEBDAVMODEL_REQUESTED_RESOURCE, resource);
             model.put("resource", resource);

@@ -45,7 +45,6 @@ import org.vortikal.repository.ResourceNotFoundException;
 import org.vortikal.util.web.HttpUtil;
 import org.vortikal.web.InvalidRequestException;
 import org.vortikal.web.RequestContext;
-import org.vortikal.webdav.ifheader.IfHeaderImpl;
 
 /**
  * Handler for UNLOCK requests
@@ -62,9 +61,7 @@ public class UnlockController extends AbstractWebdavController {
         Path uri = requestContext.getResourceURI();
         Map<String, Object> model = new HashMap<String, Object>();
         try {
-            this.ifHeader = new IfHeaderImpl(request);
             Resource resource = repository.retrieve(token, uri, false);
-            verifyIfHeader(resource, false);
             String lockToken = getLockToken(request);
             if (resource.getLock() != null && !resource.getLock().getLockToken().equals(lockToken)) {
                 throw new PreconditionFailedException();

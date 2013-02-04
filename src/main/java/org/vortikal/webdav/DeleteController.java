@@ -47,7 +47,6 @@ import org.vortikal.repository.ResourceLockedException;
 import org.vortikal.repository.ResourceNotFoundException;
 import org.vortikal.util.web.HttpUtil;
 import org.vortikal.web.RequestContext;
-import org.vortikal.webdav.ifheader.IfHeaderImpl;
 
 
 /**
@@ -73,15 +72,11 @@ public class DeleteController extends AbstractWebdavController {
         Repository repository = requestContext.getRepository();
         Map<String, Object> model = new HashMap<String, Object>();
         try {
-            this.ifHeader = new IfHeaderImpl(request);
             Resource resource = repository.retrieve(token, uri, false);
-
-            verifyIfHeader(resource, true);
 
             if (this.logger.isDebugEnabled()) {
                 this.logger.debug("Attempting to delete resource " + uri);
             }
-
 
             // Default to non-recoverable deletes for Webdav until we can get the
             // locking problems sorted out.

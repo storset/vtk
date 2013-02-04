@@ -49,7 +49,6 @@ import org.vortikal.repository.ResourceOverwriteException;
 import org.vortikal.util.web.HttpUtil;
 import org.vortikal.web.InvalidRequestException;
 import org.vortikal.web.RequestContext;
-import org.vortikal.webdav.ifheader.IfHeaderImpl;
 
 /**
  * Handler for MOVE requests
@@ -79,8 +78,6 @@ public class MoveController extends AbstractWebdavController {
 
         try {
             Resource resource = repository.retrieve(trustedToken, uri, false);
-            this.ifHeader = new IfHeaderImpl(request);
-            verifyIfHeader(resource, true);
             
             if (destHeader == null || destHeader.trim().equals("")) {
                 throw new InvalidRequestException(
@@ -102,7 +99,6 @@ public class MoveController extends AbstractWebdavController {
             
             if (existed) {
                 Resource destination = repository.retrieve(token, destURI, false);
-                verifyIfHeader(destination, true);
             }
             repository.move(token, uri, destURI, overwrite);
 

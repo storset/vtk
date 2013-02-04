@@ -403,7 +403,6 @@
   <bean id="webdavGetHandler" class="org.vortikal.web.display.file.DisplayResourceController">
     <property name="viewName" value="webdavDisplayResource" />
     <property name="ignoreLastModified" value="true" />
-    <property name="supportIfHeaders" value="${webdavSupportIfHeaders}" />
   </bean>
 
   <bean id="webdavHeadHandler" class="org.vortikal.webdav.HeadController" />
@@ -411,17 +410,14 @@
   <bean id="webdavPropfindHandler" class="org.vortikal.webdav.PropfindController" />
 
   <bean id="webdavLockHandler" class="org.vortikal.webdav.LockController">
-    <property name="supportIfHeaders" value="${webdavSupportIfHeaders}" />
     <property name="deniedFileNames" ref="webdav.deniedFileNamePatterns" />
   </bean>
 
   <bean id="webdavUnlockHandler" class="org.vortikal.webdav.UnlockController">
-    <property name="supportIfHeaders" value="${webdavSupportIfHeaders}" />
   </bean>
 
   <bean id="webdavPutHandler" class="org.vortikal.webdav.PutController">
     <property name="maxUploadSize" value="${upload.maxFileSize}" />
-    <property name="supportIfHeaders" value="${webdavSupportIfHeaders}"/>
     <property name="obeyClientCharacterEncoding" value="false" />
     <property name="deniedFileNames" ref="webdav.deniedFileNamePatterns" />
   </bean>
@@ -436,20 +432,16 @@
   </bean>
 
   <bean id="webdavCopyHandler" class="org.vortikal.webdav.CopyController">
-    <property name="supportIfHeaders" value="${webdavSupportIfHeaders}" />
   </bean>
 
   <bean id="webdavMoveHandler" class="org.vortikal.webdav.MoveController">
-    <property name="supportIfHeaders" value="${webdavSupportIfHeaders}" />
      <property name="trustedToken" ref="trustedToken" />    
   </bean>
 
   <bean id="webdavDeleteHandler" class="org.vortikal.webdav.DeleteController">
-    <property name="supportIfHeaders" value="${webdavSupportIfHeaders}" />
   </bean>
 
   <bean id="webdavProppatchHandler" class="org.vortikal.webdav.ProppatchController">
-    <property name="supportIfHeaders" value="${webdavSupportIfHeaders}" />
     <property name="webdavService" ref="webdavService"/>
   </bean>
 

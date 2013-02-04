@@ -75,7 +75,6 @@ import org.vortikal.web.InvalidRequestException;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
-import org.vortikal.webdav.ifheader.IfHeaderImpl;
 
 /**
  * Handler for PROPPATCH requests.
@@ -99,9 +98,6 @@ public class ProppatchController extends AbstractWebdavController  {
         try {
             Resource resource = repository.retrieve(token, uri, false);
             TypeInfo typeInfo = repository.getTypeInfo(token, uri);
-            this.ifHeader = new IfHeaderImpl(request);
-            verifyIfHeader(resource, true);
-            
             /* Parse the request body XML: */
             Document requestBody = parseRequestBody(request);
 

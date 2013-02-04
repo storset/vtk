@@ -59,7 +59,6 @@ import org.vortikal.security.AuthenticationException;
 import org.vortikal.util.web.HttpUtil;
 import org.vortikal.web.InvalidRequestException;
 import org.vortikal.web.RequestContext;
-import org.vortikal.webdav.ifheader.IfHeaderImpl;
 
 /**
  * Handler for LOCK requests.
@@ -122,25 +121,8 @@ public class LockController extends AbstractWebdavController {
 
             if (exists) {
                 resource = repository.retrieve(token, uri, false);
-                this.ifHeader = new IfHeaderImpl(request);
-                
-                // XXX: Requiring if-header if already locked breaks Adobe/Contributt (yes, butt)
-                // XXX: Should handle special cases in a more elegant way than this (only an emergency quick-fix)
-                String userAgent = request.getHeader("User-Agent");
-                if (userAgent != null && userAgent.startsWith("Contribute")) {
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("Contribute client detected, will not verify If-headers");
-                    }
-                    // Contribute does not send if-header if already locked, don't require it.
-                    verifyIfHeader(resource, false);
-                } else {
-                    verifyIfHeader(resource, true);
-                }
-                
                 if (request.getContentLength() <= 0) { // -1 if not known
                     //If contentLength <= 0 we assume we want to refresh a lock
-                    // If-header has already been verified in verifyIfHeader so we don't need to
-                    // verify the if-header again
                     Lock lock = resource.getLock();
                     if (lock != null) {
                         lockToken = lock.getLockToken();

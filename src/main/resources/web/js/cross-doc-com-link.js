@@ -6,21 +6,19 @@
  *
  */
 
-function CrossDocComLink() {
-  var instance; // cached instance
-  CrossDocComLink = function CrossDocComLink() { // rewrite constructor
-    return instance;
-  };
-  CrossDocComLink.prototype = this; // carry over properties
-  instance = new CrossDocComLink(); // instance
-  instance.constructor = CrossDocComLink; // reset construction pointer
-
-  this.hasPostMessage = window['postMessage'] && (!($.browser.opera && $.browser.version < 9.65));
-  this.origin = "*";
-  this.predefinedCommands;
-  
-  return instance;
-};
+var CrossDocComLink;
+(function() {
+  var instance; /* Singleton */
+  CrossDocComLink = function CrossDocComLink() {
+    if(instance) {
+      return instance;
+    }
+    instance = this;
+    this.hasPostMessage = window['postMessage'] && (!($.browser.opera && $.browser.version < 9.65));
+    this.origin = "*";
+    this.predefinedCommands;
+  }
+}());
 
 /* POST BACK TO SOURCE */
 CrossDocComLink.prototype.postCmd = function postCmd(cmdParams, source) {

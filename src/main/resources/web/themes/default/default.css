@@ -539,7 +539,7 @@ a:hover {
   background: transparent url(images/file-doc.gif) no-repeat 0px 2px;
 }
 #resource-title.doc.obsoleted {
-  background: transparent url(images/file-doc-obsoleted.gif) no-repeat 0px 2px;
+  background: transparent url(images/file-doc-obsoleted.png) no-repeat 0px 2px;
 }
 
 #resource-title.pdf {

@@ -30,6 +30,7 @@
  */
 package org.vortikal.web.decorating;
 
+import org.vortikal.util.text.PathMappingConfig;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -60,8 +61,8 @@ import org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
-import org.vortikal.web.decorating.PathMappingConfig.ConfigEntry;
-import org.vortikal.web.decorating.PathMappingConfig.Predicate;
+import org.vortikal.util.text.PathMappingConfig.ConfigEntry;
+import org.vortikal.util.text.PathMappingConfig.Qualifier;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 import org.vortikal.web.servlet.StatusAwareHttpServletResponse;
@@ -293,11 +294,11 @@ public class ConfigurableDecorationResolver implements DecorationResolver, Initi
                         // See TODO above.
                         score.put(entry, score.get(entry) + 10);
                     }
-                    List<Predicate> predicates = entry.getPredicates();
+                    List<Qualifier> predicates = entry.getQualifiers();
                     if (score.get(entry) == null) {
                         score.put(entry, 0);
                     }
-                    for (Predicate predicate: predicates) {
+                    for (Qualifier predicate: predicates) {
                         if (!matchPredicate(predicate, resource)) {
                             score.put(entry, -1);
                             break;
@@ -326,7 +327,7 @@ public class ConfigurableDecorationResolver implements DecorationResolver, Initi
     }
     
 
-    private boolean matchPredicate(Predicate predicate, Resource resource) throws Exception {
+    private boolean matchPredicate(Qualifier predicate, Resource resource) throws Exception {
         if ("type".equals(predicate.getName())) {
             String token = SecurityContext.getSecurityContext().getToken();
             

@@ -44,6 +44,7 @@ public class CSVSetFactoryBean extends AbstractCSVFactoryBean {
      * Create a new <code>Set</code> instance on every call in case the 
      * <code>FactoryBean</code> is not a singleton, but a prototype.
      */
+    @Override
     protected Object createInstance() throws Exception {
         Set<String> csvSet = new HashSet<String>();
         
@@ -55,6 +56,7 @@ public class CSVSetFactoryBean extends AbstractCSVFactoryBean {
     }
 
     @SuppressWarnings({"rawtypes" })
+    @Override
     public Class getObjectType() {
         return Set.class;
     }

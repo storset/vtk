@@ -361,6 +361,7 @@ $(document).ready(function() {
         hideShowStudy(vrtxEdit.editorForm, _$("#typeToDisplay"));
         _$(document).on("change", "#typeToDisplay", function () {
           hideShowStudy(vrtxEdit.editorForm, _$(this));
+          vrtxEditor.accordionGroupedRefresh();
         });    
         vrtxEdit.accordionGroupedInit();
         break;
@@ -1127,7 +1128,6 @@ function hideShowStudy(container, typeToDisplayElem) {
       container.removeClass("so").removeClass("nm").removeClass("em");
       break;
   }
-  vrtxEditor.accordionGroupedRefresh();
 }
 
 /*-------------------------------------------------------------------*\

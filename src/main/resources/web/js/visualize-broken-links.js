@@ -25,8 +25,7 @@ function visualizeBrokenLinks(options) {
       urls[idx] = [];
     }
     var list = urls[idx];
-    var href = $(links[i]).attr("href");
-    list[list.length] = href;
+    list[list.length] = links[i].href;
   }
   var urlsLength = urls.length;
   if (urlsLength == 0) {
@@ -64,7 +63,7 @@ function linkCheckResponse(results, context, localizer, linkClass) {
   var links = context.contents().find("a." + linkClass);
   var brokenLinks = 0;
   for (var j = 0, linksLength = links.length; j < linksLength; j++) {
-    var href = $(links[j]).attr('href');
+    var href = links[j].href;
     for (var i = 0, resultsLength = results.length; i < resultsLength; i++) {
       if (results[i].status != "OK") {
         if (href == results[i].link) {

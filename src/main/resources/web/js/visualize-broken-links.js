@@ -10,8 +10,8 @@ function visualizeBrokenLinks(options) {
 
   var selection = options.selection;
   var validationURL = options.validationURL;
-  var linkClass = options.linkClass ? options.linkClass : 'vrtx-link-check';
-  var chunk = options.chunk ? options.chunk : 10;
+  var linkClass = options.linkClass || 'vrtx-link-check';
+  var chunk = options.chunk || 10;
   var urls = [];
   var idx = 0;
   urls[idx] = [];

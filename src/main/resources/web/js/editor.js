@@ -1158,7 +1158,7 @@ function hideShowStudy(container, typeToDisplayElem) {
   vrtxEditor.resetAccordion("accordion-grouped");
 }
 
-/* Multiple inputfields */
+/* Multiple comma seperated input textfields */
 
 function loadMultipleInputFields(name, addName, removeName, moveUpName, moveDownName, browseName, isMovable, isBrowsable) { // TODO: simplify
   var inputField = $("." + name + " input[type=text]");
@@ -1360,6 +1360,8 @@ function formatMultipleInputFields(name) {
   
   multipleTxt.val(result);
 }
+
+/* Multiple JSON elements */
 
 function initJsonMovableElements(templatesRetrieved, jsonElementsBuilt) {
   $.when(templatesRetrieved, jsonElementsBuilt).done(function() {

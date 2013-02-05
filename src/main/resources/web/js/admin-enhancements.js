@@ -46,89 +46,86 @@ var startLoadTime = +new Date();
  * Creates an instance of VrtxAdmin
  * @constructor
  */
-function VrtxAdmin() {
+var VrtxAdmin;
+(function() {
+  var instance; /* Singleton */
+  VrtxAdmin = function VrtxAdmin() {
+    if(instance) {
+      return instance;
+    }
+    instance = this;
 
-  // Class-like singleton pattern (p.145 JavaScript Patterns)
-  var instance; // cached instance
-  VrtxAdmin = function VrtxAdmin() { // rewrite constructor
-    return instance;
-  };
-  VrtxAdmin.prototype = this; // carry over properties
-  instance = new VrtxAdmin(); // instance
-  instance.constructor = VrtxAdmin; // reset construction pointer
+    /** Cache jQuery instance internally
+      * @type object */
+    this._$ = $;
 
-  /** Cache jQuery instance internally
-    * @type object */
-  this._$ = $;
-
-  // Browser info: used for progressive enhancement and performance scaling based on knowledge of current JS-engine
-  this.ua = navigator.userAgent.toLowerCase();
-  this.isIE = this._$.browser.msie;
-  this.browserVersion = this._$.browser.version;
-  this.isIE8 = this.isIE && this.browserVersion <= 8;
-  this.isIE7 = this.isIE && this.browserVersion <= 7;
-  this.isIE6 = this.isIE && this.browserVersion <= 6;
-  this.isIE5OrHigher = this.isIE && this.browserVersion >= 5;
-  this.isIETridentInComp = this.isIE7 && /trident/.test(this.ua);
-  this.isOpera = this._$.browser.opera;
-  this.isSafari = this._$.browser.safari;
-  this.isIPhone = /iphone/.test(this.ua);
-  this.isIPad = /ipad/.test(this.ua);
-  this.isAndroid = /android/.test(this.ua); // http://www.gtrifonov.com/2011/04/15/google-android-user-agent-strings-2/
-  this.isMobileWebkitDevice = (this.isIPhone || this.isIPad || this.isAndroid);
-  this.isWin = ((this.ua.indexOf("win") != -1) || (this.ua.indexOf("16bit") != -1));
-  this.supportsFileList = window.FileList;
-  this.animateTableRows = !this.isIE;
+    // Browser info: used for progressive enhancement and performance scaling based on knowledge of current JS-engine
+    this.ua = navigator.userAgent.toLowerCase();
+    this.isIE = this._$.browser.msie;
+    this.browserVersion = this._$.browser.version;
+    this.isIE8 = this.isIE && this.browserVersion <= 8;
+    this.isIE7 = this.isIE && this.browserVersion <= 7;
+    this.isIE6 = this.isIE && this.browserVersion <= 6;
+    this.isIE5OrHigher = this.isIE && this.browserVersion >= 5;
+    this.isIETridentInComp = this.isIE7 && /trident/.test(this.ua);
+    this.isOpera = this._$.browser.opera;
+    this.isSafari = this._$.browser.safari;
+    this.isIPhone = /iphone/.test(this.ua);
+    this.isIPad = /ipad/.test(this.ua);
+    this.isAndroid = /android/.test(this.ua); // http://www.gtrifonov.com/2011/04/15/google-android-user-agent-strings-2/
+    this.isMobileWebkitDevice = (this.isIPhone || this.isIPad || this.isAndroid);
+    this.isWin = ((this.ua.indexOf("win") != -1) || (this.ua.indexOf("16bit") != -1));
+    this.supportsFileList = window.FileList;
+    this.animateTableRows = !this.isIE;
   
-  /** Language extracted from cookie */
-  this.lang = readCookie("vrtx.manage.language", "no");
+    /** Language extracted from cookie */
+    this.lang = readCookie("vrtx.manage.language", "no");
   
-  this.hasConsole = typeof console !== "undefined";
-  this.hasConsoleLog = this.hasConsole && console.log;
-  this.hasConsoleError = this.hasConsole && console.error;
+    this.hasConsole = typeof console !== "undefined";
+    this.hasConsoleLog = this.hasConsole && console.log;
+    this.hasConsoleError = this.hasConsole && console.error;
 
-  // Autocomplete parameters
-  this.permissionsAutocompleteParams = { minChars: 4, selectFirst: false,
-                                         max: 30, delay: 800, minWidth: 180, adjustForParentWidth: 15 };                              
-  this.usernameAutocompleteParams =    { minChars: 2, selectFirst: false,
-                                         max: 30, delay: 500, multiple: false, minWidth: 180, adjustForParentWidth: 15 };                                       
-  this.tagAutocompleteParams =         { minChars: 1, minWidth: 180, adjustForParentWidth: 15 };
+    // Autocomplete parameters
+    this.permissionsAutocompleteParams = { minChars: 4, selectFirst: false,
+                                           max: 30, delay: 800, minWidth: 180, adjustForParentWidth: 15 };                              
+    this.usernameAutocompleteParams =    { minChars: 2, selectFirst: false,
+                                           max: 30, delay: 500, multiple: false, minWidth: 180, adjustForParentWidth: 15 };                                       
+    this.tagAutocompleteParams =         { minChars: 1, minWidth: 180, adjustForParentWidth: 15 };
      
-  // Transitions
-  this.transitionSpeed = this.isMobileWebkitDevice ? 0 : 200; // same as 'fast'
-  this.transitionCustomPermissionSpeed = this.isMobileWebkitDevice ? 0 : 200; // same as 'fast'
-  this.transitionPropSpeed = this.isMobileWebkitDevice ? 0 : 100;
-  this.transitionDropdownSpeed = this.isMobileWebkitDevice ? 0 : 100;
-  this.transitionEasingSlideDown = (!(this.isIE && this.browserVersion < 10) && !this.isMobileWebkitDevice) ?  "easeOutQuad" : "linear";
-  this.transitionEasingSlideUp = (!(this.isIE && this.browserVersion < 10) && !this.isMobileWebkitDevice) ?  "easeInQuad" : "linear";
+    // Transitions
+    this.transitionSpeed = this.isMobileWebkitDevice ? 0 : 200; // same as 'fast'
+    this.transitionCustomPermissionSpeed = this.isMobileWebkitDevice ? 0 : 200; // same as 'fast'
+    this.transitionPropSpeed = this.isMobileWebkitDevice ? 0 : 100;
+    this.transitionDropdownSpeed = this.isMobileWebkitDevice ? 0 : 100;
+    this.transitionEasingSlideDown = (!(this.isIE && this.browserVersion < 10) && !this.isMobileWebkitDevice) ?  "easeOutQuad" : "linear";
+    this.transitionEasingSlideUp = (!(this.isIE && this.browserVersion < 10) && !this.isMobileWebkitDevice) ?  "easeInQuad" : "linear";
   
-  // Application logic
-  this.editorSaveButtonName = "";
-  this.asyncEditorSavedDeferred;
-  this.asyncGetFormsInProgress = 0;
-  this.asyncGetStatInProgress = false;
-  this.createResourceReplaceTitle = true;
-  this.createDocumentFileName = "";
-  this.trashcanCheckedFiles = 0;
+    // Application logic
+    this.editorSaveButtonName = "";
+    this.asyncEditorSavedDeferred;
+    this.asyncGetFormsInProgress = 0;
+    this.asyncGetStatInProgress = false;
+    this.createResourceReplaceTitle = true;
+    this.createDocumentFileName = "";
+    this.trashcanCheckedFiles = 0;
   
-  /* TODO: Need some rewrite of data structure to use 1 instead of 3 variables */
-  this.multipleCommaSeperatedInputFieldNames = [];
-  this.multipleCommaSeperatedInputFieldCounter = [];
-  this.multipleCommaSeperatedInputFieldLength = [];
-  this.multipleCommaSeperatedInputFieldTemplates = [];
-  this.multipleCommaSeperatedInputFieldDeferred;
+    /* TODO: Need some rewrite of data structure to use 1 instead of 3 variables */
+    this.multipleCommaSeperatedInputFieldNames = [];
+    this.multipleCommaSeperatedInputFieldCounter = [];
+    this.multipleCommaSeperatedInputFieldLength = [];
+    this.multipleCommaSeperatedInputFieldTemplates = [];
+    this.multipleCommaSeperatedInputFieldDeferred;
   
-  this.breadcrumbsLastPosLeft = -999;
-  this.reloadFromServer = false; // changed by funcProceedCondition and used by funcComplete in completeFormAsync for admin-permissions
-  this.ignoreAjaxErrors = false;
-  this._$.ajaxSetup({
-    timeout: 300000 // 5min
-  });
-  this.runReadyLoad = true;
-  this.bodyId = "";
-  
-  return instance;
-};
+    this.breadcrumbsLastPosLeft = -999;
+    this.reloadFromServer = false; // changed by funcProceedCondition and used by funcComplete in completeFormAsync for admin-permissions
+    this.ignoreAjaxErrors = false;
+    this._$.ajaxSetup({
+      timeout: 300000 // 5min
+    });
+    this.runReadyLoad = true;
+    this.bodyId = "";
+  }
+}());
 
 var vrtxAdmin = new VrtxAdmin();
 

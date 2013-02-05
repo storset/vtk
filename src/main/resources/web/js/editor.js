@@ -11,56 +11,54 @@
  * Creates an instance of VrtxEditor
  * @constructor
  */
-function VrtxEditor() {
-  var instance; // Class-like singleton pattern (p.145 JavaScript Patterns)
+var VrtxEditor;
+(function() {
+  var instance; /* Singleton */
   VrtxEditor = function VrtxEditor() {
-    return instance;
-  };
-  VrtxEditor.prototype = this;
-  instance = new VrtxEditor();
-  instance.constructor = VrtxEditor;
+    if(instance) {
+      return instance;
+    }
+    instance = this;
+    this.editorForm = null;
   
-  this.editorForm = null;
+    /** CKEditor toolbars */
+    this.CKEditorToolbars = {};
+    /** CKEditor div-container styles */
+    this.CKEditorDivContainerStylesSet = [{}];
   
-  /** CKEditor toolbars */
-  this.CKEditorToolbars = {};
-  /** CKEditor div-container styles */
-  this.CKEditorDivContainerStylesSet = [{}];
+    /** CKEditors at init that should be created */
+    this.CKEditorsInit = [];
+    /** CKEditors created sync */
+    this.CKEditorsInitSyncMax = 15;
+    /** CKEditors async creation interval in ms */
+    this.CKEditorsInitAsyncInterval = 15;
   
-  /** CKEditors at init that should be created */
-  this.CKEditorsInit = [];
-  /** CKEditors created sync */
-  this.CKEditorsInitSyncMax = 15;
-  /** CKEditors async creation interval in ms */
-  this.CKEditorsInitAsyncInterval = 15;
+    /** Text input fields at init */
+    this.editorInitInputFields = [];
+    /** Select fields at init */
+    this.editorInitSelects = [];
+    /** Checkboxes at init */
+    this.editorInitCheckboxes = [];
+    /** Radios at init */
+    this.editorInitRadios = [];
   
-  /** Text input fields at init */
-  this.editorInitInputFields = [];
-  /** Select fields at init */
-  this.editorInitSelects = [];
-  /** Checkboxes at init */
-  this.editorInitCheckboxes = [];
-  /** Radios at init */
-  this.editorInitRadios = [];
+    /** Initial state for the need to confirm navigation away from editor */
+    this.needToConfirm = true;
   
-  /** Initial state for the need to confirm navigation away from editor */
-  this.needToConfirm = true;
+    /** Select fields show/hide mappings */
+    this.selectMappings = { "teachingsemester":                    { "particular-semester":   ".if-teachingsemester-particular",
+                                                                     "every-other":           ".teachingsemester-every-other-semester",
+                                                                     "other":                 ".teachingsemester-other"                 },
+                            "examsemester":                        { "particular-semester":   ".if-examsemester-particular",
+                                                                     "every-other":           ".examsemester-every-other-semester",
+                                                                     "other":                 ".examsemester-other"                     },
+                            "teaching-language":                   { "other":                 ".teaching-language-text-field"           }
+                          };
   
-  /** Select fields show/hide mappings */
-  this.selectMappings = { "teachingsemester":                    { "particular-semester":   ".if-teachingsemester-particular",
-                                                                   "every-other":           ".teachingsemester-every-other-semester",
-                                                                   "other":                 ".teachingsemester-other"                 },
-                          "examsemester":                        { "particular-semester":   ".if-examsemester-particular",
-                                                                   "every-other":           ".examsemester-every-other-semester",
-                                                                   "other":                 ".examsemester-other"                     },
-                          "teaching-language":                   { "other":                 ".teaching-language-text-field"           }
-                        };
-  
-  /** Check if this script is in admin or not */                      
-  this.isInAdmin = typeof vrtxAdmin !== "undefined";
-  
-  return instance;
-};
+    /** Check if this script is in admin or not */                      
+    this.isInAdmin = typeof vrtxAdmin !== "undefined";
+  }
+}());
 
 var vrtxEditor = new VrtxEditor();
 

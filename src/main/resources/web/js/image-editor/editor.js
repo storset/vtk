@@ -30,45 +30,44 @@ var IMAGE_EDITOR_INITIALIZED = $.Deferred();
  * @license GPL3
  * @constructor
  */
-function VrtxImageEditor() {
-  var instance; // Class-like singleton pattern (p.145 JavaScript Patterns)
+var VrtxImageEditor;
+(function() {
+  var instance; /* Singleton */
   VrtxImageEditor = function VrtxImageEditor() {
-    return instance;
-  };
-  VrtxImageEditor.prototype = this;
-  instance = new VrtxImageEditor();
-  instance.constructor = VrtxImageEditor;
-  
-  this.url = null;
-  this.img = null;
-  this.scaledImg = null;
+    if(instance) {
+      return instance;
+    }
+    instance = this;
+    
+    this.url = null;
+    this.img = null;
+    this.scaledImg = null;
 
-  this.canvasSupported = null;
-  this.isIE8 = null;
-  this.canvas = null;
-  this.ctx = null;
-  this.lastWidth = null;
-  this.lastHeight = null;
-  this.rw = null;
-  this.rh = null;
-  this.cropX = 0;
-  this.cropY = 0;
-  this.cropWidth = null;
-  this.cropHeight = null;
-  this.scaleRatio = 1;
-  this.reversedScaleRatio = 1;
-  this.aspectRatioOver = 1;
-  this.aspectRatioUnder = 1;
-  this.keepAspectRatio = true;
-  this.hasCropBeenInitialized = false;
-  this.savedImage = false;
+    this.canvasSupported = null;
+    this.isIE8 = null;
+    this.canvas = null;
+    this.ctx = null;
+    this.lastWidth = null;
+    this.lastHeight = null;
+    this.rw = null;
+    this.rh = null;
+    this.cropX = 0;
+    this.cropY = 0;
+    this.cropWidth = null;
+    this.cropHeight = null;
+    this.scaleRatio = 1;
+    this.reversedScaleRatio = 1;
+    this.aspectRatioOver = 1;
+    this.aspectRatioUnder = 1;
+    this.keepAspectRatio = true;
+    this.hasCropBeenInitialized = false;
+    this.savedImage = false;
   
-  this.selection = null;
-  this.iMouseX = 1;
-  this.iMouseY = 1;
-
-  return instance;
-};
+    this.selection = null;
+    this.iMouseX = 1;
+    this.iMouseY = 1;
+  }
+}());
 
 var vrtxImageEditor = new VrtxImageEditor();
 

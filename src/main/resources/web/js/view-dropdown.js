@@ -1,7 +1,7 @@
 /*
  * View dropdown
  *
- * Turn off() first to prevent bug when JS is already included
+ * FIXME: Turn off() first to prevent bug when JS is already included
  *
  */
  

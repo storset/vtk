@@ -1240,7 +1240,6 @@ function initMultipleInputFields() {
   vrtxEditor.multipleCommaSeperatedInputFieldTemplates = vrtxAdmin.retrieveHTMLTemplates("multiple-inputfields",
                                                                                         ["button", "add-button", "multiple-inputfield"],
                                                                                         vrtxEditor.multipleCommaSeperatedInputFieldDeferred);
-  alert(vrtxEditor.multipleCommaSeperatedInputFieldTemplates.length);
 }
 
 function addFormField(name, value, removeName, moveUpName, moveDownName, browseName, size, isBrowsable, init, isMovable, isDropdown) {

@@ -31,6 +31,7 @@
 package org.vortikal.context;
 
 import org.springframework.beans.factory.config.AbstractFactoryBean;
+import org.vortikal.util.text.TextUtils;
 
 /**
  * Abstract superclass for CSV style factory beans. Parses a comma separated string
@@ -48,16 +49,12 @@ public abstract class AbstractCSVFactoryBean extends AbstractFactoryBean {
     
     public void setCsvList(String csvList) {
         if (csvList != null) {
-            if ("".equals(csvList.trim())) {
+            if (csvList.trim().isEmpty()) {
                 this.elements = new String[0];
                 return;
             }
-            this.elements = csvList.split(",");
-            if (this.trim) {
-                for (int i = 0; i < this.elements.length; i++) {
-                    this.elements[i] = this.elements[i].trim();
-                } 
-            }
+            this.elements = TextUtils.parseCsv(csvList, ',', 
+                    this.trim ? TextUtils.TRIM | TextUtils.IGNORE_ILLEGAL_ESCAPE: TextUtils.IGNORE_ILLEGAL_ESCAPE);
         } 
     }
 
@@ -65,9 +62,11 @@ public abstract class AbstractCSVFactoryBean extends AbstractFactoryBean {
         this.trim = trim;
     }
 
+    @Override
     protected abstract Object createInstance() throws Exception;
 
     @SuppressWarnings("rawtypes")
+    @Override
     public abstract Class getObjectType();
 
 }

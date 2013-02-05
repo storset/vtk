@@ -32,8 +32,17 @@
        $("#tree").on("click", "a", function(e) { // Don't want click on links
 	     e.preventDefault();
        });
-       // Params: class, appendTo, containerWidth, in-, pre-, outdelay, xOffset, yOffset, autoWidth, extra
-       $("#tree").vortexTips("li a", "#contents", 400, 300, 4000, 3000, 30, 80, false, false);
+       $("#tree").vortexTips("li a", {
+         appendTo: "#contents",
+	     containerWidth: 400,
+	     animInSpeed: 300,
+	     animOutPreDelay: 4000,
+	     animOutSpeed: 3000,
+	     xOffset: 30,
+	     yOffset: 80,
+	     autoWidth: false,
+	     extra: false
+       });
      });
   // -->
   </script>

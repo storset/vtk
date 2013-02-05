@@ -15,11 +15,10 @@
  *
  */
 (function ($) {
-  $.fn.vortexTips = function (subSelector, appendTo, containerWidth, animInSpeed, animOutPreDelay, animOutSpeed, xOffset, yOffset, autoWidth, extra) {
-
-    var html = '<span class="tip ' + appendTo.substring(1) + '">&nbsp;</span>';
-    if (extra) {
-      var extraHtml = '<span class="tipextra ' + appendTo.substring(1) + '">&nbsp;</span>';
+  $.fn.vortexTips = function (subSelector, opts) {
+    var html = '<span class="tip ' + opts.appendTo.substring(1) + '">&nbsp;</span>';
+    if (opts.extra) {
+      var extraHtml = '<span class="tipextra ' + opts.appendTo.substring(1) + '">&nbsp;</span>';
     }
     var tip;
     var tipExtra;
@@ -44,12 +43,12 @@
         if (tipExtra) {
           tipExtra.remove();
         }
-        $(appendTo).append(html);
-        tip = $('.tip.' + appendTo.substring(1));
+        $(opts.appendTo).append(html);
+        tip = $('.tip.' + opts.appendTo.substring(1));
         tip.hide();
-        if (extra) {
-         $(appendTo).append(extraHtml);
-         tipExtra = $('.tipextra.' + appendTo.substring(1));
+        if (opts.extra) {
+         $(opts.appendTo).append(extraHtml);
+         tipExtra = $('.tipextra.' + opts.appendTo.substring(1));
          tipExtra.hide();
         }
         var linkParent = link.parent();
@@ -61,24 +60,24 @@
         tip.html(title);
         link.attr('title', '');
         var nPos = link.position();
-        nPos.top = nPos.top + yOffset;
-        var left = nPos.left + link.width() + xOffset;
-        if (extra) {
+        nPos.top = nPos.top + opts.yOffset;
+        var left = nPos.left + link.width() + opts.xOffset;
+        if (opts.extra) {
           var ePos = link.position();
-          ePos.top = ePos.top + yOffset;
+          ePos.top = ePos.top + opts.yOffset;
           tipExtra.css('position', 'absolute').css('z-index', '-1').css('width', '99%');
           ePos.left = 0;
         }
-        if (autoWidth) {
+        if (opts.autoWidth) {
           tip.css('position', 'absolute').css('z-index', '1000').css('width', left + 'px');
           nPos.left = 0;
         } else {
           nPos.left = left;
-          tip.css('position', 'absolute').css('z-index', '1000').css('width', containerWidth + 'px');        
+          tip.css('position', 'absolute').css('z-index', '1000').css('width', opts.containerWidth + 'px');        
         }
-        tip.css(nPos).fadeIn(animInSpeed);
-        if (extra) {
-          tipExtra.css(ePos).fadeIn(animInSpeed);
+        tip.css(nPos).fadeIn(opts.animInSpeed);
+        if (opts.extra) {
+          tipExtra.css(ePos).fadeIn(opts.animInSpeed);
         }
       } else if (e.type == "mouseleave") {
         var link = $(this);
@@ -87,15 +86,15 @@
         }
         link.attr('title', tipText);
         fadeOutTimer = setTimeout(function () {
-          if (extra) {
-            tipExtra.fadeOut(animOutSpeed, function () {
+          if (opts.extra) {
+            tipExtra.fadeOut(opts.animOutSpeed, function () {
               $(this).remove();
             });
           }
-          tip.fadeOut(animOutSpeed, function () {
+          tip.fadeOut(opts.animOutSpeed, function () {
             $(this).remove();
           });
-        }, animOutPreDelay);
+        }, opts.animOutPreDelay);
       }
       e.stopPropagation();
     });

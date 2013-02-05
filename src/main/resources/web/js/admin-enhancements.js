@@ -197,8 +197,28 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
   });
 
   // Tooltips
-  $("#title-container").vortexTips("abbr", "#title-container", 200, 300, 250, 300, 20, 0, false, false);
-  $("#main").vortexTips(".tooltips", "#contents", 320, 300, 250, 300, 20, -30, false, false);
+  $("#title-container").vortexTips("abbr", {
+    appendTo: "#title-container",
+	containerWidth: 200,
+	animInSpeed: 300,
+	animOutPreDelay: 250,
+	animOutSpeed: 300,
+	xOffset: 20,
+	yOffset: 0,
+	autoWidth: false,
+	extra: false
+  });
+  $("#main").vortexTips(".tooltips", {
+    appendTo: "#contents",
+	containerWidth: 320,
+	animInSpeed: 300,
+	animOutPreDelay: 250,
+	animOutSpeed: 300,
+	xOffset: 20,
+	yOffset: -30,
+	autoWidth: false,
+	extra: false
+  });
 
   // Resource menus
   var resourceMenuLeftServices = ["renameService", "deleteResourceService", "manage\\.createArchiveService", "manage\\.expandArchiveService"];
@@ -784,8 +804,17 @@ function initializeTree() {
     location.href = this.href;
   });
 
-  // Params: class, appendTo, containerWidth, in-, pre-, outdelay, xOffset, yOffset, autoWidth
-  treeElem.vortexTips("li span.folder", ".vrtx-create-tree", 80, 300, 4000, 300, 10, - 8, false, true);
+  treeElem.vortexTips("li span.folder", {
+    appendTo: ".vrtx-create-tree",
+	containerWidth: 80,
+	animInSpeed: 300,
+	animOutPreDelay: 4000,
+	animOutSpeed: 300,
+	xOffset: 10,
+	yOffset: -8,
+	autoWidth: false,
+	extra: true
+  });
 }
 
 function treeCreateScrollToCallback(link) {

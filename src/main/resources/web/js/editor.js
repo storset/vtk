@@ -531,15 +531,15 @@ $(document).ready(function() {
         _$(document).on("change", "#typeToDisplay", function () {
           hideShowStudy(vrtxEdit.editorForm, _$(this));
         });    
-        vrtxEdit.initAccordionGrouped();
+        vrtxEdit.accordionGroupedInit();
         break;
       case "vrtx-course-description":
         setShowHide('course-fee', ["course-fee-amount"], false);
-        vrtxEdit.initAccordionGrouped();
+        vrtxEdit.accordionGroupedInit();
         break;
       case "vrtx-semester-page":
         setShowHide('cloned-course', ["cloned-course-code"], false);
-        vrtxEdit.initAccordionGrouped("[class*=link-box]");
+        vrtxEdit.accordionGroupedInit("[class*=link-box]");
         break;
       case "vrtx-samlet-program":
         var samletElm = vrtxEdit.editorForm.find(".samlet-element");
@@ -1134,7 +1134,7 @@ function hideShowStudy(container, typeToDisplayElem) {
       container.removeClass("so").removeClass("nm").removeClass("em");
       break;
   }
-  vrtxEditor.resetAccordion("accordion-grouped");
+  vrtxEditor.accordionGroupedRefresh();
 }
 
 /*-------------------------------------------------------------------*\
@@ -1369,7 +1369,7 @@ function initJsonMovableElements(templatesRetrieved, jsonElementsBuilt) {
     for(var grouped = $(".vrtx-json-accordion .vrtx-json-element"), i = grouped.length; i--;) { 
       var group = $(grouped[i]);
       group.find("> *").wrapAll("<div />");
-      updateAccordionHeader(group);
+      accordionJsonUpdateHeader(group);
     }
       
     $(".vrtx-json-accordion .fieldset").accordion({ 
@@ -1378,7 +1378,7 @@ function initJsonMovableElements(templatesRetrieved, jsonElementsBuilt) {
                                                    collapsible: true,
                                                    active: false,
                                                    change: function(e, ui) {
-                                                     updateAccordionHeader(ui.oldHeader);
+                                                     accordionJsonUpdateHeader(ui.oldHeader);
                                                      if(ACCORDION_MOVE_TO_AFTER_CHANGE) {
                                                        scrollToElm(ACCORDION_MOVE_TO_AFTER_CHANGE);
                                                      }
@@ -1502,7 +1502,7 @@ function initJsonMovableElements(templatesRetrieved, jsonElementsBuilt) {
       lastSharedTextItem.find(".title input").addClass("header-populators");
       // ^ TODO: avoid this being hardcoded here
           
-      accordionRefresh(accordionContent, false);
+      accordionJsonRefresh(accordionContent, false);
     }
 
     // CK and date inputfields
@@ -1548,7 +1548,7 @@ function initJsonMovableElements(templatesRetrieved, jsonElementsBuilt) {
     }
     if(hasAccordion) {
       var accordionContent = accordionWrapper.find(".fieldset");
-      accordionRefresh(accordionContent, false);
+      accordionJsonRefresh(accordionContent, false);
     }
     e.stopPropagation();
     e.preventDefault();
@@ -1704,8 +1704,8 @@ function swapContent(counter, arrayOfIds, move, name) {
     element1.val(val2);
     element2.val(val1);
     if(hasAccordion) {
-      updateAccordionHeader(element1);
-      updateAccordionHeader(element2);
+      accordionJsonUpdateHeader(element1);
+      accordionJsonUpdateHeader(element2);
     }
     element1.blur();
     element2.blur();
@@ -1751,7 +1751,7 @@ function scrollToElm(movedElm) {
  * Initialize .vrtx-grouped elements as accordions
  * @this {VrtxEditor}
  */
-VrtxEditor.prototype.initAccordionGrouped = function initAccordionGrouped(subGroupedSelector) { /* param name pending */
+VrtxEditor.prototype.accordionGroupedInit = function accordionGroupedInit(subGroupedSelector) { /* param name pending */
   var vrtxEdit = this, _$ = vrtxAdmin._$;
 
   var accordionWrpId = "accordion-grouped"; // TODO: multiple accordion group pr. page
@@ -1763,20 +1763,20 @@ VrtxEditor.prototype.initAccordionGrouped = function initAccordionGrouped(subGro
   }
   grouped.wrapAll("<div id='" + accordionWrpId + "' />");
   vrtxEdit.editorForm.find("#" + accordionWrpId).accordion({ header: "> div > .header",
-                                                           autoHeight: false,
-                                                           collapsible: true,
-                                                           active: false
-                                                         });
+                                                             autoHeight: false,
+                                                             collapsible: true,
+                                                             active: false
+                                                           });
 };
 
 /**
- * Reset accordion
+ * Refresh accordion
  * @this {VrtxEditor}
  */
-VrtxEditor.prototype.resetAccordion = function resetAccordion(accordionWrpId) { /* param name pending */
+VrtxEditor.prototype.accordionGroupedRefresh = function accordionGroupedRefresh() { /* param name pending */
   var vrtxEdit = this, _$ = vrtxAdmin._$;
   
-  vrtxEdit.editorForm.find("#" + accordionWrpId)
+  vrtxEdit.editorForm.find("#accordion.grouped")
                      .accordion( "destroy" ).accordion({ header: "> div > .header",
                                                          autoHeight: false,
                                                          collapsible: true,
@@ -1784,14 +1784,14 @@ VrtxEditor.prototype.resetAccordion = function resetAccordion(accordionWrpId) { 
                                                        });
 };
 
-function accordionRefresh(elem, active) {
+function accordionJsonRefresh(elem, active) {
   elem.accordion('destroy').accordion({
     header: "> div > .header",
     autoHeight: false,
     collapsible: true,
     active: active,
     change: function (e, ui) {
-      updateAccordionHeader(ui.oldHeader);
+      accordionJsonUpdateHeader(ui.oldHeader);
       if (ACCORDION_MOVE_TO_AFTER_CHANGE) {
         scrollToElm(ACCORDION_MOVE_TO_AFTER_CHANGE);
       }
@@ -1800,7 +1800,7 @@ function accordionRefresh(elem, active) {
 }
 
 
-function updateAccordionHeader(elem) {
+function accordionJsonUpdateHeader(elem) {
   var jsonElm = elem.closest(".vrtx-json-element");
   if (jsonElm.length) { // Prime header populators
     var str = "";

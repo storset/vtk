@@ -62,7 +62,7 @@ var VrtxEditor;
     this.needToConfirm = true;
   
     /** Select fields show/hide mappings */
-     /*                      select                                   value                    show (hide the others mapped)            */
+     /*                      select-id                               value                    show selectors (hide the others mapped)            */
     this.selectMappings = { "teachingsemester":                    { "particular-semester":   ".if-teachingsemester-particular",
                                                                      "every-other":           ".teachingsemester-every-other-semester",
                                                                      "other":                 ".teachingsemester-other"                 },

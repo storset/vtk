@@ -16,7 +16,7 @@
       </#list>
       <#if containsMultipleInputFieldScripts>
         MULTIPLE_INPUT_FIELD_INITIALIZED = $.Deferred();
-        $.when(vrtxAdmin.multipleCommaSeperatedInputFieldDeferred).done(function() {
+        $.when(vrtxEditor.multipleCommaSeperatedInputFieldDeferred).done(function() {
           browseBase = '${fckeditorBase.url?html}';
           browseBaseFolder = '${baseFolder}';
           browseBasePath = '${fckBrowse.url.pathRepresentation}';

@@ -11,10 +11,6 @@ resourcetype program-frontpage : program-document {
     faculty : string multiple,
     keywords : string,
     picture : image_ref,
-    interviewTitle : string,
-    interviewContent : html,
-    interviewLinkText : string, 
-    interviewUrl : resource_ref, 
     resource-links : json (linkHeader:string, linkTitle:string, linkUrl:string, linkDescription:string) multiple,
     title : derived (name,program-type) eval (name + " (" + program-type?localized +")") overrides title
   }
@@ -89,37 +85,6 @@ resourcetype program-frontpage : program-document {
           </div>
         </div>
       [endif]
-      ##
-    }
- 
-    interview-box {
-      ##
-      [resource-props "."]
-      [if interviewTitle != null || interviewContent != null || interviewLinkText != null || interviewUrl  != null]
-        <div class="vrtx-frontpage-box white-box two-column-feed">         
-        [if interviewTitle != null && interviewTitle != ""]
-          [if interviewUrl != null && interviewUrl != ""]
-            <h2><a href="[val interviewUrl]">[val interviewTitle]</a></h2>
-          [else]
-            <h2>[val interviewTitle]</h2>
-          [endif]
-        [endif]
-        [if interviewContent != null && interviewContent != ""]
-          <div class="vrtx-box-content">
-            [val interviewContent # unescaped]
-          </div>
-        [endif]
-        [if interviewLinkText != null && interviewLinkText != ""]
-          <div class="vrtx-more">
-          [if interviewUrl != null && interviewUrl != ""]
-            <span><a href="[val interviewUrl]">[val interviewLinkText]</a></span>
-          [else]
-            <span>[val interviewLinkText]</span>
-          [endif]
-          </div>
-        [endif]
-      </div>
-      [endif]  
       ##
     }
 
@@ -251,11 +216,6 @@ resourcetype program-frontpage : program-document {
     introduction-image-alt : (en : "Image", no : "Bilde", nn : "Bilete"),
     program-options-title : (en : "Programme options", no : "Studieretninger", nn : "Studieretningar"),
     samlet : (en : "Translation of program names for Full description of the programme", no : "Oversettelse av programnavn til Samlet programbeskrivelse", nn : "Oversetting av programnamn til Samla programbeskrivelse"),
-    interview-box : (en : "Employment opportunities", no : "Karriereintervjuer", nn : "Karriereintervjuar"),
-    interviewTitle : (en : "Title", no : "Tittel", nn : "Tittel"),
-    interviewContent : (en : "Content", no : "Innhold", nn : "Innhald"),
-    interviewLinkText : (en : "Link text", no : "Lenketekst", nn : "Lenkjetekst"),
-    interviewUrl : (en : "Webaddress", no : "Webadresse", nn : "Webadresse"),
 
     full-time : (en : "Full time study?", no : "Organisering", nn : "Organisering"),
     organization : (en : "Organization", no : "Organisering", nn : "Organisering"),

@@ -10,14 +10,15 @@ resourcetype program-option-frontpage : program-document {
   }
 
   edit-rules {
-    status (dropdown),
     name (size[large]),
+    group samlet (name-no, name-nn, name-en) (after name) horizontal,
     fs-program-code (size[10]),
     fs-program-option-code (size[10]),
-    group samlet (name-no, name-nn, name-en) (after name) horizontal,
+    status (dropdown),
     group facts (fs-program-code, fs-program-option-code, status, picture) (after samlet),
+    group interview-box (interviewTitle, interviewContent, interviewLinkText, interviewUrl) (after facts),
+    group contact-box (contactTitle, contactContent, contactLinkText, contactUrl) (after interview-box),
     resource-links tooltip (en : "Tooltip for links", no : "Tips for lenker", nn : "Tips for lenker"),
-    group contact-box (contactTitle, contactContent, contactLinkText, contactUrl) (before additional-content),
     resource-links (after contact-box),
     additional-content (after resource-links)
   }
@@ -69,7 +70,8 @@ resourcetype program-option-frontpage : program-document {
         [call "comp:additional-content" {"document":document, "main-content": "false"}]
       </div>
       ##
-    }  
+    }
+
   }
 
   view {
@@ -99,6 +101,7 @@ resourcetype program-option-frontpage : program-document {
               </div>
             </div>
             [call "comp:program-title"]
+            [call "comp:interview-box"]
             [call "comp:resource-links"]
           </div>
           [call "comp:right-column"]

@@ -5,6 +5,10 @@ resourcetype program-document {
     name-no : string,
     name-nn : string,
     name-en : string,
+    interviewTitle : string,
+    interviewContent : html,
+    interviewLinkText : string, 
+    interviewUrl : resource_ref, 
     contactTitle : string,
     contactContent : html,
     contactLinkText : string, 
@@ -97,7 +101,38 @@ resourcetype program-document {
           </div>
       [endif]
       ##
-    }  
+    }
+
+    interview-box {
+      ##
+      [resource-props "."]
+      [if interviewTitle != null || interviewContent != null || interviewLinkText != null || interviewUrl  != null]
+        <div class="vrtx-frontpage-box white-box two-column-feed">         
+        [if interviewTitle != null && interviewTitle != ""]
+          [if interviewUrl != null && interviewUrl != ""]
+            <h2><a href="[val interviewUrl]">[val interviewTitle]</a></h2>
+          [else]
+            <h2>[val interviewTitle]</h2>
+          [endif]
+        [endif]
+        [if interviewContent != null && interviewContent != ""]
+          <div class="vrtx-box-content">
+            [val interviewContent # unescaped]
+          </div>
+        [endif]
+        [if interviewLinkText != null && interviewLinkText != ""]
+          <div class="vrtx-more">
+          [if interviewUrl != null && interviewUrl != ""]
+            <span><a href="[val interviewUrl]">[val interviewLinkText]</a></span>
+          [else]
+            <span>[val interviewLinkText]</span>
+          [endif]
+          </div>
+        [endif]
+      </div>
+      [endif]  
+      ##
+    }
   
     resource-links {
       ##
@@ -310,6 +345,11 @@ resourcetype program-document {
     additional-content : (en : "Related content (right column)", no : "Relatert innhold (høyrespalte)", nn : "Relatert innhald (høgre spalte)"),
     boxTitle : (en : "Title", no : "Tittel", nn : "Tittel"),
     samlet : (en : "Translation of programme option name for Full description of the programme option", no : "Oversettelse av studieretningsnavn til Samlet studieretningsbeskrivelse", nn : "Oversetting av studieretningsnamn til Samla studieretningsbeskrivelse"),
+    interview-box : (en : "Employment opportunities", no : "Karriereintervjuer", nn : "Karriereintervjuar"),
+    interviewTitle : (en : "Title", no : "Tittel", nn : "Tittel"),
+    interviewContent : (en : "Content", no : "Innhold", nn : "Innhald"),
+    interviewLinkText : (en : "Link text", no : "Lenketekst", nn : "Lenkjetekst"),
+    interviewUrl : (en : "Webaddress", no : "Webadresse", nn : "Webadresse"),
     contact-box : (en : "Contact", no : "Kontakt", nn : "Kontakt"),
     contactTitle : (en : "Title", no : "Tittel", nn : "Tittel"),
     contactContent : (en : "Content", no : "Innhold", nn : "Innhald"),

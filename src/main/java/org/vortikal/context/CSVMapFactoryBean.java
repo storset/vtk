@@ -33,6 +33,8 @@ package org.vortikal.context;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.vortikal.util.text.TextUtils;
+
 /**
  * Creates mappings from string values to string values. 
  * 
@@ -50,7 +52,7 @@ public class CSVMapFactoryBean extends AbstractCSVFactoryBean {
         Map<String, String> map = new HashMap<String, String>();
 
         for (String element: super.elements) {
-            String[] mapping = parseMapping(element);
+            String[] mapping = TextUtils.parseKeyValue(element, ':');
             map.put(mapping[0], mapping[1]);
         }
         return map;
@@ -62,50 +64,4 @@ public class CSVMapFactoryBean extends AbstractCSVFactoryBean {
         return Map.class;
     }
 
-    private String[] parseMapping(String string) {
-        StringBuilder key = new StringBuilder();
-        StringBuilder value = null;
-        StringBuilder cur = key;
-        boolean escape = false;
-        for (int i = 0; i < string.length(); i++) {
-            char c = string.charAt(i);
-            if (cur == value && value == null) {
-                value = new StringBuilder();
-                cur = value;
-            }
-            if (c == '\\' && escape) {
-                cur.append('\\');
-                escape = false;
-                continue;
-            }
-            if (c == '\\') {
-                escape = true;
-                continue;
-            }
-            if (c == ':' && escape) {
-                cur.append(c);
-                escape = false;
-                continue;
-            }
-            if (c == ':' && cur == value) {
-                throw new IllegalArgumentException(
-                        "Unescaped colon in mapping value: '" + string + "'");
-            }
-            if (escape) {
-                throw new IllegalArgumentException("Illegal escape char: '\\" 
-                        + c + "' in mapping: " + string);
-            }
-            if (c == ':') {
-                value = new StringBuilder();
-                cur = value;
-                continue;
-            }
-            cur.append(c);
-        }
-        if (escape) {
-            throw new IllegalArgumentException(
-                    "Illegal escape sequence '\\' at end of mapping: '" + string + "'");
-        }
-        return new String[] { key.toString(), value == null ? null : value.toString() };
-    }
 }

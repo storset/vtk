@@ -156,6 +156,11 @@ td.vrtx-report-diagram-text {
   width: 115px;
 }
 
+.report-urchin,
+.report-urchin table {
+  width: 275px;
+}
+
 .report-urchin {
   float: left;
   margin: 0 20px 15px 0;
@@ -167,7 +172,6 @@ td.vrtx-report-diagram-text {
 
 .report-urchin table {
   table-layout: fixed;
-  width: 275px;
   padding: 5px 0 0 0;
 }
 

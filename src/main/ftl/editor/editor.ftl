@@ -481,7 +481,6 @@
                 <#-- HACKS 2012 start -->
                 <#-- Tooltip for aggregation and manually approve -->
                 <#if name = "display-aggregation"><#-- only add once. TODO: generalize editor tooltip concept -->
-                  <script type="text/javascript" src="/vrtx/__vrtx/static-resources/jquery/plugins/jquery.vortexTips.js"></script>
                   <script type="text/javascript"><!--
                     $(function() {
                       $("#editor").vortexTips("abbr", "#editor", 320, 300, 250, 300, 20, -30, false, false);

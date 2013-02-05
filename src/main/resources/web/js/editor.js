@@ -27,14 +27,7 @@
  * Creates an instance of VrtxEditor
  * @constructor
  */
-var VrtxEditor;
-(function() {
-  var instance; /* Singleton */
-  VrtxEditor = function VrtxEditor() {
-    if(instance) {
-      return instance;
-    }
-    instance = this;
+function VrtxEditor() {
     this.editorForm = null;
   
     /** CKEditor toolbars */
@@ -81,8 +74,7 @@ var VrtxEditor;
   
     /** Check if this script is in admin or not */                      
     this.isInAdmin = typeof vrtxAdmin !== "undefined";
-  }
-}());
+}
 
 var vrtxEditor = new VrtxEditor();
 

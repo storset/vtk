@@ -46,14 +46,7 @@ var startLoadTime = +new Date();
  * Creates an instance of VrtxAdmin
  * @constructor
  */
-var VrtxAdmin;
-(function() {
-  var instance; /* Singleton */
-  VrtxAdmin = function VrtxAdmin() {
-    if(instance) {
-      return instance;
-    }
-    instance = this;
+function VrtxAdmin() {
 
     /** Cache jQuery instance internally
       * @type object */
@@ -117,8 +110,7 @@ var VrtxAdmin;
     });
     this.runReadyLoad = true;
     this.bodyId = "";
-  }
-}());
+}
 
 var vrtxAdmin = new VrtxAdmin();
 

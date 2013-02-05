@@ -30,15 +30,7 @@ var IMAGE_EDITOR_INITIALIZED = $.Deferred();
  * @license GPL3
  * @constructor
  */
-var VrtxImageEditor;
-(function() {
-  var instance; /* Singleton */
-  VrtxImageEditor = function VrtxImageEditor() {
-    if(instance) {
-      return instance;
-    }
-    instance = this;
-    
+function VrtxImageEditor() {
     this.url = null;
     this.img = null;
     this.scaledImg = null;
@@ -66,8 +58,7 @@ var VrtxImageEditor;
     this.selection = null;
     this.iMouseX = 1;
     this.iMouseY = 1;
-  }
-}());
+}
 
 var vrtxImageEditor = new VrtxImageEditor();
 

@@ -6,19 +6,11 @@
  *
  */
 
-var CrossDocComLink;
-(function() {
-  var instance; /* Singleton */
-  CrossDocComLink = function CrossDocComLink() {
-    if(instance) {
-      return instance;
-    }
-    instance = this;
+function CrossDocComLink() {
     this.hasPostMessage = window['postMessage'] && (!($.browser.opera && $.browser.version < 9.65));
     this.origin = "*";
     this.predefinedCommands;
-  }
-}());
+}
 
 /* POST BACK TO SOURCE */
 CrossDocComLink.prototype.postCmd = function postCmd(cmdParams, source) {

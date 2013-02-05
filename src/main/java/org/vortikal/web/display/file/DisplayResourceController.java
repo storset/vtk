@@ -56,8 +56,9 @@ import org.vortikal.security.AuthenticationException;
 import org.vortikal.util.io.StreamUtil;
 import org.vortikal.web.RequestContext;
 import org.vortikal.webdav.PreconditionFailedException;
-import org.vortikal.webdav.ifheader.IfMatchHeader;
-import org.vortikal.webdav.ifheader.IfNoneMatchHeader;
+// XXX These are in use:
+//import org.vortikal.webdav.ifheader.IfMatchHeader;
+//import org.vortikal.webdav.ifheader.IfNoneMatchHeader;
 
 
 /**
@@ -203,17 +204,18 @@ public class DisplayResourceController
             return new ModelAndView(this.unsupportedResourceView);
         }
 
-        if (this.supportIfHeaders) {
-            IfMatchHeader ifMatchHeader = new IfMatchHeader(request);
-            if (!ifMatchHeader.matches(resource)) {
-                throw new PreconditionFailedException();
-            }
-                
-            IfNoneMatchHeader ifNoneMatchHeader = new IfNoneMatchHeader(request);
-            if (!ifNoneMatchHeader.matches(resource)) {
-                throw new ResourceNotModifiedException(uri);
-            }
-        }
+        // XXX: Needs IfMatchHeader to compile:
+//        if (this.supportIfHeaders) {
+//            IfMatchHeader ifMatchHeader = new IfMatchHeader(request);
+//            if (!ifMatchHeader.matches(resource)) {
+//                throw new PreconditionFailedException();
+//            }
+//                
+//            IfNoneMatchHeader ifNoneMatchHeader = new IfNoneMatchHeader(request);
+//            if (!ifNoneMatchHeader.matches(resource)) {
+//                throw new ResourceNotModifiedException(uri);
+//            }
+//        }
         model.put("resource", resource);
 
         if (!resource.isCollection()) {

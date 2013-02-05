@@ -2,10 +2,13 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
 
-  <bean id="filteredListing.abstract.handler" abstract="true" class="org.vortikal.web.display.collection.FilteredCollectionListingController"> 
+  <bean id="filteredListing.abstract.handler" abstract="true"
+    class="org.vortikal.web.display.collection.FilteredCollectionListingController">
     <property name="viewName" value="filteredListing.view" />
-    <property name="searcher" ref="systemIndexSearcher" />
+    <property name="multiHostSearcher" ref="multiHostSearcher" />
+    <property name="aggregationResolver" ref="aggregationResolver" />
     <property name="defaultSearchSorting" ref="filteredListing.defaultSearchSorting" />
+    <property name="viewService" ref="viewService" />
     <property name="resourceTypeTree" ref="resourceTypeTree" />
   </bean>
 

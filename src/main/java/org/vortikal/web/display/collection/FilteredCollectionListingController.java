@@ -40,36 +40,139 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
+import org.vortikal.repository.MultiHostSearcher;
 import org.vortikal.repository.Namespace;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.search.ConfigurablePropertySelect;
-import org.vortikal.repository.search.Searcher;
+import org.vortikal.repository.search.ResultSet;
+import org.vortikal.repository.search.Search;
 import org.vortikal.repository.search.Sorting;
 import org.vortikal.repository.search.SortingImpl;
+import org.vortikal.repository.search.query.AndQuery;
+import org.vortikal.repository.search.query.OrQuery;
+import org.vortikal.repository.search.query.Query;
+import org.vortikal.repository.search.query.UriPrefixQuery;
+import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
+import org.vortikal.web.display.collection.aggregation.AggregationResolver;
+import org.vortikal.web.display.collection.aggregation.CollectionListingAggregatedResources;
 import org.vortikal.web.display.listing.ListingPager;
 import org.vortikal.web.search.SearchSorting;
+import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
 public abstract class FilteredCollectionListingController implements ListingController {
 
+    private static final String filterNamespace = "filter.";
+
+    private String viewName;
     private Map<String, List<String>> filters;
-    private final String filterNamespace = "filter.";
-
-    protected String viewName;
-    protected int pageLimit = 25;
-    protected Searcher searcher;
-    protected SearchSorting defaultSearchSorting;
+    private int pageLimit = 25;
     protected ResourceTypeTree resourceTypeTree;
-    protected List<String> configurablePropertySelectPointers;
 
+    // XXX NO. These shoudn't be here. SearchComponent, more specifically
+    // CollectionListingSearchComponent -> Reuse!!!
+    private MultiHostSearcher multiHostSearcher;
+    private AggregationResolver aggregationResolver;
+    private SearchSorting defaultSearchSorting;
+    private List<String> configurablePropertySelectPointers;
+    private Service viewService;
+
+    /**
+     * XXX
+     * 
+     * Should be handled by SearchComponent. Filters can be set using an
+     * interface for filter resolving.
+     * 
+     */
+    abstract public void runSearch(HttpServletRequest request, Resource collection, Map<String, Object> model,
+            int pageLimit) throws Exception;
+
+    /**
+     * XXX
+     * 
+     * Remove, implement interface/impl pattern for filter resolving instead. A
+     * filtered collection listing has one or more filter resolvers that set
+     * configured filters on search.
+     * 
+     * 
+     */
     protected Map<String, List<String>> explicitlySetFilters(Resource collection, Map<String, List<String>> filters) {
         // By default this does nothing. Can be overridden to handle special
         // filters that cannot be created with beans.
         return filters;
+    }
+
+    /**
+     * XXX
+     * 
+     * Hack method to run search in concrete classes. Should be done by a
+     * SearchCompoenent, e.g. CollectionListingSearchComponent which handles
+     * aggregation, multihost search, caching, sorting and property selects.
+     * 
+     */
+    protected ResultSet search(Resource collection, AndQuery baseQuery, int offset) {
+        Search search = new Search();
+        UriPrefixQuery uriQuery = new UriPrefixQuery(collection.getURI().toString(), false);
+
+        // Initially no multi host search
+        boolean isMultiHostSearch = false;
+
+        // Initially no aggregation
+        OrQuery aggregationQuery = null;
+
+        // Resolve aggregation
+        CollectionListingAggregatedResources aggregateResources = aggregationResolver
+                .getAggregatedResources(collection);
+
+        // Check if any reference to resources from another host
+        if (aggregateResources != null) {
+            URL localHostBaseURL = viewService.constructURL(Path.ROOT);
+
+            isMultiHostSearch = multiHostSearcher.isMultiHostSearchEnabled()
+                    && aggregateResources.includesResourcesFromOtherHosts(localHostBaseURL);
+
+            Query resolvedAggregationquery = aggregateResources
+                    .getAggregationQuery(localHostBaseURL, isMultiHostSearch);
+            if (resolvedAggregationquery != null) {
+                aggregationQuery = new OrQuery();
+                aggregationQuery.add(uriQuery);
+                aggregationQuery.add(resolvedAggregationquery);
+            }
+
+        }
+
+        if (aggregationQuery != null) {
+            baseQuery.add(aggregationQuery);
+        } else {
+            baseQuery.add(uriQuery);
+        }
+        search.setQuery(baseQuery);
+
+        search.setUseDefaultExcludes(true);
+        search.setSorting(getDefaultSearchSorting(collection));
+
+        ConfigurablePropertySelect propertySelect = getPropertySelect();
+        if (propertySelect != null) {
+            search.setPropertySelect(propertySelect);
+        }
+
+        search.setCursor(offset);
+        search.setLimit(pageLimit);
+
+        ResultSet rs = null;
+        String token = SecurityContext.getSecurityContext().getToken();
+        // Most common case
+        if (!isMultiHostSearch) {
+            rs = RequestContext.getRequestContext().getRepository().search(token, search);
+        } else {
+            rs = multiHostSearcher.search(token, search);
+        }
+        return rs;
     }
 
     @Override
@@ -151,9 +254,6 @@ public abstract class FilteredCollectionListingController implements ListingCont
         }
     }
 
-    abstract public void runSearch(HttpServletRequest request, Resource collection, Map<String, Object> model,
-            int pageLimit) throws Exception;
-
     protected boolean valueExistsInFilters(Resource collection, String parameterKey, String parameterValue)
             throws Exception {
         Map<String, List<String>> currentFilters = new LinkedHashMap<String, List<String>>(filters);
@@ -180,7 +280,7 @@ public abstract class FilteredCollectionListingController implements ListingCont
         return resourceTypeTree.getPropertyTypeDefinition(ns, propertyName);
     }
 
-    protected ConfigurablePropertySelect getPropertySelect() {
+    private ConfigurablePropertySelect getPropertySelect() {
         ConfigurablePropertySelect propertySelect = null;
         if (configurablePropertySelectPointers != null && resourceTypeTree != null) {
             for (String propPointer : configurablePropertySelectPointers) {
@@ -196,12 +296,8 @@ public abstract class FilteredCollectionListingController implements ListingCont
         return propertySelect;
     }
 
-    protected Sorting getDefaultSearchSorting(Resource collection) {
+    private Sorting getDefaultSearchSorting(Resource collection) {
         return new SortingImpl(defaultSearchSorting.getSortFields(collection));
-    }
-
-    public void setFilters(Map<String, List<String>> filters) {
-        this.filters = filters;
     }
 
     @Required
@@ -209,15 +305,29 @@ public abstract class FilteredCollectionListingController implements ListingCont
         this.viewName = viewName;
     }
 
+    public void setFilters(Map<String, List<String>> filters) {
+        this.filters = filters;
+    }
+
     public void setPageLimit(int pageLimit) {
         if (pageLimit <= 0)
-            throw new IllegalArgumentException("Argument must be a positive integer");
+            throw new IllegalArgumentException("Limit must be a positive integer");
         this.pageLimit = pageLimit;
     }
 
     @Required
-    public void setSearcher(Searcher searcher) {
-        this.searcher = searcher;
+    public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
+        this.resourceTypeTree = resourceTypeTree;
+    }
+
+    @Required
+    public void setMultiHostSearcher(MultiHostSearcher multiHostSearcher) {
+        this.multiHostSearcher = multiHostSearcher;
+    }
+
+    @Required
+    public void setAggregationResolver(AggregationResolver aggregationResolver) {
+        this.aggregationResolver = aggregationResolver;
     }
 
     @Required
@@ -226,8 +336,8 @@ public abstract class FilteredCollectionListingController implements ListingCont
     }
 
     @Required
-    public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
-        this.resourceTypeTree = resourceTypeTree;
+    public void setViewService(Service viewService) {
+        this.viewService = viewService;
     }
 
     public void setConfigurablePropertySelectPointers(List<String> configurablePropertySelectPointers) {

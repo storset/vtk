@@ -1079,7 +1079,7 @@ div.dropdown-shortcut-menu-container form .vrtx-button button {
   border-bottom: 1px dotted #a9a9a9;
 }
 
-#vrtx-editor .tip.property-item .tip ul,
+#vrtx-editor .tip.property-item ul,
 #title-container .tip ul {
   margin-top: 0px;
   margin-bottom: 0px;

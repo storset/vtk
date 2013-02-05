@@ -16,6 +16,9 @@
  */
 (function ($) {
   $.fn.vortexTips = function (subSelector, opts) {
+	opts.animInSpeed = opts.animInSpeed || 300;
+	opts.animOutSpeed = opts.animOutSpeed || 300;
+	  
     var html = '<span class="tip ' + opts.appendTo.substring(1) + '">&nbsp;</span>';
     if (opts.extra) {
       var extraHtml = '<span class="tipextra ' + opts.appendTo.substring(1) + '">&nbsp;</span>';

@@ -35,7 +35,6 @@
        $("#tree").vortexTips("li a", {
          appendTo: "#contents",
 	     containerWidth: 400,
-	     animInSpeed: 300,
 	     animOutPreDelay: 4000,
 	     animOutSpeed: 3000,
 	     xOffset: 30,

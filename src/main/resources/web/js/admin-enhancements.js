@@ -200,9 +200,7 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
   $("#title-container").vortexTips("abbr", {
     appendTo: "#title-container",
 	containerWidth: 200,
-	animInSpeed: 300,
 	animOutPreDelay: 250,
-	animOutSpeed: 300,
 	xOffset: 20,
 	yOffset: 0,
 	autoWidth: false,
@@ -211,9 +209,7 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
   $("#main").vortexTips(".tooltips", {
     appendTo: "#contents",
 	containerWidth: 320,
-	animInSpeed: 300,
 	animOutPreDelay: 250,
-	animOutSpeed: 300,
 	xOffset: 20,
 	yOffset: -30,
 	autoWidth: false,
@@ -807,9 +803,7 @@ function initializeTree() {
   treeElem.vortexTips("li span.folder", {
     appendTo: ".vrtx-create-tree",
 	containerWidth: 80,
-	animInSpeed: 300,
 	animOutPreDelay: 4000,
-	animOutSpeed: 300,
 	xOffset: 10,
 	yOffset: -8,
 	autoWidth: false,

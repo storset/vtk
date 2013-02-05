@@ -1748,7 +1748,7 @@ function scrollToElm(movedElm) {
 \*-------------------------------------------------------------------*/
 
 /**
- * Initialize .vrtx-grouped elements as accordions
+ * Initialize grouped as accordion
  * @this {VrtxEditor}
  */
 VrtxEditor.prototype.accordionGroupedInit = function accordionGroupedInit(subGroupedSelector) { /* param name pending */
@@ -1770,7 +1770,7 @@ VrtxEditor.prototype.accordionGroupedInit = function accordionGroupedInit(subGro
 };
 
 /**
- * Refresh accordion
+ * Refresh grouped accordion
  * @this {VrtxEditor}
  */
 VrtxEditor.prototype.accordionGroupedRefresh = function accordionGroupedRefresh() { /* param name pending */

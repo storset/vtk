@@ -17,7 +17,10 @@
 (function ($) {
   $.fn.vortexTips = function (subSelector, opts) {
 	opts.animInSpeed = opts.animInSpeed || 300;
+	opts.animOutPreDelay = opts.animOutPreDelay || 250;
 	opts.animOutSpeed = opts.animOutSpeed || 300;
+	opts.autoWidth = opts.autoWidth || false;
+	opts.extra = opts.extra || false;
 	  
     var html = '<span class="tip ' + opts.appendTo.substring(1) + '">&nbsp;</span>';
     if (opts.extra) {

@@ -38,9 +38,7 @@
 	     animOutPreDelay: 4000,
 	     animOutSpeed: 3000,
 	     xOffset: 30,
-	     yOffset: 80,
-	     autoWidth: false,
-	     extra: false
+	     yOffset: 80
        });
      });
   // -->

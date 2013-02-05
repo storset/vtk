@@ -200,20 +200,14 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
   $("#title-container").vortexTips("abbr", {
     appendTo: "#title-container",
 	containerWidth: 200,
-	animOutPreDelay: 250,
 	xOffset: 20,
-	yOffset: 0,
-	autoWidth: false,
-	extra: false
+	yOffset: 0
   });
   $("#main").vortexTips(".tooltips", {
     appendTo: "#contents",
 	containerWidth: 320,
-	animOutPreDelay: 250,
 	xOffset: 20,
-	yOffset: -30,
-	autoWidth: false,
-	extra: false
+	yOffset: -30
   });
 
   // Resource menus
@@ -806,7 +800,6 @@ function initializeTree() {
 	animOutPreDelay: 4000,
 	xOffset: 10,
 	yOffset: -8,
-	autoWidth: false,
 	extra: true
   });
 }

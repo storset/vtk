@@ -54,6 +54,13 @@ var VrtxEditor;
                                                                      "other":                 ".examsemester-other"                     },
                             "teaching-language":                   { "other":                 ".teaching-language-text-field"           }
                           };
+    
+    /* TODO: Need some rewrite of data structure to use 1 instead of 3 variables */
+    this.multipleCommaSeperatedInputFieldNames = [];
+    this.multipleCommaSeperatedInputFieldCounter = [];
+    this.multipleCommaSeperatedInputFieldLength = [];
+    this.multipleCommaSeperatedInputFieldTemplates = [];
+    this.multipleCommaSeperatedInputFieldDeferred;
   
     /** Check if this script is in admin or not */                      
     this.isInAdmin = typeof vrtxAdmin !== "undefined";
@@ -757,7 +764,7 @@ $(document).ready(function() {
 
 /**
  * Initialize .vrtx-grouped elements as accordions
- *
+ * @this {VrtxEditor}
  */
 VrtxEditor.prototype.initAccordionGrouped = function initAccordionGrouped(subGroupedSelector) { /* param name pending */
   var vrtxEdit = this, _$ = vrtxAdmin._$;
@@ -779,7 +786,7 @@ VrtxEditor.prototype.initAccordionGrouped = function initAccordionGrouped(subGro
 
 /**
  * Reset accordion
- *
+ * @this {VrtxEditor}
  */
 VrtxEditor.prototype.resetAccordion = function resetAccordion(accordionWrpId) { /* param name pending */
   var vrtxEdit = this, _$ = vrtxAdmin._$;
@@ -794,7 +801,7 @@ VrtxEditor.prototype.resetAccordion = function resetAccordion(accordionWrpId) { 
 
 /**
  * Initialize CKEditors sync and async from CKEditorsInit array
- *
+ * @this {VrtxEditor}
  */
 VrtxEditor.prototype.initCKEditors = function initCKEditors() {
   var vrtxEdit = this;
@@ -1162,9 +1169,9 @@ function loadMultipleInputFields(name, addName, removeName, moveUpName, moveDown
 
   var formFields = inputFieldVal.split(",");
 
-  vrtxAdmin.multipleCommaSeperatedInputFieldCounter[name] = 1; // 1-index
-  vrtxAdmin.multipleCommaSeperatedInputFieldLength[name] = formFields.length;
-  vrtxAdmin.multipleCommaSeperatedInputFieldNames.push(name);
+  vrtxEditor.multipleCommaSeperatedInputFieldCounter[name] = 1; // 1-index
+  vrtxEditor.multipleCommaSeperatedInputFieldLength[name] = formFields.length;
+  vrtxEditor.multipleCommaSeperatedInputFieldNames.push(name);
 
   var size = inputField.attr("size");
 
@@ -1191,7 +1198,7 @@ function loadMultipleInputFields(name, addName, removeName, moveUpName, moveDown
 
   inputField.hide();
 
-  var appendHtml = $.mustache(vrtxAdmin.multipleCommaSeperatedInputFieldTemplates["add-button"], { name: name, removeName: removeName, moveUpName: moveUpName, 
+  var appendHtml = $.mustache(vrtxEditor.multipleCommaSeperatedInputFieldTemplates["add-button"], { name: name, removeName: removeName, moveUpName: moveUpName, 
                                                                                                    moveDownName: moveDownName, browseName: browseName,
                                                                                                    size: size, isBrowsable: isBrowsable, isMovable: isMovable,
                                                                                                    isDropdown: isDropdown, buttonText: addName });
@@ -1199,7 +1206,7 @@ function loadMultipleInputFields(name, addName, removeName, moveUpName, moveDown
   inputFieldParent.removeClass("vrtx-textfield").append(appendHtml);
     
   var addFormFieldFunc = addFormField;
-  for (var i = 0; i < vrtxAdmin.multipleCommaSeperatedInputFieldLength[name]; i++) {
+  for (var i = 0; i < vrtxEditor.multipleCommaSeperatedInputFieldLength[name]; i++) {
     addFormFieldFunc(name, $.trim(formFields[i]), removeName, moveUpName, moveDownName, browseName, size, isBrowsable, true, isMovable, isDropdown);
   }
       
@@ -1229,37 +1236,38 @@ function initMultipleInputFields() {
   });
   
   // Retrieve HTML templates
-  vrtxAdmin.multipleCommaSeperatedInputFieldDeferred = $.Deferred();
-  vrtxAdmin.multipleCommaSeperatedInputFieldTemplates = vrtxAdmin.retrieveHTMLTemplates("multiple-inputfields",
+  vrtxEditor.multipleCommaSeperatedInputFieldDeferred = $.Deferred();
+  vrtxEditor.multipleCommaSeperatedInputFieldTemplates = vrtxAdmin.retrieveHTMLTemplates("multiple-inputfields",
                                                                                         ["button", "add-button", "multiple-inputfield"],
-                                                                                        vrtxAdmin.multipleCommaSeperatedInputFieldDeferred);
+                                                                                        vrtxEditor.multipleCommaSeperatedInputFieldDeferred);
+  alert(vrtxEditor.multipleCommaSeperatedInputFieldTemplates.length);
 }
 
 function addFormField(name, value, removeName, moveUpName, moveDownName, browseName, size, isBrowsable, init, isMovable, isDropdown) {
   if (value == null) value = "";
 
   var idstr = "vrtx-" + name + "-",
-      i = vrtxAdmin.multipleCommaSeperatedInputFieldCounter[name],
+      i = vrtxEditor.multipleCommaSeperatedInputFieldCounter[name],
       removeButton = "", moveUpButton = "", moveDownButton = "", browseButton = "";
 
   if (removeName) {
-    removeButton = $.mustache(vrtxAdmin.multipleCommaSeperatedInputFieldTemplates["button"], { type: "remove", name: " " + name, 
+    removeButton = $.mustache(vrtxEditor.multipleCommaSeperatedInputFieldTemplates["button"], { type: "remove", name: " " + name, 
                                                                                                idstr: idstr,   buttonText: removeName });
   }
   if (isMovable && moveUpName && i > 1) {
-    moveUpButton = $.mustache(vrtxAdmin.multipleCommaSeperatedInputFieldTemplates["button"], { type: "moveup", name: "", 
+    moveUpButton = $.mustache(vrtxEditor.multipleCommaSeperatedInputFieldTemplates["button"], { type: "moveup", name: "", 
                                                                                                idstr: idstr,   buttonText: "&uarr; " + moveUpName });
   }
-  if (isMovable && moveDownName && i < vrtxAdmin.multipleCommaSeperatedInputFieldLength[name]) {
-    moveDownButton = $.mustache(vrtxAdmin.multipleCommaSeperatedInputFieldTemplates["button"], { type: "movedown", name: "", 
+  if (isMovable && moveDownName && i < vrtxEditor.multipleCommaSeperatedInputFieldLength[name]) {
+    moveDownButton = $.mustache(vrtxEditor.multipleCommaSeperatedInputFieldTemplates["button"], { type: "movedown", name: "", 
                                                                                                  idstr: idstr,     buttonText: "&darr; " + moveDownName });
   }
   if(isBrowsable) {
-    browseButton = $.mustache(vrtxAdmin.multipleCommaSeperatedInputFieldTemplates["button"], { type: "browse", name: "-resource-ref", 
+    browseButton = $.mustache(vrtxEditor.multipleCommaSeperatedInputFieldTemplates["button"], { type: "browse", name: "-resource-ref", 
                                                                                                idstr: idstr,   buttonText: browseName });
   }
     
-  var html = $.mustache(vrtxAdmin.multipleCommaSeperatedInputFieldTemplates["multiple-inputfield"], { idstr: idstr, i: i, value: value, 
+  var html = $.mustache(vrtxEditor.multipleCommaSeperatedInputFieldTemplates["multiple-inputfield"], { idstr: idstr, i: i, value: value, 
                                                                                                       size: size, browseButton: browseButton,
                                                                                                       removeButton: removeButton, moveUpButton: moveUpButton,
                                                                                                       moveDownButton: moveDownButton, isDropdown: isDropdown,
@@ -1268,32 +1276,32 @@ function addFormField(name, value, removeName, moveUpName, moveDownName, browseN
   $(html).insertBefore("#vrtx-" + name + "-add");
     
   if(!init) {
-    if(vrtxAdmin.multipleCommaSeperatedInputFieldLength[name] > 0 && isMovable) {
+    if(vrtxEditor.multipleCommaSeperatedInputFieldLength[name] > 0 && isMovable) {
       var fields = $("." + name + " div.vrtx-multipleinputfield");
-      if(fields.eq(vrtxAdmin.multipleCommaSeperatedInputFieldLength[name] - 1).not("has:button.movedown")) {
-        moveDownButton = $.mustache(vrtxAdmin.multipleCommaSeperatedInputFieldTemplates["button"], { type: "movedown", name: "", 
+      if(fields.eq(vrtxEditor.multipleCommaSeperatedInputFieldLength[name] - 1).not("has:button.movedown")) {
+        moveDownButton = $.mustache(vrtxEditor.multipleCommaSeperatedInputFieldTemplates["button"], { type: "movedown", name: "", 
                                                                                                      idstr: idstr,     buttonText: "&darr; " + moveDownName });
-        fields.eq(vrtxAdmin.multipleCommaSeperatedInputFieldLength[name] - 1).append(moveDownButton);
+        fields.eq(vrtxEditor.multipleCommaSeperatedInputFieldLength[name] - 1).append(moveDownButton);
       }
     }
-    vrtxAdmin.multipleCommaSeperatedInputFieldLength[name]++;
+    vrtxEditor.multipleCommaSeperatedInputFieldLength[name]++;
     autocompleteUsername(".vrtx-autocomplete-username", idstr + i);
   }
 
-  vrtxAdmin.multipleCommaSeperatedInputFieldCounter[name]++;   
+  vrtxEditor.multipleCommaSeperatedInputFieldCounter[name]++;   
 }
 
 function removeFormField(input) {
   var name = input.attr("class").replace("remove ", "");
   input.closest(".vrtx-multipleinputfield").remove();
 
-  vrtxAdmin.multipleCommaSeperatedInputFieldLength[name]--;
-  vrtxAdmin.multipleCommaSeperatedInputFieldCounter[name]--;
+  vrtxEditor.multipleCommaSeperatedInputFieldLength[name]--;
+  vrtxEditor.multipleCommaSeperatedInputFieldCounter[name]--;
 
   var fields = $("." + name + " div.vrtx-multipleinputfield");
 
-  if(fields.eq(vrtxAdmin.multipleCommaSeperatedInputFieldLength[name] - 1).has("button.movedown")) {
-    fields.eq(vrtxAdmin.multipleCommaSeperatedInputFieldLength[name] - 1).find("button.movedown").parent().remove();
+  if(fields.eq(vrtxEditor.multipleCommaSeperatedInputFieldLength[name] - 1).has("button.movedown")) {
+    fields.eq(vrtxEditor.multipleCommaSeperatedInputFieldLength[name] - 1).find("button.movedown").parent().remove();
   }
   if(fields.eq(0).has("button.moveup")) {
     fields.eq(0).find("button.moveup").parent().remove();
@@ -1322,8 +1330,8 @@ function moveDownFormField(input) {
 
 function saveMultipleInputFields() {
   var formatMultipleInputFieldsFunc = formatMultipleInputFields;
-  for(var i = 0, len = vrtxAdmin.multipleCommaSeperatedInputFieldNames.length; i < len; i++){
-    formatMultipleInputFields(vrtxAdmin.multipleCommaSeperatedInputFieldNames[i]);
+  for(var i = 0, len = vrtxEditor.multipleCommaSeperatedInputFieldNames.length; i < len; i++){
+    formatMultipleInputFields(vrtxEditor.multipleCommaSeperatedInputFieldNames[i]);
   }
 }
 

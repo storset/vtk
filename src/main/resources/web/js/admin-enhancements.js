@@ -109,13 +109,6 @@ var VrtxAdmin;
     this.createDocumentFileName = "";
     this.trashcanCheckedFiles = 0;
   
-    /* TODO: Need some rewrite of data structure to use 1 instead of 3 variables */
-    this.multipleCommaSeperatedInputFieldNames = [];
-    this.multipleCommaSeperatedInputFieldCounter = [];
-    this.multipleCommaSeperatedInputFieldLength = [];
-    this.multipleCommaSeperatedInputFieldTemplates = [];
-    this.multipleCommaSeperatedInputFieldDeferred;
-  
     this.breadcrumbsLastPosLeft = -999;
     this.reloadFromServer = false; // changed by funcProceedCondition and used by funcComplete in completeFormAsync for admin-permissions
     this.ignoreAjaxErrors = false;

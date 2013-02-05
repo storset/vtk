@@ -480,16 +480,8 @@
                 <label class="resource.${name}" for="resource.${name}.${allowedValues[0]?html}">${localizedName}</label>
                 <#-- HACKS 2012 start -->
                 <#-- Tooltip for aggregation and manually approve -->
-                <#if name = "display-aggregation"><#-- only add once. TODO: generalize editor tooltip concept -->
-                  <script type="text/javascript"><!--
-                    $(function() {
-                      $("#editor").vortexTips("abbr", "#editor", 320, 300, 250, 300, 20, -30, false, false);
-                    });
-                  // -->
-                  </script>
-                </#if>
                 <#if name = "display-aggregation" || name = "display-manually-approved">
-                  <abbr class="resource-prop-info" title="${vrtx.getMsg('editor.manually-approve-aggregation.info')}"></abbr>
+                  <abbr class="tooltips" title="${vrtx.getMsg('editor.manually-approve-aggregation.info')}"></abbr>
                 </#if>
                 <#-- HACKS 2012 end -->
               </div>      
@@ -584,7 +576,7 @@
         <label class="resource.${name}" for="resource.${name}.unspecified">${nullValue?html}</label>
       </#if>
       <#if name = "recursive-listing">
-        <abbr class="resource-prop-info" title="${vrtx.getMsg('editor.recursive-listing.info')}"></abbr>
+        <abbr class="tooltips" title="${vrtx.getMsg('editor.recursive-listing.info')}"></abbr>
       </#if>
     </div>
   </#if>

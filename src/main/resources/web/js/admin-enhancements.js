@@ -208,7 +208,7 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
 
   // Tooltips
   $("#title-container").vortexTips("abbr", "#title-container", 200, 300, 250, 300, 20, 0, false, false);
-  $("#main").vortexTips("abbr.resource-prop-info", ".vrtx-admin-form", 200, 300, 250, 300, 20, -30, false, false);
+  $("#main").vortexTips(".tooltips", "#contents", 320, 300, 250, 300, 20, -30, false, false);
 
   // Resource menus
   var resourceMenuLeftServices = ["renameService", "deleteResourceService", "manage\\.createArchiveService", "manage\\.expandArchiveService"];

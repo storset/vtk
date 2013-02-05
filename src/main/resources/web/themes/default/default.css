@@ -1160,7 +1160,7 @@ form#editor .tip ul a {
 
 /* ^ Create dialog */
 
-.resource-prop-info {
+.tooltips {
   background: url(images/info-icon-grey.png) no-repeat 0 0;
   width: 14px;
   height: 14px;
@@ -1171,7 +1171,7 @@ form#editor .tip ul a {
   border: none;
 }
 
-.vrtx-admin-form .resource-prop-info {
+.vrtx-admin-form .tooltips {
   margin-left: 0px;
   background: url(images/info-icon-grey-grey-darker-bg.png) no-repeat 0 0;
 }

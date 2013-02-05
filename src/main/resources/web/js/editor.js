@@ -1126,10 +1126,10 @@ function showHideProperty(id, init, show) {
  */
 VrtxEditor.prototype.hideShowSelect = function hideShowSelect(select) {
   var vrtxEdit = this;
-  var selected = select.val();
   var id = select.attr("id");
   if(vrtxEdit.selectMappings.hasOwnProperty(id)) {
     var mappings = vrtxEdit.selectMappings[id];
+    var selected = select.val();
     for(var item in mappings) {
       if(item === selected) {
         vrtxEdit.editorForm.find(mappings[item]).filter(":hidden").show();
@@ -1140,6 +1140,7 @@ VrtxEditor.prototype.hideShowSelect = function hideShowSelect(select) {
   }
 };
 
+/* XXX: should be more general */
 function hideShowStudy(container, typeToDisplayElem) {
   switch (typeToDisplayElem.val()) {
     case "so":

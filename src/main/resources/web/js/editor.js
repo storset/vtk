@@ -1769,9 +1769,10 @@ VrtxEditor.prototype.accordionGroupedInit = function accordionGroupedInit(subGro
 VrtxEditor.prototype.accordionGroupedCloseActiveHidden = function accordionGroupedCloseActiveHidden() {
   var vrtxEdit = this, _$ = vrtxAdmin._$;
 
-  var active = vrtxEdit.editorForm.find("#accordion-grouped .ui-state-active");
+  var accordionWrp = vrtxEdit.editorForm.find("#accordion-grouped");
+  var active = accordionWrp.find(".ui-state-active");
   if(active.length && active.filter(":hidden").length) {
-    vrtxEdit.editorForm.find("#accordion-grouped").accordion("activate", false);
+    accordionWrp.accordion("activate", false);
   }
 };
 

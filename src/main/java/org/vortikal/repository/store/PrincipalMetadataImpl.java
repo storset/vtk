@@ -36,6 +36,9 @@ package org.vortikal.repository.store;
  */
 public class PrincipalMetadataImpl extends MetadataImpl implements PrincipalMetadata {
 
+    public static final String DESCRIPTION_ATTRIBUTE = "description";
+    public static final String UID_ATTRIBUTE = "uid";
+
     private String qualifiedName;
 
     public PrincipalMetadataImpl(String qualifiedName) {
@@ -50,7 +53,7 @@ public class PrincipalMetadataImpl extends MetadataImpl implements PrincipalMeta
     }
 
     public String getUid() {
-        String uid = (String) this.getValue(PrincipalMetadata.UID_ATTRIBUTE);
+        String uid = (String) this.getValue(UID_ATTRIBUTE);
         if (uid == null) {
             uid = (String) this.getValue("username");
         }

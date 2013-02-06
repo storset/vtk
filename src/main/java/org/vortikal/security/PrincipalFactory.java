@@ -39,6 +39,7 @@ import org.apache.commons.logging.LogFactory;
 import org.vortikal.repository.store.Metadata;
 import org.vortikal.repository.store.PrincipalMetadata;
 import org.vortikal.repository.store.PrincipalMetadataDAO;
+import org.vortikal.repository.store.PrincipalMetadataImpl;
 import org.vortikal.repository.store.PrincipalSearch;
 import org.vortikal.repository.store.PrincipalSearch.SearchType;
 import org.vortikal.repository.store.PrincipalSearchImpl;
@@ -91,7 +92,7 @@ public class PrincipalFactory {
             try {
                 PrincipalMetadata metadata = this.principalMetadataDao.getMetadata(principal, preferredLocale);
                 if (metadata != null) {
-                    principal.setDescription((String) metadata.getValue(PrincipalMetadata.DESCRIPTION_ATTRIBUTE));
+                    principal.setDescription((String) metadata.getValue(PrincipalMetadataImpl.DESCRIPTION_ATTRIBUTE));
                     principal.setURL((String) metadata.getValue(Metadata.URL_ATTRIBUTE));
                     principal.setMetadata(metadata);
                 }
@@ -128,7 +129,8 @@ public class PrincipalFactory {
                     for (PrincipalMetadata metadata : results) {
                         PrincipalImpl principal = new PrincipalImpl(metadata.getQualifiedName());
                         principal.setType(type);
-                        principal.setDescription((String) metadata.getValue(PrincipalMetadata.DESCRIPTION_ATTRIBUTE));
+                        principal.setDescription((String) metadata
+                                .getValue(PrincipalMetadataImpl.DESCRIPTION_ATTRIBUTE));
                         principal.setURL((String) metadata.getValue(Metadata.URL_ATTRIBUTE));
                         principal.setMetadata(metadata);
                         retval.add(principal);

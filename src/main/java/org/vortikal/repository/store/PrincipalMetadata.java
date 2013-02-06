@@ -31,8 +31,8 @@
 package org.vortikal.repository.store;
 
 /**
- * Simplistic and generic interface for accessing principal metadata
- * as "attribute -> list of values"-mappings.
+ * Simplistic and generic interface for accessing principal metadata as
+ * "attribute -> list of values"-mappings.
  * 
  * This will typically be used by {@link org.vortikal.security.PrincipalFactory}
  * when creating {@link org.vortikal.security.Principal} instances.
@@ -40,19 +40,16 @@ package org.vortikal.repository.store;
  */
 public interface PrincipalMetadata extends Metadata {
 
-    public static final String DESCRIPTION_ATTRIBUTE = "description";
-    public static final String UID_ATTRIBUTE = "uid";
-
     /**
-     * Get the qualified name of the principal to which this instance's
-     * metadata applies.
+     * Get the qualified name of the principal to which this instance's metadata
+     * applies.
      * 
      * @see org.vortikal.security.Principal#getQualifiedName()
      * 
      * @return The qualified name as a <code>String</code>.
      */
     public String getQualifiedName();
-    
+
     /**
      * 
      * @return The user id as a <code>String</code>

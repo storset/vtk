@@ -40,6 +40,7 @@ import java.util.Set;
 import org.vortikal.repository.store.Metadata;
 import org.vortikal.repository.store.PrincipalMetadata;
 import org.vortikal.repository.store.PrincipalMetadataDAO;
+import org.vortikal.repository.store.PrincipalMetadataImpl;
 import org.vortikal.repository.store.PrincipalSearchImpl;
 import org.vortikal.security.Principal;
 import org.vortikal.security.Principal.Type;
@@ -74,7 +75,7 @@ public class DocumentPrincipalMetadataRetriever {
             if (principalDocuments != null && principalDocuments.size() > 0) {
                 for (PrincipalMetadata metadata : principalDocuments) {
                     PrincipalImpl principal = new PrincipalImpl(metadata.getUid(), Type.USER);
-                    Object descriptionObj = metadata.getValue(PrincipalMetadata.DESCRIPTION_ATTRIBUTE);
+                    Object descriptionObj = metadata.getValue(PrincipalMetadataImpl.DESCRIPTION_ATTRIBUTE);
                     if (descriptionObj != null) {
                         principal.setDescription(descriptionObj.toString());
                     }

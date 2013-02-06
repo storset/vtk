@@ -1072,7 +1072,7 @@ function toggleShowHideOldEditor(conditionHide, conditionHideEqual, showHideProp
 
 
 /**
- * Select field show/hide with mappings
+ * Select field show/hide with JS mappings
  *
  * @this {VrtxEditor}
  * @param {object} select The select field
@@ -1093,7 +1093,7 @@ VrtxEditor.prototype.hideShowSelect = function hideShowSelect(select) {
   }
 };
 
-/* XXX: should be more general */
+/* CSS based mapping. XXX: should be more general */
 VrtxEditor.prototype.hideShowStudy = function hideShowStudy(select) {
   switch (select.val()) {
     case "so":
@@ -1851,6 +1851,8 @@ VrtxEditor.prototype.contains = function contains(string, substring) {
 
 /**
  * Replace tags
+ * 
+ * XXX: Should be chainable / jQuery fn
  *
  * @this {VrtxEditor}
  * @param {string} selector The context selector

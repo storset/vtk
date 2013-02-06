@@ -1881,7 +1881,11 @@ VrtxEditor.prototype.replaceTag = function replaceTag(selector, tag, replacement
 }
 
 /**
- * General code for: do something at init and same at event (function name pending)
+ * Handler for events and init code applying a callback function with parameters
+ * 
+ * If no parameters is provided then $(selector) is default used
+ * 
+ * 'this' in the callback is vrtxEditor with its prototype chain
  * 
  * @example
  * // Process special list links

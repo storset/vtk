@@ -365,7 +365,7 @@ $(document).ready(function() {
         });    
         vrtxEdit.accordionGroupedInit();
         break;
-      case "vrtx-course-description":
+      case "vrtx-course-description": 
         setShowHide('course-fee', ["course-fee-amount"], false);
         vrtxEdit.accordionGroupedInit();
         break;
@@ -1028,10 +1028,12 @@ function previewImage(urlobj) {
 /* Boolean show/hide */
 
 function setShowHide(name, parameters, hideTrues) {
-  toggle(name, parameters, hideTrues);
-  $("#editor").on("click", '[name=' + name + ']', function () {
-    toggle(name, parameters, hideTrues);
-  });
+  vrtxEditor.setToggler('[name=' + name + ']', {
+    event: "click",
+	wrapper: "#editor",
+    callback: toggle,
+	callbackParams: [name, parameters, hideTrues]
+  })	
 }
 
 function toggle(name, parameters, hideTrues) {
@@ -1881,6 +1883,20 @@ VrtxEditor.prototype.replaceTag = function replaceTag(selector, tag, replacement
     return "<" + replacementTag + ">" + $(this).text() + "</" + replacementTag + ">";
   });
 }
+
+/**
+ * General code for: do something at init and same at event (function name pending)
+ *
+ * @this {VrtxEditor}
+ * @param {string} selector The selector
+ * @param {object} opts The options 
+ */
+VrtxEditor.prototype.setToggler = function setToggler(selector, opts) {
+  opts.callback.apply(this, opts.callbackParams);
+  $(opts.wrapper).on(opts.event, selector, function () {
+    opts.callback.apply(this, opts.callbackParams);
+  });
+};
 
 /* CK helper functions */
 

@@ -355,11 +355,11 @@ $(document).ready(function() {
   if(docType && docType !== "") {
     switch(docType) {
       case "vrtx-hvordan-soke":
-        hideShowStudy(vrtxEdit.editorForm, _$("#typeToDisplay"));
-        _$(document).on("change", "#typeToDisplay", function () {
-          hideShowStudy(vrtxEdit.editorForm, _$(this));
-          vrtxEditor.accordionGroupedCloseActiveHidden();
-        });    
+        vrtxEditor.initEventHandler("#typeToDisplay", {
+          event: "change",
+          callback: vrtxEdit.hideShowStudy,
+          callbackChange: vrtxEdit.accordionGroupedCloseActiveHidden
+        })	
         vrtxEdit.accordionGroupedInit();
         break;
       case "vrtx-course-description": 
@@ -1111,19 +1111,19 @@ VrtxEditor.prototype.hideShowSelect = function hideShowSelect(select) {
 };
 
 /* XXX: should be more general */
-function hideShowStudy(container, typeToDisplayElem) {
-  switch (typeToDisplayElem.val()) {
+VrtxEditor.prototype.hideShowStudy = function hideShowStudy(select) {
+  switch (select.val()) {
     case "so":
-      container.removeClass("nm").removeClass("em").addClass("so");
+      this.editorForm.removeClass("nm").removeClass("em").addClass("so");
       break;
     case "nm":
-      container.removeClass("so").removeClass("em").addClass("nm");
+      this.editorForm.removeClass("so").removeClass("em").addClass("nm");
       break;
     case "em":
-      container.removeClass("so").removeClass("nm").addClass("em");
+      this.editorForm.removeClass("so").removeClass("nm").addClass("em");
       break;
     default:
-      container.removeClass("so").removeClass("nm").removeClass("em");
+      this.editorForm.removeClass("so").removeClass("nm").removeClass("em");
       break;
   }
 }
@@ -1902,12 +1902,14 @@ VrtxEditor.prototype.initEventHandler = function initEventHandler(selector, opts
   opts.event = opts.event || "click";
   opts.wrapper = opts.wrapper || document;
   opts.callbackParams = opts.callbackParams || [$(selector)];
+  opts.callbackChange = opts.callbackChange || function(){};
   
   var vrtxEditor = this;
-  
+
   opts.callback.apply(vrtxEditor, opts.callbackParams);
   $(opts.wrapper).on(opts.event, selector, function () {
     opts.callback.apply(vrtxEditor, opts.callbackParams);
+    opts.callbackChange.apply(vrtxEditor);
   });
 };
 

@@ -1174,12 +1174,7 @@ function loadMultipleInputFields(name, addName, removeName, moveUpName, moveDown
 
   inputField.hide();
 
-  var appendHtml = $.mustache(vrtxEditor.multipleCommaSeperatedInputFieldTemplates["add-button"], { name: name, removeName: removeName, moveUpName: moveUpName, 
-                                                                                                   moveDownName: moveDownName, browseName: browseName,
-                                                                                                   size: size, isBrowsable: isBrowsable, isMovable: isMovable,
-                                                                                                   isDropdown: isDropdown, buttonText: addName });
-
-  inputFieldParent.removeClass("vrtx-textfield").append(appendHtml);
+  inputFieldParent.removeClass("vrtx-textfield").append(addMultipleInputFieldsAddButton(name, removeName, moveUpName, moveDownName, browseName, size, isBrowsable, isMovable, isDropdown, addName));
     
   var addFormFieldFunc = addFormField;
   for (var i = 0; i < vrtxEditor.multipleCommaSeperatedInputFieldLength[name]; i++) {
@@ -1226,27 +1221,19 @@ function addFormField(name, value, removeName, moveUpName, moveDownName, browseN
       removeButton = "", moveUpButton = "", moveDownButton = "", browseButton = "";
 
   if (removeName) {
-    removeButton = $.mustache(vrtxEditor.multipleCommaSeperatedInputFieldTemplates["button"], { type: "remove", name: " " + name, 
-                                                                                               idstr: idstr,   buttonText: removeName });
+    removeButton = addMultipleInputfieldsInteractionsButton("remove", " " + name, idstr, removeName);
   }
   if (isMovable && moveUpName && i > 1) {
-    moveUpButton = $.mustache(vrtxEditor.multipleCommaSeperatedInputFieldTemplates["button"], { type: "moveup", name: "", 
-                                                                                               idstr: idstr,   buttonText: "&uarr; " + moveUpName });
+    moveUpButton = addMultipleInputfieldsInteractionsButton("moveup", "", idstr, "&uarr; " + moveUpName);
   }
   if (isMovable && moveDownName && i < vrtxEditor.multipleCommaSeperatedInputFieldLength[name]) {
-    moveDownButton = $.mustache(vrtxEditor.multipleCommaSeperatedInputFieldTemplates["button"], { type: "movedown", name: "", 
-                                                                                                 idstr: idstr,     buttonText: "&darr; " + moveDownName });
+    moveDownButton = addMultipleInputfieldsInteractionsButton("movedown", "", idstr, "&darr; " + moveDownName);
   }
   if(isBrowsable) {
-    browseButton = $.mustache(vrtxEditor.multipleCommaSeperatedInputFieldTemplates["button"], { type: "browse", name: "-resource-ref", 
-                                                                                               idstr: idstr,   buttonText: browseName });
+    browseButton = addMultipleInputfieldsInteractionsButton("browse", "-resource-ref", idstr, browseName);
   }
     
-  var html = $.mustache(vrtxEditor.multipleCommaSeperatedInputFieldTemplates["multiple-inputfield"], { idstr: idstr, i: i, value: value, 
-                                                                                                      size: size, browseButton: browseButton,
-                                                                                                      removeButton: removeButton, moveUpButton: moveUpButton,
-                                                                                                      moveDownButton: moveDownButton, isDropdown: isDropdown,
-                                                                                                      dropdownArray: "dropdown" + name });
+  var html = addMultipleInputfield(name, idstr, i, value, size, browseButton, removeButton, moveUpButton, moveDownButton, isDropdown);
 
   $(html).insertBefore("#vrtx-" + name + "-add");
     
@@ -1254,8 +1241,7 @@ function addFormField(name, value, removeName, moveUpName, moveDownName, browseN
     if(vrtxEditor.multipleCommaSeperatedInputFieldLength[name] > 0 && isMovable) {
       var fields = $("." + name + " div.vrtx-multipleinputfield");
       if(fields.eq(vrtxEditor.multipleCommaSeperatedInputFieldLength[name] - 1).not("has:button.movedown")) {
-        moveDownButton = $.mustache(vrtxEditor.multipleCommaSeperatedInputFieldTemplates["button"], { type: "movedown", name: "", 
-                                                                                                     idstr: idstr,     buttonText: "&darr; " + moveDownName });
+        moveDownButton = addMultipleInputfieldsInteractionsButton("movedown", "", idstr, "&darr; " + moveDownName);
         fields.eq(vrtxEditor.multipleCommaSeperatedInputFieldLength[name] - 1).append(moveDownButton);
       }
     }
@@ -1342,7 +1328,7 @@ function formatMultipleInputFields(name) {
 function initJsonMovableElements(templatesRetrieved, jsonElementsBuilt) {
   $.when(templatesRetrieved, jsonElementsBuilt).done(function() {
     for (var i = 0, len = LIST_OF_JSON_ELEMENTS.length; i < len; i++) {
-      $("#" + LIST_OF_JSON_ELEMENTS[i].name).append(addInteractionsButton("add", addBtn))
+      $("#" + LIST_OF_JSON_ELEMENTS[i].name).append(addJsonBoxesInteractionsButton("add", addBtn))
         .find(".vrtx-add-button").data({'number': i});
     }
         
@@ -1433,11 +1419,11 @@ function initJsonMovableElements(templatesRetrieved, jsonElementsBuilt) {
     // Move up, move down, remove
     var isImmovable = jsonParent && jsonParent.hasClass("vrtx-multiple-immovable");
     if(!isImmovable) {
-      var moveDownButton = addInteractionsButton('move-down', '&darr; ' + moveDownBtn); 
+      var moveDownButton = addJsonBoxesInteractionsButton('move-down', '&darr; ' + moveDownBtn); 
       
-      var moveUpButton = addInteractionsButton('move-up', '&uarr; ' + moveUpBtn);
+      var moveUpButton = addJsonBoxesInteractionsButton('move-up', '&uarr; ' + moveUpBtn);
     }
-    var removeButton = addInteractionsButton('remove', removeBtn);
+    var removeButton = addJsonBoxesInteractionsButton('remove', removeBtn);
       
     var id = "<input type=\"hidden\" class=\"id\" value=\"" + counter + "\" \/>";
     var newElementId = "vrtx-json-element-" + j.name + "-" + counter;
@@ -1663,8 +1649,29 @@ function scrollToElm(movedElm) {
  * TODO: abstraction namespace a la serverFacade
  * 
  */
+ 
+function addMultipleInputfieldsInteractionsButton(clazz, name, idstr, text) {
+  return $.mustache(vrtxEditor.multipleCommaSeperatedInputFieldTemplates["button"], { type: clazz, name: name, 
+                                                                                      idstr: idstr, buttonText: text });
+}
 
-function addInteractionsButton(clazz, text) {
+function addMultipleInputFieldsAddButton(name, removeName, moveUpName, moveDownName, browseName, size, isBrowsable, isMovable, isDropdown, text) {
+  return $.mustache(vrtxEditor.multipleCommaSeperatedInputFieldTemplates["add-button"], {
+	                name: name, removeName: removeName, moveUpName: moveUpName, 
+	                moveDownName: moveDownName, browseName: browseName,
+	                size: size, isBrowsable: isBrowsable, isMovable: isMovable,
+	                isDropdown: isDropdown, buttonText: text });
+}
+
+function addMultipleInputfield(name, idstr, i, value, size, browseButton, removeButton, moveUpButton, moveDownButton, isDropdown) {
+  return $.mustache(vrtxEditor.multipleCommaSeperatedInputFieldTemplates["multiple-inputfield"], { idstr: idstr, i: i, value: value, 
+                                                                                                   size: size, browseButton: browseButton,
+                                                                                                   removeButton: removeButton, moveUpButton: moveUpButton,
+                                                                                                   moveDownButton: moveDownButton, isDropdown: isDropdown,
+                                                                                                   dropdownArray: "dropdown" + name });
+}
+
+function addJsonBoxesInteractionsButton(clazz, text) {
   return $.mustache(TEMPLATES["add-remove-move"], { clazz: clazz, buttonText: text });	
 }
 

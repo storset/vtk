@@ -359,7 +359,7 @@ $(document).ready(function() {
           event: "change",
           callback: vrtxEdit.hideShowStudy,
           callbackChange: vrtxEdit.accordionGroupedCloseActiveHidden
-        })	
+        });
         vrtxEdit.accordionGroupedInit();
         break;
       case "vrtx-course-description": 

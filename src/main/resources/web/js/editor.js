@@ -50,20 +50,17 @@ function VrtxEditor() {
     this.editorInitCheckboxes = [];
     /** Radios at init */
     this.editorInitRadios = [];
+    
+    /** Select fields show/hide mappings */
+    /*                      select-id            values to be added as class to form         */
+   this.selectMappings = { "teachingsemester":  ["particular-semester", "every-other", "other"],
+                           "examsemester":      ["particular-semester", "every-other", "other"],
+                           "teaching-language": ["other"],
+                           "typeToDisplay":     ["so", "nm", "em"],
+                         };
   
     /** Initial state for the need to confirm navigation away from editor */
     this.needToConfirm = true;
-  
-    /** Select fields show/hide mappings */
-     /*                      select-id                               value                    show selectors (hide the others mapped)            */
-    this.selectMappings = { "teachingsemester":                    { "particular-semester":   ".if-teachingsemester-particular",
-                                                                     "every-other":           ".teachingsemester-every-other-semester",
-                                                                     "other":                 ".teachingsemester-other"                 },
-                            "examsemester":                        { "particular-semester":   ".if-examsemester-particular",
-                                                                     "every-other":           ".examsemester-every-other-semester",
-                                                                     "other":                 ".examsemester-other"                     },
-                            "teaching-language":                   { "other":                 ".teaching-language-text-field"           }
-                          };
     
     /* TODO: Need some rewrite of data structure to use 1 instead of 3 variables */
     this.multipleCommaSeperatedInputFieldNames = [];
@@ -281,9 +278,8 @@ $(document).ready(function() {
     var ckInject = _$(this).closest(".cke_skin_kama").find(".ck-injected-save-help").hide();
   }); 
   
-  /* Toggle fields - TODO: should be more general (and without '.'s) but old editor need an update first */
+  // Show/hide mappings for radios/booleans
     
-  // Aggregation and manually approved
   if(!_$("#resource\\.display-aggregation\\.true").is(":checked")) {
     _$("#vrtx-resource\\.aggregation").slideUp(0, "linear");
   }
@@ -309,7 +305,6 @@ $(document).ready(function() {
     e.stopPropagation();
   });
   
-  // Course status - continued as
   vrtxAdm.cachedAppContent.on("change", "#resource\\.courseContext\\.course-status", function(e) {
     var courseStatus = _$(this);
     if(courseStatus.val() === "continued-as") {
@@ -325,7 +320,6 @@ $(document).ready(function() {
   });
   _$("#resource\\.courseContext\\.course-status").change();
 
-  // Show/hide radios old editor
   setShowHideRadiosOldEditor("#resource\\.recursive-listing\\.false, #resource\\.recursive-listing\\.unspecified", // radioIds
                               "#resource\\.recursive-listing\\.false:checked",                                         // conditionHide
                               'false',                                                                                 // conditionHideEqual
@@ -340,46 +334,31 @@ $(document).ready(function() {
                               'calendar',
                               ["#vrtx-resource\\.hide-additional-content"]);
             
-  // Hide/show mappings for select
+  // Show/hide mappings for select
   for(var select in vrtxEdit.selectMappings) {
     vrtxEditor.initEventHandler("#" + select, {
       event: "change",
-      callback: vrtxEdit.hideShowSelect
+      callback: vrtxEdit.showHideSelect,
+      callbackChange: (select === "typeToDisplay" ? vrtxEdit.accordionGroupedCloseActiveHidden : function(p){})
     })	
   }
-  
-  var docType = vrtxEdit.editorForm[0].className;
 
-  if(docType && docType !== "") {
-    switch(docType) {
-      case "vrtx-hvordan-soke":
-        vrtxEditor.initEventHandler("#typeToDisplay", {
-          event: "change",
-          callback: vrtxEdit.hideShowStudy,
-          callbackChange: vrtxEdit.accordionGroupedCloseActiveHidden
-        });
-        vrtxEdit.accordionGroupedInit();
-        break;
-      case "vrtx-course-description": 
-        setShowHideBooleanNewEditor('course-fee', ["course-fee-amount"], false);
-        vrtxEdit.accordionGroupedInit();
-        break;
-      case "vrtx-semester-page":
-        setShowHideBooleanNewEditor('cloned-course', ["cloned-course-code"], false);
-        vrtxEdit.accordionGroupedInit("[class*=link-box]");
-        break;
-      case "vrtx-samlet-program":
-        var samletElm = vrtxEdit.editorForm.find(".samlet-element");
-        vrtxEdit.replaceTag(samletElm, "h6", "strong");
-        vrtxEdit.replaceTag(samletElm, "h5", "h6");  
-        vrtxEdit.replaceTag(samletElm, "h4", "h5");
-        vrtxEdit.replaceTag(samletElm, "h3", "h4");
-        vrtxEdit.replaceTag(samletElm, "h2", "h3");
-        vrtxEdit.replaceTag(samletElm, "h1", "h2");
-        break;
-      default:
-        break;
-    }
+  if(vrtxEdit.editorForm.hasClass("vrtx-hvordan-soke")) {
+    vrtxEdit.accordionGroupedInit();
+  } else if(vrtxEdit.editorForm.hasClass("vrtx-course-description")) {
+    setShowHideBooleanNewEditor('course-fee', ["course-fee-amount"], false);
+    vrtxEdit.accordionGroupedInit();  
+  } else if(vrtxEdit.editorForm.hasClass("vrtx-semester-page")) {
+    setShowHideBooleanNewEditor('cloned-course', ["cloned-course-code"], false);
+    vrtxEdit.accordionGroupedInit("[class*=link-box]");  
+  } else if(vrtxEdit.editorForm.hasClass("vrtx-samlet-program")) {
+    var samletElm = vrtxEdit.editorForm.find(".samlet-element");
+    vrtxEdit.replaceTag(samletElm, "h6", "strong");
+    vrtxEdit.replaceTag(samletElm, "h5", "h6");  
+    vrtxEdit.replaceTag(samletElm, "h4", "h5");
+    vrtxEdit.replaceTag(samletElm, "h3", "h4");
+    vrtxEdit.replaceTag(samletElm, "h2", "h3");
+    vrtxEdit.replaceTag(samletElm, "h1", "h2");
   }
   
   vrtxEdit.initCKEditors();
@@ -1072,44 +1051,29 @@ function toggleShowHideOldEditor(conditionHide, conditionHideEqual, showHideProp
 
 
 /**
- * Select field show/hide with JS mappings
+ * Select field show/hide
  *
  * @this {VrtxEditor}
  * @param {object} select The select field
  */
-VrtxEditor.prototype.hideShowSelect = function hideShowSelect(select) {
+VrtxEditor.prototype.showHideSelect = function showHideSelect(select) {
   var vrtxEdit = this;
   var id = select.attr("id");
   if(vrtxEdit.selectMappings.hasOwnProperty(id)) {
+	if(!vrtxEdit.editorForm.hasClass("select-" + id)) {
+	  vrtxEdit.editorForm.addClass("select-" + id);	
+	}
     var mappings = vrtxEdit.selectMappings[id];
     var selected = select.val();
-    for(var item in mappings) {
-      if(item === selected) {
-        vrtxEdit.editorForm.find(mappings[item]).filter(":hidden").show();
+    for(var i = 0, len = mappings.length; i < len; i++) {
+      if(selected === mappings[i]) {
+        vrtxEdit.editorForm.addClass("select-" + id + "-" + mappings[i]);
       } else {
-        vrtxEdit.editorForm.find(mappings[item]).filter(":visible").hide();
-      }
+        vrtxEdit.editorForm.removeClass("select-" + id + "-" + mappings[i]);
+      } 
     }
   }
 };
-
-/* CSS based mapping 1:1. XXX: should be more general */
-VrtxEditor.prototype.hideShowStudy = function hideShowStudy(select) {
-  switch (select.val()) {
-    case "so":
-      this.editorForm.removeClass("nm").removeClass("em").addClass("so");
-      break;
-    case "nm":
-      this.editorForm.removeClass("so").removeClass("em").addClass("nm");
-      break;
-    case "em":
-      this.editorForm.removeClass("so").removeClass("nm").addClass("em");
-      break;
-    default:
-      this.editorForm.removeClass("so").removeClass("nm").removeClass("em");
-      break;
-  }
-}
 
 /*-------------------------------------------------------------------*\
     8. Multiple fields and boxes
@@ -1887,7 +1851,7 @@ VrtxEditor.prototype.initEventHandler = function initEventHandler(selector, opts
   opts.event = opts.event || "click";
   opts.wrapper = opts.wrapper || document;
   opts.callbackParams = opts.callbackParams || [$(selector)];
-  opts.callbackChange = opts.callbackChange || function(){};
+  opts.callbackChange = opts.callbackChange || function(p){};
   
   var vrtxEditor = this;
 

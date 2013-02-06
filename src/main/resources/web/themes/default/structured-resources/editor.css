@@ -207,40 +207,53 @@
   color: #ed1c24;
 }
 
-#editor.so .internasjonale-sokere-admin,
-#editor.so .nordiske-sokere,
-#editor.so .generelle-admin,
-#editor.so .pris,
-#editor.so .regelverk {
+/* Selects - all is default */
+
+#editor.select-typeToDisplay-so .internasjonale-sokere-admin,
+#editor.select-typeToDisplay-so .nordiske-sokere,
+#editor.select-typeToDisplay-so .generelle-admin,
+#editor.select-typeToDisplay-so .pris,
+#editor.select-typeToDisplay-so .regelverk,
+#editor.select-typeToDisplay-nm .internasjonale-sokere-admin,
+#editor.select-typeToDisplay-nm .nordiske-sokere,
+#editor.select-typeToDisplay-nm .opptakskrav-admin,
+#editor.select-typeToDisplay-nm .forstevitnemal-kvote,
+#editor.select-typeToDisplay-nm .ordinar-kvote-alle-kvalifiserte,
+#editor.select-typeToDisplay-nm .poenggrenser,
+#editor.select-typeToDisplay-nm .studiekode,
+#editor.select-typeToDisplay-em .metode-admin,
+#editor.select-typeToDisplay-em .opptakskrav-admin,
+#editor.select-typeToDisplay-em .forstevitnemal-kvote,
+#editor.select-typeToDisplay-em .ordinar-kvote-alle-kvalifiserte,
+#editor.select-typeToDisplay-em .poenggrenser,
+#editor.select-typeToDisplay-em .studiekode {
   display: none;
 }
 
-#editor.nm .internasjonale-sokere-admin,
-#editor.nm .nordiske-sokere,
-#editor.nm .opptakskrav-admin,
-#editor.nm .forstevitnemal-kvote,
-#editor.nm .ordinar-kvote-alle-kvalifiserte,
-#editor.nm .poenggrenser,
-#editor.nm .studiekode {
+/* Selects - otherwise (reversed logic) */
+
+/* Hide only if JS is turned on */
+#editor.select-teachingsemester .if-teachingsemester-particular,
+#editor.select-teachingsemester .teachingsemester-every-other-semester,
+#editor.select-teachingsemester .teachingsemester-other,
+#editor.select-examsemester .if-examsemester-particular,
+#editor.select-examsemester .examsemester-every-other-semester,
+#editor.select-examsemester .examsemester-other,                                           
+#editor.select-teaching-language .teaching-language-text-field {
   display: none;
 }
 
-#editor.em .metode-admin,
-#editor.em .opptakskrav-admin,
-#editor.em .forstevitnemal-kvote,
-#editor.em .ordinar-kvote-alle-kvalifiserte,
-#editor.em .poenggrenser,
-#editor.em .studiekode {
-  display: none;
+#editor.select-teachingsemester-particular-semester .if-teachingsemester-particular,
+#editor.select-teachingsemester-every-other .teachingsemester-every-other-semester,
+#editor.select-teachingsemester-other .teachingsemester-other,
+#editor.select-examsemester-particular-semester .if-examsemester-particular,
+#editor.select-examsemester-every-other .examsemester-every-other-semester,
+#editor.select-examsemester-other .examsemester-other,                                           
+#editor.select-teaching-language-other .teaching-language-text-field {
+  display: block;
 }
 
-#editor.so .internasjonale-sokere-admin,
-#editor.so .nordiske-sokere,
-#editor.so .generelle-admin,
-#editor.so .pris,
-#editor.so .regelverk {
-  display: none;
-}
+/* Radios */
 
 #vrtx-resource\.courseContext\.course-continued-as.hidden {
   display: none;

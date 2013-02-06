@@ -1093,7 +1093,7 @@ VrtxEditor.prototype.hideShowSelect = function hideShowSelect(select) {
   }
 };
 
-/* CSS based mapping. XXX: should be more general */
+/* CSS based mapping 1:1. XXX: should be more general */
 VrtxEditor.prototype.hideShowStudy = function hideShowStudy(select) {
   switch (select.val()) {
     case "so":

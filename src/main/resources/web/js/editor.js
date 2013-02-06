@@ -1342,9 +1342,7 @@ function formatMultipleInputFields(name) {
 function initJsonMovableElements(templatesRetrieved, jsonElementsBuilt) {
   $.when(templatesRetrieved, jsonElementsBuilt).done(function() {
     for (var i = 0, len = LIST_OF_JSON_ELEMENTS.length; i < len; i++) {
-      var json = { clazz: "add", buttonText: addBtn }
-      $("#" + LIST_OF_JSON_ELEMENTS[i].name)
-        .append($.mustache(TEMPLATES["add-remove-move"], json))
+      $("#" + LIST_OF_JSON_ELEMENTS[i].name).append(addInteractionsButton("add", addBtn))
         .find(".vrtx-add-button").data({'number': i});
     }
         
@@ -1435,10 +1433,11 @@ function initJsonMovableElements(templatesRetrieved, jsonElementsBuilt) {
     // Move up, move down, remove
     var isImmovable = jsonParent && jsonParent.hasClass("vrtx-multiple-immovable");
     if(!isImmovable) {
-      var moveDownButton = $.mustache(TEMPLATES["add-remove-move"], { clazz: 'move-down', buttonText: '&darr; ' + moveDownBtn });
-      var moveUpButton = $.mustache(TEMPLATES["add-remove-move"],   { clazz: 'move-up', buttonText: '&uarr; ' + moveUpBtn   });
+      var moveDownButton = addInteractionsButton('move-down', '&darr; ' + moveDownBtn); 
+      
+      var moveUpButton = addInteractionsButton('move-up', '&uarr; ' + moveUpBtn);
     }
-    var removeButton = $.mustache(TEMPLATES["add-remove-move"],   { clazz: 'remove', buttonText: removeBtn });
+    var removeButton = addInteractionsButton('remove', removeBtn);
       
     var id = "<input type=\"hidden\" class=\"id\" value=\"" + counter + "\" \/>";
     var newElementId = "vrtx-json-element-" + j.name + "-" + counter;
@@ -1561,83 +1560,6 @@ function wrapJSONItemsLeftRight(items, leftItems, rightItems) {
     }
   }
 }
-
-function addStringField(elem, inputFieldName) {
-  return $.mustache(TEMPLATES["string"], { classes: "vrtx-string" + " " + elem.name,
-                                           elemTitle: elem.title,
-                                           inputFieldName: inputFieldName }); 
-}
-    
-function addHtmlField(elem, inputFieldName) {
-  var baseclass = "vrtx-html";
-  if (elem.type == "simple_html") {
-    baseclass = "vrtx-simple-html";
-  }
-  return $.mustache(TEMPLATES["html"], { classes: baseclass + " " + elem.name,
-                                         elemTitle: elem.title,
-                                         inputFieldName: inputFieldName }); 
-}
-    
-function addBooleanField(elem, inputFieldName) {
-  return $.mustache(TEMPLATES["radio"], { elemTitle: elem.title,
-                                          inputFieldName: inputFieldName }); 
-}
-
-function addDropdown(elem, inputFieldName) {
-  var htmlOpts = [];
-  for (i in elem.valuemap) {
-    var keyValuePair = elem.valuemap[i];
-    var keyValuePairSplit = keyValuePair.split("$");
-    htmlOpts.push({key: keyValuePairSplit[0], value: keyValuePairSplit[1]});
-  }
-  return $.mustache(TEMPLATES["dropdown"], { classes: "vrtx-string" + " " + elem.name,
-                                             elemTitle: elem.title,
-                                             inputFieldName: inputFieldName,
-                                             options: htmlOpts });  
-}
-
-function addDateField(elem, inputFieldName) {
-  return $.mustache(TEMPLATES["date"], { elemTitle: elem.title,
-                                         inputFieldName: inputFieldName }); 
-}
-    
-function addImageRef(elem, inputFieldName) {
-  return $.mustache(TEMPLATES["browse-images"], { clazz: 'vrtx-image-ref',
-                                                  elemTitle: elem.title,
-                                                  inputFieldName: inputFieldName,
-                                                  fckEditorBaseUrl: ckBaseURI,
-                                                  parentURI: parentURI,
-                                                  fckBrowsePath: ckBaseBrowsePath,
-                                                  browseButtonText: browseImagesBtn,
-                                                  type: '',
-                                                  size: 30,
-                                                  previewTitle: browseImagesPreview,
-                                                  previewNoImageText: browseImagesNoPreview }); 
-}
-    
-function addResourceRef(elem, inputFieldName) {
-  return $.mustache(TEMPLATES["browse"], { clazz: 'vrtx-resource-ref',
-                                           elemTitle: elem.title,
-                                           inputFieldName: inputFieldName,
-                                           fckEditorBaseUrl: ckBaseURI,
-                                           parentURI: parentURI,
-                                           fckBrowsePath: ckBaseBrowsePath,
-                                           browseButtonText: browseImagesBtn,
-                                           type: 'File',
-                                           size: 40 }); 
-}
-    
-function addMediaRef(elem, inputFieldName) {      
-  return $.mustache(TEMPLATES["browse"], { clazz: 'vrtx-media-ref',
-                                           elemTitle: elem.title,
-                                           inputFieldName: inputFieldName,
-                                           fckEditorBaseUrl: ckBaseURI,
-                                           parentURI: parentURI,
-                                           fckBrowsePath: ckBaseBrowsePath,
-                                           browseButtonText: browseImagesBtn,
-                                           type: 'Media',
-                                           size: 30 }); 
-}
     
 // Move up or move down  
 function swapContent(counter, arrayOfIds, move, name) {
@@ -1734,6 +1656,93 @@ function scrollToElm(movedElm) {
   setTimeout(function() {
     ACCORDION_MOVE_TO_AFTER_CHANGE = null;
   }, 270);
+}
+
+/* Mustache => HTML 
+ * 
+ * TODO: abstraction namespace a la serverFacade
+ * 
+ */
+
+function addInteractionsButton(clazz, text) {
+  return $.mustache(TEMPLATES["add-remove-move"], { clazz: clazz, buttonText: text });	
+}
+
+function addStringField(elem, inputFieldName) {
+  return $.mustache(TEMPLATES["string"], { classes: "vrtx-string" + " " + elem.name,
+                                           elemTitle: elem.title,
+                                           inputFieldName: inputFieldName }); 
+}
+    
+function addHtmlField(elem, inputFieldName) {
+  var baseclass = "vrtx-html";
+  if (elem.type == "simple_html") {
+    baseclass = "vrtx-simple-html";
+  }
+  return $.mustache(TEMPLATES["html"], { classes: baseclass + " " + elem.name,
+                                         elemTitle: elem.title,
+                                         inputFieldName: inputFieldName }); 
+}
+    
+function addBooleanField(elem, inputFieldName) {
+  return $.mustache(TEMPLATES["radio"], { elemTitle: elem.title,
+                                          inputFieldName: inputFieldName }); 
+}
+
+function addDropdown(elem, inputFieldName) {
+  var htmlOpts = [];
+  for (i in elem.valuemap) {
+    var keyValuePair = elem.valuemap[i];
+    var keyValuePairSplit = keyValuePair.split("$");
+    htmlOpts.push({key: keyValuePairSplit[0], value: keyValuePairSplit[1]});
+  }
+  return $.mustache(TEMPLATES["dropdown"], { classes: "vrtx-string" + " " + elem.name,
+                                             elemTitle: elem.title,
+                                             inputFieldName: inputFieldName,
+                                             options: htmlOpts });  
+}
+
+function addDateField(elem, inputFieldName) {
+  return $.mustache(TEMPLATES["date"], { elemTitle: elem.title,
+                                         inputFieldName: inputFieldName }); 
+}
+    
+function addImageRef(elem, inputFieldName) {
+  return $.mustache(TEMPLATES["browse-images"], { clazz: 'vrtx-image-ref',
+                                                  elemTitle: elem.title,
+                                                  inputFieldName: inputFieldName,
+                                                  fckEditorBaseUrl: ckBaseURI,
+                                                  parentURI: parentURI,
+                                                  fckBrowsePath: ckBaseBrowsePath,
+                                                  browseButtonText: browseImagesBtn,
+                                                  type: '',
+                                                  size: 30,
+                                                  previewTitle: browseImagesPreview,
+                                                  previewNoImageText: browseImagesNoPreview }); 
+}
+    
+function addResourceRef(elem, inputFieldName) {
+  return $.mustache(TEMPLATES["browse"], { clazz: 'vrtx-resource-ref',
+                                           elemTitle: elem.title,
+                                           inputFieldName: inputFieldName,
+                                           fckEditorBaseUrl: ckBaseURI,
+                                           parentURI: parentURI,
+                                           fckBrowsePath: ckBaseBrowsePath,
+                                           browseButtonText: browseImagesBtn,
+                                           type: 'File',
+                                           size: 40 }); 
+}
+    
+function addMediaRef(elem, inputFieldName) {      
+  return $.mustache(TEMPLATES["browse"], { clazz: 'vrtx-media-ref',
+                                           elemTitle: elem.title,
+                                           inputFieldName: inputFieldName,
+                                           fckEditorBaseUrl: ckBaseURI,
+                                           parentURI: parentURI,
+                                           fckBrowsePath: ckBaseBrowsePath,
+                                           browseButtonText: browseImagesBtn,
+                                           type: 'Media',
+                                           size: 30 }); 
 }
 
 /*-------------------------------------------------------------------*\

@@ -325,18 +325,17 @@ $(document).ready(function() {
   });
   _$("#resource\\.courseContext\\.course-status").change();
 
-  // Show/hide multiple properties (initalization / config)
-  // TODO: better / easier to understand interface (and remove old "." in CSS-ids / classes)
-  setShowHideRadiosOldEditor(["#resource\\.recursive-listing\\.false", "#resource\\.recursive-listing\\.unspecified"], // radioIds
+  // Show/hide radios old editor
+  setShowHideRadiosOldEditor("#resource\\.recursive-listing\\.false, #resource\\.recursive-listing\\.unspecified", // radioIds
                               "#resource\\.recursive-listing\\.false:checked",                                         // conditionHide
                               'false',                                                                                 // conditionHideEqual
                               ["#vrtx-resource\\.recursive-listing-subfolders"]);                                      // showHideProps
-  setShowHideRadiosOldEditor(["#resource\\.display-type\\.unspecified", "#resource\\.display-type\\.calendar"],
+  setShowHideRadiosOldEditor("#resource\\.display-type\\.unspecified, #resource\\.display-type\\.calendar",
                               "#resource\\.display-type\\.calendar:checked",
                               null,
                               ["#vrtx-resource\\.event-type-title"]);
 
-  setShowHideRadiosOldEditor(["#resource\\.display-type\\.unspecified", "#resource\\.display-type\\.calendar"],
+  setShowHideRadiosOldEditor("#resource\\.display-type\\.unspecified, #resource\\.display-type\\.calendar",
                               "#resource\\.display-type\\.calendar:checked",
                               'calendar',
                               ["#vrtx-resource\\.hide-additional-content"]);
@@ -1019,6 +1018,7 @@ function previewImage(urlobj) {
 
 /*-------------------------------------------------------------------*\
     7. Show / hide
+       XXX: boolean field animations when not init
 \*-------------------------------------------------------------------*/
 
 /* Boolean show/hide new editor */
@@ -1053,35 +1053,24 @@ function toggleShowHideNewEditor(name, parameters, hideTrues) {
   }
 }
 
-/* Radio/boolean show/hide old editor (folders)
- *
- * @param radioIds: Multiple id's for radiobuttons binding click events (Array)
- * @param conditionHide: Condition to be checked for hiding
- * @param conditionHideEqual: What it should equal
- * @param showHideProps: Multiple props / id's / classnames to show / hide (Array)
- */
+/* Radio/boolean show/hide old editor (folders) */
 function setShowHideRadiosOldEditor(radioIds, conditionHide, conditionHideEqual, showHideProps) {
-  var toggleShowHideOldEditorFunc = toggleShowHideOldEditor;
-  toggleShowHideOldEditorFunc(true, conditionHide, conditionHideEqual, showHideProps); // Init
-  for (var i = 0, len = radioIds.length; i < len; i++) {
-    $(radioIds[i]).click(function () {
-      toggleShowHideOldEditorFunc(false, conditionHide, conditionHideEqual, showHideProps);
-    });
-  }
+  vrtxEditor.initEventHandler(radioIds, {
+    wrapper: "#editor",
+	callback: toggleShowHideOldEditor,
+    callbackParams: [conditionHide, conditionHideEqual, showHideProps]
+  })
 }
 
-function toggleShowHideOldEditor(init, conditionHide, conditionHideEqual, showHideProps) {
+function toggleShowHideOldEditor(conditionHide, conditionHideEqual, showHideProps) {
   var show = !($(conditionHide).val() == conditionHideEqual);
   for (var i = 0, len = showHideProps.length; i < len; i++) {
-    init ? show ? $(showHideProps[i]).show() 
-                : $(showHideProps[i]).hide()
-         : show ? $(showHideProps[i]).slideDown(vrtxAdmin.transitionPropSpeed, vrtxAdmin.transitionEasingSlideDown)
-                : $(showHideProps[i]).slideUp(vrtxAdmin.transitionPropSpeed, vrtxAdmin.transitionEasingSlideUp);
+    show ? $(showHideProps[i]).show() 
+         : $(showHideProps[i]).hide()
   }
 }
 
-/* Dropdown show/hide mappings */
- 
+
 /**
  * Select field show/hide with mappings
  *

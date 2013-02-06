@@ -344,7 +344,7 @@ $(document).ready(function() {
             
   // Hide/show mappings for select
   for(var select in vrtxEdit.selectMappings) {
-    vrtxEditor.setToggler("#" + select, {
+    vrtxEditor.initEventHandler("#" + select, {
       event: "change",
       callback: vrtxEdit.hideShowSelect
     })	
@@ -1025,7 +1025,7 @@ function previewImage(urlobj) {
 /* Boolean show/hide */
 
 function setShowHide(name, parameters, hideTrues) {
-  vrtxEditor.setToggler('[name=' + name + ']', {
+  vrtxEditor.initEventHandler('[name=' + name + ']', {
 	wrapper: "#editor",
     callback: toggle,
 	callbackParams: [name, parameters, hideTrues]
@@ -1885,7 +1885,7 @@ VrtxEditor.prototype.replaceTag = function replaceTag(selector, tag, replacement
  * 
  * @example
  * // Process special list links
- * vrtxEditor.setToggler("#list a.special", {
+ * vrtxEditor.initEventHandler("#list a.special", {
  *   callback: specialProcessFn
  * });
  *
@@ -1893,7 +1893,7 @@ VrtxEditor.prototype.replaceTag = function replaceTag(selector, tag, replacement
  * @param {string} selector The selector
  * @param {object} opts The options 
  */
-VrtxEditor.prototype.setToggler = function setToggler(selector, opts) {
+VrtxEditor.prototype.initEventHandler = function initEventHandler(selector, opts) {
   if(!selector.length) return;
 
   opts.event = opts.event || "click";

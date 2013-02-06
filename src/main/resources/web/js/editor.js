@@ -361,7 +361,7 @@ $(document).ready(function() {
         hideShowStudy(vrtxEdit.editorForm, _$("#typeToDisplay"));
         _$(document).on("change", "#typeToDisplay", function () {
           hideShowStudy(vrtxEdit.editorForm, _$(this));
-          vrtxEditor.accordionGroupedRefresh();
+          vrtxEditor.accordionGroupedCloseActiveHidden();
         });    
         vrtxEdit.accordionGroupedInit();
         break;
@@ -1763,22 +1763,20 @@ VrtxEditor.prototype.accordionGroupedInit = function accordionGroupedInit(subGro
 };
 
 /**
- * Refresh grouped accordion
+ * Close active grouped accordion if hidden
  * @this {VrtxEditor}
  */
-VrtxEditor.prototype.accordionGroupedRefresh = function accordionGroupedRefresh() { /* param name pending */
+VrtxEditor.prototype.accordionGroupedCloseActiveHidden = function accordionGroupedCloseActiveHidden() {
   var vrtxEdit = this, _$ = vrtxAdmin._$;
-  
-  vrtxEdit.editorForm.find("#accordion.grouped")
-                     .accordion( "destroy" ).accordion({ header: "> div > .header",
-                                                         autoHeight: false,
-                                                         collapsible: true,
-                                                         active: false
-                                                       });
+
+  var active = vrtxEdit.editorForm.find("#accordion-grouped .ui-state-active");
+  if(active.length && active.filter(":hidden").length) {
+    vrtxEdit.editorForm.find("#accordion-grouped").accordion("activate", false);
+  }
 };
 
 function accordionJsonRefresh(elem, active) {
-  elem.accordion('destroy').accordion({
+  elem.accordion("destroy").accordion({
     header: "> div > .header",
     autoHeight: false,
     collapsible: true,

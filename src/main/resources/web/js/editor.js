@@ -1882,6 +1882,12 @@ VrtxEditor.prototype.replaceTag = function replaceTag(selector, tag, replacement
 
 /**
  * General code for: do something at init and same at event (function name pending)
+ * 
+ * @example
+ * // Process special list links
+ * vrtxEditor.setToggler("#list a.special", {
+ *   callback: specialProcessFn
+ * });
  *
  * @this {VrtxEditor}
  * @param {string} selector The selector

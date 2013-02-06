@@ -344,13 +344,10 @@ $(document).ready(function() {
             
   // Hide/show mappings for select
   for(var select in vrtxEdit.selectMappings) {
-    var selectElm = _$("#" + select);
-    if(selectElm.length) {
-      vrtxEdit.hideShowSelect(selectElm);
-      _$(document).on("change", "#" + select, function () {
-        vrtxEdit.hideShowSelect(_$(this));
-      });
-    }
+    vrtxEditor.setToggler("#" + select, {
+      event: "change",
+      callback: vrtxEdit.hideShowSelect
+    })	
   }
   
   var docType = vrtxEdit.editorForm[0].className;
@@ -1029,7 +1026,6 @@ function previewImage(urlobj) {
 
 function setShowHide(name, parameters, hideTrues) {
   vrtxEditor.setToggler('[name=' + name + ']', {
-    event: "click",
 	wrapper: "#editor",
     callback: toggle,
 	callbackParams: [name, parameters, hideTrues]
@@ -1892,9 +1888,17 @@ VrtxEditor.prototype.replaceTag = function replaceTag(selector, tag, replacement
  * @param {object} opts The options 
  */
 VrtxEditor.prototype.setToggler = function setToggler(selector, opts) {
-  opts.callback.apply(this, opts.callbackParams);
+  if(!selector.length) return;
+
+  opts.event = opts.event || "click";
+  opts.wrapper = opts.wrapper || document;
+  opts.callbackParams = opts.callbackParams || [$(selector)];
+  
+  var vrtxEditor = this;
+  
+  opts.callback.apply(vrtxEditor, opts.callbackParams);
   $(opts.wrapper).on(opts.event, selector, function () {
-    opts.callback.apply(this, opts.callbackParams);
+    opts.callback.apply(vrtxEditor, opts.callbackParams);
   });
 };
 

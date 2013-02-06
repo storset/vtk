@@ -327,20 +327,19 @@ $(document).ready(function() {
 
   // Show/hide multiple properties (initalization / config)
   // TODO: better / easier to understand interface (and remove old "." in CSS-ids / classes)
-  showHide(["#resource\\.recursive-listing\\.false", "#resource\\.recursive-listing\\.unspecified"], // radioIds
-            "#resource\\.recursive-listing\\.false:checked",                                         // conditionHide
-            'false',                                                                                 // conditionHideEqual
-            ["#vrtx-resource\\.recursive-listing-subfolders"]);                                      // showHideProps
+  setShowHideRadiosOldEditor(["#resource\\.recursive-listing\\.false", "#resource\\.recursive-listing\\.unspecified"], // radioIds
+                              "#resource\\.recursive-listing\\.false:checked",                                         // conditionHide
+                              'false',                                                                                 // conditionHideEqual
+                              ["#vrtx-resource\\.recursive-listing-subfolders"]);                                      // showHideProps
+  setShowHideRadiosOldEditor(["#resource\\.display-type\\.unspecified", "#resource\\.display-type\\.calendar"],
+                              "#resource\\.display-type\\.calendar:checked",
+                              null,
+                              ["#vrtx-resource\\.event-type-title"]);
 
-  showHide(["#resource\\.display-type\\.unspecified", "#resource\\.display-type\\.calendar"],
-            "#resource\\.display-type\\.calendar:checked",
-            null,
-            ["#vrtx-resource\\.event-type-title"]);
-
-  showHide(["#resource\\.display-type\\.unspecified", "#resource\\.display-type\\.calendar"],
-            "#resource\\.display-type\\.calendar:checked",
-            'calendar',
-            ["#vrtx-resource\\.hide-additional-content"]);
+  setShowHideRadiosOldEditor(["#resource\\.display-type\\.unspecified", "#resource\\.display-type\\.calendar"],
+                              "#resource\\.display-type\\.calendar:checked",
+                              'calendar',
+                              ["#vrtx-resource\\.hide-additional-content"]);
             
   // Hide/show mappings for select
   for(var select in vrtxEdit.selectMappings) {
@@ -363,11 +362,11 @@ $(document).ready(function() {
         vrtxEdit.accordionGroupedInit();
         break;
       case "vrtx-course-description": 
-        setShowHide('course-fee', ["course-fee-amount"], false);
+        setShowHideBooleanNewEditor('course-fee', ["course-fee-amount"], false);
         vrtxEdit.accordionGroupedInit();
         break;
       case "vrtx-semester-page":
-        setShowHide('cloned-course', ["cloned-course-code"], false);
+        setShowHideBooleanNewEditor('cloned-course', ["cloned-course-code"], false);
         vrtxEdit.accordionGroupedInit("[class*=link-box]");
         break;
       case "vrtx-samlet-program":
@@ -1022,17 +1021,17 @@ function previewImage(urlobj) {
     7. Show / hide
 \*-------------------------------------------------------------------*/
 
-/* Boolean show/hide */
+/* Boolean show/hide new editor */
 
-function setShowHide(name, parameters, hideTrues) {
+function setShowHideBooleanNewEditor(name, parameters, hideTrues) {
   vrtxEditor.initEventHandler('[name=' + name + ']', {
 	wrapper: "#editor",
-    callback: toggle,
+    callback: toggleShowHideNewEditor,
 	callbackParams: [name, parameters, hideTrues]
   })	
 }
 
-function toggle(name, parameters, hideTrues) {
+function toggleShowHideNewEditor(name, parameters, hideTrues) {
   var hide = hideTrues ? '-true' : '-false';
   var show = hideTrues ? '-false' : '-true';
 
@@ -1054,39 +1053,34 @@ function toggle(name, parameters, hideTrues) {
   }
 }
 
-/* Show and hide properties
+/* Radio/boolean show/hide old editor (folders)
  *
  * @param radioIds: Multiple id's for radiobuttons binding click events (Array)
  * @param conditionHide: Condition to be checked for hiding
  * @param conditionHideEqual: What it should equal
  * @param showHideProps: Multiple props / id's / classnames to show / hide (Array)
  */
-function showHide(radioIds, conditionHide, conditionHideEqual, showHideProps) {
-  var showHidePropertiesFunc = showHideProperties;
-  showHidePropertiesFunc(true, conditionHide, conditionHideEqual, showHideProps); // Init
-  for (var j = 0, len = radioIds.length; j < len; j++) {
-    $(radioIds[j]).click(function () {
-      showHidePropertiesFunc(false, conditionHide, conditionHideEqual, showHideProps);
+function setShowHideRadiosOldEditor(radioIds, conditionHide, conditionHideEqual, showHideProps) {
+  var toggleShowHideOldEditorFunc = toggleShowHideOldEditor;
+  toggleShowHideOldEditorFunc(true, conditionHide, conditionHideEqual, showHideProps); // Init
+  for (var i = 0, len = radioIds.length; i < len; i++) {
+    $(radioIds[i]).click(function () {
+      toggleShowHideOldEditorFunc(false, conditionHide, conditionHideEqual, showHideProps);
     });
   }
 }
 
-function showHideProperties(init, conditionHide, conditionHideEqual, showHideProps) {
-  for (var conditionHideVal = $(conditionHide).val(), showHidePropertyFunc = showHideProperty, 
-       i = 0, len = showHideProps.length; i < len; i++) {
-    showHidePropertyFunc(showHideProps[i], init, conditionHideVal == conditionHideEqual ? false : true);
+function toggleShowHideOldEditor(init, conditionHide, conditionHideEqual, showHideProps) {
+  var show = !($(conditionHide).val() == conditionHideEqual);
+  for (var i = 0, len = showHideProps.length; i < len; i++) {
+    init ? show ? $(showHideProps[i]).show() 
+                : $(showHideProps[i]).hide()
+         : show ? $(showHideProps[i]).slideDown(vrtxAdmin.transitionPropSpeed, vrtxAdmin.transitionEasingSlideDown)
+                : $(showHideProps[i]).slideUp(vrtxAdmin.transitionPropSpeed, vrtxAdmin.transitionEasingSlideUp);
   }
 }
 
-function showHideProperty(id, init, show) {
-  init ? show ? $(id).show() 
-              : $(id).hide()
-       : show ? $(id).slideDown(vrtxAdmin.transitionPropSpeed, vrtxAdmin.transitionEasingSlideDown)
-              : $(id).slideUp(vrtxAdmin.transitionPropSpeed, vrtxAdmin.transitionEasingSlideUp);
-}
-
-/* Dropdown show/hide mappings
- */
+/* Dropdown show/hide mappings */
  
 /**
  * Select field show/hide with mappings

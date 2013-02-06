@@ -12,5 +12,5 @@
    	  </#if>
    	</#list>
   </#list>
-  setShowHide('${script.name}', [${parameters}], true);
+  setShowHideBooleanNewEditor('${script.name}', [${parameters}], true);
 </#macro>

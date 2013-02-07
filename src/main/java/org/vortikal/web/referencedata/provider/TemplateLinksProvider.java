@@ -33,10 +33,10 @@ package org.vortikal.web.referencedata.provider;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
@@ -47,44 +47,76 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.Principal;
 import org.vortikal.util.text.SimpleTemplate;
 import org.vortikal.web.RequestContext;
+import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.service.Service;
 
 /**
- * Provides external links/URLs by use of template/pattern and dynamic values.
+ * Provides links generated from patterns with placeholders for
+ * dynamic values.
  * 
- * Supported fields: "%{url}" (service URL) and "%{foo:bar}" (property values of current resource).
+ * Supported fields:
+ * <ul>
+ *   <li>%{url}     (view service URL for current resource)
+ *   <li>%{foo:bar} (property values on current resource).
+ * </ul>
  * 
- * Example: http://www.foo.com/share?url=%{url}
+ * Links are provided as a list of beans of type {@link Link}.
+ * 
+ * Example template value: "http://www.foo.com/share?url=%{url}"
+ * 
  */
-public class UrlTemplateExternalLinksProvider {
+public class TemplateLinksProvider implements ReferenceDataProvider {
 
     private static final String URL_ENCODING_CHARSET = "utf-8";
 
     private int truncateLimit = 250;
     private String truncation = "...";
-    private Map<String, SimpleTemplate> urlTemplates;
-    private Map<String, SimpleTemplate> altUrlTemplates;
+    private List<TemplateLink> templateLinks;
     private Service viewService;
+    private String modelKey = "links";
 
-    public List<ExternalLink> getTemplates(List<String> altUrls) throws Exception {
+    public static final class Link {
+        private String name;
+        private String url;
 
+        /**
+         * @return URL-encoded link
+         */
+        public String getUrl() {
+            return url;
+        }
+
+        /**
+         * @return link name.
+         */
+        public String getName() {
+            return name;
+        }
+    }
+    
+    private static final class TemplateLink {
+        String name;
+        SimpleTemplate template;
+    }
+    
+    @Override
+    public void referenceData(Map<String, Object> model, HttpServletRequest request) throws Exception {
+        
+        if (this.templateLinks == null) return;
+        
         RequestContext requestContext = RequestContext.getRequestContext();
         String token = requestContext.getSecurityToken();
         Repository repository = requestContext.getRepository();
 
-        final RenderContext ctx = new RenderContext();
-        ctx.resource = repository.retrieve(token, requestContext.getResourceURI(), true);
-        ctx.principal = requestContext.getPrincipal();
-        ctx.service = requestContext.getService();
+        final Resource resource = repository.retrieve(token, requestContext.getResourceURI(), true);
+        final Principal principal = requestContext.getPrincipal();
+        final Service service = requestContext.getService();
+        
+        List<Link> links = new ArrayList<Link>();
+        for (TemplateLink tl : this.templateLinks) {
+            String name = tl.name;
+            SimpleTemplate template = tl.template;
 
-        List<ExternalLink> links = new ArrayList<ExternalLink>();
-        for (String externalLinkName : this.urlTemplates.keySet()) {
-            SimpleTemplate template;
-            if (altUrls.contains(externalLinkName)) {
-                template = this.altUrlTemplates.get(externalLinkName);
-            } else {
-                template = this.urlTemplates.get(externalLinkName);
-            }
             if (template != null) {
                 final StringBuilder url = new StringBuilder();
                 template.apply(new SimpleTemplate.Handler() {
@@ -95,7 +127,7 @@ public class UrlTemplateExternalLinksProvider {
                     @Override
                     public String resolve(String variable) {
                         if ("url".equals(variable)) {
-                            String s = ctx.service.constructLink(ctx.resource, ctx.principal);
+                            String s = service.constructLink(resource, principal);
                             try {
                                 return URLEncoder.encode(s, URL_ENCODING_CHARSET);
                             } catch (UnsupportedEncodingException e) {
@@ -112,7 +144,7 @@ public class UrlTemplateExternalLinksProvider {
                             } else {
                                 name = variable;
                             }
-                            String retVal = propValue(ctx.resource, prefix, name);
+                            String retVal = propValue(resource, prefix, name);
                             if (retVal.length() > truncateLimit) {
                                 retVal = retVal.substring(0, truncateLimit);
                                 retVal = retVal + truncation;
@@ -125,20 +157,13 @@ public class UrlTemplateExternalLinksProvider {
                         }
                     }
                 });
-                ExternalLink link = new ExternalLink();
-                link.setName(externalLinkName);
-                link.setUrl(url.toString());
+                Link link = new Link();
+                link.name = name;
+                link.url = url.toString();
                 links.add(link);
             }
         }
-        return links;
-    }
-
-    
-    private static class RenderContext {
-        Resource resource;
-        Principal principal;
-        Service service;
+        model.put(this.modelKey, links);
     }
 
     private String propValue(Resource resource, String prefix, String name) {
@@ -168,28 +193,24 @@ public class UrlTemplateExternalLinksProvider {
                 }
             }
         }
-        return retVal;
         
-    }
-    
-    @Required
-    public void setUrlTemplates(Map<String, String> urlTemplates) {
-        this.urlTemplates = new LinkedHashMap<String, SimpleTemplate>(urlTemplates.size());
-        for (String name : urlTemplates.keySet()) {
-            String templateValue = urlTemplates.get(name);
-            if (templateValue != null) {
-                this.urlTemplates.put(name, SimpleTemplate.compile(templateValue, "%{", "}"));
-            }
-        }
+        return retVal;
     }
 
-    public void setAltUrlTemplates(Map<String, String> urlTemplates) {
-        this.altUrlTemplates = new LinkedHashMap<String, SimpleTemplate>(urlTemplates.size());
-        for (String name : urlTemplates.keySet()) {
-            String templateValue = urlTemplates.get(name);
-            if (templateValue != null) {
-                this.altUrlTemplates.put(name, SimpleTemplate.compile(templateValue, "%{", "}"));
-            }
+    /**
+     * Set link templates to be provided in model (link names mapped to
+     * link template values).
+     */
+    @Required
+    public void setTemplates(Map<String, String> templates) {
+        this.templateLinks = new ArrayList<TemplateLink>();
+        for (Map.Entry<String,String> entry: templates.entrySet()) {
+            String key = entry.getKey();
+            String templateValue = entry.getValue();
+            TemplateLink tl = new TemplateLink();
+            tl.name = key;
+            tl.template = SimpleTemplate.compile(templateValue, "%{", "}");
+            this.templateLinks.add(tl);
         }
     }
 
@@ -204,4 +225,9 @@ public class UrlTemplateExternalLinksProvider {
     public void setViewService(Service viewService) {
         this.viewService = viewService;
     }
+    
+    public void setModelKey(String key) {
+        this.modelKey = key;
+    }
+
 }

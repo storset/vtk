@@ -325,12 +325,11 @@
     </property>
   </bean>
 
-  <bean id="decorating.shareAtComponent" class="org.vortikal.web.decorating.components.ShareAtComponent">
+  <bean id="decorating.shareAtComponent" class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
     <property name="namespace" ref="decorating.resourceNamespace" />
     <property name="name" value="share-at" />
     <property name="description" value="Inserts share component" />
     <property name="view" ref="decorating.shareAtComponent.view" />
-    <property name="socialWebsitesProvider" ref="socialWebsitesProvider" />
     <property name="exposedParameters">
       <set>
         <value>use-facebook-api</value>
@@ -350,21 +349,21 @@
         <entry key="jsUrl" value="${jsBaseURL}/view-dropdown.js" />
       </map>
     </property>
-  </bean>
-
-  <bean id="socialWebsitesProvider" class="org.vortikal.web.referencedata.provider.UrlTemplateExternalLinksProvider">
-    <property name="urlTemplates">
-      <map>
-        <entry key="Facebook" value="http://www.facebook.com/share.php?u=%{url}" />
-        <entry key="Twitter" value="http://twitter.com/intent/tweet?text=%{title}&amp;amp;url=%{url}" />
-      </map>
+    <property name="referenceDataProviders">
+      <list>
+        <bean class="org.vortikal.web.referencedata.provider.TemplateLinksProvider">
+          <property name="templates">
+            <map>
+              <entry key="Facebook" value="http://www.facebook.com/share.php?u=%{url}" />
+              <entry key="FacebookAPI" value="http://www.facebook.com/sharer/sharer.php?s=100&amp;amp;p[url]=%{url}&amp;amp;p[title]=%{title}&amp;amp;p[summary]=%{introduction}&amp;amp;p[images][0]=%{picture}" />
+              <entry key="Twitter" value="http://twitter.com/intent/tweet?text=%{title}&amp;amp;url=%{url}" />
+            </map>
+          </property>
+          <property name="viewService" ref="viewService" />
+          <property name="modelKey" value="socialWebsiteLinks" />
+        </bean>
+      </list>
     </property>
-    <property name="altUrlTemplates">
-      <map> 
-        <entry key="Facebook" value="http://www.facebook.com/sharer/sharer.php?s=100&amp;amp;p[url]=%{url}&amp;amp;p[title]=%{title}&amp;amp;p[summary]=%{introduction}&amp;amp;p[images][0]=%{picture}" />
-      </map>
-    </property>
-    <property name="viewService" ref="viewService" />
   </bean>
 
   <bean id="decorating.resourcePropertyComponent" class="org.vortikal.web.decorating.components.ResourcePropertiesDecoratorComponent">

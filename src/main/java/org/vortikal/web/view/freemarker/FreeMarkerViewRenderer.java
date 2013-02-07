@@ -103,6 +103,7 @@ public class FreeMarkerViewRenderer extends FreeMarkerView implements ReferenceD
         // This causes leaking of state between view invocations.
     }
 
+    @Override
     public ReferenceDataProvider[] getReferenceDataProviders() {
         return this.referenceDataProviders;
     }
@@ -135,6 +136,7 @@ public class FreeMarkerViewRenderer extends FreeMarkerView implements ReferenceD
         }
     }
 
+    @Override
     public String toString() {
         return this.getClass().getName() + ":" + this.getUrl();
     }

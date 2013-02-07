@@ -30,6 +30,7 @@
  */
 package org.vortikal.util.text;
 
+import static junit.framework.Assert.assertEquals;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -58,6 +59,9 @@ public class SimpleTemplateTest extends TestCase {
         vars.put("xxx", "yyy");
         result = render("{$xxx}", vars, "{$", "}");
         assertEquals(result, "yyy");
+        
+        assertEquals("no placeholders", render("no placeholders", vars, "%{", "}"));
+        assertEquals("empty placeholder", render("empty %{}placeholder", vars, "%{", "}"));
     }
 
     private String render(String template, Map<String, String> vars) {

@@ -51,14 +51,9 @@ import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.RepositoryException;
 import org.vortikal.repository.Resource;
-import org.vortikal.repository.ResourceNotModifiedException;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.util.io.StreamUtil;
 import org.vortikal.web.RequestContext;
-import org.vortikal.webdav.PreconditionFailedException;
-// XXX These are in use:
-//import org.vortikal.webdav.ifheader.IfMatchHeader;
-//import org.vortikal.webdav.ifheader.IfNoneMatchHeader;
 
 
 /**
@@ -93,8 +88,6 @@ import org.vortikal.webdav.PreconditionFailedException;
  *   <li><code>ignoreLastModifiedOnCollections</code> - wether or not to ignore the
  *       resource's <code>lastModified</code> value when the resource is a collection.
  *       Default is <code>true</code>.
- *   <li><code>supportIfHeaders</code> - wether or not to look for If-Match and 
- *   If-None-Match headers. Default is <code>false</code>.</li>
  * </ul>
  * </p>
  *
@@ -127,7 +120,6 @@ public class DisplayResourceController
     private boolean streamToString = false;
     private boolean ignoreLastModified = true;
     private boolean ignoreLastModifiedOnCollections = true;
-    private boolean supportIfHeaders = true;
     
     public void setChildName(String childName) {
         this.childName = childName;
@@ -143,10 +135,6 @@ public class DisplayResourceController
         this.view = view;
     }
     
-    public void setSupportIfHeaders(boolean supportIfHeaders) {
-        this.supportIfHeaders = supportIfHeaders;
-    }
-
     public void setIgnoreLastModified(boolean ignoreLastModified) {
         this.ignoreLastModified = ignoreLastModified;
     }
@@ -204,18 +192,6 @@ public class DisplayResourceController
             return new ModelAndView(this.unsupportedResourceView);
         }
 
-        // XXX: Needs IfMatchHeader to compile:
-//        if (this.supportIfHeaders) {
-//            IfMatchHeader ifMatchHeader = new IfMatchHeader(request);
-//            if (!ifMatchHeader.matches(resource)) {
-//                throw new PreconditionFailedException();
-//            }
-//                
-//            IfNoneMatchHeader ifNoneMatchHeader = new IfNoneMatchHeader(request);
-//            if (!ifNoneMatchHeader.matches(resource)) {
-//                throw new ResourceNotModifiedException(uri);
-//            }
-//        }
         model.put("resource", resource);
 
         if (!resource.isCollection()) {

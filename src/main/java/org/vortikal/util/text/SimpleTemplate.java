@@ -146,11 +146,11 @@ public class SimpleTemplate {
     
     private List<Node> nodes;
     
-    public static Node textNode(String text) {
+    private static Node textNode(String text) {
         return new Node(text, false);
     }
     
-    public static Node varNode(String text) {
+    private static Node varNode(String text) {
         return new Node(text, true);
     }
     

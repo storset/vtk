@@ -217,6 +217,7 @@ public class PropertyImpl implements Cloneable, Property {
             return String.valueOf(this.value.getBooleanValue());
          
         default:
+            // XXX this is inconsistent with the handling of BOOLEAN type above:
             throw new IllegalOperationException("Property " + this + " not a string type");
         }
     }

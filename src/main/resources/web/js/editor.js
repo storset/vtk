@@ -1622,7 +1622,7 @@ VrtxEditor.prototype.accordionGroupedInit = function accordionGroupedInit(subGro
     var group = _$(grouped[i]);
     if(group.hasClass("vrtx-pseudo-grouped")) {
       group.find("> label").wrap("<div class='header' />");
-      group.addClass("vrtx-grouped")
+      group.addClass("vrtx-grouped");
     } else {
       group.find("> *:not(.header)").wrapAll("<div />");
     }

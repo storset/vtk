@@ -131,6 +131,7 @@
   margin-top: 0px;
 }
 
+.ui-accordion > div > .header.ui-accordion-header label,
 .ui-accordion > .vrtx-json-element {
   margin-bottom: 0px;
 }

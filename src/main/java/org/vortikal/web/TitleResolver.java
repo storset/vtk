@@ -97,9 +97,9 @@ public class TitleResolver implements ApplicationListener<ContextRefreshedEvent>
     // handling "prefix:name" prop references.. perhaps utility candidate
     private Property getPropertyByReference(Resource resource, String ref) {
         int separatorIdx = ref.indexOf(':');
-        if (separatorIdx > 0) {
+        if (separatorIdx > 0 && separatorIdx < ref.length()-1) {
             String prefix = ref.substring(0, separatorIdx);
-            String suffix = ref.substring(separatorIdx);
+            String suffix = ref.substring(separatorIdx+1);
 
             Property prop = resource.getPropertyByPrefix(prefix, suffix);
             return prop;

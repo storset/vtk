@@ -1025,7 +1025,7 @@ function loadMultipleInputFields(name, addName, removeName, moveUpName, moveDown
 
   inputField.hide();
 
-  inputFieldParent.removeClass("vrtx-textfield").append(vrtxEditor.mustacheFacade.addMultipleInputFieldsAddButton(name, removeName, moveUpName, moveDownName, browseName, size, isBrowsable, isMovable, isDropdown, addName));
+  inputFieldParent.removeClass("vrtx-textfield").append(vrtxEditor.mustacheFacade.getMultipleInputFieldsAddButton(name, removeName, moveUpName, moveDownName, browseName, size, isBrowsable, isMovable, isDropdown, addName));
     
   var addFormFieldFunc = addFormField;
   for (var i = 0; i < vrtxEditor.multipleCommaSeperatedInputFieldLength[name]; i++) {
@@ -1072,19 +1072,19 @@ function addFormField(name, value, removeName, moveUpName, moveDownName, browseN
       removeButton = "", moveUpButton = "", moveDownButton = "", browseButton = "";
 
   if (removeName) {
-    removeButton = vrtxEditor.mustacheFacade.addMultipleInputfieldsInteractionsButton("remove", " " + name, idstr, removeName);
+    removeButton = vrtxEditor.mustacheFacade.getMultipleInputfieldsInteractionsButton("remove", " " + name, idstr, removeName);
   }
   if (isMovable && moveUpName && i > 1) {
-    moveUpButton = vrtxEditor.mustacheFacade.addMultipleInputfieldsInteractionsButton("moveup", "", idstr, "&uarr; " + moveUpName);
+    moveUpButton = vrtxEditor.mustacheFacade.getMultipleInputfieldsInteractionsButton("moveup", "", idstr, "&uarr; " + moveUpName);
   }
   if (isMovable && moveDownName && i < vrtxEditor.multipleCommaSeperatedInputFieldLength[name]) {
-    moveDownButton = vrtxEditor.mustacheFacade.addMultipleInputfieldsInteractionsButton("movedown", "", idstr, "&darr; " + moveDownName);
+    moveDownButton = vrtxEditor.mustacheFacade.getMultipleInputfieldsInteractionsButton("movedown", "", idstr, "&darr; " + moveDownName);
   }
   if(isBrowsable) {
-    browseButton = vrtxEditor.mustacheFacade.addMultipleInputfieldsInteractionsButton("browse", "-resource-ref", idstr, browseName);
+    browseButton = vrtxEditor.mustacheFacade.getMultipleInputfieldsInteractionsButton("browse", "-resource-ref", idstr, browseName);
   }
     
-  var html = vrtxEditor.mustacheFacade.addMultipleInputfield(name, idstr, i, value, size, browseButton, removeButton, moveUpButton, moveDownButton, isDropdown);
+  var html = vrtxEditor.mustacheFacade.getMultipleInputfield(name, idstr, i, value, size, browseButton, removeButton, moveUpButton, moveDownButton, isDropdown);
 
   $(html).insertBefore("#vrtx-" + name + "-add");
     
@@ -1092,7 +1092,7 @@ function addFormField(name, value, removeName, moveUpName, moveDownName, browseN
     if(vrtxEditor.multipleCommaSeperatedInputFieldLength[name] > 0 && isMovable) {
       var fields = $("." + name + " div.vrtx-multipleinputfield");
       if(fields.eq(vrtxEditor.multipleCommaSeperatedInputFieldLength[name] - 1).not("has:button.movedown")) {
-        moveDownButton = vrtxEditor.mustacheFacade.addMultipleInputfieldsInteractionsButton("movedown", "", idstr, "&darr; " + moveDownName);
+        moveDownButton = vrtxEditor.mustacheFacade.getMultipleInputfieldsInteractionsButton("movedown", "", idstr, "&darr; " + moveDownName);
         fields.eq(vrtxEditor.multipleCommaSeperatedInputFieldLength[name] - 1).append(moveDownButton);
       }
     }
@@ -1179,7 +1179,7 @@ function formatMultipleInputFields(name) {
 function initJsonMovableElements(templatesRetrieved, jsonElementsBuilt) {
   $.when(templatesRetrieved, jsonElementsBuilt).done(function() {
     for (var i = 0, len = LIST_OF_JSON_ELEMENTS.length; i < len; i++) {
-      $("#" + LIST_OF_JSON_ELEMENTS[i].name).append(vrtxEditor.mustacheFacade.addJsonBoxesInteractionsButton("add", addBtn))
+      $("#" + LIST_OF_JSON_ELEMENTS[i].name).append(vrtxEditor.mustacheFacade.getJsonBoxesInteractionsButton("add", addBtn))
         .find(".vrtx-add-button").data({'number': i});
     }
         
@@ -1235,31 +1235,31 @@ function initJsonMovableElements(templatesRetrieved, jsonElementsBuilt) {
       switch (types[i].type) {
         case "string":
           if (types[i].dropdown && types[i].valuemap) {
-            htmlTemplate += vrtxEditor.mustacheFacade.addDropdown(types[i], inputFieldName);
+            htmlTemplate += vrtxEditor.mustacheFacade.getDropdown(types[i], inputFieldName);
           } else {
-            htmlTemplate += vrtxEditor.mustacheFacade.addStringField(types[i], inputFieldName);
+            htmlTemplate += vrtxEditor.mustacheFacade.getStringField(types[i], inputFieldName);
           }
           break;
         case "html":
-          htmlTemplate += vrtxEditor.mustacheFacade.addHtmlField(types[i], inputFieldName);
+          htmlTemplate += vrtxEditor.mustacheFacade.getHtmlField(types[i], inputFieldName);
           break;
         case "simple_html":
-          htmlTemplate += vrtxEditor.mustacheFacade.addHtmlField(types[i], inputFieldName);
+          htmlTemplate += vrtxEditor.mustacheFacade.getHtmlField(types[i], inputFieldName);
           break;
         case "boolean":
-          htmlTemplate += vrtxEditor.mustacheFacade.addBooleanField(types[i], inputFieldName);
+          htmlTemplate += vrtxEditor.mustacheFacade.getBooleanField(types[i], inputFieldName);
           break;
         case "image_ref":
-          htmlTemplate += vrtxEditor.mustacheFacade.addImageRef(types[i], inputFieldName);
+          htmlTemplate += vrtxEditor.mustacheFacade.getImageRef(types[i], inputFieldName);
           break;
         case "resource_ref":
-          htmlTemplate += vrtxEditor.mustacheFacade.addResourceRef(types[i], inputFieldName);
+          htmlTemplate += vrtxEditor.mustacheFacade.getResourceRef(types[i], inputFieldName);
           break;
         case "datetime":
-          htmlTemplate += vrtxEditor.mustacheFacade.addDateField(j.a[i], inputFieldName);
+          htmlTemplate += vrtxEditor.mustacheFacade.getDateField(j.a[i], inputFieldName);
           break;
         case "media":
-          htmlTemplate += vrtxEditor.mustacheFacade.addMediaRef(types[i], inputFieldName);
+          htmlTemplate += vrtxEditor.mustacheFacade.getMediaRef(types[i], inputFieldName);
           break;
         default:
           htmlTemplate += "";
@@ -1270,11 +1270,11 @@ function initJsonMovableElements(templatesRetrieved, jsonElementsBuilt) {
     // Move up, move down, remove
     var isImmovable = jsonParent && jsonParent.hasClass("vrtx-multiple-immovable");
     if(!isImmovable) {
-      var moveDownButton = vrtxEditor.mustacheFacade.addJsonBoxesInteractionsButton('move-down', '&darr; ' + moveDownBtn); 
+      var moveDownButton = vrtxEditor.mustacheFacade.getJsonBoxesInteractionsButton('move-down', '&darr; ' + moveDownBtn); 
       
-      var moveUpButton = vrtxEditor.mustacheFacade.addJsonBoxesInteractionsButton('move-up', '&uarr; ' + moveUpBtn);
+      var moveUpButton = vrtxEditor.mustacheFacade.getJsonBoxesInteractionsButton('move-up', '&uarr; ' + moveUpBtn);
     }
-    var removeButton = vrtxEditor.mustacheFacade.addJsonBoxesInteractionsButton('remove', removeBtn);
+    var removeButton = vrtxEditor.mustacheFacade.getJsonBoxesInteractionsButton('remove', removeBtn);
       
     var id = "<input type=\"hidden\" class=\"id\" value=\"" + counter + "\" \/>";
     var newElementId = "vrtx-json-element-" + j.name + "-" + counter;
@@ -1495,44 +1495,38 @@ function scrollToElm(movedElm) {
   }, 270);
 }
 
-/* Mustache => HTML 
- * 
- * TODO: abstraction namespace a la serverFacade
- * 
- */
- 
 /**
  * Mustache facade (JSON-input=>Mustache=>HTML)
  * @namespace
  */
 VrtxEditor.prototype.mustacheFacade = {
-  addMultipleInputfieldsInteractionsButton: function(clazz, name, idstr, text) {
+  getMultipleInputfieldsInteractionsButton: function(clazz, name, idstr, text) {
     return $.mustache(vrtxEditor.multipleCommaSeperatedInputFieldTemplates["button"], { type: clazz, name: name, 
                                                                                         idstr: idstr, buttonText: text });
   },
-  addMultipleInputFieldsAddButton: function(name, removeName, moveUpName, moveDownName, browseName, size, isBrowsable, isMovable, isDropdown, text) {
+  getMultipleInputFieldsAddButton: function(name, removeName, moveUpName, moveDownName, browseName, size, isBrowsable, isMovable, isDropdown, text) {
     return $.mustache(vrtxEditor.multipleCommaSeperatedInputFieldTemplates["add-button"], {
 	                  name: name, removeName: removeName, moveUpName: moveUpName, 
 	                  moveDownName: moveDownName, browseName: browseName,
 	                  size: size, isBrowsable: isBrowsable, isMovable: isMovable,
 	                  isDropdown: isDropdown, buttonText: text });
   },
-  addMultipleInputfield: function(name, idstr, i, value, size, browseButton, removeButton, moveUpButton, moveDownButton, isDropdown) {
+  getMultipleInputfield: function(name, idstr, i, value, size, browseButton, removeButton, moveUpButton, moveDownButton, isDropdown) {
     return $.mustache(vrtxEditor.multipleCommaSeperatedInputFieldTemplates["multiple-inputfield"], { idstr: idstr, i: i, value: value, 
                                                                                                      size: size, browseButton: browseButton,
                                                                                                      removeButton: removeButton, moveUpButton: moveUpButton,
                                                                                                      moveDownButton: moveDownButton, isDropdown: isDropdown,
                                                                                                      dropdownArray: "dropdown" + name });
   },
-  addJsonBoxesInteractionsButton: function(clazz, text) {
+  getJsonBoxesInteractionsButton: function(clazz, text) {
     return $.mustache(TEMPLATES["add-remove-move"], { clazz: clazz, buttonText: text });	
   },
-  addStringField: function(elem, inputFieldName) {
+  getStringField: function(elem, inputFieldName) {
     return $.mustache(TEMPLATES["string"], { classes: "vrtx-string" + " " + elem.name,
                                              elemTitle: elem.title,
                                              inputFieldName: inputFieldName }); 
   }, 
-  addHtmlField: function(elem, inputFieldName) {
+  getHtmlField: function(elem, inputFieldName) {
     var baseclass = "vrtx-html";
     if (elem.type == "simple_html") {
       baseclass = "vrtx-simple-html";
@@ -1541,11 +1535,11 @@ VrtxEditor.prototype.mustacheFacade = {
                                            elemTitle: elem.title,
                                            inputFieldName: inputFieldName }); 
   },
-  addBooleanField: function(elem, inputFieldName) {
+  getBooleanField: function(elem, inputFieldName) {
     return $.mustache(TEMPLATES["radio"], { elemTitle: elem.title,
                                             inputFieldName: inputFieldName }); 
   },
-  addDropdown: function(elem, inputFieldName) {
+  getDropdown: function(elem, inputFieldName) {
     var htmlOpts = [];
     for (i in elem.valuemap) {
       var keyValuePair = elem.valuemap[i];
@@ -1557,11 +1551,11 @@ VrtxEditor.prototype.mustacheFacade = {
                                                inputFieldName: inputFieldName,
                                                options: htmlOpts });  
   },
-  addDateField: function(elem, inputFieldName) {
+  getDateField: function(elem, inputFieldName) {
     return $.mustache(TEMPLATES["date"], { elemTitle: elem.title,
                                            inputFieldName: inputFieldName }); 
   },   
-  addImageRef: function(elem, inputFieldName) {
+  getImageRef: function(elem, inputFieldName) {
     return $.mustache(TEMPLATES["browse-images"], { clazz: 'vrtx-image-ref',
                                                     elemTitle: elem.title,
                                                     inputFieldName: inputFieldName,
@@ -1574,7 +1568,7 @@ VrtxEditor.prototype.mustacheFacade = {
                                                     previewTitle: browseImagesPreview,
                                                     previewNoImageText: browseImagesNoPreview }); 
   },
-  addResourceRef: function(elem, inputFieldName) {
+  getResourceRef: function(elem, inputFieldName) {
     return $.mustache(TEMPLATES["browse"], { clazz: 'vrtx-resource-ref',
                                              elemTitle: elem.title,
                                              inputFieldName: inputFieldName,
@@ -1585,7 +1579,7 @@ VrtxEditor.prototype.mustacheFacade = {
                                              type: 'File',
                                              size: 40 }); 
   },
-  addMediaRef: function(elem, inputFieldName) {      
+  getMediaRef: function(elem, inputFieldName) {      
     return $.mustache(TEMPLATES["browse"], { clazz: 'vrtx-media-ref',
                                              elemTitle: elem.title,
                                              inputFieldName: inputFieldName,

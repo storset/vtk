@@ -312,14 +312,14 @@ resourcetype semester-page : fellestekst-document {
     cloned-course-from : (en : "This course is a clone of", no : "Dette er et klonet kurs av", nn : "Dette er eit klona kurs av"),
     fronter : (en : "Fronter", no : "Fronter", nn : "Fronter"),
     fronter-text : (en : "This course is using Fronter as a part of the education.", no : "Dette kurset benytter Fronter som verktøy i undervisningen.", nn : "Dette kurset nytte Fronter som verktøy i undervisninga."),
-    log-into-fronter: (en : "Log into Fronter", no : "Logg på Fronter", nn : "Logg på Fronter"),
+    log-into-fronter : (en : "Log into Fronter", no : "Logg på Fronter", nn : "Logg på Fronter"),
     studinfo-kontakt : (en : "Contact", no : "Kontakt", nn : "Kontakt"),
     messages-placement : (en : "Placement of messages", no : "Plassering av beskjeder", nn : "Plassering av beskjeder"),
     max-number-of-messages : (en : "Number of messages", no : "Antall beskjeder", nn : "Talet på beskjedar"),
     messages : (en : "Messages", no : "Beskjeder", nn : "Meldingar"),
     teachersUsernames : (en : "Teachers (enter the teachers username)", no : "Lærere (fyll inn lærerens brukernavn)", nn : "Lærarar (fyll inn lærarens brukernavn)"),
     teachers : (en : "Other teachers", no : "Andre lærere", nn : "Andre lærarar"),
-    teacherName : (en : "Name",no : "Navn", nn :"Namn"),
-    teacherUrl : (en : "Webaddress",no : "Webadresse", nn :"Webadresse")
+    teacherName : (en : "Name", no : "Navn", nn : "Namn"),
+    teacherUrl : (en : "Webaddress", no : "Webadresse", nn : "Webadresse")
   }
 }

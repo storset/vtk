@@ -73,6 +73,8 @@ resourcetype course-description : fellestekst-document {
 
     teaching-language (dropdown),
 
+    learning-outcomes (class[vrtx-pseudo-grouped]),
+
     opptak-og-adgang (class[vrtx-shared-text]),
     ikke-privatist (class[vrtx-shared-text]),
     group opptak-og-adgang-group (opptak-og-adgang, opptak-og-adgang-text-field, ikke-privatist, ikke-privatist-text-field) vertical,
@@ -98,6 +100,7 @@ resourcetype course-description : fellestekst-document {
     evaluering-av-emnet (class[vrtx-shared-text]),
     group evaluering-av-emnet-group (evaluering-av-emnet, evaluering-av-emnet-text-field) vertical,
 
+    other-text-field (class[vrtx-pseudo-grouped]),
     other-text-field (after evaluering-av-emnet-group),
 
     studinfo-kontakt (class[vrtx-shared-text]),

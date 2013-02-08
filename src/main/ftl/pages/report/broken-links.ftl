@@ -26,15 +26,25 @@
           filtersAdvancedTitle = "<@vrtx.msg code='report.broken-links.filters.advanced.title' />",
           filtersAdvancedExcludeTitle = "<@vrtx.msg code='report.broken-links.filters.advanced.exclude-title' />",
           filtersAdvancedIncludeTitle = "<@vrtx.msg code='report.broken-links.filters.advanced.include-title' />",
-          filtersAdvancedUpdate = "<@vrtx.msg code='report.broken-links.filters.advanced.update' />",
-          browseBase = '${fckeditorBase.url?html}',
-          browseBaseFolder = '${baseFolder}',
-          browseBasePath = '${fckBrowse.url.pathRepresentation}',
-          btnAdd = '${vrtx.getMsg("editor.add")}',
-          btnRemove = '${vrtx.getMsg("editor.remove")}',
-          btnMoveUp = '${vrtx.getMsg("editor.move-up")}',
-          btnMoveDown = '${vrtx.getMsg("editor.move-down")}',
-          btnBrowse = '${vrtx.getMsg("editor.browseImages")}';
+          filtersAdvancedUpdate = "<@vrtx.msg code='report.broken-links.filters.advanced.update' />";
+          
+      // NEW CODE
+      vrtxAdmin.multipleFormGroupingMessages = {
+        add: "${vrtx.getMsg('editor.add')}",
+        remove: "${vrtx.getMsg('editor.remove')}",
+        moveUp: "${vrtx.getMsg('editor.move-up')}",
+        moveDown: "${vrtx.getMsg('editor.move-down')}",
+        browseImages: "${vrtx.getMsg('editor.browseImages')}"
+      };
+      vrtxAdmin.multipleFormGroupingPaths = {
+      	baseCKURL: "${fckeditorBase.url?html}",
+	    baseFolderURL: "${baseFolder}",
+	    basePath: "${fckBrowse.url.pathRepresentation}"
+      };
+      if(vrtxAdmin.hasFreeze) { // Make immutables
+        Object.freeze(vrtxAdmin.multipleFormGroupingMessages);
+        Object.freeze(vrtxAdmin.multipleFormGroupingPaths);
+      }
    // -->
    </script>
    <script type="text/javascript" src="/vrtx/__vrtx/static-resources/js/plugins/mustache.js"></script>

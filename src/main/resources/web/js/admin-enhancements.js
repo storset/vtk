@@ -70,13 +70,16 @@ function VrtxAdmin() {
     this.isWin = ((this.ua.indexOf("win") != -1) || (this.ua.indexOf("16bit") != -1));
     this.supportsFileList = window.FileList;
     this.animateTableRows = !this.isIE;
-  
-    /** Language extracted from cookie */
-    this.lang = readCookie("vrtx.manage.language", "no");
-  
+
     this.hasConsole = typeof console !== "undefined";
     this.hasConsoleLog = this.hasConsole && console.log;
     this.hasConsoleError = this.hasConsole && console.error;
+    
+    // ECMAScript 5 checks
+    this.hasFreeze = typeof Object.freeze !== "undefined";
+    
+    /** Language extracted from cookie */
+    this.lang = readCookie("vrtx.manage.language", "no");
 
     // Autocomplete parameters
     this.permissionsAutocompleteParams = { minChars: 4, selectFirst: false,
@@ -101,7 +104,7 @@ function VrtxAdmin() {
     this.createResourceReplaceTitle = true;
     this.createDocumentFileName = "";
     this.trashcanCheckedFiles = 0;
-  
+ 
     this.breadcrumbsLastPosLeft = -999;
     this.reloadFromServer = false; // changed by funcProceedCondition and used by funcComplete in completeFormAsync for admin-permissions
     this.ignoreAjaxErrors = false;

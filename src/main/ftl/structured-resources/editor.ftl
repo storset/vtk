@@ -17,7 +17,12 @@
   
   <#assign language = vrtx.getMsg("eventListing.calendar.lang", "en") />
   
-  <script type="text/javascript"><!-- 
+  <#global baseFolder = "/" />
+  <#if resourceContext.parentURI?exists>
+    <#global baseFolder = resourceContext.parentURI?html />
+  </#if>
+  
+  <script type="text/javascript"><!--
     $(window).load(function() {
       initDatePicker(datePickerLang); // TODO: this would never run if resources hangs
     });
@@ -85,11 +90,6 @@
   </script>
 
   <@editor.addCommonScripts language />
-
-  <#global baseFolder = "/" />
-  <#if resourceContext.parentURI?exists>
-    <#global baseFolder = resourceContext.parentURI?html />
-  </#if>
   
   <#if form.resource.type.scripts?exists>
     <@scripts.includeScripts form.resource.type.scripts />

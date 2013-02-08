@@ -343,8 +343,14 @@ VrtxEditor.prototype.initCKEditors = function initCKEditors() {
  * @param {array} cssFileList List of CSS-files to style content in editor
  * @param {string} simpleHTML Make h1 format available (for old document types)
  */
-VrtxEditor.prototype.newEditor = function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, baseDocumentUrl, browsePath, defaultLanguage, cssFileList, simpleHTML) {
+VrtxEditor.prototype.newEditor = function newEditor(name, completeEditor, withoutSubSuper, defaultLanguage, cssFileList, simpleHTML) {
   var vrtxEdit = this;
+  
+  /* TMP inner mapping */
+  var baseFolder = vrtxAdmin.multipleFormGroupingPaths.baseFolderURL,
+      baseUrl = vrtxAdmin.multipleFormGroupingPaths.baseCKURL,
+      baseDocumentUrl = vrtxAdmin.multipleFormGroupingPaths.baseDocURL,
+      browsePath = vrtxAdmin.multipleFormGroupingPaths.basePath;
   
   // If pregenerated parameters is used for init
   if(typeof name === "object") {
@@ -352,13 +358,9 @@ VrtxEditor.prototype.newEditor = function newEditor(name, completeEditor, withou
     name = obj[0];
     completeEditor = obj[1];
     withoutSubSuper = obj[2];
-    baseFolder = obj[3];
-    baseUrl = obj[4];
-    baseDocumentUrl = obj[5];
-    browsePath = obj[6];
-    defaultLanguage = obj[7];
-    cssFileList = obj[8];
-    simpleHTML = obj[9];
+    defaultLanguage = obj[3];
+    cssFileList = obj[4];
+    simpleHTML = obj[5];
     obj = null; // Avoid any mem leak
   }
 
@@ -1001,8 +1003,27 @@ VrtxEditor.prototype.showHideSelect = function showHideSelect(select, init) {
     XXX: refactor / combine and optimize
 \*-------------------------------------------------------------------*/
 
+/**
+ * NEW CODE/API
+ *
+ * Initialize a multiple form grouping with enhancing possibilities
+ *
+ * - Add / Remove
+ * - Move up / move down
+ * - Accordion
+ * - Animated scrolling
+ * - (drag and drop)
+ *
+ * @this {VrtxEditor}
+
+VrtxEditor.prototype.initMultipleFormGrouping = function initMultipleFormGrouping() {
+  // name, isMovable, isBrowsable, isScrollable, hasAccordion(?)
+};
+
+ */
+
 /* Multiple comma seperated input textfields */
-function loadMultipleInputFields(name, addName, removeName, moveUpName, moveDownName, browseName, isMovable, isBrowsable) { // TODO: simplify
+function loadMultipleInputFields(name, isMovable, isBrowsable) { // TODO: simplify
   var inputField = $("." + name + " input[type=text]");
   var inputFieldVal = inputField.val();
   if (inputFieldVal == null) {
@@ -1027,24 +1048,18 @@ function loadMultipleInputFields(name, addName, removeName, moveUpName, moveDown
 
   if(inputFieldParentParent.hasClass("vrtx-resource-ref-browse")) {
     isBrowsable = true;
-    if(inputFieldParent.next().hasClass("vrtx-button")) {
-      inputFieldParent.next().hide();
+    var inputFieldParentNext = inputFieldParent.next();
+    if(inputFieldParentNext.hasClass("vrtx-button")) {
+      inputFieldParentNext.hide();
     } 
   }
 
-  if (isBrowsable && (typeof browseBase === "undefined" 
-                   || typeof browseBaseFolder === "undefined"
-                   || typeof browseBasePath === "undefined")) {
-    isBrowsable = false; 
-  }
-
   inputField.hide();
-
-  inputFieldParent.removeClass("vrtx-textfield").append(vrtxEditor.mustacheFacade.getMultipleInputFieldsAddButton(name, removeName, moveUpName, moveDownName, browseName, size, isBrowsable, isMovable, isDropdown, addName));
+  inputFieldParent.removeClass("vrtx-textfield").append(vrtxEditor.mustacheFacade.getMultipleInputFieldsAddButton(name, size, isBrowsable, isMovable, isDropdown));
     
   var addFormFieldFunc = addFormField;
   for (var i = 0; i < vrtxEditor.multipleCommaSeperatedInputFieldLength[name]; i++) {
-    addFormFieldFunc(name, $.trim(formFields[i]), removeName, moveUpName, moveDownName, browseName, size, isBrowsable, true, isMovable, isDropdown);
+    addFormFieldFunc(name, $.trim(formFields[i]), size, isBrowsable, true, isMovable, isDropdown);
   }
       
   autocompleteUsernames(".vrtx-autocomplete-username");
@@ -1067,11 +1082,11 @@ function initMultipleInputFields() {
     e.stopPropagation();
   });
   vrtxAdmin.cachedAppContent.on("click", ".vrtx-multipleinputfield button.browse-resource-ref", function(e){
-    browseServer($(this).closest(".vrtx-multipleinputfield").find('input').attr('id'), browseBase, browseBaseFolder, browseBasePath, 'File');
+    browseServer($(this).closest(".vrtx-multipleinputfield").find('input').attr('id'), vrtxAdmin.multipleFormGroupingPaths.baseCKURL, vrtxAdmin.multipleFormGroupingPaths.baseFolderURL, vrtxAdmin.multipleFormGroupingPaths.basePath, 'File');
     e.preventDefault();
     e.stopPropagation();
   });
-  
+
   // Retrieve HTML templates
   vrtxEditor.multipleCommaSeperatedInputFieldDeferred = $.Deferred();
   vrtxEditor.multipleCommaSeperatedInputFieldTemplates = vrtxAdmin.retrieveHTMLTemplates("multiple-inputfields",
@@ -1079,26 +1094,24 @@ function initMultipleInputFields() {
                                                                                         vrtxEditor.multipleCommaSeperatedInputFieldDeferred);
 }
 
-function addFormField(name, value, removeName, moveUpName, moveDownName, browseName, size, isBrowsable, init, isMovable, isDropdown) {
+function addFormField(name, value, size, isBrowsable, init, isMovable, isDropdown) {
   if (value == null) value = "";
 
   var idstr = "vrtx-" + name + "-",
       i = vrtxEditor.multipleCommaSeperatedInputFieldCounter[name],
       removeButton = "", moveUpButton = "", moveDownButton = "", browseButton = "";
 
-  if (removeName) {
-    removeButton = vrtxEditor.mustacheFacade.getMultipleInputfieldsInteractionsButton("remove", " " + name, idstr, removeName);
+  removeButton = vrtxEditor.mustacheFacade.getMultipleInputfieldsInteractionsButton("remove", " " + name, idstr, vrtxAdmin.multipleFormGroupingMessages.remove);
+  if (isMovable && i > 1) {
+    moveUpButton = vrtxEditor.mustacheFacade.getMultipleInputfieldsInteractionsButton("moveup", "", idstr, "&uarr; " + vrtxAdmin.multipleFormGroupingMessages.moveUp);
   }
-  if (isMovable && moveUpName && i > 1) {
-    moveUpButton = vrtxEditor.mustacheFacade.getMultipleInputfieldsInteractionsButton("moveup", "", idstr, "&uarr; " + moveUpName);
-  }
-  if (isMovable && moveDownName && i < vrtxEditor.multipleCommaSeperatedInputFieldLength[name]) {
-    moveDownButton = vrtxEditor.mustacheFacade.getMultipleInputfieldsInteractionsButton("movedown", "", idstr, "&darr; " + moveDownName);
+  if (isMovable && i < vrtxEditor.multipleCommaSeperatedInputFieldLength[name]) {
+    moveDownButton = vrtxEditor.mustacheFacade.getMultipleInputfieldsInteractionsButton("movedown", "", idstr, "&darr; " + vrtxAdmin.multipleFormGroupingMessages.moveDown);
   }
   if(isBrowsable) {
-    browseButton = vrtxEditor.mustacheFacade.getMultipleInputfieldsInteractionsButton("browse", "-resource-ref", idstr, browseName);
+    browseButton = vrtxEditor.mustacheFacade.getMultipleInputfieldsInteractionsButton("browse", "-resource-ref", idstr, vrtxAdmin.multipleFormGroupingMessages.browseImages);
   }
-    
+
   var html = vrtxEditor.mustacheFacade.getMultipleInputfield(name, idstr, i, value, size, browseButton, removeButton, moveUpButton, moveDownButton, isDropdown);
 
   $(html).insertBefore("#vrtx-" + name + "-add");
@@ -1107,7 +1120,7 @@ function addFormField(name, value, removeName, moveUpName, moveDownName, browseN
     if(vrtxEditor.multipleCommaSeperatedInputFieldLength[name] > 0 && isMovable) {
       var fields = $("." + name + " div.vrtx-multipleinputfield");
       if(fields.eq(vrtxEditor.multipleCommaSeperatedInputFieldLength[name] - 1).not("has:button.movedown")) {
-        moveDownButton = vrtxEditor.mustacheFacade.getMultipleInputfieldsInteractionsButton("movedown", "", idstr, "&darr; " + moveDownName);
+        moveDownButton = vrtxEditor.mustacheFacade.getMultipleInputfieldsInteractionsButton("movedown", "", idstr, "&darr; " + vrtxAdmin.multipleFormGroupingMessages.moveDown);
         fields.eq(vrtxEditor.multipleCommaSeperatedInputFieldLength[name] - 1).append(moveDownButton);
       }
     }
@@ -1193,10 +1206,11 @@ function formatMultipleInputFields(name) {
 function initJsonMovableElements(templatesRetrieved, jsonElementsBuilt) {
   $.when(templatesRetrieved, jsonElementsBuilt).done(function() {
     for (var i = 0, len = LIST_OF_JSON_ELEMENTS.length; i < len; i++) {
-      $("#" + LIST_OF_JSON_ELEMENTS[i].name).append(vrtxEditor.mustacheFacade.getJsonBoxesInteractionsButton("add", addBtn))
+      $("#" + LIST_OF_JSON_ELEMENTS[i].name)
+        .append(vrtxEditor.mustacheFacade.getJsonBoxesInteractionsButton("add", vrtxAdmin.multipleFormGroupingMessages.add))
         .find(".vrtx-add-button").data({'number': i});
     }
-        
+     
     // TODO: avoid this being hardcoded here
     var syllabusItems = $("#editor.vrtx-syllabus #items");
     wrapItemsLeftRight(syllabusItems.find(".vrtx-json-element"), ".author, .title, .year, .publisher, .isbn, .comment", ".linktext, .link, .bibsys, .fulltext, .articles");
@@ -1276,7 +1290,6 @@ function initJsonMovableElements(templatesRetrieved, jsonElementsBuilt) {
           htmlTemplate += vrtxEditor.mustacheFacade.getMediaRef(types[i], inputFieldName);
           break;
         default:
-          htmlTemplate += "";
           break;
       }
     }
@@ -1284,11 +1297,10 @@ function initJsonMovableElements(templatesRetrieved, jsonElementsBuilt) {
     // Move up, move down, remove
     var isImmovable = jsonParent && jsonParent.hasClass("vrtx-multiple-immovable");
     if(!isImmovable) {
-      var moveDownButton = vrtxEditor.mustacheFacade.getJsonBoxesInteractionsButton('move-down', '&darr; ' + moveDownBtn); 
-      
-      var moveUpButton = vrtxEditor.mustacheFacade.getJsonBoxesInteractionsButton('move-up', '&uarr; ' + moveUpBtn);
+      var moveDownButton = vrtxEditor.mustacheFacade.getJsonBoxesInteractionsButton('move-down', '&darr; ' + vrtxAdmin.multipleFormGroupingMessages.moveDown); 
+      var moveUpButton = vrtxEditor.mustacheFacade.getJsonBoxesInteractionsButton('move-up', '&uarr; ' + vrtxAdmin.multipleFormGroupingMessages.moveUp);
     }
-    var removeButton = vrtxEditor.mustacheFacade.getJsonBoxesInteractionsButton('remove', removeBtn);
+    var removeButton = vrtxEditor.mustacheFacade.getJsonBoxesInteractionsButton('remove', vrtxAdmin.multipleFormGroupingMessages.remove);
       
     var id = "<input type=\"hidden\" class=\"id\" value=\"" + counter + "\" \/>";
     var newElementId = "vrtx-json-element-" + j.name + "-" + counter;
@@ -1352,9 +1364,9 @@ function initJsonMovableElements(templatesRetrieved, jsonElementsBuilt) {
     for (i in types) {
       var inputFieldName = j.name + "." + types[i].name + "." + counter;
       if (types[i].type == "simple_html") {
-        vrtxEditor.newEditor(inputFieldName, false, false, parentURI, ckBaseURI, ckBaseDocURI, ckBaseBrowsePath, requestLang, cssFileList, "true");
+        vrtxEditor.newEditor(inputFieldName, false, false, requestLang, cssFileList, "true");
       } else if (types[i].type == "html") {
-        vrtxEditor.newEditor(inputFieldName, true,  false, parentURI, ckBaseURI, ckBaseDocURI, ckBaseBrowsePath, requestLang, cssFileList, "false");
+        vrtxEditor.newEditor(inputFieldName, true,  false, requestLang, cssFileList, "false");
       } else if (types[i].type == "datetime") {
         displayDateAsMultipleInputFields(inputFieldName);
       }
@@ -1477,6 +1489,8 @@ function swapContent(counter, arrayOfIds, move, name) {
   }
 }
     
+/* NOTE: can be used generally if boolean hasScrollAnim is turned on */
+    
 function scrollToElm(movedElm) {
   var absPos = movedElm.offset();
   var absPosTop = absPos.top;
@@ -1504,12 +1518,10 @@ VrtxEditor.prototype.mustacheFacade = {
     return $.mustache(vrtxEditor.multipleCommaSeperatedInputFieldTemplates["button"], { type: clazz, name: name, 
                                                                                         idstr: idstr, buttonText: text });
   },
-  getMultipleInputFieldsAddButton: function(name, removeName, moveUpName, moveDownName, browseName, size, isBrowsable, isMovable, isDropdown, text) {
+  getMultipleInputFieldsAddButton: function(name, size, isBrowsable, isMovable, isDropdown) {
     return $.mustache(vrtxEditor.multipleCommaSeperatedInputFieldTemplates["add-button"], {
-	                  name: name, removeName: removeName, moveUpName: moveUpName, 
-	                  moveDownName: moveDownName, browseName: browseName,
-	                  size: size, isBrowsable: isBrowsable, isMovable: isMovable,
-	                  isDropdown: isDropdown, buttonText: text });
+	                  name: name, size: size, isBrowsable: isBrowsable, isMovable: isMovable,
+	                  isDropdown: isDropdown, buttonText: vrtxAdmin.multipleFormGroupingMessages.add });
   },
   getMultipleInputfield: function(name, idstr, i, value, size, browseButton, removeButton, moveUpButton, moveDownButton, isDropdown) {
     return $.mustache(vrtxEditor.multipleCommaSeperatedInputFieldTemplates["multiple-inputfield"], { idstr: idstr, i: i, value: value, 
@@ -1554,15 +1566,15 @@ VrtxEditor.prototype.mustacheFacade = {
   getDateField: function(elem, inputFieldName) {
     return $.mustache(TEMPLATES["date"], { elemTitle: elem.title,
                                            inputFieldName: inputFieldName }); 
-  },   
+  },
   getImageRef: function(elem, inputFieldName) {
     return $.mustache(TEMPLATES["browse-images"], { clazz: 'vrtx-image-ref',
                                                     elemTitle: elem.title,
                                                     inputFieldName: inputFieldName,
-                                                    fckEditorBaseUrl: ckBaseURI,
-                                                    parentURI: parentURI,
-                                                    fckBrowsePath: ckBaseBrowsePath,
-                                                    browseButtonText: browseImagesBtn,
+                                                    baseCKURL: vrtxAdmin.multipleFormGroupingPaths.baseCKURL,
+                                                    baseFolderURL: vrtxAdmin.multipleFormGroupingPaths.baseFolderURL,
+                                                    basePath: vrtxAdmin.multipleFormGroupingPaths.basePath,
+                                                    browseButtonText: vrtxAdmin.multipleFormGroupingMessages.browseImages,
                                                     type: '',
                                                     size: 30,
                                                     previewTitle: browseImagesPreview,
@@ -1572,10 +1584,10 @@ VrtxEditor.prototype.mustacheFacade = {
     return $.mustache(TEMPLATES["browse"], { clazz: 'vrtx-resource-ref',
                                              elemTitle: elem.title,
                                              inputFieldName: inputFieldName,
-                                             fckEditorBaseUrl: ckBaseURI,
-                                             parentURI: parentURI,
-                                             fckBrowsePath: ckBaseBrowsePath,
-                                             browseButtonText: browseImagesBtn,
+                                             baseCKURL: vrtxAdmin.multipleFormGroupingPaths.baseCKURL,
+                                             baseFolderURL: vrtxAdmin.multipleFormGroupingPaths.baseFolderURL,
+                                             basePath: vrtxAdmin.multipleFormGroupingPaths.basePath,
+                                             browseButtonText: vrtxAdmin.multipleFormGroupingMessages.browseImages,
                                              type: 'File',
                                              size: 40 }); 
   },
@@ -1583,10 +1595,10 @@ VrtxEditor.prototype.mustacheFacade = {
     return $.mustache(TEMPLATES["browse"], { clazz: 'vrtx-media-ref',
                                              elemTitle: elem.title,
                                              inputFieldName: inputFieldName,
-                                             fckEditorBaseUrl: ckBaseURI,
-                                             parentURI: parentURI,
-                                             fckBrowsePath: ckBaseBrowsePath,
-                                             browseButtonText: browseImagesBtn,
+                                             baseCKURL: vrtxAdmin.multipleFormGroupingPaths.baseCKURL,
+                                             baseFolderURL: vrtxAdmin.multipleFormGroupingPaths.baseFolderURL,
+                                             basePath: vrtxAdmin.multipleFormGroupingPaths.basePath,
+                                             browseButtonText: vrtxAdmin.multipleFormGroupingMessages.browseImages,
                                              type: 'Media',
                                              size: 30 }); 
   }

@@ -6,20 +6,6 @@
 vrtxAdmin._$(document).ready(function() {
    var vrtxAdm = vrtxAdmin, _$ = vrtxAdm._$;
 
-   // Multiple fields interaction
-   initMultipleInputFields();
-        
-   $.when(vrtxAdm.multipleCommaSeperatedInputFieldDeferred).done(function() {
-     if(_$(".report-filters-folders-exclude").length) {
-       loadMultipleInputFields("report-filters-folders-exclude", btnAdd, btnRemove, btnMoveUp,
-                               btnMoveDown, btnBrowse, false, true);
-       }   
-     if(_$(".report-filters-folders-include").length) {                  
-       loadMultipleInputFields("report-filters-folders-include", btnAdd, btnRemove, btnMoveUp,
-                               btnMoveDown, btnBrowse, false, true);
-     } 
-   });
-
    vrtxAdm.cachedAppContent.on("click", "td.vrtx-report-broken-links-web-page a", function(e) {
      var openedWebpageWithBrokenLinks = openRegular(this.href, 1020, 800, "DisplayWebpageBrokenLinks");
      e.stopPropagation();
@@ -29,7 +15,7 @@ vrtxAdmin._$(document).ready(function() {
    var brokenLinksFilters = _$("#vrtx-report-filters");
    if(brokenLinksFilters.length) {
      brokenLinksFilters.append("<a href='#' id='vrtx-report-filters-show-hide-advanced' onclick='javascript:void(0);'>" + filtersAdvancedShow + "...</a>");
-     // TODO: Generate HTML with Mustache
+     // XXX: Generate HTML with Mustache
      var html = "<div id='vrtx-report-filters-folders-include-exclude' class='solidExpandedForm'>"
                 + "<h3>" + filtersAdvancedTitle + "</h3>"
                 + "<div id='vrtx-report-filters-folders-exclude' class='report-filters-folders-exclude'><h4>" + filtersAdvancedExcludeTitle + "</h4>"
@@ -39,6 +25,17 @@ vrtxAdmin._$(document).ready(function() {
                 + "<a class='vrtx-button'><span>" + filtersAdvancedUpdate + "</span></a>"
              + "</div>";
      _$(html).insertAfter(brokenLinksFilters);
+     
+     initMultipleInputFields();
+
+     _$.when(vrtxEditor.multipleCommaSeperatedInputFieldDeferred).done(function() {
+       if(_$(".report-filters-folders-exclude").length) {
+         loadMultipleInputFields("report-filters-folders-exclude", false, true);
+       }   
+       if(_$(".report-filters-folders-include").length) {     
+         loadMultipleInputFields("report-filters-folders-include", false, true);
+       } 
+     });
 
      var pairs = location.search.split(/\&/),
          includedFolders = "", excludedFolders = "", query = "", pair = "";

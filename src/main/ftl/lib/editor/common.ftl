@@ -26,6 +26,25 @@
     var datePickerLang = "${language}";
     var tooLongFieldPre = "<@vrtx.msg code='editor.too-long-field-pre' />";
     var tooLongFieldPost = "<@vrtx.msg code='editor.too-long-field-post' />";
+    
+    // NEW CODE
+    vrtxAdmin.multipleFormGroupingMessages = {
+      add: "${vrtx.getMsg('editor.add')}",
+      remove: "${vrtx.getMsg('editor.remove')}",
+      moveUp: "${vrtx.getMsg('editor.move-up')}",
+      moveDown: "${vrtx.getMsg('editor.move-down')}",
+      browseImages: "${vrtx.getMsg('editor.browseImages')}"
+	};
+	vrtxAdmin.multipleFormGroupingPaths = {
+	  baseCKURL: "${fckeditorBase.url?html}",
+	  baseFolderURL: "${baseFolder}",
+	  baseDocURL: "${fckeditorBase.documentURL?html}",
+	  basePath: "${fckBrowse.url.pathRepresentation}"
+	};
+	if(vrtxAdmin.hasFreeze) { // Make immutables
+	  Object.freeze(vrtxAdmin.multipleFormGroupingMessages);
+	  Object.freeze(vrtxAdmin.multipleFormGroupingPaths);
+	}
          
     // IE CSS
     if (vrtxAdmin.isIE && typeof cssFileList !== "undefined") {
@@ -53,14 +72,10 @@
       if (CKEDITOR.env.isCompatible) {
         try {
           if (typeof vrtxEditor !== "undefined") {
-            vrtxEditor.CKEditorsInit.push(['${content}', ${completeEditor?string}, ${withoutSubSuper?string}, 
-	                                      '${baseFolder?js_string}', '${fckeditorBase.url?html}', '${fckeditorBase.documentURL?html}', 
-	                                      '${fckBrowse.url.pathRepresentation}', '<@vrtx.requestLanguage />', cssFileList, ${simpleHTML?string}]);
+            vrtxEditor.CKEditorsInit.push(['${content}', ${completeEditor?string}, ${withoutSubSuper?string}, '<@vrtx.requestLanguage />', cssFileList, ${simpleHTML?string}]);
 	      } else {
 	        $(document).ready(function() {
-	          vrtxEditor.newEditor('${content}', ${completeEditor?string}, ${withoutSubSuper?string}, 
-	                               '${baseFolder?js_string}', '${fckeditorBase.url?html}', '${fckeditorBase.documentURL?html}', 
-	                               '${fckBrowse.url.pathRepresentation}', '<@vrtx.requestLanguage />', cssFileList, ${simpleHTML?string});
+	          vrtxEditor.newEditor('${content}', ${completeEditor?string}, ${withoutSubSuper?string}, '<@vrtx.requestLanguage />', cssFileList, ${simpleHTML?string});
 	        });
 	      }
 	    } catch (e) {

@@ -6,18 +6,9 @@
   <script type="text/javascript" src="${webResources?html}/jquery/plugins/jquery.scrollTo.min.js"></script>
   <script type="text/javascript"><!--
   
-    var addBtn = '${vrtx.getMsg("editor.add")}',
-        moveDownBtn = '${vrtx.getMsg("editor.move-down")}',
-        moveUpBtn = '${vrtx.getMsg("editor.move-up")}',
-        removeBtn = '${vrtx.getMsg("editor.remove")}',
-        browseImagesBtn = '<@vrtx.msg code="editor.browseImages" />',
-        browseImagesPreview = '<@vrtx.msg code="editor.image.preview-title" />',
+    var browseImagesPreview = '<@vrtx.msg code="editor.image.preview-title" />',
         browseImagesNoPreview = '<@vrtx.msg code="editor.image.no-preview-text" />';
-        requestLang = '<@vrtx.requestLanguage />',
-        parentURI = '${resourceContext.parentURI?js_string}',
-        ckBaseURI = '${fckeditorBase.url?html}',
-        ckBaseDocURI = '${fckeditorBase.documentURL?html}',
-        ckBaseBrowsePath = '${fckBrowse.url.pathRepresentation}';
+        requestLang = '<@vrtx.requestLanguage />';
    
     var TEMPLATES = [];
     var LIST_OF_JSON_ELEMENTS = [];

@@ -43,13 +43,14 @@
 
     <script type="text/javascript"><!--
       var MULTIPLE_INPUT_FIELD_INITIALIZED;
+      
       $(window).load(function() {
         initDatePicker(datePickerLang); // TODO: this would never run if resources hangs
       });
     
       $(document).ready(function() {
         var vrtxAdm = vrtxAdmin, _$ = vrtxAdm._$;
-      
+
         // Sticky bar shortcuts
         vrtxAdm.mapShortcut("#vrtx-save-view-shortcut", "#saveAndViewButton");
         vrtxAdm.mapShortcut("#vrtx-save-copy-shortcut", "#saveCopyButton");
@@ -91,19 +92,14 @@
           }
         
           if(hasFeaturedArticles) {
-            loadMultipleInputFields("featured-articles",'${vrtx.getMsg("editor.add")}',
-                                    '${vrtx.getMsg("editor.remove")}', '${vrtx.getMsg("editor.move-up")}',
-                                    '${vrtx.getMsg("editor.move-down")}', '${vrtx.getMsg("editor.browseImages")}', true, true);
+            loadMultipleInputFields("featured-articles", true, true);
           }   
           if(hasAggregation) {               
-            loadMultipleInputFields("aggregation", '${vrtx.getMsg("editor.add")}',
-                                    '${vrtx.getMsg("editor.remove")}', '${vrtx.getMsg("editor.move-up")}',
-                                    '${vrtx.getMsg("editor.move-down")}', '${vrtx.getMsg("editor.browseImages")}', false, false);
+            loadMultipleInputFields("aggregation", false, false);
           } 
           if(hasManuallyApprove) {
-            loadMultipleInputFields("manually-approve-from", '${vrtx.getMsg("editor.add")}',
-                                    '${vrtx.getMsg("editor.remove")}', '${vrtx.getMsg("editor.move-up")}',
-                                    '${vrtx.getMsg("editor.move-down")}', '${vrtx.getMsg("editor.browseImages")}', false, false);
+            loadMultipleInputFields("manually-approve-from", false, false);
+            
             var manuallyApproveButton = $("#manually-approve-container-title");
             manuallyApproveButton.parent().find("> div:first-child").append(manuallyApproveButton.remove());
           }
@@ -151,10 +147,7 @@
           approveTablePublished = "<@vrtx.msg code='publish.permission.published' />",
           approveShowAll = "<@vrtx.msg code='editor.manually-approve.show-all' />",
           approveShowApprovedOnly = "<@vrtx.msg code='editor.manually-approve.show-approved-only' />",
-          approveNoApprovedMsg = "<@vrtx.msg code='editor.manually-approve.no-approved-msg' />",
-          browseBase = '${fckeditorBase.url?html}',
-          browseBaseFolder = '${baseFolder}',
-          browseBasePath = '${fckBrowse.url.pathRepresentation}';
+          approveNoApprovedMsg = "<@vrtx.msg code='editor.manually-approve.no-approved-msg' />";
 
       // CKEditor CSS
       var cssFileList = [<#if fckEditorAreaCSSURL?exists>

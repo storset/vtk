@@ -61,7 +61,7 @@
       <input type="text" name="{{ inputFieldName }}" id="{{ inputFieldName }}" value="" size="{{ size }}" />
     </div>
     <div class="vrtx-button">
-      <button type="button" onclick="browseServer('{{ inputFieldName }}', '{{ fckEditorBaseUrl }}', '{{ parentURI }}', '{{ fckBrowsePath }}', '{{ type }}');">
+      <button type="button" onclick="browseServer('{{ inputFieldName }}', '{{ baseCKURL }}', '{{ baseFolderURL }}', '{{ basePath }}', '{{ type }}');">
         {{ browseButtonText }}
       </button>
     </div>
@@ -80,7 +80,7 @@
       <input type="text" class="preview-image-inputfield" name="{{ inputFieldName }}" id="{{ inputFieldName }}" value="" size="{{ size }}" />
     </div>
     <div class="vrtx-button">
-      <button type="button" onclick="browseServer('{{ inputFieldName }}', '{{ fckEditorBaseUrl }}', '{{ parentURI }}', '{{ fckBrowsePath }}', '{{ type }}');">
+      <button type="button" onclick="browseServer('{{ inputFieldName }}', '{{ baseCKURL }}', '{{ baseFolderURL }}', '{{ basePath }}', '{{ type }}');">
         {{ browseButtonText }}
       </button>
     </div>

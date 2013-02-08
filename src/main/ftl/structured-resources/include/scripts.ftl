@@ -22,8 +22,7 @@
           browseBasePath = '${fckBrowse.url.pathRepresentation}';
           <#list scripts as script>
             <#if script.type == 'MULTIPLEINPUTFIELDS' >
-              loadMultipleInputFields('${script.name}', '${vrtx.getMsg("editor.add")}', '${vrtx.getMsg("editor.remove")}', '${vrtx.getMsg("editor.move-up")}', 
-                                      '${vrtx.getMsg("editor.move-down")}', '${vrtx.getMsg("editor.browseImages")}', true, false);
+              loadMultipleInputFields('${script.name}', true, false);
             </#if>
           </#list>
           MULTIPLE_INPUT_FIELD_INITIALIZED.resolve();

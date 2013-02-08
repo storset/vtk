@@ -885,16 +885,16 @@ VrtxEditor.prototype.initShowHide = function initShowHide() {
   setShowHideRadiosOldEditor("#resource\\.recursive-listing\\.false, #resource\\.recursive-listing\\.unspecified", // radioIds
                               "#resource\\.recursive-listing\\.false:checked",                                         // conditionHide
                               'false',                                                                                 // conditionHideEqual
-                              ["#vrtx-resource\\.recursive-listing-subfolders"]);                                      // showHideProps
+                              "#vrtx-resource\\.recursive-listing-subfolders");                                      // showHideProps
   setShowHideRadiosOldEditor("#resource\\.display-type\\.unspecified, #resource\\.display-type\\.calendar",
                               "#resource\\.display-type\\.calendar:checked",
                               null,
-                              ["#vrtx-resource\\.event-type-title"]);
+                              "#vrtx-resource\\.event-type-title");
 
   setShowHideRadiosOldEditor("#resource\\.display-type\\.unspecified, #resource\\.display-type\\.calendar",
                               "#resource\\.display-type\\.calendar:checked",
                               'calendar',
-                              ["#vrtx-resource\\.hide-additional-content"]);
+                              "#vrtx-resource\\.hide-additional-content");
                               
   vrtxEdit.setShowHideSelectNewEditor();
 };
@@ -907,11 +907,13 @@ function setShowHideBooleanNewEditor(name, parameters, hideTrues) {
   })	
 }
 
-function toggleShowHideNewEditor(name, parameters, hideTrues) {
-  if ($('#' + name + (hideTrues ? '-true' : '-false'))[0].checked) {
-    $(parameters).hide();
-  } else if ($('#' + name + (hideTrues ? '-false' : '-true'))[0].checked) {
-    $(parameters).show();
+function toggleShowHideNewEditor(name, parameters, hideTrues, init) {
+  if ($('#' + name + (hideTrues ? '-false' : '-true'))[0].checked) {
+    init ? $(parameters).show()
+         : $(parameters).slideDown("fast");
+  } else if ($('#' + name + (hideTrues ? '-true' : '-false'))[0].checked) {
+    init ? $(parameters).hide()
+         : $(parameters).slideUp("fast");
   }
 }
 
@@ -919,16 +921,15 @@ function setShowHideRadiosOldEditor(radioIds, conditionHide, conditionHideEqual,
   vrtxEditor.initEventHandler(radioIds, {
     wrapper: "#editor",
 	callback: toggleShowHideOldEditor,
-    callbackParams: [conditionHide, conditionHideEqual, showHideProps]
-  })
+	callbackParams: [conditionHide, conditionHideEqual, showHideProps]
+  });
 }
 
-function toggleShowHideOldEditor(conditionHide, conditionHideEqual, showHideProps) {
-  var show = !($(conditionHide).val() == conditionHideEqual);
-  for (var i = 0, len = showHideProps.length; i < len; i++) {
-    show ? $(showHideProps[i]).show()
-         : $(showHideProps[i]).hide()
-  }
+function toggleShowHideOldEditor(conditionHide, conditionHideEqual, showHideProps, init) {
+  !($(conditionHide).val() == conditionHideEqual) ? init ? $(showHideProps).show()
+                                                         : $(showHideProps).slideDown("fast")
+                                                  : init ? $(showHideProps).hide()
+                                                         : $(showHideProps).slideUp("fast");
 }
 
 /**
@@ -942,8 +943,7 @@ VrtxEditor.prototype.setShowHideSelectNewEditor = function setShowHideSelectNewE
   for(var select in vrtxEdit.selectMappings) {
     vrtxEdit.initEventHandler("#" + select, {
       event: "change",
-      callback: vrtxEdit.showHideSelect,
-      callbackChange: (select === "typeToDisplay" ? vrtxEdit.accordionGroupedCloseActiveHidden : function(p){})
+      callback: vrtxEdit.showHideSelect
     });
   }
 }
@@ -955,7 +955,7 @@ VrtxEditor.prototype.setShowHideSelectNewEditor = function setShowHideSelectNewE
  * @this {VrtxEditor}
  * @param {object} select The select field
  */
-VrtxEditor.prototype.showHideSelect = function showHideSelect(select) {
+VrtxEditor.prototype.showHideSelect = function showHideSelect(select, init) {
   var vrtxEdit = this;
   
   var id = select.attr("id");
@@ -973,6 +973,7 @@ VrtxEditor.prototype.showHideSelect = function showHideSelect(select) {
       } 
     }
   }
+  if(!init) vrtxEdit.accordionGroupedCloseActiveHidden();
 };
 
 /*-------------------------------------------------------------------*\
@@ -1736,10 +1737,9 @@ VrtxEditor.prototype.initEventHandler = function initEventHandler(selector, opts
   
   var vrtxEdit = this;
 
-  opts.callback.apply(vrtxEdit, opts.callbackParams);
+  opts.callback.apply(vrtxEdit, opts.callbackParams, true);
   $(opts.wrapper).on(opts.event, select, function () {
-    opts.callback.apply(vrtxEdit, opts.callbackParams);
-    opts.callbackChange.apply(vrtxEdit);
+    opts.callback.apply(vrtxEdit, opts.callbackParams, false);
   });
 };
 

@@ -908,23 +908,13 @@ function setShowHideBooleanNewEditor(name, parameters, hideTrues) {
 }
 
 function toggleShowHideNewEditor(name, parameters, hideTrues) {
-  var hide = hideTrues ? '-true' : '-false';
-  var show = hideTrues ? '-false' : '-true';
-
-  var trues = $('#' + name + hide);
-  for(var i = 0, truesLen = trues.length; i < truesLen; i++) {
-    if (trues[i].checked) {
-      for (var k = 0, parametersLen = parameters.length; k < parametersLen; k++) {
-        $('div.' + parameters[k]).hide();
-      }
+  if ($('#' + name + (hideTrues ? '-true' : '-false'))[0].checked) {
+    for (var i = 0, len = parameters.length; i < len; i++) {
+      $('div.' + parameters[i]).hide();
     }
-  }
-  var falses = $('#' + name + show);
-  for(i = 0, falsesLen = falses.length; i < falsesLen; i++) {
-    if (falses[i].checked) {
-      for (k = 0, parametersLength = parameters.length; k < parametersLength; k++) {
-        $('div.' + parameters[k]).show();
-      }
+  } else if ($('#' + name + (hideTrues ? '-false' : '-true'))[0].checked) {
+    for (var i = 0, len = parameters.length; i < len; i++) {
+      $('div.' + parameters[i]).show();
     }
   }
 }
@@ -940,7 +930,7 @@ function setShowHideRadiosOldEditor(radioIds, conditionHide, conditionHideEqual,
 function toggleShowHideOldEditor(conditionHide, conditionHideEqual, showHideProps) {
   var show = !($(conditionHide).val() == conditionHideEqual);
   for (var i = 0, len = showHideProps.length; i < len; i++) {
-    show ? $(showHideProps[i]).show() 
+    show ? $(showHideProps[i]).show()
          : $(showHideProps[i]).hide()
   }
 }

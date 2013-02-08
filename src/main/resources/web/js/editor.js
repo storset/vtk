@@ -882,17 +882,17 @@ VrtxEditor.prototype.initShowHide = function initShowHide() {
   });
   _$("#resource\\.courseContext\\.course-status").change();
 
-  setShowHideRadiosOldEditor("#resource\\.recursive-listing\\.false, #resource\\.recursive-listing\\.unspecified", 
+  setShowHideBooleanOldEditor("#resource\\.recursive-listing\\.false, #resource\\.recursive-listing\\.unspecified", 
                              "#vrtx-resource\\.recursive-listing-subfolders",
                              "#resource\\.recursive-listing\\.false:checked",                                       
                              "false");  
                                                                  
-  setShowHideRadiosOldEditor("#resource\\.display-type\\.unspecified, #resource\\.display-type\\.calendar",
+  setShowHideBooleanOldEditor("#resource\\.display-type\\.unspecified, #resource\\.display-type\\.calendar",
                              "#vrtx-resource\\.event-type-title",
                              "#resource\\.display-type\\.calendar:checked",
                              null);
                              
-  setShowHideRadiosOldEditor("#resource\\.display-type\\.unspecified, #resource\\.display-type\\.calendar",
+  setShowHideBooleanOldEditor("#resource\\.display-type\\.unspecified, #resource\\.display-type\\.calendar",
                              "#vrtx-resource\\.hide-additional-content",
                              "#resource\\.display-type\\.calendar:checked",
                              "calendar");
@@ -905,26 +905,26 @@ function setShowHideBooleanNewEditor(name, properties, hideTrues) {
 	wrapper: "#editor",
     callback: function(props, hideTrues, name , init) {
       if ($('#' + name + (hideTrues ? '-false' : '-true'))[0].checked) {
-        toggleShowHide(props, true, init);
+        toggleShowHideBoolean(props, true, init);
       } else if ($('#' + name + (hideTrues ? '-true' : '-false'))[0].checked) {
-        toggleShowHide(props, false, init); 
+        toggleShowHideBoolean(props, false, init); 
       }
     },
 	callbackParams: [properties, hideTrues, name]
   })	
 }
 
-function setShowHideRadiosOldEditor(radioIds, properties, conditionHide, conditionHideEqual) {
+function setShowHideBooleanOldEditor(radioIds, properties, conditionHide, conditionHideEqual) {
   vrtxEditor.initEventHandler(radioIds, {
     wrapper: "#editor",
 	callback: function(props, conditionHide, conditionHideEqual, init) {
-	  toggleShowHide(props, !($(conditionHide).val() == conditionHideEqual), init);
+	  toggleShowHideBoolean(props, !($(conditionHide).val() == conditionHideEqual), init);
 	},
 	callbackParams: [properties, conditionHide, conditionHideEqual]
   });
 }
 
-function toggleShowHide(props, show, init) {
+function toggleShowHideBoolean(props, show, init) {
   show ? init ? $(props).show()
               : $(props).slideDown("fast")
        : init ? $(props).hide()

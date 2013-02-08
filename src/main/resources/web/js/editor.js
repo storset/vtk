@@ -1184,10 +1184,10 @@ function initJsonMovableElements(templatesRetrieved, jsonElementsBuilt) {
     }
         
     // TODO: avoid this being hardcoded here
-    var syllbausItems = $("#editor.vrtx-syllabus #items");
-    wrapItemsLeftRight(syllbausItems.find(".vrtx-json-element"), ".author, .title, .year, .publisher, .isbn, .comment", ".linktext, .link, .bibsys, .fulltext, .articles");
-    syllbausItems.find(".author input, .title input").addClass("header-populators");
-    syllbausItems.find(".vrtx-html textarea").addClass("header-fallback-populator");
+    var syllabusItems = $("#editor.vrtx-syllabus #items");
+    wrapItemsLeftRight(syllabusItems.find(".vrtx-json-element"), ".author, .title, .year, .publisher, .isbn, .comment", ".linktext, .link, .bibsys, .fulltext, .articles");
+    syllabusItems.find(".author input, .title input").addClass("header-populators");
+    syllabusItems.find(".vrtx-html textarea").addClass("header-fallback-populator");
         
     var sharedTextItems = $("#editor.vrtx-shared-text #shared-text-box");
     sharedTextItems.find(".title input").addClass("header-populators");

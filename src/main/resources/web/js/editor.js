@@ -1185,7 +1185,7 @@ function initJsonMovableElements(templatesRetrieved, jsonElementsBuilt) {
         
     // TODO: avoid this being hardcoded here
     var syllbausItems = $("#editor.vrtx-syllabus #items");
-    wrapJSONItemsLeftRight(syllbausItems.find(".vrtx-json-element"), ".author, .title, .year, .publisher, .isbn, .comment", ".linktext, .link, .bibsys, .fulltext, .articles");
+    wrapItemsLeftRight(syllbausItems.find(".vrtx-json-element"), ".author, .title, .year, .publisher, .isbn, .comment", ".linktext, .link, .bibsys, .fulltext, .articles");
     syllbausItems.find(".author input, .title input").addClass("header-populators");
     syllbausItems.find(".vrtx-html textarea").addClass("header-fallback-populator");
         
@@ -1323,7 +1323,7 @@ function initJsonMovableElements(templatesRetrieved, jsonElementsBuilt) {
           
       // TODO: avoid this being hardcoded here
       var lastSyllabusItem = $("#editor.vrtx-syllabus #items .vrtx-json-element:last");
-      wrapJSONItemsLeftRight(lastSyllabusItem, ".author, .title, .year, .publisher, .isbn, .comment", ".linktext, .link, .bibsys, .fulltext, .articles");
+      wrapItemsLeftRight(lastSyllabusItem, ".author, .title, .year, .publisher, .isbn, .comment", ".linktext, .link, .bibsys, .fulltext, .articles");
       lastSyllabusItem.find(".author input, .title input").addClass("header-populators");
       lastSyllabusItem.find(".vrtx-html textarea").addClass("header-fallback-populator");
           
@@ -1382,20 +1382,6 @@ function initJsonMovableElements(templatesRetrieved, jsonElementsBuilt) {
     e.stopPropagation();
     e.preventDefault();
   });
-}
-    
-function wrapJSONItemsLeftRight(items, leftItems, rightItems) {
-  if(items.length == 1) {
-    items.find(leftItems).wrapAll("<div class='left' />");
-    items.find(rightItems).wrapAll("<div class='right' />");
-  } else if(items.length > 1) {
-    var i = items.length;
-    while(i--) {
-      var item = $(items[i]);
-      item.find(leftItems).wrapAll("<div class='left' />");
-      item.find(rightItems).wrapAll("<div class='right' />");
-    }
-  }
 }
     
 // Move up or move down  
@@ -1884,6 +1870,21 @@ VrtxEditor.prototype.initStickyBar = function initStickyBar() {
     });
   }
 };
+
+function wrapItemsLeftRight(items, leftItems, rightItems) {
+  var len = items.length;
+  if(len == 1) {
+    items.find(leftItems).wrapAll("<div class='left' />");
+    items.find(rightItems).wrapAll("<div class='right' />");
+  } else if(len > 1) {
+    var i = len;
+    while(i--) {
+      var item = $(items[i]);
+      item.find(leftItems).wrapAll("<div class='left' />");
+      item.find(rightItems).wrapAll("<div class='right' />");
+    }
+  }
+}
 
 /* CK helper functions */
 

@@ -1750,7 +1750,7 @@ VrtxEditor.prototype.replaceTag = function replaceTag(selector, tag, replacement
  * @example
  * // Process special list links
  * vrtxEditor.initEventHandler("#list a.special", {
- *   callback: specialProcessFn
+ *   callback: processSpecialListLinksFn
  * });
  *
  * @this {VrtxEditor}

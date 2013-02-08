@@ -924,7 +924,7 @@ function toggleShowHideNewEditor(name, parameters, hideTrues) {
   for(var i = 0, truesLen = trues.length; i < truesLen; i++) {
     if (trues[i].checked) {
       for (var k = 0, parametersLen = parameters.length; k < parametersLen; k++) {
-        $('div.' + parameters[k]).hide("fast");
+        $('div.' + parameters[k]).hide();
       }
     }
   }
@@ -932,7 +932,7 @@ function toggleShowHideNewEditor(name, parameters, hideTrues) {
   for(i = 0, falsesLen = falses.length; i < falsesLen; i++) {
     if (falses[i].checked) {
       for (k = 0, parametersLength = parameters.length; k < parametersLength; k++) {
-        $('div.' + parameters[k]).show("fast");
+        $('div.' + parameters[k]).show();
       }
     }
   }

@@ -895,18 +895,9 @@ VrtxEditor.prototype.initShowHide = function initShowHide() {
                               "#resource\\.display-type\\.calendar:checked",
                               'calendar',
                               ["#vrtx-resource\\.hide-additional-content"]);
-            
-  // Show/hide mappings for select
-  for(var select in vrtxEdit.selectMappings) {
-    vrtxEdit.initEventHandler("#" + select, {
-      event: "change",
-      callback: vrtxEdit.showHideSelect,
-      callbackChange: (select === "typeToDisplay" ? vrtxEdit.accordionGroupedCloseActiveHidden : function(p){})
-    })	
-  }
+                              
+  vrtxEdit.setShowHideSelectNewEditor();
 };
-
-/* Boolean show/hide new editor */
 
 function setShowHideBooleanNewEditor(name, parameters, hideTrues) {
   vrtxEditor.initEventHandler('[name=' + name + ']', {
@@ -938,7 +929,6 @@ function toggleShowHideNewEditor(name, parameters, hideTrues) {
   }
 }
 
-/* Radio/boolean show/hide old editor (folders) */
 function setShowHideRadiosOldEditor(radioIds, conditionHide, conditionHideEqual, showHideProps) {
   vrtxEditor.initEventHandler(radioIds, {
     wrapper: "#editor",
@@ -955,6 +945,23 @@ function toggleShowHideOldEditor(conditionHide, conditionHideEqual, showHideProp
   }
 }
 
+/**
+ * Set select field show/hide
+ *
+ * @this {VrtxEditor}
+ */
+VrtxEditor.prototype.setShowHideSelectNewEditor = function setShowHideSelectNewEditor() {
+  var vrtxEdit = this;
+  
+  for(var select in vrtxEdit.selectMappings) {
+    vrtxEdit.initEventHandler("#" + select, {
+      event: "change",
+      callback: vrtxEdit.showHideSelect,
+      callbackChange: (select === "typeToDisplay" ? vrtxEdit.accordionGroupedCloseActiveHidden : function(p){})
+    });
+  }
+}
+
 
 /**
  * Select field show/hide
@@ -964,6 +971,7 @@ function toggleShowHideOldEditor(conditionHide, conditionHideEqual, showHideProp
  */
 VrtxEditor.prototype.showHideSelect = function showHideSelect(select) {
   var vrtxEdit = this;
+  
   var id = select.attr("id");
   if(vrtxEdit.selectMappings.hasOwnProperty(id)) {
 	if(!vrtxEdit.editorForm.hasClass("select-" + id)) {

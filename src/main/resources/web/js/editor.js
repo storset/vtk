@@ -909,13 +909,9 @@ function setShowHideBooleanNewEditor(name, parameters, hideTrues) {
 
 function toggleShowHideNewEditor(name, parameters, hideTrues) {
   if ($('#' + name + (hideTrues ? '-true' : '-false'))[0].checked) {
-    for (var i = 0, len = parameters.length; i < len; i++) {
-      $('div.' + parameters[i]).hide();
-    }
+    $(parameters).hide();
   } else if ($('#' + name + (hideTrues ? '-false' : '-true'))[0].checked) {
-    for (var i = 0, len = parameters.length; i < len; i++) {
-      $('div.' + parameters[i]).show();
-    }
+    $(parameters).show();
   }
 }
 
@@ -1753,10 +1749,10 @@ VrtxEditor.prototype.initStudyDocTypes = function initStudyDocTypes() {
   if(vrtxEdit.editorForm.hasClass("vrtx-hvordan-soke")) {
     vrtxEdit.accordionGroupedInit();
   } else if(vrtxEdit.editorForm.hasClass("vrtx-course-description")) {
-    setShowHideBooleanNewEditor('course-fee', ["course-fee-amount"], false);
+    setShowHideBooleanNewEditor("course-fee", "div.course-fee-amount", false);
     vrtxEdit.accordionGroupedInit();  
   } else if(vrtxEdit.editorForm.hasClass("vrtx-semester-page")) {
-    setShowHideBooleanNewEditor('cloned-course', ["cloned-course-code"], false);
+    setShowHideBooleanNewEditor("cloned-course", "div.cloned-course-code", false);
     vrtxEdit.accordionGroupedInit("[class*=link-box]");  
   } else if(vrtxEdit.editorForm.hasClass("vrtx-samlet-program")) {
     var samletElm = vrtxEdit.editorForm.find(".samlet-element");

@@ -6,11 +6,11 @@
   <#list script.params?keys as param>
    	<#list script.params[param] as value >
    	  <#if parameters == ''>
-   	    <#local parameters = "'" + value?string + "'"/>
+   	    <#local parameters = "div." + value?string />
    	  <#else>
-   	    <#local parameters = parameters + ", '" + value?string + "'" />
+   	    <#local parameters = parameters + ", div." + value?string />
    	  </#if>
    	</#list>
   </#list>
-  setShowHideBooleanNewEditor('${script.name}', [${parameters}], true);
+  setShowHideBooleanNewEditor('${script.name}', '${parameters}', true);
 </#macro>

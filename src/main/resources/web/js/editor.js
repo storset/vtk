@@ -932,11 +932,13 @@ function setShowHideBooleanOldEditor(radioIds, properties, conditionHide, condit
 
 function toggleShowHideBoolean(props, show, init) {
   var theProps = $(props);
-  if(!theProps.hasClass("animate-optimized")) {
-    theProps.addClass("animate-optimized");
-  }
-  if(init) {
-    if(!show) {
+  if(init || vrtxAdmin.isIE9) {
+    if(!vrtxAdmin.isIE9) {
+      theProps.addClass("animate-optimized");
+    }
+    if(show && !init) {
+      theProps.show();  
+    } else {
       theProps.hide();  
     }
   } else {

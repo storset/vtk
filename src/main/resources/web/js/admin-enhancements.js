@@ -56,10 +56,10 @@ function VrtxAdmin() {
     this.ua = navigator.userAgent.toLowerCase();
     this.isIE = this._$.browser.msie;
     this.browserVersion = this._$.browser.version;
+    this.isIE9 = this.isIE && this.browserVersion <= 9;
     this.isIE8 = this.isIE && this.browserVersion <= 8;
     this.isIE7 = this.isIE && this.browserVersion <= 7;
     this.isIE6 = this.isIE && this.browserVersion <= 6;
-    this.isIE5OrHigher = this.isIE && this.browserVersion >= 5;
     this.isIETridentInComp = this.isIE7 && /trident/.test(this.ua);
     this.isOpera = this._$.browser.opera;
     this.isSafari = this._$.browser.safari;

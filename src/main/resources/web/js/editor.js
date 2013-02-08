@@ -959,16 +959,22 @@ VrtxEditor.prototype.showHideSelect = function showHideSelect(select, init) {
   
   var id = select.attr("id");
   if(vrtxEdit.selectMappings.hasOwnProperty(id)) {
-	if(!vrtxEdit.editorForm.hasClass("select-" + id)) {
-	  vrtxEdit.editorForm.addClass("select-" + id);	
-	}
+    var selectClassName = "select-" + id;
+    if(!vrtxEdit.editorForm.hasClass(selectClassName)) {
+      vrtxEdit.editorForm.addClass(selectClassName);	
+    }
     var mappings = vrtxEdit.selectMappings[id];
     var selected = select.val();
     for(var i = 0, len = mappings.length; i < len; i++) {
+      var mappedClass = selectClassName + "-" + mappings[i];
       if(selected === mappings[i]) {
-        vrtxEdit.editorForm.addClass("select-" + id + "-" + mappings[i]);
+        if(!vrtxEdit.editorForm.hasClass(mappedClass)) {
+          vrtxEdit.editorForm.addClass(mappedClass);
+        }
       } else {
-        vrtxEdit.editorForm.removeClass("select-" + id + "-" + mappings[i]);
+        if(vrtxEdit.editorForm.hasClass(mappedClass)) {
+          vrtxEdit.editorForm.removeClass(mappedClass);
+        }
       } 
     }
   }

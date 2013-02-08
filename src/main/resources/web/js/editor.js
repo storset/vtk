@@ -983,10 +983,10 @@ VrtxEditor.prototype.showHideSelect = function showHideSelect(select) {
 
 /*-------------------------------------------------------------------*\
     8. Multiple fields and boxes
+    XXX: refactor / combine and optimize
 \*-------------------------------------------------------------------*/
 
 /* Multiple comma seperated input textfields */
-
 function loadMultipleInputFields(name, addName, removeName, moveUpName, moveDownName, browseName, isMovable, isBrowsable) { // TODO: simplify
   var inputField = $("." + name + " input[type=text]");
   var inputFieldVal = inputField.val();
@@ -1175,7 +1175,6 @@ function formatMultipleInputFields(name) {
 }
 
 /* Multiple JSON boxes */
-
 function initJsonMovableElements(templatesRetrieved, jsonElementsBuilt) {
   $.when(templatesRetrieved, jsonElementsBuilt).done(function() {
     for (var i = 0, len = LIST_OF_JSON_ELEMENTS.length; i < len; i++) {

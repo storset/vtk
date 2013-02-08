@@ -177,6 +177,9 @@ h2 {
   position: relative;
 }
 
+.animate-optimized {
+  overflow: hidden;
+}
 
 
 /*-----------------------------------------*\

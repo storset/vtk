@@ -925,10 +925,21 @@ function setShowHideBooleanOldEditor(radioIds, properties, conditionHide, condit
 }
 
 function toggleShowHideBoolean(props, show, init) {
-  show ? init ? $(props).show()
-              : $(props).slideDown("fast")
-       : init ? $(props).hide()
-              : $(props).slideUp("fast");
+  var theProps = $(props);
+  if(!theProps.hasClass("animate-optimized")) {
+    theProps.addClass("animate-optimized");
+  }
+  if(init) {
+    if(!show) {
+      theProps.hide();  
+    }
+  } else {
+    if(show) {
+      theProps.slideDown(vrtxAdmin.transitionPropSpeed, vrtxAdmin.transitionEasingSlideDown);
+    } else {
+      theProps.slideUp(vrtxAdmin.transitionPropSpeed, vrtxAdmin.transitionEasingSlideUp);
+    }
+  }
 }
 
 /**

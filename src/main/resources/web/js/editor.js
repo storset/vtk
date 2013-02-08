@@ -900,6 +900,10 @@ VrtxEditor.prototype.initShowHide = function initShowHide() {
   vrtxEdit.setShowHideSelectNewEditor();
 };
 
+/*
+ * Boolean switch show/hide
+ *
+ */
 function setShowHideBooleanNewEditor(name, properties, hideTrues) {
   vrtxEditor.initEventHandler('[name=' + name + ']', {
 	wrapper: "#editor",

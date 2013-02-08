@@ -882,54 +882,53 @@ VrtxEditor.prototype.initShowHide = function initShowHide() {
   });
   _$("#resource\\.courseContext\\.course-status").change();
 
-  setShowHideRadiosOldEditor("#resource\\.recursive-listing\\.false, #resource\\.recursive-listing\\.unspecified", // radioIds
-                              "#resource\\.recursive-listing\\.false:checked",                                         // conditionHide
-                              'false',                                                                                 // conditionHideEqual
-                              "#vrtx-resource\\.recursive-listing-subfolders");                                      // showHideProps
+  setShowHideRadiosOldEditor("#resource\\.recursive-listing\\.false, #resource\\.recursive-listing\\.unspecified", 
+                             "#vrtx-resource\\.recursive-listing-subfolders",
+                             "#resource\\.recursive-listing\\.false:checked",                                       
+                             "false");  
+                                                                 
   setShowHideRadiosOldEditor("#resource\\.display-type\\.unspecified, #resource\\.display-type\\.calendar",
-                              "#resource\\.display-type\\.calendar:checked",
-                              null,
-                              "#vrtx-resource\\.event-type-title");
-
+                             "#vrtx-resource\\.event-type-title",
+                             "#resource\\.display-type\\.calendar:checked",
+                             null);
+                             
   setShowHideRadiosOldEditor("#resource\\.display-type\\.unspecified, #resource\\.display-type\\.calendar",
-                              "#resource\\.display-type\\.calendar:checked",
-                              'calendar',
-                              "#vrtx-resource\\.hide-additional-content");
+                             "#vrtx-resource\\.hide-additional-content",
+                             "#resource\\.display-type\\.calendar:checked",
+                             "calendar");
                               
   vrtxEdit.setShowHideSelectNewEditor();
 };
 
-function setShowHideBooleanNewEditor(name, parameters, hideTrues) {
+function setShowHideBooleanNewEditor(name, properties, hideTrues) {
   vrtxEditor.initEventHandler('[name=' + name + ']', {
 	wrapper: "#editor",
-    callback: toggleShowHideNewEditor,
-	callbackParams: [name, parameters, hideTrues]
+    callback: function(props, hideTrues, name , init) {
+      if ($('#' + name + (hideTrues ? '-false' : '-true'))[0].checked) {
+        toggleShowHide(props, true, init);
+      } else if ($('#' + name + (hideTrues ? '-true' : '-false'))[0].checked) {
+        toggleShowHide(props, false, init); 
+      }
+    },
+	callbackParams: [properties, hideTrues, name]
   })	
 }
 
-function toggleShowHideNewEditor(name, parameters, hideTrues, init) {
-  if ($('#' + name + (hideTrues ? '-false' : '-true'))[0].checked) {
-    init ? $(parameters).show()
-         : $(parameters).slideDown("fast");
-  } else if ($('#' + name + (hideTrues ? '-true' : '-false'))[0].checked) {
-    init ? $(parameters).hide()
-         : $(parameters).slideUp("fast");
-  }
-}
-
-function setShowHideRadiosOldEditor(radioIds, conditionHide, conditionHideEqual, showHideProps) {
+function setShowHideRadiosOldEditor(radioIds, properties, conditionHide, conditionHideEqual) {
   vrtxEditor.initEventHandler(radioIds, {
     wrapper: "#editor",
-	callback: toggleShowHideOldEditor,
-	callbackParams: [conditionHide, conditionHideEqual, showHideProps]
+	callback: function(props, conditionHide, conditionHideEqual, init) {
+	  toggleShowHide(props, !($(conditionHide).val() == conditionHideEqual), init);
+	},
+	callbackParams: [properties, conditionHide, conditionHideEqual]
   });
 }
 
-function toggleShowHideOldEditor(conditionHide, conditionHideEqual, showHideProps, init) {
-  !($(conditionHide).val() == conditionHideEqual) ? init ? $(showHideProps).show()
-                                                         : $(showHideProps).slideDown("fast")
-                                                  : init ? $(showHideProps).hide()
-                                                         : $(showHideProps).slideUp("fast");
+function toggleShowHide(props, show, init) {
+  show ? init ? $(props).show()
+              : $(props).slideDown("fast")
+       : init ? $(props).hide()
+              : $(props).slideUp("fast");
 }
 
 /**

@@ -28,13 +28,12 @@
           filtersAdvancedIncludeTitle = "<@vrtx.msg code='report.broken-links.filters.advanced.include-title' />",
           filtersAdvancedUpdate = "<@vrtx.msg code='report.broken-links.filters.advanced.update' />";
           
-      // NEW CODE
       vrtxAdmin.multipleFormGroupingMessages = {
         add: "${vrtx.getMsg('editor.add')}",
         remove: "${vrtx.getMsg('editor.remove')}",
         moveUp: "${vrtx.getMsg('editor.move-up')}",
         moveDown: "${vrtx.getMsg('editor.move-down')}",
-        browseImages: "${vrtx.getMsg('editor.browseImages')}"
+        browse: "${vrtx.getMsg('editor.browseImages')}"
       };
       vrtxAdmin.multipleFormGroupingPaths = {
       	baseCKURL: "${fckeditorBase.url?html}",

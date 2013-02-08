@@ -1006,7 +1006,7 @@ VrtxEditor.prototype.showHideSelect = function showHideSelect(select, init) {
 \*-------------------------------------------------------------------*/
 
 /**
- * NEW CODE/API
+ * NEW CODE/API will reside here..
  *
  * Initialize a multiple form grouping with enhancing possibilities
  *
@@ -1111,7 +1111,7 @@ function addFormField(name, value, size, isBrowsable, init, isMovable, isDropdow
     moveDownButton = vrtxEditor.mustacheFacade.getMultipleInputfieldsInteractionsButton("movedown", "", idstr, "&darr; " + vrtxAdmin.multipleFormGroupingMessages.moveDown);
   }
   if(isBrowsable) {
-    browseButton = vrtxEditor.mustacheFacade.getMultipleInputfieldsInteractionsButton("browse", "-resource-ref", idstr, vrtxAdmin.multipleFormGroupingMessages.browseImages);
+    browseButton = vrtxEditor.mustacheFacade.getMultipleInputfieldsInteractionsButton("browse", "-resource-ref", idstr, vrtxAdmin.multipleFormGroupingMessages.browse);
   }
 
   var html = vrtxEditor.mustacheFacade.getMultipleInputfield(name, idstr, i, value, size, browseButton, removeButton, moveUpButton, moveDownButton, isDropdown);
@@ -1576,7 +1576,7 @@ VrtxEditor.prototype.mustacheFacade = {
                                                     baseCKURL: vrtxAdmin.multipleFormGroupingPaths.baseCKURL,
                                                     baseFolderURL: vrtxAdmin.multipleFormGroupingPaths.baseFolderURL,
                                                     basePath: vrtxAdmin.multipleFormGroupingPaths.basePath,
-                                                    browseButtonText: vrtxAdmin.multipleFormGroupingMessages.browseImages,
+                                                    browseButtonText: vrtxAdmin.multipleFormGroupingMessages.browse,
                                                     type: '',
                                                     size: 30,
                                                     previewTitle: browseImagesPreview,
@@ -1589,7 +1589,7 @@ VrtxEditor.prototype.mustacheFacade = {
                                              baseCKURL: vrtxAdmin.multipleFormGroupingPaths.baseCKURL,
                                              baseFolderURL: vrtxAdmin.multipleFormGroupingPaths.baseFolderURL,
                                              basePath: vrtxAdmin.multipleFormGroupingPaths.basePath,
-                                             browseButtonText: vrtxAdmin.multipleFormGroupingMessages.browseImages,
+                                             browseButtonText: vrtxAdmin.multipleFormGroupingMessages.browse,
                                              type: 'File',
                                              size: 40 }); 
   },
@@ -1600,7 +1600,7 @@ VrtxEditor.prototype.mustacheFacade = {
                                              baseCKURL: vrtxAdmin.multipleFormGroupingPaths.baseCKURL,
                                              baseFolderURL: vrtxAdmin.multipleFormGroupingPaths.baseFolderURL,
                                              basePath: vrtxAdmin.multipleFormGroupingPaths.basePath,
-                                             browseButtonText: vrtxAdmin.multipleFormGroupingMessages.browseImages,
+                                             browseButtonText: vrtxAdmin.multipleFormGroupingMessages.browse,
                                              type: 'Media',
                                              size: 30 }); 
   }

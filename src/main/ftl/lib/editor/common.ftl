@@ -27,14 +27,13 @@
     var tooLongFieldPre = "<@vrtx.msg code='editor.too-long-field-pre' />";
     var tooLongFieldPost = "<@vrtx.msg code='editor.too-long-field-post' />";
     
-    // NEW CODE
     vrtxAdmin.multipleFormGroupingMessages = {
       add: "${vrtx.getMsg('editor.add')}",
       remove: "${vrtx.getMsg('editor.remove')}",
       moveUp: "${vrtx.getMsg('editor.move-up')}",
       moveDown: "${vrtx.getMsg('editor.move-down')}",
-      browseImages: "${vrtx.getMsg('editor.browseImages')}"
-	};
+      browse: "${vrtx.getMsg('editor.browseImages')}"
+    };
 	vrtxAdmin.multipleFormGroupingPaths = {
 	  baseCKURL: "${fckeditorBase.url?html}",
 	  baseFolderURL: "${baseFolder}",

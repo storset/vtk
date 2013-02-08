@@ -1615,13 +1615,19 @@ VrtxEditor.prototype.accordionGroupedInit = function accordionGroupedInit(subGro
   var vrtxEdit = this, _$ = vrtxAdmin._$;
 
   var accordionWrpId = "accordion-grouped"; // TODO: multiple accordion group pr. page
-  var groupedSelector = ".vrtx-grouped" + ((typeof subGroupedSelector !== "undefined") ? subGroupedSelector : "");
+  var groupedSelector = ".vrtx-grouped, .vrtx-pseudo-grouped" + ((typeof subGroupedSelector !== "undefined") ? subGroupedSelector : "");
 
   // Because accordion needs one content wrapper
-  for(var grouped = vrtxEdit.editorForm.find(groupedSelector), i = grouped.length; i--;) { 
-    _$(grouped[i]).find("> *:not(.header)").wrapAll("<div />");
+  for(var grouped = vrtxEdit.editorForm.find(groupedSelector), i = grouped.length; i--;) {
+    var group = _$(grouped[i]);
+    if(group.hasClass("vrtx-pseudo-grouped")) {
+      group.find("> label").wrap("<div class='header' />");
+      group.addClass("vrtx-grouped")
+    } else {
+      group.find("> *:not(.header)").wrapAll("<div />");
+    }
   }
-  // Initilialize accordion
+  // Initialize accordion
   grouped.wrapAll("<div id='" + accordionWrpId + "' />");
   vrtxEdit.editorForm.find("#" + accordionWrpId).accordion({ header: "> div > .header",
                                                              autoHeight: false,

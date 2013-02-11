@@ -1270,7 +1270,6 @@ function initJsonMovableElements(templatesRetrieved, jsonElementsBuilt) {
     }
     
     jsonParent.find(".vrtx-add-button").before(newElementHtml);
-    var newElement = $("#" + newElementId);
     
     var accordionWrapper = btn.closest(".vrtx-json-accordion");
     var hasAccordion = accordionWrapper.length;    
@@ -1287,18 +1286,22 @@ function initJsonMovableElements(templatesRetrieved, jsonElementsBuilt) {
     }
 
     // Init CKEditors and enhance date inputfields
-    setTimeout(function() { // It now go too fast so need a little delay
-      for (i in types) {
-        inputFieldName = j.name + "." + types[i].name + "." + COUNTER;
-        if (types[i].type == "simple_html") {
-          vrtxEditor.newEditor(inputFieldName, false, false, requestLang, cssFileList, "true");
-        } else if (types[i].type == "html") {
-          vrtxEditor.newEditor(inputFieldName, true,  false, requestLang, cssFileList, "false");
-        } else if (types[i].type == "datetime") {
-          displayDateAsMultipleInputFields(inputFieldName);
+    var checkForAppendComplete = setTimeout(function() {
+      if($("#" + newElementId).length) {
+        for (var i in types) {
+          inputFieldName = j.name + "." + types[i].name + "." + COUNTER;
+          if (types[i].type == "simple_html") {
+            vrtxEditor.newEditor(inputFieldName, false, false, requestLang, cssFileList, "true");
+          } else if (types[i].type == "html") {
+            vrtxEditor.newEditor(inputFieldName, true,  false, requestLang, cssFileList, "false");
+          } else if (types[i].type == "datetime") {
+            displayDateAsMultipleInputFields(inputFieldName);
+          }
         }
+      } else {
+        setTimeout(checkForAppendComplete);
       }
-    }, 100);
+    }, 25);
 
     e.stopPropagation();
     e.preventDefault();

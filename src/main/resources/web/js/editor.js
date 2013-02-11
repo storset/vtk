@@ -1243,7 +1243,6 @@ function initJsonMovableElements(templatesRetrieved, jsonElementsBuilt) {
     var inputFieldName = "";
 
     // Add correct HTML for Vortex type
-    COUNTER[j.name]++;
     var types = j.a;
     for (var i in types) {
       inputFieldName = j.name + "." + types[i].name + "." + COUNTER[j.name];
@@ -1304,6 +1303,8 @@ function initJsonMovableElements(templatesRetrieved, jsonElementsBuilt) {
         setTimeout(checkForAppendComplete);
       }
     }, 25);
+    
+    COUNTER[j.name]++;
 
     e.stopPropagation();
     e.preventDefault();

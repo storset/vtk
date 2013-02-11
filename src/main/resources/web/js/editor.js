@@ -1528,12 +1528,11 @@ VrtxEditor.prototype.mustacheFacade = {
     }
   }, 
   getSimpleHtmlField: function(elem, inputFieldName) {
-    return $.mustache(TEMPLATES["html"], { classes: "vrtx-simple-html " + elem.name,
-                                           elemTitle: elem.title,
-                                           inputFieldName: inputFieldName }); 
+    return this.getHtmlField(elem, inputFieldName, "vrtx-simple-html");
   },
-  getHtmlField: function(elem, inputFieldName) {
-    return $.mustache(TEMPLATES["html"], { classes: "vrtx-html " + elem.name,
+  getHtmlField: function(elem, inputFieldName, htmlType) {
+    if(typeof htmlType === "undefined") htmlType = "vrtx-html";
+    return $.mustache(TEMPLATES["html"], { classes: htmlType + " " + elem.name,
                                            elemTitle: elem.title,
                                            inputFieldName: inputFieldName }); 
   },

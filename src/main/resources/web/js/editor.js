@@ -1287,16 +1287,18 @@ function initJsonMovableElements(templatesRetrieved, jsonElementsBuilt) {
     }
 
     // Init CKEditors and enhance date inputfields
-    for (i in types) {
-      inputFieldName = j.name + "." + types[i].name + "." + COUNTER;
-      if (types[i].type == "simple_html") {
-        vrtxEditor.newEditor(inputFieldName, false, false, requestLang, cssFileList, "true");
-      } else if (types[i].type == "html") {
-        vrtxEditor.newEditor(inputFieldName, true,  false, requestLang, cssFileList, "false");
-      } else if (types[i].type == "datetime") {
-        displayDateAsMultipleInputFields(inputFieldName);
+    setTimeout(function() { // It now go too fast so need a little delay
+      for (i in types) {
+        inputFieldName = j.name + "." + types[i].name + "." + COUNTER;
+        if (types[i].type == "simple_html") {
+          vrtxEditor.newEditor(inputFieldName, false, false, requestLang, cssFileList, "true");
+        } else if (types[i].type == "html") {
+          vrtxEditor.newEditor(inputFieldName, true,  false, requestLang, cssFileList, "false");
+        } else if (types[i].type == "datetime") {
+          displayDateAsMultipleInputFields(inputFieldName);
+        }
       }
-    }
+    }, 100);
 
     e.stopPropagation();
     e.preventDefault();
@@ -1350,18 +1352,23 @@ function swapContent(moveBtn, move) {
   var curCounter = curElm.find("input.id").val();
   var moveToCounter = movedElm.find("input.id").val();
   
-  var arrayOfIds = ARRAY_OF_IDS; // ref in fn scope
-      
-  for (var x = 0, len = arrayOfIds.length; x < len; x++) {
-    var elementId1 = '#' + arrayOfIds[x] + curCounter;
-    var elementId2 = '#' + arrayOfIds[x] + moveToCounter;
+  var j = LIST_OF_JSON_ELEMENTS[parseInt(curElm.closest(".vrtx-json").find(".vrtx-add-button").data('number'))];
+  var types = j.a;
+  for (var i = 0, len = types.length; i < len; i++) {
+    var field = j.name + "\\." + types[i].name + "\\.";
+    var fieldCK = field.replace(/\\/g, "");
+    
+    var elementId1 = '#' + field + curCounter;
+    var elementId2 = '#' + field + moveToCounter;
     var element1 = $(elementId1);
     var element2 = $(elementId2);
+    
+    console.log(elementId1 + " exists " + element1.length);
+    console.log(elementId2 + " exists " + element2.length);
         
     /* We need to handle special cases like CK fields and date */
-    var ckInstanceName1 = arrayOfIds[x].replace(/\\/g, '') + curCounter;
-    var ckInstanceName2 = arrayOfIds[x].replace(/\\/g, '') + moveToCounter;
-
+    var ckInstanceName1 = fieldCK + curCounter;
+    var ckInstanceName2 = fieldCK + moveToCounter;
     if (isCkEditor(ckInstanceName1) && isCkEditor(ckInstanceName2)) {
       var val1 = getCkValue(ckInstanceName1);
       var val2 = getCkValue(ckInstanceName2);

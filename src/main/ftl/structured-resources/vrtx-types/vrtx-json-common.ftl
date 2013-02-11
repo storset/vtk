@@ -216,25 +216,13 @@
       <#-- JSON-property that has no value - we need to create empty fields -->
 
       <#if !elem.value?exists >
-    	  <#assign arrayOfIds = "new Array(" />
           <div class="vrtx-json-element last" id="vrtx-json-element-${inputFieldName}-${counter}">
             <#list elem.description.attributes as jsonAttr>
               <#assign attrName = jsonAttr.name />
               <#assign tmpName = inputFieldName + "." + attrName + "." + counter />
               <#assign jsonAttrLocalizedTitle = form.resource.getLocalizedMsg(attrName, locale, null) />
-
               <@printJsonProperyEditView jsonAttr.type jsonAttrLocalizedTitle tmpName "" elem attrName jsonAttr locale />
-
-              <#assign arrayAttrName = inputFieldName + '\\\\.' + attrName + '\\\\.' />
-              <#assign arrayOfIds = arrayOfIds + "'" + arrayAttrName + "'" />
-
-              <#if jsonAttr_has_next>
-                <#assign arrayOfIds = arrayOfIds + "," />
-              </#if>
-
             </#list>
-
-            <#assign arrayOfIds = arrayOfIds + ")" />
             <input type="hidden" class="id" value="${counter}" />
 
             <div class="vrtx-button vrtx-remove-button">
@@ -248,30 +236,16 @@
        <#if elem.value?exists && elem.value?is_enumerable>
          <#list elem.value as map>
            <div class="vrtx-json-element<#if (counter == (elem.value?size - 1))> last</#if>" id="vrtx-json-element-${inputFieldName}-${counter}">
-             <#assign arrayOfIds = "[" />
              <#list elem.description.attributes as jsonAttr>
                <#assign attrName = jsonAttr.name />
                <#assign tmpName = inputFieldName + "." + attrName + "." + counter />
                <#assign jsonAttrLocalizedTitle = form.resource.getLocalizedMsg(attrName, locale, null) />
-
                <#if map[attrName]?exists >
                  <@printJsonProperyEditView jsonAttr.type jsonAttrLocalizedTitle tmpName map[attrName] elem attrName jsonAttr locale />
                <#else>
                  <@printJsonProperyEditView jsonAttr.type jsonAttrLocalizedTitle tmpName "" elem attrName jsonAttr locale />
                </#if>
-
-               <#assign arrayAttrName = inputFieldName + '\\\\.' + attrName + '\\\\.' />
-               <#assign arrayOfIds = arrayOfIds + "'" + arrayAttrName + "'" />
-
-               <#if jsonAttr_has_next>
-                 <#assign arrayOfIds = arrayOfIds + "," />
-               </#if>
              </#list>
-             <#assign arrayOfIds = arrayOfIds + "]" />
-             <script type="text/javascript"><!--
-               var ARRAY_OF_IDS = ${arrayOfIds}; // XXX: try to avoid this with RegEx replace instead of counters
-             // -->
-             </script>
              
        	     <input type="hidden" class="id" value="${counter}" />
 

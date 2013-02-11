@@ -1212,6 +1212,8 @@ function initJsonMovableElements(templatesRetrieved, jsonElementsBuilt) {
         .append(vrtxEditor.mustacheFacade.getJsonBoxesInteractionsButton("add", vrtxAdmin.multipleFormGroupingMessages.add))
         .find(".vrtx-add-button").data({'number': i});
     }
+    
+    // Accordion / splits
      
     // TODO: avoid this being hardcoded here
     var syllabusItems = $("#editor.vrtx-syllabus #items");
@@ -1247,25 +1249,24 @@ function initJsonMovableElements(templatesRetrieved, jsonElementsBuilt) {
 
   vrtxAdmin.cachedAppContent.on("click", ".vrtx-json .vrtx-add-button", function(e) {
     var accordionWrapper = $(this).closest(".vrtx-json-accordion");
-    var hasAccordion = accordionWrapper.length;
-           
+    var hasAccordion = accordionWrapper.length;    
     var btn = $(this);
     var jsonParent = btn.closest(".vrtx-json");
     var counter = jsonParent.find(".vrtx-json-element").length;
     var j = LIST_OF_JSON_ELEMENTS[parseInt(btn.data('number'))];
     var htmlTemplate = "";
     var arrayOfIds = [];
+    var inputFieldName = "";
 
-    // Add correct HTML for vrtx-type
+    // Add correct HTML for Vortex type
     var types = j.a;
-    
     for (var i in types) {
-      var inputFieldName = j.name + "." + types[i].name + "." + counter;
+      inputFieldName = j.name + "." + types[i].name + "." + counter;
       arrayOfIds[i] = new String(j.name + "." + types[i].name + ".").replace(/\./g, "\\.");
       htmlTemplate += vrtxEditor.mustacheFacade.getTypeHtml(types[i], inputFieldName);
     }
       
-    // Move up, move down, remove
+    // Interaction
     var isImmovable = jsonParent && jsonParent.hasClass("vrtx-multiple-immovable");
     if(!isImmovable) {
       var moveDownButton = vrtxEditor.mustacheFacade.getJsonBoxesInteractionsButton('move-down', '&darr; ' + vrtxAdmin.multipleFormGroupingMessages.moveDown); 
@@ -1312,7 +1313,8 @@ function initJsonMovableElements(templatesRetrieved, jsonElementsBuilt) {
       }
     }
         
-    if(hasAccordion ) {
+    // Accordion / splits
+    if(hasAccordion) {
       var accordionContent = accordionWrapper.find(".fieldset");
       var group = accordionContent.find(".vrtx-json-element:last");
       group.find("> *").wrapAll("<div />");
@@ -1331,9 +1333,9 @@ function initJsonMovableElements(templatesRetrieved, jsonElementsBuilt) {
       accordionJsonRefresh(accordionContent, false);
     }
 
-    // CK and date inputfields
+    // Init CKEditors and enhance date inputfields
     for (i in types) {
-      var inputFieldName = j.name + "." + types[i].name + "." + counter;
+      inputFieldName = j.name + "." + types[i].name + "." + counter;
       if (types[i].type == "simple_html") {
         vrtxEditor.newEditor(inputFieldName, false, false, requestLang, cssFileList, "true");
       } else if (types[i].type == "html") {
@@ -1508,7 +1510,10 @@ VrtxEditor.prototype.mustacheFacade = {
   /* Type / fields */
   getTypeHtml: function(elem, inputFieldName) {
       var methodName = "get" + this.typeToMethodName(elem.type) + "Field";
-      return this[methodName](elem, inputFieldName);
+      if(this[methodName]) { // If mappable
+        return this[methodName](elem, inputFieldName);
+      }
+      return ""; // XXX: should maybe display error message in admin
   },
   typeToMethodName: function(str) { // XXX: Optimize RegEx
     return str.replace("_", " ").replace(/(\w)(\w*)/g, function(g0,g1,g2){return g1.toUpperCase() + g2.toLowerCase();}).replace(" ", "");

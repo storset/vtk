@@ -47,11 +47,6 @@
     </property>
     <property name="referenceDataProviders">
       <list>
-        <bean class="org.vortikal.resourcemanagement.edit.SharedTextProvider">
-          <property name="resourceTypeTree" ref="resourceTypeTree" />
-          <property name="safeHtmlFilter" ref="safeHtml.filterWithClass" />
-          <property name="htmlParser" ref="decorating.htmlParser" />
-        </bean>
         <ref bean="resourceContextProvider" />
         <bean class="org.vortikal.web.referencedata.provider.StaticURIServiceURLProvider">
           <property name="service" ref="staticResourceService" />

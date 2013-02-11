@@ -1244,9 +1244,22 @@ function initJsonMovableElements(templatesRetrieved, jsonElementsBuilt) {
 
     // Add correct HTML for Vortex type
     var types = j.a;
+    
+    var ckHtmls = [];
+    var ckSimpleHtmls = [];
+    var dateTimes = [];
+
     for (var i in types) {
+      var typeType = types[i].type;
       inputFieldName = j.name + "." + types[i].name + "." + COUNTER[j.name];
       htmlTemplate += vrtxEditor.mustacheFacade.getTypeHtml(types[i], inputFieldName);
+      if(typeType === "html") {
+        ckHtmls.push(inputFieldName);
+      } else if(typeType === "simple_html") {
+        ckSimpleHtmls.push(inputFieldName);
+      } else if(typeType === "datetime") {
+        dateTimes.push(inputFieldName);
+      }
     }
       
     // Interaction
@@ -1287,22 +1300,26 @@ function initJsonMovableElements(templatesRetrieved, jsonElementsBuilt) {
     }
 
     // Init CKEditors and enhance date inputfields
-    var checkForAppendComplete = setTimeout(function() {
-      if($("#" + newElementId).length) {
-        for (var i in types) {
-          inputFieldName = j.name + "." + types[i].name + "." + COUNTER[j.name];
-          if (types[i].type == "simple_html") {
-            vrtxEditor.newEditor(inputFieldName, false, false, requestLang, cssFileList, "true");
-          } else if (types[i].type == "html") {
-            vrtxEditor.newEditor(inputFieldName, true,  false, requestLang, cssFileList, "false");
-          } else if (types[i].type == "datetime") {
-            displayDateAsMultipleInputFields(inputFieldName);
+    var ckHtmlsLen = ckHtmls.length,
+        ckSimpleHtmlsLen = ckSimpleHtmls.length,
+        dateTimesLen = dateTimes.length;
+    if(ckHtmlsLen || ckSimpleHtmlsLen || dateTimesLen) {
+      var checkForAppendComplete = setTimeout(function() {
+        if($("#" + newElementId + " .vrtx-remove-button").length) {
+          for (var i = 0; i < ckHtmlsLen; i++) {
+            vrtxEditor.newEditor(ckHtmls[i], true,  false, requestLang, cssFileList, "false");
           }
+          for (i = 0; i < ckSimpleHtmlsLen; i++) {
+            vrtxEditor.newEditor(ckSimpleHtmls[i], false, false, requestLang, cssFileList, "true");
+          }
+          for (i = 0; i < dateTimesLen; i++) {
+            displayDateAsMultipleInputFields(dateTimes[i]);
+          }
+        } else {
+          setTimeout(checkForAppendComplete, 25);
         }
-      } else {
-        setTimeout(checkForAppendComplete);
-      }
-    }, 25);
+      }, 25);
+    }
     
     COUNTER[j.name]++;
 

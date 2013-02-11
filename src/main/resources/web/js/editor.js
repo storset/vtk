@@ -1205,16 +1205,18 @@ function formatMultipleInputFields(name) {
 }
 
 /* Multiple JSON boxes */
-var COUNTER; // Need to increment this uniquely because length-based may interfere when remove and add stuff
+var COUNTER = {}; // Need to increment this uniquely because length-based may interfere when remove and add stuff
+
 function initJsonMovableElements(templatesRetrieved, jsonElementsBuilt) {
   $.when(templatesRetrieved, jsonElementsBuilt).done(function() {
     for (var i = 0, len = LIST_OF_JSON_ELEMENTS.length; i < len; i++) {
-      $("#" + LIST_OF_JSON_ELEMENTS[i].name)
-        .append(vrtxEditor.mustacheFacade.getJsonBoxesInteractionsButton("add", vrtxAdmin.multipleFormGroupingMessages.add))
-        .find(".vrtx-add-button").data({'number': i});
+      var jsonName = LIST_OF_JSON_ELEMENTS[i].name;
+      var jsonElm = $("#" + jsonName);
+      jsonElm.append(vrtxEditor.mustacheFacade.getJsonBoxesInteractionsButton("add", vrtxAdmin.multipleFormGroupingMessages.add))
+              .find(".vrtx-add-button").data({'number': i});
+      COUNTER[jsonName] = jsonElm.find(".vrtx-json-element").length;
     }
-    COUNTER = len;
-    
+
     accordionJsonInit();
     
     JSON_ELEMENTS_INITIALIZED.resolve();
@@ -1241,10 +1243,10 @@ function initJsonMovableElements(templatesRetrieved, jsonElementsBuilt) {
     var inputFieldName = "";
 
     // Add correct HTML for Vortex type
-    COUNTER++;
+    COUNTER[j.name]++;
     var types = j.a;
     for (var i in types) {
-      inputFieldName = j.name + "." + types[i].name + "." + COUNTER;
+      inputFieldName = j.name + "." + types[i].name + "." + COUNTER[j.name];
       htmlTemplate += vrtxEditor.mustacheFacade.getTypeHtml(types[i], inputFieldName);
     }
       
@@ -1256,9 +1258,9 @@ function initJsonMovableElements(templatesRetrieved, jsonElementsBuilt) {
     }
     var removeButton = vrtxEditor.mustacheFacade.getJsonBoxesInteractionsButton('remove', vrtxAdmin.multipleFormGroupingMessages.remove);
 
-    var newElementId = "vrtx-json-element-" + j.name + "-" + COUNTER;
+    var newElementId = "vrtx-json-element-" + j.name + "-" + COUNTER[j.name];
     
-    var newElementHtml = htmlTemplate + "<input type=\"hidden\" class=\"id\" value=\"" + COUNTER + "\" \/>" + removeButton;
+    var newElementHtml = htmlTemplate + "<input type=\"hidden\" class=\"id\" value=\"" + COUNTER[j.name] + "\" \/>" + removeButton;
     if (!isImmovable && numOfElements > 0) {
       newElementHtml += moveUpButton;
     }
@@ -1289,7 +1291,7 @@ function initJsonMovableElements(templatesRetrieved, jsonElementsBuilt) {
     var checkForAppendComplete = setTimeout(function() {
       if($("#" + newElementId).length) {
         for (var i in types) {
-          inputFieldName = j.name + "." + types[i].name + "." + COUNTER;
+          inputFieldName = j.name + "." + types[i].name + "." + COUNTER[j.name];
           if (types[i].type == "simple_html") {
             vrtxEditor.newEditor(inputFieldName, false, false, requestLang, cssFileList, "true");
           } else if (types[i].type == "html") {

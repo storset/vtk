@@ -244,6 +244,13 @@
   display: none;
 }
 
+#editor.select-teachingsemester-particular-semester .if-teachingsemester-particular label,
+#editor.select-teachingsemester-every-other .teachingsemester-every-other-semester .header,
+#editor.select-examsemester-particular-semester .if-examsemester-particular label,
+#editor.select-examsemester-every-other .examsemester-every-other-semester .header {
+  display: none;
+}
+
 #editor.select-teachingsemester-particular-semester .if-teachingsemester-particular,
 #editor.select-teachingsemester-every-other .teachingsemester-every-other-semester,
 #editor.select-teachingsemester-other .teachingsemester-other,

@@ -38,7 +38,7 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl;
 import org.vortikal.repository.search.query.AndQuery;
 import org.vortikal.repository.search.query.OrQuery;
-import org.vortikal.repository.search.query.PropertyPrefixQuery;
+import org.vortikal.repository.search.query.PropertyTermQuery;
 import org.vortikal.repository.search.query.Query;
 import org.vortikal.repository.search.query.TermOperator;
 import org.vortikal.web.service.URL;
@@ -64,9 +64,7 @@ public class VHostScopeQueryRestricter {
     }
 
     public static Query vhostRestrictedQuery(Query original, String vhost) {
-        // XXX: Why prefix query on vhost field ? The vhost field (in Solr) only
-        //      contains the canonical host name and nothing else.
-        Query vhostQuery = new PropertyPrefixQuery(vHostPropDef, vhost, TermOperator.EQ);
+        Query vhostQuery = new PropertyTermQuery(vHostPropDef, vhost, TermOperator.EQ);
 
         if (original instanceof AndQuery) {
             AndQuery and = (AndQuery) original;
@@ -91,7 +89,7 @@ public class VHostScopeQueryRestricter {
         } else {
             OrQuery vHostOr = new OrQuery();
             for (String vhost : vhosts) {
-                vHostOr.add(new PropertyPrefixQuery(VHostScopeQueryRestricter.vHostPropDef, vhost, TermOperator.EQ));
+                vHostOr.add(new PropertyTermQuery(VHostScopeQueryRestricter.vHostPropDef, vhost, TermOperator.EQ));
             }
             AndQuery and = new AndQuery();
             and.add(original);

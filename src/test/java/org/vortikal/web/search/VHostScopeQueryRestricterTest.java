@@ -30,19 +30,19 @@
  */
 package org.vortikal.web.search;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
 import org.vortikal.repository.search.query.AndQuery;
 import org.vortikal.repository.search.query.OrQuery;
-import org.vortikal.repository.search.query.PropertyPrefixQuery;
+import org.vortikal.repository.search.query.PropertyTermQuery;
 import org.vortikal.repository.search.query.Query;
 import org.vortikal.repository.search.query.TermOperator;
 import org.vortikal.repository.search.query.UriPrefixQuery;
 import org.vortikal.web.service.URL;
-
-import static org.junit.Assert.*;
 
 public class VHostScopeQueryRestricterTest {
 
@@ -55,7 +55,7 @@ public class VHostScopeQueryRestricterTest {
 
         URL url = URL.parse("http://www.usit.uio.no");
         String vhost = url.getHost();
-        expected.add(new PropertyPrefixQuery(VHostScopeQueryRestricter.vHostPropDef, vhost, TermOperator.EQ));
+        expected.add(new PropertyTermQuery(VHostScopeQueryRestricter.vHostPropDef, vhost, TermOperator.EQ));
 
         Query actual = VHostScopeQueryRestricter.vhostRestrictedQuery(original, url);
         assertEquals(expected, actual);
@@ -79,11 +79,11 @@ public class VHostScopeQueryRestricterTest {
         UriPrefixQuery original = new UriPrefixQuery("/test/path");
         expected.add(original);
         if (vhosts.size() == 1) {
-            expected.add(new PropertyPrefixQuery(VHostScopeQueryRestricter.vHostPropDef, vhosts.get(0), TermOperator.EQ));
+            expected.add(new PropertyTermQuery(VHostScopeQueryRestricter.vHostPropDef, vhosts.get(0), TermOperator.EQ));
         } else {
             OrQuery vhostOr = new OrQuery();
             for (String vhost : vhosts) {
-                vhostOr.add(new PropertyPrefixQuery(VHostScopeQueryRestricter.vHostPropDef, vhost, TermOperator.EQ));
+                vhostOr.add(new PropertyTermQuery(VHostScopeQueryRestricter.vHostPropDef, vhost, TermOperator.EQ));
             }
             expected.add(vhostOr);
         }

@@ -1262,38 +1262,7 @@ function initJsonMovableElements(templatesRetrieved, jsonElementsBuilt) {
     for (var i in types) {
       var inputFieldName = j.name + "." + types[i].name + "." + counter;
       arrayOfIds[i] = new String(j.name + "." + types[i].name + ".").replace(/\./g, "\\.");
-      switch (types[i].type) {
-        case "string":
-          if (types[i].dropdown && types[i].valuemap) {
-            htmlTemplate += vrtxEditor.mustacheFacade.getDropdown(types[i], inputFieldName);
-          } else {
-            htmlTemplate += vrtxEditor.mustacheFacade.getStringField(types[i], inputFieldName);
-          }
-          break;
-        case "html":
-          htmlTemplate += vrtxEditor.mustacheFacade.getHtmlField(types[i], inputFieldName);
-          break;
-        case "simple_html":
-          htmlTemplate += vrtxEditor.mustacheFacade.getHtmlField(types[i], inputFieldName);
-          break;
-        case "boolean":
-          htmlTemplate += vrtxEditor.mustacheFacade.getBooleanField(types[i], inputFieldName);
-          break;
-        case "image_ref":
-          htmlTemplate += vrtxEditor.mustacheFacade.getImageRef(types[i], inputFieldName);
-          break;
-        case "resource_ref":
-          htmlTemplate += vrtxEditor.mustacheFacade.getResourceRef(types[i], inputFieldName);
-          break;
-        case "datetime":
-          htmlTemplate += vrtxEditor.mustacheFacade.getDateField(j.a[i], inputFieldName);
-          break;
-        case "media":
-          htmlTemplate += vrtxEditor.mustacheFacade.getMediaRef(types[i], inputFieldName);
-          break;
-        default:
-          break;
-      }
+      htmlTemplate += vrtxEditor.mustacheFacade.getTypeHtml(types[i], inputFieldName);
     }
       
     // Move up, move down, remove
@@ -1516,6 +1485,7 @@ function scrollToElm(movedElm) {
  * @namespace
  */
 VrtxEditor.prototype.mustacheFacade = {
+  /* Interaction */
   getMultipleInputfieldsInteractionsButton: function(clazz, name, idstr, text) {
     return $.mustache(vrtxEditor.multipleCommaSeperatedInputFieldTemplates["button"], { type: clazz, name: name, 
                                                                                         idstr: idstr, buttonText: text });
@@ -1535,17 +1505,30 @@ VrtxEditor.prototype.mustacheFacade = {
   getJsonBoxesInteractionsButton: function(clazz, text) {
     return $.mustache(TEMPLATES["add-remove-move"], { clazz: clazz, buttonText: text });	
   },
+  /* Type / fields */
+  getTypeHtml: function(elem, inputFieldName) {
+      var methodName = "get" + this.typeToMethodName(elem.type) + "Field";
+      return this[methodName](elem, inputFieldName);
+  },
+  typeToMethodName: function(str) { // XXX: Optimize RegEx
+    return str.replace("_", " ").replace(/(\w)(\w*)/g, function(g0,g1,g2){return g1.toUpperCase() + g2.toLowerCase();}).replace(" ", "");
+  },
   getStringField: function(elem, inputFieldName) {
-    return $.mustache(TEMPLATES["string"], { classes: "vrtx-string" + " " + elem.name,
-                                             elemTitle: elem.title,
-                                             inputFieldName: inputFieldName }); 
-  }, 
-  getHtmlField: function(elem, inputFieldName) {
-    var baseclass = "vrtx-html";
-    if (elem.type == "simple_html") {
-      baseclass = "vrtx-simple-html";
+    if (elem.dropdown && elem.valuemap) {
+      return this.getDropdown(elem, inputFieldName);
+    } else {        
+      return $.mustache(TEMPLATES["string"], { classes: "vrtx-string" + " " + elem.name,
+                                               elemTitle: elem.title,
+                                               inputFieldName: inputFieldName });
     }
-    return $.mustache(TEMPLATES["html"], { classes: baseclass + " " + elem.name,
+  }, 
+  getSimpleHtmlField: function(elem, inputFieldName) {
+    return $.mustache(TEMPLATES["html"], { classes: "vrtx-simple-html " + elem.name,
+                                           elemTitle: elem.title,
+                                           inputFieldName: inputFieldName }); 
+  },
+  getHtmlField: function(elem, inputFieldName) {
+    return $.mustache(TEMPLATES["html"], { classes: "vrtx-html " + elem.name,
                                            elemTitle: elem.title,
                                            inputFieldName: inputFieldName }); 
   },
@@ -1565,11 +1548,11 @@ VrtxEditor.prototype.mustacheFacade = {
                                                inputFieldName: inputFieldName,
                                                options: htmlOpts });  
   },
-  getDateField: function(elem, inputFieldName) {
+  getDatetimeField: function(elem, inputFieldName) {
     return $.mustache(TEMPLATES["date"], { elemTitle: elem.title,
                                            inputFieldName: inputFieldName }); 
   },
-  getImageRef: function(elem, inputFieldName) {
+  getImageRefField: function(elem, inputFieldName) {
     return $.mustache(TEMPLATES["browse-images"], { clazz: 'vrtx-image-ref',
                                                     elemTitle: elem.title,
                                                     inputFieldName: inputFieldName,
@@ -1582,7 +1565,7 @@ VrtxEditor.prototype.mustacheFacade = {
                                                     previewTitle: browseImagesPreview,
                                                     previewNoImageText: browseImagesNoPreview }); 
   },
-  getResourceRef: function(elem, inputFieldName) {
+  getResourceRefField: function(elem, inputFieldName) {
     return $.mustache(TEMPLATES["browse"], { clazz: 'vrtx-resource-ref',
                                              elemTitle: elem.title,
                                              inputFieldName: inputFieldName,
@@ -1593,7 +1576,7 @@ VrtxEditor.prototype.mustacheFacade = {
                                              type: 'File',
                                              size: 40 }); 
   },
-  getMediaRef: function(elem, inputFieldName) {      
+  getMediaRefField: function(elem, inputFieldName) {      
     return $.mustache(TEMPLATES["browse"], { clazz: 'vrtx-media-ref',
                                              elemTitle: elem.title,
                                              inputFieldName: inputFieldName,

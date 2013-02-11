@@ -64,6 +64,8 @@ public class VHostScopeQueryRestricter {
     }
 
     public static Query vhostRestrictedQuery(Query original, String vhost) {
+        // XXX: Why prefix query on vhost field ? The vhost field (in Solr) only
+        //      contains the canonical host name and nothing else.
         Query vhostQuery = new PropertyPrefixQuery(vHostPropDef, vhost, TermOperator.EQ);
 
         if (original instanceof AndQuery) {

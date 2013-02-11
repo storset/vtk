@@ -1213,56 +1213,35 @@ function initJsonMovableElements(templatesRetrieved, jsonElementsBuilt) {
         .find(".vrtx-add-button").data({'number': i});
     }
     
-    // Accordion / splits
-     
-    // TODO: avoid this being hardcoded here
-    var syllabusItems = $("#editor.vrtx-syllabus #items");
-    wrapItemsLeftRight(syllabusItems.find(".vrtx-json-element"), ".author, .title, .year, .publisher, .isbn, .comment", ".linktext, .link, .bibsys, .fulltext, .articles");
-    syllabusItems.find(".author input, .title input").addClass("header-populators");
-    syllabusItems.find(".vrtx-html textarea").addClass("header-fallback-populator");
-        
-    var sharedTextItems = $("#editor.vrtx-shared-text #shared-text-box");
-    sharedTextItems.find(".title input").addClass("header-populators");
-    // ^ TODO: avoid this being hardcoded here
-      
-    // Because accordion needs one content wrapper
-    for(var grouped = $(".vrtx-json-accordion .vrtx-json-element"), i = grouped.length; i--;) { 
-      var group = $(grouped[i]);
-      group.find("> *").wrapAll("<div />");
-      accordionJsonUpdateHeader(group);
-    }
-      
-    $(".vrtx-json-accordion .fieldset").accordion({ 
-                                                   header: "> div > .header",
-                                                   autoHeight: false,
-                                                   collapsible: true,
-                                                   active: false,
-                                                   change: function(e, ui) {
-                                                     accordionJsonUpdateHeader(ui.oldHeader);
-                                                     if(ACCORDION_MOVE_TO_AFTER_CHANGE) {
-                                                       scrollToElm(ACCORDION_MOVE_TO_AFTER_CHANGE);
-                                                     }
-                                                   }  
-                                                  });
+    accordionJsonInit();
+    
     JSON_ELEMENTS_INITIALIZED.resolve();
+  });
+  
+  vrtxAdmin.cachedAppContent.on("click", ".vrtx-json .vrtx-move-down-button", function(e) {
+    swapContent($(this), 1);
+    e.stopPropagation();
+    e.preventDefault();
+  });
+  
+  vrtxAdmin.cachedAppContent.on("click", ".vrtx-json .vrtx-move-up-button", function(e) {
+    swapContent($(this), -1);
+    e.stopPropagation();
+    e.preventDefault();
   });
 
   vrtxAdmin.cachedAppContent.on("click", ".vrtx-json .vrtx-add-button", function(e) {
-    var accordionWrapper = $(this).closest(".vrtx-json-accordion");
-    var hasAccordion = accordionWrapper.length;    
     var btn = $(this);
     var jsonParent = btn.closest(".vrtx-json");
     var counter = jsonParent.find(".vrtx-json-element").length;
     var j = LIST_OF_JSON_ELEMENTS[parseInt(btn.data('number'))];
     var htmlTemplate = "";
-    var arrayOfIds = [];
     var inputFieldName = "";
 
     // Add correct HTML for Vortex type
     var types = j.a;
     for (var i in types) {
       inputFieldName = j.name + "." + types[i].name + "." + counter;
-      arrayOfIds[i] = new String(j.name + "." + types[i].name + ".").replace(/\./g, "\\.");
       htmlTemplate += vrtxEditor.mustacheFacade.getTypeHtml(types[i], inputFieldName);
     }
       
@@ -1273,64 +1252,35 @@ function initJsonMovableElements(templatesRetrieved, jsonElementsBuilt) {
       var moveUpButton = vrtxEditor.mustacheFacade.getJsonBoxesInteractionsButton('move-up', '&uarr; ' + vrtxAdmin.multipleFormGroupingMessages.moveUp);
     }
     var removeButton = vrtxEditor.mustacheFacade.getJsonBoxesInteractionsButton('remove', vrtxAdmin.multipleFormGroupingMessages.remove);
-      
-    var id = "<input type=\"hidden\" class=\"id\" value=\"" + counter + "\" \/>";
+
     var newElementId = "vrtx-json-element-" + j.name + "-" + counter;
-        
-    var newElementHtml = htmlTemplate;
-    newElementHtml += id;
-    newElementHtml += removeButton;
-  
+    
+    var newElementHtml = htmlTemplate + "<input type=\"hidden\" class=\"id\" value=\"" + counter + "\" \/>" + removeButton;
     if (!isImmovable && counter > 0) {
       newElementHtml += moveUpButton;
     }
-      
-    $("#" + j.name + " .vrtx-add-button").before("<div class='vrtx-json-element' id='" + newElementId + "'>" + newElementHtml + "<\/div>");
-      
-    var newElement = $("#" + newElementId);
-    var prev = newElement.prev(".vrtx-json-element");
-    newElement.addClass("last");
-    prev.removeClass("last");
-      
-    if(!isImmovable && counter > 0) {
-      newElement.find(".vrtx-move-up-button").click(function (e) {
-        swapContent(counter, arrayOfIds, -1, j.name);
-        e.stopPropagation();
-        e.preventDefault();
-      });
-
-      if (prev.length) {
-        if(hasAccordion) {
-          prev.find("> div.ui-accordion-content").append(moveDownButton);
-        } else {
-          prev.append(moveDownButton);
-        }
-        prev.find(".vrtx-move-down-button").click(function (e) {
-          swapContent(counter-1, arrayOfIds, 1, j.name);
-          e.stopPropagation();
-          e.preventDefault();
-        });
-      }
+    newElementHtml = "<div class='vrtx-json-element last' id='" + newElementId + "'>" + newElementHtml + "<\/div>";
+    
+    var oldLast = jsonParent.find(".vrtx-json-element.last");
+    if (oldLast.length) {
+      oldLast.removeClass("last");
     }
-        
-    // Accordion / splits
+    
+    jsonParent.find(".vrtx-add-button").before(newElementHtml);
+    var newElement = $("#" + newElementId);
+    
+    var accordionWrapper = btn.closest(".vrtx-json-accordion");
+    var hasAccordion = accordionWrapper.length;    
+
+    if(!isImmovable && counter > 0 && oldLast.length) {
+      if(hasAccordion) {
+        oldLast.find("> div.ui-accordion-content").append(moveDownButton);
+      } else {
+        oldLast.append(moveDownButton);
+      }
+    }  
     if(hasAccordion) {
-      var accordionContent = accordionWrapper.find(".fieldset");
-      var group = accordionContent.find(".vrtx-json-element:last");
-      group.find("> *").wrapAll("<div />");
-      group.prepend('<div class="header">' + (vrtxAdmin.lang !== "en" ? "Inget innhold" : "No content") + '</div>');
-          
-      // TODO: avoid this being hardcoded here
-      var lastSyllabusItem = $("#editor.vrtx-syllabus #items .vrtx-json-element:last");
-      wrapItemsLeftRight(lastSyllabusItem, ".author, .title, .year, .publisher, .isbn, .comment", ".linktext, .link, .bibsys, .fulltext, .articles");
-      lastSyllabusItem.find(".author input, .title input").addClass("header-populators");
-      lastSyllabusItem.find(".vrtx-html textarea").addClass("header-fallback-populator");
-          
-      var lastSharedTextItem = $("#editor.vrtx-shared-text #shared-text-box .vrtx-json-element:last");
-      lastSharedTextItem.find(".title input").addClass("header-populators");
-      // ^ TODO: avoid this being hardcoded here
-          
-      accordionJsonRefresh(accordionContent, false);
+      accordionJsonNew(accordionWrapper);
     }
 
     // Init CKEditors and enhance date inputfields
@@ -1384,28 +1334,29 @@ function initJsonMovableElements(templatesRetrieved, jsonElementsBuilt) {
 }
     
 // Move up or move down  
-function swapContent(counter, arrayOfIds, move, name) {
-  var thisId = "#vrtx-json-element-" + name + "-" + counter;
-  var thisElm = $(thisId);   
-  var accordionWrapper = thisElm.closest(".vrtx-json-accordion");
+function swapContent(moveBtn, move) {
+  var curElm = moveBtn.closest(".vrtx-json-element");
+  var accordionWrapper = curElm.closest(".vrtx-json-accordion");
   var hasAccordion = accordionWrapper.length;   
       
   if (move > 0) {
-    var movedElm = thisElm.next(".vrtx-json-element");
+    var movedElm = curElm.next(".vrtx-json-element");
   } else {
-    var movedElm = thisElm.prev(".vrtx-json-element");
+    var movedElm = curElm.prev(".vrtx-json-element");
   }
-  var movedId = "#" + movedElm.attr("id");
+  var curCounter = curElm.find("input.id").val();
   var moveToCounter = movedElm.find("input.id").val();
+  
+  var arrayOfIds = ARRAY_OF_IDS; // ref in fn scope
       
   for (var x = 0, len = arrayOfIds.length; x < len; x++) {
-    var elementId1 = '#' + arrayOfIds[x] + counter;
+    var elementId1 = '#' + arrayOfIds[x] + curCounter;
     var elementId2 = '#' + arrayOfIds[x] + moveToCounter;
     var element1 = $(elementId1);
     var element2 = $(elementId2);
         
     /* We need to handle special cases like CK fields and date */
-    var ckInstanceName1 = arrayOfIds[x].replace(/\\/g, '') + counter;
+    var ckInstanceName1 = arrayOfIds[x].replace(/\\/g, '') + curCounter;
     var ckInstanceName2 = arrayOfIds[x].replace(/\\/g, '') + moveToCounter;
 
     if (isCkEditor(ckInstanceName1) && isCkEditor(ckInstanceName2)) {
@@ -1449,7 +1400,7 @@ function swapContent(counter, arrayOfIds, move, name) {
     element1.change();
     element2.change();
   }
-  thisElm.focusout();
+  curElm.focusout();
   movedElm.focusout();
       
   if(hasAccordion) {
@@ -1465,6 +1416,7 @@ function swapContent(counter, arrayOfIds, move, name) {
 /* NOTE: can be used generally if boolean hasScrollAnim is turned on */
     
 function scrollToElm(movedElm) {
+  if(typeof movedElm.offset() === "undefined") return;
   var absPos = movedElm.offset();
   var absPosTop = absPos.top;
   var stickyBar = $("#vrtx-editor-title-submit-buttons");
@@ -1542,7 +1494,7 @@ VrtxEditor.prototype.mustacheFacade = {
   },
   getDropdown: function(elem, inputFieldName) {
     var htmlOpts = [];
-    for (i in elem.valuemap) {
+    for (var i in elem.valuemap) {
       var keyValuePair = elem.valuemap[i];
       var keyValuePairSplit = keyValuePair.split("$");
       htmlOpts.push({key: keyValuePairSplit[0], value: keyValuePairSplit[1]});
@@ -1639,6 +1591,55 @@ VrtxEditor.prototype.accordionGroupedCloseActiveHidden = function accordionGroup
     accordionWrp.accordion("activate", false);
   }
 };
+
+function accordionJsonInit() {
+    // TODO: avoid this being hardcoded here
+    var syllabusItems = $("#editor.vrtx-syllabus #items");
+    wrapItemsLeftRight(syllabusItems.find(".vrtx-json-element"), ".author, .title, .year, .publisher, .isbn, .comment", ".linktext, .link, .bibsys, .fulltext, .articles");
+    syllabusItems.find(".author input, .title input").addClass("header-populators");
+    syllabusItems.find(".vrtx-html textarea").addClass("header-fallback-populator");
+        
+    var sharedTextItems = $("#editor.vrtx-shared-text #shared-text-box");
+    sharedTextItems.find(".title input").addClass("header-populators");
+    // ^ TODO: avoid this being hardcoded here
+      
+    // Because accordion needs one content wrapper
+    for(var grouped = $(".vrtx-json-accordion .vrtx-json-element"), i = grouped.length; i--;) { 
+      var group = $(grouped[i]);
+      group.find("> *").wrapAll("<div />");
+      accordionJsonUpdateHeader(group);
+    }
+    $(".vrtx-json-accordion .fieldset").accordion({ header: "> div > .header",
+                                                    autoHeight: false,
+                                                    collapsible: true,
+                                                    active: false,
+                                                    change: function(e, ui) {
+                                                      accordionJsonUpdateHeader(ui.oldHeader);
+                                                      if(ACCORDION_MOVE_TO_AFTER_CHANGE) {
+                                                        scrollToElm(ACCORDION_MOVE_TO_AFTER_CHANGE);
+                                                      }
+                                                    }  
+                                                  });
+}
+
+function accordionJsonNew(accordionWrapper) {
+      var accordionContent = accordionWrapper.find(".fieldset");
+      var group = accordionContent.find(".vrtx-json-element:last");
+      group.find("> *").wrapAll("<div />");
+      group.prepend('<div class="header">' + (vrtxAdmin.lang !== "en" ? "Inget innhold" : "No content") + '</div>');
+          
+      // TODO: avoid this being hardcoded here
+      var lastSyllabusItem = $("#editor.vrtx-syllabus #items .vrtx-json-element:last");
+      wrapItemsLeftRight(lastSyllabusItem, ".author, .title, .year, .publisher, .isbn, .comment", ".linktext, .link, .bibsys, .fulltext, .articles");
+      lastSyllabusItem.find(".author input, .title input").addClass("header-populators");
+      lastSyllabusItem.find(".vrtx-html textarea").addClass("header-fallback-populator");
+          
+      var lastSharedTextItem = $("#editor.vrtx-shared-text #shared-text-box .vrtx-json-element:last");
+      lastSharedTextItem.find(".title input").addClass("header-populators");
+      // ^ TODO: avoid this being hardcoded here
+          
+      accordionJsonRefresh(accordionContent, false);
+}
 
 function accordionJsonRefresh(elem, active) {
   elem.accordion("destroy").accordion({

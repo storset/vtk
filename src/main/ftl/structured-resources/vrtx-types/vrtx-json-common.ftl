@@ -248,7 +248,7 @@
        <#if elem.value?exists && elem.value?is_enumerable>
          <#list elem.value as map>
            <div class="vrtx-json-element<#if (counter == (elem.value?size - 1))> last</#if>" id="vrtx-json-element-${inputFieldName}-${counter}">
-             <#assign arrayOfIds = "new Array(" />
+             <#assign arrayOfIds = "[" />
              <#list elem.description.attributes as jsonAttr>
                <#assign attrName = jsonAttr.name />
                <#assign tmpName = inputFieldName + "." + attrName + "." + counter />
@@ -266,10 +266,13 @@
                <#if jsonAttr_has_next>
                  <#assign arrayOfIds = arrayOfIds + "," />
                </#if>
-
              </#list>
-
-             <#assign arrayOfIds = arrayOfIds + ")" />
+             <#assign arrayOfIds = arrayOfIds + "]" />
+             <script type="text/javascript"><!--
+               var ARRAY_OF_IDS = ${arrayOfIds}; // XXX: try to avoid this with RegEx replace instead of counters
+             // -->
+             </script>
+             
        	     <input type="hidden" class="id" value="${counter}" />
 
        	     <div class="vrtx-button vrtx-remove-button">
@@ -281,30 +284,11 @@
                  <div class="vrtx-button vrtx-move-up-button">
                    <input type="button" value="&uarr; ${vrtx.getMsg("editor.move-up")}"  />
                  </div>
-
-                 <script type="text/javascript"><!--
-                   $("#vrtx-json-element-${inputFieldName}-${counter}").find(".vrtx-move-up-button").off("click").click(function(e){
-     		         swapContent(${counter}, ${arrayOfIds}, -1, "${inputFieldName}");
-     		         e.stopPropagation();
-	     	         e.preventDefault();
-                   });
-                 // -->
-                 </script>
                </#if>
-
                <#if map_has_next >
                  <div class="vrtx-button vrtx-move-down-button">
                    <input type="button" value="&darr; ${vrtx.getMsg("editor.move-down")}"  />
                  </div>
-
-                 <script type="text/javascript"><!--
-          	       $("#vrtx-json-element-${inputFieldName}-${counter}").find(".vrtx-move-down-button").off("click").click(function(e){
-	     	         swapContent(${counter}, ${arrayOfIds}, 1, "${inputFieldName}");
-	     	         e.stopPropagation();
-	     	         e.preventDefault();
-	     	       });
-	     	     // -->
-                 </script>
                </#if>
              </#if>
 

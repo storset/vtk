@@ -1205,6 +1205,7 @@ function formatMultipleInputFields(name) {
 }
 
 /* Multiple JSON boxes */
+var COUNTER; // Need to increment this uniquely because length-based may interfere when remove and add stuff
 function initJsonMovableElements(templatesRetrieved, jsonElementsBuilt) {
   $.when(templatesRetrieved, jsonElementsBuilt).done(function() {
     for (var i = 0, len = LIST_OF_JSON_ELEMENTS.length; i < len; i++) {
@@ -1212,6 +1213,7 @@ function initJsonMovableElements(templatesRetrieved, jsonElementsBuilt) {
         .append(vrtxEditor.mustacheFacade.getJsonBoxesInteractionsButton("add", vrtxAdmin.multipleFormGroupingMessages.add))
         .find(".vrtx-add-button").data({'number': i});
     }
+    COUNTER = len;
     
     accordionJsonInit();
     
@@ -1233,15 +1235,16 @@ function initJsonMovableElements(templatesRetrieved, jsonElementsBuilt) {
   vrtxAdmin.cachedAppContent.on("click", ".vrtx-json .vrtx-add-button", function(e) {
     var btn = $(this);
     var jsonParent = btn.closest(".vrtx-json");
-    var counter = jsonParent.find(".vrtx-json-element").length;
+    var numOfElements = jsonParent.find(".vrtx-json-element").length;
     var j = LIST_OF_JSON_ELEMENTS[parseInt(btn.data('number'))];
     var htmlTemplate = "";
     var inputFieldName = "";
 
     // Add correct HTML for Vortex type
+    COUNTER++;
     var types = j.a;
     for (var i in types) {
-      inputFieldName = j.name + "." + types[i].name + "." + counter;
+      inputFieldName = j.name + "." + types[i].name + "." + COUNTER;
       htmlTemplate += vrtxEditor.mustacheFacade.getTypeHtml(types[i], inputFieldName);
     }
       
@@ -1253,10 +1256,10 @@ function initJsonMovableElements(templatesRetrieved, jsonElementsBuilt) {
     }
     var removeButton = vrtxEditor.mustacheFacade.getJsonBoxesInteractionsButton('remove', vrtxAdmin.multipleFormGroupingMessages.remove);
 
-    var newElementId = "vrtx-json-element-" + j.name + "-" + counter;
+    var newElementId = "vrtx-json-element-" + j.name + "-" + COUNTER;
     
-    var newElementHtml = htmlTemplate + "<input type=\"hidden\" class=\"id\" value=\"" + counter + "\" \/>" + removeButton;
-    if (!isImmovable && counter > 0) {
+    var newElementHtml = htmlTemplate + "<input type=\"hidden\" class=\"id\" value=\"" + COUNTER + "\" \/>" + removeButton;
+    if (!isImmovable && numOfElements > 0) {
       newElementHtml += moveUpButton;
     }
     newElementHtml = "<div class='vrtx-json-element last' id='" + newElementId + "'>" + newElementHtml + "<\/div>";
@@ -1272,7 +1275,7 @@ function initJsonMovableElements(templatesRetrieved, jsonElementsBuilt) {
     var accordionWrapper = btn.closest(".vrtx-json-accordion");
     var hasAccordion = accordionWrapper.length;    
 
-    if(!isImmovable && counter > 0 && oldLast.length) {
+    if(!isImmovable && numOfElements > 0 && oldLast.length) {
       if(hasAccordion) {
         oldLast.find("> div.ui-accordion-content").append(moveDownButton);
       } else {
@@ -1285,7 +1288,7 @@ function initJsonMovableElements(templatesRetrieved, jsonElementsBuilt) {
 
     // Init CKEditors and enhance date inputfields
     for (i in types) {
-      inputFieldName = j.name + "." + types[i].name + "." + counter;
+      inputFieldName = j.name + "." + types[i].name + "." + COUNTER;
       if (types[i].type == "simple_html") {
         vrtxEditor.newEditor(inputFieldName, false, false, requestLang, cssFileList, "true");
       } else if (types[i].type == "html") {

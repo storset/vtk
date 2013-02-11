@@ -38,8 +38,9 @@ public class SharedTextProvider implements ReferenceDataProvider {
     /* TODO: Need better error handling */
     @SuppressWarnings("unchecked")
     public Map<String, JSONObject> getSharedTextValues(String docType, String propName) {
+
         // XXX Hack for re-use amongst different resource-types:
-        if(propName.equals("studinfo-kontakt")) {
+        if (propName.equals("studinfo-kontakt")) {
             docType = "studinfo-kontakt";
         }
 
@@ -97,6 +98,7 @@ public class SharedTextProvider implements ReferenceDataProvider {
     @Override
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public void referenceData(Map model, HttpServletRequest request) throws Exception {
+
         RequestContext requestContext = RequestContext.getRequestContext();
         String token = requestContext.getSecurityToken();
         Repository repository = requestContext.getRepository();
@@ -104,15 +106,18 @@ public class SharedTextProvider implements ReferenceDataProvider {
         Resource r = repository.retrieve(token, currentResource, false);
 
         ResourceTypeDefinition rtd = resourceTypeTree.getResourceTypeDefinitionByName(r.getResourceType());
-        PropertyTypeDefinition[] ptdl = rtd.getPropertyTypeDefinitions();
-        if (rtd.getPropertyTypeDefinitions() != null) {
+        PropertyTypeDefinition[] propTypeDefs = rtd.getPropertyTypeDefinitions();
+
+        if (propTypeDefs != null) {
+
             Map<String, Map<String, JSONObject>> sharedTextPropsMap = new HashMap<String, Map<String, JSONObject>>();
-            for (int i = 0; i < ptdl.length; i++) {
-                if (ptdl[i] != null) {
-                    Map editHints = (Map) ptdl[i].getMetadata().get("editingHints");
+
+            for (PropertyTypeDefinition propDef : propTypeDefs) {
+                if (propDef != null) {
+                    Map editHints = (Map) propDef.getMetadata().get("editingHints");
                     if (editHints != null && "vrtx-shared-text".equals(editHints.get("class"))) {
-                        sharedTextPropsMap.put(ptdl[i].getName(),
-                                getSharedTextValues(r.getResourceType(), ptdl[i].getName()));
+                        sharedTextPropsMap.put(propDef.getName(),
+                                getSharedTextValues(r.getResourceType(), propDef.getName()));
                     }
                 }
             }

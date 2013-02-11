@@ -1362,9 +1362,6 @@ function swapContent(moveBtn, move) {
     var elementId2 = '#' + field + moveToCounter;
     var element1 = $(elementId1);
     var element2 = $(elementId2);
-    
-    console.log(elementId1 + " exists " + element1.length);
-    console.log(elementId2 + " exists " + element2.length);
         
     /* We need to handle special cases like CK fields and date */
     var ckInstanceName1 = fieldCK + curCounter;

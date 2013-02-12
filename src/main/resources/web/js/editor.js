@@ -1312,7 +1312,6 @@ function initJsonMovableElements(templatesRetrieved, jsonElementsBuilt) {
     var accordionWrapper = removeElement.closest(".vrtx-json-accordion");
     var hasAccordion = accordionWrapper.length;  
     var removeElementParent = removeElement.parent();
-    
     var textAreas = removeElement.find("textarea");
     var i = textAreas.length;
     while(i--) {
@@ -1352,7 +1351,7 @@ function swapContent(moveBtn, move) {
   
   var j = LIST_OF_JSON_ELEMENTS[parseInt(curElm.closest(".vrtx-json").find(".vrtx-add-button").data('number'))];
   var types = j.a;
-  var swapElementFn = swapElement;
+  var swapElementFn = swapElement, swapCKFn = swapCK;
   for (var i = 0, len = types.length; i < len; i++) {
     var field = j.name + "\\." + types[i].name + "\\.";
     var fieldCK = field.replace(/\\/g, "");
@@ -1366,10 +1365,7 @@ function swapContent(moveBtn, move) {
     var ckInstanceName1 = fieldCK + curCounter;
     var ckInstanceName2 = fieldCK + moveToCounter;
     if (isCkEditor(ckInstanceName1) && isCkEditor(ckInstanceName2)) {
-      var val1 = getCkValue(ckInstanceName1);
-      var val2 = getCkValue(ckInstanceName2);
-      setCkValue(ckInstanceName1, val2);
-      setCkValue(ckInstanceName2, val1);
+      swapCKFn(ckInstanceName1, ckInstanceName2);
     } else if (element1.hasClass("date") && element2.hasClass("date")) {
       var element1Wrapper = element1.closest(".vrtx-string");
       var element2Wrapper = element2.closest(".vrtx-string");
@@ -1890,6 +1886,13 @@ function wrapItemsLeftRight(items, leftItems, rightItems) {
 }
 
 /* CK helper functions */
+
+function swapCK(ckInstanceNameA, ckInstanceNameB) {
+  var valA = getCkValue(ckInstanceNameA);
+  var valB = getCkValue(ckInstanceNameB);
+  setCkValue(ckInstanceNameA, valB);
+  setCkValue(ckInstanceNameB, valA);
+}
 
 function getCkValue(instanceName) {
   var oEditor = getCkInstance(instanceName);

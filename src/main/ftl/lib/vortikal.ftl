@@ -548,6 +548,7 @@
  * Generate a Cross-Site Request Forgery (CSRF) prevention token for a
  * given form URL. Produces a hidden form field with the token.
  *
+ * @param url the url
 -->
 <#macro csrfPreventionToken url>
   <input type="hidden"
@@ -601,6 +602,10 @@
  * Based on: http://stackoverflow.com/questions/1244338/algorithm-to-evenly-distribute-items-into-3-columns
  * (with ?floor instead of ?round to distribute e.g. 10 as 4,3,3 and not 3,3,4)
  *
+ * @param totalItems the total number of items
+ * @param column the column
+ * @param maxColumns the max number of columns
+ * @return the number of items per column
 -->
 <#function getEvenlyColumnDistribution totalItems column maxColumns>
   <#assign n = (totalItems / maxColumns)?floor />
@@ -620,7 +625,15 @@
   </#compress>
 </#macro>
 
-<#-- RecoverableResource does not support propValue to get obsoleted and therefore we use this macro temporarily. -->
+
+<#--
+ * resourceContentTypeToIconResolver
+ *
+ * Resolves icon based on resource contentType
+ * RecoverableResource does not support propValue to get obsoleted and therefore we use this extra macro temporarily.
+ *
+ * @param resource the resource
+-->
 <#macro recoverableResourceToIconResolver resource>
   <#compress>
     <#local iconText = "" />
@@ -638,7 +651,13 @@
   </#compress>
 </#macro>
 
-<#-- XXX: can remove this when obsoleted becomes obsolete -->
+<#--
+ * resourceToIconResolver
+ *
+ * Resolves icon based on resource contentType
+ *
+ * @param resource the resource
+-->
 <#macro resourceToIconResolver resource>
   <#compress>
     <#local iconText = "" />
@@ -654,6 +673,15 @@
   </#compress>
 </#macro>
 
+
+<#--
+ * resourceContentTypeToIconResolver
+ *
+ * Resolves icon based on resource contentType
+ *
+ * @param contentType the contentTyoe
+ * @return icon text
+-->
 <#function resourceContentTypeToIconResolver contentType>
   <#if contentType = "application/octet-stream">
     <#return "binary" />

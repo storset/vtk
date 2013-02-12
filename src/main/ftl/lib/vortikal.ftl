@@ -556,6 +556,13 @@
          value="${VRTX_CSRF_PREVENTION_HANDLER.newToken(url)}" />
 </#macro>
 
+<#--
+ * displayTime
+ *
+ * Display time as HH:mm:ss based on a positive integer as representation of time
+ *
+ * @param timeSec the integer
+-->
 <#macro displayTime timeSec >
     <#local sec = (timeSec % 60) />
     <#local min = ((timeSec-sec) % 3600) / 60 />

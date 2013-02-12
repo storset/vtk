@@ -1059,10 +1059,11 @@ function loadMultipleInputFields(name, isMovable, isBrowsable) { // TODO: simpli
   inputField.hide();
   inputFieldParent.removeClass("vrtx-textfield").append(vrtxEditor.mustacheFacade.getMultipleInputFieldsAddButton(name, size, isBrowsable, isMovable, isDropdown));
     
-  var addFormFieldFunc = addFormField;
+  var addFormFieldFunc = addFormField, html = "";
   for (var i = 0; i < vrtxEditor.multipleCommaSeperatedInputFieldLength[name]; i++) {
-    addFormFieldFunc(name, $.trim(formFields[i]), size, isBrowsable, true, isMovable, isDropdown);
+    html += addFormFieldFunc(name, $.trim(formFields[i]), size, isBrowsable, true, isMovable, isDropdown);
   }
+  $(html).insertBefore("#vrtx-" + name + "-add");
       
   autocompleteUsernames(".vrtx-autocomplete-username");
 }
@@ -1115,10 +1116,10 @@ function addFormField(name, value, size, isBrowsable, init, isMovable, isDropdow
   }
 
   var html = vrtxEditor.mustacheFacade.getMultipleInputfield(name, idstr, i, value, size, browseButton, removeButton, moveUpButton, moveDownButton, isDropdown);
-
-  $(html).insertBefore("#vrtx-" + name + "-add");
-    
+  vrtxEditor.multipleCommaSeperatedInputFieldCounter[name]++;  
+  
   if(!init) {
+    $(html).insertBefore("#vrtx-" + name + "-add");
     if(vrtxEditor.multipleCommaSeperatedInputFieldLength[name] > 0 && isMovable) {
       var fields = $("." + name + " div.vrtx-multipleinputfield");
       if(fields.eq(vrtxEditor.multipleCommaSeperatedInputFieldLength[name] - 1).not("has:button.movedown")) {
@@ -1128,9 +1129,9 @@ function addFormField(name, value, size, isBrowsable, init, isMovable, isDropdow
     }
     vrtxEditor.multipleCommaSeperatedInputFieldLength[name]++;
     autocompleteUsername(".vrtx-autocomplete-username", idstr + i);
-  }
-
-  vrtxEditor.multipleCommaSeperatedInputFieldCounter[name]++;   
+  } else {
+    return html;
+  } 
 }
 
 function removeFormField(input) {
@@ -1366,12 +1367,8 @@ function swapContent(moveBtn, move) {
   var curElm = moveBtn.closest(".vrtx-json-element");
   var accordionWrapper = curElm.closest(".vrtx-json-accordion");
   var hasAccordion = accordionWrapper.length;   
-      
-  if (move > 0) {
-    var movedElm = curElm.next(".vrtx-json-element");
-  } else {
-    var movedElm = curElm.prev(".vrtx-json-element");
-  }
+  var movedElm = (move > 0) ? curElm.next(".vrtx-json-element") 
+                            : curElm.prev(".vrtx-json-element");
   var curCounter = curElm.find("input.id").val();
   var moveToCounter = movedElm.find("input.id").val();
   

@@ -1378,15 +1378,12 @@ function swapContent(moveBtn, move) {
       swapElementFn(element1Wrapper.find(elementId1 + '-hours'), element2Wrapper.find(elementId2 + '-hours'));
       swapElementFn(element1Wrapper.find(elementId1 + '-minutes'), element2Wrapper.find(elementId2 + '-minutes'));
     }    
-        
-    var val1 = element1.val();
-    var val2 = element2.val();
-    element1.val(val2);
-    element2.val(val1);
+    swapElementFn(element1, element2);
     if(hasAccordion) {
       accordionJsonUpdateHeader(element1);
       accordionJsonUpdateHeader(element2);
     }
+    /* Do we need these on all elements? */
     element1.blur();
     element2.blur();
     element1.change();

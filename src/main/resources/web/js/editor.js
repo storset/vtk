@@ -1481,6 +1481,12 @@ VrtxEditor.prototype.mustacheFacade = {
 	                  name: name, size: size, isBrowsable: isBrowsable, isMovable: isMovable,
 	                  isDropdown: isDropdown, buttonText: vrtxAdmin.multipleFormGroupingMessages.add });
   },
+  getJsonBoxesInteractionsButton: function(clazz, text) {
+    return $.mustache(TEMPLATES["add-remove-move"], { clazz: clazz, buttonText: text });	
+  },
+  /* 
+   * Type / fields 
+   */
   getMultipleInputfield: function(name, idstr, i, value, size, browseButton, removeButton, moveUpButton, moveDownButton, isDropdown) {
     return $.mustache(vrtxEditor.multipleCommaSeperatedInputFieldTemplates["multiple-inputfield"], { idstr: idstr, i: i, value: value, 
                                                                                                      size: size, browseButton: browseButton,
@@ -1488,12 +1494,6 @@ VrtxEditor.prototype.mustacheFacade = {
                                                                                                      moveDownButton: moveDownButton, isDropdown: isDropdown,
                                                                                                      dropdownArray: "dropdown" + name });
   },
-  getJsonBoxesInteractionsButton: function(clazz, text) {
-    return $.mustache(TEMPLATES["add-remove-move"], { clazz: clazz, buttonText: text });	
-  },
-  /* 
-   * Type / fields 
-   */
   getTypeHtml: function(elem, inputFieldName) {
       var methodName = "get" + this.typeToMethodName(elem.type) + "Field";
       if(this[methodName]) { // If type maps to method

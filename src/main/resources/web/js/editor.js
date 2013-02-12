@@ -1539,39 +1539,29 @@ VrtxEditor.prototype.mustacheFacade = {
                                            inputFieldName: inputFieldName }); 
   },
   getImageRefField: function(elem, inputFieldName) {
-    return $.mustache(TEMPLATES["browse-images"], { clazz: 'vrtx-image-ref',
-                                                    elemTitle: elem.title,
-                                                    inputFieldName: inputFieldName,
-                                                    baseCKURL: vrtxAdmin.multipleFormGroupingPaths.baseCKURL,
-                                                    baseFolderURL: vrtxAdmin.multipleFormGroupingPaths.baseFolderURL,
-                                                    basePath: vrtxAdmin.multipleFormGroupingPaths.basePath,
-                                                    browseButtonText: vrtxAdmin.multipleFormGroupingMessages.browse,
-                                                    type: '',
-                                                    size: 30,
-                                                    previewTitle: browseImagesPreview,
-                                                    previewNoImageText: browseImagesNoPreview }); 
+    return this.getBrowseField(elem, inputFieldName, "browse-images", "vrtx-image-ref", "", 30, { previewTitle: browseImagesPreview,
+                                                                                                  previewNoImageText: browseImagesNoPreview });
   },
   getResourceRefField: function(elem, inputFieldName) {
-    return $.mustache(TEMPLATES["browse"], { clazz: 'vrtx-resource-ref',
-                                             elemTitle: elem.title,
-                                             inputFieldName: inputFieldName,
-                                             baseCKURL: vrtxAdmin.multipleFormGroupingPaths.baseCKURL,
-                                             baseFolderURL: vrtxAdmin.multipleFormGroupingPaths.baseFolderURL,
-                                             basePath: vrtxAdmin.multipleFormGroupingPaths.basePath,
-                                             browseButtonText: vrtxAdmin.multipleFormGroupingMessages.browse,
-                                             type: 'File',
-                                             size: 40 }); 
+    return this.getBrowseField(elem, inputFieldName, "browse", "vrtx-resource-ref", "File", 40, {});
   },
   getMediaRefField: function(elem, inputFieldName) {      
-    return $.mustache(TEMPLATES["browse"], { clazz: 'vrtx-media-ref',
-                                             elemTitle: elem.title,
-                                             inputFieldName: inputFieldName,
-                                             baseCKURL: vrtxAdmin.multipleFormGroupingPaths.baseCKURL,
-                                             baseFolderURL: vrtxAdmin.multipleFormGroupingPaths.baseFolderURL,
-                                             basePath: vrtxAdmin.multipleFormGroupingPaths.basePath,
-                                             browseButtonText: vrtxAdmin.multipleFormGroupingMessages.browse,
-                                             type: 'Media',
-                                             size: 30 }); 
+    return this.getBrowseField(elem, inputFieldName, "browse", "vrtx-media-ref", "Media", 30, {});
+  },
+  getBrowseField: function(elem, inputFieldName, templateName, clazz, type, size, extraConfig) {
+    var config = { clazz: clazz,
+                   elemTitle: elem.title,
+                   inputFieldName: inputFieldName,
+                   baseCKURL: vrtxAdmin.multipleFormGroupingPaths.baseCKURL,
+                   baseFolderURL: vrtxAdmin.multipleFormGroupingPaths.baseFolderURL,
+                   basePath: vrtxAdmin.multipleFormGroupingPaths.basePath,
+                   browseButtonText: vrtxAdmin.multipleFormGroupingMessages.browse,
+                   type: type,
+                   size: size };
+    for (var key in extraConfig) { // Copy in extra config
+      config[key] = extraConfig[key];
+    }
+    return $.mustache(TEMPLATES[templateName], config); 
   }
 }
 
@@ -1623,52 +1613,52 @@ VrtxEditor.prototype.accordionGroupedCloseActiveHidden = function accordionGroup
 };
 
 function accordionJsonInit() {
-    // TODO: avoid this being hardcoded here
-    var syllabusItems = $("#editor.vrtx-syllabus #items");
-    wrapItemsLeftRight(syllabusItems.find(".vrtx-json-element"), ".author, .title, .year, .publisher, .isbn, .comment", ".linktext, .link, .bibsys, .fulltext, .articles");
-    syllabusItems.find(".author input, .title input").addClass("header-populators");
-    syllabusItems.find(".vrtx-html textarea").addClass("header-fallback-populator");
+  // TODO: avoid this being hardcoded here
+  var syllabusItems = $("#editor.vrtx-syllabus #items");
+  wrapItemsLeftRight(syllabusItems.find(".vrtx-json-element"), ".author, .title, .year, .publisher, .isbn, .comment", ".linktext, .link, .bibsys, .fulltext, .articles");
+  syllabusItems.find(".author input, .title input").addClass("header-populators");
+  syllabusItems.find(".vrtx-html textarea").addClass("header-fallback-populator");
         
-    var sharedTextItems = $("#editor.vrtx-shared-text #shared-text-box");
-    sharedTextItems.find(".title input").addClass("header-populators");
-    // ^ TODO: avoid this being hardcoded here
+  var sharedTextItems = $("#editor.vrtx-shared-text #shared-text-box");
+  sharedTextItems.find(".title input").addClass("header-populators");
+  // ^ TODO: avoid this being hardcoded here
       
-    // Because accordion needs one content wrapper
-    for(var grouped = $(".vrtx-json-accordion .vrtx-json-element"), i = grouped.length; i--;) { 
-      var group = $(grouped[i]);
-      group.find("> *").wrapAll("<div />");
-      accordionJsonUpdateHeader(group);
-    }
-    $(".vrtx-json-accordion .fieldset").accordion({ header: "> div > .header",
-                                                    autoHeight: false,
-                                                    collapsible: true,
-                                                    active: false,
-                                                    change: function(e, ui) {
-                                                      accordionJsonUpdateHeader(ui.oldHeader);
-                                                      if(ACCORDION_MOVE_TO_AFTER_CHANGE) {
-                                                        scrollToElm(ACCORDION_MOVE_TO_AFTER_CHANGE);
-                                                      }
-                                                    }  
-                                                  });
+  // Because accordion needs one content wrapper
+  for(var grouped = $(".vrtx-json-accordion .vrtx-json-element"), i = grouped.length; i--;) { 
+    var group = $(grouped[i]);
+    group.find("> *").wrapAll("<div />");
+    accordionJsonUpdateHeader(group);
+  }
+  $(".vrtx-json-accordion .fieldset").accordion({ header: "> div > .header",
+                                                  autoHeight: false,
+                                                  collapsible: true,
+                                                  active: false,
+                                                  change: function(e, ui) {
+                                                    accordionJsonUpdateHeader(ui.oldHeader);
+                                                    if(ACCORDION_MOVE_TO_AFTER_CHANGE) {
+                                                      scrollToElm(ACCORDION_MOVE_TO_AFTER_CHANGE);
+                                                    }
+                                                  }  
+                                                });
 }
 
 function accordionJsonNew(accordionWrapper) {
-      var accordionContent = accordionWrapper.find(".fieldset");
-      var group = accordionContent.find(".vrtx-json-element:last");
-      group.find("> *").wrapAll("<div />");
-      group.prepend('<div class="header">' + (vrtxAdmin.lang !== "en" ? "Inget innhold" : "No content") + '</div>');
+  var accordionContent = accordionWrapper.find(".fieldset");
+  var group = accordionContent.find(".vrtx-json-element:last");
+  group.find("> *").wrapAll("<div />");
+  group.prepend('<div class="header">' + (vrtxAdmin.lang !== "en" ? "Inget innhold" : "No content") + '</div>');
           
-      // TODO: avoid this being hardcoded here
-      var lastSyllabusItem = $("#editor.vrtx-syllabus #items .vrtx-json-element:last");
-      wrapItemsLeftRight(lastSyllabusItem, ".author, .title, .year, .publisher, .isbn, .comment", ".linktext, .link, .bibsys, .fulltext, .articles");
-      lastSyllabusItem.find(".author input, .title input").addClass("header-populators");
-      lastSyllabusItem.find(".vrtx-html textarea").addClass("header-fallback-populator");
+  // TODO: avoid this being hardcoded here
+  var lastSyllabusItem = $("#editor.vrtx-syllabus #items .vrtx-json-element:last");
+  wrapItemsLeftRight(lastSyllabusItem, ".author, .title, .year, .publisher, .isbn, .comment", ".linktext, .link, .bibsys, .fulltext, .articles");
+  lastSyllabusItem.find(".author input, .title input").addClass("header-populators");
+  lastSyllabusItem.find(".vrtx-html textarea").addClass("header-fallback-populator");
           
-      var lastSharedTextItem = $("#editor.vrtx-shared-text #shared-text-box .vrtx-json-element:last");
-      lastSharedTextItem.find(".title input").addClass("header-populators");
-      // ^ TODO: avoid this being hardcoded here
+  var lastSharedTextItem = $("#editor.vrtx-shared-text #shared-text-box .vrtx-json-element:last");
+  lastSharedTextItem.find(".title input").addClass("header-populators");
+  // ^ TODO: avoid this being hardcoded here
           
-      accordionJsonRefresh(accordionContent, false);
+  accordionJsonRefresh(accordionContent, false);
 }
 
 function accordionJsonRefresh(elem, active) {

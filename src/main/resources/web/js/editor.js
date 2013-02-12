@@ -1054,7 +1054,7 @@ function loadMultipleInputFields(name, isMovable, isBrowsable) { // TODO: simpli
   inputField.hide();
   inputFieldParent.removeClass("vrtx-textfield").append(vrtxEditor.mustacheFacade.getMultipleInputFieldsAddButton(name, size, isBrowsable, isMovable, isDropdown));
     
-  var addFormFieldFunc = addFormField, html = "";
+  var addFormFieldFunc = addFormField, html = ""; /* ENHANCE PART */
   for (var i = 0; i < vrtxEditor.multipleCommaSeperatedInputFieldLength[name]; i++) {
     html += addFormFieldFunc(name, $.trim(formFields[i]), size, isBrowsable, true, isMovable, isDropdown);
   }
@@ -1154,6 +1154,7 @@ function swapContentTmp(moveBtn, move) {
   movedElmInput.val(val1);
 }
 
+/* DEHANCE PART */
 function saveMultipleInputFields() {
   for(var i = 0, len = vrtxEditor.multipleCommaSeperatedInputFieldNames.length; i < len; i++){
     var name = vrtxEditor.multipleCommaSeperatedInputFieldNames[i];

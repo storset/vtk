@@ -1074,13 +1074,13 @@ function initMultipleInputFields() {
     e.preventDefault();
     e.stopPropagation();
   });
-  vrtxAdmin.cachedAppContent.on("click", ".vrtx-multipleinputfield button.moveup", function(e){
-    moveUpFormField($(this));
+  vrtxAdmin.cachedAppContent.on("click", ".vrtx-multipleinputfield button.movedown", function(e){
+    swapContentTmp($(this), 1);
     e.preventDefault();
     e.stopPropagation();
   });
-  vrtxAdmin.cachedAppContent.on("click", ".vrtx-multipleinputfield button.movedown", function(e){
-    moveDownFormField($(this));
+  vrtxAdmin.cachedAppContent.on("click", ".vrtx-multipleinputfield button.moveup", function(e){
+    swapContentTmp($(this), -1);
     e.preventDefault();
     e.stopPropagation();
   });
@@ -1151,24 +1151,16 @@ function removeFormField(input) {
   }
 }
 
-function moveUpFormField(input) {
-  var parent = input.closest(".vrtx-multipleinputfield");
-  var thisInput = parent.find("input");
-  var prevInput = parent.prev().find("input");
-  var thisText = thisInput.val();
-  var prevText = prevInput.val();
-  thisInput.val(prevText);
-  prevInput.val(thisText);
-}
-
-function moveDownFormField(input) {
-  var parent = input.closest(".vrtx-multipleinputfield");
-  var thisInput = parent.find("input");
-  var nextInput = parent.next().find("input");
-  var thisText = thisInput.val();
-  var nextText = nextInput.val();
-  thisInput.val(nextText);
-  nextInput.val(thisText);
+function swapContentTmp(moveBtn, move) {
+  var curElm = moveBtn.closest(".vrtx-multipleinputfield");
+  var movedElm = (move > 0) ? curElm.next() 
+                            : curElm.prev();              
+  var curElmInput = curElm.find("input");
+  var movedElmInput = movedElm.find("input");
+  var val1 = curElmInput.val();
+  var val2 = movedElmInput.val();
+  curElmInput.val(val2);
+  movedElmInput.val(val1);
 }
 
 function saveMultipleInputFields() {
@@ -1378,8 +1370,8 @@ function swapContent(moveBtn, move) {
     var field = j.name + "\\." + types[i].name + "\\.";
     var fieldCK = field.replace(/\\/g, "");
     
-    var elementId1 = '#' + field + curCounter;
-    var elementId2 = '#' + field + moveToCounter;
+    var elementId1 = "#" + field + curCounter;
+    var elementId2 = "#" + field + moveToCounter;
     var element1 = $(elementId1);
     var element2 = $(elementId2);
         

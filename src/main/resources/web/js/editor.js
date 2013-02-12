@@ -1333,8 +1333,7 @@ function initJsonMovableElements(templatesRetrieved, jsonElementsBuilt) {
       newLast.addClass("last");
     }
     if(hasAccordion) {
-      var accordionContent = accordionWrapper.find(".fieldset");
-      accordionJsonRefresh(accordionContent, false);
+      accordionJsonRefresh(accordionWrapper.find(".fieldset"), false);
     }
     e.stopPropagation();
     e.preventDefault();

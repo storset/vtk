@@ -56,7 +56,7 @@ function VrtxEditor() {
    this.selectMappings = { "teachingsemester":  ["particular-semester", "every-other", "other"],
                            "examsemester":      ["particular-semester", "every-other", "other"],
                            "teaching-language": ["other"],
-                           "typeToDisplay":     ["so", "nm", "em"],
+                           "typeToDisplay":     ["so", "nm", "em"]
                          };
   
     /** Initial state for the need to confirm navigation away from editor */
@@ -67,7 +67,7 @@ function VrtxEditor() {
     this.multipleCommaSeperatedInputFieldCounter = [];
     this.multipleCommaSeperatedInputFieldLength = [];
     this.multipleCommaSeperatedInputFieldTemplates = [];
-    this.multipleCommaSeperatedInputFieldDeferred;
+    this.multipleCommaSeperatedInputFieldDeferred = null;
   
     /** Check if this script is in admin or not */                      
     this.isInAdmin = typeof vrtxAdmin !== "undefined";
@@ -369,9 +369,9 @@ VrtxEditor.prototype.newEditor = function newEditor(name, completeEditor, withou
   var imageBrowseUrl = baseUrl + '/plugins/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Type=Image&Connector=' + browsePath;
   var flashBrowseUrl = baseUrl + '/plugins/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Type=Flash&Connector=' + browsePath;
 
-  var isCompleteEditor = completeEditor != null ? completeEditor : false;
-  var isWithoutSubSuper = withoutSubSuper != null ? withoutSubSuper : false;
-  var isSimpleHTML = (simpleHTML != null && simpleHTML == "true") ? true : false;
+  var isCompleteEditor = completeEditor ? completeEditor : false;
+  var isWithoutSubSuper = withoutSubSuper ? withoutSubSuper : false;
+  var isSimpleHTML = (simpleHTML && simpleHTML == "true") ? true : false;
   
   var editorElem = this.editorForm;
 
@@ -486,7 +486,7 @@ VrtxEditor.prototype.setCKEditorConfig = function setCKEditorConfig(name, linkBr
     config.entities = false;
   }
 
-  if (linkBrowseUrl != null) {
+  if (linkBrowseUrl) {
     config.filebrowserBrowseUrl = linkBrowseUrl;
     config.filebrowserImageBrowseLinkUrl = linkBrowseUrl;
   }
@@ -684,11 +684,12 @@ function validTextLengthsInEditor(isOldEditor) {
   var currentInputFields = isOldEditor ? contents.find(INPUT_OLD) : contents.find(INPUT_NEW);
   for (var i = 0, textLen = currentInputFields.length; i < textLen; i++) {
     var strElm = $(currentInputFields[i]);
+    var str = "";
     if(isOldEditor) {
-      var str = (typeof strElm.val() !== "undefined") ? str = strElm.val() : "";
+      str = (typeof strElm.val() !== "undefined") ? str = strElm.val() : "";
     } else {
       var strInput = strElm.find("input");
-      var str = (strInput.length && typeof strInput.val() !== "undefined") ? str = strInput.val() : "";
+      str = (strInput.length && typeof strInput.val() !== "undefined") ? str = strInput.val() : "";
     }
     if(str.length > MAX_LENGTH) {
       validTextLengthsInEditorErrorFunc(strElm, isOldEditor);
@@ -722,10 +723,10 @@ function validTextLengthsInEditorError(elm, isOldEditor) {
     if(isOldEditor) {
       var elmPropWrapper = elm.closest(".property-item");
       if(elmPropWrapper.length) {
-        var lbl = elmPropWrapper.find(".property-label:first");
+        lbl = elmPropWrapper.find(".property-label:first");
       }
     } else {
-      var lbl = elm.find("label");
+      lbl = elm.find("label");
     }
     if(lbl.length) {
       vrtxSimpleDialogs.openMsgDialog(tooLongFieldPre + lbl.text() + tooLongFieldPost, "");
@@ -750,7 +751,7 @@ VrtxEditor.prototype.initPreviewImage = function initPreviewImage() {
 
   /* Inputfield events for image preview */
   _$(document).on("blur", "input.preview-image-inputfield", function(e) {
-    previewImage(this.id)
+    previewImage(this.id);
   });
   
   _$(document).on("keydown", "input.preview-image-inputfield", _$.debounce(50, true, function(e) { // ENTER-key
@@ -771,7 +772,7 @@ function hideImagePreviewCaption(input, isInit) {
   
   var captionWrp = input.closest(".introImageAndCaption");
   if(!captionWrp.length) {
-    var captionWrp = input.closest(".picture-and-caption");
+    captionWrp = input.closest(".picture-and-caption");
     if(captionWrp.length) {
       captionWrp = captionWrp.parent();
     }
@@ -794,14 +795,15 @@ function showImagePreviewCaption(input) {
   previewImg.fadeIn("fast");
   
   var captionWrp = input.closest(".introImageAndCaption");
+  var oldHeight = 0;
   if(!captionWrp.length) {
-    var captionWrp = input.closest(".picture-and-caption");
+    captionWrp = input.closest(".picture-and-caption");
     if(captionWrp.length) {
       captionWrp = captionWrp.parent();
-      var oldHeight = 241;
+      oldHeight = 241;
     }
   } else {
-    var oldHeight = 244;
+    oldHeight = 244;
     var hidePicture = captionWrp.find(".hidePicture");
     if(hidePicture.length) {
       hidePicture.fadeIn("fast");
@@ -820,17 +822,19 @@ function previewImage(urlobj) {
   var previewNode = $("#" + urlobj + '\\.preview-inner');
   if (previewNode.length) {
     var elm = $("#" + urlobj);
-    var url = elm.val();
-    var parentPreviewNode = previewNode.parent();
-    if (url && url != "") {
-      previewNode.find("img").attr("src", url + "?vrtx=thumbnail");
-      if(parentPreviewNode.hasClass("no-preview")) {
-        parentPreviewNode.removeClass("no-preview");
-        previewNode.find("img").attr("alt", "thumbnail");
+    if(elm.length) {
+      var url = elm.val();
+      if (url !== "") {
+        var parentPreviewNode = previewNode.parent();
+        previewNode.find("img").attr("src", url + "?vrtx=thumbnail");
+        if(parentPreviewNode.hasClass("no-preview")) {
+          parentPreviewNode.removeClass("no-preview");
+          previewNode.find("img").attr("alt", "thumbnail");
+        }
+        showImagePreviewCaption(elm);
+      } else {
+        hideImagePreviewCaption(elm, false);
       }
-      showImagePreviewCaption(elm);
-    } else {
-      hideImagePreviewCaption(elm, false);
     }
   }
 }
@@ -917,7 +921,7 @@ function setShowHideBooleanNewEditor(name, properties, hideTrues) {
       }
     },
 	callbackParams: [properties, hideTrues, name]
-  })	
+  });
 }
 
 function setShowHideBooleanOldEditor(radioIds, properties, conditionHide, conditionHideEqual) {
@@ -964,8 +968,7 @@ VrtxEditor.prototype.setShowHideSelectNewEditor = function setShowHideSelectNewE
       callback: vrtxEdit.showHideSelect
     });
   }
-}
-
+};
 
 /**
  * Select field show/hide
@@ -1216,7 +1219,7 @@ function initJsonMovableElements(templatesRetrieved, jsonElementsBuilt) {
     var btn = $(this);
     var jsonParent = btn.closest(".vrtx-json");
     var numOfElements = jsonParent.find(".vrtx-json-element").length;
-    var j = LIST_OF_JSON_ELEMENTS[parseInt(btn.data('number'))];
+    var j = LIST_OF_JSON_ELEMENTS[parseInt(btn.data('number'), 10)];
     var htmlTemplate = "";
     var inputFieldName = "";
 
@@ -1242,16 +1245,13 @@ function initJsonMovableElements(templatesRetrieved, jsonElementsBuilt) {
       
     // Interaction
     var isImmovable = jsonParent && jsonParent.hasClass("vrtx-multiple-immovable");
-    if(!isImmovable) {
-      var moveDownButton = vrtxEditor.mustacheFacade.getJsonBoxesInteractionsButton('move-down', '&darr; ' + vrtxAdmin.multipleFormGroupingMessages.moveDown); 
-      var moveUpButton = vrtxEditor.mustacheFacade.getJsonBoxesInteractionsButton('move-up', '&uarr; ' + vrtxAdmin.multipleFormGroupingMessages.moveUp);
-    }
     var removeButton = vrtxEditor.mustacheFacade.getJsonBoxesInteractionsButton('remove', vrtxAdmin.multipleFormGroupingMessages.remove);
 
     var newElementId = "vrtx-json-element-" + j.name + "-" + COUNTER[j.name];
     
     var newElementHtml = htmlTemplate + "<input type=\"hidden\" class=\"id\" value=\"" + COUNTER[j.name] + "\" \/>" + removeButton;
     if (!isImmovable && numOfElements > 0) {
+      var moveUpButton = vrtxEditor.mustacheFacade.getJsonBoxesInteractionsButton('move-up', '&uarr; ' + vrtxAdmin.multipleFormGroupingMessages.moveUp);
       newElementHtml += moveUpButton;
     }
     newElementHtml = "<div class='vrtx-json-element last' id='" + newElementId + "'>" + newElementHtml + "<\/div>";
@@ -1267,6 +1267,7 @@ function initJsonMovableElements(templatesRetrieved, jsonElementsBuilt) {
     var hasAccordion = accordionWrapper.length;    
 
     if(!isImmovable && numOfElements > 0 && oldLast.length) {
+      var moveDownButton = vrtxEditor.mustacheFacade.getJsonBoxesInteractionsButton('move-down', '&darr; ' + vrtxAdmin.multipleFormGroupingMessages.moveDown)
       if(hasAccordion) {
         oldLast.find("> div.ui-accordion-content").append(moveDownButton);
       } else {
@@ -1348,7 +1349,7 @@ function swapContent(moveBtn, move) {
   var curCounter = curElm.find("input.id").val();
   var moveToCounter = movedElm.find("input.id").val();
   
-  var j = LIST_OF_JSON_ELEMENTS[parseInt(curElm.closest(".vrtx-json").find(".vrtx-add-button").data('number'))];
+  var j = LIST_OF_JSON_ELEMENTS[parseInt(curElm.closest(".vrtx-json").find(".vrtx-add-button").data('number'), 10)];
   var types = j.a;
   var swapElementFn = swapElement, swapCKFn = swapCK;
   for (var i = 0, len = types.length; i < len; i++) {

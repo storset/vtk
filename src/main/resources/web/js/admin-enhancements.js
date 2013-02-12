@@ -919,8 +919,8 @@ VrtxAdmin.prototype.dropdown = function dropdown(options) {
     var listParent = list.parent();
     listParent.append("<div class='dropdown-shortcut-menu-container'><ul>" + list.html() + "</ul></div>");
     
-    var startDropdown = options.start !== null ? ":nth-child(-n+" + options.start + ")" : ".first";
-    var dropdownClickArea = options.start !== null ? ":nth-child(3)" : ".first";
+    var startDropdown = options.start ? ":nth-child(-n+" + options.start + ")" : ".first";
+    var dropdownClickArea = options.start ? ":nth-child(3)" : ".first";
     
     list.find("li").not(startDropdown).remove();
     list.find("li" + dropdownClickArea).append("<span id='dropdown-shortcut-menu-click-area'></span>");

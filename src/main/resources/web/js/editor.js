@@ -1394,9 +1394,8 @@ function swapContent(moveBtn, move) {
   
   if(hasAccordion) {
     ACCORDION_MOVE_TO_AFTER_CHANGE = movedElm;
-    var accordionContent = accordionWrapper.find(".fieldset");
-    accordionContent.accordion("option", "active", (movedElm.index() - 1));
-    accordionContent.accordion("option", "refresh");
+    accordionWrapper.find(".fieldset").accordion("option", "active", (movedElm.index() - 1))
+                                      .accordion("option", "refresh");
   } else {
     scrollToElm(movedElm);
   }

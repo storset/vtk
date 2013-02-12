@@ -541,6 +541,18 @@
   <#return "" />
 </#function>
 
+<#function getMetadata metadata key multiple=false>
+  <#if multiple = true>
+    <#if metadata.getValues(key)?exists>
+      <#return metadata.getValues(key) />
+    </#if>
+  </#if>
+  <#assign value = "" />
+  <#if metadata.getValue(key)?exists>
+    <#assign value = metadata.getValue(key) />
+  </#if>
+  <#return value />
+</#function>
 
 <#--
  * csrfPreventionToken
@@ -573,7 +585,7 @@
 <#--
  * calculateResourceSize
  *
- * Display bytes approx. in the metric system
+ * Display bytes approx. as float in the metric system
  *
  * @param contentLength the content length in bytes
 -->
@@ -591,22 +603,16 @@
   </#if>
 </#macro>
 
+<#--
+ * calculateResourceSizeToKB
+ *
+ * Display bytes approx. as integer in KB
+ *
+ * @param contentLength the content length in bytes
+-->
 <#macro calculateResourceSizeToKB contentLength>
   ${(contentLength / 1000)?string("#")} KB
 </#macro>
-
-<#function getMetadata metadata key multiple=false>
-  <#if multiple = true>
-    <#if metadata.getValues(key)?exists>
-      <#return metadata.getValues(key) />
-    </#if>
-  </#if>
-  <#assign value = "" />
-  <#if metadata.getValue(key)?exists>
-    <#assign value = metadata.getValue(key) />
-  </#if>
-  <#return value />
-</#function>
 
 <#--
  * getEvenlyColumnDistribution

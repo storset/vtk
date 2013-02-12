@@ -1465,7 +1465,7 @@ function scrollToElm(movedElm) {
 }
 
 /**
- * Mustache facade (JSON-input=>Mustache=>HTML)
+ * Mustache facade (Input=>Mustache=>HTML)
  * @namespace
  */
 VrtxEditor.prototype.mustacheFacade = {

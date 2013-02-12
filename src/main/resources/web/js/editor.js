@@ -1048,10 +1048,7 @@ function loadMultipleInputFields(name, isMovable, isBrowsable) { // TODO: simpli
 
   if(inputFieldParentParent.hasClass("vrtx-resource-ref-browse")) {
     isBrowsable = true;
-    var inputFieldParentNext = inputFieldParent.next();
-    if(inputFieldParentNext.hasClass("vrtx-button")) {
-      inputFieldParentNext.hide();
-    } 
+    inputFieldParent.next().filter(".vrtx-button").hide();
   }
 
   inputField.hide();
@@ -1161,9 +1158,8 @@ function saveMultipleInputFields() {
   for(var i = 0, len = vrtxEditor.multipleCommaSeperatedInputFieldNames.length; i < len; i++){
     var name = vrtxEditor.multipleCommaSeperatedInputFieldNames[i];
     var multipleFields = $("." + name);
-    var multipleInput = multipleFields.find("#" + name);
+    var multipleInput = multipleFields.find("input").filter(":hidden");
     if (!multipleInput.length) continue;
-    
     var multipleInputFields = multipleFields.find(".vrtx-multipleinputfield");
     if(!multipleInputFields.length) {
       multipleInput.val("");

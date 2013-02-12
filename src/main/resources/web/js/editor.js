@@ -1164,37 +1164,29 @@ function swapContentTmp(moveBtn, move) {
 }
 
 function saveMultipleInputFields() {
-  var formatMultipleInputFieldsFunc = formatMultipleInputFields;
   for(var i = 0, len = vrtxEditor.multipleCommaSeperatedInputFieldNames.length; i < len; i++){
-    formatMultipleInputFields(vrtxEditor.multipleCommaSeperatedInputFieldNames[i]);
-  }
-}
-
-function formatMultipleInputFields(name) {
-  var multipleTxt = $("." + name + " input[type=text]").filter(":hidden");  /*  Note: To achieve the best performance when using :hidden to select elements,
-                                                                                      first select the elements using a pure CSS selector, then use .filter(":hidden") */
-  if (multipleTxt.val() == null) return;
-
-  var allFields = $("input[type=text][id^='vrtx-" + name + "']");
-  var isDropdown = false;
-  if(!allFields.length) {
-    allFields = $("select[id^='vrtx-" + name + "']");
-    if(allFields.length) {
-      isDropdown = true;
-    } else {
+    var multiple = $("." + vrtxEditor.multipleCommaSeperatedInputFieldNames[i]);
+    var multipleTxt = multiple.find("#" + vrtxEditor.multipleCommaSeperatedInputFieldNames[i]);
+    if (!multipleTxt.length || multipleTxt.val() == "") continue;
+    var allFields = multiple.find(".vrtx-multipleinputfield");
+    if(!allFields.length) {
       multipleTxt.val("");
-      return;
+      continue;
     }
-  }
-  
-  for (var i = 0, len = allFields.length, result = ""; i < len; i++) {
-    result += isDropdown ? $.trim($(allFields[i]).find("option:selected").val()) : $.trim(allFields[i].value);
-    if (i < (len-1)) {
-      result += ",";
+    var result = "";
+    for (var j = 0, len2 = allFields.length, result = ""; j < len2; j++) {
+      var field = $(allFields[j]).find("input");
+      if(!field) {
+        field = $(allFields[j]).find("select");
+      }
+      if(!field) continue;
+      result += $.trim(field.val());
+      if (j < (len2-1)) {
+        result += ",";
+      }
     }
+    multipleTxt.val(result);
   }
-  
-  multipleTxt.val(result);
 }
 
 /* Multiple JSON boxes */

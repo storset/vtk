@@ -1165,27 +1165,27 @@ function swapContentTmp(moveBtn, move) {
 
 function saveMultipleInputFields() {
   for(var i = 0, len = vrtxEditor.multipleCommaSeperatedInputFieldNames.length; i < len; i++){
-    var multiple = $("." + vrtxEditor.multipleCommaSeperatedInputFieldNames[i]);
-    var multipleTxt = multiple.find("#" + vrtxEditor.multipleCommaSeperatedInputFieldNames[i]);
-    if (!multipleTxt.length || multipleTxt.val() == "") continue;
-    var allFields = multiple.find(".vrtx-multipleinputfield");
-    if(!allFields.length) {
-      multipleTxt.val("");
+    var multipleFields = $("." + vrtxEditor.multipleCommaSeperatedInputFieldNames[i]);
+    var multipleInput = multipleFields.find("#" + vrtxEditor.multipleCommaSeperatedInputFieldNames[i]);
+    if (!multipleInput.length) continue;
+    
+    var multipleInputFields = multipleFields.find(".vrtx-multipleinputfield");
+    if(!multipleInputFields.length) {
+      multipleInput.val("");
       continue;
     }
     var result = "";
-    for (var j = 0, len2 = allFields.length, result = ""; j < len2; j++) {
-      var field = $(allFields[j]).find("input");
-      if(!field) {
-        field = $(allFields[j]).find("select");
-      }
+    for (var j = 0, len2 = multipleInputFields.length; j < len2; j++) {
+      var multipleInputField = $(multipleInputFields[j]);
+      var field = multipleInputField.find("input");
+      if(!field) field = multipleInputField.find("select");
       if(!field) continue;
       result += $.trim(field.val());
       if (j < (len2-1)) {
         result += ",";
       }
     }
-    multipleTxt.val(result);
+    multipleInput.val(result);
   }
 }
 

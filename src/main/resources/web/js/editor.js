@@ -1025,6 +1025,35 @@ VrtxEditor.prototype.initMultipleFormGrouping = function initMultipleFormGroupin
  */
 
 /* Multiple comma seperated input textfields */
+function initMultipleInputFields() {
+  vrtxAdmin.cachedAppContent.on("click", ".vrtx-multipleinputfield button.remove", function(e){
+    removeFormField($(this));
+    e.preventDefault();
+    e.stopPropagation();
+  });
+  vrtxAdmin.cachedAppContent.on("click", ".vrtx-multipleinputfield button.movedown", function(e){
+    swapContentTmp($(this), 1);
+    e.preventDefault();
+    e.stopPropagation();
+  });
+  vrtxAdmin.cachedAppContent.on("click", ".vrtx-multipleinputfield button.moveup", function(e){
+    swapContentTmp($(this), -1);
+    e.preventDefault();
+    e.stopPropagation();
+  });
+  vrtxAdmin.cachedAppContent.on("click", ".vrtx-multipleinputfield button.browse-resource-ref", function(e){
+    browseServer($(this).closest(".vrtx-multipleinputfield").find('input').attr('id'), vrtxAdmin.multipleFormGroupingPaths.baseCKURL, vrtxAdmin.multipleFormGroupingPaths.baseFolderURL, vrtxAdmin.multipleFormGroupingPaths.basePath, 'File');
+    e.preventDefault();
+    e.stopPropagation();
+  });
+
+  // Retrieve HTML templates
+  vrtxEditor.multipleCommaSeperatedInputFieldDeferred = $.Deferred();
+  vrtxEditor.multipleCommaSeperatedInputFieldTemplates = vrtxAdmin.retrieveHTMLTemplates("multiple-inputfields",
+                                                                                        ["button", "add-button", "multiple-inputfield"],
+                                                                                        vrtxEditor.multipleCommaSeperatedInputFieldDeferred);
+}
+
 function loadMultipleInputFields(name, isMovable, isBrowsable) { // TODO: simplify
   var inputField = $("." + name + " input[type=text]");
   if(!inputField.length) return;
@@ -1061,35 +1090,6 @@ function loadMultipleInputFields(name, isMovable, isBrowsable) { // TODO: simpli
   $(html).insertBefore("#vrtx-" + name + "-add");
       
   autocompleteUsernames(".vrtx-autocomplete-username");
-}
-
-function initMultipleInputFields() {
-  vrtxAdmin.cachedAppContent.on("click", ".vrtx-multipleinputfield button.remove", function(e){
-    removeFormField($(this));
-    e.preventDefault();
-    e.stopPropagation();
-  });
-  vrtxAdmin.cachedAppContent.on("click", ".vrtx-multipleinputfield button.movedown", function(e){
-    swapContentTmp($(this), 1);
-    e.preventDefault();
-    e.stopPropagation();
-  });
-  vrtxAdmin.cachedAppContent.on("click", ".vrtx-multipleinputfield button.moveup", function(e){
-    swapContentTmp($(this), -1);
-    e.preventDefault();
-    e.stopPropagation();
-  });
-  vrtxAdmin.cachedAppContent.on("click", ".vrtx-multipleinputfield button.browse-resource-ref", function(e){
-    browseServer($(this).closest(".vrtx-multipleinputfield").find('input').attr('id'), vrtxAdmin.multipleFormGroupingPaths.baseCKURL, vrtxAdmin.multipleFormGroupingPaths.baseFolderURL, vrtxAdmin.multipleFormGroupingPaths.basePath, 'File');
-    e.preventDefault();
-    e.stopPropagation();
-  });
-
-  // Retrieve HTML templates
-  vrtxEditor.multipleCommaSeperatedInputFieldDeferred = $.Deferred();
-  vrtxEditor.multipleCommaSeperatedInputFieldTemplates = vrtxAdmin.retrieveHTMLTemplates("multiple-inputfields",
-                                                                                        ["button", "add-button", "multiple-inputfield"],
-                                                                                        vrtxEditor.multipleCommaSeperatedInputFieldDeferred);
 }
 
 function addFormField(name, value, size, isBrowsable, init, isMovable, isDropdown) {

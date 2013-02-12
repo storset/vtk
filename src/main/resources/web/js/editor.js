@@ -1098,18 +1098,18 @@ function initMultipleInputFields() {
 }
 
 function addFormField(name, value, size, isBrowsable, init, isMovable, isDropdown) {
-  if (value == null) value = "";
-
   var idstr = "vrtx-" + name + "-",
       i = vrtxEditor.multipleCommaSeperatedInputFieldCounter[name],
       removeButton = "", moveUpButton = "", moveDownButton = "", browseButton = "";
 
   removeButton = vrtxEditor.mustacheFacade.getMultipleInputfieldsInteractionsButton("remove", " " + name, idstr, vrtxAdmin.multipleFormGroupingMessages.remove);
-  if (isMovable && i > 1) {
-    moveUpButton = vrtxEditor.mustacheFacade.getMultipleInputfieldsInteractionsButton("moveup", "", idstr, "&uarr; " + vrtxAdmin.multipleFormGroupingMessages.moveUp);
-  }
-  if (isMovable && i < vrtxEditor.multipleCommaSeperatedInputFieldLength[name]) {
-    moveDownButton = vrtxEditor.mustacheFacade.getMultipleInputfieldsInteractionsButton("movedown", "", idstr, "&darr; " + vrtxAdmin.multipleFormGroupingMessages.moveDown);
+  if (isMovable) {
+    if (i > 1) {
+      moveUpButton = vrtxEditor.mustacheFacade.getMultipleInputfieldsInteractionsButton("moveup", "", idstr, "&uarr; " + vrtxAdmin.multipleFormGroupingMessages.moveUp);
+    }
+    if (i < vrtxEditor.multipleCommaSeperatedInputFieldLength[name]) {
+      moveDownButton = vrtxEditor.mustacheFacade.getMultipleInputfieldsInteractionsButton("movedown", "", idstr, "&darr; " + vrtxAdmin.multipleFormGroupingMessages.moveDown);
+    }
   }
   if(isBrowsable) {
     browseButton = vrtxEditor.mustacheFacade.getMultipleInputfieldsInteractionsButton("browse", "-resource-ref", idstr, vrtxAdmin.multipleFormGroupingMessages.browse);
@@ -1119,15 +1119,16 @@ function addFormField(name, value, size, isBrowsable, init, isMovable, isDropdow
   vrtxEditor.multipleCommaSeperatedInputFieldCounter[name]++;  
   
   if(!init) {
-    $(html).insertBefore("#vrtx-" + name + "-add");
     if(vrtxEditor.multipleCommaSeperatedInputFieldLength[name] > 0 && isMovable) {
       var fields = $("." + name + " div.vrtx-multipleinputfield");
-      if(fields.eq(vrtxEditor.multipleCommaSeperatedInputFieldLength[name] - 1).not("has:button.movedown")) {
+      var last = fields.filter(":last");
+      if(!last.find("button.movedown").length) {
         moveDownButton = vrtxEditor.mustacheFacade.getMultipleInputfieldsInteractionsButton("movedown", "", idstr, "&darr; " + vrtxAdmin.multipleFormGroupingMessages.moveDown);
-        fields.eq(vrtxEditor.multipleCommaSeperatedInputFieldLength[name] - 1).append(moveDownButton);
+        last.append(moveDownButton);
       }
     }
-    vrtxEditor.multipleCommaSeperatedInputFieldLength[name]++;
+    $(html).insertBefore("#vrtx-" + name + "-add");
+    vrtxEditor.multipleCommaSeperatedInputFieldLength[name]++;   
     autocompleteUsername(".vrtx-autocomplete-username", idstr + i);
   } else {
     return html;
@@ -1135,20 +1136,15 @@ function addFormField(name, value, size, isBrowsable, init, isMovable, isDropdow
 }
 
 function removeFormField(input) {
-  var name = input.attr("class").replace("remove ", "");
+  var parent = input.closest(".vrtx-multipleinputfields");
   input.closest(".vrtx-multipleinputfield").remove();
-
+  var fields = parent.find(".vrtx-multipleinputfield");
+  var moveUpFirst = fields.filter(":first").find("button.moveup");
+  var moveDownLast = fields.filter(":last").find("button.movedown");
+  if(moveUpFirst.length) moveUpFirst.parent().remove();
+  if(moveDownLast.length) moveDownLast.parent().remove();
   vrtxEditor.multipleCommaSeperatedInputFieldLength[name]--;
   vrtxEditor.multipleCommaSeperatedInputFieldCounter[name]--;
-
-  var fields = $("." + name + " div.vrtx-multipleinputfield");
-
-  if(fields.eq(vrtxEditor.multipleCommaSeperatedInputFieldLength[name] - 1).has("button.movedown")) {
-    fields.eq(vrtxEditor.multipleCommaSeperatedInputFieldLength[name] - 1).find("button.movedown").parent().remove();
-  }
-  if(fields.eq(0).has("button.moveup")) {
-    fields.eq(0).find("button.moveup").parent().remove();
-  }
 }
 
 function swapContentTmp(moveBtn, move) {
@@ -1165,8 +1161,9 @@ function swapContentTmp(moveBtn, move) {
 
 function saveMultipleInputFields() {
   for(var i = 0, len = vrtxEditor.multipleCommaSeperatedInputFieldNames.length; i < len; i++){
-    var multipleFields = $("." + vrtxEditor.multipleCommaSeperatedInputFieldNames[i]);
-    var multipleInput = multipleFields.find("#" + vrtxEditor.multipleCommaSeperatedInputFieldNames[i]);
+    var name = vrtxEditor.multipleCommaSeperatedInputFieldNames[i];
+    var multipleFields = $("." + name);
+    var multipleInput = multipleFields.find("#" + name);
     if (!multipleInput.length) continue;
     
     var multipleInputFields = multipleFields.find(".vrtx-multipleinputfield");

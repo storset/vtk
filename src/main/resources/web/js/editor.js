@@ -1353,6 +1353,7 @@ function swapContent(moveBtn, move) {
   
   var j = LIST_OF_JSON_ELEMENTS[parseInt(curElm.closest(".vrtx-json").find(".vrtx-add-button").data('number'))];
   var types = j.a;
+  var swapElementFn = swapElement;
   for (var i = 0, len = types.length; i < len; i++) {
     var field = j.name + "\\." + types[i].name + "\\.";
     var fieldCK = field.replace(/\\/g, "");
@@ -1372,25 +1373,10 @@ function swapContent(moveBtn, move) {
       setCkValue(ckInstanceName2, val1);
     } else if (element1.hasClass("date") && element2.hasClass("date")) {
       var element1Wrapper = element1.closest(".vrtx-string");
-      var date1 = element1Wrapper.find(elementId1 + '-date');
-      var hours1 = element1Wrapper.find(elementId1 + '-hours');
-      var minutes1 = element1Wrapper.find(elementId1 + '-minutes');
       var element2Wrapper = element2.closest(".vrtx-string");
-      var date2 = element2Wrapper.find(elementId2 + '-date');
-      var hours2 = element2Wrapper.find(elementId2 + '-hours');
-      var minutes2 = element2Wrapper.find(elementId2 + '-minutes');
-      var dateVal1 = date1.val();
-      var hoursVal1 = hours1.val();
-      var minutesVal1 = minutes1.val();
-      var dateVal2 = date2.val();
-      var hoursVal2 = hours2.val();
-      var minutesVal2 = minutes2.val();
-      date1.val(dateVal2);
-      hours1.val(hoursVal2);
-      minutes1.val(minutesVal2);
-      date2.val(dateVal1);
-      hours2.val(hoursVal1);
-      minutes2.val(minutesVal1);
+      swapElementFn(element1Wrapper.find(elementId1 + '-date'), element2Wrapper.find(elementId2 + '-date'));
+      swapElementFn(element1Wrapper.find(elementId1 + '-hours'), element2Wrapper.find(elementId2 + '-hours'));
+      swapElementFn(element1Wrapper.find(elementId1 + '-minutes'), element2Wrapper.find(elementId2 + '-minutes'));
     }    
         
     var val1 = element1.val();
@@ -1408,7 +1394,7 @@ function swapContent(moveBtn, move) {
   }
   curElm.focusout();
   movedElm.focusout();
-      
+  
   if(hasAccordion) {
     ACCORDION_MOVE_TO_AFTER_CHANGE = movedElm;
     var accordionContent = accordionWrapper.find(".fieldset");
@@ -1417,6 +1403,13 @@ function swapContent(moveBtn, move) {
   } else {
     scrollToElm(movedElm);
   }
+}
+
+function swapElement(elemA, elemB) {
+  var elemAVal = elemA.val();
+  var elemBVal = elemB.val();
+  elemA.val(elemBVal);
+  elemB.val(elemAVal);
 }
     
 /* NOTE: can be used generally if boolean hasScrollAnim is turned on */

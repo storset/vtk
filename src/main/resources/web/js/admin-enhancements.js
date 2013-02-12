@@ -128,7 +128,7 @@ vrtxAdmin._$(window).load(function() {
   
   vrtxAdm.initAdaptiveBreadcrumbs();
   
-  vrtxAdm.log({msg: "Window.load() in " + (+new Date - startLoadTime) + "ms."});
+  vrtxAdm.log({msg: "Window.load() in " + (+new Date() - startLoadTime) + "ms."});
 });
 
 
@@ -255,8 +255,7 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
             }
           });
           return false;
-        } : null
-      ),
+        } : null),
       post: (bodyId !== "vrtx-preview" && !isSavingBeforePublish)
     });
   }
@@ -369,7 +368,7 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
                 insertAfterOrReplaceClass: "#active-tab ul#tabMenuRight",
                 nodeType: "div",
                 funcComplete: function (p) {
-                  vrtxAdm.initFileUpload()
+                  vrtxAdm.initFileUpload();
                 },
                 simultanSliding: true
               });
@@ -407,7 +406,7 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
                   break;
                 }
               }
-              var results = _$(results);
+              results = _$(results);
               if (copyMoveExists !== "") { // Reverse the belt and roll out updated baggage :)
                 baggageBeltAnimFx(copyMoveExists, {
                   reverse: true,
@@ -719,7 +718,8 @@ function interceptEnterKeyAndReroute(txt, btn) {
 }
 
 function baggageBeltAnimFx(elm, opts) {
-  var opts = (typeof opts === "object") ? opts : {};
+  if (typeof opts !== "object") opts = {};
+  
   var width = elm.outerWidth(true);
   if(opts.reverse) {
     anim = -width;
@@ -750,8 +750,7 @@ VrtxAdmin.prototype.logoutButtonAsLink = function logoutButtonAsLink() {
   var btn = _$('input#logoutAction');
   if (!btn.length) return;
   btn.hide();
-  btn.after('&nbsp;<a id=\"logoutAction.link\" name=\"logoutAction\" href="javascript:void(0);">'
-          + btn.attr('value') + '</a>');
+  btn.after('&nbsp;<a id=\"logoutAction.link\" name=\"logoutAction\" href="javascript:void(0);">' + btn.attr('value') + '</a>');
   _$("#app-head-wrapper").on("click", '#logoutAction\\.link', function (e) {
     btn.click();
     e.stopPropagation();
@@ -779,7 +778,7 @@ function initializeTree() {
       }
       traverseNode(treeElem, treeTrav[pathNum++], last);
     }
-  })
+  });
 
   treeElem.on("click", "a", function (e) { // Don't want click on links
     e.preventDefault();
@@ -882,8 +881,7 @@ VrtxAdmin.prototype.dropdownPlain = function dropdownPlain(selector) {
   var header = parent.find(selector + "-header");
   var headerText = header.text();
   // outerHtml
-  header.replaceWith("<a href='javascript:void(0);' id='" + selector.substring(1) + "-header'>"
-                     + headerText.substring(0, headerText.length - 1) + "</a>");
+  header.replaceWith("<a href='javascript:void(0);' id='" + selector.substring(1) + "-header'>" + headerText.substring(0, headerText.length - 1) + "</a>");
 
   languageMenu.addClass("dropdown-shortcut-menu-container");
 
@@ -921,8 +919,8 @@ VrtxAdmin.prototype.dropdown = function dropdown(options) {
     var listParent = list.parent();
     listParent.append("<div class='dropdown-shortcut-menu-container'><ul>" + list.html() + "</ul></div>");
     
-    var startDropdown = options.start != null ? ":nth-child(-n+" + options.start + ")" : ".first";
-    var dropdownClickArea = options.start != null ? ":nth-child(3)" : ".first";
+    var startDropdown = options.start !== null ? ":nth-child(-n+" + options.start + ")" : ".first";
+    var dropdownClickArea = options.start !== null ? ":nth-child(3)" : ".first";
     
     list.find("li").not(startDropdown).remove();
     list.find("li" + dropdownClickArea).append("<span id='dropdown-shortcut-menu-click-area'></span>");
@@ -930,7 +928,7 @@ VrtxAdmin.prototype.dropdown = function dropdown(options) {
     var shortcutMenu = listParent.find(".dropdown-shortcut-menu-container");
     shortcutMenu.find("li" + startDropdown).remove();
     if(options.calcTop) {
-      shortcutMenu.css("top", (list.position().top + list.height() - (parseInt(list.css("marginTop")) * -1) + 1) + "px");  
+      shortcutMenu.css("top", (list.position().top + list.height() - (parseInt(list.css("marginTop"), 10) * -1) + 1) + "px");  
     }
     shortcutMenu.css("left", (list.width()+5) + "px");
     
@@ -1006,7 +1004,7 @@ VrtxAdmin.prototype.initAdaptiveBreadcrumbs = function initAdaptiveBreadcrumbs()
   var vrtxAdm = this, _$ = this._$;
   vrtxAdm.cachedBreadcrumbs = _$("#vrtx-breadcrumb > span");
   vrtxAdm.adaptiveBreadcrumbs();
-}
+};
 
 /**
  * Update adaptive breadcrumbs
@@ -1030,13 +1028,13 @@ VrtxAdmin.prototype.adaptiveBreadcrumbs = function adaptiveBreadcrumbs() {
       }
       runnedAtStart = true;
     }
+    var prevBreadcrumb = breadcrumb.prev();
     if (breadcrumbPosTop > 0 && breadcrumbPosLeft == 50) {
       if (!breadcrumb.hasClass("vrtx-breadcrumb-left")) {
         breadcrumb.addClass("vrtx-breadcrumb-left");
       }
       if (breadcrumb.hasClass("vrtx-breadcrumb-active")) {
-        var prevBreadcrumb = breadcrumb.prev();
-        if(prevBreadcrumb.hasClass("vrtx-breadcrumb-before-active")) {
+        if(prevBreadcrumb.length && prevBreadcrumb.hasClass("vrtx-breadcrumb-before-active")) {
           prevBreadcrumb.removeClass("vrtx-breadcrumb-before-active");
         }
       }
@@ -1045,8 +1043,7 @@ VrtxAdmin.prototype.adaptiveBreadcrumbs = function adaptiveBreadcrumbs() {
         breadcrumb.removeClass("vrtx-breadcrumb-left");
       }
       if (breadcrumb.hasClass("vrtx-breadcrumb-active")) {
-        var prevBreadcrumb = breadcrumb.prev();
-        if(!prevBreadcrumb.hasClass("vrtx-breadcrumb-before-active")) {
+        if(prevBreadcrumb.length && !prevBreadcrumb.hasClass("vrtx-breadcrumb-before-active")) {
           prevBreadcrumb.addClass("vrtx-breadcrumb-before-active");
         }
       }
@@ -1085,12 +1082,13 @@ function createFuncComplete() {
 
 function createChangeTemplate(hasTitle) {
   var checked = $(".radio-buttons input").filter(":checked");
+  var fileTypeEnding = "";
   if(checked.length) {
     var templateFile = checked.val();
     if(templateFile.indexOf(".") !== -1) {
       var fileType = $("#vrtx-textfield-file-type");
       if(fileType.length) {
-        var fileTypeEnding = templateFile.split(".")[1];
+        fileTypeEnding = templateFile.split(".")[1];
         fileType.text("." + fileTypeEnding);
       }
     }
@@ -1111,16 +1109,17 @@ function createChangeTemplate(hasTitle) {
     }
   }
 
+  var isIndexOrReplaceTitle = false;
   if(hasTitle) {
     $("#vrtx-div-file-title").show();
-    var minWidth = (vrtxAdmin.createResourceReplaceTitle || isIndex) ? 35 : 100;
+    isIndexOrReplaceTitle = vrtxAdmin.createResourceReplaceTitle || isIndex;
   } else {
     $("#vrtx-div-file-title").hide();
-    var minWidth = isIndex ? 35 : 100;
+    isIndexOrReplaceTitle = isIndex;
   }
   
   var name = $("#name");
-  growField(name, name.val(), 5, minWidth, 530);
+  growField(name, name.val(), 5, isIndexOrReplaceTitle ? 35 : 100, 530);
   
   if(vrtxAdmin.createResourceReplaceTitle) {
     $(".vrtx-admin-form").addClass("file-name-from-title");
@@ -1304,7 +1303,7 @@ VrtxAdmin.prototype.initFileUpload = function initFileUpload() {
   inputFile.hover(function () {
     _$("a.vrtx-file-upload").addClass("hover");
   }, function () {
-    _$("a.vrtx-file-upload").removeClass("hover");;
+    _$("a.vrtx-file-upload").removeClass("hover");
   });
 
   if (vrtxAdm.supportsReadOnly(document.getElementById("fake-file"))) {
@@ -1415,7 +1414,7 @@ VrtxAdmin.prototype.collectionListingInteraction = function collectionListingInt
   vrtxAdm.placeRecoverButtonInActiveTab();
   vrtxAdm.placeDeletePermanentButtonInActiveTab();
   vrtxAdm.initializeCheckUncheckAll();
-}
+};
 
 /**
  * Update collection listing interaction
@@ -1455,8 +1454,7 @@ VrtxAdmin.prototype.initializeCheckUncheckAll = function initializeCheckUncheckA
                     $(this).filter("." + name).removeClass(name)
                       .find("td.checkbox input").attr(name, false).change();
                   }
-                })
-
+                });
       e.stopPropagation();
     });
     vrtxAdm.cachedAppContent.on("click", "td.checkbox input", function(e) {
@@ -1507,7 +1505,7 @@ VrtxAdmin.prototype.placeDeleteButtonInActiveTab = function placeDeleteButtonInA
   if (!btn.length) return;
   btn.hide();
   var li = vrtxAdm.cachedActiveTab.find('li.deleteResourcesService');
-- li.html('<a id="deleteResourceService" href="javascript:void(0);">' + btn.attr('title') + '</a>');
+  li.html('<a id="deleteResourceService" href="javascript:void(0);">' + btn.attr('title') + '</a>');
   
   vrtxAdm.cachedActiveTab.find('#deleteResourceService').click(function (e) {
     var boxes = vrtxAdm.cachedDirectoryListing.find('td input[type=checkbox]:checked');
@@ -1539,12 +1537,12 @@ VrtxAdmin.prototype.placePublishButtonInActiveTab = function placeDeleteButtonIn
   btn.hide();
   var li = vrtxAdm.cachedActiveTab.find('li.publishResourcesService'); li.hide();
   var menu = li.closest("#tabMenuRight");
-  var html = '<li class="more-menu">'
-                 + '<div id="collection-more-menu">'
-                   + '<span id="collection-more-menu-header">' + moreTitle + '</span>'
-                   + '<ul><li><a id="publishTheResourcesService" href="javascript:void(0);">' + btn.attr('title') + '</a></li></ul>'
-                 + '</div>'
-               + '</li>';
+  var html = '<li class="more-menu">' +
+               '<div id="collection-more-menu">' +   
+                 '<span id="collection-more-menu-header">' + moreTitle + '</span>' +
+                 '<ul><li><a id="publishTheResourcesService" href="javascript:void(0);">' + btn.attr('title') + '</a></li></ul>' +
+               '</div>' +
+              '</li>';
   
   menu.append(html);
   $('#publishTheResourcesService').click(function (e) {
@@ -1576,7 +1574,7 @@ VrtxAdmin.prototype.placeUnpublishButtonInActiveTab = function placeDeleteButton
   if (!btn.length) return;
   btn.hide();
   var li = vrtxAdm.cachedActiveTab.find('li.unpublishResourcesService'); li.hide();
-  var menu = li.closest("#tabMenuRight")
+  var menu = li.closest("#tabMenuRight");
   menu.find("#collection-more-menu ul").append('<li><a id="unpublishTheResourcesService" href="javascript:void(0);">' + btn.attr('title') + '</a></li>');
   $('#unpublishTheResourcesService').click(function (e) {
     var boxes = vrtxAdm.cachedDirectoryListing.find('td input[type=checkbox]:checked');
@@ -1605,9 +1603,9 @@ VrtxAdmin.prototype.placeRecoverButtonInActiveTab = function placeRecoverButtonI
   var btn = vrtxAdm.cachedAppContent.find('.recoverResource');
   if (!btn.length) return;
   btn.hide();
-  vrtxAdm.cachedActiveTab.prepend('<ul class="list-menu" id="tabMenuRight"><li class="recoverResourceService">'
-                                + '<a id="recoverResourceService" href="javascript:void(0);">' 
-                                + btn.attr('value') + '</a></li></ul>');
+  vrtxAdm.cachedActiveTab.prepend('<ul class="list-menu" id="tabMenuRight"><li class="recoverResourceService">' +
+                                  '<a id="recoverResourceService" href="javascript:void(0);">' +
+                                  btn.attr('value') + '</a></li></ul>');
   vrtxAdm.cachedActiveTab.find("#recoverResourceService").click(function (e) {
     var boxes = vrtxAdm.cachedDirectoryListing.find('td input[type=checkbox]:checked');
     var boxesSize = boxes.length;
@@ -1634,8 +1632,8 @@ VrtxAdmin.prototype.placeDeletePermanentButtonInActiveTab = function placeDelete
   if (!btn.length) return;
   btn.hide();
   vrtxAdm.cachedActiveTab.find("#tabMenuRight")
-    .append('<li class="deleteResourcePermanentService"><a id="deleteResourcePermanentService" href="javascript:void(0);">' 
-          + btn.attr('value') + '</a></li>');
+    .append('<li class="deleteResourcePermanentService"><a id="deleteResourcePermanentService" href="javascript:void(0);">' +
+            btn.attr('value') + '</a></li>');
   vrtxAdm.cachedActiveTab.find('#deleteResourcePermanentService').click(function (e) {
     var boxes = vrtxAdm.cachedDirectoryListing.find('td input[type=checkbox]:checked');
     var boxesSize = boxes.length;
@@ -1716,7 +1714,7 @@ function ajaxSave() {
   vrtxAdm.asyncEditorSavedDeferred = _$.Deferred();
 
   if(typeof CKEDITOR !== "undefined") { 
-    for (instance in CKEDITOR.instances) {
+    for (var instance in CKEDITOR.instances) {
       CKEDITOR.instances[instance].updateElement();
     }  
   }
@@ -1857,7 +1855,7 @@ function versioningInteraction(bodyId, vrtxAdm, _$) {
     
     // Delete revisions
     contents.on("click", ".vrtx-revisions-delete-form input[type=submit]", function(e) {
-      var form = _$(this).closest("form")
+      var form = _$(this).closest("form");
       var url = form.attr("action");
       var dataString = form.serialize();
       vrtxAdm.serverFacade.postHtml(url, dataString, {
@@ -1963,7 +1961,7 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(options) {
     var selector = options.selector,
         selectorClass = options.selectorClass,
         simultanSliding = options.simultanSliding,
-        transitionSpeed = ((options.transitionSpeed != null) ? options.transitionSpeed : vrtxAdm.transitionSpeed),
+        transitionSpeed = ((options.transitionSpeed !== null) ? options.transitionSpeed : vrtxAdm.transitionSpeed),
         transitionEasingSlideDown = options.transitionEasingSlideDown || vrtxAdm.transitionEasingSlideDown,
         transitionEasingSlideUp = options.transitionEasingSlideUp || vrtxAdm.transitionEasingSlideUp,
         modeUrl = location.href,
@@ -2121,8 +2119,8 @@ VrtxAdmin.prototype.addNewMarkup = function addNewMarkup(options, selectorClass,
 
   if (isReplacing) {
     var classes = inject.attr("class");
-    inject.replaceWith(vrtxAdm.wrap(nodeType, "expandedForm expandedFormIsReplaced nodeType"
-                                                         + nodeType + " " + selectorClass + " " + classes, form));
+    inject.replaceWith(vrtxAdm.wrap(nodeType, "expandedForm expandedFormIsReplaced nodeType" +
+                                              nodeType + " " + selectorClass + " " + classes, form));
   } else {
     _$(vrtxAdm.wrap(nodeType, "expandedForm nodeType" + nodeType + " " + selectorClass, form))
       .insertAfter(inject);
@@ -2192,7 +2190,7 @@ VrtxAdmin.prototype.completeFormAsync = function completeFormAsync(options) {
         }
       }
     } else {
-      options.form = link.closest("form");;
+      options.form = link.closest("form");
       options.link = link;
       if(funcProceedCondition && !isCancelAction) {
         funcProceedCondition(options);
@@ -2331,8 +2329,8 @@ VrtxAdmin.prototype.removePermissionAsync = function removePermissionAsync(selec
     var url = form.attr("action");
     var listElement = link.parent();
 
-    var dataString = "&csrf-prevention-token=" + form.find("input[name='csrf-prevention-token']").val()
-                   + "&" + escape(link.attr("name"));
+    var dataString = "&csrf-prevention-token=" + form.find("input[name='csrf-prevention-token']").val() +
+                     "&" + escape(link.attr("name"));
     
     vrtxAdmin.serverFacade.postHtml(url, dataString, {
       success: function (results, status, resp) {
@@ -2366,9 +2364,9 @@ VrtxAdmin.prototype.addPermissionAsync = function addPermissionAsync(selector, u
     var textfield = parent.find("input[type=text]");
     var textfieldName = textfield.attr("name");
     var textfieldVal = textfield.val();
-    var dataString = textfieldName + "=" + textfieldVal
-                   + "&csrf-prevention-token=" + form.find("input[name='csrf-prevention-token']").val()
-                   + "&" + link.attr("name");
+    var dataString = textfieldName + "=" + textfieldVal +
+                     "&csrf-prevention-token=" + form.find("input[name='csrf-prevention-token']").val() +
+                     "&" + link.attr("name");
                    
     var hiddenAC = parent.find("input#ac_userNames");
     if(hiddenAC.length) {
@@ -2493,7 +2491,7 @@ VrtxAdmin.prototype.displayMsg = function displayMsg(msg, type) {
 
   var currentMsg = vrtxAdm.cachedAppContent.find("> ." + current);
   var otherMsg = vrtxAdm.cachedAppContent.find("> ." + other);
-  if(typeof msg !== "undefined" && msg != "") {
+  if(typeof msg !== "undefined" && msg !== "") {
     if(currentMsg.length) {
       currentMsg.html(msg);
     } else if(otherMsg.length) {
@@ -2659,13 +2657,14 @@ VrtxAdmin.prototype.serverFacade = {
  */
   error: function(xhr, textStatus) { // TODO: detect function origin
     var status = xhr.status;
+    var msg = "";
     if (xhr.readyState == 4 && status == 200) {
-      var msg = "The service is not active: " + textStatus;
+      msg = "The service is not active: " + textStatus;
     } else {
       if (status == 401 || status == 403 || status == 404) {
         location.reload(true); // if you have no access anymore or page is removed: reload from server
       }
-      var msg = "The service returned " + xhr.status + " and failed to retrieve/post form: " + textStatus;
+      msg = "The service returned " + xhr.status + " and failed to retrieve/post form: " + textStatus;
     }
     return msg;
   }
@@ -2684,8 +2683,8 @@ function browseServer(obj, editorBase, baseFolder, editorBrowseUrl, type) {
   typestr = type;
   
   // Use 70% of screen dimension
-  var serverBrowserWindow = openServerBrowser(editorBase + '/plugins/filemanager/browser/default/browser.html?BaseFolder=' 
-                                            + baseFolder + '&Type=' + type + '&Connector=' + editorBrowseUrl,
+  var serverBrowserWindow = openServerBrowser(editorBase + '/plugins/filemanager/browser/default/browser.html?BaseFolder=' +
+                                              baseFolder + '&Type=' + type + '&Connector=' + editorBrowseUrl,
                                               screen.width * 0.7, screen.height * 0.7);
                                               
   serverBrowserWindow.focus(); 
@@ -2746,9 +2745,9 @@ function SetUrl(url) {
  * @return {string} HTML node
  */
 VrtxAdmin.prototype.wrap = function wrap(node, cls, html) {
-  return "<" + node + " class='" + cls + "'>" 
-         + html 
-         + "</" + node + ">";
+  return "<" + node + " class='" + cls + "'>" +
+          html +
+         "</" + node + ">";
 };
 
 /**
@@ -2854,7 +2853,7 @@ function gup(name, url) {
   var regexS = "[\\?&]"+name+"=([^&#]*)";
   var regex = new RegExp( regexS );
   var results = regex.exec(url);
-  return (results == null) ? "" : results[1];
+  return (results === null) ? "" : results[1];
 }
 
 /* Remove duplicates from an array

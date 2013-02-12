@@ -570,6 +570,13 @@
     <#if (hours > 0)>${hours}:</#if>${min}:<#if (sec > 0 || (hours > 0 || min > 0) )>${sec?string("00")}</#if>
 </#macro>
 
+<#--
+ * calculateResourceSize
+ *
+ * Display bytes approx. in the metric system
+ *
+ * @param contentLength the content length in bytes
+-->
 <#macro calculateResourceSize contentLength>
   <#if contentLength <= 1000>
     ${contentLength} B

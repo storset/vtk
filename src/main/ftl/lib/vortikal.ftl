@@ -5,8 +5,7 @@
  *
  * (Will become) a collection of useful FreeMarker macros and functions :)
  *
- * The  "exposeSpringMacroHelpers" property on the spring FreeMarker
- * configuration must be set.
+ * The  "exposeSpringMacroHelpers" property on the spring FreeMarker configuration must be set.
  *
  -->
 
@@ -26,8 +25,8 @@
   <#return uri />
 </#function>
 
-<#function getLocale resource>
 
+<#function getLocale resource>
   <#if resource.contentLocale?has_content>
     <#return resource.contentLocale />
   </#if>
@@ -48,8 +47,8 @@
 
   <#-- Fall back on context locale -->
   <#return springMacroRequestContext.getLocale() />
-
 </#function>
+
 
 <#-- XXX: remove this when properties 'introduction' and 'description'
      are merged: -->
@@ -74,6 +73,7 @@
     </#if>
 </#macro>
 
+
 <#--
  * msg
  *
@@ -94,12 +94,14 @@
   </#compress>
 </#macro>
 
+
 <#function resourceLanguage>
   <#if resourceLocaleResolver?exists>
      <#local l = resourceLocaleResolver.resolveLocale(null)?string />
      <#return getMsg("language."+l, l) />
   </#if>
 </#function>
+
 
 <#--
  * rawMsg
@@ -141,38 +143,6 @@
 </#function>
 
 
-
-<#-- REWORKED SPRINGS VERSION
- * 
- * formRadioButtons
- *
- * Show radio buttons.
- *
- * @param path the name of the field to bind to
- * @param options a map (value=label) of all the available options
- * @param separator the html tag or other character list that should be used to
- *        separate each option. Typically '&nbsp;', '<br>' or in most cases '<li>'
- * @param attributes any additional attributes for the element (such as class
- *        or CSS styles or size
--->
-
-<#-- FIXME: Only works for CreateDocument -->
-<#macro formRadioButtons path options pre post descriptions=[] titles=[] cTN=false attributes="">
-  <@spring.bind path/>
-  <#list options?keys as key>
-    ${pre}
-    <input type="radio" name="${spring.status.expression}" id="${key}" value="${key}"
-      <#if spring.status.value?default("") == key>checked="checked"</#if> 
-      <#if (cTN && titles?has_content && titles[key]?exists)>onclick="createChangeTemplate(${titles[key]?string})"</#if> ${attributes} <@spring.closeTag/>
-    <label for="${key}">${options[key]}</label>
-    <#if (descriptions?has_content && descriptions[key]?exists)>
-      <div class="radioDescription" id="${key}_description">${descriptions[key]}</div>
-    </#if>
-    ${post}
-  </#list>
-</#macro>
-
-
 <#--
  * date
  *
@@ -197,26 +167,6 @@
   </#compress>
 </#macro>
 
-<#function relativeLinkConstructor resourceUri serviceName >
-  <#if linkConstructor(resourceUri,serviceName)?exists >
-    <#local constructedURL = linkConstructor(resourceUri,serviceName) />
-  </#if>
-  <#if constructedURL?exists && resourceUri?exists && !resourceUri?contains("://") >
-    <#return constructedURL.getPathRepresentation() />
-  <#elseif resourceUri?exists >
-    <#return resourceUri />
-  <#else>
-    <#return "" />
-  </#if>
-</#function>
-
-<#function linkConstructor resourceUri serviceName >
-  <#if VRTX_LINK_CONSTRUCTOR?exists && resourceUri?exists && serviceName?exists >
-    <#if VRTX_LINK_CONSTRUCTOR.construct(resourceUri,null,serviceName)?exists>
-      <#return VRTX_LINK_CONSTRUCTOR.construct(resourceUri,null,serviceName) />
-    </#if>
-  </#if>
-</#function>
 
 <#--
  * calcDate
@@ -244,6 +194,7 @@
   </#if>
 </#function>
 
+
 <#--
  * parseInt
  *
@@ -258,7 +209,6 @@
   <#assign parser = constructor("java.lang.Integer", 0) />
   <#return parser.parseInt(value) />
 </#function>
-
 
 
 <#--
@@ -285,6 +235,7 @@
   </#compress>
 </#macro>
 
+
 <#--
  * linkResolveFilter
  *
@@ -298,12 +249,35 @@
 <#macro linkResolveFilter value baseURL requestURL protocolRelative=false>
   <#compress>
     <#if VRTX_HTML_UTIL?exists>
-        ${VRTX_HTML_UTIL.linkResolveFilter(value, baseURL, requestURL, protocolRelative).getStringRepresentation()}
+      ${VRTX_HTML_UTIL.linkResolveFilter(value, baseURL, requestURL, protocolRelative).getStringRepresentation()}
     <#else>
       Undefined
     </#if>
   </#compress>
 </#macro>
+
+
+<#function relativeLinkConstructor resourceUri serviceName >
+  <#if linkConstructor(resourceUri,serviceName)?exists >
+    <#local constructedURL = linkConstructor(resourceUri,serviceName) />
+  </#if>
+  <#if constructedURL?exists && resourceUri?exists && !resourceUri?contains("://") >
+    <#return constructedURL.getPathRepresentation() />
+  <#elseif resourceUri?exists >
+    <#return resourceUri />
+  <#else>
+    <#return "" />
+  </#if>
+</#function>
+
+
+<#function linkConstructor resourceUri serviceName >
+  <#if VRTX_LINK_CONSTRUCTOR?exists && resourceUri?exists && serviceName?exists >
+    <#if VRTX_LINK_CONSTRUCTOR.construct(resourceUri,null,serviceName)?exists>
+      <#return VRTX_LINK_CONSTRUCTOR.construct(resourceUri,null,serviceName) />
+    </#if>
+  </#if>
+</#function>
 
 
 <#--
@@ -554,6 +528,25 @@
   <#return value />
 </#function>
 
+
+<#--
+ * displayUserPrincipal
+ *
+ * Display the user principal. If URL exists wrapped with a link and full description.
+ *
+ * @param principal the principal
+-->
+<#macro displayUserPrincipal principal>
+  <#compress>
+    <#if principal.URL?exists>
+      <a title="${principal.name?html}" href="${principal.URL?html}">${principal.description?html}</a>
+    <#else>
+      ${principal.name?html}
+    </#if>
+  </#compress>
+</#macro>
+
+
 <#--
  * csrfPreventionToken
  *
@@ -634,16 +627,6 @@
   </#if>
   <#return n />
 </#function>
-
-<#macro displayUserPrincipal principal>
-  <#compress>
-    <#if principal.URL?exists>
-      <a title="${principal.name?html}" href="${principal.URL?html}">${principal.description?html}</a>
-    <#else>
-      ${principal.name?html}
-    </#if>
-  </#compress>
-</#macro>
 
 
 <#--
@@ -741,3 +724,34 @@
              "value":value, "localizedValue":localizedValue, "inherited":inherited} />
   </#if>
 </#function>
+
+
+<#-- REWORKED SPRINGS VERSION
+ * 
+ * formRadioButtons
+ *
+ * Show radio buttons.
+ *
+ * @param path the name of the field to bind to
+ * @param options a map (value=label) of all the available options
+ * @param separator the html tag or other character list that should be used to
+ *        separate each option. Typically '&nbsp;', '<br>' or in most cases '<li>'
+ * @param attributes any additional attributes for the element (such as class
+ *        or CSS styles or size
+-->
+
+<#-- FIXME: Only works for CreateDocument -->
+<#macro formRadioButtons path options pre post descriptions=[] titles=[] cTN=false attributes="">
+  <@spring.bind path/>
+  <#list options?keys as key>
+    ${pre}
+    <input type="radio" name="${spring.status.expression}" id="${key}" value="${key}"
+      <#if spring.status.value?default("") == key>checked="checked"</#if> 
+      <#if (cTN && titles?has_content && titles[key]?exists)>onclick="createChangeTemplate(${titles[key]?string})"</#if> ${attributes} <@spring.closeTag/>
+    <label for="${key}">${options[key]}</label>
+    <#if (descriptions?has_content && descriptions[key]?exists)>
+      <div class="radioDescription" id="${key}_description">${descriptions[key]}</div>
+    </#if>
+    ${post}
+  </#list>
+</#macro>

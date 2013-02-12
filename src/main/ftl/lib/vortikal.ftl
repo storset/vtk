@@ -430,6 +430,9 @@
   </#compress>
 </#macro>
 
+<#--
+ * These functions needs some documentation..
+ -->
 <#function resourceTypeName resource>
     <#local locale = springMacroRequestContext.getLocale() />
     <#return getMsg("resourcetype.name." + resource.resourceType) />

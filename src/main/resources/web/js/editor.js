@@ -1211,6 +1211,7 @@ function initJsonMovableElements(templatesRetrieved, jsonElementsBuilt) {
     e.preventDefault();
   });
 
+  /* XXX: Event handler */
   vrtxAdmin.cachedAppContent.on("click", ".vrtx-json .vrtx-add-button", function(e) {
     var btn = $(this);
     var jsonParent = btn.closest(".vrtx-json");
@@ -1304,6 +1305,7 @@ function initJsonMovableElements(templatesRetrieved, jsonElementsBuilt) {
     e.preventDefault();
   });
 
+  /* XXX: Event handler */
   vrtxAdmin.cachedAppContent.on("click", ".vrtx-json .vrtx-remove-button", function(e) {
     var removeElement = $(this).closest(".vrtx-json-element");
     var accordionWrapper = removeElement.closest(".vrtx-json-accordion");

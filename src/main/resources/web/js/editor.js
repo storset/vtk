@@ -1527,7 +1527,7 @@ VrtxEditor.prototype.mustacheFacade = {
     }
     return $.mustache(TEMPLATES[templateName], config); 
   }
-}
+};
 
 /*-------------------------------------------------------------------*\
     9. Accordion grouping
@@ -1714,7 +1714,7 @@ VrtxEditor.prototype.replaceTag = function replaceTag(selector, tag, replacement
   selector.find(tag).replaceWith(function() {
     return "<" + replacementTag + ">" + $(this).text() + "</" + replacementTag + ">";
   });
-}
+};
 
 /**
  * Handler for events and init code applying a callback function with parameters
@@ -1915,7 +1915,7 @@ function setCkValue(instanceName, data) {
 
 function isCkEditor(instanceName) {
   var oEditor = getCkInstance(instanceName);
-  return oEditor != null;
+  return oEditor !== null;
 }
 
 /* ^ Vortex Editor */

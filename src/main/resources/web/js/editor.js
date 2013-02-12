@@ -1497,7 +1497,7 @@ VrtxEditor.prototype.mustacheFacade = {
       }
       return "";
   },
-  typeToMethodName: function(str) { // XXX: Optimize RegEx
+  typeToMethodName: function(str) { // Replaces "_" with "" and camelCase Vortex types. XXX: Optimize RegEx
     return str.replace("_", " ").replace(/(\w)(\w*)/g, function(g0,g1,g2){return g1.toUpperCase() + g2.toLowerCase();}).replace(" ", "");
   },
   getStringField: function(elem, inputFieldName) {

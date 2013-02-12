@@ -1027,11 +1027,9 @@ VrtxEditor.prototype.initMultipleFormGrouping = function initMultipleFormGroupin
 /* Multiple comma seperated input textfields */
 function loadMultipleInputFields(name, isMovable, isBrowsable) { // TODO: simplify
   var inputField = $("." + name + " input[type=text]");
+  if(!inputField.length) return;
+  
   var inputFieldVal = inputField.val();
-  if (inputFieldVal == null) {
-    return;
-  }
-
   var formFields = inputFieldVal.split(",");
 
   vrtxEditor.multipleCommaSeperatedInputFieldCounter[name] = 1; // 1-index

@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
-  
-  <bean id="structuredResources.typeAssertion" class="org.vortikal.web.service.ResourceTypeAssertion"
-        parent="repositoryAware">
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+
+  <bean id="structuredResources.typeAssertion" class="org.vortikal.web.service.ResourceTypeAssertion" parent="repositoryAware">
     <property name="resourceTypeDefinition" ref="json.managedObjectResourceType" />
   </bean>
 
@@ -16,7 +15,7 @@
     </property>
     <property name="handler" ref="structuredResources.displayHandler" />
   </bean>
-  
+
   <bean id="structuredResources.previewService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="previewService" />
     <property name="assertions">
@@ -41,9 +40,9 @@
 
   <bean id="invalidUidServiceInterceptor" class="org.vortikal.web.ReferenceDataProvidingHandlerInterceptor">
     <property name="providers">
-     <list>
-       <ref bean="invalidUidMessageProvider" />
-     </list>
+      <list>
+        <ref bean="invalidUidMessageProvider" />
+      </list>
     </property>
   </bean>
 
@@ -57,7 +56,7 @@
   <bean id="mayPreviewUnpublishedResourceAssertion" class="org.vortikal.web.service.AndAssertion">
     <property name="assertions">
       <list>
-        <ref bean="requiresWritePermissionAssertion" />        
+        <ref bean="requiresWritePermissionAssertion" />
         <ref bean="resourceIsNotPublishedAssertion" />
       </list>
     </property>
@@ -116,17 +115,15 @@
     <property name="invert" value="true" />
   </bean>
 
-  <bean id="structuredResources.workingCopyTabTitle"
-        class="org.vortikal.web.view.components.menu.AssertionTitleResolver">
+  <bean id="structuredResources.workingCopyTabTitle" class="org.vortikal.web.view.components.menu.AssertionTitleResolver">
     <property name="assertion">
       <bean class="org.vortikal.web.service.WorkingCopyAssertion" />
     </property>
     <property name="messageKey" value="tabs.editWorkingCopy" />
   </bean>
 
-  
-  <bean id="structuredResources.displayHandler"
-        class="org.vortikal.resourcemanagement.view.StructuredResourceDisplayController"
+
+  <bean id="structuredResources.displayHandler" class="org.vortikal.resourcemanagement.view.StructuredResourceDisplayController"
     depends-on="structuredResource.parser">
     <property name="viewName" value="structuredResources.displayView" />
     <property name="resourceManager" ref="structuredResources.resourceManager" />
@@ -164,16 +161,14 @@
     <property name="templateFactory" ref="structuredResources.decoratorTemplateFactory" />
     <property name="resourceManager" ref="structuredResources.resourceManager" />
   </bean>
-  
-  <bean id="structuredResources.decoratorTemplateFactory"
-            class="org.vortikal.web.decorating.SimpleDynamicDecoratorTemplateFactory">
+
+  <bean id="structuredResources.decoratorTemplateFactory" class="org.vortikal.web.decorating.SimpleDynamicDecoratorTemplateFactory">
     <property name="directiveHandlers" ref="structuredResources.directives" />
     <property name="componentResolver" ref="decorating.defaultComponentResolver" />
     <property name="htmlParser" ref="decorating.htmlParser" />
   </bean>
 
-  <bean id="structuredResources.directives"
-        class="org.springframework.beans.factory.config.MapFactoryBean">
+  <bean id="structuredResources.directives" class="org.springframework.beans.factory.config.MapFactoryBean">
     <property name="sourceMap">
       <map>
         <entry key="if" value-ref="structuredResources.ifDirective" />
@@ -196,7 +191,9 @@
     <constructor-arg>
       <map>
         <entry>
-          <key><value type="java.lang.Class">org.vortikal.repository.PropertyImpl</value></key>
+          <key>
+            <value type="java.lang.Class">org.vortikal.repository.PropertyImpl</value>
+          </key>
           <bean class="org.vortikal.resourcemanagement.view.tl.PropertyValueFormatHandler">
             <constructor-arg>
               <ref bean="valueFormatterRegistry" />
@@ -204,7 +201,9 @@
           </bean>
         </entry>
         <entry>
-          <key><value type="java.lang.Class">org.vortikal.repository.resourcetype.Value</value></key>
+          <key>
+            <value type="java.lang.Class">org.vortikal.repository.resourcetype.Value</value>
+          </key>
           <bean class="org.vortikal.resourcemanagement.view.tl.PropertyValueFormatHandler">
             <constructor-arg ref="valueFormatterRegistry" />
           </bean>
@@ -251,8 +250,7 @@
     <property name="elements2" ref="structuredResources.customFunctions" />
   </bean>
 
-  <bean id="structuredResources.builtinFunctions"
-        class="org.springframework.beans.factory.config.SetFactoryBean">
+  <bean id="structuredResources.builtinFunctions" class="org.springframework.beans.factory.config.SetFactoryBean">
     <property name="sourceSet">
       <set>
         <ref bean="templateLanguage.toStringFunction" />
@@ -279,8 +277,7 @@
   </bean>
 
 
-  <bean id="structuredResources.customFunctions" 
-    class="org.vortikal.context.CategoryResolvingFactoryBean">
+  <bean id="structuredResources.customFunctions" class="org.vortikal.context.CategoryResolvingFactoryBean">
     <property name="category" value="structuredResources.customFunction" />
   </bean>
 
@@ -299,16 +296,16 @@
       </bean>
     </constructor-arg>
   </bean>
-  
-    <bean id="structuredResources.jsonResourceFunction" class="org.vortikal.resourcemanagement.view.tl.RetrieveJsonHandler">
+
+  <bean id="structuredResources.jsonResourceFunction" class="org.vortikal.resourcemanagement.view.tl.RetrieveJsonHandler">
     <constructor-arg>
       <bean class="org.vortikal.text.tl.Symbol">
         <constructor-arg value="json-resource" />
       </bean>
     </constructor-arg>
   </bean>
-  
-      
+
+
   <bean id="structuredResources.ResourceLocaleFunction" class="org.vortikal.resourcemanagement.view.tl.ResourceLocaleFunction">
     <constructor-arg>
       <bean class="org.vortikal.text.tl.Symbol">
@@ -371,7 +368,7 @@
   <bean id="structuredResources.localizedFunction" class="org.vortikal.resourcemanagement.view.tl.LocalizationFunction">
     <constructor-arg>
       <bean class="org.vortikal.text.tl.Symbol">
-        <constructor-arg value="localized"/>
+        <constructor-arg value="localized" />
       </bean>
     </constructor-arg>
     <constructor-arg value="structured-resource" />
@@ -384,8 +381,7 @@
     <constructor-arg type="java.lang.String" value="json" />
   </bean>
 
-  <bean id="structuredResources.fieldSelectComponent"
-        class="org.vortikal.resourcemanagement.view.StructuredResourceFieldComponent">
+  <bean id="structuredResources.fieldSelectComponent" class="org.vortikal.resourcemanagement.view.StructuredResourceFieldComponent">
     <property name="namespace" ref="structuredResources.componentNamespace" />
     <property name="name" value="field" />
     <property name="resourceModelKey" value="structured-resource" />
@@ -398,7 +394,7 @@
     <property name="successView" value="redirectToManage" />
     <property name="listComponentsService" ref="jsonDocumentsComponentsService" />
   </bean>
-  
+
   <bean id="structuredResources.viewResolver" parent="decoratorViewResolver">
     <property name="views">
       <map>
@@ -406,7 +402,7 @@
       </map>
     </property>
   </bean>
-  
+
   <bean id="structuredResources.wrappingViewResolver" parent="adminViewResolver">
     <property name="views">
       <map>
@@ -414,12 +410,12 @@
       </map>
     </property>
   </bean>
-  
+
   <bean id="structuredResources.displayView" class="org.vortikal.web.decorating.TemplateView">
     <property name="templateRef" value="structured-resources.template" />
     <property name="templateManager" ref="article.templateManager" />
   </bean>
-  
+
   <bean id="structuredResources.editView" parent="freemarkerView">
     <property name="url" value="structured-resources/editor.ftl" />
     <property name="attributesMap">
@@ -433,14 +429,12 @@
         <entry key="helpURL.editor.nn" value="${helpURL.editor.nn}" />
         <entry key="helpURL.editor.en" value="${helpURL.editor.en}" />
       </map>
-      
+
     </property>
     <property name="referenceDataProviders">
       <list>
-        <bean class="org.vortikal.resourcemanagement.edit.SharedTextProvider" >
-          <property name="resourceTypeTree" ref="resourceTypeTree" />
-          <property name="safeHtmlFilter" ref="safeHtml.filterWithClass" />
-          <property name="htmlParser" ref="decorating.htmlParser" />
+        <bean class="org.vortikal.resourcemanagement.studies.SharedTextProvider">
+          <property name="sharedTextResolver" ref="sharedTextResolver" />
         </bean>
         <ref bean="resourceContextProvider" />
         <bean class="org.vortikal.web.referencedata.provider.StaticURIServiceURLProvider">
@@ -464,7 +458,7 @@
           <property name="modelName" value="versioning" />
           <property name="urlName" value="currentVersionURL" />
         </bean>
-        
+
         <bean class="org.vortikal.web.referencedata.provider.StaticModelDataProvider">
           <property name="modelDataMap">
             <map>
@@ -480,11 +474,12 @@
       </list>
     </property>
   </bean>
-  
+
   <bean id="structuredResources.editCSSURLs" class="java.util.ArrayList">
     <constructor-arg>
       <list>
-        <value>${jquery.baseURL}/plugins/ui/jquery-ui-${jquery.ui.version}.custom/css/smoothness/jquery-ui-${jquery.ui.version}.custom.css</value>
+        <value>${jquery.baseURL}/plugins/ui/jquery-ui-${jquery.ui.version}.custom/css/smoothness/jquery-ui-${jquery.ui.version}.custom.css
+        </value>
         <value>${themeBaseURL}/default.css</value>
         <value>${themeBaseURL}/structured-resources/editor.css</value>
       </list>
@@ -495,8 +490,28 @@
     <property name="resourceType" value="organizational-unit" />
   </bean>
 
-  <bean id="resourceTypeIsOrganizationalUnitPublications" class="org.vortikal.web.service.ResourceTypeAssertion" parent="repositoryAware">
+  <bean id="resourceTypeIsOrganizationalUnitPublications" class="org.vortikal.web.service.ResourceTypeAssertion"
+    parent="repositoryAware">
     <property name="resourceType" value="unit-publications" />
+  </bean>
+
+  <!-- ### SHARED TEXT ### -->
+  <bean id="sharedTextResolver" class="org.vortikal.resourcemanagement.studies.SharedTextResolver">
+    <property name="resourceTypeTree" ref="resourceTypeTree" />
+    <property name="safeHtmlFilter" ref="safeHtml.filterWithClass" />
+    <property name="htmlParser" ref="decorating.htmlParser" />
+  </bean>
+
+  <bean id="sharedTextComponent" class="org.vortikal.resourcemanagement.studies.SharedTextComponent">
+    <property name="namespace" ref="decorating.includeNamespace" />
+    <property name="name" value="shared-text" />
+    <property name="sharedTextResolver" ref="sharedTextResolver" />
+    <property name="localeResolver" ref="viewServiceResourceAwareLocaleResolver" />
+    <property name="view" ref="decorating.sharedTextComponent.view" />
+  </bean>
+
+  <bean id="decorating.sharedTextComponent.view" parent="freemarkerView">
+    <property name="url" value="studies/shared-text.ftl" />
   </bean>
 
 </beans>

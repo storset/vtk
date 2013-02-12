@@ -1,4 +1,34 @@
-package org.vortikal.resourcemanagement.edit;
+/* Copyright (c) 2013, University of Oslo, Norway
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are
+ * met:
+ * 
+ *  * Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 
+ *  * Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ * 
+ *  * Neither the name of the University of Oslo nor the names of its
+ *    contributors may be used to endorse or promote products derived from
+ *    this software without specific prior written permission.
+ *      
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+ * IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+ * PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER
+ * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+package org.vortikal.resourcemanagement.studies;
 
 import java.io.InputStream;
 import java.util.HashMap;
@@ -10,6 +40,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import net.sf.json.JSONObject;
 
+import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
@@ -21,15 +52,15 @@ import org.vortikal.text.html.HtmlPageFilter;
 import org.vortikal.text.html.HtmlPageParser;
 import org.vortikal.util.io.StreamUtil;
 import org.vortikal.web.RequestContext;
-import org.vortikal.web.referencedata.ReferenceDataProvider;
 
 /**
- * Provides shared text values in model under key 'sharedTextProps' (a map).
+ * XXX Very UiO specific.
  * 
- * Used by editor code.
+ * For resources related to studies, resolve shared texts used to describe
+ * different aspects such as "how to apply", "deadlines" etc.
  * 
  */
-public class SharedTextProvider implements ReferenceDataProvider {
+public class SharedTextResolver {
 
     private ResourceTypeTree resourceTypeTree;
     private HtmlPageFilter safeHtmlFilter;
@@ -44,7 +75,7 @@ public class SharedTextProvider implements ReferenceDataProvider {
             docType = "studinfo-kontakt";
         }
 
-        Path p = Path.fromString("/vrtx/fellestekst/" + docType + "/" + propName + ".html");
+        Path sharedTextResourcePath = Path.fromString("/vrtx/fellestekst/" + docType + "/" + propName + ".html");
         RequestContext requestContext = RequestContext.getRequestContext();
         String token = requestContext.getSecurityToken();
         Repository repository = requestContext.getRepository();
@@ -52,8 +83,8 @@ public class SharedTextProvider implements ReferenceDataProvider {
         Map<String, JSONObject> sharedTextValuesMap = new LinkedHashMap<String, JSONObject>();
 
         try {
-            Resource r = repository.retrieve(token, p, false);
-            if (!r.isPublished()) {
+            Resource sharedTextResource = repository.retrieve(token, sharedTextResourcePath, false);
+            if (!sharedTextResource.isPublished()) {
                 return sharedTextValuesMap;
             }
         } catch (Exception e) {
@@ -61,7 +92,7 @@ public class SharedTextProvider implements ReferenceDataProvider {
         }
         try {
 
-            InputStream stream = repository.getInputStream(token, p, false);
+            InputStream stream = repository.getInputStream(token, sharedTextResourcePath, false);
             String jsonString = StreamUtil.streamToString(stream, "utf-8");
             JSONObject document = JSONObject.fromObject(jsonString);
 
@@ -88,16 +119,14 @@ public class SharedTextProvider implements ReferenceDataProvider {
                 fragment.filter(safeHtmlFilter);
                 j.put(descriptionKey, fragment.getStringRepresentation());
             } catch (Exception e) {
-                // TODO Auto-generated catch block sucks
-                e.printStackTrace();
+                // XXX handle
             }
         }
         return j;
     }
 
-    @Override
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public void referenceData(Map model, HttpServletRequest request) throws Exception {
+    @SuppressWarnings("rawtypes")
+    public Map<String, Map<String, JSONObject>> resolveSharedTexts(HttpServletRequest request) throws Exception {
 
         RequestContext requestContext = RequestContext.getRequestContext();
         String token = requestContext.getSecurityToken();
@@ -122,23 +151,27 @@ public class SharedTextProvider implements ReferenceDataProvider {
                 }
             }
 
-            model.put("sharedTextProps", sharedTextPropsMap);
+            if (!sharedTextPropsMap.isEmpty()) {
+                return sharedTextPropsMap;
+            }
         }
+
+        return null;
     }
 
-    public ResourceTypeTree getResourceTypeTree() {
-        return resourceTypeTree;
-    }
-
+    @Required
     public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
         this.resourceTypeTree = resourceTypeTree;
     }
 
+    @Required
     public void setSafeHtmlFilter(HtmlPageFilter safeHtmlFilter) {
         this.safeHtmlFilter = safeHtmlFilter;
     }
 
+    @Required
     public void setHtmlParser(HtmlPageParser htmlParser) {
         this.htmlParser = htmlParser;
     }
+
 }

@@ -37,7 +37,7 @@
             <#assign classes = elem.name />
       </#if>
       
-     <#if sharedTextProps[elem.name]?exists>  
+     <#if sharedTextProps?? & sharedTextProps[elem.name]?exists>  
         <#if  (sharedTextProps[elem.name]?size > 0) >
               <@vrtxSharedText.printPropertyEditView
                 title=localizedTitle

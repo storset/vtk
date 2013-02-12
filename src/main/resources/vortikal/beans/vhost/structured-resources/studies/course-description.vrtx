@@ -1,4 +1,4 @@
-resourcetype course-description : fellestekst-document {
+resourcetype course-description {
 
   properties {
     credits : string,
@@ -446,11 +446,11 @@ resourcetype course-description : fellestekst-document {
       [if (opptak-og-adgang-text-field != null && opptak-og-adgang-text-field != "") || (opptak-og-adgang != null && opptak-og-adgang != "" && opptak-og-adgang != "ingen-fellestekst") || (ikke-privatist-text-field != null && ikke-privatist-text-field != "") || (ikke-privatist != null && ikke-privatist != "" && ikke-privatist != "ingen-fellestekst")]
         <div id="admission">
           <h2>[localized 'opptak-og-adgang-group']</h2>
-          [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"opptak-og-adgang"}]
+          [call "include:shared-text" {"docType":"course-description", "propName":"opptak-og-adgang"}]
           [if opptak-og-adgang-text-field != null && opptak-og-adgang-text-field != ""]
             [val opptak-og-adgang-text-field # unescaped]
           [endif]
-          [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"ikke-privatist"}]
+          [call "include:shared-text" {"docType":"course-description", "propName":"ikke-privatist"}]
           [if ikke-privatist-text-field != null && ikke-privatist-text-field != ""]
             [val ikke-privatist-text-field # unescaped]
           [endif]
@@ -465,7 +465,7 @@ resourcetype course-description : fellestekst-document {
           [if (obligatoriske-forkunnskaper-text-field != null && obligatoriske-forkunnskaper-text-field != "") || (obligatoriske-forkunnskaper != null && obligatoriske-forkunnskaper != "" && obligatoriske-forkunnskaper != "ingen-fellestekst")]
             <h3>[localized 'mandatory-prerequisites']</h3>
           [endif]
-          [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"obligatoriske-forkunnskaper"}]
+          [call "include:shared-text" {"docType":"course-description", "propName":"obligatoriske-forkunnskaper"}]
           [if obligatoriske-forkunnskaper-text-field != null && obligatoriske-forkunnskaper-text-field != ""]
             [val obligatoriske-forkunnskaper-text-field # unescaped]
           [endif]
@@ -514,7 +514,7 @@ resourcetype course-description : fellestekst-document {
           [if (adgang != null && adgang != "" && adgang != "ingen-fellestekst") || (adgang-text-field != null && adgang-text-field != "")]
             <h3>[localized 'teaching-admission']</h3>
           [endif]
-          [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"adgang"}]
+          [call "include:shared-text" {"docType":"course-description", "propName":"adgang"}]
           [if adgang-text-field != null && adgang-text-field != ""]
             [val adgang-text-field # unescaped]
           [endif]
@@ -551,49 +551,49 @@ resourcetype course-description : fellestekst-document {
           [if (hjelpemidler-text-field != null && hjelpemidler-text-field != "") || (hjelpemidler != null && hjelpemidler != "" && hjelpemidler != "ingen-fellestekst")]
             <h3>[localized 'hjelpemidler-group']</h3>
           [endif]
-          [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"hjelpemidler"}]
+          [call "include:shared-text" {"docType":"course-description", "propName":"hjelpemidler"}]
           [if hjelpemidler-text-field != null && hjelpemidler-text-field != ""]
             [val hjelpemidler-text-field # unescaped]
           [endif]
           [if (eksamensspraak-text-field != null && eksamensspraak-text-field != "") || (eksamensspraak != null && eksamensspraak != "" && eksamensspraak != "ingen-fellestekst")]
             <h3>[localized 'eksamensspraak-group']</h3>
           [endif]
-          [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"eksamensspraak"}]
+          [call "include:shared-text" {"docType":"course-description", "propName":"eksamensspraak"}]
           [if eksamensspraak-text-field != null && eksamensspraak-text-field != ""]
             [val eksamensspraak-text-field # unescaped]
           [endif]
           [if (sensur-text-field != null && sensur-text-field != "") || (sensur != null && sensur != "" && sensur != "ingen-fellestekst")]
             <h3>[localized 'sensur-group']</h3>
           [endif]
-          [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"sensur"}]
+          [call "include:shared-text" {"docType":"course-description", "propName":"sensur"}]
           [if sensur-text-field != null && sensur-text-field != ""]
             [val sensur-text-field # unescaped]
           [endif]
           [if (klage-text-field != null && klage-text-field != "") || (klage != null && klage != "" && klage != "ingen-fellestekst")]
             <h3>[localized 'klage-group']</h3>
           [endif]
-          [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"klage"}]
+          [call "include:shared-text" {"docType":"course-description", "propName":"klage"}]
           [if klage-text-field != null && klage-text-field != ""]
             [val klage-text-field # unescaped]
           [endif]
           [if (ny-utsatt-eksamen-text-field != null && ny-utsatt-eksamen-text-field != "") || (ny-utsatt-eksamen != null && ny-utsatt-eksamen != "" && ny-utsatt-eksamen != "ingen-fellestekst")]
             <h3>[localized 'ny-utsatt-eksamen-group']</h3>
           [endif]
-          [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"ny-utsatt-eksamen"}]
+          [call "include:shared-text" {"docType":"course-description", "propName":"ny-utsatt-eksamen"}]
           [if ny-utsatt-eksamen-text-field != null && ny-utsatt-eksamen-text-field != ""]
             [val ny-utsatt-eksamen-text-field # unescaped]
           [endif]
           [if (antall-forsok-trekk-text-field != null && antall-forsok-trekk-text-field != "") || (antall-forsok-trekk != null && antall-forsok-trekk != "" && antall-forsok-trekk != "ingen-fellestekst")]
             <h3>[localized 'antall-forsok-trekk-group']</h3>
           [endif]
-          [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"antall-forsok-trekk"}]
+          [call "include:shared-text" {"docType":"course-description", "propName":"antall-forsok-trekk"}]
           [if antall-forsok-trekk-text-field != null && antall-forsok-trekk-text-field != ""]
             [val antall-forsok-trekk-text-field # unescaped]
           [endif]
           [if (tilrettelagt-eksamen-text-field != null && tilrettelagt-eksamen-text-field != "") || (tilrettelagt-eksamen != null && tilrettelagt-eksamen != "" && tilrettelagt-eksamen != "ingen-fellestekst")]
             <h3>[localized 'tilrettelagt-eksamen-group']</h3>
           [endif]
-          [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"tilrettelagt-eksamen"}]
+          [call "include:shared-text" {"docType":"course-description", "propName":"tilrettelagt-eksamen"}]
           [if tilrettelagt-eksamen-text-field != null && tilrettelagt-eksamen-text-field != ""]
             [val tilrettelagt-eksamen-text-field # unescaped]
           [endif]
@@ -604,7 +604,7 @@ resourcetype course-description : fellestekst-document {
       [if (evaluering-av-emnet-text-field != null && evaluering-av-emnet-text-field != "") || (evaluering-av-emnet != null && evaluering-av-emnet != "" && evaluering-av-emnet != "ingen-fellestekst")]
         <div id="evaluering-av-emnet">
           <h2>[localized 'evaluering-av-emnet-group']</h2>
-          [call "comp:vis-fellestekst" {"docType":"course-description", "propName":"evaluering-av-emnet"}]
+          [call "include:shared-text" {"docType":"course-description", "propName":"evaluering-av-emnet"}]
           [if evaluering-av-emnet-text-field != null && evaluering-av-emnet-text-field != ""]
             [val evaluering-av-emnet-text-field # unescaped]
           [endif]
@@ -653,7 +653,7 @@ resourcetype course-description : fellestekst-document {
           [if studinfo-kontakt != null && studinfo-kontakt != "" && studinfo-kontakt != "ingen-fellestekst"]
             <div id="vrtx-course-contact">
               <b>[localized 'studinfo-kontakt']</b>
-              [call "comp:vis-fellestekst" {"docType":"studinfo-kontakt", "propName":"studinfo-kontakt"}]
+              [call "include:shared-text" {"docType":"studinfo-kontakt", "propName":"studinfo-kontakt"}]
             </div>
           [endif]
           [call "comp:semesters"]

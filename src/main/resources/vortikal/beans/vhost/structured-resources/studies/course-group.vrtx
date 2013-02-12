@@ -1,4 +1,4 @@
-resourcetype course-group : fellestekst-document {
+resourcetype course-group {
 
   properties {
     course-group-name : string,
@@ -60,7 +60,7 @@ resourcetype course-group : fellestekst-document {
             <div id="vrtx-related-content">
               [if studinfo-kontakt != null && studinfo-kontakt != "" && studinfo-kontakt != "ingen-fellestekst"]
                 <h2>[localized 'studinfo-kontakt']</h2>
-                [call "comp:vis-fellestekst" {"docType":"studinfo-kontakt", "propName":"studinfo-kontakt"}]
+                [call "include:shared-text" {"docType":"studinfo-kontakt", "propName":"studinfo-kontakt"}]
               [endif]
             </div>
           </div>

@@ -35,10 +35,12 @@
       browse: "${vrtx.getMsg('editor.browseImages')}"
     };
 	vrtxAdmin.multipleFormGroupingPaths = {
+	  <#if fckeditorBase??>
 	  baseCKURL: "${fckeditorBase.url?html}",
 	  baseFolderURL: "${baseFolder}",
 	  baseDocURL: "${fckeditorBase.documentURL?html}",
 	  basePath: "${fckBrowse.url.pathRepresentation}"
+	  </#if>
 	};
 	if(vrtxAdmin.hasFreeze) { // Make immutables
 	  Object.freeze(vrtxAdmin.multipleFormGroupingMessages);

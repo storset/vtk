@@ -47,7 +47,7 @@ import org.springframework.web.servlet.View;
 import org.vortikal.repository.Resource;
 import org.vortikal.util.io.SizeLimitException;
 import org.vortikal.util.repository.ContentTypeHelper;
-import org.vortikal.util.text.HtmlUtil;
+import org.vortikal.util.text.HtmlExtractUtil;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.referencedata.ReferenceDataProviding;
 import org.vortikal.web.servlet.BufferedResponse;
@@ -239,7 +239,7 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
             contentType = contentType.substring(0, contentType.indexOf(";"));
             characterEncoding = bufferedResponse.getCharacterEncoding();
         } else if (this.guessCharacterEncodingFromContent) {
-            characterEncoding = HtmlUtil.getCharacterEncodingFromBody(contentBuffer);
+            characterEncoding = HtmlExtractUtil.getCharacterEncodingFromBody(contentBuffer);
         }
 
         if (characterEncoding == null) {

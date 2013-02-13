@@ -117,7 +117,7 @@ public class ListResourcesService implements Controller, InitializingBean {
 
             // Generate title
             StringBuilder title = new StringBuilder();
-            String name = HtmlUtil.escapeHtmlString(r.getName());
+            String name = HtmlUtil.encodeBasicEntities(r.getName());
 
             title.append("<span id=&quot;title-wrapper&quot;><strong id=&quot;title&quot;>" + name + "</strong>");
             if (r.isInheritedAcl()) {

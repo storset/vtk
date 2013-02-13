@@ -91,8 +91,21 @@ public class HtmlUtil {
         return fragment;
     }
 
-    public static String escapeHtmlString(String html) {
-        StringBuilder result = new StringBuilder();
+    /**
+     * Encodes chars to the basic built in character entities defined by XML:
+     * <ul>
+     *   <li>' to &amp;apos;
+     *   <li>&amp; to &amp;amp;
+     *   <li>&quot; to &amp;quot;
+     *   <li>&lt; to &amp;lt;
+     *   <li>&gt; to &amp;gt;
+     * </ul>
+     * 
+     * @param html string
+     * @return string with basic entity ref replacements for affected chars.
+     */
+    public static String encodeBasicEntities(String html) {
+        StringBuilder result = new StringBuilder(html.length());
         for (int i = 0; i < html.length(); i++) {
             char c = html.charAt(i);
             switch (c) {
@@ -119,17 +132,52 @@ public class HtmlUtil {
         return result.toString();
     }
 
-    public static String unescapeHtmlString(String html) {
-        html = html.replaceAll("&amp;", "&");
-        html = html.replaceAll("&quot;", "\"");
-        html = html.replaceAll("&apos;", "'");
-        html = html.replaceAll("&lt;", "<");
-        html = html.replaceAll("&gt;", ">");
-        return html;
-    }
+    /**
+     * Decodes the basic built in entities defined by XML:
+     * <ul>
+     *   <li>&amp;apos; to '
+     *   <li>&amp;amp; to &amp;
+     *   <li>&amp;quot; to &quot;
+     *   <li>&amp;lt; to &lt;
+     *   <li>&amp;gt; to &gt;
+     * </ul>
+     * 
+     * @param html string with entity refs.
+     * @return string with basic entity refs resolved to chars.
+     */
+    public static String decodeBasicEntities(String html) {
+        StringBuilder buf = new StringBuilder(html.length());
+        for (int i=0; i < html.length(); i++) {
+            char c = html.charAt(i);
+            if (c == '&') {
+                if (html.startsWith("&amp;", i)) {
+                    buf.append('&');
+                    i += 4;
+                } else if (html.startsWith("&quot;", i)) {
+                    buf.append('"');
+                    i += 5;
+                } else if (html.startsWith("&apos;", i)) {
+                    buf.append('\'');
+                    i += 5;
+                } else if (html.startsWith("&lt;", i)) {
+                    buf.append('<');
+                    i += 3;
+                } else if (html.startsWith("&gt;", i)) {
+                    buf.append('>');
+                    i += 3;
+                } else {
+                    buf.append('&');
+                }
+            } else {
+                buf.append(c);
+            }
+        }
 
+        return buf.toString();
+    }
+    
     private StringBuilder processHtmlEntities(String content) {
-        StringBuilder result = new StringBuilder();
+        StringBuilder result = new StringBuilder(content.length());
         for (int i = 0; i < content.length(); i++) {
             char ch = content.charAt(i);
             if (ch == '&') {
@@ -148,8 +196,9 @@ public class HtmlUtil {
                     j++;
                 }
                 if (entity != null) {
-                    if (this.htmlEntityMap.containsKey(entity)) {
-                        result.append(this.htmlEntityMap.get(entity));
+                    String entityMapping =  this.htmlEntityMap.get(entity);
+                    if (entityMapping != null) {
+                        result.append(entityMapping);
                     } else {
                         result.append("&").append(entity).append(";");
                     }
@@ -211,7 +260,7 @@ public class HtmlUtil {
             }
             String val = attr.getValue();
 
-            val = unescapeHtmlString(val);
+            val = decodeBasicEntities(val);
             if (val.trim().equals("")) {
                 return;
             }
@@ -221,7 +270,7 @@ public class HtmlUtil {
                         URL url = this.base.relativeURL(val);
                         val = this.protocolRelative ? 
                                 url.protocolRelativeURL() : url.getPathRepresentation();
-                        attr.setValue(escapeHtmlString(val));
+                        attr.setValue(encodeBasicEntities(val));
                     } catch (Exception e) {
                         return;
                     }
@@ -229,7 +278,7 @@ public class HtmlUtil {
                     try {
                         Path path = Path.fromString(val);
                         URL url = new URL(base.getProtocol(), base.getHost(), path);
-                        attr.setValue(escapeHtmlString(url.toString()));
+                        attr.setValue(encodeBasicEntities(url.toString()));
                     } catch (Throwable t) {
                     }
                 }
@@ -240,7 +289,7 @@ public class HtmlUtil {
                         if (url.getHost().equals(this.requestURL.getHost())) {
                             val = this.protocolRelative ? 
                                     url.protocolRelativeURL() : url.getPathRepresentation();
-                            attr.setValue(escapeHtmlString(val));
+                            attr.setValue(encodeBasicEntities(val));
                         }
                     } catch (Throwable t) {
                     }

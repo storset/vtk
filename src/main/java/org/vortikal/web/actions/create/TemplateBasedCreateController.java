@@ -310,7 +310,7 @@ public class TemplateBasedCreateController extends SimpleFormController {
             title = Matcher.quoteReplacement(title);
             title = title.replaceAll("\"", "\\\\\"");
         } else if (contentType.equals("text/html")) {
-            title = HtmlUtil.escapeHtmlString(title);
+            title = HtmlUtil.encodeBasicEntities(title);
         }
         title = Matcher.quoteReplacement(title);
 

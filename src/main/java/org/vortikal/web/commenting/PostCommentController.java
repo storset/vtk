@@ -231,7 +231,7 @@ public class PostCommentController extends SimpleFormController {
                 if (c instanceof HtmlElement) {
                     result.append(((HtmlElement) c).getEnclosedContent());
                 } else if (c instanceof HtmlText) {
-                    result.append(HtmlUtil.escapeHtmlString(c.getContent()));
+                    result.append(HtmlUtil.encodeBasicEntities(c.getContent()));
                 }
             }
             return result.toString();

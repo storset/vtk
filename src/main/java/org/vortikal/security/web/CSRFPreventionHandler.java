@@ -240,7 +240,7 @@ public class CSRFPreventionHandler extends AbstractHtmlPageFilter implements Han
 
     private URL parseActionURL(String action) {
         if (action.startsWith("http://") || action.startsWith("https://")) {
-            URL url = URL.parse(HtmlUtil.unescapeHtmlString(action));
+            URL url = URL.parse(HtmlUtil.decodeBasicEntities(action));
             return url;
         }
 

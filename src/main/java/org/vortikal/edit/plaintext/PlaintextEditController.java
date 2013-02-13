@@ -59,7 +59,7 @@ import org.vortikal.security.Principal;
 import org.vortikal.util.io.StreamUtil;
 import org.vortikal.util.repository.ContentTypeHelper;
 import org.vortikal.util.repository.TextResourceContentHelper;
-import org.vortikal.util.text.HtmlUtil;
+import org.vortikal.util.text.HtmlExtractUtil;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.ServiceUnlinkableException;
@@ -277,7 +277,7 @@ public class PlaintextEditController extends SimpleFormController {
             
         } else if (ContentTypeHelper.isHTMLContentType(resource.getContentType())) {
 
-            postedEncoding = HtmlUtil.getCharacterEncodingFromBody(
+            postedEncoding = HtmlExtractUtil.getCharacterEncodingFromBody(
                 command.getContent().getBytes());
         } 
         return postedEncoding;

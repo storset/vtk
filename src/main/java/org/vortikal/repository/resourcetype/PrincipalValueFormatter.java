@@ -64,6 +64,7 @@ public class PrincipalValueFormatter implements ValueFormatter {
      * "link" and "name-link" formats, the "link" and "name-link" latter
      * returning an html <a> tag if the principal has a url
      */
+    @Override
     public String valueToString(Value value, String format, Locale locale) throws IllegalValueTypeException {
 
         if (value.getType() != Type.PRINCIPAL) {
@@ -73,11 +74,11 @@ public class PrincipalValueFormatter implements ValueFormatter {
         Principal principal = value.getPrincipalValue();
         String url = principal.getURL();
         if (LINK_FORMAT.equals(format) && url != null) {
-            return "<a href=\"" + HtmlUtil.escapeHtmlString(url) + "\">" + principal.getDescription() + "</a>";
+            return "<a href=\"" + HtmlUtil.encodeBasicEntities(url) + "\">" + principal.getDescription() + "</a>";
         }
 
         if (NAME_LINK_FORMAT.equals(format) && url != null) {
-            return "<a href=\"" + HtmlUtil.escapeHtmlString(url) + "\">" + principal.getName() + "</a>";
+            return "<a href=\"" + HtmlUtil.encodeBasicEntities(url) + "\">" + principal.getName() + "</a>";
         }
 
         if (NAME_FORMAT.equals(format)) {
@@ -87,6 +88,7 @@ public class PrincipalValueFormatter implements ValueFormatter {
         return principal.getName();
     }
 
+    @Override
     public Value stringToValue(String string, String format, Locale locale) throws InvalidPrincipalException {
         Principal principal = principalFactory.getPrincipal(string, Principal.Type.USER);
         return new Value(principal);

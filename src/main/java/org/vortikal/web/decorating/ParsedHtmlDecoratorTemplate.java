@@ -285,7 +285,7 @@ public class ParsedHtmlDecoratorTemplate implements Template {
                 c.render(request, response);
                 result = response.getContentAsString();
             } catch (Throwable t) {
-                result = c.getNamespace() + ":" + c.getName() + ": " + HtmlUtil.escapeHtmlString(t.getMessage());
+                result = c.getNamespace() + ":" + c.getName() + ": " + HtmlUtil.encodeBasicEntities(t.getMessage());
             }
             return result;
         }

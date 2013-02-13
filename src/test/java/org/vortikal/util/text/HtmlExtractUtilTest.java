@@ -32,7 +32,7 @@ package org.vortikal.util.text;
 
 import junit.framework.TestCase;
 
-public class HtmlUtilTest extends TestCase {
+public class HtmlExtractUtilTest extends TestCase {
     
     private final static String XHTML_10_TRANS =
         "html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" "
@@ -47,14 +47,14 @@ public class HtmlUtilTest extends TestCase {
             + "<html xmlns=\"http://www.w3.org/1999/xhtml\">"
             + "<head><title>My title</title></head>"
             + "<body>My Body</body></html>";
-        String doctype = HtmlUtil.getDoctypeFromBody(html.getBytes("iso-8859-1"));
+        String doctype = HtmlExtractUtil.getDoctypeFromBody(html.getBytes("iso-8859-1"));
         assertEquals(XHTML_10_TRANS, doctype);
 
         html = "<!DOCTYPE " + HTML_401_TRANS + ">"
             + "<html><head><title>My title</title></head>"
             + "<body>My Body</body></html>";
 
-        doctype = HtmlUtil.getDoctypeFromBody(html.getBytes("iso-8859-1"));
+        doctype = HtmlExtractUtil.getDoctypeFromBody(html.getBytes("iso-8859-1"));
         assertEquals(HTML_401_TRANS, doctype);
 
 
@@ -62,7 +62,7 @@ public class HtmlUtilTest extends TestCase {
             + "<html><head><title>My title</title></head>"
             + "<body>My Body</body></html>";
 
-        doctype = HtmlUtil.getDoctypeFromBody(html.getBytes("iso-8859-1"));
+        doctype = HtmlExtractUtil.getDoctypeFromBody(html.getBytes("iso-8859-1"));
         assertEquals("some garbage", doctype);
     }
     
@@ -74,13 +74,13 @@ public class HtmlUtilTest extends TestCase {
             + "</head>"
             + "<body>My Body</body></html>";
         
-        String characterEncoding = HtmlUtil.getCharacterEncodingFromBody(html.getBytes("utf-8"));
+        String characterEncoding = HtmlExtractUtil.getCharacterEncodingFromBody(html.getBytes("utf-8"));
         assertEquals("utf-8", characterEncoding);
 
         html = "<!DOCTYPE " + HTML_401_TRANS + ">"
             + "<html><head><title>My title</title></head>"
             + "<body>My Body</body></html>";
-        characterEncoding = HtmlUtil.getCharacterEncodingFromBody(html.getBytes("utf-8"));
+        characterEncoding = HtmlExtractUtil.getCharacterEncodingFromBody(html.getBytes("utf-8"));
         assertNull(characterEncoding);
     }
     

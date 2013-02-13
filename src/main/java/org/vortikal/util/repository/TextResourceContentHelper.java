@@ -49,7 +49,7 @@ import org.jdom.output.XMLOutputter;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.util.io.StreamUtil;
-import org.vortikal.util.text.HtmlUtil;
+import org.vortikal.util.text.HtmlExtractUtil;
 
 
 public class TextResourceContentHelper {
@@ -150,7 +150,7 @@ public class TextResourceContentHelper {
             token, resource.getURI(), false);
         byte[] bytes = StreamUtil.readInputStream(is);
         String encoding = resource.getCharacterEncoding();
-        if (encoding == null) encoding = HtmlUtil.getCharacterEncodingFromBody(bytes);
+        if (encoding == null) encoding = HtmlExtractUtil.getCharacterEncodingFromBody(bytes);
         if (encoding == null) encoding = this.defaultCharacterEncoding;
         String content = new String(bytes, encoding);
         return content;
@@ -268,7 +268,7 @@ public class TextResourceContentHelper {
                 out.write(buffer, 0, n);
             }
 
-            String storedEncoding = HtmlUtil.getCharacterEncodingFromBody(
+            String storedEncoding = HtmlExtractUtil.getCharacterEncodingFromBody(
                 out.toByteArray());
             return storedEncoding;
         

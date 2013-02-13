@@ -1,4 +1,4 @@
-/* Copyright (c) 2007, University of Oslo, Norway
+/* Copyright (c) 2013, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -28,46 +28,50 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repository.resourcetype;
+package org.vortikal.text.html;
 
-import java.util.Locale;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
-import org.springframework.beans.factory.annotation.Required;
-import org.vortikal.text.html.HtmlUtil;
 
 /**
- * This value formatter represents HTML value types. 
- * It supports a single format, namely the <code>escaped</code> format,
- * producing HTML escaping of markup.
+ *
  */
-public class HtmlValueFormatter implements ValueFormatter {
-
-    public static final String ESCAPED_FORMAT = "escaped";
-    public static final String FLATTENED_FORMAT = "flattened";
-
-    private HtmlUtil htmlUtil;
+public class HtmlUtilTest {
     
-    public String valueToString(Value value, String format, Locale locale) throws IllegalValueTypeException {
-        String html = value.toString();
-        if (ESCAPED_FORMAT.equals(format)) {
-            return HtmlUtil.encodeBasicEntities(html);
-        } else if (FLATTENED_FORMAT.equals(format)) {
-            return this.htmlUtil.flatten(html);
-        }
-        return html;
-    }
-
-    public Value stringToValue(String string, String format, Locale locale) {
-        if (ESCAPED_FORMAT.equals(format)) {
-            return new Value(HtmlUtil.decodeBasicEntities(string), PropertyType.Type.HTML);
-        } 
+    /**
+     * Test methods {@link HtmlUtil#decodeBasicEntities(java.lang.String)} and
+     * {@link HtmlUtil#encodeBasicEntities(java.lang.String) }.
+     */
+    @Test
+    public void testBasicEntitiesCoding() {
         
-        return new Value(string, PropertyType.Type.HTML);
+        String unescaped = "3 is < 4 & 3 is > 2, &which; ;& can also be written as; \"two\", 'ait ?";
+        String escaped = "3 is &lt; 4 &amp; 3 is &gt; 2, &which; ;& can also be written as; &quot;two&quot;, &apos;ait ?";
+        
+        assertEquals(unescaped, HtmlUtil.decodeBasicEntities(escaped));
+        
+        assertEquals("&quot;", HtmlUtil.decodeBasicEntities("&amp;quot;"));
+
+        assertEquals("&amp", HtmlUtil.decodeBasicEntities("&amp"));
+
+        assertEquals("&u;", HtmlUtil.decodeBasicEntities("&u;"));
+        
+        assertEquals("&;", HtmlUtil.decodeBasicEntities("&;"));
+        
+        assertEquals("&", HtmlUtil.decodeBasicEntities("&"));
+        
+        assertEquals("", HtmlUtil.decodeBasicEntities(""));
+        
+        assertEquals("&apos;escaped&apos;", HtmlUtil.encodeBasicEntities("'escaped'"));
+        
+        assertEquals("&amp;foo;", HtmlUtil.encodeBasicEntities("&foo;"));
+
+        assertEquals("", HtmlUtil.encodeBasicEntities(""));
+        
+        assertEquals(unescaped, HtmlUtil.decodeBasicEntities(HtmlUtil.encodeBasicEntities(unescaped)));
+
     }
 
-    @Required
-    public void setHtmlUtil(HtmlUtil htmlUtil) {
-        this.htmlUtil = htmlUtil;
-    }
 
 }

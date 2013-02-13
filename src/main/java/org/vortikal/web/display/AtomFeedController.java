@@ -285,8 +285,8 @@ public abstract class AtomFeedController implements Controller {
 
             String imgPath = picture.getFormattedValue(PropertyType.THUMBNAIL_PROP_NAME, Locale.getDefault());
             String imgAlt = getImageAlt(imgPath);
-            sb.append("<img src=\"" + HtmlUtil.escapeHtmlString(imgPath) + "\" alt=\""
-                    + HtmlUtil.escapeHtmlString(imgAlt) + "\"/>");
+            sb.append("<img src=\"" + HtmlUtil.encodeBasicEntities(imgPath) + "\" alt=\""
+                    + HtmlUtil.encodeBasicEntities(imgAlt) + "\"/>");
         }
 
         String intro = this.getIntroduction(resource);

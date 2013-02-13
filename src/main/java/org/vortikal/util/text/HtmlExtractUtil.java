@@ -37,31 +37,28 @@ import java.util.regex.Pattern;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+/**
+ * Utility class with methods for extracting doctype and declared character
+ * encoding from raw HTML content.
+ */
+public abstract class HtmlExtractUtil {
 
-public class HtmlUtil {
-    
-    private static Log logger = LogFactory.getLog(HtmlUtil.class);
-    
-
-    private static final int NUM_HEAD_BYTES = 4096; 
-    
+    private static Log logger = LogFactory.getLog(HtmlExtractUtil.class);
+    private static final int NUM_HEAD_BYTES = 4096;
     private static final Pattern DOCTYPE_REGEXP =
-		Pattern.compile("<\\s*!DOCTYPE\\s+([^>]+)>",
-            			Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
-
+            Pattern.compile("<\\s*!DOCTYPE\\s+([^>]+)>",
+            Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
     private static final Pattern HEAD_REGEXP =
-		Pattern.compile("(<\\s*head.*?>)(.*)(<\\s*/\\s*head\\s*>)",
-            			Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
-
+            Pattern.compile("(<\\s*head.*?>)(.*)(<\\s*/\\s*head\\s*>)",
+            Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
     private static final Pattern CHARSET_REGEXP =
-        Pattern.compile("(<\\s*meta[^>]+charset\\s*\\=\\s*)([\\w-]+)", 
-                        Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
-
+            Pattern.compile("(<\\s*meta[^>]+charset\\s*\\=\\s*)([\\w-]+)",
+            Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 
     /**
-     * Tries to extract the HTML doctype from the first bytes of the
-     * content. Note that this method does not validate that the
-     * doctype found is actually a well-known doctype.
+     * Tries to extract the HTML doctype from the first bytes of the content.
+     * Note that this method does not validate that the doctype found is
+     * actually a well-known doctype.
      *
      * @param html a <code>byte[]</code> sequence
      * @return the HTML doctype, or <code>null</code> if not found
@@ -80,12 +77,10 @@ public class HtmlUtil {
         }
         return doctype;
     }
-    
-
 
     /**
-     * Tries to guess the HTML character encoding using regular
-     * expression matching.
+     * Tries to guess the HTML character encoding using regular expression
+     * matching.
      *
      * @param html a <code>byte[]</code> value
      * @return a <code>String</code>
@@ -93,7 +88,7 @@ public class HtmlUtil {
     public static String getCharacterEncodingFromBody(byte[] html) {
         // Reads the first bytes of the content to look for the charset to use.
         int numBytes = Math.min(NUM_HEAD_BYTES, html.length);
-		
+
         try {
 
             String content = new String(html, 0, numBytes, "iso-8859-1");
@@ -109,7 +104,7 @@ public class HtmlUtil {
             if (headContent != null) {
                 // Looks for a meta element which declares a charset.
                 matcher = CHARSET_REGEXP.matcher(headContent);
-	
+
                 if (matcher.find(0)) {
                     String charset = matcher.group(2).toLowerCase();
                     if (logger.isDebugEnabled()) {
@@ -121,11 +116,10 @@ public class HtmlUtil {
         } catch (UnsupportedEncodingException e) {
             logger.warn("Exception: Get charset, default encoding. This should not happen!!");
         }
-		
+
         if (logger.isDebugEnabled()) {
             logger.debug("Didn't find any charset meta in document.");
         }
         return null;
     }
-    
 }

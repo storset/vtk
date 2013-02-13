@@ -169,7 +169,7 @@ implements ServletContextAware {
             }
             
             Writer writer = response.getWriter();
-            writer.write("<esi:include src=\"" + HtmlUtil.escapeHtmlString(esi) + "\" />");
+            writer.write("<esi:include src=\"" + HtmlUtil.encodeBasicEntities(esi) + "\" />");
             writer.flush();
             writer.close();
             return;

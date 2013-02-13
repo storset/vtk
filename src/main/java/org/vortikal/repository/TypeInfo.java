@@ -36,6 +36,9 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.ValueFormatException;
 
+/**
+ * TypeInfo allows to query type information for a single resource.
+ */
 public final class TypeInfo {
 
     private PrimaryResourceTypeDefinition resourceTypeDefinition;

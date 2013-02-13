@@ -53,6 +53,8 @@ public class HtmlUtilTest {
         
         assertEquals("&quot;", HtmlUtil.decodeBasicEntities("&amp;quot;"));
 
+        assertEquals("&", HtmlUtil.decodeBasicEntities("&amp;"));
+        
         assertEquals("&amp", HtmlUtil.decodeBasicEntities("&amp"));
 
         assertEquals("&u;", HtmlUtil.decodeBasicEntities("&u;"));

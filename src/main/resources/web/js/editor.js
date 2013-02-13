@@ -1055,30 +1055,26 @@ function initMultipleInputFields() {
 function loadMultipleInputFields(name, isMovable, isBrowsable) { // TODO: simplify
   var inputField = $("." + name + " input[type=text]");
   if(!inputField.length) return;
-  
-  var inputFieldVal = inputField.val();
-  var formFields = inputFieldVal.split(",");
 
-  vrtxEditor.multipleCommaSeperatedInputFieldCounter[name] = 1; // 1-index
-
+  // Config
   var size = inputField.attr("size");
-
-  inputFieldParent = inputField.parent();
-    
+  var inputFieldParent = inputField.parent();
   var isDropdown = inputFieldParent.hasClass("vrtx-multiple-dropdown");
-  isMovable = isDropdown ? false : isMovable; // Turn off move-functionality tmp. if dropdown (not needed yet and needs some flicking of code)
-
-  var inputFieldParentParent = inputFieldParent.parent();
-  inputFieldParentParent.addClass("vrtx-multipleinputfields");
-
-  if(inputFieldParentParent.hasClass("vrtx-resource-ref-browse")) {
+  isMovable = !isDropdown && isMovable;
+  var inputFieldWrp = inputFieldParent.parent();
+  if(inputFieldWrp.hasClass("vrtx-resource-ref-browse")) {
     isBrowsable = true;
     inputFieldParent.next().filter(".vrtx-button").hide();
   }
 
-  inputField.hide();
+  inputFieldWrp.addClass("vrtx-multipleinputfields");
   inputFieldParent.removeClass("vrtx-textfield").append(vrtxEditor.mustacheFacade.getMultipleInputFieldsAddButton(name, size, isBrowsable, isMovable, isDropdown));
-    
+  
+  var inputFieldVal = inputField.hide().val();
+  var formFields = inputFieldVal.split(",");
+
+  vrtxEditor.multipleCommaSeperatedInputFieldCounter[name] = 1; // 1-index
+  
   var addFormFieldFunc = addFormField, html = ""; /* ENHANCE PART */
   for (var i = 0, len = formFields.length; i < len; i++) {
     html += addFormFieldFunc(name, len, $.trim(formFields[i]), size, isBrowsable, isMovable, isDropdown, true);

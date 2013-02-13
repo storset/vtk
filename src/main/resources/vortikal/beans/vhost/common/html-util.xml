@@ -15,6 +15,10 @@
     <property name="sourceMap">
       <map>
         <!-- TODO: complete this list -->
+        
+        <!-- TODO: consider using org.springframework.web.util.HtmlUtils#htmlUnescape, which
+                   already has data for all the entity refs below
+                   (except &apos; but that can be done in a single pass afterwords) -->
 
         <!-- XML/XHTML: -->
         <entry key="apos" value="&#39;" />

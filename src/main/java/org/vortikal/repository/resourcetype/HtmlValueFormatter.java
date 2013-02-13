@@ -47,6 +47,7 @@ public class HtmlValueFormatter implements ValueFormatter {
 
     private HtmlUtil htmlUtil;
     
+    @Override
     public String valueToString(Value value, String format, Locale locale) throws IllegalValueTypeException {
         String html = value.toString();
         if (ESCAPED_FORMAT.equals(format)) {
@@ -57,6 +58,7 @@ public class HtmlValueFormatter implements ValueFormatter {
         return html;
     }
 
+    @Override
     public Value stringToValue(String string, String format, Locale locale) {
         if (ESCAPED_FORMAT.equals(format)) {
             return new Value(HtmlUtil.decodeBasicEntities(string), PropertyType.Type.HTML);

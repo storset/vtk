@@ -85,7 +85,6 @@
         if(hasMultipleInputFields) {
           initMultipleInputFields();
         
-          // Load HTML/Mustache templates for multiple inputfields
           $.when(vrtxEditor.multipleCommaSeperatedInputFieldDeferred).done(function() {
             MULTIPLE_INPUT_FIELD_INITIALIZED = $.Deferred();
         

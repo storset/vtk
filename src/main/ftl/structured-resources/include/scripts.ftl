@@ -17,9 +17,6 @@
       <#if containsMultipleInputFieldScripts>
         MULTIPLE_INPUT_FIELD_INITIALIZED = $.Deferred();
         $.when(vrtxEditor.multipleCommaSeperatedInputFieldDeferred).done(function() {
-          browseBase = '${fckeditorBase.url?html}';
-          browseBaseFolder = '${baseFolder}';
-          browseBasePath = '${fckBrowse.url.pathRepresentation}';
           <#list scripts as script>
             <#if script.type == 'MULTIPLEINPUTFIELDS' >
               enhanceMultipleInputFields('${script.name}', true, false);

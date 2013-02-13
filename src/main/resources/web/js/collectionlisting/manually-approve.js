@@ -16,16 +16,15 @@ $(window).load(function() {
   // Retrieve initial resources
   MANUALLY_APPROVED_LOCATIONS_TEXTFIELD = $("#resource\\.manually-approve-from");
   AGGREGATED_LOCATIONS_TEXTFIELD = $("#resource\\.aggregation");
-  
-  // Retrieve HTML templates
-  var manuallyApprovedTemplatesRetrieved = $.Deferred();
-  MANUALLY_APPROVE_TEMPLATES = vrtxAdmin.retrieveHTMLTemplates("manually-approve",
-                                                               ["menu", "table-start", "table-row", 
-                                                                "table-end", "navigation-next", "navigation-prev"],
-                                                                manuallyApprovedTemplatesRetrieved);
                                                                 
   // Set initial locations / aggregated locations and generate menu
   if(MANUALLY_APPROVED_LOCATIONS_TEXTFIELD.length) {
+	// Retrieve HTML templates
+	var manuallyApprovedTemplatesRetrieved = $.Deferred();
+	MANUALLY_APPROVE_TEMPLATES = vrtxAdmin.retrieveHTMLTemplates("manually-approve",
+	                                                             ["menu", "table-start", "table-row", 
+	                                                              "table-end", "navigation-next", "navigation-prev"],
+	                                                             manuallyApprovedTemplatesRetrieved);
     var locations, aggregatedlocations;
     var value = MANUALLY_APPROVED_LOCATIONS_TEXTFIELD.val();
     LAST_MANUALLY_APPROVED_LOCATIONS = $.trim(value);

@@ -11,7 +11,7 @@
 {{! ADD BUTTON }}
 
 <div id="vrtx-{{ name }}-add" class="vrtx-button">
-  <button onclick="getField('{{ name }}', 0, 0, '', '{{ size }}', {{ isBrowsable }}, false, {{ isMovable }}, {{ isDropdown }}); return false;">
+  <button onclick="addFormField('{{ name }}', null, '{{ size }}', {{ isBrowsable }}, false, {{ isMovable }}, {{ isDropdown }}); return false;">
     {{ buttonText }}
   </button>
 </div>

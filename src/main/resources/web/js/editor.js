@@ -841,7 +841,6 @@ function previewImage(urlobj) {
 
 /*-------------------------------------------------------------------*\
     7. Show / hide
-       XXX: boolean field animations when not init
 \*-------------------------------------------------------------------*/
   
 VrtxEditor.prototype.initShowHide = function initShowHide() { 

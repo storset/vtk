@@ -62,7 +62,8 @@ function VrtxEditor() {
     /** Initial state for the need to confirm navigation away from editor */
     this.needToConfirm = true;
     
-    this.multipleCommaSeperatedInputFieldCounter = [];
+    this.multipleFieldBoxesCounter = {};
+    
     this.multipleCommaSeperatedInputFieldTemplates = [];
     this.multipleCommaSeperatedInputFieldDeferred = null;
   
@@ -1073,7 +1074,7 @@ function enhanceMultipleInputFields(name, isMovable, isBrowsable) { // TODO: sim
   var inputFieldVal = inputField.hide().val();
   var formFields = inputFieldVal.split(",");
 
-  vrtxEditor.multipleCommaSeperatedInputFieldCounter[name] = 1; // 1-index
+  vrtxEditor.multipleFieldBoxesCounter[name] = 1; // 1-index
   
   var addFormFieldFunc = addFormField, html = ""; /* ENHANCE PART */
   for (var i = 0, len = formFields.length; i < len; i++) {
@@ -1087,7 +1088,7 @@ function enhanceMultipleInputFields(name, isMovable, isBrowsable) { // TODO: sim
 function addFormField(name, len, value, size, isBrowsable, isMovable, isDropdown, init) {
   var fields = $("." + name + " div.vrtx-multipleinputfield"),
       idstr = "vrtx-" + name + "-",
-      i = vrtxEditor.multipleCommaSeperatedInputFieldCounter[name],
+      i = vrtxEditor.multipleFieldBoxesCounter[name],
       len = !init ? fields.length : len;
       removeButton = "", moveUpButton = "", moveDownButton = "", browseButton = "";
 
@@ -1105,7 +1106,7 @@ function addFormField(name, len, value, size, isBrowsable, isMovable, isDropdown
   }
 
   var html = vrtxEditor.mustacheFacade.getMultipleInputfield(name, idstr, i, value, size, browseButton, removeButton, moveUpButton, moveDownButton, isDropdown);
-  vrtxEditor.multipleCommaSeperatedInputFieldCounter[name]++;  
+  vrtxEditor.multipleFieldBoxesCounter[name]++;  
   
   if(!init) {
     if(len > 0 && isMovable) {
@@ -1171,8 +1172,6 @@ function saveMultipleInputFields() {
 }
 
 /* Multiple JSON boxes */
-var COUNTER = {}; // Need to increment this uniquely because length-based may interfere when remove and add stuff
-
 function initJsonMovableElements(templatesRetrieved, jsonElementsBuilt) {
   $.when(templatesRetrieved, jsonElementsBuilt).done(function() {
     for (var i = 0, len = LIST_OF_JSON_ELEMENTS.length; i < len; i++) {
@@ -1180,7 +1179,7 @@ function initJsonMovableElements(templatesRetrieved, jsonElementsBuilt) {
       var jsonElm = $("#" + jsonName);
       jsonElm.append(vrtxEditor.mustacheFacade.getJsonBoxesInteractionsButton("add", vrtxAdmin.multipleFormGroupingMessages.add))
               .find(".vrtx-add-button").data({'number': i});
-      COUNTER[jsonName] = jsonElm.find(".vrtx-json-element").length;
+      vrtxEditor.multipleFieldBoxesCounter[jsonName] = jsonElm.find(".vrtx-json-element").length;
     }
 
     accordionJsonInit();
@@ -1226,7 +1225,7 @@ function addJsonField(btn) {
 
   for (var i in types) {
     var typeType = types[i].type;
-    inputFieldName = j.name + "." + types[i].name + "." + COUNTER[j.name];
+    inputFieldName = j.name + "." + types[i].name + "." + vrtxEditor.multipleFieldBoxesCounter[j.name];
     htmlTemplate += vrtxEditor.mustacheFacade.getTypeHtml(types[i], inputFieldName);
     if(typeType === "html") {
       ckHtmls.push(inputFieldName);
@@ -1241,9 +1240,9 @@ function addJsonField(btn) {
   var isImmovable = jsonParent && jsonParent.hasClass("vrtx-multiple-immovable");
   var removeButton = vrtxEditor.mustacheFacade.getJsonBoxesInteractionsButton('remove', vrtxAdmin.multipleFormGroupingMessages.remove);
 
-  var newElementId = "vrtx-json-element-" + j.name + "-" + COUNTER[j.name];
+  var newElementId = "vrtx-json-element-" + j.name + "-" + vrtxEditor.multipleFieldBoxesCounter[j.name];
     
-  var newElementHtml = htmlTemplate + "<input type=\"hidden\" class=\"id\" value=\"" + COUNTER[j.name] + "\" \/>" + removeButton;
+  var newElementHtml = htmlTemplate + "<input type=\"hidden\" class=\"id\" value=\"" + vrtxEditor.multipleFieldBoxesCounter[j.name] + "\" \/>" + removeButton;
   if (!isImmovable && numOfElements > 0) {
     var moveUpButton = vrtxEditor.mustacheFacade.getJsonBoxesInteractionsButton('move-up', '&uarr; ' + vrtxAdmin.multipleFormGroupingMessages.moveUp);
     newElementHtml += moveUpButton;
@@ -1294,7 +1293,7 @@ function addJsonField(btn) {
     }, 25);
   }
    
-  COUNTER[j.name]++;
+  vrtxEditor.multipleFieldBoxesCounter[j.name]++;
 }
 
 function removeJsonField(btn) {

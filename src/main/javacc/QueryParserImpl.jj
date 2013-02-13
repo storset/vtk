@@ -36,7 +36,7 @@ import org.vortikal.repository.search.query.UriPrefixQuery;
 import org.vortikal.repository.search.query.UriTermQuery;
 import org.vortikal.repository.search.query.ACLExistsQuery;
 import org.vortikal.repository.search.query.ACLReadForAllQuery;
-
+import static org.vortikal.util.text.TextUtils.unescape;
 
 /**
 * Partial implementation of a query parser based on javacc.
@@ -134,18 +134,6 @@ public class QueryParserImpl implements QueryParser {
         return new UriSetQuery(uris, op);
     }
 
-    private String unescape(String escaped) {
-        char[] caSource = escaped.toCharArray();
-        char[] caDest = new char[caSource.length];
-        int j = 0;
-        for (int i = 0; i < caSource.length; i++) {
-            if ((caSource[i] != '\\') || (i > 0 && caSource[i-1] == '\\')) {
-                caDest[j++]=caSource[i];
-            }
-        }
-        return new String(caDest, 0, j);
-    }
-    
 }
 
 PARSER_END(QueryParserImpl)

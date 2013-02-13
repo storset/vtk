@@ -48,15 +48,6 @@ public class TextUtils {
         'a', 'b', 'c', 'd', 'e', 'f'
         };
 
-    public static char[] toHex(byte[] buffer) {
-        char[] result = new char[buffer.length * 2];
-        for (int i = 0; i < buffer.length; i++) {
-            result[i << 1] = HEX[(buffer[i] & 0xF0) >>> 4];
-            result[(i << 1)+1] = HEX[buffer[i] & 0x0F];
-        }
-        return result;
-    }
-    
     /**
      * Parsing flag indicating that values should be trimmed.
      */
@@ -69,9 +60,9 @@ public class TextUtils {
     public static final int DISCARD = 0x02;
     
     /**
-     * Parsing flag indicating that illegal escape sequences should be ignored.
+     * Parsing flag indicating that invalid escape sequences should be ignored.
      */
-    public static final int IGNORE_ILLEGAL_ESCAPE = 0x04;
+    public static final int IGNORE_INVALID_ESCAPE = 0x04;
     
     /**
      * Parsing flag indicating that unescaped separators in value of key-value
@@ -79,6 +70,25 @@ public class TextUtils {
      * @see #parseKeyValue(java.lang.String, char, int) 
      */
     public static final int IGNORE_UNESCAPED_SEP_IN_VALUE = 0x08;
+    
+    /**
+     * Parsing flag indicating the backslash character shall be removed
+     * from invalid escape sequences. The only way then to get a literal
+     * backslash in the result is to provide two backslashes "\\".
+     */
+    public static final int UNESCAPE_INVALID_ESCAPE = 0x10;
+    
+    /**
+     * Render a byte array into a string of hexadecimal numbers.
+     */
+    public static char[] toHex(byte[] buffer) {
+        char[] result = new char[buffer.length * 2];
+        for (int i = 0; i < buffer.length; i++) {
+            result[i << 1] = HEX[(buffer[i] & 0xF0) >>> 4];
+            result[(i << 1)+1] = HEX[buffer[i] & 0x0F];
+        }
+        return result;
+    }
     
     /**
      * Extracts a field from a string using the character <code>,</code> as field delimiter.
@@ -206,6 +216,24 @@ public class TextUtils {
     }
 
     /**
+     * Unescape all escape sequences in string (strip one level of backslashes).
+     * An escape sequence always consists of two characters on the form "\ &lt;anychar&gt;".
+     * @param escaped The string to unescape
+     * @return A string with one level of escaping backslashes stripped.
+     */
+    public static String unescape(String escaped) {
+        char[] source = escaped.toCharArray();
+        char[] dest = new char[source.length];
+        int j = 0;
+        for (int i = 0; i < source.length; i++) {
+            if ((source[i] != '\\') || (i > 0 && source[i-1] == '\\')) {
+                dest[j++]=source[i];
+            }
+        }
+        return new String(dest, 0, j);
+    }
+
+    /**
      * Parse a string of character-separated values, with no parsing flags set.
      * @see #parseCsv(java.lang.String, char, int) 
      */
@@ -228,21 +256,23 @@ public class TextUtils {
      *            <li>If {@link #DISCARD} is set, then empty string values
      *        will not to be included in result. When combined with {@link #TRIM}, empty
      *        values after trimming are discarded.
-     *            <li>If {@link #IGNORE_ILLEGAL_ESCAPE} is set, then illegal
+     *            <li>If {@link #IGNORE_INVALID_ESCAPE} is set, then invalid
      *                backslash escape sequences are ignored.
      *                The backslash character will be included in output
-     *                in such cases, preceding the non-special character.
+     *                in such cases, preceding the non-special character, unless
+     *                the backslash appears at the very end of input.
+     *            <li>If {@link #UNESCAPE_INVALID_ESCAPE} is set, then invalid
+     *                backslash escape sequnces are ignored, and
+     *                the backslash character will NOT be included
+     *                such cases, only the character following it.
      *        </ul>
      * @return an array of strings containing the values.
      */
     public static String[] parseCsv(String input, char sep, int flags) {
         if (input == null) throw new IllegalArgumentException("null input");
-        final boolean trim = hasFlag(TRIM, flags);
-        final boolean discard = hasFlag(DISCARD, flags);
-        final boolean ignoreIllegalEscape = hasFlag(IGNORE_ILLEGAL_ESCAPE, flags);
         
-        if (trim ? input.trim().isEmpty() : input.isEmpty()) {
-            if (discard) return new String[0];
+        if (hasFlag(TRIM, flags) ? input.trim().isEmpty() : input.isEmpty()) {
+            if (hasFlag(DISCARD, flags)) return new String[0];
             else return new String[] {""};
         }
         
@@ -266,35 +296,40 @@ public class TextUtils {
                 continue;
             }
             if (escape) {
-                if (ignoreIllegalEscape) {
-                    buf.append('\\');
+                if (hasFlag(IGNORE_INVALID_ESCAPE,flags) || hasFlag(UNESCAPE_INVALID_ESCAPE, flags)) {
+                    if (!hasFlag(UNESCAPE_INVALID_ESCAPE,flags)) {
+                        buf.append('\\');
+                    }
                     escape = false;
                 } else {
-                    throw new IllegalArgumentException("Illegal escape char: '\\" 
+                    throw new IllegalArgumentException("Invalid escape sequence: '\\" 
                         + c + "' in value: " + input);
                 }
             }
             if (c == sep) {
-                String v = trim ? buf.toString().trim() : buf.toString();
+                String v = hasFlag(TRIM, flags) ? buf.toString().trim() : buf.toString();
                 buf.setLength(0);
-                if (!v.isEmpty() || !discard) {
+                if (!v.isEmpty() || !hasFlag(DISCARD, flags)) {
                     values.add(v);
                 }
                 if (i == input.length()-1) {
                     // Input ended with separator, be consistent
-                    if (!discard) values.add("");
+                    if (!hasFlag(DISCARD, flags)) values.add("");
                 }
                 continue;
             }
             buf.append(c);
         }
-        if (escape && !ignoreIllegalEscape) {
+        if (escape && !hasFlag(IGNORE_INVALID_ESCAPE, flags)
+                   && !hasFlag(UNESCAPE_INVALID_ESCAPE, flags)) {
+            // Single escape char at end of input should trigger error
             throw new IllegalArgumentException(
-                    "Illegal escape sequence '\\' at end of key-value: '" + input + "'");
+                "Invalid escape char '\\' at end of key-value: '" + input + "'");
         }
+        
         if (buf.length() > 0) {
-            String v = trim ? buf.toString().trim() : buf.toString();
-            if (!v.isEmpty() || !discard) {
+            String v = hasFlag(TRIM, flags) ? buf.toString().trim() : buf.toString();
+            if (!v.isEmpty() || !hasFlag(DISCARD, flags)) {
                 values.add(v);
             }
         }
@@ -321,21 +356,24 @@ public class TextUtils {
      * @param sep The character to use as separator between key and value.
      * @param flags Set parsing flags. Valid flags:
      *        <ul><li>If {@link #TRIM} is set, then each value to be trimmed.
-     *            <li>If {@link #IGNORE_ILLEGAL_ESCAPE} is set, then
-     *                then illegal backslash escape sequences are ignored.
+     *            <li>If {@link #IGNORE_INVALID_ESCAPE} is set, then
+     *                then invalid backslash escape sequences are ignored.
      *                The backslash character will be included in output
-     *                in such cases, preceding the non-special character.
+     *                in such cases, preceding the non-special character, unless
+     *                the backslash is at the very end of input.
+     *            <li>If {@link #UNESCAPE_INVALID_ESCAPE} is set, then
+     *                then invalid backslash escape sequences are ignored,
+     *                and the backslash character in such sequnces will simply be removed.
      *            <li>If {@link #IGNORE_UNESCAPED_SEP_IN_VALUE} is set, then
      *             do not throw exception if unescaped separator characters
      *             are encountered in the value part.
      *        </ul>
 
-     * @return A string array with position 0 containing the key and position
-     *         1 containing the value.
+     * @return A string array of length 2 with index 0 containing the key and index
+     *         1 containing the value. Index 1 can contain <code>null</code>
+     *         if there is no value.
      */
     public static String[] parseKeyValue(String input, char sep, int flags) {
-        boolean trim = hasFlag(TRIM, flags);
-        boolean ignoreIllegalEscape = hasFlag(IGNORE_ILLEGAL_ESCAPE, flags);
         StringBuilder key = new StringBuilder();
         StringBuilder value = null;
         StringBuilder cur = key;
@@ -369,11 +407,13 @@ public class TextUtils {
                 continue;
             }
             if (escape) {
-                if (ignoreIllegalEscape) {
+                if (hasFlag(IGNORE_INVALID_ESCAPE, flags) || hasFlag(UNESCAPE_INVALID_ESCAPE, flags)) {
                     escape = false;
-                    cur.append('\\');
+                    if (!hasFlag(UNESCAPE_INVALID_ESCAPE, flags)) {
+                        cur.append('\\');
+                    }
                 } else {
-                    throw new IllegalArgumentException("Illegal escape char: '\\" 
+                    throw new IllegalArgumentException("Invalid escape sequence: '\\" 
                         + c + "' in key-value: " + input);
                 }
             }
@@ -384,13 +424,15 @@ public class TextUtils {
             }
             cur.append(c);
         }
-        if (escape && !ignoreIllegalEscape) {
+        if (escape && !hasFlag(IGNORE_INVALID_ESCAPE, flags)
+                   && !hasFlag(UNESCAPE_INVALID_ESCAPE, flags)) {
+            // Single escape char at end of input should trigger error
             throw new IllegalArgumentException(
-                    "Illegal escape sequence '\\' at end of key-value: '" + input + "'");
+                "Invalid escape char '\\' at end of key-value: '" + input + "'");
         }
         
-        return new String[] { trim ? key.toString().trim() : key.toString(), 
-            value == null ? null : trim ? value.toString().trim() : value.toString() };
+        return new String[] { hasFlag(TRIM, flags) ? key.toString().trim() : key.toString(),
+            value == null ? null : hasFlag(TRIM, flags) ? value.toString().trim() : value.toString() };
     }
 
     private static boolean hasFlag(int flag, int flags) {

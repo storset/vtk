@@ -134,35 +134,65 @@ public class TextUtilsTest extends TestCase {
         
         try {
             TextUtils.parseCsv("value\\a;value\\b", ';');
-            fail("Expected illegal escape exception");
+            fail("Expected invalid escape exception");
         } catch (IllegalArgumentException ia) {
             // ok
         }
         
         try {
-            values = TextUtils.parseCsv("\\\\value\\a;\\\\value\\b", ';', TextUtils.IGNORE_ILLEGAL_ESCAPE);
+            values = TextUtils.parseCsv("\\\\value\\a;\\\\value\\b", ';', TextUtils.IGNORE_INVALID_ESCAPE);
             assertEquals(2, values.length);
             assertEquals("\\value\\a", values[0]);
             assertEquals("\\value\\b", values[1]);
         } catch (IllegalArgumentException ia) {
-            fail("Unexpected illegal escape exception");
+            fail("Unexpected invalid escape exception");
         }
         
         try {
+            values = TextUtils.parseCsv("\\\\value\\a;\\\\value\\b", ';', TextUtils.UNESCAPE_INVALID_ESCAPE);
+            assertEquals(2, values.length);
+            assertEquals("\\valuea", values[0]);
+            assertEquals("\\valueb", values[1]);
+        } catch (IllegalArgumentException ia) {
+            fail("Unexpected invalid escape exception");
+        }
+
+        // Test that flag TextUtils.IGNORE_INVALID_ESCAPE makes no difference when
+        // already using flag TextUtils.UNESCAPE_INVALID_ESCAPE
+        assertEquals(TextUtils.parseCsv("\\\\value\\a;\\\\value\\b", ';', TextUtils.UNESCAPE_INVALID_ESCAPE)[0],
+                     TextUtils.parseCsv("\\\\value\\a;\\\\value\\b", ';', TextUtils.UNESCAPE_INVALID_ESCAPE | TextUtils.IGNORE_INVALID_ESCAPE)[0]);
+        assertEquals(TextUtils.parseCsv("\\\\value\\a;\\\\value\\b", ';', TextUtils.UNESCAPE_INVALID_ESCAPE)[1],
+                     TextUtils.parseCsv("\\\\value\\a;\\\\value\\b", ';', TextUtils.UNESCAPE_INVALID_ESCAPE | TextUtils.IGNORE_INVALID_ESCAPE)[1]);
+        
+        try {
             TextUtils.parseCsv("value a;value b\\", ';');
-            fail("Expected illegal escape exception");
+            fail("Expected invalid escape exception");
         } catch (IllegalArgumentException ia) {
             // ok
         }
         
         try {
-            values = TextUtils.parseCsv("value a;value b\\", ';', TextUtils.IGNORE_ILLEGAL_ESCAPE);
+            values = TextUtils.parseCsv("value a;value b\\", ';', TextUtils.IGNORE_INVALID_ESCAPE);
             assertEquals(2, values.length);
             assertEquals("value a", values[0]);
             assertEquals("value b", values[1]);
         } catch (IllegalArgumentException ia) {
-            fail("Unexpected illegal escape exception");
+            fail("Unexpected invalid escape exception");
         }
+        
+        // Test when input only consists of single backslash, or ends with one.
+        try {
+            values = TextUtils.parseCsv("\\", ',');
+            fail("Expected IllegalArgumentException");
+        } catch (IllegalArgumentException ia) {
+            // oK
+        }
+
+        values = TextUtils.parseCsv("\\", ',', TextUtils.IGNORE_INVALID_ESCAPE);
+        assertEquals(0, values.length);
+        
+        values = TextUtils.parseCsv("\\", ',', TextUtils.UNESCAPE_INVALID_ESCAPE);
+        assertEquals(0, values.length);
     }
     
     public void testParseKeyValue() {
@@ -218,35 +248,51 @@ public class TextUtilsTest extends TestCase {
         
         try {
             TextUtils.parseKeyValue("\\a=b", '=');
-            fail("Expected illegal escape exception");
+            fail("Expected invalid escape exception");
         } catch (IllegalArgumentException ia) {
             // ok
         }
         
         try {
-            kv = TextUtils.parseKeyValue("\\a=b", '=', TextUtils.IGNORE_ILLEGAL_ESCAPE);
+            kv = TextUtils.parseKeyValue("\\a=b", '=', TextUtils.IGNORE_INVALID_ESCAPE);
             assertEquals(2, kv.length);
             assertEquals("\\a", kv[0]);
             assertEquals("b", kv[1]);
         } catch (IllegalArgumentException ia) {
-            fail("Unexpected illegal escape exception");
+            fail("Unexpected invalid escape exception");
         }
         
         try {
             TextUtils.parseKeyValue("a=b\\", '=', TextUtils.TRIM);
-            fail("Expected illegal escape exception");
+            fail("Expected invalid escape exception");
         } catch (IllegalArgumentException ia) {
             // ok
         }
         
         try {
-            kv = TextUtils.parseKeyValue("a= \\b\\ ", '=', TextUtils.TRIM | TextUtils.IGNORE_ILLEGAL_ESCAPE);
+            kv = TextUtils.parseKeyValue("a= \\b\\ ", '=', TextUtils.TRIM | TextUtils.IGNORE_INVALID_ESCAPE);
             assertEquals(2, kv.length);
             assertEquals("a", kv[0]);
             assertEquals("\\b\\", kv[1]);
         } catch (IllegalArgumentException ia) {
-            fail("Unexpected illegal escape exception");
+            fail("Unexpected invalid escape exception");
         }
+        
+        try {
+            kv = TextUtils.parseKeyValue("a= \\b\\ ", '=', TextUtils.TRIM | TextUtils.UNESCAPE_INVALID_ESCAPE);
+            assertEquals(2, kv.length);
+            assertEquals("a", kv[0]);
+            assertEquals("b", kv[1]);
+        } catch (IllegalArgumentException ia) {
+            fail("Unexpected invalid escape exception");
+        }
+
+        // Test that flag TextUtils.IGNORE_INVALID_ESCAPE makes no difference when
+        // already using flag TextUtils.UNESCAPE_INVALID_ESCAPE
+        assertEquals(TextUtils.parseKeyValue("a=\\b", '=', TextUtils.UNESCAPE_INVALID_ESCAPE)[0],
+                     TextUtils.parseKeyValue("a=\\b", '=', TextUtils.IGNORE_INVALID_ESCAPE | TextUtils.UNESCAPE_INVALID_ESCAPE)[0]);
+        assertEquals(TextUtils.parseKeyValue("a=\\b", '=', TextUtils.UNESCAPE_INVALID_ESCAPE)[1],
+                     TextUtils.parseKeyValue("a=\\b", '=', TextUtils.IGNORE_INVALID_ESCAPE | TextUtils.UNESCAPE_INVALID_ESCAPE)[1]);
         
         try {
             kv = TextUtils.parseKeyValue("a = b = c = d", '=', TextUtils.IGNORE_UNESCAPED_SEP_IN_VALUE | TextUtils.TRIM);
@@ -254,8 +300,17 @@ public class TextUtilsTest extends TestCase {
             assertEquals("a", kv[0]);
             assertEquals("b = c = d", kv[1]);
         } catch (IllegalArgumentException ia) {
-            fail("Unexpected illegal argument exception: " + ia.getMessage());
+            fail("Unexpected invalid argument exception: " + ia.getMessage());
         }
         
+    }
+    
+    public void testUnescape() {
+        assertEquals("a b c", TextUtils.unescape("\\a \\b c"));
+        assertEquals("a b c", TextUtils.unescape("\\a \\b c\\"));
+        assertEquals("", TextUtils.unescape(""));
+        assertEquals("", TextUtils.unescape("\\"));
+        assertEquals(" ", TextUtils.unescape("\\ "));
+        assertEquals("a \\ b", TextUtils.unescape("a \\\\ b"));
     }
 }

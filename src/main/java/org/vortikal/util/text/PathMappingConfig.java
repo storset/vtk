@@ -219,7 +219,7 @@ public class PathMappingConfig {
     private void parseLine(String line, Node root) {
         String[] kv = TextUtils.parseKeyValue(line, '=', TextUtils.TRIM 
                                                          | TextUtils.IGNORE_UNESCAPED_SEP_IN_VALUE 
-                                                         | TextUtils.IGNORE_ILLEGAL_ESCAPE);
+                                                         | TextUtils.IGNORE_INVALID_ESCAPE);
         if (kv[1] == null) return;
         String lhs = kv[0];
         String rhs = kv[1];
@@ -262,7 +262,7 @@ public class PathMappingConfig {
         if (qualifierStr != null && !qualifierStr.isEmpty()) {
             String[] splitQualifiers = TextUtils.parseCsv(qualifierStr, ',', TextUtils.TRIM 
                                                                              | TextUtils.DISCARD
-                                                                             | TextUtils.IGNORE_ILLEGAL_ESCAPE);
+                                                                             | TextUtils.IGNORE_INVALID_ESCAPE);
             for (String qualifier : splitQualifiers) {
                 String[]  kv = TextUtils.parseKeyValue(qualifier, ':');
                 if (kv[0].isEmpty() || kv[1] == null || kv[1].isEmpty()) {

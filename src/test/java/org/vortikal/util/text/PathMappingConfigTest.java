@@ -57,7 +57,8 @@ public class PathMappingConfigTest extends TestCase {
         + "/c/d/e/f/g/ = exact\n"
         + "/c/d/e/f/g/h = bar\n"
         + "/x/y/z = xxx\n"
-        + "/x/y/z[a:b,c:d]/ = exact\n";
+        + "/x/y/z[a:b,c:d]/ = exact\n"
+        + "/esc/rhs = \\a\\b\\=";
     
     public void testGet() throws Exception {
         InputStream is = new ByteArrayInputStream(TEST_CONFIG.getBytes("utf-8"));
@@ -91,6 +92,10 @@ public class PathMappingConfigTest extends TestCase {
         
         assertNotNull(config.get(Path.fromString("/x/y/z")));
         assertTrue(config.get(Path.fromString("/x/y/z")).get(1).isExact());
+        
+        entries = config.get(Path.fromString("/esc/rhs"));
+        assertEquals(1, entries.size());
+        assertEquals("\\a\\b=", entries.get(0).getValue());
     }
     
     public void testGetMatchAncestors() throws Exception {

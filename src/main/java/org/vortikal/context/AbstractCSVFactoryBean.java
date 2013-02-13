@@ -54,7 +54,7 @@ public abstract class AbstractCSVFactoryBean extends AbstractFactoryBean {
                 return;
             }
             this.elements = TextUtils.parseCsv(csvList, ',', 
-                    this.trim ? TextUtils.TRIM | TextUtils.IGNORE_ILLEGAL_ESCAPE: TextUtils.IGNORE_ILLEGAL_ESCAPE);
+                    this.trim ? TextUtils.TRIM | TextUtils.IGNORE_INVALID_ESCAPE: TextUtils.IGNORE_INVALID_ESCAPE);
         } 
     }
 

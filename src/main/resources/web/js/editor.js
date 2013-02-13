@@ -1151,10 +1151,9 @@ function swapContentTmp(moveBtn, move) {
                             : curElm.prev();              
   var curElmInput = curElm.find("input");
   var movedElmInput = movedElm.find("input");
-  var val1 = curElmInput.val();
-  var val2 = movedElmInput.val();
-  curElmInput.val(val2);
-  movedElmInput.val(val1);
+  var tmp = curElmInput.val();
+  curElmInput.val(movedElmInput.val());
+  movedElmInput.val(tmp);
 }
 
 /* DEHANCE PART */
@@ -1397,10 +1396,9 @@ function swapContent(moveBtn, move) {
 }
 
 function swapElement(elemA, elemB) {
-  var elemAVal = elemA.val();
-  var elemBVal = elemB.val();
-  elemA.val(elemBVal);
-  elemB.val(elemAVal);
+  var tmp = elemA.val();
+  elemA.val(elemB.val());
+  elemB.val(tmp);
 }
     
 /* NOTE: can be used generally if boolean hasScrollAnim is turned on */
@@ -1888,10 +1886,9 @@ function wrapItemsLeftRight(items, leftItems, rightItems) {
 /* CK helper functions */
 
 function swapCK(ckInstanceNameA, ckInstanceNameB) {
-  var valA = getCkValue(ckInstanceNameA);
-  var valB = getCkValue(ckInstanceNameB);
-  setCkValue(ckInstanceNameA, valB);
-  setCkValue(ckInstanceNameB, valA);
+  var tmp = getCkValue(ckInstanceNameA);
+  setCkValue(ckInstanceNameA, getCkValue(ckInstanceNameB));
+  setCkValue(ckInstanceNameB, tmp);
 }
 
 function getCkValue(instanceName) {

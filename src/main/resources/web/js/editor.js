@@ -1571,15 +1571,7 @@ VrtxEditor.prototype.accordionGroupedCloseActiveHidden = function accordionGroup
 };
 
 function accordionJsonInit() {
-  // TODO: avoid this being hardcoded here
-  var syllabusItems = $("#editor.vrtx-syllabus #items");
-  wrapItemsLeftRight(syllabusItems.find(".vrtx-json-element"), ".author, .title, .year, .publisher, .isbn, .comment", ".linktext, .link, .bibsys, .fulltext, .articles");
-  syllabusItems.find(".author input, .title input").addClass("header-populators");
-  syllabusItems.find(".vrtx-html textarea").addClass("header-fallback-populator");
-        
-  var sharedTextItems = $("#editor.vrtx-shared-text #shared-text-box");
-  sharedTextItems.find(".title input").addClass("header-populators");
-  // ^ TODO: avoid this being hardcoded here
+  accordionContentSplitHeaderPopulators(true);
       
   // Because accordion needs one content wrapper
   for(var grouped = $(".vrtx-json-accordion .vrtx-json-element"), i = grouped.length; i--;) { 
@@ -1587,17 +1579,8 @@ function accordionJsonInit() {
     group.find("> *").wrapAll("<div />");
     accordionJsonUpdateHeader(group);
   }
-  $(".vrtx-json-accordion .fieldset").accordion({ header: "> div > .header",
-                                                  autoHeight: false,
-                                                  collapsible: true,
-                                                  active: false,
-                                                  change: function(e, ui) {
-                                                    accordionJsonUpdateHeader(ui.oldHeader);
-                                                    if(ACCORDION_MOVE_TO_AFTER_CHANGE) {
-                                                      scrollToElm(ACCORDION_MOVE_TO_AFTER_CHANGE);
-                                                    }
-                                                  }  
-                                                });
+  
+  accordionJsonRefresh($(".vrtx-json-accordion .fieldset"), false);
 }
 
 function accordionJsonNew(accordionWrapper) {
@@ -1606,19 +1589,24 @@ function accordionJsonNew(accordionWrapper) {
   group.find("> *").wrapAll("<div />");
   group.prepend('<div class="header">' + (vrtxAdmin.lang !== "en" ? "Inget innhold" : "No content") + '</div>');
           
-  // TODO: avoid this being hardcoded here
-  var lastSyllabusItem = $("#editor.vrtx-syllabus #items .vrtx-json-element:last");
-  wrapItemsLeftRight(lastSyllabusItem, ".author, .title, .year, .publisher, .isbn, .comment", ".linktext, .link, .bibsys, .fulltext, .articles");
-  lastSyllabusItem.find(".author input, .title input").addClass("header-populators");
-  lastSyllabusItem.find(".vrtx-html textarea").addClass("header-fallback-populator");
-          
-  var lastSharedTextItem = $("#editor.vrtx-shared-text #shared-text-box .vrtx-json-element:last");
-  lastSharedTextItem.find(".title input").addClass("header-populators");
-  // ^ TODO: avoid this being hardcoded here
-          
+  accordionContentSplitHeaderPopulators(false); 
   accordionJsonRefresh(accordionContent, false);
 }
 
+// XXX: avoid hardcoded enhanced fields
+function accordionContentSplitHeaderPopulators(init) {
+  var syllabusItems = $("#editor.vrtx-syllabus #items .vrtx-json-element");
+  var sharedTextItems = $("#editor.vrtx-shared-text #shared-text-box .vrtx-json-element");
+  if(!init) {
+    syllabusItems = syllabusItems.filter(":last");
+    sharedTextItems = sharedTextItems.filter(":last");
+  }
+  wrapItemsLeftRight(syllabusItems, ".author, .title, .year, .publisher, .isbn, .comment", ".linktext, .link, .bibsys, .fulltext, .articles");
+  syllabusItems.find(".author input, .title input").addClass("header-populators");
+  syllabusItems.find(".vrtx-html textarea").addClass("header-fallback-populator");
+  sharedTextItems.find(".title input").addClass("header-populators");
+}
+	
 function accordionJsonRefresh(elem, active) {
   elem.accordion("destroy").accordion({
     header: "> div > .header",

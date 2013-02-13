@@ -82,7 +82,7 @@ function setDefaultEndDate(startDateElm, endDateElm) {
   }
 }
 
-
+// XXX: possible to refactor new sub-function
 function timeHelp(hh, mm) {
   var hhVal = hh.val();
   var mmVal = mm.val();
@@ -93,7 +93,6 @@ function timeHelp(hh, mm) {
     } else {
       newHhVal = (newHhVal > 23) ? "00" : newHhVal;
       newHhVal = ((newHhVal < 10 && !newHhVal.length) ? "0" : "") + newHhVal;
-      console.log(newHhVal);
     }
     var newMmVal = parseInt(mmVal, 10); // Correct minutes
     if(isNaN(newMmVal) || newMmVal < 0) {

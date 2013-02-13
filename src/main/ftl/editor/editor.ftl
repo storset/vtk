@@ -92,13 +92,13 @@
           }
         
           if(hasFeaturedArticles) {
-            loadMultipleInputFields("featured-articles", true, true);
+            enhanceMultipleInputFields("featured-articles", true, true);
           }   
           if(hasAggregation) {               
-            loadMultipleInputFields("aggregation", false, false);
+            enhanceMultipleInputFields("aggregation", false, false);
           } 
           if(hasManuallyApprove) {
-            loadMultipleInputFields("manually-approve-from", false, false);
+            enhanceMultipleInputFields("manually-approve-from", false, false);
             
             var manuallyApproveButton = $("#manually-approve-container-title");
             manuallyApproveButton.parent().find("> div:first-child").append(manuallyApproveButton.remove());

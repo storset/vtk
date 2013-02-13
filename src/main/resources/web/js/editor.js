@@ -1052,7 +1052,7 @@ function initMultipleInputFields() {
   });
 }
 
-function loadMultipleInputFields(name, isMovable, isBrowsable) { // TODO: simplify
+function enhanceMultipleInputFields(name, isMovable, isBrowsable) { // TODO: simplify
   var inputField = $("." + name + " input[type=text]");
   if(!inputField.length) return;
 

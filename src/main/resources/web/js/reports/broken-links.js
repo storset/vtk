@@ -30,10 +30,10 @@ vrtxAdmin._$(document).ready(function() {
 
      _$.when(vrtxEditor.multipleCommaSeperatedInputFieldDeferred).done(function() {
        if(_$(".report-filters-folders-exclude").length) {
-         loadMultipleInputFields("report-filters-folders-exclude", false, true);
+         enhanceMultipleInputFields("report-filters-folders-exclude", false, true);
        }   
        if(_$(".report-filters-folders-include").length) {     
-         loadMultipleInputFields("report-filters-folders-include", false, true);
+         enhanceMultipleInputFields("report-filters-folders-include", false, true);
        } 
      });
 

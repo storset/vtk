@@ -63,7 +63,6 @@ function VrtxEditor() {
     this.needToConfirm = true;
     
     this.multipleCommaSeperatedInputFieldCounter = [];
-    this.multipleCommaSeperatedInputFieldLength = [];
     this.multipleCommaSeperatedInputFieldTemplates = [];
     this.multipleCommaSeperatedInputFieldDeferred = null;
   
@@ -1061,7 +1060,6 @@ function loadMultipleInputFields(name, isMovable, isBrowsable) { // TODO: simpli
   var formFields = inputFieldVal.split(",");
 
   vrtxEditor.multipleCommaSeperatedInputFieldCounter[name] = 1; // 1-index
-  vrtxEditor.multipleCommaSeperatedInputFieldLength[name] = formFields.length;
 
   var size = inputField.attr("size");
 
@@ -1082,25 +1080,27 @@ function loadMultipleInputFields(name, isMovable, isBrowsable) { // TODO: simpli
   inputFieldParent.removeClass("vrtx-textfield").append(vrtxEditor.mustacheFacade.getMultipleInputFieldsAddButton(name, size, isBrowsable, isMovable, isDropdown));
     
   var addFormFieldFunc = addFormField, html = ""; /* ENHANCE PART */
-  for (var i = 0; i < vrtxEditor.multipleCommaSeperatedInputFieldLength[name]; i++) {
-    html += addFormFieldFunc(name, $.trim(formFields[i]), size, isBrowsable, true, isMovable, isDropdown);
+  for (var i = 0, len = formFields.length; i < len; i++) {
+    html += addFormFieldFunc(name, len, $.trim(formFields[i]), size, isBrowsable, isMovable, isDropdown, true);
   }
   $(html).insertBefore("#vrtx-" + name + "-add");
       
   autocompleteUsernames(".vrtx-autocomplete-username");
 }
 
-function addFormField(name, value, size, isBrowsable, init, isMovable, isDropdown) {
-  var idstr = "vrtx-" + name + "-",
+function addFormField(name, len, value, size, isBrowsable, isMovable, isDropdown, init) {
+  var fields = $("." + name + " div.vrtx-multipleinputfield"),
+      idstr = "vrtx-" + name + "-",
       i = vrtxEditor.multipleCommaSeperatedInputFieldCounter[name],
+      len = !init ? fields.length : len;
       removeButton = "", moveUpButton = "", moveDownButton = "", browseButton = "";
 
   removeButton = vrtxEditor.mustacheFacade.getMultipleInputfieldsInteractionsButton("remove", " " + name, idstr, vrtxAdmin.multipleFormGroupingMessages.remove);
   if (isMovable) {
-    if (i > 1) {
+    if (i > 1 && len > 0) {
       moveUpButton = vrtxEditor.mustacheFacade.getMultipleInputfieldsInteractionsButton("moveup", "", idstr, "&uarr; " + vrtxAdmin.multipleFormGroupingMessages.moveUp);
     }
-    if (i < vrtxEditor.multipleCommaSeperatedInputFieldLength[name]) {
+    if (!init && i < len) {
       moveDownButton = vrtxEditor.mustacheFacade.getMultipleInputfieldsInteractionsButton("movedown", "", idstr, "&darr; " + vrtxAdmin.multipleFormGroupingMessages.moveDown);
     }
   }
@@ -1112,8 +1112,7 @@ function addFormField(name, value, size, isBrowsable, init, isMovable, isDropdow
   vrtxEditor.multipleCommaSeperatedInputFieldCounter[name]++;  
   
   if(!init) {
-    if(vrtxEditor.multipleCommaSeperatedInputFieldLength[name] > 0 && isMovable) {
-      var fields = $("." + name + " div.vrtx-multipleinputfield");
+    if(len > 0 && isMovable) {
       var last = fields.filter(":last");
       if(!last.find("button.movedown").length) {
         moveDownButton = vrtxEditor.mustacheFacade.getMultipleInputfieldsInteractionsButton("movedown", "", idstr, "&darr; " + vrtxAdmin.multipleFormGroupingMessages.moveDown);
@@ -1121,7 +1120,6 @@ function addFormField(name, value, size, isBrowsable, init, isMovable, isDropdow
       }
     }
     $(html).insertBefore("#vrtx-" + name + "-add");
-    vrtxEditor.multipleCommaSeperatedInputFieldLength[name]++;   
     autocompleteUsername(".vrtx-autocomplete-username", idstr + i);
   } else {
     return html;
@@ -1136,8 +1134,6 @@ function removeFormField(input) {
   var moveDownLast = fields.filter(":last").find("button.movedown");
   if(moveUpFirst.length) moveUpFirst.parent().remove();
   if(moveDownLast.length) moveDownLast.parent().remove();
-  vrtxEditor.multipleCommaSeperatedInputFieldLength[name]--;
-  vrtxEditor.multipleCommaSeperatedInputFieldCounter[name]--;
 }
 
 function swapContentTmp(moveBtn, move) {

@@ -143,7 +143,7 @@ public class SharedTextResolver {
 
             for (PropertyTypeDefinition propDef : propTypeDefs) {
                 if (propDef != null) {
-                    Map editHints = (Map) propDef.getMetadata().get("editingHints");
+                    Map editHints = (Map) propDef.getMetadata().get(PropertyTypeDefinition.METADATA_EDITING_HINTS);
                     if (editHints != null && "vrtx-shared-text".equals(editHints.get("class"))) {
                         sharedTextPropsMap.put(propDef.getName(),
                                 getSharedTextValues(r.getResourceType(), propDef.getName()));

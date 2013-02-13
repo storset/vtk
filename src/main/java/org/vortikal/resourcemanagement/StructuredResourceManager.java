@@ -298,7 +298,7 @@ public class StructuredResourceManager {
                         }
                     }
                 }
-                def.addMetadata("editingHints", editHints);
+                def.addMetadata(PropertyTypeDefinition.METADATA_EDITING_HINTS, editHints);
             }
 
             String defaultValue = spd.getDefaultValue();

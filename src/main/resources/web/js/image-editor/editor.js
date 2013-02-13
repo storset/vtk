@@ -184,8 +184,8 @@ VrtxImageEditor.prototype.init = function init(imageURL, imageSupported) {
     });
 
     $("#app-content").on("change", "#resource-width, #resource-height", function (e) {
-      var w = parseInt($.trim($("#resource-width").val()));
-      var h = parseInt($.trim($("#resource-height").val()));
+      var w = parseInt($.trim($("#resource-width").val()), 10);
+      var h = parseInt($.trim($("#resource-height").val()), 10);
       if (!isNaN(w) && !isNaN(h) && ((w / editor.cropWidth) <= 1)) {
         if (w !== editor.rw) {
           if (editor.keepAspectRatio) {
@@ -210,7 +210,7 @@ VrtxImageEditor.prototype.init = function init(imageURL, imageSupported) {
     $("#app-content").on("keydown", "#resource-width, #resource-height", function (e) {
       if (e.which == 38 || e.which == 40) {
         var isWidth = $(this).attr("id") == "resource-width";
-        var x = parseInt($.trim($(this).val()));
+        var x = parseInt($.trim($(this).val()), 10);
         if (e.which == 38) {
           x++;
         } else {

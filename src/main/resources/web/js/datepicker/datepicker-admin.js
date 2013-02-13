@@ -82,25 +82,12 @@ function setDefaultEndDate(startDateElm, endDateElm) {
   }
 }
 
-// XXX: possible to refactor new sub-function
 function timeHelp(hh, mm) {
   var hhVal = hh.val();
   var mmVal = mm.val();
   if(hhVal.length || mmVal.length) {
-    var newHhVal = parseInt(hhVal, 10); // Correct hours
-    if(isNaN(newHhVal) || newHhVal < 0) {
-      newHhVal = "00";
-    } else {
-      newHhVal = (newHhVal > 23) ? "00" : newHhVal;
-      newHhVal = ((newHhVal < 10 && !newHhVal.length) ? "0" : "") + newHhVal;
-    }
-    var newMmVal = parseInt(mmVal, 10); // Correct minutes
-    if(isNaN(newMmVal) || newMmVal < 0) {
-      newMmVal = "00";
-    } else {
-      newMmVal = (newMmVal > 59) ? "00" : newMmVal;
-      newMmVal = ((newMmVal < 10 && !newMmVal.length) ? "0" : "") + newMmVal;
-    }
+    var newHhVal = timeHelp2(hhVal, 23);
+    var newMmVal = timeHelp2(mmVal, 59);
     if((newHhVal == "00" || newHhVal == "0") && (newMmVal == "00" || newMmVal == "0")) { // If all zeroes => remove time
       hh.val("");
       mm.val("");
@@ -109,6 +96,17 @@ function timeHelp(hh, mm) {
       if(mmVal != newMmVal) mm.val(newMmVal);
     }
   }
+}
+
+function timeHelp2(val, max) { /* XXX: better name */
+  var newVal = parseInt(val, 10);
+  if(isNaN(newVal) || newVal < 0) {
+    newVal = "00";
+  } else {
+    newVal = (newVal > max) ? "00" : newVal;
+    newVal = ((newVal < 10 && !newVal.length) ? "0" : "") + newVal;
+  }
+  return newVal;
 }
 
 function extractHoursFromDate(datetime) {

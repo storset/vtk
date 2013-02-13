@@ -62,8 +62,6 @@ function VrtxEditor() {
     /** Initial state for the need to confirm navigation away from editor */
     this.needToConfirm = true;
     
-    /* TODO: Need some rewrite of data structure to use 1 instead of 3 variables */
-    this.multipleCommaSeperatedInputFieldNames = [];
     this.multipleCommaSeperatedInputFieldCounter = [];
     this.multipleCommaSeperatedInputFieldLength = [];
     this.multipleCommaSeperatedInputFieldTemplates = [];
@@ -1064,7 +1062,6 @@ function loadMultipleInputFields(name, isMovable, isBrowsable) { // TODO: simpli
 
   vrtxEditor.multipleCommaSeperatedInputFieldCounter[name] = 1; // 1-index
   vrtxEditor.multipleCommaSeperatedInputFieldLength[name] = formFields.length;
-  vrtxEditor.multipleCommaSeperatedInputFieldNames.push(name);
 
   var size = inputField.attr("size");
 
@@ -1156,12 +1153,12 @@ function swapContentTmp(moveBtn, move) {
 
 /* DEHANCE PART */
 function saveMultipleInputFields() {
-  for(var i = 0, len = vrtxEditor.multipleCommaSeperatedInputFieldNames.length; i < len; i++){
-    var name = vrtxEditor.multipleCommaSeperatedInputFieldNames[i];
-    var multipleFields = $("." + name);
-    var multipleInput = multipleFields.find("input").filter(":hidden");
+  var multipleFields = $(".vrtx-multipleinputfields");
+  for(var i = 0, len = multipleFields.length; i < len; i++){
+	var multiple = $(multipleFields[i]);
+    var multipleInput = multiple.find("input").filter(":hidden");
     if (!multipleInput.length) continue;
-    var multipleInputFields = multipleFields.find(".vrtx-multipleinputfield");
+    var multipleInputFields = multiple.find(".vrtx-multipleinputfield");
     if(!multipleInputFields.length) {
       multipleInput.val("");
       continue;

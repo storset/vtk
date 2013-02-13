@@ -86,7 +86,7 @@
         
           initMultipleInputFields();
           
-          $.when(vrtxEditor.multipleFieldBoxesDeferred).done(function() {
+          $.when(vrtxEditor.multipleFieldsBoxesDeferred).done(function() {
             MULTIPLE_INPUT_FIELD_INITIALIZED = $.Deferred();
         
             enhanceMultipleInputFields("featured-articles", true, true);  

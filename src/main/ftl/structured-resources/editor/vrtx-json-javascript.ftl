@@ -15,7 +15,7 @@
     
     $(document).ready(function() {
       // Retrieve HTML templates
-      getFieldsBoxesTemplates();
+      getMultipleFieldsBoxesTemplates();
       
       // Build JSON elements
       vrtxEditor.multipleBoxesTemplatesContractBuilt = $.Deferred();

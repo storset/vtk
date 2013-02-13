@@ -19,7 +19,7 @@
         
         initMultipleInputFields();
         
-        $.when(vrtxEditor.multipleFieldBoxesDeferred).done(function() {
+        $.when(vrtxEditor.multipleFieldsBoxesDeferred).done(function() {
           <#list scripts as script>
             <#if script.type == 'MULTIPLEINPUTFIELDS' >
               enhanceMultipleInputFields('${script.name}', true, false);

@@ -62,12 +62,15 @@
       if(!ok) return false; 
       saveDateAndTimeFields(); // js/datepicker/datepicker-admin.js
       saveMultipleInputFields();
+      
+      /* Trim box URLs */
       var boxUrlTextFields = vrtxAdmin._$(".boxUrlText input");
       var i = boxUrlTextFields.length;
       while(i--) {
         var boxUrlTextField = vrtxAdmin._$(boxUrlTextFields[i]);
         boxUrlTextField.val(vrtxAdmin._$.trim(boxUrlTextField.val()));
       }
+      
       vrtxEditor.needToConfirm = false;
       
       return true;

@@ -28,7 +28,7 @@ vrtxAdmin._$(document).ready(function() {
      
      initMultipleInputFields();
 
-     _$.when(vrtxEditor.multipleFieldBoxesDeferred).done(function() {
+     _$.when(vrtxEditor.multipleFieldsBoxesDeferred).done(function() {
        if(_$(".report-filters-folders-exclude").length) {
          enhanceMultipleInputFields("report-filters-folders-exclude", false, true);
        }   

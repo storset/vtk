@@ -1593,20 +1593,6 @@ function accordionJsonNew(accordionWrapper) {
   accordionJsonRefresh(accordionContent, false);
 }
 
-// XXX: avoid hardcoded enhanced fields
-function accordionContentSplitHeaderPopulators(init) {
-  var syllabusItems = $("#editor.vrtx-syllabus #items .vrtx-json-element");
-  var sharedTextItems = $("#editor.vrtx-shared-text #shared-text-box .vrtx-json-element");
-  if(!init) {
-    syllabusItems = syllabusItems.filter(":last");
-    sharedTextItems = sharedTextItems.filter(":last");
-  }
-  wrapItemsLeftRight(syllabusItems, ".author, .title, .year, .publisher, .isbn, .comment", ".linktext, .link, .bibsys, .fulltext, .articles");
-  syllabusItems.find(".author input, .title input").addClass("header-populators");
-  syllabusItems.find(".vrtx-html textarea").addClass("header-fallback-populator");
-  sharedTextItems.find(".title input").addClass("header-populators");
-}
-	
 function accordionJsonRefresh(elem, active) {
   elem.accordion("destroy").accordion({
     header: "> div > .header",
@@ -1620,6 +1606,20 @@ function accordionJsonRefresh(elem, active) {
       }
     }
   });
+}
+
+// XXX: avoid hardcoded enhanced fields
+function accordionContentSplitHeaderPopulators(init) {
+  var syllabusItems = $("#editor.vrtx-syllabus #items .vrtx-json-element");
+  var sharedTextItems = $("#editor.vrtx-shared-text #shared-text-box .vrtx-json-element");
+  if(!init) {
+    syllabusItems = syllabusItems.filter(":last");
+    sharedTextItems = sharedTextItems.filter(":last");
+  }
+  wrapItemsLeftRight(syllabusItems, ".author, .title, .year, .publisher, .isbn, .comment", ".linktext, .link, .bibsys, .fulltext, .articles");
+  syllabusItems.find(".author input, .title input").addClass("header-populators");
+  syllabusItems.find(".vrtx-html textarea").addClass("header-fallback-populator");
+  sharedTextItems.find(".title input").addClass("header-populators");
 }
 
 function accordionJsonUpdateHeader(elem) {

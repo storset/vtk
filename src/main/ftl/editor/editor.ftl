@@ -77,36 +77,27 @@
           interceptEnterKey('#resource\\.tags');
         </#if>
         
-        // Multiple fields interaction
-        initMultipleInputFields();
+        // XXX: possible to avoid hard-coding of these? (as in new editor)
+        var hasFeaturedArticles = _$("#resource\\.featured-articles").length;
+        var hasAggregation = _$("#resource\\.aggregation").length;
+        var hasManuallyApprove = _$("#resource\\.manually-approve-from").length;
+        var hasMultipleInputFields = hasFeaturedArticles || hasAggregation || hasManuallyApprove;
+        if(hasMultipleInputFields) {
+          initMultipleInputFields();
         
-        // Load HTML/Mustache templates for multiple inputfields
-        $.when(vrtxEditor.multipleCommaSeperatedInputFieldDeferred).done(function() {
-          var hasFeaturedArticles = _$("#resource\\.featured-articles").length;
-          var hasAggregation = _$("#resource\\.aggregation").length;
-          var hasManuallyApprove = _$("#resource\\.manually-approve-from").length;
-          var hasMultipleInputFields = hasFeaturedArticles || hasAggregation || hasManuallyApprove;
-          
-          if(hasMultipleInputFields) {
+          // Load HTML/Mustache templates for multiple inputfields
+          $.when(vrtxEditor.multipleCommaSeperatedInputFieldDeferred).done(function() {
             MULTIPLE_INPUT_FIELD_INITIALIZED = $.Deferred();
-          }
         
-          if(hasFeaturedArticles) {
-            enhanceMultipleInputFields("featured-articles", true, true);
-          }   
-          if(hasAggregation) {               
+            enhanceMultipleInputFields("featured-articles", true, true);  
             enhanceMultipleInputFields("aggregation", false, false);
-          } 
-          if(hasManuallyApprove) {
             enhanceMultipleInputFields("manually-approve-from", false, false);
             
             var manuallyApproveButton = $("#manually-approve-container-title");
             manuallyApproveButton.parent().find("> div:first-child").append(manuallyApproveButton.remove());
-          }
-          if(hasMultipleInputFields) {
             MULTIPLE_INPUT_FIELD_INITIALIZED.resolve();
-          }
-        }); 
+          });
+        }
       }); 
 
       UNSAVED_CHANGES_CONFIRMATION = "<@vrtx.msg code='manage.unsavedChangesConfirmation' />";

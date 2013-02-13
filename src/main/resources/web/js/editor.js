@@ -62,6 +62,7 @@ function VrtxEditor() {
     /** Initial state for the need to confirm navigation away from editor */
     this.needToConfirm = true;
     
+    /* Make sure every new field and box have unique id's (important for CK-fields) */
     this.multipleFieldBoxesCounter = {};
     
     this.multipleCommaSeperatedInputFieldTemplates = [];

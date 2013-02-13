@@ -87,14 +87,15 @@ function timeHelp(hh, mm) {
   var hhVal = hh.val();
   var mmVal = mm.val();
   if(hhVal.length || mmVal.length) {
-    var newHhVal = parseInt(hhVal); // Correct hours
+    var newHhVal = parseInt(hhVal, 10); // Correct hours
     if(isNaN(newHhVal) || newHhVal < 0) {
       newHhVal = "00";
     } else {
       newHhVal = (newHhVal > 23) ? "00" : newHhVal;
       newHhVal = ((newHhVal < 10 && !newHhVal.length) ? "0" : "") + newHhVal;
+      console.log(newHhVal);
     }
-    var newMmVal = parseInt(mmVal); // Correct minutes
+    var newMmVal = parseInt(mmVal, 10); // Correct minutes
     if(isNaN(newMmVal) || newMmVal < 0) {
       newMmVal = "00";
     } else {

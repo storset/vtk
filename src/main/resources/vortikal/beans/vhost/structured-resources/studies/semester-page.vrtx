@@ -242,12 +242,12 @@ resourcetype semester-page {
                 [endif]
               </div>
             [else]
-              [if (link-box-one-title != null && link-box-one-title != "" && link-box-one-links != null) ||
-                  (link-box-two-title != null && link-box-two-title != "" && link-box-two-links != null) ||
-                  (link-box-three-title != null && link-box-three-title != "" && link-box-three-links != null) ||
-                  (link-box-four-title != null && link-box-four-title != "" && link-box-four-links != null) ||
-                  (link-box-five-title != null && link-box-five-title != "" && link-box-five-links != null) ||
-                  (link-box-six-title != null && link-box-six-title != "" && link-box-six-links != null)]
+              [if ((link-box-one-title != null && link-box-one-title != "") || link-box-one-links != null) ||
+                  ((link-box-two-title != null && link-box-two-title != "") || link-box-two-links != null) ||
+                  ((link-box-three-title != null && link-box-three-title != "") || link-box-three-links != null) ||
+                  ((link-box-four-title != null && link-box-four-title != "") || link-box-four-links != null) ||
+                  ((link-box-five-title != null && link-box-five-title != "") || link-box-five-links != null) ||
+                  ((link-box-six-title != null && link-box-six-title != "") || link-box-six-links != null)]
                 <div class="vrtx-frontpage-box white-box">
                   [call "comp:resource-links"{"title":"link-box-one-title"}]
                   [call "comp:resource-links"{"title":"link-box-two-title"}]
@@ -278,12 +278,12 @@ resourcetype semester-page {
                 [endif]
               </div>
             [else]
-              [if (link-box-one-title != null && link-box-one-title != "" && link-box-one-links != null) ||
-                  (link-box-two-title != null && link-box-two-title != "" && link-box-two-links != null) ||
-                  (link-box-three-title != null && link-box-three-title != "" && link-box-three-links != null) ||
-                  (link-box-four-title != null && link-box-four-title != "" && link-box-four-links != null) ||
-                  (link-box-five-title != null && link-box-five-title != "" && link-box-five-links != null) ||
-                  (link-box-six-title != null && link-box-six-title != "" && link-box-six-links != null)]
+              [if ((link-box-one-title != null && link-box-one-title != "") || link-box-one-links != null) ||
+                  ((link-box-two-title != null && link-box-two-title != "") || link-box-two-links != null) ||
+                  ((link-box-three-title != null && link-box-three-title != "") || link-box-three-links != null) ||
+                  ((link-box-four-title != null && link-box-four-title != "") || link-box-four-links != null) ||
+                  ((link-box-five-title != null && link-box-five-title != "") || link-box-five-links != null) ||
+                  ((link-box-six-title != null && link-box-six-title != "") || link-box-six-links != null)]
                 <div class="vrtx-frontpage-box white-box">
                   [call "comp:resource-links"{"title":"link-box-one-title"}]
                   [call "comp:resource-links"{"title":"link-box-two-title"}]

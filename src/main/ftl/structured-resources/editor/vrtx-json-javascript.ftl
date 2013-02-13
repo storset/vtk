@@ -10,36 +10,34 @@
         browseImagesNoPreview = '<@vrtx.msg code="editor.image.no-preview-text" />';
         requestLang = '<@vrtx.requestLanguage />';
    
-    var TEMPLATES = [];
-    var LIST_OF_JSON_ELEMENTS = [];
     var ACCORDION_MOVE_TO_AFTER_CHANGE = null;
     var JSON_ELEMENTS_INITIALIZED = $.Deferred();
     
     $(document).ready(function() {
       // Retrieve HTML templates
-      var templatesRetrieved = $.Deferred();
-      TEMPLATES = vrtxAdmin.retrieveHTMLTemplates("templates",
-                                                  ["string", "html", "radio", "dropdown", "date", "browse", "browse-images", "add-remove-move"],
-                                                   templatesRetrieved);
+      vrtxEditor.multipleBoxesDeferred = $.Deferred();
+      vrtxEditor.multipleBoxesTemplates = vrtxAdmin.retrieveHTMLTemplates("templates",
+                                          ["string", "html", "radio", "dropdown", "date", "browse", "browse-images", "add-remove-move"],
+                                          vrtxEditor.multipleBoxesDeferred);
       // Build JSON elements
-      var jsonElementsBuilt = $.Deferred();
+      vrtxEditor.multipleBoxesTemplatesContractBuilt = $.Deferred();
       <#assign i = 0 />
       <#list form.elements as elementBox>
         <#assign j = 0 />
         <#list elementBox.formElements as elem>
           <#if elem.description.type == "json" && elem.description.isMultiple()>
-            LIST_OF_JSON_ELEMENTS[${i}] = {};
-            LIST_OF_JSON_ELEMENTS[${i}].name = "${elem.name}";
-            LIST_OF_JSON_ELEMENTS[${i}].type = "${elem.description.type}";
-            LIST_OF_JSON_ELEMENTS[${i}].a = [];
+            vrtxEditor.multipleBoxesTemplatesContract[${i}] = {};
+            vrtxEditor.multipleBoxesTemplatesContract[${i}].name = "${elem.name}";
+            vrtxEditor.multipleBoxesTemplatesContract[${i}].type = "${elem.description.type}";
+            vrtxEditor.multipleBoxesTemplatesContract[${i}].a = [];
             
             <#list elem.description.attributes as jsonAttr>
-              LIST_OF_JSON_ELEMENTS[${i}].a[${j}] = {};
-              LIST_OF_JSON_ELEMENTS[${i}].a[${j}].name = "${jsonAttr.name}";
-              LIST_OF_JSON_ELEMENTS[${i}].a[${j}].type = "${jsonAttr.type}";
+              vrtxEditor.multipleBoxesTemplatesContract[${i}].a[${j}] = {};
+              vrtxEditor.multipleBoxesTemplatesContract[${i}].a[${j}].name = "${jsonAttr.name}";
+              vrtxEditor.multipleBoxesTemplatesContract[${i}].a[${j}].type = "${jsonAttr.type}";
               <#if jsonAttr.edithints?exists>
                 <#if jsonAttr.edithints['dropdown']?exists>
-                  LIST_OF_JSON_ELEMENTS[${i}].a[${j}].dropdown = true;
+                  vrtxEditor.multipleBoxesTemplatesContract[${i}].a[${j}].dropdown = true;
                 </#if>
               </#if>
               <#if jsonAttr.getValuemap(locale)?exists >
@@ -54,9 +52,9 @@
                   valuemap[${k}] = "${optionKey}$${valuemap[key]}";
                   <#assign k = k + 1 />
                 </#list>
-                LIST_OF_JSON_ELEMENTS[${i}].a[${j}].valuemap = valuemap;
+                vrtxEditor.multipleBoxesTemplatesContract[${i}].a[${j}].valuemap = valuemap;
               </#if>
-              LIST_OF_JSON_ELEMENTS[${i}].a[${j}].title = "${form.resource.getLocalizedMsg(jsonAttr.name, locale, null)}";
+              vrtxEditor.multipleBoxesTemplatesContract[${i}].a[${j}].title = "${form.resource.getLocalizedMsg(jsonAttr.name, locale, null)}";
               <#assign j = j + 1 />
             </#list>
             <#assign i = i + 1 />
@@ -64,9 +62,9 @@
         </#list>
       </#list>
 
-      jsonElementsBuilt.resolve();
+      vrtxEditor.multipleBoxesTemplatesContractBuilt.resolve();
       
-      initJsonMovableElements(templatesRetrieved, jsonElementsBuilt);
+      initJsonMovableElements();
       
     });
   // -->

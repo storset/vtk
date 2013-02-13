@@ -67,6 +67,11 @@ function VrtxEditor() {
     
     this.multipleCommaSeperatedInputFieldTemplates = [];
     this.multipleCommaSeperatedInputFieldDeferred = null;
+    
+    this.multipleBoxesTemplates = [];
+    this.multipleBoxesDeferred = null;
+    this.multipleBoxesTemplatesContract = [];
+    this.multipleBoxesTemplatesContractBuilt = null;
   
     /** Check if this script is in admin or not */                      
     this.isInAdmin = typeof vrtxAdmin !== "undefined";
@@ -1173,10 +1178,10 @@ function saveMultipleInputFields() {
 }
 
 /* Multiple JSON boxes */
-function initJsonMovableElements(templatesRetrieved, jsonElementsBuilt) {
-  $.when(templatesRetrieved, jsonElementsBuilt).done(function() {
-    for (var i = 0, len = LIST_OF_JSON_ELEMENTS.length; i < len; i++) {
-      var jsonName = LIST_OF_JSON_ELEMENTS[i].name;
+function initJsonMovableElements() {
+  $.when(vrtxEditor.multipleBoxesDeferred, vrtxEditor.multipleBoxesTemplatesContractBuilt).done(function() {
+    for (var i = 0, len = vrtxEditor.multipleBoxesTemplatesContract.length; i < len; i++) {
+      var jsonName = vrtxEditor.multipleBoxesTemplatesContract[i].name;
       var jsonElm = $("#" + jsonName);
       jsonElm.append(vrtxEditor.mustacheFacade.getJsonBoxesInteractionsButton("add", vrtxAdmin.multipleFormGroupingMessages.add))
               .find(".vrtx-add-button").data({'number': i});
@@ -1213,7 +1218,7 @@ function initJsonMovableElements(templatesRetrieved, jsonElementsBuilt) {
 function addJsonField(btn) {
   var jsonParent = btn.closest(".vrtx-json");
   var numOfElements = jsonParent.find(".vrtx-json-element").length;
-  var j = LIST_OF_JSON_ELEMENTS[parseInt(btn.data('number'), 10)];
+  var j = vrtxEditor.multipleBoxesTemplatesContract[parseInt(btn.data('number'), 10)];
   var htmlTemplate = "";
   var inputFieldName = "";
 
@@ -1336,7 +1341,7 @@ function swapContent(moveBtn, move) {
   var curCounter = curElm.find("input.id").val();
   var moveToCounter = movedElm.find("input.id").val();
   
-  var j = LIST_OF_JSON_ELEMENTS[parseInt(curElm.closest(".vrtx-json").find(".vrtx-add-button").data('number'), 10)];
+  var j = vrtxEditor.multipleBoxesTemplatesContract[parseInt(curElm.closest(".vrtx-json").find(".vrtx-add-button").data('number'), 10)];
   var types = j.a;
   var swapElementFn = swapElement, swapCKFn = swapCK;
   for (var i = 0, len = types.length; i < len; i++) {
@@ -1428,7 +1433,7 @@ VrtxEditor.prototype.mustacheFacade = {
 	                  isDropdown: isDropdown, buttonText: vrtxAdmin.multipleFormGroupingMessages.add });
   },
   getJsonBoxesInteractionsButton: function(clazz, text) {
-    return $.mustache(TEMPLATES["add-remove-move"], { clazz: clazz, buttonText: text });	
+    return $.mustache(vrtxEditor.multipleBoxesTemplates["add-remove-move"], { clazz: clazz, buttonText: text });	
   },
   /* 
    * Type / fields 
@@ -1454,9 +1459,9 @@ VrtxEditor.prototype.mustacheFacade = {
     if (elem.dropdown && elem.valuemap) {
       return this.getDropdown(elem, inputFieldName);
     } else {        
-      return $.mustache(TEMPLATES["string"], { classes: "vrtx-string" + " " + elem.name,
-                                               elemTitle: elem.title,
-                                               inputFieldName: inputFieldName });
+      return $.mustache(vrtxEditor.multipleBoxesTemplates["string"], { classes: "vrtx-string" + " " + elem.name,
+                                                                       elemTitle: elem.title,
+                                                                       inputFieldName: inputFieldName });
     }
   }, 
   getSimpleHtmlField: function(elem, inputFieldName) {
@@ -1464,13 +1469,13 @@ VrtxEditor.prototype.mustacheFacade = {
   },
   getHtmlField: function(elem, inputFieldName, htmlType) {
     if(typeof htmlType === "undefined") htmlType = "vrtx-html";
-    return $.mustache(TEMPLATES["html"], { classes: htmlType + " " + elem.name,
-                                           elemTitle: elem.title,
-                                           inputFieldName: inputFieldName }); 
+    return $.mustache(vrtxEditor.multipleBoxesTemplates["html"], { classes: htmlType + " " + elem.name,
+                                                                   elemTitle: elem.title,
+                                                                   inputFieldName: inputFieldName }); 
   },
   getBooleanField: function(elem, inputFieldName) {
-    return $.mustache(TEMPLATES["radio"], { elemTitle: elem.title,
-                                            inputFieldName: inputFieldName }); 
+    return $.mustache(vrtxEditor.multipleBoxesTemplates["radio"], { elemTitle: elem.title,
+                                                                    inputFieldName: inputFieldName }); 
   },
   getDropdown: function(elem, inputFieldName) {
     var htmlOpts = [];
@@ -1479,14 +1484,14 @@ VrtxEditor.prototype.mustacheFacade = {
       var keyValuePairSplit = keyValuePair.split("$");
       htmlOpts.push({key: keyValuePairSplit[0], value: keyValuePairSplit[1]});
     }
-    return $.mustache(TEMPLATES["dropdown"], { classes: "vrtx-string" + " " + elem.name,
-                                               elemTitle: elem.title,
-                                               inputFieldName: inputFieldName,
-                                               options: htmlOpts });  
+    return $.mustache(vrtxEditor.multipleBoxesTemplates["dropdown"], { classes: "vrtx-string" + " " + elem.name,
+                                                                       elemTitle: elem.title,
+                                                                       inputFieldName: inputFieldName,
+                                                                       options: htmlOpts });  
   },
   getDatetimeField: function(elem, inputFieldName) {
-    return $.mustache(TEMPLATES["date"], { elemTitle: elem.title,
-                                           inputFieldName: inputFieldName }); 
+    return $.mustache(vrtxEditor.multipleBoxesTemplates["date"], { elemTitle: elem.title,
+                                                                   inputFieldName: inputFieldName }); 
   },
   getImageRefField: function(elem, inputFieldName) {
     return this.getBrowseField(elem, inputFieldName, "browse-images", "vrtx-image-ref", "", 30, { previewTitle: browseImagesPreview,
@@ -1511,7 +1516,7 @@ VrtxEditor.prototype.mustacheFacade = {
     for (var key in extraConfig) { // Copy in extra config
       config[key] = extraConfig[key];
     }
-    return $.mustache(TEMPLATES[templateName], config); 
+    return $.mustache(vrtxEditor.multipleBoxesTemplates[templateName], config); 
   }
 };
 

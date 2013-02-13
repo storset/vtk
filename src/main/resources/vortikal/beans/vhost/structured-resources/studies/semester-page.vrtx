@@ -106,33 +106,33 @@ resourcetype semester-page {
       ##
       [def link-box-title resource-prop(".", title)]
       [if link-box-title != null && link-box-title != ""]
-        [def document structured-document()]
-        [def links null]
-        [if title = "link-box-one-title"]
-          [def links document.properties.link-box-one-links]
-        [elseif title = "link-box-two-title"]
-          [def links document.properties.link-box-two-links]
-        [elseif title = "link-box-three-title"]
-          [def links document.properties.link-box-three-links]
-        [elseif title = "link-box-four-title"]
-          [def links document.properties.link-box-four-links]
-        [elseif title = "link-box-five-title"]
-          [def links document.properties.link-box-five-links]
-        [elseif title = "link-box-six-title"]
-          [def links document.properties.link-box-six-links]
-        [endif]
-        [if links != null]
-          <h2>[val link-box-title]</h2>
-          [list links link]
-            <ul>
-              [if link.link != null && link.link != "" && link.linktitle != null && link.linktitle != ""]
-                <li>
-                  <a href="[val link.link]">[val link.linktitle]</a>
-                </li>
-              [endif]
-            </ul>
-          [endlist]
-        [endif]
+        <h2>[val link-box-title]</h2>
+      [endif]
+      [def document structured-document()]
+      [def links null]
+      [if title = "link-box-one-title"]
+        [def links document.properties.link-box-one-links]
+      [elseif title = "link-box-two-title"]
+        [def links document.properties.link-box-two-links]
+      [elseif title = "link-box-three-title"]
+        [def links document.properties.link-box-three-links]
+      [elseif title = "link-box-four-title"]
+        [def links document.properties.link-box-four-links]
+      [elseif title = "link-box-five-title"]
+        [def links document.properties.link-box-five-links]
+      [elseif title = "link-box-six-title"]
+        [def links document.properties.link-box-six-links]
+      [endif]
+      [if links != null]
+        [list links link]
+          <ul>
+            [if link.link != null && link.link != "" && link.linktitle != null && link.linktitle != ""]
+              <li>
+                <a href="[val link.link]">[val link.linktitle]</a>
+              </li>
+            [endif]
+          </ul>
+        [endlist]
       [endif]
       ##
     }
@@ -180,6 +180,34 @@ resourcetype semester-page {
         [def messagelisting resource(messagelisting-uri)]
       [endif]
     [endif]
+
+    [def resourceLinkCount 0]
+    [def props #({"prop": "link-box-one-links"}, {"prop" : "link-box-two-links"}, {"prop" : "link-box-three-links"}, {"prop" : "link-box-four-links"}, {"prop" : "link-box-five-links"}, {"prop" : "link-box-six-links"})]
+    [list props box]
+      [def document structured-document()]
+      [def links null]
+      [if box.prop = "link-box-one-links"]
+        [def links document.properties.link-box-one-links]
+      [elseif box.prop = "link-box-two-links"]
+        [def links document.properties.link-box-two-links]
+      [elseif box.prop = "link-box-three-links"]
+        [def links document.properties.link-box-three-links]
+      [elseif box.prop = "link-box-four-links"]
+        [def links document.properties.link-box-four-links]
+      [elseif box.prop = "link-box-five-links"]
+        [def links document.properties.link-box-five-links]
+      [elseif box.prop = "link-box-six-links"]
+        [def links document.properties.link-box-six-links]
+      [endif]
+      [if links != null]
+        [list links link]
+          [if link.link != null && link.link != "" && link.linktitle != null && link.linktitle != ""]
+            [def resourceLinkCount resourceLinkCount + 1]
+          [endif]
+        [endlist]
+      [endif]
+    [endlist]
+
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml">
       <head>
@@ -198,15 +226,6 @@ resourcetype semester-page {
                 <p>[localized 'cloned-course-from'] [call "include:ref" {"id" : cloned-course-code, "referencetype" : "emne"}].</p>
               </div>
             [endif]
-            [if messages-placement != null && messages-placement = "middle"]
-              <div class="vrtx-frontpage-box white-box">
-                [if max-number-of-messages != null && max-number-of-messages != ""]
-                  [call "include:messages" {"uri" : messagelisting-uri, "max-number-of-messages" : max-number-of-messages}]
-                [else]
-                  [call "include:messages" {"uri" : messagelisting-uri, "max-number-of-messages" : "3"}]
-                [endif]
-              </div>
-            [endif]
             [if fronter != null && fronter]
               <div class="vrtx-frontpage-box white-box">
                 <h2>[localized 'fronter']</h2>
@@ -214,20 +233,30 @@ resourcetype semester-page {
                 <a href="https://fronter.uio.no/" class="button"><span>[localized 'log-into-fronter']</span></a>
               </div>
             [endif]
-            [if (link-box-one-title != null && link-box-one-title != "" && link-box-one-links != null) ||
-                (link-box-two-title != null && link-box-two-title != "" && link-box-two-links != null) ||
-                (link-box-three-title != null && link-box-three-title != "" && link-box-three-links != null) ||
-                (link-box-four-title != null && link-box-four-title != "" && link-box-four-links != null) ||
-                (link-box-five-title != null && link-box-five-title != "" && link-box-five-links != null) ||
-                (link-box-six-title != null && link-box-six-title != "" && link-box-six-links != null)]
+            [if messages-placement != null && (messages-placement = "middle" || (messages-placement = "auto" && resourceLinkCount < 5))]
               <div class="vrtx-frontpage-box white-box">
-                [call "comp:resource-links"{"title":"link-box-one-title"}]
-                [call "comp:resource-links"{"title":"link-box-two-title"}]
-                [call "comp:resource-links"{"title":"link-box-three-title"}]
-                [call "comp:resource-links"{"title":"link-box-four-title"}]
-                [call "comp:resource-links"{"title":"link-box-five-title"}]
-                [call "comp:resource-links"{"title":"link-box-six-title"}]
+                [if max-number-of-messages != null && max-number-of-messages != ""]
+                  [call "include:messages" {"uri" : messagelisting-uri, "max-number-of-messages" : max-number-of-messages}]
+                [else]
+                  [call "include:messages" {"uri" : messagelisting-uri, "max-number-of-messages" : "3"}]
+                [endif]
               </div>
+            [else]
+              [if (link-box-one-title != null && link-box-one-title != "" && link-box-one-links != null) ||
+                  (link-box-two-title != null && link-box-two-title != "" && link-box-two-links != null) ||
+                  (link-box-three-title != null && link-box-three-title != "" && link-box-three-links != null) ||
+                  (link-box-four-title != null && link-box-four-title != "" && link-box-four-links != null) ||
+                  (link-box-five-title != null && link-box-five-title != "" && link-box-five-links != null) ||
+                  (link-box-six-title != null && link-box-six-title != "" && link-box-six-links != null)]
+                <div class="vrtx-frontpage-box white-box">
+                  [call "comp:resource-links"{"title":"link-box-one-title"}]
+                  [call "comp:resource-links"{"title":"link-box-two-title"}]
+                  [call "comp:resource-links"{"title":"link-box-three-title"}]
+                  [call "comp:resource-links"{"title":"link-box-four-title"}]
+                  [call "comp:resource-links"{"title":"link-box-five-title"}]
+                  [call "comp:resource-links"{"title":"link-box-six-title"}]
+                </div>
+              [endif]
             [endif]
           </div>
           <div id="vrtx-additional-content">
@@ -240,7 +269,7 @@ resourcetype semester-page {
               <h2>[localized 'studinfo-kontakt']</h2>
               [call "include:shared-text" {"docType":"studinfo-kontakt", "propName":"studinfo-kontakt"}]
             </div>
-            [if messages-placement = null || messages-placement = "right"]
+            [if messages-placement = null || (messages-placement = "right" || (messages-placement = "auto" && resourceLinkCount > 4))]
               <div class="vrtx-frontpage-box white-box">
                 [if max-number-of-messages != null && max-number-of-messages != ""]
                   [call "include:messages" {"uri" : messagelisting-uri, "compact-view" : "true", "max-number-of-messages" : max-number-of-messages}]
@@ -248,6 +277,22 @@ resourcetype semester-page {
                   [call "include:messages" {"uri" : messagelisting-uri, "compact-view" : "true", "max-number-of-messages" : "3"}]
                 [endif]
               </div>
+            [else]
+              [if (link-box-one-title != null && link-box-one-title != "" && link-box-one-links != null) ||
+                  (link-box-two-title != null && link-box-two-title != "" && link-box-two-links != null) ||
+                  (link-box-three-title != null && link-box-three-title != "" && link-box-three-links != null) ||
+                  (link-box-four-title != null && link-box-four-title != "" && link-box-four-links != null) ||
+                  (link-box-five-title != null && link-box-five-title != "" && link-box-five-links != null) ||
+                  (link-box-six-title != null && link-box-six-title != "" && link-box-six-links != null)]
+                <div class="vrtx-frontpage-box white-box">
+                  [call "comp:resource-links"{"title":"link-box-one-title"}]
+                  [call "comp:resource-links"{"title":"link-box-two-title"}]
+                  [call "comp:resource-links"{"title":"link-box-three-title"}]
+                  [call "comp:resource-links"{"title":"link-box-four-title"}]
+                  [call "comp:resource-links"{"title":"link-box-five-title"}]
+                  [call "comp:resource-links"{"title":"link-box-six-title"}]
+                </div>
+              [endif]
             [endif]
           </div>
         </div>
@@ -258,9 +303,9 @@ resourcetype semester-page {
   
   vocabulary {
     messages-placement {
-      en : ("middle" = "Show in middle", "right" = "Show in right column"),
-      no : ("middle" = "Vis i midten", "right" = "Vis i høyrespalten"),
-      nn : ("middle" = "Vis i midten", "right" = "Vis i høyrespalten")
+      en : ("auto" = "Automatic", "middle" = "Show in middle", "right" = "Show in right column"),
+      no : ("auto" = "Automatisk", "middle" = "Vis i midten", "right" = "Vis i høyrespalten"),
+      nn : ("auto" = "Automatisk", "middle" = "Vis i midten", "right" = "Vis i høyrespalten")
     },
     max-number-of-messages {
       en : (range = "1..20"),

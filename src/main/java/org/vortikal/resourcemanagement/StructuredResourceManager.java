@@ -32,8 +32,10 @@ package org.vortikal.resourcemanagement;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -290,11 +292,17 @@ public class StructuredResourceManager {
 
             List<EditRule> editRules = resourceDescription.getEditRules();
             if (editRules != null && editRules.size() > 0) {
-                Map<String, String> editHints = new HashMap<String, String>();
+                Map<String, Set<String>> editHints = new HashMap<String, Set<String>>();
                 for (EditRule editRule : editRules) {
                     if (EditRuleType.EDITHINT.equals(editRule.getType())) {
                         if (editRule.getName().equals(propertyDescription.getName())) {
-                            editHints.put(editRule.getEditHintKey(), editRule.getEditHintValue());
+                            String key = editRule.getEditHintKey();
+                            Set<String> values = editHints.get(key);
+                            if (values == null) {
+                                values = new HashSet<String>();
+                                editHints.put(key, values);
+                            }
+                            values.add(editRule.getEditHintValue());
                         }
                     }
                 }

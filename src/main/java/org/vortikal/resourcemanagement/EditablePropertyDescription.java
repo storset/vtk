@@ -31,21 +31,41 @@
 package org.vortikal.resourcemanagement;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public abstract class EditablePropertyDescription extends PropertyDescription {
 
-    private Map<String, Object> edithints;
+    private Map<String, Set<Object>> edithints;
 
-    public Map<String, Object> getEdithints() {
+    public Map<String, Set<Object>> getEdithints() {
         return edithints;
     }
 
-    public void addEdithint(String key, Object value) {
-        if (edithints == null) {
-            edithints = new HashMap<String, Object>();
+    public Object getEdithint(String key) {
+        if (edithints != null) {
+            Set<Object> hints = edithints.get(key);
+            return hints != null ? hints.iterator().next() : null;
         }
-        edithints.put(key, value);
+        return null;
+    }
+
+    public void addEdithint(String key, Object value) {
+
+        Set<Object> hints = null;
+        if (edithints == null) {
+            edithints = new HashMap<String, Set<Object>>();
+            hints = new HashSet<Object>();
+        } else {
+            hints = edithints.get(key);
+        }
+
+        if (hints == null) {
+            hints = new HashSet<Object>();
+        }
+        hints.add(value);
+        edithints.put(key, hints);
     }
 
 }

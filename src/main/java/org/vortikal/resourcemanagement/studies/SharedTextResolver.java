@@ -35,6 +35,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -125,7 +126,6 @@ public class SharedTextResolver {
         return j;
     }
 
-    @SuppressWarnings("rawtypes")
     public Map<String, Map<String, JSONObject>> resolveSharedTexts(HttpServletRequest request) throws Exception {
 
         RequestContext requestContext = RequestContext.getRequestContext();
@@ -142,12 +142,9 @@ public class SharedTextResolver {
             Map<String, Map<String, JSONObject>> sharedTextPropsMap = new HashMap<String, Map<String, JSONObject>>();
 
             for (PropertyTypeDefinition propDef : propTypeDefs) {
-                if (propDef != null) {
-                    Map editHints = (Map) propDef.getMetadata().get(PropertyTypeDefinition.METADATA_EDITING_HINTS);
-                    if (editHints != null && "vrtx-shared-text".equals(editHints.get("class"))) {
-                        sharedTextPropsMap.put(propDef.getName(),
-                                getSharedTextValues(r.getResourceType(), propDef.getName()));
-                    }
+                if (isSharedTextPropDef(propDef)) {
+                    sharedTextPropsMap.put(propDef.getName(),
+                            getSharedTextValues(r.getResourceType(), propDef.getName()));
                 }
             }
 
@@ -157,6 +154,24 @@ public class SharedTextResolver {
         }
 
         return null;
+    }
+
+    @SuppressWarnings("unchecked")
+    private boolean isSharedTextPropDef(PropertyTypeDefinition propDef) {
+
+        if (propDef == null) {
+            return false;
+        }
+
+        Map<String, Set<String>> editHints = (Map<String, Set<String>>) propDef.getMetadata().get(
+                PropertyTypeDefinition.METADATA_EDITING_HINTS);
+        if (editHints != null) {
+            Set<String> classes = editHints.get("class");
+            if (classes != null && classes.contains("vrtx-shared-text")) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Required

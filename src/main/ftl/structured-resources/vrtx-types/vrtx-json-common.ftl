@@ -13,31 +13,21 @@
 <#macro printPropertyEditView form elem locale>
 
   <#assign localizedTitle = form.resource.getLocalizedMsg(elem.name, locale, null) />
+  <#assign hasEdithint = elem.description.edithints?exists />
 
   <#switch elem.description.type>
 
     <#case "string">
-      <#assign fieldSize="40" />
-      <#if elem.description.edithints?exists && elem.description.edithints['size']?exists >
-        <#if elem.description.edithints['size'] == "large" >
-          <#assign fieldSize="60" />
-        <#elseif elem.description.edithints['size'] == "small" >
-          <#assign fieldSize="20"/>
-        <#else>
-          <#assign fieldSize=elem.description.edithints['size'] />
-        </#if>
-      </#if>
+      <#assign fieldSize = getEdithintFieldSize(elem) />
+
       <#assign dropdown = false />
-      <#if elem.description.edithints?exists && elem.description.edithints['dropdown']?exists >
+      <#if hasEdithint && elem.description.edithints['dropdown']?exists>
         <#assign dropdown = true />
       </#if>
-      <#if elem.description.edithints?exists && elem.description.edithints['class']?exists >
-            <#assign classes= elem.description.edithints['class'] + ' ' + elem.name />
-      <#else>
-            <#assign classes = elem.name />
-      </#if>
-      
-     <#if sharedTextProps?? & sharedTextProps[elem.name]?exists>  
+
+      <#assign classes = getEdithintClasses(elem) />
+
+      <#if sharedTextProps?? & sharedTextProps[elem.name]?exists>
         <#if  (sharedTextProps[elem.name]?size > 0) >
               <@vrtxSharedText.printPropertyEditView
                 title=localizedTitle
@@ -48,8 +38,8 @@
                 tooltip=form.resource.getLocalizedTooltip(elem.name, locale)
                 valuemap=elem.description.getValuemap(locale)
                 dropdown=dropdown
-                defaultValue=   elem.getDefaultValue()
-              />    
+                defaultValue=elem.getDefaultValue()
+              />
         <#else>
             <p>Kunne ikke laste fellestekst</p>
         </#if>
@@ -70,16 +60,16 @@
       <#break>
 
     <#case "simple_html">
-      <#assign cssclass =  elem.name + " vrtx-simple-html" />
-      <#if elem.description.edithints?exists && elem.description.edithints['size']?exists >
-        <#assign cssclass = cssclass + "-" + elem.description.edithints['size'] />
+      <#assign cssClass =  elem.name + " vrtx-simple-html" />
+      <#if hasEdithint && elem.description.edithints['size']?exists >
+        <#assign cssClass = cssClass + "-" + getEdithintFieldSize(elem) />
       </#if>
 
       <@vrtxHtml.printPropertyEditView
         title=localizedTitle
         inputFieldName=elem.name
         value=elem.value
-        classes=cssclass
+        classes=cssClass
         tooltip=form.resource.getLocalizedTooltip(elem.name, locale)
         editor=""
       />
@@ -87,17 +77,20 @@
       <#break>
 
     <#case "html">
-      <#if elem.description.edithints?exists && elem.description.edithints['class']?exists >
-        <#assign cssclass = "vrtx-html " + elem.description.edithints['class'] + " " + elem.name />
+
+      <#assign cssClass = "vrtx-html" />
+      <#assign classes = getEdithintClasses(elem) />
+      <#if classes?has_content >
+        <#assign cssClass = cssClass + ' ' + classes />
       <#else>
-        <#assign cssclass = "vrtx-html " + elem.name />
+        <#assign cssClass = cssClass + ' ' + elem.name />
       </#if>
 
       <@vrtxHtml.printPropertyEditView
         title=localizedTitle
         inputFieldName=elem.name
         value=elem.value
-        classes=cssclass
+        classes=cssClass
         tooltip=form.resource.getLocalizedTooltip(elem.name, locale)
         editor=""
       />
@@ -135,17 +128,7 @@
       <#break>
 
     <#case "resource_ref">
-      <#assign fieldSize="40" />
-      <#if elem.description.edithints?exists && elem.description.edithints['size']?exists >
-        <#if elem.description.edithints['size'] == "large" >
-          <#assign fieldSize="60" />
-        <#elseif elem.description.edithints['size'] == "small" >
-          <#assign fieldSize="20"/>
-        <#else>
-          <#assign fieldSize=elem.description.edithints['size'] />
-        </#if>
-      </#if>
-
+      <#assign fieldSize = getEdithintFieldSize(elem) />
       <@vrtxResourceRef.printPropertyEditView
         title=localizedTitle
         inputFieldName=elem.name
@@ -180,10 +163,13 @@
       <#break>
 
     <#case "json">
-      <#assign cssclass =  "" />
-      <#if elem.description.edithints?exists && elem.description.edithints['class']?exists >
-        <#assign cssclass = " " + elem.description.edithints['class'] />
+
+      <#assign editHintClasses = getEdithintClasses(elem, false) />
+      <#assign cssClass =  "" />
+      <#if editHintClasses?has_content >
+        <#assign cssClass = " " + editHintClasses />
       </#if>
+
       <@printJSONPropertyEditView
         localizedTitle
         elem.name
@@ -192,7 +178,7 @@
         ""
         locale
         form.resource.getLocalizedTooltip(elem.name, locale)
-        cssclass
+        cssClass
       />
       <#break>
 
@@ -203,8 +189,8 @@
 
 </#macro>
 
-<#macro printJSONPropertyEditView title inputFieldName elem id tooltip locale inputFieldSize=20 cssclass="">
-  <div class="vrtx-json${cssclass}">
+<#macro printJSONPropertyEditView title inputFieldName elem id tooltip locale inputFieldSize=20 cssClass="">
+  <div class="vrtx-json${cssClass}">
     <div id="${id}" class="fieldset">
       <div class="header">${title}</div>
     
@@ -253,7 +239,7 @@
                <input type="button" value="${vrtx.getMsg("editor.remove")}" />
              </div>
        	     
-       	     <#if cssclass != "vrtx-multiple-immovable">
+       	     <#if cssClass != "vrtx-multiple-immovable">
                <#if (counter > 0) >
                  <div class="vrtx-button vrtx-move-up-button">
                    <input type="button" value="&uarr; ${vrtx.getMsg("editor.move-up")}"  />
@@ -295,18 +281,8 @@
   <#switch type >
 
     <#case "string">
-      <#assign fieldSize="40" />
+      <#assign fieldSize = getEdithintFieldSize(elem) />
 
-      <#if elem.description.edithints?exists && elem.description.edithints['size']?exists >
-        <#if elem.description.edithints['size'] == "large" >
-          <#assign fieldSize="60" />
-        <#elseif elem.description.edithints['size'] == "small" >
-          <#assign fieldSize="20"/>
-        <#else>
-          <#assign fieldSize=elem.description.edithints['size'] />
-        </#if>
-      </#if>
-      
       <#assign dropdown = false />
       <#if json.edithints?exists && json.edithints['dropdown']?exists >
         <#assign dropdown = true />
@@ -325,14 +301,14 @@
       <#break>
 
     <#case "simple_html">
-      <#assign cssclass = tmpName + " vrtx-simple-html" />
+      <#assign cssClass = tmpName + " vrtx-simple-html" />
 
       <@vrtxHtml.printPropertyEditView
         title=jsonAttr
         inputFieldName=tmpName
         value=value
         editor=""
-        classes=cssclass />
+        classes=cssClass />
 
       <@editor.createEditor tmpName />
       <#break>
@@ -373,16 +349,7 @@
      <#break>
 
    <#case "resource_ref">
-     <#assign fieldSize="40" />
-     <#if elem.description.edithints?exists && elem.description.edithints['size']?exists >
-      <#if elem.description.edithints['size'] == "large" >
-        <#assign fieldSize="60" />
-      <#elseif elem.description.edithints['size'] == "small" >
-        <#assign fieldSize="20"/>
-      <#else>
-        <#assign fieldSize=elem.description.edithints['size'] />
-      </#if>
-    </#if>
+     <#assign fieldSize = getEdithintFieldSize(elem) />
 
     <@vrtxResourceRef.printPropertyEditView 
       title=jsonAttr
@@ -414,3 +381,46 @@
   </#switch>
 
 </#macro>
+
+<#function getEdithintFieldSize element>
+
+  <#-- Default value -->
+  <#assign fieldSize = "40" />
+
+  <#if element.description.edithints?exists && element.description.edithints['size']?exists >
+    <#assign editHintSize = element.description.getEdithint('size') />
+    <#if editHintSize == "large" >
+      <#assign fieldSize="60" />
+    <#elseif editHintSize == "small" >
+      <#assign fieldSize="20"/>
+    <#else>
+      <#assign fieldSize = editHintSize />
+    </#if>
+  </#if>
+
+  <#return fieldSize />
+
+</#function>
+
+<#function getEdithintClasses element includeElementName=true>
+
+  <#-- Default value -->
+  <#assign classes = "" />
+  <#if includeElementName>
+    <#assign classes = element.name />
+  </#if>
+
+  <#if element.description.edithints?exists && element.description.edithints['class']?exists >
+    <#assign classList = element.description.edithints['class'] />
+    <#list classList as class>
+      <#if classes = "">
+        <#assign classes = class />
+      <#else>
+        <#assign classes = classes + ' ' + class />
+      </#if>
+    </#list>
+  </#if>
+
+  <#return classes />
+
+</#function>

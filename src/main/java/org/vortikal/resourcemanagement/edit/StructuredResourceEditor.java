@@ -50,7 +50,6 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Privilege;
-import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Repository.Depth;
 import org.vortikal.repository.Resource;
@@ -81,7 +80,6 @@ public class StructuredResourceEditor extends SimpleFormController {
         super();
         setCommandName("form");
     }
-    
 
     @Override
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
@@ -92,20 +90,20 @@ public class StructuredResourceEditor extends SimpleFormController {
         Repository repository = requestContext.getRepository();
         Principal principal = requestContext.getPrincipal();
         Resource resource = repository.retrieve(token, uri, false);
-        
+
         boolean published = resource.isPublished();
         boolean hasPublishDate = resource.hasPublishDate();
         boolean onlyWriteUnpublished = !repository.authorize(principal, resource.getAcl(), Privilege.READ_WRITE);
-        
+
         Revision workingCopy = null;
-        for (Revision rev: repository.getRevisions(token, uri)) {
+        for (Revision rev : repository.getRevisions(token, uri)) {
             if (rev.getType() == Revision.Type.WORKING_COPY) {
                 workingCopy = rev;
                 break;
             }
         }
         InputStream stream = null;
-        if (workingCopy !=  null) {
+        if (workingCopy != null) {
             stream = repository.getInputStream(token, uri, true, workingCopy);
         } else {
             stream = repository.getInputStream(token, uri, true);
@@ -119,15 +117,14 @@ public class StructuredResourceEditor extends SimpleFormController {
 
         URL url = RequestContext.getRequestContext().getService().constructURL(uri);
         URL listComponentServiceURL = listComponentsService.constructURL(uri);
-        
-        return new FormSubmitCommand(structuredResource, url, listComponentServiceURL, 
-                workingCopy != null, published, hasPublishDate, onlyWriteUnpublished);
+
+        return new FormSubmitCommand(structuredResource, url, listComponentServiceURL, workingCopy != null, published,
+                hasPublishDate, onlyWriteUnpublished);
     }
 
     @Override
-    protected ModelAndView onSubmit(HttpServletRequest request,
-            HttpServletResponse response, Object command, BindException errors)
-            throws Exception {
+    protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command,
+            BindException errors) throws Exception {
         FormSubmitCommand form = (FormSubmitCommand) command;
         if (form.getCancelAction() != null) {
             unlock();
@@ -140,23 +137,23 @@ public class StructuredResourceEditor extends SimpleFormController {
         Repository repository = requestContext.getRepository();
         Path uri = RequestContext.getRequestContext().getResourceURI();
         String token = requestContext.getSecurityToken();
-        
+
         boolean saveWorkingCopy = form.getSaveWorkingCopyAction() != null
                 || (form.getUpdateAction() != null && form.isWorkingCopy())
                 || (form.getUpdateViewAction() != null && form.isWorkingCopy());
-        
+
         boolean makePublicVersion = form.getMakePublicVersionAction() != null;
         boolean deleteWorkingCopy = form.getDeleteWorkingCopyAction() != null;
 
         Revision workingCopy = null;
-        
-        for (Revision rev: repository.getRevisions(token, uri)) {
+
+        for (Revision rev : repository.getRevisions(token, uri)) {
             if (rev.getType() == Revision.Type.WORKING_COPY) {
                 workingCopy = rev;
                 break;
             }
         }
-        
+
         if (deleteWorkingCopy && workingCopy != null) {
             repository.deleteRevision(token, uri, workingCopy);
             model.put("form", formBackingObject(request));
@@ -165,29 +162,28 @@ public class StructuredResourceEditor extends SimpleFormController {
 
         byte[] buffer = form.getResource().toJSON().toString(3).getBytes("utf-8");
         InputStream stream = new ByteArrayInputStream(buffer);
-        
+
         if (saveWorkingCopy && workingCopy == null) {
             workingCopy = repository.createRevision(token, uri, Revision.Type.WORKING_COPY);
         }
 
         if (makePublicVersion && workingCopy != null) {
             repository.createRevision(token, uri, Revision.Type.REGULAR);
-            
+
             repository.storeContent(token, uri, stream, workingCopy);
-            repository.storeContent(token, uri, 
-                    repository.getInputStream(token, uri, false, workingCopy));
+            repository.storeContent(token, uri, repository.getInputStream(token, uri, false, workingCopy));
             repository.deleteRevision(token, uri, workingCopy);
             form.setWorkingCopy(false);
-            
+
         } else if (saveWorkingCopy) {
             repository.storeContent(token, uri, stream, workingCopy);
             form.setWorkingCopy(true);
-            
+
         } else {
             List<Revision> revisions = repository.getRevisions(token, uri);
             Revision prev = revisions.size() == 0 ? null : revisions.get(0);
             String checksum = Revisions.checksum(buffer);
-            
+
             if (prev == null || !checksum.equals(prev.getChecksum())) {
                 // Take snapshot of previous version:
                 repository.createRevision(token, uri, Revision.Type.REGULAR);
@@ -202,7 +198,7 @@ public class StructuredResourceEditor extends SimpleFormController {
         }
         return new ModelAndView(getFormView(), model);
     }
-    
+
     @Override
     protected ServletRequestDataBinder createBinder(HttpServletRequest request, Object command) throws Exception {
         FormSubmitCommand form = (FormSubmitCommand) command;

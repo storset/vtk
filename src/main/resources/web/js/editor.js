@@ -378,31 +378,13 @@ VrtxEditor.prototype.newEditor = function newEditor(name, completeEditor, withou
   var isSimpleHTML = (simpleHTML && simpleHTML == "true") ? true : false;
   
   var editorElem = this.editorForm;
-  
-  var isIntroConfig = { "introduction":"", 
-		                "resource.description":"",
-		                "resource.image-description":"",
-		                "resource.video-description":"",
-		                "resource.audio-description":"" };
-  var isStudiesConfig = { "frist-frekvens-fri":"",
-                          "metode-fri":"",
-                          "internasjonale-sokere-fri":"",
-                          "nordiske-sokere-fri":"",
-                          "opptakskrav-fri":"",
-                          "generelle-fri":"",
-                          "spesielle-fri":"",
-                          "politiattest-fri":"",
-                          "rangering-sokere-fri":"",
-                          "forstevitnemal-kvote-fri":"",
-                          "ordinar-kvote-alle-kvalifiserte-fri":"",
-                          "innpassing-tidl-utdanning-fri":"",
-                          "regelverk-fri":"",
-                          "description-en":"",
-                          "description-nn":"",
-                          "description-no":"" };
 
   // CKEditor configurations
-  if (isIntroConfig[name]) {
+  if (vrtxEdit.contains(name, "introduction")
+   || vrtxEdit.contains(name, "resource.description")
+   || vrtxEdit.contains(name, "resource.image-description")
+   || vrtxEdit.contains(name, "resource.video-description")
+   || vrtxEdit.contains(name, "resource.audio-description")) {
     vrtxEdit.setCKEditorConfig(name, linkBrowseUrl, null, null, defaultLanguage, cssFileList, 100, 400, 40, vrtxEdit.CKEditorToolbars.inlineToolbar,
                                isCompleteEditor, false, baseDocumentUrl, isSimpleHTML);
   } else if (vrtxEdit.contains(name, "comment") && editorElem.hasClass("vrtx-schedule")) {
@@ -411,7 +393,22 @@ VrtxEditor.prototype.newEditor = function newEditor(name, completeEditor, withou
   } else if (vrtxEdit.contains(name, "caption")) {
     vrtxEdit.setCKEditorConfig(name, linkBrowseUrl, null, null, defaultLanguage, cssFileList, 78, 400, 40, vrtxEdit.CKEditorToolbars.inlineToolbar, 
                                isCompleteEditor, false, baseDocumentUrl, isSimpleHTML);               
-  } else if (isStudiesConfig[name]) {
+  } else if (vrtxEdit.contains(name, "frist-frekvens-fri") // Studies  
+          || vrtxEdit.contains(name, "metode-fri")
+          || vrtxEdit.contains(name, "internasjonale-sokere-fri")
+          || vrtxEdit.contains(name, "nordiske-sokere-fri")
+          || vrtxEdit.contains(name, "opptakskrav-fri")
+          || vrtxEdit.contains(name, "generelle-fri")
+          || vrtxEdit.contains(name, "spesielle-fri")
+          || vrtxEdit.contains(name, "politiattest-fri")
+          || vrtxEdit.contains(name, "rangering-sokere-fri")
+          || vrtxEdit.contains(name, "forstevitnemal-kvote-fri")
+          || vrtxEdit.contains(name, "ordinar-kvote-alle-kvalifiserte-fri")
+          || vrtxEdit.contains(name, "innpassing-tidl-utdanning-fri")
+          || vrtxEdit.contains(name, "regelverk-fri")
+          || vrtxEdit.contains(name, "description-en")
+          || vrtxEdit.contains(name, "description-nn")
+          || vrtxEdit.contains(name, "description-no")) {
     isSimpleHTML = false;
     isCompleteEditor = true;
     vrtxEdit.setCKEditorConfig(name, linkBrowseUrl, null, null, defaultLanguage, cssFileList, 150, 400, 40, vrtxEdit.CKEditorToolbars.studyToolbar, 

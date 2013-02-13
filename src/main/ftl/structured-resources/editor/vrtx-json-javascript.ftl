@@ -15,10 +15,8 @@
     
     $(document).ready(function() {
       // Retrieve HTML templates
-      vrtxEditor.multipleBoxesDeferred = $.Deferred();
-      vrtxEditor.multipleBoxesTemplates = vrtxAdmin.retrieveHTMLTemplates("templates",
-                                          ["string", "html", "radio", "dropdown", "date", "browse", "browse-images", "add-remove-move"],
-                                          vrtxEditor.multipleBoxesDeferred);
+      getFieldsBoxesTemplates();
+      
       // Build JSON elements
       vrtxEditor.multipleBoxesTemplatesContractBuilt = $.Deferred();
       <#assign i = 0 />

@@ -83,8 +83,9 @@
         var hasManuallyApprove = _$("#resource\\.manually-approve-from").length;
         var hasMultipleInputFields = hasFeaturedArticles || hasAggregation || hasManuallyApprove;
         if(hasMultipleInputFields) {
-          initMultipleInputFields();
         
+          initMultipleInputFields();
+          
           $.when(vrtxEditor.multipleCommaSeperatedInputFieldDeferred).done(function() {
             MULTIPLE_INPUT_FIELD_INITIALIZED = $.Deferred();
         

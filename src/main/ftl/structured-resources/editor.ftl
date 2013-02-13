@@ -50,9 +50,6 @@
         var ok = performSave();
         if(!ok) return false;
       });
-      
-      // Multiple fields interaction
-      initMultipleInputFields();
     });
     
     var CURRENT_RESOURCE_LANGAGE = "${resourceLocaleResolver.resolveLocale(null)?string}";

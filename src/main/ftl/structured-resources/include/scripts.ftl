@@ -16,6 +16,9 @@
       </#list>
       <#if containsMultipleInputFieldScripts>
         MULTIPLE_INPUT_FIELD_INITIALIZED = $.Deferred();
+        
+        initMultipleInputFields();
+        
         $.when(vrtxEditor.multipleCommaSeperatedInputFieldDeferred).done(function() {
           <#list scripts as script>
             <#if script.type == 'MULTIPLEINPUTFIELDS' >

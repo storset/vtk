@@ -1103,7 +1103,7 @@ function addFormField(name, len, value, size, isBrowsable, isMovable, isDropdown
     if (i > 1 && len > 0) {
       moveUpButton = vrtxEditor.mustacheFacade.getMultipleInputfieldsInteractionsButton("moveup", "", idstr, "&uarr; " + vrtxAdmin.multipleFormGroupingMessages.moveUp);
     }
-    if (!init && i < len) {
+    if (i < len) {
       moveDownButton = vrtxEditor.mustacheFacade.getMultipleInputfieldsInteractionsButton("movedown", "", idstr, "&darr; " + vrtxAdmin.multipleFormGroupingMessages.moveDown);
     }
   }

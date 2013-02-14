@@ -67,6 +67,8 @@ public class DollarSyntaxComponentParser implements TextualComponentParser {
 
         // Look for occurrences of:
         // ${namespace:name param1=[value] param2=[value]}
+        
+        // Can use SimpleTemplate for top level parsing here ?
 
         List<ComponentInvocation> fragmentList = new ArrayList<ComponentInvocation>();
 

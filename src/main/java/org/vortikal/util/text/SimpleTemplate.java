@@ -59,10 +59,15 @@ import java.util.List;
  *       }
  *   });
  * </pre>
- * </p>
+ * 
+ * <p>A backslash in template will prevent any interpretation of the next
+ * character in input and can be used to include substitution
+ * prefix literally in output. To get a literal backslash in output, use two
+ * consecutive backslashes in template.
+  * 
  */
 public class SimpleTemplate {
-   
+    
     /**
      * Handler for template variable substitution and output writing.
      */
@@ -78,7 +83,7 @@ public class SimpleTemplate {
          */
         public void write(String text);
     }
-    
+
     /**
      * Applies a compiled template using a supplied {@link Handler}
      * @param handler
@@ -103,44 +108,69 @@ public class SimpleTemplate {
     }
 
     /**
-     * Compiles a template with configurable delimiters.
+     * Compiles a template with configurable placeholder delimiters. You may escape
+     * placeholder interpretation by preceding <code>delimPrefix</code> with
+     * backslash in template string: <code>"foo \\${literal-me}"</code>. Escaping
+     * chars with no special meaning has no effect other than the backslash
+     * being removed. To get a literal backslash in rendering output, use two
+     * consecutive backslashes in template.
+     * 
+     * Nesting placeholders is entirely unsupported.
      */
     public static SimpleTemplate compile(String template, String delimPrefix,
                                          String delimSuffix) {
         if (template == null) {
-            throw new IllegalArgumentException("Argument 'template' is NULL");
+            throw new IllegalArgumentException("Argument 'template' is null");
         }
-        if (delimPrefix == null) {
-            throw new IllegalArgumentException("Argument 'prefix' is NULL");
+        if (delimPrefix == null || delimPrefix.isEmpty()) {
+            throw new IllegalArgumentException("Argument 'delimPrefix' null or empty");
         }
-        if (delimSuffix == null) {
-            throw new IllegalArgumentException("Argument 'suffix' is NULL");
+        if (delimSuffix == null || delimSuffix.isEmpty()) {
+            throw new IllegalArgumentException("Argument 'delimSuffix' null or empty");
         }
         List<Node> nodes = new ArrayList<Node>();
-        int start = 0;
-        int pos = 0;
-        while (true) {
-            pos = template.indexOf(delimPrefix, start);
-            if (pos != -1) {
-                String text = template.substring(start, pos);
-                nodes.add(textNode(text));
-                start = pos;
-                pos = template.indexOf(delimSuffix, start);
-                if (pos != -1) {
-                    String var = template.substring(
-                        start + delimPrefix.length(), pos);
-                    
-                    nodes.add(varNode(var));
-                    start = pos + delimSuffix.length();
+        StringBuilder token = new StringBuilder();
+        boolean escape = false;
+        boolean varState = false;
+        for (int i=0; i<template.length(); i++) {
+            char c = template.charAt(i);
+            if (escape) {
+                token.append(c);
+                escape = false;
+                continue;
+            }
+            if (c == '\\') {
+                escape = true;
+                continue;
+            }
+            if (!varState && template.startsWith(delimPrefix, i)) {
+                if (token.length() > 0) {
+                    nodes.add(textNode(token.toString()));
+                    token.setLength(0);
                 }
+                varState = true;
+                i += delimPrefix.length()-1;
+                continue;
             }
-            if (pos == -1) {
-                String text = template.substring(start);
-                if (text.length() > 0)
-                    nodes.add(textNode(text));
-                break;
+            if (varState && template.startsWith(delimSuffix, i)) {
+                if (token.length() > 0) {
+                    nodes.add(varNode(token.toString()));
+                    token.setLength(0);
+                }
+                varState = false;
+                i += delimSuffix.length()-1;
+                continue;
             }
+            token.append(c);
         }
+        if (token.length() > 0 || varState) {
+            if (varState) {
+                // Incomplete placeholder syntax at end of input, output raw
+                token.insert(0, delimPrefix);
+            }
+            nodes.add(textNode(token.toString()));
+        }
+        
         return new SimpleTemplate(nodes);
     }
     

@@ -61,7 +61,33 @@ public class SimpleTemplateTest extends TestCase {
         assertEquals(result, "yyy");
         
         assertEquals("no placeholders", render("no placeholders", vars, "%{", "}"));
+
         assertEquals("empty placeholder", render("empty %{}placeholder", vars, "%{", "}"));
+
+        assertEquals("escaped ${foo} \\", render("escaped \\${foo} \\\\", vars, "${", "}"));
+        
+        vars.put("xxx}", "strange");
+        assertEquals("escaped suffix strange", render("escaped suffix ${xxx\\}}", vars, "${", "}"));
+
+        assertEquals("escaped suffix not closing ${placeholder}", render("escaped suffix not closing ${placeholder\\}", vars, "${", "}"));
+        
+        assertEquals("invalid } stuff ${foo:bar", render("invalid } stuff ${foo:bar", vars, "${", "}"));
+        
+        assertEquals("x } x", render("x } x", vars, "${", "}"));
+        
+        assertEquals("} is not supported", render("${placeholder in ${foo}} is not supported", vars, "${", "}"));
+        
+        assertEquals("Foo is bar, same prefix and suffix delimiter", render("Foo is |foo|, same prefix and suffix delimiter", vars, "|", "|"));
+
+        assertEquals("Foo is |foo|", render("Foo is \\|foo\\|", vars, "|", "|"));
+
+        assertEquals("${", render("${", vars, "${", "}"));
+        
+        assertEquals("}", render("}", vars, "${", "}"));
+        
+        assertEquals("", render("\\", vars, "%{", "}"));
+        
+        assertEquals("", render("", vars, "%{", "}"));
     }
 
     private String render(String template, Map<String, String> vars) {

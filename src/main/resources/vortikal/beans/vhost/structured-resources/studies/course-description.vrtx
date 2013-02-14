@@ -118,6 +118,7 @@ resourcetype course-description {
     other-text-field (after evaluering-av-emnet-group),
 
     studinfo-kontakt (class[vrtx-shared-text],
+                      class[vrtx-pseudo-grouped],
                       attribute[vrtx-shared-text-path:/vrtx/fellestekst/studinfo-kontakt]),
     studinfo-kontakt (after other-text-field)
   }

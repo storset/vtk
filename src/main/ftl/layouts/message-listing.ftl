@@ -4,7 +4,7 @@
 <div class="vrtx-messages-main-content-wrapper">
 
   <div class="vrtx-messages-header">
-    <h2><#if title??>${title}<#else>${vrtx.getMsg("message-listing.title")}</#if>
+    <h2><#if messageFolder??><a href="${messageFolder.URI}"></#if><#if title??>${title}<#else>${vrtx.getMsg("message-listing.title")}</#if><#if messageFolder??></a></#if>
       <#if editMessageFolder?? && editMessageFolder >
         <a class="vrtx-message-listing-create" href="${vrtx.relativeLinkConstructor("${messageFolder.URI}", 'simpleMessageEditor')}">
           ${vrtx.getMsg("message-listing.new-message")}

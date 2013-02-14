@@ -1008,25 +1008,6 @@ VrtxEditor.prototype.showHideSelect = function showHideSelect(select, init) {
     XXX: refactor / combine and optimize
 \*-------------------------------------------------------------------*/
 
-/**
- * NEW CODE/API will reside here..
- *
- * Initialize a multiple form grouping with enhancing possibilities
- *
- * - Add / Remove
- * - Move up / move down
- * - Accordion
- * - Animated scrolling
- * - (drag and drop)
- *
- * @this {VrtxEditor}
-
-VrtxEditor.prototype.initMultipleFormGrouping = function initMultipleFormGrouping() {
-  // name, isMovable, isBrowsable, isScrollable, hasAccordion(?)
-};
-
- */
-
 function getMultipleFieldsBoxesTemplates() {
   if(!vrtxEditor.multipleFieldsBoxesDeferred) {
     vrtxEditor.multipleFieldsBoxesDeferred = $.Deferred();
@@ -1099,7 +1080,7 @@ function addFormField(name, len, value, size, isBrowsable, isMovable, isDropdown
   var fields = $("." + name + " div.vrtx-multipleinputfield"),
       idstr = "vrtx-" + name + "-",
       i = vrtxEditor.multipleFieldsBoxesCounter[name],
-      len = !init ? fields.length : len;
+      len = !init ? fields.length : len,
       removeButton = "", moveUpButton = "", moveDownButton = "", browseButton = "";
 
   removeButton = vrtxEditor.mustacheFacade.getMultipleInputfieldsInteractionsButton("remove", " " + name, idstr, vrtxAdmin.multipleFormGroupingMessages.remove);

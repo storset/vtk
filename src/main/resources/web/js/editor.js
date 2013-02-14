@@ -377,11 +377,11 @@ VrtxEditor.prototype.newEditor = function newEditor(name, completeEditor, withou
   var editorElem = this.editorForm;
 
   // CKEditor configurations
-  if (vrtxEdit.contains(name, "introduction")
-   || vrtxEdit.contains(name, "resource.description")
-   || vrtxEdit.contains(name, "resource.image-description")
-   || vrtxEdit.contains(name, "resource.video-description")
-   || vrtxEdit.contains(name, "resource.audio-description")) {
+  if (vrtxEdit.contains(name, "introduction") ||
+      vrtxEdit.contains(name, "resource.description") ||
+      vrtxEdit.contains(name, "resource.image-description") ||
+      vrtxEdit.contains(name, "resource.video-description") ||
+      vrtxEdit.contains(name, "resource.audio-description")) {
     vrtxEdit.setCKEditorConfig(name, linkBrowseUrl, null, null, defaultLanguage, cssFileList, 100, 400, 40, vrtxEdit.CKEditorToolbars.inlineToolbar,
                                isCompleteEditor, false, baseDocumentUrl, isSimpleHTML);
   } else if (vrtxEdit.contains(name, "comment") && editorElem.hasClass("vrtx-schedule")) {
@@ -390,22 +390,22 @@ VrtxEditor.prototype.newEditor = function newEditor(name, completeEditor, withou
   } else if (vrtxEdit.contains(name, "caption")) {
     vrtxEdit.setCKEditorConfig(name, linkBrowseUrl, null, null, defaultLanguage, cssFileList, 78, 400, 40, vrtxEdit.CKEditorToolbars.inlineToolbar, 
                                isCompleteEditor, false, baseDocumentUrl, isSimpleHTML);               
-  } else if (vrtxEdit.contains(name, "frist-frekvens-fri") // Studies  
-          || vrtxEdit.contains(name, "metode-fri")
-          || vrtxEdit.contains(name, "internasjonale-sokere-fri")
-          || vrtxEdit.contains(name, "nordiske-sokere-fri")
-          || vrtxEdit.contains(name, "opptakskrav-fri")
-          || vrtxEdit.contains(name, "generelle-fri")
-          || vrtxEdit.contains(name, "spesielle-fri")
-          || vrtxEdit.contains(name, "politiattest-fri")
-          || vrtxEdit.contains(name, "rangering-sokere-fri")
-          || vrtxEdit.contains(name, "forstevitnemal-kvote-fri")
-          || vrtxEdit.contains(name, "ordinar-kvote-alle-kvalifiserte-fri")
-          || vrtxEdit.contains(name, "innpassing-tidl-utdanning-fri")
-          || vrtxEdit.contains(name, "regelverk-fri")
-          || vrtxEdit.contains(name, "description-en")
-          || vrtxEdit.contains(name, "description-nn")
-          || vrtxEdit.contains(name, "description-no")) {
+  } else if (vrtxEdit.contains(name, "frist-frekvens-fri") ||     // Studies  
+             vrtxEdit.contains(name, "metode-fri") ||
+             vrtxEdit.contains(name, "internasjonale-sokere-fri") ||
+             vrtxEdit.contains(name, "nordiske-sokere-fri") ||
+             vrtxEdit.contains(name, "opptakskrav-fri") ||
+             vrtxEdit.contains(name, "generelle-fri") ||
+             vrtxEdit.contains(name, "spesielle-fri") ||
+             vrtxEdit.contains(name, "politiattest-fri") ||
+             vrtxEdit.contains(name, "rangering-sokere-fri") ||
+             vrtxEdit.contains(name, "forstevitnemal-kvote-fri") ||
+             vrtxEdit.contains(name, "ordinar-kvote-alle-kvalifiserte-fri") ||
+             vrtxEdit.contains(name, "innpassing-tidl-utdanning-fri") ||
+             vrtxEdit.contains(name, "regelverk-fri") ||
+             vrtxEdit.contains(name, "description-en") ||
+             vrtxEdit.contains(name, "description-nn") ||
+             vrtxEdit.contains(name, "description-no")) {
     isSimpleHTML = false;
     isCompleteEditor = true;
     vrtxEdit.setCKEditorConfig(name, linkBrowseUrl, null, null, defaultLanguage, cssFileList, 150, 400, 40, vrtxEdit.CKEditorToolbars.studyToolbar, 
@@ -413,8 +413,8 @@ VrtxEditor.prototype.newEditor = function newEditor(name, completeEditor, withou
   } else if (vrtxEdit.contains(name, "message")) {
     vrtxEdit.setCKEditorConfig(name, linkBrowseUrl, null, null, defaultLanguage, cssFileList, 250, 400, 40, vrtxEdit.CKEditorToolbars.messageToolbar, 
                                isCompleteEditor, false, null, isSimpleHTML);           
-  } else if (vrtxEdit.contains(name, "additional-content")
-          || vrtxEdit.contains(name, "additionalContents")) { // Additional content
+  } else if (vrtxEdit.contains(name, "additional-content") ||
+             vrtxEdit.contains(name, "additionalContents")) { // Additional content
     vrtxEdit.setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, defaultLanguage, cssFileList, 150, 400, 40, 
                                vrtxEdit.CKEditorToolbars.completeToolbar, true, false, baseDocumentUrl, isSimpleHTML);
   } else if (isCompleteEditor) { // Complete editor 
@@ -424,14 +424,14 @@ VrtxEditor.prototype.newEditor = function newEditor(name, completeEditor, withou
     if (vrtxEdit.contains("supervisor-box")) {
       height = 130;
       maxHeight = 300;
-    } else if (name == "content"
-            || name == "resource.content"
-            || name == "content-study"
-            || name == "course-group-about"
-            || name == "courses-in-group"
-            || name == "course-group-admission"
-            || name == "relevant-study-programmes"
-            || name == "course-group-other") {
+    } else if (name == "content" ||
+               name == "resource.content" ||
+               name == "content-study" ||
+               name == "course-group-about" ||
+               name == "courses-in-group" ||
+               name == "course-group-admission" ||
+               name == "relevant-study-programmes" ||
+               name == "course-group-other") {
       height = 400;
       maxHeight = 800;
       if (name == "resource.content") { // Old editor
@@ -440,11 +440,11 @@ VrtxEditor.prototype.newEditor = function newEditor(name, completeEditor, withou
       if (name == "content-study") { // Study toolbar
         completeTB = vrtxEdit.CKEditorToolbars.studyToolbar;
       } 
-      if (name == "course-group-about"
-       || name == "courses-in-group"
-       || name == "course-group-admission"
-       || name == "relevant-study-programmes"
-       || name == "course-group-other") { // CourseGroup toolbar
+      if (name == "course-group-about" ||
+          name == "courses-in-group" ||
+          name == "course-group-admission" ||
+          name == "relevant-study-programmes" ||
+          name == "course-group-other") { // CourseGroup toolbar
         completeTB = vrtxEdit.CKEditorToolbars.courseGroupToolbar;
       }
     }
@@ -637,10 +637,10 @@ function unsavedChangesInEditor() {
       radioLen = currentStateOfRadioButtons.length;
   
   // Check if count has changed
-  if(textLen != vrtxEdit.editorInitInputFields.length
-  || selectsLen != vrtxEdit.editorInitSelects.length
-  || checkboxLen != vrtxEdit.editorInitCheckboxes.length
-  || radioLen != vrtxEdit.editorInitRadios.length) return true;
+  if(textLen != vrtxEdit.editorInitInputFields.length ||
+     selectsLen != vrtxEdit.editorInitSelects.length ||
+     checkboxLen != vrtxEdit.editorInitCheckboxes.length ||
+     radioLen != vrtxEdit.editorInitRadios.length) return true;
 
   // Check if values have changed
   for (var i = 0; i < textLen; i++) if(currentStateOfInputFields[i].value !== vrtxEdit.editorInitInputFields[i]) return true;
@@ -913,7 +913,7 @@ VrtxEditor.prototype.initShowHide = function initShowHide() {
 function setShowHideBooleanNewEditor(name, properties, hideTrues) {
   vrtxEditor.initEventHandler('[name=' + name + ']', {
 	wrapper: "#editor",
-    callback: function(props, hideTrues, name , init) {
+    callback: function(props, hideTrues, name, init) {
       if ($('#' + name + (hideTrues ? '-false' : '-true'))[0].checked) {
         toggleShowHideBoolean(props, true, init);
       } else if ($('#' + name + (hideTrues ? '-true' : '-false'))[0].checked) {
@@ -928,7 +928,11 @@ function setShowHideBooleanOldEditor(radioIds, properties, conditionHide, condit
   vrtxEditor.initEventHandler(radioIds, {
     wrapper: "#editor",
 	callback: function(props, conditionHide, conditionHideEqual, init) {
-	  toggleShowHideBoolean(props, !($(conditionHide).val() == conditionHideEqual), init);
+      if($(conditionHide).val() != conditionHideEqual) {
+        toggleShowHideBoolean(props, true, init);
+      } else {
+        toggleShowHideBoolean(props, false, init);
+      }
 	},
 	callbackParams: [properties, conditionHide, conditionHideEqual]
   });
@@ -980,12 +984,12 @@ VrtxEditor.prototype.showHideSelect = function showHideSelect(select, init) {
   var vrtxEdit = this;
   
   var id = select.attr("id");
-  if(vrtxEdit.selectMappings.hasOwnProperty(id)) {
+  var mappings = vrtxEdit.selectMappings[id];
+  if(mappings) {
     var selectClassName = "select-" + id;
     if(!vrtxEdit.editorForm.hasClass(selectClassName)) {
       vrtxEdit.editorForm.addClass(selectClassName);	
     }
-    var mappings = vrtxEdit.selectMappings[id];
     var selected = select.val();
     for(var i = 0, len = mappings.length; i < len; i++) {
       var mappedClass = selectClassName + "-" + mappings[i];
@@ -1250,7 +1254,7 @@ function addJsonField(btn) {
   var hasAccordion = accordionWrapper.length;    
 
   if(!isImmovable && numOfElements > 0 && oldLast.length) {
-    var moveDownButton = vrtxEditor.mustacheFacade.getJsonBoxesInteractionsButton('move-down', '&darr; ' + vrtxAdmin.multipleFormGroupingMessages.moveDown)
+    var moveDownButton = vrtxEditor.mustacheFacade.getJsonBoxesInteractionsButton('move-down', '&darr; ' + vrtxAdmin.multipleFormGroupingMessages.moveDown);
     if(hasAccordion) {
       oldLast.find("> div.ui-accordion-content").append(moveDownButton);
     } else {
@@ -1408,8 +1412,8 @@ VrtxEditor.prototype.mustacheFacade = {
    * Interaction
    */
   getMultipleInputfieldsInteractionsButton: function(clazz, name, idstr, text) {
-    return $.mustache(vrtxEditor.multipleFieldsBoxesTemplates["button"], { type: clazz, name: name, 
-                                                                          idstr: idstr, buttonText: text });
+    return $.mustache(vrtxEditor.multipleFieldsBoxesTemplates["button"], { type: clazz, name: name,
+                                                                           idstr: idstr, buttonText: text });
   },
   getMultipleInputFieldsAddButton: function(name, size, isBrowsable, isMovable, isDropdown) {
     return $.mustache(vrtxEditor.multipleFieldsBoxesTemplates["add-button"], {

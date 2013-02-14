@@ -52,7 +52,7 @@ function VrtxAdmin() {
       * @type object */
     this._$ = $;
 
-    // Browser info: used for progressive enhancement and performance scaling based on knowledge of current JS-engine
+    // Browser info/capabilities: used for e.g. progressive enhancement and performance scaling based on knowledge of current JS-engine
     this.ua = navigator.userAgent.toLowerCase();
     this.isIE = this._$.browser.msie;
     this.browserVersion = this._$.browser.version;
@@ -70,13 +70,10 @@ function VrtxAdmin() {
     this.isWin = ((this.ua.indexOf("win") != -1) || (this.ua.indexOf("16bit") != -1));
     this.supportsFileList = window.FileList;
     this.animateTableRows = !this.isIE;
-
+    this.hasFreeze = typeof Object.freeze !== "undefined"; // ECMAScript 5 check
     this.hasConsole = typeof console !== "undefined";
     this.hasConsoleLog = this.hasConsole && console.log;
-    this.hasConsoleError = this.hasConsole && console.error;
-    
-    // ECMAScript 5 checks
-    this.hasFreeze = typeof Object.freeze !== "undefined";
+    this.hasConsoleError = this.hasConsole && console.error;  
     
     /** Language extracted from cookie */
     this.lang = readCookie("vrtx.manage.language", "no");
@@ -98,7 +95,7 @@ function VrtxAdmin() {
   
     // Application logic
     this.editorSaveButtonName = "";
-    this.asyncEditorSavedDeferred;
+    this.asyncEditorSavedDeferred = null;
     this.asyncGetFormsInProgress = 0;
     this.asyncGetStatInProgress = false;
     this.createResourceReplaceTitle = true;
@@ -1881,7 +1878,7 @@ function versioningInteraction(bodyId, vrtxAdm, _$) {
     
     // Restore revisions
     contents.on("click", ".vrtx-revisions-restore-form input[type=submit]", function(e) {
-      var form = _$(this).closest("form")
+      var form = _$(this).closest("form");
       var url = form.attr("action");
       var dataString = form.serialize();
       _$("td.vrtx-revisions-buttons-column input").attr("disabled", "disabled"); // Lock buttons
@@ -1905,7 +1902,7 @@ function versioningInteraction(bodyId, vrtxAdm, _$) {
     
     // Make working copy into current version
     contents.on("click", "#vrtx-revisions-make-current-form input[type=submit]", function(e) {
-      var form = _$(this).closest("form")
+      var form = _$(this).closest("form");
       var url = form.attr("action");
       var dataString = form.serialize();
       vrtxAdm.serverFacade.postHtml(url, dataString, {
@@ -2000,13 +1997,13 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(options) {
           var ignoreClasses = {"even":"", "odd":"", "first":"", "last":""};
           for(var i = resultSelectorClasses.length; i--;) {
             var resultSelectorClassCache = resultSelectorClasses[i];
-            if(resultSelectorClassCache && resultSelectorClassCache != ""
-               && !(resultSelectorClassCache in ignoreClasses)) {
+            if(resultSelectorClassCache && resultSelectorClassCache !== "" &&
+               !(resultSelectorClassCache in ignoreClasses)) {
                  resultSelectorClass = "." + resultSelectorClasses[i];
                  break;
             }  
           }
-
+          var succeededAddedOriginalMarkup = true;
           expandedForm.slideUp(transitionSpeed, transitionEasingSlideUp, function() {
             if(existExpandedFormIsReplaced) {
               if(fromModeToNotMode) { // When we need the 'mode=' HTML when requesting a 'not mode=' service
@@ -2028,7 +2025,7 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(options) {
                   }
                 });
               } else {
-                var succeededAddedOriginalMarkup = vrtxAdm.addOriginalMarkup(url, results, resultSelectorClass, expandedForm);
+                succeededAddedOriginalMarkup = vrtxAdm.addOriginalMarkup(url, results, resultSelectorClass, expandedForm);
               }
             } else {
               var node = _$(this).parent().parent();
@@ -2039,7 +2036,7 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(options) {
               }
             }
             if(!simultanSliding && !fromModeToNotMode) {
-              if(typeof succeededAddedOriginalMarkup !== "undefined" && !succeededAddedOriginalMarkup) {
+              if(!succeededAddedOriginalMarkup) {
                 if(vrtxAdm.asyncGetFormsInProgress) {
                   vrtxAdm.asyncGetFormsInProgress--;
                 }
@@ -2167,7 +2164,7 @@ VrtxAdmin.prototype.completeFormAsync = function completeFormAsync(options) {
     var isReplacing = options.isReplacing || false,
         funcProceedCondition = options.funcProceedCondition,
         funcComplete = options.funcComplete,
-        transitionSpeed = ((options.transitionSpeed != null) ? options.transitionSpeed : vrtxAdm.transitionSpeed),
+        transitionSpeed = ((options.transitionSpeed !== null) ? options.transitionSpeed : vrtxAdm.transitionSpeed),
         transitionEasingSlideDown = options.transitionEasingSlideDown || vrtxAdm.transitionEasingSlideDown,
         transitionEasingSlideUp = options.transitionEasingSlideUp || vrtxAdm.transitionEasingSlideUp,
         post = options.post || false,
@@ -2604,7 +2601,7 @@ VrtxAdmin.prototype.serverFacade = {
       dataType: type,
       success: callbacks.success,
       error: function (xhr, textStatus) {
-        vrtxAdmin.displayErrorMsg(vrtxAdmin.serverFacade.error(xhr, textStatus));
+        vrtxAdmin.displayErrorMsg(vrtxAdmin.serverFacade.error(xhr, textStatus));    
         if(callbacks.error) {
           callbacks.error(xhr, textStatus);
         }

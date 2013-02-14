@@ -3,14 +3,17 @@
  *
  */
 
-// Possible to override with a target for toc defined typical in document.ready() on a site / sites
-var tocTargetId = "";
+var tocTargetId = ""; /* Possible to override with a target for toc defined typical in document.ready() on a site.
+                       * XXX: not global
+                       */
 window.onload = function () {
   new tocGen('toc');
 };
 
-//This script was originally written By Brady Mulhollem - WebTech101.com
-//It was later modified by Tomm Eriksen and other humble USIT workers
+/*
+ * This script was originally written By Brady Mulhollem - WebTech101.com
+ * It was later modified by Tomm Eriksen and other humble USIT workers
+ */
 function tocGen(writeTo) {
   this.num = 1;
   this.opened = 0;

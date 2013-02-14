@@ -109,7 +109,7 @@
         wrp.find("a." + (isNext ? "next" : "prev")).stop().fadeTo(settings.fadeNavInOutTime, 1);
         wrp.find("a." + (isNext ? "prev" : "next")).stop().fadeTo(settings.fadeNavInOutTime, 0.5);
       } else if (e.type == "mouseout") {
-        wrp.find("a.next span, a.prev span").stop().fadeTo(settings.fadeNavInOutTime, 0);
+        wrp.find("a.prev, a.prev span, a.next, a.next span").stop().fadeTo(settings.fadeNavInOutTime, 0);
       } else {
         var activeThumb = wrpThumbsLinks.filter(".active").parent();
         var elm = isNext ? activeThumb.next() : activeThumb.prev();

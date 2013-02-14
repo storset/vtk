@@ -989,12 +989,13 @@ VrtxEditor.prototype.showHideSelect = function showHideSelect(select, init) {
     var selected = select.val();
     for(var i = 0, len = mappings.length; i < len; i++) {
       var mappedClass = selectClassName + "-" + mappings[i];
+      var editorHasMappedClass = vrtxEdit.editorForm.hasClass(mappedClass);
       if(selected === mappings[i]) {
-        if(!vrtxEdit.editorForm.hasClass(mappedClass)) {
+        if(!editorHasMappedClass) {
           vrtxEdit.editorForm.addClass(mappedClass);
         }
       } else {
-        if(vrtxEdit.editorForm.hasClass(mappedClass)) {
+        if(editorHasMappedClass) {
           vrtxEdit.editorForm.removeClass(mappedClass);
         }
       } 

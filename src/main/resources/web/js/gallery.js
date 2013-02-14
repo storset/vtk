@@ -86,18 +86,11 @@
     });
 
     // Pre-load and cache stuff
-    var imgs = this, centerThumbnailImageFunc = centerThumbnailImage, generateLinkImageFunc = generateLinkImage;
+    var imgs = this, centerThumbnailImageFunc = centerThumbnailImage, cacheGenerateLinkImageFunc = cacheGenerateLinkImage;
     for(var i = 0, len = imgs.length; i < len; i++) {
       var link = $(imgs[i]);
-      var fullImage = link.find("img.vrtx-full-image");
       var image = link.find("img.vrtx-thumbnail-image");
-      var src = fullImage.attr("src");
-      images[src] = {};
-      images[src].width = parseInt(link.find("span.hiddenWidth").text(), 10);
-      images[src].height = parseInt(link.find("span.hiddenHeight").text(), 10);
-      images[src].alt = image.attr("alt");
-      images[src].title = image.attr("title");
-      images[src].html = generateLinkImage(src, images[src].alt, link);
+      cacheGenerateLinkImageFunc(link.find("img.vrtx-full-image").attr("src"), image, link);
       centerThumbnailImageFunc(image, link);
     }
     return imgs; /* Make chainable */
@@ -133,13 +126,7 @@
         });
       } else {
         if (init) {
-          var link = image.parent();
-          images[src] = {};
-          images[src].width = parseInt(link.find("span.hiddenWidth").text(), 10);
-          images[src].height = parseInt(link.find("span.hiddenHeight").text(), 10);
-          images[src].alt = image.attr("alt");
-          images[src].title = image.attr("title");
-          images[src].html = generateLinkImage(src, images[src].alt, link);
+          cacheGenerateLinkImage(src, image, image.parent());
         } else {
           $(wrapperContainerLink).remove();
         }
@@ -163,6 +150,8 @@
 
     function scaleAndCalculatePosition(image) {
       var src = image.attr("src").split("?")[0];
+      
+      /* Minimum 150x100px containers */
       var imgWidth =  Math.max(parseInt(images[src].width, 10), 150) + "px";
       var imgHeight = Math.max(parseInt(images[src].height, 10), 100) + "px";
 
@@ -196,11 +185,16 @@
       thumb.css(cssProperty, adjust + "px");
     }
 
-    function generateLinkImage(src, alt, link) {
-      return "<a href='" + link.attr("href") + "'" +
-             " class='" + container.substring(1) + "-link'>" +
-             "<img src='" + src + "' alt='" + alt + "' style='width: " +
-             images[src].width + "px; height: " + images[src].height + "px;' />" + "</a>";
+    function cacheGenerateLinkImage(src, image, link) {
+      images[src] = {};
+      images[src].width = parseInt(link.find("span.hiddenWidth").text(), 10);
+      images[src].height = parseInt(link.find("span.hiddenHeight").text(), 10);
+      images[src].alt = image.attr("alt");
+      images[src].title = image.attr("title");
+      images[src].html = "<a href='" + link.attr("href") + "'" +
+                         " class='" + container.substring(1) + "-link'>" +
+                         "<img src='" + src + "' alt='" + images[src].alt + "' style='width: " +
+                         images[src].width + "px; height: " + images[src].height + "px;' />" + "</a>";
     }
   };
 })(jQuery);

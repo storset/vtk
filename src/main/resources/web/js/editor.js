@@ -1538,8 +1538,9 @@ VrtxEditor.prototype.accordionGroupedInit = function accordionGroupedInit(subGro
   var vrtxEdit = this, _$ = vrtxAdmin._$;
 
   var accordionWrpId = "accordion-grouped"; // TODO: multiple accordion group pr. page
-  var groupedSelector = ".vrtx-grouped, .vrtx-pseudo-grouped" + ((typeof subGroupedSelector !== "undefined") ? subGroupedSelector : "");
-
+  var groupedSelector  = ".vrtx-grouped" + ((typeof subGroupedSelector !== "undefined") ? subGroupedSelector : "");
+      groupedSelector += ", .vrtx-pseudo-grouped" + ((typeof subGroupedSelector !== "undefined") ? subGroupedSelector : "");
+      
   // Because accordion needs one content wrapper
   for(var grouped = vrtxEdit.editorForm.find(groupedSelector), i = grouped.length; i--;) {
     var group = _$(grouped[i]);
@@ -1613,15 +1614,10 @@ function accordionJsonRefresh(elem, active) {
 
 // XXX: avoid hardcoded enhanced fields
 function accordionContentSplitHeaderPopulators(init) {
-  var syllabusItems = $("#editor.vrtx-syllabus #items .vrtx-json-element");
   var sharedTextItems = $("#editor.vrtx-shared-text #shared-text-box .vrtx-json-element");
   if(!init) {
-    syllabusItems = syllabusItems.filter(":last");
     sharedTextItems = sharedTextItems.filter(":last");
   }
-  wrapItemsLeftRight(syllabusItems, ".author, .title, .year, .publisher, .isbn, .comment", ".linktext, .link, .bibsys, .fulltext, .articles");
-  syllabusItems.find(".author input, .title input").addClass("header-populators");
-  syllabusItems.find(".vrtx-html textarea").addClass("header-fallback-populator");
   sharedTextItems.find(".title input").addClass("header-populators");
 }
 
@@ -1631,10 +1627,8 @@ function accordionJsonUpdateHeader(elem) {
     var str = "";
     var fields = jsonElm.find(".header-populators");
     for (var i = 0, len = fields.length; i < len; i++) {
-      var val = $(fields[i]).val();
-      if (!val.length) {
-        continue;
-      }
+      var val = fields[i].value;
+      if (!val.length) continue;
       str += (str.length) ? ", " + val : val;
     }
     if (!str.length) { // Fallback header populator

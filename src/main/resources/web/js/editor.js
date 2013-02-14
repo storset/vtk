@@ -1385,7 +1385,7 @@ function swapContent(moveBtn, move) {
   curElm.focusout();
   movedElm.focusout();
   
-  if(hasAccordion) {
+  if(hasAccordion) { /* Wait with scroll until accordion switch */
     vrtxEditor.multipleFieldsBoxesAccordionSwitchThenScrollTo = movedElm;
     accordionWrapper.find(".fieldset").accordion("option", "active", (movedElm.index() - 1))
                                       .accordion("option", "refresh");

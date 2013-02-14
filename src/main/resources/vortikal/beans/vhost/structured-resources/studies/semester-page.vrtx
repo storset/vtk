@@ -262,11 +262,7 @@ resourcetype semester-page {
           </div>
           <div id="vrtx-additional-content">
             [call "resource:teacher-list"{"cssClass":"vrtx-distach-bottom"}]
-            [if messages-placement = null || messages-placement = "right"]
-              <div class="vrtx-frontpage-box white-box vrtx-distach-bottom">
-            [else]
-              <div class="vrtx-frontpage-box white-box">
-            [endif]
+            <div class="vrtx-frontpage-box white-box vrtx-distach-bottom">
               <h2>[localized 'studinfo-kontakt']</h2>
               [call "include:shared-text" {"propName":"studinfo-kontakt"}]
             </div>

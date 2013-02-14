@@ -50,9 +50,13 @@
     var firstImage = wrpThumbsLinks.filter(".active");
     var firstImageFullImage = firstImage.find("img.vrtx-full-image");
     firstImageFullImage[0].src = firstImageFullImage[0].src + "?" + Math.random(); /* IE fix */
+    var isFirstImageLoaded = false;
     firstImageFullImage[0].onload = function() {
-      calculateImage(firstImage.find("img.vrtx-thumbnail-image"), firstImageFullImage, true);
-      wrp.find("a.prev, a.prev span, a.next, a.next span").fadeTo(0, 0);
+      if(!isFirstImageLoaded) { /* Prevent twice load-firering in e.g. FF */
+        calculateImage(firstImage.find("img.vrtx-thumbnail-image"), firstImageFullImage, true);
+        wrp.find("a.prev, a.prev span, a.next, a.next span").fadeTo(0, 0);
+        isFirstImageLoaded = true;
+      }
     };
     
     // Event-handlers
@@ -167,6 +171,7 @@
       var description = $(wrapperContainer + "-description");
       if(!description.length) {
         $("<div class='" + container.substring(1) + "-description' />").insertAfter(wrapperContainer);
+        description = $(wrapperContainer + "-description");
       }
       var html = "";
       if (images[src].title) html += "<p class='" + container.substring(1) + "-title'>" + images[src].title + "</p>";

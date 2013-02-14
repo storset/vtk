@@ -1168,8 +1168,8 @@ function saveMultipleInputFields() {
     var result = "";
     for (var j = 0, len2 = multipleInputFields.length; j < len2; j++) {
       var multipleInputField = $(multipleInputFields[j]);
-      var field = multipleInputField.find("input");
-      if(!field.length) {
+      var field = multipleInputField.find("input"); /* In most cases it's a input field therefore make the assumption first */
+      if(!field.length) { /* If not exists check for dropdown (the other type) XXX: should check a shadow structure instead */
         field = multipleInputField.find("select");
       }
       if(!field.length) continue;

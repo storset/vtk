@@ -9,13 +9,13 @@
 
 <#macro galleryJSInit maxWidth fadeEffect>
   <script type="text/javascript"><!--
-    $(window).load(function () {		
+    $(document).ready(function () {		
 	  var wrapper = ".vrtx-image-listing-include";	
 	  var container = ".vrtx-image-listing-include-container";	  
 	  var options = {
 	    fadeInOutTime : ${fadeEffect}
 	  }
-	  $(wrapper + " ul li a").vrtxSGallery(wrapper, container, ${maxWidth}, options);			  
+	  $(wrapper + " li a").vrtxSGallery(wrapper, container, ${maxWidth}, options);			  
     });
   // -->
   </script>

@@ -48,10 +48,12 @@
 
     // Init first active image
     var firstImage = wrpThumbsLinks.filter(".active");
-    calculateImage(firstImage.find("img.vrtx-thumbnail-image"), firstImage.find("img.vrtx-full-image"), true);
-    
-    // Init navigation
-    wrp.find("a.prev, a.prev span, a.next, a.next span").fadeTo(0, 0);
+    var firstImageFullImage = firstImage.find("img.vrtx-full-image");
+    firstImageFullImage[0].src = firstImageFullImage[0].src + "?" + Math.random(); /* IE fix */
+    firstImageFullImage[0].onload = function() {
+      calculateImage(firstImage.find("img.vrtx-thumbnail-image"), firstImageFullImage, true);
+      wrp.find("a.prev, a.prev span, a.next, a.next span").fadeTo(0, 0);
+    };
     
     // Event-handlers
     $(document).keydown(function (e) {
@@ -86,13 +88,19 @@
     });
 
     // Pre-load and cache stuff
-    var imgs = this, centerThumbnailImageFunc = centerThumbnailImage, cacheGenerateLinkImageFunc = cacheGenerateLinkImage;
-    for(var i = 0, len = imgs.length; i < len; i++) {
+    var imgs = this, centerThumbnailImageFunc = centerThumbnailImage, 
+        cacheGenerateLinkImageFunc = cacheGenerateLinkImage, len = imgs.length, i = 0;
+    var imageTimer = setTimeout(function() {
       var link = $(imgs[i]);
       var image = link.find("img.vrtx-thumbnail-image");
       cacheGenerateLinkImageFunc(link.find("img.vrtx-full-image").attr("src"), image, link);
       centerThumbnailImageFunc(image, link);
-    }
+      if(i < len) {
+        setTimeout(arguments.callee, 0);
+      }
+      i++;
+    }, 0);
+  
     return imgs; /* Make chainable */
     
     function nextPrevNavigate(e, dir) {

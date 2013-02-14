@@ -26,7 +26,28 @@
     </#if>
   </#if>
   <#include "/system/javascript.ftl" />
-  <script type="text/javascript"><!-- // CKEditor CSS
+  <script type="text/javascript"><!-- 
+    vrtxAdmin.multipleFormGroupingMessages = {
+      add: "${vrtx.getMsg('editor.add')}",
+      remove: "${vrtx.getMsg('editor.remove')}",
+      moveUp: "${vrtx.getMsg('editor.move-up')}",
+      moveDown: "${vrtx.getMsg('editor.move-down')}",
+      browse: "${vrtx.getMsg('editor.browseImages')}"
+    };
+	vrtxAdmin.multipleFormGroupingPaths = {
+	  <#if fckeditorBase??>
+	  baseCKURL: "${fckeditorBase.url?html}",
+	  baseFolderURL: "${baseFolder}",
+	  baseDocURL: "${fckeditorBase.documentURL?html}",
+	  basePath: "${fckBrowse.url.pathRepresentation}"
+	  </#if>
+	};
+	if(vrtxAdmin.hasFreeze) { // Make immutables
+	  Object.freeze(vrtxAdmin.multipleFormGroupingMessages);
+	  Object.freeze(vrtxAdmin.multipleFormGroupingPaths);
+	}
+  
+    // CKEditor CSS
     var cssFileList = [<#if fckEditorAreaCSSURL?exists>
                          <#list fckEditorAreaCSSURL as cssURL>
                            "${cssURL?html}" <#if cssURL_has_next>,</#if>

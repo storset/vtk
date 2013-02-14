@@ -1236,15 +1236,12 @@ function addJsonField(btn) {
   var dateTimes = [];
 
   for (var i in types) {
-    var typeType = types[i].type;
     inputFieldName = j.name + "." + types[i].name + "." + vrtxEditor.multipleFieldsBoxesCounter[j.name];
     htmlTemplate += vrtxEditor.mustacheFacade.getTypeHtml(types[i], inputFieldName);
-    if(typeType === "html") {
-      ckHtmls.push(inputFieldName);
-    } else if(typeType === "simple_html") {
-      ckSimpleHtmls.push(inputFieldName);
-    } else if(typeType === "datetime") {
-      dateTimes.push(inputFieldName);
+    switch(types[i].type) {
+      case "html":        ckHtmls.push(inputFieldName); break;
+      case "simple_html": ckSimpleHtmls.push(inputFieldName); break;
+      case "datetime":    dateTimes.push(inputFieldName); break;
     }
   }
       
@@ -1253,7 +1250,6 @@ function addJsonField(btn) {
   var removeButton = vrtxEditor.mustacheFacade.getJsonBoxesInteractionsButton('remove', vrtxAdmin.multipleFormGroupingMessages.remove);
 
   var newElementId = "vrtx-json-element-" + j.name + "-" + vrtxEditor.multipleFieldsBoxesCounter[j.name];
-    
   var newElementHtml = htmlTemplate + "<input type=\"hidden\" class=\"id\" value=\"" + vrtxEditor.multipleFieldsBoxesCounter[j.name] + "\" \/>" + removeButton;
   if (!isImmovable && numOfElements > 0) {
     var moveUpButton = vrtxEditor.mustacheFacade.getJsonBoxesInteractionsButton('move-up', '&uarr; ' + vrtxAdmin.multipleFormGroupingMessages.moveUp);

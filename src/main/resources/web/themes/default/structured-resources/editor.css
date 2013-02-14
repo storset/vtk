@@ -17,6 +17,7 @@
 }
 
 .vrtx-json .vrtx-json-element .vrtx-string,
+.vrtx-json .vrtx-json-element .vrtx-resource-ref,
 .vrtx-json .vrtx-json-element .vrtx-button {
   margin: 0 20px 0 0;
   clear: none;

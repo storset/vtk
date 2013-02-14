@@ -117,7 +117,7 @@
     }
     
     function calculateImage(image, fullImage, init) {
-      var src = fullImage.attr("src");
+      var src = fullImage.attr("src").split("?")[0]; /* Remove parameters when active is sent in to gallery */
       if (settings.fadeInOutTime > 0 && !init) {
         wrpContainer.append("<div class='over'>" + $(wrapperContainerLink).html() + "</div>");
         $(wrapperContainerLink).remove();
@@ -132,7 +132,7 @@
         }
       }
       wrpContainer.append(images[src].html);
-      scaleAndCalculatePosition(fullImage);
+      scaleAndCalculatePosition(src);
 
       var thumbs = wrpThumbsLinks;
       for (var thumbsLength = thumbs.length, i = 0; i < thumbsLength; i++) {
@@ -148,26 +148,22 @@
       }
     }
 
-    function scaleAndCalculatePosition(image) {
-      var src = image.attr("src").split("?")[0];
-      
+    function scaleAndCalculatePosition(src) {
       /* Minimum 150x100px containers */
       var imgWidth =  Math.max(parseInt(images[src].width, 10), 150) + "px";
       var imgHeight = Math.max(parseInt(images[src].height, 10), 100) + "px";
 
       $(wrapperContainer + "-nav a, " + wrapperContainer + "-nav span, " + wrapperContainerLink).css("height", imgHeight);
       $(wrapperContainer + ", " + wrapperContainer + "-nav").css("width", imgWidth);
-      $(wrapperContainer + "-description").remove();
-
-      var html = "<div class='" + container.substring(1) + "-description'>";
+      
+      var description = $(wrapperContainer + "-description");
+      if(!description.length) {
+        $("<div class='" + container.substring(1) + "-description' />").insertAfter(wrapperContainer);
+      }
+      var html = "";
       if (images[src].title) html += "<p class='" + container.substring(1) + "-title'>" + images[src].title + "</p>";
       if (images[src].alt)   html += images[src].alt;
-      html += "</div>";
-      $(html).insertAfter(wrapperContainer);
-
-      if (images[src].title || images[src].alt) {
-        $(wrapperContainer + "-description").css("width", imgWidth);
-      }
+      description.html(html).css("width", imgWidth);
     }
 
     function centerThumbnailImage(thumb, link) {

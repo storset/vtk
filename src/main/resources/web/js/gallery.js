@@ -62,6 +62,7 @@
       }
     });
 
+    // Thumbs
     wrp.on("mouseover mouseout click", "li a", function (e) {
       var elm = $(this);      
       if (e.type == "mouseover" || e.type == "mouseout") {
@@ -75,6 +76,7 @@
       }
     });
 
+    // Navigation handlers
     wrp.on("click mouseover mouseout", "a.next, " + container + "-link", function (e) {
       nextPrevNavigate(e, 1);
     });
@@ -83,6 +85,7 @@
       nextPrevNavigate(e, -1);
     });
 
+    // Pre-load and cache stuff
     var imgs = this, centerThumbnailImageFunc = centerThumbnailImage, generateLinkImageFunc = generateLinkImage;
     for(var i = 0, len = imgs.length; i < len; i++) {
       var link = $(imgs[i]);

@@ -44,10 +44,8 @@
     var wrpContainer = $(wrapperContainer);
     var wrpContainerLink = $(wrapperContainer + " a" + container + "-link");
     var wrpThumbsLinks = $(wrapperThumbsLinks);
-    var images = []; 
-    var imagesWidth = {};
-    var imagesHeight = {};
-    
+    var images = {}; 
+
     // Init first active image
     var firstImage = wrpThumbsLinks.filter(".active");
     calculateImage(firstImage.find("img.vrtx-thumbnail-image"), firstImage.find("img.vrtx-full-image"), true);
@@ -92,10 +90,10 @@
       var link = $(imgs[i]);
       var img = link.find("img.vrtx-full-image");
       var src = img.attr("src");
-      imagesWidth[src] = parseInt(link.find("span.hiddenWidth").text(), 10);
-      imagesHeight[src] = parseInt(link.find("span.hiddenHeight").text(), 10);
-      images[src] = generateLinkImageFunc(img, link, false);
-      
+      images[src] = {};
+      images[src].width = parseInt(link.find("span.hiddenWidth").text(), 10);
+      images[src].height = parseInt(link.find("span.hiddenHeight").text(), 10);
+      images[src].html = generateLinkImageFunc(img, link, false);
       centerThumbnailImageFunc(link.find("img.vrtx-thumbnail-image"), link);
     }
     return imgs; /* Make chainable */
@@ -122,21 +120,24 @@
     }
     
     function calculateImage(image, fullImage, init) {
+      var src = fullImage.attr("src");
       if (settings.fadeInOutTime > 0 && !init) {
         wrpContainer.append("<div class='over'>" + $(wrapperContainerLink).html() + "</div>");
         $(wrapperContainerLink).remove();
-        wrpContainer.append(images[fullImage.attr("src")]);
         $(".over").fadeTo(settings.fadeInOutTime, settings.fadedOutOpacity, function () {
           $(this).remove();
         });
       } else {
         if (init) {
-          wrpContainer.append(generateLinkImage(fullImage, image.parent(), true));
+          images[src] = {};
+          images[src].width = parseInt(image.parent().find("span.hiddenWidth").text(), 10);
+          images[src].height = parseInt(image.parent().find("span.hiddenHeight").text(), 10);
+          images[src].html = generateLinkImage(fullImage, image.parent(), false);
         } else {
           $(wrapperContainerLink).remove();
-          wrpContainer.append(images[fullImage.attr("src")]);
         }
       }
+      wrpContainer.append(images[src].html);
       scaleAndCalculatePosition(fullImage);
 
       var thumbs = wrpThumbsLinks;
@@ -155,8 +156,8 @@
 
     function scaleAndCalculatePosition(image) {
       var src = image.attr("src").split("?")[0];
-      var imgWidth =  Math.max(parseInt( imagesWidth[src], 10), 150) + "px";
-      var imgHeight = Math.max(parseInt(imagesHeight[src], 10), 100) + "px";
+      var imgWidth =  Math.max(parseInt(images[src].width, 10), 150) + "px";
+      var imgHeight = Math.max(parseInt(images[src].height, 10), 100) + "px";
 
       $(wrapperContainer + "-nav a, " + wrapperContainer + "-nav span, " + wrapperContainerLink).css("height", imgHeight);
       $(wrapperContainer + ", " + wrapperContainer + "-nav").css("width", imgWidth);
@@ -200,17 +201,8 @@
     function generateLinkImage(image, link, init) {
       var src = image.attr("src").split("?")[0];
       var alt = image.attr("alt");
-      var width = 0;
-      var height = 0;
-      if (!init) {
-        width = imagesWidth[src];
-        height = imagesHeight[src];
-      } else {
-        width = parseInt(link.find("span.hiddenWidth").text(), 10);
-        height = parseInt(link.find("span.hiddenHeight").text(), 10);
-        imagesWidth[src] = width;
-        imagesHeight[src] = height;
-      }
+      var width = images[src].width;
+      var height = images[src].height;
       return "<a href='" + link.attr("href") + "'" +
              " class='" + container.substring(1) + "-link'>" +
              "<img src='" + src + "' alt='" + alt + "' style='width: " +

@@ -93,21 +93,20 @@
       nextPrevNavigate(e, -1);
     });
 
-    // Pre-load and cache stuff
-    var imgs = this, centerThumbnailImageFunc = centerThumbnailImage, 
-        cacheGenerateLinkImageFunc = cacheGenerateLinkImage, len = imgs.length, i = 0;
-    var imageTimer = setTimeout(function() {
-      var link = $(imgs[i]);
-      var image = link.find("img.vrtx-thumbnail-image");
-      cacheGenerateLinkImageFunc(link.find("img.vrtx-full-image").attr("src"), image, link);
-      centerThumbnailImageFunc(image, link);
-      if(i < len) {
-        setTimeout(arguments.callee, 0);
+    // Rest of images
+    var imgsCached = this;
+    $(window).load(function() {
+      var imgs = imgsCached, centerThumbnailImageFunc = centerThumbnailImage, 
+          cacheGenerateLinkImageFunc = cacheGenerateLinkImage, link, image;
+      for(var i = 0, len = imgs.length; i < len; i++) {
+        link = $(imgs[i]);
+        image = link.find("img.vrtx-thumbnail-image");
+        cacheGenerateLinkImageFunc(link.find("img.vrtx-full-image").attr("src"), image, link);
+        centerThumbnailImageFunc(image, link);
       }
-      i++;
-    }, 0);
+    });
   
-    return imgs; /* Make chainable */
+    return imgsCached; /* Make chainable */
     
     function nextPrevNavigate(e, dir) {
       var isNext = dir > 0;	

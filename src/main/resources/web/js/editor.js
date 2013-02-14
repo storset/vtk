@@ -65,7 +65,8 @@ function VrtxEditor() {
     this.multipleFieldsBoxesCounter = {}; /* Make sure every new field and box have unique id's (important for CK-fields) */
     this.multipleFieldsBoxesTemplates = [];
     this.multipleFieldsBoxesDeferred = null;
-    
+    this.multipleFieldsBoxesAccordionSwitchThenScrollTo = null;
+
     this.multipleBoxesTemplatesContract = [];
     this.multipleBoxesTemplatesContractBuilt = null;
   
@@ -1385,7 +1386,7 @@ function swapContent(moveBtn, move) {
   movedElm.focusout();
   
   if(hasAccordion) {
-    ACCORDION_MOVE_TO_AFTER_CHANGE = movedElm;
+    vrtxEditor.multipleFieldsBoxesAccordionSwitchThenScrollTo = movedElm;
     accordionWrapper.find(".fieldset").accordion("option", "active", (movedElm.index() - 1))
                                       .accordion("option", "refresh");
   } else {
@@ -1416,7 +1417,7 @@ function scrollToElm(movedElm) {
     axis: 'y'
   });
   setTimeout(function() {
-    ACCORDION_MOVE_TO_AFTER_CHANGE = null;
+    vrtxEditor.multipleFieldsBoxesAccordionSwitchThenScrollTo = null;
   }, 270);
 }
 
@@ -1603,8 +1604,8 @@ function accordionJsonRefresh(elem, active) {
     active: active,
     change: function (e, ui) {
       accordionJsonUpdateHeader(ui.oldHeader);
-      if (ACCORDION_MOVE_TO_AFTER_CHANGE) {
-        scrollToElm(ACCORDION_MOVE_TO_AFTER_CHANGE);
+      if (vrtxEditor.multipleFieldsBoxesAccordionSwitchThenScrollTo) {
+        scrollToElm(vrtxEditor.multipleFieldsBoxesAccordionSwitchThenScrollTo);
       }
     }
   });

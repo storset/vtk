@@ -48,6 +48,8 @@
 
     // Init first active image
     var firstImage = wrpThumbsLinks.filter(".active");
+    if(!firstImage.length) return this; 
+    
     var firstImageFullImage = firstImage.find("img.vrtx-full-image");
     firstImageFullImage[0].src = firstImageFullImage[0].src + "?" + Math.random(); /* IE fix */
     var isFirstImageLoaded = false;

@@ -75,7 +75,7 @@ resourcetype oppbygning {
       [endif]
       
       [if gradsnavn != null && gradsnavn != ""]
-        [localized 'grade-description'] [call "include:shared-text" {"docType":"oppbygning", "propName":"gradsnavn"}]
+        [localized 'grade-description'] [call "include:shared-text" {"propName":"gradsnavn"}]
       [endif]
       ##
     }
@@ -179,8 +179,8 @@ resourcetype oppbygning {
             [call "comp:introduction-image"]
             [call "json:field" {"select":"content-study"}]
             [call "comp:gradsnavn"]
-            [call "include:shared-text" {"docType":"oppbygning", "propName":"vitnemaal"}]
-            [call "include:shared-text" {"docType":"oppbygning", "propName":"fellestekst-fakultet"}]
+            [call "include:shared-text" {"propName":"vitnemaal"}]
+            [call "include:shared-text" {"propName":"fellestekst-fakultet"}]
             [call "json:field" {"select":"fellestekst-fakultet-fri"}]
             [call "comp:related-content-in-main-column"]
             [call "comp:vrtx-date-info"]

@@ -57,16 +57,9 @@ public class SharedTextComponent extends ViewRenderingDecoratorComponent {
     protected void processModel(Map<String, Object> model, DecoratorRequest request, DecoratorResponse response)
             throws Exception {
 
-        String docType = request.getStringParameter("docType");
         String propName = request.getStringParameter("propName");
 
-        if (StringUtils.isBlank(docType) && StringUtils.isBlank(propName)) {
-            return;
-        }
-
-        Map<String, JSONObject> resolvedsharedTexts = sharedTextResolver.getSharedTextValues(docType, propName);
-
-        if (resolvedsharedTexts == null || resolvedsharedTexts.isEmpty()) {
+        if (StringUtils.isBlank(propName)) {
             return;
         }
 
@@ -78,6 +71,13 @@ public class SharedTextComponent extends ViewRenderingDecoratorComponent {
         Property prop = resource.getProperty(Namespace.STRUCTURED_RESOURCE_NAMESPACE, propName);
 
         if (prop == null) {
+            return;
+        }
+
+        Map<String, JSONObject> resolvedsharedTexts = sharedTextResolver.getSharedTextValues(
+                resource.getResourceType(), prop.getDefinition());
+
+        if (resolvedsharedTexts == null || resolvedsharedTexts.isEmpty()) {
             return;
         }
 

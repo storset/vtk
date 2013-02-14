@@ -104,7 +104,7 @@ resourcetype hvordan-soke {
       [def opptak-metode-internasjonale-sokere document.properties.opptak-metode-internasjonale-sokere]   
         [if (internasjonale-sokere-fri != null && internasjonale-sokere-fri != "") || (opptak-metode-internasjonale-sokere != null && opptak-metode-internasjonale-sokere != "")]
     	  <h3>[localized 'internasjonale-sokere-view']</h3>  
-	      [call "include:shared-text" {"docType":"hvordan-soke", "propName":"opptak-metode-internasjonale-sokere"}]
+	      [call "include:shared-text" {"propName":"opptak-metode-internasjonale-sokere"}]
 	      [if internasjonale-sokere-fri != null && internasjonale-sokere-fri != ""]
             <div class="internasjonale-sokere-fri">[val internasjonale-sokere-fri # unescaped]</div>
           [endif]
@@ -119,7 +119,7 @@ resourcetype hvordan-soke {
       [def opptak-metode-nordiske-sokere document.properties.opptak-metode-nordiske-sokere]  
         [if (nordiske-sokere-fri != null && nordiske-sokere-fri != "") || (opptak-metode-nordiske-sokere != null && opptak-metode-nordiske-sokere != "")]
           <h3>[localized 'nordiske-sokere-view']</h3>
-          [call "include:shared-text" {"docType":"hvordan-soke", "propName":"opptak-metode-nordiske-sokere"}]
+          [call "include:shared-text" {"propName":"opptak-metode-nordiske-sokere"}]
           [if nordiske-sokere-fri != null && nordiske-sokere-fri != ""]
             <div class="nordiske-sokere-fri">[val nordiske-sokere-fri # unescaped]</div>
           [endif]
@@ -179,7 +179,7 @@ resourcetype hvordan-soke {
       [def opptakskrav-fri document.properties.opptakskrav-fri]
       [def opptakskrav-generelle-grunnstudier document.properties.opptakskrav-generelle-grunnstudier]
         [if (opptakskrav-fri != null && opptakskrav-fri != "") || (opptakskrav-generelle-grunnstudier != null && opptakskrav-generelle-grunnstudier != "")]
-          [call "include:shared-text" {"docType":"hvordan-soke", "propName":"opptakskrav-generelle-grunnstudier"}]
+          [call "include:shared-text" {"propName":"opptakskrav-generelle-grunnstudier"}]
           [if opptakskrav-fri != null && opptakskrav-fri != ""]
             <div class="opptakskrav-fri">[val opptakskrav-fri # unescaped]</div>
           [endif]
@@ -194,7 +194,7 @@ resourcetype hvordan-soke {
       [def opptakskrav-generelle-master document.properties.opptakskrav-generelle-master]
         [if (generelle-fri != null && generelle-fri != "") || (opptakskrav-generelle-master != null && opptakskrav-generelle-master != "")]
           <h3>[localized 'generelle-view']</h3>
-          [call "include:shared-text" {"docType":"hvordan-soke", "propName":"opptakskrav-generelle-master"}]
+          [call "include:shared-text" {"propName":"opptakskrav-generelle-master"}]
           [if generelle-fri != null && generelle-fri != ""]
             <div class="generelle-fri">[val generelle-fri # unescaped]</div>
           [endif]
@@ -209,7 +209,7 @@ resourcetype hvordan-soke {
       [def opptakskrav-spesielle document.properties.opptakskrav-spesielle]
         [if (spesielle-fri != null && spesielle-fri != "") || (opptakskrav-spesielle != null && opptakskrav-spesielle != "")]
           <h3>[localized 'spesielle-view']</h3>
-          [call "include:shared-text" {"docType":"hvordan-soke", "propName":"opptakskrav-spesielle"}]
+          [call "include:shared-text" {"propName":"opptakskrav-spesielle"}]
           [if spesielle-fri != null && spesielle-fri != ""]
             <div class="spesielle-fri">[val spesielle-fri # unescaped]</div>
           [endif]
@@ -224,7 +224,7 @@ resourcetype hvordan-soke {
       [def opptakskrav-politiattest document.properties.opptakskrav-politiattest]
         [if (politiattest-fri != null && politiattest-fri != "") || (opptakskrav-politiattest != null && opptakskrav-politiattest != "")]
           <h3>[localized 'politiattest-view']</h3>
-          [call "include:shared-text" {"docType":"hvordan-soke", "propName":"opptakskrav-politiattest"}]
+          [call "include:shared-text" {"propName":"opptakskrav-politiattest"}]
           [if politiattest-fri != null && politiattest-fri != ""]
             <div class="politiattest-fri">[val politiattest-fri # unescaped]</div>
           [endif]
@@ -239,7 +239,7 @@ resourcetype hvordan-soke {
       [def rangering-av-sokere document.properties.rangering-av-sokere]      
         [if (rangering-sokere-fri != null && rangering-sokere-fri != "") || (rangering-av-sokere != null && rangering-av-sokere != "")]
           <h2>[localized 'rangering-sokere-view']</h2>
-          [call "include:shared-text" {"docType":"hvordan-soke", "propName":"rangering-av-sokere"}]
+          [call "include:shared-text" {"propName":"rangering-av-sokere"}]
           [if rangering-sokere-fri != null && rangering-sokere-fri != ""]
             <div class="rangering-sokere-fri">[val rangering-sokere-fri # unescaped]</div>
           [endif]
@@ -274,7 +274,7 @@ resourcetype hvordan-soke {
       [def innpassing-tidl-utdanning document.properties.innpassing-tidl-utdanning]
         [if (innpassing-tidl-utdanning-fri != null && innpassing-tidl-utdanning-fri != "") || (innpassing-tidl-utdanning != null && innpassing-tidl-utdanning != "")]
           <h2>[localized 'innpassing-tidl-utdanning-view']</h2>
-          [call "include:shared-text" {"docType":"hvordan-soke", "propName":"innpassing-tidl-utdanning"}]
+          [call "include:shared-text" {"propName":"innpassing-tidl-utdanning"}]
           [if innpassing-tidl-utdanning-fri != null && innpassing-tidl-utdanning-fri != ""]
             <div class="innpassing-tidl-utdanning-fri">[val innpassing-tidl-utdanning-fri # unescaped]</div>
           [endif]
@@ -289,7 +289,7 @@ resourcetype hvordan-soke {
       [def relatert-innhold-regelverk document.properties.relatert-innhold-regelverk]
         [if (regelverk-fri != null && regelverk-fri != "") || (relatert-innhold-regelverk != null && relatert-innhold-regelverk != "")]
           <h2>[localized 'regelverk-view']</h2>
-	      [call "include:shared-text" {"docType":"hvordan-soke", "propName":"relatert-innhold-regelverk"}]
+	      [call "include:shared-text" {"propName":"relatert-innhold-regelverk"}]
 	      [if regelverk-fri != null && regelverk-fri != ""]
             <div class="regelverk-fri">[val regelverk-fri # unescaped]</div>
           [endif]
@@ -312,19 +312,19 @@ resourcetype hvordan-soke {
           </h3>
     	  <ul>
     	    [if (poenggrenser-forstegang-alle-kvalifiserte != null && poenggrenser-forstegang-alle-kvalifiserte != "")]
-              <li>[call "include:shared-text" {"docType":"hvordan-soke", "propName":"poenggrenser-forstegang-alle-kvalifiserte"}]</li>
+              <li>[call "include:shared-text" {"propName":"poenggrenser-forstegang-alle-kvalifiserte"}]</li>
             [endif]
             [if (forstevitnemal-kvote-fri != null && forstevitnemal-kvote-fri != "")]
               <li>[call "comp:forstevitnemal-kvote"]</li>
             [endif]
             [if (poenggrenser-ordinar-alle-kvalifiserte != null && poenggrenser-ordinar-alle-kvalifiserte != "")]
-              <li>[call "include:shared-text" {"docType":"hvordan-soke", "propName":"poenggrenser-ordinar-alle-kvalifiserte"}]</li>
+              <li>[call "include:shared-text" {"propName":"poenggrenser-ordinar-alle-kvalifiserte"}]</li>
             [endif]
             [if (ordinar-kvote-alle-kvalifiserte-fri != null && ordinar-kvote-alle-kvalifiserte-fri != "")]
               <li>[call "comp:ordinar-kvote-alle-kvalifiserte"]</li>
             [endif]
           </ul>
-          [call "include:shared-text" {"docType":"hvordan-soke", "propName":"poenggrenser-poengberegning"}]
+          [call "include:shared-text" {"propName":"poenggrenser-poengberegning"}]
         [endif]
       ##
     }
@@ -346,9 +346,9 @@ resourcetype hvordan-soke {
           <div id="vrtx-main-content" class="vrtx-hide-additional-content-false">      
             <h1>[localized 'title']</h1>
             <h2>[localized 'opptak']</h2>
-            [call "include:shared-text" {"docType":"hvordan-soke", "propName":"opptak-frist-frekvens"}]
+            [call "include:shared-text" {"propName":"opptak-frist-frekvens"}]
             [call "comp:frist-frekvens-admin"]
-            [call "include:shared-text" {"docType":"hvordan-soke", "propName":"opptak-metode"}]
+            [call "include:shared-text" {"propName":"opptak-metode"}]
             [call "comp:metode"]
             [call "comp:internasjonale-sokere"]
             [call "comp:nordiske-sokere"]

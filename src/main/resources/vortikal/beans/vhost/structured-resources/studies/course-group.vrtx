@@ -16,7 +16,8 @@ resourcetype course-group {
   edit-rules {
     status (dropdown),
     course-group-scope (dropdown),
-    studinfo-kontakt (class[vrtx-shared-text])
+    studinfo-kontakt (class[vrtx-shared-text],
+                      attribute[vrtx-shared-text-path:/vrtx/fellestekst/studinfo-kontakt])
   }
 
   view {
@@ -60,7 +61,7 @@ resourcetype course-group {
             <div id="vrtx-related-content">
               [if studinfo-kontakt != null && studinfo-kontakt != "" && studinfo-kontakt != "ingen-fellestekst"]
                 <h2>[localized 'studinfo-kontakt']</h2>
-                [call "include:shared-text" {"docType":"studinfo-kontakt", "propName":"studinfo-kontakt"}]
+                [call "include:shared-text" {"propName":"studinfo-kontakt"}]
               [endif]
             </div>
           </div>

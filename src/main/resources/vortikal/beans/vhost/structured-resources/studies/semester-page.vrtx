@@ -37,7 +37,8 @@ resourcetype semester-page {
     group link-box-four (link-box-four-title, link-box-four-links),
     group link-box-five (link-box-five-title, link-box-five-links),
     group link-box-six (link-box-six-title, link-box-six-links),
-    studinfo-kontakt (class[vrtx-shared-text]),
+    studinfo-kontakt (class[vrtx-shared-text],
+                      attribute[vrtx-shared-text-path:/vrtx/fellestekst/studinfo-kontakt]),
     studinfo-kontakt (after link-box-six)
   }
 
@@ -267,7 +268,7 @@ resourcetype semester-page {
               <div class="vrtx-frontpage-box white-box">
             [endif]
               <h2>[localized 'studinfo-kontakt']</h2>
-              [call "include:shared-text" {"docType":"studinfo-kontakt", "propName":"studinfo-kontakt"}]
+              [call "include:shared-text" {"propName":"studinfo-kontakt"}]
             </div>
             [if messages-placement = null || (messages-placement = "right" || (messages-placement = "auto" && resourceLinkCount > 4))]
               <div class="vrtx-frontpage-box white-box">

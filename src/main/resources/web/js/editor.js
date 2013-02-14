@@ -1169,8 +1169,10 @@ function saveMultipleInputFields() {
     for (var j = 0, len2 = multipleInputFields.length; j < len2; j++) {
       var multipleInputField = $(multipleInputFields[j]);
       var field = multipleInputField.find("input");
-      if(!field) field = multipleInputField.find("select");
-      if(!field) continue;
+      if(!field.length) {
+        field = multipleInputField.find("select");
+      }
+      if(!field.length) continue;
       result += $.trim(field.val());
       if (j < (len2-1)) {
         result += ",";

@@ -1414,11 +1414,11 @@ function scrollToElm(movedElm) {
   $('body').scrollTo(absPosTop, 250, {
     easing: 'swing',
     queue: true,
-    axis: 'y'
+    axis: 'y',
+    onAfter: function() {
+      vrtxEditor.multipleFieldsBoxesAccordionSwitchThenScrollTo = null;
+    }
   });
-  setTimeout(function() {
-    vrtxEditor.multipleFieldsBoxesAccordionSwitchThenScrollTo = null;
-  }, 270);
 }
 
 /**

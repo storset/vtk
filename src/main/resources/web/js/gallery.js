@@ -50,6 +50,7 @@
     var firstImage = wrpThumbsLinks.filter(".active");
     calculateImage(firstImage.find("img.vrtx-thumbnail-image"), firstImage.find("img.vrtx-full-image"), true);
     
+    // Init navigation
     wrp.find("a.prev, a.prev span, a.next, a.next span").fadeTo(0, 0);
     
     // Event-handlers
@@ -63,14 +64,11 @@
 
     wrp.on("mouseover mouseout click", "li a", function (e) {
       var elm = $(this);      
-      if (e.type == "mouseover") {
-        elm.filter(":not(.active)").find("img").stop().fadeTo(settings.fadeThumbsInOutTime, 1);
-      } else if (e.type == "mouseout") {
-        elm.filter(":not(.active)").find("img").stop().fadeTo(settings.fadeThumbsInOutTime, settings.fadedThumbsOutOpacity);
+      if (e.type == "mouseover" || e.type == "mouseout") {
+        elm.filter(":not(.active)").find("img").stop().fadeTo(settings.fadeThumbsInOutTime, (e.type == "mouseover") ? 1 : settings.fadedThumbsOutOpacity);
       } else {
         var img = elm.find("img.vrtx-thumbnail-image");
-        var fullImage = elm.find("img.vrtx-full-image");
-        calculateImage(img, fullImage, false);
+        calculateImage(img, elm.find("img.vrtx-full-image"), false);
         elm.addClass("active");
         img.stop().fadeTo(0, 1);
         e.preventDefault();
@@ -88,13 +86,16 @@
     var imgs = this, centerThumbnailImageFunc = centerThumbnailImage, generateLinkImageFunc = generateLinkImage;
     for(var i = 0, len = imgs.length; i < len; i++) {
       var link = $(imgs[i]);
-      var img = link.find("img.vrtx-full-image");
-      var src = img.attr("src");
+      var fullImage = link.find("img.vrtx-full-image");
+      var image = link.find("img.vrtx-thumbnail-image");
+      var src = fullImage.attr("src");
       images[src] = {};
       images[src].width = parseInt(link.find("span.hiddenWidth").text(), 10);
       images[src].height = parseInt(link.find("span.hiddenHeight").text(), 10);
-      images[src].html = generateLinkImageFunc(img, link, false);
-      centerThumbnailImageFunc(link.find("img.vrtx-thumbnail-image"), link);
+      images[src].alt = image.attr("alt");
+      images[src].title = image.attr("title");
+      images[src].html = generateLinkImage(src, images[src].alt, link);
+      centerThumbnailImageFunc(image, link);
     }
     return imgs; /* Make chainable */
     
@@ -129,10 +130,13 @@
         });
       } else {
         if (init) {
+          var link = image.parent();
           images[src] = {};
-          images[src].width = parseInt(image.parent().find("span.hiddenWidth").text(), 10);
-          images[src].height = parseInt(image.parent().find("span.hiddenHeight").text(), 10);
-          images[src].html = generateLinkImage(fullImage, image.parent(), false);
+          images[src].width = parseInt(link.find("span.hiddenWidth").text(), 10);
+          images[src].height = parseInt(link.find("span.hiddenHeight").text(), 10);
+          images[src].alt = image.attr("alt");
+          images[src].title = image.attr("title");
+          images[src].html = generateLinkImage(src, images[src].alt, link);
         } else {
           $(wrapperContainerLink).remove();
         }
@@ -162,23 +166,14 @@
       $(wrapperContainer + "-nav a, " + wrapperContainer + "-nav span, " + wrapperContainerLink).css("height", imgHeight);
       $(wrapperContainer + ", " + wrapperContainer + "-nav").css("width", imgWidth);
       $(wrapperContainer + "-description").remove();
-      
-      var title = image.attr("title");
-      var alt = image.attr("alt");
-      var hasTitle = title && title.length;
-      var hasAlt = alt && alt.length;
 
       var html = "<div class='" + container.substring(1) + "-description'>";
-      if (hasTitle) {
-        html += "<p class='" + container.substring(1) + "-title'>" + title + "</p>";
-      }
-      if (hasAlt) {
-        html += alt;
-      }
+      if (images[src].title) html += "<p class='" + container.substring(1) + "-title'>" + images[src].title + "</p>";
+      if (images[src].alt)   html += images[src].alt;
       html += "</div>";
       $(html).insertAfter(wrapperContainer);
 
-      if (hasTitle || hasAlt) {
+      if (images[src].title || images[src].alt) {
         $(wrapperContainer + "-description").css("width", imgWidth);
       }
     }
@@ -198,15 +193,11 @@
       thumb.css(cssProperty, adjust + "px");
     }
 
-    function generateLinkImage(image, link, init) {
-      var src = image.attr("src").split("?")[0];
-      var alt = image.attr("alt");
-      var width = images[src].width;
-      var height = images[src].height;
+    function generateLinkImage(src, alt, link) {
       return "<a href='" + link.attr("href") + "'" +
              " class='" + container.substring(1) + "-link'>" +
              "<img src='" + src + "' alt='" + alt + "' style='width: " +
-             width + "px; height: " + height + "px;' />" + "</a>";
+             images[src].width + "px; height: " + images[src].height + "px;' />" + "</a>";
     }
   };
 })(jQuery);

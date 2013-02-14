@@ -165,7 +165,7 @@ overrides
 
 
 editruledef
-	:	NAME (position)? ( LP EDITHINT (COMMA EDITHINT)* RP)?
+	:	NAME (position)? (LP EDITHINT (COMMA EDITHINT)* RP)?
 		-> ^(NAME (position)? (EDITHINT)*)
 	|	GROUP NAME namelist (position)? (ORIENTATION)?
 		-> ^(GROUP ^(NAME namelist) (position)? (ORIENTATION)?)

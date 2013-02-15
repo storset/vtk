@@ -1,3 +1,33 @@
+/* Copyright (c) 2013 University of Oslo, Norway
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are
+ * met:
+ * 
+ *  * Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 
+ *  * Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ * 
+ *  * Neither the name of the University of Oslo nor the names of its
+ *    contributors may be used to endorse or promote products derived from
+ *    this software without specific prior written permission.
+ *      
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+ * IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+ * PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER
+ * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
 package org.vortikal.web.filter;
 
 import java.io.ByteArrayOutputStream;
@@ -16,57 +46,58 @@ public class DAVLoggingRequestFilter extends AbstractRequestFilter {
     public HttpServletRequest filterRequest(HttpServletRequest request) {
         BaseContext ctx = BaseContext.getContext();
 
-        // Add self to thread local context
-        DavLoggingRequestWrapper w = new DavLoggingRequestWrapper(request);
-        ctx.setAttribute(DavLoggingRequestWrapper.class.getName(), w);
+        // Add self to thread local context (corresponding response filter needs access).
+        DavLoggingRequestWrapper requestWrapper = new DavLoggingRequestWrapper(request);
+        ctx.setAttribute(DavLoggingRequestWrapper.class.getName(), requestWrapper);
 
-        return w;
+        return requestWrapper;
     }
 
 
-    public static class DavLoggingRequestWrapper extends HttpServletRequestWrapper {
+    static class DavLoggingRequestWrapper extends HttpServletRequestWrapper {
 
-        private LoggingInputStreamWrapper streamWrapper;
+        private InputStreamCopyWrapper streamWrapper;
 
         public DavLoggingRequestWrapper(HttpServletRequest request) {
             super(request);
             try {
-                this.streamWrapper = new LoggingInputStreamWrapper(request.getInputStream());
+                this.streamWrapper = new InputStreamCopyWrapper(request.getInputStream());
             } catch (IOException io) {
             }
         }
 
+        @Override
         public ServletInputStream getInputStream() {
             return this.streamWrapper;
         }
 
-        LoggingInputStreamWrapper getLoggingInputStreamWrapper() {
+        InputStreamCopyWrapper getInputStreamWrapper() {
             return this.streamWrapper;
         }
 
     }
 
-    static class LoggingInputStreamWrapper extends ServletInputStream {
+    static class InputStreamCopyWrapper extends ServletInputStream {
 
-        private ByteArrayOutputStream streamBuffer;
+        private ByteArrayOutputStream streamCopyBuffer;
         private InputStream wrappedStream;
 
-        LoggingInputStreamWrapper(InputStream wrappedStream) {
+        InputStreamCopyWrapper(InputStream wrappedStream) {
             this.wrappedStream = wrappedStream;
-            this.streamBuffer = new ByteArrayOutputStream();
-        }
-
-        byte[] getLoggedInputBytes() {
-            return this.streamBuffer.toByteArray();
+            this.streamCopyBuffer = new ByteArrayOutputStream();
         }
 
         @Override
         public int read() throws IOException {
             int b = this.wrappedStream.read();
             if (b > -1) {
-                streamBuffer.write(b);
+                streamCopyBuffer.write(b);
             }
             return b;
+        }
+
+        public byte[] getInputBytes() {
+            return this.streamCopyBuffer.toByteArray();
         }
     }
 }

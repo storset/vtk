@@ -82,9 +82,9 @@ resourcetype structured-project {
       [def style null]
       
       [if img-uri != null]
-        [def img resource(img-uri)]      
+        [def img resource(img-uri)]
       [endif]
-      [if img != null] 
+      [if img != null]
         [def pixel-width resource-prop(img-uri, "pixelWidth")]
         [def photographer resource-prop(img-uri, "photographer")]
       [endif]
@@ -93,7 +93,7 @@ resourcetype structured-project {
       [endif]
      
       [if img-uri != null]
-        [if pixel-width != null]  
+        [if pixel-width != null]
           <div class="vrtx-introduction-image" style="[val style]">
         [else]
           <div class="vrtx-introduction-image">
@@ -121,7 +121,7 @@ resourcetype structured-project {
                 <span class="vrtx-photo-prefix">[localized "photo-prefix"]: </span>[val photographer]
               </span>
             [endif]
-          </div> 
+          </div>
         [endif]
         </div>
       [endif]
@@ -153,7 +153,7 @@ resourcetype structured-project {
             [def thetitle feed.rssTitle]
             [def theurl feed.rssUrl]
               
-            [if theurl != null && theurl != ""]         
+            [if theurl != null && theurl != ""]
               [if thetitle != null && thetitle != ""]
                 [call "include:feed"  {"url":theurl, "override-feed-title":thetitle, "feed-title":true, "max-messages":3, "include-if-empty":false}]
               [else]
@@ -182,7 +182,7 @@ resourcetype structured-project {
   }
 
   view {
-    ##    
+    ##
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml">
       <head>
@@ -195,7 +195,7 @@ resourcetype structured-project {
             <h1>[call "json:field" {"select":"name"}] [call "comp:completed"]</h1>
             [call "comp:introduction"]
             [def theHidePicture document.properties.hidePicture]
-            [if theHidePicture = "false" || theHidePicture = null] 
+            [if theHidePicture = "false" || theHidePicture = null]
               [call "comp:introduction-image"]
             [endif]
             [call "json:field" {"select": "content"}]

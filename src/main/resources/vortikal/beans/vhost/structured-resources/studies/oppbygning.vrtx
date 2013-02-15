@@ -12,7 +12,7 @@ resourcetype oppbygning {
     vitnemaal: string,
     fellestekst-fakultet : string,
     fellestekst-fakultet-fri: html,
-	related-content : html noextract,
+    related-content : html noextract,
     tittel : string,
     title : derived (tittel) eval ("oppbygning"?localized) overrides title
   }
@@ -56,7 +56,7 @@ resourcetype oppbygning {
       [resource-props "."]
       [def document structured-document()]
       [def vitnemaal document.properties.vitnemaal]
-      [def locale resource-locale()] 
+      [def locale resource-locale()]
             
       [if locale = "no_NO"]
         [def grad-fri document.properties.gradsnavn-no]
@@ -103,48 +103,51 @@ resourcetype oppbygning {
       [def photographer null]
       [def style null]
       
-	  [if img-uri != null]
-      	[def img resource(img-uri)]      
+      [if img-uri != null]
+        [def img resource(img-uri)]
       [endif]
-      [if img != null] 
-	  	[def pixel-width resource-prop(img-uri, "pixelWidth")]
-	  	[def photographer resource-prop(img-uri, "photographer")]
-  	  [endif]
-  	  [if pixel-width != null]
-	  	[def style concat("width:", pixel-width, "px")]
-	  [endif]
-	  
-	  [if img-uri != null]
-	    [if pixel-width != null]  
-		  <div class="vrtx-introduction-image" style="[val style]">
-	    [else]
-		  <div class="vrtx-introduction-image">
-	    [endif]
-	  	
-	    [if caption != null]
-		  <img src="[val img-uri]" alt="[val caption # unescaped 'flattened']"/>
-	    [else]
-		  <img src="[val img-uri]" alt="[localized 'introduction-image-alt']"/>
-	    [endif]
-	  
-	    [if caption != null]
-	      <div class="vrtx-imagetext">
-	        <div class="vrtx-imagedescription">[val caption # unescaped]</div>
-	        [if photographer != null]
-	          <span class="vrtx-photo">
-	            <span class="vrtx-photo-prefix">[localized "photo-prefix"]: </span>[val photographer]
-	          </span>
-	        [endif]
-	      </div>
-	    [elseif photographer != null]
-	      <div class="vrtx-imagetext">
-	        <span class="vrtx-photo">
-	          <span class="vrtx-photo-prefix">[localized "photo-prefix"]: </span>[val photographer]
-	        </span>
-	      </div> 
-	    [endif]
-	    </div>
-	  [endif]
+
+      [if img != null]
+        [def pixel-width resource-prop(img-uri, "pixelWidth")]
+        [def photographer resource-prop(img-uri, "photographer")]
+      [endif]
+
+      [if pixel-width != null]
+        [def style concat("width:", pixel-width, "px")]
+      [endif]
+      
+      [if img-uri != null]
+
+        [if pixel-width != null]
+          <div class="vrtx-introduction-image" style="[val style]">
+        [else]
+          <div class="vrtx-introduction-image">
+        [endif]
+
+        [if caption != null]
+          <img src="[val img-uri]" alt="[val caption # unescaped 'flattened']"/>
+        [else]
+          <img src="[val img-uri]" alt="[localized 'introduction-image-alt']"/>
+        [endif]
+
+        [if caption != null]
+          <div class="vrtx-imagetext">
+            <div class="vrtx-imagedescription">[val caption # unescaped]</div>
+            [if photographer != null]
+              <span class="vrtx-photo">
+                <span class="vrtx-photo-prefix">[localized "photo-prefix"]: </span>[val photographer]
+              </span>
+            [endif]
+          </div>
+        [elseif photographer != null]
+          <div class="vrtx-imagetext">
+            <span class="vrtx-photo">
+              <span class="vrtx-photo-prefix">[localized "photo-prefix"]: </span>[val photographer]
+            </span>
+          </div>
+        [endif]
+        </div>
+      [endif]
       ##
     }
     
@@ -153,7 +156,7 @@ resourcetype oppbygning {
       [resource-props "."]
       [if publish-date != null]
         <div class="vrtx-date-info">
-        <span class="published-date-label">[localized "publishedDate"]</span> <span class="published-date">[val publish-date] </span>
+        <span class="published-date-label">[localized "publishedDate"]</span> <span class="published-date">[val publish-date]</span>
         [if publish-date < lastModified]
           - <span class="last-modified-date">[localized "lastModifiedDate"]</span> <span class="last-modified-date">[val lastModified]</span>
         [endif]
@@ -164,7 +167,7 @@ resourcetype oppbygning {
   }
 
   view {
-    ##    
+    ##
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml">
       <head>
@@ -173,7 +176,7 @@ resourcetype oppbygning {
       <body id="vrtx-structured-article">
         <div id="vrtx-content">
           [def document structured-document()]
-          <div id="vrtx-main-content" class="vrtx-hide-additional-content-true"> 
+          <div id="vrtx-main-content" class="vrtx-hide-additional-content-true">
             <h1>[localized 'oppbygning']</h1>
             [call "comp:introduction"]
             [call "comp:introduction-image"]
@@ -196,19 +199,19 @@ resourcetype oppbygning {
   }
   
   localization {
-  	fellestekster-fakultet : (en : "Local info", no : "Lokal info", nn : "Lokal info"),
-  	fellestekst-fakultet-fri : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
-  	fellestekst-fakultet : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
-  	oppbygning : (en : "Programme structure", no : "Oppbygging og gjennomføring", nn : "Oppbygging og gjennomføring"),
+    fellestekster-fakultet : (en : "Local info", no : "Lokal info", nn : "Lokal info"),
+    fellestekst-fakultet-fri : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
+    fellestekst-fakultet : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
+    oppbygning : (en : "Programme structure", no : "Oppbygging og gjennomføring", nn : "Oppbygging og gjennomføring"),
     introduction : (en : "Introduction",no : "Innledning", nn : "Innleiing"),
     picture : (en: "Image", no: "Bilde", nn : "Bilete"),
     introduction-image-alt : (en: "Image", en: "Bilde", en: "Bilete"),
     caption : (en : "Image caption", no : "Bildetekst", nn : "Bilettekst"),
     photo-prefix : (en : "Photo", no : "Foto", nn : "Photo"),
-	gradsnavn : (en : "Name of degree (shared text)", no : "Gradsnavn (fellestekst)", nn : "Gradsnamn (fellestekst)"),
-	gradsnavn-no : (en : "Name of degree (bokmål)", no : "Gradsnavn (bokmål)", nn : "Gradsnamn (bokmål)"),
-	gradsnavn-nn : (en : "Name of degree (nynorsk)", no : "Gradsnavn (nynorsk)", nn : "Gradsnamn (nynorsk)"),
-	gradsnavn-en : (en : "Name of degree (english)", no : "Gradsnavn (engelsk)", nn : "Gradsnamn (engelsk)"),
+    gradsnavn : (en : "Name of degree (shared text)", no : "Gradsnavn (fellestekst)", nn : "Gradsnamn (fellestekst)"),
+    gradsnavn-no : (en : "Name of degree (bokmål)", no : "Gradsnavn (bokmål)", nn : "Gradsnamn (bokmål)"),
+    gradsnavn-nn : (en : "Name of degree (nynorsk)", no : "Gradsnavn (nynorsk)", nn : "Gradsnamn (nynorsk)"),
+    gradsnavn-en : (en : "Name of degree (english)", no : "Gradsnavn (engelsk)", nn : "Gradsnamn (engelsk)"),
     grader : (en : "Diploma and degree", no : "Vitnemål og grad", nn : "Vitnemål og grad"),
     vitnemaal: (en : "Diploma (shared text)", no : "Vitnemål (fellestekst)", nn : "Vitnemål (fellestekst)"),
     grade-description: (en : "This programme leads to the following degree: ", no : "Studiet leder fram til graden: ", nn : "Studiet leder fram til graden: "),

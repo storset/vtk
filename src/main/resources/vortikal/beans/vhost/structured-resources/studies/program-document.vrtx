@@ -36,11 +36,11 @@ resourcetype program-document {
         <div class="vrtx-program-status">
           [if thestatus = "under-arbeid"]
             [localized 'status-under-arbeid']
-		  [elseif thestatus = "nedlagt"]
+          [elseif thestatus = "nedlagt"]
             [localized 'status-nedlagt']
           [else]
-	        [localized 'status-inactive']
-	      [endif]
+            [localized 'status-inactive']
+          [endif]
         </div>
       [endif]
       ##
@@ -48,7 +48,7 @@ resourcetype program-document {
 
     introduction {      
       ##
-      [def locale resource-locale()]  
+      [def locale resource-locale()]
       [def thispath resource-prop("./", "uri")]
       [if locale = "en"]
         [def uri thispath + '/why-choose/index.html']
@@ -58,7 +58,7 @@ resourcetype program-document {
       [def f json-resource(uri)]
       [if f != null]
         [def published resource-prop(uri, "published") ]
-        [if published]      
+        [if published]
           [def intro f.properties.introduction]
           [if intro != null && intro != ""]
             <div class="vrtx-introduction">
@@ -66,7 +66,7 @@ resourcetype program-document {
             </div>
           [endif]
         [endif]
-      [endif]        
+      [endif]
       ##
     }
   
@@ -92,7 +92,7 @@ resourcetype program-document {
       [endif]
      
       [if img-uri != null]
-        [if pixel-width != null]  
+        [if pixel-width != null]
           <div class="vrtx-introduction-image" style="[val style]">
         [else]
           <div class="vrtx-introduction-image">
@@ -107,7 +107,7 @@ resourcetype program-document {
       ##
       [resource-props "."]
       [if interviewTitle != null || interviewContent != null || interviewLinkText != null || interviewUrl  != null]
-        <div class="vrtx-frontpage-box white-box two-column-feed">         
+        <div class="vrtx-frontpage-box white-box two-column-feed">
         [if interviewTitle != null && interviewTitle != ""]
           [if interviewUrl != null && interviewUrl != ""]
             <h2><a href="[val interviewUrl]">[val interviewTitle]</a></h2>
@@ -130,7 +130,7 @@ resourcetype program-document {
           </div>
         [endif]
       </div>
-      [endif]  
+      [endif]
       ##
     }
   
@@ -266,12 +266,12 @@ resourcetype program-document {
           [endif]
           [if number = 1]
             [if cssClasses != ""] [def cssClasses concat(cssClasses, " ")] [endif]
-            [def cssClasses concat(cssClasses, "vrtx-additional-content-first")]           
+            [def cssClasses concat(cssClasses, "vrtx-additional-content-first")]
           [endif]
           [if number = _size]
             [if cssClasses != ""] [def cssClasses concat(cssClasses, " ")] [endif]
             [def cssClasses concat(cssClasses, "vrtx-additional-content-last")]
-          [endif]    
+          [endif]
 
           [if cssClasses != null && cssClasses != ""]
             <div class="vrtx-frontpage-box [val cssClasses]" id="vrtx-additional-content-[val number]">
@@ -329,17 +329,17 @@ resourcetype program-document {
       ##
       [resource-props "."]
       [if cssUrl != null && cssUrl != ""]
-         <!-- begin custom frontpage css -->
-         <link rel="stylesheet" href="[val cssUrl]" type="text/css" media="all" />
-         <!-- end custom frontpage css -->
+        <!-- begin custom frontpage css -->
+        <link rel="stylesheet" href="[val cssUrl]" type="text/css" media="all" />
+        <!-- end custom frontpage css -->
       [endif]
-      ##  
+      ##
     }
  
   }
   
-  localization {  
-  	name-no : (en : "Bokmål", no : "Bokmål", nn : "Bokmål"),
+  localization {
+    name-no : (en : "Bokmål", no : "Bokmål", nn : "Bokmål"),
     name-nn : (en : "Nynorsk", no : "Nynorsk", nn : "Nynorsk"),
     name-en : (en : "English", no : "Engelsk", nn : "Engelsk"),
     additional-content : (en : "Related content (right column)", no : "Relatert innhold (høyrespalte)", nn : "Relatert innhald (høgre spalte)"),
@@ -366,8 +366,8 @@ resourcetype program-document {
     bachelor : (en : "bachelor's", no : "bachelor", nn : "bachelor"),
     ettoghalvt-aarig-master : (en : "master's 1 1/2-years", no : "master - halvannet år", nn : "master - halvanna år"),
     to-aarig-master : (en : "master's two years", no : "master - to år", nn : "master - to år"),
-    fem-aarig-master : (en : "master's 5-years", no : "master - 5 år", nn : "master - 5 år"), 
-    erfaringsbasert-master : (en : "master's - experience based", no : "master - erfaringsbasert", nn : "master - erfaringsbasert"), 
+    fem-aarig-master : (en : "master's 5-years", no : "master - 5 år", nn : "master - 5 år"),
+    erfaringsbasert-master : (en : "master's - experience based", no : "master - erfaringsbasert", nn : "master - erfaringsbasert"),
     profesjon : (en : "programme of professional study", en : "profesjonsstudium", en : "profesjonsstudium")
   }
 }

@@ -62,15 +62,15 @@ resourcetype frontpage {
           [if type != null && type != ""]
             [if cssClasses != ""] [def cssClasses concat(cssClasses, " ")] [endif]
             [def cssClasses concat(cssClasses, type)]
-          [endif]    
+          [endif]
           [if number = 1]
             [if cssClasses != ""] [def cssClasses concat(cssClasses, " ")] [endif]
-            [def cssClasses concat(cssClasses, "vrtx-main-content-first")]           
+            [def cssClasses concat(cssClasses, "vrtx-main-content-first")]
           [endif]
           [if number = _size]
             [if cssClasses != ""] [def cssClasses concat(cssClasses, " ")] [endif]
             [def cssClasses concat(cssClasses, "vrtx-main-content-last")]
-          [endif]      
+          [endif]
 
           [if cssClasses != null && cssClasses != ""]
             <div class="vrtx-frontpage-box [val cssClasses]" id="vrtx-main-content-[val number]">
@@ -170,12 +170,12 @@ resourcetype frontpage {
               [endif]
               [if number = 1]
                 [if cssClasses != ""] [def cssClasses concat(cssClasses, " ")] [endif]
-                [def cssClasses concat(cssClasses, "vrtx-additional-content-first")]           
+                [def cssClasses concat(cssClasses, "vrtx-additional-content-first")]
               [endif]
               [if number = _size]
                 [if cssClasses != ""] [def cssClasses concat(cssClasses, " ")] [endif]
                 [def cssClasses concat(cssClasses, "vrtx-additional-content-last")]
-              [endif]    
+              [endif]
 
               [if cssClasses != null && cssClasses != ""]
                 <div class="vrtx-frontpage-box [val cssClasses]" id="vrtx-additional-content-[val number]">
@@ -240,7 +240,7 @@ resourcetype frontpage {
          <link rel="stylesheet" href="[val cssUrl]" type="text/css" media="all" />
          <!-- end custom frontpage css -->
       [endif]
-      ##  
+      ##
     }
     
     title {
@@ -254,9 +254,9 @@ resourcetype frontpage {
       ##
       [resource-props "."]
       [if (picture != null && picture != "") || (introduction != null && introduction != "")]
-        <div id="vrtx-frontpage-introduction">  
+        <div id="vrtx-frontpage-introduction">
         [if picture != null]
-          [def img resource(picture)] 
+          [def img resource(picture)]
           [if img != null]
             [def pixel-width resource-prop(picture, "pixelWidth")]
             [def photographer resource-prop(picture, "photographer")]

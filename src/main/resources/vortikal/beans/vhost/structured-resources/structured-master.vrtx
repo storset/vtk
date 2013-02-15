@@ -28,7 +28,7 @@ resourcetype structured-master{
   }
     
   view-components {
-  	title {
+    title {
       ##
       [def v resource-prop(".", "title")]
       [if v != null]
@@ -87,48 +87,48 @@ resourcetype structured-master{
       [def photographer null]
       [def style null]
       
-	  [if img-uri != null]
-      	[def img resource(img-uri)]      
+      [if img-uri != null]
+        [def img resource(img-uri)]
       [endif]
-      [if img != null] 
-	  	[def pixel-width resource-prop(img-uri, "pixelWidth")]
-	  	[def photographer resource-prop(img-uri, "photographer")]
-  	  [endif]
-  	  [if pixel-width != null]
-	  	[def style concat("width:", pixel-width, "px")]
-	  [endif]
-	  
-	  [if img-uri != null]
-	    [if pixel-width != null]  
-		  <div class="vrtx-introduction-image" style="[val style]">
-	    [else]
-		  <div class="vrtx-introduction-image">
-	    [endif]
-	  	
-	    [if caption != null]
-		  <img src="[val img-uri]" alt="[val caption # unescaped 'flattened']"/>
-	    [else]
-		  <img src="[val img-uri]" alt="[localized 'introduction-image-alt']"/>
-	    [endif]
-	  
-	    [if caption != null]
-	      <div class="vrtx-imagetext">
-	        <div class="vrtx-imagedescription">[val caption # unescaped]</div>
-	        [if photographer != null]
-	          <span class="vrtx-photo">
-	            <span class="vrtx-photo-prefix">[localized "photo-prefix"]: </span>[val photographer]
-	          </span>
-	        [endif]
-	      </div>
-	    [elseif photographer != null]
-	      <div class="vrtx-imagetext">
-	        <span class="vrtx-photo">
-	          <span class="vrtx-photo-prefix">[localized "photo-prefix"]: </span>[val photographer]
-	        </span>
-	      </div> 
-	    [endif]
-	    </div>
-	  [endif]
+
+      [if img != null]
+        [def pixel-width resource-prop(img-uri, "pixelWidth")]
+        [def photographer resource-prop(img-uri, "photographer")]
+      [endif]
+
+      [if pixel-width != null]
+        [def style concat("width:", pixel-width, "px")]
+      [endif]
+
+      [if img-uri != null]
+        [if pixel-width != null]
+        <div class="vrtx-introduction-image" style="[val style]">
+      [else]
+        <div class="vrtx-introduction-image">
+      [endif]
+
+      [if caption != null]
+        <img src="[val img-uri]" alt="[val caption # unescaped 'flattened']"/>
+      [else]
+        <img src="[val img-uri]" alt="[localized 'introduction-image-alt']"/>
+      [endif]
+
+      [if caption != null]
+        <div class="vrtx-imagetext">
+          <div class="vrtx-imagedescription">[val caption # unescaped]</div>
+          [if photographer != null]
+            <span class="vrtx-photo">
+            <span class="vrtx-photo-prefix">[localized "photo-prefix"]: </span>[val photographer]</span>
+          [endif]
+        </div>
+      [elseif photographer != null]
+        <div class="vrtx-imagetext">
+          <span class="vrtx-photo">
+          <span class="vrtx-photo-prefix">[localized "photo-prefix"]: </span>[val photographer]</span>
+        </div>
+      [endif]
+      </div>
+      [endif]
       ##
     }
     
@@ -148,7 +148,7 @@ resourcetype structured-master{
   }
 
   view {
-    ##    
+    ##
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml">
       <head>
@@ -185,7 +185,7 @@ resourcetype structured-master{
       no : ("true" = "Tilgjengelig", "false" = "Ikke tilgjengelig"),
       nn : ("true" = "Tilgjengeleg", "false" = "Ikkje tilgjengeleg")
     },
-	credits {
+    credits {
       en : (range = "60,45,30"),
       no : (range = "60,45,30"),
       nn : (range = "60,45,30")
@@ -214,7 +214,7 @@ resourcetype structured-master{
     header : (en : "Edit master project", no : "Rediger masteroppgave", nn : "Rediger masteroppgåve"),
     publishedDate : (en : "Published", no :"Publisert", nn:"Publisert"),
     lastModifiedDate : (en : "Last modified", no : "Sist endret", nn : "Sist endra"),
-      numberOfSupervisorsToDisplay : (
+    numberOfSupervisorsToDisplay : (
       en : "Number of supervisors to show",
       no : "Antall veiledere som skal vises",
       nn : "Antall veiledarar som skal visast"),

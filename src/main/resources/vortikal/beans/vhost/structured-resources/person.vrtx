@@ -308,7 +308,7 @@ resourcetype person {
         [endif]
         [if surname != null || firstName != null]
           <a id="vrtx-person-vcard" href="?vrtx=vcf">[localized "vCard"]</a>
-       	[endif]
+        [endif]
       </div>
       ##
     }
@@ -316,13 +316,13 @@ resourcetype person {
   }
 
   view {
-    ##    
+    ##
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml">
         <head profile="http://microformats.org/profile/hcard">
         <title>[call "comp:title"]</title>
-         <link type="text/css" rel="stylesheet" media="all" href="/vrtx/__vrtx/static-resources/jquery/plugins/ui/jquery-ui-tabs-customized/css/ui-lightness/jquery-ui-1.7.2.custom.css" /> 
-         <script type="text/javascript" src="/vrtx/__vrtx/static-resources/jquery/plugins/ui/jquery-ui-1.8.23.custom/js/jquery-ui-1.8.23.custom.min.js"></script> 
+         <link type="text/css" rel="stylesheet" media="all" href="/vrtx/__vrtx/static-resources/jquery/plugins/ui/jquery-ui-tabs-customized/css/ui-lightness/jquery-ui-1.7.2.custom.css" />
+         <script type="text/javascript" src="/vrtx/__vrtx/static-resources/jquery/plugins/ui/jquery-ui-1.8.23.custom/js/jquery-ui-1.8.23.custom.min.js"></script>
       </head>
       <body id="vrtx-person">
       <div id="vrtx-content">

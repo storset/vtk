@@ -13,7 +13,7 @@ resourcetype research-group {
     participantsUsernames : string multiple,
     participantsCachedFullNames : binary external:participantsFullNameService,
     participants : json (participantName:string, participantUrl:string) multiple,
-    numberOfParticipantsToDisplay : string defaultvalue("50"),        
+    numberOfParticipantsToDisplay : string defaultvalue("50"),
     listRelatedProjects : boolean defaultvalue("true"),
     rssFeeds : json (rssTitle:string, rssUrl:string) multiple,
     related-content : html noextract
@@ -69,10 +69,10 @@ resourcetype research-group {
       [def photographer null]
       [def style null]
       
-      [if img-uri != null]   
-        [def img resource(img-uri)]      
+      [if img-uri != null]
+        [def img resource(img-uri)]
       [endif]
-      [if img != null] 
+      [if img != null]
         [def pixel-width resource-prop(img-uri, "pixelWidth")]
         [def photographer resource-prop(img-uri, "photographer")]
       [endif]
@@ -81,7 +81,7 @@ resourcetype research-group {
       [endif]
      
       [if img-uri != null]
-        [if pixel-width != null]  
+        [if pixel-width != null]
           <div class="vrtx-introduction-image" style="[val style]">
         [else]
           <div class="vrtx-introduction-image">
@@ -107,7 +107,7 @@ resourcetype research-group {
             <span class="vrtx-photo">
               <span class="vrtx-photo-prefix">[localized "photo-prefix"]: </span>[val photographer]
             </span>
-          </div> 
+          </div>
         [endif]
         </div>
       [endif]
@@ -138,7 +138,7 @@ resourcetype research-group {
             [def thetitle feed.rssTitle]
             [def theurl feed.rssUrl]
               
-            [if theurl != null && theurl != ""]         
+            [if theurl != null && theurl != ""]
               [if thetitle != null && thetitle != ""]
                 [call "include:feed" {"url":theurl, "override-feed-title":thetitle, "feed-title":true, "max-messages":3, "include-if-empty":false}]
               [else]
@@ -178,7 +178,7 @@ resourcetype research-group {
   }
 
   view {
-    ##    
+    ##
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml">
       <head>
@@ -191,7 +191,7 @@ resourcetype research-group {
             <h1>[call "json:field" {"select":"name"}]</h1>
             [call "comp:introduction"]
             [def theHidePicture document.properties.hidePicture]
-            [if theHidePicture = "false" || theHidePicture = null] 
+            [if theHidePicture = "false" || theHidePicture = null]
               [call "comp:introduction-image"]
             [endif]
             [call "json:field" {"select":"content"}]
@@ -204,7 +204,7 @@ resourcetype research-group {
             [call "comp:related-projects"]
             [call "comp:feeds"]
             [call "comp:related-content-in-additional-column"]
-          </div> 
+          </div>
         </div>
       </body>
     </html>

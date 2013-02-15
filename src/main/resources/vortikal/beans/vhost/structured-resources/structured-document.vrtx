@@ -43,7 +43,7 @@ resourcetype structured-document {
       [endif]
      
       [if img-uri != null]
-        [if pixel-width != null]  
+        [if pixel-width != null]
           <div class="vrtx-introduction-image" style="[val style]">
         [else]
           <div class="vrtx-introduction-image">

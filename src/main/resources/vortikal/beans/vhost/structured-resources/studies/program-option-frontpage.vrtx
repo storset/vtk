@@ -33,7 +33,7 @@ resourcetype program-option-frontpage : program-document {
         [def f json-resource(thispath)]
         [if f != null]
           [def published resource-prop(thispath, "published")]
-          [if published]      
+          [if published]
             [def title f.properties.name]
             [def program-type f.properties.program-type]
             <div class="vrtx-frontpage-box white-box vrtx-program-title-box">
@@ -41,7 +41,7 @@ resourcetype program-option-frontpage : program-document {
               <h3><a href='[val thispath]'>[val title] ([localized program-type])</a></h3>
             </div>
           [endif]
-        [endif]        
+        [endif]
       [endif]
       ##
     }
@@ -49,7 +49,7 @@ resourcetype program-option-frontpage : program-document {
     right-column {
       ##
       [def document structured-document()]
-      [def locale resource-locale()]  
+      [def locale resource-locale()]
       <div id="vrtx-additional-content">
         <div class="vrtx-frontpage-box vrtx-distach-bottom">
           [call "comp:contact-box"]
@@ -60,8 +60,8 @@ resourcetype program-option-frontpage : program-document {
         [else]
           [def thispath thispath + '/beskjeder']
         [endif]
-        [def message-folder resource(thispath)] 
-        [if message-folder]          
+        [def message-folder resource(thispath)]
+        [if message-folder]
           [def thisfeed thispath + '/?vrtx=feed']
           <div class="vrtx-frontpage-box">
             [call "include:feed" {"url":thisfeed, "feed-title":true, "max-messages":3, "include-if-empty":false}]
@@ -84,17 +84,17 @@ resourcetype program-option-frontpage : program-document {
       </head>
       <body id="vrtx-program-option">
         <div id="vrtx-content">
-          [def locale resource-locale()]  
+          [def locale resource-locale()]
           <div id="vrtx-main-content">
             <div id="vrtx-program-option-main" class="vrtx-frontpage-box white-box">
               [call "resource:program-option-language-link"]
-              <h1>[call "comp:title"]</h1> 
-              [call "comp:introduction-image"]         
-              [call "comp:introduction"]         
+              <h1>[call "comp:title"]</h1>
+              [call "comp:introduction-image"]
+              [call "comp:introduction"]
               [def thispath resource-prop("./","uri")]
               <div id="vrtx-program-links">
                 [if locale = "en"]
-                  [call "include:uri-menu" {"uri":thispath, "authenticated":"true", "include-children":"why-choose, learning-outcomes, admission, structure, abroad, career, teaching-examinations"}]           
+                  [call "include:uri-menu" {"uri":thispath, "authenticated":"true", "include-children":"why-choose, learning-outcomes, admission, structure, abroad, career, teaching-examinations"}]
                 [else]
                   [call "include:uri-menu" {"uri":thispath, "authenticated":"true", "include-children":"hvorfor-velge, hva-lerer-du, opptak, oppbygging, utlandet, jobb-studier, undervisning-eksamen"}]
                 [endif]
@@ -113,15 +113,14 @@ resourcetype program-option-frontpage : program-document {
   
   vocabulary {
     status {
-     en : ("under-arbeid" = "In progress", "aktivt" = "Active", "under-utfasing" = "Being phased out", "nedlagt" = "Closed"),
-     no : ("under-arbeid" = "Under arbeid", "aktivt" = "Aktiv", "under-utfasing" = "Under utfasing", "nedlagt" = "Nedlagt"),
-     nn : ("under-arbeid" = "Under arbeid", "aktivt" = "Aktiv", "under-utfasing" = "Under utfasing", "nedlagt" = "Nedlagt")
-   	}
+      en : ("under-arbeid" = "In progress", "aktivt" = "Active", "under-utfasing" = "Being phased out", "nedlagt" = "Closed"),
+      no : ("under-arbeid" = "Under arbeid", "aktivt" = "Aktiv", "under-utfasing" = "Under utfasing", "nedlagt" = "Nedlagt"),
+      nn : ("under-arbeid" = "Under arbeid", "aktivt" = "Aktiv", "under-utfasing" = "Under utfasing", "nedlagt" = "Nedlagt")
+    }
   }
 
-
   localization {
-  	name : (en : "Programme option name", no : "Studieretningsnavn", nn : "Studieretningsnamn"),
+    name : (en : "Programme option name", no : "Studieretningsnavn", nn : "Studieretningsnamn"),
     header : (en : "Edit Programme option frontpage", no : "Rediger Studieretningsforside", nn : "Rediger Studieretningsforside"),
     program-option : (en : "programme option", no : "studieretning", nn : "studieretning"),
     facts : (en : "Facts", no : "Fakta om studieretningen", nn : "Fakta om studieretninga"),
@@ -129,7 +128,7 @@ resourcetype program-option-frontpage : program-document {
     fs-program-option-code : (en : "FS programme option code", no : "FS-studieretningskode", nn : "FS-studieretningskode"),
     picture : (en: "Image", no: "Bilde", nn : "Bilete"),
     introduction-image-alt : (en : "Image", no : "Bilde", nn : "Bilete"),
-	samlet : (en : "Translation of program names for Full program option description", no : "Oversettelse av programnavn til Samlet studieretningsbeskrivelse", nn : "Oversetting av programnamn til Samla studieretningsbeskrivelse"),
+    samlet : (en : "Translation of program names for Full program option description", no : "Oversettelse av programnavn til Samlet studieretningsbeskrivelse", nn : "Oversetting av programnamn til Samla studieretningsbeskrivelse"),
 
     related-content : (en : "Related content (right column)", no : "Relatert innhold (høyre spalte)", nn : "Relatert innhald (høgre spalte)"),
     program-affiliation : (en : "The programme option is part of the programme", no : "Studieretningen hører til programmet", nn : "Studieretninga høyrer til studieprogrammet"),
@@ -142,7 +141,7 @@ resourcetype program-option-frontpage : program-document {
 
     status : (en : "Status", no : "Status", nn : "Status"),
     under-arbeid : (en : "In progress", no : "Under arbeid" ,nn : "Under arbeid"),
-    aktivt : (en: "Active", no : "Aktiv", nn : "Aktiv"), 
+    aktivt : (en: "Active", no : "Aktiv", nn : "Aktiv"),
     under-utfasing : (en : "Being phased out", no : "Under utfasing", nn : "Under utfasing"),
     nedlagt : (en : "Closed", no : "Nedlagt", nn : "Nedlagt"),
     status-under-arbeid : (en : "This is a draft", no : "Dette er en kladd", nn : "Dette er ein kladd"),

@@ -113,7 +113,7 @@ resourcetype structured-event : structured-document {
                 [call "resource:time-and-place"]
               </div>
               [def theHidePicture document.properties.hidePicture]
-              [if theHidePicture = "false" || theHidePicture = null] 
+              [if theHidePicture = "false" || theHidePicture = null]
                 [call "comp:introduction-image"]
               [endif]
               [call "json:field" {"select":"content"}]

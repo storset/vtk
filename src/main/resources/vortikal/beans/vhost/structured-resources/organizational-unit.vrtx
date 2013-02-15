@@ -113,7 +113,7 @@ resourcetype organizational-unit {
               
           [if email != null]
             <span class="vrtx-organizational-unit-email">
-              <span class="vrtx-label">[localized 'email']:</span> 
+              <span class="vrtx-label">[localized 'email']:</span>
               [list email anEmail]
                 [if anEmail.length() < 25]
                   <a href="mailto:[val anEmail]"><span class="email">[val anEmail]</span></a>
@@ -230,10 +230,10 @@ resourcetype organizational-unit {
       [def document structured-document()]
       [def subsubunits document.properties.showExtendedUnitList]
       [if subsubunits = "false" || subsubunits = null]
-	    [call "resource:org-unit-subunits" {"areacode":areacode} ]
-	  [else]
-	    [call "resource:org-unit-subunits" {"areacode":areacode, "display-subsubunits":"true"} ]
-	  [endif]
+        [call "resource:org-unit-subunits" {"areacode":areacode} ]
+      [else]
+        [call "resource:org-unit-subunits" {"areacode":areacode, "display-subsubunits":"true"} ]
+      [endif]
       ##
     }
     
@@ -252,14 +252,14 @@ resourcetype organizational-unit {
         [def document structured-document()]
         [def subsubunits document.properties.showExtendedUnitList]
         [if subsubunits = "true"]
-          <div id="vrtx-main-content" class="vrtx-hide-additional-content-true">         
+          <div id="vrtx-main-content" class="vrtx-hide-additional-content-true">
             <div class="vrtx-frontpage-box white-box">
               [call "resource:organizational-unit-language-link"]
               <h1>[call "comp:title"]</h1>
               [call "comp:contact-information"]
             </div>
             [if introduction != null || responsibilities != null || picture != null]
-              <div class="vrtx-frontpage-box white-box" id="vrtx-organizational-unit-main">  
+              <div class="vrtx-frontpage-box white-box" id="vrtx-organizational-unit-main">
                 [call "comp:introduction-image"]
                 [call "comp:introduction"]
                 [call "comp:responsibilities"]
@@ -274,10 +274,10 @@ resourcetype organizational-unit {
           <div id="vrtx-main-content" class="vrtx-hide-additional-content-false">
             <div class="vrtx-frontpage-box white-box" id="vrtx-organizational-unit-main">
               [call "resource:organizational-unit-language-link"]
-              <h1>[call "comp:title"]</h1> 
+              <h1>[call "comp:title"]</h1>
               [call "comp:introduction-image"]
               [call "comp:introduction"]
-              [call "comp:responsibilities"] 
+              [call "comp:responsibilities"]
             </div>
             [call "comp:subunits"]
             [call "comp:employees"]

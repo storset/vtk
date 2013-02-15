@@ -375,9 +375,6 @@ resourcetype hvordan-soke {
           [if ((regelverk-fri != null && regelverk-fri != "") || (relatert-innhold-regelverk != null && relatert-innhold-regelverk != ""))]
             <div id="vrtx-additional-content">
               <div id="vrtx-related-content">
-                [if (relatert-innhold-regelverk != null && relatert-innhold-regelverk != "")]
-                  
-                [endif]
                 [call "comp:regelverk-in-additional-column"]
               </div>
             </div>

@@ -1846,7 +1846,7 @@ function wrapItemsLeftRight(items, leftItems, rightItems) {
   }
 }
 
-/* CK helper functions */
+/* CK helper functions - XXX: facade */
 
 function swapCK(ckInstanceNameA, ckInstanceNameB) {
   var tmp = getCkValue(ckInstanceNameA);
@@ -1855,27 +1855,19 @@ function swapCK(ckInstanceNameA, ckInstanceNameB) {
 }
 
 function getCkValue(instanceName) {
-  var oEditor = getCkInstance(instanceName);
-  return oEditor.getData();
-}
-
-function getCkInstance(instanceName) {
-  for (var i in CKEDITOR.instances) {
-    if (CKEDITOR.instances[i].name == instanceName) {
-      return CKEDITOR.instances[i];
-    }
-  }
-  return null;
+  return getCkInstance(instanceName).getData();
 }
 
 function setCkValue(instanceName, data) {
-  var oEditor = getCkInstance(instanceName);
-  oEditor.setData(data);
+  getCkInstance(instanceName).setData(data);
 }
 
 function isCkEditor(instanceName) {
-  var oEditor = getCkInstance(instanceName);
-  return oEditor !== null;
+  return getCkInstance(instanceName) !== null;
+}
+
+function getCkInstance(instanceName) {
+  return CKEDITOR.instances[instanceName];
 }
 
 /* ^ Vortex Editor */

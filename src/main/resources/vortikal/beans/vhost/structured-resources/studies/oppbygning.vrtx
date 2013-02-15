@@ -193,11 +193,7 @@ resourcetype oppbygning {
     </html>
     ##
   }
-  
-  vocabulary {
 
-  }
-  
   localization {
     fellestekster-fakultet : (en : "Local info", no : "Lokal info", nn : "Lokal info"),
     fellestekst-fakultet-fri : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),

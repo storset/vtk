@@ -172,7 +172,7 @@ resourcetype hvordan-soke {
           (generelle-fri != null && generelle-fri != "") ||
           (opptakskrav-generelle-master != null && opptakskrav-generelle-master != "") ||
           (spesielle-fri != null && spesielle-fri != "") ||
-          (opptakskrav-spesielle != null && opptakskrav-spesielle != "")
+          (opptakskrav-spesielle != null && opptakskrav-spesielle != "")]
 
         <h2>[localized 'opptakskrav-view']</h2>
 

@@ -28,6 +28,7 @@ resourcetype structured-master{
   }
     
   view-components {
+
     title {
       ##
       [def v resource-prop(".", "title")]
@@ -36,6 +37,7 @@ resourcetype structured-master{
       [endif]
       ##
     }
+
     introduction {
       ##
       [def intro resource-prop(".", "introduction")]
@@ -102,32 +104,32 @@ resourcetype structured-master{
 
       [if img-uri != null]
         [if pixel-width != null]
-        <div class="vrtx-introduction-image" style="[val style]">
-      [else]
-        <div class="vrtx-introduction-image">
-      [endif]
+          <div class="vrtx-introduction-image" style="[val style]">
+        [else]
+          <div class="vrtx-introduction-image">
+        [endif]
 
-      [if caption != null]
-        <img src="[val img-uri]" alt="[val caption # unescaped 'flattened']"/>
-      [else]
-        <img src="[val img-uri]" alt="[localized 'introduction-image-alt']"/>
-      [endif]
+        [if caption != null]
+          <img src="[val img-uri]" alt="[val caption # unescaped 'flattened']"/>
+        [else]
+          <img src="[val img-uri]" alt="[localized 'introduction-image-alt']"/>
+        [endif]
 
-      [if caption != null]
-        <div class="vrtx-imagetext">
+        [if caption != null]
+          <div class="vrtx-imagetext">
           <div class="vrtx-imagedescription">[val caption # unescaped]</div>
           [if photographer != null]
             <span class="vrtx-photo">
             <span class="vrtx-photo-prefix">[localized "photo-prefix"]: </span>[val photographer]</span>
           [endif]
+          </div>
+        [elseif photographer != null]
+          <div class="vrtx-imagetext">
+            <span class="vrtx-photo">
+            <span class="vrtx-photo-prefix">[localized "photo-prefix"]: </span>[val photographer]</span>
+          </div>
+        [endif]
         </div>
-      [elseif photographer != null]
-        <div class="vrtx-imagetext">
-          <span class="vrtx-photo">
-          <span class="vrtx-photo-prefix">[localized "photo-prefix"]: </span>[val photographer]</span>
-        </div>
-      [endif]
-      </div>
       [endif]
       ##
     }

@@ -51,16 +51,9 @@
     if(!firstImage.length) return this; 
     
     var firstImageFullImage = firstImage.find("img.vrtx-full-image");
-    firstImageFullImage[0].src = firstImageFullImage[0].src + "?" + Math.random(); /* IE fix */
-    var isFirstImageLoaded = false;
-    firstImageFullImage[0].onload = function() {
-      if(!isFirstImageLoaded) { /* Prevent twice load-firering in e.g. FF */
-        calculateImage(firstImage.find("img.vrtx-thumbnail-image"), firstImageFullImage, true);
-        wrp.find("a.prev, a.prev span, a.next, a.next span").fadeTo(0, 0);
-        isFirstImageLoaded = true;
-      }
-    };
-    
+    calculateImage(firstImage.find("img.vrtx-thumbnail-image"), firstImageFullImage, true);
+    wrp.find("a.prev, a.prev span, a.next, a.next span").fadeTo(0, 0);
+
     // Event-handlers
     $(document).keydown(function (e) {
       if (e.keyCode == 37) {
@@ -94,19 +87,17 @@
     });
 
     // Rest of images
-    var imgsCached = this;
-    $(window).load(function() {
-      var imgs = imgsCached, centerThumbnailImageFunc = centerThumbnailImage, 
-          cacheGenerateLinkImageFunc = cacheGenerateLinkImage, link, image;
-      for(var i = 0, len = imgs.length; i < len; i++) {
-        link = $(imgs[i]);
-        image = link.find("img.vrtx-thumbnail-image");
-        cacheGenerateLinkImageFunc(link.find("img.vrtx-full-image").attr("src"), image, link);
-        centerThumbnailImageFunc(image, link);
-      }
-    });
+    var imgs = this,
+        centerThumbnailImageFunc = centerThumbnailImage, 
+        cacheGenerateLinkImageFunc = cacheGenerateLinkImage, link, image;
+    for(var i = 0, len = imgs.length; i < len; i++) {
+      link = $(imgs[i]);
+      image = link.find("img.vrtx-thumbnail-image");
+      cacheGenerateLinkImageFunc(link.find("img.vrtx-full-image").attr("src"), image, link);
+      centerThumbnailImageFunc(image, link);
+    }
   
-    return imgsCached; /* Make chainable */
+    return imgs; /* Make chainable */
     
     function nextPrevNavigate(e, dir) {
       var isNext = dir > 0;	

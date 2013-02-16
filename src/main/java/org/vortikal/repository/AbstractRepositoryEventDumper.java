@@ -45,8 +45,10 @@ import org.vortikal.repository.event.ResourceDeletionEvent;
 import org.vortikal.repository.event.ResourceModificationEvent;
 
 
-
-public abstract class AbstractRepositoryEventDumper implements ApplicationListener {
+/**
+ * 
+ */
+public abstract class AbstractRepositoryEventDumper implements ApplicationListener<RepositoryEvent> {
 
     protected int loggerId = -1;
     protected int loggerType = -1;
@@ -68,13 +70,9 @@ public abstract class AbstractRepositoryEventDumper implements ApplicationListen
     }
     
     @Override
-    public void onApplicationEvent(ApplicationEvent event) {
+    public void onApplicationEvent(RepositoryEvent event) {
 
-        if (! (event instanceof RepositoryEvent)) {
-            return;
-        }
-
-        Repository rep = ((RepositoryEvent) event).getRepository();
+        Repository rep = event.getRepository();
 
         if (! rep.getId().equals(this.repository.getId())) {
             return;

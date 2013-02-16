@@ -647,6 +647,7 @@ public interface Repository {
 
     // HACK
     // Add this for now to be used in ResourceArchiver when expanding archive
+    // And for UiOProppatchController when setting ACLs from WebDAV without validation.
     public Resource storeACL(String token, Path uri, Acl acl, boolean validateACL) throws ResourceNotFoundException,
             AuthorizationException, AuthenticationException, IllegalOperationException, ReadOnlyException, Exception;
 

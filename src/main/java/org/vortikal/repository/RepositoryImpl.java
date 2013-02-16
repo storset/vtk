@@ -1180,7 +1180,12 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             throw new ResourceNotFoundException(uri);
         }
         checkLock(r, principal);
-        this.authorizationManager.authorizeAll(r.getURI(), principal);
+        if (!validateACL) {
+            // Writing ACL without validation is a root role action
+            this.authorizationManager.authorizeRootRoleAction(principal);
+        } else {
+            this.authorizationManager.authorizeAll(r.getURI(), principal);            
+        }
 
         try {
             Resource original = (Resource) r.clone();

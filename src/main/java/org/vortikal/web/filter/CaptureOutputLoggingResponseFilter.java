@@ -46,11 +46,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationListener;
 import org.springframework.web.context.support.ServletRequestHandledEvent;
 import org.vortikal.context.BaseContext;
 import org.vortikal.web.RequestContext;
-import org.vortikal.web.filter.DAVLoggingRequestFilter.DavLoggingRequestWrapper;
+import org.vortikal.web.filter.CaptureInputRequestFilter.CaptureInputRequestWrapper;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.servlet.HeaderAwareResponseWrapper;
 
@@ -65,14 +66,27 @@ import org.vortikal.web.servlet.HeaderAwareResponseWrapper;
  * name as the fully qualified class, but if a specific service is configured, that
  * service name will be appended to the logger id.
  * 
- * @see DavLoggingRequestWrapper
+ * Note: in order for logging to occur, you must also configure an instance of
+ * {@link CaptureInputRequestFilter} in the bean context.
+ * 
+ * @see CaptureInputRequestFilter
  */
-public class DAVLoggingResponseFilter extends AbstractResponseFilter 
-    implements ApplicationListener<ServletRequestHandledEvent> {
+public class CaptureOutputLoggingResponseFilter extends AbstractResponseFilter 
+    implements ApplicationListener<ServletRequestHandledEvent>, InitializingBean {
 
     private int maxLogBytesBody = 4096;
     private Service service;
+    private Log logger;
         
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        String loggerId = CaptureOutputLoggingResponseFilter.class.getName();
+        if (this.service != null) {
+            loggerId += "." + this.service.getName();
+        }
+        this.logger = LogFactory.getLog(loggerId);
+    }
+    
     @Override
     public HttpServletResponse filter(HttpServletRequest request, HttpServletResponse response) {
 
@@ -82,8 +96,8 @@ public class DAVLoggingResponseFilter extends AbstractResponseFilter
 
         // Add self to thread local context
         BaseContext ctx = BaseContext.getContext();
-        DavLoggingResponseWrapper responseWrapper = new DavLoggingResponseWrapper(response);
-        ctx.setAttribute(DavLoggingResponseWrapper.class.getName(), responseWrapper);
+        CaptureOutputResponseWrapper responseWrapper = new CaptureOutputResponseWrapper(response);
+        ctx.setAttribute(CaptureOutputResponseWrapper.class.getName(), responseWrapper);
 
         return responseWrapper;
     }
@@ -94,10 +108,14 @@ public class DAVLoggingResponseFilter extends AbstractResponseFilter
         // data to log
 
         BaseContext ctx = BaseContext.getContext();
-        DavLoggingRequestWrapper reqWrap = (DavLoggingRequestWrapper) ctx.getAttribute(DavLoggingRequestWrapper.class
+        CaptureInputRequestWrapper reqWrap = (CaptureInputRequestWrapper) ctx.getAttribute(CaptureInputRequestWrapper.class
                 .getName());
-        DavLoggingResponseWrapper resWrap = (DavLoggingResponseWrapper) ctx.getAttribute(DavLoggingResponseWrapper.class
+        CaptureOutputResponseWrapper resWrap = (CaptureOutputResponseWrapper) ctx.getAttribute(CaptureOutputResponseWrapper.class
                 .getName());
+
+        if (reqWrap == null) {
+            logger.warn("No request wrapper found in thread local context, check that input capture filter is configured.");
+        }
         
         if (reqWrap == null || resWrap == null) {
             return;
@@ -130,7 +148,6 @@ public class DAVLoggingResponseFilter extends AbstractResponseFilter
         
         logbuf.append("\n--- END\n");
         
-        Log logger = getLogger();
         logger.info(logbuf.toString());
     }
     
@@ -147,15 +164,7 @@ public class DAVLoggingResponseFilter extends AbstractResponseFilter
         return false;
     }
     
-    private Log getLogger() {
-        String loggerId = DAVLoggingResponseFilter.class.getName();
-        if (this.service != null) {
-            loggerId += "." + this.service.getName();
-        }
-        return LogFactory.getLog(loggerId);
-    }
-    
-    private void addHeadersForLogging(DavLoggingRequestWrapper requestWrapper, StringBuilder logBuffer) {
+    private void addHeadersForLogging(CaptureInputRequestWrapper requestWrapper, StringBuilder logBuffer) {
         Enumeration<String> headerNames = requestWrapper.getHeaderNames();
         while (headerNames.hasMoreElements()) {
             String headerName = headerNames.nextElement();
@@ -167,7 +176,7 @@ public class DAVLoggingResponseFilter extends AbstractResponseFilter
         }
     }
     
-    private void addHeadersForLogging(DavLoggingResponseWrapper responseWrapper, StringBuilder logBuffer) {
+    private void addHeadersForLogging(CaptureOutputResponseWrapper responseWrapper, StringBuilder logBuffer) {
         for (Iterator<String> it= responseWrapper.getHeaderNames(); it.hasNext(); ) {
             String header = it.next();
             List<?> values = responseWrapper.getHeaderValues(header);
@@ -208,12 +217,13 @@ public class DAVLoggingResponseFilter extends AbstractResponseFilter
     }
 
 
-    private class DavLoggingResponseWrapper extends HeaderAwareResponseWrapper {
+
+    private class CaptureOutputResponseWrapper extends HeaderAwareResponseWrapper {
 
         private OutputStreamCopyWrapper streamWrapper;
         private WriterCopyWrapper writerWrapper;
 
-        public DavLoggingResponseWrapper(HttpServletResponse response) {
+        public CaptureOutputResponseWrapper(HttpServletResponse response) {
             super(response);
         }
 

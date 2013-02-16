@@ -43,29 +43,29 @@ import org.vortikal.context.BaseContext;
 /**
  * Capture/copy all request data that is read from input stream.
  * 
- * This filter will store an instance of {@link DavLoggingRequestWrapper } in
+ * This filter will store an instance of {@link CaptureInputRequestWrapper } in
  * {@link BaseContext} under class name key and capture all input that is read.
  *
  */
-public class DAVLoggingRequestFilter extends AbstractRequestFilter {
+public class CaptureInputRequestFilter extends AbstractRequestFilter {
 
     @Override
     public HttpServletRequest filterRequest(HttpServletRequest request) {
         BaseContext ctx = BaseContext.getContext();
 
         // Add self to thread local context (corresponding response filter needs access).
-        DavLoggingRequestWrapper requestWrapper = new DavLoggingRequestWrapper(request);
-        ctx.setAttribute(DavLoggingRequestWrapper.class.getName(), requestWrapper);
+        CaptureInputRequestWrapper requestWrapper = new CaptureInputRequestWrapper(request);
+        ctx.setAttribute(CaptureInputRequestWrapper.class.getName(), requestWrapper);
 
         return requestWrapper;
     }
 
 
-    static class DavLoggingRequestWrapper extends HttpServletRequestWrapper {
+    static class CaptureInputRequestWrapper extends HttpServletRequestWrapper {
 
         private InputStreamCopyWrapper streamWrapper;
 
-        public DavLoggingRequestWrapper(HttpServletRequest request) {
+        public CaptureInputRequestWrapper(HttpServletRequest request) {
             super(request);
         }
 

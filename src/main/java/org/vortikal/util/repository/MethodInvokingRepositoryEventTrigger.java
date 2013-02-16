@@ -144,7 +144,7 @@ public class MethodInvokingRepositoryEventTrigger
             return;
         }
         
-        Path resourceURI = ((RepositoryEvent) event).getURI();
+        Path resourceURI = event.getURI();
 
         if (this.uri != null) {
             if (((event instanceof ResourceDeletionEvent)

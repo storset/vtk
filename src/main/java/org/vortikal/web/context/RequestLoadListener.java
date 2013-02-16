@@ -30,11 +30,10 @@
  */
 package org.vortikal.web.context;
 
-import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.web.context.support.RequestHandledEvent;
 
-public class RequestLoadListener implements ApplicationListener {
+public class RequestLoadListener implements ApplicationListener<RequestHandledEvent> {
 
     private long totalRequests;
     private int seconds = 60;
@@ -109,12 +108,10 @@ public class RequestLoadListener implements ApplicationListener {
 
 
     @Override
-    public void onApplicationEvent(ApplicationEvent event) {
-        if (event instanceof RequestHandledEvent) {
-            update();
-            this.history[this.currentIndex]++;
-            this.totalRequests++;
-        }
+    public void onApplicationEvent(RequestHandledEvent event) {
+        update();
+        this.history[this.currentIndex]++;
+        this.totalRequests++;
     }
 
 

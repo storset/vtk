@@ -56,7 +56,7 @@ import org.vortikal.repository.event.ResourceDeletionEvent;
  *  
  */
 public class MethodInvokingRepositoryEventTrigger 
-  implements ApplicationListener, InitializingBean {
+  implements ApplicationListener<RepositoryEvent>, InitializingBean {
 
     private static Log logger = LogFactory.getLog(MethodInvokingRepositoryEventTrigger.class);
 
@@ -137,12 +137,9 @@ public class MethodInvokingRepositoryEventTrigger
     }
 
     @Override
-    public void onApplicationEvent(ApplicationEvent event) {
-        if (! (event instanceof RepositoryEvent)) {
-            return;
-        }
+    public void onApplicationEvent(RepositoryEvent event) {
         
-        Repository rep = ((RepositoryEvent) event).getRepository();
+        Repository rep = event.getRepository();
         if (! rep.getId().equals(this.repository.getId())) {
             return;
         }

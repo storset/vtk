@@ -75,10 +75,10 @@
 </head>
 <body id="vrtx-simple-editor">
 <div id="app-content">
-  <#if url?? && url?contains("edit")>
-    <h3>${vrtx.getMsg("message-listing.edit-message")}<a href="javascript:void(0)" id="vrtx-close-simple-structured-editor"></a></h3>
-  <#else>
+  <#if isNew??>
     <h3>${vrtx.getMsg("message-listing.new-message")}<a href="javascript:void(0)" id="vrtx-close-simple-structured-editor"></a></h3>
+  <#else>
+    <h3>${vrtx.getMsg("message-listing.edit-message")}<a href="javascript:void(0)" id="vrtx-close-simple-structured-editor"></a></h3> 
   </#if>
   <#if url?exists>
     <form  action="" method="post">

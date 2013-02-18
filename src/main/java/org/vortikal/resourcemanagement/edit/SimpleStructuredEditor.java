@@ -84,6 +84,8 @@ public class SimpleStructuredEditor implements Controller {
             String jsonString = StreamUtil.streamToString(stream, "utf-8");
             JSONObject document = JSONObject.fromObject(jsonString);
             model.put("properties", document.get("properties"));
+        } else {
+            model.put("isNew", true);
         }
         return new ModelAndView(viewName, model);
     }

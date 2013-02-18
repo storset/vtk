@@ -34,6 +34,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -47,31 +48,47 @@ import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.ResourceTypeTree;
+import org.vortikal.repository.TypeInfo;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
+import org.vortikal.util.repository.LocaleHelper;
 import org.vortikal.util.text.PathMappingConfig;
 import org.vortikal.util.text.PathMappingConfig.ConfigEntry;
 import org.vortikal.util.text.PathMappingConfig.Qualifier;
 import org.vortikal.util.text.SimpleTemplate;
 import org.vortikal.util.text.TextUtils;
 
-
+/**
+ * TODO make test case.
+ * TODO interface.
+ * 
+ */
 public class TitleResolver implements ApplicationListener<ContextRefreshedEvent> {
-    private static Log logger = LogFactory.getLog(TitleResolver.class);
+
+    private final Log logger = LogFactory.getLog(TitleResolver.class);
     private Repository repository;
+    private ResourceTypeTree resourceTypeTree;
     private Path configPath;
-    private PathMappingConfig config;
-    private Map<String, SimpleTemplate> cache = new ConcurrentHashMap<String, SimpleTemplate>();
+    private PathMappingConfig config; // XXX volatile
+    private Map<String, SimpleTemplate> templateCache = new ConcurrentHashMap<String, SimpleTemplate>();
     
-    public String resolve(final Resource resource) {
+     public String resolve(final Resource resource) {
+        if (config == null) {
+            // Be graceful if config is not loaded
+            logger.warn("Configuration not loaded or failed to load, using fallback title for " + resource.getURI());
+            return getFallbackTitle(resource);
+        }
+        
         ConfigEntry entry = matchConfigForResource(resource);
-        if (entry == null) return resource.getTitle();
+        if (entry == null) return getFallbackTitle(resource);
         
         String rawTemplate = entry.getValue();
-        SimpleTemplate compiledTemplate = cache.get(rawTemplate);
+        SimpleTemplate compiledTemplate = templateCache.get(rawTemplate);
         if (compiledTemplate == null) {
             compiledTemplate = SimpleTemplate.compile(rawTemplate);
-            cache.put(rawTemplate, compiledTemplate);
+            templateCache.put(rawTemplate, compiledTemplate);
         }
         
         final StringBuilder result = new StringBuilder();
@@ -82,10 +99,10 @@ public class TitleResolver implements ApplicationListener<ContextRefreshedEvent>
             }
 
             @Override
-            public String resolve(String variable) {
-                Property prop = getPropertyByReference(resource, variable);
+            public String resolve(String ref) {
+                Property prop = getPropertyByReference(resource, ref);
                 if (prop == null) {
-                    return resource.getTitle();
+                    return "";
                 }
                 return prop.getFormattedValue();
             }
@@ -111,7 +128,11 @@ public class TitleResolver implements ApplicationListener<ContextRefreshedEvent>
         return prop;
     }
     
-    private ConfigEntry matchConfigForResource(final Resource resource) {
+    private String getFallbackTitle(Resource resource) {
+        return resource.getTitle() + " - " + repository.getId();
+    }
+    
+    private ConfigEntry matchConfigForResource(Resource resource) {
         
         List<ConfigEntry> entries = this.config.getMatchAncestor(resource.getURI());
         if (entries != null && !entries.isEmpty()) {
@@ -139,16 +160,50 @@ public class TitleResolver implements ApplicationListener<ContextRefreshedEvent>
     private boolean matchQualifier(Qualifier q, Resource r) {
         if ("type".equals(q.getName())) {
             return r.getResourceType().equals(q.getValue());
-        } 
+        }
+        if ("context".equals(q.getName())) {
+            return matchContext(q.getValue(), r);
+        }
+        if ("lang".equals(q.getName())) {
+            return matchLanguage(q.getValue(), r);
+        }
         
-        return matchPropertyQualifier(q, r);
+        return matchPropertyValue(q.getName(),q.getValue(), r);
     }
     
-    private boolean matchPropertyQualifier(Qualifier q, Resource r) {
-        String ref = q.getName();
-        Property prop = getPropertyByReference(r, ref);
+    private boolean matchContext(String resourceType, Resource r) {
+        ResourceTypeDefinition typeDef = null;
+        try {
+            typeDef = resourceTypeTree.getResourceTypeDefinitionByName(resourceType);
+        } catch (IllegalArgumentException ie) {}
+
+        if (typeDef == null) return false;
+        
+        for (PropertyTypeDefinition def: typeDef.getPropertyTypeDefinitions()) {
+            if (def.isInheritable()) {
+                if (r.getProperty(def) != null) {
+                    return true;
+                }
+            }
+        }
+        
+        return false;
+    }
+    
+    private boolean matchLanguage(String lang, Resource r) {
+        Locale contentLocale = r.getContentLocale();
+        if (contentLocale == null) {
+            return false;
+        }
+        
+        String resourceLang = LocaleHelper.getPreferredLang(contentLocale);
+        return resourceLang.equalsIgnoreCase(lang);
+    }
+    
+    private boolean matchPropertyValue(String propRef, String value, Resource r) {
+        Property prop = getPropertyByReference(r, propRef);
         // Asterisk as value means "exists" testing on property
-        if ("*".equals(q.getValue())) {
+        if ("*".equals(value)) {
             return prop != null;
         }
         if (prop == null) {
@@ -164,11 +219,11 @@ public class TitleResolver implements ApplicationListener<ContextRefreshedEvent>
         }
 
         for (Value v: values) {
-            if (q.getValue().equals(v.getNativeStringRepresentation())) {
+            if (value.equals(v.getNativeStringRepresentation())) {
                 return true;
             }
         }
-        
+
         return false;
     }
     
@@ -177,24 +232,40 @@ public class TitleResolver implements ApplicationListener<ContextRefreshedEvent>
         loadConfig();
     }
     
-    @Required
-    public void setRepository(Repository repository) {
-        this.repository = repository;
-    }
-    
-    @Required
-    public void setConfigPath(String configPath) {
-        this.configPath = Path.fromString(configPath);
-    }
-    
+    /**
+     * (Re)load configuration data from resource at config path. Must be called
+     * at least once before using instance.
+     * 
+     * @see #setConfigPath(java.lang.String) 
+     */
     public void loadConfig() {
         try {
             InputStream inputStream = this.repository.getInputStream(null, this.configPath, true);
             this.config = new PathMappingConfig(inputStream);
+            this.templateCache.clear();
         } catch(Throwable t) {
             logger.warn("Unable to load title configuration file: " 
                     + this.configPath + ": " + t.getMessage(), t);
         }
+    }
+    
+    @Required
+    public void setRepository(Repository repository) {
+        this.repository = repository;
+    }
+
+    /**
+     * Set repository path to configuration resource.
+     * @param configPath the path to the configuration resource.
+     */
+    @Required
+    public void setConfigPath(String configPath) {
+        this.configPath = Path.fromString(configPath);
+    }
+
+    @Required
+    public void setResourceTypeTree(ResourceTypeTree rt) {
+        this.resourceTypeTree = rt;
     }
 
 }

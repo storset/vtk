@@ -191,10 +191,20 @@ public class SimpleTemplate {
             this.text = text;
             this.var = var;
         }
+
+        @Override
+        public String toString() {
+            return var ? "var:" + text : "text:\"" + text + "\"";
+        }
     }
     
     private SimpleTemplate(List<Node> nodes) {
         this.nodes = nodes;
+    }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + nodes.toString();
     }
 
 }

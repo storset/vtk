@@ -1090,7 +1090,8 @@ div.dropdown-shortcut-menu-container form .vrtx-button button {
   font-weight: bold;
 }
 
-#vrtx-editor .tip.property-item ul a {
+#vrtx-editor .tip.property-item ul a,
+#vrtx-report-urchin .tip a {
   color: #549401;
 }
 

@@ -1870,12 +1870,7 @@ function isCkEditor(instanceName) {
 }
 
 function getCkInstance(instanceName) {
-  var editor = CKEDITOR.instances[instanceName];
-  if(typeof editor !== "undefined") {
-    return editor;
-  } else {
-    return null;
-  }
+  return CKEDITOR.instances[instanceName] || null;
 }
 
 /* ^ Vortex Editor */

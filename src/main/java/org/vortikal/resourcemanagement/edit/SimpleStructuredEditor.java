@@ -107,7 +107,6 @@ public class SimpleStructuredEditor implements Controller {
         InputStream stream = repository.getInputStream(token, uri, false);
         String jsonString = StreamUtil.streamToString(stream, "utf-8");
         JSONObject document = JSONObject.fromObject(jsonString);
-        ;
 
         Map<String, String> propertyValues = (Map<String, String>) document.get("properties");
         for (String propertyName : properties) {

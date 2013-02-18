@@ -25,10 +25,25 @@ crossDocComLink.setUpReceiveDataHandler(function(cmdParams, source) {
   }
 });
 
-// Notify parent when loaded
-$(document).ready(function () {
-  $(window).load(function (e) {
-    crossDocComLink.postCmdToParent("preview-loaded");
-    $("a").attr("target", "_top");
+(function(){
+  var waitMaxForPreviewLoaded = 10000, // 10s
+      waitMaxForPreviewLoadedTimer,
+      sentPreviewLoaded = false;
+  
+  $(document).ready(function () {
+	waitMaxForPreviewLoadedTimer = setTimeout(function() {
+      sendPreviewLoaded(); 
+    }, waitMaxForPreviewLoaded);
+    $(window).load(function (e) {
+      sendPreviewLoaded(); 
+    });
   });
-});
+
+  function sendPreviewLoaded() {
+    if(!sentPreviewLoaded) {
+      crossDocComLink.postCmdToParent("preview-loaded");
+      $("a").attr("target", "_top");
+      sentPreviewLoaded = true;
+    }
+  }
+})();

@@ -7,20 +7,19 @@
  *  - Should work as before with regard to the previewViewIframe (served from the view domain)
  *  - Resizing the outer iframe (served from the admin domain) only works on browsers which support postMessage
  */
- 
-if(window != top) { // Obs IE bug: http://stackoverflow.com/questions/4850978/ie-bug-window-top-false
+if (window != top) { // Obs IE bug: http://stackoverflow.com/questions/4850978/ie-bug-window-top-false
   var crossDocComLink = new CrossDocComLink();
-  crossDocComLink.setUpReceiveDataHandler(function(cmdParams, source) {
-    switch(cmdParams[0]) {
+  crossDocComLink.setUpReceiveDataHandler(function (cmdParams, source) {
+    switch (cmdParams[0]) {
       case "admin-min-height":
         var setHeight = (cmdParams.length === 2) ? cmdParams[1] : 450;
-      
+
         var previewViewIframe = $("iframe#previewViewIframe");
         var iframe = previewViewIframe[0];
         try {
-          if(typeof iframe.contentWindow !== "undefined" && typeof iframe.contentWindow.document !== "undefined" && typeof iframe.contentWindow.document.body !== "undefined") {
+          if (typeof iframe.contentWindow !== "undefined" && typeof iframe.contentWindow.document !== "undefined" && typeof iframe.contentWindow.document.body !== "undefined") {
             var computedHeight = Math.ceil(iframe.contentWindow.document.body.offsetHeight) + 45;
-            if(computedHeight > setHeight) {
+            if (computedHeight > setHeight) {
               setHeight = computedHeight;
               crossDocComLink.postCmdToParent("preview-height|" + setHeight);
             } else { // Computed height is less than or below minimum height
@@ -30,8 +29,8 @@ if(window != top) { // Obs IE bug: http://stackoverflow.com/questions/4850978/ie
             crossDocComLink.postCmdToParent("preview-keep-min-height");
           }
           iframe.style.height = (setHeight - ($.browser.msie ? 4 : 0)) + "px";
-        } catch(e) { // Error
-          if(typeof console !== "undefined" && console.log) {
+        } catch (e) { // Error
+          if (typeof console !== "undefined" && console.log) {
             console.log("Error finding preview height: " + e.message);
           }
           iframe.style.height = (setHeight - ($.browser.msie ? 4 : 0)) + "px";
@@ -43,43 +42,59 @@ if(window != top) { // Obs IE bug: http://stackoverflow.com/questions/4850978/ie
   });
 }
 
-// Notify parent when loaded
-$(document).ready(function () {
-  var previewViewIframe = $("iframe#previewViewIframe");
-  if (previewViewIframe.length) {
-    if ($.browser.msie) {
-      // Iframe load event not firing in IE8 / IE9 when page with iframe is inside another iframe
-      // Setting the iframe src seems to fix the problem
-      var previewViewIframeElm = previewViewIframe[0];
-      
-      // TODO: make sure .load() does not fire twice (need to test more presicely which IEs where load does not fire at init)
-      var iSource = previewViewIframeElm.src;
-      previewViewIframeElm.src = '';
-      previewViewIframeElm.src = iSource;
-    } 
-    previewViewIframe.load(function() {
-      if(window != top) { // Obs IE bug: http://stackoverflow.com/questions/4850978/ie-bug-window-top-false
+(function () {
+  var waitMaxForPreviewLoaded = 10000, // 10s
+    waitMaxForPreviewLoadedTimer,
+    sentPreviewLoaded = false;
+  
+  $(document).ready(function () {
+    var previewViewIframe = $("iframe#previewViewIframe");
+    if (previewViewIframe.length) {
+      waitMaxForPreviewLoadedTimer = setTimeout(function () {
+        sendPreviewLoaded();
+      }, waitMaxForPreviewLoaded);
+      if ($.browser.msie) {
+        // Iframe load event not firing in IE8 / IE9 when page with iframe is inside another iframe
+        // Setting the iframe src seems to fix the problem
+        var previewViewIframeElm = previewViewIframe[0];
+
+        // TODO: make sure .load() does not fire twice (need to test more presicely which IEs where load does not fire at init)
+        var iSource = previewViewIframeElm.src;
+        previewViewIframeElm.src = '';
+        previewViewIframeElm.src = iSource;
+      }
+      previewViewIframe.load(function () {
+        sendPreviewLoaded();
+      });
+    } else {
+      crossDocComLink.postCmdToParent("preview-keep-min-height");
+    }
+  });
+
+  function sendPreviewLoaded() {
+    if (!sentPreviewLoaded) {
+      if (window != top) { // Obs IE bug: http://stackoverflow.com/questions/4850978/ie-bug-window-top-false
         crossDocComLink.postCmdToParent("preview-loaded");
       } else {
         var previewViewIframeElm = previewViewIframe[0];
+        var winHeight = 0;
         try {
-          if(typeof previewViewIframeElm.contentWindow !== "undefined" && typeof previewViewIframeElm.contentWindow.document !== "undefined" && typeof previewViewIframeElm.contentWindow.document.body !== "undefined") {
+          if (typeof previewViewIframeElm.contentWindow !== "undefined" && typeof previewViewIframeElm.contentWindow.document !== "undefined" && typeof previewViewIframeElm.contentWindow.document.body !== "undefined") {
             var previewHeight = (Math.ceil(previewViewIframeElm.contentWindow.document.body.offsetHeight) + 45);
             previewViewIframeElm.style.height = previewHeight + "px";
           } else {
-            var winHeight = ($(window).outerHeight(true) - $("h1").outerHeight(true) - 40);
-            previewViewIframeElm.style.height = winHeight  + "px";
+            winHeight = ($(window).outerHeight(true) - $("h1").outerHeight(true) - 40);
+            previewViewIframeElm.style.height = winHeight + "px";
           }
-        } catch(e) { // Error
-          if(typeof console !== "undefined" && console.log) {
+        } catch (e) { // Error
+          if (typeof console !== "undefined" && console.log) {
             console.log("Error finding preview height: " + e.message);
           }
-          var winHeight = ($(window).outerHeight(true) - $("h1").outerHeight(true) - 40);
+          winHeight = ($(window).outerHeight(true) - $("h1").outerHeight(true) - 40);
           previewViewIframeElm.style.height = winHeight + "px";
         }
       }
-    });
-  } else {
-    crossDocComLink.postCmdToParent("preview-keep-min-height");
+      sentPreviewLoaded = true;
+    }
   }
-});
+})();

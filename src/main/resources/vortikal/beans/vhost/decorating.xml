@@ -385,6 +385,7 @@
   </bean>
   
 
+  <!-- Old title resolver: -->
   <bean id="decorating.contextualTitleResolver" class="org.vortikal.web.decorating.ContextualTitleResolver">
     <property name="config" ref="decorating.contextualTitleResolver.config" />
     <property name="token" ref="trustedToken" />
@@ -400,6 +401,22 @@
     <property name="uri" value="${decorating.contextualTitleResolver.configFile}" />
     <property name="targetObject" ref="decorating.contextualTitleResolver.config" />
     <property name="method" value="load" />
+  </bean>
+  
+  <!-- New title resolver: -->
+  <bean id="decorating.titleResolver" class="org.vortikal.web.TitleResolver"
+          parent="repositoryAware">
+    <property name="configPath" value="${decorating.titleResolver.config}" />
+    <property name="resourceTypeTree" ref="resourceTypeTree" />
+    <property name="fallbackTemplate" value="${decorating.titleResolver.fallbackTemplate}" />
+  </bean>
+
+  <bean id="decorating.titleResolver.configRefreshTrigger"
+        class="org.vortikal.util.repository.MethodInvokingRepositoryEventTrigger">
+    <property name="repository" ref="repository" />
+    <property name="uri" value="${decorating.titleResolver.config}" />
+    <property name="targetObject" ref="decorating.titleResolver" />
+    <property name="method" value="loadConfig" />
   </bean>
 
 </beans>

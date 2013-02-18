@@ -384,20 +384,4 @@
     <property name="redirectToService" ref="publish.editPublishingService" />
   </bean>
   
-
-  <!-- TODO: move bean defs to a proper place in config: -->  
-  <bean id="decorating.titleResolver" class="org.vortikal.web.TitleResolver"
-          parent="repositoryAware">
-    <property name="configPath" value="${decorating.titleResolver.config}" />
-  </bean>
-
-  <bean id="decorating.titleResolver.configRefreshTrigger"
-        class="org.vortikal.util.repository.MethodInvokingRepositoryEventTrigger">
-    <property name="repository" ref="repository" />
-    <property name="uri" value="${decorating.titleResolver.config}" />
-    <property name="targetObject" ref="decorating.titleResolver" />
-    <property name="method" value="loadConfig" />
-  </bean>
-
-  
 </beans>

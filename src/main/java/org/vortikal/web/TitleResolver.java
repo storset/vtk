@@ -61,8 +61,71 @@ import org.vortikal.util.text.SimpleTemplate;
 import org.vortikal.util.text.TextUtils;
 
 /**
- * TODO make test case.
- * TODO interface.
+ * Resolve resource web titles based on configuration.
+ * 
+ * <p>{@literal General form for a config <rule>:}<br>
+ * 
+ * {@literal <path> <predicates> = <template value> "\n" }
+ * <br>
+ * where:<br>
+ * {@literal <predicates> is on the form "[P1,P2,P3..]" }
+ * <br>and {@literal <path>} is some resource path, optionally ending with slash for exact match.
+ *
+ * <p>One line per &lt;rule&gt;. One config file to rule them all. For more info on
+ * syntax, see {@link PathMappingConfig}.
+ * 
+ * <p>Matching:
+ * <ol>
+ *   <li>First, the path specified must be either equal to or ancestor of resource
+ * to match. Deeper paths in config override rules in ancestor paths.
+ *   <li>If a path match is found, then predicates of all rules applying are matched
+ *   against resource. If multiple rules match, the last rule is chosen, and its template
+ *   value used to generate title.
+ * </ol>
+ * 
+ * <p>Example configuration:
+ * <pre>
+ * # Some config
+ * / = ${title} - ${hostname}
+ * 
+ * /foo/bar = ${title} - Foobar area - ${hostname}
+ * /foo/bar[lang:en] = ${title} - Foobar area in English - ${hostname}
+ * /foo/bar[type:structured-event] = ${title} - Happenings under Foobar area - ${hostname}
+ * /foo/bar[type:structured-event,lang:en] = ${title} - English happenings under Foobar area - ${hostname}
+ * 
+ * # Require that property "prop" in namespace "some" exists (has some value) for resource:
+ * /a/b[some\:prop:*] = ${title} - a resource that has prop some:prop - ${hostname}
+ * 
+ * # A rule that matches ONLY for "/exactly", but <em>not</em> any descendants:
+ * /exactly/ = The Exactly resource at /exactly, created at ${creationTime}
+ * 
+ * # A rule that will match <em>only</em> root resource:
+ * // = Welcome to ${hostname}
+ * 
+ * # This will match any resource that inherits some inheritable property from type "some-context-type":
+ * /[context:some-context-type] = ${title} - Some Context ${some-ctx: - ${hostname}
+ * </pre>
+ * 
+ * <p>Available matching predicates:
+ * <ul>
+ *  <li><b>lang</b> - match on locale of resource.<br>
+ *   Example: "/[lang:en] = ..."
+ *  <li><b>type</b> - match on <em>exact</em> resource type<br>
+ *   Example: "/[type:collection] = ...".
+ *  <li><b>context</b> - match on resources that inherit properties from the given type<br>
+ *   Example: "/[context:foo-context] = ..."
+ *  <li><b>NAMESPACE\:NAME</b> - match on value of property NAME in namespace NAMESPACE<br>
+ *   Example: "/[visual-profile\:disabled:true] = ...".
+ *   Note the required escaping of ":" between namespace and name, since the colon is also used to separate property from
+ *   required value.
+ * </ul>
+ * 
+ * <p>Available template variables:
+ * <ul>
+ *   <li><b>${NAMESPACE:NAME}</b> - Value of resource property <b>NAME</b>, in namespace <b>NAMESPACE</b>.
+ *   <li><b>${NAME}</b> - value of resource property <b>NAME</b> in the default namespace.
+ *   <li><b>${hostname}</b> - the name of the host
+ * </ul>
  * 
  */
 public class TitleResolver implements ApplicationListener<ContextRefreshedEvent> {
@@ -71,18 +134,19 @@ public class TitleResolver implements ApplicationListener<ContextRefreshedEvent>
     private Repository repository;
     private ResourceTypeTree resourceTypeTree;
     private Path configPath;
-    private PathMappingConfig config; // XXX volatile
+    private volatile PathMappingConfig config;
     private Map<String, SimpleTemplate> templateCache = new ConcurrentHashMap<String, SimpleTemplate>();
+    private SimpleTemplate fallbackTemplate = SimpleTemplate.compile("${title} - ${hostname}");
     
      public String resolve(final Resource resource) {
         if (config == null) {
             // Be graceful if config is not loaded
             logger.warn("Configuration not loaded or failed to load, using fallback title for " + resource.getURI());
-            return getFallbackTitle(resource);
+            return renderTemplate(fallbackTemplate, resource);
         }
         
         ConfigEntry entry = matchConfigForResource(resource);
-        if (entry == null) return getFallbackTitle(resource);
+        if (entry == null) return renderTemplate(fallbackTemplate, resource);
         
         String rawTemplate = entry.getValue();
         SimpleTemplate compiledTemplate = templateCache.get(rawTemplate);
@@ -91,16 +155,25 @@ public class TitleResolver implements ApplicationListener<ContextRefreshedEvent>
             templateCache.put(rawTemplate, compiledTemplate);
         }
         
+        return renderTemplate(compiledTemplate, resource);
+        
+    }
+     
+    private String renderTemplate(SimpleTemplate template, final Resource resource) {
         final StringBuilder result = new StringBuilder();
-        compiledTemplate.apply(new SimpleTemplate.Handler() {
+        template.apply(new SimpleTemplate.Handler() {
             @Override
             public void write(String text) {
                 result.append(text);
             }
 
             @Override
-            public String resolve(String ref) {
-                Property prop = getPropertyByReference(resource, ref);
+            public String resolve(String var) {
+                if ("hostname".equals(var)) {
+                    return repository.getId();
+                }
+                
+                Property prop = getPropertyByReference(resource, var);
                 if (prop == null) {
                     return "";
                 }
@@ -126,10 +199,6 @@ public class TitleResolver implements ApplicationListener<ContextRefreshedEvent>
             prop = resource.getProperty(Namespace.STRUCTURED_RESOURCE_NAMESPACE, ref);
         }
         return prop;
-    }
-    
-    private String getFallbackTitle(Resource resource) {
-        return resource.getTitle() + " - " + repository.getId();
     }
     
     private ConfigEntry matchConfigForResource(Resource resource) {
@@ -171,10 +240,11 @@ public class TitleResolver implements ApplicationListener<ContextRefreshedEvent>
         return matchPropertyValue(q.getName(),q.getValue(), r);
     }
     
-    private boolean matchContext(String resourceType, Resource r) {
+    private boolean matchContext(String contextType, Resource r) {
         ResourceTypeDefinition typeDef = null;
+
         try {
-            typeDef = resourceTypeTree.getResourceTypeDefinitionByName(resourceType);
+            typeDef = resourceTypeTree.getResourceTypeDefinitionByName(contextType);
         } catch (IllegalArgumentException ie) {}
 
         if (typeDef == null) return false;
@@ -248,12 +318,17 @@ public class TitleResolver implements ApplicationListener<ContextRefreshedEvent>
                     + this.configPath + ": " + t.getMessage(), t);
         }
     }
-    
-    @Required
-    public void setRepository(Repository repository) {
-        this.repository = repository;
-    }
 
+    /**
+     * Set fallback template to use when no configuration rules match a resource.
+     * Default template value is "${title} - ${hostname}".
+     * 
+     * @param template The template to use as fallback, as a string.
+     */
+    public void setFallbackTemplate(String template) {
+        this.fallbackTemplate = SimpleTemplate.compile(template);
+    }
+    
     /**
      * Set repository path to configuration resource.
      * @param configPath the path to the configuration resource.
@@ -267,5 +342,9 @@ public class TitleResolver implements ApplicationListener<ContextRefreshedEvent>
     public void setResourceTypeTree(ResourceTypeTree rt) {
         this.resourceTypeTree = rt;
     }
-
+    
+    @Required
+    public void setRepository(Repository repository) {
+        this.repository = repository;
+    }
 }

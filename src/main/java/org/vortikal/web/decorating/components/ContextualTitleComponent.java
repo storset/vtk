@@ -37,13 +37,14 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Resource;
 import org.vortikal.web.RequestContext;
+import org.vortikal.web.TitleResolver;
 import org.vortikal.web.decorating.ContextualTitleResolver;
 import org.vortikal.web.decorating.DecoratorRequest;
 import org.vortikal.web.decorating.DecoratorResponse;
 
 public class ContextualTitleComponent extends AbstractDecoratorComponent {
 
-    private ContextualTitleResolver resolver;
+    private TitleResolver resolver;
     
     @Override
     public void render(DecoratorRequest request, DecoratorResponse response)
@@ -59,7 +60,7 @@ public class ContextualTitleComponent extends AbstractDecoratorComponent {
 
     @Override
     protected String getDescriptionInternal() {
-        return "Gets the resource's contextual title";
+        return "Renders a contextualized resource title";
     }
 
     @Override
@@ -68,7 +69,7 @@ public class ContextualTitleComponent extends AbstractDecoratorComponent {
     }
     
     @Required
-    public void setTitleResolver(ContextualTitleResolver resolver) {
+    public void setTitleResolver(TitleResolver resolver) {
         this.resolver = resolver;
     }
 

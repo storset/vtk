@@ -76,10 +76,18 @@
     </property>
   </bean>
 
+  <!-- Old contextual title component: -->
   <bean id="decorating.contextualTitleComponent" class="org.vortikal.web.decorating.components.ContextualTitleComponent">
     <property name="titleResolver" ref="decorating.contextualTitleResolver" />
     <property name="namespace" ref="decorating.resourceNamespace" />
     <property name="name" value="contextual-title" />
+  </bean>
+  <!-- New contextual title component: -->
+  <bean id="decorating.contextualTitleComponent.new" class="org.vortikal.web.decorating.components.ContextualTitleComponent">
+    <property name="titleResolver" ref="decorating.titleResolver" />
+    <property name="namespace" ref="decorating.resourceNamespace" />
+    <property name="name" value="contextual-title-new" />
+    <property name="description" value="Renders a contextualized resource title based on site configuration." />
   </bean>
 
   <bean id="decorating.defaultCssComponent" class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">

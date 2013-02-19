@@ -51,7 +51,7 @@ resourcetype semester-page {
     show-static-links-if-published {
       ##
       [def props #({"prop": "schedule"}, {"prop" : "exam"}, {"prop" : "syllabus"})]
-      
+      esdf
       [def count 0]
       [def totCount 0]
       [list props link]
@@ -103,9 +103,14 @@ resourcetype semester-page {
       ##
     }
 
-    resource-links (title) {
+    resource-links (title, num, split) {
       ##
       [def link-box-title resource-prop(".", title)]
+      
+      [if num = 1]
+        <div class="left">
+      [endif]
+      
       [if link-box-title != null && link-box-title != ""]
         <h2>[val link-box-title]</h2>
       [endif]
@@ -125,16 +130,25 @@ resourcetype semester-page {
         [def links document.properties.link-box-six-links]
       [endif]
       [if links != null]
+        <ul>
         [list links link]
-          <ul>
-            [if link.link != null && link.link != "" && link.linktitle != null && link.linktitle != ""]
-              <li>
-                <a href="[val link.link]">[val link.linktitle]</a>
-              </li>
-            [endif]
-          </ul>
+          [if link.link != null && link.link != "" && link.linktitle != null && link.linktitle != ""]
+            <li>
+              <a href="[val link.link]">[val link.linktitle]</a>
+            </li>
+          [endif]
         [endlist]
+        </ul>
       [endif]
+      
+      [if num = split]
+        </div>
+        <div class="right">
+      [endif]
+      [if num = 6]
+        </div>
+      [endif]
+      
       ##
     }
 
@@ -183,6 +197,7 @@ resourcetype semester-page {
     [endif]
 
     [def resourceLinkCount 0]
+    [def resourceLinkGroupCount 0]
     [def props #({"prop": "link-box-one-links"}, {"prop" : "link-box-two-links"}, {"prop" : "link-box-three-links"}, {"prop" : "link-box-four-links"}, {"prop" : "link-box-five-links"}, {"prop" : "link-box-six-links"})]
     [list props box]
       [def document structured-document()]
@@ -201,9 +216,14 @@ resourcetype semester-page {
         [def links document.properties.link-box-six-links]
       [endif]
       [if links != null]
+        [def groupMe 0]
         [list links link]
           [if link.link != null && link.link != "" && link.linktitle != null && link.linktitle != ""]
+            [if groupMe = 0]
+              [def resourceLinkGroupCount resourceLinkGroupCount + 1]
+            [endif]
             [def resourceLinkCount resourceLinkCount + 1]
+            [def groupMe 1]
           [endif]
         [endlist]
       [endif]
@@ -250,12 +270,20 @@ resourcetype semester-page {
                   ((link-box-five-title != null && link-box-five-title != "") || link-box-five-links != null) ||
                   ((link-box-six-title != null && link-box-six-title != "") || link-box-six-links != null)]
                 <div class="vrtx-frontpage-box white-box">
-                  [call "comp:resource-links"{"title":"link-box-one-title"}]
-                  [call "comp:resource-links"{"title":"link-box-two-title"}]
-                  [call "comp:resource-links"{"title":"link-box-three-title"}]
-                  [call "comp:resource-links"{"title":"link-box-four-title"}]
-                  [call "comp:resource-links"{"title":"link-box-five-title"}]
-                  [call "comp:resource-links"{"title":"link-box-six-title"}]
+                  [def split 7]
+                  [if resourceLinkGroupCount < 3]
+                    [def split 1]
+                  [elseif resourceLinkGroupCount > 2 && resourceLinkGroupCount < 5]
+                    [def split 2]
+                  [else]
+                    [def split 3]
+                  [endif]
+                  [call "comp:resource-links"{"title":"link-box-one-title","num":1,"split":split}]
+                  [call "comp:resource-links"{"title":"link-box-two-title","num":2,"split":split}]
+                  [call "comp:resource-links"{"title":"link-box-three-title","num":3,"split":split}]
+                  [call "comp:resource-links"{"title":"link-box-four-title","num":4,"split":split}]
+                  [call "comp:resource-links"{"title":"link-box-five-title","num":5,"split":split}]
+                  [call "comp:resource-links"{"title":"link-box-six-title","num":6,"split":split}]
                 </div>
               [endif]
             [endif]
@@ -282,12 +310,12 @@ resourcetype semester-page {
                   ((link-box-five-title != null && link-box-five-title != "") || link-box-five-links != null) ||
                   ((link-box-six-title != null && link-box-six-title != "") || link-box-six-links != null)]
                 <div class="vrtx-frontpage-box white-box">
-                  [call "comp:resource-links"{"title":"link-box-one-title"}]
-                  [call "comp:resource-links"{"title":"link-box-two-title"}]
-                  [call "comp:resource-links"{"title":"link-box-three-title"}]
-                  [call "comp:resource-links"{"title":"link-box-four-title"}]
-                  [call "comp:resource-links"{"title":"link-box-five-title"}]
-                  [call "comp:resource-links"{"title":"link-box-six-title"}]
+                  [call "comp:resource-links"{"title":"link-box-one-title","num":1,"split":7}]
+                  [call "comp:resource-links"{"title":"link-box-two-title","num":2,"split":7}]
+                  [call "comp:resource-links"{"title":"link-box-three-title","num":3,"split":7}]
+                  [call "comp:resource-links"{"title":"link-box-four-title","num":4,"split":7}]
+                  [call "comp:resource-links"{"title":"link-box-five-title","num":5,"split":7}]
+                  [call "comp:resource-links"{"title":"link-box-six-title","num":6,"split":7}]
                 </div>
               [endif]
             [endif]

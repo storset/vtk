@@ -55,22 +55,6 @@
           </#if>
       
           <div class="vrtx-message-line">
-            <span class="vrtx-message-line-last-modified-by">
-              <#local modifiedBy = vrtx.prop(message, 'modifiedBy').principalValue />
-              <#local val = "" />
-              <#if principalDocuments?? && principalDocuments[modifiedBy.name]??>
-                <#local principal = principalDocuments[modifiedBy.name] />
-                <#if principal.URL??>
-                  <#local val = val + " <a href='${principal.URL}'>${principal.description}</a>" />
-                <#else>
-                  <#local val = val + " ${principal.description}" />
-                </#if>
-              <#else>
-                <#local val = val + " " + vrtx.propValue(message, 'modifiedBy', 'link') />
-              </#if>
-              ${val}
-            </span>
-            <span class="vrtx-message-line-middle-fix"> - </span>
             <span class="vrtx-message-line-last-modified-date">
               <#local lastModifiedDateProp = vrtx.prop(message, 'lastModified') />
               <@vrtx.date value=lastModifiedDateProp.dateValue format='long' locale=locale />

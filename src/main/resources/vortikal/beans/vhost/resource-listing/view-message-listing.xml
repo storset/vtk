@@ -41,7 +41,6 @@
         <value>resource:isTruncated</value>
         <value>resource:listingDisplayedMessage</value>
         <value>lastModified</value>
-        <value>modifiedBy</value>
         <value>contentLocale</value>
         <value>numberOfComments</value>
       </list>

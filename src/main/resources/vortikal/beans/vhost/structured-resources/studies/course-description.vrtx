@@ -143,7 +143,7 @@ resourcetype course-description {
       [def course-fee document.properties.course-fee]
       [def course-fee-amount document.properties.course-fee-amount]
       
-      <div class="vrtx-frontpage-box">
+      <div class="vrtx-frontpage-box vrtx-distach-bottom">
       
       <h2>[localized 'facts']</h2>
       [if credits != null]
@@ -231,9 +231,13 @@ resourcetype course-description {
       ##
     }
 
-    semesters {
+    semesters(hasContact) {
       ##
-      <div class="vrtx-frontpage-box grey-box">
+      [if hasContact]
+        <div class="vrtx-frontpage-box grey-box vrtx-distach-bottom">
+      [else]
+        <div class="vrtx-frontpage-box grey-box">
+      [endif]
         <h2>[localized 'semester']</h2>
         <ul>
           [def uri resource-prop("./", "uri")]
@@ -635,12 +639,15 @@ resourcetype course-description {
           </div>
           <div id="vrtx-additional-content">
             [call "comp:facts" {"document" : document}]
-            [call "comp:semesters"]
+            [def hasContact = false]
             [if studinfo-kontakt != null && studinfo-kontakt != "" && studinfo-kontakt != "ingen-fellestekst"]
+              [call "comp:semesters" {"hasContact": true}]
               <div class="vrtx-frontpage-box">
                 <h2>[localized 'studinfo-kontakt']</h2>
                 <p>[call "include:shared-text" {"propName":"studinfo-kontakt"}]</p>
               </div>
+            [else]
+              [call "comp:semesters" {"hasContact": false}]
             [endif]
           </div>
         </div>

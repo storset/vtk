@@ -94,15 +94,17 @@ import org.vortikal.util.io.StreamUtil;
  * <code>org.vortikal.repository.Repository</code> interface. (A
  * transaction-aware content-store implementation is needed to make repository
  * fully transactional.)
- * 
+ * <p>
  * Any operation that modifies the content store cannot be rolled back, so most
  * checks/verifications and DAO operations should be done before any
  * content-store operation.
- * 
- * XXX: implement locking of depth 'infinity' XXX: namespace locking/concurrency
- * XXX: Evaluate exception practice, handling and propagation XXX: make content
- * store participate in transactions XXX: externalize caching XXX: duplication
- * of owner and inherited between resource and acl. XXX: too big.
+ * <p>
+ * XXX implement locking of depth 'infinity' XXX: namespace locking/concurrency
+ * XXX: Evaluate exception practice, handling and propagation 
+ * XXX: make content store participate in transactions 
+ * XXX: externalize caching 
+ * XXX: duplication of owner and inherited between resource and acl.
+ * XXX: too big.
  */
 public class RepositoryImpl implements Repository, ApplicationContextAware {
 

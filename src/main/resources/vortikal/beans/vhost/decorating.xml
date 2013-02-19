@@ -404,7 +404,7 @@
   </bean>
   
   <!-- New title resolver: -->
-  <bean id="decorating.titleResolver" class="org.vortikal.web.TitleResolver"
+  <bean id="decorating.titleResolver" class="org.vortikal.web.TitleResolverImpl"
           parent="repositoryAware">
     <property name="configPath" value="${decorating.titleResolver.config}" />
     <property name="resourceTypeTree" ref="resourceTypeTree" />

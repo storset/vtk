@@ -40,13 +40,18 @@ import org.vortikal.repository.Resource;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.RequestContext.RepositoryTraversal;
 import org.vortikal.web.RequestContext.TraversalCallback;
+import org.vortikal.web.TitleResolver;
 
-public class ContextualTitleResolver {
+/**
+ * Resolve titles based on JSON mapping file.
+ */
+public class ContextualTitleResolver implements TitleResolver {
     
     private Repository repository;
     private Map<String, ?> config;
     private String token = null;
 
+    @Override
     public String resolve(Resource resource) {
         final String repoID = this.repository.getId();
         if (!this.config.containsKey(repoID)) {

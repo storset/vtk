@@ -45,8 +45,7 @@ import org.vortikal.repository.Repository;
 import org.vortikal.util.ReverseMap;
 import org.vortikal.util.text.JSON;
 
-public class JSONBackedMapResource implements Map<Object, Object>, 
-    ReverseMap<Object, Object>, InitializingBean {
+public class JSONBackedMapResource implements ReverseMap<Object, Object>, InitializingBean {
 
     private Repository repository;
     private Path uri;
@@ -83,8 +82,8 @@ public class JSONBackedMapResource implements Map<Object, Object>,
     
     public void load() throws Exception {
         
-        Map<Object, Object> map = null;
-        Map<Object, Set<Object>>reverseMap = null;
+        Map<Object, Object> newMap = null;
+        Map<Object, Set<Object>> newReverseMap = null;
         try {
             InputStream inputStream = this.repository.getInputStream(this.token, this.uri, false);
             Object parsed = JSON.parse(inputStream);
@@ -93,27 +92,27 @@ public class JSONBackedMapResource implements Map<Object, Object>,
             }
             Map<?, ?> m = (Map<?, ?>) parsed;
             
-            map = new HashMap<Object, Object>();
-            reverseMap = new HashMap<Object, Set<Object>>();
+            newMap = new HashMap<Object, Object>();
+            newReverseMap = new HashMap<Object, Set<Object>>();
 
             for (Object k: m.keySet()) {
                 Object v = m.get(k);
-                map.put(k, v);
-                if (!reverseMap.containsKey(v)) {
-                    reverseMap.put(v, new HashSet<Object>());
+                newMap.put(k, v);
+                if (!newReverseMap.containsKey(v)) {
+                    newReverseMap.put(v, new HashSet<Object>());
                 }
-                Set<Object> keys = reverseMap.get(v);
+                Set<Object> keys = newReverseMap.get(v);
                 keys.add(k);
             }
         } finally {
-            this.map = map;
-            this.reverseMap = reverseMap;
+            this.map = newMap;
+            this.reverseMap = newReverseMap;
         }
     }
     
     @Override
     public void clear() {
-        throw new RuntimeException("Illegal operation");
+        throw new UnsupportedOperationException("Illegal operation");
     }
 
     @Override
@@ -166,17 +165,17 @@ public class JSONBackedMapResource implements Map<Object, Object>,
 
     @Override
     public Object put(Object key, Object value) {
-        throw new RuntimeException("Illegal operation");
+        throw new UnsupportedOperationException("Illegal operation");
     }
 
     @Override
     public void putAll(Map<? extends Object, ? extends Object> m) {
-        throw new RuntimeException("Illegal operation");
+        throw new UnsupportedOperationException("Illegal operation");
     }
 
     @Override
     public Object remove(Object key) {
-        throw new RuntimeException("Illegal operation");
+        throw new UnsupportedOperationException("Illegal operation");
     }
 
     @Override

@@ -35,6 +35,7 @@ import java.util.Collections;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Required;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Resource;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.TitleResolver;
@@ -50,12 +51,26 @@ public class ContextualTitleComponent extends AbstractDecoratorComponent {
     public void render(DecoratorRequest request, DecoratorResponse response)
             throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
+        Path path = getUriParameter(request);
+        if (path == null) {
+            path = requestContext.getResourceURI();
+        }
+        
         Resource resource = requestContext.getRepository().retrieve(
-                requestContext.getSecurityToken(), requestContext.getResourceURI(), true);
+                requestContext.getSecurityToken(), path, true);
         Writer writer = response.getWriter();
         writer.write(this.resolver.resolve(resource));
         writer.flush();
         writer.close();
+    }
+    
+    // For debugging
+    private Path getUriParameter(DecoratorRequest request) {
+        try {
+            return Path.fromString(request.getStringParameter("uri"));
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     @Override

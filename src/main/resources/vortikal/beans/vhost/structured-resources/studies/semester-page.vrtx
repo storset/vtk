@@ -51,7 +51,6 @@ resourcetype semester-page {
     show-static-links-if-published {
       ##
       [def props #({"prop": "schedule"}, {"prop" : "exam"}, {"prop" : "syllabus"})]
-      esdf
       [def count 0]
       [def totCount 0]
       [list props link]

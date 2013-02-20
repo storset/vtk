@@ -3,14 +3,22 @@
  * 
  * - Store cached refs and i18n at init in configs-obj (on toggle link id)
  * 
+ * XXX: JSDoc
+ * 
  */
 
 (function(){
   if(typeof Toggler !== "function") {
     function Toggler() {
-      this.configs = {};
+      this.configs = {
+    	/* name 
+         * hideLinkText
+    	 * showLinkText
+    	 * isAnimated (optional)
+    	 */
+      };
     }
-    toggler = new Toggler();
+    toggler = new Toggler(); /* Global accessible object - XXX: proper singleton */
     
     $(document).ready(function() {
       toggler.init();
@@ -44,17 +52,25 @@
     };
   
     Toggler.prototype.toggle = function(link) {
-	   var config = this.configs[link.id];
-	   if(config.isAnimated) {
-	     config.container.slideToggle("fast"); /* XXX: proper easing requires jQuery UI */ 
-	   } else {
-	     config.container.toggle();   
-	   }
-	   if(config.container.filter(":visible").length) {
-	     config.link.text(config.hideLinkText);
-	   } else {
-	     config.link.text(config.showLinkText);
-	   }
+      var self = this;
+    	
+	  var config = self.configs[link.id];
+	  if(config.isAnimated) {
+	    config.container.slideToggle("fast", function() {  /* XXX: proper easing requires jQuery UI */ 
+	      self.toggleLinkText(config);	 
+	    });
+	  } else {
+	    config.container.toggle();
+	    self.toggleLinkText(config);
+	  } 
+    };
+    
+    Toggler.prototype.toggleLinkText = function(config) {
+    	if(config.container.filter(":visible").length) {
+   	     config.link.text(config.hideLinkText);
+   	   } else {
+   	     config.link.text(config.showLinkText);
+   	   }	
     };
   }
 })();

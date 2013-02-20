@@ -76,11 +76,19 @@ import org.vortikal.util.text.TextUtils;
  * 
  * <p>Matching:
  * <ol>
- *   <li>First, the path specified must be either equal to or ancestor of resource
- * to match. Deeper paths in config override rules in ancestor paths.
- *   <li>If a path match is found, then predicates of all rules applying are matched
- *   against resource. If multiple rules match, the last rule is chosen, and its template
- *   value used to generate title.
+ * <li>For resource with path P, the config entries with path C that is either
+ * equal or closest ancestor to P are selected for predicate matching.
+ * 
+ * <li>If one or more of the selected config entries for path C match on all
+ * predicates, then the last one, with order in config file, is
+ * selected.
+ * 
+ * <li>If none of selected entries for path C match, then matching restarts with
+ * the parent path of P as input, thus looking for rules higher up in the
+ * hierarchy, until a rule that matches is found.
+ * 
+ * <li>If no rules match, or there is no configuration file, then the configured
+ * fallback title is used as template.
  * </ol>
  * 
  * <p>Example configuration:
@@ -204,8 +212,16 @@ public class TitleResolverImpl implements ApplicationListener<ContextRefreshedEv
     
     private ConfigEntry matchConfigForResource(Resource resource) {
         
-        List<ConfigEntry> entries = this.config.getMatchAncestor(resource.getURI());
-        if (entries != null && !entries.isEmpty()) {
+        Path path = resource.getURI();
+        while (path != null) {
+            List<ConfigEntry> entries = this.config.getMatchAncestor(path);
+            if (entries == null || entries.isEmpty()) {
+                break;
+            }
+            // Jump up to config entry ancestor path, so we don't do needless matching
+            // on the way up:
+            path = entries.get(0).getPath();
+            
             List<ConfigEntry> candidates = new ArrayList<ConfigEntry>();
             for (ConfigEntry entry: entries) {
                 boolean match = true;
@@ -222,6 +238,8 @@ public class TitleResolverImpl implements ApplicationListener<ContextRefreshedEv
             if (!candidates.isEmpty()) {
                 return candidates.get(candidates.size()-1);
             }
+            
+            path = path.getParent();
         }
         
         return null;

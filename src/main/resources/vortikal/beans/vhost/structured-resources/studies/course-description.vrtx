@@ -239,7 +239,7 @@ resourcetype course-description {
         <div class="vrtx-frontpage-box grey-box" id="vrtx-course-semesters">
       [endif]
         <h2>[localized 'semester-title']</h2>
-        <p>[localized 'semester']</p>
+        <p><strong>[localized 'semester']</strong></p>
           [def uri resource-prop("./", "uri")]
           [def semesters search('uri=' + uri + '/* && type IN semester-page && published=true')]
           [if typeof(semesterSearchSort) = 'function']
@@ -249,9 +249,18 @@ resourcetype course-description {
             [if _index = 0]<ul>[endif]
             [if _index = 4]
               </ul> 
-              <div id="vrtx-course-previous-semesters" style= "display:none">
+              <div id="vrtx-course-previous-semesters">
                 <h3>[localized 'term-previous']</h3>
+                <script type="text/javascript" src="/vrtx/__vrtx/static-resources/jquery/include-jquery.js"></script>
                 <script type="text/javascript" src="/vrtx/__vrtx/static-resources/js/toggle.js"></script>
+                <script type="text/javascript"><!--
+                  toggler.add({
+                    name: 'course-previous-semesters',
+                    hideLinkText: '[localized 'term-previous-toggle-hide']',
+                    showLinkText: '[localized 'term-previous-toggle-show']'
+                  });
+                // -->
+                </script>
                 <ul>
             [endif]
             [def url view-url(semester)]
@@ -265,8 +274,8 @@ resourcetype course-description {
                 </ul>
               [else]
                 </ul></div>
-                <span id="vrtx-course-previous-semesters-toggle-wrapper">
-                  <a id="vrtx-course-previous-semesters-toggle" href="javascript:toggleCompleted('course-previous-semesters', '[localized 'term-previous-toggle-hide']', '[localized 'term-previous-toggle-show']')">[localized 'term-previous-toggle-show']</a>
+                <span id="vrtx-course-previous-semesters-toggle-wrapper" style="display:none">
+                  <a id="vrtx-course-previous-semesters-toggle" href="javascript:void(0);">[localized 'term-previous-toggle-show']</a>
                 </span> 
               [endif]
             [endif]
@@ -660,7 +669,7 @@ resourcetype course-description {
               [call "comp:semesters" {"hasContact": "true"}]
               <div class="vrtx-frontpage-box">
                 <h2>[localized 'studinfo-kontakt']</h2>
-                <p>[call "include:shared-text" {"propName":"studinfo-kontakt"}]</p>
+                [call "include:shared-text" {"propName":"studinfo-kontakt"}]
               </div>
             [else]
               [call "comp:semesters" {"hasContact": "false"}]

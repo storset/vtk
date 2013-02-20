@@ -1,16 +1,56 @@
 /*
- * Plain JS toggle 
- * XXX: Should probably use jQuery as need document.ready for hiding list and showing toggle link (making the JS unobtrusive)
+ * View Toggle
+ * 
+ * - Store cached refs and i18n at init in configs-obj (on toggle link id)
+ * 
  */
 
-function toggleCompleted(name, hideLinkText, showLinkText) {
-  var elm = document.getElementById("vrtx-" + name);
-  var toggleLink = document.getElementById("vrtx-" + name + "-toggle");
-  if(elm.style.display == "none") {
-    elm.style.display = "block";
-    toggleLink.innerHTML = hideLinkText;
-  } else {
-    elm.style.display = "none";
-    toggleLink.innerHTML = showLinkText;
+(function(){
+  if(typeof Toggler !== "function") {
+    function Toggler() {
+      this.configs = {};
+    }
+    toggler = new Toggler();
+    
+    $(document).ready(function() {
+      toggler.init();
+    });
+  
+    Toggler.prototype.add = function(config) {
+      this.configs["vrtx-" + config.name + "-toggle"] = config;
+    };
+  	  
+    Toggler.prototype.init = function() {
+	  var self = this;
+
+      for(var key in self.configs) {
+    	var config = self.configs[key];
+        var container = $("#vrtx-" + config.name);
+	    var link = $("#" + key);
+	    link.addClass("togglable");
+	    if(container.length && link.length) {
+	      container.hide();
+	      link.parent().show();
+	      config.container = container;
+	      config.link = link;
+	    }
+      }
+      
+      $(document).on("click", "a.togglable", function(e) {
+	    self.toggle(this);
+	    e.stopPropagation();
+	    e.preventDefault();
+      });
+    };
+  
+    Toggler.prototype.toggle = function(link) {
+	   var config = this.configs[link.id];
+	   config.container.toggle();
+	   if(config.container.filter(":visible").length) {
+	     config.link.text(config.hideLinkText);
+	   } else {
+	     config.link.text(config.showLinkText);
+	   }
+    };
   }
-}
+})();

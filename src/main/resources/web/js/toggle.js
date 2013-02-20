@@ -4,8 +4,8 @@
  */
 
 function toggleCompleted(name, hideLinkText, showLinkText) {
-  var elm = document.getElementById("vrtx-" + name + "-semesters");
-  var toggleLink = document.getElementById("vrtx-" + name + "-semesters-toggle");
+  var elm = document.getElementById("vrtx-" + name);
+  var toggleLink = document.getElementById("vrtx-" + name + "-toggle");
   if(elm.style.display == "none") {
     elm.style.display = "block";
     toggleLink.innerHTML = hideLinkText;

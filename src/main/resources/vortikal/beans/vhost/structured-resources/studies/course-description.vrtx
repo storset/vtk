@@ -266,7 +266,7 @@ resourcetype course-description {
               [else]
                 </ul></div>
                 <span id="vrtx-course-previous-semesters-toggle-wrapper">
-                  <a id="vrtx-course-previous-semesters-toggle" href="javascript:toggleCompleted('course-previous', '[localized 'term-previous-toggle-hide']', '[localized 'term-previous-toggle-show']')">[localized 'term-previous-toggle-show']</a>
+                  <a id="vrtx-course-previous-semesters-toggle" href="javascript:toggleCompleted('course-previous-semesters', '[localized 'term-previous-toggle-hide']', '[localized 'term-previous-toggle-show']')">[localized 'term-previous-toggle-show']</a>
                 </span> 
               [endif]
             [endif]

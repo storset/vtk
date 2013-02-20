@@ -282,7 +282,7 @@ resourcetype semester-page {
                   ((link-box-four-title != null && link-box-four-title != "") || link-box-four-links != null) ||
                   ((link-box-five-title != null && link-box-five-title != "") || link-box-five-links != null) ||
                   ((link-box-six-title != null && link-box-six-title != "") || link-box-six-links != null)]
-                <div class="vrtx-frontpage-box white-box">
+                <div class="vrtx-frontpage-box white-box" id="vrtx-semester-resource-links">
                   [def split 7]
                   [if resourceLinkGroupCount < 3]
                     [def split 1]
@@ -322,7 +322,7 @@ resourcetype semester-page {
                   ((link-box-four-title != null && link-box-four-title != "") || link-box-four-links != null) ||
                   ((link-box-five-title != null && link-box-five-title != "") || link-box-five-links != null) ||
                   ((link-box-six-title != null && link-box-six-title != "") || link-box-six-links != null)]
-                <div class="vrtx-frontpage-box white-box">
+                <div class="vrtx-frontpage-box white-box" id="vrtx-semester-resource-links">
                   [call "comp:resource-links"{"title":"link-box-one-title","num":1,"split":7}]
                   [call "comp:resource-links"{"title":"link-box-two-title","num":2,"split":7}]
                   [call "comp:resource-links"{"title":"link-box-three-title","num":3,"split":7}]

@@ -261,7 +261,7 @@ resourcetype course-description {
               <a href="[val url]">[if term != null && term != "" && year != null && year != ""][if term = "v"][localized 'spring'][else][localized 'autumn'][endif] [val year][else][val url][endif]</a>
             </li>
             [if _index = (_size - 1)]
-              [if _index < 3]
+              [if _index < 4]
                 </ul>
               [else]
                 </ul></div>

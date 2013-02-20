@@ -233,12 +233,13 @@ resourcetype course-description {
 
     semesters (hasContact) {
       ##
-      [if hasContact = 1]
+      [if hasContact = "true"]
         <div class="vrtx-frontpage-box grey-box vrtx-distach-bottom">
       [else]
         <div class="vrtx-frontpage-box grey-box">
       [endif]
-        <h2>[localized 'semester']</h2>
+        <h2>[localized 'semester-title']</h2>
+        <p>[localized 'semester']</p>
         <ul>
           [def uri resource-prop("./", "uri")]
           [def semesters search('uri=' + uri + '/* && type IN semester-page && published=true')]
@@ -640,13 +641,13 @@ resourcetype course-description {
           <div id="vrtx-additional-content">
             [call "comp:facts" {"document" : document}]
             [if studinfo-kontakt != null && studinfo-kontakt != "" && studinfo-kontakt != "ingen-fellestekst"]
-              [call "comp:semesters" {"hasContact": 1}]
+              [call "comp:semesters" {"hasContact": "true"}]
               <div class="vrtx-frontpage-box">
                 <h2>[localized 'studinfo-kontakt']</h2>
                 <p>[call "include:shared-text" {"propName":"studinfo-kontakt"}]</p>
               </div>
             [else]
-              [call "comp:semesters" {"hasContact": 0}]
+              [call "comp:semesters" {"hasContact": "false"}]
             [endif]
           </div>
         </div>
@@ -662,9 +663,9 @@ resourcetype course-description {
        nn : ("0" = "0", "1" = "1", "2" = "2", "2.5" = "2.5", "3" = "3", "4" = "4", "5" = "5", "6" = "6", "7" = "7", "7,5" = "7,5", "8" = "8", "9" = "9", "10" = "10", "11" = "11", "12" = "12", "13" = "13", "14" = "14", "15" = "15", "16" = "16", "17" = "17", "18" = "18", "19" = "19", "20" = "20", "21" = "21", "22" = "22", "23" = "23", "24" = "24", "25" = "25", "26" = "26", "27" = "27", "28" = "28", "29" = "29", "30" = "30", "31" = "31", "32" = "32", "33" = "33", "34" = "34", "35" = "35", "36" = "36", "37" = "37", "38" = "38", "39" = "39", "40" = "40", "41" = "41", "42" = "42", "43" = "43", "44" = "44", "45" = "45", "46" = "46", "47" = "47", "48" = "48", "49" = "49", "50" = "50", "51" = "51", "52" = "52", "53" = "53", "54" = "54", "55" = "55", "56" = "56", "57" = "57", "58" = "58", "59" = "59", "60" = "60", "61" = "61", "62" = "62", "63" = "63", "64" = "64", "65" = "65", "66" = "66", "67" = "67", "68" = "68", "69" = "69", "70" = "70", "71" = "71", "72" = "72", "73" = "73", "74" = "74", "75" = "75", "76" = "76", "77" = "77", "78" = "78", "79" = "79", "80" = "80", "81" = "81", "82" = "82", "83" = "83", "84" = "84", "85" = "85", "86" = "86", "87" = "87", "88" = "88", "89" = "89", "90" = "90", "91" = "91", "92" = "92", "93" = "93", "94" = "94", "95" = "95", "96" = "96", "97" = "97", "98" = "98", "99" = "99", "100" = "100", "101" = "101", "102" = "102", "103" = "103", "104" = "104", "105" = "105", "106" = "106", "107" = "107", "108" = "108", "109" = "109", "110" = "110", "111" = "111", "112" = "112", "113" = "113", "114" = "114", "115" = "115", "116" = "116", "117" = "117", "118" = "118", "119" = "119", "120" = "120")
      },
      teachingsemester {
-       en : ("vaar-og-hoest" = "Spring and autumn", "hver-hoest" = "Every autumn", "hver-vaar" = "Every spring", "particular-semester" = "Particular semester", "every-other" = "Every other year", "over-to-semestre-oppstart-hoest" = "Covers two semesters, starting every autumn semester", "over-to-semestre-oppstart-vaar" = "Covers two semesters, starting every spring semester", "over-to-semestre-oppstart-vaar-og-hoest" = "Covers two semesters, starting every spring and autumn semester", "other" = "Other"),
-       no : ("vaar-og-hoest" = "Vår og høst", "hver-hoest" = "Hver høst", "hver-vaar" = "Hver vår", "particular-semester" = "Bestemt semester", "every-other" = "Annethvert år", "over-to-semestre-oppstart-hoest" = "Over to semestre, oppstart hvert høstsemester", "over-to-semestre-oppstart-vaar" = "Over to semestre, oppstart hvert vårsemester", "over-to-semestre-oppstart-vaar-og-hoest" = "Over to semestre, oppstart hvert vår- og høstsemester", "other" = "Annet"),
-       nn : ("vaar-og-hoest" = "Vår og haust", "hver-hoest" = "Kvar haust", "hver-vaar" = "Kvar vår", "particular-semester" = "Bestemt semester", "every-other" = "Anna kvart år", "over-to-semestre-oppstart-hoest" = "Over to semestre, oppstart kvart haustsemester", "over-to-semestre-oppstart-vaar" = "Over to semestre, oppstart kvart vårsemester", "over-to-semestre-oppstart-vaar-og-hoest" = "Over to semestre, oppstart kvart vår- og haustsemester", "other" = "Anna")
+       en : ("vaar-og-hoest" = "Spring and autumn", "hver-hoest" = "Every autumn", "hver-vaar" = "Every spring", "particular-semester" = "Particular semester", "every-other" = "Every other year", "over-to-semestre-oppstart-hoest" = "Covers two semesters, starting every autumn", "over-to-semestre-oppstart-vaar" = "Covers two semesters, starting every spring", "over-to-semestre-oppstart-vaar-og-hoest" = "Covers two semesters, starting every spring and autumn", "other" = "Other"),
+       no : ("vaar-og-hoest" = "Vår og høst", "hver-hoest" = "Hver høst", "hver-vaar" = "Hver vår", "particular-semester" = "Bestemt semester", "every-other" = "Annethvert år", "over-to-semestre-oppstart-hoest" = "Over to semestre, oppstart hver høst", "over-to-semestre-oppstart-vaar" = "Over to semestre, oppstart hver vår", "over-to-semestre-oppstart-vaar-og-hoest" = "Over to semestre, oppstart hver vår og høst", "other" = "Annet"),
+       nn : ("vaar-og-hoest" = "Vår og haust", "hver-hoest" = "Kvar haust", "hver-vaar" = "Kvar vår", "particular-semester" = "Bestemt semester", "every-other" = "Annakvart år", "over-to-semestre-oppstart-hoest" = "Over to semester, oppstart kvar haust", "over-to-semestre-oppstart-vaar" = "Over to semester, oppstart kvar vår", "over-to-semestre-oppstart-vaar-og-hoest" = "Over to semester, oppstart kvar vår og haust", "other" = "Anna")
      },
      teachingsemesterParticularSemester {
        en : ("not-set" = "Not set", "h03" = "Autumn 2003", "v03" = "Spring 2003","h04" = "Autumn 2004", "v04" = "Spring 2004","h05" = "Autumn 2005", "v05" = "Spring 2005","h06" = "Autumn 2006", "v06" = "Spring 2006","h07" = "Autumn 2007", "v07" = "Spring 2007","h08" = "Autumn 2008", "v08" = "Spring 2008","h09" = "Autumn 2009", "v09" = "Spring 2009","h10" = "Autumn 2010", "v10" = "Spring 2010","h11" = "Autumn 2011", "v11" = "Spring 2011","h12" = "Autumn 2012", "v12" = "Spring 2012","h13" = "Autumn 2013", "v13" = "Spring 2013","h14" = "Autumn 2014", "v14" = "Spring 2014","h15" = "Autumn 2015", "v15" = "Spring 2015","h16" = "Autumn 2016", "v16" = "Spring 2016","h17" = "Autumn 2017", "v17" = "Spring 2017","h18" = "Autumn 2018", "v18" = "Spring 2018","h19" = "Autumn 2019", "v19" = "Spring 2019","h20" = "Autumn 2020", "v20" = "Spring 2020"),
@@ -728,7 +729,7 @@ resourcetype course-description {
     header : (en : "Edit course description", no : "Rediger emnebeskrivelse", nn : "Rediger emneskildring"),
     version-no : (en : "Norsk versjon", no : "Norsk versjon", nn : "Norsk versjon"),
     version-en : (en : "English version", no : "English version", nn : "English version"),
-    continued-as : (en : "This course is continued as", no: "Dette emnet er videreført som", nn : "Dette emnet er vidareført som"),
+    continued-as : (en : "This course is replaced by", no: "Dette emnet er erstattet av", nn : "Dette emnet er erstatta av"),
     discontinued-course : (en : "This course is discontinued.", no : "Dette emnet er nedlagt.", nn : "Dette emnet er nedlagt."),
 
     facts : (en : "Facts about this course", no : "Fakta om emnet", nn : "Fakta om emnet"),
@@ -744,48 +745,47 @@ resourcetype course-description {
     teachingsemester : (en : "Teaching", no : "Undervisning", nn : "Undervisning"),
     teachingsemesterParticularSemester : (en : "Particular semester", no : "Bestemt semester", nn : "Bestemt semester"),
     teachingsemester-every-other-semester : (en : "Every other year", no : "Annethvert år", nn : "Annakvart år"),
-    teachingsemester-every-other-semester-term : (en : "Term", no : "Semester", nn : "Semester"),
+    teachingsemester-every-other-semester-term : (en : "Semester", no : "Semester", nn : "Semester"),
     teachingsemester-every-other-semester-startyear : (en : "Start year", no : "Oppstartsår", nn : "Oppstartsår"),
-    teachingsemester-other : (en : "Other", no : "Annet", nn : "Annet"),
+    teachingsemester-other : (en : "Other", no : "Annet", nn : "Anna"),
 
     examsemester : (en : "Examination", no: "Eksamen", nn: "Eksamen"),
     examsemesterParticularSemester : (en : "Particular semester", no : "Bestemt semester", nn : "Bestemt semester"),
-    examsemester-every-other-semester : (en : "Every other year", no : "Annethvert år", nn : "Anna kvart år"),
-    examsemester-every-other-semester-term : (en : "Term", no : "Semester", nn : "Semester"),
+    examsemester-every-other-semester : (en : "Every other year", no : "Annethvert år", nn : "Annakvart år"),
+    examsemester-every-other-semester-term : (en : "Semester", no : "Semester", nn : "Semester"),
     examsemester-every-other-semester-startyear : (en : "Start year", no : "Oppstartsår", nn : "Oppstartsår"),
-    examsemester-other : (en : "Other", no : "Annet", nn : "Annet"),
+    examsemester-other : (en : "Other", no : "Annet", nn : "Anna"),
 
     vaar-og-hoest : (en : "Spring and autumn", no : "Vår og høst", nn : "Vår og haust"),
-    hver-hoest : (en : "Every autumn semester", no : "Hvert høstsemester", nn : "Kvart haustsemester"),
-    hver-vaar : (en : "Every spring semester", no : "Hvert vårsemester", nn : "Kvart vårsemester"),
-    every-other-autumn : (en : "Every other autumn semester", no : "Annethvert høstsemester", nn : "Annakvart haustsemester"),
-    every-other-spring : (en : "Every other spring semester", no : "Annethvert vårsemester", nn : "Annakvart vårsemester"),
+    hver-hoest : (en : "Every autumn", no : "Hver høst", nn : "Kvar haust"),
+    hver-vaar : (en : "Every spring", no : "Hver vår", nn : "Kvar vår"),
+    every-other-autumn : (en : "Every other autumn", no : "Annenhver høst", nn : "Annankvar haust"),
+    every-other-spring : (en : "Every other spring", no : "Annenhver vår", nn : "Annankvar vår"),
     every-other-start : (en : "starting", no : "fra", nn : "fra"),
-    over-to-semestre-oppstart-hoest : (en : "Covers two semesters, starting every autumn semester", no : "Over to semestre, oppstart hvert høstsemester", nn : "Over to semestre, oppstart kvart haustsemester"),
-    over-to-semestre-oppstart-vaar : (en : "Covers two semesters, starting every spring semester", no : "Over to semestre, oppstart hvert vårsemester", nn : "Over to semestre, oppstart kvart vårsemester"),
-    over-to-semestre-oppstart-vaar-og-hoest : (en : "Covers two semesters, starting every spring and autumn semester", no : "Over to semestre, oppstart hvert vår- og høstsemester", nn : "Over to semestre, oppstart kvart vår- og haustsemester"),
+    over-to-semestre-oppstart-hoest : (en : "Covers two semesters, starting every autumn", no : "Over to semestre, oppstart hver høst", nn : "Over to semester, oppstart kvar haust"),
+    over-to-semestre-oppstart-vaar : (en : "Covers two semesters, starting every spring", no : "Over to semestre, oppstart hver vår", nn : "Over to semester, oppstart kvar vår"),
+    over-to-semestre-oppstart-vaar-og-hoest : (en : "Covers two semesters, starting every spring and autumn", no : "Over to semestre, oppstart hver vår og høst", nn : "Over to semester, oppstart kvar vår og haust"),
 
     teaching-language : (en : "Teaching language", no : "Undervisningsspråk", nn : "Undervisningsspråk"),
-    teaching-language-text-field : (en : "Teaching language text field", no : "Undervisningsspråk tekstfelt", nn : "Undervisningsspråk tekstfelt"),
+    teaching-language-text-field : (en : "Fill in teaching language", no : "Skriv inn undervisningsspråk", nn : "Skriv inn undervisningsspråk"),
     norwegian : (en : "Norwegian", no : "Norsk", nn : "Norsk"),
     english : (en : "English", no : "Engelsk", nn : "Engelsk"),
-    english-by-need : (en : "English by need", no : "Engelsk ved behov", nn : "Engelsk ved behov"),
+    english-by-need : (en : "Norwegian (English on demand)", no : "Norsk (engelsk på forespørsel)", nn : "Norsk (engelsk på førespurnad)"),
 
     course-fee : (en : "Course fee", no : "Kursavgift", nn : "Kursavgift"),
-    course-fee-amount : (en : "Course fee amount", no : "Kursavgift sum", nn : "Kursavgift sum"),
+    course-fee-amount : (en : "Fill in amount", no : "Skriv inn beløp", nn : "Skriv inn beløp"),
 
     course-content : (en : "Course content", no : "Kort om emnet", nn : "Kort om emnet"),
     learning-outcomes : (en : "Learning outcome", no : "Hva lærer du?", nn : "Kva lærer du?"),
 
-    term : (en : "Term", no : "Semester", nn : "Semester"),
+    term : (en : "Semester", no : "Semester", nn : "Semester"),
     autumn : (en : "Autumn", no : "Høst", nn : "Haust"),
     spring : (en : "Spring", no : "Vår", nn : "Vår"),
     year : (en : "Year", no : "År", nn : "År"),
 
     administrated : (en : "Administrated by", no : "Tilbys ved", nn : "Tilbys ved"),
-    semester : (en : "Semester pages (time and place for teaching and examination, syllabus etc.)",
-                no : "Semestersider (undervisningstider, eksamensdato, pensum m.m.)",
-                nn : "Semestersider (undervisningstider, eksamensdato, pensum m.m.)"),
+    semester-title : (en : "Semester pages", no : "Semestersider", nn : "Semestersider"),
+    semester : (en : "Teaching schedule, syllabus, examination date", no : "Timeplan, pensum, eksamensdato", nn : "Timeplan, pensum, eksamensdato"),
 
     opptak-og-adgang-text-field : (en : "Admission text", no : "Opptak og adgangsregulering fritekst", nn : "Opptak og adgangsregulering fritekst"),
     opptak-og-adgang : (en : "Admission shared text", no : "Opptak og adgangsregulering fellestekst", nn : "Opptak og adgangsregulering fellestekst"),
@@ -804,7 +804,7 @@ resourcetype course-description {
     overlapping-courses-text-field : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
     overlapping-courses-group : (en : "Overlapping courses", no : "Overlappende emner", nn : "Overlappande emne"),
     fs-course-code : (en : "Course code", no : "Emnekode", nn : "Emnekode"),
-    points-for : (en : "points for", no : "poeng for", nn : "poeng for"),
+    points-for : (en : "credits overlap with", no : "poeng overlapp mot", nn : "poeng overlapp mot"),
     and : (en : "and", no : "og", nn : "og"),
 
     teaching-text-field : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),

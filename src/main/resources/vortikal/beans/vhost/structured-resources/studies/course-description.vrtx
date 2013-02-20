@@ -240,21 +240,50 @@ resourcetype course-description {
       [endif]
         <h2>[localized 'semester-title']</h2>
         <p>[localized 'semester']</p>
-        <ul>
           [def uri resource-prop("./", "uri")]
           [def semesters search('uri=' + uri + '/* && type IN semester-page && published=true')]
           [if typeof(semesterSearchSort) = 'function']
             [def semesters semesterSearchSort(semesters)]
           [endif]
           [list semesters semester]
+            [if _index = 0]<ul>[endif]
+            [if _index = 4]
+              </ul> 
+              <div id="vrtx-course-previous-semesters" style= "display:none">
+                <h3>[localized 'term-previous']</h3>
+                <script type="text/javascript"><!-- // XXX: move to own file for reuse in related projects
+                  function toggleCompleted(name, hideLinkText, showLinkText) {
+                    var elm = document.getElementById("vrtx-" + name + "-semesters");
+                    var toggleLink = document.getElementById("vrtx-" + name + "-semesters-toggle");
+                    if(elm.style.display == "none") {
+                      elm.style.display = "block";
+                      toggleLink.innerHTML = hideLinkText;
+                    } else {
+                      elm.style.display = "none";
+                      toggleLink.innerHTML = showLinkText;
+                    }
+                  }
+                // -->
+                </script>
+                <ul>
+            [endif]
             [def url view-url(semester)]
             [def term resource-prop-obj-val(semester, "semesterContext.semesterTerm")]
             [def year resource-prop-obj-val(semester, "semesterContext.semesterYear")]
             <li>
               <a href="[val url]">[if term != null && term != "" && year != null && year != ""][if term = "v"][localized 'spring'][else][localized 'autumn'][endif] [val year][else][val url][endif]</a>
             </li>
+            [if _index = (_size - 1)]
+              [if _index < 3]
+                </ul>
+              [else]
+                </ul></div>
+                <span id="vrtx-course-previous-semesters-toggle-wrapper">
+                  <a id="vrtx-course-previous-semesters-toggle" href="javascript:toggleCompleted('course-previous', '[localized 'term-previous-toggle-hide']', '[localized 'term-previous-toggle-show']')">[localized 'term-previous-toggle-show']</a>
+                </span> 
+              [endif]
+            [endif]
           [endlist]
-        </ul>
       </div>
       ##
     }
@@ -782,6 +811,10 @@ resourcetype course-description {
     autumn : (en : "Autumn", no : "Høst", nn : "Haust"),
     spring : (en : "Spring", no : "Vår", nn : "Vår"),
     year : (en : "Year", no : "År", nn : "År"),
+    
+    term-previous : (en : "Previous semesters", no : "Tidligere semestre", nn : "Tidlegare semester"),
+    term-previous-toggle-show : (en : "Show previous semesters", no : "Vis tidligere semestre", nn : "Vis tidlegare semester"),
+    term-previous-toggle-hide : (en : "Hide previous semesters", no : "Skjul tidligere semestre", nn : "Skjul tidlegare semester"),
 
     administrated : (en : "Administrated by", no : "Tilbys ved", nn : "Tilbys ved"),
     semester-title : (en : "Semester pages", no : "Semestersider", nn : "Semestersider"),

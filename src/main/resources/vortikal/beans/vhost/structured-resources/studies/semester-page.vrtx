@@ -302,11 +302,11 @@ resourcetype semester-page {
             [endif]
           </div>
           <div id="vrtx-additional-content">
-            [call "resource:teacher-list"{"cssClass":"vrtx-distach-bottom"}]
             <div class="vrtx-frontpage-box white-box vrtx-distach-bottom">
               <h2>[localized 'studinfo-kontakt']</h2>
               [call "include:shared-text" {"propName":"studinfo-kontakt"}]
             </div>
+            [call "resource:teacher-list"{"cssClass":"vrtx-distach-bottom"}]
             [if messages-placement = null || (messages-placement = "right" || (messages-placement = "auto" && resourceLinkCount > 4))]
               <div class="vrtx-frontpage-box white-box">
                 [if max-number-of-messages != null && max-number-of-messages != ""]

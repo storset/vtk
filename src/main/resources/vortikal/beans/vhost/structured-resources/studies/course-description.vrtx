@@ -234,9 +234,9 @@ resourcetype course-description {
     semesters (hasContact) {
       ##
       [if hasContact = "true"]
-        <div class="vrtx-frontpage-box grey-box vrtx-distach-bottom">
+        <div class="vrtx-frontpage-box grey-box vrtx-distach-bottom" id="vrtx-course-semesters">
       [else]
-        <div class="vrtx-frontpage-box grey-box">
+        <div class="vrtx-frontpage-box grey-box" id="vrtx-course-semesters">
       [endif]
         <h2>[localized 'semester-title']</h2>
         <p>[localized 'semester']</p>

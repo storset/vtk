@@ -343,7 +343,7 @@ resourcetype semester-page {
     messages-placement {
       en : ("auto" = "Automatic", "middle" = "Show in middle", "right" = "Show in right column"),
       no : ("auto" = "Automatisk", "middle" = "Vis i midten", "right" = "Vis i høyrespalten"),
-      nn : ("auto" = "Automatisk", "middle" = "Vis i midten", "right" = "Vis i høyrespalten")
+      nn : ("auto" = "Automatisk", "middle" = "Vis i midten", "right" = "Vis i høgrespalta")
     },
     max-number-of-messages {
       en : (range = "1..20"),
@@ -363,12 +363,12 @@ resourcetype semester-page {
   }
 
   localization {
-    header : (en : "Edit semester", no : "Rediger semester", nn : "Rediger semester"),
+    header : (en : "Edit semester page", no : "Rediger semesterside", nn : "Rediger semesterside"),
     localized-group : (en : "group", no : "gruppe", nn : "gruppe"),
     semesterpage-for : (en : "Semester page for", no : "Semesterside for", nn : "Semesterside for"),
     schedule : (en : "Schedule", no : "Timeplan", nn : "Timeplan"),
     exam : (en : "Examination: Time and place", no : "Eksamen: Tid og sted", nn : "Eksamen: Tid og stad"),
-    syllabus : (en : "Syllabus", no : "Pensumliste", nn : "Pensumliste"),
+    syllabus : (en : "Syllabus/achievement requirements", no : "Pensum/læringskrav", nn : "Pensum/læringskrav"),
     sec : (en : "Fixed elements", no : "Faste elementer", nn : "Faste elementer"),
     link-box-one : (en : "Resource links 1", no : "Ressurslenker 1", nn : "Ressurslenker 1"),
     link-box-two : (en : "Resource links 2", no : "Ressurslenker 2", nn : "Ressurslenker 2"),
@@ -394,15 +394,15 @@ resourcetype semester-page {
     cloned-course-code : (en : "Cloned from course code", no : "Klonet fra emnekode", nn : "Klona fra emnekode"),
     cloned-course-from : (en : "This course is a clone of", no : "Dette er et klonet kurs av", nn : "Dette er eit klona kurs av"),
     fronter : (en : "Fronter", no : "Fronter", nn : "Fronter"),
-    fronter-text : (en : "This course is using Fronter as a part of the education.", no : "Dette kurset benytter Fronter som verktøy i undervisningen.", nn : "Dette kurset nytte Fronter som verktøy i undervisninga."),
+    fronter-text : (en : "This course uses the learning platform Fronter.", no : "Dette kurset bruker læringsplattformen Fronter.", nn : "Dette kurset nyttar læringsplattforma Fronter."),
     log-into-fronter : (en : "Log into Fronter", no : "Logg på Fronter", nn : "Logg på Fronter"),
     studinfo-kontakt : (en : "Contact", no : "Kontakt", nn : "Kontakt"),
-    messages-placement : (en : "Placement of messages", no : "Plassering av beskjeder", nn : "Plassering av beskjeder"),
+    messages-placement : (en : "Placement of messages", no : "Plassering av beskjeder", nn : "Plassering av beskjedar"),
     max-number-of-messages : (en : "Number of messages", no : "Antall beskjeder", nn : "Talet på beskjedar"),
-    messages : (en : "Messages", no : "Beskjeder", nn : "Meldingar"),
-    teachersUsernames : (en : "Teachers (enter the teachers username)", no : "Lærere (fyll inn lærerens brukernavn)", nn : "Lærarar (fyll inn lærarens brukernavn)"),
+    messages : (en : "Messages", no : "Beskjeder", nn : "Beskjedar"),
+    teachersUsernames : (en : "Teachers (enter username)", no : "Faglærere (fyll inn brukernavn)", nn : "Lærarar (fyll inn brukernamn)"),
     teachers : (en : "Other teachers", no : "Andre lærere", nn : "Andre lærarar"),
     teacherName : (en : "Name", no : "Navn", nn : "Namn"),
-    teacherUrl : (en : "Webaddress", no : "Webadresse", nn : "Webadresse")
+    teacherUrl : (en : "Webaddress", no : "Nettadresse", nn : "Nettadresse")
   }
 }

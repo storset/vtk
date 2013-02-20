@@ -27,9 +27,9 @@
     	var config = self.configs[key];
         var container = $("#vrtx-" + config.name);
 	    var link = $("#" + key);
-	    link.addClass("togglable");
 	    if(container.length && link.length) {
 	      container.hide();
+	      link.addClass("togglable");
 	      link.parent().show();
 	      config.container = container;
 	      config.link = link;
@@ -45,7 +45,11 @@
   
     Toggler.prototype.toggle = function(link) {
 	   var config = this.configs[link.id];
-	   config.container.toggle();
+	   if(config.isAnimated) {
+	     config.container.slideToggle("fast"); /* XXX: proper easing requires jQuery UI */ 
+	   } else {
+	     config.container.toggle();   
+	   }
 	   if(config.container.filter(":visible").length) {
 	     config.link.text(config.hideLinkText);
 	   } else {

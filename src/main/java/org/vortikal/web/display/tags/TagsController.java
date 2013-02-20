@@ -85,7 +85,7 @@ public class TagsController implements Controller {
             model.put(TagsHelper.TAG_PARAMETER, tag);
             handleSingleTag(request, tag, resource, model, resourceTypes, displayScope, overrideResourceTypeTitle);
         } else {
-            handleAllTags(token, request, resource, model, resourceTypes, overrideResourceTypeTitle, displayScope);
+            handleAllTags(token, resource, model, resourceTypes, overrideResourceTypeTitle, displayScope);
         }
 
         // Resolve Title
@@ -159,7 +159,7 @@ public class TagsController implements Controller {
 
     }
 
-    private void handleAllTags(String token, HttpServletRequest request, Resource resource, Map<String, Object> model,
+    private void handleAllTags(String token, Resource resource, Map<String, Object> model,
             List<ResourceTypeDefinition> resourceTypes, String overrideResourceTypeTitle, boolean displayScope) {
 
         Path scopeUri = resource.getURI();

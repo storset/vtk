@@ -37,8 +37,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.servlet.http.HttpServletRequest;
-
 import net.sf.json.JSONObject;
 
 import org.springframework.beans.factory.annotation.Required;
@@ -188,7 +186,7 @@ public class SharedTextResolver {
         return j;
     }
 
-    public Map<String, Map<String, JSONObject>> resolveSharedTexts(HttpServletRequest request) throws Exception {
+    public Map<String, Map<String, JSONObject>> resolveSharedTexts() throws Exception {
 
         RequestContext requestContext = RequestContext.getRequestContext();
         String token = requestContext.getSecurityToken();

@@ -22,7 +22,7 @@ public class SharedTextProvider implements ReferenceDataProvider {
     @Override
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public void referenceData(Map model, HttpServletRequest request) throws Exception {
-        Map<String, Map<String, JSONObject>> sharedTextPropsMap = sharedTextResolver.resolveSharedTexts(request);
+        Map<String, Map<String, JSONObject>> sharedTextPropsMap = sharedTextResolver.resolveSharedTexts();
         model.put("sharedTextProps", sharedTextPropsMap);
     }
 

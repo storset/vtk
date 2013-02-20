@@ -251,20 +251,7 @@ resourcetype course-description {
               </ul> 
               <div id="vrtx-course-previous-semesters" style= "display:none">
                 <h3>[localized 'term-previous']</h3>
-                <script type="text/javascript"><!-- // XXX: move to own file for reuse in related projects
-                  function toggleCompleted(name, hideLinkText, showLinkText) {
-                    var elm = document.getElementById("vrtx-" + name + "-semesters");
-                    var toggleLink = document.getElementById("vrtx-" + name + "-semesters-toggle");
-                    if(elm.style.display == "none") {
-                      elm.style.display = "block";
-                      toggleLink.innerHTML = hideLinkText;
-                    } else {
-                      elm.style.display = "none";
-                      toggleLink.innerHTML = showLinkText;
-                    }
-                  }
-                // -->
-                </script>
+                <script type="text/javascript" src="/vrtx/__vrtx/static-resources/js/toggle.js"></script>
                 <ul>
             [endif]
             [def url view-url(semester)]

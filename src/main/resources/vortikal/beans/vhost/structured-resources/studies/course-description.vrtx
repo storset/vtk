@@ -181,7 +181,7 @@ resourcetype course-description {
           <p>[localized term] [localized 'every-other-start'] [val startyear]</p>
         [endif]
       [elseif teachingsemester != null && teachingsemester = "other"]
-        [if teachingsemester-other != null]<p>[val teachingsemester-other # unescaped]</p>[endif]
+        [if teachingsemester-other != null][val teachingsemester-other # unescaped][endif]
       [else]
         [if teachingsemester != null]<p>[localized teachingsemester]</p>[endif]
       [endif]
@@ -212,7 +212,7 @@ resourcetype course-description {
           <p>[localized term] [localized 'every-other-start'] [val startyear]</p>
         [endif]
       [elseif examsemester != null && examsemester = "other"]
-        [if examsemester-other != null]<p>[val examsemester-other # unescaped]</p>[endif]
+        [if examsemester-other != null][val examsemester-other # unescaped][endif]
       [else]
         [if examsemester != null]<p>[localized examsemester]</p>[endif]
       [endif]
@@ -220,7 +220,7 @@ resourcetype course-description {
       [if teaching-language != null && teaching-language != "" && teaching-language != "other"]
         <p>[localized teaching-language]</p>
       [elseif teaching-language != null && teaching-language = "other" && teaching-language-text-field != null]
-        <p>[val teaching-language-text-field # unescaped]</p>
+        [val teaching-language-text-field # unescaped]
       [endif]
       [if course-fee != null && course-fee && course-fee-amount != null && course-fee-amount != ""]
         <h3>[localized 'course-fee']</h3>

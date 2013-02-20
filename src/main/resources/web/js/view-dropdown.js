@@ -2,6 +2,7 @@
  * View dropdown
  *
  * FIXME: Turn off() first to prevent bug when JS is already included
+ * TODO: use toggle.js
  *
  */
  

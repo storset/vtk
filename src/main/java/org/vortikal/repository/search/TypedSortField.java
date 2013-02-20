@@ -30,8 +30,6 @@
  */
 package org.vortikal.repository.search;
 
-import java.util.Locale;
-
 import org.vortikal.repository.PropertySet;
 
 /**

@@ -34,7 +34,6 @@ import java.util.Set;
 
 import org.vortikal.repository.Path;
 import org.vortikal.repository.PropertySet;
-import org.vortikal.repository.Resource;
 import org.vortikal.web.service.URL;
 
 public interface AggregationResolver {

@@ -33,10 +33,12 @@ package org.vortikal.util.text;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.fail;
-import junit.framework.TestCase;
 
-public class TextUtilsTest extends TestCase {
+import org.junit.Test;
 
+public class TextUtilsTest {
+
+    @Test
     public void testRemoveDuplicatesIgnoreCase() {
 
         // OLD: String testData = "Forskning, Røed Ødegård, forskning, FoRsKning, forskNING";

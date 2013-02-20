@@ -31,14 +31,13 @@
 package org.vortikal.util.text;
 
 import static junit.framework.Assert.assertEquals;
+
 import java.util.HashMap;
 import java.util.Map;
 
-import junit.framework.TestCase;
-
 import org.junit.Test;
 
-public class SimpleTemplateTest extends TestCase {
+public class SimpleTemplateTest {
 
     @Test
     public void test() {

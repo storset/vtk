@@ -33,7 +33,6 @@ package org.vortikal.repository;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Required;
-import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.vortikal.repository.ChangeLogEntry.Operation;
 import org.vortikal.repository.event.ACLModificationEvent;

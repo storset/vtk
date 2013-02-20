@@ -39,7 +39,6 @@ import org.vortikal.repository.Path;
 import org.vortikal.repository.Resource;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.TitleResolver;
-import org.vortikal.web.decorating.ContextualTitleResolver;
 import org.vortikal.web.decorating.DecoratorRequest;
 import org.vortikal.web.decorating.DecoratorResponse;
 

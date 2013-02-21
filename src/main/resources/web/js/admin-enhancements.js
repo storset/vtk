@@ -2672,10 +2672,10 @@ VrtxAdmin.prototype.serverFacade = {
       msg = "The service seems to be inactive.";
     } else if (status === 401) {
       msg = (useStatusCodeInMsg ? status + " - " : "") +
-            "You are probably no (longer) authorized to perform this action.";
+            "You are no longer authorized to perform this action.";
     } else if (status === 403) {	
       msg = (useStatusCodeInMsg ? status + " - " : "") +
-            "You are probably no (longer) authenticated to perform this action.";
+            "You are no longer authenticated to perform this action.";
     } else if (status === 404) {
       msg = (useStatusCodeInMsg ? status + " - " : "") +
             "The resource you are trying to perform an action on has been moved, removed or renamed.";

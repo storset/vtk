@@ -85,7 +85,7 @@ import org.vortikal.util.text.TextUtils;
  * 
  * <li>If none of selected entries for path C match, then matching restarts with
  * the parent path of P as input, thus looking for rules higher up in the
- * hierarchy, until a rule that matches is found.
+ * hierarchy, until finally a rule that matches is found.
  * 
  * <li>If no rules match, or there is no configuration file, then the configured
  * fallback title is used as template.

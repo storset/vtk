@@ -64,6 +64,7 @@ public class MessageLocalizer implements TemplateHashModel {
         this.preferredLocale = preferredLocale;
     }
 
+    @Override
     public boolean isEmpty() {
         return false;
     }
@@ -77,6 +78,7 @@ public class MessageLocalizer implements TemplateHashModel {
      *            a <code>String</code> value
      * @return a <code>StringModel</code> containing the localized message.
      */
+    @Override
     public TemplateModel get(String key) throws TemplateModelException {
 
         String[] argsInternal = null;
@@ -89,7 +91,7 @@ public class MessageLocalizer implements TemplateHashModel {
         }
 
         Locale messageLocalizationLocale = LocaleHelper.getMessageLocalizationLocale(this.preferredLocale);
-        String msg = null;
+        String msg;
         if (messageLocalizationLocale == null) {
             msg = this.springRequestContext.getMessage(this.code, argsInternal, this.defaultMessage);
         } else {

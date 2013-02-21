@@ -62,18 +62,24 @@ resourcetype semester-page {
             [def published resource-prop-obj-val(resource, "published") ]
             [if published]
               [def count count + 1]
-              [def totCount totCount + 1]
-              [if count = 1]<div id="vrtx-semester-links"><ul class="left">[endif]
-              [def localization thelink]
-              [def url view-url(resource)]
-              [if count = 1 || count = 3 || count = 5]
+              [if count = 1]
+                [def totCount totCount + 1]
+                <div id="vrtx-semester-links">
+                  <ul class="left">
+                    [def localization thelink]
+                    [def url view-url(resource)]
+                    <li><a href="[val url]">[localized localization]</a></li>
+              [elseif (count = 3 || count = 5)]
+                [def totCount totCount + 1]
+                [def localization thelink]
+                [def url view-url(resource)]
                 <li><a href="[val url]">[localized localization]</a></li>
               [endif]
             [endif]
           [endif]
         [endif]
       [endlist]
-      [if count > 0]</ul>[endif]
+      [if totCount > 0]</ul>[endif]
       
       [def count 0]
       [list props link]
@@ -85,19 +91,23 @@ resourcetype semester-page {
             [def published resource-prop-obj-val(resource, "published") ]
             [if published]
               [def count count + 1]
-              [def totCount totCount + 1]
-              [if count = 2]<ul class="right">[endif]
-              [def localization thelink]
-              [def url view-url(resource)]
-              [if count = 2 || count = 4 || count = 6]
+              [if count = 2]
+                [def totCount totCount + 1]
+                <ul class="right">
+                  [def localization thelink]
+                  [def url view-url(resource)]
+                  <li><a href="[val url]">[localized localization]</a></li>
+              [elseif (count = 4 || count = 6)]
+                [def totCount totCount + 1]
+                [def localization thelink]
+                [def url view-url(resource)]
                 <li><a href="[val url]">[localized localization]</a></li>
               [endif]
             [endif]
           [endif]
         [endif]
       [endlist]
-      [if count > 0]</ul>[endif]
-      
+      [if totCount > 1]</ul>[endif]
       [if totCount > 0]</div>[endif]
       ##
     }

@@ -2476,6 +2476,8 @@ VrtxAdmin.prototype.displayInfoMsg = function displayInfoMsg(msg) {
 
 /**
  * Display message
+ * 
+ * XXX: scrollTo top?
  *
  * @this {VrtxAdmin}
  * @param {string} msg The message

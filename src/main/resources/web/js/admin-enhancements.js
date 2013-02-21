@@ -2665,13 +2665,13 @@ VrtxAdmin.prototype.serverFacade = {
   error: function(xhr, textStatus, useStatusCodeInMsg) { // TODO: detect function origin
     var status = xhr.status;
     var msg = "";
-    if(status === 0) {
-      msg = this.errorMessages.offline;
-    } else if (xhr.readyState === 4 && status === 200) {
+    if(status === 0) {                                                             /* Also after Resin restart or deleted cookies */
+      msg = this.errorMessages.offline;                                      
+    } else if (status === 503 || (xhr.readyState === 4 && status === 200)) {       /* Resin or Jetty down */
       msg = this.errorMessages.down;
     } else if (status === 401) {
       msg = (useStatusCodeInMsg ? status + " - " : "") + this.errorMessages.s401;
-    } else if (status === 403) {	
+    } else if (status === 403) {	                                               /* Also after Jetty restart */  
       msg = (useStatusCodeInMsg ? status + " - " : "") + this.errorMessages.s403;
     } else if (status === 404) {
       msg = (useStatusCodeInMsg ? status + " - " : "") + this.errorMessages.s404;

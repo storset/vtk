@@ -32,6 +32,8 @@ package org.vortikal.web;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -224,6 +226,11 @@ public class TitleResolverImpl implements ApplicationListener<ContextRefreshedEv
             
             List<ConfigEntry> candidates = new ArrayList<ConfigEntry>();
             for (ConfigEntry entry: entries) {
+                if (entry.isExact() && !path.equals(resource.getURI())) {
+                    // For exact entries, we don't apply URI namespace inheritance of rules.
+                    continue;
+                }
+                
                 boolean match = true;
                 for (Qualifier q: entry.getQualifiers()) {
                     if (!matchQualifier(q, resource)) {
@@ -235,7 +242,18 @@ public class TitleResolverImpl implements ApplicationListener<ContextRefreshedEv
                     candidates.add(entry);
                 }
             }
+            
             if (!candidates.isEmpty()) {
+                // Sort candidate list [stably], so that any exact entries come last
+                Collections.sort(candidates, new Comparator<ConfigEntry>(){
+                    @Override
+                    public int compare(ConfigEntry o1, ConfigEntry o2) {
+                        if (o1.isExact() && !o2.isExact()) return 1;
+                        if (o2.isExact() && !o1.isExact()) return -1;
+                        return 0;
+                    }
+                });
+                
                 return candidates.get(candidates.size()-1);
             }
             

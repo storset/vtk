@@ -1736,7 +1736,7 @@ VrtxEditor.prototype.initSendToApproval = function initSendToApproval() {
   var vrtxAdm = vrtxAdmin, _$ = vrtxAdm._$;
   
   _$(document).on("click", "#vrtx-send-to-approval, #vrtx-send-to-approval-global", function (e) {
-    vrtxEditor.saveSendToApproval(this);
+    vrtxEditor.openSendToApproval(this);
     e.stopPropagation();
     e.preventDefault();
   });

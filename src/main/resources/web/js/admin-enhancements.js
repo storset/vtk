@@ -1697,7 +1697,7 @@ function editorInteraction(bodyId, vrtxAdm, _$) {
       }).fail(function(xhr, textStatus) {
          if(xhr !== null) { /* Fail in performSave() for exceeding 1500 chars in 
                              * intro/add.content is handlet in editor.js with popup */
-           vrtxAdmin.displayErrorMsg(vrtxAdmin.serverFacade.error(xhr, textStatus));
+           vrtxSimpleDialogs.openMsgDialog(vrtxAdmin.serverFacade.error(xhr, textStatus), "Error");
          }
       });
       e.stopPropagation();
@@ -2449,7 +2449,7 @@ VrtxAdmin.prototype.displayErrorContainers = function displayErrorContainers(res
     var outer = vrtxAdmin.outerHTML(results, "div." + errorContainer); 
     _$(outer).insertAfter(wrapper.find(errorContainerInsertAfter));
   }
-}; 
+};
 
 /**
  * Display error message
@@ -2667,7 +2667,7 @@ VrtxAdmin.prototype.serverFacade = {
     } else if (status === 403) {	
       msg = "You are not (longer) authenticated to perform this action.";
     } else if (status === 404) {
-      msg = "The resource you are trying to perform an action has been removed or renamed.";
+      msg = "The resource you are trying to perform an action on has been removed or renamed.";
     } else {
       msg = "The action returned " + xhr.status + " and failed to retrieve/post form: " + textStatus;
     }

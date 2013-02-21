@@ -1697,7 +1697,7 @@ function editorInteraction(bodyId, vrtxAdm, _$) {
       }).fail(function(xhr, textStatus) {
          if(xhr !== null) { /* Fail in performSave() for exceeding 1500 chars in 
                              * intro/add.content is handlet in editor.js with popup */
-           vrtxSimpleDialogs.openMsgDialog(vrtxAdmin.serverFacade.error(xhr, textStatus), "Error");
+           vrtxSimpleDialogs.openMsgDialog(vrtxAdmin.serverFacade.error(xhr, textStatus, false), "Error " + xhr.status);
          }
       });
       e.stopPropagation();
@@ -2602,7 +2602,7 @@ VrtxAdmin.prototype.serverFacade = {
       dataType: type,
       success: callbacks.success,
       error: function (xhr, textStatus) {
-        vrtxAdmin.displayErrorMsg(vrtxAdmin.serverFacade.error(xhr, textStatus));    
+        vrtxAdmin.displayErrorMsg(vrtxAdmin.serverFacade.error(xhr, textStatus, true));    
         if(callbacks.error) {
           callbacks.error(xhr, textStatus);
         }
@@ -2633,7 +2633,7 @@ VrtxAdmin.prototype.serverFacade = {
       contentType: contentType,
       success: callbacks.success,
       error: function (xhr, textStatus) {
-        vrtxAdmin.displayErrorMsg(vrtxAdmin.serverFacade.error(xhr, textStatus));
+        vrtxAdmin.displayErrorMsg(vrtxAdmin.serverFacade.error(xhr, textStatus, true));
         if(callbacks.error) {
           callbacks.error(xhr, textStatus);
         }
@@ -2661,7 +2661,7 @@ VrtxAdmin.prototype.serverFacade = {
  * @param {string} textStatus The text status
  * @return {string} The messsage
  */
-  error: function(xhr, textStatus) { // TODO: detect function origin
+  error: function(xhr, textStatus, useStatusCodeInMsg) { // TODO: detect function origin
     var status = xhr.status;
     var msg = "";
     if(status === 0) {
@@ -2669,13 +2669,17 @@ VrtxAdmin.prototype.serverFacade = {
     } else if (xhr.readyState === 4 && status === 200) {
       msg = "The service seems to be inactive.";
     } else if (status === 401) {
-      msg = "401 - You are probably no (longer) authorized to perform this action.";
+      msg = (useStatusCodeInMsg ? status + " - " : "") +
+            "You are probably no (longer) authorized to perform this action.";
     } else if (status === 403) {	
-      msg = "403 - You are probably no (longer) authenticated to perform this action.";
+      msg = (useStatusCodeInMsg ? status + " - " : "") +
+            "You are probably no (longer) authenticated to perform this action.";
     } else if (status === 404) {
-      msg = "404 - The resource you are trying to perform an action on has been removed or renamed.";
+      msg = (useStatusCodeInMsg ? status + " - " : "") +
+            "The resource you are trying to perform an action on has been moved, removed or renamed.";
     } else {
-      msg = status + " - The action failed to GET or POST the data: " + textStatus;
+      msg = (useStatusCodeInMsg ? status + " - " : "") +
+            "The action failed to GET or POST the data: " + textStatus;
     }
     return msg;
   }

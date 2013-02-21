@@ -1697,7 +1697,7 @@ function editorInteraction(bodyId, vrtxAdm, _$) {
       }).fail(function(xhr, textStatus) {
          if(xhr !== null) { /* Fail in performSave() for exceeding 1500 chars in 
                              * intro/add.content is handlet in editor.js with popup */
-           vrtxSimpleDialogs.openMsgDialog(vrtxAdmin.serverFacade.error(xhr, textStatus, false), "Error " + xhr.status);
+           vrtxSimpleDialogs.openMsgDialog(vrtxAdmin.serverFacade.error(xhr, textStatus, false), vrtxAdm.serverFacade.errorMessages.title + " " + xhr.status);
          }
       });
       e.stopPropagation();
@@ -2650,7 +2650,6 @@ VrtxAdmin.prototype.serverFacade = {
 /**
  * Error Ajax handler
  * 
- * XXX: i18n
  * XXX: Is it any different than using $.ajaxSetup()?
  * 
  *      http://www.unseenrevolution.com/jquery-ajax-error-handling-function/
@@ -2667,24 +2666,21 @@ VrtxAdmin.prototype.serverFacade = {
     var status = xhr.status;
     var msg = "";
     if(status === 0) {
-      msg = "You seem to be offline. Check your connection.";
+      msg = this.errorMessages.offline;
     } else if (xhr.readyState === 4 && status === 200) {
-      msg = "The service seems to be inactive.";
+      msg = this.errorMessages.down;
     } else if (status === 401) {
-      msg = (useStatusCodeInMsg ? status + " - " : "") +
-            "You are no longer authorized to perform this action.";
+      msg = (useStatusCodeInMsg ? status + " - " : "") + this.errorMessages.s401;
     } else if (status === 403) {	
-      msg = (useStatusCodeInMsg ? status + " - " : "") +
-            "You are no longer authenticated to perform this action.";
+      msg = (useStatusCodeInMsg ? status + " - " : "") + this.errorMessages.s403;
     } else if (status === 404) {
-      msg = (useStatusCodeInMsg ? status + " - " : "") +
-            "The resource you are trying to perform an action on has been moved, removed or renamed.";
+      msg = (useStatusCodeInMsg ? status + " - " : "") + this.errorMessages.s404;
     } else {
-      msg = (useStatusCodeInMsg ? status + " - " : "") +
-            "The action failed to GET or POST the data: " + textStatus;
+      msg = (useStatusCodeInMsg ? status + " - " : "") + this.errorMessages.general + " " + textStatus;
     }
     return msg;
-  }
+  },
+  errorMessages: {}
 };
 
 

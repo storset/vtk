@@ -16,6 +16,19 @@
     }
   }
   var cancelI18n = '${vrtx.getMsg("editor.cancel")}';
+  
+  vrtxAdmin.serverFacade.errorMessages = {
+    title: "${vrtx.getMsg('ajaxError.title')}", 
+    general: "${vrtx.getMsg('ajaxError.general')}",
+    offline: "${vrtx.getMsg('ajaxError.offline')}",
+    down: "${vrtx.getMsg('ajaxError.down')}",
+    s401: "${vrtx.getMsg('ajaxError.s401')}",
+    s403: "${vrtx.getMsg('ajaxError.s403')}",
+    s404: "${vrtx.getMsg('ajaxError.s404')}"
+  };
+  if(vrtxAdmin.hasFreeze) { // Make immutable
+    Object.freeze(vrtxAdmin.serverFacade.errorMessages);
+  }
 // -->
 </script>
 

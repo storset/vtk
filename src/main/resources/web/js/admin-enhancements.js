@@ -2675,7 +2675,7 @@ VrtxAdmin.prototype.serverFacade = {
     } else if (status === 404) {
       msg = "404 - The resource you are trying to perform an action on has been removed or renamed.";
     } else {
-      msg = xhr.status + " - The action failed to GET or POST the data: " + textStatus;
+      msg = status + " - The action failed to GET or POST the data: " + textStatus;
     }
     return msg;
   }

@@ -1694,10 +1694,10 @@ function editorInteraction(bodyId, vrtxAdm, _$) {
       ajaxSave();
       $.when(vrtxAdm.asyncEditorSavedDeferred).done(function() {
         vrtxAdm.removeMsg("error");
-      }).fail(function(err) {
-         if(err !== "INVALID_TEXT_LENGTH_INTRO_ADD_CONTENT") { /* Fail in performSave() for exceeding 1500 chars in 
-                                                                * intro/add.content is handlet in editor.js with popup */
-           vrtxAdm.displayErrorMsg(err);
+      }).fail(function(xhr, textStatus) {
+         if(xhr !== null) { /* Fail in performSave() for exceeding 1500 chars in 
+                             * intro/add.content is handlet in editor.js with popup */
+           vrtxAdmin.displayErrorMsg(vrtxAdmin.serverFacade.error(xhr, textStatus));
          }
       });
       e.stopPropagation();
@@ -1727,7 +1727,7 @@ function ajaxSave() {
      var ok = performSave();
      if(!ok) {
        vrtxSimpleDialogs.closeDialog("#dialog-loading");
-       vrtxAdm.asyncEditorSavedDeferred.rejectWith(this, ["INVALID_TEXT_LENGTH_INTRO_ADD_CONTENT"]);
+       vrtxAdm.asyncEditorSavedDeferred.rejectWith(this, [null, null]);
        return false;
      }
    }
@@ -1745,9 +1745,9 @@ function ajaxSave() {
          }, Math.round(waitMinMs - endTime));
        }
      },
-     error: function(xhr, statusText, errMsg) {
+     error: function(xhr, textStatus, errMsg) {
        vrtxSimpleDialogs.closeDialog("#dialog-loading");
-       vrtxAdm.asyncEditorSavedDeferred.rejectWith(this, [errMsg]);
+       vrtxAdm.asyncEditorSavedDeferred.rejectWith(this, [xhr, textStatus]);
      }
   });
 }
@@ -2647,6 +2647,8 @@ VrtxAdmin.prototype.serverFacade = {
   },
 /**
  * Error Ajax handler
+ * 
+ * XXX: i18n
  *
  * @this {serverFacade}
  * @param {object} xhr The XMLHttpRequest object
@@ -2656,13 +2658,18 @@ VrtxAdmin.prototype.serverFacade = {
   error: function(xhr, textStatus) { // TODO: detect function origin
     var status = xhr.status;
     var msg = "";
-    if (xhr.readyState == 4 && status == 200) {
-      msg = "The service is not active: " + textStatus;
+    if(status === 0) {
+      msg = "You seem to be offline. Check your connection.";
+    } else if (xhr.readyState === 4 && status === 200) {
+      msg = "The service seems to be inactive.";
+    } else if (status === 401) {
+      msg = "You are not (longer) authorized to perform this action.";
+    } else if (status === 403) {	
+      msg = "You are not (longer) authenticated to perform this action.";
+    } else if (status === 404) {
+      msg = "The resource you are trying to perform an action has been removed or renamed.";
     } else {
-      if (status == 401 || status == 403 || status == 404) {
-        location.reload(true); // if you have no access anymore or page is removed: reload from server
-      }
-      msg = "The service returned " + xhr.status + " and failed to retrieve/post form: " + textStatus;
+      msg = "The action returned " + xhr.status + " and failed to retrieve/post form: " + textStatus;
     }
     return msg;
   }

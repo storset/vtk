@@ -1695,7 +1695,8 @@ function editorInteraction(bodyId, vrtxAdm, _$) {
       $.when(vrtxAdm.asyncEditorSavedDeferred).done(function() {
         vrtxAdm.removeMsg("error");
       }).fail(function(err) {
-         if(err !== "INIT") {
+         if(err !== "INVALID_TEXT_LENGTH_INTRO_ADD_CONTENT") { /* Fail in performSave() for exceeding 1500 chars in 
+                                                                * intro/add.content is handlet in editor.js with popup */
            vrtxAdm.displayErrorMsg(err);
          }
       });
@@ -1726,7 +1727,7 @@ function ajaxSave() {
      var ok = performSave();
      if(!ok) {
        vrtxSimpleDialogs.closeDialog("#dialog-loading");
-       vrtxAdm.asyncEditorSavedDeferred.rejectWith(this, ["INIT"]);
+       vrtxAdm.asyncEditorSavedDeferred.rejectWith(this, ["INVALID_TEXT_LENGTH_INTRO_ADD_CONTENT"]);
        return false;
      }
    }

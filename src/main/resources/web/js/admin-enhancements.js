@@ -2650,12 +2650,7 @@ VrtxAdmin.prototype.serverFacade = {
 /**
  * Error Ajax handler
  * 
- * XXX: Is it any different than using $.ajaxSetup()?
- * 
- *      http://www.unseenrevolution.com/jquery-ajax-error-handling-function/
- * 
- *      Will e.g. abort because offline mode go trough differently in different browsers/connection-scenarioes
- *      Need this because want to have custom error-callbacks in addition (removing dialogs, disabling btns etc.)
+ * XXX: More specific error-messages on what action that failed with function-origin
  *      
  * @this {serverFacade}
  * @param {object} xhr The XMLHttpRequest object

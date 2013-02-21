@@ -13,6 +13,7 @@
         /* name 
          * hideLinkText
          * showLinkText
+         * combinator (optional)
          * isAnimated (optional)
          */
       };
@@ -31,8 +32,14 @@
       var self = this;
 
       for (var key in self.configs) {
+        
         var config = self.configs[key];
-        var container = $("#vrtx-" + config.name);
+        var container = null;
+        if(config.combinator) {
+          container = $(config.combinator + "." + config.name);
+        } else {
+          container = $("#vrtx-" + config.name);
+        }
         var link = $("#" + key);
         if (container.length && link.length) {
           container.hide();

@@ -1355,8 +1355,8 @@ function swapContent(moveBtn, move) {
     }    
     swapElementFn(element1, element2);
     if(hasAccordion) {
-      accordionJsonUpdateHeader(element1);
-      accordionJsonUpdateHeader(element2);
+      accordionUpdateHeader(element1, true, true);
+      accordionUpdateHeader(element2, true, true);
     }
     /* Do we need these on all elements? */
     element1.blur();
@@ -1520,26 +1520,36 @@ VrtxEditor.prototype.accordionGroupedInit = function accordionGroupedInit(subGro
   var vrtxEdit = this, _$ = vrtxAdmin._$;
 
   var accordionWrpId = "accordion-grouped"; // TODO: multiple accordion group pr. page
-  var groupedSelector  = ".vrtx-grouped" + ((typeof subGroupedSelector !== "undefined") ? subGroupedSelector : "");
-      groupedSelector += ", .vrtx-pseudo-grouped" + ((typeof subGroupedSelector !== "undefined") ? subGroupedSelector : "");
+  var groupedSelector  = ".vrtx-grouped" + ((typeof subGroupedSelector !== "undefined") ? subGroupedSelector : "") +
+                         ", .vrtx-pseudo-grouped" + ((typeof subGroupedSelector !== "undefined") ? subGroupedSelector : ""),
+      grouped = vrtxEdit.editorForm.find(groupedSelector);
       
+  grouped.wrapAll("<div id='" + accordionWrpId + "' />");
+  
+  accordionContentSplitHeaderPopulators(true); 
+        
   // Because accordion needs one content wrapper
-  for(var grouped = vrtxEdit.editorForm.find(groupedSelector), i = grouped.length; i--;) {
-    var group = _$(grouped[i]);
+  for(var i = grouped.length; i--;) {
+    var group = $(grouped[i]);
     if(group.hasClass("vrtx-pseudo-grouped")) {
       group.find("> label").wrap("<div class='header' />");
       group.addClass("vrtx-grouped");
     } else {
       group.find("> *:not(.header)").wrapAll("<div />");
     }
+    accordionUpdateHeader(group, false, true);
   }
+  
   // Initialize accordion
-  grouped.wrapAll("<div id='" + accordionWrpId + "' />");
-  vrtxEdit.editorForm.find("#" + accordionWrpId).accordion({ header: "> div > .header",
-                                                             autoHeight: false,
-                                                             collapsible: true,
-                                                             active: false
-                                                           });
+  vrtxEdit.editorForm.find("#" + accordionWrpId)
+    .accordion({ header: "> div > .header",
+                 autoHeight: false,
+                 collapsible: true,
+                 active: false,
+                 change: function (e, ui) {
+                   accordionUpdateHeader(ui.oldHeader, false, false);
+                 }
+               });
 };
 
 /**
@@ -1563,7 +1573,7 @@ function accordionJsonInit() {
   for(var grouped = $(".vrtx-json-accordion .vrtx-json-element"), i = grouped.length; i--;) { 
     var group = $(grouped[i]);
     group.find("> *").wrapAll("<div />");
-    accordionJsonUpdateHeader(group);
+    accordionUpdateHeader(group, true, true);
   }
   
   accordionJsonRefresh($(".vrtx-json-accordion .fieldset"), false);
@@ -1571,7 +1581,7 @@ function accordionJsonInit() {
 
 function accordionJsonNew(accordionWrapper) {
   var accordionContent = accordionWrapper.find(".fieldset");
-  var group = accordionContent.find(".vrtx-json-element:last");
+  var group = accordionContent.find(".vrtx-json-element").filter(":last");
   group.find("> *").wrapAll("<div />");
   group.prepend('<div class="header">' + (vrtxAdmin.lang !== "en" ? "Inget innhold" : "No content") + '</div>');
           
@@ -1586,7 +1596,7 @@ function accordionJsonRefresh(elem, active) {
     collapsible: true,
     active: active,
     change: function (e, ui) {
-      accordionJsonUpdateHeader(ui.oldHeader);
+      accordionUpdateHeader(ui.oldHeader, true, false);
       if (vrtxEditor.multipleFieldsBoxesAccordionSwitchThenScrollTo) {
         scrollToElm(vrtxEditor.multipleFieldsBoxesAccordionSwitchThenScrollTo);
       }
@@ -1597,24 +1607,27 @@ function accordionJsonRefresh(elem, active) {
 // XXX: avoid hardcoded enhanced fields
 function accordionContentSplitHeaderPopulators(init) {
   var sharedTextItems = $("#editor.vrtx-shared-text #shared-text-box .vrtx-json-element");
+  var semesterResourceLinksItems = $("#editor.vrtx-semester-page .vrtx-grouped[class*=link-box]");
   if(!init) {
     sharedTextItems = sharedTextItems.filter(":last");
   }
   sharedTextItems.find(".title input").addClass("header-populators");
+  semesterResourceLinksItems.find(".vrtx-string input[id*=-title]").addClass("header-populators");
 }
 
-function accordionJsonUpdateHeader(elem) {
-  var jsonElm = elem.closest(".vrtx-json-element");
-  if (jsonElm.length) { // Prime header populators
+function accordionUpdateHeader(elem, isJson, init) {
+  var elm = isJson ? elem.closest(".vrtx-json-element") : elem.closest(".vrtx-grouped");
+  if (elm.length) { // Prime header populators
     var str = "";
-    var fields = jsonElm.find(".header-populators");
+    var fields = elm.find(".header-populators");
+    if(!fields.length) return;
     for (var i = 0, len = fields.length; i < len; i++) {
       var val = fields[i].value;
       if (!val.length) continue;
       str += (str.length) ? ", " + val : val;
     }
     if (!str.length) { // Fallback header populator
-      var field = jsonElm.find(".header-fallback-populator");
+      var field = elm.find(".header-fallback-populator");
       if (field.length) {
         var fieldId = field.attr("id");
         if (isCkEditor(fieldId)) { // Check if CK
@@ -1636,11 +1649,14 @@ function accordionJsonUpdateHeader(elem) {
         str = (vrtxAdmin.lang !== "en") ? "Inget innhold" : "No content";
       }
     }
-    var header = jsonElm.find("> .header");
+    var header = elm.find("> .header");
     if (!header.length) {
-      jsonElm.prepend('<div class="header">' + str + '</div>');
+      elm.prepend('<div class="header">' + str + '</div>');
     } else {
-      header.html('<span class="ui-icon ui-icon-triangle-1-e"></span>' + str);
+      if(!isJson && init) {
+        header.data("origText", header.text());
+      }
+      header.html('<span class="ui-icon ui-icon-triangle-1-e"></span>' + (!isJson ? header.data("origText") + " - " : "") + str);
     }
   }
 }

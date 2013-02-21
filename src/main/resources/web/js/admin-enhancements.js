@@ -2491,9 +2491,9 @@ VrtxAdmin.prototype.displayMsg = function displayMsg(msg, type) {
   var otherMsg = vrtxAdm.cachedAppContent.find("> ." + other);
   if(typeof msg !== "undefined" && msg !== "") {
     if(currentMsg.length) {
-      currentMsg.html(msg);
+      currentMsg.html(msg).fadeTo(100, 0.25).fadeTo(100, 1);
     } else if(otherMsg.length) {
-      otherMsg.html(msg).removeClass(other).addClass(current);
+      otherMsg.html(msg).removeClass(other).addClass(current).fadeTo(100, 0.25).fadeTo(100, 1);
     } else {
       vrtxAdm.cachedAppContent.prepend("<div class='" + current + " message'>" + msg + "</div>");
       // _$("." + current).hide().slideDown(vrtxAdm.transitionSpeed, vrtxAdm.transitionEasingSlideDown);

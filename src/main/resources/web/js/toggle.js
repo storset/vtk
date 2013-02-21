@@ -32,7 +32,6 @@
       var self = this;
 
       for (var key in self.configs) {
-        
         var config = self.configs[key];
         var container = null;
         if(config.combinator) {

@@ -2663,13 +2663,13 @@ VrtxAdmin.prototype.serverFacade = {
     } else if (xhr.readyState === 4 && status === 200) {
       msg = "The service seems to be inactive.";
     } else if (status === 401) {
-      msg = "You are not (longer) authorized to perform this action.";
+      msg = "401 - You are probably no (longer) authorized to perform this action.";
     } else if (status === 403) {	
-      msg = "You are not (longer) authenticated to perform this action.";
+      msg = "403 - You are probably no (longer) authenticated to perform this action.";
     } else if (status === 404) {
-      msg = "The resource you are trying to perform an action on has been removed or renamed.";
+      msg = "404 - The resource you are trying to perform an action on has been removed or renamed.";
     } else {
-      msg = "The action returned " + xhr.status + " and failed to retrieve/post form: " + textStatus;
+      msg = xhr.status + " - The action failed to GET or POST the data: " + textStatus;
     }
     return msg;
   }

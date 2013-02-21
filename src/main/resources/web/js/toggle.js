@@ -6,8 +6,9 @@
  * XXX: JSDoc
  * 
  */
+var toggler = null;
 (function () {
-  if (typeof Toggler !== "function") {
+  if (typeof toggler !== "function") {
     function Toggler() {
       this.configs = {
         /* name 

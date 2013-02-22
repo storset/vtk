@@ -2666,7 +2666,7 @@ VrtxAdmin.prototype.serverFacade = {
       msg = this.errorMessages.down;
     } else if (status === 401) {
       msg = (useStatusCodeInMsg ? status + " - " : "") + this.errorMessages.s401;
-    } else if (status === 403) {	                                               /* Also after Jetty restart */  
+    } else if (status === 403) {                                                   /* Also after Jetty restart */  
       msg = (useStatusCodeInMsg ? status + " - " : "") + this.errorMessages.s403;
     } else if (status === 404) {
       msg = (useStatusCodeInMsg ? status + " - " : "") + this.errorMessages.s404;

@@ -20,8 +20,13 @@
   vrtxAdmin.serverFacade.errorMessages = {
     title: "${vrtx.getMsg('ajaxError.title')}", 
     general: "${vrtx.getMsg('ajaxError.general')}",
+    timeout: "${vrtx.getMsg('ajaxError.timeout')}",
+    abort: "${vrtx.getMsg('ajaxError.abort')}",
+    parsererror: "${vrtx.getMsg('ajaxError.parsererror')}", 
     offline: "${vrtx.getMsg('ajaxError.offline')}",
     down: "${vrtx.getMsg('ajaxError.down')}",
+    s500: "${vrtx.getMsg('ajaxError.s500')}",
+    s400: "${vrtx.getMsg('ajaxError.s400')}",
     s401: "${vrtx.getMsg('ajaxError.s401')}",
     s403: "${vrtx.getMsg('ajaxError.s403')}",
     s404: "${vrtx.getMsg('ajaxError.s404')}"

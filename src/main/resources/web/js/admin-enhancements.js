@@ -2686,7 +2686,7 @@ VrtxAdmin.prototype.serverFacade = {
     }
     return msg;
   },
-  errorMessages: {}
+  errorMessages: {} /* Populated with i18n in resource-bar.ftl */
 };
 
 

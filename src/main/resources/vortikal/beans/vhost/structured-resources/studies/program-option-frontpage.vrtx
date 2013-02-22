@@ -121,7 +121,7 @@ resourcetype program-option-frontpage : program-document {
 
   localization {
     name : (en : "Programme option name", no : "Studieretningsnavn", nn : "Studieretningsnamn"),
-    header : (en : "Edit Programme option frontpage", no : "Rediger Studieretningsforside", nn : "Rediger Studieretningsforside"),
+    header : (en : "Edit programme option frontpage", no : "Rediger studieretningsforside", nn : "Rediger studieretningsforside"),
     program-option : (en : "programme option", no : "studieretning", nn : "studieretning"),
     facts : (en : "Facts", no : "Fakta om studieretningen", nn : "Fakta om studieretninga"),
     fs-program-code : (en : "FS programme code", no : "FS-programkode", nn : "FS-programkode"),

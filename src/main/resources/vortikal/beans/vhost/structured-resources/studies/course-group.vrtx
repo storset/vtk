@@ -34,7 +34,7 @@ resourcetype course-group {
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml">
       <head>
-        <title>[if course-group-scope != null && course-group-scope != ""][val course-group-scope]-[localized 'localized-group'][endif][if title != null && title != ""] - [val title][endif]</title>
+        <title>[call "resource:contextual-title-new"]</title>
       </head>
       <body id="vrtx-course-group">
         <div id="vrtx-content">

@@ -255,7 +255,7 @@ resourcetype semester-page {
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml">
       <head>
-        <title>[localized 'semesterpage-for'] [if course-code != null && course-code != ""][val course-code][endif][if course-code != null && course-code != "" && semester != null && semester != ""] - [endif][if semester != null && semester != ""][val semester][endif]</title>
+        <title>[call "resource:contextual-title-new"]</title>
       </head>
       <body id="vrtx-semester">
         <div id="vrtx-content">

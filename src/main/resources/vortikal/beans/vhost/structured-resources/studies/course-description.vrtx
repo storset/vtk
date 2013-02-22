@@ -660,7 +660,7 @@ resourcetype course-description {
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml">
       <head>
-        <title>[if course-code != null][val course-code][endif][if course-code != null && course-name != null] - [endif][if course-name != null][val course-name][endif]</title>
+        <title>[call "resource:contextual-title-new"]</title>
       </head>
       <body id="vrtx-course-description">
         <div id="vrtx-content">

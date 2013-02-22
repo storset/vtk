@@ -2694,6 +2694,7 @@ VrtxAdmin.prototype.serverFacade = {
     14. CK browse server integration
 \*-------------------------------------------------------------------*/
 
+// XXX: don't pollute global namespace
 var urlobj;
 var typestr;
 function browseServer(obj, editorBase, baseFolder, editorBrowseUrl, type) {
@@ -2707,8 +2708,9 @@ function browseServer(obj, editorBase, baseFolder, editorBrowseUrl, type) {
                                               screen.width * 0.7, screen.height * 0.7);
                                               
   serverBrowserWindow.focus(); 
-  // TODO: Refocus when user closes window with [x] and tries to open it again via browse..
-  //       Maybe with a timer: http://en.allexperts.com/q/Javascript-1520/set-window-top-working.htm
+  /* TODO: Refocus when user closes window with [x] and tries to open it again via browse..
+   *       Maybe with a timer: http://en.allexperts.com/q/Javascript-1520/set-window-top-working.htm
+   */
 }
  
 function openServerBrowser(url, width, height) {

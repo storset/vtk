@@ -264,9 +264,8 @@ resourcetype course-description {
               <script type="text/javascript" src="/vrtx/__vrtx/static-resources/js/toggle.js"></script>
               <script type="text/javascript"><!--
                 toggler.add({
-                  name: 'course-previous-semesters',
-                  hideLinkText: '[localized 'term-previous-toggle-hide']',
-                  showLinkText: '[localized 'term-previous-toggle-show']',
+                  name: 'course-more-semesters',
+                  showLinkText: '[localized 'term-more-toggle-show']',
                   combinator: "li"
                 });
               // -->
@@ -278,14 +277,14 @@ resourcetype course-description {
             [if _index < 4]
               <li>
             [else]
-              <li class="course-previous-semesters">
+              <li class="course-more-semesters">
             [endif]
               <a href="[val url]">[if term != null && term != "" && year != null && year != ""][if term = "v"][localized 'spring'][else][localized 'autumn'][endif] [val year][else][val url][endif]</a>
             </li>
             [if _index = (_size - 1)]
               </ul>
-              <span id="vrtx-course-previous-semesters-toggle-wrapper" style="display:none">
-                <a id="vrtx-course-previous-semesters-toggle" href="javascript:void(0);">[localized 'term-previous-toggle-show']</a>
+              <span id="vrtx-course-more-semesters-toggle-wrapper" style="display:none">
+                <a id="vrtx-course-more-semesters-toggle" href="javascript:void(0);">[localized 'term-more-toggle-show']</a>
               </span> 
             [endif]
           [endlist]
@@ -817,8 +816,7 @@ resourcetype course-description {
     spring : (en : "Spring", no : "Vår", nn : "Vår"),
     year : (en : "Year", no : "År", nn : "År"),
     
-    term-previous-toggle-show : (en : "Show previous semesters", no : "Vis tidligere semestre", nn : "Vis tidlegare semester"),
-    term-previous-toggle-hide : (en : "Hide previous semesters", no : "Skjul tidligere semestre", nn : "Skjul tidlegare semester"),
+    term-more-toggle-show : (en : "Show more semesters", no : "Vis flere semestre", nn : "Vis fleire semester"),
 
     administrated : (en : "Administrated by", no : "Tilbys ved", nn : "Tilbys ved"),
     semester-title : (en : "Semester pages", no : "Semestersider", nn : "Semestersider"),

@@ -10,8 +10,8 @@
   function Toggler() {
     this.configs = {
       /* name 
-       * hideLinkText
        * showLinkText
+       * hideLinkText (optional)
        * combinator (optional)
        * isAnimated (optional)
        */
@@ -71,7 +71,11 @@
 
   Toggler.prototype.toggleLinkText = function (config) {
     if (config.container.filter(":visible").length) {
-      config.link.text(config.hideLinkText);
+      if(!config.hideLinkText) {
+        config.link.parent().hide();
+      } else {
+        config.link.text(config.hideLinkText);
+      }
     } else {
       config.link.text(config.showLinkText);
     }

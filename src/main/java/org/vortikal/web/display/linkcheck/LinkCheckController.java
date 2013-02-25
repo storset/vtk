@@ -70,10 +70,10 @@ public class LinkCheckController implements Controller {
         writeResults(results, response);
         return null;
     }
-    
+
     private List<LinkCheckResult> checkLinks(List<String> input, URL base, boolean sendReferrer) {
         List<LinkCheckResult> results = new ArrayList<LinkCheckResult>();
-        for (String link: input) {
+        for (String link : input) {
             LinkCheckResult r = this.linkChecker.validate(link, base, sendReferrer);
             results.add(r);
         }
@@ -89,10 +89,10 @@ public class LinkCheckController implements Controller {
             writer.close();
         }
     }
-    
+
     private void writeResults(List<LinkCheckResult> results, HttpServletResponse response) throws Exception {
         JSONArray list = new JSONArray();
-        for (LinkCheckResult result: results) {
+        for (LinkCheckResult result : results) {
             JSONObject o = new JSONObject();
             o.put("link", result.getLink());
             o.put("status", result.getStatus().toString());
@@ -110,7 +110,7 @@ public class LinkCheckController implements Controller {
             writer.close();
         }
     }
-    
+
     private List<String> readInput(HttpServletRequest request) throws Exception {
         String contentType = request.getContentType();
         if (contentType == null || !contentType.startsWith("text/plain")) {
@@ -123,7 +123,8 @@ public class LinkCheckController implements Controller {
             List<String> urls = new ArrayList<String>();
             while ((line = reader.readLine()) != null) {
                 if (line.length() > 500) {
-                    continue; // Facebook API link often exceeds 500 chars - ignore it
+                    continue; // Facebook API link often exceeds 500 chars -
+                              // ignore it
                 }
                 if (++n > 10) {
                     throw new BadRequestException("Too many lines");
@@ -138,7 +139,7 @@ public class LinkCheckController implements Controller {
             reader.close();
         }
     }
-    
+
     private String sanitize(String input) {
         if (input == null) {
             return null;
@@ -146,16 +147,13 @@ public class LinkCheckController implements Controller {
         if ("".equals(input.trim())) {
             return null;
         }
-        if (input.startsWith("#") 
-         || input.startsWith("mailto:") 
-         || input.startsWith("ftp:")
-         || input.startsWith("javascript:")
-         || input.startsWith("file:")) {
+        if (input.startsWith("#") || input.startsWith("mailto:") || input.startsWith("ftp:")
+                || input.startsWith("javascript:") || input.startsWith("file:")) {
             return null;
         }
         return input;
     }
-    
+
     private boolean shouldSendReferrer(HttpServletRequest request) {
         try {
             RequestContext rc = RequestContext.getRequestContext();
@@ -169,11 +167,12 @@ public class LinkCheckController implements Controller {
 
     private static class BadRequestException extends Exception {
         private static final long serialVersionUID = -8967067839019333139L;
+
         public BadRequestException(String msg) {
             super(msg);
         }
     }
-    
+
     @Required
     public void setLinkChecker(LinkChecker linkChecker) {
         this.linkChecker = linkChecker;

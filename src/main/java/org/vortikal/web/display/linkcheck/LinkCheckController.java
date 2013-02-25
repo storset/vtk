@@ -66,7 +66,7 @@ public class LinkCheckController implements Controller {
         }
         URL base = URL.create(request);
         base.clearParameters();
-        List<LinkCheckResult> results = checkLinks(urls, base, shouldSendReferrer(request));
+        List<LinkCheckResult> results = checkLinks(urls, base, shouldSendReferrer());
         writeResults(results, response);
         return null;
     }
@@ -154,7 +154,7 @@ public class LinkCheckController implements Controller {
         return input;
     }
 
-    private boolean shouldSendReferrer(HttpServletRequest request) {
+    private boolean shouldSendReferrer() {
         try {
             RequestContext rc = RequestContext.getRequestContext();
             Repository repo = rc.getRepository();

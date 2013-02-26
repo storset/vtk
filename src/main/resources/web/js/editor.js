@@ -1616,7 +1616,8 @@ function accordionContentSplitHeaderPopulators(init) {
 }
 
 function accordionUpdateHeader(elem, isJson, init) {
-  var elm = isJson ? elem.closest(".vrtx-json-element") : elem.closest(".vrtx-grouped");
+  if(typeof elem.closest !== "function") elem = $(elem);
+  var elm = isJson ? elem.closest(".vrtx-json-element") : elem.closest(".vrtx-grouped"); /* TODO: bug in IE8 */
   if (elm.length) { // Prime header populators
     var str = "";
     var fields = elm.find(".header-populators");

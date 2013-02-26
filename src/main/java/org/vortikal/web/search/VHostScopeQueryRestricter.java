@@ -86,17 +86,40 @@ public class VHostScopeQueryRestricter {
 
         if (vhosts.size() == 1) {
             return VHostScopeQueryRestricter.vhostRestrictedQuery(original, vhosts.get(0));
-        } else {
-            OrQuery vHostOr = new OrQuery();
-            for (String vhost : vhosts) {
-                vHostOr.add(new PropertyTermQuery(VHostScopeQueryRestricter.vHostPropDef, vhost, TermOperator.EQ));
-            }
-            AndQuery and = new AndQuery();
-            and.add(original);
-            and.add(vHostOr);
-            return and;
         }
 
+        OrQuery vHostOr = new OrQuery();
+        for (String vhost : vhosts) {
+            vHostOr.add(new PropertyTermQuery(VHostScopeQueryRestricter.vHostPropDef, vhost, TermOperator.EQ));
+        }
+        AndQuery and = new AndQuery();
+        and.add(original);
+        and.add(vHostOr);
+        return and;
+
+    }
+
+    /**
+     * 
+     * Check whether or not a list of vhosts contains other hosts than a given
+     * one (repositoryId)
+     * 
+     * @param vhosts
+     *            The list of vhosts to check
+     * @param repositoryId
+     *            The host to check against
+     */
+    public static boolean isRestrictedToOtherHosts(List<String> vhosts, String repositoryId) {
+        if (vhosts != null && !vhosts.isEmpty()) {
+            if (vhosts.size() == 1) {
+                String vhost = vhosts.get(0);
+                if (repositoryId != null && repositoryId.equals(vhost)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
     }
 
 }

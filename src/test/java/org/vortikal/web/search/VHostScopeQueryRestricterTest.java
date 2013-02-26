@@ -92,4 +92,25 @@ public class VHostScopeQueryRestricterTest {
         assertEquals(expected, actual);
     }
 
+    @Test
+    public void testIsRestrictedToOtherHosts() {
+
+        // Not restricted to other hosts
+        assertIsrestrictedToOtherHosts(null, "www.uio.no", false);
+        assertIsrestrictedToOtherHosts(Arrays.asList("www.uio.no"), "www.uio.no", false);
+
+        // Restricted to other hosts
+        assertIsrestrictedToOtherHosts(Arrays.asList("www.uio.no"), null, true);
+        assertIsrestrictedToOtherHosts(Arrays.asList("www.uio.no"), "www.matnat.uio.no", true);
+        assertIsrestrictedToOtherHosts(Arrays.asList("www.uio.no", "www.hf.uio.no"), "www.uio.no", true);
+
+    }
+
+    private void assertIsrestrictedToOtherHosts(List<String> vhosts, String repositoryId, boolean expected) {
+
+        boolean actual = VHostScopeQueryRestricter.isRestrictedToOtherHosts(vhosts, repositoryId);
+        assertEquals(expected, actual);
+
+    }
+
 }

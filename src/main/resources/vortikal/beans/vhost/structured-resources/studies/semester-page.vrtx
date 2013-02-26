@@ -4,7 +4,7 @@ resourcetype semester-page {
     cloned-course : boolean defaultvalue("false"),
     cloned-course-code : string,
     fronter : boolean defaultvalue("false"),
-    messages-placement : string defaultvalue("right"),
+    messages-placement : string defaultvalue("auto"),
     max-number-of-messages : string defaultvalue("3"),
     schedule : resource_ref,
     exam : resource_ref,
@@ -277,8 +277,9 @@ resourcetype semester-page {
                 <a href="https://fronter.uio.no/" class="button"><span>[localized 'log-into-fronter']</span></a>
               </div>
             [endif]
-            [if messages-placement != null && (messages-placement = "middle" || (messages-placement = "auto" && resourceLinkCount < 5))]
+            [if ((messages-placement = null || (messages-placement != null && messages-placement = "auto")) && resourceLinkCount < 5) || (messages-placement != null && messages-placement = "middle")]
               <div class="vrtx-frontpage-box white-box">
+                MIDDLE
                 [if max-number-of-messages != null && max-number-of-messages != ""]
                   [call "include:messages" {"uri" : messagelisting-uri, "max-number-of-messages" : max-number-of-messages}]
                 [else]
@@ -317,8 +318,9 @@ resourcetype semester-page {
               [call "include:shared-text" {"propName":"studinfo-kontakt"}]
             </div>
             [call "resource:teacher-list"{"cssClass":"vrtx-distach-bottom"}]
-            [if messages-placement = null || (messages-placement = "right" || (messages-placement = "auto" && resourceLinkCount > 4))]
+            [if ((messages-placement = null || (messages-placement != null && messages-placement = "auto")) && resourceLinkCount > 4) || (messages-placement != null && messages-placement = "right")]
               <div class="vrtx-frontpage-box white-box">
+                RIGHT
                 [if max-number-of-messages != null && max-number-of-messages != ""]
                   [call "include:messages" {"uri" : messagelisting-uri, "compact-view" : "true", "max-number-of-messages" : max-number-of-messages}]
                 [else]

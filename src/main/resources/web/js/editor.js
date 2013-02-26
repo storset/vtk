@@ -1331,7 +1331,8 @@ function swapContent(moveBtn, move) {
   
   var j = vrtxEditor.multipleBoxesTemplatesContract[parseInt(curElm.closest(".vrtx-json").find(".vrtx-add-button").data('number'), 10)];
   var types = j.a;
-  var swapElementFn = swapElement, swapCKFn = swapCK;
+  var swapElementFn = swapElement, swapCKFn = swapCK, isCkEditorFn = isCkEditor;
+  var runOnce = false;
   for (var i = 0, len = types.length; i < len; i++) {
     var field = j.name + "\\." + types[i].name + "\\.";
     var fieldCK = field.replace(/\\/g, "");
@@ -1344,7 +1345,8 @@ function swapContent(moveBtn, move) {
     /* We need to handle special cases like CK fields and date */
     var ckInstanceName1 = fieldCK + curCounter;
     var ckInstanceName2 = fieldCK + moveToCounter;
-    if (isCkEditor(ckInstanceName1) && isCkEditor(ckInstanceName2)) {
+
+    if (isCkEditorFn(ckInstanceName1) && isCkEditorFn(ckInstanceName2)) {
       swapCKFn(ckInstanceName1, ckInstanceName2);
     } else if (element1.hasClass("date") && element2.hasClass("date")) {
       var element1Wrapper = element1.closest(".vrtx-string");
@@ -1353,10 +1355,13 @@ function swapContent(moveBtn, move) {
       swapElementFn(element1Wrapper.find(elementId1 + '-hours'), element2Wrapper.find(elementId2 + '-hours'));
       swapElementFn(element1Wrapper.find(elementId1 + '-minutes'), element2Wrapper.find(elementId2 + '-minutes'));
     }    
+    
     swapElementFn(element1, element2);
-    if(hasAccordion) {
-      accordionUpdateHeader(element1, true, true);
-      accordionUpdateHeader(element2, true, true);
+    
+    if(hasAccordion && !runOnce) {
+      accordionUpdateHeader(element1, true, false);
+      accordionUpdateHeader(element2, true, false);
+      runOnce = true;
     }
     /* Do we need these on all elements? */
     element1.blur();
@@ -1869,17 +1874,27 @@ function wrapItemsLeftRight(items, leftItems, rightItems) {
 /* CK helper functions - XXX: facade */
 
 function swapCK(ckInstanceNameA, ckInstanceNameB) {
-  var tmp = getCkValue(ckInstanceNameA);
-  setCkValue(ckInstanceNameA, getCkValue(ckInstanceNameB));
-  setCkValue(ckInstanceNameB, tmp);
+  setTimeout(function() {
+    var ckInstA = getCkInstance(ckInstanceNameA);
+    var ckInstB = getCkInstance(ckInstanceNameB);
+    var ckValA = ckInstA.getData();
+    var ckValB = ckInstB.getData();
+    ckInstA.setData(ckValB, function() {
+      ckInstB.setData(ckValA);
+    });
+  }, 10);
 }
 
 function getCkValue(instanceName) {
-  return getCkInstance(instanceName).getData();
+  var inst = getCkInstance(instanceName);
+  return inst !== null ? inst.getData() : null;
 }
 
 function setCkValue(instanceName, data) {
-  getCkInstance(instanceName).setData(data);
+  var inst = getCkInstance(instanceName);
+  if(inst !== null && data !== null) {
+    inst.setData(data);
+  }
 }
 
 function isCkEditor(instanceName) {

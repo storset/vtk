@@ -155,6 +155,14 @@ public class LinkChecker {
             reason = t.getMessage();
         }
 
+        // XXX VTK-3162 Any status other than explicit NOT_FOUND is considered
+        // to be ok. This to reduce unnecessary noise produced by generic/random
+        // errors and timeouts.
+        if (status != Status.NOT_FOUND) {
+            status = Status.OK;
+            reason = null;
+        }
+        
         LinkCheckResult result = new LinkCheckResult(href, status, reason);
         this.cache.put(new Element(cacheKey, result));
         return result;
@@ -162,11 +170,10 @@ public class LinkChecker {
     
     private Status validateURL(URL url, URL referrer) {
         HttpURLConnection urlConnection = null;
-        int httpResponseCode = -1;
         try {
             urlConnection = createHeadRequest(url, referrer);
             urlConnection.connect();
-            httpResponseCode = urlConnection.getResponseCode();
+            int  httpResponseCode = urlConnection.getResponseCode();
             if (httpResponseCode == HttpURLConnection.HTTP_MOVED_PERM
                     || httpResponseCode == HttpURLConnection.HTTP_MOVED_TEMP
                     || httpResponseCode == HttpURLConnection.HTTP_SEE_OTHER) {
@@ -182,9 +189,7 @@ public class LinkChecker {
         } catch (UnknownHostException e) {
             return Status.NOT_FOUND;
         } catch (Exception e) {
-            // Don't asses generic exception as error
-            // XXX Introduce new Status code? e.g. Status.UNKNOWN|INCOMPLETE etc...
-            return httpResponseCode != -1 ? Status.ERROR : Status.OK;
+            return Status.ERROR;
         } finally {
             if (urlConnection != null) {
                 urlConnection.disconnect();

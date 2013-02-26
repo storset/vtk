@@ -46,6 +46,7 @@ public class SemesterTitlePropertyEvaluator implements PropertyEvaluator {
 
     private PropertyTypeDefinition semesterTermPropDef;
     private PropertyTypeDefinition semesterYearPropDef;
+    private Locale defaultLocale;
 
     @Required
     public void setSemesterTermPropDef(PropertyTypeDefinition semesterTermPropDef) {
@@ -66,6 +67,9 @@ public class SemesterTitlePropertyEvaluator implements PropertyEvaluator {
         Property year = ctx.getSuppliedResource().getProperty(semesterYearPropDef);
         Property term = ctx.getSuppliedResource().getProperty(semesterTermPropDef);
         Locale locale = ctx.getSuppliedResource().getContentLocale();
+        if (locale == null) {
+            locale = defaultLocale;
+        }
 
         if (term == null || year == null) {
             logger.warn("Property term or Property year is null.");
@@ -74,6 +78,11 @@ public class SemesterTitlePropertyEvaluator implements PropertyEvaluator {
 
         property.setStringValue(term.getFormattedValue("localized", locale) + " " + year.getFormattedValue());
         return true;
+    }
+
+    @Required
+    public void setDefaultLocale(Locale defaultLocale) {
+        this.defaultLocale = defaultLocale;
     }
 
 }

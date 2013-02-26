@@ -95,7 +95,9 @@
     </#if>
     
     <#if conf?exists && collection.resourceType = 'course-group-listing'>
-      <div id="vrtx-listing-filter-status"><@courseGroup.displayStatusLink conf  /></div>
+      <div id="vrtx-listing-filter-status">
+        <@courseGroup.displayStatusLink conf />
+      </div>
     </#if>
 
   </body>

@@ -109,7 +109,7 @@ public class VHostScopeQueryRestricter {
      * @param repositoryId
      *            The host to check against
      */
-    public static boolean isRestrictedToOtherHosts(List<String> vhosts, String repositoryId) {
+    public static boolean isMultiHostSearchRequired(List<String> vhosts, String repositoryId) {
         if (vhosts != null && !vhosts.isEmpty()) {
             if (vhosts.size() == 1) {
                 String vhost = vhosts.get(0);

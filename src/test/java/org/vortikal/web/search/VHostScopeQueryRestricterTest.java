@@ -108,7 +108,7 @@ public class VHostScopeQueryRestricterTest {
 
     private void assertIsRestrictedToOtherHosts(List<String> vhosts, String repositoryId, boolean expected) {
 
-        boolean actual = VHostScopeQueryRestricter.isRestrictedToOtherHosts(vhosts, repositoryId);
+        boolean actual = VHostScopeQueryRestricter.isMultiHostSearchRequired(vhosts, repositoryId);
         assertEquals(expected, actual);
 
     }

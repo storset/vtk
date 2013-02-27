@@ -1790,6 +1790,8 @@ VrtxEditor.prototype.openSendToApproval = function openSendToApproval(link) {
 };
 
 VrtxEditor.prototype.openSendToApprovalOpen = function openSendToApprovalOpen(dialogManageCreate, link) {
+  var vrtxAdm = vrtxAdmin, _$ = vrtxAdm._$;
+  
   var hasEmailFrom = dialogManageCreate.find("#emailFrom").length;
   vrtxSimpleDialogs.openHtmlDialog("send-approval", dialogManageCreate.html(), link.title, 410, (hasEmailFrom ? 620 : 545));
   var dialog = _$(".ui-dialog");

@@ -1781,15 +1781,15 @@ VrtxEditor.prototype.openSendToApproval = function openSendToApproval(link) {
         _$("body").append("<div id='" + id + "'>" + _$(results).find("#contents").html() + "</div>");
         dialogManageCreate = _$("#" + id);
         dialogManageCreate.hide();
-        vrtxEditor.openSendToApprovalOpen(dialogManageCreate);
+        vrtxEditor.openSendToApprovalOpen(dialogManageCreate, link);
       }
     });
   } else {
-    vrtxEditor.openSendToApprovalOpen(dialogManageCreate);
+    vrtxEditor.openSendToApprovalOpen(dialogManageCreate, link);
   }
 };
 
-VrtxEditor.prototype.openSendToApprovalOpen = function openSendToApprovalOpen(dialogManageCreate) {
+VrtxEditor.prototype.openSendToApprovalOpen = function openSendToApprovalOpen(dialogManageCreate, link) {
   var hasEmailFrom = dialogManageCreate.find("#emailFrom").length;
   vrtxSimpleDialogs.openHtmlDialog("send-approval", dialogManageCreate.html(), link.title, 410, (hasEmailFrom ? 620 : 545));
   var dialog = _$(".ui-dialog");

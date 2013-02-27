@@ -238,8 +238,8 @@
        	     <div class="vrtx-button vrtx-remove-button">
                <input type="button" value="${vrtx.getMsg("editor.remove")}" />
              </div>
-       	     
-       	     <#if cssClass?contains("vrtx-multiple-immovable")>
+
+       	     <#if !cssClass?contains("vrtx-multiple-immovable")>
                <#if (counter > 0) >
                  <div class="vrtx-button vrtx-move-up-button">
                    <input type="button" value="&uarr; ${vrtx.getMsg("editor.move-up")}"  />

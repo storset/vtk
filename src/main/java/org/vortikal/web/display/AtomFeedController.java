@@ -298,9 +298,8 @@ public abstract class AtomFeedController implements Controller {
             HtmlFragment summary = htmlUtil.linkResolveFilter(sb.toString(), baseURL, RequestContext
                     .getRequestContext().getRequestURL(), this.useProtocolRelativeImages);
             return summary;
-        } else {
-            return null;
         }
+        return null;
     }
 
     protected Property getDefaultPublishDate(PropertySet result) {

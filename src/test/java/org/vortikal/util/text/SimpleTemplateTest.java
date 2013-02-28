@@ -84,19 +84,82 @@ public class SimpleTemplateTest {
         
         assertEquals("}", render("}", vars, "${", "}"));
         
+        assertEquals("x", render("x", vars, "%{", "}"));
+
         assertEquals("", render("\\", vars, "%{", "}"));
         
         assertEquals("", render("", vars, "%{", "}"));
     }
+    
+    @Test
+    public void testEscapingParseFlags() {
+        Map<String, String> vars = new HashMap<String, String>();
+        vars.put("foo", "bar");
+        vars.put("\\", "ESCCHAR");
+        vars.put("\\\\", "DOUBLE_ESCCHAR");
+        vars.put("${", "PREFIX");
+        vars.put("}", "SUFFIX");
+        vars.put("\\}", "ESC_SUFFIX");
+        vars.put("\\${", "ESC_PREFIX");
+        
+        String testTemplate =                 "${foo} \\\\ \\x \\${foo} ${${} ${\\}} ${\\${} \\${\\\\}\\ ${\\}";
+        
+        String expectDefault =                "bar \\ x ${foo} PREFIX SUFFIX PREFIX ${\\} ${}";
+        String expectNoEscapeHandling =       "bar \\\\ \\x \\bar PREFIX ESCCHAR} ESC_PREFIX \\DOUBLE_ESCCHAR\\ ESCCHAR";
+        String expectKeepAllEscapeChars =     "bar \\\\ \\x \\${foo} PREFIX ESC_SUFFIX ESC_PREFIX \\${\\\\}\\ ${\\}";
+        String expectKeepInvalidEscapeChars = "bar \\ \\x ${foo} PREFIX SUFFIX ESC_PREFIX ${\\}\\ ${}";
+        
+        assertEquals(expectDefault, render(testTemplate, vars, 0));
+        
+        assertEquals(expectNoEscapeHandling, render(testTemplate, vars, SimpleTemplate.NO_ESCAPE_HANDLING));
+
+        assertEquals(expectKeepAllEscapeChars, render(testTemplate, vars, SimpleTemplate.KEEP_ALL_ESCAPE_CHARS));
+
+        assertEquals(expectKeepInvalidEscapeChars, render(testTemplate, vars, SimpleTemplate.KEEP_INVALID_ESCAPE_CHARS));
+        
+        // KEEP_ALL_ESCAPE_CHARS overrides KEEP_INVALID_ESCAPE_CHARS:
+        assertEquals(expectKeepAllEscapeChars, render(testTemplate, vars, SimpleTemplate.KEEP_INVALID_ESCAPE_CHARS
+                                                               | SimpleTemplate.KEEP_ALL_ESCAPE_CHARS));
+
+        // NO_ESCAPE_HANDLING overrides any other flag
+        assertEquals(expectNoEscapeHandling, render(testTemplate, vars, SimpleTemplate.NO_ESCAPE_HANDLING
+                                                               | SimpleTemplate.KEEP_INVALID_ESCAPE_CHARS
+                                                               | SimpleTemplate.KEEP_ALL_ESCAPE_CHARS));
+        
+        assertEquals(expectNoEscapeHandling, render(testTemplate, vars, SimpleTemplate.NO_ESCAPE_HANDLING
+                                                               | SimpleTemplate.KEEP_ALL_ESCAPE_CHARS));
+        
+        assertEquals(expectNoEscapeHandling, render(testTemplate, vars, SimpleTemplate.NO_ESCAPE_HANDLING
+                                                               | SimpleTemplate.KEEP_INVALID_ESCAPE_CHARS));
+    }
+    
+    @Test
+    public void testNoEscapeHandlingQueryExpression() {
+        Map<String,String> vars = new HashMap<String,String>();
+        vars.put("currentFolder", "/query-tests/a\\ folder\\ with\\ spaces");
+        
+        String testTemplate = "(uri = {$currentFolder}* AND type IN file) OR uri = /query-tests/a\\ folder\\ with\\ spaces";
+        
+        assertEquals("(uri = /query-tests/a\\ folder\\ with\\ spaces* AND type IN file) OR uri = /query-tests/a\\ folder\\ with\\ spaces",
+                render(testTemplate, vars, "{$", "}", SimpleTemplate.NO_ESCAPE_HANDLING));
+    }
 
     private String render(String template, Map<String, String> vars) {
-        return render(template, vars, "${", "}");
+        return render(template, vars, "${", "}", 0);
+    }
+    
+    private String render(String template, Map<String, String> vars, int flags) {
+        return render(template, vars, "${", "}", flags);
     }
     
     private String render(String template, final Map<String, String> vars, 
                           String delimPrefix, String delimSuffix) {
+        return render(template, vars, delimPrefix, delimSuffix, 0);
+    }
+    private String render(String template, final Map<String, String> vars, 
+                          String delimPrefix, String delimSuffix, int flags) {
         final StringBuilder result = new StringBuilder();
-        SimpleTemplate t = SimpleTemplate.compile(template, delimPrefix, delimSuffix);
+        SimpleTemplate t = SimpleTemplate.compile(template, delimPrefix, delimSuffix, flags);
         t.apply(new SimpleTemplate.Handler() {
             @Override
             public void write(String text) {

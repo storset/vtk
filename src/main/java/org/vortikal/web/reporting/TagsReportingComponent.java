@@ -41,6 +41,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import net.sf.ehcache.Ehcache;
+import net.sf.ehcache.Element;
+
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
@@ -59,9 +62,6 @@ import org.vortikal.repository.search.query.TermOperator;
 import org.vortikal.repository.search.query.TypeTermQuery;
 import org.vortikal.repository.search.query.UriPrefixQuery;
 import org.vortikal.web.display.collection.aggregation.AggregationResolver;
-
-import net.sf.ehcache.Ehcache;
-import net.sf.ehcache.Element;
 
 public class TagsReportingComponent {
 
@@ -161,35 +161,41 @@ public class TagsReportingComponent {
             }
         }
 
-        OrQuery pathScopeQuery = null;
+        Query pathScopeQuery = null;
         if (scopeUri != null && !scopeUri.isRoot()) {
-            if (pathScopeQuery == null) {
-                pathScopeQuery = new OrQuery();
-            }
 
-            pathScopeQuery.add(new UriPrefixQuery(scopeUri.toString()));
-
-            // If we have an aggregation resolver available, then include
-            // whatever URIs the scope URI might aggregate from.
+            Set<Path> aggregationPaths = null;
             if (this.aggregationResolver != null) {
-                Set<Path> aggregationPaths = this.aggregationResolver.getAggregationPaths(scopeUri);
-                if (aggregationPaths != null) {
-                    for (Path p : aggregationPaths) {
-                        pathScopeQuery.add(new UriPrefixQuery(p.toString()));
-                    }
-                }
+                aggregationPaths = this.aggregationResolver.getAggregationPaths(scopeUri);
             }
+
+            if (aggregationPaths == null) {
+                pathScopeQuery = new UriPrefixQuery(scopeUri.toString());
+            } else {
+                OrQuery or = new OrQuery();
+                or.add(new UriPrefixQuery(scopeUri.toString()));
+                for (Path p : aggregationPaths) {
+                    or.add(new UriPrefixQuery(p.toString()));
+                }
+                pathScopeQuery = or;
+            }
+
         }
 
-        OrQuery typeScopeQuery = null;
+        Query typeScopeQuery = null;
         if (rtNames != null && !rtNames.isEmpty()) {
-            if (typeScopeQuery == null)
-                typeScopeQuery = new OrQuery();
 
-            for (String rtName : rtNames) {
-                // Consider TermOperator.IN to get hierarchical type support
-                typeScopeQuery.add(new TypeTermQuery(rtName, TermOperator.EQ));
+            if (rtNames.size() == 1) {
+                typeScopeQuery = new TypeTermQuery(rtNames.iterator().next(), TermOperator.EQ);
+            } else {
+                OrQuery or = new OrQuery();
+                for (String rtName : rtNames) {
+                    // Consider TermOperator.IN to get hierarchical type support
+                    or.add(new TypeTermQuery(rtName, TermOperator.EQ));
+                }
+                typeScopeQuery = or;
             }
+
         }
 
         Query masterScopeQuery = pathScopeQuery;

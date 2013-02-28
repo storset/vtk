@@ -48,7 +48,7 @@ public class QueryStringPreProcessorImpl implements QueryStringPreProcessor {
 
     public String process(String queryString) throws QueryException {
         SimpleTemplate template = SimpleTemplate.
-                compile(queryString, expressionStart, expressionEnd);
+                compile(queryString, expressionStart, expressionEnd, SimpleTemplate.NO_ESCAPE_HANDLING);
         final StringBuilder result = new StringBuilder();
         
         template.apply(new SimpleTemplate.Handler() {

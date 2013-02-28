@@ -67,7 +67,46 @@ import java.util.List;
   * 
  */
 public class SimpleTemplate {
+
+    /**
+     * The character used for escaping interpretation of delimiter prefix in template.
+     */
+    public static final char ESCAPE_CHAR = '\\';
     
+    /**
+     * Parsing flag that disables all handling of escaping. This will make
+     * outputting a literal string containing the prefix or suffix of variable
+     * delimiter impossible (unless output by a variable itself), since the
+     * delimiters will always be interpreted as parts of variable expression,
+     * regardless of any preceding escape character. Also, all escape characters
+     * that occur in template input will be included in rendered output.
+     */
+    public static final int NO_ESCAPE_HANDLING = 1;
+    
+    /**
+     * Parsing flag meaning that <em>all</em> backslash characters in input are
+     * kept as-is in template output. The backslash will still have the effect
+     * of escaping the variable delimiter prefix.
+     */
+    public static final int KEEP_ALL_ESCAPE_CHARS = 2;
+    
+    /**
+     * Parsing flag meaning that the escape char is kept as-is in output
+     * when it forms an invalid escape sequence with the following character.
+     * This will keep all backslashes in template input, except those that
+     * form valid escapes.
+     * <p>
+     * Valid escape sequences are:
+     * <ol>
+     *   <li>An escape character preceding the delimiter prefix when outside variable.
+     *   <li>An escape character preceding the delimiter suffix when inside a variable.
+     *   <li>An escape character escaping itself.
+     * </ol>
+     * Escape chars in valid escape sequences will be consumed in this mode of
+     * operation.
+     */
+    public static final int KEEP_INVALID_ESCAPE_CHARS = 4;
+
     /**
      * Handler for template variable substitution and output writing.
      */
@@ -101,24 +140,49 @@ public class SimpleTemplate {
     }
 
     /**
-     * Compiles a template using <code>${</code> and <code>}</code> as delimiters.
+     * Compiles a template using <code>${</code> and <code>}</code> as delimiters
+     * and default escape handling (no flags).
+     * @see #compile(java.lang.String, java.lang.String, java.lang.String, int) 
      */
     public static SimpleTemplate compile(String template) {
         return compile(template, "${", "}");
     }
 
     /**
-     * Compiles a template with configurable placeholder delimiters. You may escape
-     * placeholder interpretation by preceding <code>delimPrefix</code> with
-     * backslash in template string: <code>"foo \\${literal-me}"</code>. Escaping
-     * chars with no special meaning has no effect other than the backslash
-     * being removed. To get a literal backslash in rendering output, use two
-     * consecutive backslashes in template.
-     * 
-     * Nesting placeholders is entirely unsupported.
+     * Compiles a template using custom delimiters and default escape handling (no flags).
+     * @see #compile(java.lang.String, java.lang.String, java.lang.String, int) 
      */
     public static SimpleTemplate compile(String template, String delimPrefix,
                                          String delimSuffix) {
+        return compile(template, delimPrefix, delimSuffix, 0);
+    }
+    
+    /**
+     * Compiles a template with custom placeholder delimiters. You may
+     * escape placeholder interpretation by preceding
+     * <code>delimPrefix</code> with {@link #ESCAPE_CHAR the escape character} in
+     * template string:
+     * <code>"foo \\${literal-me}"</code>. Escaping chars with no special
+     * meaning has no effect other than the backslash being removed. To get a
+     * literal backslash in rendering output, use two consecutive backslashes in
+     * template, or use a parsing flag which sets escape char policy explicitly.
+     * <p>
+     * Parsing flags that can be used:
+     * <ul>
+     * <li>0 - the default, escape handling is turned on, and one level of escape
+     *         chars will be consumed, whether they are invalid nor not.
+     * <li>{@link #NO_ESCAPE_HANDLING} - turn off escaping support. All escape chars will be included in output, and
+     *                                   it will not be possible to escape delimiter prefix or suffix.
+     * <li>{@link #KEEP_ALL_ESCAPE_CHARS} - allow escaping, and keep all escape chars verbatim in output as well.
+     * <li>{@link #KEEP_INVALID_ESCAPE_CHARS} - allow escaping, and keep all escape chars that form invalid/unknown
+     *                                          escape sequences in output. Those escape chars that actually
+     *                                          do escape variable interpretation are consumed.
+     * </ul>
+      * 
+     * Nesting placeholders is entirely unsupported.
+     */
+    public static SimpleTemplate compile(String template, String delimPrefix,
+                                         String delimSuffix, int parseFlags) {
         if (template == null) {
             throw new IllegalArgumentException("Argument 'template' is null");
         }
@@ -134,16 +198,24 @@ public class SimpleTemplate {
         boolean varState = false;
         for (int i=0; i<template.length(); i++) {
             char c = template.charAt(i);
-            if (escape) {
-                token.append(c);
-                escape = false;
-                continue;
-            }
-            if (c == '\\') {
-                escape = true;
+            if (c == ESCAPE_CHAR) {
+                if (escape) {
+                    token.append(ESCAPE_CHAR); // Valid escape
+                    escape = false;
+                } else {
+                    if (hasFlag(NO_ESCAPE_HANDLING|KEEP_ALL_ESCAPE_CHARS, parseFlags)) {
+                        token.append(ESCAPE_CHAR);
+                    }
+                    escape = !hasFlag(NO_ESCAPE_HANDLING, parseFlags);
+                }
                 continue;
             }
             if (!varState && template.startsWith(delimPrefix, i)) {
+                if (escape) { // Valid escape
+                    escape = false;
+                    token.append(c);
+                    continue;
+                }
                 if (token.length() > 0) {
                     nodes.add(textNode(token.toString()));
                     token.setLength(0);
@@ -153,6 +225,11 @@ public class SimpleTemplate {
                 continue;
             }
             if (varState && template.startsWith(delimSuffix, i)) {
+                if (escape) { // Valid escape
+                    escape = false;
+                    token.append(c);
+                    continue;
+                }
                 if (token.length() > 0) {
                     nodes.add(varNode(token.toString()));
                     token.setLength(0);
@@ -160,6 +237,13 @@ public class SimpleTemplate {
                 varState = false;
                 i += delimSuffix.length()-1;
                 continue;
+            }
+            if (escape) {
+                if (hasFlag(KEEP_INVALID_ESCAPE_CHARS, parseFlags) 
+                         && !hasFlag(KEEP_ALL_ESCAPE_CHARS, parseFlags)) {
+                    token.append(ESCAPE_CHAR);
+                }
+                escape = false;
             }
             token.append(c);
         }
@@ -202,6 +286,10 @@ public class SimpleTemplate {
         this.nodes = nodes;
     }
 
+    private static boolean hasFlag(int flag, int flags) {
+        return (flag & flags) != 0;
+    }
+    
     @Override
     public String toString() {
         return getClass().getSimpleName() + nodes.toString();

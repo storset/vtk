@@ -29,10 +29,11 @@ resourcetype schedule {
       [def semester resource-prop(".", "semester")]
       [def path resource-prop(".", "path")]
       [def overview resource-prop(".", "overview")]
+      [def locale resource-locale()]
       <iframe frameborder="0" 
               id="timeplaner" 
               scrolling="no" 
-              src="/studier/timeplaner/calendar.php?type=module&amp;embed=1&amp;ar=[val year]&amp;sem=[val semester]&amp;id=[val course-code]-1&amp;path=[val path][if overview != null && overview != ""]&amp;over=[val overview][else]&amp;over=1[endif]" 
+              src="/studier/timeplaner/calendar.php?type=module&amp;embed=1&amp;ar=[val year]&amp;sem=[val semester]&amp;id=[val course-code]-1&amp;path=[val path][if overview != null && overview != ""]&amp;over=[val overview][else]&amp;over=1[endif][if locale != null && locale = "en"]&amp;lang=en[endif]" 
               width="100%">
       </iframe>
       ##

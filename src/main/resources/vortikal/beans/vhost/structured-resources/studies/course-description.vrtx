@@ -839,7 +839,7 @@ resourcetype course-description {
     overlapping-courses-text-field : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
     overlapping-courses-group : (en : "Overlapping courses", no : "Overlappende emner", nn : "Overlappande emne"),
     fs-course-code : (en : "Course code", no : "Emnekode", nn : "Emnekode"),
-    points-for : (en : "credits overlap with", no : "poeng overlapp mot", nn : "poeng overlapp mot"),
+    points-for : (en : "credits overlap with", no : "studiepoeng overlapp mot", nn : "studiepoeng overlapp mot"),
     and : (en : "and", no : "og", nn : "og"),
 
     teaching-text-field : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),

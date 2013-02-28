@@ -64,7 +64,10 @@ import java.util.List;
  * character in input and can be used to include substitution
  * prefix literally in output. To get a literal backslash in output, use two
  * consecutive backslashes in template.
-  * 
+ * 
+ * 
+ * TODO make default parsing mode be same as parse flag NO_ESCAPE_HANDLING, so API
+ *      becomes opt-in for escape-handling, instead of opt-out.
  */
 public class SimpleTemplate {
 

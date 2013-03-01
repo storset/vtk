@@ -11,7 +11,6 @@ var AudioPlayer = function () {
         for (var i = 0; i < document.forms.length; i++) {
           if (document.forms[i][playerID]) {
             return document.forms[i][playerID];
-            break;
           }
         }
       }

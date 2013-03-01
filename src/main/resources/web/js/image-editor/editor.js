@@ -121,7 +121,7 @@ VrtxImageEditor.prototype.init = function init(imageURL, imageSupported) {
         }
       });
     }
-  }
+  };
 
   if(editor.canvasSupported) {
     $("#app-content").on("dblclick", "#vrtx-image-editor", function (e) {
@@ -154,16 +154,17 @@ VrtxImageEditor.prototype.init = function init(imageURL, imageSupported) {
         editor.hasCropBeenInitialized = false;
       } else {
         var shortestSide = Math.min(editor.rw, editor.rh);
+        var distEdge = 2;
         if(shortestSide >= 400) {
-          var distEdge = 40;
+          distEdge = 40;
         } else if(shortestSide < 400 && shortestSide >= 200) {
-          var distEdge = 30;
+          distEdge = 30;
         } else if (shortestSide < 200 && shortestSide >= 120) {
-          var distEdge = 20;
+          distEdge = 20;
         } else if (shortestSide < 120 && shortestSide > 40) {
-          var distEdge = 10;
+          distEdge = 10;
         } else {
-          var distEdge = 2;
+          distEdge = 2;
         }
         
         editor.initSelection(distEdge, distEdge, editor.rw - (distEdge * 2), editor.rh - (distEdge * 2));
@@ -171,10 +172,10 @@ VrtxImageEditor.prototype.init = function init(imageURL, imageSupported) {
         $(this).val(cropText);
         $("#vrtx-image-editor").resizable("disable");
         
-        var cropInfoHtml = "<p id='vrtx-image-crop-coordinates'>" 
-                             + widthText.substring(0,1) + ": <span id='vrtx-image-crop-coordinates-width'>" + editor.cropWidth + "</span>&nbsp;&nbsp;"
-                             + heightText.substring(0,1) + ": <span id='vrtx-image-crop-coordinates-height'>" + editor.cropHeight+ "</span>"
-                           + "</p>";    
+        var cropInfoHtml = "<p id='vrtx-image-crop-coordinates'>" +
+                              widthText.substring(0,1) + ": <span id='vrtx-image-crop-coordinates-width'>" + editor.cropWidth + "</span>&nbsp;&nbsp;" +
+                              heightText.substring(0,1) + ": <span id='vrtx-image-crop-coordinates-height'>" + editor.cropHeight+ "</span>" +
+                           "</p>";    
         $(cropInfoHtml).insertAfter("#vrtx-image-crop-button");
         
         editor.hasCropBeenInitialized = true;
@@ -191,12 +192,12 @@ VrtxImageEditor.prototype.init = function init(imageURL, imageSupported) {
           if (editor.keepAspectRatio) {
             h = Math.round(w / (editor.aspectRatioOver / editor.aspectRatioUnder));
           }
-          $("#resource-height").val(h)
+          $("#resource-height").val(h);
         } else if (h !== editor.rh) {
           if (editor.keepAspectRatio) {
             w = Math.round(h * (editor.aspectRatioOver / editor.aspectRatioUnder));
           }
-          $("#resource-width").val(w)
+          $("#resource-width").val(w);
         }
         editor.lastWidth = w;
         editor.lastHeight = h;
@@ -254,8 +255,8 @@ VrtxImageEditor.prototype.init = function init(imageURL, imageSupported) {
  * @param {number} b The second number
  */
 VrtxImageEditor.prototype.gcd = function gcd(a, b) {
-  return (b == 0) ? a : this.gcd (b, a%b);
-}
+  return (b === 0) ? a : this.gcd (b, a%b);
+};
 
 /**
  * Update dimension in textfields and canvas
@@ -287,19 +288,19 @@ VrtxImageEditor.prototype.displayDimensions = function displayDimensions(w, h) {
     $("#resource-width").val(w);
     $("#resource-height").val(h);
   } else {
-    var dimensionHtml = '<div id="vrtx-image-dimensions-crop">'
-                        + '<div class="vrtx-label-and-text">'
-                          + '<div class="property-label">' + widthText + '</div>'
-                          + '<div class="vrtx-textfield" id="vrtx-textfield-width"><input id="resource-width" type="text" value="' + w + '" size="4" /></div>'
-                        + '</div>'
-                        + '<div class="vrtx-label-and-text">'
-                          + '<div class="property-label">' + heightText + '</div>'
-                          + '<div class="vrtx-textfield" id="vrtx-textfield-height"><input id="resource-height" type="text" value="' + h + '" size="4" /></div>'
-                        + '</div>';
+    var dimensionHtml = '<div id="vrtx-image-dimensions-crop">' +
+                          '<div class="vrtx-label-and-text">' +
+                            '<div class="property-label">' + widthText + '</div>' +
+                            '<div class="vrtx-textfield" id="vrtx-textfield-width"><input id="resource-width" type="text" value="' + w + '" size="4" /></div>' +
+                          '</div>' +
+                          '<div class="vrtx-label-and-text">' +
+                            '<div class="property-label">' + heightText + '</div>' +
+                            '<div class="vrtx-textfield" id="vrtx-textfield-height"><input id="resource-height" type="text" value="' + h + '" size="4" /></div>' +
+                          '</div>';
     if(this.canvasSupported) {                      
-      dimensionHtml += '<div id="vrtx-image-crop-button"><div class="vrtx-button">'
-                     + '<input type="button" id="vrtx-image-crop" value="' + startCropText + '..." /></div></div>'
-                     + '<div id="vrtx-image-info" style="margin-top: 10px"></div>';
+      dimensionHtml += '<div id="vrtx-image-crop-button"><div class="vrtx-button">' +
+                       '<input type="button" id="vrtx-image-crop" value="' + startCropText + '..." /></div></div>' +
+                       '<div id="vrtx-image-info" style="margin-top: 10px"></div>';
     }
     dimensionHtml  += '</div>';
     $(dimensionHtml).insertBefore("#vrtx-image-editor-preview");
@@ -323,12 +324,12 @@ VrtxImageEditor.prototype.save = function save(buttonId) {
   }
 
   var form = $("form#editor");
-  var dataString = "<input style='display: none' name='crop-x' value='" + editor.cropX + "' />"
-                 + "<input style='display: none' name='crop-y' value='" + editor.cropY + "' />"
-                 + "<input style='display: none' name='crop-width' value='" + editor.cropWidth + "' />"
-                 + "<input style='display: none' name='crop-height' value='" + editor.cropHeight + "' />"
-                 + "<input style='display: none' name='new-width' value='" + editor.rw + "' />"
-                 + "<input style='display: none' name='new-height' value='" + editor.rh + "' />";
+  var dataString = "<input style='display: none' name='crop-x' value='" + editor.cropX + "' />" +
+                   "<input style='display: none' name='crop-y' value='" + editor.cropY + "' />" +
+                   "<input style='display: none' name='crop-width' value='" + editor.cropWidth + "' />" +
+                   "<input style='display: none' name='crop-height' value='" + editor.cropHeight + "' />" +
+                   "<input style='display: none' name='new-width' value='" + editor.rw + "' />" +
+                   "<input style='display: none' name='new-height' value='" + editor.rh + "' />";
    form.append(dataString);
    if(typeof buttonId !== "undefined") {
      editor.savedImage = true;
@@ -459,57 +460,57 @@ VrtxImageEditor.prototype.initSelection = function initSelection(x, y, w, h) {
       selection.iCSize[i] = selection.csize;
     }
     // hovering over resize cubes
-    if (selection.iMouseX > selection.x - selection.csizeh 
-     && selection.iMouseX < selection.x + selection.csizeh
-     && selection.iMouseY > selection.y - selection.csizeh
-     && selection.iMouseY < selection.y + selection.csizeh) {
+    if (selection.iMouseX > selection.x - selection.csizeh &&
+        selection.iMouseX < selection.x + selection.csizeh &&
+        selection.iMouseY > selection.y - selection.csizeh &&
+        selection.iMouseY < selection.y + selection.csizeh) {
       selection.bHow[0] = true;
       selection.iCSize[0] = selection.csizeh;
     }
-    if (selection.iMouseX > selection.x + selection.w - selection.csizeh 
-     && selection.iMouseX < selection.x + selection.w + selection.csizeh
-     && selection.iMouseY > selection.y - selection.csizeh
-     && selection.iMouseY < selection.y + selection.csizeh) {
+    if (selection.iMouseX > selection.x + selection.w - selection.csizeh &&
+        selection.iMouseX < selection.x + selection.w + selection.csizeh &&
+        selection.iMouseY > selection.y - selection.csizeh &&
+        selection.iMouseY < selection.y + selection.csizeh) {
       selection.bHow[1] = true;
       selection.iCSize[1] = selection.csizeh;
     }
-    if (selection.iMouseX > selection.x + selection.w - selection.csizeh
-     && selection.iMouseX < selection.x + selection.w + selection.csizeh
-     && selection.iMouseY > selection.y + selection.h - selection.csizeh
-     && selection.iMouseY < selection.y + selection.h + selection.csizeh) {
+    if (selection.iMouseX > selection.x + selection.w - selection.csizeh &&
+        selection.iMouseX < selection.x + selection.w + selection.csizeh &&
+        selection.iMouseY > selection.y + selection.h - selection.csizeh &&
+        selection.iMouseY < selection.y + selection.h + selection.csizeh) {
       selection.bHow[2] = true;
       selection.iCSize[2] = selection.csizeh;
     }
-    if (selection.iMouseX > selection.x - selection.csizeh
-     && selection.iMouseX < selection.x + selection.csizeh
-     && selection.iMouseY > selection.y + selection.h - selection.csizeh
-     && selection.iMouseY < selection.y + selection.h + selection.csizeh) {
+    if (selection.iMouseX > selection.x - selection.csizeh &&
+        selection.iMouseX < selection.x + selection.csizeh &&
+        selection.iMouseY > selection.y + selection.h - selection.csizeh &&
+        selection.iMouseY < selection.y + selection.h + selection.csizeh) {
       selection.bHow[3] = true;
       selection.iCSize[3] = selection.csizeh;
     }
     // in case of dragging of resize cubes
-    var iFW, iFH;
+    var iFX, iFY, iFW, iFH;
     if (selection.bDrag[0]) {
-      var iFX = selection.iMouseX - selection.px;
-      var iFY = selection.iMouseY - selection.py;
+      iFX = selection.iMouseX - selection.px;
+      iFY = selection.iMouseY - selection.py;
       iFW = selection.w + selection.x - iFX;
       iFH = selection.h + selection.y - iFY;
     }
     if (selection.bDrag[1]) {
-      var iFX = selection.x;
-      var iFY = selection.iMouseY - selection.py;
+      iFX = selection.x;
+      iFY = selection.iMouseY - selection.py;
       iFW = selection.iMouseX - selection.px - iFX;
       iFH = selection.h + selection.y - iFY;
     }
     if (selection.bDrag[2]) {
-      var iFX = selection.x;
-      var iFY = selection.y;
+      iFX = selection.x;
+      iFY = selection.y;
       iFW = selection.iMouseX - selection.px - iFX;
       iFH = selection.iMouseY - selection.py - iFY;
     }
     if (selection.bDrag[3]) {
-      var iFX = selection.iMouseX - selection.px;
-      var iFY = selection.y;
+      iFX = selection.iMouseX - selection.px;
+      iFY = selection.y;
       iFW = selection.w + selection.x - iFX;
       iFH = selection.iMouseY - selection.py - iFY;
     }
@@ -547,10 +548,10 @@ VrtxImageEditor.prototype.initSelection = function initSelection(x, y, w, h) {
       selection.px = selection.iMouseX - selection.x;
       selection.py = selection.iMouseY - selection.y - selection.h;
     }
-    if (selection.iMouseX > selection.x + selection.csizeh
-     && selection.iMouseX < selection.x + selection.w - selection.csizeh
-     && selection.iMouseY > selection.y + selection.csizeh
-     && selection.iMouseY < selection.y + selection.h - selection.csizeh) {
+    if (selection.iMouseX > selection.x + selection.csizeh &&
+        selection.iMouseX < selection.x + selection.w - selection.csizeh &&
+        selection.iMouseY > selection.y + selection.csizeh &&
+        selection.iMouseY < selection.y + selection.h - selection.csizeh) {
       selection.bDragAll = true;
     }
     for (i = 0; i < 4; i++) {

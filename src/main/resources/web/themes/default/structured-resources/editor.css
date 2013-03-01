@@ -237,7 +237,6 @@
 /* Hide only if JS is turned on */
 #editor.select-teachingsemester .if-teachingsemester-particular,
 #editor.select-teachingsemester .teachingsemester-every-other-semester,
-#editor.select-teachingsemester .teachingsemester-other,
 #editor.select-examsemester .if-examsemester-particular,
 #editor.select-examsemester .examsemester-every-other-semester,
 #editor.select-examsemester .examsemester-other,                                           

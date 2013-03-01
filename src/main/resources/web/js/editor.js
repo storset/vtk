@@ -53,7 +53,7 @@ function VrtxEditor() {
     
     /** Select fields show/hide mappings */
     /*                      select-id            values to be added as class to form         */
-   this.selectMappings = { "teachingsemester":  ["particular-semester", "every-other", "other"],
+   this.selectMappings = { "teachingsemester":  ["particular-semester", "every-other"],
                            "examsemester":      ["particular-semester", "every-other", "other"],
                            "teaching-language": ["other"],
                            "typeToDisplay":     ["so", "nm", "em"]

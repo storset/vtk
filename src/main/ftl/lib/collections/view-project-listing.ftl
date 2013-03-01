@@ -47,33 +47,33 @@
       <@vrtx.flattenHtml value=caption escape=true />
       </#local>
       <div class="vrtx-project">
-            <#if introImg?has_content >
-            <#local src = vrtx.propValue(project, 'picture', 'thumbnail') />
-            <#local introImgURI = vrtx.propValue(project, 'picture') />
-          	<#if introImgURI?exists>
-    			<#local thumbnail =  vrtx.relativeLinkConstructor(introImgURI, 'displayThumbnailService') />
+        <#if introImg?has_content >
+          <#local src = vrtx.propValue(project, 'picture', 'thumbnail') />
+          <#local introImgURI = vrtx.propValue(project, 'picture') />
+          <#if introImgURI?exists>
+          <#local thumbnail =  vrtx.relativeLinkConstructor(introImgURI, 'displayThumbnailService') />
     	 	<#else>
     			<#local thumbnail = "" />
    		   	</#if>
-            	<a class="vrtx-image" href="${projectListing.urls[project.URI]?html}">
-                <#if caption != ''>
-                	<img src="${thumbnail?html}" alt="${captionFlattened}" />
-                <#else>
-                    <img src="${thumbnail?html}" alt="${vrtx.getMsg("article.introductionImageAlt")}" />
-                </#if>
-                </a>
+            <a class="vrtx-image" href="${projectListing.urls[project.URI]?html}">
+            <#if caption != ''>
+              <img src="${thumbnail?html}" alt="${captionFlattened}" />
+            <#else>
+              <img src="${thumbnail?html}" alt="${vrtx.getMsg("article.introductionImageAlt")}" />
             </#if>
-            <div class="vrtx-title">
-              <a class="vrtx-title summary" href="${projectListing.urls[project.URI]?html}">${title?html}</a>
-			</div>
+            </a>
+          </#if>
+          <div class="vrtx-title">
+            <a class="vrtx-title summary" href="${projectListing.urls[project.URI]?html}">${title?html}</a>
+			    </div>
         	<#if intro?has_content && projectListing.hasDisplayPropDef(intro.definition.name)>
-        	  <div class="description introduction"><@vrtx.linkResolveFilter intro.value projectListing.urls[project.URI]  requestURL /></div>
-            </#if>
-             <div class="vrtx-read-more">
-              <a href="${projectListing.urls[project.URI]?html}" class="more">
-                <@vrtx.localizeMessage code="viewCollectionListing.readMore" default="" args=[] locale=locale />
-              </a>
-            </div>
+        	  <div class="description introduction"><@vrtx.linkResolveFilter intro.value projectListing.urls[project.URI] requestURL /></div>
+          </#if>
+          <div class="vrtx-read-more">
+            <a href="${projectListing.urls[project.URI]?html}" class="more">
+              <@vrtx.localizeMessage code="viewCollectionListing.readMore" default="" args=[] locale=locale />
+            </a>
+          </div>
       </div>
     </#list>
    </div>

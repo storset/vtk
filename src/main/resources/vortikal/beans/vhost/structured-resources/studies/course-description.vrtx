@@ -192,6 +192,7 @@ resourcetype course-description {
         [if term != null && startyear != null]
           <p>[localized term] [localized 'every-other-start'] [val startyear]</p>
         [endif]
+      [elseif teachingsemester != null && teachingsemester = "other"]
       [else]
         [if teachingsemester != null]<p>[localized teachingsemester]</p>[endif]
       [endif]

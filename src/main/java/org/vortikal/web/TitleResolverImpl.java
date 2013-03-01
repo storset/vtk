@@ -34,7 +34,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -51,7 +50,6 @@ import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceTypeTree;
-import org.vortikal.repository.TypeInfo;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
@@ -60,7 +58,6 @@ import org.vortikal.util.text.PathMappingConfig;
 import org.vortikal.util.text.PathMappingConfig.ConfigEntry;
 import org.vortikal.util.text.PathMappingConfig.Qualifier;
 import org.vortikal.util.text.SimpleTemplate;
-import org.vortikal.util.text.TextUtils;
 
 /**
  * Resolve resource web titles based on configuration.
@@ -162,7 +159,7 @@ public class TitleResolverImpl implements ApplicationListener<ContextRefreshedEv
         String rawTemplate = entry.getValue();
         SimpleTemplate compiledTemplate = templateCache.get(rawTemplate);
         if (compiledTemplate == null) {
-            compiledTemplate = SimpleTemplate.compile(rawTemplate);
+            compiledTemplate = SimpleTemplate.compile(rawTemplate, SimpleTemplate.ESC_UNESCAPE);
             templateCache.put(rawTemplate, compiledTemplate);
         }
         

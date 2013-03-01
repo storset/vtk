@@ -44,51 +44,51 @@ public class SimpleTemplateTest {
         Map<String, String> vars = new HashMap<String, String>();
         vars.put("foo", "bar");
         
-        String result = render("var: ${foo}", vars);
+        String result = renderUnescape("var: ${foo}", vars);
         assertEquals(result, "var: bar");
 
         vars.put("url", "http://example.com");
-        result = render("url: %{url}", vars, "%{", "}");
+        result = renderUnescape("url: %{url}", vars, "%{", "}");
         assertEquals(result, "url: http://example.com");
         
         vars.put("foo:bar",  "resolved");
-        result = render("%{foo:bar}", vars, "%{", "}");
+        result = renderUnescape("%{foo:bar}", vars, "%{", "}");
         assertEquals(result, "resolved");
         
         vars.put("xxx", "yyy");
-        result = render("{$xxx}", vars, "{$", "}");
+        result = renderUnescape("{$xxx}", vars, "{$", "}");
         assertEquals(result, "yyy");
         
-        assertEquals("no placeholders", render("no placeholders", vars, "%{", "}"));
+        assertEquals("no placeholders", renderUnescape("no placeholders", vars, "%{", "}"));
 
-        assertEquals("empty placeholder", render("empty %{}placeholder", vars, "%{", "}"));
+        assertEquals("empty placeholder", renderUnescape("empty %{}placeholder", vars, "%{", "}"));
 
-        assertEquals("escaped ${foo} \\", render("escaped \\${foo} \\\\", vars, "${", "}"));
+        assertEquals("escaped ${foo} \\", renderUnescape("escaped \\${foo} \\\\", vars, "${", "}"));
         
         vars.put("xxx}", "strange");
-        assertEquals("escaped suffix strange", render("escaped suffix ${xxx\\}}", vars, "${", "}"));
+        assertEquals("escaped suffix strange", renderUnescape("escaped suffix ${xxx\\}}", vars, "${", "}"));
 
-        assertEquals("escaped suffix not closing ${placeholder}", render("escaped suffix not closing ${placeholder\\}", vars, "${", "}"));
+        assertEquals("escaped suffix not closing ${placeholder}", renderUnescape("escaped suffix not closing ${placeholder\\}", vars, "${", "}"));
         
-        assertEquals("invalid } stuff ${foo:bar", render("invalid } stuff ${foo:bar", vars, "${", "}"));
+        assertEquals("invalid } stuff ${foo:bar", renderUnescape("invalid } stuff ${foo:bar", vars, "${", "}"));
         
-        assertEquals("x } x", render("x } x", vars, "${", "}"));
+        assertEquals("x } x", renderUnescape("x } x", vars, "${", "}"));
         
-        assertEquals("} is not supported", render("${placeholder in ${foo}} is not supported", vars, "${", "}"));
+        assertEquals("} is not supported", renderUnescape("${placeholder in ${foo}} is not supported", vars, "${", "}"));
         
-        assertEquals("Foo is bar, same prefix and suffix delimiter", render("Foo is |foo|, same prefix and suffix delimiter", vars, "|", "|"));
+        assertEquals("Foo is bar, same prefix and suffix delimiter", renderUnescape("Foo is |foo|, same prefix and suffix delimiter", vars, "|", "|"));
 
-        assertEquals("Foo is |foo|", render("Foo is \\|foo\\|", vars, "|", "|"));
+        assertEquals("Foo is |foo|", renderUnescape("Foo is \\|foo\\|", vars, "|", "|"));
 
-        assertEquals("${", render("${", vars, "${", "}"));
+        assertEquals("${", renderUnescape("${", vars, "${", "}"));
         
-        assertEquals("}", render("}", vars, "${", "}"));
+        assertEquals("}", renderUnescape("}", vars, "${", "}"));
         
-        assertEquals("x", render("x", vars, "%{", "}"));
+        assertEquals("x", renderUnescape("x", vars, "%{", "}"));
 
-        assertEquals("", render("\\", vars, "%{", "}"));
+        assertEquals("", renderUnescape("\\", vars, "%{", "}"));
         
-        assertEquals("", render("", vars, "%{", "}"));
+        assertEquals("", renderUnescape("", vars, "%{", "}"));
     }
     
     @Test
@@ -102,60 +102,61 @@ public class SimpleTemplateTest {
         vars.put("\\}", "ESC_SUFFIX");
         vars.put("\\${", "ESC_PREFIX");
         
-        String testTemplate =                 "${foo} \\\\ \\x \\${foo} ${${} ${\\}} ${\\${} \\${\\\\}\\ ${\\}";
+        String testTemplate =                  "${foo} \\\\ \\x \\${foo} ${${} ${\\}} ${\\${} \\${\\\\}\\ ${\\}";
         
-        String expectDefault =                "bar \\ x ${foo} PREFIX SUFFIX PREFIX ${\\} ${}";
-        String expectNoEscapeHandling =       "bar \\\\ \\x \\bar PREFIX ESCCHAR} ESC_PREFIX \\DOUBLE_ESCCHAR\\ ESCCHAR";
-        String expectKeepAllEscapeChars =     "bar \\\\ \\x \\${foo} PREFIX ESC_SUFFIX ESC_PREFIX \\${\\\\}\\ ${\\}";
-        String expectKeepInvalidEscapeChars = "bar \\ \\x ${foo} PREFIX SUFFIX ESC_PREFIX ${\\}\\ ${}";
+        String expectDefaultNoEscapeHandling = "bar \\\\ \\x \\bar PREFIX ESCCHAR} ESC_PREFIX \\DOUBLE_ESCCHAR\\ ESCCHAR";
+        String expectUnescapeAll =             "bar \\ x ${foo} PREFIX SUFFIX PREFIX ${\\} ${}";
+        String expectKeepEscapeChars =      "bar \\\\ \\x \\${foo} PREFIX ESC_SUFFIX ESC_PREFIX \\${\\\\}\\ ${\\}";
+        String expectKeepInvalidEscapeChars =  "bar \\ \\x ${foo} PREFIX SUFFIX ESC_PREFIX ${\\}\\ ${}";
         
-        assertEquals(expectDefault, render(testTemplate, vars, 0));
-        
-        assertEquals(expectNoEscapeHandling, render(testTemplate, vars, SimpleTemplate.NO_ESCAPE_HANDLING));
+        assertEquals(expectDefaultNoEscapeHandling, render(testTemplate, vars, SimpleTemplate.ESC_NO_HANDLING));
 
-        assertEquals(expectKeepAllEscapeChars, render(testTemplate, vars, SimpleTemplate.KEEP_ALL_ESCAPE_CHARS));
+        assertEquals(expectUnescapeAll, render(testTemplate, vars, SimpleTemplate.ESC_UNESCAPE));
 
-        assertEquals(expectKeepInvalidEscapeChars, render(testTemplate, vars, SimpleTemplate.KEEP_INVALID_ESCAPE_CHARS));
-        
-        // KEEP_ALL_ESCAPE_CHARS overrides KEEP_INVALID_ESCAPE_CHARS:
-        assertEquals(expectKeepAllEscapeChars, render(testTemplate, vars, SimpleTemplate.KEEP_INVALID_ESCAPE_CHARS
-                                                               | SimpleTemplate.KEEP_ALL_ESCAPE_CHARS));
+        assertEquals(expectKeepEscapeChars, render(testTemplate, vars, SimpleTemplate.ESC_KEEP));
 
-        // NO_ESCAPE_HANDLING overrides any other flag
-        assertEquals(expectNoEscapeHandling, render(testTemplate, vars, SimpleTemplate.NO_ESCAPE_HANDLING
-                                                               | SimpleTemplate.KEEP_INVALID_ESCAPE_CHARS
-                                                               | SimpleTemplate.KEEP_ALL_ESCAPE_CHARS));
+        assertEquals(expectKeepInvalidEscapeChars, render(testTemplate, vars, SimpleTemplate.ESC_KEEP_INVALID));
         
-        assertEquals(expectNoEscapeHandling, render(testTemplate, vars, SimpleTemplate.NO_ESCAPE_HANDLING
-                                                               | SimpleTemplate.KEEP_ALL_ESCAPE_CHARS));
-        
-        assertEquals(expectNoEscapeHandling, render(testTemplate, vars, SimpleTemplate.NO_ESCAPE_HANDLING
-                                                               | SimpleTemplate.KEEP_INVALID_ESCAPE_CHARS));
+        // ESC_KEEP overrides ESC_KEEP_INVALID
+        assertEquals(expectKeepEscapeChars, render(testTemplate, vars, SimpleTemplate.ESC_KEEP_INVALID
+                                                               | SimpleTemplate.ESC_KEEP));
+
+        // ESC_KEEP_INVALID overrides ESC_UNESCAPE
+        assertEquals(expectKeepInvalidEscapeChars, render(testTemplate, vars, SimpleTemplate.ESC_UNESCAPE
+                                                                             | SimpleTemplate.ESC_KEEP_INVALID));
+
+        // ESC_KEEP overrides both ESC_KEEP_INVALID and ESC_UNESCAPE
+        assertEquals(expectKeepEscapeChars, render(testTemplate, vars, SimpleTemplate.ESC_KEEP_INVALID
+                                                               | SimpleTemplate.ESC_UNESCAPE
+                                                               | SimpleTemplate.ESC_KEEP));
     }
     
     @Test
     public void testNoEscapeHandlingQueryExpression() {
-        Map<String,String> vars = new HashMap<String,String>();
+        final Map<String,String> vars = new HashMap<String,String>();
         vars.put("currentFolder", "/query-tests/a\\ folder\\ with\\ spaces");
         
         String testTemplate = "(uri = {$currentFolder}* AND type IN file) OR uri = /query-tests/a\\ folder\\ with\\ spaces";
         
-        assertEquals("(uri = /query-tests/a\\ folder\\ with\\ spaces* AND type IN file) OR uri = /query-tests/a\\ folder\\ with\\ spaces",
-                render(testTemplate, vars, "{$", "}", SimpleTemplate.NO_ESCAPE_HANDLING));
+        String expect = "(uri = /query-tests/a\\ folder\\ with\\ spaces* AND type IN file) OR uri = /query-tests/a\\ folder\\ with\\ spaces";
+        
+        assertEquals(expect,
+                render(testTemplate, vars, "{$", "}", SimpleTemplate.ESC_NO_HANDLING));
     }
 
-    private String render(String template, Map<String, String> vars) {
-        return render(template, vars, "${", "}", 0);
+    private String renderUnescape(String template, Map<String, String> vars) {
+        return render(template, vars, "${", "}", SimpleTemplate.ESC_UNESCAPE);
+    }
+    
+    private String renderUnescape(String template, final Map<String, String> vars, 
+                          String delimPrefix, String delimSuffix) {
+        return render(template, vars, delimPrefix, delimSuffix, SimpleTemplate.ESC_UNESCAPE);
     }
     
     private String render(String template, Map<String, String> vars, int flags) {
         return render(template, vars, "${", "}", flags);
     }
     
-    private String render(String template, final Map<String, String> vars, 
-                          String delimPrefix, String delimSuffix) {
-        return render(template, vars, delimPrefix, delimSuffix, 0);
-    }
     private String render(String template, final Map<String, String> vars, 
                           String delimPrefix, String delimSuffix, int flags) {
         final StringBuilder result = new StringBuilder();

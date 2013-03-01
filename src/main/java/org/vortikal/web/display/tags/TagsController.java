@@ -95,6 +95,7 @@ public class TagsController implements Controller {
         // Add scope up url
         Link scopeUpLink = tagsHelper.getScopeUpUrl(request, resource, model, tag, resourceTypes, displayScope, true);
         model.put(TagsHelper.SCOPE_UP_MODEL_KEY, scopeUpLink);
+        model.put("requestURL", requestContext.getRequestURL());
 
         return new ModelAndView(viewName, model);
     }

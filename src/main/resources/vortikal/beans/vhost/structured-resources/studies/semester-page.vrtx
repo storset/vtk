@@ -277,16 +277,14 @@ resourcetype semester-page {
                 <a href="https://fronter.uio.no/" class="button"><span>[localized 'log-into-fronter']</span></a>
               </div>
             [endif]
-            [if ((messages-placement = null || (messages-placement != null && messages-placement = "auto")) && resourceLinkCount < 5) || (messages-placement != null && messages-placement = "middle")]
-              [if messagelisting != null]
-                <div class="vrtx-frontpage-box white-box">
-                  [if max-number-of-messages != null && max-number-of-messages != ""]
-                    [call "include:messages" {"uri" : messagelisting-uri, "max-number-of-messages" : max-number-of-messages}]
-                  [else]
-                    [call "include:messages" {"uri" : messagelisting-uri, "max-number-of-messages" : "3"}]
-                  [endif]
-                </div>
-              [endif]
+            [if messagelisting != null && (((messages-placement = null || (messages-placement != null && messages-placement = "auto")) && resourceLinkCount < 5) || (messages-placement != null && messages-placement = "middle"))]
+              <div class="vrtx-frontpage-box white-box">
+                [if max-number-of-messages != null && max-number-of-messages != ""]
+                  [call "include:messages" {"uri" : messagelisting-uri, "max-number-of-messages" : max-number-of-messages}]
+                [else]
+                  [call "include:messages" {"uri" : messagelisting-uri, "max-number-of-messages" : "3"}]
+                [endif]
+              </div>
             [else]
               [if ((link-box-one-title != null && link-box-one-title != "") || link-box-one-links != null) ||
                   ((link-box-two-title != null && link-box-two-title != "") || link-box-two-links != null) ||
@@ -319,17 +317,15 @@ resourcetype semester-page {
               [call "include:shared-text" {"propName":"studinfo-kontakt"}]
             </div>
             [call "resource:teacher-list"{"cssClass":"vrtx-distach-bottom"}]
-            [if ((messages-placement = null || (messages-placement != null && messages-placement = "auto")) && resourceLinkCount > 4) || (messages-placement != null && messages-placement = "right")]
-              [if messagelisting != null]
-                <div class="vrtx-frontpage-box white-box">
-                  [if max-number-of-messages != null && max-number-of-messages != ""]
-                    [call "include:messages" {"uri" : messagelisting-uri, "compact-view" : "true", "max-number-of-messages" : max-number-of-messages}]
-                  [else]
-                    [call "include:messages" {"uri" : messagelisting-uri, "compact-view" : "true", "max-number-of-messages" : "3"}]
-                  [endif]
-                </div>
-              [endif]
-            [else]
+            [if messagelisting != null && (((messages-placement = null || (messages-placement != null && messages-placement = "auto")) && resourceLinkCount > 4) || (messages-placement != null && messages-placement = "right"))]
+              <div class="vrtx-frontpage-box white-box">
+                [if max-number-of-messages != null && max-number-of-messages != ""]
+                  [call "include:messages" {"uri" : messagelisting-uri, "compact-view" : "true", "max-number-of-messages" : max-number-of-messages}]
+                [else]
+                  [call "include:messages" {"uri" : messagelisting-uri, "compact-view" : "true", "max-number-of-messages" : "3"}]
+                [endif]
+              </div>
+            [elseif messagelisting != null]
               [if ((link-box-one-title != null && link-box-one-title != "") || link-box-one-links != null) ||
                   ((link-box-two-title != null && link-box-two-title != "") || link-box-two-links != null) ||
                   ((link-box-three-title != null && link-box-three-title != "") || link-box-three-links != null) ||

@@ -151,7 +151,7 @@ public class DynamicDecoratorTemplateFactory implements TemplateFactory, Initial
             return this.repository.getId();
         }        
     }
-    
+
     @SuppressWarnings("unused")
     private static class RequestURLFunction extends Function {
         public RequestURLFunction(Symbol symbol) {
@@ -259,7 +259,7 @@ public class DynamicDecoratorTemplateFactory implements TemplateFactory, Initial
         }
      }
     
-    
+    // XXX: Should use same code as ResourcePropHandler.java(?)
     private static class ResourcePropHandler extends Function {
 
         public ResourcePropHandler(Symbol symbol) {
@@ -296,6 +296,9 @@ public class DynamicDecoratorTemplateFactory implements TemplateFactory, Initial
             String propName = arg2.toString();
             if ("uri".equals(propName)) {
                 return resource.getURI();
+            }
+            if ("resourceType".equals(propName)) {
+                return resource.getResourceType();
             }
 
             Property property = resource.getProperty(Namespace.DEFAULT_NAMESPACE, propName);

@@ -42,6 +42,7 @@
       <map>
         <entry key="article-listing" value="${override.listing.prefix}article" />
         <entry key="event-listing" value="${override.listing.prefix}event" />
+        <entry key="course-description-listing" value="course-description" />
       </map>
     </property>
     <property name="aggregationResolver" ref="aggregationResolver" />

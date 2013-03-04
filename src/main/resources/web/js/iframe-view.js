@@ -1,4 +1,4 @@
-/*  
+/*
  *  Iframe resizing for cross domain (view except media files)
  *
  *  Based loosely on code found on the web page "http://sonspring.com/journal/jquery-iframe-sizing" which
@@ -45,10 +45,11 @@ if (window != top) { // Obs IE bug: http://stackoverflow.com/questions/4850978/i
 (function () {
   var waitMaxForPreviewLoaded = 10000, // 10s
     waitMaxForPreviewLoadedTimer,
-    sentPreviewLoaded = false;
+    sentPreviewLoaded = false,
+    previewViewIframe;
   
   $(document).ready(function () {
-    var previewViewIframe = $("iframe#previewViewIframe");
+    previewViewIframe = $("iframe#previewViewIframe");
     if (previewViewIframe.length) {
       waitMaxForPreviewLoadedTimer = setTimeout(function () {
         sendPreviewLoaded();

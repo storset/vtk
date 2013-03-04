@@ -313,7 +313,10 @@
   <bean id="displayUnpublishedMessage.view" parent="freemarkerView">
     <property name="url" value="pages/unpublished-view.ftl" />
     <property name="referenceDataProviders">
-      <ref bean="resourceContextProvider" />
+      <list>
+        <ref bean="resourceContextProvider" />
+        <ref bean="manageLinkProvider" />
+      </list>
     </property>
   </bean>
 

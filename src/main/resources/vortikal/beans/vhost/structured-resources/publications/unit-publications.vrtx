@@ -34,18 +34,6 @@ resourcetype unit-publications {
       [endif]
       ##
     }
- 
-    related-content {
-      ##
-      [def document structured-document()]
-      [def related-content document.properties.related-content]
-      [if related-content != null]
-        <div id="vrtx-related-content">
-          [val related-content # unescaped]
-        </div>
-      [endif]
-      ##
-    }
 
     publications {
       ##
@@ -57,6 +45,38 @@ resourcetype unit-publications {
         [def selectedPublications document.properties.selectedPublications]
         [if (selectedPublications != null && selectedPublications != "")]
           [val selectedPublications # unescaped]
+        [endif]
+      [endif]
+      ##
+    }
+    
+    related-content-in-additional-column {
+      ##
+      [def document structured-document()]
+      [def theshowAdditionalContent document.properties.showAdditionalContent]
+      [def theRelated-content document.properties.related-content]
+      [if (theshowAdditionalContent = "true") || (theshowAdditionalContent = null)]
+        [if theRelated-content != null]
+          <div id="vrtx-additional-content">
+            <div id="vrtx-related-content">
+              [val theRelated-content # unescaped]
+            </div>
+          </div>
+        [endif]
+      [endif]
+      ##
+    }
+    
+    related-content-in-main-column {
+      ##
+      [def document structured-document()]
+      [def theshowAdditionalContent document.properties.showAdditionalContent]
+      [def theRelated-content document.properties.related-content]
+      [if (theshowAdditionalContent = "false")]
+        [if theRelated-content != null]
+          <div id="vrtx-related-content">
+            [val theRelated-content # unescaped]
+          </div>
         [endif]
       [endif]
       ##
@@ -73,14 +93,19 @@ resourcetype unit-publications {
       </head>
       <body id="vrtx-organizational-unit-publications">
         <div id="vrtx-content">
-          <div id="vrtx-main-content">
+        [def document structured-document()]
+        [def theShowAdditionalContent document.properties.showAdditionalContent]
+        [if theShowAdditionalContent = "true" || theShowAdditionalContent = null]
+          <div id="vrtx-main-content" class="vrtx-hide-additional-content-false">
+        [else]
+          <div id="vrtx-main-content" class="vrtx-hide-additional-content-true">
+        [endif]
             <h1>[call "comp:title"]</h1>
             [call "comp:introduction"]
             [call "comp:publications"]
+            [call "comp:related-content-in-main-column"]
           </div>
-          <div id="vrtx-additional-content">
-            [call "comp:related-content"]
-          </div>
+          [call "comp:related-content-in-additional-column"]
         </div>
       </body>
     </html>

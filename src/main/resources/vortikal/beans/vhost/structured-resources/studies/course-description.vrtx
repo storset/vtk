@@ -63,7 +63,10 @@ resourcetype course-description {
 
     other-text-field : html noextract,
 
-    studinfo-kontakt : string
+    studinfo-kontakt : string,
+
+    tittel : string,
+    title : derived (tittel) eval ("course-description"?localized) overrides title
   }
 
   edit-rules {
@@ -132,7 +135,10 @@ resourcetype course-description {
     studinfo-kontakt (class[vrtx-shared-text],
                       class[vrtx-pseudo-grouped],
                       attribute[vrtx-shared-text-path:/vrtx/fellestekst/studinfo-kontakt]),
-    studinfo-kontakt (after other-text-field)
+    studinfo-kontakt (after other-text-field),
+
+    tittel (size[1]),
+    tittel (class[ui-helper-hidden])
   }
 
   scripts {
@@ -193,9 +199,11 @@ resourcetype course-description {
           <p>[localized term] [localized 'every-other-start'] [val startyear]</p>
         [endif]
       [elseif teachingsemester != null && teachingsemester = "other"]
-        [if teachingsemester-other != null][val teachingsemester-other # unescaped][endif]
       [else]
         [if teachingsemester != null]<p>[localized teachingsemester]</p>[endif]
+      [endif]
+      [if teachingsemester-other != null]
+        [val teachingsemester-other # unescaped]
       [endif]
       <h3>[localized 'examsemester']</h3>
       [if examsemester != null && examsemester = "particular-semester"]
@@ -839,7 +847,7 @@ resourcetype course-description {
     overlapping-courses-text-field : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
     overlapping-courses-group : (en : "Overlapping courses", no : "Overlappende emner", nn : "Overlappande emne"),
     fs-course-code : (en : "Course code", no : "Emnekode", nn : "Emnekode"),
-    points-for : (en : "credits overlap with", no : "poeng overlapp mot", nn : "poeng overlapp mot"),
+    points-for : (en : "credits overlap with", no : "studiepoeng overlapp mot", nn : "studiepoeng overlapp mot"),
     and : (en : "and", no : "og", nn : "og"),
 
     teaching-text-field : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
@@ -878,6 +886,8 @@ resourcetype course-description {
 
     other-text-field : (en : "Other", no : "Annet", nn : "Anna"),
 
-    studinfo-kontakt : (en : "Contact", no : "Kontakt", nn : "Kontakt")
+    studinfo-kontakt : (en : "Contact", no : "Kontakt", nn : "Kontakt"),
+
+    course-description : (en : "Course description", no : "Emnebeskrivelse", nn : "Emnebeskrivelse")
   }
 }

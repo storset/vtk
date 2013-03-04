@@ -23,7 +23,10 @@ resourcetype semester-page {
     link-box-six-links : json (linktitle : string, link : resource_ref) multiple,
     teachersUsernames : string multiple,
     teachers : json (teacherName : string, teacherUrl : string) multiple,
-    studinfo-kontakt : string
+    studinfo-kontakt : string,
+
+    tittel : string,
+    title : derived (tittel) eval ("semester-page"?localized) overrides title
   }
 
   edit-rules {
@@ -39,7 +42,10 @@ resourcetype semester-page {
     group link-box-six (link-box-six-title, link-box-six-links),
     studinfo-kontakt (class[vrtx-shared-text],
                       attribute[vrtx-shared-text-path:/vrtx/fellestekst/studinfo-kontakt]),
-    studinfo-kontakt (after link-box-six)
+    studinfo-kontakt (after link-box-six),
+
+    tittel (size[1]),
+    tittel (class[ui-helper-hidden])
   }
 
   scripts {
@@ -277,16 +283,14 @@ resourcetype semester-page {
                 <a href="https://fronter.uio.no/" class="button"><span>[localized 'log-into-fronter']</span></a>
               </div>
             [endif]
-            [if ((messages-placement = null || (messages-placement != null && messages-placement = "auto")) && resourceLinkCount < 5) || (messages-placement != null && messages-placement = "middle")]
-              [if messagelisting != null]
-                <div class="vrtx-frontpage-box white-box">
-                  [if max-number-of-messages != null && max-number-of-messages != ""]
-                    [call "include:messages" {"uri" : messagelisting-uri, "max-number-of-messages" : max-number-of-messages}]
-                  [else]
-                    [call "include:messages" {"uri" : messagelisting-uri, "max-number-of-messages" : "3"}]
-                  [endif]
-                </div>
-              [endif]
+            [if messagelisting != null && (((messages-placement = null || (messages-placement != null && messages-placement = "auto")) && resourceLinkCount < 5) || (messages-placement != null && messages-placement = "middle"))]
+              <div class="vrtx-frontpage-box white-box">
+                [if max-number-of-messages != null && max-number-of-messages != ""]
+                  [call "include:messages" {"uri" : messagelisting-uri, "max-number-of-messages" : max-number-of-messages}]
+                [else]
+                  [call "include:messages" {"uri" : messagelisting-uri, "max-number-of-messages" : "3"}]
+                [endif]
+              </div>
             [else]
               [if ((link-box-one-title != null && link-box-one-title != "") || link-box-one-links != null) ||
                   ((link-box-two-title != null && link-box-two-title != "") || link-box-two-links != null) ||
@@ -319,17 +323,15 @@ resourcetype semester-page {
               [call "include:shared-text" {"propName":"studinfo-kontakt"}]
             </div>
             [call "resource:teacher-list"{"cssClass":"vrtx-distach-bottom"}]
-            [if ((messages-placement = null || (messages-placement != null && messages-placement = "auto")) && resourceLinkCount > 4) || (messages-placement != null && messages-placement = "right")]
-              [if messagelisting != null]
-                <div class="vrtx-frontpage-box white-box">
-                  [if max-number-of-messages != null && max-number-of-messages != ""]
-                    [call "include:messages" {"uri" : messagelisting-uri, "compact-view" : "true", "max-number-of-messages" : max-number-of-messages}]
-                  [else]
-                    [call "include:messages" {"uri" : messagelisting-uri, "compact-view" : "true", "max-number-of-messages" : "3"}]
-                  [endif]
-                </div>
-              [endif]
-            [else]
+            [if messagelisting != null && (((messages-placement = null || (messages-placement != null && messages-placement = "auto")) && resourceLinkCount > 4) || (messages-placement != null && messages-placement = "right"))]
+              <div class="vrtx-frontpage-box white-box">
+                [if max-number-of-messages != null && max-number-of-messages != ""]
+                  [call "include:messages" {"uri" : messagelisting-uri, "compact-view" : "true", "max-number-of-messages" : max-number-of-messages}]
+                [else]
+                  [call "include:messages" {"uri" : messagelisting-uri, "compact-view" : "true", "max-number-of-messages" : "3"}]
+                [endif]
+              </div>
+            [elseif messagelisting != null]
               [if ((link-box-one-title != null && link-box-one-title != "") || link-box-one-links != null) ||
                   ((link-box-two-title != null && link-box-two-title != "") || link-box-two-links != null) ||
                   ((link-box-three-title != null && link-box-three-title != "") || link-box-three-links != null) ||
@@ -417,6 +419,8 @@ resourcetype semester-page {
     teachersUsernames : (en : "Teachers (enter username)", no : "Faglærere (fyll inn brukernavn)", nn : "Lærarar (fyll inn brukernamn)"),
     teachers : (en : "Other teachers", no : "Andre lærere", nn : "Andre lærarar"),
     teacherName : (en : "Name", no : "Navn", nn : "Namn"),
-    teacherUrl : (en : "Webaddress", no : "Nettadresse", nn : "Nettadresse")
+    teacherUrl : (en : "Webaddress", no : "Nettadresse", nn : "Nettadresse"),
+
+    semester-page : (en : "Semester page", no : "Semesterside", nn : "Semesterside")
   }
 }

@@ -24,14 +24,14 @@
       </#list>
     </#if>
   
-    <title>${collection.title?html}</title>
+    <title>${collection.title?html}<#if conf?exists && conf.currentUrl?exists> (${vrtx.getMsg("listing-filters.title.discontinued")})</#if></title>
   
     <#if page?has_content>
       <#if "${page}" != "1"><meta name="robots" content="noindex, follow"/></#if>
     </#if>
   </head>
   <body id="vrtx-${collection.resourceType}">
-    <h1>${collection.title?html}</h1>
+    <h1>${collection.title?html}<#if conf?exists && conf.currentUrl?exists> (${vrtx.getMsg("listing-filters.title.discontinued")})</#if></h1>
 
     <#if filters?exists>
       <div id="vrtx-listing-filters" class="vrtx-listing-filters-${filters?size}-col">
@@ -95,9 +95,13 @@
       </#if>
     </#if>
     
-    <#if conf?exists && collection.resourceType = 'course-group-listing'>
+    <#if conf?exists>
       <div id="vrtx-listing-filter-status">
-        <@courseGroup.displayStatusLink conf />
+        <#if conf.discontinuedUrl?exists>
+          <a href="${conf.discontinuedUrl}">${vrtx.getMsg("listing-filters.status.filter.${collection.resourceType}.discontinued")}</a>
+        <#elseif conf.currentUrl?exists>
+          <a href="${conf.currentUrl}">${vrtx.getMsg("listing-filters.status.filter.${collection.resourceType}.current")}</a>
+        </#if>
       </div>
     </#if>
 

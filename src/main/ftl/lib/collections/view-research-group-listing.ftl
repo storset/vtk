@@ -19,7 +19,7 @@
 <#macro displayResearchGroups researchGroupListing>
   <#local researchGroups=researchGroupListing.files />
   <#if (researchGroups?size > 0) >
-    <div id="${researchGroupListing.name}" class="vrtx-research-groups ${researchGroupListing.name}">
+    <div id="${researchGroupListing.name}" class="vrtx-resources vrtx-research-groups ${researchGroupListing.name}">
       <#if researchGroupListing.title?exists && researchGroupListing.offset == 0>
         <h2>${researchGroupListing.title?html}</h2>
       </#if>
@@ -35,7 +35,7 @@
           <@vrtx.flattenHtml value=caption escape=true />
         </#local>
       
-        <div class="vrtx-research-group">
+        <div class="vrtx-resource vrtx-research-group">
           <#if introImg?has_content >
             <#local introImgURI = vrtx.propValue(researchGroup, 'picture') />
 	        <#if introImgURI?exists>

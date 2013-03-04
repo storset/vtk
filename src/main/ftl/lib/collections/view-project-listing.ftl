@@ -32,7 +32,7 @@
 <#macro displayProjects projectListing>
   <#local projects=projectListing.files />
   <#if (projects?size > 0) >
-    <div id="${projectListing.name}" class="vrtx-projects ${projectListing.name}">
+    <div id="${projectListing.name}" class="vrtx-resources vrtx-projects ${projectListing.name}">
     <#if projectListing.title?exists && projectListing.offset == 0>
       <h2>${projectListing.title?html}</h2>
     </#if>
@@ -46,7 +46,7 @@
       <#local captionFlattened>
       <@vrtx.flattenHtml value=caption escape=true />
       </#local>
-      <div class="vrtx-project">
+      <div class="vrtx-resource vrtx-project">
         <#if introImg?has_content >
           <#local src = vrtx.propValue(project, 'picture', 'thumbnail') />
           <#local introImgURI = vrtx.propValue(project, 'picture') />

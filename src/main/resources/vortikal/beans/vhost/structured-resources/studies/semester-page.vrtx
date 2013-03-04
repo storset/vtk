@@ -23,7 +23,10 @@ resourcetype semester-page {
     link-box-six-links : json (linktitle : string, link : resource_ref) multiple,
     teachersUsernames : string multiple,
     teachers : json (teacherName : string, teacherUrl : string) multiple,
-    studinfo-kontakt : string
+    studinfo-kontakt : string,
+
+    tittel : string,
+    title : derived (tittel) eval ("semester-page"?localized) overrides title
   }
 
   edit-rules {
@@ -39,7 +42,10 @@ resourcetype semester-page {
     group link-box-six (link-box-six-title, link-box-six-links),
     studinfo-kontakt (class[vrtx-shared-text],
                       attribute[vrtx-shared-text-path:/vrtx/fellestekst/studinfo-kontakt]),
-    studinfo-kontakt (after link-box-six)
+    studinfo-kontakt (after link-box-six),
+
+    tittel (size[1]),
+    tittel (class[ui-helper-hidden])
   }
 
   scripts {
@@ -413,6 +419,8 @@ resourcetype semester-page {
     teachersUsernames : (en : "Teachers (enter username)", no : "Faglærere (fyll inn brukernavn)", nn : "Lærarar (fyll inn brukernamn)"),
     teachers : (en : "Other teachers", no : "Andre lærere", nn : "Andre lærarar"),
     teacherName : (en : "Name", no : "Navn", nn : "Namn"),
-    teacherUrl : (en : "Webaddress", no : "Nettadresse", nn : "Nettadresse")
+    teacherUrl : (en : "Webaddress", no : "Nettadresse", nn : "Nettadresse"),
+
+    semester-page : (en : "Semester page", no : "Semesterside", nn : "Semesterside")
   }
 }

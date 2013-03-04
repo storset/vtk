@@ -63,7 +63,10 @@ resourcetype course-description {
 
     other-text-field : html noextract,
 
-    studinfo-kontakt : string
+    studinfo-kontakt : string,
+
+    tittel : string,
+    title : derived (tittel) eval ("course-description"?localized) overrides title
   }
 
   edit-rules {
@@ -132,7 +135,10 @@ resourcetype course-description {
     studinfo-kontakt (class[vrtx-shared-text],
                       class[vrtx-pseudo-grouped],
                       attribute[vrtx-shared-text-path:/vrtx/fellestekst/studinfo-kontakt]),
-    studinfo-kontakt (after other-text-field)
+    studinfo-kontakt (after other-text-field),
+
+    tittel (size[1]),
+    tittel (class[ui-helper-hidden])
   }
 
   scripts {
@@ -880,6 +886,8 @@ resourcetype course-description {
 
     other-text-field : (en : "Other", no : "Annet", nn : "Anna"),
 
-    studinfo-kontakt : (en : "Contact", no : "Kontakt", nn : "Kontakt")
+    studinfo-kontakt : (en : "Contact", no : "Kontakt", nn : "Kontakt"),
+
+    course-description : (en : "Course description", no : "Emnebeskrivelse", nn : "Emnebeskrivelse")
   }
 }

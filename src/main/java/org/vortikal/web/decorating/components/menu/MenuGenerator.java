@@ -128,14 +128,15 @@ public final class MenuGenerator {
 
         Property titleProperty = resource.getProperty(this.navigationTitlePropDef);
         titleProperty = titleProperty == null ? resource.getProperty(this.titlePropDef) : titleProperty;
-        Value title = titleProperty != null ? titleProperty.getValue() : new Value(resource.getName(),
+        Value titleValue = titleProperty != null ? titleProperty.getValue() : new Value(resource.getName(),
                 PropertyType.Type.STRING);
 
         MenuItem<PropertySet> item = new MenuItem<PropertySet>(resource);
         item.setUrl(url);
 
-        item.setTitle(titleProperty.getFormattedValue());
-        item.setLabel(title.getStringValue());
+        String itemTitle = titleProperty != null ? titleProperty.getFormattedValue() : titleValue.getStringValue();
+        item.setTitle(itemTitle);
+        item.setLabel(titleValue.getStringValue());
         item.setActive(false);
 
         List<PropertySet> children = childMap.get(resource.getURI());

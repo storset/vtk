@@ -1039,6 +1039,7 @@ VrtxAdmin.prototype.scrollBreadcrumbs = function scrollBreadcrumbs(dir) {
         vrtxAdmin.scrollBreadcrumbs("right");
         e.preventDefault();
       });      
+      this.scrollBreadcrumbs("right");
       break;
     case "right": 
       var width = $("#vrtx-breadcrumb").width();

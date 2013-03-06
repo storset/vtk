@@ -56,27 +56,35 @@ public class PersonPressPhotoLinkComponent extends ViewRenderingDecoratorCompone
         Repository repository = requestContext.getRepository();
         Resource currentDocument = repository.retrieve(token, requestContext.getResourceURI(), true);
 
-        Property picture = currentDocument.getProperty(Namespace.STRUCTURED_RESOURCE_NAMESPACE,
+        if (!currentDocument.getResourceType().equals("person")) {
+            return;
+        }
+
+        Property pictureProp = currentDocument.getProperty(Namespace.STRUCTURED_RESOURCE_NAMESPACE,
                 PRESS_PHOTO_PROROPERTY_NAME);
-        
+
+        if (pictureProp == null) {
+            return;
+        }
+
         Path imageUri = null;
         Resource pictureResource = null;
         try {
-            if (picture.getStringValue().startsWith("/")) {
-                imageUri = Path.fromString(picture.getStringValue());
+            if (pictureProp.getStringValue().startsWith("/")) {
+                imageUri = Path.fromString(pictureProp.getStringValue());
             } else {
-                imageUri = requestContext.getCurrentCollection().expand(picture.getStringValue());
+                imageUri = requestContext.getCurrentCollection().expand(pictureProp.getStringValue());
             }
             pictureResource = repository.retrieve(token, imageUri, true);
         } catch (Exception e) {
-            model.put(PRESS_PHOTO_PROROPERTY_NAME, picture.getStringValue());
+            model.put(PRESS_PHOTO_PROROPERTY_NAME, pictureProp.getStringValue());
             return;
         }
 
         if (pictureResource != null && "image".equals(pictureResource.getResourceType())) {
             model.put(PRESS_PHOTO_PROROPERTY_NAME, getViewAsWebpage().constructLink(imageUri));
         } else {
-            model.put(PRESS_PHOTO_PROROPERTY_NAME, picture.getStringValue());
+            model.put(PRESS_PHOTO_PROROPERTY_NAME, pictureProp.getStringValue());
         }
 
     }

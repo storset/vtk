@@ -201,6 +201,8 @@ a:hover {
   height: auto;
 }
 
+/* Scrollable */
+
 .js #app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb-outer,
 .js #app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb-inner {
   height: 34px;
@@ -220,6 +222,7 @@ a:hover {
   float: left;
 }
 
+/* PE CSS3 transition */
 .js #app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb-inner.animate {
   -moz-transition: left 300ms ease;
   -webkit-transition: left 300ms ease;
@@ -281,13 +284,13 @@ a:hover {
 
 .js #navigate-crumbs-left span.navigate-crumbs-dividor {
   background: url(images/breadcrumbs-left-dividor.png) no-repeat center center;
-  right: -30px;
+  right: -31px;
   border-left: 1px solid #DAD9D9;
 }
 
 .js #navigate-crumbs-right span.navigate-crumbs-dividor {
   background: url(images/breadcrumbs-right-dividor.png) no-repeat center center;
-  left: -30px;
+  left: -31px;
   border-right: 1px solid #DAD9D9;
 }
 
@@ -308,6 +311,8 @@ a:hover {
   top: 11px;
   background-image: url(images/breadcrumbs-right-nav-rollover.png);
 }
+
+/* ^ Scrollable */
 
 #app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb span.vrtx-breadcrumb-level,
 #app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb span.vrtx-breadcrumb-level-no-url {

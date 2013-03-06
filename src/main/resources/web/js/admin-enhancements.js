@@ -1021,6 +1021,8 @@ VrtxAdmin.prototype.adjustResourceTitle = function adjustResourceTitle() {
  * @this {VrtxAdmin}
  */
 VrtxAdmin.prototype.scrollBreadcrumbs = function scrollBreadcrumbs(dir) {
+  var vrtxAdm = this;
+  
   switch (dir) {
     case "init":
       var crumbs = $(".vrtx-breadcrumb-level"), i = crumbs.length, crumbsWidth = 0;
@@ -1028,9 +1030,9 @@ VrtxAdmin.prototype.scrollBreadcrumbs = function scrollBreadcrumbs(dir) {
         crumbsWidth += $(crumbs[i]).outerWidth(true);
       }
       crumbs.wrapAll("<div id='vrtx-breadcrumb-inner' style='width: " + crumbsWidth + "px' />");
-      this.crumbsWidth = crumbsWidth;
-      this.crumbsInner = $("#vrtx-breadcrumb-inner");
-      this.crumbsInner.wrap("<div id='vrtx-breadcrumb-outer' />");
+      vrtxAdm.crumbsWidth = crumbsWidth;
+      vrtxAdm.crumbsInner = $("#vrtx-breadcrumb-inner");
+      vrtxAdm.crumbsInner.wrap("<div id='vrtx-breadcrumb-outer' />");
       
       var navHtml = "<span id='navigate-crumbs-left-coverup' />" +
                     "<a id='navigate-crumbs-left' class='navigate-crumbs'><span class='navigate-crumbs-icon'></span><span class='navigate-crumbs-dividor'></span></a>" +
@@ -1038,9 +1040,9 @@ VrtxAdmin.prototype.scrollBreadcrumbs = function scrollBreadcrumbs(dir) {
       
       $("#vrtx-breadcrumb").append(navHtml);
       
-      this.crumbsLeft = $("#navigate-crumbs-left");
-      this.crumbsLeftCoverUp = $("#navigate-crumbs-left-coverup");
-      this.crumbsRight = $("#navigate-crumbs-right"); 
+      vrtxAdm.crumbsLeft = $("#navigate-crumbs-left");
+      vrtxAdm.crumbsLeftCoverUp = $("#navigate-crumbs-left-coverup");
+      vrtxAdm.crumbsRight = $("#navigate-crumbs-right"); 
       $(document).on("click", "#navigate-crumbs-left", function(e) {
         vrtxAdmin.scrollBreadcrumbs("left");
         e.stopPropagation();
@@ -1050,37 +1052,50 @@ VrtxAdmin.prototype.scrollBreadcrumbs = function scrollBreadcrumbs(dir) {
         vrtxAdmin.scrollBreadcrumbs("right");
         e.stopPropagation();
         e.preventDefault();
-      });      
-      this.scrollBreadcrumbs("right");
-      this.crumbsInner.addClass("animate");
+      }); 
+      
+      $(document).on("mouseover mouseout", ".vrtx-breadcrumb-level", function(e) {
+        if(e.type == "mouseover") {
+          
+        } else {
+          
+        }
+        e.stopPropagation();
+        e.preventDefault();
+      });   
+      
+      vrtxAdm.scrollBreadcrumbs("right");
+      vrtxAdm.crumbsInner.addClass("animate");
       break;
     case "right": 
+      if(!vrtxAdm.crumbsWidth) return;
+      
       var width = $("#vrtx-breadcrumb").width();
-      var diff = this.crumbsWidth - width;
+      var diff = vrtxAdm.crumbsWidth - width;
       if(diff > 0) {
-        this.crumbsInner.css("left", -diff + "px");
-        this.crumbsRight.filter(":visible").hide();
-        this.crumbsLeftCoverUp.filter(":hidden").show();
-        this.crumbsLeft.filter(":hidden").show();
+        vrtxAdm.crumbsInner.css("left", -diff + "px");
+        vrtxAdm.crumbsRight.filter(":visible").hide();
+        vrtxAdm.crumbsLeftCoverUp.filter(":hidden").show();
+        vrtxAdm.crumbsLeft.filter(":hidden").show();
       } else {
-        this.crumbsInner.css("left", "0px");
-        this.crumbsRight.filter(":visible").hide();
-        this.crumbsLeftCoverUp.filter(":visible").hide();
-        this.crumbsLeft.filter(":visible").hide();
+        vrtxAdm.crumbsInner.css("left", "0px");
+        vrtxAdm.crumbsRight.filter(":visible").hide();
+        vrtxAdm.crumbsLeftCoverUp.filter(":visible").hide();
+        vrtxAdm.crumbsLeft.filter(":visible").hide();
       }
       break;
     case "left":
       var width = $("#vrtx-breadcrumb").width();
-      var diff = this.crumbsWidth - width;
-      this.crumbsInner.css("left", "0px");
+      var diff = vrtxAdm.crumbsWidth - width;
+      vrtxAdm.crumbsInner.css("left", "0px");
       if(diff > 0) {
-        this.crumbsRight.filter(":hidden").show();
-        this.crumbsLeftCoverUp.filter(":visible").hide();
-        this.crumbsLeft.filter(":visible").hide();
+        vrtxAdm.crumbsRight.filter(":hidden").show();
+        vrtxAdm.crumbsLeftCoverUp.filter(":visible").hide();
+        vrtxAdm.crumbsLeft.filter(":visible").hide();
       } else {
-        this.crumbsRight.filter(":visible").hide();
-        this.crumbsLeftCoverUp.filter(":visible").hide();
-        this.crumbsLeft.filter(":visible").hide();
+        vrtxAdm.crumbsRight.filter(":visible").hide();
+        vrtxAdm.crumbsLeftCoverUp.filter(":visible").hide();
+        vrtxAdm.crumbsLeft.filter(":visible").hide();
       }
       break;
     default:

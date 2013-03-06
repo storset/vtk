@@ -216,15 +216,14 @@ a:hover {
   left: 0px;
   top: 0px;
   float: left;
+}
+
+.js #app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb-inner.animate {
   -moz-transition: left 300ms ease;
   -webkit-transition: left 300ms ease;
   -o-transition: left 300ms ease;
   -ms-transition: left 300ms ease;
   transition: left 300ms ease;
-}
-
-.navigate-crumbs {
-  display: none;
 }
 
 .js .navigate-crumbs {

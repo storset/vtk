@@ -1029,8 +1029,11 @@ VrtxAdmin.prototype.scrollBreadcrumbs = function scrollBreadcrumbs(dir) {
       }
       crumbs.wrapAll("<div id='vrtx-breadcrumb-inner' style='width: " + crumbsWidth + "px' />");
       this.crumbsWidth = crumbsWidth;
-      $("#vrtx-breadcrumb-inner").wrap("<div id='vrtx-breadcrumb-outer' />");
+      this.crumbsInner = $("#vrtx-breadcrumb-inner");
+      this.crumbsInner.wrap("<div id='vrtx-breadcrumb-outer' />");
       $("#vrtx-breadcrumb").append("<a id='navigate-crumbs-left' class='navigate-crumbs' /><a id='navigate-crumbs-right' class='navigate-crumbs' />");
+      this.crumbsLeft = $("#navigate-crumbs-left");
+      this.crumbsRight = $("#navigate-crumbs-right"); 
       $(document).on("click", "#navigate-crumbs-left", function(e) {
         vrtxAdmin.scrollBreadcrumbs("left");
         e.stopPropagation();
@@ -1042,31 +1045,31 @@ VrtxAdmin.prototype.scrollBreadcrumbs = function scrollBreadcrumbs(dir) {
         e.preventDefault();
       });      
       this.scrollBreadcrumbs("right");
+      this.crumbsInner.addClass("animate");
       break;
     case "right": 
       var width = $("#vrtx-breadcrumb").width();
       var diff = this.crumbsWidth - width;
       if(diff > 0) {
-        $("#vrtx-breadcrumb-inner").css("left", -diff + "px");
-        $("#navigate-crumbs-right:visible").hide();
-        $("#navigate-crumbs-left:hidden").show();
+        this.crumbsInner.css("left", -diff + "px");
+        this.crumbsRight.filter(":visible").hide();
+        this.crumbsLeft.filter(":hidden").show();
       } else {
-        $("#vrtx-breadcrumb-inner").css("left", "0px");
-        $("#navigate-crumbs-right:visible").hide();
-        $("#navigate-crumbs-left:visible").hide();
+        this.crumbsInner.css("left", "0px");
+        this.crumbsRight.filter(":visible").hide();
+        this.crumbsLeft.filter(":visible").hide();
       }
       break;
     case "left":
       var width = $("#vrtx-breadcrumb").width();
       var diff = this.crumbsWidth - width;
+      this.crumbsInner.css("left", "0px");
       if(diff > 0) {
-        $("#vrtx-breadcrumb-inner").css("left", "0px");
-        $("#navigate-crumbs-right:hidden").show();
-        $("#navigate-crumbs-left:visible").hide();
+        this.crumbsRight.filter(":hidden").show();
+        this.crumbsLeft.filter(":visible").hide();
       } else {
-        $("#vrtx-breadcrumb-inner").css("left", "0px");
-        $("#navigate-crumbs-right:visible").hide();
-        $("#navigate-crumbs-left:visible").hide();
+        this.crumbsRight.filter(":visible").hide();
+        this.crumbsLeft.filter(":visible").hide();
       }
       break;
     default:

@@ -1053,17 +1053,18 @@ VrtxAdmin.prototype.scrollBreadcrumbs = function scrollBreadcrumbs(dir) {
         e.stopPropagation();
         e.preventDefault();
       }); 
-      
+      /* TODO: replace with stacking of blue/hovered element above nav */
       $(document).on("mouseover mouseout", ".vrtx-breadcrumb-level", function(e) {
-        if(e.type == "mouseover") {
-          
-        } else {
-          
+        if(!$(this).hasClass("vrtx-breadcrumb-active")) {
+          if(vrtxAdm.crumbsState == "left") {
+            vrtxAdm.crumbsRight.toggle();
+          } else if(vrtxAdm.crumbsState == "right") {
+            vrtxAdm.crumbsLeft.toggle();
+          }
         }
         e.stopPropagation();
         e.preventDefault();
-      });   
-      
+      });     
       vrtxAdm.scrollBreadcrumbs("right");
       vrtxAdm.crumbsInner.addClass("animate");
       break;
@@ -1073,11 +1074,13 @@ VrtxAdmin.prototype.scrollBreadcrumbs = function scrollBreadcrumbs(dir) {
       var width = $("#vrtx-breadcrumb").width();
       var diff = vrtxAdm.crumbsWidth - width;
       if(diff > 0) {
+        vrtxAdm.crumbsState = "right";
         vrtxAdm.crumbsInner.css("left", -diff + "px");
         vrtxAdm.crumbsRight.filter(":visible").hide();
         vrtxAdm.crumbsLeftCoverUp.filter(":hidden").show();
         vrtxAdm.crumbsLeft.filter(":hidden").show();
       } else {
+        vrtxAdm.crumbsState = "off";
         vrtxAdm.crumbsInner.css("left", "0px");
         vrtxAdm.crumbsRight.filter(":visible").hide();
         vrtxAdm.crumbsLeftCoverUp.filter(":visible").hide();
@@ -1089,10 +1092,12 @@ VrtxAdmin.prototype.scrollBreadcrumbs = function scrollBreadcrumbs(dir) {
       var diff = vrtxAdm.crumbsWidth - width;
       vrtxAdm.crumbsInner.css("left", "0px");
       if(diff > 0) {
+        vrtxAdm.crumbsState = "left";
         vrtxAdm.crumbsRight.filter(":hidden").show();
         vrtxAdm.crumbsLeftCoverUp.filter(":visible").hide();
         vrtxAdm.crumbsLeft.filter(":visible").hide();
       } else {
+        vrtxAdm.crumbsState = "off";
         vrtxAdm.crumbsRight.filter(":visible").hide();
         vrtxAdm.crumbsLeftCoverUp.filter(":visible").hide();
         vrtxAdm.crumbsLeft.filter(":visible").hide();

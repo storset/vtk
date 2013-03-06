@@ -232,7 +232,7 @@ a:hover {
   position: absolute;
   top: 0px;
   display: block;
-  height: 34px;
+  height: 33px;
   width: 40px;
   background: url(images/app-head-breadcrumb-bg.png) repeat left top;
 }
@@ -241,6 +241,7 @@ a:hover {
   cursor: pointer;
   background: #4a9ce2 url(images/app-head-breadcrumb-delimiter-rollover-left.png) no-repeat -10px bottom;
   top: -1px;
+  height: 34px;
 }
 
 .js #navigate-crumbs-left-coverup {
@@ -253,6 +254,15 @@ a:hover {
   background: url(images/app-head-breadcrumb-bg.png) repeat left top;
 }
 
+.js .navigate-crumbs span {
+  display: block;
+  width: 10px;
+  height: 14px;
+  position: absolute;
+  top: 10px;
+  left: 15px;
+}
+
 .js #navigate-crumbs-left {
   left: 50px;
   border-right: 1px solid #DAD9D9;
@@ -261,6 +271,24 @@ a:hover {
 .js #navigate-crumbs-right {
   right: 50px;
   border-left: 1px solid #DAD9D9;
+}
+
+.js #navigate-crumbs-left span {
+  background: url(images/breadcrumbs-left-nav.png) no-repeat center center;
+}
+
+.js #navigate-crumbs-right span {
+  background: url(images/breadcrumbs-right-nav.png) no-repeat center center;
+}
+
+.js #navigate-crumbs-left:hover span {
+  top: 11px;
+  background-image: url(images/breadcrumbs-left-nav-rollover.png);
+}
+
+.js #navigate-crumbs-right:hover span {
+  top: 11px;
+  background-image: url(images/breadcrumbs-right-nav-rollover.png);
 }
 
 #app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb span.vrtx-breadcrumb-level,

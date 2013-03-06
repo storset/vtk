@@ -1031,7 +1031,13 @@ VrtxAdmin.prototype.scrollBreadcrumbs = function scrollBreadcrumbs(dir) {
       this.crumbsWidth = crumbsWidth;
       this.crumbsInner = $("#vrtx-breadcrumb-inner");
       this.crumbsInner.wrap("<div id='vrtx-breadcrumb-outer' />");
-      $("#vrtx-breadcrumb").append("<span id='navigate-crumbs-left-coverup' /><a id='navigate-crumbs-left' class='navigate-crumbs' /><a id='navigate-crumbs-right' class='navigate-crumbs' />");
+      
+      var navHtml = "<span id='navigate-crumbs-left-coverup' />" +
+                    "<a id='navigate-crumbs-left' class='navigate-crumbs'><span></span></a>" +
+                    "<a id='navigate-crumbs-right' class='navigate-crumbs'><span></span></a>";
+      
+      $("#vrtx-breadcrumb").append(navHtml);
+      
       this.crumbsLeft = $("#navigate-crumbs-left");
       this.crumbsLeftCoverUp = $("#navigate-crumbs-left-coverup");
       this.crumbsRight = $("#navigate-crumbs-right"); 

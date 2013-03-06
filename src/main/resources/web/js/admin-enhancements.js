@@ -1033,10 +1033,12 @@ VrtxAdmin.prototype.scrollBreadcrumbs = function scrollBreadcrumbs(dir) {
       $("#vrtx-breadcrumb").append("<a id='navigate-crumbs-left' class='navigate-crumbs' /><a id='navigate-crumbs-right' class='navigate-crumbs' />");
       $(document).on("click", "#navigate-crumbs-left", function(e) {
         vrtxAdmin.scrollBreadcrumbs("left");
+        e.stopPropagation();
         e.preventDefault();
       });
       $(document).on("click", "#navigate-crumbs-right", function(e) {
         vrtxAdmin.scrollBreadcrumbs("right");
+        e.stopPropagation();
         e.preventDefault();
       });      
       this.scrollBreadcrumbs("right");

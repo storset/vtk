@@ -137,7 +137,7 @@ vrtxAdmin._$(window).load(function () {
 
   if (vrtxAdm.runReadyLoad === false) return; // XXX: return if should not run load() code
 
-  vrtxAdm.initAdaptiveBreadcrumbs();
+  vrtxAdm.scrollBreadcrumbs("init");
 
   vrtxAdm.log({
     msg: "Window.load() in " + (+new Date() - startLoadTime) + "ms."
@@ -1016,59 +1016,58 @@ VrtxAdmin.prototype.adjustResourceTitle = function adjustResourceTitle() {
 };
 
 /**
- * Init adaptive breadcrumbs
+ * Scroll breadcrumbs
  *
  * @this {VrtxAdmin}
  */
-VrtxAdmin.prototype.initAdaptiveBreadcrumbs = function initAdaptiveBreadcrumbs() {
-  var vrtxAdm = this,
-    _$ = this._$;
-  vrtxAdm.cachedBreadcrumbs = _$("#vrtx-breadcrumb > span");
-  vrtxAdm.adaptiveBreadcrumbs();
-};
-
-/**
- * Update adaptive breadcrumbs
- *
- * @this {VrtxAdmin}
- */
-VrtxAdmin.prototype.adaptiveBreadcrumbs = function adaptiveBreadcrumbs() {
-  var breadcrumbs = this.cachedBreadcrumbs,
-    i = breadcrumbs.length,
-    runnedAtStart = false;
-  while (i--) {
-    var breadcrumb = this._$(breadcrumbs[i]);
-    var breadcrumbPos = breadcrumb.position();
-    var breadcrumbPosTop = breadcrumbPos.top;
-    var breadcrumbPosLeft = breadcrumbPos.left;
-    if (!runnedAtStart) {
-      if (vrtxAdmin.breadcrumbsLastPosLeft == breadcrumbPosLeft) {
-        return;
+VrtxAdmin.prototype.scrollBreadcrumbs = function scrollBreadcrumbs(dir) {
+  switch (dir) {
+    case "init":
+      var crumbs = $(".vrtx-breadcrumb-level"), i = crumbs.length, crumbsWidth = 0;
+      while(i--) {
+        crumbsWidth += $(crumbs[i]).outerWidth(true);
+      }
+      crumbs.wrapAll("<div id='vrtx-breadcrumb-inner' style='width: " + crumbsWidth + "px' />");
+      this.crumbsWidth = crumbsWidth;
+      $("#vrtx-breadcrumb-inner").wrap("<div id='vrtx-breadcrumb-outer' />");
+      $("#vrtx-breadcrumb").append("<a id='navigate-crumbs-left' class='navigate-crumbs' /><a id='navigate-crumbs-right' class='navigate-crumbs' />");
+      $(document).on("click", "#navigate-crumbs-left", function(e) {
+        vrtxAdmin.scrollBreadcrumbs("left");
+        e.preventDefault();
+      });
+      $(document).on("click", "#navigate-crumbs-right", function(e) {
+        vrtxAdmin.scrollBreadcrumbs("right");
+        e.preventDefault();
+      });      
+      break;
+    case "right": 
+      var width = $("#vrtx-breadcrumb").width();
+      var diff = this.crumbsWidth - width;
+      if(diff > 0) {
+        $("#vrtx-breadcrumb-inner").css("left", -diff + "px");
+        $("#navigate-crumbs-right:visible").hide();
+        $("#navigate-crumbs-left:hidden").show();
       } else {
-        vrtxAdmin.breadcrumbsLastPosLeft = breadcrumbPosLeft;
+        $("#vrtx-breadcrumb-inner").css("left", "0px");
+        $("#navigate-crumbs-right:visible").hide();
+        $("#navigate-crumbs-left:visible").hide();
       }
-      runnedAtStart = true;
-    }
-    var prevBreadcrumb = breadcrumb.prev();
-    if (breadcrumbPosTop > 0 && breadcrumbPosLeft == 50) {
-      if (!breadcrumb.hasClass("vrtx-breadcrumb-left")) {
-        breadcrumb.addClass("vrtx-breadcrumb-left");
+      break;
+    case "left":
+      var width = $("#vrtx-breadcrumb").width();
+      var diff = this.crumbsWidth - width;
+      if(diff > 0) {
+        $("#vrtx-breadcrumb-inner").css("left", "0px");
+        $("#navigate-crumbs-right:hidden").show();
+        $("#navigate-crumbs-left:visible").hide();
+      } else {
+        $("#vrtx-breadcrumb-inner").css("left", "0px");
+        $("#navigate-crumbs-right:visible").hide();
+        $("#navigate-crumbs-left:visible").hide();
       }
-      if (breadcrumb.hasClass("vrtx-breadcrumb-active")) {
-        if (prevBreadcrumb.length && prevBreadcrumb.hasClass("vrtx-breadcrumb-before-active")) {
-          prevBreadcrumb.removeClass("vrtx-breadcrumb-before-active");
-        }
-      }
-    } else {
-      if (breadcrumb.hasClass("vrtx-breadcrumb-left")) {
-        breadcrumb.removeClass("vrtx-breadcrumb-left");
-      }
-      if (breadcrumb.hasClass("vrtx-breadcrumb-active")) {
-        if (prevBreadcrumb.length && !prevBreadcrumb.hasClass("vrtx-breadcrumb-before-active")) {
-          prevBreadcrumb.addClass("vrtx-breadcrumb-before-active");
-        }
-      }
-    }
+      break;
+    default:
+      break;
   }
 };
 
@@ -3026,14 +3025,15 @@ jQuery.fn.extend({
 
 var maxRuns = 0;
 vrtxAdmin._$(window).resize(vrtxAdmin._$.throttle(150, function () {
-  if (vrtxAdmin.runReadyLoad && vrtxAdmin.cachedBreadcrumbs) {
+  if (vrtxAdmin.runReadyLoad) {
     if (maxRuns < 2) {
-      vrtxAdmin.adaptiveBreadcrumbs();
+      vrtxAdmin.scrollBreadcrumbs("right");;
       maxRuns++;
     } else {
       maxRuns = 0; /* IE8: let it rest */
     }
   }
 }));
+
 
 /* ^ Vortex Admin enhancements */

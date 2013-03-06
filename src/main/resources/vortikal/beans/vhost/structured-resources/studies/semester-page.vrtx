@@ -406,7 +406,7 @@ resourcetype semester-page {
     link-box-six-links : (en : "Links", no : "Lenker", nn : "Lenker"),
     linktitle : (en : "Link title", no : "Lenketittel", nn : "Lenketittel"),
     link : (en : "Link", no : "Lenke", nn : "Lenke"),
-    cloned-course : (en : "Joint teaching (Cloned course)", no : "Felles undervisning (Klonet emne)", nn : "Felles undervisning (Klona emne)"),
+    cloned-course : (en : "Joint teaching (cloned course)", no : "Felles undervisning (klonet emne)", nn : "Felles undervisning (klona emne)"),
     cloned-course-title : (en : "Joint teaching", no : "Felles undervisning", nn : "Felles undervisning"),
     cloned-course-code : (en : "Cloned from course code", no : "Klonet fra emnekode", nn : "Klona fra emnekode"),
     cloned-course-text-start : (en : "This course has jointly taught classes with ", no : "Emnet har felles undervisning med ", nn : "Emnet har felles undervisning med "),

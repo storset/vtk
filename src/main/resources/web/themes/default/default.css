@@ -254,7 +254,7 @@ a:hover {
   background: url(images/app-head-breadcrumb-bg.png) repeat left top;
 }
 
-.js .navigate-crumbs span {
+.js .navigate-crumbs span.navigate-crumbs-icon {
   display: block;
   width: 10px;
   height: 14px;
@@ -263,30 +263,48 @@ a:hover {
   left: 15px;
 }
 
+.js .navigate-crumbs span.navigate-crumbs-dividor {
+  display: block;
+  width: 30px;
+  height: 30px;
+  position: absolute;
+  top: 1px;
+}
+
 .js #navigate-crumbs-left {
   left: 50px;
-  border-right: 1px solid #DAD9D9;
 }
 
 .js #navigate-crumbs-right {
   right: 50px;
+}
+
+.js #navigate-crumbs-left span.navigate-crumbs-dividor {
+  background: url(images/breadcrumbs-left-dividor.png) no-repeat center center;
+  right: -30px;
   border-left: 1px solid #DAD9D9;
 }
 
-.js #navigate-crumbs-left span {
+.js #navigate-crumbs-right span.navigate-crumbs-dividor {
+  background: url(images/breadcrumbs-right-dividor.png) no-repeat center center;
+  left: -30px;
+  border-right: 1px solid #DAD9D9;
+}
+
+.js #navigate-crumbs-left span.navigate-crumbs-icon {
   background: url(images/breadcrumbs-left-nav.png) no-repeat center center;
 }
 
-.js #navigate-crumbs-right span {
+.js #navigate-crumbs-right span.navigate-crumbs-icon {
   background: url(images/breadcrumbs-right-nav.png) no-repeat center center;
 }
 
-.js #navigate-crumbs-left:hover span {
+.js #navigate-crumbs-left:hover span.navigate-crumbs-icon {
   top: 11px;
   background-image: url(images/breadcrumbs-left-nav-rollover.png);
 }
 
-.js #navigate-crumbs-right:hover span {
+.js #navigate-crumbs-right:hover span.navigate-crumbs-icon {
   top: 11px;
   background-image: url(images/breadcrumbs-right-nav-rollover.png);
 }

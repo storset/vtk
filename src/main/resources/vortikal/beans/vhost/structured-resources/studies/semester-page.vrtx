@@ -272,8 +272,8 @@ resourcetype semester-page {
             </div>
             [if cloned-course != null && cloned-course && cloned-course-code != null && cloned-course-code != ""]
               <div class="vrtx-frontpage-box white-box">
-                <h2>[localized 'cloned-course']</h2>
-                <p>[localized 'cloned-course-from'] [call "include:ref" {"id" : cloned-course-code, "referencetype" : "emne"}].</p>
+                <h2>[localized 'cloned-course-title']</h2>
+                <p>[localized 'cloned-course-text-start'][call "include:ref" {"id" : cloned-course-code, "referencetype" : "emne"}][localized 'cloned-course-text-end']</p>
               </div>
             [endif]
             [if fronter != null && fronter]
@@ -406,9 +406,11 @@ resourcetype semester-page {
     link-box-six-links : (en : "Links", no : "Lenker", nn : "Lenker"),
     linktitle : (en : "Link title", no : "Lenketittel", nn : "Lenketittel"),
     link : (en : "Link", no : "Lenke", nn : "Lenke"),
-    cloned-course : (en : "Cloned course", no : "Klonet emne", nn : "Klona emne"),
+    cloned-course : (en : "Joint teaching (Cloned course)", no : "Felles undervisning (Klonet emne)", nn : "Felles undervisning (Klona emne)"),
+    cloned-course-title : (en : "Joint teaching", no : "Felles undervisning", nn : "Felles undervisning"),
     cloned-course-code : (en : "Cloned from course code", no : "Klonet fra emnekode", nn : "Klona fra emnekode"),
-    cloned-course-from : (en : "This course is a clone of", no : "Dette er et klonet kurs av", nn : "Dette er eit klona kurs av"),
+    cloned-course-text-start : (en : "This course has jointly taught classes with ", no : "Emnet har felles undervisning med ", nn : "Emnet har felles undervisning med "),
+    cloned-course-text-end : (en : ".", no : ". Se semestersiden til dette emnet for timeplan og beskjeder.", nn : ". Sjå semestersida til dette emnet for timeplan og meldingar."),
     fronter : (en : "Fronter", no : "Fronter", nn : "Fronter"),
     fronter-text : (en : "This course uses the learning platform Fronter.", no : "Dette kurset bruker læringsplattformen Fronter.", nn : "Dette kurset nyttar læringsplattforma Fronter."),
     log-into-fronter : (en : "Log into Fronter", no : "Logg på Fronter", nn : "Logg på Fronter"),

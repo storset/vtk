@@ -47,7 +47,7 @@
               <#assign marked = filter[parameterKey].marked>
               <li id="vrtx-listing-filter-parameter-${filterKey}-${parameterKey}" class="vrtx-listing-filter-parameter<#if parameterKey = "all"> vrtx-listing-filter-parameter-all</#if><#if marked> vrtx-listing-filter-parameter-selected</#if>">
                 <#if parameterKey = "all"> 
-                  <a href="${url}">${vrtx.getMsg("listing-filters.filter.all")}</a>
+                  <a href="${url}">${vrtx.getMsg("listing-filters.${filterKey}.all")}</a>
                 <#elseif filterKey = "semester"><#-- TODO: Hack to avoid year in i18n -->
                   <#if parameterKey?starts_with("v")>
                     <a href="${url}">${vrtx.getMsg("listing-filters.${filterKey}.filter.v")} 20${parameterKey?substring(1)}</a>
@@ -93,6 +93,10 @@
           <@viewutils.displayPageThroughUrls pageThroughUrls page />
         </div>
       </#if>
+    <#else>
+      <div>
+        <@vrtx.msg code="listing-filters.${collection.resourceType}.no-result" default="No result" />
+      </div>
     </#if>
     
     <#if conf?exists>

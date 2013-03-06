@@ -1031,8 +1031,9 @@ VrtxAdmin.prototype.scrollBreadcrumbs = function scrollBreadcrumbs(dir) {
       this.crumbsWidth = crumbsWidth;
       this.crumbsInner = $("#vrtx-breadcrumb-inner");
       this.crumbsInner.wrap("<div id='vrtx-breadcrumb-outer' />");
-      $("#vrtx-breadcrumb").append("<a id='navigate-crumbs-left' class='navigate-crumbs' /><a id='navigate-crumbs-right' class='navigate-crumbs' />");
+      $("#vrtx-breadcrumb").append("<span id='navigate-crumbs-left-coverup' /><a id='navigate-crumbs-left' class='navigate-crumbs' /><a id='navigate-crumbs-right' class='navigate-crumbs' />");
       this.crumbsLeft = $("#navigate-crumbs-left");
+      this.crumbsLeftCoverUp = $("#navigate-crumbs-left-coverup");
       this.crumbsRight = $("#navigate-crumbs-right"); 
       $(document).on("click", "#navigate-crumbs-left", function(e) {
         vrtxAdmin.scrollBreadcrumbs("left");
@@ -1053,10 +1054,12 @@ VrtxAdmin.prototype.scrollBreadcrumbs = function scrollBreadcrumbs(dir) {
       if(diff > 0) {
         this.crumbsInner.css("left", -diff + "px");
         this.crumbsRight.filter(":visible").hide();
+        this.crumbsLeftCoverUp.filter(":hidden").show();
         this.crumbsLeft.filter(":hidden").show();
       } else {
         this.crumbsInner.css("left", "0px");
         this.crumbsRight.filter(":visible").hide();
+        this.crumbsLeftCoverUp.filter(":visible").hide();
         this.crumbsLeft.filter(":visible").hide();
       }
       break;
@@ -1066,9 +1069,11 @@ VrtxAdmin.prototype.scrollBreadcrumbs = function scrollBreadcrumbs(dir) {
       this.crumbsInner.css("left", "0px");
       if(diff > 0) {
         this.crumbsRight.filter(":hidden").show();
+        this.crumbsLeftCoverUp.filter(":visible").hide();
         this.crumbsLeft.filter(":visible").hide();
       } else {
         this.crumbsRight.filter(":visible").hide();
+        this.crumbsLeftCoverUp.filter(":visible").hide();
         this.crumbsLeft.filter(":visible").hide();
       }
       break;

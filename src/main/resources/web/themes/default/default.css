@@ -209,6 +209,8 @@ a:hover {
 
 .js #app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb-outer {
   overflow: hidden;
+  padding-left: 11px;
+  margin-left: -11px;
 }
 
 .js #app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb-inner {
@@ -239,6 +241,16 @@ a:hover {
   cursor: pointer;
   background: #4a9ce2 url(images/app-head-breadcrumb-delimiter-rollover-left.png) no-repeat -10px bottom;
   top: -1px;
+}
+
+.js #navigate-crumbs-left-coverup {
+  position: absolute;
+  top: 0px;
+  left: 39px;
+  height: 34px;
+  width: 11px;
+  display: block;
+  background: url(images/app-head-breadcrumb-bg.png) repeat left top;
 }
 
 .js #navigate-crumbs-left {

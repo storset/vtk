@@ -94,7 +94,7 @@
         </div>
       </#if>
     <#else>
-      <div>
+      <div id="vrtx-listing-filter-no-results">
         <@vrtx.msg code="listing-filters.${collection.resourceType}.no-result" default="No result" />
       </div>
     </#if>

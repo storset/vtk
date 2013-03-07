@@ -12,7 +12,8 @@ resourcetype person {
     email : string multiple external:userMetadataLdapService,
     postalAddress : string multiple external:userMetadataLdapService,
     visitingAddress : string multiple external:userMetadataLdapService,
-    externalUserMetaData : derived external:userMetadataLdapService,
+    externalUserMetaData : derived external:userMetadataLdapService, /* Used to mark if retrieval of data from external source was successful */
+    affiliations : derived multiple external:userMetadataLdapService,
     alternativeVisitingAddress : string multiple,
     alternativeCellPhone : string,
     title : derived (firstName, surname) eval (firstName + " " + surname)

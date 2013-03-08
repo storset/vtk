@@ -59,7 +59,7 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
     private static final String PARAMETER_MAX_NUMBER_OF_SIBLINGS = "max-number-of-siblings";
     private static final String PARAMETER_MAX_NUMBER_OF_SIBLINGS_DESC = "Defines the maximum number of siblings. When this limit is"
             + " reached no siblings are going to be displayed. Default limit is: " + Integer.MAX_VALUE;
-    protected static final String PARAMETER_DISPLAY_FROM_LEVEL_DESC = "Defines the starting URI level for the menu";
+    private static final String PARAMETER_DISPLAY_FROM_LEVEL_DESC = "Defines the starting URI level for the menu";
 
     @Override
     public void processModel(Map<String, Object> model, DecoratorRequest request, DecoratorResponse response)
@@ -89,7 +89,7 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
                 breadCrumbElements.remove(0);
             }
         }
-        
+
         // From here on we typically load other resources than current resource
         // and must respect plainServiceMode.
         if (requestContext.isViewUnauthenticated()) {
@@ -113,66 +113,72 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
         URL markedUrl = this.menuGenerator.getViewService().constructURL(currentResource, principal, false);
         breadCrumbElements.add(new BreadcrumbElement(markedUrl, getMenuTitle(currentResource)));
 
-        List<MenuItem<PropertySet>> childElements = null;
-        childElements = generateChildElements(currentResource.getChildURIs(), currentResource, requestContext, token);
+        List<MenuItem<PropertySet>> menuItemList = generateMenuItemList(currentResource.getChildURIs(),
+                currentResource, token);
 
-        // If there is no children of the current resource, then we shall
-        // instead display the children of the parent node.
-        if (childElements != null && childElements.size() == 0) {
-            Resource childResource = null;
+        // If menu is null or empty, i.e. current resource had no children or
+        // all children were hidden, then generate menu based on siblings.
+        if (menuItemList != null && menuItemList.size() == 0) {
+            Resource currentResourceParent = null;
             try {
-                childResource = repository.retrieve(token, currentResource.getURI().getParent(), true);
+                currentResourceParent = repository.retrieve(token, currentResource.getURI().getParent(), true);
             } catch (AuthorizationException e) {
             } catch (AuthenticationException e) {
             }
 
-            if (childResource != null) {
-                childElements = generateChildElements(childResource.getChildURIs(), currentResource, requestContext, token);
+            if (currentResourceParent != null) {
+                menuItemList = generateMenuItemList(currentResourceParent.getChildURIs(), currentResource, token);
                 breadCrumbElements.remove(breadCrumbElements.size() - 1);
-                if (childElements.size() > maxSiblings) {
-                    childElements = new ArrayList<MenuItem<PropertySet>>();
-                    childElements.add(buildItem(currentResource));
+                if (menuItemList.size() > maxSiblings) {
+                    menuItemList = new ArrayList<MenuItem<PropertySet>>();
+                    menuItemList.add(buildItem(currentResource));
                 }
             }
         }
 
-        childElements = sortDefaultOrder(childElements, request.getLocale());
+        menuItemList = sortDefaultOrder(menuItemList, request.getLocale());
 
         model.put("breadcrumb", breadCrumbElements);
-        model.put("children", childElements);
+        model.put("children", menuItemList);
         model.put("markedurl", markedUrl);
     }
 
     private List<BreadcrumbElement> getBreadcrumbElements() throws Exception {
+
         String breadcrumbName = "breadcrumb";
-        BreadCrumbProvider p = new BreadCrumbProvider();
-        p.setSkipCurrentResource(true);
-        p.setService(this.menuGenerator.getViewService());
-        p.setBreadcrumbName(breadcrumbName);
-        p.setSkipIndexFile(false);
+        BreadCrumbProvider breadCrumbProvider = new BreadCrumbProvider();
+        breadCrumbProvider.setSkipCurrentResource(true);
+        breadCrumbProvider.setService(this.menuGenerator.getViewService());
+        breadCrumbProvider.setBreadcrumbName(breadcrumbName);
+        breadCrumbProvider.setSkipIndexFile(false);
         PropertyTypeDefinition titleProp[] = new PropertyTypeDefinition[2];
         titleProp[0] = this.menuGenerator.getNavigationTitlePropDef();
         titleProp[1] = this.menuGenerator.getTitlePropDef();
-        p.setTitleOverrideProperties(titleProp);
-        p.afterPropertiesSet();
+        breadCrumbProvider.setTitleOverrideProperties(titleProp);
+        breadCrumbProvider.afterPropertiesSet();
         Map<String, Object> map = new HashMap<String, Object>();
-        p.referenceData(map, RequestContext.getRequestContext().getServletRequest());
+        breadCrumbProvider.referenceData(map, RequestContext.getRequestContext().getServletRequest());
         Object o = map.get(breadcrumbName);
+
         if (!(o instanceof BreadcrumbElement[])) {
             throw new IllegalStateException("Expected BreadCrumbElement[] in model, found " + o);
         }
+
         BreadcrumbElement[] list = (BreadcrumbElement[]) o;
         List<BreadcrumbElement> result = new ArrayList<BreadcrumbElement>();
         for (int i = 0; i < list.length; i++) {
             result.add(list[i]);
         }
+
         return result;
     }
 
-    private List<MenuItem<PropertySet>> generateChildElements(List<Path> children, Resource currentResource,
-            RequestContext requestContext, String token) throws Exception {
-        Repository repository = requestContext.getRepository();
+    private List<MenuItem<PropertySet>> generateMenuItemList(List<Path> children, Resource currentResource, String token)
+            throws Exception {
+
+        Repository repository = RequestContext.getRequestContext().getRepository();
         List<MenuItem<PropertySet>> items = new ArrayList<MenuItem<PropertySet>>();
+
         for (Path childPath : children) {
             Resource childResource = null;
             try {
@@ -191,6 +197,7 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
             }
             items.add(buildItem(childResource));
         }
+
         return items;
     }
 

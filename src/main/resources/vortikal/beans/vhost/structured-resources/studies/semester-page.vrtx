@@ -121,11 +121,7 @@ resourcetype semester-page {
     resource-links (title, num, split) {
       ##
       [def link-box-title resource-prop(".", title)]
-      
-      [if num = 1]
-        <div class="left">
-      [endif]
-      
+
       [if link-box-title != null && link-box-title != ""]
         <h2>[val link-box-title]</h2>
       [endif]
@@ -145,26 +141,20 @@ resourcetype semester-page {
         [def links document.properties.link-box-six-links]
       [endif]
       [if links != null]
-        [def listed 0]
+        [def linkedUpCount 0]
+        [def split 0]
         [list links link]
           [if link.link != null && link.link != "" && link.linktitle != null && link.linktitle != ""]
-            [if _size > 0 && _index = 0]<ul>[def listed 1][endif]
+            [if _size > 0 && _index = 0]<ul class="left">[def splitted ceil(_size / 2)][endif]
+            [if splitted = linkedUpCount]</ul><ul class="right">[endif]
             <li>
               <a href="[val link.link]">[val link.linktitle]</a>
             </li>
+            [def linkedUpCount linkedUpCount + 1]
           [endif]
-          [if _size = _index + 1 && listed = 1]</ul>[endif]
+          [if _size = _index + 1 && linkedUpCount > 0]</ul>[endif]
         [endlist]
       [endif]
-      
-      [if num = split]
-        </div>
-        <div class="right">
-      [endif]
-      [if num = 6]
-        </div>
-      [endif]
-      
       ##
     }
 
@@ -213,7 +203,6 @@ resourcetype semester-page {
     [endif]
 
     [def resourceLinkCount 0]
-    [def resourceLinkGroupCount 0]
     [def props #({"prop": "link-box-one-links"}, {"prop" : "link-box-two-links"}, {"prop" : "link-box-three-links"}, {"prop" : "link-box-four-links"}, {"prop" : "link-box-five-links"}, {"prop" : "link-box-six-links"})]
     [list props box]
       [def document structured-document()]
@@ -238,23 +227,11 @@ resourcetype semester-page {
         [def title document.properties.link-box-six-title]
       [endif]
       [if links != null]
-        [def groupMe 0]
-        [if title != null && title != ""]
-          [if groupMe = 0]
-            [def groupMe 1]
-          [endif]
-        [endif]
         [list links link]
           [if link.link != null && link.link != "" && link.linktitle != null && link.linktitle != ""]
-            [if groupMe = 0]
-              [def groupMe 1]
-            [endif]
             [def resourceLinkCount resourceLinkCount + 1]
           [endif]
         [endlist]
-        [if groupMe = 1]
-          [def resourceLinkGroupCount resourceLinkGroupCount + 1]
-        [endif]
       [endif]
     [endlist]
 
@@ -299,20 +276,12 @@ resourcetype semester-page {
                   ((link-box-five-title != null && link-box-five-title != "") || link-box-five-links != null) ||
                   ((link-box-six-title != null && link-box-six-title != "") || link-box-six-links != null)]
                 <div class="vrtx-frontpage-box white-box" id="vrtx-semester-resource-links">
-                  [def split 7]
-                  [if resourceLinkGroupCount < 3]
-                    [def split 1]
-                  [elseif resourceLinkGroupCount > 2 && resourceLinkGroupCount < 5]
-                    [def split 2]
-                  [else]
-                    [def split 3]
-                  [endif]
-                  [call "comp:resource-links"{"title":"link-box-one-title","num":1,"split":split}]
-                  [call "comp:resource-links"{"title":"link-box-two-title","num":2,"split":split}]
-                  [call "comp:resource-links"{"title":"link-box-three-title","num":3,"split":split}]
-                  [call "comp:resource-links"{"title":"link-box-four-title","num":4,"split":split}]
-                  [call "comp:resource-links"{"title":"link-box-five-title","num":5,"split":split}]
-                  [call "comp:resource-links"{"title":"link-box-six-title","num":6,"split":split}]
+                  [call "comp:resource-links"{"title":"link-box-one-title"}]
+                  [call "comp:resource-links"{"title":"link-box-two-title"}]
+                  [call "comp:resource-links"{"title":"link-box-three-title"}]
+                  [call "comp:resource-links"{"title":"link-box-four-title"}]
+                  [call "comp:resource-links"{"title":"link-box-five-title"}]
+                  [call "comp:resource-links"{"title":"link-box-six-title"}]
                 </div>
               [endif]
             [endif]

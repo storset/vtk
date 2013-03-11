@@ -1,4 +1,4 @@
-/* Copyright (c) 2010, University of Oslo, Norway
+/* Copyright (c) 2013, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -46,8 +46,12 @@ public class Ceil extends Function {
             throw new IllegalArgumentException(getSymbol().getSymbol() 
                     + ": first argument is NULL");
         }
-        double num = Double.parseDouble(o.toString());
-        if(num <= 0) return 0;
+        double num = 0;
+        try {
+            num = Double.parseDouble(o.toString());
+        } catch(NumberFormatException nfe) {
+            return num;
+        }
         return (int) Math.ceil(num);
     }
 

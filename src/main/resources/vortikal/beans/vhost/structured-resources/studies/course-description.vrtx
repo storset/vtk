@@ -809,7 +809,7 @@ resourcetype course-description {
     over-to-semestre-oppstart-vaar-og-hoest : (en : "Covers two semesters, starting every spring and autumn", no : "Over to semestre, oppstart hver vår og høst", nn : "Over to semester, oppstart kvar vår og haust"),
 
     teaching-language : (en : "Teaching language", no : "Undervisningsspråk", nn : "Undervisningsspråk"),
-    teaching-language-text-field : (en : "Other", no : "Annet", nn : "Annet"),
+    teaching-language-text-field : (en : "Other", no : "Annet", nn : "Anna"),
     norwegian : (en : "Norwegian", no : "Norsk", nn : "Norsk"),
     english : (en : "English", no : "Engelsk", nn : "Engelsk"),
     english-by-need : (en : "Norwegian (English on demand)", no : "Norsk (engelsk på forespørsel)", nn : "Norsk (engelsk på førespurnad)"),

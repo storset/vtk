@@ -238,9 +238,7 @@
 #editor.select-teachingsemester .if-teachingsemester-particular,
 #editor.select-teachingsemester .teachingsemester-every-other-semester,
 #editor.select-examsemester .if-examsemester-particular,
-#editor.select-examsemester .examsemester-every-other-semester,
-#editor.select-examsemester .examsemester-other,                                           
-#editor.select-teaching-language .teaching-language-text-field {
+#editor.select-examsemester .examsemester-every-other-semester {
   display: none;
 }
 
@@ -255,9 +253,7 @@
 #editor.select-teachingsemester-every-other .teachingsemester-every-other-semester,
 #editor.select-teachingsemester-other .teachingsemester-other,
 #editor.select-examsemester-particular-semester .if-examsemester-particular,
-#editor.select-examsemester-every-other .examsemester-every-other-semester,
-#editor.select-examsemester-other .examsemester-other,                                           
-#editor.select-teaching-language-other .teaching-language-text-field {
+#editor.select-examsemester-every-other .examsemester-every-other-semester {
   display: block;
 }
 

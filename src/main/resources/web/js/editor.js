@@ -52,8 +52,7 @@ function VrtxEditor() {
   /** Select fields show/hide mappings */
   this.selectMappings = {
     "teachingsemester":  ["particular-semester", "every-other"],
-    "examsemester":      ["particular-semester", "every-other", "other"],
-    "teaching-language": ["other"],
+    "examsemester":      ["particular-semester", "every-other"],
     "typeToDisplay":     ["so", "nm", "em"]
   };
 

@@ -176,7 +176,7 @@ vrtxEditor.CKEditorToolbars.studyToolbar = [['Source', 'PasteText', 'PasteFromWo
                                         'JustifyCenter', 'JustifyRight',
                                         'Maximize']];
 
-vrtxEditor.CKEditorToolbars.courseGroupToolbar = [['Source', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo', '-', 'Replace',
+vrtxEditor.CKEditorToolbars.studyRefToolbar = [['Source', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo', '-', 'Replace',
                                               'RemoveFormat', '-', 'Link', 'Unlink', 'Studyreferencecomponent', 'Anchor',
                                               'Image', 'CreateDiv', 'MediaEmbed', 'Table',
                                               'HorizontalRule', 'SpecialChar'
@@ -456,7 +456,7 @@ VrtxEditor.prototype.newEditor = function newEditor(name, completeEditor, withou
     if (vrtxEdit.contains("supervisor-box")) {
       height = 130;
       maxHeight = 300;
-    } else if (name == "content" || name == "resource.content" || name == "content-study" || name == "course-group-about" || name == "courses-in-group" || name == "course-group-admission" || name == "relevant-study-programmes" || name == "course-group-other") {
+    } else if (name == "content" || name == "resource.content" || name == "content-study") {
       height = 400;
       maxHeight = 800;
       if (name == "resource.content") { // Old editor
@@ -465,9 +465,16 @@ VrtxEditor.prototype.newEditor = function newEditor(name, completeEditor, withou
       if (name == "content-study") { // Study toolbar
         completeTB = vrtxEdit.CKEditorToolbars.studyToolbar;
       }
-      if (name == "course-group-about" || name == "courses-in-group" || name == "course-group-admission" || name == "relevant-study-programmes" || name == "course-group-other") { // CourseGroup toolbar
-        completeTB = vrtxEdit.CKEditorToolbars.courseGroupToolbar;
-      }
+    } else if (name == "course-content" || name == "learning-outcomes" || name == "opptak-og-adgang-text-field" || name == "ikke-privatist-text-field" || name == "obligatoriske-forkunnskaper-text-field" || name == "recommended-prerequisites-text-field" || name == "overlapping-courses-text-field" || name == "teaching-text-field" || name == "adgang-text-field" || name == "assessment-and-grading" || name == "hjelpemidler-text-field" || name == "klage-text-field" || name == "ny-utsatt-eksamen-text-field" || name == "evaluering-av-emnet-text-field" || name == "other-text-field") {
+    	// Course description
+    	height = 400;
+        maxHeight = 800;
+        completeTB = vrtxEdit.CKEditorToolbars.studyRefToolbar;
+    } else if (name == "course-group-about" || name == "courses-in-group" || name == "course-group-admission" || name == "relevant-study-programmes" || name == "course-group-other") {
+    	// Course group
+        height = 400;
+        maxHeight = 800;
+        completeTB = vrtxEdit.CKEditorToolbars.studyRefToolbar;
     }
     vrtxEdit.setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, defaultLanguage, cssFileList, height, maxHeight, 50, completeTB,
     isCompleteEditor, true, baseDocumentUrl, isSimpleHTML);

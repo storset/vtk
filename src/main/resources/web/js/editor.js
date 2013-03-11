@@ -59,7 +59,8 @@ function VrtxEditor() {
   /** Initial state for the need to confirm navigation away from editor */
   this.needToConfirm = true;
 
-  this.multipleFieldsBoxesCounter = {}; /* Make sure every new field and box have unique id's (important for CK-fields) */
+  this.multipleFieldsBoxes = {}; /* Make sure every new field and box have unique id's (important for CK-fields) */
+  
   this.multipleFieldsBoxesTemplates = [];
   this.multipleFieldsBoxesDeferred = null;
   this.multipleFieldsBoxesAccordionSwitchThenScrollTo = null;
@@ -1079,7 +1080,7 @@ function initMultipleInputFields() {
   });
 }
 
-function enhanceMultipleInputFields(name, isMovable, isBrowsable) { // TODO: simplify
+function enhanceMultipleInputFields(name, isMovable, isBrowsable, limit) { // TODO: simplify
   var inputField = $("." + name + " input[type=text]");
   if (!inputField.length) return;
 
@@ -1094,20 +1095,25 @@ function enhanceMultipleInputFields(name, isMovable, isBrowsable) { // TODO: sim
     inputFieldParent.next().filter(".vrtx-button").hide();
   }
 
-  inputFieldWrp.addClass("vrtx-multipleinputfields");
+  inputFieldWrp.addClass("vrtx-multipleinputfields").data("name", name); // Don't like to do this need get it easily
   inputFieldParent.removeClass("vrtx-textfield").append(vrtxEditor.mustacheFacade.getMultipleInputFieldsAddButton(name, size, isBrowsable, isMovable, isDropdown));
 
   var inputFieldVal = inputField.hide().val();
   var formFields = inputFieldVal.split(",");
 
-  vrtxEditor.multipleFieldsBoxesCounter[name] = 1; // 1-index
+  vrtxEditor.multipleFieldsBoxes[name] = { counter: 1, // 1-index
+                                           limit: limit };
 
-  var addFormFieldFunc = addFormField,
-    html = ""; /* ENHANCE PART */
+  var addFormFieldFunc = addFormField, html = ""; /* ENHANCE PART */
   for (var i = 0, len = formFields.length; i < len; i++) {
     html += addFormFieldFunc(name, len, $.trim(formFields[i]), size, isBrowsable, isMovable, isDropdown, true);
   }
   $(html).insertBefore("#vrtx-" + name + "-add");
+  
+  // Hide add button if limit is reached or gone over
+  if(len >= vrtxEditor.multipleFieldsBoxes[name].limit) {
+    $("#vrtx-" + name + "-add").hide();  
+  }
 
   autocompleteUsernames(".vrtx-autocomplete-username");
 }
@@ -1115,12 +1121,12 @@ function enhanceMultipleInputFields(name, isMovable, isBrowsable) { // TODO: sim
 function addFormField(name, len, value, size, isBrowsable, isMovable, isDropdown, init) {
   var fields = $("." + name + " div.vrtx-multipleinputfield"),
     idstr = "vrtx-" + name + "-",
-    i = vrtxEditor.multipleFieldsBoxesCounter[name],
+    i = vrtxEditor.multipleFieldsBoxes[name].counter,
     removeButton = "",
     moveUpButton = "",
     moveDownButton = "",
     browseButton = "";
-
+    
   len = !init ? fields.length : len; /* If new field set len to fields length */
 
   removeButton = vrtxEditor.mustacheFacade.getMultipleInputfieldsInteractionsButton("remove", " " + name, idstr, vrtxAdmin.multipleFormGroupingMessages.remove);
@@ -1135,9 +1141,12 @@ function addFormField(name, len, value, size, isBrowsable, isMovable, isDropdown
   if (isBrowsable) {
     browseButton = vrtxEditor.mustacheFacade.getMultipleInputfieldsInteractionsButton("browse", "-resource-ref", idstr, vrtxAdmin.multipleFormGroupingMessages.browse);
   }
-
+  // Hide add button if limit is reached
+  if(!init && (len == (vrtxEditor.multipleFieldsBoxes[name].limit - 1))) {
+    $("#vrtx-" + name + "-add").hide();
+  }
   var html = vrtxEditor.mustacheFacade.getMultipleInputfield(name, idstr, i, value, size, browseButton, removeButton, moveUpButton, moveDownButton, isDropdown);
-  vrtxEditor.multipleFieldsBoxesCounter[name]++;
+  vrtxEditor.multipleFieldsBoxes[name].counter++;
 
   if (!init) {
     if (len > 0 && isMovable) {
@@ -1156,12 +1165,20 @@ function addFormField(name, len, value, size, isBrowsable, isMovable, isDropdown
 
 function removeFormField(input) {
   var parent = input.closest(".vrtx-multipleinputfields");
-  input.closest(".vrtx-multipleinputfield").remove();
+  var field = input.closest(".vrtx-multipleinputfield");
+  var name = parent.data("name");
+  field.remove();
   var fields = parent.find(".vrtx-multipleinputfield");
+  // Show add button if is within limit again
+  if(fields.length === (vrtxEditor.multipleFieldsBoxes[name].limit - 1)) {
+    $("#vrtx-" + name + "-add").show();
+  } 
   var moveUpFirst = fields.filter(":first").find("button.moveup");
   var moveDownLast = fields.filter(":last").find("button.movedown");
   if (moveUpFirst.length) moveUpFirst.parent().remove();
   if (moveDownLast.length) moveDownLast.parent().remove();
+  
+
 }
 
 function swapContentTmp(moveBtn, move) {
@@ -1213,7 +1230,7 @@ function initJsonMovableElements() {
         .find(".vrtx-add-button").data({
         'number': i
       });
-      vrtxEditor.multipleFieldsBoxesCounter[jsonName] = jsonElm.find(".vrtx-json-element").length;
+      vrtxEditor.multipleFieldsBoxes[jsonName] = {counter: jsonElm.find(".vrtx-json-element").length, limit: -1};
     }
 
     accordionJsonInit();
@@ -1258,7 +1275,7 @@ function addJsonField(btn) {
   var dateTimes = [];
 
   for (var i in types) {
-    inputFieldName = j.name + "." + types[i].name + "." + vrtxEditor.multipleFieldsBoxesCounter[j.name];
+    inputFieldName = j.name + "." + types[i].name + "." + vrtxEditor.multipleFieldsBoxes[j.name].counter;
     htmlTemplate += vrtxEditor.mustacheFacade.getTypeHtml(types[i], inputFieldName);
     switch (types[i].type) {
       case "html":
@@ -1277,8 +1294,8 @@ function addJsonField(btn) {
   var isImmovable = jsonParent && jsonParent.hasClass("vrtx-multiple-immovable");
   var removeButton = vrtxEditor.mustacheFacade.getJsonBoxesInteractionsButton('remove', vrtxAdmin.multipleFormGroupingMessages.remove);
 
-  var newElementId = "vrtx-json-element-" + j.name + "-" + vrtxEditor.multipleFieldsBoxesCounter[j.name];
-  var newElementHtml = htmlTemplate + "<input type=\"hidden\" class=\"id\" value=\"" + vrtxEditor.multipleFieldsBoxesCounter[j.name] + "\" \/>" + removeButton;
+  var newElementId = "vrtx-json-element-" + j.name + "-" + vrtxEditor.multipleFieldsBoxes[j.name].counter;
+  var newElementHtml = htmlTemplate + "<input type=\"hidden\" class=\"id\" value=\"" + vrtxEditor.multipleFieldsBoxes[j.name].counter + "\" \/>" + removeButton;
   if (!isImmovable && numOfElements > 0) {
     var moveUpButton = vrtxEditor.mustacheFacade.getJsonBoxesInteractionsButton('move-up', '&uarr; ' + vrtxAdmin.multipleFormGroupingMessages.moveUp);
     newElementHtml += moveUpButton;
@@ -1329,7 +1346,7 @@ function addJsonField(btn) {
     }, 25);
   }
 
-  vrtxEditor.multipleFieldsBoxesCounter[j.name]++;
+  vrtxEditor.multipleFieldsBoxes[j.name].counter++;
 }
 
 function removeJsonField(btn) {

@@ -83,15 +83,16 @@
         var hasManuallyApprove = _$("#resource\\.manually-approve-from").length;
         var hasMultipleInputFields = hasFeaturedArticles || hasAggregation || hasManuallyApprove;
         if(hasMultipleInputFields) {
+          var aggregationLimit = "${aggregationLimit}";
         
           initMultipleInputFields();
           
           $.when(vrtxEditor.multipleFieldsBoxesDeferred).done(function() {
             MULTIPLE_INPUT_FIELD_INITIALIZED = $.Deferred();
-        
-            enhanceMultipleInputFields("featured-articles", true, true);  
-            enhanceMultipleInputFields("aggregation", false, false);
-            enhanceMultipleInputFields("manually-approve-from", false, false);
+
+            enhanceMultipleInputFields("featured-articles", true, true, 999);  
+            enhanceMultipleInputFields("aggregation", false, false, aggregationLimit);
+            enhanceMultipleInputFields("manually-approve-from", false, false, aggregationLimit);
             
             var manuallyApproveButton = $("#manually-approve-container-title");
             manuallyApproveButton.parent().find("> div:first-child").append(manuallyApproveButton.remove());

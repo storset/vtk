@@ -24,7 +24,6 @@ resourcetype course-group {
     ##
     [def title resource-prop-obj-val(".", "title")]
     [def course-group-scope resource-prop-obj-val(".", "course-group-scope")]
-    [resource-props "."]
     [def document structured-document()]
     [def course-group-about document.properties.course-group-about]
     [def courses-in-group document.properties.courses-in-group]

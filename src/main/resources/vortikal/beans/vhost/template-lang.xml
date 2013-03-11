@@ -73,5 +73,13 @@
       </bean>
     </constructor-arg>
   </bean>
-
+  
+  <bean id="templateLanguage.ceilFunction" class="org.vortikal.text.tl.expr.Ceil">
+    <constructor-arg>
+      <bean class="org.vortikal.text.tl.Symbol">
+        <constructor-arg  value="ceil" />
+      </bean>
+    </constructor-arg>
+  </bean>
+  
 </beans>

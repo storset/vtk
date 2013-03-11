@@ -261,6 +261,7 @@
         <ref bean="templateLanguage.getFunction" />
         <ref bean="templateLanguage.toLowerCaseFunction" />
         <ref bean="templateLanguage.toUpperCaseFunction" />
+        <ref bean="templateLanguage.ceilFunction" />
         <ref bean="structuredResources.requestContextFunction" />
         <ref bean="structuredResources.resourceFunction" />
         <ref bean="structuredResources.jsonResourceFunction" />

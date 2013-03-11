@@ -142,11 +142,11 @@ resourcetype semester-page {
       [endif]
       [if links != null]
         [def linkedUpCount 0]
-        [def split 0]
+        [def splitPosition 0]
         [list links link]
           [if link.link != null && link.link != "" && link.linktitle != null && link.linktitle != ""]
-            [if _size > 0 && _index = 0]<ul class="left">[def splitted ceil(_size / 2)][endif]
-            [if splitted = linkedUpCount]</ul><ul class="right">[endif]
+            [if _size > 0 && _index = 0]<ul class="left">[def splitPosition ceil(_size / 2)][endif]
+            [if splitPosition = linkedUpCount]</ul><ul class="right">[endif]
             <li>
               <a href="[val link.link]">[val link.linktitle]</a>
             </li>

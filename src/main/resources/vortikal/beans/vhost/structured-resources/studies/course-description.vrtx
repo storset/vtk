@@ -198,9 +198,8 @@ resourcetype course-description {
         [if term != null && startyear != null]
           <p>[localized term] [localized 'every-other-start'] [val startyear]</p>
         [endif]
-      [elseif teachingsemester != null && teachingsemester = "other"]
-      [else]
-        [if teachingsemester != null]<p>[localized teachingsemester]</p>[endif]
+      [elseif teachingsemester != null && teachingsemester != "other"]
+        <p>[localized teachingsemester]</p>
       [endif]
       [if teachingsemester-other != null]
         [val teachingsemester-other # unescaped]
@@ -231,15 +230,17 @@ resourcetype course-description {
         [if term != null && startyear != null]
           <p>[localized term] [localized 'every-other-start'] [val startyear]</p>
         [endif]
-      [elseif examsemester != null && examsemester = "other"]
-        [if examsemester-other != null][val examsemester-other # unescaped][endif]
-      [else]
-        [if examsemester != null]<p>[localized examsemester]</p>[endif]
+      [elseif examsemester != null && examsemester != "other"]
+        <p>[localized examsemester]</p>
+      [endif]
+      [if examsemester-other != null]
+        [val examsemester-other # unescaped]
       [endif]
       <h3>[localized 'teaching-language']</h3>
       [if teaching-language != null && teaching-language != "" && teaching-language != "other"]
         <p>[localized teaching-language]</p>
-      [elseif teaching-language != null && teaching-language = "other" && teaching-language-text-field != null]
+      [endif]
+      [if teaching-language-text-field != null]
         [val teaching-language-text-field # unescaped]
       [endif]
       [if course-fee != null && course-fee && course-fee-amount != null && course-fee-amount != ""]
@@ -808,7 +809,7 @@ resourcetype course-description {
     over-to-semestre-oppstart-vaar-og-hoest : (en : "Covers two semesters, starting every spring and autumn", no : "Over to semestre, oppstart hver vår og høst", nn : "Over to semester, oppstart kvar vår og haust"),
 
     teaching-language : (en : "Teaching language", no : "Undervisningsspråk", nn : "Undervisningsspråk"),
-    teaching-language-text-field : (en : "Fill in teaching language", no : "Skriv inn undervisningsspråk", nn : "Skriv inn undervisningsspråk"),
+    teaching-language-text-field : (en : "Other", no : "Annet", nn : "Anna"),
     norwegian : (en : "Norwegian", no : "Norsk", nn : "Norsk"),
     english : (en : "English", no : "Engelsk", nn : "Engelsk"),
     english-by-need : (en : "Norwegian (English on demand)", no : "Norsk (engelsk på forespørsel)", nn : "Norsk (engelsk på førespurnad)"),

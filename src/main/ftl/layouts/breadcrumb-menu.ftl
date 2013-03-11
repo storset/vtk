@@ -13,9 +13,9 @@
           </#if>
         <#else>
           <#if (elem.URL.path = markedurl.path)>
-            <li class="vrtx-parent" ><a class="vrtx-marked" href="${elem.URL}"><span>${elem.title?html}</span></a></li>
+            <li class="vrtx-parent" ><a class="vrtx-marked" href="${elem.URL}"><span>${elem.title?html}</span></a>
           <#else>
-            <li class="vrtx-parent" ><a href="${elem.URL}"><span>${elem.title?html}</span></a></li>
+            <li class="vrtx-parent" ><a href="${elem.URL}"><span>${elem.title?html}</span></a>
           </#if>
         </#if>
       <#else>  
@@ -29,9 +29,9 @@
         <#else>
           <#if (breadcrumb?size > elem_index + 1)> 
             <#if elem.URL?exists>
-              <li class="vrtx-parent" ><a href="${elem.URL}"><span>${elem.title?html}</span></a></li>
+              <li class="vrtx-parent" ><a href="${elem.URL}"><span>${elem.title?html}</span></a>
             <#else>
-              <li class="vrtx-parent" ><span class="vrtx-no-url"><span>${elem.title?html}</span></span></li>
+              <li class="vrtx-parent" ><span class="vrtx-no-url"><span>${elem.title?html}</span></span>
             </#if>
           <#else>
             <ul>
@@ -53,6 +53,8 @@
          </#list>
       </ul>
     </#if>
+
+    </li>
 
   </ul>
 </#if>

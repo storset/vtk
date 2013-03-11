@@ -54,19 +54,25 @@ import org.vortikal.web.referencedata.provider.BreadcrumbElement;
 import org.vortikal.web.service.URL;
 import org.vortikal.web.view.components.menu.MenuItem;
 
+/**
+ * XXX This is NOT a simple breadcrumb menu component, as the name would
+ * suggest. It creates a parent/child menu.
+ */
 public class BreadcrumbMenuComponent extends ListMenuComponent {
 
+    private static final int DEFAULT_NUMBER_OF_SIBLINGS = 3000;
     private static final String PARAMETER_MAX_NUMBER_OF_SIBLINGS = "max-number-of-siblings";
     private static final String PARAMETER_MAX_NUMBER_OF_SIBLINGS_DESC = "Defines the maximum number of siblings. When this limit is"
-            + " reached no siblings are going to be displayed. Default limit is: " + Integer.MAX_VALUE;
-    private static final String PARAMETER_DISPLAY_FROM_LEVEL_DESC = "Defines the starting URI level for the menu";
+            + " reached no siblings are going to be displayed. Default limit is: " + DEFAULT_NUMBER_OF_SIBLINGS;
+    private static final String BREAD_CRUMB_MENU_PARAMETER_DISPLAY_FROM_LEVEL_DESC = "Defines the starting URI level for the menu";
 
     @Override
     public void processModel(Map<String, Object> model, DecoratorRequest request, DecoratorResponse response)
             throws Exception {
 
         int displayFromLevel = getIntegerGreaterThanZero(PARAMETER_DISPLAY_FROM_LEVEL, request, -1);
-        int maxSiblings = getIntegerGreaterThanZero(PARAMETER_MAX_NUMBER_OF_SIBLINGS, request, Integer.MAX_VALUE);
+        int maxSiblings = getIntegerGreaterThanZero(PARAMETER_MAX_NUMBER_OF_SIBLINGS, request,
+                DEFAULT_NUMBER_OF_SIBLINGS);
 
         RequestContext requestContext = RequestContext.getRequestContext();
         String token = requestContext.getSecurityToken();
@@ -113,27 +119,29 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
         URL markedUrl = this.menuGenerator.getViewService().constructURL(currentResource, principal, false);
         breadCrumbElements.add(new BreadcrumbElement(markedUrl, getMenuTitle(currentResource)));
 
-        List<MenuItem<PropertySet>> menuItemList = generateMenuItemList(currentResource.getChildURIs(),
-                currentResource, token);
+        List<MenuItem<PropertySet>> menuItemList = generateMenuItemList(repository.listChildren(token,
+                currentResource.getURI(), true));
 
-        // If menu is null or empty, i.e. current resource had no children or
+        // If menu is null or empty, i.e. current resource has no children or
         // all children were hidden, then generate menu based on siblings.
         if (menuItemList != null && menuItemList.size() == 0) {
             Resource currentResourceParent = null;
             try {
                 currentResourceParent = repository.retrieve(token, currentResource.getURI().getParent(), true);
-            } catch (AuthorizationException e) {
-            } catch (AuthenticationException e) {
+            } catch (Exception e) {
+                // Ignore
             }
 
             if (currentResourceParent != null) {
-                menuItemList = generateMenuItemList(currentResourceParent.getChildURIs(), currentResource, token);
+                menuItemList = generateMenuItemList(repository
+                        .listChildren(token, currentResourceParent.getURI(), true));
                 breadCrumbElements.remove(breadCrumbElements.size() - 1);
                 if (menuItemList.size() > maxSiblings) {
                     menuItemList = new ArrayList<MenuItem<PropertySet>>();
                     menuItemList.add(buildItem(currentResource));
                 }
             }
+
         }
 
         menuItemList = sortDefaultOrder(menuItemList, request.getLocale());
@@ -145,6 +153,9 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
 
     private List<BreadcrumbElement> getBreadcrumbElements() throws Exception {
 
+        // XXX NO! Reconsider this. Refactor BreadCrumbProvider and create
+        // separate generic class for bread crumb creation. Use this separate
+        // implementation in provider and here.
         String breadcrumbName = "breadcrumb";
         BreadCrumbProvider breadCrumbProvider = new BreadCrumbProvider();
         breadCrumbProvider.setSkipCurrentResource(true);
@@ -173,32 +184,17 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
         return result;
     }
 
-    private List<MenuItem<PropertySet>> generateMenuItemList(List<Path> children, Resource currentResource, String token)
-            throws Exception {
+    private List<MenuItem<PropertySet>> generateMenuItemList(Resource[] children) throws Exception {
 
-        Repository repository = RequestContext.getRequestContext().getRepository();
-        List<MenuItem<PropertySet>> items = new ArrayList<MenuItem<PropertySet>>();
-
-        for (Path childPath : children) {
-            Resource childResource = null;
-            try {
-                childResource = repository.retrieve(token, childPath, true);
-            } catch (AuthorizationException e) {
-                continue; // can't access resource - not displayed in menu
-            } catch (AuthenticationException e) {
-                continue; // can't access resource - not displayed in menu
-            }
-            if (!childResource.isCollection()) {
+        List<MenuItem<PropertySet>> menuItems = new ArrayList<MenuItem<PropertySet>>();
+        for (Resource child : children) {
+            if (!child.isCollection() || child.getProperty(menuGenerator.getHiddenPropDef()) != null) {
                 continue;
             }
-            if (childResource.getProperty(this.menuGenerator.getHiddenPropDef()) != null
-                    && !childResource.equals(currentResource)) {
-                continue; // hidden
-            }
-            items.add(buildItem(childResource));
+            menuItems.add(buildItem(child));
         }
 
-        return items;
+        return menuItems;
     }
 
     private String getMenuTitle(Resource resource) {
@@ -229,7 +225,7 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
     @Override
     protected Map<String, String> getParameterDescriptionsInternal() {
         Map<String, String> map = new LinkedHashMap<String, String>();
-        map.put(PARAMETER_DISPLAY_FROM_LEVEL, PARAMETER_DISPLAY_FROM_LEVEL_DESC);
+        map.put(PARAMETER_DISPLAY_FROM_LEVEL, BREAD_CRUMB_MENU_PARAMETER_DISPLAY_FROM_LEVEL_DESC);
         map.put(PARAMETER_MAX_NUMBER_OF_SIBLINGS, PARAMETER_MAX_NUMBER_OF_SIBLINGS_DESC);
         return map;
     }

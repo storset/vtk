@@ -652,7 +652,6 @@ resourcetype course-description {
 
   view {
     ##
-    [resource-props "."]
     [def document structured-document()]
     [def course-code resource-prop-obj-val(".", "courseContext.fs-course-code")]
     [def locale resource-locale()]

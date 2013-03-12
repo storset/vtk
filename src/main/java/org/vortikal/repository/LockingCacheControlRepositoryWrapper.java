@@ -378,6 +378,16 @@ public class LockingCacheControlRepositoryWrapper implements Repository {
     }
 
     @Override
+    public boolean isReadOnly(Path path, boolean forDelete) {
+        return this.wrappedRepository.isReadOnly(path, forDelete); // Tx
+    }
+    
+    @Override
+    public List<Path> getReadOnlyRoots() {
+        return this.wrappedRepository.getReadOnlyRoots();
+    }
+    
+    @Override
     public Resource[] listChildren(String token, Path uri, boolean forProcessing) throws ResourceNotFoundException,
             AuthorizationException, AuthenticationException, Exception {
         
@@ -706,5 +716,6 @@ public class LockingCacheControlRepositoryWrapper implements Repository {
         }
         this.tempDir = tmp;
     }
+
     
 }

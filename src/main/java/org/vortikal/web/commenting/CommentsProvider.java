@@ -156,7 +156,7 @@ public class CommentsProvider implements ReferenceDataProvider {
                 return false;
             }});
 
-        model.put("repositoryReadOnly", repository.isReadOnly());
+        model.put("repositoryReadOnly", repository.isReadOnly(uri, false));
 
         Map<String, URL> deleteCommentURLs = new HashMap<String, URL>();
 

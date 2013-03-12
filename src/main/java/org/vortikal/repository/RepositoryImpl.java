@@ -144,6 +144,16 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     public boolean isReadOnly() {
         return this.authorizationManager.isReadOnly();
     }
+    
+    @Override
+    public boolean isReadOnly(Path path, boolean forDelete) {
+        return this.authorizationManager.isReadOnly(path, forDelete);
+    }
+    
+    @Override
+    public List<Path> getReadOnlyRoots() {
+        return this.authorizationManager.getReadOnlyRoots();
+    }
 
     @Override
     public String getId() {

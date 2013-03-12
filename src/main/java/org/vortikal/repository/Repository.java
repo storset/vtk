@@ -47,10 +47,24 @@ import org.vortikal.security.Principal;
 public interface Repository {
     
     /**
-     * Is the repository set to read only mode?
+     * Is the repository globally set to read only mode?
      */
     public boolean isReadOnly();
 
+    /**
+     * Is the path set to read-only state ?
+     * @param path The path to test.
+     * @param forDelete whether to check read-only state wrt. deletion
+     *        of path, or just modification of the path or any of its descendants.
+     */
+    public boolean isReadOnly(Path path, boolean forDelete);
+    
+    /**
+     * Returns list of path roots which have been set to read-only. If no paths
+     * have been set to read-only, then the empty list is returned.
+     */
+    public List<Path> getReadOnlyRoots();
+    
     /**
      * Set repository read only option dynamically.
      * 

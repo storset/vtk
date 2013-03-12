@@ -423,6 +423,16 @@ public class RequestLocalRepository implements Repository {
     }
 
     @Override
+    public boolean isReadOnly(Path path, boolean forDelete) {
+        return this.repository.isReadOnly(path, forDelete);
+    }
+
+    @Override
+    public List<Path> getReadOnlyRoots() {
+        return this.repository.getReadOnlyRoots();
+    }
+    
+    @Override
     public void setReadOnly(String token, boolean readOnly) throws Exception {
         this.repository.setReadOnly(token, readOnly);
     }

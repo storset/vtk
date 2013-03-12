@@ -33,10 +33,14 @@ package org.vortikal.repository;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.EnumMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.DelayQueue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -56,7 +60,7 @@ public final class AuthorizationManager {
     private PrincipalManager principalManager;
     private DataAccessor dao;
     
-    private boolean readOnly = false;
+    private List<Path> readOnlyRoots = Collections.EMPTY_LIST;
 
     private Map<Privilege, List<Pattern>> usersBlacklist = 
             new EnumMap<Privilege, List<Pattern>>(Privilege.class);
@@ -253,7 +257,7 @@ public final class AuthorizationManager {
         throws AuthenticationException, AuthorizationException, ReadOnlyException, 
         IOException, ResourceNotFoundException {
 
-        checkReadOnly(principal);
+        checkReadOnly(principal, uri, false);
 
         ResourceImpl resource = loadResource(uri);
         
@@ -282,7 +286,7 @@ public final class AuthorizationManager {
         throws AuthenticationException, AuthorizationException, ReadOnlyException, 
         IOException, ResourceNotFoundException {
 
-        checkReadOnly(principal);
+        checkReadOnly(principal, uri, false);
 
         ResourceImpl resource = loadResource(uri);
         
@@ -303,7 +307,7 @@ public final class AuthorizationManager {
         throws AuthenticationException, AuthorizationException, ReadOnlyException,
         IOException, ResourceNotFoundException {
 
-        checkReadOnly(principal);
+        checkReadOnly(principal, uri, false);
 
         ResourceImpl resource = loadResource(uri);
         
@@ -324,7 +328,7 @@ public final class AuthorizationManager {
         throws AuthenticationException, AuthorizationException, ReadOnlyException,
         IOException, ResourceNotFoundException {
 
-        checkReadOnly(principal);
+        checkReadOnly(principal, uri, false);
 
         ResourceImpl resource = loadResource(uri);
         
@@ -357,7 +361,7 @@ public final class AuthorizationManager {
         throws AuthenticationException, AuthorizationException, ReadOnlyException,
         IOException, ResourceNotFoundException {
 
-        checkReadOnly(principal);
+        checkReadOnly(principal, uri, false);
 
         ResourceImpl resource = loadResource(uri);
         
@@ -378,7 +382,7 @@ public final class AuthorizationManager {
         throws AuthenticationException, AuthorizationException, ReadOnlyException,
         IOException, ResourceNotFoundException {
 
-        checkReadOnly(principal);
+        checkReadOnly(principal, uri, false);
 
         ResourceImpl resource = loadResource(uri);
         
@@ -400,7 +404,7 @@ public final class AuthorizationManager {
         throws AuthenticationException, AuthorizationException, ReadOnlyException,
         IOException, ResourceNotFoundException {
 
-        checkReadOnly(principal);
+        checkReadOnly(principal, uri, false);
         
         ResourceImpl resource = loadResource(uri);
         
@@ -421,7 +425,7 @@ public final class AuthorizationManager {
         throws AuthenticationException, AuthorizationException, ReadOnlyException,
         IOException, ResourceNotFoundException {
 
-        checkReadOnly(principal);
+        checkReadOnly(principal, uri, false);
         
         if (this.roleManager.hasRole(principal, RoleManager.Role.ROOT)) {
             return;
@@ -457,7 +461,7 @@ public final class AuthorizationManager {
         throws AuthenticationException, AuthorizationException, ReadOnlyException, 
         IOException, ResourceNotFoundException {
 
-        checkReadOnly(principal);
+        checkReadOnly(principal, uri, true);
 
         if (uri.isRoot()) {
             // Not allowed to delete root resource.
@@ -496,7 +500,7 @@ public final class AuthorizationManager {
         throws AuthenticationException, AuthorizationException, ReadOnlyException, 
         IOException, ResourceNotFoundException {
 
-        checkReadOnly(principal);
+        checkReadOnly(principal, uri, true);
 
         if (uri.isRoot()) {
             throw new AuthorizationException("Not allowed to delete root resource");
@@ -534,7 +538,7 @@ public final class AuthorizationManager {
         if (this.roleManager.hasRole(principal, RoleManager.Role.ROOT)) {
             return;
         }
-        checkReadOnly(principal);
+        checkReadOnly(principal, uri, false);
         Resource resource = loadResource(uri);
         aclAuthorize(resource, principal, Privilege.ALL);
     }
@@ -576,7 +580,7 @@ public final class AuthorizationManager {
         throws AuthenticationException, AuthorizationException, ReadOnlyException,
         IOException, ResourceNotFoundException {
 
-        checkReadOnly(principal);
+        checkReadOnly(principal, destUri, false);
 
         authorizeRead(srcUri, principal);
 
@@ -620,7 +624,8 @@ public final class AuthorizationManager {
         throws AuthenticationException, AuthorizationException, ReadOnlyException,
         IOException {
 
-        checkReadOnly(principal);
+        checkReadOnly(principal, srcUri, true);
+        checkReadOnly(principal, destUri, deleteDestination);
 
         Resource srcResource = loadResource(srcUri);
         if (srcResource.hasPublishDate()) {
@@ -849,23 +854,113 @@ public final class AuthorizationManager {
         return valid;
     }
 
-    private void checkReadOnly(Principal principal) throws ReadOnlyException {
-        if (isReadOnly() && !this.roleManager.hasRole(principal, RoleManager.Role.ROOT)) {
+    private void checkReadOnly(Principal principal, Path path, boolean forDelete) {
+        if (this.roleManager.hasRole(principal, RoleManager.Role.ROOT)) {
+            return;
+        }
+        if (isReadOnly(path, forDelete)) {
             throw new ReadOnlyException();
         }
     }
-    
+
+    /**
+     * Returns <code>true</code> if the root path has been set to read-only, meaning
+     * that the entire repository is read-only.
+     */
     public boolean isReadOnly() {
-        return this.readOnly;
+        return this.readOnlyRoots.contains(Path.ROOT);
     }
 
     /**
-     * Set repository read-only state. Setting this to <code>true</code> will
+     * Is the path set to read-only state. A path is considered to be read-only
+     * if it is a descendant or equal to a repository read-only root, or
+     * if the path should be deleted and is an ancestor or equal to a repository
+     * read-only root.
+     * 
+     * @param path The path to test.
+     * @param forDelete whether to check read-only state wrt. deletion
+     *        of path, or just modification or creation.
+     */
+    public boolean isReadOnly(Path path, boolean forDelete) {
+        for (Path readOnlyRoot : this.readOnlyRoots) {
+            if (readOnlyRoot.isAncestorOf(path) || readOnlyRoot.equals(path)) {
+                return true;
+            }
+            if (forDelete) {
+                // Cannot delete ancestor paths of read-only roots
+                if (path.isAncestorOf(readOnlyRoot)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Returns list of all root paths that have been set to read-only in
+     * repository.
+     */
+    public List<Path> getReadOnlyRoots() {
+        return this.readOnlyRoots;
+    }
+
+    /**
+     * Set repository read-only state for root path. Setting this to <code>true</code> will
      * cause all actions that modify repository to be denied (except if principal
      * has root role).
      */
     public void setReadOnly(boolean readOnly) {
-        this.readOnly = readOnly;
+        if (readOnly){
+            this.readOnlyRoots = Collections.unmodifiableList(Arrays.asList(new Path[] {Path.ROOT}));
+        } else {
+            this.readOnlyRoots = Collections.EMPTY_LIST;
+        }
+    }
+
+    /**
+     * Set repository read-only state for a set of paths.
+     * @param pathStrings Set of strings for paths that should be read-only.
+     */
+    public void setReadOnlyRootPaths(Set<String> pathStrings) {
+        if (pathStrings.isEmpty()) {
+            this.readOnlyRoots = Collections.EMPTY_LIST;
+            return;
+        }
+        Set<Path> paths = new HashSet<Path>();
+        for (String pathString: pathStrings) {
+            paths.add(Path.fromString(pathString));
+        }
+        ArrayList<Path> roots = new ArrayList<Path>();
+        roots.addAll(normalizeToRoots(paths));
+        this.readOnlyRoots = Collections.unmodifiableList(roots);
+    }
+
+    /**
+     * Normalizes set of paths to all roots in set, so that if the input set
+     * contains both ancestor and descendants, only the ancestor closest to root will
+     * be in the normalized set.
+     * @param paths
+     * @return 
+     */
+    private Set<Path> normalizeToRoots(Set<Path> paths) {
+        if (paths.size() < 2) {
+            return new HashSet<Path>(paths);
+        }
+        
+        Set<Path> normalized = new HashSet<Path>(paths.size());
+        outer: for (Path p: paths) {
+            for (Iterator<Path> it = normalized.iterator(); it.hasNext();) {
+                Path n = it.next();
+                if (p.isAncestorOf(n)) {
+                    it.remove();
+                } else if (n.isAncestorOf(p)) {
+                    continue outer;
+                }
+            }
+            normalized.add(p);
+        }
+
+        return normalized;
     }
 
     public void setPermissionBlacklist(Map<Privilege, List<String>> blacklist) {

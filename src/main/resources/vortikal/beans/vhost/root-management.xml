@@ -329,6 +329,9 @@
     <property name="referenceDataProviders">
       <list>
         <ref bean="resourceContextProvider" />
+        <bean class="org.vortikal.web.actions.repo.RepositoryReadOnlyStateProvider">
+          <property name="authorizationManager" ref="authorizationManager" />
+        </bean>
         <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
           <property name="service" ref="setRepositoryReadOnlyService" />
           <property name="modelName" value="setReadOnlyUrl" />

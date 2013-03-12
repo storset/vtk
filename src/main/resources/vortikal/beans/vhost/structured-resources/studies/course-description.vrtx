@@ -254,50 +254,52 @@ resourcetype course-description {
 
     semesters (hasContact) {
       ##
-      [if hasContact = "true"]
-        <div class="vrtx-frontpage-box grey-box vrtx-distach-bottom" id="vrtx-course-semesters">
-      [else]
-        <div class="vrtx-frontpage-box grey-box" id="vrtx-course-semesters">
+      [def uri resource-prop("./", "uri")]
+      [def semesters search('uri=' + uri + '/* && (type IN semester-page || type IN semester) && published=true')]
+      [if typeof(semesterSearchSort) = 'function']
+        [def semesters semesterSearchSort(semesters)]
       [endif]
-        <h2>[localized 'semester-title']</h2>
-        <p><strong>[localized 'semester']</strong></p>
-          [def uri resource-prop("./", "uri")]
-          [def semesters search('uri=' + uri + '/* && type IN semester-page && published=true')]
-          [if typeof(semesterSearchSort) = 'function']
-            [def semesters semesterSearchSort(semesters)]
+      [list semesters semester]
+        [if _index = 0]
+          [if hasContact = "true"]
+            <div class="vrtx-frontpage-box grey-box vrtx-distach-bottom" id="vrtx-course-semesters">
+          [else]
+            <div class="vrtx-frontpage-box grey-box" id="vrtx-course-semesters">
           [endif]
-          [list semesters semester]
-            [if _index = 0]<ul>[endif]
-            [if _index = 4]
-              <script type="text/javascript" src="/vrtx/__vrtx/static-resources/jquery/include-jquery.js"></script>
-              <script type="text/javascript" src="/vrtx/__vrtx/static-resources/js/toggle.js"></script>
-              <script type="text/javascript"><!--
-                toggler.add({
-                  name: 'course-more-semesters',
-                  showLinkText: '[localized 'term-more-toggle-show']',
-                  combinator: "li"
-                });
-              // -->
-              </script>
-            [endif]
-            [def url view-url(semester)]
-            [def term resource-prop-obj-val(semester, "semesterContext.semesterTerm")]
-            [def year resource-prop-obj-val(semester, "semesterContext.semesterYear")]
-            [if _index < 4]
-              <li>
-            [else]
-              <li class="course-more-semesters">
-            [endif]
-              <a href="[val url]">[if term != null && term != "" && year != null && year != ""][if term = "v"][localized 'spring'][else][localized 'autumn'][endif] [val year][else][val url][endif]</a>
-            </li>
-            [if _index = (_size - 1)]
-              </ul>
-              <span id="vrtx-course-more-semesters-toggle-wrapper" style="display:none">
-                <a id="vrtx-course-more-semesters-toggle" href="javascript:void(0);">[localized 'term-more-toggle-show']</a>
-              </span> 
-            [endif]
-          [endlist]
-      </div>
+          <h2>[localized 'semester-title']</h2>
+          <p><strong>[localized 'semester']</strong></p>
+          <ul>
+        [endif]
+        [if _index = 4]
+          <script type="text/javascript" src="/vrtx/__vrtx/static-resources/jquery/include-jquery.js"></script>
+          <script type="text/javascript" src="/vrtx/__vrtx/static-resources/js/toggle.js"></script>
+          <script type="text/javascript"><!--
+            toggler.add({
+              name: 'course-more-semesters',
+              showLinkText: '[localized 'term-more-toggle-show']',
+              combinator: "li"
+            });
+          // -->
+          </script>
+        [endif]
+        [def url view-url(semester)]
+        [def term resource-prop-obj-val(semester, "semesterContext.semesterTerm")]
+        [def year resource-prop-obj-val(semester, "semesterContext.semesterYear")]
+        [if _index < 4]
+          <li>
+        [else]
+          <li class="course-more-semesters">
+        [endif]
+          <a href="[val url]">[if term != null && term != "" && year != null && year != ""][if term = "v"][localized 'spring'][else][localized 'autumn'][endif] [val year][else][val url][endif]</a>
+        </li>
+        [if _index = (_size - 1)]
+          </ul>
+          <span id="vrtx-course-more-semesters-toggle-wrapper" style="display:none">
+            <a id="vrtx-course-more-semesters-toggle" href="javascript:void(0);">[localized 'term-more-toggle-show']</a>
+          </span> 
+          </div>
+        [endif]
+      [endlist]
       ##
     }
 

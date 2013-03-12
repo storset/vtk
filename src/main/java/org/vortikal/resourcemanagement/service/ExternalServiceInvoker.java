@@ -46,9 +46,10 @@ import org.vortikal.resourcemanagement.ServiceDefinition;
 public class ExternalServiceInvoker implements ApplicationContextAware {
     private ApplicationContext applicationContext;
 
-    public void invokeService(Property property, PropertyEvaluationContext ctx, ServiceDefinition serviceDefinition) {
+    public void invokeService(Property invokingProperty, PropertyEvaluationContext ctx,
+            ServiceDefinition serviceDefinition) {
 
-        if (invalidProperty(property)) {
+        if (invalidProperty(invokingProperty)) {
             return;
         }
 
@@ -59,11 +60,12 @@ public class ExternalServiceInvoker implements ApplicationContextAware {
         String serviceName = serviceDefinition.getServiceName();
         if (this.applicationContext != null && this.applicationContext.containsBean(serviceName)) {
             ExternalService externalService = (ExternalService) this.applicationContext.getBean(serviceName);
-            externalService.invoke(property, ctx, serviceDefinition);
+            externalService.invoke(invokingProperty, ctx, serviceDefinition);
         }
     }
 
     private boolean missingRequired(PropertyEvaluationContext ctx, ServiceDefinition serviceDefinition) {
+        
         List<String> requiredProps = serviceDefinition.getRequires();
         if (requiredProps == null || requiredProps.size() == 0) {
             return false;
@@ -80,14 +82,17 @@ public class ExternalServiceInvoker implements ApplicationContextAware {
     }
 
     private boolean invalidProperty(Property property) {
+
         if (property == null) {
             return true;
         }
+
         if (property.getDefinition().isMultiple()) {
             Value[] values = property.getValues();
             return values == null || values.length == 0;
         }
-        return property == null || property.getValue() == null
+
+        return property.getValue() == null
                 || (Type.BOOLEAN.equals(property.getDefinition().getType()) && property.getBooleanValue() == false);
     }
 

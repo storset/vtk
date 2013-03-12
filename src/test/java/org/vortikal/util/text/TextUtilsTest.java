@@ -34,6 +34,8 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.fail;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.junit.Test;
 
 public class TextUtilsTest {
@@ -71,7 +73,8 @@ public class TextUtilsTest {
         assertEquals(expectedDataCapitalized, test);
 
     }
-    
+
+    @Test
     public void testParseCsv() {
         
         String[] values = TextUtils.parseCsv("a,b,c", ',');
@@ -197,6 +200,7 @@ public class TextUtilsTest {
         assertEquals(0, values.length);
     }
     
+    @Test
     public void testParseKeyValue() {
         String[] kv = TextUtils.parseKeyValue("foo:bar", ':');
         assertEquals(2, kv.length);
@@ -307,6 +311,50 @@ public class TextUtilsTest {
         
     }
     
+    @Test
+    public void testReplaceAll() {
+        assertEquals("abc", TextUtils.replaceAll("aBBAc", "BBA", "b"));
+        assertEquals("aBBAc", TextUtils.replaceAll("abc", "b", "BBA"));
+        assertEquals("a", TextUtils.replaceAll("XXXXXXXXXXXXXXXa", "X", ""));
+        assertEquals("PREFIX-", TextUtils.replaceAll("PREFIX-MIDDLE-SUFFIX", "MIDDLE-SUFFIX", ""));
+        assertEquals("MIDDLE",  TextUtils.replaceAll(
+                                   TextUtils.replaceAll("PREFIX-MIDDLE-SUFFIX", "-SUFFIX", ""), "PREFIX-", ""));
+        assertEquals("1 bar 2 bar 3", TextUtils.replaceAll("1 foo 2 foo 3", "foo", "bar"));
+        assertEquals("abababa", TextUtils.replaceAll("bbb", "", "a"));
+        assertEquals("unchanged", TextUtils.replaceAll("unchanged", "X", "Y"));
+        assertEquals("abc", TextUtils.replaceAll("abc", "abigreplacement", "X"));
+        assertEquals("|-|-|-|-|-|-|-|", TextUtils.replaceAll("|.|.|.|.|.|.|.|", ".", "-"));
+        assertEquals("-.-.-.-.-.-.-.-", TextUtils.replaceAll("|.|.|.|.|.|.|.|", "|", "-"));
+        assertEquals("", TextUtils.replaceAll("XXXXXXXXXXXXXXX", "X", ""));
+        assertEquals("YXY", TextUtils.replaceAll("X", "", "Y"));
+        assertEquals("Y", TextUtils.replaceAll("", "", "Y"));
+        assertEquals("", TextUtils.replaceAll("", "X", "Y"));
+        assertEquals("", TextUtils.replaceAll("", "", ""));
+
+        // Test equal behaviour to that of String.replaceAll, when what to replace is not a regexp:
+        assertEqualsStringReplaceAll("aBBAc", "BBA", "b");
+        assertEqualsStringReplaceAll("abc", "b", "BBA");
+        assertEqualsStringReplaceAll("XXXXXXXXXXXXXXXa", "X", "");
+        assertEqualsStringReplaceAll("PREFIX-MIDDLE-SUFFIX", "MIDDLE-SUFFIX", "");
+        assertEqualsStringReplaceAll("1 foo 2 foo 3", "foo", "bar");
+        assertEqualsStringReplaceAll("bbb", "", "a");
+        assertEqualsStringReplaceAll("unchanged", "X", "Y");
+        assertEqualsStringReplaceAll("abc", "abigreplacement", "X");
+        assertEqualsStringReplaceAll("|.|.|.|.|.|.|.|", ".", "-");
+        assertEqualsStringReplaceAll("|.|.|.|.|.|.|.|", "|", "-");
+        assertEqualsStringReplaceAll("XXXXXXXXXXXXXXX", "X", "");
+        assertEqualsStringReplaceAll("X", "", "Y");
+        assertEqualsStringReplaceAll("", "", "Y");
+        assertEqualsStringReplaceAll("", "X", "Y");
+        assertEqualsStringReplaceAll("", "", "");
+    }
+    
+    private void assertEqualsStringReplaceAll(String input, String replace, String replacement) {
+        assertEquals(TextUtils.replaceAll(input, replace, replacement),
+                     input.replaceAll(Pattern.quote(replace), Matcher.quoteReplacement(replacement)));
+    }
+    
+    @Test
     public void testUnescape() {
         assertEquals("a b c", TextUtils.unescape("\\a \\b c"));
         assertEquals("a b c", TextUtils.unescape("\\a \\b c\\"));

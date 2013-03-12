@@ -39,7 +39,7 @@ import java.util.StringTokenizer;
 import org.apache.commons.lang.WordUtils;
 
 /**
- * Various text parsing utility functions.
+ * Various text parsing and string utility functions.
  */
 public class TextUtils {
 
@@ -213,6 +213,38 @@ public class TextUtils {
             }
         }
         return noDupes.toString();
+    }
+
+    /**
+     * Replace occurences of substring with another string. Can be used in
+     * favour of String.replaceAll() when the string to be replaced does not
+     * need to be a regular expression. This method will roughly give 4x faster
+     * performance in those situations.
+     * 
+     * @param input the string on which to perform replacement.
+     * @param replace the string to replace with.
+     * @param replacement the substring to replace
+     * @return 
+     */
+    public static String replaceAll(String input, String replace, String replacement) {
+        StringBuilder output = new StringBuilder(input.length());
+        for (int i=0; i<input.length(); i++) {
+            char c = input.charAt(i);
+            if (input.startsWith(replace, i)) {
+                output.append(replacement);
+                if (replace.isEmpty()) {
+                    output.append(c);
+                } else {
+                    i += replace.length()-1;
+                }
+            } else {
+                output.append(c);
+            }
+        }
+        if (replace.isEmpty()) {
+            output.append(replacement);
+        }
+        return output.toString();
     }
 
     /**

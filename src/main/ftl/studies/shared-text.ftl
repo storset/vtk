@@ -1,4 +1,11 @@
 <#ftl strip_whitespace=true>
-<#if sharedText?? & sharedText?has_content>
-  ${sharedText}
+<#import "/lib/vortikal.ftl" as vrtx />
+<#if sharedText??>
+  <#if sharedText?has_content>
+    ${sharedText}
+  <#else>
+    ${vrtx.getMsg("shared-text.no-text-for-id")}
+  </#if>
+<#else>
+  ${vrtx.getMsg("shared-text.id-does-not-exist")}
 </#if>

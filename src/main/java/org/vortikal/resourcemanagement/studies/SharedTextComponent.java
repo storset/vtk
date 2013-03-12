@@ -85,23 +85,26 @@ public class SharedTextComponent extends ViewRenderingDecoratorComponent {
         Locale locale = localeResolver.resolveResourceLocale(resource);
         String localeString = locale.toString().toLowerCase();
 
-        JSONObject propSharedText = resolvedsharedTexts.get(key);
-        if (propSharedText == null) {
+        JSONObject propSharedText;
+        if (!resolvedsharedTexts.containsKey(key) || (propSharedText = resolvedsharedTexts.get(key)) == null) {
             return;
         }
 
-        String sharedText = null;
-        if (localeString.contains("ny")) {
-            sharedText = propSharedText.get("description-nn").toString();
-        } else if (!localeString.contains("en")) {
-            sharedText = propSharedText.get("description-no").toString();
-        } else {
-            sharedText = propSharedText.get("description-en").toString();
+        String sharedText;
+        try {
+            if (localeString.contains("ny")) {
+                sharedText = propSharedText.get("description-nn").toString();
+            } else if (!localeString.contains("en")) {
+                sharedText = propSharedText.get("description-no").toString();
+            } else {
+                sharedText = propSharedText.get("description-en").toString();
+            }
+        } catch (Exception e) {
+            sharedText = "";
         }
 
         model.put("sharedText", sharedText);
-
-    };
+    }
 
     @Required
     public void setSharedTextResolver(SharedTextResolver sharedTextResolver) {

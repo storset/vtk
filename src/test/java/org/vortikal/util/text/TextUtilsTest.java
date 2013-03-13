@@ -36,6 +36,7 @@ import static junit.framework.Assert.fail;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import org.junit.Test;
 
 public class TextUtilsTest {
@@ -308,7 +309,15 @@ public class TextUtilsTest {
         } catch (IllegalArgumentException ia) {
             fail("Unexpected invalid argument exception: " + ia.getMessage());
         }
-        
+    }
+    
+    @Test
+    public void testDeleteAll() {
+        assertEquals("", TextUtils.deleteAll("xxx", "x"));
+        assertEquals("a", TextUtils.deleteAll("abcd", "bcd"));
+        assertEquals("d", TextUtils.deleteAll("abcd", "abc"));
+        assertEquals("bc", TextUtils.deleteAll(TextUtils.deleteAll("abcd", "a"),"d"));
+        assertEquals("abcd", TextUtils.deleteAll("abcd", ""));
     }
     
     @Test
@@ -316,6 +325,8 @@ public class TextUtilsTest {
         assertEquals("abc", TextUtils.replaceAll("aBBAc", "BBA", "b"));
         assertEquals("aBBAc", TextUtils.replaceAll("abc", "b", "BBA"));
         assertEquals("a", TextUtils.replaceAll("XXXXXXXXXXXXXXXa", "X", ""));
+        assertEquals("aX", TextUtils.replaceAll("aXXX", "XX", ""));
+        assertEquals("xyz", TextUtils.replaceAll("xyzabc", "abc", ""));
         assertEquals("PREFIX-", TextUtils.replaceAll("PREFIX-MIDDLE-SUFFIX", "MIDDLE-SUFFIX", ""));
         assertEquals("MIDDLE",  TextUtils.replaceAll(
                                    TextUtils.replaceAll("PREFIX-MIDDLE-SUFFIX", "-SUFFIX", ""), "PREFIX-", ""));

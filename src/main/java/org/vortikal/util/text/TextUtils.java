@@ -214,39 +214,52 @@ public class TextUtils {
         }
         return noDupes.toString();
     }
+    
+    /**
+     * Delete all occurences of substring in input string.
+     * 
+     * @param input the input string
+     * @param substring the substring to delete all occurences of in input string
+     * @return the processed string
+     */
+    public static String deleteAll(String input, String substring) {
+        return replaceAll(input, substring, "");
+    }
 
     /**
      * Replace occurences of substring with another string. Can be used in
      * favour of String.replaceAll() when the string to be replaced does not
-     * need to be a regular expression. This method will roughly give 4x faster
-     * performance in those situations.
+     * need to be a regular expression. This method will be faster.
      * 
      * @param input the string on which to perform replacement.
      * @param replace the string to replace with.
      * @param replacement the substring to replace
-     * @return 
+     * @throws NullPointerException if any parameter is <code>null</code>.
+     * @return the string with the substitutions applied.
      */
     public static String replaceAll(String input, String replace, String replacement) {
-        StringBuilder output = new StringBuilder(input.length());
-        for (int i=0; i<input.length(); i++) {
-            char c = input.charAt(i);
-            if (input.startsWith(replace, i)) {
-                output.append(replacement);
-                if (replace.isEmpty()) {
-                    output.append(c);
-                } else {
-                    i += replace.length()-1;
-                }
-            } else {
-                output.append(c);
-            }
-        }
+        StringBuilder output = new StringBuilder(replacement.length() > replace.length() ? 
+                                               (int)(input.length() * 1.5) : input.length());
         if (replace.isEmpty()) {
             output.append(replacement);
+            for (int i=0; i<input.length(); i++){
+                output.append(input.charAt(i));
+                output.append(replacement);
+            }
+            return output.toString();
+        }
+        int p = 0, n;
+        while ((n = input.indexOf(replace, p)) != -1) {
+            output.append(input, p, n);
+            p = n + replace.length();
+            output.append(replacement);
+        }
+        if (p < input.length()) {
+            output.append(input, p, input.length());
         }
         return output.toString();
     }
-
+    
     /**
      * Unescape all escape sequences in string (strip one level of backslashes).
      * An escape sequence always consists of two characters on the form "\ &lt;anychar&gt;".

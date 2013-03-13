@@ -21,8 +21,12 @@ resourcetype featured-content {
           [def webaddress item.featuredWebaddress]
           [def urlText item.featuredWebaddressText]
           [def number _index + 1]
-           
-          <div class="vrtx-featured-item" id="vrtx-featured-item-[val number]">
+          
+          [if picture != null && picture != ""]
+            <div class="vrtx-featured-item vrtx-featured-item-picture" id="vrtx-featured-item-[val number]">
+          [else] 
+            <div class="vrtx-featured-item" id="vrtx-featured-item-[val number]">
+          [endif] 
             [if picture != null && picture != ""]
               <div class="vrtx-featured-item-picture">
                 [if webaddress != null && webaddress != ""]

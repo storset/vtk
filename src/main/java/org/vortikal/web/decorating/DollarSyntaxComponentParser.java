@@ -40,6 +40,7 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.vortikal.text.html.HtmlUtil;
 
 
 public class DollarSyntaxComponentParser implements TextualComponentParser {
@@ -232,10 +233,7 @@ public class DollarSyntaxComponentParser implements TextualComponentParser {
             String value = unescapedSubstring(
                     s, ']', '\\', valueStartIdx, valueEndIdx).trim();
 
-            value = value.replaceAll("&amp;", "&");
-            value = value.replaceAll("&quot;", "\"");
-            value = value.replaceAll("&lt;", "<");
-            value = value.replaceAll("&gt;", ">");
+            value = HtmlUtil.decodeBasicEntities(value);
 
             result.put(name, value);
             startIdx = valueEndIdx;

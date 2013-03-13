@@ -149,17 +149,17 @@ resourcetype semester-page {
         [endlist]
         [def splitPosition ceil(realSize / 2)]
         [if realSize > 0]
-          [def count 0]
+          [def realCount 0]
           [list links link]
             [if link.link != null && link.link != "" && link.linktitle != null && link.linktitle != ""]
-              [if _size > 0 && _index = 0]<ul class="left">[endif]
-              [if splitPosition = count]</ul><ul class="right">[endif]
+              [if _index = 0]<ul class="left">[endif]
+              [if splitPosition = realCount]</ul><ul class="right">[endif]
               <li>
                 <a href="[val link.link]">[val link.linktitle]</a>
               </li>
-              [def count count + 1]
+              [def realCount realCount + 1]
             [endif]
-            [if _size = _index + 1 && count > 0]</ul>[endif]
+            [if _size = _index + 1]</ul>[endif]
           [endlist]
         [endif]
       [endif]

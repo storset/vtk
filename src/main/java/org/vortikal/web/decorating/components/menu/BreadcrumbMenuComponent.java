@@ -119,12 +119,15 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
         URL markedUrl = this.menuGenerator.getViewService().constructURL(currentResource, principal, false);
         breadCrumbElements.add(new BreadcrumbElement(markedUrl, getMenuTitle(currentResource)));
 
+        // XXX: for this case currentResource will never be equal any of the resources in list to generate menu from,
+        //      so generatemenuItemList need not check for this condition for hidden ones. However, it will need to
+        //      do that for the sibling case in the next call below.
         List<MenuItem<PropertySet>> menuItemList = generateMenuItemList(repository.listChildren(token,
                 currentResource.getURI(), true), currentResource);
 
-        // If menu is null or empty, i.e. current resource has no children or
+        // If menu is empty, i.e. current resource has no children or
         // all children were hidden, then generate menu based on siblings.
-        if (menuItemList != null && menuItemList.size() == 0) {
+        if (menuItemList.isEmpty()) {
             Resource currentResourceParent = null;
             try {
                 currentResourceParent = repository.retrieve(token, currentResource.getURI().getParent(), true);
@@ -141,7 +144,6 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
                     menuItemList.add(buildItem(currentResource));
                 }
             }
-
         }
 
         menuItemList = sortDefaultOrder(menuItemList, request.getLocale());
@@ -184,19 +186,19 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
         return result;
     }
 
-    private List<MenuItem<PropertySet>> generateMenuItemList(Resource[] children, Resource currentResource) throws Exception {
+    private List<MenuItem<PropertySet>> generateMenuItemList(Resource[] resources, Resource currentResource) throws Exception {
 
         List<MenuItem<PropertySet>> menuItems = new ArrayList<MenuItem<PropertySet>>();
-        for (Resource child : children) {
-            if (!child.isCollection()) {
+        for (Resource r : resources) {
+            if (!r.isCollection()) {
                 continue;
             }
-            if (child.getProperty(menuGenerator.getHiddenPropDef()) != null
-                    && !child.getURI().equals(currentResource.getURI())) {
+            if (r.getProperty(menuGenerator.getHiddenPropDef()) != null
+                    && !r.getURI().equals(currentResource.getURI())) {
                 continue;
             }
             
-            menuItems.add(buildItem(child));
+            menuItems.add(buildItem(r));
         }
 
         return menuItems;

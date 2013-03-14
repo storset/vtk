@@ -981,6 +981,9 @@
     escape '@' order by r.uri, p.extra_prop_entry_id
   </select>
 
+  <!-- FIXME This will fail when a resource has *NO* rows in extra_prop_entry, due to
+       mapping of 'inheritable' field (right side of join gets all null values, while not null expected for certain columns.
+       Same thing for other statements in this file.  -->
   <select id="orderedPropertySetIterationForUris" parameterClass="java.lang.Integer"
                                                   resultMap="ResourceAndExtraProperties">
     select r.*,

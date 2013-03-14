@@ -1,7 +1,0 @@
-
-resourcetype article {
-  properties {
-    title : string required,
-    content : html
-  }
-}

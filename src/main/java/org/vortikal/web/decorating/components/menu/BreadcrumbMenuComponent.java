@@ -120,7 +120,7 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
         breadCrumbElements.add(new BreadcrumbElement(markedUrl, getMenuTitle(currentResource)));
 
         List<MenuItem<PropertySet>> menuItemList = generateMenuItemList(repository.listChildren(token,
-                currentResource.getURI(), true));
+                currentResource.getURI(), true), currentResource);
 
         // If menu is null or empty, i.e. current resource has no children or
         // all children were hidden, then generate menu based on siblings.
@@ -134,7 +134,7 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
 
             if (currentResourceParent != null) {
                 menuItemList = generateMenuItemList(repository
-                        .listChildren(token, currentResourceParent.getURI(), true));
+                        .listChildren(token, currentResourceParent.getURI(), true), currentResource);
                 breadCrumbElements.remove(breadCrumbElements.size() - 1);
                 if (menuItemList.size() > maxSiblings) {
                     menuItemList = new ArrayList<MenuItem<PropertySet>>();
@@ -184,13 +184,18 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
         return result;
     }
 
-    private List<MenuItem<PropertySet>> generateMenuItemList(Resource[] children) throws Exception {
+    private List<MenuItem<PropertySet>> generateMenuItemList(Resource[] children, Resource currentResource) throws Exception {
 
         List<MenuItem<PropertySet>> menuItems = new ArrayList<MenuItem<PropertySet>>();
         for (Resource child : children) {
-            if (!child.isCollection() || child.getProperty(menuGenerator.getHiddenPropDef()) != null) {
+            if (!child.isCollection()) {
                 continue;
             }
+            if (child.getProperty(menuGenerator.getHiddenPropDef()) != null
+                    && !child.getURI().equals(currentResource.getURI())) {
+                continue;
+            }
+            
             menuItems.add(buildItem(child));
         }
 

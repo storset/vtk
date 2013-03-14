@@ -36,8 +36,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.vortikal.repository.Acl;
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.Path;
+import org.vortikal.repository.Privilege;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Repository;
@@ -123,7 +125,7 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
         //      so generatemenuItemList need not check for this condition for hidden ones. However, it will need to
         //      do that for the sibling case in the next call below.
         List<MenuItem<PropertySet>> menuItemList = generateMenuItemList(repository.listChildren(token,
-                currentResource.getURI(), true), currentResource);
+                currentResource.getURI(), true), currentResource, principal, repository);
 
         // If menu is empty, i.e. current resource has no children or
         // all children were hidden, then generate menu based on siblings.
@@ -137,7 +139,7 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
 
             if (currentResourceParent != null) {
                 menuItemList = generateMenuItemList(repository
-                        .listChildren(token, currentResourceParent.getURI(), true), currentResource);
+                        .listChildren(token, currentResourceParent.getURI(), true), currentResource, principal, repository);
                 breadCrumbElements.remove(breadCrumbElements.size() - 1);
                 if (menuItemList.size() > maxSiblings) {
                     menuItemList = new ArrayList<MenuItem<PropertySet>>();
@@ -186,10 +188,12 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
         return result;
     }
 
-    private List<MenuItem<PropertySet>> generateMenuItemList(Resource[] resources, Resource currentResource) throws Exception {
+    private List<MenuItem<PropertySet>> generateMenuItemList(Resource[] resources, Resource currentResource,
+                                                           Principal principal, Repository repository) throws Exception {
 
         List<MenuItem<PropertySet>> menuItems = new ArrayList<MenuItem<PropertySet>>();
         for (Resource r : resources) {
+            // Filtering:
             if (!r.isCollection()) {
                 continue;
             }
@@ -197,7 +201,13 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
                     && !r.getURI().equals(currentResource.getURI())) {
                 continue;
             }
-            
+            // Remove resources that current principal is not allowed to access
+            // (they may appear when using Repository.loadChildren).
+            if (!repository.authorize(principal, r.getAcl(), Privilege.READ_PROCESSED)) {
+                continue;
+            }
+
+            // Passed filtering, build menu item:
             menuItems.add(buildItem(r));
         }
 

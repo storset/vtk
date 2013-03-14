@@ -5,14 +5,14 @@ resourcetype organizational-unit {
     getExternalUnitInfo : boolean,
     showExtendedUnitList : boolean defaultvalue("false"),
     displayAcronym : boolean,
-    name : string external:organizationMetadataLdapService,
-    acronym : string external:organizationMetadataLdapService,
-    postalAddress : string multiple external:organizationMetadataLdapService,
-    visitingAddress : string multiple external:organizationMetadataLdapService,
-    phone : string multiple external:organizationMetadataLdapService,
-    fax : string multiple external:organizationMetadataLdapService,
-    email : string multiple external:organizationMetadataLdapService,
-    externalUnitMetaData : derived external:organizationMetadataLdapService,
+    name : string,
+    acronym : string,
+    postalAddress : string multiple,
+    visitingAddress : string multiple,
+    phone : string multiple,
+    fax : string multiple,
+    email : string multiple,
+    externalUnitMetaData : derived,
     title : derived (name) eval (name)
       overrides title default name,
     picture : image_ref,
@@ -46,7 +46,9 @@ resourcetype organizational-unit {
   }
 
   services {
-    getExternalUnitInfo organizationMetadataLdapService requires(areacode)
+    getExternalUnitInfo organizationMetadataLdapService
+      requires(areacode)
+      affects(name, acronym, postalAddress, visitingAddress, phone, fax, email, externalUnitMetaData)
   }
 
   view-components {

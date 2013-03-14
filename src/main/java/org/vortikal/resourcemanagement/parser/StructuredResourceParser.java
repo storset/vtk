@@ -55,7 +55,6 @@ import org.vortikal.resourcemanagement.DisplayTemplate;
 import org.vortikal.resourcemanagement.StructuredResourceDescription;
 import org.vortikal.resourcemanagement.StructuredResourceManager;
 
-
 @SuppressWarnings("unchecked")
 public class StructuredResourceParser implements InitializingBean {
 
@@ -68,12 +67,12 @@ public class StructuredResourceParser implements InitializingBean {
     private ScriptDefinitionParser scriptDefinitionParser;
     private ServiceDefinitionParser serviceDefinitionParser;
     private VocabularyDefinitionParser vocabularyDefinitionParser;
-    
+
     private static Log logger = LogFactory.getLog(StructuredResourceParser.class);
 
     public void afterPropertiesSet() throws Exception {
-        this.parsedResourceDescriptions = new ArrayList<ParsedResourceDescription>();
 
+        this.parsedResourceDescriptions = new ArrayList<ParsedResourceDescription>();
         this.propertyDescriptionParser = new PropertyDescriptionParser();
         this.editRuleParser = new EditRuleParser();
         this.scriptDefinitionParser = new ScriptDefinitionParser();
@@ -88,23 +87,23 @@ public class StructuredResourceParser implements InitializingBean {
         parseResourceTypeDefinition(parseUnit);
 
         List<ParsedResourceDescription> tmp = new ArrayList<ParsedResourceDescription>();
-        for (ParsedResourceDescription prd : this.parsedResourceDescriptions) {
+        for (ParsedResourceDescription prd : parsedResourceDescriptions) {
             if (prd.hasParent()) {
-                ParsedResourceDescription parent = getParent(this.parsedResourceDescriptions, prd);
+                ParsedResourceDescription parent = getParent(parsedResourceDescriptions, prd);
                 if (parent != null) {
                     parent.addChild(prd);
                 }
                 tmp.add(prd);
             }
         }
-        this.parsedResourceDescriptions.removeAll(tmp);
-        registerParsedResourceDescriptions(this.parsedResourceDescriptions);
-        this.structuredResourceManager.registrationComplete();
+        parsedResourceDescriptions.removeAll(tmp);
+        registerParsedResourceDescriptions(parsedResourceDescriptions);
+        structuredResourceManager.registrationComplete();
     }
 
     private void registerParsedResourceDescriptions(List<ParsedResourceDescription> l) throws Exception {
         for (ParsedResourceDescription prd : l) {
-            this.structuredResourceManager.register(prd.getStructuredResourceDescription());
+            structuredResourceManager.register(prd.getStructuredResourceDescription());
             if (prd.hasChildren()) {
                 registerParsedResourceDescriptions(prd.getChildren());
             }
@@ -113,11 +112,11 @@ public class StructuredResourceParser implements InitializingBean {
 
     private void parseResourceTypeDefinition(ParseUnit parseUnit) throws Exception {
         logger.info("Parse: " + parseUnit.description);
-        
+
         ResourcetreeParser parser = parseUnit.parser;
         ResourcetreeParser.resources_return resources = parser.resources();
         if (parser.getNumberOfSyntaxErrors() > 0) {
-            
+
             List<String> messages = parser.getErrorMessages();
             StringBuilder mainMessage = new StringBuilder();
             for (String m : messages) {
@@ -125,7 +124,7 @@ public class StructuredResourceParser implements InitializingBean {
             }
             throw new IllegalStateException("Unable to parse resource tree description: " + mainMessage.toString());
         }
-        
+
         CommonTree resourcetree = (CommonTree) resources.getTree();
         List<CommonTree> children = resourcetree.getChildren();
         if (children.size() == 1) {
@@ -149,7 +148,7 @@ public class StructuredResourceParser implements InitializingBean {
     }
 
     private StructuredResourceDescription createStructuredResourceDescription(Tree resource) {
-        StructuredResourceDescription srd = new StructuredResourceDescription(this.structuredResourceManager);
+        StructuredResourceDescription srd = new StructuredResourceDescription(structuredResourceManager);
         srd.setName(resource.getText());
 
         List<CommonTree> resourceDescription = ((CommonTree) resource).getChildren();
@@ -160,10 +159,10 @@ public class StructuredResourceParser implements InitializingBean {
                     srd.setInheritsFrom(descriptionEntry.getChild(0).getText());
                     break;
                 case ResourcetreeLexer.PROPERTIES:
-                    this.propertyDescriptionParser.parsePropertyDescriptions(srd, descriptionEntry.getChildren());
+                    propertyDescriptionParser.parsePropertyDescriptions(srd, descriptionEntry.getChildren());
                     break;
                 case ResourcetreeLexer.EDITRULES:
-                    this.editRuleParser.parseEditRulesDescriptions(srd, descriptionEntry.getChildren());
+                    editRuleParser.parseEditRulesDescriptions(srd, descriptionEntry.getChildren());
                     break;
                 case ResourcetreeLexer.VIEWCOMPONENTS:
                     handleViewComponents(srd, descriptionEntry.getChildren());
@@ -177,22 +176,23 @@ public class StructuredResourceParser implements InitializingBean {
                     handleLocalization(srd, descriptionEntry.getChildren());
                     break;
                 case ResourcetreeLexer.SCRIPTS:
-                    this.scriptDefinitionParser.parseScripts(srd, descriptionEntry.getChildren());
+                    scriptDefinitionParser.parseScripts(srd, descriptionEntry.getChildren());
                     break;
                 case ResourcetreeLexer.SERVICES:
-                    this.serviceDefinitionParser.parseServices(srd, descriptionEntry.getChildren());
+                    serviceDefinitionParser.parseServices(srd, descriptionEntry.getChildren());
                     break;
                 case ResourcetreeLexer.VOCABULARY:
-                    this.vocabularyDefinitionParser.handleVocabulary(srd, descriptionEntry.getChildren());
+                    vocabularyDefinitionParser.handleVocabulary(srd, descriptionEntry.getChildren());
                     break;
                 default:
-                    throw new IllegalStateException(srd.getName() + ": unknown token type: " + descriptionEntry.getText());
+                    throw new IllegalStateException(srd.getName() + ": unknown token type: "
+                            + descriptionEntry.getText());
                 }
             }
         }
         return srd;
     }
-    
+
     private void handleLocalization(StructuredResourceDescription srd, List<CommonTree> propertyDescriptions) {
         if (!hasContent(propertyDescriptions)) {
             return;
@@ -240,7 +240,7 @@ public class StructuredResourceParser implements InitializingBean {
         ResourcetreeParser parser;
         String description;
     }
-    
+
     private ParseUnit createParser(String filename) throws IOException {
         Resource resource = resolveLocation(filename);
         if (resource == null) {
@@ -258,14 +258,13 @@ public class StructuredResourceParser implements InitializingBean {
 
     private Resource resolveLocation(String filename) throws IOException {
         if (filename != null) {
-            return this.defaultResourceTypeDefinitions.createRelative(filename);
-        } else {
-            return this.defaultResourceTypeDefinitions;
+            return defaultResourceTypeDefinitions.createRelative(filename);
         }
+        return defaultResourceTypeDefinitions;
     }
 
     public StructuredResourceDescription getResourceDescription(String name) {
-        return this.structuredResourceManager.get(name);
+        return structuredResourceManager.get(name);
     }
 
     @Required
@@ -292,14 +291,14 @@ public class StructuredResourceParser implements InitializingBean {
         }
 
         public void addChild(ParsedResourceDescription prd) {
-            if (this.children == null) {
-                this.children = new ArrayList<ParsedResourceDescription>();
+            if (children == null) {
+                children = new ArrayList<ParsedResourceDescription>();
             }
             children.add(prd);
         }
 
         public boolean hasChildren() {
-            return this.children != null && this.children.size() > 0;
+            return children != null && children.size() > 0;
         }
 
         public List<ParsedResourceDescription> getChildren() {

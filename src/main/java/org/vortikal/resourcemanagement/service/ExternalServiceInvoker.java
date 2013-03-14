@@ -42,12 +42,29 @@ import org.vortikal.repository.resourcetype.PropertyType.Type;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.resourcemanagement.ServiceDefinition;
 
-@Deprecated
 public class ExternalServiceInvoker implements ApplicationContextAware {
+
     private ApplicationContext applicationContext;
 
-    public void invokeService(Property invokingProperty, PropertyEvaluationContext ctx,
-            ServiceDefinition serviceDefinition) {
+    /**
+     * Invoke an external service
+     * 
+     * @param invokingProperty
+     *            The property that invokes the service, based on content
+     *            existence. If invoking property has content, or content is
+     *            boolean and true, service is invoked.
+     * 
+     * @param serviceDefinition
+     *            The service definition, including a name (identifier), service
+     *            name (service to invoke) and any other requirements for actual
+     *            service invocation.
+     * 
+     * @param ctx
+     *            The evaluation context to hold potential changes caused by
+     *            service invocation, such as changes to property values.
+     */
+    public void invokeService(Property invokingProperty, ServiceDefinition serviceDefinition,
+            PropertyEvaluationContext ctx) {
 
         if (invalidProperty(invokingProperty)) {
             return;
@@ -65,7 +82,7 @@ public class ExternalServiceInvoker implements ApplicationContextAware {
     }
 
     private boolean missingRequired(PropertyEvaluationContext ctx, ServiceDefinition serviceDefinition) {
-        
+
         List<String> requiredProps = serviceDefinition.getRequires();
         if (requiredProps == null || requiredProps.size() == 0) {
             return false;

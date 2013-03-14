@@ -87,9 +87,6 @@ public class PropertyDescriptionParser {
             case ResourcetreeLexer.BINARY:
                 bin.setType(descEntry.getText());
                 break;
-            case ResourcetreeLexer.EXTERNAL:
-                bin.setExternalService(descEntry.getChild(0).getText());
-                break;
             default:
                 throw new IllegalStateException("Unknown token type for simple property description: "
                         + descEntry.getType());
@@ -98,12 +95,16 @@ public class PropertyDescriptionParser {
     }
 
     private void populateSimplePropertyDescription(SimplePropertyDescription p, List<CommonTree> propertyDescription) {
-        String type = null;
+
+        String propertyType = null;
         for (CommonTree descEntry : propertyDescription) {
-            switch (descEntry.getType()) {
+
+            int descType = descEntry.getType();
+
+            switch (descType) {
             case ResourcetreeLexer.PROPTYPE:
-                type = descEntry.getText();
-                p.setType(type);
+                propertyType = descEntry.getText();
+                p.setType(propertyType);
                 break;
             case ResourcetreeLexer.REQUIRED:
                 p.setRequired(true);
@@ -117,23 +118,20 @@ public class PropertyDescriptionParser {
             case ResourcetreeLexer.MULTIPLE:
                 p.setMultiple(true);
                 break;
-            case ResourcetreeLexer.EXTERNAL:
-                p.setExternalService(descEntry.getChild(0).getText());
-                break;
             case ResourcetreeLexer.DEFAULTVALUE:
                 p.setDefaultValue(descEntry.getChild(0).getText());
                 break;
             case ResourcetreeLexer.TRIM:
-                if (!ParserConstants.PROPTYPE_STRING.equals(type)) {
+                if (!ParserConstants.PROPTYPE_STRING.equals(propertyType)) {
                     throw new IllegalArgumentException("Trim is only applicable for properties of type STRING.");
                 }
                 p.setTrim(true);
                 break;
             default:
-                throw new IllegalStateException("Unknown token type for simple property description: "
-                        + descEntry.getType());
+                throw new IllegalStateException("Unknown token type for simple property description: " + descType);
             }
         }
+
     }
 
     private void populateJSONPropertyDescription(JSONPropertyDescription p, List<CommonTree> propertyDescription) {
@@ -148,9 +146,6 @@ public class PropertyDescriptionParser {
                 break;
             case ResourcetreeLexer.NOEXTRACT:
                 p.setNoExtract(true);
-                break;
-            case ResourcetreeLexer.EXTERNAL:
-                p.setExternalService(descEntry.getChild(0).getText());
                 break;
             default:
                 throw new IllegalStateException("Unknown token type for derived property description: "
@@ -202,14 +197,17 @@ public class PropertyDescriptionParser {
         int index = 0;
         Tree fields = descEntry.getChild(index);
 
+        if (fields == null) {
+            return;
+        }
+
         if (fields.getType() == ResourcetreeLexer.MULTIPLE) {
             p.setMultiple(true);
             index++;
             fields = descEntry.getChild(index);
         }
 
-        if (fields.getType() == ResourcetreeLexer.EXTERNAL) {
-            p.setExternalService(fields.getChild(0).getText());
+        if (fields == null) {
             return;
         }
 
@@ -219,7 +217,7 @@ public class PropertyDescriptionParser {
         }
 
         Tree eval = descEntry.getChild(index + 1);
-        
+
         DerivedPropertyEvaluationDescription evaluationDescription = new DerivedPropertyEvaluationDescription();
         for (int i = 0; i < eval.getChildCount(); i++) {
             Tree evalDesc = eval.getChild(i);

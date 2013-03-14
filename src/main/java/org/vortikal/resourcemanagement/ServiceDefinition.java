@@ -37,11 +37,13 @@ public class ServiceDefinition {
     private String name;
     private String serviceName;
     private List<String> requires;
+    private List<String> affects;
 
-    public ServiceDefinition(String name, String serviceName, List<String> requires) {
+    public ServiceDefinition(String name, String serviceName, List<String> requires, List<String> affects) {
         this.name = name;
         this.serviceName = serviceName;
         this.requires = requires;
+        this.affects = affects;
     }
 
     public String getName() {
@@ -54,6 +56,10 @@ public class ServiceDefinition {
 
     public List<String> getRequires() {
         return requires;
+    }
+
+    public List<String> getAffects() {
+        return affects;
     }
 
     @Override

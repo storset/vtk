@@ -36,6 +36,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import net.sf.json.JSONObject;
+
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
@@ -60,15 +62,12 @@ import org.vortikal.resourcemanagement.service.ExternalServiceInvoker;
 import org.vortikal.text.html.HtmlDigester;
 import org.vortikal.util.text.JSON;
 
-import net.sf.json.JSONObject;
-
 public class EvaluatorResolver {
 
     // XXX Reconsider this whole setup. No good implementation.
     private ExternalServiceInvoker serviceInvoker;
     private HtmlDigester htmlDigester;
     private Locale defaultLocale;
-
 
     public PropertyEvaluator createPropertyEvaluator(PropertyDescription desc,
             StructuredResourceDescription resourceDesc) {
@@ -117,8 +116,9 @@ public class EvaluatorResolver {
         public boolean evaluate(Property property, PropertyEvaluationContext ctx) throws PropertyEvaluationException {
 
             Object value = null;
-            if (propertyDesc.hasExternalService()) {
-                Object o = ctx.getEvaluationAttribute(propertyDesc.getExternalService());
+            String affectingService = propertyDesc.getAffectingService();
+            if (affectingService != null) {
+                Object o = ctx.getEvaluationAttribute(affectingService);
                 if (o != null) {
                     Map<String, Object> map = (Map<String, Object>) o;
                     value = map.get(property.getDefinition().getName());
@@ -196,7 +196,8 @@ public class EvaluatorResolver {
         private final DerivedPropertyDescription propertyDesc;
         private final StructuredResourceDescription resourceDesc;
 
-        private DerivedPropertyEvaluator(DerivedPropertyDescription propertyDesc, StructuredResourceDescription resourceDesc) {
+        private DerivedPropertyEvaluator(DerivedPropertyDescription propertyDesc,
+                StructuredResourceDescription resourceDesc) {
             this.propertyDesc = propertyDesc;
             this.resourceDesc = resourceDesc;
         }
@@ -242,18 +243,19 @@ public class EvaluatorResolver {
         private Object getEvaluatedValue(DerivedPropertyDescription desc, Property property,
                 PropertyEvaluationContext ctx) {
 
-            if (desc.hasExternalService()) {
-                Object o = ctx.getEvaluationAttribute(desc.getExternalService());
+            String affectingService = desc.getAffectingService();
+            if (affectingService != null) {
+                Object o = ctx.getEvaluationAttribute(affectingService);
                 if (o != null) {
                     Map<String, Object> map = (Map<String, Object>) o;
                     return map.get(property.getDefinition().getName());
                 }
             }
-            
+
             DerivedPropertyEvaluationDescription evaluationDescription = desc.getEvaluationDescription();
             StringBuilder value = new StringBuilder();
             for (EvaluationElement evaluationElement : evaluationDescription.getEvaluationElements()) {
-                
+
                 String v;
                 if (evaluationElement.isString()) {
                     v = evaluationElement.getValue();
@@ -274,25 +276,26 @@ public class EvaluatorResolver {
         }
 
         private String fieldValue(PropertyEvaluationContext ctx, String propName) {
+
             Property prop = getProperty(ctx.getNewResource(), propName);
             if (prop != null) {
                 return prop.getStringValue();
-            } else {
-                JSONObject json;
-                try {
-                    json = (JSONObject) ctx.getContent().getContentRepresentation(JSONObject.class);
-                } catch (Exception e) {
-                    throw new PropertyEvaluationException("Unable to get JSON representation of content", e);
-                }
-                String expression = "properties." + propName;
-                Object jsonObject = JSON.select(json, expression);
-                if (jsonObject != null) {
-                    return jsonObject.toString();
-                }
-                return null;
             }
-        }
 
+            JSONObject json;
+            try {
+                json = (JSONObject) ctx.getContent().getContentRepresentation(JSONObject.class);
+            } catch (Exception e) {
+                throw new PropertyEvaluationException("Unable to get JSON representation of content", e);
+            }
+            String expression = "properties." + propName;
+            Object jsonObject = JSON.select(json, expression);
+            if (jsonObject != null) {
+                return jsonObject.toString();
+            }
+            return null;
+
+        }
 
         private Object evaluateOperator(String propName, String propValue, PropertyEvaluationContext ctx,
                 Operator operator) {
@@ -305,16 +308,13 @@ public class EvaluatorResolver {
                 Object obj = ctx.getEvaluationAttribute(propName);
                 return Boolean.valueOf(operator.equals(obj));
             case LOCALIZED:
-                // Fetch locale from original resource, since prop is inheritable and is
-                // probably not available in ctx.getNewResource().
+                // Fetch locale from original resource, since prop is
+                // inheritable and is probably not available in
+                // ctx.getNewResource().
                 Locale locale = ctx.getOriginalResource().getContentLocale();
                 if (locale == null) {
                     locale = EvaluatorResolver.this.defaultLocale;
                 }
-//                RequestContext requestContext = RequestContext.getRequestContext();
-//                HttpServletRequest request = requestContext.getServletRequest();
-//                Locale locale = localeResolver.resolveLocale(request);
-                
                 return resourceDesc.getLocalizedMsg(propValue, locale, null);
             default:
                 return null;
@@ -356,8 +356,9 @@ public class EvaluatorResolver {
             }
 
             Object value = null;
-            if (this.propertyDesc.hasExternalService()) {
-                Object o = ctx.getEvaluationAttribute(this.propertyDesc.getExternalService());
+            String affectingService = propertyDesc.getAffectingService();
+            if (affectingService != null) {
+                Object o = ctx.getEvaluationAttribute(affectingService);
                 if (o != null) {
                     Map<String, Object> map = (Map<String, Object>) o;
                     value = map.get(property.getDefinition().getName());
@@ -424,7 +425,7 @@ public class EvaluatorResolver {
         if (services != null && services.size() > 0) {
             for (ServiceDefinition serviceDefinition : services) {
                 if (serviceDefinition.getName().equals(desc.getName())) {
-                    this.serviceInvoker.invokeService(property, ctx, serviceDefinition);
+                    this.serviceInvoker.invokeService(property, serviceDefinition, ctx);
                 }
             }
         }
@@ -439,7 +440,7 @@ public class EvaluatorResolver {
     public void setHtmlDigester(HtmlDigester htmlDigester) {
         this.htmlDigester = htmlDigester;
     }
-    
+
     @Required
     public void setDefaultLocale(Locale defaultLocale) {
         this.defaultLocale = defaultLocale;

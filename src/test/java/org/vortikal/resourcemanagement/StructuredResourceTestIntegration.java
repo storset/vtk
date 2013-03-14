@@ -54,6 +54,9 @@ public class StructuredResourceTestIntegration extends StructuredResourceTestSet
         if (propertyDescriptions != null) {
             System.out.println("\tProperties:");
             for (PropertyDescription d : propertyDescriptions) {
+
+                String affectingService = d.getAffectingService();
+
                 if (d instanceof BinaryPropertyDescription) {
                     System.out.println("\t\t" + d.getName() + ": " + d.getType());
                 } else if (d instanceof DerivedPropertyDescription) {
@@ -65,12 +68,12 @@ public class StructuredResourceTestIntegration extends StructuredResourceTestSet
                     JSONPropertyDescription jd = (JSONPropertyDescription) d;
                     System.out.println("\t\t" + jd.getName() + ": " + jd.getType() + " " + jd.isMultiple() + " "
                             + jd.isNoExtract() + " " + jd.getOverrides()
-                            + (jd.hasExternalService() ? "(external:" + jd.getExternalService() + ")" : ""));
+                            + (affectingService != null ? "(affected by service:" + affectingService + ")" : ""));
                 } else {
                     SimplePropertyDescription sd = (SimplePropertyDescription) d;
                     System.out.println("\t\t" + sd.getName() + ": " + sd.getType() + " " + sd.isMultiple() + " "
                             + sd.isRequired() + " " + sd.isNoExtract() + " " + sd.getOverrides()
-                            + (sd.hasExternalService() ? "(external:" + sd.getExternalService() + ")" : ""));
+                            + (affectingService != null ? "(affected by service:" + affectingService + ")" : ""));
                 }
             }
         }

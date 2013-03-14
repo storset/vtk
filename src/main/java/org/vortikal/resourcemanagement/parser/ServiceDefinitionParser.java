@@ -35,6 +35,7 @@ import java.util.List;
 
 import org.antlr.runtime.tree.CommonTree;
 import org.vortikal.repository.resource.ResourcetreeLexer;
+import org.vortikal.resourcemanagement.PropertyDescription;
 import org.vortikal.resourcemanagement.ServiceDefinition;
 import org.vortikal.resourcemanagement.StructuredResourceDescription;
 
@@ -42,19 +43,41 @@ public class ServiceDefinitionParser {
 
     @SuppressWarnings("unchecked")
     public void parseServices(StructuredResourceDescription srd, List<CommonTree> services) {
+
         for (CommonTree service : services) {
+
             String propName = service.getText();
             CommonTree serviceDef = (CommonTree) service.getChild(0);
             List<CommonTree> serviceParams = serviceDef.getChildren();
+            String serviceName = serviceDef.getText();
+
             List<String> requires = null;
+            List<String> affects = null;
             if (serviceParams != null) {
                 for (CommonTree param : serviceParams) {
+
                     if (ResourcetreeLexer.REQUIRES == param.getType()) {
                         requires = getList(param.getChildren());
                     }
+
+                    if (ResourcetreeLexer.AFFECTS == param.getType()) {
+                        affects = getList(param.getChildren());
+                    }
+
                 }
             }
-            srd.addServiceDefinition(new ServiceDefinition(propName, serviceDef.getText(), requires));
+
+            // Mark all properties the service affects.
+            if (affects != null) {
+                for (String affectsPropName : affects) {
+                    PropertyDescription pd = srd.getPropertyDescription(affectsPropName);
+                    if (pd != null) {
+                        pd.setAffectingService(serviceName);
+                    }
+                }
+            }
+
+            srd.addServiceDefinition(new ServiceDefinition(propName, serviceName, requires, affects));
         }
     }
 

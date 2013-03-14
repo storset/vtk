@@ -100,8 +100,8 @@ propertytypedef
 derivedpropertytypedef
 	:	NAME COLON derived (overrides)? (MULTIPLE)? (defaultprop)? 
 		-> ^(NAME derived (overrides)? (MULTIPLE)? (defaultprop)?)
-	|	NAME COLON DERIVED (MULTIPLE)? external
-		-> ^(NAME ^(DERIVED (MULTIPLE)? external))
+	|	NAME COLON DERIVED (MULTIPLE)?
+		-> ^(NAME ^(DERIVED (MULTIPLE)?))
 	;
 
 derived	:	DERIVED LP fieldlist RP EVAL LP evallist RP
@@ -128,8 +128,8 @@ defaultprop
 	:	DEFAULTPROP NAME -> ^(DEFAULTPROP NAME);
 
 jsonpropertytypedef
-	:	NAME COLON JSON (jsonspec)? (MULTIPLE)? (NOEXTRACT)? (external)?
-		-> ^(NAME ^(JSON (jsonspec)?) (MULTIPLE)? (NOEXTRACT)? (external)?)
+	:	NAME COLON JSON (jsonspec)? (MULTIPLE)? (NOEXTRACT)?
+		-> ^(NAME ^(JSON (jsonspec)?) (MULTIPLE)? (NOEXTRACT)?)
 	;
 
 jsonspec:	LP jsonpropspeclist RP -> jsonpropspeclist;
@@ -142,9 +142,9 @@ jsonpropspec
 
 plainpropertytypedef
 	:	NAME COLON PROPTYPE (TRIM)? (MULTIPLE)? (REQUIRED)? (NOEXTRACT)? (overrides)?
-			(external)? (defaultvalue)?
+			(defaultvalue)?
 		-> ^(NAME PROPTYPE (TRIM)? (MULTIPLE)? (REQUIRED)? (NOEXTRACT)? (overrides)?
-			(external)? (defaultvalue)?)
+			(defaultvalue)?)
 	;
 
 defaultvalue
@@ -152,11 +152,7 @@ defaultvalue
 	;
 
 binarypropertytypedef
-	:	NAME COLON BINARY (external)? -> ^(NAME BINARY (external)?);
-
-
-external
-	:	EXTERNAL COLON NAME -> ^(EXTERNAL NAME);
+	:	NAME COLON BINARY -> ^(NAME BINARY);
 
 overrides
 	:	OVERRIDES NAME
@@ -233,11 +229,13 @@ services:	SERVICES LCB
 	;
 
 servicedef
-	:	NAME NAME (requires)?
-		-> ^(NAME ^(NAME (requires)?))
+	:	NAME NAME (requires)? (affects)?
+		-> ^(NAME ^(NAME (requires)? (affects)?))
 	;
 
 requires:	REQUIRES namelist -> ^(REQUIRES namelist);
+
+affects: AFFECTS namelist -> ^(AFFECTS namelist);
 
 namevaluepair
 	:	NAME COLON QTEXT

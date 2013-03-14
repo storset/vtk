@@ -44,8 +44,8 @@ public abstract class PropertyDescription {
     private String overrides;
     private boolean noExtract;
     private boolean multiple;
-    private String externalService;
     private boolean trim;
+    private String affectingService;
 
     private Map<Locale, Map<String, Object>> vocabulary = new HashMap<Locale, Map<String, Object>>();
 
@@ -93,6 +93,14 @@ public abstract class PropertyDescription {
         return this.multiple;
     }
 
+    public String getAffectingService() {
+        return affectingService;
+    }
+
+    public void setAffectingService(String affectingService) {
+        this.affectingService = affectingService;
+    }
+
     public String toString() {
         return this.getClass().getName() + ": " + this.name;
     }
@@ -121,18 +129,6 @@ public abstract class PropertyDescription {
     public Map<String, Object> getValuemap(Locale local) {
         Map<String, Object> valuemap = vocabulary.get(local);
         return valuemap;
-    }
-
-    public String getExternalService() {
-        return externalService;
-    }
-
-    public void setExternalService(String externalService) {
-        this.externalService = externalService;
-    }
-
-    public boolean hasExternalService() {
-        return this.externalService != null;
     }
 
     public boolean isTrim() {

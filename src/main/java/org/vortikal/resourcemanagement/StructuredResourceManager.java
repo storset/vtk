@@ -155,9 +155,9 @@ public class StructuredResourceManager {
             }
             PrimaryResourceTypeDefinitionImpl impl = (PrimaryResourceTypeDefinitionImpl) parent;
 
-            for (RepositoryAssertion assertion : impl.getAssertions()) {
-                if (assertion instanceof JSONObjectSelectAssertion) {
-                    JSONObjectSelectAssertion jsonAssertion = (JSONObjectSelectAssertion) assertion;
+            for (RepositoryAssertion repositoryAssertion : impl.getAssertions()) {
+                if (repositoryAssertion instanceof JSONObjectSelectAssertion) {
+                    JSONObjectSelectAssertion jsonAssertion = (JSONObjectSelectAssertion) repositoryAssertion;
                     if ("resourcetype".equals(jsonAssertion.getExpression())) {
                         jsonAssertion.addExpectedValue(name);
                     }
@@ -208,8 +208,8 @@ public class StructuredResourceManager {
             StructuredResourceDescription resourceDesc) {
         String name = propDesc.getOverrides();
         // Allow overriding of only "internal" properties for now:
-        Namespace namespace = Namespace.DEFAULT_NAMESPACE;
-        PropertyTypeDefinition target = this.resourceTypeTree.getPropertyTypeDefinition(namespace, name);
+        Namespace defaultNamespace = Namespace.DEFAULT_NAMESPACE;
+        PropertyTypeDefinition target = this.resourceTypeTree.getPropertyTypeDefinition(defaultNamespace, name);
 
         String typeName = resourceDesc.getInheritsFrom();
         if (typeName == null) {

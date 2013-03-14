@@ -40,6 +40,6 @@ import org.vortikal.resourcemanagement.ServiceDefinition;
 @Deprecated
 public interface ExternalService {
 
-    public void invoke(Property property, PropertyEvaluationContext ctx, ServiceDefinition serviceDefinition);
+    public void invoke(Property invokingProperty, PropertyEvaluationContext ctx, ServiceDefinition serviceDefinition);
 
 }

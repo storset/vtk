@@ -88,7 +88,7 @@ public final class StructuredResourceDescription {
 
     public List<PropertyDescription> getAllPropertyDescriptions() {
         List<PropertyDescription> result = new ArrayList<PropertyDescription>();
-        if(propertyDescriptions == null){
+        if (propertyDescriptions == null) {
             return result;
         }
         if (this.inheritsFrom != null) {
@@ -171,7 +171,7 @@ public final class StructuredResourceDescription {
     public void addTooltips(String name, Map<Locale, String> m) {
         tooltips.put(name, m);
     }
-    
+
     public Map<String, Map<Locale, String>> getAllLocalizedTooltips() {
         Map<String, Map<Locale, String>> locales = new HashMap<String, Map<Locale, String>>();
         if (this.inheritsFrom != null) {
@@ -208,8 +208,7 @@ public final class StructuredResourceDescription {
     public StructuredResource buildResource(InputStream source) throws Exception {
         return StructuredResource.create(this, source);
     }
-    
-    
+
     // XXX: handle parameters
     public String getLocalizedMsg(String key, Locale locale, Object[] param) {
         Map<Locale, String> localizationMap = this.getAllLocalization().get(key);
@@ -248,7 +247,7 @@ public final class StructuredResourceDescription {
     }
 
     void validate() {
-        if(propertyDescriptions == null){
+        if (propertyDescriptions == null) {
             return;
         }
         for (int i = 0; i < propertyDescriptions.size(); i++) {
@@ -256,8 +255,8 @@ public final class StructuredResourceDescription {
 
             if (d instanceof DerivedPropertyDescription) {
                 DerivedPropertyDescription derived = (DerivedPropertyDescription) d;
-                
-                if (derived.hasExternalService()) {
+
+                if (derived.getAffectingService() != null) {
                     return;
                 }
 

@@ -3,17 +3,17 @@ resourcetype person {
   properties {
     username : string trim,
     getExternalPersonInfo : boolean,
-    firstName : string external:userMetadataLdapService,
-    surname : string external:userMetadataLdapService,
-    position : string external:userMetadataLdapService,
-    phone : string multiple external:userMetadataLdapService,
-    mobile : string multiple external:userMetadataLdapService,
-    fax : string multiple external:userMetadataLdapService,
-    email : string multiple external:userMetadataLdapService,
-    postalAddress : string multiple external:userMetadataLdapService,
-    visitingAddress : string multiple external:userMetadataLdapService,
-    externalUserMetaData : derived external:userMetadataLdapService, /* Used to mark if retrieval of data from external source was successful */
-    affiliations : derived multiple external:userMetadataLdapService,
+    firstName : string,
+    surname : string,
+    position : string,
+    phone : string multiple,
+    mobile : string multiple,
+    fax : string multiple,
+    email : string multiple,
+    postalAddress : string multiple,
+    visitingAddress : string multiple,
+    externalUserMetaData : derived, /* Used to mark if retrieval of data from external source was successful */
+    affiliations : derived multiple,
     alternativeVisitingAddress : string multiple,
     alternativeCellPhone : string,
     title : derived (firstName, surname) eval (firstName + " " + surname)
@@ -60,7 +60,9 @@ resourcetype person {
   }
   
   services {
-    getExternalPersonInfo userMetadataLdapService requires(username)
+    getExternalPersonInfo userMetadataLdapService
+       requires(username)
+       affects(firstName, surname, position, title, postalAddress, visitingAddress, phone, mobile, fax, email, externalUserMetaData, affiliations)
   }
 
   view-components {

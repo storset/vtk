@@ -246,7 +246,7 @@ public final class StructuredResourceDescription {
         return this.getClass().getName() + ":" + this.name;
     }
 
-    void validate() {
+    public void validate() {
         if (propertyDescriptions == null) {
             return;
         }

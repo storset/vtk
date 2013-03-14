@@ -82,7 +82,7 @@ public class DateValueFormatter implements ValueFormatter {
         this.namedDateFormats.put("full-month-year-short_en",
                 FastDateFormat.getInstance("MMMM d, yyyy", new Locale("en")));
         this.namedDateFormats.put("full-month-year_no", FastDateFormat.getInstance("MMMM yyyy", new Locale("no")));
-        this.namedDateFormats.put("full-month-year_nn", FastDateFormat.getInstance("MMMM yyyy", new Locale("nn")));
+        this.namedDateFormats.put("full-month-year_nn", FastDateFormat.getInstance("MMMM yyyy", new Locale("no")));
         this.namedDateFormats.put("full-month-year_en", FastDateFormat.getInstance("MMMM yyyy", new Locale("en")));
         this.namedDateFormats.put("full-month-short_no", FastDateFormat.getInstance("d. MMMM", new Locale("no")));
         this.namedDateFormats.put("full-month-short_nn", FastDateFormat.getInstance("d. MMMM", new Locale("no")));

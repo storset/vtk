@@ -450,8 +450,8 @@ VrtxEditor.prototype.newEditor = function newEditor(name, completeEditor, withou
                name == "evaluering-av-emnet-text-field" || 
                name == "other-text-field") {
         // Course description
-        height = 400;
-        maxHeight = 800;
+        height = 200;
+        maxHeight = 400;
         completeTB = vrtxEdit.CKEditorToolbars.studyRefToolbar;
     } else if (name == "course-group-about" || 
                name == "courses-in-group" || 
@@ -466,8 +466,19 @@ VrtxEditor.prototype.newEditor = function newEditor(name, completeEditor, withou
     vrtxEdit.setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, defaultLanguage, cssFileList, height, maxHeight, 50, completeTB,
                                isCompleteEditor, true, baseDocumentUrl, isSimpleHTML);
   } else {
+    var resizable = true;
+    // Course description
+    if(name == "teachingsemester-other" ||
+       name == "examsemester-other" ||
+       name == "teaching-language-text-field" ||
+       name == "eksamensspraak-text-field" ||
+       name == "sensur-text-field" ||
+       name == "antall-forsok-trekk-text-field" ||
+       name == "tilrettelagt-eksamen-text-field") {
+      resizable = false;   
+    }
     vrtxEdit.setCKEditorConfig(name, linkBrowseUrl, null, null, defaultLanguage, cssFileList, 90, 400, 40, vrtxEdit.CKEditorToolbars.withoutSubSuperToolbar, 
-                               isCompleteEditor, true, baseDocumentUrl, isSimpleHTML);
+                               isCompleteEditor, resizable, baseDocumentUrl, isSimpleHTML);
   }
 
 };

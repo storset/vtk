@@ -182,9 +182,10 @@ a:hover {
 }
 
 #app-head-wrapper #vrtx-breadcrumb-wrapper {
-  background: url(images/app-head-breadcrumb-bg.png) repeat left top;
+  background: url(images/app-head-breadcrumb-bg.png) repeat-x left top;
   overflow: hidden;
-  margin: 0 0 -1px 0;
+  position: relative;
+  bottom: -1px;
 }
 
 #app-head-wrapper #line-top #uiologo,
@@ -205,7 +206,7 @@ a:hover {
 
 .js #app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb-outer,
 .js #app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb-inner {
-  height: 34px;
+  height: 32px;
   position: relative;
 }
 
@@ -237,7 +238,7 @@ a:hover {
   display: block;
   height: 33px;
   width: 40px;
-  background: url(images/app-head-breadcrumb-bg.png) repeat left top;
+  background: url(images/app-head-breadcrumb-bg.png) repeat-x left top;
 }
 
 .js .navigate-crumbs:hover {
@@ -254,7 +255,7 @@ a:hover {
   height: 34px;
   width: 11px;
   display: block;
-  background: url(images/app-head-breadcrumb-bg.png) repeat left top;
+  background: url(images/app-head-breadcrumb-bg.png) repeat-x left top;
 }
 
 .js .navigate-crumbs span.navigate-crumbs-icon {

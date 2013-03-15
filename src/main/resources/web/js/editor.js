@@ -525,7 +525,11 @@ VrtxEditor.prototype.newEditor = function newEditor(name, completeEditor, withou
     // Course description
     if(name == "teachingsemester-other" ||
        name == "examsemester-other" ||
-       name == "teaching-language-text-field") {
+       name == "teaching-language-text-field" ||
+       name == "eksamensspraak-text-field" ||
+       name == "sensur-text-field" ||
+       name == "antall-forsok-trekk-text-field" ||
+       name == "tilrettelagt-eksamen-text-field") {
       resizable = false;   
     }
     vrtxEdit.setCKEditorConfig(name, linkBrowseUrl, null, null, defaultLanguage, cssFileList, 90, 400, 40, vrtxEdit.CKEditorToolbars.withoutSubSuperToolbar,

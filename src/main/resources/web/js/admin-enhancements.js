@@ -1053,13 +1053,24 @@ VrtxAdmin.prototype.scrollBreadcrumbs = function scrollBreadcrumbs(dir) {
         e.stopPropagation();
         e.preventDefault();
       }); 
-      /* TODO: replace with stacking of blue/hovered element above nav */
+      /* TODO: replace with stacking of blue/hovered element above nav(?) */
       $(document).on("mouseover mouseout", ".vrtx-breadcrumb-level", function(e) {
-        if(!$(this).hasClass("vrtx-breadcrumb-active")) {
-          if(vrtxAdm.crumbsState == "left") {
-            vrtxAdm.crumbsRight.toggle();
+        var hoveredBreadcrumb = $(this);
+        if(!hoveredBreadcrumb.hasClass("vrtx-breadcrumb-active")) {
+          if(vrtxAdm.crumbsState == "left") {            
+            var gradientRight = vrtxAdm.crumbsRight;
+            var gradientLeftEdge = gradientRight.offset().left;
+            var crumbRightEdge = hoveredBreadcrumb.offset().left + hoveredBreadcrumb.width();
+            if(crumbRightEdge > gradientLeftEdge) {
+              gradientRight.find(".navigate-crumbs-dividor").toggle();
+            }
           } else if(vrtxAdm.crumbsState == "right") {
-            vrtxAdm.crumbsLeft.toggle();
+            var gradientLeft = vrtxAdm.crumbsLeft;
+            var gradientRightEdge = gradientLeft.offset().left + gradientLeft.width();
+            var crumbLeftEdge = hoveredBreadcrumb.offset().left;
+            if(crumbLeftEdge < gradientRightEdge) {
+              gradientLeft.find(".navigate-crumbs-dividor").toggle();
+            }
           }
         }
         e.stopPropagation();
@@ -3064,7 +3075,7 @@ var maxRuns = 0;
 vrtxAdmin._$(window).resize(vrtxAdmin._$.throttle(150, function () {
   if (vrtxAdmin.runReadyLoad) {
     if (maxRuns < 2) {
-      vrtxAdmin.scrollBreadcrumbs("right");;
+      vrtxAdmin.scrollBreadcrumbs("right");
       maxRuns++;
     } else {
       maxRuns = 0; /* IE8: let it rest */

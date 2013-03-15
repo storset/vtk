@@ -282,16 +282,22 @@ a:hover {
   right: 50px;
 }
 
+.js #navigate-crumbs-left {
+  border-right: 1px solid #DAD9D9;
+}
+
 .js #navigate-crumbs-left span.navigate-crumbs-dividor {
   background: url(images/breadcrumbs-left-dividor.png) no-repeat center center;
   right: -31px;
+}
+
+.js #navigate-crumbs-right {
   border-left: 1px solid #DAD9D9;
 }
 
 .js #navigate-crumbs-right span.navigate-crumbs-dividor {
   background: url(images/breadcrumbs-right-dividor.png) no-repeat center center;
   left: -31px;
-  border-right: 1px solid #DAD9D9;
 }
 
 .js #navigate-crumbs-left span.navigate-crumbs-icon {

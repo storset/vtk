@@ -431,7 +431,11 @@ VrtxEditor.prototype.newEditor = function newEditor(name, completeEditor, withou
   var editorElem = this.editorForm;
 
   // CKEditor configurations
-  if (vrtxEdit.contains(name, "introduction") || vrtxEdit.contains(name, "resource.description") || vrtxEdit.contains(name, "resource.image-description") || vrtxEdit.contains(name, "resource.video-description") || vrtxEdit.contains(name, "resource.audio-description")) {
+  if (vrtxEdit.contains(name, "introduction") ||
+      vrtxEdit.contains(name, "resource.description") ||
+      vrtxEdit.contains(name, "resource.image-description") ||
+      vrtxEdit.contains(name, "resource.video-description") ||
+      vrtxEdit.contains(name, "resource.audio-description")) {
     vrtxEdit.setCKEditorConfig(name, linkBrowseUrl, null, null, defaultLanguage, cssFileList, 100, 400, 40, vrtxEdit.CKEditorToolbars.inlineToolbar,
     isCompleteEditor, false, baseDocumentUrl, isSimpleHTML);
   } else if (vrtxEdit.contains(name, "comment") && editorElem.hasClass("vrtx-schedule")) {
@@ -463,7 +467,8 @@ VrtxEditor.prototype.newEditor = function newEditor(name, completeEditor, withou
   } else if (vrtxEdit.contains(name, "message")) {
     vrtxEdit.setCKEditorConfig(name, linkBrowseUrl, null, null, defaultLanguage, cssFileList, 250, 400, 40, vrtxEdit.CKEditorToolbars.messageToolbar,
     isCompleteEditor, false, null, isSimpleHTML);
-  } else if (vrtxEdit.contains(name, "additional-content") || vrtxEdit.contains(name, "additionalContents")) { // Additional content
+  } else if (vrtxEdit.contains(name, "additional-content") ||
+             vrtxEdit.contains(name, "additionalContents")) { // Additional content
     vrtxEdit.setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, defaultLanguage, cssFileList, 150, 400, 40,
     vrtxEdit.CKEditorToolbars.completeToolbar, true, false, baseDocumentUrl, isSimpleHTML);
   } else if (isCompleteEditor) { // Complete editor 
@@ -473,7 +478,9 @@ VrtxEditor.prototype.newEditor = function newEditor(name, completeEditor, withou
     if (vrtxEdit.contains("supervisor-box")) {
       height = 130;
       maxHeight = 300;
-    } else if (name == "content" || name == "resource.content" || name == "content-study") {
+    } else if (name == "content" ||
+               name == "resource.content" ||
+               name == "content-study") {
       height = 400;
       maxHeight = 800;
       if (name == "resource.content") { // Old editor

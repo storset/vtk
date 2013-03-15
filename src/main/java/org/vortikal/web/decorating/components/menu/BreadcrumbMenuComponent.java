@@ -102,6 +102,7 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
         // and must respect plainServiceMode.
         if (requestContext.isViewUnauthenticated()) {
             token = null;
+            principal = null;
         }
 
         if (!currentResource.isCollection()) {

@@ -383,6 +383,9 @@ VrtxEditor.prototype.initCKEditors = function initCKEditors() {
 /**
  * Create new CKEditor instance
  *
+ * TODO: readable opts-parameter API (verbose)
+ * TODO: Should be less-hardcoded (edit-rules?)
+ *
  * @this {VrtxEditor}
  * @param {string} name Name of textarea (or object with the other parameters)
  * @param {boolean} completeEditor Use complete toolbar
@@ -438,7 +441,21 @@ VrtxEditor.prototype.newEditor = function newEditor(name, completeEditor, withou
     vrtxEdit.setCKEditorConfig(name, linkBrowseUrl, null, null, defaultLanguage, cssFileList, 78, 400, 40, vrtxEdit.CKEditorToolbars.inlineToolbar,
     isCompleteEditor, false, baseDocumentUrl, isSimpleHTML);
   } else if (vrtxEdit.contains(name, "frist-frekvens-fri") || // Studies  
-  vrtxEdit.contains(name, "metode-fri") || vrtxEdit.contains(name, "internasjonale-sokere-fri") || vrtxEdit.contains(name, "nordiske-sokere-fri") || vrtxEdit.contains(name, "opptakskrav-fri") || vrtxEdit.contains(name, "generelle-fri") || vrtxEdit.contains(name, "spesielle-fri") || vrtxEdit.contains(name, "politiattest-fri") || vrtxEdit.contains(name, "rangering-sokere-fri") || vrtxEdit.contains(name, "forstevitnemal-kvote-fri") || vrtxEdit.contains(name, "ordinar-kvote-alle-kvalifiserte-fri") || vrtxEdit.contains(name, "innpassing-tidl-utdanning-fri") || vrtxEdit.contains(name, "regelverk-fri") || vrtxEdit.contains(name, "description-en") || vrtxEdit.contains(name, "description-nn") || vrtxEdit.contains(name, "description-no")) {
+             vrtxEdit.contains(name, "metode-fri") ||
+             vrtxEdit.contains(name, "internasjonale-sokere-fri") ||
+             vrtxEdit.contains(name, "nordiske-sokere-fri") ||
+             vrtxEdit.contains(name, "opptakskrav-fri") ||
+             vrtxEdit.contains(name, "generelle-fri") ||
+             vrtxEdit.contains(name, "spesielle-fri") ||
+             vrtxEdit.contains(name, "politiattest-fri") ||
+             vrtxEdit.contains(name, "rangering-sokere-fri") ||
+             vrtxEdit.contains(name, "forstevitnemal-kvote-fri") ||
+             vrtxEdit.contains(name, "ordinar-kvote-alle-kvalifiserte-fri") ||
+             vrtxEdit.contains(name, "innpassing-tidl-utdanning-fri") ||
+             vrtxEdit.contains(name, "regelverk-fri") ||
+             vrtxEdit.contains(name, "description-en") ||
+             vrtxEdit.contains(name, "description-nn") ||
+             vrtxEdit.contains(name, "description-no")) {
     isSimpleHTML = false;
     isCompleteEditor = true;
     vrtxEdit.setCKEditorConfig(name, linkBrowseUrl, null, null, defaultLanguage, cssFileList, 150, 400, 40, vrtxEdit.CKEditorToolbars.studyToolbar,
@@ -465,13 +482,31 @@ VrtxEditor.prototype.newEditor = function newEditor(name, completeEditor, withou
       if (name == "content-study") { // Study toolbar
         completeTB = vrtxEdit.CKEditorToolbars.studyToolbar;
       }
-    } else if (name == "course-content" || name == "learning-outcomes" || name == "opptak-og-adgang-text-field" || name == "ikke-privatist-text-field" || name == "obligatoriske-forkunnskaper-text-field" || name == "recommended-prerequisites-text-field" || name == "overlapping-courses-text-field" || name == "teaching-text-field" || name == "adgang-text-field" || name == "assessment-and-grading" || name == "hjelpemidler-text-field" || name == "klage-text-field" || name == "ny-utsatt-eksamen-text-field" || name == "evaluering-av-emnet-text-field" || name == "other-text-field") {
-    	// Course description
-    	height = 400;
-        maxHeight = 800;
+    // Course description
+    } else if (name == "course-content" ||
+               name == "learning-outcomes" ||
+               name == "opptak-og-adgang-text-field" ||
+               name == "ikke-privatist-text-field" ||
+               name == "obligatoriske-forkunnskaper-text-field" ||
+               name == "recommended-prerequisites-text-field" ||
+               name == "overlapping-courses-text-field" ||
+               name == "teaching-text-field" ||
+               name == "adgang-text-field" ||
+               name == "assessment-and-grading" ||
+               name == "hjelpemidler-text-field" ||
+               name == "klage-text-field" ||
+               name == "ny-utsatt-eksamen-text-field" ||
+               name == "evaluering-av-emnet-text-field" ||
+               name == "other-text-field") {
+        height = 200;
+        maxHeight = 400;
         completeTB = vrtxEdit.CKEditorToolbars.studyRefToolbar;
-    } else if (name == "course-group-about" || name == "courses-in-group" || name == "course-group-admission" || name == "relevant-study-programmes" || name == "course-group-other") {
-    	// Course group
+    // Course group
+    } else if (name == "course-group-about" ||
+               name == "courses-in-group" ||
+               name == "course-group-admission" ||
+               name == "relevant-study-programmes" ||
+               name == "course-group-other") {
         height = 400;
         maxHeight = 800;
         completeTB = vrtxEdit.CKEditorToolbars.studyRefToolbar;
@@ -479,14 +514,23 @@ VrtxEditor.prototype.newEditor = function newEditor(name, completeEditor, withou
     vrtxEdit.setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, defaultLanguage, cssFileList, height, maxHeight, 50, completeTB,
     isCompleteEditor, true, baseDocumentUrl, isSimpleHTML);
   } else {
+    var resizable = true;
+    // Course description
+    if(name == "teachingsemester-other" ||
+       name == "examsemester-other" ||
+       name == "teaching-language-text-field") {
+      resizable = false;   
+    }
     vrtxEdit.setCKEditorConfig(name, linkBrowseUrl, null, null, defaultLanguage, cssFileList, 90, 400, 40, vrtxEdit.CKEditorToolbars.withoutSubSuperToolbar,
-    isCompleteEditor, true, baseDocumentUrl, isSimpleHTML);
+    isCompleteEditor, resizable, baseDocumentUrl, isSimpleHTML);
   }
 
 };
 
 /**
  * Set CKEditor config for an instance
+ *
+ * TODO: readable opts-parameter API (verbose)
  *
  * @this {VrtxEditor}
  * @param {string} name Name of textarea

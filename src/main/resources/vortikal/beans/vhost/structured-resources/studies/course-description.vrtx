@@ -770,8 +770,8 @@ resourcetype course-description {
   localization {
     title : (en : "Title", no : "Tittel", nn : "Tittel"),
     header : (en : "Edit course description", no : "Rediger emnebeskrivelse", nn : "Rediger emneskildring"),
-    version-no : (en : "Norsk versjon", no : "Norsk versjon", nn : "Norsk versjon"),
-    version-en : (en : "English version", no : "English version", nn : "English version"),
+    version-no : (en : "Norwegian", no : "Norwegian", nn : "Norwegian"),
+    version-en : (en : "English", no : "English", nn : "English"),
     continued-as : (en : "This course is replaced by", no: "Dette emnet er erstattet av", nn : "Dette emnet er erstatta av"),
     discontinued-course : (en : "This course is discontinued.", no : "Dette emnet er nedlagt.", nn : "Dette emnet er nedlagt."),
 

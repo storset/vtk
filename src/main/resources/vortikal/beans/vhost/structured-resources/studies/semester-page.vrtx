@@ -152,14 +152,14 @@ resourcetype semester-page {
           [def realCount 0]
           [list links link]
             [if link.link != null && link.link != "" && link.linktitle != null && link.linktitle != ""]
-              [if _index = 0]<ul class="left">[endif]
+              [if realCount = 0]<ul class="left">[endif]
               [if splitPosition = realCount]</ul><ul class="right">[endif]
               <li>
                 <a href="[val link.link]">[val link.linktitle]</a>
               </li>
               [def realCount realCount + 1]
             [endif]
-            [if _size = _index + 1]</ul>[endif]
+            [if _size = _index + 1 && realCount > 0]</ul>[endif]
           [endlist]
         [endif]
       [endif]
@@ -385,18 +385,18 @@ resourcetype semester-page {
     link : (en : "Link", no : "Lenke", nn : "Lenke"),
     cloned-course : (en : "Joint teaching (cloned course)", no : "Felles undervisning (klonet emne)", nn : "Felles undervisning (klona emne)"),
     cloned-course-title : (en : "Joint teaching", no : "Felles undervisning", nn : "Felles undervisning"),
-    cloned-course-code : (en : "Cloned from course code", no : "Klonet fra emnekode", nn : "Klona fra emnekode"),
+    cloned-course-code : (en : "Fill in course code", no : "Skriv inn emnekode", nn : "Skriv inn emnekode"),
     cloned-course-text-start : (en : "This course has jointly taught classes with ", no : "Emnet har felles undervisning med ", nn : "Emnet har felles undervisning med "),
     cloned-course-text-end : (en : ".", no : ". Se semestersiden til dette emnet for timeplan og beskjeder.", nn : ". Sjå semestersida til dette emnet for timeplan og meldingar."),
     fronter : (en : "Fronter", no : "Fronter", nn : "Fronter"),
-    fronter-text : (en : "This course uses the learning platform Fronter.", no : "Dette kurset bruker læringsplattformen Fronter.", nn : "Dette kurset nyttar læringsplattforma Fronter."),
+    fronter-text : (en : "This course uses the learning platform Fronter.", no : "Dette emnet bruker læringsplattformen Fronter.", nn : "Dette emnet nyttar læringsplattforma Fronter."),
     log-into-fronter : (en : "Log into Fronter", no : "Logg på Fronter", nn : "Logg på Fronter"),
     studinfo-kontakt : (en : "Contact", no : "Kontakt", nn : "Kontakt"),
     messages-placement : (en : "Placement of messages", no : "Plassering av beskjeder", nn : "Plassering av beskjedar"),
     max-number-of-messages : (en : "Number of messages", no : "Antall beskjeder", nn : "Talet på beskjedar"),
     messages : (en : "Messages", no : "Beskjeder", nn : "Beskjedar"),
-    teachersUsernames : (en : "Teachers (enter username)", no : "Faglærere (fyll inn brukernavn)", nn : "Lærarar (fyll inn brukernamn)"),
-    teachers : (en : "Other teachers", no : "Andre lærere", nn : "Andre lærarar"),
+    teachersUsernames : (en : "Teachers (enter username)", no : "Faglærere (fyll inn brukernavn)", nn : "Faglærarar (fyll inn brukernamn)"),
+    teachers : (en : "Other teachers", no : "Andre faglærere", nn : "Andre faglærarar"),
     teacherName : (en : "Name", no : "Navn", nn : "Namn"),
     teacherUrl : (en : "Webaddress", no : "Nettadresse", nn : "Nettadresse"),
 

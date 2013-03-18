@@ -172,8 +172,12 @@ resourcetype course-description {
         <h3>[localized 'level']</h3>
         <p>[localized level]</p>
       [endif]
-      <h3>[localized 'teachingsemester']</h3>
-      [if teachingsemester != null && teachingsemester = "particular-semester"]
+      [def teachingsemester-boolean teachingsemester != null && teachingsemester != ""]
+      [def teachingsemester-other-boolean teachingsemester-other != null && teachingsemester-other != ""]
+      [if teachingsemester-boolean || teachingsemester-other-boolean]
+        <h3>[localized 'teachingsemester']</h3>
+      [endif]
+      [if teachingsemester-boolean && teachingsemester = "particular-semester"]
         [def teachingsemesters document.properties.teachingsemesterParticularSemester]
         [if typeof(semesterParticularSort) = 'function']
           [def teachingsemesters semesterParticularSort(teachingsemesters)]
@@ -192,20 +196,24 @@ resourcetype course-description {
             [endif]
           [endlist]
         [endif]
-      [elseif teachingsemester != null && teachingsemester = "every-other"]
+      [elseif teachingsemester-boolean && teachingsemester = "every-other"]
         [def term 'every-other-' + document.properties.teachingsemester-every-other-semester-term]
         [def startyear document.properties.teachingsemester-every-other-semester-startyear]
         [if term != null && startyear != null]
           <p>[localized term] [localized 'every-other-start'] [val startyear]</p>
         [endif]
-      [elseif teachingsemester != null && teachingsemester != "other"]
+      [elseif teachingsemester-boolean && teachingsemester != "other"]
         <p>[localized teachingsemester]</p>
       [endif]
-      [if teachingsemester-other != null]
+      [if teachingsemester-other-boolean]
         [val teachingsemester-other # unescaped]
       [endif]
-      <h3>[localized 'examsemester']</h3>
-      [if examsemester != null && examsemester = "particular-semester"]
+      [def examsemester-boolean examsemester != null && examsemester != ""]
+      [def examsemester-other-boolean examsemester-other != null &&  examsemester-other != ""]
+      [if examsemester-boolean || examsemester-other-boolean]
+        <h3>[localized 'examsemester']</h3>
+      [endif]
+      [if examsemester-boolean && examsemester = "particular-semester"]
         [def examsemesters document.properties.examsemesterParticularSemester]
         [if typeof(semesterParticularSort) = 'function']
           [def examsemesters semesterParticularSort(examsemesters)]
@@ -224,23 +232,27 @@ resourcetype course-description {
             [endif]
           [endlist]
         [endif]
-      [elseif examsemester != null && examsemester = "every-other"]
+      [elseif examsemester-boolean && examsemester = "every-other"]
         [def term 'every-other-' + document.properties.examsemester-every-other-semester-term]
         [def startyear document.properties.examsemester-every-other-semester-startyear]
         [if term != null && startyear != null]
           <p>[localized term] [localized 'every-other-start'] [val startyear]</p>
         [endif]
-      [elseif examsemester != null && examsemester != "other"]
+      [elseif examsemester-boolean && examsemester != "other"]
         <p>[localized examsemester]</p>
       [endif]
-      [if examsemester-other != null]
+      [if examsemester-other-boolean]
         [val examsemester-other # unescaped]
       [endif]
-      <h3>[localized 'teaching-language']</h3>
-      [if teaching-language != null && teaching-language != "" && teaching-language != "other"]
+      [def teaching-language-boolean teaching-language != null && teaching-language != "" && teaching-language != "other"]
+      [def teaching-language-text-field-boolean teaching-language-text-field != null && teaching-language-text-field != ""]
+      [if teaching-language-boolean || teaching-language-text-field-boolean]
+        <h3>[localized 'teaching-language']</h3>
+      [endif]
+      [if teaching-language-boolean]
         <p>[localized teaching-language]</p>
       [endif]
-      [if teaching-language-text-field != null]
+      [if teaching-language-text-field-boolean]
         [val teaching-language-text-field # unescaped]
       [endif]
       [if course-fee != null && course-fee && course-fee-amount != null && course-fee-amount != ""]

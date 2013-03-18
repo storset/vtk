@@ -395,8 +395,8 @@ resourcetype semester-page {
     messages-placement : (en : "Placement of messages", no : "Plassering av beskjeder", nn : "Plassering av beskjedar"),
     max-number-of-messages : (en : "Number of messages", no : "Antall beskjeder", nn : "Talet på beskjedar"),
     messages : (en : "Messages", no : "Beskjeder", nn : "Beskjedar"),
-    teachersUsernames : (en : "Teachers (enter username)", no : "Faglærere (fyll inn brukernavn)", nn : "Lærarar (fyll inn brukernamn)"),
-    teachers : (en : "Other teachers", no : "Andre lærere", nn : "Andre lærarar"),
+    teachersUsernames : (en : "Teachers (enter username)", no : "Faglærere (fyll inn brukernavn)", nn : "Faglærarar (fyll inn brukernamn)"),
+    teachers : (en : "Other teachers", no : "Andre faglærere", nn : "Andre faglærarar"),
     teacherName : (en : "Name", no : "Navn", nn : "Namn"),
     teacherUrl : (en : "Webaddress", no : "Nettadresse", nn : "Nettadresse"),
 

@@ -775,9 +775,9 @@ resourcetype course-description {
        nn : ("norwegian" = "Norsk", "english" = "Engelsk", "english-by-need" = "Norsk (engelsk på førespurnad)", "other" = "Anna")
      },
      level {
-       en : ("bachelor" = "Bachelor", "master" = "Master", "phd" = "PhD", "course" = "Course", "not-set" = "Not set"),
-       no : ("bachelor" = "Bachelor", "master" = "Master", "phd" = "Ph.d.", "course" = "Kurs", "not-set" = "Ikke satt"),
-       nn : ("bachelor" = "Bachelor", "master" = "Master", "phd" = "Ph.d.", "course" = "Kurs", "not-set" = "Ikkje satt")
+       en : ("bachelor" = "Bachelor", "master" = "Master", "phd" = "PhD", "not-set" = "Not set"),
+       no : ("bachelor" = "Bachelor", "master" = "Master", "phd" = "Ph.d.", "not-set" = "Ikke satt"),
+       nn : ("bachelor" = "Bachelor", "master" = "Master", "phd" = "Ph.d.", "not-set" = "Ikkje satt")
      },
      course-fee {
        en : ("false" = "No", "true" = "Yes"),

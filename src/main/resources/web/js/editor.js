@@ -1777,6 +1777,7 @@ function accordionContentSplitHeaderPopulators(init) {
       sharedTextItems = sharedTextItems.filter(":last");
     }
     sharedTextItems.find(".title input").addClass("header-populators");
+    sharedTextItems.find(".vrtx-html").addClass("header-empty-check-or");
   } else if (semesterResourceLinksItems.length) {
     semesterResourceLinksItems.find(".vrtx-string input[id*=-title]").addClass("header-populators");
     semesterResourceLinksItems.find(".vrtx-json-element").addClass("header-empty-check-and");
@@ -1816,7 +1817,7 @@ function accordionUpdateHeader(elem, isJson, init) {
           if (str.length > 30) {
             str = str.substring(0, 30) + "...";
           } else if (!str.length) {
-            if(!emptyCheck(elm)) {
+            if(!emptyCheckAND(elm) || !emptyCheckOR(elm)) {
               str = (vrtxAdmin.lang !== "en") ? "Ingen tittel" : "No title"; 
             } else {
               str = (vrtxAdmin.lang !== "en") ? "Intet innhold" : "No content";  
@@ -1824,7 +1825,7 @@ function accordionUpdateHeader(elem, isJson, init) {
           }
         }
       } else {
-        if(!emptyCheck(elm)) {
+        if(!emptyCheckAND(elm) || !emptyCheckOR(elm)) {
           str = (vrtxAdmin.lang !== "en") ? "Ingen tittel" : "No title"; 
         } else {
           str = (vrtxAdmin.lang !== "en") ? "Intet innhold" : "No content";  
@@ -1843,7 +1844,7 @@ function accordionUpdateHeader(elem, isJson, init) {
   }
 }
 
-function emptyCheck(elm) {
+function emptyCheckAND(elm) { // XXX: Make more general - assumption inputs in JSON under grouped
   var checkAND = elm.find(".header-empty-check-and");
   var i = checkAND.length;
   if(i > 0) {
@@ -1857,9 +1858,32 @@ function emptyCheck(elm) {
           break;
         }
       }
-      if(allOfThem) { // Find 1 - return !empty
+      if(allOfThem) { // Find 1 with all values - return !empty
         return false;
       }
+    }
+  }
+  return true;
+}
+
+function emptyCheckOR(elm) { // XXX: Make more general - assumption CK
+  var checkOR = elm.find(".header-empty-check-or textarea");
+  var i = checkOR.length;
+  if(i > 0) {
+    var oneOfThem = false;
+    for(;i--;) {
+      var inputId = checkOR[i].id;
+      var str = "";
+      if (isCkEditor(inputId)) { // Check if CK
+        str = getCkValue(inputId); // Get CK content
+      }
+      if(str !== "") {
+        oneOfThem = true;
+        break;
+      }
+    }
+    if(oneOfThem) { // Find 1 with one value - return !empty
+      return false;
     }
   }
   return true;

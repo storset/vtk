@@ -152,14 +152,14 @@ resourcetype semester-page {
           [def realCount 0]
           [list links link]
             [if link.link != null && link.link != "" && link.linktitle != null && link.linktitle != ""]
-              [if _index = 0]<ul class="left">[endif]
+              [if realCount = 0]<ul class="left">[endif]
               [if splitPosition = realCount]</ul><ul class="right">[endif]
               <li>
                 <a href="[val link.link]">[val link.linktitle]</a>
               </li>
               [def realCount realCount + 1]
             [endif]
-            [if _size = _index + 1]</ul>[endif]
+            [if _size = _index + 1 && realCount > 0]</ul>[endif]
           [endlist]
         [endif]
       [endif]

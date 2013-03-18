@@ -39,8 +39,9 @@ resourcetype course-description {
     overlapping-courses-text-field : html noextract,
 
     teaching-text-field : html noextract,
-    adgang-text-field : html noextract,
     adgang : string,
+    adgang-text-field : html noextract,
+    forsikring : string,
 
     assessment-and-grading : html noextract,
     hjelpemidler-text-field : html noextract,
@@ -107,7 +108,9 @@ resourcetype course-description {
 
     adgang (class[vrtx-shared-text],
             attribute[vrtx-shared-text-path:/vrtx/fellestekst/emne]),
-    group teaching-group (teaching-text-field, adgang, adgang-text-field) vertical,
+    forsikring (class[vrtx-shared-text],
+                attribute[vrtx-shared-text-path:/vrtx/fellestekst/emne]),
+    group teaching-group (teaching-text-field, forsikring, adgang, adgang-text-field) vertical,
 
     hjelpemidler (class[vrtx-shared-text],
                   attribute[vrtx-shared-text-path:/vrtx/fellestekst/emne]),
@@ -405,9 +408,10 @@ resourcetype course-description {
         <a href="#overlapping-courses" class="vrtx-link-check">[localized 'overlapping-courses-group']</a>
       [endif]
       [def teaching-text-field document.properties.teaching-text-field]
-      [def adgang-text-field document.properties.adgang-text-field]
+      [def forsikring document.properties.forsikring]
       [def adgang document.properties.adgang]
-      [if (teaching-text-field != null && teaching-text-field != "") || (adgang != null && adgang != "" && adgang != "ingen-fellestekst")]
+      [def adgang-text-field document.properties.adgang-text-field]
+      [if (teaching-text-field != null && teaching-text-field != "") || (forsikring != null && forsikring != "" && forsikring != "ingen-fellestekst")  || (adgang != null && adgang != "" && adgang != "ingen-fellestekst") || (adgang-text-field != null && adgang-text-field != "")]
         [if put-dash != null]
           -
         [else]
@@ -551,13 +555,17 @@ resourcetype course-description {
         </div>
       [endif]
       [def teaching-text-field document.properties.teaching-text-field]
-      [def adgang-text-field document.properties.adgang-text-field]
+      [def forsikring document.properties.forsikring]
       [def adgang document.properties.adgang]
-      [if (teaching-text-field != null && teaching-text-field != "") || (adgang != null && adgang != "" && adgang != "ingen-fellestekst") || (adgang-text-field != null && adgang-text-field != "")]
+      [def adgang-text-field document.properties.adgang-text-field]
+      [if (teaching-text-field != null && teaching-text-field != "") || (forsikring != null && forsikring != "" && forsikring != "ingen-fellestekst") || (adgang != null && adgang != "" && adgang != "ingen-fellestekst") || (adgang-text-field != null && adgang-text-field != "")]
         <div id="teaching">
           <h2>[localized 'teaching-group']</h2>
           [if teaching-text-field != null && teaching-text-field != ""]
             [val teaching-text-field # unescaped]
+          [endif]
+          [if forsikring != null && forsikring != "" && forsikring != "ingen-fellestekst"]
+            [call "include:shared-text" {"propName":"forsikring"}]
           [endif]
           [if (adgang != null && adgang != "" && adgang != "ingen-fellestekst") || (adgang-text-field != null && adgang-text-field != "")]
             <h3>[localized 'teaching-admission']</h3>
@@ -889,8 +897,9 @@ resourcetype course-description {
     and : (en : "and", no : "og", nn : "og"),
 
     teaching-text-field : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
-    adgang-text-field : (en : "Admission text", no : "Adgang fritekst", nn : "Adgang fritekst"),
+    forsikring : (en : "Insurance", no : "Forsikring", nn : "Forsikring"),
     adgang : (en : "Admission shared text", no : "Adgang fellestekst", nn : "Adgang fellestekst"),
+    adgang-text-field : (en : "Admission text", no : "Adgang fritekst", nn : "Adgang fritekst"),
     teaching-group : (en : "Teaching", no : "Undervisning", nn : "Undervisning"),
     teaching-admission : (en : "Access to teaching", no : "Adgang til undervisning", nn : "Adgang til undervisning"),
 

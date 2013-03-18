@@ -91,7 +91,7 @@ resourcetype course-group {
     course-group-code : (en : "FS code", no : "FS-kode", nn : "FS-kode"),
     course-group-scope : (en : "Credits", no : "Studiepoeng", nn : "Studiepoeng"),
     course-group-about : (en : "About the course group", no : "Om emnegruppen", nn : "Om emnegruppa"),
-    relevant-study-programmes : (en : "Relevant study programmes", no : "Relevante studieprogrammer", nn : "Relevante studieprogram"),
+    relevant-study-programmes : (en : "Relevant for the following study programmes and programme options", no : "Relevant for følgende studieprogrammer og studieretninger", nn : "Relevant for følgjande studieprogram og studieretningar"),
     courses-in-group : (en : "Courses in group", no : "Emner i emnegruppen", nn : "Emner i emnegruppa"),
     course-group-other : (en : "Other", no : "Annet", nn : "Anna"),
     studinfo-kontakt : (en : "Contact", no : "Kontakt", nn : "Kontakt")

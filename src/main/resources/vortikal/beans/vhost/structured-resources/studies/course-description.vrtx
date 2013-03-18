@@ -39,8 +39,9 @@ resourcetype course-description {
     overlapping-courses-text-field : html noextract,
 
     teaching-text-field : html noextract,
-    adgang-text-field : html noextract,
     adgang : string,
+    adgang-text-field : html noextract,
+    forsikring : string,
 
     assessment-and-grading : html noextract,
     hjelpemidler-text-field : html noextract,
@@ -107,7 +108,9 @@ resourcetype course-description {
 
     adgang (class[vrtx-shared-text],
             attribute[vrtx-shared-text-path:/vrtx/fellestekst/emne]),
-    group teaching-group (teaching-text-field, adgang, adgang-text-field) vertical,
+    forsikring (class[vrtx-shared-text],
+                attribute[vrtx-shared-text-path:/vrtx/fellestekst/emne]),
+    group teaching-group (teaching-text-field, forsikring, adgang, adgang-text-field) vertical,
 
     hjelpemidler (class[vrtx-shared-text],
                   attribute[vrtx-shared-text-path:/vrtx/fellestekst/emne]),
@@ -172,8 +175,12 @@ resourcetype course-description {
         <h3>[localized 'level']</h3>
         <p>[localized level]</p>
       [endif]
-      <h3>[localized 'teachingsemester']</h3>
-      [if teachingsemester != null && teachingsemester = "particular-semester"]
+      [def teachingsemester-boolean teachingsemester != null && teachingsemester != "" && teachingsemester != "other"]
+      [def teachingsemester-other-boolean teachingsemester-other != null && teachingsemester-other != ""]
+      [if teachingsemester-boolean || teachingsemester-other-boolean]
+        <h3>[localized 'teachingsemester']</h3>
+      [endif]
+      [if teachingsemester-boolean && teachingsemester = "particular-semester"]
         [def teachingsemesters document.properties.teachingsemesterParticularSemester]
         [if typeof(semesterParticularSort) = 'function']
           [def teachingsemesters semesterParticularSort(teachingsemesters)]
@@ -192,20 +199,24 @@ resourcetype course-description {
             [endif]
           [endlist]
         [endif]
-      [elseif teachingsemester != null && teachingsemester = "every-other"]
+      [elseif teachingsemester-boolean && teachingsemester = "every-other"]
         [def term 'every-other-' + document.properties.teachingsemester-every-other-semester-term]
         [def startyear document.properties.teachingsemester-every-other-semester-startyear]
         [if term != null && startyear != null]
           <p>[localized term] [localized 'every-other-start'] [val startyear]</p>
         [endif]
-      [elseif teachingsemester != null && teachingsemester != "other"]
+      [elseif teachingsemester-boolean && teachingsemester != "other"]
         <p>[localized teachingsemester]</p>
       [endif]
-      [if teachingsemester-other != null]
+      [if teachingsemester-other-boolean]
         [val teachingsemester-other # unescaped]
       [endif]
-      <h3>[localized 'examsemester']</h3>
-      [if examsemester != null && examsemester = "particular-semester"]
+      [def examsemester-boolean examsemester != null && examsemester != "" && examsemester != "other"]
+      [def examsemester-other-boolean examsemester-other != null &&  examsemester-other != ""]
+      [if examsemester-boolean || examsemester-other-boolean]
+        <h3>[localized 'examsemester']</h3>
+      [endif]
+      [if examsemester-boolean && examsemester = "particular-semester"]
         [def examsemesters document.properties.examsemesterParticularSemester]
         [if typeof(semesterParticularSort) = 'function']
           [def examsemesters semesterParticularSort(examsemesters)]
@@ -224,23 +235,27 @@ resourcetype course-description {
             [endif]
           [endlist]
         [endif]
-      [elseif examsemester != null && examsemester = "every-other"]
+      [elseif examsemester-boolean && examsemester = "every-other"]
         [def term 'every-other-' + document.properties.examsemester-every-other-semester-term]
         [def startyear document.properties.examsemester-every-other-semester-startyear]
         [if term != null && startyear != null]
           <p>[localized term] [localized 'every-other-start'] [val startyear]</p>
         [endif]
-      [elseif examsemester != null && examsemester != "other"]
+      [elseif examsemester-boolean && examsemester != "other"]
         <p>[localized examsemester]</p>
       [endif]
-      [if examsemester-other != null]
+      [if examsemester-other-boolean]
         [val examsemester-other # unescaped]
       [endif]
-      <h3>[localized 'teaching-language']</h3>
-      [if teaching-language != null && teaching-language != "" && teaching-language != "other"]
+      [def teaching-language-boolean teaching-language != null && teaching-language != "" && teaching-language != "other"]
+      [def teaching-language-text-field-boolean teaching-language-text-field != null && teaching-language-text-field != ""]
+      [if teaching-language-boolean || teaching-language-text-field-boolean]
+        <h3>[localized 'teaching-language']</h3>
+      [endif]
+      [if teaching-language-boolean]
         <p>[localized teaching-language]</p>
       [endif]
-      [if teaching-language-text-field != null]
+      [if teaching-language-text-field-boolean]
         [val teaching-language-text-field # unescaped]
       [endif]
       [if course-fee != null && course-fee && course-fee-amount != null && course-fee-amount != ""]
@@ -310,24 +325,28 @@ resourcetype course-description {
         [def parent-uri resource-prop("./", "uri")]
         [def content-locale resource-prop-obj-val(".", "contentLocale")]
         [if content-locale != null && (content-locale = "no_NO" || content-locale = "no_NO_NY")]
-          [def resource resource(parent-uri + '/index-eng.html')]
-          [if resource != null]
-            [def resource-uri resource-prop(resource, "uri")]
-            [def resource-content-locale resource-prop-obj-val(resource, "contentLocale")]
-            [if resource-uri != this-uri && resource-content-locale = "en"]
-              [def view-eng view-url(resource)]
-              <a href="[val view-eng]">[localized 'version-en']</a>
-            [endif]
+          [def resources search('uri=' + parent-uri + '/index-eng.html && type IN course-description && published=true')]
+          [if resources != null]
+            [list resources resource]
+              [def resource-uri resource-prop(resource, "uri")]
+              [def resource-content-locale resource-prop-obj-val(resource, "contentLocale")]
+              [if resource-uri != this-uri && resource-content-locale = "en"]
+                [def view-eng view-url(resource)]
+                <a href="[val view-eng]">[localized 'version-en']</a>
+              [endif]
+            [endlist]
           [endif]
-        [elseif content-locale != null && content-locale = "en"]
-          [def resource resource(parent-uri + '/index.html')]
-          [if resource != null]
-            [def resource-uri resource-prop(resource, "uri")]
-            [def resource-content-locale resource-prop-obj-val(resource, "contentLocale")]
-            [if resource-uri != this-uri && (resource-content-locale = "no_NO" || resource-content-locale = "no_NO_NY")]
-              [def view-no view-url(resource)]
-              <a href="[val view-no]">[localized 'version-no']</a>
-            [endif]
+        [elseif content-locale != null && content-locale = "en" && string(this-uri) != string(parent-uri) + "/index.html"]
+          [def resources search('uri=' + parent-uri + '/index.html && type IN course-description && published=true')]
+          [if resources != null]
+            [list resources resource]
+              [def resource-uri resource-prop(resource, "uri")]
+              [def resource-content-locale resource-prop-obj-val(resource, "contentLocale")]
+              [if resource-uri != this-uri && (resource-content-locale = "no_NO" || resource-content-locale = "no_NO_NY")]
+                [def view-no view-url(resource)]
+                <a href="[val view-no]">[localized 'version-no']</a>
+              [endif]
+            [endlist]
           [endif]
         [endif]
       </div>
@@ -393,9 +412,10 @@ resourcetype course-description {
         <a href="#overlapping-courses" class="vrtx-link-check">[localized 'overlapping-courses-group']</a>
       [endif]
       [def teaching-text-field document.properties.teaching-text-field]
-      [def adgang-text-field document.properties.adgang-text-field]
+      [def forsikring document.properties.forsikring]
       [def adgang document.properties.adgang]
-      [if (teaching-text-field != null && teaching-text-field != "") || (adgang != null && adgang != "" && adgang != "ingen-fellestekst")]
+      [def adgang-text-field document.properties.adgang-text-field]
+      [if (teaching-text-field != null && teaching-text-field != "") || (forsikring != null && forsikring != "" && forsikring != "ingen-fellestekst")  || (adgang != null && adgang != "" && adgang != "ingen-fellestekst") || (adgang-text-field != null && adgang-text-field != "")]
         [if put-dash != null]
           -
         [else]
@@ -539,13 +559,17 @@ resourcetype course-description {
         </div>
       [endif]
       [def teaching-text-field document.properties.teaching-text-field]
-      [def adgang-text-field document.properties.adgang-text-field]
+      [def forsikring document.properties.forsikring]
       [def adgang document.properties.adgang]
-      [if (teaching-text-field != null && teaching-text-field != "") || (adgang != null && adgang != "" && adgang != "ingen-fellestekst") || (adgang-text-field != null && adgang-text-field != "")]
+      [def adgang-text-field document.properties.adgang-text-field]
+      [if (teaching-text-field != null && teaching-text-field != "") || (forsikring != null && forsikring != "" && forsikring != "ingen-fellestekst") || (adgang != null && adgang != "" && adgang != "ingen-fellestekst") || (adgang-text-field != null && adgang-text-field != "")]
         <div id="teaching">
           <h2>[localized 'teaching-group']</h2>
           [if teaching-text-field != null && teaching-text-field != ""]
             [val teaching-text-field # unescaped]
+          [endif]
+          [if forsikring != null && forsikring != "" && forsikring != "ingen-fellestekst"]
+            [call "include:shared-text" {"propName":"forsikring"}]
           [endif]
           [if (adgang != null && adgang != "" && adgang != "ingen-fellestekst") || (adgang-text-field != null && adgang-text-field != "")]
             <h3>[localized 'teaching-admission']</h3>
@@ -775,9 +799,9 @@ resourcetype course-description {
        nn : ("norwegian" = "Norsk", "english" = "Engelsk", "english-by-need" = "Norsk (engelsk på førespurnad)", "other" = "Anna")
      },
      level {
-       en : ("bachelor" = "Bachelor", "master" = "Master", "phd" = "PhD", "course" = "Course", "not-set" = "Not set"),
-       no : ("bachelor" = "Bachelor", "master" = "Master", "phd" = "Ph.d.", "course" = "Kurs", "not-set" = "Ikke satt"),
-       nn : ("bachelor" = "Bachelor", "master" = "Master", "phd" = "Ph.d.", "course" = "Kurs", "not-set" = "Ikkje satt")
+       en : ("bachelor" = "Bachelor", "master" = "Master", "phd" = "PhD", "not-set" = "Not set"),
+       no : ("bachelor" = "Bachelor", "master" = "Master", "phd" = "Ph.d.", "not-set" = "Ikke satt"),
+       nn : ("bachelor" = "Bachelor", "master" = "Master", "phd" = "Ph.d.", "not-set" = "Ikkje satt")
      },
      course-fee {
        en : ("false" = "No", "true" = "Yes"),
@@ -877,8 +901,9 @@ resourcetype course-description {
     and : (en : "and", no : "og", nn : "og"),
 
     teaching-text-field : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
-    adgang-text-field : (en : "Admission text", no : "Adgang fritekst", nn : "Adgang fritekst"),
+    forsikring : (en : "Insurance", no : "Forsikring", nn : "Forsikring"),
     adgang : (en : "Admission shared text", no : "Adgang fellestekst", nn : "Adgang fellestekst"),
+    adgang-text-field : (en : "Admission text", no : "Adgang fritekst", nn : "Adgang fritekst"),
     teaching-group : (en : "Teaching", no : "Undervisning", nn : "Undervisning"),
     teaching-admission : (en : "Access to teaching", no : "Adgang til undervisning", nn : "Adgang til undervisning"),
 

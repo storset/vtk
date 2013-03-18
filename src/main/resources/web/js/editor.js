@@ -1746,7 +1746,7 @@ function accordionJsonNew(accordionWrapper) {
   var accordionContent = accordionWrapper.find(".fieldset");
   var group = accordionContent.find(".vrtx-json-element").filter(":last");
   group.find("> *").wrapAll("<div />");
-  group.prepend('<div class="header">' + (vrtxAdmin.lang !== "en" ? "Inget innhold" : "No content") + '</div>');
+  group.prepend('<div class="header">' + (vrtxAdmin.lang !== "en" ? "Intet innhold" : "No content") + '</div>');
 
   accordionContentSplitHeaderPopulators(false);
   accordionJsonRefresh(accordionContent, false);
@@ -1771,11 +1771,21 @@ function accordionJsonRefresh(elem, active) {
 function accordionContentSplitHeaderPopulators(init) {
   var sharedTextItems = $("#editor.vrtx-shared-text #shared-text-box .vrtx-json-element");
   var semesterResourceLinksItems = $("#editor.vrtx-semester-page .vrtx-grouped[class*=link-box]");
-  if (!init) {
-    sharedTextItems = sharedTextItems.filter(":last");
-  }
-  sharedTextItems.find(".title input").addClass("header-populators");
-  semesterResourceLinksItems.find(".vrtx-string input[id*=-title]").addClass("header-populators");
+  
+  if(sharedTextItems.length) {
+    if (!init) {
+      sharedTextItems = sharedTextItems.filter(":last");
+    }
+    sharedTextItems.find(".title input").addClass("header-populators");
+  } else if (semesterResourceLinksItems.length) {
+    semesterResourceLinksItems.find(".vrtx-string input[id*=-title]").addClass("header-populators");
+    semesterResourceLinksItems.find(".vrtx-json-element").addClass("header-empty-check-and");
+    if(init) {
+      $(document).on("click", semesterResourceLinksItems.find(".vrtx-add-button input"), function(e) {
+        semesterResourceLinksItems.find(".vrtx-json-element:last").addClass("header-empty-check-and"); 
+      });
+    }
+  } 
 }
 
 function accordionUpdateHeader(elem, isJson, init) {
@@ -1806,11 +1816,19 @@ function accordionUpdateHeader(elem, isJson, init) {
           if (str.length > 30) {
             str = str.substring(0, 30) + "...";
           } else if (!str.length) {
-            str = (vrtxAdmin.lang !== "en") ? "Inget innhold" : "No content";
+            if(!emptyCheck(elm)) {
+              str = (vrtxAdmin.lang !== "en") ? "Ingen tittel" : "No title"; 
+            } else {
+              str = (vrtxAdmin.lang !== "en") ? "Intet innhold" : "No content";  
+            }
           }
         }
       } else {
-        str = (vrtxAdmin.lang !== "en") ? "Inget innhold" : "No content";
+        if(!emptyCheck(elm)) {
+          str = (vrtxAdmin.lang !== "en") ? "Ingen tittel" : "No title"; 
+        } else {
+          str = (vrtxAdmin.lang !== "en") ? "Intet innhold" : "No content";  
+        }
       }
     }
     var header = elm.find("> .header");
@@ -1823,6 +1841,28 @@ function accordionUpdateHeader(elem, isJson, init) {
       header.html('<span class="ui-icon ui-icon-triangle-1-e"></span>' + (!isJson ? header.data("origText") + " - " : "") + str);
     }
   }
+}
+
+function emptyCheck(elm) {
+  var checkAND = elm.find(".header-empty-check-and");
+  var i = checkAND.length;
+  if(i > 0) {
+    for(;i--;) {
+      var inputs = $(checkAND[i]).find("input[type='text']");
+      var j = inputs.length;
+      var allOfThem = true;
+      for(;j--;) {
+        if(inputs[j].value === "") {
+          allOfThem = false;
+          break;
+        }
+      }
+      if(allOfThem) { // Find 1 - return !empty
+        return false;
+      }
+    }
+  }
+  return true;
 }
 
 /*-------------------------------------------------------------------*\

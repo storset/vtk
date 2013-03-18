@@ -175,7 +175,7 @@ resourcetype course-description {
         <h3>[localized 'level']</h3>
         <p>[localized level]</p>
       [endif]
-      [def teachingsemester-boolean teachingsemester != null && teachingsemester != ""]
+      [def teachingsemester-boolean teachingsemester != null && teachingsemester != "" && teachingsemester != "other"]
       [def teachingsemester-other-boolean teachingsemester-other != null && teachingsemester-other != ""]
       [if teachingsemester-boolean || teachingsemester-other-boolean]
         <h3>[localized 'teachingsemester']</h3>
@@ -211,7 +211,7 @@ resourcetype course-description {
       [if teachingsemester-other-boolean]
         [val teachingsemester-other # unescaped]
       [endif]
-      [def examsemester-boolean examsemester != null && examsemester != ""]
+      [def examsemester-boolean examsemester != null && examsemester != "" && examsemester != "other"]
       [def examsemester-other-boolean examsemester-other != null &&  examsemester-other != ""]
       [if examsemester-boolean || examsemester-other-boolean]
         <h3>[localized 'examsemester']</h3>

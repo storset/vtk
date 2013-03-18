@@ -385,7 +385,7 @@ resourcetype semester-page {
     link : (en : "Link", no : "Lenke", nn : "Lenke"),
     cloned-course : (en : "Joint teaching (cloned course)", no : "Felles undervisning (klonet emne)", nn : "Felles undervisning (klona emne)"),
     cloned-course-title : (en : "Joint teaching", no : "Felles undervisning", nn : "Felles undervisning"),
-    cloned-course-code : (en : "Cloned from course code", no : "Klonet fra emnekode", nn : "Klona fra emnekode"),
+    cloned-course-code : (en : "Fill in course code", no : "Skriv inn emnekode", nn : "Skriv inn emnekode"),
     cloned-course-text-start : (en : "This course has jointly taught classes with ", no : "Emnet har felles undervisning med ", nn : "Emnet har felles undervisning med "),
     cloned-course-text-end : (en : ".", no : ". Se semestersiden til dette emnet for timeplan og beskjeder.", nn : ". Sjå semestersida til dette emnet for timeplan og meldingar."),
     fronter : (en : "Fronter", no : "Fronter", nn : "Fronter"),

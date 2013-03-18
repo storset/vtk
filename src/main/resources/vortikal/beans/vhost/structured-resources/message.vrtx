@@ -31,16 +31,20 @@ resourcetype structured-message {
         <title>[call "resource:property" {"id":"title"}]</title>
       </head>
       <body id="vrtx-message">
-        <h1>[call "resource:property" {"id":"title"}]</h1>
-        <div>
-          [call "json:field" {"select":"message"}]
+        <div id="vrtx-content">
+          <div id="vrtx-main-content">
+            <h1>[call "resource:property" {"id":"title"}]</h1>
+            <div>
+              [call "json:field" {"select":"message"}]
+            </div>
+            [call "comp:vrtx-date-info"]
+            <div class="vrtx-social-components">
+              [call "resource:email-friend"]
+              [call "resource:share-at"]
+            </div>
+            [call "resource:comments"]
+          </div>
         </div>
-        [call "comp:vrtx-date-info"]
-        <div class="vrtx-social-components">
-          [call "resource:email-friend"]
-          [call "resource:share-at"]
-        </div>
-        [call "resource:comments"]
       </body>
     </html>
     ##

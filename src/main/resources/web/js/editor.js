@@ -1844,7 +1844,7 @@ function accordionUpdateHeader(elem, isJson, init) {
   }
 }
 
-function emptyCheckAND(elm) { // XXX: Make more general - assumption inputs in JSON under grouped
+function emptyCheckAND(elm) { // XXX: Make more general - assumption inputs in JSON multiple
   var checkAND = elm.find(".header-empty-check-and");
   var i = checkAND.length;
   if(i > 0) {
@@ -1866,7 +1866,7 @@ function emptyCheckAND(elm) { // XXX: Make more general - assumption inputs in J
   return true;
 }
 
-function emptyCheckOR(elm) { // XXX: Make more general - assumption CK
+function emptyCheckOR(elm) { // XXX: Make more general - assumption CK and single
   var checkOR = elm.find(".header-empty-check-or textarea");
   var i = checkOR.length;
   if(i > 0) {

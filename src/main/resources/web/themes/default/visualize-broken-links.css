@@ -1,3 +1,10 @@
+
+/*
+ *
+ *  Vortex - Visualize broken links
+ *
+ */
+
 #vrtx-link-check-spinner {
   background: #efefef url(icons/tabmenu-spinner.gif) no-repeat 10px 50%;
   display: block;
@@ -24,3 +31,5 @@ html#vrtx-preview-popup #vrtx-link-check-spinner {
   padding-left: 10px !important;
   color: #ed1c24 !important;
 }
+
+/* ^ Vortex - Visualize broken links */

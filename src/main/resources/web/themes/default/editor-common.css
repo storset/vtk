@@ -528,15 +528,15 @@ span.cke_skin_kama .cke_wrapper {
 #editor .cke_skin_kama .cke_rcombo a,
 #editor .cke_skin_kama .cke_rcombo a:active,
 #editor .cke_skin_kama .cke_rcombo a:hover {
-    background-image: none;
-    background-position: 0 0
-    background-repeat: no-repeat;
-    border-bottom: none;
-    border-right: none;
-    float: left;
-    height: 21px;
-    margin: 1px 6px 0 0;
-    padding: 0;
+  background-image: none;
+  background-position: 0 0
+  background-repeat: no-repeat;
+  border-bottom: none;
+  border-right: none;
+  float: left;
+  height: 21px;
+  margin: 1px 6px 0 0;
+  padding: 0;
  }
 
 /* ^ Vortex - Editor - Common */

@@ -64,13 +64,13 @@
     </#if>
     
     <div id="resource-title" class="<@vrtx.resourceToIconResolver resource /> ${resource.collection?string}${compactClass}">
-      <h1>
+      <h1><#compress>
         <#if resource.URI == '/'>
           ${repositoryID?html}
         <#else>
           ${resource.name?html}
         </#if>
-      </h1>
+      </#compress></h1>
       <#if browseURL?exists && editField?exists><#-- TODO: fix this hack for browse -->
         <ul class="list-menu" id="resourceMenuLeft">
           <li class="createLinkToResourceService first last">

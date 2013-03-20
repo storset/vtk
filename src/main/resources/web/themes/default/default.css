@@ -1158,6 +1158,7 @@ div.dropdown-shortcut-menu-container form .vrtx-button button {
   max-width: 30%;
 }
 
+#resource-title h1,
 #resourceMenuRight li.manage\.unlockFormService p, 
 #resourceMenuRight li.manage\.unlockFormService a {
   white-space: pre;           /* CSS 2.0 */

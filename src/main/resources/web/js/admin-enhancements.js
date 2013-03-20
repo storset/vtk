@@ -1006,7 +1006,8 @@ VrtxAdmin.prototype.adjustResourceTitle = function adjustResourceTitle() {
   var resourceMenuLeft = this._$("#resourceMenuLeft");
   if (resourceMenuLeft.length) {
     var title = this._$("h1");
-    var resourceMenuLeftTopAdjustments = Math.min(0, title.outerHeight(true) - 86 - 10);
+    var resourceMenuRightHeight = this._$("#resourceMenuRight").outerHeight(true);
+    var resourceMenuLeftTopAdjustments = Math.min(0, title.outerHeight(true) - resourceMenuRightHeight);
     resourceMenuLeft.css("marginTop", resourceMenuLeftTopAdjustments + "px");
   }
 };

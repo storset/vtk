@@ -68,7 +68,7 @@
         <#if resource.URI == '/'>
           ${repositoryID?html}
         <#else>
-          <@vrtx.breakSpecificChar nchars=40 splitClass="title">${resource.name?html}</@vrtx.breakSpecificChar>
+          ${resource.name?html}
         </#if>
       </h1>
       <#if browseURL?exists && editField?exists><#-- TODO: fix this hack for browse -->

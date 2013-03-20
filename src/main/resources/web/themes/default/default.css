@@ -621,6 +621,7 @@ a:hover {
   margin:  0 0 15px 36px;
   float: left;
   min-width: 85px; /* at least as wide as 'Endre navn' in dropdown + 15px */
+  max-width: 40%;
 }
 #resource-title h1 .title-split {
   display: block;
@@ -841,7 +842,7 @@ ul.manage-create li,
 /* Resource menus */
 
 #resourceMenuLeft {
-  margin: -50px 0 20px 0;
+  margin: 0 0 20px 0;
   clear: left;
   float: left;
 }
@@ -1151,6 +1152,21 @@ div.dropdown-shortcut-menu-container form .vrtx-button button {
   padding-right: 18px;
   display: inline-block;
   margin-bottom: 2px;
+}
+
+#resourceMenuRight li.manage\.unlockFormService {
+  max-width: 30%;
+}
+
+#resourceMenuRight li.manage\.unlockFormService p, 
+#resourceMenuRight li.manage\.unlockFormService a {
+  white-space: pre;           /* CSS 2.0 */
+  white-space: pre-wrap;      /* CSS 2.1 */
+  white-space: pre-line;      /* CSS 3.0 */
+  white-space: -pre-wrap;     /* Opera 4-6 */
+  white-space: -o-pre-wrap;   /* Opera 7 */
+  white-space: -moz-pre-wrap; /* Mozilla */
+  word-wrap: break-word;      /* IE 5+ */
 }
 
 

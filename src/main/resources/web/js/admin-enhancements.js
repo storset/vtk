@@ -1005,13 +1005,9 @@ VrtxAdmin.prototype.hideTips = function hideTips() {
 VrtxAdmin.prototype.adjustResourceTitle = function adjustResourceTitle() {
   var resourceMenuLeft = this._$("#resourceMenuLeft");
   if (resourceMenuLeft.length) {
-    var titleSplits = this._$("h1 .title-split");
-    var titleSplitsLength = titleSplits.length;
-    if (titleSplitsLength == 2) {
-      resourceMenuLeft.css("marginTop", "-22px");
-    } else if (titleSplitsLength >= 3) {
-      resourceMenuLeft.css("marginTop", "0px");
-    }
+    var title = this._$("h1");
+    var resourceMenuLeftTopAdjustments = title.outerHeight(true) - 86 - 10;
+    resourceMenuLeft.css("marginTop", resourceMenuLeftTopAdjustments + "px");
   }
 };
 
@@ -3076,6 +3072,7 @@ vrtxAdmin._$(window).resize(vrtxAdmin._$.throttle(150, function () {
   if (vrtxAdmin.runReadyLoad) {
     if (maxRuns < 2) {
       vrtxAdmin.scrollBreadcrumbs("right");
+      vrtxAdmin.adjustResourceTitle();
       maxRuns++;
     } else {
       maxRuns = 0; /* IE8: let it rest */

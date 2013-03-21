@@ -127,16 +127,17 @@ public class MessageComponent extends ViewRenderingDecoratorComponent {
 
         Listing result = searchComponent.execute(request.getServletRequest(), requestedMessageFolder, 1, pageLimit, 0);
         List<PropertySet> files = result.getFiles();
-        
+
         Locale preferredLocale = localeResolver.resolveResourceLocale(requestedMessageFolder);
-        Map<String, Principal> principalDocuments = helper.getExistingPrincipalDocuments(new HashSet<PropertySet>(
-                files), preferredLocale, null);
-        
+        Map<String, Principal> principalDocuments = helper.getExistingPrincipalDocuments(
+                new HashSet<PropertySet>(files), preferredLocale, null);
+
         model.put("principalDocuments", principalDocuments);
-        model.put("messages", files);
+        model.put("messageListingResult", result);
         model.put("editMessageFolder", helper.checkResourceForEditLink(repository, requestedMessageFolder, principal));
         model.put("messageFolder", requestedMessageFolder);
         model.put("locale", preferredLocale);
+        model.put("requestURL", requestContext.getRequestURL());
 
         if (pageLimit < result.getTotalHits()) {
             model.put("moreMessages", true);

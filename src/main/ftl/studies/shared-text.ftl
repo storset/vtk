@@ -6,6 +6,6 @@
   <#else>
     ${vrtx.getMsg("shared-text.no-text-for-id")}
   </#if>
-<#else>
+<#elseif !nullProp??>
   ${vrtx.getMsg("shared-text.id-does-not-exist")}
 </#if>

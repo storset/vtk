@@ -95,7 +95,7 @@
           <div class="description introduction">
             <#local messageIntro = vrtx.propValue(message, "listingDisplayedMessage", "", "") />
             <#if messageIntro??>
-              <@vrtx.linkResolveFilter messageIntro messageURLs[message.URI] requestURL />
+              ${messageIntro}
               <#local isTruncated = vrtx.propValue(message, "isTruncated", "", "") />
               <#if isTruncated?exists && isTruncated = 'true'>
                 <div class="vrtx-read-more">

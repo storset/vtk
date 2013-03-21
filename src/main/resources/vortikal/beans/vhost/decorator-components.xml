@@ -478,7 +478,6 @@
     <property name="view" ref="decorating.eventComponent.view" />
     <property name="description" value="Inserts a event list component on the page" />
     <property name="search" ref="eventListing.upcomingEventsSearchComponent" />
-    <property name="htmlUtil" ref="htmlUtil" />
     <property name="defaultElementOrder">
       <list>
         <value>title</value>

@@ -55,7 +55,7 @@ import org.vortikal.web.search.Listing;
 import org.vortikal.web.search.SearchComponent;
 import org.vortikal.web.service.Service;
 
-public class EventComponent extends AbstractEventComponent {
+public class EventComponent extends ViewRenderingDecoratorComponent {
 
     private static final String PARAMETER_URI = "uri";
     private static final String PARAMETER_URI_DESC = "Uri to the event folder. This is a required parameter.";
@@ -105,8 +105,12 @@ public class EventComponent extends AbstractEventComponent {
     private static final String PARAMETER_SHOW_DATE = "show-date";
     private static final String PARAMETER_SHOW_DATE_DESC = "Set to false if you want to hide date on events. Default is 'true'";
 
+    private static final String PARAMETER_EVENT_ELEMENT_ORDER = "element-order";
+    private static final String PARAMETER_EVENT_ELEMENT_ORDER_DESC = "The order that the elementes are listed";
+
     private SearchComponent search;
     private Service viewService;
+    private List<String> defaultElementOrder;
 
     @Override
     protected void processModel(Map<String, Object> model, DecoratorRequest request, DecoratorResponse response)
@@ -332,6 +336,39 @@ public class EventComponent extends AbstractEventComponent {
 
     }
 
+    boolean parameterHasValue(String param, String includeParamValue, DecoratorRequest request) {
+        String itemDescriptionString = request.getStringParameter(param);
+        if (itemDescriptionString != null && includeParamValue.equalsIgnoreCase(itemDescriptionString)) {
+            return true;
+        }
+        return false;
+    }
+
+    private List<String> getElementOrder(String param, DecoratorRequest request) {
+        List<String> resultOrder = new ArrayList<String>();
+
+        String[] order = null;
+        try {
+            order = request.getStringParameter(param).split(",");
+        } catch (Exception e) {
+        }
+
+        if (order == null) {
+            return defaultElementOrder;
+        }
+
+        // check and add
+        for (int i = 0; i < order.length; i++) {
+            if (order[i] != null && !defaultElementOrder.contains(order[i].trim())) {
+                throw new DecoratorComponentException("Illigal element '" + order[i] + "' in '" + param + "'");
+            }
+            if (order[i] != null) {
+                resultOrder.add(order[i].trim());
+            }
+        }
+        return resultOrder;
+    }
+
     /* Class to keep date and PropertySet so start date can be incremented */
     public static class PropertySetTmp {
 
@@ -407,10 +444,10 @@ public class EventComponent extends AbstractEventComponent {
         RequestContext rc = RequestContext.getRequestContext();
 
         try {
-            if (!uri.startsWith("/"))
+            if (!uri.startsWith("/")) {
                 return rc.getCurrentCollection().extend(uri);
-            else
-                return Path.fromString(uri);
+            }
+            return Path.fromString(uri);
         } catch (IllegalArgumentException iae) {
             return null;
         }
@@ -424,6 +461,11 @@ public class EventComponent extends AbstractEventComponent {
     @Required
     public void setViewService(Service viewService) {
         this.viewService = viewService;
+    }
+
+    @Required
+    public void setDefaultElementOrder(List<String> defaultElementOrder) {
+        this.defaultElementOrder = defaultElementOrder;
     }
 
     protected String getDescriptionInternal() {
@@ -448,6 +490,7 @@ public class EventComponent extends AbstractEventComponent {
         map.put(PARAMETER_URI, PARAMETER_URI_DESC);
         map.put(PARAMETER_SHOW_ONLY_ONGOING, PARAMETER_SHOW_ONLY_ONGOING_DESC);
         map.put(PARAMETER_SHOW_DATE, PARAMETER_SHOW_DATE_DESC);
+        map.put(PARAMETER_EVENT_ELEMENT_ORDER, PARAMETER_EVENT_ELEMENT_ORDER_DESC);
         return map;
     }
 

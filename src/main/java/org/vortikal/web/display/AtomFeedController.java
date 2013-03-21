@@ -79,13 +79,13 @@ public abstract class AtomFeedController implements Controller {
     protected Abdera abdera;
     protected ResourceTypeTree resourceTypeTree;
     protected PropertyTypeDefinition publishDatePropDef;
+    protected HtmlUtil htmlUtil;
     protected int entryCountLimit = 200;
 
     protected PropertyTypeDefinition titlePropDef;
     protected PropertyTypeDefinition lastModifiedPropDef;
     protected PropertyTypeDefinition creationTimePropDef;
 
-    private HtmlUtil htmlUtil;
     private String authorPropDefPointer;
     private String introductionPropDefPointer;
     private String picturePropDefPointer;
@@ -106,8 +106,8 @@ public abstract class AtomFeedController implements Controller {
     // To be overridden where necessary
     protected void setFeedEntrySummary(Entry entry, PropertySet result) throws Exception {
         String type = result.getResourceType();
-        if (type != null && this.introductionAsXHTMLSummaryResourceTypes.contains(type)) {
-            HtmlFragment summary = this.prepareSummary(result);
+        if (type != null && introductionAsXHTMLSummaryResourceTypes.contains(type)) {
+            HtmlFragment summary = prepareSummary(result);
             if (summary != null) {
                 try {
                     entry.setSummaryAsXhtml(summary.getStringRepresentation());
@@ -120,7 +120,7 @@ public abstract class AtomFeedController implements Controller {
             }
         } else {
             // ...add description as plain text else
-            String description = this.getDescription(result);
+            String description = getDescription(result);
             if (description != null) {
                 entry.setSummary(description);
             }
@@ -131,7 +131,7 @@ public abstract class AtomFeedController implements Controller {
     @Override
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
-        Feed feed = this.createFeed(requestContext);
+        Feed feed = createFeed(requestContext);
         if (feed != null) {
             response.setContentType("application/atom+xml;charset=utf-8");
             feed.writeTo("prettyxml", response.getWriter());
@@ -149,7 +149,7 @@ public abstract class AtomFeedController implements Controller {
 
     protected Feed populateFeed(Resource collection, String feedTitle) throws IOException, URIException,
             UnsupportedEncodingException {
-        return this.populateFeed(collection, feedTitle, true);
+        return populateFeed(collection, feedTitle, true);
     }
 
     protected Feed populateFeed(Resource collection, String feedTitle, boolean showIntroduction) throws IOException,
@@ -158,8 +158,7 @@ public abstract class AtomFeedController implements Controller {
         Feed feed = abdera.newFeed();
 
         Property publishedDateProp = getPublishDate(collection);
-        publishedDateProp = publishedDateProp == null ? collection.getProperty(this.creationTimePropDef)
-                : publishedDateProp;
+        publishedDateProp = publishedDateProp == null ? collection.getProperty(creationTimePropDef) : publishedDateProp;
         feed.setId(getId(collection.getURI(), publishedDateProp, getFeedPrefix()));
         feed.addLink(viewService.constructLink(collection.getURI()), "alternate");
 
@@ -177,7 +176,7 @@ public abstract class AtomFeedController implements Controller {
                 }
             }
 
-            Property picture = this.getProperty(collection, this.picturePropDefPointer);
+            Property picture = getProperty(collection, picturePropDefPointer);
             if (picture != null) {
                 String val = picture.getFormattedValue(PropertyType.THUMBNAIL_PROP_NAME, Locale.getDefault());
                 feed.setLogo(val);
@@ -192,19 +191,18 @@ public abstract class AtomFeedController implements Controller {
             Entry entry = Abdera.getInstance().newEntry();
 
             Property publishedDateProp = getPublishDate(result);
-            publishedDateProp = publishedDateProp == null ? result.getProperty(this.creationTimePropDef)
-                    : publishedDateProp;
+            publishedDateProp = publishedDateProp == null ? result.getProperty(creationTimePropDef) : publishedDateProp;
             String id = getId(result.getURI(), publishedDateProp, null);
             entry.setId(id);
             entry.addCategory(result.getResourceType());
 
-            Property title = result.getProperty(this.titlePropDef);
+            Property title = result.getProperty(titlePropDef);
             if (title != null) {
                 entry.setTitle(title.getFormattedValue());
             }
 
             // Set the summary
-            this.setFeedEntrySummary(entry, result);
+            setFeedEntrySummary(entry, result);
 
             Property publishDate = getPublishDate(result);
             if (publishDate != null) {
@@ -216,7 +214,7 @@ public abstract class AtomFeedController implements Controller {
                 entry.setUpdated(updated);
             }
 
-            Property author = this.getProperty(result, this.authorPropDefPointer);
+            Property author = getProperty(result, authorPropDefPointer);
             if (author != null) {
                 ValueFormatter vf = author.getDefinition().getValueFormatter();
                 if (author.getDefinition().isMultiple()) {
@@ -238,7 +236,7 @@ public abstract class AtomFeedController implements Controller {
             link.setRel("alternate");
             entry.addLink(link);
 
-            Property mediaRef = this.getProperty(result, this.mediaPropDefPointer);
+            Property mediaRef = getProperty(result, mediaPropDefPointer);
             if (mediaRef != null) {
                 try {
                     Link mediaLink = abdera.getFactory().newLink();
@@ -267,12 +265,12 @@ public abstract class AtomFeedController implements Controller {
         }
     }
 
-    protected HtmlFragment prepareSummary(PropertySet resource) {
+    private HtmlFragment prepareSummary(PropertySet resource) {
         StringBuilder sb = new StringBuilder();
 
         URL baseURL = viewService.constructURL(resource.getURI());
 
-        Property picture = this.getProperty(resource, this.picturePropDefPointer);
+        Property picture = getProperty(resource, picturePropDefPointer);
         if (picture != null) {
             String imageRef = picture.getStringValue();
             if (!imageRef.startsWith("/") && !imageRef.startsWith("https://") && !imageRef.startsWith("https://")) {
@@ -289,28 +287,28 @@ public abstract class AtomFeedController implements Controller {
                     + HtmlUtil.encodeBasicEntities(imgAlt) + "\"/>");
         }
 
-        String intro = this.getIntroduction(resource);
+        String intro = getIntroduction(resource);
         if (intro != null) {
             sb.append(intro);
         }
 
         if (sb.length() > 0) {
             HtmlFragment summary = htmlUtil.linkResolveFilter(sb.toString(), baseURL, RequestContext
-                    .getRequestContext().getRequestURL(), this.useProtocolRelativeImages);
+                    .getRequestContext().getRequestURL(), useProtocolRelativeImages);
             return summary;
         }
         return null;
     }
 
     protected Property getDefaultPublishDate(PropertySet result) {
-        if (this.publishDatePropDef != null) {
-            return result.getProperty(this.publishDatePropDef);
+        if (publishDatePropDef != null) {
+            return result.getProperty(publishDatePropDef);
         }
         return null;
     }
 
     protected String getIntroduction(PropertySet resource) {
-        Property introductionProp = this.getProperty(resource, this.introductionPropDefPointer);
+        Property introductionProp = getProperty(resource, introductionPropDefPointer);
         return introductionProp != null ? introductionProp.getFormattedValue() : null;
     }
 
@@ -361,13 +359,13 @@ public abstract class AtomFeedController implements Controller {
     }
 
     protected Property getProperty(PropertySet resource, String propDefPointer) {
-        PropertyTypeDefinition propDef = this.resourceTypeTree.getPropertyDefinitionByPointer(propDefPointer);
+        PropertyTypeDefinition propDef = resourceTypeTree.getPropertyDefinitionByPointer(propDefPointer);
         if (propDef != null) {
             Property prop = resource.getProperty(propDef);
             if (prop == null && propDefPointer.contains(":")) {
                 String defaultPropDefPointer = propDefPointer.substring(propDefPointer.indexOf(":") + 1,
                         propDefPointer.length());
-                propDef = this.resourceTypeTree.getPropertyDefinitionByPointer(defaultPropDefPointer);
+                propDef = resourceTypeTree.getPropertyDefinitionByPointer(defaultPropDefPointer);
                 if (propDef != null) {
                     prop = resource.getProperty(propDef);
                 }

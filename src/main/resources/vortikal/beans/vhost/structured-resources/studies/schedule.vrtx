@@ -7,6 +7,7 @@ resourcetype schedule {
     semester : string,
     path : string,
     overview : string,
+    course-version : string,
     calweek : boolean defaultvalue("false"),
     comment : simple_html,
     content : html noextract
@@ -18,7 +19,8 @@ resourcetype schedule {
     year (class[ui-helper-hidden]),
     semester (class[ui-helper-hidden]),
     path (class[ui-helper-hidden]),
-    overview (dropdown)
+    overview (dropdown),
+    course-version (dropdown)
   }
   
   view-components {
@@ -31,12 +33,13 @@ resourcetype schedule {
       [def semester document.properties.semester]
       [def path document.properties.path]
       [def overview document.properties.overview]
+      [def course-version document.properties.course-version]
       [def calweek document.properties.calweek]
       [def locale resource-locale()]
       <iframe frameborder="0" 
               id="timeplaner" 
               scrolling="no" 
-              src="/studier/timeplaner/calendar.php?type=module&amp;embed=1&amp;ar=[val year]&amp;sem=[val semester]&amp;id=[val course-code]-1&amp;path=[val path][if overview != null && overview != ""]&amp;over=[val overview][else]&amp;over=1[endif][if locale != null && locale = "en"]&amp;lang=en[endif][if calweek != null && calweek]&amp;calweek=1[endif]" 
+              src="/studier/timeplaner/calendar.php?type=module&amp;embed=1&amp;ar=[val year]&amp;sem=[val semester]&amp;id=[val course-code]-[if course-version != null && course-version != ""][val course-version][else]1[endif]&amp;path=[val path][if overview != null && overview != ""]&amp;over=[val overview][else]&amp;over=1[endif][if locale != null && locale = "en"]&amp;lang=en[endif][if calweek != null && calweek]&amp;calweek=1[endif]" 
               width="100%">
       </iframe>
       ##
@@ -67,6 +70,11 @@ resourcetype schedule {
       no : ("1" = "Vanlig oversikt", "x" = "Kun snarvei til anker", "0" = "Ingen"),
       nn : ("1" = "Vanleg oversikt", "x" = "Berre snarveg til anker", "0" = "Ingen")
     },
+    course-version {
+      en : (range = "1..2"),
+      no : (range = "1..2"),
+      nn : (range = "1..2")
+    },
     calweek {
       en : ("false" = "No", "true" = "Yes"),
       no : ("false" = "Nei", "true" = "Ja"),
@@ -82,6 +90,7 @@ resourcetype schedule {
     semester : (en : "Semester", no : "Semester", nn : "Semester"),
     path : (en : "Path", no : "Sti", nn : "Sti"),
     overview : (en : "Overview", no : "Oversikt", nn : "Oversikt"),
+    course-version : (en : "Course version in FS/Syllabus", no : "Emneversjon i FS/Syllabus", nn : "Emneversjon i FS/Syllabus"),
     calweek : (en : "Calendar week view", no : "Kalenderuke-visning", nn : "Kalenderuke-visning"),
     comment : (en : "Introductory comment", no : "Innledende kommentar", nn : "Innleiande kommentar"),
     content : (en : "Content", no : "Innhold", nn : "Innhald")

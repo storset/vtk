@@ -15,7 +15,7 @@
   
   <div class="vrtx-messages">
     <#if messageFolder??>
-      <#if messages??>
+      <#if messages?? && messages?has_content>
         <@messageListing.displayMessages messages nullArg true compactView/>
         <#if moreMessages?? && moreMessages>
           <div class="vrtx-more">
@@ -23,7 +23,7 @@
           </div>
         </#if>
       <#else>
-        <p>${vrtx.getMsg("message-listing.no-messages")} ${messageFolder.URI}</p>
+        <p>${vrtx.getMsg("message-listing.no-messages")}</p>
       </#if>
     <#else>
        <p>${vrtx.getMsg("message-listing.no-message-folder")}</p>

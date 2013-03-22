@@ -2025,6 +2025,8 @@ function versioningInteraction(bodyId, vrtxAdm, _$) {
 
 /**
  * Retrieve a form async
+ * 
+ * XXX: need some consolidating of callback functions and class-filtering for getting existing form
  *
  * @this {VrtxAdmin}
  * @param {object} options Configuration
@@ -2245,6 +2247,8 @@ VrtxAdmin.prototype.addNewMarkup = function addNewMarkup(options, selectorClass,
 
 /**
  * Complete a form async
+ * 
+ * XXX: need some consolidating of callback functions
  *
  * @this {VrtxAdmin}
  * @param {object} options Configuration

@@ -202,9 +202,12 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
   vrtxAdm.initDropdowns();
 
   // Ignore all AJAX errors when user navigate away (abort)
-  _$(window).on("beforeunload", function (e) {
-    vrtxAdm.ignoreAjaxErrors = true;
-  });
+  if(typeof unsavedChangesInEditorMessage !== "function") {
+    var ignoreAjaxErrorOnBeforeUnload = function() {
+      vrtxAdm.ignoreAjaxErrors = true;
+    };
+    window.onbeforeunload = ignoreAjaxErrorOnBeforeUnload;    
+  }
 
   // Tooltips
   $("#title-container").vortexTips("abbr", {

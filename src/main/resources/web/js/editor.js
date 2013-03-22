@@ -705,8 +705,11 @@ function storeInitPropValues(contents) {
 }
 
 function unsavedChangesInEditor() {
-  if (!vrtxEditor.needToConfirm) return false;
-
+  if (!vrtxEditor.needToConfirm) {
+    vrtxAdm.ignoreAjaxErrors = true;
+    return false;
+  }
+  
   var vrtxEdit = vrtxEditor;
   var contents = $("#contents");
 
@@ -738,7 +741,7 @@ function unsavedChangesInEditor() {
       }
     }
   }
-
+  vrtxAdm.ignoreAjaxErrors = true;
   return false;
 }
 

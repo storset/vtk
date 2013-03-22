@@ -18,7 +18,9 @@
 	       <#list sharedTextProps[inputFieldName]?keys as y >
     	       <#assign language >${resourceLocaleResolver.resolveLocale(null)}</#assign>
     	       <#if language == "no_NO">
-    	       <#assign language = "no" />
+    	         <#assign language = "no" />
+    	       <#elseif language == "no_NO_NY">
+                 <#assign language = "nn" />
     	       </#if>
     	       <#if sharedTextProps[inputFieldName][y]['description-' + language]?exists>
     	         <div class="${sharedTextProps[inputFieldName][y]['id']} shared-text-description">

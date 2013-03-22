@@ -175,6 +175,7 @@ resourcetype semester-page {
     [def messages-placement resource-prop-obj-val(".", "messages-placement")]
     [def max-number-of-messages resource-prop-obj-val(".", "max-number-of-messages")]
     [def fronter resource-prop-obj-val(".", "fronter")]
+    [def studinfo-kontakt resource-prop-obj-val(".", "studinfo-kontakt")]
     [def cloned-course resource-prop-obj-val(".", "cloned-course")]
     [def cloned-course-code resource-prop-obj-val(".", "cloned-course-code")]
     [def locale resource-locale()]
@@ -295,10 +296,12 @@ resourcetype semester-page {
             [endif]
           </div>
           <div id="vrtx-additional-content">
-            <div class="vrtx-frontpage-box white-box vrtx-distach-bottom">
-              <h2>[localized 'studinfo-kontakt']</h2>
-              [call "include:shared-text" {"propName":"studinfo-kontakt"}]
-            </div>
+            [if studinfo-kontakt != null && studinfo-kontakt != ""]
+              <div class="vrtx-frontpage-box white-box vrtx-distach-bottom">
+                <h2>[localized 'studinfo-kontakt']</h2>
+                [call "include:shared-text" {"propName":"studinfo-kontakt"}]
+              </div>
+            [endif]
             [call "resource:teacher-list"{"cssClass":"vrtx-distach-bottom"}]
             [if messagelisting != null && (((messages-placement = null || (messages-placement != null && messages-placement = "auto")) && resourceLinkCount > 4) || (messages-placement != null && messages-placement = "right"))]
               <div class="vrtx-frontpage-box white-box">

@@ -71,6 +71,7 @@ public class SharedTextComponent extends ViewRenderingDecoratorComponent {
         Property prop = resource.getProperty(Namespace.STRUCTURED_RESOURCE_NAMESPACE, propName);
 
         if (prop == null) {
+            model.put("nullProp", true);
             return;
         }
 

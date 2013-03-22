@@ -11,6 +11,7 @@ import org.vortikal.context.BaseContext;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.security.SecurityContext;
+import org.vortikal.web.service.Service;
 
 public abstract class AbstractControllerTest extends TestCase {
 
@@ -22,6 +23,7 @@ public abstract class AbstractControllerTest extends TestCase {
     protected Mockery context = new JUnit4Mockery();
     protected final HttpServletRequest mockRequest = context.mock(HttpServletRequest.class);
     protected final HttpServletResponse mockResponse = context.mock(HttpServletResponse.class);
+    protected final Service mockService = context.mock(Service.class);
     protected final Repository mockRepository = context.mock(Repository.class);
 
     @Override
@@ -30,7 +32,8 @@ public abstract class AbstractControllerTest extends TestCase {
         BaseContext.pushContext();
         SecurityContext securityContext = new SecurityContext(null, null);
         SecurityContext.setSecurityContext(securityContext);
-        RequestContext requestContext = new RequestContext(null, securityContext, null, null, getRequestPath(), null, false, false, true, mockRepository);
+        RequestContext requestContext = new RequestContext(mockRequest, securityContext, mockService, null,
+                getRequestPath(), null, false, false, true, mockRepository);
         RequestContext.setRequestContext(requestContext);
     }
 

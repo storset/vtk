@@ -34,7 +34,11 @@
 	  }
 	  
 	  function linkCheckCompleted(requests, brokenLinks) {
-	    if(brokenLinks > 0) {
+	    if(brokenLinks == 1) {
+	      $("#vrtx-link-check-spinner")
+	        .html(brokenLinks + ' <@vrtx.msg code="linkcheck.brokenlink" default=" broken link"/>')
+	        .addClass("vrtx-broken-links");
+	    } else if(brokenLinks > 1) {
 	      $("#vrtx-link-check-spinner")
 	        .html(brokenLinks + ' <@vrtx.msg code="linkcheck.brokenlinks" default=" broken links"/>')
 	        .addClass("vrtx-broken-links");

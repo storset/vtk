@@ -374,7 +374,7 @@ resourcetype course-description {
       [def opptak-og-adgang-text-field document.properties.opptak-og-adgang-text-field]
       [def ikke-privatist document.properties.ikke-privatist]
       [def ikke-privatist-text-field document.properties.ikke-privatist-text-field]
-      [if (opptak-og-adgang-text-field != null && opptak-og-adgang-text-field != "") || (opptak-og-adgang != null && opptak-og-adgang != "" && opptak-og-adgang != "ingen-fellestekst") || (ikke-privatist-text-field != null && ikke-privatist-text-field != "") || (ikke-privatist != null && ikke-privatist != "" && ikke-privatist != "ingen-fellestekst")]
+      [if (opptak-og-adgang-text-field != null && opptak-og-adgang-text-field != "") || (opptak-og-adgang != null && opptak-og-adgang != "") || (ikke-privatist-text-field != null && ikke-privatist-text-field != "") || (ikke-privatist != null && ikke-privatist != "")]
         [if put-dash != null]
           -
         [else]
@@ -385,7 +385,7 @@ resourcetype course-description {
       [def obligatoriske-forkunnskaper document.properties.obligatoriske-forkunnskaper]
       [def obligatoriske-forkunnskaper-text-field document.properties.obligatoriske-forkunnskaper-text-field]
       [def recommended-prerequisites-text-field document.properties.recommended-prerequisites-text-field]
-      [if (obligatoriske-forkunnskaper-text-field != null && obligatoriske-forkunnskaper-text-field != "") || (obligatoriske-forkunnskaper != null && obligatoriske-forkunnskaper != "" && obligatoriske-forkunnskaper != "ingen-fellestekst") || (recommended-prerequisites-text-field != null && recommended-prerequisites-text-field != "")]
+      [if (obligatoriske-forkunnskaper-text-field != null && obligatoriske-forkunnskaper-text-field != "") || (obligatoriske-forkunnskaper != null && obligatoriske-forkunnskaper != "") || (recommended-prerequisites-text-field != null && recommended-prerequisites-text-field != "")]
         [if put-dash != null]
           -
         [else]
@@ -415,7 +415,7 @@ resourcetype course-description {
       [def forsikring document.properties.forsikring]
       [def adgang document.properties.adgang]
       [def adgang-text-field document.properties.adgang-text-field]
-      [if (teaching-text-field != null && teaching-text-field != "") || (forsikring != null && forsikring != "" && forsikring != "ingen-fellestekst")  || (adgang != null && adgang != "" && adgang != "ingen-fellestekst") || (adgang-text-field != null && adgang-text-field != "")]
+      [if (teaching-text-field != null && teaching-text-field != "") || (forsikring != null && forsikring != "")  || (adgang != null && adgang != "") || (adgang-text-field != null && adgang-text-field != "")]
         [if put-dash != null]
           -
         [else]
@@ -439,13 +439,13 @@ resourcetype course-description {
       [def tilrettelagt-eksamen document.properties.tilrettelagt-eksamen]
       [def tilrettelagt-eksamen-text-field document.properties.tilrettelagt-eksamen-text-field]
       [if (assessment-and-grading != null && assessment-and-grading != "") ||
-          (hjelpemidler-text-field != null && hjelpemidler-text-field != "") || (hjelpemidler != null && hjelpemidler != "" && hjelpemidler != "ingen-fellestekst") ||
-          (eksamensspraak-text-field != null && eksamensspraak-text-field != "") || (eksamensspraak != null && eksamensspraak != "" && eksamensspraak != "ingen-fellestekst") ||
-          (sensur-text-field != null && sensur-text-field != "") || (sensur != null && sensur != "" && sensur != "ingen-fellestekst") ||
-          (klage-text-field != null && klage-text-field != "") || (klage != null && klage != "" && klage != "ingen-fellestekst") ||
-          (ny-utsatt-eksamen-text-field != null && ny-utsatt-eksamen-text-field != "") || (ny-utsatt-eksamen != null && ny-utsatt-eksamen != "" && ny-utsatt-eksamen != "ingen-fellestekst") ||
-          (antall-forsok-trekk-text-field != null && antall-forsok-trekk-text-field != "") || (antall-forsok-trekk != null && antall-forsok-trekk != "" && antall-forsok-trekk != "ingen-fellestekst") || 
-          (tilrettelagt-eksamen-text-field != null && tilrettelagt-eksamen-text-field != "") || (tilrettelagt-eksamen != null && tilrettelagt-eksamen != "" && tilrettelagt-eksamen != "ingen-fellestekst")]
+          (hjelpemidler-text-field != null && hjelpemidler-text-field != "") || (hjelpemidler != null && hjelpemidler != "") ||
+          (eksamensspraak-text-field != null && eksamensspraak-text-field != "") || (eksamensspraak != null && eksamensspraak != "") ||
+          (sensur-text-field != null && sensur-text-field != "") || (sensur != null && sensur != "") ||
+          (klage-text-field != null && klage-text-field != "") || (klage != null && klage != "") ||
+          (ny-utsatt-eksamen-text-field != null && ny-utsatt-eksamen-text-field != "") || (ny-utsatt-eksamen != null && ny-utsatt-eksamen != "") ||
+          (antall-forsok-trekk-text-field != null && antall-forsok-trekk-text-field != "") || (antall-forsok-trekk != null && antall-forsok-trekk != "") || 
+          (tilrettelagt-eksamen-text-field != null && tilrettelagt-eksamen-text-field != "") || (tilrettelagt-eksamen != null && tilrettelagt-eksamen != "")]
         [if put-dash != null]
           -
         [else]
@@ -455,7 +455,7 @@ resourcetype course-description {
       [endif]
       [def evaluering-av-emnet document.properties.evaluering-av-emnet]
       [def evaluering-av-emnet-text-field document.properties.evaluering-av-emnet-text-field]
-      [if (evaluering-av-emnet-text-field != null && evaluering-av-emnet-text-field != "") || (evaluering-av-emnet != null && evaluering-av-emnet != "" && evaluering-av-emnet != "ingen-fellestekst")]
+      [if (evaluering-av-emnet-text-field != null && evaluering-av-emnet-text-field != "") || (evaluering-av-emnet != null && evaluering-av-emnet != "")]
         [if put-dash != null]
           -
         [else]
@@ -493,18 +493,14 @@ resourcetype course-description {
       [def opptak-og-adgang-text-field document.properties.opptak-og-adgang-text-field]
       [def ikke-privatist document.properties.ikke-privatist]
       [def ikke-privatist-text-field document.properties.ikke-privatist-text-field]
-      [if (opptak-og-adgang-text-field != null && opptak-og-adgang-text-field != "") || (opptak-og-adgang != null && opptak-og-adgang != "" && opptak-og-adgang != "ingen-fellestekst") || (ikke-privatist-text-field != null && ikke-privatist-text-field != "") || (ikke-privatist != null && ikke-privatist != "" && ikke-privatist != "ingen-fellestekst")]
+      [if (opptak-og-adgang-text-field != null && opptak-og-adgang-text-field != "") || (opptak-og-adgang != null && opptak-og-adgang != "") || (ikke-privatist-text-field != null && ikke-privatist-text-field != "") || (ikke-privatist != null && ikke-privatist != "")]
         <div id="admission">
           <h2>[localized 'opptak-og-adgang-group']</h2>
-          [if opptak-og-adgang != null && opptak-og-adgang != "ingen-fellestekst"]
-            [call "include:shared-text" {"propName":"opptak-og-adgang"}]
-          [endif]
+          [call "include:shared-text" {"propName":"opptak-og-adgang"}]
           [if opptak-og-adgang-text-field != null && opptak-og-adgang-text-field != ""]
             [val opptak-og-adgang-text-field # unescaped]
           [endif]
-          [if ikke-privatist != null && ikke-privatist != "ingen-fellestekst"]
-            [call "include:shared-text" {"propName":"ikke-privatist"}]
-          [endif]
+          [call "include:shared-text" {"propName":"ikke-privatist"}]
           [if ikke-privatist-text-field != null && ikke-privatist-text-field != ""]
             [val ikke-privatist-text-field # unescaped]
           [endif]
@@ -513,15 +509,13 @@ resourcetype course-description {
       [def obligatoriske-forkunnskaper document.properties.obligatoriske-forkunnskaper]
       [def obligatoriske-forkunnskaper-text-field document.properties.obligatoriske-forkunnskaper-text-field]
       [def recommended-prerequisites-text-field document.properties.recommended-prerequisites-text-field]
-      [if (obligatoriske-forkunnskaper-text-field != null && obligatoriske-forkunnskaper-text-field != "") || (obligatoriske-forkunnskaper != null && obligatoriske-forkunnskaper != "" && obligatoriske-forkunnskaper != "ingen-fellestekst") || (recommended-prerequisites-text-field != null && recommended-prerequisites-text-field != "")]
+      [if (obligatoriske-forkunnskaper-text-field != null && obligatoriske-forkunnskaper-text-field != "") || (obligatoriske-forkunnskaper != null && obligatoriske-forkunnskaper != "") || (recommended-prerequisites-text-field != null && recommended-prerequisites-text-field != "")]
         <div id="prerequisites">
           <h2>[localized 'prerequisites-group']</h2>
-          [if (obligatoriske-forkunnskaper-text-field != null && obligatoriske-forkunnskaper-text-field != "") || (obligatoriske-forkunnskaper != null && obligatoriske-forkunnskaper != "" && obligatoriske-forkunnskaper != "ingen-fellestekst")]
+          [if (obligatoriske-forkunnskaper-text-field != null && obligatoriske-forkunnskaper-text-field != "") || (obligatoriske-forkunnskaper != null && obligatoriske-forkunnskaper != "")]
             <h3>[localized 'mandatory-prerequisites']</h3>
           [endif]
-          [if obligatoriske-forkunnskaper != null && obligatoriske-forkunnskaper != "ingen-fellestekst"]
-            [call "include:shared-text" {"propName":"obligatoriske-forkunnskaper"}]
-          [endif]
+          [call "include:shared-text" {"propName":"obligatoriske-forkunnskaper"}]
           [if obligatoriske-forkunnskaper-text-field != null && obligatoriske-forkunnskaper-text-field != ""]
             [val obligatoriske-forkunnskaper-text-field # unescaped]
           [endif]
@@ -562,21 +556,17 @@ resourcetype course-description {
       [def forsikring document.properties.forsikring]
       [def adgang document.properties.adgang]
       [def adgang-text-field document.properties.adgang-text-field]
-      [if (teaching-text-field != null && teaching-text-field != "") || (forsikring != null && forsikring != "" && forsikring != "ingen-fellestekst") || (adgang != null && adgang != "" && adgang != "ingen-fellestekst") || (adgang-text-field != null && adgang-text-field != "")]
+      [if (teaching-text-field != null && teaching-text-field != "") || (forsikring != null && forsikring != "") || (adgang != null && adgang != "") || (adgang-text-field != null && adgang-text-field != "")]
         <div id="teaching">
           <h2>[localized 'teaching-group']</h2>
           [if teaching-text-field != null && teaching-text-field != ""]
             [val teaching-text-field # unescaped]
           [endif]
-          [if forsikring != null && forsikring != "" && forsikring != "ingen-fellestekst"]
-            [call "include:shared-text" {"propName":"forsikring"}]
-          [endif]
-          [if (adgang != null && adgang != "" && adgang != "ingen-fellestekst") || (adgang-text-field != null && adgang-text-field != "")]
+          [call "include:shared-text" {"propName":"forsikring"}]
+          [if (adgang != null && adgang != "") || (adgang-text-field != null && adgang-text-field != "")]
             <h3>[localized 'teaching-admission']</h3>
           [endif]
-          [if adgang != null && adgang != "ingen-fellestekst"]
-            [call "include:shared-text" {"propName":"adgang"}]
-          [endif]
+          [call "include:shared-text" {"propName":"adgang"}]
           [if adgang-text-field != null && adgang-text-field != ""]
             [val adgang-text-field # unescaped]
           [endif]
@@ -598,78 +588,64 @@ resourcetype course-description {
       [def tilrettelagt-eksamen document.properties.tilrettelagt-eksamen]
       [def tilrettelagt-eksamen-text-field document.properties.tilrettelagt-eksamen-text-field]
       [if (assessment-and-grading != null && assessment-and-grading != "") ||
-          (hjelpemidler-text-field != null && hjelpemidler-text-field != "") || (hjelpemidler != null && hjelpemidler != "" && hjelpemidler != "ingen-fellestekst") ||
-          (eksamensspraak-text-field != null && eksamensspraak-text-field != "") || (eksamensspraak != null && eksamensspraak != "" && eksamensspraak != "ingen-fellestekst") ||
-          (sensur-text-field != null && sensur-text-field != "") || (sensur != null && sensur != "" && sensur != "ingen-fellestekst") ||
-          (klage-text-field != null && klage-text-field != "") || (klage != null && klage != "" && klage != "ingen-fellestekst") ||
-          (ny-utsatt-eksamen-text-field != null && ny-utsatt-eksamen-text-field != "") || (ny-utsatt-eksamen != null && ny-utsatt-eksamen != "" && ny-utsatt-eksamen != "ingen-fellestekst") ||
-          (antall-forsok-trekk-text-field != null && antall-forsok-trekk-text-field != "") || (antall-forsok-trekk != null && antall-forsok-trekk != "" && antall-forsok-trekk != "ingen-fellestekst") || 
-          (tilrettelagt-eksamen-text-field != null && tilrettelagt-eksamen-text-field != "") || (tilrettelagt-eksamen != null && tilrettelagt-eksamen != "" && tilrettelagt-eksamen != "ingen-fellestekst")]
+          (hjelpemidler-text-field != null && hjelpemidler-text-field != "") || (hjelpemidler != null && hjelpemidler != "") ||
+          (eksamensspraak-text-field != null && eksamensspraak-text-field != "") || (eksamensspraak != null && eksamensspraak != "") ||
+          (sensur-text-field != null && sensur-text-field != "") || (sensur != null && sensur != "") ||
+          (klage-text-field != null && klage-text-field != "") || (klage != null && klage != "") ||
+          (ny-utsatt-eksamen-text-field != null && ny-utsatt-eksamen-text-field != "") || (ny-utsatt-eksamen != null && ny-utsatt-eksamen != "") ||
+          (antall-forsok-trekk-text-field != null && antall-forsok-trekk-text-field != "") || (antall-forsok-trekk != null && antall-forsok-trekk != "") || 
+          (tilrettelagt-eksamen-text-field != null && tilrettelagt-eksamen-text-field != "") || (tilrettelagt-eksamen != null && tilrettelagt-eksamen != "")]
         <div id="exam">
           <h2>[localized 'assessment-and-grading']</h2>
           [if assessment-and-grading != null && assessment-and-grading != ""]
             [val assessment-and-grading # unescaped]
           [endif]
-          [if (hjelpemidler-text-field != null && hjelpemidler-text-field != "") || (hjelpemidler != null && hjelpemidler != "" && hjelpemidler != "ingen-fellestekst")]
+          [if (hjelpemidler-text-field != null && hjelpemidler-text-field != "") || (hjelpemidler != null && hjelpemidler != "")]
             <h3>[localized 'hjelpemidler-group']</h3>
           [endif]
-          [if hjelpemidler != null && hjelpemidler != "ingen-fellestekst"]
-            [call "include:shared-text" {"propName":"hjelpemidler"}]
-          [endif]
+          [call "include:shared-text" {"propName":"hjelpemidler"}]
           [if hjelpemidler-text-field != null && hjelpemidler-text-field != ""]
             [val hjelpemidler-text-field # unescaped]
           [endif]
-          [if (eksamensspraak-text-field != null && eksamensspraak-text-field != "") || (eksamensspraak != null && eksamensspraak != "" && eksamensspraak != "ingen-fellestekst")]
+          [if (eksamensspraak-text-field != null && eksamensspraak-text-field != "") || (eksamensspraak != null && eksamensspraak != "")]
             <h3>[localized 'eksamensspraak-group']</h3>
           [endif]
-          [if eksamensspraak != null && eksamensspraak != "ingen-fellestekst"]
-            [call "include:shared-text" {"propName":"eksamensspraak"}]
-          [endif]
+          [call "include:shared-text" {"propName":"eksamensspraak"}]
           [if eksamensspraak-text-field != null && eksamensspraak-text-field != ""]
             [val eksamensspraak-text-field # unescaped]
           [endif]
-          [if (sensur-text-field != null && sensur-text-field != "") || (sensur != null && sensur != "" && sensur != "ingen-fellestekst")]
+          [if (sensur-text-field != null && sensur-text-field != "") || (sensur != null && sensur != "")]
             <h3>[localized 'sensur-group']</h3>
           [endif]
-          [if sensur != null && sensur != "ingen-fellestekst"]
-            [call "include:shared-text" {"propName":"sensur"}]
-          [endif]
+          [call "include:shared-text" {"propName":"sensur"}]
           [if sensur-text-field != null && sensur-text-field != ""]
             [val sensur-text-field # unescaped]
           [endif]
-          [if (klage-text-field != null && klage-text-field != "") || (klage != null && klage != "" && klage != "ingen-fellestekst")]
+          [if (klage-text-field != null && klage-text-field != "") || (klage != null && klage != "")]
             <h3>[localized 'klage-group']</h3>
           [endif]
-          [if klage != null && klage != "ingen-fellestekst"]
-            [call "include:shared-text" {"propName":"klage"}]
-          [endif]
+          [call "include:shared-text" {"propName":"klage"}]
           [if klage-text-field != null && klage-text-field != ""]
             [val klage-text-field # unescaped]
           [endif]
-          [if (ny-utsatt-eksamen-text-field != null && ny-utsatt-eksamen-text-field != "") || (ny-utsatt-eksamen != null && ny-utsatt-eksamen != "" && ny-utsatt-eksamen != "ingen-fellestekst")]
+          [if (ny-utsatt-eksamen-text-field != null && ny-utsatt-eksamen-text-field != "") || (ny-utsatt-eksamen != null && ny-utsatt-eksamen != "")]
             <h3>[localized 'ny-utsatt-eksamen-group']</h3>
           [endif]
-          [if ny-utsatt-eksamen != null && ny-utsatt-eksamen != "ingen-fellestekst"]
-            [call "include:shared-text" {"propName":"ny-utsatt-eksamen"}]
-          [endif]
+          [call "include:shared-text" {"propName":"ny-utsatt-eksamen"}]
           [if ny-utsatt-eksamen-text-field != null && ny-utsatt-eksamen-text-field != ""]
             [val ny-utsatt-eksamen-text-field # unescaped]
           [endif]
-          [if (antall-forsok-trekk-text-field != null && antall-forsok-trekk-text-field != "") || (antall-forsok-trekk != null && antall-forsok-trekk != "" && antall-forsok-trekk != "ingen-fellestekst")]
+          [if (antall-forsok-trekk-text-field != null && antall-forsok-trekk-text-field != "") || (antall-forsok-trekk != null && antall-forsok-trekk != "")]
             <h3>[localized 'antall-forsok-trekk-group']</h3>
           [endif]
-          [if antall-forsok-trekk != null && antall-forsok-trekk != "ingen-fellestekst"]
-            [call "include:shared-text" {"propName":"antall-forsok-trekk"}]
-          [endif]
+          [call "include:shared-text" {"propName":"antall-forsok-trekk"}]
           [if antall-forsok-trekk-text-field != null && antall-forsok-trekk-text-field != ""]
             [val antall-forsok-trekk-text-field # unescaped]
           [endif]
-          [if (tilrettelagt-eksamen-text-field != null && tilrettelagt-eksamen-text-field != "") || (tilrettelagt-eksamen != null && tilrettelagt-eksamen != "" && tilrettelagt-eksamen != "ingen-fellestekst")]
+          [if (tilrettelagt-eksamen-text-field != null && tilrettelagt-eksamen-text-field != "") || (tilrettelagt-eksamen != null && tilrettelagt-eksamen != "")]
             <h3>[localized 'tilrettelagt-eksamen-group']</h3>
           [endif]
-          [if tilrettelagt-eksamen != null && tilrettelagt-eksamen != "ingen-fellestekst"]
-            [call "include:shared-text" {"propName":"tilrettelagt-eksamen"}]
-          [endif]
+          [call "include:shared-text" {"propName":"tilrettelagt-eksamen"}]
           [if tilrettelagt-eksamen-text-field != null && tilrettelagt-eksamen-text-field != ""]
             [val tilrettelagt-eksamen-text-field # unescaped]
           [endif]
@@ -677,12 +653,10 @@ resourcetype course-description {
       [endif]
       [def evaluering-av-emnet document.properties.evaluering-av-emnet]
       [def evaluering-av-emnet-text-field document.properties.evaluering-av-emnet-text-field]
-      [if (evaluering-av-emnet-text-field != null && evaluering-av-emnet-text-field != "") || (evaluering-av-emnet != null && evaluering-av-emnet != "" && evaluering-av-emnet != "ingen-fellestekst")]
+      [if (evaluering-av-emnet-text-field != null && evaluering-av-emnet-text-field != "") || (evaluering-av-emnet != null && evaluering-av-emnet != "")]
         <div id="evaluering-av-emnet">
           <h2>[localized 'evaluering-av-emnet-group']</h2>
-          [if evaluering-av-emnet != null && evaluering-av-emnet != "ingen-fellestekst"]
-            [call "include:shared-text" {"propName":"evaluering-av-emnet"}]
-          [endif]
+          [call "include:shared-text" {"propName":"evaluering-av-emnet"}]
           [if evaluering-av-emnet-text-field != null && evaluering-av-emnet-text-field != ""]
             [val evaluering-av-emnet-text-field # unescaped]
           [endif]
@@ -731,7 +705,7 @@ resourcetype course-description {
           </div>
           <div id="vrtx-additional-content">
             [call "comp:facts" {"document" : document}]
-            [if studinfo-kontakt != null && studinfo-kontakt != "" && studinfo-kontakt != "ingen-fellestekst"]
+            [if studinfo-kontakt != null && studinfo-kontakt != ""]
               [call "comp:semesters" {"hasContact": "true"}]
               <div class="vrtx-frontpage-box">
                 <h2>[localized 'studinfo-kontakt']</h2>
@@ -941,4 +915,5 @@ resourcetype course-description {
 
     course-description : (en : "Course description", no : "Emnebeskrivelse", nn : "Emnebeskrivelse")
   }
+
 }

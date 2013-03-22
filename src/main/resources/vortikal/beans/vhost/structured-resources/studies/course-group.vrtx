@@ -58,7 +58,7 @@ resourcetype course-group {
           </div>
           <div id="vrtx-additional-content">
             <div id="vrtx-related-content">
-              [if studinfo-kontakt != null && studinfo-kontakt != "" && studinfo-kontakt != "ingen-fellestekst"]
+              [if studinfo-kontakt != null && studinfo-kontakt != ""]
                 <h2>[localized 'studinfo-kontakt']</h2>
                 [call "include:shared-text" {"propName":"studinfo-kontakt"}]
               [endif]

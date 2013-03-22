@@ -202,7 +202,7 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
   vrtxAdm.initDropdowns();
 
   // Ignore all AJAX errors on tab change
-  _$("#app-tabs, #vrtx-breadcrumb-wrapper").on("click", "a", function (e) {
+  _$(window).on("beforeunload", function (e) {
     vrtxAdm.ignoreAjaxErrors = true;
   });
 

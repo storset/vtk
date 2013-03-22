@@ -874,7 +874,7 @@ resourcetype course-description {
     spring : (en : "Spring", no : "Vår", nn : "Vår"),
     year : (en : "Year", no : "År", nn : "År"),
     
-    term-more-toggle-show : (en : "Show more semesters", no : "Vis flere semestre", nn : "Vis fleire semester"),
+    term-more-toggle-show : (en : "Show previous semesters", no : "Vis tidligere semestre", nn : "Vis tidlegare semester"),
 
     administrated : (en : "Administrated by", no : "Tilbys ved", nn : "Tilbys ved"),
     semester-title : (en : "Semester pages", no : "Semestersider", nn : "Semestersider"),

@@ -353,7 +353,10 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
             errorContainerInsertAfter: "> ul",
             funcComplete: vrtxAdm.updateCollectionListingInteraction,
             post: true,
-            transitionSpeed: speedCreationServices
+            transitionSpeed: speedCreationServices,
+            funcBeforeComplete: function () {
+              createTitleChange($("#vrtx-textfield-collection-title input"), $("#vrtx-textfield-collection-name input"), null);
+            }
           });
         } else { // Half-async for file upload and create document
           if (tabMenuServices[i] == "createDocumentService") {
@@ -370,7 +373,10 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
             });
             vrtxAdm.completeFormAsync({
               selector: "form#" + tabMenuServices[i] + "-form input[type=submit]",
-              transitionSpeed: speedCreationServices
+              transitionSpeed: speedCreationServices,
+              funcBeforeComplete: function () {
+                createTitleChange("#vrtx-textfield-file-title input", $("#vrtx-textfield-file-name input"), $("#isIndex"));
+              }
             });
           } else {
             if (vrtxAdm.isIPhone || vrtxAdm.isIPad) { // TODO: feature detection
@@ -1211,7 +1217,6 @@ function createCheckUncheckIndexFile(nameField, indexCheckbox) {
 function createTitleChange(titleField, nameField, indexCheckbox) {
   if (vrtxAdmin.createResourceReplaceTitle) {
     var nameFieldVal = replaceInvalidChar(titleField.val());
-
     if (!indexCheckbox || !indexCheckbox.length || !indexCheckbox.is(":checked")) {
       if (nameFieldVal.length > 50) {
         nameFieldVal = nameFieldVal.substring(0, 50);
@@ -2264,6 +2269,7 @@ VrtxAdmin.prototype.completeFormAsync = function completeFormAsync(options) {
   vrtxAdm.cachedBody.dynClick(options.selector, function (e) {
 
     var isReplacing = options.isReplacing || false,
+      funcBeforeComplete = options.funcBeforeComplete,
       funcProceedCondition = options.funcProceedCondition,
       funcComplete = options.funcComplete,
       transitionSpeed = ((options.transitionSpeed !== null) ? options.transitionSpeed : vrtxAdm.transitionSpeed),
@@ -2281,6 +2287,9 @@ VrtxAdmin.prototype.completeFormAsync = function completeFormAsync(options) {
         e.preventDefault();
       } else {
         e.stopPropagation();
+        if(!isCancelAction && funcBeforeComplete) {
+          funcBeforeComplete();
+        }
         if (funcComplete && !isCancelAction) {
           var returnVal = funcComplete(link);
           return returnVal;
@@ -2291,7 +2300,7 @@ VrtxAdmin.prototype.completeFormAsync = function completeFormAsync(options) {
     } else {
       options.form = link.closest("form");
       options.link = link;
-      if (funcProceedCondition && !isCancelAction) {
+      if (!isCancelAction && funcProceedCondition) {
         funcProceedCondition(options);
       } else {
         vrtxAdm.completeFormAsyncPost(options);
@@ -2318,15 +2327,21 @@ VrtxAdmin.prototype.completeFormAsyncPost = function completeFormAsyncPost(optio
     updateSelectors = options.updateSelectors,
     errorContainer = options.errorContainer,
     errorContainerInsertAfter = options.errorContainerInsertAfter,
+    funcBeforeComplete = options.funcBeforeComplete,
     funcComplete = options.funcComplete,
     transitionSpeed = options.transitionSpeed || vrtxAdm.transitionSpeed,
     transitionEasingSlideDown = options.transitionEasingSlideDown || vrtxAdm.transitionEasingSlideDown,
     transitionEasingSlideUp = options.transitionEasingSlideUp || vrtxAdm.transitionEasingSlideUp,
     form = options.form,
     link = options.link,
-    url = form.attr("action"),
-    dataString = form.serialize() + "&" + link.attr("name"),
-    modeUrl = location.href;
+    url = form.attr("action");
+  
+  if(funcBeforeComplete) {
+    funcBeforeComplete();
+  }
+  
+  var dataString = form.serialize() + "&" + link.attr("name"),
+      modeUrl = location.href;
 
   vrtxAdmin.serverFacade.postHtml(url, dataString, {
     success: function (results, status, resp) {

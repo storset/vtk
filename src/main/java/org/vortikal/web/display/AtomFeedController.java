@@ -81,6 +81,7 @@ public abstract class AtomFeedController implements Controller {
     protected PropertyTypeDefinition publishDatePropDef;
     protected HtmlUtil htmlUtil;
     protected int entryCountLimit = 200;
+    protected boolean useProtocolRelativeImages = true;
 
     protected PropertyTypeDefinition titlePropDef;
     protected PropertyTypeDefinition lastModifiedPropDef;
@@ -90,7 +91,6 @@ public abstract class AtomFeedController implements Controller {
     private String introductionPropDefPointer;
     private String picturePropDefPointer;
     private String mediaPropDefPointer;
-    private boolean useProtocolRelativeImages = true;
 
     private List<String> introductionAsXHTMLSummaryResourceTypes;
 

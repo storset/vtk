@@ -43,6 +43,7 @@
         <value>lastModified</value>
         <value>contentLocale</value>
         <value>numberOfComments</value>
+        <value>createdBy</value>
       </list>
     </property>
   </bean>
@@ -81,6 +82,7 @@
   <bean id="messageListing.feedHandler" class="org.vortikal.web.display.collection.message.MessageListingAsAtomFeed"
     parent="viewAsFeedHandler">
     <property name="searchComponent" ref="messageListing.searchComponent" />
+    <property name="authorPropDefPointer" value="createdBy" />
   </bean>
 
   <bean id="messageListing.searchSorting" class="org.vortikal.web.search.SearchSorting" depends-on="resourceTypeTree">

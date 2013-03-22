@@ -53,47 +53,36 @@ public abstract class DocumentReporter extends AbstractReporter {
 
     private int pageSize = DEFAULT_SEARCH_LIMIT;
     private Service manageService, reportService;
-    private int backURL;
+    private String backReportName;
 
     protected abstract Search getSearch(String token, Resource currentResource, HttpServletRequest request);
 
     @Override
     public Map<String, Object> getReportContent(String token, Resource resource, HttpServletRequest request) {
         Map<String, Object> result = new HashMap<String, Object>();
-        result.put(REPORT_NAME, this.getName());
+        result.put(REPORT_NAME, getName());
 
-        /* Create back to diagram URL. TODO: more general */
-        if (backURL > 0) {
-            String backURLname;
-            switch (backURL) {
-            case 1:
-                backURLname = "diagram";
-                break;
-            default:
-                backURLname = "BACKURL_SET-BUT_UNKNOWN";
-                break;
-            }
+        if (backReportName != null) {
+            URL backURL = new URL(reportService.constructURL(resource));
+            backURL.addParameter(REPORT_TYPE_PARAM, backReportName);
 
-            URL backURLConstructed = new URL(reportService.constructURL(resource)).addParameter(REPORT_TYPE_PARAM,
-                    backURLname);
-
-            result.put("backURLname", backURLname);
-            result.put("backURL", backURLConstructed);
+            result.put("backURLname", backReportName);
+            result.put("backURL", backURL);
         }
 
-        Search search = this.getSearch(token, resource, request);
+        Search search = getSearch(token, resource, request);
         if (search == null) {
             return result;
         }
 
-        Position pos = Position.create(request, this.pageSize);
+        Position pos = Position.create(request, pageSize);
         if (pos.cursor >= Search.DEFAULT_LIMIT) {
             return result;
         }
         search.setCursor(pos.cursor);
         search.setLimit(pageSize);
 
-        ResultSet rs = this.searcher.execute(token, search);
+        ResultSet rs = searcher.execute(token, search);
         if (pos.cursor + Math.min(pageSize, rs.getSize()) >= rs.getTotalHits()) {
             pos.next = null;
         }
@@ -115,12 +104,12 @@ public abstract class DocumentReporter extends AbstractReporter {
         for (PropertySet propSet : rs.getAllResults()) {
             Path path = propSet.getURI();
             try {
-                Resource res = this.repository.retrieve(token, path, true);
+                Resource res = repository.retrieve(token, path, true);
                 propSet = res; // fresh copy of resource
                 isReadRestricted[i] = res.isReadRestricted();
                 isInheritedAcl[i] = res.isInheritedAcl();
-                if (this.manageService != null) {
-                    viewURLs[i] = this.manageService.constructURL(path).setProtocol("http");
+                if (manageService != null) {
+                    viewURLs[i] = manageService.constructURL(path).setProtocol("http");
                 }
                 handleResult(res, result);
             } catch (Exception e) {
@@ -152,8 +141,8 @@ public abstract class DocumentReporter extends AbstractReporter {
         return this.reportService;
     }
 
-    public void setBackURL(int backURL) {
-        this.backURL = backURL;
+    public void setBackReportName(String backReportName) {
+        this.backReportName = backReportName;
     }
 
     public void setPageSize(int pageSize) {

@@ -201,7 +201,7 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
   vrtxAdm.adjustResourceTitle();
   vrtxAdm.initDropdowns();
 
-  // Ignore all AJAX errors on tab change
+  // Ignore all AJAX errors when user navigate away (abort)
   _$(window).on("beforeunload", function (e) {
     vrtxAdm.ignoreAjaxErrors = true;
   });

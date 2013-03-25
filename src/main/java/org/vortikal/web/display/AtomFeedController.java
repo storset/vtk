@@ -156,14 +156,18 @@ public abstract class AtomFeedController implements Controller {
             URIException, UnsupportedEncodingException {
 
         Feed feed = abdera.newFeed();
+        feed.setTitle(feedTitle);
 
         Property publishedDateProp = getPublishDate(collection);
         publishedDateProp = publishedDateProp == null ? collection.getProperty(creationTimePropDef) : publishedDateProp;
         feed.setId(getId(collection.getURI(), publishedDateProp, getFeedPrefix()));
-        feed.addLink(viewService.constructLink(collection.getURI()), "alternate");
 
-        feed.setTitle(feedTitle);
-        feed.addAuthor("");
+        RequestContext requestContext = RequestContext.getRequestContext();
+        feed.addLink(requestContext.getRequestURL().toString(), "self");
+
+        // Author of feed is the system service
+        feed.addAuthor(requestContext.getRepository().getId().concat("/").concat(requestContext.getService().getName()));
+        feed.setUpdated(getLastModified(collection));
 
         if (showIntroduction) {
             String subTitle = getIntroduction(collection);

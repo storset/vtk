@@ -45,7 +45,7 @@ public class CollectionListingAsAtomFeedTest extends AbstractControllerTest {
     private CollectionListingAsAtomFeed controller;
 
     private Path requestPath;
-    private final Service mockViewService = context.mock(Service.class);
+    private final Service mockViewService = context.mock(Service.class, "mockViewService");
 
     private String atomFeedRequestPath = "/atomfeedtest";
     private String host = "localhost";
@@ -73,6 +73,43 @@ public class CollectionListingAsAtomFeedTest extends AbstractControllerTest {
     }
 
     public void testCreateFeed() throws Exception {
+
+        final URL requestUrl = URL.parse("http://www.testhost.no/feed");
+        final StringBuffer requestUrlSB = new StringBuffer(requestUrl.toString());
+        context.checking(new Expectations() {
+            {
+                atLeast(1).of(mockRequest).getRequestURL();
+                will(returnValue(requestUrlSB));
+            }
+        });
+
+        context.checking(new Expectations() {
+            {
+                atLeast(1).of(mockRequest).isSecure();
+                will(returnValue(false));
+            }
+        });
+
+        context.checking(new Expectations() {
+            {
+                atLeast(1).of(mockRequest).getQueryString();
+                will(returnValue(null));
+            }
+        });
+
+        context.checking(new Expectations() {
+            {
+                one(mockRepository).getId();
+                will(returnValue("www.testhost.no"));
+            }
+        });
+
+        context.checking(new Expectations() {
+            {
+                one(mockService).getName();
+                will(returnValue("feedService"));
+            }
+        });
 
         // Retrieve the collection to create feed from
         context.checking(new Expectations() {
@@ -123,11 +160,11 @@ public class CollectionListingAsAtomFeedTest extends AbstractControllerTest {
         String feed = out.toString();
         assertTrue("Feed is empty", StringUtils.isNotBlank(feed));
 
-        validateFeedXML(feed);
+        validateFeedXML(feed, requestUrl);
 
     }
 
-    private void validateFeedXML(String feed) throws JDOMException, IOException {
+    private void validateFeedXML(String feed, URL requestUrl) throws JDOMException, IOException {
         SAXBuilder builder = new SAXBuilder();
 
         Document feedDocument = builder.build(new ByteArrayInputStream(feed.getBytes()));
@@ -154,7 +191,7 @@ public class CollectionListingAsAtomFeedTest extends AbstractControllerTest {
         assertNotNull("No link set for feed", link);
         Attribute linkHref = link.getAttribute("href");
         assertNotNull("No href set for link", linkHref);
-        assertEquals("Wrong href", atomFeedRequestPath, linkHref.getValue());
+        assertEquals("Wrong href", requestUrl.toString(), linkHref.getValue());
     }
 
     private Resource getCollection() {
@@ -227,11 +264,6 @@ public class CollectionListingAsAtomFeedTest extends AbstractControllerTest {
             propSet.addProperty(lastModifiedPropDef.createProperty(Calendar.getInstance().getTime()));
 
             return propSet;
-        }
-
-        public Listing execute(HttpServletRequest request, Resource collection, int page, int pageLimit,
-                int baseOffset, boolean recursive) throws Exception {
-            return null;
         }
 
     }

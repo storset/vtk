@@ -79,7 +79,7 @@
     <property name="handler" ref="messageListing.feedHandler" />
   </bean>
 
-  <bean id="messageListing.feedHandler" class="org.vortikal.web.display.collection.message.MessageListingAsAtomFeed"
+  <bean id="messageListing.feedHandler" class="org.vortikal.web.display.collection.message.MessageListingAtomFeedController"
     parent="viewAsFeedHandler">
     <property name="searchComponent" ref="messageListing.searchComponent" />
     <property name="authorPropDefPointer" value="createdBy" />

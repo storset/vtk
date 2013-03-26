@@ -30,12 +30,8 @@
  */
 package org.vortikal.web.display.collection;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.abdera.model.Feed;
 import org.springframework.beans.factory.annotation.Required;
-import org.vortikal.repository.Path;
-import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Resource;
 import org.vortikal.web.RequestContext;
@@ -43,37 +39,25 @@ import org.vortikal.web.display.AtomFeedController;
 import org.vortikal.web.search.Listing;
 import org.vortikal.web.search.SearchComponent;
 
-public class CollectionListingAsAtomFeed extends AtomFeedController {
+public class CollectionListingAtomFeedController extends AtomFeedController {
 
     private SearchComponent searchComponent;
 
     @Override
-    protected Feed createFeed(RequestContext requestContext) throws Exception {
+    protected void addFeedEntries(Feed feed, Resource feedScope) throws Exception {
 
-        Path uri = requestContext.getResourceURI();
-        String token = requestContext.getSecurityToken();
-        Resource collection = requestContext.getRepository().retrieve(token, uri, true);
+        Listing entryElements = searchComponent.execute(RequestContext.getRequestContext().getServletRequest(),
+                feedScope, 1, entryCountLimit, 0);
 
-        String feedTitle = getTitle(collection, requestContext);
-        Feed feed = populateFeed(collection, feedTitle);
-
-        HttpServletRequest request = requestContext.getServletRequest();
-        Listing searchResult = searchComponent.execute(request, collection, 1, this.entryCountLimit, 0);
-
-        for (PropertySet result : searchResult.getFiles()) {
-            addEntry(feed, requestContext, result);
+        for (PropertySet feedEntry : entryElements.getFiles()) {
+            addPropertySetAsFeedEntry(feed, feedEntry);
         }
-        return feed;
+
     }
 
     @Required
     public void setSearchComponent(SearchComponent searchComponent) {
         this.searchComponent = searchComponent;
-    }
-
-    @Override
-    protected Property getPublishDate(PropertySet resource) {
-        return this.getDefaultPublishDate(resource);
     }
 
 }

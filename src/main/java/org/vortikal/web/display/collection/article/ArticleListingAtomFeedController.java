@@ -28,14 +28,14 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.display.tags;
+package org.vortikal.web.display.collection.article;
 
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.abdera.model.Feed;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
@@ -44,73 +44,48 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.display.AtomFeedController;
 import org.vortikal.web.search.Listing;
-import org.vortikal.web.search.SearchComponent;
-import org.vortikal.web.service.Service;
-import org.vortikal.web.tags.TagsHelper;
 
-public class TagsAsFeedController extends AtomFeedController {
+public class ArticleListingAtomFeedController extends AtomFeedController {
 
+    private ArticleListingSearcher searcher;
     private PropertyTypeDefinition overridePublishDatePropDef;
-    private SearchComponent searchComponent;
-    private TagsHelper tagsHelper;
 
     @Override
-    protected Feed createFeed(RequestContext requestContext) throws Exception {
+    protected void addFeedEntries(Feed feed, Resource feedScope) throws Exception {
 
-        String token = requestContext.getSecurityToken();
-        HttpServletRequest request = requestContext.getServletRequest();
+        List<PropertySet> entryElements = new ArrayList<PropertySet>();
 
-        Resource scope = this.tagsHelper.getScopedResource(token, request);
-
-        String tag = request.getParameter(TagsHelper.TAG_PARAMETER);
-        if (StringUtils.isBlank(tag)) {
-            return null;
+        HttpServletRequest request = RequestContext.getRequestContext().getServletRequest();
+        Listing featuredArticles = searcher.getFeaturedArticles(request, feedScope, 1, entryCountLimit, 0);
+        if (featuredArticles != null && featuredArticles.size() > 0) {
+            entryElements.addAll(featuredArticles.getFiles());
         }
 
-        RequestContext rc = RequestContext.getRequestContext();
-        Service service = rc.getService();
-        String feedTitle = service.getLocalizedName(scope, request);
-        Feed feed = populateFeed(scope, feedTitle, false);
-
-        Listing searchResult = searchComponent.execute(request, scope, 1, this.entryCountLimit, 0);
-
-        for (PropertySet result : searchResult.getFiles()) {
-            addEntry(feed, requestContext, result);
+        Listing articles = searcher.getArticles(request, feedScope, 1, entryCountLimit, 0);
+        if (articles.size() > 0) {
+            entryElements.addAll(articles.getFiles());
         }
 
-        return feed;
-
-    }
-
-    @Override
-    protected String getFeedPrefix() {
-        return "tags:";
-    }
-
-    @Override
-    protected Date getLastModified(PropertySet collection) {
-        return new Date();
-    }
-
-    @Required
-    public void setSearchComponent(SearchComponent searchComponent) {
-        this.searchComponent = searchComponent;
-    }
-
-    @Required
-    public void setTagsHelper(TagsHelper tagsHelper) {
-        this.tagsHelper = tagsHelper;
+        for (PropertySet feedEntry : entryElements) {
+            addPropertySetAsFeedEntry(feed, feedEntry);
+        }
     }
 
     @Override
     protected Property getPublishDate(PropertySet resource) {
-        Property overridePublishDateProp = resource.getProperty(this.overridePublishDatePropDef);
+        Property overridePublishDateProp = resource.getProperty(overridePublishDatePropDef);
         if (overridePublishDateProp != null) {
             return overridePublishDateProp;
         }
-        return this.getDefaultPublishDate(resource);
+        return getDefaultPublishDate(resource);
     }
 
+    @Required
+    public void setSearcher(ArticleListingSearcher searcher) {
+        this.searcher = searcher;
+    }
+
+    @Required
     public void setOverridePublishDatePropDef(PropertyTypeDefinition overridePublishDatePropDef) {
         this.overridePublishDatePropDef = overridePublishDatePropDef;
     }

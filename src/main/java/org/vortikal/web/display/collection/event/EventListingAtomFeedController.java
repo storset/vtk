@@ -36,7 +36,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.abdera.model.Feed;
 import org.springframework.beans.factory.annotation.Required;
-import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Resource;
@@ -46,7 +45,7 @@ import org.vortikal.web.display.AtomFeedController;
 import org.vortikal.web.display.collection.event.EventListingHelper.SpecificDateSearchType;
 import org.vortikal.web.search.Listing;
 
-public class EventListingAsFeedController extends AtomFeedController {
+public class EventListingAtomFeedController extends AtomFeedController {
 
     private EventListingHelper helper;
     private EventListingSearcher searcher;
@@ -54,60 +53,73 @@ public class EventListingAsFeedController extends AtomFeedController {
     private String overridePublishDatePropDefPointer;
 
     @Override
-    protected Feed createFeed(RequestContext requestContext) throws Exception {
-        Path uri = requestContext.getResourceURI();
-        String token = requestContext.getSecurityToken();
-        Resource collection = requestContext.getRepository().retrieve(token, uri, false);
-        HttpServletRequest request = requestContext.getServletRequest();
+    protected void addFeedEntries(Feed feed, Resource feedScope) throws Exception {
 
-        String feedTitle = getTitle(collection, requestContext);
-
-        Listing feedContent = null;
-        boolean showIntroduction = true;
-        Property displayTypeProp = collection.getProperty(this.displayTypePropDef);
+        HttpServletRequest request = RequestContext.getRequestContext().getServletRequest();
+        Listing entryElements = null;
+        Property displayTypeProp = feedScope.getProperty(displayTypePropDef);
         if (displayTypeProp != null && "calendar".equals(displayTypeProp.getStringValue())) {
-            SpecificDateSearchType searchType = this.helper.getSpecificDateSearchType(request);
+            SpecificDateSearchType searchType = helper.getSpecificDateSearchType(request);
             if (searchType != null) {
-                Date date = this.helper.getSpecificSearchDate(request);
+                entryElements = searcher.searchSpecificDate(request, feedScope, entryCountLimit, 1);
+            }
+        }
+        if (entryElements == null) {
+            entryElements = searcher.searchUpcoming(request, feedScope, 1, entryCountLimit, 0);
+        }
+
+        for (PropertySet feedEntry : entryElements.getFiles()) {
+            addPropertySetAsFeedEntry(feed, feedEntry);
+        }
+    }
+
+    @Override
+    protected String getFeedTitle(Resource feedScope, RequestContext requestContext) {
+
+        String feedTitle = super.getFeedTitle(feedScope, requestContext);
+        Property displayTypeProp = feedScope.getProperty(displayTypePropDef);
+        if (displayTypeProp != null && "calendar".equals(displayTypeProp.getStringValue())) {
+            HttpServletRequest request = RequestContext.getRequestContext().getServletRequest();
+            SpecificDateSearchType searchType = helper.getSpecificDateSearchType(request);
+            if (searchType != null) {
+                Date date = helper.getSpecificSearchDate(request);
                 String messageKey = searchType == SpecificDateSearchType.Day ? "eventListing.specificDayEvent"
                         : "eventListing.specificDateEvent";
-                feedTitle = this.helper.getEventTypeTitle(request, collection, searchType, date, messageKey, true,
-                        false);
-                feedContent = this.searcher.searchSpecificDate(request, collection, this.entryCountLimit, 1);
+                feedTitle = helper.getEventTypeTitle(request, feedScope, searchType, date, messageKey, true, false);
             } else {
                 String viewType = request.getParameter(EventListingHelper.REQUEST_PARAMETER_VIEW);
                 if (EventListingHelper.VIEW_TYPE_ALL_UPCOMING.equals(viewType)
                         || EventListingHelper.VIEW_TYPE_ALL_PREVIOUS.equals(viewType)) {
-                    feedTitle = this.helper.getEventTypeTitle(request, collection, "eventListing.allupcoming", false);
+                    feedTitle = helper.getEventTypeTitle(request, feedScope, "eventListing.allupcoming", false);
                 }
             }
-            showIntroduction = false;
-        }
-        if (feedContent == null) {
-            feedContent = this.searcher.searchUpcoming(request, collection, 1, this.entryCountLimit, 0);
         }
 
-        Feed feed = populateFeed(collection, feedTitle, showIntroduction);
-        for (PropertySet feedEntry : feedContent.getFiles()) {
-            addEntry(feed, requestContext, feedEntry);
-        }
+        return feedTitle;
+    }
 
-        return feed;
+    @Override
+    protected boolean showFeedIntroduction(Resource feedScope) {
+        Property displayTypeProp = feedScope.getProperty(displayTypePropDef);
+        if (displayTypeProp != null && "calendar".equals(displayTypeProp.getStringValue())) {
+            return false;
+        }
+        return true;
     }
 
     @Override
     protected Property getPublishDate(PropertySet resource) {
-        Property sortProp = this.helper.getStartDateProperty(resource);
+        Property sortProp = helper.getStartDateProperty(resource);
         if (sortProp == null) {
-            sortProp = this.helper.getEndDateProperty(resource);
+            sortProp = helper.getEndDateProperty(resource);
         }
-        return sortProp != null ? sortProp : this.getDefaultPublishDate(resource);
+        return sortProp != null ? sortProp : getDefaultPublishDate(resource);
     }
 
     @Override
     protected Date getLastModified(PropertySet resource) {
-        PropertyTypeDefinition overridePublishDatePropDef = this.resourceTypeTree
-                .getPropertyDefinitionByPointer(this.overridePublishDatePropDefPointer);
+        PropertyTypeDefinition overridePublishDatePropDef = resourceTypeTree
+                .getPropertyDefinitionByPointer(overridePublishDatePropDefPointer);
         Property overridePublishDateProp = resource.getProperty(overridePublishDatePropDef);
         if (overridePublishDateProp != null) {
             return overridePublishDateProp.getDateValue();

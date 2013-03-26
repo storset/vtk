@@ -38,19 +38,19 @@ import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.text.html.HtmlFragment;
 import org.vortikal.web.RequestContext;
-import org.vortikal.web.display.collection.CollectionListingAsAtomFeed;
+import org.vortikal.web.display.collection.CollectionListingAtomFeedController;
 import org.vortikal.web.service.URL;
 
-public class MessageListingAsAtomFeed extends CollectionListingAsAtomFeed {
+public class MessageListingAtomFeedController extends CollectionListingAtomFeedController {
 
-    private final Log logger = LogFactory.getLog(MessageListingAsAtomFeed.class);
+    private final Log logger = LogFactory.getLog(MessageListingAtomFeedController.class);
 
     @Override
-    protected void setFeedEntrySummary(Entry entry, PropertySet resource) throws Exception {
-        Property messageProp = resource.getProperty(Namespace.STRUCTURED_RESOURCE_NAMESPACE, "listingDisplayedMessage");
+    protected void setFeedEntrySummary(Entry entry, PropertySet result) throws Exception {
+        Property messageProp = result.getProperty(Namespace.STRUCTURED_RESOURCE_NAMESPACE, "listingDisplayedMessage");
         if (messageProp != null) {
             try {
-                URL baseURL = viewService.constructURL(resource.getURI());
+                URL baseURL = viewService.constructURL(result.getURI());
                 HtmlFragment summary = htmlUtil.linkResolveFilter(messageProp.getStringValue(), baseURL, RequestContext
                         .getRequestContext().getRequestURL(), useProtocolRelativeImages);
                 entry.setSummaryAsXhtml(summary.getStringRepresentation());

@@ -70,6 +70,15 @@ import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
+/**
+ * 
+ * Creates an Atom feed using the Apache Abdera library, adhering to:
+ * http://tools.ietf.org/html/rfc4287
+ * 
+ * Subclasses provide results for and add entries to feed, as well as override
+ * title and certain other properties (date, author ++).
+ * 
+ */
 public abstract class AtomFeedController implements Controller {
 
     private final Log logger = LogFactory.getLog(AtomFeedController.class);
@@ -91,105 +100,64 @@ public abstract class AtomFeedController implements Controller {
     private String introductionPropDefPointer;
     private String picturePropDefPointer;
     private String mediaPropDefPointer;
-
     private List<String> introductionAsXHTMLSummaryResourceTypes;
 
-    protected abstract Feed createFeed(RequestContext requestContext) throws Exception;
-
-    protected abstract Property getPublishDate(PropertySet resource);
-
-    // To be overridden where necessary
-    protected Date getLastModified(PropertySet resource) {
-        return resource.getProperty(lastModifiedPropDef).getDateValue();
-    }
-
-    // To be overridden where necessary
-    protected void setFeedEntrySummary(Entry entry, PropertySet result) throws Exception {
-        String type = result.getResourceType();
-        if (type != null && introductionAsXHTMLSummaryResourceTypes.contains(type)) {
-            HtmlFragment summary = prepareSummary(result);
-            if (summary != null) {
-                try {
-                    entry.setSummaryAsXhtml(summary.getStringRepresentation());
-                } catch (Exception e) {
-                    // Don't remove entry because of illegal characters in
-                    // string. In the future, consider blacklist of illegal
-                    // characters (VTK-3009).
-                    logger.error("Could not set summery as XHTML: " + e.getMessage());
-                }
-            }
-        } else {
-            // ...add description as plain text else
-            String description = getDescription(result);
-            if (description != null) {
-                entry.setSummary(description);
-            }
-        }
-
-    }
+    // Must be overriden by subclasses to provide content for feed entries and
+    // add these to feed
+    protected abstract void addFeedEntries(Feed feed, Resource feedScope) throws Exception;
 
     @Override
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        RequestContext requestContext = RequestContext.getRequestContext();
-        Feed feed = createFeed(requestContext);
-        if (feed != null) {
-            response.setContentType("application/atom+xml;charset=utf-8");
-            feed.writeTo("prettyxml", response.getWriter());
-        }
+        Resource feedScope = getFeedScope();
+        Feed feed = createFeed(feedScope);
+        addFeedEntries(feed, feedScope);
+        printFeed(feed, response);
         return null;
     }
 
-    protected String getTitle(Resource collection, RequestContext requestContext) {
-        String feedTitle = collection.getTitle();
-        if (Path.ROOT.equals(collection.getURI())) {
-            feedTitle = requestContext.getRepository().getId();
-        }
-        return feedTitle;
-    }
-
-    protected Feed populateFeed(Resource collection, String feedTitle) throws IOException, URIException,
-            UnsupportedEncodingException {
-        return populateFeed(collection, feedTitle, true);
-    }
-
-    protected Feed populateFeed(Resource collection, String feedTitle, boolean showIntroduction) throws IOException,
-            URIException, UnsupportedEncodingException {
-
-        Feed feed = abdera.newFeed();
-        feed.setTitle(feedTitle);
-
-        Property publishedDateProp = getPublishDate(collection);
-        publishedDateProp = publishedDateProp == null ? collection.getProperty(creationTimePropDef) : publishedDateProp;
-        feed.setId(getId(collection.getURI(), publishedDateProp, getFeedPrefix()));
+    protected Feed createFeed(Resource feedScope) throws Exception {
 
         RequestContext requestContext = RequestContext.getRequestContext();
+        Feed feed = abdera.newFeed();
+
+        String feedTitle = getFeedTitle(feedScope, requestContext);
+        feed.setTitle(feedTitle);
+
+        Property publishedDateProp = getPublishDate(feedScope);
+        publishedDateProp = publishedDateProp == null ? feedScope.getProperty(creationTimePropDef) : publishedDateProp;
+        feed.setId(getId(feedScope.getURI(), publishedDateProp, getFeedPrefix()));
+
         feed.addLink(requestContext.getRequestURL().toString(), "self");
 
         // Author of feed is the system service
         feed.addAuthor(requestContext.getRepository().getId().concat("/").concat(requestContext.getService().getName()));
-        feed.setUpdated(getLastModified(collection));
+        feed.setUpdated(getLastModified(feedScope));
 
+        // Whether or not to display collection introduction in feed
+        boolean showIntroduction = showFeedIntroduction(feedScope);
         if (showIntroduction) {
-            String subTitle = getIntroduction(collection);
+            String subTitle = getIntroduction(feedScope);
             if (subTitle != null) {
                 feed.setSubtitleAsXhtml(subTitle);
             } else {
-                subTitle = getDescription(collection);
+                subTitle = getDescription(feedScope);
                 if (subTitle != null) {
                     feed.setSubtitle(subTitle);
                 }
             }
 
-            Property picture = getProperty(collection, picturePropDefPointer);
+            Property picture = getProperty(feedScope, picturePropDefPointer);
             if (picture != null) {
                 String val = picture.getFormattedValue(PropertyType.THUMBNAIL_PROP_NAME, Locale.getDefault());
                 feed.setLogo(val);
             }
         }
+
         return feed;
+
     }
 
-    protected void addEntry(Feed feed, RequestContext requestContext, PropertySet result) {
+    protected void addPropertySetAsFeedEntry(Feed feed, PropertySet result) {
         try {
 
             Entry entry = Abdera.getInstance().newEntry();
@@ -246,6 +214,7 @@ public abstract class AtomFeedController implements Controller {
                     Link mediaLink = abdera.getFactory().newLink();
                     Path propRef = getPropRef(result, mediaRef.getStringValue());
                     if (propRef != null) {
+                        RequestContext requestContext = RequestContext.getRequestContext();
                         mediaLink.setHref(viewService.constructLink(propRef));
                         mediaLink.setRel("enclosure");
                         Repository repository = requestContext.getRepository();
@@ -269,17 +238,22 @@ public abstract class AtomFeedController implements Controller {
         }
     }
 
-    private HtmlFragment prepareSummary(PropertySet resource) {
+    protected void printFeed(Feed feed, HttpServletResponse response) throws IOException {
+        response.setContentType("application/atom+xml;charset=utf-8");
+        feed.writeTo("prettyxml", response.getWriter());
+    }
+
+    private HtmlFragment prepareSummary(PropertySet propSet) {
         StringBuilder sb = new StringBuilder();
 
-        URL baseURL = viewService.constructURL(resource.getURI());
+        URL baseURL = viewService.constructURL(propSet.getURI());
 
-        Property picture = getProperty(resource, picturePropDefPointer);
+        Property picture = getProperty(propSet, picturePropDefPointer);
         if (picture != null) {
             String imageRef = picture.getStringValue();
             if (!imageRef.startsWith("/") && !imageRef.startsWith("https://") && !imageRef.startsWith("https://")) {
                 try {
-                    imageRef = resource.getURI().getParent().expand(imageRef).toString();
+                    imageRef = propSet.getURI().getParent().expand(imageRef).toString();
                     picture.setValue(new Value(imageRef, PropertyType.Type.STRING));
                 } catch (Throwable t) {
                 }
@@ -291,7 +265,7 @@ public abstract class AtomFeedController implements Controller {
                     + HtmlUtil.encodeBasicEntities(imgAlt) + "\"/>");
         }
 
-        String intro = getIntroduction(resource);
+        String intro = getIntroduction(propSet);
         if (intro != null) {
             sb.append(intro);
         }
@@ -391,6 +365,63 @@ public abstract class AtomFeedController implements Controller {
             // Don't do anything special, imgAlt isn't all that important
             return "feed_image";
         }
+    }
+
+    // To be overridden where necessary
+    protected Property getPublishDate(PropertySet propertySet) {
+        return getDefaultPublishDate(propertySet);
+    }
+
+    // To be overridden where necessary
+    protected boolean showFeedIntroduction(Resource feedScope) {
+        return true;
+    }
+
+    // To be overridden where necessary
+    protected String getFeedTitle(Resource feedScope, RequestContext requestContext) {
+        String feedTitle = feedScope.getTitle();
+        if (Path.ROOT.equals(feedScope.getURI())) {
+            feedTitle = requestContext.getRepository().getId();
+        }
+        return feedTitle;
+    }
+
+    // To be overridden where necessary
+    protected Resource getFeedScope() throws Exception {
+        RequestContext requestContext = RequestContext.getRequestContext();
+        Path uri = requestContext.getResourceURI();
+        String token = requestContext.getSecurityToken();
+        return requestContext.getRepository().retrieve(token, uri, true);
+    }
+
+    // To be overridden where necessary
+    protected Date getLastModified(PropertySet propertySet) {
+        return propertySet.getProperty(lastModifiedPropDef).getDateValue();
+    }
+
+    // To be overridden where necessary
+    protected void setFeedEntrySummary(Entry entry, PropertySet result) throws Exception {
+        String type = result.getResourceType();
+        if (type != null && introductionAsXHTMLSummaryResourceTypes.contains(type)) {
+            HtmlFragment summary = prepareSummary(result);
+            if (summary != null) {
+                try {
+                    entry.setSummaryAsXhtml(summary.getStringRepresentation());
+                } catch (Exception e) {
+                    // Don't remove entry because of illegal characters in
+                    // string. In the future, consider blacklist of illegal
+                    // characters (VTK-3009).
+                    logger.error("Could not set summery as XHTML: " + e.getMessage());
+                }
+            }
+        } else {
+            // ...add description as plain text else
+            String description = getDescription(result);
+            if (description != null) {
+                entry.setSummary(description);
+            }
+        }
+
     }
 
     @Required

@@ -50,7 +50,7 @@
     <property name="specificDateEventSearchComponent" ref="${override.listing.prefix}eventListing.specificDateEventSearchComponent" />
   </bean>
 
-  <bean id="eventListing.atomHandler" class="org.vortikal.web.display.collection.event.EventListingAsFeedController"
+  <bean id="eventListing.atomHandler" class="org.vortikal.web.display.collection.event.EventListingAtomFeedController"
     parent="viewAsFeedHandler">
     <property name="helper" ref="eventListingHelper" />
     <property name="searcher" ref="eventListing.eventListingSearcher" />

@@ -28,7 +28,8 @@
     <property name="handler" ref="collectionListing.atomHandler" />
   </bean>
 
-  <bean id="collectionListing.abstract.handler" abstract="true" class="org.vortikal.web.display.collection.CollectionListingController">
+  <bean id="collectionListing.abstract.handler" abstract="true"
+    class="org.vortikal.web.display.collection.CollectionListingController">
     <property name="resourceManager" ref="resourceManager" />
     <property name="viewName" value="collectionListing.view" />
     <property name="pageLimitPropDef" ref="pageLimitPropDef" />
@@ -82,7 +83,7 @@
       </list>
     </property>
     <property name="cache" ref="ehCache.MULTI_HOST_INDEX_SEARCH_CACHE" />
-    <property name="resourceTypeTree" ref="resourceTypeTree"/>
+    <property name="resourceTypeTree" ref="resourceTypeTree" />
   </bean>
 
   <bean id="collection.listingUriQueryBuilder" class="org.vortikal.web.search.ListingUriQueryBuilder">
@@ -93,7 +94,8 @@
     <property name="defaultRecursive" value="true" />
   </bean>
 
-  <bean id="collectionListing.atomHandler" class="org.vortikal.web.display.collection.CollectionListingAsAtomFeed" parent="viewAsFeedHandler">
+  <bean id="collectionListing.atomHandler" class="org.vortikal.web.display.collection.CollectionListingAtomFeedController"
+    parent="viewAsFeedHandler">
     <property name="searchComponent" ref="collectionListing.searchComponent" />
   </bean>
 
@@ -114,7 +116,7 @@
       </map>
     </property>
   </bean>
-  
+
   <bean id="collectionListing.helper" class="org.vortikal.web.decorating.components.CollectionListingHelper">
     <property name="applicableResourceTypes">
       <set>

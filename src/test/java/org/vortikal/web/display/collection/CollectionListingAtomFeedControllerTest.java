@@ -40,9 +40,9 @@ import org.vortikal.web.search.SearchComponent;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
-public class CollectionListingAsAtomFeedTest extends AbstractControllerTest {
+public class CollectionListingAtomFeedControllerTest extends AbstractControllerTest {
 
-    private CollectionListingAsAtomFeed controller;
+    private CollectionListingAtomFeedController controller;
 
     private Path requestPath;
     private final Service mockViewService = context.mock(Service.class, "mockViewService");
@@ -53,7 +53,7 @@ public class CollectionListingAsAtomFeedTest extends AbstractControllerTest {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        controller = new CollectionListingAsAtomFeed();
+        controller = new CollectionListingAtomFeedController();
         controller.setAbdera(new Abdera());
         controller.setViewService(mockViewService);
         controller.setSearchComponent(new MockSearchComponent());

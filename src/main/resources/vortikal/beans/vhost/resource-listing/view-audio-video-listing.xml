@@ -112,7 +112,7 @@
     <property name="handler" ref="audioVideoListing.feedHandler" />
   </bean>
 
-  <bean id="audioVideoListing.feedHandler" class="org.vortikal.web.display.collection.AudioVideoListingAsFeedController"
+  <bean id="audioVideoListing.feedHandler" class="org.vortikal.web.display.collection.AudioVideoListingAtomFeedController"
     parent="viewAsFeedHandler">
     <property name="searchComponent" ref="audioVideoListing.searchComponent" />
     <property name="publishDatePropDef" ref="publishDatePropDef" />

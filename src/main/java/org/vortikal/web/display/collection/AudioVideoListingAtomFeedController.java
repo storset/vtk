@@ -44,13 +44,14 @@ import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFormatter;
 import org.vortikal.web.RequestContext;
 
-public class AudioVideoListingAsFeedController extends CollectionListingAsAtomFeed {
+public class AudioVideoListingAtomFeedController extends CollectionListingAtomFeedController {
 
-    private final Log logger = LogFactory.getLog(AudioVideoListingAsFeedController.class);
+    private final Log logger = LogFactory.getLog(AudioVideoListingAtomFeedController.class);
 
     @Override
-    protected void addEntry(Feed feed, RequestContext requestContext, PropertySet result) {
+    protected void addPropertySetAsFeedEntry(Feed feed, PropertySet result) {
 
+        RequestContext requestContext = RequestContext.getRequestContext();
         Repository repository = requestContext.getRepository();
         String token = requestContext.getSecurityToken();
 
@@ -73,8 +74,8 @@ public class AudioVideoListingAsFeedController extends CollectionListingAsAtomFe
             Link mediaLink = abdera.getFactory().newLink();
             mediaLink.setHref(viewService.constructLink(result.getURI()));
             mediaLink.setRel("enclosure");
-            Resource mediaResource1 = repository.retrieve(token, result.getURI(), true);
-            mediaLink.setMimeType(mediaResource1.getContentType());
+            Resource mediaResource = repository.retrieve(token, result.getURI(), true);
+            mediaLink.setMimeType(mediaResource.getContentType());
             entry.addLink(mediaLink);
 
             String description = getDescription(result);

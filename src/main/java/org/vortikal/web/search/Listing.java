@@ -174,14 +174,14 @@ public class Listing {
             for (SortField sortField : this.sorting.getSortFields()) {
                 if (sortField instanceof PropertySortField) {
                     PropertySortField propertySortField = ((PropertySortField) sortField);
-                    String prefix = propertySortField.getDefinition().getNamespace().getPrefix();
-                    String name = propertySortField.getDefinition().getName();
+                    String sortPrefix = propertySortField.getDefinition().getNamespace().getPrefix();
+                    String sortName = propertySortField.getDefinition().getName();
                     SortFieldDirection sortDirection = propertySortField.getDirection();
                     StringBuilder paramValue = new StringBuilder();
-                    if (prefix != null) {
-                        paramValue.append(URL.encode(prefix + SORTING_PARAM_DELIMITER));
+                    if (sortPrefix != null) {
+                        paramValue.append(URL.encode(sortPrefix + SORTING_PARAM_DELIMITER));
                     }
-                    paramValue.append(URL.encode(name + SORTING_PARAM_DELIMITER + sortDirection.toString()));
+                    paramValue.append(URL.encode(sortName + SORTING_PARAM_DELIMITER + sortDirection.toString()));
                     sortFields.add(paramValue.toString());
                 }
             }

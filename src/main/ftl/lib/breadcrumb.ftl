@@ -33,7 +33,7 @@
         <#if downcase>
           <#assign name = name?lower_case/>
         </#if>
-        <#if (elem_index < (crumbsSize - 1))>
+        <#if (elem_index <= (crumbsSize - 1))>
           <#if elem.URL??>
             <span class="vrtx-breadcrumb-level vrtx-breadcrumb-level-${counter?html}<#if (elem_index == (crumbsSize - 2))> vrtx-breadcrumb-before-active</#if>">
             <a href="${elem.URL?html}">${name?html}</a>

@@ -52,46 +52,47 @@ import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
-
 /**
- * Creates model data for a breadcrumb (list of URLs from the root
- * resource to the current).
+ * Creates model data for a breadcrumb (list of URLs from the root resource to
+ * the current).
  * 
- * <p>Description: creates an array of {@link BreadcrumbElement}
- * objects, which is the "breadcrumb trail" from the root resource
- * down to the collection containing the current resource.
+ * <p>
+ * Description: creates an array of {@link BreadcrumbElement} objects, which is
+ * the "breadcrumb trail" from the root resource down to the collection
+ * containing the current resource.
  * 
- * <p>Configurable properties:
+ * <p>
+ * Configurable properties:
  * <ul>
- *   <li><code>repository</code> - the content repository
- *   <li><code>service</code> - the service for which to construct breadcrumb URLs
- *   <li><code>breadcrumbName</code> - the name to publish the
- *   breadcrumb under (default <code>breadcrumb</code>
- *   <li><code>ignoreProperty</code> - a resource property definition specifying
- *   whether to not include a given resource in the breadcrumb data model. 
- *   Resources are ignored when the property exists.
- *   <li><code>titleOverrideProperties</code> - a {@link PropertyTypeDefinition} array
- *   specifying properties that override the names of the resources in
- *   the breadcrumb when present. If such a property is present on a
- *   resource, the value of that property is used as the {@link
- *   BreadcrumbElement#getTitle title} of the breadcrumb
- *   element.
- *   <li><code>skipCurrentResource</code> - whether to skip the last 
- *   element in the breadcrumb. Defaults to <code>false</code>. 
+ * <li><code>repository</code> - the content repository
+ * <li><code>service</code> - the service for which to construct breadcrumb URLs
+ * <li><code>breadcrumbName</code> - the name to publish the breadcrumb under
+ * (default <code>breadcrumb</code>
+ * <li><code>ignoreProperty</code> - a resource property definition specifying
+ * whether to not include a given resource in the breadcrumb data model.
+ * Resources are ignored when the property exists.
+ * <li><code>titleOverrideProperties</code> - a {@link PropertyTypeDefinition}
+ * array specifying properties that override the names of the resources in the
+ * breadcrumb when present. If such a property is present on a resource, the
+ * value of that property is used as the {@link BreadcrumbElement#getTitle
+ * title} of the breadcrumb element.
+ * <li><code>skipCurrentResource</code> - whether to skip the last element in
+ * the breadcrumb. Defaults to <code>false</code>.
  * </ul>
  * 
- * <p>In addition to the <code>skipCurrentResource</code> config property,
- * this component looks in the model for an entry by the name 
- * <code>include-last-element</code>. If this entry exists and has the value 
- * <code>true</code>, the last breadcrumb element will be included regardless 
- * of the configuration. 
- *
- * <p>Model data published:
+ * <p>
+ * In addition to the <code>skipCurrentResource</code> config property, this
+ * component looks in the model for an entry by the name
+ * <code>include-last-element</code>. If this entry exists and has the value
+ * <code>true</code>, the last breadcrumb element will be included regardless of
+ * the configuration.
+ * 
+ * <p>
+ * Model data published:
  * <ul>
- * <li><code>breadcrumb</code> (or, if the property
- * <code>breadcrumbName</code> is specified, the value of that
- * property): a {@link BreadcrumbElement} array constituting the
- * breadcrumb trail.
+ * <li><code>breadcrumb</code> (or, if the property <code>breadcrumbName</code>
+ * is specified, the value of that property): a {@link BreadcrumbElement} array
+ * constituting the breadcrumb trail.
  * </ul>
  */
 public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBean {
@@ -107,49 +108,6 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
 
     private final Logger logger = Logger.getLogger(BreadCrumbProvider.class);
 
-    @Required
-    public void setService(Service service) {
-        this.service = service;
-    }
-
-    public void setBreadcrumbName(String breadcrumbName) {
-        this.breadcrumbName = breadcrumbName;
-    }
-
-    public void setIgnoreProperty(PropertyTypeDefinition ignoreProperty) {
-        this.ignoreProperty = ignoreProperty;
-    }
-
-    public void setTitleOverrideProperties(
-            PropertyTypeDefinition[] titleOverrideProperties) {
-        this.titleOverrideProperties = titleOverrideProperties;
-    }
-
-    public void setSkipIndexFile(boolean skipIndexFile) {
-        this.skipIndexFile = skipIndexFile;
-    }
-
-    public void setSkipCurrentResource(boolean skipCurrentResource) {
-        this.skipCurrentResource = skipCurrentResource;
-    }
-
-    public void setNavigationTitlePropDef(
-            PropertyTypeDefinition navigationTitlePropDef) {
-        this.navigationTitlePropDef = navigationTitlePropDef;
-    }
-
-    @Override
-    public final void afterPropertiesSet() throws Exception {
-        if (this.service == null) {
-            throw new BeanInitializationException(
-            "Property 'service' not set");
-        }
-        if (this.breadcrumbName == null) {
-            throw new BeanInitializationException(
-            "Property 'breadcrumbName' cannot be null");
-        }
-    }
-
     @Override
     public void referenceData(Map<String, Object> model, HttpServletRequest request) {
 
@@ -158,27 +116,26 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
         String token = requestContext.isViewUnauthenticated() ? null : requestContext.getSecurityToken(); // VTK-2460
         Path uri = requestContext.getResourceURI();
 
-        try{
-            displayFromLevel = Integer.parseInt((String) model.get("display-from-level"))-1;
-        }catch (NumberFormatException e) {
+        try {
+            displayFromLevel = Integer.parseInt((String) model.get("display-from-level")) - 1;
+        } catch (NumberFormatException e) {
             displayFromLevel = 0;
         }
-        boolean skipLastElement = this.skipCurrentResource;
+        boolean skipLastElement = skipCurrentResource;
         Object includeLast = model.get("include-last-element");
-        if (includeLast != null 
-                && ("true".equals(includeLast) || Boolean.TRUE.equals(includeLast))) {
+        if (includeLast != null && ("true".equals(includeLast) || Boolean.TRUE.equals(includeLast))) {
             skipLastElement = false;
         }
         boolean displayServiceName = true;
         Object includeServiceName = model.get("display-services");
-        if (includeServiceName != null 
+        if (includeServiceName != null
                 && ("false".equals(includeServiceName) || Boolean.FALSE.equals(includeServiceName))) {
             displayServiceName = false;
         }
 
         boolean displayHidden = false;
         Object displayHiddenFromNavigation = model.get("display-folders-hidden-from-navigation");
-        if (displayHiddenFromNavigation != null 
+        if (displayHiddenFromNavigation != null
                 && ("true".equals(displayHiddenFromNavigation) || Boolean.TRUE.equals(displayHiddenFromNavigation))) {
             displayHidden = true;
         }
@@ -186,24 +143,23 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
         String serviceName = null;
         if (!skipLastElement && displayServiceName) {
             try {
-                Service service = requestContext.getService();
+                Service currentService = requestContext.getService();
                 Resource resource = repository.retrieve(token, uri, true);
-                serviceName = service.getLocalizedName(resource, request);
+                serviceName = currentService.getLocalizedName(resource, request);
             } catch (Exception e) {
-                // Let's not fail the entire breadcrumb just 
+                // Let's not fail the entire breadcrumb just
                 // because we can't show the service name
                 logger.error("An error occured while getting the servicename", e);
             }
         }
 
-        List<BreadcrumbElement> breadCrumb = 
-            generateBreadcrumb(requestContext, uri, skipLastElement, requestContext.isIndexFile(), displayHidden, serviceName);
-        model.put(this.breadcrumbName, breadCrumb.toArray(new BreadcrumbElement[breadCrumb.size()]));
+        List<BreadcrumbElement> breadCrumb = generateBreadcrumb(requestContext, uri, skipLastElement,
+                requestContext.isIndexFile(), displayHidden, serviceName);
+        model.put(breadcrumbName, breadCrumb.toArray(new BreadcrumbElement[breadCrumb.size()]));
     }
 
-
-    private List<BreadcrumbElement> generateBreadcrumb(RequestContext requestContext, Path uri, boolean skipLastElement,
-            boolean isIndexFile, boolean displayHidden, String serviceName) {
+    private List<BreadcrumbElement> generateBreadcrumb(RequestContext requestContext, Path uri,
+            boolean skipLastElement, boolean isIndexFile, boolean displayHidden, String serviceName) {
 
         List<BreadcrumbElement> breadCrumb = new ArrayList<BreadcrumbElement>();
         if (uri.isRoot()) {
@@ -214,7 +170,7 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
         List<Path> incrementalPath = uri.getPaths();
 
         int length = path.size();
-        if (this.skipIndexFile && isIndexFile) {
+        if (skipIndexFile && isIndexFile) {
             length--;
         }
         if (skipLastElement) {
@@ -225,7 +181,7 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
         if (serviceName != null && !"".equals(serviceName.trim())) {
             serviceNameCrumb = new BreadcrumbElement(null, serviceName, null);
         }
-        
+
         Repository repository = requestContext.getRepository();
         String token = requestContext.isViewUnauthenticated() ? null : requestContext.getSecurityToken(); // VTK-2460
         Principal principal = requestContext.getPrincipal();
@@ -239,12 +195,12 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
                 }
                 String title = getTitle(requestContext, r);
                 String navigationTitle = null;
-                if (this.navigationTitlePropDef != null) {
+                if (navigationTitlePropDef != null) {
                     navigationTitle = getNavigationTitle(r);
                 }
                 title = StringUtils.isBlank(navigationTitle) ? title : navigationTitle;
 
-                URL url = this.service.constructURL(r, principal, false);
+                URL url = service.constructURL(r, principal, false);
                 if (!skipLastElement) {
                     if (i == length - 1) {
                         if (serviceNameCrumb != null) {
@@ -272,8 +228,8 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
     }
 
     private boolean hasIgnoreProperty(Resource resource) {
-        if (this.ignoreProperty != null) {
-            Property p = resource.getProperty(this.ignoreProperty);
+        if (ignoreProperty != null) {
+            Property p = resource.getProperty(ignoreProperty);
             if (p != null) {
                 return true;
             }
@@ -282,11 +238,10 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
     }
 
     private String getTitle(RequestContext requestContext, Resource resource) {
-        if (this.titleOverrideProperties != null
-                && this.titleOverrideProperties.length > 0) {
+        if (titleOverrideProperties != null && titleOverrideProperties.length > 0) {
 
             // Check titleOverrideProperties in correct order
-            for (PropertyTypeDefinition overridePropDef: this.titleOverrideProperties) {
+            for (PropertyTypeDefinition overridePropDef : titleOverrideProperties) {
                 Property property = resource.getProperty(overridePropDef);
                 if (property != null && property.getStringValue() != null) {
                     return property.getStringValue();
@@ -300,20 +255,58 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
     }
 
     private String getNavigationTitle(Resource resource) {
-        Property prop = resource.getProperty(this.navigationTitlePropDef);
+        Property prop = resource.getProperty(navigationTitlePropDef);
         if (prop != null) {
             return prop.getStringValue();
         }
         return null;
     }
 
+    @Required
+    public void setService(Service service) {
+        this.service = service;
+    }
+
+    public void setBreadcrumbName(String breadcrumbName) {
+        this.breadcrumbName = breadcrumbName;
+    }
+
+    public void setIgnoreProperty(PropertyTypeDefinition ignoreProperty) {
+        this.ignoreProperty = ignoreProperty;
+    }
+
+    public void setTitleOverrideProperties(PropertyTypeDefinition[] titleOverrideProperties) {
+        this.titleOverrideProperties = titleOverrideProperties;
+    }
+
+    public void setSkipIndexFile(boolean skipIndexFile) {
+        this.skipIndexFile = skipIndexFile;
+    }
+
+    public void setSkipCurrentResource(boolean skipCurrentResource) {
+        this.skipCurrentResource = skipCurrentResource;
+    }
+
+    public void setNavigationTitlePropDef(PropertyTypeDefinition navigationTitlePropDef) {
+        this.navigationTitlePropDef = navigationTitlePropDef;
+    }
+
+    @Override
+    public final void afterPropertiesSet() throws Exception {
+        if (this.service == null) {
+            throw new BeanInitializationException("Property 'service' not set");
+        }
+        if (this.breadcrumbName == null) {
+            throw new BeanInitializationException("Property 'breadcrumbName' cannot be null");
+        }
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder(this.getClass().getName());
         sb.append(" [ ");
-        sb.append("breadcrumbName = ").append(this.breadcrumbName);
+        sb.append("breadcrumbName = ").append(breadcrumbName);
         sb.append(" ]");
         return sb.toString();
     }
 }
-

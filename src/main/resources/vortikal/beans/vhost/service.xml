@@ -237,19 +237,6 @@
      </property>
    </bean>
 
-
-  <bean id="collectionListingAsFeedService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="parent" ref="collectionListing.viewService" />
-    <property name="order" value="-1" />
-    <property name="assertions">
-      <list>
-        <ref bean="legacy.feedParameterSetAssertion" />
-      </list>
-    </property>
-    <property name="handler" ref="collectionListingAsFeedHandler" />
-  </bean>
-  
-
   <bean id="displayIndexFileService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="collectionListing.viewService" />
     <property name="order" value="-1" />
@@ -491,13 +478,6 @@
 
   <bean id="resourceTypeIsXhtmlTrans" parent="resourceTypeInXhtmlTrans">
     <property name="exactMatch" value="true" />
-  </bean>
-
-
-  <bean id="legacy.feedParameterSetAssertion" 
-        class="org.vortikal.web.service.RequestParameterAssertion">
-    <property name="parameterName" value="vrtx" />
-    <property name="parameterValue" value="collection-feed" />
   </bean>
 
   <bean id="feedParameterSetAssertion" 

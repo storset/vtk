@@ -25,14 +25,7 @@
   
   <bean id="displayIndexFileHandler" class="org.vortikal.web.display.index.IndexFileController" />
 
-  <bean id="collectionListingAsFeedHandler" 
-    class="org.vortikal.web.display.file.ResourceAwareParameterizableViewController">
-    <property name="viewName" value="collectionListingAsFeed" />
-  </bean>
-  
-
   <bean id="abdera" class="org.apache.abdera.Abdera" />
-  
   
   <bean id="displayResourceHandler" 
     class="org.vortikal.web.display.file.DisplayResourceController">

@@ -108,8 +108,8 @@ input[type=checkbox] {
   margin: 0 5px -4px -7px;
 }
 
-#manually-approve-container-title {
-  padding-left: 20px;
+#vrtx-manually-approve-from-add {
+  margin-right: 20px;
 }
 
 #approve-spinner {

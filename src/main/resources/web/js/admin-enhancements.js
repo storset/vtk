@@ -1818,6 +1818,9 @@ function reAuthenticateRetokenizeForms() {
     newW.focus();
     // Loading..
     vrtxSimpleDialogs.openLoadingDialog(vrtxAdmin.serverFacade.errorMessages.sessionWaitReauthenticate);
+    
+    setTimeout(function() {
+    
     var current = $("body input[name='csrf-prevention-token']");
     var currentLen = current.length;
     vrtxAdmin.serverFacade.getHtml(location.href, { // Repopulate tokens
@@ -1836,6 +1839,8 @@ function reAuthenticateRetokenizeForms() {
         }, null, vrtxAdmin.serverFacade.errorMessages.sessionValidatedOk, null);
       }
     });
+    
+    }, 4000);
   }, null, vrtxAdmin.serverFacade.errorMessages.sessionInvalidOk, "(" + vrtxAdmin.serverFacade.errorMessages.sessionInvalidOkInfo + ")");                          
   var cancelBtnSpan = $(".ui-dialog[aria-labelledby='ui-dialog-title-dialog-html-reauth-open']").find(".ui-button:last-child span");
   cancelBtnSpan.unwrap();

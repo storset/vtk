@@ -30,4 +30,16 @@
     <property name="htmlUtil" ref="htmlUtil" />
   </bean>
 
+  <bean id="feedParameterSetAssertion" class="org.vortikal.web.service.RequestParameterAssertion">
+    <property name="parameterName" value="vrtx" />
+    <property name="parameterValue" value="feed" />
+    <property name="legalValueParameters">
+      <set>
+        <value>feed</value>
+        <value>atom</value>
+        <value>rss</value>
+      </set>
+    </property>
+  </bean>
+
 </beans>

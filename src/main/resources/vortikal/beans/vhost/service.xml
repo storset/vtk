@@ -480,19 +480,6 @@
     <property name="exactMatch" value="true" />
   </bean>
 
-  <bean id="feedParameterSetAssertion" 
-    class="org.vortikal.web.service.RequestParameterAssertion">
-    <property name="parameterName" value="vrtx" />
-    <property name="parameterValue" value="feed" />
-    <property name="legalValueParameters">
-      <set>
-	    <value>rss</value>
-	    <value>feed</value>
-	    <value>atom</value>
-      </set>
-    </property>
-  </bean>
-
   <bean id="abstractResourcePrincipalPermissionAssertion" 
         class="org.vortikal.web.service.ResourcePrincipalPermissionAssertion"
         abstract="true">

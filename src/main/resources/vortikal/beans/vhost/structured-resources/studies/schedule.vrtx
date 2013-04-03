@@ -22,7 +22,7 @@ resourcetype schedule {
     overview (dropdown),
     course-version (dropdown)
   }
-  
+
   view-components {
 
     iframe {
@@ -44,7 +44,7 @@ resourcetype schedule {
       </iframe>
       ##
     }
-    
+
   }
 
   view {
@@ -95,4 +95,5 @@ resourcetype schedule {
     comment : (en : "Introductory comment", no : "Innledende kommentar", nn : "Innleiande kommentar"),
     content : (en : "Content", no : "Innhold", nn : "Innhald")
   }
+
 }

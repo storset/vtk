@@ -24,12 +24,23 @@
     abort: "${vrtx.getMsg('ajaxError.abort')}",
     parsererror: "${vrtx.getMsg('ajaxError.parsererror')}", 
     offline: "${vrtx.getMsg('ajaxError.offline')}",
+    sessionInvalid: "${vrtx.getMsg('ajaxError.sessionInvalid')}",
+    sessionInvalidTitle: "${vrtx.getMsg('ajaxError.sessionInvalid.title')}",
+    sessionInvalidOk: "${vrtx.getMsg('ajaxError.sessionInvalid.ok')}",
+    sessionInvalidOkInfo: "${vrtx.getMsg('ajaxError.sessionInvalid.ok.info')}",
+    sessionWaitReauthenticate: "${vrtx.getMsg('ajaxError.sessionInvalid.waitReauthenticate')}",
+    sessionValidated: "${vrtx.getMsg('ajaxError.sessionValidated')}",
+    sessionValidatedTitle: "${vrtx.getMsg('ajaxError.sessionValidated.title')}",
+    sessionValidatedOk: "${vrtx.getMsg('ajaxError.sessionValidated.ok')}",
     down: "${vrtx.getMsg('ajaxError.down')}",
     s500: "${vrtx.getMsg('ajaxError.s500')}",
     s400: "${vrtx.getMsg('ajaxError.s400')}",
     s401: "${vrtx.getMsg('ajaxError.s401')}",
     s403: "${vrtx.getMsg('ajaxError.s403')}",
-    s404: "${vrtx.getMsg('ajaxError.s404')}"
+    s404: "${vrtx.getMsg('ajaxError.s404')}",
+    customTitle: {
+      "0": "Offline"
+    }
   };
   if(vrtxAdmin.hasFreeze) { // Make immutable
     Object.freeze(vrtxAdmin.serverFacade.errorMessages);

@@ -304,7 +304,7 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
       vrtxAdm.serverFacade.getHtml(link.href, {
         success: function (results, status, resp) {
           _$("body").append("<div id='" + id + "'>" + _$(results).find("#vrtx-manage-create-content").html() + "</div>");
-          dialogManageCreate = $("#" + id);
+          dialogManageCreate = _$("#" + id);
           dialogManageCreate.hide();
           // Lazy-load JS-dependency chain (cached)
           vrtxAdm.loadScript(location.protocol + '//' + location.host + '/vrtx/__vrtx/static-resources/jquery/plugins/jquery.treeview.js', function () {
@@ -502,7 +502,7 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
             vrtxAdm.cachedContent.html(result.find("#contents").html());
             vrtxAdm.updateCollectionListingInteraction();
           }
-        });
+        }, input);
         e.stopPropagation();
         e.preventDefault();
       });
@@ -607,8 +607,8 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
       break;
     case "vrtx-publishing":
       // TODO: generalize dialog jQuery UI function with AJAX markup/text
-      $(document).on("click", "a.publishing-status-link", function (e) {
-        var dialogTemplate = $("#vrtx-dialog-template-content");
+      _$(document).on("click", "a.publishing-status-link", function (e) {
+        var dialogTemplate = _$("#vrtx-dialog-template-content");
         if (!dialogTemplate.length) {
           vrtxAdm.serverFacade.getHtml(this.href, {
             success: function (results, status, resp) {
@@ -656,11 +656,11 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
       }
 
       var SUBMIT_TAKE_OWNERSHIP = false;
-      $(document).on("submit", "#vrtx-admin-ownership-form", function (e) {
+      _$(document).on("submit", "#vrtx-admin-ownership-form", function (e) {
         if (!SUBMIT_TAKE_OWNERSHIP) {
           vrtxSimpleDialogs.openConfirmDialog(confirmTakeOwnershipMsg, confirmTakeOwnershipTitle, function () {
             SUBMIT_TAKE_OWNERSHIP = true;
-            $("#vrtx-admin-ownership-form").submit();
+            _$("#vrtx-admin-ownership-form").submit();
           }, null, null);
           e.stopPropagation();
           e.preventDefault();
@@ -676,7 +676,8 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
         }
         vrtxAdm.asyncGetStatInProgress = true;
 
-        var liElm = $(this).parent();
+        var link = _$(this);
+        var liElm = link.parent();
         if (liElm.hasClass("first")) {
           liElm.removeClass("first").addClass("active").addClass("active-first");
           liElm.next().removeClass("active").removeClass("active-last").addClass("last");
@@ -1528,15 +1529,14 @@ VrtxAdmin.prototype.initializeCheckUncheckAll = function initializeCheckUncheckA
       var trigger = this;
       var checkAll = trigger.checked;
 
-      $(trigger).closest("table").find("tbody tr")
-        .filter(function (idx) {
+      $(trigger).closest("table").find("tbody tr").filter(function (idx) {
         var name = "checked";
         if (checkAll) {
           $(this).filter(":not(." + name + ")").addClass(name)
-            .find("td.checkbox input").attr(name, true).change();
+                 .find("td.checkbox input").attr(name, true).change();
         } else {
           $(this).filter("." + name).removeClass(name)
-            .find("td.checkbox input").attr(name, false).change();
+                 .find("td.checkbox input").attr(name, false).change();
         }
       });
       e.stopPropagation();
@@ -1785,21 +1785,60 @@ function editorInteraction(bodyId, vrtxAdm, _$) {
       ctrlSEventHandler(_$, e);
     }));
     vrtxAdm.cachedAppContent.on("click", ".vrtx-focus-button:last input", function (e) {
-      vrtxAdm.editorSaveButtonName = _$(this).attr("name");
+      var link = _$(this);
+      vrtxAdm.editorSaveButtonName = link.attr("name");
       ajaxSave();
       $.when(vrtxAdm.asyncEditorSavedDeferred).done(function () {
         vrtxAdm.removeMsg("error");
       }).fail(function (xhr, textStatus) {
         if (xhr !== null) {
-          /* Fail in performSave() for exceeding 1500 chars in 
-           * intro/add.content is handlet in editor.js with popup */
-          vrtxSimpleDialogs.openMsgDialog(vrtxAdmin.serverFacade.error(xhr, textStatus, false), vrtxAdm.serverFacade.errorMessages.title + " " + xhr.status);
+          /* Fail in performSave() for exceeding 1500 chars in intro/add.content is handled in editor.js with popup */
+
+          var msg = vrtxAdmin.serverFacade.error(xhr, textStatus, false);
+          if(msg === "RE_AUTH") {
+            reAuthenticateRetokenizeForms();
+          } else {
+            var customTitle = vrtxAdm.serverFacade.errorMessages.customTitle[xhr.status];
+            vrtxSimpleDialogs.openMsgDialog(msg, customTitle ? customTitle : vrtxAdm.serverFacade.errorMessages.title + " " + xhr.status);
+          }
         }
       });
       e.stopPropagation();
       e.preventDefault();
     });
   }
+}
+
+function reAuthenticateRetokenizeForms() {  
+  // Open reauth dialog
+  vrtxSimpleDialogs.openHtmlDialog("reauth-open", vrtxAdmin.serverFacade.errorMessages.sessionInvalid,
+                                   vrtxAdmin.serverFacade.errorMessages.sessionInvalidTitle,
+                                   null, null, function() { // Log in
+    var newW = openRegular("./?vrtx=admin", 1020, 800, "Reauth");
+    newW.focus();
+    // Loading..
+    vrtxSimpleDialogs.openLoadingDialog(vrtxAdmin.serverFacade.errorMessages.sessionWaitReauthenticate);
+    var current = $("body input[name='csrf-prevention-token']");
+    var currentLen = current.length;
+    vrtxAdmin.serverFacade.getHtml(location.href, { // Repopulate tokens
+      success: function (results, status, resp) {
+        var updated = $(results).find("input[name='csrf-prevention-token']");
+        for(var i = 0; i < currentLen; i++) {
+          current[i].value = updated[i].value;
+        }
+        // Stop loading
+        vrtxSimpleDialogs.closeDialog("#dialog-loading");
+        // Open save dialog
+        vrtxSimpleDialogs.openHtmlDialog("reauth-save", vrtxAdmin.serverFacade.errorMessages.sessionValidated,
+                                         vrtxAdmin.serverFacade.errorMessages.sessionValidatedTitle,
+                                         null, null, function() { // Save
+          $(".vrtx-focus-button:last-child").click();
+        }, null, vrtxAdmin.serverFacade.errorMessages.sessionValidatedOk, null);
+      }
+    });
+  }, null, vrtxAdmin.serverFacade.errorMessages.sessionInvalidOk, "(" + vrtxAdmin.serverFacade.errorMessages.sessionInvalidOkInfo + ")");                          
+  var cancelBtnSpan = $(".ui-dialog[aria-labelledby='ui-dialog-title-dialog-html-reauth-open']").find(".ui-button:last-child span");
+  cancelBtnSpan.unwrap();
 }
 
 function ajaxSave() {
@@ -1950,7 +1989,8 @@ function versioningInteraction(bodyId, vrtxAdm, _$) {
 
     // Delete revisions
     contents.on("click", ".vrtx-revisions-delete-form input[type=submit]", function (e) {
-      var form = _$(this).closest("form");
+      var link = _$(this);
+      var form = link.closest("form");
       var url = form.attr("action");
       var dataString = form.serialize();
       vrtxAdm.serverFacade.postHtml(url, dataString, {
@@ -1979,7 +2019,8 @@ function versioningInteraction(bodyId, vrtxAdm, _$) {
 
     // Restore revisions
     contents.on("click", ".vrtx-revisions-restore-form input[type=submit]", function (e) {
-      var form = _$(this).closest("form");
+      var link = _$(this);
+      var form = link.closest("form");
       var url = form.attr("action");
       var dataString = form.serialize();
       _$("td.vrtx-revisions-buttons-column input").attr("disabled", "disabled"); // Lock buttons
@@ -2003,7 +2044,8 @@ function versioningInteraction(bodyId, vrtxAdm, _$) {
 
     // Make working copy into current version
     contents.on("click", "#vrtx-revisions-make-current-form input[type=submit]", function (e) {
-      var form = _$(this).closest("form");
+      var link = _$(this);
+      var form = link.closest("form");
       var url = form.attr("action");
       var dataString = form.serialize();
       vrtxAdm.serverFacade.postHtml(url, dataString, {
@@ -2051,7 +2093,8 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(options) {
     _$ = vrtxAdm._$;
 
   vrtxAdm.cachedBody.dynClick(options.selector, function (e) {
-    var url = _$(this).attr("href") || _$(this).closest("form").attr("action");
+    var link = _$(this);
+    var url = link.attr("href") || link.closest("form").attr("action");
 
     if (vrtxAdm.asyncGetFormsInProgress) { // If there are any getFormAsync() in progress
       return false;
@@ -2713,7 +2756,7 @@ VrtxAdmin.prototype.serverFacade = {
    * @param {object} callbacks The callback functions
    */
   postJSON: function (url, params, callbacks) {
-    this.post(url, params, callbacks, "json", "text/plain;charset=utf-8");
+    this.post(url, params, callbacks, "json", "text/plain;charset=utf-8"k);
   },
   /**
    * GET Ajax <data type>
@@ -2786,16 +2829,27 @@ VrtxAdmin.prototype.serverFacade = {
   error: function (xhr, textStatus, useStatusCodeInMsg) { // TODO: detect function origin
     var status = xhr.status;
     var msg = "";
-
+    
     if (textStatus === "timeout") {
       msg = this.errorMessages.timeout;
     } else if (textStatus === "abort") {
       msg = this.errorMessages.abort;
     } else if (textStatus === "parsererror") {
       msg = this.errorMessages.parsererror;
-    } else if (status === 0) { /* Also after Resin restart or deleted cookies */
-      msg = this.errorMessages.offline;
-    } else if (status === 503 || (xhr.readyState === 4 && status === 200)) { /* Resin or Jetty down */
+    } else if (status === 0) {   
+      var serverFacade = this;
+      vrtxAdmin._$.ajax({
+        type: "GET",
+        url: "/vrtx/__vrtx/static-resources/themes/default/images/globe.png?" + (+new Date()),
+        async: false,
+        success: function (results, status, resp) { // Online - Re-authentication needed
+          msg = useStatusCodeInMsg ? serverFacade.errorMessages.sessionInvalid : "RE_AUTH";
+        },
+        error: function (xhr, textStatus) {         // Not Online
+          msg = serverFacade.errorMessages.offline;
+        }
+      });
+    } else if (status === 503 || (xhr.readyState === 4 && status === 200)) {
       msg = (useStatusCodeInMsg ? status + " - " : "") + this.errorMessages.down;
     } else if (status === 500) {
       msg = (useStatusCodeInMsg ? status + " - " : "") + this.errorMessages.s500;
@@ -2803,7 +2857,7 @@ VrtxAdmin.prototype.serverFacade = {
       msg = (useStatusCodeInMsg ? status + " - " : "") + this.errorMessages.s400;
     } else if (status === 401) {
       msg = (useStatusCodeInMsg ? status + " - " : "") + this.errorMessages.s401;
-    } else if (status === 403) { /* Also after Jetty restart */
+    } else if (status === 403) {
       msg = (useStatusCodeInMsg ? status + " - " : "") + this.errorMessages.s403;
     } else if (status === 404) {
       msg = (useStatusCodeInMsg ? status + " - " : "") + this.errorMessages.s404;

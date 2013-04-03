@@ -17,13 +17,19 @@ var vrtxSimpleDialogs = {
       width: 208
     });
   },
-  openHtmlDialog: function (name, html, title, width, height) { // XXX: HTML content should set height (not hardcoded)
+  openHtmlDialog: function (name, html, title, width, height, funcOkComplete, funcOkCompleteOpts, btnTextOk, btnTextCancel) { // XXX: HTML content should set height (not hardcoded)
     this.openDialog("#dialog-html-" + name, {
       msg: html,
       title: title,
       hasHtml: true,
       width: width,
-      height: height
+      height: height,
+      funcOkComplete: (typeof funcOkComplete !== "undefined") ? funcOkComplete : null,
+      funcOkCompleteOpts: (typeof funcOkCompleteOpts !== "undefined") ? funcOkCompleteOpts : null,
+      hasOk: (typeof btnTextOk !== "undefined"),
+      hasCancel: (typeof btnTextCancel !== "undefined"),
+      btnTextOk: (typeof btnTextOk !== "undefined") ? btnTextOk : "Ok",
+      btnTextCancel: (typeof btnTextCancel !== "undefined") ? btnTextCancel : null
     });
   },
   openMsgDialog: function (msg, title) {
@@ -55,19 +61,19 @@ var vrtxSimpleDialogs = {
       elm = $(selector); // Re-query DOM after appending html
       var l10nButtons = {};
       if (opts.hasOk) {
-        l10nButtons["Ok"] = function() {
-	      $(this).dialog("close");
-	      if(opts.funcOkComplete) opts.funcOkComplete(opts.funcOkCompleteOpts);
+        var btnTextOk = opts.btnTextOk || "Ok";
+        l10nButtons[btnTextOk] = function() {
+          $(this).dialog("close");
+          if(opts.funcOkComplete) opts.funcOkComplete(opts.funcOkCompleteOpts);
         };
       }
       if (opts.hasCancel) {
-        var Cancel = (typeof cancelI18n != "undefined") ? cancelI18n : "Cancel";
+        var Cancel = opts.btnTextCancel || ((typeof cancelI18n != "undefined") ? cancelI18n : "Cancel");
         l10nButtons[Cancel] = function() {
           $(this).dialog("close");
-	      if(opts.funcCancelComplete) opts.funcCancelComplete();
+          if(opts.funcCancelComplete) opts.funcCancelComplete();
         };
       }
-     
       var dialogOpts =     { modal: true,                        // Defaults
                              autoOpen: false,
                              resizable: false,
@@ -77,11 +83,10 @@ var vrtxSimpleDialogs = {
       if (opts.unclosable) { dialogOpts.closeOnEscape = false;   // TODO: used only for loading dialog yet
                              dialogOpts.open = function(e, ui) { 
                                var ctx = $(this).parent();
-                               $(".ui-dialog-titlebar-close", ctx).hide();
-                               $(".ui-dialog-titlebar", ctx).addClass("closable");
+                               ctx.find(".ui-dialog-titlebar-close").hide();
+                               ctx.find(".ui-dialog-titlebar").addClass("closable");
                              };
-                           }       
-                         
+                           }                        
       elm.dialog(dialogOpts);
     } else {
       if(opts.title) {

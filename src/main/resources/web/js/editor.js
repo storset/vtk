@@ -706,7 +706,7 @@ function storeInitPropValues(contents) {
 
 function unsavedChangesInEditor() {
   if (!vrtxEditor.needToConfirm) {
-    vrtxAdm.ignoreAjaxErrors = true;
+    vrtxAdmin.ignoreAjaxErrors = true;
     return false;
   }
   
@@ -741,7 +741,7 @@ function unsavedChangesInEditor() {
       }
     }
   }
-  vrtxAdm.ignoreAjaxErrors = true;
+  vrtxAdmin.ignoreAjaxErrors = true;
   return false;
 }
 

@@ -502,7 +502,7 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
             vrtxAdm.cachedContent.html(result.find("#contents").html());
             vrtxAdm.updateCollectionListingInteraction();
           }
-        }, input);
+        });
         e.stopPropagation();
         e.preventDefault();
       });
@@ -2756,7 +2756,7 @@ VrtxAdmin.prototype.serverFacade = {
    * @param {object} callbacks The callback functions
    */
   postJSON: function (url, params, callbacks) {
-    this.post(url, params, callbacks, "json", "text/plain;charset=utf-8"k);
+    this.post(url, params, callbacks, "json", "text/plain;charset=utf-8");
   },
   /**
    * GET Ajax <data type>

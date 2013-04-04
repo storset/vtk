@@ -44,9 +44,9 @@ import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFormatter;
 import org.vortikal.web.RequestContext;
 
-public class AudioVideoListingAtomFeedController extends CollectionListingAtomFeedController {
+public class AudioVideoListingAtomFeedGenerator extends CollectionListingAtomFeedGenerator {
 
-    private final Log logger = LogFactory.getLog(AudioVideoListingAtomFeedController.class);
+    private final Log logger = LogFactory.getLog(AudioVideoListingAtomFeedGenerator.class);
 
     @Override
     protected void addPropertySetAsFeedEntry(Feed feed, PropertySet result) {
@@ -60,13 +60,12 @@ public class AudioVideoListingAtomFeedController extends CollectionListingAtomFe
             Entry entry = Abdera.getInstance().newEntry();
 
             Property publishedDateProp = getPublishDate(result);
-            publishedDateProp = publishedDateProp == null ? result.getProperty(this.creationTimePropDef)
-                    : publishedDateProp;
+            publishedDateProp = publishedDateProp == null ? result.getProperty(creationTimePropDef) : publishedDateProp;
             String id = getId(result.getURI(), publishedDateProp, null);
             entry.setId(id);
             entry.addCategory(result.getResourceType());
 
-            Property title = result.getProperty(this.titlePropDef);
+            Property title = result.getProperty(titlePropDef);
             if (title != null) {
                 entry.setTitle(title.getFormattedValue());
             }
@@ -89,12 +88,12 @@ public class AudioVideoListingAtomFeedController extends CollectionListingAtomFe
                 entry.setPublished(publishDate.getDateValue());
             }
 
-            Property updated = result.getProperty(this.lastModifiedPropDef);
+            Property updated = result.getProperty(lastModifiedPropDef);
             if (updated != null) {
                 entry.setUpdated(updated.getDateValue());
             }
 
-            Property author = this.getProperty(result, "resource:author");
+            Property author = getProperty(result, "resource:author");
             if (author != null) {
                 ValueFormatter vf = author.getDefinition().getValueFormatter();
                 if (author.getDefinition().isMultiple()) {

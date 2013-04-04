@@ -102,7 +102,7 @@
     <property name="linkToResourceName" value="viewOngoingProjectsLink" />
   </bean>
 
-  <bean id="projectListing.feedService" parent="collectionListing.atomService">
+  <bean id="projectListing.feedService" parent="collectionListing.feedService">
     <property name="order" value="-2" />
     <property name="assertions">
       <list>
@@ -113,7 +113,12 @@
     <property name="handler" ref="projectListing.feedHandler" />
   </bean>
 
-  <bean id="projectListing.feedHandler" parent="collectionListing.atomHandler">
+  <bean id="projectListing.feedHandler" parent="collectionListing.feedHandler">
+    <property name="feedGenerator" ref="projectListing.atomFeedGenerator" />
+  </bean>
+
+  <bean id="projectListing.atomFeedGenerator" class="org.vortikal.web.display.collection.CollectionListingAtomFeedGenerator"
+    parent="atomFeedGenerator">
     <property name="searchComponent" ref="projectListing.searchComponent" />
   </bean>
 

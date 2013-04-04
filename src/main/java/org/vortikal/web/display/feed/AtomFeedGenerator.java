@@ -28,7 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.display;
+package org.vortikal.web.display.feed;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -50,7 +50,6 @@ import org.apache.commons.logging.LogFactory;
 import org.openxri.IRIUtils;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.repository.MultiHostSearcher;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Path;
@@ -79,9 +78,9 @@ import org.vortikal.web.service.URL;
  * title and certain other properties (date, author ++).
  * 
  */
-public abstract class AtomFeedController implements Controller {
+public abstract class AtomFeedGenerator implements FeedGenerator {
 
-    private final Log logger = LogFactory.getLog(AtomFeedController.class);
+    private final Log logger = LogFactory.getLog(AtomFeedGenerator.class);
     public static final String TAG_PREFIX = "tag:";
 
     protected Service viewService;
@@ -107,7 +106,7 @@ public abstract class AtomFeedController implements Controller {
     protected abstract void addFeedEntries(Feed feed, Resource feedScope) throws Exception;
 
     @Override
-    public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public ModelAndView generateFeed(HttpServletRequest request, HttpServletResponse response) throws Exception {
         Resource feedScope = getFeedScope();
         Feed feed = createFeed(feedScope);
         addFeedEntries(feed, feedScope);

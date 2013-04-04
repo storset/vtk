@@ -28,66 +28,36 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.display.collection.article;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
+package org.vortikal.web.display.collection;
 
 import org.apache.abdera.model.Feed;
 import org.springframework.beans.factory.annotation.Required;
-import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Resource;
-import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.web.RequestContext;
-import org.vortikal.web.display.AtomFeedController;
+import org.vortikal.web.display.feed.AtomFeedGenerator;
 import org.vortikal.web.search.Listing;
+import org.vortikal.web.search.SearchComponent;
 
-public class ArticleListingAtomFeedController extends AtomFeedController {
+public class CollectionListingAtomFeedGenerator extends AtomFeedGenerator {
 
-    private ArticleListingSearcher searcher;
-    private PropertyTypeDefinition overridePublishDatePropDef;
+    private SearchComponent searchComponent;
 
     @Override
     protected void addFeedEntries(Feed feed, Resource feedScope) throws Exception {
 
-        List<PropertySet> entryElements = new ArrayList<PropertySet>();
+        Listing entryElements = searchComponent.execute(RequestContext.getRequestContext().getServletRequest(),
+                feedScope, 1, entryCountLimit, 0);
 
-        HttpServletRequest request = RequestContext.getRequestContext().getServletRequest();
-        Listing featuredArticles = searcher.getFeaturedArticles(request, feedScope, 1, entryCountLimit, 0);
-        if (featuredArticles != null && featuredArticles.size() > 0) {
-            entryElements.addAll(featuredArticles.getFiles());
-        }
-
-        Listing articles = searcher.getArticles(request, feedScope, 1, entryCountLimit, 0);
-        if (articles.size() > 0) {
-            entryElements.addAll(articles.getFiles());
-        }
-
-        for (PropertySet feedEntry : entryElements) {
+        for (PropertySet feedEntry : entryElements.getFiles()) {
             addPropertySetAsFeedEntry(feed, feedEntry);
         }
-    }
 
-    @Override
-    protected Property getPublishDate(PropertySet resource) {
-        Property overridePublishDateProp = resource.getProperty(overridePublishDatePropDef);
-        if (overridePublishDateProp != null) {
-            return overridePublishDateProp;
-        }
-        return getDefaultPublishDate(resource);
     }
 
     @Required
-    public void setSearcher(ArticleListingSearcher searcher) {
-        this.searcher = searcher;
-    }
-
-    @Required
-    public void setOverridePublishDatePropDef(PropertyTypeDefinition overridePublishDatePropDef) {
-        this.overridePublishDatePropDef = overridePublishDatePropDef;
+    public void setSearchComponent(SearchComponent searchComponent) {
+        this.searchComponent = searchComponent;
     }
 
 }

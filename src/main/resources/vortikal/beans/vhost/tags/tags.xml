@@ -25,7 +25,7 @@
     <property name="tagsHelper" ref="tagsHelper" />
   </bean>
 
-  <bean id="tags.atomService" class="org.vortikal.web.service.ServiceImpl">
+  <bean id="tags.feedService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="tags.viewService" />
     <property name="assertions">
       <list>
@@ -35,7 +35,7 @@
         </bean>
       </list>
     </property>
-    <property name="handler" ref="tags.atomHandler" />
+    <property name="handler" ref="tags.feedHandler" />
     <property name="serviceNameProvider" ref="tags.viewService.serviceNameProvider" />
   </bean>
 
@@ -51,7 +51,7 @@
     <property name="tagElementsProvider" ref="tags.tagElementsProvider" />
     <property name="alternativeRepresentations">
       <map>
-        <entry key="application/atom+xml" value-ref="tags.atomService" />
+        <entry key="application/atom+xml" value-ref="tags.feedService" />
       </map>
     </property>
     <property name="tagsHelper" ref="tagsHelper" />
@@ -82,7 +82,11 @@
     </property>
   </bean>
 
-  <bean id="tags.atomHandler" class="org.vortikal.web.display.tags.TagsAtomFeedController" parent="viewAsFeedHandler">
+  <bean id="tags.feedHandler" parent="collectionListing.feedHandler">
+    <property name="feedGenerator" ref="tags.atomFeedGenerator" />
+  </bean>
+
+  <bean id="tags.atomFeedGenerator" class="org.vortikal.web.display.tags.TagsAtomFeedGenerator" parent="atomFeedGenerator">
     <property name="overridePublishDatePropDef" ref="publishedDatePropDef" />
     <property name="searchComponent" ref="tags.searchComponent" />
     <property name="tagsHelper" ref="tagsHelper" />

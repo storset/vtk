@@ -28,9 +28,10 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.display.tags;
+package org.vortikal.web.display.collection.article;
 
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -41,58 +42,33 @@ import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.web.RequestContext;
-import org.vortikal.web.display.AtomFeedController;
+import org.vortikal.web.display.feed.AtomFeedGenerator;
 import org.vortikal.web.search.Listing;
-import org.vortikal.web.search.SearchComponent;
-import org.vortikal.web.service.Service;
-import org.vortikal.web.tags.TagsHelper;
 
-public class TagsAtomFeedController extends AtomFeedController {
+public class ArticleListingAtomFeedGenerator extends AtomFeedGenerator {
 
+    private ArticleListingSearcher searcher;
     private PropertyTypeDefinition overridePublishDatePropDef;
-    private SearchComponent searchComponent;
-    private TagsHelper tagsHelper;
 
     @Override
     protected void addFeedEntries(Feed feed, Resource feedScope) throws Exception {
 
-        Listing entryElements = searchComponent.execute(RequestContext.getRequestContext().getServletRequest(),
-                feedScope, 1, entryCountLimit, 0);
+        List<PropertySet> entryElements = new ArrayList<PropertySet>();
 
-        for (PropertySet feedEntry : entryElements.getFiles()) {
-            addPropertySetAsFeedEntry(feed, feedEntry);
+        HttpServletRequest request = RequestContext.getRequestContext().getServletRequest();
+        Listing featuredArticles = searcher.getFeaturedArticles(request, feedScope, 1, entryCountLimit, 0);
+        if (featuredArticles != null && featuredArticles.size() > 0) {
+            entryElements.addAll(featuredArticles.getFiles());
         }
 
-    }
+        Listing articles = searcher.getArticles(request, feedScope, 1, entryCountLimit, 0);
+        if (articles.size() > 0) {
+            entryElements.addAll(articles.getFiles());
+        }
 
-    @Override
-    protected Resource getFeedScope() throws Exception {
-        RequestContext requestContext = RequestContext.getRequestContext();
-        String token = requestContext.getSecurityToken();
-        HttpServletRequest request = requestContext.getServletRequest();
-
-        return tagsHelper.getScopedResource(token, request);
-    }
-
-    @Override
-    protected String getFeedTitle(Resource feedScope, RequestContext requestContext) {
-        Service service = requestContext.getService();
-        return service.getLocalizedName(feedScope, requestContext.getServletRequest());
-    }
-
-    @Override
-    protected boolean showFeedIntroduction(Resource feedScope) {
-        return false;
-    }
-
-    @Override
-    protected String getFeedPrefix() {
-        return "tags:";
-    }
-
-    @Override
-    protected Date getLastModified(PropertySet collection) {
-        return new Date();
+        for (PropertySet feedEntry : entryElements) {
+            addPropertySetAsFeedEntry(feed, feedEntry);
+        }
     }
 
     @Override
@@ -105,14 +81,11 @@ public class TagsAtomFeedController extends AtomFeedController {
     }
 
     @Required
-    public void setTagsHelper(TagsHelper tagsHelper) {
-        this.tagsHelper = tagsHelper;
+    public void setSearcher(ArticleListingSearcher searcher) {
+        this.searcher = searcher;
     }
 
-    public void setSearchComponent(SearchComponent searchComponent) {
-        this.searchComponent = searchComponent;
-    }
-
+    @Required
     public void setOverridePublishDatePropDef(PropertyTypeDefinition overridePublishDatePropDef) {
         this.overridePublishDatePropDef = overridePublishDatePropDef;
     }

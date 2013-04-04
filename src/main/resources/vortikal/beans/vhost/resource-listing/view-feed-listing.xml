@@ -2,7 +2,32 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
 
-  <bean id="viewAsFeedHandler" class="org.vortikal.web.display.AtomFeedController" abstract="true" depends-on="resourceTypetree">
+  <!-- ## Feed parameter assertion. Defines legal set of parmeter/value combinations for feed service invocation ## -->
+  <bean id="feedParameterSetAssertion" class="org.vortikal.web.service.RequestParameterAssertion">
+    <property name="parameterName" value="vrtx" />
+    <property name="parameterValue" value="feed" />
+    <property name="legalValueParameters">
+      <set>
+        <value>feed</value>
+        <value>atom</value>
+        <value>rss</value>
+      </set>
+    </property>
+  </bean>
+
+  <!-- ## Default feed controller. Generates Atom feed. ## -->
+  <bean id="collectionListing.feedHandler" class="org.vortikal.web.display.feed.FeedController">
+    <property name="feedParameterSetAssertion" ref="feedParameterSetAssertion" />
+    <property name="feedGenerator" ref="collectionListing.atomFeedGenerator" />
+  </bean>
+
+  <bean id="collectionListing.atomFeedGenerator" class="org.vortikal.web.display.collection.CollectionListingAtomFeedGenerator"
+    parent="atomFeedGenerator">
+    <property name="searchComponent" ref="collectionListing.searchComponent" />
+  </bean>
+
+  <!-- ## Parent Atom feed generator ## -->
+  <bean id="atomFeedGenerator" class="org.vortikal.web.display.feed.AtomFeedGenerator" abstract="true" depends-on="resourceTypetree">
     <property name="viewService" ref="viewService" />
     <property name="abdera" ref="abdera" />
     <property name="resourceTypeTree" ref="resourceTypeTree" />
@@ -30,16 +55,12 @@
     <property name="htmlUtil" ref="htmlUtil" />
   </bean>
 
-  <bean id="feedParameterSetAssertion" class="org.vortikal.web.service.RequestParameterAssertion">
-    <property name="parameterName" value="vrtx" />
-    <property name="parameterValue" value="feed" />
-    <property name="legalValueParameters">
-      <set>
-        <value>feed</value>
-        <value>atom</value>
-        <value>rss</value>
-      </set>
-    </property>
+  <!-- ## Parent RSS 2.0 feed generator ## -->
+  <bean id="rssFeedGenerator" class="org.vortikal.web.display.feed.RSSFeedGenerator" abstract="true">
+    <property name="viewService" ref="viewService" />
+    <property name="titlePropDef" ref="titlePropDef" />
+    <property name="publishDatePropDef" ref="publishDatePropDef" />
+    <property name="lastModifiedPropDef" ref="lastModifiedPropDef" />
   </bean>
 
 </beans>

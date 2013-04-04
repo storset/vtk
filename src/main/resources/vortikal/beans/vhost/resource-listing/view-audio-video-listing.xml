@@ -67,6 +67,8 @@
         <value>duration</value>
         <value>publish-date</value>
         <value>poster-image</value>
+        <value>video-description</value>
+        <value>audio-description</value>
       </list>
     </property>
   </bean>
@@ -101,7 +103,7 @@
     </property>
   </bean>
 
-  <bean id="audioVideoListing.feedService" parent="collectionListing.atomService">
+  <bean id="audioVideoListing.feedService" parent="collectionListing.feedService">
     <property name="order" value="-2" />
     <property name="assertions">
       <list>
@@ -112,10 +114,27 @@
     <property name="handler" ref="audioVideoListing.feedHandler" />
   </bean>
 
-  <bean id="audioVideoListing.feedHandler" class="org.vortikal.web.display.collection.AudioVideoListingAtomFeedController"
-    parent="viewAsFeedHandler">
+  <bean id="audioVideoListing.feedHandler" parent="collectionListing.feedHandler">
+    <property name="feedGenerator" ref="audioVideoListing.rssFeedGenerator" />
+    <property name="alternateGenerators">
+      <bean class="java.util.HashMap">
+        <constructor-arg>
+          <map>
+            <entry key="atom" value-ref="audioVideoListing.atomFeedGenerator" />
+          </map>
+        </constructor-arg>
+      </bean>
+    </property>
+  </bean>
+
+  <bean id="audioVideoListing.rssFeedGenerator" class="org.vortikal.web.display.collection.AudioVideoListingRSSFeedGenerator"
+    parent="rssFeedGenerator">
     <property name="searchComponent" ref="audioVideoListing.searchComponent" />
-    <property name="publishDatePropDef" ref="publishDatePropDef" />
+  </bean>
+
+  <bean id="audioVideoListing.atomFeedGenerator" class="org.vortikal.web.display.collection.AudioVideoListingAtomFeedGenerator"
+    parent="collectionListing.atomFeedGenerator">
+    <property name="searchComponent" ref="audioVideoListing.searchComponent" />
   </bean>
 
 </beans>

@@ -38,12 +38,12 @@ import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.text.html.HtmlFragment;
 import org.vortikal.web.RequestContext;
-import org.vortikal.web.display.collection.CollectionListingAtomFeedController;
+import org.vortikal.web.display.collection.CollectionListingAtomFeedGenerator;
 import org.vortikal.web.service.URL;
 
-public class MessageListingAtomFeedController extends CollectionListingAtomFeedController {
+public class MessageListingAtomFeedGenerator extends CollectionListingAtomFeedGenerator {
 
-    private final Log logger = LogFactory.getLog(MessageListingAtomFeedController.class);
+    private final Log logger = LogFactory.getLog(MessageListingAtomFeedGenerator.class);
 
     @Override
     protected void setFeedEntrySummary(Entry entry, PropertySet result) throws Exception {

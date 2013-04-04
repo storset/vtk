@@ -55,7 +55,7 @@
     </property>
   </bean>
 
-  <bean id="researchGroupListing.feedService" parent="collectionListing.atomService">
+  <bean id="researchGroupListing.feedService" parent="collectionListing.feedService">
     <property name="order" value="-2" />
     <property name="assertions">
       <list>
@@ -66,7 +66,12 @@
     <property name="handler" ref="researchGroupListing.feedHandler" />
   </bean>
 
-  <bean id="researchGroupListing.feedHandler" parent="collectionListing.atomHandler">
+  <bean id="researchGroupListing.feedHandler" parent="collectionListing.feedHandler">
+    <property name="feedGenerator" ref="researchGroupListing.atomFeedGenerator" />
+  </bean>
+
+  <bean id="researchGroupListing.atomFeedGenerator" class="org.vortikal.web.display.collection.CollectionListingAtomFeedGenerator"
+    parent="atomFeedGenerator">
     <property name="searchComponent" ref="researchGroupListing.searchComponent" />
   </bean>
 

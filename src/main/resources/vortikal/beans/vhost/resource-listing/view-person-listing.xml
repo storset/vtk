@@ -14,8 +14,7 @@
     <property name="serviceNameProvider" ref="collectionListing.viewService.serviceNameProvider" />
   </bean>
 
-  <bean id="personListing.handler" class="org.vortikal.web.display.collection.CollectionListingController"
-    parent="collectionListing.abstract.handler">
+  <bean id="personListing.handler" class="org.vortikal.web.display.collection.CollectionListingController" parent="collectionListing.abstract.handler">
     <property name="searchComponents">
       <list>
         <ref bean="personListing.searchComponent" />
@@ -64,7 +63,7 @@
     </property>
   </bean>
 
-  <bean id="personListing.feedService" parent="collectionListing.atomService">
+  <bean id="personListing.feedService" parent="collectionListing.feedService">
     <property name="order" value="-2" />
     <property name="assertions">
       <list>
@@ -75,7 +74,12 @@
     <property name="handler" ref="personListing.feedHandler" />
   </bean>
 
-  <bean id="personListing.feedHandler" parent="collectionListing.atomHandler">
+  <bean id="personListing.feedHandler" parent="collectionListing.feedHandler">
+    <property name="feedGenerator" ref="personListing.atomFeedGenerator" />
+  </bean>
+
+  <bean id="personListing.atomFeedGenerator" class="org.vortikal.web.display.collection.CollectionListingAtomFeedGenerator"
+    parent="atomFeedGenerator">
     <property name="searchComponent" ref="personListing.searchComponent" />
   </bean>
 

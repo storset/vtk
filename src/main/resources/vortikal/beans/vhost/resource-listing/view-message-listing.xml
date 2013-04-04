@@ -68,7 +68,7 @@
     <property name="documentPrincipalMetadataRetriever" ref="documentPrincipalMetadataRetriever" />
   </bean>
 
-  <bean id="messageListing.feedService" parent="collectionListing.atomService">
+  <bean id="messageListing.feedService" parent="collectionListing.feedService">
     <property name="order" value="-2" />
     <property name="assertions">
       <list>
@@ -79,8 +79,12 @@
     <property name="handler" ref="messageListing.feedHandler" />
   </bean>
 
-  <bean id="messageListing.feedHandler" class="org.vortikal.web.display.collection.message.MessageListingAtomFeedController"
-    parent="viewAsFeedHandler">
+  <bean id="messageListing.feedHandler" parent="collectionListing.feedHandler">
+    <property name="feedGenerator" ref="messageListing.feedGenerator" />
+  </bean>
+
+  <bean id="messageListing.feedGenerator" class="org.vortikal.web.display.collection.message.MessageListingAtomFeedGenerator"
+    parent="atomFeedGenerator">
     <property name="searchComponent" ref="messageListing.searchComponent" />
     <property name="authorPropDefPointer" value="createdBy" />
   </bean>
@@ -106,8 +110,7 @@
     <property name="localeResolver" ref="viewServiceResourceAwareLocaleResolver" />
     <property name="examples">
       <map>
-        <entry key="uri=[/messages/to/display/] max-number-of-messages=[15]"
-               value="Display messages from a message listing, given by prameter uri." />
+        <entry key="uri=[/messages/to/display/] max-number-of-messages=[15]" value="Display messages from a message listing, given by prameter uri." />
       </map>
     </property>
   </bean>

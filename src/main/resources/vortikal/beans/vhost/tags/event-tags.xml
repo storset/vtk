@@ -36,7 +36,7 @@
     <property name="searcher" ref="tags.eventListing.eventListingSearcher" />
     <property name="alternativeRepresentations">
       <map>
-        <entry key="application/atom+xml" value-ref="tags.eventListing.atomService" />
+        <entry key="application/atom+xml" value-ref="tags.eventListing.feedService" />
       </map>
     </property>
   </bean>
@@ -80,18 +80,22 @@
 
   <!-- ## Feed service setup ## -->
 
-  <bean id="tags.eventListing.atomService" class="org.vortikal.web.service.ServiceImpl">
+  <bean id="tags.eventListing.feedService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="tags.eventViewService" />
     <property name="assertions">
       <list>
         <ref bean="feedViewParameterAssertion" />
       </list>
     </property>
-    <property name="handler" ref="tags.eventListing.atomHandler" />
+    <property name="handler" ref="tags.eventListing.feedHandler" />
     <property name="serviceNameProvider" ref="tags.viewService.serviceNameProvider" />
   </bean>
 
-  <bean id="tags.eventListing.atomHandler" parent="eventListing.atomHandler">
+  <bean id="tags.eventListing.feedHandler" parent="eventListing.feedHandler">
+    <property name="feedGenerator" ref="tags.eventListing.atomFeedGenerator" />
+  </bean>
+
+  <bean id="tags.eventListing.atomFeedGenerator" parent="eventListing.atomFeedGenerator">
     <property name="searcher" ref="tags.eventListing.eventListingSearcher" />
   </bean>
 

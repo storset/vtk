@@ -14,15 +14,15 @@
     <property name="serviceNameProvider" ref="collectionListing.viewService.serviceNameProvider" />
   </bean>
 
-  <bean id="articleListing.atomService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="parent" ref="collectionListing.atomService" />
+  <bean id="articleListing.feedService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="collectionListing.feedService" />
     <property name="order" value="-2" />
     <property name="assertions">
       <list>
         <ref bean="resourceIsArticleListing" />
       </list>
     </property>
-    <property name="handler" ref="articleListing.atomHandler" />
+    <property name="handler" ref="articleListing.feedHandler" />
   </bean>
 
   <bean id="articleListing.handler" class="org.vortikal.web.display.collection.article.ArticleListingController">
@@ -36,13 +36,17 @@
     <property name="searcher" ref="articleListingSearcher" />
     <property name="alternativeRepresentations">
       <map>
-        <entry key="application/atom+xml" value-ref="articleListing.atomService" />
+        <entry key="application/atom+xml" value-ref="articleListing.feedService" />
       </map>
     </property>
   </bean>
 
-  <bean id="articleListing.atomHandler" class="org.vortikal.web.display.collection.article.ArticleListingAtomFeedController"
-    parent="viewAsFeedHandler">
+  <bean id="articleListing.feedHandler" parent="collectionListing.feedHandler">
+    <property name="feedGenerator" ref="articleListing.atomFeedGenerator" />
+  </bean>
+
+  <bean id="articleListing.atomFeedGenerator" class="org.vortikal.web.display.collection.article.ArticleListingAtomFeedGenerator"
+    parent="atomFeedGenerator">
     <property name="searcher" ref="articleListingSearcher" />
     <property name="overridePublishDatePropDef" ref="publishedDatePropDef" />
   </bean>

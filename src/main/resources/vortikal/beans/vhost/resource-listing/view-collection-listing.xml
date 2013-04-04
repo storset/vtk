@@ -16,7 +16,7 @@
 
   <bean id="collectionListing.viewService.serviceNameProvider" class="org.vortikal.web.service.provider.CollectionListingViewServiceNameProvider" />
 
-  <bean id="collectionListing.atomService" class="org.vortikal.web.service.ServiceImpl">
+  <bean id="collectionListing.feedService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="viewService" />
     <property name="order" value="-1" />
     <property name="assertions">
@@ -25,7 +25,7 @@
         <ref bean="feedParameterSetAssertion" />
       </list>
     </property>
-    <property name="handler" ref="collectionListing.atomHandler" />
+    <property name="handler" ref="collectionListing.feedHandler" />
   </bean>
 
   <bean id="collectionListing.abstract.handler" abstract="true"
@@ -40,7 +40,7 @@
     <property name="localeResolver" ref="viewServiceResourceAwareLocaleResolver" />
     <property name="alternativeRepresentations">
       <map>
-        <entry key="application/atom+xml" value-ref="collectionListing.atomService" />
+        <entry key="application/atom+xml" value-ref="collectionListing.feedService" />
       </map>
     </property>
   </bean>
@@ -92,11 +92,6 @@
 
   <bean id="collection.defaultRecursiveListingUriQueryBuilder" parent="collection.listingUriQueryBuilder">
     <property name="defaultRecursive" value="true" />
-  </bean>
-
-  <bean id="collectionListing.atomHandler" class="org.vortikal.web.display.collection.CollectionListingAtomFeedController"
-    parent="viewAsFeedHandler">
-    <property name="searchComponent" ref="collectionListing.searchComponent" />
   </bean>
 
   <bean id="collectionListing.searchSorting" class="org.vortikal.web.search.SearchSorting" depends-on="resourceTypeTree">

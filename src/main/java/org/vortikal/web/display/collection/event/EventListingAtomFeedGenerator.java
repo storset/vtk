@@ -41,11 +41,12 @@ import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.web.RequestContext;
-import org.vortikal.web.display.AtomFeedController;
 import org.vortikal.web.display.collection.event.EventListingHelper.SpecificDateSearchType;
+import org.vortikal.web.display.feed.AtomFeedGenerator;
 import org.vortikal.web.search.Listing;
+import org.vortikal.web.service.Service;
 
-public class EventListingAtomFeedController extends AtomFeedController {
+public class EventListingAtomFeedGenerator extends AtomFeedGenerator {
 
     private EventListingHelper helper;
     private EventListingSearcher searcher;
@@ -76,10 +77,13 @@ public class EventListingAtomFeedController extends AtomFeedController {
     @Override
     protected String getFeedTitle(Resource feedScope, RequestContext requestContext) {
 
-        String feedTitle = super.getFeedTitle(feedScope, requestContext);
+        Service service = requestContext.getService();
+        String feedTitle = service.getLocalizedName(feedScope, requestContext.getServletRequest());
+        feedTitle = feedTitle == null ? super.getFeedTitle(feedScope, requestContext) : feedTitle;
+
         Property displayTypeProp = feedScope.getProperty(displayTypePropDef);
         if (displayTypeProp != null && "calendar".equals(displayTypeProp.getStringValue())) {
-            HttpServletRequest request = RequestContext.getRequestContext().getServletRequest();
+            HttpServletRequest request = requestContext.getServletRequest();
             SpecificDateSearchType searchType = helper.getSpecificDateSearchType(request);
             if (searchType != null) {
                 Date date = helper.getSpecificSearchDate(request);

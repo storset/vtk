@@ -79,7 +79,7 @@
     </property>
   </bean>
 
-  <bean id="blogListing.feedService" parent="collectionListing.atomService">
+  <bean id="blogListing.feedService" parent="collectionListing.feedService">
     <property name="order" value="-2" />
     <property name="assertions">
       <list>
@@ -87,7 +87,7 @@
         <ref bean="feedParameterSetAssertion" />
       </list>
     </property>
-    <property name="handler" ref="articleListing.atomHandler" />
+    <property name="handler" ref="articleListing.feedHandler" />
   </bean>
 
 </beans>

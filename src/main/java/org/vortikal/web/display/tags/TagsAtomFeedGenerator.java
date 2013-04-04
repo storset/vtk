@@ -28,20 +28,30 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.display.collection;
+package org.vortikal.web.display.tags;
+
+import java.util.Date;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.abdera.model.Feed;
 import org.springframework.beans.factory.annotation.Required;
+import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.web.RequestContext;
-import org.vortikal.web.display.AtomFeedController;
+import org.vortikal.web.display.feed.AtomFeedGenerator;
 import org.vortikal.web.search.Listing;
 import org.vortikal.web.search.SearchComponent;
+import org.vortikal.web.service.Service;
+import org.vortikal.web.tags.TagsHelper;
 
-public class CollectionListingAtomFeedController extends AtomFeedController {
+public class TagsAtomFeedGenerator extends AtomFeedGenerator {
 
+    private PropertyTypeDefinition overridePublishDatePropDef;
     private SearchComponent searchComponent;
+    protected TagsHelper tagsHelper;
 
     @Override
     protected void addFeedEntries(Feed feed, Resource feedScope) throws Exception {
@@ -55,9 +65,56 @@ public class CollectionListingAtomFeedController extends AtomFeedController {
 
     }
 
+    @Override
+    protected Resource getFeedScope() throws Exception {
+        RequestContext requestContext = RequestContext.getRequestContext();
+        String token = requestContext.getSecurityToken();
+        HttpServletRequest request = requestContext.getServletRequest();
+
+        return tagsHelper.getScopedResource(token, request);
+    }
+
+    @Override
+    protected String getFeedTitle(Resource feedScope, RequestContext requestContext) {
+        Service service = requestContext.getService();
+        return service.getLocalizedName(feedScope, requestContext.getServletRequest());
+    }
+
+    @Override
+    protected boolean showFeedIntroduction(Resource feedScope) {
+        return false;
+    }
+
+    @Override
+    protected String getFeedPrefix() {
+        return "tags:";
+    }
+
+    @Override
+    protected Date getLastModified(PropertySet collection) {
+        return new Date();
+    }
+
+    @Override
+    protected Property getPublishDate(PropertySet resource) {
+        Property overridePublishDateProp = resource.getProperty(overridePublishDatePropDef);
+        if (overridePublishDateProp != null) {
+            return overridePublishDateProp;
+        }
+        return getDefaultPublishDate(resource);
+    }
+
     @Required
+    public void setTagsHelper(TagsHelper tagsHelper) {
+        this.tagsHelper = tagsHelper;
+    }
+
     public void setSearchComponent(SearchComponent searchComponent) {
         this.searchComponent = searchComponent;
+    }
+
+    public void setOverridePublishDatePropDef(PropertyTypeDefinition overridePublishDatePropDef) {
+        this.overridePublishDatePropDef = overridePublishDatePropDef;
     }
 
 }

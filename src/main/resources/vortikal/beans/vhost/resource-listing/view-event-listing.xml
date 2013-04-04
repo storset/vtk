@@ -14,15 +14,15 @@
     <property name="serviceNameProvider" ref="collectionListing.viewService.serviceNameProvider" />
   </bean>
 
-  <bean id="eventListing.atomService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="parent" ref="collectionListing.atomService" />
+  <bean id="eventListing.feedService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="collectionListing.feedService" />
     <property name="order" value="-2" />
     <property name="assertions">
       <list>
         <ref bean="resourceIsEventListing" />
       </list>
     </property>
-    <property name="handler" ref="eventListing.atomHandler" />
+    <property name="handler" ref="eventListing.feedHandler" />
   </bean>
 
   <bean id="eventListing.handler" class="org.vortikal.web.display.collection.event.EventListingController">
@@ -35,7 +35,7 @@
     <property name="searcher" ref="eventListing.eventListingSearcher" />
     <property name="alternativeRepresentations">
       <map>
-        <entry key="application/atom+xml" value-ref="eventListing.atomService" />
+        <entry key="application/atom+xml" value-ref="eventListing.feedService" />
         <entry key="text/calendar" value-ref="eventListing.iCalService" />
       </map>
     </property>
@@ -50,12 +50,16 @@
     <property name="specificDateEventSearchComponent" ref="${override.listing.prefix}eventListing.specificDateEventSearchComponent" />
   </bean>
 
-  <bean id="eventListing.atomHandler" class="org.vortikal.web.display.collection.event.EventListingAtomFeedController"
-    parent="viewAsFeedHandler">
+  <bean id="eventListing.atomFeedGenerator" class="org.vortikal.web.display.collection.event.EventListingAtomFeedGenerator"
+    parent="atomFeedGenerator">
     <property name="helper" ref="eventListingHelper" />
     <property name="searcher" ref="eventListing.eventListingSearcher" />
     <property name="displayTypePropDef" ref="eventListing.displayTypePropDef" />
     <property name="overridePublishDatePropDefPointer" ref="${override.listing.prefix}overridePublishDatePropDefPointer" />
+  </bean>
+
+  <bean id="eventListing.feedHandler" parent="collectionListing.feedHandler">
+    <property name="feedGenerator" ref="eventListing.atomFeedGenerator" />
   </bean>
 
   <bean id="overridePublishDatePropDefPointer" class="java.lang.String">

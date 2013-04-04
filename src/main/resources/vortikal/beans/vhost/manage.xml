@@ -2262,4 +2262,50 @@
     <property name="url" value="pages/approval-mail-template.ftl"></property>
   </bean>
   
+  <!-- Reauthenticate -->
+  
+  <bean id="reauthenticateView" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="viewService" />
+    <property name="order" value="-999" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="vrtx" />
+          <property name="parameterValue" value="reauthenticate" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="reauthenticateHandler" />
+  </bean>
+  
+  <bean id="reauthenticate" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="manageService" />
+    <property name="order" value="-999" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="service" />
+          <property name="parameterValue" value="reauthenticate" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="reauthenticateHandler" />
+  </bean>
+  
+  <bean id="reauthenticateHandler" class="org.vortikal.web.service.ReauthenticateController">
+    <property name="viewName" value="reauthenticate.view" />
+  </bean>
+  
+ <bean id="reauthenticate.viewResolver" parent="system.decoratingViewResolver">
+    <property name="views">
+      <map>
+        <entry key="reauthenticate.view" value-ref="reauthenticate.view" />
+      </map>
+    </property>
+  </bean>
+  
+  <bean id="reauthenticate.view" parent="freemarkerView">
+    <property name="url" value="pages/reauth.ftl"></property>
+  </bean>
+  
 </beans>

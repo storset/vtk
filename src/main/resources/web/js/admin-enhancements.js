@@ -1814,36 +1814,62 @@ function reAuthenticateRetokenizeForms() {
   vrtxSimpleDialogs.openHtmlDialog("reauth-open", vrtxAdmin.serverFacade.errorMessages.sessionInvalid,
                                    vrtxAdmin.serverFacade.errorMessages.sessionInvalidTitle,
                                    null, null, function() { // Log in
-    var newW = openRegular("./?vrtx=admin", 1020, 800, "Reauth");
-    newW.focus();
+                                   
     // Loading..
     vrtxSimpleDialogs.openLoadingDialog(vrtxAdmin.serverFacade.errorMessages.sessionWaitReauthenticate);
     
-    setTimeout(function() {
-    
-    var current = $("body input[name='csrf-prevention-token']");
-    var currentLen = current.length;
-    vrtxAdmin.serverFacade.getHtml(location.href, { // Repopulate tokens
-      success: function (results, status, resp) {
-        var updated = $(results).find("input[name='csrf-prevention-token']");
-        for(var i = 0; i < currentLen; i++) {
-          current[i].value = updated[i].value;
+    // Open window to reauthenticate - the user may log in
+    var newW = openRegular("./?vrtx=admin&service=reauthenticate", 1020, 800, "Reauth");
+    newW.focus();
+
+    // Wait for reauthentication (250ms interval)
+    var timerDelay = 250;
+    var timerWaitReauthenticate = setTimeout(function() {
+      var self = arguments.callee;
+      $.ajax({
+        type: "GET",
+        url: "./?vrtx=admin&service=reauthenticate",
+        cache: false,
+        success: function (results, status, resp) {
+          newW.close(); // Close window without any message to user
+          retokenizeFormsOpenSaveDialog();
+        },
+        error: function (xhr, textStatus, errMsg) {
+          if(xhr.status === 0) {
+            setTimeout(self, timerDelay);
+          } else {
+            newW.close(); // Close window without any message to user
+            retokenizeFormsOpenSaveDialog();
+          }
         }
-        // Stop loading
-        vrtxSimpleDialogs.closeDialog("#dialog-loading");
-        // Open save dialog
-        vrtxSimpleDialogs.openHtmlDialog("reauth-save", vrtxAdmin.serverFacade.errorMessages.sessionValidated,
-                                         vrtxAdmin.serverFacade.errorMessages.sessionValidatedTitle,
-                                         null, null, function() { // Save
-          $(".vrtx-focus-button:last-child").click();
-        }, null, vrtxAdmin.serverFacade.errorMessages.sessionValidatedOk, null);
-      }
-    });
-    
-    }, 4000);
+      });
+    }, timerDelay);														
   }, null, vrtxAdmin.serverFacade.errorMessages.sessionInvalidOk, "(" + vrtxAdmin.serverFacade.errorMessages.sessionInvalidOkInfo + ")");                          
   var cancelBtnSpan = $(".ui-dialog[aria-labelledby='ui-dialog-title-dialog-html-reauth-open']").find(".ui-button:last-child span");
   cancelBtnSpan.unwrap();
+}
+
+function retokenizeFormsOpenSaveDialog() {
+  // Repopulate tokens
+  var current = $("body input[name='csrf-prevention-token']");
+  var currentLen = current.length;
+  vrtxAdmin.serverFacade.getHtml(location.href, {
+    success: function (results, status, resp) {
+      var updated = $(results).find("input[name='csrf-prevention-token']");
+      for(var i = 0; i < currentLen; i++) {
+        current[i].value = updated[i].value;
+      }
+      // Stop loading
+      vrtxSimpleDialogs.closeDialog("#dialog-loading");
+      // Open save dialog
+      vrtxSimpleDialogs.openHtmlDialog("reauth-save", vrtxAdmin.serverFacade.errorMessages.sessionValidated,
+                                       vrtxAdmin.serverFacade.errorMessages.sessionValidatedTitle,
+                                       null, null, function() {
+        // Trigger save
+        $(".vrtx-focus-button:last input").click();
+      }, null, vrtxAdmin.serverFacade.errorMessages.sessionValidatedOk, null);
+    }
+  });
 }
 
 function ajaxSave() {

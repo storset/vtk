@@ -184,7 +184,6 @@ $.fn.ajaxSubmit = function(options) {
 		fileUploadXhr(a);
 	}
 	else {
-                if(typeof console !== "undefined") console.log(options);
 		$.ajax(options);
 	}
 

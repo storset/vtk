@@ -1831,14 +1831,12 @@ function reAuthenticateRetokenizeForms() {
         url: "./?vrtx=admin&service=reauthenticate",
         cache: false,
         success: function (results, status, resp) {
-          newW.close(); // Close window without any message to user
           retokenizeFormsOpenSaveDialog();
         },
         error: function (xhr, textStatus, errMsg) {
           if(xhr.status === 0) {
             setTimeout(self, timerDelay);
           } else {
-            newW.close(); // Close window without any message to user
             retokenizeFormsOpenSaveDialog();
           }
         }

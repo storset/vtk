@@ -2264,20 +2264,6 @@
   
   <!-- Reauthenticate -->
   
-  <bean id="reauthenticateView" class="org.vortikal.web.service.ServiceImpl">
-    <property name="parent" ref="viewService" />
-    <property name="order" value="-999" />
-    <property name="assertions">
-      <list>
-        <bean class="org.vortikal.web.service.RequestParameterAssertion">
-          <property name="parameterName" value="vrtx" />
-          <property name="parameterValue" value="reauthenticate" />
-        </bean>
-      </list>
-    </property>
-    <property name="handler" ref="reauthenticateHandler" />
-  </bean>
-  
   <bean id="reauthenticate" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="manageService" />
     <property name="order" value="-999" />
@@ -2292,11 +2278,11 @@
     <property name="handler" ref="reauthenticateHandler" />
   </bean>
   
-  <bean id="reauthenticateHandler" class="org.vortikal.web.service.ReauthenticateController">
+  <bean id="reauthenticateHandler" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
     <property name="viewName" value="reauthenticate.view" />
   </bean>
   
- <bean id="reauthenticate.viewResolver" parent="system.decoratingViewResolver">
+ <bean id="reauthenticate.viewResolver" class="org.vortikal.web.decorating.MappingViewResolver">
     <property name="views">
       <map>
         <entry key="reauthenticate.view" value-ref="reauthenticate.view" />

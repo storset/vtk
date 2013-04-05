@@ -14,6 +14,13 @@
     <meta name="viewport" content="width=1140, user-scalable=yes" /> 
     <title>${vrtx.getMsg("reauth.title")}</title>
     <link rel="stylesheet" type="text/css" href="/vrtx/__vrtx/static-resources/themes/default/default.css" />
+    <style type="text/css">
+      body, html { background: #fff; }
+      body {
+        text-align: left;
+        padding: 15px 25px 25px 25px;
+      }
+    </style>
     <script type="text/javascript" src="/vrtx/__vrtx/static-resources/jquery/jquery.min.js"></script>
     <script type="text/javascript"><!--
       $(document).ready(function() {
@@ -25,13 +32,6 @@
       });
     // -->
     </script>
-    <style type="text/css">
-      body,html { background: #fff; }
-      body {
-        text-align: left;
-        padding: 15px 25px 25px 25px;
-      }
-    </style>
   </head>
   <body>
     <h1>${vrtx.getMsg("reauth.title")}</h1>

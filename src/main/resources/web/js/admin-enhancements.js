@@ -1784,12 +1784,23 @@ function editorInteraction(bodyId, vrtxAdm, _$) {
     $(document).bind('keydown', 'ctrl+s', $.debounce(150, true, function (e) {
       ctrlSEventHandler(_$, e);
     }));
-    vrtxAdm.cachedAppContent.on("click", ".vrtx-focus-button:last input", function (e) {
+    
+    // Save
+    vrtxAdm.cachedAppContent.on("click", ".vrtx-save-button input", function (e) {
       var link = _$(this);
       vrtxAdm.editorSaveButtonName = link.attr("name");
+      var isRedirectView = (this.id === "saveAndViewButton" || this.id === "saveViewAction");
       ajaxSave();
       $.when(vrtxAdm.asyncEditorSavedDeferred).done(function () {
         vrtxAdm.removeMsg("error");
+        if(isRedirectView) {
+          var isCollection = $("#resource-title.true").length;
+          if(isCollection) {
+            location.href = "./?vrtx=admin&action=preview";
+          } else {
+            location.href = location.pathname + "/?vrtx=admin";
+          }
+        }
       }).fail(function (xhr, textStatus) {
         if (xhr !== null) {
           /* Fail in performSave() for exceeding 1500 chars in intro/add.content is handled in editor.js with popup */
@@ -1807,6 +1818,14 @@ function editorInteraction(bodyId, vrtxAdm, _$) {
       e.preventDefault();
     });
   }
+}
+
+function ctrlSEventHandler(_$, e) {
+  if (!_$("#dialog-loading:visible").length) {
+    _$(".vrtx-focus-button:last input").click();
+  }
+  e.preventDefault();
+  return false;
 }
 
 function ajaxSave() {
@@ -1912,14 +1931,6 @@ function retokenizeFormsOpenSaveDialog() {
       }, null, vrtxAdmin.serverFacade.errorMessages.sessionValidatedOk, null);
     }
   });
-}
-
-function ctrlSEventHandler(_$, e) {
-  if (!_$("#dialog-loading:visible").length) {
-    _$(".vrtx-focus-button:last input").click();
-  }
-  e.preventDefault();
-  return false;
 }
 
 

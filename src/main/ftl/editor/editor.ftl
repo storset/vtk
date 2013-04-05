@@ -232,7 +232,7 @@
       </#if>
 
       <div id="submit" class="submitButtons save-cancel">
-        <div class="vrtx-button">
+        <div class="vrtx-button vrtx-save-button">
           <input type="submit" id="saveAndViewButton" name="saveview"  value="${vrtx.getMsg("editor.saveAndView")}"  />
         </div>
         <#if supportedImageEditor>
@@ -240,7 +240,7 @@
              <input type="submit" id="saveCopyButton" name="savecopy" value="${vrtx.getMsg("editor.saveCopy")}" />
            </div>  
         </#if>
-        <div class="vrtx-focus-button">
+        <div class="vrtx-focus-button vrtx-save-button">
           <input type="submit" id="saveButton" name="save" value="${vrtx.getMsg("editor.save")}" />
         </div>  
         <div class="vrtx-button">

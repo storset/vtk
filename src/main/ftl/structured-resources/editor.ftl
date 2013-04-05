@@ -212,10 +212,10 @@
 
     <div class="submit submitButtons">
     <#if !form.hasPublishDate && !form.workingCopy>
-      <div class="vrtx-button">
+      <div class="vrtx-button vrtx-save-button">
         <input type="submit" id="saveAndViewButton" name="updateViewAction"  value="${vrtx.getMsg('editor.saveAndView')}" />
       </div>
-      <div class="vrtx-focus-button"> 
+      <div class="vrtx-focus-button vrtx-save-button"> 
         <input type="submit" id="updateAction" name="updateAction" value="${vrtx.getMsg('editor.save')}" />
       </div>
       <div class="vrtx-button">
@@ -227,10 +227,10 @@
         <a class="vrtx-button" title="${vrtx.getMsg('send-to-approval.title')}" id="vrtx-send-to-approval" href="?vrtx=admin&action=email-approval"><span>${vrtx.getMsg('send-to-approval.title')}</span></a>
       </#if>
     <#elseif form.workingCopy>
-      <div class="vrtx-button">
+      <div class="vrtx-button vrtx-save-button">
         <input type="submit" id="saveAndViewButton" name="updateViewAction"  value="${vrtx.getMsg('editor.saveAndView')}" />
       </div>
-      <div class="vrtx-focus-button">
+      <div class="vrtx-focus-button vrtx-save-button">
         <input type="submit" id="saveWorkingCopyAction" name="saveWorkingCopyAction" value="${vrtx.getMsg('editor.save')}" />
       </div>
       <div class="vrtx-button">
@@ -250,10 +250,10 @@
       </div>
     <#else>
       <#if !form.onlyWriteUnpublished>
-        <div class="vrtx-button">
+        <div class="vrtx-button vrtx-save-button">
           <input type="submit" id="saveAndViewButton" name="updateViewAction"  value="${vrtx.getMsg('editor.saveAndView')}" />
         </div>
-        <div class="vrtx-focus-button">
+        <div class="vrtx-focus-button vrtx-save-button">
           <input type="submit" id="updateAction" name="updateAction" value="${vrtx.getMsg('editor.save')}" />
         </div>
         <div class="vrtx-button">

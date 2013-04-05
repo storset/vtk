@@ -61,10 +61,10 @@
     <form id="editor" action="${plaintextEditForm.submitURL}" method="post">
       <textarea id="foo" name="content" rows="30" cols="80">${plaintextEditForm.content?html}</textarea>
       <div class="vrtx-edit-plaintext-submit-buttons submitButtons">
-        <div class="vrtx-button">
+        <div class="vrtx-button vrtx-save-button">
           <input type="submit" id="saveViewAction" name="saveViewAction" value="<@vrtx.msg code="plaintextEditForm.saveAndView" default="Save and view"/>" />
         </div>
-        <div class="vrtx-focus-button">
+        <div class="vrtx-focus-button vrtx-save-button">
           <input type="submit" id="saveAction" name="saveAction" value="<@vrtx.msg code="plaintextEditForm.save" default="Save"/>" />
         </div>
         <div class="vrtx-button">

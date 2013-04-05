@@ -1807,7 +1807,7 @@ function editorInteraction(bodyId, vrtxAdm, _$) {
 
           var msg = vrtxAdmin.serverFacade.error(xhr, textStatus, false);
           if(msg === "RE_AUTH") {
-            reAuthenticateRetokenizeForms();
+            reAuthenticateRetokenizeForms(link);
           } else {
             var customTitle = vrtxAdm.serverFacade.errorMessages.customTitle[xhr.status];
             vrtxSimpleDialogs.openMsgDialog(msg, customTitle ? customTitle : vrtxAdm.serverFacade.errorMessages.title + " " + xhr.status);
@@ -1875,7 +1875,7 @@ function ajaxSave() {
   });
 }
 
-function reAuthenticateRetokenizeForms() {  
+function reAuthenticateRetokenizeForms(link) {  
   // Open reauth dialog
   vrtxSimpleDialogs.openHtmlDialog("reauth-open", vrtxAdmin.serverFacade.errorMessages.sessionInvalid,
                                    vrtxAdmin.serverFacade.errorMessages.sessionInvalidTitle,
@@ -1900,7 +1900,7 @@ function reAuthenticateRetokenizeForms() {
           if(xhr.status === 0) {
             setTimeout(self, timerDelay);
           } else {
-            retokenizeFormsOpenSaveDialog();
+            retokenizeFormsOpenSaveDialog(link);
           }
         }
       });
@@ -1910,7 +1910,7 @@ function reAuthenticateRetokenizeForms() {
   cancelBtnSpan.unwrap();
 }
 
-function retokenizeFormsOpenSaveDialog() {
+function retokenizeFormsOpenSaveDialog(link) {
   // Repopulate tokens
   var current = $("body input[name='csrf-prevention-token']");
   var currentLen = current.length;
@@ -1927,7 +1927,7 @@ function retokenizeFormsOpenSaveDialog() {
                                        vrtxAdmin.serverFacade.errorMessages.sessionValidatedTitle,
                                        null, null, function() {
         // Trigger save
-        $(".vrtx-focus-button:last input").click();
+        link.click();
       }, null, vrtxAdmin.serverFacade.errorMessages.sessionValidatedOk, null);
     }
   });

@@ -30,6 +30,7 @@
  */
 package org.vortikal.web.report;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
@@ -48,13 +49,12 @@ public class BrokenLinksCollectionReport extends BrokenLinksReport {
 
     @Override
     public Map<String, Object> getReportContent(String token, Resource resource, HttpServletRequest request) {
-        Map<String, Object> result = super.getReportContent(token, resource, request);
+        Map<String, Object> result = new HashMap<String, Object>();
+        result.put(REPORT_NAME, getName());
 
-        String linkType = request.getParameter(FILTER_LINK_TYPE_PARAM_NAME);
-        if (linkType == null)
-            linkType = FILTER_LINK_TYPE_PARAM_DEFAULT_VALUE;
+        populateMap(token, resource, result, request);
 
-        Accumulator accumulator = getBrokenLinkCount(token, resource, request, linkType);
+        Accumulator accumulator = getBrokenLinkCount(token, resource, request, (String) result.get("linkType"));
 
         result.put("map", accumulator.map);
         result.put("sum", accumulator.sum);
@@ -115,25 +115,16 @@ public class BrokenLinksCollectionReport extends BrokenLinksReport {
     }
 
     public class CollectionStats {
-        Path uri;
         int documentCount;
         int linkCount;
 
         public CollectionStats() {
-            this(null, 0, 0);
+            this(0, 0);
         }
 
-        public CollectionStats(Path uri) {
-            this(uri, 0, 0);
-        }
-
-        public CollectionStats(Path uri, int documentCount, int linkCount) {
+        public CollectionStats(int documentCount, int linkCount) {
             this.documentCount = documentCount;
             this.linkCount = linkCount;
-        }
-
-        public Path getUri() {
-            return uri;
         }
 
         public int getLinkCount() {

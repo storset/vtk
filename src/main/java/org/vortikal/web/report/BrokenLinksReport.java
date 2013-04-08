@@ -97,10 +97,7 @@ public class BrokenLinksReport extends DocumentReporter {
     private final static String INCLUDE_PATH_PARAM_NAME = "include-path";
     private final static String EXCLUDE_PATH_PARAM_NAME = "exclude-path";
 
-    @Override
-    public Map<String, Object> getReportContent(String token, Resource resource, HttpServletRequest request) {
-        Map<String, Object> result = super.getReportContent(token, resource, request);
-
+    protected void populateMap(String token, Resource resource, Map<String, Object> result, HttpServletRequest request) {
         URL reportURL = super.getReportService().constructURL(resource).addParameter(REPORT_TYPE_PARAM, getName());
 
         Map<String, List<FilterOption>> filters = new LinkedHashMap<String, List<FilterOption>>();
@@ -157,7 +154,26 @@ public class BrokenLinksReport extends DocumentReporter {
         filters.put(FILTER_READ_RESTRICTION_PARAM_NAME, filterReadRestrictionOptions);
 
         result.put("filters", filters);
-        result.put("brokenLinkCount", getBrokenLinkCount(token, resource, request, linkType));
+    }
+
+    @Override
+    public Map<String, Object> getReportContent(String token, Resource resource, HttpServletRequest request) {
+        Map<String, Object> result = super.getReportContent(token, resource, request);
+
+        populateMap(token, resource, result, request);
+
+        String linkType = request.getParameter(FILTER_LINK_TYPE_PARAM_NAME);
+        String published = request.getParameter(FILTER_PUBLISHED_PARAM_NAME);
+        String readRestriction = request.getParameter(FILTER_READ_RESTRICTION_PARAM_NAME);
+
+        if (linkType == null)
+            linkType = FILTER_LINK_TYPE_PARAM_DEFAULT_VALUE;
+        if (published == null)
+            published = FILTER_PUBLISHED_PARAM_DEFAULT_VALUE;
+        if (readRestriction == null)
+            readRestriction = FILTER_READ_RESTRICTION_PARAM_DEFAULT_VALUE;
+
+        result.put("brokenLinkCount", getBrokenLinkCount(token, resource, request, (String) result.get("linkType")));
 
         if (((Integer) result.get("total")) <= 1000 && ((Integer) result.get("total")) > 0) {
             Map<String, String> usedFilters = new LinkedHashMap<String, String>();

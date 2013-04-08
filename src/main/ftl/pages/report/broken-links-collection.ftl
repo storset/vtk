@@ -66,10 +66,6 @@
 
   <@generateFilters report.filters />
 
-  <#if report.total?has_content>
-    <div>Total pages with broken links is ${report.total}. With documentSum it is ${report.documentSum}</div>
-  </#if>  
-
   <#if report.sum?has_content>
     <div>Sum of broken links is ${report.sum}.</div>
   </#if>

@@ -2,6 +2,4 @@
 
 drop index vortex_resource_depth_index;
 
-create index vortex_resource_depth_uri_index on vortex_resource(depth, uri);
-
-
+create index vortex_resource_d_u_index on vortex_resource(depth, uri);

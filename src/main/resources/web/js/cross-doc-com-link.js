@@ -8,26 +8,26 @@
 
 function CrossDocComLink() {
     this.hasPostMessage = window['postMessage'] && (!($.browser.opera && $.browser.version < 9.65));
-    this.origin = "*";
-    this.predefinedCommands;
+    this.postOrigin = "*";
+    this.predefinedCommands = null;
 }
 
 /* POST BACK TO SOURCE */
 CrossDocComLink.prototype.postCmd = function postCmd(cmdParams, source) {
-  if(this.hasPostMessage && source != "") {
-    source.postMessage(cmdParams, this.origin);
+  if(this.hasPostMessage && source !== "") {
+    source.postMessage(cmdParams, this.postOrigin);
   }
 };
 /* POST TO PARENT */
 CrossDocComLink.prototype.postCmdToParent = function postCmdToParent(cmdParams) {
   if(this.hasPostMessage && parent) {
-    parent.postMessage(cmdParams, this.origin);
+    parent.postMessage(cmdParams, this.postOrigin);
   }
 };
 /* POST TO IFRAME */
 CrossDocComLink.prototype.postCmdToIframe = function postCmdToParent(iframeElm, cmdParams) {
   if(this.hasPostMessage && iframeElm && iframeElm.contentWindow ) {
-    iframeElm.contentWindow.postMessage(cmdParams, this.origin);
+    iframeElm.contentWindow.postMessage(cmdParams, this.postOrigin);
   }
 };
 
@@ -37,6 +37,7 @@ CrossDocComLink.prototype.setUpReceiveDataHandler = function setUpReceiveDataHan
   
   $(window).on("message", function(e) {
     if(e.originalEvent) e = e.originalEvent;
+ 
     var receivedData = e.data;
     var source = e.source;
     if(typeof source === "undefined") source = "";

@@ -48,7 +48,7 @@ alter table vortex_resource
 
 create index vortex_resource_acl_index on vortex_resource(acl_inherited_from);
 
-create index vortex_resource_depth_index on vortex_resource(depth);
+create index vortex_resource_depth_uri_index on vortex_resource(depth, uri);
 
 
 -----------------------------------------------------------------------------

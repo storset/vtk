@@ -70,7 +70,7 @@ public class BrokenLinksReport extends DocumentReporter {
 
     private PropertyTypeDefinition linkStatusPropDef;
     private PropertyTypeDefinition linkCheckPropDef;
-    private PropertyTypeDefinition brokenLinksCountPropDef;
+    protected PropertyTypeDefinition brokenLinksCountPropDef;
     private PropertyTypeDefinition sortPropDef;
     private PropertyTypeDefinition publishedPropDef;
     private PropertyTypeDefinition indexFilePropDef;
@@ -79,15 +79,13 @@ public class BrokenLinksReport extends DocumentReporter {
     private String queryFilterExpression;
     private Service brokenLinksToTsvReportService;
 
-    private final static String REPORT_TYPE_PARAM_NAME = "broken-links";
-
     private final static String FILTER_READ_RESTRICTION_PARAM_NAME = "read-restriction";
     private final static String FILTER_READ_RESTRICTION_PARAM_DEFAULT_VALUE = "all";
     private final static String[] FILTER_READ_RESTRICTION_PARAM_VALUES = { FILTER_READ_RESTRICTION_PARAM_DEFAULT_VALUE,
             "false", "true" };
 
-    private final static String FILTER_LINK_TYPE_PARAM_NAME = "link-type";
-    private final static String FILTER_LINK_TYPE_PARAM_DEFAULT_VALUE = "anchor-img";
+    protected final static String FILTER_LINK_TYPE_PARAM_NAME = "link-type";
+    protected final static String FILTER_LINK_TYPE_PARAM_DEFAULT_VALUE = "anchor-img";
 
     private final static String[] FILTER_LINK_TYPE_PARAM_VALUES = { FILTER_LINK_TYPE_PARAM_DEFAULT_VALUE, "img",
             "anchor", "other" };
@@ -103,8 +101,7 @@ public class BrokenLinksReport extends DocumentReporter {
     public Map<String, Object> getReportContent(String token, Resource resource, HttpServletRequest request) {
         Map<String, Object> result = super.getReportContent(token, resource, request);
 
-        URL reportURL = super.getReportService().constructURL(resource)
-                .addParameter(REPORT_TYPE_PARAM, REPORT_TYPE_PARAM_NAME);
+        URL reportURL = super.getReportService().constructURL(resource).addParameter(REPORT_TYPE_PARAM, getName());
 
         Map<String, List<FilterOption>> filters = new LinkedHashMap<String, List<FilterOption>>();
 

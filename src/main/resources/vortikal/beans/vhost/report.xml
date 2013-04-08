@@ -69,6 +69,7 @@
     <property name="reporters">
       <list>
         <ref bean="lastModifiedReporter" />
+        <ref bean="brokenLinksCollectionReport" />
       </list>
     </property>
     <property name="hiddenReporters">
@@ -119,6 +120,11 @@
     parent="reporter">
     <property name="name" value="list-resources" />
     <property name="viewName" value="listResources" />
+  </bean>
+
+  <bean id="brokenLinksCollectionReport" class="org.vortikal.web.report.BrokenLinksCollectionReport" parent="brokenLinksReport">
+    <property name="name" value="broken-links-collection" />
+    <property name="viewName" value="brokenLinksCollectionReport" />
   </bean>
 
   <bean id="diagramReport" class="org.vortikal.web.report.DiagramReport" parent="reporter">
@@ -404,6 +410,7 @@
         <entry key="documentReport" value-ref="documentReportView" />
         <entry key="diagramReport" value-ref="diagramReportView" />
         <entry key="brokenLinksReport" value-ref="brokenLinksReportView" />
+        <entry key="brokenLinksCollectionReport" value-ref="brokenLinksCollectionReportView" />
       </map>
     </property>
     <property name="referenceDataProviders">
@@ -468,6 +475,33 @@
           </list>
         </entry>
       </map>
+    </property>
+  </bean>
+
+  <bean id="brokenLinksCollectionReportView" parent="freemarkerView">
+    <property name="url" value="pages/report/broken-links-collection.ftl" />
+    <property name="attributesMap">
+      <map>
+        <entry key="cssURLs">
+          <list>
+            <value>${themeBaseURL}/report/report.css</value>
+          </list>
+        </entry>
+      </map>
+    </property>
+    <property name="referenceDataProviders">
+      <list>
+        <bean class="org.vortikal.web.referencedata.provider.StaticURIServiceURLProvider">
+          <property name="service" ref="staticResourceService" />
+          <property name="path" value="${editor.fck.resourcesURL}" />
+          <property name="modelName" value="fckeditorBase" />
+        </bean>
+        <bean class="org.vortikal.web.referencedata.provider.StaticURIServiceURLProvider">
+          <property name="service" ref="editor.browseService" />
+          <property name="path" value="${editor.fck.browseURL}" />
+          <property name="modelName" value="fckBrowse" />
+        </bean>
+      </list>
     </property>
   </bean>
 

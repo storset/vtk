@@ -39,7 +39,7 @@
     s403: "${vrtx.getMsg('ajaxError.s403')}",
     s404: "${vrtx.getMsg('ajaxError.s404')}",
     customTitle: {
-      "0": "Offline"
+      "0": "${vrtx.getMsg('ajaxError.offline.title')}"
     }
   };
   if(vrtxAdmin.hasFreeze) { // Make immutable

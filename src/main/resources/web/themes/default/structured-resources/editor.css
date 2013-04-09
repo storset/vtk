@@ -371,7 +371,7 @@
   visibility: hidden;
 }
 
-.vrtx-json:after {
+.vrtx-grouped .vrtx-json:after {
   content: "";
 }
 

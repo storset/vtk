@@ -74,15 +74,13 @@ public class AudioVideoListingRSSFeedGenerator extends RSSFeedGenerator {
             feedEntry.put("title", title);
 
             // Item description
-            String description = title;
             Property introductionProp = ps.getProperty(videoHtmlDescriptionPropDef);
             if (introductionProp == null) {
                 introductionProp = ps.getProperty(audioHtmlDescriptionPropDef);
             }
             if (introductionProp != null) {
-                description = introductionProp.getFormattedValue();
+                feedEntry.put("description", introductionProp.getFormattedValue());
             }
-            feedEntry.put("description", description);
 
             // Item link
             String urlString = null;

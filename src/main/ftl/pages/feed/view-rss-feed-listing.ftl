@@ -14,7 +14,9 @@
     <#list feedContent.feedItems as feedItem>
     <item>
       <title>${feedItem.title}</title>
+      <#if feedItem.description??>
       <description>${feedItem.description?html}</description>
+      </#if>
       <link>${feedItem.link}</link>
       <guid>${feedItem.guid}</guid>
       <pubDate>${feedItem.pubDate}</pubDate>

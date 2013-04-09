@@ -70,6 +70,10 @@
     <div>Sum of broken links is ${report.sum}.</div>
   </#if>
 
+  <#if report.documentSum?has_content>
+    <div>Sum documents with broken links is ${report.documentSum}.</div>
+  </#if>
+
   <#if report.map?has_content>
     <#list report.map?keys as key>
       <p>${key} = ${report.map[key].linkCount} # ${report.map[key].documentCount}</p>

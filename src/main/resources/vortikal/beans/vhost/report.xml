@@ -122,11 +122,6 @@
     <property name="viewName" value="listResources" />
   </bean>
 
-  <bean id="brokenLinksCollectionReport" class="org.vortikal.web.report.BrokenLinksCollectionReport" parent="brokenLinksReport">
-    <property name="name" value="broken-links-collection" />
-    <property name="viewName" value="brokenLinksCollectionReport" />
-  </bean>
-
   <bean id="diagramReport" class="org.vortikal.web.report.DiagramReport" parent="reporter">
     <property name="name" ref="diagramReportName" />
     <property name="viewName" value="diagramReport" />
@@ -154,6 +149,11 @@
     <property name="queryFilterExpression" value="${systemjob.linkcheck.queryFilterExpression}"/>
     <property name="enabled" value="${report.brokenLinks.enabled}" />
     <property name="brokenLinksToTsvReportService" ref="brokenLinksToTsvReportService" />
+  </bean>
+
+  <bean id="brokenLinksCollectionReport" class="org.vortikal.web.report.BrokenLinksCollectionReport" parent="brokenLinksReport">
+    <property name="name" value="broken-links-collection" />
+    <property name="viewName" value="brokenLinksCollectionReport" />
   </bean>
 
   <bean id="myDocumentsReporter" class="org.vortikal.web.report.MyDocumentsReporter" parent="documentReporter">

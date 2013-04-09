@@ -32,7 +32,9 @@ package org.vortikal.web.report;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.TreeMap;
 
 import javax.servlet.http.HttpServletRequest;
@@ -44,8 +46,11 @@ import org.vortikal.repository.Resource;
 import org.vortikal.repository.search.ConfigurablePropertySelect;
 import org.vortikal.repository.search.Search;
 import org.vortikal.repository.search.Searcher;
+import org.vortikal.web.service.URL;
 
 public class BrokenLinksCollectionReport extends BrokenLinksReport {
+
+    private int pageSize = 25;
 
     @Override
     public Map<String, Object> getReportContent(String token, Resource resource, HttpServletRequest request) {
@@ -56,7 +61,35 @@ public class BrokenLinksCollectionReport extends BrokenLinksReport {
 
         Accumulator accumulator = getBrokenLinkCount(token, resource, request, (String) result.get("linkType"));
 
-        result.put("map", accumulator.map);
+        int page = 1;
+        try {
+            page = Integer.parseInt(request.getParameter("page"));
+        } catch (Exception e) {
+        }
+
+        Map<String, CollectionStats> map = new LinkedHashMap<String, CollectionStats>();
+        if (accumulator.map.size() > pageSize && (pageSize * page) - pageSize < accumulator.map.size()) {
+            URL currentPage = URL.create(request).removeParameter("page");
+            if (page > 1) {
+                result.put("prev", currentPage.addParameter("page", String.valueOf(page - 1)));
+            }
+            if (pageSize * page < accumulator.map.size()) {
+                result.put("next", currentPage.addParameter("page", String.valueOf(page + 1)));
+            }
+
+            Iterator<Entry<String, CollectionStats>> it = accumulator.map.entrySet().iterator();
+            int count = 0;
+            while (it.hasNext() && ++count <= pageSize * page) {
+                Entry<String, CollectionStats> pairs = (Entry<String, CollectionStats>) it.next();
+                if (count > (pageSize * page) - pageSize && count <= pageSize * page) {
+                    map.put(pairs.getKey(), pairs.getValue());
+                }
+            }
+            result.put("map", map);
+        } else if (accumulator.map.size() <= pageSize) {
+            result.put("map", accumulator.map);
+        }
+
         result.put("sum", accumulator.sum);
         result.put("documentSum", accumulator.documentSum);
 
@@ -184,6 +217,10 @@ public class BrokenLinksCollectionReport extends BrokenLinksReport {
 
             return true;
         }
+    }
+
+    public void setPageSize(int pageSize) {
+        this.pageSize = pageSize;
     }
 
 }

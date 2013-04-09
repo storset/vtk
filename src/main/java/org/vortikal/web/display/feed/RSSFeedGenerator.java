@@ -30,11 +30,14 @@
  */
 package org.vortikal.web.display.feed;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 import org.vortikal.repository.Namespace;
@@ -47,15 +50,12 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 
-import com.sun.syndication.feed.synd.SyndEntry;
-import com.sun.syndication.feed.synd.SyndFeed;
-import com.sun.syndication.feed.synd.SyndFeedImpl;
-import com.sun.syndication.io.SyndFeedOutput;
-
 /**
  * 
- * Creates a RSS 2.0 feed using the Rome library, adhering to:
+ * Creates an ITunes extended RSS 2.0 feed, adhering to:
  * http://cyber.law.harvard.edu/rss/rss.html
+ * http://www.apple.com/itunes/podcasts/specs.html
+ * 
  * 
  * Subclasses provide results for and add entries to feed, as well as override
  * title and certain other properties (date, author ++).
@@ -63,11 +63,8 @@ import com.sun.syndication.io.SyndFeedOutput;
  */
 public abstract class RSSFeedGenerator implements FeedGenerator {
 
-    // Supported feed types as of Apr. 2013 are:
-    // rss_0.9, rss_0.91, rss_0.92, rss_0.93, rss_0.94, rss_1.0, rss_2.0,
-    // atom_0.3, atom_1.0
-    // We only provide RSS 2.0
-    public static final String SUPPORTED_FEED_TYPE = "rss_2.0";
+    private String viewName;
+    private String feedLogoPath;
 
     protected Service viewService;
     protected PropertyTypeDefinition titlePropDef;
@@ -76,7 +73,7 @@ public abstract class RSSFeedGenerator implements FeedGenerator {
 
     // Must be overriden by subclasses to provide content for feed entries and
     // add these to feed
-    protected abstract List<SyndEntry> getFeedEntries(Resource feedScope) throws Exception;
+    protected abstract List<Map<String, Object>> getFeedEntries(Resource feedScope) throws Exception;
 
     @Override
     public ModelAndView generateFeed(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -86,28 +83,31 @@ public abstract class RSSFeedGenerator implements FeedGenerator {
         String token = requestContext.getSecurityToken();
         Resource feedScope = requestContext.getRepository().retrieve(token, uri, true);
 
-        SyndFeed feed = new SyndFeedImpl();
-        feed.setFeedType(SUPPORTED_FEED_TYPE);
-        feed.setTitle(getTitle(feedScope, requestContext));
-        feed.setLink(request.getRequestURL().toString());
+        Map<String, Object> feedContent = new HashMap<String, Object>();
 
-        // Description must be string
+        // Title, link and description are required by spec
+        feedContent.put("title", getTitle(feedScope, requestContext));
+        feedContent.put("link", request.getRequestURL().toString());
         Namespace NS_CONTENT = Namespace.getNamespace("http://www.uio.no/content");
         Property descriptionProp = feedScope.getProperty(NS_CONTENT, PropertyType.DESCRIPTION_PROP_NAME);
         String description = descriptionProp != null ? descriptionProp.getFormattedValue(
                 HtmlValueFormatter.FLATTENED_FORMAT, null) : "";
-        feed.setDescription(description);
+        feedContent.put("description", description);
 
-        List<SyndEntry> entries = getFeedEntries(feedScope);
-        if (entries.size() > 0) {
-            feed.setEntries(entries);
+        // Optional elements
+        feedContent.put("atomLink", requestContext.getRequestURL().toString());
+
+        if (!StringUtils.isBlank(feedLogoPath)) {
+            feedContent.put("feedLogoPath", feedLogoPath);
         }
 
-        SyndFeedOutput output = new SyndFeedOutput();
-        response.setContentType("text/xml;charset=utf-8");
-        output.output(feed, response.getWriter());
+        feedContent.put("feedItems", getFeedEntries(feedScope));
 
-        return null;
+        Map<String, Object> model = new HashMap<String, Object>();
+        model.put("feedContent", feedContent);
+
+        return new ModelAndView(viewName, model);
+
     }
 
     protected String getTitle(Resource feedScope, RequestContext requestContext) {
@@ -116,6 +116,15 @@ public abstract class RSSFeedGenerator implements FeedGenerator {
             feedTitle = requestContext.getRepository().getId();
         }
         return feedTitle;
+    }
+
+    @Required
+    public void setViewName(String viewName) {
+        this.viewName = viewName;
+    }
+
+    public void setFeedLogoPath(String feedLogoPath) {
+        this.feedLogoPath = feedLogoPath;
     }
 
     @Required
@@ -137,4 +146,5 @@ public abstract class RSSFeedGenerator implements FeedGenerator {
     public void setLastModifiedPropDef(PropertyTypeDefinition lastModifiedPropDef) {
         this.lastModifiedPropDef = lastModifiedPropDef;
     }
+
 }

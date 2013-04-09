@@ -64,6 +64,7 @@
         <value>lastModified</value>
         <value>content:description</value>
         <value>contentType</value>
+        <value>contentLength</value>
         <value>duration</value>
         <value>publish-date</value>
         <value>poster-image</value>
@@ -130,6 +131,10 @@
   <bean id="audioVideoListing.rssFeedGenerator" class="org.vortikal.web.display.collection.AudioVideoListingRSSFeedGenerator"
     parent="rssFeedGenerator">
     <property name="searchComponent" ref="audioVideoListing.searchComponent" />
+    <property name="audioHtmlDescriptionPropDef" ref="audioHtmlDescriptionPropDef" />
+    <property name="videoHtmlDescriptionPropDef" ref="videoHtmlDescriptionPropDef" />
+    <property name="contentLengthPropDef" ref="contentLengthPropDef" />
+    <property name="contentTypePropDef" ref="contentTypePropDef" />
   </bean>
 
   <bean id="audioVideoListing.atomFeedGenerator" class="org.vortikal.web.display.collection.AudioVideoListingAtomFeedGenerator"

@@ -30,9 +30,11 @@
  */
 package org.vortikal.web.display.collection;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.MultiHostSearcher;
@@ -40,90 +42,105 @@ import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Resource;
-import org.vortikal.repository.resourcetype.Value;
-import org.vortikal.repository.resourcetype.ValueFormatter;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.display.feed.RSSFeedGenerator;
 import org.vortikal.web.search.Listing;
 import org.vortikal.web.search.SearchComponent;
 import org.vortikal.web.service.URL;
 
-import com.sun.syndication.feed.synd.SyndCategoryImpl;
-import com.sun.syndication.feed.synd.SyndContentImpl;
-import com.sun.syndication.feed.synd.SyndEntry;
-import com.sun.syndication.feed.synd.SyndEntryImpl;
-
 public class AudioVideoListingRSSFeedGenerator extends RSSFeedGenerator {
 
     private SearchComponent searchComponent;
+    private PropertyTypeDefinition videoHtmlDescriptionPropDef;
+    private PropertyTypeDefinition audioHtmlDescriptionPropDef;
+    private PropertyTypeDefinition contentLengthPropDef;
+    private PropertyTypeDefinition contentTypePropDef;
 
     @Override
-    protected List<SyndEntry> getFeedEntries(Resource feedScope) throws Exception {
+    protected List<Map<String, Object>> getFeedEntries(Resource feedScope) throws Exception {
 
         Listing entryElements = searchComponent.execute(RequestContext.getRequestContext().getServletRequest(),
                 feedScope, 1, 500, 0);
 
-        List<SyndEntry> entries = new ArrayList<SyndEntry>();
+        List<Map<String, Object>> feedEntries = new ArrayList<Map<String, Object>>();
+
         for (PropertySet ps : entryElements.getFiles()) {
 
-            SyndEntry entry = new SyndEntryImpl();
-            entry.setTitle(ps.getProperty(Namespace.DEFAULT_NAMESPACE, "title").getStringValue());
+            Map<String, Object> feedEntry = new HashMap<String, Object>();
 
-            String urlString = viewService.constructLink(ps.getURI());
+            // Item title
+            String title = ps.getProperty(titlePropDef).getStringValue();
+            feedEntry.put("title", title);
+
+            // Item description
+            String description = title;
+            Property introductionProp = ps.getProperty(videoHtmlDescriptionPropDef);
+            if (introductionProp == null) {
+                introductionProp = ps.getProperty(audioHtmlDescriptionPropDef);
+            }
+            if (introductionProp != null) {
+                description = introductionProp.getFormattedValue();
+            }
+            feedEntry.put("description", description);
+
+            // Item link
+            String urlString = null;
             Property urlProp = ps.getProperty(Namespace.DEFAULT_NAMESPACE, MultiHostSearcher.URL_PROP_NAME);
             if (urlProp != null) {
                 urlString = URL.parse(urlProp.getStringValue()).toString();
+            } else {
+                urlString = viewService.constructLink(ps.getURI());
             }
-            entry.setLink(urlString);
+            feedEntry.put("link", urlString);
 
-            Property author = ps.getProperty(Namespace.DEFAULT_NAMESPACE, "author");
-            if (author == null) {
-                author = ps.getProperty(Namespace.STRUCTURED_RESOURCE_NAMESPACE, "author");
-            }
-            if (author != null) {
-                ValueFormatter vf = author.getDefinition().getValueFormatter();
-                if (author.getDefinition().isMultiple()) {
-                    List<String> authors = new ArrayList<String>();
-                    for (Value v : author.getValues()) {
-                        authors.add(vf.valueToString(v, "name", null));
-                    }
-                    entry.setAuthors(authors);
-                } else {
-                    entry.setAuthor(author.getFormattedValue("name", null));
-                }
-            }
+            feedEntry.put("enclosure", urlString);
+            long contentLength = ps.getProperty(contentLengthPropDef).getLongValue();
+            feedEntry.put("length", String.valueOf(contentLength));
+            String contentType = ps.getProperty(contentTypePropDef).getStringValue();
+            feedEntry.put("type", contentType);
 
-            SyndContentImpl description = null;
-            Property introductionProp = ps.getProperty(Namespace.DEFAULT_NAMESPACE, "video-description");
-            if (introductionProp == null) {
-                introductionProp = ps.getProperty(Namespace.DEFAULT_NAMESPACE, "audio-description");
-            }
-            if (introductionProp != null) {
-                description = new SyndContentImpl();
-                description.setType("text/html");
-                description.setValue(introductionProp.getFormattedValue());
-            }
+            feedEntry.put("category", ps.getResourceType());
 
-            if (description != null) {
-                entry.setDescription(description);
-            }
+            // Item guid
+            feedEntry.put("guid", urlString);
 
-            SyndCategoryImpl category = new SyndCategoryImpl();
-            category.setName(ps.getResourceType());
-            entry.setCategories(Arrays.asList(category));
+            // Item publish date
+            SimpleDateFormat rfc822_dateformat = new SimpleDateFormat("EEE', 'dd' 'MMM' 'yyyy' 'HH:mm:ss' 'Z");
+            String rfc822FormattedPubDate = rfc822_dateformat.format(ps.getProperty(publishDatePropDef).getDateValue());
+            feedEntry.put("pubDate", rfc822FormattedPubDate);
 
-            entry.setUpdatedDate(ps.getProperty(lastModifiedPropDef).getDateValue());
-            entry.setPublishedDate(ps.getProperty(publishDatePropDef).getDateValue());
-            entries.add(entry);
+            feedEntries.add(feedEntry);
 
         }
 
-        return entries;
+        return feedEntries;
+
     }
 
     @Required
     public void setSearchComponent(SearchComponent searchComponent) {
         this.searchComponent = searchComponent;
+    }
+
+    @Required
+    public void setVideoHtmlDescriptionPropDef(PropertyTypeDefinition videoHtmlDescriptionPropDef) {
+        this.videoHtmlDescriptionPropDef = videoHtmlDescriptionPropDef;
+    }
+
+    @Required
+    public void setAudioHtmlDescriptionPropDef(PropertyTypeDefinition audioHtmlDescriptionPropDef) {
+        this.audioHtmlDescriptionPropDef = audioHtmlDescriptionPropDef;
+    }
+
+    @Required
+    public void setContentLengthPropDef(PropertyTypeDefinition contentLengthPropDef) {
+        this.contentLengthPropDef = contentLengthPropDef;
+    }
+
+    @Required
+    public void setContentTypePropDef(PropertyTypeDefinition contentTypePropDef) {
+        this.contentTypePropDef = contentTypePropDef;
     }
 
 }

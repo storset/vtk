@@ -65,6 +65,7 @@
     <property name="viewName" value="rss.feedView" />
   </bean>
 
+  <!-- ## RSS feed view resolver and template ## -->
   <bean id="rss.viewResolver" parent="decoratorViewResolver">
     <property name="views">
       <map>
@@ -73,7 +74,6 @@
     </property>
   </bean>
 
-  <!-- ## RSS feed view resolver and template ## -->
   <bean id="rss.feedView" parent="freemarkerView">
     <property name="url" value="pages/feed/view-rss-feed-listing.ftl" />
     <property name="contentType" value="text/xml;charset=utf-8" />

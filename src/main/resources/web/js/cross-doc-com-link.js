@@ -2,8 +2,6 @@
  *  Cross-document communication (lightweight library)
  *  by USIT/2012 - Licenced under GPL v3.0
  *
- *  TODO: origin checks
- *
  */
 
 function CrossDocComLink() {
@@ -37,6 +35,8 @@ CrossDocComLink.prototype.setUpReceiveDataHandler = function setUpReceiveDataHan
   
   $(window).on("message", function(e) {
     if(e.originalEvent) e = e.originalEvent;
+    
+    /* TODO: Need to check that origin is same domain here - although we validate the data and don't do eval etc. */
  
     var receivedData = e.data;
     var source = e.source;

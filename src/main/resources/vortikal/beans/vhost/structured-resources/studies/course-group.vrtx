@@ -56,14 +56,14 @@ resourcetype course-group {
               [val course-group-other # unescaped]
             [endif]
           </div>
-          <div id="vrtx-additional-content">
-            <div id="vrtx-related-content">
-              [if studinfo-kontakt != null && studinfo-kontakt != ""]
+          [if studinfo-kontakt != null && studinfo-kontakt != ""]
+            <div id="vrtx-additional-content">
+              <div id="vrtx-related-content">
                 <h2>[localized 'studinfo-kontakt']</h2>
                 [call "include:shared-text" {"propName":"studinfo-kontakt"}]
-              [endif]
+              </div>
             </div>
-          </div>
+          [endif]
         </div>
       </body>
     </html>

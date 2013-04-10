@@ -66,15 +66,12 @@
 
   <@generateFilters report.filters />
 
-  <#if report.sum?has_content>
-    <div>Sum of broken links is ${report.sum}.</div>
-  </#if>
-
-  <#if report.documentSum?has_content>
-    <div>Sum documents with broken links is ${report.documentSum}.</div>
-  </#if>
-
   <#if report.map?has_content>
+    <p id="vrtx-report-info-paging-top">
+      <@vrtx.msg code="report.${report.reportname}.about"
+                 args=[report.documentSum, report.sum]
+                 default="There is a total of " + report.documentSum + " web pages with " + report.sum + " broken" /> ${linkTypeLocalization?lower_case}
+    </p>
     <div class="vrtx-report">
       <table id="directory-listing" class="report-broken-links">
         <thead>

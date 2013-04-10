@@ -75,42 +75,47 @@
   </#if>
 
   <#if report.map?has_content>
-    <#list report.map?keys as uri>
-      <#assign rowType = "odd" />
-      <#if (uri_index % 2 == 0) >
-        <#assign rowType = "even" />
-      </#if>
+    <div class="vrtx-report">
+      <table id="directory-listing" class="report-broken-links">
+        <thead>
+          <tr>
+            <th id="vrtx-report-broken-links-collection"><@vrtx.msg code="report.${report.reportname}.collection" /></th>
+            <th id="vrtx-report-broken-links-document-count"><@vrtx.msg code="report.${report.reportname}.document-count" /></th>
+            <th id="vrtx-report-broken-links-count">${linkTypeLocalization} <@vrtx.msg code="report.${report.reportname}.count" /></th>
+          </tr>
+        </thead>
+        <tbody>
+          <#list report.map?keys as uri>
+            <#assign rowType = "odd" />
+            <#if (uri_index % 2 == 0) >
+              <#assign rowType = "even" />
+            </#if>
 
-      <#assign firstLast = ""  />
-      <#if (uri_index == 0) && (uri_index == (report.map?size - 1))>
-        <#assign firstLast = " first last" />
-      <#elseif (uri_index == 0)>
-        <#assign firstLast = " first" />
-      <#elseif (uri_index == (report.map?size - 1))>
-        <#assign firstLast = " last" />     
-      </#if>
+            <#assign firstLast = ""  />
+            <#if (uri_index == 0) && (uri_index == (report.map?size - 1))>
+              <#assign firstLast = " first last" />
+            <#elseif (uri_index == 0)>
+              <#assign firstLast = " first" />
+            <#elseif (uri_index == (report.map?size - 1))>
+              <#assign firstLast = " last" />     
+            </#if>
 
-      <#assign url = uri>
-      <#if report.map[uri].url?has_content>
-        <#assign url = report.map[uri].url>
-      </#if>
-      <#assign title = uri>
-      <#if report.map[uri].title?has_content>
-        <#assign title = report.map[uri].title>
-      </#if>
-      <tr class="${rowType}${firstLast}">
-        <td class="vrtx-report-broken-links-web-page">
-          <a href="${url?html}">${title?html}</a>
-          <span>${uri?html}</span>
-        </td>
-        <td class="vrtx-report-broken-links-document-count">
-          ${report.map[uri].documentCount}
-        </td>
-        <td class="vrtx-report-broken-links-count">
-          ${report.map[uri].linkCount}
-        </td>
-      </tr>
-    </#list>
+            <tr class="${rowType}${firstLast}">
+              <td class="vrtx-report-broken-links-web-page">
+                <a href="${report.map[uri].url?html}">${report.map[uri].title?html}</a>
+                <span>${uri?html}</span>
+              </td>
+              <td class="vrtx-report-broken-links-document-count">
+                ${report.map[uri].documentCount}
+              </td>
+              <td class="vrtx-report-broken-links-count">
+                ${report.map[uri].linkCount}
+              </td>
+            </tr>
+          </#list>
+        </tbody>
+      </table>
+    </div>
   </#if>
   
   

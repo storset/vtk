@@ -52,7 +52,7 @@
   </head>
   <body id="vrtx-report-broken-links">
   <#assign linkTypeLocalization>
-    <@vrtx.msg code="report.${report.reportname}.filters.link-type.${report.linkType}" />
+    <@vrtx.msg code="report.broken-links.filters.link-type.${report.linkType}" />
   </#assign>
 
   <div class="resourceInfo">
@@ -75,8 +75,41 @@
   </#if>
 
   <#if report.map?has_content>
-    <#list report.map?keys as key>
-      <p>${key} = ${report.map[key].linkCount} # ${report.map[key].documentCount}</p>
+    <#list report.map?keys as uri>
+      <#assign rowType = "odd" />
+      <#if (uri_index % 2 == 0) >
+        <#assign rowType = "even" />
+      </#if>
+
+      <#assign firstLast = ""  />
+      <#if (uri_index == 0) && (uri_index == (report.map?size - 1))>
+        <#assign firstLast = " first last" />
+      <#elseif (uri_index == 0)>
+        <#assign firstLast = " first" />
+      <#elseif (uri_index == (report.map?size - 1))>
+        <#assign firstLast = " last" />     
+      </#if>
+
+      <#assign url = uri>
+      <#if report.map[uri].url?has_content>
+        <#assign url = report.map[uri].url>
+      </#if>
+      <#assign title = uri>
+      <#if report.map[uri].title?has_content>
+        <#assign title = report.map[uri].title>
+      </#if>
+      <tr class="${rowType}${firstLast}">
+        <td class="vrtx-report-broken-links-web-page">
+          <a href="${url?html}">${title?html}</a>
+          <span>${uri?html}</span>
+        </td>
+        <td class="vrtx-report-broken-links-document-count">
+          ${report.map[uri].documentCount}
+        </td>
+        <td class="vrtx-report-broken-links-count">
+          ${report.map[uri].linkCount}
+        </td>
+      </tr>
     </#list>
   </#if>
   
@@ -102,10 +135,10 @@
                 <#local filterID = "vrtx-report-filter-" + filterKey + "-" + filterOpt.name />
                 <#if filterOpt.active>
                   <li class="active-filter" id="${filterID}">
-                    <span><@vrtx.msg code="report.${report.reportname}.filters.${filterKey}.${filterOpt.name}" /></span>
+                    <span><@vrtx.msg code="report.broken-links.filters.${filterKey}.${filterOpt.name}" /></span>
                 <#else>
                   <li id="${filterID}">
-                    <a href="${filterOpt.URL?html}"><@vrtx.msg code="report.${report.reportname}.filters.${filterKey}.${filterOpt.name}" /></a>
+                    <a href="${filterOpt.URL?html}"><@vrtx.msg code="report.broken-links.filters.${filterKey}.${filterOpt.name}" /></a>
                 </#if>
                   </li>
               </#list>

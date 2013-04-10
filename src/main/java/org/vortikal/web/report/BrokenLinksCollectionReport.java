@@ -68,7 +68,7 @@ public class BrokenLinksCollectionReport extends BrokenLinksReport {
         }
 
         Map<String, CollectionStats> map = new LinkedHashMap<String, CollectionStats>();
-        if (accumulator.map.size() > pageSize && (pageSize * page) - pageSize < accumulator.map.size()) {
+        if ((pageSize * page) - pageSize < accumulator.map.size()) {
             URL currentPage = URL.create(request).removeParameter("page");
             if (page > 1) {
                 result.put("prev", currentPage.addParameter("page", String.valueOf(page - 1)));
@@ -79,15 +79,23 @@ public class BrokenLinksCollectionReport extends BrokenLinksReport {
 
             Iterator<Entry<String, CollectionStats>> it = accumulator.map.entrySet().iterator();
             int count = 0;
+            Resource r;
+            CollectionStats cs;
             while (it.hasNext() && ++count <= pageSize * page) {
                 Entry<String, CollectionStats> pairs = (Entry<String, CollectionStats>) it.next();
                 if (count > (pageSize * page) - pageSize && count <= pageSize * page) {
-                    map.put(pairs.getKey(), pairs.getValue());
+                    cs = pairs.getValue();
+                    try {
+                        r = repository.retrieve(token, Path.fromString(pairs.getKey()), false);
+                        cs.title = r.getTitle();
+                        cs.url = getReportService().constructURL(r).addParameter(REPORT_TYPE_PARAM, "broken-links");
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    map.put(pairs.getKey(), cs);
                 }
             }
             result.put("map", map);
-        } else if (accumulator.map.size() <= pageSize) {
-            result.put("map", accumulator.map);
         }
 
         result.put("sum", accumulator.sum);
@@ -150,6 +158,8 @@ public class BrokenLinksCollectionReport extends BrokenLinksReport {
     public class CollectionStats {
         int documentCount;
         int linkCount;
+        String title;
+        URL url;
 
         public CollectionStats() {
             this(0, 0);
@@ -166,6 +176,14 @@ public class BrokenLinksCollectionReport extends BrokenLinksReport {
 
         public int getDocumentCount() {
             return documentCount;
+        }
+
+        public String getTitle() {
+            return title;
+        }
+
+        public URL getUrl() {
+            return url;
         }
     }
 

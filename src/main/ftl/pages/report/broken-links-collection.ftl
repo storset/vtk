@@ -81,7 +81,7 @@
           <tr>
             <th id="vrtx-report-broken-links-collection"><@vrtx.msg code="report.${report.reportname}.collection" /></th>
             <th id="vrtx-report-broken-links-document-count"><@vrtx.msg code="report.${report.reportname}.document-count" /></th>
-            <th id="vrtx-report-broken-links-count">${linkTypeLocalization} <@vrtx.msg code="report.${report.reportname}.count" /></th>
+            <th id="vrtx-report-broken-links-count">#${linkTypeLocalization?lower_case} <@vrtx.msg code="report.${report.reportname}.count" /></th>
           </tr>
         </thead>
         <tbody>

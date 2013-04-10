@@ -80,17 +80,19 @@ public class BrokenLinksCollectionReport extends BrokenLinksReport {
             Iterator<Entry<String, CollectionStats>> it = accumulator.map.entrySet().iterator();
             int count = 0;
             Resource r;
+            Path uri;
             CollectionStats cs;
             while (it.hasNext() && ++count <= pageSize * page) {
                 Entry<String, CollectionStats> pairs = (Entry<String, CollectionStats>) it.next();
                 if (count > (pageSize * page) - pageSize && count <= pageSize * page) {
                     cs = pairs.getValue();
+                    uri = Path.fromString(pairs.getKey());
+                    cs.url = getReportService().constructURL(uri).addParameter(REPORT_TYPE_PARAM, "broken-links");
                     try {
-                        r = repository.retrieve(token, Path.fromString(pairs.getKey()), false);
+                        r = repository.retrieve(token, uri, false);
                         cs.title = r.getTitle();
-                        cs.url = getReportService().constructURL(r).addParameter(REPORT_TYPE_PARAM, "broken-links");
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        cs.title = uri.getName();
                     }
                     map.put(pairs.getKey(), cs);
                 }
@@ -206,6 +208,10 @@ public class BrokenLinksCollectionReport extends BrokenLinksReport {
         public boolean matching(PropertySet propertySet) throws Exception {
             Property prop = propertySet.getProperty(brokenLinksCountPropDef);
             if (prop == null) {
+                return true;
+            }
+
+            if (propertySet.getURI().getDepth() == depth) {
                 return true;
             }
 

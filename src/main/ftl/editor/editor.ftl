@@ -90,7 +90,7 @@
           $.when(vrtxEditor.multipleFieldsBoxesDeferred).done(function() {
             MULTIPLE_INPUT_FIELD_INITIALIZED = $.Deferred();
 
-            enhanceMultipleInputFields("featured-articles", true, true, 999);  
+            enhanceMultipleInputFields("featured-articles", true, true, 50);
             enhanceMultipleInputFields("aggregation", false, false, aggregationLimit);
             enhanceMultipleInputFields("manually-approve-from", false, false, aggregationLimit);
             

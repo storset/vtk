@@ -181,6 +181,7 @@ public class URLTest extends TestCase {
         assertEquals("%23", URL.encode("#"));
         assertEquals("%5B", URL.encode("["));
         assertEquals("%5D", URL.encode("]"));
+        assertEquals("%20", URL.encode(" "));
         
         URL url = new URL("http", "foo.bar", Path.fromString("/ "));
         assertEquals("/%20", url.getPathEncoded());

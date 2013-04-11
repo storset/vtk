@@ -47,6 +47,7 @@ import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
 
 import org.vortikal.repository.Path;
+import org.vortikal.util.text.TextUtils;
 
 /**
  * Class for representing HTTP(s) URLs. Resembles {@link java.net.URL}, except
@@ -1083,7 +1084,7 @@ public class URL implements Serializable {
     public static String encode(String value, String encoding) throws UnsupportedEncodingException {
         String encoded = URLEncoder.encode(value, encoding);
         // Force hex '%20' instead of '+' as space representation:
-        return encoded.replaceAll("\\+", "%20");
+        return TextUtils.replaceAll(encoded, "+", "%20");
     }
 
     /**

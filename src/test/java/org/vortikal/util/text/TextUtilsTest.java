@@ -349,6 +349,7 @@ public class TextUtilsTest {
         assertEqualsStringReplaceAll("PREFIX-MIDDLE-SUFFIX", "MIDDLE-SUFFIX", "");
         assertEqualsStringReplaceAll("1 foo 2 foo 3", "foo", "bar");
         assertEqualsStringReplaceAll("bbb", "", "a");
+        assertEqualsStringReplaceAll("aaa", "aa", "b");
         assertEqualsStringReplaceAll("unchanged", "X", "Y");
         assertEqualsStringReplaceAll("abc", "abigreplacement", "X");
         assertEqualsStringReplaceAll("|.|.|.|.|.|.|.|", ".", "-");

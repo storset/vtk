@@ -562,7 +562,7 @@ VrtxEditor.prototype.newEditor = function newEditor(name, completeEditor, withou
 VrtxEditor.prototype.setCKEditorConfig = function setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, defaultLanguage, cssFileList, height,
 maxHeight, minHeight, toolbar, complete, resizable, baseDocumentUrl, simple) {
   var vrtxEdit = this;
-  var config = [{}];
+  var config = {};
 
   config.baseHref = baseDocumentUrl;
   config.contentsCss = cssFileList;

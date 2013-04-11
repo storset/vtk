@@ -407,7 +407,9 @@
 
   <bean id="webdavHeadHandler" class="org.vortikal.webdav.HeadController" />
 
-  <bean id="webdavPropfindHandler" class="org.vortikal.webdav.PropfindController" />
+  <bean id="webdavPropfindHandler" class="org.vortikal.webdav.PropfindController" >
+    <property name="childAuthorizeWhitelistProperties" ref="webdav.childAuthorizeWhitelistProperties" />
+  </bean>
 
   <bean id="webdavLockHandler" class="org.vortikal.webdav.LockController">
     <property name="deniedFileNames" ref="webdav.deniedFileNamePatterns" />
@@ -425,6 +427,19 @@
   <bean id="webdav.deniedFileNamePatterns" class="org.vortikal.context.CSVListFactoryBean">
     <property name="csvList" value="${webdav.deniedFiles}" />
     <property name="trim" value="true" />
+  </bean>
+  
+  <!-- Set of whitelisted properties which, when requested by a client, will not
+       trigger authorization on descendant resources returned in response to a
+       PROPFIND request with depth greater than 0 (VTK-3235).
+       The value provided should be a CSV-formatted string on the form:
+         namespace1:prop1,namespace1:prop2,namespace2:prop1,...
+         
+       The set need not include properties in the "DAV:" namespace,
+       as those are already handled internally.
+  -->
+  <bean id="webdav.childAuthorizeWhitelistProperties" class="org.vortikal.context.CSVListFactoryBean">
+    <property name="csvList" value="${webdav.childAuthorizeWhitelistProperties}"/>
   </bean>
 
   <bean id="webdavMkColHandler" class="org.vortikal.webdav.MkColController">

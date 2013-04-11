@@ -46,11 +46,6 @@
 	  Object.freeze(vrtxAdmin.multipleFormGroupingMessages);
 	  Object.freeze(vrtxAdmin.multipleFormGroupingPaths);
 	}
-         
-    // IE CSS
-    if (vrtxAdmin.isIE && typeof cssFileList !== "undefined") {
-      cssFileList.push("/vrtx/__vrtx/static-resources/themes/default/editor-container-ie.css");
-    }
   // -->
   </script>
 

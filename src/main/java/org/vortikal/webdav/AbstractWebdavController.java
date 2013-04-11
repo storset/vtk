@@ -121,12 +121,11 @@ public abstract class AbstractWebdavController implements Controller {
      * @return <code>true</code> if the property is recognized,
      * <code>false</code> otherwise
      */
-    protected boolean isSupportedProperty(
-        String propertyName, Namespace namespace) {
-
+    protected boolean isSupportedProperty(String propertyName, Namespace namespace) {
         if (!WebdavConstants.DAV_NAMESPACE.equals(namespace)) {
             return true;
         }
+        
         return DAV_PROPERTIES.contains(propertyName);
     }
     

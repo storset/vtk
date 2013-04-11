@@ -69,6 +69,7 @@ public class WebOtherReporter extends DocumentReporter {
         q.add(new TypeTermQuery("organizational-unit", TermOperator.NI));
         q.add(new TypeTermQuery("contact-supervisor", TermOperator.NI));
         q.add(new TypeTermQuery("frontpage", TermOperator.NI));
+        q.add(new TypeTermQuery("structured-message", TermOperator.NI));
 
         /* In current resource but not in /vrtx. */
         UriPrefixQuery upq = new UriPrefixQuery(currentResource.getURI().toString(), false);

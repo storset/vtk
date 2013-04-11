@@ -90,6 +90,7 @@
         <ref bean="fileReporter" />
         <ref bean="structured-articleReporter" />
         <ref bean="structured-eventReporter" />
+        <ref bean="structured-messageReporter" />
         <ref bean="personReporter" />
         <ref bean="structured-projectReporter" />
         <ref bean="structured-masterReporter" />
@@ -317,6 +318,15 @@
     <property name="sortPropDef" ref="lastModifiedPropDef" />
     <property name="titlePropDef" ref="titlePropDef" />
     <property name="type" value="structured-event" />
+    <property name="backReportName" ref="diagramReportName" />
+    <property name="sortOrder" ref="SORT_ORDER.DESC" />
+  </bean>
+
+  <bean id="structured-messageReporter" class="org.vortikal.web.report.LastModifiedReporter" parent="documentReporter">
+    <property name="name" value="structured-messageReporter" />
+    <property name="sortPropDef" ref="lastModifiedPropDef" />
+    <property name="titlePropDef" ref="titlePropDef" />
+    <property name="type" value="structured-message" />
     <property name="backReportName" ref="diagramReportName" />
     <property name="sortOrder" ref="SORT_ORDER.DESC" />
   </bean>

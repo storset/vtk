@@ -127,7 +127,7 @@
   <bean id="editCSSURLs" class="java.util.ArrayList">
     <constructor-arg>
       <list>
-        <value>${themeBaseURL}/edit.css</value>
+        <value>${themeBaseURL}/editor-xml.css</value>
       </list>
     </constructor-arg>
   </bean> 

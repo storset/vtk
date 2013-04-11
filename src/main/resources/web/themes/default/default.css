@@ -1665,6 +1665,7 @@ span.vrtx-help-step-by-step-cmd {
   width: 9%;
 }
 
+#directory-listing th#vrtx-report-broken-links-document-count,
 #directory-listing th#vrtx-report-broken-links-count {
   width: 6%;
 }
@@ -1694,7 +1695,8 @@ span.vrtx-help-step-by-step-cmd {
 body#vrtx-report-documents #directory-listing th#vrtx-report-name,
 body#vrtx-report-documents #directory-listing td.vrtx-report-name,
 body#vrtx-report-broken-links #directory-listing th#vrtx-report-broken-links-web-page,
-body#vrtx-report-broken-links #directory-listing td.vrtx-report-broken-links-web-page {
+body#vrtx-report-broken-links #directory-listing td.vrtx-report-broken-links-web-page,
+body#vrtx-report-broken-links #directory-listing th#vrtx-report-broken-links-collection {
   padding-left: 15px;
   width: 30%;
 }

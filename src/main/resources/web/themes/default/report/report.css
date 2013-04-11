@@ -1,3 +1,8 @@
+/*
+ * Vortex - Reports
+ *
+ */
+
 body#vrtx-report-diagram h2 {
   background: url(../images/line-dotted.gif) repeat-x bottom left;
   padding-bottom: 15px;
@@ -485,3 +490,5 @@ div.vrtx-report #vrtx-report-help {
 .vrtx-report-help-allowed-for-all-not-inherited-file   { background: url(../images/file-small-own-permissions.gif)   no-repeat 0 0; }
 
 /* ^ Help */
+
+/* ^ Vortex - Reports */

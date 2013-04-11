@@ -1,3 +1,8 @@
+/*
+ * Vortex comments component
+ *
+ */
+
 div.vrtx-comments {
   margin-top: 0.5em;
   background-color: #fff;  
@@ -174,3 +179,4 @@ div.vrtx-comments .error {
 div.vrtx-comments div.comments-text div.error {
   margin-top: 1em;
 }
+/* ^ Vortex comments component */

@@ -109,7 +109,7 @@
 
   <bean id="brokenLinksToTsvReportHandler" class="org.vortikal.web.report.BrokenLinksToTsvController">
     <property name="reportService" ref="reportService" />
-    <property name="brokenLinksReporter" ref="brokenLinksReport" />
+    <property name="brokenLinksReporter" ref="brokenLinksCollectionReport" />
     <property name="webHostName" value="${webHostName}" />
   </bean>
 
@@ -149,12 +149,12 @@
     <property name="parser" ref="searchParser"/>
     <property name="queryFilterExpression" value="${systemjob.linkcheck.queryFilterExpression}"/>
     <property name="enabled" value="${report.brokenLinks.enabled}" />
-    <property name="brokenLinksToTsvReportService" ref="brokenLinksToTsvReportService" />
   </bean>
 
   <bean id="brokenLinksCollectionReport" class="org.vortikal.web.report.BrokenLinksCollectionReport" parent="brokenLinksReport">
     <property name="name" value="broken-links-collection" />
     <property name="viewName" value="brokenLinksCollectionReport" />
+    <property name="brokenLinksToTsvReportService" ref="brokenLinksToTsvReportService" />
   </bean>
 
   <bean id="myDocumentsReporter" class="org.vortikal.web.report.MyDocumentsReporter" parent="documentReporter">

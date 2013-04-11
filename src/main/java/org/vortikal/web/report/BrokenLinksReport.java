@@ -63,7 +63,6 @@ import org.vortikal.repository.search.query.PropertyTermQuery;
 import org.vortikal.repository.search.query.Query;
 import org.vortikal.repository.search.query.TermOperator;
 import org.vortikal.repository.search.query.UriPrefixQuery;
-import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
 public class BrokenLinksReport extends DocumentReporter {
@@ -77,10 +76,9 @@ public class BrokenLinksReport extends DocumentReporter {
     private SortFieldDirection sortOrder;
     private Parser parser;
     private String queryFilterExpression;
-    private Service brokenLinksToTsvReportService;
 
-    private final static String FILTER_READ_RESTRICTION_PARAM_NAME = "read-restriction";
-    private final static String FILTER_READ_RESTRICTION_PARAM_DEFAULT_VALUE = "all";
+    protected final static String FILTER_READ_RESTRICTION_PARAM_NAME = "read-restriction";
+    protected final static String FILTER_READ_RESTRICTION_PARAM_DEFAULT_VALUE = "all";
     private final static String[] FILTER_READ_RESTRICTION_PARAM_VALUES = { FILTER_READ_RESTRICTION_PARAM_DEFAULT_VALUE,
             "false", "true" };
 
@@ -90,12 +88,12 @@ public class BrokenLinksReport extends DocumentReporter {
     private final static String[] FILTER_LINK_TYPE_PARAM_VALUES = { FILTER_LINK_TYPE_PARAM_DEFAULT_VALUE, "img",
             "anchor", "other" };
 
-    private final static String FILTER_PUBLISHED_PARAM_NAME = "published";
-    private final static String FILTER_PUBLISHED_PARAM_DEFAULT_VALUE = "true";
+    protected final static String FILTER_PUBLISHED_PARAM_NAME = "published";
+    protected final static String FILTER_PUBLISHED_PARAM_DEFAULT_VALUE = "true";
     private final static String[] FILTER_PUBLISHED_PARAM_VALUES = { FILTER_PUBLISHED_PARAM_DEFAULT_VALUE, "false" };
 
-    private final static String INCLUDE_PATH_PARAM_NAME = "include-path";
-    private final static String EXCLUDE_PATH_PARAM_NAME = "exclude-path";
+    protected final static String INCLUDE_PATH_PARAM_NAME = "include-path";
+    protected final static String EXCLUDE_PATH_PARAM_NAME = "exclude-path";
 
     protected void populateMap(String token, Resource resource, Map<String, Object> result, HttpServletRequest request) {
         URL reportURL = super.getReportService().constructURL(resource).addParameter(REPORT_TYPE_PARAM, getName());
@@ -162,39 +160,7 @@ public class BrokenLinksReport extends DocumentReporter {
 
         populateMap(token, resource, result, request);
 
-        String linkType = request.getParameter(FILTER_LINK_TYPE_PARAM_NAME);
-        String published = request.getParameter(FILTER_PUBLISHED_PARAM_NAME);
-        String readRestriction = request.getParameter(FILTER_READ_RESTRICTION_PARAM_NAME);
-
-        if (linkType == null)
-            linkType = FILTER_LINK_TYPE_PARAM_DEFAULT_VALUE;
-        if (published == null)
-            published = FILTER_PUBLISHED_PARAM_DEFAULT_VALUE;
-        if (readRestriction == null)
-            readRestriction = FILTER_READ_RESTRICTION_PARAM_DEFAULT_VALUE;
-
         result.put("brokenLinkCount", getBrokenLinkCount(token, resource, request, (String) result.get("linkType")));
-
-        if (((Integer) result.get("total")) <= 1000 && ((Integer) result.get("total")) > 0) {
-            Map<String, String> usedFilters = new LinkedHashMap<String, String>();
-            usedFilters.put(FILTER_LINK_TYPE_PARAM_NAME, linkType);
-            usedFilters.put(FILTER_PUBLISHED_PARAM_NAME, published);
-            usedFilters.put(FILTER_READ_RESTRICTION_PARAM_NAME, readRestriction);
-
-            URL exportURL = this.brokenLinksToTsvReportService.constructURL(resource, null, usedFilters, false);
-
-            String[] exclude = request.getParameterValues(EXCLUDE_PATH_PARAM_NAME);
-            if (exclude != null)
-                for (String value : exclude)
-                    exportURL.addParameter(EXCLUDE_PATH_PARAM_NAME, value);
-
-            String[] include = request.getParameterValues(INCLUDE_PATH_PARAM_NAME);
-            if (include != null)
-                for (String value : include)
-                    exportURL.addParameter(INCLUDE_PATH_PARAM_NAME, value);
-
-            result.put("brokenLinksToTsvReportService", exportURL);
-        }
 
         return result;
     }
@@ -447,10 +413,6 @@ public class BrokenLinksReport extends DocumentReporter {
 
     public void setQueryFilterExpression(String exp) {
         this.queryFilterExpression = exp;
-    }
-
-    public void setBrokenLinksToTsvReportService(Service brokenLinksToTsvReportService) {
-        this.brokenLinksToTsvReportService = brokenLinksToTsvReportService;
     }
 
 }

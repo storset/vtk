@@ -39,6 +39,7 @@ import java.util.TreeMap;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
@@ -46,11 +47,13 @@ import org.vortikal.repository.Resource;
 import org.vortikal.repository.search.ConfigurablePropertySelect;
 import org.vortikal.repository.search.Search;
 import org.vortikal.repository.search.Searcher;
+import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
 public class BrokenLinksCollectionReport extends BrokenLinksReport {
 
     private int pageSize = 25;
+    private Service brokenLinksToTsvReportService;
 
     @Override
     public Map<String, Object> getReportContent(String token, Resource resource, HttpServletRequest request) {
@@ -59,7 +62,7 @@ public class BrokenLinksCollectionReport extends BrokenLinksReport {
 
         populateMap(token, resource, result, request);
 
-        Accumulator accumulator = getBrokenLinkCount(token, resource, request, (String) result.get("linkType"));
+        Accumulator accumulator = getBrokenLinkAccumulator(token, resource, request, (String) result.get("linkType"));
 
         int page = 1;
         try {
@@ -103,10 +106,51 @@ public class BrokenLinksCollectionReport extends BrokenLinksReport {
         result.put("sum", accumulator.sum);
         result.put("documentSum", accumulator.documentSum);
 
+        if (accumulator.sum > 0) {
+            String linkType = request.getParameter(FILTER_LINK_TYPE_PARAM_NAME);
+            String published = request.getParameter(FILTER_PUBLISHED_PARAM_NAME);
+            String readRestriction = request.getParameter(FILTER_READ_RESTRICTION_PARAM_NAME);
+
+            if (linkType == null)
+                linkType = FILTER_LINK_TYPE_PARAM_DEFAULT_VALUE;
+            if (published == null)
+                published = FILTER_PUBLISHED_PARAM_DEFAULT_VALUE;
+            if (readRestriction == null)
+                readRestriction = FILTER_READ_RESTRICTION_PARAM_DEFAULT_VALUE;
+
+            Map<String, String> usedFilters = new LinkedHashMap<String, String>();
+            usedFilters.put(FILTER_LINK_TYPE_PARAM_NAME, linkType);
+            usedFilters.put(FILTER_PUBLISHED_PARAM_NAME, published);
+            usedFilters.put(FILTER_READ_RESTRICTION_PARAM_NAME, readRestriction);
+
+            URL exportURL = this.brokenLinksToTsvReportService.constructURL(resource, null, usedFilters, false);
+
+            String[] exclude = request.getParameterValues(EXCLUDE_PATH_PARAM_NAME);
+            if (exclude != null)
+                for (String value : exclude)
+                    exportURL.addParameter(EXCLUDE_PATH_PARAM_NAME, value);
+
+            String[] include = request.getParameterValues(INCLUDE_PATH_PARAM_NAME);
+            if (include != null)
+                for (String value : include)
+                    exportURL.addParameter(INCLUDE_PATH_PARAM_NAME, value);
+
+            result.put("brokenLinksToTsvReportService", exportURL);
+        }
+
         return result;
     }
 
-    private Accumulator getBrokenLinkCount(String token, Resource currentResource, HttpServletRequest request,
+    public Map<String, CollectionStats> getAccumulatorMap(String token, Resource currentResource,
+            HttpServletRequest request) {
+        String linkType = request.getParameter(FILTER_LINK_TYPE_PARAM_NAME);
+        if (linkType == null)
+            linkType = FILTER_LINK_TYPE_PARAM_DEFAULT_VALUE;
+
+        return getBrokenLinkAccumulator(token, currentResource, request, linkType).map;
+    }
+
+    private Accumulator getBrokenLinkAccumulator(String token, Resource currentResource, HttpServletRequest request,
             final String linkType) {
         // Set up search
         Search search = getSearch(token, currentResource, request);
@@ -245,6 +289,11 @@ public class BrokenLinksCollectionReport extends BrokenLinksReport {
 
     public void setPageSize(int pageSize) {
         this.pageSize = pageSize;
+    }
+
+    @Required
+    public void setBrokenLinksToTsvReportService(Service brokenLinksToTsvReportService) {
+        this.brokenLinksToTsvReportService = brokenLinksToTsvReportService;
     }
 
 }

@@ -34,8 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Create a <code>java.util.List</code> from a CSV list.
- * TODO: Consider creating property editor instead (org.springframework.beans.propertyeditors)
+ * Create a <code>java.util.List<String></code> from a CSV list string.
  *
  */
 public class CSVListFactoryBean extends AbstractCSVFactoryBean {
@@ -54,10 +53,10 @@ public class CSVListFactoryBean extends AbstractCSVFactoryBean {
         
         return list;
     }
-    
+
     @SuppressWarnings("rawtypes")
+    @Override
     public Class getObjectType() {
         return List.class;
     }
-    
 }

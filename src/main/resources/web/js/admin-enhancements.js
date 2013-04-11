@@ -726,16 +726,18 @@ function interceptEnterKey(idOrClass) {
   });
 }
 
-function interceptEnterKeyAndReroute(txt, btn) {
+function interceptEnterKeyAndReroute(txt, btn, cb) {
   vrtxAdmin.cachedAppContent.delegate(txt, "keypress", function (e) {
     if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
       if ($(this).hasClass("blockSubmit")) { // submit/rerouting can be blocked elsewhere on textfield
         $(this).removeClass("blockSubmit");
-        e.preventDefault();
       } else {
         $(btn).click(); // click the associated button
-        e.preventDefault();
       }
+      if(typeof cb === "function") {
+        cb($(this));
+      }
+      e.preventDefault();
     }
   });
 }
@@ -1940,8 +1942,12 @@ function retokenizeFormsOpenSaveDialog(link) {
 function initPermissionForm(selectorClass) {
   if (!$("." + selectorClass + " .aclEdit").length) return;
   toggleConfigCustomPermissions(selectorClass);
-  interceptEnterKeyAndReroute("." + selectorClass + " .addUser input[type=text]", "." + selectorClass + " input.addUserButton");
-  interceptEnterKeyAndReroute("." + selectorClass + " .addGroup input[type=text]", "." + selectorClass + " input.addGroupButton");
+  interceptEnterKeyAndReroute("." + selectorClass + " .addUser input[type=text]", "." + selectorClass + " input.addUserButton", function(txt) {
+    txt.unautocomplete();
+  });
+  interceptEnterKeyAndReroute("." + selectorClass + " .addGroup input[type=text]", "." + selectorClass + " input.addGroupButton", function(txt) {
+    txt.unautocomplete();
+  });
   initSimplifiedPermissionForm();
 }
 

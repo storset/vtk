@@ -116,7 +116,6 @@ function VrtxAdmin() {
   this.createDocumentFileName = "";
   this.trashcanCheckedFiles = 0;
 
-  this.breadcrumbsLastPosLeft = -999;
   this.reloadFromServer = false; // changed by funcProceedCondition and used by funcComplete in completeFormAsync for admin-permissions
   this.ignoreAjaxErrors = false;
   this._$.ajaxSetup({
@@ -1034,7 +1033,7 @@ VrtxAdmin.prototype.scrollBreadcrumbs = function scrollBreadcrumbs(dir) {
     case "init":
       var crumbs = $(".vrtx-breadcrumb-level"), i = crumbs.length, crumbsWidth = 0;
       while(i--) {
-        crumbsWidth += $(crumbs[i]).outerWidth(true);
+        crumbsWidth += $(crumbs[i]).outerWidth(true) + 2;
       }
       crumbs.wrapAll("<div id='vrtx-breadcrumb-inner' style='width: " + crumbsWidth + "px' />");
       vrtxAdm.crumbsWidth = crumbsWidth;

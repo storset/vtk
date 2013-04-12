@@ -168,7 +168,8 @@ public class CaptureOutputLoggingResponseFilter extends AbstractResponseFilter
         Enumeration<String> headerNames = requestWrapper.getHeaderNames();
         while (headerNames.hasMoreElements()) {
             String headerName = headerNames.nextElement();
-            if (!headerName.equalsIgnoreCase("Authorization")) {
+            if (!headerName.equalsIgnoreCase("Authorization")
+                 && !headerName.equalsIgnoreCase("SSL_SERVER_CERT")) {
                 logBuffer.append(headerName).append(": ").append(requestWrapper.getHeader(headerName)).append('\n');
             } else {
                 logBuffer.append(headerName).append(": ****\n");

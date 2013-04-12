@@ -289,7 +289,7 @@
 
   <!-- Will be initiated with required set of properties where needed -->
   <bean id="decorating.abstractResourceTagsComponent" abstract="true"
-    class="org.vortikal.web.decorating.components.PropertyLinkedValueDecoratorComponent">
+        class="org.vortikal.web.decorating.components.PropertyLinkedValueDecoratorComponent">
     <property name="namespace" ref="decorating.resourceNamespace" />
     <property name="name" value="tags" />
     <property name="propertyTypeDefinition" ref="tagsPropDef" />

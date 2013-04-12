@@ -46,24 +46,14 @@ import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
+import org.vortikal.util.text.TextUtils;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.decorating.DecoratorRequest;
 import org.vortikal.web.decorating.DecoratorResponse;
 import org.vortikal.web.service.URL;
 
-/**
- * FIXME
- */
 public class PropertyLinkedValueDecoratorComponent extends ViewRenderingDecoratorComponent {
 
-    /**
-     * FIXME
-     */
-    public interface NearestContextResolver {
-
-        public URL getClosestContext(URL url, Locale locale);
-    }
-    
     private static final String DESCRIPTION = "Display the value(s) of a string property, with link(s) to search";
     private static final String PARAMETER_TITLE = "title";
     private static final String PARAMETER_TITLE_DESC = "Optional title (default is 'Tags')";
@@ -71,10 +61,10 @@ public class PropertyLinkedValueDecoratorComponent extends ViewRenderingDecorato
 
     private String defaultURLpattern;
     private PropertyTypeDefinition propertyTypeDefinition;
-    private NearestContextResolver nearestContextResolver;
 
     private boolean forProcessing = true;
 
+    @Override
     protected void processModel(Map<String, Object> model, DecoratorRequest request, DecoratorResponse response)
             throws Exception {
 
@@ -117,8 +107,7 @@ public class PropertyLinkedValueDecoratorComponent extends ViewRenderingDecorato
         }
     }
 
-    private String getUrl(String value, String serviceUrl, URL requestURL, Locale locale) {
-
+    protected String getUrl(String value, String serviceUrl, URL requestURL, Locale locale) {
         if (value == null) {
             throw new IllegalArgumentException("Value is NULL");
         }
@@ -126,25 +115,15 @@ public class PropertyLinkedValueDecoratorComponent extends ViewRenderingDecorato
         String serviceURLpattern = null;
         value = Matcher.quoteReplacement(value);
         if (serviceUrl == null) {
-            serviceURLpattern = this.defaultURLpattern.replaceAll("%v", value);
+            serviceURLpattern = TextUtils.replaceAll(this.defaultURLpattern, "%v", value);
         } else {
-            serviceURLpattern = serviceUrl.replaceAll("%v", value);
-        }
-
-        if (nearestContextResolver != null) {
-            URL closestContextURL = nearestContextResolver.getClosestContext(requestURL, locale);
-            if (closestContextURL != null) {
-                String contextURL = closestContextURL.toString();
-                contextURL = contextURL.endsWith("/") ? contextURL.substring(0, contextURL.lastIndexOf("/"))
-                        : contextURL;
-                contextURL = contextURL.concat(serviceURLpattern);
-                return contextURL;
-            }
+            serviceURLpattern = TextUtils.replaceAll(serviceUrl, "%v", value);
         }
 
         return serviceURLpattern;
     }
 
+    @Override
     public void afterPropertiesSet() throws Exception {
         super.afterPropertiesSet();
         if (this.propertyTypeDefinition == null) {
@@ -159,10 +138,15 @@ public class PropertyLinkedValueDecoratorComponent extends ViewRenderingDecorato
         }
     }
 
-    public void setForProcessing(boolean forProcessing) {
-        this.forProcessing = forProcessing;
+    @Override
+    protected Map<String, String> getParameterDescriptionsInternal() {
+        Map<String, String> map = new HashMap<String, String>();
+        map.put(PARAMETER_TITLE, PARAMETER_TITLE_DESC);
+        map.put(PARAMETER_SERVICEURL, "Optional reference to service (default is '" + defaultURLpattern + "')");
+        return map;
     }
 
+    @Override
     protected String getDescriptionInternal() {
         return DESCRIPTION;
     }
@@ -175,14 +159,8 @@ public class PropertyLinkedValueDecoratorComponent extends ViewRenderingDecorato
         this.defaultURLpattern = defaultURLpattern;
     }
 
-    protected Map<String, String> getParameterDescriptionsInternal() {
-        Map<String, String> map = new HashMap<String, String>();
-        map.put(PARAMETER_TITLE, PARAMETER_TITLE_DESC);
-        map.put(PARAMETER_SERVICEURL, "Optional reference to service (default is '" + defaultURLpattern + "')");
-        return map;
+    public void setForProcessing(boolean forProcessing) {
+        this.forProcessing = forProcessing;
     }
-
-    public void setNearestContextResolver(NearestContextResolver nearestContextResolver) {
-        this.nearestContextResolver = nearestContextResolver;
-    }
+    
 }

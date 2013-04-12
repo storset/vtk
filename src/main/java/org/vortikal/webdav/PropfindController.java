@@ -480,8 +480,7 @@ public class PropfindController extends AbstractWebdavController
      * trigger authorization on descendant resources returned in response to a
      * <code>PROPFIND</code> request with <code>Depth</code> greater than 0 (VTK-3235).
      * 
-     * The map should have namespace URIs as keys and set of property names
-     * as values.
+     * The each string in list should be on the form "namespace:prop".
      */
     public void setChildAuthorizeWhitelistProperties(List<String> props) {
         this.childAuthorizeWhitelistProperties = new HashMap<org.jdom.Namespace,Set<String>>();

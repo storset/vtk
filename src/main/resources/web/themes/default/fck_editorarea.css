@@ -16,6 +16,10 @@ body {
   margin: 8px;
 }
 
+body > *:first-child {
+  margin-top: 0px;
+}
+
 /* USIT - font */
 body, td {
   font-family: Arial, Helvetica, Sans-Serif;

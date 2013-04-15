@@ -648,11 +648,11 @@ VrtxEditor.prototype.addSaveHelpCKMaximized = function addSaveHelpCKMaximized() 
   var vrtxAdm = vrtxAdmin,
     _$ = vrtxAdm._$;
 
-  vrtxAdm.cachedAppContent.on("click", ".cke_button_maximize.cke_on", function (e) {
+  vrtxAdm.cachedAppContent.on("click", ".cke_button__maximize.cke_button_on", function (e) {
     var stickyBar = _$("#vrtx-editor-title-submit-buttons");
     stickyBar.hide();
 
-    var ckInject = _$(this).closest(".cke_skin_kama")
+    var ckInject = _$(this).closest(".cke_reset")
       .find(".cke_toolbar_end:last");
 
     if (!ckInject.find("#editor-help-menu").length) {
@@ -676,10 +676,10 @@ VrtxEditor.prototype.addSaveHelpCKMaximized = function addSaveHelpCKMaximized() 
       ckInject.find(".ck-injected-save-help").show();
     }
   });
-  vrtxAdm.cachedAppContent.on("click", ".cke_button_maximize.cke_off", function (e) {
+  vrtxAdm.cachedAppContent.on("click", ".cke_button__maximize.cke_button_off", function (e) {
     var stickyBar = _$("#vrtx-editor-title-submit-buttons");
     stickyBar.show();
-    var ckInject = _$(this).closest(".cke_skin_kama").find(".ck-injected-save-help").hide();
+    var ckInject = _$(this).closest(".cke_reset").find(".ck-injected-save-help").hide();
   });
 };
 

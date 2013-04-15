@@ -89,10 +89,16 @@
           
           $.when(vrtxEditor.multipleFieldsBoxesDeferred).done(function() {
             MULTIPLE_INPUT_FIELD_INITIALIZED = $.Deferred();
-
-            enhanceMultipleInputFields("featured-articles", true, true, 50);
+            
+            // General/aggregation
             enhanceMultipleInputFields("aggregation", false, false, aggregationLimit);
             enhanceMultipleInputFields("manually-approve-from", false, false, aggregationLimit);
+            
+            // Article listing
+            enhanceMultipleInputFields("featured-articles", true, true, 50);
+            
+            // Person listing
+            enhanceMultipleInputFields("tag-search-suggestions", false, false, 50);
             
             var manuallyApproveButton = $("#manually-approve-container-title");
             manuallyApproveButton.parent().find("> div:first-child").append(manuallyApproveButton.remove());

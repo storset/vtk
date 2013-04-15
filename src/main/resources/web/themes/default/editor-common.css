@@ -445,7 +445,7 @@ div#resource\.picture\.preview.no-preview img {
 	3. CK
 \*------------------------------------*/
 
-.cke_reset {
+div.cke_reset {
   border-color: #d9d9d9 !important;
   /* Remove rounded corners */
   -moz-border-radius: 0px !important;
@@ -455,22 +455,22 @@ div#resource\.picture\.preview.no-preview img {
   background: #ededed !important;
 }
 
-.cke_reset  .cke_inner {
+div.cke_reset  .cke_inner {
   padding: 10px !important;
 }
 
-.cke_reset .cke_top {
+div.cke_reset .cke_top {
   box-shadow: none !important;
   background: #ededed !important;
   padding: 0 !important;
 }
 
-.cke_reset .cke_toolgroup,
-.cke_reset .cke_contents iframe {
+div.cke_reset .cke_toolgroup,
+div.cke_reset .cke_contents iframe {
   border: 1px solid #d9d9d9 !important;
 }
 
-.cke_reset .cke_toolgroup {
+div.cke_reset .cke_toolgroup {
   box-shadow: none !important;
   background: #fff !important;
   margin-bottom: 10px !important;
@@ -478,7 +478,7 @@ div#resource\.picture\.preview.no-preview img {
 
 /* Override CK for injected save/help */
 
-.cke_reset .vrtx-button {
+div.cke_reset .vrtx-button {
   background: url(images/dropdown-left.gif) no-repeat 0 0 !important;
   display: inline-block;
   height: 27px !important;
@@ -490,46 +490,46 @@ div#resource\.picture\.preview.no-preview img {
   margin-left: 20px !important;
 }
 
-.cke_reset .vrtx-button.vrtx-focus-button {
+div.cke_reset .vrtx-button.vrtx-focus-button {
   background: url(images/focus-button-left.gif) no-repeat 0 0 !important;
 }
 
-.cke_reset .vrtx-button:hover,
-.cke_reset .vrtx-button.hover {
+div.cke_reset .vrtx-button:hover,
+div.cke_reset .vrtx-button.hover {
   background: url(images/focus-button-left.gif) no-repeat 0 0 !important;
 }
 
-.cke_reset .vrtx-button.vrtx-focus-button:hover,
-.cke_reset .vrtx-button.vrtx-focus-button.hover {
+div.cke_reset .vrtx-button.vrtx-focus-button:hover,
+div.cke_reset .vrtx-button.vrtx-focus-button.hover {
   background: url(images/focus-button-left-rollover.gif) no-repeat 0 0 !important;
 }
 
-.cke_reset .vrtx-button span,
-.cke_reset #editor-help-menu a {
+div.cke_reset .vrtx-button span,
+div.cke_reset #editor-help-menu a {
   font: normal 13px/1.3 Arial, sans-serif !important;
   cursor: pointer !important;  
 }
 
-.cke_reset .vrtx-button:hover,
-.cke_reset .vrtx-button.hover {
+div.cke_reset .vrtx-button:hover,
+div.cke_reset .vrtx-button.hover {
   background-image: url(images/dropdown-left-rollover.gif) !important;
 }
 
-.cke_reset #editor-help-menu {
+div.cke_reset #editor-help-menu {
   padding-left: 10px;
 }
 
-.cke_reset #editor-help-menu a {
+div.cke_reset #editor-help-menu a {
   color: #005AAB;
 }
 
-.cke_reset #editor-help-menu ul.dropdown-shortcut-menu-container li a {
+div.cke_reset #editor-help-menu ul.dropdown-shortcut-menu-container li a {
   border-bottom: 1px solid #CBCBCB;
 }
 
-#editor .cke_reset .cke_rcombo a,
-#editor .cke_reset .cke_rcombo a:active,
-#editor .cke_reset .cke_rcombo a:hover {
+#editor div.cke_reset .cke_rcombo a,
+#editor div.cke_reset .cke_rcombo a:active,
+#editor div.cke_reset .cke_rcombo a:hover {
   background-image: none;
   background-position: 0 0
   background-repeat: no-repeat;

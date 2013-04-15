@@ -623,9 +623,9 @@
             <ref bean="pageLimitPropDef" />
             <ref bean="displayAggregationPropDef" />
             <ref bean="aggregationPropDef" />
-            <ref bean="personListing.displayAffiliationTabsPropDef" />
             <ref bean="personListing.tagSearchSuggestionsPropDef" />
             <ref bean="personListing.displayTagsPropDef" />
+            <ref bean="personListing.displayAffiliationTabsPropDef" />
           </list>
         </property>
       </bean>

@@ -273,7 +273,20 @@
       <#if name?starts_with("hide") && !startWrapHideProps?exists>
         <#assign startWrapHideProps = "true" />
         <div id="vrtx-resource.hide-props" class="hide property-item">
-          <div class="resource.hide-props property-label"><@vrtx.msg code='editor.hide-props-title' /></div> 
+          <div class="resource.hide-props property-label"><@vrtx.msg code='editor.hide-props-title' /></div>
+      </#if>
+      
+      <#-- For person listing. Grouping of display properties. -->
+      <#if resource.resourceType = 'person-listing'>
+        <#if !(name?starts_with("display-affiliation-tabs") || name?starts_with("display-tags"))
+          && startWrapDisplayProps?exists && startWrapDisplayProps = "true">
+        </div><#assign startWrapDisplayProps = "false" />
+      </#if>
+      <#if (name?starts_with("display-affiliation-tabs") || name?starts_with("display-tags")) && !startWrapDisplayProps?exists>
+        <#assign startWrapDisplayProps = "true" />
+        <div id="vrtx-resource.display-props" class="display property-item">
+          <div class="resource.display-props property-label"><@vrtx.msg code='editor.display-props-title' /></div>
+      </#if>
       </#if>
       
       <#-- Title for aggregation and manually approve when recursive isn't present -->

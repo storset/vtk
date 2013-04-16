@@ -136,8 +136,6 @@ vrtxAdmin._$(window).load(function () {
 
   if (vrtxAdm.runReadyLoad === false) return; // XXX: return if should not run load() code
 
-  vrtxAdm.scrollBreadcrumbs("init");
-
   vrtxAdm.log({
     msg: "Window.load() in " + (+new Date() - startLoadTime) + "ms."
   });
@@ -160,6 +158,7 @@ vrtxAdmin._$(document).ready(function () {
   if (vrtxAdm.runReadyLoad === false) return; // XXX: return if should not run all of ready() code
 
   vrtxAdm.initFunctionalityDocReady();
+  vrtxAdm.scrollBreadcrumbs("init");
 
   vrtxAdm.log({
     msg: "Document.ready() in " + (+new Date() - startReadyTime) + "ms."

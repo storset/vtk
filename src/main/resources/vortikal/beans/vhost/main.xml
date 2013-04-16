@@ -34,7 +34,10 @@
   <import resource="article.xml" />
   <import resource="structured-resources-management.xml" />
   <import resource="structured-resources.xml" />
-  
+
+  <!-- Default editor -->
+  <import resource="editor/editor.xml" />
+
   <import resource="manage.xml" />
   <import resource="visual-profile-aspect.xml" />
   <import resource="report.xml"/>
@@ -44,7 +47,6 @@
   <import resource="webdav.xml" />
   <import resource="source.xml" />
   <import resource="windows-webdav-explorer.xml" />
-  <import resource="editor.xml" />
   <import resource="plaintextedit.xml" />
   <import resource="versioning.xml" />
   <import resource="copy-move.xml" />

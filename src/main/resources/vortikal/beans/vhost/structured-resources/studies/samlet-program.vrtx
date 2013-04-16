@@ -11,18 +11,17 @@ resourcetype samlet-program : samlet {
   }
 
   view-components {
-  
+
     programkode {
     ##
-    [def progpath resource-prop("./", "uri")]
-    [def thispath progpath + '/index.html']
-    [def facts json-resource(thispath)]
-    [if facts.properties.fs-program-code != "" && facts.properties.fs-program-code != null]
-      [val facts.properties.fs-program-code # unescaped]
+    [def fs-program-code resource-prop-obj-val(".", "programContext.fs-program-code")]
+    [if fs-program-code != "" && fs-program-code != null]
+      [val fs-program-code]
     [endif]
     ##
+
   }
-  
+
   program-facts {
     ##
     [def progpath resource-prop("./", "uri")]
@@ -74,6 +73,7 @@ resourcetype samlet-program : samlet {
     [endif]
     ##
     }
+
   }
 
   view {
@@ -108,7 +108,7 @@ resourcetype samlet-program : samlet {
     </html>
     ##
   }
-  
+
   localization {
     fulltime : (en : "Full time study", no : "Fulltidsstudium", nn : "Fulltidsstudium"),
     parttime : (en : "Part-time study", no : "Deltidsstudium", nn : "Deltidsstudium"),
@@ -117,4 +117,5 @@ resourcetype samlet-program : samlet {
     notfound : (en : "Can't find program frontpage", no : "Finner ikke programforside", nn : "Finn ikkje programforside"),
     samlet-program : (en: "Full description of the programme", no: "Samlet programbeskrivelse", nn: "Samla programbeskrivelse")
   }
+
 }

@@ -1,9 +1,6 @@
 resourcetype program-option-frontpage : program-document {
 
   properties {
-    fs-program-option-code : string,
-    fs-program-code : string,
-    status : string,
     picture : image_ref,
     resource-links : json (linkHeader:string, linkTitle:string, linkUrl:string, linkDescription:string) multiple,
     title : derived (name) eval (name + " (" + "program-option"?localized +")") overrides title
@@ -12,17 +9,14 @@ resourcetype program-option-frontpage : program-document {
   edit-rules {
     name (size[large]),
     group samlet (name-no, name-nn, name-en) (after name) horizontal,
-    fs-program-code (size[10]),
-    fs-program-option-code (size[10]),
-    status (dropdown),
-    group facts (fs-program-code, fs-program-option-code, status, picture) (after samlet),
-    group interview-box (interviewTitle, interviewContent, interviewLinkText, interviewUrl) (after facts),
+    picture (after samlet),
+    group interview-box (interviewTitle, interviewContent, interviewLinkText, interviewUrl) (after picture),
     group contact-box (contactTitle, contactContent, contactLinkText, contactUrl) (after interview-box),
     resource-links tooltip (en : "Tooltip for links", no : "Tips for lenker", nn : "Tips for lenker"),
     resource-links (after contact-box),
     additional-content (after resource-links)
   }
-  
+
   view-components {
 
     program-title {
@@ -110,42 +104,29 @@ resourcetype program-option-frontpage : program-document {
     </html>
     ##
   }
-  
-  vocabulary {
-    status {
-      en : ("under-arbeid" = "In progress", "aktivt" = "Active", "under-utfasing" = "Being phased out", "nedlagt" = "Closed"),
-      no : ("under-arbeid" = "Under arbeid", "aktivt" = "Aktiv", "under-utfasing" = "Under utfasing", "nedlagt" = "Nedlagt"),
-      nn : ("under-arbeid" = "Under arbeid", "aktivt" = "Aktiv", "under-utfasing" = "Under utfasing", "nedlagt" = "Nedlagt")
-    }
-  }
 
   localization {
     name : (en : "Programme option name", no : "Studieretningsnavn", nn : "Studieretningsnamn"),
     header : (en : "Edit programme option frontpage", no : "Rediger studieretningsforside", nn : "Rediger studieretningsforside"),
     program-option : (en : "programme option", no : "studieretning", nn : "studieretning"),
     facts : (en : "Facts", no : "Fakta om studieretningen", nn : "Fakta om studieretninga"),
-    fs-program-code : (en : "FS programme code", no : "FS-programkode", nn : "FS-programkode"),
-    fs-program-option-code : (en : "FS programme option code", no : "FS-studieretningskode", nn : "FS-studieretningskode"),
     picture : (en: "Image", no: "Bilde", nn : "Bilete"),
     introduction-image-alt : (en : "Image", no : "Bilde", nn : "Bilete"),
     samlet : (en : "Translation of program names for Full program option description", no : "Oversettelse av programnavn til Samlet studieretningsbeskrivelse", nn : "Oversetting av programnamn til Samla studieretningsbeskrivelse"),
 
     related-content : (en : "Related content (right column)", no : "Relatert innhold (høyre spalte)", nn : "Relatert innhald (høgre spalte)"),
     program-affiliation : (en : "The programme option is part of the programme", no : "Studieretningen hører til programmet", nn : "Studieretninga høyrer til studieprogrammet"),
-  
+
     resource-links : (en : "Links", no : "Lenker", nn : "Lenker"),
     linkTitle : (en : "Link title", no : "Lenketittel", nn : "Lenketittel"),
     linkUrl : (en : "Webaddress", no : "Webadresse", nn : "Webadresse"),
     linkHeader : (en : "Header", no : "Overskrift", nn : "Overskrift"),
     linkDescription : (en : "Description", no : "Beskrivelse", nn : "Beskriving"),
 
-    status : (en : "Status", no : "Status", nn : "Status"),
     under-arbeid : (en : "In progress", no : "Under arbeid" ,nn : "Under arbeid"),
     aktivt : (en: "Active", no : "Aktiv", nn : "Aktiv"),
     under-utfasing : (en : "Being phased out", no : "Under utfasing", nn : "Under utfasing"),
-    nedlagt : (en : "Closed", no : "Nedlagt", nn : "Nedlagt"),
-    status-under-arbeid : (en : "This is a draft", no : "Dette er en kladd", nn : "Dette er ein kladd"),
-    status-nedlagt : (en : "This programme option is closed", no : "Denne studieretningen er nedlagt", nn : "Denne studieretninga er nedlagd"),
-    status-inactive : (en : "This programme option no longer admits students", no : "Studieretningen tar ikke opp nye studenter", nn : "Studieretninga tar ikkje opp nye studentar")
+    nedlagt : (en : "Closed", no : "Nedlagt", nn : "Nedlagt")
   }
+
 }

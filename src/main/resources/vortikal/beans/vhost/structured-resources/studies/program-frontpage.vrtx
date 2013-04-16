@@ -1,8 +1,6 @@
 resourcetype program-frontpage : program-document {
 
   properties {
-    fs-program-code : string,
-    status : string,
     program-type : string,
     theme : string multiple,
     duration : string trim,
@@ -16,16 +14,14 @@ resourcetype program-frontpage : program-document {
   }
 
   edit-rules {
-    status (dropdown),
     program-type (dropdown),
     faculty (dropdown),
     theme (dropdown),
     name (size[large]),
     duration (size[2]),
     study-points (size[4]),
-    fs-program-code (size[10]),
     group samlet (name-no, name-nn, name-en) (after name) horizontal,
-    group facts (fs-program-code, status, program-type, theme, duration, study-points, full-time, faculty, keywords, picture) (after samlet),
+    group facts (program-type, theme, duration, study-points, full-time, faculty, keywords, picture) (after samlet),
     group interview-box (interviewTitle, interviewContent, interviewLinkText, interviewUrl) (before additional-content),
     resource-links tooltip (en : "Tooltip for links", no : "Tips for lenker", nn : "Tips for lenkjer"),
     keywords tooltip (en : "Comma separated list", no : "Kommaseparert liste", nn : "Kommaseparert liste"),
@@ -75,13 +71,33 @@ resourcetype program-frontpage : program-document {
       [endif]
       [def folder resource(thispath)]
       [if folder]
-        [def activefeed thispath + '/?vrtx=feed&status=aktive']
-        [def inactivefeed thispath + '/?vrtx=feed&status=inaktive']
         <div class="vrtx-frontpage-box white-box vrtx-program-options">
           <h2><a href="[val thispath]">[localized 'program-options-title']</a></h2>
-          [call "include:feed"  {"url":activefeed, "feed-title":false, "max-messages":100, "include-if-empty":false}]
+          [def inactive search('uri=' + thispath + '/* && type IN program-option-frontpage && published=true && program-option-context:programOptionContext.status=aktivt')]
+          <ul>
+            [list inactive res]
+              [def url view-url(res)]
+              [def name resource-prop-obj-val(res,"name")]
+              [if url != null && url != "" && name != null && name != ""]
+                <li>
+                  <a href="[val url]">[val name]</a>
+                </li>
+              [endif]
+            [endlist]
+          </ul>
           <div class="vrtx-program-options-inactive">
-            [call "include:feed"  {"url":inactivefeed, "feed-title":false, "max-messages":100, "include-if-empty":false, "all-messages-link":false}]
+            [def inactive search('uri=' + thispath + '/* && type IN program-option-frontpage && published=true && program-option-context:programOptionContext.status=under-utfasing')]
+            <ul>
+              [list inactive res]
+                [def url view-url(res)]
+                [def name resource-prop-obj-val(res,"name")]
+                [if url != null && url != "" && name != null && name != ""]
+                  <li>
+                    <a href="[val url]">[val name]</a>
+                  </li>
+                [endif]
+              [endlist]
+            </ul>
           </div>
         </div>
       [endif]
@@ -131,6 +147,40 @@ resourcetype program-frontpage : program-document {
         [call "comp:additional-content" {"document":document, "main-content": "false"}]
       </div>
       ##
+    } 
+   
+    program-links {
+      ##
+      [def uri resource-prop("./","uri")]
+      [def uri uri + "/"]
+      [def locale resource-locale()]
+      [def names null]
+      [if locale = "en"]
+        [def links #({"name" : "why-choose"}, {"name" : "learning-outcomes"}, {"name" : "admission"}, {"name" : "structure"}, {"name" : "abroad"}, {"name" : "career"}, {"name" : "teaching-examinations"})]
+      [else]
+        [def links #({"name" : "hvorfor-velge"}, {"name" : "hva-lerer-du"}, {"name" : "opptak"}, {"name" : "oppbygging"}, {"name" : "utlandet"}, {"name" : "jobb-studier"}, {"name" : "undervisning-eksamen"})]
+      [endif]
+      [def uriQuery ""]
+      [list links current]
+        [def uriQuery uriQuery + "uri=" + uri + current.name]
+        [if _size != _index + 1]
+          [def uriQuery uriQuery + " OR "]
+        [endif]
+      [endlist]
+      [def collections search('(' + uriQuery + ') && type IN collection && published=true')]
+      [list collections collection]
+        [def resUri string(resource-prop-obj-val(collection, "uri"))]
+        [list links current]
+          [if resUri = uri + current.name]
+            [def url view-url(collection)]
+            [def title resource-prop(collection,"title")]
+            [if url != null && url != "" && title != null && title != ""]
+              <a href="[val url]">[val title]</a>
+            [endif]
+          [endif]
+        [endlist]
+      [endlist]
+      ##
     }  
   }
 
@@ -144,7 +194,6 @@ resourcetype program-frontpage : program-document {
       </head>
       <body id="vrtx-program-frontpage">
         <div id="vrtx-content">
-          [def locale resource-locale()]
           <div id="vrtx-main-content">
             <div id="vrtx-program-frontpage-main" class="vrtx-frontpage-box white-box">
               [call "resource:program-language-link"]
@@ -153,11 +202,7 @@ resourcetype program-frontpage : program-document {
               [call "comp:introduction"]
               [def thispath resource-prop("./","uri")]
               <div id="vrtx-program-links">
-                [if locale = "en"]
-                  [call "include:uri-menu" {"uri":thispath, "authenticated":"true", "include-children":"why-choose, learning-outcomes, admission, structure, abroad, career, teaching-examinations"}]
-                [else]
-                  [call "include:uri-menu" {"uri":thispath, "authenticated":"true", "include-children":"hvorfor-velge, hva-lerer-du, opptak, oppbygging, utlandet, jobb-studier, undervisning-eksamen"}]
-                [endif]
+                [call "comp:program-links"]
               </div>
             </div>
             [call "comp:program-options"]
@@ -172,12 +217,6 @@ resourcetype program-frontpage : program-document {
   }
   
   vocabulary {
-
-    status {
-      en : ("under-arbeid" = "In progress", "aktivt" = "Active", "under-utfasing" = "Being phased out", "nedlagt" = "Closed"),
-      no : ("under-arbeid" = "Under arbeid", "aktivt" = "Aktiv", "under-utfasing" = "Under utfasing", "nedlagt" = "Nedlagt"),
-      nn : ("under-arbeid" = "Under arbeid", "aktivt" = "Aktiv", "under-utfasing" = "Under utfasing", "nedlagt" = "Nedlagt")
-    },
 
     faculty {
       en : ("hf" = "Faculty of Humanities", "jus" = "Faculty of Law", "matnat" = "Faculty of Mathematics and Natural Sciences", "med" = "Faculty of Medicine", "odont" = "Faculty of Dentistry", "sv" = "Faculty of Social Sciences", "tf" = "Faculty of Theology", "uv" = "Faculty of Educational Sciences"),
@@ -208,7 +247,6 @@ resourcetype program-frontpage : program-document {
   localization {
     name : (en : "Program name", no : "Programnavn", nn : "Programnamn"),
     header : (en : "Edit programme frontpage", no : "Rediger programforside", nn : "Rediger programforside"),
-    fs-program-code : (en : "FS programme code", no : "FS-programkode", nn : "FS-programkode"),
     duration : (en : "Duration", no : "Studiet varer", nn : "Varighet"),
     year : (en : "year", no : "år", nn : "år"),
     years : (en : "years", no : "år", nn : "år"),
@@ -235,14 +273,10 @@ resourcetype program-frontpage : program-document {
     linkHeader : (en : "Header", no : "Overskrift", nn : "Overskrift"),
     linkDescription : (en : "Description", no : "Beskrivelse", nn : "Beskrivelse"),
 
-    status : (en : "Status", no : "Status", nn : "Status"),
     under-arbeid : (en : "In progress", no : "Under arbeid" ,nn : "Under arbeid"),
     aktivt : (en: "Active", no : "Aktiv", nn : "Aktiv"),
     under-utfasing : (en : "Being phased out", no : "Under utfasing", nn : "Under utfasing"),
     nedlagt : (en : "Closed", no : "Nedlagt", nn : "Nedlagt"),
-    status-under-arbeid : (en : "This is a draft", no : "Dette er en kladd", nn : "Dette er ein kladd"),
-    status-nedlagt : (en : "This programme is closed", no : "Dette programmet er nedlagt", nn : "Dette programmet er nedlagt"),
-    status-inactive : (en : "This programme no longer admits students", no : "Programmet tar ikke opp nye studenter", nn : "Programmet tar ikkje opp nye studentar"),
     
     program-type : (en : "Programme type", no : "Programtype", nn : "Programtype"),
     

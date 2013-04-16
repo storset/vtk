@@ -17,6 +17,8 @@ resourcetype samlet-retning : samlet {
     [def progpath resource-prop("./", "uri")]
     [def thispath progpath + '/index.html']
     [def facts json-resource(thispath)]
+    [def fs-program-code resource-prop-obj-val(".", "programContext.fs-program-code")]
+    [def fs-program-option-code resource-prop-obj-val(".", "programOptionContext.fs-program-option-code")]
 
     [if (facts.properties.name-no != "" && facts.properties.name-no != null) || (facts.properties.name-nn != "" && facts.properties.name-nn != null) || (facts.properties.name-en != "" && facts.properties.name-en != null)]
       <h2>[localized 'prog-opt-name']</h2>
@@ -36,16 +38,16 @@ resourcetype samlet-retning : samlet {
       </p>
 
       <h2>[localized 'fs-program-code']</h2>
-      <p>[val facts.properties.fs-program-code # unescaped]</p>
+      <p>[val fs-program-code]</p>
       <h2>[localized 'fs-program-option-code']</h2>
-      <p>[val facts.properties.fs-program-option-code # unescaped]</p>
+      <p>[val fs-program-option-code]</p>
 
     [endif]
     ##
     }
-  
+
   }
-  
+
   view {
     ##
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -84,10 +86,11 @@ resourcetype samlet-retning : samlet {
     </html>
     ##
   }
-  
+
   localization {
     program-affiliation : (en : "The programme option is part of the programme", no : "Studieretningen hører til programmet", nn : "Studieretninga høyrer til studieprogrammet"),
     samlet-retning : (en: "Full description of the programme option", no: "Samlet studieretningsbeskrivelse", nn: "Samlet studieretningsbeskrivelse"),
     notfound : (en : "Can't find program option frontpage", no : "Finner ikke studieretningsforside", nn : "Finn ikkje studieretningsforside")
   }
+
 }

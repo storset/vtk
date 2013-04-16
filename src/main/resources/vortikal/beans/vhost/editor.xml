@@ -370,8 +370,7 @@
   <bean id="editor.editCSSURLs" class="java.util.ArrayList">
     <constructor-arg>
       <list>
-        <value>${jquery.baseURL}/plugins/ui/jquery-ui-${jquery.ui.version}.custom/css/smoothness/jquery-ui-${jquery.ui.version}.custom.css
-        </value>
+        <value>${jquery.baseURL}/plugins/ui/jquery-ui-${jquery.ui.version}.custom/css/smoothness/jquery-ui-${jquery.ui.version}.custom.css</value>
         <value>${themeBaseURL}/default.css</value>
         <value>${themeBaseURL}/editor.css</value>
       </list>
@@ -623,9 +622,6 @@
             <ref bean="pageLimitPropDef" />
             <ref bean="displayAggregationPropDef" />
             <ref bean="aggregationPropDef" />
-            <ref bean="personListing.tagSearchSuggestionsPropDef" />
-            <ref bean="personListing.displayTagsPropDef" />
-            <ref bean="personListing.displayAffiliationTabsPropDef" />
           </list>
         </property>
       </bean>

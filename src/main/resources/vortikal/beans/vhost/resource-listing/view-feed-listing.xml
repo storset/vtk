@@ -49,6 +49,8 @@
         <value>structured-article</value>
         <value>structured-event</value>
         <value>structured-project</value>
+        <value>audio</value>
+        <value>video</value>
       </list>
     </property>
 
@@ -62,6 +64,7 @@
     <property name="titlePropDef" ref="titlePropDef" />
     <property name="publishDatePropDef" ref="publishDatePropDef" />
     <property name="lastModifiedPropDef" ref="lastModifiedPropDef" />
+    <property name="introductionPropDef" ref="introductionPropDef" />
     <property name="viewName" value="rss.feedView" />
   </bean>
 

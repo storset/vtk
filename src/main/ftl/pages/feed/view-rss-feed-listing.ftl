@@ -4,7 +4,8 @@
   <channel>
     <title>${feedContent.title}</title>
     <link>${feedContent.link}</link>
-    <description>${feedContent.description}</description>
+    <description>${feedContent.description?html}</description>
+    <itunes:summary>${feedContent.description?html}</itunes:summary>
     <#if feedContent.atomLink??>
     <atom:link href="${feedContent.atomLink}" rel="self" type="application/rss+xml" />
     </#if>

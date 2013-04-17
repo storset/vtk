@@ -36,10 +36,12 @@ import org.apache.abdera.model.Feed;
 import org.apache.abdera.model.Link;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFormatter;
 import org.vortikal.web.RequestContext;
@@ -47,6 +49,9 @@ import org.vortikal.web.RequestContext;
 public class AudioVideoListingAtomFeedGenerator extends CollectionListingAtomFeedGenerator {
 
     private final Log logger = LogFactory.getLog(AudioVideoListingAtomFeedGenerator.class);
+
+    private PropertyTypeDefinition videoHtmlDescriptionPropDef;
+    private PropertyTypeDefinition audioHtmlDescriptionPropDef;
 
     @Override
     protected void addPropertySetAsFeedEntry(Feed feed, PropertySet result) {
@@ -77,10 +82,13 @@ public class AudioVideoListingAtomFeedGenerator extends CollectionListingAtomFee
             mediaLink.setMimeType(mediaResource.getContentType());
             entry.addLink(mediaLink);
 
-            String description = getDescription(result);
-            if (description != null) {
-                entry.setSummary(description);
-
+            // Item description
+            Property introductionProp = result.getProperty(videoHtmlDescriptionPropDef);
+            if (introductionProp == null) {
+                introductionProp = result.getProperty(audioHtmlDescriptionPropDef);
+            }
+            if (introductionProp != null) {
+                entry.setSummaryAsXhtml(introductionProp.getStringValue());
             }
 
             Property publishDate = getPublishDate(result);
@@ -118,4 +126,15 @@ public class AudioVideoListingAtomFeedGenerator extends CollectionListingAtomFee
         }
 
     }
+
+    @Required
+    public void setVideoHtmlDescriptionPropDef(PropertyTypeDefinition videoHtmlDescriptionPropDef) {
+        this.videoHtmlDescriptionPropDef = videoHtmlDescriptionPropDef;
+    }
+
+    @Required
+    public void setAudioHtmlDescriptionPropDef(PropertyTypeDefinition audioHtmlDescriptionPropDef) {
+        this.audioHtmlDescriptionPropDef = audioHtmlDescriptionPropDef;
+    }
+
 }

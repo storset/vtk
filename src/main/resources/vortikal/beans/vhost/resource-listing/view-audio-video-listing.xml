@@ -140,6 +140,8 @@
   <bean id="audioVideoListing.atomFeedGenerator" class="org.vortikal.web.display.collection.AudioVideoListingAtomFeedGenerator"
     parent="collectionListing.atomFeedGenerator">
     <property name="searchComponent" ref="audioVideoListing.searchComponent" />
+    <property name="audioHtmlDescriptionPropDef" ref="audioHtmlDescriptionPropDef" />
+    <property name="videoHtmlDescriptionPropDef" ref="videoHtmlDescriptionPropDef" />
   </bean>
 
 </beans>

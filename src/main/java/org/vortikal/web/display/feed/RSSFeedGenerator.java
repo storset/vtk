@@ -40,12 +40,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
-import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Resource;
-import org.vortikal.repository.resourcetype.HtmlValueFormatter;
-import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
@@ -70,6 +67,7 @@ public abstract class RSSFeedGenerator implements FeedGenerator {
     protected PropertyTypeDefinition titlePropDef;
     protected PropertyTypeDefinition publishDatePropDef;
     protected PropertyTypeDefinition lastModifiedPropDef;
+    protected PropertyTypeDefinition introductionPropDef;
 
     // Must be overriden by subclasses to provide content for feed entries and
     // add these to feed
@@ -88,10 +86,8 @@ public abstract class RSSFeedGenerator implements FeedGenerator {
         // Title, link and description are required by spec
         feedContent.put("title", getTitle(feedScope, requestContext));
         feedContent.put("link", request.getRequestURL().toString());
-        Namespace NS_CONTENT = Namespace.getNamespace("http://www.uio.no/content");
-        Property descriptionProp = feedScope.getProperty(NS_CONTENT, PropertyType.DESCRIPTION_PROP_NAME);
-        String description = descriptionProp != null ? descriptionProp.getFormattedValue(
-                HtmlValueFormatter.FLATTENED_FORMAT, null) : "";
+        Property introductionProp = feedScope.getProperty(introductionPropDef);
+        String description = introductionProp != null ? introductionProp.getStringValue().trim() : "";
         feedContent.put("description", description);
 
         // Optional elements
@@ -145,6 +141,11 @@ public abstract class RSSFeedGenerator implements FeedGenerator {
     @Required
     public void setLastModifiedPropDef(PropertyTypeDefinition lastModifiedPropDef) {
         this.lastModifiedPropDef = lastModifiedPropDef;
+    }
+
+    @Required
+    public void setIntroductionPropDef(PropertyTypeDefinition introductionPropDef) {
+        this.introductionPropDef = introductionPropDef;
     }
 
 }

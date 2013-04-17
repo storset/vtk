@@ -97,7 +97,7 @@
             // Article listing
             enhanceMultipleInputFields("featured-articles", true, true, 50);
             
-            // Person listing
+            // Employee listing
             enhanceMultipleInputFields("tag-search-suggestions", false, false, 50);
             
             var manuallyApproveButton = $("#manually-approve-container-title");
@@ -282,8 +282,8 @@
           <div class="resource.hide-props property-label"><@vrtx.msg code='editor.hide-props-title' /></div>
       </#if>
       
-      <#-- For person listing. Grouping of display properties. -->
-      <#if resource.resourceType = 'person-listing'>
+      <#-- For employee listing. Grouping of display properties. -->
+      <#if resource.resourceType = 'employee-listing'>
         <#if !(name?starts_with("display-affiliation-tabs") || name?starts_with("display-tags"))
           && startWrapDisplayProps?exists && startWrapDisplayProps = "true">
         </div><#assign startWrapDisplayProps = "false" />

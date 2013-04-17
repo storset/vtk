@@ -2,22 +2,22 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
 
-  <bean id="editor.personListingEditService" parent="editor.abstractEditService">
+  <bean id="editor.employeeListingEditService" parent="editor.abstractEditService">
     <property name="assertions">
       <list>
         <ref bean="resourceIsEmployeeListing" />
       </list>
     </property>
-    <property name="handler" ref="editor.personEditHandler" />
+    <property name="handler" ref="editor.employeeEditHandler" />
   </bean>
 
-  <bean id="editor.personEditHandler" class="org.vortikal.edit.editor.ResourceEditController">
-    <property name="resourceManager" ref="editor.personResourceManager" />
+  <bean id="editor.employeeEditHandler" class="org.vortikal.edit.editor.ResourceEditController">
+    <property name="resourceManager" ref="editor.employeeResourceManager" />
     <property name="formView" value="editor.editView" />
     <property name="successView" value="redirectToPreviewCollection" />
   </bean>
 
-  <bean id="editor.personResourceManager" class="org.vortikal.edit.editor.ResourceWrapperManager">
+  <bean id="editor.employeeResourceManager" class="org.vortikal.edit.editor.ResourceWrapperManager">
     <property name="htmlParser" ref="decorating.htmlParser" />
     <property name="htmlPropsFilter" ref="personResourceManager.htmlPropsFilter" />
     <property name="contentResourceType" ref="documentResourceTypeDefinition" />
@@ -31,9 +31,9 @@
             <ref bean="importancePropDef" />
             <ref bean="hiddenPropDef" />
             <ref bean="pageLimitPropDef" />
-            <ref bean="empolyeeListing.tagSearchSuggestionsPropDef" />
-            <ref bean="empolyeeListing.displayTagsPropDef" />
-            <ref bean="empolyeeListing.displayAffiliationTabsPropDef" />
+            <ref bean="employeeListing.tagSearchSuggestionsPropDef" />
+            <ref bean="employeeListing.displayTagsPropDef" />
+            <ref bean="employeeListing.displayAffiliationTabsPropDef" />
           </list>
         </property>
       </bean>

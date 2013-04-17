@@ -30,6 +30,11 @@
     <constructor-arg value="http://www.uio.no/resource-types/person-listing" />
   </bean>
 
+  <bean id="EMPLOYEE_LISTING_NAMESPACE" class="org.vortikal.repository.Namespace">
+    <constructor-arg value="empl" />
+    <constructor-arg value="http://www.uio.no/resource-types/person-listing" />
+  </bean>
+
   <bean id="PROJECT_LISTING_NAMESPACE" class="org.vortikal.repository.Namespace">
     <constructor-arg value="prl" />
     <constructor-arg value="http://www.uio.no/resource-types/project-listing" />

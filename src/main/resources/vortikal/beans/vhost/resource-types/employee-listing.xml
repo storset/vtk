@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+
+  <bean id="employeeListingResourceTypeDefinition" class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
+    <property name="name" value="employee-listing" />
+    <property name="namespace" ref="EMPLOYEE_LISTING_NAMESPACE" />
+    <property name="parentTypeDefinition" ref="collectionResourceTypeDefinition" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.ResourcePropertyAssertion">
+          <property name="namespace" ref="DEFAULT_NAMESPACE" />
+          <property name="name" value="collection-type" />
+          <property name="value" value="employee-listing" />
+          <property name="checkExistenceOnly" value="false" />
+        </bean>
+      </list>
+    </property>
+    <property name="propertyTypeDefinitions">
+      <list>
+        <ref bean="employeeListing.unitAreaCodePropDef" />
+        <ref bean="employeeListing.tagSearchSuggestionsPropDef" />
+        <ref bean="employeeListing.displayTagsPropDef" />
+        <ref bean="employeeListing.displayAffiliationTabsPropDef" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="resourceIsEmployeeListing" class="org.vortikal.web.service.ResourceTypeAssertion" parent="repositoryAware">
+    <property name="resourceTypeDefinition" ref="employeeListingResourceTypeDefinition" />
+    <property name="exactMatch" value="true" />
+  </bean>
+
+  <bean id="employeeListing.unitAreaCodePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+    parent="abstractPropDef">
+    <property name="name" value="unit-areacode" />
+    <property name="type" value="STRING" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
+    <property name="mandatory" value="false" />
+  </bean>
+
+  <!-- ## Abstract parent bean for display propdefs ## -->
+  <bean id="employeeListing.abstractDisplayPropDef" abstract="true"
+    class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+    <property name="type" value="BOOLEAN" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
+    <property name="mandatory" value="false" />
+    <property name="vocabulary">
+      <bean class="org.vortikal.repository.resourcetype.ValueVocabulary">
+        <property name="values">
+          <list>
+            <ref bean="VALUE_TRUE" />
+          </list>
+        </property>
+      </bean>
+    </property>
+    <property name="metadata">
+      <map>
+        <entry key="editingHints">
+          <map>
+            <entry key="hideLabel" value="true" />
+          </map>
+        </entry>
+      </map>
+    </property>
+  </bean>
+
+  <bean id="employeeListing.tagSearchSuggestionsPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+    parent="abstractPropDef">
+    <property name="name" value="tag-search-suggestions" />
+    <property name="type" value="STRING" />
+    <property name="multiple" value="true" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
+  </bean>
+
+  <bean id="employeeListing.displayTagsPropDef" parent="employeeListing.abstractDisplayPropDef">
+    <property name="name" value="display-tags" />
+  </bean>
+
+  <bean id="employeeListing.displayAffiliationTabsPropDef" parent="employeeListing.abstractDisplayPropDef">
+    <property name="name" value="display-affiliation-tabs" />
+  </bean>
+
+</beans>

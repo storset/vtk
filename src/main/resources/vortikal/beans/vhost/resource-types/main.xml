@@ -9,7 +9,6 @@
   <import resource="article-listing.xml" />
   <import resource="blog-listing.xml" />
   <import resource="event-listing.xml" />
-  <import resource="person-listing.xml" />
   <import resource="project-listing.xml" />
   <import resource="master-listing.xml" />
   <import resource="message-listing.xml" />
@@ -32,6 +31,9 @@
   <import resource="msoffice.xml" />
   <import resource="odf.xml" />
   <import resource="json.xml" />
+
+  <import resource="employee-listing.xml" />
+  <import resource="person-listing.xml" />
 
 
   <!-- Studinfo -->

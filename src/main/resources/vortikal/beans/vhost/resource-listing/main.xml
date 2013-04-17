@@ -8,7 +8,6 @@
   <import resource="view-event-listing.xml" />
   <import resource="view-event-calendar-listing.xml" />
   <import resource="view-blog-listing.xml" />
-  <import resource="view-person-listing.xml" />
   <import resource="view-project-listing.xml" />
   <import resource="view-research-group-listing.xml" />
   <import resource="view-message-listing.xml" />
@@ -21,4 +20,9 @@
   <import resource="view-structured-article-listing.xml" />
   <import resource="view-structured-event-listing.xml" />
 
+  <import resource="view-employee-listing.xml" />
+  <import resource="view-person-listing.xml" />
+
+
 </beans>
+

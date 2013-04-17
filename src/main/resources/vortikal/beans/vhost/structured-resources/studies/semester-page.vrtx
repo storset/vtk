@@ -360,6 +360,9 @@ resourcetype semester-page {
 
   localization {
     header : (en : "Edit semester page", no : "Rediger semesterside", nn : "Rediger semesterside"),
+    plaster : (en : "You can edit semester and year on the semester folder",
+               no : "Semester og år redigerer du på semestermappen", 
+               nn : "Semester og år redigerer du på semestermappen"),
     localized-group : (en : "group", no : "gruppe", nn : "gruppe"),
     semesterpage-for : (en : "Semester page for", no : "Semesterside for", nn : "Semesterside for"),
     schedule : (en : "Schedule", no : "Timeplan", nn : "Timeplan"),

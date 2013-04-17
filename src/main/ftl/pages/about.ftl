@@ -248,7 +248,6 @@
   <#-- @propList.propertyList
        modelName = "aboutItems"
        itemNames =  [ 'title', 'navigation:hidden', 'navigation:importance', 
-                      'content:keywords',
                       'content:description', 'content:verifiedDate',
                       'content:authorName', 'content:authorEmail', 
                       'content:authorURL' ] / -->
@@ -256,9 +255,6 @@
   <table id="vrtx-resourceInfoContent" class="resourceInfo">
     <!-- title -->
     <@propList.editOrDisplayPropertyItem item=aboutItems['userTitle'] defaultItem=aboutItems['title'] inputSize=40 />
-
-    <!-- content:keywords -->
-    <@propList.editOrDisplayProperty modelName='aboutItems' propertyName = 'content:keywords' inputSize=40 />
 
     <!-- content:description -->
     <#if resource.resourceType != "audio" && resource.resourceType != "video" && resource.resourceType != "image" >

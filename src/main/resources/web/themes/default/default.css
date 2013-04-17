@@ -2249,6 +2249,7 @@ table.resourceInfo td,
 table.privilegeTable td {
   padding: 3px 5px;
   border-top: 1px solid #F0F0F0
+  vertical-align: top;
 }
 
 table.resourceInfo tr.first td,

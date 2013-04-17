@@ -792,6 +792,8 @@ resourcetype course-description {
   localization {
     title : (en : "Title", no : "Tittel", nn : "Tittel"),
     header : (en : "Edit course description", no : "Rediger emnebeskrivelse", nn : "Rediger emneskildring"),
+    plaster : (en : "You can edit course name, course code and status on the course folder", no : "Emnenavn, emnekode og status redigerer du på emnemappen", 
+               nn : "Emnenavn, emnekode og status redigerer du på emnemappa"),
     version-no : (en : "Norwegian", no : "Norwegian", nn : "Norwegian"),
     version-en : (en : "English", no : "English", nn : "English"),
     continued-as : (en : "This course is replaced by", no: "Dette emnet er erstattet av", nn : "Dette emnet er erstatta av"),

@@ -81,7 +81,8 @@
         var hasFeaturedArticles = _$("#resource\\.featured-articles").length;
         var hasAggregation = _$("#resource\\.aggregation").length;
         var hasManuallyApprove = _$("#resource\\.manually-approve-from").length;
-        var hasMultipleInputFields = hasFeaturedArticles || hasAggregation || hasManuallyApprove;
+        var hasTagSearchSuggestions = _$("#resource\\.tag-search-suggestions").length;
+        var hasMultipleInputFields = hasFeaturedArticles || hasAggregation || hasManuallyApprove || hasTagSearchSuggestions;
         if(hasMultipleInputFields) {
           var aggregationLimit = "${aggregationLimit}";
         

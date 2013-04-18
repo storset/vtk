@@ -31,7 +31,7 @@
   </bean>
 
   <bean id="employeeListing.view" parent="freemarkerView">
-    <property name="url" value="pages/view-employee-listing.ftl" />
+    <property name="url" value="pages/employee-listing.ftl" />
   </bean>
 
 </beans>

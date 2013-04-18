@@ -78,7 +78,6 @@ resourcetype program-option-frontpage : program-document {
       </head>
       <body id="vrtx-program-option">
         <div id="vrtx-content">
-          [def locale resource-locale()]
           <div id="vrtx-main-content">
             <div id="vrtx-program-option-main" class="vrtx-frontpage-box white-box">
               [call "resource:program-option-language-link"]
@@ -87,10 +86,10 @@ resourcetype program-option-frontpage : program-document {
               [call "comp:introduction"]
               [def thispath resource-prop("./","uri")]
               <div id="vrtx-program-links">
-                [if locale = "en"]
-                  [call "include:uri-menu" {"uri":thispath, "authenticated":"true", "include-children":"why-choose, learning-outcomes, admission, structure, abroad, career, teaching-examinations"}]
+                [if resource-locale() = "en"]
+                  [call "comp:child-collections" {"links" : #({"name" : "why-choose"}, {"name" : "learning-outcomes"}, {"name" : "admission"}, {"name" : "structure"}, {"name" : "abroad"}, {"name" : "career"}, {"name" : "teaching-examinations"})}]
                 [else]
-                  [call "include:uri-menu" {"uri":thispath, "authenticated":"true", "include-children":"hvorfor-velge, hva-lerer-du, opptak, oppbygging, utlandet, jobb-studier, undervisning-eksamen"}]
+                  [call "comp:child-collections" {"links" : #({"name" : "hvorfor-velge"}, {"name" : "hva-lerer-du"}, {"name" : "opptak"}, {"name" : "oppbygging"}, {"name" : "utlandet"}, {"name" : "jobb-studier"}, {"name" : "undervisning-eksamen"})}]
                 [endif]
               </div>
             </div>

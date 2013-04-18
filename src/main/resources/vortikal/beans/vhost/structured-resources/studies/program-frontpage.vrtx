@@ -147,40 +147,8 @@ resourcetype program-frontpage : program-document {
         [call "comp:additional-content" {"document":document, "main-content": "false"}]
       </div>
       ##
-    } 
-   
-    program-links {
-      ##
-      [def uri resource-prop("./","uri")]
-      [def uri uri + "/"]
-      [def locale resource-locale()]
-      [def names null]
-      [if locale = "en"]
-        [def links #({"name" : "why-choose"}, {"name" : "learning-outcomes"}, {"name" : "admission"}, {"name" : "structure"}, {"name" : "abroad"}, {"name" : "career"}, {"name" : "teaching-examinations"})]
-      [else]
-        [def links #({"name" : "hvorfor-velge"}, {"name" : "hva-lerer-du"}, {"name" : "opptak"}, {"name" : "oppbygging"}, {"name" : "utlandet"}, {"name" : "jobb-studier"}, {"name" : "undervisning-eksamen"})]
-      [endif]
-      [def uriQuery ""]
-      [list links current]
-        [def uriQuery uriQuery + "uri=" + uri + current.name]
-        [if _size != _index + 1]
-          [def uriQuery uriQuery + " OR "]
-        [endif]
-      [endlist]
-      [def collections search('(' + uriQuery + ') && type IN collection && published=true', null)]
-      [list collections collection]
-        [list links current]
-          [if string(resource-prop(collection, "uri")) = uri + current.name]
-            [def url view-url(collection)]
-            [def title resource-prop(collection, "title")]
-            [if url != null && url != "" && title != null && title != ""]
-              <a href="[val url]">[val title]</a>
-            [endif]
-          [endif]
-        [endlist]
-      [endlist]
-      ##
-    }  
+    }
+
   }
 
   view {
@@ -201,7 +169,11 @@ resourcetype program-frontpage : program-document {
               [call "comp:introduction"]
               [def thispath resource-prop("./","uri")]
               <div id="vrtx-program-links">
-                [call "comp:program-links"]
+                [if resource-locale() = "en"]
+                  [call "comp:child-collections" {"links" : #({"name" : "why-choose"}, {"name" : "learning-outcomes"}, {"name" : "admission"}, {"name" : "structure"}, {"name" : "abroad"}, {"name" : "career"}, {"name" : "teaching-examinations"})}]
+                [else]
+                  [call "comp:child-collections" {"links" : #({"name" : "hvorfor-velge"}, {"name" : "hva-lerer-du"}, {"name" : "opptak"}, {"name" : "oppbygging"}, {"name" : "utlandet"}, {"name" : "jobb-studier"}, {"name" : "undervisning-eksamen"})}]
+                [endif]
               </div>
             </div>
             [call "comp:program-options"]

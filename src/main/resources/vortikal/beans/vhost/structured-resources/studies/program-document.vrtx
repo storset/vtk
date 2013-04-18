@@ -15,9 +15,9 @@ resourcetype program-document {
     contactUrl : resource_ref,
     additional-content : json (boxTitle : string, boxType : string, boxPicture : image_ref, boxContent : html, boxUrlText : string, boxUrl : resource_ref) multiple noextract
   }
-  
+
   view-components {
-  
+
     title {
       ##
       [def v resource-prop(".", "title")]
@@ -26,7 +26,7 @@ resourcetype program-document {
       [endif]
       ##
     }
-  
+
     status {
       ##
       [resource-props "."]
@@ -69,7 +69,7 @@ resourcetype program-document {
       [endif]
       ##
     }
-  
+
     introduction-image {
       ##
       [def img-uri resource-prop(".", "picture")]
@@ -133,7 +133,7 @@ resourcetype program-document {
       [endif]
       ##
     }
-  
+
     resource-links {
       ##
       [resource-props "."]
@@ -241,7 +241,7 @@ resourcetype program-document {
           [def urlText box.boxUrlText]
           [def number _index + 1]
           [def cssClasses ""]
-          
+
           [if urlText != null && urlText != ""]
           [else]
             [def cssClasses concat(cssClasses, "vrtx-more-false")]
@@ -324,7 +324,7 @@ resourcetype program-document {
       [endif]
       ##
     }
-    
+
     css-link {
       ##
       [resource-props "."]
@@ -335,9 +335,42 @@ resourcetype program-document {
       [endif]
       ##
     }
- 
+
+    child-collections (links) {
+      ##
+      [def uri resource-prop("./","uri")]
+      [def uri uri + "/"]
+      [def names null]
+      [def uriQuery ""]
+      [def uriSort ""]
+      [list links current]
+        [def uriQuery uriQuery + "uri=" + uri + current.name]
+        [def uriSort uriSort + current.name]
+        [if _size != _index + 1]
+          [def uriQuery uriQuery + " OR "]
+          [def uriSort uriSort + ","]
+        [endif]
+      [endlist]
+      [def collections search('(' + uriQuery + ') && type IN collection && published=true', null)]
+      [if typeof(programLinkSort) = 'function']
+        [def collections programLinkSort(collections, uriSort)]
+      [endif]
+      [list collections collection]
+        [list links current]
+          [if string(resource-prop(collection, "uri")) = uri + current.name]
+            [def url view-url(collection)]
+            [def title resource-prop(collection, "title")]
+            [if url != null && url != "" && title != null && title != ""]
+              <a href="[val url]">[val title]</a>
+            [endif]
+          [endif]
+        [endlist]
+      [endlist]
+      ##
+    }
+
   }
-  
+
   localization {
     name-no : (en : "Bokmål", no : "Bokmål", nn : "Bokmål"),
     name-nn : (en : "Nynorsk", no : "Nynorsk", nn : "Nynorsk"),

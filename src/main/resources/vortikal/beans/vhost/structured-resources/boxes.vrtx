@@ -33,7 +33,7 @@ resourcetype boxes {
 
     test-search (query) {
       ##
-      [def results search(query)]
+      [def results search(query, null)]
       <p>Results for [val query]:</p>
       <ul>
       [list results result]

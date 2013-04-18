@@ -347,6 +347,7 @@
     </constructor-arg>
     <constructor-arg ref="searchParser" />
     <constructor-arg ref="systemIndexSearcher" />
+    <property name="titlePropDef" ref="titlePropDef" />
   </bean>
 
   <bean id="structuredResources.viewURLFunction" class="org.vortikal.resourcemanagement.view.tl.ViewURLValueProvider">

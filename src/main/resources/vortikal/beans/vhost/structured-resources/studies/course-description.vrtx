@@ -270,7 +270,7 @@ resourcetype course-description {
     semesters (hasContact) {
       ##
       [def uri resource-prop("./", "uri")]
-      [def semesters search('uri=' + uri + '/* && (type IN semester-page || type IN semester) && published=true')]
+      [def semesters search('uri=' + uri + '/* && (type IN semester-page || type IN semester) && published=true', null)]
       [if typeof(semesterSearchSort) = 'function']
         [def semesters semesterSearchSort(semesters)]
       [endif]
@@ -325,7 +325,7 @@ resourcetype course-description {
         [def parent-uri resource-prop("./", "uri")]
         [def content-locale resource-prop-obj-val(".", "contentLocale")]
         [if content-locale != null && (content-locale = "no_NO" || content-locale = "no_NO_NY")]
-          [def resources search('uri=' + parent-uri + '/index-eng.html && type IN course-description && published=true')]
+          [def resources search('uri=' + parent-uri + '/index-eng.html && type IN course-description && published=true', null)]
           [if resources != null]
             [list resources resource]
               [def resource-uri resource-prop(resource, "uri")]
@@ -337,7 +337,7 @@ resourcetype course-description {
             [endlist]
           [endif]
         [elseif content-locale != null && content-locale = "en" && string(this-uri) != string(parent-uri) + "/index.html"]
-          [def resources search('uri=' + parent-uri + '/index.html && type IN course-description && published=true')]
+          [def resources search('uri=' + parent-uri + '/index.html && type IN course-description && published=true', null)]
           [if resources != null]
             [list resources resource]
               [def resource-uri resource-prop(resource, "uri")]

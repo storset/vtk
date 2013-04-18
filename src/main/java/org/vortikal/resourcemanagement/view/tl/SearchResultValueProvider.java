@@ -30,10 +30,15 @@
  */
 package org.vortikal.resourcemanagement.view.tl;
 
+import org.springframework.beans.factory.annotation.Required;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.search.Parser;
+import org.vortikal.repository.search.PropertySortField;
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
 import org.vortikal.repository.search.Searcher;
+import org.vortikal.repository.search.SortFieldDirection;
+import org.vortikal.repository.search.SortingImpl;
 import org.vortikal.repository.search.query.Query;
 import org.vortikal.text.tl.Context;
 import org.vortikal.text.tl.Symbol;
@@ -43,15 +48,15 @@ import org.vortikal.web.RequestContext;
 public class SearchResultValueProvider extends Function {
 
     private Parser searchParser;
-    //private QueryParserFactory queryParserFactory;
+    // private QueryParserFactory queryParserFactory;
     private Searcher searcher;
-    
-    public SearchResultValueProvider(Symbol symbol, 
-            //QueryParserFactory queryParserFactory,
-            Parser searchParser,
-            Searcher searcher) {
-        super(symbol, 1);
-        //this.queryParserFactory = queryParserFactory;
+    private PropertyTypeDefinition titlePropDef;
+
+    public SearchResultValueProvider(Symbol symbol,
+    // QueryParserFactory queryParserFactory,
+            Parser searchParser, Searcher searcher) {
+        super(symbol, 2);
+        // this.queryParserFactory = queryParserFactory;
         this.searchParser = searchParser;
         this.searcher = searcher;
     }
@@ -62,13 +67,25 @@ public class SearchResultValueProvider extends Function {
         String queryString = arg.toString();
         RequestContext requestContext = RequestContext.getRequestContext();
         String token = requestContext.getSecurityToken();
-        //Query query = queryParserFactory.getParser().parse(queryString);
+        // Query query = queryParserFactory.getParser().parse(queryString);
         Query query = this.searchParser.parse(queryString);
         Search search = new Search();
         search.setLimit(100);
         search.setQuery(query);
+
+        if (args[1] != null && args[1].toString().equals("title")) {
+            SortingImpl sorting = new SortingImpl();
+            sorting.addSortField(new PropertySortField(titlePropDef, SortFieldDirection.ASC));
+            search.setSorting(sorting);
+        }
+
         ResultSet resultSet = searcher.execute(token, search);
         return resultSet.iterator();
+    }
+
+    @Required
+    public void setTitlePropDef(PropertyTypeDefinition titlePropDef) {
+        this.titlePropDef = titlePropDef;
     }
 
 }

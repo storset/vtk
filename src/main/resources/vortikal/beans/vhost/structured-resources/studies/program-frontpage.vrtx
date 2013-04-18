@@ -73,11 +73,11 @@ resourcetype program-frontpage : program-document {
       [if folder]
         <div class="vrtx-frontpage-box white-box vrtx-program-options">
           <h2><a href="[val thispath]">[localized 'program-options-title']</a></h2>
-          [def inactive search('uri=' + thispath + '/* && type IN program-option-frontpage && published=true && program-option-context:programOptionContext.status=aktivt')]
+          [def active search('uri=' + thispath + '/* && type IN program-option-frontpage && published=true && program-option-context:programOptionContext.status=aktivt', 'title')]
           <ul>
-            [list inactive res]
+            [list active res]
               [def url view-url(res)]
-              [def name resource-prop-obj-val(res,"name")]
+              [def name resource-prop-obj-val(res, "name")]
               [if url != null && url != "" && name != null && name != ""]
                 <li>
                   <a href="[val url]">[val name]</a>
@@ -86,11 +86,11 @@ resourcetype program-frontpage : program-document {
             [endlist]
           </ul>
           <div class="vrtx-program-options-inactive">
-            [def inactive search('uri=' + thispath + '/* && type IN program-option-frontpage && published=true && program-option-context:programOptionContext.status=under-utfasing')]
+            [def inactive search('uri=' + thispath + '/* && type IN program-option-frontpage && published=true && program-option-context:programOptionContext.status=under-utfasing', 'title')]
             <ul>
               [list inactive res]
                 [def url view-url(res)]
-                [def name resource-prop-obj-val(res,"name")]
+                [def name resource-prop-obj-val(res, "name")]
                 [if url != null && url != "" && name != null && name != ""]
                   <li>
                     <a href="[val url]">[val name]</a>
@@ -167,13 +167,12 @@ resourcetype program-frontpage : program-document {
           [def uriQuery uriQuery + " OR "]
         [endif]
       [endlist]
-      [def collections search('(' + uriQuery + ') && type IN collection && published=true')]
+      [def collections search('(' + uriQuery + ') && type IN collection && published=true', null)]
       [list collections collection]
-        [def resUri string(resource-prop-obj-val(collection, "uri"))]
         [list links current]
-          [if resUri = uri + current.name]
+          [if string(resource-prop(collection, "uri")) = uri + current.name]
             [def url view-url(collection)]
-            [def title resource-prop(collection,"title")]
+            [def title resource-prop(collection, "title")]
             [if url != null && url != "" && title != null && title != ""]
               <a href="[val url]">[val title]</a>
             [endif]

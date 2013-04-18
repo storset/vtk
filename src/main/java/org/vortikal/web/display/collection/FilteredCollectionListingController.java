@@ -76,11 +76,11 @@ public abstract class FilteredCollectionListingController implements ListingCont
 
     // XXX NO. These shoudn't be here. SearchComponent, more specifically
     // CollectionListingSearchComponent -> Reuse!!!
-    private MultiHostSearcher multiHostSearcher;
-    private AggregationResolver aggregationResolver;
+    protected MultiHostSearcher multiHostSearcher;
+    protected AggregationResolver aggregationResolver;
     private SearchSorting defaultSearchSorting;
     private List<String> configurablePropertySelectPointers;
-    private Service viewService;
+    protected Service viewService;
 
     /**
      * XXX

@@ -43,6 +43,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.resourcetype.HtmlValueFormatter;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
@@ -87,7 +88,8 @@ public abstract class RSSFeedGenerator implements FeedGenerator {
         feedContent.put("title", getTitle(feedScope, requestContext));
         feedContent.put("link", request.getRequestURL().toString());
         Property introductionProp = feedScope.getProperty(introductionPropDef);
-        String description = introductionProp != null ? introductionProp.getStringValue().trim() : "";
+        String description = introductionProp != null ? introductionProp.getFormattedValue(
+                HtmlValueFormatter.FLATTENED_FORMAT, null) : "";
         feedContent.put("description", description);
 
         // Optional elements

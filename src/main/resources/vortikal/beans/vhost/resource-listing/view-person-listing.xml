@@ -105,6 +105,7 @@
         <value>lastModified</value>
         <value>contentLocale</value>
         <value>publish-date</value>
+        <value>resource:affiliations</value>
       </list>
     </constructor-arg>
   </bean>

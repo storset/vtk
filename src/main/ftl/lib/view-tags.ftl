@@ -13,7 +13,7 @@
   
   <#if splitInThirds>
     <#local tagsSize = tagElements?size />
-    <#if limit > 0 && limit < tagsSize>
+    <#if (limit > 0 && limit < tagsSize)>
       <#local tagsSize = limit />
     </#if>
   

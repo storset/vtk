@@ -74,17 +74,20 @@ resourcetype program-frontpage : program-document {
         <div class="vrtx-frontpage-box white-box vrtx-program-options">
           <h2><a href="[val thispath]">[localized 'program-options-title']</a></h2>
           [def active search('uri=' + thispath + '/* && type IN program-option-frontpage && published=true && program-option-context:programOptionContext.status=aktivt', 'title')]
-          <ul>
-            [list active res]
-              [def url view-url(res)]
-              [def name resource-prop-obj-val(res, "name")]
-              [if url != null && url != "" && name != null && name != ""]
-                <li>
-                  <a href="[val url]">[val name]</a>
-                </li>
+          [list active res]
+            [def url view-url(res)]
+            [def name resource-prop-obj-val(res, "name")]
+            [if url != null && url != "" && name != null && name != ""]
+              [def splitPosition ceil(_size / 2)]
+              [if _index = 0]
+                <ul class="left">
+              [elseif _index = splitPosition]
+                </ul><ul class="right">
               [endif]
-            [endlist]
-          </ul>
+              <li><a href="[val url]">[val name]</a></li>
+            [endif]
+            [if _size = _index + 1]</ul>[endif]
+          [endlist]
           <div class="vrtx-program-options-inactive">
             [def inactive search('uri=' + thispath + '/* && type IN program-option-frontpage && published=true && program-option-context:programOptionContext.status=under-utfasing', 'title')]
             <ul>
@@ -92,9 +95,7 @@ resourcetype program-frontpage : program-document {
                 [def url view-url(res)]
                 [def name resource-prop-obj-val(res, "name")]
                 [if url != null && url != "" && name != null && name != ""]
-                  <li>
-                    <a href="[val url]">[val name]</a>
-                  </li>
+                  <li><a href="[val url]">[val name]</a></li>
                 [endif]
               [endlist]
             </ul>

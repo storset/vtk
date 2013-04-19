@@ -794,6 +794,8 @@ resourcetype course-description {
   }
 
   localization {
+    ctx-patch : (en : "Test", no : "Test", nn : "Test"),
+  
     title : (en : "Title", no : "Tittel", nn : "Tittel"),
     header : (en : "Edit course description", no : "Rediger emnebeskrivelse", nn : "Rediger emneskildring"),
     plaster : (en : "You can edit course name, course code and status on the course folder", no : "Emnenavn, emnekode og status redigerer du på emnemappen", 

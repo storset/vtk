@@ -6,15 +6,20 @@
 <#import "/lib/collections/view-project-listing.ftl" as projects />
 <#import "/lib/collections/view-person-listing.ftl" as persons />
 
-<#macro displayTagElements tagElements splitInThirds=false>
+<#macro displayTagElements tagElements splitInThirds=false limit=0>
   <div id="vrtx-tags-service">
   
   <#local count = 1 />
   
   <#if splitInThirds>
-    <#local colOneCount = vrtx.getEvenlyColumnDistribution(tagElements?size, 1, 3) />
-    <#local colTwoCount = vrtx.getEvenlyColumnDistribution(tagElements?size, 2, 3) />
-    <#local colThreeCount = vrtx.getEvenlyColumnDistribution(tagElements?size, 3, 3) />
+    <#local tagsSize = tagElements?size />
+    <#if limit > 0 && limit < tagsSize>
+      <#local tagsSize = limit />
+    </#if>
+  
+    <#local colOneCount = vrtx.getEvenlyColumnDistribution(tagsSize, 1, 3) />
+    <#local colTwoCount = vrtx.getEvenlyColumnDistribution(tagsSize, 2, 3) />
+    <#local colThreeCount = vrtx.getEvenlyColumnDistribution(tagsSize, 3, 3) />
     <ul class="vrtx-tag thirds-left">
     <#list tagElements as element>
       <#if (count = colOneCount && colTwoCount > 0)>
@@ -23,18 +28,24 @@
       <#if ((count = colOneCount + colTwoCount) && colThreeCount > 0)>
         </ul><ul class="vrtx-tag thirds-right">
       </#if>
-      <li class="vrtx-tags-element-${i}">
+      <li class="vrtx-tags-element-${count}">
         <a class="tags" href="${element.linkUrl?html}" rel="tags">${element.text?html}</a>
       </li>
+      <#if count = limit>
+        <#break>
+      </#if>
       <#local count = count + 1 />
     </#list>
     </ul>
   <#else>
     <ul class="vrtx-tag">
       <#list tagElements as element>
-        <li class="vrtx-tags-element-${i}">
+        <li class="vrtx-tags-element-${count}">
           <a class="tags" href="${element.linkUrl?html}" rel="tags">${element.text?html}</a>
         </li>
+        <#if count = limit>
+          <#break />
+        </#if>
         <#local count = count + 1 />
       </#list>
     </ul>

@@ -73,7 +73,7 @@ resourcetype course-description {
   }
 
   edit-rules {
-    ctx-patch (class[ui-helper-hidden]),
+    ctx-patch (class[vrtx-info-msg]),
   
     credits (dropdown),
     level (dropdown),
@@ -794,7 +794,7 @@ resourcetype course-description {
   }
 
   localization {
-    ctx-patch : (en : "Test", no : "Test", nn : "Test"),
+    ctx-patch : (en : "You can edit course name, course code and status on the course folder", no : "Emnenavn, emnekode og status redigerer du på emnemappen", nn : "Emnenamn, emnekode og status redigerer du på emnemappa"),
   
     title : (en : "Title", no : "Tittel", nn : "Tittel"),
     header : (en : "Edit course description", no : "Rediger emnebeskrivelse", nn : "Rediger emneskildring"),

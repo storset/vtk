@@ -1,12 +1,16 @@
 resourcetype program-option-frontpage : program-document {
 
   properties {
+    ctx-patch : string,
+  
     picture : image_ref,
     resource-links : json (linkHeader:string, linkTitle:string, linkUrl:string, linkDescription:string) multiple,
     title : derived (name) eval (name + " (" + "program-option"?localized +")") overrides title
   }
 
   edit-rules {
+    ctx-patch (class[vrtx-info-msg]),
+  
     name (size[large]),
     group samlet (name-no, name-nn, name-en) (after name) horizontal,
     picture (after samlet),
@@ -105,6 +109,8 @@ resourcetype program-option-frontpage : program-document {
   }
 
   localization {
+    ctx-patch : (en : "You can edit the FS programme option code and status on the program option folder", no : "FS-studieretningskode og status redigerer du på studeretningsmappen", nn : "FS-studieretningskode og status redigerer du på studeretningsmappa"),
+  
     name : (en : "Programme option name", no : "Studieretningsnavn", nn : "Studieretningsnamn"),
     header : (en : "Edit programme option frontpage", no : "Rediger studieretningsforside", nn : "Rediger studieretningsforside"),
     program-option : (en : "programme option", no : "studieretning", nn : "studieretning"),

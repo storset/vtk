@@ -1,6 +1,8 @@
 resourcetype program-frontpage : program-document {
 
   properties {
+    ctx-patch : string,
+  
     program-type : string,
     theme : string multiple,
     duration : string trim,
@@ -14,6 +16,8 @@ resourcetype program-frontpage : program-document {
   }
 
   edit-rules {
+    ctx-patch (class[vrtx-info-msg]),
+  
     program-type (dropdown),
     faculty (dropdown),
     theme (dropdown),
@@ -217,6 +221,8 @@ resourcetype program-frontpage : program-document {
   }
 
   localization {
+    ctx-patch : (en : "You can edit the FS program code and status on the program folder", no : "FS-programkode og status redigerer du på programmappen", nn : "FS-programkode og status redigerer du på programmappa"),
+    
     name : (en : "Program name", no : "Programnavn", nn : "Programnamn"),
     header : (en : "Edit programme frontpage", no : "Rediger programforside", nn : "Rediger programforside"),
     duration : (en : "Duration", no : "Studiet varer", nn : "Varighet"),

@@ -115,6 +115,21 @@
   padding-left: 5px;
 }
 
+.vrtx-info-msg {
+  margin-bottom: -15px;
+  font-size: 0.867em;
+}
+
+.vrtx-info-msg .inputfield {
+  display: none;
+}
+
+.vrtx-info-msg label {
+  background: url(../images/info-small.gif) no-repeat 0 0;
+  padding: 0 0 10px 25px;
+  margin-bottom: 0px;
+}
+
 /* Accordion */
 
 .ui-accordion > div {

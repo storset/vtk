@@ -1,6 +1,8 @@
 resourcetype semester-page {
 
   properties {
+    ctx-patch : string,
+  
     cloned-course : boolean defaultvalue("false"),
     cloned-course-code : string,
     fronter : boolean defaultvalue("false"),
@@ -30,6 +32,8 @@ resourcetype semester-page {
   }
 
   edit-rules {
+    ctx-patch (class[vrtx-info-msg]),
+  
     messages-placement (dropdown),
     max-number-of-messages (dropdown),
     group sec (schedule, exam, syllabus) (before link-box-one-title),
@@ -359,10 +363,9 @@ resourcetype semester-page {
   }
 
   localization {
+    ctx-patch : (en : "You can edit semester and year on the semester folder", no : "Semester og år redigerer du på semestermappen", nn : "Semester og år redigerer du på semestermappa"),
+    
     header : (en : "Edit semester page", no : "Rediger semesterside", nn : "Rediger semesterside"),
-    plaster : (en : "You can edit semester and year on the semester folder",
-               no : "Semester og år redigerer du på semestermappen", 
-               nn : "Semester og år redigerer du på semestermappen"),
     localized-group : (en : "group", no : "gruppe", nn : "gruppe"),
     semesterpage-for : (en : "Semester page for", no : "Semesterside for", nn : "Semesterside for"),
     schedule : (en : "Schedule", no : "Timeplan", nn : "Timeplan"),

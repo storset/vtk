@@ -1707,7 +1707,8 @@ body#vrtx-report-broken-links #directory-listing th.vrtx-report-broken-links-col
   width: 30%;
 }
 
-#directory-listing td.vrtx-report-broken-links-web-page span {
+#directory-listing td.vrtx-report-broken-links-web-page span,
+#directory-listing td.vrtx-report-broken-links-collection span {
   display: block;
   clear: left;
   font-size: 0.867em;

@@ -13,10 +13,9 @@
   
   <#if splitInThirds>
     <#local tagsSize = tagElements?size />
-    <#if (limit > 0 && limit < tagsSize)>
+    <#if (limit > 0 && tagsSize > limit)>
       <#local tagsSize = limit />
     </#if>
-  
     <#local colOneCount = vrtx.getEvenlyColumnDistribution(tagsSize, 1, 3) />
     <#local colTwoCount = vrtx.getEvenlyColumnDistribution(tagsSize, 2, 3) />
     <#local colThreeCount = vrtx.getEvenlyColumnDistribution(tagsSize, 3, 3) />

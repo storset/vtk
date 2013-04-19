@@ -1,7 +1,7 @@
 resourcetype course-description {
 
   properties {
-    plaster : string,
+    ctx-patch : string,
   
     credits : string,
     level : string,
@@ -73,6 +73,8 @@ resourcetype course-description {
   }
 
   edit-rules {
+    ctx-patch (class[ui-helper-hidden]),
+  
     credits (dropdown),
     level (dropdown),
     level (after credits),

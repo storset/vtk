@@ -360,7 +360,9 @@ resourcetype program-document {
           [def url view-url(collection)]
           [def title resource-prop(collection, "title")]
           [if url != null && url != "" && title != null && title != ""]
-            <a href="[val url]">[val title]</a>
+            [if _index = 0]<ul class="left">[endif]
+            [elseif _index > 0 && _index + 1 = ceil(_size / 2)]</ul><ul class="right">[endif]
+              <li><a href="[val url]">[val title]</a></li>
           [endif]
         [endif]
       [endlist]

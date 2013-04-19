@@ -1670,6 +1670,11 @@ span.vrtx-help-step-by-step-cmd {
   width: 6%;
 }
 
+#directory-listing th#vrtx-report-broken-links-collection-document-count,
+#directory-listing th#vrtx-report-broken-links-collection-count {
+  width: 11%;
+}
+
 #directory-listing th#vrtx-report-broken-links {
   width: 35%;
 }

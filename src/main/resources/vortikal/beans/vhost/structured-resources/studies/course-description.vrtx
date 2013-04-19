@@ -1,6 +1,8 @@
 resourcetype course-description {
 
   properties {
+    plaster : string,
+  
     credits : string,
     level : string,
 

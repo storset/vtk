@@ -73,12 +73,12 @@
                  default="There is a total of " + report.documentSum + " web pages with " + report.sum + " broken" /> ${linkTypeLocalization?lower_case}
     </p>
     <div class="vrtx-report">
-      <table id="directory-listing" class="report-broken-links">
+      <table id="directory-listing" class="report-broken-links-collection">
         <thead>
           <tr>
             <th id="vrtx-report-broken-links-collection"><@vrtx.msg code="report.${report.reportname}.collection" /></th>
-            <th id="vrtx-report-broken-links-document-count"><@vrtx.msg code="report.${report.reportname}.document-count" /></th>
-            <th id="vrtx-report-broken-links-count">#${linkTypeLocalization?lower_case} <@vrtx.msg code="report.${report.reportname}.count" /></th>
+            <th id="vrtx-report-broken-links-collection-document-count"><@vrtx.msg code="report.${report.reportname}.document-count" /></th>
+            <th id="vrtx-report-broken-links-collection-count">#${linkTypeLocalization?lower_case} <@vrtx.msg code="report.${report.reportname}.count" /></th>
           </tr>
         </thead>
         <tbody>
@@ -98,14 +98,14 @@
             </#if>
 
             <tr class="${rowType}${firstLast}">
-              <td class="vrtx-report-broken-links-web-page">
+              <td class="vrtx-report-broken-links-collection">
                 <a href="${report.map[uri].url?html}">${report.map[uri].title?html}</a>
                 <span>${uri?html}</span>
               </td>
-              <td class="vrtx-report-broken-links-document-count">
+              <td class="vrtx-report-broken-links-collection-document-count">
                 ${report.map[uri].documentCount}
               </td>
-              <td class="vrtx-report-broken-links-count">
+              <td class="vrtx-report-broken-links-collection-count">
                 ${report.map[uri].linkCount}
               </td>
             </tr>

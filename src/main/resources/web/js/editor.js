@@ -606,6 +606,8 @@ maxHeight, minHeight, toolbar, complete, resizable, baseDocumentUrl, simple) {
 
   config.disableNativeSpellChecker = false;
 
+  config.allowedContent = true
+
   // Configure tag formatting in source
   config.on = {
     instanceReady: function (ev) {

@@ -6,7 +6,7 @@
 <#import "/lib/collections/view-project-listing.ftl" as projects />
 <#import "/lib/collections/view-person-listing.ftl" as persons />
 
-<#macro displayTagElements tagElements splitInThirds=false>
+<#macro displayTagElements tagElements showOccurences=false splitInThirds=false>
   <div id="vrtx-tags-service">
   
   <#local count = 1 />
@@ -19,7 +19,7 @@
     <ul class="vrtx-tag thirds-left">
     <#list tagElements as element>
       <li class="vrtx-tags-element-${count}">
-        <a class="tags" href="${element.linkUrl?html}" rel="tags">${element.text?html}</a>
+        <a class="tags" href="${element.linkUrl?html}" rel="tags">${element.text?html}<#if showOccurences> (${element.occurences?html})</#if></a>
       </li>
       <#if (count = colOneCount && colTwoCount > 0)>
         </ul><ul class="vrtx-tag thirds-middle">
@@ -34,7 +34,7 @@
     <ul class="vrtx-tag">
       <#list tagElements as element>
         <li class="vrtx-tags-element-${count}">
-          <a class="tags" href="${element.linkUrl?html}" rel="tags">${element.text?html}</a>
+          <a class="tags" href="${element.linkUrl?html}" rel="tags">${element.text?html}<#if showOccurences> (${element.occurences?html})</#if></a>
         </li>
         <#local count = count + 1 />
       </#list>

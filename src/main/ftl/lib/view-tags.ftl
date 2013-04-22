@@ -45,6 +45,7 @@
       <#local elementText = element.text />
         
       <#-- Alphabetical separation (not possible when split in thirds) -->
+      <#-- TODO move to java or optimize -->
       <#if alphabeticalSeparation>
         <#if count = 1>
           <#if springMacroRequestContext.getLocale() = "en">
@@ -67,16 +68,22 @@
                <li><a href="#vrtx-tags-alphabetical-${alphaChunked}" name="vrtx-tags-alphabetical-${alphaChunked}">${alphaChunked?upper_case}</a></li>
              </#list>
            </ul>
-           <div id="${count}"><#-- TODO tab containers -->
+           <div id="vrtx-tags-alphabetical-a-c">
+           <#local curChar = " " />
+           <#local lastChunk = 0 />
         </#if>
         
-        <#local curChar><#if !curChar??>" "<#else>${curChar}</#if></#local>
         <#if !elementText?capitalize?starts_with(curChar)>
           <#local curChar = elementText?capitalize?substring(0,1) />
           <#if (count > 1)>
             </ul>
-            </div>
-            <div id="${count}"><#-- TODO tab containers -->
+            <#local lastChunkRange = lastChunk?number + 3 />
+            <#local curCharPos = alphabet?seq_index_of(curChar?lower_case) />
+            <#if (curCharPos > lastChunkRange - 1)>
+              <#local lastChunk = lastChunkRange />
+              </div>
+              <div id="vrtx-tags-alphabetical-${alphabet[lastChunk]}-${alphabet[lastChunk+2]}">
+            </#if>
           </#if>
           <h2>${curChar}</h2>
           <ul class="vrtx-tag">
@@ -99,7 +106,7 @@
     </#list>
     </ul>
     
-    <#if alphaBeticalSeperation>
+    <#if alphabeticalSeparation>
       </div>
       </div>
     </#if>

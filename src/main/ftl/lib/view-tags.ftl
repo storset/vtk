@@ -6,7 +6,7 @@
 <#import "/lib/collections/view-project-listing.ftl" as projects />
 <#import "/lib/collections/view-person-listing.ftl" as persons />
 
-<#macro displayTagElements tagElements showOccurences=false splitInThirds=false limit=0 alphaBethicalSeperation=false>
+<#macro displayTagElements tagElements showOccurences=false splitInThirds=false limit=0 alphabeticalSeparation=false>
   <div id="vrtx-tags-service">
   
   <#local count = 1 />
@@ -44,19 +44,19 @@
     <#list tagElements as element>
       <#local elementText = element.text />
         
-      <#-- Alphabetical seperation (not possible when split in thirds) -->
-      <#if alphaBethicalSeperation>
+      <#-- Alphabetical separation (not possible when split in thirds) -->
+      <#if alphabeticalSeparation>
         <#if count = 1>
           <#if springMacroRequestContext.getLocale() = "en">
-            <#local alphabeth = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m",
+            <#local alphabet = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m",
                                 "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"] />
           <#else>
-            <#local alphabeth = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o",
+            <#local alphabet = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o",
                                 "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "æ", "ø", "å"] />
           </#if>
           <div id="vrtx-tags-alphabetical-tabs">
             <ul style="display: none">
-             <#list alphabeth?chunk(3) as alphaChunk>
+             <#list alphabet?chunk(3) as alphaChunk>
                <#local alhaChunkSize = alphaChunk?size/>
                <#local alphaChunked>
                  <#list alphaChunk as alpha>

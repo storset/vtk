@@ -81,8 +81,12 @@
             <#local curCharPos = alphabet?seq_index_of(curChar?lower_case) />
             <#if (curCharPos > lastChunkRange - 1)>
               <#local lastChunk = lastChunkRange />
+              <#local lastChunkRange = lastChunk + 2 />
+              <#if (lastChunkRange > alphabet?size - 1)>
+                <#local lastChunkRange = alphabet?size - 1 />  
+              </#if>
               </div>
-              <div id="vrtx-tags-alphabetical-${alphabet[lastChunk]}-${alphabet[lastChunk+2]}">
+              <div id="vrtx-tags-alphabetical-${alphabet[lastChunk]}-${alphabet[lastChunkRange]}">
             </#if>
           </#if>
           <h2>${curChar}</h2>

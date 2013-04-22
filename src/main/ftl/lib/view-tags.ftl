@@ -77,6 +77,7 @@
           <#local curChar = elementText?capitalize?substring(0,1) />
           <#if (count > 1)>
             </ul>
+            <#-- TODO this dont work quite (assuming tags on each chunk of the alphabet) -->
             <#local lastChunkRange = lastChunk?number + 3 />
             <#local curCharPos = alphabet?seq_index_of(curChar?lower_case) />
             <#if (curCharPos > lastChunkRange - 1)>

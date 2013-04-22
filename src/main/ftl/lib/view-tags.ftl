@@ -6,11 +6,12 @@
 <#import "/lib/collections/view-project-listing.ftl" as projects />
 <#import "/lib/collections/view-person-listing.ftl" as persons />
 
-<#macro displayTagElements tagElements showOccurences=false splitInThirds=false limit=0>
+<#macro displayTagElements tagElements showOccurences=false splitInThirds=false limit=0 alphaBeticalSeperation=false>
   <div id="vrtx-tags-service">
   
   <#local count = 1 />
   
+  <#-- Split in thirds -->
   <#if splitInThirds>
     <#assign tagElementsSize = tagElements?size />
     <#if (limit > 0 && tagElementsSize > limit)>
@@ -21,9 +22,12 @@
     <#local colThreeCount = vrtx.getEvenlyColumnDistribution(tagElementsSize, 3, 3) />
     <ul class="vrtx-tag thirds-left">
     <#list tagElements as element>
+    
+      <#-- Tag element -->
       <li class="vrtx-tags-element-${count}">
         <a class="tags" href="${element.linkUrl?html}" rel="tags">${element.text?html}<#if showOccurences> (${element.occurences?html})</#if></a>
       </li>
+      
       <#if (count = colOneCount && colTwoCount > 0)>
         </ul><ul class="vrtx-tag thirds-middle">
       </#if>
@@ -37,17 +41,67 @@
     </#list>
     </ul>
   <#else>
-    <ul class="vrtx-tag">
-      <#list tagElements as element>
-        <li class="vrtx-tags-element-${count}">
-          <a class="tags" href="${element.linkUrl?html}" rel="tags">${element.text?html}<#if showOccurences> (${element.occurences?html})</#if></a>
-        </li>
-        <#if count = limit>
-          <#break>
-        </#if> 
-        <#local count = count + 1 />
-      </#list>
+    <#list tagElements as element>
+      <#local elementText = element.text />
+        
+      <#-- Alphabetical seperation (not possible when split in thirds) -->
+      <#if alphaBeticalSeperation>
+        <#if count = 1>
+          <#if springMacroRequestContext.getLocale() = "en">
+            <#local alphabet = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"] />
+          <#else>
+            <#local alphabet = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "æ", "ø", "å"] />
+          </#if>
+          <div id="vrtx-tags-alphabetical-tabs">
+            <ul style="display: none">
+             <#list alphabet?chunk(3) as alphaChunk>
+               <#local alhaChunkSize = alphaChunk?size/>
+               <#local alphaChunked>
+                 <#list alphaChunk as alpha>
+                   <#lt/><#if (alhaChunkSize == 2 && alpha_index = 1)>-</#if><#rt/>
+                   <#lt/><#if (alhaChunkSize == 3 && alpha_index = 1)>-<#else>${alpha}</#if><#rt/>
+                 </#list>
+               </#local>
+               <li><a href="#vrtx-tags-alphabetical-${alphaChunked}" name="vrtx-tags-alphabetical-${alphaChunked}">${alphaChunked?upper_case}</a></li>
+             </#list>
+           </ul>
+           <div id="${count}"><#-- TODO tab containers -->
+        </#if>
+        
+        <#local curChar><#if !curChar??>" "<#else>${curChar}</#if></#local>
+        <#if !elementText?capitalize?starts_with(curChar)>
+          <#local curChar = elementText?capitalize?substring(0,1) />
+          <#if (count > 1)>
+            </ul>
+            </div>
+            <div id="${count}"><#-- TODO tab containers -->
+          </#if>
+          <h2>${curChar}</h2>
+          <ul class="vrtx-tag">
+        </#if>
+      <#elseif count = 1>
+        <ul class="vrtx-tag">
+      </#if>
+      
+      <#-- Tag element -->
+      <li class="vrtx-tags-element-${count}">
+        <a class="tags" href="${element.linkUrl?html}" rel="tags">${elementText?html}<#if showOccurences> (${element.occurences?html})</#if></a>
+      </li>
+      
+      <#-- Limit -->
+      <#if count = limit>
+        <#break>
+      </#if>
+      
+      <#local count = count + 1 />
+    </#list>
     </ul>
+    
+    <#if alphaBeticalSeperation>
+      </div>
+      </div>
+    </#if>
+    
   </#if>
   
   </div>

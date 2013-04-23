@@ -79,7 +79,7 @@
       <div id="vrtx-tags-alphabetical-${alphabeticalTagElementsChunkKey}">
         <#local alphabeticalTagElementsChunk = alphabeticalTagElementsChunks[alphabeticalTagElementsChunkKey]>
         <#list alphabeticalTagElementsChunk?keys as alphabeticalTagElements>
-          <h2>${alphabeticalTagElements}</h2>
+          <h2>${alphabeticalTagElements?upper_case}}</h2>
           <ul class="vrtx-tag">
             <#list alphabeticalTagElementsChunk[alphabeticalTagElements] as element>
               <#-- Tag element -->

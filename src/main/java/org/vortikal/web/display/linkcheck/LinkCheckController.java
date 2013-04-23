@@ -148,7 +148,7 @@ public class LinkCheckController implements Controller {
             return null;
         }
         if (input.startsWith("#") || input.startsWith("mailto:") || input.startsWith("ftp:")
-                || input.startsWith("javascript:") || input.startsWith("file:")) {
+                || input.startsWith("javascript:") || input.startsWith("file:") || input.startsWith("webcal:")) {
             return null;
         }
         return input;

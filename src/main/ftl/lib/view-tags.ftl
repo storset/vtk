@@ -66,7 +66,7 @@
 
 <#macro displayAlphabeticalTagElements alphabeticalTagElementsChunks showOccurences=false>
   <div id="vrtx-tags-alphabetical-tabs">
-    <ul>
+    <ul><#--- TODO display:none when finished -->
       <#list alphabeticalTagElementsChunks?keys as alphabeticalTagElementsChunk>
         <li><a href="#vrtx-tags-alphabetical-${alphabeticalTagElementsChunk}" name="vrtx-tags-alphabetical-${alphabeticalTagElementsChunk}">${alphabeticalTagElementsChunk?upper_case}</a></li>
       </#list>

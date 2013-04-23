@@ -133,9 +133,11 @@ public class LinkCheckerTest {
         });
 
         LinkCheckResult actual = linkChecker.validate(href, testLink.testBase);
-        assertNotNull(actual);
-        assertEquals(expected.getStatus(), actual.getStatus());
-        assertEquals(expected.getReason(), actual.getReason());
+        assertNotNull("Did not return expected link check result for '" + testLink.testHref + "'", actual);
+        assertEquals("Did not return expected status for '" + testLink.testHref + "'", expected.getStatus(),
+                actual.getStatus());
+        assertEquals("Did not return expected reason for '" + testLink.testHref + "'", expected.getReason(),
+                actual.getReason());
 
     }
 

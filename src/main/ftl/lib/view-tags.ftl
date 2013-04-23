@@ -71,8 +71,13 @@
         <li><a href="#vrtx-tags-alphabetical-${alphabeticalTagElementsChunk}" name="vrtx-tags-alphabetical-${alphabeticalTagElementsChunk}">${alphabeticalTagElementsChunk?upper_case}</a></li>
       </#list>
     </ul>
-    <div id="vrtx-tags-alphabetical-a-c">
-    </div>
+    <#list alphabeticalTagElementsChunks?keys as alphabeticalTagElementsChunk>
+      <div id="vrtx-tags-alphabetical-${alphabeticalTagElementsChunk}">
+        
+        
+        
+      </div>
+    </#list>
   </div>
 </#macro>
 

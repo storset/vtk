@@ -83,7 +83,7 @@
         <#list alphabeticalRangeTagElements?keys as alphabeticalLetterTagElementsKey>
           <h2>${alphabeticalLetterTagElementsKey?upper_case}</h2>
           <ul class="vrtx-tag">
-            <#local tagElements = alphabeticalRangeTagElements[alphabeticalRangeTagElementsKey]>
+            <#local tagElements = alphabeticalRangeTagElements[alphabeticalLetterTagElementsKey]>
             <#list tagElements as element>
               <#-- Tag element -->
               <li class="vrtx-tags-element-${count}">

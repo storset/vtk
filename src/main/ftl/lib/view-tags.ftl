@@ -64,24 +64,27 @@
   </div>
 </#macro>
 
-<#macro displayAlphabeticalTagElements alphabeticalTagElementsChunks showOccurences=false>
+<#macro displayAlphabeticalTagElements alphabeticalRangesTagElements showOccurences=false>
   <div id="vrtx-tags-service">
   
   <#local count = 1 />
 
   <div id="vrtx-tags-alphabetical-tabs">
     <ul style="display: none">
-      <#list alphabeticalTagElementsChunks?keys as alphabeticalTagElementsChunk>
-        <li><a href="#vrtx-tags-alphabetical-${alphabeticalTagElementsChunk}" name="vrtx-tags-alphabetical-${alphabeticalTagElementsChunk}">${alphabeticalTagElementsChunk?upper_case}</a></li>
+      <#list alphabeticalRangesTagElements?keys as alphabeticalRangeTagElementsKey>
+        <li>
+          <a href="#vrtx-tags-alphabetical-${alphabeticalRangeTagElementsKey}" name="vrtx-tags-alphabetical-${alphabeticalRangeTagElementsKey}">${alphabeticalRangeTagElementsKey?upper_case?replace("-", " - ")}</a>
+        </li>
       </#list>
     </ul>
-    <#list alphabeticalTagElementsChunks?keys as alphabeticalTagElementsChunkKey>
-      <div id="vrtx-tags-alphabetical-${alphabeticalTagElementsChunkKey}">
-        <#local alphabeticalTagElementsChunk = alphabeticalTagElementsChunks[alphabeticalTagElementsChunkKey]>
-        <#list alphabeticalTagElementsChunk?keys as alphabeticalTagElements>
-          <h2>${alphabeticalTagElements?upper_case?replace("-", " - ")}</h2>
+    <#list alphabeticalRangesTagElements?keys as alphabeticalRangeTagElementsKey>
+      <div id="vrtx-tags-alphabetical-${alphabeticalRangeTagElementsKey}">
+        <#local alphabeticalRangeTagElements = alphabeticalRangesTagElements[alphabeticalRangeTagElementsKey]>
+        <#list alphabeticalRangeTagElements?keys as alphabeticalLetterTagElementsKey>
+          <h2>${alphabeticalLetterTagElementsKey?upper_case}</h2>
           <ul class="vrtx-tag">
-            <#list alphabeticalTagElementsChunk[alphabeticalTagElements] as element>
+            <#local tagElements = alphabeticalRangeTagElements[alphabeticalRangeTagElementsKey]>
+            <#list tagElements as element>
               <#-- Tag element -->
               <li class="vrtx-tags-element-${count}">
                 <a class="tags" href="${element.linkUrl?html}" rel="tags">${element.text?html}<#if showOccurences> (${element.occurences?html})</#if></a>

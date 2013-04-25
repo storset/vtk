@@ -606,7 +606,9 @@ maxHeight, minHeight, toolbar, complete, resizable, baseDocumentUrl, simple) {
 
   config.disableNativeSpellChecker = false;
 
-  config.allowedContent = true
+  config.allowedContent = true;
+  
+  config.linkShowTargetTab = false;
 
   // Configure tag formatting in source
   config.on = {

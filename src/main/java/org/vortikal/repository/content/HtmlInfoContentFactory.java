@@ -72,7 +72,9 @@ public class HtmlInfoContentFactory implements ContentFactory {
 
     private static class Handler implements ContentHandler, LexicalHandler {
         private HtmlInfo htmlInfo;
+        
         private Stack<String> stack = new Stack<String>();
+        private StringBuilder title = new StringBuilder();
 
         public Handler(HtmlInfo map) {
             this.htmlInfo = map;
@@ -82,7 +84,7 @@ public class HtmlInfoContentFactory implements ContentFactory {
         public void startElement(String namespaceUri, String localName, String qName,
                 Attributes attrs) throws SAXException {
             
-            this.stack.push(localName);
+            stack.push(localName);
             
             if ("meta".equals(localName)) {
                 boolean httpEquiv = false;
@@ -107,10 +109,10 @@ public class HtmlInfoContentFactory implements ContentFactory {
                     }
                 }
                 if (html5charset != null) {
-                  this.htmlInfo.setEncoding(html5charset.toLowerCase());
+                  htmlInfo.setEncoding(html5charset.toLowerCase());
                   
                 } else if (httpEquiv && charset != null) {
-                    this.htmlInfo.setEncoding(charset.toLowerCase());
+                    htmlInfo.setEncoding(charset.toLowerCase());
                 }
             }
         }
@@ -118,30 +120,32 @@ public class HtmlInfoContentFactory implements ContentFactory {
         @Override
         public void endElement(String namespaceUri, String localName, String qName)
                 throws SAXException {
-            if (!this.stack.isEmpty()) {
-                this.stack.pop();
+            if (!stack.isEmpty()) {
+                stack.pop();
+            }
+            if ("title".equals(localName)) {
+                htmlInfo.setTitle(title.toString());
             }
         }
 
         @Override
         public void characters(char[] chars, int start, int length)
                 throws SAXException {
-            if (!this.stack.isEmpty()) {
-                String top = this.stack.peek();
+            if (!stack.isEmpty()) {
+                String top = stack.peek();
                 if ("title".equals(top)) {
-                    this.htmlInfo.setTitle(new String(chars, start, length));
+                    title.append(chars, start, length);
                     return;
                 }
-                for (String elem: this.stack) {
+                for (String elem: stack) {
                     if ("body".equals(elem.toLowerCase())) {
                         String s = new String(chars, start, length);
                         if (!"".equals(s.trim())) {
-                            this.htmlInfo.setBody(true);
+                            htmlInfo.setBody(true);
                             throw new StopException();
                         }
                     }
                 }
-                
             }
         }
 

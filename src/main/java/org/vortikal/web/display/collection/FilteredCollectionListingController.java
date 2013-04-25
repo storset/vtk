@@ -81,6 +81,7 @@ public abstract class FilteredCollectionListingController implements ListingCont
     private SearchSorting defaultSearchSorting;
     private List<String> configurablePropertySelectPointers;
     protected Service viewService;
+    private List<String> filterWhitelistExceptions;
 
     /**
      * XXX
@@ -263,6 +264,10 @@ public abstract class FilteredCollectionListingController implements ListingCont
             parameterKey = parameterKey.substring(filterNamespace.length());
         }
 
+        if (filterWhitelistExceptions != null && filterWhitelistExceptions.contains(parameterKey)) {
+            return true;
+        }
+
         List<String> filter = currentFilters.get(parameterKey);
         if (filter != null) {
             return filter.contains(parameterValue);
@@ -342,6 +347,10 @@ public abstract class FilteredCollectionListingController implements ListingCont
 
     public void setConfigurablePropertySelectPointers(List<String> configurablePropertySelectPointers) {
         this.configurablePropertySelectPointers = configurablePropertySelectPointers;
+    }
+
+    public void setFilterWhitelistExceptions(List<String> filterWhitelistExceptions) {
+        this.filterWhitelistExceptions = filterWhitelistExceptions;
     }
 
 }

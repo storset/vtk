@@ -245,6 +245,16 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         // Evaluate revision content (as content-modification)
         Content content = getContent(resource, revision);
         ResourceImpl result = this.resourceHelper.contentModification(resource, principal, content);
+
+        // Add inherited properties (not loaded by revision store):
+        for (Property p: resource) {
+            if (p.isInherited()) {
+                if (result.getProperty(p.getDefinition().getNamespace(), 
+                        p.getDefinition().getName()) == null) {
+                    result.addProperty(p);
+                }
+            }
+        }
         result.setAcl(resource.getAcl());
         return result;
     }

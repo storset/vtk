@@ -492,6 +492,10 @@ div#resource\.picture\.preview.no-preview img {
   filter: none !important;
 }
 
+.cke_chrome .cke_combo_text {
+  width: 63px;
+}
+
 /* Override CK for injected save/help */
 
 .cke_chrome .vrtx-button {

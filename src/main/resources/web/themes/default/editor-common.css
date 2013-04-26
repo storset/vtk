@@ -488,7 +488,8 @@ div#resource\.picture\.preview.no-preview img {
 }
 
 .cke_chrome .cke_combo_button {
-  background: #fff !important; 
+  background: #fff !important;
+  filter: none !important;
 }
 
 /* Override CK for injected save/help */

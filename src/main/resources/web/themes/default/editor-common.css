@@ -558,7 +558,7 @@ div#resource\.picture\.preview.no-preview img {
   background: -o-linear-gradient(top, #71b2e9 0%,#66ace7 26%,#499ce2 74%,#3d95e0 100%); /* Opera 11.10+ */
   background: -ms-linear-gradient(top, #71b2e9 0%,#66ace7 26%,#499ce2 74%,#3d95e0 100%); /* IE10+ */
   background: linear-gradient(to bottom, #71b2e9 0%,#66ace7 26%,#499ce2 74%,#3d95e0 100%); /* W3C */
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#8ec6ef', endColorstr='#4db0e8',GradientType=0 ); /* IE6-9 */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#71b2e9', endColorstr='#3d95e0',GradientType=0 ); /* IE6-9 */
 }
 
 .cke_dialog a.cke_dialog_ui_button_ok:hover {
@@ -571,7 +571,7 @@ div#resource\.picture\.preview.no-preview img {
   background: -o-linear-gradient(top, #8ec6ef 0%,#83c2ed 22%,#56b4ea 83%,#4db0e8 100%); /* Opera 11.10+ */
   background: -ms-linear-gradient(top, #8ec6ef 0%,#83c2ed 22%,#56b4ea 83%,#4db0e8 100%); /* IE10+ */
   background: linear-gradient(to bottom, #8ec6ef 0%,#83c2ed 22%,#56b4ea 83%,#4db0e8 100%); /* W3C */
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#8ec6ef', endColorstr='#4db0e8',GradientType=0 );
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#8ec6ef', endColorstr='#4db0e8',GradientType=0 ); /* IE6-9 */
 }
 
 .cke_dialog a.cke_dialog_ui_button_ok span {

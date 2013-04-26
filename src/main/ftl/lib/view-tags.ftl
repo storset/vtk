@@ -80,10 +80,10 @@
     <#list rangesTagElements?keys as rangeKey>
       <div id="vrtx-tags-alphabetical-${rangeKey}">
         <#local range = rangesTagElements[rangeKey]>
-        <#list range?keys as letter>
-          <h2>${letter?upper_case}</h2>
+        <#list range?keys as letterKey>
+          <h2>${letterKey?upper_case}</h2>
           <ul class="vrtx-tag">
-            <#local tagElements = range[letter]>
+            <#local tagElements = range[letterKey]>
             <#list tagElements as element>
               <#-- Tag element -->
               <li class="vrtx-tags-element-${count}">

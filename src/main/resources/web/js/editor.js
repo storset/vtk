@@ -103,10 +103,16 @@ $(window).load(function () {
 
   // CTRL+S save inside CKEditor
   if (typeof CKEDITOR !== "undefined" && vrtxEditor.editorForm.length) { // XXX: Don't add event if not regular editor
-    CKEDITOR.on('instanceReady', function () {
+    CKEDITOR.on('instanceReady', function (event) {
       _$(".cke_contents iframe").contents().find("body").bind('keydown', 'ctrl+s', $.debounce(150, true, function (e) {
         ctrlSEventHandler(_$, e);
       }));
+      // Fix bug (http://dev.ckeditor.com/ticket/9958) with IE triggering onbeforeunload on dialog click
+      event.editor.on('dialogShow', function(dialogShowEvent) {
+        if(CKEDITOR.env.ie) {
+          $(dialogShowEvent.data._.element.$).find('a[href*="void(0)"]').removeAttr('href');
+        }
+      });
     });
   }
 });

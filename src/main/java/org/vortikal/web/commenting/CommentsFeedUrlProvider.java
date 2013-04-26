@@ -39,8 +39,6 @@ import org.vortikal.repository.Repository;
 import org.vortikal.repository.RepositoryAction;
 import org.vortikal.repository.Resource;
 import org.vortikal.web.RequestContext;
-import org.vortikal.web.RequestContext.RepositoryTraversal;
-import org.vortikal.web.RequestContext.TraversalCallback;
 import org.vortikal.web.decorating.DecoratorRequest;
 import org.vortikal.web.decorating.DecoratorResponse;
 import org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent;

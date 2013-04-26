@@ -550,7 +550,7 @@ div#resource\.picture\.preview.no-preview img {
 /* Blue buttons */
 .cke_dialog a.cke_dialog_ui_button_ok {
   text-shadow: none;
-  border-color: #B6B6B6 #B6B6B6 #999;
+  border-color: #2d81c8;
   background: #71b2e9; /* Old browsers */
   background: -moz-linear-gradient(top, #71b2e9 0%, #66ace7 26%, #499ce2 74%, #3d95e0 100%); /* FF3.6+ */
   background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#71b2e9), color-stop(26%,#66ace7), color-stop(74%,#499ce2), color-stop(100%,#3d95e0)); /* Chrome,Safari4+ */
@@ -563,7 +563,7 @@ div#resource\.picture\.preview.no-preview img {
 
 .cke_dialog a.cke_dialog_ui_button_ok:hover {
   text-shadow: none;
-  border-color: #B6B6B6 #B6B6B6 #999;
+  border-color: #2d81c8;
   background: #8ec6ef; /* Old browsers */
   background: -moz-linear-gradient(top, #8ec6ef 0%, #83c2ed 22%, #56b4ea 83%, #4db0e8 100%); /* FF3.6+ */
   background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#8ec6ef), color-stop(22%,#83c2ed), color-stop(83%,#56b4ea), color-stop(100%,#4db0e8)); /* Chrome,Safari4+ */

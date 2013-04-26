@@ -32,6 +32,7 @@ package org.vortikal.web.commenting;
 
 import java.util.Map;
 
+import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
@@ -44,14 +45,13 @@ import org.vortikal.web.decorating.DecoratorRequest;
 import org.vortikal.web.decorating.DecoratorResponse;
 import org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent;
 
+/**
+ * XXX class is named "an URL provider", which is easy to mix up with typical
+ * reference data provider classes.
+ * (Actual URL comes from another provider configured for the view.)
+ */
 public class CommentsFeedUrlProvider extends ViewRenderingDecoratorComponent {
     
-    private String trustedToken = null;
-    
-    public void setTrustedToken(String trustedToken) {
-        this.trustedToken = trustedToken;
-    }
-
     @Override
     protected void processModel(final Map<String, Object> model, DecoratorRequest request, DecoratorResponse response)
             throws Exception {
@@ -60,33 +60,22 @@ public class CommentsFeedUrlProvider extends ViewRenderingDecoratorComponent {
         Repository repository = requestContext.getRepository();
         String token = requestContext.getSecurityToken();
         Path uri = RequestContext.getRequestContext().getResourceURI();
-        Resource resource = repository.retrieve(token, uri, true);
-        boolean commentsAllowed = false;
-        if (resource != null) {
-            commentsAllowed = repository.isAuthorized(resource, RepositoryAction.ADD_COMMENT, 
-                    requestContext.getPrincipal(), false);
-        }
-        model.put("commentsAllowed", commentsAllowed);
         
-        model.put("commentsEnabled", false);
-        String traversalToken = this.trustedToken != null ? this.trustedToken : token;
-        RepositoryTraversal traversal = requestContext.rootTraversal(traversalToken, uri);
-        traversal.traverse(new TraversalCallback() {
-            @Override
-            public boolean callback(Resource resource) {
-                for (Property p: resource) {
-                    if (p.getDefinition().getName().equals("commentsEnabled")) {
-                        model.put("commentsEnabled", p.getBooleanValue());
-                        return false;
-                    }
-                }
-                return true;
-            }
-            @Override
-            public boolean error(Path uri, Throwable error) {
-                return false;
-            }
-        });
+        boolean commentsAllowed = false;
+        boolean commentsEnabled = false;
+
+        Resource resource = repository.retrieve(token, uri, true);
+        commentsAllowed = repository.isAuthorized(resource, RepositoryAction.ADD_COMMENT, 
+                                            requestContext.getPrincipal(), false);
+
+        Property commentsEnabledProp = resource.getProperty(Namespace.DEFAULT_NAMESPACE, "commentsEnabled");
+        if (commentsEnabledProp != null && commentsEnabledProp.getBooleanValue()) {
+            commentsEnabled = true;
+        }
+        
+        model.put("commentsAllowed", commentsAllowed);
+        model.put("commentsEnabled", commentsEnabled);
+        
     }
 
 }

@@ -64,26 +64,26 @@
   </div>
 </#macro>
 
-<#macro displayAlphabeticalTagElements alphabeticalRangesTagElements showOccurences=false>
+<#macro displayAlphabeticalTagElements rangesTagElements showOccurences=false>
   <div id="vrtx-tags-service">
   
   <#local count = 1 />
 
   <div id="vrtx-tags-alphabetical-tabs">
     <ul style="display: none">
-      <#list alphabeticalRangesTagElements?keys as alphabeticalRangeTagElementsKey>
+      <#list rangesTagElements?keys as rangeKey>
         <li>
-          <a href="#vrtx-tags-alphabetical-${alphabeticalRangeTagElementsKey}" name="vrtx-tags-alphabetical-${alphabeticalRangeTagElementsKey}">${alphabeticalRangeTagElementsKey?upper_case?replace("-", " - ")}</a>
+          <a href="#vrtx-tags-alphabetical-${rangeKey}" name="vrtx-tags-alphabetical-${rangeKey}">${rangeKey?upper_case?replace("-", " - ")}</a>
         </li>
       </#list>
     </ul>
-    <#list alphabeticalRangesTagElements?keys as alphabeticalRangeTagElementsKey>
-      <div id="vrtx-tags-alphabetical-${alphabeticalRangeTagElementsKey}">
-        <#local alphabeticalRangeTagElements = alphabeticalRangesTagElements[alphabeticalRangeTagElementsKey]>
-        <#list alphabeticalRangeTagElements?keys as alphabeticalLetterTagElementsKey>
-          <h2>${alphabeticalLetterTagElementsKey?upper_case}</h2>
+    <#list rangesTagElements?keys as rangeKey>
+      <div id="vrtx-tags-alphabetical-${rangeKey}">
+        <#local range = rangesTagElements[rangeKey]>
+        <#list range?keys as letter>
+          <h2>${letter?upper_case}</h2>
           <ul class="vrtx-tag">
-            <#local tagElements = alphabeticalRangeTagElements[alphabeticalLetterTagElementsKey]>
+            <#local tagElements = range[letter]>
             <#list tagElements as element>
               <#-- Tag element -->
               <li class="vrtx-tags-element-${count}">

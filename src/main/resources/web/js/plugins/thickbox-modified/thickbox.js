@@ -255,7 +255,7 @@ function tb_show(caption, url, imageGroup) { //function called when the user cli
           display: "block"
         });
       } else if (typeof params['inlineClass'] !== "undefined") {
-        $("#TB_ajaxContent").append($('.' + params['inlineClass']).children().clone());
+        $("#TB_ajaxContent").append($('.' + params['inlineClass']).filter(":visible").children().clone());
         tb_position();
         $("#TB_load").remove();
         $("#TB_window").css({

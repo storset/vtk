@@ -7,7 +7,7 @@
 <#import "/lib/collections/view-person-listing.ftl" as persons />
 
 <#macro displayTagElements tagElements showOccurences=false splitInThirds=false limit=0>
-  <div id="vrtx-tags-service">
+  <div class="vrtx-tags-service">
   
   <#local count = 1 />
   
@@ -65,7 +65,7 @@
 </#macro>
 
 <#macro displayAlphabeticalTagElements rangesTagElements showOccurences=false>
-  <div id="vrtx-tags-service">
+  <div class="vrtx-tags-service">
   
   <#local count = 1 />
 

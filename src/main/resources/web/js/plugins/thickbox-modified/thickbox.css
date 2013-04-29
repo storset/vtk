@@ -186,7 +186,7 @@ margin-top: expression(0 - parseInt(this.offsetHeight / 2) + (TBWindowMargin = d
 
 #TB_overlay,
 #TB_window {
-  z-index: 9999 !important;
+  z-index: 99999 !important;
 }
 
 #TB_ajaxContent,

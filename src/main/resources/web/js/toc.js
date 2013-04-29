@@ -24,7 +24,12 @@ function tocGen(writeTo) {
     var headers = null;
     if (document.querySelectorAll) { /* >= IE8 */
       if (tocTargetId !== "") {
-        headers = document.getElementById(tocTargetId).querySelectorAll('h2,h3');
+        var tocTarget = document.getElementById(tocTargetId);
+        if(tocTarget != null) {
+          headers = tocTarget.querySelectorAll('h2,h3');
+        } else {
+          headers = document.querySelectorAll('h2,h3');
+        }
       } else {
         headers = document.querySelectorAll('h2,h3');
       }
@@ -86,7 +91,12 @@ function getElementsByTagNames(list, obj) {
   for (var i = 0, tagNamesLength = tagNames.length; i < tagNamesLength; i++) {
 	var tags = null;
     if (tocTargetId !== "") {
-      tags = obj.getElementById(tocTargetId).getElementsByTagName(tagNames[i]);
+      var tocTarget = obj.getElementById(tocTargetId);
+      if(tocTarget != null) {
+        tags = tocTarget.getElementsByTagName(tagNames[i]);
+      } else {
+        tags = obj.getElementsByTagName(tagNames[i]);
+      }
     } else {
       tags = obj.getElementsByTagName(tagNames[i]);
     }

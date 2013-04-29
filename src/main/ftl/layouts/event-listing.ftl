@@ -106,7 +106,7 @@
        </#if>
 
         <div class="vrtx-event-component-title">
-          <a class="vrtx-event-component-title summary vrtx-link-check" href="${uri?html}">${title?html}</a>
+          <a class="vrtx-event-component-title summary" href="${uri?html}">${title?html}</a>
         </div>
 
         <div class="vrtx-event-component-misc">
@@ -130,7 +130,7 @@
           <#if conf.addToCalendar>
             <div class="vrtx-number-of-comments-add-event-container">
               <span class="vrtx-add-event">
-                <a class="vrtx-ical vrtx-link-check" href="${uri?html}?vrtx=ical"><@vrtx.msg code="event.add-to-calendar" /></a>
+                <a class="vrtx-ical" href="${uri?html}?vrtx=ical"><@vrtx.msg code="event.add-to-calendar" /></a>
                 <a class="vrtx-ical-help" href="${vrtx.getMsg("event.add-to-calendar.help-url")?html}" title="${vrtx.getMsg("event.add-to-calendar.help")?html}"></a>
               </span>
             </div> 
@@ -186,7 +186,7 @@
     </#if>
 
     <div class="vrtx-event-component-title">
-      <a class="vrtx-event-component-title summary vrtx-link-check" href="${uri?html}">${title?html}</a>
+      <a class="vrtx-event-component-title summary" href="${uri?html}">${title?html}</a>
     </div>
 
     <div class="vrtx-event-component-misc">
@@ -220,7 +220,7 @@
 
       <#if conf.addToCalendar>
         <span class="vrtx-add-event">
-          <a class="vrtx-ical vrtx-link-check" href="${uri?html}?vrtx=ical"><@vrtx.msg code="event.add-to-calendar" /></a><a class="vrtx-ical-help" href="${vrtx.getMsg("event.add-to-calendar.help-url")?html}" title="${vrtx.getMsg("event.add-to-calendar.help")?html}"></a>
+          <a class="vrtx-ical" href="${uri?html}?vrtx=ical"><@vrtx.msg code="event.add-to-calendar" /></a><a class="vrtx-ical-help" href="${vrtx.getMsg("event.add-to-calendar.help-url")?html}" title="${vrtx.getMsg("event.add-to-calendar.help")?html}"></a>
         </span>
       </#if>
     </div>

@@ -276,11 +276,11 @@ a:hover {
 }
 
 .js #navigate-crumbs-left {
-  left: 50px;
+  left: 35px;
 }
 
 .js #navigate-crumbs-right {
-  right: 50px;
+  right: 35px;
 }
 
 .js #navigate-crumbs-left {
@@ -2741,7 +2741,7 @@ body#vrtx-preview .tabMessage-big {
 
 .app-fluid #app-head #global-menu-top,
 .app-fluid #app-head #global-menu-bottom {
-  right: 50px;
+  right: 55px;
 }
 
 * html .app-fluid #app-footer {

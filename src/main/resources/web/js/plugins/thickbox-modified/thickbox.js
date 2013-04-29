@@ -12,6 +12,7 @@ var tb_pathToImage = "/vrtx/__vrtx/static-resources/js/plugins/thickbox-modified
 // USIT added: opacity animation
 // USIT added: dynamic on click
 // USIT removed: old Mac FF hack
+// USIT modified: inlineId to duplicate instead of remove and append back
 
 /*!!!!!!!!!!!!!!!!! edit below this line at your own risk !!!!!!!!!!!!!!!!!!!!!!!*/
 
@@ -247,10 +248,7 @@ function tb_show(caption, url, imageGroup) { //function called when the user cli
       $("#TB_closeWindowButton").click(tb_remove);
 
       if (typeof params['inlineId'] !== "undefined") {
-        $("#TB_ajaxContent").append($('#' + params['inlineId']).children());
-        $("#TB_window").unload(function () {
-          $('#' + params['inlineId']).append($("#TB_ajaxContent").children()); // move elements back when you're finished
-        });
+        $("#TB_ajaxContent").append($('#' + params['inlineId']).children().clone());
         tb_position();
         $("#TB_load").remove();
         $("#TB_window").css({

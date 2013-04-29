@@ -500,8 +500,13 @@
   <!-- ### SHARED TEXT ### -->
   <bean id="sharedTextResolver" class="org.vortikal.resourcemanagement.studies.SharedTextResolver">
     <property name="resourceTypeTree" ref="resourceTypeTree" />
-    <property name="safeHtmlFilter" ref="safeHtml.filterWithClass" />
+    <property name="safeHtmlFilter" ref="sharedTextResolver.filter" />
     <property name="htmlParser" ref="decorating.htmlParser" />
+  </bean>
+
+  <bean id="sharedTextResolver.filter" class="org.vortikal.text.html.SimpleHtmlPageFilter">
+    <property name="illegalElements" ref="safeHtml.illegalElementSet" />
+    <property name="checkValidElements" value="false" />
   </bean>
 
   <bean id="sharedTextComponent" class="org.vortikal.resourcemanagement.studies.SharedTextComponent">

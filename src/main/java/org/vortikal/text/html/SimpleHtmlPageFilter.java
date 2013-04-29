@@ -67,6 +67,7 @@ public class SimpleHtmlPageFilter implements HtmlPageFilter {
     private Set<String> illegalElements = new HashSet<String>();
     private Map<String, HtmlElementDescriptor> validElements = new HashMap<String, HtmlElementDescriptor>();
     private boolean keepComments = true;
+    private boolean checkValidElements = true;
     
     public SimpleHtmlPageFilter() {
     }
@@ -98,6 +99,10 @@ public class SimpleHtmlPageFilter implements HtmlPageFilter {
     public void setKeepComments(boolean keepComments) {
         this.keepComments = keepComments;
     }
+    
+    public void setCheckValidElements(boolean checkValidElements) {
+        this.checkValidElements = checkValidElements;
+    }
 
     @Override
     public boolean match(HtmlPage page) {
@@ -108,7 +113,7 @@ public class SimpleHtmlPageFilter implements HtmlPageFilter {
     public HtmlPageFilter.NodeResult filter(HtmlContent node) {
 
         if (node instanceof HtmlComment) {
-            return this.keepComments ? NodeResult.keep : NodeResult.exclude;
+            return keepComments ? NodeResult.keep : NodeResult.exclude;
 
         } else if (node instanceof HtmlText) {
             return NodeResult.keep;
@@ -117,12 +122,16 @@ public class SimpleHtmlPageFilter implements HtmlPageFilter {
             HtmlElement element = (HtmlElement) node;
             String name = element.getName().toLowerCase();
 
-            if (this.illegalElements.contains(name)) {
+            if (illegalElements.contains(name)) {
                 return NodeResult.exclude;
             }
+            
+            if (!checkValidElements) {
+                return NodeResult.keep;
+            }
 
-            if (this.validElements.containsKey(name)) {
-                HtmlElementDescriptor desc = this.validElements.get(name);
+            if (validElements.containsKey(name)) {
+                HtmlElementDescriptor desc = validElements.get(name);
                 String value = element.getContent();
                 if (!desc.isValidAsEmpty() && "".equals(value.trim())) {
                     return NodeResult.exclude;

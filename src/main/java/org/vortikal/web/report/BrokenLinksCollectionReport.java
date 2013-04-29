@@ -74,10 +74,10 @@ public class BrokenLinksCollectionReport extends BrokenLinksReport {
         if ((pageSize * page) - pageSize < accumulator.map.size()) {
             URL currentPage = URL.create(request).removeParameter("page");
             if (page > 1) {
-                result.put("prev", currentPage.addParameter("page", String.valueOf(page - 1)));
+                result.put("prev", new URL(currentPage).addParameter("page", String.valueOf(page - 1)));
             }
             if (pageSize * page < accumulator.map.size()) {
-                result.put("next", currentPage.addParameter("page", String.valueOf(page + 1)));
+                result.put("next", new URL(currentPage).addParameter("page", String.valueOf(page + 1)));
             }
 
             Iterator<Entry<String, CollectionStats>> it = accumulator.map.entrySet().iterator();

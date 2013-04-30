@@ -468,6 +468,12 @@ div#resource\.picture\.preview.no-preview img {
   border-bottom: none !important;
 }
 
+/* Contains float alternative fix to make help-menu visible on slide-down (overflowing) */
+.cke_chrome .cke_maximized .cke_top {
+  overflow: visible;
+  display: inline-block;
+}
+
 .cke_chrome .cke_bottom {
   background: transparent !important;
   filter: none !important;

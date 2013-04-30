@@ -6,7 +6,7 @@
  */
 
 #vrtx-link-check-spinner {
-  background: #efefef url(icons/tabmenu-spinner.gif) no-repeat 10px 50%;
+  background: #efefef url(images/spinner.png) no-repeat 10px 50%;
   display: block;
   position: absolute;
   top: 0px;

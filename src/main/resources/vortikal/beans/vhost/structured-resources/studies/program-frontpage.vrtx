@@ -17,7 +17,8 @@ resourcetype program-frontpage : program-document {
 
   edit-rules {
     ctx-patch (class[vrtx-info-msg]),
-  
+    ctx-patch (before name),
+    
     program-type (dropdown),
     faculty (dropdown),
     theme (dropdown),

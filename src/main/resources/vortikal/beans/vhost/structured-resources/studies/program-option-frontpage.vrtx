@@ -10,7 +10,8 @@ resourcetype program-option-frontpage : program-document {
 
   edit-rules {
     ctx-patch (class[vrtx-info-msg]),
-  
+    ctx-patch (before name),
+    
     name (size[large]),
     group samlet (name-no, name-nn, name-en) (after name) horizontal,
     picture (after samlet),

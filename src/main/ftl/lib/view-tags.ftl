@@ -6,13 +6,13 @@
 <#import "/lib/collections/view-project-listing.ftl" as projects />
 <#import "/lib/collections/view-person-listing.ftl" as persons />
 
-<#macro displayTagElements tagElements showOccurences=false splitInThirds=false limit=0>
+<#macro displayTagElements tagElements showOccurences=false split="" limit=0>
   <div class="vrtx-tags-service">
   
   <#local count = 1 />
   
   <#-- Split in thirds -->
-  <#if splitInThirds>
+  <#if split?has_content && split = "thirds">
     <#assign tagElementsSize = tagElements?size />
     <#if (limit > 0 && tagElementsSize > limit)>
       <#assign tagElementsSize = limit />  
@@ -33,6 +33,41 @@
       </#if>
       <#if ((count = colOneCount + colTwoCount) && colThreeCount > 0)>
         </ul><ul class="vrtx-tag thirds-right">
+      </#if>
+      
+      <#-- Limit -->
+      <#if count = limit>
+        <#break>
+      </#if> 
+      <#local count = count + 1 />
+    </#list>
+    </ul>
+  <#-- Split in fourths -->
+  <#elseif split?has_content && split = "fourths">
+    <#assign tagElementsSize = tagElements?size />
+    <#if (limit > 0 && tagElementsSize > limit)>
+      <#assign tagElementsSize = limit />  
+    </#if>
+    <#local colOneCount = vrtx.getEvenlyColumnDistribution(tagElementsSize, 1, 4) />
+    <#local colTwoCount = vrtx.getEvenlyColumnDistribution(tagElementsSize, 2, 4) />
+    <#local colThreeCount = vrtx.getEvenlyColumnDistribution(tagElementsSize, 3, 4) />
+    <#local colFourCount = vrtx.getEvenlyColumnDistribution(tagElementsSize, 4, 4) />
+    <ul class="vrtx-tag fourths-left">
+    <#list tagElements as element>
+    
+      <#-- Tag element -->
+      <li class="vrtx-tags-element-${count}">
+        <a class="tags" href="${element.linkUrl?html}" rel="tags">${element.text?html}<#if showOccurences> (${element.occurences?html})</#if></a>
+      </li>
+      
+      <#if (count = colOneCount && colTwoCount > 0)>
+        </ul><ul class="vrtx-tag fourths-middle">
+      </#if>
+      <#if ((count = colOneCount + colTwoCount) && colThreeCount > 0)>
+        </ul><ul class="vrtx-tag fourths-middle">
+      </#if>
+      <#if ((count = colOneCount + colTwoCount + colThreeCount) && colFourCount > 0)>
+        </ul><ul class="vrtx-tag fourths-right">
       </#if>
       
       <#-- Limit -->

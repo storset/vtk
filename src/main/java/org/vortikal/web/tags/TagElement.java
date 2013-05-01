@@ -38,23 +38,20 @@ public class TagElement extends Tag implements Comparable<TagElement> {
     private URL linkUrl;
     private int occurences;
 
-
-    public TagElement(int magnitude, URL linkUrl, String text,int occurences) {
+    public TagElement(int magnitude, URL linkUrl, String text, int occurences) {
         super(text);
         this.magnitude = magnitude;
         this.linkUrl = linkUrl;
         this.occurences = occurences;
     }
 
-	public int getMagnitude() {
+    public int getMagnitude() {
         return magnitude;
     }
-
 
     public URL getLinkUrl() {
         return linkUrl;
     }
-
 
     // VTK-1107: Sets the text to compare to lowercase,
     // thus avoiding problem with sorting.
@@ -63,8 +60,18 @@ public class TagElement extends Tag implements Comparable<TagElement> {
         return this.getText().toLowerCase().compareTo(other.getText().toLowerCase());
     }
 
-	public int getOccurences() {
-		return occurences;
-	}
+    public int getOccurences() {
+        return occurences;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder(this.getText());
+        if (linkUrl != null) {
+            sb.append(": ").append(linkUrl);
+        }
+        sb.append(" [occurences: ").append(occurences).append(", magnitude: ").append(magnitude).append("]");
+        return sb.toString();
+    }
 
 }

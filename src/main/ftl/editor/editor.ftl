@@ -348,7 +348,8 @@
       <#-- hack for setting collection titles: -->
       <#elseif isCollection && (name='userTitle' || name='navigationTitle')>
 
-        <#if value = '' && name='userTitle'>
+        <#-- Except for employee listing, which has a default generated title based on areacode -->
+        <#if value = '' && name='userTitle' && resource.resourceType != 'employee-listing'>
           <#local value = resource.title?html />
         </#if>  
         <#if name='userTitle'>  

@@ -186,6 +186,7 @@ a:hover {
   overflow: hidden;
   position: relative;
   bottom: -1px;
+  margin-top: -1px;
 }
 
 #app-head-wrapper #line-top #uiologo,

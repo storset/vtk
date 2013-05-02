@@ -12,7 +12,7 @@
   <#local count = 1 />
   
   <#-- Split in thirds -->
-  <#if split?has_content && split = "thirds">
+  <#if split = "thirds">
     <#assign tagElementsSize = tagElements?size />
     <#if (limit > 0 && tagElementsSize > limit)>
       <#assign tagElementsSize = limit />  
@@ -43,7 +43,7 @@
     </#list>
     </ul>
   <#-- Split in fourths -->
-  <#elseif split?has_content && split = "fourths">
+  <#elseif split = "fourths">
     <#assign tagElementsSize = tagElements?size />
     <#if (limit > 0 && tagElementsSize > limit)>
       <#assign tagElementsSize = limit />  

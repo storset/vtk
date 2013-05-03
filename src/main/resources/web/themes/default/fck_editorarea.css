@@ -13,11 +13,7 @@ body {
   background-color: #fff;
 
   /* USIT: Make sure it stays the same in all browsers */
-  margin: 10px;
-}
-
-body > *:first-child {
-  margin-top: 0px;
+  margin: 12px;
 }
 
 /* USIT - font */

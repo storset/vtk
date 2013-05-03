@@ -126,7 +126,8 @@ public abstract class AtomFeedGenerator implements FeedGenerator {
         publishedDateProp = publishedDateProp == null ? feedScope.getProperty(creationTimePropDef) : publishedDateProp;
         feed.setId(getId(feedScope.getURI(), publishedDateProp, getFeedPrefix()));
 
-        feed.addLink(requestContext.getRequestURL().toString(), "alternate");
+        URL feedAlternateURL = URL.parse(requestContext.getRequestURL().toString()).clearParameters();
+        feed.addLink(feedAlternateURL.toString(), "alternate");
         feed.addLink(requestContext.getRequestURL().toString(), "self");
 
         // Author of feed is the system service

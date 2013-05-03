@@ -351,7 +351,7 @@ resourcetype program-document {
           [def uriSort uriSort + ","]
         [endif]
       [endlist]
-      [def collections search('(' + uriQuery + ') && type IN collection && published=true', null)]
+      [def collections search('(' + uriQuery + ') && type IN collection && published=true && navigation:hidden not exists', null)]
       [if typeof(programLinkSort) = 'function']
         [def collections programLinkSort(collections, uriSort)]
       [endif]

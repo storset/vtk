@@ -194,6 +194,8 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
   if (!activeTabMsg.text().length) {
     activeTabMsg.remove();
   }
+  
+  interceptEnterKey();
 
   vrtxAdm.logoutButtonAsLink();
   vrtxAdm.adjustResourceTitle();
@@ -717,8 +719,8 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
     4. General interaction / dialogs
 \*-------------------------------------------------------------------*/
 
-function interceptEnterKey(idOrClass) {
-  vrtxAdmin.cachedAppContent.delegate("form input" + idOrClass, "keypress", function (e) {
+function interceptEnterKey() {
+  vrtxAdmin.cachedAppContent.delegate("form input", "keypress", function (e) {
     if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
       e.preventDefault(); // cancel the default browser click
     }

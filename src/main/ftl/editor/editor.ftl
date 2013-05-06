@@ -73,10 +73,6 @@
           }
         });
         
-        <#if !isCollection>
-          interceptEnterKey('#resource\\.tags');
-        </#if>
-        
         // XXX: possible to avoid hard-coding of these? (as in new editor)
         var hasFeaturedArticles = _$("#resource\\.featured-articles").length;
         var hasAggregation = _$("#resource\\.aggregation").length;

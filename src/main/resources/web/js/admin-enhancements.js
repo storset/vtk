@@ -300,15 +300,18 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
   $(document).on("click", "#global-menu-create a", function (e) {
     var link = this;
     var id = link.id + "-content";
-    if (!dialogManageCreateHtml[id]) {
+    var dialogManageCreate = $("#" + id);
+    if (!dialogManageCreate.length) {
       vrtxAdm.serverFacade.getHtml(link.href, {
         success: function (results, status, resp) {
-          dialogManageCreateHtml[id] = _$(_$.parseHTML(results)).find("#vrtx-manage-create-content").html();
+          _$("body").append("<div id='" + id + "'>" + _$(_$.parseHTML(results)).find("#vrtx-manage-create-content").html() + "</div>");
+          dialogManageCreate = _$("#" + id);
+          dialogManageCreate.hide();
           // Lazy-load JS-dependency chain (cached)
           vrtxAdm.loadScript(location.protocol + '//' + location.host + '/vrtx/__vrtx/static-resources/jquery/plugins/jquery.treeview.js', function () {
             vrtxAdm.loadScript(location.protocol + '//' + location.host + '/vrtx/__vrtx/static-resources/jquery/plugins/jquery.treeview.async.js', function () {
               vrtxAdm.loadScript(location.protocol + '//' + location.host + '/vrtx/__vrtx/static-resources/jquery/plugins/jquery.scrollTo.min.js', function () {
-                vrtxSimpleDialogs.openHtmlDialog("global-menu-create", dialogManageCreateHtml[id], link.title, 600, 395);
+                vrtxSimpleDialogs.openHtmlDialog("global-menu-create", dialogManageCreate.html(), link.title, 600, 395);
                 initializeTree();
               });
             });
@@ -316,7 +319,7 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
         }
       });
     } else {
-      vrtxSimpleDialogs.openHtmlDialog("global-menu-create", dialogManageCreateHtml[id], link.title, 600, 395);
+      vrtxSimpleDialogs.openHtmlDialog("global-menu-create", dialogManageCreate.html(), link.title, 600, 395);
       initializeTree();
     }
     e.stopPropagation();

@@ -341,26 +341,32 @@ input[type=text]:focus {
   margin: 0;
 }
 
+.ui-dialog .ui-dialog-titlebar-close {
+  right: 3px;
+  top: 3px;
+}
+
 .ui-dialog .ui-dialog-titlebar-close,
-.ui-dialog .ui-dialog-titlebar-close span {
+.ui-dialog .ui-dialog-titlebar-close.ui-state-hover {
+  border: none;
+  background: none;
+}
+
+.ui-dialog .ui-dialog-titlebar-close,
+.ui-dialog .ui-dialog-titlebar-close .ui-icon {
   width: 20px;
   height: 18px;
   margin: 0;
   padding: 0;
 }
 
-.ui-dialog .ui-dialog-titlebar-close {
-  right: 3px;
-  top: 3px;
+.ui-dialog .ui-dialog-titlebar-close .ui-button-text {
+  display: none;
 }
 
-.ui-dialog .ui-dialog-titlebar-close.ui-state-hover {
-  border: none;
-  background: none;
-}
-
-.ui-dialog .ui-dialog-titlebar-close span {
+.ui-dialog .ui-dialog-titlebar-close .ui-icon {
   background: url(/vrtx/__vrtx/static-resources/themes/default/images/thickbox-close.png) no-repeat center center;
+  position: static;
 }
 
 .ui-dialog .ui-dialog-buttonpane,

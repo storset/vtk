@@ -1176,6 +1176,7 @@ function enhanceMultipleInputFields(name, isMovable, isBrowsable, limit) { // TO
   for (var i = 0, len = formFields.length; i < len; i++) {
     html += addFormFieldFunc(name, len, $.trim(formFields[i]), size, isBrowsable, isMovable, isDropdown, true);
   }
+  html = $.parseHTML(html);
   $(html).insertBefore("#vrtx-" + name + "-add");
   
   // Hide add button if limit is reached or gone over
@@ -1224,7 +1225,7 @@ function addFormField(name, len, value, size, isBrowsable, isMovable, isDropdown
         last.append(moveDownButton);
       }
     }
-    $(html).insertBefore("#vrtx-" + name + "-add");
+    $($.parseHTML(html)).insertBefore("#vrtx-" + name + "-add");
     autocompleteUsername(".vrtx-autocomplete-username", idstr + i);
   } else {
     return html;
@@ -2015,7 +2016,7 @@ VrtxEditor.prototype.openSendToApproval = function openSendToApproval(link) {
   if (!dialogManageCreate.length) {
     vrtxAdm.serverFacade.getHtml(link.href, {
       success: function (results, status, resp) {
-        _$("body").append("<div id='" + id + "'>" + _$(results).find("#contents").html() + "</div>");
+        _$("body").append("<div id='" + id + "'>" + _$(_$.parseHTML(results)).find("#contents").html() + "</div>");
         dialogManageCreate = _$("#" + id);
         dialogManageCreate.hide();
         vrtxEditor.openSendToApprovalOpen(dialogManageCreate, link);
@@ -2052,7 +2053,7 @@ VrtxEditor.prototype.saveSendToApproval = function saveSendToApproval(btn) {
   vrtxAdm.serverFacade.postHtml(url, dataString, {
     success: function (results, status, resp) {
       var formParent = form.parent();
-      formParent.html(_$(results).find("#contents").html());
+      formParent.html(_$($.parseHTML(results)).find("#contents").html());
       var successWrapper = formParent.find("#email-approval-success");
       if (successWrapper.length) { // Save async if sent mail
         successWrapper.trigger("click");

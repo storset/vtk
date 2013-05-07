@@ -91,15 +91,15 @@
             function treeController(tree, control) {
                 function handler(filter) {
                     return function () {
-                        toggler.apply($("div." + CLASSES.hitarea, tree).filter(function () {
+                        toggler.apply(tree.find("div." + CLASSES.hitarea).filter(function () {
                             return filter ? $(this).parent("." + filter).length : true;
                         }));
                         return false;
                     };
                 }
-                $("a:eq(0)", control).click(handler(CLASSES.collapsable));
-                $("a:eq(1)", control).click(handler(CLASSES.expandable));
-                $("a:eq(2)", control).click(handler());
+                control.find("a:eq(0)").click(handler(CLASSES.collapsable));
+                control.find("a:eq(1)").click(handler(CLASSES.expandable));
+                control.find("a:eq(2)").click(handler());
             }
             function toggler() {
                 $(this).parent().find(">.hitarea").swapClass(CLASSES.collapsableHitarea, CLASSES.expandableHitarea).swapClass(CLASSES.lastCollapsableHitarea, CLASSES.lastExpandableHitarea).end().swapClass(CLASSES.collapsable, CLASSES.expandable).swapClass(CLASSES.lastCollapsable, CLASSES.lastExpandable).find(">ul").heightToggle(settings.animated, settings.toggle);
@@ -129,33 +129,34 @@
             this.addClass("treeview");
             var branches = this.find("li").prepareBranches(settings);
             switch (settings.persist) {
-            case "cookie":
-                var toggleCallback = settings.toggle;
-                settings.toggle = function () {
-                    serialize();
-                    if (toggleCallback) {
-                        toggleCallback.apply(this, arguments);
+                case "cookie":
+                    var toggleCallback = settings.toggle;
+                    settings.toggle = function () {
+                        serialize();
+                        if (toggleCallback) {
+                            toggleCallback.apply(this, arguments);
+                        }
+                    };
+                    deserialize();
+                    break;
+                case "location":
+                    var current = this.find("a").filter(function () {
+                        return this.href.toLowerCase() == location.href.toLowerCase();
+                    });
+                    if (current.length) {
+                        current.addClass("selected").parents("ul, li").add(current.next()).show();
                     }
-                };
-                deserialize();
-                break;
-            case "location":
-                var current = this.find("a").filter(function () {
-                    return this.href.toLowerCase() == location.href.toLowerCase();
-                });
-                if (current.length) {
-                    current.addClass("selected").parents("ul, li").add(current.next()).show();
-                }
-                break;
+                    break;
             }
             branches.applyClasses(settings, toggler);
             if (settings.control) {
                 treeController(this, settings.control);
                 $(settings.control).show();
-            }
+            }     
+
             return this.bind("add", function (event, branches) {
                 $(branches).prev().removeClass(CLASSES.last).removeClass(CLASSES.lastCollapsable).removeClass(CLASSES.lastExpandable).find(">.hitarea").removeClass(CLASSES.lastCollapsableHitarea).removeClass(CLASSES.lastExpandableHitarea);
-                $(branches).find("li").andSelf().prepareBranches(settings).applyClasses(settings, toggler);
+                $(branches).find("li").addBack().prepareBranches(settings).applyClasses(settings, toggler);
             });
         }
     });

@@ -107,15 +107,6 @@
         var $this = $(this);
         if ($this.hasClass("hasChildren")) {
           var subFolder = $(this).find("a").attr("href").split("?")[0];
-          if ($.browser.msie && $.browser.version <= 7) { // dirty but only way to fix broken IE 7 DOM
-            var locationHref = window.location.href;
-            var uioCutpoint = "uio.no/";
-            var devCutpoint = ":9322/";
-            var uioEnd = locationHref.indexOf(uioCutpoint) + uioCutpoint.length;
-            uioEnd = uioEnd > uioCutpoint.length ? uioEnd : locationHref.indexOf(devCutpoint) + devCutpoint.length;
-            var base = locationHref.substring(0, uioEnd);
-            subFolder = "/" + subFolder.replace(base, "");
-          }
           var timestamp = 1 - new Date();
           var ajaxUrl = {
             url: "?vrtx=admin&service=" + settings.service + "&uri=" + subFolder + "&ts=" + timestamp

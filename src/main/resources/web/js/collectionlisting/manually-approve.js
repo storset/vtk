@@ -39,7 +39,7 @@ $(window).load(function() {
       var html = $.mustache(MANUALLY_APPROVE_TEMPLATES["menu"], { approveShowAll: approveShowAll, 
                                                                   approveShowApprovedOnly: approveShowApprovedOnly });  
     
-      $(html).insertAfter("#manually-approve-container-title"); 
+      $($.parseHTML(html)).insertAfter("#manually-approve-container-title"); 
     });
   } else {
     MANUALLY_APPROVE_INITIALIZED.resolve();

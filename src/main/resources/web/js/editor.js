@@ -1716,13 +1716,12 @@ VrtxEditor.prototype.accordionGroupedInit = function accordionGroupedInit(subGro
   }
 
   // Initialize accordion
-  vrtxEdit.editorForm.find("#" + accordionWrpId)
-    .accordion({
+  vrtxEdit.editorForm.find("#" + accordionWrpId).accordion({
     header: "> div > .header",
-    autoHeight: false,
+    heightStyle: "content",
     collapsible: true,
     active: false,
-    change: function (e, ui) {
+    activate: function (e, ui) {
       accordionUpdateHeader(ui.oldHeader, false, false);
     }
   });
@@ -1767,12 +1766,15 @@ function accordionJsonNew(accordionWrapper) {
 }
 
 function accordionJsonRefresh(elem, active) {
-  elem.accordion("destroy").accordion({
+  if(elem.hasClass("ui-accordion")) {
+    elem.accordion("destroy");
+  }
+  elem.accordion({
     header: "> div > .header",
-    autoHeight: false,
+    heightStyle: "content",
     collapsible: true,
     active: active,
-    change: function (e, ui) {
+    activate: function (e, ui) {
       accordionUpdateHeader(ui.oldHeader, true, false);
       if (vrtxEditor.multipleFieldsBoxesAccordionSwitchThenScrollTo) {
         scrollToElm(vrtxEditor.multipleFieldsBoxesAccordionSwitchThenScrollTo);

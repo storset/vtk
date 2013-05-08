@@ -1855,7 +1855,7 @@ function accordionUpdateHeader(elem, isJson, init) {
       if (!isJson && init) {
         header.data("origText", header.text());
       }
-      header.html('<span class="ui-icon ui-icon-triangle-1-e"></span>' + (!isJson ? header.data("origText") + " - " : "") + str);
+      header.html('<span class="ui-accordion-header-icon ui-icon ui-icon-triangle-1-e"></span>' + (!isJson ? header.data("origText") + " - " : "") + str);
     }
   }
 }

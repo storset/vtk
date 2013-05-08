@@ -76,6 +76,8 @@ public class ReportHandler implements Controller {
     // report flap, but only accessible via other reports (primarily via
     // "primaryReportes"
     protected List<Reporter> hiddenReporters;
+    
+    private Service viewReportService;
 
     @Override
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -104,12 +106,17 @@ public class ReportHandler implements Controller {
                     Map<String, Principal> principalDocuments = this.getPrincipalDocuments(report, locale);
                     model.put("principalDocuments", principalDocuments);
                 }
-
+               
                 model.put("report", report);
+                
+                Map<String, String> typeParam = new HashMap<String, String>();
+                typeParam.put(AbstractReporter.REPORT_TYPE_PARAM, reportType);
+                model.put("viewReportServiceURL", viewReportService.constructURL(resource, securityContext.getPrincipal(), typeParam));
+                
                 return new ModelAndView(reporter.getViewName(), model);
             }
         }
-
+        
         this.addReports(this.primaryReporters, "primaryReporters", model, serviceURL);
         this.addReports(this.reporters, "reporters", model, serviceURL);
 
@@ -223,6 +230,11 @@ public class ReportHandler implements Controller {
     @Required
     public void setLocaleResolver(LocaleResolver localeResolver) {
         this.localeResolver = localeResolver;
+    }
+    
+    @Required
+    public void setViewReportService(Service viewReportService) {
+        this.viewReportService = viewReportService;
     }
 
 }

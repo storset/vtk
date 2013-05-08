@@ -107,9 +107,8 @@
         var $this = $(this);
         if ($this.hasClass("hasChildren")) {
           var subFolder = $(this).find("a").attr("href").split("?")[0];
-          var timestamp = 1 - new Date();
           var ajaxUrl = {
-            url: "?vrtx=admin&service=" + settings.service + "&uri=" + subFolder + "&ts=" + timestamp
+            url: "?vrtx=admin&" + settings.service + "&uri=" + subFolder + "&ts=" + (+new Date())
           };
           $.extend(settings, ajaxUrl);
           var childList = $this.removeClass("hasChildren").find("ul");

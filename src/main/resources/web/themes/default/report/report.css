@@ -3,10 +3,27 @@
  *
  */
 
-body#vrtx-report-diagram h2 {
+h2 {
   background: url(../images/line-dotted.gif) repeat-x bottom left;
   padding-bottom: 15px;
   margin-bottom: 20px;
+}
+
+#vrtx-report h2 {
+  background: none;
+  padding-bottom: 0px;
+  margin-bottom: 8px;
+}
+
+#vrtx-report-view-other {
+  float: right;
+  display: block;
+  font-size: 0.652em;
+  margin-top: 0.55em;
+}
+
+#vrtx-report-resources #contents {
+  position: relative;
 }
 
 body#vrtx-report-diagram div.vrtx-report-diagram h3 {

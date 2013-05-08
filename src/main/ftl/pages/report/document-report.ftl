@@ -10,7 +10,7 @@
     </#list>
   </#if>
   </head>
-  <body id="vrtx-report-documents">
+  <body id="vrtx-report-documents" class="vrtx-report">
   <div class="resourceInfo">
     <div class="vrtx-report-nav">
       <div class="back">
@@ -21,7 +21,8 @@
         </#if>
       </div>
     </div>
-    <h2><@vrtx.msg code="report.${report.reportname}" /></h2>
+    <h2><@vrtx.msg code="report.${report.reportname}" />
+    <a id="vrtx-report-view-other" title="${vrtx.getMsg('manage.choose-location.choose-collection')}" href="${viewReportServiceURL?html}"><@vrtx.msg code="report.view-other-link" default="View other folder" />...</a></h2>
     
   <#if (report.result?exists && report.result?size > 0)>
     <p id="vrtx-report-info-paging-top">

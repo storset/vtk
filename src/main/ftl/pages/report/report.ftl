@@ -15,7 +15,7 @@
     </#list>
   </#if>
   </head>
-  <body id="vrtx-report">
+  <body id="vrtx-report" class="vrtx-report">
     <div class="resourceInfo">
       <h2><@vrtx.msg code="report.heading" default="Reports" /></h2>
       <div class="vrtx-report">

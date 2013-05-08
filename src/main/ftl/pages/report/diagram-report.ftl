@@ -10,14 +10,15 @@
     </#list>
   </#if>
   </head>
-  <body id="vrtx-report-diagram">
+  <body id="vrtx-report-diagram" class="vrtx-report">
   <div class="resourceInfo">
     <div class="vrtx-report-nav">
       <div class="back">
         <a href="${serviceURL?html}" ><@vrtx.msg code="report.back" default="Back" /></a>
       </div>
     </div>
-    <h2><@vrtx.msg code="report.${report.reportname}" /></h2>
+    <h2><@vrtx.msg code="report.${report.reportname}" />
+    <a id="vrtx-report-view-other" title="${vrtx.getMsg('manage.choose-location.choose-collection')}" href="${viewReportServiceURL?html}"><@vrtx.msg code="report.view-other-link" default="View other folder" />...</a></h2>
   <#if (report.thirdtotal?exists && report.thirdtotal > 0)>
     <div class="vrtx-report-diagram">
       <h3><@vrtx.msg code="report.diagram.webtypetitle" /></h3>

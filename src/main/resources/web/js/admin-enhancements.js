@@ -296,8 +296,7 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
 
   // Create folder chooser in global menu
   // TODO: generalize dialog jQuery UI function with AJAX markup/text
-  var dialogManageCreateHtml = {};
-  $(document).on("click", "#global-menu-create a", function (e) {
+  $(document).on("click", "#global-menu-create a, #vrtx-report-view-other", function (e) {
     var link = this;
     var id = link.id + "-content";
     var dialogManageCreate = $("#" + id);
@@ -771,12 +770,19 @@ function initializeTree() {
   var treeElem = dialog.find(".tree-create");
   var treeTrav = dialog.find("#vrtx-create-tree-folders").hide().text().split(",");
   var treeType = dialog.find("#vrtx-create-tree-type").hide().text();
+  var treeAddParam = dialog.find("#vrtx-create-tree-add-param");
   var pathNum = 0;
+  
+  var service = "service=" + treeType + "-from-drop-down";
+  if(treeAddParam.length) {
+    treeAddParam = treeAddParam.hide().text();
+    service += "&" + treeAddParam;
+  }
 
   treeElem.treeview({
     animated: "fast",
-    url: location.protocol + '//' + location.host + location.pathname + "?vrtx=admin&service=" + treeType + "-from-drop-down&uri=&ts=" + (+new Date()),
-    service: treeType + "-from-drop-down",
+    url: location.protocol + '//' + location.host + location.pathname + "?vrtx=admin&uri=&" + service + "&ts=" + (+new Date()),
+    service: service,
     dataLoaded: function () { // AJAX success
       var last = false;
       if (pathNum == (treeTrav.length - 1)) {

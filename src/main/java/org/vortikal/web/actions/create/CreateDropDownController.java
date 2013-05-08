@@ -32,7 +32,9 @@ package org.vortikal.web.actions.create;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -89,11 +91,21 @@ public class CreateDropDownController implements Controller {
             String token) throws Exception {
         JSONArray list = new JSONArray();
 
-        String buttonText;
-        if ((buttonText = request.getParameter("service")) != null && buttonText.equals("upload-file-from-drop-down"))
+        String buttonText = request.getParameter("service");
+        if (buttonText != null && buttonText.equals("upload-file-from-drop-down")) {
             buttonText = "manage.upload-here";
-        else
+        } else if (buttonText != null && buttonText.equals("view-report-from-drop-down")) {
+            buttonText = "manage.view-this";
+        } else {
             buttonText = "manage.place-here";
+        }
+        
+        // XXX: More general
+        Map<String, String> typeParam = new HashMap<String, String>();
+        String reportType = request.getParameter("report-type");
+        if(reportType != null) {
+            typeParam.put("report-type", reportType);
+        }
 
         for (Resource r : resources) {
             JSONObject o = new JSONObject();
@@ -102,7 +114,7 @@ public class CreateDropDownController implements Controller {
 
             String title;
             try {
-                String url = service.constructURL(r, principal).getPathRepresentation();
+                String url = service.constructURL(r, principal, typeParam).getPathRepresentation();     
 
                 title = "<a target=&quot;_top&quot; class=&quot;vrtx-button-small&quot; href=&quot;" + url + "&quot;>"
                         + "<span>" + provider.getLocalizedTitle(request, buttonText, null) + "</span>" + "</a>";

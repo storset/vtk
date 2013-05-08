@@ -58,6 +58,7 @@
     <property name="viewName" value="report" />
     <property name="localeResolver" ref="manageLocaleResolver" />
     <property name="documentPrincipalMetadataRetriever" ref="documentPrincipalMetadataRetriever" />
+    <property name="viewReportService" ref="viewReportService" />
     <property name="primaryReporters">
       <list>
         <ref bean="listResourcesReporter" />

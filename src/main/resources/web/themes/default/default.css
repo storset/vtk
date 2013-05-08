@@ -1596,10 +1596,6 @@ span.vrtx-help-step-by-step-cmd {
   margin-top: 15px;
 }
 
-#vrtx-report #contents {
-  position: relative;
-}
-
 #directory-listing {
   width: 100%;
   table-layout: fixed;

@@ -64,6 +64,29 @@
     <property name="repository" ref="repository" />
   </bean>
   
+  <bean id="viewReport.retrieveService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="manageService" />
+    <property name="order" value="-9999" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="service" />
+          <property name="parameterValue" value="view-report-from-drop-down" />
+        </bean>
+        <bean class="org.vortikal.web.service.RequestParameterExistsAssertion">
+          <property name="parameterName" value="report-type" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="viewReport.handler" />
+  </bean>
+
+  <bean id="viewReport.handler" class="org.vortikal.web.actions.create.CreateDropDownController">
+    <property name="provider" ref="createDropDown.provider" />
+    <property name="service" ref="reportService" />
+    <property name="repository" ref="repository" />
+  </bean>
+  
   <bean id="createDropDown.provider" class="org.vortikal.web.actions.create.CreateDropDownProvider">
     <property name="searcher" ref="systemIndexSearcher" />
     <property name="repository" ref="repository" />
@@ -115,6 +138,23 @@
   <bean id="uploadFileFromDropDownHandler" class="org.vortikal.web.actions.create.CreateFromDropDownController">
     <property name="viewName" value="createFromDropDown.view" />
     <property name="type" value="upload-file" />
+  </bean>
+  
+    <bean id="viewReportService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="manageService" />
+    <property name="handler" ref="viewReportHandler" />
+    <property name="assertions">
+      <bean class="org.vortikal.web.service.RequestParameterAssertion">
+        <property name="parameterName" value="display" />
+        <property name="parameterValue" value="report" />
+      </bean>
+    </property>
+  </bean>
+
+  <bean id="viewReportHandler" class="org.vortikal.web.actions.create.CreateFromDropDownController">
+    <property name="viewName" value="createFromDropDown.view" />
+    <property name="type" value="view-report" />
+    <property name="addParam" value="report-type" /> 
   </bean>
 
   <bean id="createFromDropDown.viewResolver" parent="viewResolver">

@@ -50,7 +50,7 @@
    <script type="text/javascript" src="/vrtx/__vrtx/static-resources/js/editor.js"></script>
    <script type="text/javascript" src="/vrtx/__vrtx/static-resources/js/reports/broken-links.js"></script>
   </head>
-  <body id="vrtx-report-broken-links">
+  <body id="vrtx-report-broken-links" class="vrtx-report">
   <#assign linkTypeLocalization>
     <@vrtx.msg code="report.broken-links.filters.link-type.${report.linkType}" />
   </#assign>
@@ -61,7 +61,8 @@
         <a href="${serviceURL?html}" ><@vrtx.msg code="report.back" default="Back" /></a>
       </div>
     </div>
-    <h2><@vrtx.msg code="report.${report.reportname}.title" /> ${linkTypeLocalization?lower_case}</h2>
+    <h2><@vrtx.msg code="report.${report.reportname}.title" /> ${linkTypeLocalization?lower_case}
+    <a id="vrtx-report-view-other" title="${vrtx.getMsg('manage.choose-location.choose-collection')}" href="${viewReportServiceURL?html}"><@vrtx.msg code="report.view-other-link" default="View other folder" />...</a></h2>
   </div>
 
   <@generateFilters report.filters />

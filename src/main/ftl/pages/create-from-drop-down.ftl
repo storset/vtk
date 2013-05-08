@@ -13,7 +13,9 @@
   </div>
   <div id="vrtx-create-tree-folders"><#list uris as link>${link?html}<#if uris[link_index+1]?exists>,</#if></#list></div>
   <div id="vrtx-create-tree-type">${type}</div>
-  
+  <#if addParam?has_content>
+    <div id="vrtx-create-tree-add-param">${addParam?html}</div>
+  </#if>
   </div></div>
 </body>
 </html>

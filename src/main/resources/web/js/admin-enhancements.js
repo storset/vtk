@@ -338,32 +338,7 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
       var tabMenuServices = ["fileUploadService", "createDocumentService", "createCollectionService"];
       var speedCreationServices = vrtxAdm.isIE8 ? 0 : 350;
       for (i = tabMenuServices.length; i--;) {
-        if (tabMenuServices[i] == "createCollectionService") {
-          vrtxAdm.getFormAsync({
-            selector: "ul#tabMenuRight a#" + tabMenuServices[i],
-            selectorClass: "vrtx-admin-form",
-            insertAfterOrReplaceClass: "#active-tab ul#tabMenuRight",
-            nodeType: "div",
-            funcComplete: function (p) {
-              createFuncComplete();
-            },
-            simultanSliding: true,
-            transitionSpeed: speedCreationServices
-          });
-          vrtxAdm.completeFormAsync({
-            selector: "form#" + tabMenuServices[i] + "-form input[type=submit]",
-            updateSelectors: ["#contents"],
-            errorContainer: "errorContainer",
-            errorContainerInsertAfter: "> ul",
-            funcComplete: vrtxAdm.updateCollectionListingInteraction,
-            post: true,
-            transitionSpeed: speedCreationServices,
-            funcBeforeComplete: function () {
-              createTitleChange($("#vrtx-textfield-collection-title input"), $("#vrtx-textfield-collection-name input"), null);
-            }
-          });
-        } else { // Half-async for file upload and create document
-          if (tabMenuServices[i] == "createDocumentService") {
+          if (tabMenuServices[i] != "fileUploadService") {
             vrtxAdm.getFormAsync({
               selector: "ul#tabMenuRight a#" + tabMenuServices[i],
               selectorClass: "vrtx-admin-form",
@@ -379,6 +354,7 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
               selector: "form#" + tabMenuServices[i] + "-form input[type=submit]",
               transitionSpeed: speedCreationServices,
               funcBeforeComplete: function () {
+                createTitleChange("#vrtx-textfield-collection-title input", $("#vrtx-textfield-collection-name input"), $("#isIndex"));
                 createTitleChange("#vrtx-textfield-file-title input", $("#vrtx-textfield-file-name input"), $("#isIndex"));
               }
             });
@@ -402,7 +378,6 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
               vrtxAdm.initFileUpload(); // when error message
             }
           }
-        }
       }
 
       tabMenuServices = ["collectionListing\\.action\\.move-resources", "collectionListing\\.action\\.copy-resources"];

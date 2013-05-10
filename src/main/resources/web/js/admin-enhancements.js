@@ -695,7 +695,7 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
 \*-------------------------------------------------------------------*/
 
 function interceptEnterKey() {
-  vrtxAdmin.cachedAppContent.delegate("form input", "keypress", function (e) {
+  vrtxAdmin.cachedAppContent.delegate("form#editor input", "keypress", function (e) {
     if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
       e.preventDefault(); // cancel the default browser click
     }

@@ -30,7 +30,9 @@
     <property name="multiple" value="false" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
     <property name="mandatory" value="false" />
-    <property name="propertyEvaluator" ref="mediaMetadataStatusEvaluator" />
+    <property name="propertyEvaluator">
+      <bean id="mediaMetadataStatusEvaluator" class="org.vortikal.repository.resourcetype.property.MediaMetadataStatusPropertyEvaluator" />
+    </property>
     <property name="vocabulary">
       <bean class="org.vortikal.repository.resourcetype.ValueVocabulary">
       <property name="messageSourceBaseName" value="vortikal.beans.vhost.resource-types.properties.commentsEnabled" />

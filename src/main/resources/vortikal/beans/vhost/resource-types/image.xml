@@ -93,6 +93,4 @@
     <property name="resourceTypeDefinition" ref="imageResourceTypeDefinition" />
   </bean>
 
-  <bean id="mediaMetadataStatusEvaluator" class="org.vortikal.repository.resourcetype.property.MediaMetadataStatusPropertyEvaluator"></bean>
-
 </beans>

@@ -34,7 +34,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
 
-public abstract class AbstractExternalVortexMediaServiceJob extends RepositoryJob {
+public abstract class AbstractMediaServiceJob extends RepositoryJob {
 
     protected PathSelector pathSelector;
 

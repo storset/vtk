@@ -38,7 +38,7 @@ import org.vortikal.repository.ResourceNotFoundException;
 import org.vortikal.repository.SystemChangeContext;
 import org.vortikal.security.SecurityContext;
 
-public class MediaMetadataJob extends AbstractExternalVortexMediaServiceJob {
+public class MediaMetadataJob extends AbstractMediaServiceJob {
 
     private MediaMetadataProvider mediaMetadataProvider;
 

@@ -33,6 +33,7 @@ package org.vortikal.testing.mocktypes;
 
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.resourcetype.HierarchicalNode;
@@ -46,8 +47,7 @@ import org.vortikal.repository.resourcetype.ValueFormatter;
 
 public class MockResourceTypeTree implements ResourceTypeTree {
 
-    public List<MixinResourceTypeDefinition> getMixinTypes(
-            PrimaryResourceTypeDefinition def) {
+    public List<MixinResourceTypeDefinition> getMixinTypes(PrimaryResourceTypeDefinition def) {
         return null;
     }
 
@@ -58,22 +58,19 @@ public class MockResourceTypeTree implements ResourceTypeTree {
     public Namespace getNamespaceByPrefix(String prefix) {
         return null;
     }
-    
-    public PrimaryResourceTypeDefinition[] getPrimaryResourceTypesForPropDef(
-            PropertyTypeDefinition definition) {
+
+    public PrimaryResourceTypeDefinition[] getPrimaryResourceTypesForPropDef(PropertyTypeDefinition definition) {
         return null;
     }
 
-    public PropertyTypeDefinition getPropertyDefinitionByPrefix(String prefix,
-            String name) {
+    public PropertyTypeDefinition getPropertyDefinitionByPrefix(String prefix, String name) {
         PropertyTypeDefinitionImpl propDef = new PropertyTypeDefinitionImpl();
         propDef.setNamespace(Namespace.getNamespaceFromPrefix(prefix));
         propDef.setName(name);
         return propDef;
     }
 
-    public PropertyTypeDefinition getPropertyTypeDefinition(
-            Namespace namespace, String name) {
+    public PropertyTypeDefinition getPropertyTypeDefinition(Namespace namespace, String name) {
         return null;
     }
 
@@ -81,8 +78,7 @@ public class MockResourceTypeTree implements ResourceTypeTree {
         return null;
     }
 
-    public List<PropertyTypeDefinition> getPropertyTypeDefinitionsIncludingAncestors(
-            ResourceTypeDefinition def) {
+    public List<PropertyTypeDefinition> getPropertyTypeDefinitionsIncludingAncestors(ResourceTypeDefinition def) {
         return null;
     }
 
@@ -93,13 +89,28 @@ public class MockResourceTypeTree implements ResourceTypeTree {
         def.afterPropertiesSet();
         return def;
     }
-    
+
     public PropertyTypeDefinition getPropertyDefinitionByPointer(String pointer) {
+
+        if (StringUtils.isBlank(pointer)) {
+            return null;
+        }
+
+        String[] pointerParts = pointer.split(":");
+        if (pointerParts.length == 1) {
+            return this.getPropertyDefinitionByPrefix(null, pointer);
+        }
+        if (pointerParts.length == 2) {
+            return this.getPropertyDefinitionByPrefix(pointerParts[0], pointerParts[1]);
+        }
+        if (pointerParts.length == 3) {
+            // XXX support
+            return null;
+        }
         return null;
     }
 
-    public List<PrimaryResourceTypeDefinition> getResourceTypeDefinitionChildren(
-            PrimaryResourceTypeDefinition def) {
+    public List<PrimaryResourceTypeDefinition> getResourceTypeDefinitionChildren(PrimaryResourceTypeDefinition def) {
         return null;
     }
 
@@ -111,8 +122,7 @@ public class MockResourceTypeTree implements ResourceTypeTree {
         return null;
     }
 
-    public boolean isContainedType(ResourceTypeDefinition def,
-            String resourceTypeName) {
+    public boolean isContainedType(ResourceTypeDefinition def, String resourceTypeName) {
         return false;
     }
 

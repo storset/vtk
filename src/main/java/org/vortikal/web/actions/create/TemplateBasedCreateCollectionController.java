@@ -39,6 +39,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.BindException;
+import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.vortikal.repository.InheritablePropertiesStoreContext;
 import org.vortikal.repository.Namespace;
@@ -64,25 +65,8 @@ public class TemplateBasedCreateCollectionController extends SimpleFormControlle
     private PropertyTypeDefinition hiddenPropDef;
     private boolean downcaseCollectionNames = false;
     private Map<String, String> replaceNameChars;
+    private String cancelView;
     private PropertyTypeDefinition descriptionPropDef;
-
-    public void setDowncaseCollectionNames(boolean downcaseCollectionNames) {
-        this.downcaseCollectionNames = downcaseCollectionNames;
-    }
-
-    public void setReplaceNameChars(Map<String, String> replaceNameChars) {
-        this.replaceNameChars = replaceNameChars;
-    }
-
-    @Required
-    public void setUserTitlePropDef(PropertyTypeDefinition userTitlePropDef) {
-        this.userTitlePropDef = userTitlePropDef;
-    }
-
-    @Required
-    public void setDescriptionPropDef(PropertyTypeDefinition descriptionPropDef) {
-        this.descriptionPropDef = descriptionPropDef;
-    }
 
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
@@ -100,15 +84,14 @@ public class TemplateBasedCreateCollectionController extends SimpleFormControlle
         return command;
     }
 
-    @SuppressWarnings({ "rawtypes" })
-    protected Map referenceData(HttpServletRequest request) throws Exception {
+    protected Map<String, Object> referenceData(HttpServletRequest request) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
         Map<String, Object> model = new HashMap<String, Object>();
 
         Path uri = requestContext.getResourceURI();
         String token = requestContext.getSecurityToken();
 
-        List<ResourceTemplate> templates = this.templateManager.getFolderTemplates(token, uri);
+        List<ResourceTemplate> templates = templateManager.getFolderTemplates(token, uri);
 
         HttpServletRequest servletRequest = requestContext.getServletRequest();
         org.springframework.web.servlet.support.RequestContext springRequestContext = new org.springframework.web.servlet.support.RequestContext(
@@ -129,11 +112,13 @@ public class TemplateBasedCreateCollectionController extends SimpleFormControlle
         return model;
     }
 
-    protected void doSubmitAction(Object command) throws Exception {
+    protected ModelAndView onSubmit(Object command) throws Exception {
+        Map<String, Object> model = new HashMap<String, Object>();
+
         CreateCollectionCommand createFolderCommand = (CreateCollectionCommand) command;
         if (createFolderCommand.getCancelAction() != null) {
             createFolderCommand.setDone(true);
-            return;
+            return new ModelAndView(cancelView);
         }
         RequestContext requestContext = RequestContext.getRequestContext();
         Repository repository = requestContext.getRepository();
@@ -144,9 +129,9 @@ public class TemplateBasedCreateCollectionController extends SimpleFormControlle
         String source = createFolderCommand.getSourceURI();
         if (source == null || source.equals(NORMAL_FOLDER_IDENTIFIER)) {
             // Just create a new folder if no "folder-template" is selected
-            createNewFolder(command, uri, requestContext);
+            model.put("resource", createNewFolder(command, uri, requestContext));
             createFolderCommand.setDone(true);
-            return;
+            return new ModelAndView(getSuccessView(), model);
         }
         Path sourceURI = Path.fromString(source);
 
@@ -200,11 +185,13 @@ public class TemplateBasedCreateCollectionController extends SimpleFormControlle
             dest.addProperty(hiddenProp);
         }
 
-        repository.store(token, dest, sc);
+        model.put("resource", repository.store(token, dest, sc));
         createFolderCommand.setDone(true);
+
+        return new ModelAndView(getSuccessView(), model);
     }
 
-    private void createNewFolder(Object command, Path uri, RequestContext requestContext) throws Exception {
+    private Resource createNewFolder(Object command, Path uri, RequestContext requestContext) throws Exception {
         CreateCollectionCommand createCollectionCommand = (CreateCollectionCommand) command;
 
         String title = createCollectionCommand.getTitle();
@@ -217,39 +204,18 @@ public class TemplateBasedCreateCollectionController extends SimpleFormControlle
         if (title == null || "".equals(title))
             title = name.substring(0, 1).toUpperCase() + name.substring(1);
 
-        Property titleProp = this.userTitlePropDef.createProperty();
+        Property titleProp = userTitlePropDef.createProperty();
         titleProp.setStringValue(title);
         collection.addProperty(titleProp);
 
         // hiddenPropDef can only be true or not set.
         if (createCollectionCommand.getHidden()) {
-            Property hiddenProp = this.hiddenPropDef.createProperty();
+            Property hiddenProp = hiddenPropDef.createProperty();
             hiddenProp.setBooleanValue(true);
             collection.addProperty(hiddenProp);
         }
 
-        repository.store(token, collection);
-    }
-
-    public void setHiddenPropDef(PropertyTypeDefinition hiddenPropDef) {
-        this.hiddenPropDef = hiddenPropDef;
-    }
-
-    public void setTemplateManager(ResourceTemplateManager templateManager) {
-        this.templateManager = templateManager;
-    }
-
-    private String fixCollectionName(String name) {
-        if (this.downcaseCollectionNames) {
-            name = name.toLowerCase();
-        }
-        if (this.replaceNameChars != null) {
-            for (String regex : this.replaceNameChars.keySet()) {
-                String replacement = this.replaceNameChars.get(regex);
-                name = name.replaceAll(regex, replacement);
-            }
-        }
-        return name;
+        return repository.store(token, collection);
     }
 
     @Override
@@ -302,6 +268,52 @@ public class TemplateBasedCreateCollectionController extends SimpleFormControlle
             errors.rejectValue("name", "manage.create.collection.invalid.destination",
                     "Cannot copy a collection into itself");
         }
+    }
+
+    private String fixCollectionName(String name) {
+        if (downcaseCollectionNames) {
+            name = name.toLowerCase();
+        }
+        if (replaceNameChars != null) {
+            for (String regex : replaceNameChars.keySet()) {
+                String replacement = replaceNameChars.get(regex);
+                name = name.replaceAll(regex, replacement);
+            }
+        }
+        return name;
+    }
+
+    @Required
+    public void setTemplateManager(ResourceTemplateManager templateManager) {
+        this.templateManager = templateManager;
+    }
+
+    @Required
+    public void setUserTitlePropDef(PropertyTypeDefinition userTitlePropDef) {
+        this.userTitlePropDef = userTitlePropDef;
+    }
+
+    @Required
+    public void setHiddenPropDef(PropertyTypeDefinition hiddenPropDef) {
+        this.hiddenPropDef = hiddenPropDef;
+    }
+
+    public void setDowncaseCollectionNames(boolean downcaseCollectionNames) {
+        this.downcaseCollectionNames = downcaseCollectionNames;
+    }
+
+    public void setReplaceNameChars(Map<String, String> replaceNameChars) {
+        this.replaceNameChars = replaceNameChars;
+    }
+
+    @Required
+    public void setCancelView(String cancelView) {
+        this.cancelView = cancelView;
+    }
+
+    @Required
+    public void setDescriptionPropDef(PropertyTypeDefinition descriptionPropDef) {
+        this.descriptionPropDef = descriptionPropDef;
     }
 
 }

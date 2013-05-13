@@ -79,7 +79,7 @@ public class TemplateBasedCreateController extends SimpleFormController {
         String url = service.constructLink(resource, requestContext.getPrincipal());
         CreateDocumentCommand command = new CreateDocumentCommand(url);
 
-        List<ResourceTemplate> l = this.templateManager.getDocumentTemplates(token, uri);
+        List<ResourceTemplate> l = templateManager.getDocumentTemplates(token, uri);
         // Set first available template
         if (!l.isEmpty()) {
             boolean hasDefault = false;
@@ -92,7 +92,7 @@ public class TemplateBasedCreateController extends SimpleFormController {
                 try {
                     r = repo.retrieve(token, t.getUri(), false);
 
-                    if ((dp = r.getProperty(this.descriptionPropDef)) != null) {
+                    if ((dp = r.getProperty(descriptionPropDef)) != null) {
                         name = dp.getFormattedValue();
 
                         if (name.contains("|")) {
@@ -125,7 +125,7 @@ public class TemplateBasedCreateController extends SimpleFormController {
 
         Map<String, Object> model = new HashMap<String, Object>();
         Path uri = requestContext.getResourceURI();
-        List<ResourceTemplate> l = this.templateManager.getDocumentTemplates(token, uri);
+        List<ResourceTemplate> l = templateManager.getDocumentTemplates(token, uri);
 
         Map<String, List<String>> sortmap = new TreeMap<String, List<String>>(String.CASE_INSENSITIVE_ORDER);
         Map<String, String> templates = new LinkedHashMap<String, String>();
@@ -143,7 +143,7 @@ public class TemplateBasedCreateController extends SimpleFormController {
             try {
                 r = repo.retrieve(token, t.getUri(), false);
 
-                if ((dp = r.getProperty(this.descriptionPropDef)) != null) {
+                if ((dp = r.getProperty(descriptionPropDef)) != null) {
                     name = dp.getFormattedValue();
 
                     if (name.contains("|")) {
@@ -187,7 +187,7 @@ public class TemplateBasedCreateController extends SimpleFormController {
             }
 
             // Title field
-            titles.put(t.getUri().toString(), t.getTitle().equals(this.titlePlaceholder));
+            titles.put(t.getUri().toString(), t.getTitle().equals(titlePlaceholder));
         }
         // Merge default templates and sorted templates
         for (String key : sortmap.keySet()) {
@@ -273,7 +273,7 @@ public class TemplateBasedCreateController extends SimpleFormController {
         CreateDocumentCommand createDocumentCommand = (CreateDocumentCommand) command;
         if (createDocumentCommand.getCancelAction() != null) {
             createDocumentCommand.setDone(true);
-            return new ModelAndView(this.cancelView);
+            return new ModelAndView(cancelView);
         }
         RequestContext requestContext = RequestContext.getRequestContext();
         Path uri = requestContext.getResourceURI();
@@ -315,18 +315,33 @@ public class TemplateBasedCreateController extends SimpleFormController {
         title = Matcher.quoteReplacement(title);
 
         Resource r = repository.storeContent(token, destinationURI,
-                StreamUtil.stringToStream(stream.replaceAll(this.titlePlaceholder, title)));
+                StreamUtil.stringToStream(stream.replaceAll(titlePlaceholder, title)));
 
-        for (PropertyTypeDefinition ptd : this.removePropList)
-            r.removeProperty(ptd);
+        if (removePropList != null) {
+            for (PropertyTypeDefinition ptd : removePropList) {
+                r.removeProperty(ptd);
+            }
+        }
 
-        repository.store(token, r);
+        model.put("resource", repository.store(token, r));
 
         createDocumentCommand.setDone(true);
 
-        model.put("resource", r);
-
         return new ModelAndView(getSuccessView(), model);
+    }
+
+    private String fixDocumentName(String name) {
+        if (downcaseNames) {
+            name = name.toLowerCase();
+        }
+
+        if (replaceNameChars != null) {
+            for (String regex : replaceNameChars.keySet()) {
+                String replacement = replaceNameChars.get(regex);
+                name = name.replaceAll(regex, replacement);
+            }
+        }
+        return name;
     }
 
     @Required
@@ -334,37 +349,26 @@ public class TemplateBasedCreateController extends SimpleFormController {
         this.templateManager = templateManager;
     }
 
+    public void setDowncaseNames(boolean downcaseNames) {
+        this.downcaseNames = downcaseNames;
+    }
+
     public void setReplaceNameChars(Map<String, String> replaceNameChars) {
         this.replaceNameChars = replaceNameChars;
+    }
+
+    @Required
+    public void setCancelView(String cancelView) {
+        this.cancelView = cancelView;
     }
 
     public void setRemovePropList(PropertyTypeDefinition[] removePropList) {
         this.removePropList = removePropList;
     }
 
+    @Required
     public void setDescriptionPropDef(PropertyTypeDefinition descriptionPropDef) {
         this.descriptionPropDef = descriptionPropDef;
     }
 
-    public void setCancelView(String cancelView) {
-        this.cancelView = cancelView;
-    }
-
-    public void setDowncaseNames(boolean downcaseNames) {
-        this.downcaseNames = downcaseNames;
-    }
-
-    private String fixDocumentName(String name) {
-        if (this.downcaseNames) {
-            name = name.toLowerCase();
-        }
-
-        if (this.replaceNameChars != null) {
-            for (String regex : this.replaceNameChars.keySet()) {
-                String replacement = this.replaceNameChars.get(regex);
-                name = name.replaceAll(regex, replacement);
-            }
-        }
-        return name;
-    }
 }

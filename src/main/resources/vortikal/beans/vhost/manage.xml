@@ -967,6 +967,7 @@
 
   <bean id="createCollectionHandler" class="org.vortikal.web.actions.create.TemplateBasedCreateCollectionController">
     <property name="formView" value="manageCollectionListing" />
+    <property name="cancelView" value="redirectToManage" />
     <property name="successView" value="redirectToManage" />
     <property name="commandName" value="createCollectionForm" />
     <property name="commandClass" value="org.vortikal.web.actions.create.CreateCollectionCommand" />

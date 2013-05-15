@@ -14,14 +14,12 @@
 <#import "/lib/vortikal.ftl" as vrtx />
 <#import "/lib/view-utils.ftl" as viewutils />
 
-<!-- begin view dropdown js -->
-<script type="text/javascript" src="${jsUrl?html}"></script>
-<!-- end view dropdown js -->
-  
-<#assign title = vrtx.getMsg("decorating.shareAtComponent.title") + "..." />
+<#assign prefixLinkText = vrtx.getMsg("decorating.shareAtComponent.title") />
 <#assign useFacebookAPI = .vars["use-facebook-api"]?? && .vars["use-facebook-api"]?string != "false" />
 
-<@viewutils.displayDropdown "share" title>
+<#if socialWebsiteLinks?has_content>
+<div class="vrtx-share-component">
+  <ul>
   <#list socialWebsiteLinks as link>
      <#if (link.name = "FacebookAPI" && !useFacebookAPI)
           || (link.name = "Facebook" && useFacebookAPI)>
@@ -33,9 +31,11 @@
      <#if name = "FacebookAPI"><#assign name = "Facebook" /></#if>
      
      <#if url?is_string>
-        <li>
-         <a href="${url}" target="_blank" class="${name?lower_case}">${name}</a>
+       <li>
+         <a href="${url}" target="_blank" class="${name?lower_case}">${prefixLinkText} ${name}</a>
        </li>
     </#if>
   </#list>
-</@viewutils.displayDropdown>
+  </ul>
+</div>
+</#if>

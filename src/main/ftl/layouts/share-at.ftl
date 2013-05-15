@@ -18,7 +18,7 @@
 <#assign useFacebookAPI = .vars["use-facebook-api"]?? && .vars["use-facebook-api"]?string != "false" />
 
 <#if socialWebsiteLinks?has_content>
-<div class="vrtx-share-component">
+<div class="vrtx-share-at-component">
   <ul>
   <#list socialWebsiteLinks as link>
      <#if (link.name = "FacebookAPI" && !useFacebookAPI)

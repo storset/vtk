@@ -184,6 +184,9 @@ public class ManuallyApproveResourcesHandler implements Controller {
     }
 
     private String getCacheKey(Set<String> locations, Set<String> alreadyApproved) {
+
+        // XXX Reconsider this. Using hash code as cache key is not safe.
+
         StringBuilder cacheKey = new StringBuilder();
         if (locations.size() != 0) {
             cacheKey.append(locations.toString().hashCode());

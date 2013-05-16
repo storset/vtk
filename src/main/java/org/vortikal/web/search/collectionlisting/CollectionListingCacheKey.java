@@ -32,49 +32,79 @@ package org.vortikal.web.search.collectionlisting;
 
 import java.io.Serializable;
 
+import org.vortikal.repository.Path;
+
 public class CollectionListingCacheKey implements Serializable {
 
     private static final long serialVersionUID = -4326224006550057333L;
 
+    String searchComponentName;
+    Path resourcePath;
     String lastModified;
     String token;
-    String name;
-    String requestUri;
 
-    public CollectionListingCacheKey(String lastModified, String token, String name, String requestUri) {
+    public CollectionListingCacheKey(String searchComponentName, Path resourcePath, String lastModified, String token) {
+
+        if (searchComponentName == null) {
+            throw new IllegalArgumentException("Must supply search component name");
+        }
+
+        if (resourcePath == null) {
+            throw new IllegalArgumentException("Must supply resource path");
+        }
+
+        if (lastModified == null) {
+            throw new IllegalArgumentException("Must supply last modified date as string");
+        }
+
+        this.searchComponentName = searchComponentName;
+        this.resourcePath = resourcePath;
         this.lastModified = lastModified;
         this.token = token;
-        this.name = name;
-        this.requestUri = requestUri;
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (obj == null || !(obj instanceof CollectionListingCacheKey)) {
+    public boolean equals(Object otherObj) {
+
+        if (otherObj == null || !(otherObj instanceof CollectionListingCacheKey)) {
             return false;
         }
-        CollectionListingCacheKey other = (CollectionListingCacheKey) obj;
-        return this.hashCode() == other.hashCode();
+
+        CollectionListingCacheKey other = (CollectionListingCacheKey) otherObj;
+        if (!searchComponentName.equals(other.searchComponentName)) {
+            return false;
+        }
+        if (!resourcePath.equals(other.resourcePath)) {
+            return false;
+        }
+        if (!lastModified.equals(other.lastModified)) {
+            return false;
+        }
+        if (token != null && !token.equals(other.token)) {
+            return false;
+        } else if (other.token != null && !other.token.equals(token)) {
+            return false;
+        }
+
+        return true;
     }
 
     @Override
     public int hashCode() {
         int hash = 9;
+        hash = 7 * hash + this.resourcePath.hashCode();
         hash = 7 * hash + this.lastModified.hashCode();
-        hash = 7 * hash + this.requestUri.hashCode();
-        hash = 7 * hash + this.name.hashCode();
+        hash = 7 * hash + this.searchComponentName.hashCode();
         hash = 7 * hash + (this.token != null ? this.token.hashCode() : 0);
         return hash;
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder(this.name);
-        sb.append(": ").append(this.requestUri);
+        StringBuilder sb = new StringBuilder(this.searchComponentName);
+        sb.append(": ").append(this.resourcePath);
         sb.append(" - ").append(this.lastModified);
-        if (this.token != null) {
-            sb.append(" - ").append(this.token);
-        }
+        sb.append(" - ").append(this.token);
         return sb.toString();
     }
 

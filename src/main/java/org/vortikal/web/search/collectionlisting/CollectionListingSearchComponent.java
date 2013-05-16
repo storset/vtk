@@ -62,6 +62,17 @@ import org.vortikal.web.search.SearchComponentQueryBuilder;
 import org.vortikal.web.search.VHostScopeQueryRestricter;
 import org.vortikal.web.service.URL;
 
+/**
+ * 
+ * Resolves and includes aggregation in search.
+ * 
+ * If resolved aggregation set requires search across hosts, and mulit host
+ * search is enabled (necessary solr extensions are included in config), the
+ * resolved aggregation set is cached for 10mins, using a cache key comprised of
+ * [name] of search component performing search, [path] to resource requesting
+ * search, [last modified date] of resource and [security token].
+ * 
+ */
 public class CollectionListingSearchComponent extends QueryPartsSearchComponent {
 
     private static Log logger = LogFactory.getLog(CollectionListingSearchComponent.class.getName());
@@ -76,7 +87,9 @@ public class CollectionListingSearchComponent extends QueryPartsSearchComponent 
             int searchLimit, int offset, ConfigurablePropertySelect propertySelect) {
 
         // Check cache for aggregation set containing ref to other hosts
-        CollectionListingCacheKey cacheKey = getCacheKey(request, collection, token);
+        String lastModified = collection.getPropertiesLastModified().toString();
+        CollectionListingCacheKey cacheKey = new CollectionListingCacheKey(getName(), collection.getURI(),
+                lastModified, token);
         Element cached = cache.get(cacheKey);
         Object cachedObj = cached != null ? cached.getObjectValue() : null;
 
@@ -85,6 +98,9 @@ public class CollectionListingSearchComponent extends QueryPartsSearchComponent 
         boolean isMultiHostSearch = false;
         CollectionListingAggregatedResources clar = null;
         if (cachedObj != null) {
+
+            logger.info("Retrieved aggregation set from cache, cacheKey: " + cacheKey);
+
             clar = (CollectionListingAggregatedResources) cachedObj;
             isMultiHostSearch = true;
         } else {
@@ -106,27 +122,22 @@ public class CollectionListingSearchComponent extends QueryPartsSearchComponent 
             search.setPropertySelect(propertySelect);
         }
 
-        boolean successfulMultiHostSearch = false;
         if (isMultiHostSearch) {
 
             // Keep aggregation set in cache
+
+            logger.info("Caching aggreagtion set, cacheKey: " + cacheKey);
+
             cache.put(new Element(cacheKey, clar));
 
             try {
                 result = multiHostSearcher.search(token, search);
-                if (result != null) {
-                    successfulMultiHostSearch = true;
-                }
             } catch (Exception e) {
                 logger.error("An error occured while searching multiple hosts: " + e.getMessage());
             }
-        }
-
-        if (!successfulMultiHostSearch) {
-
+        } else {
             Repository repository = RequestContext.getRequestContext().getRepository();
             result = repository.search(token, search);
-
         }
 
         return result;
@@ -173,13 +184,6 @@ public class CollectionListingSearchComponent extends QueryPartsSearchComponent 
 
         return and;
 
-    }
-
-    private CollectionListingCacheKey getCacheKey(HttpServletRequest request, Resource collection, String token) {
-        String lastModified = collection.getPropertiesLastModified().toString();
-        String url = request.getRequestURL().toString();
-        CollectionListingCacheKey cacheKey = new CollectionListingCacheKey(lastModified, token, getName(), url);
-        return cacheKey;
     }
 
     private List<Query> getAdditionalQueries(Resource collection, HttpServletRequest request) {

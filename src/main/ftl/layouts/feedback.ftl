@@ -74,12 +74,12 @@
     </#if>
     <ul>
       <li>
-        <a class="feedback-yes" title='<@vrtx.msg code="feedback.send" default="Send us your feedback" />' href="#">
+        <a target="_blank" class="feedback-yes" title='<@vrtx.msg code="feedback.send" default="Send us your feedback" />' href="#">
           <@vrtx.msg code="feedback.link.yes" default="Yes, my questions were answered" />
         </a>
       </li>
       <li>
-        <a class="feedback-no thickbox" title='<@vrtx.msg code="feedback.send" default="Send us your feedback" />' href="${link?html}&amp;height=350&amp;width=370&amp;KeepThis=true&amp;TB_iframe=true">
+        <a target="_blank" class="feedback-no thickbox" title='<@vrtx.msg code="feedback.send" default="Send us your feedback" />' href="${link?html}&amp;height=350&amp;width=370&amp;KeepThis=true&amp;TB_iframe=true">
           <@vrtx.msg code="feedback.link.no" default="No, I didn't find what I was looking for" />
         </a>
       </li>

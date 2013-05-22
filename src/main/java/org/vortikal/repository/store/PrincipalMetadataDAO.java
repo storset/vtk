@@ -49,14 +49,14 @@ public interface PrincipalMetadataDAO {
      * (username/id+domain).
      * 
      * 
-     * @param qualifiedName
-     *            The fully qualified name of the principal to get the
+     * @param qualifiedNameOrUid
+     *            The fully qualified name or uid of the principal to get the
      *            description for.
      * @return A <code>PrincipalMetadata</code> instance with description or
      *         <code>null</code> if no metadata could be found.
      * 
      */
-    PrincipalMetadata getMetadata(String qualifiedName, Locale preferredLocale);
+    PrincipalMetadata getMetadata(String qualifiedNameOrUid, Locale preferredLocale);
 
     /**
      * Get metadata instance for given principal instance.
@@ -78,6 +78,18 @@ public interface PrincipalMetadataDAO {
      *         <code>null</code> if nothing suitable was found.
      */
     List<PrincipalMetadata> search(PrincipalSearch search);
+
+    /**
+     * 
+     * Searches for principals which match any of the supplied qualified names
+     * or uids. Basically a multi uid principal lookup.
+     * 
+     * @return List of metadata-instances (<code>PrincipalMetadata</code>) for
+     *         each principal that matches one of the supplied qualified names
+     *         or uids, or empty list if nothing suitable was found.
+     * 
+     */
+    List<PrincipalMetadata> getMetadata(Set<String> qualifiedNamesOrUids, Locale preferredLocale);
 
     /**
      * Return set of supported principal domains for this DAO.

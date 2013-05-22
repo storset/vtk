@@ -32,7 +32,6 @@
 package org.vortikal.repository.store;
 
 import java.util.Locale;
-import java.util.Set;
 
 import org.vortikal.security.Principal;
 import org.vortikal.security.Principal.Type;
@@ -46,7 +45,6 @@ public class PrincipalSearchImpl implements PrincipalSearch {
     protected Principal.Type principalType;
     private SearchType searchType;
     private Locale preferredLocale;
-    private Set<String> uids;
 
     public PrincipalSearchImpl(String searchString) {
         this(Principal.Type.USER, searchString, null, null);
@@ -65,21 +63,6 @@ public class PrincipalSearchImpl implements PrincipalSearch {
         this.searchString = searchString;
         this.preferredLocale = preferredLocale;
         this.searchType = searchType;
-    }
-
-    public PrincipalSearchImpl(Set<String> uids, Locale preferredLocale) {
-        this.principalType = Principal.Type.USER;
-        this.searchType = SearchType.MULTIPLE_IDS_SEARCH;
-        this.preferredLocale = preferredLocale;
-        this.uids = uids;
-    }
-
-    public PrincipalSearchImpl(Set<String> uids, String searchString, Locale preferredLocale) {
-        this(searchString);
-        this.principalType = Principal.Type.USER;
-        this.searchType = SearchType.MULTIPLE_IDS_SEARCH;
-        this.preferredLocale = preferredLocale;
-        this.uids = uids;
     }
 
     @Override
@@ -102,10 +85,6 @@ public class PrincipalSearchImpl implements PrincipalSearch {
         return this.preferredLocale;
     }
 
-    public Set<String> getUids() {
-        return uids;
-    }
-
     @Override
     public int hashCode() {
         int code = 7;
@@ -124,15 +103,12 @@ public class PrincipalSearchImpl implements PrincipalSearch {
             code = 31 * code + this.searchType.hashCode();
         }
 
-        if (this.uids != null) {
-            code = 31 * code + this.uids.hashCode();
-        }
-
         return code;
     }
 
     @Override
     public boolean equals(Object other) {
+
         if (this == other) {
             return true;
         }
@@ -166,21 +142,17 @@ public class PrincipalSearchImpl implements PrincipalSearch {
             }
         }
 
-        if (this.uids != null) {
-            if (!this.uids.equals(po.uids)) {
+        if (this.searchString != null) {
+            if (!this.searchString.equals(po.searchString)) {
                 return false;
             }
         } else {
-            if (po.uids != null) {
+            if (po.searchString != null) {
                 return false;
             }
         }
 
-        if (this.searchString == null) {
-            return (po.searchString == null);
-        } else {
-            return this.searchString.equals(po.searchString);
-        }
+        return true;
 
     }
 
@@ -199,10 +171,6 @@ public class PrincipalSearchImpl implements PrincipalSearch {
 
         if (this.searchString != null) {
             sb.append("-").append(this.searchString);
-        }
-
-        if (this.uids != null) {
-            sb.append("-").append(uids.toString());
         }
 
         return sb.toString();

@@ -84,14 +84,14 @@ public class PrincipalMetadataDAOCacheWrapper implements PrincipalMetadataDAO, I
      * .String)
      */
     @Override
-    public PrincipalMetadata getMetadata(String qualifiedName, Locale preferredLocale) {
-        if (qualifiedName == null) {
+    public PrincipalMetadata getMetadata(String qualifiedNameOrUid, Locale preferredLocale) {
+        if (qualifiedNameOrUid == null) {
             throw new IllegalArgumentException("Qualified name cannot be null");
         }
 
-        String cacheKey = qualifiedName;
+        String cacheKey = qualifiedNameOrUid;
         if (preferredLocale != null) {
-            cacheKey = qualifiedName.concat(preferredLocale.toString());
+            cacheKey = qualifiedNameOrUid.concat(preferredLocale.toString());
         }
         CacheItem item = this.cache.get(cacheKey);
         if (item != null) {
@@ -99,7 +99,7 @@ public class PrincipalMetadataDAOCacheWrapper implements PrincipalMetadataDAO, I
         }
 
         // Ignore any unchecked exceptions, let them propagate to caller.
-        PrincipalMetadata result = this.wrappedDao.getMetadata(qualifiedName, preferredLocale);
+        PrincipalMetadata result = this.wrappedDao.getMetadata(qualifiedNameOrUid, preferredLocale);
 
         // Note: will also cache null-results
         // (indicates that metadata is unavailable for the principal).
@@ -121,6 +121,25 @@ public class PrincipalMetadataDAOCacheWrapper implements PrincipalMetadataDAO, I
         this.cache.put(cacheKey, new CacheItem(result));
         return result;
 
+    }
+
+    public List<PrincipalMetadata> getMetadata(Set<String> qualifiedNamesOrUids, Locale preferredLocale) {
+
+        if (qualifiedNamesOrUids == null) {
+            throw new IllegalArgumentException("Set of qualified names or uids cannot be null");
+        }
+
+        String cacheKey = qualifiedNamesOrUids.toString();
+        if (preferredLocale != null) {
+            cacheKey = cacheKey.concat(preferredLocale.toString());
+        }
+        CacheItem item = this.cache.get(cacheKey);
+        if (item != null) {
+            return item.values;
+        }
+        List<PrincipalMetadata> result = this.wrappedDao.getMetadata(qualifiedNamesOrUids, preferredLocale);
+        this.cache.put(cacheKey, new CacheItem(result));
+        return result;
     }
 
     @Override

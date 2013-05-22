@@ -41,7 +41,6 @@ import org.vortikal.repository.store.Metadata;
 import org.vortikal.repository.store.PrincipalMetadata;
 import org.vortikal.repository.store.PrincipalMetadataDAO;
 import org.vortikal.repository.store.PrincipalMetadataImpl;
-import org.vortikal.repository.store.PrincipalSearchImpl;
 import org.vortikal.security.Principal;
 import org.vortikal.security.Principal.Type;
 import org.vortikal.security.PrincipalImpl;
@@ -69,8 +68,8 @@ public class DocumentPrincipalMetadataRetriever {
         Set<Principal> result = new HashSet<Principal>();
         if (this.personDocumentPrincipalMetadataDao != null && uids != null && !uids.isEmpty()) {
 
-            PrincipalSearchImpl ps = new PrincipalSearchImpl(uids, preferredLocale);
-            List<PrincipalMetadata> principalDocuments = this.personDocumentPrincipalMetadataDao.search(ps);
+            List<PrincipalMetadata> principalDocuments = this.personDocumentPrincipalMetadataDao.getMetadata(uids,
+                    preferredLocale);
 
             if (principalDocuments != null && principalDocuments.size() > 0) {
                 for (PrincipalMetadata metadata : principalDocuments) {

@@ -584,7 +584,7 @@ maxHeight, minHeight, toolbar, complete, resizable, baseDocumentUrl, simple) {
   if (complete) {
     config.filebrowserImageBrowseUrl = imageBrowseUrl;
     config.filebrowserFlashBrowseUrl = flashBrowseUrl;
-    config.extraPlugins = 'mediaembed,studyreferencecomponent,htmlbuttons';
+    config.extraPlugins = 'mediaembed,studyreferencecomponent,htmlbuttons,button-h2,button-h3,button-h4,button-h5,button-h6,button-normal';
     config.stylesSet = vrtxEdit.CKEditorDivContainerStylesSet;
     if (name == "resource.content" && simple) { // XHTML
       config.format_tags = 'p;h1;h2;h3;h4;h5;h6;pre;div';
@@ -615,6 +615,16 @@ maxHeight, minHeight, toolbar, complete, resizable, baseDocumentUrl, simple) {
   config.allowedContent = true;
   
   config.linkShowTargetTab = false;
+
+  config.keystrokes =
+  [
+    [ CKEDITOR.CTRL + 50 /*2*/, 'button-h2' ],
+    [ CKEDITOR.CTRL + 51 /*3*/, 'button-h3' ],
+    [ CKEDITOR.CTRL + 52 /*4*/, 'button-h4' ],
+    [ CKEDITOR.CTRL + 53 /*5*/, 'button-h5' ],
+    [ CKEDITOR.CTRL + 54 /*6*/, 'button-h6' ],
+    [ CKEDITOR.CTRL + 49 /*0*/, 'button-normal' ]
+  ];
 
   // Configure tag formatting in source
   config.on = {

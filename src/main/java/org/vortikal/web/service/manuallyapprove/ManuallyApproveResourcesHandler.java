@@ -58,6 +58,17 @@ import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.URL;
 
+/**
+ * Retrieves list of resources to manually approve from. Used in editing of
+ * collections that have manually-approve-from property.
+ * 
+ * Caches result for 10min at a time, with resource path, last modified time and
+ * list of resources to approve from as cache key. Caching is used to avoid
+ * unnecessary search for resources on subsequent reloads of editing tab without
+ * having done any changes to property manually-approve-from (e.g. edited
+ * anything else other than manually approval).
+ * 
+ */
 public class ManuallyApproveResourcesHandler implements Controller {
 
     private ManuallyApproveResourcesSearcher searcher;
@@ -143,7 +154,8 @@ public class ManuallyApproveResourcesHandler implements Controller {
             return null;
         }
 
-        String cacheKey = getCacheKey(locations, alreadyApproved);
+        String cacheKey = getCacheKey(currentCollectionPath, currentCollection.getLastModified().toString(),
+                manuallyApproveFromParam);
         Element cached = cache.get(cacheKey);
         Object cachedObj = cached != null ? cached.getObjectValue() : null;
 
@@ -183,16 +195,14 @@ public class ManuallyApproveResourcesHandler implements Controller {
         return null;
     }
 
-    private String getCacheKey(Set<String> locations, Set<String> alreadyApproved) {
-
-        // XXX Reconsider this. Using hash code as cache key is not safe.
-
-        StringBuilder cacheKey = new StringBuilder();
-        if (locations.size() != 0) {
-            cacheKey.append(locations.toString().hashCode());
-        }
-        if (alreadyApproved.size() != 0) {
-            cacheKey.append(alreadyApproved.toString().hashCode());
+    private String getCacheKey(Path currentCollectionPath, String lastModifiedString, String[] manuallyApproveFromParam) {
+        StringBuilder cacheKey = new StringBuilder(currentCollectionPath.toString());
+        cacheKey.append("-").append(lastModifiedString);
+        if (manuallyApproveFromParam.length != 0) {
+            cacheKey.append("-");
+            for (String manuallyApproveFrom : manuallyApproveFromParam) {
+                cacheKey.append(manuallyApproveFrom);
+            }
         }
         return cacheKey.toString();
     }

@@ -665,6 +665,8 @@ VrtxEditor.prototype.addSaveHelpCKMaximized = function addSaveHelpCKMaximized() 
   vrtxAdm.cachedAppContent.on("click", ".cke_button__maximize.cke_button_on", function (e) {
     var stickyBar = _$("#vrtx-editor-title-submit-buttons");
     stickyBar.hide();
+    
+    $("body").addClass("forms-new");
 
     var ckInject = _$(this).closest(".cke_reset")
       .find(".cke_toolbar_end:last");

@@ -141,14 +141,14 @@ h2 {
   background: none;
 }
 
-.submit-extra-buttons {
+#app-content .submit-extra-buttons {
   clear: none;
   float: right;
   margin-top: -42px;
   padding-top: 0px;
 }
 
-.vrtx-sticky-editor-title-submit-buttons {
+#app-content .vrtx-sticky-editor-title-submit-buttons {
   position: fixed;
   top: 0px;
   z-index: 9999;
@@ -158,7 +158,7 @@ h2 {
   box-shadow:  0px 7px 14px -8px rgba(0, 0, 0, 0.5); 
 }
 
-.vrtx-sticky-editor-title-submit-buttons #sticky-bg-ie8-below {
+#app-content .vrtx-sticky-editor-title-submit-buttons #sticky-bg-ie8-below {
   height: 13px;
   position: absolute;
   bottom: -13px;
@@ -168,13 +168,13 @@ h2 {
   display: block;
 }
 
-.vrtx-sticky-editor-title-submit-buttons #vrtx-editor-title-submit-buttons-inner-wrapper {
+#app-content .vrtx-sticky-editor-title-submit-buttons #vrtx-editor-title-submit-buttons-inner-wrapper {
   padding-left: 19px;
   padding-right: 19px;
   position: relative;
 }
 
-.animate-optimized {
+#app-content .animate-optimized {
   overflow: hidden;
 }
 

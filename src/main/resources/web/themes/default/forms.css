@@ -1,40 +1,44 @@
 /*
  * Vortex - Forms
  *
- * TODO: rename to forms-dialogs.css
  */
 
-form, fieldset, input, button, .ui-dialog .ui-dialog-buttonpane button {
+.forms-new form,
+.forms-new fieldset,
+.forms-new input,
+.forms-new button,
+.forms-new .ui-dialog
+.forms-new .ui-dialog-buttonpane button {
   margin: 0;
   padding: 0;
 }
 
-fieldset {
+.forms-new fieldset {
   background: transparent;
   border: none;
 }
 
-textarea {
+.forms-new textarea {
   border: 1px solid #919191;
   outline: none;
 }
 
-textarea.round-corners {
+.forms-new textarea.round-corners {
   -webkit-border-radius: 5px;
   -moz-border-radius: 5px;
   border-radius: 5px; 
   padding: 8px 10px;
 }
 
-input[type=button],
-input[type=file],
-input[type=image],
-input[type=password],
-input[type=reset],
-input[type=submit],
-input[type=text],
-button,
-.ui-dialog .ui-dialog-buttonpane button {
+.forms-new input[type=button],
+.forms-new input[type=file],
+.forms-new input[type=image],
+.forms-new input[type=password],
+.forms-new input[type=reset],
+.forms-new input[type=submit],
+.forms-new input[type=text],
+.forms-new button,
+.forms-new .ui-dialog .ui-dialog-buttonpane button {
   border: 1px solid transparent;
   background: transparent;
   font-family: inherit;
@@ -43,24 +47,24 @@ button,
   font-weight: inherit;
 }
 
-.ui-dialog .ui-dialog-buttonpane button:focus,
-button:focus,
-input[type=button]:focus,
-input[type=file]:focus ,
-input[type=image]:focus ,
-input[type=password]:focus ,
-input[type=reset]:focus ,
-input[type=submit]:focus ,
-input[type=text]:focus {
+.forms-new .ui-dialog .ui-dialog-buttonpane button:focus,
+.forms-new button:focus,
+.forms-new input[type=button]:focus,
+.forms-new input[type=file]:focus,
+.forms-new input[type=image]:focus ,
+.forms-new input[type=password]:focus ,
+.forms-new input[type=reset]:focus ,
+.forms-new input[type=submit]:focus ,
+.forms-new input[type=text]:focus {
   outline: 0;
 }
 
 /* Buttons */
 
-.vrtx-button,
-.ui-dialog .ui-dialog-buttonpane button,
-.vrtx-focus-button,
-.vrtx-button-small {
+.forms-new .vrtx-button,
+.forms-new .ui-dialog .ui-dialog-buttonpane button,
+.forms-new .vrtx-focus-button,
+.forms-new .vrtx-button-small {
   background: url(/vrtx/__vrtx/static-resources/themes/default/images/dropdown-left.gif) no-repeat 0 0;
   display: inline-block;
   height: 27px;
@@ -71,12 +75,12 @@ input[type=text]:focus {
   text-decoration: none !important;
 }
 
-.ui-dialog .ui-dialog-buttonpane button {
+.forms-new .ui-dialog .ui-dialog-buttonpane button {
   height: 28px;
 }
 
-.ui-dialog .ui-dialog-buttonpane button:first-child,
-.vrtx-focus-button {
+.forms-new .ui-dialog .ui-dialog-buttonpane button:first-child,
+.forms-new .vrtx-focus-button {
   background: url(/vrtx/__vrtx/static-resources/themes/default/images/focus-button-left.gif) no-repeat 0 0;
 }
 
@@ -84,22 +88,22 @@ input[type=text]:focus {
 /* TODO: could we do it like this for all buttons when IE7-comp.modus is removed on view? */
 /*       supported in IE8 */
 @media all and (-webkit-min-device-pixel-ratio:0) {
-  .ui-dialog .ui-dialog-buttonpane button {
+  .forms-new .ui-dialog .ui-dialog-buttonpane button {
     background: none !important;
     padding: 0 !important;
     margin-right: 5px !important;
     height: auto !important;
   }
-  .ui-dialog .ui-dialog-buttonpane button.ui-state-hover.ui-state-active {
+  .forms-new .ui-dialog .ui-dialog-buttonpane button.ui-state-hover.ui-state-active {
     background: none !important;
   }
-  .ui-dialog .ui-dialog-buttonpane button span {
+  .forms-new .ui-dialog .ui-dialog-buttonpane button span {
     background: url(/vrtx/__vrtx/static-resources/themes/default/images/dropdown-left.gif) top left no-repeat !important;
     height: 23px !important;
     margin: 0 !important;
     position: relative;
   }
-  .ui-dialog .ui-dialog-buttonpane button span:after {
+  .forms-new .ui-dialog .ui-dialog-buttonpane button span:after {
     content: "";
     width: 5px;
     height: 27px;
@@ -108,41 +112,41 @@ input[type=text]:focus {
     right: 0px;
     background: #fff url(/vrtx/__vrtx/static-resources/themes/default/images/dropdown-right.gif) top right no-repeat !important;
   }
-  .ui-dialog .ui-dialog-buttonpane button:hover span {
+  .forms-new .ui-dialog .ui-dialog-buttonpane button:hover span {
     background-image: url(/vrtx/__vrtx/static-resources/themes/default/images/dropdown-left-rollover.gif) !important;
   }
-  .ui-dialog .ui-dialog-buttonpane button:hover span:after {
+  .forms-new .ui-dialog .ui-dialog-buttonpane button:hover span:after {
     background-image: url(/vrtx/__vrtx/static-resources/themes/default/images/button-closed-right-rollover.gif) !important;
   }
-  .ui-dialog .ui-dialog-buttonpane button:first-child span {
+  .forms-new .ui-dialog .ui-dialog-buttonpane button:first-child span {
     background-image: url(/vrtx/__vrtx/static-resources/themes/default/images/focus-button-left.gif) !important;
   }
-  .ui-dialog .ui-dialog-buttonpane button:first-child span:after {
+  .forms-new .ui-dialog .ui-dialog-buttonpane button:first-child span:after {
     background-image: url(/vrtx/__vrtx/static-resources/themes/default/images/focus-button-right.gif) !important;
   }
-  .ui-dialog .ui-dialog-buttonpane button:first-child:hover span {
+  .forms-new .ui-dialog .ui-dialog-buttonpane button:first-child:hover span {
     background-image: url(/vrtx/__vrtx/static-resources/themes/default/images/focus-button-left-rollover.gif) !important;
   }
-  .ui-dialog .ui-dialog-buttonpane button:first-child:hover span:after {
+  .forms-new .ui-dialog .ui-dialog-buttonpane button:first-child:hover span:after {
     background-image: url(/vrtx/__vrtx/static-resources/themes/default/images/focus-button-right-rollover.gif) !important;
   }
 }
 
-.vrtx-button-small {
+.forms-new .vrtx-button-small {
   height: 22px;
   background: url(/vrtx/__vrtx/static-resources/themes/default/images/button-small-left.gif) no-repeat 0 0;
 }
 
-.ui-dialog .ui-dialog-buttonpane button span,
-.vrtx-button span,
-.vrtx-button input,
-.vrtx-button button,
-.vrtx-focus-button span,
-.vrtx-focus-button input,
-.vrtx-focus-button button,
-.vrtx-button-small span,
-.vrtx-button-small input,
-.vrtx-button-small button {
+.forms-new .ui-dialog .ui-dialog-buttonpane button span,
+.forms-new .vrtx-button span,
+.forms-new .vrtx-button input,
+.forms-new .vrtx-button button,
+.forms-new .vrtx-focus-button span,
+.forms-new .vrtx-focus-button input,
+.forms-new .vrtx-focus-button button,
+.forms-new .vrtx-button-small span,
+.forms-new .vrtx-button-small input,
+.forms-new .vrtx-button-small button {
   color: #363534;
   background: url(/vrtx/__vrtx/static-resources/themes/default/images/button-closed-right.gif) no-repeat top right;
   display: inline-block;
@@ -153,110 +157,110 @@ input[type=text]:focus {
   margin: 0 -5px 0 0;
 }
 
-.vrtx-button input,
-.vrtx-button button,
-.vrtx-focus-button input,
-.vrtx-focus-button button {
+.forms-new .vrtx-button input,
+.forms-new .vrtx-button button,
+.forms-new .vrtx-focus-button input,
+.forms-new .vrtx-focus-button button {
   height: 27px;
   padding: 0 15px 0 14px;
 }
 
-.ui-dialog .ui-dialog-buttonpane button:first-child span,
-.vrtx-focus-button span,
-.vrtx-focus-button input,
-.vrtx-focus-button button {
+.forms-new .ui-dialog .ui-dialog-buttonpane button:first-child span,
+.forms-new .vrtx-focus-button span,
+.forms-new .vrtx-focus-button input,
+.forms-new .vrtx-focus-button button {
   color: #fff;
   background: url(/vrtx/__vrtx/static-resources/themes/default/images/focus-button-right.gif) no-repeat top right;
 }
 
-.vrtx-button-small span,
-.vrtx-button-small input,
-.vrtx-button-small button {
+.forms-new .vrtx-button-small span,
+.forms-new .vrtx-button-small input,
+.forms-new .vrtx-button-small button {
   height: 20px;
   padding: 2px 11px 0 10px;
   background: url(/vrtx/__vrtx/static-resources/themes/default/images/button-small-right.gif) no-repeat top right;
 } 
 
-.vrtx-button-small input,
-.vrtx-button-small button {
+.forms-new .vrtx-button-small input,
+.forms-new .vrtx-button-small button {
   height: 22px;
   padding: 0 11px 0 10px;
 }
 
-.ui-dialog .ui-dialog-buttonpane button:hover,
-.vrtx-button:hover,
-.vrtx-button.hover {
+.forms-new .ui-dialog .ui-dialog-buttonpane button:hover,
+.forms-new .vrtx-button:hover,
+.forms-new .vrtx-button.hover {
   background-image: url(/vrtx/__vrtx/static-resources/themes/default/images/dropdown-left-rollover.gif);
 }
 
-.ui-dialog .ui-dialog-buttonpane button:first-child:hover,
-.vrtx-focus-button:hover,
-.vrtx-focus-button.hover {
+.forms-new .ui-dialog .ui-dialog-buttonpane button:first-child:hover,
+.forms-new .vrtx-focus-button:hover,
+.forms-new .vrtx-focus-button.hover {
   background-image: url(/vrtx/__vrtx/static-resources/themes/default/images/focus-button-left-rollover.gif);
 }
 
-.vrtx-button-small:hover,
-.vrtx-button-small.hover {
+.forms-new .vrtx-button-small:hover,
+.forms-new .vrtx-button-small.hover {
   background-image: url(/vrtx/__vrtx/static-resources/themes/default/images/button-small-left-rollover.gif);
 }
 
-.ui-dialog .ui-dialog-buttonpane button:hover span,
-.vrtx-button:hover span,
-.vrtx-button:hover input,
-.vrtx-button:hover button,
-.vrtx-focus-button:hover span,
-.vrtx-focus-button:hover input,
-.vrtx-focus-button:hover button,
-.vrtx-button-small:hover span,
-.vrtx-button-small:hover input,
-.vrtx-button-small:hover button,
-.vrtx-button.hover span,
-.vrtx-button.hover input,
-.vrtx-button.hover button,
-.vrtx-focus-button.hover span,
-.vrtx-focus-button.hover input,
-.vrtx-focus-button.hover button,
-.vrtx-button-small.hover span,
-.vrtx-button-small.hover input,
-.vrtx-button-small.hover button {
+.forms-new .ui-dialog .ui-dialog-buttonpane button:hover span,
+.forms-new .vrtx-button:hover span,
+.forms-new .vrtx-button:hover input,
+.forms-new .vrtx-button:hover button,
+.forms-new .vrtx-focus-button:hover span,
+.forms-new .vrtx-focus-button:hover input,
+.forms-new .vrtx-focus-button:hover button,
+.forms-new .vrtx-button-small:hover span,
+.forms-new .vrtx-button-small:hover input,
+.forms-new .vrtx-button-small:hover button,
+.forms-new .vrtx-button.hover span,
+.forms-new .vrtx-button.hover input,
+.forms-new .vrtx-button.hover button,
+.forms-new .vrtx-focus-button.hover span,
+.forms-new .vrtx-focus-button.hover input,
+.forms-new .vrtx-focus-button.hover button,
+.forms-new .vrtx-button-small.hover span,
+.forms-new .vrtx-button-small.hover input,
+.forms-new .vrtx-button-small.hover button {
   color: #fff;
   background: url(/vrtx/__vrtx/static-resources/themes/default/images/button-closed-right-rollover.gif) no-repeat top right;
 }
 
-.ui-dialog .ui-dialog-buttonpane button:first-child:hover span,
-.vrtx-focus-button:hover span,
-.vrtx-focus-button:hover input,
-.vrtx-focus-button:hover button,
-.vrtx-focus-button.hover span,
-.vrtx-focus-button.hover input,
-.vrtx-focus-button.hover button {
+.forms-new .ui-dialog .ui-dialog-buttonpane button:first-child:hover span,
+.forms-new .vrtx-focus-button:hover span,
+.forms-new .vrtx-focus-button:hover input,
+.forms-new .vrtx-focus-button:hover button,
+.forms-new .vrtx-focus-button.hover span,
+.forms-new .vrtx-focus-button.hover input,
+.forms-new .vrtx-focus-button.hover button {
   background: url(/vrtx/__vrtx/static-resources/themes/default/images/focus-button-right-rollover.gif) no-repeat top right;
 }
 
-.vrtx-button-small:hover span,
-.vrtx-button-small:hover input,
-.vrtx-button-small:hover button,
-.vrtx-button-small.hover span,
-.vrtx-button-small.hover input,
-.vrtx-button-small.hover button {
+.forms-new .vrtx-button-small:hover span,
+.forms-new .vrtx-button-small:hover input,
+.forms-new .vrtx-button-small:hover button,
+.forms-new .vrtx-button-small.hover span,
+.forms-new .vrtx-button-small.hover input,
+.forms-new .vrtx-button-small.hover button {
   background: url(/vrtx/__vrtx/static-resources/themes/default/images/button-small-right-rollover.gif) no-repeat top right;
 }
 
-.submitButtons,
-#submitButtons {
+.forms-new .submitButtons,
+.forms-new #submitButtons {
   padding: 15px 0 0 0;
   clear: left;
 }
 
-.submitButtons .vrtx-button,
-.submitButtons .vrtx-focus-button,
-#submitButtons .vrtx-button,
-#submitButtons .vrtx-focus-button,
-.ui-dialog .ui-dialog-buttonpane button {
+.forms-new .submitButtons .vrtx-button,
+.forms-new .submitButtons .vrtx-focus-button,
+.forms-new #submitButtons .vrtx-button,
+.forms-new #submitButtons .vrtx-focus-button,
+.forms-new .ui-dialog .ui-dialog-buttonpane button {
   margin: 0 10px 0 0;
 }
 
-.ui-dialog .ui-dialog-buttonpane button.ui-corner-all {
+.forms-new .ui-dialog .ui-dialog-buttonpane button.ui-corner-all {
   -moz-border-radius: 0px;
   -webkit-border-radius: 0px;
   -khtml-border-radius: 0px;
@@ -267,14 +271,14 @@ input[type=text]:focus {
 
 /* Textfields */
 
-.vrtx-textfield {
+.forms-new .vrtx-textfield {
   background: url(/vrtx/__vrtx/static-resources/themes/default/images/textfield-left.gif) no-repeat 0 0;
   height: 27px;
   padding: 0 0 0 8px;
   display: inline-block;
 }
 
-.vrtx-textfield input {
+.forms-new .vrtx-textfield input {
   background: url(/vrtx/__vrtx/static-resources/themes/default/images/textfield-right.gif) no-repeat top right;
   height: 23px;
   margin: -1px -5px 0 0;
@@ -283,14 +287,14 @@ input[type=text]:focus {
   display: inline-block;
 }
 
-.vrtx-textfield-big {
+.forms-new .vrtx-textfield-big {
   background: url(/vrtx/__vrtx/static-resources/themes/default/images/textfield-big-left.gif) no-repeat 0 0;
   height: 33px;
   padding: 0 0 0 12px;
   display: inline-block;
 }
 
-.vrtx-textfield-big input {
+.forms-new .vrtx-textfield-big input {
   background: url(/vrtx/__vrtx/static-resources/themes/default/images/textfield-big-right.gif) no-repeat top right;
   height: 23px;
   margin: -1px -6px 0 0;
@@ -303,7 +307,7 @@ input[type=text]:focus {
 
 /* jQuery UI dialog, datepicker, accordion etc. */
 
-.ui-widget-overlay {
+.forms-new .ui-widget-overlay {
   background: #000;
   opacity: 0.4;
   -moz-opacity: 0.4; 
@@ -312,7 +316,7 @@ input[type=text]:focus {
   z-index: 99999 !important; 
 }
 
-.ui-dialog {
+.forms-new .ui-dialog {
   background: none repeat scroll 0 0 #FFFFFF;
   border: 2px solid #848484;
   box-shadow: 1px 1px 5px 2px #848484;
@@ -324,87 +328,89 @@ input[type=text]:focus {
   z-index: 100000 !important;
 }
 
-.ui-dialog .ui-dialog-titlebar {
+.forms-new .ui-dialog .ui-dialog-titlebar {
   background: url(/vrtx/__vrtx/static-resources/themes/default/images/line-dotted.gif) repeat-x scroll left bottom transparent;
   border: none;
   padding: 0 0 15px 0;
 }
 
-.ui-dialog .ui-dialog-titlebar.closable {
+.forms-new .ui-dialog .ui-dialog-titlebar.closable {
   padding-bottom: 0px;
   background: none;
 }
 
-.ui-dialog .ui-dialog-titlebar .ui-dialog-title {
+.forms-new .ui-dialog .ui-dialog-titlebar .ui-dialog-title {
   font-size: 1.538em;
   font-weight: normal;
   margin: 0;
 }
 
-.ui-dialog .ui-dialog-titlebar-close {
+.forms-new .ui-dialog .ui-dialog-titlebar-close {
   right: 3px;
   top: 3px;
 }
 
-.ui-dialog .ui-dialog-titlebar-close,
-.ui-dialog .ui-dialog-titlebar-close.ui-state-hover {
+.forms-new .ui-dialog .ui-dialog-titlebar-close,
+.forms-new .ui-dialog .ui-dialog-titlebar-close.ui-state-hover {
   border: none;
   background: none;
 }
 
-.ui-dialog .ui-dialog-titlebar-close,
-.ui-dialog .ui-dialog-titlebar-close .ui-icon {
+.forms-new .ui-dialog .ui-dialog-titlebar-close,
+.forms-new .ui-dialog .ui-dialog-titlebar-close .ui-icon {
   width: 20px;
   height: 18px;
   margin: 0;
   padding: 0;
 }
 
-.ui-dialog .ui-dialog-titlebar-close .ui-button-text {
+.forms-new .ui-dialog .ui-dialog-titlebar-close .ui-button-text {
   display: none;
 }
 
-.ui-dialog .ui-dialog-titlebar-close .ui-icon {
+.forms-new .ui-dialog .ui-dialog-titlebar-close .ui-icon {
   background: url(/vrtx/__vrtx/static-resources/themes/default/images/thickbox-close.png) no-repeat center center;
   position: static;
 }
 
-.ui-dialog .ui-dialog-buttonpane,
-.ui-dialog .ui-dialog-content {
+.forms-new .ui-dialog .ui-dialog-buttonpane,
+.forms-new .ui-dialog .ui-dialog-content {
   margin: 0;
   border: none;
 }
 
-.ui-dialog .ui-dialog-content {
+.forms-new .ui-dialog .ui-dialog-content {
   padding: 15px 0;
   min-height: 0 !important;
 }
 
-.ui-dialog .ui-dialog-content ul {
+.forms-new .ui-dialog .ui-dialog-content ul {
   margin: 10px 0 10px 25px;
   padding: 0;
 }
 
-.ui-dialog .ui-dialog-buttonpane {
+.forms-new .ui-dialog .ui-dialog-buttonpane {
   padding: 0;
 }
 
-.ui-dialog .ui-dialog-buttonpane .ui-dialog-buttonset {
+.forms-new .ui-dialog .ui-dialog-buttonpane .ui-dialog-buttonset {
   float: left;
 }
 
-.ui-widget {
+.forms-new .ui-widget {
   font-size: 1em !important;
   text-align: left;
 }
 
-.ui-widget,
-.ui-widget input, .ui-widget select,
-.ui-widget textarea, .ui-widget button {
+.forms-new .ui-widget,
+.forms-new .ui-widget input,
+.forms-new .ui-widget select,
+.forms-new .ui-widget textarea,
+.forms-new .ui-widget button {
   font-family: Arial, Helvetica, sans-serif !important;
 }
 
-.ui-widget.ui-datepicker {
+.forms-new .ui-widget.ui-datepicker {
   font-size: 0.9em !important;
 }
 
@@ -412,46 +418,46 @@ input[type=text]:focus {
 
 /* Email forms */
 
-#email-approval-form {
+.forms-new #email-approval-form {
   width: 400px;
 }
 
-#email-approval-form label {
+.forms-new #email-approval-form label {
   margin: 15px 0px 5px;
   display: block;
   font-size: 1.154em;
 }
 
-#email-approval-form label.first {
+.forms-new #email-approval-form label.first {
   margin-top: 0px;
 }
 
-#email-approval-form .vrtx-textfield input {
+.forms-new #email-approval-form .vrtx-textfield input {
   width: 385px;
 }
 
-#email-approval-form textarea {
+.forms-new #email-approval-form textarea {
   width: 380px;
   height: 90px;
 }
 
-#email-approval-form .email-help {
+.forms-new #email-approval-form .email-help {
   margin: 5px 0 0 0;
   color: #888;
   font-size: 0.923em;
 }
 
-#emailBody {
+.forms-new #emailBody {
   color: #666;
   overflow: hidden;
 }
 
-#emailBody a {
+.forms-new #emailBody a {
   color: #005aab;
   text-decoration: underline;
 }
 
-div#email-response { 
+.forms-new div#email-response { 
   font-size: 0.923em;
   font-style: italic;
   color: #ed1c24;
@@ -462,29 +468,29 @@ div#email-response {
 
 /* Mozilla hacks */
 
-form::-moz-focus-inner,
-.ui-dialog .ui-dialog-buttonpane button::-moz-focus-inner,
-form button::-moz-focus-inner {
+.forms-new form::-moz-focus-inner,
+.forms-new .ui-dialog .ui-dialog-buttonpane button::-moz-focus-inner,
+.forms-new form button::-moz-focus-inner {
   border: none;
   padding: 0;
 }
 
 /* Vertical aligning text in textfields: targets Firefox 1.5 and newer 
    Credits: http://perishablepress.com/press/2009/06/28/css-hacks-for-different-versions-of-firefox/ */
-.vrtx-button input,
-.vrtx-button button,
-.ui-dialog .ui-dialog-buttonpane button,
-.vrtx-focus-button input,
-.vrtx-focus-button button, x:-moz-any-link, x:only-child {
+.forms-new .vrtx-button input,
+.forms-new .vrtx-button button,
+.forms-new .ui-dialog .ui-dialog-buttonpane button,
+.forms-new .vrtx-focus-button input,
+.forms-new .vrtx-focus-button button, x:-moz-any-link, x:only-child {
   padding-bottom: 1px;
 }
 
-.vrtx-textfield input, x:-moz-any-link, x:only-child {
+.forms-new .vrtx-textfield input, x:-moz-any-link, x:only-child {
   padding-top: 2px;
   height: 25px;
 }
 
-.vrtx-textfield-big input, x:-moz-any-link, x:only-child {
+.forms-new .vrtx-textfield-big input, x:-moz-any-link, x:only-child {
   padding-top: 2px;
   height: 31px;
 }
@@ -493,13 +499,13 @@ form button::-moz-focus-inner {
 
 /* Webkit fixes - typical apple mobile devices */
 
-input[type=button],
-input[type=file],
-input[type=image],
-input[type=password],
-input[type=reset],
-input[type=submit],
-input[type=text] { /* input reset */
+.forms-new input[type=button],
+.forms-new input[type=file],
+.forms-new input[type=image],
+.forms-new input[type=password],
+.forms-new input[type=reset],
+.forms-new input[type=submit],
+.forms-new input[type=text] { /* input reset */
   -webkit-appearance: none;
   -webkit-border-radius: 0;
 }

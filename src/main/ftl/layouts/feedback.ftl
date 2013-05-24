@@ -75,7 +75,7 @@
         </a>
       </li>
       <li>
-        <a target="_blank" class="feedback-no dialog" title='<@vrtx.msg code="feedback.send" default="Send us your feedback" />' href="${link?html}&amp;height=350&amp;width=370&amp;KeepThis=true&amp;TB_iframe=true">
+        <a target="_blank" class="feedback-no dialog" title='<@vrtx.msg code="feedback.send" default="Send us your feedback" />' href="${link?html}">
           <@vrtx.msg code="feedback.link.no" default="No, I didn't find what I was looking for" />
         </a>
       </li>

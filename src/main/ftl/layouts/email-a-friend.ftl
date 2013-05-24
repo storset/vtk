@@ -12,12 +12,4 @@
   <#stop "Missing 'emailLink' entry in model"/>
 </#if>
 
-<!-- begin email a friend js -->
-<#if jsURLs?exists>
-  <#list jsURLs as jsURL>
-    <script type="text/javascript" src="${jsURL}"></script>
-  </#list>
-</#if>
-<!-- end email a friend js -->
-
-<a class="vrtx-email-friend thickbox" target="_blank" title='<@vrtx.msg code="tip.emailtitle" default="E-mail a friend" />' href="${emailLink.url?html}&amp;height=420&amp;width=345&amp;TB_iframe=true"><@vrtx.msg code="decorating.emailAFriendComponent.emaillink" default="E-mail a friend" /></a>
+<a class="vrtx-email-friend dialog" target="_blank" title='<@vrtx.msg code="tip.emailtitle" default="E-mail a friend" />' href="${emailLink.url?html}&amp;height=420&amp;width=345&amp;TB_iframe=true"><@vrtx.msg code="decorating.emailAFriendComponent.emaillink" default="E-mail a friend" /></a>

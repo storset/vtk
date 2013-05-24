@@ -12,11 +12,6 @@
   <#assign link = emailLink.url />
   
    <!-- begin feedback js -->
-  <#if jsURLs?exists>
-    <#list jsURLs as jsURL>
-      <script type="text/javascript" src="${jsURL}"></script>
-    </#list>
-  </#if>
   <script type="text/javascript"><!--
     $(function() {
       if (typeof urchinTracker !== "undefined") {
@@ -47,6 +42,7 @@
   // -->
   </script>
   <!-- end feedback js -->
+  
   <!-- start feedback css -->
   <style type="text/css">
     .vrtx-feedback,
@@ -79,7 +75,7 @@
         </a>
       </li>
       <li>
-        <a target="_blank" class="feedback-no thickbox" title='<@vrtx.msg code="feedback.send" default="Send us your feedback" />' href="${link?html}&amp;height=350&amp;width=370&amp;KeepThis=true&amp;TB_iframe=true">
+        <a target="_blank" class="feedback-no dialog" title='<@vrtx.msg code="feedback.send" default="Send us your feedback" />' href="${link?html}&amp;height=350&amp;width=370&amp;KeepThis=true&amp;TB_iframe=true">
           <@vrtx.msg code="feedback.link.no" default="No, I didn't find what I was looking for" />
         </a>
       </li>

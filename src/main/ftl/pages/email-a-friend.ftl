@@ -31,9 +31,9 @@
  <body>
    <#if mailResponse?has_content && mailResponse = "OK">
      <p><@vrtx.msg code="email.form.success" args=[emailSentTo] /></p>
-     <div class="vrtx-button">
-       <button onclick="javascript:window.parent.tb_remove();"><@vrtx.msg code="email.form.close" default="Close" /></button>
-     </div>
+     <a class="vrtx-button" href=".">
+       <span><@vrtx.msg code="email.form.close" default="Close" /></span>
+     </a>
    <#else>
     <h1>Send to approval</h1>   
     <h2>${resource.title}</h2>

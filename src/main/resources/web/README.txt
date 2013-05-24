@@ -72,8 +72,7 @@ JavaScript and plain JS plugins
 │   ├── mustache.js
 │   ├── shortcut.js
 │   ├── tablesort-1.5.min.js
-│   ├── tablesort-customsort.js
-│   └── thickbox-modified
+│   └── tablesort-customsort.js
 ├── shared-text-extension.js
 ├── share-subscribe.js
 ├── templates

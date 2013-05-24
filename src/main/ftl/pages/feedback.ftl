@@ -38,14 +38,11 @@
 <body>
   <#if mailResponse?has_content && mailResponse = "OK">
     <p><@vrtx.msg code="feedback.form.success" args=[emailSentTo] /></p>
-    <div class="vrtx-button">
-      <button onclick="javascript:window.parent.tb_remove();"><@vrtx.msg code="email.form.close" default="Close" /></button>
-    </div>
+    <a class="vrtx-button" href=".">
+      <span><@vrtx.msg code="email.form.close" default="Close" /></span>
+    </a>
     <script type="text/javascript"><!--
-      $(function() {
-        var TBTitle = window.parent.document.getElementById("TB_ajaxWindowTitle");
-        $(TBTitle).text('<@vrtx.msg code="feedback.thanks" default="Thank you for giving us feedback" />');
-      });
+      var updatedTitle = '<@vrtx.msg code="feedback.thanks" default="Thank you for giving us feedback" />';
     // -->
     </script>
   <#else>

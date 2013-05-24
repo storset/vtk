@@ -164,7 +164,7 @@
         });
       // -->
       </script>
-      <div type="text" id="datepicker"></div>
+      <div id="datepicker"></div>
     </div>
     <#assign additionalContent = vrtx.propValue(collection, "additionalContents") />
     <#if additionalContent?has_content>

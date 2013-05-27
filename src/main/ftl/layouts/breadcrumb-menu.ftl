@@ -47,11 +47,11 @@
     </#list>
 
     <#if (children?exists && children?size > 0) >
-      <ul>
+      <#if breadcrumb?has_content><ul></#if>
         <#list children as c>
           <li class="vrtx-child"><a <#if (c.url.path = markedurl.path) >class="vrtx-marked"</#if> href="${c.url?html}"><span>${c.title?html}</span></a></li>
-         </#list>
-      </ul>
+        </#list>
+      <#if breadcrumb?has_content></ul></#if>
     </#if>
 
     </li>

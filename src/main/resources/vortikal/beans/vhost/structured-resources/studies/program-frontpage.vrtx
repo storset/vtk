@@ -75,10 +75,11 @@ resourcetype program-frontpage : program-document {
         [def thispath thispath + '/studieretninger']
       [endif]
       [def folder resource(thispath)]
-      [if folder]
+      [def fs-program-code resource-prop-obj-val(".", "programContext.fs-program-code")]
+      [if folder != null && fs-program-code != null && fs-program-code != ""]
         <div class="vrtx-frontpage-box white-box vrtx-program-options">
           <h2><a href="[val thispath]">[localized 'program-options-title']</a></h2>
-          [def active search('uri=' + thispath + '/* && type IN program-option-frontpage && published=true && program-option-context:programOptionContext.status=aktivt', 'title')]
+          [def active search('program-context:programContext.fs-program-code=' + fs-program-code + ' && type IN program-option-frontpage && published=true && program-option-context:programOptionContext.status=aktivt', 'title')]
           [list active res]
             [def url view-url(res)]
             [def name resource-prop-obj-val(res, "name")]
@@ -94,7 +95,7 @@ resourcetype program-frontpage : program-document {
             [if _size = _index + 1]</ul>[endif]
           [endlist]
           <div class="vrtx-program-options-inactive">
-            [def inactive search('uri=' + thispath + '/* && type IN program-option-frontpage && published=true && program-option-context:programOptionContext.status=under-utfasing', 'title')]
+            [def inactive search('program-context:programContext.fs-program-code=' + fs-program-code + ' && type IN program-option-frontpage && published=true && program-option-context:programOptionContext.status=under-utfasing', 'title')]
             <ul>
               [list inactive res]
                 [def url view-url(res)]

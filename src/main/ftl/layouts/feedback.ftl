@@ -31,7 +31,7 @@
         var noLink = $(".vrtx-feedback a.feedback-no").parent();
         noLink.find("a").removeClass("feedback-no")
                         .addClass("feedback")
-                        .text('<@vrtx.msg code="feedback.link" default="Give feedback" />');
+                        .text('<@vrtx.msg code="feedback.send" default="Give us feedback" />');
         $(".vrtx-feedback ul").replaceWith('<p>' + noLink.html() + '</p>');
       }
     });

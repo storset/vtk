@@ -13,7 +13,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-  <title><@vrtx.msg code="feedback.title" default="Give feedback" /></title>
+  <title><@vrtx.msg code="feedback.send" default="Give us feedback" /></title>
   <#if cssURLs?exists>
     <#list cssURLs as cssUrl>
       <link href="${cssUrl}" type="text/css" rel="stylesheet" />
@@ -46,18 +46,8 @@
     // -->
     </script>
   <#else>
-    <h1><@vrtx.msg code="feedback.title" default="Give feedback" /></h1> 
+    <h1><@vrtx.msg code="feedback.send" default="Give us feedback" /></h1> 
 
-    <p><@vrtx.msg code="feedback.cant-respond" default="We can unfortunately not respond directly." /></p>
-    <p>
-    <@vrtx.msg code="feedback.contact-pre" default="See" />
-    <#if contacturl?has_content>
-      <a id="vrtx-feedback-contact" target="_top" href='${contacturl?html}'>
-    <#else>
-      <a id="vrtx-feedback-contact" target="_top" href='<@vrtx.msg code="feedback.contact-link" default="http://www.uio.no/english/about/contact/" />'>
-    </#if>
-    <@vrtx.msg code="feedback.contact-middle" default="our points of contact" /></a>&nbsp;<@vrtx.msg code="feedback.contact-post" default="if you need answers from anyone." />
-    </p>
     <#if !like?exists || (like?exists && like = "false")>
       <form id="feedback-form" method="post" action="?vrtx=send-feedback">
            
@@ -74,6 +64,17 @@
         <#if contacturl?has_content>
           <input type="hidden" name="contacturl" value="${contacturl?html}" />
         </#if>
+        
+        <p><@vrtx.msg code="feedback.cant-respond" default="Thank you for your help. We can unfortunately not respond on your request." /></p>
+        <p>
+        <#if contacturl?has_content>
+          <a id="vrtx-feedback-contact" target="_top" href='${contacturl?html}'>
+        <#else>
+          <a id="vrtx-feedback-contact" target="_top" href='<@vrtx.msg code="feedback.contact-link" default="http://www.uio.no/english/about/contact/" />'>
+        </#if>
+          <@vrtx.msg code="feedback.contact" default="Contact us if you have questions you wish to be answered" />
+        </a>
+        </p>
            
         <div id="submitButtons">
           <div class="vrtx-focus-button"> 

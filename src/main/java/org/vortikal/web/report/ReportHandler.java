@@ -76,7 +76,11 @@ public class ReportHandler implements Controller {
     // report flap, but only accessible via other reports (primarily via
     // "primaryReportes"
     protected List<Reporter> hiddenReporters;
-    
+
+    // Reports only visible on specific collections
+    protected Map<String, List<Reporter>> collectionPrimaryReporters;
+    protected Map<String, List<Reporter>> collectionReporters;
+
     private Service viewReportService;
 
     @Override
@@ -87,7 +91,7 @@ public class ReportHandler implements Controller {
 
         Path uri = requestContext.getResourceURI();
         String token = securityContext.getToken();
-        Resource resource = this.repository.retrieve(token, uri, false);
+        Resource resource = repository.retrieve(token, uri, false);
 
         Service service = requestContext.getService();
         URL serviceURL = service.constructURL(resource, securityContext.getPrincipal());
@@ -97,30 +101,51 @@ public class ReportHandler implements Controller {
 
         String reportType = request.getParameter(AbstractReporter.REPORT_TYPE_PARAM);
         if (reportType != null && !"".equals(reportType.trim())) {
-            Reporter reporter = getReporter(reportType);
+            Reporter reporter = getReporter(reportType, resource.getResourceType());
             if (reporter != null) {
                 Map<String, Object> report = reporter.getReportContent(token, resource, request);
 
                 if (reporter.isResolvePrincipalLink()) {
-                    Locale locale = this.localeResolver.resolveLocale(request);
-                    Map<String, Principal> principalDocuments = this.getPrincipalDocuments(report, locale);
+                    Locale locale = localeResolver.resolveLocale(request);
+                    Map<String, Principal> principalDocuments = getPrincipalDocuments(report, locale);
                     model.put("principalDocuments", principalDocuments);
                 }
-               
+
                 model.put("report", report);
-                
+
                 Map<String, String> typeParam = new HashMap<String, String>();
                 typeParam.put(AbstractReporter.REPORT_TYPE_PARAM, reportType);
                 model.put("viewReportServiceURL", viewReportService.constructURL(resource, securityContext.getPrincipal(), typeParam));
-                
+
                 return new ModelAndView(reporter.getViewName(), model);
             }
         }
-        
-        this.addReports(this.primaryReporters, "primaryReporters", model, serviceURL);
-        this.addReports(this.reporters, "reporters", model, serviceURL);
 
-        return new ModelAndView(this.viewName, model);
+        if (collectionPrimaryReporters != null && collectionPrimaryReporters.containsKey(resource.getResourceType())) {
+            List<Reporter> primaryReportersList = new ArrayList<Reporter>(primaryReporters);
+
+            for (Reporter reporter : collectionPrimaryReporters.get(resource.getResourceType())) {
+                primaryReportersList.add(reporter);
+            }
+
+            addReports(primaryReportersList, "primaryReporters", model, serviceURL);
+        } else {
+            addReports(primaryReporters, "primaryReporters", model, serviceURL);
+        }
+
+        if (collectionReporters != null && collectionReporters.containsKey(resource.getResourceType())) {
+            List<Reporter> reportersList = new ArrayList<Reporter>(reporters);
+
+            for (Reporter reporter : collectionReporters.get(resource.getResourceType())) {
+                reportersList.add(reporter);
+            }
+
+            addReports(reportersList, "reporters", model, serviceURL);
+        } else {
+            addReports(reporters, "reporters", model, serviceURL);
+        }
+
+        return new ModelAndView(viewName, model);
     }
 
     private Map<String, Principal> getPrincipalDocuments(Map<String, Object> report, Locale locale) {
@@ -140,7 +165,7 @@ public class ReportHandler implements Controller {
                 }
             }
             if (uids.size() > 0) {
-                return this.documentPrincipalMetadataRetriever.getPrincipalDocumentsMapByUid(uids, locale);
+                return documentPrincipalMetadataRetriever.getPrincipalDocumentsMapByUid(uids, locale);
             }
         }
         return null;
@@ -161,10 +186,20 @@ public class ReportHandler implements Controller {
         }
     }
 
-    private Reporter getReporter(String reportType) {
-        Reporter reporter = this.getReporter(this.primaryReporters, reportType);
-        reporter = reporter == null ? this.getReporter(this.reporters, reportType) : reporter;
-        reporter = reporter == null ? this.getReporter(this.hiddenReporters, reportType) : reporter;
+    private Reporter getReporter(String reportType, String resourceType) {
+        Reporter reporter = getReporter(primaryReporters, reportType);
+        reporter = reporter == null ? getReporter(reporters, reportType) : reporter;
+        reporter = reporter == null ? getReporter(hiddenReporters, reportType) : reporter;
+
+        if (reporter == null && collectionPrimaryReporters != null
+                && collectionPrimaryReporters.containsKey(resourceType)) {
+            reporter = getReporter(collectionPrimaryReporters.get(resourceType), reportType);
+        }
+
+        if (reporter == null && collectionReporters != null && collectionReporters.containsKey(resourceType)) {
+            reporter = getReporter(collectionReporters.get(resourceType), reportType);
+        }
+
         return reporter;
     }
 
@@ -221,6 +256,14 @@ public class ReportHandler implements Controller {
         this.hiddenReporters = hiddenReporters;
     }
 
+    public void setCollectionPrimaryReporters(Map<String, List<Reporter>> collectionPrimaryReporters) {
+        this.collectionPrimaryReporters = collectionPrimaryReporters;
+    }
+
+    public void setCollectionReporters(Map<String, List<Reporter>> collectionReporters) {
+        this.collectionReporters = collectionReporters;
+    }
+
     @Required
     public void setDocumentPrincipalMetadataRetriever(
             DocumentPrincipalMetadataRetriever documentPrincipalMetadataRetriever) {
@@ -231,7 +274,7 @@ public class ReportHandler implements Controller {
     public void setLocaleResolver(LocaleResolver localeResolver) {
         this.localeResolver = localeResolver;
     }
-    
+
     @Required
     public void setViewReportService(Service viewReportService) {
         this.viewReportService = viewReportService;

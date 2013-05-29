@@ -11,6 +11,13 @@ body {
   margin: 10px 20px 0 20px;
 }
 
+h1 {
+  font-size: 1.69em;
+  font-weight: bold;
+  line-height: 1.2em;
+  margin: 10px 0 15px;
+}
+
 h2 {
   font-family: Arial, sans-serif;
   font-size: 1.154em;

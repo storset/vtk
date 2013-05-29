@@ -8,18 +8,10 @@
 @media screen and (max-width: 15.05cm) { 
 
   .forms-new input,
-  #uiodoc-wrapper #uiodoc input {
-    background: #fff;
-  }
-
+  .forms-new .vrtx-button,
   #uiodoc-wrapper #uiodoc #vrtx-comments-delete-all,
   #uiodoc-wrapper #uiodoc .comment-delete-button,
   #uiodoc-wrapper #uiodoc #comment-form .submit,
-  .forms-new a.button,
-  .forms-new a.button-large,
-  .forms-new a.button-large-blue,
-  .forms-new input,
-  .forms-new button,
   #uiodoc-wrapper #uiodoc a.button,
   #uiodoc-wrapper #uiodoc a.button-large,
   #uiodoc-wrapper #uiodoc a.button-large-blue,
@@ -49,14 +41,18 @@
     white-space: normal !important;
     font-size: 100% !important;
   }
+  
+  .forms-new input,
+  #uiodoc-wrapper #uiodoc input {
+    background: #fff;
+  }
 
-  .forms-new a.button-large,
-  .forms-new a.button-large-blue,
   #uiodoc-wrapper #uiodoc a.button-large,
   #uiodoc-wrapper #uiodoc a.button-large-blue {
     padding: 10px 16px !important;
   }
-
+  
+  .forms-new .vrtx-button,
   #uiodoc-wrapper #uiodoc #vrtx-comments-delete-all,
   #uiodoc-wrapper #uiodoc .comment-delete-button,
   #uiodoc-wrapper #uiodoc #comment-form .submit,
@@ -64,9 +60,6 @@
   #uiodoc-wrapper #uiodoc a.button,
   #uiodoc-wrapper #uiodoc a.button-large,
   #uiodoc-wrapper #uiodoc a.button-large-blue,
-  .forms-new a.button,
-  .forms-new a.button-large,
-  .forms-new a.button-large-blue,
   #uiodoc-wrapper #uiodoc form.vrtx-big-search button,
   #uiodoc-wrapper #uiodoc form#fronter button,
   #uiodoc-wrapper #uiodoc form.vrtx-button button,
@@ -88,9 +81,9 @@
     max-width: 100%;
     height: auto !important;
   }
-
+  
+  .forms-new .vrtx-focus-button,
   .ui-dialog .ui-dialog-buttonpane button:first-child,
-  .forms-new a.button-large-blue,
   #uiodoc-wrapper #uiodoc a.button-large-blue {
     border-color: #407bc2 !important;
     background: rgb(140,209,238) !important;
@@ -117,7 +110,10 @@
                                            rgba(98,173,223,1) 8%,rgba(94,171,222,1) 10%,rgba(74,154,209,1) 56%,
                                            rgba(58,132,198,1) 100%) !important;
   }
-
+  
+  .forms-new .vrtx-button span,
+  .forms-new .vrtx-button:hover span,
+  .forms-new .vrtx-button:active span,
   #uiodoc-wrapper #uiodoc #vrtx-comments-delete-all span,
   #uiodoc-wrapper #uiodoc #vrtx-comments-delete-all:hover span,
   #uiodoc-wrapper #uiodoc #vrtx-comments-delete-all:active span,
@@ -136,18 +132,6 @@
   #uiodoc-wrapper #uiodoc a.button-large-blue span,
   #uiodoc-wrapper #uiodoc a.button-large-blue:hover span,
   #uiodoc-wrapper #uiodoc a.button-large-blue:active span,
-  .forms-new a.button span,
-  .forms-new a.button:hover span,
-  .forms-new a.button:active span,
-  .forms-new a.button-large span,
-  .forms-new a.button-large:hover span,
-  .forms-new a.button-large:active span,
-  .forms-new a.button-large-blue span,
-  .forms-new a.button-large-blue:hover span,
-  .forms-new a.button-large-blue:active span,
-  .forms-new button span,
-  .forms-new button:hover span,
-  .forms-new button:active span,
   #uiodoc-wrapper #uiodoc form.vrtx-big-search button span,
   #uiodoc-wrapper #uiodoc form.vrtx-big-search button:hover span,
   #uiodoc-wrapper #uiodoc form.vrtx-big-search button:active span,
@@ -182,7 +166,9 @@
     margin: 0;
     color: #2b2b2b;
   }
-
+  
+  .forms-new .vrtx-button:hover,
+  .forms-new .vrtx-button:active,
   #uiodoc-wrapper #uiodoc #vrtx-comments-delete-all:hover,
   #uiodoc-wrapper #uiodoc #vrtx-comments-delete-all:active,
   #uiodoc-wrapper #uiodoc .comment-delete-button:hover,
@@ -195,12 +181,6 @@
   #uiodoc-wrapper #uiodoc a.button:active,
   #uiodoc-wrapper #uiodoc a.button-large:hover,
   #uiodoc-wrapper #uiodoc a.button-large:active,
-  .forms-new a.button:hover,
-  .forms-new a.button:active,
-  .forms-new a.button-large:hover,
-  .forms-new a.button-large:active,
-  .forms-new button:hover,
-  .forms-new button:active,
   #uiodoc-wrapper #uiodoc form.vrtx-big-search button:hover,
   #uiodoc-wrapper #uiodoc form.vrtx-big-search button:active,
   #uiodoc-wrapper #uiodoc form#fronter button:hover,
@@ -212,7 +192,7 @@
   #uiodoc-wrapper #uiodoc form#personer button:hover,
   #uiodoc-wrapper #uiodoc form#personer button:active,
   #uiodoc-wrapper #uiodoc form#enheter button:hover,
-  #uiodoc-wrapper #uiodoc form#enheter button:active span,
+  #uiodoc-wrapper #uiodoc form#enheter button:active,
   #uiodoc-wrapper #uiodoc form#emner button:hover,
   #uiodoc-wrapper #uiodoc form#emner button:active,
   body .ui-dialog .ui-button.ui-state-hover,
@@ -230,9 +210,8 @@
     cursor: pointer;
   }
 
-  .forms-new #submitButtons button:first-child:hover,
-  .forms-new a.button-large-blue:hover,
-  .forms-new a.button-large-blue:active,
+  .forms-new .vrtx-focus-button:hover,
+  .forms-new .vrtx-focus-button:active,
   .ui-dialog .ui-dialog-buttonpane button:first-child.ui-state-hover,
   #uiodoc-wrapper #uiodoc a.button-large-blue:hover,
   #uiodoc-wrapper #uiodoc a.button-large-blue:active {
@@ -263,10 +242,6 @@
     cursor: pointer;
   }
 
-  .forms-new a.button-large:hover span,
-  .forms-new a.button-large-blue:hover span,
-  .forms-new a.button-large span,
-  .forms-new a.button-large-blue span,
   #uiodoc-wrapper #uiodoc a.button-large:hover span,
   #uiodoc-wrapper #uiodoc a.button-large-blue:hover span,
   #uiodoc-wrapper #uiodoc a.button-large span,

@@ -41,7 +41,7 @@
 
   <#if mailResponse?has_content && mailResponse = "OK">
     <p><@vrtx.msg code="feedback.form.success" args=[emailSentTo] /></p>
-    <a class="vrtx-button" href="${closeURI}">
+    <a class="vrtx-button vrtx-close-dialog" href="${closeURI}">
       <span><@vrtx.msg code="email.form.close" default="Close" /></span>
     </a>
     <script type="text/javascript"><!--
@@ -83,7 +83,7 @@
           <div class="vrtx-focus-button"> 
             <input type="submit" class="submit-email-form" value="Send" name="submit" />
           </div>
-          <a class="vrtx-button" href="${closeURI}">
+          <a class="vrtx-button vrtx-close-dialog" href="${closeURI}">
             <span><@vrtx.msg code="email.form.close" default="Close" /></span>
           </a>
         </div>

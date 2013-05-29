@@ -211,7 +211,25 @@
   .forms-new .vrtx-focus-button input,
   body .ui-dialog .ui-dialog-buttonpane .ui-button span {
     margin: 0;
+  }
+
+  .forms-new .vrtx-button span,
+  .forms-new .vrtx-button input,
+  .forms-new .vrtx-button:active span,
+  .forms-new .vrtx-button:active input,
+  .forms-new .vrtx-button:hover span,
+  .forms-new .vrtx-button:hover input,
+  body .ui-dialog .ui-dialog-buttonpane .ui-button span {
     color: #2b2b2b;
+  }
+
+  .forms-new .vrtx-focus-button span,
+  .forms-new .vrtx-focus-button input,
+  .forms-new .vrtx-focus-button:active span,
+  .forms-new .vrtx-focus-button:active input,
+  .forms-new .vrtx-focus-button:hover span,
+  .forms-new .vrtx-focus-button:hover input {
+    color: #fff;
   }
   
   .forms-new .vrtx-button:hover,

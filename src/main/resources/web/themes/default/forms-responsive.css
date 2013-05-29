@@ -73,6 +73,7 @@
     display: block;
   }
 
+  .forms-new form,
   .forms-new .vrtx-textfield input,
   .forms-new textarea {
     width: 100% !important;

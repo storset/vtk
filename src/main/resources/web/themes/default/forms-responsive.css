@@ -5,21 +5,25 @@
 
 /* Desktop */
 
-@media screen and (min-width: 15.05cm) { 
+.vrtx-close-dialog {
+  display: none;
+}
 
-  .vrtx-close-dialog {
-    display: none;
-  }
+.ui-dialog .vrtx-close-dialog {
+  display: block;
+}
 
-  .ui-dialog .vrtx-close-dialog {
-    display: block;
-  }
-
+.ui-dialog h1 {
+  display: none;
 }
 
 /* Small-screen */
 
-@media screen and (max-width: 15.05cm) { 
+@media screen and (max-width: 15.05cm) {
+
+  .vrtx-close-dialog {
+    display: block;
+  }
 
   .forms-new input,
   .forms-new .vrtx-button,

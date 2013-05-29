@@ -47,6 +47,24 @@
     background: #fff;
   }
 
+  .forms-new .vrtx-textfield {
+    padding: 0;
+  }
+
+  .forms-new .vrtx-textfield,
+  .forms-new .vrtx-textfield input {
+    background: none;
+    height: auto;
+    display: block;
+  }
+
+  .forms-new .vrtx-textfield input,
+  .forms-new textarea {
+    width: 100% !important;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+  }
+
   #uiodoc-wrapper #uiodoc a.button-large,
   #uiodoc-wrapper #uiodoc a.button-large-blue {
     padding: 10px 16px !important;
@@ -114,6 +132,9 @@
   .forms-new .vrtx-button span,
   .forms-new .vrtx-button:hover span,
   .forms-new .vrtx-button:active span,
+  .forms-new .vrtx-button input,
+  .forms-new .vrtx-button:hover input,
+  .forms-new .vrtx-button:active input,
   #uiodoc-wrapper #uiodoc #vrtx-comments-delete-all span,
   #uiodoc-wrapper #uiodoc #vrtx-comments-delete-all:hover span,
   #uiodoc-wrapper #uiodoc #vrtx-comments-delete-all:active span,
@@ -162,6 +183,7 @@
     font-weight: normal !important;
   }
 
+  .forms-new .vrtx-button span {
   body .ui-dialog .ui-dialog-buttonpane .ui-button span {
     margin: 0;
     color: #2b2b2b;

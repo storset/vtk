@@ -66,11 +66,11 @@
 .ui-datepicker .ui-datepicker-next-hover { right:4px; }
 
 #vrtx-event-calendar .ui-datepicker .ui-datepicker-prev span {
-  background-image: url(../../jquery/plugins/ui/jquery-ui-tabs-customized/css/ui-lightness/images/left.png);
+  background-image: url(images/calendar-prev-month.png);
 }
 
 #vrtx-event-calendar .ui-datepicker .ui-datepicker-next span {
-  background-image: url(../../jquery/plugins/ui/jquery-ui-tabs-customized/css/ui-lightness/images/right.png);
+  background-image: url(images/calendar-next-month.png);
 }
 
 #vrtx-event-calendar .ui-datepicker .ui-datepicker-header a:hover {

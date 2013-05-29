@@ -23,6 +23,7 @@
 
   .forms-new input,
   .forms-new .vrtx-button,
+  .forms-new .vrtx-focus-button,
   #uiodoc-wrapper #uiodoc #vrtx-comments-delete-all,
   #uiodoc-wrapper #uiodoc .comment-delete-button,
   #uiodoc-wrapper #uiodoc #comment-form .submit,
@@ -56,7 +57,7 @@
     font-size: 100% !important;
   }
   
-  .forms-new input,
+  .forms-new .vrtx-textfield input,
   #uiodoc-wrapper #uiodoc input {
     background: #fff;
   }
@@ -85,6 +86,7 @@
   }
   
   .forms-new .vrtx-button,
+  .forms-new .vrtx-focus-button,
   #uiodoc-wrapper #uiodoc #vrtx-comments-delete-all,
   #uiodoc-wrapper #uiodoc .comment-delete-button,
   #uiodoc-wrapper #uiodoc #comment-form .submit,
@@ -149,6 +151,12 @@
   .forms-new .vrtx-button input,
   .forms-new .vrtx-button:hover input,
   .forms-new .vrtx-button:active input,
+  .forms-new .vrtx-focus-button span,
+  .forms-new .vrtx-focus-button:hover span,
+  .forms-new .vrtx-focus-button:active span,
+  .forms-new .vrtx-focus-button input,
+  .forms-new .vrtx-focus-button:hover input,
+  .forms-new .vrtx-focus-button:active input,
   #uiodoc-wrapper #uiodoc #vrtx-comments-delete-all span,
   #uiodoc-wrapper #uiodoc #vrtx-comments-delete-all:hover span,
   #uiodoc-wrapper #uiodoc #vrtx-comments-delete-all:active span,
@@ -197,7 +205,10 @@
     font-weight: normal !important;
   }
 
-  .forms-new .vrtx-button span {
+  .forms-new .vrtx-button span,
+  .forms-new .vrtx-button input,
+  .forms-new .vrtx-focus-button span,
+  .forms-new .vrtx-focus-button input,
   body .ui-dialog .ui-dialog-buttonpane .ui-button span {
     margin: 0;
     color: #2b2b2b;

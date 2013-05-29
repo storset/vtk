@@ -39,7 +39,7 @@
        <span><@vrtx.msg code="email.form.close" default="Close" /></span>
      </a>
    <#else>
-    <h1>Send to approval</h1>   
+    <h1><@vrtx.msg code="decorating.emailAFriendComponent.emaillink" /></h1>   
     <h2>${resource.title}</h2>
      <form id="email-a-friend-form" method="post" action="?vrtx=email-a-friend">
        

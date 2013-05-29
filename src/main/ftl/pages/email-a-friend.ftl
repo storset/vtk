@@ -69,9 +69,9 @@
          <div class="vrtx-focus-button"> 
            <input type="submit" class="submit-email-form" value="Send" name="submit" />
          </div>
-         <div class="vrtx-button"> 
-           <input type="button" onclick="javascript:window.parent.tb_remove();" class="cancel-email-form" value="${vrtx.getMsg('editor.cancel')}" name="cancel" />
-         </div>  
+          <a class="vrtx-button" href=".">
+            <span><@vrtx.msg code="email.form.close" default="Close" /></span>
+          </a>
        </div>
     </form>
        

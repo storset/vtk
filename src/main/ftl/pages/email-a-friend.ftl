@@ -28,7 +28,7 @@
   <![endif]--> 
   <meta name="robots" content="noindex"/> 
  </head>
- <body>
+ <body class="forms-new">
    <#if mailResponse?has_content && mailResponse = "OK">
      <p><@vrtx.msg code="email.form.success" args=[emailSentTo] /></p>
      <a class="vrtx-button" href=".">

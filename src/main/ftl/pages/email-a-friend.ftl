@@ -29,9 +29,11 @@
   <meta name="robots" content="noindex"/> 
  </head>
  <body class="forms-new">
+   <#assign closeURI = resourceContext.currentURI?split("?")[0]?html />
+ 
    <#if mailResponse?has_content && mailResponse = "OK">
      <p><@vrtx.msg code="email.form.success" args=[emailSentTo] /></p>
-     <a class="vrtx-button" href=".">
+     <a class="vrtx-button" href="${closeURI}">
        <span><@vrtx.msg code="email.form.close" default="Close" /></span>
      </a>
    <#else>
@@ -69,7 +71,7 @@
          <div class="vrtx-focus-button"> 
            <input type="submit" class="submit-email-form" value="Send" name="submit" />
          </div>
-          <a class="vrtx-button" href=".">
+          <a class="vrtx-button" href="${closeURI}">
             <span><@vrtx.msg code="email.form.close" default="Close" /></span>
           </a>
        </div>

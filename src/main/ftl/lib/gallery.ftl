@@ -30,8 +30,8 @@
 <#macro galleryListImages images maxWidth maxHeight activeImage="" imageListing="">
   <#local count = 1 />
   <#list images as image>
-    <#local description = vrtx.propValue(image, 'image-description')?html.replace("'", "&#39;") />
-    <#local title = vrtx.propValue(image, 'title')?html.replace("'", "&#39;") />
+    <#local description = vrtx.propValue(image, 'image-description')?html?replace("'", "&#39;") />
+    <#local title = vrtx.propValue(image, 'title')?html?replace("'", "&#39;") />
     <#local width = vrtx.propValue(image, 'pixelWidth') />
     <#local height = vrtx.propValue(image, 'pixelHeight') />
     <#local photographer = vrtx.propValue(image, "photographer") />

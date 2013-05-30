@@ -333,7 +333,9 @@ VrtxImageEditor.prototype.save = function save(buttonId) {
    form.append(dataString);
    if(typeof buttonId !== "undefined") {
      editor.savedImage = true;
-     $("#" + buttonId).click();
+     setTimeout(function() {
+       $("#" + buttonId).click();
+     }, 500); /* VTK-3290: Avoid 403 */
    }
 };
 

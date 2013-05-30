@@ -40,7 +40,7 @@
  
 </head>
 
-<body id="vrtx-tagview" <#if scopeUp??>class="vrtx-has-tags-upscoping</#if>>
+<body id="vrtx-tagview" <#if scopeUp??>class="vrtx-has-tags-scope"</#if>>
 
   <h1>${title}
     <#if page?has_content>

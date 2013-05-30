@@ -566,10 +566,8 @@ maxHeight, minHeight, toolbar, complete, resizable, baseDocumentUrl, simple) {
 
   config.baseHref = baseDocumentUrl;
   config.contentsCss = cssFileList;
-  if (vrtxEdit.contains(name, "resource.")) { // Don't use HTML-entities for structured-documents
-    config.entities = false;
-  }
-
+  config.entities = false;
+    
   if (linkBrowseUrl) {
     config.filebrowserBrowseUrl = linkBrowseUrl;
     config.filebrowserImageBrowseLinkUrl = linkBrowseUrl;

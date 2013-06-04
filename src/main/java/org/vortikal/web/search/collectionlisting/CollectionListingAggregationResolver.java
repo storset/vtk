@@ -28,7 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.display.collection.aggregation;
+package org.vortikal.web.search.collectionlisting;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -49,9 +49,36 @@ import org.vortikal.repository.ResourceNotFoundException;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.web.RequestContext;
+import org.vortikal.web.display.collection.aggregation.AggregationResolver;
+import org.vortikal.web.display.collection.aggregation.CollectionListingAggregatedResources;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
+/**
+ * 
+ * XXX If you feel like making changes in this class, don't. Ask rezam first.
+ * Don't ruin your day. If rezam should for some reason not be available in time
+ * for your deadline, just delete this entire class and start over. Trust me,
+ * you'll live longer.
+ * 
+ * Resolve nested aggregation and manually approved resources for a collection
+ * listing.
+ * 
+ * For any resource that the current collection is configured to aggregate from,
+ * we retrieve all manually approved resources as well as any other resources
+ * that it might aggregate from (including manually approved). This is done down
+ * to a configured predefined depth (5 in production as of June 2013), with a
+ * configured predefined limit for number of resources to aggregate from in each
+ * step (20 in production as of June 2013).
+ * 
+ * 
+ * XXX This class is in serious need of refactoring, to make it understandable
+ * and testable. As it is it has no unit tests (!!!) and a real pain in the a$$
+ * to figure out.
+ * 
+ * XXX Also needs proper logging.
+ * 
+ */
 public class CollectionListingAggregationResolver implements AggregationResolver {
 
     private static Log logger = LogFactory.getLog(CollectionListingAggregationResolver.class);
@@ -81,37 +108,40 @@ public class CollectionListingAggregationResolver implements AggregationResolver
     @Override
     public CollectionListingAggregatedResources getAggregatedResources(URL url) {
 
-        PropertySet collection = this.getResource(url);
+        PropertySet collection = getResource(url);
 
         // Resource not found
         if (collection == null) {
             return null;
         }
 
-        return this.getAggregatedResources(collection);
+        return getAggregatedResources(collection);
     }
 
     @Override
     public CollectionListingAggregatedResources getAggregatedResources(PropertySet collection) {
 
-        Map<URL, Set<Path>> aggregationSet = new HashMap<URL, Set<Path>>();
-        Map<URL, Set<Path>> manuallyApprovedSet = new HashMap<URL, Set<Path>>();
-
-        // Keep a reference to the starting point, avoid circular references
-        // to self when resolving aggregation
-        URL startCollectionURL = this.resolveCurrentCollectionURL(collection);
-
-        // Current host url, key ref to all paths to aggregate from on that
-        // particular host
-        URL currentHostURL = startCollectionURL.relativeURL("/");
-
-        // Resolve the aggregation
-        this.resolveAggregatedResources(aggregationSet, manuallyApprovedSet, collection, currentHostURL,
-                startCollectionURL, 0);
-
         CollectionListingAggregatedResources clar = new CollectionListingAggregatedResources();
-        clar.setAggregationSet(aggregationSet);
-        clar.setManuallyApprovedSet(manuallyApprovedSet);
+
+        if (isDisplayAggregation(collection) || isDisplayManuallyApproved(collection)) {
+
+            Map<URL, Set<Path>> aggregationSet = new HashMap<URL, Set<Path>>();
+            Map<URL, Set<Path>> manuallyApprovedSet = new HashMap<URL, Set<Path>>();
+
+            // Keep a reference to the starting point, avoid circular references
+            // to self when resolving aggregation
+            URL startCollectionURL = resolveCurrentCollectionURL(collection);
+
+            // Resolve the aggregation
+            URL currentHostURL = startCollectionURL.relativeURL("/");
+            resolveAggregatedResources(aggregationSet, manuallyApprovedSet, collection, currentHostURL,
+                    startCollectionURL, 0);
+
+            clar.setAggregationSet(aggregationSet);
+            clar.setManuallyApprovedSet(manuallyApprovedSet);
+
+            logger.info("Resolved aggregation for " + collection.getURI() + "\n" + clar);
+        }
 
         return clar;
     }
@@ -121,8 +151,8 @@ public class CollectionListingAggregationResolver implements AggregationResolver
             int depth) {
 
         // Include manually approved resources if any
-        if (this.isDisplayManuallyApproved(resource)) {
-            Property manuallyApprovedProp = resource.getProperty(this.manuallyApprovedPropDef);
+        if (isDisplayManuallyApproved(resource)) {
+            Property manuallyApprovedProp = resource.getProperty(manuallyApprovedPropDef);
             if (manuallyApprovedProp != null) {
                 Value[] values = manuallyApprovedProp.getValues();
                 for (Value manApp : values) {
@@ -146,14 +176,14 @@ public class CollectionListingAggregationResolver implements AggregationResolver
         }
 
         // Resolve aggregation
-        Set<PropertySet> set = this.resolveAggregation(resource, aggregationSet, currentHostURL, startCollectionURL);
-        if (depth < this.maxRecursiveDepth) {
+        Set<PropertySet> set = resolveAggregation(resource, aggregationSet, currentHostURL, startCollectionURL);
+        if (depth < maxRecursiveDepth) {
             depth += 1;
             for (PropertySet ps : set) {
-                currentHostURL = this.resolveCurrentCollectionURL(ps).relativeURL("/");
+                currentHostURL = resolveCurrentCollectionURL(ps).relativeURL("/");
                 // Recursively repeat until depth is reached
-                this.resolveAggregatedResources(aggregationSet, manuallyApprovedSet, ps, currentHostURL,
-                        startCollectionURL, depth);
+                resolveAggregatedResources(aggregationSet, manuallyApprovedSet, ps, currentHostURL, startCollectionURL,
+                        depth);
             }
         }
 
@@ -163,19 +193,19 @@ public class CollectionListingAggregationResolver implements AggregationResolver
             URL currentHostURL, URL startCollectionURL) {
 
         Set<PropertySet> resultSet = new HashSet<PropertySet>();
-        if (this.isDisplayAggregation(resource)) {
-            Property aggregationProp = resource.getProperty(this.aggregationPropDef);
+        if (isDisplayAggregation(resource)) {
+            Property aggregationProp = resource.getProperty(aggregationPropDef);
 
             if (aggregationProp != null) {
                 Value[] values = aggregationProp.getValues();
 
                 // Only handle as many values as defined my limit
-                int aggregationLimit = values.length > this.limit ? this.limit : values.length;
+                int aggregationLimit = values.length > limit ? limit : values.length;
 
                 for (int i = 0; i < aggregationLimit; i++) {
                     String aggStr = values[i].getStringValue();
 
-                    URL aggregationURL = this.getAsURL(currentHostURL, aggStr);
+                    URL aggregationURL = getAsURL(currentHostURL, aggStr);
                     if (aggregationURL == null) {
                         // Invalid ref, ignore and continue with next
                         continue;
@@ -184,14 +214,13 @@ public class CollectionListingAggregationResolver implements AggregationResolver
                     // Do not include any references to starting point or
                     // already existing refs in aggregation set -> AVOID
                     // CIRCULAR RECURSION!!!
-                    if (aggregationURL.equals(startCollectionURL)
-                            || this.isAlreadyResolved(aggregationURL, aggregationSet)) {
+                    if (aggregationURL.equals(startCollectionURL) || isAlreadyResolved(aggregationURL, aggregationSet)) {
                         continue;
                     }
 
                     // Valid ref, now make sure it points to an existing
                     // resource
-                    PropertySet res = this.getResource(aggregationURL);
+                    PropertySet res = getResource(aggregationURL);
                     if (res != null) {
 
                         // Resource exists. Add it to return set for further
@@ -199,16 +228,15 @@ public class CollectionListingAggregationResolver implements AggregationResolver
                         // add to set of hosts and paths to aggregate from
                         resultSet.add(res);
 
-                        // Make sure currentHostURL is right
-                        currentHostURL = aggregationURL.relativeURL("/");
+                        URL keyURL = aggregationURL.relativeURL("/");
                         Path path = aggregationURL.getPath();
-                        Set<Path> paths = aggregationSet.get(currentHostURL);
+                        Set<Path> paths = aggregationSet.get(keyURL);
                         if (paths != null) {
                             paths.add(path);
                         } else {
                             Set<Path> pathSet = new HashSet<Path>();
                             pathSet.add(path);
-                            aggregationSet.put(currentHostURL, pathSet);
+                            aggregationSet.put(keyURL, pathSet);
                         }
 
                     }
@@ -252,12 +280,12 @@ public class CollectionListingAggregationResolver implements AggregationResolver
     }
 
     private boolean isDisplayAggregation(PropertySet resource) {
-        Property displayAggregationProp = resource.getProperty(this.displayAggregationPropDef);
+        Property displayAggregationProp = resource.getProperty(displayAggregationPropDef);
         return displayAggregationProp != null && displayAggregationProp.getBooleanValue();
     }
 
     private boolean isDisplayManuallyApproved(PropertySet resource) {
-        Property displayManuallyApprovedProp = resource.getProperty(this.displayManuallyApprovedPropDef);
+        Property displayManuallyApprovedProp = resource.getProperty(displayManuallyApprovedPropDef);
         return displayManuallyApprovedProp != null && displayManuallyApprovedProp.getBooleanValue();
     }
 
@@ -270,12 +298,12 @@ public class CollectionListingAggregationResolver implements AggregationResolver
 
             PropertySet resource = null;
             Path path = null;
-            if (this.getLocalHostUrl().getHost().equals(url.getHost())) {
+            if (getLocalHostUrl().getHost().equals(url.getHost())) {
                 path = url.getPath();
             }
             if (path != null) {
-                resource = this.repository.retrieve(token, path, false);
-            } else if (this.multiHostSearcher.isMultiHostSearchEnabled()) {
+                resource = repository.retrieve(token, path, false);
+            } else if (multiHostSearcher.isMultiHostSearchEnabled()) {
                 resource = multiHostSearcher.retrieve(token, url);
             }
 
@@ -297,14 +325,14 @@ public class CollectionListingAggregationResolver implements AggregationResolver
         if (solrUrlProp != null) {
             currentCollectionURL = URL.parse(solrUrlProp.getStringValue());
         } else {
-            currentCollectionURL = this.getLocalHostUrl();
+            currentCollectionURL = getLocalHostUrl();
             currentCollectionURL.setPath(collection.getURI());
         }
         return currentCollectionURL;
     }
 
     private URL getLocalHostUrl() {
-        return this.viewService.constructURL(Path.ROOT);
+        return viewService.constructURL(Path.ROOT);
     }
 
     @Override
@@ -314,9 +342,9 @@ public class CollectionListingAggregationResolver implements AggregationResolver
             token = RequestContext.getRequestContext().getSecurityToken();
         }
         try {
-            Resource collection = this.repository.retrieve(token, pathToResource, false);
-            CollectionListingAggregatedResources clar = this.getAggregatedResources(collection);
-            return clar.getHostAggregationSet(this.getLocalHostUrl());
+            Resource collection = repository.retrieve(token, pathToResource, false);
+            CollectionListingAggregatedResources clar = getAggregatedResources(collection);
+            return clar.getHostAggregationSet(getLocalHostUrl());
         } catch (Exception e) {
             return null;
         }

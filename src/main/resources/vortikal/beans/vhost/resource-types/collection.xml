@@ -149,7 +149,7 @@
     </property>
   </bean>
 
-  <bean id="aggregationResolver" class="org.vortikal.web.display.collection.aggregation.CollectionListingAggregationResolver"
+  <bean id="aggregationResolver" class="org.vortikal.web.search.collectionlisting.CollectionListingAggregationResolver"
     parent="repositoryAware">
     <property name="multiHostSearcher" ref="multiHostSearcher" />
     <property name="limit" value="${aggregation.limit}" />
@@ -580,7 +580,7 @@
       </map>
     </property>
   </bean>
-  
+
   <bean id="obsoletedPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
     <property name="namespace" ref="DEFAULT_NAMESPACE" />
     <property name="name" value="obsoleted" />
@@ -605,7 +605,8 @@
     </property>
   </bean>
 
-  <bean id="editorialContactsPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+  <bean id="editorialContactsPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+    parent="abstractPropDef">
     <property name="namespace" ref="DEFAULT_NAMESPACE" />
     <property name="name" value="editorial-contacts" />
     <property name="inheritable" value="true" />
@@ -613,7 +614,7 @@
     <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_ADMIN" />
   </bean>
-  
+
   <bean id="resourceInCollection" class="org.vortikal.web.service.ResourceTypeAssertion" parent="repositoryAware">
     <property name="resourceTypeDefinition" ref="collectionResourceTypeDefinition" />
   </bean>

@@ -51,6 +51,7 @@ import org.vortikal.repository.search.Sorting;
 import org.vortikal.repository.search.query.AndQuery;
 import org.vortikal.repository.search.query.OrQuery;
 import org.vortikal.repository.search.query.Query;
+import org.vortikal.repository.search.query.TermOperator;
 import org.vortikal.repository.search.query.UriPrefixQuery;
 import org.vortikal.repository.search.query.UriSetQuery;
 import org.vortikal.web.RequestContext;
@@ -75,7 +76,7 @@ import org.vortikal.web.service.URL;
  */
 public class CollectionListingSearchComponent extends QueryPartsSearchComponent {
 
-    private static Log logger = LogFactory.getLog(CollectionListingSearchComponent.class.getName());
+    private static Log logger = LogFactory.getLog(CollectionListingSearchComponent.class);
 
     private AggregationResolver aggregationResolver;
     private MultiHostSearcher multiHostSearcher;
@@ -95,14 +96,17 @@ public class CollectionListingSearchComponent extends QueryPartsSearchComponent 
 
         URL localHostBaseURL = viewService.constructURL(Path.ROOT);
 
-        boolean isMultiHostSearch = false;
+        boolean isMultiHostSearch = false; // Mark if multi host search required
+        boolean isCached = false; // Mark if retrieved from cache
         CollectionListingAggregatedResources clar = null;
         if (cachedObj != null) {
-
-            logger.info("Retrieved aggregation set from cache, cacheKey: " + cacheKey);
-
             clar = (CollectionListingAggregatedResources) cachedObj;
-            isMultiHostSearch = true;
+
+            logger.info("Retrieved aggregation for " + collection.getURI() + " from cache:\n" + clar);
+
+            isMultiHostSearch = true; // Aggregation set is only cached if multi
+                                      // host search is required
+            isCached = true;
         } else {
             clar = aggregationResolver.getAggregatedResources(collection);
             isMultiHostSearch = multiHostSearcher.isMultiHostSearchEnabled()
@@ -124,12 +128,12 @@ public class CollectionListingSearchComponent extends QueryPartsSearchComponent 
 
         if (isMultiHostSearch) {
 
-            // Keep aggregation set in cache
+            if (!isCached) {
+                // Cache aggergation set
+                logger.info("Caching aggreagtion for " + collection.getURI() + ", cacheKey: " + cacheKey);
 
-            logger.info("Caching aggreagtion set, cacheKey: " + cacheKey);
-
-            cache.put(new Element(cacheKey, clar));
-
+                cache.put(new Element(cacheKey, clar));
+            }
             try {
                 result = multiHostSearcher.search(token, search);
             } catch (Exception e) {
@@ -143,61 +147,126 @@ public class CollectionListingSearchComponent extends QueryPartsSearchComponent 
         return result;
     }
 
+    /**
+     * 
+     * XXX This is where the trouble starts. We need to reconstruct the query
+     * from all the different query generation mechanisms we have. We then need
+     * to check if multi host search is required, and if so, restrict any
+     * locally generated uri type query to the current host. This is just a
+     * pain... Contact rezam if you honstly feel like you need to alter this
+     * (which you don't).
+     * 
+     */
     private Query generateQuery(HttpServletRequest request, Resource collection,
             CollectionListingAggregatedResources clar, URL localHostBaseURL, boolean isMultiHostSearch) {
 
-        AndQuery and = new AndQuery();
-
+        // Basic listing uri query
         Query uriQuery = listingUriQueryBuilder.build(collection);
+        if (uriQuery == null) {
+            throw new IllegalArgumentException("An uri query must be supplied");
+        }
+
+        // Other queries that might be configured
+        List<Query> additionalQueries = getAdditionalQueries(collection, request);
+        Query aggregationQuery = clar == null ? null : clar.getAggregationQuery(localHostBaseURL, isMultiHostSearch);
+
+        // No more to do, just return the listing uri query
+        if (additionalQueries.isEmpty() && aggregationQuery == null) {
+            if (isMultiHostSearch) {
+                return VHostScopeQueryRestricter.vhostRestrictedQuery(uriQuery, localHostBaseURL);
+            }
+            return uriQuery;
+        }
+
+        // Different categories of additional queries
+        List<Query> localOtherQueries = new ArrayList<Query>();
+        List<Query> localIncludeUriQueries = new ArrayList<Query>();
+        List<Query> localExcludeUriQueries = new ArrayList<Query>();
+        for (Query localQuery : additionalQueries) {
+            if (localQuery instanceof UriPrefixQuery) {
+                if (((UriPrefixQuery) localQuery).isInverted()) {
+                    localExcludeUriQueries.add(localQuery);
+                } else {
+                    localIncludeUriQueries.add(localQuery);
+                }
+            } else if (localQuery instanceof UriSetQuery) {
+                if (((UriSetQuery) localQuery).getOperator().equals(TermOperator.NI)) {
+                    localExcludeUriQueries.add(localQuery);
+                } else {
+                    localIncludeUriQueries.add(localQuery);
+                }
+            } else {
+                localOtherQueries.add(localQuery);
+            }
+        }
+
+        if (!localIncludeUriQueries.isEmpty()) {
+            OrQuery includeUriOr = new OrQuery();
+            includeUriOr.add(uriQuery);
+            for (Query incQ : localIncludeUriQueries) {
+                includeUriOr.add(incQ);
+            }
+            uriQuery = includeUriOr;
+        }
+
+        if (!localExcludeUriQueries.isEmpty()) {
+            Query excludeQuery = null;
+            if (localExcludeUriQueries.size() == 1) {
+                excludeQuery = localExcludeUriQueries.get(0);
+            } else {
+                OrQuery excludeOr = new OrQuery();
+                for (Query exQ : localExcludeUriQueries) {
+                    excludeOr.add(exQ);
+                }
+                excludeQuery = excludeOr;
+            }
+            AndQuery excludeUriAnd = new AndQuery();
+            excludeUriAnd.add(uriQuery);
+            excludeUriAnd.add(excludeQuery);
+            uriQuery = excludeUriAnd;
+        }
+
+        // Restrict the base listing uri query to the current (if multi host
+        // search is required)
         if (isMultiHostSearch) {
             uriQuery = VHostScopeQueryRestricter.vhostRestrictedQuery(uriQuery, localHostBaseURL);
         }
 
-        Query aggregationQuery = clar == null ? null : clar.getAggregationQuery(localHostBaseURL, isMultiHostSearch);
-        OrQuery uriOr = null;
-        if (aggregationQuery == null) {
-            and.add(uriQuery);
-        } else {
-            uriOr = new OrQuery();
+        if (localOtherQueries.isEmpty() && aggregationQuery == null) {
+            return uriQuery;
+        }
+
+        if (aggregationQuery != null) {
+            OrQuery uriOr = new OrQuery();
             uriOr.add(uriQuery);
             uriOr.add(aggregationQuery);
+            uriQuery = uriOr;
         }
 
-        List<Query> additionalQueries = getAdditionalQueries(collection, request);
-        if (additionalQueries != null) {
-            for (Query q : additionalQueries) {
-                if (isMultiHostSearch && (q instanceof UriPrefixQuery || q instanceof UriSetQuery)) {
-                    q = VHostScopeQueryRestricter.vhostRestrictedQuery(q, localHostBaseURL);
-                    if (uriOr == null) {
-                        uriOr = new OrQuery();
-                    }
-                    uriOr.add(q);
-                } else {
-                    and.add(q);
-                }
+        if (!localOtherQueries.isEmpty()) {
+            AndQuery and = new AndQuery();
+            and.add(uriQuery);
+            for (Query q : localOtherQueries) {
+                and.add(q);
             }
+            uriQuery = and;
         }
 
-        if (uriOr != null) {
-            and.add(uriOr);
-        }
-
-        return and;
+        return uriQuery;
 
     }
 
     private List<Query> getAdditionalQueries(Resource collection, HttpServletRequest request) {
+        List<Query> result = new ArrayList<Query>();
         if (queryBuilders != null) {
-            List<Query> result = new ArrayList<Query>();
             for (SearchComponentQueryBuilder queryBuilder : queryBuilders) {
                 Query q = queryBuilder.build(collection, request);
                 if (q != null) {
                     result.add(q);
                 }
             }
-            return result;
         }
-        return null;
+        return result;
     }
 
     @Required

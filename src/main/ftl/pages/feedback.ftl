@@ -14,6 +14,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <title><@vrtx.msg code="feedback.send" default="Give us feedback" /></title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <#if cssURLs?exists>
     <#list cssURLs as cssUrl>
       <link href="${cssUrl}" type="text/css" rel="stylesheet" />
@@ -34,7 +35,7 @@
       <script type="text/javascript" src="${jsURL}"></script>
     </#list>
   </#if>
-  <meta name="robots" content="noindex"/> 
+  <meta name="robots" content="noindex" /> 
 </head>
 <body class="forms-new">
   <#assign closeURI = resourceContext.currentURI?split("?")[0]?html />

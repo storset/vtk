@@ -14,6 +14,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <title>Send for approval - ${resource.title}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <#if cssURLs?exists>
     <#list cssURLs as cssUrl>
       <link href="${cssUrl}" type="text/css" rel="stylesheet" />
@@ -28,7 +29,7 @@
   <!--[if lte IE 6]>
     <link rel="stylesheet" href="/vrtx/__vrtx/static-resources/themes/default/default-ie6.css" type="text/css" /> 
   <![endif]--> 
-  <meta name="robots" content="noindex"/> 
+  <meta name="robots" content="noindex" /> 
  </head>
  <body class="forms-new">
    <#assign closeURI = resourceContext.currentURI?split("?")[0]?html />

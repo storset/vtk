@@ -27,6 +27,11 @@
     display: block;
   }
 
+  .forms-new .submitButtons,
+  .forms-new #submitButtons {
+    padding-bottom: 15px;
+  }
+
   .forms-new input,
   .forms-new .vrtx-button,
   .forms-new .vrtx-focus-button,

@@ -235,18 +235,18 @@ public class CollectionListingAggregatedResources implements Serializable {
 
     }
 
-    private Query aggregationQuery(URL vhost, Set<Path> aggregationSet) {
+    private Query aggregationQuery(URL vhost, Set<Path> providedAggregationSet) {
 
-        if (aggregationSet == null) {
+        if (providedAggregationSet == null) {
             return null;
         }
 
         Query query = null;
-        if (aggregationSet.size() == 1) {
-            query = new UriPrefixQuery(aggregationSet.iterator().next().toString());
+        if (providedAggregationSet.size() == 1) {
+            query = new UriPrefixQuery(providedAggregationSet.iterator().next().toString());
         } else {
             OrQuery or = new OrQuery();
-            for (Path path : aggregationSet) {
+            for (Path path : providedAggregationSet) {
                 or.add(new UriPrefixQuery(path.toString()));
             }
             query = or;
@@ -260,15 +260,15 @@ public class CollectionListingAggregatedResources implements Serializable {
 
     }
 
-    private Query manuallyApprovedQuery(URL vhost, Set<Path> manuallyApprovedSet) {
+    private Query manuallyApprovedQuery(URL vhost, Set<Path> providedManuallyApprovedSet) {
 
-        if (manuallyApprovedSet == null) {
+        if (providedManuallyApprovedSet == null) {
             return null;
         }
 
         Query query = null;
         Set<String> uriSet = new HashSet<String>();
-        for (Path manuallyApprovedPath : manuallyApprovedSet) {
+        for (Path manuallyApprovedPath : providedManuallyApprovedSet) {
             uriSet.add(manuallyApprovedPath.toString());
         }
         query = new UriSetQuery(uriSet);
@@ -297,17 +297,9 @@ public class CollectionListingAggregatedResources implements Serializable {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        if (this.aggregationSet != null && this.aggregationSet.size() > 0) {
-            sb.append("Aggregation set: ");
-            sb.append(this.aggregationSet);
-        }
-        if (this.manuallyApprovedSet != null && this.manuallyApprovedSet.size() > 0) {
-            if (sb.toString().length() > 0) {
-                sb.append("\n");
-            }
-            sb.append("Manually approved set: ");
-            sb.append(this.manuallyApprovedSet);
-        }
+        sb.append("Aggregation set: ").append(this.aggregationSet);
+        sb.append("\n");
+        sb.append("Manually approved set: ").append(this.manuallyApprovedSet);
         return sb.toString();
     }
 

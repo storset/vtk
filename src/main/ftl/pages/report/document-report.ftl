@@ -21,8 +21,12 @@
         </#if>
       </div>
     </div>
-    <h2><@vrtx.msg code="report.${report.reportname}" />
-    <a id="vrtx-report-view-other" title="${vrtx.getMsg('manage.choose-location.choose-collection')}" href="${viewReportServiceURL?html}"><@vrtx.msg code="report.view-other-link" default="View other folder" />...</a></h2>
+    <h2>
+      <@vrtx.msg code="report.${report.reportname}" />
+      <#if !report.specificCollectionReporter??>
+        <a id="vrtx-report-view-other" title="${vrtx.getMsg('manage.choose-location.choose-collection')}" href="${viewReportServiceURL?html}"><@vrtx.msg code="report.view-other-link" default="View other folder" />...</a>
+      </#if>
+    </h2>
     
   <#if (report.result?exists && report.result?size > 0)>
     <p id="vrtx-report-info-paging-top">

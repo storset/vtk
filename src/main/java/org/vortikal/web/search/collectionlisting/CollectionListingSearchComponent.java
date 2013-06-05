@@ -243,17 +243,16 @@ public class CollectionListingSearchComponent extends QueryPartsSearchComponent 
             uriQuery = uriOr;
         }
 
-        if (!localOtherQueries.isEmpty()) {
-            AndQuery and = new AndQuery();
-            and.add(uriQuery);
-            for (Query q : localOtherQueries) {
-                and.add(q);
-            }
-            uriQuery = and;
+        if (localOtherQueries.isEmpty()) {
+            return uriQuery;
         }
 
-        return uriQuery;
-
+        AndQuery and = new AndQuery();
+        for (Query q : localOtherQueries) {
+            and.add(q);
+        }
+        and.add(uriQuery);
+        return and;
     }
 
     private List<Query> getAdditionalQueries(Resource collection, HttpServletRequest request) {

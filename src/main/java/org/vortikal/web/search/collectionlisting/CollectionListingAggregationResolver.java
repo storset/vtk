@@ -140,7 +140,7 @@ public class CollectionListingAggregationResolver implements AggregationResolver
             clar.setAggregationSet(aggregationSet);
             clar.setManuallyApprovedSet(manuallyApprovedSet);
 
-            logger.info("Resolved aggregation for " + collection.getURI() + "\n" + clar);
+            logger.info("Resolved aggregation for " + collection.getURI() + ":\n" + clar);
         }
 
         return clar;

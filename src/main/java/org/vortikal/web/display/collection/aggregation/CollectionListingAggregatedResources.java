@@ -297,10 +297,34 @@ public class CollectionListingAggregatedResources implements Serializable {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("Aggregation set: ").append(this.aggregationSet);
+        sb.append("Aggregation set: ");
+        appendIndentedList(this.aggregationSet, sb);
         sb.append("\n");
-        sb.append("Manually approved set: ").append(this.manuallyApprovedSet);
+        sb.append("Manually approved set: ");
+        appendIndentedList(this.manuallyApprovedSet, sb);
         return sb.toString();
+    }
+
+    private void appendIndentedList(Map<URL, Set<Path>> set, StringBuilder sb) {
+        if (set != null && !set.isEmpty()) {
+            for (Entry<URL, Set<Path>> entry : set.entrySet()) {
+                sb.append("\n");
+                URL url = entry.getKey();
+                Set<Path> paths = entry.getValue();
+                sb.append("* ").append(url).append("\n");
+                int lastIdx = paths.size() - 1;
+                int i = 0;
+                for (Path path : paths) {
+                    sb.append("   ").append(path);
+                    if (i != lastIdx) {
+                        sb.append("\n");
+                    }
+                    i++;
+                }
+            }
+        } else {
+            sb.append(set);
+        }
     }
 
 }

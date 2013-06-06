@@ -285,7 +285,7 @@ public abstract class FilteredCollectionListingController implements ListingCont
         return resourceTypeTree.getPropertyTypeDefinition(ns, propertyName);
     }
 
-    private ConfigurablePropertySelect getPropertySelect() {
+    protected ConfigurablePropertySelect getPropertySelect() {
         ConfigurablePropertySelect propertySelect = null;
         if (configurablePropertySelectPointers != null && resourceTypeTree != null) {
             for (String propPointer : configurablePropertySelectPointers) {
@@ -301,7 +301,7 @@ public abstract class FilteredCollectionListingController implements ListingCont
         return propertySelect;
     }
 
-    private Sorting getDefaultSearchSorting(Resource collection) {
+    protected Sorting getDefaultSearchSorting(Resource collection) {
         return new SortingImpl(defaultSearchSorting.getSortFields(collection));
     }
 
@@ -318,6 +318,10 @@ public abstract class FilteredCollectionListingController implements ListingCont
         if (pageLimit <= 0)
             throw new IllegalArgumentException("Limit must be a positive integer");
         this.pageLimit = pageLimit;
+    }
+
+    protected int getPageLimit() {
+        return pageLimit;
     }
 
     @Required

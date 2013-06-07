@@ -29,8 +29,11 @@ resourcetype schedule {
       ##
       [def document structured-document()]
       [def course-code document.properties.course-code]
-      [def year document.properties.year]
-      [def semester document.properties.semester]
+      [def term resource-prop-obj-val(".", "semesterContext.semesterTerm")]
+      [def year resource-prop-obj-val(".", "semesterContext.semesterYear")]
+      [if year != null && year.length() = 4]
+        [def year year.substring(2, 4)]
+      [endif]
       [def path document.properties.path]
       [def overview document.properties.overview]
       [def course-version document.properties.course-version]
@@ -39,7 +42,7 @@ resourcetype schedule {
       <iframe frameborder="0" 
               id="timeplaner" 
               scrolling="no" 
-              src="/studier/timeplaner/calendar.php?type=module&amp;embed=1&amp;ar=[val year]&amp;sem=[val semester]&amp;id=[val course-code]-[if course-version != null && course-version != ""][val course-version][else]1[endif]&amp;path=[val path][if overview != null && overview != ""]&amp;over=[val overview][else]&amp;over=1[endif][if locale != null && locale = "en"]&amp;lang=en[endif][if calweek != null && calweek]&amp;calweek=1[endif]" 
+              src="/studier/timeplaner/calendar.php?type=module&amp;embed=1&amp;ar=[val year]&amp;sem=[val term]&amp;id=[val course-code]-[if course-version != null && course-version != ""][val course-version][else]1[endif]&amp;path=[val path][if overview != null && overview != ""]&amp;over=[val overview][else]&amp;over=1[endif][if locale != null && locale = "en"]&amp;lang=en[endif][if calweek != null && calweek]&amp;calweek=1[endif]" 
               width="100%">
       </iframe>
       ##

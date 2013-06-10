@@ -2636,7 +2636,7 @@ VrtxAdmin.prototype.displayErrorContainers = function displayErrorContainers(res
   var wrapper = form.find(errorContainerInsertAfter).parent(),
     _$ = this._$;
   if (wrapper.find("div." + errorContainer).length) {
-    wrapper.find("div." + errorContainer).html(results.find("div." + errorContainer).html());
+    wrapper.find("div." + errorContainer).html(_$(results).find("div." + errorContainer).html());
   } else {
     var outer = vrtxAdmin.outerHTML(results, "div." + errorContainer);
     _$(outer).insertAfter(wrapper.find(errorContainerInsertAfter));

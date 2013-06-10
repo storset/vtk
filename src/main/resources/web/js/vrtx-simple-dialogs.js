@@ -90,7 +90,7 @@ var vrtxSimpleDialogs = {
       elm.dialog(dialogOpts);
     } else {
       if(opts.title) {
-        elm.prev().find("#ui-dialog-title-" + selector.substring(1)).html(opts.title); 
+        elm.prev().find(".ui-dialog-title").html(opts.title); 
       }
       elm.find(selector + "-content").html(!opts.hasHtml ? "<p>" + opts.msg + "</p>" : opts.msg);
     }

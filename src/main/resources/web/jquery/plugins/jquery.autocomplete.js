@@ -651,7 +651,7 @@
       listItems.slice(active, active + 1).removeClass(CLASSES.ACTIVE);
       movePosition(step);
       var activeItem = listItems.slice(active, active + 1).addClass(CLASSES.ACTIVE);
-      if (options.scroll && (listItems.size() > options.resultsBeforeScroll || options.resultsBeforeScroll == 0)) {
+      if (options.scroll && (listItems.length > options.resultsBeforeScroll || options.resultsBeforeScroll == 0)) {
         var offset = 0;
         listItems.slice(0, active).each( function() {
           offset += this.offsetHeight;
@@ -668,8 +668,8 @@
     function movePosition(step) {
       active += step;
       if (active < 0) {
-        active = listItems.size() - 1;
-      } else if (active >= listItems.size()) {
+        active = listItems.length - 1;
+      } else if (active >= listItems.length) {
         active = 0;
       }
     }
@@ -722,8 +722,8 @@
         }
       },
       pageDown: function() {
-        if (active != listItems.size() - 1 && active + 8 > listItems.size()) {
-          moveSelect(listItems.size() - 1 - active);
+        if (active != listItems.length - 1 && active + 8 > listItems.length) {
+          moveSelect(listItems.length - 1 - active);
         } else {
           moveSelect(8);
         }
@@ -768,7 +768,7 @@
           left: offset.left
         }).show();
 
-        if (options.scroll && (listItems.size() > options.resultsBeforeScroll || options.resultsBeforeScroll == 0)) {
+        if (options.scroll && (listItems.length > options.resultsBeforeScroll || options.resultsBeforeScroll == 0)) {
           list.scrollTop(0);
           list.css( {
             maxHeight :options.scrollHeight,

@@ -924,7 +924,7 @@ VrtxAdmin.prototype.dropdown = function dropdown(options) {
   var list = _$(options.selector);
   if (!list.length) return;
 
-  var numOfListElements = list.find("li").size();
+  var numOfListElements = list.find("li").length;
 
   if (!options.proceedCondition || (options.proceedCondition && options.proceedCondition(numOfListElements))) {
     list.addClass("dropdown-shortcut-menu");

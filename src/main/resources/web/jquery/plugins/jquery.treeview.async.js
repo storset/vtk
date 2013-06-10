@@ -99,7 +99,7 @@
       return proxied.apply(this, arguments);
     }
     var container = this;
-    if (!container.children().size()) load(settings, "source", this, container);
+    if (!container.children().length) load(settings, "source", this, container);
     var userToggle = settings.toggle;
     return proxied.call(this, $.extend({}, settings, {
       collapsed: true,

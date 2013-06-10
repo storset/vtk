@@ -10,7 +10,7 @@
     </#list>
   </#if>
   </head>
-  <body id="vrtx-report-diagram" class="vrtx-report">
+  <body id="vrtx-report-diagram">
   <div class="resourceInfo">
     <div class="vrtx-report-nav">
       <div class="back">

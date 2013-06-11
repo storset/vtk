@@ -23,8 +23,18 @@
 
 @media screen and (max-width: 15.05cm) {
 
+  a {
+    text-decoration: none;
+    color: #0B5A9D;
+  }
+
+  a:hover {
+    text-decoration: underline;
+  }
+
   .vrtx-close-dialog {
-    display: block;
+    display: inline-block;
+    margin-left: 10px;
   }
 
   .forms-new .submitButtons,

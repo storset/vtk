@@ -74,8 +74,8 @@
          <div class="vrtx-focus-button"> 
            <input type="submit" class="submit-email-form" value="Send" name="submit" />
          </div>
-          <a class="vrtx-button vrtx-close-dialog" href="${closeURI}">
-            <span><@vrtx.msg code="email.form.close" default="Close" /></span>
+          <a class="vrtx-close-dialog" href="${closeURI}">
+            <@vrtx.msg code="email.form.cancel" default="Cancel" />
           </a>
        </div>
     </form>

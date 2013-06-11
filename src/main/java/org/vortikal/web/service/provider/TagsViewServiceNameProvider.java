@@ -58,7 +58,7 @@ public class TagsViewServiceNameProvider implements ServiceNameProvider {
 
     }
 
-    public void settagsHelper(TagsHelper tagsHelper) {
+    public void setTagsHelper(TagsHelper tagsHelper) {
         this.tagsHelper = tagsHelper;
     }
 

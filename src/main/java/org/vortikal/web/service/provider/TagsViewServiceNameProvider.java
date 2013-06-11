@@ -31,11 +31,14 @@
 package org.vortikal.web.service.provider;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Resource;
+import org.vortikal.util.repository.LocaleHelper;
 import org.vortikal.web.service.URL;
 import org.vortikal.web.tags.TagsHelper;
 
@@ -54,10 +57,13 @@ public class TagsViewServiceNameProvider implements ServiceNameProvider {
             }
         }
 
-        return this.tagsHelper.getTitle(request, resource, tag, false);
+        String langParam = request.getParameter("lang");
+        Locale preferredLocale = LocaleHelper.getLocale(langParam);
+        return tagsHelper.getTitle(request, resource, tag, false, preferredLocale);
 
     }
 
+    @Required
     public void setTagsHelper(TagsHelper tagsHelper) {
         this.tagsHelper = tagsHelper;
     }

@@ -73,7 +73,7 @@
   // -->
   </script>
 </head>
-<body id="vrtx-simple-editor">
+<body id="vrtx-simple-editor" class="forms-new">
 <div id="app-content">
   <#if isNew??>
     <h3>${vrtx.getMsg("message-listing.new-message")}<a href="javascript:void(0)" id="vrtx-close-simple-structured-editor"></a></h3>

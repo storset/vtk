@@ -44,8 +44,8 @@ import org.vortikal.repository.Resource;
 import org.vortikal.web.RequestContext;
 
 /**
- * Resolves locale for resources. If no locale is set on resource, then
- * a configurable default Locale is returned.
+ * Resolves locale for resources. If no locale is set on resource, then a
+ * configurable default Locale is returned.
  */
 public class ResourceAwareLocaleResolver extends AbstractLocaleResolver {
 
@@ -53,9 +53,10 @@ public class ResourceAwareLocaleResolver extends AbstractLocaleResolver {
     private Repository repository;
 
     /**
-     * @see LocaleResolver#resolveLocale(javax.servlet.http.HttpServletRequest) 
+     * @see LocaleResolver#resolveLocale(javax.servlet.http.HttpServletRequest)
      * @param request
-     * @return The @{link Locale locale} object for the current resource being requested.
+     * @return The @{link Locale locale} object for the current resource being
+     *         requested.
      */
     @Override
     public Locale resolveLocale(HttpServletRequest request) {
@@ -67,6 +68,7 @@ public class ResourceAwareLocaleResolver extends AbstractLocaleResolver {
     /**
      * Resolve locale for resource at URI. If no locale is set, the default
      * locale is returned.
+     * 
      * @param uri
      * @return The @{link Locale locale} object for resource at URI.
      */
@@ -75,18 +77,21 @@ public class ResourceAwareLocaleResolver extends AbstractLocaleResolver {
         try {
             Resource r = this.repository.retrieve(this.trustedToken, uri, true);
             locale = r.getContentLocale();
-        } catch (Exception e) {}
+        } catch (Exception e) {
+        }
 
         if (locale == null) {
             return getDefaultLocale();
-        } else {
-            return locale;
         }
+
+        return locale;
+
     }
-    
+
     /**
      * Resolve locale for resource. If resource has no locale set, the default
      * locale is returned.
+     * 
      * @param resource
      * @return The resource @{link Locale locale} object.
      */
@@ -94,13 +99,13 @@ public class ResourceAwareLocaleResolver extends AbstractLocaleResolver {
         Locale locale = resource.getContentLocale();
         return locale != null ? locale : getDefaultLocale();
     }
-    
+
     @Override
     public void setLocale(HttpServletRequest request, HttpServletResponse response, Locale locale) {
         throw new UnsupportedOperationException(
                 "This locale resolver does not support explicitly setting the request locale");
     }
-    
+
     public void setTrustedToken(String trustedToken) {
         this.trustedToken = trustedToken;
     }

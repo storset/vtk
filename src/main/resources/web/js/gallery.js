@@ -190,8 +190,10 @@
       images[src] = {};
       images[src].width = parseInt(link.find("span.hiddenWidth").text(), 10);
       images[src].height = parseInt(link.find("span.hiddenHeight").text(), 10);
-      images[src].alt = image.attr("alt");
-      images[src].title = image.attr("title");
+      var alt = image.attr("alt");
+      var title = image.attr("title");
+      images[src].alt = alt ? alt.replace(/\'/g, "&#39;").replace(/\"/g, "&quot;") : null;
+      images[src].title = title ? title.replace(/\'/g, "&#39;").replace(/\"/g, "&quot;") : null;
       images[src].html = "<a href='" + link.attr("href") + "'" +
                          " class='" + container.substring(1) + "-link'>" +
                          "<img src='" + src + "' alt='" + images[src].alt + "' style='width: " +

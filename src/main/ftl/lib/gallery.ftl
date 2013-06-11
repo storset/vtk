@@ -34,7 +34,7 @@
     <#local title = vrtx.propValue(image, 'title')?html?replace("'", "&#39;") />
     <#local width = vrtx.propValue(image, 'pixelWidth') />
     <#local height = vrtx.propValue(image, 'pixelHeight') />
-    <#local photographer = vrtx.propValue(image, "photographer") />
+    <#local photographer = vrtx.propValue(image, "photographer")?html?replace("'", "&#39;") />
     
     <#if height != "" && width != "">
       <#local width = width?number />

@@ -27,7 +27,7 @@
        $("#tree").treeview({
          animated: "fast",
          url: "?vrtx=admin&service=list-resources-retrieve&uri=${report.uri}&ts=" + (+new Date()),
-         service: "list-resources-retrieve"
+         service: "service=list-resources-retrieve"
        })
        $("#tree").on("click", "a", function(e) { // Don't want click on links
 	     e.preventDefault();

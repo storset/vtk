@@ -32,12 +32,14 @@ package org.vortikal.web.tags;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.web.servlet.support.RequestContext;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Resource;
@@ -61,6 +63,7 @@ public final class TagsHelper {
 
     private ResourceTypeTree resourceTypeTree;
     private boolean servesWebRoot;
+    private ResourceBundleMessageSource messageSource;
 
     public Resource getScopedResource(String token, HttpServletRequest request) throws Exception {
         Path requestedScope = getScopePath(request);
@@ -92,6 +95,11 @@ public final class TagsHelper {
     }
 
     public String getTitle(HttpServletRequest request, Resource resource, String tag, boolean scopeUp) {
+        return getTitle(request, resource, tag, scopeUp, null);
+    }
+
+    public String getTitle(HttpServletRequest request, Resource resource, String tag, boolean scopeUp,
+            Locale preferredLocale) {
 
         String repositoryID = org.vortikal.web.RequestContext.getRequestContext().getRepository().getId();
         String scopeTitle = (scopeUp && !resource.getURI().isRoot()) ? repositoryID : resource.getTitle();
@@ -107,7 +115,6 @@ public final class TagsHelper {
             keyBuilder.append(".scoped");
         }
         String titleKey = keyBuilder.toString();
-
         RequestContext rc = new RequestContext(request);
         if (!StringUtils.isBlank(overrideResourceTypeTitle) && !scopeUp) {
             titleKey = titleKey.concat(".overridenTitle");
@@ -123,6 +130,10 @@ public final class TagsHelper {
 
         Object[] localizationParams = getLocalizationParams(tag, scopeUp, displayScope, scopeTitle,
                 overrideResourceTypeTitle);
+
+        if (preferredLocale != null) {
+            return messageSource.getMessage(titleKey, localizationParams, preferredLocale);
+        }
 
         return rc.getMessage(titleKey, localizationParams);
 
@@ -230,6 +241,11 @@ public final class TagsHelper {
 
     public void setServesWebRoot(boolean servesWebRoot) {
         this.servesWebRoot = servesWebRoot;
+    }
+
+    @Required
+    public void setMessageSource(ResourceBundleMessageSource messageSource) {
+        this.messageSource = messageSource;
     }
 
 }

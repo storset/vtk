@@ -180,6 +180,7 @@
   <bean id="tagsHelper" class="org.vortikal.web.tags.TagsHelper">
     <property name="resourceTypeTree" ref="resourceTypeTree" />
     <property name="servesWebRoot" value="${servesWebRoot}" />
+    <property name="messageSource" ref="tags.messageSource" />
   </bean>
 
   <bean id="tags.tagsParameterAssertion" parent="vrtxParameterEquals">

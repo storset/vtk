@@ -118,6 +118,9 @@ public abstract class QuerySearchComponent implements SearchComponent {
             if (urlProp != null) {
                 url = URL.parse(urlProp.getStringValue());
             }
+
+            // XXX NO!!! When aggreagtion, we might have resources from multiple
+            // hosts that have same path (uri).
             urls.put(res.getURI().toString(), url);
         }
 

@@ -53,7 +53,13 @@ public class Listing {
     private int offset;
     private boolean more;
     private List<PropertySet> files = new ArrayList<PropertySet>();
+
+    // XXX Reconsider this. The basic use of this is to use path of resource as
+    // key and full url as value. This however does not work for aggregation in
+    // cases where resources from different hosts happen to have the same path.
+    @Deprecated
     private Map<String, URL> urls = new HashMap<String, URL>();
+
     private List<PropertyTypeDefinition> displayPropDefs = new ArrayList<PropertyTypeDefinition>();
     private int totalHits; /* Regardless of number of files ( files.size() ) */
     private Sorting sorting;
@@ -97,10 +103,12 @@ public class Listing {
         return this.files.size();
     }
 
+    @Deprecated
     public void setUrls(Map<String, URL> urls) {
         this.urls = urls;
     }
 
+    @Deprecated
     public Map<String, URL> getUrls() {
         return Collections.unmodifiableMap(this.urls);
     }

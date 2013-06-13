@@ -1180,7 +1180,7 @@ function enhanceMultipleInputFields(name, isMovable, isBrowsable, limit) { // TO
   for (var i = 0, len = formFields.length; i < len; i++) {
     html += addFormFieldFunc(name, len, $.trim(formFields[i]), size, isBrowsable, isMovable, isDropdown, true);
   }
-  html = $.parseHTML(html);
+  html = $.parseHTML(html, document, true);
   $(html).insertBefore("#vrtx-" + name + "-add");
   
   // Hide add button if limit is reached or gone over
@@ -1218,7 +1218,9 @@ function addFormField(name, len, value, size, isBrowsable, isMovable, isDropdown
   if(!init && (len == (vrtxEditor.multipleFieldsBoxes[name].limit - 1))) {
     $("#vrtx-" + name + "-add").hide();
   }
+
   var html = vrtxEditor.mustacheFacade.getMultipleInputfield(name, idstr, i, value, size, browseButton, removeButton, moveUpButton, moveDownButton, isDropdown);
+
   vrtxEditor.multipleFieldsBoxes[name].counter++;
 
   if (!init) {
@@ -1229,7 +1231,7 @@ function addFormField(name, len, value, size, isBrowsable, isMovable, isDropdown
         last.append(moveDownButton);
       }
     }
-    $($.parseHTML(html)).insertBefore("#vrtx-" + name + "-add");
+    $($.parseHTML(html, document, true)).insertBefore("#vrtx-" + name + "-add");
     autocompleteUsername(".vrtx-autocomplete-username", idstr + i);
   } else {
     return html;

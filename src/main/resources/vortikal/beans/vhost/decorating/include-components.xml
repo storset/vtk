@@ -20,11 +20,11 @@
     </property>
     <property name="parameterDescriptions">
       <map>
-        <entry key="folders" value="Which explicit folders to list resources from." />
-        <entry key="resource-type" value="The resource type to include. Default is 'file'." />
-        <entry key="max-items" value="How many resources to list from each folder." />
-        <entry key="go-to-folder-link" value="Whether a link to the folder should be provided. Default false." />
-        <entry key="result-sets" value="How many columns the result set should be devided in. Default two." />
+        <entry key="folders" value="Which explicit folders to list resources from (required)." />
+        <entry key="resource-type" value="The resource type to include. Default is 'file' (optional)." />
+        <entry key="max-items" value="How many resources to list from each folder. (optional)" />
+        <entry key="go-to-folder-link" value="Whether a link to the folder should be provided. Default false. (optional)" />
+        <entry key="result-sets" value="How many columns the result set should be devided in. Default two. (optional)" />
       </map>
     </property>
   </bean>
@@ -33,5 +33,27 @@
     <property name="url" value="layouts/resource-list.ftl" />
   </bean>
 
+  <bean id="decorating.numberOfResourcesComponent" class="org.vortikal.web.decorating.components.NumberOfResourcesComponent">
+    <property name="namespace" ref="decorating.includeNamespace" />
+    <property name="name" value="number-of-resources" />
+    <property name="view" ref="decorator.numberOfResources.view" />
+    <property name="description" value="Counts the total number of resources, optionally under a provided forlder reference." />
+    <property name="exposedParameters">
+      <set>
+        <value>folder</value>
+        <value>resource-type</value>
+      </set>
+    </property>
+    <property name="parameterDescriptions">
+      <map>
+        <entry key="resource-type" value="The resource type to count. Default is 'file' (optional)." />
+        <entry key="folder" value="The folder to count resources from (optional)." />
+      </map>
+    </property>
+  </bean>
+
+  <bean id="decorator.numberOfResources.view" parent="freemarkerView">
+    <property name="url" value="layouts/number-of-resources.ftl" />
+  </bean>
 
 </beans>

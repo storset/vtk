@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+
+  <!-- ## This file contains decorator components in the "include" namespace ## -->
+
+  <bean id="decorating.resourceListComponent" class="org.vortikal.web.decorating.components.ResourceListComponent">
+    <property name="namespace" ref="decorating.includeNamespace" />
+    <property name="name" value="resource-list" />
+    <property name="view" ref="decorator.resourceList.view" />
+    <property name="description" value="List a configurable subset of articles for Norgeshistorien på nett" />
+    <property name="exposedParameters">
+      <set>
+        <value>folders</value>
+        <value>resource-type</value>
+        <value>max-items</value>
+        <value>go-to-folder-link</value>
+        <value>result-sets</value>
+      </set>
+    </property>
+    <property name="parameterDescriptions">
+      <map>
+        <entry key="folders" value="Which explicit folders to list resources from." />
+        <entry key="resource-type" value="The resource type to include. Default is 'file'." />
+        <entry key="max-items" value="How many resources to list from each folder." />
+        <entry key="go-to-folder-link" value="Whether a link to the folder should be provided. Default false." />
+        <entry key="result-sets" value="How many columns the result set should be devided in. Default two." />
+      </map>
+    </property>
+  </bean>
+
+  <bean id="decorator.resourceList.view" parent="freemarkerView">
+    <property name="url" value="layouts/resource-list.ftl" />
+  </bean>
+
+
+</beans>

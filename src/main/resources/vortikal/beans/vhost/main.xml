@@ -25,8 +25,6 @@
   <import resource="schema-registry.xml" />
   <import resource="template-lang.xml" />
   <import resource="view.xml" />
-  <import resource="decorating.xml" />
-  <import resource="decorator-components.xml" />
   <import resource="system-decorating.xml" />
   <import resource="controllers.xml" />
   <import resource="service.xml" />
@@ -34,6 +32,10 @@
   <import resource="article.xml" />
   <import resource="structured-resources-management.xml" />
   <import resource="structured-resources.xml" />
+  
+  <!-- Decorating and decorator components -->
+  <import resource="decorating/decorating.xml" />
+  <import resource="decorating/decorator-components.xml" />
 
   <!-- Default editor -->
   <import resource="editor/editor.xml" />

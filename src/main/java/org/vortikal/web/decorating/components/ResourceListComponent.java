@@ -45,7 +45,7 @@ public class ResourceListComponent extends ViewRenderingDecoratorComponent {
         for (Path folder : validFolders) {
 
             AndQuery query = new AndQuery();
-            query.add(new TypeTermQuery(DEFAULT_RESOURCE_TYPE, TermOperator.IN));
+            query.add(new TypeTermQuery(resourceType, TermOperator.IN));
             query.add(new UriPrefixQuery(folder.toString()));
 
             Search search = new Search();

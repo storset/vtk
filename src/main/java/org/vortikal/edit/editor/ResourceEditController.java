@@ -128,6 +128,8 @@ public class ResourceEditController extends SimpleFormController {
                     wrapper.getCropHeight(), wrapper.getNewWidth(), wrapper.getNewHeight());
             if(is != null) {
               repository.storeContent(token, wrapper.getURI(), is);
+            } else {
+              // TODO: return something for the client side if image is not cropped/scaled yet
             }
         }
 

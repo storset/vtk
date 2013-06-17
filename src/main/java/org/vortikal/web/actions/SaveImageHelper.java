@@ -62,17 +62,36 @@ public class SaveImageHelper {
 
     public InputStream saveImage(Resource resource, Repository repository, String token, Path uri, int cropX,
             int cropY, int cropWidth, int cropHeight, int newWidth, int newHeight) throws Exception {
-    	
-    	// Check whether all is zero (default values when image is not supported in editor or JS is turned off)
-    	// OR some of them is negative (in case of cropping error etc.)
-    	if(   (cropX == 0 && cropY == 0 && cropWidth ==  0 && cropHeight == 0 && newWidth == 0 && newHeight == 0)
-    	   || (cropX  < 0 || cropY  < 0 || cropWidth  <  0 || cropHeight  < 0 || newWidth  < 0 || newHeight  < 0)) {
-    		return null;
-    	}
-    	
+
+        // Check whether all is zero (default values when image is not supported
+        // in editor or JS is turned off)
+        // OR some of them is negative (in case of cropping error etc.)
+        if ((cropX == 0 && cropY == 0 && cropWidth == 0 && cropHeight == 0 && newWidth == 0 && newHeight == 0)
+                || (cropX < 0 || cropY < 0 || cropWidth < 0 || cropHeight < 0 || newWidth < 0 || newHeight < 0)) {
+            return null;
+        }
+
         // Crop and scale (downscale bilinear)
-        BufferedImage image = ImageIO.read(repository.getInputStream(token, uri, true)).getSubimage(cropX, cropY,
-                cropWidth, cropHeight);
+        BufferedImage image = ImageIO.read(repository.getInputStream(token, uri, true));
+        if (image.getHeight() < cropY + cropHeight || image.getWidth() < cropX + cropWidth) {
+            /* System.out.println("\n\nIf");
+            System.out.println("image.getHeight(): " + image.getHeight());
+            System.out.println("cropY + cropHeight: " + (cropY + cropHeight));
+            System.out.println("image.getWidth(): " + image.getWidth());
+            System.out.println("cropX + cropWidth: " + (cropX + cropWidth));
+            System.out.println("\n\n"); */
+            return null;
+        }/* else {
+            System.out.println("\n\nElse");
+            System.out.println("image.getHeight(): " + image.getHeight());
+            System.out.println("cropY + cropHeight: " + (cropY + cropHeight));
+            System.out.println("image.getWidth(): " + image.getWidth());
+            System.out.println("cropX + cropWidth: " + (cropX + cropWidth));
+            System.out.println("\n\n");
+        } */
+
+        image = image.getSubimage(cropX, cropY, cropWidth, cropHeight);
+
         BufferedImage scaledImage = imageService.getScaledInstance(image, newWidth, newHeight); // Bilinear
 
         // Find a writer

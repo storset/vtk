@@ -324,19 +324,30 @@ VrtxImageEditor.prototype.save = function save(buttonId) {
   }
 
   var form = $("form#editor");
-  var dataString = "<input style='display: none' name='crop-x' value='" + editor.cropX + "' />" +
-                   "<input style='display: none' name='crop-y' value='" + editor.cropY + "' />" +
-                   "<input style='display: none' name='crop-width' value='" + editor.cropWidth + "' />" +
-                   "<input style='display: none' name='crop-height' value='" + editor.cropHeight + "' />" +
-                   "<input style='display: none' name='new-width' value='" + editor.rw + "' />" +
-                   "<input style='display: none' name='new-height' value='" + editor.rh + "' />";
-   form.append(dataString);
-   if(typeof buttonId !== "undefined") {
-     editor.savedImage = true;
-     setTimeout(function() {
-       $("#" + buttonId).click();
-     }, 500); /* VTK-3290: Avoid 403 */
-   }
+  var formImageEditorInputs = form.find(".image-editor-input");
+  if(!formImageEditorInputs.length) {
+    var dataString = "<input class='image-editor-input' style='display: none' name='crop-x' value='" + editor.cropX + "' />" +
+                     "<input class='image-editor-input' style='display: none' name='crop-y' value='" + editor.cropY + "' />" +
+                     "<input class='image-editor-input' style='display: none' name='crop-width' value='" + editor.cropWidth + "' />" +
+                     "<input class='image-editor-input' style='display: none' name='crop-height' value='" + editor.cropHeight + "' />" +
+                     "<input class='image-editor-input' style='display: none' name='new-width' value='" + editor.rw + "' />" +
+                     "<input class='image-editor-input' style='display: none' name='new-height' value='" + editor.rh + "' />";
+    form.append(dataString);
+  } else {
+    formImageEditorInputs.filter("[name='crop-x']").val(editor.cropX);
+    formImageEditorInputs.filter("[name='crop-y']").val(editor.cropY);
+    formImageEditorInputs.filter("[name='crop-width']").val(editor.cropWidth);
+    formImageEditorInputs.filter("[name='crop-height']").val(editor.cropHeight);
+    formImageEditorInputs.filter("[name='new-width']").val(editor.rw);
+    formImageEditorInputs.filter("[name='new-height']").val(editor.rh);
+  } 
+  
+  if(typeof buttonId !== "undefined") {
+    editor.savedImage = true;
+    setTimeout(function() {
+      $("#" + buttonId).click();
+    }, 500); /* VTK-3290: Avoid 403 */
+  }
 };
 
 /**

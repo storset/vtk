@@ -37,12 +37,19 @@ public class ResourceListComponent extends ViewRenderingDecoratorComponent {
         String goToFolderLink = request.getStringParameter("go-to-folder-link");
         String resultSets = request.getStringParameter("result-sets");
 
-        List<Path> validFolders = getValidFolders(includeFolders);
+        List<Path> validPaths = getPathsFolders(includeFolders);
+        List<Path> validResources = new ArrayList<Path>();
+        for (Path folder : validPaths) {
 
-        model.put("folders", validFolders);
-        model.put("numberOfFolders", validFolders.size());
+            RequestContext requestContext = RequestContext.getRequestContext();
+            String token = requestContext.getSecurityToken();
+            Repository repository = requestContext.getRepository();
 
-        for (Path folder : validFolders) {
+            if (!repository.exists(token, folder)) {
+                // Ignore it. Valid path, but resource does not exist
+                continue;
+            }
+            validResources.add(folder);
 
             AndQuery query = new AndQuery();
             query.add(new TypeTermQuery(resourceType, TermOperator.IN));
@@ -64,10 +71,6 @@ public class ResourceListComponent extends ViewRenderingDecoratorComponent {
             // XXX Sorting?
             // XXX Default limit?
             search.setQuery(query);
-
-            RequestContext requestContext = RequestContext.getRequestContext();
-            String token = requestContext.getSecurityToken();
-            Repository repository = requestContext.getRepository();
             ResultSet results = repository.search(token, search);
 
             model.put(folder.toString(), results.getAllResults());
@@ -77,9 +80,12 @@ public class ResourceListComponent extends ViewRenderingDecoratorComponent {
             }
         }
 
+        model.put("folders", validResources);
+        model.put("numberOfFolders", validResources.size());
+
     }
 
-    private List<Path> getValidFolders(String includeFolders) {
+    private List<Path> getPathsFolders(String includeFolders) {
         List<Path> validPaths = new ArrayList<Path>();
         String[] folders = includeFolders.split(",");
         for (String folder : folders) {

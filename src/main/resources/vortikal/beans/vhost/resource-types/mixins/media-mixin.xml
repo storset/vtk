@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
 
-  <bean id="mediaMixinResourceTypeDef" 
-        class="org.vortikal.repository.resourcetype.MixinResourceTypeDefinitionImpl">
-    <property name="name" value="media-mixin"/>
-    <property name="namespace" ref="DEFAULT_NAMESPACE" /> 
+  <bean id="mediaMixinResourceTypeDef" class="org.vortikal.repository.resourcetype.MixinResourceTypeDefinitionImpl">
+    <property name="name" value="media-mixin" />
+    <property name="namespace" ref="DEFAULT_NAMESPACE" />
     <property name="propertyTypeDefinitions">
       <list>
         <ref bean="thumbnailPropDef" />
@@ -15,7 +14,7 @@
         <ref bean="mediaDurationPropDef" />
       </list>
     </property>
-  </bean>  
+  </bean>
 
   <bean id="thumbnailPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
     <property name="name" value="thumbnail" />
@@ -24,7 +23,8 @@
     <property name="mandatory" value="false" />
   </bean>
 
-  <bean id="mediaMetadataStatusPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+  <bean id="mediaMetadataStatusPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+    parent="abstractPropDef">
     <property name="name" value="media-metadata-status" />
     <property name="type" value="STRING" />
     <property name="multiple" value="false" />
@@ -33,9 +33,10 @@
     <property name="propertyEvaluator">
       <bean id="mediaMetadataStatusEvaluator" class="org.vortikal.repository.resourcetype.property.MediaMetadataStatusPropertyEvaluator" />
     </property>
+
     <property name="vocabulary">
       <bean class="org.vortikal.repository.resourcetype.ValueVocabulary">
-      <property name="messageSourceBaseName" value="vortikal.beans.vhost.resource-types.properties.commentsEnabled" />
+        <property name="messageSourceBaseName" value="vortikal.beans.vhost.resource-types.properties.commentsEnabled" />
         <property name="type" value="STRING" />
         <property name="values">
           <list>
@@ -89,5 +90,5 @@
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
     <property name="mandatory" value="false" />
   </bean>
-  
+
 </beans>

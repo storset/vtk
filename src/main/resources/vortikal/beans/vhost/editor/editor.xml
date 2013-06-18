@@ -371,7 +371,8 @@
   <bean id="editor.editCSSURLs" class="java.util.ArrayList">
     <constructor-arg>
       <list>
-        <value>${jquery.baseURL}/plugins/ui/jquery-ui-${jquery.ui.version}.custom/css/smoothness/jquery-ui-${jquery.ui.version}.custom.min.css</value>
+        <value>${jquery.baseURL}/plugins/ui/jquery-ui-${jquery.ui.version}.custom/css/smoothness/jquery-ui-${jquery.ui.version}.custom.min.css
+        </value>
         <value>${themeBaseURL}/default.css</value>
         <value>${themeBaseURL}/editor.css</value>
       </list>
@@ -404,7 +405,8 @@
     <property name="successView" value="redirectToPreviewCollection" />
   </bean>
 
-  <bean id="editor.imageEditHandler" class="org.vortikal.edit.editor.ResourceEditController">
+
+  <bean id="editor.imageEditHandler" class="org.vortikal.edit.editor.ImageEditController">
     <property name="resourceManager" ref="editor.imageResourceManager" />
     <property name="formView" value="editor.editView" />
     <property name="successView" value="redirectToManage" />
@@ -412,6 +414,9 @@
     <property name="editImageService" ref="editor.imageEditService" />
     <property name="saveImageHelper" ref="saveImageHelper" />
     <property name="copyHelper" ref="copyHelperImageEdit" />
+
+    <property name="heightPropDef" ref="mediaHeightPropDef" />
+    <property name="widthPropDef" ref="mediaWidthPropDef" />
   </bean>
 
   <bean id="copyHelperImageEdit" class="org.vortikal.web.actions.copymove.CopyHelper">

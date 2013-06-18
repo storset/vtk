@@ -28,44 +28,41 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 package org.vortikal.edit.editor;
 
-import java.util.ArrayList;
+import java.io.InputStream;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.Errors;
-import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.SimpleFormController;
+import org.springframework.web.servlet.view.RedirectView;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Privilege;
+import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceWrapper;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.Principal;
 import org.vortikal.web.RequestContext;
+import org.vortikal.web.actions.SaveImageHelper;
+import org.vortikal.web.actions.copymove.CopyHelper;
 import org.vortikal.web.service.Service;
-import org.vortikal.web.service.ServiceUnlinkableException;
+import org.vortikal.web.service.URL;
 
-public class ResourceEditController extends SimpleFormController {
+public class ImageEditController extends ResourceEditController {
 
-    protected List<Service> tooltipServices;
-    protected ResourceWrapperManager resourceManager;
-    protected Map<PropertyTypeDefinition, PropertyEditPreprocessor> propertyEditPreprocessors;
-
-    public ResourceEditController() {
-        super();
-        setCommandName("resource");
-    }
-
-    protected ResourceWrapperManager getResourceManager() {
-        return this.resourceManager;
-    }
+    private Service loadImageService;
+    private Service editImageService;
+    private SaveImageHelper saveImageHelper;
+    private CopyHelper copyHelper;
+    private PropertyTypeDefinition heightPropDef;
+    private PropertyTypeDefinition widthPropDef;
 
     @Override
     protected ModelAndView onSubmit(Object command) throws Exception {
@@ -74,6 +71,7 @@ public class ResourceEditController extends SimpleFormController {
         RequestContext requestContext = RequestContext.getRequestContext();
         Principal principal = requestContext.getPrincipal();
         Repository repository = requestContext.getRepository();
+        String token = requestContext.getSecurityToken();
 
         if (wrapper.hasErrors()) {
             Map<String, Object> model = new HashMap<String, Object>();
@@ -81,7 +79,31 @@ public class ResourceEditController extends SimpleFormController {
             model.put("published", resource.isPublished());
             model.put("hasPublishDate", resource.hasPublishDate());
             model.put("onlyWriteUnpublished", !repository.authorize(principal, resource.getAcl(), Privilege.READ_WRITE));
+            model = addImageEditorServices(model, resource, principal);
             return new ModelAndView(getFormView(), model);
+        }
+
+        Property imageHeightProp = heightPropDef.createProperty();
+        imageHeightProp.setIntValue(wrapper.getNewHeight());
+        resource.addProperty(imageHeightProp);
+
+        Property imageWidthProp = widthPropDef.createProperty();
+        imageWidthProp.setIntValue(wrapper.getNewWidth());
+        resource.addProperty(imageWidthProp);
+
+        repository.store(token, resource);
+
+        if (wrapper.isSaveCopy() && this.editImageService != null && this.copyHelper != null
+                && this.saveImageHelper != null) {
+            InputStream is = saveImageHelper.saveImage(resource, repository, token, resource.getURI(),
+                    wrapper.getCropX(), wrapper.getCropY(), wrapper.getCropWidth(), wrapper.getCropHeight(),
+                    wrapper.getNewWidth(), wrapper.getNewHeight());
+
+            Path destUri = this.copyHelper.copyResource(resource.getURI(), resource.getURI(), repository, token,
+                    wrapper.getResource(), is);
+            URL editServiceUrl = editImageService.constructURL(destUri);
+            this.resourceManager.unlock();
+            return new ModelAndView(new RedirectView(editServiceUrl.toString()));
         }
 
         if (!wrapper.isSave()) {
@@ -91,6 +113,19 @@ public class ResourceEditController extends SimpleFormController {
 
         this.resourceManager.store(wrapper);
 
+        if (this.editImageService != null && this.copyHelper != null && this.saveImageHelper != null) {
+
+            InputStream is = saveImageHelper.saveImage(resource, repository, token, resource.getURI(),
+                    wrapper.getCropX(), wrapper.getCropY(), wrapper.getCropWidth(), wrapper.getCropHeight(),
+                    wrapper.getNewWidth(), wrapper.getNewHeight());
+            if (is != null) {
+                repository.storeContent(token, wrapper.getURI(), is);
+            } else {
+                // TODO: return something for the client side if image is not
+                // cropped/scaled yet
+            }
+        }
+
         if (!wrapper.isView()) {
             Map<String, Object> model = new HashMap<String, Object>();
             model.put(getCommandName(), command);
@@ -98,20 +133,12 @@ public class ResourceEditController extends SimpleFormController {
             model.put("published", resource.isPublished());
             model.put("hasPublishDate", resource.hasPublishDate());
             model.put("onlyWriteUnpublished", !repository.authorize(principal, resource.getAcl(), Privilege.READ_WRITE));
+            model = addImageEditorServices(model, resource, principal);
             return new ModelAndView(getFormView(), model);
         }
 
         this.resourceManager.unlock();
-        return super.onSubmit(command);
-    }
-
-    @Override
-    protected ServletRequestDataBinder createBinder(HttpServletRequest request, Object command) throws Exception {
-        ServletRequestDataBinder binder = new ResourceEditDataBinder(command, getCommandName(),
-                resourceManager.getHtmlParser(), resourceManager.getHtmlPropsFilter(), propertyEditPreprocessors);
-        prepareBinder(binder);
-        initBinder(request, binder);
-        return binder;
+        return new ModelAndView(getSuccessView());
     }
 
     @Override
@@ -127,7 +154,6 @@ public class ResourceEditController extends SimpleFormController {
         Resource resource = ((ResourceWrapper) command).getResource();
         RequestContext requestContext = RequestContext.getRequestContext();
         Principal principal = requestContext.getPrincipal();
-        Repository repository = requestContext.getRepository();
 
         Map model = super.referenceData(request, command, errors);
 
@@ -135,36 +161,34 @@ public class ResourceEditController extends SimpleFormController {
             model = new HashMap();
         }
 
-        model.put("published", resource.isPublished());
-        model.put("hasPublishDate", resource.hasPublishDate());
-        model.put("onlyWriteUnpublished", !repository.authorize(principal, resource.getAcl(), Privilege.READ_WRITE));
-        model.put("tooltips", resolveTooltips(resource, principal));
+        model = addImageEditorServices(model, resource, principal);
 
         return model;
     }
 
-    public void setTooltipServices(List<Service> tooltipServices) {
-        this.tooltipServices = tooltipServices;
+    private Map<String, Object> addImageEditorServices(Map<String, Object> model, Resource resource, Principal principal) {
+        // XXX:
+        if (this.loadImageService != null) {
+            URL imageSourceURL = this.loadImageService.constructURL(resource, principal);
+            model.put("imageURL", imageSourceURL);
+        }
+        return model;
     }
 
-    private List<Map<String, String>> resolveTooltips(Resource resource, Principal principal) {
-        if (this.tooltipServices == null) {
-            return null;
-        }
-        List<Map<String, String>> tooltips = new ArrayList<Map<String, String>>();
-        for (Service service : this.tooltipServices) {
-            String url = null;
-            try {
-                url = service.constructLink(resource, principal);
-                Map<String, String> tooltip = new HashMap<String, String>();
-                tooltip.put("url", url);
-                tooltip.put("messageKey", "plaintextEdit.tooltip." + service.getName());
-                tooltips.add(tooltip);
-            } catch (ServiceUnlinkableException e) {
-                // Ignore
-            }
-        }
-        return tooltips;
+    public void setLoadImageService(Service loadImageService) {
+        this.loadImageService = loadImageService;
+    }
+
+    public void setEditImageService(Service editImageService) {
+        this.editImageService = editImageService;
+    }
+
+    public void setSaveImageHelper(SaveImageHelper saveImageHelper) {
+        this.saveImageHelper = saveImageHelper;
+    }
+
+    public void setCopyHelper(CopyHelper copyHelper) {
+        this.copyHelper = copyHelper;
     }
 
     @Required
@@ -175,6 +199,14 @@ public class ResourceEditController extends SimpleFormController {
     public void setPropertyEditPreprocessors(
             Map<PropertyTypeDefinition, PropertyEditPreprocessor> propertyEditPreprocessors) {
         this.propertyEditPreprocessors = propertyEditPreprocessors;
+    }
+
+    public void setHeightPropDef(PropertyTypeDefinition hightPropDef) {
+        this.heightPropDef = hightPropDef;
+    }
+
+    public void setWidthPropDef(PropertyTypeDefinition widthPropDef) {
+        this.widthPropDef = widthPropDef;
     }
 
 }

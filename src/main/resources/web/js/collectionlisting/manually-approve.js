@@ -335,7 +335,7 @@ function generateStartPageAndTableHead(pages) {
 
 function generateTableRow(resource, isInit, approvedTextfield) {
   if(resource.approved && !isInit) { // Repopulate approved resources textfield
-    var approveTextfieldVal = approvedTextfield.val();
+    var approvedTextfieldVal = approvedTextfield.val();
     if (approvedTextfieldVal.length) {
       approvedTextfield.val(approvedTextfieldVal + ", " + resource.uri);
     } else {

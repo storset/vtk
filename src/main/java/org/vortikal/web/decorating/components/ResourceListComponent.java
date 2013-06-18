@@ -7,6 +7,7 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
+import org.vortikal.repository.Resource;
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
 import org.vortikal.repository.search.query.AndQuery;
@@ -31,6 +32,7 @@ public class ResourceListComponent extends ViewRenderingDecoratorComponent {
             throw new DecoratorComponentException("Parameter \"folders\" is required.");
         }
 
+        String parentFolder = request.getStringParameter("parent-folder");
         String resourceType = DEFAULT_RESOURCE_TYPE;
         String requestedResourceType = request.getStringParameter("resource-type");
         resourceType = requestedResourceType != null ? requestedResourceType : resourceType;
@@ -43,19 +45,22 @@ public class ResourceListComponent extends ViewRenderingDecoratorComponent {
         }
         model.put("resultSets", numberOfResultSets);
 
-        List<Path> validPaths = getPathsFolders(includeFolders);
-        List<Path> validResources = new ArrayList<Path>();
+        List<Path> validPaths = getValidFolderPaths(includeFolders, parentFolder);
+        List<Resource> validResources = new ArrayList<Resource>();
         for (Path folder : validPaths) {
 
             RequestContext requestContext = RequestContext.getRequestContext();
             String token = requestContext.getSecurityToken();
             Repository repository = requestContext.getRepository();
 
-            if (!repository.exists(token, folder)) {
-                // Ignore it. Valid path, but resource does not exist
+            Resource resource = null;
+            try {
+                resource = repository.retrieve(token, folder, true);
+            } catch (Exception e) {
+                // Resource not available, ignore (most likely not found)
                 continue;
             }
-            validResources.add(folder);
+            validResources.add(resource);
 
             AndQuery query = new AndQuery();
             query.add(new TypeTermQuery(resourceType, TermOperator.IN));
@@ -87,18 +92,42 @@ public class ResourceListComponent extends ViewRenderingDecoratorComponent {
 
     }
 
-    private List<Path> getPathsFolders(String includeFolders) {
+    private List<Path> getValidFolderPaths(String includeFolders, String parentFolder) {
         List<Path> validPaths = new ArrayList<Path>();
         String[] folders = includeFolders.split(",");
+        Path parentPath = getValidPath(parentFolder);
+        String parentPathString = parentPath != null ? parentPath.toString() : null;
         for (String folder : folders) {
-            try {
-                Path validPath = Path.fromString(folder.trim());
-                validPaths.add(validPath);
-            } catch (IllegalArgumentException iae) {
-                // Invalid path, ignore
+            
+            folder = folder.trim();
+
+            Path validPath = null;
+            if (parentPathString == null) {
+                validPath = getValidPath(folder);
+            } else {
+                if (!folder.startsWith("/")) {
+                    String extendedFolderWithParent = parentPathString.concat("/").concat(folder);
+                    validPath = getValidPath(extendedFolderWithParent);
+                } else {
+                    validPath = getValidPath(folder);
+                }
             }
+
+            if (validPath != null) {
+                validPaths.add(validPath);
+            }
+
         }
         return validPaths;
+    }
+
+    private Path getValidPath(String pathString) {
+        try {
+            return Path.fromString(pathString);
+        } catch (IllegalArgumentException iae) {
+            // Invalid path, ignore
+        }
+        return null;
     }
 
 }

@@ -12,6 +12,7 @@
     <property name="exposedParameters">
       <set>
         <value>folders</value>
+        <value>parent-folder</value>
         <value>resource-type</value>
         <value>max-items</value>
         <value>go-to-folder-link</value>
@@ -21,6 +22,8 @@
     <property name="parameterDescriptions">
       <map>
         <entry key="folders" value="Which explicit folders to list resources from (required)." />
+        <entry key="parent-folder"
+          value="Parent folder to start search from. (optional). Explicit relative folder references provided in property 'folders' will use this as their parent." />
         <entry key="resource-type" value="The resource type to include. Default is 'file' (optional)." />
         <entry key="max-items" value="How many resources to list from each folder. (optional)" />
         <entry key="go-to-folder-link" value="Whether a link to the folder should be provided. Default false. (optional)" />

@@ -1,5 +1,7 @@
 <#ftl strip_whitespace=true>
 
+<#import "/lib/vortikal.ftl" as vrtx />
+
 <#assign numberofcolumns = (folders?size / resultSets)?ceiling>
 <#list folders?sort as folder>
 
@@ -10,13 +12,15 @@
   <div class="vrtx-list-articles">
     <div class="vrtx-list-articles-col vrtx-list-articles-col-${i}">
     <#if goToFolderLink?exists>
-      <a href="${folder}">${folder?cap_first}</a>
+      <a href="${folder.URI}">${folder.title}</a>
     <#else>
-      ${folder?cap_first}
+      ${folder.title}
     </#if>
     <ul>
-    <#list .vars[folder] as result>
-      <li><a href="${result.getURI()}">${result.getName()}</a></li>
+    <#list .vars[folder.URI] as result>
+      <#assign resourceUri = vrtx.getUri(result) />
+      <#assign title = vrtx.propValue(result, 'title') />
+      <li><a href="${resourceUri}">${title}</a></li>
     </#list>
     </ul>
     </div>

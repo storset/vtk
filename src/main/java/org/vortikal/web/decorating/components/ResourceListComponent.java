@@ -70,6 +70,7 @@ public class ResourceListComponent extends ViewRenderingDecoratorComponent {
             }
 
             // XXX Sorting?
+            search.setSorting(null);
             // XXX Default limit?
             search.setQuery(query);
             ResultSet results = repository.search(token, search);

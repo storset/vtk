@@ -88,7 +88,7 @@ $(document).ready(function() {
           aggregatedlocations = aggregatedlocations.split(",");
         }
 
-        retrieveResources(".", locations, aggregatedlocations, false);  
+        retrieveResources(".", locations, aggregatedlocations, false);
       }
       e.stopPropagation();
       e.preventDefault();
@@ -172,6 +172,11 @@ function retrieveResources(serviceUri, locations, aggregatedlocations, isInit) {
     $("#manually-approve-container:visible").addClass("hidden");
     return;
   }
+  
+  var approvedTextfield = $("#resource\\.manually-approved-resources");
+  if(!isInit) { // Clear approved resources textfield before repopulation
+    approvedTextfield.val("");
+  }
 
   // Add spinner
   $("#manually-approve-container-title").append("<span id='approve-spinner'>" + approveRetrievingData + "...</span>");
@@ -181,8 +186,7 @@ function retrieveResources(serviceUri, locations, aggregatedlocations, isInit) {
       if (results != null && results.length > 0) {
         $("#vrtx-manually-approve-tab-menu:hidden").removeClass("hidden");
         $("#manually-approve-container:hidden").removeClass("hidden");
-        
-        generateManuallyApprovedContainer(results, isInit);
+        generateManuallyApprovedContainer(results, isInit, approvedTextfield);
       } else {
         $("#approve-spinner").remove();
         if(!APPROVED_ONLY) {
@@ -211,7 +215,7 @@ function retrieveResources(serviceUri, locations, aggregatedlocations, isInit) {
  * 
  */
 
-function generateManuallyApprovedContainer(resources, isInit) {
+function generateManuallyApprovedContainer(resources, isInit, approvedTextfield) {
 
   // Initial setup
   var pages = 1,
@@ -230,7 +234,7 @@ function generateManuallyApprovedContainer(resources, isInit) {
   // If more than one page
   if (moreThanOnePage) {
     for (; i < prPage; i++) { // Generate first page synchronous
-      html += generateTableRowFunc(resources[i]);
+      html += generateTableRowFunc(resources[i], isInit, approvedTextfield);
     }
     html += generateTableEndAndPageInfoFunc(pages, prPage, len, false);
     pages++;
@@ -254,7 +258,7 @@ function generateManuallyApprovedContainer(resources, isInit) {
  
   // Generate rest of pages asynchronous
   ASYNC_GEN_PAGE_TIMER = setTimeout(function() {
-    html += generateTableRowFunc(resources[i]);
+    html += generateTableRowFunc(resources[i], isInit, approvedTextfield);
     if ((i + 1) % prPage == 0) {
       html += generateTableEndAndPageInfoFunc(pages, prPage, len, false);
       pages++;
@@ -329,8 +333,16 @@ function generateStartPageAndTableHead(pages) {
                                                                  approveTablePublished: approveTablePublished }); 
 }
 
-function generateTableRow(resource) {
-  return $.mustache(MANUALLY_APPROVE_TEMPLATES["table-row"], { resource: resource });  
+function generateTableRow(resource, isInit, approvedTextfield) {
+  if(resource.approved && !isInit) { // Repopulate approved resources textfield
+    var approveTextfieldVal = approvedTextfield.val();
+    if (approvedTextfieldVal.length) {
+      approvedTextfield.val(approvedTextfieldVal + ", " + resource.uri);
+    } else {
+      approvedTextfield.val(resource.uri);
+    }
+  }
+  return $.mustache(MANUALLY_APPROVE_TEMPLATES["table-row"], { resource: resource });
 }
 
 function generateTableEndAndPageInfo(pages, prPage, len, lastRow) {

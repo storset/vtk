@@ -20,6 +20,7 @@ import org.vortikal.web.decorating.DecoratorResponse;
 public class ResourceListComponent extends ViewRenderingDecoratorComponent {
 
     private static final String DEFAULT_RESOURCE_TYPE = "file";
+    private static final int DEFAULT_NUMBER_OF_RESULTSETS = 2;
 
     @Override
     protected void processModel(Map<String, Object> model, DecoratorRequest request, DecoratorResponse response)
@@ -36,6 +37,11 @@ public class ResourceListComponent extends ViewRenderingDecoratorComponent {
         String maxItems = request.getStringParameter("max-items");
         String goToFolderLink = request.getStringParameter("go-to-folder-link");
         String resultSets = request.getStringParameter("result-sets");
+        int numberOfResultSets = DEFAULT_NUMBER_OF_RESULTSETS;
+        if (StringUtils.isNumeric(resultSets)) {
+            numberOfResultSets = Integer.parseInt(resultSets);
+        }
+        model.put("resultSets", numberOfResultSets);
 
         List<Path> validPaths = getPathsFolders(includeFolders);
         List<Path> validResources = new ArrayList<Path>();
@@ -61,11 +67,6 @@ public class ResourceListComponent extends ViewRenderingDecoratorComponent {
                     search.setLimit(Integer.parseInt(maxItems));
                 } catch (NumberFormatException e) {
                 }
-            }
-            if (resultSets != null) {
-                model.put("resultSets", Integer.parseInt(resultSets));
-            } else {
-                model.put("resultSets", 2);
             }
 
             // XXX Sorting?

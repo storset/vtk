@@ -8,7 +8,7 @@
     <property name="namespace" ref="decorating.includeNamespace" />
     <property name="name" value="resource-list" />
     <property name="view" ref="decorator.resourceList.view" />
-    <property name="description" value="List a configurable subset of articles for Norgeshistorien på nett" />
+    <property name="description" value="List resources from a set of folders" />
     <property name="exposedParameters">
       <set>
         <value>folders</value>

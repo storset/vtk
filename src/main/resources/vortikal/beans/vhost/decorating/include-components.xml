@@ -43,14 +43,17 @@
     <property name="description" value="Counts the total number of resources, optionally under a provided forlder reference." />
     <property name="exposedParameters">
       <set>
-        <value>folder</value>
         <value>resource-type</value>
+        <value>folders</value>
+        <value>exclude-folders</value>
       </set>
     </property>
     <property name="parameterDescriptions">
       <map>
         <entry key="resource-type" value="The resource type to count. Default is 'file' (optional)." />
-        <entry key="folder" value="The folder to count resources from (optional)." />
+        <entry key="folders" value="Comma seperated list with absolute paths to folder to count resources from (optional)." />
+        <entry key="exclude-folders"
+          value="Comma seperated list with absolute paths to folder to NOT include in count (optional). Overrides any match provided by parameter 'folder'" />
       </map>
     </property>
   </bean>

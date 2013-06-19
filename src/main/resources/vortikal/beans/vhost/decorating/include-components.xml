@@ -25,9 +25,9 @@
         <entry key="parent-folder"
           value="Parent folder to start search from. (optional). Explicit relative folder references provided in property 'folders' will use this as their parent." />
         <entry key="resource-type" value="The resource type to include. Default is 'file' (optional)." />
-        <entry key="max-items" value="How many resources to list from each folder. (optional)" />
-        <entry key="go-to-folder-link" value="Whether a link to the folder should be provided. Default false. (optional)" />
-        <entry key="result-sets" value="How many columns the result set should be devided in. Default two. (optional)" />
+        <entry key="max-items" value="How many resources to list from each folder (optional)." />
+        <entry key="go-to-folder-link" value="Whether a link to the folder should be provided. Default false (optional)." />
+        <entry key="result-sets" value="How many columns the result set should be devided in. Default two (optional)." />
       </map>
     </property>
   </bean>
@@ -53,7 +53,7 @@
         <entry key="resource-type" value="The resource type to count. Default is 'file' (optional)." />
         <entry key="folders" value="Comma seperated list with absolute paths to folder to count resources from (optional)." />
         <entry key="exclude-folders"
-          value="Comma seperated list with absolute paths to folder to NOT include in count (optional). Overrides any match provided by parameter 'folder'" />
+          value="Comma seperated list with absolute paths to folder to NOT include in count (optional). Overrides any match provided by parameter 'folder'." />
       </map>
     </property>
   </bean>

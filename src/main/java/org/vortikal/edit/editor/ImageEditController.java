@@ -74,15 +74,10 @@ public class ImageEditController extends ResourceEditController {
         String token = requestContext.getSecurityToken();
 
         if (wrapper.hasErrors()) {
-            Map<String, Object> model = new HashMap<String, Object>();
-            model.put(getCommandName(), command);
-            model.put("published", resource.isPublished());
-            model.put("hasPublishDate", resource.hasPublishDate());
-            model.put("onlyWriteUnpublished", !repository.authorize(principal, resource.getAcl(), Privilege.READ_WRITE));
-            model = addImageEditorServices(model, resource, principal);
+            Map<String, Object> model = getModelProperties(command, resource, principal, repository);
             return new ModelAndView(getFormView(), model);
         }
-
+        
         Property imageHeightProp = heightPropDef.createProperty();
         imageHeightProp.setIntValue(wrapper.getNewHeight());
         resource.addProperty(imageHeightProp);
@@ -127,12 +122,8 @@ public class ImageEditController extends ResourceEditController {
         }
 
         if (!wrapper.isView()) {
-            Map<String, Object> model = new HashMap<String, Object>();
-            model.put(getCommandName(), command);
+            Map<String, Object> model = getModelProperties(command, resource, principal, repository);
             wrapper.setSave(false);
-            model.put("published", resource.isPublished());
-            model.put("hasPublishDate", resource.hasPublishDate());
-            model.put("onlyWriteUnpublished", !repository.authorize(principal, resource.getAcl(), Privilege.READ_WRITE));
             model = addImageEditorServices(model, resource, principal);
             return new ModelAndView(getFormView(), model);
         }
@@ -167,7 +158,6 @@ public class ImageEditController extends ResourceEditController {
     }
 
     private Map<String, Object> addImageEditorServices(Map<String, Object> model, Resource resource, Principal principal) {
-        // XXX:
         if (this.loadImageService != null) {
             URL imageSourceURL = this.loadImageService.constructURL(resource, principal);
             model.put("imageURL", imageSourceURL);

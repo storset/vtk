@@ -76,11 +76,7 @@ public class ResourceEditController extends SimpleFormController {
         Repository repository = requestContext.getRepository();
 
         if (wrapper.hasErrors()) {
-            Map<String, Object> model = new HashMap<String, Object>();
-            model.put(getCommandName(), command);
-            model.put("published", resource.isPublished());
-            model.put("hasPublishDate", resource.hasPublishDate());
-            model.put("onlyWriteUnpublished", !repository.authorize(principal, resource.getAcl(), Privilege.READ_WRITE));
+            Map<String, Object> model = getModelProperties(command, resource, principal, repository);
             return new ModelAndView(getFormView(), model);
         }
 
@@ -92,17 +88,23 @@ public class ResourceEditController extends SimpleFormController {
         this.resourceManager.store(wrapper);
 
         if (!wrapper.isView()) {
-            Map<String, Object> model = new HashMap<String, Object>();
-            model.put(getCommandName(), command);
+            Map<String, Object> model = getModelProperties(command, resource, principal, repository);
             wrapper.setSave(false);
-            model.put("published", resource.isPublished());
-            model.put("hasPublishDate", resource.hasPublishDate());
-            model.put("onlyWriteUnpublished", !repository.authorize(principal, resource.getAcl(), Privilege.READ_WRITE));
             return new ModelAndView(getFormView(), model);
         }
 
         this.resourceManager.unlock();
         return super.onSubmit(command);
+    }
+
+    protected Map<String, Object> getModelProperties(Object command, Resource resource, Principal principal,
+            Repository repository) {
+        Map<String, Object> model = new HashMap<String, Object>();
+        model.put(getCommandName(), command);
+        model.put("published", resource.isPublished());
+        model.put("hasPublishDate", resource.hasPublishDate());
+        model.put("onlyWriteUnpublished", !repository.authorize(principal, resource.getAcl(), Privilege.READ_WRITE));
+        return model;
     }
 
     @Override

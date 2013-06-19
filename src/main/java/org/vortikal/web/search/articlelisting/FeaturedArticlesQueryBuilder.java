@@ -80,16 +80,16 @@ public class FeaturedArticlesQueryBuilder extends ParsedQueryBuilder {
         Query uriSetQuery = null;
         if (!invert) {
             return new UriSetQuery(validUris, TermOperator.NI);
-        } else {
-            uriSetQuery = new UriSetQuery(validUris);
-            Query resourceQuery = super.build(collection, request);
-            if (resourceQuery == null) {
-                return null;
-            }
-            resultQuery.add(resourceQuery);
-            resultQuery.add(uriSetQuery);
-            return resultQuery;
         }
+        
+        uriSetQuery = new UriSetQuery(validUris);
+        Query resourceQuery = super.build(collection, request);
+        if (resourceQuery == null) {
+            return null;
+        }
+        resultQuery.add(resourceQuery);
+        resultQuery.add(uriSetQuery);
+        return resultQuery;
 
     }
 

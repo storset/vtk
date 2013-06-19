@@ -23,6 +23,18 @@ resourcetype semester-page {
     link-box-five-links : json (linktitle : string, link : resource_ref) multiple,
     link-box-six-title : string,
     link-box-six-links : json (linktitle : string, link : resource_ref) multiple,
+    link-box-seven-title : string,
+    link-box-seven-links : json (linktitle : string, link : resource_ref) multiple,
+    link-box-eight-title : string,
+    link-box-eight-links : json (linktitle : string, link : resource_ref) multiple,
+    link-box-nine-title : string,
+    link-box-nine-links : json (linktitle : string, link : resource_ref) multiple,
+    link-box-ten-title : string,
+    link-box-ten-links : json (linktitle : string, link : resource_ref) multiple,
+    link-box-eleven-title : string,
+    link-box-eleven-links : json (linktitle : string, link : resource_ref) multiple,
+    link-box-twelve-title : string,
+    link-box-twelve-links : json (linktitle : string, link : resource_ref) multiple,
     teachersUsernames : string multiple,
     teachers : json (teacherName : string, teacherUrl : string) multiple,
     studinfo-kontakt : string,
@@ -49,7 +61,20 @@ resourcetype semester-page {
     studinfo-kontakt (after link-box-six),
 
     tittel (size[1]),
-    tittel (class[ui-helper-hidden])
+    tittel (class[ui-helper-hidden]),
+
+    link-box-seven-title (class[ui-helper-hidden]),
+    link-box-seven-links (class[ui-helper-hidden]),
+    link-box-eight-title (class[ui-helper-hidden]),
+    link-box-eight-links (class[ui-helper-hidden]),
+    link-box-nine-title (class[ui-helper-hidden]),
+    link-box-nine-links (class[ui-helper-hidden]),
+    link-box-ten-title (class[ui-helper-hidden]),
+    link-box-ten-links (class[ui-helper-hidden]),
+    link-box-eleven-title (class[ui-helper-hidden]),
+    link-box-eleven-links (class[ui-helper-hidden]),
+    link-box-twelve-title (class[ui-helper-hidden]),
+    link-box-twelve-links (class[ui-helper-hidden])
   }
 
   scripts {
@@ -122,7 +147,7 @@ resourcetype semester-page {
       ##
     }
 
-    resource-links (title, num, split) {
+    resource-links (title, num) {
       ##
       [def link-box-title resource-prop(".", title)]
 
@@ -143,6 +168,18 @@ resourcetype semester-page {
         [def links document.properties.link-box-five-links]
       [elseif title = "link-box-six-title"]
         [def links document.properties.link-box-six-links]
+      [elseif title = "link-box-seven-title"]
+        [def links document.properties.link-box-seven-links]
+      [elseif title = "link-box-eight-title"]
+        [def links document.properties.link-box-eight-links]
+      [elseif title = "link-box-nine-title"]
+        [def links document.properties.link-box-nine-links]
+      [elseif title = "link-box-ten-title"]
+        [def links document.properties.link-box-ten-links]
+      [elseif title = "link-box-eleven-title"]
+        [def links document.properties.link-box-eleven-links]
+      [elseif title = "link-box-twelve-title"]
+        [def links document.properties.link-box-twelve-links]
       [endif]
       [if links != null]
         [def realSize 0]
@@ -195,6 +232,18 @@ resourcetype semester-page {
     [def link-box-five-links resource-prop(".", "link-box-five-links")]
     [def link-box-six-title resource-prop-obj-val(".", "link-box-six-title")]
     [def link-box-six-links resource-prop(".", "link-box-six-links")]
+    [def link-box-seven-title resource-prop-obj-val(".", "link-box-seven-title")]
+    [def link-box-seven-links resource-prop(".", "link-box-seven-links")]
+    [def link-box-eight-title resource-prop-obj-val(".", "link-box-eight-title")]
+    [def link-box-eight-links resource-prop(".", "link-box-eight-links")]
+    [def link-box-nine-title resource-prop-obj-val(".", "link-box-nine-title")]
+    [def link-box-nine-links resource-prop(".", "link-box-nine-links")]
+    [def link-box-ten-title resource-prop-obj-val(".", "link-box-ten-title")]
+    [def link-box-ten-links resource-prop(".", "link-box-ten-links")]
+    [def link-box-eleven-title resource-prop-obj-val(".", "link-box-eleven-title")]
+    [def link-box-eleven-links resource-prop(".", "link-box-eleven-links")]
+    [def link-box-twelve-title resource-prop-obj-val(".", "link-box-twelve-title")]
+    [def link-box-twelve-links resource-prop(".", "link-box-twelve-links")]
     [def messagelisting null]
     [def messagelisting-uri resource-prop("./", "uri")]
     [if locale != null && locale = "en"]
@@ -216,7 +265,7 @@ resourcetype semester-page {
     [endif]
 
     [def resourceLinkCount 0]
-    [def props #({"prop": "link-box-one-links"}, {"prop" : "link-box-two-links"}, {"prop" : "link-box-three-links"}, {"prop" : "link-box-four-links"}, {"prop" : "link-box-five-links"}, {"prop" : "link-box-six-links"})]
+    [def props #({"prop": "link-box-one-links"}, {"prop" : "link-box-two-links"}, {"prop" : "link-box-three-links"}, {"prop" : "link-box-four-links"}, {"prop" : "link-box-five-links"}, {"prop" : "link-box-six-links"}, {"prop" : "link-box-seven-links"}, {"prop" : "link-box-eight-links"}, {"prop" : "link-box-nine-links"}, {"prop" : "link-box-ten-links"}, {"prop" : "link-box-eleven-links"}, {"prop" : "link-box-twelve-links"})]
     [list props box]
       [def document structured-document()]
       [def links null]
@@ -238,6 +287,24 @@ resourcetype semester-page {
       [elseif box.prop = "link-box-six-links"]
         [def links document.properties.link-box-six-links]
         [def title document.properties.link-box-six-title]
+      [elseif box.prop = "link-box-seven-links"]
+        [def links document.properties.link-box-seven-links]
+        [def title document.properties.link-box-seven-title]
+      [elseif box.prop = "link-box-eight-links"]
+        [def links document.properties.link-box-eight-links]
+        [def title document.properties.link-box-eight-title]
+      [elseif box.prop = "link-box-nine-links"]
+        [def links document.properties.link-box-nine-links]
+        [def title document.properties.link-box-nine-title]
+      [elseif box.prop = "link-box-ten-links"]
+        [def links document.properties.link-box-ten-links]
+        [def title document.properties.link-box-ten-title]
+      [elseif box.prop = "link-box-eleven-links"]
+        [def links document.properties.link-box-eleven-links]
+        [def title document.properties.link-box-eleven-title]
+      [elseif box.prop = "link-box-twelve-links"]
+        [def links document.properties.link-box-twelve-links]
+        [def title document.properties.link-box-twelve-title]
       [endif]
       [if links != null]
         [list links link]
@@ -287,7 +354,13 @@ resourcetype semester-page {
                   ((link-box-three-title != null && link-box-three-title != "") || link-box-three-links != null) ||
                   ((link-box-four-title != null && link-box-four-title != "") || link-box-four-links != null) ||
                   ((link-box-five-title != null && link-box-five-title != "") || link-box-five-links != null) ||
-                  ((link-box-six-title != null && link-box-six-title != "") || link-box-six-links != null)]
+                  ((link-box-six-title != null && link-box-six-title != "") || link-box-six-links != null) ||
+                  ((link-box-seven-title != null && link-box-seven-title != "") || link-box-seven-links != null) ||
+                  ((link-box-eight-title != null && link-box-eight-title != "") || link-box-eight-links != null) ||
+                  ((link-box-nine-title != null && link-box-nine-title != "") || link-box-nine-links != null) ||
+                  ((link-box-ten-title != null && link-box-ten-title != "") || link-box-ten-links != null) ||
+                  ((link-box-eleven-title != null && link-box-eleven-title != "") || link-box-eleven-links != null) ||
+                  ((link-box-twelve-title != null && link-box-twelve-title != "") || link-box-twelve-links != null)]
                 <div class="vrtx-frontpage-box white-box" id="vrtx-semester-resource-links">
                   [call "comp:resource-links"{"title":"link-box-one-title"}]
                   [call "comp:resource-links"{"title":"link-box-two-title"}]
@@ -295,6 +368,12 @@ resourcetype semester-page {
                   [call "comp:resource-links"{"title":"link-box-four-title"}]
                   [call "comp:resource-links"{"title":"link-box-five-title"}]
                   [call "comp:resource-links"{"title":"link-box-six-title"}]
+                  [call "comp:resource-links"{"title":"link-box-seven-title"}]
+                  [call "comp:resource-links"{"title":"link-box-eight-title"}]
+                  [call "comp:resource-links"{"title":"link-box-nine-title"}]
+                  [call "comp:resource-links"{"title":"link-box-ten-title"}]
+                  [call "comp:resource-links"{"title":"link-box-eleven-title"}]
+                  [call "comp:resource-links"{"title":"link-box-twelve-title"}]
                 </div>
               [endif]
             [endif]
@@ -321,14 +400,26 @@ resourcetype semester-page {
                   ((link-box-three-title != null && link-box-three-title != "") || link-box-three-links != null) ||
                   ((link-box-four-title != null && link-box-four-title != "") || link-box-four-links != null) ||
                   ((link-box-five-title != null && link-box-five-title != "") || link-box-five-links != null) ||
-                  ((link-box-six-title != null && link-box-six-title != "") || link-box-six-links != null)]
+                  ((link-box-six-title != null && link-box-six-title != "") || link-box-six-links != null) ||
+                  ((link-box-seven-title != null && link-box-seven-title != "") || link-box-seven-links != null) ||
+                  ((link-box-eight-title != null && link-box-eight-title != "") || link-box-eight-links != null) ||
+                  ((link-box-nine-title != null && link-box-nine-title != "") || link-box-nine-links != null) ||
+                  ((link-box-ten-title != null && link-box-ten-title != "") || link-box-ten-links != null) ||
+                  ((link-box-eleven-title != null && link-box-eleven-title != "") || link-box-eleven-links != null) ||
+                  ((link-box-twelve-title != null && link-box-twelve-title != "") || link-box-twelve-links != null)]
                 <div class="vrtx-frontpage-box white-box" id="vrtx-semester-resource-links">
-                  [call "comp:resource-links"{"title":"link-box-one-title","num":1,"split":7}]
-                  [call "comp:resource-links"{"title":"link-box-two-title","num":2,"split":7}]
-                  [call "comp:resource-links"{"title":"link-box-three-title","num":3,"split":7}]
-                  [call "comp:resource-links"{"title":"link-box-four-title","num":4,"split":7}]
-                  [call "comp:resource-links"{"title":"link-box-five-title","num":5,"split":7}]
-                  [call "comp:resource-links"{"title":"link-box-six-title","num":6,"split":7}]
+                  [call "comp:resource-links"{"title":"link-box-one-title","num":1}]
+                  [call "comp:resource-links"{"title":"link-box-two-title","num":2}]
+                  [call "comp:resource-links"{"title":"link-box-three-title","num":3}]
+                  [call "comp:resource-links"{"title":"link-box-four-title","num":4}]
+                  [call "comp:resource-links"{"title":"link-box-five-title","num":5}]
+                  [call "comp:resource-links"{"title":"link-box-six-title","num":6}]
+                  [call "comp:resource-links"{"title":"link-box-seven-title","num":7}]
+                  [call "comp:resource-links"{"title":"link-box-eight-title","num":8}]
+                  [call "comp:resource-links"{"title":"link-box-nine-title","num":9}]
+                  [call "comp:resource-links"{"title":"link-box-ten-title","num":10}]
+                  [call "comp:resource-links"{"title":"link-box-eleven-title","num":11}]
+                  [call "comp:resource-links"{"title":"link-box-twelve-title","num":12}]
                 </div>
               [endif]
             [endif]

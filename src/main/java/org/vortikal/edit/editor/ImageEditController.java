@@ -77,7 +77,7 @@ public class ImageEditController extends ResourceEditController {
             Map<String, Object> model = getModelProperties(command, resource, principal, repository);
             return new ModelAndView(getFormView(), model);
         }
-        
+
         Property imageHeightProp = heightPropDef.createProperty();
         imageHeightProp.setIntValue(wrapper.getNewHeight());
         resource.addProperty(imageHeightProp);
@@ -85,9 +85,9 @@ public class ImageEditController extends ResourceEditController {
         Property imageWidthProp = widthPropDef.createProperty();
         imageWidthProp.setIntValue(wrapper.getNewWidth());
         resource.addProperty(imageWidthProp);
-        
-        this.resourceManager.store(wrapper);        
-        
+
+        this.resourceManager.store(wrapper);
+
         if (wrapper.isSaveCopy() && this.editImageService != null && this.copyHelper != null
                 && this.saveImageHelper != null) {
             InputStream is = saveImageHelper.saveImage(resource, repository, token, resource.getURI(),
@@ -113,9 +113,6 @@ public class ImageEditController extends ResourceEditController {
                     wrapper.getNewWidth(), wrapper.getNewHeight());
             if (is != null) {
                 repository.storeContent(token, wrapper.getURI(), is);
-            } else {
-                // TODO: return something for the client side if image is not
-                // cropped/scaled yet
             }
         }
 
@@ -132,7 +129,6 @@ public class ImageEditController extends ResourceEditController {
 
     @Override
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
-
         resourceManager.lock();
         return resourceManager.createResourceEditWrapper();
     }

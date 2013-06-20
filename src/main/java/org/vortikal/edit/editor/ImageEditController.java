@@ -85,9 +85,9 @@ public class ImageEditController extends ResourceEditController {
         Property imageWidthProp = widthPropDef.createProperty();
         imageWidthProp.setIntValue(wrapper.getNewWidth());
         resource.addProperty(imageWidthProp);
-
-        repository.store(token, resource);
-
+        
+        this.resourceManager.store(wrapper);        
+        
         if (wrapper.isSaveCopy() && this.editImageService != null && this.copyHelper != null
                 && this.saveImageHelper != null) {
             InputStream is = saveImageHelper.saveImage(resource, repository, token, resource.getURI(),
@@ -105,8 +105,6 @@ public class ImageEditController extends ResourceEditController {
             this.resourceManager.unlock();
             return new ModelAndView(getSuccessView(), new HashMap<String, Object>());
         }
-
-        this.resourceManager.store(wrapper);
 
         if (this.editImageService != null && this.copyHelper != null && this.saveImageHelper != null) {
 

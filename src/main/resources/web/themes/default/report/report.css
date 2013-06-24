@@ -271,22 +271,6 @@ td.vrtx-report-broken-links li {
   float: left;
 }
 
-/*
-
-@media screen and (min-width: 1100px) and (max-width: 1200px) {
-  #vrtx-report-filters ul {
-    margin-right: 6%;
-  }
-}
-
-@media screen and (max-width: 1100px) {
-  #vrtx-report-filters ul {
-    margin-right: 2%;
-  }
-}
-
-*/
-
 /* ^ Responsive width distribution */
 
 #vrtx-report-filters ul.vrtx-report-filter-last {

@@ -15,6 +15,7 @@ h2 {
   margin-bottom: 8px;
 }
 
+/* Fix h2 for broken links */
 #vrtx-report-broken-links h2 {
   margin-bottom: 0;
 }

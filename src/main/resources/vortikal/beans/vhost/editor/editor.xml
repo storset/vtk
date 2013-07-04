@@ -918,7 +918,9 @@
         <bean class="org.vortikal.text.html.HtmlElementDescriptor">
           <property name="name" value="strike" />
         </bean>
-
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="s" />
+        </bean>
         <!-- Additional legal elements: -->
         <bean class="org.vortikal.text.html.HtmlElementDescriptor">
           <property name="name" value="b" />

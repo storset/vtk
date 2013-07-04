@@ -423,6 +423,9 @@
           <property name="name" value="strike" />
         </bean>
         <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="s" />
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
           <property name="name" value="u" />
         </bean>
       </set>
@@ -487,6 +490,9 @@
         </bean>
         <bean class="org.vortikal.text.html.HtmlElementDescriptor">
           <property name="name" value="strike" />
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="s" />
         </bean>
         <bean class="org.vortikal.text.html.HtmlElementDescriptor">
           <property name="name" value="u" />
@@ -560,6 +566,9 @@
           <property name="name" value="strike" />
         </bean>
         <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="s" />
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
           <property name="name" value="u" />
         </bean>
         <bean class="org.vortikal.text.html.HtmlElementDescriptor">
@@ -611,6 +620,7 @@
         <value>noscript</value>
         <value>blockquote</value>
         <value>strike</value>
+        <value>s</value>
         <value>v:component</value>
       </set>
     </property>

@@ -129,6 +129,9 @@
           <property name="name" value="strike" />
         </bean>
         <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="s" />
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
           <property name="name" value="u" />
         </bean>
         <!--

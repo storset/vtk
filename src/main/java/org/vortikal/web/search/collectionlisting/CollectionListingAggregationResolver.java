@@ -30,8 +30,10 @@
  */
 package org.vortikal.web.search.collectionlisting;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -48,6 +50,9 @@ import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceNotFoundException;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
+import org.vortikal.repository.search.ResultSet;
+import org.vortikal.repository.search.Search;
+import org.vortikal.repository.search.query.UriSetQuery;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.display.collection.aggregation.AggregationResolver;
 import org.vortikal.web.display.collection.aggregation.CollectionListingAggregatedResources;
@@ -108,7 +113,27 @@ public class CollectionListingAggregationResolver implements AggregationResolver
     @Override
     public CollectionListingAggregatedResources getAggregatedResources(URL url) {
 
-        PropertySet collection = getResource(url);
+        PropertySet collection = null;
+        String token = null;
+        if (RequestContext.exists()) {
+            token = RequestContext.getRequestContext().getSecurityToken();
+        }
+        try {
+
+            Path path = null;
+            if (getLocalHostUrl().getHost().equals(url.getHost())) {
+                path = url.getPath();
+            }
+            if (path != null) {
+                collection = repository.retrieve(token, path, false);
+            } else if (multiHostSearcher.isMultiHostSearchEnabled()) {
+                collection = multiHostSearcher.retrieve(token, url);
+            }
+        } catch (ResourceNotFoundException rnfe) {
+            // resource doesn'n exist, ignore
+        } catch (Exception e) {
+            // Ignore
+        }
 
         // Resource not found
         if (collection == null) {
@@ -197,13 +222,21 @@ public class CollectionListingAggregationResolver implements AggregationResolver
             Property aggregationProp = resource.getProperty(aggregationPropDef);
 
             if (aggregationProp != null) {
-                Value[] values = aggregationProp.getValues();
 
-                // Only handle as many values as defined my limit
-                int aggregationLimit = values.length > limit ? limit : values.length;
+                List<Value> aggregationList = Arrays.asList(aggregationProp.getValues());
+                // Check limit, truncate list and log if needed
+                if (aggregationList.size() > limit) {
+                    List<Value> ignored = aggregationList.subList(limit, aggregationList.size());
+                    logger.warn(resource.getURI()
+                            + " exceeds maximum number of resources to aggregate from, following resources wil be ignored: "
+                            + ignored);
+                    aggregationList = aggregationList.subList(0, limit);
+                }
 
-                for (int i = 0; i < aggregationLimit; i++) {
-                    String aggStr = values[i].getStringValue();
+                // Get a set of urls to aggregate from
+                Set<URL> urlSet = new HashSet<URL>();
+                for (Value val : aggregationList) {
+                    String aggStr = val.getStringValue();
 
                     URL aggregationURL = getAsURL(currentHostURL, aggStr);
                     if (aggregationURL == null) {
@@ -218,27 +251,33 @@ public class CollectionListingAggregationResolver implements AggregationResolver
                         continue;
                     }
 
-                    // Valid ref, now make sure it points to an existing
-                    // resource
-                    PropertySet res = getResource(aggregationURL);
-                    if (res != null) {
+                    urlSet.add(aggregationURL);
 
-                        // Resource exists. Add it to return set for further
-                        // aggregation resolving (until depth is reached) and
-                        // add to set of hosts and paths to aggregate from
-                        resultSet.add(res);
+                }
 
-                        URL keyURL = aggregationURL.relativeURL("/");
-                        Path path = aggregationURL.getPath();
-                        Set<Path> paths = aggregationSet.get(keyURL);
-                        if (paths != null) {
-                            paths.add(path);
-                        } else {
-                            Set<Path> pathSet = new HashSet<Path>();
-                            pathSet.add(path);
-                            aggregationSet.put(keyURL, pathSet);
-                        }
+                Set<PropertySet> resources = getResources(urlSet);
+                for (PropertySet ps : resources) {
 
+                    // Add resource to return set for further aggregation
+                    // resolving (until depth is reached) and add to set of
+                    // hosts and paths to aggregate from
+                    resultSet.add(ps);
+
+                    URL aggregationURL = this.viewService.constructURL(ps.getURI());
+                    Property urlProp = ps.getProperty(Namespace.DEFAULT_NAMESPACE, MultiHostSearcher.URL_PROP_NAME);
+                    if (urlProp != null) {
+                        aggregationURL = URL.parse(urlProp.getStringValue());
+                    }
+
+                    URL keyURL = aggregationURL.relativeURL("/");
+                    Path path = aggregationURL.getPath();
+                    Set<Path> paths = aggregationSet.get(keyURL);
+                    if (paths != null) {
+                        paths.add(path);
+                    } else {
+                        Set<Path> pathSet = new HashSet<Path>();
+                        pathSet.add(path);
+                        aggregationSet.put(keyURL, pathSet);
                     }
 
                 }
@@ -289,34 +328,46 @@ public class CollectionListingAggregationResolver implements AggregationResolver
         return displayManuallyApprovedProp != null && displayManuallyApprovedProp.getBooleanValue();
     }
 
-    private PropertySet getResource(URL url) {
+    private Set<PropertySet> getResources(Set<URL> urls) {
+
+        Set<PropertySet> result = new HashSet<PropertySet>();
+
         String token = null;
         if (RequestContext.exists()) {
             token = RequestContext.getRequestContext().getSecurityToken();
         }
         try {
 
-            PropertySet resource = null;
-            Path path = null;
-            if (getLocalHostUrl().getHost().equals(url.getHost())) {
-                path = url.getPath();
-            }
-            if (path != null) {
-                resource = repository.retrieve(token, path, false);
-            } else if (multiHostSearcher.isMultiHostSearchEnabled()) {
-                resource = multiHostSearcher.retrieve(token, url);
+            if (multiHostSearcher.isMultiHostSearchEnabled()) {
+                Set<PropertySet> tmp = multiHostSearcher.retrieve(token, urls);
+                if (tmp != null) {
+                    result.addAll(tmp);
+                }
+            } else {
+                // Local repository search
+                String localHost = getLocalHostUrl().getHost();
+                for (URL url : urls) {
+
+                    Set<String> uris = new HashSet<String>();
+                    if (localHost.equals(url.getHost())) {
+                        uris.add(url.getPath().toString());
+                    }
+
+                    UriSetQuery uriSetQuery = new UriSetQuery(uris);
+                    Search search = new Search();
+                    search.setQuery(uriSetQuery);
+                    ResultSet rs = repository.search(token, search);
+                    result.addAll(rs.getAllResults());
+
+                }
+
             }
 
-            if (resource == null) {
-                return null;
-            }
-            return resource;
-        } catch (ResourceNotFoundException rnfe) {
-            // resource doesn'n exist, ignore
         } catch (Exception e) {
             // Ignore
         }
-        return null;
+
+        return result;
     }
 
     private URL resolveCurrentCollectionURL(PropertySet collection) {

@@ -4,10 +4,9 @@
 
 <#macro displayCollection collectionListing>
 
-  <#local resources=collectionListing.files />
-  <#local editLinks = collectionListing.editLinkAuthorized />
+  <#local entries=collectionListing.entries />
 
-  <#if (resources?size > 0)>
+  <#if (entries?size > 0)>
     <script type="text/javascript" src="/vrtx/__vrtx/static-resources/jquery/include-jquery.js"></script>
     <script type="text/javascript" src="/vrtx/__vrtx/static-resources/js/open-webdav.js"></script>
     <div id="${collectionListing.name}" class="vrtx-resources ${collectionListing.name}">
@@ -15,40 +14,43 @@
         <h2>${collectionListing.title?html}</h2>
       </#if>
     
-      <#list resources as r>
-        <#assign uri = vrtx.getUri(r) />
-      
+      <#list entries as entry>
+
+        <#-- The actual resource we are displaying -->
+        <#local entryPropSet = entry.propertySet />
+        <#assign url = entry.url />
+
         <#if !hideIcon?exists>
           <div class="vrtx-resource vrtx-resource-icon">
         <#else>
           <div class="vrtx-resource">
         </#if>
         <#if !hideIcon?exists>
-		  <a class="vrtx-icon <@vrtx.resourceToIconResolver r />" href="${collectionListing.urls[r.URI]?html}"></a>
+		  <a class="vrtx-icon <@vrtx.resourceToIconResolver entryPropSet />" href="${url?html}"></a>
 		</#if> 
       
 		<div class="vrtx-title">
-		  <#assign title = vrtx.propValue(r, "title", "", "") />
+		  <#assign title = vrtx.propValue(entryPropSet, "title", "", "") />
 		  <#if !title?has_content>
-		    <#assign title = vrtx.propValue(r, "solr.name", "", "") />
+		    <#assign title = vrtx.propValue(entryPropSet, "solr.name", "", "") />
 		  </#if>
-          <a class="vrtx-title vrtx-title-link" href="${collectionListing.urls[r.URI]?html}">${title?html}</a>
-          <#if editLinks?exists && editLinks[r_index]?exists && editLinks[r_index]>
-            <a class="vrtx-resource-open-webdav" href="${vrtx.linkConstructor(uri, 'webdavService')}"><@vrtx.msg code="collectionListing.editlink" /></a>
+          <a class="vrtx-title vrtx-title-link" href="${url?html}">${title?html}</a>
+          <#if entry.editAuthorized>
+            <a class="vrtx-resource-open-webdav" href="${vrtx.linkConstructor(url, 'webdavService')}"><@vrtx.msg code="collectionListing.editlink" /></a>
           </#if>
 		</div>
 
         <#list collectionListing.displayPropDefs as displayPropDef>
           <#if displayPropDef.name = 'introduction'>
-            <#assign val = vrtx.getIntroduction(r) />
+            <#assign val = vrtx.getIntroduction(entryPropSet) />
           <#elseif displayPropDef.type = 'IMAGE_REF'>
-            <#assign val><img src="${vrtx.propValue(r, displayPropDef.name, "")}" /></#assign>
+            <#assign val><img src="${vrtx.propValue(entryPropSet, displayPropDef.name, "")}" /></#assign>
           <#elseif displayPropDef.name = 'lastModified'>
             <#assign val>
               <@vrtx.msg code="viewCollectionListing.lastModified"
-                         args=[vrtx.propValue(r, displayPropDef.name, "long")] />
+                         args=[vrtx.propValue(entryPropSet, displayPropDef.name, "long")] />
             </#assign>
-            <#assign modifiedBy = vrtx.prop(r, 'modifiedBy').principalValue />
+            <#assign modifiedBy = vrtx.prop(entryPropSet, 'modifiedBy').principalValue />
             <#if principalDocuments?exists && principalDocuments[modifiedBy.name]?exists>
               <#assign principal = principalDocuments[modifiedBy.name] />
               <#if principal.URL?exists>
@@ -57,10 +59,10 @@
                 <#assign val = val + " ${principal.description}" />
               </#if>
             <#else>
-              <#assign val = val + " " + vrtx.propValue(r, 'modifiedBy', 'link') />
+              <#assign val = val + " " + vrtx.propValue(entryPropSet, 'modifiedBy', 'link') />
             </#if>
           <#else>
-            <#assign val = vrtx.propValue(r, displayPropDef.name, "long") /> <#-- Default to 'long' format -->
+            <#assign val = vrtx.propValue(entryPropSet, displayPropDef.name, "long") /> <#-- Default to 'long' format -->
           </#if>
 
           <#if val?has_content>

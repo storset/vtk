@@ -43,6 +43,7 @@ import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.web.search.Listing;
+import org.vortikal.web.search.ListingEntry;
 import org.vortikal.web.search.SearchComponent;
 
 public class ArticleListingSearcher {
@@ -81,16 +82,17 @@ public class ArticleListingSearcher {
     // Sort the featured articles listing according to the propdef
     private void sortFeaturedArticles(Listing result, Property featuredArticlesProp) {
         Value[] featuredArticleURIs = featuredArticlesProp.getValues();
-        List<PropertySet> sortedFiles = new ArrayList<PropertySet>();
-        List<PropertySet> files = result.getFiles();
+        List<ListingEntry> sortedEntries = new ArrayList<ListingEntry>();
+        List<ListingEntry> entries = result.getEntries();
         for (Value featuredArticleURI : featuredArticleURIs) {
-            for (PropertySet file : files) {
-                if (StringUtils.equals(file.getURI().toString(), featuredArticleURI.getStringValue())) {
-                    sortedFiles.add(file);
+            for (ListingEntry entry : entries) {
+                PropertySet propSet = entry.getPropertySet();
+                if (StringUtils.equals(propSet.getURI().toString(), featuredArticleURI.getStringValue())) {
+                    sortedEntries.add(entry);
                 }
             }
         }
-        result.setFiles(sortedFiles);
+        result.setEntries(sortedEntries);
     }
 
     @Required

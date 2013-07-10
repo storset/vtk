@@ -54,12 +54,13 @@
 </#macro>
 
 <#macro displayDefault imageListing collection>
-  <#local images=imageListing.files />
+  <#local images = imageListing.entries />
   <#if (images?size > 0)>
     <div class="vrtx-image-listing-container">
       <ul class="vrtx-image-listing">
       <#assign count = 1 />
-      <#list images as image>
+      <#list images as imageEntry>
+        <#local image = imageEntry.propertySet />
         <#local title = vrtx.propValue(image, 'title')?html />
         <#if count % 4 == 0 && count % 5 == 0>
           <li class="vrtx-image-entry last last-four last-five">
@@ -70,19 +71,19 @@
         <#else>
           <li class="vrtx-image-entry">
         </#if>
-        <#assign url = vrtx.getUri(image) />
             <div class="vrtx-image-container">
-              <a href="${imageListing.urls[image.URI]?html}">
-                <img src="${vrtx.relativeLinkConstructor(url, 'displayThumbnailService')}" title="${title}" alt="${title}" />
+              <a href="${imageEntry.url?html}">
+                <#-- ${vrtx.relativeLinkConstructor(imageEntry.url, 'displayThumbnailService')} is no good! -->
+                <img src="${imageEntry.url?html}?vrtx=thumbnail" title="${title}" alt="${title}" />
               </a>
             </div>
 
             <div class="vrtx-image-info">
               <div class="vrtx-image-title">
                 <#if (title?string?length > 20) >
-                  <a href="${imageListing.urls[image.URI]?html}">${title?substring(0, 20)}...</a>
+                  <a href="${imageEntry.url?html}">${title?substring(0, 20)}...</a>
                 <#else>
-                  <a href="${imageListing.urls[image.URI]?html}">${title}</a>
+                  <a href="${imageEntry.url?html}">${title}</a>
                 </#if>
               </div>
               
@@ -100,7 +101,7 @@
 </#macro>
 
 <#macro displayGallery imageListing collection>
-  <#local images=imageListing.files />
+  <#local images = imageListing.entries />
   <#if (images?size > 0)>
     <#assign maxWidth = 635 />
     <#assign maxHeight = 380 />
@@ -121,7 +122,7 @@
 </#macro>
 
 <#macro displayTable imageListing collection>
-  <#local images=imageListing.files />
+  <#local images = imageListing.entries />
   <#if (images?size > 0)>
     <div class="vrtx-image-table">
       <table class="rowstyle-alt colstyle-alt no-arrow" cellpadding="5" border="1">
@@ -132,18 +133,20 @@
             <th id="vrtx-table-description" class="sortable-text">${vrtx.getMsg("property.content:description")}</th>
             <th id="vrtx-table-dimensions-width" class="sortable-numeric">${vrtx.getMsg("imageListing.width")}</th>
             <th id="vrtx-table-dimensions-height" class="sortable-numeric">${vrtx.getMsg("imageListing.height")}</th>
-            <th id="vrtx-table-size"class="sortable-numeric">${vrtx.getMsg("property.contentLength")}</th>
+            <th id="vrtx-table-size" class="sortable-numeric">${vrtx.getMsg("property.contentLength")}</th>
             <th id="vrtx-table-photo" class="sortable-text">${vrtx.getMsg("article.photoprefix")}</th>
             <th id="vrtx-table-creation-time" class="sortable-sortEnglishLonghandDateFormat">${vrtx.getMsg("proptype.name.creationTime")}</th>
           </tr>
         </thead>
         <tbody>
-        <#list images as image>
-          <#assign url = vrtx.getUri(image) />
+        <#list images as imageEntry>
+          <#local image = imageEntry.propertySet />
+          <#assign url = imageEntry.url />
           <tr>
             <#local title = vrtx.propValue(image, 'title')?html />
-            <td class="vrtx-table-image"><a href="${imageListing.urls[image.URI]?html}"><img src="${vrtx.relativeLinkConstructor(url, 'displayThumbnailService')}" alt="${title}" /></a></td>
-            <td class="vrtx-table-title"><a href="${imageListing.urls[image.URI]?html}">${title}</a></td>
+            <#-- ${vrtx.relativeLinkConstructor(url, 'displayThumbnailService')} is no good! -->
+            <td class="vrtx-table-image"><a href="${url?html}"><img src="${url?html}?vrtx=thumbnail" alt="${title}" /></a></td>
+            <td class="vrtx-table-title"><a href="${url?html}">${title}</a></td>
             <#local description = vrtx.propValue(image, 'image-description')?html />
             <td class="vrtx-table-description">
               <#if description?has_content>

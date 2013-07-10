@@ -1,12 +1,10 @@
-<#ftl strip_whitespace=true>
+  <#ftl strip_whitespace=true>
 <#import "/lib/vortikal.ftl" as vrtx />
 <#import "/lib/view-utils.ftl" as viewutils />
 
 <#macro displayCollection collectionListing>
 
-  <#local messages = collectionListing.files />
-  <#local messageURLs = collectionListing.urls />
-  <#local editLinks = collectionListing.editLinkAuthorized />
+  <#local messages = collectionListing.entries />
 
   <#if (messages?size > 0)>
     <div id="${collectionListing.name}" class="vrtx-resources ${collectionListing.name}">
@@ -14,27 +12,30 @@
         <h2>${collectionListing.title?html}</h2>
       </#if>
 
-      <@displayMessages messages messageURLs editLinks />
+      <@displayMessages messages />
 
     </div>
   </#if>
 
 </#macro>
 
-<#macro displayMessages messages messageURLs editLinks=[] componentView=false compactView=false >
+<#macro displayMessages messages componentView=false compactView=false >
   <#local i = 1 />
   <#if compactView><div class="vrtx-feed"><ul class="items"></#if>
-  <#list messages as message>
+
+  <#list messages as messageEntry>
+
+    <#local message = messageEntry.propertySet />
     <#local locale = vrtx.getLocale(message) />
-    <#local uri = vrtx.getUri(message) />
     <#local title = vrtx.propValue(message, "title") />
+
     <#if !title?has_content>
       <#local title = vrtx.propValue(message, "solr.name") />
     </#if>
 
     <#if compactView> <#-- XXX: use feed-component instead (but need to avoid another search)? -->
       <li class="item-${i}">
-        <a class="item-title" href="${uri?html}">${title?html}</a>
+        <a class="item-title" href="${messageEntry.url?html}">${title?html}</a>
         <#local publishDateProp = vrtx.prop(message, 'publish-date') />
         <span class="published-date"><@vrtx.date value=publishDateProp.dateValue format='long' locale=locale /></span>
       </li>
@@ -42,9 +43,10 @@
     <#else>
       <div class="vrtx-result-${i} vrtx-resource">
         <div class="vrtx-title">
-          <a class="vrtx-title" href="${uri?html}">${title?html}</a>
-          <#if editLinks?exists && editLinks[message_index]?exists && editLinks[message_index]>
-            <a class="vrtx-message-listing-edit" href="${vrtx.relativeLinkConstructor(uri, 'simpleMessageEditor')}"><@vrtx.msg code="collectionListing.editlink" /></a>
+          <a class="vrtx-title" href="${messageEntry.url?html}">${title?html}</a>
+          <#if messageEntry.editAuthorized>
+            <#-- Don't use messageEntry.url here, since we only allow editing of local resources (not resources from other hosts) -->
+            <a class="vrtx-message-listing-edit" href="${vrtx.relativeLinkConstructor(message.URI, 'simpleMessageEditor')}"><@vrtx.msg code="collectionListing.editlink" /></a>
           </#if> 
         </div>
 
@@ -52,7 +54,7 @@
           <#local messageIntro = vrtx.propValue(message, "listingDisplayedMessage", "", "") />
           <#if messageIntro??>
             <div class="description introduction">
-              <@vrtx.linkResolveFilter messageIntro messageURLs[message.URI] requestURL />
+              <@vrtx.linkResolveFilter messageIntro messageEntry.url requestURL />
              </div>
           </#if>
           <div class="vrtx-message-line">
@@ -70,7 +72,7 @@
           <#local isTruncated = vrtx.propValue(message, "isTruncated", "", "") />
           <#if isTruncated?exists && isTruncated = 'true'>
             <div class="vrtx-read-more">
-              <a href="${message.URI?html}" class="more">
+              <a href="${messageEntry.url?html}" class="more">
                 <@vrtx.localizeMessage code="viewCollectionListing.readMore" default="" args=[] locale=locale />
               </a>
             </div>

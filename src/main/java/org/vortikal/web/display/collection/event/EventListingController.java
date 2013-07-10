@@ -48,6 +48,7 @@ import org.vortikal.web.display.collection.AbstractCollectionListingController;
 import org.vortikal.web.display.listing.ListingPager;
 import org.vortikal.web.display.listing.ListingPagingLink;
 import org.vortikal.web.search.Listing;
+import org.vortikal.web.search.ListingEntry;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
@@ -87,19 +88,21 @@ public class EventListingController extends AbstractCollectionListingController 
             totalHits += upcoming.getTotalHits();
             totalUpcomingHits = upcoming.getTotalHits();
             upcomingAndOngoingSize = upcoming.size();
-            
+
             if (upcomingAndOngoingSize > 0) {
                 atLeastOneUpcoming = true;
 
                 // Split upcoming into ongoing and upcoming
-                /* 
+                /*
                  * Quickest way[hack] to avoid:
                  * 
-                 * 1. extra search component with rewrite of search for upcoming and new search for ongoing
-                 * 2. extra index search, potentially with aggregation and manual approval
-                 * 3. rewrite of paging scheme to handle multiple listings (recalculation of offsets and pagenr)
+                 * 1. extra search component with rewrite of search for upcoming
+                 * and new search for ongoing 2. extra index search, potentially
+                 * with aggregation and manual approval 3. rewrite of paging
+                 * scheme to handle multiple listings (recalculation of offsets
+                 * and pagenr)
                  */
-                List<PropertySet> events = upcoming.getFiles();
+                List<ListingEntry> events = upcoming.getEntries();
                 int ongoingLastIdx = getOngoingLastIdx(events);
 
                 if (ongoingLastIdx != -1) {
@@ -112,13 +115,11 @@ public class EventListingController extends AbstractCollectionListingController 
                     int splitIdx = ongoingLastIdx + 1;
                     Listing ongoing = new Listing(resourceManager.createResourceWrapper(collection), title,
                             ongoingSearchCompName, 0);
-                    ongoing.setFiles(events.subList(0, splitIdx));
-                    ongoing.setUrls(upcoming.getUrls());
+                    ongoing.setEntries(events.subList(0, splitIdx));
                     ongoing.setDisplayPropDefs(upcoming.getDisplayPropDefs());
                     results.add(ongoing);
 
-                    upcoming.setFiles(events.subList(splitIdx, events.size()));
-                    ongoing.setEditLinkAuthorized(new boolean[0]);
+                    upcoming.setEntries(events.subList(splitIdx, events.size()));
                 }
 
                 results.add(upcoming);
@@ -178,12 +179,12 @@ public class EventListingController extends AbstractCollectionListingController 
 
     }
 
-    private int getOngoingLastIdx(List<PropertySet> files) {
+    private int getOngoingLastIdx(List<ListingEntry> entries) {
         int ongoingLastIdx = -1;
         long now = Calendar.getInstance().getTimeInMillis();
         PropertyTypeDefinition startDatePropDef = resourceTypeTree.getPropertyDefinitionByPointer(startPropDefPointer);
-        for (int i = 0; i < files.size(); i++) {
-            PropertySet event = files.get(i);
+        for (int i = 0; i < entries.size(); i++) {
+            PropertySet event = entries.get(i).getPropertySet();
             Property startProp = event.getProperty(startDatePropDef);
             if (startProp == null) {
                 // Event without startprops should not be a part of search

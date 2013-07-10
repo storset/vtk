@@ -32,9 +32,7 @@ package org.vortikal.web.search;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.ResourceWrapper;
@@ -47,26 +45,20 @@ import org.vortikal.web.service.URL;
 
 public class Listing {
 
+    public static final String SORTING_PARAM = "sorting";
+    public static final String SORTING_PARAM_DELIMITER = ":";
+
     private ResourceWrapper resource;
     private String title;
     private String name;
     private int offset;
     private boolean more;
-    private List<PropertySet> files = new ArrayList<PropertySet>();
-
-    // XXX Reconsider this. The basic use of this is to use path of resource as
-    // key and full url as value. This however does not work for aggregation in
-    // cases where resources from different hosts happen to have the same path.
-    @Deprecated
-    private Map<String, URL> urls = new HashMap<String, URL>();
-
     private List<PropertyTypeDefinition> displayPropDefs = new ArrayList<PropertyTypeDefinition>();
     private int totalHits; /* Regardless of number of files ( files.size() ) */
     private Sorting sorting;
-    private boolean[] editLinkAuthorized = new boolean[0];
 
-    public static final String SORTING_PARAM = "sorting";
-    public static final String SORTING_PARAM_DELIMITER = ":";
+    // The actual resources to display
+    private List<ListingEntry> entries = new ArrayList<ListingEntry>();
 
     public Listing(ResourceWrapper resource, String title, String name, int offset) {
         this.resource = resource;
@@ -91,28 +83,6 @@ public class Listing {
         return this.offset;
     }
 
-    public void setFiles(List<PropertySet> files) {
-        this.files = files;
-    }
-
-    public List<PropertySet> getFiles() {
-        return Collections.unmodifiableList(this.files);
-    }
-
-    public int size() {
-        return this.files.size();
-    }
-
-    @Deprecated
-    public void setUrls(Map<String, URL> urls) {
-        this.urls = urls;
-    }
-
-    @Deprecated
-    public Map<String, URL> getUrls() {
-        return Collections.unmodifiableMap(this.urls);
-    }
-
     public void setDisplayPropDefs(List<PropertyTypeDefinition> displayPropDefs) {
         this.displayPropDefs = displayPropDefs;
     }
@@ -127,10 +97,6 @@ public class Listing {
 
     public boolean hasMoreResults() {
         return more;
-    }
-
-    public boolean hasContent() {
-        return getFiles() != null && getFiles().size() > 0;
     }
 
     public void setTotalHits(int totalHits) {
@@ -153,12 +119,28 @@ public class Listing {
         this.sorting = sorting;
     }
 
-    public boolean[] getEditLinkAuthorized() {
-        return this.editLinkAuthorized;
+    public List<ListingEntry> getEntries() {
+        return Collections.unmodifiableList(entries);
     }
 
-    public void setEditLinkAuthorized(boolean[] editLinkAuthorized) {
-        this.editLinkAuthorized = editLinkAuthorized;
+    public void setEntries(List<ListingEntry> entries) {
+        this.entries = entries;
+    }
+
+    public int size() {
+        return this.entries.size();
+    }
+
+    /**
+     * Utility method to retrieve all property sets from entry list. Used where
+     * access to actual property sets is needed only.
+     */
+    public List<PropertySet> getPropertySets() {
+        List<PropertySet> propertySets = new ArrayList<PropertySet>();
+        for (ListingEntry entry : entries) {
+            propertySets.add(entry.getPropertySet());
+        }
+        return Collections.unmodifiableList(propertySets);
     }
 
     public String getRequestSortOrderParams() {
@@ -203,7 +185,7 @@ public class Listing {
         sb.append(": title: " + this.title);
         sb.append("; resource: ").append(this.resource.getURI());
         sb.append("; offset: " + this.offset);
-        sb.append("; size: " + this.files.size());
+        sb.append("; size: " + this.entries.size());
         sb.append("; more:").append(this.more);
         return sb.toString();
     }

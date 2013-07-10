@@ -16,18 +16,18 @@
 </#macro>
 
 <#macro displayStandard collectionListing hideNumberOfComments displayMoreURLs showTitle=true>
-  <#local events = collectionListing.files />
+  <#local events = collectionListing.entries />
   <#if events?size &gt; 0>
     <div id="${collectionListing.name}" class="vrtx-resources ${collectionListing.name}">
       <#if collectionListing.title?exists && collectionListing.offset == 0 && showTitle>
         <h2>${collectionListing.title?html}</h2>
       </#if>
       <#assign count = 1 />
-      <#list events as event>
+      <#list events as eventEntry>
         <#if events?size == count>
           <div class="vrtx-last-event">
         </#if>
-        <@displayEvent collectionListing event hideNumberOfComments displayMoreURLs />
+        <@displayEvent collectionListing eventEntry hideNumberOfComments displayMoreURLs />
         <#if events?size == count>
           </div>
         </#if>
@@ -45,21 +45,21 @@
   </#if>
   <#if allupcoming?has_content>
 	  <h1>${allupcomingTitle?html}</h1>
-	  <#if allupcoming.files?size &gt; 0 >
+	  <#if allupcoming.entries?size &gt; 0 >
 	    <@displayStandard allupcoming hideNumberOfComments displayMoreURLs false />
 	  <#else>
 	    <p class="vrtx-events-no-planned">${allupcomingNoPlannedTitle?html}</p>
 	  </#if>
   <#elseif allprevious?has_content>
     <h1>${allpreviousTitle?html}</h1>
-    <#if allprevious.files?size &gt; 0 >
+    <#if allprevious.entries?size &gt; 0 >
       <@displayStandard allprevious hideNumberOfComments displayMoreURLs false />
     <#else>
 	    <p class="vrtx-events-no-planned">${allpreviousNoPlannedTitle?html}</p>
     </#if>
   <#elseif specificDate?has_content && specificDate>
     <h1 class="vrtx-events-specific-date">${specificDateEventsTitle?html}</h1>
-    <#if specificDateEvents?has_content && specificDateEvents.files?size &gt; 0>
+    <#if specificDateEvents?has_content && specificDateEvents.entries?size &gt; 0>
       <@displayStandard specificDateEvents hideNumberOfComments displayMoreURLs=false />
     <#else>
       <p class="vrtx-events-no-planned">${noPlannedEventsMsg?html}</p>
@@ -112,12 +112,12 @@
             <div class="vrtx-daily-event">
               <#local eventListing = groupedEvents.events />
               <#assign subcount = 1 />
-              <#list eventListing.files as event>
-                <#if groupedByDayEvents?size == count && eventListing.files?size == subcount>
+              <#list eventListing.entries as eventEntry>
+                <#if groupedByDayEvents?size == count && eventListing.entries?size == subcount>
                   <div class="vrtx-last-daily-event">
                 </#if>
-                <@displayEvent eventListing event hideNumberOfComments displayMoreURLs=false />
-                <#if groupedByDayEvents?size == count && eventListing.files?size == subcount>
+                <@displayEvent eventListing eventEntry hideNumberOfComments displayMoreURLs=false />
+                <#if groupedByDayEvents?size == count && eventListing.entries?size == subcount>
                   </div>
                 </#if>
 	            <#assign subcount = subcount +1 />
@@ -129,14 +129,14 @@
 	  </div>
     </#if>
     
-    <#if furtherUpcoming?has_content && furtherUpcoming.files?size &gt; 0>
+    <#if furtherUpcoming?has_content && furtherUpcoming.entries?size &gt; 0>
       <div class="vrtx-events-further-upcoming">
         <h2 class="vrtx-events-further-upcoming">${furtherUpcomingTitle?html}</h2>
         <@displayStandard furtherUpcoming hideNumberOfComments displayMoreURLs=false />
       </div>
     </#if>
     
-    <#if furtherUpcoming?has_content && furtherUpcoming.files?size &gt; 0>
+    <#if furtherUpcoming?has_content && furtherUpcoming.entries?size &gt; 0>
       <div id="vrtx-events-nav">
     <#else>
       <div id="vrtx-events-nav" class="vrtx-events-nav-top-border">
@@ -175,8 +175,9 @@
   </div>
 </#macro>
 
-<#macro displayEvent parent event hideNumberOfComments displayMoreURLs >
+<#macro displayEvent parent eventEntry hideNumberOfComments displayMoreURLs >
 
+  <#local event = eventEntry.propertySet />
   <#local locale = springMacroRequestContext.getLocale() />
   
   <#local title = vrtx.propValue(event, 'title') />
@@ -200,7 +201,7 @@
 	  <#else>
 			<#local thumbnail = "" />
 	  </#if>
-      <a class="vrtx-image" href="${parent.urls[event.URI]?html}">
+      <a class="vrtx-image" href="${eventEntry.url?html}">
         <#if caption != ''>
           <img src="${thumbnail?html}" alt="${captionFlattened}" />
         <#else>
@@ -209,7 +210,7 @@
       </a>
     </#if>
     <div class="vrtx-title">
-      <a class="vrtx-title summary" href="${parent.urls[event.URI]?html}">${title?html}</a>
+      <a class="vrtx-title summary" href="${eventEntry.url?html}">${title?html}</a>
     </div>
 
     <div class="time-and-place">
@@ -218,14 +219,14 @@
 
     <#if intro?has_content && parent.hasDisplayPropDef(intro.definition.name)>
       <div class="description introduction">
-        <@vrtx.linkResolveFilter intro.value parent.urls[event.URI] requestURL />
+        <@vrtx.linkResolveFilter intro.value eventEntry.url requestURL />
       </div>
     </#if>
 
     <#local hasBody = vrtx.propValue(event, 'hasBodyContent') == 'true' />
     <#if displayMoreURLs && hasBody>
       <div class="vrtx-read-more">
-        <a href="${parent.urls[event.URI]?html}" class="more" title="${title?html}">
+        <a href="${eventEntry.url?html}" class="more" title="${title?html}">
           <@vrtx.msg code="viewCollectionListing.readMore" />
         </a>
       </div>

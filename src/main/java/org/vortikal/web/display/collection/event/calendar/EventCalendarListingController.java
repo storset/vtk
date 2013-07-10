@@ -33,7 +33,6 @@ package org.vortikal.web.display.collection.event.calendar;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -52,10 +51,14 @@ import org.vortikal.web.display.collection.event.EventListingController;
 import org.vortikal.web.display.collection.event.EventListingHelper;
 import org.vortikal.web.display.listing.ListingPager;
 import org.vortikal.web.search.Listing;
+import org.vortikal.web.search.ListingEntry;
 import org.vortikal.web.search.SearchComponent;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
+/**
+ * Controller for calendar view display of event listing.
+ */
 public class EventCalendarListingController extends EventListingController {
 
     protected EventListingHelper helper;
@@ -81,7 +84,7 @@ public class EventCalendarListingController extends EventListingController {
         model.put("requestedDate", requestedDate);
 
         // Days with events, with localized calendar titles for clickable days.
-        String eventDates = this.helper.getCalendarWidgetMonthEventDates(result.getFiles(), currentMonth);
+        String eventDates = this.helper.getCalendarWidgetMonthEventDates(result.getPropertySets(), currentMonth);
         model.put("allowedDates", eventDates);
         this.helper.setCalendarTitles(request, collection, model);
 
@@ -126,7 +129,7 @@ public class EventCalendarListingController extends EventListingController {
     private List<GroupedEvents> groupEvents(Listing result) {
         List<GroupedEvents> groupedByDayEvents = new ArrayList<GroupedEvents>();
         if (result != null && result.size() > 0) {
-            List<PropertySet> allEvents = result.getFiles();
+            List<ListingEntry> allEvents = result.getEntries();
             for (int i = 0; i < this.daysAhead; i++) {
                 Calendar cal = Calendar.getInstance();
                 cal.add(Calendar.DAY_OF_MONTH, i);
@@ -136,18 +139,14 @@ public class EventCalendarListingController extends EventListingController {
                 cal.set(Calendar.MILLISECOND, 0);
                 Listing subListing = new Listing(result.getResource(), null, result.getName(), result.getOffset());
                 subListing.setDisplayPropDefs(result.getDisplayPropDefs());
-                List<PropertySet> events = new ArrayList<PropertySet>();
-                Map<String, URL> urls = new HashMap<String, URL>();
-                for (PropertySet ps : allEvents) {
-                    if (this.isWithinDaysAhead(cal.getTime(), ps)) {
-                        events.add(ps);
-                        String urlString = ps.getURI().toString();
-                        urls.put(urlString, result.getUrls().get(urlString));
+                List<ListingEntry> subListingEvents = new ArrayList<ListingEntry>();
+                for (ListingEntry entry : allEvents) {
+                    if (this.isWithinDaysAhead(cal.getTime(), entry.getPropertySet())) {
+                        subListingEvents.add(entry);
                     }
                 }
-                if (events.size() > 0) {
-                    subListing.setFiles(events);
-                    subListing.setUrls(urls);
+                if (subListingEvents.size() > 0) {
+                    subListing.setEntries(subListingEvents);
                     groupedByDayEvents.add(new GroupedEvents(cal.getTime(), subListing));
                 }
             }
@@ -182,10 +181,10 @@ public class EventCalendarListingController extends EventListingController {
 
             // Default is now, in case there are no grouped by events
             Date lastGroupedByDay = Calendar.getInstance().getTime();
-            Set<PropertySet> allGroupedByEvents = new HashSet<PropertySet>();
+            Set<ListingEntry> allGroupedByEvents = new HashSet<ListingEntry>();
             if (groupedEvents != null && groupedEvents.size() > 0) {
                 for (GroupedEvents ge : groupedEvents) {
-                    allGroupedByEvents.addAll(ge.getEvents().getFiles());
+                    allGroupedByEvents.addAll(ge.getEvents().getEntries());
                     Date groupedByDay = ge.getDay();
                     if (groupedByDay.after(lastGroupedByDay)) {
                         lastGroupedByDay = groupedByDay;
@@ -193,23 +192,22 @@ public class EventCalendarListingController extends EventListingController {
                 }
             }
 
-            List<PropertySet> filteredEventsWithoutGrouped = new ArrayList<PropertySet>(result.getFiles());
+            List<ListingEntry> filteredEventsWithoutGrouped = new ArrayList<ListingEntry>(result.getEntries());
             filteredEventsWithoutGrouped.removeAll(allGroupedByEvents);
             if (filteredEventsWithoutGrouped.size() == 0) {
                 return null;
             }
 
+            // XXX WTF does this mean?!?!?!
             // No need to sort, already sorted as we want and we have removed
             // grouped events. Now get "furtherUpcomingLimit" further events
             // "daysAhead" from now
 
-            List<PropertySet> furtherEvents = new ArrayList<PropertySet>();
-            Map<String, URL> urls = new HashMap<String, URL>();
-            for (PropertySet ps : filteredEventsWithoutGrouped) {
+            List<ListingEntry> furtherEvents = new ArrayList<ListingEntry>();
+            for (ListingEntry entry : filteredEventsWithoutGrouped) {
+                PropertySet ps = entry.getPropertySet();
                 if (this.isWithinFurtherUpcoming(ps, lastGroupedByDay)) {
-                    furtherEvents.add(ps);
-                    String urlString = ps.getURI().toString();
-                    urls.put(urlString, result.getUrls().get(urlString));
+                    furtherEvents.add(entry);
                     if (furtherEvents.size() == this.furtherUpcomingLimit) {
                         break;
                     }
@@ -218,8 +216,7 @@ public class EventCalendarListingController extends EventListingController {
 
             if (furtherEvents.size() > 0) {
                 Listing furtherUpcoming = new Listing(result.getResource(), null, result.getName(), result.getOffset());
-                furtherUpcoming.setFiles(furtherEvents);
-                furtherUpcoming.setUrls(urls);
+                furtherUpcoming.setEntries(furtherEvents);
                 furtherUpcoming.setDisplayPropDefs(result.getDisplayPropDefs());
                 return furtherUpcoming;
             }

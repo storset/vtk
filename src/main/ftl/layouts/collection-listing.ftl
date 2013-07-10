@@ -2,7 +2,7 @@
 <#import "/lib/vortikal.ftl" as vrtx />
 <#import "/lib/view-utils.ftl" as viewutils />
 
-<#if (conf.auth && list?exists && list?size > 0)>
+<#if (conf.auth && entries?exists && entries?size > 0)>
   <div class="vrtx-collection-listing-component-wrapper">
     <script type="text/javascript" src="/vrtx/__vrtx/static-resources/jquery/include-jquery.js"></script>
     <script type="text/javascript" src="/vrtx/__vrtx/static-resources/js/open-webdav.js"></script>
@@ -26,23 +26,26 @@
         </thead>
         <tbody>
         <#assign count = 1 />
-        <#assign listSize = list?size />
-        <#list list as res >
-          <#assign title = vrtx.propValue(res, 'title') />
-          <#assign lastModifiedTime = vrtx.propValue(res, 'lastModified') />
-          <#assign uri = vrtx.getUri(res) />
+        <#assign entriesCount = entries?size />
+        <#list entries as entry >
+
+          <#-- The actual resource we are displaying -->
+          <#assign entryPropSet = entry.propertySet />
+
+          <#assign title = vrtx.propValue(entryPropSet, 'title') />
+          <#assign lastModifiedTime = vrtx.propValue(entryPropSet, 'lastModified') />
 
           <#assign rowType = "odd" />
-          <#if (res_index % 2 == 0) >
+          <#if (entry_index % 2 == 0) >
             <#assign rowType = "even" />
           </#if>
 
           <#assign firstLast = ""  />
-          <#if (res_index == 0) && (res_index == (listSize - 1))>
+          <#if (entry_index == 0) && (entry_index == (entriesCount - 1))>
             <#assign firstLast = " first last" />
-          <#elseif (res_index == 0)>
+          <#elseif (entry_index == 0)>
             <#assign firstLast = " first" />
-          <#elseif (res_index == (listSize - 1))>
+          <#elseif (entry_index == (entriesCount - 1))>
             <#assign firstLast = " last" />     
           </#if>
 
@@ -52,10 +55,10 @@
             <#else>
               <td class="vrtx-collection-listing-title first-col last-col">
             </#if>
-              <a class="vrtx-icon <@vrtx.resourceToIconResolver res />" href="${uri?html}"></a>
-              <a class="vrtx-title-link" href="${uri?html}">${title?html}</a>
-            <#if editLinks?exists && editLinks[res_index]?exists && editLinks[res_index]>
-              <a class="vrtx-resource-open-webdav" href="${vrtx.linkConstructor(uri, 'webdavService')}"><@vrtx.msg code="collectionListing.edit" /></a>
+              <a class="vrtx-icon <@vrtx.resourceToIconResolver entryPropSet />" href="${entry.url?html}"></a>
+              <a class="vrtx-title-link" href="${entry.url?html}">${title?html}</a>
+            <#if entry.isEditAuthorized()>
+              <a class="vrtx-resource-open-webdav" href="${vrtx.linkConstructor(entry.url, 'webdavService')}"><@vrtx.msg code="collectionListing.edit" /></a>
             </#if>
             <#if conf.compactView>
               <span>${lastModifiedTime?html}</span>
@@ -63,7 +66,7 @@
             </td>
           <#if !conf.compactView>
             <td class="vrtx-collection-listing-last-modified-by">
-              <#assign modifiedBy = vrtx.prop(res, 'modifiedBy').principalValue />
+              <#assign modifiedBy = vrtx.prop(entryPropSet, 'modifiedBy').principalValue />
               <#if principalDocuments?exists && principalDocuments[modifiedBy.name]?exists>
                 <#assign principal = principalDocuments[modifiedBy.name] />
                 <#if principal.URL?exists>
@@ -72,7 +75,7 @@
                   ${principal.description}
                 </#if>
               <#else>
-                <#assign modifiedByNameLink = vrtx.propValue(res, 'modifiedBy', 'link') />
+                <#assign modifiedByNameLink = vrtx.propValue(entryPropSet, 'modifiedBy', 'link') />
                 ${modifiedByNameLink}
               </#if>
             </td>

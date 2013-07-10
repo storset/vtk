@@ -44,6 +44,7 @@ import org.vortikal.web.RequestContext;
 import org.vortikal.web.display.collection.event.EventListingHelper.SpecificDateSearchType;
 import org.vortikal.web.display.feed.AtomFeedGenerator;
 import org.vortikal.web.search.Listing;
+import org.vortikal.web.search.ListingEntry;
 import org.vortikal.web.service.Service;
 
 public class EventListingAtomFeedGenerator extends AtomFeedGenerator {
@@ -69,7 +70,8 @@ public class EventListingAtomFeedGenerator extends AtomFeedGenerator {
             entryElements = searcher.searchUpcoming(request, feedScope, 1, entryCountLimit, 0);
         }
 
-        for (PropertySet feedEntry : entryElements.getFiles()) {
+        for (ListingEntry entry : entryElements.getEntries()) {
+            PropertySet feedEntry = entry.getPropertySet();
             addPropertySetAsFeedEntry(feed, feedEntry);
         }
     }

@@ -67,7 +67,7 @@ public class EventListingAsICalController implements Controller {
             events = this.searcher.searchSpecificDate(request, currentResource, 100, 1);
         }
 
-        String iCal = this.iCalHelper.getAsICal(events.getFiles());
+        String iCal = this.iCalHelper.getAsICal(events.getPropertySets());
         if (iCal == null) {
             return null;
         }

@@ -46,6 +46,7 @@
         <value>createdBy</value>
       </list>
     </property>
+    <property name="helper" ref="messageListing.helper" />
   </bean>
 
   <!-- ##

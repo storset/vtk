@@ -175,22 +175,22 @@
 
 <#macro displayCommonTagListing listing>
   
-  <#assign resources=listing.getFiles() />
-  <#assign urls=listing.urls />
-  <#assign displayPropDefs=listing.displayPropDefs />
+  <#assign resources = listing.entries />
+  <#assign displayPropDefs = listing.displayPropDefs />
   <#assign i = 1 />
 
-  <#list resources as resource>
+  <#list resources as resourceEntry>
+    <#assign resource = resourceEntry.propertySet />
     <#assign resourceTitle = vrtx.prop(resource, "title", "").getFormattedValue() />
     <#assign introImageProp = vrtx.prop(resource, "picture", "")?default("") />
     <div class="vrtx-resource" id="vrtx-result-${i}">
       <#if introImageProp != "">
-      <a href="${resource.getURI()?html}" class="vrtx-image">
+      <a href="${resourceEntry.url?html}" class="vrtx-image">
         <#assign src = vrtx.propValue(resource, 'picture', 'thumbnail') /><img src="${src?html}" />
       </a>
       </#if>
       <div class="vrtx-title">
-        <a href="${resource.getURI()?html}" class="vrtx-title"> ${resourceTitle?html}</a>
+        <a href="${resourceEntry.url?html}" class="vrtx-title"> ${resourceTitle?html}</a>
       </div>
       <#list displayPropDefs as displayPropDef>
         <#if displayPropDef.name = 'introduction'>
@@ -211,7 +211,7 @@
               <#assign hasBody = vrtx.propValue(resource, 'hasBodyContent') == 'true' />
               <#if hasBody>
                 <div class="vrtx-read-more">
-                  <a href="${listing.urls[resource.URI]?html}" class="more">
+                  <a href="${resourceEntry.url?html}" class="more">
                     <@vrtx.localizeMessage code="viewCollectionListing.readMore" default="" args=[] locale=locale />
                   </a>
                 </div>

@@ -106,9 +106,9 @@ public final class EventListingHelper implements InitializingBean {
     public SpecificDateSearchType getSpecificDateSearchType(HttpServletRequest request) {
         String specificDate = request.getParameter(EventListingHelper.REQUEST_PARAMETER_DATE);
         if (specificDate != null && !"".equals(specificDate.trim())) {
-            for (Pattern regex : this.searchTypes.keySet()) {
+            for (Pattern regex : searchTypes.keySet()) {
                 if (regex.matcher(specificDate).matches()) {
-                    return this.searchTypes.get(regex);
+                    return searchTypes.get(regex);
                 }
             }
         }
@@ -119,9 +119,9 @@ public final class EventListingHelper implements InitializingBean {
         String specificDate = request.getParameter(EventListingHelper.REQUEST_PARAMETER_DATE);
         if (specificDate != null && !"".equals(specificDate.trim())) {
             DateTimeFormatter sdf = null;
-            for (Pattern regex : this.searchTypes.keySet()) {
+            for (Pattern regex : searchTypes.keySet()) {
                 if (regex.matcher(specificDate).matches()) {
-                    sdf = this.dateformats.get(regex);
+                    sdf = dateformats.get(regex);
                 }
             }
             if (sdf != null) {
@@ -138,25 +138,25 @@ public final class EventListingHelper implements InitializingBean {
     }
 
     public String getEventTypeTitle(HttpServletRequest request, Resource collection, String key, boolean capitalize) {
-        return this.getEventTypeTitle(request, collection, null, null, key, capitalize, true);
+        return getEventTypeTitle(request, collection, null, null, key, capitalize, true);
     }
 
     public String getEventTypeTitle(HttpServletRequest request, Resource collection, SpecificDateSearchType searchType,
             Date date, String key, boolean capitalize, boolean includePage) {
         List<Object> params = new ArrayList<Object>();
-        String eventTypeTitle = this.getEventTypeTitle(collection, capitalize);
+        String eventTypeTitle = getEventTypeTitle(collection, capitalize);
         if (eventTypeTitle != null) {
             key = key + ".overrideDefault";
             params.add(eventTypeTitle);
         }
         if (searchType != null && date != null) {
-            String titleDate = this.getRequestedDateAsLocalizedString(collection, searchType, date);
+            String titleDate = getRequestedDateAsLocalizedString(collection, searchType, date);
             params.add(titleDate);
         }
         String title = getLocalizedTitle(request, key, params.toArray());
         int page = ListingPager.getPage(request, ListingPager.UPCOMING_PAGE_PARAM);
         if (includePage && page > 1) {
-            String pageText = this.getLocalizedTitle(request, "viewCollectionListing.page", null);
+            String pageText = getLocalizedTitle(request, "viewCollectionListing.page", null);
             title = title + " - " + pageText + " " + page;
         }
         return title;
@@ -171,7 +171,7 @@ public final class EventListingHelper implements InitializingBean {
     }
 
     public String getEventTypeTitle(Resource collection, boolean capitalize) {
-        Property eventTypeTitleProp = collection.getProperty(this.eventTypeTitlePropDef);
+        Property eventTypeTitleProp = collection.getProperty(eventTypeTitlePropDef);
         if (eventTypeTitleProp != null) {
             String eventTypeTitle = eventTypeTitleProp.getStringValue();
             eventTypeTitle = capitalize ? eventTypeTitle.substring(0, 1).toUpperCase()
@@ -185,12 +185,12 @@ public final class EventListingHelper implements InitializingBean {
         Calendar requestedCal = Calendar.getInstance();
         requestedCal.setTime(date);
         if (searchType != SpecificDateSearchType.Year) {
-            Locale locale = this.localeResolver.resolveResourceLocale(collection.getURI());
+            Locale locale = localeResolver.resolveResourceLocale(collection.getURI());
             String format = "full-month-year-short";
             if (searchType == SpecificDateSearchType.Month) {
                 format = "full-month-year";
             }
-            return this.dateValueFormatter.valueToString(new Value(date, false), format, locale);
+            return dateValueFormatter.valueToString(new Value(date, false), format, locale);
         }
         return String.valueOf(requestedCal.get(Calendar.YEAR));
     }
@@ -216,13 +216,13 @@ public final class EventListingHelper implements InitializingBean {
 
         for (PropertySet event : events) {
 
-            Property eventStartDateProp = this.getStartDateProperty(event);
+            Property eventStartDateProp = getStartDateProperty(event);
             Date eventStart = null;
             if (eventStartDateProp != null) {
                 eventStart = eventStartDateProp.getDateValue();
             }
 
-            Property eventEndDateProp = this.getEndDateProperty(event);
+            Property eventEndDateProp = getEndDateProperty(event);
             Date eventEnd = null;
             if (eventEndDateProp != null) {
                 eventEnd = eventEndDateProp.getDateValue();
@@ -234,7 +234,7 @@ public final class EventListingHelper implements InitializingBean {
                 continue;
             }
 
-            Calendar eventStartCal = eventStart != null ? this.getDayOfMonth(eventStart) : this.getDayOfMonth(eventEnd);
+            Calendar eventStartCal = eventStart != null ? getDayOfMonth(eventStart) : getDayOfMonth(eventEnd);
             if (eventStartCal.after(endOfRequestedMonthCal)) {
                 continue;
             }
@@ -242,7 +242,7 @@ public final class EventListingHelper implements InitializingBean {
                 eventStartCal.setTime(requestedMonthCal.getTime());
             }
 
-            Calendar eventEndCal = eventEnd != null ? this.getDayOfMonth(eventEnd) : this.getDayOfMonth(eventStart);
+            Calendar eventEndCal = eventEnd != null ? getDayOfMonth(eventEnd) : getDayOfMonth(eventStart);
             if (eventEndCal.get(Calendar.MONTH) > requestedMonthCal.get(Calendar.MONTH)) {
                 eventEndCal.set(Calendar.DAY_OF_MONTH, eventEndCal.getActualMaximum(Calendar.DAY_OF_MONTH));
             }
@@ -254,7 +254,7 @@ public final class EventListingHelper implements InitializingBean {
 
         }
 
-        String eventDates = this.getEventDatesAsArrayString(eventDatesList);
+        String eventDates = getEventDatesAsArrayString(eventDatesList);
         return eventDates;
     }
 
@@ -286,17 +286,17 @@ public final class EventListingHelper implements InitializingBean {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public void setCalendarTitles(HttpServletRequest request, Resource resource, Map model) {
         model.put("dayHasPlannedEventsTitle",
-                this.getEventTypeTitle(request, resource, "eventListing.calendar.dayHasPlannedEvents", false));
+                getEventTypeTitle(request, resource, "eventListing.calendar.dayHasPlannedEvents", false));
         model.put("dayHasNoPlannedEventsTitle",
-                this.getEventTypeTitle(request, resource, "eventListing.calendar.dayHasNoPlannedEvents", false));
+                getEventTypeTitle(request, resource, "eventListing.calendar.dayHasNoPlannedEvents", false));
     }
 
     public Property getStartDateProperty(PropertySet ps) {
-        return ps.getProperty(this.startPropDef);
+        return ps.getProperty(startPropDef);
     }
 
     public Property getEndDateProperty(PropertySet ps) {
-        return ps.getProperty(this.endPropDef);
+        return ps.getProperty(endPropDef);
     }
 
     @Required

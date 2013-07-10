@@ -49,6 +49,10 @@ import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.search.Listing;
 import org.vortikal.web.search.SearchComponent;
 
+/**
+ * Content provider for event listing calendar. Supplies a set of dates
+ * representing days that contain events.
+ */
 public class EventCalendarContentProvider implements ReferenceDataProvider {
 
     private EventListingHelper helper;
@@ -57,7 +61,7 @@ public class EventCalendarContentProvider implements ReferenceDataProvider {
     @Override
     public void referenceData(Map<String, Object> model, HttpServletRequest request) throws Exception {
 
-        SpecificDateSearchType searchType = this.helper.getSpecificDateSearchType(request);
+        SpecificDateSearchType searchType = helper.getSpecificDateSearchType(request);
         if (searchType != null) {
             // valid date on request
             String requestedDate = request.getParameter(EventListingHelper.REQUEST_PARAMETER_DATE);
@@ -68,7 +72,7 @@ public class EventCalendarContentProvider implements ReferenceDataProvider {
         Path resourceURI = requestContext.getResourceURI();
         Repository repository = requestContext.getRepository();
         Resource resource = repository.retrieve(token, resourceURI, true);
-        Calendar cal = this.helper.getCurrentMonth();
+        Calendar cal = helper.getCurrentMonth();
 
         String dateString = request.getParameter(EventListingHelper.REQUEST_PARAMETER_DATE);
         if (dateString != null) {
@@ -80,11 +84,11 @@ public class EventCalendarContentProvider implements ReferenceDataProvider {
                 // Ignore, show current month
             }
         }
-        Listing plannedEvents = this.currentMonthSearchComponent.execute(request, resource, 1, 500, 0);
-        String eventDates = this.helper.getCalendarWidgetMonthEventDates(plannedEvents.getFiles(), cal);
+        Listing plannedEvents = currentMonthSearchComponent.execute(request, resource, 1, 500, 0);
+        String eventDates = helper.getCalendarWidgetMonthEventDates(plannedEvents.getPropertySets(), cal);
         model.put("allowedDates", eventDates);
 
-        this.helper.setCalendarTitles(request, resource, model);
+        helper.setCalendarTitles(request, resource, model);
 
     }
 

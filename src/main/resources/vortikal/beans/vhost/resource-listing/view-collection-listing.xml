@@ -84,6 +84,8 @@
     </property>
     <property name="cache" ref="ehCache.MULTI_HOST_INDEX_SEARCH_CACHE" />
     <property name="resourceTypeTree" ref="resourceTypeTree" />
+    <property name="helper" ref="collectionListing.helper" />
+    <property name="displayEditLinks" value="true" />
   </bean>
 
   <bean id="collection.listingUriQueryBuilder" class="org.vortikal.web.search.ListingUriQueryBuilder">

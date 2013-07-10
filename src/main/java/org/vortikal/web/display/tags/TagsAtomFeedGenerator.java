@@ -43,6 +43,7 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.display.feed.AtomFeedGenerator;
 import org.vortikal.web.search.Listing;
+import org.vortikal.web.search.ListingEntry;
 import org.vortikal.web.search.SearchComponent;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.tags.TagsHelper;
@@ -59,7 +60,8 @@ public class TagsAtomFeedGenerator extends AtomFeedGenerator {
         Listing entryElements = searchComponent.execute(RequestContext.getRequestContext().getServletRequest(),
                 feedScope, 1, entryCountLimit, 0);
 
-        for (PropertySet feedEntry : entryElements.getFiles()) {
+        for (ListingEntry entry : entryElements.getEntries()) {
+            PropertySet feedEntry = entry.getPropertySet();
             addPropertySetAsFeedEntry(feed, feedEntry);
         }
 

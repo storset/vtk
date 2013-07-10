@@ -121,6 +121,6 @@ public class LinkConstructorImpl implements LinkConstructor, ApplicationContextA
 
 	@Required
 	public void setApplicationContext(ApplicationContext context) throws BeansException {
-	    this.context = context;
-	}
+        this.context = context;
+    }
 }

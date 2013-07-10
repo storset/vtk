@@ -46,6 +46,7 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.display.feed.RSSFeedGenerator;
 import org.vortikal.web.search.Listing;
+import org.vortikal.web.search.ListingEntry;
 import org.vortikal.web.search.SearchComponent;
 import org.vortikal.web.service.URL;
 
@@ -65,8 +66,9 @@ public class AudioVideoListingRSSFeedGenerator extends RSSFeedGenerator {
 
         List<Map<String, Object>> feedEntries = new ArrayList<Map<String, Object>>();
 
-        for (PropertySet ps : entryElements.getFiles()) {
+        for (ListingEntry entry : entryElements.getEntries()) {
 
+            PropertySet ps = entry.getPropertySet();
             Map<String, Object> feedEntry = new HashMap<String, Object>();
 
             // Item title

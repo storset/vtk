@@ -1,4 +1,4 @@
-/* Copyright (c) 2008, University of Oslo, Norway
+/* Copyright (c) 2013, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -28,36 +28,42 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.display.collection;
+package org.vortikal.web.search;
 
-import org.apache.abdera.model.Feed;
-import org.springframework.beans.factory.annotation.Required;
-import org.vortikal.repository.Resource;
-import org.vortikal.web.RequestContext;
-import org.vortikal.web.display.feed.AtomFeedGenerator;
-import org.vortikal.web.search.Listing;
-import org.vortikal.web.search.ListingEntry;
-import org.vortikal.web.search.SearchComponent;
+import org.vortikal.repository.PropertySet;
+import org.vortikal.web.service.URL;
 
-public class CollectionListingAtomFeedGenerator extends AtomFeedGenerator {
+public class ListingEntry {
 
-    private SearchComponent searchComponent;
+    // The actual resource
+    private PropertySet propertySet;
+    // The full url to the resource
+    private URL url;
+    // Indicates if the accessing principal is allowed to edit the contents of
+    // the property set
+    private boolean isEditAuthorized;
 
-    @Override
-    protected void addFeedEntries(Feed feed, Resource feedScope) throws Exception {
-
-        Listing entryElements = searchComponent.execute(RequestContext.getRequestContext().getServletRequest(),
-                feedScope, 1, entryCountLimit, 0);
-
-        for (ListingEntry entry : entryElements.getEntries()) {
-            addPropertySetAsFeedEntry(feed, entry.getPropertySet());
-        }
-
+    public ListingEntry(PropertySet propertySet, URL url, boolean isEditAuthorized) {
+        this.propertySet = propertySet;
+        this.url = url;
+        this.isEditAuthorized = isEditAuthorized;
     }
 
-    @Required
-    public void setSearchComponent(SearchComponent searchComponent) {
-        this.searchComponent = searchComponent;
+    public PropertySet getPropertySet() {
+        return propertySet;
+    }
+
+    public URL getUrl() {
+        return url;
+    }
+
+    public boolean isEditAuthorized() {
+        return isEditAuthorized;
+    }
+
+    @Override
+    public String toString() {
+        return propertySet.getName().concat(" - ").concat(this.url.toString());
     }
 
 }

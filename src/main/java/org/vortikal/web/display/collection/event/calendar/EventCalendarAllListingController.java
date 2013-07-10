@@ -44,6 +44,10 @@ import org.vortikal.web.search.Listing;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
+/**
+ * Controller for all upcoming or previous (depending on configuration) display
+ * of event listing.
+ */
 public class EventCalendarAllListingController extends EventCalendarListingController {
 
     private boolean upcoming = true;
@@ -75,7 +79,7 @@ public class EventCalendarAllListingController extends EventCalendarListingContr
         String titleKey = viewType + "Title";
         model.put(titleKey, title);
 
-        if (result == null || result.getFiles().isEmpty()) {
+        if (result == null || result.getEntries().isEmpty()) {
             String noPlannedTitle = helper.getEventTypeTitle(request, collection, "eventListing.noPlanned." + viewType,
                     false);
             String noPlannedTitleKey = viewType + "NoPlannedTitle";

@@ -32,7 +32,6 @@ package org.vortikal.web.decorating.components;
 
 import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -126,11 +125,9 @@ public class MessageComponent extends ViewRenderingDecoratorComponent {
         }
 
         Listing result = searchComponent.execute(request.getServletRequest(), requestedMessageFolder, 1, pageLimit, 0);
-        List<PropertySet> files = result.getFiles();
-
         Locale preferredLocale = localeResolver.resolveResourceLocale(requestedMessageFolder);
-        Map<String, Principal> principalDocuments = helper.getExistingPrincipalDocuments(
-                new HashSet<PropertySet>(files), preferredLocale, null);
+        Map<String, Principal> principalDocuments = helper.getPrincipalDocumentLinks(new HashSet<PropertySet>(
+                result.getPropertySets()), preferredLocale, null);
 
         model.put("principalDocuments", principalDocuments);
         model.put("messageListingResult", result);

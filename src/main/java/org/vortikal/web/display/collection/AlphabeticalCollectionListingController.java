@@ -45,6 +45,7 @@ import org.vortikal.web.RequestContext;
 import org.vortikal.web.display.listing.ListingPager;
 import org.vortikal.web.display.listing.ListingPagingLink;
 import org.vortikal.web.search.Listing;
+import org.vortikal.web.search.ListingEntry;
 import org.vortikal.web.search.SearchComponent;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
@@ -59,8 +60,8 @@ public class AlphabeticalCollectionListingController extends CollectionListingCo
     public void runSearch(HttpServletRequest request, Resource collection, Map<String, Object> model, int pageLimit)
             throws Exception {
 
-        if (this.alternateSearchComponent != null) {
-            Listing listing = this.alternateSearchComponent.execute(request, collection, 1, pageLimit, 0);
+        if (alternateSearchComponent != null) {
+            Listing listing = alternateSearchComponent.execute(request, collection, 1, pageLimit, 0);
             if (listing != null && listing.size() > 0) {
                 model.put("displayAlternateLink", "true");
             }
@@ -87,21 +88,22 @@ public class AlphabeticalCollectionListingController extends CollectionListingCo
         int page = ListingPager.getPage(request, ListingPager.UPCOMING_PAGE_PARAM);
         int limit = pageLimit;
         int totalHits = 0;
-        Map<String, List<PropertySet>> alpthabeticalOrdredResult = new LinkedHashMap<String, List<PropertySet>>();
+        Map<String, List<ListingEntry>> alpthabeticalOrdredResult = new LinkedHashMap<String, List<ListingEntry>>();
         List<Listing> results = new ArrayList<Listing>();
 
-        for (SearchComponent component : this.searchComponents) {
+        for (SearchComponent component : searchComponents) {
             Listing listing = component.execute(request, collection, page, limit, 0);
             results.add(listing);
             totalHits = listing.getTotalHits();
-            List<PropertySet> files = listing.getFiles();
-            List<PropertySet> tmpFiles = new ArrayList<PropertySet>();
+            List<ListingEntry> entries = listing.getEntries();
+            List<ListingEntry> tmpFiles = new ArrayList<ListingEntry>();
 
             // array is convenient for string constructors
             char currentIndexChar[] = new char[1];
-            for (int i = 0; i < files.size(); i++) {
-                PropertySet file = files.get(i);
-                Property title = file.getProperty(this.titlePropDef);
+            for (int i = 0; i < entries.size(); i++) {
+                ListingEntry entry = entries.get(i);
+                PropertySet file = entry.getPropertySet();
+                Property title = file.getProperty(titlePropDef);
                 char firstCharInTitle = title.getStringValue().trim().charAt(0);
                 if (i == 0) {
                     currentIndexChar[0] = firstCharInTitle;
@@ -114,9 +116,9 @@ public class AlphabeticalCollectionListingController extends CollectionListingCo
                         alpthabeticalOrdredResult.put(key, tmpFiles);
                     }
                     currentIndexChar[0] = firstCharInTitle;
-                    tmpFiles = new ArrayList<PropertySet>();
+                    tmpFiles = new ArrayList<ListingEntry>();
                 }
-                tmpFiles.add(file);
+                tmpFiles.add(entry);
             }
             if (tmpFiles.size() > 0) {
                 String key = new String(currentIndexChar).toUpperCase();

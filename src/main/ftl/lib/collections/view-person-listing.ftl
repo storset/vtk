@@ -2,7 +2,9 @@
 <#import "../vortikal.ftl" as vrtx />
 <#-- XXX: should reuse similar FTL in person-list-util.ftl in vortex-project -->
 <#macro displayPersons personListing title="">
-  <#local persons=personListing.files />
+
+  <#local persons = personListing.entries />
+
   <#if (persons?size > 0)>
     <div class="vrtx-person-search-hits">
       <table class="vrtx-person-listing" summary="${vrtx.getMsg("person-listing.overview-of")} ${title?html}">
@@ -23,7 +25,8 @@
         </thead>
         <tbody>
       <#local personNr = 1 />
-      <#list persons as person>
+      <#list persons as personEntry>
+        <#local person = personEntry.propertySet />
         <#local firstName = vrtx.propValue(person, 'firstName') />
         <#local surname = vrtx.propValue(person, 'surname') />
         <#local title = vrtx.propValue(person, 'title') />
@@ -49,12 +52,12 @@
 	    <tr class="vrtx-person-${personNr}">
           <td class="vrtx-person-listing-name">
             <#if src?has_content>
-              <a class="vrtx-image" href="${personListing.urls[person.URI]?html}"><img src="${thumbnail?html}" alt="${imageAlt}" /></a>
+              <a class="vrtx-image" href="${personEntry.url?html}"><img src="${thumbnail?html}" alt="${imageAlt}" /></a>
             </#if>
             <#if surname?has_content >
-              <a href="${personListing.urls[person.URI]?html}">${surname}<#if firstName?has_content && surname?has_content>, </#if>${firstName?html}</a>
+              <a href="${personEntry.url?html}">${surname}<#if firstName?has_content && surname?has_content>, </#if>${firstName?html}</a>
             <#else>
-              <a href="${personListing.urls[person.URI]?html}">${title?html}</a>
+              <a href="${personEntry.url?html}">${title?html}</a>
             </#if>
             <span>${position?html}</span>
           </td>

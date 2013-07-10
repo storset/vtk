@@ -16,11 +16,10 @@
   <div class="vrtx-messages">
     <#if messageFolder?? && messageListingResult??>
 
-      <#assign messages = messageListingResult.files />
-      <#assign messageURLs = messageListingResult.urls />
+      <#assign messages = messageListingResult.entries />
 
       <#if messages?? && messages?has_content>
-        <@messageListing.displayMessages messages messageURLs nullArg true compactView/>
+        <@messageListing.displayMessages messages true compactView/>
         <#if moreMessages?? && moreMessages>
           <div class="vrtx-more">
             <a href="${messageFolder.URI}">${vrtx.getMsg("message-listing.more")}</a>

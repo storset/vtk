@@ -3,28 +3,34 @@
 
 <#macro displayResearchGroupsAlphabetical researchGroupListing>
   <#list alpthabeticalOrdredResult?keys as key >
-	<ul  class="vrtx-alphabetical-research-group-listing">
+	<ul class="vrtx-alphabetical-research-group-listing">
       <li>${key}
         <ul>
-		  <#list alpthabeticalOrdredResult[key] as researchGroup>
-			<#local title = vrtx.propValue(researchGroup, 'title') />
-			<li><a href="${researchGroupListing.urls[researchGroup.URI]?html}">${title}</a></li>
-		  </#list>
-		</ul>
+		      <#list alpthabeticalOrdredResult[key] as researchGroup>
+			      <#local title = vrtx.propValue(researchGroup.propertySet, 'title') />
+			      <li><a href="${researchGroup.url?html}">${title}</a></li>
+		      </#list>
+		    </ul>
 	  </li>
 	</ul>
   </#list>
 </#macro>
 
 <#macro displayResearchGroups researchGroupListing>
-  <#local researchGroups=researchGroupListing.files />
+
+  <#local researchGroups = researchGroupListing.entries />
+
   <#if (researchGroups?size > 0) >
     <div id="${researchGroupListing.name}" class="vrtx-resources vrtx-research-groups ${researchGroupListing.name}">
       <#if researchGroupListing.title?exists && researchGroupListing.offset == 0>
         <h2>${researchGroupListing.title?html}</h2>
       </#if>
       <#local locale = springMacroRequestContext.getLocale() />
-      <#list researchGroups as researchGroup>
+
+      <#list researchGroups as researchGroupEntry>
+
+       <#local researchGroup = researchGroupEntry.propertySet />
+
         <#local title = vrtx.propValue(researchGroup, 'title') />
         <#local introImg = vrtx.prop(researchGroup, 'picture')  />
         <#local intro = vrtx.prop(researchGroup, 'introduction')  />
@@ -43,7 +49,7 @@
 	        <#else>
 	    	  <#local thumbnail = "" />
 	   	    </#if>
-            <a class="vrtx-image" href="${researchGroupListing.urls[researchGroup.URI]?html}">
+            <a class="vrtx-image" href="${researchGroupEntry.url?html}">
               <#if caption != ''>
                 <img src="${thumbnail?html}" alt="${captionFlattened}" />
               <#else>
@@ -52,15 +58,15 @@
             </a>
           </#if>
           <div class="vrtx-title">
-            <a class="vrtx-title summary" href="${researchGroupListing.urls[researchGroup.URI]?html}">${title?html}</a>
+            <a class="vrtx-title summary" href="${researchGroupEntry.url?html}">${title?html}</a>
 	      </div>
           <#if intro?has_content && researchGroupListing.hasDisplayPropDef(intro.definition.name)>
             <div class="description introduction">
-              <@vrtx.linkResolveFilter intro.value researchGroupListing.urls[researchGroup.URI] requestURL />
+              <@vrtx.linkResolveFilter intro.value researchGroupEntry.url requestURL />
             </div>
           </#if>
           <div class="vrtx-read-more">
-            <a href="${researchGroupListing.urls[researchGroup.URI]?html}" class="more">
+            <a href="${researchGroupEntry.url?html}" class="more">
               <@vrtx.localizeMessage code="viewCollectionListing.readMore" default="" args=[] locale=locale />
             </a>
           </div>

@@ -86,6 +86,7 @@
     </property>
     <property name="searchSorting" ref="articleListing.searchSorting" />
     <property name="configurablePropertySelectPointers" ref="${override.listing.prefix}article.configurablePropertySelectPointersList" />
+    <property name="displayEditLinks" value="false" />
   </bean>
 
   <bean id="articleListing.listingUriQueryBuilder" parent="collection.defaultRecursiveListingUriQueryBuilder">

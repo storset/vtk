@@ -52,6 +52,7 @@ import org.vortikal.web.RequestContext;
 import org.vortikal.web.decorating.DecoratorRequest;
 import org.vortikal.web.decorating.DecoratorResponse;
 import org.vortikal.web.search.Listing;
+import org.vortikal.web.search.ListingEntry;
 import org.vortikal.web.search.SearchComponent;
 import org.vortikal.web.service.Service;
 
@@ -208,9 +209,11 @@ public class EventComponent extends ViewRenderingDecoratorComponent {
 
         if (showOnlyOngoing) {
             Calendar startDate, now = Calendar.getInstance();
-            List<PropertySet> tmpEvents = new ArrayList<PropertySet>(events.getFiles());
+            List<ListingEntry> tmpEvents = new ArrayList<ListingEntry>(events.getEntries());
 
-            for (PropertySet ps : events.getFiles()) {
+            for (ListingEntry entry : events.getEntries()) {
+
+                PropertySet ps = entry.getPropertySet();
 
                 Property sprop = ps.getProperty(Namespace.STRUCTURED_RESOURCE_NAMESPACE, "start-date");
                 if (sprop == null) {
@@ -222,12 +225,12 @@ public class EventComponent extends ViewRenderingDecoratorComponent {
                     startDate.setTimeInMillis(sprop.getDateValue().getTime());
 
                     if (!startDate.before(now)) {
-                        tmpEvents.remove(ps);
+                        tmpEvents.remove(entry);
                     }
                 }
             }
 
-            events.setFiles(tmpEvents);
+            events.setEntries(tmpEvents);
             conf.put("showOnlyOngoing", showOnlyOngoing);
         }
 
@@ -248,8 +251,9 @@ public class EventComponent extends ViewRenderingDecoratorComponent {
             model.put("tomorrow", tomorrow.getTime());
 
             List<PropertySetTmp> psList = new ArrayList<PropertySetTmp>();
-            for (PropertySet ps : events.getFiles()) {
+            for (ListingEntry entry : events.getEntries()) {
 
+                PropertySet ps = entry.getPropertySet();
                 Property sprop = ps.getProperty(Namespace.STRUCTURED_RESOURCE_NAMESPACE, "start-date");
                 if (sprop == null) {
                     sprop = ps.getProperty(Namespace.DEFAULT_NAMESPACE, "start-date");

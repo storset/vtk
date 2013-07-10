@@ -46,6 +46,11 @@ import org.vortikal.web.search.Listing;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
+/**
+ * Controller for a specific date display of event listing. The specific date is
+ * supplied as request parameter (yyyy-mm-dd). If invalid, defaults to standard
+ * calendar view.
+ */
 public class EventCalendarSpecificDateListingController extends EventCalendarListingController {
 
     @Override
@@ -55,20 +60,20 @@ public class EventCalendarSpecificDateListingController extends EventCalendarLis
         int page = ListingPager.getPage(request, ListingPager.UPCOMING_PAGE_PARAM);
         model.put(MODEL_KEY_PAGE, page);
 
-        Date date = this.helper.getSpecificSearchDate(request);
+        Date date = helper.getSpecificSearchDate(request);
         if (date != null) {
-            SpecificDateSearchType searchType = this.helper.getSpecificDateSearchType(request);
-            Listing specificDateEvents = this.searcher.searchSpecificDate(request, collection, pageLimit, page);
+            SpecificDateSearchType searchType = helper.getSpecificDateSearchType(request);
+            Listing specificDateEvents = searcher.searchSpecificDate(request, collection, pageLimit, page);
 
             model.put("specificDate", Boolean.TRUE);
             String messageKey = searchType == SpecificDateSearchType.Day ? "eventListing.specificDayEvent"
                     : "eventListing.specificDateEvent";
-            String specificDateEventsTitle = this.helper.getEventTypeTitle(request, collection, searchType, date,
+            String specificDateEventsTitle = helper.getEventTypeTitle(request, collection, searchType, date,
                     messageKey, true, true);
             model.put("specificDateEventsTitle", specificDateEventsTitle);
             model.put(MODEL_KEY_OVERRIDDEN_TITLE, specificDateEventsTitle);
 
-            if (specificDateEvents != null && !specificDateEvents.getFiles().isEmpty()) {
+            if (specificDateEvents != null && !specificDateEvents.getEntries().isEmpty()) {
                 model.put("specificDateEvents", specificDateEvents);
 
                 Service service = RequestContext.getRequestContext().getService();
@@ -82,7 +87,7 @@ public class EventCalendarSpecificDateListingController extends EventCalendarLis
                 model.put(EventListingHelper.DISPLAY_LISTING_ICAL_LINK, true);
             } else {
                 model.put("noPlannedEventsMsg",
-                        this.helper.getEventTypeTitle(request, collection, "eventListing.noPlannedEvents", false));
+                        helper.getEventTypeTitle(request, collection, "eventListing.noPlannedEvents", false));
             }
         } else {
             // invalid date given in request, run default search

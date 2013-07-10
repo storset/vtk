@@ -30,7 +30,6 @@
  */
 package org.vortikal.web.decorating.components;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -84,14 +83,13 @@ public class CollectionListingComponent extends ViewRenderingDecoratorComponent 
             throw new DecoratorComponentException("Component parameter 'uri' is required");
         }
 
-        Path resourcePath = this.getResourcePath(uri);
+        Path resourcePath = getResourcePath(uri);
         if (resourcePath == null) {
             throw new DecoratorComponentException("Provided uri is not a valid folder reference: " + uri);
         }
 
         Repository repository = RequestContext.getRequestContext().getRepository();
         String token = SecurityContext.getSecurityContext().getToken();
-        Principal principal = SecurityContext.getSecurityContext().getPrincipal();
 
         Resource res;
         try {
@@ -124,6 +122,7 @@ public class CollectionListingComponent extends ViewRenderingDecoratorComponent 
             // Ignore, defaults to predefined limit
         }
 
+        // XXX ???
         boolean goToFolderLink, folderTitle = parameterHasValue(PARAMETER_FOLDER_TITLE, "true", request);
         if (goToFolderLink = parameterHasValue(PARAMETER_GO_TO_FOLDER_LINK, "true", request)) {
             model.put("goToFolderLink", uri);
@@ -138,15 +137,13 @@ public class CollectionListingComponent extends ViewRenderingDecoratorComponent 
         conf.put("compactView", parameterHasValue(PARAMETER_COMPACT_VIEW, "true", request));
 
         Listing listing = search.execute(request.getServletRequest(), res, 1, maxItems, 0);
-        this.helper.checkListingsForEditLinks(repository, token, principal, Arrays.asList(listing));
 
-        Locale preferredLocale = this.localeResolver.resolveResourceLocale(res);
-        Map<String, Principal> principalDocuments = this.helper.getExistingPrincipalDocuments(new HashSet<PropertySet>(
-                listing.getFiles()), preferredLocale, null);
+        Locale preferredLocale = localeResolver.resolveResourceLocale(res);
+        Map<String, Principal> principalDocuments = helper.getPrincipalDocumentLinks(
+                new HashSet<PropertySet>(listing.getPropertySets()), preferredLocale, null);
         model.put("principalDocuments", principalDocuments);
 
-        model.put("editLinks", listing.getEditLinkAuthorized());
-        model.put("list", listing.getFiles());
+        model.put("entries", listing.getEntries());
         model.put("conf", conf);
     }
 
@@ -157,10 +154,10 @@ public class CollectionListingComponent extends ViewRenderingDecoratorComponent 
         RequestContext rc = RequestContext.getRequestContext();
 
         try {
-            if (!uri.startsWith("/"))
+            if (!uri.startsWith("/")) {
                 return rc.getCurrentCollection().extend(uri);
-            else
-                return Path.fromString(uri);
+            }
+            return Path.fromString(uri);
         } catch (IllegalArgumentException iae) {
             return null;
         }

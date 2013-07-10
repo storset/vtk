@@ -31,7 +31,6 @@
 package org.vortikal.web.display.collection;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -79,7 +78,6 @@ public class CollectionListingController extends AbstractCollectionListingContro
         RequestContext requestContext = RequestContext.getRequestContext();
         Service service = requestContext.getService();
         Repository repository = requestContext.getRepository();
-        String token = requestContext.getSecurityToken();
         Principal principal = requestContext.getPrincipal();
 
         List<Listing> results = new ArrayList<Listing>();
@@ -88,7 +86,7 @@ public class CollectionListingController extends AbstractCollectionListingContro
 
             Listing listing = component.execute(request, collection, page, limit, 0);
             totalHits += listing.getTotalHits();
-            int numberOfFiles = listing.getFiles().size();
+            int numberOfFiles = listing.getEntries().size();
 
             // Add the listing to the results
             if (numberOfFiles > 0) {
@@ -99,13 +97,9 @@ public class CollectionListingController extends AbstractCollectionListingContro
             // XXX: is there a better way?
             if (numberOfFiles == 0 && offset > 0) {
                 Listing prevListing = component.execute(request, collection, page - 1, limit, 0);
-                if (prevListing.getFiles().size() > 0 && !prevListing.hasMoreResults()) {
-                    offset -= prevListing.getFiles().size();
+                if (prevListing.getEntries().size() > 0 && !prevListing.hasMoreResults()) {
+                    offset -= prevListing.getEntries().size();
                 }
-            }
-
-            if (displayEditLinks && helper != null) {
-                helper.checkListingsForEditLinks(repository, token, principal, Arrays.asList(listing));
             }
 
             // We have more results to display for this listing
@@ -114,7 +108,7 @@ public class CollectionListingController extends AbstractCollectionListingContro
             }
             // Only include enough results to fill the page:
             if (numberOfFiles > 0) {
-                limit -= listing.getFiles().size();
+                limit -= listing.getEntries().size();
             }
 
         }
@@ -124,10 +118,10 @@ public class CollectionListingController extends AbstractCollectionListingContro
 
             Set<PropertySet> allFiles = new HashSet<PropertySet>();
             for (Listing l : results) {
-                allFiles.addAll(l.getFiles());
+                allFiles.addAll(l.getPropertySets());
             }
 
-            Map<String, Principal> principalDocuments = helper.getExistingPrincipalDocuments(allFiles, preferredLocale,
+            Map<String, Principal> principalDocuments = helper.getPrincipalDocumentLinks(allFiles, preferredLocale,
                     null);
             model.put("principalDocuments", principalDocuments);
         }

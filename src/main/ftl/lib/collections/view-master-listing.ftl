@@ -7,9 +7,8 @@
 	  <li>${key}
 	    <ul>
 		  <#list alpthabeticalOrdredResult[key] as master>
-			<#local title = vrtx.propValue(master, 'title') />
-			<#local uri = vrtx.getUri(master) />
-			<li><a href="${uri?html}">${title}</a></li>
+			<#local title = vrtx.propValue(master.propertySet, 'title') />
+			<li><a href="${master.url?html}">${title}</a></li>
 		  </#list>
 		</ul>
 	  </li>
@@ -31,19 +30,19 @@
 </#macro>
 
 <#macro displayMasters masterListing>
-  <#local masters=masterListing.files />
+  <#local masters = masterListing.entries />
   <#if (masters?size > 0) >
     <div id="${masterListing.name}" class="vrtx-masters ${masterListing.name}">
       <#if masterListing.title?exists && masterListing.offset == 0>
         <h2>${masterListing.title?html}</h2>
       </#if>
       <#local locale = springMacroRequestContext.getLocale() />
-      <#list masters as master>
+      <#list masters as masterEntry>
+        <#local master = mesterEntry.propertySet />
         <#local title = vrtx.propValue(master, 'title') />
         <#local introImg = vrtx.prop(master, 'picture')  />
         <#local intro = vrtx.prop(master, 'introduction')  />
         <#local caption = vrtx.propValue(master, 'caption')  />
-        <#local uri = vrtx.getUri(master) />
         <#-- Flattened caption for alt-tag in image -->
         <#local captionFlattened>
           <@vrtx.flattenHtml value=caption escape=true />
@@ -57,7 +56,7 @@
     	 	<#else>
     		  <#local thumbnail = "" />
    		   	</#if>
-            <a class="vrtx-image" href="${uri?html}">
+            <a class="vrtx-image" href="${masterEntry.url?html}">
               <#if caption != ''>
                 <img src="${thumbnail?html}" alt="${captionFlattened}" />
               <#else>
@@ -66,7 +65,7 @@
             </a>
           </#if>
           <div class="vrtx-title">
-            <a class="vrtx-title summary" href="${uri?html}">${title?html}</a>
+            <a class="vrtx-title summary" href="${masterEntry.url?html}">${title?html}</a>
 		  </div>
           <#if intro?has_content && masterListing.hasDisplayPropDef(intro.definition.name)>
             <div class="description introduction">
@@ -74,7 +73,7 @@
         	</div>
           </#if>
           <div class="vrtx-read-more">
-            <a href="${uri?html}" class="more">
+            <a href="${masterEntry.url?html}" class="more">
               <@vrtx.localizeMessage code="viewCollectionListing.readMore" default="" args=[] locale=locale />
             </a>
           </div>
@@ -85,7 +84,7 @@
 </#macro>
 
 <#macro displayTable masterListing collection>
-  <#local masters=masterListing.files />
+  <#local masters = masterListing.entries />
   <#if (masters?size > 0)>
     <div class="vrtx-master-table">
       <table class="sortable" cellpadding="5" border="1">
@@ -99,15 +98,15 @@
         </thead>
         <tbody>
         <#assign masterCount = 1 />
-        <#list masters as master>
+        <#list masters as masterEntry>
           <#if (masterCount % 2 == 0)>
             <tr id="vrtx-master-${masterCount}" class="even">
           <#else>
             <tr id="vrtx-master-${masterCount}">
           </#if>
+            <#local master = masterEntry.propertySet />
             <#local title = vrtx.propValue(master, 'title')?html />
-            <#local uri = vrtx.getUri(master) />
-            <td class="vrtx-table-title"><a href="${uri}">${title}</a></td>
+            <td class="vrtx-table-title"><a href="${masterEntry.url}">${title}</a></td>
             <#local publishDate = vrtx.propValue(master, 'publish-date', 'short', '') />
             <td class="vrtx-table-creation-time">${publishDate}</td>
             <td class="vrtx-table-scope">${vrtx.propValue(master, 'credits')?html}</td>

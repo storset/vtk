@@ -58,12 +58,12 @@ public class ArticleListingAtomFeedGenerator extends AtomFeedGenerator {
         HttpServletRequest request = RequestContext.getRequestContext().getServletRequest();
         Listing featuredArticles = searcher.getFeaturedArticles(request, feedScope, 1, entryCountLimit, 0);
         if (featuredArticles != null && featuredArticles.size() > 0) {
-            entryElements.addAll(featuredArticles.getFiles());
+            entryElements.addAll(featuredArticles.getPropertySets());
         }
 
         Listing articles = searcher.getArticles(request, feedScope, 1, entryCountLimit, 0);
         if (articles.size() > 0) {
-            entryElements.addAll(articles.getFiles());
+            entryElements.addAll(articles.getPropertySets());
         }
 
         for (PropertySet feedEntry : entryElements) {

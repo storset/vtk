@@ -898,6 +898,10 @@ public class URL implements Serializable {
         if (rel.startsWith(PROTOCOL_HTTP + ":") || rel.startsWith(PROTOCOL_HTTPS + ":")) {
             return parse(rel);
         }
+
+        // XXX: VTK-3208: Proper encoding of plus signs in filenames
+        rel = TextUtils.replaceAll(rel, "+", "%2B");
+
         String host = this.host;
         if (rel.startsWith("//")) {
             rel = rel.substring(2);

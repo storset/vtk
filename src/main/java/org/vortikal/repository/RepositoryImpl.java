@@ -1210,14 +1210,14 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         }
 
         try {
+            if (validateACL) {
+                validateNewAcl(acl, r.getAcl());
+            }
             Resource original = (Resource) r.clone();
             r.setAcl(acl);
             r.setInheritedAcl(false);
             r.setAclInheritedFrom(PropertySetImpl.NULL_RESOURCE_ID);
 
-            if (validateACL) {
-                validateNewAcl(acl, original.getAcl());
-            }
 
             ResourceImpl newResource = this.dao.storeACL(r);
 

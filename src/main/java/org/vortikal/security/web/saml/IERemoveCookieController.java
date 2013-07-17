@@ -38,7 +38,8 @@ public class IERemoveCookieController implements Controller {
         if (iECookieStore.getToken(request, UUID.fromString(cookieTicket)) != null) {
             for (String key : cookiesToDelete) {
                 if (authLogger.isDebugEnabled()) {
-                    authLogger.debug("DELETING cookie: " + key);
+                    authLogger.debug(request.getRemoteAddr() + " - request-URI: " + request.getRequestURI() + " - "
+                            + "DELETING cookie: " + key);
                 }
                 Cookie c = new Cookie(key, key);
                 c.setPath("/");

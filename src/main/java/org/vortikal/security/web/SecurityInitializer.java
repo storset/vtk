@@ -221,7 +221,8 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
                                 + " using authentication handler " + handler + ". " + "Setting security context.");
                     }
                     if (authLogger.isDebugEnabled()) {
-                        authLogger.debug("Auth: principal: '" + principal + "' - method: '" + handler.getIdentifier()
+                        authLogger.debug(req.getRemoteAddr() + " - request-URI: " + req.getRequestURI() + " - "
+                                + "Auth: principal: '" + principal + "' - method: '" + handler.getIdentifier()
                                 + "' - status: OK");
                     }
 
@@ -258,9 +259,11 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
                                 + " to the client");
                     }
                     if (authLogger.isDebugEnabled()) {
-                        authLogger.debug("Auth: request: '" + req.getRequestURI() + "' - method: '"
+                        authLogger.debug(req.getRemoteAddr() + " - request-URI: " + req.getRequestURI() + " - "
+                                + "Auth: request: '" + req.getRequestURI() + "' - method: '"
                                 + handler.getIdentifier() + "' - status: FAIL ");
-                        authLogger.debug("Authentication attempt " + req + " rejected by " + "handler " + handler
+                        authLogger.debug(req.getRemoteAddr() + " - request-URI: " + req.getRequestURI() + " - "
+                                + "Authentication attempt " + req + " rejected by " + "handler " + handler
                                 + " with message " + exception.getMessage() + ", presenting challenge " + challenge
                                 + " to the client");
                     }
@@ -314,7 +317,8 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
         this.tokenManager.removeToken(securityContext.getToken());
         SecurityContext.setSecurityContext(null);
         if (authLogger.isDebugEnabled()) {
-            authLogger.debug("removeAuthState_method: Logout: principal: '" + principal
+            authLogger.debug(request.getRemoteAddr() + " - request-URI: " + request.getRequestURI() + " - "
+                    +    "removeAuthState_method: Logout: principal: '" + principal
                     + "' - method: '<none>' - status: OK");
         }
         if (this.rememberAuthMethod) {
@@ -330,7 +334,8 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
                         logger.debug("Deleting cookie " + cookie);
                     }
                     if (authLogger.isDebugEnabled()) {
-                        authLogger.debug("Deleting cookie " + cookie);
+                        authLogger.debug(request.getRemoteAddr() + " - request-URI: " + request.getRequestURI() + " - "
+                                + "Deleting cookie " + cookie);
                     }
                     c = new Cookie(cookie, c.getValue());
                     if (!cookie.equals(VRTXLINK_COOKIE)) {
@@ -387,7 +392,8 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
         boolean result = handler.logout(principal, request, response);
         String status = result ? "OK" : "FAIL";
         if (authLogger.isDebugEnabled()) {
-            authLogger.debug("logout_method: Logout: principal: '" + principal + "' - method: '"
+            authLogger.debug(request.getRemoteAddr() + " - request-URI: " + request.getRequestURI() + " - "
+                    + "logout_method: Logout: principal: '" + principal + "' - method: '"
                     + handler.getIdentifier() + "' - status: " + status);
         }
 

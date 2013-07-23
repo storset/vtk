@@ -8,7 +8,7 @@
 	    <ul>
 		  <#list alpthabeticalOrdredResult[key] as project>
 			  <#local title = vrtx.propValue(project.propertySet, 'title') />
-			  <li><a href="${projectEntry.url?html}">${title}</a></li>
+			  <li><a href="${project.url?html}">${title}</a></li>
 		  </#list>
 		</ul>
 	  </li>
@@ -40,7 +40,7 @@
     </#if>
     <#local locale = springMacroRequestContext.getLocale() />
 
-    <#list projects as projecEntryt>
+    <#list projects as projectEntry>
 
       <#local project = projectEntry.propertySet />
       <#local title = vrtx.propValue(project, 'title') />

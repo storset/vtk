@@ -98,6 +98,7 @@ public class HtmlPageParserTest extends TestCase {
         + "    <div>"
         + "      <span>Last modified"
         + "        <b>${resource:property id=[lastModified]}</b>"
+        + "        <s><em>test</em></s>"
         + "      </span>"
         + "      ${resource:property id=[lastModified]}"
         + "    </div>"
@@ -128,6 +129,7 @@ public class HtmlPageParserTest extends TestCase {
         assertNotNull(map.get("div"));
         assertNotNull(map.get("span"));
         assertNotNull(map.get("b"));
+        assertNotNull(map.get("s"));
     }
 
 

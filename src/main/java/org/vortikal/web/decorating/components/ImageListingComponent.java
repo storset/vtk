@@ -37,17 +37,11 @@ import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
-import org.vortikal.repository.search.ResultSet;
-import org.vortikal.repository.search.Search;
-import org.vortikal.repository.search.SortingImpl;
-import org.vortikal.repository.search.query.AndQuery;
-import org.vortikal.repository.search.query.TermOperator;
-import org.vortikal.repository.search.query.TypeTermQuery;
-import org.vortikal.repository.search.query.UriPrefixQuery;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.decorating.DecoratorRequest;
 import org.vortikal.web.decorating.DecoratorResponse;
-import org.vortikal.web.search.SearchSorting;
+import org.vortikal.web.search.Listing;
+import org.vortikal.web.search.SearchComponent;
 
 public class ImageListingComponent extends ViewRenderingDecoratorComponent {
 
@@ -76,7 +70,7 @@ public class ImageListingComponent extends ViewRenderingDecoratorComponent {
     private static final String PARAMETER_EXCLUDE_SCRIPTS_DESC = "Use to exclude multiple inclusion of scripts for gallery display. "
             + "Set to 'true' when including more than one image gallery on same page. Default is 'false'.";
 
-    private SearchSorting searchSorting;
+    private SearchComponent searchComponent;
 
     protected void processModel(Map<String, Object> model, DecoratorRequest request, DecoratorResponse response)
             throws Exception {
@@ -124,18 +118,10 @@ public class ImageListingComponent extends ViewRenderingDecoratorComponent {
             return;
         }
 
-        AndQuery mainQuery = new AndQuery();
-        mainQuery.add(new UriPrefixQuery(pathUriParameter));
-        mainQuery.add(new TypeTermQuery("image", TermOperator.IN));
+        Listing events = searchComponent.execute(RequestContext.getRequestContext().getServletRequest(),
+                requestedResource, 1, searchLimit, 0);
 
-        Search search = new Search();
-        search.setQuery(mainQuery);
-        search.setLimit(searchLimit);
-        search.setSorting(new SortingImpl(this.searchSorting.getSortFields(requestedResource)));
-
-        ResultSet rs = repository.search(token, search);
-
-        model.put("images", rs.getAllResults());
+        model.put("images", events.getEntries());
         model.put("folderTitle", requestedResource.getTitle());
         model.put("folderUrl", pathUriParameter);
         model.put("fadeEffect", fadeEffect);
@@ -174,8 +160,8 @@ public class ImageListingComponent extends ViewRenderingDecoratorComponent {
     }
 
     @Required
-    public void setSearchSorting(SearchSorting searchSorting) {
-        this.searchSorting = searchSorting;
+    public void setSearchComponent(SearchComponent searchComponent) {
+        this.searchComponent = searchComponent;
     }
 
     protected String getDescriptionInternal() {

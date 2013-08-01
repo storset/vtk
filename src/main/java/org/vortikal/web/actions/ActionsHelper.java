@@ -39,6 +39,8 @@ import java.util.Map.Entry;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.vortikal.repository.AuthorizationException;
+import org.vortikal.repository.InheritablePropertiesStoreContext;
+import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
@@ -54,7 +56,7 @@ public class ActionsHelper {
     private static final String deleteMsgKey = "manage.delete.error.";
     private static final String publishMsgKey = "manage.publish.error.";
     private static final String unpublishMsgKey = "manage.unpublish.error.";
-    
+
     private static Log logger = LogFactory.getLog(ActionsHelper.class);
 
     public static void deleteResource(Repository repository, String token, Path uri, boolean recoverable,
@@ -76,8 +78,9 @@ public class ActionsHelper {
         }
     }
 
-    public static void publishResource(PropertyTypeDefinition publishDatePropDef, Date publishedDate,
-            Repository repository, String token, Path uri, Map<String, List<Path>> failures) {
+    public static void publishResource(PropertyTypeDefinition publishDatePropDef,
+            PropertyTypeDefinition unpublisedCollectionPropDef, Date publishedDate, Repository repository,
+            String token, Path uri, Map<String, List<Path>> failures) {
         try {
             Resource resource = repository.retrieve(token, uri, true);
             Property publishDateProp = resource.getProperty(publishDatePropDef);
@@ -86,7 +89,20 @@ public class ActionsHelper {
                 resource.addProperty(publishDateProp);
             }
             publishDateProp.setDateValue(publishedDate);
-            repository.store(token, resource);
+
+            InheritablePropertiesStoreContext storeContext = null;        
+            if (resource.isCollection()) {
+                Property unpublisedCollectionProp = resource.getProperty(unpublisedCollectionPropDef);
+                if (unpublisedCollectionProp != null && !unpublisedCollectionProp.isInherited()) {
+                    storeContext = new InheritablePropertiesStoreContext();
+                    storeContext.addAffectedProperty(unpublisedCollectionPropDef);
+                    resource.removeProperty(unpublisedCollectionPropDef);
+                    repository.store(token, resource, storeContext);
+                }
+            }
+
+            repository.store(token, resource, storeContext);
+
         } catch (ResourceNotFoundException rnfe) {
             addToFailures(failures, uri, publishMsgKey, "nonExisting");
         } catch (AuthorizationException ae) {
@@ -102,12 +118,23 @@ public class ActionsHelper {
         }
     }
 
-    public static void unpublishResource(PropertyTypeDefinition publishDatePropDef, Repository repository,
-            String token, Path uri, Map<String, List<Path>> failures) {
+    public static void unpublishResource(PropertyTypeDefinition publishDatePropDef,
+            PropertyTypeDefinition unpublisedCollectionPropDef, Repository repository, String token, Path uri,
+            Map<String, List<Path>> failures) {
         try {
+            InheritablePropertiesStoreContext storeContext = null;
             Resource resource = repository.retrieve(token, uri, true);
             resource.removeProperty(publishDatePropDef);
-            repository.store(token, resource);
+            if (resource.isCollection()) {
+                storeContext = new InheritablePropertiesStoreContext();
+                storeContext.addAffectedProperty(unpublisedCollectionPropDef);
+                Property unpublisedCollectionProp = unpublisedCollectionPropDef.createProperty();
+                unpublisedCollectionProp.setBooleanValue(true);
+                resource.addProperty(unpublisedCollectionProp);
+            }
+
+            repository.store(token, resource, storeContext);
+
         } catch (ResourceNotFoundException rnfe) {
             addToFailures(failures, uri, unpublishMsgKey, "nonExisting");
         } catch (AuthorizationException ae) {
@@ -115,6 +142,8 @@ public class ActionsHelper {
         } catch (ResourceLockedException rle) {
             addToFailures(failures, uri, unpublishMsgKey, "locked");
         } catch (Exception ex) {
+            Exception e = ex;
+            System.out.println("xxx" + e.getMessage());
             StringBuilder msg = new StringBuilder("Could not perform ");
             msg.append("unpublish of ").append(uri);
             msg.append(": ").append(ex.getMessage());

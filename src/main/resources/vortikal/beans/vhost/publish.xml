@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
 
 
   <bean id="publish.globalPublishService" class="org.vortikal.web.service.ServiceImpl">
@@ -8,7 +8,6 @@
     <property name="assertions">
       <list>
         <ref bean="resourceIsNotPublishedAssertion" />
-        <ref bean="displayPublishUnpublishIfSetOrStructuredAssertion" />
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
           <property name="parameterName" value="action" />
           <property name="parameterValue" value="g-publish" />
@@ -35,7 +34,6 @@
     <property name="assertions">
       <list>
         <ref bean="resourceIsPublishedAssertion" />
-        <ref bean="displayPublishUnpublishIfSetOrStructuredAssertion" />
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
           <property name="parameterName" value="action" />
           <property name="parameterValue" value="g-unpublish" />
@@ -73,7 +71,6 @@
     <property name="assertions">
       <list>
         <ref bean="requiresPublishUnpublishPermissionAssertion" />
-        <ref bean="displayPublishUnpublishIfSetOrStructuredAssertion" />
         <ref bean="resourceIsNotPublishedAssertion" />
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
           <property name="parameterName" value="action" />
@@ -94,7 +91,6 @@
     <property name="assertions">
       <list>
         <ref bean="requiresPublishUnpublishPermissionAssertion" />
-        <ref bean="displayPublishUnpublishIfSetOrStructuredAssertion" />
         <ref bean="resourceIsPublishedAssertion" />
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
           <property name="parameterName" value="action" />
@@ -139,11 +135,10 @@
 
   <bean id="publish.unpublishResourceConfirmedService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="manageService" />
-    <!--<property name="order" value="490" />-->
+    <!--<property name="order" value="490" /> -->
     <property name="assertions">
       <list>
         <ref bean="requiresPublishUnpublishPermissionAssertion" />
-        <ref bean="displayPublishUnpublishIfSetOrStructuredAssertion" />
         <ref bean="manage.postRequestAssertion" />
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
           <property name="parameterName" value="action" />
@@ -156,11 +151,10 @@
 
   <bean id="publish.publishResourceConfirmedService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="manageService" />
-    <!--<property name="order" value="490" />-->
+    <!--<property name="order" value="490" /> -->
     <property name="assertions">
       <list>
         <ref bean="requiresPublishUnpublishPermissionAssertion" />
-        <ref bean="displayPublishUnpublishIfSetOrStructuredAssertion" />
         <ref bean="manage.postRequestAssertion" />
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
           <property name="parameterName" value="action" />
@@ -170,14 +164,13 @@
     </property>
     <property name="handler" ref="publishResourceHandler" />
   </bean>
-    
+
   <bean id="publish.globalUnpublishResourceConfirmedService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="manageService" />
-    <!--<property name="order" value="480" />-->
+    <!--<property name="order" value="480" /> -->
     <property name="assertions">
       <list>
         <ref bean="requiresPublishUnpublishPermissionAssertion" />
-        <ref bean="displayPublishUnpublishIfSetOrStructuredAssertion" />
         <ref bean="manage.postRequestAssertion" />
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
           <property name="parameterName" value="action" />
@@ -187,14 +180,13 @@
     </property>
     <property name="handler" ref="globalPublishResourceHandler" />
   </bean>
-  
+
   <bean id="publish.globalPublishResourceConfirmedService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="manageService" />
-    <!--<property name="order" value="480" />-->
+    <!--<property name="order" value="480" /> -->
     <property name="assertions">
       <list>
         <ref bean="requiresPublishUnpublishPermissionAssertion" />
-        <ref bean="displayPublishUnpublishIfSetOrStructuredAssertion" />
         <ref bean="manage.postRequestAssertion" />
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
           <property name="parameterName" value="action" />
@@ -208,16 +200,18 @@
   <bean id="publishResourceHandler" class="org.vortikal.web.actions.publish.PublishResourceController">
     <property name="viewName" value="redirectToPublish" />
     <property name="publishDatePropDef" ref="publishDatePropDef" />
+    <property name="unpublishedCollectionPropDef" ref="unpublishedCollectionPropDef" />
   </bean>
-  
+
   <bean id="globalPublishResourceHandler" class="org.vortikal.web.actions.publish.PublishResourceController">
     <property name="viewName" value="redirectToManage" />
     <property name="publishDatePropDef" ref="publishDatePropDef" />
+    <property name="unpublishedCollectionPropDef" ref="unpublishedCollectionPropDef" />
   </bean>
-  
-  <!--  Multiple -->
-  
-   <bean id="unpublishResourcesService" class="org.vortikal.web.service.ServiceImpl">
+
+  <!-- Multiple -->
+
+  <bean id="unpublishResourcesService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="manageCollectionListingService" />
     <property name="order" value="-955" />
     <property name="categories">
@@ -262,13 +256,14 @@
     </property>
     <property name="handler" ref="publishResourcesHandler" />
   </bean>
-  
+
   <bean id="publishResourcesHandler" class="org.vortikal.web.actions.publish.PublishResourcesController">
     <property name="viewName" value="manageCollectionListing" />
     <property name="publishDatePropDef" ref="publishDatePropDef" />
+    <property name="unpublishedCollectionPropDef" ref="unpublishedCollectionPropDef" />
   </bean>
-  
-  <!--  ^ Multiple -->
+
+  <!-- ^ Multiple -->
 
   <bean id="resourceIsNotPublishedAssertion" class="org.vortikal.web.service.ResourcePropertyAssertion">
     <property name="namespace" ref="DEFAULT_NAMESPACE" />
@@ -363,7 +358,6 @@
     <property name="assertions">
       <list>
         <ref bean="requiresReadPermissionAssertion" />
-        <ref bean="displayPublishUnpublishIfSetOrStructuredAssertion" />
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
           <property name="parameterName" value="mode" />
           <property name="parameterValue" value="publishing" />
@@ -410,7 +404,7 @@
     <property name="successView" value="publishing" />
     <property name="commandClass" value="org.vortikal.web.actions.publish.EditPublishingCommand" />
     <property name="validator">
-      <bean class="org.vortikal.web.actions.publish.EditPublishingCommandValidator" >
+      <bean class="org.vortikal.web.actions.publish.EditPublishingCommandValidator">
         <property name="publishDatePropDef" ref="publishDatePropDef" />
         <property name="unpublishDatePropDef" ref="unpublishDatePropDef" />
       </bean>
@@ -451,22 +445,36 @@
     <property name="editUnpublishDateService" ref="editUnpublishDateService" />
     <property name="publishedPropDef" ref="publishedPropDef" />
   </bean>
-  
-  <!-- Possible temporary assertion to minimize concept impact -->
-  <bean id="displayPublishUnpublishIfSetOrStructuredAssertion" class="org.vortikal.web.service.OrAssertion">
-    <property name="assertions">
-      <list>
-        <ref bean="structuredResources.typeAssertion" />
-        <ref bean="hasWriteUnpublishedPermissionPrincipalsAssertion" />
-      </list>
-    </property>
-  </bean>
 
   <bean class="org.springframework.context.support.ResourceBundleMessageSource">
     <property name="basenames">
       <list>
         <value>vortikal.i18n.publish.publish</value>
       </list>
+    </property>
+  </bean>
+
+  <bean id="unpublishedCollectionPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+    parent="abstractPropDef">
+    <property name="namespace" ref="DEFAULT_NAMESPACE" />
+    <property name="name" value="unpublishedCollection" />
+    <property name="inheritable" value="true" />
+    <property name="type" value="BOOLEAN" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
+    <property name="mandatory" value="false" />
+    <property name="vocabulary">
+      <bean class="org.vortikal.repository.resourcetype.ValueVocabulary">
+        <property name="type" value="BOOLEAN" />
+        <property name="values">
+          <list>
+            <bean class="org.vortikal.repository.resourcetype.Value">
+              <constructor-arg type="boolean">
+                <value>true</value>
+              </constructor-arg>
+            </bean>
+          </list>
+        </property>
+      </bean>
     </property>
   </bean>
 

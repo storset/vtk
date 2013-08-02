@@ -142,8 +142,6 @@ public class ActionsHelper {
         } catch (ResourceLockedException rle) {
             addToFailures(failures, uri, unpublishMsgKey, "locked");
         } catch (Exception ex) {
-            Exception e = ex;
-            System.out.println("xxx" + e.getMessage());
             StringBuilder msg = new StringBuilder("Could not perform ");
             msg.append("unpublish of ").append(uri);
             msg.append(": ").append(ex.getMessage());

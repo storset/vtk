@@ -270,6 +270,13 @@
     <property name="name" value="published" />
     <property name="value" value="false" />
   </bean>
+  
+  <bean id="collectionIsNotPublishedAssertion" class="org.vortikal.web.service.ResourcePropertyAssertion">
+    <property name="namespace" ref="DEFAULT_NAMESPACE" />
+    <property name="name" value="unpublishedCollection" /> 
+    <property name="checkExistenceOnly" value="true" />
+  </bean>
+  
 
   <bean id="resourceIsPublishedAssertion" class="org.vortikal.web.service.ResourcePropertyAssertion">
     <property name="namespace" ref="DEFAULT_NAMESPACE" />
@@ -278,11 +285,27 @@
   </bean>
 
   <bean id="displayUnpublishedMessageService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="parent" ref="structuredResources.displayService" />
-    <property name="order" value="0" />
+    <property name="parent" ref="viewService" />
+    <property name="order" value="-2" />
     <property name="assertions">
       <list>
         <ref bean="resourceIsNotPublishedAssertion" />
+      </list>
+    </property>
+    <property name="handler" ref="displayUnpublishedpPageHandler" />
+    <property name="attributes">
+      <map>
+        <entry key="decorating.servicePredicateName" value="view-unpublished" />
+      </map>
+    </property>
+  </bean>
+  
+  <bean id="displayUnpublishedCollectionMessageService" class="org.vortikal.web.service.ServiceImpl">    
+     <property name="parent" ref="viewService" />
+    <property name="order" value="-2" />
+    <property name="assertions">
+      <list>
+        <ref bean="collectionIsNotPublishedAssertion" />
       </list>
     </property>
     <property name="handler" ref="displayUnpublishedpPageHandler" />
@@ -459,7 +482,7 @@
     <property name="namespace" ref="DEFAULT_NAMESPACE" />
     <property name="name" value="unpublishedCollection" />
     <property name="inheritable" value="true" />
-    <property name="type" value="BOOLEAN" />
+    <property name="type" value="BOOLEAN" /> 
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
     <property name="mandatory" value="false" />
     <property name="vocabulary">

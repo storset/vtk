@@ -45,16 +45,44 @@
     <property name="service" ref="viewImageInfoService" />
   </bean>
 
+  <bean id="editor.loadImageService.urlProvider" class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
+    <property name="modelName" value="previewImage" />
+    <property name="urlName" value="URL" />
+    <property name="service" ref="editor.loadImageService" />
+  </bean>
+  <bean id="previewImageInfoService.urlProvider" class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
+    <property name="modelName" value="previewImage" />
+    <property name="urlName" value="URL" />
+    <property name="service" ref="previewImageInfoService" />
+  </bean>
+
   <bean id="viewImageInfoService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="viewService" />
-    <property name="order" value="0" />
+    <property name="order" value="-3" />
     <property name="assertions">
       <list>
         <ref bean="contentTypeMatchesImage" />
         <ref bean="asWebpageAssertion" />
+        <ref bean="resourceIsPublishedAssertion" />
       </list>
     </property>
     <property name="handler" ref="imageWithInfoHandler" />
+  </bean>
+
+  <bean id="previewImageInfoService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="viewService" />
+    <property name="order" value="-3" />
+    <property name="assertions">
+      <list>
+        <ref bean="contentTypeMatchesImage" />
+        <ref bean="asWebpageAssertion" />
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="action" />
+          <property name="parameterValue" value="preview" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="previewImageWithInfoHandler" />
   </bean>
 
   <bean id="imageWithInfoHandler" class="org.vortikal.web.display.image.DisplayImageWithInfoController">
@@ -63,16 +91,46 @@
     <property name="descriptionPropDef" ref="imageHtmlDescriptionPropDef" />
   </bean>
 
+  <bean id="previewImageWithInfoHandler" class="org.vortikal.web.display.image.DisplayImageWithInfoController">
+    <property name="viewName" value="previewImageWithInfoView" />
+    <property name="titlePropDef" ref="titlePropDef" />
+    <property name="descriptionPropDef" ref="imageHtmlDescriptionPropDef" />
+  </bean>
+
   <bean id="imageWithInfoViewResolver" parent="decoratorViewResolver">
     <property name="views">
       <map>
         <entry key="imageWithInfoView" value-ref="imageWithInfoView" />
+        <entry key="previewImageWithInfoView" value-ref="previewImageWithInfoView" />
       </map>
     </property>
   </bean>
 
   <bean name="imageWithInfoView" parent="freemarkerView">
     <property name="url" value="pages/image-as-html.ftl" />
+    <property name="attributesMap">
+      <map>
+        <entry key="copyrightHelpURL.no" value="${copyrightHelpURL.no}" />
+        <entry key="copyrightHelpURL.nn" value="${copyrightHelpURL.nn}" />
+        <entry key="copyrightHelpURL.en" value="${copyrightHelpURL.en}" />
+        <entry key="jsURLs">
+          <list>
+            <value>${jquery.baseURL}/include-jquery.js</value>
+            <value>${webResources.baseURL}/js/cross-doc-com-link.js</value>
+            <value>${webResources.baseURL}/js/iframe-view-media.js</value>
+          </list>
+        </entry>
+      </map>
+    </property>
+  </bean>
+
+  <bean name="previewImageWithInfoView" parent="freemarkerView">
+    <property name="url" value="pages/image-as-html.ftl" />
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="editor.loadImageService.urlProvider" />
+      </list>
+    </property>
     <property name="attributesMap">
       <map>
         <entry key="copyrightHelpURL.no" value="${copyrightHelpURL.no}" />

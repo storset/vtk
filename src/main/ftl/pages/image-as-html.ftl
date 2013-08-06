@@ -26,12 +26,13 @@
 <#if resource.name != title >
   <h1>${title}</h1>
 </#if>
-
-<#if src?exists>
-  <#assign dateStr = nanoTime?c />
-  <div class="vrtx-introduction-image">
-     <a href="${src}"><img src="${src}?${dateStr?html}" alt="image" /></a>
   </div>
+  
+<#if previewImage?exists>
+    <a href="${previewImage.URL?html}"><img src="${previewImage.URL?html}" alt="image" /></a>
+<#else>
+     <#assign dateStr = nanoTime?c />
+     <a href="${src?html}"><img src="${src?html}" alt="image" /></a>
 </#if>
 
 <#if description?exists >
@@ -45,7 +46,8 @@
 
 <h2>${vrtx.getMsg('imageAsHtml.source')}</h2>
 <p id="vrtx-image-view-link">
-  <a href="${src}">${resource.name?html}</a>
+test
+  <a href="<#if previewImage?exists>${previewImage.URL}<#else>${src}</#if>">${resource.name?html}</a>
   <#if pixelHeight != "" && pixelWidth != "">
     &nbsp;(${pixelWidth} x ${pixelHeight} px)
   </#if>

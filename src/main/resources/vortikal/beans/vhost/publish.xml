@@ -288,7 +288,7 @@
     <property name="parent" ref="viewService" />
     <property name="order" value="-2" />
     <property name="assertions">
-      <list>
+      <list>    
         <ref bean="resourceIsNotPublishedAssertion" />
       </list>
     </property>

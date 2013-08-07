@@ -270,13 +270,13 @@
     <property name="name" value="published" />
     <property name="value" value="false" />
   </bean>
-  
+
   <bean id="collectionIsNotPublishedAssertion" class="org.vortikal.web.service.ResourcePropertyAssertion">
     <property name="namespace" ref="DEFAULT_NAMESPACE" />
-    <property name="name" value="unpublishedCollection" /> 
+    <property name="name" value="unpublishedCollection" />
     <property name="checkExistenceOnly" value="true" />
   </bean>
-  
+
 
   <bean id="resourceIsPublishedAssertion" class="org.vortikal.web.service.ResourcePropertyAssertion">
     <property name="namespace" ref="DEFAULT_NAMESPACE" />
@@ -288,8 +288,9 @@
     <property name="parent" ref="viewService" />
     <property name="order" value="-2" />
     <property name="assertions">
-      <list>    
+      <list>
         <ref bean="resourceIsNotPublishedAssertion" />
+        <ref bean="notViewUnpublishedAssertion" />
       </list>
     </property>
     <property name="handler" ref="displayUnpublishedpPageHandler" />
@@ -300,12 +301,14 @@
     </property>
   </bean>
   
-  <bean id="displayUnpublishedCollectionMessageService" class="org.vortikal.web.service.ServiceImpl">    
-     <property name="parent" ref="viewService" />
+    <bean id="displayUnpublishedCollectionMessageService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="viewService" />
     <property name="order" value="-2" />
     <property name="assertions">
       <list>
         <ref bean="collectionIsNotPublishedAssertion" />
+        <ref bean="notViewUnpublishedAssertion" />
+        
       </list>
     </property>
     <property name="handler" ref="displayUnpublishedpPageHandler" />
@@ -315,6 +318,7 @@
       </map>
     </property>
   </bean>
+  
 
   <bean id="displayUnpublishedpPageHandler" class="org.vortikal.web.display.file.DisplayResourceController">
     <property name="viewName" value="displayUnpublishedMessage.view" />
@@ -338,31 +342,12 @@
     </property>
   </bean>
 
-  <!-- ### view of unpublished resources ### -->
-  <bean id="viewUnpublishedResourceService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="parent" ref="structuredResources.displayService" />
-    <property name="order" value="-1" />
-    <property name="assertions">
-      <list>
-        <ref bean="viewUnpublishedResourceAssertion" />
-      </list>
-    </property>
-  </bean>
 
-  <bean id="viewUnpublishedAssertion" class="org.vortikal.web.service.RequestParameterAssertion">
+  <bean id="notViewUnpublishedAssertion" class="org.vortikal.web.service.RequestParameterExistsAssertion">
     <property name="parameterName" value="vrtxPreviewUnpublished" />
-    <property name="parameterValue" value="true" />
+    <property name="invert" value="true" />
   </bean>
 
-  <bean id="viewUnpublishedResourceAssertion" class="org.vortikal.web.service.AndAssertion">
-    <property name="assertions">
-      <list>
-        <ref bean="viewUnpublishedAssertion" />
-        <ref bean="requiresReadPermissionAssertion" />
-        <ref bean="resourceIsNotPublishedAssertion" />
-      </list>
-    </property>
-  </bean>
 
   <bean id="publish.editPublishingService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="manageService" />
@@ -482,7 +467,7 @@
     <property name="namespace" ref="DEFAULT_NAMESPACE" />
     <property name="name" value="unpublishedCollection" />
     <property name="inheritable" value="true" />
-    <property name="type" value="BOOLEAN" /> 
+    <property name="type" value="BOOLEAN" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
     <property name="mandatory" value="false" />
     <property name="vocabulary">

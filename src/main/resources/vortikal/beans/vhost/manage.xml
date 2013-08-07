@@ -1099,8 +1099,8 @@
         <entry key="manageCollectionListing" value-ref="manageCollectionListingView" />
         <entry key="admin" value-ref="aboutView" />
         <entry key="permissions" value-ref="permissionsView" />
-        <entry key="previewImage" value-ref="previewImageView" />
-        <entry key="previewMedia" value-ref="previewMediaPlayerView" />
+        <entry key="previewImage" value-ref="previewMediaView" />
+        <entry key="previewMedia" value-ref="previewMediaView" />
         <entry key="preview.displayPopupURL" value-ref="preview.displayPopupURLView" />
         <entry key="previewAdminIframe" value-ref="previewAdminIframeView" />
         <entry key="previewText" value-ref="previewTextView" />
@@ -1544,42 +1544,26 @@
     <property name="url" value="layouts/lock-refresh-response.ftl" />
   </bean>
 
-  <!-- Views -->
-  <bean id="previewImageView" parent="freemarkerView">
-    <property name="url" value="pages/preview-admin-iframe.ftl" />
-    <property name="referenceDataProviders">
-      <list>
-        <ref bean="resourceContextProvider" />
-        <ref bean="previewImageInfoService.urlProvider" />
-        <ref bean="iframeJSProvider" />
-        <bean class="org.vortikal.web.referencedata.provider.ResourcePrincipalPermissionsProvider">
-          <property name="modelName" value="permissions_ACTION_READ" />
-          <property name="permission" value="READ" />
-          <property name="anonymous" value="true" />
-        </bean>
-        <bean class="org.vortikal.web.referencedata.provider.ResourcePrincipalPermissionsProvider">
-          <property name="modelName" value="permissions_ACTION_READ_PROCESSED" />
-          <property name="permission" value="READ_PROCESSED" />
-          <property name="anonymous" value="true" />
-        </bean>
-        <bean class="org.vortikal.web.referencedata.provider.StaticModelDataProvider">
-          <property name="modelDataMap">
-            <map>
-              <entry key="webProtocol" value="${webProtocol}" />
-            </map>
-          </property>
-        </bean>
-      </list>
+  <bean id="asWebpage.urlProvider" class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
+    <property name="modelName" value="previewImage" />
+    <property name="urlName" value="URL" />
+    <!-- create a common mother for all view as webpage services -->
+    <property name="service" ref="mediaPlayerService" />
+    <property name="staticURLParameters">
+      <map>
+        <entry key="vrtxPreviewUnpublished" value="true" />
+      </map>
     </property>
-
   </bean>
 
-  <bean id="previewMediaPlayerView" parent="freemarkerView">
+  <!-- Views -->
+
+  <bean id="previewMediaView" parent="freemarkerView">
     <property name="url" value="pages/preview-admin-iframe.ftl" />
     <property name="referenceDataProviders">
       <list>
         <ref bean="resourceContextProvider" />
-        <ref bean="previewMediaPlayerService.urlProvider" />
+        <ref bean="asWebpage.urlProvider" />
         <ref bean="iframeJSProvider" />
         <bean class="org.vortikal.web.referencedata.provider.ResourcePrincipalPermissionsProvider">
           <property name="modelName" value="permissions_ACTION_READ" />

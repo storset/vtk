@@ -37,26 +37,11 @@
 
   <bean id="mediaPlayerService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="viewService" />
-    <property name="order" value="-3" />
+    <property name="order" value="-1" />
     <property name="assertions">
       <list>
         <ref bean="contentTypeMatchesAudioOrVideo" />
         <ref bean="asWebpageAssertion" />
-      </list>
-    </property>
-  </bean>
-
-  <bean id="previewMediaPlayerService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="parent" ref="viewService" />
-    <property name="order" value="-4" />
-    <property name="assertions">
-      <list>
-        <ref bean="contentTypeMatchesAudioOrVideo" />
-        <ref bean="asWebpageAssertion" />
-        <bean id="previewVrtxParameterRule" class="org.vortikal.web.service.RequestParameterAssertion">
-          <property name="parameterName" value="action" />
-          <property name="parameterValue" value="preview" />
-        </bean>
       </list>
     </property>
   </bean>
@@ -68,7 +53,6 @@
       <list>
         <ref bean="contentTypeMatchesVideo" />
         <ref bean="asWebpageAssertion" />
-        <ref bean="resourceIsPublishedAssertion" />
       </list>
     </property>
     <property name="handler" ref="displayVideoResource" />
@@ -80,40 +64,9 @@
       <list>
         <ref bean="contentTypeMatchesAudio" />
         <ref bean="asWebpageAssertion" />
-        <ref bean="resourceIsPublishedAssertion" />
       </list>
     </property>
     <property name="handler" ref="displayAudioResource" />
-  </bean>
-
-  <bean id="previewVideoPlayerService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="parent" ref="previewMediaPlayerService" />
-    <property name="assertions">
-      <list>
-        <ref bean="contentTypeMatchesVideo" />
-        <ref bean="asWebpageAssertion" />
-        <bean id="previewVrtxParameterRule" class="org.vortikal.web.service.RequestParameterAssertion">
-          <property name="parameterName" value="action" />
-          <property name="parameterValue" value="preview" />
-        </bean>
-      </list>
-    </property>
-    <property name="handler" ref="displayUnpublishedVideoResource" />
-  </bean>
-
-  <bean id="previewAudioPlayerService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="parent" ref="previewMediaPlayerService" />
-    <property name="assertions">
-      <list>
-        <ref bean="contentTypeMatchesAudio" />
-        <ref bean="asWebpageAssertion" />
-        <bean id="previewVrtxParameterRule" class="org.vortikal.web.service.RequestParameterAssertion">
-          <property name="parameterName" value="action" />
-          <property name="parameterValue" value="preview" />
-        </bean>
-      </list>
-    </property>
-    <property name="handler" ref="displayUnpublishedAudioResource" />
   </bean>
 
 
@@ -133,24 +86,6 @@
     <property name="thumbnailService" ref="displayThumbnailService" />
   </bean>
 
-  <bean id="previewMediaPlayer" class="org.vortikal.web.display.media.MediaPlayer">
-    <property name="extentionToMimetype">
-      <map>
-        <entry key="mp4" value="video/mp4" />
-        <entry key="mov" value="video/quicktime" />
-        <entry key="mp3" value="audio/mpeg" />
-        <entry key="swf" value="application/x-shockwave-flash" />
-        <entry key="flv" value="video/x-flv" />
-      </map>
-    </property>
-    <property name="posterImagePropDef" ref="posterImagePropDef" />
-    <property name="generatedPosterImagePropDef" ref="generatedPosterImagePropDef" />
-    <property name="viewService" ref="editor.loadImageService" />
-    <property name="thumbnailService" ref="displayThumbnailService" />
-  </bean>
-
-
-
   <bean id="displayAudioResource" class="org.vortikal.web.display.media.DisplayMediaController">
     <property name="mediaPlayer" ref="mediaPlayer" />
     <property name="viewName" value="viewMediaPlayer" />
@@ -163,25 +98,16 @@
     <property name="descriptionPropDef" ref="videoHtmlDescriptionPropDef" />
   </bean>
 
-
-  <bean id="displayUnpublishedAudioResource" class="org.vortikal.web.display.media.DisplayMediaController">
-    <property name="mediaPlayer" ref="previewMediaPlayer" />
-    <property name="viewName" value="viewMediaPlayer" />
-    <property name="descriptionPropDef" ref="audioHtmlDescriptionPropDef" />
-  </bean>
-
-  <bean id="displayUnpublishedVideoResource" class="org.vortikal.web.display.media.DisplayMediaController">
-    <property name="mediaPlayer" ref="previewMediaPlayer" />
-    <property name="viewName" value="viewMediaPlayer" />
-    <property name="descriptionPropDef" ref="videoHtmlDescriptionPropDef" />
-  </bean>
-
   <bean id="displayMediaResourceViewResolver" parent="decoratorViewResolver">
     <property name="views">
       <map>
         <entry key="viewMediaPlayer" value-ref="displayMediaResourceView" />
       </map>
     </property>
+  </bean>
+
+  <bean id="mediaPreviewAwareReferanceDataProvider" class="org.vortikal.web.referencedata.provider.PreviewAwareResourceLinkProvider">
+    <property name="linkModelName" value="media" />
   </bean>
 
   <bean name="displayMediaResourceView" parent="freemarkerView">
@@ -199,6 +125,7 @@
     <property name="referenceDataProviders">
       <list>
         <ref bean="resourceContextProvider" />
+        <ref bean="mediaPreviewAwareReferanceDataProvider" />
       </list>
     </property>
     <property name="attributesMap">
@@ -226,12 +153,11 @@
     <property name="modelName" value="previewImage" />
     <property name="urlName" value="URL" />
     <property name="service" ref="mediaPlayerService" />
-  </bean>
-  
-    <bean id="previewMediaPlayerService.urlProvider" class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
-    <property name="modelName" value="previewImage" />
-    <property name="urlName" value="URL" />
-    <property name="service" ref="previewMediaPlayerService" />
+    <property name="staticURLParameters">
+      <map>
+        <entry key="vrtxPreviewUnpublished" value="true" />
+      </map>
+    </property>
   </bean>
 
   <bean id="posterImagePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">

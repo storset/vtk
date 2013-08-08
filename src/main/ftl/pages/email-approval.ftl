@@ -29,7 +29,7 @@
       <@vrtx.csrfPreventionToken uri />
       
       <label for="emailTo" class="first"><@vrtx.msg code="email.form.to" default="Send e-mail to" /></label> 
-      <div class="vrtx-textfield">  
+      <div class="vrtx-textfield">
         <#if emailSavedTo?has_content>
           <input type="text" id="emailTo" name="emailTo" value="${emailSavedTo?html}" />
         <#else>
@@ -39,8 +39,8 @@
       <div class="email-help"><@vrtx.msg code="email.form.to-tooltip" default="Use comma as a separator if sending to more than one e-mail recipient" /></div> 
       
       <#if userEmailFrom??>
-        <label for="emailFrom"><@vrtx.msg code="email.form.from" default="Your e-mail address" /></label>  
-        <div class="vrtx-textfield">  
+        <label for="emailFrom"><@vrtx.msg code="email.form.from" default="Your e-mail address" /></label>
+        <div class="vrtx-textfield">
           <#if emailSavedFrom?has_content>
             <input type="text" id="emailFrom" name="emailFrom" value="${emailSavedFrom?html}" />
           <#else>
@@ -70,7 +70,7 @@
         </div>
         <div class="vrtx-button"> 
           <input type="button" onclick="javascript:vrtxSimpleDialogs.closeDialog('#dialog-html-send-approval');" class="cancel-email-form" value="${vrtx.getMsg('editor.cancel')}" name="cancel" />
-        </div>  
+        </div>
       </div>
     </form>
 
@@ -84,7 +84,7 @@
           <span class="failure"><@vrtx.msg code="email.form.fail.general" default="E-mail was not sent" /><#if mailResponseMsg?has_content>${mailResponseMsg}</#if>.</span>
         </#if> 
       </div>
-    </#if>  
+    </#if>
   </#if>
 </body>
 </html>

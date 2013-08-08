@@ -50,7 +50,7 @@
             <#if count == 1 && count == size && menu.label != "resourceMenuRight">
               <li class="${item.label} first last">
             <#elseif count == 1>
-              <li class="${item.label} first">     
+              <li class="${item.label} first"> 
             <#elseif count == size && menu.label != "resourceMenuRight">
               <li class="${item.label} last">
             <#else>
@@ -67,7 +67,7 @@
               </li>
               <#assign count = count+1 />
           </#if>
-        </#list>  
+        </#list>
       </#if>
       
       <#if menu.label == "resourceMenuRight">

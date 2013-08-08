@@ -254,11 +254,11 @@
                 </#if>
               
                 <#-- Remove -->
-                &nbsp;<input class="removePermission" name="remove${capitalizedType}.${groupOrUser.name?html}" type="submit" value="<@vrtx.msg code='permissions.remove' default='remove' />" />  
+                &nbsp;<input class="removePermission" name="remove${capitalizedType}.${groupOrUser.name?html}" type="submit" value="<@vrtx.msg code='permissions.remove' default='remove' />" />
               </#compress>
             </li>
           </#list>
-        </ul>   
+        </ul> 
       </#if>
       </div>
       
@@ -306,7 +306,7 @@
           <#assign value=""/>
           <#if errorsExist>
             <#assign value = spring.status.value />
-          </#if>        
+          </#if>
           <input type="hidden" id="ac_userNames" name="ac_userNames" value="${value?html}" />
         </#if>
         
@@ -340,7 +340,7 @@
               <input id="${shortcut[0]}-${privilegeName}" type="radio" name="updatedShortcut" checked="${shortcut[1]}" value="${shortcut[0]}" />
               <#assign radioCheckedShortcuts = true />
             <#else>
-              <input id="${shortcut[0]}-${privilegeName}" type="radio" name="updatedShortcut" value="${shortcut[0]}" />             
+              <input id="${shortcut[0]}-${privilegeName}" type="radio" name="updatedShortcut" value="${shortcut[0]}" /> 
             </#if>
             <@vrtx.msg code="permissions.shortcut.${shortcut[0]}" />
           </label>
@@ -351,7 +351,7 @@
           <#if !radioCheckedShortcuts>
             <input id="custom" type="radio" name="updatedShortcut" checked="checked" value="" />
           <#else>
-            <input id="custom" type="radio" name="updatedShortcut" value="" />             
+            <input id="custom" type="radio" name="updatedShortcut" value="" /> 
           </#if>
           <@vrtx.msg code="permissions.shortcut.custom" />
         </label>

@@ -27,10 +27,10 @@
          <input tabindex="1" type="submit" name="unlock" value="${item.title?html}" />
        </div>
      </form>
-  <#else>  
+  <#else>
     <a id="manage.unlockFormService" class="vrtx-button-small vrtx-admin-button" title="${titleMsg}" href="${actionURL?html}">
       <span>${item.title?html}</span>
-    </a>  
+    </a>
   </#if>
 </#if>
 

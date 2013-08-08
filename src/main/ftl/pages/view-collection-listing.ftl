@@ -179,7 +179,7 @@
            		</#if>
            	<#elseif collection.resourceType = 'master-listing'>
            		<#assign listingType = vrtx.propValue(collection, 'display-type', '', 'master') />
-           	  	<#if (listingType = "alphabetical" || overrideListingType??) && alpthabeticalOrdredResult??>    
+           	  	<#if (listingType = "alphabetical" || overrideListingType??) && alpthabeticalOrdredResult??>
            	  		<@master.displayMastersAlphabetical searchComponent />
            	  	<#else>
              		<@master.displayTable searchComponent collection />

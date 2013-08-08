@@ -78,7 +78,7 @@
     <#else>
       <ul>
         <@listMenu menu=item.menu />
-      </ul>    
+      </ul>
     </#if>
   </#if>
 </#macro>

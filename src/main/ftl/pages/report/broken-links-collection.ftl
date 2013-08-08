@@ -95,7 +95,7 @@
             <#elseif (uri_index == 0)>
               <#assign firstLast = " first" />
             <#elseif (uri_index == (report.map?size - 1))>
-              <#assign firstLast = " last" />     
+              <#assign firstLast = " last" /> 
             </#if>
 
             <tr class="${rowType}${firstLast}">

@@ -34,7 +34,7 @@
     <#assign formElementsSize = form.elements?size />
     <#list form.elements as element>
       <#if (element_index == (formElementsSize-1))>
-        <div class="vrtx-visual-profile-rows last">      
+        <div class="vrtx-visual-profile-rows last">
       <#else>
         <div class="vrtx-visual-profile-rows">
       </#if>

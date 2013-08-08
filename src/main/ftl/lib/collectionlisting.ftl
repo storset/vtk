@@ -116,7 +116,7 @@
     <#assign rowType = "odd">
     <#assign collectionSize = collectionListing.children?size />
   
-    <#if (collectionSize > 0)>  
+    <#if (collectionSize > 0)>
       <#list collectionListing.children as child>
   
         <#assign firstLast = ""  />
@@ -124,12 +124,12 @@
           <#assign firstLast = " first last" /> 
         <#elseif (child_index == 0)>
           <#assign firstLast = " first" />
-        <#elseif (child_index == (collectionSize - 1))>    
-          <#assign firstLast = " last" />     
+        <#elseif (child_index == (collectionSize - 1))>
+          <#assign firstLast = " last" /> 
         </#if>
   
         <#if child.collection>
-          <tr class="${rowType} <@vrtx.resourceToIconResolver child /> true${firstLast}">  
+          <tr class="${rowType} <@vrtx.resourceToIconResolver child /> true${firstLast}">
         <#else>
           <tr class="${rowType} <@vrtx.resourceToIconResolver child />${firstLast}">
         </#if>
@@ -268,7 +268,7 @@
         <#assign rowType = "even">
       </#if>
     </#list>
-    <#else>  
+    <#else>
       <tr id="collectionlisting-empty" class="first last">
         <td colspan="5"><@vrtx.msg code="collectionListing.empty" default="This collection is empty"/></td>
       </tr>

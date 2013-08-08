@@ -321,7 +321,7 @@
       ${val}
       <#if elide>...</#if>
     </#if>
-  </#compress>   
+  </#compress> 
 </#macro>
 
 <#--
@@ -346,10 +346,10 @@
         <#local newVal = newVal + "<span class='${splitClass}-two'>" + val?substring(cut_index, val?length) + "</span>" /> 
         ${newVal}
       <#else>
-        <@splitParts val "" splitClass cut_index 0 />   
-      </#if>        
+        <@splitParts val "" splitClass cut_index 0 /> 
+      </#if>
     </#if>
-  </#compress>   
+  </#compress> 
 </#macro>
 
 <#macro splitParts val newVal splitClass cut_index nr>
@@ -698,7 +698,7 @@
     <#return "zip" />
   <#elseif contentType = "application/java-archive">
     <#return "jar" />
-  <#else>  
+  <#else>
     <#return "file" />
   </#if>
 </#function>

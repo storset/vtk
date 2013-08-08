@@ -3,4 +3,4 @@
   - 
   - Description: To be removed footer for browse
   -->
-  </div>  <#-- End of <div class="body"> -->
+  </div><#-- End of <div class="body"> -->

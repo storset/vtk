@@ -35,7 +35,7 @@
     <table class="resourceInfo revisions">
       <thead>
         <tr>
-          <th><@vrtx.msg code="versions.table.title" />  #</th>
+          <th><@vrtx.msg code="versions.table.title" />#</th>
           <th><@vrtx.msg code="versions.table.modified-by" /></th>
           <th><@vrtx.msg code="versions.table.time" /></th>
           <#-- <th><@vrtx.msg code="versions.table.change-amount" /></th> -->
@@ -82,7 +82,7 @@
             <#if (resourceChangeAmount?exists)>
                 <@changeAmount resourceChangeAmount />
             </#if>
-          </td>  -->
+          </td>-->
           <td class="vrtx-revisions-buttons-column">
             <a class="vrtx-revision-view vrtx-button-small" href="${displayURL?html}"><span><@vrtx.msg code="versions.table.buttons.view" /></span></a>
           </td>
@@ -98,7 +98,7 @@
               <#if (revision.changeAmount)?exists>
                 <@changeAmount revision.changeAmount />
               </#if>
-            </td>  -->
+            </td>-->
             <td class="vrtx-revisions-buttons-column">
               <#if (revision.displayURL)?exists>
                 <a class="vrtx-revision-view  vrtx-button-small" href="${revision.displayURL?html}"><span><@vrtx.msg code="versions.table.buttons.view" /></span></a>

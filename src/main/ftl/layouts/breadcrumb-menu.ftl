@@ -18,7 +18,7 @@
             <li class="vrtx-parent" ><a href="${elem.URL}"><span>${elem.title?html}</span></a>
           </#if>
         </#if>
-      <#else>  
+      <#else>
         <#-- If the user don't have access to the 'current' resource -->
         <#if (breadcrumb?size > elem_index + 2 )>
           <#if elem.URL?exists>

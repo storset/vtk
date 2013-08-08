@@ -40,12 +40,12 @@
        <span><@vrtx.msg code="email.form.close" default="Close" /></span>
      </a>
    <#else>
-    <h1><@vrtx.msg code="decorating.emailAFriendComponent.emaillink" /></h1>   
+    <h1><@vrtx.msg code="decorating.emailAFriendComponent.emaillink" /></h1> 
     <h2>${resource.title}</h2>
      <form id="email-a-friend-form" method="post" action="?vrtx=email-a-friend">
        
        <label for="emailTo"><@vrtx.msg code="email.form.to" default="Send e-mail to" /></label> 
-       <div class="vrtx-textfield">  
+       <div class="vrtx-textfield">
          <#if emailSavedTo?exists && emailSavedTo?has_content>
            <input type="text" id="emailTo" name="emailTo" value="${emailSavedTo?html}" />
          <#else>
@@ -54,8 +54,8 @@
        </div>
        <div class="email-help"><@vrtx.msg code="email.form.to-tooltip" default="Use comma as a separator if sending to more than one e-mail recipient" /></div> 
       
-       <label for="emailFrom"><@vrtx.msg code="email.form.from" default="Your e-mail address" /></label>  
-       <div class="vrtx-textfield">  
+       <label for="emailFrom"><@vrtx.msg code="email.form.from" default="Your e-mail address" /></label>
+       <div class="vrtx-textfield">
          <#if emailSavedFrom?exists && emailSavedFrom?has_content>
            <input type="text" id="emailFrom" name="emailFrom" value="${emailSavedFrom?html}" />
          <#else>
@@ -90,7 +90,7 @@
           <span class="failure"><@vrtx.msg code="email.form.fail.general" default="E-mail was not sent" /><#if mailResponseMsg?has_content>${mailResponseMsg}</#if>.</span>
         </#if> 
       </div>
-    </#if>  
+    </#if>
   </#if>
 </body>
 </html>

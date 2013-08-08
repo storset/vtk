@@ -99,23 +99,23 @@
           <textarea id="message" name="message"><#if properties?exists && properties.message?exists>${properties.message?html}</#if></textarea>
         </div>
       </div>
-      <div class="vrtx-focus-button">   
+      <div class="vrtx-focus-button"> 
         <input type="submit" id="save" name="save" value="${vrtx.getMsg("editor.save")}" />
       </div> 
-    </form>  
+    </form>
     <form action="" method="post" id="vrtx-message-cancel">
       <@vrtx.csrfPreventionToken url />
-      <div class="vrtx-button">     
+      <div class="vrtx-button"> 
         <input type="submit" id="cancel" name="cancel" value="${vrtx.getMsg("editor.cancel")}" />
       </div>
     </form>
     <#if !isCollection>
-      <form  action="" method="post" id="vrtx-message-delete">        
+      <form  action="" method="post" id="vrtx-message-delete">
         <@vrtx.csrfPreventionToken url />
         <span id="buttons-or-text"><@vrtx.msg code="editor.orText" default="or" /></span>
         &nbsp;
         <input name="${url.path}" value="${url.path}" type="hidden" />
-        <div class="vrtx-button">     
+        <div class="vrtx-button"> 
           <input type="submit" name="delete" value="${vrtx.getMsg("tabMenuRight.deleteResourcesService")}" />
         </div>
       </form>

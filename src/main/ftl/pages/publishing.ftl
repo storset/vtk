@@ -49,7 +49,7 @@
         <#else>
           <span class="unpublished">
             <@vrtx.msg code=publishedStatusMsgKey default="" />
-            <#assign titleMsg = vrtx.getMsg("confirm-publish.title.publish") />      
+            <#assign titleMsg = vrtx.getMsg("confirm-publish.title.publish") />
           </span>
           <#if publishUrl?has_content>
           &nbsp;<a class="vrtx-button-small publishing-status-link" href="${publishUrl?html}" title="${titleMsg}"><span><@vrtx.msg code="publish.action.publish" default="Publish" /></span></a>

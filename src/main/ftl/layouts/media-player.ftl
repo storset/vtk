@@ -89,7 +89,7 @@
         <param name="autoplay" value="<#if autoplay?exists && autoplay = "true">true<#else>false</#if>"/>
         <param name="controller" value="true"/>
         <param name="loop" value="false"/>
-        <param name="scale" value="aspect" />         
+        <param name="scale" value="aspect" /> 
         <embed src="${media?html}" 
                width="${width}" 
                height="${height}"

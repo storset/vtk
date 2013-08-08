@@ -162,7 +162,7 @@
       <!--[if lte IE 8]>
         <script type="text/javascript" src="${jsBaseURL?html}/image-editor/excanvas.compiled.js"></script>
       <![endif]-->
-      <script type="text/javascript" src="${jsBaseURL?html}/image-editor/editor.js"></script>    
+      <script type="text/javascript" src="${jsBaseURL?html}/image-editor/editor.js"></script>
       <script type="text/javascript"><!--  
         var startCropText = '<@vrtx.msg code="editor.image.start-crop" default="Start cropping" />';
         var cropText = '<@vrtx.msg code="editor.image.crop" default="Crop" />';
@@ -241,11 +241,11 @@
         <#if supportedImageEditor>
            <div class="vrtx-button">
              <input type="submit" id="saveCopyButton" name="savecopy" value="${vrtx.getMsg("editor.saveCopy")}" />
-           </div>  
+           </div>
         </#if>
         <div class="vrtx-focus-button vrtx-save-button">
           <input type="submit" id="saveButton" name="save" value="${vrtx.getMsg("editor.save")}" />
-        </div>  
+        </div>
         <div class="vrtx-button">
           <input type="submit" id="cancel" name="cancel" value="${vrtx.getMsg("editor.cancel")}" />
         </div>
@@ -347,8 +347,8 @@
         <#-- Except for employee listing, which has a default generated title based on areacode -->
         <#if value = '' && name='userTitle' && resource.resourceType != 'employee-listing'>
           <#local value = resource.title?html />
-        </#if>  
-        <#if name='userTitle'>  
+        </#if>
+        <#if name='userTitle'>
           <div class="vrtx-textfield-big">
         <#else>
           <div class="vrtx-textfield">
@@ -423,7 +423,7 @@
                   <#else>
                     <#local thumbnail = value />
                   </#if> 
-                </#if>          
+                </#if>
                 <#if thumbnail != ''>
                   <img src="${thumbnail?html}" alt="preview" />
                 <#else>
@@ -486,7 +486,7 @@
                   <abbr class="tooltips" title="${vrtx.getMsg('editor.manually-approve-aggregation.info')}"></abbr>
                 </#if>
                 <#-- HACKS 2012 end -->
-              </div>      
+              </div>
             <#else>
               <div class="vrtx-checkbox-square">
                 <label class="resource.${name}">${allowedValues[0]?html}</label>
@@ -500,7 +500,7 @@
 
           <#elseif useRadioButtons>
           
-            <#-- Special case for recursive listing... Jesus Christ... -->            
+            <#-- Special case for recursive listing... Jesus Christ... -->
             <#if name == 'recursive-listing'>
               <@displayAllowedValuesAsRadioButtons propDef name allowedValues value />
               <@displayDefaultSelectedValueAsRadioButton propDef name />
@@ -611,10 +611,10 @@
         <#assign lang><@vrtx.requestLanguage/></#assign>
         <#assign propKey = "helpURL.editor." + lang />
         <#if isCollection >
-            <#assign propKey = "helpURL.editor.collection." + lang />            
+            <#assign propKey = "helpURL.editor.collection." + lang />
         </#if>
         <#if type == "image" || type == "video" || type == "audio" >
-            <#assign propKey = "helpURL.editor." + type + "." + lang />  
+            <#assign propKey = "helpURL.editor." + type + "." + lang />
                     
         </#if>
         

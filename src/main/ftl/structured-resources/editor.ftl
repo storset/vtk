@@ -110,7 +110,7 @@
     <div id="vrtx-editor-title-submit-buttons-inner-wrapper">
       <#if form.workingCopy || !form.onlyWriteUnpublished || !form.hasPublishDate>
       <h2>${header}</h2>
-      <div class="submitButtons submit-extra-buttons" id="editor-shortcuts">  
+      <div class="submitButtons submit-extra-buttons" id="editor-shortcuts">
         <#if !form.hasPublishDate && !form.workingCopy>
           <a class="vrtx-button" href="javascript:void(0)" id="vrtx-save-view-shortcut"><span>${vrtx.getMsg("editor.saveAndView")}</span></a>
           <span id="vrtx-save">

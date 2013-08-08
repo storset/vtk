@@ -123,7 +123,7 @@
           <#elseif (item_index == 0)>
             <#assign firstLast = " first" />
           <#elseif (item_index == (brokenLinksSize - 1))>
-            <#assign firstLast = " last" />     
+            <#assign firstLast = " last" /> 
           </#if>
           
           <#assign lastModified = vrtx.propValue(item, 'lastModified') />
@@ -196,7 +196,7 @@
       </p>
     </#if>
   <#else>
-    <p id="vrtx-report-broken-links-info"><@vrtx.msg code="report.${report.reportname}.info.web-pages.none-found" />  ${linkTypeLocalization?lower_case}.<span class="vrtx-report-broken-links-info-number">&nbsp;</span></p>
+    <p id="vrtx-report-broken-links-info"><@vrtx.msg code="report.${report.reportname}.info.web-pages.none-found" />${linkTypeLocalization?lower_case}.<span class="vrtx-report-broken-links-info-number">&nbsp;</span></p>
   </#if>
 
   <#macro generateFilters filters>

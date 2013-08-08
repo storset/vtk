@@ -49,7 +49,7 @@
         <@vrtx.msg code="commenting.deleteall.confirmation" 
                    default="Are you sure you want to delete all ${comments?size} comments?" 
                    args=[comments?size] />
-      </#assign>  
+      </#assign>
   
       <#if (deleteAllCommentsURL?exists && comments?size > 0)>
         <form class="vrtx-comments-delete-all" action="${deleteAllCommentsURL?html}" method="post">

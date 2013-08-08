@@ -5,7 +5,7 @@
   <#if docUrl.url?exists && collUrl.url?exists && upUrl.url?exists>
     <#assign docFinalUrl = docUrl.url />
     <#assign collFinalUrl = collUrl.url />
-    <#assign upFinalUrl = upUrl.url />  
+    <#assign upFinalUrl = upUrl.url />
 
     <#assign resourceType = resourceContext.currentResource.resourceType />
 
@@ -16,7 +16,7 @@
       <#assign collFinalUrl = collFinalUrl?substring(0, collFinalUrl?last_index_of("/"))
                             + "/" + collFinalUrl?substring(collFinalUrl?index_of("?"), collFinalUrl?length) />
       <#assign upFinalUrl = upFinalUrl?substring(0, upFinalUrl?last_index_of("/"))
-                          + "/" + upFinalUrl?substring(upFinalUrl?index_of("?"), upFinalUrl?length) />     
+                          + "/" + upFinalUrl?substring(upFinalUrl?index_of("?"), upFinalUrl?length) /> 
     </#if>
 
     <ul class="manage-create"> 

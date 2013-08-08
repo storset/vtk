@@ -56,7 +56,7 @@
   <@gen resource resourceMenuLeft resourceMenuRight />
 <#elseif resource?exists && resourceMenuLeft?exists>
   <@gen resource resourceMenuLeft />
-<#else>  
+<#else>
   <@gen resource /> 
 </#if>
 
@@ -70,7 +70,7 @@
       <#if (resourceMenuLeftServicesLinkable == 0 
          && (writePermission.permissionsQueryResult = 'false' || resourceMenuRightServicesLinkable == 0))
          && !(resourceMenuRightServicesLinkable >= 1 && unlockPermission.permissionsQueryResult = 'true' && writePermission.permissionsQueryResult = 'false' && !publishLink.url?? && !unpublishLink.url??)>
-        <#local compactClass = " compact" />    
+        <#local compactClass = " compact" />
       </#if>
     </#if>
     

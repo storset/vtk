@@ -44,8 +44,8 @@
 <#macro printList list has_next_array>
 <#local counter=0 />
 <#list list as item>
-<#list has_next_array+[true] as has_next><#if !has_next>    <#else>  | </#if></#list>
-<#list has_next_array as has_next><#if !has_next>    <#else>  | </#if></#list><#t>
+<#list has_next_array+[true] as has_next><#if !has_next><#else>| </#if></#list>
+<#list has_next_array as has_next><#if !has_next><#else>| </#if></#list><#t>
 <#t><@printItem item?if_exists,has_next_array+[item_has_next], counter />
 <#local counter = counter + 1/>
 </#list>
@@ -53,8 +53,8 @@
 
 <#macro printHashEx hash has_next_array>
 <#list hash?keys as key>
-<#list has_next_array+[true] as has_next><#if !has_next>    <#else>  | </#if></#list>
-<#list has_next_array as has_next><#if !has_next>    <#else>  | </#if></#list><#t>
+<#list has_next_array+[true] as has_next><#if !has_next><#else>| </#if></#list>
+<#list has_next_array as has_next><#if !has_next><#else>| </#if></#list><#t>
 <#t><@printItem hash[key]?if_exists,has_next_array+[key_has_next], key />
 </#list>
 </#macro>

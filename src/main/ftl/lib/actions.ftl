@@ -35,7 +35,7 @@
     <#if resourceContext.currentResource.collection>
       <#assign actionURL = vrtx.linkConstructor('../', 'manageService') />
     <#else>
-      <#assign actionURL = vrtx.linkConstructor('./', 'manageService') />  
+      <#assign actionURL = vrtx.linkConstructor('./', 'manageService') />
     </#if>
   <#else>
     <#assign actionURL = vrtx.linkConstructor(resourceContext.parentURI, 'manageService') />

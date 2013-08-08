@@ -12,7 +12,7 @@
           <option value="" <#if value=="">selected="selected"</#if>><@vrtx.msg code="shared-text.no-shared-text" default="No shared text" /></option>
           <#list sharedTextProps[inputFieldName]?keys as y >
             <option value="${sharedTextProps[inputFieldName][y]['id']?html}" <#if value==sharedTextProps[inputFieldName][y]['id']>selected="selected"</#if>>${sharedTextProps[inputFieldName][y]['title']?html}</option>
-          </#list>     
+          </#list> 
 	  </select>
 	  <div id="${inputFieldName}Descriptions">
 	       <#list sharedTextProps[inputFieldName]?keys as y >

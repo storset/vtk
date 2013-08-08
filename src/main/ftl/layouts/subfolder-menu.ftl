@@ -71,7 +71,7 @@
   <#if newDiv>
     <#if currentCount != 1>
       </div>
-    </#if>  
+    </#if>
     <div class="vrtx-group-${groupCount?html}">
   </#if>
   	
@@ -111,7 +111,7 @@
     </#list>
     
   	<#if (menu.totalNumberOfItems > menu.maxNumberOfItems)>
-      <li class="vrtx-more">   
+      <li class="vrtx-more"> 
         <a href="${menu.moreUrl?html}"><@vrtx.msg code="subfolder.morelinkTitle" /></a>
       </li>
     </#if>

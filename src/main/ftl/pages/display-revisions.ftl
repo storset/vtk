@@ -35,7 +35,7 @@
     <table class="resourceInfo revisions">
       <thead>
         <tr>
-          <th><@vrtx.msg code="versions.table.title" />#</th>
+          <th><@vrtx.msg code="versions.table.title" />  #</th>
           <th><@vrtx.msg code="versions.table.modified-by" /></th>
           <th><@vrtx.msg code="versions.table.time" /></th>
           <#-- <th><@vrtx.msg code="versions.table.change-amount" /></th> -->

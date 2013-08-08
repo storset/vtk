@@ -38,7 +38,7 @@
       <#assign class = class + " " +  item.label?html />
     </#if>
     <#if isCurrent(item)>
-      <#assign class = class + " vrtx-current-item" /> 
+      <#assign class = class + " vrtx-current-item" />
     </#if>
   <#else>
     <#if item.label?exists>
@@ -54,7 +54,7 @@
       <@displayItem item=item/>
     </li>
   </#if>
-</#macro> 
+</#macro>
 
 <#function isCurrent item>
   <#if !item.menu?exists>

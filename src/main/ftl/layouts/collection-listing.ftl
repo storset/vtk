@@ -46,7 +46,7 @@
           <#elseif (entry_index == 0)>
             <#assign firstLast = " first" />
           <#elseif (entry_index == (entriesCount - 1))>
-            <#assign firstLast = " last" /> 
+            <#assign firstLast = " last" />
           </#if>
 
           <tr class="${rowType} ${firstLast}">

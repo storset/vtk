@@ -176,7 +176,7 @@
         <!-- Size -->
         <#assign size>
          <#if resourceContext.currentResource.contentLength?exists>
-            <@vrtx.calculateResourceSize resourceContext.currentResource.contentLength /> 
+            <@vrtx.calculateResourceSize resourceContext.currentResource.contentLength />
          <#else>
             <@vrtx.msg code="property.contentLength.unavailable" default="Not available" />
          </#if>

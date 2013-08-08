@@ -78,7 +78,7 @@
   <#if isNew??>
     <h3>${vrtx.getMsg("message-listing.new-message")}<a href="javascript:void(0)" id="vrtx-close-simple-structured-editor"></a></h3>
   <#else>
-    <h3>${vrtx.getMsg("message-listing.edit-message")}<a href="javascript:void(0)" id="vrtx-close-simple-structured-editor"></a></h3> 
+    <h3>${vrtx.getMsg("message-listing.edit-message")}<a href="javascript:void(0)" id="vrtx-close-simple-structured-editor"></a></h3>
   </#if>
   <#if url?exists>
     <form  action="" method="post">
@@ -87,7 +87,7 @@
         <div id="vrtx-resource.userTitle" class="userTitle property-item">
           <div class="property-label">
             ${vrtx.getMsg("property.title")}
-          </div> 
+          </div>
           <div class="vrtx-textfield">
             <input type="text" name="title" id="title"<#if properties?exists && properties.title?exists> value="${properties.title?html}"</#if> />
           </div>
@@ -95,17 +95,17 @@
         <div id="vrtx-message" class="property-item">
           <div class="property-label">
             ${vrtx.getMsg("resourcetype.name.structured-message")}
-          </div> 
+          </div>
           <textarea id="message" name="message"><#if properties?exists && properties.message?exists>${properties.message?html}</#if></textarea>
         </div>
       </div>
-      <div class="vrtx-focus-button"> 
+      <div class="vrtx-focus-button">
         <input type="submit" id="save" name="save" value="${vrtx.getMsg("editor.save")}" />
-      </div> 
+      </div>
     </form>
     <form action="" method="post" id="vrtx-message-cancel">
       <@vrtx.csrfPreventionToken url />
-      <div class="vrtx-button"> 
+      <div class="vrtx-button">
         <input type="submit" id="cancel" name="cancel" value="${vrtx.getMsg("editor.cancel")}" />
       </div>
     </form>
@@ -115,7 +115,7 @@
         <span id="buttons-or-text"><@vrtx.msg code="editor.orText" default="or" /></span>
         &nbsp;
         <input name="${url.path}" value="${url.path}" type="hidden" />
-        <div class="vrtx-button"> 
+        <div class="vrtx-button">
           <input type="submit" name="delete" value="${vrtx.getMsg("tabMenuRight.deleteResourcesService")}" />
         </div>
       </form>

@@ -80,7 +80,7 @@
                <img src="/vrtx/__vrtx/static-resources/themes/default/icons/audio-icon.png" alt="audio icon" />
              </a>
            <#elseif resourceType == "video">
-               <#local introImgURI = vrtx.propValue(r, 'poster-image') /> 	 
+               <#local introImgURI = vrtx.propValue(r, 'poster-image') />
 	           <#if introImgURI?exists && introImgURI != "">
 	    			<#local thumbnail =  vrtx.relativeLinkConstructor(introImgURI, 'displayThumbnailService') />
 	    	  	<#else>
@@ -115,7 +115,7 @@
                 </#if>
              <#else>
                 <#assign val = vrtx.propValue(r, displayPropDef.name) />
-             </#if> 
+             </#if>
              <#if val?has_content>
                <div class="${displayPropDef.name}">
                  ${val}

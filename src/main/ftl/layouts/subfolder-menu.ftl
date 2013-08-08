@@ -14,14 +14,14 @@
 <#-- RECURSIVE MENU BUILD -->
 
 <#assign commaSeparated = false />
-<#if subFolderMenu?exists> 
+<#if subFolderMenu?exists>
   <#if subFolderMenu.display?exists && subFolderMenu.display = "comma-separated">
     <#assign commaSeparated = true />
   </#if>
   <@displaySubFolderMenu subFolderMenu />
 </#if>
 
-<#macro displaySubFolderMenu subFolderMenu> 
+<#macro displaySubFolderMenu subFolderMenu>
     <#if subFolderMenu.size &gt; 0>
       <#assign "counter" = 0>
       <#assign "counter2" = 0>
@@ -107,11 +107,11 @@
           <@displayItem item=item />
         </#if>
       </li>
-      <#assign i = i + 1 /> 
+      <#assign i = i + 1 />
     </#list>
     
   	<#if (menu.totalNumberOfItems > menu.maxNumberOfItems)>
-      <li class="vrtx-more"> 
+      <li class="vrtx-more">
         <a href="${menu.moreUrl?html}"><@vrtx.msg code="subfolder.morelinkTitle" /></a>
       </li>
     </#if>

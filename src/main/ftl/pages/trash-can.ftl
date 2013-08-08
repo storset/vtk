@@ -5,7 +5,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <title>Trash Can</title> 
+    <title>Trash Can</title>
   </head>
 <body id="vrtx-trash-can">
 
@@ -56,7 +56,7 @@
           <#elseif (tco_index == 0)>
             <#assign firstLast = " first" />
           <#elseif (tco_index == (collectionSize - 1))>
-            <#assign firstLast = " last" /> 
+            <#assign firstLast = " last" />
           </#if>
         
           <#if rr.isCollection()>

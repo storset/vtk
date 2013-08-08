@@ -59,7 +59,7 @@
                    vrtx.getMsg("permissions.removeAcl.warning", 
                    "Are you sure you want to set inherited permissions? This cannot be undone.",
                    [resource.name]) />
-          <div id="permissions-inheritance"> 
+          <div id="permissions-inheritance">
           <@vrtx.msg code="permissions.notInherited.${resource.resourceType}" default="${defaultNotInherited}" />
           <#if aclInfo.aclEditURLs.inheritance?exists>
             <#assign permissionsSetInherited><@vrtx.msg code="permissions.setInherited" /></#assign>
@@ -94,7 +94,7 @@
         </div>
         <div class="permissions-all-wrapper">
           <#assign privilegeHeading><@vrtx.msg code="permissions.privilege.all" default="Admin - all privileges" /></#assign>
-          <@permissions.editOrDisplayPrivilege privilegeName="all" privilegeHeading=privilegeHeading /> 
+          <@permissions.editOrDisplayPrivilege privilegeName="all" privilegeHeading=privilegeHeading />
         </div>
       </div>
       

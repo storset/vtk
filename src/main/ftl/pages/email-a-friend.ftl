@@ -19,17 +19,17 @@
     <#list cssURLs as cssUrl>
       <link href="${cssUrl}" type="text/css" rel="stylesheet" />
     </#list>
-  </#if> 
+  </#if>
   <link href="/vrtx/__vrtx/static-resources/themes/default/forms.css" type="text/css" rel="stylesheet" />
   <link href="/vrtx/__vrtx/static-resources/themes/default/forms-responsive.css" type="text/css" rel="stylesheet" />
  
   <!--[if lte IE 7]>
-    <link rel="stylesheet" href="/vrtx/__vrtx/static-resources/themes/default/default-ie7.css" type="text/css" /> 
-  <![endif]--> 
+    <link rel="stylesheet" href="/vrtx/__vrtx/static-resources/themes/default/default-ie7.css" type="text/css" />
+  <![endif]-->
   <!--[if lte IE 6]>
-    <link rel="stylesheet" href="/vrtx/__vrtx/static-resources/themes/default/default-ie6.css" type="text/css" /> 
-  <![endif]--> 
-  <meta name="robots" content="noindex" /> 
+    <link rel="stylesheet" href="/vrtx/__vrtx/static-resources/themes/default/default-ie6.css" type="text/css" />
+  <![endif]-->
+  <meta name="robots" content="noindex" />
  </head>
  <body class="forms-new">
    <#assign closeURI = resourceContext.currentURI?split("?")[0]?html />
@@ -40,11 +40,11 @@
        <span><@vrtx.msg code="email.form.close" default="Close" /></span>
      </a>
    <#else>
-    <h1><@vrtx.msg code="decorating.emailAFriendComponent.emaillink" /></h1> 
+    <h1><@vrtx.msg code="decorating.emailAFriendComponent.emaillink" /></h1>
     <h2>${resource.title}</h2>
      <form id="email-a-friend-form" method="post" action="?vrtx=email-a-friend">
        
-       <label for="emailTo"><@vrtx.msg code="email.form.to" default="Send e-mail to" /></label> 
+       <label for="emailTo"><@vrtx.msg code="email.form.to" default="Send e-mail to" /></label>
        <div class="vrtx-textfield">
          <#if emailSavedTo?exists && emailSavedTo?has_content>
            <input type="text" id="emailTo" name="emailTo" value="${emailSavedTo?html}" />
@@ -52,7 +52,7 @@
            <input type="text" id="emailTo" name="emailTo" value="" />
          </#if>
        </div>
-       <div class="email-help"><@vrtx.msg code="email.form.to-tooltip" default="Use comma as a separator if sending to more than one e-mail recipient" /></div> 
+       <div class="email-help"><@vrtx.msg code="email.form.to-tooltip" default="Use comma as a separator if sending to more than one e-mail recipient" /></div>
       
        <label for="emailFrom"><@vrtx.msg code="email.form.from" default="Your e-mail address" /></label>
        <div class="vrtx-textfield">
@@ -63,15 +63,15 @@
          </#if>
        </div>
        
-       <label for="yourComment"><@vrtx.msg code="email.form.yourcomment" default="Your comment" /></label> 
+       <label for="yourComment"><@vrtx.msg code="email.form.yourcomment" default="Your comment" /></label>
        <#if yourSavedComment?exists && yourSavedComment?has_content>
          <textarea class="round-corners" rows="6" cols="10" id="yourComment" name="yourComment">${yourSavedComment?html}</textarea>
        <#else>
-         <textarea class="round-corners" rows="6" cols="10" id="yourComment" name="yourComment" value=""></textarea> 
+         <textarea class="round-corners" rows="6" cols="10" id="yourComment" name="yourComment" value=""></textarea>
        </#if>
   
        <div id="submitButtons">
-         <div class="vrtx-focus-button"> 
+         <div class="vrtx-focus-button">
            <input type="submit" class="submit-email-form" value="Send" name="submit" />
          </div>
           <a class="vrtx-close-dialog" href="${closeURI}">
@@ -88,7 +88,7 @@
           <span class="failure"><@vrtx.msg code="email.form.fail.invalidate" default="One of the e-mail addresses is not valid" />.</span>
         <#elseif mailResponse = "failure-general">
           <span class="failure"><@vrtx.msg code="email.form.fail.general" default="E-mail was not sent" /><#if mailResponseMsg?has_content>${mailResponseMsg}</#if>.</span>
-        </#if> 
+        </#if>
       </div>
     </#if>
   </#if>

@@ -123,7 +123,7 @@
           <#elseif (item_index == 0)>
             <#assign firstLast = " first" />
           <#elseif (item_index == (brokenLinksSize - 1))>
-            <#assign firstLast = " last" /> 
+            <#assign firstLast = " last" />
           </#if>
           
           <#assign lastModified = vrtx.propValue(item, 'lastModified') />

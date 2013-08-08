@@ -44,17 +44,17 @@
                     <span class="vrtx-photo-prefix"><@vrtx.msg code="article.photoprefix" />: </span>${photographer}
                   </#if>
                </span>
-         </div> 
+         </div>
      </div>
     <#else>
        <#if photographer != ""><#-- No caption but image author set -->
           <div class="vrtx-introduction-image" <#if style?has_content>style="${style}"</#if>>
-          <img src="${introductionImage}" alt="${vrtx.getMsg("article.introductionImageAlt")}" /> 
+          <img src="${introductionImage}" alt="${vrtx.getMsg("article.introductionImageAlt")}" />
             <div class="vrtx-imagetext">
               <span class="vrtx-photo">
                 <span class="vrtx-photo-prefix"><@vrtx.msg code="article.photoprefix" />: </span>${photographer}
               </span>
-            </div> 
+            </div>
           </div>
        <#else><#-- No caption or image author set -->
           <img class="vrtx-introduction-image" src="${introductionImage}" alt="${vrtx.getMsg("article.introductionImageAlt")}" />

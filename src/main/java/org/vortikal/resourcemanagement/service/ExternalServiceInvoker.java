@@ -109,6 +109,10 @@ public class ExternalServiceInvoker implements ApplicationContextAware {
             return values == null || values.length == 0;
         }
 
+        // XXX NO!!! Boolean value check here is insane. The invoking service
+        // should do this check and decide proper action based on actual values.
+        // Check for vlidity here should ONLY check if a required property
+        // exists or not.
         return property.getValue() == null
                 || (Type.BOOLEAN.equals(property.getDefinition().getType()) && property.getBooleanValue() == false);
     }

@@ -80,7 +80,8 @@ public class Logout extends SamlService {
 
         if (SamlAuthenticationHandler.browserIsIE(request) && manageAssertion.matches(request, null, null)) {
             if (authLogger.isDebugEnabled()) {
-                authLogger.debug("IE detected, initiating cookie removal");
+                authLogger.debug(request.getRemoteAddr() + " - request-URI: " + request.getRequestURI() + " - "
+                        + "IE detected, initiating cookie removal");
             }
             Map<String, String> myMap = new HashMap<String, String>();
             myMap.put("true", "true");
@@ -112,7 +113,8 @@ public class Logout extends SamlService {
         Credential signingCredential = getSigningCredential();
 
         if (authLogger.isDebugEnabled()) {
-            authLogger.debug("handleLogoutRequest: " + request.getRemoteHost() + ":" + URL.create(request));
+            authLogger.debug(request.getRemoteAddr() + " - request-URI: " + request.getRequestURI() + " - "
+                    + "handleLogoutRequest: " + request.getRemoteHost() + ":" + URL.create(request));
         }
 
         UUID responseID = UUID.randomUUID();
@@ -166,7 +168,8 @@ public class Logout extends SamlService {
         setRequestIDSessionAttribute(request, url, null);
 
         if (authLogger.isDebugEnabled()) {
-            authLogger.debug("handleLogoutResponse: " + request.getRemoteHost() + ":" + URL.create(request));
+            authLogger.debug(request.getRemoteAddr() + " - request-URI: " + request.getRequestURI() + " - "
+                    + "handleLogoutResponse: " + request.getRemoteHost() + ":" + URL.create(request));
         }
 
         LogoutResponse logoutResponse = getLogoutResponse(request);

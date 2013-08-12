@@ -164,10 +164,10 @@
   <#assign privilege = aclInfo.privileges[privilegeName] />
   <#assign pseudoPrincipals = aclInfo.privilegedPseudoPrincipals[privilegeName] />
 
-  <@spring.bind formName + ".submitURL" /> 
+  <@spring.bind formName + ".submitURL" />
   <#assign submitUrl = spring.status.value />
 
-  <@spring.bind formName + ".losingPrivileges" /> 
+  <@spring.bind formName + ".losingPrivileges" />
   <#assign losingPrivileges = spring.status.value />
 
   <h3>${privilegeHeading}</h3>
@@ -254,16 +254,16 @@
                 </#if>
               
                 <#-- Remove -->
-                &nbsp;<input class="removePermission" name="remove${capitalizedType}.${groupOrUser.name?html}" type="submit" value="<@vrtx.msg code='permissions.remove' default='remove' />" />  
+                &nbsp;<input class="removePermission" name="remove${capitalizedType}.${groupOrUser.name?html}" type="submit" value="<@vrtx.msg code='permissions.remove' default='remove' />" />
               </#compress>
             </li>
           </#list>
-        </ul>   
+        </ul>
       </#if>
       </div>
       
       <#-- Bind names -->
-      <@spring.bind formName + ".${type}Names" /> 
+      <@spring.bind formName + ".${type}Names" />
       
       <#-- Display errors -->
       <#assign value=""/>
@@ -271,7 +271,7 @@
       <#if spring.status.errorMessages?size &gt; 0>
         <div class="errorContainer">
           <ul class="errors">
-            <#list spring.status.errorMessages as error> 
+            <#list spring.status.errorMessages as error>
               <li>${error}</li>
             </#list>
           </ul>
@@ -297,7 +297,7 @@
       
       <#-- Add -->
       <span class="add${capitalizedType}">
-        <div class="vrtx-textfield"> 
+        <div class="vrtx-textfield">
           <input type="text" id="${spring.status.expression}" name="${spring.status.expression}" value="${value?html}" />
         </div>
         
@@ -306,7 +306,7 @@
           <#assign value=""/>
           <#if errorsExist>
             <#assign value = spring.status.value />
-          </#if>        
+          </#if>
           <input type="hidden" id="ac_userNames" name="ac_userNames" value="${value?html}" />
         </#if>
         
@@ -335,23 +335,23 @@
       <#assign radioCheckedShortcuts = false />
       <#list shortcuts as shortcut>
         <li>
-          <label for="${shortcut[0]}-${privilegeName}"> 
+          <label for="${shortcut[0]}-${privilegeName}">
             <#if shortcut[1] == "checked">
               <input id="${shortcut[0]}-${privilegeName}" type="radio" name="updatedShortcut" checked="${shortcut[1]}" value="${shortcut[0]}" />
               <#assign radioCheckedShortcuts = true />
             <#else>
-              <input id="${shortcut[0]}-${privilegeName}" type="radio" name="updatedShortcut" value="${shortcut[0]}" />             
+              <input id="${shortcut[0]}-${privilegeName}" type="radio" name="updatedShortcut" value="${shortcut[0]}" />
             </#if>
             <@vrtx.msg code="permissions.shortcut.${shortcut[0]}" />
           </label>
         </li>
       </#list>
       <li>
-        <label for="custom"> 
+        <label for="custom">
           <#if !radioCheckedShortcuts>
             <input id="custom" type="radio" name="updatedShortcut" checked="checked" value="" />
           <#else>
-            <input id="custom" type="radio" name="updatedShortcut" value="" />             
+            <input id="custom" type="radio" name="updatedShortcut" value="" />
           </#if>
           <@vrtx.msg code="permissions.shortcut.custom" />
         </label>

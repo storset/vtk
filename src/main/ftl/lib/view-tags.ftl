@@ -15,7 +15,7 @@
   <#if split = "thirds">
     <#assign tagElementsSize = tagElements?size />
     <#if (limit > 0 && tagElementsSize > limit)>
-      <#assign tagElementsSize = limit />  
+      <#assign tagElementsSize = limit />
     </#if>
     <#local colOneCount = vrtx.getEvenlyColumnDistribution(tagElementsSize, 1, 3) />
     <#local colTwoCount = vrtx.getEvenlyColumnDistribution(tagElementsSize, 2, 3) />
@@ -46,7 +46,7 @@
   <#elseif split = "fourths">
     <#assign tagElementsSize = tagElements?size />
     <#if (limit > 0 && tagElementsSize > limit)>
-      <#assign tagElementsSize = limit />  
+      <#assign tagElementsSize = limit />
     </#if>
     <#local colOneCount = vrtx.getEvenlyColumnDistribution(tagElementsSize, 1, 4) />
     <#local colTwoCount = vrtx.getEvenlyColumnDistribution(tagElementsSize, 2, 4) />
@@ -200,7 +200,7 @@
         <#elseif displayPropDef.name = 'publish-date'>
           <#assign val>
             <@vrtx.localizeMessage code="viewCollectionListing.publishedDate" default="" args=[] locale=locale />${vrtx.propValue(resource, displayPropDef.name)}
-          </#assign>  
+          </#assign>
         <#else>
           <#assign val = vrtx.propValue(resource, displayPropDef.name, "long") />
         </#if>

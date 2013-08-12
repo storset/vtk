@@ -29,7 +29,7 @@
   <#else>
     ${vrtx.getMsg("copyMove.copy.discloseWarning.explanation")}
   </#if>
-</div>   
+</div>
 <div class="vrtx-confirm-copy-move-confirmation">
   <#if action = "move-resources">
     ${vrtx.getMsg("copyMove.move.discloseWarning.confirm")}

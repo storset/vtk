@@ -23,7 +23,7 @@
   <h1>Available decorator components</h1>
 <#if componentList?exists>
   <#-- Table of contents -->
-  <div class="content">                         
+  <div class="content">
     <h2>List of components</h2>
     <ul>
       <#list componentList?sort_by('name')?sort_by('namespace') as component>

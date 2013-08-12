@@ -321,7 +321,7 @@
       ${val}
       <#if elide>...</#if>
     </#if>
-  </#compress>   
+  </#compress>
 </#macro>
 
 <#--
@@ -343,13 +343,13 @@
       <#if (char != "" && val?index_of(char) >= 0)>
         <#local cut_index = val?index_of(char) />
         <#local newVal = "<span class='${splitClass}-one'>" + val?substring(0, cut_index) + "</span>" />
-        <#local newVal = newVal + "<span class='${splitClass}-two'>" + val?substring(cut_index, val?length) + "</span>" /> 
+        <#local newVal = newVal + "<span class='${splitClass}-two'>" + val?substring(cut_index, val?length) + "</span>" />
         ${newVal}
       <#else>
-        <@splitParts val "" splitClass cut_index 0 />   
-      </#if>        
+        <@splitParts val "" splitClass cut_index 0 />
+      </#if>
     </#if>
-  </#compress>   
+  </#compress>
 </#macro>
 
 <#macro splitParts val newVal splitClass cut_index nr>
@@ -698,7 +698,7 @@
     <#return "zip" />
   <#elseif contentType = "application/java-archive">
     <#return "jar" />
-  <#else>  
+  <#else>
     <#return "file" />
   </#if>
 </#function>
@@ -723,7 +723,7 @@
   <#list options?keys as key>
     ${pre}
     <input type="radio" name="${spring.status.expression}" id="${key}" value="${key}"
-      <#if spring.status.value?default("") == key>checked="checked"</#if> 
+      <#if spring.status.value?default("") == key>checked="checked"</#if>
       <#if (cTN && titles?has_content && titles[key]?exists)>onclick="createChangeTemplate(${titles[key]?string})"</#if> ${attributes} <@spring.closeTag/>
     <label for="${key}">${options[key]}</label>
     <#if (descriptions?has_content && descriptions[key]?exists)>

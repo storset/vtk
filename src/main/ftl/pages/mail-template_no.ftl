@@ -2,7 +2,7 @@
 
 <p>${site} har en artikkel jeg tror kan være interessant for deg:</p>
 
-<h2>${title}</h2>     
+<h2>${title}</h2>
 
 <#if comment?has_content>
 <pre>${comment}</pre>

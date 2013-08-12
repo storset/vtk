@@ -25,7 +25,8 @@ public class SSOCookieController implements Controller {
         currentURL.addParameter("authTarget", request.getScheme());
 
         if (authLogger.isDebugEnabled()) {
-            authLogger.debug("SSO-cookie found, redirecting to: " + currentURL.toString());
+            authLogger.debug(request.getRemoteAddr() + " - request-URI: " + request.getRequestURI() + " - "
+                    + "SSO-cookie found, redirecting to: " + currentURL.toString());
         }
 
         response.sendRedirect(currentURL.toString());

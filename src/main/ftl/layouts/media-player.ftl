@@ -21,7 +21,7 @@
         document.write("<scr" + "ipt src='/vrtx/__vrtx/static-resources/flash/StrobeMediaPlayback_1.5.1-patched/10.1/scripts/swfobject.js' type='text/javascript'><\/script>");
       }
     // -->
-    </script> 
+    </script>
 
     <div id="mediaspiller-${dateStr}">
       <a class="vrtx-media" href="${media?html}">
@@ -53,7 +53,7 @@
         document.write("<scr" + "ipt src='/vrtx/__vrtx/static-resources/flash/StrobeMediaPlayback_1.5.1-patched/10.1/scripts/swfobject.js' type='text/javascript'><\/script>");
       }
     // -->
-    </script> 
+    </script>
 
     <#if contentType == "audio" || contentType == "audio/mpeg" || contentType == "audio/mp3" || contentType == "audio/x-mpeg">
       <#-- <script type="text/javascript" src="${audioFlashPlayerJsURL?html}/"></script> -->
@@ -89,7 +89,7 @@
         <param name="autoplay" value="<#if autoplay?exists && autoplay = "true">true<#else>false</#if>"/>
         <param name="controller" value="true"/>
         <param name="loop" value="false"/>
-        <param name="scale" value="aspect" />         
+        <param name="scale" value="aspect" />
         <embed src="${media?html}" 
                width="${width}" 
                height="${height}"

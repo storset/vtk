@@ -85,8 +85,8 @@ public class ImageEditController extends ResourceEditController {
         Property imageWidthProp = widthPropDef.createProperty();
         imageWidthProp.setIntValue(wrapper.getNewWidth());
         resource.addProperty(imageWidthProp);
-
-        this.resourceManager.store(wrapper);
+      
+        repository.store(token, resource);
 
         if (wrapper.isSaveCopy() && this.editImageService != null && this.copyHelper != null
                 && this.saveImageHelper != null) {

@@ -171,13 +171,15 @@ public class Login extends SamlService {
 
         String inResponseToID = samlResponse.getInResponseTo();
         if (!expectedRequestID.toString().equals(inResponseToID)) {
-            authLogger.debug("Request IDs not equal - expectedReqID: " + expectedRequestID + " inresponseToID: "
+            authLogger.debug(request.getRemoteAddr() + " - request-URI: " + request.getRequestURI() + " - "
+                    + "Request IDs not equal - expectedReqID: " + expectedRequestID + " inresponseToID: "
                     + inResponseToID);
 
             throw new AuthenticationException("Request ID mismatch");
             // throw new InvalidRequestException("Request ID mismatch");
         }
-        authLogger.debug("Request IDs are equal - expectedReqID: " + expectedRequestID + " inresponseToID: "
+        authLogger.debug(request.getRemoteAddr() + " - request-URI: " + request.getRequestURI() + " - "
+                + "Request IDs are equal - expectedReqID: " + expectedRequestID + " inresponseToID: "
                 + inResponseToID);
 
         verifyStatusCodeIsSuccess(samlResponse);

@@ -36,7 +36,7 @@
   <#if (menu.items?size > 0 || menu.label == "resourceMenuRight")>
 
       <#assign size = 0 />
-      <#list menu.items as item> 
+      <#list menu.items as item>
         <#if item.url?exists>
           <#assign size = size+1 />
         </#if>
@@ -45,12 +45,12 @@
       <#if (size > 0)>
         <ul class="list-menu" id="${menu.label}">
         <#assign count = 1 />
-        <#list menu.items as item> 
+        <#list menu.items as item>
           <#if item.url?exists>
             <#if count == 1 && count == size && menu.label != "resourceMenuRight">
               <li class="${item.label} first last">
             <#elseif count == 1>
-              <li class="${item.label} first">     
+              <li class="${item.label} first">
             <#elseif count == size && menu.label != "resourceMenuRight">
               <li class="${item.label} last">
             <#else>
@@ -67,7 +67,7 @@
               </li>
               <#assign count = count+1 />
           </#if>
-        </#list>  
+        </#list>
       </#if>
       
       <#if menu.label == "resourceMenuRight">
@@ -89,7 +89,7 @@
       
      <#if (size > 0)>
        </ul>
-     </#if> 
+     </#if>
      
     <#-- Output the form if it exists -->
     <#if displayForms && menu.activeItem?exists>

@@ -45,7 +45,7 @@
     <title>${(title.title)?default(resourceContext.currentResource.name)}</title>
     <script type="text/javascript"><!--
       var previewLoadingMsg = "${vrtx.getMsg('preview.loadingMsg')}";
-    // -->   
+    // --> 
     </script> 
   </head>
   <body id="vrtx-preview">

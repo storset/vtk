@@ -120,13 +120,13 @@
   </bean>
 
   <bean id="editor.loadImageService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="parent" ref="editor.imageEditService" />
+    <property name="parent" ref="viewService" />
     <property name="order" value="-99999" />
     <property name="assertions">
       <list>
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
-          <property name="parameterName" value="edit-action" />
-          <property name="parameterValue" value="load-image" />
+          <property name="parameterName" value="action" />
+          <property name="parameterValue" value="previewResource" />
         </bean>
       </list>
     </property>

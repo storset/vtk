@@ -62,7 +62,8 @@ resourcetype person {
   services {
     getExternalPersonInfo userMetadataLdapService
        requires(username)
-       affects(firstName, surname, position, postalAddress, visitingAddress, phone, mobile, fax, email, externalUserMetaData, affiliations)
+       affects(firstName, surname, position, postalAddress, visitingAddress, phone, mobile, fax, email, externalUserMetaData),
+    username userAffiliationLdapService affects(affiliations)
   }
 
   view-components {

@@ -64,17 +64,17 @@
                 <span class="vrtx-photo-prefix"><@vrtx.msg code="article.photoprefix" />: </span>${photographer}
               </#if>
             </span>
-          </div> 
+          </div>
         </div>
       <#else>
         <#if photographer != ""><#-- No caption but image author set -->
           <div class="vrtx-introduction-image" <#if style?has_content>style="${style}"</#if>>
-            <img src="${introductionImage}" alt="${vrtx.getMsg("article.introductionImageAlt")}" />   
+            <img src="${introductionImage}" alt="${vrtx.getMsg("article.introductionImageAlt")}" />
             <div class="vrtx-imagetext">
               <span class="vrtx-photo">
                 <span class="vrtx-photo-prefix"><@vrtx.msg code="article.photoprefix" />: </span>${photographer}
               </span>
-            </div>     
+            </div>
           </div>
         <#else><#-- No caption or image author set -->
           <img class="vrtx-introduction-image" src="${introductionImage}" alt="${vrtx.getMsg("article.introductionImageAlt")}" />
@@ -225,7 +225,7 @@
           <#if (url.title) = "prev" ><@vrtx.msg code="viewCollectionListing.previous" />
           <#elseif (url.title) = "next" ><@vrtx.msg code="viewCollectionListing.next" />
           <#else >${(url.title?html)}
-          </#if>       
+          </#if>
           </#compress></a>
         </#list>
     </span>
@@ -238,7 +238,7 @@
       <a href="${titleLink?html}" class="vrtx-${type}-title-link vrtx-dropdown-title-link">${title?html}</a>
       <a href="javascript:void(0)" class="vrtx-${type}-link vrtx-dropdown-link"></a>
     <#else>
-      <a href="javascript:void(0)" class="vrtx-${type}-link vrtx-dropdown-link">${title?html}</a>  
+      <a href="javascript:void(0)" class="vrtx-${type}-link vrtx-dropdown-link">${title?html}</a>
     </#if>
     <div class="vrtx-${type}-wrapper vrtx-dropdown-wrapper">
       <div class="vrtx-${type}-wrapper-inner vrtx-dropdown-wrapper-inner">
@@ -275,7 +275,7 @@
             <#if alt.contentType = 'application/atom+xml'>
               <li><a id="vrtx-feed-link" href="${alt.url?html}"><@vrtx.msg code="viewCollectionListing.feed.fromThis" /></a></li>
             <#elseif alt.contentType = 'text/calendar' && (displayEventListingICalLink?? && displayEventListingICalLink)>
-              <#assign altUrl = alt.url?replace("http://", "webcal://")?html /> 
+              <#assign altUrl = alt.url?replace("http://", "webcal://")?html />
               <li><a id="vrtx-ical-link" href="${altUrl}"><@vrtx.msg code="eventListing.ical.add" /></a></li>
             </#if>
           </#list>
@@ -286,10 +286,10 @@
             <div class="vrtx-feed-link">
               <a id="vrtx-feed-link" href="${alt.url?html}"><@vrtx.msg code="viewCollectionListing.feed.fromThis" /></a>
             </div>
-          </#if> 
-        </#list>      
+          </#if>
+        </#list>
       </#if>
-    </#if> 
+    </#if>
     </div>
   </#if>
 </#macro>

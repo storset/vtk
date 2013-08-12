@@ -80,7 +80,7 @@
                <img src="/vrtx/__vrtx/static-resources/themes/default/icons/audio-icon.png" alt="audio icon" />
              </a>
            <#elseif resourceType == "video">
-               <#local introImgURI = vrtx.propValue(r, 'poster-image') />     	 
+               <#local introImgURI = vrtx.propValue(r, 'poster-image') />
 	           <#if introImgURI?exists && introImgURI != "">
 	    			<#local thumbnail =  vrtx.relativeLinkConstructor(introImgURI, 'displayThumbnailService') />
 	    	  	<#else>
@@ -105,21 +105,21 @@
              <#elseif displayPropDef.name = 'lastModified'>
                <#assign val = vrtx.propValue(r, displayPropDef.name, 'short') />
              <#elseif displayPropDef.name = 'duration'  >
-                <#if r.getProperty(displayPropDef)?exists >                 
+                <#if r.getProperty(displayPropDef)?exists >
                     <#local property = r.getProperty(displayPropDef) />
                     <#if property?exists>
-                        <div class="${displayPropDef.name}">                
+                        <div class="${displayPropDef.name}">
                             <@vrtx.displayTime property.intValue />
                         </div>
                     </#if>
                 </#if>
              <#else>
                 <#assign val = vrtx.propValue(r, displayPropDef.name) />
-             </#if> 
+             </#if>
              <#if val?has_content>
                <div class="${displayPropDef.name}">
                  ${val}
-               </div>            
+               </div>
              </#if>
            </#list>
          </div>

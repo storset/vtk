@@ -101,7 +101,7 @@
               <#local isTruncated = vrtx.propValue(message, "isTruncated", "", "") />
               <#if isTruncated?exists && isTruncated = 'true'>
                 <div class="vrtx-read-more">
-                  <a href="${message.URI?html}" class="more">
+                  <a href="${messageEntry.url?html}" class="more">
                     <@vrtx.localizeMessage code="viewCollectionListing.readMore" default="" args=[] locale=locale />
                   </a>
                 </div>

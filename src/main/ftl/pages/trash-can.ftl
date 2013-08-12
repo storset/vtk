@@ -5,7 +5,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <title>Trash Can</title>     
+    <title>Trash Can</title>
   </head>
 <body id="vrtx-trash-can">
 
@@ -52,15 +52,15 @@
           <#assign rr = tco.recoverableResource />
           <#assign firstLast = ""  />
           <#if (tco_index == 0) && (tco_index == (collectionSize - 1))>
-            <#assign firstLast = " first last" />  
+            <#assign firstLast = " first last" />
           <#elseif (tco_index == 0)>
             <#assign firstLast = " first" />
-          <#elseif (tco_index == (collectionSize - 1))>    
-            <#assign firstLast = " last" />     
+          <#elseif (tco_index == (collectionSize - 1))>
+            <#assign firstLast = " last" />
           </#if>
         
           <#if rr.isCollection()>
-            <tr class="${rowType} <@vrtx.recoverableResourceToIconResolver rr /> true${firstLast}">  
+            <tr class="${rowType} <@vrtx.recoverableResourceToIconResolver rr /> true${firstLast}">
           <#else>
             <tr class="${rowType} <@vrtx.recoverableResourceToIconResolver rr />${firstLast}">
           </#if>
@@ -87,7 +87,7 @@
         <tr id="trash-can-empty" class="first last">
           <td colspan="4"><@vrtx.msg code="trash-can.empty" default="The trash can contains no garbage" /></td>
         </tr>
-      </#if>    
+      </#if>
     </tbody>
   </table>
 

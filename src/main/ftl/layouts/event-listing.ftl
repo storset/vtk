@@ -154,7 +154,7 @@
 </#if>
 
     <#-- The actual event we are displaying -->
-    <#local event = entryEntry.propertySet />
+    <#local event = eventEntry.propertySet />
 
     <#local title = vrtx.propValue(event, 'title') />
     <#local location  = vrtx.propValue(event, 'location')  />

@@ -370,7 +370,7 @@
  *        Default is 'defaultPropertyDisplay'
 -->
 <#macro propertyDisplay item toggle=false defaultItem=false displayMacro='defaultPropertyDisplay'>
-  <#local msgPrefix = localizationPrefix(item) />  
+  <#local msgPrefix = localizationPrefix(item) />
   <#local name = vrtx.getMsg(msgPrefix, item.definition.name) />
   
   <#assign valueItem=item />
@@ -500,7 +500,7 @@
           <select name="value">
           <#list form.possibleValues as alternative>
             <#if alternative?has_content>
-              <#local constructor = "freemarker.template.utility.ObjectConstructor"?new() />    
+              <#local constructor = "freemarker.template.utility.ObjectConstructor"?new() />
               <#local label>${item.definition.valueFormatter.valueToString(constructor("org.vortikal.repository.resourcetype.Value", alternative, item.definition.type), "localized", springMacroRequestContext.locale)}</#local>
               <option value="${alternative}" <#if form.value?has_content && form.value = alternative>selected="true"</#if> label="${label}">${label}</option>
             <#else>
@@ -663,7 +663,7 @@
     <#local macroCall = .main[macroName] />
   <#else>
     <#stop "No such macro: ${macroName}" />
-  </#if>        
+  </#if>
   <#return macroCall />
 </#function>
 

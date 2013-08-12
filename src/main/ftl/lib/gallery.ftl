@@ -122,7 +122,7 @@
 	 </#if>
 	        <#if imageListing != "">
 	          <span><img class="vrtx-full-image" src="${url?split("?")[0]?html}" alt='${description}' style="width: ${width}px; height: ${height}px" <#if showTitle>title="${title}"</#if> /></span>
-	        <#else>  
+	        <#else>
 	          <span><img class="vrtx-full-image" src="${url?html}" alt='${description}' style="width: ${width}px; height: ${height}px" <#if showTitle>title="${title}"</#if> /></span> 
 	        </#if>
 	          <span class="hiddenWidth" style="display: none">${width}</span>

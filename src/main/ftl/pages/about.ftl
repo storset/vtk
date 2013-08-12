@@ -132,7 +132,7 @@
              name = vrtx.getMsg("resource.viewURL", "Web address")
              value = url />
 
-      <!-- WebDAV address -->      
+      <!-- WebDAV address -->
       <#assign url>${resourceDetail.webdavURL?html}</#assign>
       <@propList.defaultPropertyDisplay 
              propName = "webdavURL"
@@ -176,7 +176,7 @@
         <!-- Size -->
         <#assign size>
          <#if resourceContext.currentResource.contentLength?exists>
-            <@vrtx.calculateResourceSize resourceContext.currentResource.contentLength />       
+            <@vrtx.calculateResourceSize resourceContext.currentResource.contentLength />
          <#else>
             <@vrtx.msg code="property.contentLength.unavailable" default="Not available" />
          </#if>
@@ -195,7 +195,7 @@
            <@propList.defaultPropertyDisplay propName = 'editorial-contacts' 
                                              name = vrtx.getMsg("property.editorial-contacts")
                                              value = vrtx.getPropValue(resource, "editorial-contacts") />
-        </#if>        
+        </#if>
       <#else>
         <!-- Obsolete for collection -->
         <#if resourceDetail.propertyInheritanceMap["obsoleted"]?exists>

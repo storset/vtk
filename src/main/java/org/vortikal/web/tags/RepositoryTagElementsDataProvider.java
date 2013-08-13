@@ -70,14 +70,14 @@ public class RepositoryTagElementsDataProvider {
     }
 
     public List<TagElement> getTagElements(Path scopeUri, String token, int magnitudeMin, int magnitudeMax, int limit,
-            int tagOccurenceMin) throws QueryException, IllegalArgumentException {
+            int tagOccurenceMin) throws Exception {
         return this.getTagElements(scopeUri, token, magnitudeMin, magnitudeMax, limit, tagOccurenceMin, null, null,
                 null, false);
     }
 
     public List<TagElement> getTagElements(Path scopeUri, String token, int magnitudeMin, int magnitudeMax, int limit,
             int tagOccurenceMin, List<ResourceTypeDefinition> resourceTypeDefs, List<String> urlSortingParams,
-            String overrideResourceTypeTitle, boolean displayScope) throws QueryException, IllegalArgumentException {
+            String overrideResourceTypeTitle, boolean displayScope) throws Exception {
 
         // Do data report query
         List<TagFrequency> result = this.tagsReporter

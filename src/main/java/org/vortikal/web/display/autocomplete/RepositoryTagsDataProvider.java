@@ -78,15 +78,15 @@ public class RepositoryTagsDataProvider implements VocabularyDataProvider<Tag> {
         // TODO might consider adding limit on number of unique tags that are
         // fetched.
         try {
-            List<TagFrequency> reportResult = tagsReporter.getTags(context.getContextUri(),
-                                                            null, -1, -1, context.getToken());
+            List<TagFrequency> reportResult = tagsReporter.getTags(context.getContextUri(), null, -1, -1,
+                    context.getToken());
             List<Tag> retVal = new ArrayList<Tag>(reportResult.size());
             for (TagFrequency tf : reportResult) {
                 retVal.add(new Tag(tf.getTag()));
             }
 
             return retVal;
-        } catch (QueryException qe) {
+        } catch (Exception qe) {
             logger.warn("Failed to execute query", qe);
 
             // Return empty list when failed, for now.
@@ -99,8 +99,7 @@ public class RepositoryTagsDataProvider implements VocabularyDataProvider<Tag> {
         Iterator<Tag> i = list.iterator();
         while (i.hasNext()) {
             String tagText = i.next().getText();
-            if (!(prefix.length() <= tagText.length()
-                    && tagText.substring(0, prefix.length()).equalsIgnoreCase(prefix))) {
+            if (!(prefix.length() <= tagText.length() && tagText.substring(0, prefix.length()).equalsIgnoreCase(prefix))) {
                 i.remove();
             }
         }

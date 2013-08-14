@@ -41,7 +41,6 @@
         <ref bean="hideNumberOfCommentsPropDef" />
         <ref bean="obsoletedPropDef" />
         <ref bean="editorialContactsPropDef" />
-        <ref bean="unpublishedCollectionPropDef"  />
       </list>
     </property>
   </bean>

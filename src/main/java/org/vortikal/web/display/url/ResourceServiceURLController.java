@@ -110,8 +110,13 @@ public class ResourceServiceURLController implements Controller {
             }
         }
 
-        // Add parameter to preview unpublished resources
-        resourceViewURL.addParameter("vrtxPreviewUnpublished", "true");
+        // Add parameter to preview view unpublished only if resource actually
+        // is unpublished
+        if (this.previewUnpublished) {
+            if (!resource.isPublished()) {
+                resourceViewURL.addParameter("vrtxPreviewUnpublished", "true");
+            }
+        }
 
         // Add parameter to preview obsoleted only if resource actually is
         // obsoleted

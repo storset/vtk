@@ -57,8 +57,14 @@
             </#if>
               <a class="vrtx-icon <@vrtx.resourceToIconResolver entryPropSet />" href="${entry.url?html}"></a>
               <a class="vrtx-title-link" href="${entry.url?html}">${title?html}</a>
+
+            <#--
+              Only local resources are ever evaluated for edit authorization.
+              Use prop set path (uri) and NOT full entry url for link construction.
+              See open-webdav.js
+            -->
             <#if entry.isEditAuthorized()>
-              <a class="vrtx-resource-open-webdav" href="${vrtx.linkConstructor(entry.url, 'webdavService')}"><@vrtx.msg code="collectionListing.edit" /></a>
+              <a class="vrtx-resource-open-webdav" href="${vrtx.linkConstructor(entryPropSet.URI, 'webdavService')}"><@vrtx.msg code="collectionListing.edit" /></a>
             </#if>
             <#if conf.compactView>
               <span>${lastModifiedTime?html}</span>

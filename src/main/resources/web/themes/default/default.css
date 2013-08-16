@@ -2028,6 +2028,52 @@ p.previewUnavailableReasons {
   color: #5e5e5e;
 }
 
+/* Preview actions */
+
+ul#preview-mode,
+ul#preview-mode li,
+ul#preview-actions,
+ul#preview-actions li {
+  display: inline-block;
+}
+
+ul#preview-mode {
+  float: left;
+}
+
+ul#preview-actions {
+  float: right;
+}
+
+#contents ul#preview-actions li {
+  margin-left: 25px;
+}
+
+ul#preview-actions li a {
+  padding: 2px 0;
+}
+
+ul#preview-actions #preview-actions-share {
+  padding-left: 20px;
+  background: url(images/preview-share.png) no-repeat center left;
+}
+
+ul#preview-actions #preview-actions-print {
+  padding-left: 22px;
+  background: url(images/preview-print.png) no-repeat center left;
+}
+
+ul#preview-actions #preview-actions-fullscreen-toggle {
+  padding-left: 22px;
+  background: url(images/preview-maximize.png) no-repeat 0 3px;
+}
+
+.fullscreen-toggle-open ul#preview-actions #preview-actions-fullscreen-toggle {
+  background-image: url(images/preview-minimize.png);
+}
+
+/* ^ Preview actions  */
+
 /* Preview popup */
 
 html#vrtx-preview-popup,
@@ -2783,6 +2829,10 @@ ul.radio-buttons li,
 .expandedForm form ul li,
 form.vrtx-admin-form ul,
 form.vrtx-admin-form ul li,
+ul#preview-mode,
+ul#preview-mode li,
+ul#preview-actions,
+ul#preview-actions li,
 ul#vrtx-manually-approve-tab-menu,
 ul#vrtx-manually-approve-tab-menu li,
 #vrtx-preview-ssl-mixed-mode #contents ul,

@@ -76,7 +76,26 @@
   $(document).ready(function() {
     isPreviewMode = $("#vrtx-preview").length;
     if(isPreviewMode) {
-      body = $("body");
+   
+      body = $("body"); 
+   
+      $(document).on("click", "#preview-actions-print", function(e) {
+        window.print();
+        e.preventDefault();
+        e.stopPropagation();
+      });
+          
+      $(document).on("click", "#preview-actions-fullscreen-toggle", function(e) {
+        body.toggleClass('fullscreen-toggle-open');
+        if(body.hasClass('fullscreen-toggle-open')) {
+          $(this).text(fullscreenToggleClose);
+        } else {
+          $(this).text(fullscreenToggleOpen);
+        }
+        e.preventDefault();
+        e.stopPropagation();
+      });
+
       contents = body.find("#contents");
       var appContentHeight = body.find("#app-content").height();
       var appHeadWrapperHeight = body.find("#app-head-wrapper").outerHeight(true);

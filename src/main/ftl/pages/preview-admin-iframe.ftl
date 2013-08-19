@@ -91,8 +91,8 @@
     
     <!-- Preview mode -->
     <ul id="preview-mode">
-      <li><span>${vrtx.getMsg("preview.view-mode.normal")}</span></li>
-      <li><a href="">${vrtx.getMsg("preview.view-mode.mobile")}</a></li>
+      <li><span id="preview-mode-normal">${vrtx.getMsg("preview.view-mode.normal")}</span></li>
+      <li><a id="preview-mode-mobile" href="javascript:void(0);">${vrtx.getMsg("preview.view-mode.mobile")}</a></li>
     </ul>
     <script type="text/javascript"><!--
       var fullscreenToggleOpen = '${vrtx.getMsg("preview.actions.fullscreen-toggle.open")}',

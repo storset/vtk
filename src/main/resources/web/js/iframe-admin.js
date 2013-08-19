@@ -77,10 +77,25 @@
     isPreviewMode = $("#vrtx-preview").length;
     if(isPreviewMode) {
    
-      body = $("body"); 
+      body = $("body");
+      
+      $(document).on("click", "#preview-mode-mobile", function(e) {
+        $("#previewIframe").addClass("mobile");
+        var normal = $("#preview-mode span");
+        normal.replaceWith("<a id='" + normal.attr("id") + "' href='javascript:void(0);'>" + normal.text() + "</span");
+        $(this).replaceWith("<span id='" + this.id + "'>" + $(this).text() + "</span");
+      });
+      
+      $(document).on("click", "#preview-mode-normal", function(e) {
+        $("#previewIframe").removeClass("mobile");
+        var mobile = $("#preview-mode span");
+        mobile.replaceWith("<a id='" + mobile.attr("id") + "' href='javascript:void(0);'>" + mobile.text() + "</span");
+        $(this).replaceWith("<span id='" + this.id + "'>" + $(this).text() + "</span");
+      });
    
       $(document).on("click", "#preview-actions-print", function(e) {
-        window.print();
+        // Print iframe
+        alert("Implement.");
         e.preventDefault();
         e.stopPropagation();
       });
@@ -88,13 +103,14 @@
       $(document).on("click", "#preview-actions-fullscreen-toggle", function(e) {
         body.toggleClass('fullscreen-toggle-open');
         if(body.hasClass('fullscreen-toggle-open')) {
+          alert("Implement.");
           $(this).text(fullscreenToggleClose);
         } else {
           $(this).text(fullscreenToggleOpen);
         }
         e.preventDefault();
         e.stopPropagation();
-      });
+      });	
 
       contents = body.find("#contents");
       var appContentHeight = body.find("#app-content").height();

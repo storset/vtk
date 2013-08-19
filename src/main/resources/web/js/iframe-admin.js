@@ -71,6 +71,12 @@
       previewLoading.remove();
     }
   }
+  
+  function switchPreviewMode(parentId, elm) {
+    var notLink = $(parentId + " span");
+    notLink.replaceWith("<a id='" + notLink.attr("id") + "' href='javascript:void(0);'>" + notLink.text() + "</span");
+    $(elm).replaceWith("<span id='" + elm.id + "'>" + $(elm).text() + "</span");
+  }
 
   // Find min-height
   $(document).ready(function() {
@@ -81,16 +87,12 @@
       
       $(document).on("click", "#preview-mode-mobile", function(e) {
         $("#previewIframe").addClass("mobile");
-        var normal = $("#preview-mode span");
-        normal.replaceWith("<a id='" + normal.attr("id") + "' href='javascript:void(0);'>" + normal.text() + "</span");
-        $(this).replaceWith("<span id='" + this.id + "'>" + $(this).text() + "</span");
+        switchPreviewMode("#preview-mode", this);
       });
       
       $(document).on("click", "#preview-mode-normal", function(e) {
         $("#previewIframe").removeClass("mobile");
-        var mobile = $("#preview-mode span");
-        mobile.replaceWith("<a id='" + mobile.attr("id") + "' href='javascript:void(0);'>" + mobile.text() + "</span");
-        $(this).replaceWith("<span id='" + this.id + "'>" + $(this).text() + "</span");
+        switchPreviewMode("#preview-mode", this);
       });
    
       $(document).on("click", "#preview-actions-print", function(e) {

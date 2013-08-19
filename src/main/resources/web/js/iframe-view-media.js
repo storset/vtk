@@ -42,7 +42,7 @@ crossDocComLink.setUpReceiveDataHandler(function(cmdParams, source) {
   function sendPreviewLoaded() {
     if(!sentPreviewLoaded) {
       crossDocComLink.postCmdToParent("preview-loaded");
-      $("a").attr("target", "_top");
+      $("a").attr("target", "vrtx-preview-window");
       sentPreviewLoaded = true;
     }
   }

@@ -56,6 +56,7 @@
   <#include "/system/css.ftl"/> 
   <#include "/system/javascript.ftl"/>
   <script type="text/javascript"><!--
+
   function linkCheckResponseLocalizer(status) {
       switch (status) {
          case 'NOT_FOUND':
@@ -80,7 +81,7 @@
 
   $(document).ready(function() {
      $('iframe').load(function() {
-        $(this).contents().find("a").attr("target", "_top");
+        $(this).contents().find("a").attr("target", "vrtx-preview-window");
         
         <#if visualizeBrokenLinks?exists && visualizeBrokenLinks = 'true'> 
         

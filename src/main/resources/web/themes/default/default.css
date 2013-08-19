@@ -2088,6 +2088,7 @@ p.previewUnavailableReasons {
 #preview-mode,
 #preview-actions {
   display: none;
+  margin-top: 0;
 }
 
 .js ul#preview-mode {

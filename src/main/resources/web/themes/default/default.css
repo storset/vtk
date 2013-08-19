@@ -2031,15 +2031,15 @@ body#vrtx-preview #app-content #contents #previewIframeWrapper.mobile iframe#pre
   height: 494px !important;
   background-color: #fff;
   display: block;
-  margin: 12px auto 0;
+  margin: 30px auto 0;
   border: none;
 }
 
 body#vrtx-preview #app-content #contents #previewIframeWrapper.mobile {
-  background: #ececec url(images/preview-mobile-bg.png) no-repeat 50% 50%;
+  background: #ececec url(images/preview-mobile-bg.png) no-repeat 50% 98px;
   clear: both;
-  min-height: 494px;
-  padding: 130px 0;
+  height: 494px !important;
+  padding: 190px 0;
 }
 
 body#vrtx-preview #app-content #contents .previewUnavailable {
@@ -2085,17 +2085,23 @@ p.previewUnavailableReasons {
 
 /* Preview actions */
 
-ul#preview-actions,
+#preview-mode,
+#preview-actions {
+  display: none;
+}
+
+.js ul#preview-mode {
+  float: left;
+  display: block;
+}
+
+.js ul#preview-actions {
+  float: right;
+  display: block;
+}
+
 ul#preview-actions li {
   display: inline-block;
-}
-
-ul#preview-mode {
-  float: left;
-}
-
-ul#preview-actions {
-  float: right;
 }
 
 #contents ul#preview-actions li {

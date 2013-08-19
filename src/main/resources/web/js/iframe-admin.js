@@ -71,12 +71,6 @@
       previewLoading.remove();
     }
   }
-  
-  function switchPreviewMode(parentId, elm) {
-    var notLink = $(parentId + " span");
-    notLink.replaceWith("<a id='" + notLink.attr("id") + "' href='javascript:void(0);'>" + notLink.text() + "</span");
-    $(elm).replaceWith("<span id='" + elm.id + "'>" + $(elm).text() + "</span");
-  }
 
   // Find min-height
   $(document).ready(function() {
@@ -85,14 +79,11 @@
    
       body = $("body");
       
-      $(document).on("click", "#preview-mode-mobile", function(e) {
-        $("#previewIframe").addClass("mobile");
-        switchPreviewMode("#preview-mode", this);
-      });
-      
-      $(document).on("click", "#preview-mode-normal", function(e) {
-        $("#previewIframe").removeClass("mobile");
-        switchPreviewMode("#preview-mode", this);
+      $(document).on("click", "#preview-mode a", function(e) {
+        $("#previewIframe").toggleClass("mobile");
+        var notLink = $("#preview-mode span");
+        notLink.replaceWith("<a id='" + notLink.attr("id") + "' href='javascript:void(0);'>" + notLink.text() + "</span");
+        $(this).replaceWith("<span id='" + this.id + "'>" + $(this).text() + "</span");
       });
    
       $(document).on("click", "#preview-actions-print", function(e) {

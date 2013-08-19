@@ -79,6 +79,11 @@
    
       body = $("body");
       
+      // As we can't check on matchMedia and Modernizr is not included in admin yet - check that not is <= IE8
+      if(vrtxAdmin.isIE8) {
+        $("#preview-mode").hide();
+      }
+      
       $(document).on("click", "#preview-mode a", function(e) {
         var previewIframe = $("iframe#previewIframe")[0];
         if(!$("#previewIframeWrapper").hasClass("mobile")) {

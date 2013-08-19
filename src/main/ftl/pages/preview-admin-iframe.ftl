@@ -91,7 +91,7 @@
     
     <!-- Preview mode -->
     <ul id="preview-mode">
-      <li><span id="preview-mode-normal">${vrtx.getMsg("preview.view-mode.normal")}</span></li>
+      <li class="active-mode"><span id="preview-mode-normal">${vrtx.getMsg("preview.view-mode.normal")}</span></li>
       <li><a id="preview-mode-mobile" href="javascript:void(0);">${vrtx.getMsg("preview.view-mode.mobile")}</a></li>
     </ul>
     <script type="text/javascript"><!--
@@ -106,12 +106,14 @@
       <li><a id="preview-actions-print" href="javascript:void(0);">${vrtx.getMsg("preview.actions.print")}</a></li>
       <li><a id="preview-actions-fullscreen-toggle" href="javascript:void(0);">${vrtx.getMsg("preview.actions.fullscreen-toggle.open")}</a></li>
     </ul>
-
-    <iframe class="preview" name="previewIframe" id="previewIframe" src="${url}" marginwidth="0" marginheight="0" scrolling="auto" frameborder="0" style="overflow:visible; width:100%; ">
-      [Your user agent does not support frames or is currently configured
-      not to display frames. However, you may visit
-      <a href="${resourceReference}">the related document.</a>]
-    </iframe>
+   
+    <div id="previewIframeWrapper">
+      <iframe class="preview" name="previewIframe" id="previewIframe" src="${url}" marginwidth="0" marginheight="0" scrolling="auto" frameborder="0" style="overflow:visible; width:100%; ">
+        [Your user agent does not support frames or is currently configured
+        not to display frames. However, you may visit
+        <a href="${resourceReference}">the related document.</a>]
+      </iframe>
+    </div>
   </body>
 </html>
 

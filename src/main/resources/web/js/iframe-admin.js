@@ -80,10 +80,14 @@
       body = $("body");
       
       $(document).on("click", "#preview-mode a", function(e) {
-        $("#previewIframe").toggleClass("mobile");
+        $("#previewIframeWrapper").toggleClass("mobile");
         var notLink = $("#preview-mode span");
+        
+        notLink.parent().removeClass("active-mode");
+        $(this).parent().addClass("active-mode");
+        
         notLink.replaceWith("<a id='" + notLink.attr("id") + "' href='javascript:void(0);'>" + notLink.text() + "</span");
-        $(this).replaceWith("<span id='" + this.id + "'>" + $(this).text() + "</span");
+        $(this).replaceWith("<span id='" + this.id + "'>" + $(this).text() + "</span>")
       });
    
       $(document).on("click", "#preview-actions-print", function(e) {

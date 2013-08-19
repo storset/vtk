@@ -278,50 +278,6 @@ td.vrtx-report-broken-links li {
 
 /* ^ Responsive width distribution */
 
-#vrtx-report-filters ul.vrtx-report-filter-last {
-  margin-right: 0;
-}
-
-#vrtx-report-filters ul li {
-  float: left;
-  margin-right: 2px;
-  display: inline-block;
-  white-space: nowrap;
-  overflow: visible;
-  height: 22px;
-}
-
-#vrtx-report-filters ul li.active-filter span,
-#vrtx-report-filters ul li a {
-  height: 19px;
-  padding: 3px 9px 0 10px;
-  display: inline-block;
-}
-
-#vrtx-report-filters ul li.active-filter,
-#vrtx-report-filters ul li.active-filter:hover {
-  background: url(../images/report-filter-hover-left.png) no-repeat 0 0;
-}
-
-#vrtx-report-filters ul li.active-filter span,
-#vrtx-report-filters ul li.active-filter:hover span {
-  background: url(../images/report-filter-hover-right.png) no-repeat top right;
-  display: inline-block;
-  /* color: #fff; */
-}
-
-/*
-#vrtx-report-filters ul li:hover {
-  background: url(../images/report-filter-hover-left.png) no-repeat 0 0;
-}
-
-#vrtx-report-filters ul li:hover a {
-  background: url(../images/report-filter-hover-right.png) no-repeat top right;
-  color: #363534;
-  text-decoration: none;
-}
-*/
-
 /* Remove "Other:" */
 #vrtx-report-filters ul li#vrtx-report-filter-link-type-other {
   display: none;

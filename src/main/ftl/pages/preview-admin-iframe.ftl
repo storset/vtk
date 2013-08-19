@@ -88,6 +88,8 @@
     <#else>
       <#assign mailDocument = resourceContext.currentURI + "?vrtx=admin" />
     </#if>
+    
+    <!-- Preview mode -->
     <ul id="preview-mode">
       <li><span>${vrtx.getMsg("preview.view-mode.normal")}</span></li>
       <li><a href="">${vrtx.getMsg("preview.view-mode.mobile")}</a></li>
@@ -97,6 +99,8 @@
           fullscreenToggleClose = '${vrtx.getMsg("preview.actions.fullscreen-toggle.close")}';
     // -->
     </script>
+    
+    <!-- Preview actions -->
     <ul id="preview-actions">
       <li><a id="preview-actions-share" href="mailto:?subject=${mailSubject}&body=${vrtx.getMsg('preview.actions.share.mail.body', '', ['${mailDocument?url("UTF-8")}', '${resourceContext.principal.description?url("UTF-8")}'])}">${vrtx.getMsg("preview.actions.share")}</a></li>
       <li><a id="preview-actions-print" href="javascript:void(0);">${vrtx.getMsg("preview.actions.print")}</a></li>

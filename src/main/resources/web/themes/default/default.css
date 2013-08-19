@@ -2031,12 +2031,12 @@ body#vrtx-preview #app-content #contents #previewIframeWrapper.mobile iframe#pre
   height: 494px !important;
   background-color: #fff;
   display: block;
-  margin: 30px auto 0;
+  margin: 26px auto 0;
   border: none;
 }
 
 body#vrtx-preview #app-content #contents #previewIframeWrapper.mobile {
-  background: #ececec url(images/preview-mobile-bg.png) no-repeat 50% 98px;
+  background: #ececec url(images/preview-mobile-bg.png) no-repeat 50% 94px;
   clear: both;
   height: 494px !important;
   padding: 190px 0;
@@ -2099,6 +2099,7 @@ p.previewUnavailableReasons {
 .js ul#preview-actions {
   float: right;
   display: block;
+  margin-top: 3px;
 }
 
 ul#preview-actions li {
@@ -2106,7 +2107,7 @@ ul#preview-actions li {
 }
 
 #contents ul#preview-actions li {
-  margin-left: 25px;
+  margin-left: 30px;
 }
 
 ul#preview-actions li a {

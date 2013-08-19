@@ -107,6 +107,8 @@
         });
         
         $(document).on("click", "#preview-mode-mobile-rotate-hv", function(e) {
+          $("iframe#previewIframe").fadeTo(50, 0, "easeOutCubic").delay(150).fadeTo(50, 1, "easeOutCubic");
+        
           var previewIframe = $("iframe#previewIframe")[0];
           if(!$("#previewIframeWrapper").hasClass("horizontal")) {
             crossDocComLink.postCmdToIframe(previewIframe, "update-height|" + 328);

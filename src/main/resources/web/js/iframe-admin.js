@@ -80,7 +80,17 @@
       body = $("body");
       
       $(document).on("click", "#preview-mode a", function(e) {
+        var previewIframe = $("iframe#previewIframe")[0];
+        if(!$("#previewIframeWrapper").hasClass("mobile")) {
+          $("#previewIframeWrapper").css("height", $("#previewIframe").height());
+          crossDocComLink.postCmdToIframe(previewIframe, "update-height|" + 494);
+        } else {
+          $("#previewIframeWrapper").css("height", "auto");
+          crossDocComLink.postCmdToIframe(previewIframe, "restore-height");
+        }
+      
         $("#previewIframeWrapper").toggleClass("mobile");
+
         var notLink = $("#preview-mode span");
         
         notLink.parent().removeClass("active-mode");

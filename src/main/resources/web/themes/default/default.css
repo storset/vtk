@@ -2027,14 +2027,19 @@ body#vrtx-preview #app-content #contents iframe#previewIframe {
 }
 
 body#vrtx-preview #app-content #contents #previewIframeWrapper.mobile iframe#previewIframe {
-  width: 329px !important;
-  height: 300px !important;
+  width: 328px !important;
+  height: 494px !important;
   background-color: #fff;
+  display: block;
+  margin: 12px auto 0;
+  border: none;
 }
 
 body#vrtx-preview #app-content #contents #previewIframeWrapper.mobile {
-  background: #ececec;
+  background: #ececec url(images/preview-mobile-bg.png) no-repeat 50% 50%;
   clear: both;
+  min-height: 494px;
+  padding: 130px 0;
 }
 
 body#vrtx-preview #app-content #contents .previewUnavailable {

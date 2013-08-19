@@ -9,6 +9,7 @@
  */
 if (window != top) { // Obs IE bug: http://stackoverflow.com/questions/4850978/ie-bug-window-top-false
   var crossDocComLink = new CrossDocComLink();
+  var originalHeight = 0;
   crossDocComLink.setUpReceiveDataHandler(function (cmdParams, source) {
     switch (cmdParams[0]) {
       case "admin-min-height":
@@ -28,14 +29,29 @@ if (window != top) { // Obs IE bug: http://stackoverflow.com/questions/4850978/i
           } else {
             crossDocComLink.postCmdToParent("preview-keep-min-height");
           }
-          iframe.style.height = (setHeight - ($.browser.msie ? 4 : 0)) + "px";
+          setHeight = (setHeight - ($.browser.msie ? 4 : 0));
+          originalHeight = setHeight;
+          iframe.style.height = setHeight + "px";
         } catch (e) { // Error
           if (typeof console !== "undefined" && console.log) {
             console.log("Error finding preview height: " + e.message);
           }
-          iframe.style.height = (setHeight - ($.browser.msie ? 4 : 0)) + "px";
+          setHeight = (setHeight - ($.browser.msie ? 4 : 0));
+          originalHeight = setHeight;
+          iframe.style.height = setHeight + "px";
           crossDocComLink.postCmdToParent("preview-keep-min-height");
         }
+        break;
+      case "update-height":
+        var previewViewIframe = $("iframe#previewViewIframe");
+        var iframe = previewViewIframe[0];
+        var setHeight = (cmdParams.length === 2) ? cmdParams[1] : 500;
+        iframe.style.height = (setHeight - ($.browser.msie ? 4 : 0)) + "px";
+        break;
+      case "restore-height":
+        var previewViewIframe = $("iframe#previewViewIframe");
+        var iframe = previewViewIframe[0];
+        iframe.style.height = originalHeight + "px";
         break;
       default:
     }

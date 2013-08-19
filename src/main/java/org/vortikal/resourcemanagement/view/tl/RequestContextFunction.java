@@ -63,6 +63,7 @@ public class RequestContextFunction extends Function {
         result.put("request-url", urlToMap(url));
         result.put("headers", headersToMap(requestContext.getServletRequest()));
         result.put("principal", requestContext.getPrincipal());
+        result.put("view-unauthenticated", requestContext.isViewUnauthenticated());
         return result;
     }
     

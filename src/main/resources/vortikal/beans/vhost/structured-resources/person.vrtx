@@ -141,7 +141,7 @@ resourcetype person {
             <div class="vrtx-person-contact-info-line vrtx-username">
               <span class="vrtx-label">[localized "username"]</span>
               [def requestContext request-context()]
-              [if requestContext.principal]
+              [if requestContext.principal != null && requestContext.view-unauthenticated = false]
                 <span class="vrtx-value">[val username]</span>
               [else]
                 [call "include:login"]

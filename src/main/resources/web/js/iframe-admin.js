@@ -79,31 +79,31 @@
    
       body = $("body");
       
-      // As we can't check on matchMedia and Modernizr is not included in admin yet - check that not is <= IE8
+      // As we can't check on matchMedia and Modernizr is not included in admin yet - hide if <= IE8
       if(vrtxAdmin.isIE8) {
         $("#preview-mode").hide();
-      }
+      } else {
+        $(document).on("click", "#preview-mode a", function(e) {
+          var previewIframe = $("iframe#previewIframe")[0];
+          if(!$("#previewIframeWrapper").hasClass("mobile")) {
+            $("#previewIframeWrapper").css("height", $("#previewIframe").height());
+            crossDocComLink.postCmdToIframe(previewIframe, "update-height|" + 494);
+          } else {
+            $("#previewIframeWrapper").css("height", "auto");
+            crossDocComLink.postCmdToIframe(previewIframe, "restore-height");
+          }
       
-      $(document).on("click", "#preview-mode a", function(e) {
-        var previewIframe = $("iframe#previewIframe")[0];
-        if(!$("#previewIframeWrapper").hasClass("mobile")) {
-          $("#previewIframeWrapper").css("height", $("#previewIframe").height());
-          crossDocComLink.postCmdToIframe(previewIframe, "update-height|" + 494);
-        } else {
-          $("#previewIframeWrapper").css("height", "auto");
-          crossDocComLink.postCmdToIframe(previewIframe, "restore-height");
-        }
-      
-        $("#previewIframeWrapper").toggleClass("mobile");
+          $("#previewIframeWrapper").toggleClass("mobile");
 
-        var notLink = $("#preview-mode span");
+          var notLink = $("#preview-mode span");
         
-        notLink.parent().removeClass("active-mode");
-        $(this).parent().addClass("active-mode");
+          notLink.parent().removeClass("active-mode");
+          $(this).parent().addClass("active-mode");
         
-        notLink.replaceWith("<a id='" + notLink.attr("id") + "' href='javascript:void(0);'>" + notLink.text() + "</span");
-        $(this).replaceWith("<span id='" + this.id + "'>" + $(this).text() + "</span>")
-      });
+          notLink.replaceWith("<a id='" + notLink.attr("id") + "' href='javascript:void(0);'>" + notLink.text() + "</span");
+          $(this).replaceWith("<span id='" + this.id + "'>" + $(this).text() + "</span>")
+        });
+      }
    
       $(document).on("click", "#preview-actions-print", function(e) {
         var previewIframe = $("iframe#previewIframe")[0];

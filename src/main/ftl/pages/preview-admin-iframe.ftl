@@ -102,7 +102,7 @@
     
     <!-- Preview actions -->
     <ul id="preview-actions">
-      <li><a id="preview-actions-share" href="mailto:?subject=${mailSubject}&body=${vrtx.getMsg('preview.actions.share.mail.body', '', ['${mailDocument?url("UTF-8")}', '${resourceContext.principal.description?url("UTF-8")}'])}">${vrtx.getMsg("preview.actions.share")}</a></li>
+      <li><a id="preview-actions-share" href="mailto:?subject=${mailSubject}&amp;body=${vrtx.getMsg('preview.actions.share.mail.body', '', ['${mailDocument?url("UTF-8")}', '${resourceContext.principal.description?url("UTF-8")}'])}">${vrtx.getMsg("preview.actions.share")}</a></li>
       <li><a id="preview-actions-print" href="javascript:void(0);">${vrtx.getMsg("preview.actions.print")}</a></li>
       <li><a id="preview-actions-fullscreen-toggle" href="javascript:void(0);">${vrtx.getMsg("preview.actions.fullscreen-toggle.open")}</a></li>
     </ul>

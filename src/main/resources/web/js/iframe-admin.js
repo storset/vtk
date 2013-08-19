@@ -101,8 +101,8 @@
       });
    
       $(document).on("click", "#preview-actions-print", function(e) {
-        // Print iframe
-        alert("Implement.");
+        var previewIframe = $("iframe#previewIframe")[0];
+        crossDocComLink.postCmdToIframe(previewIframe, "print");
         e.preventDefault();
         e.stopPropagation();
       });

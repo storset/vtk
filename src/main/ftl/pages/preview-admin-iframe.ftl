@@ -102,6 +102,8 @@
     </ul>
 
     <div id="previewIframeWrapper">
+      <a href='javascript:void(0);' id='preview-mode-mobile-rotate-hv'>${vrtx.getMsg("preview.actions.mobile.rotate")}</a>
+      <span id="previewIframeMobileBg"></span>
       <iframe class="preview" name="previewIframe" id="previewIframe" src="${url}" marginwidth="0" marginheight="0" scrolling="auto" frameborder="0" style="overflow:visible; width:100%; ">
         [Your user agent does not support frames or is currently configured
         not to display frames. However, you may visit

@@ -101,7 +101,21 @@
           $(this).parent().addClass("active-mode");
         
           notLink.replaceWith("<a id='" + notLink.attr("id") + "' href='javascript:void(0);'>" + notLink.text() + "</span");
-          $(this).replaceWith("<span id='" + this.id + "'>" + $(this).text() + "</span>")
+          $(this).replaceWith("<span id='" + this.id + "'>" + $(this).text() + "</span>");
+          e.preventDefault();
+          e.stopPropagation();
+        });
+        
+        $(document).on("click", "#preview-mode-mobile-rotate-hv", function(e) {
+          var previewIframe = $("iframe#previewIframe")[0];
+          if(!$("#previewIframeWrapper").hasClass("horizontal")) {
+            crossDocComLink.postCmdToIframe(previewIframe, "update-height|" + 328);
+          } else {
+            crossDocComLink.postCmdToIframe(previewIframe, "update-height|" + 494);
+          }
+          $("#previewIframeWrapper").toggleClass("horizontal");
+          e.preventDefault();
+          e.stopPropagation();
         });
       }
    

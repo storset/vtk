@@ -2026,22 +2026,6 @@ body#vrtx-preview #app-content #contents iframe#previewIframe {
   border: 1px solid #d9d9d9;
 }
 
-body#vrtx-preview #app-content #contents #previewIframeWrapper.mobile iframe#previewIframe {
-  width: 328px !important;
-  height: 494px !important;
-  background-color: #fff;
-  display: block;
-  margin: 26px auto 0;
-  border: none;
-}
-
-body#vrtx-preview #app-content #contents #previewIframeWrapper.mobile {
-  background: #ececec url(images/preview-mobile-bg.png) no-repeat 50% 94px;
-  clear: both;
-  height: 494px !important;
-  padding: 190px 0;
-}
-
 body#vrtx-preview #app-content #contents .previewUnavailable {
   margin: 10px 14px;
 }
@@ -2085,20 +2069,94 @@ p.previewUnavailableReasons {
 
 /* Preview actions */
 
+#preview-mode-mobile-rotate-hv,
+#previewIframeMobileBg,
 #preview-mode,
 #preview-actions {
   display: none;
   margin-top: 0;
 }
 
-.js ul#preview-mode {
-  float: left;
+.js ul#preview-mode,
+.js ul#preview-actions {
   display: block;
 }
 
-.js ul#preview-actions {
-  float: right;
+#previewIframeWrapper.mobile #previewIframeMobileBg {
+  background: #ececec url(images/preview-mobile-bg.png) no-repeat 0 0;
+  height: 745px;
+  width: 400px;
+  margin: -95px auto 0;
   display: block;
+  position: relative;
+  z-index: 0;
+  -webkit-transition: -webkit-transform 250ms ease;
+  -moz-transition: -moz-transforml 250ms ease;
+  -ms-transition: -ms-transform 250ms ease;
+  -o-transition: -o-transform 250ms ease;
+  transition: transform 250ms ease;
+}
+
+#previewIframeWrapper.mobile.horizontal #previewIframeMobileBg {
+  -webkit-transform: rotate(-90deg);
+  -moz-transform: rotate(-90deg);
+  -ms-transform: rotate(-90deg);
+  -o-transform: rotate(-90deg);
+  transform: rotate(-90deg);
+  top: -87px;
+  left: 4px;
+}
+
+body#vrtx-preview #app-content #contents #previewIframeWrapper.mobile {
+  background: #ececec;
+  clear: both;
+  height: 494px !important;
+  padding: 190px 0;
+  position: relative;
+}
+
+body#vrtx-preview #app-content #contents #previewIframeWrapper.mobile.horizontal {
+  height: 328px !important;
+}
+
+body#vrtx-preview #app-content #contents #previewIframeWrapper.mobile.horizontal iframe#previewIframe {
+  width: 494px !important;
+  height: 328px !important;
+}
+
+body#vrtx-preview #app-content #contents #previewIframeWrapper.mobile iframe#previewIframe {
+  width: 328px !important;
+  height: 494px !important;
+  background-color: #fff;
+  display: block;
+  margin: -623px auto 0;
+  border: none;
+  position: relative;
+  z-index: 1;
+}
+
+body#vrtx-preview #app-content #contents #previewIframeWrapper.mobile #preview-mode-mobile-rotate-hv {
+  display: inline-block;
+  position: absolute;
+  top: 40px;
+  left: 42%;
+  padding-left: 24px;
+  background: #ececec url(images/preview-mobile-rotate.png) no-repeat center left;
+  font-size: 1.15em;
+}
+
+body#vrtx-preview #app-content #contents #previewIframeWrapper.mobile.horizontal #preview-mode-mobile-rotate-hv {
+  padding-right: 24px;
+  padding-left: 0;
+  background: #ececec url(images/preview-mobile-rotate-back.png) no-repeat center right;
+}
+
+ul#preview-mode {
+  float: left;
+}
+
+ul#preview-actions {
+  float: right;
   margin-top: 3px;
 }
 

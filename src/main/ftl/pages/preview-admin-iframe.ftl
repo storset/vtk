@@ -82,13 +82,6 @@
     </#if>
     <#assign url = url + "&amp;" + previewRefreshParameter + "=" + dateStr />
 
-    <#assign mailSubject = resourceContext.currentResource.title?url('UTF-8') />
-    <#if resourceContext.currentResource.isCollection()>
-      <#assign mailDocument = resourceContext.currentURI + "?vrtx=admin&action=preview" />
-    <#else>
-      <#assign mailDocument = resourceContext.currentURI + "?vrtx=admin" />
-    </#if>
-    
     <!-- Preview mode -->
     <ul id="preview-mode">
       <li class="active-mode"><span id="preview-mode-normal">${vrtx.getMsg("preview.view-mode.normal")}</span></li>
@@ -101,12 +94,13 @@
     </script>
     
     <!-- Preview actions -->
+    <#assign mailSubject = resourceContext.currentResource.title?url('UTF-8') />  
     <ul id="preview-actions">
-      <li><a id="preview-actions-share" href="mailto:?subject=${mailSubject}&amp;body=${vrtx.getMsg('preview.actions.share.mail.body', '', ['${mailDocument?url("UTF-8")}', '${resourceContext.principal.description?url("UTF-8")}'])}">${vrtx.getMsg("preview.actions.share")}</a></li>
+      <li><a id="preview-actions-share" href="mailto:?subject=${mailSubject}&amp;body=${vrtx.getMsg('preview.actions.share.mail.body', '', ['${resourceContext.currentServiceURL?url("UTF-8")}', '${resourceContext.principal.description?url("UTF-8")}'])}">${vrtx.getMsg("preview.actions.share")}</a></li>
       <li><a id="preview-actions-print" href="javascript:void(0);">${vrtx.getMsg("preview.actions.print")}</a></li>
       <li><a id="preview-actions-fullscreen-toggle" href="javascript:void(0);">${vrtx.getMsg("preview.actions.fullscreen-toggle.open")}</a></li>
     </ul>
-   
+
     <div id="previewIframeWrapper">
       <iframe class="preview" name="previewIframe" id="previewIframe" src="${url}" marginwidth="0" marginheight="0" scrolling="auto" frameborder="0" style="overflow:visible; width:100%; ">
         [Your user agent does not support frames or is currently configured

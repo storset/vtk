@@ -105,9 +105,17 @@
           e.preventDefault();
           e.stopPropagation();
         });
-        
+        $(document).on("keyup", function(e) {
+          var isHorizontal = $("#previewIframeWrapper").hasClass("horizontal");
+          if((e.which === 39 && isHorizontal) || (e.which === 37 && !isHorizontal)) {
+            $("#preview-mode-mobile-rotate-hv").click();
+          }
+        });
         $(document).on("click", "#preview-mode-mobile-rotate-hv", function(e) {
-          $("iframe#previewIframe").fadeTo(50, 0, "easeOutCubic").delay(150).fadeTo(50, 1, "easeOutCubic");
+          $("iframe#previewIframe").stop()
+                                   .fadeTo(50, 0, "easeOutCubic")
+                                     .delay(150)
+                                   .fadeTo(50, 1, "easeOutCubic");
         
           var previewIframe = $("iframe#previewIframe")[0];
           if(!$("#previewIframeWrapper").hasClass("horizontal")) {

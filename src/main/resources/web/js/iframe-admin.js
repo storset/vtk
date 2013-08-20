@@ -111,19 +111,23 @@
             $("#preview-mode-mobile-rotate-hv").click();
           }
         });
+        var waitForFade = null;
         $(document).on("click", "#preview-mode-mobile-rotate-hv", function(e) {
-          $("iframe#previewIframe").stop()
-                                   .fadeTo(50, 0, "easeOutCubic")
-                                     .delay(150)
-                                   .fadeTo(50, 1, "easeOutCubic");
-        
-          var previewIframe = $("iframe#previewIframe")[0];
-          if(!$("#previewIframeWrapper").hasClass("horizontal")) {
-            crossDocComLink.postCmdToIframe(previewIframe, "update-height|" + 328);
-          } else {
-            crossDocComLink.postCmdToIframe(previewIframe, "update-height|" + 494);
-          }
-          $("#previewIframeWrapper").toggleClass("horizontal");
+          if(waitForFade != null) return;
+          
+          $("iframe#previewIframe").stop().fadeTo(75, 0, "easeInCubic")
+                                            .delay(250)
+                                          .fadeTo(75, 1, "easeOutCubic");
+          waitForFade = setTimeout(function() {
+            var previewIframe = $("iframe#previewIframe")[0];
+            if(!$("#previewIframeWrapper").hasClass("horizontal")) {
+              crossDocComLink.postCmdToIframe(previewIframe, "update-height|" + 328);
+            } else {
+              crossDocComLink.postCmdToIframe(previewIframe, "update-height|" + 494);
+            }
+            $("#previewIframeWrapper").toggleClass("horizontal");
+            waitForFade = null;
+          }, 75);
           e.preventDefault();
           e.stopPropagation();
         });

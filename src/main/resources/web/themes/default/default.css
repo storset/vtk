@@ -2128,21 +2128,11 @@ body#vrtx-preview #app-content #contents #previewIframeWrapper.mobile iframe#pre
   border: none;
   position: relative;
   z-index: 1;
-  -webkit-transition: -webkit-transform 250ms ease;
-  -moz-transition: -moz-transforml 250ms ease;
-  -ms-transition: -ms-transform 250ms ease;
-  -o-transition: -o-transform 250ms ease;
-  transition: transform 250ms ease;
 }
 
 body#vrtx-preview #app-content #contents #previewIframeWrapper.mobile.horizontal iframe#previewIframe {
   width: 494px !important;
   height: 328px !important;
-  -webkit-transform: rotate(-360deg);
-  -moz-transform: rotate(-360deg);
-  -ms-transform: rotate(-360deg);
-  -o-transform: rotate(-360deg);
-  transform: rotate(-360deg);
 }
 
 body#vrtx-preview #app-content #contents #previewIframeWrapper.mobile #preview-mode-mobile-rotate-hv {

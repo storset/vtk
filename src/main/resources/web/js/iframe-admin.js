@@ -85,7 +85,7 @@
       } else {
         $(document).on("click", "#preview-mode a", function(e) {
           var previewIframe = $("iframe#previewIframe")[0];
-          if(!$("#previewIframeWrapper").hasClass("mobile")) {
+          if(!$("html").hasClass("mobile")) {
             $("#previewIframeWrapper").css("height", $("#previewIframe").height());
             crossDocComLink.postCmdToIframe(previewIframe, "update-height|" + 494);
           } else {
@@ -93,7 +93,7 @@
             crossDocComLink.postCmdToIframe(previewIframe, "restore-height");
           }
       
-          $("#previewIframeWrapper").toggleClass("mobile");
+          $("html").toggleClass("mobile");
 
           var notLink = $("#preview-mode span");
         
@@ -106,7 +106,7 @@
           e.stopPropagation();
         });
         $(document).on("keyup", function(e) {
-          var isHorizontal = $("#previewIframeWrapper").hasClass("horizontal");
+          var isHorizontal = $("html").hasClass("horizontal");
           if((e.which === 39 && isHorizontal) || (e.which === 37 && !isHorizontal)) {
             $("#preview-mode-mobile-rotate-hv").click();
           }
@@ -120,13 +120,13 @@
                                           .fadeTo(75, 1, "easeOutCubic");
           waitForFade = setTimeout(function() {
             var previewIframe = $("iframe#previewIframe")[0];
-            var previewIframeWrapper = $("#previewIframeWrapper");
-            if(!previewIframeWrapper.hasClass("horizontal")) {
+            var html = $("html");
+            if(!html.hasClass("horizontal")) {
               crossDocComLink.postCmdToIframe(previewIframe, "update-height|" + 328);
             } else {
               crossDocComLink.postCmdToIframe(previewIframe, "update-height|" + 494);
             }
-            previewIframeWrapper.toggleClass("horizontal");
+            html.toggleClass("horizontal");
             waitForFade = null;
           }, 75);
           e.preventDefault();
@@ -142,12 +142,14 @@
       });
           
       $(document).on("click", "#preview-actions-fullscreen-toggle", function(e) {
-        body.toggleClass('fullscreen-toggle-open');
-        if(body.hasClass('fullscreen-toggle-open')) {
-          alert("Implement.");
+        body.parent().toggleClass('fullscreen-toggle-open');
+        if(body.parent().hasClass('fullscreen-toggle-open')) {
           $(this).text(fullscreenToggleClose);
+          vrtxAdmin.initStickyBar("#preview-mode-actions", "vrtx-sticky-preview-mode-actions", 2);
+          $(window).trigger("scroll");
         } else {
           $(this).text(fullscreenToggleOpen);
+          vrtxAdmin.destroyStickyBar("#preview-mode-actions", "vrtx-sticky-preview-mode-actions");
         }
         e.preventDefault();
         e.stopPropagation();

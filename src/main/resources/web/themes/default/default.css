@@ -2083,32 +2083,27 @@ p.previewUnavailableReasons {
 }
 
 #previewIframeWrapper.mobile #previewIframeMobileBg {
-  background: #ececec url(images/preview-mobile-bg.png) no-repeat 0 0;
+  background: transparent url(images/preview-mobile-bg.png) no-repeat 0 0;
   height: 745px;
   width: 400px;
   margin: -95px auto 0;
   display: block;
   position: relative;
+  top: 0px;
   z-index: 0;
-  -webkit-transition: -webkit-transform 250ms ease;
-  -moz-transition: -moz-transforml 250ms ease;
-  -ms-transition: -ms-transform 250ms ease;
-  -o-transition: -o-transform 250ms ease;
-  transition: transform 250ms ease;
+  -webkit-transition: -webkit-transform 250ms ease-in-out;
+  -moz-transition: -moz-transforml 250ms ease-in-out;
+  -ms-transition: -ms-transform 250ms ease-in-out;
+  -o-transition: -o-transform 250ms ease-in-out;
+  transition: transform 250ms ease-in-out;
 }
 
 #previewIframeWrapper.mobile.horizontal #previewIframeMobileBg {
-  -webkit-transform: rotate(-90deg);
-  -moz-transform: rotate(-90deg);
-  -ms-transform: rotate(-90deg);
-  -o-transform: rotate(-90deg);
-  transform: rotate(-90deg);
-  -webkit-transform-origin: right top;
-  -moz-transform-origin: right top;
-  -ms-transform-origin: right top;
-  -o-transform-origin: right top;
-  transform-origin: right top;
-  left: -569px;
+  -webkit-transform: rotate(-90deg) translate(170px, 0);
+  -moz-transform: rotate(-90deg) translate(170px, 0);
+  -ms-transform: rotate(-90deg) translate(170px, 0);
+  -o-transform: rotate(-90deg) translate(170px, 0);
+  transform: rotate(-90deg) translate(170px, 0);
 }
 
 body#vrtx-preview #app-content #contents #previewIframeWrapper.mobile {
@@ -2142,7 +2137,8 @@ body#vrtx-preview #app-content #contents #previewIframeWrapper.mobile iframe#pre
 body#vrtx-preview #app-content #contents #previewIframeWrapper.mobile.horizontal iframe#previewIframe {
   width: 494px !important;
   height: 328px !important;
-  top: -86px;
+  top: -84px;
+  left: -4px;
 }
 
 body#vrtx-preview #app-content #contents #previewIframeWrapper.mobile #preview-mode-mobile-rotate-hv {
@@ -2151,14 +2147,8 @@ body#vrtx-preview #app-content #contents #previewIframeWrapper.mobile #preview-m
   top: 40px;
   left: 42%;
   padding-left: 24px;
-  background: #ececec url(images/preview-mobile-rotate.png) no-repeat center left;
+  background: #ececec url(images/refresh.png) no-repeat center left;
   font-size: 1.15em;
-}
-
-body#vrtx-preview #app-content #contents #previewIframeWrapper.mobile.horizontal #preview-mode-mobile-rotate-hv {
-  padding-right: 24px;
-  padding-left: 0;
-  background: #ececec url(images/preview-mobile-rotate-back.png) no-repeat center right;
 }
 
 ul#preview-mode {

@@ -120,12 +120,13 @@
                                           .fadeTo(75, 1, "easeOutCubic");
           waitForFade = setTimeout(function() {
             var previewIframe = $("iframe#previewIframe")[0];
-            if(!$("#previewIframeWrapper").hasClass("horizontal")) {
+            var previewIframeWrapper = $("#previewIframeWrapper");
+            if(!previewIframeWrapper.hasClass("horizontal")) {
               crossDocComLink.postCmdToIframe(previewIframe, "update-height|" + 328);
             } else {
               crossDocComLink.postCmdToIframe(previewIframe, "update-height|" + 494);
             }
-            $("#previewIframeWrapper").toggleClass("horizontal");
+            previewIframeWrapper.toggleClass("horizontal");
             waitForFade = null;
           }, 75);
           e.preventDefault();

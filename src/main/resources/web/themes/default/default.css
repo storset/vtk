@@ -2091,19 +2091,35 @@ p.previewUnavailableReasons {
   position: relative;
   top: 0px;
   z-index: 0;
-  -webkit-transition: -webkit-transform 250ms ease-in-out;
-  -moz-transition: -moz-transforml 250ms ease-in-out;
-  -ms-transition: -ms-transform 250ms ease-in-out;
-  -o-transition: -o-transform 250ms ease-in-out;
-  transition: transform 250ms ease-in-out;
+  -webkit-transition: top 200ms ease-in-out 0ms,
+                      -webkit-transform 300ms ease-in-out;
+  -moz-transition: top 200ms ease-in-out 0ms,
+                   -moz-transform 300ms ease-in-out;
+  -ms-transition: top 200ms ease-in-out 0ms,
+                  -ms-transform 300ms ease-in-out;
+  -o-transition: top 200ms ease-in-out 0ms,
+                 -o-transform 300ms ease-in-out;
+  transition: top 200ms ease-in-out 0ms,
+              transform 300ms ease-in-out;
 }
 
 #previewIframeWrapper.mobile.horizontal #previewIframeMobileBg {
-  -webkit-transform: rotate(-90deg) translate(170px, 0);
-  -moz-transform: rotate(-90deg) translate(170px, 0);
-  -ms-transform: rotate(-90deg) translate(170px, 0);
-  -o-transform: rotate(-90deg) translate(170px, 0);
-  transform: rotate(-90deg) translate(170px, 0);
+  -webkit-transform: rotate(-90deg);
+  -moz-transform: rotate(-90deg);
+  -ms-transform: rotate(-90deg);
+  -o-transform: rotate(-90deg);
+  transform: rotate(-90deg);
+  top: -170px;
+  -webkit-transition: top 200ms ease-in-out 100ms,
+                      -webkit-transform 300ms ease-in-out;
+  -moz-transition: top 200ms ease-in-out 100ms,
+                   -moz-transform 300ms ease-in-out;
+  -ms-transition: top 200ms ease-in-out 100ms,
+                  -ms-transform 300ms ease-in-out;
+  -o-transition: top 200ms ease-in-out 100ms,
+                 -o-transform 300ms ease-in-out;
+  transition: top 200ms ease-in-out 100ms,
+              transform 300ms ease-in-out;
 }
 
 body#vrtx-preview #app-content #contents #previewIframeWrapper.mobile {

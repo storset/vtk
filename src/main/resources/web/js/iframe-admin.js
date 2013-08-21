@@ -117,7 +117,7 @@
           if(waitForTheEnd != null) return;
           
           /* Do the fade */
-          $("iframe#previewIframe").stop().fadeTo(75, 0, "easeInCubic", function() {
+          $("iframe#previewIframe").stop().fadeTo(150, 0, "easeInCubic", function() {
             var html = $("html");
           
             /* Make shadow "follow along" rotation */
@@ -139,7 +139,7 @@
             }
             html.toggleClass("horizontal");
             
-          }).delay(250).fadeTo(75, 1, "easeOutCubic");
+          }).delay(250).fadeTo(150, 1, "easeOutCubic");
 
           e.preventDefault();
           e.stopPropagation();

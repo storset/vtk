@@ -2094,7 +2094,7 @@ body#vrtx-preview.js #app-content #main {
   background: transparent url(images/preview-mobile-bg.png) no-repeat 0 0;
   height: 745px;
   width: 400px;
-  margin: -95px auto 0;
+  margin: -115px auto 0;
   display: block;
   position: relative;
   top: 0px;
@@ -2134,9 +2134,9 @@ body#vrtx-preview.js #app-content #main {
 
 /* Move shadow below mobile */
 .mobile.horizontal.change-bg #previewIframeWrapper #previewIframeMobileBg {
-  background-image: url(images/preview-mobile-bg-horizontal.png);
+  background: transparent url(images/preview-mobile-bg-horizontal.png) no-repeat -2px 0;
   left: 4px;
-  top: -163px;
+  top: -167px;
   -webkit-transition: none;
   -moz-transition: none;
   -ms-transition: none;
@@ -2180,7 +2180,7 @@ body#vrtx-preview.js #app-content #main {
   padding-left: 24px;
   background: #ececec url(images/refresh.png) no-repeat center left;
   font-size: 1.15em;
-  top: -140px;
+  top: -150px;
   position: relative;
 }
 

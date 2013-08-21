@@ -2094,21 +2094,21 @@ body#vrtx-preview.js #app-content #main {
   background: transparent url(images/preview-mobile-bg.png) no-repeat 0 0;
   height: 745px;
   width: 400px;
-  margin: -115px auto 0;
+  margin: -135px auto 0;
   display: block;
   position: relative;
   top: 0px;
   z-index: 0;
   /* Move down faster to avoid collision with link */
-  -webkit-transition: top 200ms ease-in-out 0ms,
+  -webkit-transition: top 100ms ease-in-out 0ms,
                       -webkit-transform 300ms ease-in-out;
-  -moz-transition: top 200ms ease-in-out 0ms,
+  -moz-transition: top 120ms ease-in-out 0ms,
                    -moz-transform 300ms ease-in-out;
-  -ms-transition: top 200ms ease-in-out 0ms,
+  -ms-transition: top 120ms ease-in-out 0ms,
                   -ms-transform 300ms ease-in-out;
-  -o-transition: top 200ms ease-in-out 0ms,
+  -o-transition: top 120ms ease-in-out 0ms,
                  -o-transform 300ms ease-in-out;
-  transition: top 200ms ease-in-out 0ms,
+  transition: top 120ms ease-in-out 0ms,
               transform 300ms ease-in-out;
 }
 
@@ -2120,15 +2120,15 @@ body#vrtx-preview.js #app-content #main {
   transform: rotate(-90deg);
   top: -170px;
   /* Move down faster after some delay to avoid collision with link */
-  -webkit-transition: top 200ms ease-in-out 100ms,
+  -webkit-transition: top 120ms ease-in-out 180ms,
                       -webkit-transform 300ms ease-in-out;
-  -moz-transition: top 200ms ease-in-out 100ms,
+  -moz-transition: top 120ms ease-in-out 180ms,
                    -moz-transform 300ms ease-in-out;
-  -ms-transition: top 200ms ease-in-out 100ms,
+  -ms-transition: top 120ms ease-in-out 180ms,
                   -ms-transform 300ms ease-in-out;
-  -o-transition: top 200ms ease-in-out 100ms,
+  -o-transition: top 120ms ease-in-out 180ms,
                  -o-transform 300ms ease-in-out;
-  transition: top 200ms ease-in-out 100ms,
+  transition: top 120ms ease-in-out 180ms,
               transform 300ms ease-in-out;
 }
 
@@ -2180,7 +2180,7 @@ body#vrtx-preview.js #app-content #main {
   padding-left: 24px;
   background: #ececec url(images/refresh.png) no-repeat center left;
   font-size: 1.15em;
-  top: -150px;
+  top: -167px;
   position: relative;
 }
 

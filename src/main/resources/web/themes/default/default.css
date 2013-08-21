@@ -2099,6 +2099,7 @@ body#vrtx-preview.js #app-content #main {
   position: relative;
   top: 0px;
   z-index: 0;
+  /* Move down faster to avoid collision with link */
   -webkit-transition: top 200ms ease-in-out 0ms,
                       -webkit-transform 300ms ease-in-out;
   -moz-transition: top 200ms ease-in-out 0ms,
@@ -2118,6 +2119,7 @@ body#vrtx-preview.js #app-content #main {
   -o-transform: rotate(-90deg);
   transform: rotate(-90deg);
   top: -170px;
+  /* Move down faster after some delay to avoid collision with link */
   -webkit-transition: top 200ms ease-in-out 100ms,
                       -webkit-transform 300ms ease-in-out;
   -moz-transition: top 200ms ease-in-out 100ms,
@@ -2128,6 +2130,18 @@ body#vrtx-preview.js #app-content #main {
                  -o-transform 300ms ease-in-out;
   transition: top 200ms ease-in-out 100ms,
               transform 300ms ease-in-out;
+}
+
+/* Move shadow below mobile */
+.mobile.horizontal.change-bg #previewIframeWrapper #previewIframeMobileBg {
+  background-image: url(images/preview-mobile-bg-horizontal.png);
+  left: 4px;
+  top: -163px;
+  -webkit-transition: none;
+  -moz-transition: none;
+  -ms-transition: none;
+  -o-transition: none;
+  transition: none;
 }
 
 .mobile body#vrtx-preview #app-content #contents #previewIframeWrapper {

@@ -111,24 +111,36 @@
             $("#preview-mode-mobile-rotate-hv").click();
           }
         });
-        var waitForFade = null;
+
+        var waitForTheEnd = null;
         $(document).on("click", "#preview-mode-mobile-rotate-hv", function(e) {
-          if(waitForFade != null) return;
+          if(waitForTheEnd != null) return;
           
-          $("iframe#previewIframe").stop().fadeTo(75, 0, "easeInCubic")
-                                            .delay(250)
-                                          .fadeTo(75, 1, "easeOutCubic");
-          waitForFade = setTimeout(function() {
-            var previewIframe = $("iframe#previewIframe")[0];
+          /* Do the fade */
+          $("iframe#previewIframe").stop().fadeTo(75, 0, "easeInCubic", function() {
             var html = $("html");
+          
+            /* Make shadow "follow along" rotation */
+            if(html.hasClass("change-bg")) {
+              html.removeClass("change-bg");
+            } else {
+              waitForTheEnd = setTimeout(function() {
+                html.addClass("change-bg");
+                waitForTheEnd = null;
+              }, 250);
+            }
+
+            /* Update iframe height */
+            var previewIframe = $("iframe#previewIframe")[0];
             if(!html.hasClass("horizontal")) {
               crossDocComLink.postCmdToIframe(previewIframe, "update-height|" + 328);
             } else {
               crossDocComLink.postCmdToIframe(previewIframe, "update-height|" + 494);
             }
             html.toggleClass("horizontal");
-            waitForFade = null;
-          }, 75);
+            
+          }).delay(250).fadeTo(75, 1, "easeOutCubic");
+
           e.preventDefault();
           e.stopPropagation();
         });

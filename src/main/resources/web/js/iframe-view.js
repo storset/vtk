@@ -50,6 +50,7 @@ if (window != top) { // Obs IE bug: http://stackoverflow.com/questions/4850978/i
         
         // Restore zoom
         previewViewIframe.css(supportedProp, "");
+        originalZoom = 0;
         
         var iframe = previewViewIframe[0];
         var viewportMetaTag = previewViewIframe.contents().find("meta[name='viewport']");
@@ -68,6 +69,7 @@ if (window != top) { // Obs IE bug: http://stackoverflow.com/questions/4850978/i
      
         // Restore zoom
         previewViewIframe.css(supportedProp, "");
+        originalZoom = 0;
         
         var iframe = previewViewIframe[0];
         var viewportMetaTag = previewViewIframe.contents().find("meta[name='viewport']");
@@ -107,6 +109,7 @@ if (window != top) { // Obs IE bug: http://stackoverflow.com/questions/4850978/i
       case "restore-zoom":
         var previewViewIframe = $("iframe#previewViewIframe");
         previewViewIframe.css(supportedProp, "");
+        originalZoom = 0;
         break;
       case "print":
         var previewViewIframe = $("iframe#previewViewIframe");

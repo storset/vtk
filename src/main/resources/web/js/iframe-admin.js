@@ -89,7 +89,7 @@
           var previewIframe = $("iframe#previewIframe")[0];
           if(!htmlTag.hasClass("mobile")) {
             $("#previewIframeWrapper").css("height", $("#previewIframe").height());
-            crossDocComLink.postCmdToIframe(previewIframe, "update-height-vertical|494|1536");
+            crossDocComLink.postCmdToIframe(previewIframe, "update-height-vertical");
           } else {
             $("#previewIframeWrapper").css("height", "auto");
             crossDocComLink.postCmdToIframe(previewIframe, "restore-height");
@@ -145,9 +145,9 @@
             /* Update iframe height */
             var previewIframe = $("iframe#previewIframe")[0];
             if(!htmlTag.hasClass("horizontal")) {
-              crossDocComLink.postCmdToIframe(previewIframe, "update-height-horizontal|328|1020");
+              crossDocComLink.postCmdToIframe(previewIframe, "update-height-horizontal");
             } else {
-              crossDocComLink.postCmdToIframe(previewIframe, "update-height-vertical|494|1536");
+              crossDocComLink.postCmdToIframe(previewIframe, "update-height-vertical");
             }
             
             htmlTag.toggleClass("horizontal");

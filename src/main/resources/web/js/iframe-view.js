@@ -114,6 +114,7 @@ if (window != top) { // Obs IE bug: http://stackoverflow.com/questions/4850978/i
         // Restore zoom
         previewViewIframe.css(supportedProp, "");
         originalZoom = 0;
+        var iframe = previewViewIframe[0];
         iframe.style.height = originalHeight + "px";
         break;
         

@@ -60,33 +60,65 @@ if (window != top) { // Obs IE bug: http://stackoverflow.com/questions/4850978/i
         
       case "update-height-vertical":
         var previewViewIframe = $("iframe#previewViewIframe");
+        
         // Restore zoom
         previewViewIframe.css(supportedProp, "");
         originalZoom = 0;
+        
         var viewportMetaTag = previewViewIframe.contents().find("meta[name='viewport']");
         if(viewportMetaTag.attr("content").indexOf("width=device-width") === -1) {
           previewViewIframe.addClass("mobile-none-responsive");
           previewViewIframe.removeClass("mobile-none-responsive-horizontal");
+        } else {
+          if (!previewViewIframe.hasClass("mobile-responsive")) {
+            previewViewIframe.addClass("mobile-responsive");
+          }
+          try {
+            var iframe = previewViewIframe[0];
+            if (typeof iframe.contentWindow !== "undefined" && typeof iframe.contentWindow.document !== "undefined" && typeof iframe.contentWindow.document.body !== "undefined") {
+              var computedHeight = Math.ceil(iframe.contentWindow.document.body.offsetHeight) + 45;
+              if (computedHeight > setHeight) {
+                iframe.style.height = computedHeight + "px";
+              }
+            }
+          } catch (e) {}
         }
         break;
       case "update-height-horizontal":
         var previewViewIframe = $("iframe#previewViewIframe");
+        
         // Restore zoom
         previewViewIframe.css(supportedProp, "");
         originalZoom = 0;
+        
         var viewportMetaTag = previewViewIframe.contents().find("meta[name='viewport']");
         if(viewportMetaTag.attr("content").indexOf("width=device-width") === -1) {
           previewViewIframe.addClass("mobile-none-responsive-horizontal");
           previewViewIframe.removeClass("mobile-none-responsive");
+        } else {
+          if (!previewViewIframe.hasClass("mobile-responsive")) {
+            previewViewIframe.addClass("mobile-responsive");
+          }
+          try {
+            var iframe = previewViewIframe[0];
+            if (typeof iframe.contentWindow !== "undefined" && typeof iframe.contentWindow.document !== "undefined" && typeof iframe.contentWindow.document.body !== "undefined") {
+              var computedHeight = Math.ceil(iframe.contentWindow.document.body.offsetHeight) + 45;
+              if (computedHeight > setHeight) {
+                iframe.style.height = computedHeight + "px";
+              }
+            }
+          } catch (e) {}
         }
         break;
       case "restore-height":
         var previewViewIframe = $("iframe#previewViewIframe");
+        previewViewIframe.removeClass("mobile-responsive");
         previewViewIframe.removeClass("mobile-none-responsive");
         previewViewIframe.removeClass("mobile-none-responsive-horizontal");
         // Restore zoom
         previewViewIframe.css(supportedProp, "");
         originalZoom = 0;
+        iframe.style.height = originalHeight + "px";
         break;
         
       /* BETA functionality for mobile preview */

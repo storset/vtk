@@ -1,4 +1,3 @@
-
 /*
  *
  *  Vortex - Visualize broken links
@@ -30,6 +29,10 @@ html#vrtx-preview-popup #vrtx-link-check-spinner {
   background-image: none !important;
   padding-left: 10px !important;
   color: #ed1c24 !important;
+}
+
+#previewViewIframe.mobile-responsive {
+  overflow: hidden;
 }
 
 #previewViewIframe.mobile-none-responsive,

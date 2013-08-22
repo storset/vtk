@@ -87,7 +87,7 @@
           var previewIframe = $("iframe#previewIframe")[0];
           if(!$("html").hasClass("mobile")) {
             $("#previewIframeWrapper").css("height", $("#previewIframe").height());
-            crossDocComLink.postCmdToIframe(previewIframe, "update-height|" + 494);
+            crossDocComLink.postCmdToIframe(previewIframe, "update-height-vertical|494|1536");
           } else {
             $("#previewIframeWrapper").css("height", "auto");
             crossDocComLink.postCmdToIframe(previewIframe, "restore-height");
@@ -116,7 +116,6 @@
         $(document).on("click", "#preview-mode-mobile-rotate-hv", function(e) {
           if(waitForTheEnd != null) return;
           
-          /* Do the fade */
           $("iframe#previewIframe").stop().fadeTo(150, 0, "easeInCubic", function() {
             var html = $("html");
           
@@ -133,10 +132,11 @@
             /* Update iframe height */
             var previewIframe = $("iframe#previewIframe")[0];
             if(!html.hasClass("horizontal")) {
-              crossDocComLink.postCmdToIframe(previewIframe, "update-height|" + 328);
+              crossDocComLink.postCmdToIframe(previewIframe, "update-height-horizontal|328|1020");
             } else {
-              crossDocComLink.postCmdToIframe(previewIframe, "update-height|" + 494);
+              crossDocComLink.postCmdToIframe(previewIframe, "update-height-vertical|494|1536");
             }
+            
             html.toggleClass("horizontal");
             
           }).delay(250).fadeTo(150, 1, "easeOutCubic");

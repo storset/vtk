@@ -42,14 +42,35 @@ if (window != top) { // Obs IE bug: http://stackoverflow.com/questions/4850978/i
           crossDocComLink.postCmdToParent("preview-keep-min-height");
         }
         break;
-      case "update-height":
+      case "update-height-vertical":
         var previewViewIframe = $("iframe#previewViewIframe");
         var iframe = previewViewIframe[0];
-        var setHeight = (cmdParams.length === 2) ? cmdParams[1] : 500;
+        var viewportMetaTag = previewViewIframe.contents().find("meta[name='viewport']");
+        if(viewportMetaTag.attr("content").indexOf("width=") !== -1) {
+          var setHeight = (cmdParams.length === 3) ? cmdParams[2] : 1536;
+          previewViewIframe.addClass("mobile-none-responsive");
+        } else {
+          var setHeight = (cmdParams.length === 2) ? cmdParams[1] : 494;
+        }
+        iframe.style.height = (setHeight - ($.browser.msie ? 4 : 0)) + "px";
+        break;
+      case "update-height-horizontal":
+        var previewViewIframe = $("iframe#previewViewIframe");
+        var iframe = previewViewIframe[0];
+        var viewportMetaTag = previewViewIframe.contents().find("meta[name='viewport']");
+        if(viewportMetaTag.attr("content").indexOf("width=") !== -1) {
+          var setHeight = (cmdParams.length === 3) ? cmdParams[2] : 1020;
+          previewViewIframe.addClass("mobile-none-responsive");
+          previewViewIframe.addClass("mobile-none-responsive-horizontal");
+        } else {
+          var setHeight = (cmdParams.length === 2) ? cmdParams[1] : 328;
+        }
         iframe.style.height = (setHeight - ($.browser.msie ? 4 : 0)) + "px";
         break;
       case "restore-height":
         var previewViewIframe = $("iframe#previewViewIframe");
+        previewViewIframe.removeClass("mobile-none-responsive");
+        previewViewIframe.removeClass("mobile-none-responsive-horizontal");
         var iframe = previewViewIframe[0];
         iframe.style.height = originalHeight + "px";
         break;

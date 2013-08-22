@@ -49,6 +49,7 @@ if (window != top) { // Obs IE bug: http://stackoverflow.com/questions/4850978/i
         if(viewportMetaTag.attr("content").indexOf("width=") !== -1) {
           var setHeight = (cmdParams.length === 3) ? cmdParams[2] : 1536;
           previewViewIframe.addClass("mobile-none-responsive");
+          previewViewIframe.removeClass("mobile-none-responsive-horizontal");
         } else {
           var setHeight = (cmdParams.length === 2) ? cmdParams[1] : 494;
         }
@@ -61,6 +62,7 @@ if (window != top) { // Obs IE bug: http://stackoverflow.com/questions/4850978/i
         if(viewportMetaTag.attr("content").indexOf("width=") !== -1) {
           var setHeight = (cmdParams.length === 3) ? cmdParams[2] : 1020;
           previewViewIframe.addClass("mobile-none-responsive-horizontal");
+          previewViewIframe.removeClass("mobile-none-responsive");
         } else {
           var setHeight = (cmdParams.length === 2) ? cmdParams[1] : 328;
         }

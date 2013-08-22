@@ -46,7 +46,7 @@ if (window != top) { // Obs IE bug: http://stackoverflow.com/questions/4850978/i
         var previewViewIframe = $("iframe#previewViewIframe");
         var iframe = previewViewIframe[0];
         var viewportMetaTag = previewViewIframe.contents().find("meta[name='viewport']");
-        if(viewportMetaTag.attr("content").indexOf("width=") !== -1) {
+        if(viewportMetaTag.attr("content").indexOf("device-width=") === -1) {
           var setHeight = (cmdParams.length === 3) ? cmdParams[2] : 1536;
           previewViewIframe.addClass("mobile-none-responsive");
           previewViewIframe.removeClass("mobile-none-responsive-horizontal");
@@ -59,7 +59,7 @@ if (window != top) { // Obs IE bug: http://stackoverflow.com/questions/4850978/i
         var previewViewIframe = $("iframe#previewViewIframe");
         var iframe = previewViewIframe[0];
         var viewportMetaTag = previewViewIframe.contents().find("meta[name='viewport']");
-        if(viewportMetaTag.attr("content").indexOf("width=") !== -1) {
+        if(viewportMetaTag.attr("content").indexOf("device-width=") === -1) {
           var setHeight = (cmdParams.length === 3) ? cmdParams[2] : 1020;
           previewViewIframe.addClass("mobile-none-responsive-horizontal");
           previewViewIframe.removeClass("mobile-none-responsive");

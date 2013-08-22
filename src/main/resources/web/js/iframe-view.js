@@ -9,10 +9,20 @@
  */
 if (window != top) { // Obs IE bug: http://stackoverflow.com/questions/4850978/ie-bug-window-top-false
   var crossDocComLink = new CrossDocComLink();
+  
+  // Mobile preview
   var originalHeight = 0;
   var originalZoom = 0;
-  var supportedProp = getSupportedProp(['transform', 'MozTransform', 'WebkitTransform', 'msTransform', 'OTransform']);
-        
+  var supportedProp = (function () {
+    var propArray = ['transform', 'MozTransform', 'WebkitTransform', 'msTransform', 'OTransform'];
+    var root = document.documentElement;
+    for (var i = 0, len = propArray.length; i < len; i++) {
+      if (propArray[i] in root.style){
+        return propArray[i];
+      }
+    }
+  })();
+
   crossDocComLink.setUpReceiveDataHandler(function (cmdParams, source) {
     switch (cmdParams[0]) {
       case "admin-min-height":
@@ -45,6 +55,9 @@ if (window != top) { // Obs IE bug: http://stackoverflow.com/questions/4850978/i
           crossDocComLink.postCmdToParent("preview-keep-min-height");
         }
         break;
+        
+      /* Mobile preview */
+        
       case "update-height-vertical":
         var previewViewIframe = $("iframe#previewViewIframe");
         
@@ -88,6 +101,9 @@ if (window != top) { // Obs IE bug: http://stackoverflow.com/questions/4850978/i
         var iframe = previewViewIframe[0];
         iframe.style.height = originalHeight + "px";
         break;
+        
+      /* BETA functionality for mobile preview */
+        
       case "zoom-in":
         var previewViewIframe = $("iframe#previewViewIframe");
         var zoom = parseFloat(previewViewIframe.css(supportedProp).match(/[0-9]*[.][0-9]+/)[0], 10);
@@ -109,25 +125,20 @@ if (window != top) { // Obs IE bug: http://stackoverflow.com/questions/4850978/i
         previewViewIframe.css(supportedProp, "");
         originalZoom = 0;
         break;
+              
+      /* Print preview */
+        
       case "print":
         var previewViewIframe = $("iframe#previewViewIframe");
         var iframe = previewViewIframe[0];
         var ifWin = iframe.contentWindow || iframe;
         iframe.focus();
         ifWin.print(); 
-        break;     
+        break;    
+        
       default:
     }
   });
-}
-
-function getSupportedProp(proparray){
-  var root=document.documentElement //reference root element of document
-  for (var i = 0, len = proparray.length; i < len; i++){ //loop through possible properties
-    if (proparray[i] in root.style){ //if property exists on element (value will be string, empty string if not set)
-      return proparray[i] //return that string
-    }
-  }
 }
 
 (function () {

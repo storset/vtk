@@ -13,6 +13,7 @@
 (function ($) {
 
   var isPreviewMode,
+      htmlTag,
       body,
       contents,
       appFooterHeight,
@@ -77,6 +78,7 @@
     isPreviewMode = $("#vrtx-preview").length;
     if(isPreviewMode) {
    
+      htmlTag = $("html");
       body = $("body");
       
       // As we can't check on matchMedia and Modernizr is not included in admin yet - hide if <= IE8
@@ -85,17 +87,17 @@
       } else {
         $(document).on("click", "#preview-mode a", function(e) {
           var previewIframe = $("iframe#previewIframe")[0];
-          if(!$("html").hasClass("mobile")) {
+          if(!htmlTag.hasClass("mobile")) {
             $("#previewIframeWrapper").css("height", $("#previewIframe").height());
             crossDocComLink.postCmdToIframe(previewIframe, "update-height-vertical|494|1536");
           } else {
             $("#previewIframeWrapper").css("height", "auto");
             crossDocComLink.postCmdToIframe(previewIframe, "restore-height");
-            $("html").removeClass("horizontal");
-            $("html").removeClass("change-bg");
+            htmlTag.removeClass("horizontal");
+            htmlTag.removeClass("change-bg");
           }
       
-          $("html").toggleClass("mobile");
+          htmlTag.toggleClass("mobile");
 
           var notLink = $("#preview-mode span");
         
@@ -108,7 +110,7 @@
           e.stopPropagation();
         });
         $(document).on("keyup", function(e) {
-          if(html.hasClass("mobile")) {
+          if(htmlTag.hasClass("mobile")) {
             var isHorizontal = $("html").hasClass("horizontal");
             if((e.which === 39 && isHorizontal) || (e.which === 37 && !isHorizontal)) {
               $("#preview-mode-mobile-rotate-hv").click();
@@ -130,27 +132,25 @@
           if(waitForTheEnd != null) return;
           
           $("iframe#previewIframe").stop().fadeTo(150, 0, "easeInCubic", function() {
-            var html = $("html");
-          
             /* Make shadow "follow along" rotation */
-            if(html.hasClass("change-bg")) {
-              html.removeClass("change-bg");
+            if(htmlTag.hasClass("change-bg")) {
+              htmlTag.removeClass("change-bg");
             } else {
               waitForTheEnd = setTimeout(function() {
-                html.addClass("change-bg");
+                htmlTag.addClass("change-bg");
                 waitForTheEnd = null;
               }, 250);
             }
 
             /* Update iframe height */
             var previewIframe = $("iframe#previewIframe")[0];
-            if(!html.hasClass("horizontal")) {
+            if(!htmlTag.hasClass("horizontal")) {
               crossDocComLink.postCmdToIframe(previewIframe, "update-height-horizontal|328|1020");
             } else {
               crossDocComLink.postCmdToIframe(previewIframe, "update-height-vertical|494|1536");
             }
             
-            html.toggleClass("horizontal");
+            htmlTag.toggleClass("horizontal");
             
           }).delay(250).fadeTo(150, 1, "easeOutCubic");
 
@@ -167,8 +167,8 @@
       });
           
       $(document).on("click", "#preview-actions-fullscreen-toggle", function(e) {
-        body.parent().toggleClass('fullscreen-toggle-open');
-        if(body.parent().hasClass('fullscreen-toggle-open')) {
+        htmlTag.toggleClass('fullscreen-toggle-open');
+        if(htmlTag.hasClass('fullscreen-toggle-open')) {
           $(this).text(fullscreenToggleClose);
           vrtxAdmin.initStickyBar("#preview-mode-actions", "vrtx-sticky-preview-mode-actions", 2);
           $(window).trigger("scroll");

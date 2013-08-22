@@ -32,6 +32,11 @@ html#vrtx-preview-popup #vrtx-link-check-spinner {
   color: #ed1c24 !important;
 }
 
+#previewViewIframe.mobile-none-responsive,
+#previewViewIframe.mobile-none-responsive-horizontal {
+  width: 1020px !important;
+}
+
 #previewViewIframe.mobile-none-responsive {
   -ms-zoom: 0.32156862745;
   -moz-transform: scale(0.32156862745);
@@ -40,7 +45,6 @@ html#vrtx-preview-popup #vrtx-link-check-spinner {
   -o-transform-origin: 0 0;
   -webkit-transform: scale(0.32156862745);
   -webkit-transform-origin: 0 0;
-  width: 1020px !important;
 }
 
 #previewViewIframe.mobile-none-responsive-horizontal {
@@ -51,7 +55,6 @@ html#vrtx-preview-popup #vrtx-link-check-spinner {
   -o-transform-origin: 0 0;
   -webkit-transform: scale(0.48431372549);
   -webkit-transform-origin: 0 0;
-  width: 1536px !important;
 }
 
 /* ^ Vortex - Visualize broken links */

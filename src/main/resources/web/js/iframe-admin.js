@@ -94,6 +94,8 @@
           } else {
             $("#previewIframeWrapper").css("height", "auto");
             crossDocComLink.postCmdToIframe(previewIframe, "restore-height");
+            $("html").removeClass("horizontal");
+            $("html").removeClass("change-bg");
           }
       
           $("html").toggleClass("mobile");
@@ -109,18 +111,20 @@
           e.stopPropagation();
         });
         $(document).on("keyup", function(e) {
-          var isHorizontal = $("html").hasClass("horizontal");
-          if((e.which === 39 && isHorizontal) || (e.which === 37 && !isHorizontal)) {
-            $("#preview-mode-mobile-rotate-hv").click();
-          } else if(e.which === 107) {
-            var previewIframe = $("iframe#previewIframe")[0];
-            crossDocComLink.postCmdToIframe(previewIframe, "zoom-in");
-          } else if(e.which === 109) {
-            var previewIframe = $("iframe#previewIframe")[0];
-            crossDocComLink.postCmdToIframe(previewIframe, "zoom-out");
-          } else if(e.which === 106) {
-            var previewIframe = $("iframe#previewIframe")[0];
-            crossDocComLink.postCmdToIframe(previewIframe, "restore-zoom");
+          if(html.hasClass("mobile")) {
+            var isHorizontal = $("html").hasClass("horizontal");
+            if((e.which === 39 && isHorizontal) || (e.which === 37 && !isHorizontal)) {
+              $("#preview-mode-mobile-rotate-hv").click();
+            } else if(e.which === 107) {
+              var previewIframe = $("iframe#previewIframe")[0];
+              crossDocComLink.postCmdToIframe(previewIframe, "zoom-in");
+            } else if(e.which === 109) {
+              var previewIframe = $("iframe#previewIframe")[0];
+              crossDocComLink.postCmdToIframe(previewIframe, "zoom-out");
+            } else if(e.which === 106) {
+              var previewIframe = $("iframe#previewIframe")[0];
+              crossDocComLink.postCmdToIframe(previewIframe, "restore-zoom");
+            }
           }
         });
 

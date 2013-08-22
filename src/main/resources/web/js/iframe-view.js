@@ -10,6 +10,9 @@
 if (window != top) { // Obs IE bug: http://stackoverflow.com/questions/4850978/ie-bug-window-top-false
   var crossDocComLink = new CrossDocComLink();
   var originalHeight = 0;
+  var originalZoom = 0;
+  var supportedProp = getSupportedProp(['transform', 'MozTransform', 'WebkitTransform', 'msTransform', 'OTransform']);
+        
   crossDocComLink.setUpReceiveDataHandler(function (cmdParams, source) {
     switch (cmdParams[0]) {
       case "admin-min-height":
@@ -44,12 +47,17 @@ if (window != top) { // Obs IE bug: http://stackoverflow.com/questions/4850978/i
         break;
       case "update-height-vertical":
         var previewViewIframe = $("iframe#previewViewIframe");
+        
+        // Restore zoom
+        previewViewIframe.css(supportedProp, "");
+        
         var iframe = previewViewIframe[0];
         var viewportMetaTag = previewViewIframe.contents().find("meta[name='viewport']");
         if(viewportMetaTag.attr("content").indexOf("width=device-width") === -1) {
           var setHeight = (cmdParams.length === 3) ? cmdParams[2] : 1536;
           previewViewIframe.addClass("mobile-none-responsive");
           previewViewIframe.removeClass("mobile-none-responsive-horizontal");
+          crossDocComLink.postCmdToParent("mobile-none-responsive");
         } else {
           var setHeight = (cmdParams.length === 2) ? cmdParams[1] : 494;
         }
@@ -57,12 +65,17 @@ if (window != top) { // Obs IE bug: http://stackoverflow.com/questions/4850978/i
         break;
       case "update-height-horizontal":
         var previewViewIframe = $("iframe#previewViewIframe");
+     
+        // Restore zoom
+        previewViewIframe.css(supportedProp, "");
+        
         var iframe = previewViewIframe[0];
         var viewportMetaTag = previewViewIframe.contents().find("meta[name='viewport']");
         if(viewportMetaTag.attr("content").indexOf("width=device-width") === -1) {
           var setHeight = (cmdParams.length === 3) ? cmdParams[2] : 1020;
           previewViewIframe.addClass("mobile-none-responsive-horizontal");
           previewViewIframe.removeClass("mobile-none-responsive");
+          crossDocComLink.postCmdToParent("mobile-none-responsive-horizontal");
         } else {
           var setHeight = (cmdParams.length === 2) ? cmdParams[1] : 328;
         }
@@ -75,6 +88,26 @@ if (window != top) { // Obs IE bug: http://stackoverflow.com/questions/4850978/i
         var iframe = previewViewIframe[0];
         iframe.style.height = originalHeight + "px";
         break;
+      case "zoom-in":
+        var previewViewIframe = $("iframe#previewViewIframe");
+        var zoom = parseFloat(previewViewIframe.css(supportedProp).match(/[0-9]*[.][0-9]+/)[0], 10);
+        if(originalZoom === 0) originalZoom = zoom;
+        zoom = zoom + 0.05;
+        previewViewIframe.css(supportedProp, "scale(" + zoom + ")");
+        break;
+      case "zoom-out":
+        var previewViewIframe = $("iframe#previewViewIframe");
+        var zoom = parseFloat(previewViewIframe.css(supportedProp).match(/[0-9]*[.][0-9]+/)[0], 10);
+        if(originalZoom === 0) originalZoom = zoom;
+        zoom = zoom - 0.05;
+        if(zoom >= originalZoom) {
+          previewViewIframe.css(supportedProp, "scale(" + zoom + ")");
+        }
+        break;
+      case "restore-zoom":
+        var previewViewIframe = $("iframe#previewViewIframe");
+        previewViewIframe.css(supportedProp, "");
+        break;
       case "print":
         var previewViewIframe = $("iframe#previewViewIframe");
         var iframe = previewViewIframe[0];
@@ -85,6 +118,15 @@ if (window != top) { // Obs IE bug: http://stackoverflow.com/questions/4850978/i
       default:
     }
   });
+}
+
+function getSupportedProp(proparray){
+  var root=document.documentElement //reference root element of document
+  for (var i = 0, len = proparray.length; i < len; i++){ //loop through possible properties
+    if (proparray[i] in root.style){ //if property exists on element (value will be string, empty string if not set)
+      return proparray[i] //return that string
+    }
+  }
 }
 
 (function () {

@@ -53,6 +53,9 @@
       case "preview-keep-min-height":
         previewLoadingComplete(previewIframe, previewIframeMinHeight, previewLoading, contents);
         break;
+      case "mobile-none-responsive":
+        $("iframe#previewIframe").addClass("mobile-none-responsive");
+        break;
       default:
     }
   });
@@ -109,6 +112,15 @@
           var isHorizontal = $("html").hasClass("horizontal");
           if((e.which === 39 && isHorizontal) || (e.which === 37 && !isHorizontal)) {
             $("#preview-mode-mobile-rotate-hv").click();
+          } else if(e.which === 107) {
+            var previewIframe = $("iframe#previewIframe")[0];
+            crossDocComLink.postCmdToIframe(previewIframe, "zoom-in");
+          } else if(e.which === 109) {
+            var previewIframe = $("iframe#previewIframe")[0];
+            crossDocComLink.postCmdToIframe(previewIframe, "zoom-out");
+          } else if(e.which === 106) {
+            var previewIframe = $("iframe#previewIframe")[0];
+            crossDocComLink.postCmdToIframe(previewIframe, "restore-zoom");
           }
         });
 

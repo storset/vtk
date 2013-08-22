@@ -2245,7 +2245,9 @@ ul#preview-actions #preview-actions-fullscreen-toggle {
 .fullscreen-toggle-open #app-head-wrapper,
 .fullscreen-toggle-open #title-container,
 .fullscreen-toggle-open #app-tabs,
-.fullscreen-toggle-open #app-footer-wrapper {
+.fullscreen-toggle-open #app-footer-wrapper,
+.fullscreen-toggle-open #active-tab,
+.fullscreen-toggle-open .tabMessage-big {
   display: none;
 }
 
@@ -2949,11 +2951,16 @@ div.tabMessage {
   padding: 0 0 10px 25px;
 }
 
+body#vrtx-preview div.tabMessage {
+  margin: 15px 0 0;
+  padding: 0 0 0 25px;
+}
+
 .tabMessage-big {
   background: #4a9ce2 url(images/info-white-blue-bg.png) no-repeat 19px center;
   padding: 12px 0 12px 58px;
   color: #fff;
-  margin: 0 -19px 15px -19px;
+  margin: 6px -19px 2px;
   font-size: 1.231em;
 }
 
@@ -2963,7 +2970,7 @@ div.tabMessage {
 }
 
 body#vrtx-preview .tabMessage-big {
-  margin: 0 -20px 19px -20px;
+  margin: 11px -20px 0;
 }
 
 /* ^ 3.7 Messages */

@@ -53,9 +53,6 @@
       case "preview-keep-min-height":
         previewLoadingComplete(previewIframe, previewIframeMinHeight, previewLoading, contents);
         break;
-      case "mobile-none-responsive":
-        $("iframe#previewIframe").addClass("mobile-none-responsive");
-        break;
       default:
     }
   });

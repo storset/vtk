@@ -60,7 +60,6 @@ if (window != top) { // Obs IE bug: http://stackoverflow.com/questions/4850978/i
         var viewportMetaTag = previewViewIframe.contents().find("meta[name='viewport']");
         if(viewportMetaTag.attr("content").indexOf("width=") !== -1) {
           var setHeight = (cmdParams.length === 3) ? cmdParams[2] : 1020;
-          previewViewIframe.addClass("mobile-none-responsive");
           previewViewIframe.addClass("mobile-none-responsive-horizontal");
         } else {
           var setHeight = (cmdParams.length === 2) ? cmdParams[1] : 328;

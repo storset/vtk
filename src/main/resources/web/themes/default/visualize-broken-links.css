@@ -40,10 +40,17 @@ html#vrtx-preview-popup #vrtx-link-check-spinner {
   -o-transform-origin: 0 0;
   -webkit-transform: scale(0.32156862745);
   -webkit-transform-origin: 0 0;
-   width: 1020px !important;
+  width: 1020px !important;
 }
 
-#previewViewIframe.mobile-none-responsive.mobile-none-responsive-horizontal {
+#previewViewIframe.mobile-none-responsive-horizontal {
+  -ms-zoom: 0.48431372549;
+  -moz-transform: scale(0.48431372549);
+  -moz-transform-origin: 0px 0;
+  -o-transform: scale(0.48431372549);
+  -o-transform-origin: 0 0;
+  -webkit-transform: scale(0.48431372549);
+  -webkit-transform-origin: 0 0;
   width: 1536px !important;
 }
 

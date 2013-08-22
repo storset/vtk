@@ -32,7 +32,7 @@ html#vrtx-preview-popup #vrtx-link-check-spinner {
 }
 
 #previewViewIframe.mobile-responsive {
-  overflow: hidden;
+  overflow: hidden !important;
 }
 
 #previewViewIframe.mobile-none-responsive,

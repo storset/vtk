@@ -2086,8 +2086,27 @@ body#vrtx-preview.js #app-content #main {
   padding-top: 4px;
 }
 
+ul#preview-mode {
+  float: left;
+}
+
 #preview-mode-actions {
   padding-top: 15px;
+}
+
+/* Mobile preview */
+
+.mobile body#vrtx-preview #app-content #contents #previewIframeWrapper {
+  background: #ececec;
+  clear: both;
+  height: 494px !important;
+  padding: 190px 0;
+  position: relative;
+  text-align: center;
+}
+
+.mobile.horizontal body#vrtx-preview #app-content #contents #previewIframeWrapper {
+  height: 328px !important;
 }
 
 .mobile #previewIframeWrapper #previewIframeMobileBg {
@@ -2121,7 +2140,7 @@ body#vrtx-preview.js #app-content #main {
   transform: rotate(-90deg);
   top: -170px;
   
-  /* Move down faster after some delay to avoid collision with link */
+  /* Move up faster after some delay to avoid collision with link */
   -webkit-transition: top 200ms ease-in-out 100ms,
                       -webkit-transform 300ms ease-in-out;
   -moz-transition: top 200ms ease-in-out 100ms,
@@ -2145,19 +2164,6 @@ body#vrtx-preview.js #app-content #main {
   -ms-transition: none;
   -o-transition: none;
   transition: none;
-}
-
-.mobile body#vrtx-preview #app-content #contents #previewIframeWrapper {
-  background: #ececec;
-  clear: both;
-  height: 494px !important;
-  padding: 190px 0;
-  position: relative;
-  text-align: center;
-}
-
-.mobile.horizontal body#vrtx-preview #app-content #contents #previewIframeWrapper {
-  height: 328px !important;
 }
 
 .mobile body#vrtx-preview #app-content #contents #previewIframeWrapper iframe#previewIframe {
@@ -2187,9 +2193,7 @@ body#vrtx-preview.js #app-content #main {
   position: relative;
 }
 
-ul#preview-mode {
-  float: left;
-}
+/* ^ Mobile preview */
 
 ul#preview-actions {
   float: right;

@@ -2163,7 +2163,6 @@ body#vrtx-preview.js #app-content #main {
 .mobile body#vrtx-preview #app-content #contents #previewIframeWrapper iframe#previewIframe {
   width: 328px !important;
   height: 494px !important;
-  overflow: hidden !important;
   background-color: #fff;
   display: block;
   margin: -623px auto 0;

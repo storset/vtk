@@ -2278,7 +2278,7 @@ ul#preview-actions #preview-actions-fullscreen-toggle {
   border-top: 1px solid #D9D9D9;
 }
 
-#app-content .vrtx-sticky-preview-mode-actions {
+.fullscreen-toggle-open #app-content .vrtx-sticky-preview-mode-actions {
   position: fixed;
   top: 0px;
   z-index: 9999;
@@ -2297,7 +2297,7 @@ ul#preview-actions #preview-actions-fullscreen-toggle {
   padding-right: 50px;
 }
 
-#app-content .vrtx-sticky-preview-mode-actions .sticky-bg-ie8-below {
+.fullscreen-toggle-open #app-content .vrtx-sticky-preview-mode-actions .sticky-bg-ie8-below {
   height: 13px;
   position: absolute;
   bottom: -13px;

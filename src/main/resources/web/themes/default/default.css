@@ -1979,6 +1979,45 @@ body#vrtx-report-broken-links #directory-listing td.vrtx-report-broken-links {
 
 /* 3.6 Permissions / About / Publishing / View / Plaintext-edit / Visual profile / Versioning  */
 
+#vrtx-report-filters ul.vrtx-report-filter-last {
+  margin-right: 0;
+}
+
+#vrtx-report-filters ul li,
+#preview-mode li {
+  float: left;
+  margin-right: 2px;
+  display: inline-block;
+  white-space: nowrap;
+  overflow: visible;
+  height: 22px;
+}
+
+#vrtx-report-filters ul li.active-filter span,
+#vrtx-report-filters ul li a,
+#preview-mode li.active-mode span,
+#preview-mode li a {
+  height: 19px;
+  padding: 3px 9px 0 10px;
+  display: inline-block;
+}
+
+#vrtx-report-filters ul li.active-filter,
+#vrtx-report-filters ul li.active-filter:hover,
+#preview-mode li.active-mode,
+#preview-mode li.active-mode:hover {
+  background: url(images/report-filter-hover-left.png) no-repeat 0 0;
+}
+
+#vrtx-report-filters ul li.active-filter span,
+#vrtx-report-filters ul li.active-filter:hover span,
+#preview-mode li.active-mode span,
+#preview-mode li.active-mode:hover span {
+  background: url(images/report-filter-hover-right.png) no-repeat top right;
+  display: inline-block;
+  /* color: #fff; */
+}
+
 body#vrtx-preview {
   overflow-y: scroll;
 }
@@ -2027,6 +2066,245 @@ p.previewUnavailableReasons {
   left: 41%;
   color: #5e5e5e;
 }
+
+/* Preview mode and actions */
+
+#preview-mode-mobile-rotate-hv,
+#previewIframeMobileBg,
+#preview-mode,
+#preview-actions {
+  display: none;
+  margin-top: 0;
+}
+
+.js ul#preview-mode,
+.js ul#preview-actions {
+  display: block;
+}
+
+body#vrtx-preview.js #app-content #main {
+  padding-top: 4px;
+}
+
+#preview-mode-actions {
+  padding-top: 15px;
+}
+
+.mobile #previewIframeWrapper #previewIframeMobileBg {
+  background: transparent url(images/preview-mobile-bg.png) no-repeat 0 0;
+  height: 745px;
+  width: 400px;
+  margin: -135px auto 0;
+  display: block;
+  position: relative;
+  top: 0px;
+  z-index: 0;
+  
+  /* Move down faster to avoid collision with link */
+  -webkit-transition: top 200ms ease-in-out 0ms,
+                      -webkit-transform 300ms ease-in-out;
+  -moz-transition: top 200ms ease-in-out 0ms,
+                   -moz-transform 300ms ease-in-out;
+  -ms-transition: top 200ms ease-in-out 0ms,
+                  -ms-transform 300ms ease-in-out;
+  -o-transition: top 200ms ease-in-out 0ms,
+                 -o-transform 300ms ease-in-out;
+  transition: top 200ms ease-in-out 0ms,
+              transform 300ms ease-in-out;
+}
+
+.mobile.horizontal #previewIframeWrapper #previewIframeMobileBg {
+  -webkit-transform: rotate(-90deg);
+  -moz-transform: rotate(-90deg);
+  -ms-transform: rotate(-90deg);
+  -o-transform: rotate(-90deg);
+  transform: rotate(-90deg);
+  top: -170px;
+  
+  /* Move down faster after some delay to avoid collision with link */
+  -webkit-transition: top 200ms ease-in-out 100ms,
+                      -webkit-transform 300ms ease-in-out;
+  -moz-transition: top 200ms ease-in-out 100ms,
+                   -moz-transform 300ms ease-in-out;
+  -ms-transition: top 200ms ease-in-out 100ms,
+                  -ms-transform 300ms ease-in-out;
+  -o-transition: top 200ms ease-in-out 100ms,
+                 -o-transform 300ms ease-in-out;
+  transition: top 200ms ease-in-out 100ms,
+              transform 300ms ease-in-out;
+}
+
+/* Move shadow below mobile */
+.mobile.horizontal.change-bg #previewIframeWrapper #previewIframeMobileBg {
+  background: transparent url(images/preview-mobile-bg-horizontal.png) no-repeat -2px 0;
+  left: 4px;
+  top: -167px;
+  border: 1px solid transparent;
+  -webkit-transition: none;
+  -moz-transition: none;
+  -ms-transition: none;
+  -o-transition: none;
+  transition: none;
+}
+
+.mobile body#vrtx-preview #app-content #contents #previewIframeWrapper {
+  background: #ececec;
+  clear: both;
+  height: 494px !important;
+  padding: 190px 0;
+  position: relative;
+  text-align: center;
+}
+
+.mobile.horizontal body#vrtx-preview #app-content #contents #previewIframeWrapper {
+  height: 328px !important;
+}
+
+.mobile body#vrtx-preview #app-content #contents #previewIframeWrapper iframe#previewIframe {
+  width: 328px !important;
+  height: 494px !important;
+  overflow: hidden !important;
+  background-color: #fff;
+  display: block;
+  margin: -623px auto 0;
+  border: none;
+  position: relative;
+  z-index: 1;
+}
+
+.mobile.horizontal body#vrtx-preview #app-content #contents #previewIframeWrapper iframe#previewIframe {
+  width: 494px !important;
+  height: 328px !important;
+  top: -84px;
+  left: -4px;
+}
+
+.mobile body#vrtx-preview #app-content #contents #previewIframeWrapper #preview-mode-mobile-rotate-hv {
+  display: inline-block;
+  padding-left: 24px;
+  background: #ececec url(images/refresh.png) no-repeat center left;
+  font-size: 1.15em;
+  top: -167px;
+  position: relative;
+}
+
+ul#preview-mode {
+  float: left;
+}
+
+ul#preview-actions {
+  float: right;
+  margin-top: 3px;
+}
+
+ul#preview-actions li {
+  display: inline-block;
+}
+
+#contents ul#preview-actions li {
+  margin-left: 30px;
+}
+
+ul#preview-actions li a {
+  padding: 2px 0;
+}
+
+ul#preview-actions #preview-actions-share {
+  padding-left: 20px;
+  background: url(images/preview-share.png) no-repeat center left;
+}
+
+ul#preview-actions #preview-actions-print {
+  padding-left: 22px;
+  background: url(images/preview-print.png) no-repeat center left;
+}
+
+/* ^ Preview mode and actions  */
+
+/* Preview action fullscreen */
+
+ul#preview-actions #preview-actions-fullscreen-toggle {
+  padding-left: 22px;
+  background: url(images/preview-maximize.png) no-repeat 0 3px;
+}
+
+.fullscreen-toggle-open ul#preview-actions #preview-actions-fullscreen-toggle {
+  background-image: url(images/preview-minimize.png);
+}
+
+.fullscreen-toggle-open,
+.fullscreen-toggle-open body {
+  background-color: #fff;
+}
+
+.mobile.fullscreen-toggle-open,
+.mobile.fullscreen-toggle-open body {
+  background-color: #ececec;
+}
+
+.fullscreen-toggle-open #app-head-wrapper,
+.fullscreen-toggle-open #title-container,
+.fullscreen-toggle-open #app-tabs,
+.fullscreen-toggle-open #app-footer-wrapper,
+.fullscreen-toggle-open #active-tab,
+.fullscreen-toggle-open .tabMessage-big {
+  display: none;
+}
+
+.fullscreen-toggle-open body#vrtx-preview #app-content #main {
+  border: none;
+  padding: 0;
+}
+
+.fullscreen-toggle-open .app-fluid #app-content {
+  padding: 0px;
+  margin: 0px;
+  min-width: 0;
+  max-width: none;
+}
+
+.fullscreen-toggle-open body#vrtx-preview #app-content #contents iframe#previewIframe {
+  border-width: 1px 0;
+}
+
+.fullscreen-toggle-open.mobile body#vrtx-preview #app-content #contents iframe#previewIframe {
+  border-width: 1px;
+}
+
+.mobile.fullscreen-toggle-open body#vrtx-preview #app-content #contents #previewIframeWrapper {
+  border-top: 1px solid #D9D9D9;
+}
+
+#app-content .vrtx-sticky-preview-mode-actions {
+  position: fixed;
+  top: 0px;
+  z-index: 9999;
+  background-color: #fff;
+  -webkit-box-shadow:  0px 7px 14px -8px rgba(0, 0, 0, 0.5);
+  -moz-box-shadow:  0px 7px 14px -8px rgba(0, 0, 0, 0.5);
+  box-shadow:  0px 7px 14px -8px rgba(0, 0, 0, 0.5); 
+}
+
+.fullscreen-toggle-open #app-content #preview-mode-actions-inner {
+  margin: 0 auto;
+  width: auto;
+  min-width: 914px;
+  max-width: 1200px;
+  padding-left: 50px;
+  padding-right: 50px;
+}
+
+#app-content .vrtx-sticky-preview-mode-actions .sticky-bg-ie8-below {
+  height: 13px;
+  position: absolute;
+  bottom: -13px;
+  left: 0px;
+  width: 100%;
+  background: transparent url(images/sticky-bar-fade-to-grey-ie8-bg.png) repeat-x bottom left;
+  display: block;
+}
+
+/* ^ Preview action fullscreen */
 
 /* Preview popup */
 
@@ -2673,11 +2951,16 @@ div.tabMessage {
   padding: 0 0 10px 25px;
 }
 
+body#vrtx-preview div.tabMessage {
+  margin: 15px 0 -2px;
+  padding: 0 0 2px 25px;
+}
+
 .tabMessage-big {
   background: #4a9ce2 url(images/info-white-blue-bg.png) no-repeat 19px center;
   padding: 12px 0 12px 58px;
   color: #fff;
-  margin: 0 -19px 15px -19px;
+  margin: 6px -19px 2px;
   font-size: 1.231em;
 }
 
@@ -2687,7 +2970,7 @@ div.tabMessage {
 }
 
 body#vrtx-preview .tabMessage-big {
-  margin: 0 -20px 19px -20px;
+  margin: 11px -20px 0;
 }
 
 /* ^ 3.7 Messages */
@@ -2783,6 +3066,10 @@ ul.radio-buttons li,
 .expandedForm form ul li,
 form.vrtx-admin-form ul,
 form.vrtx-admin-form ul li,
+ul#preview-mode,
+ul#preview-mode li,
+ul#preview-actions,
+ul#preview-actions li,
 ul#vrtx-manually-approve-tab-menu,
 ul#vrtx-manually-approve-tab-menu li,
 #vrtx-preview-ssl-mixed-mode #contents ul,

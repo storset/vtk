@@ -161,7 +161,8 @@ public class TagsController implements Controller {
     }
 
     private void handleAllTags(String token, Resource resource, Map<String, Object> model,
-            List<ResourceTypeDefinition> resourceTypes, String overrideResourceTypeTitle, boolean displayScope) {
+            List<ResourceTypeDefinition> resourceTypes, String overrideResourceTypeTitle, boolean displayScope)
+            throws Exception {
 
         Path scopeUri = resource.getURI();
 

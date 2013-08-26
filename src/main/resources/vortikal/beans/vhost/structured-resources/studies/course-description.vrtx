@@ -363,7 +363,7 @@ resourcetype course-description {
       [def course-content document.properties.course-content]
       [if course-content != null && course-content != ""]
         [def put-dash ""]
-        <a href="#course-content" class="vrtx-link-check">[localized 'course-content']</a>
+        <a href="#course-content">[localized 'course-content']</a>
       [endif]
       [def learning-outcomes document.properties.learning-outcomes]
       [if learning-outcomes != null && learning-outcomes != ""]
@@ -372,7 +372,7 @@ resourcetype course-description {
         [else]
           [def put-dash ""]
         [endif]
-        <a href="#learning-outcomes" class="vrtx-link-check">[localized 'learning-outcomes']</a>
+        <a href="#learning-outcomes">[localized 'learning-outcomes']</a>
       [endif]
       [def opptak-og-adgang document.properties.opptak-og-adgang]
       [def opptak-og-adgang-text-field document.properties.opptak-og-adgang-text-field]
@@ -384,7 +384,7 @@ resourcetype course-description {
         [else]
           [def put-dash ""]
         [endif]
-        <a href="#admission" class="vrtx-link-check">[localized 'opptak-og-adgang-group']</a>
+        <a href="#admission">[localized 'opptak-og-adgang-group']</a>
       [endif]
       [def obligatoriske-forkunnskaper document.properties.obligatoriske-forkunnskaper]
       [def obligatoriske-forkunnskaper-text-field document.properties.obligatoriske-forkunnskaper-text-field]
@@ -395,7 +395,7 @@ resourcetype course-description {
         [else]
           [def put-dash ""]
         [endif]
-        <a href="#prerequisites" class="vrtx-link-check">[localized 'prerequisites-group']</a>
+        <a href="#prerequisites">[localized 'prerequisites-group']</a>
       [endif]
       [def overlapping-courses document.properties.overlapping-courses]
       [def overlapping-courses-text-field document.properties.overlapping-courses-text-field]
@@ -413,7 +413,7 @@ resourcetype course-description {
         [else]
           [def put-dash ""]
         [endif]
-        <a href="#overlapping-courses" class="vrtx-link-check">[localized 'overlapping-courses-group']</a>
+        <a href="#overlapping-courses">[localized 'overlapping-courses-group']</a>
       [endif]
       [def teaching-text-field document.properties.teaching-text-field]
       [def forsikring document.properties.forsikring]
@@ -425,7 +425,7 @@ resourcetype course-description {
         [else]
           [def put-dash ""]
         [endif]
-        <a href="#teaching" class="vrtx-link-check">[localized 'teaching-group']</a>
+        <a href="#teaching">[localized 'teaching-group']</a>
       [endif]
       [def assessment-and-grading document.properties.assessment-and-grading]
       [def hjelpemidler document.properties.hjelpemidler]
@@ -455,7 +455,7 @@ resourcetype course-description {
         [else]
           [def put-dash ""]
         [endif]
-        <a href="#exam" class="vrtx-link-check">[localized 'assessment-and-grading']</a>
+        <a href="#exam">[localized 'assessment-and-grading']</a>
       [endif]
       [def evaluering-av-emnet document.properties.evaluering-av-emnet]
       [def evaluering-av-emnet-text-field document.properties.evaluering-av-emnet-text-field]
@@ -465,14 +465,14 @@ resourcetype course-description {
         [else]
           [def put-dash ""]
         [endif]
-        <a href="#evaluering-av-emnet" class="vrtx-link-check">[localized 'evaluering-av-emnet-group']</a>
+        <a href="#evaluering-av-emnet">[localized 'evaluering-av-emnet-group']</a>
       [endif]
       [def other-text-field document.properties.other-text-field]
       [if other-text-field != null && evaluering-av-emnet-text-field != ""]
         [if put-dash != null]
           -
         [endif]
-        <a href="#other" class="vrtx-link-check">[localized 'other-text-field']</a>
+        <a href="#other">[localized 'other-text-field']</a>
       [endif]
       ##
     }

@@ -52,9 +52,7 @@ import org.vortikal.web.actions.ActionsHelper;
 public class PublishResourcesController implements Controller {
 
     private String viewName;
-    private PropertyTypeDefinition publishDatePropDef; 
-    private PropertyTypeDefinition unpublishedCollectionPropDef;
-    
+    private PropertyTypeDefinition publishDatePropDef;
     private static final String ACTION_PARAM = "action";
     private static final String PUBLISH_PARAM = "publish-resources";
     private static final String UNPUBLISH_PARAM = "unpublish-resources";
@@ -87,10 +85,10 @@ public class PublishResourcesController implements Controller {
                 String name = (String) e.nextElement();
                 try {
                     if (isPublishAction) {
-                        ActionsHelper.publishResource(publishDatePropDef,unpublishedCollectionPropDef, publishedDate, repository, token,
+                        ActionsHelper.publishResource(publishDatePropDef, publishedDate, repository, token,
                                 Path.fromString(name), failures);
                     } else if (isUnpublishAction) {
-                        ActionsHelper.unpublishResource(publishDatePropDef,unpublishedCollectionPropDef, repository, token, Path.fromString(name),
+                        ActionsHelper.unpublishResource(publishDatePropDef, repository, token, Path.fromString(name),
                                 failures);
                     }
                 } catch (IllegalArgumentException iae) { // Not a path, ignore it
@@ -115,10 +113,4 @@ public class PublishResourcesController implements Controller {
     public void setPublishDatePropDef(PropertyTypeDefinition publishDatePropDef) {
         this.publishDatePropDef = publishDatePropDef;
     }
-
-    @Required   
-    public void setUnpublishedCollectionPropDef(PropertyTypeDefinition unpublishedCollectionPropDef) {
-        this.unpublishedCollectionPropDef = unpublishedCollectionPropDef;
-    }
-
 }

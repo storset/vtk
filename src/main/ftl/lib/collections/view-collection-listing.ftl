@@ -35,8 +35,14 @@
 		    <#assign title = vrtx.propValue(entryPropSet, "solr.name", "", "") />
 		  </#if>
           <a class="vrtx-title vrtx-title-link" href="${url?html}">${title?html}</a>
+
+          <#--
+            Only local resources are ever evaluated for edit authorization.
+            Use prop set path (uri) and NOT full entry url for link construction.
+            See open-webdav.js
+          -->
           <#if entry.editAuthorized>
-            <a class="vrtx-resource-open-webdav" href="${vrtx.linkConstructor(url, 'webdavService')}"><@vrtx.msg code="collectionListing.editlink" /></a>
+            <a class="vrtx-resource-open-webdav" href="${vrtx.linkConstructor(entryPropSet.URI, 'webdavService')}"><@vrtx.msg code="collectionListing.editlink" /></a>
           </#if>
 		</div>
 

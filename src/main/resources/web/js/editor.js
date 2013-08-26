@@ -142,7 +142,7 @@ $(document).ready(function () {
 
   vrtxEdit.initPreviewImage();
   vrtxEdit.initSendToApproval();
-  vrtxEdit.initStickyBar();
+  vrtxAdmin.initStickyBar("#vrtx-editor-title-submit-buttons", "vrtx-sticky-editor-title-submit-buttons", 0);
   vrtxEdit.addSaveHelpCKMaximized();
   vrtxEdit.initShowHide();
   vrtxEdit.initStudyDocTypes();
@@ -2071,40 +2071,6 @@ VrtxEditor.prototype.saveSendToApproval = function saveSendToApproval(btn) {
       }
     }
   });
-};
-
-VrtxEditor.prototype.initStickyBar = function initStickyBar() {
-  var vrtxAdm = vrtxAdmin,
-    _$ = vrtxAdm._$;
-
-  var titleSubmitButtons = _$("#vrtx-editor-title-submit-buttons");
-  var thisWindow = _$(window);
-  if (titleSubmitButtons.length && !vrtxAdm.isIPhone) { // Turn off for iPhone. 
-    var titleSubmitButtonsPos = titleSubmitButtons.offset();
-    if (vrtxAdm.isIE8) {
-      titleSubmitButtons.append("<span id='sticky-bg-ie8-below'></span>");
-    }
-    thisWindow.on("scroll", function () {
-      if (thisWindow.scrollTop() >= titleSubmitButtonsPos.top) {
-        if (!titleSubmitButtons.hasClass("vrtx-sticky-editor-title-submit-buttons")) {
-          titleSubmitButtons.addClass("vrtx-sticky-editor-title-submit-buttons");
-          _$("#contents").css("paddingTop", titleSubmitButtons.outerHeight(true) + "px");
-        }
-        titleSubmitButtons.css("width", (_$("#main").outerWidth(true) - 2) + "px");
-      } else {
-        if (titleSubmitButtons.hasClass("vrtx-sticky-editor-title-submit-buttons")) {
-          titleSubmitButtons.removeClass("vrtx-sticky-editor-title-submit-buttons");
-          titleSubmitButtons.css("width", "auto");
-          _$("#contents").css("paddingTop", "0px");
-        }
-      }
-    });
-    thisWindow.on("resize", function () {
-      if (thisWindow.scrollTop() >= titleSubmitButtonsPos.top) {
-        titleSubmitButtons.css("width", (_$("#main").outerWidth(true) - 2) + "px");
-      }
-    });
-  }
 };
 
 function wrapItemsLeftRight(items, leftItems, rightItems) {

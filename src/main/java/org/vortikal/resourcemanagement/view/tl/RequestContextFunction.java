@@ -30,8 +30,13 @@
  */
 package org.vortikal.resourcemanagement.view.tl;
 
+import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.vortikal.text.tl.Context;
 import org.vortikal.text.tl.Symbol;
@@ -56,7 +61,9 @@ public class RequestContextFunction extends Function {
                 requestContext.getResourceURI()));
         URL url = URL.create(requestContext.getServletRequest());
         result.put("request-url", urlToMap(url));
+        result.put("headers", headersToMap(requestContext.getServletRequest()));
         result.put("principal", requestContext.getPrincipal());
+        result.put("view-unauthenticated", requestContext.isViewUnauthenticated());
         return result;
     }
     
@@ -75,6 +82,25 @@ public class RequestContextFunction extends Function {
         map.put("parameters", parameters);
         map.put("full", url.toString());
         return map;
+    }
+    
+    @SuppressWarnings("unchecked")
+    private Map<Object, Object> headersToMap(HttpServletRequest request) {
+        Map<Object, Object> result = new HashMap<Object, Object>();
+        for (Enumeration<String> names = request.getHeaderNames(); names.hasMoreElements();) {
+            String name = names.nextElement();
+            Enumeration<String> values = request.getHeaders(name);
+            List<String> valueList = new ArrayList<String>();
+            while (values.hasMoreElements()) valueList.add(values.nextElement());
+            
+            Map<String, Object> entry = new HashMap<String, Object>();
+            if (!valueList.isEmpty()) {
+                entry.put("values", valueList);
+                entry.put("value", valueList.get(0));
+            }
+            result.put(name, entry);
+        }
+        return result;
     }
 
 }

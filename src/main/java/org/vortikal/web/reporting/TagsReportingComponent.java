@@ -41,6 +41,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.servlet.http.HttpServletRequest;
+
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
 
@@ -48,6 +50,8 @@ import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
+import org.vortikal.repository.Repository;
+import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
@@ -61,7 +65,9 @@ import org.vortikal.repository.search.query.Query;
 import org.vortikal.repository.search.query.TermOperator;
 import org.vortikal.repository.search.query.TypeTermQuery;
 import org.vortikal.repository.search.query.UriPrefixQuery;
+import org.vortikal.web.RequestContext;
 import org.vortikal.web.display.collection.aggregation.AggregationResolver;
+import org.vortikal.web.search.SearchComponentQueryBuilder;
 
 public class TagsReportingComponent {
 
@@ -70,6 +76,7 @@ public class TagsReportingComponent {
     private AggregationResolver aggregationResolver;
     private boolean caseInsensitive = true;
     private Ehcache cache;
+    private Map<String, List<SearchComponentQueryBuilder>> resourceTypeQueries;
 
     public static final class TagFrequency implements Serializable {
 
@@ -150,23 +157,27 @@ public class TagsReportingComponent {
      */
     @SuppressWarnings("unchecked")
     public List<TagFrequency> getTags(Path scopeUri, List<ResourceTypeDefinition> resourceTypeDefs, int limit,
-            int tagOccurenceMin, String token) throws QueryException {
+            int tagOccurenceMin, String token) throws Exception {
 
         Set<String> rtNames = resourceTypeNames(resourceTypeDefs);
         final CacheKey cacheKey = new CacheKey(scopeUri, rtNames, limit, tagOccurenceMin, token);
-        if (this.cache != null) {
-            Element elem = this.cache.get(cacheKey);
+        if (cache != null) {
+            Element elem = cache.get(cacheKey);
             if (elem != null) {
                 return (List<TagFrequency>) elem.getValue();
             }
         }
 
+        RequestContext requestContext = RequestContext.getRequestContext();
+        Repository repo = requestContext.getRepository();
+        Resource scopeResource = repo.retrieve(token, scopeUri, true);
+
         Query pathScopeQuery = null;
         if (scopeUri != null && !scopeUri.isRoot()) {
 
             Set<Path> aggregationPaths = null;
-            if (this.aggregationResolver != null) {
-                aggregationPaths = this.aggregationResolver.getAggregationPaths(scopeUri);
+            if (aggregationResolver != null) {
+                aggregationPaths = aggregationResolver.getAggregationPaths(scopeUri);
             }
 
             if (aggregationPaths == null) {
@@ -186,12 +197,13 @@ public class TagsReportingComponent {
         if (rtNames != null && !rtNames.isEmpty()) {
 
             if (rtNames.size() == 1) {
-                typeScopeQuery = new TypeTermQuery(rtNames.iterator().next(), TermOperator.EQ);
+                typeScopeQuery = getTypeScopeQuery(rtNames.iterator().next(), scopeResource,
+                        requestContext.getServletRequest());
             } else {
                 OrQuery or = new OrQuery();
                 for (String rtName : rtNames) {
                     // Consider TermOperator.IN to get hierarchical type support
-                    or.add(new TypeTermQuery(rtName, TermOperator.EQ));
+                    or.add(getTypeScopeQuery(rtName, scopeResource, requestContext.getServletRequest()));
                 }
                 typeScopeQuery = or;
             }
@@ -222,11 +234,11 @@ public class TagsReportingComponent {
 
         TagFrequencyCollector tfc = new TagFrequencyCollector();
         // Execute index iteration and collect/aggregate tag frequencies
-        this.searcher.iterateMatching(token, search, tfc);
+        searcher.iterateMatching(token, search, tfc);
         List<TagFrequency> tagFreqs = tfc.getTagFreqList();
 
         // Case insensitive value consolidation
-        if (this.caseInsensitive) {
+        if (caseInsensitive) {
             tagFreqs = consolidateCaseVariations(tagFreqs);
         }
 
@@ -252,11 +264,25 @@ public class TagsReportingComponent {
         tagFreqs = Collections.unmodifiableList(tagFreqs);
 
         // Populate cache
-        if (this.cache != null) {
-            this.cache.put(new Element(cacheKey, tagFreqs));
+        if (cache != null) {
+            // cache.put(new Element(cacheKey, tagFreqs));
         }
 
         return tagFreqs;
+    }
+
+    private Query getTypeScopeQuery(String rtName, Resource scopeResource, HttpServletRequest servletRequest) {
+        Query typeScopeQuery = new TypeTermQuery(rtName, TermOperator.EQ);
+        List<SearchComponentQueryBuilder> rtNameQueryBuilders = resourceTypeQueries.get(rtName);
+        if (rtNameQueryBuilders != null) {
+            AndQuery and = new AndQuery();
+            for (SearchComponentQueryBuilder queryBuilder : rtNameQueryBuilders) {
+                and.add(queryBuilder.build(scopeResource, servletRequest));
+            }
+            and.add(typeScopeQuery);
+            typeScopeQuery = and;
+        }
+        return typeScopeQuery;
     }
 
     private Set<String> resourceTypeNames(List<ResourceTypeDefinition> defs) {
@@ -387,4 +413,9 @@ public class TagsReportingComponent {
     public void setCaseInsensitive(boolean caseInsensitive) {
         this.caseInsensitive = caseInsensitive;
     }
+
+    public void setResourceTypeQueries(Map<String, List<SearchComponentQueryBuilder>> resourceTypeQueries) {
+        this.resourceTypeQueries = resourceTypeQueries;
+    }
+
 }

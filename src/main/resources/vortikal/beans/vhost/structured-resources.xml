@@ -53,6 +53,15 @@
     <property name="principalFactory" ref="principalFactory" />
   </bean>
 
+  <bean id="mayPreviewUnpublishedResourceAssertion" class="org.vortikal.web.service.AndAssertion">
+    <property name="assertions">
+      <list>
+        <ref bean="requiresWritePermissionAssertion" />
+        <ref bean="resourceIsNotPublishedAssertion" />
+      </list>
+    </property>
+  </bean>
+
   <bean id="structuredResources.editService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="manageService" />
     <property name="order" value="-9800" />

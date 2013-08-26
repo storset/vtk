@@ -80,6 +80,20 @@
         <property name="timeToLive" value="45" />
       </bean>
     </property>
+    <property name="resourceTypeQueries">
+      <map>
+        <entry key="structured-event">
+          <list>
+            <ref bean="eventListing.upcomingEventsQueryBuilder" />
+          </list>
+        </entry>
+        <entry key="event">
+          <list>
+            <ref bean="eventListing.upcomingEventsQueryBuilder" />
+          </list>
+        </entry>
+      </map>
+    </property>
   </bean>
 
   <bean id="tags.feedHandler" parent="collectionListing.feedHandler">

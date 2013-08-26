@@ -68,6 +68,8 @@ public final class DefaultHtmlTagConfiguration {
         compositeTags.add("blockquote");
         compositeTags.add("strike");
         compositeTags.add("s");
+        compositeTags.add("dd");
+        compositeTags.add("dl");
         
         emptyTags.add("br");
         emptyTags.add("area");

@@ -2,6 +2,22 @@
  * Vortex - Forms
  *
  */
+ 
+ /* Desktop */
+
+.forms-new .vrtx-close-dialog {
+  display: none;
+}
+
+/* JS enabled */
+
+.forms-new .ui-dialog .vrtx-close-dialog {
+  display: block;
+}
+
+.forms-new .ui-dialog h1 {
+  display: none;
+}
 
 .forms-new form,
 .forms-new fieldset,

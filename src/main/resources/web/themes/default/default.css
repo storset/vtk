@@ -2166,9 +2166,11 @@ ul#preview-mode {
   transition: none;
 }
 
-.mobile body#vrtx-preview #app-content #contents #previewIframeWrapper iframe#previewIframe {
+.mobile body#vrtx-preview #app-content #contents #previewIframeWrapper #previewIframeInnerWrapper {
   width: 329px !important;
   height: 495px !important;
+  overflow: scroll;
+  -webkit-overflow-scrolling: touch;
   background-color: #fff;
   display: block;
   margin: -624px auto 0;
@@ -2177,7 +2179,7 @@ ul#preview-mode {
   z-index: 1;
 }
 
-.mobile.horizontal body#vrtx-preview #app-content #contents #previewIframeWrapper iframe#previewIframe {
+.mobile.horizontal body#vrtx-preview #app-content #contents #previewIframeWrapper #previewIframeInnerWrapper {
   width: 495px !important;
   height: 329px !important;
   top: -84px;

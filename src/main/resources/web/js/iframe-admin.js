@@ -131,7 +131,7 @@
         $(document).on("click", "#preview-mode-mobile-rotate-hv", function(e) {
           if(waitForTheEnd != null) return;
           
-          $("iframe#previewIframe").stop().fadeTo(150, 0, "easeInCubic", function() {
+          $("#previewIframeInnerWrapper").stop().fadeTo(150, 0, "easeInCubic", function() {
             /* Make shadow "follow along" rotation */
             if(htmlTag.hasClass("change-bg")) {
               htmlTag.removeClass("change-bg");

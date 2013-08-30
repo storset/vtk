@@ -2167,19 +2167,19 @@ ul#preview-mode {
 }
 
 .mobile body#vrtx-preview #app-content #contents #previewIframeWrapper iframe#previewIframe {
-  width: 328px !important;
-  height: 494px !important;
+  width: 329px !important;
+  height: 495px !important;
   background-color: #fff;
   display: block;
-  margin: -623px auto 0;
+  margin: -624px auto 0;
   border: none;
   position: relative;
   z-index: 1;
 }
 
 .mobile.horizontal body#vrtx-preview #app-content #contents #previewIframeWrapper iframe#previewIframe {
-  width: 494px !important;
-  height: 328px !important;
+  width: 495px !important;
+  height: 329px !important;
   top: -84px;
   left: -4px;
 }

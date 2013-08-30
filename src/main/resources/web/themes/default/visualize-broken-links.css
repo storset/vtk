@@ -31,6 +31,10 @@ html#vrtx-preview-popup #vrtx-link-check-spinner {
   color: #ed1c24 !important;
 }
 
+#previewViewIframe.mobile {
+  overflow: hidden !important;
+}
+
 #previewViewIframeWrapper.mobile-none-responsive,
 #previewViewIframeWrapper.mobile-none-responsive-horizontal {
   width: 1020px !important;

@@ -66,6 +66,9 @@ if (window != top) { // Obs IE bug: http://stackoverflow.com/questions/4850978/i
         previewViewIframeWrp.css(supportedProp, "");
         originalZoom = 0;
         
+        if(!previewViewIframe.hasClass("mobile")) {
+          previewViewIframe.addClass("mobile");
+        }
         var viewportMetaTag = previewViewIframe.contents().find("meta[name='viewport']");
         if(viewportMetaTag.attr("content").indexOf("width=device-width") === -1) {
           previewViewIframeWrp.addClass("mobile-none-responsive");
@@ -88,6 +91,9 @@ if (window != top) { // Obs IE bug: http://stackoverflow.com/questions/4850978/i
         previewViewIframeWrp.css(supportedProp, "");
         originalZoom = 0;
         
+        if(!previewViewIframe.hasClass("mobile")) {
+          previewViewIframe.addClass("mobile");
+        }
         var viewportMetaTag = previewViewIframe.contents().find("meta[name='viewport']");
         if(viewportMetaTag.attr("content").indexOf("width=device-width") === -1) {
           previewViewIframeWrp.addClass("mobile-none-responsive-horizontal");
@@ -105,6 +111,7 @@ if (window != top) { // Obs IE bug: http://stackoverflow.com/questions/4850978/i
       case "restore-height":
         var previewViewIframeWrp = $("#previewViewIframeWrapper");
         var previewViewIframe = $("iframe#previewViewIframe");
+        previewViewIframe.removeClass("mobile");
         previewViewIframeWrp.removeClass("mobile-none-responsive");
         previewViewIframeWrp.removeClass("mobile-none-responsive-horizontal");
         // Restore zoom

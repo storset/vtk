@@ -2179,6 +2179,10 @@ ul#preview-mode {
   z-index: 1;
 }
 
+.mobile body#vrtx-preview #app-content #contents iframe#previewIframe {
+  overflow: hidden !important;
+}
+
 .mobile.horizontal body#vrtx-preview #app-content #contents #previewIframeWrapper #previewIframeInnerWrapper {
   width: 495px !important;
   height: 329px !important;

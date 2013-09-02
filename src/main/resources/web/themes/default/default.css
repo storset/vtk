@@ -2177,6 +2177,7 @@ ul#preview-mode {
 
 .mobile body#vrtx-preview #app-content #contents iframe#previewIframe {
   overflow: hidden !important;
+  border-width: 0px;
 }
 
 .mobile body#vrtx-preview #app-content #contents iframe#previewIframe::-webkit-scrollbar {  
@@ -2277,7 +2278,7 @@ ul#preview-actions #preview-actions-fullscreen-toggle {
 }
 
 .fullscreen-toggle-open.mobile body#vrtx-preview #app-content #contents iframe#previewIframe {
-  border-width: 1px;
+  border-width: 0px;
 }
 
 .mobile.fullscreen-toggle-open body#vrtx-preview #app-content #contents #previewIframeWrapper {

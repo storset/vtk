@@ -35,6 +35,10 @@ html#vrtx-preview-popup #vrtx-link-check-spinner {
   overflow: hidden !important;
 }
 
+#previewViewIframe.mobile::-webkit-scrollbar {  
+  display: none !important;
+}
+
 #previewViewIframeWrapper.mobile-none-responsive,
 #previewViewIframeWrapper.mobile-none-responsive-horizontal {
   width: 1020px !important;

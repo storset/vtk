@@ -2183,6 +2183,10 @@ ul#preview-mode {
   overflow: hidden !important;
 }
 
+.mobile body#vrtx-preview #app-content #contents iframe#previewIframe::-webkit-scrollbar {  
+  display: none !important;
+}
+
 .mobile.horizontal body#vrtx-preview #app-content #contents #previewIframeWrapper #previewIframeInnerWrapper {
   width: 495px !important;
   height: 329px !important;

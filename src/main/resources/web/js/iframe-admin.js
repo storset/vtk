@@ -82,7 +82,7 @@
       body = $("body");
       
       // As we can't check on matchMedia and Modernizr is not included in admin yet - hide if <= IE8
-      if(vrtxAdmin.isIE8 || (this.isAndroid && vrtxAdmin.browserVersion < 4)) {
+      if(vrtxAdmin.isIE8 || (vrtxAdmin.isAndroid && vrtxAdmin.browserVersion < 4)) {
         $("#preview-mode").hide();
       } else {
         $(document).on("click", "#preview-mode a", function(e) {

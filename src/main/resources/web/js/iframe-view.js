@@ -77,7 +77,7 @@ if (window != top) { // Obs IE bug: http://stackoverflow.com/questions/4850978/i
           try {
             var iframe = previewViewIframe[0];
             if (typeof iframe.contentWindow !== "undefined" && typeof iframe.contentWindow.document !== "undefined" && typeof iframe.contentWindow.document.body !== "undefined") {
-              var computedHeight = Math.ceil(iframe.contentWindow.document.body.offsetHeight) + 45;
+              var computedHeight = Math.ceil(iframe.contentWindow.document.body.offsetHeight);
               iframe.style.height = computedHeight + "px";
               crossDocComLink.postCmdToParent("preview-height-update|" + computedHeight);
             }
@@ -103,7 +103,7 @@ if (window != top) { // Obs IE bug: http://stackoverflow.com/questions/4850978/i
           try {
             var iframe = previewViewIframe[0];
             if (typeof iframe.contentWindow !== "undefined" && typeof iframe.contentWindow.document !== "undefined" && typeof iframe.contentWindow.document.body !== "undefined") {
-              var computedHeight = Math.ceil(iframe.contentWindow.document.body.offsetHeight) + 45;
+              var computedHeight = Math.ceil(iframe.contentWindow.document.body.offsetHeight);
               iframe.style.height = computedHeight + "px";
               crossDocComLink.postCmdToParent("preview-height-update|" + computedHeight);
             }

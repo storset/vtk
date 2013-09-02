@@ -9,6 +9,10 @@
  */
  
 var crossDocComLink = new CrossDocComLink();
+
+// Mobile preview
+var originalHeight = 0;
+
 crossDocComLink.setUpReceiveDataHandler(function(cmdParams, source) {
   switch(cmdParams[0]) {
     case "admin-min-height":
@@ -20,7 +24,29 @@ crossDocComLink.setUpReceiveDataHandler(function(cmdParams, source) {
       } else { // Computed height is less than or below minimum height
         crossDocComLink.postCmdToParent("preview-keep-min-height");
       }
+      originalHeight = setHeight;
       break;
+      
+    /* Mobile preview */
+        
+    case "update-height-vertical":
+      var computedHeight = document.body.offsetHeight;
+      crossDocComLink.postCmdToParent("preview-height-update|" + computedHeight);
+      break;
+    case "update-height-horizontal":
+      var computedHeight = document.body.offsetHeight;
+      crossDocComLink.postCmdToParent("preview-height-update|" + computedHeight);
+      break;
+    case "restore-height":
+      crossDocComLink.postCmdToParent("preview-height-update|" + originalHeight);
+      break;
+              
+    /* Print preview */
+        
+    case "print":
+      window.focus();
+      window.print(); 
+      break;    
     default:
   }
 });

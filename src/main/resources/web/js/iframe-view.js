@@ -8,6 +8,7 @@
  *  - Resizing the outer iframe (served from the admin domain) only works on browsers which support postMessage
  */
 if (window != top) { // Obs IE bug: http://stackoverflow.com/questions/4850978/ie-bug-window-top-false
+ 
   var crossDocComLink = new CrossDocComLink();
   
   // Mobile preview

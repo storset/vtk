@@ -2173,7 +2173,6 @@ ul#preview-mode {
   margin: -622px auto 0;
   border: none;
   position: relative;
-  left: 1px;
 }
 
 .mobile body#vrtx-preview #app-content #contents iframe#previewIframe {

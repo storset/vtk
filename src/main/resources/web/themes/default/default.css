@@ -2177,6 +2177,7 @@ ul#preview-mode {
   margin: -622px auto 0;
   border: none;
   position: relative;
+  left: 1px;
 }
 
 .mobile body#vrtx-preview #app-content #contents iframe#previewIframe {
@@ -2188,10 +2189,10 @@ ul#preview-mode {
 }
 
 .mobile.horizontal body#vrtx-preview #app-content #contents #previewIframeWrapper #previewIframeInnerWrapper {
-  width: 493px !important;
+  width: 494px !important;
   height: 327px !important;
   top: -86px;
-  left: -5px;
+  left: -4px;
 }
 
 .mobile body#vrtx-preview #app-content #contents #previewIframeWrapper #preview-mode-mobile-rotate-hv {

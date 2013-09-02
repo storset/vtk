@@ -2105,10 +2105,6 @@ ul#preview-mode {
   text-align: center;
 }
 
-.mobile.horizontal body#vrtx-preview #app-content #contents #previewIframeWrapper {
-  height: 328px !important;
-}
-
 .mobile #previewIframeWrapper #previewIframeMobileBg {
   background: transparent url(images/preview-mobile-bg.png) no-repeat 0 0;
   height: 745px;

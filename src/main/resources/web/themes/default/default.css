@@ -2961,7 +2961,7 @@ table.resourceInfo.revisions tr:nth-child(even) td {
 }
 
 div.tabMessage {
-  background: url(images/info-small.gif) no-repeat 0 0;
+  background: url(images/info-small.gif) no-repeat 0 14px;
   padding: 0 0 10px 25px;
 }
 

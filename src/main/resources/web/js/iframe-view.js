@@ -78,8 +78,9 @@ if (window != top) { // Obs IE bug: http://stackoverflow.com/questions/4850978/i
             var iframe = previewViewIframe[0];
             if (typeof iframe.contentWindow !== "undefined" && typeof iframe.contentWindow.document !== "undefined" && typeof iframe.contentWindow.document.body !== "undefined") {
               var computedHeight = Math.ceil(iframe.contentWindow.document.body.offsetHeight);
-              iframe.style.height = computedHeight + "px";
               crossDocComLink.postCmdToParent("preview-height-update|" + computedHeight);
+              computedHeight = (computedHeight - ($.browser.msie ? 4 : 0));
+              iframe.style.height = computedHeight + "px";
             }
           } catch (e) {}
         }
@@ -104,8 +105,9 @@ if (window != top) { // Obs IE bug: http://stackoverflow.com/questions/4850978/i
             var iframe = previewViewIframe[0];
             if (typeof iframe.contentWindow !== "undefined" && typeof iframe.contentWindow.document !== "undefined" && typeof iframe.contentWindow.document.body !== "undefined") {
               var computedHeight = Math.ceil(iframe.contentWindow.document.body.offsetHeight);
-              iframe.style.height = computedHeight + "px";
               crossDocComLink.postCmdToParent("preview-height-update|" + computedHeight);
+              computedHeight = (computedHeight - ($.browser.msie ? 4 : 0));
+              iframe.style.height = computedHeight + "px";
             }
           } catch (e) {}
         }
@@ -121,7 +123,7 @@ if (window != top) { // Obs IE bug: http://stackoverflow.com/questions/4850978/i
         originalZoom = 0;
         var iframe = previewViewIframe[0];
         iframe.style.height = originalHeight + "px";
-        crossDocComLink.postCmdToParent("preview-height-update|" + originalHeight);
+        crossDocComLink.postCmdToParent("preview-height-update|" + (originalHeight + ($.browser.msie ? 4 : 0)));
         break;
         
       /* BETA functionality for mobile preview */

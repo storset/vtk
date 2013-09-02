@@ -2170,6 +2170,7 @@ ul#preview-mode {
   width: 329px !important;
   height: 495px !important;
   overflow: scroll;
+  overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
   background-color: #fff;
   display: block;

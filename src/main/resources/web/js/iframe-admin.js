@@ -31,6 +31,11 @@
       case "preview-loaded":
         crossDocComLink.postCmdToIframe(previewIframe, "admin-min-height|" + previewIframeMinHeight);
         break;
+      case "preview-height-update":
+        var dataHeight = (cmdParams.length === 2) ? cmdParams[1] : 0;
+        var newHeight = Math.min(Math.max(dataHeight, previewIframeMinHeight), 20000); // Keep height between available window pixels and 20000 pixels
+        previewIframe.style.height = newHeight + "px";
+        break; 
       case "preview-height":
         var dataHeight = (cmdParams.length === 2) ? cmdParams[1] : 0;
         var newHeight = Math.min(Math.max(dataHeight, previewIframeMinHeight), 20000); // Keep height between available window pixels and 20000 pixels

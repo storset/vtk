@@ -79,6 +79,7 @@ if (window != top) { // Obs IE bug: http://stackoverflow.com/questions/4850978/i
             if (typeof iframe.contentWindow !== "undefined" && typeof iframe.contentWindow.document !== "undefined" && typeof iframe.contentWindow.document.body !== "undefined") {
               var computedHeight = Math.ceil(iframe.contentWindow.document.body.offsetHeight) + 45;
               iframe.style.height = computedHeight + "px";
+              crossDocComLink.postCmdToParent("preview-height|" + computedHeight);
             }
           } catch (e) {}
         }
@@ -104,6 +105,7 @@ if (window != top) { // Obs IE bug: http://stackoverflow.com/questions/4850978/i
             if (typeof iframe.contentWindow !== "undefined" && typeof iframe.contentWindow.document !== "undefined" && typeof iframe.contentWindow.document.body !== "undefined") {
               var computedHeight = Math.ceil(iframe.contentWindow.document.body.offsetHeight) + 45;
               iframe.style.height = computedHeight + "px";
+              crossDocComLink.postCmdToParent("preview-height|" + computedHeight);
             }
           } catch (e) {}
         }
@@ -119,6 +121,7 @@ if (window != top) { // Obs IE bug: http://stackoverflow.com/questions/4850978/i
         originalZoom = 0;
         var iframe = previewViewIframe[0];
         iframe.style.height = originalHeight + "px";
+        crossDocComLink.postCmdToParent("preview-height|" + originalHeight);
         break;
         
       /* BETA functionality for mobile preview */

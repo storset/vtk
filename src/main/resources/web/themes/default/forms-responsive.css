@@ -3,27 +3,6 @@
  *
  */
 
-/* Desktop */
-
-.vrtx-close-dialog {
-  display: none;
-}
-
-/* JS enabled */
-
-.ui-dialog .vrtx-close-dialog {
-  display: block;
-}
-
-.ui-dialog h1 {
-  display: none;
-}
-
-/* Small-screen */
-
-@media only screen and (max-width: 15.5cm) and (orientation : portrait),
-       only screen and (max-width: 17.5cm) and (orientation : landscape) {
-
   a {
     text-decoration: none;
     color: #0B5A9D;
@@ -33,7 +12,7 @@
     text-decoration: underline;
   }
 
-  .vrtx-close-dialog {
+  .forms-new .vrtx-close-dialog {
     display: inline-block;
     margin-left: 10px;
   }
@@ -354,7 +333,5 @@
   #uiodoc-wrapper #uiodoc #main a.button-large-blue span {
     background: url(../images/mobile/grey-arrow-forward.png) no-repeat 100% 50% !important;
   }
-
-}
 
 /* ^ Forms responsive */

@@ -2086,8 +2086,23 @@ body#vrtx-preview.js #app-content #main {
   padding-top: 4px;
 }
 
+ul#preview-mode {
+  float: left;
+}
+
 #preview-mode-actions {
   padding-top: 15px;
+}
+
+/* Mobile preview */
+
+.mobile body#vrtx-preview #app-content #contents #previewIframeWrapper {
+  background: #ececec;
+  clear: both;
+  height: 494px !important;
+  padding: 190px 0;
+  position: relative;
+  text-align: center;
 }
 
 .mobile #previewIframeWrapper #previewIframeMobileBg {
@@ -2121,7 +2136,7 @@ body#vrtx-preview.js #app-content #main {
   transform: rotate(-90deg);
   top: -170px;
   
-  /* Move down faster after some delay to avoid collision with link */
+  /* Move up faster after some delay to avoid collision with link */
   -webkit-transition: top 200ms ease-in-out 100ms,
                       -webkit-transform 300ms ease-in-out;
   -moz-transition: top 200ms ease-in-out 100ms,
@@ -2147,35 +2162,32 @@ body#vrtx-preview.js #app-content #main {
   transition: none;
 }
 
-.mobile body#vrtx-preview #app-content #contents #previewIframeWrapper {
-  background: #ececec;
-  clear: both;
-  height: 494px !important;
-  padding: 190px 0;
-  position: relative;
-  text-align: center;
-}
-
-.mobile.horizontal body#vrtx-preview #app-content #contents #previewIframeWrapper {
-  height: 328px !important;
-}
-
-.mobile body#vrtx-preview #app-content #contents #previewIframeWrapper iframe#previewIframe {
-  width: 328px !important;
-  height: 494px !important;
-  overflow: hidden !important;
+.mobile body#vrtx-preview #app-content #contents #previewIframeWrapper #previewIframeInnerWrapper {
+  width: 327px !important;
+  height: 493px !important;
+  overflow: scroll;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
   background-color: #fff;
   display: block;
-  margin: -623px auto 0;
+  margin: -622px auto 0;
   border: none;
   position: relative;
-  z-index: 1;
 }
 
-.mobile.horizontal body#vrtx-preview #app-content #contents #previewIframeWrapper iframe#previewIframe {
+.mobile body#vrtx-preview #app-content #contents iframe#previewIframe {
+  overflow: hidden !important;
+  border-width: 0px;
+}
+
+.mobile body#vrtx-preview #app-content #contents iframe#previewIframe::-webkit-scrollbar {  
+  display: none !important;
+}
+
+.mobile.horizontal body#vrtx-preview #app-content #contents #previewIframeWrapper #previewIframeInnerWrapper {
   width: 494px !important;
-  height: 328px !important;
-  top: -84px;
+  height: 327px !important;
+  top: -86px;
   left: -4px;
 }
 
@@ -2188,9 +2200,7 @@ body#vrtx-preview.js #app-content #main {
   position: relative;
 }
 
-ul#preview-mode {
-  float: left;
-}
+/* ^ Mobile preview */
 
 ul#preview-actions {
   float: right;
@@ -2268,14 +2278,14 @@ ul#preview-actions #preview-actions-fullscreen-toggle {
 }
 
 .fullscreen-toggle-open.mobile body#vrtx-preview #app-content #contents iframe#previewIframe {
-  border-width: 1px;
+  border-width: 0px;
 }
 
 .mobile.fullscreen-toggle-open body#vrtx-preview #app-content #contents #previewIframeWrapper {
   border-top: 1px solid #D9D9D9;
 }
 
-#app-content .vrtx-sticky-preview-mode-actions {
+.fullscreen-toggle-open #app-content .vrtx-sticky-preview-mode-actions {
   position: fixed;
   top: 0px;
   z-index: 9999;
@@ -2294,7 +2304,7 @@ ul#preview-actions #preview-actions-fullscreen-toggle {
   padding-right: 50px;
 }
 
-#app-content .vrtx-sticky-preview-mode-actions .sticky-bg-ie8-below {
+.fullscreen-toggle-open #app-content .vrtx-sticky-preview-mode-actions .sticky-bg-ie8-below {
   height: 13px;
   position: absolute;
   bottom: -13px;
@@ -2529,7 +2539,7 @@ table.privilegeTable {
 table.resourceInfo td,
 table.privilegeTable td {
   padding: 3px 5px;
-  border-top: 1px solid #F0F0F0
+  border-top: 1px solid #F0F0F0;
   vertical-align: top;
 }
 
@@ -2947,13 +2957,13 @@ table.resourceInfo.revisions tr:nth-child(even) td {
 }
 
 div.tabMessage {
-  background: url(images/info-small.gif) no-repeat 0 0;
+  background: url(images/info-small.gif) no-repeat 0 14px;
   padding: 0 0 10px 25px;
 }
 
 body#vrtx-preview div.tabMessage {
-  margin: 15px 0 -2px;
-  padding: 0 0 2px 25px;
+  margin: 0 0 -2px 0;
+  padding: 15px 0 2px 25px;
 }
 
 .tabMessage-big {

@@ -21,8 +21,8 @@
     </#list>
   </#if>
   <link href="/vrtx/__vrtx/static-resources/themes/default/forms.css" type="text/css" rel="stylesheet" />
-  <link href="/vrtx/__vrtx/static-resources/themes/default/forms-responsive.css" type="text/css" rel="stylesheet" />
- 
+  <link href="/vrtx/__vrtx/static-resources/themes/default/forms-responsive.css" media="only screen and (max-width: 15.5cm) and (orientation : portrait), only screen and (max-width: 17.5cm) and (orientation : landscape)" type="text/css" rel="stylesheet" />
+
   <!--[if lte IE 7]>
     <link rel="stylesheet" href="/vrtx/__vrtx/static-resources/themes/default/default-ie7.css" type="text/css" />
   <![endif]-->

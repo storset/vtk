@@ -8,6 +8,7 @@
  *  - Resizing the outer iframe (served from the admin domain) only works on browsers which support postMessage
  */
 if (window != top) { // Obs IE bug: http://stackoverflow.com/questions/4850978/ie-bug-window-top-false
+ 
   var crossDocComLink = new CrossDocComLink();
   
   // Mobile preview
@@ -59,79 +60,94 @@ if (window != top) { // Obs IE bug: http://stackoverflow.com/questions/4850978/i
       /* Mobile preview */
         
       case "update-height-vertical":
+        var previewViewIframeWrp = $("#previewViewIframeWrapper");
         var previewViewIframe = $("iframe#previewViewIframe");
         
         // Restore zoom
-        previewViewIframe.css(supportedProp, "");
+        previewViewIframeWrp.css(supportedProp, "");
         originalZoom = 0;
         
+        if(!previewViewIframe.hasClass("mobile")) {
+          previewViewIframe.addClass("mobile");
+        }
         var viewportMetaTag = previewViewIframe.contents().find("meta[name='viewport']");
         if(viewportMetaTag.attr("content").indexOf("width=device-width") === -1) {
-          previewViewIframe.addClass("mobile-none-responsive");
-          previewViewIframe.removeClass("mobile-none-responsive-horizontal");
+          previewViewIframeWrp.addClass("mobile-none-responsive");
+          previewViewIframeWrp.removeClass("mobile-none-responsive-horizontal");
         } else {
           try {
             var iframe = previewViewIframe[0];
             if (typeof iframe.contentWindow !== "undefined" && typeof iframe.contentWindow.document !== "undefined" && typeof iframe.contentWindow.document.body !== "undefined") {
-              var computedHeight = Math.ceil(iframe.contentWindow.document.body.offsetHeight) + 45;
+              var computedHeight = Math.ceil(iframe.contentWindow.document.body.offsetHeight);
+              crossDocComLink.postCmdToParent("preview-height-update|" + computedHeight);
+              computedHeight = (computedHeight - ($.browser.msie ? 4 : 0));
               iframe.style.height = computedHeight + "px";
             }
           } catch (e) {}
         }
         break;
       case "update-height-horizontal":
+        var previewViewIframeWrp = $("#previewViewIframeWrapper");
         var previewViewIframe = $("iframe#previewViewIframe");
         
         // Restore zoom
-        previewViewIframe.css(supportedProp, "");
+        previewViewIframeWrp.css(supportedProp, "");
         originalZoom = 0;
         
+        if(!previewViewIframe.hasClass("mobile")) {
+          previewViewIframe.addClass("mobile");
+        }
         var viewportMetaTag = previewViewIframe.contents().find("meta[name='viewport']");
         if(viewportMetaTag.attr("content").indexOf("width=device-width") === -1) {
-          previewViewIframe.addClass("mobile-none-responsive-horizontal");
-          previewViewIframe.removeClass("mobile-none-responsive");
+          previewViewIframeWrp.addClass("mobile-none-responsive-horizontal");
+          previewViewIframeWrp.removeClass("mobile-none-responsive");
         } else {
           try {
             var iframe = previewViewIframe[0];
             if (typeof iframe.contentWindow !== "undefined" && typeof iframe.contentWindow.document !== "undefined" && typeof iframe.contentWindow.document.body !== "undefined") {
-              var computedHeight = Math.ceil(iframe.contentWindow.document.body.offsetHeight) + 45;
+              var computedHeight = Math.ceil(iframe.contentWindow.document.body.offsetHeight);
+              crossDocComLink.postCmdToParent("preview-height-update|" + computedHeight);
+              computedHeight = (computedHeight - ($.browser.msie ? 4 : 0));
               iframe.style.height = computedHeight + "px";
             }
           } catch (e) {}
         }
         break;
       case "restore-height":
+        var previewViewIframeWrp = $("#previewViewIframeWrapper");
         var previewViewIframe = $("iframe#previewViewIframe");
-        previewViewIframe.removeClass("mobile-none-responsive");
-        previewViewIframe.removeClass("mobile-none-responsive-horizontal");
+        previewViewIframe.removeClass("mobile");
+        previewViewIframeWrp.removeClass("mobile-none-responsive");
+        previewViewIframeWrp.removeClass("mobile-none-responsive-horizontal");
         // Restore zoom
         previewViewIframe.css(supportedProp, "");
         originalZoom = 0;
         var iframe = previewViewIframe[0];
         iframe.style.height = originalHeight + "px";
+        crossDocComLink.postCmdToParent("preview-height-update|" + (originalHeight + ($.browser.msie ? 4 : 0)));
         break;
         
       /* BETA functionality for mobile preview */
         
       case "zoom-in":
-        var previewViewIframe = $("iframe#previewViewIframe");
-        var zoom = parseFloat(previewViewIframe.css(supportedProp).match(/[0-9]*[.][0-9]+/)[0], 10);
+        var previewViewIframeWrp = $("#previewViewIframeWrapper");
+        var zoom = parseFloat(previewViewIframeWrp.css(supportedProp).match(/[0-9]*[.][0-9]+/)[0], 10);
         if(originalZoom === 0) originalZoom = zoom;
         zoom = zoom + 0.05;
-        previewViewIframe.css(supportedProp, "scale(" + zoom + ")");
+        previewViewIframeWrp.css(supportedProp, "scale(" + zoom + ")");
         break;
       case "zoom-out":
-        var previewViewIframe = $("iframe#previewViewIframe");
-        var zoom = parseFloat(previewViewIframe.css(supportedProp).match(/[0-9]*[.][0-9]+/)[0], 10);
+        var previewViewIframeWrp = $("#previewViewIframeWrapper");
+        var zoom = parseFloat(previewViewIframeWrp.css(supportedProp).match(/[0-9]*[.][0-9]+/)[0], 10);
         if(originalZoom === 0) originalZoom = zoom;
         zoom = zoom - 0.05;
         if(zoom >= originalZoom) {
-          previewViewIframe.css(supportedProp, "scale(" + zoom + ")");
+          previewViewIframeWrp.css(supportedProp, "scale(" + zoom + ")");
         }
         break;
       case "restore-zoom":
-        var previewViewIframe = $("iframe#previewViewIframe");
-        previewViewIframe.css(supportedProp, "");
+        var previewViewIframeWrp = $("#previewViewIframeWrapper");
+        previewViewIframeWrp.css(supportedProp, "");
         originalZoom = 0;
         break;
               

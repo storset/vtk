@@ -31,6 +31,11 @@
       case "preview-loaded":
         crossDocComLink.postCmdToIframe(previewIframe, "admin-min-height|" + previewIframeMinHeight);
         break;
+      case "preview-height-update":
+        var dataHeight = (cmdParams.length === 2) ? cmdParams[1] : 0;
+        var newHeight = Math.min(Math.max(dataHeight, previewIframeMinHeight), 20000); // Keep height between available window pixels and 20000 pixels
+        previewIframe.style.height = newHeight + "px";
+        break; 
       case "preview-height":
         var dataHeight = (cmdParams.length === 2) ? cmdParams[1] : 0;
         var newHeight = Math.min(Math.max(dataHeight, previewIframeMinHeight), 20000); // Keep height between available window pixels and 20000 pixels
@@ -82,7 +87,7 @@
       body = $("body");
       
       // As we can't check on matchMedia and Modernizr is not included in admin yet - hide if <= IE8
-      if(vrtxAdmin.isIE8) {
+      if(vrtxAdmin.isIE8 || vrtxAdmin.isMobileWebkitDevice) {
         $("#preview-mode").hide();
       } else {
         $(document).on("click", "#preview-mode a", function(e) {
@@ -131,7 +136,7 @@
         $(document).on("click", "#preview-mode-mobile-rotate-hv", function(e) {
           if(waitForTheEnd != null) return;
           
-          $("iframe#previewIframe").stop().fadeTo(150, 0, "easeInCubic", function() {
+          $("#previewIframeInnerWrapper").stop().fadeTo(150, 0, "easeInCubic", function() {
             /* Make shadow "follow along" rotation */
             if(htmlTag.hasClass("change-bg")) {
               htmlTag.removeClass("change-bg");

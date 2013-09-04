@@ -64,7 +64,7 @@ public class ResourcePropertyAssertion
     private String value;
     private boolean checkExistenceOnly = false;
     private boolean invert = false;
-    private boolean checkInherited = false;
+    private boolean checkInherited = false; // Can delete ?
     private String token = null;
     
     public void setName(String name) {

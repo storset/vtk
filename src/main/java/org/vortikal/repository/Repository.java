@@ -258,6 +258,11 @@ public interface Repository {
     public InputStream getInputStream(String token, Path uri, boolean forProcessing, Revision revision) throws ResourceNotFoundException,
             AuthorizationException, AuthenticationException, Exception;
     
+    public InputStream getInputStream(String token, Path uri, boolean forProcessing, String contentType) 
+           throws ResourceNotFoundException,
+            AuthorizationException, AuthenticationException, Exception;
+            
+    
     /**
      * Creates a new document in the repository.
      * 

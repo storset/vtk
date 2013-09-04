@@ -88,6 +88,7 @@ import org.vortikal.security.InvalidPrincipalException;
 import org.vortikal.security.Principal;
 import org.vortikal.security.token.TokenManager;
 import org.vortikal.util.io.StreamUtil;
+import org.vortikal.util.repository.MimeHelper;
 
 /**
  * A semi-transactional implementation of the
@@ -123,6 +124,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     private int maxComments = 1000;
     private int maxResourceChildren = 3000;
     private File tempDir;
+    private List<ContentHandlingInterceptor> contentHandlingInterceptors;
 
     // Default value of 60 days before recoverable resources are purged from
     // trash can
@@ -139,7 +141,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
 
     private static Log searchLogger = LogFactory.getLog(RepositoryImpl.class.getName() + ".Search");
     private static Log trashLogger = LogFactory.getLog(RepositoryImpl.class.getName() + ".Trash");
-
+    
     @Override
     public boolean isReadOnly() {
         return this.authorizationManager.isReadOnly();
@@ -298,6 +300,59 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         }
 
         return this.contentStore.getInputStream(uri).getInputStream();
+    }
+    
+    /**
+     * Request alternate content with the given content type. Only some resource
+     * types support this.
+     * FIXME using this API feels somewhat strange, perhaps go for stream-ID or another
+     *       more explicit reference to an alternative stream.
+     */
+    @Transactional
+    public InputStream getInputStream(String token, Path uri, boolean forProcessing, String contentType) 
+            throws ResourceNotFoundException, AuthorizationException, AuthenticationException, ResourceLockedException,
+            IOException {
+        
+        Principal principal = this.tokenManager.getPrincipal(token);
+        ResourceImpl r = this.dao.load(uri);
+
+        if (r == null) {
+            throw new ResourceNotFoundException(uri);
+        } else if (r.isCollection()) {
+            throw new IllegalOperationException("Resource is collection");
+        }
+
+        if (forProcessing) {
+            this.authorizationManager.authorizeReadProcessed(uri, principal);
+        } else {
+            this.authorizationManager.authorizeRead(uri, principal);
+        }
+
+        if (contentType != null) {
+            ContentHandlingInterceptor chi = getCHI(r);
+            if (chi != null) {
+                return chi.getInputStream(r, contentType, this.contentStore);
+            }
+        }
+        
+        if (contentType == null || r.getContentType().equals(contentType)) {
+            return this.contentStore.getInputStream(uri).getInputStream();
+        }
+        
+        throw new IllegalArgumentException("No such stream available");
+    }
+    
+    private ContentHandlingInterceptor getCHI(Resource r) {
+        ContentHandlingInterceptor chi = null;
+        if (this.contentHandlingInterceptors != null) {
+            for (ContentHandlingInterceptor c : this.contentHandlingInterceptors) {
+                if (c.isSupportedResourceType(r.getResourceType())) {
+                    chi = c;
+                    break;
+                }
+            }
+        }
+        return chi;
     }
 
     @Transactional
@@ -958,20 +1013,30 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             // Store content modification on parent
             final ResourceImpl originalParent = (ResourceImpl) parent.clone();
             parent.addChildURI(uri);
-            Content content = getContent(parent);
-            parent = this.resourceHelper.contentModification(parent, principal, content);
+            parent = this.resourceHelper.contentModification(parent, principal, getContent(parent));
             parent = this.dao.store(parent);
             this.context.publishEvent(new ContentModificationEvent(this, (Resource) parent.clone(), originalParent));
 
             // Set up new resource
-            this.contentStore.storeContent(uri, inStream);
             ResourceImpl newResource = new ResourceImpl(uri);
-            content = getContent(newResource);
             newResource.setAcl(parent.getAcl());
             newResource.setInheritedAcl(true);
             int aclIneritedFrom = parent.isInheritedAcl() ? parent.getAclInheritedFrom() : parent.getID();
             newResource.setAclInheritedFrom(aclIneritedFrom);
-            newResource = this.resourceHelper.create(principal, newResource, false, content);
+            
+            // Check if contentType has interceptor for storage
+            // XXX probably need more reliable way of determining if storage should be handled by interceptor.
+            //     (now just based on filename and nothing else).
+            String contentType = MimeHelper.map(uri.getName());
+            ContentHandlingInterceptor chi = getCHIForContentType(contentType);
+            if (chi != null) {
+                newResource = chi.interceptCreate(newResource, inStream, contentType, this.contentStore);
+            } else {
+                this.contentStore.storeContent(uri, inStream);
+            }
+
+            // Run through type evaluation
+            newResource = this.resourceHelper.create(principal, newResource, false, getContent(newResource));
             
             // Store new resource
             newResource = this.dao.store(newResource);
@@ -981,6 +1046,32 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         } catch (CloneNotSupportedException e) {
             throw new IOException("Failed to clone object", e);
         }
+    }
+
+    private ContentHandlingInterceptor getCHIForContentType(String contentType) {
+        ContentHandlingInterceptor chi = null;
+        if (this.contentHandlingInterceptors != null) {
+            for (ContentHandlingInterceptor c : this.contentHandlingInterceptors) {
+                if (c.isSupportedContentType(contentType)) {
+                    chi = c;
+                    break;
+                }
+            }
+        }
+        return chi;
+    }
+
+    /**
+     * Store content with specific content-type. Only for resource types 
+     */
+    @Transactional
+    public Resource storeContent(String token, Path uri, InputStream byteStream, String contentType) 
+            throws AuthorizationException,
+            AuthenticationException, ResourceNotFoundException, ResourceLockedException, IllegalOperationException,
+            ReadOnlyException, IOException {
+
+        
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -1025,7 +1116,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             throw new IOException("Failed to clone object", e);
         }
     }
-
+    
     /**
      * Requests that an InputStream be written to a resource.
      * Used to update contents of working copy revision.
@@ -1083,8 +1174,8 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         String uid = principal.getQualifiedName();
         Type type = existing.getType();
         Date timestamp = new Date();
-        String checksum = null;
-        Integer changeAmount = null;
+        String checksum;
+        Integer changeAmount;
 
         File tempFile = null;
         try {
@@ -1383,7 +1474,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         long revisionId = this.revisionStore.newRevisionID();
         Integer changeAmount = null;
         String uid = resource.getModifiedBy().getQualifiedName();
-        String checksum = null;
+        String checksum;
         Date timestamp = resource.getLastModified();
         Acl acl = type == Type.WORKING_COPY ? null : resource.getAcl();
 
@@ -1844,6 +1935,10 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     @Required
     public void setContentRepresentationRegistry(ContentRepresentationRegistry contentRepresentationRegistry) {
         this.contentRepresentationRegistry = contentRepresentationRegistry;
+    }
+    
+    public void setContentHandlingInterceptors(List<ContentHandlingInterceptor> chis) {
+        this.contentHandlingInterceptors = chis;
     }
 
     @Required

@@ -227,6 +227,13 @@ public class RequestLocalRepository implements Repository {
 
         return this.repository.getInputStream(token, uri, forProcessing);
     }
+    
+    @Override
+    public InputStream getInputStream(String token, Path uri, boolean forProcessing, String contentType) throws ResourceNotFoundException, AuthorizationException, AuthenticationException, Exception {
+
+        return this.repository.getInputStream(token, uri, forProcessing, contentType);
+
+    }
 
     @Override
     public InputStream getInputStream(String token, Path uri, boolean forProcessing, Revision revision) throws Exception {
@@ -514,4 +521,5 @@ public class RequestLocalRepository implements Repository {
             AuthenticationException, Exception {
         this.repository.deleteRevision(token, uri, revision);
     }
+
 }

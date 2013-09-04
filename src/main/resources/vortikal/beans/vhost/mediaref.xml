@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" 
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p" 
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+                           http://www.springframework.org/schema/context
+                           http://www.springframework.org/schema/context/spring-context.xsd
+                           http://www.springframework.org/schema/util
+                           http://www.springframework.org/schema/util/spring-util.xsd">
+  
+  <!-- XXX I'd prefer not to mess with structured-resources, but placing
+      the mediaref type under anything but json-resource makes it never match in
+      evaluation. -->
+  <bean id="mediaref.mediarefType"
+        class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
+    <property name="name" value="mediaref"/>
+    <property name="namespace" ref="DEFAULT_NAMESPACE" />
+    <property name="parentTypeDefinition" ref="json.resourceType" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.ResourceContentTypeAssertion">
+          <property name="contentType" value="application/json" />
+        </bean>
+        <bean class="org.vortikal.resourcemanagement.JSONObjectSelectAssertion">
+          <property name="expression" value="mediaref" />
+          <property name="expectedValue" value="true" />
+        </bean>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="mediaref.videorefType"
+        class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
+    <property name="name" value="videoref"/>
+    <property name="namespace" ref="DEFAULT_NAMESPACE" />
+    <property name="parentTypeDefinition" ref="mediaref.mediarefType" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.resourcemanagement.JSONObjectSelectAssertion">
+          <property name="expression" value="resourcetype" />
+          <property name="expectedValue" value="videoref" />
+        </bean>
+      </list>
+    </property>
+    <property name="propertyTypeDefinitions">
+      <list>
+        <bean class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+          <property name="name" value="videoId" />
+          <property name="namespace" ref="DEFAULT_NAMESPACE" />
+          <property name="type" value="STRING" />
+          <property name="propertyEvaluator">
+            <bean class="org.vortikal.repository.resourcetype.property.JsonExtractEvaluator">
+              <property name="valueFactory" ref="valueFactory" />
+              <property name="expression" value="ref.videoId" />
+            </bean>
+          </property>
+        </bean>
+      </list>
+    </property>
+  </bean>
+  
+  <bean id="video.contentHandlingInterceptor"
+       class="org.vortikal.repository.ContentHandlingInterceptor">
+    <property name="videoStorageRoot" value="/home/oyvind/usit/vrtxdata/vidstor" />
+    <property name="repositoryId" value="${repositoryID}" />
+    <property name="videoApiClient" ref="video.client" />
+    <property name="contentTypePropDef" ref="contentTypePropDef"/>
+  </bean>
+  
+  <!-- Videoapp -->
+  <bean id="video.restTemplate" class="org.springframework.web.client.RestTemplate" >
+    <constructor-arg>
+      <bean class="org.vortikal.util.web.BasicAuthHttpRequestFactory">
+        <property name="username" value="vortex" />
+        <property name="password" value="123.Takk" />
+      </bean>
+    </constructor-arg>
+  </bean>
+  
+  <bean id="video.client" class="org.vortikal.video.rest.VideoApiClient">
+    <property name="restTemplate" ref="video.restTemplate" />
+    <property name="repositoryId" value="${repositoryID}" />
+  </bean>
+  
+  <!-- Special view service for mediaref types -->
+  <bean id="displayMediarefResource" class="org.vortikal.web.service.ServiceImpl">
+    <description>
+      Special display for mediaref types, since their primary content is not
+      what should be served out.
+    </description>
+    <property name="parent" ref="displayResourceService" />
+    <property name="order" value="150" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.ResourceTypeAssertion">
+          <property name="resourceType" value="mediaref"/>
+          <property name="repository" ref="repository" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="displayMediarefHandler" />
+  </bean>
+
+  <bean id="displayMediarefHandler"
+        class="org.vortikal.web.display.mediaref.DisplayMediarefController">
+    <property name="view" ref="displayMediarefView" />
+  </bean>
+
+  <bean id="displayMediarefView"
+        class="org.vortikal.web.display.mediaref.DisplayMediarefView">
+    <property name="supportRangeRequests" value="true" />
+  </bean>
+  
+</beans>

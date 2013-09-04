@@ -82,4 +82,7 @@
 
   <!-- Obsolete -->
   <import resource="obsoleted.xml" />
+  
+  <!-- Mediaref/videoref support and videoapp integration -->
+  <import resource="mediaref.xml" />
 </beans>

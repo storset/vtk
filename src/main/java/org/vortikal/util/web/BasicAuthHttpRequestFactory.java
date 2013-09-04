@@ -1,21 +1,21 @@
-/* Copyright (c) 2009, University of Oslo, Norway
+/* Copyright (c) 2013, University of Oslo, Norway
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
  * met:
- * 
+ *
  *  * Redistributions of source code must retain the above copyright
  *    notice, this list of conditions and the following disclaimer.
- * 
+ *
  *  * Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
- * 
+ *
  *  * Neither the name of the University of Oslo nor the names of its
  *    contributors may be used to endorse or promote products derived from
  *    this software without specific prior written permission.
- *      
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
  * IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
  * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
@@ -28,38 +28,37 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repository.content;
 
-import net.sf.json.JSONObject;
+package org.vortikal.util.web;
 
-import org.vortikal.util.io.StreamUtil;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.vortikal.util.codec.Base64;
 
 /**
- * Content factory for <code>net.sf.json.JSONObject</code> objects.
+ * Extends {@link SimpleClientHttpRequestFactory} and provides preemptive
+ * basic authentication for created HTTP requests.
  */
-public class JSONObjectContentFactory implements ContentFactory {
+public class BasicAuthHttpRequestFactory extends SimpleClientHttpRequestFactory {
 
-    private int maxLength = 1000000;
-    
+    private String username;
+    private String password;
+
     @Override
-    public Class<?>[] getRepresentationClasses() {
-        return new Class[] {JSONObject.class};
+    protected void prepareConnection(HttpURLConnection connection, String httpMethod) throws IOException {
+        super.prepareConnection(connection, httpMethod);
+        String u = this.username != null ? this.username : "";
+        String p = this.password != null ? this.password : "";
+        String encoded = Base64.encode(u + ":" + p);
+        connection.addRequestProperty("Authorization", "Basic " + encoded);
     }
     
-    @Override
-    public Object getContentRepresentation(Class<?> clazz,  InputStreamWrapper content) throws Exception {
-        byte[] buffer = StreamUtil.readInputStream(content.getInputStream(), this.maxLength + 1);
-        if (buffer.length > this.maxLength) {
-            throw new Exception("Unable to parse content: maximum size exceeded: " 
-                    + this.maxLength);
-        }
-        String s = new String(buffer, "utf-8");    
-        return JSONObject.fromObject(s);
+    public void setUsername(String username) {
+        this.username = username;
     }
-
-    public void setMaxLength(int maxLength) {
-        this.maxLength = maxLength;
+    
+    public void setPassword(String password) {
+        this.password = password;
     }
-
-
 }

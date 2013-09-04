@@ -63,8 +63,12 @@ public class ContentTypeEvaluator implements PropertyEvaluator {
                 property.setStringValue(X_VORTEX_COLLECTION);
                 return true;
             }
-            String guessedContentType = MimeHelper.map(ctx.getNewResource().getName());
-            property.setStringValue(guessedContentType);
+            // Unless proeprty has been preset to some controlled or desired value,
+            // take a guess based on name:
+            if (!property.isValueInitialized()) {
+                String guessedContentType = MimeHelper.map(ctx.getNewResource().getName());
+                property.setStringValue(guessedContentType);
+            }
         } 
         if (this.contentPeekRegexps == null) {
             return true;
@@ -73,7 +77,7 @@ public class ContentTypeEvaluator implements PropertyEvaluator {
         if (evalType == Type.Create || evalType == Type.ContentChange) {
             // Initial guess:
             String resourceContentType = ctx.getOriginalResource().getContentType();
-            if (resourceContentType == null || resourceContentType.isEmpty() 
+                if (resourceContentType == null || resourceContentType.isEmpty() 
                     || "application/octet-stream".equals(resourceContentType)) {
                 resourceContentType = MimeHelper.map(ctx.getNewResource().getName());
                 property.setStringValue(resourceContentType);

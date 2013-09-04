@@ -412,12 +412,20 @@ public abstract class StreamUtil {
      * @throws IOException if an I/O error occurs
      */
     public static TempFile streamToTempFile(InputStream stream, File tempDir) throws IOException {
-        return streamToTempFile(stream, -1, tempDir);
+        return streamToTempFile(stream, -1, tempDir, null);
     }
 
     /**
-     * Like {@link #streamToTempFile(java.io.InputStream, java.io.File) }, but with an additional
-     * size limit on the created temporary file.
+     * Like {@link #streamToTempFile(java.io.InputStream,java.io.File)}, but with
+     * added option of setting a maximum limit on size.
+     */
+    public static TempFile streamToTempFile(InputStream stream, final long sizeLimit, File tempDir) throws IOException {
+        return streamToTempFile(stream, sizeLimit, tempDir, null);
+    }
+    
+    /**
+     * Like {@link #streamToTempFile(java.io.InputStream,long,java.io.File) }, but
+     * with an additional option of controlling the suffix of the generated file name.
      * 
      * @param stream the input stream to write to a temporary file.
      * @param tempDir temporary directory to store the file in. May be <code>null</code> for system default
@@ -433,15 +441,16 @@ public abstract class StreamUtil {
      * 
      *                  A limit of &lt;= -1 means no limit and is equivalent to calling
      *                  {@link #streamToTempFile(java.io.InputStream) }.
+     * @param suffix    File name suffix for created temporary file.
      * 
      * @see #streamToTempFile(java.io.InputStream) 
      */
-    public static TempFile streamToTempFile(InputStream stream, final long sizeLimit, File tempDir) throws IOException {
+    public static TempFile streamToTempFile(InputStream stream, final long sizeLimit, File tempDir, String suffix) throws IOException {
         if (tempDir == null) {
             tempDir = new File(System.getProperty("java.io.tmpdir"));
         }
         ReadableByteChannel src = Channels.newChannel(stream);
-        File tempFile = File.createTempFile("StreamUtil-tmpfile", null, tempDir);
+        File tempFile = File.createTempFile("StreamUtil-tmpfile", suffix, tempDir);
         FileChannel dest = new FileOutputStream(tempFile).getChannel();
         long pos = 0;
         try {

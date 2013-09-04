@@ -50,6 +50,11 @@
     <property name="resourceTypeTree" ref="resourceTypeTree" />
     <property name="tempDir" value="${repository.tempDir}" />
     <property name="transactionManager" ref="repository.transactionManager"/>
+    <property name="contentHandlingInterceptors">
+      <list>
+        <ref bean="video.contentHandlingInterceptor" />
+      </list>
+    </property>
   </bean>
 
   <!-- Repository lock and cache control wrapper -->
@@ -251,5 +256,5 @@
 
   <!-- ## Will search across multiple hosts when configured to do so ## -->
   <bean id="multiHostSearcher" class="org.vortikal.repository.MultiHostSearcher" />
-
+  
 </beans>

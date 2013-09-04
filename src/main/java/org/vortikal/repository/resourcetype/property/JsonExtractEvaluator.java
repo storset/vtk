@@ -1,21 +1,21 @@
-/* Copyright (c) 2011, University of Oslo, Norway
+/* Copyright (c) 2013, University of Oslo, Norway
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
  * met:
- * 
+ *
  *  * Redistributions of source code must retain the above copyright
  *    notice, this list of conditions and the following disclaimer.
- * 
+ *
  *  * Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
- * 
+ *
  *  * Neither the name of the University of Oslo nor the names of its
  *    contributors may be used to endorse or promote products derived from
  *    this software without specific prior written permission.
- *      
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
  * IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
  * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
@@ -28,66 +28,63 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 package org.vortikal.repository.resourcetype.property;
 
-import org.bouncycastle.util.encoders.Base64;
+
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertyEvaluationContext;
+import org.vortikal.repository.resourcetype.property.PropertyEvaluationException;
+import org.vortikal.util.text.JSON;
+
+import net.sf.json.JSONNull;
+import net.sf.json.JSONObject;
+
 import org.vortikal.repository.resourcetype.PropertyEvaluator;
-import org.vortikal.repository.resourcetype.PropertyType;
-import org.vortikal.repository.store.Metadata;
+import org.vortikal.repository.resourcetype.ValueFactory;
 
-public class JSONPropertyFieldEvaluratorImpl implements PropertyEvaluator {
+/**
+ * Set property value based on value extracted from JSON content. The value
+ * is selected by a simple dotted keys expression.
+ */
+public class JsonExtractEvaluator implements PropertyEvaluator {
 
-    private Class<?> clazz;
-    private String key;
-    private String binaryMimeType = null;
-
+    private ValueFactory vf;
+    private String expression;
+    
     @Override
     public boolean evaluate(Property property, PropertyEvaluationContext ctx) throws PropertyEvaluationException {
-
-        Metadata obj = null;
-        try {
-            obj = (Metadata) ctx.getContent().getContentRepresentation(clazz);
-        } catch (Exception e) {
-        }
-        if (obj == null) {
+        if (ctx.getContent() == null) {
             return false;
         }
-        String value = (String) obj.getValue(key);
-        if (value != null) {
-            if (property.getType() == PropertyType.Type.BINARY) {
-                property.setBinaryValue(Base64.decode(value), binaryMimeType);
-            } else if (property.getType() == PropertyType.Type.INT) {
-                try {
-                    int intValue = Integer.parseInt(value);
-                    property.setIntValue(intValue);
-                } catch (Exception e) {
-                    return false;
+        if (ctx.getEvaluationType() == PropertyEvaluationContext.Type.ContentChange
+                || ctx.getEvaluationType() == PropertyEvaluationContext.Type.Create) {
+
+            try {
+                JSONObject json = (JSONObject)ctx.getContent().getContentRepresentation(JSONObject.class);
+                Object o = JSON.select(json, this.expression);
+                if (o != null && !(o instanceof JSONNull)) {
+                    String stringValue = o.toString();
+                    property.setValue(this.vf.createValue(stringValue, property.getType()));
+                    return true;
                 }
+            } catch (Exception e) {}
 
-            } else if (property.getType() == PropertyType.Type.STRING) {
-                property.setStringValue(value);
-            }
-        } else {
             return false;
-        }
-        return true;
-    }
+        } 
 
+        return property.isValueInitialized();
+    }
+    
     @Required
-    public void setClazz(Class<?> clazz) {
-        this.clazz = clazz;
+    public void setExpression(String expression) {
+        if (expression == null) throw new IllegalArgumentException("Expression cannot be null");
+        this.expression = expression;
     }
-
+    
     @Required
-    public void setKey(String key) {
-        this.key = key;
+    public void setValueFactory(ValueFactory vf) {
+        this.vf = vf;
     }
-
-    public void setBinaryMimeType(String binaryMimeType) {
-        this.binaryMimeType = binaryMimeType;
-    }
-
 }

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+
+  <bean id="ssiMixinResourceTypeDef" class="org.vortikal.repository.resourcetype.MixinResourceTypeDefinitionImpl">
+    <property name="name" value="ssi" />
+    <property name="namespace" ref="SSI_NAMESPACE" />
+    <property name="propertyTypeDefinitions" ref="ssiPropertyDefinitions" />
+  </bean>
+
+  <bean id="SSI_NAMESPACE" class="org.vortikal.repository.Namespace">
+    <constructor-arg value="ssi" />
+    <constructor-arg value="http://www.uio.no/ssi" />
+  </bean>
+
+  <bean id="ssiPropertyDefinitions" class="org.springframework.beans.factory.config.ListFactoryBean">
+    <property name="sourceList">
+      <list>
+        <ref bean="ssiDirectivesPropDef" />
+        <ref bean="containsSSIDirectivesPropDef" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="ssiDirectivesPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+    <property name="name" value="ssiDirectives" />
+    <property name="type" value="STRING" />
+    <property name="multiple" value="true" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+    <property name="mandatory" value="false" />
+    <property name="propertyEvaluator" ref="ssiDirectivesEvaluator" />
+  </bean>
+
+
+  <bean id="ssiDirectivesEvaluator" class="org.vortikal.repository.resourcetype.property.ContentRegexpEvaluator">
+    <property name="pattern">
+      <value>(&lt;!--\s*(#include\s+\w+\s*="[^"]+"\s*)--&gt;)|(\$\{(\w+:\w+\s+[^\}]+)\})</value>
+    </property>
+    <property name="evaluation" value="$2$4" />
+    <property name="maxLength" value="1000000" />
+  </bean>
+
+
+  <bean id="containsSSIDirectivesPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+    <property name="name" value="containsSSIDirectives" />
+    <property name="type" value="BOOLEAN" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+    <property name="mandatory" value="false" />
+    <property name="vocabulary">
+      <bean class="org.vortikal.repository.resourcetype.ValueVocabulary">
+        <property name="type" value="BOOLEAN" />
+        <property name="values">
+          <list>
+            <ref bean="VALUE_TRUE" />
+          </list>
+        </property>
+      </bean>
+    </property>
+    <property name="propertyEvaluator" ref="containsSsiDirectivesEvaluator" />
+  </bean>
+
+  <bean id="containsSsiDirectivesEvaluator" class="org.vortikal.repository.resourcetype.property.ContentRegexpEvaluator">
+    <property name="pattern">
+      <value>(&lt;!--\s*#include\s+\w+\s*="[^"]+"\s*--&gt;)|(\$\{[^\}]+\})</value>
+    </property>
+    <property name="maxLength" value="1000000" />
+  </bean>
+
+</beans>

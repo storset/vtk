@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+
+  <description>
+    This is the main bean configuration file. This file does not
+    contain any bean definitions, its purpose is to import the other
+    configuration files in a given order. When a new bean configuration file is
+    added to the system, it must be included in the list below.
+  </description>
+  
+  <import resource="cache.xml" />
+  
+  <!-- Common beans used across resources, services and backend -->
+  <import resource="common/common.xml" />
+  <import resource="common/html-util.xml" />
+  <import resource="common/security.xml" />
+  <import resource="common/vortikal.xml" />
+
+  <import resource="resource-types/main.xml" />
+  <import resource="resource-listing/main.xml" />
+  
+  <import resource="repository.xml" />
+  <import resource="query.xml" />
+  <import resource="schema-registry.xml" />
+  <import resource="template-lang.xml" />
+  <import resource="view.xml" />
+  <import resource="system-decorating.xml" />
+  <import resource="controllers.xml" />
+  <import resource="service.xml" />
+  <import resource="authentication.xml" />
+  <import resource="article.xml" />
+  <import resource="structured-resources-management.xml" />
+  <import resource="structured-resources.xml" />
+  
+  <!-- Decorating and decorator components -->
+  <import resource="decorating/decorating.xml" />
+  <import resource="decorating/decorator-components.xml" />
+
+  <!-- Default editor -->
+  <import resource="editor/editor.xml" />
+
+  <import resource="manage.xml" />
+  <import resource="visual-profile-aspect.xml" />
+  <import resource="report.xml"/>
+  <import resource="commenting.xml" />
+  <import resource="root-management.xml" />
+  <import resource="browse.xml" />
+  <import resource="webdav.xml" />
+  <import resource="source.xml" />
+  <import resource="windows-webdav-explorer.xml" />
+  <import resource="plaintextedit.xml" />
+  <import resource="versioning.xml" />
+  <import resource="copy-move.xml" />
+  <import resource="errorhandlers.xml" />
+  <import resource="templates.xml" />
+  <import resource="autocomplete.xml" />
+  <import resource="ical.xml" />
+  <import resource="vcf.xml" />
+  <import resource="delete.xml" />
+  <import resource="publish.xml" />
+  <import resource="trash-can.xml" />
+  <import resource="create-from-drop-down.xml" />
+  <import resource="manually-approve-resources.xml" />
+  
+  <import resource="link-check.xml" />
+  
+  <import resource="list-resources.xml" />
+  
+  <import resource="tags/tags.xml" />
+
+  <!-- Extensions enabled by default: -->
+  <import resource="classpath:/vortikal/beans/standard-extensions/transformXml/transformXml.xml" />
+  <import resource="classpath:/vortikal/beans/standard-extensions/editXml/editXml.xml" />
+
+  <!-- OperationLog interceptor for Repository -->
+  <import resource="repository-operationlog-interceptor.xml" />
+
+  <!-- System task manager -->
+  <import resource="scheduling/scheduling.xml"/>
+  <import resource="simple-structured-editor.xml" />
+
+  <!-- Obsolete -->
+  <import resource="obsoleted.xml" />
+</beans>

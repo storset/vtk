@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+
+  <!-- Retrieve services -->
+
+  <bean id="createDocumentDropDown.retrieveService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="manageService" />
+    <property name="order" value="-9999" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="service" />
+          <property name="parameterValue" value="create-document-from-drop-down" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="createDocumentDropDown.handler" />
+  </bean>
+
+  <bean id="createDocumentDropDown.handler" class="org.vortikal.web.actions.create.CreateDropDownController">
+    <property name="provider" ref="createDropDown.provider" />
+    <property name="service" ref="createDocumentService" />
+    <property name="repository" ref="repository" />
+  </bean>
+
+  <bean id="createCollectionDropDown.retrieveService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="manageService" />
+    <property name="order" value="-9999" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="service" />
+          <property name="parameterValue" value="create-collection-from-drop-down" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="createCollectionDropDown.handler" />
+  </bean>
+
+  <bean id="createCollectionDropDown.handler" class="org.vortikal.web.actions.create.CreateDropDownController">
+    <property name="provider" ref="createDropDown.provider" />
+    <property name="service" ref="createCollectionService" />
+    <property name="repository" ref="repository" />
+  </bean>
+
+  <bean id="uploadFileDropDown.retrieveService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="manageService" />
+    <property name="order" value="-9999" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="service" />
+          <property name="parameterValue" value="upload-file-from-drop-down" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="uploadFileDropDown.handler" />
+  </bean>
+
+  <bean id="uploadFileDropDown.handler" class="org.vortikal.web.actions.create.CreateDropDownController">
+    <property name="provider" ref="createDropDown.provider" />
+    <property name="service" ref="fileUploadService" />
+    <property name="repository" ref="repository" />
+  </bean>
+  
+  <bean id="viewReport.retrieveService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="manageService" />
+    <property name="order" value="-9999" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="service" />
+          <property name="parameterValue" value="view-report-from-drop-down" />
+        </bean>
+        <bean class="org.vortikal.web.service.RequestParameterExistsAssertion">
+          <property name="parameterName" value="report-type" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="viewReport.handler" />
+  </bean>
+
+  <bean id="viewReport.handler" class="org.vortikal.web.actions.create.CreateDropDownController">
+    <property name="provider" ref="createDropDown.provider" />
+    <property name="service" ref="reportService" />
+    <property name="repository" ref="repository" />
+  </bean>
+  
+  <bean id="createDropDown.provider" class="org.vortikal.web.actions.create.CreateDropDownProvider">
+    <property name="searcher" ref="systemIndexSearcher" />
+    <property name="repository" ref="repository" />
+  </bean>
+
+  <bean id="createCollectionFromDropDownService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="manageService" />
+    <property name="handler" ref="createCollectionFromDropDownHandler" />
+    <property name="assertions">
+      <bean class="org.vortikal.web.service.RequestParameterAssertion">
+        <property name="parameterName" value="display" />
+        <property name="parameterValue" value="create-collection-from-drop-down" />
+      </bean>
+    </property>
+  </bean>
+
+  <bean id="createCollectionFromDropDownHandler" class="org.vortikal.web.actions.create.CreateFromDropDownController">
+    <property name="viewName" value="createFromDropDown.view" />
+    <property name="type" value="create-collection" />
+  </bean>
+
+  <bean id="createDocFromDropDownService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="manageService" />
+    <property name="handler" ref="createDocFromDropDownHandler" />
+    <property name="assertions">
+      <bean class="org.vortikal.web.service.RequestParameterAssertion">
+        <property name="parameterName" value="display" />
+        <property name="parameterValue" value="create-document-from-drop-down" />
+      </bean>
+    </property>
+  </bean>
+
+  <bean id="createDocFromDropDownHandler" class="org.vortikal.web.actions.create.CreateFromDropDownController">
+    <property name="viewName" value="createFromDropDown.view" />
+    <property name="type" value="create-document" />
+  </bean>
+  
+  <bean id="uploadFileFromDropDownService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="manageService" />
+    <property name="handler" ref="uploadFileFromDropDownHandler" />
+    <property name="assertions">
+      <bean class="org.vortikal.web.service.RequestParameterAssertion">
+        <property name="parameterName" value="display" />
+        <property name="parameterValue" value="upload-file-from-drop-down" />
+      </bean>
+    </property>
+  </bean>
+
+  <bean id="uploadFileFromDropDownHandler" class="org.vortikal.web.actions.create.CreateFromDropDownController">
+    <property name="viewName" value="createFromDropDown.view" />
+    <property name="type" value="upload-file" />
+  </bean>
+  
+    <bean id="viewReportService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="manageService" />
+    <property name="handler" ref="viewReportHandler" />
+    <property name="assertions">
+      <bean class="org.vortikal.web.service.RequestParameterAssertion">
+        <property name="parameterName" value="display" />
+        <property name="parameterValue" value="report" />
+      </bean>
+    </property>
+  </bean>
+
+  <bean id="viewReportHandler" class="org.vortikal.web.actions.create.CreateFromDropDownController">
+    <property name="viewName" value="createFromDropDown.view" />
+    <property name="type" value="view-report" />
+    <property name="addParam" value="report-type" /> 
+  </bean>
+
+  <bean id="createFromDropDown.viewResolver" parent="viewResolver">
+    <property name="views">
+      <map>
+        <entry key="createFromDropDown.view" value-ref="createFromDropDown.view" />
+      </map>
+    </property>
+  </bean>
+  
+  <bean id="createFromDropDown.view" parent="freemarkerView">
+    <property name="url" value="pages/create-from-drop-down.ftl" />
+    <property name="referenceDataProviders">
+      <ref bean="resourceContextProvider" />
+    </property>
+  </bean>
+  
+  <bean id="createFromDropDown.docService.urlProvider" class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
+    <property name="service" ref="createDocFromDropDownService" />
+    <property name="modelName" value="docUrl" />
+    <property name="urlName" value="url" />
+  </bean>
+  <bean id="createFromDropDown.collService.urlProvider" class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
+    <property name="service" ref="createCollectionFromDropDownService" />
+    <property name="modelName" value="collUrl" />
+    <property name="urlName" value="url" />
+  </bean>
+  <bean id="createFromDropDown.upService.urlProvider" class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
+    <property name="service" ref="uploadFileFromDropDownService" />
+    <property name="modelName" value="upUrl" />
+    <property name="urlName" value="url" />
+  </bean>
+
+  <bean id="createDropDownService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="manageService" />
+    <property name="handler" ref="createDropDownHandler" />
+    <property name="assertions">
+      <bean class="org.vortikal.web.service.RequestParameterAssertion">
+        <property name="parameterName" value="display" />
+        <property name="parameterValue" value="create-drop-down" />
+      </bean>
+    </property>
+    <property name="attributes">
+      <map>
+        <entry key="manage.preventXFrameOptionsHeader" value="true" />
+      </map>
+    </property>
+  </bean>
+
+  <bean id="createDropDownHandler" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+    <property name="viewName" value="createDropDown.view" />
+  </bean>
+
+ <bean id="createDropDown.viewResolver" class="org.vortikal.web.decorating.MappingViewResolver">
+    <property name="views">
+      <map>
+        <entry key="createDropDown.view" value-ref="createDropDown.view" />
+      </map>
+    </property>
+  </bean>
+
+  <bean id="createDropDown.view" parent="freemarkerView">
+    <property name="url" value="system/create-drop-down.ftl" />
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="resourceContextProvider" />
+        <ref bean="createFromDropDown.docService.urlProvider" />
+        <ref bean="createFromDropDown.collService.urlProvider" />
+        <ref bean="createFromDropDown.upService.urlProvider" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="createDropDown.urlProvider" class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
+    <property name="service" ref="createDropDownService" />
+    <property name="modelName" value="create" />
+    <property name="urlName" value="url" />
+  </bean>
+
+</beans>

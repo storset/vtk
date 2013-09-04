@@ -1,0 +1,536 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+
+  <bean id="webServiceAssertion" class="org.vortikal.web.service.AndAssertion">
+    <property name="assertions">
+      <list>
+        <ref bean="webPortAssertion" />
+        <ref bean="webHostNameAssertion" />
+        <ref bean="webProtocolAssertion" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="configRedirectHttpsWebService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="order" value="-4" />
+    <property name="assertions">
+      <list>
+        <ref bean="webProtocolAssertion.inverted" />
+      </list>
+    </property>
+    <property name="handlerInterceptors">
+      <list>
+        <!-- Redirect to a different protocol: -->
+        <bean class="org.vortikal.web.interceptors.ProtocolInvertRedirectInterceptor" />
+      </list>
+    </property>
+    <!-- Dummy handler that is never invoked (the handler interceptor will prevent it): -->
+    <property name="handler">
+      <bean class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+        <property name="viewName" value="HTTP_200_OK" />
+      </bean>
+    </property>
+  </bean>
+
+  <bean id="redirectHttpsWebService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="order" value="-1" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.ConfigAssertion">
+          <property name="config" value="${webProtocolRestricted}" />
+          <property name="expectedValue" value="https" />
+        </bean>
+        <bean class="org.vortikal.web.service.RequestProtocolAssertion">
+          <property name="protocol" value="http" />
+        </bean>
+        <ref bean="isReadRestrictedAssertion" />
+        <ref bean="webHostNameAssertion" />
+      </list>
+    </property>
+    <property name="handlerInterceptors">
+      <list>
+        <!-- Redirect to a different protocol: -->
+        <bean class="org.vortikal.web.interceptors.ProtocolInvertRedirectInterceptor" />
+      </list>
+    </property>
+    <!-- Dummy handler that is never invoked (the handler interceptor will prevent it): -->
+    <property name="handler">
+      <bean class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+        <property name="viewName" value="HTTP_200_OK" />
+      </bean>
+    </property>
+  </bean>
+
+
+  <!-- ************************** -->
+  <!-- THE WEB SERVICE TREE       -->
+  <!-- Web browser based services -->
+  <!-- ************************** -->
+
+  <bean id="webService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="order" value="0" />
+    <property name="assertions" ref="webServiceAssertion" />
+    <property name="urlPostProcessors" ref="webServiceUrlPostProcessors" />
+    <property name="handlerInterceptors">
+      <list>
+        <bean class="org.vortikal.web.FullDomainRedirectInterceptor">
+          <property name="hostName" value="${webHostName}" />
+        </bean>
+        <bean class="org.vortikal.web.ThrottleHandlerInterceptor">
+          <property name="maxConcurrentRequests" value="${webService.maxConcurrentRequests}" />
+          <property name="rejectStatus" value="${webService.tooManyRequests.rejectStatus}" />
+        </bean>
+      </list>
+    </property>
+    <property name="authenticationChallenge" ref="${webAuthenticationChallenge}" />
+  </bean>
+
+  <bean id="webServiceUrlPostProcessors" class="org.springframework.beans.factory.config.ListFactoryBean">
+    <property name="sourceList">
+      <list>
+      </list>
+    </property>
+  </bean>
+
+
+  <!-- Collection redirect service -->
+
+  <bean id="collectionRedirectService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="webService" />
+    <property name="order" value="0" />
+    <property name="assertions">
+      <list>
+        <ref bean="resourceInCollection" />
+        <ref bean="uriDoesNotEndWithSlash" />
+      </list>
+    </property>
+    <property name="handler" ref="redirectHandler" />
+  </bean>
+
+
+  <!-- WEB assertions -->
+
+
+  <bean id="webHostNameAssertion" class="org.vortikal.web.service.RequestHostNameAssertion">
+    <property name="hostName" value="${webHostName}" />
+  </bean>
+
+  <bean id="httpOptionsService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="webService" />
+    <property name="order" value="300" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestMethodAssertion">
+          <property name="methods">
+            <set>
+              <value>OPTIONS</value>
+            </set>
+          </property>       
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="httpOptionsHandler" />
+  </bean>
+
+
+  <!-- View services -->
+  
+  <bean id="viewService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="webService" />
+    <property name="order" value="700" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestMethodAssertion">
+          <property name="methods">
+            <set>
+              <value>GET</value>
+              <value>HEAD</value>
+              <value>POST</value>
+            </set>
+          </property>       
+        </bean>
+      </list>
+    </property>
+    <property name="attributes">
+      <map>
+        <entry key="localeResolver" value-ref="viewServiceResourceAwareLocaleResolver" />
+        <entry key="decorating.servicePredicateName" value="view" />
+      </map>
+    </property>
+  </bean>
+
+
+  <bean id="staticResourceService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="order" value="-97000" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.StaticResourceLocationsAssertion" />
+      </list>
+    </property>
+
+    <property name="urlPostProcessors">
+      <bean class="org.vortikal.web.service.LocalURLPostProcessor" />
+    </property>
+
+    <property name="handler" ref="displayClassPathResourceHandler" />
+    <property name="authenticationChallenge" ref="${webAuthenticationChallenge}" />
+    <property name="attributes">
+      <map>
+        <entry key="inhibit-caching" value="true" />
+      </map>
+    </property>
+  </bean>
+
+  <bean id="displayClassPathResourceHandler"
+        class="org.vortikal.web.display.classpath.DisplayClassPathResourceController">
+    <property name="headers">
+      <map>
+        <entry key="Cache-Control" value="public,max-age=${staticResourcesCacheSeconds}" />
+      </map>
+    </property>
+    <property name="handleLastModified" value="${staticResources.handleLastModified}" />
+  </bean>
+
+
+  <bean id="displayThumbnailService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="displayResourceService" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="vrtx" />
+          <property name="parameterValue" value="thumbnail" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="displayThumbnailHandler" />
+  </bean>
+
+  <bean id="displayThumbnailHandler" class="org.vortikal.web.display.thumbnail.DisplayThumbnailController" />  
+
+   <!-- Resource-aware locale resolver (for viewService)  -->
+
+   <bean id="viewServiceResourceAwareLocaleResolver"
+         class="org.vortikal.web.servlet.ResourceAwareLocaleResolver" parent="repositoryAware">
+     <property name="defaultLocale" value="${view.defaultLocale}" />
+     <property name="trustedToken" ref="trustedToken" />
+   </bean>
+
+
+   <!-- Global locale resolver: looks for 'localeResolver' service
+        attributes on the current service and ancestors towards the
+        root and uses the first one found. -->
+   <bean id="localeResolver"
+         class="org.vortikal.web.servlet.ServiceDelegatingLocaleResolver">
+     <property name="defaultLocaleResolver" ref="defaultViewCookieLocaleResolver" />
+     <property name="localeTranslationMap" ref="localeTranslationMap" />
+   </bean>
+
+   <bean id="defaultViewCookieLocaleResolver"
+         class="org.springframework.web.servlet.i18n.CookieLocaleResolver" >
+     <property name="cookieMaxAge" value="315360000" />
+     <property name="cookieName" value="service.view.locale" />
+     <property name="defaultLocale"> 
+       <bean class="java.util.Locale">
+         <constructor-arg value="${view.defaultLocale}" />
+       </bean>
+     </property>
+   </bean>
+
+  <bean id="displayIndexFileService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="collectionListing.viewService" />
+    <property name="order" value="-1" />
+    <property name="assertions">
+      <list>
+        <ref bean="hasIndexFileAssertion" />
+      </list>
+    </property>
+    <property name="handler" ref="displayIndexFileHandler" />
+  </bean>
+
+  <bean id="hasIndexFileAssertion" class="org.vortikal.web.service.IndexFileAssertion" />
+
+
+  <bean id="expiresCacheResponseFilter" class="org.vortikal.web.filter.ExpiresCacheResponseFilter"
+        parent="defaultResponseFilterCategoryBean">
+    <property name="expiresPropDef" ref="expiresSecPropDef" />
+    <!--property name="rootService" ref="viewService" /-->
+    <property name="globalMaxAge" value="${webCache.globalMaxAge}" />
+    <property name="excludedResourceTypes">
+      <bean class="org.vortikal.context.CSVSetFactoryBean">
+        <property name="csvList" value="${webCache.excludedResourceTypes}" />
+      </bean>
+    </property>
+  </bean>
+
+
+  <bean id="redirectToManageHTTPSService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="viewService" />
+    <property name="order" value="-100" />
+    <property name="assertions">
+      <list>
+        <ref bean="isReadRestrictedAssertion" />
+        <ref bean="redirectToManageAssertion" />
+      </list>
+    </property>
+    <property name="handlerInterceptors">
+      <list>
+        <!-- Redirect to manage hostname -->
+        <bean class="org.vortikal.web.interceptors.ConfigurableRedirector">
+          <property name="protocol" value="${manage.protocol}" />
+          <property name="hostName" value="${manage.hostName}" />
+          <property name="port" value="${manage.port}" />
+        </bean>
+      </list>
+    </property>
+    <!-- Dummy handler that is never invoked (the handler interceptor will prevent it): -->
+    <property name="handler">
+      <bean class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+        <property name="viewName" value="HTTP_200_OK" />
+      </bean>
+    </property>
+  </bean>
+
+  <bean id="redirectToManageHTTPService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="viewService" />
+    <property name="order" value="-100" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.InvertAssertion">
+          <property name="assertion">
+            <ref bean="isReadRestrictedAssertion" />
+          </property>
+        </bean>
+        <ref bean="redirectToManageAssertion" />
+      </list>
+    </property>
+        <property name="handlerInterceptors">
+      <list>
+        <!-- Redirect to manage hostname -->
+        <bean class="org.vortikal.web.interceptors.ConfigurableRedirector">
+          <property name="protocol" value="http" />
+          <property name="hostName" value="${manage.hostName}" />
+          <property name="port" value="${manage.port}" />
+        </bean>
+      </list>
+    </property>
+    <!-- Dummy handler that is never invoked (the handler interceptor will prevent it): -->
+    <property name="handler">
+      <bean class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+        <property name="viewName" value="HTTP_200_OK" />
+      </bean>
+    </property>
+  </bean>
+  
+  <bean id="redirectToManageAssertion" class="org.vortikal.web.service.AndAssertion">
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.InvertAssertion">
+          <property name="assertion">
+            <bean class="org.vortikal.web.service.ConfigAssertion">
+              <property name="config" value="${webHostName}" />
+              <property name="expectedValue" value="${manage.hostName}" />
+            </bean>
+          </property>
+        </bean>
+        <ref bean="adminVrtxParameterRule" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="isReadRestrictedAssertion" class="org.vortikal.web.service.AndAssertion">
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.ResourceExistsAssertion" />
+        <bean class="org.vortikal.web.service.InvertAssertion">
+          <property name="assertion">
+            <bean parent="abstractResourcePrincipalPermissionAssertion">
+              <property name="permission" value="READ" />
+              <property name="anonymous" value="true" />
+            </bean>
+          </property>
+        </bean>
+        <bean class="org.vortikal.web.service.InvertAssertion">
+          <property name="assertion">
+            <bean parent="abstractResourcePrincipalPermissionAssertion">
+              <property name="permission" value="READ_PROCESSED" />
+              <property name="anonymous" value="true" />
+            </bean>
+          </property>
+        </bean>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="previewViewIframeService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="viewService" />
+    <property name="order" value="-90" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="vrtx" />
+          <property name="parameterValue" value="previewViewIframe" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="previewViewIframeHandler" />
+  </bean>
+
+
+  <bean id="previewViewIframeHandler" parent="abstractPreviewIframe">
+    <property name="viewName" value="previewViewIframe" />
+    <property name="service" ref="viewService" />
+    <property name="displayWorkingRevision" value="true" />
+    <property name="previewUnpublished" value="true" />
+    <property name="previewObsoleted" value="true" />
+  </bean>
+
+
+  <bean id="previewPopupService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="viewService" />
+    <property name="order" value="-90" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="vrtx" />
+          <property name="parameterValue" value="preview-popup" />
+        </bean>
+        <bean parent="abstractResourcePrincipalPermissionAssertion">
+          <property name="requiresAuthentication" value="true" />
+          <property name="considerLocks" value="false" />
+          <property name="permission" value="READ_PROCESSED" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="previewPopupHandler" />
+  </bean>
+
+  <bean id="previewPopupHandler" parent="abstractPreviewIframe">
+    <property name="viewName" value="previewPopup" />
+    <property name="service" ref="viewService" />
+    <property name="displayWorkingRevision" value="true" />
+    <property name="previewUnpublished" value="true" />
+    <property name="previewObsoleted" value="true" />
+  </bean>
+
+
+  <bean id="displayResourceService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="viewService" />
+    <property name="order" value="100" />
+    <property name="handler" ref="displayResourceHandler" />
+  </bean>
+
+
+  <bean id="displayHTMLResourceService" class="org.vortikal.web.service.ServiceImpl">
+    <description>
+      Specific service for displaying HTML resources. It is unwise to
+      use the plain 'displayResource' service here, as a number of
+      content wrappers are applied to the response, and this should
+      not be done on e.g. PDF resources, etc.
+    </description>
+    <property name="parent" ref="displayResourceService" />
+    <property name="assertions">
+      <list>
+        <ref bean="contentTypeMatchesHtml" />
+      </list>
+    </property>
+    <property name="handler" ref="displayHTMLResourceHandler" />
+  </bean>
+
+
+
+  <!-- **************** -->
+  <!-- ASSERTIONS       -->
+  <!-- **************** -->
+
+  <!-- Parent assertions -->
+
+  <bean id="vrtxParameterEquals" 
+        class="org.vortikal.web.service.RequestParameterAssertion" abstract="true">
+    <property name="parameterName" value="vrtx" />
+  </bean>
+
+  <!-- Collection redirect -->
+
+  <bean id="uriDoesNotEndWithSlash"
+        class="org.vortikal.web.service.RequestURIRegexpAssertion">
+    <property name="pattern" value=".*[^/]$" />
+  </bean>   
+ 
+  <bean id="resourceTypeInHtml" class="org.vortikal.web.service.ResourceTypeAssertion" parent="repositoryAware">
+    <property name="resourceTypeDefinition" ref="htmlResourceTypeDefinition" />
+    <property name="exactMatch" value="false" />
+  </bean> 
+  
+  <bean id="resourceTypeInXhtml" class="org.vortikal.web.service.ResourceTypeAssertion" parent="repositoryAware">
+    <property name="resourceTypeDefinition" ref="xhtml10ResourceTypeDefinition" />
+    <property name="exactMatch" value="false" />
+  </bean>
+  
+  <bean id="resourceTypeIsXhtml" parent="resourceTypeInXhtml" >
+    <property name="exactMatch" value="true" />
+  </bean>
+
+  <bean id="resourceTypeInXhtmlTrans" class="org.vortikal.web.service.ResourceTypeAssertion" parent="repositoryAware">
+    <property name="resourceTypeDefinition" ref="xhtml10TransResourceTypeDefinition" />
+    <property name="exactMatch" value="false" />
+  </bean>
+
+  <bean id="resourceTypeIsXhtmlTrans" parent="resourceTypeInXhtmlTrans">
+    <property name="exactMatch" value="true" />
+  </bean>
+
+  <bean id="abstractResourcePrincipalPermissionAssertion" 
+        class="org.vortikal.web.service.ResourcePrincipalPermissionAssertion"
+        abstract="true">
+    <property name="principalManager" ref="principalManager" />
+    <property name="roleManager" ref="roleManager" />
+    <property name="repository" ref="repository" />
+    <property name="trustedToken" ref="trustedToken" />
+  </bean>
+
+
+  <bean id="webPortAssertion"
+        class="org.vortikal.web.service.RequestPortAssertion">
+    <property name="port" value="${webPort}" />
+  </bean>
+
+
+  <bean id="webProtocolAssertion"
+        class="org.vortikal.web.service.ConfigurableRequestProtocolAssertion">
+    <property name="configuration" ref="ssl.configurationPropertiesFile" />
+    <property name="defaultProtocol" value="${webProtocol}" />
+    <property name="restrictedProtocol" value="${webProtocolRestricted}" />
+  </bean>
+
+  <bean id="webProtocolAssertion.inverted"
+        class="org.vortikal.web.service.ConfigurableRequestProtocolAssertion">
+    <property name="configuration" ref="ssl.configurationPropertiesFile" />
+    <property name="invert" value="true" />
+  </bean>
+
+
+  <bean id="ssl.configurationPropertiesFile"
+        class="org.vortikal.util.repository.PropertiesResource">
+    <property name="repository" ref="repository" />
+    <property name="uri" value="${ssl.configFile}" />
+    <property name="lazyInit" value="false" />
+  </bean>
+
+  <bean id="ssl.templateConfigRefreshTrigger"
+        class="org.vortikal.util.repository.MethodInvokingRepositoryEventTrigger">
+    <property name="repository" ref="repository" />
+    <property name="uri" value="${ssl.configFile}" />
+    <property name="targetObject" ref="ssl.configurationPropertiesFile" />
+    <property name="method" value="load" />
+  </bean>
+  
+  <!-- Canonical URL constructor -->
+  <bean id="canonicalUrlConstructor" class="org.vortikal.web.service.CanonicalUrlConstructorImpl">
+    <property name="webHostName" value="${webHostName}" />
+    <property name="webProtocol" value="${webProtocol}" />
+    <property name="webProtocolRestricted" value="${webProtocolRestricted}" />
+    <property name="webPort" value="${canonicalUrl.webPort}" />
+  </bean>
+
+</beans>

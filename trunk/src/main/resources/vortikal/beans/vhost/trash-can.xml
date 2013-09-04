@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+
+  <!-- ## Manage trash can ## -->
+  <bean id="trashCanService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="manageService" />
+    <property name="categories">
+      <set>
+        <value>tabMenu</value>
+      </set>
+    </property>
+    <property name="attributes">
+      <map>
+        <entry key="tabOrder">
+          <value type="java.lang.Integer">390</value>
+        </entry>
+      </map>
+    </property>
+    <property name="assertions">
+      <list>
+        <ref bean="resourceInCollection" />
+        <ref bean="trashCan.displayPermissionAssertion" />
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="mode" />
+          <property name="parameterValue" value="trash-can" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="trashCanHandler" />
+  </bean>
+
+  <bean id="trashCan.displayPermissionAssertion" parent="abstractResourcePrincipalPermissionAssertion">
+    <property name="permission" value="READ_WRITE" />
+    <property name="considerLocks" value="false" />
+  </bean>
+
+  <bean id="trashCanHandler" class="org.vortikal.web.actions.trashcan.TrashCanController">
+    <property name="formView" value="trashCan" />
+    <property name="successView" value="redirectToManage" />
+    <property name="commandClass" value="org.vortikal.web.actions.trashcan.TrashCanCommand" />
+    <property name="commandName" value="trashcan" />
+  </bean>
+
+  <bean id="trashCan.viewResolver" parent="system.decoratingViewResolver">
+    <property name="views">
+      <map>
+        <entry key="trashCan" value-ref="trashCanView" />
+      </map>
+    </property>
+  </bean>
+
+  <bean id="trashCanView" parent="freemarkerView">
+    <property name="url" value="pages/trash-can.ftl" />
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="overDueLimitMessageProvider" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="overDueLimitMessageProvider" class="org.vortikal.web.referencedata.provider.OverDueLimitMessageProvider">
+    <property name="permanentDeleteOverdueLimitInDays" value="${repository.permanentDeleteOverdueLimitInDays}" />
+  </bean>
+
+  <bean class="org.springframework.context.support.ResourceBundleMessageSource">
+    <property name="basenames">
+      <list>
+        <value>vortikal.i18n.trash-can.trash-can</value>
+      </list>
+    </property>
+  </bean>
+
+</beans>

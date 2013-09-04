@@ -1,0 +1,378 @@
+resourcetype organizational-unit {
+
+  properties {
+    areacode : string trim,
+    getExternalUnitInfo : boolean,
+    showExtendedUnitList : boolean defaultvalue("false"),
+    displayAcronym : boolean,
+    name : string,
+    acronym : string,
+    postalAddress : string multiple,
+    visitingAddress : string multiple,
+    phone : string multiple,
+    fax : string multiple,
+    email : string multiple,
+    externalUnitMetaData : derived,
+    title : derived (name) eval (name)
+      overrides title default name,
+    picture : image_ref,
+    introduction : simple_html,
+    responsibilities : html,
+    selectedEmployees : string multiple,
+    numberOfEmployeesToDisplay : string,
+    urlToEmployeesList : resource_ref,
+    displayEmployees : boolean,
+    content : html noextract,
+    hasBodyContent : derived (content) eval (content?exists),
+    related-content : html noextract
+  }
+
+  edit-rules {
+    areacode (size[8]),
+    displayEmployees (before selectedEmployees),
+    selectedEmployees (size[8], class[vrtx-autocomplete-username]),
+    group employees (displayEmployees, selectedEmployees, numberOfEmployeesToDisplay, urlToEmployeesList) (after responsibilities),
+    numberOfEmployeesToDisplay (dropdown),
+    postalAddress tooltip (en : "(postbox / streetaddress, postnumber place)", no : "(postboks / gateadresse, postnummer sted)", nn : "(postboks / gateadresse, postnummer sted)"),
+    visitingAddress tooltip (en : "(building, streetaddress, postnumber place)", no : "(bygning, gateadresse, postnummer sted)", nn : "(bygning, gateadresse, postnummer sted)"),
+    getExternalUnitInfo tooltip (en : "(report <a class='contact-info' href='http://www.uio.no/om/kontaktinformasjon/endre-personppl.html'>changes in information</a>.)",
+                                 no : "(meld fra om <a class='contact-info' href='http://www.uio.no/om/kontaktinformasjon/endre-personppl.html'>feil eller mangler i opplysningene</a>.)",
+                                 nn : "(meld frå om <a class='contact-info' href='http://www.uio.no/om/kontaktinformasjon/endre-personppl.html'>feil eller manglar i opplysningane</a>.)")
+  }
+
+  scripts {
+    getExternalUnitInfo show-hide onclick (name, acronym, postalAddress, visitingAddress, phone, fax, email),
+    selectedEmployees multipleinputfields
+  }
+
+  services {
+    getExternalUnitInfo organizationMetadataLdapService
+      requires(areacode)
+      affects(name, acronym, postalAddress, visitingAddress, phone, fax, email, externalUnitMetaData)
+  }
+
+  view-components {
+
+    title {
+      ##
+      [def title resource-prop(".", "title")]
+      [def acronym resource-prop(".", "acronym")]
+      [def displayAcronym resource-prop-obj-val(".", "displayAcronym")]
+      [if title != null]
+        [val title]
+        [if acronym != null && displayAcronym = true]
+          ([val acronym])
+        [endif]
+      [endif]
+      ##
+    }
+    
+    contact-information {
+      ##
+      [resource-props "."]
+
+      [def getExternal resource-prop-obj-val(".", "getExternalUnitInfo")]
+      [if getExternal = true && externalUnitMetaData = null]
+        [localized 'no-external-unit-metadata']
+      [else]
+        <div class="vcard">
+          [if title != null]
+            <span class="fn org" style="display:none">[val title]</span>
+          [endif]
+        
+          [if postalAddress != null && postalAddress != ""]
+            <span class="vrtx-organizational-unit-postal-address adr">
+              <span class="vrtx-label">[localized "postalAddress"]</span>
+              [list postalAddress postalAddressLine]
+                <span class="vrtx-address-line">[if postalAddressLine != null][val postalAddressLine][endif]</span>
+              [endlist]
+            </span>
+          [endif]
+        
+          [if visitingAddress != null && visitingAddress != ""]
+            <span class="vrtx-organizational-unit-visiting-address adr">
+              <span class="vrtx-label">[localized "visitingAddress"]</span>
+              [list visitingAddress visitingAddressLine]
+                <span class="vrtx-address-line">[if visitingAddressLine != null][val visitingAddressLine][endif]</span>
+              [endlist]
+            </span>
+          [endif]
+            
+          [if (phone != null && phone != "") || (fax != null && fax != "")]
+            <span class="vrtx-organizational-unit-phone-fax">
+              [if phone != null && phone != ""]
+                <span class="vrtx-organizational-unit-phone">
+                  <span class="vrtx-label">[localized 'phone']:</span> <span class="tel"><span class="type" style="display: none">Work</span><span class="value">[val phone]</span></span>
+                </span>
+              [endif]
+              [if fax != null && fax != ""]
+                <span class="vrtx-organizational-unit-fax">
+                  <span class="vrtx-label">[localized 'fax']:</span> <span class="tel"><span class="type" style="display: none">Fax</span><span class="value">[val fax]</span></span>
+                </span>
+              [endif]
+            </span>
+          [endif]
+              
+          [if email != null]
+            <span class="vrtx-organizational-unit-email">
+              <span class="vrtx-label">[localized 'email']:</span>
+              [list email anEmail]
+                [if anEmail.length() < 25]
+                  <a href="mailto:[val anEmail]"><span class="email">[val anEmail]</span></a>
+                [else]
+                  [def emailSplit anEmail.split("@")]
+                  [if emailSplit.length() = 2]
+                    <a href="mailto:[val anEmail]"><span class="email">[val emailSplit.0]@ [val emailSplit.1]</span></a>
+                  [else]
+                    <a href="mailto:[val anEmail]"><span class="email">[val emailSplit.0]</span></a>
+                  [endif]
+                [endif]
+              [endlist]
+            </span>
+          [endif]
+       
+          [if areacode != null && areacode != ""]
+            <span class="vrtx-organizational-unit-areacode">
+              <span class="vrtx-label">[localized 'areacode']:</span> <span class="areacode">[val areacode]</span>
+            </span>
+          [endif]
+        </div>
+      [endif]
+      ##
+    }
+    
+    introduction {
+      ##
+      [def intro resource-prop(".", "introduction")]
+      [if intro != null && intro != ""]
+        <div class="vrtx-organizational-unit-introduction">[val intro # unescaped]</div>
+      [endif]
+      ##
+    }
+    
+    responsibilities {
+      ##
+      [def resp resource-prop(".", "responsibilities")]
+      [if resp != null && resp != ""]
+        <div class="vrtx-organizational-unit-responsibilities">
+          [val resp # unescaped]
+        </div>
+      [endif]
+      ##
+    }
+    
+    introduction-image {
+      ##
+      [def img-uri resource-prop(".", "picture")]
+      [def caption resource-prop(".", "caption")]
+      [def pixel-width null]
+      [def img null]
+      [def pixel-width null]
+      [def style null]
+      
+      [if img-uri != null]
+        [def img resource(img-uri)]
+      [endif]
+      [if img != null]
+        [def pixel-width resource-prop(img-uri, "pixelWidth")]
+      [endif]
+      [if pixel-width != null]
+        [def style concat("width:", pixel-width, "px")]
+      [endif]
+     
+      [if img-uri != null]
+        [if pixel-width != null]
+          <div class="vrtx-introduction-image" style="[val style]">
+        [else]
+          <div class="vrtx-introduction-image">
+        [endif]
+          <img src="[val img-uri]" alt="[localized 'introduction-image-alt']"/>
+        </div>
+      [endif]
+      ##
+    }
+
+
+    related-content {
+      ##
+      [def document structured-document()]
+      [def theRelated-content document.properties.related-content]
+      [if theRelated-content != null]
+        <div id="vrtx-related-content">
+          [val theRelated-content # unescaped]
+        </div>
+      [endif]
+      ##
+    }
+    
+    content {
+      ##
+      [def document structured-document()]
+      [def theContent document.properties.content]
+      [if theContent != null && theContent != ""]
+        <div class="vrtx-frontpage-box white-box">
+          [val theContent # unescaped]
+        </div>
+      [endif]
+      ##
+    }
+    
+    employees {
+      ##
+      [def displayEmployees resource-prop-obj-val(".", "displayEmployees")]
+      [if displayEmployees = true]
+        ${resource:organization-employees}
+      [endif]
+      ##
+    }
+    
+    subunits {
+      ##
+      [def areacode resource-prop(".", "areacode")]
+      [def document structured-document()]
+      [def subsubunits document.properties.showExtendedUnitList]
+      [if subsubunits = "false" || subsubunits = null]
+        [call "resource:org-unit-subunits" {"areacode":areacode} ]
+      [else]
+        [call "resource:org-unit-subunits" {"areacode":areacode, "display-subsubunits":"true"} ]
+      [endif]
+      ##
+    }
+    
+  }
+
+  view {
+    ##
+    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+    <html xmlns="http://www.w3.org/1999/xhtml">
+      <head>
+        <title>[call "comp:title"]</title>
+      </head>
+      <body id="vrtx-organizational-unit">
+        <div id="vrtx-content">
+        [resource-props "."]
+        [def document structured-document()]
+        [def subsubunits document.properties.showExtendedUnitList]
+        [if subsubunits = "true"]
+          <div id="vrtx-main-content" class="vrtx-hide-additional-content-true">
+            <div class="vrtx-frontpage-box white-box">
+              [call "resource:organizational-unit-language-link"]
+              <h1>[call "comp:title"]</h1>
+              [call "comp:contact-information"]
+            </div>
+            [if introduction != null || responsibilities != null || picture != null]
+              <div class="vrtx-frontpage-box white-box" id="vrtx-organizational-unit-main">
+                [call "comp:introduction-image"]
+                [call "comp:introduction"]
+                [call "comp:responsibilities"]
+              </div>
+            [endif]
+            [call "comp:subunits"]
+            [call "comp:employees"]
+            [call "comp:content"]
+            [call "comp:related-content"]
+          </div>
+        [else]
+          <div id="vrtx-main-content" class="vrtx-hide-additional-content-false">
+            <div class="vrtx-frontpage-box white-box" id="vrtx-organizational-unit-main">
+              [call "resource:organizational-unit-language-link"]
+              <h1>[call "comp:title"]</h1>
+              [call "comp:introduction-image"]
+              [call "comp:introduction"]
+              [call "comp:responsibilities"]
+            </div>
+            [call "comp:subunits"]
+            [call "comp:employees"]
+            [call "comp:content"]
+          </div>
+          <div id="vrtx-additional-content">
+            <div class="vrtx-frontpage-box">
+              <h2>[localized "contactHeader"]</h2>
+              [call "comp:contact-information"]
+            </div>
+            [call "comp:related-content"]
+          </div>
+        [endif]
+      </body>
+    </html>
+    ##
+  }
+
+  vocabulary {
+     displayAcronym {
+       en : ("true" = "Yes", "false" = "No"),
+       no : ("true" = "Ja", "false" = "Nei"),
+       nn : ("true" = "Ja", "false" = "Nei")
+     },
+     getExternalUnitInfo {
+       en : ("true" = "Yes", "false" = "No"),
+       no : ("true" = "Ja", "false" = "Nei"),
+       nn : ("true" = "Ja", "false" = "Nei")
+     },
+     showExtendedUnitList {
+       en : ("true" = "Yes", "false" = "No"),
+       no : ("true" = "Ja", "false" = "Nei"),
+       nn : ("true" = "Ja", "false" = "Nei")
+     },
+     displayEmployees {
+       en : ("true" = "Yes", "false" = "No"),
+       no : ("true" = "Ja", "false" = "Nei"),
+       nn : ("true" = "Ja", "false" = "Nei")
+     },
+     numberOfEmployeesToDisplay {
+       en : (range = "1..10,15,20,25,30,35,40,45,50"),
+       no : (range = "1..10,15,20,25,30,35,40,45,50"),
+       nn : (range = "1..10,15,20,25,30,35,40,45,50")
+     }
+  }
+
+  localization {
+    header : (en : "Edit organizational unit", no : "Rediger organisatorisk enhet", nn : "Rediger organisatorisk eining"),
+    areacode : (en : "Org. Unit ID", no : "Stedkode", nn : "Stadkode"),
+    getExternalUnitInfo : (
+      en : "Use information registrated in UiO's payroll- and personalsystem",
+      no : "Bruk opplysninger registrert i UiOs lønns- og personalsystem",
+      nn : "Bruk opplysningar registrerte i lønns- og personalsystemet til UiO"),
+    displayAcronym : (
+      en : "Display acronym in title",
+      no : "Vis enhetens forkortelse i parentes bak tittel",
+      nn : "Vis forkortinga til einninga i parentes bak tittelen"),
+    name : (en : "Name", no : "Navn", nn : "Namn"),
+    acronym : (en : "Acronym", no : "Forkortelse", nn : "Forkortelse"),
+    contactHeader : (en : "Contact", no : "Kontakt", nn : "Kontakt"),
+    postalAddress : (en : "Postal address", no : "Postadresse", nn : "Postadresse"),
+    visitingAddress : (en : "Visiting address", no : "Besøksadresse", nn : "Besøksadresse"),
+    phone : (en : "Phone", no : "Telefon", nn : "Telefon"),
+    fax : (en : "Fax", no : "Faks", nn : "Faks"),
+    email : (en : "Email", no : "E-post", nn : "E-post"),
+    picture : (en: "Picture of unit", no: "Bilde av enheten", nn : "Bilde av enheten"),
+    introduction-image-alt : (en : "Image", no : "Bilde", nn : "Bilete"),
+    introduction : (en: "Introduction", no: "Innledning", nn : "Innleiing"),
+    responsibilities : (en : "Responsibilities", no : "Ansvarsområder", nn : "Ansvarsområder"),
+    employees : (en : "Staff", no : "Ansatte", nn : "Ansatte"),
+    employeesLink : (en : "All employees in", no : "Alle ansatte i", nn : "Alle ansatte i"),
+    displayEmployees : (
+      en : "Display staff members registered in UiO's payroll- and personnel system (requires valid area code)",
+      no : "Vis ansatte registrert i UiOs lønns- og personalsystem (krever gyldig stedkode)",
+      nn : "Vis tilsette registrerte i lønns- og personalsystemet til UiO (krev gyldig stedkode)"),
+    selectedEmployees : (
+      en : "Staff members to display at the top of list",
+      no : "Ansatte som skal vises øverst i listen",
+      nn : "Ansatte som skal visast øverst i lista"),
+    numberOfEmployeesToDisplay : (
+      en : "Number of staff members to display",
+      no : "Antall ansatte som skal vises",
+      nn : "Antall ansatte som skal visast"),
+    urlToEmployeesList : (
+      en : "Web address to list of complete staff",
+      no : "Webadresse til liste over alle ansatte",
+      nn : "Webadresse til liste over alle ansatte"),
+    content : (en: "Content", no: "Innhold", nn : "Innhald"),
+    showExtendedUnitList : (en: "Show two levels of sub units (disables the right column)", no: "Vis to nivåer av underenheter (skjuler høyrekolonnen)", nn : "Vis to nivåer av undereiningar (skjular høgrekolonnen)"),
+    related-content : (en : "Related content", no : "Relatert innhold", nn : "Relatert innhold"),
+    no-external-unit-metadata : (en : "Could not get unit data from external service",
+                                 no : "Kan ikke hente opplysninger om enhet fra ekstern kilde",
+                                 nn : "Kan ikkje hente opplysningar om eining frå ekstern kilde"),
+    combinedPublications : (en : "Publications", no : "Publikasjoner", nn : "Publikasjonar")
+  }
+}

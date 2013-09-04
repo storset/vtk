@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+
+
+  <!-- WEB controllers -->
+
+  <bean id="logoutHandler" 
+    class="org.vortikal.web.actions.logout.LogoutController">
+    <property name="redirectService" ref="viewService" />
+    <property name="securityInitializer" ref="securityInitializer" />
+    <property name="commandName" value="form" />
+  </bean>
+
+  <bean id="redirectHandler" 
+    class="org.vortikal.web.http.RedirectController">
+    <property name="viewName" value="collectionRedirect" />
+  </bean>
+
+  <bean id="httpOptionsHandler"
+        class="org.vortikal.web.display.file.ResourceAwareParameterizableViewController">
+    <property name="supportedMethods" value="OPTIONS" />
+    <property name="viewName" value="httpOptions" />
+  </bean>
+  
+  <bean id="displayIndexFileHandler" class="org.vortikal.web.display.index.IndexFileController" />
+
+  <bean id="abdera" class="org.apache.abdera.Abdera" />
+  
+  <bean id="displayResourceHandler" 
+    class="org.vortikal.web.display.file.DisplayResourceController">
+    <property name="displayProcessed" value="true" />
+    <property name="ignoreLastModified" value="false" />
+  </bean>
+
+  <bean id="displayHTMLResourceHandler" 
+    class="org.vortikal.web.display.file.DisplayResourceController">
+    <property name="displayProcessed" value="true" />
+    <property name="viewName" value="displayHTMLResource" />
+    <property name="ignoreLastModified" value="true" />
+    <property name="ignoreLastModifiedOnCollections" value="true" />
+  </bean>
+
+</beans>

@@ -1,0 +1,150 @@
+resourcetype structured-document {
+
+  properties {
+    title : string overrides title,
+    introduction : simple_html,
+    picture : image_ref,
+    caption : simple_html,
+    hidePicture : boolean defaultvalue("false"),
+    content : html noextract,
+    hasBodyContent : derived (content) eval (content?exists)
+  }
+
+  view-components {
+
+    title {
+      ##
+      [def v resource-prop(".", "title")]
+      [if v != null]
+        [val v]
+      [endif]
+      ##
+    }
+
+    introduction-image {
+      ##
+      [def img-uri resource-prop(".", "picture")]
+      [def caption resource-prop(".", "caption")]
+      [def pixel-width null]
+      [def img null]
+      [def pixel-width null]
+      [def photographer null]
+      [def style null]
+      
+      [if img-uri != null]
+        [def img resource(img-uri)]
+      [endif]
+      [if img != null]
+        [def pixel-width resource-prop(img-uri, "pixelWidth")]
+        [def photographer resource-prop(img-uri, "photographer")]
+      [endif]
+      [if pixel-width != null]
+        [def style concat("width:", pixel-width, "px")]
+      [endif]
+     
+      [if img-uri != null]
+        [if pixel-width != null]
+          <div class="vrtx-introduction-image" style="[val style]">
+        [else]
+          <div class="vrtx-introduction-image">
+        [endif]
+        
+         [if caption != null]
+           <img src="[val img-uri]" alt="[val caption # unescaped 'flattened']"/>
+         [else]
+           <img src="[val img-uri]" alt="[localized 'introduction-image-alt']"/>
+         [endif]
+     
+         [if caption != null]
+           <div class="vrtx-imagetext">
+             <div class="vrtx-imagedescription">[val caption # unescaped]</div>
+             [if photographer != null]
+               <span class="vrtx-photo">
+                 <span class="vrtx-photo-prefix">[localized "photo-prefix"]: </span>[val photographer]
+               </span>
+             [endif]
+           </div>
+         [elseif photographer != null]
+           <div class="vrtx-imagetext">
+             <span class="vrtx-photo">
+               <span class="vrtx-photo-prefix">[localized "photo-prefix"]: </span>[val photographer]
+             </span>
+           </div> 
+         [endif]
+         </div>
+      [endif]
+      ##
+    }
+    
+    introduction {
+      ##
+      [def intro resource-prop(".", "introduction")]
+      [if intro != null]
+        <div class="vrtx-introduction">[val intro # unescaped]</div>
+      [endif]
+      ##
+    }
+    
+    vrtx-date-info {
+      ##
+      [resource-props "."]
+      [if publish-date != null]
+        <div class="vrtx-date-info">
+          <span class="published-date-label">[localized "publishedDate"]</span> <span class="published-date">[val publish-date] </span>
+          [if publish-date < lastModified]
+           - <span class="last-modified-date">[localized "lastModifiedDate"]</span> <span class="last-modified-date">[val lastModified]</span>
+          [endif]
+        </div>
+      [endif]
+      ##
+    }
+  }
+
+  view {
+    ##
+    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+    <html xmlns="http://www.w3.org/1999/xhtml">
+      <head>
+        <title>[call "comp:title"]</title>
+      </head>
+      <body>
+        <h1>[call "comp:title"]</h1>
+        [def document structured-document()]
+        [def hidePic document.properties.hidePicture]
+        [if hidePic != "true"]
+          [call "comp:introduction-image"]
+        [endif]
+        [call "comp:introduction"]
+        [call "json:field" {"select":"content"}]
+        [call "resource:tags"]
+        [call "resource:comments"]
+      </body>
+    </html>
+    ##
+  }
+  
+  vocabulary {
+    hidePicture {
+      en : ("true" = "Yes", "false" = "No"),
+      no : ("true" = "Ja", "false" = "Nei"),
+      nn : ("true" = "Ja", "false" = "Nei")
+    }
+  }
+  
+  localization {
+    title : (en : "Title", no : "Tittel", nn : "Tittel"),
+    introduction : (en : "Introduction", no : "Innledning", nn : "Innleiing"),
+    picture : (en: "Image", no: "Bilde", nn : "Bilete"),
+    hidePicture : (en : "Hide image in document", no : "Skjul bilde i dokument", nn : "Skjul bilete i dokument"),
+    introduction-image-alt : (en : "Image", no : "Bilde", nn : "Bilete"),
+    photo-prefix : (en : "Photo", no : "Foto", nn : "Photo"),
+    caption : (en : "Image caption", no : "Bildetekst", nn : "Bilettekst"),
+    preview : (en : "Preview", no : "Forhåndsvisning", nn : "Førehandsvisning"),
+    content : (en : "Content", no : "Innhold", nn : "Innhald"),
+    share-link : (en : "Share at...", no : "Del på...", nn : "Del på..."),
+    share-close : (en : "Close", no : "Lukk", nn : "Lukk"),
+    publishedDate : (en : "Published", no :"Publisert", nn:"Publisert"),
+    lastModifiedDate : (en : "Last modified", no : "Sist endret", nn : "Sist endra"),
+    header : (en : "Edit document", no : "Rediger dokument", nn : "Rediger dokument")
+  }
+}

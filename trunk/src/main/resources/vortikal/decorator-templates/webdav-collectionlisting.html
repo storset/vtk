@@ -1,0 +1,37 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    ${webdav:css}
+    <!--[if lte IE 7]>
+      <link rel="stylesheet" href="/vrtx/__vrtx/static-resources/themes/default/default-ie7.css" type="text/css"/> 
+    <![endif]--> 
+    <!--[if lte IE 6]>
+      <link rel="stylesheet" href="/vrtx/__vrtx/static-resources/themes/default/default-ie6.css" type="text/css"/> 
+    <![endif]--> 
+    ${document:element select=[html.head] exclude=[title]}
+    <title>${document:title}</title>
+  </head>
+  <body${document:element-attributes select=[html.body]}>
+    <div id="app-head-wrapper"> 
+      <div id="app-head">
+        <div id="global-menu-top">
+          <div class="global-menu-small">
+            ${resource:manage-url}
+          </div>
+          <div class="global-menu-small last">
+            <a href="" onclick="window.close()">${manage:localized-text code=[default.window.close]default=[close window]}
+          </div>
+        </div>
+      </div>
+      ${webdav:breadcrumb}
+    </div> 
+    <div id="app-content">	
+      ${webdav:info-message}
+      <div id="main">
+        <div id="contents">
+          ${document:body}
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

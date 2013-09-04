@@ -1,0 +1,619 @@
+options {
+  // MULTI = true;
+  STATIC = false;
+  //  DEBUG_PARSER = true;
+  //  DEBUG_LOOKAHEAD = false;
+  //  DEBUG_TOKEN_MANAGER = false;
+  // JAVA_UNICODE_ESCAPE = true;
+  UNICODE_INPUT = true;
+}
+
+PARSER_BEGIN(QueryParserImpl)
+
+package org.vortikal.repository.search;
+
+import java.io.StringReader;
+import java.util.Set;
+import java.util.HashSet;
+
+import org.vortikal.repository.ResourceTypeTree;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.repository.search.query.AndQuery;
+import org.vortikal.repository.search.query.NamePrefixQuery;
+import org.vortikal.repository.search.query.NameWildcardQuery;
+import org.vortikal.repository.search.query.NameTermQuery;
+import org.vortikal.repository.search.query.OrQuery;
+import org.vortikal.repository.search.query.PropertyExistsQuery;
+import org.vortikal.repository.search.query.PropertyPrefixQuery;
+import org.vortikal.repository.search.query.PropertyWildcardQuery;
+import org.vortikal.repository.search.query.PropertyTermQuery;
+import org.vortikal.repository.search.query.Query;
+import org.vortikal.repository.search.query.UriSetQuery;
+import org.vortikal.repository.search.query.TermOperator;
+import org.vortikal.repository.search.query.TypeTermQuery;
+import org.vortikal.repository.search.query.UriDepthQuery;
+import org.vortikal.repository.search.query.UriPrefixQuery;
+import org.vortikal.repository.search.query.UriTermQuery;
+import org.vortikal.repository.search.query.ACLExistsQuery;
+import org.vortikal.repository.search.query.ACLReadForAllQuery;
+import static org.vortikal.util.text.TextUtils.unescape;
+
+/**
+* Partial implementation of a query parser based on javacc.
+* <p>Try the parser out with:
+* <p>java -cp target/classes org.vortikal.repository.search.QueryParserImpl "((pre:post=c AND s:s=s) OR ff=2211)"
+*/
+@SuppressWarnings({"all", "warnings", "unchecked"})
+public class QueryParserImpl implements QueryParser {
+
+    private ResourceTypeTree resourceTypeTree;
+    
+    public static final char COMPLEX_VALUE_ATTRIBUTE_SPECIFIER = '@';
+
+    public QueryParserImpl(ResourceTypeTree resourceTypeTree) {
+        this(new StringReader(""));
+        this.resourceTypeTree = resourceTypeTree;
+    }
+
+    @Override
+    public Query parse(String query) {
+        ReInit(new StringReader(query));
+        try {
+            return Query();
+        } catch (TokenMgrError tme) {
+            throw new RuntimeException(tme.getMessage());
+        } catch (ParseException e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
+    }
+    
+    private static final class PropSpec {
+        String qualifier = null; // Property qualifier (currently ns-prefix, will be resource-type-name in the future)
+        String name = null;      // Property name
+        String cva = null;       // Property "Complex Value Attribute" specifier (for JSON props)
+
+        PropSpec(String qualifier, String name, String cva) {
+            this.qualifier = qualifier;
+            this.name = name;
+            this.cva = cva;
+        }
+    } 
+    
+    private Query getPropExistsQuery(PropSpec spec, boolean inverted) {
+        PropertyTypeDefinition def = 
+            resourceTypeTree.getPropertyDefinitionByPrefix(spec.qualifier, spec.name);
+        if (def == null)
+            throw new RuntimeException("Unknown property " + spec.qualifier + ":" + spec.name);
+
+        PropertyExistsQuery peq = new PropertyExistsQuery(def, inverted);
+        peq.setComplexValueAttributeSpecifier(spec.cva);
+        return peq;
+    }
+
+    private Query getPropTermQuery(PropSpec spec, String value,
+                                   TermOperator operator) {
+        PropertyTypeDefinition def = 
+            resourceTypeTree.getPropertyDefinitionByPrefix(spec.qualifier, spec.name);
+        if (def == null)
+            throw new RuntimeException("Unknown property " + spec.qualifier + ":" + spec.name);
+
+        PropertyTermQuery ptq = new PropertyTermQuery(def, value, operator);
+        ptq.setComplexValueAttributeSpecifier(spec.cva);
+        return ptq;
+    }
+    
+    private Query getPropPrefixQuery(PropSpec spec, String value, TermOperator op) {
+        PropertyTypeDefinition def = 
+            resourceTypeTree.getPropertyDefinitionByPrefix(spec.qualifier, spec.name);
+        if (def == null)
+            throw new RuntimeException("Unknown property " + spec.qualifier + ":" + spec.name);
+
+        PropertyPrefixQuery ppq = new PropertyPrefixQuery(def, value, op);
+        ppq.setComplexValueAttributeSpecifier(spec.cva);
+        return ppq;
+    }
+
+    private Query getPropWildcardQuery(PropSpec spec, String value, TermOperator op) {
+        PropertyTypeDefinition def = 
+            resourceTypeTree.getPropertyDefinitionByPrefix(spec.qualifier, spec.name);
+        if (def == null)
+            throw new RuntimeException("Unknown property " + spec.qualifier + ":" + spec.name);
+
+        PropertyWildcardQuery pwq = new PropertyWildcardQuery(def, value, op);
+        pwq.setComplexValueAttributeSpecifier(spec.cva);
+        return pwq;
+    }
+    
+    private Query getUriSetQuery(String urisCsv, TermOperator op) {
+        String[] values = unescape(urisCsv).split(",");
+        Set uris = new HashSet();
+        for (String value: values) {
+            uris.add(value);
+        }
+        
+        return new UriSetQuery(uris, op);
+    }
+
+}
+
+PARSER_END(QueryParserImpl)
+
+<DEFAULT, Value> SKIP : {" " | "\t" | "\n" | "\r" }
+
+TOKEN : {
+          <URI: "uri">
+        | <NAME: "name">
+        | <TYPE: "type">
+        | <DEPTH: "depth">
+        | <ACL: "acl" >
+
+        | <EQ: "="> : Value
+        | <EQ_IGNORECASE: "=~"> : Value
+        | <NE: "!="> : Value
+        | <NE_IGNORECASE: "!=~"> : Value
+        | <GT: ">"> : Value
+        | <GE: ">="> : Value
+        | <LT: "<"> : Value
+        | <LE: "<="> : Value
+        | <IN: "IN"> : Value
+        | <NI: "NOT IN"> : Value
+
+        | <AND: "AND" | "&&">
+        | <OR: "OR" | "||">
+
+        // XXX: This isn't consistent ! Some reserved words are all uppercase, other all lowercase ...WHY ?
+        //      Cannot change now, since that would probably break a lot of things in the wild.
+        | <EXISTS: "exists" | "EXISTS">                                    // Should have been only "EXISTS"
+        | <NOTEXISTS: "not exists" | "!exists" | "!EXISTS" | "NOT EXISTS"> // Should have been only "NOT EXISTS" | "!EXISTS"
+        | <ALL: "ALL">
+        | <NOTALL: "NOT ALL" | "!ALL">
+
+        | <ASTERISK: "*">
+
+        | <LP: "(">
+        | <RP: ")">
+
+        | <COMPLEX_VALUE_ATTR_CHAR: "@">
+        | <NAMEVALUE: (<ID_CHAR> | <ESCAPED_CHAR>)+ >
+
+        | <NLP: ~["(", ":"] >
+        | <NRP: ~[")", ":"] >
+}
+
+TOKEN : { < COLON: ":"> }
+
+// Regexp named as #ID_CHAR = private regular expression (can only be referenced from other regexps).
+
+TOKEN : { < #ID_CHAR: ~[" ", "\t", "\n", "\r", "\\", "\"", "=", "<", ">", "!", "(", ")", ":", "*", "?", "@"] > }
+
+<DEFAULT, Value> TOKEN : {
+      <ESCAPED_CHAR: "\\" [" ", "\\", "!", "(", ")", ":", "\"", "|", "&", "=", "<", ">", "*", "?"] >
+}
+
+// Tokens available only in lexical state 'Value':
+<Value> TOKEN : {
+           <#VALUE_CHAR: (<ESCAPED_CHAR> | ~["*", "?", " ", ")", "\t", "\n", "\r"])>
+         | <#WILDCARD_CHAR: ["*","?"]>
+         | <VALUE: (<VALUE_CHAR>)+ > : DEFAULT // Transition lexical state back to default
+         | <WILDVALUE: (
+                          (<WILDCARD_CHAR>)+ (<VALUE_CHAR>)+ (<WILDCARD_CHAR>)*
+                        | 
+                          (<WILDCARD_CHAR>)* (<VALUE_CHAR>)+ (<WILDCARD_CHAR>)+ <VALUE_CHAR> (<VALUE_CHAR> | <WILDCARD_CHAR>)*
+                        ) > : DEFAULT
+}
+
+
+// Main method:
+Query Query() : 
+{
+    Query q;
+}
+{ 
+    ( 
+        LOOKAHEAD((Closed() | SimpleQuery()) <AND>) q=AndQuery() 
+        | LOOKAHEAD((Closed() | SimpleQuery()) <OR>) q=OrQuery() 
+        | q=SimpleQuery() 
+    )
+        { return q; }
+}
+
+// Used for lookahead only:
+void Closed() : {}
+{
+    <LP> (<ESCAPED_CHAR> | <COLON> | <NLP>)* [Closed() (<ESCAPED_CHAR> | <COLON> | <NRP>)*] <RP>
+}
+
+Query AndQuery() : 
+{
+    AndQuery q = new AndQuery();
+    Query tmp;
+}
+{ 
+    (
+        tmp=SimpleQuery()
+            { q.add(tmp);}
+        (<AND> tmp=SimpleQuery()
+            { q.add(tmp);}
+        )+
+    )
+        { return q; }
+}
+
+Query OrQuery() : 
+{
+    OrQuery q = new OrQuery();
+    Query tmp;
+}
+{ 
+    (
+        tmp=SimpleQuery()
+            { q.add(tmp);}
+        (<OR> tmp=SimpleQuery()
+            { q.add(tmp);}
+        )+
+    )
+        { return q; }
+}
+
+Query SimpleQuery() : 
+{
+    Query q;
+}
+{
+    (
+        q=ClosedQuery() 
+        | LOOKAHEAD(2) q=NameQuery() 
+        | LOOKAHEAD(2) q=UriQuery() 
+        | LOOKAHEAD(2) q=TypeQuery()
+        | LOOKAHEAD(2) q=DepthQuery()
+        | LOOKAHEAD(2) q=ACLQuery()
+        | q=PropertyQuery()
+    )
+        { return q; }
+}
+
+Query ClosedQuery() : 
+{
+    Query q;
+}
+{
+    <LP> q=Query() <RP>
+        { return q;}
+}
+
+Query DepthQuery() : 
+{
+    Token t;
+}
+{
+    <DEPTH> <EQ> t=<VALUE>
+        { 	
+        	// Should be validating this in the parser (?)
+        	int depth = -1;
+        	try {
+	        	depth = Integer.parseInt(t.image);
+        	} catch (NumberFormatException e) {
+	            throw new RuntimeException("depth value not a legal integer");
+        	}   
+        	if (depth < 0)
+	            throw new RuntimeException("depth value cannot negative");
+        	 	
+        	return new UriDepthQuery(depth); 
+        }
+}
+
+Query ACLQuery() :
+{
+   Query q;
+}
+{
+    <ACL> (q=ACLExistsQuery() | q=ACLReadForAllQuery())
+    {
+      return q;
+    }
+}
+
+Query ACLExistsQuery():
+{
+  Token ex=null;
+}
+{
+    (ex=<EXISTS> | <NOTEXISTS>)
+    {
+      boolean inverted = (ex == null);
+      return new ACLExistsQuery(inverted);
+    }
+}
+Query ACLReadForAllQuery():
+{
+  Token all=null;
+}
+{
+    (all=<ALL> | <NOTALL>)
+    {
+      boolean inverted = (all == null);
+      return new ACLReadForAllQuery(inverted);
+    }
+}
+
+Query UriQuery() : 
+{
+    Query q;
+}
+{
+    (LOOKAHEAD(4) q=UriPrefixQuery() | LOOKAHEAD(2) q=UriTermQuery() | LOOKAHEAD(2) q=UriSetQuery())
+        { return q; }
+}
+
+Query UriPrefixQuery() : 
+{
+    Token t, ne = null;
+}
+{
+    <URI> (<EQ> | ne=<NE>) t=<VALUE> <ASTERISK>
+        {
+            boolean inverted = (ne != null);
+            String value = unescape(t.image);
+            return new UriPrefixQuery(value, inverted);
+        }
+}
+
+Query UriSetQuery() :
+{
+    Token t, in = null, ni = null;
+    TermOperator o;
+}
+{
+    <URI> (in=<IN> | ni=<NI>) t=<VALUE>
+     {
+        if (in != null) {
+          o = TermOperator.IN;
+        } else {
+          o = TermOperator.NI;
+        }
+        
+        return getUriSetQuery(t.image, o);
+     }
+}
+
+Query UriTermQuery() : 
+{
+    Token t, eq = null, ne = null;
+    TermOperator o;
+}
+{
+    <URI> (eq=<EQ> | ne=<NE>) t=<VALUE>
+        {  
+            if (eq != null) 
+                o = TermOperator.EQ;
+            else
+                o = TermOperator.NE;
+                
+            String value = unescape(t.image);
+            return new UriTermQuery(value, o);
+        }
+}
+
+
+Query TypeQuery() : 
+{
+    Query q;
+    Token eq = null, ne = null, in = null, ni = null, v;
+    TermOperator o;
+}
+{
+    (<TYPE> (eq=<EQ> | ne=<NE> | in=<IN> | ni=<NI>) v=<VALUE>)
+        { 
+            if (eq != null)
+                o = TermOperator.EQ;
+            else if (ne != null)
+                o = TermOperator.NE;
+            else if (in != null)
+                o = TermOperator.IN;
+            else
+                o = TermOperator.NI;
+
+            return new TypeTermQuery(v.image, o);
+        }
+}
+
+Query NameQuery() : 
+{
+    Query q;
+}
+{
+    (LOOKAHEAD(4) q=NamePrefixQuery() | LOOKAHEAD(3) q=NameWildcardQuery() | q=NameTermQuery() /**| q=NameRangeQuery() **/)
+        { return q; }
+}
+
+Query NamePrefixQuery() : 
+{
+    Token t, eq=null;
+}
+{
+    <NAME> (<NE> | eq=<EQ>) t=<VALUE> <ASTERISK>
+        { 
+            boolean inverted = (eq == null); 
+            return new NamePrefixQuery(unescape(t.image), inverted); 
+        }
+}
+
+Query NameWildcardQuery() :
+{
+    Token t, eq=null;
+}
+{
+    <NAME> (<NE> | eq=<EQ>) t=<WILDVALUE>
+        {
+           boolean inverted = (eq == null);
+           return new NameWildcardQuery(unescape(t.image), inverted);
+        }
+}
+
+Query NameTermQuery() :
+{
+    Token t, eq = null, eqi = null, ne = null, nei = null, gt = null, lt = null, ge = null, le = null;
+    TermOperator operator;
+}
+{
+    <NAME> (eq=<EQ> | eqi=<EQ_IGNORECASE> | ne=<NE> | nei=<NE_IGNORECASE> | gt=<GT> | lt=<LT> | ge=<GE> | le=<LE>) t=<VALUE>
+        {  
+            if (eq != null) 
+                operator = TermOperator.EQ;
+            else if (eqi != null)
+                operator = TermOperator.EQ_IGNORECASE;
+            else if (ne != null)
+                operator = TermOperator.NE;
+            else if (nei != null)
+                operator = TermOperator.NE_IGNORECASE;
+            else if (gt != null)
+                operator = TermOperator.GT;
+            else if (lt != null)
+                operator = TermOperator.LT;
+            else if (ge != null)
+                operator = TermOperator.GE;
+            else
+                operator = TermOperator.LE;
+
+            return new NameTermQuery(unescape(t.image), operator);
+        }
+}
+
+// Query NameRangeQuery() :
+// {}{}
+
+PropSpec PropSpec() :
+{
+   Token q=null, c=null, n;
+}
+{
+   ( [LOOKAHEAD(2) q=<NAMEVALUE> <COLON>] n=<NAMEVALUE> [<COMPLEX_VALUE_ATTR_CHAR> c=<NAMEVALUE>] )
+   {
+       String qualifier = q != null ? q.image : null;
+       String name = n.image;
+       String cvaspec = c != null ? c.image : null;
+       return new PropSpec(qualifier, name, cvaspec);
+   }
+}
+
+Query PropertyQuery() : 
+{
+    Query q;
+}
+{
+    (LOOKAHEAD(6) q=PropertyExistsQuery()
+     | LOOKAHEAD(8) q=PropertyPrefixQuery()
+     | LOOKAHEAD(8) q=PropertyWildcardQuery()
+     | q=PropertyTermQuery())
+        { return q;}
+}    
+
+// Property exists:
+Query PropertyExistsQuery() :
+{
+    PropSpec p;
+    Token ex=null;
+}
+{
+    (p=PropSpec() (ex=<EXISTS> | <NOTEXISTS>))
+        {
+            boolean inverted = (ex == null);
+            return getPropExistsQuery(p, inverted);
+        }
+
+}
+
+Query PropertyPrefixQuery() : 
+{
+    PropSpec p;
+    Token v, eq=null, ne=null, eqi=null, nei=null;
+}
+{
+    p=PropSpec()
+        (eq=<EQ> | ne=<NE> | eqi=<EQ_IGNORECASE> | nei=<NE_IGNORECASE>)
+        //        ("\"" v=<VALUE> "\"" | v=<VALUE>)    
+        v=<VALUE> <ASTERISK>
+        { 
+            String value = unescape(v.image);
+
+            TermOperator op = null;
+            if (eq != null)
+                op = TermOperator.EQ;
+            else if (ne != null)
+                op = TermOperator.NE;
+            else if (eqi != null)
+                op = TermOperator.EQ_IGNORECASE;
+            else if (nei != null)
+                op = TermOperator.NE_IGNORECASE;
+
+            return getPropPrefixQuery(p, value, op);
+        }
+}
+
+Query PropertyWildcardQuery() : 
+{
+    PropSpec p;
+    Token v, eq=null, ne=null, eqi=null, nei=null;
+}
+{
+    p=PropSpec()
+        (eq=<EQ> | ne=<NE> | eqi=<EQ_IGNORECASE> | nei=<NE_IGNORECASE>)
+        v=<WILDVALUE>
+        { 
+            String value = unescape(v.image);
+
+            TermOperator op = null;
+            if (eq != null)
+                op = TermOperator.EQ;
+            else if (ne != null)
+                op = TermOperator.NE;
+            else if (eqi != null)
+                op = TermOperator.EQ_IGNORECASE;
+            else if (nei != null)
+                op = TermOperator.NE_IGNORECASE;
+
+            return getPropWildcardQuery(p, value, op);
+        }
+}
+
+
+// Property value query:
+Query PropertyTermQuery() : {
+    PropSpec p;
+    Token v, ne=null, nei=null, ge=null, le=null, eq=null, eqi=null, gt=null, lt=null, in=null, ni=null;
+}
+{
+    p=PropSpec()
+        (ne=<NE> | nei=<NE_IGNORECASE> | ge =<GE> | le=<LE> | eq=<EQ> | eqi=<EQ_IGNORECASE> | gt=<GT> | lt=<LT> | in=<IN> | ni=<NI>)
+        //        ("\"" v=<VALUE> "\"" | v=<VALUE>)
+        v=<VALUE>
+        {
+            String value = unescape(v.image);
+
+            TermOperator operator = null;
+            if (ne != null)
+                operator = TermOperator.NE;
+            else if (nei != null)
+                operator = TermOperator.NE_IGNORECASE;
+            else if (ge != null)
+                operator = TermOperator.GE;
+            else if (le != null)
+                operator = TermOperator.LE;
+            else if (eq != null)
+                operator = TermOperator.EQ;
+            else if (eqi != null)
+                operator = TermOperator.EQ_IGNORECASE;
+            else if (gt != null)
+                operator = TermOperator.GT;
+            else if (lt != null)
+                operator = TermOperator.LT;
+            else if (in != null)
+                operator = TermOperator.IN;
+            else 
+                operator = TermOperator.NI;
+
+            return getPropTermQuery(p, value, operator);
+        }
+
+}
+

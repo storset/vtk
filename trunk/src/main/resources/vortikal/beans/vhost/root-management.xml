@@ -1,0 +1,380 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+
+  <bean id="repositoryManageService" 
+        class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="webService" />
+    <property name="order" value="350" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.OrAssertion">
+          <property name="assertions">
+            <list>
+              <bean class="org.vortikal.web.service.PrincipalQualifiedNameAssertion">
+                <property name="username" value="root@localhost"/>
+              </bean>
+              <bean class="org.vortikal.web.service.PrincipalQualifiedNameAssertion">
+                <property name="username" value="vortex@services.uio.no"/>
+              </bean>
+            </list>
+          </property>
+        </bean>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="vrtx" />
+          <property name="parameterValue" value="root" />
+        </bean>
+      </list>
+    </property>
+    <property name="attributes">
+      <map>
+        <entry key-ref="system.decoratorTemplateAttribute" value="root-admin.html" />
+        <entry key="remove-caching" value="true" />
+      </map>
+    </property>
+  </bean>
+
+  <bean id="repositoryManageDefaultService"
+        class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="repositoryManageService" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.PrincipalQualifiedNameAssertion">
+          <property name="username" value="root@localhost"/>
+        </bean>
+      </list>
+    </property>
+    <property name="categories">
+      <set>
+        <value>rootMenu</value>
+      </set>
+    </property>
+    <property name="attributes">
+      <map>
+        <entry key="tabOrder"><value type="java.lang.Integer">-400</value></entry>
+      </map>
+    </property>
+    <property name="handler" ref="root1Handler" />
+  </bean>
+
+  <bean id="root1Handler"
+        class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+    <property name="viewName" value="rootView" />
+  </bean>
+
+  <bean id="rootView" parent="freemarkerView">
+    <property name="url" value="pages/root/root1.ftl" />
+    <property name="referenceDataProviders">
+      <list>
+        <bean class="org.vortikal.web.referencedata.provider.ShellExecutionResultProvider">
+          <property name="shell" ref="beanShellEvaluator" />
+          <property name="modelName" value="managementStats" />
+          <property name="groups" ref="managementStatsGroups" />
+        </bean>
+      </list>
+    </property>
+  </bean>
+
+
+  <bean id="rootManage.tabsComponent"
+        class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
+    <property name="namespace" ref="decorating.manageNamespace" />
+    <property name="name" value="root-tabs" />
+    <property name="description" value="Displays the default admin tabs" />
+    <property name="view" ref="rootManage.tabView" />
+  </bean>
+
+  <bean id="rootManage.tabView" parent="freemarkerView">
+    <property name="url" value="layouts/tabs.ftl" />
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="rootManage.tabsProvider" />
+      </list>
+    </property>
+  </bean>
+
+
+  <bean id="rootManage.tabsProvider" 
+    class="org.vortikal.web.view.components.menu.DefaultListMenuProvider">
+    <constructor-arg ref="rootManage.tabServicesFactory" />
+    <constructor-arg value="tabs"/>
+    <property name="matchAncestorServices" value="true" />
+  </bean>
+
+  <bean id="rootManage.tabServicesFactory"
+    class="org.vortikal.context.CategoryResolvingFactoryBean">
+    <property name="category" value="rootMenu" />
+    <property name="comparator">
+      <bean class="org.vortikal.web.service.ServiceAttributeComparator">
+        <property name="attributeName" value="tabOrder" />
+      </bean>
+    </property>
+  </bean>
+
+
+  <bean id="managementStatsGroups" class="java.util.HashMap">
+    <constructor-arg>
+      <map>
+        <entry key="Principals" value-ref="principalStatsGroup" />
+        <entry key="Java VM" value-ref="jvmStatsGroup" />
+        <entry key="Servlet" value-ref="servletStatsGroup" />       
+        <entry key="Repository" value-ref="repositoryStatsGroup" />
+        <entry key="Resource types" value-ref="resourceTypesStatsGroup" />
+      </map>
+    </constructor-arg>
+  </bean>
+
+  <bean id="principalStatsGroup" class="java.util.HashMap">
+    <constructor-arg>
+      <map>
+        <entry key="Principal manager tokens">
+          <value>context.getBean("tokenManagerCache").getSize()</value>
+        </entry>
+      </map>
+    </constructor-arg>
+  </bean>
+
+  <bean id="jvmStatsGroup" class="java.util.HashMap">
+    <constructor-arg>
+      <map>
+        <entry key="Available processors">
+          <value>Runtime.getRuntime().availableProcessors()</value>
+        </entry>
+        <entry key="Total memory">
+          <value>Runtime.getRuntime().totalMemory()</value>
+        </entry>
+        <entry key="Maximum memory">
+          <value>Runtime.getRuntime().maxMemory()</value>
+        </entry>
+        <entry key="Free memory">
+          <value>Runtime.getRuntime().freeMemory()</value>
+        </entry>
+      </map>
+    </constructor-arg>
+  </bean>
+
+  <bean id="servletStatsGroup" class="java.util.HashMap">
+    <constructor-arg>
+      <map>
+        <entry key="Request load (avg reqs per second)">
+          <value>
+            java.text.DecimalFormat df = new java.text.DecimalFormat("0.00");
+            listener = context.getBean("requestLoadListener");
+
+            df.format((float) listener.getLoad(60)/60) + " (1m), " +
+            df.format((float) listener.getLoad(600)/600) + " (10m), " +
+            df.format((float) listener.getLoad(3600)/3600) + " (1h)";
+          </value>
+        </entry>
+        <entry key="Total requests">
+          <value>context.getBean("requestLoadListener").getTotalRequests()</value>
+        </entry>
+        <entry key="Application startup">
+          <value>new java.util.Date(context.getStartupDate());</value>
+        </entry>
+      </map>
+    </constructor-arg>
+  </bean>
+
+  <bean id="repositoryStatsGroup" class="java.util.HashMap">
+    <constructor-arg>
+      <map>
+        <entry key="Cache size">
+          <value>context.getBean("repository.cache").size()</value>
+        </entry>
+      </map>
+    </constructor-arg>
+  </bean>
+
+  <bean id="resourceTypesStatsGroup" class="java.util.HashMap">
+    <constructor-arg>
+      <map>
+        <entry key="Resource type tree">
+          <value>"\n" + context.getBean("resourceTypeTree").getResourceTypeTreeAsString()</value>
+        </entry>
+      </map>
+    </constructor-arg>
+  </bean>
+  
+  
+
+  <bean id="requestLoadListener"
+        class="org.vortikal.web.context.RequestLoadListener">
+    <property name="historySeconds" value="3600" />
+  </bean>
+
+
+  <bean id="beanShellEvaluator" class="org.vortikal.shell.BeanShellConsole">
+    <property name="runEvalLoop" value="false" />
+    <property name="wrapOutputInBrackets" value="false" />
+  </bean>
+
+  <bean id="rootViewResolver" parent="system.decoratingViewResolver">
+    <property name="views">
+      <map>
+        <entry key="rootView" value-ref="rootView" />
+        <entry key="serviceTree" value-ref="serviceTreeView" />
+        <entry key="repositoryReadOnly" value-ref="repositoryReadOnlyView" />
+      </map>
+    </property>
+  </bean>
+
+  <!-- Service tree -->
+
+  <bean id="serviceTreeService"
+    class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="repositoryManageService" />
+    <property name="order" value="-1" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.PrincipalQualifiedNameAssertion">
+          <property name="username" value="root@localhost"/>
+        </bean>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="mode" />
+          <property name="parameterValue" value="services" />
+        </bean>
+      </list>
+    </property>
+    <property name="categories">
+      <set>
+        <value>rootMenu</value>
+      </set>
+    </property>
+    <property name="attributes">
+      <map>
+        <entry key="tabOrder"><value type="java.lang.Integer">-300</value></entry>
+      </map>
+    </property>
+    <property name="handler" ref="root2Handler" />
+  </bean>
+  
+  <bean id="root2Handler"
+    class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+    <property name="viewName" value="serviceTree" />
+  </bean>
+  
+  <bean id="serviceTreeView" parent="freemarkerView">
+    <property name="url" value="pages/root/root1.ftl" />
+    <property name="referenceDataProviders">
+      <list>
+        <bean class="org.vortikal.web.referencedata.provider.ShellExecutionResultProvider">
+          <property name="shell" ref="beanShellEvaluator" />
+          <property name="modelName" value="managementStats" />
+          <property name="groups" ref="serviceTreeGroups" />
+        </bean>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="serviceTreeGroups" class="java.util.HashMap">
+    <constructor-arg>
+      <map>
+        <entry key="Services" value-ref="serviceTreeStatsGroup" />
+      </map>
+    </constructor-arg>
+  </bean>
+
+  <bean id="serviceTreeStatsGroup" class="java.util.HashMap">
+    <constructor-arg>
+      <map>
+        <entry key="Service tree">
+          <value>"\n" + context.getBean("requestContextInitializer").printServiceTree(true)</value>
+        </entry>
+      </map>
+    </constructor-arg>
+  </bean>
+  
+  <!-- repository read only -->
+
+  <bean id="repositoryReadOnlyService"
+        class="org.vortikal.web.service.ServiceImpl">
+    <description>
+      Service for bringing the repository in and out of read-only mode.
+      Request parameters: action=set-read-only&amp;read-only={true,false}
+    </description>
+    <property name="parent" ref="repositoryManageService" />
+    <property name="order" value="-1" />
+    <property name="categories">
+      <set>
+        <value>rootMenu</value>
+      </set>
+    </property>
+    <property name="attributes">
+      <map>
+        <entry key="tabOrder"><value type="java.lang.Integer">0</value></entry>
+      </map>
+    </property>
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.PrincipalQualifiedNameAssertion">
+          <property name="username" value="root@localhost"/>
+        </bean>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="action" />
+          <property name="parameterValue" value="read-only" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="repositoryReadOnlyHandler" />
+  </bean>
+
+  <bean id="repositoryReadOnlyHandler"
+        class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+    <property name="viewName" value="repositoryReadOnly" />
+  </bean>
+
+  <bean id="repositoryReadOnlyView" parent="freemarkerView">
+    <property name="url" value="pages/root/repository-read-only.ftl" />
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="resourceContextProvider" />
+        <bean class="org.vortikal.web.actions.repo.RepositoryReadOnlyStateProvider">
+          <property name="authorizationManager" ref="authorizationManager" />
+        </bean>
+        <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
+          <property name="service" ref="setRepositoryReadOnlyService" />
+          <property name="modelName" value="setReadOnlyUrl" />
+        </bean>
+        <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
+          <property name="service" ref="unsetRepositoryReadOnlyService" />
+          <property name="modelName" value="unsetReadOnlyUrl" />
+        </bean>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="setRepositoryReadOnlyService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="repositoryReadOnlyService" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="read-only" />
+          <property name="parameterValue" value="true" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="repositoryReadOnlyController" />
+  </bean>
+
+  <bean id="unsetRepositoryReadOnlyService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="repositoryReadOnlyService" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="read-only" />
+          <property name="parameterValue" value="false" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="repositoryReadOnlyController" />
+  </bean>
+
+  <bean id="repositoryReadOnlyController"
+        class="org.vortikal.web.actions.repo.RepositoryReadOnlyController">
+    <property name="repository" ref="repository" />
+    <property name="viewName" value="repositoryReadOnly" />
+    <property name="parameterName" value="read-only" />
+  </bean>
+
+</beans>

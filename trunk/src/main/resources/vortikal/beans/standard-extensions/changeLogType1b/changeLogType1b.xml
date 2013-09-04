@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+
+  <!-- Publish events whenever changes to Vortex resources occur. -->
+  <bean id="processedContentEventDumperOpen" 
+    class="org.vortikal.repository.ProcessedContentEventDumperOpen">
+    <property name="changeLogDAO" ref="repository.changeLogDAO" />
+    <property name="repository" ref="repository"/>
+    <property name="loggerType" value="1" />
+    <property name="loggerId" value="1" />
+  </bean>
+
+</beans>

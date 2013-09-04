@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+
+  <bean id="introductionMixinResourceTypeDef" 
+        class="org.vortikal.repository.resourcetype.MixinResourceTypeDefinitionImpl">
+    <property name="name" value="introduction-mixin"/>
+    <property name="namespace" ref="DEFAULT_NAMESPACE" /> 
+    <property name="propertyTypeDefinitions">
+      <list>
+        <ref bean="introductionPropDef" />
+        <ref bean="introductionImagePropDef" />
+        <ref bean="introductionImageCaptionPropDef" />
+        <ref bean="tagsPropDef" />
+      </list>
+    </property>
+  </bean>  
+
+  <bean id="introductionPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+    <property name="contentRelation" value="PRE_CONTENT" />
+    <property name="name" value="introduction"/>
+    <property name="type" value="HTML"/>
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE"/>
+    <property name="mandatory" value="false"/>
+  </bean>
+
+  <bean id="introductionImagePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+    <property name="contentRelation" value="PRE_CONTENT" />
+    <property name="name" value="picture"/>
+    <property name="type" value="IMAGE_REF"/>
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE"/>
+    <property name="mandatory" value="false"/>
+  </bean>
+  
+  <bean id="introductionImageCaptionPropDef" class="org.vortikal.repository.resourcetype.OverridablePropertyTypeDefinitionImpl" parent="abstractPropDef">
+    <property name="contentRelation" value="PRE_CONTENT" />
+    <property name="name" value="caption"/>
+    <property name="type" value="HTML"/>
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE"/>
+    <property name="mandatory" value="false"/>
+  </bean>
+
+  <bean id="tagsPropDef" class="org.vortikal.repository.resourcetype.OverridablePropertyTypeDefinitionImpl" parent="abstractPropDef">
+    <property name="contentRelation" value="POST_CONTENT" />
+    <property name="name" value="tags" /> 
+    <property name="type" value="STRING" />
+    <property name="multiple" value="true" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
+    <property name="mandatory" value="false" />
+  </bean>
+
+</beans>

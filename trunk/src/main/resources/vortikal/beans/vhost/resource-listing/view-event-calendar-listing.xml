@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="utf-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+
+  <!-- ### Default service, grouped view ###-->
+
+  <bean id="calendarEventListing.viewService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="eventListing.viewService" />
+    <property name="order" value="0" />
+    <property name="assertions">
+      <list>
+        <ref bean="resourceIsEventListing" />
+        <bean class="org.vortikal.web.service.ResourcePropertyAssertion">
+          <property name="namespace" ref="EVENT_LISTING_NAMESPACE" />
+          <property name="name" value="display-type" />
+          <property name="value" value="calendar" />
+          <property name="checkExistenceOnly" value="false" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="eventListing.calendarHandler" />
+    <property name="serviceNameProvider" ref="collectionListing.viewService.serviceNameProvider" />
+  </bean>
+
+  <bean id="eventListing.calendarHandler" class="org.vortikal.web.display.collection.event.calendar.EventCalendarListingController"
+    parent="eventListing.handler">
+    <property name="viewName" value="eventListingCalendar.view" />
+    <property name="helper" ref="eventListingHelper" />
+    <property name="daysAhead" value="${event.listing.days.ahead}" />
+    <property name="viewAllUpcomingService" ref="calendarEventListing.viewAllUpcomingService" />
+    <property name="viewAllPreviousService" ref="calendarEventListing.viewAllPreviousService" />
+    <property name="calendarSearchComponent" ref="eventListing.calendarCurrentMonthAndForwardSearchComponent" />
+    <property name="publishDatePropDef" ref="publishDatePropDef" />
+  </bean>
+
+  <bean id="eventListing.calendarCurrentMonthAndForwardSearchComponent" parent="collectionListing.searchComponent">
+    <property name="name" value="eventListing.calendarCurrentMonthAndForwardSearchComponent" />
+    <property name="listableProperties" ref="eventListing.listableProperties" />
+    <property name="listingUriQueryBuilder" ref="eventListing.listingUriQueryBuilder" />
+    <property name="queryBuilders">
+      <list>
+        <ref bean="eventListing.calendarCurrentMonthAndForwardQueryBuilder" />
+      </list>
+    </property>
+    <property name="searchSorting" ref="eventListing.upcoming.searchSorting" />
+  </bean>
+
+  <bean id="eventListing.calendarCurrentMonthAndForwardQueryBuilder" class="org.vortikal.web.search.eventlisting.EventCalendarQueryBuilder">
+    <property name="resourceTypeTree" ref="resourceTypeTree" />
+    <property name="startPropDefPointer" ref="${override.listing.prefix}eventListing.startDatePropDefPointer" />
+    <property name="endPropDefPointer" ref="${override.listing.prefix}eventListing.endDatePropDefPointer" />
+    <property name="helper" ref="eventListingHelper" />
+  </bean>
+
+  <!-- ### View specific date ###-->
+
+  <bean id="calendarEventListing.viewSpecificDateService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="calendarEventListing.viewService" />
+    <property name="order" value="0" />
+    <property name="assertions">
+      <list>
+        <ref bean="resourceIsEventListing" />
+        <bean class="org.vortikal.web.service.ResourcePropertyAssertion">
+          <property name="namespace" ref="EVENT_LISTING_NAMESPACE" />
+          <property name="name" value="display-type" />
+          <property name="value" value="calendar" />
+          <property name="checkExistenceOnly" value="false" />
+        </bean>
+        <bean class="org.vortikal.web.service.RequestParameterExistsAssertion">
+          <property name="parameterName" value="date" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="eventListing.calendarSpecificDateHandler" />
+    <property name="serviceNameProvider" ref="collectionListing.viewService.serviceNameProvider" />
+  </bean>
+
+  <bean id="eventListing.calendarSpecificDateHandler" class="org.vortikal.web.display.collection.event.calendar.EventCalendarSpecificDateListingController"
+    parent="eventListing.calendarHandler">
+    <property name="viewName" value="eventListingCalendarWithWidgetContextProvider.view" />
+  </bean>
+  
+  <!-- ### View all upcoming and all previous ### -->
+
+  <bean id="calendarEventListing.viewAllUpcomingService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="calendarEventListing.viewService" />
+    <property name="order" value="0" />
+    <property name="assertions">
+      <list>
+        <ref bean="resourceIsEventListing" />
+        <bean class="org.vortikal.web.service.ResourcePropertyAssertion">
+          <property name="namespace" ref="EVENT_LISTING_NAMESPACE" />
+          <property name="name" value="display-type" />
+          <property name="value" value="calendar" />
+          <property name="checkExistenceOnly" value="false" />
+        </bean>
+        <bean parent="viewParameterEquals">
+          <property name="parameterValue" value="allupcoming" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="eventListing.calendarAllUpcomingHandler" />
+    <property name="serviceNameProvider" ref="collectionListing.viewService.serviceNameProvider" />
+  </bean>
+
+  <bean id="calendarEventListing.viewAllPreviousService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="calendarEventListing.viewService" />
+    <property name="order" value="0" />
+    <property name="assertions">
+      <list>
+        <ref bean="resourceIsEventListing" />
+        <bean class="org.vortikal.web.service.ResourcePropertyAssertion">
+          <property name="namespace" ref="EVENT_LISTING_NAMESPACE" />
+          <property name="name" value="display-type" />
+          <property name="value" value="calendar" />
+          <property name="checkExistenceOnly" value="false" />
+        </bean>
+        <bean parent="viewParameterEquals">
+          <property name="parameterValue" value="allprevious" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="eventListing.calendarAllPreviousHandler" />
+    <property name="serviceNameProvider" ref="collectionListing.viewService.serviceNameProvider" />
+  </bean>
+
+  <bean id="eventListing.calendarAllPreviousHandler" class="org.vortikal.web.display.collection.event.calendar.EventCalendarAllListingController"
+    parent="eventListing.calendarHandler">
+    <property name="viewName" value="eventListingCalendarWithWidgetContextProvider.view" />
+    <property name="upcoming" value="false" />
+  </bean>
+
+  <bean id="eventListing.calendarAllUpcomingHandler" class="org.vortikal.web.display.collection.event.calendar.EventCalendarAllListingController"
+    parent="eventListing.calendarHandler">
+    <property name="viewName" value="eventListingCalendarWithWidgetContextProvider.view" />
+  </bean>
+
+  <bean id="viewParameterEquals" class="org.vortikal.web.service.RequestParameterAssertion" abstract="true">
+    <property name="parameterName" value="view" />
+  </bean>
+
+  <bean id="eventListing.specificDateEventSearchComponent" parent="eventListing.upcomingEventsSearchComponent">
+    <property name="name" value="eventListing.specificDateEventSearchComponent" />
+    <property name="queryBuilders">
+      <list>
+        <bean parent="queryStringParser">
+          <property name="queryString" value="type IN event" />
+        </bean>
+        <bean class="org.vortikal.web.search.eventlisting.DateAndSearchTypeQueryStringProcessor" parent="queryStringParser">
+          <property name="helper" ref="eventListingHelper" />
+          <property name="queryString"
+            value="(start-date &gt;= [1] AND start-date &lt; [2])
+            OR (end-date &gt;= [1] AND end-date &lt; [2])
+            OR (start-date &lt;= [1] AND end-date &gt;= [2])" />
+        </bean>
+      </list>
+    </property>
+    <property name="titleLocalizationKey">
+      <null />
+    </property>
+  </bean>
+
+  <bean id="eventListing.currentMonthSearchComponent" parent="eventListing.specificDateEventSearchComponent">
+    <property name="name" value="eventListing.currentMonthSearchComponent" />
+    <property name="queryBuilders">
+      <list>
+        <bean parent="queryStringParser">
+          <property name="queryString" value="type IN event" />
+        </bean>
+        <bean class="org.vortikal.web.search.eventlisting.CurrentMonthQueryStringProcessor" parent="queryStringParser">
+          <property name="helper" ref="eventListingHelper" />
+          <property name="queryString"
+            value="(start-date &gt;= [1] AND start-date &lt; [2])
+            OR (end-date &gt;= [1] AND end-date &lt; [2])
+            OR (start-date &lt;= [1] AND end-date &gt;= [2])" />
+        </bean>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="eventListingCalendar.view" parent="freemarkerView">
+    <property name="url" value="pages/view-collection-listing.ftl" />
+    <property name="attributesMap">
+      <map>
+        <entry key="cssURLs">
+          <list>
+            <value>${webResources.baseURL}/jquery/plugins/ui/jquery-ui-${jquery.ui.version}.custom/css/smoothness/jquery-ui-${jquery.ui.version}.custom.min.css
+            </value>
+            <value>${themeBaseURL}/view-collectionlisting.css</value>
+            <value>${themeBaseURL}/view-event-calendar-listing.css</value>
+          </list>
+        </entry>
+        <entry key="jsURLs">
+          <list>
+            <value>${webResources.baseURL}/jquery/include-jquery.js</value>
+            <value>${webResources.baseURL}/jquery/plugins/ui/jquery-ui-${jquery.ui.version}.custom/js/jquery-ui-${jquery.ui.version}.custom.min.js
+            </value>
+            <value>${webResources.baseURL}/jquery/plugins/ui/jquery-ui-${jquery.ui.version}.custom/js/jquery.ui.datepicker-no.js
+            </value>
+            <value>${webResources.baseURL}/jquery/plugins/ui/jquery-ui-${jquery.ui.version}.custom/js/jquery.ui.datepicker-nn.js
+            </value>
+            <value>${webResources.baseURL}/js/datepicker/datepicker-event-listing.js</value>
+            <value>${webResources.baseURL}/js/view-dropdown.js</value>
+          </list>
+        </entry>
+      </map>
+    </property>
+  </bean>
+
+  <bean id="eventListingCalendarWithWidgetContextProvider.view" parent="eventListingCalendar.view">
+    <property name="url" value="pages/view-collection-listing.ftl" />
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="eventCalendarContentProvider" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="eventCalendarContentProvider" class="org.vortikal.web.referencedata.provider.EventCalendarContentProvider">
+    <property name="helper" ref="eventListingHelper" />
+    <property name="currentMonthSearchComponent" ref="${override.listing.prefix}eventListing.currentMonthSearchComponent" />
+  </bean>
+
+</beans>

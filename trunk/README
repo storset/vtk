@@ -1,0 +1,46 @@
+To set up a minimal version of the Vortikal server the following steps
+are necessary:
+
+1. Download and install Maven 3
+   ( http://maven.apache.org/download.html )
+
+2. Create a database using the DDL in the
+   'src/main/sql/postgresql-schema.sql' (currently only PostgreSQL is
+   supported, but HSQLDB has also been known to work in the past). The
+   current PostgreSQL usage requires the language 'plpgsql' to be
+   installed in the database which can be installed with the following
+   command 'createlang plpgsql <database>'.
+
+3. Set up the configuration. Configuration should be placed in the
+   file ~/.vrtx.properties
+
+  indexStorageRootPath = [an empty directory for storing indices]
+  jdbcUsername = [your JDBC user]
+  jdbcPassword = [your JDBC password]
+  repositoryDataDirectory = [an empty directory for storing files]
+  repositoryTrashCanDirectory = [an empty directory for storing "deleted" files]
+  repositoryRevisionDirectory = [an empty directory for storing file revisions]
+  databaseURL = [your JDBC URL, e.g. jdbc:postgresql:my-user>]
+  xslFilePath = [the path to webdocuments]
+
+4. Run the command 'mvn jetty:run' (standing in the project
+   directory). 
+
+5. You should now be able to access the web service on
+   http:localhost:9322/ and the WebDAV service on
+   http://localhost:9321/. Log in as 'root@localhost:fish'.
+
+6. See the default configuration file
+   'src/main/resources/vortikal/beans/vortikal.properties' for
+   descriptions of the various configuration settings.
+
+7. Custom bean definitions and overriding can be placed in the file
+   ~/.vrtx-context.xml (loaded if it exists).
+
+8. Serving static resources from the file system: add an entry to the
+   ~/.vrtx-context.xml file:
+
+  <bean class="org.vortikal.web.StaticResourceLocation">
+    <property name="uriPrefix" value="/my/uri/prefix" />
+    <property name="resourceLocation" value="file:///my/file/path" />
+  </bean>

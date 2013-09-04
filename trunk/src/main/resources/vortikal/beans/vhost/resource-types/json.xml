@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+
+  <import resource="mixins/structured-resource-mixin.xml"/>
+
+  <bean id="json.resourceType" class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
+    <property name="name" value="json-resource" />
+    <property name="namespace" ref="DEFAULT_NAMESPACE" />
+    <property name="parentTypeDefinition" ref="textResourceTypeDefinition" />
+    <property name="assertions">
+      <list>
+        <ref bean="json.contentTypeAssertion" />
+      </list>
+    </property>
+    <property name="propertyTypeDefinitions">
+      <list>
+        <ref bean="jsonOverriddenGuessedCharacterEncodingPropDef" />
+        <ref bean="jsonOverriddenCharacterEncodingPropDef" />
+        <ref bean="overridingPublishDatePropDef" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="json.contentTypeAssertion" class="org.vortikal.web.service.ResourceContentTypeAssertion">
+    <property name="contentType" value="application/json" />
+  </bean>
+
+  <bean id="jsonOverriddenGuessedCharacterEncodingPropDef"
+        class="org.vortikal.repository.resourcetype.OverridingPropertyTypeDefinitionImpl">
+    <property name="overriddenPropDef" ref="guessedCharacterEncodingPropDef" />
+    <property name="propertyEvaluator" ref="jsonGuessedCharacterEncodingEvaluator" />
+  </bean>
+
+  <bean id="jsonGuessedCharacterEncodingEvaluator"
+        class="org.vortikal.repository.resourcetype.property.FixedValuePropertyEvaluator">
+    <property name="value">
+      <bean class="org.vortikal.repository.resourcetype.Value">
+        <constructor-arg type="java.lang.String"
+                         value="utf-8" />
+        <constructor-arg ref="TYPE_STRING" />
+      </bean>
+    </property>
+  </bean>
+
+  <bean id="jsonOverriddenCharacterEncodingPropDef"
+        class="org.vortikal.repository.resourcetype.OverridingPropertyTypeDefinitionImpl">
+    <property name="overriddenPropDef" ref="characterEncodingPropDef" />
+  </bean>
+
+  <bean id="json.managedObjectResourceType" class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
+    <property name="name" value="managed-json-resource" />
+    <property name="namespace" ref="DEFAULT_NAMESPACE" />
+    <property name="parentTypeDefinition" ref="json.resourceType" />
+    <property name="assertions">
+      <list>
+        <ref bean="json.validDocumentAssertion" />
+      </list>
+    </property>
+    <property name="mixinTypeDefinitions">
+      <list>
+        <ref bean="structuredResourceMixinResourceTypeDef" />
+        <ref bean="ssiMixinResourceTypeDef" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="json.objectParseableAssertion" class="org.vortikal.resourcemanagement.JSONObjectParseableAssertion" />
+  
+  <bean id="json.objectHasResourceTypeAssertion" class="org.vortikal.resourcemanagement.JSONObjectSelectAssertion">
+    <property name="expression" value="resourcetype" />
+  </bean>
+
+  <bean id="json.validDocumentAssertion" class="org.vortikal.resourcemanagement.ValidDocumentAssertion">
+    <property name="resourceManager" ref="structuredResources.resourceManager" />
+  </bean>
+
+  <bean id="json.isManagedObjectResourceType" class="org.vortikal.web.service.ResourceTypeAssertion" parent="repositoryAware">
+    <property name="resourceTypeDefinition" ref="json.managedObjectResourceType" />
+  </bean>
+
+  <!-- Override publish date prop, so we can configure a different evaluator instance
+       which defaults to no value on create.
+       Structured resources should not be published by default. -->
+  <bean id="overridingPublishDatePropDef" class="org.vortikal.repository.resourcetype.OverridingPropertyTypeDefinitionImpl">
+    <property name="overriddenPropDef" ref="publishDatePropDef" />
+    <property name="propertyEvaluator">
+      <bean id="publishDateEvaluator" class="org.vortikal.repository.resourcetype.property.PublishDateEvaluator">
+        <property name="creationTimePropDef" ref="creationTimePropDef" />
+        <property name="authorizationManager" ref="authorizationManager" />
+        <property name="removeValueOnCreate" value="true" />
+      </bean>
+    </property>
+  </bean>
+
+</beans>

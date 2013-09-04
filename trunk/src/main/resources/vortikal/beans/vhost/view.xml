@@ -1,0 +1,381 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+
+  <bean id="viewResolver" class="org.vortikal.web.decorating.MappingViewResolver">
+    <property name="views">
+      <map>
+        <entry key="httpOptions" value-ref="httpOptionsView" />
+        <entry key="collectionRedirect" value-ref="collectionRedirectView" />
+        <entry key="redirect" value-ref="redirectView" />
+        <entry key="redirectToManage" value-ref="redirectToManageView" />
+        <entry key="redirectToPermissions" value-ref="redirectToPermissionView" />
+        <entry key="redirectToPreviewCollection" value-ref="redirectToPreviewCollectionView" />
+        <entry key="displayResource" value-ref="displayResourceView" />
+        <entry key="redirectToPublish" value-ref="redirectToPublishView" />
+        <entry key="previewViewIframe" value-ref="previewViewIframeView" />
+        <entry key="previewPopup" value-ref="previewPopupView" />
+      </map>
+    </property>
+  </bean>
+
+  <bean id="decoratorViewResolver" class="org.vortikal.web.decorating.MappingViewResolver">
+    <property name="views">
+      <map>
+        <entry key="displayHTMLResource"  value-ref="displayResourceView" />
+      </map>
+    </property>
+    <property name="viewWrapper" ref="decoratingViewWrapper" />
+  </bean>
+
+
+
+  <!-- View definitions -->
+
+  <bean id="displayResourceView"
+        class="org.vortikal.web.view.DisplayResourceView">
+    <property name="supportRangeRequests" value="${displayResource.supportRangeRequests}" />
+  </bean> 
+
+  <bean id="httpOptionsView"
+        class="org.vortikal.web.view.StandardHttpView">
+    <property name="headers">
+      <map>
+        <entry key="Allow" value="GET, HEAD, POST, OPTIONS, TRACE" />
+      </map>
+    </property>
+  </bean>
+
+  <bean id="freemarkerView" abstract="true" class="org.vortikal.web.view.freemarker.FreeMarkerViewRenderer">
+    <property name="exposeSpringMacroHelpers" value="true" />
+    <property name="contentType" value="text/html;charset=utf-8" />
+    <property name="encoding" value="utf-8" />
+    <property name="debug" value="${freemarkerDebug}" />
+    <property name="repositoryID" value="${repositoryID}" />
+    <property name="resourceLocaleResolver" ref="viewServiceResourceAwareLocaleResolver" />
+    <property name="attributesMap">
+      <map>
+        <entry key="webmaster" value="${webmaster}" />
+        <entry key="debugErrors" value-ref="debugErrorsBooleanValue" />
+      </map>
+    </property>
+  </bean>
+
+  <bean id="debugErrorsBooleanValue" class="java.lang.Boolean">
+    <constructor-arg type="boolean" value="${debugErrors}" />
+  </bean>
+
+  <bean id="collectionRedirectView" 
+    class="org.vortikal.web.view.RedirectView">
+    <description>Standard HTTP redirect view</description>
+  </bean>
+
+  <bean id="redirectView" 
+    class="org.vortikal.web.view.RedirectView">
+    <description>Standard HTTP redirect view to the aboutResourceService service</description>
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="redirectToAboutProvider" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="redirectToPreviewCollectionView" 
+        class="org.vortikal.web.view.RedirectView">
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="redirectToPreviewCollectionProvider" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="redirectToManageView"
+    class="org.vortikal.web.view.RedirectView">
+    <description>Standard HTTP redirect view to the manage service</description>
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="redirectToManageProvider" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="redirectToPublishView"
+    class="org.vortikal.web.view.RedirectView">
+    <description>Standard HTTP redirect view to the publish service</description>
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="redirectToPublishProvider" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="redirectToPermissionView"
+    class="org.vortikal.web.view.RedirectView">
+    <description>Standard HTTP redirect view to the permissions service</description>
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="redirectToPermissionsProvider" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="previewViewIframeView" parent="freemarkerView">
+    <property name="url" value="pages/preview-view-iframe.ftl" />
+    <property name="attributesMap">
+      <map>
+        <entry key="visualizeBrokenLinks" value="${preview.visualizeBrokenLinks}" />
+      </map>
+    </property>
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="viewIframeCSSProvider" />
+        <ref bean="viewIframeJSProvider" />
+        <ref bean="resourceContextProvider" />
+        <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
+          <property name="service" ref="linkCheck.validationService" />
+          <property name="modelName" value="linkcheck" />
+          <property name="urlName" value="URL" />
+        </bean>
+        <bean class="org.vortikal.web.referencedata.provider.ResourcePrincipalPermissionsProvider">
+          <property name="modelName" value="permissions_ACTION_READ" />
+          <property name="permission" value="READ" />
+          <property name="anonymous" value="true" />
+        </bean>  
+      </list>
+    </property>
+  </bean>
+
+
+  <bean id="previewPopupView" parent="freemarkerView">
+    <property name="url" value="pages/preview-popup.ftl" />
+    <property name="attributesMap">
+      <map>
+        <entry key="visualizeBrokenLinks" value="${preview.visualizeBrokenLinks}" />
+      </map>
+    </property>
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="viewIframeCSSProvider" />
+        <ref bean="viewIframeJSProvider" />
+        <ref bean="resourceContextProvider" />
+        <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
+          <property name="service" ref="linkCheck.validationService" />
+          <property name="modelName" value="linkcheck" />
+          <property name="urlName" value="URL" />
+        </bean>
+        <bean class="org.vortikal.web.referencedata.provider.ResourcePrincipalPermissionsProvider">
+          <property name="modelName" value="permissions_ACTION_READ" />
+          <property name="permission" value="READ" />
+          <property name="anonymous" value="true" />
+        </bean>  
+      </list>
+    </property>
+  </bean>
+
+
+  <!-- Model data providers -->
+
+
+  <bean id="resourceDetailProvider"
+        class="org.vortikal.web.referencedata.provider.ResourceDetailProvider">
+    <property name="serviceMap">
+      <map>
+        <entry key="viewURL" value-ref="viewService" />
+        <entry key="webdavURL" value-ref="webdavService" />
+        <entry key="getSourceURL" value-ref="getSourceService" />
+        <entry key="viewImageInfoService" value-ref="viewImageInfoService" />
+        <entry key="mediaPlayerService" value-ref="mediaPlayerService" />
+        <entry key="videoPlayerService" value-ref="videoPlayerService" />
+        <entry key="audioPlayerService" value-ref="audioPlayerService" />
+      </map>
+    </property>
+  </bean>
+
+  <bean id="redirectToAboutProvider" 
+        class="org.vortikal.web.referencedata.provider.RedirectProvider">
+    <property name="redirectToService" ref="aboutResourceService" />
+  </bean>
+
+  <bean id="redirectToPreviewCollectionProvider" 
+        class="org.vortikal.web.referencedata.provider.RedirectProvider">
+    <property name="redirectToService" ref="previewCollectionListingService" />
+  </bean>
+
+  <bean id="redirectToManageProvider" 
+        class="org.vortikal.web.referencedata.provider.RedirectProvider">
+    <property name="redirectToService" ref="manageService" />
+  </bean>
+
+  <bean id="redirectToPermissionsProvider" 
+    class="org.vortikal.web.referencedata.provider.RedirectProvider">
+    <property name="redirectToService" ref="permissionsService" />
+  </bean>
+
+  <bean id="leaveAdminLinkProvider"
+        class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
+    <property name="service" ref="viewService" />
+    <property name="modelName" value="leaveAdmin" />
+  </bean>
+
+  <bean id="parentLinkProvider"
+        class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
+    <property name="service" ref="manageService" />
+    <property name="modelName" value="tabMenuLeft" />
+    <property name="linkToParent" value="true" />
+    <property name="matchAssertions" value="true" />
+  </bean>
+
+  <bean id="tabsProvider" 
+    class="org.vortikal.web.view.components.menu.DefaultListMenuProvider">
+    <constructor-arg ref="tabServicesFactory" />
+    <constructor-arg value="tabs"/>
+    <property name="matchAncestorServices" value="true" />
+  </bean>
+
+  <bean id="tabServicesFactory"
+    class="org.vortikal.context.CategoryResolvingFactoryBean">
+    <property name="category" value="tabMenu" />
+    <property name="comparator">
+      <bean class="org.vortikal.web.service.ServiceAttributeComparator">
+        <property name="attributeName" value="tabOrder" />
+      </bean>
+    </property>
+  </bean>
+
+  <bean id="resourceContextProvider" 
+        class="org.vortikal.web.referencedata.provider.ResourceContextProvider">
+    <property name="retrieveForProcessing" value="true" />
+    <property name="revisionRequestParameter" value="revision" />
+    <property name="resourceWrapperManager" ref="resourceManager" />
+  </bean>
+
+  <bean id="switchLocaleActionsProvider" 
+        class="org.vortikal.web.referencedata.provider.SwitchLocaleProvider">
+    <description>
+      Map of links for locale switching
+    </description>
+    <property name="modelName">
+      <value>switchLocaleActions</value>
+    </property>
+    <property name="locales">
+      <map>
+        <entry key="no" value-ref="setNorwegianNBLocaleService" />
+        <entry key="nn" value-ref="setNorwegianNNLocaleService" />
+        <entry key="en" value-ref="setEnglishLocaleService" />
+      </map>
+    </property>
+  </bean>
+
+  <bean id="lockUnlockActionsProvider" 
+    class="org.vortikal.web.view.components.menu.DefaultListMenuProvider">
+    <constructor-arg ref="lockActionServicesFactory" />
+    <constructor-arg value="lockUnlockActions" />
+  </bean>
+
+  <bean id="lockActionServicesFactory"
+    class="org.vortikal.context.CategoryResolvingFactoryBean" parent="ordered">
+    <property name="category" value="lockUnlockAction" />
+  </bean>
+  
+  <bean id="readPermissionsProvider" 
+    class="org.vortikal.web.view.components.menu.DefaultListMenuProvider">
+    <constructor-arg ref="readPermissionFactory" />
+    <constructor-arg value="readPermissions" />
+  </bean>
+  
+  <bean id="readPermissionFactory"
+    class="org.vortikal.context.CategoryResolvingFactoryBean" parent="ordered">
+    <property name="category" value="readPermission" />
+  </bean>
+  
+  <bean id="publishProvider" 
+    class="org.vortikal.web.view.components.menu.DefaultListMenuProvider">
+    <constructor-arg ref="publishFactory" />
+    <constructor-arg value="publish" />
+  </bean>
+  
+  <bean id="publishFactory"
+    class="org.vortikal.context.CategoryResolvingFactoryBean" parent="ordered">
+    <property name="category" value="publish" />
+  </bean>
+
+  <bean id="viewBreadCrumbProvider"
+        class="org.vortikal.web.referencedata.provider.BreadCrumbProvider">
+    <description>
+      Breadcrumb provider that generates links to the view service
+    </description>
+    <property name="service" ref="viewService"/>
+    <property name="ignoreProperty" ref="hiddenPropDef"/>
+    <property name="titleOverrideProperties">
+      <list>
+        <ref bean="titlePropDef" />
+      </list>
+    </property>
+    <property name="navigationTitlePropDef" ref="navigationTitlePropDef" />
+    <property name="skipCurrentResource" value="true" />
+    <property name="skipIndexFile" value="true" />
+  </bean>
+  
+  <bean id="viewIframeCSSProvider" class="org.vortikal.web.referencedata.provider.StaticModelDataProvider">
+    <property name="modelDataMap">
+      <map>
+        <entry key="cssURLs">
+          <list>
+            <value>${themeBaseURL}/visualize-broken-links.css</value>
+          </list>
+        </entry>
+      </map>
+    </property>
+  </bean>
+  
+  <bean id="viewIframeJSProvider" class="org.vortikal.web.referencedata.provider.StaticModelDataProvider">
+    <property name="modelDataMap">
+      <map>
+        <entry key="jsURLs">
+          <list>
+            <value>${jquery.baseURL}/jquery.min.js</value>
+            <value>${webResources.baseURL}/js/cross-doc-com-link.js</value>
+            <value>${jsBaseURL}/iframe-view.js</value>
+            <value>${jsBaseURL}/visualize-broken-links.js</value>
+          </list>
+        </entry>
+      </map>
+    </property>
+  </bean>
+
+ <!-- Config for view technologies -->
+
+   <!-- Freemarker config -->
+
+   <bean id="freemarkerConfigurer"
+         class="org.vortikal.web.view.freemarker.MultiTemplateLocationsFreeMarkerConfigurer">
+     <property name="sharedVariables">
+       <map>
+         <entry key="VRTX_DATE_VALUE_FORMATTER" value-ref="dateValueFormatter" />
+         <entry key="VRTX_HTML_VALUE_FORMATTER" value-ref="htmlFormatter" />
+         <entry key="VRTX_RESOURCE_TYPE_TREE" value-ref="resourceTypeTree" />
+         <entry key="VRTX_HTML_UTIL" value-ref="htmlUtil" />
+         <entry key="VRTX_DECORATING_NODE_FILTER" value-ref="decorating.ssiNodeFilter" />
+         <entry key="VRTX_CSRF_PREVENTION_HANDLER" value-ref="system.csrfPreventionHandler" />
+         <entry key="VRTX_LINK_CONSTRUCTOR" value-ref="linkConstructor" />
+       </map>
+     </property>
+   </bean>
+     
+   <bean id="dateValueFormatter" class="org.vortikal.repository.resourcetype.DateValueFormatter" />
+
+   <bean id="vortikalFreemarkerTemplateLocation" class="org.vortikal.web.view.freemarker.FreeMarkerTemplateLocationImpl">
+     <property name="location" value="${templateLoaderPath}" />
+   </bean>
+
+
+   <bean id="linkConstructor" class="org.vortikal.web.view.LinkConstructorImpl" />
+   
+  <bean id="romeFeedView" class="org.vortikal.web.view.RomeFeedView"  abstract="true" />
+ 
+  <bean id="redirectToPublishProvider" 
+        class="org.vortikal.web.referencedata.provider.RedirectProvider">
+    <property name="redirectToService" ref="publish.editPublishingService" />
+  </bean>
+  
+</beans>

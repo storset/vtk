@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+                      http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.1.xsd
+                      http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.1.xsd">
+
+  <!-- Transaction setup -->
+  <bean id="repository.transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+    <property name="dataSource" ref="repository.dataSource" />
+  </bean>
+
+  <!-- AOP transaction advice setup -->
+  <tx:advice id="repository.txAdvice" transaction-manager="repository.transactionManager">
+    <tx:attributes>
+      <!-- Avoid rollback for exceptions which originate purely from business logic, and before any DAO layers have been 
+        touched. Typically this will be validation exceptions, authentication exceptions, etc. This is likely not 100% bulletproof, 
+        though. Consider an exception from property evaluation during a move where some DAO operations already have been performed.. 
+        The database-parts might not be rolled back, yuck.. -->
+      <tx:method name="*"
+        no-rollback-for="org.vortikal.repository.RepositoryException,org.vortikal.security.AuthenticationException" />
+    </tx:attributes>
+  </tx:advice>
+
+  <aop:config>
+    <!-- Pointcut that applies to all methods with @Transactional annotation -->
+    <aop:pointcut id="transactionalAnnotationPointcut"
+                  expression="@annotation(org.springframework.transaction.annotation.Transactional)"/>
+
+    <!-- Apply transactions to all @Transactional methods -->
+    <aop:advisor advice-ref="repository.txAdvice" pointcut-ref="transactionalAnnotationPointcut"
+                 order="1000" />
+  </aop:config>
+
+  <!-- Main repository instance. -->
+  <bean id="repository.internal" class="org.vortikal.repository.RepositoryImpl"
+        init-method="init" destroy-method="destroy">
+    <property name="id" value="${repositoryID}" />
+    <property name="tokenManager" ref="tokenManager" />
+    <property name="authorizationManager" ref="authorizationManager" />
+    <property name="dao" ref="${repositoryBackend}" />
+    <property name="revisionStore" ref="${repository.revisionStore}" />
+    <property name="commentDAO" ref="${repository.commentDao}" />
+    <property name="contentStore" ref="${repository.contentStore}" />
+    <property name="contentRepresentationRegistry" ref="contentRepresentationRegistry" />
+    <property name="repositoryResourceHelper" ref="repositoryResourceHelper" />
+    <property name="maxResourceChildren" value="${repository.maxResourceChildren}" />
+    <property name="permanentDeleteOverdueLimitInDays" value="${repository.permanentDeleteOverdueLimitInDays}" />
+    <property name="searcher" ref="systemIndexSearcher" />
+    <property name="resourceTypeTree" ref="resourceTypeTree" />
+    <property name="tempDir" value="${repository.tempDir}" />
+    <property name="transactionManager" ref="repository.transactionManager"/>
+  </bean>
+
+  <!-- Repository lock and cache control wrapper -->
+  <bean id="repository.lockingCacheControlWrapper" class="org.vortikal.repository.LockingCacheControlRepositoryWrapper">
+    <property name="wrappedRepository" ref="repository.internal" />
+    <property name="cache" ref="repository.cache" />
+    <property name="tempDir" value="${repository.tempDir}" />
+  </bean>
+
+  <!-- Wrapper around the repository that caches retrievals in thread-local context when executing in a servlet request: -->
+  <bean id="repository" class="org.vortikal.web.RequestLocalRepository">
+    <property name="repository" ref="repository.lockingCacheControlWrapper" />
+  </bean>
+
+  <!-- Default data source setup -->
+  <bean id="repository.dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+    <property name="driverClassName" value="${databaseDriver}" />
+    <property name="maxActive" value="${maxDatabaseConnections}" />
+    <property name="url" value="${databaseURL}" />
+    <property name="username" value="${jdbcUsername}" />
+    <property name="password" value="${jdbcPassword}" />
+    <property name="defaultAutoCommit" value="false" />
+  </bean>
+
+  <!-- SqlMap setup for iBATIS Database Layer -->
+  <bean id="repository.sqlMapClient" class="org.springframework.orm.ibatis.SqlMapClientFactoryBean">
+    <property name="useTransactionAwareDataSource" value="true" />
+    <property name="configLocation" value="classpath:/org/vortikal/repository/store/db/ibatis/${sqlDialect}-sql-map-config.xml" />
+    <property name="dataSource" ref="repository.dataSource" />
+    <property name="lobHandler" ref="repository.lobHandler" />
+  </bean>
+
+  <!-- Use LobHandlerFactoryBean which creates handles based on
+       SQL dialect in use. -->
+  <bean id="repository.lobHandler" class="org.vortikal.repository.store.db.ibatis.LobHandlerFactoryBean">
+    <property name="sqlDialect" value="${sqlDialect}" />
+  </bean>
+
+  <!-- Override iBATIS SQL map statement names in this map (should generally not be necessary): -->
+  <bean id="repository.statementMappings" class="java.util.HashMap">
+    <constructor-arg>
+      <map>
+      </map>
+    </constructor-arg>
+  </bean>
+
+  <bean id="repository.sqlMapDao" class="org.vortikal.repository.store.db.SqlMapDataAccessor">
+    <property name="sqlMapClient" ref="repository.sqlMapClient" />
+    <property name="sqlMaps" ref="repository.statementMappings" />
+    <property name="optimizedAclCopySupported" value="${optimizedAclCopySupported}" />
+    <property name="resourceTypeTree" ref="resourceTypeTree" />
+    <property name="principalFactory" ref="principalFactory" />
+  </bean>
+
+  <bean id="repository.fsContentStore" class="org.vortikal.repository.store.fs.FileSystemContentStore">
+    <property name="urlEncodeFileNames" value="${urlEncodeFileNames}" />
+    <property name="repositoryDataDirectory" value="${repositoryDataDirectory}" />
+    <property name="repositoryTrashCanDirectory" value="${repositoryTrashCanDirectory}" />
+  </bean>
+
+  <bean id="repository.indexDao" class="org.vortikal.repository.store.db.SqlMapIndexDao">
+    <property name="sqlMapClient" ref="repository.sqlMapClient" />
+    <property name="sqlMaps" ref="repository.statementMappings" />
+    <property name="resourceTypeTree" ref="resourceTypeTree" />
+    <property name="principalFactory" ref="principalFactory" />
+  </bean>
+
+  <bean id="repository.changeLogDAO" class="org.vortikal.repository.store.db.SqlMapChangeLogDAO">
+    <property name="sqlMapClient" ref="repository.sqlMapClient" />
+    <property name="sqlMaps" ref="repository.statementMappings" />
+  </bean>
+
+  <bean id="repository.cache" class="org.vortikal.repository.store.Cache">
+    <property name="maxItems" value="${resourceCacheSize}" />
+    <property name="wrappedAccessor" ref="${repository.dao}" />
+  </bean>
+
+  <bean id="repository.defaultRevisionStore" class="org.vortikal.repository.store.DefaultRevisionStore">
+    <property name="sqlMapClient" ref="repository.sqlMapClient" />
+    <property name="sqlMaps" ref="repository.statementMappings" />
+    <property name="principalFactory" ref="principalFactory" />
+    <property name="revisionDirectory" value="${repositoryRevisionDirectory}" />
+    <property name="tempDir" value="${repository.tempDir}" />
+  </bean>
+
+  <bean id="repository.sqlMapCommentDao" class="org.vortikal.repository.store.db.SqlMapCommentDAO">
+    <property name="sqlMapClient" ref="repository.sqlMapClient" />
+    <property name="sqlMaps" ref="repository.statementMappings" />
+    <property name="principalFactory" ref="principalFactory" />
+  </bean>
+
+  <bean id="repositoryAware" abstract="true">
+    <description>
+      Simple parent template for repository aware controllers. Just
+      saves a couple of lines for each
+      controller having a repository
+      property, that's just about all of them
+    </description>
+    <property name="repository" ref="repository" />
+  </bean>
+
+  <bean id="repositoryResourceHelper" class="org.vortikal.repository.RepositoryResourceHelper">
+    <property name="authorizationManager" ref="authorizationManager" />
+    <property name="resourceTypeTree" ref="resourceTypeTree" />
+  </bean>
+
+  <bean id="typeLocalizationProvider" class="org.vortikal.repository.resourcetype.MessageSourceTypeLocalizationProvider">
+    <property name="messageSource" ref="repository.typeLocalizationMessageSource" />
+  </bean>
+
+  <bean id="repository.typeLocalizationMessageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
+    <property name="basename" value="vortikal.i18n.resource-types" />
+  </bean>
+
+  <bean id="contentRepresentationRegistry" class="org.vortikal.repository.content.ContentRepresentationRegistry" />
+
+  <bean id="jdomContentFactory" class="org.vortikal.repository.content.JDOMContentFactory" />
+
+  <bean id="jtidyContentFactory" class="org.vortikal.repository.content.JTidyContentFactory" />
+  <bean id="imageContentFactory" class="org.vortikal.repository.content.ImageContentFactory" />
+  <bean id="audioFileContentFactory" class="org.vortikal.repository.content.AudioFileContentFactory" />
+
+  <bean id="htmlInfoContentFactory" class="org.vortikal.repository.content.HtmlInfoContentFactory" />
+
+  <bean id="jsonObjectContentFactory" class="org.vortikal.repository.content.JSONObjectContentFactory" />
+
+  <bean id="pdfContentFactory" class="org.vortikal.repository.content.PDFContentFactory" />
+
+  <bean id="authorizationManager" class="org.vortikal.repository.AuthorizationManager">
+    <property name="principalManager" ref="principalManager" />
+    <property name="roleManager" ref="roleManager" />
+    <property name="dao" ref="${repositoryBackend}" />
+    <property name="permissionBlacklist" ref="repository.acl.blacklist" />
+    <property name="readOnlyRootPaths">
+      <bean class="org.vortikal.context.CSVSetFactoryBean">
+        <property name="csvList" value="#{'${repositoryReadOnly}'=='true' ? '/' : '${repositoryReadOnlyRoots}'}" />
+      </bean>
+    </property>
+  </bean>
+
+  <bean id="repository.archiver" class="org.vortikal.util.repository.ResourceArchiver">
+    <property name="repository" ref="repository" />
+    <property name="resourceTypeTree" ref="resourceTypeTree" />
+    <property name="tempDir" value="${repository.tempDir}" />
+    <property name="principalFactory" ref="principalFactory" />
+    <property name="legacyPrincipalMappings" ref="repository.archiver.legacyPrincipalMappings" />
+    <property name="legacyActionMappings" ref="repository.archiver.legacyActionMappings" />
+  </bean>
+
+  <bean id="repository.archiver.legacyPrincipalMappings" class="org.vortikal.context.JSONFactoryBean">
+    <constructor-arg value="${archiver.legacyPrincipalMappings}" />
+  </bean>
+
+  <bean id="repository.archiver.legacyActionMappings" class="org.vortikal.context.JSONFactoryBean">
+    <constructor-arg value="${archiver.legacyActionMappings}" />
+  </bean>
+
+  <bean id="repository.acl.blacklist" class="org.springframework.beans.factory.config.MapFactoryBean">
+    <property name="sourceMap">
+      <map key-type="org.vortikal.repository.Privilege">
+        <entry key="ALL" value-ref="repository.acl.blacklist.all" />
+        <entry key="READ_WRITE" value-ref="repository.acl.blacklist.readWrite" />
+        <entry key="READ_WRITE_UNPUBLISHED" value-ref="repository.acl.blacklist.readWrite" />
+        <entry key="ADD_COMMENT" value-ref="repository.acl.blacklist.addComment" />
+        <!-- <entry key="BIND_TEMPLATE" value-ref="repository.acl.blacklist.bindTemplate" /> -->
+        <entry key="READ" value-ref="repository.acl.blacklist.read" />
+        <entry key="READ_PROCESSED" value-ref="repository.acl.blacklist.readProcessed" />
+      </map>
+    </property>
+  </bean>
+
+  <bean id="repository.acl.blacklist.all" class="org.vortikal.context.CSVListFactoryBean">
+    <property name="csvList" value="${permissions.blacklist.all}" />
+    <property name="trim" value="true" />
+  </bean>
+
+  <bean id="repository.acl.blacklist.readWrite" class="org.vortikal.context.CSVListFactoryBean">
+    <property name="csvList" value="${permissions.blacklist.read-write}" />
+    <property name="trim" value="true" />
+  </bean>
+
+  <bean id="repository.acl.blacklist.addComment" class="org.vortikal.context.CSVListFactoryBean">
+    <property name="csvList" value="${permissions.blacklist.add-comment}" />
+    <property name="trim" value="true" />
+  </bean>
+
+  <!-- <bean id="repository.acl.blacklist.bindTemplate" class="org.vortikal.context.CSVListFactoryBean"> <property name="csvList" 
+    value="${permissions.blacklist.bind-template}" /> <property name="trim" value="true" /> </bean> -->
+
+  <bean id="repository.acl.blacklist.read" class="org.vortikal.context.CSVListFactoryBean">
+    <property name="csvList" value="${permissions.blacklist.read}" />
+    <property name="trim" value="true" />
+  </bean>
+
+  <bean id="repository.acl.blacklist.readProcessed" class="org.vortikal.context.CSVListFactoryBean">
+    <property name="csvList" value="${permissions.blacklist.read-processed}" />
+    <property name="trim" value="true" />
+  </bean>
+
+  <!-- ## Will search across multiple hosts when configured to do so ## -->
+  <bean id="multiHostSearcher" class="org.vortikal.repository.MultiHostSearcher" />
+
+</beans>

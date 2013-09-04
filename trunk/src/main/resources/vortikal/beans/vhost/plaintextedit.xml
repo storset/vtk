@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+
+  
+  <bean id="plaintextEditService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="manageService" />
+    <property name="categories">
+      <set>
+        <value>tabMenu</value>
+      </set>
+    </property>
+    <property name="attributes">
+      <map>
+        <entry key="tabOrder"><value type="java.lang.Integer">160</value></entry>
+      </map>
+    </property>
+    <property name="order" value="-100" />
+    <property name="assertions">
+      <list>
+        <ref bean="requiresWritePermissionAssertion" />
+        <ref bean="actionParameterEqualsPlaintextEdit" />
+
+        <ref bean="resourceTypeIsText" />
+        <ref bean="resourceTypeIsNotManagedXml" />
+        <ref bean="resourceTypeIsNotJSON" />
+      </list>
+    </property>
+    <property name="handler">
+      <ref bean="plaintextEditHandler" />
+    </property>
+  </bean>
+
+  <bean id="plaintextEdit.documentTooLargeService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="plaintextEditService" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.ResourceContentLengthAssertion">
+          <property name="greaterThanValue" value="${plaintextEdit.maxDocumentSize}" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="plaintextEdit.documentTooLargeHandler" />
+  </bean>
+
+  <bean id="plaintextEdit.documentTooLargeHandler" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+    <property name="viewName" value="plaintextEdit.documentTooLarge" />
+  </bean>
+
+  <bean id="plaintextXMLEditService" parent="plaintextEditService">
+    <property name="assertions">
+      <list>
+        <ref bean="requiresWritePermissionAssertion" />
+        <ref bean="actionParameterEqualsPlaintextEdit" />
+        <ref bean="resourceTypeIsManagedXml" />
+        <ref bean="plaintextEditPropertyIsSet" />
+      </list>
+    </property>
+  </bean>
+
+
+  <bean id="plaintextXMLEdit.documentTooLargeService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="plaintextXMLEditService" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.ResourceContentLengthAssertion">
+          <property name="greaterThanValue" value="${plaintextEdit.maxDocumentSize}" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="plaintextEdit.documentTooLargeHandler" />
+  </bean>
+
+  <bean id="resourceTypeIsText" class="org.vortikal.web.service.ResourceTypeAssertion" parent="repositoryAware">
+    <property name="resourceTypeDefinition" ref="textResourceTypeDefinition" />
+  </bean>
+
+  <bean id="resourceTypeIsNotJSON" class="org.vortikal.web.service.ResourceTypeAssertion" parent="repositoryAware">
+    <property name="resourceTypeDefinition" ref="json.resourceType" />
+    <property name="invert" value="true" />
+  </bean>
+
+  <bean id="resourceTypeIsNotManagedXml" parent="resourceTypeIsManagedXml">
+    <property name="invert" value="true" />
+  </bean>
+
+  <bean id="plaintextEditPropertyIsSet"
+        class="org.vortikal.web.service.ResourcePropertyAssertion">
+    <property name="namespace" ref="DEFAULT_NAMESPACE" />
+    <property name="name" value="plaintext-edit" />
+    <property name="checkExistenceOnly" value="true" />
+  </bean>
+
+  <bean id="actionParameterEqualsPlaintextEdit"
+        class="org.vortikal.web.service.RequestParameterAssertion">
+    <property name="parameterName" value="action" />
+    <property name="parameterValue" value="plaintext-edit" />
+  </bean>
+
+  <bean id="plaintextViewResolver" parent="adminViewResolver">
+    <property name="views">
+      <map>
+        <entry key="plaintextEdit" value-ref="plaintextEditView" />
+        <entry key="plaintextEdit.documentTooLarge" value-ref="plaintextEdit.documentTooLargeView" />
+      </map>
+    </property>
+  </bean>
+
+  <bean id="plaintextEdit.documentTooLargeView" parent="freemarkerView">
+    <property name="url" value="pages/plaintext-edit-too-large.ftl" />
+  </bean>
+
+  <bean id="plaintextEditView" parent="freemarkerView">
+    <property name="url" value="pages/plaintext-edit.ftl" />
+    <property name="referenceDataProviders">
+      <list>
+        <bean class="org.vortikal.web.referencedata.provider.StaticModelDataProvider">
+          <property name="modelDataMap">
+            <map>
+              <entry key="cssURLs" value-ref="plainEditCSSURLs" />
+              <entry key="md5jsURL" value="${jsBaseURL}/md5/md5.js" />
+            </map>
+          </property>
+        </bean>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="plainEditCSSURLs" class="java.util.ArrayList">
+    <constructor-arg>
+      <list>
+        <value>${jquery.baseURL}/plugins/ui/jquery-ui-${jquery.ui.version}.custom/css/smoothness/jquery-ui-${jquery.ui.version}.custom.min.css</value>
+        <value>${themeBaseURL}/default.css</value>
+      </list>
+    </constructor-arg>
+  </bean>
+
+  <!-- Plaintext edit controller -->
+  
+  <bean id="plaintextEditHandler"
+        class="org.vortikal.edit.plaintext.PlaintextEditController">
+    <property name="formView" value="plaintextEdit" />
+    <property name="successView" value="plaintextEdit" />
+    <property name="manageView" value="redirectToManage" />
+    <property name="commandName" value="plaintextEditForm" />
+    <property name="commandClass" value="org.vortikal.edit.plaintext.PlaintextEditCommand" />
+    <property name="tooltipServices" ref="plaintextEditTooltipURLServicesFactory" />
+    <property name="textResourceContentHelper" ref="textResourceContentHelper" />
+  </bean>
+
+
+  <bean id="plaintextEditTooltipURLServicesFactory"
+    class="org.vortikal.context.CategoryResolvingFactoryBean" parent="ordered">
+    <property name="category" value="plaintextEditTooltipService" />
+  </bean>
+
+  <bean id="textResourceContentHelper" class="org.vortikal.util.repository.TextResourceContentHelper">
+    <constructor-arg ref="repository" />
+  </bean>
+
+
+</beans>

@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+	
+  <bean id="manage.createArchiveService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="manageService" />
+    <property name="order" value="-997" />
+    <property name="categories">
+      <set>
+        <value>resourceMenuLeft</value>
+      </set>
+    </property>
+    <property name="attributes">
+      <map>
+        <entry key="resourceMenuLeftOrder">
+          <value type="java.lang.Integer">1001</value>
+        </entry>
+      </map>
+    </property>
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="action" />
+          <property name="parameterValue" value="create-archive" />
+        </bean>
+        <bean class="org.vortikal.web.service.PrincipalQualifiedNameAssertion">
+          <property name="username" value="root@localhost" />
+        </bean>
+        <ref bean="resourceInCollection" />
+        <ref bean="bindPermissionAssertion" />
+      </list>
+    </property>
+    <property name="handler" ref="manage.createArchiveHandler" />
+  </bean>
+  
+  <bean id="manage.createArchiveHandler"
+        class="org.vortikal.web.actions.convert.ArchiveController">
+    <property name="extension" value=".jar" />
+    <property name="parentViewOnSuccess" value="true" />
+    <property name="copyAction" ref="manage.createArchiveAction" />
+    <property name="formView" value="admin" />
+    <property name="successView" value="redirectToManage" />
+    <property name="cancelView" value="redirectToManage" />
+    <property name="commandClass"
+              value="org.vortikal.web.actions.convert.ArchiveCommand" />
+    <property name="validator">
+      <bean class="org.vortikal.web.actions.convert.CreateArchiveCommandValidator" />
+    </property>
+  </bean>
+  
+  <bean id="manage.createArchiveAction"
+        class="org.vortikal.web.actions.convert.CreateArchiveAction">
+    <property name="repository" ref="repository" />
+    <property name="archiver" ref="repository.archiver" />
+    <property name="tempDir" value="${repository.tempDir}" />
+  </bean>
+  
+  <bean id="manage.expandArchiveService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="manageService" />
+    <property name="order" value="-997" />
+    <property name="categories">
+      <set>
+        <value>resourceMenuLeft</value>
+      </set>
+    </property>
+    <property name="attributes">
+      <map>
+        <entry key="resourceMenuLeftOrder">
+          <value type="java.lang.Integer">1001</value>
+        </entry>
+      </map>
+    </property>
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="action" />
+          <property name="parameterValue" value="expand-archive" />
+        </bean>
+        <bean class="org.vortikal.web.service.PrincipalQualifiedNameAssertion">
+          <property name="username" value="root@localhost" />
+        </bean>
+        <ref bean="contentTypeMatchesJar" />
+        <ref bean="bindPermissionAssertion" />
+      </list>
+    </property>
+    <property name="handler" ref="manage.expandArchiveHandler" />
+  </bean>
+  
+  <bean id="manage.expandArchiveHandler"
+        class="org.vortikal.web.actions.convert.ArchiveController">
+    <property name="parentViewOnSuccess" value="true" />
+    <property name="copyAction" ref="manage.expandArchiveAction" />
+    <property name="formView" value="admin" />
+    <property name="successView" value="redirectToManage" />
+    <property name="cancelView" value="redirectToManage" />
+    <property name="commandClass"
+              value="org.vortikal.web.actions.convert.ArchiveCommand" />
+    <property name="validator">
+      <bean class="org.vortikal.web.actions.convert.ArchiveCommandValidator" />
+    </property>
+  </bean>
+  
+  <bean id="manage.expandArchiveAction"
+        class="org.vortikal.web.actions.convert.ExpandArchiveAction">
+    <property name="repository" ref="repository" />
+    <property name="archiver" ref="repository.archiver" />
+  </bean>
+  
+</beans>

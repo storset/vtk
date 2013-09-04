@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+
+  <bean id="imageListingResourceTypeDefinition" class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
+    <property name="name" value="image-listing" />
+    <property name="namespace" ref="IMAGE_LISTING_NAMESPACE" />
+    <property name="parentTypeDefinition" ref="collectionResourceTypeDefinition" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.ResourcePropertyAssertion">
+          <property name="namespace" ref="DEFAULT_NAMESPACE" />
+          <property name="name" value="collection-type" />
+          <property name="value" value="image-listing" />
+          <property name="checkExistenceOnly" value="false" />
+        </bean>
+      </list>
+    </property>
+    <property name="propertyTypeDefinitions">
+      <list>
+        <ref bean="imageListing.displayTypePropDef" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="imageListing.displayTypePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+    parent="abstractPropDef">
+    <property name="name" value="display-type" />
+    <property name="type" value="STRING" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
+    <property name="mandatory" value="false" />
+    <property name="valueFormatter">
+      <bean class="org.vortikal.repository.resourcetype.MessageSourceValueFormatter">
+        <constructor-arg value="vortikal.beans.vhost.resource-types.properties.image-listing-display-type" />
+        <constructor-arg value="STRING" />
+      </bean>
+    </property>
+    <property name="vocabulary">
+      <bean class="org.vortikal.repository.resourcetype.ValueVocabulary">
+        <property name="values">
+          <list>
+            <bean class="org.vortikal.repository.resourcetype.Value">
+              <constructor-arg type="java.lang.String">
+                <value>table</value>
+              </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
+            </bean>
+            <bean class="org.vortikal.repository.resourcetype.Value">
+              <constructor-arg type="java.lang.String">
+                <value>gallery</value>
+              </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
+            </bean>
+          </list>
+        </property>
+      </bean>
+    </property>
+    <property name="metadata">
+      <map>
+        <entry key="editingHints">
+          <map>
+            <entry key="radio" value="true" />
+          </map>
+        </entry>
+      </map>
+    </property>
+  </bean>
+
+  <bean id="resourceIsImageListing" class="org.vortikal.web.service.ResourceTypeAssertion" parent="repositoryAware">
+    <property name="resourceTypeDefinition" ref="imageListingResourceTypeDefinition" />
+    <property name="exactMatch" value="true" />
+  </bean>
+
+</beans>

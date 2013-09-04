@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+
+  <bean id="DEFAULT_NAMESPACE" class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
+    <property name="staticField" value="org.vortikal.repository.Namespace.DEFAULT_NAMESPACE" />
+  </bean>
+
+  <bean id="CUSTOM_NAMESPACE" class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
+    <property name="staticField" value="org.vortikal.repository.Namespace.CUSTOM_NAMESPACE" />
+  </bean>
+
+  <bean id="CONTENT_NAMESPACE" class="org.vortikal.repository.Namespace">
+    <constructor-arg value="content" />
+    <constructor-arg value="http://www.uio.no/content" />
+  </bean>
+
+  <bean id="ARTICLE_LISTING_NAMESPACE" class="org.vortikal.repository.Namespace">
+    <constructor-arg value="al" />
+    <constructor-arg value="http://www.uio.no/resource-types/article-listing" />
+  </bean>
+
+  <bean id="EVENT_LISTING_NAMESPACE" class="org.vortikal.repository.Namespace">
+    <constructor-arg value="el" />
+    <constructor-arg value="http://www.uio.no/resource-types/event-listing" />
+  </bean>
+
+  <bean id="PERSON_LISTING_NAMESPACE" class="org.vortikal.repository.Namespace">
+    <constructor-arg value="pl" />
+    <constructor-arg value="http://www.uio.no/resource-types/person-listing" />
+  </bean>
+
+  <bean id="EMPLOYEE_LISTING_NAMESPACE" class="org.vortikal.repository.Namespace">
+    <constructor-arg value="empl" />
+    <constructor-arg value="http://www.uio.no/resource-types/employee-listing" />
+  </bean>
+
+  <bean id="PROJECT_LISTING_NAMESPACE" class="org.vortikal.repository.Namespace">
+    <constructor-arg value="prl" />
+    <constructor-arg value="http://www.uio.no/resource-types/project-listing" />
+  </bean>
+
+  <bean id="RESEARCH_GROUP_LISTING_NAMESPACE" class="org.vortikal.repository.Namespace">
+    <constructor-arg value="rg" />
+    <constructor-arg value="http://www.uio.no/resource-types/research-group-listing" />
+  </bean>
+
+  <bean id="BLOG_LISTING_NAMESPACE" class="org.vortikal.repository.Namespace">
+    <constructor-arg value="bl" />
+    <constructor-arg value="http://www.uio.no/resource-types/blog-listing" />
+  </bean>
+
+  <bean id="IMAGE_LISTING_NAMESPACE" class="org.vortikal.repository.Namespace">
+    <constructor-arg value="imgl" />
+    <constructor-arg value="http://www.uio.no/resource-types/image-listing" />
+  </bean>
+
+  <bean id="AUDIO_VIDEO_LISTING_NAMESPACE" class="org.vortikal.repository.Namespace">
+    <constructor-arg value="audvideo" />
+    <constructor-arg value="http://www.uio.no/resource-types/audio-video-listing" />
+  </bean>
+
+  <bean id="MASTER_LISTING_NAMESPACE" class="org.vortikal.repository.Namespace">
+    <constructor-arg value="master" />
+    <constructor-arg value="http://www.uio.no/resource-types/master-listing" />
+  </bean>
+
+  <bean id="MESSAGE_LISTING_NAMESPACE" class="org.vortikal.repository.Namespace">
+    <constructor-arg value="message" />
+    <constructor-arg value="http://www.uio.no/resource-types/message-listing" />
+  </bean>
+
+  <bean id="PROGRAM_NAMESPACE" class="org.vortikal.repository.Namespace">
+    <constructor-arg value="program" />
+    <constructor-arg value="http://www.uio.no/resource-types/program" />
+  </bean>
+
+  <bean id="PROGRAM_OPTION_NAMESPACE" class="org.vortikal.repository.Namespace">
+    <constructor-arg value="program-option" />
+    <constructor-arg value="http://www.uio.no/resource-types/program-option" />
+  </bean>
+
+  <bean id="PROGRAM_CONTEXT_NAMESPACE" class="org.vortikal.repository.Namespace">
+    <constructor-arg value="program-context" />
+    <constructor-arg value="http://www.uio.no/resource-types/program-context" />
+  </bean>
+
+  <bean id="PROGRAM_OPTION_CONTEXT_NAMESPACE" class="org.vortikal.repository.Namespace">
+    <constructor-arg value="program-option-context" />
+    <constructor-arg value="http://www.uio.no/resource-types/program-option-context" />
+  </bean>
+
+  <bean id="COURSE_CONTEXT_NAMESPACE" class="org.vortikal.repository.Namespace">
+    <constructor-arg value="course-context" />
+    <constructor-arg value="http://www.uio.no/resource-types/course-context" />
+  </bean>
+
+  <bean id="SEMESTER_CONTEXT_NAMESPACE" class="org.vortikal.repository.Namespace">
+    <constructor-arg value="semester-context" />
+    <constructor-arg value="http://www.uio.no/resource-types/semester-context" />
+  </bean>
+
+  <bean id="COURSE_GROUP_LISTING_NAMESPACE" class="org.vortikal.repository.Namespace">
+    <constructor-arg value="course-group-listing" />
+    <constructor-arg value="http://www.uio.no/resource-types/course-group-listing" />
+  </bean>
+
+  <bean id="COURSE_DESCRIPTION_LISTING_NAMESPACE" class="org.vortikal.repository.Namespace">
+    <constructor-arg value="course-description-listing" />
+    <constructor-arg value="http://www.uio.no/resource-types/course-description-listing" />
+  </bean>
+  
+</beans>

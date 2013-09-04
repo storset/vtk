@@ -1,0 +1,115 @@
+resourcetype featured-content {
+
+  properties {
+    title : string overrides title,
+    featured-items : json (featuredStickTitle : string, featuredTitle : string, featuredDate : datetime, featuredPicture : image_ref, featuredContent : html, featuredWebaddressText : string, featuredWebaddress : resource_ref) multiple noextract
+  }
+  
+  view-components {
+
+    featured-items {
+      ##
+      [def document structured-document()]
+      [def items document.properties.featured-items]
+      [if items != null]
+        [list items item]
+          [def sticktitle item.featuredStickTitle]
+          [def thetitle item.featuredTitle]
+          [def date item.featuredDate]
+          [def picture item.featuredPicture]
+          [def content item.featuredContent]
+          [def webaddress item.featuredWebaddress]
+          [def urlText item.featuredWebaddressText]
+          [def number _index + 1]
+          
+          [if picture != null && picture != ""]
+            <div class="vrtx-featured-item vrtx-featured-item-picture" id="vrtx-featured-item-[val number]">
+          [else] 
+            <div class="vrtx-featured-item" id="vrtx-featured-item-[val number]">
+          [endif] 
+            [if picture != null && picture != ""]
+              <div class="vrtx-featured-item-picture">
+                [if webaddress != null && webaddress != ""]
+                  <a href="[val webaddress]">
+                [endif]
+                <img src="[val picture]" alt="[localized 'featuredPictureAlt'] [val thetitle]" />
+                [if webaddress != null && webaddress != ""]
+                  </a>
+                [endif]
+              </div>
+            [endif]
+            [if (sticktitle != null && sticktitle != "") || (thetitle != null && thetitle != "")
+             || (date != null && date != "") || (content != null && content != "") || (urlText != null && urlText != "")]
+              <div class="vrtx-box-content">
+                [if sticktitle != null && sticktitle != ""]
+                  <div class="vrtx-sticktitle">[val sticktitle]</div>
+                [endif]
+                [if thetitle != null && thetitle != ""]
+                  [if webaddress != null && webaddress != ""]
+                    <h2><a href="[val webaddress]">[val thetitle]</a></h2>
+                  [else]
+                    <h2>[val thetitle]</h2>
+                  [endif]
+                [endif]
+                [if date != null && date != ""]
+                  [def dateVal to-date(date)]
+                  <div class="vrtx-date">[val dateVal]</div>
+                [endif]
+                [if content != null && content != ""]
+                  <div class="vrtx-box-sub-content">[val content # unescaped]</div>
+                [endif]
+              </div>
+              [if urlText != null && urlText != ""]
+                <div class="vrtx-more">
+                  [if webaddress != null && webaddress != ""]
+                    <span><a href="[val webaddress]">[val urlText]</a></span>
+                  [else]
+                    <span>[val urlText]</span>
+                  [endif]
+                </div>
+              [endif]
+            [endif]
+          </div>
+        [endlist]
+      [endif]
+      ##
+    }
+    
+    title {
+      ##
+      [def v resource-prop(".", "title")]
+      [if v != null]
+        [val v]
+      [endif]
+      ##
+    }
+  }
+
+  view {
+    ##
+    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+    <html xmlns="http://www.w3.org/1999/xhtml">
+      <head>
+        <title>[call "comp:title"]</title>
+      </head>
+      <body id="vrtx-featured-content">
+         [call "comp:featured-items"]
+      </body>
+    </html>
+    ##
+  }
+  
+  localization {
+     title : (en : "Title", no : "Tittel", nn : "Tittel"),
+     featured-items : (en : "Featured items", no : "Fremhevede saker", nn : "Fremhevede saker"),
+     featuredStickTitle : (en : "Sticktitle", no : "Stikktittel", nn : "Stikktittel"),
+     featuredTitle : (en : "Title", no : "Tittel", nn : "Tittel"),
+     featuredDate : (en : "Date", no : "Dato", nn : "Dato"),
+     featuredPicture : (en : "Picture", no : "Bilde", nn : "Bilete"),
+     featuredPictureAlt : (en : "Picture to ", no : "Bilde til ", nn : "Bilete til "),
+     featuredContent : (en : "Content", no : "Innhold", nn : "Innhald"),
+     featuredWebaddress : (en : "Webaddress", no : "Webadresse", nn : "Webadresse"),
+     featuredWebaddressText : (en : "Link text", no : "Lenketekst", nn : "Lenketekst"),
+     header : (en : "Edit featured content", no : "Rediger fremhevet innhold", nn : "Rediger fremhevet innhald")
+  }
+}

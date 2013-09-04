@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+ 
+  <bean id="autoCompleteService" class="org.vortikal.web.service.ServiceImpl" abstract="true">
+    <property name="order" value="-999" />
+    <property name="assertions">
+      <list>
+        <ref bean="autoComplete.appResourceAssertion" />
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="action" />
+          <property name="parameterValue" value="autocomplete" />
+        </bean>
+      </list>
+    </property>
+  </bean>
+  
+  <bean id="tagsAutoCompleteService" class="org.vortikal.web.service.ServiceImpl" parent="autoCompleteService">
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="service" />
+          <property name="parameterValue" value="tags" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="tagsAutoCompleteHandler" />
+  </bean>
+  
+  <bean id="tagsAutoCompleteHandler"
+    class="org.vortikal.web.display.autocomplete.TagsAutoCompleteController">
+    <property name="dataProvider" ref="tagsAutoCompleteDataProvider" />
+    <property name="useRootContext" value="true" />
+  </bean>
+  
+  <bean id="tagsAutoCompleteDataProvider"
+    class="org.vortikal.web.display.autocomplete.RepositoryTagsDataProvider">
+    <property name="tagsReporter" ref="tagsReporter" />
+  </bean>
+  
+  <bean id="userNamesAutoCompleteService" class="org.vortikal.web.service.ServiceImpl" parent="autoCompleteService">
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="service" />
+          <property name="parameterValue" value="userNames" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="userNamesAutoCompleteHandler" />
+  </bean>
+  
+  <bean id="userNamesAutoCompleteHandler"
+    class="org.vortikal.web.display.autocomplete.PrincipalAutoCompleteController">
+    <property name="dataProvider" ref="userNamesAutoCompleteDataProvider" />
+  </bean>
+  
+  <bean id="userNamesAutoCompleteDataProvider"
+    class="org.vortikal.web.display.autocomplete.PrincipalDataProvider">
+    <property name="type" value="USER" />
+    <property name="principalFactory" ref="principalFactory" />
+    <property name="principalManager" ref="principalManager" />
+  </bean>
+  
+  <bean id="groupNamesAutoCompleteService" class="org.vortikal.web.service.ServiceImpl" parent="autoCompleteService">
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="service" />
+          <property name="parameterValue" value="groupNames" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="groupNamesAutoCompleteHandler" />
+  </bean>
+  
+  <bean id="groupNamesAutoCompleteHandler"
+    class="org.vortikal.web.display.autocomplete.PrincipalAutoCompleteController">
+    <property name="dataProvider" ref="groupNamesAutoCompleteDataProvider" />
+    <property name="invert" value="true" />
+  </bean>
+  
+  <bean id="groupNamesAutoCompleteDataProvider"
+    class="org.vortikal.web.display.autocomplete.PrincipalDataProvider">
+    <property name="type" value="GROUP" />
+    <property name="principalFactory" ref="principalFactory" />
+  </bean>
+  
+  <bean id="autoComplete.appResourceAssertion"
+    class="org.vortikal.web.service.RequestURIRegexpAssertion">
+    <property name="pattern" value="${autoComplete.appResourceURL}" />
+  </bean>
+
+</beans>

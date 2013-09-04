@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+
+  <bean id="editor.collection.manuallyApproveResourcesService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="manageService" />
+    <property name="order" value="-999" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="service" />
+          <property name="parameterValue" value="manually-approve-resources" />
+        </bean>
+        <ref bean="resourceInCollection" />
+      </list>
+    </property>
+    <property name="handler" ref="editor.collection.manuallyApproveResourcesHandler" />
+  </bean>
+
+  <bean id="editor.collection.manuallyApproveResourcesHandler" class="org.vortikal.web.service.manuallyapprove.ManuallyApproveResourcesHandler">
+    <property name="searcher" ref="editor.collection.manuallyApproveResourcesSearcher" />
+    <property name="manuallyApproveFromPropDef" ref="manuallyApproveFromPropDef" />
+    <property name="manuallyApprovedResourcesPropDef" ref="manuallyApprovedResourcesPropDef" />
+    <property name="aggregationPropDef" ref="aggregationPropDef" />
+    <property name="multiHostSearcher" ref="multiHostSearcher" />
+    <property name="cache" ref="ehCache.EDITOR_MANUALLY_APPROVE_SEARCH_CACHE" />
+  </bean>
+
+  <bean id="ehCache.EDITOR_MANUALLY_APPROVE_SEARCH_CACHE" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+    <property name="cacheManager" ref="ehCacheManager" />
+    <property name="cacheName" value="org.vortikal.EDITOR_MANUALLY_APPROVE_SEARCH_CACHE" />
+    <property name="maxElementsInMemory" value="100" />
+    <property name="maxElementsOnDisk" value="10000" />
+    <property name="eternal" value="false" />
+    <property name="overflowToDisk" value="true" />
+    <property name="timeToIdle" value="0" />
+    <property name="timeToLive" value="600" /> <!-- 10mins -->
+  </bean>
+
+  <bean id="editor.collection.manuallyApproveResourcesSearcher" class="org.vortikal.web.service.manuallyapprove.ManuallyApproveResourcesSearcher">
+    <property name="listingResourceTypeMappingPointers">
+      <map>
+        <entry key="article-listing" value="${override.listing.prefix}article" />
+        <entry key="event-listing" value="${override.listing.prefix}event" />
+        <entry key="course-description-listing" value="course-description" />
+      </map>
+    </property>
+    <property name="aggregationResolver" ref="aggregationResolver" />
+    <property name="titlePropDef" ref="titlePropDef" />
+    <property name="publishDatePropDef" ref="publishDatePropDef" />
+    <property name="creationTimePropDef" ref="creationTimePropDef" />
+    <property name="multiHostSearcher" ref="multiHostSearcher" />
+    <property name="viewService" ref="viewService" />
+    <property name="resourceTypeTree" ref="resourceTypeTree" />
+    <property name="configurablePropertySelectPointers" ref="editor.collection.configurablePropertySelectPointersList" />
+  </bean>
+
+  <bean id="editor.collection.configurablePropertySelectPointersList" class="java.util.ArrayList">
+    <constructor-arg>
+      <list>
+        <value>title</value>
+        <value>publish-date</value>
+        <value>creationTime</value>
+      </list>
+    </constructor-arg>
+  </bean>
+
+</beans>

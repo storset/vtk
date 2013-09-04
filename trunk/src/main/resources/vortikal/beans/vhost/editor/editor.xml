@@ -1,0 +1,1143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+
+  <import resource="blog-listing-editor.xml" />
+  <import resource="employee-listing-editor.xml" />
+
+  <bean id="editor.service" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="manageService" />
+    <property name="order" value="-9800" />
+    <property name="assertions">
+      <list>
+        <ref bean="editor.modeParameterAssertion" />
+        <ref bean="requiresWritePermissionAssertion" />
+        <ref bean="editor.parameterEqualsEdit" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="editor.abstractEditService" class="org.vortikal.web.service.ServiceImpl" abstract="true">
+    <property name="parent" ref="editor.service" />
+    <property name="order" value="-9800" />
+    <property name="categories">
+      <set>
+        <value>tabMenu</value>
+      </set>
+    </property>
+    <property name="attributes">
+      <map>
+        <entry key="tabOrder">
+          <value type="java.lang.Integer">152</value>
+        </entry>
+      </map>
+    </property>
+  </bean>
+
+  <bean id="editor.unstructuredXhtmlEditService" parent="editor.abstractEditService">
+    <property name="assertions">
+      <list>
+        <ref bean="resourceTypeInHtml" />
+        <ref bean="resourceTypeIsNotDocument" />
+        <ref bean="resourceTypeIsNotOoXml" />
+      </list>
+    </property>
+    <property name="handler" ref="editor.unstructuredXhtmlEditHandler" />
+  </bean>
+
+  <bean id="editor.ooXmlEditService" parent="editor.abstractEditService">
+    <property name="assertions">
+      <list>
+        <ref bean="resourceTypeIsOoXml" />
+      </list>
+    </property>
+    <property name="handler" ref="editor.ooXmlEditHandler" />
+  </bean>
+
+  <bean id="editor.collectionEditService" parent="editor.abstractEditService">
+    <property name="assertions">
+      <list>
+        <ref bean="resourceIsCollection" />
+      </list>
+    </property>
+    <property name="handler" ref="editor.collectionEditHandler" />
+  </bean>
+
+  <bean id="editor.personListingEditService" parent="editor.abstractEditService">
+    <property name="assertions">
+      <list>
+        <ref bean="resourceIsPersonListing" />
+      </list>
+    </property>
+    <property name="handler" ref="editor.personEditHandler" />
+  </bean>
+
+
+  <bean id="editor.projectListingEditService" parent="editor.abstractEditService">
+    <property name="assertions">
+      <list>
+        <ref bean="resourceIsProjectListing" />
+      </list>
+    </property>
+    <property name="handler" ref="editor.projectEditHandler" />
+  </bean>
+
+  <bean id="editor.researchGroupListingEditService" parent="editor.abstractEditService">
+    <property name="assertions">
+      <list>
+        <ref bean="resourceIsResearchGroupListing" />
+      </list>
+    </property>
+    <property name="handler" ref="editor.researchGroupEditHandler" />
+  </bean>
+
+
+  <bean id="editor.imageListingEditService" parent="editor.abstractEditService">
+    <property name="assertions">
+      <list>
+        <ref bean="resourceIsImageListing" />
+      </list>
+    </property>
+    <property name="handler" ref="editor.imageListingEditHandler" />
+  </bean>
+
+  <bean id="editor.messageListingEditService" parent="editor.abstractEditService">
+    <property name="assertions">
+      <list>
+        <ref bean="resourceIsMessageListing" />
+      </list>
+    </property>
+    <property name="handler" ref="editor.messageListingEditHandler" />
+  </bean>
+
+  <bean id="editor.imageEditService" parent="editor.abstractEditService">
+    <property name="assertions">
+      <list>
+        <ref bean="resourceTypeIsImage" />
+      </list>
+    </property>
+    <property name="handler" ref="editor.imageEditHandler" />
+  </bean>
+
+  <bean id="editor.loadImageService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="editor.imageEditService" />
+    <property name="order" value="-99999" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="edit-action" />
+          <property name="parameterValue" value="load-image" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="editor.loadImageHandler" />
+  </bean>
+
+  <bean id="editor.loadImageHandler" class="org.vortikal.web.display.file.DisplayResourceController">
+    <property name="displayProcessed" value="false" />
+    <property name="ignoreLastModified" value="true" />
+  </bean>
+
+  <bean id="editor.videoEditService" parent="editor.abstractEditService">
+    <property name="assertions">
+      <list>
+        <ref bean="contentTypeMatchesVideo" />
+      </list>
+    </property>
+    <property name="handler" ref="editor.videoEditHandler" />
+  </bean>
+
+  <bean id="editor.audioEditService" parent="editor.abstractEditService">
+    <property name="assertions">
+      <list>
+        <ref bean="contentTypeMatchesAudio" />
+      </list>
+    </property>
+    <property name="handler" ref="editor.audioEditHandler" />
+  </bean>
+
+  <bean id="editor.articleListingEditService" parent="editor.abstractEditService">
+    <property name="assertions">
+      <list>
+        <ref bean="resourceIsArticleListing" />
+      </list>
+    </property>
+    <property name="handler" ref="editor.articleListingEditHandler" />
+  </bean>
+
+  <bean id="editor.blogListingEditService" parent="editor.abstractEditService">
+    <property name="assertions">
+      <list>
+        <ref bean="resourceIsBlogListing" />
+      </list>
+    </property>
+    <property name="handler" ref="editor.blogListingEditHandler" />
+  </bean>
+
+  <bean id="editor.audioVideoListingEditService" parent="editor.abstractEditService">
+    <property name="assertions">
+      <list>
+        <ref bean="resourceIsAudioVideoListing" />
+      </list>
+    </property>
+    <property name="handler" ref="editor.audioVideoListingEditHandler" />
+  </bean>
+
+  <bean id="editor.eventListingEditService" parent="editor.abstractEditService">
+    <property name="assertions">
+      <list>
+        <ref bean="resourceIsEventListing" />
+      </list>
+    </property>
+    <property name="handler" ref="editor.eventListingEditHandler" />
+  </bean>
+
+  <bean id="editor.documentEditService" parent="editor.abstractEditService">
+    <property name="assertions">
+      <list>
+        <ref bean="resourceTypeIsDocument" />
+      </list>
+    </property>
+    <property name="handler" ref="editor.editHandler" />
+  </bean>
+
+  <bean id="editor.browseService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="order" value="-999" />
+    <property name="assertions">
+      <list>
+        <ref bean="editor.browseUriAssertion" />
+        <ref bean="editor.parameterEqualsBrowse" />
+      </list>
+    </property>
+    <property name="handler">
+      <bean class="org.vortikal.edit.fckeditor.FCKeditorConnector">
+        <property name="viewService" ref="viewService" />
+        <property name="browseViewName" value="editor.browseView" />
+        <property name="uploadStatusViewName" value="editor.uploadStatusView" />
+        <property name="downcaseNames" value="true" />
+        <property name="replaceNameChars" ref="createResource.nameReplacementMap" />
+      </bean>
+    </property>
+  </bean>
+
+  <bean id="editor.getSourceStripHeadersInterceptor" class="org.vortikal.web.interceptors.HeaderControlHandlerInterceptor">
+    <property name="includeLastModifiedHeader" value="false" />
+    <property name="includeEtagHeader" value="false" />
+  </bean>
+
+  <bean id="editor.browseUriAssertion" class="org.vortikal.web.service.RequestURIRegexpAssertion">
+    <property name="pattern" value="${editor.fck.browseURL}" />
+  </bean>
+
+  <bean id="editor.modeParameterAssertion" class="org.vortikal.web.service.RequestParameterAssertion">
+    <property name="parameterName" value="mode" />
+    <property name="parameterValue" value="editor" />
+  </bean>
+
+  <bean id="editor.parameterEqualsEdit" class="org.vortikal.web.service.RequestParameterAssertion">
+    <property name="parameterName" value="action" />
+    <property name="parameterValue" value="edit" />
+  </bean>
+
+  <bean id="editor.parameterEqualsBrowse" class="org.vortikal.web.service.RequestParameterAssertion">
+    <property name="parameterName" value="action" />
+    <property name="parameterValue" value="browse" />
+  </bean>
+
+  <bean id="editor.wrappingViewResolver" parent="adminViewResolver">
+    <property name="views">
+      <map>
+        <entry key="editor.editView" value-ref="editor.editView" />
+        <entry key="editor.collectionEditView" value-ref="editor.collectionEditView" />
+        <entry key="editor.ooXmlEditView" value-ref="editor.ooXmlEditView" />
+      </map>
+    </property>
+  </bean>
+
+  <bean id="editor.plainViewResolver" class="org.vortikal.web.decorating.MappingViewResolver">
+    <property name="views">
+      <map>
+        <entry key="editor.browseView" value-ref="editor.browseView" />
+        <entry key="editor.uploadStatusView" value-ref="editor.uploadStatusView" />
+      </map>
+    </property>
+  </bean>
+
+  <bean id="editor.editView" parent="freemarkerView">
+    <property name="url" value="editor/editor.ftl" />
+    <property name="attributesMap">
+      <map>
+        <entry key="helpURL.editor.collection.no" value="${helpURL.editor.collection.no}" />
+        <entry key="helpURL.editor.collection.nn" value="${helpURL.editor.collection.nn}" />
+        <entry key="helpURL.editor.image.no" value="${helpURL.editor.image.no}" />
+        <entry key="helpURL.editor.audio.no" value="${helpURL.editor.audio.no}" />
+        <entry key="helpURL.editor.video.no" value="${helpURL.editor.video.no}" />
+        <entry key="helpURL.editor.image.nn" value="${helpURL.editor.image.nn}" />
+        <entry key="helpURL.editor.audio.nn" value="${helpURL.editor.audio.nn}" />
+        <entry key="helpURL.editor.video.nn" value="${helpURL.editor.video.nn}" />
+        <entry key="helpURL" value="${helpURL}" />
+        <entry key="helpURL.no" value="${helpURL.no}" />
+        <entry key="helpURL.nn" value="${helpURL.nn}" />
+        <entry key="helpURL.en" value="${helpURL.en}" />
+        <entry key="helpURL.editor" value="${helpURL.editor}" />
+        <entry key="helpURL.editor.no" value="${helpURL.editor.no}" />
+        <entry key="helpURL.editor.nn" value="${helpURL.editor.nn}" />
+        <entry key="helpURL.editor.en" value="${helpURL.editor.en}" />
+      </map>
+    </property>
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="resourceContextProvider" />
+        <ref bean="manage.unlockURLProvider" />
+        <bean class="org.vortikal.web.referencedata.provider.StaticURIServiceURLProvider">
+          <property name="service" ref="staticResourceService" />
+          <property name="path" value="${editor.fck.resourcesURL}" />
+          <property name="modelName" value="fckeditorBase" />
+        </bean>
+
+        <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
+          <property name="service" ref="viewService" />
+          <property name="modelName" value="fckeditorBase" />
+          <property name="urlName" value="documentURL" />
+          <property name="staticURLProtocol" value="${webProtocolRestricted}" />
+        </bean>
+        <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
+          <property name="modelName" value="manuallyApprove" />
+          <property name="urlName" value="url" />
+          <property name="service" ref="editor.collection.manuallyApproveResourcesService" />
+        </bean>
+        <bean class="org.vortikal.web.referencedata.provider.StaticURIServiceURLProvider">
+          <property name="service" ref="editor.browseService" />
+          <property name="path" value="${editor.fck.browseURL}" />
+          <property name="modelName" value="fckBrowse" />
+        </bean>
+        <bean class="org.vortikal.web.referencedata.provider.StaticURIServiceURLProvider">
+          <property name="service" ref="staticResourceService" />
+          <property name="path" value="${yui.baseURL}" />
+          <property name="modelName" value="yuiBase" />
+        </bean>
+        <bean class="org.vortikal.web.referencedata.provider.StaticModelDataProvider">
+          <property name="modelDataMap">
+            <map>
+              <entry key="cssURLs" value-ref="editor.editCSSURLs" />
+              <entry key="fckEditorAreaCSSURL" value-ref="editor.fckEditorAreaCSSURL" />
+              <entry key="jsBaseURL" value="${jsBaseURL}" />
+              <entry key="webResources" value="${webResources.baseURL}" />
+              <entry key="jQueryUiVersion" value="${jquery.ui.version}" />
+              <entry key="aggregationLimit" value="${aggregation.limit}" />
+            </map>
+          </property>
+        </bean>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="editor.ooXmlEditView" parent="freemarkerView">
+    <property name="url" value="editor/ooxml-editor.ftl" />
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="resourceContextProvider" />
+        <bean class="org.vortikal.web.referencedata.provider.StaticModelDataProvider">
+          <property name="modelDataMap">
+            <map>
+              <entry key="jsBaseURL" value="${jsBaseURL}" />
+            </map>
+          </property>
+        </bean>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="editor.collectionEditView" parent="editor.editView" />
+
+  <bean id="editor.browseView" parent="freemarkerView">
+    <property name="url" value="ckeditor/browse.ftl" />
+    <property name="contentType" value="text/xml;charset=utf-8" />
+    <property name="referenceDataProviders">
+      <list>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="editor.uploadStatusView" parent="freemarkerView">
+    <property name="url" value="ckeditor/upload-status.ftl" />
+    <property name="contentType" value="text/html;charset=utf-8" />
+    <property name="referenceDataProviders">
+      <list>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="editor.editCSSURLs" class="java.util.ArrayList">
+    <constructor-arg>
+      <list>
+        <value>${jquery.baseURL}/plugins/ui/jquery-ui-${jquery.ui.version}.custom/css/smoothness/jquery-ui-${jquery.ui.version}.custom.min.css
+        </value>
+        <value>${themeBaseURL}/default.css</value>
+        <value>${themeBaseURL}/editor.css</value>
+      </list>
+    </constructor-arg>
+  </bean>
+
+  <bean id="editor.fckEditorAreaCSSURL" class="java.util.ArrayList">
+    <constructor-arg>
+      <list>
+        <value>${themeBaseURL}/editor-container.css</value>
+        <value>${themeBaseURL}/fck_editorarea.css</value>
+      </list>
+    </constructor-arg>
+  </bean>
+
+  <!-- Editor main controllers -->
+  <bean id="editor.unstructuredXhtmlEditHandler" class="org.vortikal.edit.editor.UnstructuredXHtmlEditController">
+    <property name="resourceManager" ref="editor.unstructuredXhtmlResourceManager" />
+    <property name="formView" value="editor.editView" />
+    <property name="successView" value="redirectToManage" />
+  </bean>
+
+  <bean id="editor.ooXmlEditHandler" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+    <property name="viewName" value="editor.ooXmlEditView" />
+  </bean>
+
+  <bean id="editor.collectionEditHandler" class="org.vortikal.edit.editor.ResourceEditController">
+    <property name="resourceManager" ref="editor.collectionResourceManager" />
+    <property name="formView" value="editor.editView" />
+    <property name="successView" value="redirectToPreviewCollection" />
+  </bean>
+
+
+  <bean id="editor.imageEditHandler" class="org.vortikal.edit.editor.ImageEditController">
+    <property name="resourceManager" ref="editor.imageResourceManager" />
+    <property name="formView" value="editor.editView" />
+    <property name="successView" value="redirectToManage" />
+    <property name="loadImageService" ref="editor.loadImageService" />
+    <property name="editImageService" ref="editor.imageEditService" />
+    <property name="saveImageHelper" ref="saveImageHelper" />
+    <property name="copyHelper" ref="copyHelperImageEdit" />
+
+    <property name="heightPropDef" ref="mediaHeightPropDef" />
+    <property name="widthPropDef" ref="mediaWidthPropDef" />
+  </bean>
+
+  <bean id="copyHelperImageEdit" class="org.vortikal.web.actions.copymove.CopyHelper">
+    <property name="copyThenStoreAction" ref="copy.imageCopyThenStoreAction" />
+  </bean>
+
+  <bean id="saveImageHelper" class="org.vortikal.web.actions.SaveImageHelper">
+    <property name="imageService">
+      <bean class="org.vortikal.graphics.ImageServiceImpl" />
+    </property>
+  </bean>
+
+  <bean id="editor.videoEditHandler" class="org.vortikal.edit.editor.ResourceEditController">
+    <property name="resourceManager" ref="editor.videoResourceManager" />
+    <property name="formView" value="editor.editView" />
+    <property name="successView" value="redirectToManage" />
+  </bean>
+
+  <bean id="editor.audioEditHandler" class="org.vortikal.edit.editor.ResourceEditController">
+    <property name="resourceManager" ref="editor.audioResourceManager" />
+    <property name="formView" value="editor.editView" />
+    <property name="successView" value="redirectToManage" />
+  </bean>
+
+  <bean id="editor.personEditHandler" class="org.vortikal.edit.editor.ResourceEditController">
+    <property name="resourceManager" ref="editor.personResourceManager" />
+    <property name="formView" value="editor.editView" />
+    <property name="successView" value="redirectToPreviewCollection" />
+  </bean>
+
+
+  <bean id="editor.projectEditHandler" class="org.vortikal.edit.editor.ResourceEditController">
+    <property name="resourceManager" ref="editor.projectResourceManager" />
+    <property name="formView" value="editor.editView" />
+    <property name="successView" value="redirectToPreviewCollection" />
+  </bean>
+
+  <bean id="editor.researchGroupEditHandler" class="org.vortikal.edit.editor.ResourceEditController">
+    <property name="resourceManager" ref="editor.researchGroupResourceManager" />
+    <property name="formView" value="editor.editView" />
+    <property name="successView" value="redirectToPreviewCollection" />
+  </bean>
+
+  <bean id="editor.imageListingEditHandler" class="org.vortikal.edit.editor.ResourceEditController">
+    <property name="resourceManager" ref="editor.imageListingResourceManager" />
+    <property name="formView" value="editor.editView" />
+    <property name="successView" value="redirectToPreviewCollection" />
+  </bean>
+
+  <bean id="editor.messageListingEditHandler" class="org.vortikal.edit.editor.ResourceEditController">
+    <property name="resourceManager" ref="editor.messageListingResourceManager" />
+    <property name="formView" value="editor.editView" />
+    <property name="successView" value="redirectToPreviewCollection" />
+  </bean>
+
+  <bean id="editor.audioVideoListingEditHandler" class="org.vortikal.edit.editor.ResourceEditController">
+    <property name="resourceManager" ref="editor.audioVideoListingResourceManager" />
+    <property name="formView" value="editor.editView" />
+    <property name="successView" value="redirectToPreviewCollection" />
+  </bean>
+
+  <bean id="editor.articleListingEditHandler" class="org.vortikal.edit.editor.ResourceEditController">
+    <property name="resourceManager" ref="editor.articleListingResourceManager" />
+    <property name="formView" value="editor.editView" />
+    <property name="successView" value="redirectToPreviewCollection" />
+  </bean>
+
+  <bean id="editor.blogListingEditHandler" class="org.vortikal.edit.editor.ResourceEditController">
+    <property name="resourceManager" ref="editor.blogListingResourceManager" />
+    <property name="formView" value="editor.editView" />
+    <property name="successView" value="redirectToPreviewCollection" />
+  </bean>
+
+  <bean id="editor.eventListingEditHandler" class="org.vortikal.edit.editor.ResourceEditController">
+    <property name="resourceManager" ref="editor.eventListingResourceManager" />
+    <property name="formView" value="editor.editView" />
+    <property name="successView" value="redirectToPreviewCollection" />
+  </bean>
+
+  <bean id="editor.editHandler" class="org.vortikal.edit.editor.ResourceEditController">
+    <property name="resourceManager" ref="resourceManager" />
+    <property name="formView" value="editor.editView" />
+    <property name="successView" value="redirectToManage" />
+    <property name="propertyEditPreprocessors">
+      <map>
+        <entry key-ref="tagsPropDef" value-ref="editor.propertyEditPreprocessors" />
+      </map>
+    </property>
+  </bean>
+
+  <bean id="editor.propertyEditPreprocessors" class="org.vortikal.edit.editor.TagsEditPreprocessor" />
+
+  <bean id="editor.unstructuredXhtmlResourceManager" class="org.vortikal.edit.editor.ResourceWrapperManager">
+    <property name="htmlParser" ref="decorating.htmlParser" />
+    <property name="htmlPropsFilter" ref="resourceManager.htmlPropsFilter" />
+    <property name="contentResourceType" ref="htmlResourceTypeDefinition" />
+    <property name="editPropertyProvider">
+      <bean class="org.vortikal.edit.editor.ConfigurableEditablePropertyProvider">
+        <property name="preContentProperties">
+          <list>
+            <ref bean="htmlTitlePropDef" />
+          </list>
+        </property>
+      </bean>
+    </property>
+  </bean>
+
+  <bean id="editor.imageResourceManager" class="org.vortikal.edit.editor.ResourceWrapperManager">
+    <property name="htmlParser" ref="decorating.htmlParser" />
+    <property name="htmlPropsFilter" ref="resourceManager.htmlPropsFilter" />
+    <property name="contentResourceType" ref="documentResourceTypeDefinition" />
+    <property name="editPropertyProvider">
+      <bean class="org.vortikal.edit.editor.ConfigurableEditablePropertyProvider">
+        <property name="preContentProperties">
+          <list>
+            <ref bean="userTitlePropDef" />
+            <ref bean="photographerPropDef" />
+            <ref bean="imageHtmlDescriptionPropDef" />
+          </list>
+        </property>
+      </bean>
+    </property>
+
+  </bean>
+
+  <bean id="editor.videoResourceManager" class="org.vortikal.edit.editor.ResourceWrapperManager">
+    <property name="htmlParser" ref="decorating.htmlParser" />
+    <property name="htmlPropsFilter" ref="resourceManager.htmlPropsFilter" />
+    <property name="contentResourceType" ref="documentResourceTypeDefinition" />
+    <property name="editPropertyProvider">
+      <bean class="org.vortikal.edit.editor.ConfigurableEditablePropertyProvider">
+        <property name="preContentProperties">
+          <list>
+            <ref bean="userTitlePropDef" />
+            <ref bean="videoHtmlDescriptionPropDef" />
+            <ref bean="posterImagePropDef" />
+          </list>
+        </property>
+      </bean>
+    </property>
+  </bean>
+
+  <bean id="editor.audioResourceManager" class="org.vortikal.edit.editor.ResourceWrapperManager">
+    <property name="htmlParser" ref="decorating.htmlParser" />
+    <property name="htmlPropsFilter" ref="resourceManager.htmlPropsFilter" />
+    <property name="contentResourceType" ref="documentResourceTypeDefinition" />
+    <property name="editPropertyProvider">
+      <bean class="org.vortikal.edit.editor.ConfigurableEditablePropertyProvider">
+        <property name="preContentProperties">
+          <list>
+            <ref bean="userTitlePropDef" />
+            <ref bean="audioHtmlDescriptionPropDef" />
+          </list>
+        </property>
+      </bean>
+    </property>
+  </bean>
+
+  <bean id="editor.collectionResourceManager" class="org.vortikal.edit.editor.ResourceWrapperManager">
+    <property name="htmlParser" ref="decorating.htmlParser" />
+    <property name="htmlPropsFilter" ref="personResourceManager.htmlPropsFilter" />
+    <property name="contentResourceType" ref="documentResourceTypeDefinition" />
+    <property name="editPropertyProvider">
+      <bean class="org.vortikal.edit.editor.ConfigurableEditablePropertyProvider">
+        <property name="preContentProperties">
+          <list>
+            <ref bean="userTitlePropDef" />
+            <ref bean="introductionPropDef" />
+            <ref bean="introductionImagePropDef" />
+            <ref bean="introductionImageCaptionPropDef" />
+            <ref bean="navigationTitlePropDef" />
+            <ref bean="importancePropDef" />
+            <ref bean="hiddenPropDef" />
+            <ref bean="pageLimitPropDef" />
+            <ref bean="collection.sortingPropDef" />
+            <ref bean="collection.recursiveListingPropDef" />
+            <ref bean="displayAggregationPropDef" />
+            <ref bean="aggregationPropDef" />
+            <ref bean="displayManuallyApprovedPropDef" />
+            <ref bean="manuallyApproveFromPropDef" />
+            <ref bean="manuallyApprovedResourcesPropDef" />
+            <ref bean="collection.hideLastModifiedPropDef" />
+            <ref bean="collection.hideIntroductionPropDef" />
+            <ref bean="collection.hideIconPropDef" />
+            <ref bean="additionalContentPropDef" />
+          </list>
+        </property>
+      </bean>
+    </property>
+  </bean>
+
+  <bean id="editor.personResourceManager" class="org.vortikal.edit.editor.ResourceWrapperManager">
+    <property name="htmlParser" ref="decorating.htmlParser" />
+    <property name="htmlPropsFilter" ref="personResourceManager.htmlPropsFilter" />
+    <property name="contentResourceType" ref="documentResourceTypeDefinition" />
+    <property name="editPropertyProvider">
+      <bean class="org.vortikal.edit.editor.ConfigurableEditablePropertyProvider">
+        <property name="preContentProperties">
+          <list>
+            <ref bean="personListing.unitAreaCodePropDef" />
+            <ref bean="userTitlePropDef" />
+            <ref bean="introductionPropDef" />
+            <ref bean="introductionImagePropDef" />
+            <ref bean="introductionImageCaptionPropDef" />
+            <ref bean="personListing.additionalContentPropDef" />
+            <ref bean="navigationTitlePropDef" />
+            <ref bean="importancePropDef" />
+            <ref bean="hiddenPropDef" />
+            <ref bean="pageLimitPropDef" />
+            <ref bean="displayAggregationPropDef" />
+            <ref bean="aggregationPropDef" />
+          </list>
+        </property>
+      </bean>
+    </property>
+  </bean>
+
+
+  <bean id="editor.projectResourceManager" class="org.vortikal.edit.editor.ResourceWrapperManager">
+    <property name="htmlParser" ref="decorating.htmlParser" />
+    <property name="htmlPropsFilter" ref="personResourceManager.htmlPropsFilter" />
+    <property name="contentResourceType" ref="documentResourceTypeDefinition" />
+    <property name="editPropertyProvider">
+      <bean class="org.vortikal.edit.editor.ConfigurableEditablePropertyProvider">
+        <property name="preContentProperties">
+          <list>
+            <ref bean="userTitlePropDef" />
+            <ref bean="introductionPropDef" />
+            <ref bean="introductionImagePropDef" />
+            <ref bean="introductionImageCaptionPropDef" />
+            <ref bean="navigationTitlePropDef" />
+            <ref bean="importancePropDef" />
+            <ref bean="hiddenPropDef" />
+            <ref bean="pageLimitPropDef" />
+            <ref bean="displayAggregationPropDef" />
+            <ref bean="aggregationPropDef" />
+            <ref bean="projectListing.displayTypePropDef" />
+            <ref bean="additionalContentPropDef" />
+          </list>
+        </property>
+      </bean>
+    </property>
+  </bean>
+
+  <bean id="editor.researchGroupResourceManager" class="org.vortikal.edit.editor.ResourceWrapperManager">
+    <property name="htmlParser" ref="decorating.htmlParser" />
+    <property name="htmlPropsFilter" ref="personResourceManager.htmlPropsFilter" />
+    <property name="contentResourceType" ref="documentResourceTypeDefinition" />
+    <property name="editPropertyProvider">
+      <bean class="org.vortikal.edit.editor.ConfigurableEditablePropertyProvider">
+        <property name="preContentProperties">
+          <list>
+            <ref bean="userTitlePropDef" />
+            <ref bean="introductionPropDef" />
+            <ref bean="introductionImagePropDef" />
+            <ref bean="introductionImageCaptionPropDef" />
+            <ref bean="navigationTitlePropDef" />
+            <ref bean="importancePropDef" />
+            <ref bean="hiddenPropDef" />
+            <ref bean="pageLimitPropDef" />
+            <ref bean="displayAggregationPropDef" />
+            <ref bean="aggregationPropDef" />
+            <ref bean="researchGroupListing.displayTypePropDef" />
+            <ref bean="additionalContentPropDef" />
+          </list>
+        </property>
+      </bean>
+    </property>
+  </bean>
+
+  <bean id="editor.imageListingResourceManager" class="org.vortikal.edit.editor.ResourceWrapperManager">
+    <property name="htmlParser" ref="decorating.htmlParser" />
+    <property name="htmlPropsFilter" ref="resourceManager.htmlPropsFilter" />
+    <property name="contentResourceType" ref="documentResourceTypeDefinition" />
+    <property name="editPropertyProvider">
+      <bean class="org.vortikal.edit.editor.ConfigurableEditablePropertyProvider">
+        <property name="preContentProperties">
+          <list>
+            <ref bean="userTitlePropDef" />
+            <ref bean="introductionPropDef" />
+            <ref bean="navigationTitlePropDef" />
+            <ref bean="importancePropDef" />
+            <ref bean="hiddenPropDef" />
+            <ref bean="pageLimitPropDef" />
+            <ref bean="displayAggregationPropDef" />
+            <ref bean="aggregationPropDef" />
+            <ref bean="collection.sortingPropDef" />
+            <ref bean="imageListing.displayTypePropDef" />
+          </list>
+        </property>
+      </bean>
+    </property>
+  </bean>
+
+  <bean id="editor.audioVideoListingResourceManager" class="org.vortikal.edit.editor.ResourceWrapperManager">
+    <property name="htmlParser" ref="decorating.htmlParser" />
+    <property name="htmlPropsFilter" ref="resourceManager.htmlPropsFilter" />
+    <property name="contentResourceType" ref="documentResourceTypeDefinition" />
+    <property name="editPropertyProvider">
+      <bean class="org.vortikal.edit.editor.ConfigurableEditablePropertyProvider">
+        <property name="preContentProperties">
+          <list>
+            <ref bean="userTitlePropDef" />
+            <ref bean="introductionPropDef" />
+            <ref bean="introductionImagePropDef" />
+            <ref bean="introductionImageCaptionPropDef" />
+            <ref bean="navigationTitlePropDef" />
+            <ref bean="importancePropDef" />
+            <ref bean="hiddenPropDef" />
+            <ref bean="pageLimitPropDef" />
+            <ref bean="displayAggregationPropDef" />
+            <ref bean="aggregationPropDef" />
+            <ref bean="collection.sortingPropDef" />
+          </list>
+        </property>
+      </bean>
+    </property>
+  </bean>
+
+  <bean id="editor.articleListingResourceManager" class="org.vortikal.edit.editor.ResourceWrapperManager">
+    <property name="htmlParser" ref="decorating.htmlParser" />
+    <property name="htmlPropsFilter" ref="personResourceManager.htmlPropsFilter" />
+    <property name="contentResourceType" ref="documentResourceTypeDefinition" />
+    <property name="editPropertyProvider">
+      <bean class="org.vortikal.edit.editor.ConfigurableEditablePropertyProvider">
+        <property name="preContentProperties">
+          <list>
+            <ref bean="userTitlePropDef" />
+            <ref bean="introductionPropDef" />
+            <ref bean="introductionImagePropDef" />
+            <ref bean="introductionImageCaptionPropDef" />
+            <ref bean="navigationTitlePropDef" />
+            <ref bean="importancePropDef" />
+            <ref bean="hiddenPropDef" />
+            <ref bean="pageLimitPropDef" />
+            <ref bean="articleListing.listingViewPropDef" />
+            <ref bean="articleListing.featuredArticlesPropDef" />
+            <ref bean="articleListing.recursiveListingPropDef" />
+            <ref bean="articleListing.recursiveListingSubfoldersPropDef" />
+            <ref bean="displayAggregationPropDef" />
+            <ref bean="aggregationPropDef" />
+            <ref bean="displayManuallyApprovedPropDef" />
+            <ref bean="manuallyApproveFromPropDef" />
+            <ref bean="manuallyApprovedResourcesPropDef" />
+            <ref bean="articleListing.sortingPropDef" />
+            <ref bean="articleListing.hidePublishedDatePropDef" />
+            <ref bean="articleListing.hideIntroductionPropDef" />
+            <ref bean="articleListing.hideIntroductionImagePropDef" />
+            <ref bean="hideNumberOfCommentsPropDef" />
+            <ref bean="additionalContentPropDef" />
+          </list>
+        </property>
+      </bean>
+    </property>
+  </bean>
+
+  <bean id="editor.messageListingResourceManager" class="org.vortikal.edit.editor.ResourceWrapperManager">
+    <property name="htmlParser" ref="decorating.htmlParser" />
+    <property name="htmlPropsFilter" ref="resourceManager.htmlPropsFilter" />
+    <property name="contentResourceType" ref="documentResourceTypeDefinition" />
+    <property name="editPropertyProvider">
+      <bean class="org.vortikal.edit.editor.ConfigurableEditablePropertyProvider">
+        <property name="preContentProperties">
+          <list>
+            <ref bean="userTitlePropDef" />
+            <ref bean="introductionPropDef" />
+            <ref bean="navigationTitlePropDef" />
+            <ref bean="importancePropDef" />
+            <ref bean="hiddenPropDef" />
+            <ref bean="pageLimitPropDef" />
+            <ref bean="displayAggregationPropDef" />
+            <ref bean="aggregationPropDef" />
+          </list>
+        </property>
+      </bean>
+    </property>
+  </bean>
+
+  <bean id="editor.blogListingResourceManager" class="org.vortikal.edit.editor.ResourceWrapperManager">
+    <property name="htmlParser" ref="decorating.htmlParser" />
+    <property name="htmlPropsFilter" ref="personResourceManager.htmlPropsFilter" />
+    <property name="contentResourceType" ref="documentResourceTypeDefinition" />
+    <property name="editPropertyProvider">
+      <bean class="org.vortikal.edit.editor.ConfigurableEditablePropertyProvider">
+        <property name="preContentProperties">
+          <list>
+            <ref bean="userTitlePropDef" />
+            <ref bean="introductionPropDef" />
+            <ref bean="introductionImagePropDef" />
+            <ref bean="introductionImageCaptionPropDef" />
+            <ref bean="navigationTitlePropDef" />
+            <ref bean="importancePropDef" />
+            <ref bean="hiddenPropDef" />
+            <ref bean="pageLimitPropDef" />
+            <ref bean="blogListing.recursiveListingPropDef" />
+            <ref bean="additionalContentPropDef" />
+          </list>
+        </property>
+      </bean>
+    </property>
+  </bean>
+
+  <bean id="editor.eventListingResourceManager" class="org.vortikal.edit.editor.ResourceWrapperManager">
+    <property name="htmlParser" ref="decorating.htmlParser" />
+    <property name="htmlPropsFilter" ref="personResourceManager.htmlPropsFilter" />
+    <property name="contentResourceType" ref="documentResourceTypeDefinition" />
+    <property name="editPropertyProvider">
+      <bean class="org.vortikal.edit.editor.ConfigurableEditablePropertyProvider">
+        <property name="preContentProperties">
+          <list>
+            <ref bean="userTitlePropDef" />
+            <ref bean="introductionPropDef" />
+            <ref bean="introductionImagePropDef" />
+            <ref bean="introductionImageCaptionPropDef" />
+            <ref bean="navigationTitlePropDef" />
+            <ref bean="importancePropDef" />
+            <ref bean="hiddenPropDef" />
+            <ref bean="pageLimitPropDef" />
+            <ref bean="eventListing.recursiveListingPropDef" />
+            <ref bean="displayAggregationPropDef" />
+            <ref bean="aggregationPropDef" />
+            <ref bean="displayManuallyApprovedPropDef" />
+            <ref bean="manuallyApproveFromPropDef" />
+            <ref bean="manuallyApprovedResourcesPropDef" />
+            <ref bean="eventListing.hideEndDatePropDef" />
+            <ref bean="eventListing.hideLocationPropDef" />
+            <ref bean="articleListing.hideIntroductionPropDef" />
+            <ref bean="articleListing.hideIntroductionImagePropDef" />
+            <ref bean="hideNumberOfCommentsPropDef" />
+            <ref bean="eventListing.displayTypePropDef" />
+            <ref bean="eventListing.eventTypeTitlePropDef" />
+            <ref bean="additionalContentPropDef" />
+          </list>
+        </property>
+      </bean>
+    </property>
+  </bean>
+
+
+  <!-- XXX: Separate HTML filter setup for person listing: -->
+
+  <bean id="personResourceManager.htmlPropsFilter" class="org.vortikal.text.html.SimpleHtmlPageFilter">
+    <property name="keepComments" value="false" />
+    <property name="illegalElements" ref="personResourceManager.htmlPropsFilter.illegalHtmlElementSet" />
+    <property name="validElements" ref="personResourceManager.htmlPropsFilter.validHtmlElementSet" />
+  </bean>
+
+  <bean id="personResourceManager.htmlPropsFilter.illegalHtmlElementSet" class="org.springframework.beans.factory.config.SetFactoryBean">
+    <property name="sourceSet">
+      <set>
+        <value>script</value>
+        <value>style</value>
+        <value>frameset</value>
+        <value>frame</value>
+        <value>iframe</value>
+        <value>object</value>
+        <value>embed</value>
+      </set>
+    </property>
+  </bean>
+
+  <bean id="personResourceManager.htmlPropsFilter.validHtmlElementSet" class="org.springframework.beans.factory.config.SetFactoryBean">
+    <property name="sourceSet">
+      <set>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="a" />
+          <property name="attributes">
+            <set>
+              <value>href</value>
+              <value>rel</value>
+              <value>class</value>
+              <value>id</value>
+              <value>target</value>
+              <value>title</value>
+            </set>
+          </property>
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="p" />
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="sub" />
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="sup" />
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="em" />
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="strong" />
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="cite" />
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="code" />
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="strike" />
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="s" />
+        </bean>
+        <!-- Additional legal elements: -->
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="b" />
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="i" />
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="h2" />
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="h3" />
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="h4" />
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="h5" />
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="h6" />
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="pre" />
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="hr" />
+          <property name="validAsEmpty" value="true" />
+        </bean>
+
+        <!-- Lists -->
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="ul" />
+          <property name="attributes">
+            <set>
+              <value>id</value>
+              <value>name</value>
+              <value>class</value>
+            </set>
+          </property>
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="ol" />
+          <property name="attributes">
+            <set>
+              <value>id</value>
+              <value>name</value>
+              <value>class</value>
+            </set>
+          </property>
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="li" />
+          <property name="attributes">
+            <set>
+              <value>id</value>
+              <value>name</value>
+              <value>class</value>
+            </set>
+          </property>
+        </bean>
+
+        <!-- Table -->
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="table" />
+          <property name="attributes">
+            <set>
+              <value>id</value>
+              <value>name</value>
+              <value>class</value>
+              <value>style</value>
+              <value>align</value>
+              <value>cellpadding</value>
+              <value>cellspacing</value>
+              <value>summery</value>
+            </set>
+          </property>
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="td" />
+          <property name="attributes">
+            <set>
+              <value>id</value>
+              <value>name</value>
+              <value>class</value>
+              <value>style</value>
+            </set>
+          </property>
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="tr" />
+          <property name="attributes">
+            <set>
+              <value>id</value>
+              <value>name</value>
+              <value>class</value>
+              <value>style</value>
+            </set>
+          </property>
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="th" />
+          <property name="attributes">
+            <set>
+              <value>id</value>
+              <value>name</value>
+              <value>class</value>
+              <value>style</value>
+              <value>scope</value>
+            </set>
+          </property>
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="caption" />
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="tbody" />
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="thead" />
+        </bean>
+
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="img" />
+          <property name="validAsEmpty" value="true" />
+          <property name="attributes">
+            <set>
+              <value>id</value>
+              <value>style</value>
+              <value>class</value>
+              <value>src</value>
+              <value>alt</value>
+            </set>
+          </property>
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="div" />
+          <property name="attributes">
+            <set>
+              <value>id</value>
+              <value>name</value>
+              <value>class</value>
+              <value>style</value>
+            </set>
+          </property>
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="span" />
+          <property name="attributes">
+            <set>
+              <value>id</value>
+              <value>name</value>
+              <value>class</value>
+              <value>style</value>
+            </set>
+          </property>
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="form" />
+          <property name="attributes">
+            <set>
+              <value>id</value>
+              <value>name</value>
+              <value>class</value>
+              <value>method</value>
+              <value>action</value>
+            </set>
+          </property>
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="fieldset" />
+          <property name="attributes">
+            <set>
+              <value>id</value>
+              <value>name</value>
+              <value>class</value>
+            </set>
+          </property>
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="label" />
+          <property name="attributes">
+            <set>
+              <value>id</value>
+              <value>name</value>
+              <value>class</value>
+            </set>
+          </property>
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="input" />
+          <property name="validAsEmpty" value="true" />
+          <property name="attributes">
+            <set>
+              <value>id</value>
+              <value>name</value>
+              <value>class</value>
+              <value>type</value>
+              <value>value</value>
+              <value>size</value>
+              <value>autocomplete</value>
+            </set>
+          </property>
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="button" />
+          <property name="attributes">
+            <set>
+              <value>id</value>
+              <value>name</value>
+              <value>type</value>
+              <value>class</value>
+            </set>
+          </property>
+        </bean>
+      </set>
+    </property>
+  </bean>
+
+</beans>

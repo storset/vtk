@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+
+  <!-- Audio resource -->
+
+  <bean id="audioResourceTypeDefinition"
+        class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
+    <property name="name" value="audio"/>
+        <property name="namespace" ref="DEFAULT_NAMESPACE" />
+    <property name="parentTypeDefinition" ref="fileResourceTypeDefinition" />
+    <property name="assertions" ref="contentTypeMatchesAudio" />
+    <property name="propertyTypeDefinitions">
+      <list>
+        <ref bean="audioTitlePropDef" />
+        <ref bean="audioAuthorPropDef" />
+        <ref bean="audioAlbumPropDef" />
+        <ref bean="audioTrackPropDef" />
+        <ref bean="audioGenrePropDef" />
+        <ref bean="audioOverriddenTitlePropDef" />
+        <ref bean="audioHtmlDescriptionPropDef" />
+      </list>
+    </property>
+    <property name="mixinTypeDefinitions">
+      <list>
+        <ref bean="mediaMixinResourceTypeDef" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="audioHtmlDescriptionPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+    <property name="name" value="audio-description" /> 
+    <property name="type" value="HTML" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
+    <property name="mandatory" value="false" />
+  </bean>
+
+  <bean id="contentTypeMatchesAudio" 
+        class="org.vortikal.web.service.ResourceContentTypeRegexpAssertion">
+    <property name="pattern" value="audio/(.+)" />
+  </bean>
+
+  <bean id="audioAuthorPropDef"
+        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+    <property name="name" value="author" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+    <property name="mandatory" value="false" />
+    <property name="propertyEvaluator" ref="audioAuthorPropertyEvaluator" />
+  </bean>
+
+  <bean id="audioAuthorPropertyEvaluator"
+        class="org.vortikal.repository.resourcetype.property.AudioFilePropertyEvaluator">
+    <property name="audioFileProperty" value="${resourcetype.audio.audiofileProperty.author}" />
+  </bean>
+
+  <bean id="audioAlbumPropDef"
+        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+    <property name="name" value="album" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+    <property name="mandatory" value="false" />
+    <property name="propertyEvaluator" ref="audioAlbumPropertyEvaluator" />
+  </bean>
+  <bean id="audioAlbumPropertyEvaluator"
+        class="org.vortikal.repository.resourcetype.property.AudioFilePropertyEvaluator">
+    <property name="audioFileProperty" value="${resourcetype.audio.audiofileProperty.album}" />
+  </bean>
+
+  <bean id="audioTitlePropDef"
+        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+    <property name="name" value="title" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+    <property name="mandatory" value="false" />
+    <property name="propertyEvaluator" ref="audioTitlePropertyEvaluator" />
+  </bean>
+
+  <bean id="audioTitlePropertyEvaluator"
+        class="org.vortikal.repository.resourcetype.property.AudioFilePropertyEvaluator">
+    <property name="audioFileProperty" value="${resourcetype.audio.audiofileProperty.title}" />
+  </bean>
+
+  <bean id="audioOverriddenTitlePropDef"
+        class="org.vortikal.repository.resourcetype.OverridingPropertyTypeDefinitionImpl">
+    <property name="overriddenPropDef" ref="titlePropDef" />
+    <property name="propertyEvaluator" ref="audioOverriddenTitlePropertyEvaluator" />
+  </bean>
+
+  <bean id="audioOverriddenTitlePropertyEvaluator" parent="titleEvaluator">
+    <property name="fallbackTitlePropDef" ref="audioTitlePropDef"/>
+  </bean>
+
+  <bean id="audioTrackPropDef"
+        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+    <property name="name" value="track" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+    <property name="mandatory" value="false" />
+    <property name="propertyEvaluator" ref="audioTrackPropertyEvaluator" />
+  </bean>
+  <bean id="audioTrackPropertyEvaluator"
+        class="org.vortikal.repository.resourcetype.property.AudioFilePropertyEvaluator">
+    <property name="audioFileProperty" value="${resourcetype.audio.audiofileProperty.track}" />
+  </bean>
+
+  <bean id="audioGenrePropDef"
+        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+    <property name="name" value="genre" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+    <property name="mandatory" value="false" />
+    <property name="propertyEvaluator" ref="audioGenrePropertyEvaluator" />
+  </bean>
+  <bean id="audioGenrePropertyEvaluator"
+        class="org.vortikal.repository.resourcetype.property.AudioFilePropertyEvaluator">
+    <property name="audioFileProperty" value="${resourcetype.audio.audiofileProperty.genre}" />
+  </bean>
+
+  <bean id="AUDIO_NAMESPACE" class="org.vortikal.repository.Namespace">
+    <constructor-arg value="audio" />
+    <constructor-arg value="audio" />
+  </bean>
+
+</beans>
+
+

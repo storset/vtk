@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+
+  <bean id="blogListingResourceTypeDefinition" class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
+    <property name="name" value="blog-listing" />
+    <property name="namespace" ref="BLOG_LISTING_NAMESPACE" />
+    <property name="parentTypeDefinition" ref="collectionResourceTypeDefinition" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.ResourcePropertyAssertion">
+          <property name="namespace" ref="DEFAULT_NAMESPACE" />
+          <property name="name" value="collection-type" />
+          <property name="value" value="blog-listing" />
+          <property name="checkExistenceOnly" value="false" />
+        </bean>
+      </list>
+    </property>
+     <property name="propertyTypeDefinitions">
+      <list>
+        <ref bean="blogListing.recursiveListingPropDef" />
+      </list>
+    </property>
+  </bean>
+  
+  <bean id="blogListing.recursiveListingPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+    parent="articleListing.recursiveListingPropDef" />
+
+  <bean id="resourceIsBlogListing" class="org.vortikal.web.service.ResourceTypeAssertion" parent="repositoryAware">
+    <property name="resourceTypeDefinition" ref="blogListingResourceTypeDefinition" />
+    <property name="exactMatch" value="true" />
+  </bean>
+  
+</beans>

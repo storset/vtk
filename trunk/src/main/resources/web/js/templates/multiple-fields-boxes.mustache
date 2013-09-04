@@ -1,0 +1,155 @@
+{{! STRING }}
+
+<div class="{{ classes }}">
+  <label for="{{ inputFieldName  }}">{{ elemTitle }}</label>
+  <div class="inputfield vrtx-textfield">
+    <input size="40" type="text" name="{{ inputFieldName }}" id="{{ inputFieldName }}" />
+  </div>
+</div>
+
+### {{! HTML }}
+
+<div class="{{ classes }}">
+  <label for="{{ inputFieldName  }}">{{ elemTitle }}</label>
+  <textarea name="{{ inputFieldName }}" id="{{ inputFieldName }}" rows="7" cols="60" ></textarea>
+</div>
+
+### {{! RADIO }}
+
+<div class="vrtx-radio">
+  <div>
+    <label>{{ elemTitle }}</label>
+  </div>
+
+  <input name="{{ inputFieldName }}" id="{{ inputFieldName }}-true" type="radio" value="true" />
+  <label for="{{ inputFieldName }}-true">True</label>
+
+  <input name="{{ inputFieldName }}" id="{{ inputFieldName }}-false" type="radio" value="false" />
+  <label for="{{ inputFieldName }}-false">False</label>
+</div>
+
+### {{! DROPDOWN }}
+
+<div class="{{ classes }}">
+  <label for="{{ inputFieldName }}">{{ elemTitle }}</label>
+  <div class="inputfield">
+    <select id="{{ inputFieldName }}" name="{{ inputFieldName }}">
+      {{#options}}
+         <option value="{{ key }}">{{ value }}</option>
+      {{/options}} 
+    </select>
+  </div>
+</div>
+
+### {{! DATE }}
+
+<div class="vrtx-string">
+  <label for="{{ inputFieldName }}">{{ elemTitle }}</label>
+  <div class="inputfield vrtx-textfield">
+    <input size="20" type="text" name="{{ inputFieldName }}" id="{{ inputFieldName }}" value="" class="date" />
+  </div>
+</div>
+
+### {{! BROWSE }}
+
+<div class="{{ clazz }}">
+  <div class="{{ clazz }}-label">
+    <label for="{{ inputFieldName }}">{{ elemTitle }}</label>
+  </div>
+  <div class="{{ clazz }}-browse">
+    <div class="vrtx-textfield">
+      <input type="text" name="{{ inputFieldName }}" id="{{ inputFieldName }}" value="" size="{{ size }}" />
+    </div>
+    <div class="vrtx-button">
+      <button type="button" onclick="browseServer('{{ inputFieldName }}', '{{ baseCKURL }}', '{{ baseFolderURL }}', '{{ basePath }}', '{{ type }}');">
+        {{ browseButtonText }}
+      </button>
+    </div>
+  </div>
+  {{{ preview }}}
+</div>
+
+### {{! BROWSE IMAGES }}
+
+<div class="{{ clazz }}">
+  <div class="{{ clazz }}-label">
+    <label for="{{ inputFieldName }}">{{ elemTitle }}</label>
+  </div>
+  <div class="{{ clazz }}-browse">
+    <div class="vrtx-textfield">
+      <input type="text" class="preview-image-inputfield" name="{{ inputFieldName }}" id="{{ inputFieldName }}" value="" size="{{ size }}" />
+    </div>
+    <div class="vrtx-button">
+      <button type="button" onclick="browseServer('{{ inputFieldName }}', '{{ baseCKURL }}', '{{ baseFolderURL }}', '{{ basePath }}', '{{ type }}');">
+        {{ browseButtonText }}
+      </button>
+    </div>
+  </div>
+  <div id="{{ inputFieldName }}.preview" class="vrtx-image-ref-preview no-preview" style="display: none">
+    <label for="{{ inputFieldName }}.preview">{{ previewTitle }}</label>
+	<span>{{ previewNoImageText }}</span>
+    <div id="{{ inputFieldName }}.preview-inner" class="vrtx-image-ref-preview-inner">
+      <img src="/vrtx/__vrtx/static-resources/themes/default/images/no-preview-image.png" alt="{{ previewNoImageText }}" />
+    </div>
+  </div>
+</div>
+
+### {{! ADD, REMOVE, MOVE UP, MOVE DOWN }}
+
+<div class="vrtx-button vrtx-{{ clazz }}-button">
+  <input type="button" value="{{ buttonText }}" />
+</div>
+
+### {{! BUTTON }}
+
+<div class="vrtx-button">
+  <button class="{{ type }}{{ name }}" type="button" id="{{ idstr }}{{ type }}">
+    {{ buttonText }}
+  </button>
+</div>
+
+### {{! ADD BUTTON }}
+
+<div id="vrtx-{{ name }}-add" class="vrtx-button">
+  <button onclick="addFormField('{{ name }}', 1, null, '{{ size }}', {{ isBrowsable }}, {{ isMovable }}, {{ isDropdown }}, false); return false;">
+    {{ buttonText }}
+  </button>
+</div>
+
+### {{! MULTIPLE INPUTFIELD AND DROPDOWN }}
+
+<div class="vrtx-multipleinputfield" id="{{ idstr }}row-{{ i }}">
+
+  {{#isDropdown}}
+    <div class="vrtx-dropdown">
+      <select id="{{ idstr }}select-{{ i }}"> </select>
+
+      {{! POPULATE DROPDOWN WITH PROP-VALUEMAP JS-ARRAY }}
+      <script type="text/javascript"><!--
+        $(function() {
+          var {{ dropdownArray }}Html = "";
+          for(var i = 0, {{ dropdownArray }}Len = {{ dropdownArray }}.length; i < {{ dropdownArray }}Len; i++) {
+            if({{ dropdownArray }}[i].key === "{{ value }}") {
+              {{ dropdownArray }}Html += "<option value='" + {{ dropdownArray }}[i].key + "' selected='selected'>" + {{ dropdownArray }}[i].value + "</option>";
+            } else {
+              {{ dropdownArray }}Html += "<option value='" + {{ dropdownArray }}[i].key + "'>" + {{ dropdownArray }}[i].value + "</option>";
+            }
+          }
+          $("select[id='{{ idstr }}select-{{ i }}']").append({{ dropdownArray }}Html);
+        });
+      // -->
+      </script>
+    </div>
+  {{/isDropdown}}
+
+  {{^isDropdown}}
+    <div class="vrtx-textfield">
+      <input value="{{ value }}" type="text" size="{{ size }}" id="{{ idstr }}{{ i }}" />
+    </div>
+  {{/isDropdown}}
+  
+  {{{ browseButton }}}
+  {{{ removeButton }}}
+  {{{ moveUpButton }}}
+  {{{ moveDownButton }}}
+</div>

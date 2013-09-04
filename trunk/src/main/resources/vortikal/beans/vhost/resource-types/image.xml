@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+
+  <!-- Image resource -->
+
+  <bean id="imageResourceTypeDefinition" class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
+    <property name="name" value="image" />
+    <property name="namespace" ref="DEFAULT_NAMESPACE" />
+    <property name="parentTypeDefinition" ref="fileResourceTypeDefinition" />
+    <property name="assertions">
+      <list>
+        <ref bean="contentTypeMatchesImage" />
+      </list>
+    </property>
+    <property name="propertyTypeDefinitions">
+      <list>
+        <ref bean="photographerPropDef" />
+        <ref bean="imageHtmlDescriptionPropDef" />
+      </list>
+    </property>
+    <property name="mixinTypeDefinitions">
+      <list>
+        <ref bean="mediaMixinResourceTypeDef" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="imageHtmlDescriptionPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+    parent="abstractPropDef">
+    <property name="name" value="image-description" />
+    <property name="type" value="HTML" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
+    <property name="mandatory" value="false" />
+  </bean>
+
+  <bean id="asWebpageAssertion" class="org.vortikal.web.service.RequestParameterAssertion">
+    <property name="parameterName" value="vrtx" />
+    <property name="parameterValue" value="view-as-webpage" />
+  </bean>
+
+  <bean id="viewImageInfoService.urlProvider" class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
+    <property name="modelName" value="previewImage" />
+    <property name="urlName" value="URL" />
+    <property name="service" ref="viewImageInfoService" />
+  </bean>
+
+  <bean id="viewImageInfoService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="viewService" />
+    <property name="order" value="0" />
+    <property name="assertions">
+      <list>
+        <ref bean="contentTypeMatchesImage" />
+        <ref bean="asWebpageAssertion" />
+      </list>
+    </property>
+    <property name="handler" ref="imageWithInfoHandler" />
+  </bean>
+
+  <bean id="imageWithInfoHandler" class="org.vortikal.web.display.image.DisplayImageWithInfoController">
+    <property name="viewName" value="imageWithInfoView" />
+    <property name="titlePropDef" ref="titlePropDef" />
+    <property name="descriptionPropDef" ref="imageHtmlDescriptionPropDef" />
+  </bean>
+
+  <bean id="imageWithInfoViewResolver" parent="decoratorViewResolver">
+    <property name="views">
+      <map>
+        <entry key="imageWithInfoView" value-ref="imageWithInfoView" />
+      </map>
+    </property>
+  </bean>
+
+  <bean name="imageWithInfoView" parent="freemarkerView">
+    <property name="url" value="pages/image-as-html.ftl" />
+    <property name="attributesMap">
+      <map>
+        <entry key="copyrightHelpURL.no" value="${copyrightHelpURL.no}" />
+        <entry key="copyrightHelpURL.nn" value="${copyrightHelpURL.nn}" />
+        <entry key="copyrightHelpURL.en" value="${copyrightHelpURL.en}" />
+        <entry key="jsURLs">
+          <list>
+            <value>${jquery.baseURL}/include-jquery.js</value>
+            <value>${webResources.baseURL}/js/cross-doc-com-link.js</value>
+            <value>${webResources.baseURL}/js/iframe-view-media.js</value>
+          </list>
+        </entry>
+      </map>
+    </property>
+  </bean>
+
+  <bean id="resourceTypeIsImage" class="org.vortikal.web.service.ResourceTypeAssertion" parent="repositoryAware">
+    <property name="resourceTypeDefinition" ref="imageResourceTypeDefinition" />
+  </bean>
+
+</beans>

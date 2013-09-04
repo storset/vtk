@@ -1,0 +1,632 @@
+<?xml version="1.0" encoding="utf-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+
+  <!-- Resource type 'collection' -->
+  <bean id="collectionResourceTypeDefinition" class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
+    <property name="name" value="collection" />
+    <property name="namespace" ref="DEFAULT_NAMESPACE" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.ResourceIsCollectionAssertion" />
+      </list>
+    </property>
+    <property name="mixinTypeDefinitions">
+      <list>
+        <ref bean="introductionMixinResourceTypeDef" />
+        <ref bean="visualProfileMixinResourceTypeDef" />
+        <ref bean="navigationMixinResourceTypeDef" />
+        <ref bean="additionalContentMixinResourceTypeDef" />
+      </list>
+    </property>
+    <property name="parentTypeDefinition" ref="resourceResourceTypeDefinition" />
+    <property name="propertyTypeDefinitions">
+      <list>
+        <ref bean="collectionTitlePropDef" />
+        <ref bean="collectionOverriddenTitlePropDef" />
+        <ref bean="navigationTitlePropDef" />
+        <ref bean="collection.typePropDef" />
+        <ref bean="collection.indexFilePropDef" />
+        <ref bean="collection.recursiveListingPropDef" />
+        <ref bean="displayAggregationPropDef" />
+        <ref bean="aggregationPropDef" />
+        <ref bean="displayManuallyApprovedPropDef" />
+        <ref bean="manuallyApproveFromPropDef" />
+        <ref bean="manuallyApprovedResourcesPropDef" />
+        <ref bean="pageLimitPropDef" />
+        <ref bean="collection.sortingPropDef" />
+        <ref bean="collection.hideLastModifiedPropDef" />
+        <ref bean="collection.hideIntroductionPropDef" />
+        <ref bean="collection.hideIconPropDef" />
+        <ref bean="hideNumberOfCommentsPropDef" />
+        <ref bean="obsoletedPropDef" />
+        <ref bean="editorialContactsPropDef" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="displayAggregationPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+    parent="abstractPropDef">
+    <property name="name" value="display-aggregation" />
+    <property name="type" value="BOOLEAN" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
+    <property name="mandatory" value="false" />
+    <property name="vocabulary">
+      <bean class="org.vortikal.repository.resourcetype.ValueVocabulary">
+        <property name="values">
+          <list>
+            <ref bean="VALUE_TRUE" />
+          </list>
+        </property>
+      </bean>
+    </property>
+    <property name="metadata">
+      <map>
+        <entry key="editingHints">
+          <map>
+            <entry key="hideLabel" value="true" />
+          </map>
+        </entry>
+      </map>
+    </property>
+  </bean>
+
+  <bean id="aggregationPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+    <property name="name" value="aggregation" />
+    <property name="type" value="STRING" />
+    <property name="multiple" value="true" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
+    <property name="metadata">
+      <map>
+        <entry key="editingHints">
+          <map>
+            <entry key="hideLabel" value="true" />
+          </map>
+        </entry>
+      </map>
+    </property>
+  </bean>
+
+  <bean id="displayManuallyApprovedPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+    parent="abstractPropDef">
+    <property name="name" value="display-manually-approved" />
+    <property name="type" value="BOOLEAN" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
+    <property name="mandatory" value="false" />
+    <property name="vocabulary">
+      <bean class="org.vortikal.repository.resourcetype.ValueVocabulary">
+        <property name="values">
+          <list>
+            <ref bean="VALUE_TRUE" />
+          </list>
+        </property>
+      </bean>
+    </property>
+    <property name="metadata">
+      <map>
+        <entry key="editingHints">
+          <map>
+            <entry key="hideLabel" value="true" />
+          </map>
+        </entry>
+      </map>
+    </property>
+  </bean>
+
+  <bean id="manuallyApproveFromPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+    parent="abstractPropDef">
+    <property name="name" value="manually-approve-from" />
+    <property name="type" value="STRING" />
+    <property name="multiple" value="true" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
+    <property name="metadata">
+      <map>
+        <entry key="editingHints">
+          <map>
+            <entry key="hideLabel" value="true" />
+          </map>
+        </entry>
+      </map>
+    </property>
+  </bean>
+
+  <!-- ### See manually-approve.js ### -->
+  <bean id="manuallyApprovedResourcesPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+    parent="abstractPropDef">
+    <property name="name" value="manually-approved-resources" />
+    <property name="type" value="STRING" />
+    <property name="multiple" value="true" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
+    <property name="metadata">
+      <map>
+        <entry key="editingHints">
+          <map>
+            <entry key="checkbox" value="true" />
+            <entry key="hideLabel" value="true" />
+          </map>
+        </entry>
+      </map>
+    </property>
+  </bean>
+
+  <bean id="aggregationResolver" class="org.vortikal.web.search.collectionlisting.CollectionListingAggregationResolver"
+    parent="repositoryAware">
+    <property name="multiHostSearcher" ref="multiHostSearcher" />
+    <property name="limit" value="${aggregation.limit}" />
+    <property name="maxRecursiveDepth" value="${aggregation.maxRecursiveDepth}" />
+    <property name="displayAggregationPropDef" ref="displayAggregationPropDef" />
+    <property name="aggregationPropDef" ref="aggregationPropDef" />
+    <property name="displayManuallyApprovedPropDef" ref="displayManuallyApprovedPropDef" />
+    <property name="manuallyApprovedPropDef" ref="manuallyApprovedResourcesPropDef" />
+    <property name="viewService" ref="viewService" />
+  </bean>
+
+  <bean id="navigationTitlePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+    <property name="contentRelation" value="PRE_CONTENT" />
+    <property name="name" value="navigationTitle" />
+    <property name="type" value="STRING" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
+  </bean>
+
+  <bean id="collection.typePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+    <property name="name" value="collection-type" />
+    <property name="type" value="STRING" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
+    <property name="mandatory" value="false" />
+    <property name="valueFormatter">
+      <bean class="org.vortikal.repository.resourcetype.MessageSourceValueFormatter">
+        <constructor-arg value="vortikal.beans.vhost.resource-types.properties.collection-type" />
+        <constructor-arg value="STRING" />
+      </bean>
+    </property>
+    <property name="vocabulary">
+      <bean class="org.vortikal.repository.resourcetype.ValueVocabulary">
+        <property name="values">
+          <list>
+            <bean class="org.vortikal.repository.resourcetype.Value">
+              <constructor-arg type="java.lang.String">
+                <value>article-listing</value>
+              </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
+            </bean>
+            <bean class="org.vortikal.repository.resourcetype.Value">
+              <constructor-arg type="java.lang.String">
+                <value>blog-listing</value>
+              </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
+            </bean>
+            <bean class="org.vortikal.repository.resourcetype.Value">
+              <constructor-arg type="java.lang.String">
+                <value>event-listing</value>
+              </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
+            </bean>
+            <bean class="org.vortikal.repository.resourcetype.Value">
+              <constructor-arg type="java.lang.String">
+                <value>person-listing</value>
+              </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
+            </bean>
+            <bean class="org.vortikal.repository.resourcetype.Value">
+              <constructor-arg type="java.lang.String">
+                <value>employee-listing</value>
+              </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
+            </bean>
+            <bean class="org.vortikal.repository.resourcetype.Value">
+              <constructor-arg type="java.lang.String">
+                <value>project-listing</value>
+              </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
+            </bean>
+            <bean class="org.vortikal.repository.resourcetype.Value">
+              <constructor-arg type="java.lang.String">
+                <value>research-group-listing</value>
+              </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
+            </bean>
+            <bean class="org.vortikal.repository.resourcetype.Value">
+              <constructor-arg type="java.lang.String">
+                <value>image-listing</value>
+              </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
+            </bean>
+            <bean class="org.vortikal.repository.resourcetype.Value">
+              <constructor-arg type="java.lang.String">
+                <value>message-listing</value>
+              </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
+            </bean>
+            <bean class="org.vortikal.repository.resourcetype.Value">
+              <constructor-arg type="java.lang.String">
+                <value>course-context</value>
+              </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
+            </bean>
+            <bean class="org.vortikal.repository.resourcetype.Value">
+              <constructor-arg type="java.lang.String">
+                <value>course-group-listing</value>
+              </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
+            </bean>
+            <bean class="org.vortikal.repository.resourcetype.Value">
+              <constructor-arg type="java.lang.String">
+                <value>course-description-listing</value>
+              </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
+            </bean>
+            <bean class="org.vortikal.repository.resourcetype.Value">
+              <constructor-arg type="java.lang.String">
+                <value>semester-context</value>
+              </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
+            </bean>
+            <bean class="org.vortikal.repository.resourcetype.Value">
+              <constructor-arg type="java.lang.String">
+                <value>audio-video-listing</value>
+              </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
+            </bean>
+            <bean class="org.vortikal.repository.resourcetype.Value">
+              <constructor-arg type="java.lang.String">
+                <value>master-listing</value>
+              </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
+            </bean>
+            <bean class="org.vortikal.repository.resourcetype.Value">
+              <constructor-arg type="java.lang.String">
+                <value>program-listing</value>
+              </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
+            </bean>
+            <bean class="org.vortikal.repository.resourcetype.Value">
+              <constructor-arg type="java.lang.String">
+                <value>program-option-listing</value>
+              </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
+            </bean>
+            <bean class="org.vortikal.repository.resourcetype.Value">
+              <constructor-arg type="java.lang.String">
+                <value>program-context</value>
+              </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
+            </bean>
+            <bean class="org.vortikal.repository.resourcetype.Value">
+              <constructor-arg type="java.lang.String">
+                <value>program-option-context</value>
+              </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
+            </bean>
+          </list>
+        </property>
+      </bean>
+    </property>
+  </bean>
+
+  <bean id="collection.indexFilePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+    parent="abstractPropDef">
+    <property name="name" value="indexFile" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+    <property name="mandatory" value="false" />
+    <property name="propertyEvaluator" ref="collection.indexFilePropertyEvaluator" />
+  </bean>
+
+  <bean id="collectionTitlePropDef" class="org.vortikal.repository.resourcetype.OverridablePropertyTypeDefinitionImpl"
+    parent="abstractPropDef">
+    <property name="name" value="collectionTitle" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+    <property name="mandatory" value="false" />
+    <property name="propertyEvaluator" ref="collectionTitlePropertyEvaluator" />
+  </bean>
+
+  <bean id="collection.indexFilePropertyEvaluator" class="org.vortikal.repository.resourcetype.property.IndexFileEvaluator">
+    <property name="indexFiles" ref="collection.indexFiles" />
+  </bean>
+
+  <bean id="collection.indexFiles" class="org.vortikal.context.CSVListFactoryBean">
+    <property name="csvList" value="${indexFiles}" />
+    <property name="trim" value="true" />
+  </bean>
+
+  <bean id="collectionTitlePropertyEvaluator" parent="titleEvaluator">
+    <property name="capitalizeResourceNames" value="true" />
+  </bean>
+
+  <bean id="collectionOverriddenTitlePropDef" class="org.vortikal.repository.resourcetype.OverridingPropertyTypeDefinitionImpl">
+    <property name="overriddenPropDef" ref="titlePropDef" />
+    <property name="propertyEvaluator" ref="collectionOverriddenTitlePropertyEvaluator" />
+  </bean>
+
+  <bean id="collectionOverriddenTitlePropertyEvaluator" parent="titleEvaluator">
+    <property name="fallbackTitlePropDef" ref="collectionTitlePropDef" />
+  </bean>
+
+  <bean id="collection.recursiveListingPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+    parent="abstractPropDef">
+    <property name="name" value="recursive-listing" />
+    <property name="type" value="BOOLEAN" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
+    <property name="mandatory" value="false" />
+    <property name="valueFormatter">
+      <bean class="org.vortikal.repository.resourcetype.MessageSourceValueFormatter">
+        <constructor-arg value="vortikal.beans.vhost.resource-types.properties.collection-listing-recursive-listing" />
+        <constructor-arg value="BOOLEAN" />
+      </bean>
+    </property>
+    <property name="vocabulary">
+      <bean class="org.vortikal.repository.resourcetype.ValueVocabulary">
+        <property name="values">
+          <list>
+            <ref bean="VALUE_FALSE" />
+          </list>
+        </property>
+      </bean>
+    </property>
+    <property name="metadata">
+      <map>
+        <entry key="editingHints">
+          <map>
+            <entry key="radio" value="true" />
+          </map>
+        </entry>
+      </map>
+    </property>
+  </bean>
+
+  <bean id="pageLimitPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+    <property name="name" value="page-limit" />
+    <property name="type" value="INT" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
+    <property name="mandatory" value="false" />
+    <property name="valueFormatter">
+      <bean class="org.vortikal.repository.resourcetype.MessageSourceValueFormatter">
+        <constructor-arg value="vortikal.beans.vhost.resource-types.properties.collection-page" />
+        <constructor-arg value="INT" />
+      </bean>
+    </property>
+    <property name="vocabulary">
+      <bean class="org.vortikal.repository.resourcetype.ValueVocabulary">
+        <property name="values">
+          <list>
+            <bean class="org.vortikal.repository.resourcetype.Value">
+              <constructor-arg type="int">
+                <value>0</value>
+              </constructor-arg>
+            </bean>
+            <bean class="org.vortikal.repository.resourcetype.Value">
+              <constructor-arg type="int">
+                <value>5</value>
+              </constructor-arg>
+            </bean>
+            <bean class="org.vortikal.repository.resourcetype.Value">
+              <constructor-arg type="int">
+                <value>10</value>
+              </constructor-arg>
+            </bean>
+            <bean class="org.vortikal.repository.resourcetype.Value">
+              <constructor-arg type="int">
+                <value>15</value>
+              </constructor-arg>
+            </bean>
+            <bean class="org.vortikal.repository.resourcetype.Value">
+              <constructor-arg type="int">
+                <value>20</value>
+              </constructor-arg>
+            </bean>
+            <bean class="org.vortikal.repository.resourcetype.Value">
+              <constructor-arg type="int">
+                <value>50</value>
+              </constructor-arg>
+            </bean>
+            <bean class="org.vortikal.repository.resourcetype.Value">
+              <constructor-arg type="int">
+                <value>100</value>
+              </constructor-arg>
+            </bean>
+            <bean class="org.vortikal.repository.resourcetype.Value">
+              <constructor-arg type="int">
+                <value>500</value>
+              </constructor-arg>
+            </bean>
+          </list>
+        </property>
+      </bean>
+    </property>
+  </bean>
+
+  <bean id="collection.sortingPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+    parent="abstractPropDef">
+    <property name="name" value="sorting" />
+    <property name="type" value="STRING" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
+    <property name="mandatory" value="false" />
+    <property name="valueFormatter">
+      <bean class="org.vortikal.repository.resourcetype.MessageSourceValueFormatter">
+        <constructor-arg value="vortikal.beans.vhost.resource-types.properties.collection-sorting" />
+        <constructor-arg value="STRING" />
+      </bean>
+    </property>
+    <property name="vocabulary">
+      <bean class="org.vortikal.repository.resourcetype.ValueVocabulary">
+        <property name="values">
+          <list>
+            <bean class="org.vortikal.repository.resourcetype.Value">
+              <constructor-arg type="java.lang.String">
+                <value>lastModified</value>
+              </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
+            </bean>
+            <bean class="org.vortikal.repository.resourcetype.Value">
+              <constructor-arg type="java.lang.String">
+                <value>name</value>
+              </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
+            </bean>
+          </list>
+        </property>
+      </bean>
+    </property>
+    <property name="metadata">
+      <map>
+        <entry key="editingHints">
+          <map>
+            <entry key="radio" value="true" />
+          </map>
+        </entry>
+      </map>
+    </property>
+  </bean>
+
+  <bean id="collection.hideLastModifiedPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+    parent="abstractPropDef">
+    <property name="name" value="hide-last-modified" />
+    <property name="type" value="BOOLEAN" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
+    <property name="mandatory" value="false" />
+    <property name="vocabulary">
+      <bean class="org.vortikal.repository.resourcetype.ValueVocabulary">
+        <property name="values">
+          <list>
+            <ref bean="VALUE_TRUE" />
+          </list>
+        </property>
+      </bean>
+    </property>
+    <property name="metadata">
+      <map>
+        <entry key="editingHints">
+          <map>
+            <entry key="hideLabel" value="true" />
+          </map>
+        </entry>
+      </map>
+    </property>
+  </bean>
+
+  <bean id="collection.hideIntroductionPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+    parent="abstractPropDef">
+    <property name="name" value="hide-introduction" />
+    <property name="type" value="BOOLEAN" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
+    <property name="mandatory" value="false" />
+    <property name="vocabulary">
+      <bean class="org.vortikal.repository.resourcetype.ValueVocabulary">
+        <property name="values">
+          <list>
+            <ref bean="VALUE_TRUE" />
+          </list>
+        </property>
+      </bean>
+    </property>
+    <property name="metadata">
+      <map>
+        <entry key="editingHints">
+          <map>
+            <entry key="hideLabel" value="true" />
+          </map>
+        </entry>
+      </map>
+    </property>
+  </bean>
+
+  <bean id="collection.hideIconPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+    parent="abstractPropDef">
+    <property name="name" value="hide-icon" />
+    <property name="type" value="BOOLEAN" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
+    <property name="mandatory" value="false" />
+    <property name="vocabulary">
+      <bean class="org.vortikal.repository.resourcetype.ValueVocabulary">
+        <property name="values">
+          <list>
+            <ref bean="VALUE_TRUE" />
+          </list>
+        </property>
+      </bean>
+    </property>
+    <property name="metadata">
+      <map>
+        <entry key="editingHints">
+          <map>
+            <entry key="hideLabel" value="true" />
+          </map>
+        </entry>
+      </map>
+    </property>
+  </bean>
+
+  <bean id="hideNumberOfCommentsPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+    parent="abstractPropDef">
+    <property name="name" value="hide-number-of-comments" />
+    <property name="type" value="BOOLEAN" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
+    <property name="mandatory" value="false" />
+    <property name="vocabulary">
+      <bean class="org.vortikal.repository.resourcetype.ValueVocabulary">
+        <property name="values">
+          <list>
+            <ref bean="VALUE_TRUE" />
+          </list>
+        </property>
+      </bean>
+    </property>
+    <property name="metadata">
+      <map>
+        <entry key="editingHints">
+          <map>
+            <entry key="hideLabel" value="true" />
+          </map>
+        </entry>
+      </map>
+    </property>
+  </bean>
+
+  <bean id="obsoletedPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+    <property name="namespace" ref="DEFAULT_NAMESPACE" />
+    <property name="name" value="obsoleted" />
+    <property name="inheritable" value="true" />
+    <property name="type" value="BOOLEAN" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_ADMIN" />
+    <property name="mandatory" value="false" />
+    <property name="vocabulary">
+      <bean class="org.vortikal.repository.resourcetype.ValueVocabulary">
+        <property name="messageSourceBaseName" value="vortikal.beans.vhost.resource-types.mixins.properties.plaintext-edit" />
+        <property name="type" value="BOOLEAN" />
+        <property name="values">
+          <list>
+            <bean class="org.vortikal.repository.resourcetype.Value">
+              <constructor-arg type="boolean">
+                <value>true</value>
+              </constructor-arg>
+            </bean>
+          </list>
+        </property>
+      </bean>
+    </property>
+  </bean>
+
+  <bean id="editorialContactsPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+    parent="abstractPropDef">
+    <property name="namespace" ref="DEFAULT_NAMESPACE" />
+    <property name="name" value="editorial-contacts" />
+    <property name="inheritable" value="true" />
+    <property name="multiple" value="true" />
+    <property name="type" value="STRING" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_ADMIN" />
+  </bean>
+
+  <bean id="resourceInCollection" class="org.vortikal.web.service.ResourceTypeAssertion" parent="repositoryAware">
+    <property name="resourceTypeDefinition" ref="collectionResourceTypeDefinition" />
+  </bean>
+
+  <bean id="resourceNotInCollection" class="org.vortikal.web.service.ResourceTypeAssertion" parent="repositoryAware">
+    <property name="resourceTypeDefinition" ref="collectionResourceTypeDefinition" />
+    <property name="invert" value="true" />
+  </bean>
+
+  <bean id="resourceIsCollection" class="org.vortikal.web.service.ResourceTypeAssertion" parent="repositoryAware">
+    <property name="resourceTypeDefinition" ref="collectionResourceTypeDefinition" />
+    <property name="exactMatch" value="true" />
+  </bean>
+
+</beans>

@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="utf-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+
+  <import resource="person-tags.xml" />
+  <import resource="event-tags.xml" />
+
+  <bean id="tags.viewService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="collectionListing.viewService" />
+    <property name="order" value="-2" />
+    <property name="assertions">
+      <list>
+        <ref bean="tags.tagsParameterAssertion" />
+      </list>
+    </property>
+    <property name="handler" ref="tags.handler" />
+    <property name="attributes">
+      <map>
+        <entry key="decorating.servicePredicateName" value="tags" />
+      </map>
+    </property>
+  </bean>
+
+  <bean id="tags.viewService.serviceNameProvider" class="org.vortikal.web.service.provider.TagsViewServiceNameProvider">
+    <property name="tagsHelper" ref="tagsHelper" />
+  </bean>
+
+  <bean id="tags.feedService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="tags.viewService" />
+    <property name="assertions">
+      <list>
+        <ref bean="feedViewParameterAssertion" />
+        <bean class="org.vortikal.web.service.RequestParameterExistsAssertion">
+          <property name="parameterName" value="tag" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="tags.feedHandler" />
+    <property name="serviceNameProvider" ref="tags.viewService.serviceNameProvider" />
+  </bean>
+
+  <bean id="feedViewParameterAssertion" class="org.vortikal.web.service.RequestParameterAssertion">
+    <property name="parameterName" value="view" />
+    <property name="parameterValue" value="feed" />
+  </bean>
+
+  <bean id="tags.handler" class="org.vortikal.web.display.tags.TagsController">
+    <property name="viewName" value="tags.tags" />
+    <property name="defaultPageLimit" value="${collectionListing.defaultPageLimit}" />
+    <property name="searchComponent" ref="tags.searchComponent" />
+    <property name="tagElementsProvider" ref="tags.tagElementsProvider" />
+    <property name="alternativeRepresentations">
+      <map>
+        <entry key="application/atom+xml" value-ref="tags.feedService" />
+      </map>
+    </property>
+    <property name="tagsHelper" ref="tagsHelper" />
+  </bean>
+
+  <bean id="tags.tagElementsProvider" class="org.vortikal.web.tags.RepositoryTagElementsDataProvider">
+    <property name="tagService" ref="tags.viewService" />
+    <property name="tagsReporter" ref="tagsReporter" />
+    <property name="servesRoot" value="${servesWebRoot}" />
+  </bean>
+
+  <bean id="tagsReporter" class="org.vortikal.web.reporting.TagsReportingComponent">
+    <description>Reporting usage of tags</description>
+    <property name="tagsPropDef" ref="tagsPropDef" />
+    <property name="searcher" ref="systemIndexSearcher" />
+    <property name="aggregationResolver" ref="aggregationResolver" />
+    <property name="cache">
+      <bean class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+        <property name="cacheManager" ref="ehCacheManager" />
+        <property name="cacheName" value="org.vortikal.TAGS_REPORTER_CACHE" />
+        <property name="maxElementsInMemory" value="50" />
+        <property name="maxElementsOnDisk" value="2000" />
+        <property name="eternal" value="false" />
+        <property name="overflowToDisk" value="true" />
+        <property name="timeToIdle" value="0" />
+        <property name="timeToLive" value="45" />
+      </bean>
+    </property>
+    <property name="resourceTypeQueries">
+      <map>
+        <entry key="structured-event">
+          <list>
+            <ref bean="eventListing.upcomingEventsQueryBuilder" />
+          </list>
+        </entry>
+        <entry key="event">
+          <list>
+            <ref bean="eventListing.upcomingEventsQueryBuilder" />
+          </list>
+        </entry>
+      </map>
+    </property>
+  </bean>
+
+  <bean id="tags.feedHandler" parent="collectionListing.feedHandler">
+    <property name="feedGenerator" ref="tags.atomFeedGenerator" />
+  </bean>
+
+  <bean id="tags.atomFeedGenerator" class="org.vortikal.web.display.tags.TagsAtomFeedGenerator" parent="atomFeedGenerator">
+    <property name="overridePublishDatePropDef" ref="publishedDatePropDef" />
+    <property name="searchComponent" ref="tags.searchComponent" />
+    <property name="tagsHelper" ref="tagsHelper" />
+  </bean>
+
+  <bean id="tags.searchComponent" class="org.vortikal.web.search.QueryPartsSearchComponent">
+    <property name="name" value="tags.searchComponent" />
+    <property name="viewService" ref="webService" />
+    <property name="resourceManager" ref="resourceManager" />
+    <property name="listableProperties">
+      <list>
+        <bean class="org.vortikal.web.search.PropertyDisplayConfig">
+          <property name="displayProperty" ref="publishDatePropDef" />
+        </bean>
+        <bean class="org.vortikal.web.search.PropertyDisplayConfig">
+          <property name="displayProperty" ref="introductionPropDef" />
+          <property name="preventDisplayProperty" ref="collection.hideIntroductionPropDef" />
+        </bean>
+      </list>
+    </property>
+    <property name="queryBuilders">
+      <list>
+        <ref bean="tags.scopeQueryBuilder" />
+        <bean class="org.vortikal.web.search.ResourceTypeQueryBuilder">
+          <property name="resourceTypeTree" ref="resourceTypeTree" />
+        </bean>
+        <bean class="org.vortikal.web.search.PropertyValueQueryBuilder">
+          <property name="parameterName" value="tag" />
+          <property name="propertyTypeDefinition" ref="tagsPropDef" />
+        </bean>
+        <bean parent="queryStringParser">
+          <property name="queryString" value="(type IN article AND published-date &lt;= {$currentTime}) OR type NOT IN article" />
+        </bean>
+      </list>
+    </property>
+    <property name="searchSorting" ref="tags.searchSorting" />
+  </bean>
+
+  <bean id="tags.scopeQueryBuilder" class="org.vortikal.web.search.ScopeQueryBuilder">
+    <property name="aggregationResolver" ref="aggregationResolver" />
+  </bean>
+
+  <bean id="tags.searchSorting" class="org.vortikal.web.search.SearchSorting" depends-on="resourceTypeTree">
+    <property name="sortOrderPropDefPointers">
+      <list>
+        <value>publish-date</value>
+        <value>title</value>
+      </list>
+    </property>
+    <property name="resourceTypeTree" ref="resourceTypeTree" />
+    <property name="defaultSortOrder" ref="SORT_ORDER.DESC" />
+    <property name="sortOrderMapping">
+      <map>
+        <entry key="title" value-ref="SORT_ORDER.ASC" />
+      </map>
+    </property>
+  </bean>
+
+  <bean id="tags.viewResolver" parent="decoratorViewResolver">
+    <property name="views">
+      <map>
+        <entry key="tags.tags" value-ref="tags.tagsView" />
+      </map>
+    </property>
+  </bean>
+
+  <bean id="tags.tagsView" parent="freemarkerView">
+    <property name="url" value="pages/tags.ftl" />
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="resourceContextProvider" />
+      </list>
+    </property>
+    <property name="attributesMap">
+      <map>
+        <entry key="cssURLs">
+          <list>
+            <value>${themeBaseURL}/tags.css</value>
+            <value>${themeBaseURL}/view-collectionlisting.css</value>
+          </list>
+        </entry>
+        <entry key="searchComponents">
+          <list>
+            <ref bean="tags.searchComponent" />
+          </list>
+        </entry>
+      </map>
+    </property>
+  </bean>
+
+  <bean id="tagsHelper" class="org.vortikal.web.tags.TagsHelper">
+    <property name="resourceTypeTree" ref="resourceTypeTree" />
+    <property name="servesWebRoot" value="${servesWebRoot}" />
+    <property name="messageSource" ref="tags.messageSource" />
+  </bean>
+
+  <bean id="tags.tagsParameterAssertion" parent="vrtxParameterEquals">
+    <property name="parameterValue" value="tags" />
+  </bean>
+
+  <bean id="tags.messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
+    <property name="basenames">
+      <list>
+        <value>vortikal.i18n.tags</value>
+      </list>
+    </property>
+  </bean>
+
+</beans>

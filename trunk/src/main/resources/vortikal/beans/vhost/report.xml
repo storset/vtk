@@ -1,0 +1,554 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+
+  <bean id="reportService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="manageService" />
+    <property name="categories">
+      <set>
+        <value>tabMenu</value>
+      </set>
+    </property>
+    <property name="attributes">
+      <map>
+        <entry key="tabOrder">
+          <value type="java.lang.Integer">300</value>
+        </entry>
+      </map>
+    </property>
+    <property name="assertions">
+      <list>
+        <ref bean="reports.viewPermissionAssertion" />
+        <ref bean="resourceInCollection" />
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="mode" />
+          <property name="parameterValue" value="report" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="reportHandler" />
+  </bean>
+
+  <bean id="brokenLinksToTsvReportService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="reportService" />
+    <property name="assertions">
+      <list>
+        <ref bean="reports.viewPermissionAssertion" />
+        <ref bean="resourceInCollection" />
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="report-type" />
+          <property name="parameterValue" value="broken-links" />
+        </bean>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="export-report" />
+          <property name="parameterValue" value="broken-links-to-tsv" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="brokenLinksToTsvReportHandler" />
+  </bean>
+
+  <bean id="reports.viewPermissionAssertion" parent="abstractResourcePrincipalPermissionAssertion">
+    <property name="permission" value="READ_WRITE" />
+    <property name="considerLocks" value="false" />
+  </bean>
+
+  <bean id="abstractReportHandler" abstract="true"
+    class="org.vortikal.web.report.ReportHandler" parent="repositoryAware">
+    <property name="viewName" value="report" />
+    <property name="localeResolver" ref="manageLocaleResolver" />
+    <property name="documentPrincipalMetadataRetriever" ref="documentPrincipalMetadataRetriever" />
+    <property name="viewReportService" ref="viewReportService" />
+    <property name="primaryReporters">
+      <list>
+        <ref bean="listResourcesReporter" />
+        <ref bean="diagramReport" />
+        <ref bean="myDocumentsReporter" />
+        <ref bean="brokenLinksReport" />
+      </list>
+    </property>
+    <property name="reporters">
+      <list>
+        <ref bean="lastModifiedReporter" />
+        <ref bean="brokenLinksCollectionReport" />
+      </list>
+    </property>
+    <property name="hiddenReporters">
+      <list>
+        <ref bean="webpageReporter" />
+        <ref bean="otherReporter" />
+        <ref bean="webOtherReporter" />
+        <ref bean="imageReporter" />
+        <ref bean="audioReporter" />
+        <ref bean="videoReporter" />
+        <ref bean="pdfReporter" />
+        <ref bean="docReporter" />
+        <ref bean="pptReporter" />
+        <ref bean="xlsReporter" />
+        <ref bean="textReporter" />
+        <ref bean="frontpageReporter" />
+        <ref bean="folderReporter" />
+        <ref bean="fileReporter" />
+        <ref bean="structured-articleReporter" />
+        <ref bean="structured-eventReporter" />
+        <ref bean="structured-messageReporter" />
+        <ref bean="personReporter" />
+        <ref bean="structured-projectReporter" />
+        <ref bean="structured-masterReporter" />
+        <ref bean="research-groupReporter" />
+        <ref bean="organizational-unitReporter" />
+        <ref bean="contact-supervisorReporter" />
+        <ref bean="managed-xmlReporter" />
+        <ref bean="htmlReporter" />
+        <ref bean="phpReporter" />
+      </list>
+    </property>
+  </bean>
+
+  <!-- Default report handler -->
+  <bean id="reportHandler" parent="abstractReportHandler" />
+
+  <bean id="brokenLinksToTsvReportHandler" class="org.vortikal.web.report.BrokenLinksToTsvController">
+    <property name="reportService" ref="reportService" />
+    <property name="brokenLinksReporter" ref="brokenLinksCollectionReport" />
+    <property name="webHostName" value="${webHostName}" />
+  </bean>
+
+  <bean id="reporter" abstract="true" class="org.vortikal.web.report.AbstractReporter" parent="repositoryAware">
+    <property name="searcher" ref="systemIndexSearcher" />
+  </bean>
+
+  <bean id="listResourcesReporter" class="org.vortikal.web.report.ListResourcesReporter"
+    parent="reporter">
+    <property name="name" value="list-resources" />
+    <property name="viewName" value="listResources" />
+  </bean>
+
+  <bean id="diagramReport" class="org.vortikal.web.report.DiagramReport" parent="reporter">
+    <property name="name" ref="diagramReportName" />
+    <property name="viewName" value="diagramReport" />
+  </bean>
+
+  <bean id="diagramReportName" class="java.lang.String">
+    <constructor-arg value="diagram"/>
+  </bean>
+
+  <bean id="brokenLinksReport" class="org.vortikal.web.report.BrokenLinksReport" parent="reporter">
+    <property name="name" value="broken-links" />
+    <property name="manageService" ref="manageService" />
+    <property name="reportService" ref="reportService" />
+    <property name="viewName" value="brokenLinksReport" />
+    <property name="pageSize" value="25" />
+    <property name="linkStatusPropDef" ref="linkStatusPropDef" />
+    <property name="linkCheckPropDef" ref="linkCheckPropDef" />
+    <property name="brokenLinksCountPropDef" ref="brokenLinksCountPropDef"/>
+    <!--property name="sortPropDef" ref="lastModifiedPropDef" /-->
+    <property name="publishedPropDef" ref="publishedPropDef" />
+    <property name="indexFilePropDef" ref="collection.indexFilePropDef" />
+
+    <property name="sortOrder" ref="SORT_ORDER.ASC" />
+    <property name="parser" ref="searchParser"/>
+    <property name="queryFilterExpression" value="${systemjob.linkcheck.queryFilterExpression}"/>
+    <property name="enabled" value="${report.brokenLinks.enabled}" />
+  </bean>
+
+  <bean id="brokenLinksCollectionReport" class="org.vortikal.web.report.BrokenLinksCollectionReport" parent="brokenLinksReport">
+    <property name="name" value="broken-links-collection" />
+    <property name="viewName" value="brokenLinksCollectionReport" />
+    <property name="brokenLinksToTsvReportService" ref="brokenLinksToTsvReportService" />
+  </bean>
+
+  <bean id="myDocumentsReporter" class="org.vortikal.web.report.MyDocumentsReporter" parent="documentReporter">
+    <property name="name" value="my-documents" />
+    <property name="createdByPropDef" ref="createdByPropDef" />
+    <property name="sortPropDef" ref="creationTimePropDef" />
+    <property name="sortOrder" ref="SORT_ORDER.DESC" />
+  </bean>
+
+  <bean id="documentReporter" abstract="true" class="org.vortikal.web.report.DocumentReporter" parent="reporter">
+    <property name="manageService" ref="manageService" />
+    <property name="reportService" ref="reportService" />
+    <property name="viewName" value="documentReport" />
+    <property name="resolvePrincipalLink" value="true" />
+  </bean>
+
+  <bean id="lastModifiedReporter" class="org.vortikal.web.report.LastModifiedReporter" parent="documentReporter">
+    <property name="name" value="last-modified" />
+    <property name="sortPropDef" ref="lastModifiedPropDef" />
+    <property name="titlePropDef" ref="titlePropDef" />
+    <property name="type" value="file" />
+    <property name="sortOrder" ref="SORT_ORDER.DESC" />
+  </bean>
+
+  <bean id="webpageReporter" class="org.vortikal.web.report.WebpageReporter" parent="documentReporter">
+    <property name="name" value="webpageReporter" />
+    <property name="sortPropDef" ref="lastModifiedPropDef" />
+    <property name="titlePropDef" ref="titlePropDef" />
+    <property name="backReportName" ref="diagramReportName" />
+    <property name="sortOrder" ref="SORT_ORDER.DESC" />
+  </bean>
+
+  <bean id="otherReporter" class="org.vortikal.web.report.OtherReporter" parent="documentReporter">
+    <property name="name" value="otherReporter" />
+    <property name="sortPropDef" ref="lastModifiedPropDef" />
+    <property name="titlePropDef" ref="titlePropDef" />
+    <property name="backReportName" ref="diagramReportName" />
+    <property name="sortOrder" ref="SORT_ORDER.DESC" />
+  </bean>
+
+  <bean id="webOtherReporter" class="org.vortikal.web.report.WebOtherReporter" parent="documentReporter">
+    <property name="name" value="webOtherReporter" />
+    <property name="sortPropDef" ref="lastModifiedPropDef" />
+    <property name="titlePropDef" ref="titlePropDef" />
+    <property name="backReportName" ref="diagramReportName" />
+    <property name="sortOrder" ref="SORT_ORDER.DESC" />
+  </bean>
+
+  <bean id="imageReporter" class="org.vortikal.web.report.LastModifiedReporter" parent="documentReporter">
+    <property name="name" value="imageReporter" />
+    <property name="sortPropDef" ref="lastModifiedPropDef" />
+    <property name="titlePropDef" ref="titlePropDef" />
+    <property name="type" value="image" />
+    <property name="backReportName" ref="diagramReportName" />
+    <property name="sortOrder" ref="SORT_ORDER.DESC" />
+  </bean>
+
+  <bean id="audioReporter" class="org.vortikal.web.report.LastModifiedReporter" parent="documentReporter">
+    <property name="name" value="audioReporter" />
+    <property name="sortPropDef" ref="lastModifiedPropDef" />
+    <property name="titlePropDef" ref="titlePropDef" />
+    <property name="type" value="audio" />
+    <property name="backReportName" ref="diagramReportName" />
+    <property name="sortOrder" ref="SORT_ORDER.DESC" />
+  </bean>
+
+  <bean id="videoReporter" class="org.vortikal.web.report.LastModifiedReporter" parent="documentReporter">
+    <property name="name" value="videoReporter" />
+    <property name="sortPropDef" ref="lastModifiedPropDef" />
+    <property name="titlePropDef" ref="titlePropDef" />
+    <property name="type" value="video" />
+    <property name="backReportName" ref="diagramReportName" />
+    <property name="sortOrder" ref="SORT_ORDER.DESC" />
+  </bean>
+
+  <bean id="pdfReporter" class="org.vortikal.web.report.LastModifiedReporter" parent="documentReporter">
+    <property name="name" value="pdfReporter" />
+    <property name="sortPropDef" ref="lastModifiedPropDef" />
+    <property name="titlePropDef" ref="titlePropDef" />
+    <property name="type" value="pdf" />
+    <property name="backReportName" ref="diagramReportName" />
+    <property name="sortOrder" ref="SORT_ORDER.DESC" />
+  </bean>
+
+  <bean id="docReporter" class="org.vortikal.web.report.LastModifiedReporter" parent="documentReporter">
+    <property name="name" value="docReporter" />
+    <property name="sortPropDef" ref="lastModifiedPropDef" />
+    <property name="titlePropDef" ref="titlePropDef" />
+    <property name="type" value="doc" />
+    <property name="backReportName" ref="diagramReportName" />
+    <property name="sortOrder" ref="SORT_ORDER.DESC" />
+  </bean>
+
+  <bean id="pptReporter" class="org.vortikal.web.report.LastModifiedReporter" parent="documentReporter">
+    <property name="name" value="pptReporter" />
+    <property name="sortPropDef" ref="lastModifiedPropDef" />
+    <property name="titlePropDef" ref="titlePropDef" />
+    <property name="type" value="ppt" />
+    <property name="backReportName" ref="diagramReportName" />
+    <property name="sortOrder" ref="SORT_ORDER.DESC" />
+  </bean>
+
+  <bean id="xlsReporter" class="org.vortikal.web.report.LastModifiedReporter" parent="documentReporter">
+    <property name="name" value="xlsReporter" />
+    <property name="sortPropDef" ref="lastModifiedPropDef" />
+    <property name="titlePropDef" ref="titlePropDef" />
+    <property name="type" value="xls" />
+    <property name="backReportName" ref="diagramReportName" />
+    <property name="sortOrder" ref="SORT_ORDER.DESC" />
+  </bean>
+
+  <bean id="textReporter" class="org.vortikal.web.report.LastModifiedReporter" parent="documentReporter">
+    <property name="name" value="textReporter" />
+    <property name="sortPropDef" ref="lastModifiedPropDef" />
+    <property name="titlePropDef" ref="titlePropDef" />
+    <property name="type" value="text" />
+    <property name="backReportName" ref="diagramReportName" />
+    <property name="termIN" value="false" />
+    <property name="sortOrder" ref="SORT_ORDER.DESC" />
+  </bean>
+
+  <bean id="frontpageReporter" class="org.vortikal.web.report.LastModifiedReporter" parent="documentReporter">
+    <property name="name" value="frontpageReporter" />
+    <property name="sortPropDef" ref="lastModifiedPropDef" />
+    <property name="titlePropDef" ref="titlePropDef" />
+    <property name="type" value="frontpage" />
+    <property name="backReportName" ref="diagramReportName" />
+    <property name="termIN" value="false" />
+    <property name="sortOrder" ref="SORT_ORDER.DESC" />
+  </bean>
+
+  <bean id="folderReporter" class="org.vortikal.web.report.LastModifiedReporter" parent="documentReporter">
+    <property name="name" value="folderReporter" />
+    <property name="sortPropDef" ref="lastModifiedPropDef" />
+    <property name="titlePropDef" ref="titlePropDef" />
+    <property name="type" value="collection" />
+    <property name="backReportName" ref="diagramReportName" />
+    <property name="sortOrder" ref="SORT_ORDER.DESC" />
+  </bean>
+
+  <bean id="fileReporter" class="org.vortikal.web.report.LastModifiedReporter" parent="documentReporter">
+    <property name="name" value="fileReporter" />
+    <property name="sortPropDef" ref="lastModifiedPropDef" />
+    <property name="titlePropDef" ref="titlePropDef" />
+    <property name="type" value="file" />
+    <property name="backReportName" ref="diagramReportName" />
+    <property name="sortOrder" ref="SORT_ORDER.DESC" />
+  </bean>
+
+  <bean id="structured-articleReporter" class="org.vortikal.web.report.LastModifiedReporter" parent="documentReporter">
+    <property name="name" value="structured-articleReporter" />
+    <property name="sortPropDef" ref="lastModifiedPropDef" />
+    <property name="titlePropDef" ref="titlePropDef" />
+    <property name="type" value="structured-article" />
+    <property name="backReportName" ref="diagramReportName" />
+    <property name="sortOrder" ref="SORT_ORDER.DESC" />
+  </bean>
+
+  <bean id="structured-eventReporter" class="org.vortikal.web.report.LastModifiedReporter" parent="documentReporter">
+    <property name="name" value="structured-eventReporter" />
+    <property name="sortPropDef" ref="lastModifiedPropDef" />
+    <property name="titlePropDef" ref="titlePropDef" />
+    <property name="type" value="structured-event" />
+    <property name="backReportName" ref="diagramReportName" />
+    <property name="sortOrder" ref="SORT_ORDER.DESC" />
+  </bean>
+
+  <bean id="structured-messageReporter" class="org.vortikal.web.report.LastModifiedReporter" parent="documentReporter">
+    <property name="name" value="structured-messageReporter" />
+    <property name="sortPropDef" ref="lastModifiedPropDef" />
+    <property name="titlePropDef" ref="titlePropDef" />
+    <property name="type" value="structured-message" />
+    <property name="backReportName" ref="diagramReportName" />
+    <property name="sortOrder" ref="SORT_ORDER.DESC" />
+  </bean>
+
+  <bean id="personReporter" class="org.vortikal.web.report.LastModifiedReporter" parent="documentReporter">
+    <property name="name" value="personReporter" />
+    <property name="sortPropDef" ref="lastModifiedPropDef" />
+    <property name="titlePropDef" ref="titlePropDef" />
+    <property name="type" value="person" />
+    <property name="backReportName" ref="diagramReportName" />
+    <property name="sortOrder" ref="SORT_ORDER.DESC" />
+  </bean>
+
+  <bean id="structured-projectReporter" class="org.vortikal.web.report.LastModifiedReporter" parent="documentReporter">
+    <property name="name" value="structured-projectReporter" />
+    <property name="sortPropDef" ref="lastModifiedPropDef" />
+    <property name="titlePropDef" ref="titlePropDef" />
+    <property name="type" value="structured-project" />
+    <property name="backReportName" ref="diagramReportName" />
+    <property name="sortOrder" ref="SORT_ORDER.DESC" />
+  </bean>
+
+  <bean id="structured-masterReporter" class="org.vortikal.web.report.LastModifiedReporter" parent="documentReporter">
+    <property name="name" value="structured-masterReporter" />
+    <property name="sortPropDef" ref="lastModifiedPropDef" />
+    <property name="titlePropDef" ref="titlePropDef" />
+    <property name="type" value="structured-master" />
+    <property name="backReportName" ref="diagramReportName" />
+    <property name="sortOrder" ref="SORT_ORDER.DESC" />
+  </bean>
+
+  <bean id="research-groupReporter" class="org.vortikal.web.report.LastModifiedReporter" parent="documentReporter">
+    <property name="name" value="research-groupReporter" />
+    <property name="sortPropDef" ref="lastModifiedPropDef" />
+    <property name="titlePropDef" ref="titlePropDef" />
+    <property name="type" value="research-group" />
+    <property name="backReportName" ref="diagramReportName" />
+    <property name="sortOrder" ref="SORT_ORDER.DESC" />
+  </bean>
+
+  <bean id="organizational-unitReporter" class="org.vortikal.web.report.LastModifiedReporter" parent="documentReporter">
+    <property name="name" value="organizational-unitReporter" />
+    <property name="sortPropDef" ref="lastModifiedPropDef" />
+    <property name="titlePropDef" ref="titlePropDef" />
+    <property name="type" value="organizational-unit" />
+    <property name="backReportName" ref="diagramReportName" />
+    <property name="sortOrder" ref="SORT_ORDER.DESC" />
+  </bean>
+
+  <bean id="contact-supervisorReporter" class="org.vortikal.web.report.LastModifiedReporter" parent="documentReporter">
+    <property name="name" value="contact-supervisorReporter" />
+    <property name="sortPropDef" ref="lastModifiedPropDef" />
+    <property name="titlePropDef" ref="titlePropDef" />
+    <property name="type" value="contact-supervisor" />
+    <property name="backReportName" ref="diagramReportName" />
+    <property name="sortOrder" ref="SORT_ORDER.DESC" />
+  </bean>
+
+  <bean id="managed-xmlReporter" class="org.vortikal.web.report.LastModifiedReporter" parent="documentReporter">
+    <property name="name" value="managed-xmlReporter" />
+    <property name="sortPropDef" ref="lastModifiedPropDef" />
+    <property name="titlePropDef" ref="titlePropDef" />
+    <property name="type" value="managed-xml" />
+    <property name="backReportName" ref="diagramReportName" />
+    <property name="sortOrder" ref="SORT_ORDER.DESC" />
+  </bean>
+
+  <bean id="htmlReporter" class="org.vortikal.web.report.LastModifiedReporter" parent="documentReporter">
+    <property name="name" value="htmlReporter" />
+    <property name="sortPropDef" ref="lastModifiedPropDef" />
+    <property name="titlePropDef" ref="titlePropDef" />
+    <property name="type" value="html" />
+    <property name="backReportName" ref="diagramReportName" />
+    <property name="sortOrder" ref="SORT_ORDER.DESC" />
+  </bean>
+
+  <bean id="phpReporter" class="org.vortikal.web.report.LastModifiedReporter" parent="documentReporter">
+    <property name="name" value="phpReporter" />
+    <property name="sortPropDef" ref="lastModifiedPropDef" />
+    <property name="titlePropDef" ref="titlePropDef" />
+    <property name="type" value="php" />
+    <property name="backReportName" ref="diagramReportName" />
+    <property name="sortOrder" ref="SORT_ORDER.DESC" />
+  </bean>
+
+  <bean id="report.viewResolver" parent="system.decoratingViewResolver">
+    <property name="views">
+      <map>
+        <entry key="report" value-ref="reportView" />
+        <entry key="listResources" value-ref="listResourcesView" />
+        <entry key="documentReport" value-ref="documentReportView" />
+        <entry key="diagramReport" value-ref="diagramReportView" />
+        <entry key="brokenLinksReport" value-ref="brokenLinksReportView" />
+        <entry key="brokenLinksCollectionReport" value-ref="brokenLinksCollectionReportView" />
+      </map>
+    </property>
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="resourceContextProvider" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="reportView" parent="freemarkerView">
+    <property name="url" value="pages/report/report.ftl" />
+    <property name="attributesMap">
+      <map>
+        <entry key="cssURLs">
+          <list>
+            <value>${themeBaseURL}/report/report.css</value>
+          </list>
+        </entry>
+      </map>
+    </property>
+  </bean>
+
+  <bean id="listResourcesView" parent="freemarkerView">
+    <property name="url" value="pages/report/list-resources.ftl" />
+    <property name="attributesMap">
+      <map>
+        <entry key="cssURLs">
+          <list>
+            <value>${themeBaseURL}/report/report.css</value>
+          </list>
+        </entry>
+        <entry key="jsURLs">
+          <list>
+            <value>${webResources.baseURL}/jquery/plugins/jquery.treeview.js</value>
+            <value>${webResources.baseURL}/jquery/plugins/jquery.treeview.async.js</value>
+          </list>
+        </entry>
+      </map>
+    </property>
+  </bean>
+
+  <bean id="documentReportView" parent="freemarkerView">
+    <property name="url" value="pages/report/document-report.ftl" />
+    <property name="attributesMap">
+      <map>
+        <entry key="cssURLs">
+          <list>
+            <value>${themeBaseURL}/report/report.css</value>
+          </list>
+        </entry>
+      </map>
+    </property>
+  </bean>
+
+  <bean id="diagramReportView" parent="freemarkerView">
+    <property name="url" value="pages/report/diagram-report.ftl" />
+    <property name="attributesMap">
+      <map>
+        <entry key="cssURLs">
+          <list>
+            <value>${themeBaseURL}/report/report.css</value>
+          </list>
+        </entry>
+      </map>
+    </property>
+  </bean>
+
+  <bean id="brokenLinksCollectionReportView" parent="freemarkerView">
+    <property name="url" value="pages/report/broken-links-collection.ftl" />
+    <property name="attributesMap">
+      <map>
+        <entry key="cssURLs">
+          <list>
+            <value>${themeBaseURL}/report/report.css</value>
+          </list>
+        </entry>
+      </map>
+    </property>
+    <property name="referenceDataProviders">
+      <list>
+        <bean class="org.vortikal.web.referencedata.provider.StaticURIServiceURLProvider">
+          <property name="service" ref="staticResourceService" />
+          <property name="path" value="${editor.fck.resourcesURL}" />
+          <property name="modelName" value="fckeditorBase" />
+        </bean>
+        <bean class="org.vortikal.web.referencedata.provider.StaticURIServiceURLProvider">
+          <property name="service" ref="editor.browseService" />
+          <property name="path" value="${editor.fck.browseURL}" />
+          <property name="modelName" value="fckBrowse" />
+        </bean>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="brokenLinksReportView" parent="freemarkerView">
+    <property name="url" value="pages/report/broken-links.ftl" />
+    <property name="attributesMap">
+      <map>
+        <entry key="cssURLs">
+          <list>
+            <value>${themeBaseURL}/report/report.css</value>
+          </list>
+        </entry>
+      </map>
+    </property>
+    <property name="referenceDataProviders">
+      <list>
+        <bean class="org.vortikal.web.referencedata.provider.StaticURIServiceURLProvider">
+          <property name="service" ref="staticResourceService" />
+          <property name="path" value="${editor.fck.resourcesURL}" />
+          <property name="modelName" value="fckeditorBase" />
+        </bean>
+        <bean class="org.vortikal.web.referencedata.provider.StaticURIServiceURLProvider">
+          <property name="service" ref="editor.browseService" />
+          <property name="path" value="${editor.fck.browseURL}" />
+          <property name="modelName" value="fckBrowse" />
+        </bean>
+      </list>
+    </property>
+  </bean>
+
+  <bean class="org.springframework.context.support.ResourceBundleMessageSource">
+    <property name="basenames">
+      <list>
+        <value>vortikal.i18n.report.report</value>
+      </list>
+    </property>
+  </bean>
+
+</beans>

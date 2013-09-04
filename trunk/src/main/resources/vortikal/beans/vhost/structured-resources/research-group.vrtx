@@ -1,0 +1,262 @@
+resourcetype research-group {
+
+  properties {
+    name : string,
+    title : derived (name) eval (name) overrides title,
+    introduction : simple_html,
+    picture : image_ref,
+    caption : simple_html,
+    hidePicture : boolean defaultvalue("false"),
+    content : html noextract,
+    tags : string multiple overrides tags,
+    contactInfo : html noextract,
+    participantsUsernames : string multiple,
+    participantsCachedFullNames : binary,
+    participants : json (participantName:string, participantUrl:string) multiple,
+    numberOfParticipantsToDisplay : string defaultvalue("50"),
+    listRelatedProjects : boolean defaultvalue("true"),
+    rssFeeds : json (rssTitle:string, rssUrl:string) multiple,
+    related-content : html noextract
+  }
+  
+  edit-rules {
+    participantsUsernames (class[vrtx-autocomplete-username]),
+    caption (size[small]),
+    numberOfParticipantsToDisplay (dropdown),
+    group introImageAndCaption (picture, caption, hidePicture) (after introduction),
+    tags tooltip (en : "(Tag1, Tag2, ...)", no : "(Emneord1, Emneord2, ...)", nn : "(Emneord1, Emneord2, ...)"),
+    tags (class[vrtx-autocomplete-tag])
+  }
+
+  scripts {
+    participantsUsernames multipleinputfields
+  }
+    
+  services {
+    participantsUsernames participantsFullNameService requires(participantUsernames) affects(participantsCachedFullNames)
+  }
+
+  view-components {
+  
+    introduction {
+      ##
+      [def intro resource-prop(".", "introduction")]
+      [if intro != null]
+        <div class="vrtx-introduction">[val intro # unescaped]</div>
+      [endif]
+      ##
+    }
+    
+   related-content-in-additional-column {
+      ##
+      [def document structured-document()]
+      [def theRelated-content document.properties.related-content]
+      [if theRelated-content != null]
+        <div id="vrtx-related-content">
+          [val theRelated-content # unescaped]
+        </div>
+      [endif]
+      ##
+    }
+        
+    introduction-image {
+      ##
+      [def img-uri resource-prop(".", "picture")]
+      [def caption resource-prop(".", "caption")]
+      [def pixel-width null]
+      [def img null]
+      [def pixel-width null]
+      [def photographer null]
+      [def style null]
+      
+      [if img-uri != null]
+        [def img resource(img-uri)]
+      [endif]
+      [if img != null]
+        [def pixel-width resource-prop(img-uri, "pixelWidth")]
+        [def photographer resource-prop(img-uri, "photographer")]
+      [endif]
+      [if pixel-width != null]
+        [def style concat("width:", pixel-width, "px")]
+      [endif]
+     
+      [if img-uri != null]
+        [if pixel-width != null]
+          <div class="vrtx-introduction-image" style="[val style]">
+        [else]
+          <div class="vrtx-introduction-image">
+        [endif]
+        
+        [if caption != null]
+          <img src="[val img-uri]" alt="[val caption # unescaped 'flattened']"/>
+        [else]
+          <img src="[val img-uri]" alt="[localized 'introduction-image-alt']"/>
+        [endif]
+     
+        [if caption != null]
+          <div class="vrtx-imagetext">
+            <div class="vrtx-imagedescription">[val caption # unescaped]</div>
+            [if photographer != null]
+              <span class="vrtx-photo">
+                <span class="vrtx-photo-prefix">[localized "photo-prefix"]: </span>[val photographer]
+              </span>
+            [endif]
+          </div>
+        [elseif photographer != null]
+          <div class="vrtx-imagetext">
+            <span class="vrtx-photo">
+              <span class="vrtx-photo-prefix">[localized "photo-prefix"]: </span>[val photographer]
+            </span>
+          </div>
+        [endif]
+        </div>
+      [endif]
+      ##
+    }
+    
+    contact-info {
+      ##
+      [def document structured-document()]
+      [def contactinfo document.properties.contactInfo]
+      [if contactinfo != null]
+        <div class="vrtx-research-contactinfo vrtx-frontpage-box">
+          <h2>[localized "contactInfoView"]</h2>
+          [val contactinfo # unescaped]
+        </div>
+      [endif]
+      ##
+    }
+    
+    feeds {
+      ##
+      [resource-props "."]
+      [if rssFeeds != null]
+        [def document structured-document()]
+        [def feeds document.properties.rssFeeds]
+        [if feeds != null]
+          [list feeds feed]
+            [def thetitle feed.rssTitle]
+            [def theurl feed.rssUrl]
+              
+            [if theurl != null && theurl != ""]
+              [if thetitle != null && thetitle != ""]
+                [call "include:feed" {"url":theurl, "override-feed-title":thetitle, "feed-title":true, "max-messages":3, "include-if-empty":false}]
+              [else]
+                [call "include:feed" {"url":theurl, "feed-title":true, "max-messages":3, "include-if-empty":false}]
+              [endif]
+            [endif]
+          [endlist]
+        [endif]
+      [endif]
+      ##
+    }
+    
+    vrtx-date-info {
+      ##
+      [resource-props "."]
+      [if publish-date != null]
+         <div class="vrtx-date-info">
+         <span class="published-date-label">[localized "publishedDate"]</span> <span class="published-date">[val publish-date] </span>
+         [if publish-date < lastModified]
+            - <span class="last-modified-date">[localized "lastModifiedDate"]</span> <span class="last-modified-date">[val lastModified]</span>
+         [endif]
+         </div>
+      [endif]
+      ##
+    }
+
+    related-projects {
+      ##
+      [def document structured-document()]
+      [def listRelatedProjects document.properties.listRelatedProjects]
+      [if listRelatedProjects = "true"]
+        [call "resource:projects-related-to-group"]
+      [endif]
+      ##
+    }
+
+  }
+
+  view {
+    ##
+    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+    <html xmlns="http://www.w3.org/1999/xhtml">
+      <head>
+        <title>[call "json:field" {"select":"name"}]</title>
+      </head>
+      <body id="vrtx-structured-project">
+        <div id="vrtx-content">
+          [def document structured-document()]
+          <div id="vrtx-main-content">
+            <h1>[call "json:field" {"select":"name"}]</h1>
+            [call "comp:introduction"]
+            [def theHidePicture document.properties.hidePicture]
+            [if theHidePicture = "false" || theHidePicture = null]
+              [call "comp:introduction-image"]
+            [endif]
+            [call "json:field" {"select":"content"}]
+            [call "resource:tags"]
+            [call "comp:vrtx-date-info"]
+          </div>
+          <div id="vrtx-additional-content">
+            [call "comp:contact-info"]
+            [call "resource:person-list"]
+            [call "comp:related-projects"]
+            [call "comp:feeds"]
+            [call "comp:related-content-in-additional-column"]
+          </div>
+        </div>
+      </body>
+    </html>
+    ##
+  }
+  
+  vocabulary {
+    numberOfParticipantsToDisplay {
+      en : (range = "0..25,30,35,40,45,50"),
+      no : (range = "0..25,30,35,40,45,50"),
+      nn : (range = "0..25,30,35,40,45,50")
+    },
+    listRelatedProjects{
+      en : ("true" = "Yes", "false" = "No"),
+      no : ("true" = "Ja", "false" = "Nei"),
+      nn : ("true" = "Ja", "false" = "Nei")
+    },
+    hidePicture {
+      en : ("true" = "Yes", "false" = "No"),
+      no : ("true" = "Ja", "false" = "Nei"),
+      nn : ("true" = "Ja", "false" = "Nei")
+    }
+  }
+    
+  localization {
+    name : (en : "Name", no : "Navn", nn : "Navn"),
+    introduction : (en : "Introduction",no : "Innledning", nn : "Innleiing"),
+    picture : (en: "Image", no: "Bilde", nn : "Bilete"),
+    introduction-image-alt : (en: "Image", en: "Bilde", en: "Bilete"),
+    caption : (en : "Image caption", no : "Bildetekst", nn : "Bilettekst"),
+    photo-prefix : (en : "Photo", no : "Foto", nn : "Photo"),
+    hidePicture : (en : "Hide image in research group", no : "Skjul bilde i forskergruppe", nn : "Skjul bilete i forskargruppe"),
+    related-content : (en : "Related content (right column)", no : "Relatert innhold (vises i høyre kolonne)", nn : "Relatert innhald (visast i høgre kolonne)"),
+    participantsHeader : (en : "Participants", no : "Deltakere", nn : "Deltakarar"),
+    participantsUsernames : (en : "Participants from UiO (enter the participant username)",no : "Deltakere fra UiO (fyll inn deltakerens brukernavn)", nn :"Deltakarar fra UiO (fyll inn deltakarens brukernavn)"),
+    participants : (en : "Other participants", no : "Andre deltakere", nn : "Andre deltakarar"),
+    participantName : (en : "Name",no : "Navn", nn :"Namn"),
+    participantUrl : (en : "Webaddress",no : "Webadresse", nn :"Webadresse"),
+    rssFeeds : (en : "Subscribe to RSS-feeds",no : "Abonner på RSS-strømmer", nn :"Abonner på RSS-strømmar"),
+    rssTitle : (en : "Title",no : "Tittel", nn : "Tittel"),
+    rssUrl : (en : "Webaddress",no : "Webadresse", nn :"Webadresse"),
+    tags : (en : "Tags", no : "Emneord", nn : "Emneord"),
+    content : (en : "Content", no :"Innhold",nn : "Innhold"),
+    contactInfo : (en : "Contact information", no : "Kontaktinformasjon", nn : "Kontaktinformasjon"),
+    contactInfoView : (en : "Contact", no : "Kontakt", nn : "Kontakt"),
+    header : (en : "Edit research group", no : "Rediger forskergruppe", nn : "Rediger forskargruppe"),
+    publishedDate : (en : "Published", no :"Publisert", nn:"Publisert"),
+    listRelatedProjects : (en : "Show related projects", no : "Vis tilhørende prosjekter", nn : "Vis tilhøyrande prosjekt"),
+    numberOfParticipantsToDisplay : (
+      en : "Number of participants to show",
+      no : "Antall deltakere som skal vises",
+      nn : "Antall deltakarar som skal visast"),
+    lastModifiedDate : (en : "Last modified", no : "Sist endret", nn : "Sist endra")
+  }
+}

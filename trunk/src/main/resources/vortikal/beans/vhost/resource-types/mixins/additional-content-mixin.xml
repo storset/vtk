@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+
+  <bean id="additionalContentMixinResourceTypeDef" 
+        class="org.vortikal.repository.resourcetype.MixinResourceTypeDefinitionImpl">
+    <property name="name" value="additional-content-mixin"/>
+    <property name="namespace" ref="DEFAULT_NAMESPACE" /> 
+    <property name="propertyTypeDefinitions">
+      <list>
+        <ref bean="additionalContentPropDef" />
+      </list>
+    </property>
+  </bean>  
+
+  <bean id="additionalContentPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+    <property name="contentRelation" value="PRE_CONTENT" />
+    <property name="name" value="additionalContents"/>
+    <property name="type" value="HTML"/>
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE"/>
+    <property name="mandatory" value="false"/>
+  </bean>
+
+</beans>

@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+
+  <bean id="copyResourcesService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="manageCollectionListingService" />
+    <property name="order" value="-990" />
+    <property name="categories">
+      <set>
+        <value>collectionMenu</value>
+      </set>
+    </property>
+    <property name="assertions">
+      <list>
+        <ref bean="manage.postRequestAssertion" />
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="action" />
+          <property name="parameterValue" value="copy-resources" />
+        </bean>
+        <ref bean="resourceInCollection" />
+      </list>
+    </property>
+    <property name="handler" ref="copyHandler" />
+  </bean>        
+
+  <bean id="moveResourcesService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="manageCollectionListingService" />
+    <property name="order" value="-1000" />
+    <property name="categories">
+      <set>
+        <value>collectionMenu</value>
+      </set>
+    </property>
+    <property name="assertions">
+      <list>
+        <ref bean="manage.postRequestAssertion" />
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="action" />
+          <property name="parameterValue" value="move-resources" />
+        </bean>
+        <ref bean="writePermissionAssertion" />
+        <ref bean="resourceInCollection" />
+      </list>
+    </property>
+    <property name="handler" ref="moveHandler" />
+  </bean>        
+
+
+  <bean id="copyToSelectedFolderService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="manageCollectionListingService" />
+    <property name="order" value="-996" />
+    <property name="categories">
+      <set>
+        <value>resourceMenuRight</value>
+      </set>
+    </property>
+    <property name="attributes">
+      <map>
+        <entry key="resourceMenuRightOrder"><value type="java.lang.Integer">200</value></entry>
+      </map>
+    </property>
+    <property name="assertions">
+      <list>
+        <ref bean="manage.postRequestAssertion" />
+        <ref bean="writePermissionAssertion" />
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="action" />
+          <property name="parameterValue" value="copy-resources-to-this-folder" />
+        </bean>
+        <bean class="org.vortikal.web.service.SessionVariableExistsAssertion">
+          <property name="variableName" value="copymovesession" />
+          <property name="action" value="copy-resources" />
+        </bean>
+      </list>
+    </property>  
+    <property name="handler" ref="copyToSelectedFolderHandler" />
+  </bean>
+
+  <bean id="moveToSelectedFolderService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="manageCollectionListingService" />
+    <property name="order" value="-996" />
+    <property name="categories">
+      <set>
+        <value>resourceMenuRight</value>
+      </set>
+    </property>
+    <property name="attributes">
+      <map>
+        <entry key="resourceMenuRightOrder"><value type="java.lang.Integer">200</value></entry>
+      </map>
+    </property>
+    <property name="assertions">
+      <list>
+        <ref bean="manage.postRequestAssertion" />
+        <ref bean="writePermissionAssertion" />
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="action" />
+          <property name="parameterValue" value="move-resources-to-this-folder" />
+        </bean>
+        <bean class="org.vortikal.web.service.SessionVariableExistsAssertion">
+          <property name="variableName" value="copymovesession" />
+          <property name="action" value="move-resources" />
+        </bean>
+      </list>
+    </property>  
+    <property name="handler" ref="moveToSelectedFolderHandler" />
+  </bean>
+
+  <bean id="copyMove.warningProvider"
+        class="org.vortikal.web.referencedata.CategorizableReferenceDataProvider">
+    <property name="referenceDataProvider">
+      <bean class="org.vortikal.web.actions.copymove.CopyMoveWarningProvider">
+        <property name="searcher" ref="systemIndexSearcher" />
+        <property name="confirmationService" ref="copyMove.confirmationService" />
+      </bean>
+    </property>
+    <property name="categories" value="resourceMenuRight.referenceDataProvider" />
+  </bean>
+
+
+  <bean id="copyMove.confirmationService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="manageCollectionListingService" />
+    <property name="order" value="-980" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="action" />
+          <property name="parameterValue" value="copy-move-warning" />
+        </bean>
+        <ref bean="resourceInCollection" />
+      </list>
+    </property>
+    <property name="handler" ref="copyMove.warningHandler" />
+    <property name="attributes">
+      <map>
+        <entry key-ref="system.decoratorTemplateAttribute" value="dialog-template.html" />
+      </map>
+    </property>
+  </bean>   
+  
+ <bean id="copyResourceService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="manageService" />
+    <property name="order" value="-990" />
+    <property name="categories">
+      <set>
+        <value>resourceMenuLeft</value>
+      </set>
+    </property>
+    <property name="attributes">
+      <map>
+        <entry key="resourceMenuLeftOrder">
+          <value type="java.lang.Integer">998</value>
+        </entry>
+      </map>
+    </property>
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="action" />
+          <property name="parameterValue" value="copy-resource" />
+        </bean>
+        <ref bean="resourceNotRootAssertion" />
+        <ref bean="requiresReadPermissionAssertion" />
+        <ref bean="requiresReadParentPermissionAssertion" />
+      </list>
+    </property>
+  </bean>
+  
+ <bean id="moveResourceService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="manageService" />
+    <property name="order" value="-1000" />
+    <property name="categories">
+      <set>
+        <value>resourceMenuLeft</value>
+      </set>
+    </property>
+    <property name="attributes">
+      <map>
+        <entry key="resourceMenuLeftOrder">
+          <value type="java.lang.Integer">997</value>
+        </entry>
+      </map>
+    </property>
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="action" />
+          <property name="parameterValue" value="move-resource" />
+        </bean>
+        <ref bean="resourceNotRootAssertion" />
+        <ref bean="requiresReadPermissionAssertion" />
+        <ref bean="writeParentPermissionAssertion" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="moveResourceHandler" 
+    class="org.vortikal.web.actions.copymove.CopyMoveController">
+    <property name="viewName" value="manageCollectionListing" />
+  </bean>
+
+  <bean id="copyMove.warningHandler" 
+    class="org.vortikal.web.display.file.DisplayResourceController">
+    <property name="viewName" value="copyMove.warningView" />
+  </bean>
+
+  <bean id="copyHandler" 
+    class="org.vortikal.web.actions.copymove.CopyMoveController">
+    <property name="viewName" value="manageCollectionListing" />
+  </bean>
+
+  <bean id="moveHandler" 
+    class="org.vortikal.web.actions.copymove.CopyMoveController">
+    <property name="viewName" value="manageCollectionListing" />
+  </bean>
+
+  <bean id="copyToSelectedFolderHandler" class="org.vortikal.web.actions.copymove.CopyMoveToSelectedFolderController">
+    <property name="viewName" value="manageCollectionListing" />
+    <property name="copyHelper" ref="copyHelper" />
+  </bean>
+  
+  <bean id="copyHelper" class="org.vortikal.web.actions.copymove.CopyHelper">
+    <property name="copyAction" ref="copy.unpublishAfterCopyAction" />
+  </bean>
+  
+  <bean id="copy.unpublishAfterCopyAction" class="org.vortikal.web.actions.copymove.UnpublishAfterCopyAction" />
+  <bean id="copy.imageCopyThenStoreAction" class="org.vortikal.web.actions.copymove.CopyThenStoreAction"> 
+    <property name="preservedProperties">
+      <list>
+        <ref bean="userTitlePropDef" />
+        <ref bean="imageHtmlDescriptionPropDef" />
+        <ref bean="photographerPropDef" />
+      </list>
+    </property>
+  </bean> 
+
+  <bean id="moveToSelectedFolderHandler" class="org.vortikal.web.actions.copymove.CopyMoveToSelectedFolderController">
+    <property name="viewName" value="manageCollectionListing" />
+  </bean>
+
+  <bean id="copyMove.viewResolver" parent="system.decoratingViewResolver">
+    <property name="views">
+      <map>
+        <entry key="copyMove.warningView" value-ref="copyMove.warningView" />
+     </map>
+    </property>
+  </bean> 
+
+  <bean id="copyMove.warningView" parent="freemarkerView">
+    <property name="url" value="pages/copy-move-warning.ftl" />
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="copyMove.warningProvider" />
+        <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
+          <property name="service" ref="copyToSelectedFolderService" />
+          <property name="modelName" value="copy" />
+          <property name="matchAssertions" value="true" />
+        </bean>
+        <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
+          <property name="service" ref="moveToSelectedFolderService" />
+          <property name="modelName" value="move" />
+          <property name="matchAssertions" value="true" />
+        </bean>
+      </list>
+    </property>
+  </bean>
+  
+</beans>

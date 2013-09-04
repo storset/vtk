@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+
+  <!-- RESOURCE TYPE DEFINITIONS -->
+  <import resource="resource.xml" />
+  <import resource="file.xml" />
+  <import resource="collection.xml" />
+  <import resource="article-listing.xml" />
+  <import resource="blog-listing.xml" />
+  <import resource="event-listing.xml" />
+  <import resource="project-listing.xml" />
+  <import resource="master-listing.xml" />
+  <import resource="message-listing.xml" />
+  <import resource="research-group-listing.xml" />
+  <import resource="image-listing.xml" />
+  <import resource="audio-video-listing.xml" />
+  <import resource="image.xml" />
+  <import resource="audio.xml" />
+  <import resource="video.xml" />
+  <import resource="pdf.xml" />
+  <import resource="text.xml" />
+  <import resource="apt.xml" />
+  <import resource="php.xml" />
+  <import resource="html.xml" />
+  <import resource="xhtml10.xml" />
+  <import resource="article.xml" />
+  <import resource="event.xml" />
+  <import resource="xml.xml" />
+  <import resource="managed-xml.xml" />
+  <import resource="msoffice.xml" />
+  <import resource="odf.xml" />
+  <import resource="json.xml" />
+
+  <import resource="employee-listing.xml" />
+  <import resource="person-listing.xml" />
+
+
+  <!-- Studinfo -->
+  <import resource="emne.xml" />
+  <import resource="semester.xml" />
+  <import resource="emnegruppe.xml" />
+  <import resource="studieprogram.xml" />
+  <import resource="studieretning.xml" />
+  <import resource="utvekslingsavtale.xml" />
+
+  <!-- Felles / Common -->
+  <import resource="artikkelsamling.xml" />
+
+  <!-- UiO -->
+  <import resource="artikkel.xml" />
+  <import resource="disputas.xml" />
+  <import resource="proveforelesning.xml" />
+  <import resource="nyhet.xml" />
+  <import resource="arrangement.xml" />
+  <import resource="publikasjon.xml" />
+
+  <!-- Sakskart -->
+  <import resource="sakskart.xml" />
+
+  <!-- Traktater -->
+  <import resource="treaty.xml" />
+
+  <!-- Portal.xml - søkedokumentet -->
+  <import resource="portal.xml" />
+
+  <!-- MUV -->
+  <import resource="muv-artikkel.xml" />
+
+  <!-- CEES -->
+  <import resource="researcher.xml" />
+  <import resource="project.xml" />
+
+  <!-- MIXINs -->
+  <import resource="mixins/introduction-mixin.xml" />
+  <import resource="mixins/navigation.xml" />
+  <import resource="mixins/additional-content-mixin.xml" />
+  <import resource="mixins/ssi.xml" />
+  <import resource="mixins/visual-profile.xml" />
+  <import resource="mixins/media-mixin.xml" />
+
+</beans>

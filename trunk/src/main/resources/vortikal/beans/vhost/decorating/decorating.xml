@@ -1,0 +1,403 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+
+  <bean id="decoratingViewWrapper"
+        class="org.vortikal.web.decorating.DecoratingViewWrapper">
+    <property name="decorators">
+      <list>
+        <ref bean="decorating.templateDecorator" />
+      </list>
+    </property>
+    <property name="maxDocumentSize" value="${decorating.maxDocumentSize}" />
+  </bean>
+
+  <bean id="decorating.templateDecorator"
+        class="org.vortikal.web.decorating.TemplateDecorator">
+    <property name="htmlParser" ref="decorating.htmlParser" />
+    <property name="decorationResolver" ref="decorating.decorationResolver" />
+    <property name="initialFilters" ref="decorating.initialFilters" />
+    <property name="userFilters" ref="decorating.userFilters" />
+    <property name="tidyXhtml" value="${decorating.tidyXhtml}" />
+    <property name="preventDecoratingParameter" value="x-prevent-decorating" />
+    <!--
+    <property name="postFilters">
+      <list>
+        <ref bean="system.csrfPreventionHandler" />
+      </list>
+    </property>
+    -->
+  </bean>
+
+  <bean id="decorating.initialFilters"
+        class="org.springframework.beans.factory.config.ListFactoryBean">
+    <property name="sourceList">
+      <list>
+        <ref bean="linkCheck.htmlFilter" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="decorating.userFilters"
+        class="org.springframework.beans.factory.config.ListFactoryBean">
+    <property name="sourceList">
+      <list>
+        <!--ref bean="decorating.nodeLabelFilter" /-->
+        <ref bean="decorating.ssiNodeFilter" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="decorating.ssiNodeFilter" class="org.vortikal.web.decorating.ComponentInvokingNodeFilter">
+    <property name="componentResolver" ref="decorating.defaultComponentResolver" />
+    <property name="ssiDirectiveComponentMap">
+      <map>
+        <entry key="include" value-ref="decorating.includeComponent" />
+      </map>
+    </property>
+    <property name="availableComponentNamespaces">
+      <set>
+        <ref bean="decorating.cssNamespace" />
+        <ref bean="decorating.includeNamespace" />
+        <ref bean="decorating.resourceNamespace" />
+      </set>
+    </property>
+    <property name="contentComponentParser" ref="decorating.dollarSyntaxTemplateParser" />
+    <property name="parseAttributes" value="true" />
+  </bean>
+
+  <bean id="decorating.decorationResolver"
+        class="org.vortikal.web.decorating.ConfigurableDecorationResolver"
+        parent="repositoryAware">
+    <property name="config" value="${decorating.templateConfigFile}" />
+    <property name="supportMultipleTemplates" value="${decorating.supportMultipleTemplates}" />
+    <property name="templateManager" ref="decorating.templateManager" />
+    <property name="decorationConfiguration" ref="decorating.configurationPropertiesFile" />
+    <property name="parseableContentPropDef" ref="containsSSIDirectivesPropDef" />
+    <property name="localeResolver" ref="viewServiceResourceAwareLocaleResolver" />
+    <property name="maxDocumentSize" value="${decorating.maxDocumentSize}" />
+  </bean>
+
+  <bean id="decorating.configurationPropertiesFile"
+        class="org.vortikal.util.repository.PropertiesResource">
+    <property name="repository" ref="repository" />
+    <property name="uri" value="${decorating.templateConfigFile}" />
+    <property name="lazyInit" value="false" />
+  </bean>
+
+  <bean id="decorating.templateConfigPropsRefreshTrigger"
+        class="org.vortikal.util.repository.MethodInvokingRepositoryEventTrigger">
+    <property name="repository" ref="repository" />
+    <property name="uri" value="${decorating.templateConfigFile}" />
+    <property name="targetObject" ref="decorating.configurationPropertiesFile" />
+    <property name="method" value="load" />
+  </bean>
+
+  <bean id="decorating.templateConfigRefreshTrigger"
+        class="org.vortikal.util.repository.MethodInvokingRepositoryEventTrigger">
+    <property name="repository" ref="repository" />
+    <property name="uri" value="${decorating.templateConfigFile}" />
+    <property name="targetObject" ref="decorating.decorationResolver" />
+    <property name="method" value="loadConfig" />
+  </bean>
+
+  <bean id="decorating.templateManager" class="org.vortikal.web.decorating.CollectionTemplateManager">
+    <property name="repository" ref="repository" />
+    <property name="collectionName" value="${decorating.templatesCollection}" />
+    <property name="templateFactory" ref="decorating.defaultTemplateFactory" />
+    <property name="templateResourceType" ref="htmlResourceTypeDefinition" />
+  </bean>
+
+  <bean id="decorating.templateCollectionRefreshTrigger"
+        class="org.vortikal.util.repository.MethodInvokingRepositoryEventTrigger">
+    <property name="repository" ref="repository" />
+    <property name="uriPattern" value="${decorating.templatesCollection}/.*\.(html|template|tmp)$" />
+    <property name="targetObject" ref="decorating.templateManager" />
+    <property name="method" value="load" />
+  </bean>
+
+
+  <bean id="decorating.defaultTemplateFactory"
+            class="org.vortikal.web.decorating.DelegatingTemplateFactory">
+    <property name="templateFactoryMap">
+      <map>
+	<entry key="\.template$" value-ref="decorating.htmlParserTemplateFactory" />
+	<entry key="\.html$" value-ref="decorating.dollarSyntaxTemplateFactory" />
+	<entry key="\.tmp$" value-ref="decorating.dynamicTemplateFactory" />
+	<entry key="\.tpl$" value-ref="decorating.dynamicTemplateFactory" />
+      </map>
+    </property>
+  </bean>
+
+  <bean id="decorating.htmlParserTemplateFactory"
+            class="org.vortikal.web.decorating.ParsedHtmlDecoratorTemplateFactory">
+    <property name="htmlParser" ref="decorating.htmlParser" />
+    <property name="componentResolver" ref="decorating.defaultComponentResolver" />
+    <property name="componentParser" ref="decorating.dollarSyntaxTemplateParser" />
+  </bean>
+  
+  <bean id="decorating.dollarSyntaxTemplateFactory"
+            class="org.vortikal.web.decorating.TextualDecoratorTemplateFactory">
+    <property name="parser" ref="decorating.dollarSyntaxTemplateParser" />
+    <property name="componentResolver" ref="decorating.defaultComponentResolver" />
+  </bean>
+
+  <bean id="decorating.dollarSyntaxTemplateParser" class="org.vortikal.web.decorating.DollarSyntaxComponentParser">
+  </bean>
+
+  <bean id="decorating.dynamicTemplateFactory"
+            class="org.vortikal.web.decorating.DynamicDecoratorTemplateFactory">
+    <property name="repository" ref="repository" />
+    <property name="componentResolver" ref="decorating.defaultComponentResolver" />
+    <property name="aspectsPropdef" ref="resourceAspectsPropDef" />
+    <property name="fieldConfig" ref="visualProfileAspect.fieldConfig" />
+    <property name="token" ref="trustedToken" />
+    <property name="functions" ref="decorating.tlFunctions" />
+  </bean>
+
+  <bean id="decorating.tlFunctions"
+        class="org.springframework.beans.factory.config.SetFactoryBean">
+    <property name="sourceSet">
+      <set>
+        <ref bean="templateLanguage.toStringFunction" />
+        <ref bean="templateLanguage.toIntFunction" />
+        <ref bean="templateLanguage.concatFunction" />
+        <ref bean="templateLanguage.splitFunction" />
+        <ref bean="templateLanguage.lengthFunction" />
+        <ref bean="templateLanguage.getFunction" />
+        <ref bean="structuredResources.requestContextFunction" />
+      </set>
+    </property>
+  </bean>
+
+  <bean name="decorating.defaultComponentResolver"
+        class="org.vortikal.web.decorating.BeanContextComponentResolver">
+    <property name="availableComponentNamespaces"
+              ref="decorating.defaultComponentNamespaces" />
+  </bean>
+
+  <bean id="decorating.defaultComponentNamespaces"
+        class="org.springframework.beans.factory.config.SetFactoryBean">
+    <property name="sourceSet">
+      <set>
+        <ref bean="decorating.documentNamespace" />
+        <ref bean="decorating.resourceNamespace" />
+        <ref bean="decorating.includeNamespace" />
+        <ref bean="decorating.cssNamespace" />
+        <ref bean="article.componentNamespace" />
+        <ref bean="event.componentNamespace" />
+        <ref bean="structuredResources.componentNamespace" />
+      </set>
+    </property>
+  </bean>
+
+
+
+  <bean name="decorating.documentComponentResolver"
+        class="org.vortikal.web.decorating.BeanContextComponentResolver">
+    <property name="availableComponentNamespaces"
+              ref="decorating.documentComponentNamespaces" />
+  </bean>
+
+  <bean id="decorating.documentComponentNamespaces"
+        class="org.springframework.beans.factory.config.SetFactoryBean">
+    <property name="sourceSet">
+      <set>
+        <ref bean="decorating.resourceNamespace" />
+        <ref bean="decorating.includeNamespace" />
+        <ref bean="decorating.cssNamespace" />
+      </set>
+    </property>
+  </bean>
+
+  <bean id="decorating.plainViewService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="webService" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="x-decorating-mode" />
+          <property name="parameterValue" value="plain" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="decorating.plainViewHandler" />
+    <property name="attributes">
+      <map>
+        <entry key="remove-caching" value="true" />
+      </map>
+    </property>
+  </bean>
+
+  <bean id="decorating.plainViewHandler" class="org.vortikal.web.display.ForwardingController">
+    <property name="service" ref="viewService" />
+    <property name="preservedRequestParameters">
+      <set>
+        <value>revision</value>
+      </set>
+    </property>
+    <property name="requestParameters">
+      <map>
+        <entry key="x-prevent-decorating" value="true" />
+      </map>
+    </property>
+  </bean>
+
+
+  <bean id="decorating.viewUnpublishedService" parent="decorating.plainViewService">
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="x-decorating-mode" />
+          <property name="parameterValue" value="view-unpublished" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="decorating.viewUnpublishedHandler" />
+  </bean>
+
+  <bean id="decorating.viewUnpublishedHandler" parent="decorating.plainViewHandler">
+    <property name="requestParameters">
+      <map>
+        <!--entry key="x-prevent-decorating" value="true" /-->
+        <entry key="vrtxPreviewUnpublished" value="true" />
+      </map>
+    </property>
+  </bean>
+
+  <bean id="listDecoratorComponentsService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="webService" />
+    <property name="order" value="-200" />
+    <property name="categories">
+      <set>
+        <value>plaintextEditTooltipService</value>
+      </set>
+    </property>
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.ResourceTypeAssertion" parent="repositoryAware">
+          <property name="resourceTypeDefinition" ref="htmlResourceTypeDefinition" />
+        </bean>
+        <bean class="org.vortikal.web.service.ResourceURIRegexpAssertion">
+          <property name="pattern" value="^${decorating.templatesCollection}/.*" />
+        </bean>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="action" />
+          <property name="parameterValue" value="list-decorator-components" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="listDecoratorComponentsHandler" />
+    <property name="authenticationChallenge" ref="${webAuthenticationChallenge}" />
+  </bean>
+
+  <bean id="listDocumentsComponentsService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="webService" />
+    <property name="order" value="-200" />
+    <property name="categories">
+      <set>
+        <value>plaintextEditTooltipService</value>
+      </set>
+    </property>
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.ResourceTypeAssertion" parent="repositoryAware">
+          <property name="resourceTypeDefinition" ref="htmlResourceTypeDefinition" />
+        </bean>
+        <bean class="org.vortikal.web.service.ResourceURIRegexpAssertion">
+          <property name="pattern" value="^${decorating.templatesCollection}/.*" />
+          <property name="invert" value="true" />
+        </bean>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="action" />
+          <property name="parameterValue" value="list-decorator-components" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="listDocumentComponentsHandler" />
+  </bean>
+
+  <bean id="jsonDocumentsComponentsService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="webService" />
+    <property name="order" value="-200" />
+    <property name="categories">
+      <set>
+        <value>jsonEditTooltipService</value>
+      </set>
+    </property>
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.ResourceTypeAssertion"
+              parent="repositoryAware">
+          <property name="resourceTypeDefinition" ref="json.managedObjectResourceType" />
+        </bean>
+        <bean class="org.vortikal.web.service.ResourceURIRegexpAssertion">
+          <property name="pattern" value="^${decorating.templatesCollection}/.*" />
+          <property name="invert" value="true" />
+        </bean>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="action" />
+          <property name="parameterValue" value="list-decorator-components" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="listDocumentComponentsHandler" />
+  </bean>
+
+  <bean name="listDecoratorComponentsHandler" class="org.vortikal.web.display.MethodInvokingController">
+    <property name="targetObject" ref="decorating.defaultComponentResolver" />
+    <property name="targetMethod" value="listComponents" />
+    <property name="modelName" value="componentList" />
+    <property name="viewName" value="listDecoratorComponents" />
+  </bean>
+
+  <bean name="listDocumentComponentsHandler" class="org.vortikal.web.display.MethodInvokingController">
+    <property name="targetObject" ref="decorating.documentComponentResolver" />
+    <property name="targetMethod" value="listComponents" />
+    <property name="modelName" value="componentList" />
+    <property name="viewName" value="listDocumentDecoratorComponents" />
+  </bean>
+  
+  <bean id="listDecoratorComponentsViewResolver"
+        class="org.vortikal.web.decorating.MappingViewResolver">
+    <property name="views">
+      <map>
+        <entry key="listDecoratorComponents" value-ref="listDecoratorComponentsView" />
+        <entry key="listDocumentDecoratorComponents" value-ref="listDocumentDecoratorComponentsView" />
+      </map>
+    </property>
+  </bean>
+
+  <bean id="listDecoratorComponentsView" parent="freemarkerView">
+    <property name="url" value="pages/list-decorator-components.ftl" />
+  </bean>
+
+
+  <bean id="listDocumentDecoratorComponentsView" parent="listDecoratorComponentsView">
+    <property name="attributesMap">
+      <map>
+        <entry key="hiddenComponents">
+          <bean id="decorating.hiddenComponents" class="org.vortikal.context.CSVSetFactoryBean">
+            <property name="csvList" value="${decorating.hiddenComponents}" />
+          </bean>
+        </entry>
+      </map>
+    </property>
+  </bean>
+   
+  <!-- New title resolver: -->
+  <bean id="decorating.titleResolver" class="org.vortikal.web.TitleResolverImpl"
+          parent="repositoryAware">
+    <property name="configPath" value="${decorating.titleResolver.config}" />
+    <property name="resourceTypeTree" ref="resourceTypeTree" />
+    <property name="fallbackTemplate" value="${decorating.titleResolver.fallbackTemplate}" />
+  </bean>
+
+  <bean id="decorating.titleResolver.configRefreshTrigger"
+        class="org.vortikal.util.repository.MethodInvokingRepositoryEventTrigger">
+    <property name="repository" ref="repository" />
+    <property name="uri" value="${decorating.titleResolver.config}" />
+    <property name="targetObject" ref="decorating.titleResolver" />
+    <property name="method" value="loadConfig" />
+  </bean>
+
+</beans>

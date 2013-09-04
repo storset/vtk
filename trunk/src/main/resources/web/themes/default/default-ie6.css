@@ -1,0 +1,21 @@
+/*
+ *
+ *  Vortex IE 6
+ *
+ *  TODO: Should be removed
+ */
+
+#resourceMenuLeft,
+#resourceMenuRight {
+  position: relative;
+}
+
+#main {
+  position: relative;
+}
+
+input {
+  border: none;
+}
+
+/* ^ Vortex IE 6 */

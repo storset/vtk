@@ -1,0 +1,101 @@
+resourcetype boxes {
+
+  properties {
+    title : string required overrides title,
+    box-list : json (title : string, content : html) multiple noextract,
+    simplebox : json (foo : string, bar : html) noextract,
+    nedtrekk : string
+  }
+  
+  
+  edit-rules {
+    simplebox tooltip (en : "Tooltip for simple box", no : "Tips for enkel boks", nn : "Taps for enekl boks"),
+    title tooltip (en : "Tooltip for title", no : "Tooltip for tittel", nn : "Tooltip for tittel"),
+    box-list tooltip (en : "Tooltip for box list", no : "Tooltip for liste med bokser", nn : "Tooltip for liste med bokser"),
+    nedtrekk (dropdown)
+  }
+
+  view-components {
+
+    test-include-feed (url) {
+      ##
+
+      [list #('a', 'b', 'cc') elem]
+         elem: [val elem]
+      [endlist]
+      [def map {'a':'b', 'c':'d'}]
+      [list map entry]
+        entry: [val entry]
+      [endlist]
+      [call "include:feed" {"url" : url}]
+      ##
+    }
+
+    test-search (query) {
+      ##
+      [def results search(query, null)]
+      <p>Results for [val query]:</p>
+      <ul>
+      [list results result]
+        [def url view-url(result)]
+        [def title resource-prop(result, "title")]
+        <li><a href="[val url]">[val title]</a></li>
+      [endlist]
+      </ul>
+      ##
+    }
+
+
+    box-list (first-param, second-param) {
+      ##
+      [resource-props "."]
+      [def document structured-document()]
+      [def boxes document.properties.box-list]
+      [if boxes != null]
+        [def document structured-document()]
+        [def boxes document.properties.box-list]
+        [list boxes box]
+           [def title box.title]
+           [def content box.content]
+           <div style="border:1px solid black;margin:20px;">
+             [if title != null]<b>[val title]</b>[endif]
+             [if content != null][val content # unescaped][endif]
+           </div>
+        [endlist]
+      [endif]
+      ##
+    }
+  }
+
+  view {
+    ##
+    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+    <html xmlns="http://www.w3.org/1999/xhtml">
+      <head>
+        <title>[call "resource:property" {"id":"title"}]</title>
+      </head>
+      <body class="foo">
+        <h1>[call "resource:property" {"id":"title"}]</h1>
+        [call "comp:box-list" {"first-param":"component-param1", "second-param":"component-param2"}]
+        [call "comp:test-include-feed" {"url":"http://www.usit.uio.no/saus/blogg/?vrtx=feed"}]
+        [call "comp:test-search" {"query":"type IN file"}]
+      </body>
+    </html>
+    ##
+  }
+  
+    vocabulary {
+       nedtrekk {
+         en : ("true" = "Yes", "false" = "No"),
+         no : ("true" = "Ja", "false" = "Nei"),
+         nn : ("true" = "Ja", "false" = "Nei")
+      }
+    }
+    
+    localization {
+      title : (en : "Title", no : "Tittel", nn : "Tittel"),
+      box-list : (en : "Box list", no : "Liste med bokser", nn : "Liste med bokser"),
+      simplebox : (en : "Simple box", no : "Enkel boks", nn : "Enkel boks"),
+      content : (en : "Content", no : "Innhold", nn : "Innhold")
+    }
+}

@@ -1,0 +1,83 @@
+resourcetype contact-supervisor {
+
+  properties {
+    title : string overrides title,
+    contact-supervisor-box : json ( id : string, description : html, contactInfo : html) multiple noextract
+  }
+  
+  view-components {
+    title {
+      ##
+      [def v resource-prop(".", "title")]
+      [if v != null]
+        [val v]
+      [endif]
+      ##
+    }
+      
+    contact-supervisor-box {
+      ##
+      [def document structured-document()]
+      [def boxes document.properties.contact-supervisor-box]
+      [if boxes != null]
+        [list boxes box]
+          [def title box.boxTitle]
+          [def description box.description]
+          [def contactInfo box.contactInfo]
+          [def id box.id]
+             
+          [def number _index + 1]
+             
+          [if id != null && id != ""]
+            <div class="vrtx-contact-supervisor-box" id="[val id]">
+          [else]
+            <div class="vrtx-contact-supervisor-box">
+          [endif]
+              <div class="vrtx-contact-supervisor-description" id="vrtx-contact-supervisor-description-[val number]">
+                [if description != null && description != ""]
+                  [val description # unescaped]
+                [endif]
+              </div>
+              <div class="vrtx-contact-supervisor-contact-info" id="vrtx-contact-supervisor-contact-info-[val number]">
+                [if contactInfo != null && contactInfo != ""]
+                  [val contactInfo # unescaped]
+                [endif]
+              </div>
+          </div>
+        [endlist]
+      [endif]
+      ##
+    }
+  }
+  
+  view {
+    ##
+    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+    <html xmlns="http://www.w3.org/1999/xhtml">
+      <head>
+        <title>[call "comp:title"]</title>
+      </head>
+      <body id="vrtx-contact-supervisor">
+        <div id="vrtx-content">
+          <div id="vrtx-main-content">
+            <h1>[call "comp:title"]</h1>
+            [call "comp:contact-supervisor-box"]
+          </div>
+        </div>
+      </body>
+    </html>
+    ##
+  }
+
+  localization {
+    title : (en : "Title", no : "Tittel", nn : "Tittel"),
+    id : (en : "Identifier", no : "Identifikator", nn : "Identifikator"),
+    contact-supervisor-box : (en : "Content", no : "Innhold", nn : "Innhold"),
+    boxTitle : (en : "Title", no : "Tittel", nn : "Tittel"),
+    boxType : (en : "Type", no : "Type", nn : "Type"),
+    contactInfo : (en : "Contact Info", no : "Kontaktinformasjon", nn : "Kontaktinformasjon"),
+    description : (en : "Description", no : "Beskrivelse", nn : "Beskrivelse"),
+    boxUrl : (en : "Webaddress", no : "Webadresse", nn : "Webadresse"),
+    header : (en : "Edit contact supervisor", no : "Rediger kontaktveileder", nn : "Rediger kontaktveileder")
+  }
+}

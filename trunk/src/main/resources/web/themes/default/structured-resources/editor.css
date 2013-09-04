@@ -1,0 +1,397 @@
+@import url(../editor-common.css);
+
+/*
+ *
+ *  Vortex - Editor - New documenttypes
+ *
+ */
+
+.vrtx-json {
+  clear: both;
+}
+
+.vrtx-json .vrtx-json-element {
+  margin-bottom: 20px;
+  position: relative;
+  clear: both;
+}
+
+.vrtx-json .vrtx-json-element .vrtx-string,
+.vrtx-json .vrtx-json-element .vrtx-resource-ref,
+.vrtx-json .vrtx-json-element .vrtx-button {
+  margin: 0 20px 0 0;
+  clear: none;
+  float: left;
+}
+
+.vrtx-json .vrtx-json-element .vrtx-string.id {
+  float: none;
+}
+
+.vrtx-json .vrtx-json-element .vrtx-remove-button,
+.vrtx-json .vrtx-json-element .vrtx-move-up-button,
+.vrtx-json .vrtx-json-element .vrtx-move-down-button {
+  margin-top: 26px;
+}
+
+.vrtx-json .vrtx-json-element .vrtx-image-ref {
+  clear: left;
+  /* Fix a clearing problem */
+  margin-top: 0px;
+  padding-top: 20px;
+  overflow: hidden; /* IE collision fix */
+}
+
+.vrtx-image-ref .vrtx-image-ref-preview {
+  display: inline-block;
+  margin-top: 20px;
+}
+
+.vrtx-json .vrtx-json-element .vrtx-resource-ref-browse .vrtx-button,
+.vrtx-json .vrtx-json-element .vrtx-image-ref-browse .vrtx-button,
+.vrtx-json .vrtx-json-element .vrtx-image-ref .vrtx-button {
+  float: none;
+  margin: 0 0 0 20px;
+}
+
+.vrtx-json .vrtx-json-element .vrtx-html {
+  margin-bottom: 20px;
+}
+
+.vrtx-radio-buttons label {
+  margin-bottom: 0px;
+  display: inline;
+}
+
+.vrtx-grouped-horizontal .vrtx-string,
+.vrtx-grouped-horizontal .vrtx-radio,
+.vrtx-grouped-horizontal .vrtx-resource-ref,
+.vrtx-grouped-horizontal .vrtx-image-ref,
+.vrtx-grouped-horizontal .vrtx-media-ref {
+  float: left;
+  margin-right: 20px;
+  margin-top: 0px;
+}
+
+.vrtx-grouped-horizontal .vrtx-string label,
+.vrtx-grouped-horizontal .vrtx-radio label,
+.vrtx-grouped-horizontal .vrtx-resource-ref label,
+.vrtx-grouped-horizontal .vrtx-image-ref label,
+.vrtx-grouped-horizontal .vrtx-media-ref label {
+  margin-bottom: 0px;
+  padding-bottom: 10px;
+}
+
+.vrtx-grouped .vrtx-string,
+.vrtx-grouped .vrtx-radio,
+.vrtx-grouped .vrtx-resource-ref,
+.vrtx-grouped .vrtx-image-ref,
+.vrtx-grouped .vrtx-media-ref {
+  margin-top: 15px;
+}
+
+.vrtx-add-button,
+.vrtx-grouped-horizontal,
+.vrtx-string.author {
+  clear: left;
+}
+
+.vrtx-grouped .related-content label {
+  display: none;
+}
+
+.getExternalPersonInfo label,
+.getExternalUnitInfo label {
+  display: inline;
+}
+
+.getExternalPersonInfo .vrtx-radio-buttons,
+.getExternalUnitInfo .vrtx-radio-buttons {
+  margin-top: 10px;
+}
+
+.getExternalPersonInfo .tooltip,
+.getExternalUnitInfo .tooltip {
+  padding-left: 5px;
+}
+
+.vrtx-info-msg {
+  margin-bottom: -15px;
+  font-size: 0.867em;
+}
+
+.vrtx-info-msg .inputfield {
+  display: none;
+}
+
+.vrtx-info-msg label {
+  background: url(../images/info-small.gif) no-repeat 0 0;
+  padding: 0 0 10px 25px;
+  margin-bottom: 0px;
+}
+
+/* Accordion */
+
+.ui-accordion > div {
+  margin-left: -20px;
+  margin-right: -20px;
+}
+
+.ui-accordion > .header,
+.ui-accordion > .vrtx-add-button {
+  margin-left: 0px;
+  margin-right: 0px;
+}
+
+.ui-accordion > .vrtx-grouped {
+  margin-top: 0px;
+}
+
+.ui-accordion > div > .header.ui-accordion-header label,
+.ui-accordion > .vrtx-json-element {
+  margin-bottom: 0px;
+}
+
+#accordion-grouped {
+  margin: 20px 0;
+}
+
+.ui-accordion > .vrtx-json-element.last {
+  margin-bottom: 20px;
+}
+
+.ui-accordion > div > .header.ui-accordion-header {
+  padding: 15px 15px 14px 40px;
+  border-radius: 0px;
+  margin-bottom: -3px;
+  background: #f9f9f9;
+  color: inherit;
+  border-color: #d9d9d9;
+}
+
+.ui-accordion > div > .header.ui-accordion-header.ui-accordion-header-active {
+  border-bottom: none;
+}
+
+.ui-accordion > div > .header.ui-accordion-header .ui-icon {
+  left: 11px;
+  height: 14px;
+  width: 16px;
+}
+
+.ui-accordion > div > .header.ui-accordion-header .ui-icon.ui-icon-triangle-1-s { /* Expanded */
+  background: url(../images/arrow-expanded-big.gif) no-repeat center left;
+  left: 13px;
+}
+
+.ui-accordion > div > .header.ui-accordion-header .ui-icon.ui-icon-triangle-1-e { /* Collapsed */
+  background: url(../images/arrow-collapsed-big.gif) no-repeat top left;
+}
+
+.ui-accordion .vrtx-grouped .header.ui-accordion-header.ui-state-hover {
+  background: #ecf3f9;
+}
+
+.ui-accordion > div > .header.ui-accordion-header.ui-state-active,
+.ui-accordion > div > .header.ui-accordion-header.ui-state-hover.ui-state-active {
+  background: none;
+}
+
+.ui-accordion > div > .ui-accordion-content { 
+  padding-left: 40px !important;
+  padding-top: 0px !important;
+  border: 1px solid #d9d9d9 !important;
+  border-bottom: none !important;
+  border-top: none !important;
+}
+
+/* ^ Accordion */
+
+/* Study enhancements */
+
+.vrtx-shared-text .shared-text-description {
+  background-color: #fafafa;
+  border: 1px dashed #d5d5d5;
+  margin: 15px 0;
+  padding: 6px 15px;
+}
+
+.vrtx-shared-text .shared-text-description a {
+  color: #005aab;
+  text-decoration: underline;
+}
+
+.vrtx-shared-text .shared-text-description.unavailable {
+  background-color: transparent;
+  border: none;
+  padding: 0;
+  color: #ed1c24;
+}
+
+/* Selects - all is default */
+
+#editor.select-typeToDisplay-so .internasjonale-sokere-admin,
+#editor.select-typeToDisplay-so .nordiske-sokere,
+#editor.select-typeToDisplay-so .generelle-admin,
+#editor.select-typeToDisplay-so .pris,
+#editor.select-typeToDisplay-so .regelverk,
+#editor.select-typeToDisplay-nm .internasjonale-sokere-admin,
+#editor.select-typeToDisplay-nm .nordiske-sokere,
+#editor.select-typeToDisplay-nm .opptakskrav-admin,
+#editor.select-typeToDisplay-nm .forstevitnemal-kvote,
+#editor.select-typeToDisplay-nm .ordinar-kvote-alle-kvalifiserte,
+#editor.select-typeToDisplay-nm .poenggrenser,
+#editor.select-typeToDisplay-nm .studiekode,
+#editor.select-typeToDisplay-em .metode-admin,
+#editor.select-typeToDisplay-em .opptakskrav-admin,
+#editor.select-typeToDisplay-em .forstevitnemal-kvote,
+#editor.select-typeToDisplay-em .ordinar-kvote-alle-kvalifiserte,
+#editor.select-typeToDisplay-em .poenggrenser,
+#editor.select-typeToDisplay-em .studiekode {
+  display: none;
+}
+
+/* Selects - otherwise (reversed logic) */
+
+/* Hide only if JS is turned on */
+#editor.select-teachingsemester .if-teachingsemester-particular,
+#editor.select-teachingsemester .teachingsemester-every-other-semester,
+#editor.select-examsemester .if-examsemester-particular,
+#editor.select-examsemester .examsemester-every-other-semester {
+  display: none;
+}
+
+#editor.select-teachingsemester-particular-semester .if-teachingsemester-particular label,
+#editor.select-teachingsemester-every-other .teachingsemester-every-other-semester .header,
+#editor.select-examsemester-particular-semester .if-examsemester-particular label,
+#editor.select-examsemester-every-other .examsemester-every-other-semester .header {
+  display: none;
+}
+
+#editor.select-teachingsemester-particular-semester .if-teachingsemester-particular,
+#editor.select-teachingsemester-every-other .teachingsemester-every-other-semester,
+#editor.select-teachingsemester-other .teachingsemester-other,
+#editor.select-examsemester-particular-semester .if-examsemester-particular,
+#editor.select-examsemester-every-other .examsemester-every-other-semester {
+  display: block;
+}
+
+/* Radios */
+
+#vrtx-resource\.courseContext\.course-continued-as.hidden {
+  display: none;
+}
+
+/* TODO: generalize JSON-element-accordion */
+#items .vrtx-json-element > div > div,
+#items .vrtx-json-element .left > div,
+#items .vrtx-json-element .right > div {
+  clear: left;
+  float: left;
+  margin-top: 20px;
+}
+
+#items .vrtx-json-element .left,
+#items .vrtx-json-element .right,
+#items .vrtx-json-element .left > div:first-child,
+#items .vrtx-json-element .right > div:first-child,
+#items .vrtx-json-element > div > div:first-child,
+.vrtx-grouped .ui-accordion-content > div:first-child {
+  margin-top: 0px;
+}
+
+#items .vrtx-json-element .right {
+  clear: none;
+}
+
+/* ^ Study enhancements */
+
+/* JSON-boxes - explicit settings */
+
+.vrtx-json #main-content .vrtx-json-element,
+.vrtx-json #contact-supervisor-box .vrtx-json-element,
+.vrtx-json #additional-content .vrtx-json-element,
+.vrtx-json #featured-items .vrtx-json-element {
+  padding: 10px;
+  border: 1px solid #D8D8D8;
+  background-color: #eee;
+}
+
+.vrtx-json.vrtx-json-accordion .vrtx-json-element .vrtx-remove-button,
+.vrtx-json #main-content .vrtx-json-element .vrtx-remove-button,
+.vrtx-json #contact-supervisor-box .vrtx-json-element .vrtx-remove-button,
+.vrtx-json #additional-content .vrtx-json-element .vrtx-remove-button,
+.vrtx-json #featured-items .vrtx-json-element .vrtx-remove-button {
+  position: absolute;
+  margin-top: 0;
+  right: 0px;
+  top: 50%;
+  float: none;
+}
+
+.vrtx-json.vrtx-json-accordion .vrtx-json-element .vrtx-move-up-button,
+.vrtx-json #main-content .vrtx-json-element .vrtx-move-up-button,
+.vrtx-json #contact-supervisor-box .vrtx-json-element .vrtx-move-up-button,
+.vrtx-json #additional-content .vrtx-json-element .vrtx-move-up-button,
+.vrtx-json #featured-items .vrtx-json-element .vrtx-move-up-button,
+.vrtx-json.vrtx-json-accordion .vrtx-json-element .vrtx-move-down-button,
+.vrtx-json #main-content .vrtx-json-element .vrtx-move-down-button,
+.vrtx-json #contact-supervisor-box .vrtx-json-element .vrtx-move-down-button,
+.vrtx-json #additional-content .vrtx-json-element .vrtx-move-down-button,
+.vrtx-json #featured-items .vrtx-json-element .vrtx-move-down-button {
+  position: absolute;
+  right: 0px;
+  margin-top: 0 !important;
+}
+
+.vrtx-json.vrtx-json-accordion .vrtx-json-element .vrtx-move-up-button,
+.vrtx-json #main-content .vrtx-json-element .vrtx-move-up-button,
+.vrtx-json #contact-supervisor-box .vrtx-json-element .vrtx-move-up-button,
+.vrtx-json #additional-content .vrtx-json-element .vrtx-move-up-button,
+.vrtx-json #featured-items .vrtx-json-element .vrtx-move-up-button {
+  top: 10px;
+}
+
+.vrtx-json.vrtx-json-accordion .vrtx-json-element .vrtx-move-down-button,
+.vrtx-json #main-content .vrtx-json-element .vrtx-move-down-button,
+.vrtx-json #contact-supervisor-box .vrtx-json-element .vrtx-move-down-button,
+.vrtx-json #additional-content .vrtx-json-element .vrtx-move-down-button,
+.vrtx-json #featured-items .vrtx-json-element .vrtx-move-down-button {
+  bottom: 10px;
+}
+
+.vrtx-json .vrtx-json-element .vrtx-html {
+  width: 600px;
+}
+
+.vrtx-json .vrtx-json-element .vrtx-html iframe {
+  width: 576px;
+}
+
+.contactInformation .visitingAddress {
+  display: none !important;
+}
+
+#resource-links .vrtx-textfield input{
+  width: 160px;
+}
+
+/* ^ JSON-boxes - explicit settings */
+
+.vrtx-grouped-horizontal:after,
+.vrtx-grouped-vertical:after,
+.vrtx-grouped:after,
+.vrtx-json:after,
+.vrtx-json .vrtx-json-element:after {
+  clear: both;
+  content: ".";
+  display: block;
+  height: 0;
+  visibility: hidden;
+}
+
+.vrtx-grouped .vrtx-json:after {
+  content: "";
+}
+
+/* ^ Vortex - Editor - New documenttypes */

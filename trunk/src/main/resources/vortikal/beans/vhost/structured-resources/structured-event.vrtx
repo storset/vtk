@@ -1,0 +1,162 @@
+resourcetype structured-event : structured-document {
+
+  properties {
+    start-date : datetime,
+    end-date : datetime,
+    location : string,
+    mapurl : string,
+    organizers : json (organizer:string, organizer-url:string) multiple,
+    tags : string multiple overrides tags,
+    related-content : html noextract,
+    showAdditionalContent : boolean defaultvalue("true")
+  }
+
+  edit-rules {
+    caption (size[small]),
+    group introImageAndCaption (picture, caption, hidePicture) (after introduction),
+    title (size[large]),
+    group timeAndPlace (start-date, end-date, location, mapurl) (after introImageAndCaption) horizontal,
+    location (size[small]),
+    mapurl (size[small]),
+    tags tooltip (en : "(Tag1, Tag2, ...)", no : "(Emneord1, Emneord2, ...)", nn : "(Emneord1, Emneord2, ...)"),
+    tags (class[vrtx-autocomplete-tag]),
+    group relatedContent (showAdditionalContent, related-content) (after tags)
+  }
+  
+  view-components {
+  
+    organizer {
+      ##
+      [def document structured-document()]
+      [def organizers document.properties.organizers]
+      [if organizers != null]
+        <div class="vrtx-event-organizers">
+          <h2>[localized 'organizers']</h2>
+          [list organizers organizer]
+            [def organizerName organizer.organizer]
+            [def organizerUrl organizer.organizer-url]
+            [def count _index + 1]
+            [def size _size]
+            [def beforeLast size - 1]
+          
+            [if organizerUrl != null && organizerUrl != ""]
+              <a href="[val organizerUrl]"><span class="organizer">[val organizerName]</span></a>[if count != beforeLast && count != size && size > 1],[endif]
+            [else]
+              <span class="organizer">[val organizerName][if count != beforeLast && count != size && size > 1],[endif]</span>
+            [endif]
+
+            [if count = beforeLast && size > 1]
+              [localized 'organizer-and']
+            [endif]
+
+          [endlist]
+        </div>
+      [endif]
+      ##
+    }
+    
+    related-content-in-additional-column {
+      ##
+      [def document structured-document()]
+      [def theshowAdditionalContent document.properties.showAdditionalContent]
+      [def theRelated-content document.properties.related-content]
+
+      [if (theshowAdditionalContent = "true") || (theshowAdditionalContent = null)]
+        [if theRelated-content != null]
+          <div id="vrtx-additional-content">
+            <div id="vrtx-related-content">
+              [val theRelated-content # unescaped]
+            </div>
+          </div>
+        [endif]
+      [endif]
+      ##
+    }
+    
+    related-content-in-main-column {
+      ##
+      [def document structured-document()]
+      [def theshowAdditionalContent document.properties.showAdditionalContent]
+      [def theRelated-content document.properties.related-content]
+      
+      [if (theshowAdditionalContent = "false")]
+          [if theRelated-content != null]
+            <div id="vrtx-related-content">
+              [val theRelated-content # unescaped]
+            </div>
+          [endif]
+      [endif]
+      ##
+    }
+  }
+  
+  view {
+    ##
+    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+    <html xmlns="http://www.w3.org/1999/xhtml">
+      <head>
+        [call "resource:comments-feed-link"]
+        <title>[call "comp:title"]</title>
+      </head>
+      <body id="vrtx-structured-event">
+        <div id="vrtx-content">
+          [def document structured-document()]
+          [def theShowAdditionalContent document.properties.showAdditionalContent]
+          [if theShowAdditionalContent = "true" || theShowAdditionalContent = null]
+            <div id="vrtx-main-content" class="vrtx-hide-additional-content-false">
+          [else]
+            <div id="vrtx-main-content" class="vrtx-hide-additional-content-true">
+          [endif]
+              <h1>[call "comp:title"]</h1>
+              [call "comp:introduction"]
+              <div class="vrtx-byline">
+                [call "resource:time-and-place"]
+              </div>
+              [def theHidePicture document.properties.hidePicture]
+              [if theHidePicture = "false" || theHidePicture = null]
+                [call "comp:introduction-image"]
+              [endif]
+              [call "json:field" {"select":"content"}]
+              [call "comp:organizer"]
+              [call "comp:related-content-in-main-column"]
+              [call "resource:tags"]
+              [call "comp:vrtx-date-info"]
+              <div class="vrtx-social-components">
+                [call "resource:email-friend"]
+                [call "resource:share-at" {"use-facebook-api": true}]
+              </div>
+              [call "resource:comments"]
+          </div>
+          [call "comp:related-content-in-additional-column"]
+        </div>
+      </body>
+    </html>
+    ##
+  }
+  
+  vocabulary {
+    showAdditionalContent {
+      en : ("true" = "Yes", "false" = "No"),
+      no : ("true" = "Ja", "false" = "Nei"),
+      nn : ("true" = "Ja", "false" = "Nei")
+    }
+  }
+  
+  localization {
+    start-date : (en : "Starts", no : "Starter", nn : "Byrjar"),
+    end-date : (en : "Ends", no : "Slutter", nn : "Sluttar"),
+    location : (en : "Location", no : "Sted", nn : "Stad"),
+    mapurl : (en : "Link to map", no : "Lenke til kart", nn : "Lenke til kart"),
+    hidePicture : (en : "Hide image in event", no : "Skjul bilde i arrangement", nn : "Skjul bilete i arrangement"),
+    organizers : (en: "Organizer", no : "Arrangør", nn : "Arrangør"),
+    organizer : (en: "Name", no : "Navn", nn : "Namn"),
+    organizer-url : (en: "Web address", no : "Webadresse", nn : "Webadresse"),
+    organizer-and : (en: "and", no : "og", nn : "og"),
+    tags : (en : "Tags", no : "Emneord", nn : "Emneord"),
+    timeAndPlace : (en : "Time and place", no : "Tid og sted", nn : "Tid og stad"),
+    showAdditionalContent : (en : "Show in right-column", no : "Vis i høyrekolonne", nn : "Vis i høgrekolonne"),
+    related-content : (en : "Content", no : "Innhold", nn : "Innhold"),
+    relatedContent : (en : "Related content", no : "Relatert innhold", nn : "Relatert innhald"),
+    header : (en : "Edit event", no : "Rediger arrangement", nn : "Rediger arrangement")
+  }
+}

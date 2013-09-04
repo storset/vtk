@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+
+<!-- XML Edit services -->
+
+  <bean id="editService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="manageService" />
+    <property name="order" value="-9800" />
+    <property name="categories">
+      <set>
+        <value>tabMenu</value>
+      </set>
+    </property>
+    <property name="attributes">
+      <map>
+        <entry key="disable-csrf-checking"><value type="java.lang.Boolean">true</value></entry>
+        <entry key="tabOrder"><value type="java.lang.Integer">150</value></entry>
+        <entry key="localeResolver" value-ref="manageLocaleResolver" />
+        <entry key-ref="system.decoratorTemplateAttribute" value="admin.html" />
+      </map>
+    </property>
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="mode" />
+          <property name="parameterValue" value="edit" />
+        </bean>
+        <ref bean="resourceTypeIsManagedXml" />
+        <ref bean="requiresWritePermissionAssertion" />
+        <ref bean="editXslStylesheetAvailable" />
+      </list>
+    </property>
+    <property name="handlerInterceptors">
+      <list>
+        <ref bean="editTabHelpURLServiceInterceptor" />
+      </list>
+    </property>
+    <property name="handler" ref="xmlEditHandler" />
+  </bean>
+
+  <bean id="editTabHelpURLServiceInterceptor"
+        class="org.vortikal.web.ReferenceDataProvidingHandlerInterceptor">
+    <property name="providers" ref="editTabHelpURLProvider" />
+  </bean>
+
+
+  <bean id="editXslStylesheetAvailable"
+        class="org.vortikal.web.service.XmlSchemaXPathAssertion">
+    <property name="schemaRegistry" ref="schemaRegistry" />
+    <property name="schemaPropertyDefinition" ref="schemaPropDef" />
+    <property name="xpath" value="${editXslTransformationSchemaXPath}" />
+  </bean>
+
+
+  <!-- XML edit handler -->
+
+  <bean id="xmlEditHandler" class="org.vortikal.edit.xml.XmlEditController"
+        parent="repositoryAware">
+    <property name="transformerManager" ref="editTransformerManager" />
+    <property name="schemaPropDef" ref="schemaPropDef" />
+    <property name="browseService" ref="browseService" />
+
+    <property name="viewName" value="edit" />
+    <property name="finishViewName" value="redirectToManage" />
+
+  </bean>
+  
+  <bean id="editMessageProvider"
+        class="org.vortikal.web.referencedata.provider.ResourceMessageProvider">
+    <property name="modelName" value="tabMessage" />
+    <property name="localizationKey" value="xmledit.tabMessage" />
+  </bean>
+
+  <bean id="editTabHelpURLProvider"
+        class="org.vortikal.web.referencedata.provider.StaticURLProvider">
+    <property name="modelName" value="tabHelpURL" />
+    <property name="descriptionKey" value="xmledit.tabHelpURLDescription" />
+    <property name="url" value="${editHelpURL}" />
+    <property name="target" value="helpWindow" />
+  </bean>
+
+
+  <bean id="xmledit.ViewResolver" parent="system.decoratingViewResolver">
+    <property name="views">
+      <map>
+        <entry key="edit" value-ref="editView" />
+      </map>
+    </property>
+    <!--property name="viewWrapper" ref="editViewWrapper" /-->
+  </bean>
+
+  <!-- Add the raw query URL provider to the reference data providers
+       for editView (used for debugging XML searches): -->
+<!--   <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"> -->
+<!--     <property name="targetObject" ref="editView" /> -->
+<!--     <property name="targetMethod" value="addReferenceDataProvider" /> -->
+<!--     <property name="arguments"> -->
+<!--       <list> -->
+<!--         <ref bean="rawXmlQueryURLProvider" /> -->
+<!--       </list> -->
+<!--     </property> -->
+<!--   </bean> -->
+
+
+  <!-- XML edit view -->
+
+  <bean id="editView" class="org.vortikal.web.view.xslt.ResourceXsltView">
+    <property name="staticAttributes" ref="xslTransformerParameterMap" />
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="rawXmlQueryURLProvider" />
+        <ref bean="editMessageProvider" />
+        <ref bean="editTabHelpURLProvider" />
+        <bean class="org.vortikal.web.referencedata.provider.StaticModelDataProvider">
+          <property name="modelDataMap">
+            <map>
+              <entry key="serviceCssURLs" value-ref="editCSSURLs" />
+            </map>
+          </property>
+        </bean>
+      </list>
+    </property>
+    <property name="transformerManager" ref="editTransformerManager" />
+  </bean>
+
+  <bean id="editCSSURLs" class="java.util.ArrayList">
+    <constructor-arg>
+      <list>
+        <value>${themeBaseURL}/editor-xml.css</value>
+      </list>
+    </constructor-arg>
+  </bean> 
+  
+  
+  <bean id="xmlEditMessageSource"
+        class="org.springframework.context.support.ResourceBundleMessageSource">
+    <property name="basenames">
+      <list>
+        <value>vortikal.i18n.xmledit</value>
+      </list>
+    </property>
+  </bean>
+
+
+  <bean id="editXslStylesheetResolvers" class="java.util.ArrayList">
+    <constructor-arg>
+      <list>
+        <bean class="org.vortikal.xml.StylesheetInSchemaResolver">
+          <property name="schemaRegistry" ref="schemaRegistry"/>
+          <property name="elementXPath" value="${editXslTransformationSchemaXPath}" />
+         </bean>
+      </list>
+    </constructor-arg>
+  </bean>
+
+
+  <bean id="editTransformerManager" class="org.vortikal.xml.TransformerManager">
+    <property name="alwaysCompile" value="true" />
+    <property name="stylesheetReferenceResolvers" ref="editXslStylesheetResolvers" />
+     <property name="compilationURIResolvers" ref="standardXslCompilationResolvers" />
+     <property name="transformationURIResolvers">
+       <list>
+         <ref bean="xsltTransformationRepositoryURIResolver" />
+       </list>
+     </property>
+     <property name="transformationThrottle" ref="xmlTransformationThrottle" />
+   </bean>
+
+
+
+  <!-- XML edit error handler -->
+
+  <bean id="xmlEditErrorHandler" class="org.vortikal.web.DefaultErrorHandler"
+        parent="abstractReferencedataProvidingErrorHandler">
+    <description>
+      Provides error handling for the XML edit service.
+    </description>
+    <property name="service" ref="editService" />
+    <property name="errorType">
+      <bean class="java.lang.Class" factory-method="forName">
+        <constructor-arg value="org.vortikal.edit.xml.XMLEditException" />
+      </bean>
+    </property>
+    <property name="errorViewName" value="xmlEditError" />
+  </bean>
+
+  <bean id="xmlEditErrorViewResolver" parent="manageErrorViewResolver">
+    <property name="views">
+      <map>
+        <entry key="xmlEditError" value-ref="xmlEditErrorView" />
+      </map>
+    </property>
+  </bean>
+  
+
+  <bean id="xmlEditErrorView" parent="freemarkerView">
+        <property name="url" value="pages/error/edit-xml-error.ftl" />
+  </bean>
+
+</beans>

@@ -1,0 +1,420 @@
+<?xml version="1.0" encoding="utf-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+  
+  <bean name="commenting.postCommentService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="webService" />
+    <property name="assertions">
+      <list>
+        <ref bean="commenting.requestParameterIsAddComment" />
+        <ref bean="commenting.isPostRequest" />
+        <ref bean="commenting.commentsAllowed" />
+        <ref bean="commenting.commentsEnabled" />
+      </list>
+    </property>
+    <property name="handlerFilters">
+      <list>
+        <ref bean="system.csrfPreventionHandler" />
+      </list>
+    </property>
+    <property name="handler" ref="commenting.postCommentController" />
+  </bean>
+
+  <bean name="commenting.deleteCommentService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="webService" />
+    <property name="assertions">
+      <list>
+        <ref bean="commenting.isPostRequest" />
+        <ref bean="commenting.requestParameterIsDeleteComment" />
+        <ref bean="commenting.hasDeletePermission" />
+      </list>
+    </property>
+    <property name="handlerFilters">
+      <list>
+        <ref bean="system.csrfPreventionHandler" />
+      </list>
+    </property>
+    <property name="handler" ref="commenting.deleteCommentController" />
+  </bean>
+
+  <bean name="commenting.deleteAllCommentsService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="webService" />
+    <property name="assertions">
+      <list>
+        <ref bean="commenting.isPostRequest" />
+        <ref bean="commenting.requestParameterIsDeleteAllComments" />
+        <ref bean="commenting.hasDeletePermission" />
+      </list>
+    </property>
+    <property name="handlerFilters">
+      <list>
+        <ref bean="system.csrfPreventionHandler" />
+      </list>
+    </property>
+    <property name="handler" ref="commenting.deleteAllCommentsController" />
+  </bean>
+
+  <bean name="commenting.resourceCommentsService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="webService" />
+    <property name="assertions">
+      <list>
+        <ref bean="commenting.requestParameterIsComments" />
+      </list>
+    </property>
+    <property name="handler" ref="commenting.resourceCommentsController" />
+    <property name="attributes">
+      <map>
+        <entry key="decorating.servicePredicateName" value="comments" />
+      </map>
+    </property>
+    <property name="serviceNameProvider" ref="commenting.serviceNameProvider" />
+  </bean>
+  
+  <bean id="commenting.serviceNameProvider"
+      class="org.vortikal.web.service.provider.CommentingServiceNameProvider">
+    <property name="repositoryId" value="${repositoryID}" />
+  </bean>
+
+  <bean name="commenting.feedService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="webService" />
+    <property name="assertions">
+      <list>
+        <ref bean="commenting.requestParameterIsFeed" />
+      </list>
+    </property>
+    <property name="handler" ref="commenting.displayFeedController" />
+  </bean>
+
+
+  <bean name="commenting.postCommentController"
+        class="org.vortikal.web.commenting.PostCommentController">
+    <property name="formView" value="commenting.redirectToDefault" />
+    <property name="successView" value="commenting.redirectToDefault" />
+    <property name="commandName" value="postCommentForm" />
+    <property name="commandClass"
+              value="org.vortikal.web.commenting.PostCommentCommand" />
+    <property name="requireCommentTitle" ref="commenting.titlesEnabled" />
+    <property name="formSessionAttributeName" ref="commenting.postFormSessionAttributeName" />
+    <property name="htmlParser" ref="decorating.htmlParser" />
+    <property name="htmlFilter" ref="commenting.htmlFilter" />
+  </bean>
+
+  <bean id="commenting.htmlFilter" class="org.vortikal.text.html.SimpleHtmlPageFilter">
+    <property name="illegalElements" ref="safeHtml.illegalElementSet" />
+    <property name="validElements" ref="commenting.validHtmlElementSet" />
+  </bean>
+
+  <bean id="commenting.validHtmlElementSet" class="org.springframework.beans.factory.config.SetFactoryBean">
+    <property name="sourceSet">
+      <set>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="a" />
+          <property name="attributes">
+            <set>
+              <value>href</value>
+            </set>
+          </property>
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="p" />
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="ul" />
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="li" />
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="ol" />
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="em" />
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="strong" />
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="cite" />
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="code" />
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="strike" />
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="s" />
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="u" />
+        </bean>
+      </set>
+    </property>
+  </bean>
+
+  <bean name="commenting.deleteCommentController"
+        class="org.vortikal.web.commenting.DeleteCommentController">
+    <property name="viewName" value="commenting.redirectToDefault" />
+  </bean>
+
+  <bean name="commenting.deleteAllCommentsController"
+        class="org.vortikal.web.commenting.DeleteCommentController">
+    <property name="deleteAllComments" value="true" />
+    <property name="viewName" value="commenting.redirectToDefault" />
+  </bean>
+
+  <bean name="commenting.resourceCommentsController"
+        class="org.vortikal.web.display.file.ResourceAwareParameterizableViewController">
+    <property name="viewName" value="commenting.resourceCommentsView" />
+  </bean>
+
+  <bean name="commenting.displayFeedController"
+        class="org.vortikal.web.commenting.CommentsFeedController">
+    <property name="viewService" ref="viewService" />
+    <property name="viewName" value="commenting.feedView" />
+  </bean>
+
+  <bean id="commenting.requestParameterIsAddComment" 
+    class="org.vortikal.web.service.RequestParameterAssertion">
+    <property name="parameterName" value="vrtx" />
+    <property name="parameterValue" value="add-comment" />
+  </bean>
+
+  <bean id="commenting.requestParameterIsDeleteComment" 
+    class="org.vortikal.web.service.RequestParameterAssertion">
+    <property name="parameterName" value="vrtx" />
+    <property name="parameterValue" value="delete-comment" />
+  </bean>
+
+  <bean id="commenting.requestParameterIsDeleteAllComments" 
+    class="org.vortikal.web.service.RequestParameterAssertion">
+    <property name="parameterName" value="vrtx" />
+    <property name="parameterValue" value="delete-all-comments" />
+  </bean>
+
+  <bean id="commenting.requestParameterIsFeed" 
+    class="org.vortikal.web.service.RequestParameterAssertion">
+    <property name="parameterName" value="vrtx" />
+    <property name="parameterValue" value="comments-feed" />
+  </bean>
+
+  <bean id="commenting.requestParameterIsComments" 
+    class="org.vortikal.web.service.RequestParameterAssertion">
+    <property name="parameterName" value="vrtx" />
+    <property name="parameterValue" value="comments" />
+  </bean>
+
+  <bean id="commenting.isPostRequest"
+        class="org.vortikal.web.service.RequestMethodAssertion">
+    <property name="methods">
+      <set>
+        <value>POST</value>
+      </set>
+    </property>
+  </bean>
+
+  <bean id="commenting.commentsEnabled"
+        class="org.vortikal.web.service.ResourcePropertyAssertion">
+    <property name="namespace" ref="DEFAULT_NAMESPACE" />
+    <property name="name" value="commentsEnabled" />
+    <property name="value" value="true" />
+    <property name="token" ref="trustedToken" />
+  </bean>
+
+  <bean id="commenting.commentsAllowed"
+        parent="abstractResourcePrincipalPermissionAssertion">
+    <property name="privilege" value="ADD_COMMENT" />
+  </bean>
+
+  <bean id="commenting.hasDeletePermission"
+        parent="abstractResourcePrincipalPermissionAssertion">
+    <property name="privilege" value="ALL" />
+  </bean>
+
+  <bean id="commenting.viewResolver" parent="viewResolver">
+    <property name="views">
+      <map>
+        <entry key="commenting.redirectToDefault" value-ref="commenting.redirectToDefaultView" />
+        <entry key="commenting.feedView" value-ref="commenting.feedView" />
+      </map>
+    </property>
+  </bean>
+  
+  <bean id="commenting.decoratingViewResolver" parent="decoratorViewResolver">
+    <property name="views">
+      <map>
+        <entry key="commenting.resourceCommentsView" value-ref="commenting.resourceCommentsView" />
+      </map>
+    </property>
+  </bean>
+
+  <bean id="commenting.redirectToDefaultView" 
+    class="org.vortikal.web.view.RedirectView">
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="commenting.redirectToDefaultProvider" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="commenting.redirectToDefaultProvider" 
+        class="org.vortikal.web.referencedata.provider.RedirectProvider">
+    <property name="redirectToService" ref="displayResourceService" />
+    <property name="urlAnchor" value="comment-form" />
+  </bean>
+
+
+  <bean id="commenting.resourceCommentsView" parent="freemarkerView">
+    <property name="url" value="commenting/resource-comments.ftl" />
+    <property name="contentType" value="text/html;charset=utf-8" />
+    <property name="referenceDataProviders">
+      <bean class="org.vortikal.web.commenting.RecentCommentsProvider">
+        <property name="deepCommentsListing" value="true" />
+        <property name="maxComments" value="100" />
+        <property name="viewService" ref="viewService" />
+        <property name="resourceCommentsFeedService" ref="commenting.feedService" />
+        <property name="publishedDatePropDef" ref="publishedDatePropDef" />
+        <property name="includeCommentsFromUnpublished" value="true" />
+        <property name="trustedToken" ref="trustedToken" />
+      </bean>    
+    </property>
+    <property name="attributesMap">
+      <map>
+        <entry key="cssURLs"><list><value>${themeBaseURL}/comments.css</value></list></entry>
+      </map>
+    </property>
+  </bean>
+
+  <bean id="commenting.recentCommentsComponentView" parent="freemarkerView">
+    <property name="url" value="commenting/recent-comments-component.ftl" />
+    <property name="contentType" value="text/html;charset=utf-8" />
+    <property name="referenceDataProviders">
+      <bean class="org.vortikal.web.commenting.RecentCommentsProvider">
+        <property name="deepCommentsListing" value="true" />
+        <property name="maxComments" value="10" />
+        <property name="viewService" ref="viewService" />
+        <property name="recentCommentsService" ref="commenting.resourceCommentsService" />
+        <property name="resourceCommentsFeedService" ref="commenting.feedService" />
+        <property name="publishedDatePropDef" ref="publishedDatePropDef" />
+        <property name="trustedToken" ref="trustedToken" />
+      </bean>    
+    </property>  
+  </bean>
+
+  <bean id="commenting.feedView" parent="freemarkerView">
+    <property name="url" value="commenting/comments-feed.ftl" />
+    <!--
+    <property name="contentType" value="application/atom+xml" />
+    -->
+    <property name="contentType" value="text/xml;charset=utf-8" />
+  </bean>
+
+
+  <bean name="commenting.postFormSessionAttributeName" class="java.lang.String">
+    <constructor-arg value="org.vortikal.web.commenting.FormSessionAttribute" />
+  </bean>
+
+
+  <bean name="commenting.listCommentsComponent" class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
+    <property name="namespace" ref="decorating.documentNamespace" />
+    <property name="name" value="comments" />
+    <property name="description" value="Lists comments on a resource" />
+    <property name="view" ref="commenting.commentsView" />
+  </bean>
+
+
+  <bean name="commenting.recentCommentsComponent" class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
+    <property name="namespace" ref="decorating.includeNamespace" />
+    <property name="name" value="recent-comments" />
+    <property name="description" value="Lists recent comments under the current collection" />
+    <property name="view" ref="commenting.recentCommentsComponentView" />
+    <property name="parameterDescriptions">
+      <map>
+        <entry key="max-comments" value="Maximum number of comments to display. The default value is 10." />
+        <entry key="include-if-empty" value="Set to 'false' if you don't want to display empty comments. Default is 'true'." />
+      </map>
+    </property>
+    <property name="examples">
+      <map>
+        <entry key="max-comments=[5] include-if-empty=[false]" value="" />
+      </map>
+    </property>
+    <property name="exposedParameters">
+      <set>
+        <value>max-comments</value>
+        <value>include-if-empty</value>
+      </set>
+    </property>
+  </bean>
+
+
+  <bean id="commenting.titlesEnabled" class="java.lang.Boolean">
+    <constructor-arg value="${commenting.title.enabled}" />
+  </bean>
+
+  <bean id="commenting.htmlContentEnabled" class="java.lang.Boolean">
+    <constructor-arg value="${commenting.html.enabled}" />
+  </bean>
+
+
+  <bean id="commenting.commentsView" parent="freemarkerView">
+    <property name="url" value="commenting/comments-component.ftl" />
+    <property name="referenceDataProviders" ref="commenting.commentsView.referenceDataProviders" />
+      <property name="attributesMap">
+      <map>
+        <entry key="jsBaseURL" value="${jsBaseURL}" />
+         <entry key="jquery" value="${jquery.baseURL}/jquery.min.js" />
+      </map>
+    </property>
+  </bean>
+
+  <bean id="commenting.freemarkerConfig" class="org.springframework.beans.factory.config.MapFactoryBean">
+    <property name="sourceMap">
+      <map>
+        <entry key="titlesEnabled" value-ref="commenting.titlesEnabled" />
+        <entry key="htmlContentEnabled" value-ref="commenting.htmlContentEnabled" />
+        <entry key="validHtmlElements" value-ref="commenting.validHtmlElementSet" />
+      </map>
+    </property>
+  </bean>
+
+
+  <bean id="commenting.commentsView.referenceDataProviders" class="org.springframework.beans.factory.config.ListFactoryBean">
+    <property name="sourceList">
+      <list>
+        <bean class="org.vortikal.web.commenting.CommentsProvider">
+          <property name="postCommentService" ref="commenting.postCommentService" />
+          <property name="deleteCommentService" ref="commenting.deleteCommentService" />
+          <property name="deleteAllCommentsService" ref="commenting.deleteAllCommentsService" />
+          <property name="resourceCommentsFeedService" ref="commenting.feedService" />
+          <property name="loginService" ref="loginService" />
+          <property name="formSessionAttributeName" ref="commenting.postFormSessionAttributeName" />
+          <property name="trustedToken" ref="trustedToken" />
+        </bean>
+        <bean class="org.vortikal.web.referencedata.provider.StaticURIServiceURLProvider">
+          <property name="service" ref="staticResourceService" />
+          <property name="path" value="${editor.fck.resourcesURL}" />
+          <property name="modelName" value="fckeditorBase" />
+        </bean>
+        <bean class="org.vortikal.web.referencedata.provider.StaticModelDataProvider">
+          <property name="modelDataMap">
+            <map>
+              <entry key="fckEditorAreaCSSURL" value-ref="editor.fckEditorAreaCSSURL" />
+              <entry key="config" value-ref="commenting.freemarkerConfig" /> 
+            </map>
+          </property>
+        </bean>
+      </list>
+    </property>
+  </bean>
+
+   <bean id="commenting.messageSource"
+         class="org.springframework.context.support.ResourceBundleMessageSource">
+     <property name="basenames">
+       <list>
+         <value>vortikal.i18n.commenting</value>
+       </list>
+     </property>
+   </bean>
+
+</beans>

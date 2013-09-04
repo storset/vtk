@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+
+  <bean id="vcfService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="webService" />
+    <property name="order" value="-999" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.OrAssertion">
+          <property name="assertions">
+            <list>
+              <ref bean="resourceTypeIsPerson" />
+              <ref bean="resourceIsPersonListing" />
+            </list>
+          </property>
+        </bean>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="vrtx" />
+          <property name="parameterValue" value="vcf" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="vcfHandler" />
+  </bean>
+
+  <bean id="vcfHandler" class="org.vortikal.web.display.vcf.VcfController">
+    <property name="resourceTypeTree" ref="resourceTypeTree"/>
+    <property name="firstNamePropDefPointer" value="resource:firstName" />
+    <property name="surnamePropDefPointer" value="resource:surname" />
+    <property name="usernamePropDefPointer" value="resource:username" />
+    <property name="positionPropDefPointer" value="resource:position" />
+    <property name="phonePropDefPointer" value="resource:phone" />
+    <property name="alternativeCellPhonePropDefPointer" value="resource:alternativeCellPhone" />
+    <property name="mobilePropDefPointer" value="resource:mobile" />
+    <property name="faxPropDefPointer" value="resource:fax" />
+    <property name="postalAddressPropDefPointer" value="resource:postalAddress" />
+    <property name="alternativeVisitingAddressPropDefPointer" value="resource:alternativeVisitingAddress" />
+    <property name="visitingAddressPropDefPointer" value="resource:visitingAddress" />
+    <property name="emailPropDefPointer" value="resource:email" />
+    <property name="picturePropDefPointer" value="resource:picture" />
+    <property name="thumbnailPropDefPointer" value="thumbnail" />
+    <property name="imageWidthPropDefPointer" value="pixelWidth" />
+    <property name="maxImageWidth" value="${resourcetype.image.thumbnail.width}" />
+  </bean>
+
+</beans>

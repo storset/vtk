@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <xsd:annotation>
+    <xsd:appinfo>
+      <rss>
+        <xsl>/common/portal/v001/portal-rss.xsl</xsl>
+      </rss>
+    </xsd:appinfo>
+  </xsd:annotation>
+
+  <xsd:element name="portal" type="xsd:string"/>
+
+</xsd:schema>

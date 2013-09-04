@@ -1,0 +1,21 @@
+Strobe media playback 1.5 søtter ikke content-type fra http request header. Ved oppgradering av Strobe er det viktig at man først sjekker
+om den nye versjonen støtter dette. Hvis den ikke gjør det, må det legges inn en fix for at Strobe skal kunne laste bilder fra thumbnail 
+servicen i Vortikal. 
+
+Følgende skritt må følges:
+
+1. Last ned siste versjon av OSMF fra http://www.osmf.org/
+2. Last ned siste versjon av SMP fra http://www.osmd.org/ 
+3. Start Flash Builder (følger med adobe sin gigantpakke sammen med Photoshop, Dreamweaver osv)
+4. Importer kildekoden til OSMF i Flash Builder
+5. Importer kildekoden til SMP i Flash Builder
+5.1 Oppdater Action Script  Build Path i SMP prosjektet til å peke mot OSFM prosjektet ( Properties > Acion Script Build Path > Add project )  
+6. Patch ImageLoader.as med "StrobeMediaPlayback_vortikal_patch/ImageLoader.patch"
+7. Bygg SMP ( Project > Export Release Build )
+8. Legg den ferske versjonen av SMP i vortikal
+9. Oppdater eventuelle pakere til ny versjon av SMP
+
+Nyttige kilder til informasjon:
+
+http://active.tutsplus.com/tutorials/media/getting-started-with-strobe-media-playback-full-customization/
+http://help.adobe.com/en_US/OSMF/1.0/Dev/WSc6f922f643dd2e6d231a337012a15fff05c-8000.html

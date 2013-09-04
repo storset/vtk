@@ -1,0 +1,87 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <title>Service MVC abstraction</title>
+  </head>  
+  <body>
+    This package is the core spring web application framework extension.
+    <p>
+      TODO:
+    </p>
+    <ul>
+      <li>How is the guessing of url constructing to be specified</li>
+    </ul>
+      
+    <p>
+      This package is a simple abstraction layer on top of the Spring's 
+      standard and flexible webapp framework, to support our resource centric
+      approach.
+    </p>
+    <p>
+      When generating user views, we often want to create links to more or 
+      less specific functionality or views on resources (i.e. a link to a resource' 
+      general administration page, deletion or a certain modification of a child 
+      resource). This kind of dependencies between functionality are usually
+      just handled within the scope of the "application" (where each application has it's own uri),
+      and are the (application centric) developers' responsibility. For web and document centric 
+      web applications this isn't a good solution.
+    </p>
+    <p>
+      The core of this package is the Service, a plain data holder. A service can have a list of child 
+      services, effectively making a tree of services. Each service can have a list of assertions, 
+      a standard Spring Controller and a set of name->View mappings.
+    </p>
+    <p>
+      The service is not as plain as it might seem. Usually the task of dividing complex 
+      functionality into manageble parts, is done by creating isolated applications where 
+      each again has divided the functionality into pages, views, actions or whatever. The service 
+      in our framework is a simple generic and flexible replacement for this kind of two (or more)-level 
+      approach, making it possible to define abstract or concrete grouping of functionality 
+      anyway you like. With the flexible assertion concept we're no longer bound to the use of 
+      the uri namespace to divide functionality into logical toplevel applications (or pages). This 
+      makes it possible to give the user a document- and web centric experience, a widely known and 
+      understood metaphore for computer and web use. 
+    </p>
+    <p>
+      With the helper class LinkConstructor, a service is able to construct URLs 
+      to itself, based on a given resource and principal, and the assertions in the service tree.
+    </p>
+    <p>
+      An assertion states a fact that must be true (for the service it's referenced from).
+      It might say that the uri prefix must be "/sweet/16" or that the host name must be "localhost".
+      But it could also state that the resource on the specified uri must be a folder or an XML document
+      with a specific schema definition. As long as the implementation can resolve the assertion based 
+      on the request, resource or principal, there's no limitations on what can be asserted.   
+    </p>    
+    <p>
+      Two classes, the ServiceHandlerMapping and the 
+      ServiceViewResolver takes a service tree as a property to perform two distinct framework
+      tasks; handler mapping and view resolving.
+    </p>
+    <p>
+      <b>The ServiceHandlerMapping</b> is a standard Spring HandlerMapping. Starting at the service 
+      root it checks any assertions set on this service. If any fails it returns null (no match).
+      If there are no assertions or all assertions passes, it goes through all child services 
+      (if there are any) recursively. The first child to return a controller ends the recursion, 
+      giving a simple depth first traversal of the service tree. If none of the children returns 
+      a controller, this service' controller (if it has any) is returned. 
+    </p>   
+    <p>
+      In other words, you place your controllers in a service tree with associated assertions,
+      returning the last controller found (if any) along the first depth first traversal where all
+      assertions match.
+    </p>  
+    <p><b>The ServiceViewResolver</b> can be used, as all view resolvers, to map logical view 
+      name to a View. It checks the current service (if any) to see if this name is specified in
+      the name->View map. If it doesn't, it traverses up the service tree to see if the name is 
+      specified in any of the ancestors.
+    </p>
+    <p>This is a convenient way to easily add custom functionality. Often new functionality is
+      added for a rare case, where you want a specific view to be overrided or a new one added, 
+      without changing the logical name of this view or any other view. In a large service tree,
+      keeping tabs on unique but still meaningful logical view names, and avoid having to change 
+      the hard coded String values in code, can be a mess. This mechanism gives us the ability to
+      group the views to the logical services, without loosing any flexibility.
+    </p>
+  </body>
+</html>

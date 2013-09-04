@@ -1,0 +1,294 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+
+  <!-- 
+    To use: 
+
+    1. add to ~/.vrtx-context.xml:
+
+    <import resource="classpath:/vortikal/beans/standard-extensions/saml/saml.xml" />
+
+
+    2. add to ~/.vrtx.properties:
+
+    webAuthenticationChallenge = saml.authenticationHandler
+    saml.authenticationURL = <login url>
+    saml.logoutURL = <logout url>
+    saml.idpCertificate = <encoded IDP certificate>
+    saml.keystorePath = <path to keystore>
+    saml.keystorePassword = <keystore password>
+    saml.privateKeyAlias = <alias of private key entry in keystore>
+    saml.privateKeyPassword = <password of private key entry>
+  -->
+
+
+  <bean id="saml.authenticationHandler"
+    class="org.vortikal.security.web.saml.SamlAuthenticationHandler">
+    <property name="identifier" value="saml:${saml.authenticationURL}"/>
+    <property name="principalFactory" ref="principalFactory"/>
+    <property name="loginListeners" ref="saml.loginListeners" />
+
+    <property name="challenge" ref="saml.challenge"/>
+    <property name="login" ref="saml.login"/>
+    <property name="logout" ref="saml.logout"/>
+    <property name="postHandler" ref="saml.lostPostHandler"/>
+
+    <property name="ieCookieSetterURI" value="${saml.ieCookieSetterURI}" />
+
+    <property name="iECookieStore" ref="saml.ieCookieStore" />
+    
+    <property name="redirectToViewService" ref="viewService"/>
+    <property name="redirectToAdminService" ref="manageService" />
+
+    <property name="spCookieDomain" value="${security.spCookieDomain}" />
+
+    <property name="ieCookieTicket" value="${saml.ieCookieTicket}" />
+    <property name="vrtxAuthSP" value="${saml.vrtxAuthSP}" />
+    <property name="uioAuthIDP" value="${saml.uioAuthIDP}" />
+    <property name="uioAuthSSO" value="${saml.uioAuthSSO}" />
+    <property name="ieReturnURL" value="${saml.ieReturnURL}" />
+      
+    <property name="ieCookieHandlingEnabled" value="${saml.ieCookieHandlingEnabled}" />  
+      
+    <property name="manageAssertion" ref="manage.hostNameAssertion" />
+
+    <property name="staticHeaders">
+      <map>
+        <entry key="Cache-Control" value="no-cache, no-store, must-revalidate, max-age=0" />
+        <entry key="Expires" value="0" />
+        <entry key="Pragma" value="no-cache" />
+      </map>
+    </property>
+    <property name="categories" value="spCookie" />
+  </bean>
+
+  <bean id="saml.abstractHandler" abstract="true">
+    <property name="certificateManager" ref="saml.certificateManager"/>
+    <property name="serviceProviderURI" value="${saml.serviceProviderURI}"/>
+    <property name="privateKeyAlias" value="${saml.privateKeyAlias}"/>
+    <property name="authenticationURL" value="${saml.authenticationURL}"/>
+    <property name="logoutURL" value="${saml.logoutURL}"/>
+    <property name="serviceIdentifier" value="${saml.serviceIdentifier}"/>
+    <property name="certKey" value="${saml.idpCertKey}"/>
+  </bean>
+
+  <bean id="saml.challenge" class="org.vortikal.security.web.saml.Challenge"
+    parent="saml.abstractHandler">
+    <property name="urlSessionAttribute" value="${saml.urlSessionAttribute}" />
+  </bean>
+
+  <bean id="saml.login" class="org.vortikal.security.web.saml.Login" parent="saml.abstractHandler">
+    <property name="replayMinutes" value="60"/>
+  </bean>
+
+  <bean id="saml.loginListeners" class="org.vortikal.context.CategoryResolvingFactoryBean">
+    <property name="category" value="saml.loginListener" />
+  </bean>
+
+
+  <bean id="saml.logout" class="org.vortikal.security.web.saml.Logout" parent="saml.abstractHandler">
+    <property name="securityInitializer" ref="securityInitializer"/>
+    <property name="redirectService" ref="viewService"/>
+    <property name="ieCookieLogoutTicket" value="${saml.ieCookieLogoutTicket}" />    
+    <property name="iECookieStore" ref="saml.ieCookieStore" />
+    <property name="manageAssertion" ref="manage.hostNameAssertion" />    
+  </bean>
+
+
+  <bean id="saml.certificateManager" class="org.vortikal.security.web.saml.CertificateManager">
+    <property name="keystore" value="${saml.keystorePath}"/>
+    <property name="keystorePassword" value="${saml.keystorePassword}"/>
+    <property name="privateKeyPassword" value="${saml.privateKeyPassword}"/>
+    <property name="encodedIdpCertificatesMap">
+      <map>
+        <entry key="${saml.idpCertKey}" value="${saml.idpCertificate}"/>        
+      </map>
+    </property>
+  </bean>
+
+  <!-- 
+    - This service serves the purpose of receiving "post-logout" requests from IDP 
+    - and then redirecting to the resource from where logout request was initiated
+  -->
+  <bean id="saml.postLogoutService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="order" value="-97000"/>
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestPathAssertion">
+          <property name="path" value="${saml.serviceProviderURI}"/>
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="saml.authenticationHandler"/>
+    <property name="attributes">
+      <map>
+        <entry key="inhibit-caching" value="true" />
+      </map>
+    </property>
+  </bean>
+
+  <bean id="saml.metadataService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="order" value="-97000"/>
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestPathAssertion">
+          <property name="path" value="${saml.metadataServiceURI}"/>
+        </bean>
+      </list>
+    </property>
+    <property name="handler">
+      <bean class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+        <property name="viewName" value="saml.metadata"/>
+      </bean>
+    </property>
+    <property name="attributes">
+      <map>
+        <entry key="inhibit-caching" value="true" />
+      </map>
+    </property>
+  </bean>
+
+  <bean id="saml.lostPostService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="order" value="-96000"/>
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestPathAssertion">
+          <property name="path" value="${saml.lostPost.URI}"/>
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="saml.lostPostHandler" />
+    <property name="attributes">
+      <map>
+        <entry key="inhibit-caching" value="true" />
+      </map>
+    </property>
+  </bean>
+
+  <bean id="saml.lostPostHandler" class="org.vortikal.security.web.saml.LostPostHandler"
+        init-method="init">
+    <property name="workingDirectory" value="${saml.lostPost.directory}" />
+    <property name="viewName" value="saml.lostPost" />
+    <property name="redirectURI" value="${saml.lostPost.URI}" />
+    <property name="savedStateTimeout" value="${saml.lostPost.timeoutSeconds}" />
+    <property name="limitPerAddress" value="100" />
+    <property name="maxPostSize" value="2000000" />
+    <property name="secureCookies" value="${saml.lostPost.secureCookies}" />
+  </bean>
+
+
+  <bean id="saml.viewResolver" class="org.vortikal.web.decorating.MappingViewResolver">
+    <property name="views">
+      <map>
+        <entry key="saml.metadata" value-ref="saml.metadataView"/>
+      </map>
+    </property>
+  </bean>
+
+  <bean id="saml.decoratedViewResolver" parent="system.decoratingViewResolver">
+    <property name="views">
+      <map>
+        <entry key="saml.lostPost" value-ref="saml.lostPost.view"/>
+      </map>
+    </property>
+  </bean>
+
+  <bean id="saml.metadataView" parent="freemarkerView">
+    <property name="url" value="saml/metadata.ftl"/>
+    <property name="contentType">
+      <value>text/xml;charset=UTF-8</value>
+    </property>
+    <property name="referenceDataProviders">
+      <list>
+        <!-- reference data providers here -->
+      </list>
+    </property>
+    <property name="attributesMap">
+      <map>
+        <entry key="singleLogoutService" value="${webHostName}${saml.serviceProviderURI}"> </entry>
+        <entry key="assertionConsumerService" value="${webHostName}${saml.serviceProviderURI}"> </entry>
+        <entry key="entityId" value="${webHostName}${saml.metadataServiceURI}"> </entry>
+        <entry key="contactPersonGivenName" value="${saml.metadataService.contactPersonGivenName}" />
+        <entry key="contactPersonSurName" value="${saml.metadataService.contactPersonSurName}" />
+        <entry key="contactPersonEmailAddress" value="${saml.metadataService.contactPersonEmailAddress}" />
+      </map>
+    </property>
+  </bean>
+
+  <bean id="saml.lostPost.view" parent="freemarkerView">
+    <property name="url" value="saml/lost-post.ftl"/>
+    <property name="attributesMap">
+      <map>
+        <entry key="autosubmit" value="${saml.lostPost.autosubmit}" />
+      </map>
+    </property>
+  </bean>
+
+  <bean id="saml.ssoCookieService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="order" value="-3"/>
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.SSOCookieAssertion">
+          <property name="uioAuthSSO" value="${saml.uioAuthSSO}" />          
+          <property name="serviceProviderURI" value="${saml.serviceProviderURI}" />
+          <property name="wordWhitelist" value="${security.ssoWordWhitelist}"/>
+          <property name="ssoTimeout" value="${security.ssoTimeoutMilliseconds}" />  
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="saml.ssoCookieHandler"/>
+  </bean>
+
+  <bean name="saml.ssoCookieHandler" class="org.vortikal.security.web.saml.SSOCookieController">    
+  </bean>
+
+  <bean id="saml.ieCookieRedirectService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="order" value="-3"/> 
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestPathAssertion">
+          <property name="path" value="${saml.ieCookieSetterURI}"/>
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="saml.ieCookieRedirectHandler"/>
+  </bean>
+
+  <bean name="saml.ieCookieRedirectHandler" class="org.vortikal.security.web.saml.IECookieRedirectController"> 
+    <property name="iECookieStore" ref="saml.ieCookieStore" />
+    <property name="spCookieDomain" value="${security.spCookieDomain}" />
+    <property name="ieCookieTicket" value="${saml.ieCookieTicket}" />
+    <property name="vrtxAuthSP" value="${saml.vrtxAuthSP}" />
+    <property name="uioAuthIDP" value="${saml.uioAuthIDP}" />
+    <property name="uioAuthSSO" value="${saml.uioAuthSSO}" />
+    <property name="ieReturnURL" value="${saml.ieReturnURL}" />
+  </bean>
+
+  <bean id="saml.ieCookieLogoutService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="order" value="-4"/> 
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.IERemoveCookieAssertion">
+          <property name="ieCookieLogoutTicket" value="${saml.ieCookieLogoutTicket}"/>                   
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="saml.ieCookieLogoutHandler"/>
+  </bean>
+
+  <bean name="saml.ieCookieLogoutHandler" class="org.vortikal.security.web.saml.IERemoveCookieController"> 
+    <property name="iECookieStore" ref="saml.ieCookieStore" />
+    <property name="spCookieDomain" value="${security.spCookieDomain}" />
+    <property name="ieCookieLogoutTicket" value="${saml.ieCookieLogoutTicket}" />
+    <property name="uioAuthSSO" value="${saml.uioAuthSSO}" />    
+  </bean>
+
+  <bean id="saml.ieCookieStore" class="org.vortikal.security.web.saml.IECookieStore">
+    <property name="cache" ref="saml.ieCookieStore.cache" />
+  </bean>
+  <bean id="saml.ieCookieStore.cache" class="org.vortikal.util.cache.SimpleCacheImpl">
+    <property name="timeoutSeconds" value="3600" />
+  </bean>
+
+</beans>

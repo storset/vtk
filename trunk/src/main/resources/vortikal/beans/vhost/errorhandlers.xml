@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+
+  <!-- Error handlers -->
+
+  <bean id="resourceNotFoundErrorHandler" class="org.vortikal.web.DefaultErrorHandler">
+    <property name="errorViewName" value="resourceNotFoundError" />
+    <property name="errorType">
+      <bean class="java.lang.Class" factory-method="forName">
+        <constructor-arg value="org.vortikal.repository.ResourceNotFoundException" />
+      </bean>
+    </property>
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="resourceContextProvider"/>
+      </list>
+    </property>
+    <property name="statusCodeMappings">
+      <map>
+        <entry key="org.vortikal.repository.ResourceNotFoundException" value="404" />
+      </map>
+    </property>
+  </bean>
+
+
+  <bean id="badRequestErrorHandler" class="org.vortikal.web.DefaultErrorHandler">
+    <property name="errorViewName" value="badRequestError" />
+    <property name="errorType">
+      <bean class="java.lang.Class" factory-method="forName">
+        <constructor-arg value="org.vortikal.web.InvalidRequestException" />
+      </bean>
+    </property>
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="resourceContextProvider"/>
+      </list>
+    </property>
+    <property name="statusCodeMappings">
+      <map>
+        <entry key="org.vortikal.web.InvalidRequestException" value="400" />
+      </map>
+    </property>
+  </bean>
+
+  <bean id="notAuthorizedErrorHandler" class="org.vortikal.web.DefaultErrorHandler">
+    <property name="errorViewName" value="notAuthorizedError" />
+    <property name="errorType">
+      <bean class="java.lang.Class" factory-method="forName">
+        <constructor-arg value="org.vortikal.repository.AuthorizationException" />
+      </bean>
+    </property>
+    <property name="logExceptions" value="${errorHandler.notAuthorized.logErrors}" />
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="resourceContextProvider"/>
+      </list>
+    </property>
+    <property name="statusCodeMappings">
+      <map>
+        <entry key="org.vortikal.repository.AuthorizationException" value="403" />
+      </map>
+    </property>
+  </bean>
+
+  
+  <bean id="preconditionFailedErrorHandler" class="org.vortikal.web.DefaultErrorHandler">
+    <property name="errorViewName" value="preconditionFailedError" />
+    <property name="errorType">
+      <bean class="java.lang.Class" factory-method="forName">
+        <constructor-arg value="org.vortikal.webdav.PreconditionFailedException" />
+      </bean>
+    </property>
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="resourceContextProvider"/>
+      </list>
+    </property>
+    <property name="statusCodeMappings">
+      <map>
+        <entry key="org.vortikal.webdav.PreconditionFailedException" value="412" />
+      </map>
+    </property>
+  </bean>
+  
+  <bean id="resourceNotModifiedErrorHandler" class="org.vortikal.web.DefaultErrorHandler">
+    <property name="errorViewName" value="resourceNotModifiedError" />
+    <property name="errorType">
+      <bean class="java.lang.Class" factory-method="forName">
+        <constructor-arg value="org.vortikal.repository.ResourceNotModifiedException" />
+      </bean>
+    </property>
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="resourceContextProvider"/>
+      </list>
+    </property>
+    <property name="statusCodeMappings">
+      <map>
+        <entry key="org.vortikal.repository.ResourceNotModifiedException" value="304" />
+      </map>
+    </property>
+  </bean>
+  
+  <bean id="defaultErrorHandler" class="org.vortikal.web.DefaultErrorHandler">
+    <property name="errorViewName" value="defaultError" />
+    <property name="referenceDataProviders">
+      <list>
+        <!--ref bean="versionProvider"/-->
+      </list>
+    </property>
+    <property name="statusCodeMappings">
+      <map>
+        <entry key="org.vortikal.webdav.PreconditionFailedException" value="412" />
+        <entry key="org.vortikal.repository.ResourceNotFoundException" value="404" />
+        <entry key="org.vortikal.repository.AuthorizationException" value="403" />
+        <entry key="org.vortikal.repository.ResourceNotModifiedException" value="304" />
+        
+      </map>
+    </property>
+  </bean>
+
+
+  <!-- Error views-->
+
+
+  <bean id="errorViewResolver" parent="decoratorViewResolver">
+    <property name="order" value="0" />
+    <property name="views">
+      <map>
+        <entry key="badRequestError" value-ref="badRequestErrorView" />
+        <entry key="resourceNotFoundError" value-ref="resourceNotFoundErrorView" />
+        <entry key="notAuthorizedError" value-ref="notAuthorizedErrorView" />
+        <entry key="preconditionFailedError" value-ref="preconditionFailedErrorView" />
+        <entry key="resourceNotModifiedError" value-ref="resourceNotModifiedErrorView" />
+        <entry key="defaultError" value-ref="defaultErrorView" />
+      </map>
+    </property>
+  </bean>
+
+  <bean id="badRequestErrorView" parent="freemarkerView">
+    <property name="url" value="pages/error/400.ftl" />
+  </bean>
+
+  <bean id="resourceNotFoundErrorView" parent="freemarkerView">
+    <property name="url" value="pages/error/404.ftl" />
+  </bean>
+
+  <bean id="notAuthorizedErrorView"  parent="freemarkerView">
+    <property name="url" value="pages/error/403.ftl" />
+  </bean>
+
+  <bean id="preconditionFailedErrorView" parent="freemarkerView">
+    <property name="url" value="pages/error/412.ftl" />
+  </bean>
+
+  <bean id="resourceNotModifiedErrorView" parent="freemarkerView">
+    <property name="url" value="pages/error/304.ftl" />
+  </bean>
+    
+  <bean id="defaultErrorView" parent="freemarkerView">
+    <property name="url" value="pages/error/default-error.ftl" />
+  </bean>
+
+
+</beans>

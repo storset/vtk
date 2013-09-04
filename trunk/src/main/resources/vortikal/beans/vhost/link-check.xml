@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+
+  <bean id="linkCheck.validationService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="viewService" />
+    <property name="order" value="-999" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="vrtx" />
+          <property name="parameterValue" value="link-check" />
+        </bean>
+        <bean class="org.vortikal.web.service.RequestMethodAssertion">
+          <property name="method" value="POST" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="linkCheck.validationHandler" />
+  </bean>
+
+  <bean id="linkCheck.validationHandler" class="org.vortikal.web.display.linkcheck.LinkCheckController">
+    <property name="linkChecker" ref="linkCheck.validator" />
+  </bean>
+
+  <bean id="linkCheck.htmlFilter" class="org.vortikal.web.display.linkcheck.LinkCheckFilter">
+    <property name="elementClass" value="${linkCheck.htmlClass}" />
+  </bean>
+
+  <bean id="linkCheck.validator" class="org.vortikal.web.display.linkcheck.LinkChecker">
+    <property name="cache" ref="ehCache.LINK_CHECK_CACHE" />
+    <property name="connectTimeout" value="5000" />
+    <property name="readTimeout" value="10000" />
+    <property name="userAgent" value="Link checker for ${repositoryID}" />
+  </bean>
+  
+  </beans>

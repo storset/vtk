@@ -253,7 +253,7 @@ drop sequence simple_content_revision_seq_pk;
 
 create sequence simple_content_revision_seq_pk increment by 1 start with 1000;
 
-drop table simple_content_revision;
+drop table simple_content_revision cascade constraints;
 
 create table simple_content_revision (
     id number not null,
@@ -281,7 +281,7 @@ drop sequence revision_acl_entry_seq_pk;
 
 create sequence revision_acl_entry_seq_pk increment by 1 start with 1000;
 
-drop table revision_acl_entry cascade;
+drop table revision_acl_entry cascade constraints;
 
 create table revision_acl_entry
 (

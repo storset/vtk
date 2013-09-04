@@ -413,7 +413,8 @@ select extra_prop_entry_seq_pk.nextval,
        'title',
        '/',
        null,
-       null
+       null,
+       'N'
 from vortex_resource where uri = '/';
 
 -- Insert publish-date prop for root resource

@@ -108,7 +108,7 @@
     <property name="fieldValueMapper" ref="fieldValueMapper"/>
     <property name="queryAuthorizationFilterFactory" ref="queryAuthorizationFilterFactory"/>
     <property name="publishedPropDef" ref="publishedPropDef" />
-    <property name="obsoletedPropDef" ref="obsoletedPropDef" />
+    <property name="obsoletedPropDef" ref="unpublishedCollectionPropDef" />
   </bean>
 
   <!-- Searcher implementation (wrapped in throttler)-->

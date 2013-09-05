@@ -151,6 +151,7 @@
           <#if item = "published">
             <#assign published = vrtx.propValue(child, "published") />
           </#if>
+         
       
           <td class="${class}">
             <#switch item>
@@ -223,19 +224,20 @@
                 <#break>
             
              <#case "published">
-               <#if published?exists 
-                 && ((child.collection?string == "false" && child.contentType == "application/json")
-                     || hasWriteUnpublished)>
+               <#if published?exists>
+                    <#assign unpublishedCollection = vrtx.getPropValue(child, "unpublishedCollection")?exists && vrtx.getPropValue(child, "unpublishedCollection") == "true">
+                   <#if unpublishedCollection> 
+                      <span style="  color: lightgray;font-style: italic;">
+                   <#else>
+                      <span>
+                   </#if>
                  <#if published == "true">
                    ${vrtx.getMsg("publish.permission.published")}
                  <#else>
                    ${vrtx.getMsg("publish.permission.unpublished")}
                  </#if>
-               <#else>
-                 <span style="color: #bbb">
-                   <#if published == "true">${vrtx.getMsg("publish.permission.published")}<#else>${vrtx.getMsg("publish.permission.unpublished")}</#if>
-                 </span>
-               </#if>
+                    </span>
+                 </#if>
                <#break>
           </#switch>
         </td>

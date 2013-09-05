@@ -122,12 +122,13 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
         URL markedUrl = this.menuGenerator.getViewService().constructURL(currentResource, principal, false);
         breadCrumbElements.add(new BreadcrumbElement(markedUrl, getMenuTitle(currentResource)));
 
-        // XXX: for this case currentResource will never be equal any of the resources in list to generate menu from,
-        //      so generatemenuItemList need not check for this condition for hidden ones. However, it will need to
-        //      do that for the sibling case in the next call below.
-        List<MenuItem<PropertySet>> menuItemList = generateMenuItemList(repository.listChildren(token,
-                currentResource.getURI(), true), currentResource, principal, repository);
-
+        // XXX: for this case currentResource will never be equal any of the
+        // resources in list to generate menu from,
+        // so generatemenuItemList need not check for this condition for hidden
+        // ones. However, it will need to
+        // do that for the sibling case in the next call below.
+        List<MenuItem<PropertySet>> menuItemList = generateMenuItemList(
+                repository.listChildren(token, currentResource.getURI(), true), currentResource, principal, repository);
         // If menu is empty, i.e. current resource has no children or
         // all children were hidden, then generate menu based on siblings.
         if (menuItemList.isEmpty()) {
@@ -139,8 +140,9 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
             }
 
             if (currentResourceParent != null) {
-                menuItemList = generateMenuItemList(repository
-                        .listChildren(token, currentResourceParent.getURI(), true), currentResource, principal, repository);
+                menuItemList = generateMenuItemList(
+                        repository.listChildren(token, currentResourceParent.getURI(), true), currentResource,
+                        principal, repository);
                 breadCrumbElements.remove(breadCrumbElements.size() - 1);
                 if (menuItemList.size() > maxSiblings) {
                     menuItemList = new ArrayList<MenuItem<PropertySet>>();
@@ -167,6 +169,7 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
         breadCrumbProvider.setService(this.menuGenerator.getViewService());
         breadCrumbProvider.setBreadcrumbName(breadcrumbName);
         breadCrumbProvider.setSkipIndexFile(false);
+        breadCrumbProvider.setIgnoreProperty(menuGenerator.getUnpublishedCollectionPropDef());
         PropertyTypeDefinition titleProp[] = new PropertyTypeDefinition[2];
         titleProp[0] = this.menuGenerator.getNavigationTitlePropDef();
         titleProp[1] = this.menuGenerator.getTitlePropDef();
@@ -190,16 +193,23 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
     }
 
     private List<MenuItem<PropertySet>> generateMenuItemList(Resource[] resources, Resource currentResource,
-                                                           Principal principal, Repository repository) throws Exception {
+            Principal principal, Repository repository) throws Exception {
 
         List<MenuItem<PropertySet>> menuItems = new ArrayList<MenuItem<PropertySet>>();
+
+        if (currentResource.getProperty(menuGenerator.getUnpublishedCollectionPropDef()) != null) {
+            return menuItems;
+        }
+
         for (Resource r : resources) {
             // Filtering:
             if (!r.isCollection()) {
                 continue;
             }
-            if (r.getProperty(menuGenerator.getHiddenPropDef()) != null
-                    && !r.getURI().equals(currentResource.getURI())) {
+            if (r.getProperty(menuGenerator.getHiddenPropDef()) != null && !r.getURI().equals(currentResource.getURI())) {
+                continue;
+            }
+            if (r.getProperty(menuGenerator.getUnpublishedCollectionPropDef()) != null) {
                 continue;
             }
             // Remove resources that current principal is not allowed to access

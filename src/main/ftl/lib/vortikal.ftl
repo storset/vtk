@@ -671,8 +671,8 @@
     <#if iconText = "file" && contentType?has_content>
       <#local iconText = resourceContentTypeToIconResolver(contentType) />
     </#if>
-    <#local obsoleted = propValue(resource, 'obsoleted')>
-    ${iconText}<#if obsoleted?has_content> obsoleted</#if>
+    <#local unpublished = propValue(resource, 'unpublishedCollection')>
+    ${iconText}<#if unpublished?has_content || !resource.published> unpublished</#if> 
   </#compress>
 </#macro>
 

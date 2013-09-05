@@ -226,17 +226,13 @@
              <#case "published">
                <#if published?exists>
                     <#assign unpublishedCollection = vrtx.getPropValue(child, "unpublishedCollection")?exists && vrtx.getPropValue(child, "unpublishedCollection") == "true">
-                   <#if unpublishedCollection> 
-                      <span style="  color: lightgray;font-style: italic;">
-                   <#else>
                       <span>
-                   </#if>
-                 <#if published == "true">
-                   ${vrtx.getMsg("publish.permission.published")}
-                 <#else>
-                   ${vrtx.getMsg("publish.permission.unpublished")}
-                 </#if>
-                    </span>
+                       <#if published == "true">
+                            ${vrtx.getMsg("publish.permission.published")}
+                       <#else>
+                            ${vrtx.getMsg("publish.permission.unpublished")}
+                       </#if>
+                     </span>
                  </#if>
                <#break>
           </#switch>

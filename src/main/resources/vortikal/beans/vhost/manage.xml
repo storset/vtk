@@ -863,7 +863,7 @@
         <ref bean="commentsEnabledPropDef" />
 
         <!-- Obsolete -->
-        <ref bean="obsoletedPropDef" />
+        <ref bean="unpublishedCollectionPropDef" />
 
         <!-- Editorial contacts -->
         <ref bean="editorialContactsPropDef" />
@@ -1069,7 +1069,7 @@
     <property name="viewName" value="previewAdminIframe" />
     <property name="displayWorkingRevision" value="true" />
     <property name="previewUnpublished" value="true" />
-    <property name="previewObsoleted" value="true" />
+    <property name="previewUnpublishedCollection" value="true" />
   </bean>
 
   <bean id="previewImageHandler" parent="abstractPreviewIframe">

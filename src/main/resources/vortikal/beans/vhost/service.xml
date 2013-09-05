@@ -382,7 +382,7 @@
     <property name="service" ref="viewService" />
     <property name="displayWorkingRevision" value="true" />
     <property name="previewUnpublished" value="true" />
-    <property name="previewObsoleted" value="true" />
+    <property name="previewUnpublishedCollection" value="true" />
   </bean>
 
 
@@ -410,7 +410,7 @@
     <property name="service" ref="viewService" />
     <property name="displayWorkingRevision" value="true" />
     <property name="previewUnpublished" value="true" />
-    <property name="previewObsoleted" value="true" />
+    <property name="previewUnpublishedCollection" value="true" />
   </bean>
 
 

@@ -103,7 +103,7 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
     private FieldValueMapper fieldValueMapper;
     private QueryAuthorizationFilterFactory queryAuthorizationFilterFactory;
     private PropertyTypeDefinition publishedPropDef;
-    private PropertyTypeDefinition obsoletedPropDef;
+    private PropertyTypeDefinition unpublishedCollectionPropDef;
 
     private Filter cachedOnlyPublishedFilter;
     private Filter cachedDeletedDocsFilter;
@@ -379,13 +379,13 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
         // Filter to include only published resources:
         bf.add(this.cachedOnlyPublishedFilter, BooleanClause.Occur.MUST);
 
-        // Filter to exclude obsoleted resources:
+        // Filter to exclude unpublishedCollection resources:
         // Avoid using cache-wrapper for FieldValueFilter, since that can lead
         // to memory leaks
         // in Lucene.
         RequestContext requestContext = RequestContext.getRequestContext();
         if (requestContext.getRequestURL().getParameter("vrtxPreviewUnpublished") == null) {
-            bf.add(new FieldValueFilter(FieldNames.getSearchFieldName(this.obsoletedPropDef, false), true),
+            bf.add(new FieldValueFilter(FieldNames.getSearchFieldName(this.unpublishedCollectionPropDef, false), true),
                     BooleanClause.Occur.MUST);
         }
 
@@ -451,8 +451,8 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
     }
 
     @Required
-    public void setObsoletedPropDef(PropertyTypeDefinition obsoletedPropDef) {
-        this.obsoletedPropDef = obsoletedPropDef;
+    public void setUnpublishedCollectionPropDef(PropertyTypeDefinition unpublishedCollectionPropDef) {
+        this.unpublishedCollectionPropDef = unpublishedCollectionPropDef;
     }
 
 }

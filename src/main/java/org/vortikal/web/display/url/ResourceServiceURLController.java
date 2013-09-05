@@ -79,7 +79,7 @@ public class ResourceServiceURLController implements Controller {
     private String webProtocolRestricted;
     private boolean displayWorkingRevision;
     private boolean previewUnpublished;
-    private boolean previewObsoleted;
+    private boolean previewUnpublishedCollection;
 
     private PropertyTypeDefinition unpublishedCollectionPropDef;
 
@@ -185,8 +185,8 @@ public class ResourceServiceURLController implements Controller {
         this.previewUnpublished = previewUnpublished;
     }
 
-    public void setPreviewObsoleted(boolean previewObsoleted) {
-        this.previewObsoleted = previewObsoleted;
+    public void setPreviewUnpublishedCollection(boolean previewUnpublishedCollection) {
+        this.previewUnpublishedCollection = previewUnpublishedCollection;
     }
 
     public void setUnpublishedCollectionPropDef(PropertyTypeDefinition unpublishedCollectionPropDef) {

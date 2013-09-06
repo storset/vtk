@@ -168,7 +168,7 @@ vrtxEditor.CKEditorToolbars.completeToolbar = [['Source', 'PasteText', 'PasteFro
                                            'HorizontalRule', 'SpecialChar'
                                           ], ['Format', 'Bold', 'Italic', 'Strike',
                                             'Subscript', 'Superscript', 'NumberedList',
-                                            'BulletedList', 'Outdent', 'Indent', '-', 'BlockQuote', '-', 'TextColor',
+                                            'BulletedList', 'Outdent', 'Indent', '-', 'Blockquote', '-', 'TextColor',
                                             'Maximize']];
 
 vrtxEditor.CKEditorToolbars.studyToolbar = [['Source', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo', '-', 'Replace',

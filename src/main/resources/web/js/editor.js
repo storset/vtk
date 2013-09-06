@@ -168,7 +168,7 @@ vrtxEditor.CKEditorToolbars.completeToolbar = [['Source', 'PasteText', 'PasteFro
                                            'HorizontalRule', 'SpecialChar'
                                           ], ['Format', 'Bold', 'Italic', 'Strike',
                                             'Subscript', 'Superscript', 'NumberedList',
-                                            'BulletedList', 'Outdent', 'Indent', 'TextColor',
+                                            'BulletedList', 'Outdent', 'Indent', '-', 'BlockQuote', '-', 'TextColor',
                                             'Maximize']];
 
 vrtxEditor.CKEditorToolbars.studyToolbar = [['Source', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo', '-', 'Replace',
@@ -197,7 +197,7 @@ vrtxEditor.CKEditorToolbars.completeToolbarOld = [['Source', 'PasteText', 'Paste
                                               'HorizontalRule', 'SpecialChar'
                                              ], ['Format', 'Bold', 'Italic', 'Strike',
                                               'Subscript', 'Superscript', 'NumberedList',
-                                              'BulletedList', 'Outdent', 'Indent', 'TextColor',
+                                              'BulletedList', 'Outdent', 'Indent', '-', 'Blockquote', '-', 'TextColor',
                                               'Maximize']];
 
 vrtxEditor.CKEditorToolbars.commentsToolbar = [['Source', 'PasteText', 'Bold',

@@ -162,14 +162,14 @@ vrtxEditor.CKEditorToolbars.inlineToolbar = [['Source', 'PasteText', 'Link', 'Un
 vrtxEditor.CKEditorToolbars.withoutSubSuperToolbar = [['Source', 'PasteText', 'Link', 'Unlink', 'Bold',
                                                   'Italic', 'Strike', 'SpecialChar']];
 
-vrtxEditor.CKEditorToolbars.completeToolbar = [['Source', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo', '-', 'Replace',
-                                           'RemoveFormat', '-', 'Link', 'Unlink', 'Anchor',
-                                           'Image', 'CreateDiv', 'MediaEmbed', 'Table',
-                                           'HorizontalRule', 'SpecialChar'
-                                          ], ['Format', 'Bold', 'Italic', 'Strike',
-                                            'Subscript', 'Superscript', 'NumberedList',
-                                            'BulletedList', 'Outdent', 'Indent', '-', 'Blockquote', '-', 'TextColor',
-                                            'Maximize']];
+vrtxEditor.CKEditorToolbars.completeToolbar = [['PasteText', 'PasteFromWord', '-', 'Undo', 'Redo'], ['Replace'],
+                                              ['Link', 'Unlink', 'Anchor'], 
+                                              ['Image', 'CreateDiv', 'MediaEmbed', 'Table',
+                                              'HorizontalRule', 'SpecialChar'], ['Maximize'], ['Source'],
+                                              ['Bold', 'Italic', 'Strike', 'Subscript', 'Superscript', 'TextColor', '-', 'RemoveFormat'] ,
+                                              ['NumberedList',
+                                              'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote'],
+                                              ['Format']];
 
 vrtxEditor.CKEditorToolbars.studyToolbar = [['Source', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo', '-', 'Replace',
                                         'RemoveFormat', '-', 'Link', 'Unlink', 'Studyreferencecomponent', 'Anchor',
@@ -191,14 +191,14 @@ vrtxEditor.CKEditorToolbars.messageToolbar = [['Source', 'PasteText', 'Bold', 'I
                                           'Subscript', 'Superscript', 'NumberedList', 'BulletedList', 'Outdent', 'Indent']];
 
 
-vrtxEditor.CKEditorToolbars.completeToolbarOld = [['Source', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo', '-', 'Replace',
-                                              'RemoveFormat', '-', 'Link', 'Unlink', 'Anchor',
-                                              'Image', 'CreateDiv', 'MediaEmbed', 'Table',
-                                              'HorizontalRule', 'SpecialChar'
-                                             ], ['Format', 'Bold', 'Italic', 'Strike',
-                                              'Subscript', 'Superscript', 'NumberedList',
-                                              'BulletedList', 'Outdent', 'Indent', '-', 'Blockquote', '-', 'TextColor',
-                                              'Maximize']];
+vrtxEditor.CKEditorToolbars.completeToolbarOld = [['PasteText', 'PasteFromWord', '-', 'Undo', 'Redo'], ['Replace'],
+                                              ['Link', 'Unlink', 'Anchor'], 
+                                              ['Image', 'CreateDiv', 'MediaEmbed', 'Table',
+                                              'HorizontalRule', 'SpecialChar'], ['Maximize'], ['Source'],
+                                              ['Bold', 'Italic', 'Strike', 'Subscript', 'Superscript', 'TextColor', '-', 'RemoveFormat'] ,
+                                              ['NumberedList',
+                                              'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote'],
+                                              ['Format']];
 
 vrtxEditor.CKEditorToolbars.commentsToolbar = [['Source', 'PasteText', 'Bold',
                                            'Italic', 'Strike', 'NumberedList',

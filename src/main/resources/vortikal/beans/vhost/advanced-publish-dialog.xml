@@ -6,10 +6,13 @@
     <property name="parent" ref="manageService" />
     <property name="handler" ref="publishDialogHandler" />
     <property name="assertions">
-      <bean class="org.vortikal.web.service.RequestParameterAssertion">
-        <property name="parameterName" value="display" />
-        <property name="parameterValue" value="publish-dialog" />
-      </bean>
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="display" />
+          <property name="parameterValue" value="publish-dialog" />
+        </bean>
+        <ref bean="fileAssertion" />
+      </list>
     </property>
   </bean>
 

@@ -2912,6 +2912,8 @@ table.resourceInfo.revisions tr:nth-child(even) td {
 
 /* 3.7 Messages */
 
+/* Resource bar messages */
+
 #app-content > div.message,
 #app-content > div.infomessage {
   background-color: #fff;
@@ -2940,6 +2942,8 @@ table.resourceInfo.revisions tr:nth-child(even) td {
   height: 22px;
   margin: -10px 0 0 0;
 }
+
+/* ^ Resource bar messages */
 
 /* System message */
 

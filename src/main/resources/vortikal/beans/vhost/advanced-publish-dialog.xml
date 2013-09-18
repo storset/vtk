@@ -9,7 +9,7 @@
       <list>
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
           <property name="parameterName" value="display" />
-          <property name="parameterValue" value="publish-dialog" />
+          <property name="parameterValue" value="advanced-publish-dialog" />
         </bean>
         <ref bean="fileAssertion" />
       </list>

@@ -2941,6 +2941,8 @@ table.resourceInfo.revisions tr:nth-child(even) td {
   margin: -10px 0 0 0;
 }
 
+/* System message */
+
 #system-message-wrapper {
   background-color: #4a9ce2;
 }
@@ -2964,9 +2966,17 @@ table.resourceInfo.revisions tr:nth-child(even) td {
   text-decoration:underline;
 }
 
+/* ^ System message */
+
+/* Tab message */
+
 div.tabMessage {
   background: url(images/info-small.gif) no-repeat 0 14px;
   padding: 0 0 10px 25px;
+}
+
+body#vrtx-trash-can div.tabMessage {
+  background-position: 0 0;
 }
 
 body#vrtx-preview div.tabMessage {
@@ -2990,6 +3000,8 @@ body#vrtx-preview div.tabMessage {
 body#vrtx-preview .tabMessage-big {
   margin: 11px -20px 0;
 }
+
+/* ^ Tab message */
 
 /* ^ 3.7 Messages */
 

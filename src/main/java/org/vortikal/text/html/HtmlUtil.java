@@ -215,7 +215,10 @@ public class HtmlUtil {
             return false;
         char c = content.charAt(i);
         return i < content.length() && c != ';'
-                && (('a' <= c && 'z' >= c) || ('A' <= c && 'Z' >= c) || ('0' <= c && '9' >= c));
+                && ('#' == c || 
+                    ('a' <= c && 'z' >= c) || 
+                    ('A' <= c && 'Z' >= c) || 
+                    ('0' <= c && '9' >= c));
     }
 
     public void setHtmlParser(HtmlPageParser htmlParser) {

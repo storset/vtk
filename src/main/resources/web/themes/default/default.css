@@ -2975,17 +2975,14 @@ table.resourceInfo.revisions tr:nth-child(even) td {
 /* Tab message */
 
 div.tabMessage {
-  background: url(images/info-small.gif) no-repeat 0 14px;
+  background: url(images/info-small.gif) no-repeat 0 0;
   padding: 0 0 10px 25px;
-}
-
-body#vrtx-trash-can div.tabMessage {
-  background-position: 0 0;
 }
 
 body#vrtx-preview div.tabMessage {
   margin: 0 0 -2px 0;
   padding: 15px 0 2px 25px;
+  background-position: 0 14px;
 }
 
 /* Big */

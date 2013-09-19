@@ -45,7 +45,6 @@ import org.apache.commons.logging.LogFactory;
 import org.jdom.Namespace;
 import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.repository.Path;
-import org.vortikal.repository.Repository;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.web.service.URL;
 
@@ -53,13 +52,6 @@ import org.vortikal.web.service.URL;
 /**
  * The superclass of all the WebDAV method controllers.
  *
- * <p>Configurable JavaBean properties:
- * <ul>
- *   <li><code>repository</code> - the {@link Repository content
- *   repository}
- *   <li><code>ignoreIfHeaderVerify</code> - If true: Only use
- *   ifheaders when refreshing locks. Default is <code>false</code>.
- * </ul>
  */
 public abstract class AbstractWebdavController implements Controller {
 

@@ -89,7 +89,7 @@ public class ActionsHelper {
             }
             publishDateProp.setDateValue(publishedDate);
 
-            InheritablePropertiesStoreContext storeContext = null;        
+            InheritablePropertiesStoreContext storeContext = null;
             if (resource.isCollection()) {
                 Property unpublisedCollectionProp = resource.getProperty(unpublisedCollectionPropDef);
                 if (unpublisedCollectionProp != null && !unpublisedCollectionProp.isInherited()) {
@@ -118,7 +118,7 @@ public class ActionsHelper {
     }
 
     public static void unpublishResource(PropertyTypeDefinition publishDatePropDef,
-            PropertyTypeDefinition unpublisedCollectionPropDef, Repository repository, String token, Path uri,
+            PropertyTypeDefinition unpublishedCollectionPropDef, Repository repository, String token, Path uri,
             Map<String, List<Path>> failures) {
         try {
             InheritablePropertiesStoreContext storeContext = null;
@@ -126,8 +126,8 @@ public class ActionsHelper {
             resource.removeProperty(publishDatePropDef);
             if (resource.isCollection()) {
                 storeContext = new InheritablePropertiesStoreContext();
-                storeContext.addAffectedProperty(unpublisedCollectionPropDef);
-                Property unpublisedCollectionProp = unpublisedCollectionPropDef.createProperty();
+                storeContext.addAffectedProperty(unpublishedCollectionPropDef);
+                Property unpublisedCollectionProp = unpublishedCollectionPropDef.createProperty();
                 unpublisedCollectionProp.setBooleanValue(true);
                 resource.addProperty(unpublisedCollectionProp);
             }
@@ -150,6 +150,9 @@ public class ActionsHelper {
     }
 
     private static void addToFailures(Map<String, List<Path>> failures, Path fileUri, String msgKey, String failureType) {
+        if (failures == null) {
+            return;
+        }
         String key = msgKey.concat(failureType);
         List<Path> failedPaths = failures.get(key);
         if (failedPaths == null) {

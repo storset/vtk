@@ -51,14 +51,14 @@
         <input type="text" id="${nameBind?html}" name="${nameBind?html}" value="${newColName?html}" size="15" maxlength="50" />
       </div>
 
-      <@spring.bind "createCollectionForm" + ".hidden" />
-      <#assign hiddenBind = spring.status.expression>
+      <@spring.bind "createCollectionForm" + ".publish" />
+      <#assign publishBind = spring.status.expression>
       <@actionsLib.genErrorMessages spring.status.errorMessages />
 
       <div class="vrtx-checkbox" id="vrtx-checkbox-hide-from-navigation">
-        <input type="checkbox"  id="${hiddenBind?html}" name="${hiddenBind?html}" />
-        <label for="hidden"><@vrtx.msg code="property.navigation:hidden" default="Hide from navigation" /></label>
-        <abbr title="${vrtx.getMsg("actions.tooltip.hideFromNavigation")}" class="tooltips"></abbr>
+        <input type="checkbox"  id="${publishBind?html}" name="${publishBind?html}" checked />
+        <label for="publish"><@vrtx.msg code="property.navigation:publish" default="Publish" /></label>
+        
       </div>
 
       <@actionsLib.genOkCancelButtons "save" "cancelAction" "actions.createCollectionService.save" "actions.createCollectionService.cancel" />

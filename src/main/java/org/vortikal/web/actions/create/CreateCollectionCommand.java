@@ -37,7 +37,7 @@ public class CreateCollectionCommand extends UpdateCancelCommand {
     private String name = null;
     private String title = null;
     private String sourceURI = null;
-    private boolean hidden = false;
+    private boolean publish = false;
 
     public CreateCollectionCommand(String submitURL) {
         super(submitURL);
@@ -101,22 +101,22 @@ public class CreateCollectionCommand extends UpdateCancelCommand {
     }
 
     /**
-     * Gets the value of hidden
+     * Gets the value of publish
      * 
-     * @return the value of hidden
+     * @return the value of publish
      */
-    public boolean getHidden() {
-        return this.hidden;
+    public boolean getPublish() {
+        return this.publish;
     }
 
     /**
-     * Sets the value of hidden
+     * Sets the value of publish
      * 
-     * @param hidden
-     *            Value to assign to this.hidden
+     * @param publish
+     *            Value to assign to this.publish
      */
-    public void setHidden(boolean hidden) {
-        this.hidden = hidden;
+    public void setPublish(boolean publish) {
+        this.publish = publish;
     }
 
 }

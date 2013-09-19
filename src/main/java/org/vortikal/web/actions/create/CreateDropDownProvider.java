@@ -56,7 +56,7 @@ public class CreateDropDownProvider {
     private Searcher searcher;
     private Repository repository;
     private final int maxLimit = 500;
-    
+
     private static Log logger = LogFactory.getLog(CreateDropDownProvider.class);
 
     public List<Resource> buildSearchAndPopulateResources(String uri, String token) {
@@ -81,14 +81,14 @@ public class CreateDropDownProvider {
                 Resource r = this.repository.retrieve(token, result.getURI(), true);
                 items.add(r);
             } catch (Exception e) {
-            	logger.error("Exception " + e.getMessage());
+                logger.error("Exception " + e.getMessage());
             }
         }
         return items;
     }
-    
+
     public boolean hasChildren(Resource r, String token) {
-    	if (r.getChildURIs() != null) {
+        if (r.getChildURIs() != null) {
             if (!r.getChildURIs().isEmpty()) {
                 AndQuery mainQuery = new AndQuery();
                 mainQuery.add(new UriPrefixQuery(r.getURI().toString()));
@@ -98,11 +98,11 @@ public class CreateDropDownProvider {
                 search.setQuery(mainQuery);
                 search.setLimit(1);
                 if (searcher.execute(token, search).getTotalHits() > 0) {
-                	return true;
+                    return true;
                 }
             }
         }
-    	return false;
+        return false;
     }
 
     public String getLocalizedTitle(HttpServletRequest request, String key, Object[] params) {

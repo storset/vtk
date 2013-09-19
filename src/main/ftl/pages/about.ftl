@@ -185,10 +185,6 @@
                propName = "contentLength"
                name = vrtx.getMsg("property.contentLength", "Size")
                value = size />
-        <!-- Obsoleted for document -->
-        <#if resourceDetail.propertyInheritanceMap["obsoleted"]?exists>
-          <@propList.defaultPropertyDisplay propName = "obsoleted" name = vrtx.getMsg("property.obsoleted") value = vrtx.getMsg("property.obsoleted.inheritedFrom") + ' ' + resourceDetail.propertyInheritanceMap["obsoleted"] />
-        </#if>
 
         <!-- Editorial contacts for document (can only be inherited) -->
         <#if resourceDetail.propertyInheritanceMap["editorial-contacts"]?exists>
@@ -197,12 +193,6 @@
                                              value = vrtx.getPropValue(resource, "editorial-contacts") />
         </#if>
       <#else>
-        <!-- Obsolete for collection -->
-        <#if resourceDetail.propertyInheritanceMap["obsoleted"]?exists>
-          <@propList.defaultPropertyDisplay propName = "obsoleted" name = vrtx.getMsg("property.obsoleted") value = vrtx.getMsg("property.obsoleted.inheritedFrom") + ' ' + resourceDetail.propertyInheritanceMap["obsoleted"] />
-        <#else>
-          <@propList.editOrDisplayProperty modelName = 'aboutItems' propertyName = 'obsoleted' displayMacro = 'generalInheritedPropertyDisplay' />
-        </#if>
         <!-- Editorial contacts -->
         <@propList.editOrDisplayProperty modelName = 'aboutItems' propertyName = 'editorial-contacts' displayMacro = 'generalInheritedPropertyDisplay' />
       </#if>

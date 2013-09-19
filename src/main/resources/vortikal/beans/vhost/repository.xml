@@ -52,7 +52,7 @@
     <property name="transactionManager" ref="repository.transactionManager"/>
     <property name="contentHandlingInterceptors">
       <list>
-        <ref bean="video.contentHandlingInterceptor" />
+        <ref bean="mediaref.video.contentHandlingInterceptor" />
       </list>
     </property>
   </bean>

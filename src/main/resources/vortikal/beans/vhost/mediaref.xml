@@ -62,16 +62,16 @@
     </property>
   </bean>
   
-  <bean id="video.contentHandlingInterceptor"
+  <bean id="mediaref.video.contentHandlingInterceptor"
        class="org.vortikal.repository.ContentHandlingInterceptor">
     <property name="videoStorageRoot" value="/home/oyvind/usit/vrtxdata/vidstor" />
     <property name="repositoryId" value="${repositoryID}" />
-    <property name="videoApiClient" ref="video.client" />
+    <property name="videoApiClient" ref="mediaref.video.appclient" />
     <property name="contentTypePropDef" ref="contentTypePropDef"/>
   </bean>
   
   <!-- Videoapp -->
-  <bean id="video.restTemplate" class="org.springframework.web.client.RestTemplate" >
+  <bean id="mediaref.video.restTemplate" class="org.springframework.web.client.RestTemplate" >
     <constructor-arg>
       <bean class="org.vortikal.util.web.BasicAuthHttpRequestFactory">
         <property name="username" value="vortex" />
@@ -80,13 +80,13 @@
     </constructor-arg>
   </bean>
   
-  <bean id="video.client" class="org.vortikal.video.rest.VideoApiClient">
-    <property name="restTemplate" ref="video.restTemplate" />
+  <bean id="mediaref.video.appclient" class="org.vortikal.video.rest.VideoApiClient">
+    <property name="restTemplate" ref="mediaref.video.restTemplate" />
     <property name="repositoryId" value="${repositoryID}" />
   </bean>
   
   <!-- Special view service for mediaref types -->
-  <bean id="displayMediarefResource" class="org.vortikal.web.service.ServiceImpl">
+  <bean id="mediaref.displayResource" class="org.vortikal.web.service.ServiceImpl">
     <description>
       Special display for mediaref types, since their primary content is not
       what should be served out.
@@ -101,15 +101,15 @@
         </bean>
       </list>
     </property>
-    <property name="handler" ref="displayMediarefHandler" />
+    <property name="handler" ref="mediaref.displayHandler" />
   </bean>
 
-  <bean id="displayMediarefHandler"
+  <bean id="mediaref.displayHandler"
         class="org.vortikal.web.display.mediaref.DisplayMediarefController">
-    <property name="view" ref="displayMediarefView" />
+    <property name="view" ref="mediaref.displayView" />
   </bean>
 
-  <bean id="displayMediarefView"
+  <bean id="mediaref.displayView"
         class="org.vortikal.web.display.mediaref.DisplayMediarefView">
     <property name="supportRangeRequests" value="true" />
   </bean>

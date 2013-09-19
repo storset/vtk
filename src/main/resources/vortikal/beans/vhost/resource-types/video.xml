@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
 
   <!-- Video resource -->
 
@@ -26,18 +26,18 @@
       </list>
     </property>
   </bean>
-  
+
   <bean id="contentTypeMatchesVideo" class="org.vortikal.web.service.ResourceContentTypeRegexpAssertion">
     <property name="pattern" value="video/(.+)" />
   </bean>
-  
+
   <bean id="contentTypeMatchesAudioOrVideo" class="org.vortikal.web.service.ResourceContentTypeRegexpAssertion">
     <property name="pattern" value="(video/(.+))||(audio/(.+))" />
   </bean>
-  
+
   <bean id="mediaPlayerService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="viewService" />
-    <property name="order" value="0" />
+    <property name="order" value="-1" />
     <property name="assertions">
       <list>
         <ref bean="contentTypeMatchesAudioOrVideo" />
@@ -45,6 +45,7 @@
       </list>
     </property>
   </bean>
+
 
   <bean id="videoPlayerService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="mediaPlayerService" />
@@ -56,7 +57,7 @@
     </property>
     <property name="handler" ref="displayVideoResource" />
   </bean>
-  
+
   <bean id="audioPlayerService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="mediaPlayerService" />
     <property name="assertions">
@@ -90,7 +91,7 @@
     <property name="viewName" value="viewMediaPlayer" />
     <property name="descriptionPropDef" ref="audioHtmlDescriptionPropDef" />
   </bean>
-  
+
   <bean id="displayVideoResource" class="org.vortikal.web.display.media.DisplayMediaController">
     <property name="mediaPlayer" ref="mediaPlayer" />
     <property name="viewName" value="viewMediaPlayer" />
@@ -134,18 +135,24 @@
       </map>
     </property>
   </bean>
-  
-  <bean id="videoHtmlDescriptionPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
-    <property name="name" value="video-description" /> 
+
+  <bean id="videoHtmlDescriptionPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+    parent="abstractPropDef">
+    <property name="name" value="video-description" />
     <property name="type" value="HTML" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
     <property name="mandatory" value="false" />
   </bean>
-  
+
   <bean id="mediaPlayerService.urlProvider" class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
     <property name="modelName" value="previewImage" />
     <property name="urlName" value="URL" />
     <property name="service" ref="mediaPlayerService" />
+    <property name="staticURLParameters">
+      <map>
+        <entry key="vrtxPreviewUnpublished" value="true" />
+      </map>
+    </property>
   </bean>
 
   <bean id="posterImagePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">

@@ -76,6 +76,10 @@ import org.vortikal.web.service.URL;
  */
 public class CollectionListingSearchComponent extends QueryPartsSearchComponent {
 
+    /* Make this aware of admin preview */
+
+    private static String vrtxPreviewUnpublishedParameter = "vrtxPreviewUnpublished";
+
     private static Log logger = LogFactory.getLog(CollectionListingSearchComponent.class);
 
     private AggregationResolver aggregationResolver;
@@ -122,6 +126,10 @@ public class CollectionListingSearchComponent extends QueryPartsSearchComponent 
         search.setLimit(searchLimit);
         search.setCursor(offset);
         search.setSorting(sorting);
+        if (request.getParameterMap().containsKey(vrtxPreviewUnpublishedParameter)) {
+            search.setUseDefaultExcludes(false);
+        }
+
         if (propertySelect != null) {
             search.setPropertySelect(propertySelect);
         }

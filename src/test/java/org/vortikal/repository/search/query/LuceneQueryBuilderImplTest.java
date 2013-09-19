@@ -73,10 +73,10 @@ public class LuceneQueryBuilderImplTest {
         publishedPropDef.setName("published");
         luceneQueryBuilder.setPublishedPropDef(publishedPropDef);
 
-        PropertyTypeDefinitionImpl obsoletedPropDef = new PropertyTypeDefinitionImpl();
-        obsoletedPropDef.setNamespace(Namespace.DEFAULT_NAMESPACE);
-        obsoletedPropDef.setName("obsoleted");
-        luceneQueryBuilder.setObsoletedPropDef(obsoletedPropDef);
+        PropertyTypeDefinitionImpl unpublishedCollectionPropDef = new PropertyTypeDefinitionImpl();
+        unpublishedCollectionPropDef.setNamespace(Namespace.DEFAULT_NAMESPACE);
+        unpublishedCollectionPropDef.setName("unpublishedCollection");
+        luceneQueryBuilder.setUnpublishedCollectionPropDef(unpublishedCollectionPropDef);
 
         luceneQueryBuilder.setFieldValueMapper(new FieldValueMapper());
 

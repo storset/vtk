@@ -57,6 +57,8 @@ public class PublishResourceController extends SimpleFormController {
 
     private String viewName;
     private PropertyTypeDefinition publishDatePropDef;
+    private PropertyTypeDefinition unpublishedCollectionPropDef;
+    
     private static final String ACTION_PARAM = "action";
     private static final String PUBLISH_PARAM = "publish-confirmed";
     private static final String PUBLISH_PARAM_GLOBAL = "global-publish-confirmed";
@@ -99,9 +101,9 @@ public class PublishResourceController extends SimpleFormController {
         
         if (publishResourceCommand.getPublishResourceAction() != null) {
             if (PUBLISH_PARAM.equals(action) || PUBLISH_PARAM_GLOBAL.equals(action)) {
-                ActionsHelper.publishResource(publishDatePropDef, Calendar.getInstance().getTime(), repository, token, resourceURI, failures);
+                ActionsHelper.publishResource(publishDatePropDef,unpublishedCollectionPropDef, Calendar.getInstance().getTime(), repository, token, resourceURI, failures);
             } else if (UNPUBLISH_PARAM.equals(action) || UNPUBLISH_PARAM_GLOBAL.equals(action)) {
-                ActionsHelper.unpublishResource(publishDatePropDef, repository, token, resourceURI, failures);
+                ActionsHelper.unpublishResource(publishDatePropDef,unpublishedCollectionPropDef, repository, token, resourceURI, failures);
             }
         }
         ActionsHelper.addFailureMessages(failures, requestContext);
@@ -117,6 +119,11 @@ public class PublishResourceController extends SimpleFormController {
     @Required
     public void setPublishDatePropDef(PropertyTypeDefinition publishDatePropDef) {
         this.publishDatePropDef = publishDatePropDef;
+    }
+
+    @Required
+    public void setUnpublishedCollectionPropDef(PropertyTypeDefinition unpublishedCollectionPropDef) {
+        this.unpublishedCollectionPropDef = unpublishedCollectionPropDef;
     }
 
 }

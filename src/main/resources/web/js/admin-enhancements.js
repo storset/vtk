@@ -1074,7 +1074,7 @@ VrtxAdmin.prototype.scrollBreadcrumbs = function scrollBreadcrumbs(dir) {
   
   switch (dir) {
     case "init":
-      var crumbs = $(".vrtx-breadcrumb-level"), i = crumbs.length, crumbsWidth = 0;
+      var crumbs = $(".vrtx-breadcrumb-level, .vrtx-breadcrumb-level-no-url"), i = crumbs.length, crumbsWidth = 0;
       while(i--) {
         crumbsWidth += $(crumbs[i]).outerWidth(true) + 2;
       }

@@ -30,6 +30,9 @@
  */
 package org.vortikal.web.display.index;
 
+import java.util.Enumeration;
+import java.util.List;
+
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -53,43 +56,42 @@ import org.vortikal.web.service.URL;
 import org.vortikal.web.servlet.ConfigurableRequestWrapper;
 import org.vortikal.web.servlet.VortikalServlet;
 
-
 /**
- * Index file controller. Uses {@link RequestContext#indexFileURI} to
- * retrieve the actual index file. If the current resource is not a
- * collection, this controller will fail.
- *
- * <p>The controller gets the name of the servlet to
- *   dispatch requests to (a
- *   <code>ServletContext.getNamedDispatcher()</code> from a required request attribute
- *   with id <code>VortikalServlet.SERVLET_NAME_REQUEST_ATTRIBUTE</code>.
- *
- * <p>Configurable JavaBean properties:
+ * Index file controller. Uses {@link RequestContext#indexFileURI} to retrieve
+ * the actual index file. If the current resource is not a collection, this
+ * controller will fail.
+ * 
+ * <p>
+ * The controller gets the name of the servlet to dispatch requests to (a
+ * <code>ServletContext.getNamedDispatcher()</code> from a required request
+ * attribute with id <code>VortikalServlet.SERVLET_NAME_REQUEST_ATTRIBUTE</code>.
+ * 
+ * <p>
+ * Configurable JavaBean properties:
  * <ul>
- *   <li><code>repository</code> - the content {@link Repository repository}
+ * <li><code>repository</code> - the content {@link Repository repository}
  * </ul>
  */
-public class IndexFileController
-  implements Controller, LastModified, InitializingBean, ServletContextAware {
+public class IndexFileController implements Controller, LastModified, InitializingBean, ServletContextAware {
     private static final Log logger = LogFactory.getLog(IndexFileController.class);
-    
+
     private ServletContext servletContext;
 
     public void setServletContext(ServletContext servletContext) {
         this.servletContext = servletContext;
-      
+
     }
+
     public void afterPropertiesSet() {
         if (this.servletContext == null) {
-            throw new BeanInitializationException(
-                "JavaBean property 'servletContext' not set");
+            throw new BeanInitializationException("JavaBean property 'servletContext' not set");
         }
     }
-    
+
     public long getLastModified(HttpServletRequest request) {
         return -1L;
     }
-    
+
     public ModelAndView handleRequest(HttpServletRequest request,
                                       HttpServletResponse response)
         throws Exception {
@@ -121,6 +123,14 @@ public class IndexFileController
         URL indexFileURL = URL.create(request);
         indexFileURL.setCollection(false);
         indexFileURL.setPath(indexURI);
+        
+        /* Forwarding parameters for the index page request */ 
+        Enumeration<String> p = request.getParameterNames();
+        while(p.hasMoreElements()){
+            String key = p.nextElement();
+            indexFileURL.addParameter(key, request.getParameter(key));
+        }
+        
         if (logger.isDebugEnabled()) {
             logger.debug("Dispatch index file request to: " + indexFileURL);
         }
@@ -143,5 +153,4 @@ public class IndexFileController
         }
         return null;
     }
-    
 }

@@ -45,9 +45,15 @@
     <property name="service" ref="viewImageInfoService" />
   </bean>
 
+  <bean id="editor.loadImageService.urlProvider" class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
+    <property name="modelName" value="previewImage" />
+    <property name="urlName" value="URL" />
+    <property name="service" ref="editor.loadImageService" />
+  </bean>
+
   <bean id="viewImageInfoService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="viewService" />
-    <property name="order" value="0" />
+    <property name="order" value="-1" />
     <property name="assertions">
       <list>
         <ref bean="contentTypeMatchesImage" />
@@ -73,6 +79,11 @@
 
   <bean name="imageWithInfoView" parent="freemarkerView">
     <property name="url" value="pages/image-as-html.ftl" />
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="viewImageInfoService.urlProvider" />
+      </list>
+    </property>
     <property name="attributesMap">
       <map>
         <entry key="copyrightHelpURL.no" value="${copyrightHelpURL.no}" />

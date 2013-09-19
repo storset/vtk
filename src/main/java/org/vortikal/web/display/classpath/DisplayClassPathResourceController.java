@@ -56,6 +56,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 import org.springframework.web.servlet.mvc.LastModified;
 import org.vortikal.repository.Path;
+import org.vortikal.util.io.StreamUtil;
 import org.vortikal.util.repository.MimeHelper;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.StaticResourceLocation;
@@ -79,6 +80,7 @@ public class DisplayClassPathResourceController
     private ApplicationContext applicationContext;
     private boolean handleLastModified;
 
+    @Override
     public void setApplicationContext(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
     }
@@ -92,6 +94,7 @@ public class DisplayClassPathResourceController
     }
     
     @SuppressWarnings("unchecked")
+    @Override
     public void afterPropertiesSet() throws Exception {
 
         Map<String, StaticResourceLocation> matchingBeans = BeanFactoryUtils.beansOfTypeIncludingAncestors(
@@ -110,6 +113,7 @@ public class DisplayClassPathResourceController
     }
 
 
+    @Override
     public ModelAndView handleRequest(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
 
@@ -129,14 +133,10 @@ public class DisplayClassPathResourceController
             return null;
         }
 
-        InputStream inStream = null;
-        OutputStream outStream = null;
-        int contentLength = -1;
-        
         try {
             Stream stream = openStream(resource);
-            inStream = stream.stream;
-            contentLength = stream.contentLength;
+            InputStream inStream = stream.stream;
+            int contentLength = stream.contentLength;
             
             response.setContentType(MimeHelper.map(request.getRequestURI()));
             if (contentLength != -1) {
@@ -147,37 +147,25 @@ public class DisplayClassPathResourceController
             }
             
             if ("GET".equals(request.getMethod())) {
-                outStream  = response.getOutputStream();
-                byte[] buffer = new byte[5000];
-
-                int n = 0;
-                while (((n = inStream.read(buffer, 0, 5000)) > 0)) {
-                    outStream.write(buffer, 0, n);
-                }
+                StreamUtil.pipe(inStream, response.getOutputStream(), 4096, true);
             }
             
             if (this.logger.isDebugEnabled()) {
                 this.logger.debug("Successfully served resource: " + resource
                                   + " from " + resource.getDescription());
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             if (this.logger.isDebugEnabled()) {
                 this.logger.debug("Unable to serve resource: " + resource
                                   + " from " + resource.getDescription(), e);
             }
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
-        } finally {
-            if (inStream != null) {
-            	inStream.close();
-            }
-            if (outStream != null) {
-            	outStream.close();
-            }
         }
         return null;
     }
 
 
+    @Override
     public long getLastModified(HttpServletRequest request) {
         if (!this.handleLastModified) {
             return -1;
@@ -198,7 +186,7 @@ public class DisplayClassPathResourceController
         return -1;
     }
 
-    private class Stream {
+    private static final class Stream {
         int contentLength = -1;
         InputStream stream;
     }

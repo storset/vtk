@@ -37,6 +37,7 @@ import org.vortikal.web.actions.UpdateCancelCommand;
 public class EditPublishingCommand extends UpdateCancelCommand {
 
     private Resource resource;
+    private String publishStatus;
     private String publishDate;
     private String unpublishDate;
     private Value publishDateValue;
@@ -103,6 +104,14 @@ public class EditPublishingCommand extends UpdateCancelCommand {
 
     public void setUnpublishDateUpdateAction(String unpublishDateUpdateAction) {
         this.unpublishDateUpdateAction = unpublishDateUpdateAction;
+    }
+
+    public String getPublishStatus() {
+        return publishStatus;
+    }
+
+    public void setPublishStatus(String publishStatus) {
+        this.publishStatus = publishStatus;
     }
 
 }

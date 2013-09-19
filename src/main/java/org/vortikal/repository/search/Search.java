@@ -68,7 +68,7 @@ import org.vortikal.repository.search.query.Query;
  * @param useDefaultExcludes
  *            Marks which resources to include/exclude in result. Default set to
  *            true, meaning (per. Oct. 2012) include only when published and not
- *            obsoleted.
+ *            unpublishedCollection.
  * 
  * @return A <code>ResultSet</code> containing a subset of the results.
  * 

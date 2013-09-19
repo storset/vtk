@@ -63,8 +63,6 @@ import org.vortikal.web.RequestContext;
 /**
  * Handler for LOCK requests.
  * 
- * XXX: Controller missing supportIfHeaders true/false flag
- * 
  */
 public class LockController extends AbstractWebdavController {
 
@@ -78,9 +76,13 @@ public class LockController extends AbstractWebdavController {
     private static final int MAX_LOCKOWNER_INFO_LENGTH = 128;
 
     /**
-     * Performs the WebDAV 'LOCK' method.
-     * 
+     * Handles WebDAV LOCK method.
+     * @param request
+     * @param response
+     * @return
+     * @throws Exception 
      */
+    @Override
     public ModelAndView handleRequest(HttpServletRequest request, 
             HttpServletResponse response) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();

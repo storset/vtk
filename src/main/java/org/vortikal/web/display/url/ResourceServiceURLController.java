@@ -45,6 +45,7 @@ import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.Revision;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.Principal;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
@@ -78,7 +79,9 @@ public class ResourceServiceURLController implements Controller {
     private String webProtocolRestricted;
     private boolean displayWorkingRevision;
     private boolean previewUnpublished;
-    private boolean previewObsoleted;
+    private boolean previewUnpublishedCollection;
+
+    private PropertyTypeDefinition unpublishedCollectionPropDef;
 
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
@@ -110,24 +113,22 @@ public class ResourceServiceURLController implements Controller {
             }
         }
 
-        // Add parameter to preview view unpublished only if resource actually
-        // is unpublished
-        if (this.previewUnpublished) {
-            if (!resource.isPublished()) {
+        // Add parameter to preview unpublished resources
+        if (unpublishedCollectionPropDef != null) {
+            boolean vrtxPreviewUnpublished = false;
+            if (resource.getProperty(unpublishedCollectionPropDef) != null || !resource.isPublished()) {
+                vrtxPreviewUnpublished = true;
+            }
+
+            if (requestContext.getIndexFileURI() != null) {
+                Resource indexResource = repository.retrieve(token, requestContext.getIndexFileURI(), false);
+                if (indexResource != null && !indexResource.isPublished()) {
+                    vrtxPreviewUnpublished = true;
+                }
+            }
+            if (vrtxPreviewUnpublished) {
                 resourceViewURL.addParameter("vrtxPreviewUnpublished", "true");
             }
-        }
-
-        // Add parameter to preview obsoleted only if resource actually is
-        // obsoleted
-        if (this.previewObsoleted) {
-
-            Property obsoletedProp = resource.getProperty(Namespace.DEFAULT_NAMESPACE, "obsoleted");
-            if (obsoletedProp != null && obsoletedProp.getBooleanValue()) {
-                model.put("obsoleted", "true");
-                resourceViewURL.addParameter("vrtxPreviewObsoleted", "true");
-            }
-
         }
 
         String resourceURL = resourceViewURL.toString();
@@ -184,8 +185,12 @@ public class ResourceServiceURLController implements Controller {
         this.previewUnpublished = previewUnpublished;
     }
 
-    public void setPreviewObsoleted(boolean previewObsoleted) {
-        this.previewObsoleted = previewObsoleted;
+    public void setPreviewUnpublishedCollection(boolean previewUnpublishedCollection) {
+        this.previewUnpublishedCollection = previewUnpublishedCollection;
+    }
+
+    public void setUnpublishedCollectionPropDef(PropertyTypeDefinition unpublishedCollectionPropDef) {
+        this.unpublishedCollectionPropDef = unpublishedCollectionPropDef;
     }
 
 }

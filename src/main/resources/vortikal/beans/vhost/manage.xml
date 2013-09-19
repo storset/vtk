@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
 
   <!-- Temporarily redirect ?vrtx=thumbnail on manage hostname to view hostname until editor is fixed to use thumbnail service 
     to generate image URLs -->
@@ -82,9 +82,8 @@
 
 
 
-  <!-- Kicks in when
-       webHostName != manage.hostName and request.hostname = manage.hostname
-       and manage.protocol == https  and request.protocol == http: -->
+  <!-- Kicks in when webHostName != manage.hostName and request.hostname = manage.hostname and manage.protocol == https and 
+    request.protocol == http: -->
   <bean id="manage.redirectToHTTPSService" class="org.vortikal.web.service.ServiceImpl">
     <property name="order" value="-100" />
     <property name="assertions">
@@ -139,7 +138,7 @@
     </property>
     <property name="urlPostProcessors" ref="manage.urlPostProcessors" />
     <property name="handlerFilters">
-      <ref bean="system.csrfPreventionHandler" />  
+      <ref bean="system.csrfPreventionHandler" />
     </property>
     <property name="handlerInterceptors">
       <list>
@@ -364,8 +363,8 @@
     </property>
     <property name="handler" ref="manage.unlockResourceHandler" />
   </bean>
-  
-  
+
+
   <bean id="fileUploadService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="manageCollectionListingService" />
     <property name="order" value="-980" />
@@ -533,7 +532,7 @@
     </property>
     <property name="handler" ref="editAddCommentPermissionsHandler" />
   </bean>
-  
+
   <bean id="editReadWriteUnpublishedPermissionsService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="permissionsService" />
     <property name="assertions">
@@ -547,7 +546,7 @@
     </property>
     <property name="handler" ref="editReadWriteUnpublishedPermissionsHandler" />
   </bean>
-  
+
 
   <!-- <bean id="editBindPermissionsService" class="org.vortikal.web.service.ServiceImpl"> <property name="parent" ref="permissionsService" 
     /> <property name="assertions"> <list> <ref local="writeACLPermissionAssertion" /> <bean class="org.vortikal.web.service.RequestParameterAssertion"> 
@@ -644,8 +643,7 @@
     <property name="handler" ref="previewFallbackHandler" />
   </bean>
 
-  <bean id="preview.workingCopyTabTitle"
-        class="org.vortikal.web.view.components.menu.AssertionTitleResolver">
+  <bean id="preview.workingCopyTabTitle" class="org.vortikal.web.view.components.menu.AssertionTitleResolver">
     <property name="assertion">
       <bean class="org.vortikal.web.service.AndAssertion">
         <property name="assertions">
@@ -669,52 +667,44 @@
     <property name="order" value="-1" />
     <property name="assertions">
       <list>
-        <!--
-        <bean class="org.vortikal.web.service.RequestProtocolAssertion">
-          <property name="protocol" value="https" />
-        </bean>
-        -->
+        <!-- <bean class="org.vortikal.web.service.RequestProtocolAssertion"> <property name="protocol" value="https" /> 
+          </bean> -->
         <bean class="org.vortikal.web.service.OrAssertion">
           <property name="assertions">
             <list>
-            <bean class="org.vortikal.web.service.ResourcePropertyRegexpAssertion">
-              <property name="namespace" ref="DEFAULT_NAMESPACE" />
-              <property name="name" value="sslMixedMode" />
-              <property name="pattern" value="(img|iframe|frame|embed|link|base|object|applet|property|xml:img:?):http://" />
-            </bean>
-            <bean class="org.vortikal.web.service.ResourcePropertyRegexpAssertion">
-              <property name="namespace" ref="DEFAULT_NAMESPACE" />
-              <property name="name" value="sslMixedMode" />
-              <property name="pattern" value="element:style" />
-            </bean>
-            <bean class="org.vortikal.web.service.ResourcePropertyRegexpAssertion">
-              <property name="namespace" ref="DEFAULT_NAMESPACE" />
-              <property name="name" value="sslMixedMode" />
-              <property name="pattern" value="script:" />
-            </bean>
-            <bean class="org.vortikal.web.service.ResourcePropertyRegexpAssertion">
-              <property name="namespace" ref="DEFAULT_NAMESPACE" />
-              <property name="name" value="sslMixedMode" />
-              <property name="patterns">
-                <list>
-                  <value>element:ssi:include:feed.*</value>
-                  <value>item-picture=\[true\].*</value>
-                  <value>url=\[http:.*</value>
-                </list>
-              </property>
-            </bean>
-            <bean class="org.vortikal.web.service.ResourcePropertyRegexpAssertion">
-              <property name="namespace" ref="DEFAULT_NAMESPACE" />
-              <property name="name" value="sslMixedMode" />
-              <property name="pattern" value="attr:style" />
-            </bean>
-            <!--
-            <bean class="org.vortikal.web.service.ResourcePropertyRegexpAssertion">
-              <property name="namespace" ref="DEFAULT_NAMESPACE" />
-              <property name="name" value="sslMixedMode" />
-              <property name="pattern" value="attr:on" />
-            </bean>
-            -->
+              <bean class="org.vortikal.web.service.ResourcePropertyRegexpAssertion">
+                <property name="namespace" ref="DEFAULT_NAMESPACE" />
+                <property name="name" value="sslMixedMode" />
+                <property name="pattern" value="(img|iframe|frame|embed|link|base|object|applet|property|xml:img:?):http://" />
+              </bean>
+              <bean class="org.vortikal.web.service.ResourcePropertyRegexpAssertion">
+                <property name="namespace" ref="DEFAULT_NAMESPACE" />
+                <property name="name" value="sslMixedMode" />
+                <property name="pattern" value="element:style" />
+              </bean>
+              <bean class="org.vortikal.web.service.ResourcePropertyRegexpAssertion">
+                <property name="namespace" ref="DEFAULT_NAMESPACE" />
+                <property name="name" value="sslMixedMode" />
+                <property name="pattern" value="script:" />
+              </bean>
+              <bean class="org.vortikal.web.service.ResourcePropertyRegexpAssertion">
+                <property name="namespace" ref="DEFAULT_NAMESPACE" />
+                <property name="name" value="sslMixedMode" />
+                <property name="patterns">
+                  <list>
+                    <value>element:ssi:include:feed.*</value>
+                    <value>item-picture=\[true\].*</value>
+                    <value>url=\[http:.*</value>
+                  </list>
+                </property>
+              </bean>
+              <bean class="org.vortikal.web.service.ResourcePropertyRegexpAssertion">
+                <property name="namespace" ref="DEFAULT_NAMESPACE" />
+                <property name="name" value="sslMixedMode" />
+                <property name="pattern" value="attr:style" />
+              </bean>
+              <!-- <bean class="org.vortikal.web.service.ResourcePropertyRegexpAssertion"> <property name="namespace" ref="DEFAULT_NAMESPACE" 
+                /> <property name="name" value="sslMixedMode" /> <property name="pattern" value="attr:on" /> </bean> -->
             </list>
           </property>
         </bean>
@@ -734,6 +724,7 @@
     <property name="handler" ref="previewAdminIframeHandler" />
   </bean>
 
+
   <bean id="previewImageService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="previewService" />
     <property name="assertions">
@@ -744,6 +735,7 @@
     <property name="handler" ref="previewImageHandler" />
     <property name="handlerInterceptors" ref="previewAsWebpageServiceInterceptor" />
   </bean>
+
 
   <bean id="previewMediaService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="previewService" />
@@ -871,9 +863,9 @@
         <ref bean="commentsEnabledPropDef" />
 
         <!-- Obsolete -->
-        <ref bean="obsoletedPropDef" />
-        
-        <!--  Editorial contacts -->
+        <ref bean="unpublishedCollectionPropDef" />
+
+        <!-- Editorial contacts -->
         <ref bean="editorialContactsPropDef" />
 
         <!-- Collection type -->
@@ -891,7 +883,7 @@
     <property name="documentPrincipalMetadataRetriever" ref="documentPrincipalMetadataRetriever" />
     <property name="localeResolver" ref="manageLocaleResolver" />
   </bean>
-  
+
   <bean id="fileUploadHandler" class="org.vortikal.web.actions.create.FileUploadController">
     <property name="formView" value="manageCollectionListing" />
     <property name="successView" value="redirectToManage" />
@@ -948,19 +940,19 @@
   <bean id="createResource.nameReplacementMap" class="java.util.HashMap">
     <constructor-arg>
       <map>
-        <entry key="\/"    value="-" />
-        <entry key="\\"    value="-" />
-        <entry key="\s+"    value="-" />
-        <entry key="&amp;"  value="-" />
-        <entry key=","      value="" />
-        <entry key="\'"     value="-" />
+        <entry key="\/" value="-" />
+        <entry key="\\" value="-" />
+        <entry key="\s+" value="-" />
+        <entry key="&amp;" value="-" />
+        <entry key="," value="" />
+        <entry key="\'" value="-" />
         <entry key="&quot;" value="-" />
-        <entry key="æ"      value="e" />
-        <entry key="ø"      value="o" />
-        <entry key="å"      value="a" />
-        <entry key="%"      value="" />
-        <entry key="#"      value="" />
-        <entry key="\?"     value="" />
+        <entry key="æ" value="e" />
+        <entry key="ø" value="o" />
+        <entry key="å" value="a" />
+        <entry key="%" value="" />
+        <entry key="#" value="" />
+        <entry key="\?" value="" />
       </map>
     </constructor-arg>
   </bean>
@@ -1044,7 +1036,7 @@
     <property name="successView" value="redirectToPermissions" />
     <property name="commandName" value="permissionsForm_add-comment" />
   </bean>
-  
+
   <bean id="editReadWriteUnpublishedPermissionsHandler" parent="abstractPermissionsHandler">
     <property name="privilege" value="READ_WRITE_UNPUBLISHED" />
     <property name="successView" value="redirectToPermissions" />
@@ -1063,28 +1055,30 @@
     <property name="viewName" value="preview.displayPopupURL" />
     <property name="service" ref="viewService" />
     <property name="displayWorkingRevision" value="true" />
+    <property name="unpublishedCollectionPropDef" ref="unpublishedCollectionPropDef" />
   </bean>
-  
-  <bean id="abstractPreviewIframe" abstract="true" class="org.vortikal.web.display.url.ResourceServiceURLController"> 
+
+  <bean id="abstractPreviewIframe" abstract="true" class="org.vortikal.web.display.url.ResourceServiceURLController">
     <property name="webProtocol" value="${webProtocol}" />
-    <property name="webProtocolRestricted" value="${webProtocolRestricted}" />  
+    <property name="webProtocolRestricted" value="${webProtocolRestricted}" />
+    <property name="unpublishedCollectionPropDef" ref="unpublishedCollectionPropDef" />
   </bean>
 
   <bean id="previewAdminIframeHandler" parent="abstractPreviewIframe">
-    <property name="service" ref="viewService" /> 
+    <property name="service" ref="viewService" />
     <property name="viewName" value="previewAdminIframe" />
     <property name="displayWorkingRevision" value="true" />
     <property name="previewUnpublished" value="true" />
-    <property name="previewObsoleted" value="true" />
+    <property name="previewUnpublishedCollection" value="true" />
   </bean>
 
   <bean id="previewImageHandler" parent="abstractPreviewIframe">
-    <property name="service" ref="viewService" /> 
+    <property name="service" ref="viewService" />
     <property name="viewName" value="previewImage" />
   </bean>
 
   <bean id="previewMediaHandler" parent="abstractPreviewIframe">
-    <property name="service" ref="viewService" /> 
+    <property name="service" ref="viewService" />
     <property name="viewName" value="previewMedia" />
   </bean>
 
@@ -1107,8 +1101,8 @@
         <entry key="manageCollectionListing" value-ref="manageCollectionListingView" />
         <entry key="admin" value-ref="aboutView" />
         <entry key="permissions" value-ref="permissionsView" />
-        <entry key="previewImage" value-ref="previewImageView" />
-        <entry key="previewMedia" value-ref="previewMediaPlayerView" />
+        <entry key="previewImage" value-ref="previewMediaView" />
+        <entry key="previewMedia" value-ref="previewMediaView" />
         <entry key="preview.displayPopupURL" value-ref="preview.displayPopupURLView" />
         <entry key="previewAdminIframe" value-ref="previewAdminIframeView" />
         <entry key="previewText" value-ref="previewTextView" />
@@ -1144,14 +1138,14 @@
   <bean id="decorating.manageNamespace" class="java.lang.String">
     <constructor-arg type="java.lang.String" value="manage" />
   </bean>
-  
+
   <bean id="manage.lineTopComponent" class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
     <property name="namespace" ref="decorating.manageNamespace" />
     <property name="name" value="display-line-top" />
     <property name="description" value="Inserts line top" />
     <property name="view" ref="manage.lineTopView" />
   </bean>
-  
+
   <bean id="manage.lineTopView" parent="freemarkerView">
     <property name="url" value="system/line-top.ftl" />
     <property name="attributes">
@@ -1197,7 +1191,8 @@
       <map>
         <entry key="cssURLs">
           <list>
-            <value>${jquery.baseURL}/plugins/ui/jquery-ui-${jquery.ui.version}.custom/css/smoothness/jquery-ui-${jquery.ui.version}.custom.min.css</value>
+            <value>${jquery.baseURL}/plugins/ui/jquery-ui-${jquery.ui.version}.custom/css/smoothness/jquery-ui-${jquery.ui.version}.custom.min.css
+            </value>
             <value>${themeBaseURL}/default.css</value>
           </list>
         </entry>
@@ -1220,7 +1215,8 @@
         <entry key="jsURLs">
           <list>
             <value>${jquery.baseURL}/jquery.min.js</value>
-            <value>${jquery.baseURL}/plugins/ui/jquery-ui-${jquery.ui.version}.custom/js/jquery-ui-${jquery.ui.version}.custom.min.js</value>
+            <value>${jquery.baseURL}/plugins/ui/jquery-ui-${jquery.ui.version}.custom/js/jquery-ui-${jquery.ui.version}.custom.min.js
+            </value>
             <value>${jquery.baseURL}/plugins/jquery.form.js</value>
             <value>${jsBaseURL}/cross-doc-com-link.js</value>
             <value>${jsBaseURL}/iframe-admin.js</value>
@@ -1550,42 +1546,26 @@
     <property name="url" value="layouts/lock-refresh-response.ftl" />
   </bean>
 
-  <!-- Views -->
-  <bean id="previewImageView" parent="freemarkerView">
-    <property name="url" value="pages/preview-admin-iframe.ftl" />
-    <property name="referenceDataProviders">
-      <list>
-        <ref bean="resourceContextProvider" />
-        <ref bean="viewImageInfoService.urlProvider" />
-        <ref bean="iframeJSProvider" />
-        <bean class="org.vortikal.web.referencedata.provider.ResourcePrincipalPermissionsProvider">
-          <property name="modelName" value="permissions_ACTION_READ" />
-          <property name="permission" value="READ" />
-          <property name="anonymous" value="true" />
-        </bean>
-        <bean class="org.vortikal.web.referencedata.provider.ResourcePrincipalPermissionsProvider">
-          <property name="modelName" value="permissions_ACTION_READ_PROCESSED" />
-          <property name="permission" value="READ_PROCESSED" />
-          <property name="anonymous" value="true" />
-        </bean>
-        <bean class="org.vortikal.web.referencedata.provider.StaticModelDataProvider">
-          <property name="modelDataMap">
-            <map>
-              <entry key="webProtocol" value="${webProtocol}" />
-            </map>
-          </property>
-        </bean>
-      </list>
+  <bean id="asWebpage.urlProvider" class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
+    <property name="modelName" value="previewImage" />
+    <property name="urlName" value="URL" />
+    <!-- create a common mother for all view as webpage services -->
+    <property name="service" ref="mediaPlayerService" />
+    <property name="staticURLParameters">
+      <map>
+        <entry key="vrtxPreviewUnpublished" value="true" />
+      </map>
     </property>
-
   </bean>
 
-  <bean id="previewMediaPlayerView" parent="freemarkerView">
+  <!-- Views -->
+
+  <bean id="previewMediaView" parent="freemarkerView">
     <property name="url" value="pages/preview-admin-iframe.ftl" />
     <property name="referenceDataProviders">
       <list>
         <ref bean="resourceContextProvider" />
-        <ref bean="mediaPlayerService.urlProvider" />
+        <ref bean="asWebpage.urlProvider" />
         <ref bean="iframeJSProvider" />
         <bean class="org.vortikal.web.referencedata.provider.ResourcePrincipalPermissionsProvider">
           <property name="modelName" value="permissions_ACTION_READ" />
@@ -1801,7 +1781,8 @@
         <entry key="jsURLs">
           <list>
             <value>${jquery.baseURL}/jquery.min.js</value>
-            <value>${jquery.baseURL}/plugins/ui/jquery-ui-${jquery.ui.version}.custom/js/jquery-ui-${jquery.ui.version}.custom.min.js</value>
+            <value>${jquery.baseURL}/plugins/ui/jquery-ui-${jquery.ui.version}.custom/js/jquery-ui-${jquery.ui.version}.custom.min.js
+            </value>
             <value>${jsBaseURL}/cross-doc-com-link.js</value>
             <value>${jsBaseURL}/iframe-admin.js</value>
             <value>${jquery.baseURL}/plugins/jquery.vortexTips.js</value>
@@ -1851,7 +1832,8 @@
     <constructor-arg ref="collectionActionServicesFactory" />
   </bean>
 
-  <bean id="collectionActionServicesFactory" class="org.vortikal.context.CategoryResolvingFactoryBean" lazy-init="true" parent="ordered">
+  <bean id="collectionActionServicesFactory" class="org.vortikal.context.CategoryResolvingFactoryBean" lazy-init="true"
+    parent="ordered">
     <property name="category" value="collectionMenu" />
   </bean>
 
@@ -1863,7 +1845,8 @@
     <constructor-arg ref="resourceMenuLeft.referenceDataProviders" />
   </bean>
 
-  <bean id="resourceMenuLeftActionServicesFactory" class="org.vortikal.context.CategoryResolvingFactoryBean" parent="ordered">
+  <bean id="resourceMenuLeftActionServicesFactory" class="org.vortikal.context.CategoryResolvingFactoryBean"
+    parent="ordered">
     <property name="category" value="resourceMenuLeft" />
     <property name="comparator">
       <bean class="org.vortikal.web.service.ServiceAttributeComparator">
@@ -1948,12 +1931,12 @@
     <property name="requiresAuthentication" value="true" />
     <property name="permission" value="READ" />
   </bean>
-  
+
   <bean id="requiresPublishUnpublishPermissionAssertion" parent="abstractResourcePrincipalPermissionAssertion">
     <property name="requiresAuthentication" value="true" />
     <property name="permission" value="PUBLISH_UNPUBLISH" />
   </bean>
-  
+
   <bean id="requiresReadParentPermissionAssertion" parent="abstractResourcePrincipalPermissionAssertion">
     <property name="parent" value="true" />
     <property name="requiresAuthentication" value="true" />
@@ -1976,7 +1959,7 @@
     <property name="permission" value="WRITE" />
     <property name="unpublishedPermission" value="READ_WRITE_UNPUBLISHED" />
   </bean>
-  
+
   <bean id="requiresWriteUnpublishedPermissionAssertion" parent="abstractResourcePrincipalPermissionAssertion">
     <property name="permission" value="READ_WRITE_UNPUBLISHED" />
     <property name="requiresAuthentication" value="true" />
@@ -1985,15 +1968,15 @@
   <bean id="writeUnpublishedPermissionAssertion" parent="abstractResourcePrincipalPermissionAssertion">
     <property name="permission" value="READ_WRITE_UNPUBLISHED" />
   </bean>
-  
+
   <!-- Possible temporary assertion to minimize concept impact -->
   <bean id="hasWriteUnpublishedPermissionPrincipalsAssertion" class="org.vortikal.web.service.ResourceHasWriteUnpublishedPermissionPrincipalsAssertion" />
-  
+
   <bean id="writeParentPermissionAssertion" parent="abstractResourcePrincipalPermissionAssertion">
     <property name="parent" value="true" />
     <property name="permission" value="WRITE" />
   </bean>
-  
+
   <bean id="bindPermissionAssertion" parent="abstractResourcePrincipalPermissionAssertion">
     <property name="permission" value="CREATE_UNPUBLISHED" />
   </bean>
@@ -2188,7 +2171,7 @@
       </map>
     </property>
   </bean>
-  
+
   <!-- Email -->
   <bean id="email.executor" class="org.vortikal.util.mail.MailExecutor">
     <constructor-arg ref="email.taskExecutor" />
@@ -2205,13 +2188,10 @@
   <bean id="email.taskExecutor" class="org.springframework.core.task.SimpleAsyncTaskExecutor">
     <property name="concurrencyLimit" value="${email.concurrencyLimit}" />
   </bean>
-  
-   <!--
-    <bean id="taskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
-    <property name="corePoolSize" value="10" /> <property name="maxPoolSize" value="25" /> <property
-    name="queueCapacity" value="50" /> </bean>
-  -->
-  
+
+  <!-- <bean id="taskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor"> <property name="corePoolSize" 
+    value="10" /> <property name="maxPoolSize" value="25" /> <property name="queueCapacity" value="50" /> </bean> -->
+
   <bean id="emailApprovalService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="manageService" />
     <property name="order" value="-999" />
@@ -2223,10 +2203,10 @@
           <property name="parameterName" value="action" />
           <property name="parameterValue" value="email-approval" />
         </bean>
-      </list> 
+      </list>
     </property>
   </bean>
-  
+
   <bean id="emailApprovalHandler" class="org.vortikal.web.actions.publish.ApprovalViaEmailController">
     <property name="manageService" ref="manageService" />
     <property name="viewName" value="emailApproval.view" />
@@ -2236,8 +2216,8 @@
     <property name="editorialContactsPropDef" ref="editorialContactsPropDef" />
     <property name="principalFactory" ref="principalFactory" />
   </bean>
-  
- <bean id="emailApproval.viewResolver" parent="system.decoratingViewResolver">
+
+  <bean id="emailApproval.viewResolver" parent="system.decoratingViewResolver">
     <property name="views">
       <map>
         <entry key="emailApproval.view" value-ref="emailApproval.view" />
@@ -2253,7 +2233,7 @@
       </list>
     </property>
   </bean>
-  
+
   <bean id="emailApproval.mailTemplateProvider" class="org.vortikal.util.mail.MailTemplateProvider">
     <property name="view" ref="emailApproval.mailTemplateView" />
     <property name="resourceDetailProvider" ref="resourceDetailProvider" />
@@ -2262,9 +2242,9 @@
   <bean id="emailApproval.mailTemplateView" parent="freemarkerView">
     <property name="url" value="pages/approval-mail-template.ftl"></property>
   </bean>
-  
+
   <!-- Reauthenticate -->
-  
+
   <bean id="reauthenticate" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="manageService" />
     <property name="order" value="-999" />
@@ -2278,21 +2258,21 @@
     </property>
     <property name="handler" ref="reauthenticateHandler" />
   </bean>
-  
+
   <bean id="reauthenticateHandler" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
     <property name="viewName" value="reauthenticate.view" />
   </bean>
-  
- <bean id="reauthenticate.viewResolver" class="org.vortikal.web.decorating.MappingViewResolver">
+
+  <bean id="reauthenticate.viewResolver" class="org.vortikal.web.decorating.MappingViewResolver">
     <property name="views">
       <map>
         <entry key="reauthenticate.view" value-ref="reauthenticate.view" />
       </map>
     </property>
   </bean>
-  
+
   <bean id="reauthenticate.view" parent="freemarkerView">
     <property name="url" value="pages/reauth.ftl"></property>
   </bean>
-  
+
 </beans>

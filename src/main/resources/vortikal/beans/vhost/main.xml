@@ -1,16 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
 
   <description>
     This is the main bean configuration file. This file does not
-    contain any bean definitions, its purpose is to import the other
+    contain any bean definitions, its purpose is
+    to import the other
     configuration files in a given order. When a new bean configuration file is
-    added to the system, it must be included in the list below.
+    added to the system,
+    it must be included in the list below.
   </description>
-  
+
   <import resource="cache.xml" />
-  
+
   <!-- Common beans used across resources, services and backend -->
   <import resource="common/common.xml" />
   <import resource="common/html-util.xml" />
@@ -19,7 +21,7 @@
 
   <import resource="resource-types/main.xml" />
   <import resource="resource-listing/main.xml" />
-  
+
   <import resource="repository.xml" />
   <import resource="query.xml" />
   <import resource="schema-registry.xml" />
@@ -32,7 +34,7 @@
   <import resource="article.xml" />
   <import resource="structured-resources-management.xml" />
   <import resource="structured-resources.xml" />
-  
+
   <!-- Decorating and decorator components -->
   <import resource="decorating/decorating.xml" />
   <import resource="decorating/decorator-components.xml" />
@@ -42,7 +44,7 @@
 
   <import resource="manage.xml" />
   <import resource="visual-profile-aspect.xml" />
-  <import resource="report.xml"/>
+  <import resource="report.xml" />
   <import resource="commenting.xml" />
   <import resource="root-management.xml" />
   <import resource="browse.xml" />
@@ -59,14 +61,16 @@
   <import resource="vcf.xml" />
   <import resource="delete.xml" />
   <import resource="publish.xml" />
+  <import resource="advanced-publish-dialog.xml" />
   <import resource="trash-can.xml" />
   <import resource="create-from-drop-down.xml" />
   <import resource="manually-approve-resources.xml" />
-  
+
+
   <import resource="link-check.xml" />
-  
+
   <import resource="list-resources.xml" />
-  
+
   <import resource="tags/tags.xml" />
 
   <!-- Extensions enabled by default: -->
@@ -77,11 +81,8 @@
   <import resource="repository-operationlog-interceptor.xml" />
 
   <!-- System task manager -->
-  <import resource="scheduling/scheduling.xml"/>
+  <import resource="scheduling/scheduling.xml" />
   <import resource="simple-structured-editor.xml" />
-
-  <!-- Obsolete -->
-  <import resource="obsoleted.xml" />
   
   <!-- Mediaref/videoref support and videoapp integration -->
   <import resource="mediaref.xml" />

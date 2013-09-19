@@ -59,6 +59,7 @@ public final class MenuGenerator {
     private PropertyTypeDefinition importancePropDef;
     private ResourceTypeDefinition collectionResourceType;
     private PropertyTypeDefinition navigationTitlePropDef;
+    private PropertyTypeDefinition unpublishedCollectionPropDef;
 
     public MenuRequest getMenuRequest(DecoratorRequest request) {
         MenuRequest menuRequest = new MenuRequest(request, this.titlePropDef, this.collectionResourceType);
@@ -270,6 +271,14 @@ public final class MenuGenerator {
     @Required
     public void setNavigationTitlePropDef(PropertyTypeDefinition navigationTitlePropDef) {
         this.navigationTitlePropDef = navigationTitlePropDef;
+    }
+
+    public PropertyTypeDefinition getUnpublishedCollectionPropDef() {
+        return unpublishedCollectionPropDef;
+    }
+
+    public void setUnpublishedCollectionPropDef(PropertyTypeDefinition unpublishedCollectionPropDef) {
+        this.unpublishedCollectionPropDef = unpublishedCollectionPropDef;
     }
 
 }

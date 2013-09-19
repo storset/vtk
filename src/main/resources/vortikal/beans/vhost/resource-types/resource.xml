@@ -296,7 +296,6 @@
   <bean id="publishDateEvaluator" class="org.vortikal.repository.resourcetype.property.PublishDateEvaluator">
     <property name="creationTimePropDef" ref="creationTimePropDef" />
     <property name="authorizationManager" ref="authorizationManager" />
-    <property name="publishDatePropDef" ref="publishDatePropDef" />
     <property name="removeValueOnCreate" value="false" />
   </bean>
 

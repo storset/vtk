@@ -64,11 +64,11 @@ public class VideoApiClient {
                 request, String.class, this.repositoryId);
         
         JSONObject responseJson = JSONObject.fromObject(response);
-        String numericVideoId = responseJson.getString("id");
+        String videoId = responseJson.getString("id");
         
         // Get info for newly created video object
         response = this.restTemplate.getForObject("http://localhost:8080/videoapp/rest/v0/videos/{host}/{id}", 
-                                                      String.class, this.repositoryId, numericVideoId);
+                                                      String.class, this.repositoryId, numericId(videoId));
         responseJson = JSONObject.fromObject(response);
         String sourcePath = responseJson.getJSONObject("sourceVideoFile").getString("localPath");
         String convPath = responseJson.getJSONObject("conversionVideoFile").getString("localPath");
@@ -77,6 +77,10 @@ public class VideoApiClient {
                                              .sourceVideo(inputContentType, sourcePath, getFileSize(sourcePath))
                                              .convertedVideo(null, convPath, getFileSize(convPath))
                                              .build();
+    }
+    
+    private long numericId(String videoId) {
+        return Long.parseLong(videoId.split(":")[2]);
     }
     
     private long getFileSize(String localPath) {

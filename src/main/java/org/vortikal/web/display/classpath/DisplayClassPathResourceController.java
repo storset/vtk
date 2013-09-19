@@ -154,7 +154,7 @@ public class DisplayClassPathResourceController
                 this.logger.debug("Successfully served resource: " + resource
                                   + " from " + resource.getDescription());
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             if (this.logger.isDebugEnabled()) {
                 this.logger.debug("Unable to serve resource: " + resource
                                   + " from " + resource.getDescription(), e);

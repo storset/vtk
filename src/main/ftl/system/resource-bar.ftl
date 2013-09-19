@@ -4,6 +4,7 @@
 <#import "/lib/ping.ftl" as ping />
 
 <#assign resource = resourceContext.currentResource />
+<#assign lang = vrtx.getMsg("eventListing.calendar.lang", "en") />
 
 <script type="text/javascript"><!--
   if(vrtxAdmin.isIE7 || vrtxAdmin.isIETridentInComp) {
@@ -15,7 +16,16 @@
       var outdatedBrowserText = '${vrtx.getMsg("msg.browser.msie.msie6")}';
     }
   }
-  var cancelI18n = '${vrtx.getMsg("editor.cancel")}';
+  var cancelI18n = '${vrtx.getMsg("editor.cancel")}',
+      datePickerLang = "${lang}",
+      publishing = {
+        msg: {
+          error: {
+            unpublishDateBefore: '${vrtx.getMsg("publishing.edit.invalid.unpublishDateBefore")}',
+            unpublishDateNonExisting: '${vrtx.getMsg("publishing.edit.invalid.unpublishDateNonExisting")}'
+          }
+        }
+      };
   
   vrtxAdmin.serverFacade.errorMessages = {
     title: "${vrtx.getMsg('ajaxError.title')}", 

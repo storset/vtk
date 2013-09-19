@@ -276,11 +276,20 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
           link: link,
           form: $("#vrtx-publish-document-form"),
           funcComplete: function () { // Save and unlock to view regulary
+            vrtxAdm.dropdown({
+              selector: "ul.publishing-document",
+              calcTop: true
+            });
             _$("#vrtx-save-view-shortcut").trigger("click");
           }
         });
         return false;
-      } : null),
+      } : function(link) {
+        vrtxAdm.dropdown({
+          selector: "ul.publishing-document",
+          calcTop: true
+        }); 
+      }),
       post: (bodyId !== "vrtx-preview" && !isSavingBeforePublish)
     });
   }
@@ -301,9 +310,13 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
     updateSelectors: ["#resourceMenuRight", "#contents"],
     post: (bodyId !== "vrtx-editor" && bodyId !== "vrtx-edit-plaintext" && bodyId !== "vrtx-manage-collectionlisting" && bodyId !== "")
   });
+  
+  /*
+   * Global Async dialogs
+   * 
+   */
 
   // Create folder chooser in global menu
-  // TODO: generalize dialog jQuery UI function with AJAX markup/text
   $(document).on("click", "#global-menu-create a, #vrtx-report-view-other", function (e) {
     var link = this;
     var id = link.id + "-content";
@@ -332,6 +345,108 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
     e.stopPropagation();
     e.preventDefault();
   });
+  
+  // Advanced publish settings
+  $(document).on("click", "#advanced-publish-settings", function (e) {
+    var link = this;
+    var id = link.id + "-content";
+    var dialogAPS = $("#" + id);
+    if (!dialogAPS.length) {
+      vrtxAdm.serverFacade.getHtml(link.href + "&4", {
+        success: function (results, status, resp) {
+          _$("body").append("<div id='" + id + "'>" + _$(_$.parseHTML(results)).find("#vrtx-advanced-publish-settings-dialog").html() + "</div>");
+          dialogAPS = _$("#" + id);
+          dialogAPS.hide();
+
+          var datePickerReady = $.Deferred();
+          if(typeof initDatePicker !== "function") {
+            $.getScript("/vrtx/__vrtx/static-resources/js/datepicker/datepicker-admin.js", function() {
+              if(datePickerLang === "no") {
+                $.getScript("/vrtx/__vrtx/static-resources/jquery/plugins/ui/jquery-ui-1.10.3.custom/js/jquery.ui.datepicker-no.js", function() {
+                  datePickerReady.resolve(); 
+                });
+              } else if(datePickerLang === "nn") {
+                $.getScript("/vrtx/__vrtx/static-resources/jquery/plugins/ui/jquery-ui-1.10.3.custom/js/jquery.ui.datepicker-nn.js", function() {
+                  datePickerReady.resolve(); 
+                });
+              } else {
+                datePickerReady.resolve(); 
+              }
+            });
+          } else {
+            datePickerReady.resolve(); 
+          }
+          
+          vrtxSimpleDialogs.openHtmlDialog("advanced-publish-settings", dialogAPS.html(), dialogAPS.find("h1").text(), 400, null, null, null, null, null, function() {
+            $(".ui-dialog-buttonpane").hide();
+            $.when(datePickerReady).done(function() {
+              initDatePicker(datePickerLang, "#dialog-html-advanced-publish-settings-content");
+            });
+          });   
+        }
+      });
+    } else {
+      vrtxSimpleDialogs.openHtmlDialog("advanced-publish-settings", dialogAPS.html(), dialogAPS.find("h1").text(), 400, null, null, null, null, null, function() {
+        $(".ui-dialog-buttonpane").hide();
+        initDatePicker(datePickerLang, "#dialog-html-advanced-publish-settings-content");
+      });  
+    }
+    e.stopPropagation();
+    e.preventDefault();
+  });
+  
+  vrtxAdm.completeFormAsync({
+    selector: "#dialog-html-advanced-publish-settings-content #submitButtons input",
+    updateSelectors: ["#resourceMenuRight", "#publishing-status", "#publishing-publish-date", "#publishing-unpublish-date"],
+    post: true,
+    funcProceedCondition: function(options) {
+      var dialogId = "#dialog-html-advanced-publish-settings-content";
+      var dialog = $(dialogId);
+
+      var pDate = genDate(dialog, "publishDate");
+      var upDate = genDate(dialog, "unpublishDate");
+      
+      if(upDate != null && pDate == null) {
+        vrtxAdm.displayDialogErrorMsg(dialogId + " #submitButtons", publishing.msg.error.unpublishDateNonExisting);
+        return; 
+      }
+      if(upDate != null && (upDate <= pDate)) {
+        vrtxAdm.displayDialogErrorMsg(dialogId + " #submitButtons", publishing.msg.error.unpublishDateBefore);
+        return;
+      }
+      saveDateAndTimeFields();
+      vrtxAdm.completeFormAsyncPost(options);
+    },
+    funcComplete: function () { 
+      $(".ui-dialog-titlebar-close").click();
+      vrtxAdm.dropdown({
+        selector: "ul.publishing-document",
+        calcTop: true
+      });
+    }
+  });
+  
+  var genDate = function(dialog, idInfix) {
+    var dt = dialog.find("#" + idInfix + "-date").val();
+    if(!dt.length) {
+      return null;
+    }
+    dt = dt.split("-");
+    if(!dt.length === 3) {
+      return null;
+    }
+    var hh = dialog.find("#" + idInfix + "-hours").val();
+    if(!hh.length) {
+      return new Date(dt[0], dt[1], dt[2], 0, 0, 0, 0);
+    }
+    var mm = dialog.find("#" + idInfix + "-minutes").val();
+    return new Date(dt[0], dt[1], dt[2], hh, mm, 0, 0);
+  };
+  
+  /*
+   *  ^ Global Async dialogs 
+   *
+   */
 
   // Interactions initialization
   vrtxAdm.collectionListingInteraction();
@@ -921,6 +1036,10 @@ VrtxAdmin.prototype.initDropdowns = function initDropdowns() {
   });
   this.dropdown({
     selector: "ul.manage-create"
+  });
+  this.dropdown({
+    selector: "ul.publishing-document",
+    calcTop: true
   });
   var vrtxAdm = this;
   this.cachedBody.on("click", ".dropdown-shortcut-menu li a, .dropdown-shortcut-menu-container li a", function () {
@@ -2782,6 +2901,21 @@ VrtxAdmin.prototype.removeMsg = function removeMsg(type) {
   if (currentMsg.length) {
     currentMsg.remove();
   }
+};
+
+/**
+ * Display error message in dialog
+ *
+ * @this {VrtxAdmin}
+ * @param {string} msg The message
+ */
+VrtxAdmin.prototype.displayDialogErrorMsg = function displayDialogErrorMsg(selector, msg) {
+  var msgWrp = $(".dialog-error-msg");
+  if(!msgWrp.length) {
+    $("<p class='dialog-error-msg'>" + msg + "</p>").insertBefore(selector);
+  } else {
+    msgWrp.text(msg);
+  } 
 };
 
 /**

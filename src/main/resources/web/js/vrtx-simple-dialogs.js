@@ -17,7 +17,7 @@ var vrtxSimpleDialogs = {
       width: 208
     });
   },
-  openHtmlDialog: function (name, html, title, width, height, funcOkComplete, funcOkCompleteOpts, btnTextOk, btnTextCancel) { // XXX: HTML content should set height (not hardcoded)
+  openHtmlDialog: function (name, html, title, width, height, funcOkComplete, funcOkCompleteOpts, btnTextOk, btnTextCancel, funcOnOpen) {
     this.openDialog("#dialog-html-" + name, {
       msg: html,
       title: title,
@@ -29,7 +29,8 @@ var vrtxSimpleDialogs = {
       hasOk: (typeof btnTextOk !== "undefined"),
       hasCancel: (typeof btnTextCancel !== "undefined"),
       btnTextOk: (typeof btnTextOk !== "undefined") ? btnTextOk : "Ok",
-      btnTextCancel: (typeof btnTextCancel !== "undefined") ? btnTextCancel : null
+      btnTextCancel: (typeof btnTextCancel !== "undefined") ? btnTextCancel : null,
+      funcOnOpen: (typeof funcOnOpen !== "undefined") ? funcOnOpen : null
     });
   },
   openMsgDialog: function (msg, title) {
@@ -85,8 +86,15 @@ var vrtxSimpleDialogs = {
                                var ctx = $(this).parent();
                                ctx.find(".ui-dialog-titlebar-close").hide();
                                ctx.find(".ui-dialog-titlebar").addClass("closable");
+                               if(opts.funcOnOpen) opts.funcOnOpen();
                              };
-                           }                        
+                           } else {
+                             if(opts.funcOnOpen) {
+                               dialogOpts.open = function(e, ui) { 
+                                 opts.funcOnOpen();
+                               };
+                             }
+                           }
       elm.dialog(dialogOpts);
     } else {
       if(opts.title) {

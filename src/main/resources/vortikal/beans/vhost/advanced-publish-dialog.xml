@@ -44,7 +44,7 @@
     </property>
   </bean>
 
-  <bean id="publishDialogViewResolver" parent="adminViewResolver">
+  <bean id="publishDialogViewResolver" parent="viewResolver">
     <property name="views">
       <map>
         <entry key="publishDialogView" value-ref="publishDialogView" />

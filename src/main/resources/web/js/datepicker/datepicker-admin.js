@@ -4,9 +4,13 @@
  */
 
 var DATE_PICKER_INITIALIZED = $.Deferred();
-function initDatePicker(language) {
-  var contents = $("#contents");
-
+function initDatePicker(language, selector) {
+  if(typeof selector !== "undefined") {
+    var contents = $(selector);
+  } else {
+    var contents = $("#contents");
+  }
+  
   // i18n (default english)
   if (language == 'no') {
     $.datepicker.setDefaults($.datepicker.regional['no']);
@@ -16,7 +20,7 @@ function initDatePicker(language) {
   
   var dateFields = contents.find(".date");
   for(var i = 0, len = dateFields.length; i < len; i++) {
-    displayDateAsMultipleInputFields(dateFields[i].name);
+    displayDateAsMultipleInputFields(dateFields[i].name, selector);
   }
   
   // Help user with time
@@ -50,14 +54,18 @@ function initDatePicker(language) {
   DATE_PICKER_INITIALIZED.resolve();
 }
 
-function displayDateAsMultipleInputFields(name) {
+function displayDateAsMultipleInputFields(name, selector) {
   var hours = "";
   var minutes = "";
   var date = [];
   var fieldName = name.replace(/\./g, '\\.');
 
-  var elem = $("#" + fieldName);
-
+  if(typeof selector !== "undefined") {
+    var elem = $(selector + " #" + fieldName);
+  } else {
+    var elem = $("#" + fieldName);
+  }
+  
   if (elem.length) {
     hours = extractHoursFromDate(elem[0].value);
     minutes = extractMinutesFromDate(elem[0].value)

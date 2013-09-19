@@ -434,14 +434,24 @@
 
 /* Email forms */
 
+.forms-new .ui-dialog .dialog-error-msg {
+  margin: 10px 0;
+  color: #ed1c24;
+}
+
 .forms-new #email-approval-form {
   width: 400px;
 }
 
+.forms-new #dialog-html-advanced-publish-settings-content label,
 .forms-new #email-approval-form label {
   margin: 15px 0px 5px;
   display: block;
   font-size: 1.154em;
+}
+
+.forms-new #dialog-html-advanced-publish-settings-content label:first-child {
+  margin-top: 0px;
 }
 
 .forms-new #email-approval-form label.first {

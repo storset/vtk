@@ -10,7 +10,22 @@
 <h3>${headerMsg}</h3>
 <p><span class="unpublished"><@vrtx.msg code="publish.permission.unpublished" /></span></p>
 <#if writePermission.permissionsQueryResult = 'true'>
-  <a id="vrtx-publish-document" class="vrtx-button-small" title="${titleMsg}" href="${actionURL?html}"><span>${item.title?html}</span></a>
+  <#if !resourceContext.currentResource.isCollection()>
+    <ul class="publishing-document">
+      <li class="first">
+        <a id="vrtx-publish-document" title="${titleMsg}" href="${actionURL?html}">
+          ${item.title?html}
+        </a>
+      </li>
+      <li>
+        <a id="advanced-publish-settings" href="${resourceContext.currentURI}?vrtx=admin&display=advanced-publish-dialog">
+          <@vrtx.msg code="publishing.advanced.link" />
+        </a>
+      </li>    
+    </ul>
+  <#else>
+    <a id="vrtx-publish-document" class="vrtx-button-small" title="${titleMsg}" href="${actionURL?html}"><span>${item.title?html}</span></a>
+  </#if>
 </#if>
 
 <#recover>

@@ -446,9 +446,8 @@
 .forms-new #dialog-html-advanced-publish-settings-content label,
 .forms-new #email-approval-form label {
   margin: 15px 0px 5px;
-  display: block;
+  display: inline-block;
   font-size: 1.154em;
-  float: left;
   width: 100%;
 }
 

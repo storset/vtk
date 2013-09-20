@@ -397,6 +397,7 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
     selector: "#dialog-html-advanced-publish-settings-content #submitButtons input",
     updateSelectors: ["#resource-title", "#directory-listing"],
     post: true,
+    isUndecoratedService: true,
     funcProceedCondition: function(options) {
       var dialogId = "#dialog-html-advanced-publish-settings-content";
       var dialog = $(dialogId);
@@ -2607,6 +2608,7 @@ VrtxAdmin.prototype.completeFormAsyncPost = function completeFormAsyncPost(optio
     _$ = vrtxAdm._$,
     selector = options.selector,
     isReplacing = options.isReplacing || false,
+    isUndecoratedService = options.isUndecoratedService || false,
     updateSelectors = options.updateSelectors,
     errorContainer = options.errorContainer,
     errorContainerInsertAfter = options.errorContainerInsertAfter,
@@ -2657,7 +2659,7 @@ VrtxAdmin.prototype.completeFormAsyncPost = function completeFormAsyncPost(optio
               sameMode = true;
             }
           }
-          if (modeUrl.indexOf("&mode=") !== -1 && !sameMode) { // When we need the 'mode=' HTML. TODO: should only run when updateSelector is inside content
+          if (isUndecoratedService || (modeUrl.indexOf("&mode=") !== -1 && !sameMode)) { // When we need the 'mode=' HTML. TODO: should only run when updateSelector is inside content
             vrtxAdmin.serverFacade.getHtml(modeUrl, {
               success: function (results, status, resp) {
                 for (var i = updateSelectors.length; i--;) {

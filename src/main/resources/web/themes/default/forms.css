@@ -448,6 +448,8 @@
   margin: 15px 0px 5px;
   display: block;
   font-size: 1.154em;
+  float: left;
+  width: 100%;
 }
 
 .forms-new #dialog-html-advanced-publish-settings-content label:first-child {

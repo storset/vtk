@@ -78,7 +78,26 @@ function displayDateAsMultipleInputFields(name, selector) {
   elem.parent().hide();
   elem.parent().after(dateField + hoursField + "<span class='vrtx-time-seperator'>:</span>" + minutesField);
   $("#" + fieldName + "-date").datepicker({
-    dateFormat: 'yy-mm-dd'
+    dateFormat: 'yy-mm-dd',
+    
+    /* fix buggy IE focus functionality: 
+     * http://www.objectpartners.com/2012/06/18/jquery-ui-datepicker-ie-focus-fix/ */
+    fixFocusIE: false,
+     
+    /* blur needed to correctly handle placeholder text */
+    onSelect: function(dateText, inst) {
+      this.fixFocusIE = true;
+      $(this).blur().change().focus();
+    },
+    onClose: function(dateText, inst) {
+      this.fixFocusIE = true;
+      this.focus();
+    },
+    beforeShow: function(input, inst) {
+      var result = $.browser.msie ? !this.fixFocusIE : true;
+      this.fixFocusIE = false;
+      return result;
+    }
   });
 }
 

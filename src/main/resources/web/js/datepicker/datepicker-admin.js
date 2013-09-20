@@ -26,12 +26,12 @@ function initDatePicker(language, selector) {
   // Help user with time
   contents.on("change", ".vrtx-hours input", function () {
     var hh = $(this);
-    var mm = hh.parent().nextAll(".vrtx-minutes").find("input"); // Relative to
+    var mm = hh.parent().nextAll(".vrtx-minutes").filter(":first").find("input"); // Relative to
     timeHelp(hh, mm);
   });
   contents.on("change", ".vrtx-minutes input", function () {
     var mm = $(this);
-    var hh = mm.parent().prevAll(".vrtx-hours").find("input"); // Relative to
+    var hh = mm.parent().prevAll(".vrtx-hours").filter(":first").find("input"); // Relative to
     timeHelp(hh, mm);
   });
   

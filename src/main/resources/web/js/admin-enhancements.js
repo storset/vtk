@@ -403,8 +403,8 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
       var dialogId = "#dialog-html-advanced-publish-settings-content";
       var dialog = $(dialogId);
 
-      var pDate = genDate(dialog, "publishDate");
-      var upDate = genDate(dialog, "unpublishDate");
+      var pDate = generateDateObjForValidation(dialog, "publishDate");
+      var upDate = generateDateObjForValidation(dialog, "unpublishDate");
       
       if(upDate != null && pDate == null) {
         vrtxAdm.displayDialogErrorMsg(dialogId + " #submitButtons", publishing.msg.error.unpublishDateNonExisting);
@@ -426,7 +426,7 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
     }
   });
   
-  var genDate = function(dialog, idInfix) {
+  var generateDateObjForValidation = function(dialog, idInfix) {
     var date = dialog.find("#" + idInfix + "-date").val();
     if(!date.length) {
       return null;

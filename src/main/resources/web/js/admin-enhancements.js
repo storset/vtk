@@ -403,18 +403,23 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
       var dialogId = "#dialog-html-advanced-publish-settings-content";
       var dialog = $(dialogId);
 
-      var pDate = generateDateObjForValidation(dialog, "publishDate");
-      var upDate = generateDateObjForValidation(dialog, "unpublishDate");
+      var publishDate = generateDateObjForValidation(dialog, "publishDate");
+      var unpublishDate = generateDateObjForValidation(dialog, "unpublishDate");
       
-      if(upDate != null && pDate == null) {
+      // Check that unpublish date is not set alone
+      if(unpublishDate != null && publishDate == null) {
         vrtxAdm.displayDialogErrorMsg(dialogId + " #submitButtons", publishing.msg.error.unpublishDateNonExisting);
         return; 
       }
-      if(upDate != null && (upDate <= pDate)) {
+      
+      // Check that unpublish date is not before or same as publish date
+      if(unpublishDate != null && (unpublishDate <= publishDate)) {
         vrtxAdm.displayDialogErrorMsg(dialogId + " #submitButtons", publishing.msg.error.unpublishDateBefore);
         return;
       }
+      
       saveDateAndTimeFields();
+      
       vrtxAdm.completeFormAsyncPost(options);
     },
     funcComplete: function () { 

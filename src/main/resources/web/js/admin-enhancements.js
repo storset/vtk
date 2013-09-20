@@ -270,14 +270,14 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
     vrtxAdm.completeFormAsync({
       selector: "form#" + publishUnpublishService + "-form input[type=submit]",
       updateSelectors: ["#resource-title", "#directory-listing"],
-      funcComplete: (isSavingBeforePublish ? function (link) { // Save async
+      funcComplete: (isSavingBeforePublish ? function (link) {
+        $(".vrtx-focus-button.vrtx-save-button input").click(); // Save async
         vrtxAdm.completeFormAsyncPost({ // Publish async
           updateSelectors: ["#resource-title"],
           link: link,
           form: $("#vrtx-publish-document-form"),
-          funcComplete: function () { // Save and unlock to view regulary
+          funcComplete: function () {
             vrtxAdm.publishingComplete();
-            _$("#vrtx-save-view-shortcut").trigger("click");
           }
         });
         return false;

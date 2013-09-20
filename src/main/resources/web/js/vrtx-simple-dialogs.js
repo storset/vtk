@@ -3,7 +3,6 @@
  *  XXX: This should not be a singleton/module but function/class as it is used for different dialogs..
  */
 
-
 var vrtxSimpleDialogs = {
   openLoadingDialog: function (title) {
     this.openDialog("#dialog-loading", {

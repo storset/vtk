@@ -1113,7 +1113,6 @@
         <entry key="previewText" value-ref="previewTextView" />
         <entry key="previewText.documentTooLarge" value-ref="previewText.documentTooLargeView" />
         <entry key="previewFallback" value-ref="previewFallbackView" />
-        <entry key="publishing" value-ref="publishingView" />
       </map>
     </property>
   </bean>

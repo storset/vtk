@@ -361,64 +361,6 @@
     <property name="invert" value="true" />
   </bean>
 
-  <bean id="publish.editPublishingService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="parent" ref="manageService" />
-    <property name="categories">
-      <set>
-        <value>tabMenu</value>
-      </set>
-    </property>
-    <property name="attributes">
-      <map>
-        <entry key="tabOrder">
-          <value type="java.lang.Integer">200</value>
-        </entry>
-      </map>
-    </property>
-    <property name="assertions">
-      <list>
-        <ref bean="requiresReadPermissionAssertion" />
-        <bean class="org.vortikal.web.service.RequestParameterAssertion">
-          <property name="parameterName" value="mode" />
-          <property name="parameterValue" value="publishing" />
-        </bean>
-      </list>
-    </property>
-    <property name="handler" ref="publishingHandler" />
-  </bean>
-
-  <bean id="publishingHandler" class="org.vortikal.web.display.file.ResourceAwareParameterizableViewController">
-    <property name="viewName" value="publishing" />
-  </bean>
-
-  <bean id="editPublishDateService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="parent" ref="publish.editPublishingService" />
-    <property name="assertions">
-      <list>
-        <ref bean="requiresPublishUnpublishPermissionAssertion" />
-        <bean class="org.vortikal.web.service.RequestParameterAssertion">
-          <property name="parameterName" value="action" />
-          <property name="parameterValue" value="edit-publish-date" />
-        </bean>
-      </list>
-    </property>
-    <property name="handler" ref="editPublishDateHandler" />
-  </bean>
-
-  <bean id="editUnpublishDateService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="parent" ref="publish.editPublishingService" />
-    <property name="assertions">
-      <list>
-        <ref bean="requiresPublishUnpublishPermissionAssertion" />
-        <bean class="org.vortikal.web.service.RequestParameterAssertion">
-          <property name="parameterName" value="action" />
-          <property name="parameterValue" value="edit-unpublish-date" />
-        </bean>
-      </list>
-    </property>
-    <property name="handler" ref="editUnpublishDateHandler" />
-  </bean>
-
   <bean id="abstractEditPublishingHandler" abstract="true" class="org.vortikal.web.actions.publish.EditPublishingController">
     <property name="formView" value="publishing" />
     <property name="successView" value="publishing" />
@@ -439,31 +381,6 @@
 
   <bean id="editUnpublishDateHandler" parent="abstractEditPublishingHandler">
     <property name="commandName" value="unpublish-date" />
-  </bean>
-
-  <bean id="publishingView" parent="freemarkerView">
-    <property name="url" value="pages/publishing.ftl" />
-    <property name="referenceDataProviders">
-      <list>
-        <ref bean="resourceContextProvider" />
-        <ref bean="editPublishingProvider" />
-      </list>
-    </property>
-    <property name="attributesMap">
-      <map>
-        <entry key="jsBaseURL" value="${jsBaseURL}" />
-        <entry key="webResources" value="${webResources.baseURL}" />
-        <entry key="jQueryUiVersion" value="${jquery.ui.version}" />
-      </map>
-    </property>
-  </bean>
-
-  <bean id="editPublishingProvider" class="org.vortikal.web.referencedata.provider.EditPublishingProvider">
-    <property name="publishResourceService" ref="publish.publishResourceService" />
-    <property name="unpublishResourceService" ref="publish.unpublishResourceService" />
-    <property name="editPublishDateService" ref="editPublishDateService" />
-    <property name="editUnpublishDateService" ref="editUnpublishDateService" />
-    <property name="publishedPropDef" ref="publishedPropDef" />
   </bean>
 
   <bean class="org.springframework.context.support.ResourceBundleMessageSource">

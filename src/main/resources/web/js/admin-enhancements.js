@@ -387,6 +387,7 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
         }
       });
     } else {
+      // TODO: HTML-injection fails second time
       vrtxSimpleDialogs.openHtmlDialog("advanced-publish-settings", dialogAPS.html(), dialogAPS.find("h1").text(), 400, null, null, null, null, null, function() {
         $(".ui-dialog-buttonpane").hide();
         initDatePicker(datePickerLang, "#dialog-html-advanced-publish-settings-content");

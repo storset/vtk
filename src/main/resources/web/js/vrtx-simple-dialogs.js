@@ -102,8 +102,9 @@ var vrtxSimpleDialogs = {
     elm.dialog("open");
   },
   destroyDialog: function (classOrId) {
-    $(classOrId).dialog("destroy");
-    $(classOrId).remove();
+    var elem = $(classOrId);
+    elem.dialog("destroy");
+    elem.remove();
   },
   closeDialog: function (classOrId) {
     $(classOrId).dialog("close"); 

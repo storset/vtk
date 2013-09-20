@@ -276,19 +276,13 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
           link: link,
           form: $("#vrtx-publish-document-form"),
           funcComplete: function () { // Save and unlock to view regulary
-            vrtxAdm.initResourceTitleDropdown();
-            vrtxAdm.initPublishingDropdown();
-            vrtxAdm.adjustResourceTitle();
-            vrtxAdm.updateCollectionListingInteraction();
+            vrtxAdm.publishingComplete();
             _$("#vrtx-save-view-shortcut").trigger("click");
           }
         });
         return false;
       } : function(link) {
-        vrtxAdm.initResourceTitleDropdown();
-        vrtxAdm.initPublishingDropdown();
-        vrtxAdm.adjustResourceTitle();
-        vrtxAdm.updateCollectionListingInteraction();
+        vrtxAdm.publishingComplete();
       }),
       post: (bodyId !== "vrtx-preview" && !isSavingBeforePublish)
     });
@@ -425,10 +419,7 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
     },
     funcComplete: function () { 
       vrtxSimpleDialogs.destroyDialog("#dialog-html-advanced-publish-settings");
-      vrtxAdm.initResourceTitleDropdown();
-      vrtxAdm.initPublishingDropdown();
-      vrtxAdm.adjustResourceTitle();
-      vrtxAdm.updateCollectionListingInteraction();
+      vrtxAdm.publishingComplete();
     }
   });
   
@@ -940,6 +931,19 @@ VrtxAdmin.prototype.logoutButtonAsLink = function logoutButtonAsLink() {
     e.stopPropagation();
     e.preventDefault();
   });
+};
+
+/**
+ * On publish / unpublish async completion
+ *
+ * @this {VrtxAdmin}
+ */
+VrtxAdmin.prototype.publishingComplete = function publishingComplete() {
+  var vrtxAdm = this;
+  vrtxAdm.initResourceTitleDropdown();
+  vrtxAdm.initPublishingDropdown();
+  vrtxAdm.adjustResourceTitle();
+  vrtxAdm.updateCollectionListingInteraction();
 };
 
 /* Create dialog tree view */

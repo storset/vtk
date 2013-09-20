@@ -276,19 +276,13 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
           link: link,
           form: $("#vrtx-publish-document-form"),
           funcComplete: function () { // Save and unlock to view regulary
-            vrtxAdm.dropdown({
-              selector: "ul.publishing-document",
-              calcTop: true
-            });
+            vrtxAdm.initPublishingDropdown(); 
             _$("#vrtx-save-view-shortcut").trigger("click");
           }
         });
         return false;
       } : function(link) {
-        vrtxAdm.dropdown({
-          selector: "ul.publishing-document",
-          calcTop: true
-        }); 
+        vrtxAdm.initPublishingDropdown(); 
       }),
       post: (bodyId !== "vrtx-preview" && !isSavingBeforePublish)
     });
@@ -426,10 +420,7 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
     },
     funcComplete: function () { 
       $(".ui-dialog-titlebar-close").click();
-      vrtxAdm.dropdown({
-        selector: "ul.publishing-document",
-        calcTop: true
-      });
+      vrtxAdm.initPublishingDropdown();
     }
   });
   
@@ -1044,10 +1035,7 @@ VrtxAdmin.prototype.initDropdowns = function initDropdowns() {
   this.dropdown({
     selector: "ul.manage-create"
   });
-  this.dropdown({
-    selector: "ul.publishing-document",
-    calcTop: true
-  });
+  this.initPublishingDropdown();
   var vrtxAdm = this;
   this.cachedBody.on("click", ".dropdown-shortcut-menu li a, .dropdown-shortcut-menu-container li a", function () {
     vrtxAdm.closeDropdowns();
@@ -1055,6 +1043,18 @@ VrtxAdmin.prototype.initDropdowns = function initDropdowns() {
   this.cachedBody.on("click", document, function (e) {
     vrtxAdm.closeDropdowns();
     vrtxAdm.hideTips();
+  });
+};
+
+/**
+ * Initialize publishing dropdown
+ *
+ * @this {VrtxAdmin}
+ */
+VrtxAdmin.prototype.initPublishingDropdown = function initPublishingDropdown() {
+  this.dropdown({
+    selector: "ul.publishing-document",
+    calcTop: true
   });
 };
 

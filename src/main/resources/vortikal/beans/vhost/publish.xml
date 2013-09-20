@@ -361,28 +361,6 @@
     <property name="invert" value="true" />
   </bean>
 
-  <bean id="abstractEditPublishingHandler" abstract="true" class="org.vortikal.web.actions.publish.EditPublishingController">
-    <property name="formView" value="publishing" />
-    <property name="successView" value="publishing" />
-    <property name="commandClass" value="org.vortikal.web.actions.publish.EditPublishingCommand" />
-    <property name="validator">
-      <bean class="org.vortikal.web.actions.publish.EditPublishingCommandValidator">
-        <property name="publishDatePropDef" ref="publishDatePropDef" />
-        <property name="unpublishDatePropDef" ref="unpublishDatePropDef" />
-      </bean>
-    </property>
-    <property name="publishDatePropDef" ref="publishDatePropDef" />
-    <property name="unpublishDatePropDef" ref="unpublishDatePropDef" />
-  </bean>
-
-  <bean id="editPublishDateHandler" parent="abstractEditPublishingHandler">
-    <property name="commandName" value="publish-date" />
-  </bean>
-
-  <bean id="editUnpublishDateHandler" parent="abstractEditPublishingHandler">
-    <property name="commandName" value="unpublish-date" />
-  </bean>
-
   <bean class="org.springframework.context.support.ResourceBundleMessageSource">
     <property name="basenames">
       <list>

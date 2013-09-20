@@ -270,8 +270,8 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
     vrtxAdm.completeFormAsync({
       selector: "form#" + publishUnpublishService + "-form input[type=submit]",
       updateSelectors: ["#resource-title", "#directory-listing"],
-      funcComplete: (isSavingBeforePublish ? function (link) {
-        $(".vrtx-focus-button.vrtx-save-button input").click(); // Save async
+      funcComplete: (isSavingBeforePublish ? function (link) { // Save async
+        $(".vrtx-focus-button.vrtx-save-button input").click();
         vrtxAdm.completeFormAsyncPost({ // Publish async
           updateSelectors: ["#resource-title"],
           link: link,

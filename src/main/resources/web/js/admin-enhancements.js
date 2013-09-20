@@ -269,20 +269,26 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
     });
     vrtxAdm.completeFormAsync({
       selector: "form#" + publishUnpublishService + "-form input[type=submit]",
-      updateSelectors: ["#resourceMenuRight", "#publishing-status", "#publishing-publish-date", "#publishing-unpublish-date"],
+      updateSelectors: ["#resource-title", "#directory-listing"],
       funcComplete: (isSavingBeforePublish ? function (link) { // Save async
         vrtxAdm.completeFormAsyncPost({ // Publish async
-          updateSelectors: ["#resourceMenuRight"],
+          updateSelectors: ["#resource-title"],
           link: link,
           form: $("#vrtx-publish-document-form"),
           funcComplete: function () { // Save and unlock to view regulary
-            vrtxAdm.initPublishingDropdown(); 
+            vrtxAdm.initResourceTitleDropdown();
+            vrtxAdm.initPublishingDropdown();
+            vrtxAdm.adjustResourceTitle();
+            vrtxAdm.updateCollectionListingInteraction();
             _$("#vrtx-save-view-shortcut").trigger("click");
           }
         });
         return false;
       } : function(link) {
-        vrtxAdm.initPublishingDropdown(); 
+        vrtxAdm.initResourceTitleDropdown();
+        vrtxAdm.initPublishingDropdown();
+        vrtxAdm.adjustResourceTitle();
+        vrtxAdm.updateCollectionListingInteraction();
       }),
       post: (bodyId !== "vrtx-preview" && !isSavingBeforePublish)
     });
@@ -381,7 +387,6 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
         }
       });
     } else {
-      // TODO: HTML-injection fails second time
       vrtxSimpleDialogs.openHtmlDialog("advanced-publish-settings", dialogAPS.html(), dialogAPS.find("h1").text(), 400, null, null, null, null, null, function() {
         $(".ui-dialog-buttonpane").hide();
         initDatePicker(datePickerLang, "#dialog-html-advanced-publish-settings-content");
@@ -393,7 +398,7 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
   
   vrtxAdm.completeFormAsync({
     selector: "#dialog-html-advanced-publish-settings-content #submitButtons input",
-    updateSelectors: ["#resourceMenuRight", "#publishing-status", "#publishing-publish-date", "#publishing-unpublish-date"],
+    updateSelectors: ["#resource-title", "#directory-listing"],
     post: true,
     funcProceedCondition: function(options) {
       var dialogId = "#dialog-html-advanced-publish-settings-content";
@@ -419,8 +424,11 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
       vrtxAdm.completeFormAsyncPost(options);
     },
     funcComplete: function () { 
-      $(".ui-dialog-titlebar-close").click();
+      vrtxSimpleDialogs.destroyDialog("#dialog-html-advanced-publish-settings");
+      vrtxAdm.initResourceTitleDropdown();
       vrtxAdm.initPublishingDropdown();
+      vrtxAdm.adjustResourceTitle();
+      vrtxAdm.updateCollectionListingInteraction();
     }
   });
   
@@ -1025,13 +1033,7 @@ function traverseNode(treeElem, treeTravNode, lastNode) {
  */
 VrtxAdmin.prototype.initDropdowns = function initDropdowns() {
   this.dropdownPlain("#locale-selection");
-  this.dropdown({
-    selector: "#resource-title ul#resourceMenuLeft",
-    proceedCondition: function (numOfListElements) {
-      return numOfListElements > 1;
-    },
-    calcTop: true
-  });
+  this.initResourceTitleDropdown();
   this.dropdown({
     selector: "ul.manage-create"
   });
@@ -1043,6 +1045,21 @@ VrtxAdmin.prototype.initDropdowns = function initDropdowns() {
   this.cachedBody.on("click", document, function (e) {
     vrtxAdm.closeDropdowns();
     vrtxAdm.hideTips();
+  });
+};
+
+/**
+ * Initialize resource title dropdown
+ *
+ * @this {VrtxAdmin}
+ */
+VrtxAdmin.prototype.initResourceTitleDropdown = function initResourceTitleDropdown() {
+  this.dropdown({
+    selector: "#resource-title ul#resourceMenuLeft",
+    proceedCondition: function (numOfListElements) {
+      return numOfListElements > 1;
+    },
+    calcTop: true
   });
 };
 

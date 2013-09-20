@@ -5,9 +5,6 @@
 
 
 var vrtxSimpleDialogs = {
-  closeDialog: function (classOrId) {
-    $(classOrId).dialog("close"); 
-  },
   openLoadingDialog: function (title) {
     this.openDialog("#dialog-loading", {
       msg: "<img src='/vrtx/__vrtx/static-resources/themes/default/images/loadingAnimation.gif' alt='Loading icon' />",
@@ -103,7 +100,14 @@ var vrtxSimpleDialogs = {
       elm.find(selector + "-content").html(!opts.hasHtml ? "<p>" + opts.msg + "</p>" : opts.msg);
     }
     elm.dialog("open");
-  }
+  },
+  destroyDialog: function (classOrId) {
+    $(classOrId).dialog("destroy");
+    $(classOrId).remove();
+  },
+  closeDialog: function (classOrId) {
+    $(classOrId).dialog("close"); 
+  },
 };
 
 /* ^ Dialogs and interface to jQuery UI */

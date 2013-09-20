@@ -358,6 +358,7 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
           dialogAPS = _$("#" + id);
           dialogAPS.hide();
 
+          // Retrieve Datepicker JS if non-existing with Future-object for when to run the initialization
           var datePickerReady = $.Deferred();
           if(typeof initDatePicker !== "function") {
             $.getScript("/vrtx/__vrtx/static-resources/js/datepicker/datepicker-admin.js", function() {

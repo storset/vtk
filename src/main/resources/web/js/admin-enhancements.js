@@ -427,20 +427,20 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
   });
   
   var genDate = function(dialog, idInfix) {
-    var dt = dialog.find("#" + idInfix + "-date").val();
-    if(!dt.length) {
+    var date = dialog.find("#" + idInfix + "-date").val();
+    if(!date.length) {
       return null;
     }
-    dt = dt.split("-");
-    if(!dt.length === 3) {
+    date = date.split("-");
+    if(!date.length === 3) {
       return null;
     }
     var hh = dialog.find("#" + idInfix + "-hours").val();
     if(!hh.length) {
-      return new Date(dt[0], dt[1], dt[2], 0, 0, 0, 0);
+      return new Date(date[0], date[1], date[2], 0, 0, 0, 0);
     }
     var mm = dialog.find("#" + idInfix + "-minutes").val();
-    return new Date(dt[0], dt[1], dt[2], hh, mm, 0, 0);
+    return new Date(date[0], date[1], date[2], hh, mm, 0, 0);
   };
   
   /*

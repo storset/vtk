@@ -1083,7 +1083,8 @@ VrtxAdmin.prototype.initResourceTitleDropdown = function initResourceTitleDropdo
 VrtxAdmin.prototype.initPublishingDropdown = function initPublishingDropdown() {
   this.dropdown({
     selector: "ul.publishing-document",
-    calcTop: true
+    calcTop: true,
+    calcLeft: true
   });
 };
 
@@ -1157,7 +1158,11 @@ VrtxAdmin.prototype.dropdown = function dropdown(options) {
     if (options.calcTop) {
       shortcutMenu.css("top", (list.position().top + list.height() - (parseInt(list.css("marginTop"), 10) * -1) + 1) + "px");
     }
-    shortcutMenu.css("left", (list.width() + 5) + "px");
+    var left = (list.width() + 5)
+    if (options.calcLeft) {
+      left += list.position().left;
+    }
+    shortcutMenu.css("left", left + "px");
 
     list.find("li" + dropdownClickArea).addClass("dropdown-init");
 

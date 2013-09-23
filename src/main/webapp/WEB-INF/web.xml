@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE web-app PUBLIC '-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN' 'http://java.sun.com/dtd/web-app_2_3.dtd'>
+<web-app id="Vortikal" version="2.4" xmlns="http://java.sun.com/xml/ns/j2ee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
 
-<web-app>
   <servlet id="vortikalServlet"> 
     <servlet-name>vortikal</servlet-name>
-	<servlet-class>org.vortikal.web.servlet.VortikalServlet</servlet-class>
-	<load-on-startup>1</load-on-startup>
-    	<init-param>
-          <param-name>contextConfigLocation</param-name>
-          <param-value>/WEB-INF/applicationContext.xml,file://${user.home}/*vortikal.xml,file://${user.home}/*vrtx-context.xml</param-value>
-        </init-param>
+    <servlet-class>org.vortikal.web.servlet.VortikalServlet</servlet-class>
+    <init-param>
+      <param-name>contextConfigLocation</param-name>
+      <param-value>/WEB-INF/applicationContext.xml,file://${user.home}/*vortikal.xml,file://${user.home}/*vrtx-context.xml</param-value>
+    </init-param>
+    <load-on-startup>1</load-on-startup>
   </servlet>  
   
   <servlet-mapping>

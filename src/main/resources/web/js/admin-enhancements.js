@@ -222,9 +222,16 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
   }
 
   // Tooltips
-  $("#title-container").vortexTips("abbr", {
+  $("#title-container").vortexTips("abbr:not(.delayed)", {
     appendTo: "#title-container",
     containerWidth: 200,
+    xOffset: 20,
+    yOffset: 0
+  });
+  $("#title-container").vortexTips("abbr.delayed", {
+    appendTo: "#title-container",
+    containerWidth: 200,
+    animOutPreDelay: 4000,
     xOffset: 20,
     yOffset: 0
   });

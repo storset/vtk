@@ -23,6 +23,56 @@ if (window != top) { // Obs IE bug: http://stackoverflow.com/questions/4850978/i
       }
     }
   })();
+  
+  var mobilePreviewUpdateHeight = function(isVertical) {
+    var previewViewIframeWrp = $("#previewViewIframeWrapper");
+    var previewViewIframe = $("iframe#previewViewIframe");
+        
+    // Restore zoom
+    previewViewIframeWrp.css(supportedProp, "");
+    originalZoom = 0;
+        
+    if(!previewViewIframe.hasClass("mobile")) {
+      previewViewIframe.addClass("mobile");
+    }
+    var viewportMetaTag = previewViewIframe.contents().find("meta[name='viewport']");
+    if(viewportMetaTag.length && viewportMetaTag.attr("content").indexOf("width=device-width") === -1) {
+      if(isVertical) {
+        previewViewIframeWrp.addClass("mobile-none-responsive");
+        previewViewIframeWrp.removeClass("mobile-none-responsive-horizontal");
+      } else {
+        previewViewIframeWrp.addClass("mobile-none-responsive-horizontal");
+        previewViewIframeWrp.removeClass("mobile-none-responsive");
+      }
+    } else {
+      try {
+        var iframe = previewViewIframe[0];
+        if (typeof iframe.contentWindow !== "undefined" && typeof iframe.contentWindow.document !== "undefined" && typeof iframe.contentWindow.document.body !== "undefined") {
+          var computedHeight = Math.ceil(iframe.contentWindow.document.body.offsetHeight);
+          crossDocComLink.postCmdToParent("preview-height-update|" + computedHeight);
+          computedHeight = (computedHeight - ($.browser.msie ? 4 : 0));
+          iframe.style.height = computedHeight + "px";
+        }
+      } catch (e) {}
+    }
+  };
+  
+  var mobilePreviewZoomNoneResponsive = function(isZoomIn) {
+    var previewViewIframeWrp = $("#previewViewIframeWrapper");
+    var zoom = previewViewIframeWrp.css(supportedProp);
+    if(!zoom || zoom == "none") return;
+    var zoom = parseFloat(zoom.match(/[0-9]*[.][0-9]+/)[0], 10);
+
+    if(originalZoom === 0) originalZoom = zoom;
+    if(isZoomIn) {
+      zoom = zoom + 0.05;
+    } else {
+      zoom = zoom - 0.05;
+    }
+    if(zoom >= originalZoom) {
+      previewViewIframeWrp.css(supportedProp, "scale(" + zoom + ")");
+    }
+  };
 
   crossDocComLink.setUpReceiveDataHandler(function (cmdParams, source) {
     switch (cmdParams[0]) {
@@ -60,58 +110,10 @@ if (window != top) { // Obs IE bug: http://stackoverflow.com/questions/4850978/i
       /* Mobile preview */
         
       case "update-height-vertical":
-        var previewViewIframeWrp = $("#previewViewIframeWrapper");
-        var previewViewIframe = $("iframe#previewViewIframe");
-        
-        // Restore zoom
-        previewViewIframeWrp.css(supportedProp, "");
-        originalZoom = 0;
-        
-        if(!previewViewIframe.hasClass("mobile")) {
-          previewViewIframe.addClass("mobile");
-        }
-        var viewportMetaTag = previewViewIframe.contents().find("meta[name='viewport']");
-        if(viewportMetaTag.length && viewportMetaTag.attr("content").indexOf("width=device-width") === -1) {
-          previewViewIframeWrp.addClass("mobile-none-responsive");
-          previewViewIframeWrp.removeClass("mobile-none-responsive-horizontal");
-        } else {
-          try {
-            var iframe = previewViewIframe[0];
-            if (typeof iframe.contentWindow !== "undefined" && typeof iframe.contentWindow.document !== "undefined" && typeof iframe.contentWindow.document.body !== "undefined") {
-              var computedHeight = Math.ceil(iframe.contentWindow.document.body.offsetHeight);
-              crossDocComLink.postCmdToParent("preview-height-update|" + computedHeight);
-              computedHeight = (computedHeight - ($.browser.msie ? 4 : 0));
-              iframe.style.height = computedHeight + "px";
-            }
-          } catch (e) {}
-        }
+        mobilePreviewUpdateHeight(true);
         break;
       case "update-height-horizontal":
-        var previewViewIframeWrp = $("#previewViewIframeWrapper");
-        var previewViewIframe = $("iframe#previewViewIframe");
-        
-        // Restore zoom
-        previewViewIframeWrp.css(supportedProp, "");
-        originalZoom = 0;
-        
-        if(!previewViewIframe.hasClass("mobile")) {
-          previewViewIframe.addClass("mobile");
-        }
-        var viewportMetaTag = previewViewIframe.contents().find("meta[name='viewport']");
-        if(viewportMetaTag.length && viewportMetaTag.attr("content").indexOf("width=device-width") === -1) {
-          previewViewIframeWrp.addClass("mobile-none-responsive-horizontal");
-          previewViewIframeWrp.removeClass("mobile-none-responsive");
-        } else {
-          try {
-            var iframe = previewViewIframe[0];
-            if (typeof iframe.contentWindow !== "undefined" && typeof iframe.contentWindow.document !== "undefined" && typeof iframe.contentWindow.document.body !== "undefined") {
-              var computedHeight = Math.ceil(iframe.contentWindow.document.body.offsetHeight);
-              crossDocComLink.postCmdToParent("preview-height-update|" + computedHeight);
-              computedHeight = (computedHeight - ($.browser.msie ? 4 : 0));
-              iframe.style.height = computedHeight + "px";
-            }
-          } catch (e) {}
-        }
+        mobilePreviewUpdateHeight(false);
         break;
       case "restore-height":
         var previewViewIframeWrp = $("#previewViewIframeWrapper");
@@ -130,20 +132,10 @@ if (window != top) { // Obs IE bug: http://stackoverflow.com/questions/4850978/i
       /* BETA functionality for mobile preview */
         
       case "zoom-in":
-        var previewViewIframeWrp = $("#previewViewIframeWrapper");
-        var zoom = parseFloat(previewViewIframeWrp.css(supportedProp).match(/[0-9]*[.][0-9]+/)[0], 10);
-        if(originalZoom === 0) originalZoom = zoom;
-        zoom = zoom + 0.05;
-        previewViewIframeWrp.css(supportedProp, "scale(" + zoom + ")");
+        mobilePreviewZoomNoneResponsive(true);
         break;
       case "zoom-out":
-        var previewViewIframeWrp = $("#previewViewIframeWrapper");
-        var zoom = parseFloat(previewViewIframeWrp.css(supportedProp).match(/[0-9]*[.][0-9]+/)[0], 10);
-        if(originalZoom === 0) originalZoom = zoom;
-        zoom = zoom - 0.05;
-        if(zoom >= originalZoom) {
-          previewViewIframeWrp.css(supportedProp, "scale(" + zoom + ")");
-        }
+        mobilePreviewZoomNoneResponsive(false);
         break;
       case "restore-zoom":
         var previewViewIframeWrp = $("#previewViewIframeWrapper");

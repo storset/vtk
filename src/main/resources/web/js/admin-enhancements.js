@@ -892,14 +892,14 @@ VrtxAdmin.prototype.initStickyBar = function initStickyBar(wrapperId, stickyClas
       if (thisWindow.scrollTop() >= wrapperPos.top + 1) {
         if (!wrapper.hasClass(stickyClass)) {
           wrapper.addClass(stickyClass);
-          vrtxAdm.cachedContent.css("paddingTop", wrapper.outerHeight(true) + "px");
+          vrtxAdmin.cachedContent.css("paddingTop", wrapper.outerHeight(true) + "px");
         }
         wrapper.css("width", (_$("#main").outerWidth(true) - 2 + extraWidth) + "px");
       } else {
         if (wrapper.hasClass(stickyClass)) {
           wrapper.removeClass(stickyClass);
           wrapper.css("width", "auto");
-          vrtxAdm.cachedContent.css("paddingTop", "0px");
+          vrtxAdmin.cachedContent.css("paddingTop", "0px");
         }
       }
     });

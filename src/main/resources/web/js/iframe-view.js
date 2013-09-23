@@ -71,7 +71,7 @@ if (window != top) { // Obs IE bug: http://stackoverflow.com/questions/4850978/i
           previewViewIframe.addClass("mobile");
         }
         var viewportMetaTag = previewViewIframe.contents().find("meta[name='viewport']");
-        if(viewportMetaTag.attr("content").indexOf("width=device-width") === -1) {
+        if(viewportMetaTag.length && viewportMetaTag.attr("content").indexOf("width=device-width") === -1) {
           previewViewIframeWrp.addClass("mobile-none-responsive");
           previewViewIframeWrp.removeClass("mobile-none-responsive-horizontal");
         } else {
@@ -98,7 +98,7 @@ if (window != top) { // Obs IE bug: http://stackoverflow.com/questions/4850978/i
           previewViewIframe.addClass("mobile");
         }
         var viewportMetaTag = previewViewIframe.contents().find("meta[name='viewport']");
-        if(viewportMetaTag.attr("content").indexOf("width=device-width") === -1) {
+        if(viewportMetaTag.length && viewportMetaTag.attr("content").indexOf("width=device-width") === -1) {
           previewViewIframeWrp.addClass("mobile-none-responsive-horizontal");
           previewViewIframeWrp.removeClass("mobile-none-responsive");
         } else {

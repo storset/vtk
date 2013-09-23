@@ -6,7 +6,8 @@
  *  Iterating-method for jQuery elements based on: http://jsperf.com/loop-through-jquery-elements/2 (among multiple tests)
  *   -> Backwards for-loop is in most cases even faster but not always desirable
  *
- *  TODO: CPU usage in ready() vs. wait for it in load()
+ *  click/onclick/binding: http://stackoverflow.com/questions/12824549/should-all-jquery-events-be-bound-to-document (No)
+ *
  *  TODO: Add more functions as prototype to vrtxAdmin (with maybe some exceptions)
  *  TODO: JSDoc functions
  *  TODO: Better/revisit architecture for Async code regarding Deferred/Promise 
@@ -177,7 +178,10 @@ VrtxAdmin.prototype.cacheDOMNodesForReuse = function cacheDOMNodesForReuse() {
   var vrtxAdm = this,
     _$ = vrtxAdm._$;
 
-  vrtxAdm.cachedBody = _$("body");
+  if(vrtxAdm.cachedBody != null) return;
+
+  vrtxAdm.cachedDoc = _$(document);
+  vrtxAdm.cachedBody = vrtxAdm.cachedDoc.find("body");
   vrtxAdm.cachedAppContent = vrtxAdm.cachedBody.find("#app-content");
   vrtxAdm.cachedContent = vrtxAdm.cachedAppContent.find("#contents");
   vrtxAdm.cachedDirectoryListing = _$("#directory-listing");
@@ -314,14 +318,14 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
    */
 
   // Create folder chooser in global menu
-  $(document).on("click", "#global-menu-create a, #vrtx-report-view-other", function (e) {
+  vrtxAdm.cachedDoc.on("click", "#global-menu-create a, #vrtx-report-view-other", function (e) {
     var link = this;
     var id = link.id + "-content";
     var dialogManageCreate = $("#" + id);
     if (!dialogManageCreate.length) {
       vrtxAdm.serverFacade.getHtml(link.href, {
         success: function (results, status, resp) {
-          _$("body").append("<div id='" + id + "'>" + _$(_$.parseHTML(results)).find("#vrtx-manage-create-content").html() + "</div>");
+          vrtxAdm.cachedBody.append("<div id='" + id + "'>" + _$(_$.parseHTML(results)).find("#vrtx-manage-create-content").html() + "</div>");
           dialogManageCreate = _$("#" + id);
           dialogManageCreate.hide();
           // Lazy-load JS-dependency chain (cached)
@@ -344,14 +348,14 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
   });
   
   // Advanced publish settings
-  $(document).on("click", "#advanced-publish-settings", function (e) {
+  vrtxAdm.cachedDoc.on("click", "#advanced-publish-settings", function (e) {
     var link = this;
     var id = link.id + "-content";
     var dialogAPS = $("#" + id);
     if (!dialogAPS.length) {
       vrtxAdm.serverFacade.getHtml(link.href + "&4", {
         success: function (results, status, resp) {
-          _$("body").append("<div id='" + id + "'>" + _$(_$.parseHTML(results)).find("#vrtx-advanced-publish-settings-dialog").html() + "</div>");
+          vrtxAdm.cachedBody.append("<div id='" + id + "'>" + _$(_$.parseHTML(results)).find("#vrtx-advanced-publish-settings-dialog").html() + "</div>");
           dialogAPS = _$("#" + id);
           dialogAPS.hide();
 
@@ -690,7 +694,7 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
       vrtxAdm.addPermissionAsync("span.addUser", ".principalList", ".users-wrapper", "errorContainer");
 
       var SUBMIT_SET_INHERITED_PERMISSIONS = false;
-      $(document).on("click", "#permissions\\.toggleInheritance\\.submit", function (e) {
+      vrtxAdm.cachedDoc.on("click", "#permissions\\.toggleInheritance\\.submit", function (e) {
         if (!SUBMIT_SET_INHERITED_PERMISSIONS) {
           vrtxSimpleDialogs.openConfirmDialog(confirmSetInheritedPermissionsMsg, confirmSetInheritedPermissionsTitle, function () {
             SUBMIT_SET_INHERITED_PERMISSIONS = true;
@@ -706,12 +710,12 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
       break;
     case "vrtx-publishing":
       // TODO: generalize dialog jQuery UI function with AJAX markup/text
-      _$(document).on("click", "a.publishing-status-link", function (e) {
+      vrtxAdm.cachedDoc.on("click", "a.publishing-status-link", function (e) {
         var dialogTemplate = _$("#vrtx-dialog-template-content");
         if (!dialogTemplate.length) {
           vrtxAdm.serverFacade.getHtml(this.href, {
             success: function (results, status, resp) {
-              _$("body").append(_$($.parseHTML(results)).find("#vrtx-dialog-template-content").parent().html());
+              vrtxAdm.cachedBody.append(_$($.parseHTML(results)).find("#vrtx-dialog-template-content").parent().html());
               dialogTemplate = $("#vrtx-dialog-template-content");
               dialogTemplate.hide();
 
@@ -755,7 +759,7 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
       }
 
       var SUBMIT_TAKE_OWNERSHIP = false;
-      _$(document).on("submit", "#vrtx-admin-ownership-form", function (e) {
+      vrtxAdm.cachedDoc.on("submit", "#vrtx-admin-ownership-form", function (e) {
         if (!SUBMIT_TAKE_OWNERSHIP) {
           vrtxSimpleDialogs.openConfirmDialog(confirmTakeOwnershipMsg, confirmTakeOwnershipTitle, function () {
             SUBMIT_TAKE_OWNERSHIP = true;
@@ -888,14 +892,14 @@ VrtxAdmin.prototype.initStickyBar = function initStickyBar(wrapperId, stickyClas
       if (thisWindow.scrollTop() >= wrapperPos.top + 1) {
         if (!wrapper.hasClass(stickyClass)) {
           wrapper.addClass(stickyClass);
-          _$("#contents").css("paddingTop", wrapper.outerHeight(true) + "px");
+          vrtxAdm.cachedContent.css("paddingTop", wrapper.outerHeight(true) + "px");
         }
         wrapper.css("width", (_$("#main").outerWidth(true) - 2 + extraWidth) + "px");
       } else {
         if (wrapper.hasClass(stickyClass)) {
           wrapper.removeClass(stickyClass);
           wrapper.css("width", "auto");
-          _$("#contents").css("paddingTop", "0px");
+          vrtxAdm.cachedContent.css("paddingTop", "0px");
         }
       }
     });
@@ -919,7 +923,7 @@ VrtxAdmin.prototype.destroyStickyBar = function destroyStickyBar(wrapperId, stic
   if (wrapper.hasClass(stickyClass)) {
     wrapper.removeClass(stickyClass);
     wrapper.css("width", "auto");
-    _$("#contents").css("paddingTop", "0px");
+    vrtxAdm.cachedContent.css("paddingTop", "0px");
   }
 };
 
@@ -1243,18 +1247,18 @@ VrtxAdmin.prototype.scrollBreadcrumbs = function scrollBreadcrumbs(dir) {
       vrtxAdm.crumbsLeft = $("#navigate-crumbs-left");
       vrtxAdm.crumbsLeftCoverUp = $("#navigate-crumbs-left-coverup");
       vrtxAdm.crumbsRight = $("#navigate-crumbs-right"); 
-      $(document).on("click", "#navigate-crumbs-left", function(e) {
+      vrtxAdm.cachedDoc.on("click", "#navigate-crumbs-left", function(e) {
         vrtxAdmin.scrollBreadcrumbs("left");
         e.stopPropagation();
         e.preventDefault();
       });
-      $(document).on("click", "#navigate-crumbs-right", function(e) {
+      vrtxAdm.cachedDoc.on("click", "#navigate-crumbs-right", function(e) {
         vrtxAdmin.scrollBreadcrumbs("right");
         e.stopPropagation();
         e.preventDefault();
       }); 
       /* TODO: replace with stacking of blue/hovered element above nav(?) */
-      $(document).on("mouseover mouseout", ".vrtx-breadcrumb-level", function(e) {
+      vrtxAdm.cachedDoc.on("mouseover mouseout", ".vrtx-breadcrumb-level", function(e) {
         var hoveredBreadcrumb = $(this);
         if(!hoveredBreadcrumb.hasClass("vrtx-breadcrumb-active")) {
           if(vrtxAdm.crumbsState == "left") {            
@@ -1325,17 +1329,19 @@ VrtxAdmin.prototype.scrollBreadcrumbs = function scrollBreadcrumbs(dir) {
 \*-------------------------------------------------------------------*/
 
 function createFuncComplete() {
-  $(document).on("keyup", "#vrtx-textfield-collection-title input", $.debounce(50, true, function () {
+  var vrtxAdm = vrtxAdmin;
+
+  vrtxAdm.cachedDoc.on("keyup", "#vrtx-textfield-collection-title input", $.debounce(50, true, function () {
     createTitleChange($(this), $("#vrtx-textfield-collection-name input"), null);
   }));
-  $(document).on("keyup", "#vrtx-textfield-file-title input", $.debounce(50, true, function () {
+  vrtxAdm.cachedDoc.on("keyup", "#vrtx-textfield-file-title input", $.debounce(50, true, function () {
     createTitleChange($(this), $("#vrtx-textfield-file-name input"), $("#isIndex"));
   }));
-  $(document).on("keyup", "#vrtx-textfield-file-name input, #vrtx-textfield-collection-name input", $.debounce(50, true, function () {
+  vrtxAdm.cachedDoc.on("keyup", "#vrtx-textfield-file-name input, #vrtx-textfield-collection-name input", $.debounce(50, true, function () {
     createFileNameChange($(this));
   }));
 
-  vrtxAdmin.createResourceReplaceTitle = true;
+  vrtxAdm.createResourceReplaceTitle = true;
 
   // Fix margin left for radio descriptions because radio width variation on different OS-themes
   var radioDescriptions = $(".radioDescription");
@@ -1643,12 +1649,12 @@ VrtxAdmin.prototype.collectionListingInteraction = function collectionListingInt
   });
 
   // TODO: generalize dialog jQuery UI function with AJAX markup/text
-  $(document).on("click", "a.vrtx-copy-move-to-selected-folder-disclosed", function (e) {
+  vrtxAdm.cachedDoc.on("click", "a.vrtx-copy-move-to-selected-folder-disclosed", function (e) {
     var dialogTemplate = $("#vrtx-dialog-template-copy-move-content");
     if (!dialogTemplate.length) {
       vrtxAdm.serverFacade.getHtml(this.href, {
         success: function (results, status, resp) {
-          _$("body").append("<div id='vrtx-dialog-template-copy-move-content'>" + _$($.parseHTML(results)).find("#vrtx-dialog-template-content").html() + "</div>");
+          vrtxAdm.cachedBody.append("<div id='vrtx-dialog-template-copy-move-content'>" + _$($.parseHTML(results)).find("#vrtx-dialog-template-content").html() + "</div>");
           dialogTemplate = $("#vrtx-dialog-template-copy-move-content");
           dialogTemplate.hide();
 
@@ -1974,7 +1980,7 @@ function editorInteraction(bodyId, vrtxAdm, _$) {
     });
 
     // Save shortcut and AJAX
-    $(document).bind('keydown', 'ctrl+s', $.debounce(150, true, function (e) {
+    vrtxAdm.cachedDoc.bind('keydown', 'ctrl+s', $.debounce(150, true, function (e) {
       ctrlSEventHandler(_$, e);
     }));
     
@@ -2219,10 +2225,9 @@ function versioningInteraction(bodyId, vrtxAdm, _$) {
   });
 
   if (bodyId == "vrtx-revisions") {
-    var contents = _$("#contents");
 
     // Delete revisions
-    contents.on("click", ".vrtx-revisions-delete-form input[type=submit]", function (e) {
+    vrtxAdm.cachedContent.on("click", ".vrtx-revisions-delete-form input[type=submit]", function (e) {
       var link = _$(this);
       var form = link.closest("form");
       var url = form.attr("action");
@@ -2242,7 +2247,7 @@ function versioningInteraction(bodyId, vrtxAdm, _$) {
           var animB = tr.slideUp(vrtxAdm.transitionDropdownSpeed, vrtxAdm.transitionEasingSlideUp, _$.noop);
           _$.when(animA, animB).done(function () {
             var result = _$($.parseHTML(results));
-            contents.html(result.find("#contents").html());
+            vrtxAdm.cachedContent.html(result.find("#contents").html());
             _$("#app-tabs").html(result.find("#app-tabs").html());
           });
         }
@@ -2252,7 +2257,7 @@ function versioningInteraction(bodyId, vrtxAdm, _$) {
     });
 
     // Restore revisions
-    contents.on("click", ".vrtx-revisions-restore-form input[type=submit]", function (e) {
+    vrtxAdm.cachedContent.on("click", ".vrtx-revisions-restore-form input[type=submit]", function (e) {
       var link = _$(this);
       var form = link.closest("form");
       var url = form.attr("action");
@@ -2260,7 +2265,7 @@ function versioningInteraction(bodyId, vrtxAdm, _$) {
       _$("td.vrtx-revisions-buttons-column input").attr("disabled", "disabled"); // Lock buttons
       vrtxAdm.serverFacade.postHtml(url, dataString, {
         success: function (results, status, resp) {
-          contents.html($($.parseHTML(results)).find("#contents").html());
+          vrtxAdm.cachedContent.html($($.parseHTML(results)).find("#contents").html());
           if (typeof versionsRestoredInfoMsg !== "undefined") {
             var revisionNr = url.substring(url.lastIndexOf("=") + 1, url.length);
             var versionsRestoredInfoMsgTmp = versionsRestoredInfoMsg.replace("X", revisionNr);
@@ -2277,14 +2282,14 @@ function versioningInteraction(bodyId, vrtxAdm, _$) {
     });
 
     // Make working copy into current version
-    contents.on("click", "#vrtx-revisions-make-current-form input[type=submit]", function (e) {
+    vrtxAdm.cachedContent.on("click", "#vrtx-revisions-make-current-form input[type=submit]", function (e) {
       var link = _$(this);
       var form = link.closest("form");
       var url = form.attr("action");
       var dataString = form.serialize();
       vrtxAdm.serverFacade.postHtml(url, dataString, {
         success: function (results, status, resp) {
-          contents.html(_$($.parseHTML(results)).find("#contents").html());
+          vrtxAdm.cachedContent.html(_$($.parseHTML(results)).find("#contents").html());
           _$("#app-tabs").html(_$($.parseHTML(results)).find("#app-tabs").html());
           if (typeof versionsMadeCurrentInfoMsg !== "undefined") {
             vrtxAdm.displayInfoMsg(versionsMadeCurrentInfoMsg);

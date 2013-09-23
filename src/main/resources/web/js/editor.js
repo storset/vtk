@@ -98,7 +98,7 @@ $(window).load(function () {
     vrtxAdm.log({
       msg: "Editor initialized."
     });
-    storeInitPropValues($("#contents"));
+    storeInitPropValues(vrtxAdm.cachedContent);
   });
 
   // CTRL+S save inside CKEditor
@@ -132,6 +132,8 @@ $(document).ready(function () {
 
   var vrtxAdm = vrtxAdmin,
     _$ = vrtxAdm._$;
+    
+  vrtxAdm.cacheDOMNodesForReuse();
 
   // When ui-helper-hidden class is added => we need to add 'first'-class to next element (if it is not last and first of these)
   vrtxEdit.editorForm.find(".ui-helper-hidden").filter(":not(:last)").filter(":first").next().addClass("first");
@@ -664,7 +666,7 @@ VrtxEditor.prototype.addSaveHelpCKMaximized = function addSaveHelpCKMaximized() 
     var stickyBar = _$("#vrtx-editor-title-submit-buttons");
     stickyBar.hide();
     
-    $("body").addClass("forms-new");
+    vrtxAdm.cachedBody.addClass("forms-new");
 
     var ckInject = _$(this).closest(".cke_reset")
       .find(".cke_toolbar_end:last");
@@ -725,7 +727,7 @@ function unsavedChangesInEditor() {
   }
   
   var vrtxEdit = vrtxEditor;
-  var contents = $("#contents");
+  var contents = vrtxAdmin.cachedContent;
 
   var currentStateOfInputFields = contents.find("input").not("[type=submit]").not("[type=button]")
     .not("[type=checkbox]").not("[type=radio]"),
@@ -775,7 +777,7 @@ function validTextLengthsInEditor(isOldEditor) {
     CK_NEW = ".vrtx-simple-html, .vrtx-simple-html-small", // aka. textareas
     CK_OLD = "textarea:not(#resource\\.content)";
 
-  var contents = $("#contents");
+  var contents = vrtxAdmin.cachedContent;
 
   var validTextLengthsInEditorErrorFunc = validTextLengthsInEditorError; // Perf.
 
@@ -849,11 +851,11 @@ VrtxEditor.prototype.initPreviewImage = function initPreviewImage() {
   }
 
   /* Inputfield events for image preview */
-  _$(document).on("blur", "input.preview-image-inputfield", function (e) {
+  vrtxAdmin.cachedDoc.on("blur", "input.preview-image-inputfield", function (e) {
     previewImage(this.id);
   });
 
-  _$(document).on("keydown", "input.preview-image-inputfield", _$.debounce(50, true, function (e) { // ENTER-key
+  vrtxAdmin.cachedDoc.on("keydown", "input.preview-image-inputfield", _$.debounce(50, true, function (e) { // ENTER-key
     if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
       previewImage(this.id);
       e.preventDefault();
@@ -1804,7 +1806,7 @@ function accordionContentSplitHeaderPopulators(init) {
     semesterResourceLinksItems.find(".vrtx-string input[id*=-title]").addClass("header-populators");
     semesterResourceLinksItems.find(".vrtx-json-element").addClass("header-empty-check-and");
     if(init) {
-      $(document).on("click", semesterResourceLinksItems.find(".vrtx-add-button input"), function(e) {
+      vrtxAdmin.cachedDoc.on("click", semesterResourceLinksItems.find(".vrtx-add-button input"), function(e) {
         semesterResourceLinksItems.find(".vrtx-json-element:last").addClass("header-empty-check-and"); 
       });
     }
@@ -2002,13 +2004,13 @@ VrtxEditor.prototype.initSendToApproval = function initSendToApproval() {
   var vrtxAdm = vrtxAdmin,
     _$ = vrtxAdm._$;
 
-  _$(document).on("click", "#vrtx-send-to-approval, #vrtx-send-to-approval-global", function (e) {
+  vrtxAdm.cachedDoc.on("click", "#vrtx-send-to-approval, #vrtx-send-to-approval-global", function (e) {
     vrtxEditor.openSendToApproval(this);
     e.stopPropagation();
     e.preventDefault();
   });
 
-  _$(document).on("click", "#dialog-html-send-approval-content .vrtx-focus-button", function (e) {
+  vrtxAdm.cachedDoc.on("click", "#dialog-html-send-approval-content .vrtx-focus-button", function (e) {
     vrtxEditor.saveSendToApproval(_$(this));
     e.stopPropagation();
     e.preventDefault();
@@ -2024,7 +2026,7 @@ VrtxEditor.prototype.openSendToApproval = function openSendToApproval(link) {
   if (!dialogManageCreate.length) {
     vrtxAdm.serverFacade.getHtml(link.href, {
       success: function (results, status, resp) {
-        _$("body").append("<div id='" + id + "'>" + _$(_$.parseHTML(results)).find("#contents").html() + "</div>");
+        vrtxAdm.cachedBody.append("<div id='" + id + "'>" + _$(_$.parseHTML(results)).find("#contents").html() + "</div>");
         dialogManageCreate = _$("#" + id);
         dialogManageCreate.hide();
         vrtxEditor.openSendToApprovalOpen(dialogManageCreate, link);

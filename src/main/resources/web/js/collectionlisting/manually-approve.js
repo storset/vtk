@@ -48,7 +48,9 @@ $(window).load(function() {
 
 $(document).ready(function() {
 
-    $("#app-content").on("click", "#vrtx-manually-approve-tab-menu a", function(e) {
+    var manuallyApproveContainer = $("#manually-approve-container");
+
+    vrtxAdmin.cachedAppContent.on("click", "#vrtx-manually-approve-tab-menu a", function(e) {
       var elem = $(this);
       var parent = elem.parent();
       elem.replaceWith("<span>" + elem.html() + "</span>"); // todo: use wrap()'
@@ -71,7 +73,7 @@ $(document).ready(function() {
       e.preventDefault();
     });
 
-    $("#app-content").on("click", "#manually-approve-refresh", function(e) {
+    vrtxAdmin.cachedAppContent.on("click", "#manually-approve-refresh", function(e) {
       clearTimeout(ASYNC_GEN_PAGE_TIMER);
       $("#approve-spinner").remove();
       
@@ -95,7 +97,7 @@ $(document).ready(function() {
     });
 
     // Add / remove manually approved uri's
-    $("#manually-approve-container").on("change", "td.checkbox input", function(e) {
+    manuallyApproveContainer.on("change", "td.checkbox input", function(e) {
       var textfield = $("#resource\\.manually-approved-resources");
       var value = textfield.val();
       var uri = $(this).val();
@@ -116,23 +118,23 @@ $(document).ready(function() {
     });
     
     // Paging - next
-    $("#manually-approve-container").on("click", ".next", function(e) {
+    manuallyApproveContainer.on("click", ".next", function(e) {
       var that = $(this).parent();
       var next = that.next();
       if (next.attr("id") && next.attr("id").indexOf("approve-page") != -1) {
-        $(that).hide();
-        $(next).show();
+        that.hide();
+        next.show();
       }
       return false;
     });
 
     // Paging - previous
-    $("#manually-approve-container").on("click", ".prev", function(e) {
+    manuallyApproveContainer.on("click", ".prev", function(e) {
       var that = $(this).parent();
       var prev = that.prev();
       if (prev.attr("id") && prev.attr("id").indexOf("approve-page") != -1) {
-        $(that).hide();
-        $(prev).show();
+        that.hide();
+        prev.show();
       }
       return false;
     });

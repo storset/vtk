@@ -168,10 +168,9 @@ vrtxEditor.CKEditorToolbars.completeToolbar = [['PasteText', 'PasteFromWord', '-
                                               ['Link', 'Unlink', 'Anchor'], 
                                               ['Image', 'CreateDiv', 'MediaEmbed', 'Table',
                                               'HorizontalRule', 'SpecialChar'], ['Maximize'], ['Source'],
-                                              ['Bold', 'Italic', 'Strike', 'Subscript', 'Superscript', 'TextColor', '-', 'RemoveFormat'] ,
+                                              '/', ['Format'], ['Bold', 'Italic', 'Strike', 'Subscript', 'Superscript', 'TextColor', '-', 'RemoveFormat'] ,
                                               ['NumberedList',
-                                              'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote'],
-                                              ['Format']];
+                                              'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote']];
 
 vrtxEditor.CKEditorToolbars.studyToolbar = [['Source', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo', '-', 'Replace',
                                         'RemoveFormat', '-', 'Link', 'Unlink', 'Studyreferencecomponent', 'Anchor',
@@ -197,10 +196,9 @@ vrtxEditor.CKEditorToolbars.completeToolbarOld = [['PasteText', 'PasteFromWord',
                                               ['Link', 'Unlink', 'Anchor'], 
                                               ['Image', 'CreateDiv', 'MediaEmbed', 'Table',
                                               'HorizontalRule', 'SpecialChar'], ['Maximize'], ['Source'],
-                                              ['Bold', 'Italic', 'Strike', 'Subscript', 'Superscript', 'TextColor', '-', 'RemoveFormat'] ,
+                                              '/', ['Format'], ['Bold', 'Italic', 'Strike', 'Subscript', 'Superscript', 'TextColor', '-', 'RemoveFormat'] ,
                                               ['NumberedList',
-                                              'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote'],
-                                              ['Format']];
+                                              'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote']];
 
 vrtxEditor.CKEditorToolbars.commentsToolbar = [['Source', 'PasteText', 'Bold',
                                            'Italic', 'Strike', 'NumberedList',

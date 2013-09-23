@@ -2,13 +2,16 @@
 <#attempt>
 <#import "/spring.ftl" as spring />
 <#import "/lib/vortikal.ftl" as vrtx />
+<#import "/lib/publish.ftl" as publish />
 
 <#assign headerMsg = vrtx.getMsg("unpublish.header") />
 <#assign titleMsg = vrtx.getMsg("unpublish.title") />
 <#assign actionURL = item.url />
 
 <h3>${headerMsg}</h3>
-<p><span class="published"><@vrtx.msg code="publish.permission.published" /></span></p>
+
+<@publish.publishMessage resourceContext />
+
 <#if writePermission.permissionsQueryResult = 'true'>
   <#if !resourceContext.currentResource.isCollection()>
     <ul class="publishing-document">

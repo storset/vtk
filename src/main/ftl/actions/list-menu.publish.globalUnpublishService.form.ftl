@@ -5,6 +5,7 @@
 <#import "/lib/actions.ftl" as actionsLib />
 
 <#if type = "publish.globalUnpublishResourceConfirmedService">
+4
   <div class="globalmenu expandedForm">
     <form name="vrtx-unpublish-document" id="vrtx-unpublish-document-form" action="${url}" method="post">
       <h3>${vrtx.getMsg("confirm-publish.confirmation.unpublish")}?</h3>

@@ -1802,7 +1802,7 @@ body#vrtx-report-broken-links #directory-listing td.vrtx-report-broken-links {
 .unpublished .permissions span,
 .unpublished td.resource-type,
 .unpublished td.last-modified {
-  color: lightgray !important;
+  color: #9a9996 !important;
   font-style: italic !important;
 }
 

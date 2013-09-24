@@ -264,8 +264,13 @@
 
 .forms-new .submitButtons,
 .forms-new #submitButtons {
-  padding: 15px 0 0 0;
+  padding: 20px 0 0 0;
   clear: left;
+}
+
+.forms-new .ui-dialog .submitButtons,
+.forms-new .ui-dialog #submitButtons {
+  margin: 0 0 -15px;
 }
 
 .forms-new .submitButtons .vrtx-button,

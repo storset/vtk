@@ -1192,6 +1192,10 @@ div.dropdown-shortcut-menu-container form .vrtx-button button {
   font-weight: bold;
 }
 
+#resourceMenuRight span.unpublished span {
+  font-weight: normal;
+}
+
 /* ^ Resource menus */
 
 /* Tooltip */
@@ -1222,10 +1226,6 @@ div.dropdown-shortcut-menu-container form .vrtx-button button {
   color: #797979;
   cursor: pointer;
   border-bottom: 1px dotted #a9a9a9;
-}
-
-#title-container abbr.tooltips {
-  border-bottom: none;
 }
 
 #vrtx-editor .tip.property-item ul,
@@ -1319,6 +1319,15 @@ div.dropdown-shortcut-menu-container form .vrtx-button button {
   margin: 0 0 -2px 3px;
   cursor: pointer;
   border: none;
+}
+
+#title-container .tooltips {
+  background-image: url(images/info-icon-grey-grey-bg2.png);
+  background-size: 15px auto;
+  border-bottom: none;
+  width: 15px;
+  height: 15px;
+  margin: 0 0 -3px 6px;
 }
 
 .vrtx-admin-form .tooltips {
@@ -1795,10 +1804,13 @@ body#vrtx-report-broken-links #directory-listing td.vrtx-report-broken-links {
 }
 
 #directory-listing td span.restricted,
-#resourceMenuRight span.restricted,
+#resourceMenuRight span.restricted {
+  color: #ed1c24;
+}
+
 #resourceMenuRight span.unpublished,
 #publishing-status span.unpublished {
-  color: #ed1c24;
+  color: #888;
 }
 
 #collectionListing\.checkUncheckAll {

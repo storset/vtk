@@ -955,7 +955,7 @@ VrtxAdmin.prototype.logoutButtonAsLink = function logoutButtonAsLink() {
  */
 VrtxAdmin.prototype.publishingComplete = function publishingComplete() {
   var vrtxAdm = this;
-  if(vrtxAdm.bodyId == "vrtx-preview") {
+  if(vrtxAdm.bodyId === "vrtx-preview") {
     var previewIframe = $("#previewIframe");
     previewIframe[0].src = previewIframe[0].src;
   }

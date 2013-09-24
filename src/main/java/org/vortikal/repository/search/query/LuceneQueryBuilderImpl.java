@@ -375,16 +375,16 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
 
     BooleanFilter buildDefaultExcludesFilter() {
         BooleanFilter bf = new BooleanFilter();
-
-        // Filter to include only published resources:
-        bf.add(this.cachedOnlyPublishedFilter, BooleanClause.Occur.MUST);
-
-        // Filter to exclude unpublishedCollection resources:
-        // Avoid using cache-wrapper for FieldValueFilter, since that can lead
-        // to memory leaks
-        // in Lucene.
         RequestContext requestContext = RequestContext.getRequestContext();
         if (requestContext.getRequestURL().getParameter("vrtxPreviewUnpublished") == null) {
+
+            // Filter to include only published resources:
+            bf.add(this.cachedOnlyPublishedFilter, BooleanClause.Occur.MUST);
+
+            // Filter to exclude unpublishedCollection resources:
+            // Avoid using cache-wrapper for FieldValueFilter, since that can
+            // lead to memory leaks in Lucene.
+
             bf.add(new FieldValueFilter(FieldNames.getSearchFieldName(this.unpublishedCollectionPropDef, false), true),
                     BooleanClause.Occur.MUST);
         }

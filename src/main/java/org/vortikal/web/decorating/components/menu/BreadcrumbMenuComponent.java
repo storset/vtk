@@ -82,7 +82,9 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
         Path uri = requestContext.getResourceURI();
         Principal principal = requestContext.getPrincipal();
 
-        List<BreadcrumbElement> breadCrumbElements = getBreadcrumbElements();
+        boolean vrtxPreviewUnpublished = request.getServletRequest().getParameter("vrtxPreviewUnpublished") != null;
+
+        List<BreadcrumbElement> breadCrumbElements = getBreadcrumbElements(vrtxPreviewUnpublished);
         Resource currentResource = null;
 
         currentResource = repository.retrieve(token, uri, true);
@@ -127,8 +129,10 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
         // so generatemenuItemList need not check for this condition for hidden
         // ones. However, it will need to
         // do that for the sibling case in the next call below.
+
         List<MenuItem<PropertySet>> menuItemList = generateMenuItemList(
-                repository.listChildren(token, currentResource.getURI(), true), currentResource, principal, repository);
+                repository.listChildren(token, currentResource.getURI(), true), currentResource, principal, repository,
+                vrtxPreviewUnpublished);
         // If menu is empty, i.e. current resource has no children or
         // all children were hidden, then generate menu based on siblings.
         if (menuItemList.isEmpty()) {
@@ -142,7 +146,7 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
             if (currentResourceParent != null) {
                 menuItemList = generateMenuItemList(
                         repository.listChildren(token, currentResourceParent.getURI(), true), currentResource,
-                        principal, repository);
+                        principal, repository, vrtxPreviewUnpublished);
                 breadCrumbElements.remove(breadCrumbElements.size() - 1);
                 if (menuItemList.size() > maxSiblings) {
                     menuItemList = new ArrayList<MenuItem<PropertySet>>();
@@ -158,7 +162,7 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
         model.put("markedurl", markedUrl);
     }
 
-    private List<BreadcrumbElement> getBreadcrumbElements() throws Exception {
+    private List<BreadcrumbElement> getBreadcrumbElements(boolean vrtxPreviewUnpublished) throws Exception {
 
         // XXX NO! Reconsider this. Refactor BreadCrumbProvider and create
         // separate generic class for bread crumb creation. Use this separate
@@ -169,7 +173,9 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
         breadCrumbProvider.setService(this.menuGenerator.getViewService());
         breadCrumbProvider.setBreadcrumbName(breadcrumbName);
         breadCrumbProvider.setSkipIndexFile(false);
-        breadCrumbProvider.setIgnoreProperty(menuGenerator.getUnpublishedCollectionPropDef());
+        if (!vrtxPreviewUnpublished) {
+            breadCrumbProvider.setIgnoreProperty(menuGenerator.getUnpublishedCollectionPropDef());
+        }
         PropertyTypeDefinition titleProp[] = new PropertyTypeDefinition[2];
         titleProp[0] = this.menuGenerator.getNavigationTitlePropDef();
         titleProp[1] = this.menuGenerator.getTitlePropDef();
@@ -193,14 +199,14 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
     }
 
     private List<MenuItem<PropertySet>> generateMenuItemList(Resource[] resources, Resource currentResource,
-            Principal principal, Repository repository) throws Exception {
+            Principal principal, Repository repository, boolean vrtxPreviewUnpublished) throws Exception {
 
         List<MenuItem<PropertySet>> menuItems = new ArrayList<MenuItem<PropertySet>>();
-
-        if (currentResource.getProperty(menuGenerator.getUnpublishedCollectionPropDef()) != null) {
-            return menuItems;
+        if (!vrtxPreviewUnpublished) {
+            if (currentResource.getProperty(menuGenerator.getUnpublishedCollectionPropDef()) != null) {
+                return menuItems;
+            }
         }
-
         for (Resource r : resources) {
             // Filtering:
             if (!r.isCollection()) {
@@ -209,8 +215,10 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
             if (r.getProperty(menuGenerator.getHiddenPropDef()) != null && !r.getURI().equals(currentResource.getURI())) {
                 continue;
             }
-            if (r.getProperty(menuGenerator.getUnpublishedCollectionPropDef()) != null) {
-                continue;
+            if (!vrtxPreviewUnpublished) {
+                if (r.getProperty(menuGenerator.getUnpublishedCollectionPropDef()) != null) {
+                    continue;
+                }
             }
             // Remove resources that current principal is not allowed to access
             // (they may appear when using Repository.loadChildren).

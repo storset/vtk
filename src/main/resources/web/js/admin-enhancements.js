@@ -1094,6 +1094,7 @@ VrtxAdmin.prototype.initResourceTitleDropdown = function initResourceTitleDropdo
 VrtxAdmin.prototype.initPublishingDropdown = function initPublishingDropdown() {
   this.dropdown({
     selector: "ul.publishing-document",
+    small: true,
     calcTop: true,
     calcLeft: true
   });
@@ -1153,6 +1154,9 @@ VrtxAdmin.prototype.dropdown = function dropdown(options) {
 
   if (!options.proceedCondition || (options.proceedCondition && options.proceedCondition(numOfListElements))) {
     list.addClass("dropdown-shortcut-menu");
+    if(options.small) {
+      list.addClass("dropdown-shortcut-menu-small");
+    }
 
     // Move listelements except .first into container
     var listParent = list.parent();

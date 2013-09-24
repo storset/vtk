@@ -149,8 +149,8 @@
 }
 
 .forms-new .vrtx-button-small {
-  height: 22px;
-  background: url(/vrtx/__vrtx/static-resources/themes/default/images/button-small-left.gif) no-repeat 0 0;
+  height: 25px;
+  background: url(/vrtx/__vrtx/static-resources/themes/default/images/button-small-left.png) no-repeat 0 0;
 }
 
 .forms-new .ui-dialog .ui-dialog-buttonpane button span,
@@ -192,15 +192,15 @@
 .forms-new .vrtx-button-small span,
 .forms-new .vrtx-button-small input,
 .forms-new .vrtx-button-small button {
-  height: 20px;
-  padding: 2px 11px 0 10px;
-  background: url(/vrtx/__vrtx/static-resources/themes/default/images/button-small-right.gif) no-repeat top right;
+  height: 21px;
+  padding: 4px 11px 0 10px;
+  background: url(/vrtx/__vrtx/static-resources/themes/default/images/button-small-right.png) no-repeat top right;
 } 
 
 .forms-new .vrtx-button-small input,
 .forms-new .vrtx-button-small button {
-  height: 22px;
-  padding: 0 11px 0 10px;
+  height: 25px;
+  padding: 0 9px 3px 8px;
 }
 
 .forms-new .ui-dialog .ui-dialog-buttonpane button:hover,
@@ -217,7 +217,7 @@
 
 .forms-new .vrtx-button-small:hover,
 .forms-new .vrtx-button-small.hover {
-  background-image: url(/vrtx/__vrtx/static-resources/themes/default/images/button-small-left-rollover.gif);
+  background-image: url(/vrtx/__vrtx/static-resources/themes/default/images/button-small-left-rollover.png);
 }
 
 .forms-new .ui-dialog .ui-dialog-buttonpane button:hover span,
@@ -259,7 +259,7 @@
 .forms-new .vrtx-button-small.hover span,
 .forms-new .vrtx-button-small.hover input,
 .forms-new .vrtx-button-small.hover button {
-  background: url(/vrtx/__vrtx/static-resources/themes/default/images/button-small-right-rollover.gif) no-repeat top right;
+  background: url(/vrtx/__vrtx/static-resources/themes/default/images/button-small-right-rollover.png) no-repeat top right;
 }
 
 .forms-new .submitButtons,

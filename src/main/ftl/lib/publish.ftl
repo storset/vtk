@@ -32,14 +32,14 @@
         <#local resourceType = "folder">
     </#if>
     <#if resource.published >
-      <abbr class="tooltips delayed" title="<@vrtx.msg code="publish.unpublished.published.info.${resourceType}" />" />
+      <abbr class="tooltips delayed" title="<@vrtx.msg code="publish.unpublished.published.info.${resourceType}" />"></abbr>
     <#else> 
-      <abbr class="tooltips delayed" title="<@vrtx.msg code="publish.unpublished.unpublishedCollection.info.${resourceType}" />
+      <abbr class="tooltips delayed" title="<@vrtx.msg code="publish.unpublished.unpublishedCollection.info.${resourceType}" />"></abbr>
     </#if>
 <#elseif propResource?has_content && !propParent?has_content>  
-  <abbr class="tooltips delayed" title="<@vrtx.msg code="unpublishedCollection.info" />" />
+  <abbr class="tooltips delayed" title="<@vrtx.msg code="unpublishedCollection.info" />"></abbr>
 <#elseif propParent?has_content >
-  <abbr class="tooltips delayed" title="<@vrtx.msg code="publish.unpublished.unpublishedCollection.info.${resourceType}" />
+  <abbr class="tooltips delayed" title="<@vrtx.msg code="publish.unpublished.unpublishedCollection.info.${resourceType}" />"></abbr>
 </#if> 
 </p>
 </#macro>

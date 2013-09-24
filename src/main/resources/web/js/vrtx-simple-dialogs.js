@@ -66,6 +66,9 @@ var vrtxSimpleDialogs = {
       }
       if (opts.hasCancel) {
         var Cancel = opts.btnTextCancel || ((typeof cancelI18n != "undefined") ? cancelI18n : "Cancel");
+        if(/^\(/.test(Cancel)) {
+          opts.cancelIsNotAButton = true;
+        }
         l10nButtons[Cancel] = function() {
           $(this).dialog("close");
           if(opts.funcCancelComplete) opts.funcCancelComplete();
@@ -85,9 +88,15 @@ var vrtxSimpleDialogs = {
                                if(opts.funcOnOpen) opts.funcOnOpen();
                              };
                            } else {
-                             if(opts.funcOnOpen) {
-                               dialogOpts.open = function(e, ui) { 
-                                 opts.funcOnOpen();
+                             if(opts.funcOnOpen || opts.cancelIsNotAButton) {
+                               dialogOpts.open = function(e, ui) {
+                                 if(opts.funcOnOpen) {
+                                   opts.funcOnOpen();
+                                 }
+                                 if(opts.cancelIsNotAButton) {
+                                   var ctx = $(this).parent();
+                                   ctx.find(".ui-dialog-buttonpane button:last-child span").unwrap().addClass("cancel-is-not-a-button");
+                                 }
                                };
                              }
                            }

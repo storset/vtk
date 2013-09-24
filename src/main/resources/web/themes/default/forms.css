@@ -281,6 +281,10 @@
   margin: 0 10px 0 0;
 }
 
+.forms-new .ui-dialog .cancel-is-not-a-button {
+  margin-left: 5px;
+}
+
 .forms-new .ui-dialog .ui-dialog-buttonpane button.ui-corner-all {
   -moz-border-radius: 0px;
   -webkit-border-radius: 0px;

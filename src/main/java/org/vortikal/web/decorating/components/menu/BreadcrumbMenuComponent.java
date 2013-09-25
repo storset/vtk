@@ -219,6 +219,9 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
                     continue;
                 }
             }
+            if(!r.isPublished() && (!r.getURI().equals(currentResource.getURI()) && vrtxPreviewUnpublished)){
+                continue;
+            }
             // Remove resources that current principal is not allowed to access
             // (they may appear when using Repository.loadChildren).
             if (!repository.authorize(principal, r.getAcl(), Privilege.READ_PROCESSED)) {

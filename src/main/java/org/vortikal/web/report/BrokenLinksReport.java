@@ -312,10 +312,10 @@ public class BrokenLinksReport extends DocumentReporter {
         if (currentResource.getProperty(unpublishedCollectionPropDef) != null) {
             search.setUseDefaultExcludes(false);
             PropertyTermQuery ptq = null;
-            if ("true".equals(published)) {
-                ptq = new PropertyTermQuery(this.publishedPropDef, "true", TermOperator.EQ);
-            } else {
+            if ("false".equals(published)) {
                 ptq = new PropertyTermQuery(this.publishedPropDef, "true", TermOperator.NE);
+            } else {
+                ptq = new PropertyTermQuery(this.publishedPropDef, "true", TermOperator.EQ);
             }
             topLevelQ.add(ptq);
         } else if (published != null && "false".equals(published)) {

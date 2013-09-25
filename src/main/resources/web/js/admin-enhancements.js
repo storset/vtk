@@ -288,12 +288,12 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
           link: link,
           form: $("#vrtx-publish-document-form"),
           funcComplete: function () {
-            vrtxAdm.publishingComplete();
+            vrtxAdm.globalAsyncComplete();
           }
         });
         return false;
       } : function(link) {
-        vrtxAdm.publishingComplete();
+        vrtxAdm.globalAsyncComplete();
       }),
       post: (!isSavingBeforePublish)
     });
@@ -314,9 +314,9 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
     selector: "li.manage\\.unlockFormService form[name=unlockForm]",
     updateSelectors: ["#resourceMenuRight", "#contents"],
     funcComplete: function() {
-      vrtxAdm.initPublishingDropdown();
+      vrtxAdm.globalAsyncComplete();
     },
-    post: (bodyId !== "vrtx-editor" && bodyId !== "vrtx-edit-plaintext" && bodyId !== "vrtx-manage-collectionlisting" && bodyId !== "")
+    post: (bodyId !== "vrtx-editor" && bodyId !== "vrtx-edit-plaintext" && bodyId !== "")
   });
   
   /*
@@ -434,7 +434,7 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
     },
     funcComplete: function () { 
       vrtxSimpleDialogs.destroyDialog("#dialog-html-advanced-publish-settings");
-      vrtxAdm.publishingComplete();
+      vrtxAdm.globalAsyncComplete();
     }
   });
   
@@ -953,7 +953,7 @@ VrtxAdmin.prototype.logoutButtonAsLink = function logoutButtonAsLink() {
  *
  * @this {VrtxAdmin}
  */
-VrtxAdmin.prototype.publishingComplete = function publishingComplete() {
+VrtxAdmin.prototype.globalAsyncComplete = function globalAsyncComplete() {
   var vrtxAdm = this;
   if(vrtxAdm.bodyId === "vrtx-preview") {
     var previewIframe = $("#previewIframe");

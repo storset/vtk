@@ -595,8 +595,7 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
           e.preventDefault();
         });
       }
-      /*
-      vrtxAdm.cachedContent.on("click", "input#collectionListing\\.action\\.delete-resources", function (e) {
+      vrtxAdm.cachedContent.on("click", "input#collectionListing\\.action\\.unpublish-resources, input#collectionListing\\.action\\.publish-resources, input#collectionListing\\.action\\.delete-resources", function (e) {
         var input = _$(this);
         var form = input.closest("form");
         var url = form.attr("action");
@@ -612,7 +611,6 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
         e.stopPropagation();
         e.preventDefault();
       });
-      */
       break;
     case "vrtx-trash-can":
       vrtxAdm.cachedContent.on("click", "input.deleteResourcePermanent", function (e) {
@@ -633,6 +631,7 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
         e.stopPropagation();
         e.preventDefault();
       });
+      
       break;
     case "vrtx-permissions":
       var privilegiesPermissions = ["read", "read-write", "all"];
@@ -711,32 +710,6 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
       });
 
       break;
-    case "vrtx-publishing":
-      // TODO: generalize dialog jQuery UI function with AJAX markup/text
-      vrtxAdm.cachedDoc.on("click", "a.publishing-status-link", function (e) {
-        var dialogTemplate = _$("#vrtx-dialog-template-content");
-        if (!dialogTemplate.length) {
-          vrtxAdm.serverFacade.getHtml(this.href, {
-            success: function (results, status, resp) {
-              vrtxAdm.cachedBody.append(_$($.parseHTML(results)).find("#vrtx-dialog-template-content").parent().html());
-              dialogTemplate = $("#vrtx-dialog-template-content");
-              dialogTemplate.hide();
-
-              vrtxSimpleDialogs.openConfirmDialog("", dialogTemplate.find(".vrtx-confirm-publish-msg").html(), function () {
-                dialogTemplate.find(".vrtx-focus-button input").trigger("click");
-              }, null, null);
-            }
-          });
-        } else {
-          vrtxSimpleDialogs.openConfirmDialog("", dialogTemplate.find(".vrtx-confirm-publish-msg").html(), function () {
-            dialogTemplate.find(".vrtx-focus-button input").trigger("click");
-          }, null, null);
-        }
-        e.stopPropagation();
-        e.preventDefault();
-      });
-
-      break;
     case "vrtx-about":
       vrtxAdm.zebraTables(".resourceInfo");
 
@@ -804,6 +777,7 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
         e.stopPropagation();
         e.preventDefault();
       });
+      
       break;
     default:
       // noop

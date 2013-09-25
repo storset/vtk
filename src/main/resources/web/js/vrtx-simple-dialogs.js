@@ -37,6 +37,7 @@ var vrtxSimpleDialogs = {
     });
   },
   openConfirmDialog: function (msg, title, funcOkComplete, funcCancelComplete, funcOkCompleteOpts) {
+    this.destroyDialog("#dialog-confirm");
     this.openDialog("#dialog-confirm", { 
       msg: msg,
       title: title,

@@ -8,12 +8,8 @@
  *
  *  click/onclick/binding: http://stackoverflow.com/questions/12824549/should-all-jquery-events-be-bound-to-document (No)
  *
- *  TODO: Add more functions as prototype to vrtxAdmin (with maybe some exceptions)
- *  TODO: JSDoc functions
  *  TODO: Better/revisit architecture for Async code regarding Deferred/Promise 
  *        (http://net.tutsplus.com/tutorials/javascript-ajax/wrangle-async-tasks-with-jquery-promises/)
- *  TODO: Better seperation of business logic, events, Async/AJAX and DOM interaction (and write tests for easier refactoring)
- *  TODO: Remove caching of this when local reference inside function (http://stackoverflow.com/questions/12662118/is-this-cached-locally)
  *
  *  ToC: 
  *
@@ -949,7 +945,7 @@ VrtxAdmin.prototype.logoutButtonAsLink = function logoutButtonAsLink() {
 };
 
 /**
- * On publish / unpublish async completion
+ * On global async completion
  *
  * @this {VrtxAdmin}
  */

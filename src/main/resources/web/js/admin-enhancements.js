@@ -960,9 +960,9 @@ VrtxAdmin.prototype.publishingComplete = function publishingComplete() {
     previewIframe[0].src = previewIframe[0].src;
   }
   $("#advanced-publish-settings-content").remove();
+  vrtxAdm.adjustResourceTitle();
   vrtxAdm.initResourceTitleDropdown();
   vrtxAdm.initPublishingDropdown();
-  vrtxAdm.adjustResourceTitle();
   vrtxAdm.updateCollectionListingInteraction();
 };
 

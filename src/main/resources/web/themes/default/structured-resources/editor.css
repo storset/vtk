@@ -58,6 +58,14 @@
   margin-bottom: 20px;
 }
 
+.vrtx-json .cke_chrome {
+  border: none !important;
+}
+
+.vrtx-json .cke_chrome  .cke_inner {
+  padding: 0px !important;
+}
+
 .vrtx-radio-buttons label {
   margin-bottom: 0px;
   display: inline;

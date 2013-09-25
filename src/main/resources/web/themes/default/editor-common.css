@@ -446,7 +446,7 @@ div#resource\.picture\.preview.no-preview img {
 \*------------------------------------*/
 
 .cke_chrome {
-  border: none !important;
+  border-color: #d9d9d9 !important;
   /* Remove rounded corners */
   -moz-border-radius: 0px !important;
   -webkit-border-radius: 0px !important;
@@ -456,7 +456,7 @@ div#resource\.picture\.preview.no-preview img {
 }
 
 .cke_chrome  .cke_inner {
-  padding: 0px !important;
+  padding: 10px !important;
   background: #ededed !important;
 }
 

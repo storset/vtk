@@ -2906,6 +2906,7 @@ table.resourceInfo.revisions tr:nth-child(even) td {
 #vrtx-revisions .resourceInfo td.vrtx-revisions-buttons-column {
   font-size: 1em;
   width: 320px;
+  padding: 11px;
 } 
 
 #vrtx-revisions .resourceInfo td.vrtx-revisions-buttons-column form {

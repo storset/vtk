@@ -959,6 +959,7 @@ VrtxAdmin.prototype.publishingComplete = function publishingComplete() {
     var previewIframe = $("#previewIframe");
     previewIframe[0].src = previewIframe[0].src;
   }
+  $("#advanced-publish-settings-content").remove();
   vrtxAdm.initResourceTitleDropdown();
   vrtxAdm.initPublishingDropdown();
   vrtxAdm.adjustResourceTitle();

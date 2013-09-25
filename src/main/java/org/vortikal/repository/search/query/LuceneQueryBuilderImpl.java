@@ -57,6 +57,7 @@ import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.HierarchicalVocabulary;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.PropertySetImpl;
+import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.Vocabulary;
 import org.vortikal.repository.index.mapping.FieldNames;
@@ -88,6 +89,7 @@ import org.vortikal.repository.search.query.builders.UriTermQueryBuilder;
 import org.vortikal.repository.search.query.filter.DeletedDocsFilter;
 import org.vortikal.repository.search.query.security.QueryAuthorizationFilterFactory;
 import org.vortikal.web.RequestContext;
+import org.vortikal.web.service.Assertion;
 
 /**
  * Factory that helps in building different Lucene queries from our own query
@@ -104,6 +106,12 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
     private QueryAuthorizationFilterFactory queryAuthorizationFilterFactory;
     private PropertyTypeDefinition publishedPropDef;
     private PropertyTypeDefinition unpublishedCollectionPropDef;
+
+    private Assertion notViewUnpublishedAssertion;
+
+    public void setNotViewUnpublishedAssertion(Assertion notViewUnpublishedAssertion) {
+        this.notViewUnpublishedAssertion = notViewUnpublishedAssertion;
+    }
 
     private Filter cachedOnlyPublishedFilter;
     private Filter cachedDeletedDocsFilter;
@@ -373,14 +381,26 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
         return filter;
     }
 
+    private boolean notViewUnpublished() {
+        RequestContext requestContext = RequestContext.getRequestContext();
+        Resource resource = null;
+        try {
+            resource = requestContext.getRepository().retrieve(requestContext.getSecurityToken(),
+                    requestContext.getResourceURI(), true);
+        } catch (Exception e) {
+            return false;
+        }
+        return notViewUnpublishedAssertion.matches(requestContext.getServletRequest(), resource,
+                requestContext.getPrincipal());
+    }
+
     BooleanFilter buildDefaultExcludesFilter() {
         BooleanFilter bf = new BooleanFilter();
-        RequestContext requestContext = RequestContext.getRequestContext();
-        if (requestContext.getRequestURL().getParameter("vrtxPreviewUnpublished") == null) {
 
-            // Filter to include only published resources:
-            bf.add(this.cachedOnlyPublishedFilter, BooleanClause.Occur.MUST);
+        // Filter to include only published resources:
+        bf.add(this.cachedOnlyPublishedFilter, BooleanClause.Occur.MUST);
 
+        if (notViewUnpublished()) {
             // Filter to exclude unpublishedCollection resources:
             // Avoid using cache-wrapper for FieldValueFilter, since that can
             // lead to memory leaks in Lucene.

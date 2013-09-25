@@ -105,6 +105,7 @@
   <bean id="queryBuilder"
         class="org.vortikal.repository.search.query.LuceneQueryBuilderImpl">
     <property name="resourceTypeTree" ref="resourceTypeTree"/>
+    <property name="notViewUnpublishedAssertion" ref="notViewUnpublishedAssertion" />
     <property name="fieldValueMapper" ref="fieldValueMapper"/>
     <property name="queryAuthorizationFilterFactory" ref="queryAuthorizationFilterFactory"/>
     <property name="publishedPropDef" ref="publishedPropDef" />

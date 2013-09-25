@@ -26,11 +26,11 @@
         ${vrtx.getMsg("publish.permission.unpublished")}
     </#if>
 </span>
+<#local resourceType = "resource">
+<#if resource.collection >
+    <#local resourceType = "folder">
+</#if>
 <#if propResource?has_content && propResource.inherited >
-    <#local resourceType = "resource">
-    <#if resource.collection >
-        <#local resourceType = "folder">
-    </#if>
     <#if resource.published >
       <abbr class="tooltips delayed" title="<@vrtx.msg code="publish.unpublished.published.info.${resourceType}" />"></abbr>
     <#else> 

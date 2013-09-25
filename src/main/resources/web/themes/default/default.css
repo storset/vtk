@@ -1019,8 +1019,8 @@ ul.dropdown-shortcut-menu li.dropdown-init form.hover input[type=submit] {
   margin: 0 -5px 0 0 !important;
 }
 
-ul.dropdown-shortcut-menu li.dropdown-init:hover a,
-ul.dropdown-shortcut-menu li.dropdown-init a.hover {
+ul.dropdown-shortcut-menu.dropdown-shortcut-menu-small li.dropdown-init:hover a,
+ul.dropdown-shortcut-menu.dropdown-shortcut-menu-small li.dropdown-init a.hover {
   margin-right: -24px !important;
 }
 

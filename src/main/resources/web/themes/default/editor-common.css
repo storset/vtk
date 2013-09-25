@@ -446,7 +446,7 @@ div#resource\.picture\.preview.no-preview img {
 \*------------------------------------*/
 
 .cke_chrome {
-  border-color: #d9d9d9 !important;
+  border: none !important;
   /* Remove rounded corners */
   -moz-border-radius: 0px !important;
   -webkit-border-radius: 0px !important;
@@ -456,7 +456,7 @@ div#resource\.picture\.preview.no-preview img {
 }
 
 .cke_chrome  .cke_inner {
-  padding: 10px !important;
+  padding: 0px !important;
   background: #ededed !important;
 }
 
@@ -480,6 +480,17 @@ div#resource\.picture\.preview.no-preview img {
   padding: 10px 0 0 0 !important;
   margin: 0 !important;
   border-top: none !important;
+  box-shadow: none !important;
+}
+
+.cke_chrome .cke_resizer {
+  background: url(images/resize-ck.png) no-repeat center center !important;
+  border: none !important;
+  box-shadow: none !important;
+  display: inline-block !important;
+  width: 10px !important;
+  height: 9px !important;
+  margin: 0 !important;
 }
 
 .cke_chrome .cke_contents {

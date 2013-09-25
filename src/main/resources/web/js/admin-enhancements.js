@@ -184,7 +184,7 @@ VrtxAdmin.prototype.cacheDOMNodesForReuse = function cacheDOMNodesForReuse() {
   vrtxAdm.cachedActiveTab = vrtxAdm.cachedAppContent.find("#active-tab");
 };
 
-// TODO: these function needs a lot of seperation of concerns
+// TODO: these function needs a lot of separation of concerns
 VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocReady() {
   var vrtxAdm = this,
     _$ = vrtxAdm._$;

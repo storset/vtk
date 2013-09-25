@@ -978,6 +978,7 @@ ul.dropdown-shortcut-menu li.dropdown-init form input[type=submit] {
 ul.dropdown-shortcut-menu.dropdown-shortcut-menu-small li.dropdown-init a {
   background: url(images/dropdown-small-right.png) no-repeat top right !important;
   padding-right: 35px !important;
+  margin-right: -24px;
 }
 
 ul.dropdown-shortcut-menu li.dropdown-init:hover {
@@ -1016,6 +1017,11 @@ ul.dropdown-shortcut-menu li.dropdown-init form.hover input[type=submit] {
   background-image: url(images/dropdown-right-rollover.gif) !important;
   color: #363534 !important;
   margin: 0 -5px 0 0 !important;
+}
+
+ul.dropdown-shortcut-menu li.dropdown-init:hover a,
+ul.dropdown-shortcut-menu li.dropdown-init a.hover {
+  margin-right: -24px !important;
 }
 
 ul.dropdown-shortcut-menu.dropdown-shortcut-menu-small li.dropdown-init a.hover {
@@ -1082,6 +1088,7 @@ ul.dropdown-shortcut-menu.dropdown-shortcut-menu-small li.dropdown-init #dropdow
   width: 24px;
   height: 25px;
   top: 1px;
+  right: -24px;
 }  
 
 div.dropdown-shortcut-menu-container ul,

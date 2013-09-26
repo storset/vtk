@@ -106,13 +106,6 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
     private QueryAuthorizationFilterFactory queryAuthorizationFilterFactory;
     private PropertyTypeDefinition publishedPropDef;
     private PropertyTypeDefinition unpublishedCollectionPropDef;
-
-    private Assertion notViewUnpublishedAssertion;
-
-    public void setNotViewUnpublishedAssertion(Assertion notViewUnpublishedAssertion) {
-        this.notViewUnpublishedAssertion = notViewUnpublishedAssertion;
-    }
-
     private Filter cachedOnlyPublishedFilter;
     private Filter cachedDeletedDocsFilter;
 
@@ -381,17 +374,12 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
         return filter;
     }
 
+    /* TODO: move this away from the QueryBuilder, RequestContex should not reside here. */
     private boolean notViewUnpublished() {
-        RequestContext requestContext = RequestContext.getRequestContext();
-        Resource resource = null;
-        try {
-            resource = requestContext.getRepository().retrieve(requestContext.getSecurityToken(),
-                    requestContext.getResourceURI(), true);
-        } catch (Exception e) {
+        if (!RequestContext.exists()) {
             return false;
         }
-        return notViewUnpublishedAssertion.matches(requestContext.getServletRequest(), resource,
-                requestContext.getPrincipal());
+        return RequestContext.getRequestContext().isPreviewUnpublished();
     }
 
     BooleanFilter buildDefaultExcludesFilter() {

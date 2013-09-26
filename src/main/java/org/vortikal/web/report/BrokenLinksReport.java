@@ -311,6 +311,7 @@ public class BrokenLinksReport extends DocumentReporter {
         String published = request.getParameter(FILTER_PUBLISHED_PARAM_NAME);
         if (currentResource.getProperty(unpublishedCollectionPropDef) != null) {
             search.setUseDefaultExcludes(false);
+            search.setPreviewUnpublished(false);
             PropertyTermQuery ptq = null;
             if ("false".equals(published)) {
                 ptq = new PropertyTermQuery(this.publishedPropDef, "true", TermOperator.NE);
@@ -321,6 +322,7 @@ public class BrokenLinksReport extends DocumentReporter {
         } else if (published != null && "false".equals(published)) {
             // ONLY those NOT published
             search.setUseDefaultExcludes(false);
+            search.setPreviewUnpublished(false);
             PropertyTermQuery ptq = new PropertyTermQuery(this.publishedPropDef, "true", TermOperator.NE);
             topLevelQ.add(ptq);
         } else {

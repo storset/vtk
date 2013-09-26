@@ -118,6 +118,8 @@ public abstract class FilteredCollectionListingController implements ListingCont
      */
     protected ResultSet search(Resource collection, AndQuery baseQuery, int offset) {
         Search search = new Search();
+
+        search.setPreviewUnpublished(RequestContext.getRequestContext().isPreviewUnpublished());
         UriPrefixQuery uriQuery = new UriPrefixQuery(collection.getURI().toString(), false);
 
         // Initially no multi host search

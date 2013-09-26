@@ -363,6 +363,11 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
         // Add filters for removing default excludes if requested
         if (search.isUseDefaultExcludes()) {
             BooleanFilter bf = buildDefaultExcludesFilter();
+            
+            if(!search.isPreviewUnpublished()){
+                bf = addPreviewUnpublishedFilter(bf);
+            }
+            
             // Include ACL-filter if non-null:
             if (filter != null) {
                 bf.add(filter, BooleanClause.Occur.MUST);
@@ -374,28 +379,25 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
         return filter;
     }
 
-    /* TODO: move this away from the QueryBuilder, RequestContex should not reside here. */
-    private boolean notViewUnpublished() {
-        if (!RequestContext.exists()) {
-            return false;
-        }
-        return RequestContext.getRequestContext().isPreviewUnpublished();
-    }
-
     BooleanFilter buildDefaultExcludesFilter() {
         BooleanFilter bf = new BooleanFilter();
 
         // Filter to include only published resources:
         bf.add(this.cachedOnlyPublishedFilter, BooleanClause.Occur.MUST);
 
-        if (notViewUnpublished()) {
-            // Filter to exclude unpublishedCollection resources:
-            // Avoid using cache-wrapper for FieldValueFilter, since that can
-            // lead to memory leaks in Lucene.
+        return bf;
+    }
 
-            bf.add(new FieldValueFilter(FieldNames.getSearchFieldName(this.unpublishedCollectionPropDef, false), true),
-                    BooleanClause.Occur.MUST);
-        }
+    BooleanFilter addPreviewUnpublishedFilter(BooleanFilter bf) {
+        if(bf == null)
+            bf = new BooleanFilter();
+        
+        // Filter to exclude unpublishedCollection resources:
+        // Avoid using cache-wrapper for FieldValueFilter, since that can
+        // lead to memory leaks in Lucene.
+
+        bf.add(new FieldValueFilter(FieldNames.getSearchFieldName(this.unpublishedCollectionPropDef, false), true),
+                BooleanClause.Occur.MUST);
 
         return bf;
     }

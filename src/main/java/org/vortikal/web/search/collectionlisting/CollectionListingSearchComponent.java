@@ -118,6 +118,8 @@ public class CollectionListingSearchComponent extends QueryPartsSearchComponent 
         Query query = generateQuery(request, collection, clar, localHostBaseURL, isMultiHostSearch);
 
         Search search = new Search();
+        search.setPreviewUnpublished(RequestContext.getRequestContext().isPreviewUnpublished());
+
         search.setQuery(query);
         search.setLimit(searchLimit);
         search.setCursor(offset);

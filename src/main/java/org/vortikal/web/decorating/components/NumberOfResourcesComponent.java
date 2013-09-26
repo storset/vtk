@@ -56,6 +56,7 @@ public class NumberOfResourcesComponent extends ViewRenderingDecoratorComponent 
 
         // No sorting required, we just want count
         Search search = new Search();
+        search.setPreviewUnpublished(requestContext.isPreviewUnpublished());
         search.setLimit(1);
         search.setQuery(query);
 

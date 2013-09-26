@@ -186,14 +186,15 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
         
         BufferedResponse bufferedResponse = new BufferedResponse(this.maxDocumentSize);
 
+        int status = HttpServletResponse.SC_OK;
         if (response instanceof StatusAwareResponseWrapper) {
-            int status = ((StatusAwareResponseWrapper) response).getStatus();
+            status = ((StatusAwareResponseWrapper) response).getStatus();
             bufferedResponse.setStatus(status);
         }
 
         if (view instanceof HtmlRenderer) {
             HtmlPageContent page = ((HtmlRenderer) view).render(model, requestWrapper);
-            decorate(model, request, decoratorList, page, response);
+            decorate(status, model, request, decoratorList, page, response);
 
         } else {
             try {
@@ -285,11 +286,12 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
 
             contentType = contentType + ";charset=" + characterEncoding;
         }
-        writeResponse(content.getContent().getBytes(characterEncoding), contentType, response);
+        int status = bufferedResponse.getStatus();
+        writeResponse(status, content.getContent().getBytes(characterEncoding), contentType, response);
     }
 
     @SuppressWarnings("rawtypes")
-    private void decorate(Map model, HttpServletRequest request,
+    private void decorate(int status, Map model, HttpServletRequest request,
                           List<Decorator> decoratorList, HtmlPageContent page,
                           HttpServletResponse response)
         throws Exception {
@@ -316,11 +318,11 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
 
             contentType = contentType + ";charset=" + characterEncoding;
         }
-        writeResponse(content.getContent().getBytes(characterEncoding), contentType, response);
+        writeResponse(status, content.getContent().getBytes(characterEncoding), contentType, response);
     }
 
 
-    protected void writeResponse(byte[] content,
+    protected void writeResponse(int status, byte[] content,
             String contentType, HttpServletResponse response)
             throws Exception {
         writeStaticHeaders(response);
@@ -329,6 +331,7 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
             logger.debug("Write response: Content-Length: " + content.length
                     + ", Content-Type: " + contentType);
         }
+        response.setStatus(status);
         response.setContentType(contentType);
         response.setContentLength(content.length);
         ServletOutputStream outStream = response.getOutputStream();

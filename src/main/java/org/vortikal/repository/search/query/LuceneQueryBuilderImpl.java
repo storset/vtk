@@ -365,7 +365,7 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
             BooleanFilter bf = buildDefaultExcludesFilter();
             
             if(!search.isPreviewUnpublished()){
-                bf = addPreviewUnpublishedFilter(bf);
+                bf = addUnpublishedCollectionFilter(bf);
             }
             
             // Include ACL-filter if non-null:
@@ -388,7 +388,7 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
         return bf;
     }
 
-    BooleanFilter addPreviewUnpublishedFilter(BooleanFilter bf) {
+    BooleanFilter addUnpublishedCollectionFilter(BooleanFilter bf) {
         if(bf == null)
             bf = new BooleanFilter();
         

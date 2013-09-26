@@ -304,6 +304,9 @@ public class RequestContext {
     }
 
     public boolean isPreviewUnpublished() {
+        if (servletRequest == null) {
+            return false;
+        }
         return servletRequest.getParameter("vrtxPreviewUnpublished") != null;
     }
 

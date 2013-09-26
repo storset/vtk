@@ -294,7 +294,7 @@
         <ref bean="notViewUnpublishedRefererAssertion" />
       </list>
     </property>
-    <property name="handler" ref="displayUnpublishedpPageHandler" />
+    <property name="handler" ref="displayUnpublishedPageHandler" />
     <property name="attributes">
       <map>
         <entry key="decorating.servicePredicateName" value="view-unpublished" />
@@ -312,7 +312,7 @@
         <ref bean="notViewUnpublishedRefererAssertion" />
       </list>
     </property>
-    <property name="handler" ref="displayUnpublishedpPageHandler" />
+    <property name="handler" ref="displayUnpublishedPageHandler" />
     <property name="attributes">
       <map>
         <entry key="decorating.servicePredicateName" value="view-unpublished" />
@@ -321,7 +321,7 @@
   </bean>
 
 
-  <bean id="displayUnpublishedpPageHandler" class="org.vortikal.web.display.file.DisplayResourceController">
+  <bean id="displayUnpublishedPageHandler" class="org.vortikal.web.display.file.DisplayResourceController">
     <property name="viewName" value="displayUnpublishedMessage.view" />
   </bean>
 
@@ -334,6 +334,7 @@
   </bean>
 
   <bean id="displayUnpublishedMessage.view" parent="freemarkerView">
+    <property name="status" value="404" />
     <property name="url" value="pages/unpublished-view.ftl" />
     <property name="referenceDataProviders">
       <list>

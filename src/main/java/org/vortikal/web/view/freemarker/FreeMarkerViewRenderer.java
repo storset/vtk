@@ -66,6 +66,7 @@ public class FreeMarkerViewRenderer extends FreeMarkerView implements ReferenceD
     private ReferenceDataProvider[] referenceDataProviders;
     private LocaleResolver resourceLocaleResolver;
     private String repositoryID;
+    private Integer status = null;
 
 
     public void setResourceLocaleResolver(LocaleResolver resourceLocaleResolver) {
@@ -75,11 +76,16 @@ public class FreeMarkerViewRenderer extends FreeMarkerView implements ReferenceD
     public void setDebug(boolean debug) {
         this.debug = debug;
     }
+    
+    public void setStatus(int status) {
+        this.status = status;
+    }
 
     @Override
     protected void processTemplate(Template template, SimpleHash model, HttpServletResponse response)
             throws IOException, TemplateException {
-
+        if (status != null) response.setStatus(status);
+        
         if (this.debug) {
             String debugModel = model.toString();
             model.put("dumpedModel", debugModel);

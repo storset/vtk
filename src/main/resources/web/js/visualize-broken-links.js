@@ -17,17 +17,17 @@ function visualizeBrokenLinks(options) {
   urls[idx] = [];
   var context = $(selection);
   
-  // Filter out UiO design
-  var links = context.contents().find("#right-main, #total-main");
+  // Clone only content inside UiO decoration (if exists)
+  var links = context.contents().find("#right-main, #total-main").clone();
   if(!links.length) {
-    alert("UiO design should never go here.");
-    links = context.contents();
+    links = context.contents().clone();
   }
-  // Filter out components
-  links = links.find("div, span, ul").filter(":not(.vrtx-tab-menu, .vrtx-breadcrumb-menu, .vrtx-subfolder-menu, #vrtx-tags, .vrtx-tags, .vrtx-tag-cloud)")
-               .find("a." + linkClass)
-               // Filter out Vortex-links
-               .filter(":not(.vrtx-icon, .more, .vrtx-resource-open-webdav, .vrtx-message-listing-edit, .more-url, .channel, .all-comments, .all-messages, .feed-title, .vrtx-ical, .vrtx-ical-help, .vrtx-event-component-title, .vrtx-image, #vrtx-feed-link, .vrtx-title, .item-title, .comments-title)");
+  // Remove components without user content from clone
+  links.find(".last-modified, .vrtx-subfolder-menu, .vrtx-tab-menu, .vrtx-breadcrumb-menu, #vrtx-tags, .vrtx-tags, .vrtx-tags-service, .vrtx-tag-cloud").remove();
+  
+  // Get links with filtered out Vortex-links
+  links = links.find("a." + linkClass).filter(":not(.vrtx-icon, .more, .vrtx-resource-open-webdav, .vrtx-message-listing-edit, .more-url, .channel, .all-comments, .all-messages, .feed-title, .vrtx-ical, .vrtx-ical-help, .vrtx-event-component-title, .vrtx-image, #vrtx-feed-link, .vrtx-title, .item-title, .comments-title)");
+
 
   if(typeof console !== "undefined") {
     console.log(links);

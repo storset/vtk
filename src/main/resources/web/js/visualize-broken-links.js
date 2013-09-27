@@ -19,10 +19,10 @@ function visualizeBrokenLinks(options) {
   
   // Filter out listings and navigation
   var links = context.contents().find("div, ul")
-                     .filter(":not(#head-breadcrumb-container, #head, .vrtx-tab-menu, .vrtx-breadcrumb-menu, #bottomnav, #collectionListing\\.searchComponent)")
+                     .filter(":not(#head-breadcrumb-container, #head, .vrtx-tab-menu, .vrtx-breadcrumb-menu, #bottomnav, #collectionListing\.searchComponent)")
                      .find("a." + linkClass)
                      .filter(":not(.more, .vrtx-message-listing-edit, .more-url, .channel, .all-comments, .all-messages, .feed-title, .vrtx-ical, .vrtx-event-component-title, .vrtx-image, .vrtx-feed-link, .vrtx-title, .item-title)");
-  
+
   for (var i = 0, linksLength = links.length; i < linksLength; i++) {
     if (urls[idx].length == chunk) {
       idx++;

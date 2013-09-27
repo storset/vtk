@@ -20,13 +20,14 @@ function visualizeBrokenLinks(options) {
   // Filter out UiO design
   var links = context.contents().find("#right-main, #total-main");
   if(!links.length) {
+    alert("UiO design should never go here.");
     links = context.contents();
   }
   // Filter out components
   links = links.find("div, span, ul").filter(":not(.vrtx-tab-menu, .vrtx-breadcrumb-menu, .vrtx-subfolder-menu, #vrtx-tags, .vrtx-tags, .vrtx-tag-cloud)")
-                .find("a." + linkClass)
-                // Filter out Vortex-links
-                .filter(":not(.vrtx-icon, .more, .vrtx-resource-open-webdav, .vrtx-message-listing-edit, .more-url, .channel, .all-comments, .all-messages, .feed-title, .vrtx-ical, .vrtx-ical-help, .vrtx-event-component-title, .vrtx-image, #vrtx-feed-link, .vrtx-title, .item-title, .comments-title)");
+               .find("a." + linkClass)
+               // Filter out Vortex-links
+               .filter(":not(.vrtx-icon, .more, .vrtx-resource-open-webdav, .vrtx-message-listing-edit, .more-url, .channel, .all-comments, .all-messages, .feed-title, .vrtx-ical, .vrtx-ical-help, .vrtx-event-component-title, .vrtx-image, #vrtx-feed-link, .vrtx-title, .item-title, .comments-title)");
 
   if(typeof console !== "undefined") {
     console.log(links);

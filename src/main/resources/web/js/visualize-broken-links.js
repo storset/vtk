@@ -22,16 +22,19 @@ function visualizeBrokenLinks(options) {
   if(!links.length) {
     links = context.contents().clone();
   }
-  // Remove components without user content from clone
-  links.find(".last-modified, .vrtx-subfolder-menu, .vrtx-tab-menu, .vrtx-breadcrumb-menu, #vrtx-tags, .vrtx-tags, .vrtx-tags-service, .vrtx-tag-cloud").remove();
+  // Remove components without user content
+  links.find("table.vrtx-unit-listing, table.vrtx-person-listing, .vrtx-alphabetical-project-listing, .vrtx-alphabetical-master-listing, .vrtx-listing-completed-ongoing, #vrtx-events-nav, .vrtx-paging-feed-wrapper, .comments, .vrtx-subfolder-menu, .vrtx-tab-menu, .vrtx-breadcrumb-menu, #vrtx-tags, .vrtx-tags, .vrtx-tags-service, .vrtx-tag-cloud").remove();
   
-  // Get links with filtered out Vortex-links
+  // Remove all non-user content inside resources listings
+  links.find(".vrtx-resources, #vrtx-daily-events, .vrtx-master-table, .vrtx-masters, .vrtx-programs, .vrtx-programs-inactive, .vrtx-program-options, .vrtx-program-options-inactive, .vrtx-person-list-participants").find("*:not(.description) a").remove()
+  links.find(".vrtx-image-listing-container *:not(.vrtx-image-description) a").remove();
+  links.find(".vrtx-image-table *:not(.vrtx-table-description) a").remove();
+
+  // Remove all non-user content inside feed- and event-components
+  links.find(".vrtx-recent-comments *:not(.item-description) a, .vrtx-feed *:not(.item-description) a, .vrtx-event-component *:not(.vrtx-event-component-introduction) a").remove();
+  
+  // Filtered out rest of Vortex-links
   links = links.find("a." + linkClass).filter(":not(.vrtx-icon, .more, .vrtx-resource-open-webdav, .vrtx-message-listing-edit, .more-url, .channel, .all-comments, .all-messages, .feed-title, .vrtx-ical, .vrtx-ical-help, .vrtx-event-component-title, .vrtx-image, #vrtx-feed-link, .vrtx-title, .item-title, .comments-title)");
-
-
-  if(typeof console !== "undefined") {
-    console.log(links);
-  }
 
   for (var i = 0, linksLength = links.length; i < linksLength; i++) {
     if (urls[idx].length == chunk) {

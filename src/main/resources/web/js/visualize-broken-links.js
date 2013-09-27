@@ -17,11 +17,16 @@ function visualizeBrokenLinks(options) {
   urls[idx] = [];
   var context = $(selection);
   
-  // Filter out listings and navigation
-  var links = context.contents().find("div, ul")
-                     .filter(":not(#head-breadcrumb-container, #head, .vrtx-tab-menu, .vrtx-breadcrumb-menu, #bottomnav, #collectionListing\.searchComponent)")
-                     .find("a." + linkClass)
-                     .filter(":not(.vrtx-icon, .more, .vrtx-message-listing-edit, .more-url, .channel, .all-comments, .all-messages, .feed-title, .vrtx-ical, .vrtx-event-component-title, .vrtx-image, .vrtx-feed-link, .vrtx-title, .item-title)");
+  // Filter out UiO design
+  var links = context.contents().find("#right-main, #total-main");
+  if(!links.length) {
+    links = context.contents();
+  }
+  // Filter out components
+  links.find("div, span, ul").filter(":not(.vrtx-tab-menu, .vrtx-breadcrumb-menu, .vrtx-subfolder-menu, #vrtx-tags, .vrtx-tags, .vrtx-tag-cloud")
+       .find("a." + linkClass)
+       // Filter out Vortex-links
+       .filter(":not(.vrtx-icon, .more, .vrtx-resource-open-webdav, .vrtx-message-listing-edit, .more-url, .channel, .all-comments, .all-messages, .feed-title, .vrtx-ical, .vrtx-event-component-title, .vrtx-image, #vrtx-feed-link, .vrtx-title, .item-title, .comments-title)");
 
   if(typeof console !== "undefined") {
     console.log(links);

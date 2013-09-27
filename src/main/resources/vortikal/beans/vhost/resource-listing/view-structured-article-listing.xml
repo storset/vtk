@@ -25,6 +25,7 @@
         <value>resource:caption</value>
         <value>resource:introduction</value>
         <value>resource:hasBodyContent</value>
+        <value>resource:media</value>
         <value>numberOfComments</value>
         <value>lastModified</value>
         <value>contentLocale</value>

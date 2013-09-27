@@ -21,7 +21,11 @@ function visualizeBrokenLinks(options) {
   var links = context.contents().find("div, ul")
                      .filter(":not(#head-breadcrumb-container, #head, .vrtx-tab-menu, .vrtx-breadcrumb-menu, #bottomnav, #collectionListing\.searchComponent)")
                      .find("a." + linkClass)
-                     .filter(":not(.more, .vrtx-message-listing-edit, .more-url, .channel, .all-comments, .all-messages, .feed-title, .vrtx-ical, .vrtx-event-component-title, .vrtx-image, .vrtx-feed-link, .vrtx-title, .item-title)");
+                     .filter(":not(.vrtx-icon, .more, .vrtx-message-listing-edit, .more-url, .channel, .all-comments, .all-messages, .feed-title, .vrtx-ical, .vrtx-event-component-title, .vrtx-image, .vrtx-feed-link, .vrtx-title, .item-title)");
+
+  if(typeof console !== "undefined") {
+    console.log(links);
+  }
 
   for (var i = 0, linksLength = links.length; i < linksLength; i++) {
     if (urls[idx].length == chunk) {

@@ -16,7 +16,13 @@ function visualizeBrokenLinks(options) {
   var idx = 0;
   urls[idx] = [];
   var context = $(selection);
-  var links = context.contents().find("a." + linkClass);
+  
+  // Filter out listings and navigation
+  var links = context.contents().find("div")
+                     .filter(":not(#collectionListing\\.searchComponent)")
+                     .find("a." + linkClass)
+                     .filter(":not(.more, .vrtx-message-listing-edit, .more-url, .channel, .all-comments, .all-messages, .feed-title, .vrtx-ical, .vrtx-event-component-title, .vrtx-image, .vrtx-feed-link, .vrtx-title, .item-title)");
+  
   for (var i = 0, linksLength = links.length; i < linksLength; i++) {
     if (urls[idx].length == chunk) {
       idx++;

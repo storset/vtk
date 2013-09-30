@@ -17,9 +17,6 @@
  *   2.3 Head menu
  *   2.4 App name
  *   2.5 Footer
- * 3. App content
- *   3.1 App content grid
- *   3.2 Resource title
  *   3.3 Tabs
  *   3.4 Tab Menus
  *   3.5 Directorylisting
@@ -1363,28 +1360,22 @@ div.dropdown-shortcut-menu-container form .vrtx-button button {
 /* ^ Create dialog */
 
 .tooltips {
-  background: url(images/info-icon-grey.png) no-repeat 0 0;
-  width: 14px;
-  height: 14px;
+  background: url(images/info-icon-grey-grey-bg2.png) no-repeat 0 0;
+  width: 15px;
+  height: 15px;
   display: block;
   display: inline-block;
-  margin: 0 0 -2px 3px;
+  margin: 0 0 -3px 3px;
   cursor: pointer;
   border: none;
 }
 
 #title-container .tooltips {
-  background-image: url(images/info-icon-grey-grey-bg2.png);
-  background-size: 15px auto;
   border-bottom: none;
-  width: 15px;
-  height: 15px;
-  margin: 0 0 -3px 6px;
 }
 
 .vrtx-admin-form .tooltips {
   margin-left: 0px;
-  background: url(images/info-icon-grey-grey-darker-bg.png) no-repeat 0 0;
 }
 
 /* ^ Tooltip */

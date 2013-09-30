@@ -1185,7 +1185,9 @@ function enhanceMultipleInputFields(name, isMovable, isBrowsable, limit) { // TO
   
   // Hide add button if limit is reached or gone over
   if(len >= vrtxEditor.multipleFieldsBoxes[name].limit) {
-    $("#vrtx-" + name + "-add").hide();  
+    var moreBtn = $("#vrtx-" + name + "-add");
+    $("<p class='vrtx-" + name + "-limit-reached'>" + vrtxAdmin.multipleFormGroupingMessages.limitReached + "</p>").insertBefore(moreBtn);
+    moreBtn.hide();
   }
 
   autocompleteUsernames(".vrtx-autocomplete-username");
@@ -1214,10 +1216,7 @@ function addFormField(name, len, value, size, isBrowsable, isMovable, isDropdown
   if (isBrowsable) {
     browseButton = vrtxEditor.mustacheFacade.getMultipleInputfieldsInteractionsButton("browse", "-resource-ref", idstr, vrtxAdmin.multipleFormGroupingMessages.browse);
   }
-  // Hide add button if limit is reached
-  if(!init && (len == (vrtxEditor.multipleFieldsBoxes[name].limit - 1))) {
-    $("#vrtx-" + name + "-add").hide();
-  }
+
 
   var html = vrtxEditor.mustacheFacade.getMultipleInputfield(name, idstr, i, value, size, browseButton, removeButton, moveUpButton, moveDownButton, isDropdown);
 
@@ -1233,6 +1232,13 @@ function addFormField(name, len, value, size, isBrowsable, isMovable, isDropdown
     }
     $($.parseHTML(html, document, true)).insertBefore("#vrtx-" + name + "-add");
     autocompleteUsername(".vrtx-autocomplete-username", idstr + i);
+    
+    // Hide add button if limit is reached
+    if((len == (vrtxEditor.multipleFieldsBoxes[name].limit - 1))) {
+      var moreBtn = $("#vrtx-" + name + "-add");
+      $("<p class='vrtx-" + name + "-limit-reached'>" + vrtxAdmin.multipleFormGroupingMessages.limitReached + "</p>").insertBefore(moreBtn);
+      moreBtn.hide();
+    }
   } else {
     return html;
   }
@@ -1246,14 +1252,13 @@ function removeFormField(input) {
   var fields = parent.find(".vrtx-multipleinputfield");
   // Show add button if is within limit again
   if(fields.length === (vrtxEditor.multipleFieldsBoxes[name].limit - 1)) {
+    $(".vrtx-" + name + "-limit-reached").remove();
     $("#vrtx-" + name + "-add").show();
   } 
   var moveUpFirst = fields.filter(":first").find("button.moveup");
   var moveDownLast = fields.filter(":last").find("button.movedown");
   if (moveUpFirst.length) moveUpFirst.parent().remove();
   if (moveDownLast.length) moveDownLast.parent().remove();
-  
-
 }
 
 function swapContentTmp(moveBtn, move) {

@@ -226,8 +226,7 @@
           <property name="parameterName" value="action" />
           <property name="parameterValue" value="unpublish-resources" />
         </bean>
-        <!-- <ref bean="requiresPublishUnpublishPermissionAssertion" /> <ref bean="hasWriteUnpublishedPermissionPrincipalsAssertion" 
-          /> -->
+        <ref bean="requiresPublishUnpublishPermissionAssertion" /> 
         <ref bean="resourceInCollection" />
       </list>
     </property>
@@ -249,8 +248,7 @@
           <property name="parameterName" value="action" />
           <property name="parameterValue" value="publish-resources" />
         </bean>
-        <!-- <ref bean="requiresPublishUnpublishPermissionAssertion" /> <ref bean="hasWriteUnpublishedPermissionPrincipalsAssertion" 
-          /> -->
+        <ref bean="requiresPublishUnpublishPermissionAssertion" />
         <ref bean="resourceInCollection" />
       </list>
     </property>

@@ -950,36 +950,25 @@ VrtxEditor.prototype.initShowHide = function initShowHide() {
   var vrtxAdm = vrtxAdmin,
     _$ = vrtxAdm._$,
     vrtxEdit = this;
-
-  // Show/hide mappings for radios/booleans
-  if (!_$("#resource\\.display-aggregation\\.true").is(":checked")) {
-    _$("#vrtx-resource\\.aggregation").slideUp(0, "linear");
-  }
-  if (!_$("#resource\\.display-manually-approved\\.true").is(":checked")) {
-    _$("#vrtx-resource\\.manually-approve-from").slideUp(0, "linear");
-  }
-
-  vrtxAdm.cachedAppContent.on("click", "#resource\\.display-aggregation\\.true", function (e) {
-    if (!_$(this).is(":checked")) {
-      _$(".aggregation .vrtx-multipleinputfield").remove();
-      _$("#resource\\.aggregation").val("");
-      _$(".vrtx-aggregation-limit-reached").remove();
-      _$("#vrtx-aggregation-add").show();
+    
+  var initResetAggregationManuallyApproved = function(_$, checkboxId, name) {
+    if (!_$(checkboxId + "\\.true").is(":checked")) {
+      _$("#vrtx-resource\\." + name).slideUp(0, "linear");
     }
-    _$("#vrtx-resource\\.aggregation").slideToggle(vrtxAdm.transitionDropdownSpeed, "swing");
-    e.stopPropagation();
-  });
-
-  vrtxAdm.cachedAppContent.on("click", "#resource\\.display-manually-approved\\.true", function (e) {
-    if (!_$(this).is(":checked")) {
-      _$(".manually-approve-from .vrtx-multipleinputfield").remove();
-      _$("#resource\\.manually-approve-from").val("");
-      _$(".vrtx-manually-approve-from-limit-reached").remove();
-      _$("#vrtx-manually-approve-from-add").show();
-    }
-    _$("#vrtx-resource\\.manually-approve-from").slideToggle(vrtxAdm.transitionDropdownSpeed, "swing");
-    e.stopPropagation();
-  });
+    vrtxAdm.cachedAppContent.on("click", checkboxId + "\\.true", function (e) {
+      if (!_$(this).is(":checked")) {
+        _$("." + name + " .vrtx-multipleinputfield").remove();
+        _$("#resource\\." + name).val("");
+        _$(".vrtx-" + name + "-limit-reached").remove();
+        _$("#vrtx-" + name + "-add").show();
+      }
+      _$("#vrtx-resource\\." + name).slideToggle(vrtxAdm.transitionDropdownSpeed, "swing");
+      e.stopPropagation();
+    });
+  };
+  
+  initResetAggregationManuallyApproved(_$, "#resource\\.display-aggregation", "aggregation");
+  initResetAggregationManuallyApproved(_$, "#resource\\.display-manually-approved", "manually-approve-from");
 
   vrtxAdm.cachedAppContent.on("change", "#resource\\.courseContext\\.course-status", function (e) {
     var courseStatus = _$(this);
@@ -995,6 +984,8 @@ VrtxEditor.prototype.initShowHide = function initShowHide() {
     e.stopPropagation();
   });
   _$("#resource\\.courseContext\\.course-status").change();
+  
+  // Show/hide mappings for radios/booleans
 
   setShowHideBooleanOldEditor("#resource\\.recursive-listing\\.false, #resource\\.recursive-listing\\.unspecified",
     "#vrtx-resource\\.recursive-listing-subfolders",

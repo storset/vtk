@@ -39,7 +39,10 @@
       <#else>
         <#global baseFolder = resourceContext.parentURI?html />
       </#if>
-     </#if>
+    </#if>
+
+    <#assign aggregationInputFieldsLimitReachedMsg = vrtx.getMsg("editor.manually-approve-aggregation-limit-reached",
+                                                                 "You've reached the limit of websites to add contents from.") />
 
     <script type="text/javascript"><!--
       var MULTIPLE_INPUT_FIELD_INITIALIZED;

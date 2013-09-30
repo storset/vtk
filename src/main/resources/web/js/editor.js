@@ -963,6 +963,8 @@ VrtxEditor.prototype.initShowHide = function initShowHide() {
     if (!_$(this).is(":checked")) {
       _$(".aggregation .vrtx-multipleinputfield").remove();
       _$("#resource\\.aggregation").val("");
+      _$(".vrtx-aggregation-limit-reached").remove();
+      _$("#vrtx-aggregation-add").show();
     }
     _$("#vrtx-resource\\.aggregation").slideToggle(vrtxAdm.transitionDropdownSpeed, "swing");
     e.stopPropagation();
@@ -972,6 +974,8 @@ VrtxEditor.prototype.initShowHide = function initShowHide() {
     if (!_$(this).is(":checked")) {
       _$(".manually-approve-from .vrtx-multipleinputfield").remove();
       _$("#resource\\.manually-approve-from").val("");
+      _$(".vrtx-manually-approve-from-limit-reached").remove();
+      _$("#vrtx-manually-approve-from-add").show();
     }
     _$("#vrtx-resource\\.manually-approve-from").slideToggle(vrtxAdm.transitionDropdownSpeed, "swing");
     e.stopPropagation();

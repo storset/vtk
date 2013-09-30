@@ -129,13 +129,15 @@ public abstract class SamlService {
         if (session == null) {
             return null;
         }
-        @SuppressWarnings("unchecked")
-        Map<URL, UUID> attr = (Map<URL, UUID>) session.getAttribute(REQUEST_ID_SESSION_ATTR);
-        if (attr == null) {
-            return null;
+        synchronized (session.getId().intern()) {
+            @SuppressWarnings("unchecked")
+            Map<URL, UUID> attr = (Map<URL, UUID>) session.getAttribute(REQUEST_ID_SESSION_ATTR);
+            if (attr == null) {
+                return null;
+            }
+            url.setCollection(false);
+            return attr.get(url);
         }
-        url.setCollection(false);
-        return attr.get(url);
     }
 
 

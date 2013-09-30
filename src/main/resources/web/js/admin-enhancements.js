@@ -927,7 +927,9 @@ VrtxAdmin.prototype.globalAsyncComplete = function globalAsyncComplete() {
   var vrtxAdm = this;
   if(vrtxAdm.bodyId === "vrtx-preview") {
     var previewIframe = $("#previewIframe");
-    previewIframe[0].src = previewIframe[0].src;
+    if(previewIframe.length) {
+      previewIframe[0].src = previewIframe[0].src;
+    }
   }
   $("#advanced-publish-settings-content").remove();
   vrtxAdm.adjustResourceTitle();

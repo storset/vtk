@@ -276,7 +276,7 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
     });
     vrtxAdm.completeFormAsync({
       selector: "form#" + publishUnpublishService + "-form input[type=submit]",
-      updateSelectors: ["#resource-title", "#directory-listing"],
+      updateSelectors: ["#resource-title", "#directory-listing", ".prop-lastModified"],
       funcComplete: (isSavingBeforePublish ? function (link) { // Save async
         $(".vrtx-focus-button.vrtx-save-button input").click();
         vrtxAdm.completeFormAsyncPost({ // Publish async
@@ -402,7 +402,7 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
   
   vrtxAdm.completeFormAsync({
     selector: "#dialog-html-advanced-publish-settings-content #submitButtons input",
-    updateSelectors: ["#resource-title", "#directory-listing"],
+    updateSelectors: ["#resource-title", "#directory-listing", ".prop-lastModified"],
     post: true,
     isUndecoratedService: true,
     funcProceedCondition: function(options) {

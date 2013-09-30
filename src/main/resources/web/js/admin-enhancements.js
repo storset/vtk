@@ -900,7 +900,7 @@ VrtxAdmin.prototype.destroyStickyBar = function destroyStickyBar(wrapperId, stic
   if (wrapper.hasClass(stickyClass)) {
     wrapper.removeClass(stickyClass);
     wrapper.css("width", "auto");
-    vrtxAdm.cachedContent.css("paddingTop", "0px");
+    vrtxAdmin.cachedContent.css("paddingTop", "0px");
   }
 };
 

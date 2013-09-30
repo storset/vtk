@@ -3223,8 +3223,6 @@ VrtxAdmin.prototype.outerHTML = function outerHTML(selector, subselector) {
   }
 };
 
-
-
 /**
  * Load script Async / lazy-loading
  *

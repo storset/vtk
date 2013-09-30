@@ -187,7 +187,8 @@ VrtxImageEditor.prototype.init = function init(imageURL, imageSupported) {
     $("#app-content").on("change", "#resource-width, #resource-height", function (e) {
       var w = parseInt($.trim($("#resource-width").val()), 10);
       var h = parseInt($.trim($("#resource-height").val()), 10);
-      if (!isNaN(w) && !isNaN(h) && ((w / editor.cropWidth) <= 1)) {
+      console.log(w + " " + h + " " + editor.cropWidth + " " + editor.cropHeight);
+      if (!isNaN(w) && !isNaN(h) && ((w / editor.cropWidth) <= 1) && ((h / editor.cropHeight) <= 1) && w >= 1 && h >= 1) {
         if (w !== editor.rw) {
           if (editor.keepAspectRatio) {
             h = Math.round(w / (editor.aspectRatioOver / editor.aspectRatioUnder));
@@ -226,7 +227,7 @@ VrtxImageEditor.prototype.init = function init(imageURL, imageSupported) {
         }
         var w = isWidth ? x : y;
         var h = isWidth ? y : x;
-        if ((w / editor.cropWidth) <= 1) {
+        if (((w / editor.cropWidth) <= 1) && ((h / editor.cropHeight) <= 1) && w >= 1 && h >= 1) {
           editor.lastWidth = w;
           editor.lastHeight = h;
           $("#resource-width").val(w);

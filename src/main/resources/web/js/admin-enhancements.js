@@ -1701,11 +1701,13 @@ VrtxAdmin.prototype.updateCollectionListingInteraction = function updateCollecti
   var vrtxAdm = vrtxAdmin;
   vrtxAdm.cachedContent = vrtxAdm.cachedAppContent.find("#contents");
   vrtxAdm.cachedDirectoryListing = vrtxAdm.cachedContent.find("#directory-listing");
-  var tdCheckbox = vrtxAdm.cachedDirectoryListing.find("td.checkbox");
-  if (tdCheckbox.length) {
-    vrtxAdm.cachedDirectoryListing.find("th.checkbox").append("<input type='checkbox' name='checkUncheckAll' />");
+  if(vrtxAdm.cachedDirectoryListing.length) {
+    var tdCheckbox = vrtxAdm.cachedDirectoryListing.find("td.checkbox");
+    if (tdCheckbox.length) {
+      vrtxAdm.cachedDirectoryListing.find("th.checkbox").append("<input type='checkbox' name='checkUncheckAll' />");
+    }
+    vrtxAdm.cachedContent.find("input[type=submit]").hide();
   }
-  vrtxAdm.cachedContent.find("input[type=submit]").hide();
 };
 
 /**

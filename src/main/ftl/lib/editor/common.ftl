@@ -32,7 +32,7 @@
       moveUp: "${vrtx.getMsg('editor.move-up', 'Up')}",
       moveDown: "${vrtx.getMsg('editor.move-down', 'Down')}",
       browse: "${vrtx.getMsg('editor.browseImages', 'Browse ...')}",
-      limitReached: "${vrtx.getMsg('editor.mansually-approve-aggregation-limit-reached', 'You\'ve reached the limit of websites to add contents from.')}"
+      limitReached: "${vrtx.getMsg('editor.manually-approve-aggregation-limit-reached', 'You\'ve reached the limit of websites to add contents from.')}"
     };
 	vrtxAdmin.multipleFormGroupingPaths = {
 	  <#if fckeditorBase??>

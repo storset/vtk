@@ -22,6 +22,7 @@
  * Added adjustForParentWidth option
  * Added min-width option
  * Added class 'ac_active_parent' for active autocomplete field (to solve stacking issues with multiple fields)
+ * Added class 'wrapperClass' possibility to distinguish between different autocomplete results
  */
 
 ;

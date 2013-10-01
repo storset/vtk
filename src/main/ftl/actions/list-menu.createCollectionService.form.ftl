@@ -58,26 +58,7 @@
       <div class="vrtx-checkbox" id="vrtx-checkbox-hide-from-navigation">
         <input type="checkbox"  id="${publishBind?html}" name="${publishBind?html}" checked />
         <label for="publish"><@vrtx.msg code="property.navigation:publish" default="Publish" /></label>
-        
-        <#-- TODO: refactor with code in publish.ftl -->
-        <#assign resource = resourceContext.currentResource />
-        <#assign propResource = vrtx.getProp(resourceContext.currentResource,"unpublishedCollection")  />
-        <#if resourceContext.parentResource?exists >
-          <#assign propParent = vrtx.getProp(resourceContext.parentResource,"unpublishedCollection")  />
-        </#if>
-        <#assign notPublished = ((propResource?has_content || propParent?has_content) || !resource.published)  />
-        <#assign resourceType = "folder">
-        <#if propResource?has_content && propResource.inherited >
-           <#if resource.published >
-             <abbr class="tooltips" title="<@vrtx.msg code="publish.unpublished.published.info.${resourceType}" />"></abbr>
-          <#else> 
-            <abbr class="tooltips" title="<@vrtx.msg code="publish.unpublished.unpublishedCollection.info.${resourceType}" />"></abbr>
-          </#if>
-        <#elseif propResource?has_content && !propParent?has_content>  
-          <abbr class="tooltips" title="<@vrtx.msg code="unpublishedCollection.info" />"></abbr>
-        <#elseif propParent?has_content >
-          <abbr class="tooltips" title="<@vrtx.msg code="publish.unpublished.unpublishedCollection.info.${resourceType}" />"></abbr>
-        </#if>
+        <abbr class="tooltips" title="<@vrtx.msg code="unpublishedCollection.info" />"></abbr>
       </div>
 
       <@actionsLib.genOkCancelButtons "save" "cancelAction" "actions.createCollectionService.save" "actions.createCollectionService.cancel" />

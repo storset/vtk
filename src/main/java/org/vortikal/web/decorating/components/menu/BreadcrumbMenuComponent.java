@@ -169,9 +169,6 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
         breadCrumbProvider.setService(this.menuGenerator.getViewService());
         breadCrumbProvider.setBreadcrumbName(breadcrumbName);
         breadCrumbProvider.setSkipIndexFile(false);
-        if (!requestContext.isPreviewUnpublished()) {
-            breadCrumbProvider.setIgnoreProperty(menuGenerator.getUnpublishedCollectionPropDef());
-        }
         PropertyTypeDefinition titleProp[] = new PropertyTypeDefinition[2];
         titleProp[0] = this.menuGenerator.getNavigationTitlePropDef();
         titleProp[1] = this.menuGenerator.getTitlePropDef();

@@ -1723,6 +1723,7 @@ VrtxAdmin.prototype.initializeCheckUncheckAll = function initializeCheckUncheckA
   if (tdCheckbox.length) {
     vrtxAdm.cachedDirectoryListing.find("th.checkbox").append("<input type='checkbox' name='checkUncheckAll' />");
   }
+  // Check / uncheck all
   vrtxAdm.cachedAppContent.on("click", "th.checkbox input", function (e) {
     var trigger = this;
     var checkAll = trigger.checked;
@@ -1739,6 +1740,7 @@ VrtxAdmin.prototype.initializeCheckUncheckAll = function initializeCheckUncheckA
     });
     e.stopPropagation();
   });
+  // Check / uncheck single
   vrtxAdm.cachedAppContent.on("click", "td.checkbox input", function (e) {
     $(this).closest("tr").toggleClass("checked");
     e.stopPropagation();

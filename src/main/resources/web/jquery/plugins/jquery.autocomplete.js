@@ -430,6 +430,7 @@
     inputClass: "ac_input",
     resultsClass: "ac_results",
     loadingClass: "ac_loading",
+    wrapperClass: "",
     minChars: 1,
     delay: 400,
     matchCase: false,
@@ -612,7 +613,7 @@
     function init() {
       if (!needsInit)
         return;
-      element = $("<div/>").hide().addClass(options.resultsClass).css("position", "absolute").appendTo(document.body);
+      element = $("<div/>").hide().addClass(options.resultsClass).addClass(options.wrapperClass).css("position", "absolute").appendTo(document.body);
 
       list = $("<ul/>").appendTo(element).mouseover( function(event) {
         if (target(event).nodeName && target(event).nodeName.toUpperCase() == 'LI') {

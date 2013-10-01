@@ -359,21 +359,21 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
                 logger.debug("ACL filter: " + filter + " for token " + token);
             }
         }
-
+        BooleanFilter bf = null;
         // Add filters for removing default excludes if requested
         if (search.isUseDefaultExcludes()) {
-            BooleanFilter bf = buildDefaultExcludesFilter();
-            
-            if(!search.isPreviewUnpublished()){
-                bf = addUnpublishedCollectionFilter(bf);
-            }
-            
+             bf = buildDefaultExcludesFilter();
+                        
             // Include ACL-filter if non-null:
             if (filter != null) {
                 bf.add(filter, BooleanClause.Occur.MUST);
             }
 
             filter = bf;
+        }
+        
+        if(!search.isPreviewUnpublished()){
+            filter = addUnpublishedCollectionFilter(bf);
         }
 
         return filter;
@@ -389,9 +389,9 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
     }
 
     BooleanFilter addUnpublishedCollectionFilter(BooleanFilter bf) {
-        if(bf == null)
+        if (bf == null)
             bf = new BooleanFilter();
-        
+
         // Filter to exclude unpublishedCollection resources:
         // Avoid using cache-wrapper for FieldValueFilter, since that can
         // lead to memory leaks in Lucene.

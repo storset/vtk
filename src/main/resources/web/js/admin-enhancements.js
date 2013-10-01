@@ -1722,27 +1722,27 @@ VrtxAdmin.prototype.initializeCheckUncheckAll = function initializeCheckUncheckA
   var tdCheckbox = vrtxAdm.cachedDirectoryListing.find("td.checkbox");
   if (tdCheckbox.length) {
     vrtxAdm.cachedDirectoryListing.find("th.checkbox").append("<input type='checkbox' name='checkUncheckAll' />");
-    vrtxAdm.cachedAppContent.on("click", "th.checkbox input", function (e) {
-      var trigger = this;
-      var checkAll = trigger.checked;
-
-      $(trigger).closest("table").find("tbody tr").filter(function (idx) {
-        var name = "checked";
-        if (checkAll) {
-          $(this).filter(":not(." + name + ")").addClass(name)
-                 .find("td.checkbox input").attr(name, true).change();
-        } else {
-          $(this).filter("." + name).removeClass(name)
-                 .find("td.checkbox input").attr(name, false).change();
-        }
-      });
-      e.stopPropagation();
-    });
-    vrtxAdm.cachedAppContent.on("click", "td.checkbox input", function (e) {
-      $(this).closest("tr").toggleClass("checked");
-      e.stopPropagation();
-    });
   }
+  vrtxAdm.cachedAppContent.on("click", "th.checkbox input", function (e) {
+    var trigger = this;
+    var checkAll = trigger.checked;
+
+    $(trigger).closest("table").find("tbody tr").filter(function (idx) {
+      var name = "checked";
+      if (checkAll) {
+        $(this).filter(":not(." + name + ")").addClass(name)
+               .find("td.checkbox input").attr(name, true).change();
+      } else {
+        $(this).filter("." + name).removeClass(name)
+               .find("td.checkbox input").attr(name, false).change();
+      }
+    });
+    e.stopPropagation();
+  });
+  vrtxAdm.cachedAppContent.on("click", "td.checkbox input", function (e) {
+    $(this).closest("tr").toggleClass("checked");
+    e.stopPropagation();
+  });
 };
 
 /**

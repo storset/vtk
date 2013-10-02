@@ -14,17 +14,17 @@
 /*
  * Extensions added by USIT for Vortex
  * 
- * Added RIGHTARROW & SPACE as selection keys
- * Added option "resultsBeforeScroll" (defines minimum nr of hits before scrollbar is added to dropdown)
- * Added class when submit is blocked in FF for use externally (removed when intercepted in reroute-function in admin-enhancements and toggled off and does not interfere with anything else)
- * Added option "adjustForParentWidth"
- * Added option "min-width"
- * Added class "ac_active_parent" for active autocomplete field (to solve stacking issues with multiple fields)
- * Added class "wrapperClass" possibility to distinguish between different autocomplete results
- * Added class "ac_more" for special case in result (if formatted starts with "###MORE###LINK###")
- * Added option "infiniteScroll" for turning on / off scroll to top from bottom and vice versa (set default to off)
- * Added string constants in CLASSES object-literal for all CSS classes inside $.Autocompleter.Select
- * Added parameter "term" to formatResult
+ * [???. ????] Added RIGHTARROW & SPACE as selection keys
+ * [???. ????] Added option "resultsBeforeScroll" (defines minimum nr of hits before scrollbar is added to dropdown)
+ * [???. ????] Added class when submit is blocked in FF for use externally (removed when intercepted in reroute-function in admin-enhancements and toggled off and does not interfere with anything else)
+ * [???. ????] Added option "adjustForParentWidth"
+ * [???. ????] Added option "min-width"
+ * [???. ????] Added class "ac_active_parent" for active autocomplete field (to solve stacking issues with multiple fields)
+ * [Oct. 2013] Added option "wrapperClass" possibility to distinguish between different autocomplete results
+ * [Oct. 2013] Added class "ac_more" for special case in result (if formatted starts with "###MORE###LINK###")
+ * [Oct. 2013] Added option "infiniteScroll" for turning on / off scroll to top from bottom and vice versa (set default to off)
+ * [Oct. 2013] Added string constants in CLASSES object-literal for all CSS classes inside $.Autocompleter.Select
+ * [Oct. 2013] Added parameter "term" to formatResult
  */
 
 ;

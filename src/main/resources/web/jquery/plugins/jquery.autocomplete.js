@@ -683,7 +683,7 @@
       if (active < 0) {
         active = !options.finiteScroll ? realLength : 0;
       } else if (active > realLength) {
-        active =  !options.finiteScroll ? 0 : realLength;
+        active = !options.finiteScroll ? 0 : realLength;
       }
     }
 

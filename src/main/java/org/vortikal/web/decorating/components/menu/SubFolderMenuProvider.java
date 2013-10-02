@@ -115,6 +115,7 @@ public class SubFolderMenuProvider {
         query.add(new TypeTermQuery("collection", TermOperator.IN));
 
         Search search = new Search();
+        search.setPreviewUnpublished(requestContext.isPreviewUnpublished());
         search.setLimit(this.collectionDisplayLimit);
         search.setQuery(query);
 

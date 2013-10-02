@@ -146,6 +146,7 @@ public class ManuallyApproveResourcesSearcher {
             Query query = generateQuery(locationURL, resourceTypeQuery, clar, localHostURL, isMultiHostSearch);
 
             Search search = new Search();
+            search.setPreviewUnpublished(RequestContext.getRequestContext().isPreviewUnpublished());
             search.setQuery(query);
             search.setLimit(SEARCH_LIMIT);
             search.setSorting(sorting);
@@ -302,6 +303,7 @@ public class ManuallyApproveResourcesSearcher {
             if (!localPathsAsStringSet.isEmpty()) {
                 UriSetQuery uriSetQuery = new UriSetQuery(localPathsAsStringSet, TermOperator.IN);
                 Search search = new Search();
+                search.setPreviewUnpublished(RequestContext.getRequestContext().isPreviewUnpublished());
                 search.setQuery(uriSetQuery);
                 ResultSet rs = repository.search(token, search);
                 alreadyApprovedResources.addAll(rs.getAllResults());

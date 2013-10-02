@@ -185,8 +185,9 @@ public class HtmlUtil {
 
                 String entity = null;
                 while (j < content.length()) {
-                    boolean validChar = validEntityCharAtIndex(content, j);
-                    if (!validChar && content.charAt(j) == ';' && j > i + 1) {
+                    char next = content.charAt(j);
+                    boolean validChar = validEntityChar(next);
+                    if (!validChar && next == ';' && j > i + 1) {
                         entity = content.substring(i + 1, j);
                         i = j;
                         break;
@@ -196,9 +197,9 @@ public class HtmlUtil {
                     j++;
                 }
                 if (entity != null) {
-                    String entityMapping =  this.htmlEntityMap.get(entity);
-                    if (entityMapping != null) {
-                        result.append(entityMapping);
+                    String mapped = mapEntity(entity);
+                    if (mapped != null) {
+                        result.append(mapped);
                     } else {
                         result.append("&").append(entity).append(";");
                     }
@@ -209,16 +210,27 @@ public class HtmlUtil {
         }
         return result;
     }
+    
+    private String mapEntity(String entity) {
+        if (entity.startsWith("#")) {
+            try {
+                entity = entity.startsWith("#x") || entity.startsWith("#X") ?
+                        "0" + entity.substring(1) : entity.substring(1);
+                int codePoint = Integer.decode(entity);
+                char[] ref = Character.toChars(codePoint);
+                return new String(ref);
+            } catch (Exception e) {
+                return null;
+            }
+        }
+        return htmlEntityMap.get(entity);
+    }
 
-    private boolean validEntityCharAtIndex(String content, int i) {
-        if (i >= content.length())
-            return false;
-        char c = content.charAt(i);
-        return i < content.length() && c != ';'
-                && ('#' == c || 
-                    ('a' <= c && 'z' >= c) || 
-                    ('A' <= c && 'Z' >= c) || 
-                    ('0' <= c && '9' >= c));
+    private boolean validEntityChar(char c) {
+        return c != ';' && ('#' == c || 
+                ('a' <= c && 'z' >= c) || 
+                ('A' <= c && 'Z' >= c) || 
+                ('0' <= c && '9' >= c));
     }
 
     public void setHtmlParser(HtmlPageParser htmlParser) {

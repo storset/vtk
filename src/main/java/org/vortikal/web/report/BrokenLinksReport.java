@@ -73,6 +73,12 @@ public class BrokenLinksReport extends DocumentReporter {
     private PropertyTypeDefinition sortPropDef;
     private PropertyTypeDefinition publishedPropDef;
     private PropertyTypeDefinition indexFilePropDef;
+    private PropertyTypeDefinition unpublishedCollectionPropDef;
+
+    public void setUnpublishedCollectionPropDef(PropertyTypeDefinition unpublishedCollectionPropDef) {
+        this.unpublishedCollectionPropDef = unpublishedCollectionPropDef;
+    }
+
     private SortFieldDirection sortOrder;
     private Parser parser;
     private String queryFilterExpression;
@@ -303,9 +309,20 @@ public class BrokenLinksReport extends DocumentReporter {
 
         // Published (true|false)
         String published = request.getParameter(FILTER_PUBLISHED_PARAM_NAME);
-
-        if (published != null && "false".equals(published)) {
+        if (currentResource.getProperty(unpublishedCollectionPropDef) != null) {
+            search.setUseDefaultExcludes(false);
+            search.setPreviewUnpublished(false);
+            PropertyTermQuery ptq = null;
+            if ("false".equals(published)) {
+                ptq = new PropertyTermQuery(this.publishedPropDef, "true", TermOperator.NE);
+            } else {
+                ptq = new PropertyTermQuery(this.publishedPropDef, "true", TermOperator.EQ);
+            }
+            topLevelQ.add(ptq);
+        } else if (published != null && "false".equals(published)) {
             // ONLY those NOT published
+            search.setUseDefaultExcludes(false);
+            search.setPreviewUnpublished(false);
             PropertyTermQuery ptq = new PropertyTermQuery(this.publishedPropDef, "true", TermOperator.NE);
             topLevelQ.add(ptq);
         } else {

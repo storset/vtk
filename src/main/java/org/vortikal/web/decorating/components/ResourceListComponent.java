@@ -67,6 +67,7 @@ public class ResourceListComponent extends ViewRenderingDecoratorComponent {
             query.add(new UriPrefixQuery(folder.toString()));
 
             Search search = new Search();
+            search.setPreviewUnpublished(requestContext.isPreviewUnpublished());
             if (maxItems != null) {
                 try {
                     search.setLimit(Integer.parseInt(maxItems));

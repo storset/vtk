@@ -622,7 +622,7 @@ a:hover {
   margin:  0 0 15px 36px;
   float: left;
   min-width: 85px; /* at least as wide as 'Endre navn' in dropdown + 15px */
-  max-width: 40%;
+  max-width: 35%;
 }
 #resource-title h1 .title-split {
   display: block;
@@ -735,6 +735,8 @@ td.vrtx-report-broken-links ul li,
 #editor-button-row li,
 ul.manage-create,
 ul.manage-create li,
+ul.publishing-document,
+ul.publishing-document li,
 #locale-selection ul,
 #locale-selection ul li,
 #collection-more-menu ul,
@@ -750,6 +752,10 @@ ul.manage-create li,
 #collection-more-menu,
 #editor-menu-wrapper,
 #editor-button-row {
+  display: inline-block;
+}
+
+ul.publishing-document {
   display: inline-block;
 }
 
@@ -880,6 +886,15 @@ ul.dropdown-shortcut-menu li a,
   margin: 0 -5px 0 0;
 }
 
+ul.dropdown-shortcut-menu.dropdown-shortcut-menu-small li a {
+  height: 21px;
+  padding: 4px 12px 0 11px;
+}
+
+ul.dropdown-shortcut-menu.dropdown-shortcut-menu-small {
+  padding-right: 25px;
+}
+
 #resourceMenuLeft li form input[type=submit] {
   height: 28px;
   padding-top: 1px;
@@ -950,22 +965,44 @@ ul.dropdown-shortcut-menu li.dropdown-init.first {
   background-position: 0 0;
 }
 
+ul.dropdown-shortcut-menu.dropdown-shortcut-menu-small li.dropdown-init {
+  background-image: url(images/button-small-left.png);
+}
+
 ul.dropdown-shortcut-menu li.dropdown-init a,
 ul.dropdown-shortcut-menu li.dropdown-init form input[type=submit] {
   background: url(images/dropdown-right.gif) no-repeat top right !important;
   padding-right: 44px !important;
 }
 
+ul.dropdown-shortcut-menu.dropdown-shortcut-menu-small li.dropdown-init a {
+  background: url(images/dropdown-small-right.png) no-repeat top right !important;
+  padding-right: 35px !important;
+  margin-right: -24px;
+}
+
 ul.dropdown-shortcut-menu li.dropdown-init:hover {
   background-image: url(images/dropdown-left-rollover.gif) !important;
+}
+
+ul.dropdown-shortcut-menu.dropdown-shortcut-menu-small li.dropdown-init:hover {
+  background-image: url(images/button-small-left-rollover.png) !important;
 }
 
 ul.dropdown-shortcut-menu li.dropdown-init.unhover.first {
   background: url(images/dropdown-left.gif) no-repeat top left !important;
 }
 
+ul.dropdown-shortcut-menu.dropdown-shortcut-menu-small li.dropdown-init.unhover.first {
+  background: url(images/button-small-left.png) no-repeat top left !important;
+}
+
 ul.dropdown-shortcut-menu li.dropdown-init.unhover {
   background: url(images/dropdown-left.gif) no-repeat -5px 0 !important;
+}
+
+ul.dropdown-shortcut-menu.dropdown-shortcut-menu-small li.dropdown-init.unhover {
+  background: url(images/button-small-left.png) no-repeat -5px 0 !important;
 }
 
 ul.dropdown-shortcut-menu li.dropdown-init:hover a,
@@ -980,6 +1017,15 @@ ul.dropdown-shortcut-menu li.dropdown-init form.hover input[type=submit] {
   background-image: url(images/dropdown-right-rollover.gif) !important;
   color: #363534 !important;
   margin: 0 -5px 0 0 !important;
+}
+
+ul.dropdown-shortcut-menu.dropdown-shortcut-menu-small li.dropdown-init:hover a,
+ul.dropdown-shortcut-menu.dropdown-shortcut-menu-small li.dropdown-init a.hover {
+  margin-right: -24px !important;
+}
+
+ul.dropdown-shortcut-menu.dropdown-shortcut-menu-small li.dropdown-init a.hover {
+  background-image: url(images/dropdown-small-right-rollover.png) !important;
 }
 
 div.dropdown-shortcut-menu-container,
@@ -1037,6 +1083,13 @@ ul.dropdown-shortcut-menu li.dropdown-init #dropdown-shortcut-menu-click-area {
   top: 0;
   cursor: pointer
 }
+
+ul.dropdown-shortcut-menu.dropdown-shortcut-menu-small li.dropdown-init #dropdown-shortcut-menu-click-area {
+  width: 24px;
+  height: 25px;
+  top: 1px;
+  right: -24px;
+}  
 
 div.dropdown-shortcut-menu-container ul,
 div.dropdown-shortcut-menu-container ul li,
@@ -1104,15 +1157,15 @@ div.dropdown-shortcut-menu-container form .vrtx-button button {
 
 #resourceMenuRight {
   float: left;
-  width: 48%;
+  width: 53%;
   min-height: 86px;
   margin: -12px 0 20px 25px;
   padding: 0 0 0 25px;
-  overflow: hidden;
+  /* overflow: hidden; */
   background: url(images/seperator-grey-gradient-big.png) no-repeat top left;
 }
 
-#resourceMenuRight li {
+#resourceMenuRight > li {
   background: url(images/seperator-grey-gradient-big.png) no-repeat top right;  
   float: left;
   margin: 0 25px 0 0;
@@ -1129,21 +1182,21 @@ div.dropdown-shortcut-menu-container form .vrtx-button button {
   background-image: url(images/seperator-grey-gradient.png);
 }
 
-#resource-title.compact #resourceMenuRight li {
+#resource-title.compact #resourceMenuRight > li {
   background-image: url(images/seperator-grey-gradient.png);
   background-repeat: no-repeat;
   background-position: 100% 0px;
   min-height: 65px;
 }
 
-#resourceMenuRight li.last,
-#resource-title.compact #resourceMenuRight li.last {
+#resourceMenuRight > li.last,
+#resource-title.compact #resourceMenuRight > li.last {
   background: none;
   margin: 0;
   padding: 0;
 }
 
-#resourceMenuRight li h3 {
+#resourceMenuRight > li h3 {
   font-size: 1.15em;
   font-weight: bold;
   margin: 9px 0 5px 0;
@@ -1156,13 +1209,15 @@ div.dropdown-shortcut-menu-container form .vrtx-button button {
   margin-bottom: 2px;
 }
 
-#resourceMenuRight li.manage\.unlockFormService {
+#resourceMenuRight > li.publish\.globalPublishService,
+#resourceMenuRight > li.publish\.globalUnpublishService,
+#resourceMenuRight > li.manage\.unlockFormService {
   max-width: 30%;
 }
 
 #resource-title h1,
-#resourceMenuRight li.manage\.unlockFormService p, 
-#resourceMenuRight li.manage\.unlockFormService p a {
+#resourceMenuRight > li.manage\.unlockFormService p, 
+#resourceMenuRight > li.manage\.unlockFormService p a {
   white-space: pre;           /* CSS 2.0 */
   white-space: pre-wrap;      /* CSS 2.1 */
   white-space: pre-line;      /* CSS 3.0 */
@@ -1182,6 +1237,10 @@ div.dropdown-shortcut-menu-container form .vrtx-button button {
 #publishing-status span.published,
 #publishing-status span.unpublished {
   font-weight: bold;
+}
+
+#resourceMenuRight span.unpublished span {
+  font-weight: normal;
 }
 
 /* ^ Resource menus */
@@ -1233,6 +1292,11 @@ div.dropdown-shortcut-menu-container form .vrtx-button button {
 }
 
 /* Create dialog */
+
+.vrtx-create-tree .vrtx-button-small {
+  margin-top: -2px;
+  margin-bottom: -1px;
+}
 
 .vrtx-create-tree .tree-create {
   position: absolute;
@@ -1299,19 +1363,22 @@ div.dropdown-shortcut-menu-container form .vrtx-button button {
 /* ^ Create dialog */
 
 .tooltips {
-  background: url(images/info-icon-grey.png) no-repeat 0 0;
-  width: 14px;
-  height: 14px;
+  background: url(images/info-icon.png) no-repeat 0 0;
+  width: 15px;
+  height: 15px;
   display: block;
   display: inline-block;
-  margin: 0 0 -2px 3px;
+  margin: 0 0 -3px 3px;
   cursor: pointer;
   border: none;
 }
 
+#title-container .tooltips {
+  border-bottom: none;
+}
+
 .vrtx-admin-form .tooltips {
   margin-left: 0px;
-  background: url(images/info-icon-grey-grey-darker-bg.png) no-repeat 0 0;
 }
 
 /* ^ Tooltip */
@@ -1783,10 +1850,13 @@ body#vrtx-report-broken-links #directory-listing td.vrtx-report-broken-links {
 }
 
 #directory-listing td span.restricted,
-#resourceMenuRight span.restricted,
+#resourceMenuRight span.restricted {
+  color: #ed1c24;
+}
+
 #resourceMenuRight span.unpublished,
 #publishing-status span.unpublished {
-  color: #ed1c24;
+  color: #888;
 }
 
 #collectionListing\.checkUncheckAll {
@@ -1799,7 +1869,7 @@ body#vrtx-report-broken-links #directory-listing td.vrtx-report-broken-links {
 .unpublished .permissions span,
 .unpublished td.resource-type,
 .unpublished td.last-modified {
-  color: lightgray !important;
+  color: #9a9996 !important;
   font-style: italic !important;
 }
 
@@ -2590,10 +2660,6 @@ ul.property {
   margin: 0px;
 }
 
-.resourceInfo .vrtx-button-small {
-  margin-left: 2px;
-}
-
 #vrtx-admin-ownership-form {
   display: inline;
 }
@@ -2834,6 +2900,7 @@ table.resourceInfo.revisions tr:nth-child(even) td {
 #vrtx-revisions .resourceInfo td.vrtx-revisions-buttons-column {
   font-size: 1em;
   width: 320px;
+  padding: 11px;
 } 
 
 #vrtx-revisions .resourceInfo td.vrtx-revisions-buttons-column form {
@@ -3146,6 +3213,10 @@ div.vrtx-admin-form {
 
 /* Smaller font-size in resource-info tables */
 
+.resourceInfo .vrtx-button-small {
+  margin-left: 2px;
+}
+
 .resourceInfo table .vrtx-button-small input,
 .resourceInfo table .vrtx-button-small button,
 .resourceInfo table .vrtx-button-small span {
@@ -3154,7 +3225,7 @@ div.vrtx-admin-form {
 
 .resourceInfo table .vrtx-button-small span {
   height: 20px;
-  padding: 4px 11px 0 10px;
+  padding: 5px 9px 0 8px;
 }
 
 /* ^ Smaller font-size in resource-info tables */

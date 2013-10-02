@@ -98,7 +98,7 @@ $(window).load(function () {
     vrtxAdm.log({
       msg: "Editor initialized."
     });
-    storeInitPropValues($("#contents"));
+    storeInitPropValues(vrtxAdm.cachedContent);
   });
 
   // CTRL+S save inside CKEditor
@@ -132,6 +132,8 @@ $(document).ready(function () {
 
   var vrtxAdm = vrtxAdmin,
     _$ = vrtxAdm._$;
+    
+  vrtxAdm.cacheDOMNodesForReuse();
 
   // When ui-helper-hidden class is added => we need to add 'first'-class to next element (if it is not last and first of these)
   vrtxEdit.editorForm.find(".ui-helper-hidden").filter(":not(:last)").filter(":first").next().addClass("first");
@@ -166,10 +168,9 @@ vrtxEditor.CKEditorToolbars.completeToolbar = [['PasteText', 'PasteFromWord', '-
                                               ['Link', 'Unlink', 'Anchor'], 
                                               ['Image', 'CreateDiv', 'MediaEmbed', 'Table',
                                               'HorizontalRule', 'SpecialChar'], ['Maximize'], ['Source'],
-                                              ['Bold', 'Italic', 'Strike', 'Subscript', 'Superscript', 'TextColor', '-', 'RemoveFormat'] ,
+                                              '/', ['Format'], ['Bold', 'Italic', 'Strike', 'Subscript', 'Superscript', 'TextColor', '-', 'RemoveFormat'] ,
                                               ['NumberedList',
-                                              'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote'],
-                                              ['Format']];
+                                              'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote']];
 
 vrtxEditor.CKEditorToolbars.studyToolbar = [['Source', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo', '-', 'Replace',
                                         'RemoveFormat', '-', 'Link', 'Unlink', 'Studyreferencecomponent', 'Anchor',
@@ -195,10 +196,9 @@ vrtxEditor.CKEditorToolbars.completeToolbarOld = [['PasteText', 'PasteFromWord',
                                               ['Link', 'Unlink', 'Anchor'], 
                                               ['Image', 'CreateDiv', 'MediaEmbed', 'Table',
                                               'HorizontalRule', 'SpecialChar'], ['Maximize'], ['Source'],
-                                              ['Bold', 'Italic', 'Strike', 'Subscript', 'Superscript', 'TextColor', '-', 'RemoveFormat'] ,
+                                              '/', ['Format'], ['Bold', 'Italic', 'Strike', 'Subscript', 'Superscript', 'TextColor', '-', 'RemoveFormat'] ,
                                               ['NumberedList',
-                                              'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote'],
-                                              ['Format']];
+                                              'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote']];
 
 vrtxEditor.CKEditorToolbars.commentsToolbar = [['Source', 'PasteText', 'Bold',
                                            'Italic', 'Strike', 'NumberedList',
@@ -664,7 +664,7 @@ VrtxEditor.prototype.addSaveHelpCKMaximized = function addSaveHelpCKMaximized() 
     var stickyBar = _$("#vrtx-editor-title-submit-buttons");
     stickyBar.hide();
     
-    $("body").addClass("forms-new");
+    vrtxAdm.cachedBody.addClass("forms-new");
 
     var ckInject = _$(this).closest(".cke_reset")
       .find(".cke_toolbar_end:last");
@@ -725,7 +725,7 @@ function unsavedChangesInEditor() {
   }
   
   var vrtxEdit = vrtxEditor;
-  var contents = $("#contents");
+  var contents = vrtxAdmin.cachedContent;
 
   var currentStateOfInputFields = contents.find("input").not("[type=submit]").not("[type=button]")
     .not("[type=checkbox]").not("[type=radio]"),
@@ -775,7 +775,7 @@ function validTextLengthsInEditor(isOldEditor) {
     CK_NEW = ".vrtx-simple-html, .vrtx-simple-html-small", // aka. textareas
     CK_OLD = "textarea:not(#resource\\.content)";
 
-  var contents = $("#contents");
+  var contents = vrtxAdmin.cachedContent;
 
   var validTextLengthsInEditorErrorFunc = validTextLengthsInEditorError; // Perf.
 
@@ -849,11 +849,11 @@ VrtxEditor.prototype.initPreviewImage = function initPreviewImage() {
   }
 
   /* Inputfield events for image preview */
-  _$(document).on("blur", "input.preview-image-inputfield", function (e) {
+  vrtxAdmin.cachedDoc.on("blur", "input.preview-image-inputfield", function (e) {
     previewImage(this.id);
   });
 
-  _$(document).on("keydown", "input.preview-image-inputfield", _$.debounce(50, true, function (e) { // ENTER-key
+  vrtxAdmin.cachedDoc.on("keydown", "input.preview-image-inputfield", _$.debounce(50, true, function (e) { // ENTER-key
     if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
       previewImage(this.id);
       e.preventDefault();
@@ -950,32 +950,25 @@ VrtxEditor.prototype.initShowHide = function initShowHide() {
   var vrtxAdm = vrtxAdmin,
     _$ = vrtxAdm._$,
     vrtxEdit = this;
-
-  // Show/hide mappings for radios/booleans
-  if (!_$("#resource\\.display-aggregation\\.true").is(":checked")) {
-    _$("#vrtx-resource\\.aggregation").slideUp(0, "linear");
-  }
-  if (!_$("#resource\\.display-manually-approved\\.true").is(":checked")) {
-    _$("#vrtx-resource\\.manually-approve-from").slideUp(0, "linear");
-  }
-
-  vrtxAdm.cachedAppContent.on("click", "#resource\\.display-aggregation\\.true", function (e) {
-    if (!_$(this).is(":checked")) {
-      _$(".aggregation .vrtx-multipleinputfield").remove();
-      _$("#resource\\.aggregation").val("");
+    
+  var initResetAggregationManuallyApproved = function(_$, checkboxId, name) {
+    if (!_$(checkboxId + "\\.true").is(":checked")) {
+      _$("#vrtx-resource\\." + name).slideUp(0, "linear");
     }
-    _$("#vrtx-resource\\.aggregation").slideToggle(vrtxAdm.transitionDropdownSpeed, "swing");
-    e.stopPropagation();
-  });
-
-  vrtxAdm.cachedAppContent.on("click", "#resource\\.display-manually-approved\\.true", function (e) {
-    if (!_$(this).is(":checked")) {
-      _$(".manually-approve-from .vrtx-multipleinputfield").remove();
-      _$("#resource\\.manually-approve-from").val("");
-    }
-    _$("#vrtx-resource\\.manually-approve-from").slideToggle(vrtxAdm.transitionDropdownSpeed, "swing");
-    e.stopPropagation();
-  });
+    vrtxAdm.cachedAppContent.on("click", checkboxId + "\\.true", function (e) {
+      if (!_$(this).is(":checked")) {
+        _$("." + name + " .vrtx-multipleinputfield").remove();
+        _$("#resource\\." + name).val("");
+        _$(".vrtx-" + name + "-limit-reached").remove();
+        _$("#vrtx-" + name + "-add").show();
+      }
+      _$("#vrtx-resource\\." + name).slideToggle(vrtxAdm.transitionDropdownSpeed, "swing");
+      e.stopPropagation();
+    });
+  };
+  
+  initResetAggregationManuallyApproved(_$, "#resource\\.display-aggregation", "aggregation");
+  initResetAggregationManuallyApproved(_$, "#resource\\.display-manually-approved", "manually-approve-from");
 
   vrtxAdm.cachedAppContent.on("change", "#resource\\.courseContext\\.course-status", function (e) {
     var courseStatus = _$(this);
@@ -991,6 +984,8 @@ VrtxEditor.prototype.initShowHide = function initShowHide() {
     e.stopPropagation();
   });
   _$("#resource\\.courseContext\\.course-status").change();
+  
+  // Show/hide mappings for radios/booleans
 
   setShowHideBooleanOldEditor("#resource\\.recursive-listing\\.false, #resource\\.recursive-listing\\.unspecified",
     "#vrtx-resource\\.recursive-listing-subfolders",
@@ -1185,7 +1180,9 @@ function enhanceMultipleInputFields(name, isMovable, isBrowsable, limit) { // TO
   
   // Hide add button if limit is reached or gone over
   if(len >= vrtxEditor.multipleFieldsBoxes[name].limit) {
-    $("#vrtx-" + name + "-add").hide();  
+    var moreBtn = $("#vrtx-" + name + "-add");
+    $("<p class='vrtx-" + name + "-limit-reached'>" + vrtxAdmin.multipleFormGroupingMessages.limitReached + "</p>").insertBefore(moreBtn);
+    moreBtn.hide();
   }
 
   autocompleteUsernames(".vrtx-autocomplete-username");
@@ -1214,10 +1211,7 @@ function addFormField(name, len, value, size, isBrowsable, isMovable, isDropdown
   if (isBrowsable) {
     browseButton = vrtxEditor.mustacheFacade.getMultipleInputfieldsInteractionsButton("browse", "-resource-ref", idstr, vrtxAdmin.multipleFormGroupingMessages.browse);
   }
-  // Hide add button if limit is reached
-  if(!init && (len == (vrtxEditor.multipleFieldsBoxes[name].limit - 1))) {
-    $("#vrtx-" + name + "-add").hide();
-  }
+
 
   var html = vrtxEditor.mustacheFacade.getMultipleInputfield(name, idstr, i, value, size, browseButton, removeButton, moveUpButton, moveDownButton, isDropdown);
 
@@ -1233,6 +1227,13 @@ function addFormField(name, len, value, size, isBrowsable, isMovable, isDropdown
     }
     $($.parseHTML(html, document, true)).insertBefore("#vrtx-" + name + "-add");
     autocompleteUsername(".vrtx-autocomplete-username", idstr + i);
+    
+    // Hide add button if limit is reached
+    if((len == (vrtxEditor.multipleFieldsBoxes[name].limit - 1))) {
+      var moreBtn = $("#vrtx-" + name + "-add");
+      $("<p class='vrtx-" + name + "-limit-reached'>" + vrtxAdmin.multipleFormGroupingMessages.limitReached + "</p>").insertBefore(moreBtn);
+      moreBtn.hide();
+    }
   } else {
     return html;
   }
@@ -1246,14 +1247,13 @@ function removeFormField(input) {
   var fields = parent.find(".vrtx-multipleinputfield");
   // Show add button if is within limit again
   if(fields.length === (vrtxEditor.multipleFieldsBoxes[name].limit - 1)) {
+    $(".vrtx-" + name + "-limit-reached").remove();
     $("#vrtx-" + name + "-add").show();
   } 
   var moveUpFirst = fields.filter(":first").find("button.moveup");
   var moveDownLast = fields.filter(":last").find("button.movedown");
   if (moveUpFirst.length) moveUpFirst.parent().remove();
   if (moveDownLast.length) moveDownLast.parent().remove();
-  
-
 }
 
 function swapContentTmp(moveBtn, move) {
@@ -1804,7 +1804,7 @@ function accordionContentSplitHeaderPopulators(init) {
     semesterResourceLinksItems.find(".vrtx-string input[id*=-title]").addClass("header-populators");
     semesterResourceLinksItems.find(".vrtx-json-element").addClass("header-empty-check-and");
     if(init) {
-      $(document).on("click", semesterResourceLinksItems.find(".vrtx-add-button input"), function(e) {
+      vrtxAdmin.cachedDoc.on("click", semesterResourceLinksItems.find(".vrtx-add-button input"), function(e) {
         semesterResourceLinksItems.find(".vrtx-json-element:last").addClass("header-empty-check-and"); 
       });
     }
@@ -2002,13 +2002,13 @@ VrtxEditor.prototype.initSendToApproval = function initSendToApproval() {
   var vrtxAdm = vrtxAdmin,
     _$ = vrtxAdm._$;
 
-  _$(document).on("click", "#vrtx-send-to-approval, #vrtx-send-to-approval-global", function (e) {
+  vrtxAdm.cachedDoc.on("click", "#vrtx-send-to-approval, #vrtx-send-to-approval-global", function (e) {
     vrtxEditor.openSendToApproval(this);
     e.stopPropagation();
     e.preventDefault();
   });
 
-  _$(document).on("click", "#dialog-html-send-approval-content .vrtx-focus-button", function (e) {
+  vrtxAdm.cachedDoc.on("click", "#dialog-html-send-approval-content .vrtx-focus-button", function (e) {
     vrtxEditor.saveSendToApproval(_$(this));
     e.stopPropagation();
     e.preventDefault();
@@ -2024,7 +2024,7 @@ VrtxEditor.prototype.openSendToApproval = function openSendToApproval(link) {
   if (!dialogManageCreate.length) {
     vrtxAdm.serverFacade.getHtml(link.href, {
       success: function (results, status, resp) {
-        _$("body").append("<div id='" + id + "'>" + _$(_$.parseHTML(results)).find("#contents").html() + "</div>");
+        vrtxAdm.cachedBody.append("<div id='" + id + "'>" + _$(_$.parseHTML(results)).find("#contents").html() + "</div>");
         dialogManageCreate = _$("#" + id);
         dialogManageCreate.hide();
         vrtxEditor.openSendToApprovalOpen(dialogManageCreate, link);

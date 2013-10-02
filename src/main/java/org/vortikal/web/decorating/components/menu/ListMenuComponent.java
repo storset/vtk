@@ -353,6 +353,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         }
 
         Search search = new Search();
+        search.setPreviewUnpublished(requestContext.isPreviewUnpublished());
         search.setSorting(null);
         search.setQuery(q);
         search.setLimit(this.searchLimit);

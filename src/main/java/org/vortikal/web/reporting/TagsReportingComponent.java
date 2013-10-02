@@ -224,6 +224,7 @@ public class TagsReportingComponent {
 
         // Set up index search
         Search search = new Search();
+        search.setPreviewUnpublished(requestContext.isPreviewUnpublished());
         search.setQuery(masterScopeQuery);
         search.setSorting(null);
         search.setLimit(Integer.MAX_VALUE);

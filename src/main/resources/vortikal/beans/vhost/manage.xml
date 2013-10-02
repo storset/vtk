@@ -964,11 +964,16 @@
     <property name="commandName" value="createCollectionForm" />
     <property name="commandClass" value="org.vortikal.web.actions.create.CreateCollectionCommand" />
     <property name="userTitlePropDef" ref="userTitlePropDef" />
-    <property name="hiddenPropDef" ref="hiddenPropDef" />
+    <property name="hiddenPropDef" ref="publishDatePropDef" />
     <property name="downcaseCollectionNames" value="true" />
     <property name="templateManager" ref="templates.resourceTemplateManager" />
     <property name="replaceNameChars" ref="createResource.nameReplacementMap" />
     <property name="descriptionPropDef" ref="descriptionPropDef" />
+
+    <property name="publishDatePropDef" ref="publishDatePropDef" />
+    <property name="unpublishDatePropDef" ref="unpublishDatePropDef" />
+    <property name="unpublishedCollectionPropDef" ref="unpublishedCollectionPropDef" />
+    
   </bean>
 
   <bean id="renameHandler" class="org.vortikal.web.actions.copymove.RenameController">
@@ -1108,7 +1113,6 @@
         <entry key="previewText" value-ref="previewTextView" />
         <entry key="previewText.documentTooLarge" value-ref="previewText.documentTooLargeView" />
         <entry key="previewFallback" value-ref="previewFallbackView" />
-        <entry key="publishing" value-ref="publishingView" />
       </map>
     </property>
   </bean>

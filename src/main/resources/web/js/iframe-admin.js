@@ -14,8 +14,6 @@
 
   var isPreviewMode,
       htmlTag,
-      body,
-      contents,
       appFooterHeight,
       extras = 0,
       surplusReduce,
@@ -26,6 +24,7 @@
   var crossDocComLink = new CrossDocComLink();
   crossDocComLink.setUpReceiveDataHandler(function(cmdParams, source) {
     postback = true;
+    var vrtxAdm = vrtxAdmin;
     var previewIframe = $("iframe#previewIframe")[0];
     switch(cmdParams[0]) {
       case "preview-loaded":
@@ -40,57 +39,60 @@
         var dataHeight = (cmdParams.length === 2) ? cmdParams[1] : 0;
         var newHeight = Math.min(Math.max(dataHeight, previewIframeMinHeight), 20000); // Keep height between available window pixels and 20000 pixels
         
-        if(!vrtxAdmin.isIE8) {
+        if(!vrtxAdm.isIE8) {
           var diff = newHeight - previewIframeMinHeight;
           var surplus = (appFooterHeight + 13 + 20) - surplusReduce; // +contentBottomMargin+border+contentBottomPadding+border
           if(surplus <= 0) { // If surplus have been swallowed by minimum height
-            previewLoadingComplete(previewIframe, newHeight, previewLoading, contents);
+            previewLoadingComplete(previewIframe, newHeight, previewLoading, vrtxAdm);
           } else {
             var animatedPixels = (diff > surplus) ? (previewIframeMinHeight + surplus) : newHeight;
             previewLoading.animate({height: animatedPixels + "px"}, surplusAnimationSpeed);
-            contents.animate({height: (animatedPixels + extras) + "px"}, surplusAnimationSpeed, function() {
-              previewLoadingComplete(previewIframe, newHeight, previewLoading, contents);
+            vrtxAdm.cachedContent.animate({height: (animatedPixels + extras) + "px"}, surplusAnimationSpeed, function() {
+              previewLoadingComplete(previewIframe, newHeight, previewLoading, vrtxAdm);
             });
           }
         } else {
-          previewLoadingComplete(previewIframe, newHeight, previewLoading, contents);
+          previewLoadingComplete(previewIframe, newHeight, previewLoading, vrtxAdm);
         }
         break;
       case "preview-keep-min-height":
-        previewLoadingComplete(previewIframe, previewIframeMinHeight, previewLoading, contents);
+        previewLoadingComplete(previewIframe, previewIframeMinHeight, previewLoading, vrtxAdm);
         break;
       default:
     }
   });
 
   // Remove preview-loading overlay and set height
-  function previewLoadingComplete(previewIframe, newHeight, previewLoading, contents) {
+  function previewLoadingComplete(previewIframe, newHeight, previewLoading, vrtxAdm) {
     previewIframe.style.height = newHeight + "px";
-    if(!vrtxAdmin.isIE8) {
+    if(!vrtxAdm.isIE8) {
       previewLoading.find("#preview-loading-inner").remove();
       previewLoading.fadeOut(surplusAnimationSpeed, function() {
-        contents.removeAttr('style');
+        vrtxAdm.cachedContent.removeAttr('style');
         previewLoading.remove();
       });
     } else {
-      contents.removeAttr('style');
+      vrtxAdm.cachedContent.removeAttr('style');
       previewLoading.remove();
     }
   }
 
   // Find min-height
   $(document).ready(function() {
+    var vrtxAdm = vrtxAdmin;
+  
+    vrtxAdm.cacheDOMNodesForReuse();
+  
     isPreviewMode = $("#vrtx-preview").length;
     if(isPreviewMode) {
    
       htmlTag = $("html");
-      body = $("body");
       
       // As we can't check on matchMedia and Modernizr is not included in admin yet - hide if <= IE8
-      if(vrtxAdmin.isIE8 || vrtxAdmin.isMobileWebkitDevice) {
+      if(vrtxAdm.isIE8 || vrtxAdm.isMobileWebkitDevice) {
         $("#preview-mode").hide();
       } else {
-        $(document).on("click", "#preview-mode a", function(e) {
+        vrtxAdm.cachedContent.on("click", "#preview-mode a", function(e) {
           var previewIframe = $("iframe#previewIframe")[0];
           if(!htmlTag.hasClass("mobile")) {
             $("#previewIframeWrapper").css("height", $("#previewIframe").height());
@@ -133,7 +135,7 @@
         });
 
         var waitForTheEnd = null;
-        $(document).on("click", "#preview-mode-mobile-rotate-hv", function(e) {
+        vrtxAdm.cachedContent.on("click", "#preview-mode-mobile-rotate-hv", function(e) {
           if(waitForTheEnd != null) return;
           
           $("#previewIframeInnerWrapper").stop().fadeTo(150, 0, "easeInCubic", function() {
@@ -163,32 +165,31 @@
           e.stopPropagation();
         });
       }
-   
-      $(document).on("click", "#preview-actions-print", function(e) {
+
+      vrtxAdm.cachedContent.on("click", "#preview-actions-print", function(e) {
         var previewIframe = $("iframe#previewIframe")[0];
         crossDocComLink.postCmdToIframe(previewIframe, "print");
         e.preventDefault();
         e.stopPropagation();
       });
           
-      $(document).on("click", "#preview-actions-fullscreen-toggle", function(e) {
+      vrtxAdm.cachedContent.on("click", "#preview-actions-fullscreen-toggle", function(e) {
         htmlTag.toggleClass('fullscreen-toggle-open');
         if(htmlTag.hasClass('fullscreen-toggle-open')) {
           $(this).text(fullscreenToggleClose);
-          vrtxAdmin.initStickyBar("#preview-mode-actions", "vrtx-sticky-preview-mode-actions", 2);
+          vrtxAdm.initStickyBar("#preview-mode-actions", "vrtx-sticky-preview-mode-actions", 2);
           $(window).trigger("scroll");
         } else {
           $(this).text(fullscreenToggleOpen);
-          vrtxAdmin.destroyStickyBar("#preview-mode-actions", "vrtx-sticky-preview-mode-actions");
+          vrtxAdm.destroyStickyBar("#preview-mode-actions", "vrtx-sticky-preview-mode-actions");
         }
         e.preventDefault();
         e.stopPropagation();
       });	
 
-      contents = body.find("#contents");
-      var appContentHeight = body.find("#app-content").height();
-      var appHeadWrapperHeight = body.find("#app-head-wrapper").outerHeight(true);
-      appFooterHeight = body.find("#app-footer").outerHeight(true);
+      var appContentHeight = vrtxAdm.cachedAppContent.height();
+      var appHeadWrapperHeight = vrtxAdm.cachedBody.find("#app-head-wrapper").outerHeight(true);
+      appFooterHeight = vrtxAdm.cachedBody.find("#app-footer").outerHeight(true);
       var windowHeight = $(window).outerHeight(true);
 
       var msg = $(".tabMessage-big");
@@ -204,11 +205,11 @@
         previewIframeMinHeight = availWinHeight;
       }
       
-      contents.append("<span id='preview-loading'><span id='preview-loading-inner'><span>" + previewLoadingMsg + "...</span></span></span>")
-              .css({ position: "relative",
-                     height: (previewIframeMinHeight + extras + 2) + "px" });
+      vrtxAdm.cachedContent.append("<span id='preview-loading'><span id='preview-loading-inner'><span>" + previewLoadingMsg + "...</span></span></span>")
+                           .css({ position: "relative",
+                                    height: (previewIframeMinHeight + extras + 2) + "px" });
       
-      previewLoading = contents.find("#preview-loading");
+      previewLoading = vrtxAdm.cachedContent.find("#preview-loading");
       previewLoading.css({
         height: previewIframeMinHeight + "px",
         top: extras + "px"

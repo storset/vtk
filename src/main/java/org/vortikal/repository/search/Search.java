@@ -88,6 +88,7 @@ public final class Search {
     private int limit = DEFAULT_LIMIT;
     private int cursor = 0;
     private boolean useDefaultExcludes = false;
+    private boolean previewUnpublished = false;
 
     public Search() {
         SortingImpl defaultSorting = new SortingImpl();
@@ -206,6 +207,14 @@ public final class Search {
         hash = 47 * hash + this.limit;
         hash = 47 * hash + this.cursor;
         return hash;
+    }
+    
+    public boolean isPreviewUnpublished(){
+        return previewUnpublished;
+    }
+    
+    public void setPreviewUnpublished(boolean previewUnpublished){
+        this.previewUnpublished = previewUnpublished;
     }
 
 }

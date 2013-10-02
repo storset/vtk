@@ -23,16 +23,16 @@
 <#macro addCommonScripts language oldEditor=false>
 
   <script type="text/javascript"><!--
-    var datePickerLang = "${language}";
     var tooLongFieldPre = "<@vrtx.msg code='editor.too-long-field-pre' />";
     var tooLongFieldPost = "<@vrtx.msg code='editor.too-long-field-post' />";
     
     vrtxAdmin.multipleFormGroupingMessages = {
-      add: "${vrtx.getMsg('editor.add')}",
-      remove: "${vrtx.getMsg('editor.remove')}",
-      moveUp: "${vrtx.getMsg('editor.move-up')}",
-      moveDown: "${vrtx.getMsg('editor.move-down')}",
-      browse: "${vrtx.getMsg('editor.browseImages')}"
+      add: "${vrtx.getMsg('editor.add', 'Add')}",
+      remove: "${vrtx.getMsg('editor.remove', 'Remove')}",
+      moveUp: "${vrtx.getMsg('editor.move-up', 'Up')}",
+      moveDown: "${vrtx.getMsg('editor.move-down', 'Down')}",
+      browse: "${vrtx.getMsg('editor.browseImages', 'Browse ...')}",
+      limitReached: "${vrtx.getMsg('editor.manually-approve-aggregation-limit-reached', 'You\'ve reached the limit of websites to add contents from.')}"
     };
 	vrtxAdmin.multipleFormGroupingPaths = {
 	  <#if fckeditorBase??>

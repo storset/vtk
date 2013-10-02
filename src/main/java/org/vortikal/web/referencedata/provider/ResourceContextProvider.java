@@ -52,21 +52,26 @@ import org.vortikal.web.service.Service;
 import org.vortikal.web.service.ServiceUnlinkableException;
 
 /**
- * Standard resource context model builder. Creates a model map with "standard" model data for the current resource.
+ * Standard resource context model builder. Creates a model map with "standard"
+ * model data for the current resource.
  * 
  * <p>
  * Configurable properties:
  * <ul>
- * <li><code>retrieveForProcessing</code> - boolean indicating whether to retrieve resources using the
- * <code>forProcessing</code> flag set to <code>false</code> or false. The default is <code>true</code>.
- * <li><code>getResourceFromModel</code> - boolean indicating if the provider should use the resource from the model
- * provided (<code>true</code>), or get it from the repository from the URI specified in the RequestContext. Default is
- * <code>false</code>.
- * <li><code>resourceFromModelKey</code> (only applicable when <code>getResourceFromModel</code> is <code>true</code>) -
- * the key to use when looking up the resource from the model. Default is <code>resource</code>.
- * <li><code>modelName</code> - the name to use for the submodel (default is <code>resourceContext</code>).
- * <li><code>resourceWrapperManager</code> - optional resource wrapper manager. If set, the resource will be wrapped in
- * a {@link ResourceWrapper}
+ * <li><code>retrieveForProcessing</code> - boolean indicating whether to
+ * retrieve resources using the <code>forProcessing</code> flag set to
+ * <code>false</code> or false. The default is <code>true</code>.
+ * <li><code>getResourceFromModel</code> - boolean indicating if the provider
+ * should use the resource from the model provided (<code>true</code>), or get
+ * it from the repository from the URI specified in the RequestContext. Default
+ * is <code>false</code>.
+ * <li><code>resourceFromModelKey</code> (only applicable when
+ * <code>getResourceFromModel</code> is <code>true</code>) - the key to use when
+ * looking up the resource from the model. Default is <code>resource</code>.
+ * <li><code>modelName</code> - the name to use for the submodel (default is
+ * <code>resourceContext</code>).
+ * <li><code>resourceWrapperManager</code> - optional resource wrapper manager.
+ * If set, the resource will be wrapped in a {@link ResourceWrapper}
  * </ul>
  * 
  * <p>
@@ -75,8 +80,8 @@ import org.vortikal.web.service.ServiceUnlinkableException;
  * <li><code>principal</code> - the current principal
  * <li><code>currentServiceName</code> - the name of the current service
  * <li><code>currentURI</code> - the URI of the requested resource
- * <li><code>parentURI</code> - the parent URI of the requested resource (<code>null</code>) if the current resource is
- * the root resource ('/').
+ * <li><code>parentURI</code> - the parent URI of the requested resource (
+ * <code>null</code>) if the current resource is the root resource ('/').
  * <li><code>currentResource</code> - the requested resource
  * <li><code>repositoryId</code> - the repository id
  * </ul>
@@ -109,7 +114,7 @@ public class ResourceContextProvider implements InitializingBean, ReferenceDataP
     public void setResourceWrapperManager(ResourceWrapperManager resourceWrapperManager) {
         this.resourceWrapperManager = resourceWrapperManager;
     }
-    
+
     public void setRevisionRequestParameter(String revisionRequestParameter) {
         this.revisionRequestParameter = revisionRequestParameter;
     }
@@ -125,7 +130,6 @@ public class ResourceContextProvider implements InitializingBean, ReferenceDataP
         }
     }
 
-
     @Override
     public void referenceData(Map<String, Object> model, HttpServletRequest request) throws Exception {
 
@@ -138,43 +142,45 @@ public class ResourceContextProvider implements InitializingBean, ReferenceDataP
         Principal principal = requestContext.getPrincipal();
 
         Resource resource = null;
-        Path parent = null;
+        Resource parent = null;
 
         if (this.revisionRequestParameter != null) {
             String revisionID = request.getParameter(this.revisionRequestParameter);
             if (revisionID != null) {
                 try {
                     Revision rev = null;
-                    List<Revision> revisions = repository.getRevisions(requestContext.getSecurityToken(), 
+                    List<Revision> revisions = repository.getRevisions(requestContext.getSecurityToken(),
                             requestContext.getResourceURI());
-                    for (Revision revision: revisions) {
+                    for (Revision revision : revisions) {
                         if (revisionID.equals(revision.getName())) {
                             rev = revision;
                             break;
                         }
                     }
                     if (rev != null) {
-                        resource = repository.retrieve(requestContext.getSecurityToken(), 
-                                requestContext.getResourceURI(),
-                                this.retrieveForProcessing, rev);
+                        resource = repository.retrieve(requestContext.getSecurityToken(),
+                                requestContext.getResourceURI(), this.retrieveForProcessing, rev);
                     }
-                } catch (RepositoryException e) { }
+                } catch (RepositoryException e) {
+                }
             }
         }
-        
+
         if (this.getResourceFromModel) {
             resource = (Resource) model.get(this.resourceFromModelKey);
         }
 
         if (resource == null) {
             try {
-                resource = repository.retrieve(requestContext.getSecurityToken(), 
-                        requestContext.getResourceURI(),
+                resource = repository.retrieve(requestContext.getSecurityToken(), requestContext.getResourceURI(),
                         this.retrieveForProcessing);
-            } catch (RepositoryException e) { }
+            } catch (RepositoryException e) {
+            }
         }
-        if (resource != null) {
-            parent = resource.getURI().getParent();
+        if (resource != null && !resource.getURI().isRoot()) {
+            parent = repository.retrieve(requestContext.getSecurityToken(),
+                    requestContext.getResourceURI().getParent(), this.retrieveForProcessing);
+
         }
 
         if (this.resourceWrapperManager != null && resource != null) {
@@ -186,19 +192,23 @@ public class ResourceContextProvider implements InitializingBean, ReferenceDataP
         resourceContextModel.put("principal", principal);
         resourceContextModel.put("currentResource", resource);
         resourceContextModel.put("currentURI", requestContext.getResourceURI());
-        resourceContextModel.put("parentURI", parent);
+        if (parent != null) {
+            resourceContextModel.put("parentURI", parent.getURI());
+            resourceContextModel.put("parentResource", parent);
+        }
+
         resourceContextModel.put("currentServiceName", currentService.getName());
         try {
-          resourceContextModel.put("currentServiceURL", currentService.constructURL(resource, principal));
-        } catch(ServiceUnlinkableException sue) {
-        } catch(Exception ex) {}
+            resourceContextModel.put("currentServiceURL", currentService.constructURL(resource, principal));
+        } catch (ServiceUnlinkableException sue) {
+        } catch (Exception ex) {
+        }
         resourceContextModel.put("repositoryId", repository.getId());
         resourceContextModel.put("requestContext", requestContext);
         resourceContextModel.put("repositoryReadOnly", repository.isReadOnly(requestContext.getResourceURI(), false));
 
         model.put(this.modelName, resourceContextModel);
     }
-
 
     @Override
     public String toString() {

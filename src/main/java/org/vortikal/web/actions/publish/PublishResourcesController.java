@@ -98,7 +98,6 @@ public class PublishResourcesController implements Controller {
                 }
             }
         }
-        ActionsHelper.addFailureMessages(failures, requestContext);
 
         return new ModelAndView(this.viewName);
     }

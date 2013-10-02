@@ -134,7 +134,8 @@ public class SubFolderMenuComponent extends ListMenuComponent {
         String token = requestContext.isViewUnauthenticated() ? null : requestContext.getSecurityToken(); // VTK-2460
         Repository repository = requestContext.getRepository();
 
-        Search search = buildSearch(menuRequest);
+        Search search = buildSearch(requestContext, menuRequest);
+       
         ResultSet rs = repository.search(token, search);
         if (logger.isDebugEnabled()) {
             logger.debug("Executed search: " + search + ", hits: " + rs.getSize());
@@ -147,7 +148,7 @@ public class SubFolderMenuComponent extends ListMenuComponent {
         }
     }
 
-    private Search buildSearch(MenuRequest menuRequest) {
+    private Search buildSearch(RequestContext requestContext, MenuRequest menuRequest) {
 
         Path uri = menuRequest.getCurrentCollectionUri();
 
@@ -179,6 +180,7 @@ public class SubFolderMenuComponent extends ListMenuComponent {
         mainQuery.add(includeFolders);
         mainQuery.add(new TypeTermQuery(menuRequest.getCollectionResourceType().getName(), TermOperator.IN));
         Search search = new Search();
+        search.setPreviewUnpublished(requestContext.isPreviewUnpublished());
         search.setQuery(mainQuery);
         search.setLimit(menuRequest.getSearchLimit());
         search.setPropertySelect(PropertySelect.ALL);

@@ -149,8 +149,8 @@
 }
 
 .forms-new .vrtx-button-small {
-  height: 22px;
-  background: url(/vrtx/__vrtx/static-resources/themes/default/images/button-small-left.gif) no-repeat 0 0;
+  height: 25px;
+  background: url(/vrtx/__vrtx/static-resources/themes/default/images/button-small-left.png) no-repeat 0 0;
 }
 
 .forms-new .ui-dialog .ui-dialog-buttonpane button span,
@@ -192,15 +192,15 @@
 .forms-new .vrtx-button-small span,
 .forms-new .vrtx-button-small input,
 .forms-new .vrtx-button-small button {
-  height: 20px;
-  padding: 2px 11px 0 10px;
-  background: url(/vrtx/__vrtx/static-resources/themes/default/images/button-small-right.gif) no-repeat top right;
+  height: 21px;
+  padding: 4px 11px 0 10px;
+  background: url(/vrtx/__vrtx/static-resources/themes/default/images/button-small-right.png) no-repeat top right;
 } 
 
 .forms-new .vrtx-button-small input,
 .forms-new .vrtx-button-small button {
-  height: 22px;
-  padding: 0 11px 0 10px;
+  height: 25px;
+  padding: 0 9px 3px 8px;
 }
 
 .forms-new .ui-dialog .ui-dialog-buttonpane button:hover,
@@ -217,7 +217,7 @@
 
 .forms-new .vrtx-button-small:hover,
 .forms-new .vrtx-button-small.hover {
-  background-image: url(/vrtx/__vrtx/static-resources/themes/default/images/button-small-left-rollover.gif);
+  background-image: url(/vrtx/__vrtx/static-resources/themes/default/images/button-small-left-rollover.png);
 }
 
 .forms-new .ui-dialog .ui-dialog-buttonpane button:hover span,
@@ -259,13 +259,19 @@
 .forms-new .vrtx-button-small.hover span,
 .forms-new .vrtx-button-small.hover input,
 .forms-new .vrtx-button-small.hover button {
-  background: url(/vrtx/__vrtx/static-resources/themes/default/images/button-small-right-rollover.gif) no-repeat top right;
+  background: url(/vrtx/__vrtx/static-resources/themes/default/images/button-small-right-rollover.png) no-repeat top right;
 }
 
 .forms-new .submitButtons,
 .forms-new #submitButtons {
-  padding: 15px 0 0 0;
+  padding: 20px 0 0 0;
   clear: left;
+}
+
+.forms-new .ui-dialog .submitButtons,
+.forms-new .ui-dialog #submitButtons {
+  padding: 30px 0 0 0;
+  margin: 0 0 -15px;
 }
 
 .forms-new .submitButtons .vrtx-button,
@@ -274,6 +280,10 @@
 .forms-new #submitButtons .vrtx-focus-button,
 .forms-new .ui-dialog .ui-dialog-buttonpane button {
   margin: 0 10px 0 0;
+}
+
+.forms-new .ui-dialog .cancel-is-not-a-button {
+  margin-left: 5px;
 }
 
 .forms-new .ui-dialog .ui-dialog-buttonpane button.ui-corner-all {
@@ -434,14 +444,25 @@
 
 /* Email forms */
 
+.forms-new .ui-dialog .dialog-error-msg {
+  margin: 10px 0 0;
+  color: #ed1c24;
+}
+
 .forms-new #email-approval-form {
   width: 400px;
 }
 
+.forms-new #dialog-html-advanced-publish-settings-content label,
 .forms-new #email-approval-form label {
   margin: 15px 0px 5px;
-  display: block;
+  display: inline-block;
   font-size: 1.154em;
+  width: 100%;
+}
+
+.forms-new #dialog-html-advanced-publish-settings-content label:first-child {
+  margin-top: 0px;
 }
 
 .forms-new #email-approval-form label.first {

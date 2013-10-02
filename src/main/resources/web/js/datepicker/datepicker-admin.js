@@ -4,9 +4,13 @@
  */
 
 var DATE_PICKER_INITIALIZED = $.Deferred();
-function initDatePicker(language) {
-  var contents = $("#contents");
-
+function initDatePicker(language, selector) {
+  if(typeof selector !== "undefined") {
+    var contents = $(selector);
+  } else {
+    var contents = $("#contents");
+  }
+  
   // i18n (default english)
   if (language == 'no') {
     $.datepicker.setDefaults($.datepicker.regional['no']);
@@ -16,18 +20,18 @@ function initDatePicker(language) {
   
   var dateFields = contents.find(".date");
   for(var i = 0, len = dateFields.length; i < len; i++) {
-    displayDateAsMultipleInputFields(dateFields[i].name);
+    displayDateAsMultipleInputFields(dateFields[i].name, selector);
   }
   
   // Help user with time
   contents.on("change", ".vrtx-hours input", function () {
     var hh = $(this);
-    var mm = hh.parent().nextAll(".vrtx-minutes").find("input"); // Relative to
+    var mm = hh.parent().nextAll(".vrtx-minutes").filter(":first").find("input"); // Relative to
     timeHelp(hh, mm);
   });
   contents.on("change", ".vrtx-minutes input", function () {
     var mm = $(this);
-    var hh = mm.parent().prevAll(".vrtx-hours").find("input"); // Relative to
+    var hh = mm.parent().prevAll(".vrtx-hours").filter(":first").find("input"); // Relative to
     timeHelp(hh, mm);
   });
   
@@ -50,27 +54,50 @@ function initDatePicker(language) {
   DATE_PICKER_INITIALIZED.resolve();
 }
 
-function displayDateAsMultipleInputFields(name) {
+function displayDateAsMultipleInputFields(name, selector) {
   var hours = "";
   var minutes = "";
   var date = [];
   var fieldName = name.replace(/\./g, '\\.');
 
-  var elem = $("#" + fieldName);
-
+  if(typeof selector !== "undefined") {
+    var elem = $(selector + " #" + fieldName);
+  } else {
+    var elem = $("#" + fieldName);
+  }
+  
   if (elem.length) {
     hours = extractHoursFromDate(elem[0].value);
     minutes = extractMinutesFromDate(elem[0].value)
     date = new String(elem[0].value).split(" ");
   }
 
-  var dateField = "<div class='vrtx-textfield vrtx-date'><input type='text' size='12' id='" + name + "-date' value='" + date[0] + "' /></div>";
-  var hoursField = "<div class='vrtx-textfield vrtx-hours'><input type='text' size='2' id='" + name + "-hours' value='" + hours + "' /></div>";
-  var minutesField = "<div class='vrtx-textfield vrtx-minutes'><input type='text' size='2' id='" + name + "-minutes' value='" + minutes + "' /></div>";
+  var dateField = "<div class='vrtx-textfield vrtx-date'><input type='text' maxlength='10' size='8' id='" + name + "-date' value='" + date[0] + "' /></div>";
+  var hoursField = "<div class='vrtx-textfield vrtx-hours'><input type='text' maxlength='2' size='1' id='" + name + "-hours' value='" + hours + "' /></div>";
+  var minutesField = "<div class='vrtx-textfield vrtx-minutes'><input type='text' maxlength='2' size='1' id='" + name + "-minutes' value='" + minutes + "' /></div>";
   elem.parent().hide();
   elem.parent().after(dateField + hoursField + "<span class='vrtx-time-seperator'>:</span>" + minutesField);
   $("#" + fieldName + "-date").datepicker({
-    dateFormat: 'yy-mm-dd'
+    dateFormat: 'yy-mm-dd',
+    
+    /* fix buggy IE focus functionality: 
+     * http://www.objectpartners.com/2012/06/18/jquery-ui-datepicker-ie-focus-fix/ */
+    fixFocusIE: false,
+     
+    /* blur needed to correctly handle placeholder text */
+    onSelect: function(dateText, inst) {
+      this.fixFocusIE = true;
+      $(this).blur().change().focus();
+    },
+    onClose: function(dateText, inst) {
+      this.fixFocusIE = true;
+      this.focus();
+    },
+    beforeShow: function(input, inst) {
+      var result = $.browser.msie ? !this.fixFocusIE : true;
+      this.fixFocusIE = false;
+      return result;
+    }
   });
 }
 

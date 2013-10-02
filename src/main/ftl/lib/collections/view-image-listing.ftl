@@ -72,7 +72,7 @@
           <li class="vrtx-image-entry">
         </#if>
             <div class="vrtx-image-container">
-              <a href="${imageEntry.url?html}">
+              <a href="${imageEntry.url?html}?vrtx=view-as-webpage">
                 <#-- ${vrtx.relativeLinkConstructor(imageEntry.url, 'displayThumbnailService')} is no good! -->
                 <img src="${imageEntry.url?html}?vrtx=thumbnail" title="${title}" alt="${title}" />
               </a>
@@ -81,9 +81,9 @@
             <div class="vrtx-image-info">
               <div class="vrtx-image-title">
                 <#if (title?string?length > 20) >
-                  <a href="${imageEntry.url?html}">${title?substring(0, 20)}...</a>
+                  <a href="${imageEntry.url?html}?vrtx=view-as-webpage">${title?substring(0, 20)}...</a>
                 <#else>
-                  <a href="${imageEntry.url?html}">${title}</a>
+                  <a href="${imageEntry.url?html}?vrtx=view-as-webpage">${title}</a>
                 </#if>
               </div>
               
@@ -91,6 +91,14 @@
               <div class="vrtx-image-creation-time">
                 ${creationTime}
               </div>
+
+              <#local description = vrtx.propValue(image, 'image-description')?html />
+              <div class="vrtx-image-description">
+                <#if description?has_content>
+                  <@vrtx.flattenHtml value=description escape=false />
+                </#if>
+              </div>
+
             </div>
         </li>
         <#assign count = count +1 />
@@ -130,7 +138,7 @@
           <tr>
             <th id="vrtx-table-image">${vrtx.getMsg("property.resourceType.image")}</th>
             <th id="vrtx-table-title" class="sortable-text">${vrtx.getMsg("property.title")}</th>
-            <th id="vrtx-table-description" class="sortable-text">${vrtx.getMsg("property.content:description")}</th>
+            <th id="vrtx-table-description" class="sortable-text">${vrtx.getMsg("imageListing.description")}</th>
             <th id="vrtx-table-dimensions-width" class="sortable-numeric">${vrtx.getMsg("imageListing.width")}</th>
             <th id="vrtx-table-dimensions-height" class="sortable-numeric">${vrtx.getMsg("imageListing.height")}</th>
             <th id="vrtx-table-size" class="sortable-numeric">${vrtx.getMsg("property.contentLength")}</th>
@@ -145,8 +153,8 @@
           <tr>
             <#local title = vrtx.propValue(image, 'title')?html />
             <#-- ${vrtx.relativeLinkConstructor(url, 'displayThumbnailService')} is no good! -->
-            <td class="vrtx-table-image"><a href="${url?html}"><img src="${url?html}?vrtx=thumbnail" alt="${title}" /></a></td>
-            <td class="vrtx-table-title"><a href="${url?html}">${title}</a></td>
+            <td class="vrtx-table-image"><a href="${url?html}?vrtx=view-as-webpage"><img src="${url?html}?vrtx=thumbnail" alt="${title}" /></a></td>
+            <td class="vrtx-table-title"><a href="${url?html}?vrtx=view-as-webpage">${title}</a></td>
             <#local description = vrtx.propValue(image, 'image-description')?html />
             <td class="vrtx-table-description">
               <#if description?has_content>

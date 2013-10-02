@@ -45,15 +45,15 @@ import org.vortikal.security.SecurityContext;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
-
 /**
- * Request context. Lives throughout one request, and contains the
- * servlet request, the current {@link Service} and the requested
- * resource URI. The request context can be obtained from application
- * code in the following way:
- *
- * <pre>RequestContext requestContext = RequestContext.getRequestContext();</pre>
- *
+ * Request context. Lives throughout one request, and contains the servlet
+ * request, the current {@link Service} and the requested resource URI. The
+ * request context can be obtained from application code in the following way:
+ * 
+ * <pre>
+ * RequestContext requestContext = RequestContext.getRequestContext();
+ * </pre>
+ * 
  */
 public class RequestContext {
 
@@ -69,23 +69,26 @@ public class RequestContext {
     private final boolean viewUnauthenticated;
     private List<Message> infoMessages = new ArrayList<Message>(0);
     private List<Message> errorMessages = new ArrayList<Message>(0);
-    
+
     /**
      * Creates a new request context.
-     *
-     * @param servletRequest the current servlet request
-     * @param service the resolved service
-     * @param resource the current resource (may be null)
-     * @param uri the URI of the current resource
-     * @param indexFileURI the URI of the current index file
+     * 
+     * @param servletRequest
+     *            the current servlet request
+     * @param service
+     *            the resolved service
+     * @param resource
+     *            the current resource (may be null)
+     * @param uri
+     *            the URI of the current resource
+     * @param indexFileURI
+     *            the URI of the current index file
      * @param viewUnauthenticated
-     * (<code>null</code> if no index file exists)
+     *            (<code>null</code> if no index file exists)
      */
-    public RequestContext(HttpServletRequest servletRequest,
-                          SecurityContext securityContext,
-                          Service service, Resource resource, Path uri,
-                          Path indexFileURI, boolean isIndexFile, boolean viewUnauthenticated,
-                          boolean inRepository, Repository repository) {
+    public RequestContext(HttpServletRequest servletRequest, SecurityContext securityContext, Service service,
+            Resource resource, Path uri, Path indexFileURI, boolean isIndexFile, boolean viewUnauthenticated,
+            boolean inRepository, Repository repository) {
         this.servletRequest = servletRequest;
         this.securityContext = securityContext;
         this.indexFileURI = indexFileURI;
@@ -109,13 +112,13 @@ public class RequestContext {
 
     /**
      * Creates a new request context without a resource object.
+     * 
      * @deprecated this constructor is used only in unit tests
      */
-    public RequestContext(HttpServletRequest servletRequest,
-                          Service service, Path uri) {
+    public RequestContext(HttpServletRequest servletRequest, Service service, Path uri) {
         this(servletRequest, null, service, null, uri, null, false, false, true, null);
     }
-    
+
     public static void setRequestContext(RequestContext requestContext) {
         BaseContext ctx = BaseContext.getContext();
         ctx.setAttribute(RequestContext.class.getName(), requestContext);
@@ -134,11 +137,9 @@ public class RequestContext {
      */
     public static RequestContext getRequestContext() {
         BaseContext ctx = BaseContext.getContext();
-        RequestContext requestContext = (RequestContext)
-            ctx.getAttribute(RequestContext.class.getName());
+        RequestContext requestContext = (RequestContext) ctx.getAttribute(RequestContext.class.getName());
         return requestContext;
     }
-    
 
     /**
      * Gets the current servlet request.
@@ -157,43 +158,39 @@ public class RequestContext {
     }
 
     /**
-     * Gets the current {@link Service} that this request executes
-     * under.
+     * Gets the current {@link Service} that this request executes under.
      * 
-     * @return the service, or <code>null</code> if there is no
-     * current service.
+     * @return the service, or <code>null</code> if there is no current service.
      */
     public Service getService() {
         return this.service;
     }
 
-
     /**
-     * Gets the {@link org.vortikal.repository.Resource#getURI URI}
-     * that the current request maps to.
+     * Gets the {@link org.vortikal.repository.Resource#getURI URI} that the
+     * current request maps to.
      * 
      * @return the URI of the requested resource.
      */
     public Path getResourceURI() {
         return this.resourceURI;
     }
-    
 
     /**
      * Gets the URI of the current collection. If the request is for a
-     * collection, the current collection and {@link #getResourceURI
-     * resource URI} are the same, otherwise the current collection is
-     * the nearest collection towards the root.
+     * collection, the current collection and {@link #getResourceURI resource
+     * URI} are the same, otherwise the current collection is the nearest
+     * collection towards the root.
      */
     public Path getCurrentCollection() {
         return this.currentCollection;
     }
-    
 
     /**
      * Gets the index file URI.
-     * @return the index file URI, or <code>null</code> if this is
-     * not an index file request.
+     * 
+     * @return the index file URI, or <code>null</code> if this is not an index
+     *         file request.
      */
     public Path getIndexFileURI() {
         return this.indexFileURI;
@@ -209,7 +206,7 @@ public class RequestContext {
     public List<Message> getInfoMessages() {
         return Collections.unmodifiableList(this.infoMessages);
     }
-    
+
     public void addErrorMessage(Message msg) {
         if (msg == null) {
             throw new IllegalArgumentException("Message cannot be null");
@@ -235,43 +232,44 @@ public class RequestContext {
     public boolean isIndexFile() {
         return isIndexFile;
     }
-    
+
     /**
-     * This flag will be set to <code>true</code> if request should be
-     * processed for viewing as unauthenticated principal.
+     * This flag will be set to <code>true</code> if request should be processed
+     * for viewing as unauthenticated principal.
      */
     public boolean isViewUnauthenticated() {
         return this.viewUnauthenticated;
     }
-    
+
     public boolean isInRepository() {
         return this.inRepository;
     }
-    
+
     public Repository getRepository() {
         return this.repository;
     }
-    
+
     public String getSecurityToken() {
         return this.securityContext.getToken();
     }
-    
+
     public Principal getPrincipal() {
         return this.securityContext.getPrincipal();
     }
-    
+
     public RepositoryTraversal rootTraversal(String token, Path uri) {
         return new RepositoryTraversal(this.repository, token, uri);
     }
-    
+
     public static RepositoryTraversal rootTraversal(Repository repository, String token, Path uri) {
         return new RepositoryTraversal(repository, token, uri);
     }
-    
+
     public static final class RepositoryTraversal {
         private Repository repository;
         private String token;
         private Path uri;
+
         private RepositoryTraversal(Repository repository, String token, Path uri) {
             if (repository == null) {
                 throw new IllegalArgumentException("Repository is NULL");
@@ -280,6 +278,7 @@ public class RequestContext {
             this.token = token;
             this.uri = uri;
         }
+
         public void traverse(TraversalCallback callback) {
             Path uri = this.uri;
             while (uri != null) {
@@ -297,9 +296,18 @@ public class RequestContext {
             }
         }
     }
-    
+
     public static interface TraversalCallback {
         public boolean callback(Resource resource);
+
         public boolean error(Path uri, Throwable error);
     }
+
+    public boolean isPreviewUnpublished() {
+        if (servletRequest == null) {
+            return false;
+        }
+        return servletRequest.getParameter("vrtxPreviewUnpublished") != null;
+    }
+
 }

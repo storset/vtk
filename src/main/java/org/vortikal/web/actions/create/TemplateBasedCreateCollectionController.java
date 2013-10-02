@@ -30,6 +30,7 @@
  */
 package org.vortikal.web.actions.create;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -50,6 +51,7 @@ import org.vortikal.repository.Resource;
 import org.vortikal.repository.TypeInfo;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.web.RequestContext;
+import org.vortikal.web.actions.ActionsHelper;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.templates.ResourceTemplate;
 import org.vortikal.web.templates.ResourceTemplateManager;
@@ -67,6 +69,10 @@ public class TemplateBasedCreateCollectionController extends SimpleFormControlle
     private Map<String, String> replaceNameChars;
     private String cancelView;
     private PropertyTypeDefinition descriptionPropDef;
+
+    private PropertyTypeDefinition publishDatePropDef;
+    private PropertyTypeDefinition unpublishDatePropDef;
+    private PropertyTypeDefinition unpublishedCollectionPropDef;
 
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
@@ -178,14 +184,13 @@ public class TemplateBasedCreateCollectionController extends SimpleFormControlle
         titleProp.setStringValue(title);
         dest.addProperty(titleProp);
 
-        // hiddenPropDef can only be true or not set.
-        if (createFolderCommand.getHidden()) {
-            Property hiddenProp = hiddenPropDef.createProperty();
-            hiddenProp.setBooleanValue(true);
-            dest.addProperty(hiddenProp);
+        model.put("resource", repository.store(token, dest, sc));
+
+        if (!createFolderCommand.getPublish()) {
+            ActionsHelper.unpublishResource(publishDatePropDef, unpublishedCollectionPropDef, repository, token,
+                    destinationURI, null);
         }
 
-        model.put("resource", repository.store(token, dest, sc));
         createFolderCommand.setDone(true);
 
         return new ModelAndView(getSuccessView(), model);
@@ -209,13 +214,14 @@ public class TemplateBasedCreateCollectionController extends SimpleFormControlle
         collection.addProperty(titleProp);
 
         // hiddenPropDef can only be true or not set.
-        if (createCollectionCommand.getHidden()) {
-            Property hiddenProp = hiddenPropDef.createProperty();
-            hiddenProp.setBooleanValue(true);
-            collection.addProperty(hiddenProp);
+        Resource r = repository.store(token, collection);
+
+        if (!createCollectionCommand.getPublish()) {
+            ActionsHelper.unpublishResource(publishDatePropDef, unpublishedCollectionPropDef, repository, token,
+                    newURI, null);
         }
 
-        return repository.store(token, collection);
+        return r;
     }
 
     @Override
@@ -314,6 +320,18 @@ public class TemplateBasedCreateCollectionController extends SimpleFormControlle
     @Required
     public void setDescriptionPropDef(PropertyTypeDefinition descriptionPropDef) {
         this.descriptionPropDef = descriptionPropDef;
+    }
+
+    public void setPublishDatePropDef(PropertyTypeDefinition publishDatePropDef) {
+        this.publishDatePropDef = publishDatePropDef;
+    }
+
+    public void setUnpublishDatePropDef(PropertyTypeDefinition unpublishDatePropDef) {
+        this.unpublishDatePropDef = unpublishDatePropDef;
+    }
+
+    public void setUnpublishedCollectionPropDef(PropertyTypeDefinition unpublishedCollectionPropDef) {
+        this.unpublishedCollectionPropDef = unpublishedCollectionPropDef;
     }
 
 }

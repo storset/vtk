@@ -39,7 +39,6 @@
         <ref bean="collection.hideIntroductionPropDef" />
         <ref bean="collection.hideIconPropDef" />
         <ref bean="hideNumberOfCommentsPropDef" />
-        <ref bean="obsoletedPropDef" />
         <ref bean="editorialContactsPropDef" />
         <ref bean="unpublishedCollectionPropDef"  />
       </list>
@@ -579,30 +578,6 @@
           </map>
         </entry>
       </map>
-    </property>
-  </bean>
-
-  <bean id="obsoletedPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
-    <property name="namespace" ref="DEFAULT_NAMESPACE" />
-    <property name="name" value="obsoleted" />
-    <property name="inheritable" value="true" />
-    <property name="type" value="BOOLEAN" />
-    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_ADMIN" />
-    <property name="mandatory" value="false" />
-    <property name="vocabulary">
-      <bean class="org.vortikal.repository.resourcetype.ValueVocabulary">
-        <property name="messageSourceBaseName" value="vortikal.beans.vhost.resource-types.mixins.properties.plaintext-edit" />
-        <property name="type" value="BOOLEAN" />
-        <property name="values">
-          <list>
-            <bean class="org.vortikal.repository.resourcetype.Value">
-              <constructor-arg type="boolean">
-                <value>true</value>
-              </constructor-arg>
-            </bean>
-          </list>
-        </property>
-      </bean>
     </property>
   </bean>
 

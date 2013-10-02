@@ -39,7 +39,7 @@
       <#else>
         <#global baseFolder = resourceContext.parentURI?html />
       </#if>
-     </#if>
+    </#if>
 
     <script type="text/javascript"><!--
       var MULTIPLE_INPUT_FIELD_INITIALIZED;
@@ -70,6 +70,7 @@
           if(typeof vrtxImageEditor !== "undefined" && vrtxImageEditor.save && !vrtxImageEditor.savedImage) {
             vrtxImageEditor.save(_$(this).attr("id"));
             e.preventDefault();
+            e.stopPropagation();
           }
         });
         

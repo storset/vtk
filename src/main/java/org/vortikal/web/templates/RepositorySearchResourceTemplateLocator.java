@@ -55,6 +55,7 @@ import org.vortikal.repository.search.query.TermOperator;
 import org.vortikal.repository.search.query.TypeTermQuery;
 import org.vortikal.repository.search.query.UriDepthQuery;
 import org.vortikal.repository.search.query.UriPrefixQuery;
+import org.vortikal.web.RequestContext;
 
 /**
  * Template locator which uses repository search mechanism to locate templates. 
@@ -98,7 +99,7 @@ public class RepositorySearchResourceTemplateLocator implements ResourceTemplate
         List<ResourceTemplate> templates = new ArrayList<ResourceTemplate>();
         
         Search search = new Search();
-        
+
         Query query = getQuery(baseUris, resourceTypes, recursive);
         
         search.setQuery(query);

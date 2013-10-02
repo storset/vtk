@@ -5,37 +5,38 @@
 
 <#assign resource = resourceContext.currentResource />
 
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 </head>
 <body>
-<h1><@vrtx.msg code="publishing.header" /></h1>
-<form method="POST" action="${command.submitURL?html}">
-      <div>
-        <div>
-            <@vrtx.msg code="publish.action.publish" default="Unpublish" /> 
-         </div> 
-         <div class="vrtx-textfield">
-             <@dateTimeInput "publish-date" "publishDate"/>
-         </div>
-    </div>
-    <div>
-        <div>
-            <@vrtx.msg code="publish.action.unpublish" default="Unpublish" /> 
-        </div>
-        <div class="vrtx-textfield">
-            <@dateTimeInput "unpublish-date" "unpublishDate" />
-        </div>
-    </div>
-    <div id="submitButtons" class="submitButtons">
+  <div>
+  <div id="vrtx-advanced-publish-settings-dialog">
+    <h1><@vrtx.msg code="publishing.advanced.title" /></h1>
+    <#assign actionURL = vrtx.linkConstructor("", 'publishDialog') />
+    <form method="post" action="${actionURL?html}">
+      <fieldset>
+       <label for="publishDate"><@vrtx.msg code="publishing.publish-date" default="Publish on" /> </label>
+       <div class="vrtx-textfield">
+         <@dateTimeInput "publish-date" "publishDate"/>
+       </div>
+       <label for="unpublishDate"><@vrtx.msg code="publishing.unpublish-date" default="Unpublish on" /></label>
+       <div class="vrtx-textfield">
+         <@dateTimeInput "unpublish-date" "unpublishDate" />
+       </div>
+       <@vrtx.csrfPreventionToken url=actionURL />
+       <div id="submitButtons" class="submitButtons">
           <div class="vrtx-focus-button">
             <input type="submit" id="updateAction" name="updateAction" value="${vrtx.getMsg("editor.save")}"  />
           </div>
           <div class="vrtx-button">
             <input type="submit" id="cancelAction" name="cancelAction" value="${vrtx.getMsg("editor.cancel")}" />
           </div>
-     </div>
-</form>
+       </div>
+      </fieldset>
+    </form>
+  </div>
+  </div>
 </body>
 </html>
 

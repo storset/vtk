@@ -57,6 +57,7 @@ import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.HierarchicalVocabulary;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.PropertySetImpl;
+import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.Vocabulary;
 import org.vortikal.repository.index.mapping.FieldNames;
@@ -88,6 +89,7 @@ import org.vortikal.repository.search.query.builders.UriTermQueryBuilder;
 import org.vortikal.repository.search.query.filter.DeletedDocsFilter;
 import org.vortikal.repository.search.query.security.QueryAuthorizationFilterFactory;
 import org.vortikal.web.RequestContext;
+import org.vortikal.web.service.Assertion;
 
 /**
  * Factory that helps in building different Lucene queries from our own query
@@ -104,7 +106,6 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
     private QueryAuthorizationFilterFactory queryAuthorizationFilterFactory;
     private PropertyTypeDefinition publishedPropDef;
     private PropertyTypeDefinition unpublishedCollectionPropDef;
-
     private Filter cachedOnlyPublishedFilter;
     private Filter cachedDeletedDocsFilter;
 
@@ -358,16 +359,21 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
                 logger.debug("ACL filter: " + filter + " for token " + token);
             }
         }
-
+        BooleanFilter bf = null;
         // Add filters for removing default excludes if requested
         if (search.isUseDefaultExcludes()) {
-            BooleanFilter bf = buildDefaultExcludesFilter();
+             bf = buildDefaultExcludesFilter();
+                        
             // Include ACL-filter if non-null:
             if (filter != null) {
                 bf.add(filter, BooleanClause.Occur.MUST);
             }
 
             filter = bf;
+        }
+        
+        if(!search.isPreviewUnpublished()){
+            filter = addUnpublishedCollectionFilter(bf);
         }
 
         return filter;
@@ -379,15 +385,19 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
         // Filter to include only published resources:
         bf.add(this.cachedOnlyPublishedFilter, BooleanClause.Occur.MUST);
 
+        return bf;
+    }
+
+    BooleanFilter addUnpublishedCollectionFilter(BooleanFilter bf) {
+        if (bf == null)
+            bf = new BooleanFilter();
+
         // Filter to exclude unpublishedCollection resources:
-        // Avoid using cache-wrapper for FieldValueFilter, since that can lead
-        // to memory leaks
-        // in Lucene.
-        RequestContext requestContext = RequestContext.getRequestContext();
-        if (requestContext.getRequestURL().getParameter("vrtxPreviewUnpublished") == null) {
-            bf.add(new FieldValueFilter(FieldNames.getSearchFieldName(this.unpublishedCollectionPropDef, false), true),
-                    BooleanClause.Occur.MUST);
-        }
+        // Avoid using cache-wrapper for FieldValueFilter, since that can
+        // lead to memory leaks in Lucene.
+
+        bf.add(new FieldValueFilter(FieldNames.getSearchFieldName(this.unpublishedCollectionPropDef, false), true),
+                BooleanClause.Occur.MUST);
 
         return bf;
     }

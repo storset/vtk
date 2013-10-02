@@ -88,7 +88,7 @@ VrtxImageEditor.prototype.init = function init(imageURL, imageSupported) {
   editor.img.onload = function () {
     editor.rw = editor.lastWidth = editor.cropWidth = editor.img.width;
     editor.rh = editor.lastHeight = editor.cropHeight = editor.img.height;
-    editor.canvasSupported = editor.canvasSupported && ((editor.rw * editor.rh) < 100000000); // Limit to 400MB(32bpp)
+    editor.canvasSupported = editor.canvasSupported && ((editor.rw * editor.rh * (24 / 8)) < 100000000); // Limit to 100MB (24bit)
     if(!editor.canvasSupported) {
       $(editor.canvas).replaceWith("<img src='" + editor.url + "' alt='preview image' />");
       editor.displayDimensions(editor.rw, editor.rh);
@@ -187,7 +187,7 @@ VrtxImageEditor.prototype.init = function init(imageURL, imageSupported) {
     $("#app-content").on("change", "#resource-width, #resource-height", function (e) {
       var w = parseInt($.trim($("#resource-width").val()), 10);
       var h = parseInt($.trim($("#resource-height").val()), 10);
-      if (!isNaN(w) && !isNaN(h) && ((w / editor.cropWidth) <= 1)) {
+      if (!isNaN(w) && !isNaN(h) && ((w / editor.cropWidth) <= 1) && ((h / editor.cropHeight) <= 1) && w >= 1 && h >= 1) {
         if (w !== editor.rw) {
           if (editor.keepAspectRatio) {
             h = Math.round(w / (editor.aspectRatioOver / editor.aspectRatioUnder));
@@ -226,7 +226,7 @@ VrtxImageEditor.prototype.init = function init(imageURL, imageSupported) {
         }
         var w = isWidth ? x : y;
         var h = isWidth ? y : x;
-        if ((w / editor.cropWidth) <= 1) {
+        if (((w / editor.cropWidth) <= 1) && ((h / editor.cropHeight) <= 1) && w >= 1 && h >= 1) {
           editor.lastWidth = w;
           editor.lastHeight = h;
           $("#resource-width").val(w);

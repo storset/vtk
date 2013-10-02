@@ -102,7 +102,7 @@ public class MenuRequest {
 
     public MenuRequest(DecoratorRequest request, PropertyTypeDefinition titlePropDef,
             ResourceTypeDefinition collectionResourceType) {
-        
+
         this.titlePropDef = titlePropDef;
         this.collectionResourceType = collectionResourceType;
 
@@ -243,7 +243,7 @@ public class MenuRequest {
         }
 
         List<Path> children = new ArrayList<Path>();
-        Search search = getSearchForCollectionChildren(currentCollectionUri, searchLimit);
+        Search search = getSearchForCollectionChildren(requestContext, currentCollectionUri, searchLimit);
         Repository repository = requestContext.getRepository();
         ResultSet rs = repository.search(token, search);
         for (Iterator<PropertySet> child = rs.iterator(); child.hasNext();) {
@@ -391,7 +391,8 @@ public class MenuRequest {
         return includeURIs;
     }
 
-    private Search getSearchForCollectionChildren(Path currentCollectionUri, int searchLimit) {
+    private Search getSearchForCollectionChildren(RequestContext requestContext, Path currentCollectionUri,
+            int searchLimit) {
         Path uri = currentCollectionUri;
         int depth = uri.getDepth() + 1;
         AndQuery mainQuery = new AndQuery();
@@ -399,6 +400,7 @@ public class MenuRequest {
         mainQuery.add(new UriPrefixQuery(uri.toString()));
         mainQuery.add(new TypeTermQuery(this.collectionResourceType.getName(), TermOperator.IN));
         Search search = new Search();
+        search.setPreviewUnpublished(requestContext.isPreviewUnpublished());
         search.setQuery(mainQuery);
         search.setLimit(searchLimit);
         search.setPropertySelect(PropertySelect.ALL);

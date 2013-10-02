@@ -3,11 +3,7 @@
  *  XXX: This should not be a singleton/module but function/class as it is used for different dialogs..
  */
 
-
 var vrtxSimpleDialogs = {
-  closeDialog: function (classOrId) {
-    $(classOrId).dialog("close"); 
-  },
   openLoadingDialog: function (title) {
     this.openDialog("#dialog-loading", {
       msg: "<img src='/vrtx/__vrtx/static-resources/themes/default/images/loadingAnimation.gif' alt='Loading icon' />",
@@ -17,7 +13,7 @@ var vrtxSimpleDialogs = {
       width: 208
     });
   },
-  openHtmlDialog: function (name, html, title, width, height, funcOkComplete, funcOkCompleteOpts, btnTextOk, btnTextCancel) { // XXX: HTML content should set height (not hardcoded)
+  openHtmlDialog: function (name, html, title, width, height, funcOkComplete, funcOkCompleteOpts, btnTextOk, btnTextCancel, funcOnOpen) {
     this.openDialog("#dialog-html-" + name, {
       msg: html,
       title: title,
@@ -29,7 +25,8 @@ var vrtxSimpleDialogs = {
       hasOk: (typeof btnTextOk !== "undefined"),
       hasCancel: (typeof btnTextCancel !== "undefined"),
       btnTextOk: (typeof btnTextOk !== "undefined") ? btnTextOk : "Ok",
-      btnTextCancel: (typeof btnTextCancel !== "undefined") ? btnTextCancel : null
+      btnTextCancel: (typeof btnTextCancel !== "undefined") ? btnTextCancel : null,
+      funcOnOpen: (typeof funcOnOpen !== "undefined") ? funcOnOpen : null
     });
   },
   openMsgDialog: function (msg, title) {
@@ -40,6 +37,7 @@ var vrtxSimpleDialogs = {
     });
   },
   openConfirmDialog: function (msg, title, funcOkComplete, funcCancelComplete, funcOkCompleteOpts) {
+    this.destroyDialog("#dialog-confirm");
     this.openDialog("#dialog-confirm", { 
       msg: msg,
       title: title,
@@ -69,6 +67,9 @@ var vrtxSimpleDialogs = {
       }
       if (opts.hasCancel) {
         var Cancel = opts.btnTextCancel || ((typeof cancelI18n != "undefined") ? cancelI18n : "Cancel");
+        if(/^\(/.test(Cancel)) {
+          opts.cancelIsNotAButton = true;
+        }
         l10nButtons[Cancel] = function() {
           $(this).dialog("close");
           if(opts.funcCancelComplete) opts.funcCancelComplete();
@@ -85,8 +86,21 @@ var vrtxSimpleDialogs = {
                                var ctx = $(this).parent();
                                ctx.find(".ui-dialog-titlebar-close").hide();
                                ctx.find(".ui-dialog-titlebar").addClass("closable");
+                               if(opts.funcOnOpen) opts.funcOnOpen();
                              };
-                           }                        
+                           } else {
+                             if(opts.funcOnOpen || opts.cancelIsNotAButton) {
+                               dialogOpts.open = function(e, ui) {
+                                 if(opts.funcOnOpen) {
+                                   opts.funcOnOpen();
+                                 }
+                                 if(opts.cancelIsNotAButton) {
+                                   var ctx = $(this).parent();
+                                   ctx.find(".ui-dialog-buttonpane button:last-child span").unwrap().addClass("cancel-is-not-a-button");
+                                 }
+                               };
+                             }
+                           }
       elm.dialog(dialogOpts);
     } else {
       if(opts.title) {
@@ -95,7 +109,15 @@ var vrtxSimpleDialogs = {
       elm.find(selector + "-content").html(!opts.hasHtml ? "<p>" + opts.msg + "</p>" : opts.msg);
     }
     elm.dialog("open");
-  }
+  },
+  destroyDialog: function (classOrId) {
+    var elem = $(classOrId);
+    elem.dialog("destroy");
+    elem.remove();
+  },
+  closeDialog: function (classOrId) {
+    $(classOrId).dialog("close"); 
+  },
 };
 
 /* ^ Dialogs and interface to jQuery UI */

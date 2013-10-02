@@ -14,14 +14,17 @@
 /*
  * Extensions added by USIT for Vortex
  * 
- * Added RIGHTARROW & SPACE as selectionkeys
- * Added parameter "resultsBeforeScroll"
- *   -> defines minimum nr of hits before scrollbar is added to dropdown
- * Added class when submit is blocked in FF for use externally (removed when intercepted in reroute-function in admin-enhancements and toggled off)
- *   -> Does not interfere with anything else
- * Added adjustForParentWidth option
- * Added min-width option
- * Added class 'ac_active_parent' for active autocomplete field (to solve stacking issues with multiple fields)
+ * [???. ????] Added RIGHTARROW & SPACE as selection keys
+ * [???. ????] Added option "resultsBeforeScroll" (defines minimum nr of hits before scrollbar is added to dropdown)
+ * [???. ????] Added class when submit is blocked in FF for use externally (removed when intercepted in reroute-function in admin-enhancements and toggled off and does not interfere with anything else)
+ * [???. ????] Added option "adjustForParentWidth"
+ * [???. ????] Added option "min-width"
+ * [???. ????] Added class "ac_active_parent" for active autocomplete field (to solve stacking issues with multiple fields)
+ * [Oct. 2013] Added option "wrapperClass" possibility to distinguish between different autocomplete results
+ * [Oct. 2013] Added class "ac_more" for special case in result when more-link is needed (if formatted starts with "###MORE###LINK###")
+ * [Oct. 2013] Added option "finiteScroll" for not scrolling to top from bottom and vice versa on key/page up and down (set default to true)
+ * [Oct. 2013] Added string constants to CLASSES object-literal for all CSS classes inside $.Autocompleter.Select
+ * [Oct. 2013] Added option "updateInput" to make it possible to disable updating of input field on select (set default to true)
  */
 
 ;
@@ -230,15 +233,17 @@
       var v = selected.result;
       previousValue = v;
 
-      if (options.multiple) {
-        var words = trimWords($input.val());
-        if (words.length > 1) {
-          v = words.slice(0, words.length - 1).join(options.multipleSeparator) + options.multipleSeparator + v;
+      if(options.updateInput) {
+        if (options.multiple) {
+          var words = trimWords($input.val());
+          if (words.length > 1) {
+            v = words.slice(0, words.length - 1).join(options.multipleSeparator) + options.multipleSeparator + v;
+          }
+          v += options.multipleSeparator;
         }
-        v += options.multipleSeparator;
+        $input.val(v);
       }
-
-      $input.val(v);
+      
       hideResultsNow();
       $input.trigger("result", [ selected.data, selected.value ]);
       return true;
@@ -430,6 +435,7 @@
     inputClass: "ac_input",
     resultsClass: "ac_results",
     loadingClass: "ac_loading",
+    wrapperClass: "",
     minChars: 1,
     delay: 400,
     matchCase: false,
@@ -457,7 +463,9 @@
     scrollHeight: 180,
     resultsBeforeScroll: 10,
     minWidth: null,
-    adjustForParentWidth: null
+    adjustForParentWidth: null,
+    finiteScroll: true,
+    updateInput: true
   };
 
   $.Autocompleter.Cache = function(options) {
@@ -603,7 +611,14 @@
 
   $.Autocompleter.Select = function(options, input, select, config) {
     var CLASSES = {
-      ACTIVE :"ac_over"
+      ACTIVE_PARENT: "ac_active_parent",
+      ACTIVE: "ac_over",
+      EVEN: "ac_even",
+      ODD: "ac_odd",
+      FIRST: "ac_first",
+      LAST: "ac_last",
+      MORE: "ac_more",
+      DATA: "ac_data"
     };
 
     var listItems, active = -1, data, term = "", needsInit = true, element, list;
@@ -612,7 +627,7 @@
     function init() {
       if (!needsInit)
         return;
-      element = $("<div/>").hide().addClass(options.resultsClass).css("position", "absolute").appendTo(document.body);
+      element = $("<div/>").hide().addClass(options.resultsClass).addClass(options.wrapperClass).css("position", "absolute").appendTo(document.body);
 
       list = $("<ul/>").appendTo(element).mouseover( function(event) {
         if (target(event).nodeName && target(event).nodeName.toUpperCase() == 'LI') {
@@ -667,10 +682,12 @@
 
     function movePosition(step) {
       active += step;
+      
+      var realLength = listItems.length - 1;
       if (active < 0) {
-        active = listItems.length - 1;
-      } else if (active >= listItems.length) {
-        active = 0;
+        active = !options.finiteScroll ? realLength : 0;
+      } else if (active > realLength) {
+        active = !options.finiteScroll ? 0 : realLength;
       }
     }
 
@@ -687,9 +704,19 @@
         var formatted = options.formatItem(data[i].data, i + 1, max, data[i].value, term);
         if (formatted === false)
           continue;
-        var li = $("<li/>").html(options.highlight(formatted, term)).addClass(i % 2 == 0 ? "ac_even" : "ac_odd")
-            .addClass(i == (max - 1) ? "ac_last" : "").addClass(i == 0 ? "ac_first" : "").appendTo(list)[0];
-        $.data(li, "ac_data", data[i]);
+          
+        var cls = ((i % 2 == 0) ? CLASSES.EVEN : CLASSES.ODD)
+                + ((i == (max - 1)) ? " " + CLASSES.LAST : "")
+                + ((i == 0) ? " " + CLASSES.FIRST : "");
+                
+        if(/^###MORE###LINK###.*$/.test(formatted)) {
+          formatted = formatted.replace(/^###MORE###LINK###[\s]*/, "");
+          cls += " " + CLASSES.MORE;
+        }
+        
+        var li = $("<li/>").html(options.highlight(formatted, term)).addClass(cls).appendTo(list)[0];
+                           
+        $.data(li, CLASSES.DATA, data[i]);
       }
       listItems = list.find("li");
       if (options.selectFirst) {
@@ -756,9 +783,9 @@
         // Stack up active field
         var inputFieldParent = inputField.closest(".vrtx-textfield");
         if(inputFieldParent.length) {
-          $(".ac_active_parent").removeClass("ac_active_parent");
-          if(!inputFieldParent.hasClass("ac_active_parent")) {
-            inputFieldParent.addClass("ac_active_parent");
+          $("." + CLASSES.ACTIVE_PARENT).removeClass(CLASSES.ACTIVE_PARENT);
+          if(!inputFieldParent.hasClass(CLASSES.ACTIVE_PARENT)) {
+            inputFieldParent.addClass(CLASSES.ACTIVE_PARENT);
           }
         }
         
@@ -797,7 +824,7 @@
 },
 selected : function() {
 var selected = listItems && listItems.filter("." + CLASSES.ACTIVE).removeClass(CLASSES.ACTIVE);
-return selected && selected.length && $.data(selected[0], "ac_data");
+return selected && selected.length && $.data(selected[0], CLASSES.DATA);
 },
 emptyList : function() {
 list && list.empty();

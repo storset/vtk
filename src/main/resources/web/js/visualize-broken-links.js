@@ -16,7 +16,26 @@ function visualizeBrokenLinks(options) {
   var idx = 0;
   urls[idx] = [];
   var context = $(selection);
-  var links = context.contents().find("a." + linkClass);
+  
+  // Clone only content inside UiO decoration (if exists)
+  var links = context.contents().find("#right-main, #total-main").clone();
+  if(!links.length) {
+    links = context.contents().clone();
+  }
+  // Remove components without user content
+  links.find("table.vrtx-unit-listing, table.vrtx-person-listing, .vrtx-alphabetical-project-listing, .vrtx-alphabetical-master-listing, .vrtx-listing-filter-results, .vrtx-listing-filter-status, .vrtx-listing-completed-ongoing, #vrtx-events-nav, .vrtx-paging-feed-wrapper, .comments, .vrtx-subfolder-menu, .vrtx-tab-menu, .vrtx-breadcrumb-menu, #vrtx-tags, .vrtx-tags, .vrtx-tags-service, .vrtx-tag-cloud").remove();
+  
+  // Remove all non-user content inside resources listings
+  links.find(".vrtx-resources, #vrtx-daily-events, .vrtx-master-table, .vrtx-masters, .vrtx-programs, .vrtx-programs-inactive, .vrtx-program-options, .vrtx-program-options-inactive, .vrtx-person-list-participants").find("*:not(.description) a").remove()
+  links.find(".vrtx-image-listing-container *:not(.vrtx-image-description) a").remove();
+  links.find(".vrtx-image-table *:not(.vrtx-table-description) a").remove();
+
+  // Remove all non-user content inside feed- and event-components
+  links.find(".vrtx-recent-comments *:not(.item-description) a, .vrtx-feed *:not(.item-description) a, .vrtx-event-component *:not(.vrtx-event-component-introduction) a").remove();
+  
+  // Filtered out rest of Vortex-links
+  links = links.find("a." + linkClass).filter(":not(.vrtx-icon, .more, .vrtx-resource-open-webdav, .vrtx-message-listing-edit, .more-url, .channel, .all-comments, .all-messages, .feed-title, .vrtx-ical, .vrtx-ical-help, .vrtx-event-component-title, .vrtx-image, #vrtx-feed-link, .vrtx-title, .item-title, .comments-title)");
+
   for (var i = 0, linksLength = links.length; i < linksLength; i++) {
     if (urls[idx].length == chunk) {
       idx++;

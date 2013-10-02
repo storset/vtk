@@ -24,6 +24,7 @@
  * Added class 'ac_more' for special case in result (if formatted starts with "###MORE###LINK###")
  * Added option "infiniteScroll" for turning on / off scroll to top from bottom and vice versa (set default to off)
  * Added string constants in CLASSES object-literal for all CSS classes inside $.Autocompleter.Select
+ * Added term to formatResult
  */
 
 ;
@@ -389,7 +390,7 @@
             limit :options.max
           }, extraParams),
           success : function(data) {
-            var parsed = options.parse && options.parse(data) || parse(data);
+            var parsed = options.parse && options.parse(data, term) || parse(data);
             cache.add(term, parsed);
             success(term, parsed);
           }
@@ -403,7 +404,7 @@
     }
     ;
 
-    function parse(data) {
+    function parse(data, term) {
       var parsed = [];
       var rows = data.split("\n");
       for ( var i = 0; i < rows.length; i++) {
@@ -413,7 +414,7 @@
           parsed[parsed.length] = {
             data :row,
             value :row[0],
-            result :options.formatResult && options.formatResult(row, row[0]) || row[0]
+            result :options.formatResult && options.formatResult(row, row[0], term) || row[0]
           };
         }
       }

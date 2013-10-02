@@ -24,7 +24,7 @@
  * [Oct. 2013] Added class "ac_more" for special case in result when more-link is needed (if formatted starts with "###MORE###LINK###")
  * [Oct. 2013] Added option "finiteScroll" for not scrolling to top from bottom and vice versa on key/page up and down (set default to true)
  * [Oct. 2013] Added string constants to CLASSES object-literal for all CSS classes inside $.Autocompleter.Select
- * [Oct. 2013] Added parameter "term" to formatResult
+ * [Oct. 2013] Added option "updateInput" to make it possible to disable updating of input field on select (set default to true)
  */
 
 ;
@@ -233,15 +233,17 @@
       var v = selected.result;
       previousValue = v;
 
-      if (options.multiple) {
-        var words = trimWords($input.val());
-        if (words.length > 1) {
-          v = words.slice(0, words.length - 1).join(options.multipleSeparator) + options.multipleSeparator + v;
+      if(options.updateInput) {
+        if (options.multiple) {
+          var words = trimWords($input.val());
+          if (words.length > 1) {
+            v = words.slice(0, words.length - 1).join(options.multipleSeparator) + options.multipleSeparator + v;
+          }
+          v += options.multipleSeparator;
         }
-        v += options.multipleSeparator;
+        $input.val(v);
       }
-
-      $input.val(v);
+      
       hideResultsNow();
       $input.trigger("result", [ selected.data, selected.value ]);
       return true;
@@ -390,7 +392,7 @@
             limit :options.max
           }, extraParams),
           success : function(data) {
-            var parsed = options.parse && options.parse(data, term) || parse(data);
+            var parsed = options.parse && options.parse(data) || parse(data);
             cache.add(term, parsed);
             success(term, parsed);
           }
@@ -404,7 +406,7 @@
     }
     ;
 
-    function parse(data, term) {
+    function parse(data) {
       var parsed = [];
       var rows = data.split("\n");
       for ( var i = 0; i < rows.length; i++) {
@@ -414,7 +416,7 @@
           parsed[parsed.length] = {
             data :row,
             value :row[0],
-            result :options.formatResult && options.formatResult(row, row[0], term) || row[0]
+            result :options.formatResult && options.formatResult(row, row[0]) || row[0]
           };
         }
       }
@@ -462,7 +464,8 @@
     resultsBeforeScroll: 10,
     minWidth: null,
     adjustForParentWidth: null,
-    finiteScroll: true
+    finiteScroll: true,
+    updateInput: true
   };
 
   $.Autocompleter.Cache = function(options) {

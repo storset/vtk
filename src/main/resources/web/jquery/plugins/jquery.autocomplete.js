@@ -24,6 +24,7 @@
  * Added class 'ac_active_parent' for active autocomplete field (to solve stacking issues with multiple fields)
  * Added class 'wrapperClass' possibility to distinguish between different autocomplete results
  * Added class 'ac_more' for special case in result (if formatted starts with "###MORE###LINK###")
+ * Added option "infiniteScroll" for turning on / off scroll to top from bottom and vice versa (set default to off)
  */
 
 ;
@@ -460,7 +461,8 @@
     scrollHeight: 180,
     resultsBeforeScroll: 10,
     minWidth: null,
-    adjustForParentWidth: null
+    adjustForParentWidth: null,
+    infiniteScroll: false
   };
 
   $.Autocompleter.Cache = function(options) {
@@ -670,9 +672,9 @@
 
     function movePosition(step) {
       active += step;
-      if (active < 0) {
+      if (active < 0 && options.infiniteScroll) {
         active = listItems.length - 1;
-      } else if (active >= listItems.length) {
+      } else if ((active >= listItems.length) && options.infiniteScroll) {
         active = 0;
       }
     }

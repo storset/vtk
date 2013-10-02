@@ -696,7 +696,7 @@
                 + ((i == 0) ? " ac_first" : "");
                 
         if(/^###MORE###LINK###.*$/.test(formatted)) {
-          formatted = formatted.replace("###MORE###LINK###", "");
+          formatted = formatted.replace(/^###MORE###LINK###[\s]*/, "");
           cls += " ac_more";
         }
         

@@ -22,7 +22,7 @@
  * [???. ????] Added class "ac_active_parent" for active autocomplete field (to solve stacking issues with multiple fields)
  * [Oct. 2013] Added option "wrapperClass" possibility to distinguish between different autocomplete results
  * [Oct. 2013] Added class "ac_more" for special case in result when more-link is needed (if formatted starts with "###MORE###LINK###")
- * [Oct. 2013] Added option "finiteScroll" for not scrolling to top from bottom and vice versa (set default to true)
+ * [Oct. 2013] Added option "finiteScroll" for not scrolling to top from bottom and vice versa on key/page up and down (set default to true)
  * [Oct. 2013] Added string constants to CLASSES object-literal for all CSS classes inside $.Autocompleter.Select
  * [Oct. 2013] Added parameter "term" to formatResult
  */

@@ -15,16 +15,15 @@
  * Extensions added by USIT for Vortex
  * 
  * Added RIGHTARROW & SPACE as selectionkeys
- * Added parameter "resultsBeforeScroll"
- *   -> defines minimum nr of hits before scrollbar is added to dropdown
- * Added class when submit is blocked in FF for use externally (removed when intercepted in reroute-function in admin-enhancements and toggled off)
- *   -> Does not interfere with anything else
+ * Added parameter "resultsBeforeScroll" (defines minimum nr of hits before scrollbar is added to dropdown)
+ * Added class when submit is blocked in FF for use externally (removed when intercepted in reroute-function in admin-enhancements and toggled off and does not interfere with anything else)
  * Added adjustForParentWidth option
  * Added min-width option
  * Added class 'ac_active_parent' for active autocomplete field (to solve stacking issues with multiple fields)
  * Added class 'wrapperClass' possibility to distinguish between different autocomplete results
  * Added class 'ac_more' for special case in result (if formatted starts with "###MORE###LINK###")
  * Added option "infiniteScroll" for turning on / off scroll to top from bottom and vice versa (set default to off)
+ * Added string constants in CLASSES object-literal for all CSS classes inside $.Autocompleter.Select
  */
 
 ;
@@ -462,7 +461,7 @@
     resultsBeforeScroll: 10,
     minWidth: null,
     adjustForParentWidth: null,
-    infiniteScroll: false
+    finiteScroll: true
   };
 
   $.Autocompleter.Cache = function(options) {
@@ -608,7 +607,14 @@
 
   $.Autocompleter.Select = function(options, input, select, config) {
     var CLASSES = {
-      ACTIVE :"ac_over"
+      ACTIVE_PARENT: "ac_active_parent",
+      ACTIVE: "ac_over",
+      EVEN: "ac_even",
+      ODD: "ac_odd",
+      FIRST: "ac_first",
+      LAST: "ac_last",
+      MORE: "ac_more",
+      DATA: "ac_data"
     };
 
     var listItems, active = -1, data, term = "", needsInit = true, element, list;
@@ -675,9 +681,9 @@
       
       var realLength = listItems.length - 1;
       if (active < 0) {
-        active = options.infiniteScroll ? realLength : 0;
+        active = !options.finiteScroll ? realLength : 0;
       } else if (active > realLength) {
-        active =  options.infiniteScroll ? 0 : realLength;
+        active =  !options.finiteScroll ? 0 : realLength;
       }
     }
 
@@ -695,18 +701,18 @@
         if (formatted === false)
           continue;
           
-        var cls = ((i % 2 == 0) ? "ac_even" : "ac_odd")
-                + ((i == (max - 1)) ? " ac_last" : "")
-                + ((i == 0) ? " ac_first" : "");
+        var cls = ((i % 2 == 0) ? CLASSES.EVEN : CLASSES.ODD)
+                + ((i == (max - 1)) ? " " + CLASSES.LAST : "")
+                + ((i == 0) ? " " + CLASSES.FIRST : "");
                 
         if(/^###MORE###LINK###.*$/.test(formatted)) {
           formatted = formatted.replace(/^###MORE###LINK###[\s]*/, "");
-          cls += " ac_more";
+          cls += " " + CLASSES.MORE;
         }
         
         var li = $("<li/>").html(options.highlight(formatted, term)).addClass(cls).appendTo(list)[0];
                            
-        $.data(li, "ac_data", data[i]);
+        $.data(li, CLASSES.DATA, data[i]);
       }
       listItems = list.find("li");
       if (options.selectFirst) {
@@ -773,9 +779,9 @@
         // Stack up active field
         var inputFieldParent = inputField.closest(".vrtx-textfield");
         if(inputFieldParent.length) {
-          $(".ac_active_parent").removeClass("ac_active_parent");
-          if(!inputFieldParent.hasClass("ac_active_parent")) {
-            inputFieldParent.addClass("ac_active_parent");
+          $("." + CLASSES.ACTIVE_PARENT).removeClass(CLASSES.ACTIVE_PARENT);
+          if(!inputFieldParent.hasClass(CLASSES.ACTIVE_PARENT)) {
+            inputFieldParent.addClass(CLASSES.ACTIVE_PARENT);
           }
         }
         
@@ -814,7 +820,7 @@
 },
 selected : function() {
 var selected = listItems && listItems.filter("." + CLASSES.ACTIVE).removeClass(CLASSES.ACTIVE);
-return selected && selected.length && $.data(selected[0], "ac_data");
+return selected && selected.length && $.data(selected[0], CLASSES.DATA);
 },
 emptyList : function() {
 list && list.empty();

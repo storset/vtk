@@ -697,7 +697,7 @@
                 
         if(/^###MORE###LINK###.*$/.test(formatted)) {
           formatted = formatted.replace("###MORE###LINK###", "");
-          cls += "ac_more";
+          cls += " ac_more";
         }
         
         var li = $("<li/>").html(options.highlight(formatted, term)).addClass(cls).appendTo(list)[0];

@@ -125,14 +125,14 @@ var divAlign = "";
         // Create a menu item
         editor.addMenuItems({
           MediaEmbedDialogMod: {
-            label: lang.edit,
+            label: editor.lang.mediaembed.edit,
             command: 'mediaembedmod',
             group: 'mediaembed',
             icon: this.path.toLowerCase() + 'images/icon.png',
             order: 1
           },
           RemoveMedia: {
-            label: lang.remove,
+            label: editor.lang.div.remove,
             command: 'MediaEmbedRemove',
             group: 'mediaembed',
             icon: this.path.toLowerCase() + 'images/iconremove.png',
@@ -150,7 +150,7 @@ var divAlign = "";
           }
 
           extractMediaPlayerProps(HTML, element);
-
+	  
           return {
             MediaEmbedDialogMod: CKEDITOR.TRISTATE_OFF,
             RemoveMedia: CKEDITOR.TRISTATE_OFF

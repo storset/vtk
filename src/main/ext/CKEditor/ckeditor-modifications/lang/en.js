@@ -17,5 +17,11 @@ studyreferencecomponent :
                 specialization  : 'Specialization',
                 optional        : 'Optional',
                 master          : 'Masters thesis'
-        }
+        },
+
+	mediaembed: 
+	{
+		edit: 'Media properties',
+		remove: 'Remove media'
+	}
 };

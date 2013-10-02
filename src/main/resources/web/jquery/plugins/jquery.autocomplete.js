@@ -690,14 +690,17 @@
         var formatted = options.formatItem(data[i].data, i + 1, max, data[i].value, term);
         if (formatted === false)
           continue;
-
-        var li = $("<li/>").html(options.highlight(formatted, term))
-                           .addClass(i % 2 == 0 ? "ac_even" : "ac_odd")
-                           .addClass(i == (max - 1) ? "ac_last" : "").addClass(i == 0 ? "ac_first" : "");
+          
+        var cls = ((i % 2 == 0) ? "ac_even" : "ac_odd")
+                + ((i == (max - 1)) ? " ac_last" : "")
+                + ((i == 0) ? " ac_first" : "");
+                
         if(/^###MORE###LINK###.*$/.test(formatted)) {
-          li.addClass("ac_more");
+          formatted = formatted.replace("###MORE###LINK###", "");
+          cls += "ac_more";
         }
-        li.appendTo(list)[0];
+        
+        var li = $("<li/>").html(options.highlight(formatted, term)).addClass(cls).appendTo(list)[0];
                            
         $.data(li, "ac_data", data[i]);
       }

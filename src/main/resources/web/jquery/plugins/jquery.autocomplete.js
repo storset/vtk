@@ -672,10 +672,12 @@
 
     function movePosition(step) {
       active += step;
-      if (active < 0 && options.infiniteScroll) {
-        active = listItems.length - 1;
-      } else if ((active >= listItems.length) && options.infiniteScroll) {
-        active = 0;
+      
+      var realLength = listItems.length - 1;
+      if (active < 0) {
+        active = options.infiniteScroll ? realLength : 0;
+      } else if (active > realLength) {
+        active =  options.infiniteScroll ? 0 : realLength;
       }
     }
 

@@ -23,6 +23,7 @@
  * Added min-width option
  * Added class 'ac_active_parent' for active autocomplete field (to solve stacking issues with multiple fields)
  * Added class 'wrapperClass' possibility to distinguish between different autocomplete results
+ * Added class 'ac_more' for special case in result (if formatted starts with "###MORE###LINK###")
  */
 
 ;
@@ -689,8 +690,15 @@
         var formatted = options.formatItem(data[i].data, i + 1, max, data[i].value, term);
         if (formatted === false)
           continue;
-        var li = $("<li/>").html(options.highlight(formatted, term)).addClass(i % 2 == 0 ? "ac_even" : "ac_odd")
-            .addClass(i == (max - 1) ? "ac_last" : "").addClass(i == 0 ? "ac_first" : "").appendTo(list)[0];
+
+        var li = $("<li/>").html(options.highlight(formatted, term))
+                           .addClass(i % 2 == 0 ? "ac_even" : "ac_odd")
+                           .addClass(i == (max - 1) ? "ac_last" : "").addClass(i == 0 ? "ac_first" : "");
+        if(/^###MORE###LINK###.*$/.test(formatted)) {
+          li.addClass("ac_more");
+        }
+        li.appendTo(list)[0];
+                           
         $.data(li, "ac_data", data[i]);
       }
       listItems = list.find("li");

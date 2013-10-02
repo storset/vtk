@@ -14,17 +14,17 @@
 /*
  * Extensions added by USIT for Vortex
  * 
- * Added RIGHTARROW & SPACE as selectionkeys
- * Added parameter "resultsBeforeScroll" (defines minimum nr of hits before scrollbar is added to dropdown)
+ * Added RIGHTARROW & SPACE as selection keys
+ * Added option "resultsBeforeScroll" (defines minimum nr of hits before scrollbar is added to dropdown)
  * Added class when submit is blocked in FF for use externally (removed when intercepted in reroute-function in admin-enhancements and toggled off and does not interfere with anything else)
- * Added adjustForParentWidth option
- * Added min-width option
- * Added class 'ac_active_parent' for active autocomplete field (to solve stacking issues with multiple fields)
- * Added class 'wrapperClass' possibility to distinguish between different autocomplete results
- * Added class 'ac_more' for special case in result (if formatted starts with "###MORE###LINK###")
+ * Added option "adjustForParentWidth"
+ * Added option "min-width"
+ * Added class "ac_active_parent" for active autocomplete field (to solve stacking issues with multiple fields)
+ * Added class "wrapperClass" possibility to distinguish between different autocomplete results
+ * Added class "ac_more" for special case in result (if formatted starts with "###MORE###LINK###")
  * Added option "infiniteScroll" for turning on / off scroll to top from bottom and vice versa (set default to off)
  * Added string constants in CLASSES object-literal for all CSS classes inside $.Autocompleter.Select
- * Added term to formatResult
+ * Added parameter "term" to formatResult
  */
 
 ;

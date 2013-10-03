@@ -9,49 +9,47 @@
 
 <#import "/lib/vortikal.ftl" as vrtx />
 
-<#assign dateStr = "" />
-<#assign strobeVersion = "10.1.0" />
-<#assign rootResources = "/vrtx/__vrtx/static-resources/themes/default/" />
-<script type="text/javascript"><!--
-  if (typeof swfobject == "undefined") {
-    document.write("<scr" + "ipt src='/vrtx/__vrtx/static-resources/flash/StrobeMediaPlayback_1.5.1-patched/10.1/scripts/swfobject.js' type='text/javascript'><\/script>");
-  }
-// -->
-</script>
-
 <#macro mediaPlayer >
   <#if media?exists>
-    <#if poster?exists> <#assign vidImgSrc = "${poster?html}" />
-    <#else>             <#assign vidImgSrc = "${rootResources}icons/video-noflash.png" />
-    </#if>              <#assign audioImgSrc = "${rootResources}icons/audio-icon.png" />
+    <#assign dateStr = nanoTime?c />
+    <#assign strobeVersion = "10.1.0" />
+    <#assign rootResources = "/vrtx/__vrtx/static-resources/themes/default/" />
+    <script type="text/javascript"><!--
+      if (typeof swfobject == "undefined") {
+        document.write("<scr" + "ipt src='/vrtx/__vrtx/static-resources/flash/StrobeMediaPlayback_1.5.1-patched/10.1/scripts/swfobject.js' type='text/javascript'><\/script>");
+      }
+    // -->
+    </script>
+    <#if poster?exists> <#assign imgSrc = "${poster?html}" />
+    <#else>             <#assign imgSrc = "${rootResources}icons/video-noflash.png" />
+    </#if>
     
     <#if streamType?exists>
-      <#assign dateStr = nanoTime?c />
-      <@genPrintImage vidImgSrc />
-      <@includeMediaPlayerMarkup vidImgSrc "article.media-file" "" "500" "279" />       
+      <@genPrintImage />
+      <@includeMediaPlayerMarkup "article.media-file" />       
       <@initVideoJS true />
     <#elseif contentType?exists>
-      <#assign dateStr = nanoTime?c />
       <#if contentType == "audio"
         || contentType == "audio/mpeg"
         || contentType == "audio/mp3"
         || contentType == "audio/x-mpeg">
-        <@genPrintImage audioImgSrc />
-        <@includeMediaPlayerMarkup audioImgSrc "article.audio-file" "" "151" "82" />                     
+        <#assign imgSrc = "${rootResources}icons/audio-icon.png" />
+        <@genPrintImage />
+        <@includeMediaPlayerMarkup "article.audio-file" />                     
         <@initAudioJS />
         <@showDownloadLink "article.audio-file" />
       <#elseif contentType == "video/quicktime" >
-        <@genPrintImage vidImgSrc />
+        <@genPrintImage />
         <@initVideoQuicktime />
         <@showDownloadLink "article.media-file" />
       <#elseif contentType == "application/x-shockwave-flash" && extension == "swf">
-        <@genPrintImage vidImgSrc />
-        <@includeMediaPlayerMarkup vidImgSrc "article.media-file" "" "500" "279" />
+        <@genPrintImage />
+        <@includeMediaPlayerMarkup "article.media-file" />
         <@initVideoJS false true />
       <#elseif contentType == "video/x-flv"
             || contentType == "video/mp4">
-        <@genPrintImage vidImgSrc />
-        <@includeMediaPlayerMarkup vidImgSrc "article.video-file" "vrtx-media-player-no-flash" "" "" true />
+        <@genPrintImage />
+        <@includeMediaPlayerMarkup "article.video-file" "vrtx-media-player-no-flash" true />
         <@initVideoJS />
         <#if contentType == "video/mp4" && !media?starts_with("rtmp")>
           <@showDownloadLink "article.video-file" />
@@ -64,12 +62,12 @@
   </#if>
 </#macro>
 
-<#macro includeMediaPlayerMarkup imgSrc alt class="" w="" h="" linkedImg=false>
+<#macro includeMediaPlayerMarkup alt class="" linkedImg=false>
   <div id="mediaspiller-${dateStr}"<#if class !=""> class="${class}"</#if>>
     <#if linkedImg>
       <a class="vrtx-media" href="${media?html}">
     </#if>
-        <img src="${imgSrc}" alt="<@vrtx.msg code=alt />" <#if w != ""> width="${w}"</#if><#if h != ""> height="${w}"</#if> />
+        <img src="${imgSrc}" alt="<@vrtx.msg code=alt />" />
 	<#if linkedImg>
 	  </a>
 	<#else>
@@ -145,7 +143,7 @@
    </#if>
 </#macro>
 
-<#macro genPrintImage imgSrc>
+<#macro genPrintImage>
   <img class="vrtx-media-print" src="${imgSrc}" alt="print video image" style="display: none" />
 </#macro>
 

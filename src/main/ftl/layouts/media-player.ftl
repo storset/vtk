@@ -27,20 +27,20 @@
     <#elseif contentType?exists>
       <#if contentType == "audio" || contentType == "audio/mpeg" || contentType == "audio/mp3" || contentType == "audio/x-mpeg">
         <@includeMediaPlayerMarkup "${rootResources}icons/audio-icon.png" "article.audio-file" "" "151" "82" />                     
-	    <@initAudioJS />
-	    <@showDownloadLink "article.audio-file" />
+        <@initAudioJS />
+        <@showDownloadLink "article.audio-file" />
       <#elseif contentType == "video/quicktime" >
         <@initVideoQuicktime />
         <@showDownloadLink "article.media-file" />
       <#elseif contentType == "application/x-shockwave-flash" && extension == "swf">
         <@includeMediaPlayerMarkup "${rootResources}icons/video-noflash.png" "article.media-file" "" "500" "279" />
-	    <@initVideoJS false true />
+        <@initVideoJS false true />
       <#elseif contentType == "video/x-flv" || contentType == "video/mp4">
         <@includeMediaPlayerMarkup "<#if poster?exists>${poster?html}<#else>${rootResources}video-noflash.png</#if>" "article.video-file" "vrtx-media-player-no-flash" "" "" true />
-	    <@initVideoJS />
-	    <#if contentType == "video/mp4" && !media?starts_with("rtmp")>
+        <@initVideoJS />
+        <#if contentType == "video/mp4" && !media?starts_with("rtmp")>
           <@showDownloadLink "article.video-file" />
-	    </#if>
+        </#if>
       <#else>
         <#assign showDL = "true" />
         <@showDownloadLink "article.media-file"  />

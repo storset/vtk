@@ -21,27 +21,32 @@
 
 <#macro mediaPlayer >
   <#if media?exists>
+  
+    <#if poster?exists> <#assign vidImgSrc = "${poster?html}" />
+    <#else>             <#assign vidImgSrc = "${rootResources}icons/video-noflash.png" />
+    </#if>              <#assign audioImgSrc = "${rootResources}icons/audio-icon.png" />
+    
     <#if streamType?exists>
-      <@genPrintImage "<#if poster?exists>${poster?html}<#else>${rootResources}icons/video-noflash.png</#if>" />
-      <@includeMediaPlayerMarkup "<#if poster?exists>${poster?html}<#else>${rootResources}video-noflash.png</#if>" "article.media-file" "" "500" "279" />       
+      <@genPrintImage vidImgSrc />
+      <@includeMediaPlayerMarkup vidImgSrc "article.media-file" "" "500" "279" />       
       <@initVideoJS true />
     <#elseif contentType?exists>
       <#if contentType == "audio" || contentType == "audio/mpeg" || contentType == "audio/mp3" || contentType == "audio/x-mpeg">
-        <@genPrintImage "${rootResources}icons/audio-icon.png" />
-        <@includeMediaPlayerMarkup "${rootResources}icons/audio-icon.png" "article.audio-file" "" "151" "82" />                     
+        <@genPrintImage audioImgSrc />
+        <@includeMediaPlayerMarkup audioImgSrc "article.audio-file" "" "151" "82" />                     
         <@initAudioJS />
         <@showDownloadLink "article.audio-file" />
       <#elseif contentType == "video/quicktime" >
-        <@genPrintImage "<#if poster?exists>${poster?html}<#else>${rootResources}icons/video-noflash.png</#if>" />
+        <@genPrintImage vidImgSrc />
         <@initVideoQuicktime />
         <@showDownloadLink "article.media-file" />
       <#elseif contentType == "application/x-shockwave-flash" && extension == "swf">
-        <@genPrintImage "<#if poster?exists>${poster?html}<#else>${rootResources}icons/video-noflash.png</#if>" />
-        <@includeMediaPlayerMarkup "<#if poster?exists>${poster?html}<#else>${rootResources}video-noflash.png</#if>" "article.media-file" "" "500" "279" />
+        <@genPrintImage vidImgSrc />
+        <@includeMediaPlayerMarkup vidImgSrc "article.media-file" "" "500" "279" />
         <@initVideoJS false true />
       <#elseif contentType == "video/x-flv" || contentType == "video/mp4">
-        <@genPrintImage "<#if poster?exists>${poster?html}<#else>${rootResources}icons/video-noflash.png</#if>" />
-        <@includeMediaPlayerMarkup "<#if poster?exists>${poster?html}<#else>${rootResources}video-noflash.png</#if>" "article.video-file" "vrtx-media-player-no-flash" "" "" true />
+        <@genPrintImage vidImgSrc />
+        <@includeMediaPlayerMarkup vidImgSrc "article.video-file" "vrtx-media-player-no-flash" "" "" true />
         <@initVideoJS />
         <#if contentType == "video/mp4" && !media?starts_with("rtmp")>
           <@showDownloadLink "article.video-file" />

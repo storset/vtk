@@ -190,7 +190,8 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
     _$ = vrtxAdm._$;
 
   var bodyId = vrtxAdm.cachedBody.attr("id");
-  vrtxAdm.bodyId = (typeof bodyId !== "undefined") ? bodyId : "";
+  bodyId = (typeof bodyId !== "undefined") ? bodyId : "";
+  vrtxAdm.bodyId = bodyId;
 
   // Remove active tab if it has no children
   if (!vrtxAdm.cachedActiveTab.find(" > *").length) {
@@ -305,7 +306,6 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
   vrtxAdm.completeFormAsync({
     selector: "form#manage\\.unlockFormService-form input[type=submit]"
   });
-
   vrtxAdm.completeFormAsync({
     selector: "li.manage\\.unlockFormService form[name=unlockForm]",
     updateSelectors: ["#resourceMenuRight", "#contents"],

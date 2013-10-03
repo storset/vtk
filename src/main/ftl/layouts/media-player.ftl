@@ -9,7 +9,7 @@
 
 <#import "/lib/vortikal.ftl" as vrtx />
 
-<#assign dateStr = nanoTime?c />
+<#assign dateStr = "" />
 <#assign strobeVersion = "10.1.0" />
 <#assign rootResources = "/vrtx/__vrtx/static-resources/themes/default/" />
 <script type="text/javascript"><!--
@@ -26,10 +26,12 @@
     </#if>              <#assign audioImgSrc = "${rootResources}icons/audio-icon.png" />
     
     <#if streamType?exists>
+      <#assign dateStr = nanoTime?c />
       <@genPrintImage vidImgSrc />
       <@includeMediaPlayerMarkup vidImgSrc "article.media-file" "" "500" "279" />       
       <@initVideoJS true />
     <#elseif contentType?exists>
+      <#assign dateStr = nanoTime?c />
       <#if contentType == "audio"
         || contentType == "audio/mpeg"
         || contentType == "audio/mp3"

@@ -162,7 +162,6 @@
   }
   .vrtx-media-player-no-flash .playbutton { 
     position: absolute;
-    /* take out of flow */
     top: 90px;
     left: 195px;
     width: 115px;

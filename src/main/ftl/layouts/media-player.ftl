@@ -21,7 +21,6 @@
 
 <#macro mediaPlayer >
   <#if media?exists>
-  
     <#if poster?exists> <#assign vidImgSrc = "${poster?html}" />
     <#else>             <#assign vidImgSrc = "${rootResources}icons/video-noflash.png" />
     </#if>              <#assign audioImgSrc = "${rootResources}icons/audio-icon.png" />
@@ -31,7 +30,10 @@
       <@includeMediaPlayerMarkup vidImgSrc "article.media-file" "" "500" "279" />       
       <@initVideoJS true />
     <#elseif contentType?exists>
-      <#if contentType == "audio" || contentType == "audio/mpeg" || contentType == "audio/mp3" || contentType == "audio/x-mpeg">
+      <#if contentType == "audio"
+        || contentType == "audio/mpeg"
+        || contentType == "audio/mp3"
+        || contentType == "audio/x-mpeg">
         <@genPrintImage audioImgSrc />
         <@includeMediaPlayerMarkup audioImgSrc "article.audio-file" "" "151" "82" />                     
         <@initAudioJS />
@@ -44,7 +46,8 @@
         <@genPrintImage vidImgSrc />
         <@includeMediaPlayerMarkup vidImgSrc "article.media-file" "" "500" "279" />
         <@initVideoJS false true />
-      <#elseif contentType == "video/x-flv" || contentType == "video/mp4">
+      <#elseif contentType == "video/x-flv"
+            || contentType == "video/mp4">
         <@genPrintImage vidImgSrc />
         <@includeMediaPlayerMarkup vidImgSrc "article.video-file" "vrtx-media-player-no-flash" "" "" true />
         <@initVideoJS />
@@ -81,7 +84,7 @@
   	    src: "${media?url("UTF-8")}"
   	    <#if isLiveStream>,streamType: "live"</#if>
   	    <#if poster?exists>,poster: "${poster?url("UTF-8")}" 
-  	    <#else>,poster: "/vrtx/__vrtx/static-resources/themes/default/icons/video-noflash.png"</#if>
+  	    <#else>,poster: "${rootResources}icons/video-noflash.png"</#if>
   	    <#if autoplay?exists>,autoPlay: "${autoplay}"</#if>
 	  };
 	  var flashparams = {
@@ -141,7 +144,7 @@
 </#macro>
 
 <#macro genPrintImage imgSrc>
-  <img src="${imgSrc}" alt="print video image" style="display: none" />
+  <img class="vrtx-media-print" src="${imgSrc}" alt="print video image" style="display: none" />
 </#macro>
 
 <#-- XXX: own file -->

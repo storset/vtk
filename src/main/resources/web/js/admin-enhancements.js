@@ -826,6 +826,10 @@ function interceptEnterKeyAndReroute(txt, btn, cb) {
 function baggageBeltAnimFx(elm, opts) {
   if (typeof opts !== "object") opts = {};
 
+  var resMenuRight = $("#resourceMenuRight");
+  if(!resMenuRight.hasClass("overflow-hidden")) {
+    resMenuRight.addClass("overflow-hidden");
+  }
   var width = elm.outerWidth(true);
   if (opts.reverse) {
     anim = -width;
@@ -838,11 +842,16 @@ function baggageBeltAnimFx(elm, opts) {
   if (opts.complete) {
     elm.animate({
       "marginLeft": anim + "px"
-    }, vrtxAdmin.transitionSpeed, easing, opts.complete);
+    }, vrtxAdmin.transitionSpeed, easing, function() {
+      resMenuRight.removeClass("overflow-hidden");
+      opts.complete();
+    });
   } else {
     elm.animate({
       "marginLeft": anim + "px"
-    }, vrtxAdmin.transitionSpeed, easing);
+    }, vrtxAdmin.transitionSpeed, easing, function() {
+      resMenuRight.removeClass("overflow-hidden");
+    });
   }
 }
 
@@ -1157,7 +1166,6 @@ VrtxAdmin.prototype.dropdown = function dropdown(options) {
     list.find("li.dropdown-init #dropdown-shortcut-menu-click-area").click(function (e) {
       vrtxAdm.closeDropdowns();
       vrtxAdm.openDropdown(shortcutMenu);
-
       e.stopPropagation();
       e.preventDefault();
     });

@@ -22,20 +22,25 @@
 <#macro mediaPlayer >
   <#if media?exists>
     <#if streamType?exists>
-      <@includeMediaPlayerMarkup "${rootResources}icons/video-noflash.png" "article.media-file" "" "500" "279" />       
+      <@genPrintImage "<#if poster?exists>${poster?html}<#else>${rootResources}icons/video-noflash.png</#if>" />
+      <@includeMediaPlayerMarkup "<#if poster?exists>${poster?html}<#else>${rootResources}video-noflash.png</#if>" "article.media-file" "" "500" "279" />       
       <@initVideoJS true />
     <#elseif contentType?exists>
       <#if contentType == "audio" || contentType == "audio/mpeg" || contentType == "audio/mp3" || contentType == "audio/x-mpeg">
+        <@genPrintImage "${rootResources}icons/audio-icon.png" />
         <@includeMediaPlayerMarkup "${rootResources}icons/audio-icon.png" "article.audio-file" "" "151" "82" />                     
         <@initAudioJS />
         <@showDownloadLink "article.audio-file" />
       <#elseif contentType == "video/quicktime" >
+        <@genPrintImage "<#if poster?exists>${poster?html}<#else>${rootResources}icons/video-noflash.png</#if>" />
         <@initVideoQuicktime />
         <@showDownloadLink "article.media-file" />
       <#elseif contentType == "application/x-shockwave-flash" && extension == "swf">
-        <@includeMediaPlayerMarkup "${rootResources}icons/video-noflash.png" "article.media-file" "" "500" "279" />
+        <@genPrintImage "<#if poster?exists>${poster?html}<#else>${rootResources}icons/video-noflash.png</#if>" />
+        <@includeMediaPlayerMarkup "<#if poster?exists>${poster?html}<#else>${rootResources}video-noflash.png</#if>" "article.media-file" "" "500" "279" />
         <@initVideoJS false true />
       <#elseif contentType == "video/x-flv" || contentType == "video/mp4">
+        <@genPrintImage "<#if poster?exists>${poster?html}<#else>${rootResources}icons/video-noflash.png</#if>" />
         <@includeMediaPlayerMarkup "<#if poster?exists>${poster?html}<#else>${rootResources}video-noflash.png</#if>" "article.video-file" "vrtx-media-player-no-flash" "" "" true />
         <@initVideoJS />
         <#if contentType == "video/mp4" && !media?starts_with("rtmp")>
@@ -128,6 +133,10 @@
   <#if showDL?exists && showDL == "true">
     <a class="vrtx-media" href="${media?html}"><@vrtx.msg code=linkText /></a>
    </#if>
+</#macro>
+
+<#macro genPrintImage imgSrc>
+  <img src="${imgSrc}" alt="print video image" style="display: none" />
 </#macro>
 
 <#-- XXX: own file -->

@@ -11,7 +11,7 @@
 
 <#assign dateStr = nanoTime?c />
 <#assign strobeVersion = "10.1.0" />
-<#assign rootResources = "/vrtx/__vrtx/static-resources/themes/default/";
+<#assign rootResources = "/vrtx/__vrtx/static-resources/themes/default/" />
 <script type="text/javascript"><!--
   if (typeof swfobject == "undefined") {
     document.write("<scr" + "ipt src='/vrtx/__vrtx/static-resources/flash/StrobeMediaPlayback_1.5.1-patched/10.1/scripts/swfobject.js' type='text/javascript'><\/script>");

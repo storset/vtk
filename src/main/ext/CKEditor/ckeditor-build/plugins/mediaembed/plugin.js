@@ -132,7 +132,7 @@ var divAlign = "";
             order: 1
           },
           RemoveMedia: {
-            label: editor.lang.div.remove,
+            label: editor.lang.mediaembed.remove,
             command: 'MediaEmbedRemove',
             group: 'mediaembed',
             icon: this.path.toLowerCase() + 'images/iconremove.png',

@@ -72,6 +72,7 @@ import org.vortikal.repository.event.ResourceCreationEvent;
 import org.vortikal.repository.event.ResourceDeletionEvent;
 import org.vortikal.repository.event.ResourceModificationEvent;
 import org.vortikal.repository.resourcetype.Content;
+import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.search.QueryException;
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
@@ -239,7 +240,9 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         }
 
         if (revision.getType() != Revision.Type.WORKING_COPY) {
-            this.authorizationManager.authorize(principal, revision.getAcl(), Privilege.READ);
+            if (!this.authorizationManager.authorize(principal, revision.getAcl(), Privilege.READ)) {
+                throw new AuthorizationException("Principal " + principal + " not authorized by revision ACL for privilege READ");
+            }
         }
 
         // Evaluate revision content (as content-modification)
@@ -334,7 +337,9 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         if (revision.getType() == Type.WORKING_COPY) {
             this.authorizationManager.authorizeRead(uri, principal);
         } else {
-            this.authorizationManager.authorize(principal, revision.getAcl(), Privilege.READ);
+            if (!this.authorizationManager.authorize(principal, revision.getAcl(), Privilege.READ)) {
+                throw new AuthorizationException("Principal " + principal + " not authorized by revision ACL for privilege READ");
+            }
         }
         return this.revisionStore.getContent(r, revision);
     }
@@ -468,8 +473,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         }
 
         try {
-            PropertySet fixedProps = this.resourceHelper.getFixedCopyProperties(src, principal, destUri);
-
+            PropertySetImpl fixedProps = this.resourceHelper.getFixedCopyProperties(src, principal, destUri);
             ResourceImpl newResource = src.createCopy(destUri, copyAcl ? src.getAcl() : destParent.getAcl());
             Content content = getContent(src);
             // XXX: why nameChange() on copy?
@@ -483,7 +487,23 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             // Both new resource and destParent are stored in DAO copy call
             // Probably better to not touch destparent in DAO copy code and
             // explicitly store it here instead (for better clarity).
-            newResource = this.dao.copy(src, destParent, newResource, copyAcl, fixedProps);
+
+            // TODO recursive unpublish in case of only CREATE_UNPUBLISHED permissions at destination.
+            // A concept of forced properties must be introduced in DAO.copy(), in addition to
+            // the already existing "deleteProperties" argument. Forced properties must then be applied
+            // recursively by DAO.copy() (published=false), in addition to deletion of publish-date.
+            // For now, do a simplified unpublish of non-collection resources:
+            Set<String> deleteProperties = new HashSet<String>(PropertyType.UNCOPYABLE_PROPERTIES);
+            if (!src.isCollection() 
+                    && src.hasPublishDate()
+                    && !this.authorizationManager.authorize(principal, destParent.getAcl(), Privilege.READ_WRITE)) {
+                deleteProperties.add(PropertyType.PUBLISH_DATE_PROP_NAME);
+                Property publishedProp = (Property) src.getProperty(Namespace.DEFAULT_NAMESPACE,
+                                                    PropertyType.PUBLISHED_PROP_NAME).clone();
+                publishedProp.setBooleanValue(false);
+                fixedProps.addProperty(publishedProp);
+            }
+            newResource = this.dao.copy(src, destParent, newResource, copyAcl, fixedProps, deleteProperties);
             this.contentStore.copy(src.getURI(), newResource.getURI());
 
             this.context.publishEvent(new ResourceCreationEvent(this, (Resource) newResource.clone()));

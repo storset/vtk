@@ -414,10 +414,11 @@ public class Cache implements DataAccessor, InitializingBean {
 
     @Override
     public ResourceImpl copy(ResourceImpl r, ResourceImpl destParent, PropertySet newResource, boolean copyACLs,
-            PropertySet fixedProperties) throws DataAccessException {
+            PropertySet fixedProperties, Set<String> deleteProperties) throws DataAccessException {
 
         // Persist copy operation
-        ResourceImpl writtenDestResource = this.wrappedAccessor.copy(r, destParent, newResource, copyACLs, fixedProperties);
+        ResourceImpl writtenDestResource = this.wrappedAccessor.copy(
+                r, destParent, newResource, copyACLs, fixedProperties, deleteProperties);
 
         // Purge affected destination parent from cache
         this.items.remove(destParent.getURI(), false);

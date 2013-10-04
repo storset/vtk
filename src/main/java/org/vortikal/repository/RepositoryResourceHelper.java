@@ -163,7 +163,7 @@ public class RepositoryResourceHelper {
      * XXX: This hard coded list must be replaced by standard prop handling
      * methods..
      */
-    public PropertySet getFixedCopyProperties(ResourceImpl resource, Principal principal, Path destUri)
+    public PropertySetImpl getFixedCopyProperties(ResourceImpl resource, Principal principal, Path destUri)
             throws CloneNotSupportedException {
         PropertySetImpl fixedProps = new PropertySetImpl();
         fixedProps.setUri(destUri);
@@ -214,7 +214,7 @@ public class RepositoryResourceHelper {
                 PropertyType.PROPERTIESMODIFIEDBY_PROP_NAME).clone();
         propertiesModifiedBy.setPrincipalValue(principal);
         fixedProps.addProperty(propertiesModifiedBy);
-
+        
         return fixedProps;
     }
 
@@ -375,7 +375,8 @@ public class RepositoryResourceHelper {
                 if (propDef.getProtectionLevel() != null) {
                     try {
                         if (propDef.getProtectionLevel() == RepositoryAction.READ_WRITE
-                                && !ctx.getOriginalResource().hasPublishDate()) {
+                                && !ctx.getOriginalResource().hasPublishDate()
+                                && !isPublishDateProperty(propDef)) {
                             // Authorize for READ_WRITE_UNPUBLISHED instead, if original resource is
                             // unpublished and protection level is READ_WRITE
                             this.authorizationManager.authorizeAction(ctx.getOriginalResource().getURI(),
@@ -540,6 +541,16 @@ public class RepositoryResourceHelper {
                     + " succeeded, assertions matched: " + (assertions != null ? Arrays.asList(assertions) : null));
         }
         return true;
+    }
+    
+    /**
+     * 
+     * @return <code>true</code> if the property definition is the well known
+     *         publish-date property, <code>false</code> otherwise.
+     */
+    private boolean isPublishDateProperty(PropertyTypeDefinition def) {
+        return Namespace.DEFAULT_NAMESPACE.equals(def.getNamespace())
+                && PropertyType.PUBLISH_DATE_PROP_NAME.equals(def.getName());
     }
 
     @Required

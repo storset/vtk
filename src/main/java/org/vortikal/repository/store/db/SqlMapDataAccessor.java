@@ -495,7 +495,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
 
     @Override
     public ResourceImpl copy(ResourceImpl resource, ResourceImpl destParent, PropertySet newResource, boolean copyACLs,
-            PropertySet fixedProperties) {
+            PropertySet fixedProperties, Set<String> deleteProperties) {
 
         Path destURI = newResource.getURI();
         int depthDiff = destURI.getDepth() - resource.getURI().getDepth();
@@ -593,23 +593,23 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
         storeProperties(created);
 
         // Remove uncopyable properties
-        deleteUncopyablePropertiesRecursively(created.getURI());
+        deletePropertiesRecursively(created.getURI(), deleteProperties);
 
         // Re-load and return newly written destination ResourceImpl
         return load(created.getURI());
     }
 
     /**
-     * Removes all properties found in PropertyType.UNCOPYABLE_PROPERTIES, by name, from
-     * resource at path (recursively for all sub-resources as well if resource is collection).
-     * Only properties in DEFAULT (null) namespace are deleted.
+     * Removes all properties by name, from resource at path (recursively for
+     * all sub-resources as well if resource is collection).Only properties in
+     * DEFAULT (null) namespace are deleted.
      * 
      * Alters only database with no other side effects.
      * 
      * @param uri The path to the resource.
      * @see PropertyType#UNCOPYABLE_PROPERTIES
      */
-    private void deleteUncopyablePropertiesRecursively(Path uri) {
+    private void deletePropertiesRecursively(Path uri, final Set<String> deleteProperties) {
         final String destUri = uri.toString();
         final String uriWildcard = SqlDaoUtils.getUriSqlWildcard(uri, SQL_ESCAPE_CHAR);
         final String batchSqlMap = getSqlMap("deleteUncopyableProperties");
@@ -617,7 +617,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
             @Override
             public Object doInSqlMapClient(SqlMapExecutor executor) throws SQLException {
                 executor.startBatch();
-                for (String propertyName : PropertyType.UNCOPYABLE_PROPERTIES) {
+                for (String propertyName : deleteProperties) {
                     Map<String, Object> params = new HashMap<String, Object>();
                     params.put("destUri", destUri);
                     params.put("uriWildcard", uriWildcard);

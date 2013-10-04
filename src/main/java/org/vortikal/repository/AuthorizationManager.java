@@ -592,10 +592,11 @@ public final class AuthorizationManager {
                 authorizeRead(uris[i], principal);
             }
             
-            // For copy of collection we require full CREATE at destination
+            // For copy of collection we require full CREATE at destination (since we are missing recursive unpublication).
             authorizeCreate(destUri.getParent(), principal);
         } else {
-            // If not collection, we allow if principal only has CREATE_UNPUBLISHED at minimum.
+            // If not collection, we only require CREATE_UNPUBLISHED and depend on repository to
+            // unpublish new destination resource if source was published.
             authorizeCreateUnpublished(destUri.getParent(), principal);
         }
 

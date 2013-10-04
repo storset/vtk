@@ -57,17 +57,60 @@
             "type" : "file"
         },
 
+        "/c/published-file.txt" : {
+            "type" : "file",
+            "properties" : {
+              "publish-date" : "2013-01-01 12:00",
+              "published" : "true"
+            }
+        },
+        
         "/d" : {
             "acl" : {
                 "read-write" : [ "u:user1@localhost" ],
                 "all" : [ "u:admin@localhost" ] 
             }
         },
+        
+        "/d/file-published.txt" : {
+            "type" : "file",
+            "properties" : {
+              "publish-date" : "2013-01-01 12:00",
+              "published" : "true"
+            }
+        },
 
+        "/d/file-unpublished.txt" : {
+            "type" : "file"
+        },
+        
         "/e" : {
             "acl" : {
                 "all" : [ "u:user4@localhost", "u:admin@localhost" ] 
             }
+        },
+        
+        "/vrtx" : {
+          "type" : "collection"
+        },
+        
+        "/vrtx/templates" : {
+          "type" : "collection"
+        },
+        
+        "/vrtx/templates/file-published.txt" : {
+          "type" : "file",
+          "properties" : {
+            "publish-date" : "2013-01-01 12:00",
+            "published" : "true"
+          }
+        },
+        
+        "/vrtx/templates/file-unpublished.txt" : {
+          "type" : "file",
+          "properties" : {
+            "published" : "false"
+          }
         }
     },
 
@@ -157,13 +200,55 @@
             "expected-outcome" : "FAILURE",
             "description" : "Should fail because user1@localhost is not allowed to read /a/b/c"
         },
+        
+        "copy-3" : {
+          "method" : [ "authorizeCopy", "/vrtx/templates/file-published.txt", "/c/new.txt", "user1@localhost", false],
+          "expected-outcome" : "SUCCESS",
+          "description" : "Should work because user1@localhost has CREATE_UNPUBLISHED and repository should unpublish the copied resource"
+        },
 
+        "copy-4" : {
+          "method" : [ "authorizeCopy", "/vrtx/templates/file-unpublished.txt", "/c/new.txt", "user1@localhost", false],
+          "expected-outcome" : "SUCCESS",
+          "description" : "Should work because user1@localhost has permissions to create unpublished resources at destination"
+        },
+        
+        "copy-5" : {
+          "method" : [ "authorizeCopy", "/b", "/c/b-copy", "user1@localhost", false],
+          "expected-outcome" : "FAILURE",
+          "description" : "Should fail because copy of collections is not allowed with only CREATE_UNPUBLISHED at destination"
+        },
+        
         "move-1" : {
             "method" : [ "authorizeMove", "/a", "/c", "admin@localhost", false  ],
             "expected-outcome" : "SUCCESS",
             "description" : "Regular move"
         },
 
+        "move-2" : {
+          "method" : [ "authorizeMove", "/d/file-published.txt", "/c/file-published.txt", "user1@localhost", false],
+          "expected-outcome" : "FAILURE",
+          "description" : "Should fail because user1@localhost is not allowed to publish resources at destination"
+        },
+        
+        "move-3" : {
+          "method" : [ "authorizeMove", "/d/file-unpublished.txt", "/c/file-unpublished.txt", "user1@localhost", false],
+          "expected-outcome" : "FAILURE",
+          "description" : "Should fail because because we don't allow move when destParent != srcParent for privilege CREATE_UNPUBLISHED on destParent"
+        },
+        
+        "move-4" : {
+          "method" : [ "authorizeMove", "/c/published-file.txt", "/c/unpub.txt", "user1@localhost", false],
+          "expected-outcome" : "FAILURE",
+          "description" : "Should fail because user1@localhost is not allowed to alter published resources at destination"
+        },
+        
+        "move-5" : {
+          "method" : [ "authorizeMove", "/c/d", "/c/D", "user1@localhost", false],
+          "expected-outcome" : "SUCCESS",
+          "description" : "Should work because user1@localhost is allowed to rename unpublished resources at destination"
+        },
+        
         "read-1" : {
             "method" : [ "authorizeRead", "/c", "user1@localhost" ],
             "expected-outcome" : "SUCCESS"

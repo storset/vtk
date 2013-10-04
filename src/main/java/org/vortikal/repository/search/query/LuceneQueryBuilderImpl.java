@@ -57,7 +57,6 @@ import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.HierarchicalVocabulary;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.PropertySetImpl;
-import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.Vocabulary;
 import org.vortikal.repository.index.mapping.FieldNames;
@@ -88,8 +87,6 @@ import org.vortikal.repository.search.query.builders.UriSetQueryBuilder;
 import org.vortikal.repository.search.query.builders.UriTermQueryBuilder;
 import org.vortikal.repository.search.query.filter.DeletedDocsFilter;
 import org.vortikal.repository.search.query.security.QueryAuthorizationFilterFactory;
-import org.vortikal.web.RequestContext;
-import org.vortikal.web.service.Assertion;
 
 /**
  * Factory that helps in building different Lucene queries from our own query

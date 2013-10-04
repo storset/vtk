@@ -178,9 +178,11 @@ public class ResourceContextProvider implements InitializingBean, ReferenceDataP
             }
         }
         if (resource != null && !resource.getURI().isRoot()) {
-            parent = repository.retrieve(requestContext.getSecurityToken(),
-                    requestContext.getResourceURI().getParent(), this.retrieveForProcessing);
-
+            try {
+                parent = repository.retrieve(requestContext.getSecurityToken(), requestContext.getResourceURI()
+                        .getParent(), this.retrieveForProcessing);
+            } catch (Exception e) {
+            }
         }
 
         if (this.resourceWrapperManager != null && resource != null) {
@@ -192,11 +194,13 @@ public class ResourceContextProvider implements InitializingBean, ReferenceDataP
         resourceContextModel.put("principal", principal);
         resourceContextModel.put("currentResource", resource);
         resourceContextModel.put("currentURI", requestContext.getResourceURI());
+        if(resource != null){
+            resourceContextModel.put("parentURI", resource.getURI().getParent());
+        }
         if (parent != null) {
-            resourceContextModel.put("parentURI", parent.getURI());
             resourceContextModel.put("parentResource", parent);
         }
-
+        
         resourceContextModel.put("currentServiceName", currentService.getName());
         try {
             resourceContextModel.put("currentServiceURL", currentService.constructURL(resource, principal));

@@ -23,7 +23,7 @@ function visualizeBrokenLinks(options) {
     links = context.contents().clone();
   }
   // Remove components without user content
-  links.find("table.vrtx-unit-listing, table.vrtx-person-listing, .vrtx-alphabetical-project-listing, .vrtx-alphabetical-master-listing, .vrtx-listing-filter-results, .vrtx-listing-filter-status, .vrtx-listing-completed-ongoing, #vrtx-events-nav, .vrtx-paging-feed-wrapper, .comments, .vrtx-subfolder-menu, .vrtx-tab-menu, .vrtx-breadcrumb-menu, #vrtx-tags, .vrtx-tags, .vrtx-tags-service, .vrtx-tag-cloud").remove();
+  links.find("table.vrtx-unit-listing, table.vrtx-person-listing, .vrtx-alphabetical-project-listing, .vrtx-alphabetical-master-listing, .vrtx-listing-filter-results, .vrtx-listing-filter-status, .vrtx-listing-completed-ongoing, #vrtx-events-nav, .vrtx-paging-feed-wrapper, .comments, .comments-header, .vrtx-subfolder-menu, .vrtx-tab-menu, .vrtx-breadcrumb-menu, #vrtx-tags, .vrtx-tags, .vrtx-tags-service, .vrtx-tag-cloud").remove();
   
   // Remove all non-user content inside resources listings
   links.find(".vrtx-resources, #vrtx-daily-events, .vrtx-master-table, .vrtx-masters, .vrtx-programs, .vrtx-programs-inactive, .vrtx-program-options, .vrtx-program-options-inactive, .vrtx-person-list-participants").find("*:not(.description) a").remove()

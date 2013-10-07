@@ -97,6 +97,12 @@
   }
   
   function updateHashShareLink(link) {
+    if($.isEmptyObject($.bbq.getState())) {
+      var hash = "";
+    } else {
+      var hash = location.hash;
+    }
+  
     var msg = link[0].href;
     var msgLines = decodeURI(msg).split("\n");
       

@@ -10,173 +10,156 @@
 <#import "/lib/vortikal.ftl" as vrtx />
 
 <#macro mediaPlayer >
-  <#if media?exists>
+
+  <#if media?exists && streamType?exists>
+
     <#assign dateStr = nanoTime?c />
     <#assign strobeVersion = "10.1.0" />
-    <#assign rootResources = "/vrtx/__vrtx/static-resources/themes/default/" />
+
     <script type="text/javascript"><!--
-      if (typeof swfobject == "undefined") {
+      if (typeof swfobject == 'undefined') {
         document.write("<scr" + "ipt src='/vrtx/__vrtx/static-resources/flash/StrobeMediaPlayback_1.5.1-patched/10.1/scripts/swfobject.js' type='text/javascript'><\/script>");
       }
     // -->
     </script>
-    <#if poster?exists> <#assign imgSrc = "${poster?html}" />
-    <#else>             <#assign imgSrc = "${rootResources}icons/video-noflash.png" />
-    </#if>
-    
-    <#if streamType?exists>
-      <@genPrintImage />
-      <@includeMediaPlayerMarkup "article.media-file" />       
-      <@initVideoJS true />
-    <#elseif contentType?exists>
-      <#if contentType == "audio"
-        || contentType == "audio/mpeg"
-        || contentType == "audio/mp3"
-        || contentType == "audio/x-mpeg">
-        <#assign imgSrc = "${rootResources}icons/audio-icon.png" />
-        <@genPrintImage />
-        <@includeMediaPlayerMarkup "article.audio-file" />                     
-        <@initAudioJS />
-        <@showDownloadLink "article.audio-file" />
-      <#elseif contentType == "video/quicktime" >
-        <@genPrintImage />
-        <@initVideoQuicktime />
-        <@showDownloadLink "article.media-file" />
-      <#elseif contentType == "application/x-shockwave-flash" && extension == "swf">
-        <@genPrintImage />
-        <@includeMediaPlayerMarkup "article.media-file" />
-        <@initVideoJS false true />
-      <#elseif contentType == "video/x-flv"
-            || contentType == "video/mp4">
-        <@genPrintImage />
-        <@includeMediaPlayerMarkup "article.video-file" "vrtx-media-player-no-flash" true />
-        <@initVideoJS />
-        <#if contentType == "video/mp4" && !media?starts_with("rtmp")>
-          <@showDownloadLink "article.video-file" />
-        </#if>
-      <#else>
-        <#assign showDL = "true" />
-        <@showDownloadLink "article.media-file"  />
-      </#if>
-    </#if>
-  </#if>
-</#macro>
 
-<#macro includeMediaPlayerMarkup alt class="" linkedImg=false>
-  <div id="mediaspiller-${dateStr}"<#if class !=""> class="${class}"</#if>>
-    <#if linkedImg>
+    <div id="mediaspiller-${dateStr}">
       <a class="vrtx-media" href="${media?html}">
-    </#if>
-        <img src="${imgSrc}" alt="<@vrtx.msg code=alt />" />
-	<#if linkedImg>
+	    <img src="/vrtx/__vrtx/static-resources/themes/default/icons/video-noflash.png" width="500" height="279" alt="<@vrtx.msg code="article.media-file" />"/>
 	  </a>
-	<#else>
-	  <a class="playbutton" href="${media?html}"></a>
-	  <@includeNoFlashCSS />
-	</#if>
-  </div>
-</#macro>
-
-<#macro initVideoJS isLiveStream=false isFlash=false>
-  <script type="text/javascript"><!--
-    <#if !isFlash>
+    </div>
+    <script type="text/javascript"><!--
       var flashvars = {
-  	    src: "${media?url("UTF-8")}"
-  	    <#if isLiveStream>,streamType: "live"</#if>
-  	    <#if poster?exists>,poster: "${poster?url("UTF-8")}" 
-  	    <#else>,poster: "${rootResources}icons/video-noflash.png"</#if>
+  	    src: "${media?url("UTF-8")}",
+  	    streamType: "live"
+  	    <#if poster?exists>,poster: "${poster?html}" </#if>
   	    <#if autoplay?exists>,autoPlay: "${autoplay}"</#if>
 	  };
-	  var flashparams = {
+	  var params = {																																														
 	    allowFullScreen: "true",
 	    allowscriptaccess: "always"
 	  };
-	<#else>
-	  var flashvars = {
-        <#if autoplay?exists>autoplay: "${autoplay}"</#if>
-	  };
-	  var flashparams = {};
-      var flashattr = {};
-	</#if>
-	swfobject.embedSWF(<#if !isFlash>"${strobe?html}"<#else>"${media?html}"</#if>, "mediaspiller-${dateStr}", "${width}", "${height}", "${strobeVersion}", false, flashvars, flashparams<#if isFlash>, flashattr</#if>);
-  // -->
-  </script>
-</#macro>
+	  swfobject.embedSWF("${strobe?html}", "mediaspiller-${dateStr}", "${width}", "${height}", "${strobeVersion}", false, flashvars, params);
+	// -->
+    </script>
 
-<#macro initVideoQuicktime>
-  <object classid="clsid:02BF25D5-8C17-4B23-BC80-D3488ABDDC6B" id="testid" width="${width}" height="${height}" codebase="http://www.apple.com/qtactivex/qtplugin.cab">
-    <param name="src" value="${media?html}"/>
-    <param name="autoplay" value="<#if autoplay?exists && autoplay = "true">true<#else>false</#if>"/>
-    <param name="controller" value="true"/>
-    <param name="loop" value="false"/>
-    <param name="scale" value="aspect" />
-    <embed src="${media?html}" 
-           width="${width}" 
-           height="${height}"
-           autoplay="<#if autoplay?exists && autoplay = "true">true<#else>false</#if>"
-           controller="true" loop="false" scale="aspect" pluginspage="http://www.apple.com/quicktime/download/">
-    </embed>
-  </object>
-</#macro>
+  <#elseif media?exists && contentType?exists>
 
-<#macro initAudioJS>
-  <script type="text/javascript"><!--
-    var flashvars = {
-	  playerID: "1",
-  	  soundFile: "${media?url("UTF-8")}"
-  	  <#if poster?exists>,poster: "${poster?html}" </#if>
-  	  <#if autoplay?exists>,autoplay: "${autoplay}"</#if>
-    };
-    var params = {
-      quality: "high",
-	  menu: "false",
-	  wmode: "transparent"
-    };	
-    swfobject.embedSWF("${audioFlashPlayerFlashURL?html}", "mediaspiller-${dateStr}", "290", "24", "${strobeVersion}", false, flashvars, params);
-  // -->
-  </script>
-</#macro>
+    <#assign dateStr = nanoTime?c />
+    <#assign strobeVersion = "10.1.0" />
 
-<#macro showDownloadLink linkText="article.media-file">
-  <#if showDL?exists && showDL == "true">
-    <a class="vrtx-media" href="${media?html}"><@vrtx.msg code=linkText /></a>
-   </#if>
-</#macro>
+    <script type="text/javascript"><!--
+      if (typeof swfobject == 'undefined') {
+        document.write("<scr" + "ipt src='/vrtx/__vrtx/static-resources/flash/StrobeMediaPlayback_1.5.1-patched/10.1/scripts/swfobject.js' type='text/javascript'><\/script>");
+      }
+    // -->
+    </script>
 
-<#macro genPrintImage>
-  <img class="vrtx-media-print" src="${imgSrc}" alt="print video image" style="display: none" />
-</#macro>
+    <#if contentType == "audio" || contentType == "audio/mpeg" || contentType == "audio/mp3" || contentType == "audio/x-mpeg">
+      <#-- <script type="text/javascript" src="${audioFlashPlayerJsURL?html}/"></script> -->
+   	  <div id="mediaspiller-${dateStr}">
+        <a class="vrtx-media" href="${media?html}">
+          <img src="/vrtx/__vrtx/static-resources/themes/default/icons/audio-icon.png" width="151" height="82" alt="<@vrtx.msg code="article.audio-file" />"/>
+        </a>
+	  </div>
+	  <script type="text/javascript"><!--
+	    var flashvars = {
+		  playerID: "1",
+  		  soundFile: "${media?url("UTF-8")}"
+  		  <#if poster?exists>,poster: "${poster?html}" </#if>
+  		  <#if autoplay?exists>,autoplay: "${autoplay}"</#if>
+	    };
+	    var params = {
+		  quality: "high",
+		  menu: "false",
+		  wmode: "transparent"
+	    };	
+	    swfobject.embedSWF("${audioFlashPlayerFlashURL?html}", "mediaspiller-${dateStr}", "290", "24", "${strobeVersion}",false,flashvars,params);
+	  // -->
+	  </script>
 
-<#-- XXX: own file -->
-<#macro includeNoFlashCSS>
-<style type="text/css">
-  .vrtx-media-player-no-flash,
-  .vrtx-media-player-no-flash img {
-    width: 507px;
-    height: 282px;
-    float: left;
-  }
-  .vrtx-media-player-no-flash {
-    background-color: #000000;
-    position: relative;
-  }
-  .vrtx-media-player-no-flash .playbutton { 
-    position: absolute;
-    top: 90px;
-    left: 195px;
-    width: 115px;
-    height: 106px;
-    display: block;
-  }
-  .vrtx-media-player-no-flash .playbutton,
-  .vrtx-media-player-no-flash .playbutton:visited,
-  .vrtx-media-player-no-flash .playbutton:active {
-    background: url('${rootResources}icons/video-playbutton.png') no-repeat center center;
-  }
-  .vrtx-media-player-no-flash .playbutton:hover {
-    background-image: url('${rootResources}icons/video-playbutton-hover.png');
-  }
-</style>
+	  <#if showDL?exists && showDL == "true">
+        <a class="vrtx-media" href="${media?html}"><@vrtx.msg code="article.audio-file" /></a>
+      </#if>
+
+    <#elseif contentType == "video/quicktime" >
+
+      <object classid="clsid:02BF25D5-8C17-4B23-BC80-D3488ABDDC6B" id="testid" width="${width}" height="${height}" codebase="http://www.apple.com/qtactivex/qtplugin.cab">
+        <param name="src" value="${media?html}"/>
+        <param name="autoplay" value="<#if autoplay?exists && autoplay = "true">true<#else>false</#if>"/>
+        <param name="controller" value="true"/>
+        <param name="loop" value="false"/>
+        <param name="scale" value="aspect" />
+        <embed src="${media?html}" 
+               width="${width}" 
+               height="${height}"
+               autoplay="<#if autoplay?exists && autoplay = "true">true<#else>false</#if>"
+               controller="true" loop="false" scale="aspect" pluginspage="http://www.apple.com/quicktime/download/">
+        </embed>
+      </object>
+
+      <#if showDL?exists && showDL == "true">
+        <a class="vrtx-media" href="${media?html}"><@vrtx.msg code="article.media-file" /></a>
+      </#if>
+
+    <#elseif contentType == "application/x-shockwave-flash" && extension == "swf">
+
+	  <div id="mediaspiller-${dateStr}">
+	    <a class="vrtx-media" href="${media?html}">
+	      <img src="/vrtx/__vrtx/static-resources/themes/default/icons/video-noflash.png" width="500" height="279" alt="<@vrtx.msg code="article.media-file" />"/>
+	    </a>
+	  </div>
+	  <script type="text/javascript"><!--
+		var flashvars = {
+  		  <#if autoplay?exists>autoplay: "${autoplay}"</#if>
+		};
+		var flashparams = {};
+		var flashattr = {};
+		swfobject.embedSWF("${media?html}", "mediaspiller-${dateStr}", "${width}", "${height}", "${strobeVersion}", false, flashvars, flashparams, flashattr);
+	  // -->
+	  </script>
+
+    <#elseif (!streamType?exists) && contentType == "video/x-flv" || contentType == "video/mp4">
+      <style type="text/css">
+        .vrtx-media-player-no-flash, .vrtx-media-player-no-flash img { width: 507px; height: 282px; float: left; }
+        .vrtx-media-player-no-flash { background-color: #000000; position: relative; }
+        .vrtx-media-player-no-flash .playbutton { 
+          position: absolute; /* take out of flow */ top: 90px; left: 195px; width: 115px; height: 106px; display: block;
+        }
+        .vrtx-media-player-no-flash .playbutton,.vrtx-media-player-no-flash .playbutton:visited,.vrtx-media-player-no-flash .playbutton:active {
+          background: url('/vrtx/__vrtx/static-resources/themes/default/icons/video-playbutton.png') no-repeat center center;
+        }
+        .vrtx-media-player-no-flash .playbutton:hover { background-image: url('/vrtx/__vrtx/static-resources/themes/default/icons/video-playbutton-hover.png'); }
+      </style>
+	  <div id="mediaspiller-${dateStr}" class="vrtx-media-player-no-flash">
+	    <img src="<#if poster?exists>${poster?html}<#else>/vrtx/__vrtx/static-resources/themes/default/icons/video-noflash.png</#if>" alt="poster image" />
+	    <a class="playbutton" href="${media?html}"></a>
+	  </div>
+	  <script type="text/javascript"><!--
+	    var flashvars = {
+  		  src: "${media?url("UTF-8")}"
+  		  <#if poster?exists>,poster: "${poster?url("UTF-8")}" 
+  		  <#else>,poster: "/vrtx/__vrtx/static-resources/themes/default/icons/video-noflash.png"
+  		  </#if>
+  		  <#if autoplay?exists>,autoPlay: "${autoplay}"</#if>
+	    };
+	    var params = {
+		  allowFullScreen: "true",
+		  allowscriptaccess: "always"
+	    };
+	    swfobject.embedSWF("${strobe?html}", "mediaspiller-${dateStr}", "${width}", "${height}", "${strobeVersion}", false, flashvars, params);
+	  // -->
+	  </script>
+	  <#if contentType == "video/mp4" && !media?starts_with("rtmp")>
+        <#if showDL?exists && showDL == "true">
+          <a class="vrtx-media" href="${media?html}"><@vrtx.msg code="article.video-file" /></a>
+        </#if>
+	  </#if>
+    <#else>
+      <a class="vrtx-media" href="${media?html}"><@vrtx.msg code="article.media-file" /></a>
+    </#if>
+
+  </#if>
 </#macro>
 
 <@mediaPlayer />

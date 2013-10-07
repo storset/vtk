@@ -7,7 +7,7 @@ var VrtxSimpleDialog = dejavu.Class.declare({
   initialize: function() {     // Constructor
   },
   openLoadingDialog: function (title) {
-    this.openDialog("#dialog-loading", {
+    this.__openDialog("#dialog-loading", {
       msg: "<img src='/vrtx/__vrtx/static-resources/themes/default/images/loadingAnimation.gif' alt='Loading icon' />",
       title: title,
       hasHtml: true,
@@ -16,7 +16,7 @@ var VrtxSimpleDialog = dejavu.Class.declare({
     });
   },
   openHtmlDialog: function (name, html, title, width, height, funcOkComplete, funcOkCompleteOpts, btnTextOk, btnTextCancel, funcOnOpen) {
-    this.openDialog("#dialog-html-" + name, {
+    this.__openDialog("#dialog-html-" + name, {
       msg: html,
       title: title,
       hasHtml: true,
@@ -32,7 +32,7 @@ var VrtxSimpleDialog = dejavu.Class.declare({
     });
   },
   openMsgDialog: function (msg, title) {
-    this.openDialog("#dialog-message", {
+    this.__openDialog("#dialog-message", {
       msg: msg,
       title: title,
       hasOk: true
@@ -40,7 +40,7 @@ var VrtxSimpleDialog = dejavu.Class.declare({
   },
   openConfirmDialog: function (msg, title, funcOkComplete, funcCancelComplete, funcOkCompleteOpts) {
     this.destroyDialog("#dialog-confirm");
-    this.openDialog("#dialog-confirm", { 
+    this.__openDialog("#dialog-confirm", { 
       msg: msg,
       title: title,
       hasOk: true,
@@ -50,7 +50,7 @@ var VrtxSimpleDialog = dejavu.Class.declare({
       funcCancelComplete: funcCancelComplete
     });
   },
-  openDialog: function (selector, opts) {
+  __openDialog: function (selector, opts) {
     var elm = $(selector);
     if (!elm.length) {
       if (opts.title) {

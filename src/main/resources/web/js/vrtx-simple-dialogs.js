@@ -2,55 +2,16 @@
  *  Dialogs and interface to jQuery UI
  */
 
-var VrtxSimpleDialog = dejavu.Class.declare({
+var VrtxSimpleDialogInterface = dejavu.Interface.declare({
+    $name: 'VortexSimpleDialogInterface'
+});
+
+var VrtxSimpleDialog = dejavu.AbstractClass.declare({
   $name: "VortexSimpleDialog", // Meta-attribute useful for debugging
+  $implements: [VrtxSimpleDialogInterface],
   initialize: function() {     // Constructor
   },
-  openLoadingDialog: function (title) {
-    this.__openDialog("#dialog-loading", {
-      msg: "<img src='/vrtx/__vrtx/static-resources/themes/default/images/loadingAnimation.gif' alt='Loading icon' />",
-      title: title,
-      hasHtml: true,
-      unclosable: true,
-      width: 208
-    });
-  },
-  openHtmlDialog: function (name, html, title, width, height, funcOkComplete, funcOkCompleteOpts, btnTextOk, btnTextCancel, funcOnOpen) {
-    this.__openDialog("#dialog-html-" + name, {
-      msg: html,
-      title: title,
-      hasHtml: true,
-      width: width,
-      height: height,
-      funcOkComplete: (typeof funcOkComplete !== "undefined") ? funcOkComplete : null,
-      funcOkCompleteOpts: (typeof funcOkCompleteOpts !== "undefined") ? funcOkCompleteOpts : null,
-      hasOk: (typeof btnTextOk !== "undefined"),
-      hasCancel: (typeof btnTextCancel !== "undefined"),
-      btnTextOk: (typeof btnTextOk !== "undefined") ? btnTextOk : "Ok",
-      btnTextCancel: (typeof btnTextCancel !== "undefined") ? btnTextCancel : null,
-      funcOnOpen: (typeof funcOnOpen !== "undefined") ? funcOnOpen : null
-    });
-  },
-  openMsgDialog: function (msg, title) {
-    this.__openDialog("#dialog-message", {
-      msg: msg,
-      title: title,
-      hasOk: true
-    });
-  },
-  openConfirmDialog: function (msg, title, funcOkComplete, funcCancelComplete, funcOkCompleteOpts) {
-    this.destroyDialog("#dialog-confirm");
-    this.__openDialog("#dialog-confirm", { 
-      msg: msg,
-      title: title,
-      hasOk: true,
-      hasCancel: true,
-      funcOkComplete: funcOkComplete,
-      funcOkCompleteOpts: funcOkCompleteOpts,
-      funcCancelComplete: funcCancelComplete
-    });
-  },
-  __openDialog: function (selector, opts) {
+  openDialog: function (selector, opts) {
     var elm = $(selector);
     if (!elm.length) {
       if (opts.title) {
@@ -120,6 +81,82 @@ var VrtxSimpleDialog = dejavu.Class.declare({
   closeDialog: function (classOrId) {
     $(classOrId).dialog("close"); 
   }          
+});
+
+var VrtxLoadingDialog = dejavu.Class.declare({
+  $name: 'VrtxLoadingDialog',
+  $extends: VrtxSimpleDialog,
+  initialize: function (name) {
+    this.$super();
+  },
+  open: function (title) {
+    this.openDialog("#dialog-loading", {
+      msg: "<img src='/vrtx/__vrtx/static-resources/themes/default/images/loadingAnimation.gif' alt='Loading icon' />",
+      title: title,
+      hasHtml: true,
+      unclosable: true,
+      width: 208
+    });
+  }
+});
+
+var VrtxHtmlDialog = dejavu.Class.declare({
+  $name: 'VrtxLoadingDialog',
+  $extends: VrtxSimpleDialog,
+  initialize: function (name) {
+    this.$super();
+  },
+  open: function (name, html, title, width, height, funcOkComplete, funcOkCompleteOpts, btnTextOk, btnTextCancel, funcOnOpen) {
+    this.openDialog("#dialog-html-" + name, {
+      msg: html,
+      title: title,
+      hasHtml: true,
+      width: width,
+      height: height,
+      funcOkComplete: (typeof funcOkComplete !== "undefined") ? funcOkComplete : null,
+      funcOkCompleteOpts: (typeof funcOkCompleteOpts !== "undefined") ? funcOkCompleteOpts : null,
+      hasOk: (typeof btnTextOk !== "undefined"),
+      hasCancel: (typeof btnTextCancel !== "undefined"),
+      btnTextOk: (typeof btnTextOk !== "undefined") ? btnTextOk : "Ok",
+      btnTextCancel: (typeof btnTextCancel !== "undefined") ? btnTextCancel : null,
+      funcOnOpen: (typeof funcOnOpen !== "undefined") ? funcOnOpen : null
+    });
+  }
+});
+
+var VrtxMsgDialog = dejavu.Class.declare({
+  $name: 'VrtxMsgDialog',
+  $extends: VrtxSimpleDialog,
+  initialize: function (name) {
+    this.$super();
+  },
+  open: function (msg, title) {
+    this.openDialog("#dialog-message", {
+      msg: msg,
+      title: title,
+      hasOk: true
+    });
+  }
+});
+
+var VrtxConfirmDialog = dejavu.Class.declare({
+  $name: 'VrtxConfirmDialog',
+  $extends: VrtxSimpleDialog,
+  initialize: function (name) {
+    this.$super();
+  },
+  open: function (msg, title, funcOkComplete, funcCancelComplete, funcOkCompleteOpts) {
+    this.destroyDialog("#dialog-confirm");
+    this.openDialog("#dialog-confirm", { 
+      msg: msg,
+      title: title,
+      hasOk: true,
+      hasCancel: true,
+      funcOkComplete: funcOkComplete,
+      funcOkCompleteOpts: funcOkCompleteOpts,
+      funcCancelComplete: funcCancelComplete
+    });
+  }
 });
 
 /* ^ Dialogs and interface to jQuery UI */

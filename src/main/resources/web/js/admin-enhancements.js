@@ -971,7 +971,8 @@ function initializeTree() {
       var last = false;
       if (pathNum == (treeTrav.length - 1)) {
         last = true;
-      }
+      } 
+      alert("loading..");
       traverseNode(treeElem, treeTrav[pathNum++], last);
     }
   });

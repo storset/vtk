@@ -97,7 +97,7 @@
   }
   
   function updateHashShareLink(link) {
-    if($.isEmptyObject($.bbq.getState())) {
+    if(location.hash.length <= 1) {
       var hash = "";
     } else {
       var hash = location.hash;

@@ -111,7 +111,7 @@
 
     <#case "image_ref">
       <#if elem.value?exists>
-        <#local thumbnail = vrtx.relativeLinkConstructor(elem.value, 'displayThumbnailService') />
+        <#local thumbnail = vrtx.relativeLinkConstructor(elem.value, 'editor.loadImageService') />
       <#else>
         <#local thumbnail = "" />
       </#if>
@@ -334,7 +334,7 @@
 
    <#case "image_ref">
      <#if value?has_content>
-       <#local thumbnail =  vrtx.relativeLinkConstructor(value, 'displayThumbnailService') />
+       <#local thumbnail =  vrtx.relativeLinkConstructor(value, 'editor.loadImageService') />
      <#else>
        <#local thumbnail = "" />
      </#if>

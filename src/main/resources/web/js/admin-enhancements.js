@@ -1002,11 +1002,13 @@ function treeCreateScrollToCallback(link) {
 
 function traverseNode(treeElem, treeTravNode, lastNode) {
   var checkNodeAvailable = setInterval(function () {
+    $(".loading-tree-node").remove()
     var link = treeElem.find("a[href$='" + treeTravNode + "']");
     if (link.length) {
       clearInterval(checkNodeAvailable);
       var hit = link.closest("li").find("> .hitarea");
       hit.click();
+      $("<span class='loading-tree-node'>" + loadingSubfolders + "</span>").insertAfter(hit.next());
       if (lastNode) { // If last: scroll to node
         treeElem.css("background", "none");
         var scrollToLink = (link.position().top - 145);

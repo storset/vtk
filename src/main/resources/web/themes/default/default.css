@@ -1313,6 +1313,11 @@ div.dropdown-shortcut-menu-container form .vrtx-button button {
   font-size: 1.077em;
 }
 
+.loading-tree-node {
+  background: transparent url(images/spinner.gif) no-repeat center left;
+  padding-left: 26px;
+}
+
 .tip.vrtx-create-tree {
   padding: 4px 0px 4px 0 !important;
   border: none !important;

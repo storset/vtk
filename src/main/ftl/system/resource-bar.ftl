@@ -18,6 +18,7 @@
   }
   var cancelI18n = '${vrtx.getMsg("editor.cancel")}',
       datePickerLang = "${lang}",
+      loadingSubfolders = '${vrtx.getMsg("manage.load-subfolders")}';
       publishing = {
         msg: {
           error: {

@@ -324,80 +324,86 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
   vrtxAdm.cachedDoc.on("click", "#global-menu-create a, #vrtx-report-view-other", function (e) {
     var link = this;
     var id = link.id + "-content";
-    var dialogManageCreate = $("#" + id);
-    var d = new VrtxHtmlDialog();
-    if (!dialogManageCreate.length) {
-      vrtxAdm.serverFacade.getHtml(link.href, {
-        success: function (results, status, resp) {
-          vrtxAdm.cachedBody.append("<div id='" + id + "'>" + _$(_$.parseHTML(results)).find("#vrtx-manage-create-content").html() + "</div>");
-          dialogManageCreate = _$("#" + id);
-          dialogManageCreate.hide();
-          // Lazy-load JS-dependency chain (cached)
+    vrtxAdm.serverFacade.getHtml(link.href, {
+      success: function (results, status, resp) {
+        vrtxAdm.cachedBody.append("<div id='" + id + "'>" + _$(_$.parseHTML(results)).find("#vrtx-manage-create-content").html() + "</div>");
+        dialogManageCreate = _$("#" + id);
+        dialogManageCreate.hide();
+        var d = new VrtxHtmlDialog({
+          name: "global-menu-create",
+          html: dialogManageCreate.html(),
+          title: link.title,
+          width: 600,
+          height: 395
+        });
+        // Retrieve Treeview JS if non-existing with Future-object for when to run the initialization
+        var treeViewReady = $.Deferred();
+        if(typeof $.fn.treeview !== "function") {
           vrtxAdm.loadScript(location.protocol + '//' + location.host + '/vrtx/__vrtx/static-resources/jquery/plugins/jquery.treeview.js', function () {
             vrtxAdm.loadScript(location.protocol + '//' + location.host + '/vrtx/__vrtx/static-resources/jquery/plugins/jquery.treeview.async.js', function () {
               vrtxAdm.loadScript(location.protocol + '//' + location.host + '/vrtx/__vrtx/static-resources/jquery/plugins/jquery.scrollTo.min.js', function () {
-                d.open("global-menu-create", dialogManageCreate.html(), link.title, 600, 395);
-                initializeTree();
+                treeViewReady.resolve();
               });
             });
           });
+        } else {
+          treeViewReady.resolve();
         }
-      });
-    } else {
-      d.open("global-menu-create", dialogManageCreate.html(), link.title, 600, 395);
-      initializeTree();
-    }
+        $.when(treeViewReady).done(function() {
+          d.open();
+          initializeTree();
+        });
+      }
+    });
     e.stopPropagation();
     e.preventDefault();
   });
   
   // Advanced publish settings
+  var apsD;
   vrtxAdm.cachedDoc.on("click", "#advanced-publish-settings", function (e) {
     var link = this;
     var id = link.id + "-content";
-    var dialogAPS = $("#" + id);
-    var d = new VrtxHtmlDialog();
-    if (!dialogAPS.length) {
-      vrtxAdm.serverFacade.getHtml(link.href + "&4", {
-        success: function (results, status, resp) {
-          vrtxAdm.cachedBody.append("<div id='" + id + "'>" + _$(_$.parseHTML(results)).find("#vrtx-advanced-publish-settings-dialog").html() + "</div>");
-          dialogAPS = _$("#" + id);
-          dialogAPS.hide();
+    vrtxAdm.serverFacade.getHtml(link.href + "&4", {
+      success: function (results, status, resp) {
+        vrtxAdm.cachedBody.append("<div id='" + id + "'>" + _$(_$.parseHTML(results)).find("#vrtx-advanced-publish-settings-dialog").html() + "</div>");
+        dialogAPS = _$("#" + id);
+        dialogAPS.hide();
 
-          // Retrieve Datepicker JS if non-existing with Future-object for when to run the initialization
-          var datePickerReady = $.Deferred();
-          if(typeof initDatePicker !== "function") {
-            $.getScript("/vrtx/__vrtx/static-resources/js/datepicker/datepicker-admin.js", function() {
-              if(datePickerLang === "no") {
-                $.getScript("/vrtx/__vrtx/static-resources/jquery/plugins/ui/jquery-ui-1.10.3.custom/js/jquery.ui.datepicker-no.js", function() {
-                  datePickerReady.resolve(); 
-                });
-              } else if(datePickerLang === "nn") {
-                $.getScript("/vrtx/__vrtx/static-resources/jquery/plugins/ui/jquery-ui-1.10.3.custom/js/jquery.ui.datepicker-nn.js", function() {
-                  datePickerReady.resolve(); 
-                });
-              } else {
+        // Retrieve Datepicker JS if non-existing with Future-object for when to run the initialization
+        var datePickerReady = $.Deferred();
+        if(typeof initDatePicker !== "function") {
+          vrtxAdm.loadScript("/vrtx/__vrtx/static-resources/js/datepicker/datepicker-admin.js", function() {
+            if(datePickerLang === "no") {
+              vrtxAdm.loadScript("/vrtx/__vrtx/static-resources/jquery/plugins/ui/jquery-ui-1.10.3.custom/js/jquery.ui.datepicker-no.js", function() {
                 datePickerReady.resolve(); 
-              }
-            });
-          } else {
-            datePickerReady.resolve(); 
-          }
-          
-          d.open("advanced-publish-settings", dialogAPS.html(), dialogAPS.find("h1").text(), 400, null, null, null, null, null, function() {
+              });
+            } else if(datePickerLang === "nn") {
+              vrtxAdm.loadScript("/vrtx/__vrtx/static-resources/jquery/plugins/ui/jquery-ui-1.10.3.custom/js/jquery.ui.datepicker-nn.js", function() {
+                datePickerReady.resolve(); 
+              });
+            } else {
+              datePickerReady.resolve(); 
+            }
+          });
+        } else {
+          datePickerReady.resolve(); 
+        }
+        apsD = new VrtxHtmlDialog({
+          name: "advanced-publish-settings",
+          html: dialogAPS.html(),
+          title: dialogAPS.find("h1").text(),
+          width: 400, 
+          funcOnOpen: function() {
             $(".ui-dialog-buttonpane").hide();
             $.when(datePickerReady).done(function() {
               initDatePicker(datePickerLang, "#dialog-html-advanced-publish-settings-content");
             });
-          });   
-        }
-      });
-    } else {
-      d.open("advanced-publish-settings", dialogAPS.html(), dialogAPS.find("h1").text(), 400, null, null, null, null, null, function() {
-        $(".ui-dialog-buttonpane").hide();
-        initDatePicker(datePickerLang, "#dialog-html-advanced-publish-settings-content");
-      });  
-    }
+          }
+        });
+        apsD.open();
+      }
+    });
     e.stopPropagation();
     e.preventDefault();
   });
@@ -431,8 +437,7 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
       vrtxAdm.completeFormAsyncPost(options);
     },
     funcComplete: function () {
-      var d = new VrtxHtmlDialog();
-      d.destroyDialog("#dialog-html-advanced-publish-settings");
+      apsD.closeDialog();
       vrtxAdm.globalAsyncComplete();
     }
   });
@@ -701,11 +706,15 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
       var SUBMIT_SET_INHERITED_PERMISSIONS = false;
       vrtxAdm.cachedDoc.on("click", "#permissions\\.toggleInheritance\\.submit", function (e) {
         if (!SUBMIT_SET_INHERITED_PERMISSIONS) {
-          var d = new VrtxConfirmDialog();
-          d.open(confirmSetInheritedPermissionsMsg, confirmSetInheritedPermissionsTitle, function () {
-            SUBMIT_SET_INHERITED_PERMISSIONS = true;
-            $("#permissions\\.toggleInheritance\\.submit").trigger("click");
-          }, null, null);
+          var d = new VrtxConfirmDialog({
+            msg: confirmSetInheritedPermissionsMsg,
+            title: confirmSetInheritedPermissionsTitle,
+            funcOkComplete: function () {
+              SUBMIT_SET_INHERITED_PERMISSIONS = true;
+              $("#permissions\\.toggleInheritance\\.submit").trigger("click");
+            }
+          });
+          d.open();
           e.stopPropagation();
           e.preventDefault();
         } else {
@@ -741,11 +750,15 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
       var SUBMIT_TAKE_OWNERSHIP = false;
       vrtxAdm.cachedDoc.on("submit", "#vrtx-admin-ownership-form", function (e) {
         if (!SUBMIT_TAKE_OWNERSHIP) {
-          var d = new VrtxConfirmDialog();
-          d.open(confirmTakeOwnershipMsg, confirmTakeOwnershipTitle, function () {
-            SUBMIT_TAKE_OWNERSHIP = true;
-            _$("#vrtx-admin-ownership-form").submit();
-          }, null, null);
+          var d = new VrtxConfirmDialog({
+            msg: confirmTakeOwnershipMsg,
+            title: confirmTakeOwnershipTitle,
+            funcOkComplete: function () {
+              SUBMIT_TAKE_OWNERSHIP = true;
+              _$("#vrtx-admin-ownership-form").submit();
+            }
+          });
+          d.open();
           e.stopPropagation();
           e.preventDefault();
         } else {
@@ -1659,23 +1672,31 @@ VrtxAdmin.prototype.collectionListingInteraction = function collectionListingInt
   // TODO: generalize dialog jQuery UI function with AJAX markup/text
   vrtxAdm.cachedDoc.on("click", "a.vrtx-copy-move-to-selected-folder-disclosed", function (e) {
     var dialogTemplate = $("#vrtx-dialog-template-copy-move-content");
-    var d = new VrtxConfirmDialog();
     if (!dialogTemplate.length) {
       vrtxAdm.serverFacade.getHtml(this.href, {
         success: function (results, status, resp) {
           vrtxAdm.cachedBody.append("<div id='vrtx-dialog-template-copy-move-content'>" + _$($.parseHTML(results)).find("#vrtx-dialog-template-content").html() + "</div>");
           dialogTemplate = $("#vrtx-dialog-template-copy-move-content");
           dialogTemplate.hide();
-
-          d.open(dialogTemplate.find(".vrtx-confirm-copy-move-explanation").text(), dialogTemplate.find(".vrtx-confirm-copy-move-confirmation").text(), function () {
-            dialogTemplate.find(".vrtx-focus-button button").trigger("click");
-          }, null, null);
+          var d = new VrtxConfirmDialog({
+            msg: dialogTemplate.find(".vrtx-confirm-copy-move-explanation").text(),
+            title: dialogTemplate.find(".vrtx-confirm-copy-move-confirmation").text(),
+            funcOkComplete: function () {
+              dialogTemplate.find(".vrtx-focus-button button").trigger("click");
+            }
+          });
+          d.open();
         }
       });
     } else {
-      d.open(dialogTemplate.find(".vrtx-confirm-copy-move-explanation").text(), dialogTemplate.find(".vrtx-confirm-copy-move-confirmation").text(), function () {
-        dialogTemplate.find(".vrtx-focus-button button").trigger("click");
-      }, null, null);
+      var d = new VrtxConfirmDialog({
+        msg: dialogTemplate.find(".vrtx-confirm-copy-move-explanation").text(),
+        title: dialogTemplate.find(".vrtx-confirm-copy-move-confirmation").text(),
+        funcOkComplete: function () {
+          dialogTemplate.find(".vrtx-focus-button button").trigger("click");
+        }
+      });
+      d.open();
     }
     e.stopPropagation();
     e.preventDefault();
@@ -1784,8 +1805,8 @@ VrtxAdmin.prototype.placeCopyMoveButtonInActiveTab = function placeCopyMoveButto
   li.html("<a id='" + options.service + "' href='javascript:void(0);'>" + btn.attr('title') + "</a>");
   vrtxAdm.cachedActiveTab.find("#" + options.service).click(function (e) {
     if (!vrtxAdm.cachedDirectoryListing.find("td input[type=checkbox]:checked").length) {
-      var d = new VrtxMsgDialog();
-      d.open(options.msg, options.title);
+      var d = new VrtxMsgDialog(options);
+      d.open();
     } else {
       vrtxAdm.cachedAppContent.find("#" + options.btnId).click();
     }
@@ -1813,14 +1834,18 @@ VrtxAdmin.prototype.placeDeleteButtonInActiveTab = function placeDeleteButtonInA
     var boxes = vrtxAdm.cachedDirectoryListing.find('td input[type=checkbox]:checked');
     var boxesSize = boxes.length;
     if (!boxesSize) {
-      var d = new VrtxMsgDialog();
-      d.open(deleteUncheckedMessage, deleteTitle);
+      var d = new VrtxMsgDialog({msg: deleteUncheckedMessage, title: deleteTitle});
+      d.open();
     } else {
       var list = vrtxAdm.buildFileList(boxes, boxesSize, false);
-      var d = new VrtxConfirmDialog();
-      d.open(confirmDelete.replace("(1)", boxesSize) + '<br />' + list, confirmDeleteTitle, function () {
-        vrtxAdm.cachedAppContent.find('#collectionListing\\.action\\.delete-resources').click();
-      }, null, null);
+      var d = new VrtxConfirmDialog({
+        msg: confirmDelete.replace("(1)", boxesSize) + '<br />' + list,
+        title: confirmDeleteTitle,
+        funcOkComplete: function () {
+          vrtxAdm.cachedAppContent.find('#collectionListing\\.action\\.delete-resources').click();
+        }
+      });
+      d.open();
     }
     e.stopPropagation();
     e.preventDefault();
@@ -1855,14 +1880,18 @@ VrtxAdmin.prototype.placePublishButtonInActiveTab = function placeDeleteButtonIn
     var boxes = vrtxAdm.cachedDirectoryListing.find('td input[type=checkbox]:checked');
     var boxesSize = boxes.length;
     if (!boxesSize) {
-      var d = new VrtxMsgDialog();
-      d.open(publishUncheckedMessage, publishTitle);
+      var d = new VrtxMsgDialog({msg: publishUncheckedMessage, title: publishTitle});
+      d.open();
     } else {
-      var d = new VrtxConfirmDialog();
       var list = vrtxAdm.buildFileList(boxes, boxesSize, false);
-      d.open(confirmPublish.replace("(1)", boxesSize) + '<br />' + list, confirmPublishTitle, function () {
-        vrtxAdm.cachedAppContent.find('#collectionListing\\.action\\.publish-resources').click();
-      }, null, null);
+      var d = new VrtxConfirmDialog({
+        msg: confirmPublish.replace("(1)", boxesSize) + '<br />' + list,
+        title: confirmPublishTitle,
+        funcOkComplete: function () {
+          vrtxAdm.cachedAppContent.find('#collectionListing\\.action\\.publish-resources').click();
+        }
+      });
+      d.open();
     }
     e.stopPropagation();
     e.preventDefault();
@@ -1891,14 +1920,18 @@ VrtxAdmin.prototype.placeUnpublishButtonInActiveTab = function placeDeleteButton
     var boxesSize = boxes.length;
     
     if (!boxesSize) {
-      var d = new VrtxMsgDialog();
-      d.open(unpublishUncheckedMessage, unpublishTitle);
+      var d = new VrtxMsgDialog({msg: unpublishUncheckedMessage, title: unpublishTitle});
+      d.open();
     } else {
       var list = vrtxAdm.buildFileList(boxes, boxesSize, false);
-      var d = new VrtxConfirmDialog();
-      d.open(confirmUnpublish.replace("(1)", boxesSize) + '<br />' + list, confirmUnpublishTitle, function () {
-        vrtxAdm.cachedAppContent.find('#collectionListing\\.action\\.unpublish-resources').click();
-      }, null, null);
+      var d = new VrtxConfirmDialog({
+        msg: confirmUnpublish.replace("(1)", boxesSize) + '<br />' + list,
+        title: confirmUnpublishTitle,
+        funcOkComplete: function () {
+          vrtxAdm.cachedAppContent.find('#collectionListing\\.action\\.unpublish-resources').click();
+        }
+      });
+      d.open();
     }
     e.stopPropagation();
     e.preventDefault();
@@ -1922,9 +1955,9 @@ VrtxAdmin.prototype.placeRecoverButtonInActiveTab = function placeRecoverButtonI
   vrtxAdm.cachedActiveTab.find("#recoverResourceService").click(function (e) {
     var boxes = vrtxAdm.cachedDirectoryListing.find('td input[type=checkbox]:checked');
     var boxesSize = boxes.length;
-    var d = new VrtxMsgDialog();
+    var d = new VrtxMsgDialog({msg: recoverUncheckedMessage, title: recoverTitle});
     if (!boxesSize) {
-      d.open(recoverUncheckedMessage, recoverTitle);
+      d.open();
     } else {
       vrtxAdm.trashcanCheckedFiles = boxesSize;
       vrtxAdm.cachedAppContent.find('.recoverResource').click();
@@ -1952,15 +1985,19 @@ VrtxAdmin.prototype.placeDeletePermanentButtonInActiveTab = function placeDelete
     var boxes = vrtxAdm.cachedDirectoryListing.find('td input[type=checkbox]:checked');
     var boxesSize = boxes.length;
     if (!boxesSize) {
-      var d = new VrtxMsgDialog();
-      d.open(deletePermanentlyUncheckedMessage, deletePermTitle);
+      var d = new VrtxMsgDialog({msg: deletePermanentlyUncheckedMessage, title: deletePermTitle});
+      d.open();
     } else {
       vrtxAdm.trashcanCheckedFiles = boxesSize;
       var list = vrtxAdm.buildFileList(boxes, boxesSize, true);
-      var d = new VrtxConfirmDialog();
-      d.open(confirmDeletePermanently.replace("(1)", boxesSize) + '<br />' + list, confirmDeletePermTitle, function () {
-        vrtxAdm.cachedContent.find('.deleteResourcePermanent').click();
-      }, null, null);
+      var d = new VrtxConfirmDialog({
+        msg: confirmDeletePermanently.replace("(1)", boxesSize) + '<br />' + list,
+        title: confirmDeletePermTitle,
+        funcOkComplete: function () {
+          vrtxAdm.cachedContent.find('.deleteResourcePermanent').click();
+        }
+      });
+      d.open();
     }
     e.stopPropagation();
     e.preventDefault();
@@ -2036,8 +2073,11 @@ function editorInteraction(bodyId, vrtxAdm, _$) {
             reAuthenticateRetokenizeForms(link);
           } else {
             var customTitle = vrtxAdm.serverFacade.errorMessages.customTitle[xhr.status];
-            var d = new VrtxMsgDialog();
-            d.open(msg, customTitle ? customTitle : vrtxAdm.serverFacade.errorMessages.title + " " + xhr.status);
+            var d = new VrtxMsgDialog({
+              msg: msg,
+              title: customTitle ? customTitle : vrtxAdm.serverFacade.errorMessages.title + " " + xhr.status
+            });
+            d.open();
           }
         }
       });
@@ -2068,9 +2108,8 @@ function ajaxSave() {
   }
   var startTime = new Date();
   
-  var d = new VrtxLoadingDialog();
-
-  d.open(ajaxSaveText);
+  var d = new VrtxLoadingDialog({title: ajaxSaveText});
+  d.open();
 
   if (typeof vrtxImageEditor !== "undefined" && vrtxImageEditor.save) {
     vrtxImageEditor.save();
@@ -2078,7 +2117,7 @@ function ajaxSave() {
   if (typeof performSave !== "undefined") {
     var ok = performSave();
     if (!ok) {
-      d.closeDialog("#dialog-loading");
+      d.closeDialog();
       vrtxAdm.asyncEditorSavedDeferred.rejectWith(this, [null, null]);
       return false;
     }
@@ -2088,60 +2127,66 @@ function ajaxSave() {
       var endTime = new Date() - startTime;
       var waitMinMs = 800;
       if (endTime >= waitMinMs) { // Wait minimum 0.8s
-        d.closeDialog("#dialog-loading");
+        d.closeDialog();
         vrtxAdm.asyncEditorSavedDeferred.resolve();
       } else {
         setTimeout(function () {
-          d.closeDialog("#dialog-loading");
+          d.closeDialog();
           vrtxAdm.asyncEditorSavedDeferred.resolve();
         }, Math.round(waitMinMs - endTime));
       }
     },
     error: function (xhr, textStatus, errMsg) {
-      d.closeDialog("#dialog-loading");
+      d.closeDialog();
       vrtxAdm.asyncEditorSavedDeferred.rejectWith(this, [xhr, textStatus]);
     }
   });
 }
 
 function reAuthenticateRetokenizeForms(link) {  
-  var d = new VrtxHtmlDialog();
   // Open reauth dialog
-  d.open("reauth-open", vrtxAdmin.serverFacade.errorMessages.sessionInvalid,
-                                   vrtxAdmin.serverFacade.errorMessages.sessionInvalidTitle,
-                                   null, null, function() { // Log in
-                                   
-    // Loading..
-    var d2 = new VrtxLoadingDialog();
-    d2.open(vrtxAdmin.serverFacade.errorMessages.sessionWaitReauthenticate);
+  var d = new VrtxHtmlDialog({
+    name: "reauth-open",
+    html: vrtxAdmin.serverFacade.errorMessages.sessionInvalid,
+    title: vrtxAdmin.serverFacade.errorMessages.sessionInvalidTitle,
+    funcOkComplete: function() { // Log in          
+      // Loading..
+      var d2 = new VrtxLoadingDialog({title: vrtxAdmin.serverFacade.errorMessages.sessionWaitReauthenticate});
+      d2.open();
     
-    // Open window to reauthenticate - the user may log in
-    var newW = openRegular("./?vrtx=admin&service=reauthenticate", 1020, 800, "Reauth");
-    newW.focus();
+      // Open window to reauthenticate - the user may log in
+      var newW = openRegular("./?vrtx=admin&service=reauthenticate", 1020, 800, "Reauth");
+      newW.focus();
 
-    // Wait for reauthentication (250ms interval)
-    var timerDelay = 250;
-    var timerWaitReauthenticate = setTimeout(function() {
-      var self = arguments.callee;
-      $.ajax({
-        type: "GET",
-        url: "./?vrtx=admin&service=reauthenticate",
-        cache: false,
-        complete: function (xhr, textStatus, errMsg) {
-          if(xhr.status === 0) {
-            setTimeout(self, timerDelay);
-          } else {
-            retokenizeFormsOpenSaveDialog(link);
-          }
-        }
-      });
-    }, timerDelay);														
-  }, null, vrtxAdmin.serverFacade.errorMessages.sessionInvalidOk, "(" + vrtxAdmin.serverFacade.errorMessages.sessionInvalidOkInfo + ")");                          
+      // Wait for reauthentication (250ms interval)
+      var timerDelay = 250;
+      var timerWaitReauthenticate = setTimeout(function() {
+        var self = arguments.callee;
+        $.ajax({
+          type: "GET",
+          url: "./?vrtx=admin&service=reauthenticate",
+          cache: false,
+          complete: function (xhr, textStatus, errMsg) {
+            if(xhr.status === 0) {
+              setTimeout(self, timerDelay);
+            } else {
+              retokenizeFormsOpenSaveDialog(link, d2);
+            }
+          } 
+        });
+      }, timerDelay);
+    },
+    btnTextOk: vrtxAdmin.serverFacade.errorMessages.sessionInvalidOk,
+    btnTextCancel: "(" + vrtxAdmin.serverFacade.errorMessages.sessionInvalidOkInfo + ")"													
+  });
+  
+  d.open();
+                           
   var cancelBtnSpan = $(".ui-dialog[aria-labelledby='ui-dialog-title-dialog-html-reauth-open']").find(".ui-button:last-child span");
   cancelBtnSpan.unwrap();
 }
 
-function retokenizeFormsOpenSaveDialog(link) {
+function retokenizeFormsOpenSaveDialog(link, d2) {
   // Repopulate tokens
   var current = $("body input[name='csrf-prevention-token']");
   var currentLen = current.length;
@@ -2151,18 +2196,22 @@ function retokenizeFormsOpenSaveDialog(link) {
       for(var i = 0; i < currentLen; i++) {
         current[i].value = updated[i].value;
       }
-      
-      var d = new VrtxHtmlDialog();
-      
+
       // Stop loading
-      d.closeDialog("#dialog-loading");
+      d2.closeDialog();
+      
       // Open save dialog
-      d.open("reauth-save", vrtxAdmin.serverFacade.errorMessages.sessionValidated,
-                                       vrtxAdmin.serverFacade.errorMessages.sessionValidatedTitle,
-                                       null, null, function() {
-        // Trigger save
-        link.click();
-      }, null, vrtxAdmin.serverFacade.errorMessages.sessionValidatedOk, null);
+      var d = new VrtxHtmlDialog({
+        name: "reauth-save",
+        html: vrtxAdmin.serverFacade.errorMessages.sessionValidated,
+        title: vrtxAdmin.serverFacade.errorMessages.sessionValidatedTitle,
+        funcOkComplete: function() {
+          // Trigger save
+          link.click();
+        },
+        btnTextOk: vrtxAdmin.serverFacade.errorMessages.sessionValidatedOk
+      });
+      d.open();
     }
   });
 }
@@ -2214,10 +2263,16 @@ function checkStillAdmin(options) {
   vrtxAdmin.reloadFromServer = false;
   if (stillAdmin == "false") {
     vrtxAdmin.reloadFromServer = true;
-    var d = new VrtxConfirmDialog();
-    d.open(removeAdminPermissionsMsg, removeAdminPermissionsTitle, vrtxAdmin.completeFormAsyncPost, function () {
-      vrtxAdmin.reloadFromServer = false;
-    }, options);
+    var d = new VrtxConfirmDialog({
+      msg: removeAdminPermissionsMsg,
+      title: removeAdminPermissionsTitle,
+      funcOkComplete: vrtxAdmin.completeFormAsyncPost,
+      funcOkCompleteOpts: options,
+      funcCancelComplete: function () {
+        vrtxAdmin.reloadFromServer = false;
+      }
+    });
+    d.open();
   } else {
     vrtxAdmin.completeFormAsyncPost(options);
   }

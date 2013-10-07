@@ -828,8 +828,8 @@ function validTextLengthsInEditorError(elm, isOldEditor) {
       lbl = elm.find("label");
     }
     if (lbl.length) {
-      var d = new VrtxMsgDialog();
-      d.open(tooLongFieldPre + lbl.text() + tooLongFieldPost, "");
+      var d = new VrtxMsgDialog({msg: tooLongFieldPre + lbl.text() + tooLongFieldPost, title: ""});
+      d.open();
     }
   }
 }
@@ -2041,8 +2041,14 @@ VrtxEditor.prototype.openSendToApprovalOpen = function openSendToApprovalOpen(di
     _$ = vrtxAdm._$;
 
   var hasEmailFrom = dialogManageCreate.find("#emailFrom").length;
-  var d = new VrtxHtmlDialog();
-  d.open("send-approval", dialogManageCreate.html(), link.title, 410, (hasEmailFrom ? 620 : 545));
+  var d = new VrtxHtmlDialog({
+    name: "send-approval",
+    html: dialogManageCreate.html(),
+    title: link.title,
+    width: 410,
+    height: (hasEmailFrom ? 620 : 545)
+  });
+  d.open();
   var dialog = _$(".ui-dialog");
   if (dialog.find("#emailTo").val().length > 0) {
     if (hasEmailFrom) {

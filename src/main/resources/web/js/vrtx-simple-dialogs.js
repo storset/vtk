@@ -1,9 +1,11 @@
 /*
  *  Dialogs and interface to jQuery UI
- *  XXX: This should not be a singleton/module but function/class as it is used for different dialogs..
  */
 
-var vrtxSimpleDialogs = {
+var VrtxSimpleDialog = dejavu.Class.declare({
+  $name: "VortexSimpleDialog", // Meta-attribute useful for debugging
+  initialize: function() {     // Constructor
+  },
   openLoadingDialog: function (title) {
     this.openDialog("#dialog-loading", {
       msg: "<img src='/vrtx/__vrtx/static-resources/themes/default/images/loadingAnimation.gif' alt='Loading icon' />",
@@ -117,7 +119,7 @@ var vrtxSimpleDialogs = {
   },
   closeDialog: function (classOrId) {
     $(classOrId).dialog("close"); 
-  },
-};
+  }          
+});
 
 /* ^ Dialogs and interface to jQuery UI */

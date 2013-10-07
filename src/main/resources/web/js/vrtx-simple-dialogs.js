@@ -3,11 +3,11 @@
  */
 
 var VrtxSimpleDialogInterface = dejavu.Interface.declare({
-  $name: 'VortexSimpleDialogInterface'
+  $name: "VortexSimpleDialogInterface"
 });
 
-var VrtxSimpleDialog = dejavu.AbstractClass.declare({
-  $name: "VortexSimpleDialog", // Meta-attribute useful for debugging
+var AbstractVrtxSimpleDialog = dejavu.AbstractClass.declare({
+  $name: "AbstractVortexSimpleDialog", // Meta-attribute useful for debugging
   $implements: [VrtxSimpleDialogInterface],
   initialize: function() {     // Constructor
   },
@@ -84,9 +84,9 @@ var VrtxSimpleDialog = dejavu.AbstractClass.declare({
 });
 
 var VrtxLoadingDialog = dejavu.Class.declare({
-  $name: 'VrtxLoadingDialog',
-  $extends: VrtxSimpleDialog,
-  initialize: function (name) {
+  $name: "VrtxLoadingDialog",
+  $extends: AbstractVrtxSimpleDialog,
+  initialize: function () {
     this.$super();
   },
   open: function (title) {
@@ -101,9 +101,9 @@ var VrtxLoadingDialog = dejavu.Class.declare({
 });
 
 var VrtxHtmlDialog = dejavu.Class.declare({
-  $name: 'VrtxLoadingDialog',
-  $extends: VrtxSimpleDialog,
-  initialize: function (name) {
+  $name: "VrtxHtmlDialog",
+  $extends: AbstractVrtxSimpleDialog,
+  initialize: function () {
     this.$super();
   },
   open: function (name, html, title, width, height, funcOkComplete, funcOkCompleteOpts, btnTextOk, btnTextCancel, funcOnOpen) {
@@ -125,9 +125,9 @@ var VrtxHtmlDialog = dejavu.Class.declare({
 });
 
 var VrtxMsgDialog = dejavu.Class.declare({
-  $name: 'VrtxMsgDialog',
-  $extends: VrtxSimpleDialog,
-  initialize: function (name) {
+  $name: "VrtxMsgDialog",
+  $extends: AbstractVrtxSimpleDialog,
+  initialize: function () {
     this.$super();
   },
   open: function (msg, title) {
@@ -140,9 +140,9 @@ var VrtxMsgDialog = dejavu.Class.declare({
 });
 
 var VrtxConfirmDialog = dejavu.Class.declare({
-  $name: 'VrtxConfirmDialog',
-  $extends: VrtxSimpleDialog,
-  initialize: function (name) {
+  $name: "VrtxConfirmDialog",
+  $extends: AbstractVrtxSimpleDialog,
+  initialize: function () {
     this.$super();
   },
   open: function (msg, title, funcOkComplete, funcCancelComplete, funcOkCompleteOpts) {

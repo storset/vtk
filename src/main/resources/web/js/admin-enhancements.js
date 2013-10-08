@@ -360,37 +360,16 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
       success: function (results, status, resp) {
         vrtxAdm.cachedBody.append("<div id='" + id + "'>" + _$(_$.parseHTML(results)).find("#vrtx-advanced-publish-settings-dialog").html() + "</div>");
         dialogAPS = _$("#" + id);
-        dialogAPS.hide();
-
-        // Retrieve Datepicker JS if non-existing with Future-object for when to run the initialization
-        var datePickerReady = $.Deferred();
-        if(typeof initDatePicker !== "function") {
-          vrtxAdm.loadScript("/vrtx/__vrtx/static-resources/js/datepicker/datepicker-admin.js", function() {
-            if(datePickerLang === "no") {
-              vrtxAdm.loadScript("/vrtx/__vrtx/static-resources/jquery/plugins/ui/jquery-ui-1.10.3.custom/js/jquery.ui.datepicker-no.js", function() {
-                datePickerReady.resolve(); 
-              });
-            } else if(datePickerLang === "nn") {
-              vrtxAdm.loadScript("/vrtx/__vrtx/static-resources/jquery/plugins/ui/jquery-ui-1.10.3.custom/js/jquery.ui.datepicker-nn.js", function() {
-                datePickerReady.resolve(); 
-              });
-            } else {
-              datePickerReady.resolve(); 
-            }
-          });
-        } else {
-          datePickerReady.resolve(); 
-        }
+        dialogAPS.hide();        
         apsD = new VrtxHtmlDialog({
           name: "advanced-publish-settings",
           html: dialogAPS.html(),
           title: dialogAPS.find("h1").text(),
-          width: 400, 
+          width: 400,
+          datepicker: true,
           funcOnOpen: function() {
             $(".ui-dialog-buttonpane").hide();
-            $.when(datePickerReady).done(function() {
-              initDatePicker(datePickerLang, "#dialog-html-advanced-publish-settings-content");
-            });
+            initDatePicker(datePickerLang, "#dialog-html-advanced-publish-settings-content");
           }
         });
         apsD.open();

@@ -90,7 +90,19 @@ var AbstractVrtxSimpleDialog = dejavu.AbstractClass.declare({
     } else {
       futureTree.resolve();
     }
-    $.when(futureUi, futureTree).done(function() {
+    var futureDatepicker = $.Deferred();
+    if(typeof initDatePicker !== "function" && dialog.__opts.datepicker) {
+      $.getScript("/vrtx/__vrtx/static-resources/js/datepicker/datepicker-admin.js", function() {
+        $.getScript("/vrtx/__vrtx/static-resources/jquery/plugins/ui/jquery-ui-1.10.3.custom/js/jquery.ui.datepicker-no.js", function() {
+          $.getScript("/vrtx/__vrtx/static-resources/jquery/plugins/ui/jquery-ui-1.10.3.custom/js/jquery.ui.datepicker-nn.js", function() {
+            futureDatepicker.resolve(); 
+          });
+        });
+      });
+    } else {
+      futureDatepicker.resolve(); 
+    }
+    $.when(futureUi, futureTree, futureDatepicker).done(function() {
       dialog.__opts.elm = $(dialog.__opts.selector);
       dialog.__opts.elm.dialog(dialog.__dialogOpts);
       dialog.__opts.elm.dialog("open");
@@ -138,6 +150,7 @@ var VrtxHtmlDialog = dejavu.Class.declare({
       btnTextOk: opts.btnTextOk,
       btnTextCancel: opts.btnTextCancel,
       tree: opts.tree,
+      datepicker: opts.datepicker,
       funcOnOpen: opts.funcOnOpen
     });
   }

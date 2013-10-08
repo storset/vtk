@@ -171,7 +171,6 @@ vrtxAdmin._$(document).ready(function () {
   vrtxAdm.initScrollBreadcrumbs();
 
   // Interactions initialization - TODO: move to Domains
-  vrtxAdm.collectionListingInteraction();
   editorInteraction(bodyId, vrtxAdm, _$);
   versioningInteraction(bodyId, vrtxAdm, _$);
 
@@ -673,6 +672,7 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
         e.stopPropagation();
         e.preventDefault();
       });
+      vrtxAdm.collectionListingInteraction();
       break;
     case "vrtx-trash-can":
       vrtxAdm.cachedContent.on("click", "input.deleteResourcePermanent", function (e) {
@@ -693,7 +693,7 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
         e.stopPropagation();
         e.preventDefault();
       });
-      
+      vrtxAdm.collectionListingInteraction();
       break;
     case "vrtx-permissions":
       var privilegiesPermissions = ["read", "read-write", "all"];

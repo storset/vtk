@@ -975,7 +975,7 @@ var VrtxTree = dejavu.Class.declare({
         if (pathNum == (treeTrav.length - 1)) {
           last = true;
         } 
-        tree.openLeaf(treeElem, treeTrav[pathNum++], last);
+        tree.__openLeaf(treeElem, treeTrav[pathNum++], last);
       }
     });
 
@@ -996,7 +996,7 @@ var VrtxTree = dejavu.Class.declare({
       extra: true
     });
   },
-  openLeaf: function(treeElem, treeTravNode, lastNode) {
+  __openLeaf: function(treeElem, treeTravNode, lastNode) {
     var tree = this;
     
     var checkNodeAvailable = setInterval(function () {

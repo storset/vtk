@@ -558,18 +558,23 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
                 }
               }
               results = _$($.parseHTML(results));
+              
+              var copyMoveAfter = function() {
+                resourceMenuRight.html(results.find("#resourceMenuRight").html());
+                vrtxAdm.displayInfoMsg(results.find(".infomessage").html());
+                var resourceTitle = resourceMenuRight.closest("#resource-title");
+                if (resourceTitle.hasClass("compact")) { // Instant compact => expanded
+                  resourceTitle.removeClass("compact");
+                }
+              };
+              
               if (copyMoveExists !== "") {
                 var copyMoveAnimation = new VrtxAnimation({
                   elem: copyMoveExists,
                   outerWrapperElem: resourceMenuRight,
                   after: function() {
                     copyMoveExists.remove();
-                    resourceMenuRight.html(results.find("#resourceMenuRight").html());
-                    vrtxAdm.displayInfoMsg(results.find(".infomessage").html());
-                    var resourceTitle = resourceMenuRight.closest("#resource-title");
-                    if (resourceTitle.hasClass("compact")) { // Instant compact => expanded
-                      resourceTitle.removeClass("compact");
-                    }
+                    copyMoveAfter();
                     copyMoveAnimation.update({
                       elem: resourceMenuRight.find(li),
                       outerWrapperElem: resourceMenuRight
@@ -579,12 +584,7 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
                 });
                 copyMoveAnimation.leftOut();
               } else {
-                resourceMenuRight.html(results.find("#resourceMenuRight").html());
-                vrtxAdm.displayInfoMsg(results.find(".infomessage").html());
-                var resourceTitle = resourceMenuRight.closest("#resource-title");
-                if (resourceTitle.hasClass("compact")) { // Instant compact => expanded
-                  resourceTitle.removeClass("compact");
-                }
+                copyMoveAfter();
                 var copyMoveAnimation = new VrtxAnimation({
                   elem: resourceMenuRight.find(li),
                   outerWrapperElem: resourceMenuRight

@@ -437,7 +437,7 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
       vrtxAdm.completeFormAsyncPost(options);
     },
     funcComplete: function () {
-      apsD.closeDialog();
+      apsD.close();
       vrtxAdm.globalAsyncComplete();
     }
   });
@@ -2117,7 +2117,7 @@ function ajaxSave() {
   if (typeof performSave !== "undefined") {
     var ok = performSave();
     if (!ok) {
-      d.closeDialog();
+      d.close();
       vrtxAdm.asyncEditorSavedDeferred.rejectWith(this, [null, null]);
       return false;
     }
@@ -2127,17 +2127,17 @@ function ajaxSave() {
       var endTime = new Date() - startTime;
       var waitMinMs = 800;
       if (endTime >= waitMinMs) { // Wait minimum 0.8s
-        d.closeDialog();
+        d.close();
         vrtxAdm.asyncEditorSavedDeferred.resolve();
       } else {
         setTimeout(function () {
-          d.closeDialog();
+          d.close();
           vrtxAdm.asyncEditorSavedDeferred.resolve();
         }, Math.round(waitMinMs - endTime));
       }
     },
     error: function (xhr, textStatus, errMsg) {
-      d.closeDialog();
+      d.close();
       vrtxAdm.asyncEditorSavedDeferred.rejectWith(this, [xhr, textStatus]);
     }
   });
@@ -2198,7 +2198,7 @@ function retokenizeFormsOpenSaveDialog(link, d2) {
       }
 
       // Stop loading
-      d2.closeDialog();
+      d2.close();
       
       // Open save dialog
       var d = new VrtxHtmlDialog({

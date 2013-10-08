@@ -76,11 +76,11 @@ var AbstractVrtxSimpleDialog = dejavu.AbstractClass.declare({
       dialog.opts.elm.dialog("open");
     });
   },
-  destroyDialog: function () {
+  destroy: function () {
     this.opts.elm.dialog("destroy");
     this.opts.elm.remove();
   },
-  closeDialog: function () {
+  close: function () {
     this.opts.elm.dialog("close");
   }          
 });

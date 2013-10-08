@@ -138,7 +138,6 @@ var vrtxAdmin = new VrtxAdmin();
 
 vrtxAdmin._$(window).load(function () {
   var vrtxAdm = vrtxAdmin;
-
   if (vrtxAdm.runReadyLoad === false) return; // XXX: return if should not run load() code
 
   vrtxAdm.log({
@@ -154,44 +153,16 @@ vrtxAdmin._$(window).load(function () {
 
 vrtxAdmin._$(document).ready(function () {
   var startReadyTime = +new Date(),
-    vrtxAdm = vrtxAdmin;
-
-  vrtxAdm.cacheDOMNodesForReuse();
-
-  vrtxAdm.cachedBody.addClass("js");
-
-  if (vrtxAdm.runReadyLoad === false) return; // XXX: return if should not run all of ready() code
-
-  vrtxAdm.initFunctionalityDocReady();
-  vrtxAdm.scrollBreadcrumbs();
-
-  vrtxAdm.log({
-    msg: "Document.ready() in " + (+new Date() - startReadyTime) + "ms."
-  });
-});
-
-VrtxAdmin.prototype.cacheDOMNodesForReuse = function cacheDOMNodesForReuse() {
-  var vrtxAdm = this,
+    vrtxAdm = vrtxAdmin,
     _$ = vrtxAdm._$;
-
-  if(vrtxAdm.cachedBody != null) return;
-
-  vrtxAdm.cachedDoc = _$(document);
-  vrtxAdm.cachedBody = vrtxAdm.cachedDoc.find("body");
-  vrtxAdm.cachedAppContent = vrtxAdm.cachedBody.find("#app-content");
-  vrtxAdm.cachedContent = vrtxAdm.cachedAppContent.find("#contents");
-  vrtxAdm.cachedDirectoryListing = _$("#directory-listing");
-  vrtxAdm.cachedActiveTab = vrtxAdm.cachedAppContent.find("#active-tab");
-};
-
-// TODO: these function needs a lot of separation of concerns
-VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocReady() {
-  var vrtxAdm = this,
-    _$ = vrtxAdm._$;
-
+    
   var bodyId = vrtxAdm.cachedBody.attr("id");
   bodyId = (typeof bodyId !== "undefined") ? bodyId : "";
   vrtxAdm.bodyId = bodyId;
+
+  vrtxAdm.cacheDOMNodesForReuse();
+  vrtxAdm.cachedBody.addClass("js");
+  if (vrtxAdm.runReadyLoad === false) return; // XXX: return if should not run all of ready() code
 
   // Remove active tab if it has no children
   if (!vrtxAdm.cachedActiveTab.find(" > *").length) {
@@ -213,6 +184,7 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
   vrtxAdm.initResourceMenus();
   vrtxAdm.initGlobalDialogs();
   vrtxAdm.initDomains();
+  vrtxAdm.scrollBreadcrumbs();
 
   // Ignore all AJAX errors when user navigate away (abort)
   if(typeof unsavedChangesInEditorMessage !== "function") {
@@ -236,11 +208,30 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
       vrtxAdm.cachedAppContent.prepend("<div class='infomessage'>" + outdatedBrowserText + "</div>");
     }
   }
-};
+
+  vrtxAdm.log({
+    msg: "Document.ready() in " + (+new Date() - startReadyTime) + "ms."
+  });
+});
+
 
 /*-------------------------------------------------------------------*\
     4. General / setup interactions
 \*-------------------------------------------------------------------*/
+
+VrtxAdmin.prototype.cacheDOMNodesForReuse = function cacheDOMNodesForReuse() {
+  var vrtxAdm = this,
+    _$ = vrtxAdm._$;
+
+  if(vrtxAdm.cachedBody != null) return;
+
+  vrtxAdm.cachedDoc = _$(document);
+  vrtxAdm.cachedBody = vrtxAdm.cachedDoc.find("body");
+  vrtxAdm.cachedAppContent = vrtxAdm.cachedBody.find("#app-content");
+  vrtxAdm.cachedContent = vrtxAdm.cachedAppContent.find("#contents");
+  vrtxAdm.cachedDirectoryListing = _$("#directory-listing");
+  vrtxAdm.cachedActiveTab = vrtxAdm.cachedAppContent.find("#active-tab");
+};
 
 /*
  * Tooltips init

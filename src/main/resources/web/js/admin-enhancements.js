@@ -358,6 +358,10 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
     var id = link.id + "-content";
     vrtxAdm.serverFacade.getHtml(link.href + "&4", {
       success: function (results, status, resp) {
+        var dialogAPS = _$("#" + id);
+        if(dialogAPS.length) {
+          dialogAPS.remove();
+        }
         vrtxAdm.cachedBody.append("<div id='" + id + "'>" + _$(_$.parseHTML(results)).find("#vrtx-advanced-publish-settings-dialog").html() + "</div>");
         dialogAPS = _$("#" + id);
         dialogAPS.hide();        

@@ -85,7 +85,7 @@ var AbstractVrtxSimpleDialog = dejavu.AbstractClass.declare({
     
     var futureUi = $.Deferred();
     if (typeof $.ui === "undefined") {
-      $.getScript("/jquery/plugins/ui/jquery-ui-" + jQueryUiVersion + ".custom/js/jquery-ui-" + jQueryUiVersion + ".custom.min.js"), function () {
+      $.getScript("/jquery/plugins/ui/jquery-ui-" + jQueryUiVersion + ".custom/js/jquery-ui-" + jQueryUiVersion + ".custom.min.js", function () {
         futureUi.resolve();
       });
     } else {
@@ -107,7 +107,7 @@ var AbstractVrtxSimpleDialog = dejavu.AbstractClass.declare({
     if (typeof initDatePicker !== "function" && dialog.__opts.requiresDatepicker) {
       $.getScript(futureRootUrl + "/js/datepicker/datepicker-admin.js", function() {
         $.getScript(futureRootUrl + "/jquery/plugins/ui/jquery-ui-" + jQueryUiVersion + ".custom/js/jquery.ui.datepicker-no.js", function() {
-          $.getScriptfutureRootUrl + "/jquery/plugins/ui/jquery-ui-" + jQueryUiVersion + ".custom/js/jquery.ui.datepicker-nn.js", function() {
+          $.getScript(futureRootUrl + "/jquery/plugins/ui/jquery-ui-" + jQueryUiVersion + ".custom/js/jquery.ui.datepicker-nn.js", function() {
             futureDatepicker.resolve(); 
           });
         });

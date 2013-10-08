@@ -163,7 +163,7 @@ vrtxAdmin._$(document).ready(function () {
   if (vrtxAdm.runReadyLoad === false) return; // XXX: return if should not run all of ready() code
 
   vrtxAdm.initFunctionalityDocReady();
-  vrtxAdm.scrollBreadcrumbs("init");
+  vrtxAdm.scrollBreadcrumbs();
 
   vrtxAdm.log({
     msg: "Document.ready() in " + (+new Date() - startReadyTime) + "ms."
@@ -1245,102 +1245,98 @@ VrtxAdmin.prototype.adjustResourceTitle = function adjustResourceTitle() {
  *
  * @this {VrtxAdmin}
  */
-VrtxAdmin.prototype.scrollBreadcrumbs = function scrollBreadcrumbs(dir) {
+VrtxAdmin.prototype.scrollBreadcrumbs = function scrollBreadcrumbs() {
   var vrtxAdm = this;
   
-  switch (dir) {
-    case "init":
-      var crumbs = $(".vrtx-breadcrumb-level, .vrtx-breadcrumb-level-no-url"), i = crumbs.length, crumbsWidth = 0;
-      while(i--) {
-        crumbsWidth += $(crumbs[i]).outerWidth(true) + 2;
-      }
-      crumbs.wrapAll("<div id='vrtx-breadcrumb-inner' style='width: " + crumbsWidth + "px' />");
-      vrtxAdm.crumbsWidth = crumbsWidth;
-      vrtxAdm.crumbsInner = $("#vrtx-breadcrumb-inner");
-      vrtxAdm.crumbsInner.wrap("<div id='vrtx-breadcrumb-outer' />");
+  var crumbs = $(".vrtx-breadcrumb-level, .vrtx-breadcrumb-level-no-url"), i = crumbs.length, crumbsWidth = 0;
+  while(i--) {
+    crumbsWidth += $(crumbs[i]).outerWidth(true) + 2;
+  }
+  crumbs.wrapAll("<div id='vrtx-breadcrumb-inner' style='width: " + crumbsWidth + "px' />");
+  vrtxAdm.crumbsWidth = crumbsWidth;
+  vrtxAdm.crumbsInner = $("#vrtx-breadcrumb-inner");
+  vrtxAdm.crumbsInner.wrap("<div id='vrtx-breadcrumb-outer' />");
       
-      var navHtml = "<span id='navigate-crumbs-left-coverup' />" +
-                    "<a id='navigate-crumbs-left' class='navigate-crumbs'><span class='navigate-crumbs-icon'></span><span class='navigate-crumbs-dividor'></span></a>" +
-                    "<a id='navigate-crumbs-right' class='navigate-crumbs'><span class='navigate-crumbs-icon'></span><span class='navigate-crumbs-dividor'></span></a>";                                      
+  var navHtml = "<span id='navigate-crumbs-left-coverup' />" +
+                "<a id='navigate-crumbs-left' class='navigate-crumbs'><span class='navigate-crumbs-icon'></span><span class='navigate-crumbs-dividor'></span></a>" +
+                "<a id='navigate-crumbs-right' class='navigate-crumbs'><span class='navigate-crumbs-icon'></span><span class='navigate-crumbs-dividor'></span></a>";                                      
       
-      $("#vrtx-breadcrumb").append(navHtml);
+  $("#vrtx-breadcrumb").append(navHtml);
       
-      vrtxAdm.crumbsLeft = $("#navigate-crumbs-left");
-      vrtxAdm.crumbsLeftCoverUp = $("#navigate-crumbs-left-coverup");
-      vrtxAdm.crumbsRight = $("#navigate-crumbs-right"); 
-      vrtxAdm.cachedDoc.on("click", "#navigate-crumbs-left", function(e) {
-        vrtxAdmin.scrollBreadcrumbs("left");
-        e.stopPropagation();
-        e.preventDefault();
-      });
-      vrtxAdm.cachedDoc.on("click", "#navigate-crumbs-right", function(e) {
-        vrtxAdmin.scrollBreadcrumbs("right");
-        e.stopPropagation();
-        e.preventDefault();
-      }); 
-      /* TODO: replace with stacking of blue/hovered element above nav(?) */
-      vrtxAdm.cachedDoc.on("mouseover mouseout", ".vrtx-breadcrumb-level", function(e) {
-        var hoveredBreadcrumb = $(this);
-        if(!hoveredBreadcrumb.hasClass("vrtx-breadcrumb-active")) {
-          if(vrtxAdm.crumbsState == "left") {            
-            var gradientRight = vrtxAdm.crumbsRight;
-            var gradientLeftEdge = gradientRight.offset().left;
-            var crumbRightEdge = hoveredBreadcrumb.offset().left + hoveredBreadcrumb.width();
-            if(crumbRightEdge > gradientLeftEdge) {
-              gradientRight.find(".navigate-crumbs-dividor").toggle();
-            }
-          } else if(vrtxAdm.crumbsState == "right") {
-            var gradientLeft = vrtxAdm.crumbsLeft;
-            var gradientRightEdge = gradientLeft.offset().left + gradientLeft.width();
-            var crumbLeftEdge = hoveredBreadcrumb.offset().left;
-            if(crumbLeftEdge < gradientRightEdge) {
-              gradientLeft.find(".navigate-crumbs-dividor").toggle();
-            }
-          }
+  vrtxAdm.crumbsLeft = $("#navigate-crumbs-left");
+  vrtxAdm.crumbsLeftCoverUp = $("#navigate-crumbs-left-coverup");
+  vrtxAdm.crumbsRight = $("#navigate-crumbs-right"); 
+  vrtxAdm.cachedDoc.on("click", "#navigate-crumbs-left", function(e) {
+    vrtxAdmin.scrollBreadcrumbsLeft();
+    e.stopPropagation();
+    e.preventDefault();
+  });
+  vrtxAdm.cachedDoc.on("click", "#navigate-crumbs-right", function(e) {
+    vrtxAdmin.scrollBreadcrumbsRight();
+    e.stopPropagation();
+    e.preventDefault();
+  }); 
+  /* TODO: replace with stacking of blue/hovered element above nav(?) */
+  vrtxAdm.cachedDoc.on("mouseover mouseout", ".vrtx-breadcrumb-level", function(e) {
+    var hoveredBreadcrumb = $(this);
+    if(!hoveredBreadcrumb.hasClass("vrtx-breadcrumb-active")) {
+      if(vrtxAdm.crumbsState == "left") {            
+        var gradientRight = vrtxAdm.crumbsRight;
+        var gradientLeftEdge = gradientRight.offset().left;
+        var crumbRightEdge = hoveredBreadcrumb.offset().left + hoveredBreadcrumb.width();
+        if(crumbRightEdge > gradientLeftEdge) {
+          gradientRight.find(".navigate-crumbs-dividor").toggle();
         }
-        e.stopPropagation();
-        e.preventDefault();
-      });     
-      vrtxAdm.scrollBreadcrumbs("right");
-      vrtxAdm.crumbsInner.addClass("animate");
-      break;
-    case "right": 
-      if(!vrtxAdm.crumbsWidth) return;
-      
-      var width = $("#vrtx-breadcrumb").width();
-      var diff = vrtxAdm.crumbsWidth - width;
-      if(diff > 0) {
-        vrtxAdm.crumbsState = "right";
-        vrtxAdm.crumbsInner.css("left", -diff + "px");
-        vrtxAdm.crumbsRight.filter(":visible").hide();
-        vrtxAdm.crumbsLeftCoverUp.filter(":hidden").show();
-        vrtxAdm.crumbsLeft.filter(":hidden").show();
-      } else {
-        vrtxAdm.crumbsState = "off";
-        vrtxAdm.crumbsInner.css("left", "0px");
-        vrtxAdm.crumbsRight.filter(":visible").hide();
-        vrtxAdm.crumbsLeftCoverUp.filter(":visible").hide();
-        vrtxAdm.crumbsLeft.filter(":visible").hide();
+      } else if(vrtxAdm.crumbsState == "right") {
+        var gradientLeft = vrtxAdm.crumbsLeft;
+        var gradientRightEdge = gradientLeft.offset().left + gradientLeft.width();
+        var crumbLeftEdge = hoveredBreadcrumb.offset().left;
+        if(crumbLeftEdge < gradientRightEdge) {
+          gradientLeft.find(".navigate-crumbs-dividor").toggle();
+        }
       }
-      break;
-    case "left":
-      var width = $("#vrtx-breadcrumb").width();
-      var diff = vrtxAdm.crumbsWidth - width;
+    }
+    e.stopPropagation();
+    e.preventDefault();
+  });     
+  vrtxAdm.scrollBreadcrumbsRight();
+  vrtxAdm.crumbsInner.addClass("animate");  
+};
+
+VrtxAdmin.prototype.scrollBreadcrumbsLeft = function scrollBreadcrumbsLeft() {
+  this.scrollBreadcrumbsHorizontal(false);
+};
+
+VrtxAdmin.prototype.scrollBreadcrumbsRight = function scrollBreadcrumbsRight() {
+  this.scrollBreadcrumbsHorizontal(true);
+};
+
+VrtxAdmin.prototype.scrollBreadcrumbsHorizontal = function scrollBreadcrumbsHorizontal(isRight) {
+  var vrtxAdm = this;
+  if(!vrtxAdm.crumbsWidth) return;
+
+  var width = $("#vrtx-breadcrumb").width();
+  var diff = vrtxAdm.crumbsWidth - width; 
+  if(diff > 0) {
+    if(isRight) {
+      vrtxAdm.crumbsState = "right";
+      vrtxAdm.crumbsInner.css("left", -diff + "px");
+      vrtxAdm.crumbsRight.filter(":visible").hide();
+      vrtxAdm.crumbsLeftCoverUp.filter(":hidden").show();
+      vrtxAdm.crumbsLeft.filter(":hidden").show();
+    } else {
+      vrtxAdm.crumbsState = "left";
       vrtxAdm.crumbsInner.css("left", "0px");
-      if(diff > 0) {
-        vrtxAdm.crumbsState = "left";
-        vrtxAdm.crumbsRight.filter(":hidden").show();
-        vrtxAdm.crumbsLeftCoverUp.filter(":visible").hide();
-        vrtxAdm.crumbsLeft.filter(":visible").hide();
-      } else {
-        vrtxAdm.crumbsState = "off";
-        vrtxAdm.crumbsRight.filter(":visible").hide();
-        vrtxAdm.crumbsLeftCoverUp.filter(":visible").hide();
-        vrtxAdm.crumbsLeft.filter(":visible").hide();
-      }
-      break;
-    default:
-      break;
+      vrtxAdm.crumbsRight.filter(":hidden").show();
+      vrtxAdm.crumbsLeftCoverUp.filter(":visible").hide();
+      vrtxAdm.crumbsLeft.filter(":visible").hide();
+    }
+  } else {
+    vrtxAdm.crumbsState = "off";
+    if(isRight) vrtxAdm.crumbsInner.css("left", "0px");
+    vrtxAdm.crumbsRight.filter(":visible").hide();
+    vrtxAdm.crumbsLeftCoverUp.filter(":visible").hide();
+    vrtxAdm.crumbsLeft.filter(":visible").hide();
   }
 };
 
@@ -3494,7 +3490,7 @@ var maxRuns = 0;
 vrtxAdmin._$(window).resize(vrtxAdmin._$.throttle(150, function () {
   if (vrtxAdmin.runReadyLoad) {
     if (maxRuns < 2) {
-      vrtxAdmin.scrollBreadcrumbs("right");
+      vrtxAdmin.scrollBreadcrumbsRight();
       vrtxAdmin.adjustResourceTitle();
       maxRuns++;
     } else {

@@ -2,8 +2,10 @@
  *  Dialogs facade to jQuery UI
  *
  *  * Uses Dejavu OOP library
- *  * Lazy-loads jQuery UI library if not defined on open
- *  * Lazy-loads Tree libraries if not defined and {tree: true} on open
+ *  * Lazy-loads jQuery UI library (if not defined) on open
+ *  * Lazy-loads Tree and Datepicker libraries (if not defined) on open if:
+ *     - requiresTree: true
+ *     - requiresDatepicker: true
  */
 
 var VrtxSimpleDialogInterface = dejavu.Interface.declare({

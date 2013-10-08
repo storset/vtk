@@ -326,6 +326,10 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
     var id = link.id + "-content";
     vrtxAdm.serverFacade.getHtml(link.href, {
       success: function (results, status, resp) {
+        var dialogManageCreate = _$("#" + id);
+        if(dialogManageCreate.length) {
+          dialogManageCreate.remove();
+        }
         vrtxAdm.cachedBody.append("<div id='" + id + "'>" + _$(_$.parseHTML(results)).find("#vrtx-manage-create-content").html() + "</div>");
         dialogManageCreate = _$("#" + id);
         dialogManageCreate.hide();
@@ -351,7 +355,7 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
         }
         $.when(treeViewReady).done(function() {
           d.open();
-          initializeTree();
+          var t = new VrtxTree($(".ui-dialog:visible"));
         });
       }
     });
@@ -967,50 +971,87 @@ VrtxAdmin.prototype.globalAsyncComplete = function globalAsyncComplete() {
 
 /* Create dialog tree view */
 
-function initializeTree() {
-  var dialog = $(".ui-dialog:visible");
-  var treeElem = dialog.find(".tree-create");
-  var treeTrav = dialog.find("#vrtx-create-tree-folders").hide().text().split(",");
-  var treeType = dialog.find("#vrtx-create-tree-type").hide().text();
-  var treeAddParam = dialog.find("#vrtx-create-tree-add-param");
-  var pathNum = 0;
+var VrtxTreeInterface = dejavu.Interface.declare({
+  $name: "VrtxTree",
+  openLeaf: function(treeElem, treeTravNode, lastNode) {}
+});
+
+var VrtxTree = dejavu.Class.declare({
+  $name: "VrtxTree",
+  $implements: [VrtxTreeInterface],
+  initialize: function(dialog) {
+    var tree = this;
+
+    var treeElem = dialog.find(".tree-create");
+    var treeTrav = dialog.find("#vrtx-create-tree-folders").hide().text().split(",");
+    var treeType = dialog.find("#vrtx-create-tree-type").hide().text();
+    var treeAddParam = dialog.find("#vrtx-create-tree-add-param");
+    var pathNum = 0;
   
-  var service = "service=" + treeType + "-from-drop-down";
-  if(treeAddParam.length) {
-    treeAddParam = treeAddParam.hide().text();
-    service += "&" + treeAddParam;
-  }
-
-  treeElem.treeview({
-    animated: "fast",
-    url: location.protocol + '//' + location.host + location.pathname + "?vrtx=admin&uri=&" + service + "&ts=" + (+new Date()),
-    service: service,
-    dataLoaded: function () { // AJAX success
-      var last = false;
-      if (pathNum == (treeTrav.length - 1)) {
-        last = true;
-      } 
-      traverseNode(treeElem, treeTrav[pathNum++], last);
+    var service = "service=" + treeType + "-from-drop-down";
+    if(treeAddParam.length) {
+      treeAddParam = treeAddParam.hide().text();
+      service += "&" + treeAddParam;
     }
-  });
 
-  treeElem.on("click", "a", function (e) { // Don't want click on links
-    e.preventDefault();
-  });
+    treeElem.treeview({
+      animated: "fast",
+      url: location.protocol + '//' + location.host + location.pathname + "?vrtx=admin&uri=&" + service + "&ts=" + (+new Date()),
+      service: service,
+      dataLoaded: function () { // AJAX success
+        var last = false;
+        if (pathNum == (treeTrav.length - 1)) {
+          last = true;
+        } 
+        tree.openLeaf(treeElem, treeTrav[pathNum++], last);
+      }
+    });
 
-  dialog.on("click", ".tip a", function (e) { // Override jQuery UI prevention
-    location.href = this.href;
-  });
+    treeElem.on("click", "a", function (e) { // Don't want click on links
+      e.preventDefault();
+    });
 
-  treeElem.vortexTips("li span.folder", {
-    appendTo: ".vrtx-create-tree",
-    containerWidth: 80,
-    animOutPreDelay: 4000,
-    xOffset: 10,
-    yOffset: -8,
-    extra: true
-  });
-}
+    dialog.on("click", ".tip a", function (e) { // Override jQuery UI prevention
+      location.href = this.href;
+    });
+
+    treeElem.vortexTips("li span.folder", {
+      appendTo: ".vrtx-create-tree",
+      containerWidth: 80,
+      animOutPreDelay: 4000,
+      xOffset: 10,
+      yOffset: -8,
+      extra: true
+    });
+  },
+  openLeaf: function(treeElem, treeTravNode, lastNode) {
+    var tree = this;
+    
+    var checkNodeAvailable = setInterval(function () {
+      $(".loading-tree-node").remove()
+      var link = treeElem.find("a[href$='" + treeTravNode + "']");
+      if (link.length) {
+        clearInterval(checkNodeAvailable);
+        var hit = link.closest("li").find("> .hitarea");
+        hit.click();
+        $("<span class='loading-tree-node'>" + loadingSubfolders + "</span>").insertAfter(hit.next());
+        if (lastNode) { // If last: scroll to node
+          treeElem.css("background", "none");
+          var scrollToLink = (link.position().top - 145);
+          scrollToLink = scrollToLink < 0 ? 0 : scrollToLink;
+          treeElem.fadeIn(200, function () {
+            $(".ui-dialog:visible .ui-dialog-content").scrollTo(scrollToLink, 250, {
+              easing: "swing",
+              queue: true,
+              axis: 'y',
+              complete: treeCreateScrollToCallback(link)
+            });
+          });
+        }
+      }
+    }, 20);
+  }
+});
 
 function treeCreateScrollToCallback(link) {
   linkTriggeredMouseEnter = link;
@@ -1018,34 +1059,7 @@ function treeCreateScrollToCallback(link) {
   link.parent().trigger("mouseenter");
 }
 
-function traverseNode(treeElem, treeTravNode, lastNode) {
-  var checkNodeAvailable = setInterval(function () {
-    $(".loading-tree-node").remove()
-    var link = treeElem.find("a[href$='" + treeTravNode + "']");
-    if (link.length) {
-      clearInterval(checkNodeAvailable);
-      var hit = link.closest("li").find("> .hitarea");
-      hit.click();
-      $("<span class='loading-tree-node'>" + loadingSubfolders + "</span>").insertAfter(hit.next());
-      if (lastNode) { // If last: scroll to node
-        treeElem.css("background", "none");
-        var scrollToLink = (link.position().top - 145);
-        scrollToLink = scrollToLink < 0 ? 0 : scrollToLink;
-        treeElem.fadeIn(200, function () {
-          $(".ui-dialog:visible .ui-dialog-content").scrollTo(scrollToLink, 250, {
-            easing: "swing",
-            queue: true,
-            axis: 'y',
-            complete: treeCreateScrollToCallback(link)
-          });
-        });
-      }
-    }
-  }, 20);
-}
-
 /* ^ Create dialog tree view */
-
 
 /*-------------------------------------------------------------------*\
     5. Dropdowns XXX: etc.

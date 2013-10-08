@@ -338,25 +338,13 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
           html: dialogManageCreate.html(),
           title: link.title,
           width: 600,
-          height: 395
+          height: 395,
+          tree: true,
+          funcOnOpen: function() {
+            var t = new VrtxTree({ selector: ".ui-dialog:visible" });
+          }
         });
-        // Retrieve Treeview JS if non-existing with Future-object for when to run the initialization
-        var treeViewReady = $.Deferred();
-        if(typeof $.fn.treeview !== "function") {
-          vrtxAdm.loadScript(location.protocol + '//' + location.host + '/vrtx/__vrtx/static-resources/jquery/plugins/jquery.treeview.js', function () {
-            vrtxAdm.loadScript(location.protocol + '//' + location.host + '/vrtx/__vrtx/static-resources/jquery/plugins/jquery.treeview.async.js', function () {
-              vrtxAdm.loadScript(location.protocol + '//' + location.host + '/vrtx/__vrtx/static-resources/jquery/plugins/jquery.scrollTo.min.js', function () {
-                treeViewReady.resolve();
-              });
-            });
-          });
-        } else {
-          treeViewReady.resolve();
-        }
-        $.when(treeViewReady).done(function() {
-          d.open();
-          var t = new VrtxTree({ selector: ".ui-dialog:visible" });
-        });
+        d.open();
       }
     });
     e.stopPropagation();

@@ -1,9 +1,9 @@
 /*
  *  Dialogs facade to jQuery UI
  *
- *  * Uses Dejavu OOP
- *  * Lazy-loads jQuery UI (if not defined) on open
- *
+ *  * Uses Dejavu OOP library
+ *  * Lazy-loads jQuery UI library if not defined on open
+ *  * Lazy-loads Tree libraries if not defined and {tree: true} on open
  */
 
 var VrtxSimpleDialogInterface = dejavu.Interface.declare({
@@ -78,7 +78,19 @@ var AbstractVrtxSimpleDialog = dejavu.AbstractClass.declare({
     var dialog = this;
     var futureUiUrl = "/vrtx/__vrtx/static-resources/jquery/plugins/ui/jquery-ui-1.10.3.custom/js/jquery-ui-1.10.3.custom.min.js";
     var futureUi = (typeof $.ui === "undefined") ? $.getScript(futureUiUrl) : $.Deferred().resolve();
-    $.when(futureUi).done(function() {
+    var futureTree = $.Deferred();
+    if (typeof $.fn.treeview !== "function" && dialog.__opts.tree) {
+      $.getScript(location.protocol + '//' + location.host + '/vrtx/__vrtx/static-resources/jquery/plugins/jquery.treeview.js', function () {
+        $.getScript(location.protocol + '//' + location.host + '/vrtx/__vrtx/static-resources/jquery/plugins/jquery.treeview.async.js', function () {
+          $.getScript(location.protocol + '//' + location.host + '/vrtx/__vrtx/static-resources/jquery/plugins/jquery.scrollTo.min.js', function () {
+            futureTree.resolve();
+          });
+        });
+      });
+    } else {
+      futureTree.resolve();
+    }
+    $.when(futureUi, futureTree).done(function() {
       dialog.__opts.elm = $(dialog.__opts.selector);
       dialog.__opts.elm.dialog(dialog.__dialogOpts);
       dialog.__opts.elm.dialog("open");
@@ -125,6 +137,7 @@ var VrtxHtmlDialog = dejavu.Class.declare({
       hasCancel: opts.btnTextCancel,
       btnTextOk: opts.btnTextOk,
       btnTextCancel: opts.btnTextCancel,
+      tree: opts.tree,
       funcOnOpen: opts.funcOnOpen
     });
   }

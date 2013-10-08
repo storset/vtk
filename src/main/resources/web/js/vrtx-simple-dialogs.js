@@ -2,7 +2,7 @@
  *  VrtxSimpleDialog - facade to jQuery UI dialogs
  *
  *  * Requires Dejavu OOP library
- *  * Requires but lazy-loads jQuery UI library (if not defined) on open
+ *  * Requires but Lazy-loads jQuery UI library (if not defined) on open
  *  * Lazy-loads Tree and Datepicker libraries (if not defined) on open if:
  *     - requiresTree: true
  *     - requiresDatepicker: true

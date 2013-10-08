@@ -558,10 +558,11 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
                 }
               }
               results = _$($.parseHTML(results));
-              if (copyMoveExists !== "") { // Reverse the belt and roll out updated baggage :)
-                horizontalAnimation(copyMoveExists, {
-                  reverse: true,
-                  complete: function () {
+              if (copyMoveExists !== "") {
+                var copyMoveAnimation = new VrtxAnimation({
+                  elem: copyMoveExists,
+                  outerWrapperElem: resourceMenuRight,
+                  after: function() {
                     copyMoveExists.remove();
                     resourceMenuRight.html(results.find("#resourceMenuRight").html());
                     vrtxAdm.displayInfoMsg(results.find(".infomessage").html());
@@ -569,9 +570,14 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
                     if (resourceTitle.hasClass("compact")) { // Instant compact => expanded
                       resourceTitle.removeClass("compact");
                     }
-                    horizontalAnimation(resourceMenuRight.find(li));
+                    var copyMoveAnimation2 = new VrtxAnimation({
+                      elem: resourceMenuRight.find(li),
+                      outerWrapperElem: resourceMenuRight
+                    });
+                    copyMoveAnimation2.rightIn();
                   }
                 });
+                copyMoveAnimation.leftOut();
               } else {
                 resourceMenuRight.html(results.find("#resourceMenuRight").html());
                 vrtxAdm.displayInfoMsg(results.find(".infomessage").html());
@@ -579,7 +585,11 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
                 if (resourceTitle.hasClass("compact")) { // Instant compact => expanded
                   resourceTitle.removeClass("compact");
                 }
-                horizontalAnimation(resourceMenuRight.find(li));
+                var copyMoveAnimation = new VrtxAnimation({
+                  elem: resourceMenuRight.find(li),
+                  outerWrapperElem: resourceMenuRight
+                });
+                copyMoveAnimation.rightIn();
               }
             }
           });
@@ -597,9 +607,10 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
           var dataString = form.serialize() + "&" + button.attr("name") + "=" + button.val();
           vrtxAdm.serverFacade.postHtml(url, dataString, {
             success: function (results, status, resp) {
-              horizontalAnimation(li, {
-                reverse: true,
-                complete: function () {
+              var copyMoveAnimation = new VrtxAnimation({
+                elem: li,
+                outerWrapperElem: $("#resourceMenuRight"),
+                after: function() {
                   var result = _$($.parseHTML(results));
                   vrtxAdm.displayErrorMsg(result.find(".errormessage").html());
                   vrtxAdm.cachedContent.html(_$($.parseHTML(results)).find("#contents").html());
@@ -611,6 +622,7 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
                   }
                 }
               });
+              copyMoveAnimation.leftOut();
             }
           });
           e.stopPropagation();
@@ -952,37 +964,48 @@ VrtxAdmin.prototype.globalAsyncComplete = function globalAsyncComplete() {
  *
  */
  
-function horizontalAnimation(elm, opts) {
-  if (typeof opts !== "object") opts = {};
-
-  var resMenuRight = $("#resourceMenuRight");
-  if(!resMenuRight.hasClass("overflow-hidden")) {
-    resMenuRight.addClass("overflow-hidden");
-  }
-  var width = elm.outerWidth(true);
-  if (opts.reverse) {
-    anim = -width;
-    easing = vrtxAdmin.transitionEasingSlideUp;
-  } else {
-    elm.css("marginLeft", -width);
-    anim = 0;
-    easing = vrtxAdmin.transitionEasingSlideDown;
-  }
-  if (opts.complete) {
-    elm.animate({
-      "marginLeft": anim + "px"
+var VrtxAnimationInterface = dejavu.Interface.declare({
+  $name: "VrtxTree",
+  __opts: {},
+  __prepare: function() {},
+  __horizontalMove: function() {},
+  rightIn: function() {},
+  leftOut: function() {}
+});
+ 
+var VrtxAnimation = dejavu.Class.declare({
+  $name: "VrtxAnimation",
+  $implements: [VrtxAnimationInterface],
+  initialize: function(opts) {
+    this.__opts = opts;
+  },
+  __opts: {},
+  __prepare: function() {
+    if(!this.__opts.outerWrapperElem.hasClass("overflow-hidden")) {
+      this.__opts.outerWrapperElem.addClass("overflow-hidden");
+    }
+    return this.__opts.elem.outerWidth(true);
+  },
+  __horizontalMove: function(left, easing) {
+    var animation = this;
+    animation.__opts.elem.animate({
+      "marginLeft": left + "px"
     }, vrtxAdmin.transitionSpeed, easing, function() {
-      resMenuRight.removeClass("overflow-hidden");
-      opts.complete();
+      animation.__opts.outerWrapperElem.removeClass("overflow-hidden");
+      if(animation.__opts.after) animation.__opts.after();
     });
-  } else {
-    elm.animate({
-      "marginLeft": anim + "px"
-    }, vrtxAdmin.transitionSpeed, easing, function() {
-      resMenuRight.removeClass("overflow-hidden");
-    });
+  },
+  rightIn: function() {
+    var width = this.__prepare();
+    this.__opts.elem.css("marginLeft", -width);
+    this.__horizontalMove(0, vrtxAdmin.transitionEasingSlideDown);
+  },
+  leftOut: function() {
+    var width = this.__prepare();
+    this.__horizontalMove(-width, vrtxAdmin.transitionEasingSlideUp);
   }
-}
+});
+ 
 
 /*
  * VrtxTree - facade to TreeView async

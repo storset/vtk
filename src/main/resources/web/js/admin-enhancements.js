@@ -570,11 +570,11 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
                     if (resourceTitle.hasClass("compact")) { // Instant compact => expanded
                       resourceTitle.removeClass("compact");
                     }
-                    var copyMoveAnimation2 = new VrtxAnimation({
+                    copyMoveAnimation.newOpts({
                       elem: resourceMenuRight.find(li),
                       outerWrapperElem: resourceMenuRight
-                    });
-                    copyMoveAnimation2.rightIn();
+                    })
+                    copyMoveAnimation.rightIn();
                   }
                 });
                 copyMoveAnimation.leftOut();
@@ -969,6 +969,7 @@ var VrtxAnimationInterface = dejavu.Interface.declare({
   __opts: {},
   __prepare: function() {},
   __horizontalMove: function() {},
+  newOpts: function(opts) {},
   rightIn: function() {},
   leftOut: function() {}
 });
@@ -994,6 +995,9 @@ var VrtxAnimation = dejavu.Class.declare({
       animation.__opts.outerWrapperElem.removeClass("overflow-hidden");
       if(animation.__opts.after) animation.__opts.after();
     });
+  },
+  newOpts: function(opts) {
+    this.__opts = opts;
   },
   rightIn: function() {
     var width = this.__prepare();

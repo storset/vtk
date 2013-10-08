@@ -78,13 +78,23 @@ var AbstractVrtxSimpleDialog = dejavu.AbstractClass.declare({
   },
   open: function () {
     var dialog = this;
-    var futureUiUrl = "/vrtx/__vrtx/static-resources/jquery/plugins/ui/jquery-ui-1.10.3.custom/js/jquery-ui-1.10.3.custom.min.js";
-    var futureUi = (typeof $.ui === "undefined") ? $.getScript(futureUiUrl) : $.Deferred().resolve();
+    
+    var futureRootUrl = "/vrtx/__vrtx/static-resources";
+    var jQueryUiVersion = "1.10.3";
+    
+    var futureUi = $.Deferred();
+    if (typeof $.ui === "undefined") {
+      $.getScript("/jquery/plugins/ui/jquery-ui-" + jQueryUiVersion + ".custom/js/jquery-ui-" + jQueryUiVersion + ".custom.min.js"), function () {
+        futureUi.resolve();
+      });
+    } else {
+      futureUi.resolve();
+    }
     var futureTree = $.Deferred();
     if (typeof $.fn.treeview !== "function" && dialog.__opts.requiresTree) {
-      $.getScript(location.protocol + '//' + location.host + '/vrtx/__vrtx/static-resources/jquery/plugins/jquery.treeview.js', function () {
-        $.getScript(location.protocol + '//' + location.host + '/vrtx/__vrtx/static-resources/jquery/plugins/jquery.treeview.async.js', function () {
-          $.getScript(location.protocol + '//' + location.host + '/vrtx/__vrtx/static-resources/jquery/plugins/jquery.scrollTo.min.js', function () {
+      $.getScript(location.protocol + "//" + location.host + futureRootUrl + "/jquery/plugins/jquery.treeview.js", function () {
+        $.getScript(location.protocol + "//" + location.host + futureRootUrl + "/jquery/plugins/jquery.treeview.async.js", function () {
+          $.getScript(location.protocol + "//" + location.host + futureRootUrl + "/jquery/plugins/jquery.scrollTo.min.js", function () {
             futureTree.resolve();
           });
         });
@@ -93,10 +103,10 @@ var AbstractVrtxSimpleDialog = dejavu.AbstractClass.declare({
       futureTree.resolve();
     }
     var futureDatepicker = $.Deferred();
-    if(typeof initDatePicker !== "function" && dialog.__opts.requiresDatepicker) {
-      $.getScript("/vrtx/__vrtx/static-resources/js/datepicker/datepicker-admin.js", function() {
-        $.getScript("/vrtx/__vrtx/static-resources/jquery/plugins/ui/jquery-ui-1.10.3.custom/js/jquery.ui.datepicker-no.js", function() {
-          $.getScript("/vrtx/__vrtx/static-resources/jquery/plugins/ui/jquery-ui-1.10.3.custom/js/jquery.ui.datepicker-nn.js", function() {
+    if (typeof initDatePicker !== "function" && dialog.__opts.requiresDatepicker) {
+      $.getScript(futureRootUrl + "/js/datepicker/datepicker-admin.js", function() {
+        $.getScript(futureRootUrl + "/jquery/plugins/ui/jquery-ui-" + jQueryUiVersion + ".custom/js/jquery.ui.datepicker-no.js", function() {
+          $.getScriptfutureRootUrl + "/jquery/plugins/ui/jquery-ui-" + jQueryUiVersion + ".custom/js/jquery.ui.datepicker-nn.js", function() {
             futureDatepicker.resolve(); 
           });
         });

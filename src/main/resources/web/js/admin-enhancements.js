@@ -16,7 +16,7 @@
  *  1.  Config
  *  2.  DOM is fully loaded
  *  3.  DOM is ready
- *  4.  General interaction / dialogs
+ *  4.  General / setup interactions
  *  5.  Dropdowns
  *  6.  Create service
  *  7.  File upload service
@@ -239,104 +239,8 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
 };
 
 /*-------------------------------------------------------------------*\
-    4. General interaction / dialogs
+    4. General / setup interactions
 \*-------------------------------------------------------------------*/
-
-function interceptEnterKey() {
-  vrtxAdmin.cachedAppContent.delegate("form#editor input", "keypress", function (e) {
-    if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
-      e.preventDefault(); // cancel the default browser click
-    }
-  });
-}
-
-function interceptEnterKeyAndReroute(txt, btn, cb) {
-  vrtxAdmin.cachedAppContent.delegate(txt, "keypress", function (e) {
-    if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
-      if ($(this).hasClass("blockSubmit")) { // submit/rerouting can be blocked elsewhere on textfield
-        $(this).removeClass("blockSubmit");
-      } else {
-        $(btn).click(); // click the associated button
-      }
-      if(typeof cb === "function") {
-        cb($(this));
-      }
-      e.preventDefault();
-    }
-  });
-}
-
-VrtxAdmin.prototype.mapShortcut = function mapShortcut(selectors, reroutedSelector) {
-  this.cachedAppContent.on("click", selectors, function (e) {
-    $(reroutedSelector).click();
-    e.stopPropagation();
-    e.preventDefault();
-  });
-};
-
-VrtxAdmin.prototype.initStickyBar = function initStickyBar(wrapperId, stickyClass, extraWidth) {
-  var vrtxAdm = vrtxAdmin,
-    _$ = vrtxAdm._$;
-
-  var wrapper = _$(wrapperId);
-  var thisWindow = _$(window);
-  if (wrapper.length && !vrtxAdm.isIPhone) { // Turn off for iPhone. 
-    var wrapperPos = wrapper.offset();
-    if (vrtxAdm.isIE8) {
-      wrapper.append("<span class='sticky-bg-ie8-below'></span>");
-    }
-    thisWindow.on("scroll", function () {
-      if (thisWindow.scrollTop() >= wrapperPos.top + 1) {
-        if (!wrapper.hasClass(stickyClass)) {
-          wrapper.addClass(stickyClass);
-          vrtxAdmin.cachedContent.css("paddingTop", wrapper.outerHeight(true) + "px");
-        }
-        wrapper.css("width", (_$("#main").outerWidth(true) - 2 + extraWidth) + "px");
-      } else {
-        if (wrapper.hasClass(stickyClass)) {
-          wrapper.removeClass(stickyClass);
-          wrapper.css("width", "auto");
-          vrtxAdmin.cachedContent.css("paddingTop", "0px");
-        }
-      }
-    });
-    thisWindow.on("resize", function () {
-      if (thisWindow.scrollTop() >= wrapperPos.top + 1) {
-        wrapper.css("width", (_$("#main").outerWidth(true) - 2 + extraWidth) + "px");
-      }
-    });
-  }
-};
-
-VrtxAdmin.prototype.destroyStickyBar = function destroyStickyBar(wrapperId, stickyClass) {
-  var _$ = this._$;
-  
-  var thisWindow = _$(window);
-  thisWindow.off("scroll");
-  thisWindow.off("resize");
-  
-  var wrapper = _$(wrapperId);
-  
-  if (wrapper.hasClass(stickyClass)) {
-    wrapper.removeClass(stickyClass);
-    wrapper.css("width", "auto");
-    vrtxAdmin.cachedContent.css("paddingTop", "0px");
-  }
-};
-
-VrtxAdmin.prototype.logoutButtonAsLink = function logoutButtonAsLink() {
-  var _$ = this._$;
-
-  var btn = _$('input#logoutAction');
-  if (!btn.length) return;
-  btn.hide();
-  btn.after('&nbsp;<a id=\"logoutAction.link\" name=\"logoutAction\" href="javascript:void(0);">' + btn.attr('value') + '</a>');
-  _$("#app-head-wrapper").on("click", '#logoutAction\\.link', function (e) {
-    btn.click();
-    e.stopPropagation();
-    e.preventDefault();
-  });
-};
 
 /*
  * Tooltips init
@@ -1097,6 +1001,107 @@ var VrtxTree = dejavu.Class.declare({
     }, 20);
   }
 });
+
+/*
+ * Misc.
+ *
+ */
+
+function interceptEnterKey() {
+  vrtxAdmin.cachedAppContent.delegate("form#editor input", "keypress", function (e) {
+    if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
+      e.preventDefault(); // cancel the default browser click
+    }
+  });
+}
+
+function interceptEnterKeyAndReroute(txt, btn, cb) {
+  vrtxAdmin.cachedAppContent.delegate(txt, "keypress", function (e) {
+    if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
+      if ($(this).hasClass("blockSubmit")) { // submit/rerouting can be blocked elsewhere on textfield
+        $(this).removeClass("blockSubmit");
+      } else {
+        $(btn).click(); // click the associated button
+      }
+      if(typeof cb === "function") {
+        cb($(this));
+      }
+      e.preventDefault();
+    }
+  });
+}
+
+VrtxAdmin.prototype.mapShortcut = function mapShortcut(selectors, reroutedSelector) {
+  this.cachedAppContent.on("click", selectors, function (e) {
+    $(reroutedSelector).click();
+    e.stopPropagation();
+    e.preventDefault();
+  });
+};
+
+VrtxAdmin.prototype.initStickyBar = function initStickyBar(wrapperId, stickyClass, extraWidth) {
+  var vrtxAdm = vrtxAdmin,
+    _$ = vrtxAdm._$;
+
+  var wrapper = _$(wrapperId);
+  var thisWindow = _$(window);
+  if (wrapper.length && !vrtxAdm.isIPhone) { // Turn off for iPhone. 
+    var wrapperPos = wrapper.offset();
+    if (vrtxAdm.isIE8) {
+      wrapper.append("<span class='sticky-bg-ie8-below'></span>");
+    }
+    thisWindow.on("scroll", function () {
+      if (thisWindow.scrollTop() >= wrapperPos.top + 1) {
+        if (!wrapper.hasClass(stickyClass)) {
+          wrapper.addClass(stickyClass);
+          vrtxAdmin.cachedContent.css("paddingTop", wrapper.outerHeight(true) + "px");
+        }
+        wrapper.css("width", (_$("#main").outerWidth(true) - 2 + extraWidth) + "px");
+      } else {
+        if (wrapper.hasClass(stickyClass)) {
+          wrapper.removeClass(stickyClass);
+          wrapper.css("width", "auto");
+          vrtxAdmin.cachedContent.css("paddingTop", "0px");
+        }
+      }
+    });
+    thisWindow.on("resize", function () {
+      if (thisWindow.scrollTop() >= wrapperPos.top + 1) {
+        wrapper.css("width", (_$("#main").outerWidth(true) - 2 + extraWidth) + "px");
+      }
+    });
+  }
+};
+
+VrtxAdmin.prototype.destroyStickyBar = function destroyStickyBar(wrapperId, stickyClass) {
+  var _$ = this._$;
+  
+  var thisWindow = _$(window);
+  thisWindow.off("scroll");
+  thisWindow.off("resize");
+  
+  var wrapper = _$(wrapperId);
+  
+  if (wrapper.hasClass(stickyClass)) {
+    wrapper.removeClass(stickyClass);
+    wrapper.css("width", "auto");
+    vrtxAdmin.cachedContent.css("paddingTop", "0px");
+  }
+};
+
+VrtxAdmin.prototype.logoutButtonAsLink = function logoutButtonAsLink() {
+  var _$ = this._$;
+
+  var btn = _$('input#logoutAction');
+  if (!btn.length) return;
+  btn.hide();
+  btn.after('&nbsp;<a id=\"logoutAction.link\" name=\"logoutAction\" href="javascript:void(0);">' + btn.attr('value') + '</a>');
+  _$("#app-head-wrapper").on("click", '#logoutAction\\.link', function (e) {
+    btn.click();
+    e.stopPropagation();
+    e.preventDefault();
+  });
+};
 
 /*-------------------------------------------------------------------*\
     5. Dropdowns XXX: etc.

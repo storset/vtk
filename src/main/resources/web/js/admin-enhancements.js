@@ -990,38 +990,41 @@ var VrtxTree = dejavu.Class.declare({
   $implements: [VrtxTreeInterface],
   initialize: function(opts) {
     var tree = this;
-    var pathNum = 0;
+    tree.__opts = opts;
+    tree.__opts.pathNum = 0;
     opts.elem.treeview({
       animated: "fast",
       url: location.protocol + '//' + location.host + location.pathname + "?vrtx=admin&uri=&" + opts.service + "&ts=" + (+new Date()),
       service: opts.service,
       dataLoaded: function () {
-        tree.__openLeaf(opts.elem, opts.trav[pathNum], (pathNum == (opts.trav.length - 1)), opts.afterTrav);
-        pathNum++;
+        tree.__openLeaf();
       }
     });
   },
-  __openLeaf: function(elem, travNode, isLastNode, afterTrav) {
+  __opts: {},
+  __openLeaf: function() {
+    var tree = this;
     var checkNodeAvailable = setInterval(function () {
       $(".loading-tree-node").remove();
-      var link = elem.find("a[href$='" + travNode + "']");
+      var link = tree.__opts.elem.find("a[href$='" + tree.__opts.trav[tree.__opts.pathNum] + "']");
       if (link.length) {
         clearInterval(checkNodeAvailable);
         var hit = link.closest("li").find("> .hitarea");
         hit.click();
-        if (isLastNode) { // Scroll to node
+        if (tree.__opts.pathNum == (tree.__opts.trav.length - 1)) { // Scroll to node
           var scrollToLinkPosition = (link.position().top - 145);
-          elem.css("background", "none").fadeIn(200, function () {
+          tree.__opts.elem.css("background", "none").fadeIn(200, function () {
             $(".ui-dialog:visible .ui-dialog-content").scrollTo(Math.max(0, scrollToLinkPosition), 250, {
               easing: "swing",
               queue: true,
               axis: 'y',
-              complete: afterTrav(link)
+              complete: tree.__opts.afterTrav(link)
             });
           });
         } else {
           $("<span class='loading-tree-node'>" + loadingSubfolders + "</span>").insertAfter(hit.next());
         }
+        tree.__opts.pathNum++;
       }
     }, 20);
   }

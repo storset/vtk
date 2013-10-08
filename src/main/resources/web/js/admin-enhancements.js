@@ -638,6 +638,8 @@ VrtxAdmin.prototype.globalAsyncComplete = function globalAsyncComplete() {
 /*
  * Domains init
  *
+ * * is based on id of body-tag
+ *
  */
  
 VrtxAdmin.prototype.initDomains = function initDomains() {

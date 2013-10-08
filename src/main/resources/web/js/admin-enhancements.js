@@ -341,7 +341,45 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
           height: 395,
           requiresTree: true,
           funcOnOpen: function() {
-            var t = new VrtxTree({ selector: ".ui-dialog:visible" });
+            var dialog = $(".ui-dialog:visible");
+            var treeElem = dialog.find(".tree-create");
+            var treeTrav = dialog.find("#vrtx-create-tree-folders").hide().text().split(",");
+            var treeType = dialog.find("#vrtx-create-tree-type").hide().text();
+            var treeAddParam = dialog.find("#vrtx-create-tree-add-param");
+
+            var service = "service=" + treeType + "-from-drop-down";
+            if(treeAddParam.length) {
+              treeAddParam = treeAddParam.hide().text();
+              service += "&" + treeAddParam;
+            }
+
+            treeElem.on("click", "a", function (e) { // Don't want click on links
+              e.preventDefault();
+            });
+
+            dialog.on("click", ".tip a", function (e) { // Override jQuery UI prevention
+              location.href = this.href;
+            });
+
+            treeElem.vortexTips("li span.folder", {
+              appendTo: ".vrtx-create-tree",
+              containerWidth: 80,
+              animOutPreDelay: 4000,
+              xOffset: 10,
+              yOffset: -8,
+              extra: true
+            });
+            
+            var t = new VrtxTree({
+              service: service,
+              elem: treeElem,
+              trav: treeTrav,
+              afterTrav: function(link) {
+                linkTriggeredMouseEnter = link;
+                linkTriggeredMouseEnterTipText = linkTriggeredMouseEnter.attr('title');
+                link.parent().trigger("mouseenter");
+              }
+            });
           }
         });
         d.open();
@@ -952,84 +990,42 @@ var VrtxTree = dejavu.Class.declare({
   $implements: [VrtxTreeInterface],
   initialize: function(opts) {
     var tree = this;
-
-    var dialog = $(opts.selector);
-    var treeElem = dialog.find(".tree-create");
-    var treeTrav = dialog.find("#vrtx-create-tree-folders").hide().text().split(",");
-    var treeType = dialog.find("#vrtx-create-tree-type").hide().text();
-    var treeAddParam = dialog.find("#vrtx-create-tree-add-param");
     var pathNum = 0;
-  
-    var service = "service=" + treeType + "-from-drop-down";
-    if(treeAddParam.length) {
-      treeAddParam = treeAddParam.hide().text();
-      service += "&" + treeAddParam;
-    }
-
-    treeElem.treeview({
+    opts.elem.treeview({
       animated: "fast",
-      url: location.protocol + '//' + location.host + location.pathname + "?vrtx=admin&uri=&" + service + "&ts=" + (+new Date()),
-      service: service,
-      dataLoaded: function () { // AJAX success
-        var last = false;
-        if (pathNum == (treeTrav.length - 1)) {
-          last = true;
-        } 
-        tree.__openLeaf(treeElem, treeTrav[pathNum++], last);
+      url: location.protocol + '//' + location.host + location.pathname + "?vrtx=admin&uri=&" + opts.service + "&ts=" + (+new Date()),
+      service: opts.service,
+      dataLoaded: function () {
+        tree.__openLeaf(opts.elem, opts.trav[pathNum], (pathNum == (opts.trav.length - 1)), opts.afterTrav);
+        pathNum++;
       }
     });
-
-    treeElem.on("click", "a", function (e) { // Don't want click on links
-      e.preventDefault();
-    });
-
-    dialog.on("click", ".tip a", function (e) { // Override jQuery UI prevention
-      location.href = this.href;
-    });
-
-    treeElem.vortexTips("li span.folder", {
-      appendTo: ".vrtx-create-tree",
-      containerWidth: 80,
-      animOutPreDelay: 4000,
-      xOffset: 10,
-      yOffset: -8,
-      extra: true
-    });
   },
-  __openLeaf: function(treeElem, treeTravNode, lastNode) {
-    var tree = this;
-    
+  __openLeaf: function(elem, travNode, isLastNode, afterTrav) {
     var checkNodeAvailable = setInterval(function () {
-      $(".loading-tree-node").remove()
-      var link = treeElem.find("a[href$='" + treeTravNode + "']");
+      $(".loading-tree-node").remove();
+      var link = elem.find("a[href$='" + travNode + "']");
       if (link.length) {
         clearInterval(checkNodeAvailable);
         var hit = link.closest("li").find("> .hitarea");
         hit.click();
-        $("<span class='loading-tree-node'>" + loadingSubfolders + "</span>").insertAfter(hit.next());
-        if (lastNode) { // If last: scroll to node
-          treeElem.css("background", "none");
-          var scrollToLink = (link.position().top - 145);
-          scrollToLink = scrollToLink < 0 ? 0 : scrollToLink;
-          treeElem.fadeIn(200, function () {
-            $(".ui-dialog:visible .ui-dialog-content").scrollTo(scrollToLink, 250, {
+        if (isLastNode) { // Scroll to node
+          var scrollToLinkPosition = (link.position().top - 145);
+          elem.css("background", "none").fadeIn(200, function () {
+            $(".ui-dialog:visible .ui-dialog-content").scrollTo(Math.max(0, scrollToLinkPosition), 250, {
               easing: "swing",
               queue: true,
               axis: 'y',
-              complete: treeCreateScrollToCallback(link)
+              complete: afterTrav(link)
             });
           });
+        } else {
+          $("<span class='loading-tree-node'>" + loadingSubfolders + "</span>").insertAfter(hit.next());
         }
       }
     }, 20);
   }
 });
-
-function treeCreateScrollToCallback(link) {
-  linkTriggeredMouseEnter = link;
-  linkTriggeredMouseEnterTipText = linkTriggeredMouseEnter.attr('title');
-  link.parent().trigger("mouseenter");
-}
 
 /* ^ Create dialog tree view */
 

@@ -1,7 +1,7 @@
 /*
  *  Dialogs and interface to jQuery UI
  *
- *  Hard dependency to Dejavu OOP
+ *  Uses Dejavu OOP
  *
  */
 

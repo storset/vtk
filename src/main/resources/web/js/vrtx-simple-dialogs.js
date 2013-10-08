@@ -1,5 +1,5 @@
 /*
- *  Dialogs facade to jQuery UI
+ *  VrtxSimpleDialog - facade to jQuery UI dialogs
  *
  *  * Uses Dejavu OOP library
  *  * Lazy-loads jQuery UI library (if not defined) on open

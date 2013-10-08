@@ -980,7 +980,7 @@ VrtxAdmin.prototype.globalAsyncComplete = function globalAsyncComplete() {
 };
 
 /*
- * VrtxTree
+ * VrtxTree - facade to TreeView async
  *
  */
 

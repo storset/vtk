@@ -170,10 +170,6 @@ vrtxAdmin._$(document).ready(function () {
   vrtxAdm.initDomains();
   vrtxAdm.initScrollBreadcrumbs();
 
-  // Interactions initialization - TODO: move to Domains
-  editorInteraction(bodyId, vrtxAdm, _$);
-  versioningInteraction(bodyId, vrtxAdm, _$);
-
   vrtxAdm.log({
     msg: "Document.ready() in " + (+new Date() - startReadyTime) + "ms."
   });
@@ -695,6 +691,13 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
       });
       vrtxAdm.collectionListingInteraction();
       break;
+    case "vrtx-editor":
+    case "vrtx-edit-plaintext":
+    case "vrtx-visual-profile":
+      editorInteraction(bodyId, vrtxAdm, _$);
+    case "vrtx-preview":
+    case "vrtx-revisions":
+      versioningInteraction(bodyId, vrtxAdm, _$);
     case "vrtx-permissions":
       var privilegiesPermissions = ["read", "read-write", "all"];
       for (i = privilegiesPermissions.length; i--;) {

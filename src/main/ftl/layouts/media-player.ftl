@@ -35,7 +35,7 @@
   	    <#if poster?exists>,poster: "${poster?html}" </#if>
   	    <#if autoplay?exists>,autoPlay: "${autoplay}"</#if>
 	  };
-	  var params = {
+	  var params = {																																														
 	    allowFullScreen: "true",
 	    allowscriptaccess: "always"
 	  };

@@ -41,22 +41,13 @@ import org.vortikal.security.PrincipalFactory;
 
 /**
  * Utility class for sorting a set of resources in various ways.
- *
+ * 
  * NB String value order is not locale-aware.
  */
 public class ResourceSorter {
 
     public static enum Order {
-        BY_TITLE,
-        BY_NAME,
-        BY_DATE,
-        BY_OWNER,
-        BY_LOCKS,
-        BY_FILESIZE,
-        BY_CONTENT_TYPE,
-        BY_RESOURCE_TYPE,
-        BY_PERMISSIONS,
-        BY_PUBLISHED
+        BY_TITLE, BY_NAME, BY_DATE, BY_OWNER, BY_LOCKS, BY_FILESIZE, BY_CONTENT_TYPE, BY_RESOURCE_TYPE, BY_PERMISSIONS, BY_PUBLISHED
     }
 
     public static void sort(Resource[] resources, Order order, boolean inverted, RequestContext rc) {
@@ -67,7 +58,7 @@ public class ResourceSorter {
         case BY_NAME:
             comparator = new ResourceNameComparator(inverted);
             break;
-            
+
         case BY_TITLE:
             comparator = new ResourceTitleComparator(inverted);
             break;
@@ -91,7 +82,7 @@ public class ResourceSorter {
         case BY_CONTENT_TYPE:
             comparator = new ContentTypeComparator(inverted);
             break;
-            
+
         case BY_RESOURCE_TYPE:
             comparator = new ResourceTypeComparator(inverted, rc);
             break;
@@ -99,7 +90,7 @@ public class ResourceSorter {
         case BY_PERMISSIONS:
             comparator = new PermissionsComparator(inverted);
             break;
-        
+
         case BY_PUBLISHED:
             comparator = new PublishedComparator(inverted);
             break;
@@ -127,7 +118,7 @@ public class ResourceSorter {
             return r2.getTitle().compareTo(r1.getTitle());
         }
     }
-    
+
     private static class ResourceNameComparator implements Comparator<Resource> {
         private boolean invert = false;
 
@@ -170,11 +161,9 @@ public class ResourceSorter {
         @Override
         public int compare(Resource r1, Resource r2) {
             if (!this.invert) {
-                return r1.getOwner().getQualifiedName().compareTo(
-                        r2.getOwner().getQualifiedName());
+                return r1.getOwner().getQualifiedName().compareTo(r2.getOwner().getQualifiedName());
             }
-            return r2.getOwner().getQualifiedName().compareTo(
-                    r1.getOwner().getQualifiedName());
+            return r2.getOwner().getQualifiedName().compareTo(r1.getOwner().getQualifiedName());
         }
     }
 
@@ -239,9 +228,9 @@ public class ResourceSorter {
             }
             return r2.getContentType().compareTo(r1.getContentType());
         }
-        
+
     }
-    
+
     private static class ResourceTypeComparator implements Comparator<Resource> {
         private boolean invert = false;
         private RequestContext rc;
@@ -253,12 +242,12 @@ public class ResourceSorter {
 
         @Override
         public int compare(Resource r1, Resource r2) {
-            
+
             String key1 = "resourcetype.name." + r1.getResourceType();
             String localizedResourceType1 = this.rc.getMessage(key1, r1.getResourceType());
             String key2 = "resourcetype.name." + r2.getResourceType();
             String localizedResourceType2 = this.rc.getMessage(key2, r2.getResourceType());
-            
+
             if (!this.invert) {
                 return localizedResourceType1.compareTo(localizedResourceType2);
             }
@@ -286,9 +275,9 @@ public class ResourceSorter {
         private boolean isReadAll(Resource r) {
             Acl acl = r.getAcl();
             return acl.hasPrivilege(Privilege.READ, PrincipalFactory.ALL)
-                || acl.hasPrivilege(Privilege.READ_PROCESSED, PrincipalFactory.ALL);
+                    || acl.hasPrivilege(Privilege.READ_PROCESSED, PrincipalFactory.ALL);
         }
-        
+
         private int compare(boolean r1ReadAll, boolean r2ReadAll) {
             if (r1ReadAll == true && r2ReadAll == false) {
                 return 1;
@@ -297,10 +286,11 @@ public class ResourceSorter {
             }
             return 0;
         }
-        
+
     }
-    
+
     private static class PublishedComparator implements Comparator<Resource> {
+
         private boolean invert = false;
 
         public PublishedComparator(boolean invert) {
@@ -308,42 +298,10 @@ public class ResourceSorter {
         }
 
         @Override
-        public int compare(Resource r1, Resource r2) { 
+        public int compare(Resource r1, Resource r2) {
             String rr1 = r1.isPublished() ? "true" : "false";
             String rr2 = r2.isPublished() ? "true" : "false";
-            
-            // TODO: less hacky solution for checking if it is JSON and !collection
-            //       now other files with 'application/json' is also considered published/unpublished..
-            if(r1.getContentType() == null || !r1.getContentType().equals("application/json")) {
-              rr1 = null;
-            }
-            if(r2.getContentType() == null || !r2.getContentType().equals("application/json")) {
-              rr2 = null;
-            }
-            if(r1.isCollection()) {
-              rr1 = null;
-            }
-            if(r2.isCollection()) {
-              rr2 = null;
-            }
-            
-            if (rr1 != null && rr2 == null) {
-              if(!this.invert) {
-                return 1;
-              } else { 
-                return -1;
-              }
-            } else if (rr1 == null && rr2 != null) {
-             if(!this.invert) {
-               return -1;
-             } else {
-               return 1;
-             }
-            } else if(rr1 == null && rr2 == null) {
-              return 0;
-            }
-            // .......
-            
+
             if (!this.invert) {
                 return rr1.compareTo(rr2);
             }

@@ -96,6 +96,7 @@ public final class PropertyType {
     public static final String UNPUBLISH_DATE_PROP_NAME = "unpublish-date";
     public static final String PUBLISHED_PROP_NAME = "published";
     public static final String TAGS_PROP_NAME = "tags";
+    public static final String CONTENTLOCALE_PROP_NAME = "contentLocale";
     
     /*
      * Special properties
@@ -108,7 +109,6 @@ public final class PropertyType {
     public static final String CHARACTERENCODING_PROP_NAME = "characterEncoding";
     public static final String CHARACTERENCODING_USER_SPECIFIED_PROP_NAME = "userSpecifiedCharacterEncoding";
     public static final String CHARACTERENCODING_GUESSED_PROP_NAME = "guessedCharacterEncoding";
-    public static final String CONTENTLOCALE_PROP_NAME = "contentLocale";
     public static final String LASTMODIFIED_PROP_NAME = "lastModified";
     public static final String MODIFIEDBY_PROP_NAME = "modifiedBy";
     public static final String CONTENTLASTMODIFIED_PROP_NAME = "contentLastModified";
@@ -127,7 +127,6 @@ public final class PropertyType {
             CHARACTERENCODING_PROP_NAME,
             CHARACTERENCODING_USER_SPECIFIED_PROP_NAME,
             CHARACTERENCODING_GUESSED_PROP_NAME,
-//            CONTENTLOCALE_PROP_NAME,
             LASTMODIFIED_PROP_NAME,
             MODIFIEDBY_PROP_NAME,
             CONTENTLASTMODIFIED_PROP_NAME,

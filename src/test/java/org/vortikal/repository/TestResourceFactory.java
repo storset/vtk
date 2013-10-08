@@ -32,6 +32,8 @@ package org.vortikal.repository;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -302,8 +304,16 @@ public class TestResourceFactory {
                             def.setType(PropertyType.Type.INT);
                             value = new Value(val.toString(), PropertyType.Type.INT);
                         } else {
-                            def.setType(PropertyType.Type.STRING);
-                            value = new Value(val.toString(), PropertyType.Type.STRING);
+                            try {
+                                // Try parsing as date value first and assume it is a date if parsing works out.
+                                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                                Date d = sdf.parse(val.toString());
+                                value = new Value(d, true);
+                                def.setType(PropertyType.Type.DATE);
+                            } catch (Exception e) {
+                                value = new Value(val.toString(), PropertyType.Type.STRING);
+                                def.setType(PropertyType.Type.STRING);
+                            }
                         }
                         def.setName(key);
                         def.setNamespace(Namespace.DEFAULT_NAMESPACE);

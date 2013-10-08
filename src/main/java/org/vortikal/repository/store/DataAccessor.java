@@ -185,11 +185,14 @@ public interface DataAccessor {
      * @param fixedProperties
      *            a set of properties to set on the new resource(s) instead of
      *            copying from the existing
+     * @param deleteProperties set of property names (in default namespace) which shall be recursively
+     *            deleted from the destination resource. The properties are removed recursively if a collection
+     *            is being copied.
      * 
      * @return the new destination ResourceImpl
      */
     public ResourceImpl copy(ResourceImpl resource, ResourceImpl destParent, PropertySet newResource, boolean copyACLs,
-            PropertySet fixedProperties) throws DataAccessException;
+            PropertySet fixedProperties, Set<String> deleteProperties) throws DataAccessException;
 
     /**
      * Atomically moves a resource to a new destination.

@@ -58,10 +58,8 @@ public class LastModifiedReporter extends DocumentReporter {
 
         if (termIN) {
             query.add(new TypeTermQuery(type, TermOperator.IN));
-            System.err.println("\n\ntermIN == true\n\n");
         } else {
             query.add(new TypeTermQuery(type, TermOperator.EQ));
-            System.err.println("\n\ntermIN == false\n\n");
         }
 
         /* In current resource but not in /vrtx. */

@@ -571,7 +571,7 @@ public class AuthorizationManagerTest {
         @Override
         public ResourceImpl copy(ResourceImpl resource,
                 ResourceImpl destParent, PropertySet newResource,
-                boolean copyACLs, PropertySet fixedProperties)
+                boolean copyACLs, PropertySet fixedProperties, Set<String> deleteProperties)
                 throws DataAccessException {
             throw new UnsupportedOperationException();
         }

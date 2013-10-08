@@ -16,6 +16,11 @@ CKEDITOR.lang['no']={"dir":"ltr","editor":"Rikteksteditor","common":{"editorHelp
                 specialization  : 'Fordypning',
                 optional        : 'Valgfri',
                 master          : 'Masteroppgave'
-        }
-
+        },
+	
+	mediaembed: 
+	{
+		edit: 'Mediaegenskaper',
+		remove: 'Fjern media'
+	}		
 };

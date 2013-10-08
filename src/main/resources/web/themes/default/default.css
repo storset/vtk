@@ -1161,8 +1161,11 @@ div.dropdown-shortcut-menu-container form .vrtx-button button {
   min-height: 86px;
   margin: -12px 0 20px 25px;
   padding: 0 0 0 25px;
-  /* overflow: hidden; */
   background: url(images/seperator-grey-gradient-big.png) no-repeat top left;
+}
+
+#resourceMenuRight.overflow-hidden {
+  overflow: hidden;
 }
 
 #resourceMenuRight > li {
@@ -1308,6 +1311,11 @@ div.dropdown-shortcut-menu-container form .vrtx-button button {
 .vrtx-create-tree a.tree-link {
   color: #2b2b2b !important;
   font-size: 1.077em;
+}
+
+.loading-tree-node {
+  background: transparent url(images/spinner.gif) no-repeat center left;
+  padding-left: 26px;
 }
 
 .tip.vrtx-create-tree {

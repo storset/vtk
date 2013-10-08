@@ -388,8 +388,8 @@
             <div id="resource.${name}.preview-inner">
               <#local thumbnail = '' />
               <#if value?has_content>
-                <#if  vrtx.linkConstructor(value, 'displayThumbnailService')?exists >
-                  <#local thumbnail = vrtx.linkConstructor(value, 'displayThumbnailService').getPathRepresentation() />
+                <#if  vrtx.linkConstructor(value, 'editor.loadImageService')?exists >
+                  <#local thumbnail = vrtx.linkConstructor(value, 'editor.loadImageService').getPathRepresentation() />
                 <#else>
                   <#local thumbnail = value />
                 </#if> 
@@ -419,8 +419,8 @@
               <div id="resource.${name}.preview-inner">
                 <#local thumbnail = '' />
                 <#if value?exists && value != "">
-                  <#if  vrtx.linkConstructor(value, 'displayThumbnailService')?exists >
-                    <#local thumbnail = vrtx.linkConstructor(value, 'displayThumbnailService').getPathRepresentation() />
+                  <#if  vrtx.linkConstructor(value, 'editor.loadImageService')?exists >
+                    <#local thumbnail = vrtx.linkConstructor(value, 'editor.loadImageService').getPathRepresentation() />
                   <#else>
                     <#local thumbnail = value />
                   </#if> 

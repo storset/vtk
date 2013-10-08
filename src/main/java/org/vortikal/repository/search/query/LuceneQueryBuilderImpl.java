@@ -44,6 +44,7 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermDocs;
 import org.apache.lucene.search.BooleanClause;
+import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.search.BooleanFilter;
 import org.apache.lucene.search.CachingWrapperFilter;
 import org.apache.lucene.search.FieldValueFilter;
@@ -57,7 +58,6 @@ import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.HierarchicalVocabulary;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.PropertySetImpl;
-import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.Vocabulary;
 import org.vortikal.repository.index.mapping.FieldNames;
@@ -88,8 +88,6 @@ import org.vortikal.repository.search.query.builders.UriSetQueryBuilder;
 import org.vortikal.repository.search.query.builders.UriTermQueryBuilder;
 import org.vortikal.repository.search.query.filter.DeletedDocsFilter;
 import org.vortikal.repository.search.query.security.QueryAuthorizationFilterFactory;
-import org.vortikal.web.RequestContext;
-import org.vortikal.web.service.Assertion;
 
 /**
  * Factory that helps in building different Lucene queries from our own query
@@ -373,7 +371,7 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
         }
         
         if(!search.isPreviewUnpublished()){
-            filter = addUnpublishedCollectionFilter(bf);
+            filter = addUnpublishedCollectionFilter(filter);
         }
 
         return filter;
@@ -388,13 +386,17 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
         return bf;
     }
 
-    BooleanFilter addUnpublishedCollectionFilter(BooleanFilter bf) {
-        if (bf == null)
-            bf = new BooleanFilter();
+    BooleanFilter addUnpublishedCollectionFilter(Filter filter) {
+        BooleanFilter bf = new BooleanFilter();
 
+        if (filter != null) {
+            bf.add(filter, Occur.MUST);
+        }
+        
         // Filter to exclude unpublishedCollection resources:
         // Avoid using cache-wrapper for FieldValueFilter, since that can
         // lead to memory leaks in Lucene.
+        
 
         bf.add(new FieldValueFilter(FieldNames.getSearchFieldName(this.unpublishedCollectionPropDef, false), true),
                 BooleanClause.Occur.MUST);

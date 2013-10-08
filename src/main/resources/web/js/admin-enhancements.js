@@ -185,6 +185,11 @@ vrtxAdmin._$(document).ready(function () {
     4. General / setup interactions
 \*-------------------------------------------------------------------*/
 
+/*
+ * Cache DOM nodes for reuse
+ *
+ */
+
 VrtxAdmin.prototype.cacheDOMNodesForReuse = function cacheDOMNodesForReuse() {
   var vrtxAdm = this,
     _$ = vrtxAdm._$;

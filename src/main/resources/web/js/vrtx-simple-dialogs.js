@@ -2,11 +2,15 @@
  *  Dialogs facade to jQuery UI
  *
  *  Uses Dejavu OOP
+ *  Lazy-load jQuery UI if not defined on open
  *
  */
 
 var VrtxSimpleDialogInterface = dejavu.Interface.declare({
-  $name: "VortexSimpleDialogInterface"
+  $name: "VortexSimpleDialogInterface",
+  open: function() {},
+  close: function() {},
+  destroy: function() {}
 });
 
 var AbstractVrtxSimpleDialog = dejavu.AbstractClass.declare({
@@ -76,13 +80,13 @@ var AbstractVrtxSimpleDialog = dejavu.AbstractClass.declare({
       dialog.opts.elm.dialog("open");
     });
   },
+  close: function () {
+    this.opts.elm.dialog("close");
+  },
   destroy: function () {
     this.opts.elm.dialog("destroy");
     this.opts.elm.remove();
-  },
-  close: function () {
-    this.opts.elm.dialog("close");
-  }          
+  }        
 });
 
 var VrtxLoadingDialog = dejavu.Class.declare({

@@ -378,7 +378,8 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
                 linkTriggeredMouseEnter = link;
                 linkTriggeredMouseEnterTipText = linkTriggeredMouseEnter.attr('title');
                 link.parent().trigger("mouseenter");
-              }
+              },
+              scrollToContent: ".ui-dialog:visible .ui-dialog-content"
             });
           }
         });
@@ -978,7 +979,10 @@ VrtxAdmin.prototype.globalAsyncComplete = function globalAsyncComplete() {
   vrtxAdm.updateCollectionListingInteraction();
 };
 
-/* Create dialog tree view */
+/*
+ * VrtxTree
+ *
+ */
 
 var VrtxTreeInterface = dejavu.Interface.declare({
   $name: "VrtxTree",
@@ -1011,10 +1015,9 @@ var VrtxTree = dejavu.Class.declare({
         clearInterval(checkNodeAvailable);
         var hit = link.closest("li").find("> .hitarea");
         hit.click();
-        if (tree.__opts.pathNum == (tree.__opts.trav.length - 1)) { // Scroll to node
-          var scrollToLinkPosition = (link.position().top - 145);
-          tree.__opts.elem.css("background", "none").fadeIn(200, function () {
-            $(".ui-dialog:visible .ui-dialog-content").scrollTo(Math.max(0, scrollToLinkPosition), 250, {
+        if (tree.__opts.scrollToContent && (tree.__opts.pathNum == (tree.__opts.trav.length - 1))) {
+          tree.__opts.elem.css("background", "none").fadeIn(200, function () {  // Scroll to node
+            $(tree.__opts.scrollToContent).scrollTo(Math.max(0, (link.position().top - 145)), 250, {
               easing: "swing",
               queue: true,
               axis: 'y',
@@ -1029,8 +1032,6 @@ var VrtxTree = dejavu.Class.declare({
     }, 20);
   }
 });
-
-/* ^ Create dialog tree view */
 
 /*-------------------------------------------------------------------*\
     5. Dropdowns XXX: etc.

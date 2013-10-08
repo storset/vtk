@@ -74,7 +74,8 @@ var AbstractVrtxSimpleDialog = dejavu.AbstractClass.declare({
   },
   open: function () {
     var dialog = this;
-    var futureUi = (typeof $.ui === "undefined") ? $.getScript("/vrtx/__vrtx/static-resources/jquery/plugins/ui/jquery-ui-1.10.3.custom/js/jquery-ui-1.10.3.custom.min.js") : $.Deferred().resolve();
+    var futureUiUrl = "/vrtx/__vrtx/static-resources/jquery/plugins/ui/jquery-ui-1.10.3.custom/js/jquery-ui-1.10.3.custom.min.js";
+    var futureUi = (typeof $.ui === "undefined") ? $.getScript(futureUiUrl) : $.Deferred().resolve();
     $.when(futureUi).done(function() {
       dialog.opts.elm = $(dialog.opts.selector);
       dialog.opts.elm.dialog(dialog.opts);

@@ -559,7 +559,7 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
               }
               results = _$($.parseHTML(results));
               if (copyMoveExists !== "") { // Reverse the belt and roll out updated baggage :)
-                baggageBeltAnimFx(copyMoveExists, {
+                horizontalAnimation(copyMoveExists, {
                   reverse: true,
                   complete: function () {
                     copyMoveExists.remove();
@@ -569,7 +569,7 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
                     if (resourceTitle.hasClass("compact")) { // Instant compact => expanded
                       resourceTitle.removeClass("compact");
                     }
-                    baggageBeltAnimFx(resourceMenuRight.find(li));
+                    horizontalAnimation(resourceMenuRight.find(li));
                   }
                 });
               } else {
@@ -579,7 +579,7 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
                 if (resourceTitle.hasClass("compact")) { // Instant compact => expanded
                   resourceTitle.removeClass("compact");
                 }
-                baggageBeltAnimFx(resourceMenuRight.find(li));
+                horizontalAnimation(resourceMenuRight.find(li));
               }
             }
           });
@@ -597,7 +597,7 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
           var dataString = form.serialize() + "&" + button.attr("name") + "=" + button.val();
           vrtxAdm.serverFacade.postHtml(url, dataString, {
             success: function (results, status, resp) {
-              baggageBeltAnimFx(li, {
+              horizontalAnimation(li, {
                 reverse: true,
                 complete: function () {
                   var result = _$($.parseHTML(results));
@@ -855,38 +855,6 @@ function interceptEnterKeyAndReroute(txt, btn, cb) {
   });
 }
 
-function baggageBeltAnimFx(elm, opts) {
-  if (typeof opts !== "object") opts = {};
-
-  var resMenuRight = $("#resourceMenuRight");
-  if(!resMenuRight.hasClass("overflow-hidden")) {
-    resMenuRight.addClass("overflow-hidden");
-  }
-  var width = elm.outerWidth(true);
-  if (opts.reverse) {
-    anim = -width;
-    easing = vrtxAdmin.transitionEasingSlideUp;
-  } else {
-    elm.css("marginLeft", -width);
-    anim = 0;
-    easing = vrtxAdmin.transitionEasingSlideDown;
-  }
-  if (opts.complete) {
-    elm.animate({
-      "marginLeft": anim + "px"
-    }, vrtxAdmin.transitionSpeed, easing, function() {
-      resMenuRight.removeClass("overflow-hidden");
-      opts.complete();
-    });
-  } else {
-    elm.animate({
-      "marginLeft": anim + "px"
-    }, vrtxAdmin.transitionSpeed, easing, function() {
-      resMenuRight.removeClass("overflow-hidden");
-    });
-  }
-}
-
 VrtxAdmin.prototype.mapShortcut = function mapShortcut(selectors, reroutedSelector) {
   this.cachedAppContent.on("click", selectors, function (e) {
     $(reroutedSelector).click();
@@ -978,6 +946,43 @@ VrtxAdmin.prototype.globalAsyncComplete = function globalAsyncComplete() {
   vrtxAdm.initPublishingDropdown();
   vrtxAdm.updateCollectionListingInteraction();
 };
+
+/* 
+ * VrtxAnimation
+ *
+ */
+ 
+function horizontalAnimation(elm, opts) {
+  if (typeof opts !== "object") opts = {};
+
+  var resMenuRight = $("#resourceMenuRight");
+  if(!resMenuRight.hasClass("overflow-hidden")) {
+    resMenuRight.addClass("overflow-hidden");
+  }
+  var width = elm.outerWidth(true);
+  if (opts.reverse) {
+    anim = -width;
+    easing = vrtxAdmin.transitionEasingSlideUp;
+  } else {
+    elm.css("marginLeft", -width);
+    anim = 0;
+    easing = vrtxAdmin.transitionEasingSlideDown;
+  }
+  if (opts.complete) {
+    elm.animate({
+      "marginLeft": anim + "px"
+    }, vrtxAdmin.transitionSpeed, easing, function() {
+      resMenuRight.removeClass("overflow-hidden");
+      opts.complete();
+    });
+  } else {
+    elm.animate({
+      "marginLeft": anim + "px"
+    }, vrtxAdmin.transitionSpeed, easing, function() {
+      resMenuRight.removeClass("overflow-hidden");
+    });
+  }
+}
 
 /*
  * VrtxTree - facade to TreeView async

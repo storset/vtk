@@ -162,21 +162,7 @@ vrtxAdmin._$(document).ready(function () {
   vrtxAdm.cachedBody.addClass("js");
   if (vrtxAdm.runReadyLoad === false) return; // XXX: return if should not run all of ready() code
 
-  // Remove active tab if it has no children
-  if (!vrtxAdm.cachedActiveTab.find(" > *").length) {
-    vrtxAdm.cachedActiveTab.remove();
-  }
-
-  // Remove active tab-message if it is empty
-  var activeTabMsg = vrtxAdm.cachedActiveTab.find(" > .tabMessage");
-  if (!activeTabMsg.text().length) {
-    activeTabMsg.remove();
-  }
-  
-  interceptEnterKey();
-
-  vrtxAdm.logoutButtonAsLink();
-  vrtxAdm.adjustResourceTitle();
+  vrtxAdm.mistAdjustments();
   vrtxAdm.initDropdowns();
   vrtxAdm.initTooltips();
   vrtxAdm.initResourceMenus();
@@ -184,28 +170,10 @@ vrtxAdmin._$(document).ready(function () {
   vrtxAdm.initDomains();
   vrtxAdm.initScrollBreadcrumbs();
 
-  // Ignore all AJAX errors when user navigate away (abort)
-  if(typeof unsavedChangesInEditorMessage !== "function") {
-    var ignoreAjaxErrorOnBeforeUnload = function() {
-      vrtxAdm.ignoreAjaxErrors = true;
-    };
-    window.onbeforeunload = ignoreAjaxErrorOnBeforeUnload;    
-  }
-
   // Interactions initialization - TODO: move to Domains
   vrtxAdm.collectionListingInteraction();
   editorInteraction(bodyId, vrtxAdm, _$);
   versioningInteraction(bodyId, vrtxAdm, _$);
-
-  // Show message in IE6, IE7 and IETrident in compability mode
-  if (vrtxAdm.isIE7 || vrtxAdm.isIETridentInComp) {
-    var message = vrtxAdm.cachedAppContent.find(" > .message");
-    if (message.length) {
-      message.html(outdatedBrowserText);
-    } else {
-      vrtxAdm.cachedAppContent.prepend("<div class='infomessage'>" + outdatedBrowserText + "</div>");
-    }
-  }
 
   vrtxAdm.log({
     msg: "Document.ready() in " + (+new Date() - startReadyTime) + "ms."
@@ -1165,20 +1133,6 @@ VrtxAdmin.prototype.hideTips = function hideTips() {
   this._$(".tip:visible").fadeOut(this.transitionDropdownSpeed, "swing");
 };
 
-/**
- * Adjust resource title across multiple lines
- *
- * @this {VrtxAdmin}
- */
-VrtxAdmin.prototype.adjustResourceTitle = function adjustResourceTitle() {
-  var resourceMenuLeft = this._$("#resourceMenuLeft");
-  if (resourceMenuLeft.length) {
-    var title = this._$("h1");
-    var resourceMenuRightHeight = this._$("#resourceMenuRight").outerHeight(true);
-    var resourceMenuLeftTopAdjustments = Math.min(0, title.outerHeight(true) - resourceMenuRightHeight);
-    resourceMenuLeft.css("marginTop", resourceMenuLeftTopAdjustments + "px");
-  }
-};
 
 /**
  * Scroll breadcrumbs
@@ -1280,11 +1234,64 @@ VrtxAdmin.prototype.scrollBreadcrumbsHorizontal = function scrollBreadcrumbsHori
   }
 };
 
-
 /*
  * Misc.
  *
  */
+ 
+VrtxAdmin.prototype.mistAdjustments = function mistAdjustments() {
+  var vrtxAdm = this;
+
+   // Remove active tab if it has no children
+  if (!vrtxAdm.cachedActiveTab.find(" > *").length) {
+    vrtxAdm.cachedActiveTab.remove();
+  }
+
+  // Remove active tab-message if it is empty
+  var activeTabMsg = vrtxAdm.cachedActiveTab.find(" > .tabMessage");
+  if (!activeTabMsg.text().length) {
+    activeTabMsg.remove();
+  }
+  
+  interceptEnterKey();
+
+  vrtxAdm.logoutButtonAsLink();
+  
+  vrtxAdm.adjustResourceTitle();
+  
+  // Ignore all AJAX errors when user navigate away (abort)
+  if(typeof unsavedChangesInEditorMessage !== "function") {
+    var ignoreAjaxErrorOnBeforeUnload = function() {
+      vrtxAdm.ignoreAjaxErrors = true;
+    };
+    window.onbeforeunload = ignoreAjaxErrorOnBeforeUnload;    
+  } 
+
+  // Show message in IE6, IE7 and IETrident in compability mode
+  if (vrtxAdm.isIE7 || vrtxAdm.isIETridentInComp) {
+    var message = vrtxAdm.cachedAppContent.find(" > .message");
+    if (message.length) {
+      message.html(outdatedBrowserText);
+    } else {
+      vrtxAdm.cachedAppContent.prepend("<div class='infomessage'>" + outdatedBrowserText + "</div>");
+    }
+  }
+};
+
+/**
+ * Adjust resource title across multiple lines
+ *
+ * @this {VrtxAdmin}
+ */
+VrtxAdmin.prototype.adjustResourceTitle = function adjustResourceTitle() {
+  var resourceMenuLeft = this._$("#resourceMenuLeft");
+  if (resourceMenuLeft.length) {
+    var title = this._$("h1");
+    var resourceMenuRightHeight = this._$("#resourceMenuRight").outerHeight(true);
+    var resourceMenuLeftTopAdjustments = Math.min(0, title.outerHeight(true) - resourceMenuRightHeight);
+    resourceMenuLeft.css("marginTop", resourceMenuLeftTopAdjustments + "px");
+  }
+};
 
 function interceptEnterKey() {
   vrtxAdmin.cachedAppContent.delegate("form#editor input", "keypress", function (e) {

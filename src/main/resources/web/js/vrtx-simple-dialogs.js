@@ -1,8 +1,8 @@
 /*
  *  Dialogs facade to jQuery UI
  *
- *  Uses Dejavu OOP
- *  Lazy-load jQuery UI if not defined on open
+ *  * Uses Dejavu OOP
+ *  * Lazy-loads jQuery UI (if not defined) on open
  *
  */
 

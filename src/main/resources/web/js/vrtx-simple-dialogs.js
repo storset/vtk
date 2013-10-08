@@ -80,12 +80,12 @@ var AbstractVrtxSimpleDialog = dejavu.AbstractClass.declare({
     var dialog = this;
     
     // TODO: these should be retrieved from Vortex config/properties somehow
-    var futureRootUrl = "/vrtx/__vrtx/static-resources";
+    var rootUrl = "/vrtx/__vrtx/static-resources";
     var jQueryUiVersion = "1.10.3";
     
     var futureUi = $.Deferred();
     if (typeof $.ui === "undefined") {
-      $.getScript("/jquery/plugins/ui/jquery-ui-" + jQueryUiVersion + ".custom/js/jquery-ui-" + jQueryUiVersion + ".custom.min.js", function () {
+      $.getScript(rootUrl + "/jquery/plugins/ui/jquery-ui-" + jQueryUiVersion + ".custom/js/jquery-ui-" + jQueryUiVersion + ".custom.min.js", function () {
         futureUi.resolve();
       });
     } else {
@@ -93,9 +93,9 @@ var AbstractVrtxSimpleDialog = dejavu.AbstractClass.declare({
     }
     var futureTree = $.Deferred();
     if (typeof $.fn.treeview !== "function" && dialog.__opts.requiresTree) {
-      $.getScript(location.protocol + "//" + location.host + futureRootUrl + "/jquery/plugins/jquery.treeview.js", function () {
-        $.getScript(location.protocol + "//" + location.host + futureRootUrl + "/jquery/plugins/jquery.treeview.async.js", function () {
-          $.getScript(location.protocol + "//" + location.host + futureRootUrl + "/jquery/plugins/jquery.scrollTo.min.js", function () {
+      $.getScript(location.protocol + "//" + location.host + rootUrl + "/jquery/plugins/jquery.treeview.js", function () {
+        $.getScript(location.protocol + "//" + location.host + rootUrl + "/jquery/plugins/jquery.treeview.async.js", function () {
+          $.getScript(location.protocol + "//" + location.host + rootUrl + "/jquery/plugins/jquery.scrollTo.min.js", function () {
             futureTree.resolve();
           });
         });
@@ -105,9 +105,9 @@ var AbstractVrtxSimpleDialog = dejavu.AbstractClass.declare({
     }
     var futureDatepicker = $.Deferred();
     if (typeof initDatePicker !== "function" && dialog.__opts.requiresDatepicker) {
-      $.getScript(futureRootUrl + "/js/datepicker/datepicker-admin.js", function() {
-        $.getScript(futureRootUrl + "/jquery/plugins/ui/jquery-ui-" + jQueryUiVersion + ".custom/js/jquery.ui.datepicker-no.js", function() {
-          $.getScript(futureRootUrl + "/jquery/plugins/ui/jquery-ui-" + jQueryUiVersion + ".custom/js/jquery.ui.datepicker-nn.js", function() {
+      $.getScript(rootUrl + "/js/datepicker/datepicker-admin.js", function() {
+        $.getScript(rootUrl + "/jquery/plugins/ui/jquery-ui-" + jQueryUiVersion + ".custom/js/jquery.ui.datepicker-no.js", function() {
+          $.getScript(rootUrl + "/jquery/plugins/ui/jquery-ui-" + jQueryUiVersion + ".custom/js/jquery.ui.datepicker-nn.js", function() {
             futureDatepicker.resolve(); 
           });
         });

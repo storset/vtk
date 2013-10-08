@@ -986,7 +986,8 @@ VrtxAdmin.prototype.globalAsyncComplete = function globalAsyncComplete() {
 
 var VrtxTreeInterface = dejavu.Interface.declare({
   $name: "VrtxTree",
-  openLeaf: function(treeElem, treeTravNode, lastNode) {}
+  __opts: {},
+  __openLeaf: function(treeElem, treeTravNode, lastNode) {}
 });
 
 var VrtxTree = dejavu.Class.declare({

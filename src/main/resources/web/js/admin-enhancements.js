@@ -14,8 +14,8 @@
  *  ToC: 
  *
  *  1.  Config
- *  2.  DOM is fully loaded
- *  3.  DOM is ready
+ *  2.  DOM is ready
+ *  3.  DOM is fully loaded
  *  4.  General / setup interactions
  *  5.  Create / File upload
  *  6.  Collectionlisting
@@ -130,22 +130,9 @@ function VrtxAdmin() {
 
 var vrtxAdmin = new VrtxAdmin();
 
-/*-------------------------------------------------------------------*\
-    2. DOM is fully loaded ("load"-event) 
-\*-------------------------------------------------------------------*/
-
-vrtxAdmin._$(window).load(function () {
-  var vrtxAdm = vrtxAdmin;
-  if (vrtxAdm.runReadyLoad === false) return; // XXX: return if should not run load() code
-
-  vrtxAdm.log({
-    msg: "Window.load() in " + (+new Date() - startLoadTime) + "ms."
-  });
-});
-
 
 /*-------------------------------------------------------------------*\
-    3. DOM is ready
+    2. DOM is ready
        readyState === "complete" || "DOMContentLoaded"-event (++)
 \*-------------------------------------------------------------------*/
 
@@ -172,6 +159,20 @@ vrtxAdmin._$(document).ready(function () {
 
   vrtxAdm.log({
     msg: "Document.ready() in " + (+new Date() - startReadyTime) + "ms."
+  });
+});
+
+
+/*-------------------------------------------------------------------*\
+    3. DOM is fully loaded ("load"-event) 
+\*-------------------------------------------------------------------*/
+
+vrtxAdmin._$(window).load(function () {
+  var vrtxAdm = vrtxAdmin;
+  if (vrtxAdm.runReadyLoad === false) return; // XXX: return if should not run load() code
+
+  vrtxAdm.log({
+    msg: "Window.load() in " + (+new Date() - startLoadTime) + "ms."
   });
 });
 

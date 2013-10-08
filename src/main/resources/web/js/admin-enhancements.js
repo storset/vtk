@@ -570,7 +570,7 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
                     if (resourceTitle.hasClass("compact")) { // Instant compact => expanded
                       resourceTitle.removeClass("compact");
                     }
-                    copyMoveAnimation.newOpts({
+                    copyMoveAnimation.update({
                       elem: resourceMenuRight.find(li),
                       outerWrapperElem: resourceMenuRight
                     })
@@ -969,7 +969,7 @@ var VrtxAnimationInterface = dejavu.Interface.declare({
   __opts: {},
   __prepare: function() {},
   __horizontalMove: function() {},
-  newOpts: function(opts) {},
+  update: function(opts) {},
   rightIn: function() {},
   leftOut: function() {}
 });
@@ -996,7 +996,7 @@ var VrtxAnimation = dejavu.Class.declare({
       if(animation.__opts.after) animation.__opts.after();
     });
   },
-  newOpts: function(opts) {
+  update: function(opts) {
     this.__opts = opts;
   },
   rightIn: function() {

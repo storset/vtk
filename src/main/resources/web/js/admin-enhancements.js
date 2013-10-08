@@ -696,9 +696,11 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
     case "vrtx-edit-plaintext":
     case "vrtx-visual-profile":
       editorInteraction(bodyId, vrtxAdm, _$);
+      break;
     case "vrtx-preview":
     case "vrtx-revisions":
       versioningInteraction(bodyId, vrtxAdm, _$);
+      break;
     case "vrtx-permissions":
       var privilegiesPermissions = ["read", "read-write", "all"];
       for (i = privilegiesPermissions.length; i--;) {

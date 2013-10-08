@@ -18,28 +18,19 @@ var AbstractVrtxSimpleDialog = dejavu.AbstractClass.declare({
                              buttons: this.__generateOkCancel(opts) };
       if (opts.width)      { dialogOpts.width = opts.width; }
       if (opts.height)     { dialogOpts.height = opts.height; }
-      if (opts.unclosable) { dialogOpts.closeOnEscape = false;   // TODO: used only for loading dialog yet
-                             dialogOpts.open = function(e, ui) { 
-                               var ctx = $(this).parent();
-                               ctx.find(".ui-dialog-titlebar-close").hide();
-                               ctx.find(".ui-dialog-titlebar").addClass("closable");
+      if (opts.unclosable) { dialogOpts.closeOnEscape = false; }
+                             dialogOpts.open = function(e, ui) {
+                               if (opts.unclosable) {
+                                 var ctx = $(this).parent();
+                                 ctx.find(".ui-dialog-titlebar-close").hide();
+                                 ctx.find(".ui-dialog-titlebar").addClass("closable");
+                               }
                                if(opts.funcOnOpen) opts.funcOnOpen();
                                if(opts.cancelIsNotAButton) {
                                  var ctx = $(this).parent();
                                  ctx.find(".ui-dialog-buttonpane button:last-child span").unwrap().addClass("cancel-is-not-a-button");
                                }
                              };
-                           } else {
-                             if(opts.funcOnOpen || opts.cancelIsNotAButton) {
-                               dialogOpts.open = function(e, ui) {
-                                 if(opts.funcOnOpen) opts.funcOnOpen();
-                                 if(opts.cancelIsNotAButton) {
-                                   var ctx = $(this).parent();
-                                   ctx.find(".ui-dialog-buttonpane button:last-child span").unwrap().addClass("cancel-is-not-a-button");
-                                 }
-                               };
-                             }
-                           }
       this.opts = dialogOpts;
   },
   opts: {},

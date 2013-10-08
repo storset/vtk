@@ -126,7 +126,6 @@
   </repositories>
 
   <properties>
-    <test.skip>true</test.skip>
     <project.build.sourceEncoding>utf-8</project.build.sourceEncoding>
     <checkstyle.config.location>src/main/checkstyle/checkstyle.xml</checkstyle.config.location>
   </properties>

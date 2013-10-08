@@ -1,8 +1,6 @@
 /*
  *  Dialogs and interface to jQuery UI
  */
- 
-
 
 var VrtxSimpleDialogInterface = dejavu.Interface.declare({
   $name: "VortexSimpleDialogInterface"
@@ -75,9 +73,13 @@ var AbstractVrtxSimpleDialog = dejavu.AbstractClass.declare({
     $(".vrtx-dialog").hide();
   },
   open: function () {
-    this.opts.elm = $(this.opts.selector);
-    this.opts.elm.dialog(this.opts);
-    this.opts.elm.dialog("open");
+    var dialog = this;
+    var futureUi = (typeof $.ui === "undefined") ? $.getScript("/vrtx/__vrtx/static-resources/jquery/plugins/ui/jquery-ui-1.10.3.custom/js/jquery-ui-1.10.3.custom.min.js") : $.Deferred().resolve();
+    $.when(futureUi).done(function() {
+      dialog.opts.elm = $(dialog.opts.selector);
+      dialog.opts.elm.dialog(dialog.opts);
+      dialog.opts.elm.dialog("open");
+    });
   },
   destroyDialog: function () {
     this.opts.elm.dialog("destroy");

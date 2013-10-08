@@ -339,7 +339,7 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
           title: link.title,
           width: 600,
           height: 395,
-          tree: true,
+          requiresTree: true,
           funcOnOpen: function() {
             var t = new VrtxTree({ selector: ".ui-dialog:visible" });
           }
@@ -366,7 +366,7 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
           html: dialogAPS.html(),
           title: dialogAPS.find("h1").text(),
           width: 400,
-          datepicker: true,
+          requiresDatepicker: true,
           funcOnOpen: function() {
             $(".ui-dialog-buttonpane").hide();
             initDatePicker(datePickerLang, "#dialog-html-advanced-publish-settings-content");

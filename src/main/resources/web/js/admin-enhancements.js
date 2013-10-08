@@ -355,7 +355,7 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
         }
         $.when(treeViewReady).done(function() {
           d.open();
-          var t = new VrtxTree($(".ui-dialog:visible"));
+          var t = new VrtxTree({ selector: ".ui-dialog:visible" });
         });
       }
     });
@@ -979,9 +979,10 @@ var VrtxTreeInterface = dejavu.Interface.declare({
 var VrtxTree = dejavu.Class.declare({
   $name: "VrtxTree",
   $implements: [VrtxTreeInterface],
-  initialize: function(dialog) {
+  initialize: function(opts) {
     var tree = this;
 
+    var dialog = $(opts.selector);
     var treeElem = dialog.find(".tree-create");
     var treeTrav = dialog.find("#vrtx-create-tree-folders").hide().text().split(",");
     var treeType = dialog.find("#vrtx-create-tree-type").hide().text();

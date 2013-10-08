@@ -67,10 +67,11 @@ var AbstractVrtxSimpleDialog = dejavu.AbstractClass.declare({
   },
   __addDOM: function() {
     $(".vrtx-dialog").remove();
+    var html = "<div class='vrtx-dialog' id='" + this.__opts.selector.substring(1) + "'";
     if (this.__opts.title) {
-      $("body").append("<div class='vrtx-dialog' id='" + this.__opts.selector.substring(1) + "' title='" + this.__opts.title + "'><div id='" + this.__opts.selector.substring(1) + "-content'>" + (!this.__opts.hasHtml ? "<p>" + this.__opts.msg + "</p>" : this.__opts.msg) + "</div></div>");
+      html += " title='" + this.__opts.title + "'";
     }
-    $("body").append("<div class='vrtx-dialog' id='" + this.__opts.selector.substring(1) + "'><div id='" + this.__opts.selector.substring(1) + "-content'>" + (!this.__opts.hasHtml ? "<p>" + this.__opts.msg + "</p>" : this.__opts.msg) + "</div></div>");
+    $("body").append(html + "><div id='" + this.__opts.selector.substring(1) + "-content'>" + (!this.__opts.hasHtml ? "<p>" + this.__opts.msg + "</p>" : this.__opts.msg) + "</div></div>");
     $(".vrtx-dialog").hide();
   },
   open: function () {

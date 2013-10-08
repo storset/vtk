@@ -162,7 +162,7 @@ vrtxAdmin._$(document).ready(function () {
   vrtxAdm.cachedBody.addClass("js");
   if (vrtxAdm.runReadyLoad === false) return; // XXX: return if should not run all of ready() code
 
-  vrtxAdm.mistAdjustments();
+  vrtxAdm.miscAdjustments();
   vrtxAdm.initDropdowns();
   vrtxAdm.initTooltips();
   vrtxAdm.initResourceMenus();
@@ -939,11 +939,11 @@ var VrtxTree = dejavu.Class.declare({
   __opts: {},
   __openLeaf: function() {
     var tree = this;
-    var checkNodeAvailable = setInterval(function () {
+    var checkLeafAvailable = setInterval(function () {
       $(".loading-tree-node").remove();
       var link = tree.__opts.elem.find("a[href$='" + tree.__opts.trav[tree.__opts.pathNum] + "']");
       if (link.length) {
-        clearInterval(checkNodeAvailable);
+        clearInterval(checkLeafAvailable);
         var hit = link.closest("li").find("> .hitarea");
         hit.click();
         if (tree.__opts.scrollToContent && (tree.__opts.pathNum == (tree.__opts.trav.length - 1))) {
@@ -1244,7 +1244,7 @@ VrtxAdmin.prototype.scrollBreadcrumbsHorizontal = function scrollBreadcrumbsHori
  *
  */
  
-VrtxAdmin.prototype.mistAdjustments = function mistAdjustments() {
+VrtxAdmin.prototype.miscAdjustments = function miscAdjustments() {
   var vrtxAdm = this;
 
    // Remove active tab if it has no children

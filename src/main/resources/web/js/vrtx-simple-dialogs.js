@@ -79,6 +79,7 @@ var AbstractVrtxSimpleDialog = dejavu.AbstractClass.declare({
   open: function () {
     var dialog = this;
     
+    // TODO: these should be retrieved from Vortex config/properties somehow
     var futureRootUrl = "/vrtx/__vrtx/static-resources";
     var jQueryUiVersion = "1.10.3";
     

@@ -1,5 +1,5 @@
 /*
- *  Dialogs and interface to jQuery UI
+ *  Dialogs facade to jQuery UI
  *
  *  Uses Dejavu OOP
  *

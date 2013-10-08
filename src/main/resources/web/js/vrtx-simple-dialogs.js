@@ -1,6 +1,8 @@
 /*
  *  Dialogs and interface to jQuery UI
  */
+ 
+
 
 var VrtxSimpleDialogInterface = dejavu.Interface.declare({
   $name: "VortexSimpleDialogInterface"
@@ -11,29 +13,11 @@ var AbstractVrtxSimpleDialog = dejavu.AbstractClass.declare({
   $implements: [VrtxSimpleDialogInterface],
   initialize: function(opts) {              // Constructor
       this.__addDOM(opts)
-      var l10nButtons = {};
-      if (opts.hasOk) {
-        var btnTextOk = opts.btnTextOk || "Ok";
-        l10nButtons[btnTextOk] = function() {
-          $(this).dialog("close");
-          if(opts.funcOkComplete) opts.funcOkComplete(opts.funcOkCompleteOpts);
-        };
-      }
-      if (opts.hasCancel) {
-        var Cancel = opts.btnTextCancel || ((typeof cancelI18n != "undefined") ? cancelI18n : "Cancel");
-        if(/^\(/.test(Cancel)) {
-          opts.cancelIsNotAButton = true;
-        }
-        l10nButtons[Cancel] = function() {
-          $(this).dialog("close");
-          if(opts.funcCancelComplete) opts.funcCancelComplete();
-        };
-      }
       var dialogOpts =     { selector: opts.selector,
                              modal: true,                        
                              autoOpen: false,
                              resizable: false,
-                             buttons: l10nButtons };
+                             buttons: this.__generateOkCancel(opts) };
       if (opts.width)      { dialogOpts.width = opts.width; }
       if (opts.height)     { dialogOpts.height = opts.height; }
       if (opts.unclosable) { dialogOpts.closeOnEscape = false;   // TODO: used only for loading dialog yet
@@ -42,13 +26,15 @@ var AbstractVrtxSimpleDialog = dejavu.AbstractClass.declare({
                                ctx.find(".ui-dialog-titlebar-close").hide();
                                ctx.find(".ui-dialog-titlebar").addClass("closable");
                                if(opts.funcOnOpen) opts.funcOnOpen();
+                               if(opts.cancelIsNotAButton) {
+                                 var ctx = $(this).parent();
+                                 ctx.find(".ui-dialog-buttonpane button:last-child span").unwrap().addClass("cancel-is-not-a-button");
+                               }
                              };
                            } else {
                              if(opts.funcOnOpen || opts.cancelIsNotAButton) {
                                dialogOpts.open = function(e, ui) {
-                                 if(opts.funcOnOpen) {
-                                   opts.funcOnOpen();
-                                 }
+                                 if(opts.funcOnOpen) opts.funcOnOpen();
                                  if(opts.cancelIsNotAButton) {
                                    var ctx = $(this).parent();
                                    ctx.find(".ui-dialog-buttonpane button:last-child span").unwrap().addClass("cancel-is-not-a-button");
@@ -59,6 +45,27 @@ var AbstractVrtxSimpleDialog = dejavu.AbstractClass.declare({
       this.opts = dialogOpts;
   },
   opts: {},
+  __generateOkCancel: function(opts) {
+    var buttons = {};
+    if (opts.hasOk) {
+      var ok = opts.btnTextOk || "Ok";
+      buttons[ok] = function() {
+        $(this).dialog("close");
+        if(opts.funcOkComplete) opts.funcOkComplete(opts.funcOkCompleteOpts);
+      };
+    }
+    if (opts.hasCancel) {
+      var cancel = opts.btnTextCancel || ((typeof cancelI18n != "undefined") ? cancelI18n : "Cancel");
+      if(/^\(/.test(cancel)) {
+        opts.cancelIsNotAButton = true;
+      }
+      buttons[cancel] = function() {
+        $(this).dialog("close");
+        if(opts.funcCancelComplete) opts.funcCancelComplete();
+      };
+    }
+    return buttons;
+  },
   __addDOM: function(opts) {
     $(".vrtx-dialog").remove();
     if (opts.title) {
@@ -111,7 +118,7 @@ var VrtxHtmlDialog = dejavu.Class.declare({
       funcOkCompleteOpts: opts.funcOkCompleteOpts,
       hasOk: opts.btnTextOk,
       hasCancel: opts.btnTextCancel,
-      btnTextOk: (opts.btnTextOk) ? opts.btnTextOk : "Ok",
+      btnTextOk: opts.btnTextOk,
       btnTextCancel: opts.btnTextCancel,
       funcOnOpen: opts.funcOnOpen
     });

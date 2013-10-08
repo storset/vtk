@@ -209,6 +209,10 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
   vrtxAdm.logoutButtonAsLink();
   vrtxAdm.adjustResourceTitle();
   vrtxAdm.initDropdowns();
+  vrtxAdm.initTooltips();
+  vrtxAdm.initResourceMenus();
+  vrtxAdm.initGlobalDialogs();
+  vrtxAdm.initDomains();
 
   // Ignore all AJAX errors when user navigate away (abort)
   if(typeof unsavedChangesInEditorMessage !== "function") {
@@ -218,8 +222,129 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
     window.onbeforeunload = ignoreAjaxErrorOnBeforeUnload;    
   }
 
-  // Tooltips
-  $("#title-container").vortexTips("abbr:not(.delayed)", {
+  // Interactions initialization - TODO: move to Domains
+  vrtxAdm.collectionListingInteraction();
+  editorInteraction(bodyId, vrtxAdm, _$);
+  versioningInteraction(bodyId, vrtxAdm, _$);
+
+  // Show message in IE6, IE7 and IETrident in compability mode
+  if (vrtxAdm.isIE7 || vrtxAdm.isIETridentInComp) {
+    var message = vrtxAdm.cachedAppContent.find(" > .message");
+    if (message.length) {
+      message.html(outdatedBrowserText);
+    } else {
+      vrtxAdm.cachedAppContent.prepend("<div class='infomessage'>" + outdatedBrowserText + "</div>");
+    }
+  }
+};
+
+/*-------------------------------------------------------------------*\
+    4. General interaction / dialogs
+\*-------------------------------------------------------------------*/
+
+function interceptEnterKey() {
+  vrtxAdmin.cachedAppContent.delegate("form#editor input", "keypress", function (e) {
+    if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
+      e.preventDefault(); // cancel the default browser click
+    }
+  });
+}
+
+function interceptEnterKeyAndReroute(txt, btn, cb) {
+  vrtxAdmin.cachedAppContent.delegate(txt, "keypress", function (e) {
+    if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
+      if ($(this).hasClass("blockSubmit")) { // submit/rerouting can be blocked elsewhere on textfield
+        $(this).removeClass("blockSubmit");
+      } else {
+        $(btn).click(); // click the associated button
+      }
+      if(typeof cb === "function") {
+        cb($(this));
+      }
+      e.preventDefault();
+    }
+  });
+}
+
+VrtxAdmin.prototype.mapShortcut = function mapShortcut(selectors, reroutedSelector) {
+  this.cachedAppContent.on("click", selectors, function (e) {
+    $(reroutedSelector).click();
+    e.stopPropagation();
+    e.preventDefault();
+  });
+};
+
+VrtxAdmin.prototype.initStickyBar = function initStickyBar(wrapperId, stickyClass, extraWidth) {
+  var vrtxAdm = vrtxAdmin,
+    _$ = vrtxAdm._$;
+
+  var wrapper = _$(wrapperId);
+  var thisWindow = _$(window);
+  if (wrapper.length && !vrtxAdm.isIPhone) { // Turn off for iPhone. 
+    var wrapperPos = wrapper.offset();
+    if (vrtxAdm.isIE8) {
+      wrapper.append("<span class='sticky-bg-ie8-below'></span>");
+    }
+    thisWindow.on("scroll", function () {
+      if (thisWindow.scrollTop() >= wrapperPos.top + 1) {
+        if (!wrapper.hasClass(stickyClass)) {
+          wrapper.addClass(stickyClass);
+          vrtxAdmin.cachedContent.css("paddingTop", wrapper.outerHeight(true) + "px");
+        }
+        wrapper.css("width", (_$("#main").outerWidth(true) - 2 + extraWidth) + "px");
+      } else {
+        if (wrapper.hasClass(stickyClass)) {
+          wrapper.removeClass(stickyClass);
+          wrapper.css("width", "auto");
+          vrtxAdmin.cachedContent.css("paddingTop", "0px");
+        }
+      }
+    });
+    thisWindow.on("resize", function () {
+      if (thisWindow.scrollTop() >= wrapperPos.top + 1) {
+        wrapper.css("width", (_$("#main").outerWidth(true) - 2 + extraWidth) + "px");
+      }
+    });
+  }
+};
+
+VrtxAdmin.prototype.destroyStickyBar = function destroyStickyBar(wrapperId, stickyClass) {
+  var _$ = this._$;
+  
+  var thisWindow = _$(window);
+  thisWindow.off("scroll");
+  thisWindow.off("resize");
+  
+  var wrapper = _$(wrapperId);
+  
+  if (wrapper.hasClass(stickyClass)) {
+    wrapper.removeClass(stickyClass);
+    wrapper.css("width", "auto");
+    vrtxAdmin.cachedContent.css("paddingTop", "0px");
+  }
+};
+
+VrtxAdmin.prototype.logoutButtonAsLink = function logoutButtonAsLink() {
+  var _$ = this._$;
+
+  var btn = _$('input#logoutAction');
+  if (!btn.length) return;
+  btn.hide();
+  btn.after('&nbsp;<a id=\"logoutAction.link\" name=\"logoutAction\" href="javascript:void(0);">' + btn.attr('value') + '</a>');
+  _$("#app-head-wrapper").on("click", '#logoutAction\\.link', function (e) {
+    btn.click();
+    e.stopPropagation();
+    e.preventDefault();
+  });
+};
+
+/*
+ * Tooltips init
+ *
+ */
+ 
+VrtxAdmin.prototype.initTooltips = function initTooltips() {
+   $("#title-container").vortexTips("abbr:not(.delayed)", {
     appendTo: "#title-container",
     containerWidth: 200,
     xOffset: 20,
@@ -238,8 +363,18 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
     xOffset: 20,
     yOffset: -30
   });
+}
 
-  // Resource menus
+/*
+ * Resource menus init
+ *
+ */
+ 
+VrtxAdmin.prototype.initResourceMenus = function initResourceMenus() {
+  var vrtxAdm = this,
+      bodyId = vrtxAdm.bodyId;
+      _$ = vrtxAdm._$;
+
   var resourceMenuLeftServices = ["renameService", "deleteResourceService", "manage\\.createArchiveService", "manage\\.expandArchiveService"];
   for (var i = resourceMenuLeftServices.length; i--;) {
     vrtxAdm.getFormAsync({
@@ -314,11 +449,17 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
     },
     post: (bodyId !== "vrtx-editor" && bodyId !== "vrtx-edit-plaintext" && bodyId !== "")
   });
+};
+ 
+ /*
+  * Global dialogs init
+  *
+  */
   
-  /*
-   * Global Async dialogs
-   * 
-   */
+VrtxAdmin.prototype.initGlobalDialogs = function initGlobalDialogs() {
+  var vrtxAdm = this,
+      bodyId = vrtxAdm.bodyId;
+      _$ = vrtxAdm._$;
 
   // Create folder chooser in global menu
   vrtxAdm.cachedDoc.on("click", "#global-menu-create a, #vrtx-report-view-other", function (e) {
@@ -472,19 +613,38 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
     var mm = dialog.find("#" + idInfix + "-minutes").val();
     return new Date(date[0], date[1], date[2], hh, mm, 0, 0);
   };
-  
-  /*
-   *  ^ Global Async dialogs 
-   *
-   */
+};
 
-  // Interactions initialization
-  vrtxAdm.collectionListingInteraction();
-  editorInteraction(bodyId, vrtxAdm, _$);
-  versioningInteraction(bodyId, vrtxAdm, _$);
+/**
+ * On global async completion
+ *
+ * @this {VrtxAdmin}
+ */
+VrtxAdmin.prototype.globalAsyncComplete = function globalAsyncComplete() {
+  var vrtxAdm = this;
+  if(vrtxAdm.bodyId === "vrtx-preview") {
+    var previewIframe = $("#previewIframe");
+    if(previewIframe.length) {
+      previewIframe[0].src = previewIframe[0].src;
+    }
+  }
+  $("#advanced-publish-settings-content").remove();
+  vrtxAdm.adjustResourceTitle();
+  vrtxAdm.initResourceTitleDropdown();
+  vrtxAdm.initPublishingDropdown();
+  vrtxAdm.updateCollectionListingInteraction();
+};
 
-  // Ajax initialization / listeners
-
+/*
+ * Domains init
+ *
+ */
+ 
+VrtxAdmin.prototype.initDomains = function initDomains() {
+  var vrtxAdm = this,
+      bodyId = vrtxAdm.bodyId;
+      _$ = vrtxAdm._$;
+      
   switch (bodyId) {
     case "vrtx-manage-collectionlisting":
       var tabMenuServices = ["fileUploadService", "createDocumentService", "createCollectionService"];
@@ -827,136 +987,6 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
       // noop
       break;
   }
-
-  // Show message in IE6, IE7 and IETrident in compability mode
-  if (vrtxAdm.isIE7 || vrtxAdm.isIETridentInComp) {
-    var message = vrtxAdm.cachedAppContent.find(" > .message");
-    if (message.length) {
-      message.html(outdatedBrowserText);
-    } else {
-      vrtxAdm.cachedAppContent.prepend("<div class='infomessage'>" + outdatedBrowserText + "</div>");
-    }
-  }
-};
-
-/*-------------------------------------------------------------------*\
-    4. General interaction / dialogs
-\*-------------------------------------------------------------------*/
-
-function interceptEnterKey() {
-  vrtxAdmin.cachedAppContent.delegate("form#editor input", "keypress", function (e) {
-    if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
-      e.preventDefault(); // cancel the default browser click
-    }
-  });
-}
-
-function interceptEnterKeyAndReroute(txt, btn, cb) {
-  vrtxAdmin.cachedAppContent.delegate(txt, "keypress", function (e) {
-    if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
-      if ($(this).hasClass("blockSubmit")) { // submit/rerouting can be blocked elsewhere on textfield
-        $(this).removeClass("blockSubmit");
-      } else {
-        $(btn).click(); // click the associated button
-      }
-      if(typeof cb === "function") {
-        cb($(this));
-      }
-      e.preventDefault();
-    }
-  });
-}
-
-VrtxAdmin.prototype.mapShortcut = function mapShortcut(selectors, reroutedSelector) {
-  this.cachedAppContent.on("click", selectors, function (e) {
-    $(reroutedSelector).click();
-    e.stopPropagation();
-    e.preventDefault();
-  });
-};
-
-VrtxAdmin.prototype.initStickyBar = function initStickyBar(wrapperId, stickyClass, extraWidth) {
-  var vrtxAdm = vrtxAdmin,
-    _$ = vrtxAdm._$;
-
-  var wrapper = _$(wrapperId);
-  var thisWindow = _$(window);
-  if (wrapper.length && !vrtxAdm.isIPhone) { // Turn off for iPhone. 
-    var wrapperPos = wrapper.offset();
-    if (vrtxAdm.isIE8) {
-      wrapper.append("<span class='sticky-bg-ie8-below'></span>");
-    }
-    thisWindow.on("scroll", function () {
-      if (thisWindow.scrollTop() >= wrapperPos.top + 1) {
-        if (!wrapper.hasClass(stickyClass)) {
-          wrapper.addClass(stickyClass);
-          vrtxAdmin.cachedContent.css("paddingTop", wrapper.outerHeight(true) + "px");
-        }
-        wrapper.css("width", (_$("#main").outerWidth(true) - 2 + extraWidth) + "px");
-      } else {
-        if (wrapper.hasClass(stickyClass)) {
-          wrapper.removeClass(stickyClass);
-          wrapper.css("width", "auto");
-          vrtxAdmin.cachedContent.css("paddingTop", "0px");
-        }
-      }
-    });
-    thisWindow.on("resize", function () {
-      if (thisWindow.scrollTop() >= wrapperPos.top + 1) {
-        wrapper.css("width", (_$("#main").outerWidth(true) - 2 + extraWidth) + "px");
-      }
-    });
-  }
-};
-
-VrtxAdmin.prototype.destroyStickyBar = function destroyStickyBar(wrapperId, stickyClass) {
-  var _$ = this._$;
-  
-  var thisWindow = _$(window);
-  thisWindow.off("scroll");
-  thisWindow.off("resize");
-  
-  var wrapper = _$(wrapperId);
-  
-  if (wrapper.hasClass(stickyClass)) {
-    wrapper.removeClass(stickyClass);
-    wrapper.css("width", "auto");
-    vrtxAdmin.cachedContent.css("paddingTop", "0px");
-  }
-};
-
-VrtxAdmin.prototype.logoutButtonAsLink = function logoutButtonAsLink() {
-  var _$ = this._$;
-
-  var btn = _$('input#logoutAction');
-  if (!btn.length) return;
-  btn.hide();
-  btn.after('&nbsp;<a id=\"logoutAction.link\" name=\"logoutAction\" href="javascript:void(0);">' + btn.attr('value') + '</a>');
-  _$("#app-head-wrapper").on("click", '#logoutAction\\.link', function (e) {
-    btn.click();
-    e.stopPropagation();
-    e.preventDefault();
-  });
-};
-
-/**
- * On global async completion
- *
- * @this {VrtxAdmin}
- */
-VrtxAdmin.prototype.globalAsyncComplete = function globalAsyncComplete() {
-  var vrtxAdm = this;
-  if(vrtxAdm.bodyId === "vrtx-preview") {
-    var previewIframe = $("#previewIframe");
-    if(previewIframe.length) {
-      previewIframe[0].src = previewIframe[0].src;
-    }
-  }
-  $("#advanced-publish-settings-content").remove();
-  vrtxAdm.adjustResourceTitle();
-  vrtxAdm.initResourceTitleDropdown();
-  vrtxAdm.initPublishingDropdown();
-  vrtxAdm.updateCollectionListingInteraction();
 };
 
 /* 

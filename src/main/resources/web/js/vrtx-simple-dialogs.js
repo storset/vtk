@@ -1,5 +1,8 @@
 /*
  *  Dialogs and interface to jQuery UI
+ *
+ *  Hard dependency to Dejavu OOP
+ *
  */
 
 var VrtxSimpleDialogInterface = dejavu.Interface.declare({

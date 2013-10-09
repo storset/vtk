@@ -3,6 +3,8 @@
  *  
  *  API: http://api.jqueryui.com/accordion/
  *  
+ *  * Requires Dejavu OOP library
+ *  
  *  TODO: generalize more function updateHeader()
  *  TODO: add function for adding header populators in elem
  */

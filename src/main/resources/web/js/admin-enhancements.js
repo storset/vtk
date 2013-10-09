@@ -1436,6 +1436,17 @@ function createFuncComplete() {
 
   $("#initCreateChangeTemplate").trigger("click");
   $(".vrtx-admin-form input[type='text']").attr("autocomplete", "off").attr("autocorrect", "off");
+  
+  var notRecommendedTemplates = $("#vrtx-create-templates-not-recommended");
+  if(notRecommendedTemplates.length) {
+    notRecommendedTemplates.hide();
+    $("<a id='vrtx-create-templates-not-recommended-toggle' href='javascript:void(0);'>Vis flere maler</a>").insertBefore(notRecommendedTemplates);
+    $("#vrtx-create-templates-not-recommended-toggle").click(function(e) {
+      $(this).hide().next().toggle().parent().find(".radio-buttons:first input:first").click();
+      e.stopPropagation();
+      e.preventDefault();
+    });
+  }
 }
 
 function createChangeTemplate(hasTitle) {

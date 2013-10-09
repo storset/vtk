@@ -75,11 +75,14 @@ public class TemplateBasedCreateController extends SimpleFormController {
         String token = requestContext.getSecurityToken();
         Repository repository = requestContext.getRepository();
 
-        Resource resource = repository.retrieve(token, uri, false);
-        String url = service.constructLink(resource, requestContext.getPrincipal());
+        Resource collection = repository.retrieve(token, uri, false);
+        String url = service.constructLink(collection, requestContext.getPrincipal());
+        String collectionType = collection.getResourceType();
+        
         CreateDocumentCommand command = new CreateDocumentCommand(url);
 
         List<ResourceTemplate> l = templateManager.getDocumentTemplates(token, uri);
+        
         // Set first available template
         if (!l.isEmpty()) {
             boolean hasDefault = false;
@@ -87,10 +90,9 @@ public class TemplateBasedCreateController extends SimpleFormController {
             String[] split;
             Resource r;
             Property dp;
-            Repository repo = RequestContext.getRequestContext().getRepository();
             for (ResourceTemplate t : l) {
                 try {
-                    r = repo.retrieve(token, t.getUri(), false);
+                    r = repository.retrieve(token, t.getUri(), false);
 
                     if ((dp = r.getProperty(descriptionPropDef)) != null) {
                         name = dp.getFormattedValue();
@@ -102,6 +104,12 @@ public class TemplateBasedCreateController extends SimpleFormController {
                             // Default
                             if (split.length >= 3 && "default".equals(split[2])) {
                                 command.setSourceURI(t.getUri().toString());
+                                hasDefault = true;
+                            }
+                            // Recommended (overrides default)
+                            if(split.length >= 4 && collectionType.equals(split[3])) {
+                                command.setSourceURI(t.getUri().toString());
+                                command.setIsRecommended(true);
                                 hasDefault = true;
                                 break;
                             }
@@ -125,10 +133,15 @@ public class TemplateBasedCreateController extends SimpleFormController {
 
         Map<String, Object> model = new HashMap<String, Object>();
         Path uri = requestContext.getResourceURI();
+        Repository repo = RequestContext.getRequestContext().getRepository();
+        Resource collection = repo.retrieve(token, uri, false);
+        String collectionType = collection.getResourceType();
+        
         List<ResourceTemplate> l = templateManager.getDocumentTemplates(token, uri);
 
         Map<String, List<String>> sortmap = new TreeMap<String, List<String>>(String.CASE_INSENSITIVE_ORDER);
         Map<String, String> templates = new LinkedHashMap<String, String>();
+        Map<String, String> recommendedTemplates = new LinkedHashMap<String, String>();
         Map<String, String> descriptions = new HashMap<String, String>();
         Map<String, Boolean> titles = new HashMap<String, Boolean>();
 
@@ -136,8 +149,8 @@ public class TemplateBasedCreateController extends SimpleFormController {
         String[] split;
         Resource r;
         Property dp;
-        boolean noDefault = true, put;
-        Repository repo = RequestContext.getRequestContext().getRepository();
+        boolean noDefault = true, noRecommended = true, put;
+        
         for (ResourceTemplate t : l) {
             put = false;
             try {
@@ -166,6 +179,12 @@ public class TemplateBasedCreateController extends SimpleFormController {
                             noDefault = false;
                             put = true;
                         }
+                        // Recommended or not
+                        if (noRecommended && split.length >= 4 && collectionType.equals(split[3])) {
+                            recommendedTemplates.put(t.getUri().toString(), name);
+                            noRecommended = false;
+                            put = true;
+                        }
                     }
 
                 } else
@@ -189,14 +208,22 @@ public class TemplateBasedCreateController extends SimpleFormController {
             // Title field
             titles.put(t.getUri().toString(), t.getTitle().equals(titlePlaceholder));
         }
+        
         // Merge default templates and sorted templates
         for (String key : sortmap.keySet()) {
             List<String> list = sortmap.get(key);
             for (String value : list)
                 templates.put(value, key);
         }
+        // Merge into recommended templates if not empty
+        // XXX: more efficient code?
+        if(!recommendedTemplates.isEmpty()) {
+          recommendedTemplates.putAll(templates);
+          model.put("templates", recommendedTemplates);
+        } else {
+          model.put("templates", templates);
+        }
 
-        model.put("templates", templates);
         model.put("descriptions", descriptions);
         model.put("titles", titles);
         return model;

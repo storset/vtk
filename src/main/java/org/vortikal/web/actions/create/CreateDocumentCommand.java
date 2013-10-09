@@ -39,6 +39,7 @@ public class CreateDocumentCommand extends UpdateCancelCommand {
     private String title = null;
     private String sourceURI = null;
     private boolean isIndex = false;
+    private boolean isRecommended = false;
     
     
     public CreateDocumentCommand(String submitURL) {
@@ -87,4 +88,13 @@ public class CreateDocumentCommand extends UpdateCancelCommand {
     public void setIsIndex(boolean isIndex) {
         this.isIndex = isIndex;
     }
+
+    public boolean getIsRecommended() {
+        return this.isRecommended;
+    }
+
+    public void setIsRecommended(boolean isRecommended) {
+        this.isRecommended = isRecommended;
+    }
+
 }

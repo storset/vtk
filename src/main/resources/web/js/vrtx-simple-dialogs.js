@@ -35,7 +35,7 @@ var AbstractVrtxSimpleDialog = dejavu.AbstractClass.declare({
                                  ctx.find(".ui-dialog-titlebar-close").hide();
                                  ctx.find(".ui-dialog-titlebar").addClass("closable");
                                }
-                               if(dialog.__opts.onOpen) dialog .__opts.onOpen();
+                               if(dialog.__opts.onOpen) dialog.__opts.onOpen();
                                if(dialog.__opts.cancelIsNotAButton) {
                                  ctx.find(".ui-dialog-buttonpane button:last-child span").unwrap().addClass("cancel-is-not-a-button");
                                }

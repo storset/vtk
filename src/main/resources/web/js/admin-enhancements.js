@@ -345,7 +345,7 @@ VrtxAdmin.prototype.initGlobalDialogs = function initGlobalDialogs() {
           width: 600,
           height: 395,
           requiresTree: true,
-          funcOnOpen: function() {
+          onOpen: function() {
             var dialog = $(".ui-dialog:visible");
             var treeElem = dialog.find(".tree-create");
             var treeTrav = dialog.find("#vrtx-create-tree-folders").hide().text().split(",");
@@ -415,7 +415,7 @@ VrtxAdmin.prototype.initGlobalDialogs = function initGlobalDialogs() {
           title: dialogAPS.find("h1").text(),
           width: 400,
           requiresDatepicker: true,
-          funcOnOpen: function() {
+          onOpen: function() {
             $(".ui-dialog-buttonpane").hide();
             initDatePicker(datePickerLang, "#dialog-html-advanced-publish-settings-content");
           }
@@ -945,14 +945,16 @@ var VrtxTree = dejavu.Class.declare({
     });
   },
   __opts: {},
+  __loadingLeafClass: "loading-tree-node",
+  __leafSelector: "> .hitarea", // From closest li
   __openLeaf: function() {
     var tree = this;
     var checkLeafAvailable = setInterval(function () {
-      $(".loading-tree-node").remove();
+      $("." + tree.__loadingLeafClass).remove();
       var link = tree.__opts.elem.find("a[href$='" + tree.__opts.trav[tree.__opts.pathNum] + "']");
       if (link.length) {
         clearInterval(checkLeafAvailable);
-        var hit = link.closest("li").find("> .hitarea");
+        var hit = link.closest("li").find(tree.__leafSelector);
         hit.click();
         if (tree.__opts.scrollToContent && (tree.__opts.pathNum == (tree.__opts.trav.length - 1))) {
           tree.__opts.elem.css("background", "none").fadeIn(200, function () {  // Scroll to node
@@ -964,7 +966,7 @@ var VrtxTree = dejavu.Class.declare({
             });
           });
         } else {
-          $("<span class='loading-tree-node'>" + loadingSubfolders + "</span>").insertAfter(hit.next());
+          $("<span class='" + tree.__loadingLeafClass + "'>" + loadingSubfolders + "</span>").insertAfter(hit.next());
         }
         tree.__opts.pathNum++;
       }

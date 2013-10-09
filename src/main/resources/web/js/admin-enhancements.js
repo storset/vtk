@@ -871,7 +871,7 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
  */
  
 var VrtxAnimationInterface = dejavu.Interface.declare({
-  $name: "VrtxTree",
+  $name: "VrtxAnimationInterface",
   __opts: {},
   __prepare: function() {},
   __horizontalMove: function() {},
@@ -923,14 +923,18 @@ var VrtxAnimation = dejavu.Class.declare({
  */
 
 var VrtxTreeInterface = dejavu.Interface.declare({
-  $name: "VrtxTree",
+  $name: "VrtxTreeInterface",
   __opts: {},
-  __openLeaf: function(treeElem, treeTravNode, lastNode) {}
+  __openLeaf: function() {}
 });
 
 var VrtxTree = dejavu.Class.declare({
   $name: "VrtxTree",
   $implements: [VrtxTreeInterface],
+  $constants: {
+    loadingLeafClass: "loading-tree-node",
+    leafSelector: "> .hitarea" // From closest li
+  },
   initialize: function(opts) {
     var tree = this;
     tree.__opts = opts;
@@ -945,16 +949,14 @@ var VrtxTree = dejavu.Class.declare({
     });
   },
   __opts: {},
-  __loadingLeafClass: "loading-tree-node",
-  __leafSelector: "> .hitarea", // From closest li
   __openLeaf: function() {
     var tree = this;
     var checkLeafAvailable = setInterval(function () {
-      $("." + tree.__loadingLeafClass).remove();
+      $("." + tree.$static.loadingLeafClass).remove();
       var link = tree.__opts.elem.find("a[href$='" + tree.__opts.trav[tree.__opts.pathNum] + "']");
       if (link.length) {
         clearInterval(checkLeafAvailable);
-        var hit = link.closest("li").find(tree.__leafSelector);
+        var hit = link.closest("li").find(tree.$static.leafSelector);
         hit.click();
         if (tree.__opts.scrollToContent && (tree.__opts.pathNum == (tree.__opts.trav.length - 1))) {
           tree.__opts.elem.css("background", "none").fadeIn(200, function () {  // Scroll to node
@@ -966,7 +968,7 @@ var VrtxTree = dejavu.Class.declare({
             });
           });
         } else {
-          $("<span class='" + tree.__loadingLeafClass + "'>" + loadingSubfolders + "</span>").insertAfter(hit.next());
+          $("<span class='" + tree.$static.loadingLeafClass + "'>" + loadingSubfolders + "</span>").insertAfter(hit.next());
         }
         tree.__opts.pathNum++;
       }

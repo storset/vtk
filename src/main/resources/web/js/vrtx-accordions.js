@@ -36,7 +36,7 @@ var VrtxAccordion = dejavu.Class.declare({
   },
   updateHeader: function(elem, isJson, init) {
     
-    var emptyCheckAND = function(elm) { // XXX: Make more general - assumption inputs in JSON multiple
+    var emptyCheckAND = function(elm) { // XXX: Make more general - assumption inputs
       var checkAND = elm.find(".header-empty-check-and");
       var i = checkAND.length;
       if(i > 0) {

@@ -1,5 +1,10 @@
 /*
  *  VrtxAccordion - facade to jQuery UI accordions
+ *  
+ *  TODO: generalize more function updateHeader()
+ *  TODO: add function for adding header populators in elem
+ *  TODO: add function for refresh() that hopefully can be utilized for movable JSON-elements
+ *  
  */
 
 var VrtxAccordionInterface = dejavu.Interface.declare({

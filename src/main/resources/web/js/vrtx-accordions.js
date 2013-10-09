@@ -32,8 +32,8 @@ var VrtxAccordion = dejavu.Class.declare({
     });
   },
   destroy: function() {
-    if(accordion.__opts.elem.hasClass("ui-accordion")) {
-      accordion.__opts.elem.accordion("destroy");
+    if(this.__opts.elem.hasClass("ui-accordion")) {
+      this.__opts.elem.accordion("destroy");
     }
   },
   refresh: function() {

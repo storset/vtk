@@ -9,14 +9,14 @@
  */
 
 var VrtxSimpleDialogInterface = dejavu.Interface.declare({
-  $name: "VortexSimpleDialogInterface",
+  $name: "VrtxSimpleDialogInterface",
   open: function() {},
   close: function() {},
   destroy: function() {}
 });
 
 var AbstractVrtxSimpleDialog = dejavu.AbstractClass.declare({
-  $name: "AbstractVortexSimpleDialog",      // Meta-attribute useful for debugging
+  $name: "AbstractVrtxSimpleDialog",        // Meta-attribute useful for debugging
   $implements: [VrtxSimpleDialogInterface],
   initialize: function(opts) {              // Constructor
       this.__opts = opts;

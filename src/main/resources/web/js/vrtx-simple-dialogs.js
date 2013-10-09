@@ -35,7 +35,7 @@ var AbstractVrtxSimpleDialog = dejavu.AbstractClass.declare({
                                  ctx.find(".ui-dialog-titlebar-close").hide();
                                  ctx.find(".ui-dialog-titlebar").addClass("closable");
                                }
-                               if(dialog.__opts.funcOnOpen) dialog .__opts.funcOnOpen();
+                               if(dialog.__opts.onOpen) dialog .__opts.onOpen();
                                if(dialog.__opts.cancelIsNotAButton) {
                                  ctx.find(".ui-dialog-buttonpane button:last-child span").unwrap().addClass("cancel-is-not-a-button");
                                }
@@ -51,7 +51,7 @@ var AbstractVrtxSimpleDialog = dejavu.AbstractClass.declare({
       var dialog = this;
       buttons[ok] = function() {
         $(this).dialog("close");
-        if(dialog.__opts.funcOkComplete) dialog.__opts.funcOkComplete(dialog.__opts.funcOkCompleteOpts);
+        if(dialog.__opts.onOk) dialog.__opts.onOk(dialog.__opts.onOkOpts);
       };
     }
     if (this.__opts.hasCancel) {
@@ -62,7 +62,7 @@ var AbstractVrtxSimpleDialog = dejavu.AbstractClass.declare({
       var dialog = this;
       buttons[cancel] = function() {
         $(this).dialog("close");
-        if(dialog.__opts.funcCancelComplete) dialog.__opts.funcCancelComplete();
+        if(dialog.__opts.onCancel) dialog.__opts.onCancel();
       };
     }
     return buttons;
@@ -156,15 +156,15 @@ var VrtxHtmlDialog = dejavu.Class.declare({
       hasHtml: opts.true,
       width: opts.width,
       height: opts.height,
-      funcOkComplete: opts.funcOkComplete,
-      funcOkCompleteOpts: opts.funcOkCompleteOpts,
+      onOk: opts.onOk,
+      onOkOpts: opts.onOkOpts,
       hasOk: opts.btnTextOk,
       hasCancel: opts.btnTextCancel,
       btnTextOk: opts.btnTextOk,
       btnTextCancel: opts.btnTextCancel,
       requiresTree: opts.requiresTree,
       requiresDatepicker: opts.requiresDatepicker,
-      funcOnOpen: opts.funcOnOpen
+      onOpen: opts.onOpen
     });
   }
 });
@@ -192,9 +192,9 @@ var VrtxConfirmDialog = dejavu.Class.declare({
       title: opts.title,
       hasOk: true,
       hasCancel: true,
-      funcOkComplete: opts.funcOkComplete,
-      funcOkCompleteOpts: opts.funcOkCompleteOpts,
-      funcCancelComplete: opts.funcCancelComplete
+      onOk: opts.onOk,
+      onOkOpts: opts.onOkOpts,
+      onCancel: opts.onCancel
     });
   }
 });

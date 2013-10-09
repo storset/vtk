@@ -29,9 +29,11 @@
  *  14. Override JavaScript / jQuery
  *
  */
+
 /*-------------------------------------------------------------------*\
     1. Config
 \*-------------------------------------------------------------------*/
+
 var startLoadTime = +new Date();
 
 /**
@@ -769,7 +771,7 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
           var d = new VrtxConfirmDialog({
             msg: confirmSetInheritedPermissionsMsg,
             title: confirmSetInheritedPermissionsTitle,
-            funcOkComplete: function () {
+            onOk: function () {
               SUBMIT_SET_INHERITED_PERMISSIONS = true;
               $("#permissions\\.toggleInheritance\\.submit").trigger("click");
             }
@@ -813,7 +815,7 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
           var d = new VrtxConfirmDialog({
             msg: confirmTakeOwnershipMsg,
             title: confirmTakeOwnershipTitle,
-            funcOkComplete: function () {
+            onOk: function () {
               SUBMIT_TAKE_OWNERSHIP = true;
               _$("#vrtx-admin-ownership-form").submit();
             }
@@ -1734,7 +1736,7 @@ VrtxAdmin.prototype.collectionListingInteraction = function collectionListingInt
           var d = new VrtxConfirmDialog({
             msg: dialogTemplate.find(".vrtx-confirm-copy-move-explanation").text(),
             title: dialogTemplate.find(".vrtx-confirm-copy-move-confirmation").text(),
-            funcOkComplete: function () {
+            onOk: function () {
               dialogTemplate.find(".vrtx-focus-button button").trigger("click");
             }
           });
@@ -1745,7 +1747,7 @@ VrtxAdmin.prototype.collectionListingInteraction = function collectionListingInt
       var d = new VrtxConfirmDialog({
         msg: dialogTemplate.find(".vrtx-confirm-copy-move-explanation").text(),
         title: dialogTemplate.find(".vrtx-confirm-copy-move-confirmation").text(),
-        funcOkComplete: function () {
+        onOk: function () {
           dialogTemplate.find(".vrtx-focus-button button").trigger("click");
         }
       });
@@ -1894,7 +1896,7 @@ VrtxAdmin.prototype.placeDeleteButtonInActiveTab = function placeDeleteButtonInA
       var d = new VrtxConfirmDialog({
         msg: confirmDelete.replace("(1)", boxesSize) + '<br />' + list,
         title: confirmDeleteTitle,
-        funcOkComplete: function () {
+        onOk: function () {
           vrtxAdm.cachedAppContent.find('#collectionListing\\.action\\.delete-resources').click();
         }
       });
@@ -1940,7 +1942,7 @@ VrtxAdmin.prototype.placePublishButtonInActiveTab = function placeDeleteButtonIn
       var d = new VrtxConfirmDialog({
         msg: confirmPublish.replace("(1)", boxesSize) + '<br />' + list,
         title: confirmPublishTitle,
-        funcOkComplete: function () {
+        onOk: function () {
           vrtxAdm.cachedAppContent.find('#collectionListing\\.action\\.publish-resources').click();
         }
       });
@@ -1980,7 +1982,7 @@ VrtxAdmin.prototype.placeUnpublishButtonInActiveTab = function placeDeleteButton
       var d = new VrtxConfirmDialog({
         msg: confirmUnpublish.replace("(1)", boxesSize) + '<br />' + list,
         title: confirmUnpublishTitle,
-        funcOkComplete: function () {
+        onOk: function () {
           vrtxAdm.cachedAppContent.find('#collectionListing\\.action\\.unpublish-resources').click();
         }
       });
@@ -2046,7 +2048,7 @@ VrtxAdmin.prototype.placeDeletePermanentButtonInActiveTab = function placeDelete
       var d = new VrtxConfirmDialog({
         msg: confirmDeletePermanently.replace("(1)", boxesSize) + '<br />' + list,
         title: confirmDeletePermTitle,
-        funcOkComplete: function () {
+        onOk: function () {
           vrtxAdm.cachedContent.find('.deleteResourcePermanent').click();
         }
       });
@@ -2202,7 +2204,7 @@ function reAuthenticateRetokenizeForms(link) {
     name: "reauth-open",
     html: vrtxAdmin.serverFacade.errorMessages.sessionInvalid,
     title: vrtxAdmin.serverFacade.errorMessages.sessionInvalidTitle,
-    funcOkComplete: function() { // Log in          
+    onOk: function() { // Log in          
       // Loading..
       var d2 = new VrtxLoadingDialog({title: vrtxAdmin.serverFacade.errorMessages.sessionWaitReauthenticate});
       d2.open();
@@ -2258,7 +2260,7 @@ function retokenizeFormsOpenSaveDialog(link, d2) {
         name: "reauth-save",
         html: vrtxAdmin.serverFacade.errorMessages.sessionValidated,
         title: vrtxAdmin.serverFacade.errorMessages.sessionValidatedTitle,
-        funcOkComplete: function() {
+        onOk: function() {
           // Trigger save
           link.click();
         },
@@ -2319,9 +2321,9 @@ function checkStillAdmin(options) {
     var d = new VrtxConfirmDialog({
       msg: removeAdminPermissionsMsg,
       title: removeAdminPermissionsTitle,
-      funcOkComplete: vrtxAdmin.completeFormAsyncPost,
-      funcOkCompleteOpts: options,
-      funcCancelComplete: function () {
+      onOk: vrtxAdmin.completeFormAsyncPost,
+      onOkOpts: options,
+      onCancel: function () {
         vrtxAdmin.reloadFromServer = false;
       }
     });

@@ -1,10 +1,10 @@
 /*
  *  VrtxAccordion - facade to jQuery UI accordions
  *  
+ *  API: http://api.jqueryui.com/accordion/
+ *  
  *  TODO: generalize more function updateHeader()
  *  TODO: add function for adding header populators in elem
- *  TODO: add function for refresh() that hopefully can be utilized for movable JSON-elements
- *  
  */
 
 var VrtxAccordionInterface = dejavu.Interface.declare({
@@ -20,9 +20,7 @@ var VrtxAccordion = dejavu.Class.declare({
   },
   create: function() {
     var accordion = this;
-    if(accordion.__opts.elem.hasClass("ui-accordion")) { // Destroy if already exists
-      accordion.__opts.elem.accordion("destroy");
-    }
+    accordion.destroy(); // Destroy if already exists
     accordion.__opts.elem.accordion({
       header: accordion.__opts.headerSelector,
       heightStyle: "content",
@@ -32,6 +30,14 @@ var VrtxAccordion = dejavu.Class.declare({
         if(accordion.__opts.onActivate) accordion.__opts.onActivate(e, ui, accordion);
       }
     });
+  },
+  destroy: function() {
+    if(accordion.__opts.elem.hasClass("ui-accordion")) {
+      accordion.__opts.elem.accordion("destroy");
+    }
+  },
+  refresh: function() {
+    this.__opts.elem.accordion("refresh");
   },
   closeActiveHidden: function() {
     var active = this.__opts.elem.find(".ui-state-active");

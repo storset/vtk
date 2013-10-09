@@ -1,5 +1,7 @@
 /*
  *  VrtxSimpleDialog - facade to jQuery UI dialogs
+ *  
+ *  API: http://api.jqueryui.com/dialog/
  *
  *  * Requires Dejavu OOP library
  *  * Requires but Lazy-loads jQuery UI library (if not defined) on open

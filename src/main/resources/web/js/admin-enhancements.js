@@ -932,7 +932,7 @@ var VrtxTree = dejavu.Class.declare({
   $name: "VrtxTree",
   $implements: [VrtxTreeInterface],
   $constants: {
-    loadingLeafClass: "loading-tree-node",
+    leafLoadingClass: "loading-tree-node",
     leafSelector: "> .hitarea" // From closest li
   },
   initialize: function(opts) {
@@ -956,7 +956,7 @@ var VrtxTree = dejavu.Class.declare({
       var link = tree.__opts.elem.find("a[href$='" + tree.__opts.trav[tree.__opts.pathNum] + "']");
       if (link.length) {
         clearInterval(checkLeafAvailable);
-        var hit = link.closest("li").find(tree.$static.leafSelector);
+        var hit = link.closest("li").find(tree.$static.leafLoadingClass);
         hit.click();
         if (tree.__opts.scrollToContent && (tree.__opts.pathNum == (tree.__opts.trav.length - 1))) {
           tree.__opts.elem.css("background", "none").fadeIn(200, function () {  // Scroll to node
@@ -968,7 +968,7 @@ var VrtxTree = dejavu.Class.declare({
             });
           });
         } else {
-          $("<span class='" + tree.$static.loadingLeafClass + "'>" + loadingSubfolders + "</span>").insertAfter(hit.next());
+          $("<span class='" + tree.$static.leafLoadingClass + "'>" + loadingSubfolders + "</span>").insertAfter(hit.next());
         }
         tree.__opts.pathNum++;
       }

@@ -919,7 +919,9 @@ var VrtxAnimation = dejavu.Class.declare({
 
 /*
  * VrtxTree - facade to TreeView async
- *
+ *  
+ *  * Requires Dejavu OOP library
+ *  * Requires but Lazy-loads TreeView and ScrollTo libraries (if not defined) on open
  */
 
 var VrtxTreeInterface = dejavu.Interface.declare({
@@ -940,13 +942,32 @@ var VrtxTree = dejavu.Class.declare({
     var tree = this;
     tree.__opts = opts;
     tree.__opts.pathNum = 0;
-    opts.elem.treeview({
-      animated: "fast",
-      url: location.protocol + '//' + location.host + location.pathname + "?vrtx=admin&uri=&" + opts.service + "&ts=" + (+new Date()),
-      service: opts.service,
-      dataLoaded: function () {
-        tree.__openLeaf();
-      }
+    
+    // TODO: these should be retrieved from Vortex config/properties somehow
+    var rootUrl = "/vrtx/__vrtx/static-resources";
+    var jQueryUiVersion = "1.10.3";
+    
+    var futureTree = $.Deferred();
+    if (typeof $.fn.treeview !== "function" && dialog.__opts.requiresTree) {
+      $.getScript(location.protocol + "//" + location.host + rootUrl + "/jquery/plugins/jquery.treeview.js", function () {
+        $.getScript(location.protocol + "//" + location.host + rootUrl + "/jquery/plugins/jquery.treeview.async.js", function () {
+          $.getScript(location.protocol + "//" + location.host + rootUrl + "/jquery/plugins/jquery.scrollTo.min.js", function () {
+            futureTree.resolve();
+          });
+        });
+      });
+    } else {
+      futureTree.resolve();
+    }
+    $.when(futureTree).done(function() {
+      opts.elem.treeview({
+        animated: "fast",
+        url: location.protocol + '//' + location.host + location.pathname + "?vrtx=admin&uri=&" + opts.service + "&ts=" + (+new Date()),
+        service: opts.service,
+        dataLoaded: function () {
+          tree.__openLeaf();
+        }
+      });
     });
   },
   __openLeaf: function() {

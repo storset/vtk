@@ -93,18 +93,6 @@ var AbstractVrtxSimpleDialog = dejavu.AbstractClass.declare({
     } else {
       futureUi.resolve();
     }
-    var futureTree = $.Deferred();
-    if (typeof $.fn.treeview !== "function" && dialog.__opts.requiresTree) {
-      $.getScript(location.protocol + "//" + location.host + rootUrl + "/jquery/plugins/jquery.treeview.js", function () {
-        $.getScript(location.protocol + "//" + location.host + rootUrl + "/jquery/plugins/jquery.treeview.async.js", function () {
-          $.getScript(location.protocol + "//" + location.host + rootUrl + "/jquery/plugins/jquery.scrollTo.min.js", function () {
-            futureTree.resolve();
-          });
-        });
-      });
-    } else {
-      futureTree.resolve();
-    }
     var futureDatepicker = $.Deferred();
     if (typeof initDatePicker !== "function" && dialog.__opts.requiresDatepicker) {
       $.getScript(rootUrl + "/js/datepicker/datepicker-admin.js", function() {
@@ -117,7 +105,7 @@ var AbstractVrtxSimpleDialog = dejavu.AbstractClass.declare({
     } else {
       futureDatepicker.resolve(); 
     }
-    $.when(futureUi, futureTree, futureDatepicker).done(function() {
+    $.when(futureUi, futureDatepicker).done(function() {
       dialog.__opts.elm = $(dialog.__opts.selector);
       dialog.__opts.elm.dialog(dialog.__dialogOpts);
       dialog.__opts.elm.dialog("open");

@@ -55,58 +55,39 @@ var VrtxAccordion = dejavu.Class.declare({
   updateHeader: function(elem, isJson, init) {
     var tree = this;
     
+    var getString = function(input) {
+      var inputId = input.id;
+      if (isCkEditor(inputId)) { // Check if CK
+        str = getCkValue(inputId); // Get CK content
+      } else {
+        str = input.value; // Get input text
+      }
+      return str;
+    };
+    
     var findMultipleForContentMatch = function(elm) {
       var containers = elm.find(tree.$static.headerMultipleCheckClass);
       var i = containers.length;
-      if(i > 0) {
-        for(;i--;) {
-          var inputs = $(containers[i]).find("input[type='text'], textarea");
-          var j = inputs.length;
-          var allOfThem = true;
-          for(;j--;) {
-            var inputId = inputs[j].id;
-            var str = "";
-            if (isCkEditor(inputId)) { // Check if CK
-              str = getCkValue(inputId); // Get CK content
-            } else {
-              str = inputs[j].value; // Get input text
-            }
-            if(str === "") {
-              allOfThem = false;
-              break;
-            }
-          }
-          if(allOfThem) { // Find 1 with all values - return !empty
-            return true;
+      for(;i--;) {
+        var inputs = $(containers[i]).find("input[type='text'], textarea");
+        var j = inputs.length;
+        for(;j--;) {
+          if("" === getString(inputs[j])) { // All need to have content for match
+            return false;
           }
         }
+        return true;
       }
-      return false;
     };
     
     var findSingleForContentMatch = function(elm) {
       var inputs = elm.find(tree.$static.headerSingleCheckClass + " input[type='text'], " + tree.$static.headerSingleCheckClass + " textarea");
       var i = inputs.length;
-      if(i > 0) {
-        var oneOfThem = false;
-        for(;i--;) {
-          var inputId = inputs[i].id;
-          var str = "";
-          if (isCkEditor(inputId)) { // Check if CK
-            str = getCkValue(inputId); // Get CK content
-          } else {
-            str = inputs[i].value; // Get input text
-          }
-          if(str !== "") {
-            oneOfThem = true;
-            break;
-          }
-        }
-        if(oneOfThem) { // Find 1 with one value - return !empty
+      for(;i--;) {
+        if("" !== getString(inputs[i])) { // One need to have content for match
           return true;
         }
       }
-      return false;
     };
     
     var noContentOrNoTitle = function() {

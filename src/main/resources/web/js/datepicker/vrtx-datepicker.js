@@ -32,10 +32,7 @@ var VrtxDatepicker = dejavu.Class.declare({
       $.datepicker.setDefaults($.datepicker.regional['nn']);
     }
     
-    var dateFields = contents.find(".date");
-    for(var i = 0, len = dateFields.length; i < len; i++) {
-      datepick.initField(dateFields[i].name, opts.selector);
-    }
+    datepick.initFields(contents.find(".date"));
     
     // Help user with time
     contents.on("change", ".vrtx-hours input", function () {
@@ -62,6 +59,11 @@ var VrtxDatepicker = dejavu.Class.declare({
     }
     
     if(opts.after) opts.after();
+  },
+  initFields: function(dateFields) {
+    for(var i = 0, len = dateFields.length; i < len; i++) {
+      this.initField(dateFields[i].name, this.__opts.selector);
+    }
   },
   initField: function(name, selector) {
     var hours = "";

@@ -1417,9 +1417,7 @@ function addJsonField(btn) {
         for (i = 0; i < ckSimpleHtmlsLen; i++) {
           vrtxEditor.newEditor(ckSimpleHtmls[i], false, false, requestLang, cssFileList, "true");
         }
-        for (i = 0; i < dateTimesLen; i++) {
-          datepickerEditor.initField(dateTimes[i]);
-        }
+        datepickerEditor.initFields(dateTimes);
       } else {
         setTimeout(checkForAppendComplete, 25);
       }

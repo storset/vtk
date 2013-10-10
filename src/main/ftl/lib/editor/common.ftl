@@ -49,11 +49,10 @@
 	}
   // -->
   </script>
-
-  <!-- JQuery UI (used for datepicker) -->
-
-
+  
   <#if oldEditor>
+    <!-- JQuery UI (used for old datepicker) -->
+    <script type="text/javascript" src="${webResources?html}/jquery/plugins/ui/jquery-ui-${jQueryUiVersion}.custom/js/jquery-ui-${jQueryUiVersion}.custom.min.js"></script>
     <#if language = "no">
       <script type="text/javascript" src="${webResources?html}/jquery/plugins/ui/jquery-ui-${jQueryUiVersion}.custom/js/jquery.ui.datepicker-no.js"></script>
     <#elseif language = "nn">

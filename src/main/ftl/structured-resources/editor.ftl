@@ -23,6 +23,7 @@
   </#if>
   
   <script type="text/javascript"><!--
+    var DATE_PICKER_INITIALIZED = $.Deferred();
     $(window).load(function() {
       datepickerEditor = new VrtxDatepicker({
         language: datePickerLang,

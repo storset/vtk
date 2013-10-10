@@ -31,55 +31,62 @@
 
 package org.vortikal.video.rest;
 
-import net.sf.json.JSONNull;
+import java.util.Date;
 import net.sf.json.JSONObject;
 
 /**
- * 
+ * Vortex video reference.
  */
 public class VideoRef {
     
-    private String videoId;
-    private MediaFileRef sourceVideoFileRef;
-    private MediaFileRef convertedVideoFileRef;
+    private final VideoId videoId;
+    private final Date refUpdateTimestamp;      // Timestamp of last reference update from video system
+    private final String uploadContentType;     // Original content type of video when uploaded to Vortex
+    private final FileRef sourceVideoFileRef;
+    private final FileRef convertedVideoFileRef;
     
     private VideoRef(Builder builder) {
         this.videoId = builder.videoId;
         this.sourceVideoFileRef = builder.sourceVideoFileRef;
         this.convertedVideoFileRef = builder.convertedVideoFileRef;
+        this.refUpdateTimestamp = builder.refUpdateTimestamp;
+        this.uploadContentType = builder.uploadContentType;
     }
-   
+    
     /**
      * Whatever. Consider auto-serialization instead.
+     * 
+     * @return object formatted as JSON string, parseable by {@link Builder#fromJsonString(java.lang.String) }.
      */
-    public JSONObject toJson() {
+    public String toJsonString() {
         JSONObject json = new JSONObject();
         json.element("mediaref", true);
         json.element("resourcetype", "videoref");
-        
+        json.elementOpt("uploadContentType", this.uploadContentType);
+
         JSONObject refJson = new JSONObject();
-        refJson.element("videoId", this.videoId);
 
-        JSONObject sourceJson = new JSONObject();
+        refJson.element("videoId", this.videoId.toString());
+        refJson.element("refUpdateTimestamp", this.refUpdateTimestamp.getTime());
+
         if (this.sourceVideoFileRef != null) {
-            sourceJson.element("contentType", this.sourceVideoFileRef.getContentType() != null ?
-                                              this.sourceVideoFileRef.getContentType() : JSONNull.getInstance());
-            sourceJson.element("localPath", this.sourceVideoFileRef.getPath());
-            sourceJson.element("size", this.sourceVideoFileRef.getSize());
+            JSONObject sourceJson = new JSONObject();
+            sourceJson.elementOpt("contentType", this.sourceVideoFileRef.contentType());
+            sourceJson.element("localPath", this.sourceVideoFileRef.path());
+            sourceJson.element("size", this.sourceVideoFileRef.size());
+            refJson.element("sourceVideoFile", sourceJson);
         }
-        refJson.element("sourceVideoFile", sourceJson);
 
-        JSONObject convJson = new JSONObject();
         if (this.convertedVideoFileRef != null) {
-            convJson.element("contentType", this.convertedVideoFileRef.getContentType() != null ?
-                                            this.convertedVideoFileRef.getContentType() : JSONNull.getInstance());
-            convJson.element("localPath", this.convertedVideoFileRef.getPath());
-            convJson.element("size", this.convertedVideoFileRef.getSize());
+            JSONObject convJson = new JSONObject();
+            convJson.elementOpt("contentType", this.convertedVideoFileRef.contentType());
+            convJson.element("localPath", this.convertedVideoFileRef.path());
+            convJson.element("size", this.convertedVideoFileRef.size());
+            refJson.element("conversionVideoFile", convJson);
         }
-        refJson.element("conversionVideoFile", convJson);
-        
+
         json.element("ref", refJson);
-        return json;
+        return json.toString(2);
     }
     
     public static Builder newBuilder() {
@@ -89,80 +96,136 @@ public class VideoRef {
     public Builder copyBuilder() {
         Builder b = new Builder();
         b.videoId = this.videoId;
-        b.sourceVideoFileRef = new MediaFileRef(this.sourceVideoFileRef.getContentType(), 
-                                                this.sourceVideoFileRef.getPath(),
-                                                this.sourceVideoFileRef.getSize());
-        b.convertedVideoFileRef = new MediaFileRef(this.convertedVideoFileRef.getContentType(), 
-                                                this.convertedVideoFileRef.getPath(),
-                                                this.convertedVideoFileRef.getSize());
+        b.sourceVideoFileRef = new FileRef(this.sourceVideoFileRef.contentType(), 
+                                                this.sourceVideoFileRef.path(),
+                                                this.sourceVideoFileRef.size());
+        b.convertedVideoFileRef = new FileRef(this.convertedVideoFileRef.contentType(), 
+                                                this.convertedVideoFileRef.path(),
+                                                this.convertedVideoFileRef.size());
+        b.refUpdateTimestamp = new Date(this.refUpdateTimestamp.getTime());
+        b.uploadContentType = this.uploadContentType;
         return b;
     }
     
     public static final class Builder {
-        private String videoId;
-        private MediaFileRef sourceVideoFileRef;
-        private MediaFileRef convertedVideoFileRef;
+        private VideoId videoId;
+        private Date refUpdateTimestamp;
+        private String uploadContentType;
+        private FileRef sourceVideoFileRef;
+        private FileRef convertedVideoFileRef;
         
         public Builder videoId(String videoId) {
+            this.videoId = VideoId.fromString(videoId);
+            return this;
+        }
+        
+        public Builder videoId(VideoId videoId) {
             this.videoId = videoId;
             return this;
         }
         
+        public Builder refUpdateTimestamp(Date ts) {
+            this.refUpdateTimestamp = new Date(ts.getTime());
+            return this;
+        }
+        
+        public Builder uploadContentType(String contentType) {
+            this.uploadContentType = contentType;
+            return this;
+        }
+        
+        public Builder sourceVideo(FileRef fileRef) {
+            this.sourceVideoFileRef = fileRef;
+            return this;
+        }
+        
+        public Builder convertedVideo(FileRef fileRef) {
+            this.convertedVideoFileRef = fileRef;
+            return this;
+        }
+        
         public Builder sourceVideo(String contentType, String path, long size) {
-            this.sourceVideoFileRef = new MediaFileRef(contentType, path, size);
+            this.sourceVideoFileRef = new FileRef(contentType, path, size);
             return this;
         }
         
         public Builder convertedVideo(String contentType, String path, long size) {
-            this.convertedVideoFileRef = new MediaFileRef(contentType, path, size);
+            this.convertedVideoFileRef = new FileRef(contentType, path, size);
             return this;
         }
 
+        public VideoRef build() {
+            if (this.videoId == null) {
+                throw new IllegalStateException("Video id must be set");
+            }
+            if (this.refUpdateTimestamp == null) {
+                this.refUpdateTimestamp = new Date();
+            }
+            return new VideoRef(this);
+        }
+        
         /**
-         * TOOD Accept JSON-string instead, so we don't force use of particular JSON impl
-         *      on client code.
-         * @return 
+         * @param jsonString JSON-formatted string
+         * @return A <code>Builder</code> initialized by JSON string representing a VideoRef obj.
          */
-        public Builder fromJson(JSONObject json) {
+        public Builder fromJsonString(String jsonString) {
+            JSONObject json = JSONObject.fromObject(jsonString);
+            if (!json.has("mediaref")
+                     || !json.getBoolean("mediaref")
+                     || !json.has("resourcetype")
+                     || !"videoref".equals(json.getString("resourcetype"))) {
+
+                throw new IllegalArgumentException("Not a videoref: " + json);
+            }
+
+            this.uploadContentType = json.optString("uploadContentType", null);
+            
             JSONObject ref = json.getJSONObject("ref");
-            String vId = ref.getString("videoId");
-            MediaFileRef sourceFileRef = null;
-            MediaFileRef convFileRef = null;
+            
+            this.refUpdateTimestamp = new Date(ref.getLong("refUpdateTimestamp"));
+            
+            FileRef sourceFileRef = null;
+            FileRef convFileRef = null;
             
             if (ref.has("sourceVideoFile")) {
                 JSONObject sourceJson = ref.getJSONObject("sourceVideoFile");
-                sourceFileRef = new MediaFileRef(sourceJson.getString("contentType"),
-                                                      sourceJson.getString("localPath"),
-                                                      sourceJson.getLong("size"));
+                sourceFileRef = new FileRef(sourceJson.optString("contentType", null),
+                                            sourceJson.getString("localPath"),
+                                            sourceJson.getLong("size"));
             }
             if (ref.has("conversionVideoFile")) {
                 JSONObject convJson = ref.getJSONObject("conversionVideoFile");
-                convFileRef = new MediaFileRef(convJson.getString("contentType"), 
-                                                      convJson.getString("localPath"),
-                                                      convJson.getLong("size"));
+                convFileRef = new FileRef(convJson.optString("contentType", null),
+                                          convJson.getString("localPath"),
+                                          convJson.getLong("size"));
             }
             
-            this.videoId = vId;
+            this.videoId = VideoId.fromString(ref.getString("videoId"));
             this.sourceVideoFileRef = sourceFileRef;
             this.convertedVideoFileRef = convFileRef;
             return this;
         }
         
-        public VideoRef build() {
-            return new VideoRef(this);
-        }
     }
     
-    public String getVideoId() {
+    public VideoId videoId() {
         return this.videoId;
     }
     
-    public MediaFileRef getSourceVideoFileRef() {
+    public FileRef sourceVideo() {
         return this.sourceVideoFileRef;
     }
     
-    public MediaFileRef getConvertedVideoFileRef() {
+    public FileRef convertedVideo() {
         return this.convertedVideoFileRef;
+    }
+    
+    public Date refUpdateTimestamp() {
+        return new Date(this.refUpdateTimestamp.getTime());
+    }
+    
+    public String uploadContentType() {
+        return this.uploadContentType;
     }
 
     @Override

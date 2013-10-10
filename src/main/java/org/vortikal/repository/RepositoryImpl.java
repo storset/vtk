@@ -125,7 +125,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     private int maxComments = 1000;
     private int maxResourceChildren = 3000;
     private File tempDir;
-    private List<ContentHandlingInterceptor> contentHandlingInterceptors;
+    private List<ResourceContentInterceptor> contentHandlingInterceptors;
 
     // Default value of 60 days before recoverable resources are purged from
     // trash can
@@ -192,9 +192,15 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         } else {
             this.authorizationManager.authorizeRead(uri, principal);
         }
-
+        
         try {
-            return (Resource) resource.clone();
+            ResourceImpl clone = (ResourceImpl)resource.clone();
+            ResourceContentInterceptor interceptor = getCHI(resource);
+            if (interceptor != null) {
+                clone = interceptor.interceptRetrieve(clone, this.contentStore);
+            }
+            
+            return clone;
         } catch (CloneNotSupportedException e) {
             throw new IOException("Failed to clone object", e);
         }
@@ -301,54 +307,19 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         } else {
             this.authorizationManager.authorizeRead(uri, principal);
         }
+        
+        ResourceContentInterceptor interceptor = getCHI(r);
+        if (interceptor != null) {
+            return interceptor.interceptGetInputStream(r, this.contentStore);
+        }
 
         return this.contentStore.getInputStream(uri).getInputStream();
     }
     
-    /**
-     * Request alternate content with the given content type. Only some resource
-     * types support this.
-     * FIXME using this API feels somewhat strange, perhaps go for stream-ID or another
-     *       more explicit reference to an alternative stream.
-     */
-    @Transactional
-    public InputStream getInputStream(String token, Path uri, boolean forProcessing, String contentType) 
-            throws ResourceNotFoundException, AuthorizationException, AuthenticationException, ResourceLockedException,
-            IOException {
-        
-        Principal principal = this.tokenManager.getPrincipal(token);
-        ResourceImpl r = this.dao.load(uri);
-
-        if (r == null) {
-            throw new ResourceNotFoundException(uri);
-        } else if (r.isCollection()) {
-            throw new IllegalOperationException("Resource is collection");
-        }
-
-        if (forProcessing) {
-            this.authorizationManager.authorizeReadProcessed(uri, principal);
-        } else {
-            this.authorizationManager.authorizeRead(uri, principal);
-        }
-
-        if (contentType != null) {
-            ContentHandlingInterceptor chi = getCHI(r);
-            if (chi != null) {
-                return chi.getInputStream(r, contentType, this.contentStore);
-            }
-        }
-        
-        if (contentType == null || r.getContentType().equals(contentType)) {
-            return this.contentStore.getInputStream(uri).getInputStream();
-        }
-        
-        throw new IllegalArgumentException("No such stream available");
-    }
-    
-    private ContentHandlingInterceptor getCHI(Resource r) {
-        ContentHandlingInterceptor chi = null;
+    private ResourceContentInterceptor getCHI(Resource r) {
+        ResourceContentInterceptor chi = null;
         if (this.contentHandlingInterceptors != null) {
-            for (ContentHandlingInterceptor c : this.contentHandlingInterceptors) {
+            for (ResourceContentInterceptor c : this.contentHandlingInterceptors) {
                 if (c.isSupportedResourceType(r.getResourceType())) {
                     chi = c;
                     break;
@@ -384,6 +355,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         for (Revision rev : revisions) {
             if (rev.getID() == revision.getID()) {
                 found = true;
+                break;
             }
         }
         if (!found) {
@@ -1048,7 +1020,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             // XXX probably need more reliable way of determining if storage should be handled by interceptor.
             //     (now just based on filename and nothing else).
             String contentType = MimeHelper.map(uri.getName());
-            ContentHandlingInterceptor chi = getCHIForContentType(contentType);
+            ResourceContentInterceptor chi = getCHIForContentType(contentType);
             if (chi != null) {
                 newResource = chi.interceptCreate(newResource, inStream, contentType, this.contentStore);
             } else {
@@ -1068,10 +1040,10 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         }
     }
 
-    private ContentHandlingInterceptor getCHIForContentType(String contentType) {
-        ContentHandlingInterceptor chi = null;
+    private ResourceContentInterceptor getCHIForContentType(String contentType) {
+        ResourceContentInterceptor chi = null;
         if (this.contentHandlingInterceptors != null) {
-            for (ContentHandlingInterceptor c : this.contentHandlingInterceptors) {
+            for (ResourceContentInterceptor c : this.contentHandlingInterceptors) {
                 if (c.isSupportedContentType(contentType)) {
                     chi = c;
                     break;
@@ -1957,7 +1929,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         this.contentRepresentationRegistry = contentRepresentationRegistry;
     }
     
-    public void setContentHandlingInterceptors(List<ContentHandlingInterceptor> chis) {
+    public void setContentHandlingInterceptors(List<ResourceContentInterceptor> chis) {
         this.contentHandlingInterceptors = chis;
     }
 

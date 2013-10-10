@@ -34,23 +34,29 @@ package org.vortikal.video.rest;
 /**
  *
  */
-public class MediaFileRef {
+public class FileRef {
     
-    private String contentType;
-    private String path;
-    private long size;
+    private final String contentType;
+    private final String path;
+    private final long size;
 
-    public MediaFileRef(String contentType, String path, long size) {
-        this.contentType = contentType;
+    public FileRef(String contentType, String path, long size) {
+        if (path == null) {
+            throw new IllegalArgumentException("path cannot be null");
+        }
+        if (size < 0) {
+            throw new IllegalArgumentException("size cannot be < 0");
+        }
         this.path = path;
         this.size = size;
+        this.contentType = contentType;
     }
 
     /**
      * 
-     * @return Content type of media file.
+     * @return Content type of media file. May be <code>null</code>.
      */
-    public String getContentType() {
+    public String contentType() {
         return this.contentType;
     }
 
@@ -58,15 +64,15 @@ public class MediaFileRef {
      * 
      * @return Local path to media file.
      */
-    public String getPath() {
+    public String path() {
         return this.path;
     }
     
     /**
      * @return Size of referenced media file in bytes.
      */
-    public long getSize() {
+    public long size() {
         return this.size;
     }
-    
+
 }

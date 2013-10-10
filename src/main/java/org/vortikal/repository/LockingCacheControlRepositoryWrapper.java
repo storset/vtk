@@ -345,13 +345,7 @@ public class LockingCacheControlRepositoryWrapper implements Repository {
     }
 
     @Override
-    public InputStream getInputStream(String token, Path uri, boolean forProcessing) throws ResourceNotFoundException,
-            AuthorizationException, AuthenticationException, Exception {
-        return getInputStream(token, uri, forProcessing, (String)null);
-    }
-    
-    @Override
-    public InputStream getInputStream(String token, Path uri, boolean forProcessing, String contentType) 
+    public InputStream getInputStream(String token, Path uri, boolean forProcessing) 
             throws ResourceNotFoundException, AuthorizationException, AuthenticationException, Exception{
         // XXX perhaps not lock at all for getInputStream ..
         //     If a slow writer is uploading to the same resource, getting the input stream will block.
@@ -359,16 +353,11 @@ public class LockingCacheControlRepositoryWrapper implements Repository {
         
         List<Path> locked = this.lockManager.lock(uri, false);
         try {
-            if (contentType == null) {
-                return this.wrappedRepository.getInputStream(token, uri, forProcessing); // Tx
-            } else {
-                return this.wrappedRepository.getInputStream(token, uri, forProcessing, contentType); // Tx
-            }
+            return this.wrappedRepository.getInputStream(token, uri, forProcessing); // Tx
         } finally {
             this.lockManager.unlock(locked, false);
         }
     }
-    
 
     @Override
     public InputStream getInputStream(String token, Path uri, boolean forProcessing, Revision revision) throws ResourceNotFoundException,

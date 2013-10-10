@@ -67,20 +67,22 @@ public class DisplayMediarefController implements Controller {
         model.put("resource", resource);
 
         if ("videoref".equals(resource.getResourceType())) {
-            JSONObject refJson = JSONObject.fromObject(StreamUtil.streamToString(
-                                    repository.getInputStream(token, uri, true), "utf-8"));
+            String videoRefJson = StreamUtil.streamToString(
+                                    repository.getInputStream(token, uri, true), "utf-8");
             
-            VideoRef ref = VideoRef.newBuilder().fromJson(refJson).build();
-            String contentType = ref.getSourceVideoFileRef().getContentType();
+            VideoRef ref = VideoRef.newBuilder().fromJsonString(videoRefJson).build();
+            String contentType = ref.sourceVideo().contentType();
             if (contentType == null) {
-                contentType = "application/octet-stream";
+                contentType = ref.uploadContentType() != null ?
+                        ref.uploadContentType() : "application/octet-stream";
             }
-            long contentLength = ref.getSourceVideoFileRef().getSize();
-            InputStream stream = repository.getInputStream(token, uri, true, contentType);
             
-            model.put("resourceStream", stream);
-            model.put("contentType", contentType);
-            model.put("contentLength", contentLength);
+            long contentLength = ref.sourceVideo().size();
+//            InputStream stream = repository.getInputStream(token, uri, true, contentType);
+            
+//            model.put("resourceStream", stream);
+//            model.put("contentType", contentType);
+//            model.put("contentLength", contentLength);
 
             return new ModelAndView(this.view, model);
         }

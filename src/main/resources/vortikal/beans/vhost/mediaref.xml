@@ -11,9 +11,6 @@
                            http://www.springframework.org/schema/util
                            http://www.springframework.org/schema/util/spring-util.xsd">
   
-  <!-- XXX I'd prefer not to mess with structured-resources, but placing
-      the mediaref type under anything but json-resource makes it never match in
-      evaluation. -->
   <bean id="mediaref.mediarefType"
         class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
     <property name="name" value="mediaref"/>
@@ -63,7 +60,7 @@
   </bean>
   
   <bean id="mediaref.video.contentHandlingInterceptor"
-       class="org.vortikal.repository.ContentHandlingInterceptor">
+       class="org.vortikal.repository.ResourceContentInterceptor">
     <property name="videoStorageRoot" value="/home/oyvind/usit/vrtxdata/vidstor" />
     <property name="repositoryId" value="${repositoryID}" />
     <property name="videoApiClient" ref="mediaref.video.appclient" />
@@ -86,7 +83,7 @@
   </bean>
   
   <!-- Special view service for mediaref types -->
-  <bean id="mediaref.displayResource" class="org.vortikal.web.service.ServiceImpl">
+<!--  <bean id="mediaref.displayResource" class="org.vortikal.web.service.ServiceImpl">
     <description>
       Special display for mediaref types, since their primary content is not
       what should be served out.
@@ -112,6 +109,6 @@
   <bean id="mediaref.displayView"
         class="org.vortikal.web.display.mediaref.DisplayMediarefView">
     <property name="supportRangeRequests" value="true" />
-  </bean>
+  </bean>-->
   
 </beans>

@@ -229,13 +229,6 @@ public class RequestLocalRepository implements Repository {
     }
     
     @Override
-    public InputStream getInputStream(String token, Path uri, boolean forProcessing, String contentType) throws ResourceNotFoundException, AuthorizationException, AuthenticationException, Exception {
-
-        return this.repository.getInputStream(token, uri, forProcessing, contentType);
-
-    }
-
-    @Override
     public InputStream getInputStream(String token, Path uri, boolean forProcessing, Revision revision) throws Exception {
 
         return this.repository.getInputStream(token, uri, forProcessing, revision);

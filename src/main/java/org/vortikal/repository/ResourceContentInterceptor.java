@@ -46,9 +46,12 @@ import org.vortikal.video.rest.VideoApiClient;
 import org.vortikal.video.rest.VideoRef;
 
 /**
+ * Interceptor which allows for specialized handling of resource content and
+ * control over how resource shall be stored in regular repository.
+ * 
  * TODO Rename and pull out interface, if we decide for this approach.
  */
-public class ContentHandlingInterceptor implements InitializingBean {
+public class ResourceContentInterceptor implements InitializingBean {
     
     private String videoStorageRoot;
     private String repositoryId;
@@ -72,23 +75,21 @@ public class ContentHandlingInterceptor implements InitializingBean {
      * if input has the right content type.
      */
     public ResourceImpl interceptCreate(ResourceImpl newResource,
-            InputStream stream, String contentType, ContentStore contentStore) 
+            InputStream stream, String contentType, ContentStore repositoryContentStore) 
             throws IOException {
 
-        // Dump input stream to file in video storage input area
+        // Dump input stream to file in videoRef storage input area
         String name = newResource.getURI().getName();
         TempFile tempFile = StreamUtil.streamToTempFile(stream, -1, new File(getInputDirAbspath()), name);
 
-        // Make a videoapp API call to create new video
+        // Make a videoapp API call to create new videoRef
         VideoRef ref = this.videoapp.createVideo(newResource, tempFile.getFile().getAbsolutePath(), contentType);
         
-        if (tempFile.getFile().exists()) {
-            System.out.println("Warning: expected temp file to be moved to another location, but it still exists.  API might have failed.");
-        }
+        tempFile.delete();
         
-        // Store videoref info JSON as resource main content
-        contentStore.storeContent(newResource.getURI(), 
-                StreamUtil.stringToStream(ref.toJson().toString(2), "utf-8"));
+        // Store videoref videoRef JSON as resource main content
+        repositoryContentStore.storeContent(newResource.getURI(), 
+                StreamUtil.stringToStream(ref.toJsonString(), "utf-8"));
 
         Property contentTypeProp = this.contentTypePropDef.createProperty("application/json");
         newResource.addProperty(contentTypeProp);
@@ -102,22 +103,43 @@ public class ContentHandlingInterceptor implements InitializingBean {
         throw new UnsupportedOperationException();
     }
     
-    public InputStream getInputStream(ResourceImpl resource, String contentType, ContentStore store) 
+    public InputStream interceptGetInputStream(ResourceImpl resource, ContentStore store) 
             throws IOException {
         
         // XXX only one alternative content-type, ignore supplied contentType
+        VideoRef ref = VideoRef.newBuilder().fromJsonString(
+                StreamUtil.streamToString(store.getInputStream(resource.getURI()), "utf-8")).build();
         
-        JSONObject videoRefJson = JSONObject.fromObject(
-                                    StreamUtil.streamToString(
-                                        store.getInputStream(resource.getURI()), "utf-8"));
-        
-        VideoRef ref = VideoRef.newBuilder().fromJson(videoRefJson).build();
-        
-        if (ref.getSourceVideoFileRef() != null) {
-            return new FileInputStream(new File(ref.getSourceVideoFileRef().getPath()));
+        if (ref.sourceVideo() != null) {
+            return new FileInputStream(new File(ref.sourceVideo().path()));
         }
 
         throw new IOException("Stream not found");
+    }
+    
+    public ResourceImpl interceptRetrieve(ResourceImpl resource, ContentStore store) throws IOException {
+        
+        InputStream is = store.getInputStream(resource.getURI());
+        String jsonString = StreamUtil.streamToString(is, "utf-8");
+        
+        VideoRef ref = VideoRef.newBuilder().fromJsonString(jsonString).build();
+        
+        // Modify resource content type and content length according to stream
+        String contentType = ref.sourceVideo().contentType();
+        if (contentType == null) {
+            contentType = ref.uploadContentType();
+        }
+        if (contentType == null) {
+            contentType = "application/octet-stream";
+        }
+        // XXX assume prop existence (fairly safe
+        Property contentTypeProp = resource.getProperty(Namespace.DEFAULT_NAMESPACE, "contentType");
+        contentTypeProp.setStringValue(contentType);
+        
+        Property contentLengthProp = resource.getProperty(Namespace.DEFAULT_NAMESPACE, "contentLength");
+        contentLengthProp.setLongValue(ref.sourceVideo().size());
+
+        return resource;
     }
     
     

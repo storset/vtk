@@ -4,12 +4,22 @@
  *  API: http://api.jqueryui.com/accordion/
  *  
  *  * Requires Dejavu OOP library
+ *  * Requires but Lazy-loads jQuery UI library (if not defined) on open
  *  
  *  TODO: add function for adding header populators in elem
  */
 
 var VrtxAccordionInterface = dejavu.Interface.declare({
-  $name: "VrtxAccordionInterface"
+  $name: "VrtxAccordionInterface",
+  create: function() {},
+  destroy: function() {},
+  refresh: function() {},
+  closeActiveHidden: function() {},
+  __getFieldString: function(field) {},
+  __findMultiContentMatch: function(elm) {},
+  __findSingleContentMatch: function(elm) {},
+  __headerCheckNoContentOrNoTitle: function(elm) {},
+  updateHeader: function(elem, isJson, init) {}
 });
 
 var VrtxAccordion = dejavu.Class.declare({
@@ -29,15 +39,29 @@ var VrtxAccordion = dejavu.Class.declare({
   },
   create: function() {
     var accordion = this;
-    accordion.destroy(); // Destroy if already exists
-    accordion.__opts.elem.accordion({
-      header: accordion.__opts.headerSelector,
-      heightStyle: "content",
-      collapsible: true,
-      active: accordion.__opts.activeElem ? accordion.__opts.activeElem : false,
-      activate: function (e, ui) {
-        if(accordion.__opts.onActivate) accordion.__opts.onActivate(e, ui, accordion);
-      }
+    // TODO: these should be retrieved from Vortex config/properties somehow
+    var rootUrl = "/vrtx/__vrtx/static-resources";
+    var jQueryUiVersion = "1.10.3";
+    
+    var futureUi = $.Deferred();
+    if (typeof $.ui === "undefined") {
+      $.getScript(rootUrl + "/jquery/plugins/ui/jquery-ui-" + jQueryUiVersion + ".custom/js/jquery-ui-" + jQueryUiVersion + ".custom.min.js", function () {
+        futureUi.resolve();
+      });
+    } else {
+      futureUi.resolve();
+    }
+    $.when(futureUi).done(function() {
+      accordion.destroy(); // Destroy if already exists
+      accordion.__opts.elem.accordion({
+        header: accordion.__opts.headerSelector,
+        heightStyle: "content",
+        collapsible: true,
+        active: accordion.__opts.activeElem ? accordion.__opts.activeElem : false,
+        activate: function (e, ui) {
+          if(accordion.__opts.onActivate) accordion.__opts.onActivate(e, ui, accordion);
+        }
+      });
     });
   },
   destroy: function() {

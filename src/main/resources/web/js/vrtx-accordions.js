@@ -5,8 +5,6 @@
  *  
  *  * Requires Dejavu OOP library
  *  * Requires but Lazy-loads jQuery UI library (if not defined) on open
- *  
- *  TODO: add function for adding header populators in elem
  */
 
 var VrtxAccordionInterface = dejavu.Interface.declare({

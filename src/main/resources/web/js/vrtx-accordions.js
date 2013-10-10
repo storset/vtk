@@ -37,7 +37,7 @@ var VrtxAccordion = dejavu.Class.declare({
   },
   create: function() {
     var accordion = this;
-    // TODO: these should be retrieved from Vortex config/properties somehow
+    // TODO: rootUrl and jQueryUiVersion should be retrieved from Vortex config/properties somehow
     var rootUrl = "/vrtx/__vrtx/static-resources";
     var jQueryUiVersion = "1.10.3";
     

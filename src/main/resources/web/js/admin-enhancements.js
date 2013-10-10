@@ -416,7 +416,7 @@ VrtxAdmin.prototype.initGlobalDialogs = function initGlobalDialogs() {
           requiresDatepicker: true,
           onOpen: function() {
             $(".ui-dialog-buttonpane").hide();
-            // TODO: these should be retrieved from Vortex config/properties somehow
+            // TODO: rootUrl and jQueryUiVersion should be retrieved from Vortex config/properties somehow
             var rootUrl = "/vrtx/__vrtx/static-resources";
             var futureDatepicker = (typeof VrtxDatepicker === "undefined") ? $.getScript(rootUrl + "/js/datepicker/vrtx-datepicker.js") : $.Deferred().resolve();
             $.when(futureDatepicker).done(function() {
@@ -950,7 +950,7 @@ var VrtxTree = dejavu.Class.declare({
     tree.__opts = opts;
     tree.__opts.pathNum = 0;
     
-    // TODO: these should be retrieved from Vortex config/properties somehow
+    // TODO: rootUrl and jQueryUiVersion should be retrieved from Vortex config/properties somehow
     var rootUrl = "/vrtx/__vrtx/static-resources";
     var jQueryUiVersion = "1.10.3";
     
@@ -2221,7 +2221,7 @@ function ajaxSave() {
     }
   }
   
-  // TODO: these should be retrieved from Vortex config/properties somehow
+  // TODO: rootUrl and jQueryUiVersion should be retrieved from Vortex config/properties somehow
   var rootUrl = "/vrtx/__vrtx/static-resources";
   var futureFormAjax = $.Deferred();
   if (typeof $.fn.ajaxSubmit !== "function") {

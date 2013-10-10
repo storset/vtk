@@ -49,7 +49,7 @@ var VrtxAccordion = dejavu.Class.declare({
   },
   updateHeader: function(elem, isJson, init) {
     
-    var emptyCheckAND = function(elm) { // XXX: Make more general - assumption inputs
+    var findMultipleForContentMatch = function(elm) { // XXX: Make more general - assumption inputs
       var checkAND = elm.find(".header-empty-check-and");
       var i = checkAND.length;
       if(i > 0) {
@@ -64,14 +64,14 @@ var VrtxAccordion = dejavu.Class.declare({
             }
           }
           if(allOfThem) { // Find 1 with all values - return !empty
-            return false;
+            return true;
           }
         }
       }
-      return true;
+      return false;
     };
     
-    var emptyCheckOR = function(elm) { // XXX: Make more general - assumption CK and single
+    var findSingleForContentMatch = function(elm) { // XXX: Make more general - assumption CK and single
       var checkOR = elm.find(".header-empty-check-or textarea");
       var i = checkOR.length;
       if(i > 0) {
@@ -88,15 +88,15 @@ var VrtxAccordion = dejavu.Class.declare({
           }
         }
         if(oneOfThem) { // Find 1 with one value - return !empty
-          return false;
+          return true;
         }
       }
-      return true;
+      return false;
     };
     
     var noContentOrNoTitle = function() {
       var lang = (vrtxAdmin !== "undefined") ? vrtxAdmin.lang : $("body").attr("lang");
-      if(!emptyCheckAND(elm) || !emptyCheckOR(elm)) {
+      if(findMultipleForContentMatch(elm) || findSingleForContentMatch(elm)) {
         return (lang !== "en") ? "Ingen tittel" : "No title"; 
       } else {
         return (lang !== "en") ? "Intet innhold" : "No content";  

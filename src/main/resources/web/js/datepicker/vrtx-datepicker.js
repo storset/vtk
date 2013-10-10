@@ -22,16 +22,10 @@ var VrtxDatepicker = dejavu.Class.declare({
     timeDate: "date"
   },
   __opts: {},
-  initialize: function (opts) { // language, selector
-    this.__opts = opts;
+  initialize: function (opts) {
     var datepick = this;
-    
-    if(typeof opts.selector !== "undefined") {
-      var contents = $(opts.selector);
-    } else {
-      var contents = $(this.$static.contentsDefaultSelector);
-    }
-    this.__opts.contents = contents;
+    datepick.__opts = opts;
+    datepick.__opts.contents = $(opts.selector || this.$static.contentsDefaultSelector);
     
     // TODO: these should be retrieved from Vortex config/properties somehow
     var rootUrl = "/vrtx/__vrtx/static-resources";
@@ -55,7 +49,7 @@ var VrtxDatepicker = dejavu.Class.declare({
     }
     $.when(futureUi, futureDatepickerLang).done(function() {
       $.datepicker.setDefaults($.datepicker.regional[opts.language]);
-      datepick.initFields(contents.find(".date"));
+      datepick.initFields(datepick.__opts.contents.find(".date"));
       datepick.initTimeHelp();
       datepick.initDefaultEndDates();
       if(opts.after) opts.after();

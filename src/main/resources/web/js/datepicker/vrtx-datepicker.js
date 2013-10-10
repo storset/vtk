@@ -123,8 +123,8 @@ var VrtxDatepicker = dejavu.Class.declare({
     var hhVal = hh.val();
     var mmVal = mm.val();
     if(hhVal.length || mmVal.length) {
-      var newHhVal = this.timeHelp2(hhVal, 23);
-      var newMmVal = this.timeHelp2(mmVal, 59);
+      var newHhVal = this.timeRangeHelp(hhVal, 23);
+      var newMmVal = this.timeRangeHelp(mmVal, 59);
       if((newHhVal == "00" || newHhVal == "0") && (newMmVal == "00" || newMmVal == "0")) { // If all zeroes => remove time
         hh.val("");
         mm.val("");
@@ -134,7 +134,7 @@ var VrtxDatepicker = dejavu.Class.declare({
       }
     }
   },
-  timeHelp2: function(val, max) { /* XXX: better name */
+  timeRangeHelp: function(val, max) { /* XXX: better name */
     var newVal = parseInt(val, 10);
     if(isNaN(newVal) || newVal < 0) {
       newVal = "00";
@@ -195,9 +195,7 @@ var VrtxDatepicker = dejavu.Class.declare({
           }
         }
       }
-    
       dateFields[i].value = savedVal;
-    
     }
   }
 });

@@ -866,7 +866,7 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
 };
 
 /* 
- * ation
+ * VrtxAnimation
  *
  */
  

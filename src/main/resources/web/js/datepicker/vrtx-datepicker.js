@@ -65,7 +65,7 @@ var VrtxDatepicker = dejavu.Class.declare({
     $.when(futureUi, futureDatepickerLang).done(function() {
       $.datepicker.setDefaults($.datepicker.regional[opts.language]);
       datepick.initFields(datepick.__opts.contents.find(".date"));
-      datepick.initTimeHelp();
+      datepick.__initTimeHelp();
       datepick.__initDefaultEndDates();
       if(opts.after) opts.after();
     });

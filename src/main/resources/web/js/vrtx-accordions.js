@@ -19,7 +19,9 @@ var VrtxAccordion = dejavu.Class.declare({
     headerMultipleCheckClass: ".header-empty-check-and",
     headerSingleCheckClass: ".header-empty-check-or",
     headerPopulatorsClass: ".header-populators",
-    headerPopulatorsFallbackClass: ".header-fallback-populator"
+    headerPopulatorsFallbackClass: ".header-fallback-populator",
+    headerRegexRemoveMarkup: /(<([^>]+)>|[\t\r]+)/ig,
+    headerEllipsisStart: 30
   },
   __opts: {},
   initialize: function (opts) {
@@ -115,11 +117,11 @@ var VrtxAccordion = dejavu.Class.declare({
             str = field.val(); // Get input text
           }
           if (field.is("textarea")) { // Remove markup and tabs
-            str = $.trim(str.replace(/(<([^>]+)>|[\t\r]+)/ig, ""));
+            str = $.trim(str.replace(this.$static.headerRegexRemoveMarkup, ""));
           }
           if (typeof str !== "undefined") {
-            if (str.length > 30) {
-              str = str.substring(0, 30) + "...";
+            if (str.length > this.$static.headerEllipsisStart) {
+              str = str.substring(0, this.$static.headerEllipsisStart) + "...";
             } else if (!str.length) {
               str = this.__headerCheckNoContentOrNoTitle(elm);
             }

@@ -17,9 +17,14 @@ var VrtxDatepicker = dejavu.Class.declare({
   $implements: [VrtxDatepickerInterface],
   $constants: {
     contentsDefaultSelector: "#contents",
-    timeHours: "hours",
+    timeDate: "date",
+    timeHours: "hours",  
     timeMinutes: "minutes",
-    timeDate: "date"
+    timeMaxLengths: {
+      date: 10,
+      hours: 2,
+      minutes: 2
+    }
   },
   __opts: {},
   initialize: function (opts) {
@@ -78,9 +83,15 @@ var VrtxDatepicker = dejavu.Class.declare({
       date = new String(elem[0].value).split(" ");
     }
 
-    var dateField = "<div class='vrtx-textfield vrtx-" + this.$static.timeDate + "'><input type='text' maxlength='10' size='8' id='" + name + "-" + this.$static.timeDate + "' value='" + date[0] + "' /></div>";
-    var hoursField = "<div class='vrtx-textfield vrtx-" + this.$static.timeHours + "'><input type='text' maxlength='2' size='1' id='" + name + "-" + this.$static.timeHours + "' value='" + hours + "' /></div>";
-    var minutesField = "<div class='vrtx-textfield vrtx-" + this.$static.timeMinutes + "'><input type='text' maxlength='2' size='1' id='" + name + "-" + this.$static.timeMinutes + "' value='" + minutes + "' /></div>";
+    var dateField = "<div class='vrtx-textfield vrtx-" + this.$static.timeDate + "'>"
+                  +   "<input type='text' maxlength='" + this.$static.timeMaxLengths.date + "' size='8' id='" + name + "-" + this.$static.timeDate + "' value='" + date[0] + "' />"
+                  + "</div>";
+    var hoursField = "<div class='vrtx-textfield vrtx-" + this.$static.timeHours + "'>"
+                     + "<input type='text' maxlength='" + this.$static.timeMaxLengths.hours + "' size='1' id='" + name + "-" + this.$static.timeHours + "' value='" + hours + "' />"
+                   + "</div>";
+    var minutesField = "<div class='vrtx-textfield vrtx-" + this.$static.timeMinutes + "'>"
+                     +   "<input type='text' maxlength='" + this.$static.timeMaxLengths.minutes + "' size='1' id='" + name + "-" + this.$static.timeMinutes + "' value='" + minutes + "' />"
+                     + "</div>";
     elem.parent().hide();
     elem.parent().after(dateField + hoursField + "<span class='vrtx-time-seperator'>:</span>" + minutesField);
     $("#" + fieldName + "-" + this.$static.timeDate).datepicker({

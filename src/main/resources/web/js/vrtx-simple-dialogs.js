@@ -20,6 +20,8 @@ var VrtxSimpleDialogInterface = dejavu.Interface.declare({
 var AbstractVrtxSimpleDialog = dejavu.AbstractClass.declare({
   $name: "AbstractVrtxSimpleDialog",        // Meta-attribute useful for debugging
   $implements: [VrtxSimpleDialogInterface],
+  __opts: {},
+  __dialogOpts: {},
   initialize: function(opts) {              // Constructor
       this.__opts = opts;
       this.__addDOM();
@@ -44,8 +46,6 @@ var AbstractVrtxSimpleDialog = dejavu.AbstractClass.declare({
                              };
       this.__dialogOpts = dialogOpts;
   },
-  __opts: {},
-  __dialogOpts: {},
   __generateOkCancel: function() {
     var buttons = {};
     if (this.__opts.hasOk) {

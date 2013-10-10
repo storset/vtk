@@ -866,7 +866,7 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
 };
 
 /* 
- * VrtxAnimation
+ * ation
  *
  */
  
@@ -883,10 +883,10 @@ var VrtxAnimationInterface = dejavu.Interface.declare({
 var VrtxAnimation = dejavu.Class.declare({
   $name: "VrtxAnimation",
   $implements: [VrtxAnimationInterface],
+  __opts: {},
   initialize: function(opts) {
     this.__opts = opts;
   },
-  __opts: {},
   __prepare: function() {
     if(!this.__opts.outerWrapperElem.hasClass("overflow-hidden")) {
       this.__opts.outerWrapperElem.addClass("overflow-hidden");
@@ -935,6 +935,7 @@ var VrtxTree = dejavu.Class.declare({
     leafLoadingClass: "loading-tree-node",
     leafSelector: "> .hitarea" // From closest li
   },
+  __opts: {},
   initialize: function(opts) {
     var tree = this;
     tree.__opts = opts;
@@ -948,7 +949,6 @@ var VrtxTree = dejavu.Class.declare({
       }
     });
   },
-  __opts: {},
   __openLeaf: function() {
     var tree = this;
     var checkLeafAvailable = setInterval(function () {

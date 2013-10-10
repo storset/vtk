@@ -5,7 +5,6 @@
  *  
  *  * Requires Dejavu OOP library
  *  
- *  TODO: generalize more function updateHeader()
  *  TODO: add function for adding header populators in elem
  */
 
@@ -16,6 +15,12 @@ var VrtxAccordionInterface = dejavu.Interface.declare({
 var VrtxAccordion = dejavu.Class.declare({
   $name: "VrtxAccordion",
   $implements: [VrtxAccordionInterface],
+  $constants: {
+    headerMultipleCheckClass: ".header-empty-check-and",
+    headerSingleCheckClass: ".header-empty-check-or",
+    headerPopulatorsClass: ".header-populators",
+    headerPopulatorsFallbackClass: ".header-fallback-populator"
+  },
   __opts: {},
   initialize: function (opts) {
     this.__opts = opts;
@@ -48,17 +53,25 @@ var VrtxAccordion = dejavu.Class.declare({
     }
   },
   updateHeader: function(elem, isJson, init) {
+    var tree = this;
     
-    var findMultipleForContentMatch = function(elm) { // XXX: Make more general - assumption inputs
-      var checkAND = elm.find(".header-empty-check-and");
-      var i = checkAND.length;
+    var findMultipleForContentMatch = function(elm) {
+      var containers = elm.find(tree.$static.headerMultipleCheckClass);
+      var i = containers.length;
       if(i > 0) {
         for(;i--;) {
-          var inputs = $(checkAND[i]).find("input[type='text']");
+          var inputs = $(containers[i]).find("input[type='text'], textarea");
           var j = inputs.length;
           var allOfThem = true;
           for(;j--;) {
-            if(inputs[j].value === "") {
+            var inputId = inputs[j].id;
+            var str = "";
+            if (isCkEditor(inputId)) { // Check if CK
+              str = getCkValue(inputId); // Get CK content
+            } else {
+              str = inputs[j].value; // Get input text
+            }
+            if(str === "") {
               allOfThem = false;
               break;
             }
@@ -71,16 +84,18 @@ var VrtxAccordion = dejavu.Class.declare({
       return false;
     };
     
-    var findSingleForContentMatch = function(elm) { // XXX: Make more general - assumption CK and single
-      var checkOR = elm.find(".header-empty-check-or textarea");
-      var i = checkOR.length;
+    var findSingleForContentMatch = function(elm) {
+      var inputs = elm.find(tree.$static.headerSingleCheckClass + " input[type='text'], " + tree.$static.headerSingleCheckClass + " textarea");
+      var i = inputs.length;
       if(i > 0) {
         var oneOfThem = false;
         for(;i--;) {
-          var inputId = checkOR[i].id;
+          var inputId = inputs[i].id;
           var str = "";
           if (isCkEditor(inputId)) { // Check if CK
             str = getCkValue(inputId); // Get CK content
+          } else {
+            str = inputs[i].value; // Get input text
           }
           if(str !== "") {
             oneOfThem = true;
@@ -104,10 +119,11 @@ var VrtxAccordion = dejavu.Class.declare({
     };
 
     if (typeof elem.closest !== "function") elem = $(elem);
-    var elm = isJson ? elem.closest(".vrtx-json-element") : elem.closest(".vrtx-grouped");
-    if (elm.length) { // Prime header populators
+    var elm = isJson ? elem.closest(".vrtx-json-element") 
+                     : elem.closest(".vrtx-grouped"); // XXX: extract
+    if (elm.length) { // Header populators
       var str = "";
-      var fields = elm.find(".header-populators");
+      var fields = elm.find(tree.$static.headerPopulatorsClass);
       if (!fields.length) return;
       for (var i = 0, len = fields.length; i < len; i++) {
         var val = fields[i].value;
@@ -115,13 +131,13 @@ var VrtxAccordion = dejavu.Class.declare({
         str += (str.length) ? ", " + val : val;
       }
       if (!str.length) { // Fallback header populator
-        var field = elm.find(".header-fallback-populator");
+        var field = elm.find(tree.$static.headerPopulatorsFallbackClass);
         if (field.length) {
           var fieldId = field.attr("id");
           if (isCkEditor(fieldId)) { // Check if CK
             str = getCkValue(fieldId); // Get CK content
           } else {
-            str = field.val();
+            str = field.val(); // Get input text
           }
           if (field.is("textarea")) { // Remove markup and tabs
             str = $.trim(str.replace(/(<([^>]+)>|[\t\r]+)/ig, ""));

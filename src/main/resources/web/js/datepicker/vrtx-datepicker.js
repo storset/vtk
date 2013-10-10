@@ -24,6 +24,7 @@ var VrtxDatepicker = dejavu.Class.declare({
     } else {
       var contents = $("#contents");
     }
+    this.__opts.contents = contents;
     
     // i18n (default english)
     if (opts.language == 'no') {
@@ -46,17 +47,7 @@ var VrtxDatepicker = dejavu.Class.declare({
       datepick.timeHelp(hh, mm);
     });
     
-    // Specific for start and end date
-    var startDateElm = contents.find("#start-date-date");
-    var endDateElm = contents.find("#end-date-date");
-    if (startDateElm.length && endDateElm.length) {
-      if (startDateElm.datepicker('getDate') != null) {
-        datepick.setDefaultEndDate(startDateElm, endDateElm);
-      }
-      contents.on("change", "#start-date-date, #end-date-date", function () {
-        datepick.setDefaultEndDate(startDateElm, endDateElm);
-      }); 
-    }
+    datepick.initDefaultEndDates();
     
     if(opts.after) opts.after();
   },
@@ -108,6 +99,20 @@ var VrtxDatepicker = dejavu.Class.declare({
         return result;
       }
     });
+  },
+  initDefaultEndDates: function() {
+    var datepick = this;
+    
+    var startDateElm = this.__opts.contents.find("#start-date-date");
+    var endDateElm = this.__opts.contents.find("#end-date-date");
+    if (startDateElm.length && endDateElm.length) {
+      if (startDateElm.datepicker('getDate') != null) {
+        datepick.setDefaultEndDate(startDateElm, endDateElm);
+      }
+      this.__opts.contents.on("change", "#start-date-date, #end-date-date", function () {
+        datepick.setDefaultEndDate(startDateElm, endDateElm);
+      }); 
+    }
   },
   setDefaultEndDate: function(startDateElm, endDateElm) {
     var endDate = endDateElm.val();

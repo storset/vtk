@@ -52,18 +52,15 @@ var VrtxDatepicker = dejavu.Class.declare({
     // Specific for start and end date
     var startDateElm = contents.find("#start-date-date");
     var endDateElm = contents.find("#end-date-date");
-    
-    if (!startDateElm.length || !endDateElm.length) {
-      if(opts.after) opts.after();
-      return;
+    if (startDateElm.length && endDateElm.length) {
+      if (startDateElm.datepicker('getDate') != null) {
+        datepick.setDefaultEndDate(startDateElm, endDateElm);
+      }
+      contents.on("change", "#start-date-date, #end-date-date", function () {
+        datepick.setDefaultEndDate(startDateElm, endDateElm);
+      }); 
     }
-    if (startDateElm.datepicker('getDate') != null) {
-      datepick.setDefaultEndDate(startDateElm, endDateElm);
-    }
     
-    contents.on("change", "#start-date-date, #end-date-date", function () {
-      datepick.setDefaultEndDate(startDateElm, endDateElm);
-    });
     if(opts.after) opts.after();
   },
   displayDateAsMultipleInputFields: function(name, selector) {

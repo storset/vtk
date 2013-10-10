@@ -53,6 +53,13 @@ import org.vortikal.repository.search.Search;
 import org.vortikal.repository.search.query.security.QueryAuthorizationFilterFactory;
 import org.vortikal.security.PrincipalFactory;
 
+/*
+ *  TODO: Review this test. It is (at least to me) a bit unclear exactly what we are testing, so 
+ *  I believe we need to document this more throughly, and make it perfectly clear what is suppose 
+ *  to happen at each step in each test...
+ * 
+ */
+
 public class LuceneQueryBuilderImplTest {
 
     final String dummyToken = "dummy_token";
@@ -88,16 +95,22 @@ public class LuceneQueryBuilderImplTest {
 
     @Test
     public void testGetSearchFilterDefaultExcludesFalseNoAcl() {
-
-        this.assertGetSearchFilter(null, new Search(), null);
+        
+        Search search = new Search();
+        search.setUseDefaultExcludes(false);
+        search.setPreviewUnpublished(true);
+        this.assertGetSearchFilter(null, search, null);
 
     }
 
     @Test
     public void testGetSearchFilterDefaultExcludesFalseAndAcl() {
-
+        
+        Search search = new Search();
+        search.setUseDefaultExcludes(false);
+        search.setPreviewUnpublished(true);
         Filter expected = dummyAclFilter;
-        this.assertGetSearchFilter(expected, new Search(), dummyAclFilter);
+        this.assertGetSearchFilter(expected, search, dummyAclFilter);
 
     }
 
@@ -106,19 +119,22 @@ public class LuceneQueryBuilderImplTest {
 
         Search search = new Search();
         search.setUseDefaultExcludes(true);
+        search.setPreviewUnpublished(false);
         Filter expected = luceneQueryBuilder.buildDefaultExcludesFilter();
+        expected = luceneQueryBuilder.addUnpublishedCollectionFilter(expected);
         this.assertGetSearchFilter(expected, search, null);
 
     }
 
     @Test
     public void testGetSearchFilterDefaultExcludesAndAcl() {
-        
+
         Search search = new Search();
         search.setUseDefaultExcludes(true);
+        search.setPreviewUnpublished(false);
         BooleanFilter expected = luceneQueryBuilder.buildDefaultExcludesFilter();
         expected.add(dummyAclFilter, BooleanClause.Occur.MUST);
-
+        expected = luceneQueryBuilder.addUnpublishedCollectionFilter(expected);
         this.assertGetSearchFilter(expected, search, dummyAclFilter);
 
     }
@@ -136,11 +152,14 @@ public class LuceneQueryBuilderImplTest {
 
         // Nothing more to do, requested configuration yields no filter
         if (!search.isUseDefaultExcludes() && expectedReturnAclQuery == null) {
-            assertNull("Filter is supposed to be NULL", actual);
+            assertNull(
+                    "Filter 'actual' is supposed to be NULL when useDafaultExcludes=" + search.isUseDefaultExcludes(),
+                    actual);
             return;
         }
 
-        assertNotNull("Filter is NOT supposed to be NULL", actual);
+        assertNotNull("Filter 'actual' is NOT supposed to be NULL", actual);
+        assertNotNull("Filter 'expected' is NOT supposed to be NULL", expected);
         assertTrue("Filter is not as expected", expected.equals(actual));
 
     }

@@ -722,8 +722,9 @@
 -->
 
 <#-- FIXME: Only works for CreateDocument -->
-<#macro formRadioButtons path options pre post descriptions=[] titles=[] cTN=false attributes="">
+<#macro formRadioButtons path options pre post descriptions=[] titles=[] cTN=false attributes="" splitAfterFirstTitle="">
   <@spring.bind path/>
+  <#local c = 0 />
   <#list options?keys as key>
     ${pre}
     <input type="radio" name="${spring.status.expression}" id="${key}" value="${key}"
@@ -734,5 +735,9 @@
       <div class="radioDescription" id="${key}_description">${descriptions[key]}</div>
     </#if>
     ${post}
+    <#if c = 0 && splitAfterFirstTitle != "">
+      ${splitAfterFirstTitle}
+    </#if>
+    <#local c = c + 1 />
   </#list>
 </#macro>

@@ -14,26 +14,26 @@
  *  ToC: 
  *
  *  1.  Config
- *  2.  DOM is fully loaded
- *  3.  DOM is ready
- *  4.  General interaction / dialogs
- *  5.  Dropdowns
- *  6.  Create service
- *  7.  File upload service
- *  8.  Collectionlisting
- *  9.  Editor
- *  10. Permissions
- *  11. Versioning
- *  12. Async functions
- *  13. Async helper functions and AJAX server façade
- *  14. CK browse server integration
- *  15. Utils
- *  16. Override JavaScript / jQuery
+ *  2.  DOM is ready
+ *  3.  DOM is fully loaded
+ *  4.  General / setup interactions
+ *  5.  Create / File upload
+ *  6.  Collectionlisting
+ *  7.  Editor
+ *  8.  Permissions
+ *  9.  Versioning
+ *  10. Async functions
+ *  11. Async helper functions and AJAX server façade
+ *  11. CK browse server integration
+ *  13. Utils
+ *  14. Override JavaScript / jQuery
  *
  */
+
 /*-------------------------------------------------------------------*\
     1. Config
 \*-------------------------------------------------------------------*/
+
 var startLoadTime = +new Date();
 
 /**
@@ -132,13 +132,45 @@ function VrtxAdmin() {
 
 var vrtxAdmin = new VrtxAdmin();
 
+
 /*-------------------------------------------------------------------*\
-    2. DOM is fully loaded ("load"-event) 
+    2. DOM is ready
+       readyState === "complete" || "DOMContentLoaded"-event (++)
+\*-------------------------------------------------------------------*/
+
+vrtxAdmin._$(document).ready(function () {
+  var startReadyTime = +new Date(),
+    vrtxAdm = vrtxAdmin,
+    _$ = vrtxAdm._$;
+    
+  var bodyId = vrtxAdm.cachedBody.attr("id");
+  bodyId = (typeof bodyId !== "undefined") ? bodyId : "";
+  vrtxAdm.bodyId = bodyId;
+
+  vrtxAdm.cacheDOMNodesForReuse();
+  vrtxAdm.cachedBody.addClass("js");
+  if (vrtxAdm.runReadyLoad === false) return; // XXX: return if should not run all of ready() code
+
+  vrtxAdm.miscAdjustments();
+  vrtxAdm.initDropdowns();
+  vrtxAdm.initTooltips();
+  vrtxAdm.initResourceMenus();
+  vrtxAdm.initGlobalDialogs();
+  vrtxAdm.initDomains();
+  vrtxAdm.initScrollBreadcrumbs();
+
+  vrtxAdm.log({
+    msg: "Document.ready() in " + (+new Date() - startReadyTime) + "ms."
+  });
+});
+
+
+/*-------------------------------------------------------------------*\
+    3. DOM is fully loaded ("load"-event) 
 \*-------------------------------------------------------------------*/
 
 vrtxAdmin._$(window).load(function () {
   var vrtxAdm = vrtxAdmin;
-
   if (vrtxAdm.runReadyLoad === false) return; // XXX: return if should not run load() code
 
   vrtxAdm.log({
@@ -148,27 +180,13 @@ vrtxAdmin._$(window).load(function () {
 
 
 /*-------------------------------------------------------------------*\
-    3. DOM is ready
-       readyState === "complete" || "DOMContentLoaded"-event (++)
+    4. General / setup interactions
 \*-------------------------------------------------------------------*/
 
-vrtxAdmin._$(document).ready(function () {
-  var startReadyTime = +new Date(),
-    vrtxAdm = vrtxAdmin;
-
-  vrtxAdm.cacheDOMNodesForReuse();
-
-  vrtxAdm.cachedBody.addClass("js");
-
-  if (vrtxAdm.runReadyLoad === false) return; // XXX: return if should not run all of ready() code
-
-  vrtxAdm.initFunctionalityDocReady();
-  vrtxAdm.scrollBreadcrumbs("init");
-
-  vrtxAdm.log({
-    msg: "Document.ready() in " + (+new Date() - startReadyTime) + "ms."
-  });
-});
+/*
+ * Cache DOM nodes for reuse
+ *
+ */
 
 VrtxAdmin.prototype.cacheDOMNodesForReuse = function cacheDOMNodesForReuse() {
   var vrtxAdm = this,
@@ -184,42 +202,13 @@ VrtxAdmin.prototype.cacheDOMNodesForReuse = function cacheDOMNodesForReuse() {
   vrtxAdm.cachedActiveTab = vrtxAdm.cachedAppContent.find("#active-tab");
 };
 
-// TODO: these function needs a lot of separation of concerns
-VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocReady() {
-  var vrtxAdm = this,
-    _$ = vrtxAdm._$;
-
-  var bodyId = vrtxAdm.cachedBody.attr("id");
-  bodyId = (typeof bodyId !== "undefined") ? bodyId : "";
-  vrtxAdm.bodyId = bodyId;
-
-  // Remove active tab if it has no children
-  if (!vrtxAdm.cachedActiveTab.find(" > *").length) {
-    vrtxAdm.cachedActiveTab.remove();
-  }
-
-  // Remove active tab-message if it is empty
-  var activeTabMsg = vrtxAdm.cachedActiveTab.find(" > .tabMessage");
-  if (!activeTabMsg.text().length) {
-    activeTabMsg.remove();
-  }
-  
-  interceptEnterKey();
-
-  vrtxAdm.logoutButtonAsLink();
-  vrtxAdm.adjustResourceTitle();
-  vrtxAdm.initDropdowns();
-
-  // Ignore all AJAX errors when user navigate away (abort)
-  if(typeof unsavedChangesInEditorMessage !== "function") {
-    var ignoreAjaxErrorOnBeforeUnload = function() {
-      vrtxAdm.ignoreAjaxErrors = true;
-    };
-    window.onbeforeunload = ignoreAjaxErrorOnBeforeUnload;    
-  }
-
-  // Tooltips
-  $("#title-container").vortexTips("abbr:not(.delayed)", {
+/*
+ * Tooltips init
+ *
+ */
+ 
+VrtxAdmin.prototype.initTooltips = function initTooltips() {
+   $("#title-container").vortexTips("abbr:not(.delayed)", {
     appendTo: "#title-container",
     containerWidth: 200,
     xOffset: 20,
@@ -238,8 +227,18 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
     xOffset: 20,
     yOffset: -30
   });
+}
 
-  // Resource menus
+/*
+ * Resource menus init
+ *
+ */
+ 
+VrtxAdmin.prototype.initResourceMenus = function initResourceMenus() {
+  var vrtxAdm = this,
+      bodyId = vrtxAdm.bodyId;
+      _$ = vrtxAdm._$;
+
   var resourceMenuLeftServices = ["renameService", "deleteResourceService", "manage\\.createArchiveService", "manage\\.expandArchiveService"];
   for (var i = resourceMenuLeftServices.length; i--;) {
     vrtxAdm.getFormAsync({
@@ -314,11 +313,17 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
     },
     post: (bodyId !== "vrtx-editor" && bodyId !== "vrtx-edit-plaintext" && bodyId !== "")
   });
+};
+ 
+ /*
+  * Global dialogs init
+  *
+  */
   
-  /*
-   * Global Async dialogs
-   * 
-   */
+VrtxAdmin.prototype.initGlobalDialogs = function initGlobalDialogs() {
+  var vrtxAdm = this,
+      bodyId = vrtxAdm.bodyId;
+      _$ = vrtxAdm._$;
 
   // Create folder chooser in global menu
   vrtxAdm.cachedDoc.on("click", "#global-menu-create a, #vrtx-report-view-other", function (e) {
@@ -326,6 +331,10 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
     var id = link.id + "-content";
     vrtxAdm.serverFacade.getHtml(link.href, {
       success: function (results, status, resp) {
+        var dialogManageCreate = _$("#" + id);
+        if(dialogManageCreate.length) {
+          dialogManageCreate.remove();
+        }
         vrtxAdm.cachedBody.append("<div id='" + id + "'>" + _$(_$.parseHTML(results)).find("#vrtx-manage-create-content").html() + "</div>");
         dialogManageCreate = _$("#" + id);
         dialogManageCreate.hide();
@@ -334,25 +343,52 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
           html: dialogManageCreate.html(),
           title: link.title,
           width: 600,
-          height: 395
-        });
-        // Retrieve Treeview JS if non-existing with Future-object for when to run the initialization
-        var treeViewReady = $.Deferred();
-        if(typeof $.fn.treeview !== "function") {
-          vrtxAdm.loadScript(location.protocol + '//' + location.host + '/vrtx/__vrtx/static-resources/jquery/plugins/jquery.treeview.js', function () {
-            vrtxAdm.loadScript(location.protocol + '//' + location.host + '/vrtx/__vrtx/static-resources/jquery/plugins/jquery.treeview.async.js', function () {
-              vrtxAdm.loadScript(location.protocol + '//' + location.host + '/vrtx/__vrtx/static-resources/jquery/plugins/jquery.scrollTo.min.js', function () {
-                treeViewReady.resolve();
-              });
+          height: 395,
+          requiresTree: true,
+          onOpen: function() {
+            var dialog = $(".ui-dialog:visible");
+            var treeElem = dialog.find(".tree-create");
+            var treeTrav = dialog.find("#vrtx-create-tree-folders").hide().text().split(",");
+            var treeType = dialog.find("#vrtx-create-tree-type").hide().text();
+            var treeAddParam = dialog.find("#vrtx-create-tree-add-param");
+
+            var service = "service=" + treeType + "-from-drop-down";
+            if(treeAddParam.length) {
+              treeAddParam = treeAddParam.hide().text();
+              service += "&" + treeAddParam;
+            }
+
+            treeElem.on("click", "a", function (e) { // Don't want click on links
+              e.preventDefault();
             });
-          });
-        } else {
-          treeViewReady.resolve();
-        }
-        $.when(treeViewReady).done(function() {
-          d.open();
-          initializeTree();
+
+            dialog.on("click", ".tip a", function (e) { // Override jQuery UI prevention
+              location.href = this.href;
+            });
+
+            treeElem.vortexTips("li span.folder", {
+              appendTo: ".vrtx-create-tree",
+              containerWidth: 80,
+              animOutPreDelay: 4000,
+              xOffset: 10,
+              yOffset: -8,
+              extra: true
+            });
+            
+            var t = new VrtxTree({
+              service: service,
+              elem: treeElem,
+              trav: treeTrav,
+              afterTrav: function(link) {
+                linkTriggeredMouseEnter = link;
+                linkTriggeredMouseEnterTipText = linkTriggeredMouseEnter.attr('title');
+                link.parent().trigger("mouseenter");
+              },
+              scrollToContent: ".ui-dialog:visible .ui-dialog-content"
+            });
+          }
         });
+        d.open();
       }
     });
     e.stopPropagation();
@@ -366,39 +402,22 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
     var id = link.id + "-content";
     vrtxAdm.serverFacade.getHtml(link.href + "&4", {
       success: function (results, status, resp) {
+        var dialogAPS = _$("#" + id);
+        if(dialogAPS.length) {
+          dialogAPS.remove();
+        }
         vrtxAdm.cachedBody.append("<div id='" + id + "'>" + _$(_$.parseHTML(results)).find("#vrtx-advanced-publish-settings-dialog").html() + "</div>");
         dialogAPS = _$("#" + id);
-        dialogAPS.hide();
-
-        // Retrieve Datepicker JS if non-existing with Future-object for when to run the initialization
-        var datePickerReady = $.Deferred();
-        if(typeof initDatePicker !== "function") {
-          vrtxAdm.loadScript("/vrtx/__vrtx/static-resources/js/datepicker/datepicker-admin.js", function() {
-            if(datePickerLang === "no") {
-              vrtxAdm.loadScript("/vrtx/__vrtx/static-resources/jquery/plugins/ui/jquery-ui-1.10.3.custom/js/jquery.ui.datepicker-no.js", function() {
-                datePickerReady.resolve(); 
-              });
-            } else if(datePickerLang === "nn") {
-              vrtxAdm.loadScript("/vrtx/__vrtx/static-resources/jquery/plugins/ui/jquery-ui-1.10.3.custom/js/jquery.ui.datepicker-nn.js", function() {
-                datePickerReady.resolve(); 
-              });
-            } else {
-              datePickerReady.resolve(); 
-            }
-          });
-        } else {
-          datePickerReady.resolve(); 
-        }
+        dialogAPS.hide();        
         apsD = new VrtxHtmlDialog({
           name: "advanced-publish-settings",
           html: dialogAPS.html(),
           title: dialogAPS.find("h1").text(),
-          width: 400, 
-          funcOnOpen: function() {
+          width: 400,
+          requiresDatepicker: true,
+          onOpen: function() {
             $(".ui-dialog-buttonpane").hide();
-            $.when(datePickerReady).done(function() {
-              initDatePicker(datePickerLang, "#dialog-html-advanced-publish-settings-content");
-            });
+            initDatePicker(datePickerLang, "#dialog-html-advanced-publish-settings-content");
           }
         });
         apsD.open();
@@ -437,7 +456,7 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
       vrtxAdm.completeFormAsyncPost(options);
     },
     funcComplete: function () {
-      apsD.closeDialog();
+      apsD.close();
       vrtxAdm.globalAsyncComplete();
     }
   });
@@ -458,19 +477,40 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
     var mm = dialog.find("#" + idInfix + "-minutes").val();
     return new Date(date[0], date[1], date[2], hh, mm, 0, 0);
   };
-  
-  /*
-   *  ^ Global Async dialogs 
-   *
-   */
+};
 
-  // Interactions initialization
-  vrtxAdm.collectionListingInteraction();
-  editorInteraction(bodyId, vrtxAdm, _$);
-  versioningInteraction(bodyId, vrtxAdm, _$);
+/**
+ * On global async completion
+ *
+ * @this {VrtxAdmin}
+ */
+VrtxAdmin.prototype.globalAsyncComplete = function globalAsyncComplete() {
+  var vrtxAdm = this;
+  if(vrtxAdm.bodyId === "vrtx-preview") {
+    var previewIframe = $("#previewIframe");
+    if(previewIframe.length) {
+      previewIframe[0].src = previewIframe[0].src;
+    }
+  }
+  $("#advanced-publish-settings-content").remove();
+  vrtxAdm.adjustResourceTitle();
+  vrtxAdm.initResourceTitleDropdown();
+  vrtxAdm.initPublishingDropdown();
+  vrtxAdm.updateCollectionListingInteraction();
+};
 
-  // Ajax initialization / listeners
-
+/*
+ * Domains init
+ *
+ * * is based on id of body-tag
+ *
+ */
+ 
+VrtxAdmin.prototype.initDomains = function initDomains() {
+  var vrtxAdm = this,
+      bodyId = vrtxAdm.bodyId;
+      _$ = vrtxAdm._$;
+      
   switch (bodyId) {
     case "vrtx-manage-collectionlisting":
       var tabMenuServices = ["fileUploadService", "createDocumentService", "createCollectionService"];
@@ -544,28 +584,38 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
                 }
               }
               results = _$($.parseHTML(results));
-              if (copyMoveExists !== "") { // Reverse the belt and roll out updated baggage :)
-                baggageBeltAnimFx(copyMoveExists, {
-                  reverse: true,
-                  complete: function () {
-                    copyMoveExists.remove();
-                    resourceMenuRight.html(results.find("#resourceMenuRight").html());
-                    vrtxAdm.displayInfoMsg(results.find(".infomessage").html());
-                    var resourceTitle = resourceMenuRight.closest("#resource-title");
-                    if (resourceTitle.hasClass("compact")) { // Instant compact => expanded
-                      resourceTitle.removeClass("compact");
-                    }
-                    baggageBeltAnimFx(resourceMenuRight.find(li));
-                  }
-                });
-              } else {
+              
+              var copyMoveAfter = function() {
                 resourceMenuRight.html(results.find("#resourceMenuRight").html());
                 vrtxAdm.displayInfoMsg(results.find(".infomessage").html());
                 var resourceTitle = resourceMenuRight.closest("#resource-title");
                 if (resourceTitle.hasClass("compact")) { // Instant compact => expanded
                   resourceTitle.removeClass("compact");
                 }
-                baggageBeltAnimFx(resourceMenuRight.find(li));
+              };
+              
+              if (copyMoveExists !== "") {
+                var copyMoveAnimation = new VrtxAnimation({
+                  elem: copyMoveExists,
+                  outerWrapperElem: resourceMenuRight,
+                  after: function() {
+                    copyMoveExists.remove();
+                    copyMoveAfter();
+                    copyMoveAnimation.update({
+                      elem: resourceMenuRight.find(li),
+                      outerWrapperElem: resourceMenuRight
+                    })
+                    copyMoveAnimation.rightIn();
+                  }
+                });
+                copyMoveAnimation.leftOut();
+              } else {
+                copyMoveAfter();
+                var copyMoveAnimation = new VrtxAnimation({
+                  elem: resourceMenuRight.find(li),
+                  outerWrapperElem: resourceMenuRight
+                });
+                copyMoveAnimation.rightIn();
               }
             }
           });
@@ -583,9 +633,10 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
           var dataString = form.serialize() + "&" + button.attr("name") + "=" + button.val();
           vrtxAdm.serverFacade.postHtml(url, dataString, {
             success: function (results, status, resp) {
-              baggageBeltAnimFx(li, {
-                reverse: true,
-                complete: function () {
+              var copyMoveAnimation = new VrtxAnimation({
+                elem: li,
+                outerWrapperElem: $("#resourceMenuRight"),
+                after: function() {
                   var result = _$($.parseHTML(results));
                   vrtxAdm.displayErrorMsg(result.find(".errormessage").html());
                   vrtxAdm.cachedContent.html(_$($.parseHTML(results)).find("#contents").html());
@@ -597,6 +648,7 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
                   }
                 }
               });
+              copyMoveAnimation.leftOut();
             }
           });
           e.stopPropagation();
@@ -619,6 +671,7 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
         e.stopPropagation();
         e.preventDefault();
       });
+      vrtxAdm.collectionListingInteraction();
       break;
     case "vrtx-trash-can":
       vrtxAdm.cachedContent.on("click", "input.deleteResourcePermanent", function (e) {
@@ -639,7 +692,16 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
         e.stopPropagation();
         e.preventDefault();
       });
-      
+      vrtxAdm.collectionListingInteraction();
+      break;
+    case "vrtx-editor":
+    case "vrtx-edit-plaintext":
+    case "vrtx-visual-profile":
+      editorInteraction(bodyId, vrtxAdm, _$);
+      break;
+    case "vrtx-preview":
+    case "vrtx-revisions":
+      versioningInteraction(bodyId, vrtxAdm, _$);
       break;
     case "vrtx-permissions":
       var privilegiesPermissions = ["read", "read-write", "all"];
@@ -709,7 +771,7 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
           var d = new VrtxConfirmDialog({
             msg: confirmSetInheritedPermissionsMsg,
             title: confirmSetInheritedPermissionsTitle,
-            funcOkComplete: function () {
+            onOk: function () {
               SUBMIT_SET_INHERITED_PERMISSIONS = true;
               $("#permissions\\.toggleInheritance\\.submit").trigger("click");
             }
@@ -753,7 +815,7 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
           var d = new VrtxConfirmDialog({
             msg: confirmTakeOwnershipMsg,
             title: confirmTakeOwnershipTitle,
-            funcOkComplete: function () {
+            onOk: function () {
               SUBMIT_TAKE_OWNERSHIP = true;
               _$("#vrtx-admin-ownership-form").submit();
             }
@@ -801,255 +863,118 @@ VrtxAdmin.prototype.initFunctionalityDocReady = function initFunctionalityDocRea
       // noop
       break;
   }
-
-  // Show message in IE6, IE7 and IETrident in compability mode
-  if (vrtxAdm.isIE7 || vrtxAdm.isIETridentInComp) {
-    var message = vrtxAdm.cachedAppContent.find(" > .message");
-    if (message.length) {
-      message.html(outdatedBrowserText);
-    } else {
-      vrtxAdm.cachedAppContent.prepend("<div class='infomessage'>" + outdatedBrowserText + "</div>");
-    }
-  }
 };
 
-/*-------------------------------------------------------------------*\
-    4. General interaction / dialogs
-\*-------------------------------------------------------------------*/
-
-function interceptEnterKey() {
-  vrtxAdmin.cachedAppContent.delegate("form#editor input", "keypress", function (e) {
-    if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
-      e.preventDefault(); // cancel the default browser click
-    }
-  });
-}
-
-function interceptEnterKeyAndReroute(txt, btn, cb) {
-  vrtxAdmin.cachedAppContent.delegate(txt, "keypress", function (e) {
-    if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
-      if ($(this).hasClass("blockSubmit")) { // submit/rerouting can be blocked elsewhere on textfield
-        $(this).removeClass("blockSubmit");
-      } else {
-        $(btn).click(); // click the associated button
-      }
-      if(typeof cb === "function") {
-        cb($(this));
-      }
-      e.preventDefault();
-    }
-  });
-}
-
-function baggageBeltAnimFx(elm, opts) {
-  if (typeof opts !== "object") opts = {};
-
-  var resMenuRight = $("#resourceMenuRight");
-  if(!resMenuRight.hasClass("overflow-hidden")) {
-    resMenuRight.addClass("overflow-hidden");
-  }
-  var width = elm.outerWidth(true);
-  if (opts.reverse) {
-    anim = -width;
-    easing = vrtxAdmin.transitionEasingSlideUp;
-  } else {
-    elm.css("marginLeft", -width);
-    anim = 0;
-    easing = vrtxAdmin.transitionEasingSlideDown;
-  }
-  if (opts.complete) {
-    elm.animate({
-      "marginLeft": anim + "px"
-    }, vrtxAdmin.transitionSpeed, easing, function() {
-      resMenuRight.removeClass("overflow-hidden");
-      opts.complete();
-    });
-  } else {
-    elm.animate({
-      "marginLeft": anim + "px"
-    }, vrtxAdmin.transitionSpeed, easing, function() {
-      resMenuRight.removeClass("overflow-hidden");
-    });
-  }
-}
-
-VrtxAdmin.prototype.mapShortcut = function mapShortcut(selectors, reroutedSelector) {
-  this.cachedAppContent.on("click", selectors, function (e) {
-    $(reroutedSelector).click();
-    e.stopPropagation();
-    e.preventDefault();
-  });
-};
-
-VrtxAdmin.prototype.initStickyBar = function initStickyBar(wrapperId, stickyClass, extraWidth) {
-  var vrtxAdm = vrtxAdmin,
-    _$ = vrtxAdm._$;
-
-  var wrapper = _$(wrapperId);
-  var thisWindow = _$(window);
-  if (wrapper.length && !vrtxAdm.isIPhone) { // Turn off for iPhone. 
-    var wrapperPos = wrapper.offset();
-    if (vrtxAdm.isIE8) {
-      wrapper.append("<span class='sticky-bg-ie8-below'></span>");
-    }
-    thisWindow.on("scroll", function () {
-      if (thisWindow.scrollTop() >= wrapperPos.top + 1) {
-        if (!wrapper.hasClass(stickyClass)) {
-          wrapper.addClass(stickyClass);
-          vrtxAdmin.cachedContent.css("paddingTop", wrapper.outerHeight(true) + "px");
-        }
-        wrapper.css("width", (_$("#main").outerWidth(true) - 2 + extraWidth) + "px");
-      } else {
-        if (wrapper.hasClass(stickyClass)) {
-          wrapper.removeClass(stickyClass);
-          wrapper.css("width", "auto");
-          vrtxAdmin.cachedContent.css("paddingTop", "0px");
-        }
-      }
-    });
-    thisWindow.on("resize", function () {
-      if (thisWindow.scrollTop() >= wrapperPos.top + 1) {
-        wrapper.css("width", (_$("#main").outerWidth(true) - 2 + extraWidth) + "px");
-      }
-    });
-  }
-};
-
-VrtxAdmin.prototype.destroyStickyBar = function destroyStickyBar(wrapperId, stickyClass) {
-  var _$ = this._$;
-  
-  var thisWindow = _$(window);
-  thisWindow.off("scroll");
-  thisWindow.off("resize");
-  
-  var wrapper = _$(wrapperId);
-  
-  if (wrapper.hasClass(stickyClass)) {
-    wrapper.removeClass(stickyClass);
-    wrapper.css("width", "auto");
-    vrtxAdmin.cachedContent.css("paddingTop", "0px");
-  }
-};
-
-VrtxAdmin.prototype.logoutButtonAsLink = function logoutButtonAsLink() {
-  var _$ = this._$;
-
-  var btn = _$('input#logoutAction');
-  if (!btn.length) return;
-  btn.hide();
-  btn.after('&nbsp;<a id=\"logoutAction.link\" name=\"logoutAction\" href="javascript:void(0);">' + btn.attr('value') + '</a>');
-  _$("#app-head-wrapper").on("click", '#logoutAction\\.link', function (e) {
-    btn.click();
-    e.stopPropagation();
-    e.preventDefault();
-  });
-};
-
-/**
- * On global async completion
+/* 
+ * VrtxAnimation
  *
- * @this {VrtxAdmin}
  */
-VrtxAdmin.prototype.globalAsyncComplete = function globalAsyncComplete() {
-  var vrtxAdm = this;
-  if(vrtxAdm.bodyId === "vrtx-preview") {
-    var previewIframe = $("#previewIframe");
-    if(previewIframe.length) {
-      previewIframe[0].src = previewIframe[0].src;
+ 
+var VrtxAnimationInterface = dejavu.Interface.declare({
+  $name: "VrtxAnimationInterface",
+  __opts: {},
+  __prepare: function() {},
+  __horizontalMove: function() {},
+  update: function(opts) {},
+  rightIn: function() {},
+  leftOut: function() {}
+});
+ 
+var VrtxAnimation = dejavu.Class.declare({
+  $name: "VrtxAnimation",
+  $implements: [VrtxAnimationInterface],
+  initialize: function(opts) {
+    this.__opts = opts;
+  },
+  __opts: {},
+  __prepare: function() {
+    if(!this.__opts.outerWrapperElem.hasClass("overflow-hidden")) {
+      this.__opts.outerWrapperElem.addClass("overflow-hidden");
     }
+    return this.__opts.elem.outerWidth(true);
+  },
+  __horizontalMove: function(left, easing) {
+    var animation = this;
+    animation.__opts.elem.animate({
+      "marginLeft": left + "px"
+    }, vrtxAdmin.transitionSpeed, easing, function() {
+      animation.__opts.outerWrapperElem.removeClass("overflow-hidden");
+      if(animation.__opts.after) animation.__opts.after();
+    });
+  },
+  update: function(opts) {
+    this.__opts = opts;
+  },
+  rightIn: function() {
+    var width = this.__prepare();
+    this.__opts.elem.css("marginLeft", -width);
+    this.__horizontalMove(0, vrtxAdmin.transitionEasingSlideDown);
+  },
+  leftOut: function() {
+    var width = this.__prepare();
+    this.__horizontalMove(-width, vrtxAdmin.transitionEasingSlideUp);
   }
-  $("#advanced-publish-settings-content").remove();
-  vrtxAdm.adjustResourceTitle();
-  vrtxAdm.initResourceTitleDropdown();
-  vrtxAdm.initPublishingDropdown();
-  vrtxAdm.updateCollectionListingInteraction();
-};
+});
+ 
 
-/* Create dialog tree view */
+/*
+ * VrtxTree - facade to TreeView async
+ *
+ */
 
-function initializeTree() {
-  var dialog = $(".ui-dialog:visible");
-  var treeElem = dialog.find(".tree-create");
-  var treeTrav = dialog.find("#vrtx-create-tree-folders").hide().text().split(",");
-  var treeType = dialog.find("#vrtx-create-tree-type").hide().text();
-  var treeAddParam = dialog.find("#vrtx-create-tree-add-param");
-  var pathNum = 0;
-  
-  var service = "service=" + treeType + "-from-drop-down";
-  if(treeAddParam.length) {
-    treeAddParam = treeAddParam.hide().text();
-    service += "&" + treeAddParam;
-  }
+var VrtxTreeInterface = dejavu.Interface.declare({
+  $name: "VrtxTreeInterface",
+  __opts: {},
+  __openLeaf: function() {}
+});
 
-  treeElem.treeview({
-    animated: "fast",
-    url: location.protocol + '//' + location.host + location.pathname + "?vrtx=admin&uri=&" + service + "&ts=" + (+new Date()),
-    service: service,
-    dataLoaded: function () { // AJAX success
-      var last = false;
-      if (pathNum == (treeTrav.length - 1)) {
-        last = true;
-      } 
-      traverseNode(treeElem, treeTrav[pathNum++], last);
-    }
-  });
-
-  treeElem.on("click", "a", function (e) { // Don't want click on links
-    e.preventDefault();
-  });
-
-  dialog.on("click", ".tip a", function (e) { // Override jQuery UI prevention
-    location.href = this.href;
-  });
-
-  treeElem.vortexTips("li span.folder", {
-    appendTo: ".vrtx-create-tree",
-    containerWidth: 80,
-    animOutPreDelay: 4000,
-    xOffset: 10,
-    yOffset: -8,
-    extra: true
-  });
-}
-
-function treeCreateScrollToCallback(link) {
-  linkTriggeredMouseEnter = link;
-  linkTriggeredMouseEnterTipText = linkTriggeredMouseEnter.attr('title');
-  link.parent().trigger("mouseenter");
-}
-
-function traverseNode(treeElem, treeTravNode, lastNode) {
-  var checkNodeAvailable = setInterval(function () {
-    $(".loading-tree-node").remove()
-    var link = treeElem.find("a[href$='" + treeTravNode + "']");
-    if (link.length) {
-      clearInterval(checkNodeAvailable);
-      var hit = link.closest("li").find("> .hitarea");
-      hit.click();
-      $("<span class='loading-tree-node'>" + loadingSubfolders + "</span>").insertAfter(hit.next());
-      if (lastNode) { // If last: scroll to node
-        treeElem.css("background", "none");
-        var scrollToLink = (link.position().top - 145);
-        scrollToLink = scrollToLink < 0 ? 0 : scrollToLink;
-        treeElem.fadeIn(200, function () {
-          $(".ui-dialog:visible .ui-dialog-content").scrollTo(scrollToLink, 250, {
-            easing: "swing",
-            queue: true,
-            axis: 'y',
-            complete: treeCreateScrollToCallback(link)
-          });
-        });
+var VrtxTree = dejavu.Class.declare({
+  $name: "VrtxTree",
+  $implements: [VrtxTreeInterface],
+  $constants: {
+    leafLoadingClass: "loading-tree-node",
+    leafSelector: "> .hitarea" // From closest li
+  },
+  initialize: function(opts) {
+    var tree = this;
+    tree.__opts = opts;
+    tree.__opts.pathNum = 0;
+    opts.elem.treeview({
+      animated: "fast",
+      url: location.protocol + '//' + location.host + location.pathname + "?vrtx=admin&uri=&" + opts.service + "&ts=" + (+new Date()),
+      service: opts.service,
+      dataLoaded: function () {
+        tree.__openLeaf();
       }
-    }
-  }, 20);
-}
-
-/* ^ Create dialog tree view */
-
-
-/*-------------------------------------------------------------------*\
-    5. Dropdowns XXX: etc.
-\*-------------------------------------------------------------------*/
+    });
+  },
+  __opts: {},
+  __openLeaf: function() {
+    var tree = this;
+    var checkLeafAvailable = setInterval(function () {
+      $("." + tree.$static.loadingLeafClass).remove();
+      var link = tree.__opts.elem.find("a[href$='" + tree.__opts.trav[tree.__opts.pathNum] + "']");
+      if (link.length) {
+        clearInterval(checkLeafAvailable);
+        var hit = link.closest("li").find(tree.$static.leafLoadingClass);
+        hit.click();
+        if (tree.__opts.scrollToContent && (tree.__opts.pathNum == (tree.__opts.trav.length - 1))) {
+          tree.__opts.elem.css("background", "none").fadeIn(200, function () {  // Scroll to node
+            $(tree.__opts.scrollToContent).scrollTo(Math.max(0, (link.position().top - 145)), 250, {
+              easing: "swing",
+              queue: true,
+              axis: 'y',
+              complete: tree.__opts.afterTrav(link)
+            });
+          });
+        } else {
+          $("<span class='" + tree.$static.leafLoadingClass + "'>" + loadingSubfolders + "</span>").insertAfter(hit.next());
+        }
+        tree.__opts.pathNum++;
+      }
+    }, 20);
+  }
+});
 
 /**
  * Initialize dropdowns
@@ -1225,6 +1150,151 @@ VrtxAdmin.prototype.hideTips = function hideTips() {
   this._$(".tip:visible").fadeOut(this.transitionDropdownSpeed, "swing");
 };
 
+
+/**
+ * Scroll breadcrumbs
+ *
+ * @this {VrtxAdmin}
+ */
+VrtxAdmin.prototype.initScrollBreadcrumbs = function initScrollBreadcrumbs() {
+  var vrtxAdm = this;
+  
+  var crumbs = $(".vrtx-breadcrumb-level, .vrtx-breadcrumb-level-no-url"), i = crumbs.length, crumbsWidth = 0;
+  while(i--) {
+    crumbsWidth += $(crumbs[i]).outerWidth(true) + 2;
+  }
+  crumbs.wrapAll("<div id='vrtx-breadcrumb-inner' style='width: " + crumbsWidth + "px' />");
+  vrtxAdm.crumbsWidth = crumbsWidth;
+  vrtxAdm.crumbsInner = $("#vrtx-breadcrumb-inner");
+  vrtxAdm.crumbsInner.wrap("<div id='vrtx-breadcrumb-outer' />");
+      
+  var navHtml = "<span id='navigate-crumbs-left-coverup' />" +
+                "<a id='navigate-crumbs-left' class='navigate-crumbs'><span class='navigate-crumbs-icon'></span><span class='navigate-crumbs-dividor'></span></a>" +
+                "<a id='navigate-crumbs-right' class='navigate-crumbs'><span class='navigate-crumbs-icon'></span><span class='navigate-crumbs-dividor'></span></a>";                                      
+      
+  $("#vrtx-breadcrumb").append(navHtml);
+      
+  vrtxAdm.crumbsLeft = $("#navigate-crumbs-left");
+  vrtxAdm.crumbsLeftCoverUp = $("#navigate-crumbs-left-coverup");
+  vrtxAdm.crumbsRight = $("#navigate-crumbs-right"); 
+  vrtxAdm.cachedDoc.on("click", "#navigate-crumbs-left", function(e) {
+    vrtxAdmin.scrollBreadcrumbsLeft();
+    e.stopPropagation();
+    e.preventDefault();
+  });
+  vrtxAdm.cachedDoc.on("click", "#navigate-crumbs-right", function(e) {
+    vrtxAdmin.scrollBreadcrumbsRight();
+    e.stopPropagation();
+    e.preventDefault();
+  }); 
+  /* TODO: replace with stacking of blue/hovered element above nav(?) */
+  vrtxAdm.cachedDoc.on("mouseover mouseout", ".vrtx-breadcrumb-level", function(e) {
+    var hoveredBreadcrumb = $(this);
+    if(!hoveredBreadcrumb.hasClass("vrtx-breadcrumb-active")) {
+      if(vrtxAdm.crumbsState == "left") {            
+        var gradientRight = vrtxAdm.crumbsRight;
+        var gradientLeftEdge = gradientRight.offset().left;
+        var crumbRightEdge = hoveredBreadcrumb.offset().left + hoveredBreadcrumb.width();
+        if(crumbRightEdge > gradientLeftEdge) {
+          gradientRight.find(".navigate-crumbs-dividor").toggle();
+        }
+      } else if(vrtxAdm.crumbsState == "right") {
+        var gradientLeft = vrtxAdm.crumbsLeft;
+        var gradientRightEdge = gradientLeft.offset().left + gradientLeft.width();
+        var crumbLeftEdge = hoveredBreadcrumb.offset().left;
+        if(crumbLeftEdge < gradientRightEdge) {
+          gradientLeft.find(".navigate-crumbs-dividor").toggle();
+        }
+      }
+    }
+    e.stopPropagation();
+    e.preventDefault();
+  });     
+  vrtxAdm.scrollBreadcrumbsRight();
+  vrtxAdm.crumbsInner.addClass("animate");  
+};
+
+VrtxAdmin.prototype.scrollBreadcrumbsLeft = function scrollBreadcrumbsLeft() {
+  this.scrollBreadcrumbsHorizontal(false);
+};
+
+VrtxAdmin.prototype.scrollBreadcrumbsRight = function scrollBreadcrumbsRight() {
+  this.scrollBreadcrumbsHorizontal(true);
+};
+
+VrtxAdmin.prototype.scrollBreadcrumbsHorizontal = function scrollBreadcrumbsHorizontal(isRight) {
+  var vrtxAdm = this;
+  if(!vrtxAdm.crumbsWidth) return;
+
+  var width = $("#vrtx-breadcrumb").width();
+  var diff = vrtxAdm.crumbsWidth - width; 
+  if(diff > 0) {
+    if(isRight) {
+      vrtxAdm.crumbsState = "right";
+      vrtxAdm.crumbsInner.css("left", -diff + "px");
+      vrtxAdm.crumbsRight.filter(":visible").hide();
+      vrtxAdm.crumbsLeftCoverUp.filter(":hidden").show();
+      vrtxAdm.crumbsLeft.filter(":hidden").show();
+    } else {
+      vrtxAdm.crumbsState = "left";
+      vrtxAdm.crumbsInner.css("left", "0px");
+      vrtxAdm.crumbsRight.filter(":hidden").show();
+      vrtxAdm.crumbsLeftCoverUp.filter(":visible").hide();
+      vrtxAdm.crumbsLeft.filter(":visible").hide();
+    }
+  } else {
+    vrtxAdm.crumbsState = "off";
+    if(isRight) vrtxAdm.crumbsInner.css("left", "0px");
+    vrtxAdm.crumbsRight.filter(":visible").hide();
+    vrtxAdm.crumbsLeftCoverUp.filter(":visible").hide();
+    vrtxAdm.crumbsLeft.filter(":visible").hide();
+  }
+};
+
+/*
+ * Misc.
+ *
+ */
+ 
+VrtxAdmin.prototype.miscAdjustments = function miscAdjustments() {
+  var vrtxAdm = this;
+
+   // Remove active tab if it has no children
+  if (!vrtxAdm.cachedActiveTab.find(" > *").length) {
+    vrtxAdm.cachedActiveTab.remove();
+  }
+
+  // Remove active tab-message if it is empty
+  var activeTabMsg = vrtxAdm.cachedActiveTab.find(" > .tabMessage");
+  if (!activeTabMsg.text().length) {
+    activeTabMsg.remove();
+  }
+  
+  interceptEnterKey();
+
+  vrtxAdm.logoutButtonAsLink();
+  
+  vrtxAdm.adjustResourceTitle();
+  
+  // Ignore all AJAX errors when user navigate away (abort)
+  if(typeof unsavedChangesInEditorMessage !== "function") {
+    var ignoreAjaxErrorOnBeforeUnload = function() {
+      vrtxAdm.ignoreAjaxErrors = true;
+    };
+    window.onbeforeunload = ignoreAjaxErrorOnBeforeUnload;    
+  } 
+
+  // Show message in IE6, IE7 and IETrident in compability mode
+  if (vrtxAdm.isIE7 || vrtxAdm.isIETridentInComp) {
+    var message = vrtxAdm.cachedAppContent.find(" > .message");
+    if (message.length) {
+      message.html(outdatedBrowserText);
+    } else {
+      vrtxAdm.cachedAppContent.prepend("<div class='infomessage'>" + outdatedBrowserText + "</div>");
+    }
+  }
+};
+
 /**
  * Adjust resource title across multiple lines
  *
@@ -1240,112 +1310,105 @@ VrtxAdmin.prototype.adjustResourceTitle = function adjustResourceTitle() {
   }
 };
 
-/**
- * Scroll breadcrumbs
- *
- * @this {VrtxAdmin}
- */
-VrtxAdmin.prototype.scrollBreadcrumbs = function scrollBreadcrumbs(dir) {
-  var vrtxAdm = this;
-  
-  switch (dir) {
-    case "init":
-      var crumbs = $(".vrtx-breadcrumb-level, .vrtx-breadcrumb-level-no-url"), i = crumbs.length, crumbsWidth = 0;
-      while(i--) {
-        crumbsWidth += $(crumbs[i]).outerWidth(true) + 2;
+function interceptEnterKey() {
+  vrtxAdmin.cachedAppContent.delegate("form#editor input", "keypress", function (e) {
+    if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
+      e.preventDefault(); // cancel the default browser click
+    }
+  });
+}
+
+function interceptEnterKeyAndReroute(txt, btn, cb) {
+  vrtxAdmin.cachedAppContent.delegate(txt, "keypress", function (e) {
+    if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
+      if ($(this).hasClass("blockSubmit")) { // submit/rerouting can be blocked elsewhere on textfield
+        $(this).removeClass("blockSubmit");
+      } else {
+        $(btn).click(); // click the associated button
       }
-      crumbs.wrapAll("<div id='vrtx-breadcrumb-inner' style='width: " + crumbsWidth + "px' />");
-      vrtxAdm.crumbsWidth = crumbsWidth;
-      vrtxAdm.crumbsInner = $("#vrtx-breadcrumb-inner");
-      vrtxAdm.crumbsInner.wrap("<div id='vrtx-breadcrumb-outer' />");
-      
-      var navHtml = "<span id='navigate-crumbs-left-coverup' />" +
-                    "<a id='navigate-crumbs-left' class='navigate-crumbs'><span class='navigate-crumbs-icon'></span><span class='navigate-crumbs-dividor'></span></a>" +
-                    "<a id='navigate-crumbs-right' class='navigate-crumbs'><span class='navigate-crumbs-icon'></span><span class='navigate-crumbs-dividor'></span></a>";                                      
-      
-      $("#vrtx-breadcrumb").append(navHtml);
-      
-      vrtxAdm.crumbsLeft = $("#navigate-crumbs-left");
-      vrtxAdm.crumbsLeftCoverUp = $("#navigate-crumbs-left-coverup");
-      vrtxAdm.crumbsRight = $("#navigate-crumbs-right"); 
-      vrtxAdm.cachedDoc.on("click", "#navigate-crumbs-left", function(e) {
-        vrtxAdmin.scrollBreadcrumbs("left");
-        e.stopPropagation();
-        e.preventDefault();
-      });
-      vrtxAdm.cachedDoc.on("click", "#navigate-crumbs-right", function(e) {
-        vrtxAdmin.scrollBreadcrumbs("right");
-        e.stopPropagation();
-        e.preventDefault();
-      }); 
-      /* TODO: replace with stacking of blue/hovered element above nav(?) */
-      vrtxAdm.cachedDoc.on("mouseover mouseout", ".vrtx-breadcrumb-level", function(e) {
-        var hoveredBreadcrumb = $(this);
-        if(!hoveredBreadcrumb.hasClass("vrtx-breadcrumb-active")) {
-          if(vrtxAdm.crumbsState == "left") {            
-            var gradientRight = vrtxAdm.crumbsRight;
-            var gradientLeftEdge = gradientRight.offset().left;
-            var crumbRightEdge = hoveredBreadcrumb.offset().left + hoveredBreadcrumb.width();
-            if(crumbRightEdge > gradientLeftEdge) {
-              gradientRight.find(".navigate-crumbs-dividor").toggle();
-            }
-          } else if(vrtxAdm.crumbsState == "right") {
-            var gradientLeft = vrtxAdm.crumbsLeft;
-            var gradientRightEdge = gradientLeft.offset().left + gradientLeft.width();
-            var crumbLeftEdge = hoveredBreadcrumb.offset().left;
-            if(crumbLeftEdge < gradientRightEdge) {
-              gradientLeft.find(".navigate-crumbs-dividor").toggle();
-            }
-          }
+      if(typeof cb === "function") {
+        cb($(this));
+      }
+      e.preventDefault();
+    }
+  });
+}
+
+VrtxAdmin.prototype.mapShortcut = function mapShortcut(selectors, reroutedSelector) {
+  this.cachedAppContent.on("click", selectors, function (e) {
+    $(reroutedSelector).click();
+    e.stopPropagation();
+    e.preventDefault();
+  });
+};
+
+VrtxAdmin.prototype.initStickyBar = function initStickyBar(wrapperId, stickyClass, extraWidth) {
+  var vrtxAdm = vrtxAdmin,
+    _$ = vrtxAdm._$;
+
+  var wrapper = _$(wrapperId);
+  var thisWindow = _$(window);
+  if (wrapper.length && !vrtxAdm.isIPhone) { // Turn off for iPhone. 
+    var wrapperPos = wrapper.offset();
+    if (vrtxAdm.isIE8) {
+      wrapper.append("<span class='sticky-bg-ie8-below'></span>");
+    }
+    thisWindow.on("scroll", function () {
+      if (thisWindow.scrollTop() >= wrapperPos.top + 1) {
+        if (!wrapper.hasClass(stickyClass)) {
+          wrapper.addClass(stickyClass);
+          vrtxAdmin.cachedContent.css("paddingTop", wrapper.outerHeight(true) + "px");
         }
-        e.stopPropagation();
-        e.preventDefault();
-      });     
-      vrtxAdm.scrollBreadcrumbs("right");
-      vrtxAdm.crumbsInner.addClass("animate");
-      break;
-    case "right": 
-      if(!vrtxAdm.crumbsWidth) return;
-      
-      var width = $("#vrtx-breadcrumb").width();
-      var diff = vrtxAdm.crumbsWidth - width;
-      if(diff > 0) {
-        vrtxAdm.crumbsState = "right";
-        vrtxAdm.crumbsInner.css("left", -diff + "px");
-        vrtxAdm.crumbsRight.filter(":visible").hide();
-        vrtxAdm.crumbsLeftCoverUp.filter(":hidden").show();
-        vrtxAdm.crumbsLeft.filter(":hidden").show();
+        wrapper.css("width", (_$("#main").outerWidth(true) - 2 + extraWidth) + "px");
       } else {
-        vrtxAdm.crumbsState = "off";
-        vrtxAdm.crumbsInner.css("left", "0px");
-        vrtxAdm.crumbsRight.filter(":visible").hide();
-        vrtxAdm.crumbsLeftCoverUp.filter(":visible").hide();
-        vrtxAdm.crumbsLeft.filter(":visible").hide();
+        if (wrapper.hasClass(stickyClass)) {
+          wrapper.removeClass(stickyClass);
+          wrapper.css("width", "auto");
+          vrtxAdmin.cachedContent.css("paddingTop", "0px");
+        }
       }
-      break;
-    case "left":
-      var width = $("#vrtx-breadcrumb").width();
-      var diff = vrtxAdm.crumbsWidth - width;
-      vrtxAdm.crumbsInner.css("left", "0px");
-      if(diff > 0) {
-        vrtxAdm.crumbsState = "left";
-        vrtxAdm.crumbsRight.filter(":hidden").show();
-        vrtxAdm.crumbsLeftCoverUp.filter(":visible").hide();
-        vrtxAdm.crumbsLeft.filter(":visible").hide();
-      } else {
-        vrtxAdm.crumbsState = "off";
-        vrtxAdm.crumbsRight.filter(":visible").hide();
-        vrtxAdm.crumbsLeftCoverUp.filter(":visible").hide();
-        vrtxAdm.crumbsLeft.filter(":visible").hide();
+    });
+    thisWindow.on("resize", function () {
+      if (thisWindow.scrollTop() >= wrapperPos.top + 1) {
+        wrapper.css("width", (_$("#main").outerWidth(true) - 2 + extraWidth) + "px");
       }
-      break;
-    default:
-      break;
+    });
   }
 };
 
+VrtxAdmin.prototype.destroyStickyBar = function destroyStickyBar(wrapperId, stickyClass) {
+  var _$ = this._$;
+  
+  var thisWindow = _$(window);
+  thisWindow.off("scroll");
+  thisWindow.off("resize");
+  
+  var wrapper = _$(wrapperId);
+  
+  if (wrapper.hasClass(stickyClass)) {
+    wrapper.removeClass(stickyClass);
+    wrapper.css("width", "auto");
+    vrtxAdmin.cachedContent.css("paddingTop", "0px");
+  }
+};
+
+VrtxAdmin.prototype.logoutButtonAsLink = function logoutButtonAsLink() {
+  var _$ = this._$;
+
+  var btn = _$('input#logoutAction');
+  if (!btn.length) return;
+  btn.hide();
+  btn.after('&nbsp;<a id=\"logoutAction.link\" name=\"logoutAction\" href="javascript:void(0);">' + btn.attr('value') + '</a>');
+  _$("#app-head-wrapper").on("click", '#logoutAction\\.link', function (e) {
+    btn.click();
+    e.stopPropagation();
+    e.preventDefault();
+  });
+};
+
+
 /*-------------------------------------------------------------------*\
-    6. Create service
+    5. Create/File upload
        XXX: optimize more and needs more seperation
 \*-------------------------------------------------------------------*/
 
@@ -1373,6 +1436,17 @@ function createFuncComplete() {
 
   $("#initCreateChangeTemplate").trigger("click");
   $(".vrtx-admin-form input[type='text']").attr("autocomplete", "off").attr("autocorrect", "off");
+  
+  var notRecommendedTemplates = $("#vrtx-create-templates-not-recommended");
+  if(notRecommendedTemplates.length) {
+    notRecommendedTemplates.hide();
+    $("<a id='vrtx-create-templates-not-recommended-toggle' href='javascript:void(0);'>Vis flere maler</a>").insertBefore(notRecommendedTemplates);
+    $("#vrtx-create-templates-not-recommended-toggle").click(function(e) {
+      $(this).hide().next().toggle().parent().find(".radio-buttons:first input:first").click();
+      e.stopPropagation();
+      e.preventDefault();
+    });
+  }
 }
 
 function createChangeTemplate(hasTitle) {
@@ -1568,10 +1642,6 @@ function growField(input, val, comfortZone, minWidth, maxWidth) {
 }
 
 
-/*-------------------------------------------------------------------*\
-    7. File upload service
-\*-------------------------------------------------------------------*/
-
 /**
  * Initialize file upload
  *
@@ -1642,7 +1712,7 @@ VrtxAdmin.prototype.supportsReadOnly = function supportsReadOnly(inputfield) {
 
 
 /*-------------------------------------------------------------------*\
-    8. Collectionlisting
+    6. Collectionlisting
        TODO: dynamic event handlers for tab-menu links
 \*-------------------------------------------------------------------*/
 
@@ -1681,7 +1751,7 @@ VrtxAdmin.prototype.collectionListingInteraction = function collectionListingInt
           var d = new VrtxConfirmDialog({
             msg: dialogTemplate.find(".vrtx-confirm-copy-move-explanation").text(),
             title: dialogTemplate.find(".vrtx-confirm-copy-move-confirmation").text(),
-            funcOkComplete: function () {
+            onOk: function () {
               dialogTemplate.find(".vrtx-focus-button button").trigger("click");
             }
           });
@@ -1692,7 +1762,7 @@ VrtxAdmin.prototype.collectionListingInteraction = function collectionListingInt
       var d = new VrtxConfirmDialog({
         msg: dialogTemplate.find(".vrtx-confirm-copy-move-explanation").text(),
         title: dialogTemplate.find(".vrtx-confirm-copy-move-confirmation").text(),
-        funcOkComplete: function () {
+        onOk: function () {
           dialogTemplate.find(".vrtx-focus-button button").trigger("click");
         }
       });
@@ -1841,7 +1911,7 @@ VrtxAdmin.prototype.placeDeleteButtonInActiveTab = function placeDeleteButtonInA
       var d = new VrtxConfirmDialog({
         msg: confirmDelete.replace("(1)", boxesSize) + '<br />' + list,
         title: confirmDeleteTitle,
-        funcOkComplete: function () {
+        onOk: function () {
           vrtxAdm.cachedAppContent.find('#collectionListing\\.action\\.delete-resources').click();
         }
       });
@@ -1887,7 +1957,7 @@ VrtxAdmin.prototype.placePublishButtonInActiveTab = function placeDeleteButtonIn
       var d = new VrtxConfirmDialog({
         msg: confirmPublish.replace("(1)", boxesSize) + '<br />' + list,
         title: confirmPublishTitle,
-        funcOkComplete: function () {
+        onOk: function () {
           vrtxAdm.cachedAppContent.find('#collectionListing\\.action\\.publish-resources').click();
         }
       });
@@ -1927,7 +1997,7 @@ VrtxAdmin.prototype.placeUnpublishButtonInActiveTab = function placeDeleteButton
       var d = new VrtxConfirmDialog({
         msg: confirmUnpublish.replace("(1)", boxesSize) + '<br />' + list,
         title: confirmUnpublishTitle,
-        funcOkComplete: function () {
+        onOk: function () {
           vrtxAdm.cachedAppContent.find('#collectionListing\\.action\\.unpublish-resources').click();
         }
       });
@@ -1993,7 +2063,7 @@ VrtxAdmin.prototype.placeDeletePermanentButtonInActiveTab = function placeDelete
       var d = new VrtxConfirmDialog({
         msg: confirmDeletePermanently.replace("(1)", boxesSize) + '<br />' + list,
         title: confirmDeletePermTitle,
-        funcOkComplete: function () {
+        onOk: function () {
           vrtxAdm.cachedContent.find('.deleteResourcePermanent').click();
         }
       });
@@ -2032,7 +2102,7 @@ VrtxAdmin.prototype.buildFileList = function buildFileList(boxes, boxesSize, use
 };
 
 /*-------------------------------------------------------------------*\
-    9. Editor and Save-robustness (also for plaintext and vis. profile)
+    7. Editor and Save-robustness (also for plaintext and vis. profile)
 \*-------------------------------------------------------------------*/
 
 function editorInteraction(bodyId, vrtxAdm, _$) {
@@ -2117,7 +2187,7 @@ function ajaxSave() {
   if (typeof performSave !== "undefined") {
     var ok = performSave();
     if (!ok) {
-      d.closeDialog();
+      d.close();
       vrtxAdm.asyncEditorSavedDeferred.rejectWith(this, [null, null]);
       return false;
     }
@@ -2127,17 +2197,17 @@ function ajaxSave() {
       var endTime = new Date() - startTime;
       var waitMinMs = 800;
       if (endTime >= waitMinMs) { // Wait minimum 0.8s
-        d.closeDialog();
+        d.close();
         vrtxAdm.asyncEditorSavedDeferred.resolve();
       } else {
         setTimeout(function () {
-          d.closeDialog();
+          d.close();
           vrtxAdm.asyncEditorSavedDeferred.resolve();
         }, Math.round(waitMinMs - endTime));
       }
     },
     error: function (xhr, textStatus, errMsg) {
-      d.closeDialog();
+      d.close();
       vrtxAdm.asyncEditorSavedDeferred.rejectWith(this, [xhr, textStatus]);
     }
   });
@@ -2149,7 +2219,7 @@ function reAuthenticateRetokenizeForms(link) {
     name: "reauth-open",
     html: vrtxAdmin.serverFacade.errorMessages.sessionInvalid,
     title: vrtxAdmin.serverFacade.errorMessages.sessionInvalidTitle,
-    funcOkComplete: function() { // Log in          
+    onOk: function() { // Log in          
       // Loading..
       var d2 = new VrtxLoadingDialog({title: vrtxAdmin.serverFacade.errorMessages.sessionWaitReauthenticate});
       d2.open();
@@ -2198,14 +2268,14 @@ function retokenizeFormsOpenSaveDialog(link, d2) {
       }
 
       // Stop loading
-      d2.closeDialog();
+      d2.close();
       
       // Open save dialog
       var d = new VrtxHtmlDialog({
         name: "reauth-save",
         html: vrtxAdmin.serverFacade.errorMessages.sessionValidated,
         title: vrtxAdmin.serverFacade.errorMessages.sessionValidatedTitle,
-        funcOkComplete: function() {
+        onOk: function() {
           // Trigger save
           link.click();
         },
@@ -2218,7 +2288,7 @@ function retokenizeFormsOpenSaveDialog(link, d2) {
 
 
 /*-------------------------------------------------------------------*\
-    10. Permissions
+    8. Permissions
 \*-------------------------------------------------------------------*/
 
 function initPermissionForm(selectorClass) {
@@ -2266,9 +2336,9 @@ function checkStillAdmin(options) {
     var d = new VrtxConfirmDialog({
       msg: removeAdminPermissionsMsg,
       title: removeAdminPermissionsTitle,
-      funcOkComplete: vrtxAdmin.completeFormAsyncPost,
-      funcOkCompleteOpts: options,
-      funcCancelComplete: function () {
+      onOk: vrtxAdmin.completeFormAsyncPost,
+      onOkOpts: options,
+      onCancel: function () {
         vrtxAdmin.reloadFromServer = false;
       }
     });
@@ -2305,7 +2375,7 @@ function autocompleteTags(selector) {
 
 
 /*-------------------------------------------------------------------*\
-    11. Versioning
+    9. Versioning
 \*-------------------------------------------------------------------*/
 
 function versioningInteraction(bodyId, vrtxAdm, _$) {
@@ -2395,7 +2465,7 @@ function versioningInteraction(bodyId, vrtxAdm, _$) {
 
 
 /*-------------------------------------------------------------------*\
-    12. Async functions  
+    10. Async functions  
 \*-------------------------------------------------------------------*/
 
 /**
@@ -2912,7 +2982,7 @@ VrtxAdmin.prototype.retrieveHTMLTemplates = function retrieveHTMLTemplates(fileN
 
 
 /*-------------------------------------------------------------------*\
-    13. Async helper functions and AJAX server façade   
+    11. Async helper functions and AJAX server façade   
 \*-------------------------------------------------------------------*/
 
 /**
@@ -3217,7 +3287,7 @@ VrtxAdmin.prototype.serverFacade = {
 
 
 /*-------------------------------------------------------------------*\
-    14. CK browse server integration
+    12. CK browse server integration
 \*-------------------------------------------------------------------*/
 
 // XXX: don't pollute global namespace
@@ -3279,7 +3349,7 @@ function SetUrl(url) {
 
 
 /*-------------------------------------------------------------------*\
-    15. Utils
+    13. Utils
 \*-------------------------------------------------------------------*/
 
 /**
@@ -3418,7 +3488,7 @@ function unique(array) {
 
 
 /*-------------------------------------------------------------------*\
-    16. Override JavaScript / jQuery
+    14. Override JavaScript / jQuery
 \*-------------------------------------------------------------------*/
 
 /*  Override slideUp() / slideDown() to animate rows in a table
@@ -3494,7 +3564,7 @@ var maxRuns = 0;
 vrtxAdmin._$(window).resize(vrtxAdmin._$.throttle(150, function () {
   if (vrtxAdmin.runReadyLoad) {
     if (maxRuns < 2) {
-      vrtxAdmin.scrollBreadcrumbs("right");
+      vrtxAdmin.scrollBreadcrumbsRight();
       vrtxAdmin.adjustResourceTitle();
       maxRuns++;
     } else {

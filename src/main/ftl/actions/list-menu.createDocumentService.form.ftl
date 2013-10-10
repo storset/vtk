@@ -9,7 +9,29 @@
     <form name="createDocumentService" id="createDocumentService-form" action="${createDocumentForm.submitURL?html}"
           method="post" accept-charset="utf-8">
       <h3><@vrtx.msg code="actions.createDocumentService" default="Create Document"/></h3>
-      <h4><@vrtx.msg code="actions.createDocumentService.subtitle" default="Choose a template"/></h4>
+      
+      <div id="vrtx-create-document-templates">
+      
+      <@spring.bind "createDocumentForm" + ".isRecommended" /> 
+      <#assign isRecommendedBind = spring.status.value>
+      <@actionsLib.genErrorMessages spring.status.errorMessages />
+      
+      <#assign splitAfterRecommenedTitle = "" />
+      <#assign subTitle><#compress>
+        <#if !isRecommendedBind>
+          <@vrtx.msg code="actions.createDocumentService.subtitle" default="Choose a template"/>
+        <#else>
+          <@vrtx.msg code="actions.createDocumentService.subtitle.recommended" default="Recommended template in this folder"/>
+          <#assign splitAfterRecommenedTitle>
+            </ul>
+            <div id="vrtx-create-templates-not-recommended">
+              <h4><@vrtx.msg code="actions.createDocumentService.subtitle.not-recommended" default="Other available templates (not recommended)" /></h4>
+              <ul class="radio-buttons">
+          </#assign>
+        </#if>
+      </#compress></#assign>
+      
+      <h4>${subTitle}</h4>
       <#compress>
         <@spring.bind "createDocumentForm" + ".sourceURI" />
         <#assign sourceURIBind = spring.status.value?default("")>
@@ -28,8 +50,12 @@
         </#if>
         <#if templates?has_content>
           <ul class="radio-buttons">
-            <@vrtx.formRadioButtons "createDocumentForm.sourceURI", templates, "<li>", "</li>", descriptions, titles, true />
+            <@vrtx.formRadioButtons "createDocumentForm.sourceURI", templates, "<li>", "</li>", descriptions, titles, true, "", splitAfterRecommenedTitle />
           </ul>
+          <#if isRecommendedBind>
+            </div>
+          </#if>
+          </div>
           <button id="initCreateChangeTemplate" type="button" onclick="createChangeTemplate(<#if (titles?has_content && titles[sourceURIBind]?exists)>${titles[sourceURIBind]?string}<#else>false</#if>)"></button>
           
           <#-- If POST is not AJAX (otherwise it would be a funcComplete() in completeAsyncForm()) -->

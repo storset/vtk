@@ -1573,11 +1573,24 @@ span.vrtx-help-step-by-step-cmd {
   clear: left;
 }
 
-.vrtx-admin-form #createDocumentService-form .radio-buttons,
-.vrtx-admin-form #createCollectionService-form .radio-buttons {
+.vrtx-admin-form #createCollectionService-form .radio-buttons,
+.vrtx-admin-form #vrtx-create-document-templates {
   background: transparent url("images/line-dotted-tighter.gif") repeat-x scroll left bottom;
   margin-bottom: 15px;
   padding-bottom: 15px;
+}
+
+.vrtx-admin-form #vrtx-create-document-templates .radio-buttons {
+  margin-bottom: 0;
+}
+
+#vrtx-create-templates-not-recommended-toggle {
+  display: inline-block;
+  margin-top: 8px;
+}
+
+.vrtx-admin-form #createDocumentService-form .radio-buttons,
+.vrtx-admin-form #createCollectionService-form .radio-buttons {
   position: relative;
 }
 

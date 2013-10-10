@@ -73,8 +73,10 @@ function VrtxEditor() {
 }
 
 var vrtxEditor = new VrtxEditor();
-
 var UNSAVED_CHANGES_CONFIRMATION;
+
+var accordionJson = null;
+var accordionGrouped = null;
 
 /*-------------------------------------------------------------------*\
     2. DOM is fully loaded
@@ -1105,7 +1107,7 @@ VrtxEditor.prototype.showHideSelect = function showHideSelect(select, init) {
       }
     }
   }
-  if (!init) vrtxEdit.accordionGroupedCloseActiveHidden();
+  if (!init && accordionGrouped) accordionGrouped.closeActiveHidden();
 };
 
 /*-------------------------------------------------------------------*\
@@ -1297,6 +1299,7 @@ function saveMultipleInputFields() {
 }
 
 /* Multiple JSON boxes */
+
 function initJsonMovableElements() {
   $.when(vrtxEditor.multipleFieldsBoxesDeferred, vrtxEditor.multipleBoxesTemplatesContractBuilt).done(function () {
     for (var i = 0, len = vrtxEditor.multipleBoxesTemplatesContract.length; i < len; i++) {
@@ -1453,6 +1456,7 @@ function removeJsonField(btn) {
   }
   if (hasAccordion) {
     accordionJsonRefresh(accordionWrapper.find(".fieldset"), false);
+    accordionJson.create();
   }
 }
 
@@ -1497,8 +1501,8 @@ function swapContent(moveBtn, move) {
     swapElementFn(element1, element2);
 
     if (hasAccordion && !runOnce) {
-      accordionUpdateHeader(element1, true, false);
-      accordionUpdateHeader(element2, true, false);
+      jsonAccordion.updateHeader(element1, true, false);
+      jsonAccordion.updateHeader(element2, true, false);
       runOnce = true;
     }
     /* Do we need these on all elements? */
@@ -1512,8 +1516,7 @@ function swapContent(moveBtn, move) {
 
   if (hasAccordion) { /* Wait with scroll until accordion switch */
     vrtxEditor.multipleFieldsBoxesAccordionSwitchThenScrollTo = movedElm;
-    accordionWrapper.find(".fieldset").accordion("option", "active", (movedElm.index() - 1))
-      .accordion("option", "refresh");
+    accordionWrapper.find(".fieldset").accordion("option", "active", (movedElm.index() - 1)).accordion("option", "refresh");
   } else {
     scrollToElm(movedElm);
   }
@@ -1709,6 +1712,14 @@ VrtxEditor.prototype.accordionGroupedInit = function accordionGroupedInit(subGro
   grouped.wrapAll("<div id='" + accordionWrpId + "' />");
 
   accordionContentSplitHeaderPopulators(true);
+  
+  accordionGrouped = new VrtxAccordion({
+    elem: vrtxEdit.editorForm.find("#" + accordionWrpId),
+    headerSelector: "> div > .header",
+    onActivate: function (e, ui, accordion) {
+      accordionGrouped.updateHeader(ui.oldHeader, false, false);
+    }
+  });
 
   // Because accordion needs one content wrapper
   for (var i = grouped.length; i--;) {
@@ -1719,47 +1730,24 @@ VrtxEditor.prototype.accordionGroupedInit = function accordionGroupedInit(subGro
     } else {
       group.find("> *:not(.header)").wrapAll("<div />");
     }
-    accordionUpdateHeader(group, false, true);
+    accordionGrouped.updateHeader(group, false, true);
   }
-
-  // Initialize accordion
-  vrtxEdit.editorForm.find("#" + accordionWrpId).accordion({
-    header: "> div > .header",
-    heightStyle: "content",
-    collapsible: true,
-    active: false,
-    activate: function (e, ui) {
-      accordionUpdateHeader(ui.oldHeader, false, false);
-    }
-  });
-};
-
-/**
- * Close active grouped accordion if hidden
- * @this {VrtxEditor}
- */
-VrtxEditor.prototype.accordionGroupedCloseActiveHidden = function accordionGroupedCloseActiveHidden() {
-  var vrtxEdit = this,
-    _$ = vrtxAdmin._$;
-
-  var accordionWrp = vrtxEdit.editorForm.find("#accordion-grouped");
-  var active = accordionWrp.find(".ui-state-active");
-  if (active.length && active.filter(":hidden").length) {
-    accordionWrp.accordion("activate", false);
-  }
+  
+  accordionGrouped.create();
 };
 
 function accordionJsonInit() {
   accordionContentSplitHeaderPopulators(true);
 
+  accordionJsonRefresh($(".vrtx-json-accordion .fieldset"), false);
+
   // Because accordion needs one content wrapper
   for (var grouped = $(".vrtx-json-accordion .vrtx-json-element"), i = grouped.length; i--;) {
     var group = $(grouped[i]);
     group.find("> *").wrapAll("<div />");
-    accordionUpdateHeader(group, true, true);
+    accordionJson.updateHeader(group, true, true);
   }
-
-  accordionJsonRefresh($(".vrtx-json-accordion .fieldset"), false);
+  accordionJson.create();
 }
 
 function accordionJsonNew(accordionWrapper) {
@@ -1767,22 +1755,19 @@ function accordionJsonNew(accordionWrapper) {
   var group = accordionContent.find(".vrtx-json-element").filter(":last");
   group.find("> *").wrapAll("<div />");
   group.prepend('<div class="header">' + (vrtxAdmin.lang !== "en" ? "Intet innhold" : "No content") + '</div>');
-
   accordionContentSplitHeaderPopulators(false);
+  
   accordionJsonRefresh(accordionContent, false);
+  accordionJson.create();
 }
 
 function accordionJsonRefresh(elem, active) {
-  if(elem.hasClass("ui-accordion")) {
-    elem.accordion("destroy");
-  }
-  elem.accordion({
-    header: "> div > .header",
-    heightStyle: "content",
-    collapsible: true,
-    active: active,
-    activate: function (e, ui) {
-      accordionUpdateHeader(ui.oldHeader, true, false);
+  accordionJson = new VrtxAccordion({
+    elem: elem,
+    headerSelector: "> div > .header",
+    activeElem: active,
+    onActivate: function (e, ui, accordion) {
+      accordion.updateHeader(ui.oldHeader, true, false);
       if (vrtxEditor.multipleFieldsBoxesAccordionSwitchThenScrollTo) {
         scrollToElm(vrtxEditor.multipleFieldsBoxesAccordionSwitchThenScrollTo);
       }
@@ -1810,106 +1795,6 @@ function accordionContentSplitHeaderPopulators(init) {
       });
     }
   } 
-}
-
-function accordionUpdateHeader(elem, isJson, init) {
-  if (typeof elem.closest !== "function") elem = $(elem);
-  var elm = isJson ? elem.closest(".vrtx-json-element") : elem.closest(".vrtx-grouped"); /* TODO: bug in IE8 */
-  if (elm.length) { // Prime header populators
-    var str = "";
-    var fields = elm.find(".header-populators");
-    if (!fields.length) return;
-    for (var i = 0, len = fields.length; i < len; i++) {
-      var val = fields[i].value;
-      if (!val.length) continue;
-      str += (str.length) ? ", " + val : val;
-    }
-    if (!str.length) { // Fallback header populator
-      var field = elm.find(".header-fallback-populator");
-      if (field.length) {
-        var fieldId = field.attr("id");
-        if (isCkEditor(fieldId)) { // Check if CK
-          str = getCkValue(fieldId); // Get CK content
-        } else {
-          str = field.val();
-        }
-        if (field.is("textarea")) { // Remove markup and tabs
-          str = $.trim(str.replace(/(<([^>]+)>|[\t\r]+)/ig, ""));
-        }
-        if (typeof str !== "undefined") {
-          if (str.length > 30) {
-            str = str.substring(0, 30) + "...";
-          } else if (!str.length) {
-            if(!emptyCheckAND(elm) || !emptyCheckOR(elm)) {
-              str = (vrtxAdmin.lang !== "en") ? "Ingen tittel" : "No title"; 
-            } else {
-              str = (vrtxAdmin.lang !== "en") ? "Intet innhold" : "No content";  
-            }
-          }
-        }
-      } else {
-        if(!emptyCheckAND(elm) || !emptyCheckOR(elm)) {
-          str = (vrtxAdmin.lang !== "en") ? "Ingen tittel" : "No title"; 
-        } else {
-          str = (vrtxAdmin.lang !== "en") ? "Intet innhold" : "No content";  
-        }
-      }
-    }
-    var header = elm.find("> .header");
-    if (!header.length) {
-      elm.prepend('<div class="header">' + str + '</div>');
-    } else {
-      if (!isJson && init) {
-        header.data("origText", header.text());
-      }
-      header.html('<span class="ui-accordion-header-icon ui-icon ui-icon-triangle-1-e"></span>' + (!isJson ? header.data("origText") + " - " : "") + str);
-    }
-  }
-}
-
-function emptyCheckAND(elm) { // XXX: Make more general - assumption inputs in JSON multiple
-  var checkAND = elm.find(".header-empty-check-and");
-  var i = checkAND.length;
-  if(i > 0) {
-    for(;i--;) {
-      var inputs = $(checkAND[i]).find("input[type='text']");
-      var j = inputs.length;
-      var allOfThem = true;
-      for(;j--;) {
-        if(inputs[j].value === "") {
-          allOfThem = false;
-          break;
-        }
-      }
-      if(allOfThem) { // Find 1 with all values - return !empty
-        return false;
-      }
-    }
-  }
-  return true;
-}
-
-function emptyCheckOR(elm) { // XXX: Make more general - assumption CK and single
-  var checkOR = elm.find(".header-empty-check-or textarea");
-  var i = checkOR.length;
-  if(i > 0) {
-    var oneOfThem = false;
-    for(;i--;) {
-      var inputId = checkOR[i].id;
-      var str = "";
-      if (isCkEditor(inputId)) { // Check if CK
-        str = getCkValue(inputId); // Get CK content
-      }
-      if(str !== "") {
-        oneOfThem = true;
-        break;
-      }
-    }
-    if(oneOfThem) { // Find 1 with one value - return !empty
-      return false;
-    }
-  }
-  return true;
 }
 
 /*-------------------------------------------------------------------*\

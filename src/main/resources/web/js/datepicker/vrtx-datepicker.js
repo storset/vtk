@@ -14,7 +14,7 @@
 var VrtxDatepickerInterface = dejavu.Interface.declare({
   $name: "VrtxDatepickerInterface",
   initFields: function(dateFields) {},
-  initField: function(name, selector) {},
+  __initField: function(name, selector) {},
   initDefaultEndDates: function() {},
   setDefaultEndDate: function(startDateElm, endDateElm) {},
   initTimeHelp: function() {},

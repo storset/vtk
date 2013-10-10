@@ -60,7 +60,7 @@
   <#if oldEditor>
     <script type="text/javascript" src="${jsBaseURL?html}/datepicker/datepicker-admin-old.js"></script>
   <#else>
-    <script type="text/javascript" src="${jsBaseURL?html}/datepicker/datepicker-admin.js"></script>
+    <script type="text/javascript" src="${jsBaseURL?html}/datepicker/vrtx-datepicker.js"></script>
   </#if>
 </#macro>
 

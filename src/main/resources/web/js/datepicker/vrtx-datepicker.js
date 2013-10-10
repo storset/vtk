@@ -7,8 +7,6 @@
  *  * Requires but Lazy-loads jQuery UI library (if not defined) on open
  */
 
-var DATE_PICKER_INITIALIZED = $.Deferred();
-
 var VrtxDatepickerInterface = dejavu.Interface.declare({
   $name: "VrtxDatepickerInterface"
 });
@@ -19,6 +17,7 @@ var VrtxDatepicker = dejavu.Class.declare({
   __opts: {},
   initialize: function (opts) { // language, selector
     this.__opts = opts;
+    var datepick = this;
     
     if(typeof opts.selector !== "undefined") {
       var contents = $(opts.selector);
@@ -35,19 +34,19 @@ var VrtxDatepicker = dejavu.Class.declare({
     
     var dateFields = contents.find(".date");
     for(var i = 0, len = dateFields.length; i < len; i++) {
-      this.displayDateAsMultipleInputFields(dateFields[i].name, opts.selector);
+      datepick.displayDateAsMultipleInputFields(dateFields[i].name, opts.selector);
     }
     
     // Help user with time
     contents.on("change", ".vrtx-hours input", function () {
       var hh = $(this);
       var mm = hh.parent().nextAll(".vrtx-minutes").filter(":first").find("input"); // Relative to
-      this.timeHelp(hh, mm);
+      datepick.timeHelp(hh, mm);
     });
     contents.on("change", ".vrtx-minutes input", function () {
       var mm = $(this);
       var hh = mm.parent().prevAll(".vrtx-hours").filter(":first").find("input"); // Relative to
-      this.timeHelp(hh, mm);
+      datepick.timeHelp(hh, mm);
     });
     
     // Specific for start and end date
@@ -55,18 +54,17 @@ var VrtxDatepicker = dejavu.Class.declare({
     var endDateElm = contents.find("#end-date-date");
     
     if (!startDateElm.length || !endDateElm.length) {
-      DATE_PICKER_INITIALIZED.resolve();
+      if(opts.after) opts.after();
       return;
     }
     if (startDateElm.datepicker('getDate') != null) {
-      this.setDefaultEndDate(startDateElm, endDateElm);
+      datepick.setDefaultEndDate(startDateElm, endDateElm);
     }
     
     contents.on("change", "#start-date-date, #end-date-date", function () {
-      this.setDefaultEndDate(startDateElm, endDateElm);
+      datepick.setDefaultEndDate(startDateElm, endDateElm);
     });
-    
-    DATE_PICKER_INITIALIZED.resolve();
+    if(opts.after) opts.after();
   },
   displayDateAsMultipleInputFields: function(name, selector) {
     var hours = "";

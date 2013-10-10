@@ -82,6 +82,7 @@ var accordionGrouped = null;
     2. DOM is fully loaded
 \*-------------------------------------------------------------------*/
 
+var DATE_PICKER_INITIALIZED = $.Deferred();
 $(window).load(function () {
   /* XXX: Exit if not is in admin */
   if (!vrtxEditor.isInAdmin) return;

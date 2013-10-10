@@ -25,7 +25,10 @@
   <script type="text/javascript"><!--
     $(window).load(function() {
       datepickerEditor = new VrtxDatepicker({
-        language: datePickerLang
+        language: datePickerLang,
+        after: function() {
+          DATE_PICKER_INITIALIZED.resolve();
+        }
       });
     });
 

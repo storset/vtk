@@ -34,19 +34,7 @@ var VrtxDatepicker = dejavu.Class.declare({
     }
     
     datepick.initFields(contents.find(".date"));
-    
-    // Help user with time
-    contents.on("change", ".vrtx-hours input", function () {
-      var hh = $(this);
-      var mm = hh.parent().nextAll(".vrtx-minutes").filter(":first").find("input"); // Relative to
-      datepick.timeHelp(hh, mm);
-    });
-    contents.on("change", ".vrtx-minutes input", function () {
-      var mm = $(this);
-      var hh = mm.parent().prevAll(".vrtx-hours").filter(":first").find("input"); // Relative to
-      datepick.timeHelp(hh, mm);
-    });
-    
+    datepick.initTimeHelp();
     datepick.initDefaultEndDates();
     
     if(opts.after) opts.after();
@@ -120,6 +108,20 @@ var VrtxDatepicker = dejavu.Class.declare({
     if (endDate == "") {
       endDateElm.datepicker('option', 'defaultDate', startDate);
     }
+  },
+  initTimeHelp: function() {
+    var datepick = this;
+    
+    this.__opts.contents.on("change", ".vrtx-hours input", function () {
+      var hh = $(this);
+      var mm = hh.parent().nextAll(".vrtx-minutes").filter(":first").find("input"); // Relative to
+      datepick.timeHelp(hh, mm);
+    });
+    this.__opts.contents.on("change", ".vrtx-minutes input", function () {
+      var mm = $(this);
+      var hh = mm.parent().prevAll(".vrtx-hours").filter(":first").find("input"); // Relative to
+      datepick.timeHelp(hh, mm);
+    });
   },
   timeHelp: function(hh, mm) {
     var hhVal = hh.val();

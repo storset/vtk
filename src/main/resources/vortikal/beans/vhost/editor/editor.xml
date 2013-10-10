@@ -32,6 +32,15 @@
         </entry>
       </map>
     </property>
+    <property name="urlPostProcessors">
+        <list>
+            <ref bean="editor.urlPostProcessor"/>
+        </list>
+    </property>
+  </bean>
+  
+  <bean id="editor.urlPostProcessor" class="org.vortikal.web.service.PreviewUnpublishedURLPostProcessor">
+        <property name="unpublishedCollectionPropDef" ref="unpublishedCollectionPropDef" />
   </bean>
 
   <bean id="editor.unstructuredXhtmlEditService" parent="editor.abstractEditService">

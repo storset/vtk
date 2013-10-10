@@ -6,22 +6,19 @@
  *  * Requires Dejavu OOP library
  *  * Requires but Lazy-loads jQuery UI library (if not defined) on open
  *  * Lazy-loads jQuery UI language file if language matches on open (and not empty string or 'en')
- *  
- *  TODO: set private functions when only used internal
- *  
  */
 
 var VrtxDatepickerInterface = dejavu.Interface.declare({
   $name: "VrtxDatepickerInterface",
   initFields: function(dateFields) {},
   __initField: function(name, selector) {},
-  initDefaultEndDates: function() {},
-  setDefaultEndDate: function(startDateElm, endDateElm) {},
-  initTimeHelp: function() {},
-  timeHelp: function(hh, mm) {},
-  timeRangeHelp: function(val, max) {},
-  extractHoursFromDate: function(datetime) {},
-  extractMinutesFromDate: function(datetime) {},
+  __initDefaultEndDates: function() {},
+  __setDefaultEndDate: function(startDateElm, endDateElm) {},
+  __initTimeHelp: function() {},
+  __timeHelp: function(hh, mm) {},
+  __timeRangeHelp: function(val, max) {},
+  __extractHoursFromDate: function(datetime) {},
+  __extractMinutesFromDate: function(datetime) {},
   prepareForSave: function() {}
 });
 
@@ -69,7 +66,7 @@ var VrtxDatepicker = dejavu.Class.declare({
       $.datepicker.setDefaults($.datepicker.regional[opts.language]);
       datepick.initFields(datepick.__opts.contents.find(".date"));
       datepick.initTimeHelp();
-      datepick.initDefaultEndDates();
+      datepick.__initDefaultEndDates();
       if(opts.after) opts.after();
     });
   },
@@ -91,8 +88,8 @@ var VrtxDatepicker = dejavu.Class.declare({
     }
   
     if (elem.length) {
-      hours = this.extractHoursFromDate(elem[0].value);
-      minutes = this.extractMinutesFromDate(elem[0].value)
+      hours = this.__extractHoursFromDate(elem[0].value);
+      minutes = this.__extractMinutesFromDate(elem[0].value)
       date = new String(elem[0].value).split(" ");
     }
 
@@ -128,47 +125,47 @@ var VrtxDatepicker = dejavu.Class.declare({
       }
     });
   },
-  initDefaultEndDates: function() {
+  __initDefaultEndDates: function() {
     var datepick = this;
     
     var startDateElm = this.__opts.contents.find("#start-date-date");
     var endDateElm = this.__opts.contents.find("#end-date-date");
     if (startDateElm.length && endDateElm.length) {
       if (startDateElm.datepicker('getDate') != null) {
-        datepick.setDefaultEndDate(startDateElm, endDateElm);
+        datepick.__setDefaultEndDate(startDateElm, endDateElm);
       }
       this.__opts.contents.on("change", "#start-date-date, #end-date-date", function () {
-        datepick.setDefaultEndDate(startDateElm, endDateElm);
+        datepick.__setDefaultEndDate(startDateElm, endDateElm);
       }); 
     }
   },
-  setDefaultEndDate: function(startDateElm, endDateElm) {
+  __setDefaultEndDate: function(startDateElm, endDateElm) {
     var endDate = endDateElm.val();
     var startDate = startDateElm.datepicker('getDate');
     if (endDate == "") {
       endDateElm.datepicker('option', 'defaultDate', startDate);
     }
   },
-  initTimeHelp: function() {
+  __initTimeHelp: function() {
     var datepick = this;
     
     datepick.__opts.contents.on("change", ".vrtx-" + datepick.$static.timeHours + " input", function () {
       var hh = $(this);
       var mm = hh.parent().nextAll(".vrtx-" + datepick.$static.timeMinutes).filter(":first").find("input"); // Relative to
-      datepick.timeHelp(hh, mm);
+      datepick.__timeHelp(hh, mm);
     });
     datepick.__opts.contents.on("change", ".vrtx-" + datepick.$static.timeMinutes + " input", function () {
       var mm = $(this);
       var hh = mm.parent().prevAll(".vrtx-" + datepick.$static.timeHours).filter(":first").find("input"); // Relative to
-      datepick.timeHelp(hh, mm);
+      datepick.__timeHelp(hh, mm);
     });
   },
-  timeHelp: function(hh, mm) {
+  __timeHelp: function(hh, mm) {
     var hhVal = hh.val();
     var mmVal = mm.val();
     if(hhVal.length || mmVal.length) {
-      var newHhVal = this.timeRangeHelp(hhVal, 23);
-      var newMmVal = this.timeRangeHelp(mmVal, 59);
+      var newHhVal = this.__timeRangeHelp(hhVal, 23);
+      var newMmVal = this.__timeRangeHelp(mmVal, 59);
       if((newHhVal == "00" || newHhVal == "0") && (newMmVal == "00" || newMmVal == "0")) { // If all zeroes => remove time
         hh.val("");
         mm.val("");
@@ -178,7 +175,7 @@ var VrtxDatepicker = dejavu.Class.declare({
       }
     }
   },
-  timeRangeHelp: function(val, max) {
+  __timeRangeHelp: function(val, max) {
     var newVal = parseInt(val, 10);
     if(isNaN(newVal) || newVal < 0) {
       newVal = "00";
@@ -188,7 +185,7 @@ var VrtxDatepicker = dejavu.Class.declare({
     }
     return newVal;
   },
-  extractHoursFromDate: function(datetime) {
+  __extractHoursFromDate: function(datetime) {
     var a = new String(datetime);
     var b = a.split(" ");
     if (b.length > 1) {
@@ -199,7 +196,7 @@ var VrtxDatepicker = dejavu.Class.declare({
     }
     return "";
   },
-  extractMinutesFromDate: function(datetime) {
+  __extractMinutesFromDate: function(datetime) {
     var a = new String(datetime);
     var b = a.split(" ");
     if (b.length > 1) {

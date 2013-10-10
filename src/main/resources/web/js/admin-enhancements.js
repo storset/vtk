@@ -227,6 +227,14 @@ VrtxAdmin.prototype.initTooltips = function initTooltips() {
     xOffset: 20,
     yOffset: -30
   });
+  this.cachedBody.vortexTips(".ui-dialog:visible .tree-create li span.folder", {
+    appendTo: ".vrtx-create-tree",
+    containerWidth: 80,
+    animOutPreDelay: 4000,
+    xOffset: 10,
+    yOffset: -8,
+    extra: true
+  });
 }
 
 /*
@@ -363,15 +371,6 @@ VrtxAdmin.prototype.initGlobalDialogs = function initGlobalDialogs() {
 
             dialog.on("click", ".tip a", function (e) { // Override jQuery UI prevention
               location.href = this.href;
-            });
-
-            treeElem.vortexTips("li span.folder", {
-              appendTo: ".vrtx-create-tree",
-              containerWidth: 80,
-              animOutPreDelay: 4000,
-              xOffset: 10,
-              yOffset: -8,
-              extra: true
             });
             
             var t = new VrtxTree({

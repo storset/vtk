@@ -110,12 +110,7 @@ var VrtxAccordion = dejavu.Class.declare({
       if (!str.length) { // Fallback header populator
         var field = elm.find(this.$static.headerPopulatorsFallbackClass);
         if (field.length) {
-          var fieldId = field.attr("id");
-          if (isCkEditor(fieldId)) { // Check if CK
-            str = getCkValue(fieldId); // Get CK content
-          } else {
-            str = field.val(); // Get input text
-          }
+          str = this.__getFieldString(field);
           if (field.is("textarea")) { // Remove markup and tabs
             str = $.trim(str.replace(this.$static.headerRegexRemoveMarkup, ""));
           }

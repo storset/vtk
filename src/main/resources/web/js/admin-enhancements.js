@@ -892,9 +892,9 @@ var VrtxAnimation = dejavu.Class.declare({
   $name: "VrtxAnimation",
   $implements: [VrtxAnimationInterface],
   $constants: {
-    animationSpeed: 200,
-    easeIn: "easeInQuad",
-    easeOut: "easeOutQuad"
+    animationSpeed: vrtxAdmin.isMobileWebkitDevice ? 0 : 200,
+    easeIn: (!(vrtxAdmin.isIE && vrtxAdmin.browserVersion < 10) && !vrtxAdmin.isMobileWebkitDevice) ? "easeInQuad" : "linear",
+    easeOut: (!(vrtxAdmin.isIE && vrtxAdmin.browserVersion < 10) && !vrtxAdmin.isMobileWebkitDevice) ? "easeOutQuad" : "linear"
   },
   __opts: {},
   initialize: function(opts) {
@@ -927,11 +927,11 @@ var VrtxAnimation = dejavu.Class.declare({
   rightIn: function() {
     var width = this.__prepareHorizontalMove();
     this.__opts.elem.css("marginLeft", -width);
-    this.__horizontalMove(0, animation.__opts.easeIn || animation.$static.easeIn);
+    this.__horizontalMove(0, this.__opts.easeIn || this.$static.easeIn);
   },
   leftOut: function() {
     var width = this.__prepareHorizontalMove();
-    this.__horizontalMove(-width, animation.__opts.easeOut || animation.$static.easeOut);
+    this.__horizontalMove(-width, this.__opts.easeOut || this.$static.easeOut);
   },
   topDown: function() {
     var animation = this;

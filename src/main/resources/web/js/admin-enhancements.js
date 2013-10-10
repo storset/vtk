@@ -884,7 +884,9 @@ var VrtxAnimationInterface = dejavu.Interface.declare({
   __horizontalMove: function() {},
   update: function(opts) {},
   rightIn: function() {},
-  leftOut: function() {}
+  leftOut: function() {},
+  topDown: function() {},
+  bottomUp: function() {}
 });
  
 var VrtxAnimation = dejavu.Class.declare({
@@ -907,6 +909,8 @@ var VrtxAnimation = dejavu.Class.declare({
     }, vrtxAdmin.transitionSpeed, easing, function() {
       animation.__opts.outerWrapperElem.removeClass("overflow-hidden");
       if(animation.__opts.after) animation.__opts.after();
+      if(animation.__opts.afterIn) animation.__opts.afterIn();
+      if(animation.__opts.afterOut) animation.__opts.afterOut();
     });
   },
   update: function(opts) {
@@ -920,6 +924,20 @@ var VrtxAnimation = dejavu.Class.declare({
   leftOut: function() {
     var width = this.__prepare();
     this.__horizontalMove(-width, vrtxAdmin.transitionEasingSlideUp);
+  },
+  topDown: function() {
+    var animation = this;
+    animation.__opts.elem.slideDown(vrtxAdmin.transitionSpeed, vrtxAdmin.transitionEasingSlideDown, function() {
+      if(animation.__opts.after) animation.__opts.after();
+      if(animation.__opts.afterIn) animation.__opts.afterIn();
+    });
+  },
+  bottomUp: function() {
+    var animation = this;
+    animation.__opts.elem.slideUp(vrtxAdmin.transitionSpeed, vrtxAdmin.transitionEasingSlideUp, function() {
+      if(animation.__opts.after) animation.__opts.after();
+      if(animation.__opts.afterOut) animation.__opts.afterOut();
+    });
   }
 });
  

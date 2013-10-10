@@ -1501,8 +1501,8 @@ function swapContent(moveBtn, move) {
     swapElementFn(element1, element2);
 
     if (hasAccordion && !runOnce) {
-      jsonAccordion.updateHeader(element1, true, false);
-      jsonAccordion.updateHeader(element2, true, false);
+      accordionJson.updateHeader(element1, true, false);
+      accordionJson.updateHeader(element2, true, false);
       runOnce = true;
     }
     /* Do we need these on all elements? */

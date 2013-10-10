@@ -416,9 +416,14 @@ VrtxAdmin.prototype.initGlobalDialogs = function initGlobalDialogs() {
           requiresDatepicker: true,
           onOpen: function() {
             $(".ui-dialog-buttonpane").hide();
-            datepickerApsD = new VrtxDatepicker({
-              language: datePickerLang,
-              selector: "#dialog-html-advanced-publish-settings-content"
+            // TODO: these should be retrieved from Vortex config/properties somehow
+            var rootUrl = "/vrtx/__vrtx/static-resources";
+            var futureDatepicker = (typeof VrtxDatepicker === "undefined") ? $.getScript(rootUrl + "/js/datepicker/vrtx-datepicker.js") : $.Deferred().resolve();
+            $.when(futureDatepicker).done(function() {
+              datepickerApsD = new VrtxDatepicker({
+                language: datePickerLang,
+                selector: "#dialog-html-advanced-publish-settings-content"
+              });
             });
           }
         });

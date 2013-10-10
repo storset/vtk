@@ -93,20 +93,7 @@ var AbstractVrtxSimpleDialog = dejavu.AbstractClass.declare({
     } else {
       futureUi.resolve();
     }
-    // TODO: When VrtxDatepicker starts to exist add this dependency-resolve-chain to it
-    var futureDatepicker = $.Deferred();
-    if (typeof VrtxDatepicker === "undefined" && dialog.__opts.requiresDatepicker) {
-      $.getScript(rootUrl + "/js/datepicker/vrtx-datepicker.js", function() {
-        $.getScript(rootUrl + "/jquery/plugins/ui/jquery-ui-" + jQueryUiVersion + ".custom/js/jquery.ui.datepicker-no.js", function() {
-          $.getScript(rootUrl + "/jquery/plugins/ui/jquery-ui-" + jQueryUiVersion + ".custom/js/jquery.ui.datepicker-nn.js", function() {
-            futureDatepicker.resolve(); 
-          });
-        });
-      });
-    } else {
-      futureDatepicker.resolve(); 
-    }
-    $.when(futureUi, futureDatepicker).done(function() {
+    $.when(futureUi).done(function() {
       dialog.__opts.elm = $(dialog.__opts.selector);
       dialog.__opts.elm.dialog(dialog.__dialogOpts);
       dialog.__opts.elm.dialog("open");

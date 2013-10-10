@@ -51,13 +51,14 @@
   </script>
 
   <!-- JQuery UI (used for datepicker) -->
-  <#if language = "no">
-    <script type="text/javascript" src="${webResources?html}/jquery/plugins/ui/jquery-ui-${jQueryUiVersion}.custom/js/jquery.ui.datepicker-no.js"></script>
-  <#elseif language = "nn">
-    <script type="text/javascript" src="${webResources?html}/jquery/plugins/ui/jquery-ui-${jQueryUiVersion}.custom/js/jquery.ui.datepicker-nn.js"></script>
-  </#if>
+
 
   <#if oldEditor>
+    <#if language = "no">
+      <script type="text/javascript" src="${webResources?html}/jquery/plugins/ui/jquery-ui-${jQueryUiVersion}.custom/js/jquery.ui.datepicker-no.js"></script>
+    <#elseif language = "nn">
+      <script type="text/javascript" src="${webResources?html}/jquery/plugins/ui/jquery-ui-${jQueryUiVersion}.custom/js/jquery.ui.datepicker-nn.js"></script>
+    </#if>
     <script type="text/javascript" src="${jsBaseURL?html}/datepicker/datepicker-admin-old.js"></script>
   <#else>
     <script type="text/javascript" src="${jsBaseURL?html}/datepicker/vrtx-datepicker.js"></script>

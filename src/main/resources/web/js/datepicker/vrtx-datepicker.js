@@ -26,18 +26,33 @@ var VrtxDatepicker = dejavu.Class.declare({
     }
     this.__opts.contents = contents;
     
-    // i18n (default english)
-    if (opts.language == 'no') {
-      $.datepicker.setDefaults($.datepicker.regional['no']);
-    } else if (opts.language == 'nn') {
-      $.datepicker.setDefaults($.datepicker.regional['nn']);
+    // TODO: these should be retrieved from Vortex config/properties somehow
+    var rootUrl = "/vrtx/__vrtx/static-resources";
+    var jQueryUiVersion = "1.10.3";
+    
+    var futureUi = $.Deferred();
+    if (typeof $.ui === "undefined") {
+      $.getScript(rootUrl + "/jquery/plugins/ui/jquery-ui-" + jQueryUiVersion + ".custom/js/jquery-ui-" + jQueryUiVersion + ".custom.min.js", function () {
+        futureUi.resolve();
+      });
+    } else {
+      futureUi.resolve();
     }
-    
-    datepick.initFields(contents.find(".date"));
-    datepick.initTimeHelp();
-    datepick.initDefaultEndDates();
-    
-    if(opts.after) opts.after();
+    var futureDatepickerLang = $.Deferred();
+    if (opts.language && opts.language !== "en") {
+      $.getScript(rootUrl + "/jquery/plugins/ui/jquery-ui-" + jQueryUiVersion + ".custom/js/jquery.ui.datepicker-" + opts.language + ".js", function() {
+        futureDatepickerLang.resolve(); 
+      });
+    } else {
+      futureDatepickerLang.resolve(); 
+    }
+    $.when(futureUi, futureDatepickerLang).done(function() {
+      $.datepicker.setDefaults($.datepicker.regional[opts.language]);
+      datepick.initFields(contents.find(".date"));
+      datepick.initTimeHelp();
+      datepick.initDefaultEndDates();
+      if(opts.after) opts.after();
+    });
   },
   initFields: function(dateFields) {
     for(var i = 0, len = dateFields.length; i < len; i++) {

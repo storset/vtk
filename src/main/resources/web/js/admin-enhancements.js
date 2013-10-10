@@ -344,7 +344,6 @@ VrtxAdmin.prototype.initGlobalDialogs = function initGlobalDialogs() {
           title: link.title,
           width: 600,
           height: 395,
-          requiresTree: true,
           onOpen: function() {
             var dialog = $(".ui-dialog:visible");
             var treeElem = dialog.find(".tree-create");
@@ -948,7 +947,7 @@ var VrtxTree = dejavu.Class.declare({
     var jQueryUiVersion = "1.10.3";
     
     var futureTree = $.Deferred();
-    if (typeof $.fn.treeview !== "function" && dialog.__opts.requiresTree) {
+    if (typeof $.fn.treeview !== "function") {
       $.getScript(location.protocol + "//" + location.host + rootUrl + "/jquery/plugins/jquery.treeview.js", function () {
         $.getScript(location.protocol + "//" + location.host + rootUrl + "/jquery/plugins/jquery.treeview.async.js", function () {
           $.getScript(location.protocol + "//" + location.host + rootUrl + "/jquery/plugins/jquery.scrollTo.min.js", function () {
@@ -973,11 +972,11 @@ var VrtxTree = dejavu.Class.declare({
   __openLeaf: function() {
     var tree = this;
     var checkLeafAvailable = setInterval(function () {
-      $("." + tree.$static.loadingLeafClass).remove();
+      $("." + tree.$static.leafLoadingClass).remove();
       var link = tree.__opts.elem.find("a[href$='" + tree.__opts.trav[tree.__opts.pathNum] + "']");
       if (link.length) {
         clearInterval(checkLeafAvailable);
-        var hit = link.closest("li").find(tree.$static.leafLoadingClass);
+        var hit = link.closest("li").find(tree.$static.leafSelector);
         hit.click();
         if (tree.__opts.scrollToContent && (tree.__opts.pathNum == (tree.__opts.trav.length - 1))) {
           tree.__opts.elem.css("background", "none").fadeIn(200, function () {  // Scroll to node

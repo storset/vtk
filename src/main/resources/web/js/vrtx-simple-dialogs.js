@@ -93,6 +93,7 @@ var AbstractVrtxSimpleDialog = dejavu.AbstractClass.declare({
     } else {
       futureUi.resolve();
     }
+    // TODO: When VrtxDatepicker starts to exist add this dependency-resolve-chain to it
     var futureDatepicker = $.Deferred();
     if (typeof initDatePicker !== "function" && dialog.__opts.requiresDatepicker) {
       $.getScript(rootUrl + "/js/datepicker/datepicker-admin.js", function() {
@@ -152,7 +153,6 @@ var VrtxHtmlDialog = dejavu.Class.declare({
       hasCancel: opts.btnTextCancel,
       btnTextOk: opts.btnTextOk,
       btnTextCancel: opts.btnTextCancel,
-      requiresTree: opts.requiresTree,
       requiresDatepicker: opts.requiresDatepicker,
       onOpen: opts.onOpen
     });

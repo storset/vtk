@@ -1417,7 +1417,7 @@ function addJsonField(btn) {
           vrtxEditor.newEditor(ckSimpleHtmls[i], false, false, requestLang, cssFileList, "true");
         }
         for (i = 0; i < dateTimesLen; i++) {
-          displayDateAsMultipleInputFields(dateTimes[i]);
+          datepickerEditor.displayDateAsMultipleInputFields(dateTimes[i]);
         }
       } else {
         setTimeout(checkForAppendComplete, 25);

@@ -24,7 +24,9 @@
   
   <script type="text/javascript"><!--
     $(window).load(function() {
-      initDatePicker(datePickerLang); // TODO: this would never run if resources hangs
+      datepickerEditor = new VrtxDatepicker({
+        language: datePickerLang
+      });
     });
 
     $(document).ready(function() {
@@ -60,7 +62,7 @@
     function performSave() {
       var ok = validTextLengthsInEditor(false);
       if(!ok) return false; 
-      saveDateAndTimeFields(); // js/datepicker/datepicker-admin.js
+      datepickerEditor.saveDateAndTimeFields(); // js/datepicker/datepicker-admin.js
       saveMultipleInputFields();
       
       /* Trim box URLs */

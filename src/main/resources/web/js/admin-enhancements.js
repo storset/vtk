@@ -395,6 +395,7 @@ VrtxAdmin.prototype.initGlobalDialogs = function initGlobalDialogs() {
   
   // Advanced publish settings
   var apsD;
+  var datepickerApsD;
   vrtxAdm.cachedDoc.on("click", "#advanced-publish-settings", function (e) {
     var link = this;
     var id = link.id + "-content";
@@ -415,7 +416,10 @@ VrtxAdmin.prototype.initGlobalDialogs = function initGlobalDialogs() {
           requiresDatepicker: true,
           onOpen: function() {
             $(".ui-dialog-buttonpane").hide();
-            initDatePicker(datePickerLang, "#dialog-html-advanced-publish-settings-content");
+            datepickerApsD = new VrtxDatepicker({
+              language: datePickerLang,
+              selector: "#dialog-html-advanced-publish-settings-content"
+            });
           }
         });
         apsD.open();
@@ -449,7 +453,7 @@ VrtxAdmin.prototype.initGlobalDialogs = function initGlobalDialogs() {
         return;
       }
       
-      saveDateAndTimeFields();
+      datepickerApsD.saveDateAndTimeFields();
       
       vrtxAdm.completeFormAsyncPost(options);
     },

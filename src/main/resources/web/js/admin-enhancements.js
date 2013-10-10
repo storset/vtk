@@ -105,8 +105,6 @@ function VrtxAdmin() {
   };
 
   // Transitions
-  this.transitionSpeed = this.isMobileWebkitDevice ? 0 : 200; // same as 'fast'
-  this.transitionCustomPermissionSpeed = this.isMobileWebkitDevice ? 0 : 200; // same as 'fast'
   this.transitionPropSpeed = this.isMobileWebkitDevice ? 0 : 100;
   this.transitionDropdownSpeed = this.isMobileWebkitDevice ? 0 : 100;
   this.transitionEasingSlideDown = (!(this.isIE && this.browserVersion < 10) && !this.isMobileWebkitDevice) ? "easeOutQuad" : "linear";
@@ -893,6 +891,11 @@ var VrtxAnimationInterface = dejavu.Interface.declare({
 var VrtxAnimation = dejavu.Class.declare({
   $name: "VrtxAnimation",
   $implements: [VrtxAnimationInterface],
+  $constants: {
+    animationSpeed: 200,
+    easeIn: "easeInQuad",
+    easeOut: "easeOutQuad"
+  },
   __opts: {},
   initialize: function(opts) {
     this.__opts = opts;
@@ -907,7 +910,7 @@ var VrtxAnimation = dejavu.Class.declare({
     var animation = this;
     animation.__opts.elem.animate({
       "marginLeft": left + "px"
-    }, animation.__opts.animationSpeed || vrtxAdmin.transitionSpeed, easing, function() {
+    }, animation.__opts.animationSpeed || animation.$static.animationSpeed, easing, function() {
       if(animation.__opts.outerWrapperElem) animation.__opts.outerWrapperElem.removeClass("overflow-hidden");
       if(animation.__opts.after) animation.__opts.after(animation);
       // TODO: closures pr. direction if needed also for horizontal animation
@@ -924,22 +927,26 @@ var VrtxAnimation = dejavu.Class.declare({
   rightIn: function() {
     var width = this.__prepareHorizontalMove();
     this.__opts.elem.css("marginLeft", -width);
-    this.__horizontalMove(0, vrtxAdmin.transitionEasingSlideDown);
+    this.__horizontalMove(0, animation.__opts.easeIn || animation.$static.easeIn);
   },
   leftOut: function() {
     var width = this.__prepareHorizontalMove();
-    this.__horizontalMove(-width, vrtxAdmin.transitionEasingSlideUp);
+    this.__horizontalMove(-width, animation.__opts.easeOut || animation.$static.easeOut);
   },
   topDown: function() {
     var animation = this;
-    animation.__opts.elem.slideDown(animation.__opts.animationSpeed || vrtxAdmin.transitionSpeed, vrtxAdmin.transitionEasingSlideDown, function() {
+    animation.__opts.elem.slideDown(
+        animation.__opts.animationSpeed || animation.$static.animationSpeed,
+        animation.__opts.easeIn || animation.$static.easeIn, function() {
       if(animation.__opts.after) animation.__opts.after(animation);
       if(animation.__opts.afterIn) animation.__opts.afterIn(animation);
     });
   },
   bottomUp: function() {
     var animation = this;
-    animation.__opts.elem.slideUp(animation.__opts.animationSpeed || vrtxAdmin.transitionSpeed, vrtxAdmin.transitionEasingSlideUp, function() {
+    animation.__opts.elem.slideUp(
+        animation.__opts.animationSpeed || animation.$static.animationSpeed, 
+        animation.__opts.easeOut || animation.$static.easeOut, function() {
       if(animation.__opts.after) animation.__opts.after(animation);
       if(animation.__opts.afterOut) animation.__opts.afterOut(animation);
     });
@@ -1180,7 +1187,12 @@ VrtxAdmin.prototype.dropdown = function dropdown(options) {
  * @this {VrtxAdmin}
  */
 VrtxAdmin.prototype.openDropdown = function openDropdown(elm) {
-  elm.not(":visible").slideDown(this.transitionDropdownSpeed, "swing");
+  var animation = new VrtxAnimation({
+    elem: elm.not(":visible"),
+    animationSpeed: vrtxAdmin.transitionDropdownSpeed,
+    easeIn: "swing"
+  });
+  animation.topDown();
 };
 
 /**
@@ -1189,7 +1201,12 @@ VrtxAdmin.prototype.openDropdown = function openDropdown(elm) {
  * @this {VrtxAdmin}
  */
 VrtxAdmin.prototype.closeDropdowns = function closeDropdowns() {
-  this._$(".dropdown-shortcut-menu-container:visible").slideUp(this.transitionDropdownSpeed, "swing");
+  var animation = new VrtxAnimation({
+    elem: this._$(".dropdown-shortcut-menu-container:visible"),
+    animationSpeed: vrtxAdmin.transitionDropdownSpeed,
+    easeIn: "swing"
+  });
+  animation.bottomUp();
 };
 
 /**
@@ -2379,7 +2396,6 @@ function toggleConfigCustomPermissions(selectorClass) {
     $("." + selectorClass).find(".principalList").addClass("hidden");
   }
   var customConfigAnimation = new VrtxAnimation({
-    animationSpeed: vrtxAdmin.transitionCustomPermissionSpeed,
     afterIn: function(animation) {
       animation.__opts.elem.removeClass("hidden");
     },
@@ -2577,9 +2593,9 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(options) {
     var selector = options.selector,
       selectorClass = options.selectorClass,
       simultanSliding = options.simultanSliding,
-      transitionSpeed = ((options.transitionSpeed !== null) ? options.transitionSpeed : vrtxAdm.transitionSpeed),
-      transitionEasingSlideDown = options.transitionEasingSlideDown || vrtxAdm.transitionEasingSlideDown,
-      transitionEasingSlideUp = options.transitionEasingSlideUp || vrtxAdm.transitionEasingSlideUp,
+      transitionSpeed = options.transitionSpeed,
+      transitionEasingSlideDown = options.transitionEasingSlideDown,
+      transitionEasingSlideUp = options.transitionEasingSlideUp,
       modeUrl = location.href,
       fromModeToNotMode = false,
       existExpandedFormIsReplaced = false,
@@ -2632,6 +2648,9 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(options) {
           var succeededAddedOriginalMarkup = true;
           var animation = new VrtxAnimation({
             elem: expandedForm,
+            animationSpeed: transitionSpeed,
+            easeIn: transitionEasingSlideDown,
+            easeOut: transitionEasingSlideUp,
             afterOut: function(animation) {
               if (existExpandedFormIsReplaced) {
                 if (fromModeToNotMode) { // When we need the 'mode=' HTML when requesting a 'not mode=' service
@@ -2766,6 +2785,9 @@ VrtxAdmin.prototype.addNewMarkup = function addNewMarkup(options, selectorClass,
   
   var animation = new VrtxAnimation({
     elem: $(nodeType + "." + selectorClass).hide(),
+    animationSpeed: transitionSpeed,
+    easeIn: transitionEasingSlideDown,
+    easeOut: transitionEasingSlideUp,
     afterIn: function(animation) {
       animation.__opts.elem.find("input[type=text]:visible:first").focus();
     }
@@ -2804,9 +2826,9 @@ VrtxAdmin.prototype.completeFormAsync = function completeFormAsync(options) {
       funcBeforeComplete = options.funcBeforeComplete,
       funcProceedCondition = options.funcProceedCondition,
       funcComplete = options.funcComplete,
-      transitionSpeed = ((options.transitionSpeed !== null) ? options.transitionSpeed : vrtxAdm.transitionSpeed),
-      transitionEasingSlideDown = options.transitionEasingSlideDown || vrtxAdm.transitionEasingSlideDown,
-      transitionEasingSlideUp = options.transitionEasingSlideUp || vrtxAdm.transitionEasingSlideUp,
+      transitionSpeed = options.transitionSpeed,
+      transitionEasingSlideDown = options.transitionEasingSlideDown,
+      transitionEasingSlideUp = options.transitionEasingSlideUp,
       post = options.post || false,
       link = _$(this),
       isCancelAction = link.attr("name").toLowerCase().indexOf("cancel") != -1;
@@ -2815,6 +2837,9 @@ VrtxAdmin.prototype.completeFormAsync = function completeFormAsync(options) {
       if (isCancelAction && !isReplacing) {
         var animation = new VrtxAnimation({
           elem: $(".expandedForm"),
+          animationSpeed: transitionSpeed,
+          easeIn: transitionEasingSlideDown,
+          easeOut: transitionEasingSlideUp,
           afterOut: function(animation) {
             animation.__opts.elem.remove();
           }
@@ -2866,9 +2891,9 @@ VrtxAdmin.prototype.completeFormAsyncPost = function completeFormAsyncPost(optio
     errorContainerInsertAfter = options.errorContainerInsertAfter,
     funcBeforeComplete = options.funcBeforeComplete,
     funcComplete = options.funcComplete,
-    transitionSpeed = options.transitionSpeed || vrtxAdm.transitionSpeed,
-    transitionEasingSlideDown = options.transitionEasingSlideDown || vrtxAdm.transitionEasingSlideDown,
-    transitionEasingSlideUp = options.transitionEasingSlideUp || vrtxAdm.transitionEasingSlideUp,
+    transitionSpeed = options.transitionSpeed,
+    transitionEasingSlideDown = options.transitionEasingSlideDown,
+    transitionEasingSlideUp = options.transitionEasingSlideUp,
     form = options.form,
     link = options.link,
     url = form.attr("action");
@@ -2888,6 +2913,9 @@ VrtxAdmin.prototype.completeFormAsyncPost = function completeFormAsyncPost(optio
         if (isReplacing) {
           var animation = new VrtxAnimation({
             elem: form.parent(),
+            animationSpeed: transitionSpeed,
+            easeIn: transitionEasingSlideDown,
+            easeOut: transitionEasingSlideUp,
             afterOut: function(animation) {
               for (var i = updateSelectors.length; i--;) {
                 var outer = vrtxAdm.outerHTML(_$.parseHTML(results), updateSelectors[i]);
@@ -2936,6 +2964,9 @@ VrtxAdmin.prototype.completeFormAsyncPost = function completeFormAsyncPost(optio
                 }
                 var animation = new VrtxAnimation({
                   elem: form.parent(),
+                  animationSpeed: transitionSpeed,
+                  easeIn: transitionEasingSlideDown,
+                  easeOut: transitionEasingSlideUp,
                   afterOut: function(animation) {
                     animation.__opts.elem.remove();
                   }
@@ -2962,6 +2993,9 @@ VrtxAdmin.prototype.completeFormAsyncPost = function completeFormAsyncPost(optio
             }
             var animation = new VrtxAnimation({
               elem: form.parent(),
+              animationSpeed: transitionSpeed,
+              easeIn: transitionEasingSlideDown,
+              easeOut: transitionEasingSlideUp,
               afterOut: function(animation) {
                 animation.__opts.elem.remove();
               }

@@ -975,14 +975,23 @@ VrtxEditor.prototype.initShowHide = function initShowHide() {
 
   vrtxAdm.cachedAppContent.on("change", "#resource\\.courseContext\\.course-status", function (e) {
     var courseStatus = _$(this);
+    var animation = new VrtxAnimation({
+      animationSpeed: vrtxAdm.transitionDropdownSpeed,
+      easeIn: "swing",
+      easeOut: "swing",
+      afterIn: function(animation) {
+        animation.__opts.elem.removeClass("hidden");
+      },
+      afterOut: function(animation) {
+        animation.__opts.elem.addClass("hidden");
+      }
+    })
     if (courseStatus.val() === "continued-as") {
-      _$("#vrtx-resource\\.courseContext\\.course-continued-as.hidden").slideDown(vrtxAdm.transitionDropdownSpeed, "swing", function () {
-        _$(this).removeClass("hidden");
-      });
+      animation.updateElem(_$("#vrtx-resource\\.courseContext\\.course-continued-as.hidden"));
+      animation.topDown();
     } else {
-      _$("#vrtx-resource\\.courseContext\\.course-continued-as:not(.hidden)").slideUp(vrtxAdm.transitionDropdownSpeed, "swing", function () {
-        _$(this).addClass("hidden");
-      });
+      animation.updateElem(_$("#vrtx-resource\\.courseContext\\.course-continued-as:not(.hidden)"));
+      animation.bottomUp();
     }
     e.stopPropagation();
   });

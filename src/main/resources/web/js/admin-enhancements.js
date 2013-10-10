@@ -892,9 +892,10 @@ var VrtxAnimation = dejavu.Class.declare({
   $name: "VrtxAnimation",
   $implements: [VrtxAnimationInterface],
   $constants: {
-    animationSpeed: vrtxAdmin.isMobileWebkitDevice ? 0 : 200,
-    easeIn: (!(vrtxAdmin.isIE && vrtxAdmin.browserVersion < 10) && !vrtxAdmin.isMobileWebkitDevice) ? "easeInQuad" : "linear",
-    easeOut: (!(vrtxAdmin.isIE && vrtxAdmin.browserVersion < 10) && !vrtxAdmin.isMobileWebkitDevice) ? "easeOutQuad" : "linear"
+    // TODO: remove vrtxAdmin dependency
+    animationSpeed: typeof vrtxAdmin !== "undefined" && vrtxAdmin.isMobileWebkitDevice ? 0 : 200,
+    easeIn: (typeof vrtxAdmin !== "undefined" && !(vrtxAdmin.isIE && vrtxAdmin.browserVersion < 10) && !vrtxAdmin.isMobileWebkitDevice) ? "easeInQuad" : "linear",
+    easeOut: (typeof vrtxAdmin !== "undefined" && !(vrtxAdmin.isIE && vrtxAdmin.browserVersion < 10) && !vrtxAdmin.isMobileWebkitDevice) ? "easeOutQuad" : "linear"
   },
   __opts: {},
   initialize: function(opts) {

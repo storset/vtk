@@ -52,59 +52,53 @@ var VrtxAccordion = dejavu.Class.declare({
       this.__opts.elem.accordion("option", "active", false);
     }
   },
-  updateHeader: function(elem, isJson, init) {
-    var tree = this;
-    
-    var getString = function(input) {
-      var inputId = input.id;
-      if (isCkEditor(inputId)) { // Check if CK
-        str = getCkValue(inputId); // Get CK content
-      } else {
-        str = input.value; // Get input text
-      }
-      return str;
-    };
-    
-    var findMultipleForContentMatch = function(elm) {
-      var containers = elm.find(tree.$static.headerMultipleCheckClass);
-      var i = containers.length;
-      for(;i--;) {
-        var inputs = $(containers[i]).find("input[type='text'], textarea");
-        var j = inputs.length;
-        for(;j--;) {
-          if("" === getString(inputs[j])) { // All need to have content for match
-            return false;
-          }
+  __getFieldString: function(field) {
+    var fieldId = field.id;
+    if (isCkEditor(fieldId)) { // Check if CK
+      var str = getCkValue(fieldId); // Get CK content
+    } else {
+      var str = field.value; // Get input text
+    }
+    return str;
+  },
+  __findMultiContentMatch: function(elm) {
+    var containers = elm.find(this.$static.headerMultipleCheckClass);
+    var i = containers.length;
+    for(;i--;) {
+      var inputs = $(containers[i]).find("input[type='text'], textarea");
+      var j = inputs.length;
+      for(;j--;) {
+        if("" === this.__getFieldString(inputs[j])) { // All need to have content for match
+          return false;
         }
+      }
+      return true;
+    }
+  },
+  __findSingleContentMatch: function(elm) {
+    var inputs = elm.find(this.$static.headerSingleCheckClass + " input[type='text'], " + this.$static.headerSingleCheckClass + " textarea");
+    var i = inputs.length;
+    for(;i--;) {
+      if("" !== this.__getFieldString(inputs[i])) { // One need to have content for match
         return true;
       }
-    };
-    
-    var findSingleForContentMatch = function(elm) {
-      var inputs = elm.find(tree.$static.headerSingleCheckClass + " input[type='text'], " + tree.$static.headerSingleCheckClass + " textarea");
-      var i = inputs.length;
-      for(;i--;) {
-        if("" !== getString(inputs[i])) { // One need to have content for match
-          return true;
-        }
-      }
-    };
-    
-    var noContentOrNoTitle = function() {
+    }
+  },
+  __headerCheckNoContentOrNoTitle: function(elm) {
+    if(!this.__opts.noTitleText) {
       var lang = (vrtxAdmin !== "undefined") ? vrtxAdmin.lang : $("body").attr("lang");
-      if(findMultipleForContentMatch(elm) || findSingleForContentMatch(elm)) {
-        return (lang !== "en") ? "Ingen tittel" : "No title"; 
-      } else {
-        return (lang !== "en") ? "Intet innhold" : "No content";  
-      }
-    };
-
+      this.__opts.noTitleText = (lang !== "en") ? "Ingen tittel" : "No title";
+      this.__opts.noContentText = (lang !== "en") ? "Intet innhold" : "No content"; 
+    }
+    return (this.__findMultiContentMatch(elm) || this.__findSingleContentMatch(elm)) ? this.__opts.noTitleText : this.__opts.noContentText;
+  },
+  updateHeader: function(elem, isJson, init) {
     if (typeof elem.closest !== "function") elem = $(elem);
     var elm = isJson ? elem.closest(".vrtx-json-element") 
                      : elem.closest(".vrtx-grouped"); // XXX: extract
     if (elm.length) { // Header populators
       var str = "";
-      var fields = elm.find(tree.$static.headerPopulatorsClass);
+      var fields = elm.find(this.$static.headerPopulatorsClass);
       if (!fields.length) return;
       for (var i = 0, len = fields.length; i < len; i++) {
         var val = fields[i].value;
@@ -112,7 +106,7 @@ var VrtxAccordion = dejavu.Class.declare({
         str += (str.length) ? ", " + val : val;
       }
       if (!str.length) { // Fallback header populator
-        var field = elm.find(tree.$static.headerPopulatorsFallbackClass);
+        var field = elm.find(this.$static.headerPopulatorsFallbackClass);
         if (field.length) {
           var fieldId = field.attr("id");
           if (isCkEditor(fieldId)) { // Check if CK
@@ -127,11 +121,11 @@ var VrtxAccordion = dejavu.Class.declare({
             if (str.length > 30) {
               str = str.substring(0, 30) + "...";
             } else if (!str.length) {
-              str = noContentOrNoTitle();
+              str = this.__headerCheckNoContentOrNoTitle(elm);
             }
           }
         } else {
-          str = noContentOrNoTitle();
+          str = this.__headerCheckNoContentOrNoTitle(elm);
         }
       }
       var header = elm.find("> .header");

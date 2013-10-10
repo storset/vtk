@@ -880,9 +880,10 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
 var VrtxAnimationInterface = dejavu.Interface.declare({
   $name: "VrtxAnimationInterface",
   __opts: {},
-  __prepare: function() {},
+  __prepareHorizontalMove: function() {},
   __horizontalMove: function() {},
   update: function(opts) {},
+  updateElem: function(elem) {},
   rightIn: function() {},
   leftOut: function() {},
   topDown: function() {},
@@ -896,8 +897,8 @@ var VrtxAnimation = dejavu.Class.declare({
   initialize: function(opts) {
     this.__opts = opts;
   },
-  __prepare: function() {
-    if(!this.__opts.outerWrapperElem.hasClass("overflow-hidden")) {
+  __prepareHorizontalMove: function() {
+    if(this.__opts.outerWrapperElem && !this.__opts.outerWrapperElem.hasClass("overflow-hidden")) {
       this.__opts.outerWrapperElem.addClass("overflow-hidden");
     }
     return this.__opts.elem.outerWidth(true);
@@ -906,37 +907,40 @@ var VrtxAnimation = dejavu.Class.declare({
     var animation = this;
     animation.__opts.elem.animate({
       "marginLeft": left + "px"
-    }, vrtxAdmin.transitionSpeed, easing, function() {
-      animation.__opts.outerWrapperElem.removeClass("overflow-hidden");
-      if(animation.__opts.after) animation.__opts.after();
-      if(animation.__opts.afterIn) animation.__opts.afterIn();
-      if(animation.__opts.afterOut) animation.__opts.afterOut();
+    }, animation.__opts.animationSpeed || vrtxAdmin.transitionSpeed, easing, function() {
+      if(animation.__opts.outerWrapperElem) animation.__opts.outerWrapperElem.removeClass("overflow-hidden");
+      if(animation.__opts.after) animation.__opts.after(animation);
+      if(animation.__opts.afterIn) animation.__opts.afterIn(animation);
+      if(animation.__opts.afterOut) animation.__opts.afterOut(animation);
     });
   },
   update: function(opts) {
     this.__opts = opts;
   },
+  updateElem: function(elem) {
+    this.__opts.elem = elem;
+  },
   rightIn: function() {
-    var width = this.__prepare();
+    var width = this.__prepareHorizontalMove();
     this.__opts.elem.css("marginLeft", -width);
     this.__horizontalMove(0, vrtxAdmin.transitionEasingSlideDown);
   },
   leftOut: function() {
-    var width = this.__prepare();
+    var width = this.__prepareHorizontalMove();
     this.__horizontalMove(-width, vrtxAdmin.transitionEasingSlideUp);
   },
   topDown: function() {
     var animation = this;
-    animation.__opts.elem.slideDown(vrtxAdmin.transitionSpeed, vrtxAdmin.transitionEasingSlideDown, function() {
-      if(animation.__opts.after) animation.__opts.after();
-      if(animation.__opts.afterIn) animation.__opts.afterIn();
+    animation.__opts.elem.slideDown(animation.__opts.animationSpeed || vrtxAdmin.transitionSpeed, vrtxAdmin.transitionEasingSlideDown, function() {
+      if(animation.__opts.after) animation.__opts.after(animation);
+      if(animation.__opts.afterIn) animation.__opts.afterIn(animation);
     });
   },
   bottomUp: function() {
     var animation = this;
-    animation.__opts.elem.slideUp(vrtxAdmin.transitionSpeed, vrtxAdmin.transitionEasingSlideUp, function() {
-      if(animation.__opts.after) animation.__opts.after();
-      if(animation.__opts.afterOut) animation.__opts.afterOut();
+    animation.__opts.elem.slideUp(animation.__opts.animationSpeed || vrtxAdmin.transitionSpeed, vrtxAdmin.transitionEasingSlideUp, function() {
+      if(animation.__opts.after) animation.__opts.after(animation);
+      if(animation.__opts.afterOut) animation.__opts.afterOut(animation);
     });
   }
 });
@@ -2373,16 +2377,25 @@ function toggleConfigCustomPermissions(selectorClass) {
   if (!customInput.is(":checked") && customInput.length) {
     $("." + selectorClass).find(".principalList").addClass("hidden");
   }
+  var customConfigAnimation = new VrtxAnimation({
+    animationSpeed: vrtxAdmin.transitionCustomPermissionSpeed,
+    afterIn: function(animation) {
+      animation.__opts.elem.removeClass("hidden");
+    },
+    afterOut: function(animation) {
+      animation.__opts.elem.addClass("hidden");
+    }
+  });
   vrtxAdmin.cachedAppContent.delegate("." + selectorClass + " ul.shortcuts label[for=custom]", "click", function (e) {
-    $(this).closest("form").find(".principalList.hidden").slideDown(vrtxAdmin.transitionCustomPermissionSpeed, vrtxAdmin.transitionEasingSlideDown, function () {
-      $(this).removeClass("hidden");
-    });
+    var elem = $(this).closest("form").find(".principalList.hidden");
+    customConfigAnimation.updateElem(elem);
+    customConfigAnimation.topDown();
     e.stopPropagation();
   });
   vrtxAdmin.cachedAppContent.delegate("." + selectorClass + " ul.shortcuts label:not([for=custom])", "click", function (e) {
-    $(this).closest("form").find(".principalList:not(.hidden)").slideUp(vrtxAdmin.transitionCustomPermissionSpeed, vrtxAdmin.transitionEasingSlideUp, function () {
-      $(this).addClass("hidden");
-    });
+    var elem = $(this).closest("form").find(".principalList:not(.hidden)");
+    customConfigAnimation.updateElem(elem);
+    customConfigAnimation.bottomUp();
     e.stopPropagation();
   });
 }

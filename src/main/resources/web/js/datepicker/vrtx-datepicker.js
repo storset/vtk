@@ -6,10 +6,23 @@
  *  * Requires Dejavu OOP library
  *  * Requires but Lazy-loads jQuery UI library (if not defined) on open
  *  * Lazy-loads jQuery UI language file if language matches on open (and not empty string or 'en')
+ *  
+ *  TODO: set private functions when only used internal
+ *  
  */
 
 var VrtxDatepickerInterface = dejavu.Interface.declare({
-  $name: "VrtxDatepickerInterface"
+  $name: "VrtxDatepickerInterface",
+  initFields: function(dateFields) {},
+  initField: function(name, selector) {},
+  initDefaultEndDates: function() {},
+  setDefaultEndDate: function(startDateElm, endDateElm) {},
+  initTimeHelp: function() {},
+  timeHelp: function(hh, mm) {},
+  timeRangeHelp: function(val, max) {},
+  extractHoursFromDate: function(datetime) {},
+  extractMinutesFromDate: function(datetime) {},
+  prepareForSave: function() {}
 });
 
 var VrtxDatepicker = dejavu.Class.declare({
@@ -62,10 +75,10 @@ var VrtxDatepicker = dejavu.Class.declare({
   },
   initFields: function(dateFields) {
     for(var i = 0, len = dateFields.length; i < len; i++) {
-      this.initField(dateFields[i].name, this.__opts.selector);
+      this.__initField(dateFields[i].name, this.__opts.selector);
     }
   },
-  initField: function(name, selector) {
+  __initField: function(name, selector) {
     var hours = "";
     var minutes = "";
     var date = [];
@@ -165,7 +178,7 @@ var VrtxDatepicker = dejavu.Class.declare({
       }
     }
   },
-  timeRangeHelp: function(val, max) { /* XXX: better name */
+  timeRangeHelp: function(val, max) {
     var newVal = parseInt(val, 10);
     if(isNaN(newVal) || newVal < 0) {
       newVal = "00";

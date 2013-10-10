@@ -2812,9 +2812,13 @@ VrtxAdmin.prototype.completeFormAsync = function completeFormAsync(options) {
 
     if (!post) {
       if (isCancelAction && !isReplacing) {
-        _$(".expandedForm").slideUp(transitionSpeed, transitionEasingSlideUp, function () {
-          _$(this).remove();
+        var animation = new VrtxAnimation({
+          elem: $(".expandedForm"),
+          afterOut: function(animation) {
+            animation.__opts.elem.remove();
+          }
         });
+        animation.bottomUp();
         e.preventDefault();
       } else {
         e.stopPropagation();
@@ -2881,24 +2885,28 @@ VrtxAdmin.prototype.completeFormAsyncPost = function completeFormAsyncPost(optio
         vrtxAdm.displayErrorContainers(_$.parseHTML(results), form, errorContainerInsertAfter, errorContainer);
       } else {
         if (isReplacing) {
-          form.parent().slideUp(transitionSpeed, transitionEasingSlideUp, function () {
-            for (var i = updateSelectors.length; i--;) {
-              var outer = vrtxAdm.outerHTML(_$.parseHTML(results), updateSelectors[i]);
-              vrtxAdm.cachedBody.find(updateSelectors[i]).replaceWith(outer);
-            }
-            var resultsResourceTitle = _$($.parseHTML(results)).find("#resource-title");
-            var currentResourceTitle = vrtxAdm.cachedBody.find("#resource-title");
-            if (resultsResourceTitle.length && currentResourceTitle.length) {
-              if (resultsResourceTitle.hasClass("compact") && !currentResourceTitle.hasClass("compact")) {
-                currentResourceTitle.addClass("compact");
-              } else if (!resultsResourceTitle.hasClass("compact") && currentResourceTitle.hasClass("compact")) {
-                currentResourceTitle.removeClass("compact");
+          var animation = new VrtxAnimation({
+            elem: form.parent(),
+            afterOut: function(animation) {
+              for (var i = updateSelectors.length; i--;) {
+                var outer = vrtxAdm.outerHTML(_$.parseHTML(results), updateSelectors[i]);
+                vrtxAdm.cachedBody.find(updateSelectors[i]).replaceWith(outer);
+              }
+              var resultsResourceTitle = _$($.parseHTML(results)).find("#resource-title");
+              var currentResourceTitle = vrtxAdm.cachedBody.find("#resource-title");
+              if (resultsResourceTitle.length && currentResourceTitle.length) {
+                if (resultsResourceTitle.hasClass("compact") && !currentResourceTitle.hasClass("compact")) {
+                  currentResourceTitle.addClass("compact");
+                } else if (!resultsResourceTitle.hasClass("compact") && currentResourceTitle.hasClass("compact")) {
+                  currentResourceTitle.removeClass("compact");
+                }
+              }
+              if (funcComplete) {
+                funcComplete();
               }
             }
-            if (funcComplete) {
-              funcComplete();
-            }
           });
+          animation.bottomUp();
         } else {
           var sameMode = false;
           if (url.indexOf("&mode=") !== -1) {
@@ -2925,9 +2933,13 @@ VrtxAdmin.prototype.completeFormAsyncPost = function completeFormAsyncPost(optio
                 if (funcComplete) {
                   funcComplete();
                 }
-                form.parent().slideUp(transitionSpeed, transitionEasingSlideUp, function () {
-                  _$(this).remove();
+                var animation = new VrtxAnimation({
+                  elem: form.parent(),
+                  afterOut: function(animation) {
+                    animation.__opts.elem.remove();
+                  }
                 });
+                animation.bottomUp();
               }
             });
           } else {
@@ -2947,9 +2959,13 @@ VrtxAdmin.prototype.completeFormAsyncPost = function completeFormAsyncPost(optio
             if (funcComplete) {
               funcComplete();
             }
-            form.parent().slideUp(transitionSpeed, transitionEasingSlideUp, function () {
-              _$(this).remove();
+            var animation = new VrtxAnimation({
+              elem: form.parent(),
+              afterOut: function(animation) {
+                animation.__opts.elem.remove();
+              }
             });
+            animation.bottomUp();
           }
         }
       }
@@ -3148,19 +3164,12 @@ VrtxAdmin.prototype.displayMsg = function displayMsg(msg, type) {
       otherMsg.html(msg).removeClass(other).addClass(current).fadeTo(100, 0.25).fadeTo(100, 1);
     } else {
       vrtxAdm.cachedAppContent.prepend("<div class='" + current + " message'>" + msg + "</div>");
-      // _$("." + current).hide().slideDown(vrtxAdm.transitionSpeed, vrtxAdm.transitionEasingSlideDown);
     }
   } else {
     if (currentMsg.length) {
-      /* currentMsg.hide().slideUp(vrtxAdm.transitionSpeed, vrtxAdm.transitionEasingSlideUp, function() {
-        _$(this).remove();
-      }); */
       currentMsg.remove();
     }
     if (otherMsg.length) {
-      /* otherMsg.hide().slideUp(vrtxAdm.transitionSpeed, vrtxAdm.transitionEasingSlideUp, function() {
-        _$(this).remove();
-      }); */
       otherMsg.remove();
     }
   }

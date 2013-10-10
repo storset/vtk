@@ -1052,10 +1052,14 @@ function toggleShowHideBoolean(props, show, init) {
       theProps.hide();
     }
   } else {
+    var animation = new VrtxAnimation({
+      animationSpeed: vrtxAdmin.transitionPropSpeed,
+      elem: theProps
+    });
     if (show) {
-      theProps.slideDown(vrtxAdmin.transitionPropSpeed, vrtxAdmin.transitionEasingSlideDown);
+      animation.topDown();
     } else {
-      theProps.slideUp(vrtxAdmin.transitionPropSpeed, vrtxAdmin.transitionEasingSlideUp);
+      animation.bottomUp();
     }
   }
 }

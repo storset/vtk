@@ -2629,47 +2629,51 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(options) {
             }
           }
           var succeededAddedOriginalMarkup = true;
-          expandedForm.slideUp(transitionSpeed, transitionEasingSlideUp, function () {
-            if (existExpandedFormIsReplaced) {
-              if (fromModeToNotMode) { // When we need the 'mode=' HTML when requesting a 'not mode=' service
-                vrtxAdmin.serverFacade.getHtml(modeUrl, {
-                  success: function (results, status, resp) {
-                    var succeededAddedOriginalMarkup = vrtxAdm.addOriginalMarkup(modeUrl, _$.parseHTML(results), resultSelectorClass, expandedForm);
-                    if (succeededAddedOriginalMarkup) {
-                      vrtxAdm.addNewMarkup(options, selectorClass, transitionSpeed, transitionEasingSlideDown, transitionEasingSlideUp, form);
-                    } else {
+          var animation = new VrtxAnimation({
+            elem: expandedForm,
+            afterOut: function(animation) {
+              if (existExpandedFormIsReplaced) {
+                if (fromModeToNotMode) { // When we need the 'mode=' HTML when requesting a 'not mode=' service
+                  vrtxAdmin.serverFacade.getHtml(modeUrl, {
+                    success: function (results, status, resp) {
+                      var succeededAddedOriginalMarkup = vrtxAdm.addOriginalMarkup(modeUrl, _$.parseHTML(results), resultSelectorClass, expandedForm);
+                      if (succeededAddedOriginalMarkup) {
+                        vrtxAdmin.addNewMarkup(options, selectorClass, transitionSpeed, transitionEasingSlideDown, transitionEasingSlideUp, form);
+                      } else {
+                        if (vrtxAdm.asyncGetFormsInProgress) {
+                          vrtxAdmin.asyncGetFormsInProgress--;
+                        }
+                      }
+                    },
+                    error: function (xhr, textStatus) {
                       if (vrtxAdm.asyncGetFormsInProgress) {
                         vrtxAdm.asyncGetFormsInProgress--;
                       }
                     }
-                  },
-                  error: function (xhr, textStatus) {
-                    if (vrtxAdm.asyncGetFormsInProgress) {
-                      vrtxAdm.asyncGetFormsInProgress--;
-                    }
-                  }
-                });
-              } else {
-                succeededAddedOriginalMarkup = vrtxAdm.addOriginalMarkup(url, _$.parseHTML(results), resultSelectorClass, expandedForm);
-              }
-            } else {
-              var node = _$(this).parent().parent();
-              if (node.is("tr") && vrtxAdm.animateTableRows) { // Because 'this' can be tr > td > div
-                node.remove();
-              } else {
-                _$(this).remove();
-              }
-            }
-            if (!simultanSliding && !fromModeToNotMode) {
-              if (!succeededAddedOriginalMarkup) {
-                if (vrtxAdm.asyncGetFormsInProgress) {
-                  vrtxAdm.asyncGetFormsInProgress--;
+                  });
+                } else {
+                  succeededAddedOriginalMarkup = vrtxAdm.addOriginalMarkup(url, _$.parseHTML(results), resultSelectorClass, expandedForm);
                 }
               } else {
-                vrtxAdm.addNewMarkup(options, selectorClass, transitionSpeed, transitionEasingSlideDown, transitionEasingSlideUp, form);
+                var node = animation.__opts.elem.parent().parent();
+                if (node.is("tr") && vrtxAdmin.animateTableRows) { // Because 'this' can be tr > td > div
+                  node.remove();
+                } else {
+                  animation.__opts.elem.remove();
+                }
+              }
+              if (!simultanSliding && !fromModeToNotMode) {
+                if (!succeededAddedOriginalMarkup) {
+                  if (vrtxAdmin.asyncGetFormsInProgress) {
+                    vrtxAdmin.asyncGetFormsInProgress--;
+                  }
+                } else {
+                  vrtxAdmin.addNewMarkup(options, selectorClass, transitionSpeed, transitionEasingSlideDown, transitionEasingSlideUp, form);
+                }
               }
             }
           });
+          animation.bottomUp();
         }
         if ((!existExpandedForm || simultanSliding) && !fromModeToNotMode) {
           vrtxAdm.addNewMarkup(options, selectorClass, transitionSpeed, transitionEasingSlideDown, transitionEasingSlideUp, form);
@@ -2758,9 +2762,14 @@ VrtxAdmin.prototype.addNewMarkup = function addNewMarkup(options, selectorClass,
   if (nodeType == "tr" && vrtxAdm.animateTableRows) {
     _$(nodeType + "." + selectorClass).prepareTableRowForSliding();
   }
-  _$(nodeType + "." + selectorClass).hide().slideDown(transitionSpeed, transitionEasingSlideDown, function () {
-    _$(this).find("input[type=text]:visible:first").focus();
+  
+  var animation = new VrtxAnimation({
+    elem: $(nodeType + "." + selectorClass).hide(),
+    afterIn: function(animation) {
+      animation.__opts.elem.find("input[type=text]:visible:first").focus();
+    }
   });
+  animation.topDown();
 };
 
 /**

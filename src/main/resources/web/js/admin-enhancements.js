@@ -453,7 +453,7 @@ VrtxAdmin.prototype.initGlobalDialogs = function initGlobalDialogs() {
         return;
       }
       
-      datepickerApsD.saveDateAndTimeFields();
+      datepickerApsD.prepareForSave();
       
       vrtxAdm.completeFormAsyncPost(options);
     },

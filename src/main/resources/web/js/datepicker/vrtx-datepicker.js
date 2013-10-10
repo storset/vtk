@@ -34,7 +34,7 @@ var VrtxDatepicker = dejavu.Class.declare({
     
     var dateFields = contents.find(".date");
     for(var i = 0, len = dateFields.length; i < len; i++) {
-      datepick.displayDateAsMultipleInputFields(dateFields[i].name, opts.selector);
+      datepick.initField(dateFields[i].name, opts.selector);
     }
     
     // Help user with time
@@ -63,7 +63,7 @@ var VrtxDatepicker = dejavu.Class.declare({
     
     if(opts.after) opts.after();
   },
-  displayDateAsMultipleInputFields: function(name, selector) {
+  initField: function(name, selector) {
     var hours = "";
     var minutes = "";
     var date = [];
@@ -167,7 +167,7 @@ var VrtxDatepicker = dejavu.Class.declare({
     }
     return "";
   },
-  saveDateAndTimeFields: function() {
+  prepareForSave: function() {
     var dateFields = $(".date");
     for(var i = 0, len = dateFields.length; i < len; i++) {
       var dateFieldName = dateFields[i].name;

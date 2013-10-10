@@ -65,7 +65,7 @@
     function performSave() {
       var ok = validTextLengthsInEditor(false);
       if(!ok) return false; 
-      datepickerEditor.saveDateAndTimeFields(); // js/datepicker/datepicker-admin.js
+      datepickerEditor.prepareForSave(); // js/datepicker/datepicker-admin.js
       saveMultipleInputFields();
       
       /* Trim box URLs */

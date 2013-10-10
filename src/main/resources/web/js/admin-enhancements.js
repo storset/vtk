@@ -2220,24 +2220,37 @@ function ajaxSave() {
       return false;
     }
   }
-  _$("#editor").ajaxSubmit({
-    success: function () {
-      var endTime = new Date() - startTime;
-      var waitMinMs = 800;
-      if (endTime >= waitMinMs) { // Wait minimum 0.8s
-        d.close();
-        vrtxAdm.asyncEditorSavedDeferred.resolve();
-      } else {
-        setTimeout(function () {
+  
+  // TODO: these should be retrieved from Vortex config/properties somehow
+  var rootUrl = "/vrtx/__vrtx/static-resources";
+  var futureFormAjax = $.Deferred();
+  if (typeof $.fn.ajaxSubmit !== "function") {
+    $.getScript(rootUrl + "/jquery/plugins/jquery.form.js", function () {
+      futureFormAjax.resolve();
+    });
+  } else {
+    futureFormAjax.resolve();
+  }
+  $.when(futureFormAjax).done(function() {
+    _$("#editor").ajaxSubmit({
+      success: function () {
+        var endTime = new Date() - startTime;
+        var waitMinMs = 800;
+        if (endTime >= waitMinMs) { // Wait minimum 0.8s
           d.close();
           vrtxAdm.asyncEditorSavedDeferred.resolve();
-        }, Math.round(waitMinMs - endTime));
+        } else {
+          setTimeout(function () {
+            d.close();
+            vrtxAdm.asyncEditorSavedDeferred.resolve();
+          }, Math.round(waitMinMs - endTime));
+        }
+      },
+      error: function (xhr, textStatus, errMsg) {
+        d.close();
+        vrtxAdm.asyncEditorSavedDeferred.rejectWith(this, [xhr, textStatus]);
       }
-    },
-    error: function (xhr, textStatus, errMsg) {
-      d.close();
-      vrtxAdm.asyncEditorSavedDeferred.rejectWith(this, [xhr, textStatus]);
-    }
+    });
   });
 }
 

@@ -5,6 +5,7 @@
  *  
  *  * Requires Dejavu OOP library
  *  * Requires but Lazy-loads jQuery UI library (if not defined) on open
+ *  * Lazy-loads jQuery UI language file if language matches on open (and not empty string or 'en')
  */
 
 var VrtxDatepickerInterface = dejavu.Interface.declare({

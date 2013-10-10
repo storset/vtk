@@ -44,6 +44,7 @@
     </property>
     <property name="propertyTypeDefinitions">
       <list>
+        <!-- videoId property -->
         <bean class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
           <property name="name" value="videoId" />
           <property name="namespace" ref="DEFAULT_NAMESPACE" />
@@ -55,6 +56,15 @@
             </bean>
           </property>
         </bean>
+        
+        <!-- contentType property (overriding for custom evaluator) -->
+<!--        <bean class="org.vortikal.repository.resourcetype.OverridingPropertyTypeDefinitionImpl" parent="abstractPropDef">
+          <property name="name" value="contentType" />
+          <property name="propertyEvaluator" ref="contentTypeEvaluator" />
+        </bean>-->
+        
+        <!-- contentLength property (overriding) -->
+
       </list>
     </property>
   </bean>
@@ -71,8 +81,8 @@
   <bean id="mediaref.video.restTemplate" class="org.springframework.web.client.RestTemplate" >
     <constructor-arg>
       <bean class="org.vortikal.util.web.BasicAuthHttpRequestFactory">
-        <property name="username" value="vortex" />
-        <property name="password" value="123.Takk" />
+        <property name="username" value="${mediaref.videoapp.username}" />
+        <property name="password" value="${mediaref.videoapp.password}" />
       </bean>
     </constructor-arg>
   </bean>

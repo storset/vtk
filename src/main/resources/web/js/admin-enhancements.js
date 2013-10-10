@@ -3601,7 +3601,11 @@ vrtxAdmin._$(window).resize(vrtxAdmin._$.throttle(150, function () {
   }
 }));
 
-/* Easing */
+/* Easing 
+ * 
+ * TODO: Move to VrtxAnimation when slide and rotate animations (forms and preview) becomes part of it
+ * 
+ */
 (function() {
  // based on easing equations from Robert Penner (http://www.robertpenner.com/easing)
  var baseEasings = {};

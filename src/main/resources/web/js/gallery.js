@@ -91,6 +91,9 @@
     for(var i = 0, len = imgs.length; i < len; i++) {
       link = $(imgs[i]);
       image = link.find("img.vrtx-thumbnail-image");
+      if(i > 1) {
+        $("<span class='loading-image'></span>").insertBefore(image);
+      }
       cacheGenerateLinkImageFunc(image.attr("src").split("?")[0], image, link); 
       centerThumbnailImageFunc(image, link);
     }
@@ -101,9 +104,6 @@
       $(imgs).filter("[href^='" + this.src + "']").closest("a").find(".loading-image").remove();
     };
     var loadRestOfImages = setTimeout(function() {
-      link = $(imgs[j]);
-      image = link.find("img.vrtx-thumbnail-image");
-      $("<span class='loading-image'></span>").insertBefore(image);
       imgLaters[j - startAsyncIdx] = new Image();
       imgLaters[j - startAsyncIdx].onload = loadFullImage;
       imgLaters[j - startAsyncIdx].src = imagesLater[j - startAsyncIdx];

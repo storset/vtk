@@ -123,7 +123,7 @@
               <img class="vrtx-thumbnail-image" src="${vrtx.relativeLinkConstructor(url, 'displayThumbnailService')}" alt='${description}' <#if showTitle>title="${title}"</#if> /> 
          </#if>
 	   </#if>
-	 </#if>
+	 </#if>   
 	          <#if (count < 3)>
 	            <#if imageListing != "">
 	              <span><img class="vrtx-full-image" src="${url?split("?")[0]?html}" alt='${description}' /></span>
@@ -131,6 +131,13 @@
 	              <span><img class="vrtx-full-image" src="${url?html}" alt='${description}' /></span> 
 	            </#if>
 	          <#else>
+	            <noscript>
+	              <#if imageListing != "">
+	                <span><img class="vrtx-full-image" src="${url?split("?")[0]?html}" alt='${description}' /></span>
+	              <#else>
+	                <span><img class="vrtx-full-image" src="${url?html}" alt='${description}' /></span> 
+	              </#if>
+	            </noscript>
 	            <script type="text/javascript"><!--
 	              <#if imageListing != "">
 	                imagesLater.push({src: '${url?split("?")[0]?html}', alt: '${description}'});

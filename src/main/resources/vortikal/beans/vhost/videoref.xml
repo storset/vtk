@@ -11,29 +11,11 @@
                            http://www.springframework.org/schema/util
                            http://www.springframework.org/schema/util/spring-util.xsd">
   
-  <bean id="mediaref.mediarefType"
-        class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
-    <property name="name" value="mediaref"/>
-    <property name="namespace" ref="DEFAULT_NAMESPACE" />
-    <property name="parentTypeDefinition" ref="json.resourceType" />
-    <property name="assertions">
-      <list>
-        <bean class="org.vortikal.web.service.ResourceContentTypeAssertion">
-          <property name="contentType" value="application/json" />
-        </bean>
-        <bean class="org.vortikal.resourcemanagement.JSONObjectSelectAssertion">
-          <property name="expression" value="mediaref" />
-          <property name="expectedValue" value="true" />
-        </bean>
-      </list>
-    </property>
-  </bean>
-
   <bean id="mediaref.videorefType"
         class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
     <property name="name" value="videoref"/>
     <property name="namespace" ref="DEFAULT_NAMESPACE" />
-    <property name="parentTypeDefinition" ref="mediaref.mediarefType" />
+    <property name="parentTypeDefinition" ref="videoResourceTypeDefinition" />
     <property name="assertions">
       <list>
         <bean class="org.vortikal.resourcemanagement.JSONObjectSelectAssertion">
@@ -57,14 +39,8 @@
           </property>
         </bean>
         
-        <!-- contentType property (overriding for custom evaluator) -->
-<!--        <bean class="org.vortikal.repository.resourcetype.OverridingPropertyTypeDefinitionImpl" parent="abstractPropDef">
-          <property name="name" value="contentType" />
-          <property name="propertyEvaluator" ref="contentTypeEvaluator" />
-        </bean>-->
-        
-        <!-- contentLength property (overriding) -->
-
+        <!-- TODO add overriding contentType propdef with evaluator which looks in
+             videoref (if available), falls back to standard evaluator otherwise. -->
       </list>
     </property>
   </bean>
@@ -74,10 +50,8 @@
     <property name="videoStorageRoot" value="/home/oyvind/usit/vrtxdata/vidstor" />
     <property name="repositoryId" value="${repositoryID}" />
     <property name="videoApiClient" ref="mediaref.video.appclient" />
-    <property name="contentTypePropDef" ref="contentTypePropDef"/>
   </bean>
   
-  <!-- Videoapp -->
   <bean id="mediaref.video.restTemplate" class="org.springframework.web.client.RestTemplate" >
     <constructor-arg>
       <bean class="org.vortikal.util.web.BasicAuthHttpRequestFactory">
@@ -87,38 +61,26 @@
     </constructor-arg>
   </bean>
   
+  <!-- Videoapp client -->
   <bean id="mediaref.video.appclient" class="org.vortikal.video.rest.VideoApiClient">
-    <property name="restTemplate" ref="mediaref.video.restTemplate" />
+    <property name="restTemplate">
+      <bean id="mediaref.video.restTemplate" class="org.springframework.web.client.RestTemplate" >
+        <constructor-arg>
+          <bean class="org.vortikal.util.web.BasicAuthHttpRequestFactory">
+            <property name="username" value="${mediaref.videoapp.username}" />
+            <property name="password" value="${mediaref.videoapp.password}" />
+          </bean>
+        </constructor-arg>
+        <property name="messageConverters">
+          <list>
+            <bean class="org.springframework.http.converter.StringHttpMessageConverter" />
+            <bean class="org.springframework.http.converter.ByteArrayHttpMessageConverter" />
+            <bean class="org.vortikal.util.web.JSONHttpMessageConverter" />
+          </list>
+        </property>
+      </bean>
+    </property>
     <property name="repositoryId" value="${repositoryID}" />
   </bean>
-  
-  <!-- Special view service for mediaref types -->
-<!--  <bean id="mediaref.displayResource" class="org.vortikal.web.service.ServiceImpl">
-    <description>
-      Special display for mediaref types, since their primary content is not
-      what should be served out.
-    </description>
-    <property name="parent" ref="displayResourceService" />
-    <property name="order" value="150" />
-    <property name="assertions">
-      <list>
-        <bean class="org.vortikal.web.service.ResourceTypeAssertion">
-          <property name="resourceType" value="mediaref"/>
-          <property name="repository" ref="repository" />
-        </bean>
-      </list>
-    </property>
-    <property name="handler" ref="mediaref.displayHandler" />
-  </bean>
-
-  <bean id="mediaref.displayHandler"
-        class="org.vortikal.web.display.mediaref.DisplayMediarefController">
-    <property name="view" ref="mediaref.displayView" />
-  </bean>
-
-  <bean id="mediaref.displayView"
-        class="org.vortikal.web.display.mediaref.DisplayMediarefView">
-    <property name="supportRangeRequests" value="true" />
-  </bean>-->
   
 </beans>

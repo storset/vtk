@@ -53,7 +53,7 @@ public class JSONObjectContentFactory implements ContentFactory {
             throw new Exception("Unable to parse content: maximum size exceeded: " 
                     + this.maxLength);
         }
-        String s = new String(buffer, "utf-8");    
+        String s = new String(buffer, "utf-8");
         return JSONObject.fromObject(s);
     }
 

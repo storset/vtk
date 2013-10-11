@@ -32,11 +32,10 @@
 package org.vortikal.video.rest;
 
 import java.io.File;
+import java.net.URI;
 import java.util.Date;
 import net.sf.json.JSONObject;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.vortikal.repository.Resource;
@@ -50,64 +49,58 @@ public class VideoApiClient {
     
     private RestTemplate restTemplate;
     private String repositoryId;
-    
-    public VideoRef createVideo(Resource newResource, String path, String contentType) {
+    private String apiEntryPoint = "http://localhost:8080/videoapp/rest/v0/";
 
+    /**
+     * Create new video object in videoapp.
+     * @param newResource
+     * @param path
+     * @param contentType
+     * @return 
+     */
+    public VideoRef createVideo(Resource newResource, String path, String contentType) {
         JSONObject postJson = new JSONObject();
         postJson.element("path", path);
         
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity request = new HttpEntity(postJson.toString(), headers);
-
-        // Create new videoRef object
-        // TODO handle errors and in particular error about invalid video
-        String response = 
-                this.restTemplate.postForObject("http://localhost:8080/videoapp/rest/v0/videos/{host}/", 
-                request, String.class, this.repositoryId);
+        JSONObject response = this.restTemplate.postForObject("http://localhost:8080/videoapp/rest/v0/videos/{host}/",
+                postJson, JSONObject.class, this.repositoryId);
+    
+        VideoId videoId = VideoId.fromString(response.getString("id"));
         
-        JSONObject responseJson = JSONObject.fromObject(response);
-        VideoId videoId = VideoId.fromString(responseJson.getString("id"));
-        
-        return videoRef(videoId).copyBuilder()
+        return getVideo(videoId).copyBuilder()
                                 .uploadContentType(contentType).build();
     }
-    
-    public VideoRef videoRef(VideoId id) {
 
-        String response = this.restTemplate.getForObject("http://localhost:8080/videoapp/rest/v0/videos/{host}/{numericId}",
-                String.class, id.host(), id.numericId());
-        JSONObject responseJson = JSONObject.fromObject(response);
+    /**
+     * Get video info from videoapp.
+     * @param id
+     * @return 
+     */
+    public VideoRef getVideo(VideoId id) {
+        JSONObject response = this.restTemplate.getForObject(
+                "http://localhost:8080/videoapp/rest/v0/videos/{host}/{numericId}",
+                JSONObject.class, id.host(), id.numericId());
         
-        if (!id.equals(VideoId.fromString(responseJson.getString("videoId")))) {
+        if (!id.equals(VideoId.fromString(response.getString("videoId")))) {
             throw new RestClientException("Unexpected videoId in response"); // XXX
         }
         
         VideoRef.Builder b = VideoRef.newBuilder().videoId(id);
-        b.sourceVideo(videoFileRef(responseJson.getJSONObject("sourceVideoFile")));
-        b.convertedVideo(videoFileRef(responseJson.getJSONObject("conversionVideoFile")));
+        b.sourceVideo(videoFileRef(response.getJSONObject("sourceVideoFile")));
+        b.convertedVideo(videoFileRef(response.getJSONObject("conversionVideoFile")));
         
         return b.build();
     }
     
-    private FileRef videoFileRef(JSONObject videoFileJson) {
-        String localPath = videoFileJson.getString("localPath");
-        String contentType = videoFileJson.optString("contentType", null);
-        long size = videoFileJson.getLong("size");
-        if (size <= 0) {
-            size = getFileSize(localPath);
-        }
-        return new FileRef(contentType, localPath, size);
-    }
-
     /**
      * Updated certain parts of a video ref that are non-Vortex-specific data
      * from video app. Other parts are left intact.
+     * 
      * @param oldRef
      * @return a refreshed <code>VideoRef</code> instance.
      */
-    public VideoRef refreshVideoRef(VideoRef oldRef) {
-        VideoRef newRef = videoRef(oldRef.videoId());
+    public VideoRef refreshVideo(VideoRef oldRef) {
+        VideoRef newRef = getVideo(oldRef.videoId());
         
         VideoRef.Builder refreshedBuilder = oldRef.copyBuilder();
         
@@ -116,16 +109,27 @@ public class VideoApiClient {
                         .convertedVideo(newRef.convertedVideo()).build();
     }
     
-    private long getFileSize(String localPath) {
-        return new File(localPath).length();
+    private FileRef videoFileRef(JSONObject videoFileJson) {
+        String localPath = videoFileJson.getString("localPath");
+        String contentType = videoFileJson.optString("contentType", null);
+        long size = videoFileJson.getLong("size");
+        if (size <= 0) {
+            size = new File(localPath).length();
+        }
+        return new FileRef(contentType, localPath, size);
     }
-    
+
+    @Required
     public void setRepositoryId(String repositoryId) {
         this.repositoryId = repositoryId;
     }
-    
+
+    @Required
     public void setRestTemplate(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
 
+    public void setApiEntryPoint(URI entryPointUrl) {
+        this.apiEntryPoint = entryPointUrl.toString();
+    }
 }

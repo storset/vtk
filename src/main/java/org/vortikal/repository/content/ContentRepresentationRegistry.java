@@ -30,9 +30,6 @@
  */
 package org.vortikal.repository.content;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.Collection;
 import java.util.HashMap;
@@ -44,6 +41,7 @@ import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.vortikal.util.io.StreamUtil;
 
 /**
  * A resource content representation registry.
@@ -63,11 +61,13 @@ public class ContentRepresentationRegistry implements ApplicationContextAware, I
     private ApplicationContext applicationContext;
     private Map<Class<?>, ContentFactory> contentFactories;
 
+    @Override
     public void setApplicationContext(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
     }
 
     @SuppressWarnings("unchecked")
+    @Override
     public void afterPropertiesSet() {
 
         this.contentFactories = new HashMap<Class<?>, ContentFactory>();
@@ -95,25 +95,13 @@ public class ContentRepresentationRegistry implements ApplicationContextAware, I
 
         // The default representations:
         if (clazz == byte[].class) {
-            return getContentAsByteArray(content.getInputStream());
+            return StreamUtil.readInputStream(content.getInputStream());
         } else if (clazz == java.nio.ByteBuffer.class) {
-            return ByteBuffer.wrap(getContentAsByteArray(content.getInputStream()));
+            return ByteBuffer.wrap(StreamUtil.readInputStream(content.getInputStream()));
         }
 
         throw new UnsupportedContentRepresentationException("Content type '" + clazz.getName() + "' not supported.");
 
-    }
-
-    private static byte[] getContentAsByteArray(InputStream content) throws IOException {
-        ByteArrayOutputStream bout = new ByteArrayOutputStream();
-
-        int n;
-        byte[] buffer = new byte[5000];
-        while ((n = content.read(buffer, 0, buffer.length)) != -1) {
-            bout.write(buffer, 0, n);
-        }
-
-        return bout.toByteArray();
     }
 
 }

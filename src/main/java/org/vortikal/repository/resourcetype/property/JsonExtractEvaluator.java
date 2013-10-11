@@ -35,7 +35,6 @@ package org.vortikal.repository.resourcetype.property;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertyEvaluationContext;
-import org.vortikal.repository.resourcetype.property.PropertyEvaluationException;
 import org.vortikal.util.text.JSON;
 
 import net.sf.json.JSONNull;

@@ -194,13 +194,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         }
         
         try {
-            ResourceImpl clone = (ResourceImpl)resource.clone();
-            ResourceContentInterceptor interceptor = getCHI(resource);
-            if (interceptor != null) {
-                clone = interceptor.interceptRetrieve(clone, this.contentStore);
-            }
-            
-            return clone;
+            return (Resource)resource.clone();
         } catch (CloneNotSupportedException e) {
             throw new IOException("Failed to clone object", e);
         }
@@ -308,26 +302,15 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             this.authorizationManager.authorizeRead(uri, principal);
         }
         
-        ResourceContentInterceptor interceptor = getCHI(r);
-        if (interceptor != null) {
-            return interceptor.interceptGetInputStream(r, this.contentStore);
+        // TODO interceptor exception handling and fallback
+        ResourceContentInterceptor rci = getRCI(r);
+        if (rci != null) {
+            return rci.interceptGetInputStream(r, this.contentStore);
         }
 
         return this.contentStore.getInputStream(uri).getInputStream();
     }
     
-    private ResourceContentInterceptor getCHI(Resource r) {
-        ResourceContentInterceptor chi = null;
-        if (this.contentHandlingInterceptors != null) {
-            for (ResourceContentInterceptor c : this.contentHandlingInterceptors) {
-                if (c.isSupportedResourceType(r.getResourceType())) {
-                    chi = c;
-                    break;
-                }
-            }
-        }
-        return chi;
-    }
 
     @Transactional
     @Override
@@ -903,8 +886,14 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
 
         try {
             ResourceImpl originalClone = (ResourceImpl) original.clone();
-
+            
             ResourceImpl suppliedResource = (ResourceImpl) resource;
+            // TODO interceptor exception handling and fallback
+            ResourceContentInterceptor rci = getRCI(original);
+            if (rci != null) {
+                suppliedResource = rci.interceptStore(suppliedResource, this.contentStore);
+            }
+            
             ResourceImpl newResource;
             Content content = getContent(original);
 
@@ -931,6 +920,12 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             ResourceImpl originalClone = (ResourceImpl) original.clone();
 
             ResourceImpl suppliedResource = (ResourceImpl) resource;
+            // TODO interceptor exception handling and fallback
+            ResourceContentInterceptor rci = getRCI(original);
+            if (rci != null) {
+                suppliedResource = rci.interceptStoreSystemChange(suppliedResource, this.contentStore, context);
+            }
+            
             ResourceImpl newResource;
             Content content = getContent(original);
 
@@ -961,6 +956,12 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             ResourceImpl originalClone = (ResourceImpl) original.clone();
 
             ResourceImpl suppliedResource = (ResourceImpl) resource;
+            // TODO interceptor exception handling and fallback
+            ResourceContentInterceptor rci = getRCI(original);
+            if (rci != null) {
+                suppliedResource = rci.interceptStoreInheritableProps(suppliedResource, this.contentStore, context);
+            }
+            
             ResourceImpl newResource;
             Content content = getContent(original);
 
@@ -1017,19 +1018,19 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             newResource.setAclInheritedFrom(aclIneritedFrom);
             
             // Check if contentType has interceptor for storage
-            // XXX probably need more reliable way of determining if storage should be handled by interceptor.
-            //     (now just based on filename and nothing else).
             String contentType = MimeHelper.map(uri.getName());
-            ResourceContentInterceptor chi = getCHIForContentType(contentType);
-            if (chi != null) {
-                newResource = chi.interceptCreate(newResource, inStream, contentType, this.contentStore);
+            ResourceContentInterceptor rci = getRCIForContentType(contentType);
+            if (rci != null) {
+                // TODO interceptor exception handling
+                newResource = rci.interceptCreate(newResource, inStream, contentType, this.contentStore);
+                Content content = rci.interceptGetContentForEvaluation(newResource, getContent(newResource), this.contentStore);
+                newResource = this.resourceHelper.create(principal, newResource, false, content);
             } else {
                 this.contentStore.storeContent(uri, inStream);
+                // Run through type evaluation
+                newResource = this.resourceHelper.create(principal, newResource, false, getContent(newResource));
             }
 
-            // Run through type evaluation
-            newResource = this.resourceHelper.create(principal, newResource, false, getContent(newResource));
-            
             // Store new resource
             newResource = this.dao.store(newResource);
             this.context.publishEvent(new ResourceCreationEvent(this, (Resource) newResource.clone()));
@@ -1040,30 +1041,25 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         }
     }
 
-    private ResourceContentInterceptor getCHIForContentType(String contentType) {
-        ResourceContentInterceptor chi = null;
+    private ResourceContentInterceptor getRCIForContentType(String contentType) {
         if (this.contentHandlingInterceptors != null) {
             for (ResourceContentInterceptor c : this.contentHandlingInterceptors) {
                 if (c.isSupportedContentType(contentType)) {
-                    chi = c;
-                    break;
+                    return c;
                 }
             }
         }
-        return chi;
+        return null;
     }
-
-    /**
-     * Store content with specific content-type. Only for resource types 
-     */
-    @Transactional
-    public Resource storeContent(String token, Path uri, InputStream byteStream, String contentType) 
-            throws AuthorizationException,
-            AuthenticationException, ResourceNotFoundException, ResourceLockedException, IllegalOperationException,
-            ReadOnlyException, IOException {
-
-        
-        throw new UnsupportedOperationException();
+    private ResourceContentInterceptor getRCI(Resource r) {
+        if (this.contentHandlingInterceptors != null) {
+            for (ResourceContentInterceptor c : this.contentHandlingInterceptors) {
+                if (c.isSupportedResourceType(r.getResourceType())) {
+                    return c;
+                }
+            }
+        }
+        return null;
     }
 
     /**
@@ -1093,9 +1089,16 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         }
         
         try {
-            final Resource original = (ResourceImpl) r.clone();
+            final ResourceImpl original = (ResourceImpl) r.clone();
+            
+            ResourceContentInterceptor rci = getRCI(original);
+            if (rci != null) {
+                // TODO exception handling and fallback
+                rci.interceptStoreContent(original, byteStream, MimeHelper.map(uri.getName()), this.contentStore);
+            } else {
+                this.contentStore.storeContent(uri, byteStream);
+            }
 
-            this.contentStore.storeContent(uri, byteStream);
             Content content = getContent(r);
             r = this.resourceHelper.contentModification(r, principal, content);
 
@@ -1970,11 +1973,19 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         this.permanentDeleteOverdueLimitInDays = permanentDeleteOverdueLimitInDays;
     }
 
-    private Content getContent(Resource resource) {
+    private Content getContent(Resource resource) throws IOException {
         if (resource == null || resource.isCollection()) {
             return null;
         }
-        return new ContentImpl(resource.getURI(), this.contentStore, this.contentRepresentationRegistry);
+        
+        Content defaultContent = new ContentImpl(resource.getURI(), this.contentStore, this.contentRepresentationRegistry);
+        
+        ResourceContentInterceptor rci = getRCI(resource);
+        if (rci != null) {
+            return rci.interceptGetContentForEvaluation(resource, defaultContent, contentStore);
+        }
+        
+        return defaultContent;
     }
 
     private Content getContent(final ResourceImpl resource, final Revision revision) {

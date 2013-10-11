@@ -42,9 +42,6 @@ import javax.imageio.stream.ImageInputStream;
 
 public class ImageContentFactory implements ContentFactory {
 
-    public ImageContentFactory() {
-    }
-
     @Override
     public Class<?>[] getRepresentationClasses() {
         String prop = System.getProperty("java.awt.headless");

@@ -103,6 +103,13 @@
   z-index: 1;
 }
 
+.vrtx-image-listing-include ul.vrtx-image-listing-include-thumbs .loading-image-error {
+  color: red;
+  font-size: 0.85em;
+  text-align: center;
+  background: #fff;
+}
+
 .vrtx-image-listing-include .vrtx-image-listing-include-container-pure-css {
   display: none;
 }

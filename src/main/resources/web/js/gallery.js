@@ -102,10 +102,13 @@
     var startAsyncIdx = 2;
     var j = startAsyncIdx, imagesLaterLen = imagesLater.length, imgLaters = new Array(imagesLaterLen), loadFullImage = function() {
       $(imgs).filter("[href^='" + this.src + "']").closest("a").find(".loading-image").remove();
+    }, errorFullImage = function() {
+      $(imgs).filter("[href^='" + this.src + "']").closest("a").find(".loading-image").addClass("loading-image-error").append("<p>" + loadImageErrorMsg + "</p>");
     };
     var loadRestOfImages = setTimeout(function() {
       imgLaters[j - startAsyncIdx] = new Image();
       imgLaters[j - startAsyncIdx].onload = loadFullImage;
+      imgLaters[j - startAsyncIdx].onerror = errorFullImage;
       imgLaters[j - startAsyncIdx].src = imagesLater[j - startAsyncIdx];
       j++;
       if((j - startAsyncIdx) < imagesLaterLen) {

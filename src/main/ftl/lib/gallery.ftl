@@ -15,6 +15,7 @@
 	  var options = {
 	    fadeInOutTime : ${fadeEffect}
 	  }
+	  loadImageErrorMsg = "${vrtx.getMsg('imageListing.loading-image.error')}";
 	  $(wrapper + " li a").vrtxSGallery(wrapper, container, ${maxWidth}, options);			  
     });
   // -->

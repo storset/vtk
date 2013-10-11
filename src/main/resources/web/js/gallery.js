@@ -95,14 +95,21 @@
     }
     
     // Load full images in the background
-    var j = 2, len2 = imagesLater.length;
+    var j = 2, len2 = imagesLater.length, loadFullImage = function() {
+      $(this).closest("a").find(".loading-image").remove();
+    };
     setTimeout(function() {
-      $(imgs[j]).append("<span><img class='vrtx-full-image' src='" + imagesLater[j - 2].src + "' alt='" + imagesLater[j - 2].alt + "' /></span>");
+      link = $(imgs[j]);
+      image = link.find("img.vrtx-thumbnail-image");
+      $("<span class='loading-image'></span>").insertBefore(image);
+      link.append("<span><img class='vrtx-full-image' src='" + imagesLater[j - 2].src + "' alt='" + imagesLater[j - 2].alt + "' /></span>");
+      link.find("img.vrtx-full-image")[0].onload = loadFullImage;
       j++;
       if((j - 2) < len2) {
         setTimeout(arguments.callee);
       }
     }, 20);
+
   
     return imgs; /* Make chainable */
     

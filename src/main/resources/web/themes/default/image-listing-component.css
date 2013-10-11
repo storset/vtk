@@ -43,6 +43,7 @@
   width: 107px;
   height: 80px;
   overflow: hidden;
+  position: relative;
 }
 
 .vrtx-image-listing-include ul img {
@@ -88,6 +89,18 @@
 
 .vrtx-image-listing-include ul.vrtx-image-listing-include-thumbs li a span {
   display: none;	
+}
+
+.vrtx-image-listing-include ul.vrtx-image-listing-include-thumbs .loading-image {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  display: block;
+  background: #fff url("images/ajax-loader.gif") no-repeat center center;
+  width: 100%;
+  height: 100%;
+  visibility: visible;
+  z-index: 1;
 }
 
 .vrtx-image-listing-include .vrtx-image-listing-include-container-pure-css {

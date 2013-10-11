@@ -98,7 +98,7 @@
     var j = 2, len2 = imagesLater.length, loadFullImage = function() {
       $(this).closest("a").find(".loading-image").remove();
     };
-    setTimeout(function() {
+    var loadRestOfImages = setTimeout(function() {
       link = $(imgs[j]);
       image = link.find("img.vrtx-thumbnail-image");
       $("<span class='loading-image'></span>").insertBefore(image);

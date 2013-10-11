@@ -50,8 +50,7 @@
     var firstImage = wrpThumbsLinks.filter(".active");
     if(!firstImage.length) return this; 
     
-    var firstImageFullImage = firstImage.find("img.vrtx-full-image");
-    calculateImage(firstImage.find("img.vrtx-thumbnail-image"), firstImageFullImage, true);
+    calculateImage(firstImage.find("img.vrtx-thumbnail-image"), true);
     wrp.find("a.prev, a.prev span, a.next, a.next span").fadeTo(0, 0);
 
     // Thumbs
@@ -61,7 +60,7 @@
         elm.filter(":not(.active)").find("img").stop().fadeTo(settings.fadeThumbsInOutTime, (e.type == "mouseover") ? 1 : settings.fadedThumbsOutOpacity);
       } else {
         var img = elm.find("img.vrtx-thumbnail-image");
-        calculateImage(img, elm.find("img.vrtx-full-image"), false);
+        calculateImage(img, false);
         elm.addClass("active");
         img.stop().fadeTo(0, 1);
         e.preventDefault();
@@ -91,9 +90,19 @@
     for(var i = 0, len = imgs.length; i < len; i++) {
       link = $(imgs[i]);
       image = link.find("img.vrtx-thumbnail-image");
-      cacheGenerateLinkImageFunc(link.find("img.vrtx-full-image").attr("src"), image, link);
+      cacheGenerateLinkImageFunc(image.attr("src").split("?")[0], image, link); 
       centerThumbnailImageFunc(image, link);
     }
+    
+    // Load full images in the background
+    var j = 2, len2 = imagesLater.length;
+    setTimeout(function() {
+      $(imgs[j]).append("<span><img class='vrtx-full-image' src='" + imagesLater[j - 2].src + "' alt='" + imagesLater[j - 2].alt + "' /></span>");
+      j++;
+      if((j - 2) < len2) {
+        setTimeout(arguments.callee);
+      }
+    }, 20);
   
     return imgs; /* Make chainable */
     
@@ -118,8 +127,8 @@
       }
     }
     
-    function calculateImage(image, fullImage, init) {
-      var src = fullImage.attr("src").split("?")[0]; /* Remove parameters when active is sent in to gallery */
+    function calculateImage(image, init) {
+      var src = image.attr("src").split("?")[0]; /* Remove parameters when active is sent in to gallery */
       if (settings.fadeInOutTime > 0 && !init) {
         wrpContainer.append("<div class='over'>" + $(wrapperContainerLink).html() + "</div>");
         $(wrapperContainerLink).remove();

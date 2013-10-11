@@ -29,6 +29,10 @@
 
 <#macro galleryListImages images maxWidth maxHeight activeImage="" imageListing="">
   <#local count = 1 />
+  <script type="text/javascript">
+    var imagesLater = [];
+  </script>
+  
   <#list images as imageEntry>
     <#local image = imageEntry.propertySet />
     <#local description = vrtx.propValue(image, 'image-description')?html?replace("'", "&#39;") />
@@ -120,14 +124,28 @@
          </#if>
 	   </#if>
 	 </#if>
-	        <#if imageListing != "">
-	          <span><img class="vrtx-full-image" src="${url?split("?")[0]?html}" alt='${description}' style="width: ${width}px; height: ${height}px" <#if showTitle>title="${title}"</#if> /></span>
-	        <#else>
-	          <span><img class="vrtx-full-image" src="${url?html}" alt='${description}' style="width: ${width}px; height: ${height}px" <#if showTitle>title="${title}"</#if> /></span> 
-	        </#if>
-	          <span class="hiddenWidth" style="display: none">${width}</span>
-	          <span class="hiddenHeight" style="display: none">${height}</span>
-	        </a>
+	        
+	          <#if (count < 3)>
+	            <#if imageListing != "">
+	              <span><img class="vrtx-full-image" src="${url?split("?")[0]?html}" alt='${description}' /></span>
+	            <#else>
+	              <span><img class="vrtx-full-image" src="${url?html}" alt='${description}' /></span> 
+	            </#if>
+	          <#else>
+	            <script type="text/javascript"><!--
+	              <#if imageListing != "">
+	                imagesLater.push({src: '${url?split("?")[0]?html}', alt: '${description}'});
+	              <#else>
+	                imagesLater.push({src: '${url?html}', alt: '${description}'});
+	              </#if>
+	            // -->
+	            </script>
+	          </#if>
+	            <span class="hiddenWidth" style="display: none">${width}</span>
+	            <span class="hiddenHeight" style="display: none">${height}</span>
+	          </a>
+	        
+	        
       </li>
     <#local count = count+1 />
   </#list>

@@ -33,6 +33,7 @@ package org.vortikal.web.display.linkcheck;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 
@@ -130,12 +131,27 @@ public class LinkChecker {
         if (href == null) {
             throw new IllegalArgumentException("Link argument cannot be NULL");
         }
-        URL url;
-        try {
-            url = base.relativeURL(href);
-        } catch (Throwable t) {
-            return new LinkCheckResult(href, Status.MALFORMED_URL, t.getMessage());
+        if (base == null) {
+            throw new IllegalArgumentException("Base argument cannot be NULL");
         }
+        
+        String normalized = href;
+        
+        if (URL.isRelativeURL(href)) {
+            try {
+                normalized = base.relativeURL(href).toString();
+            } catch (Throwable t) {
+                return new LinkCheckResult(href, Status.MALFORMED_URL, t.getMessage());
+            }
+        }
+        
+        java.net.URL url = null;
+        try {
+            url = new java.net.URL(normalized);
+        } catch (MalformedURLException e) {
+            return new LinkCheckResult(href, Status.MALFORMED_URL, e.getMessage());
+        }
+    
         final String cacheKey = url.toString();
         Element cached = this.cache.get(cacheKey);
         if (cached != null) {
@@ -168,7 +184,7 @@ public class LinkChecker {
         return result;
     }
     
-    private Status validateURL(URL url, URL referrer) {
+    private Status validateURL(java.net.URL url, URL referrer) {
         HttpURLConnection urlConnection = null;
         try {
             urlConnection = createHeadRequest(url, referrer);
@@ -207,7 +223,7 @@ public class LinkChecker {
             if (location == null) {
                 return responseCode;
             }
-            urlConnection = createHeadRequest(URL.parse(location), referrer);
+            urlConnection = createHeadRequest(new java.net.URL(location), referrer);
             urlConnection.connect();
             responseCode = urlConnection.getResponseCode();
             retry++;
@@ -215,7 +231,7 @@ public class LinkChecker {
         return responseCode;
     }
     
-    private HttpURLConnection createHeadRequest(URL url, URL referrer) throws IOException {
+    private HttpURLConnection createHeadRequest(java.net.URL url, URL referrer) throws IOException {
         java.net.URL location = new java.net.URL(url.toString());
         HttpURLConnection urlConnection = (HttpURLConnection) location.openConnection();
         urlConnection.setRequestMethod("HEAD");

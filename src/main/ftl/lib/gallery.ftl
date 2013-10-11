@@ -124,7 +124,7 @@
          </#if>
 	   </#if>
 	 </#if>   
-	          <#if (count < 3)>
+	          <#if (count < 2)>
 	            <#if imageListing != "">
 	              <span><img class="vrtx-full-image" src="${url?split("?")[0]?html}" alt='${description}' /></span>
 	            <#else>

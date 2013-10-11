@@ -2,7 +2,7 @@
  * Vortex Simple Gallery jQuery plugin
  * w/ paging, centered thumbnail navigation and crossfade effect (dimensions from server)
  *
- * Copyright (C) 2010 Øyvind Hatland - University Of Oslo / USIT
+ * Copyright (C) 2010- Øyvind Hatland - University Of Oslo / USIT
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,15 +54,6 @@
     calculateImage(firstImage.find("img.vrtx-thumbnail-image"), firstImageFullImage, true);
     wrp.find("a.prev, a.prev span, a.next, a.next span").fadeTo(0, 0);
 
-    // Event-handlers
-    $(document).keydown(function (e) {
-      if (e.keyCode == 37) {
-        wrp.find("a.prev").click();
-      } else if (e.keyCode == 39) {
-        wrp.find("a.next").click();
-      }
-    });
-
     // Thumbs
     wrp.on("mouseover mouseout click", "li a", function (e) {
       var elm = $(this);      
@@ -78,6 +69,13 @@
     });
 
     // Navigation handlers
+    $(document).keydown(function (e) {
+      if (e.keyCode == 37) {
+        nextPrevNavigate(e, -1);
+      } else if (e.keyCode == 39) {
+        nextPrevNavigate(e, 1);
+      }
+    });
     wrp.on("click mouseover mouseout", "a.next, " + container + "-link", function (e) {
       nextPrevNavigate(e, 1);
     });

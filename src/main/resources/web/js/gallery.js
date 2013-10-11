@@ -92,7 +92,7 @@
       link = $(imgs[i]);
       image = link.find("img.vrtx-thumbnail-image");
       if(i > 1) {
-        $("<span class='loading-image'></span>").insertBefore(image);
+        $("<span class='loading-image'>" + loadImageMsg + "...</span>").insertBefore(image);
       }
       cacheGenerateLinkImageFunc(image.attr("src").split("?")[0], image, link); 
       centerThumbnailImageFunc(image, link);

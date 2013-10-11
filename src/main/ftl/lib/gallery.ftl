@@ -16,6 +16,7 @@
 	    fadeInOutTime : ${fadeEffect}
 	  }
 	  loadImageErrorMsg = "${vrtx.getMsg('imageListing.loading-image.error')}";
+	  loadImageMsg = "${vrtx.getMsg('imageListing.loading-image')}";
 	  $(wrapper + " li a").vrtxSGallery(wrapper, container, ${maxWidth}, options);			  
     });
   // -->

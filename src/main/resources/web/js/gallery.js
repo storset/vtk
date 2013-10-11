@@ -55,7 +55,8 @@
 
     // Thumbs
     wrp.on("mouseover mouseout click", "li a", function (e) {
-      var elm = $(this);      
+      var elm = $(this);
+      if(elm.find(".loading-image").length) return false;
       if (e.type == "mouseover" || e.type == "mouseout") {
         elm.filter(":not(.active)").find("img").stop().fadeTo(settings.fadeThumbsInOutTime, (e.type == "mouseover") ? 1 : settings.fadedThumbsOutOpacity);
       } else {
@@ -126,6 +127,7 @@
         var elm = isNext ? activeThumb.next() : activeThumb.prev();
         var roundAboutElm = isNext ? "first" : "last";
         if (elm.length) {
+          if(elm.find(".loading-image").length) return false;
           elm.find("a").click();
         } else {
           wrp.find("li:" + roundAboutElm + " a").click();

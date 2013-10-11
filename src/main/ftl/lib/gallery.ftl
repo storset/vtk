@@ -96,19 +96,19 @@
     <#if activeImage != "" && imageListing != "">
 	  <#if (activeImage == url) >
 	     <a href="${url?html}" class="active">
-	       <img class="vrtx-thumbnail-image" src="${vrtx.relativeLinkConstructor(url, 'displayThumbnailService')}" alt='${description}' <#if showTitle>title="${title}"</#if> />
+	       <img class="vrtx-thumbnail-image" src="${url?html}?vrtx=thumbnail" alt='${description}' <#if showTitle>title="${title}"</#if> />
 	   <#else>
 	     <a href="${url?html}">
-	       <img class="vrtx-thumbnail-image" src="${vrtx.relativeLinkConstructor(url, 'displayThumbnailService')}" alt='${description}' <#if showTitle>title="${title}"</#if> />
+	       <img class="vrtx-thumbnail-image" src="${url?html}?vrtx=thumbnail" alt='${description}' <#if showTitle>title="${title}"</#if> />
 	   </#if>
 	 <#else>
 	   <#if imageListing != "">
 	     <#if (imageEntry_index == 0) >
 	       <a href="${url?html}" class="active">
-	         <img class="vrtx-thumbnail-image" src="${vrtx.relativeLinkConstructor(url, 'displayThumbnailService')}" alt='${description}' <#if showTitle>title="${title}"</#if> />
+	         <img class="vrtx-thumbnail-image" src="${url?html}?vrtx=thumbnail" alt='${description}' <#if showTitle>title="${title}"</#if> />
 	     <#else>
 	       <a href="${url?html}">
-	         <img class="vrtx-thumbnail-image" src="${vrtx.relativeLinkConstructor(url, 'displayThumbnailService')}" alt='${description}' <#if showTitle>title="${title}"</#if> />
+	         <img class="vrtx-thumbnail-image" src="${url?html}?vrtx=thumbnail" alt='${description}' <#if showTitle>title="${title}"</#if> />
 	     </#if>
 	   <#else>
 	     <#assign finalFolderUrl = vrtx.relativeLinkConstructor(folderUrl, 'viewService') />
@@ -117,10 +117,10 @@
 	     </#if>
 	     <#if (imageEntry_index == 0) >
             <a href="${finalFolderUrl}?actimg=${url?html}&amp;display=gallery" class="active">
-              <img class="vrtx-thumbnail-image" src="${vrtx.relativeLinkConstructor(url, 'displayThumbnailService')}" alt='${description}' <#if showTitle>title="${title}"</#if> />
+              <img class="vrtx-thumbnail-image" src="${url?html}?vrtx=thumbnail" alt='${description}' <#if showTitle>title="${title}"</#if> />
          <#else>
             <a href="${finalFolderUrl}?actimg=${url?html}&amp;display=gallery">
-              <img class="vrtx-thumbnail-image" src="${vrtx.relativeLinkConstructor(url, 'displayThumbnailService')}" alt='${description}' <#if showTitle>title="${title}"</#if> /> 
+              <img class="vrtx-thumbnail-image" src="${url?html}?vrtx=thumbnail" alt='${description}' <#if showTitle>title="${title}"</#if> /> 
          </#if>
 	   </#if>
 	 </#if>   

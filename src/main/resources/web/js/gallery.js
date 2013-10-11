@@ -190,8 +190,10 @@
       images[src].height = parseInt(link.find("span.hiddenHeight").text(), 10);
       var alt = image.attr("alt");
       var title = image.attr("title");
+      // HTML encode quotes in alt and title if not already encoded
       images[src].alt = alt ? alt.replace(/\'/g, "&#39;").replace(/\"/g, "&quot;") : null;
       images[src].title = title ? title.replace(/\'/g, "&#39;").replace(/\"/g, "&quot;") : null;
+      // Build HTML
       images[src].html = "<a href='" + link.attr("href") + "'" +
                          " class='" + container.substring(1) + "-link'>" +
                          "<img src='" + src + "' alt='" + images[src].alt + "' style='width: " +

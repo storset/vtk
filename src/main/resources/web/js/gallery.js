@@ -96,17 +96,18 @@
     }
     
     // Load full images in the background
-    var j = 2, len2 = imagesLater.length, loadFullImage = function() {
-      $(this).closest("a").find(".loading-image").remove();
+    var j = 2, imagesLaterLen = imagesLater.length, imgLaters = new Array(imagesLaterLen), loadFullImage = function() {
+      $(imgs).filter("[href^='" + this.src + "']").closest("a").find(".loading-image").remove();
     };
     var loadRestOfImages = setTimeout(function() {
       link = $(imgs[j]);
       image = link.find("img.vrtx-thumbnail-image");
       $("<span class='loading-image'></span>").insertBefore(image);
-      link.append("<span><img class='vrtx-full-image' src='" + imagesLater[j - 2].src + "' alt='" + imagesLater[j - 2].alt + "' /></span>");
-      link.find("img.vrtx-full-image")[0].onload = loadFullImage;
+      imgLaters[j - 2] = new Image();
+      imgLaters[j - 2].onload = loadFullImage;
+      imgLaters[j - 2].src = imagesLater[j - 2];
       j++;
-      if((j - 2) < len2) {
+      if((j - 2) < imagesLaterLen) {
         setTimeout(arguments.callee);
       }
     }, 20);

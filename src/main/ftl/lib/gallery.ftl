@@ -133,9 +133,9 @@
 	          <#else>
 	            <script type="text/javascript"><!--
 	              <#if imageListing != "">
-	                imagesLater.push({src: '${url?split("?")[0]?html}', alt: '${description}'});
+	                imagesLater.push('${url?split("?")[0]?html}');
 	              <#else>
-	                imagesLater.push({src: '${url?html}', alt: '${description}'});
+	                imagesLater.push('${url?html}');
 	              </#if>
 	            // -->
 	            </script>

@@ -63,7 +63,7 @@
           imgLatersRetrieved[startAsync.find(".vrtx-thumbnail-image")[0].src.split("?")[0]] = true,
           j = 0,
           loadErrorFullImage = function(imgLater) {
-            imgLatersRetrieved[imgLater.src] = true;
+            imgLatersRetrieved[imgLater.src] = true; // Replace Image with simple boolean
           },
           loadFullImage = function() {
             loadErrorFullImage(this);

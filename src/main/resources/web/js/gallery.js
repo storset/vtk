@@ -187,7 +187,7 @@
       $(wrapperContainer + ", " + wrapperContainer + "-nav").css("width", images[src].width);
       var description = $(wrapperContainer + "-description");
       if(!description.length) {
-        $("<div class='" + container.substring(1) + "-description'>" + images[src].desc + "</div>").insertAfter(wrapperContainer);
+        $($.parseHTML("<div class='" + container.substring(1) + "-description' style='width: " + images[src].width + "'>" + images[src].desc + "</div>")).insertAfter(wrapperContainer);
       } else {
         description.html(images[src].desc).css("width", images[src].width);
       }

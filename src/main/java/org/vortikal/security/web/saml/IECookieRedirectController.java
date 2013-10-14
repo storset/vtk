@@ -93,7 +93,7 @@ public class IECookieRedirectController implements Controller {
             }
         }
 
-        setHeaders(response);
+        // setHeaders(response);
         response.sendRedirect(returnURL);
         return null;
     }

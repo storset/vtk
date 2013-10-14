@@ -118,10 +118,10 @@
 
     // Navigation handlers
     $(document).keydown(function (e) {
-      if (e.keyCode == 37) {
-        nextPrevNavigate(e, -1);
-      } else if (e.keyCode == 39) {
+      if (e.keyCode == 39) {
         nextPrevNavigate(e, 1);
+      } else if (e.keyCode == 37) {
+        nextPrevNavigate(e, -1);
       }
     });
     wrp.on("click mouseover mouseout", "a.next, " + container + "-link", function (e) {

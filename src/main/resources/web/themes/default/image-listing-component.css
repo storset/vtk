@@ -91,6 +91,11 @@
   display: none;	
 }
 
+.vrtx-image-listing-include.loading {
+  background: url("images/loadingAnimation.gif") no-repeat top center;
+  padding-top: 50px !important;
+}
+
 .vrtx-image-listing-include ul.vrtx-image-listing-include-thumbs .loading-image {
   position: absolute;
   top: 0px;

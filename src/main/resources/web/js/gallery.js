@@ -85,17 +85,15 @@
     });
 
     // Generate markup for rest of images
-    var imgs = this;
-    var delay = setTimeout(function() {
-      var centerThumbnailImageFunc = centerThumbnailImage, 
+    var imgs = this,
+        centerThumbnailImageFunc = centerThumbnailImage, 
         cacheGenerateLinkImageFunc = cacheGenerateLinkImage, link, image;
-      for(var i = 0, len = imgs.length; i < len; i++) {
-        link = $(imgs[i]);
-        image = link.find("img.vrtx-thumbnail-image");
-        centerThumbnailImageFunc(image, link);
-        cacheGenerateLinkImageFunc(image.attr("src").split("?")[0], image, link);
-      }
-    }, 1);
+    for(var i = 0, len = imgs.length; i < len; i++) {
+      link = $(imgs[i]);
+      image = link.find("img.vrtx-thumbnail-image");
+      centerThumbnailImageFunc(image, link);
+      cacheGenerateLinkImageFunc(image.attr("src").split("?")[0], image, link);
+    }
     
     // Prefetch current, next and prev full images in the background
     var imageUrlsToBePrefetchedLen = imageUrlsToBePrefetched.length - 1,
@@ -131,6 +129,8 @@
     };
     
     prefetchCurrentNextPrevImage();
+    
+    wrp.removeClass("loading");
   
     return imgs; /* Make chainable */
     
@@ -156,7 +156,7 @@
         if (elm.length) {
           navigate(elm.find("a"));
         } else {
-          navigate(wrp.find("li").filter((isNext ? ":first" : ":last") + ":visible").find("a"));
+          navigate(wrp.find("li").filter(isNext ? ":first" : ":last").find("a"));
         }
         if(!e.keyCode) {
           e.stopPropagation();

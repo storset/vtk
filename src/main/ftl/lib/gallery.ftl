@@ -9,6 +9,9 @@
 
 <#macro galleryJSInit maxWidth fadeEffect>
   <script type="text/javascript"><!--
+    $(document).ready(function() {
+      $(".vrtx-image-listing-include").addClass("loading");
+    });
     $(window).load(function() {	
 	  var wrapper = ".vrtx-image-listing-include";	
 	  var container = ".vrtx-image-listing-include-container";	  

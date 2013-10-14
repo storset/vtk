@@ -56,26 +56,28 @@
     // Prefetch next and prev full images in the background
     var imageUrlsToBePrefetchedLen = imageUrlsToBePrefetched.length - 1,
         imagesPrefetched = {}; // Keeps images in memory (reachable) so that don't need to prefetch again until reload
-    
-    var prefetchNextPrev = function() {
+
+    var loadErrorFullImage = function(imgLater) {
+      // void() - could maybe be used for something later :)
+    },
+    loadFullImage = function() {
+      loadErrorFullImage(this);
+    },
+    errorFullImage = function() {
+      $(imgs).filter("[href^='" + this.src + "']").closest("a").append("<span class='loading-image loading-image-error'><p>" + loadImageErrorMsg + "</p></span>");
+      loadErrorFullImage(this);
+    },
+    loadImage = function(src) {
+      imagesPrefetched[src] = new Image();
+      imagesPrefetched[src].onload = loadFullImage;
+      imagesPrefetched[src].onerror = errorFullImage;
+      imagesPrefetched[src].src = src;
+    },
+    prefetchNextPrev = function() {
       var active = wrpThumbsLinks.filter(".active"),
           activeIdx = active.parent().index() - 1,
           activeSrc = active.find(".vrtx-thumbnail-image")[0].src.split("?")[0],
-          j = 0,
-          loadErrorFullImage = function(imgLater) {
-            // void() - could maybe be used for something later :)
-          },
-          loadFullImage = function() {
-            loadErrorFullImage(this);
-          }, errorFullImage = function() {
-            $(imgs).filter("[href^='" + this.src + "']").closest("a").append("<span class='loading-image loading-image-error'><p>" + loadImageErrorMsg + "</p></span>");
-            loadErrorFullImage(this);
-          }, loadImage = function(src) {
-            imagesPrefetched[src] = new Image();
-            imagesPrefetched[src].onload = loadFullImage;
-            imagesPrefetched[src].onerror = errorFullImage;
-            imagesPrefetched[src].src = src;
-          };
+          j = 0;
 
       if(!imagesPrefetched[activeSrc]) {
         loadImage(activeSrc);

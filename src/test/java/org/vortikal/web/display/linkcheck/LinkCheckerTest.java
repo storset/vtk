@@ -106,6 +106,15 @@ public class LinkCheckerTest {
 
     }
 
+    @Test
+    public void testIDN() throws java.net.MalformedURLException {
+        java.net.URL url = new java.net.URL("http://www.øl.com/#/BedsteBryggeprocess");
+        assertEquals(new java.net.URL("http://www.xn--l-4ga.com/#/BedsteBryggeprocess"), 
+                LinkChecker.toIDN(url));
+        url = new java.net.URL("http://plain-ascii.com/foo/bar");
+        assertEquals(url, LinkChecker.toIDN(url));
+    }
+
     private void testValidation(List<TestLinkCheckObject> testLinks) {
 
         for (TestLinkCheckObject testLink : testLinks) {
@@ -140,7 +149,7 @@ public class LinkCheckerTest {
                 actual.getStatus());
 
     }
-
+    
     private class TestLinkCheckObject {
 
         String testHref;

@@ -126,6 +126,28 @@ public class LinkChecker {
         logger.info("Validate: href='" + href + "', base='" + base + "': " + result);
         return result;
     }
+    
+    private static boolean isAscii(String s) {
+        for (int i = 0; i < s.length(); i++) {
+            if (s.charAt(i) > 0x7f) return false;
+        }
+        return true;
+    }
+    
+    public static java.net.URL toIDN(java.net.URL url) throws MalformedURLException {
+        String host = url.getHost();
+        if (isAscii(host)) {
+            return url;
+        }
+
+        String s = url.toString();
+        int start = s.indexOf(host, 0);
+        StringBuilder sb = new StringBuilder();
+        sb.append(s.substring(0, start));
+        sb.append(java.net.IDN.toASCII(host));
+        sb.append(s.substring(start + host.length()));
+        return new java.net.URL(sb.toString());
+    }
 
     private LinkCheckResult validateInternal(String href, URL base, boolean sendReferrer) {
         if (href == null) {
@@ -144,14 +166,13 @@ public class LinkChecker {
                 return new LinkCheckResult(href, Status.MALFORMED_URL, t.getMessage());
             }
         }
-        
+
         java.net.URL url = null;
         try {
-            url = new java.net.URL(normalized);
+            url = toIDN(new java.net.URL(normalized));
         } catch (MalformedURLException e) {
             return new LinkCheckResult(href, Status.MALFORMED_URL, e.getMessage());
         }
-    
         final String cacheKey = url.toString();
         Element cached = this.cache.get(cacheKey);
         if (cached != null) {
@@ -170,7 +191,6 @@ public class LinkChecker {
             status = Status.ERROR;
             reason = t.getMessage();
         }
-
         // XXX VTK-3162 Any status other than explicit NOT_FOUND is considered
         // to be ok. This to reduce unnecessary noise produced by generic/random
         // errors and timeouts.
@@ -223,7 +243,7 @@ public class LinkChecker {
             if (location == null) {
                 return responseCode;
             }
-            urlConnection = createHeadRequest(new java.net.URL(location), referrer);
+            urlConnection = createHeadRequest(toIDN(new java.net.URL(location)), referrer);
             urlConnection.connect();
             responseCode = urlConnection.getResponseCode();
             retry++;
@@ -232,8 +252,7 @@ public class LinkChecker {
     }
     
     private HttpURLConnection createHeadRequest(java.net.URL url, URL referrer) throws IOException {
-        java.net.URL location = new java.net.URL(url.toString());
-        HttpURLConnection urlConnection = (HttpURLConnection) location.openConnection();
+        HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
         urlConnection.setRequestMethod("HEAD");
         urlConnection.setConnectTimeout(this.connectTimeout);
         urlConnection.setReadTimeout(this.readTimeout);

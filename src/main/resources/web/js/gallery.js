@@ -92,19 +92,12 @@
       cacheGenerateLinkImageFunc(image.attr("src").split("?")[0], image, link);
     }
     
-    // Prefetch next and prev full images in the background
+    // Prefetch current, next and prev full images in the background
     var imageUrlsToBePrefetchedLen = imageUrlsToBePrefetched.length - 1,
-        imagesPrefetched = {}; // Keeps images in memory (reachable) so that don't need to prefetch again until reload
-
-    var loadErrorFullImage = function(image) {
-      // void() - could maybe be used for something later :)
-    },
-    loadFullImage = function() {
-      loadErrorFullImage(this);
-    },
+        imagesPrefetched = {}, // Keeps images in memory (reachable) so that don't need to prefetch again until reload
+    loadFullImage = function() {},
     errorFullImage = function() {
       $(imgs).filter("[href^='" + this.src + "']").closest("a").append("<span class='loading-image loading-image-error'><p>" + loadImageErrorMsg + "</p></span>");
-      loadErrorFullImage(this);
     },
     loadImage = function(src) {
       imagesPrefetched[src] = new Image();
@@ -194,7 +187,6 @@
     function scaleAndCalculatePosition(src) {
       $(wrapperContainer + "-nav a, " + wrapperContainer + "-nav span, " + wrapperContainerLink).css("height", images[src].height);
       $(wrapperContainer + ", " + wrapperContainer + "-nav").css("width", images[src].width);
-      
       var description = $(wrapperContainer + "-description");
       if(!description.length) {
         $("<div class='" + container.substring(1) + "-description' />").insertAfter(wrapperContainer);
@@ -204,8 +196,8 @@
     }
 
     function centerThumbnailImage(thumb, link) {
-      centerDimension(thumb, thumb.width(), link.width(), "marginLeft"); // horizontal
-      centerDimension(thumb, thumb.height(), link.height(), "marginTop"); // vertical
+      centerDimension(thumb, thumb.width(), link.width(), "marginLeft"); // Horizontal dimension
+      centerDimension(thumb, thumb.height(), link.height(), "marginTop"); // Vertical dimension
     }
 
     function centerDimension(thumb, tDim, tCDim, cssProperty) { // Center thumbDimension in thumbContainerDimension

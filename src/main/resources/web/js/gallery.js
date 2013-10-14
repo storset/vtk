@@ -54,27 +54,23 @@
     wrp.find("a.prev, a.prev span, a.next, a.next span").fadeTo(0, 0);
 
     // Load next and prev full images in the background
-    var imagesLaterLen = imagesLater.length - 1, 
-             imgLaters = new Array(2),
-                     k = 0,
-    imgLatersRetrieved = new Array(imagesLater.length),
-    loadErrorFullImage = function() {
-      k++;
-      if(k >= 2) {
-        imgLaters = new Array(2); // GC when next and prev is loaded/error
-      }
-    },
-    loadFullImage = function() {
-      loadErrorFullImage();
-    }, errorFullImage = function() {
-      $(imgs).filter("[href^='" + this.src + "']").closest("a").append("<span class='loading-image loading-image-error'><p>" + loadImageErrorMsg + "</p></span>");
-      loadErrorFullImage();
-    };
+    var imagesLaterLen = imagesLater.length - 1,
+    imgLatersRetrieved = new Array(imagesLater.length);
     
     var prefetchNextPrev = function() {
-      var startAsyncIdx = wrpThumbsLinks.filter(".active").parent().index() - 1;
+      var startAsyncIdx = wrpThumbsLinks.filter(".active").parent().index() - 1,
+          loadErrorFullImage = function() {
+            
+          },
+          loadFullImage = function() {
+            loadErrorFullImage();
+          }, errorFullImage = function() {
+            $(imgs).filter("[href^='" + this.src + "']").closest("a").append("<span class='loading-image loading-image-error'><p>" + loadImageErrorMsg + "</p></span>");
+            loadErrorFullImage();
+          };
+      
       imgLatersRetrieved[startAsyncIdx] = true;
-      var j = 0;
+      var j = 0, imgLaters = new Array(2);
       var loadNextPrevImages = setTimeout(function() {
         if(j === 0) {
           var imgLaterIdx = startAsyncIdx + 1;

@@ -64,7 +64,6 @@
           startSrc = startImage[0].src.split("?")[0],
           j = 0,
           loadErrorFullImage = function(imgLater) {
-            console.dir(imgLatersRetrieved);
           },
           loadFullImage = function() {
             loadErrorFullImage(this);

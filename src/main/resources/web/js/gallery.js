@@ -210,7 +210,7 @@
         $("<div class='" + container.substring(1) + "-description' />").insertAfter(wrapperContainer);
         description = $(wrapperContainer + "-description");
       }
-      if(images[src].desc) description.html(images[src].desc).css("width", images[src].width);
+      description.html(images[src].desc).css("width", images[src].width);
     }
 
     function centerThumbnailImage(thumb, link) {
@@ -248,7 +248,7 @@
       var desc = "";
       if (images[src].title) desc += "<p class='" + container.substring(1) + "-title'>" + images[src].title + "</p>";
       if (images[src].alt)   desc += images[src].alt;
-      if(desc != "") images[src].desc = desc;
+      images[src].desc = desc;
     }
   };
 })(jQuery);

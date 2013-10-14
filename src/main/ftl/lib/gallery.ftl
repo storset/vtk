@@ -35,7 +35,7 @@
 <#macro galleryListImages images maxWidth maxHeight activeImage="" imageListing="">
   <#local count = 1 />
   <script type="text/javascript">
-    var imagesLater = [];
+    var imageUrlsToBePrefetched = [];
   </script>
   
   <#list images as imageEntry>
@@ -138,9 +138,9 @@
 	          </#if>
 	          <script type="text/javascript"><!--
 	            <#if imageListing != "">
-	              imagesLater.push('${url?split("?")[0]?html}');
+	              imageUrlsToBePrefetched.push('${url?split("?")[0]?html}');
 	            <#else>
-	              imagesLater.push('${url?html}');
+	              imageUrlsToBePrefetched.push('${url?html}');
 	            </#if>
 	          // -->
 	          </script>

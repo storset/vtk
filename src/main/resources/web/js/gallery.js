@@ -53,49 +53,49 @@
     calculateImage(firstImage.find("img.vrtx-thumbnail-image"), true);
     wrp.find("a.prev, a.prev span, a.next, a.next span").fadeTo(0, 0);
 
-    // Load next and prev full images in the background
-    var imagesLaterLen = imagesLater.length - 1,
-        imgLatersRetrieved = {}; // Keeps images in memory (reachable) so that don't need to prefetch again until reload
+    // Prefetch next and prev full images in the background
+    var imageUrlsToBePrefetchedLen = imageUrlsToBePrefetched.length - 1,
+        imagesPrefetched = {}; // Keeps images in memory (reachable) so that don't need to prefetch again until reload
     
     var prefetchNextPrev = function() {
-      var startAsync = wrpThumbsLinks.filter(".active"),
-          startAsyncIdx = startAsync.parent().index() - 1,
-          startImage = startAsync.find(".vrtx-thumbnail-image"),
-          startSrc = startImage[0].src.split("?")[0],
+      var active = wrpThumbsLinks.filter(".active"),
+          activeIdx = active.parent().index() - 1,
+          activeSrc = active.find(".vrtx-thumbnail-image")[0].src.split("?")[0],
           j = 0,
           loadErrorFullImage = function(imgLater) {
+            // void() - could maybe be used for something later :)
           },
           loadFullImage = function() {
             loadErrorFullImage(this);
           }, errorFullImage = function() {
             $(imgs).filter("[href^='" + this.src + "']").closest("a").append("<span class='loading-image loading-image-error'><p>" + loadImageErrorMsg + "</p></span>");
             loadErrorFullImage(this);
-          }, genImage = function(src) {
-            imgLatersRetrieved[src] = new Image();
-            imgLatersRetrieved[src].onload = loadFullImage;
-            imgLatersRetrieved[src].onerror = errorFullImage;
-            imgLatersRetrieved[src].src = src;
+          }, loadImage = function(src) {
+            imagesPrefetched[src] = new Image();
+            imagesPrefetched[src].onload = loadFullImage;
+            imagesPrefetched[src].onerror = errorFullImage;
+            imagesPrefetched[src].src = src;
           };
 
-      if(!imgLatersRetrieved[startSrc]) {
-        genImage(startSrc);
+      if(!imagesPrefetched[activeSrc]) {
+        loadImage(activeSrc);
       }   
           
       var loadNextPrevImages = setTimeout(function() {
         if(j === 0) {
-          var imgLaterIdx = startAsyncIdx + 1;
-          if(imgLaterIdx > imagesLaterLen) {
-            imgLaterIdx = 0;
+          var imageUrlToBePrefetchedIdx = activeIdx + 1;
+          if(imageUrlToBePrefetchedIdx > imageUrlsToBePrefetchedLen) {
+            imageUrlToBePrefetchedIdx = 0;
           }
         } else {
-          var imgLaterIdx = startAsyncIdx - 1;
-          if(imgLaterIdx < 0) {
-            imgLaterIdx = imagesLaterLen;
+          var imageUrlToBePrefetchedIdx = activeIdx - 1;
+          if(imageUrlToBePrefetchedIdx < 0) {
+            imageUrlToBePrefetchedIdx = imageUrlsToBePrefetchedLen;
           }
         }
-        var src = imagesLater[imgLaterIdx];
-        if(!imgLatersRetrieved[src]) {
-          genImage(src);
+        var src = imageUrlsToBePrefetched[imageUrlToBePrefetchedIdx];
+        if(!imagesPrefetched[src]) {
+          loadImage(src);
         }
         j++;
         if(j < 2) {

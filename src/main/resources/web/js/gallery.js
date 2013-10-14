@@ -112,7 +112,7 @@
       imagesPrefetched[src].onerror = errorFullImage;
       imagesPrefetched[src].src = src;
     },
-    prefetchNextPrev = function() {
+    prefetchCurrentNextPrevImage = function() {
       var active = wrpThumbsLinks.filter(".active"),
           activeIdx = active.parent().index() - 1,
           activeSrc = active.find(".vrtx-thumbnail-image")[0].src.split("?")[0],
@@ -132,7 +132,7 @@
       }, 20);
     };
     
-    prefetchNextPrev();
+    prefetchCurrentNextPrevImage();
   
     return imgs; /* Make chainable */
     
@@ -140,7 +140,7 @@
       var img = elm.find("img.vrtx-thumbnail-image");
       calculateImage(img, false);
       elm.addClass("active");
-      prefetchNextPrev();
+      prefetchCurrentNextPrevImage();
       img.stop().fadeTo(0, 1);
     }
     
@@ -220,6 +220,7 @@
 
     function cacheGenerateLinkImage(src, image, link) {
       images[src] = {};
+      // Find image width and height "precalculated" from Vortex (properties)
       images[src].width = parseInt(link.find("span.hiddenWidth").text(), 10);
       images[src].height = parseInt(link.find("span.hiddenHeight").text(), 10);
       // HTML encode quotes in alt and title if not already encoded
@@ -228,13 +229,13 @@
       images[src].alt = alt ? alt.replace(/\'/g, "&#39;").replace(/\"/g, "&quot;") : null;
       images[src].title = title ? title.replace(/\'/g, "&#39;").replace(/\"/g, "&quot;") : null;
       // Build HTML
-      images[src].html = "<a href='" + link.attr("href") + "'" +
-                         " class='" + container.substring(1) + "-link'>" +
-                         "<img src='" + src + "' alt='" + images[src].alt + "' style='width: " +
-                         images[src].width + "px; height: " + images[src].height + "px;' />" + "</a>";
-      /* Minimum 150x100px containers */
+      images[src].html = "<a href='" + link.attr("href") + "'" + " class='" + container.substring(1) + "-link'>" +
+                           "<img src='" + src + "' alt='" + images[src].alt + "' style='width: " + images[src].width + "px; height: " + images[src].height + "px;' />" +
+                         "</a>";
+      // Set 150x100px containers
       images[src].width = Math.max(parseInt(images[src].width, 10), 150) + "px";
       images[src].height = Math.max(parseInt(images[src].height, 10), 100) + "px";
+      // Add description
       var desc = "";
       if (images[src].title) desc += "<p class='" + container.substring(1) + "-title'>" + images[src].title + "</p>";
       if (images[src].alt)   desc += images[src].alt;

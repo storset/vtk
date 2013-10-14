@@ -171,8 +171,10 @@
         } else {
           navigate(wrp.find("li").filter((isNext ? ":first" : ":last") + ":visible").find("a"));
         }
-        e.stopPropagation();
-        e.preventDefault();
+        if(!e.keyCode) {
+          e.stopPropagation();
+          e.preventDefault();
+        }
       }
     }
     

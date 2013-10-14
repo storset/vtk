@@ -53,6 +53,54 @@
     calculateImage(firstImage.find("img.vrtx-thumbnail-image"), true);
     wrp.find("a.prev, a.prev span, a.next, a.next span").fadeTo(0, 0);
 
+    // Load next and prev full images in the background
+    var imagesLaterLen = imagesLater.length - 1, 
+             imgLaters = new Array(2),
+                     k = 0,
+    imgLatersRetrieved = new Array(imagesLater.length),
+    loadErrorFullImage = function() {
+      k++;
+      if(k >= 2) {
+        imgLaters = new Array(2); // GC when next and prev is loaded/error
+      }
+    },
+    loadFullImage = function() {
+      loadErrorFullImage();
+    }, errorFullImage = function() {
+      $(imgs).filter("[href^='" + this.src + "']").closest("a").append("<span class='loading-image loading-image-error'><p>" + loadImageErrorMsg + "</p></span>");
+      loadErrorFullImage();
+    };
+    
+    var prefetchNextPrev = function() {
+      var startAsyncIdx = wrpThumbsLinks.filter(".active").parent().index() - 1;
+      imgLatersRetrieved[startAsyncIdx] = true;
+      var j = 0;
+      var loadNextPrevImages = setTimeout(function() {
+        if(j === 0) {
+          var imgLaterIdx = startAsyncIdx + 1;
+          if(imgLaterIdx > imagesLaterLen) {
+            imgLaterIdx = 0;
+          }
+        } else {
+          var imgLaterIdx = startAsyncIdx - 1;
+          if(imgLaterIdx < 0) {
+            imgLaterIdx = imagesLaterLen;
+          }
+        }
+        if(!imgLatersRetrieved[imgLaterIdx]) {
+          imgLaters[j] = new Image();
+          imgLaters[j].onload = loadFullImage;
+          imgLaters[j].onerror = errorFullImage;
+          imgLaters[j].src = imagesLater[imgLaterIdx];
+          imgLatersRetrieved[imgLaterIdx] = true;
+        }
+        j++;
+        if(j < 2) {
+          setTimeout(arguments.callee, 20);
+        }
+      }, 20);
+    };
+    
     // Thumbs
     wrp.on("mouseover mouseout click", "li a", function (e) {
       var elm = $(this);
@@ -64,6 +112,7 @@
         calculateImage(img, false);
         elm.addClass("active");
         img.stop().fadeTo(0, 1);
+        prefetchNextPrev();
         e.preventDefault();
       }
     });
@@ -91,31 +140,11 @@
     for(var i = 0, len = imgs.length; i < len; i++) {
       link = $(imgs[i]);
       image = link.find("img.vrtx-thumbnail-image");
-      if(i > 1) {
-        $("<span class='loading-image'></span>").insertBefore(image);
-      }
       cacheGenerateLinkImageFunc(image.attr("src").split("?")[0], image, link); 
       centerThumbnailImageFunc(image, link);
     }
     
-    // Load full images in the background
-    var startAsyncIdx = 2;
-    var j = startAsyncIdx, imagesLaterLen = imagesLater.length, imgLaters = new Array(imagesLaterLen), loadFullImage = function() {
-      $(imgs).filter("[href^='" + this.src + "']").closest("a").find(".loading-image").remove();
-    }, errorFullImage = function() {
-      $(imgs).filter("[href^='" + this.src + "']").closest("a").find(".loading-image").addClass("loading-image-error").append("<p>" + loadImageErrorMsg + "</p>");
-    };
-    var loadRestOfImages = setTimeout(function() {
-      imgLaters[j - startAsyncIdx] = new Image();
-      imgLaters[j - startAsyncIdx].onload = loadFullImage;
-      imgLaters[j - startAsyncIdx].onerror = errorFullImage;
-      imgLaters[j - startAsyncIdx].src = imagesLater[j - startAsyncIdx];
-      j++;
-      if((j - startAsyncIdx) < imagesLaterLen) {
-        setTimeout(arguments.callee);
-      }
-    }, 20);
-
+    prefetchNextPrev();
   
     return imgs; /* Make chainable */
     
@@ -137,6 +166,7 @@
         } else {
           wrp.find("li:" + roundAboutElm + " a").click();
         }
+        prefetchNextPrev();
         e.preventDefault();
       }
     }

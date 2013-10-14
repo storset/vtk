@@ -132,16 +132,16 @@
 	            <#else>
 	              <span><img class="vrtx-full-image" src="${url?html}" alt='${description}' /></span> 
 	            </#if>
-	          <#else>
-	            <script type="text/javascript"><!--
-	              <#if imageListing != "">
-	                imagesLater.push('${url?split("?")[0]?html}');
-	              <#else>
-	                imagesLater.push('${url?html}');
-	              </#if>
-	            // -->
-	            </script>
 	          </#if>
+	          <script type="text/javascript"><!--
+	            <#if imageListing != "">
+	              imagesLater.push('${url?split("?")[0]?html}');
+	            <#else>
+	              imagesLater.push('${url?html}');
+	            </#if>
+	          // -->
+	          </script>
+	          
 	            <span class="hiddenWidth" style="display: none">${width}</span>
 	            <span class="hiddenHeight" style="display: none">${height}</span>
 	          </a>

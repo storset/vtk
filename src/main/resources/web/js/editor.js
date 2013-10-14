@@ -730,7 +730,7 @@ function unsavedChangesInEditor() {
   var contents = vrtxAdmin.cachedContent;
 
   var currentStateOfInputFields = contents.find("input").not("[type=submit]").not("[type=button]")
-    .not("[type=checkbox]").not("[type=radio]"),
+                                                        .not("[type=checkbox]").not("[type=radio]"),
     textLen = currentStateOfInputFields.length,
     currentStateOfSelects = contents.find("select"),
     selectsLen = currentStateOfSelects.length,

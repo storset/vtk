@@ -297,7 +297,7 @@ VrtxAdmin.prototype.initResourceMenus = function initResourceMenus() {
       } : function(link) {
         vrtxAdm.globalAsyncComplete();
       }),
-      post: (!isSavingBeforePublish && !isImageAudioVideo)
+      post: (!isSavingBeforePublish && (typeof isImageAudioVideo !== "boolean" || !isImageAudioVideo))
     });
   }
   // Unlock

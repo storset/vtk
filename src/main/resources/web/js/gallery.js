@@ -130,7 +130,7 @@
       nextPrevNavigate(e, -1);
     });
 
-    // Rest of images
+    // Generate markup for rest of images
     var imgs = this,
         centerThumbnailImageFunc = centerThumbnailImage, 
         cacheGenerateLinkImageFunc = cacheGenerateLinkImage, link, image;

@@ -270,8 +270,7 @@
         <entry key="Expires" value="0" />
         <entry key="Pragma" value="no-cache" />
       </map>
-    </property>
-    <property name="categories" value="spCookie" />  
+    </property>      
   </bean>
 
   <bean id="saml.ieCookieLogoutService" class="org.vortikal.web.service.ServiceImpl">

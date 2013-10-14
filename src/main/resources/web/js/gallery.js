@@ -55,7 +55,7 @@
 
     // Load next and prev full images in the background
     var imagesLaterLen = imagesLater.length - 1,
-        imgLatersRetrieved = {};
+        imgLatersRetrieved = {}; // Keeps images in memory (reachable) so that don't need to prefetch again until reload
     
     var prefetchNextPrev = function() {
       var startAsync = wrpThumbsLinks.filter(".active"),

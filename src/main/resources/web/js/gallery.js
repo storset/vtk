@@ -165,12 +165,11 @@
         wrp.find("a.prev, a.prev span, a.next, a.next span").stop().fadeTo(settings.fadeNavInOutTime, 0);
       } else {
         var activeThumb = wrpThumbsLinks.filter(".active").parent();
-        var elm = isNext ? activeThumb.next() : activeThumb.prev();
-        var roundAboutElm = isNext ? "first" : "last";
+        var elm = isNext ? activeThumb.next("li") : activeThumb.prev("li");
         if (elm.length) {
           navigate(elm.find("a"));
         } else {
-          navigate(wrp.find("li:" + roundAboutElm + " a"));
+          navigate(wrp.find("li").filter((isNext ? ":first" : ":last") + ":visible").find("a"));
         }
         e.stopPropagation();
         e.preventDefault();

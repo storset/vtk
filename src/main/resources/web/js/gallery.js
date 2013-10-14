@@ -233,8 +233,10 @@
       images[src].width = parseInt(link.find("span.hiddenWidth").text(), 10);
       images[src].height = parseInt(link.find("span.hiddenHeight").text(), 10);
       // HTML encode quotes in alt and title if not already encoded
-      images[src].alt = image.attr("alt") ? alt.replace(/\'/g, "&#39;").replace(/\"/g, "&quot;") : null;
-      images[src].title = image.attr("title") ? title.replace(/\'/g, "&#39;").replace(/\"/g, "&quot;") : null;
+      var alt = image.attr("alt");
+      var title = image.attr("title");
+      images[src].alt = alt ? alt.replace(/\'/g, "&#39;").replace(/\"/g, "&quot;") : null;
+      images[src].title = title ? title.replace(/\'/g, "&#39;").replace(/\"/g, "&quot;") : null;
       // Build HTML
       images[src].html = "<a href='" + link.attr("href") + "'" +
                          " class='" + container.substring(1) + "-link'>" +

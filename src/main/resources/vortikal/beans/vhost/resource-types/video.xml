@@ -42,6 +42,7 @@
       <list>
         <ref bean="contentTypeMatchesAudioOrVideo" />
         <ref bean="asWebpageAssertion" />
+        <ref bean="resourceIsPublishedAssertion" />
       </list>
     </property>
   </bean>
@@ -53,6 +54,7 @@
       <list>
         <ref bean="contentTypeMatchesVideo" />
         <ref bean="asWebpageAssertion" />
+        <ref bean="resourceIsPublishedAssertion" />
       </list>
     </property>
     <property name="handler" ref="displayVideoResource" />
@@ -64,6 +66,7 @@
       <list>
         <ref bean="contentTypeMatchesAudio" />
         <ref bean="asWebpageAssertion" />
+        <ref bean="resourceIsPublishedAssertion" />
       </list>
     </property>
     <property name="handler" ref="displayAudioResource" />
@@ -148,11 +151,6 @@
     <property name="modelName" value="previewImage" />
     <property name="urlName" value="URL" />
     <property name="service" ref="mediaPlayerService" />
-    <property name="staticURLParameters">
-      <map>
-        <entry key="vrtxPreviewUnpublished" value="true" />
-      </map>
-    </property>
   </bean>
 
   <bean id="posterImagePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">

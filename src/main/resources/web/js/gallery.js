@@ -52,12 +52,51 @@
     
     calculateImage(firstImage.find("img.vrtx-thumbnail-image"), true);
     wrp.find("a.prev, a.prev span, a.next, a.next span").fadeTo(0, 0);
+    
+    // Thumbs
+    wrp.on("mouseover mouseout click", "li a", function (e) {
+      var elm = $(this);
+      if (e.type == "mouseover" || e.type == "mouseout") {
+        elm.filter(":not(.active)").find("img").stop().fadeTo(settings.fadeThumbsInOutTime, (e.type == "mouseover") ? 1 : settings.fadedThumbsOutOpacity);
+      } else {
+        navigate(elm);
+        e.stopPropagation();
+        e.preventDefault();
+      }
+    });
 
+    // Navigation handlers
+    $(document).keydown(function (e) {
+      if (e.keyCode == 39) {
+        nextPrevNavigate(e, 1);
+      } else if (e.keyCode == 37) {
+        nextPrevNavigate(e, -1);
+      }
+    });
+    wrp.on("click mouseover mouseout", "a.next, " + container + "-link", function (e) {
+      nextPrevNavigate(e, 1);
+    });
+
+    wrp.on("click mouseover mouseout", "a.prev", function (e) {
+      nextPrevNavigate(e, -1);
+    });
+
+    // Generate markup for rest of images
+    var imgs = this,
+        centerThumbnailImageFunc = centerThumbnailImage, 
+        cacheGenerateLinkImageFunc = cacheGenerateLinkImage, link, image;
+    for(var i = 0, len = imgs.length; i < len; i++) {
+      link = $(imgs[i]);
+      image = link.find("img.vrtx-thumbnail-image");
+      centerThumbnailImageFunc(image, link);
+      cacheGenerateLinkImageFunc(image.attr("src").split("?")[0], image, link);
+    }
+    
     // Prefetch next and prev full images in the background
     var imageUrlsToBePrefetchedLen = imageUrlsToBePrefetched.length - 1,
         imagesPrefetched = {}; // Keeps images in memory (reachable) so that don't need to prefetch again until reload
 
-    var loadErrorFullImage = function(imgLater) {
+    var loadErrorFullImage = function(image) {
       // void() - could maybe be used for something later :)
     },
     loadFullImage = function() {
@@ -105,45 +144,6 @@
         }
       }, 20);
     };
-    
-    // Thumbs
-    wrp.on("mouseover mouseout click", "li a", function (e) {
-      var elm = $(this);
-      if (e.type == "mouseover" || e.type == "mouseout") {
-        elm.filter(":not(.active)").find("img").stop().fadeTo(settings.fadeThumbsInOutTime, (e.type == "mouseover") ? 1 : settings.fadedThumbsOutOpacity);
-      } else {
-        navigate(elm);
-        e.stopPropagation();
-        e.preventDefault();
-      }
-    });
-
-    // Navigation handlers
-    $(document).keydown(function (e) {
-      if (e.keyCode == 39) {
-        nextPrevNavigate(e, 1);
-      } else if (e.keyCode == 37) {
-        nextPrevNavigate(e, -1);
-      }
-    });
-    wrp.on("click mouseover mouseout", "a.next, " + container + "-link", function (e) {
-      nextPrevNavigate(e, 1);
-    });
-
-    wrp.on("click mouseover mouseout", "a.prev", function (e) {
-      nextPrevNavigate(e, -1);
-    });
-
-    // Generate markup for rest of images
-    var imgs = this,
-        centerThumbnailImageFunc = centerThumbnailImage, 
-        cacheGenerateLinkImageFunc = cacheGenerateLinkImage, link, image;
-    for(var i = 0, len = imgs.length; i < len; i++) {
-      link = $(imgs[i]);
-      image = link.find("img.vrtx-thumbnail-image");
-      centerThumbnailImageFunc(image, link);
-      cacheGenerateLinkImageFunc(image.attr("src").split("?")[0], image, link);
-    }
     
     prefetchNextPrev();
   

@@ -208,14 +208,8 @@
       centerDimension(thumb, thumb.height(), link.height(), "marginTop"); // vertical
     }
 
-    function centerDimension(thumb, thumbDimension, thumbContainerDimension, cssProperty) {
-      var adjust = 0;
-      if (thumbDimension > thumbContainerDimension) {
-        adjust = ((thumbDimension - thumbContainerDimension) / 2) * -1;
-      } else if (thumbDimension < thumbContainerDimension) {
-        adjust = (thumbContainerDimension - thumbDimension) / 2;
-      }
-      thumb.css(cssProperty, adjust + "px");
+    function centerDimension(thumb, tDim, tCDim, cssProperty) { // Center thumbDimension in thumbContainerDimension
+      thumb.css(cssProperty, ((tDim > tCDim) ? ((tDim - tCDim) / 2) * -1 : (tDim < tCDim) ? (tCDim - tDim) / 2 : 0) + "px");
     }
 
     function cacheGenerateLinkImage(src, image, link) {

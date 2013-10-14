@@ -180,15 +180,17 @@
           $(wrapperContainerLink).remove();
         }
       }
+      // Image
       wrpContainer.append(images[src].html);
+      // Description     
       $(wrapperContainer + "-nav a, " + wrapperContainer + "-nav span, " + wrapperContainerLink).css("height", images[src].height);
       $(wrapperContainer + ", " + wrapperContainer + "-nav").css("width", images[src].width);
       var description = $(wrapperContainer + "-description");
       if(!description.length) {
-        $("<div class='" + container.substring(1) + "-description' />").insertAfter(wrapperContainer);
-        description = $(wrapperContainer + "-description");
+        $("<div class='" + container.substring(1) + "-description'>" + images[src].desc + "</div>").insertAfter(wrapperContainer);
+      } else {
+        description.html(images[src].desc).css("width", images[src].width);
       }
-      description.html(images[src].desc).css("width", images[src].width);
       if(!init) {
         wrpThumbsLinks.filter(".active").removeClass("active").find("img").stop().fadeTo(settings.fadeThumbsInOutTime, settings.fadedThumbsOutOpacity);
       } else {

@@ -26,7 +26,10 @@
       fadedOutOpacity: 0,
       fadeThumbsInOutTime: 250,
       fadedThumbsOutOpacity: 0.6,
-      fadeNavInOutTime: 250
+      fadeNavInOutTime: 250,
+      fadedInActiveNavOpacity: 0.5,
+      fadedNavOpacity: 0.2,
+      loadNextPrevImagesInterval: 20
     }, options || {});
     
     var wrp = $(wrapper);
@@ -82,15 +85,17 @@
     });
 
     // Generate markup for rest of images
-    var imgs = this,
-        centerThumbnailImageFunc = centerThumbnailImage, 
+    var imgs = this;
+    var delay = setTimeout(function() {
+      var centerThumbnailImageFunc = centerThumbnailImage, 
         cacheGenerateLinkImageFunc = cacheGenerateLinkImage, link, image;
-    for(var i = 0, len = imgs.length; i < len; i++) {
-      link = $(imgs[i]);
-      image = link.find("img.vrtx-thumbnail-image");
-      centerThumbnailImageFunc(image, link);
-      cacheGenerateLinkImageFunc(image.attr("src").split("?")[0], image, link);
-    }
+      for(var i = 0, len = imgs.length; i < len; i++) {
+        link = $(imgs[i]);
+        image = link.find("img.vrtx-thumbnail-image");
+        centerThumbnailImageFunc(image, link);
+        cacheGenerateLinkImageFunc(image.attr("src").split("?")[0], image, link);
+      }
+    }, 1);
     
     // Prefetch current, next and prev full images in the background
     var imageUrlsToBePrefetchedLen = imageUrlsToBePrefetched.length - 1,
@@ -120,9 +125,9 @@
           loadImage(src);
         }
         if(++j < 2) {
-          setTimeout(arguments.callee, 20);
+          setTimeout(arguments.callee, settings.loadNextPrevImagesInterval);
         }
-      }, 20);
+      }, settings.loadNextPrevImagesInterval);
     };
     
     prefetchCurrentNextPrevImage();
@@ -140,9 +145,9 @@
     function nextPrevNavigate(e, dir) {
       var isNext = dir > 0;	
       if (e.type == "mouseover") {
-        wrp.find("a.next span, a.prev span").stop().fadeTo(settings.fadeNavInOutTime, 0.2);   /* XXX: some filtering instead below */
+        wrp.find("a.next span, a.prev span").stop().fadeTo(settings.fadeNavInOutTime, settings.fadedNavOpacity);   /* XXX: some filtering instead below */
         wrp.find("a." + (isNext ? "next" : "prev")).stop().fadeTo(settings.fadeNavInOutTime, 1);
-        wrp.find("a." + (isNext ? "prev" : "next")).stop().fadeTo(settings.fadeNavInOutTime, 0.5);
+        wrp.find("a." + (isNext ? "prev" : "next")).stop().fadeTo(settings.fadeNavInOutTime, settings.fadedInActiveNavOpacity);
       } else if (e.type == "mouseout") {
         wrp.find("a.prev, a.prev span, a.next, a.next span").stop().fadeTo(settings.fadeNavInOutTime, 0);
       } else {

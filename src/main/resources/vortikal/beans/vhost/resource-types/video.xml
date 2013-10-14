@@ -151,6 +151,11 @@
     <property name="modelName" value="previewImage" />
     <property name="urlName" value="URL" />
     <property name="service" ref="mediaPlayerService" />
+    <property name="staticURLParameters">
+      <map>
+        <entry key="vrtxPreviewUnpublished" value="true" />
+      </map>
+    </property>
   </bean>
 
   <bean id="posterImagePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">

@@ -53,7 +53,7 @@
     var firstImage = wrpThumbsLinks.filter(".active");
     if(!firstImage.length) return this; 
     
-    calculateImage(firstImage.find("img.vrtx-thumbnail-image"), true);
+    showImage(firstImage.find("img.vrtx-thumbnail-image"), true);
     wrp.find("a.prev, a.prev span, a.next, a.next span").fadeTo(0, 0);
     
     // Thumbs
@@ -136,7 +136,7 @@
     
     function navigate(elm) {
       var img = elm.find("img.vrtx-thumbnail-image");
-      calculateImage(img, false);
+      showImage(img, false);
       elm.addClass("active");
       prefetchCurrentNextPrevImage();
       img.stop().fadeTo(0, 1);
@@ -165,7 +165,7 @@
       }
     }
     
-    function calculateImage(image, init) {
+    function showImage(image, init) {
       var src = image.attr("src").split("?")[0]; /* Remove parameters when active is sent in to gallery */
       if (settings.fadeInOutTime > 0 && !init) {
         wrpContainer.append("<div class='over'>" + $(wrapperContainerLink).html() + "</div>");
@@ -181,15 +181,6 @@
         }
       }
       wrpContainer.append(images[src].html);
-      scaleAndCalculatePosition(src);
-      if(!init) {
-        wrpThumbsLinks.filter(".active").removeClass("active").find("img").stop().fadeTo(settings.fadeThumbsInOutTime, settings.fadedThumbsOutOpacity);
-      } else {
-        wrpThumbsLinks.filter(":not(.active)").find("img").stop().fadeTo(0, settings.fadedThumbsOutOpacity);
-      }
-    }
-
-    function scaleAndCalculatePosition(src) {
       $(wrapperContainer + "-nav a, " + wrapperContainer + "-nav span, " + wrapperContainerLink).css("height", images[src].height);
       $(wrapperContainer + ", " + wrapperContainer + "-nav").css("width", images[src].width);
       var description = $(wrapperContainer + "-description");
@@ -198,6 +189,11 @@
         description = $(wrapperContainer + "-description");
       }
       description.html(images[src].desc).css("width", images[src].width);
+      if(!init) {
+        wrpThumbsLinks.filter(".active").removeClass("active").find("img").stop().fadeTo(settings.fadeThumbsInOutTime, settings.fadedThumbsOutOpacity);
+      } else {
+        wrpThumbsLinks.filter(":not(.active)").find("img").stop().fadeTo(0, settings.fadedThumbsOutOpacity);
+      }
     }
 
     function centerThumbnailImage(thumb, link) {

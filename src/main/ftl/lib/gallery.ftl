@@ -17,6 +17,9 @@
 	  }
 	  loadImageErrorMsg = "${vrtx.getMsg('imageListing.loading-image.error')}";
 	  loadImageMsg = "${vrtx.getMsg('imageListing.loading-image')}";
+	  showFullscreen = "${vrtx.getMsg('imageListing.fullscreen.show')}";
+	  closeFullscreen = "${vrtx.getMsg('imageListing.fullscreen.close')}";
+	  
 	  $(wrapper + " li a").vrtxSGallery(wrapper, container, ${maxWidth}, options);			  
     });
   // -->

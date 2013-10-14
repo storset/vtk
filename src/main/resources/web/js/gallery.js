@@ -59,19 +59,28 @@
     
     var prefetchNextPrev = function() {
       var startAsync = wrpThumbsLinks.filter(".active"),
-          startAsyncIdx = startAsync.parent().index() - 1;
-          imgLatersRetrieved[startAsync.find(".vrtx-thumbnail-image")[0].src.split("?")[0]] = true,
+          startAsyncIdx = startAsync.parent().index() - 1,
+          startImage = startAsync.find(".vrtx-thumbnail-image"),
+          startSrc = startImage[0].src.split("?")[0],
           j = 0,
           loadErrorFullImage = function(imgLater) {
-            imgLatersRetrieved[imgLater.src] = true; // Replace Image with simple boolean
           },
           loadFullImage = function() {
             loadErrorFullImage(this);
           }, errorFullImage = function() {
             $(imgs).filter("[href^='" + this.src + "']").closest("a").append("<span class='loading-image loading-image-error'><p>" + loadImageErrorMsg + "</p></span>");
             loadErrorFullImage(this);
+          }, genImage = function(src) {
+            imgLatersRetrieved[src] = new Image();
+            imgLatersRetrieved[src].onload = loadFullImage;
+            imgLatersRetrieved[src].onerror = errorFullImage;
+            imgLatersRetrieved[src].src = src;
           };
 
+      if(!imgLatersRetrieved[startSrc]) {
+        genImage(startSrc);
+      }   
+          
       var loadNextPrevImages = setTimeout(function() {
         if(j === 0) {
           var imgLaterIdx = startAsyncIdx + 1;
@@ -86,10 +95,7 @@
         }
         var src = imagesLater[imgLaterIdx];
         if(!imgLatersRetrieved[src]) {
-          imgLatersRetrieved[src] = new Image();
-          imgLatersRetrieved[src].onload = loadFullImage;
-          imgLatersRetrieved[src].onerror = errorFullImage;
-          imgLatersRetrieved[src].src = src;
+          genImage(src);
         }
         j++;
         if(j < 2) {
@@ -137,8 +143,8 @@
     for(var i = 0, len = imgs.length; i < len; i++) {
       link = $(imgs[i]);
       image = link.find("img.vrtx-thumbnail-image");
-      cacheGenerateLinkImageFunc(image.attr("src").split("?")[0], image, link); 
       centerThumbnailImageFunc(image, link);
+      cacheGenerateLinkImageFunc(image.attr("src").split("?")[0], image, link);
     }
     
     prefetchNextPrev();

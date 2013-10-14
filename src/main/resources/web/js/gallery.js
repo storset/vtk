@@ -64,6 +64,7 @@
           startSrc = startImage[0].src.split("?")[0],
           j = 0,
           loadErrorFullImage = function(imgLater) {
+            console.dir(imgLatersRetrieved);
           },
           loadFullImage = function() {
             loadErrorFullImage(this);
@@ -110,11 +111,7 @@
       if (e.type == "mouseover" || e.type == "mouseout") {
         elm.filter(":not(.active)").find("img").stop().fadeTo(settings.fadeThumbsInOutTime, (e.type == "mouseover") ? 1 : settings.fadedThumbsOutOpacity);
       } else {
-        var img = elm.find("img.vrtx-thumbnail-image");
-        calculateImage(img, false);
-        elm.addClass("active");
-        prefetchNextPrev();
-        img.stop().fadeTo(0, 1);
+        navigate(elm);
         e.stopPropagation();
         e.preventDefault();
       }
@@ -151,6 +148,14 @@
   
     return imgs; /* Make chainable */
     
+    function navigate(elm) {
+      var img = elm.find("img.vrtx-thumbnail-image");
+      calculateImage(img, false);
+      elm.addClass("active");
+      prefetchNextPrev();
+      img.stop().fadeTo(0, 1);
+    }
+    
     function nextPrevNavigate(e, dir) {
       var isNext = dir > 0;	
       if (e.type == "mouseover") {
@@ -164,9 +169,9 @@
         var elm = isNext ? activeThumb.next() : activeThumb.prev();
         var roundAboutElm = isNext ? "first" : "last";
         if (elm.length) {
-          elm.find("a").click();
+          navigate(elm.find("a"));
         } else {
-          wrp.find("li:" + roundAboutElm + " a").click();
+          navigate(wrp.find("li:" + roundAboutElm + " a"));
         }
         e.stopPropagation();
         e.preventDefault();
@@ -190,38 +195,23 @@
       }
       wrpContainer.append(images[src].html);
       scaleAndCalculatePosition(src);
-
-      var thumbs = wrpThumbsLinks;
-      for (var thumbsLength = thumbs.length, i = 0; i < thumbsLength; i++) {
-        var thumb = $(thumbs[i]);
-        if (thumb.hasClass("active")) {
-          if (!init) {
-            thumb.removeClass("active");
-            thumb.find("img").stop().fadeTo(settings.fadeThumbsInOutTime, settings.fadedThumbsOutOpacity);
-          }
-        } else {
-          thumb.find("img").stop().fadeTo(0, settings.fadedThumbsOutOpacity);
-        }
+      if(!init) {
+        wrpThumbsLinks.filter(".active").removeClass("active").find("img").stop().fadeTo(settings.fadeThumbsInOutTime, settings.fadedThumbsOutOpacity);
+      } else {
+        wrpThumbsLinks.filter(":not(.active)").find("img").stop().fadeTo(0, settings.fadedThumbsOutOpacity);
       }
     }
 
     function scaleAndCalculatePosition(src) {
-      /* Minimum 150x100px containers */
-      var imgWidth =  Math.max(parseInt(images[src].width, 10), 150) + "px";
-      var imgHeight = Math.max(parseInt(images[src].height, 10), 100) + "px";
-
-      $(wrapperContainer + "-nav a, " + wrapperContainer + "-nav span, " + wrapperContainerLink).css("height", imgHeight);
-      $(wrapperContainer + ", " + wrapperContainer + "-nav").css("width", imgWidth);
+      $(wrapperContainer + "-nav a, " + wrapperContainer + "-nav span, " + wrapperContainerLink).css("height", images[src].height);
+      $(wrapperContainer + ", " + wrapperContainer + "-nav").css("width", images[src].width);
       
       var description = $(wrapperContainer + "-description");
       if(!description.length) {
         $("<div class='" + container.substring(1) + "-description' />").insertAfter(wrapperContainer);
         description = $(wrapperContainer + "-description");
       }
-      var html = "";
-      if (images[src].title) html += "<p class='" + container.substring(1) + "-title'>" + images[src].title + "</p>";
-      if (images[src].alt)   html += images[src].alt;
-      description.html(html).css("width", imgWidth);
+      if(images[src].desc) description.html(images[src].desc).css("width", images[src].width);
     }
 
     function centerThumbnailImage(thumb, link) {
@@ -243,16 +233,21 @@
       images[src] = {};
       images[src].width = parseInt(link.find("span.hiddenWidth").text(), 10);
       images[src].height = parseInt(link.find("span.hiddenHeight").text(), 10);
-      var alt = image.attr("alt");
-      var title = image.attr("title");
       // HTML encode quotes in alt and title if not already encoded
-      images[src].alt = alt ? alt.replace(/\'/g, "&#39;").replace(/\"/g, "&quot;") : null;
-      images[src].title = title ? title.replace(/\'/g, "&#39;").replace(/\"/g, "&quot;") : null;
+      images[src].alt = image.attr("alt") ? alt.replace(/\'/g, "&#39;").replace(/\"/g, "&quot;") : null;
+      images[src].title = image.attr("title") ? title.replace(/\'/g, "&#39;").replace(/\"/g, "&quot;") : null;
       // Build HTML
       images[src].html = "<a href='" + link.attr("href") + "'" +
                          " class='" + container.substring(1) + "-link'>" +
                          "<img src='" + src + "' alt='" + images[src].alt + "' style='width: " +
                          images[src].width + "px; height: " + images[src].height + "px;' />" + "</a>";
+      /* Minimum 150x100px containers */
+      images[src].width = Math.max(parseInt(images[src].width, 10), 150) + "px";
+      images[src].height = Math.max(parseInt(images[src].height, 10), 100) + "px";
+      var desc = "";
+      if (images[src].title) desc += "<p class='" + container.substring(1) + "-title'>" + images[src].title + "</p>";
+      if (images[src].alt)   desc += images[src].alt;
+      if(desc != "") images[src].desc = desc;
     }
   };
 })(jQuery);

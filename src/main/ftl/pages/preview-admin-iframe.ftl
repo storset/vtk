@@ -39,6 +39,7 @@
   'webProtocol' missing">
 </#if>
 
+<#-- Used for switching off Ajax POST on preview for image/audio/video and use default height when those are unpublished -->
 <#assign resourceType = resourceContext.currentResource.getResourceType() />
 <#assign isImageAudioVideo = (resourceType = "image" || resourceType = "audio" || resourceType = "video") />
 <#assign hasNotPreviewIframeCommunication = isImageAudioVideo && !resourceContext.currentResource.isPublished() />

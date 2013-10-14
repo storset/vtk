@@ -1784,7 +1784,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
 
             // Set use default excludes to true, exclude not published and
             // unpublishedCollection resources from search
-            search.setUseDefaultExcludes(true);
 
             long before = System.currentTimeMillis();
             try {

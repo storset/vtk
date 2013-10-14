@@ -12,6 +12,7 @@ import org.vortikal.repository.search.Search;
 import org.vortikal.repository.search.query.AbstractMultipleQuery;
 import org.vortikal.repository.search.query.AndQuery;
 import org.vortikal.repository.search.query.OrQuery;
+import org.vortikal.repository.search.query.SearchFilterFlags;
 import org.vortikal.repository.search.query.TermOperator;
 import org.vortikal.repository.search.query.TypeTermQuery;
 import org.vortikal.repository.search.query.UriPrefixQuery;
@@ -56,7 +57,9 @@ public class NumberOfResourcesComponent extends ViewRenderingDecoratorComponent 
 
         // No sorting required, we just want count
         Search search = new Search();
-        search.setPreviewUnpublished(requestContext.isPreviewUnpublished());
+        if (RequestContext.getRequestContext().isPreviewUnpublished()) {
+            search.removeFilterFlag(SearchFilterFlags.FILTER_RESOURCES_IN_UNPUBLISHED_COLLECTIONS);
+        }
         search.setLimit(1);
         search.setQuery(query);
 

@@ -61,6 +61,7 @@ import org.vortikal.repository.search.SortingImpl;
 import org.vortikal.repository.search.query.AndQuery;
 import org.vortikal.repository.search.query.OrQuery;
 import org.vortikal.repository.search.query.Query;
+import org.vortikal.repository.search.query.SearchFilterFlags;
 import org.vortikal.repository.search.query.TermOperator;
 import org.vortikal.repository.search.query.TypeTermQuery;
 import org.vortikal.repository.search.query.UriPrefixQuery;
@@ -146,7 +147,9 @@ public class ManuallyApproveResourcesSearcher {
             Query query = generateQuery(locationURL, resourceTypeQuery, clar, localHostURL, isMultiHostSearch);
 
             Search search = new Search();
-            search.setPreviewUnpublished(RequestContext.getRequestContext().isPreviewUnpublished());
+            if (RequestContext.getRequestContext().isPreviewUnpublished()) {
+                search.removeFilterFlag(SearchFilterFlags.FILTER_RESOURCES_IN_UNPUBLISHED_COLLECTIONS);
+            }
             search.setQuery(query);
             search.setLimit(SEARCH_LIMIT);
             search.setSorting(sorting);
@@ -303,7 +306,9 @@ public class ManuallyApproveResourcesSearcher {
             if (!localPathsAsStringSet.isEmpty()) {
                 UriSetQuery uriSetQuery = new UriSetQuery(localPathsAsStringSet, TermOperator.IN);
                 Search search = new Search();
-                search.setPreviewUnpublished(RequestContext.getRequestContext().isPreviewUnpublished());
+                if (RequestContext.getRequestContext().isPreviewUnpublished()) {
+                    search.removeFilterFlag(SearchFilterFlags.FILTER_RESOURCES_IN_UNPUBLISHED_COLLECTIONS);
+                }
                 search.setQuery(uriSetQuery);
                 ResultSet rs = repository.search(token, search);
                 alreadyApprovedResources.addAll(rs.getAllResults());

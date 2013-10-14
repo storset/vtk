@@ -30,9 +30,12 @@
  */
 package org.vortikal.repository.search;
 
+import java.util.EnumSet;
+
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.search.query.DumpQueryTreeVisitor;
 import org.vortikal.repository.search.query.Query;
+import org.vortikal.repository.search.query.SearchFilterFlags;
 
 /**
  * Specifies a search on repository resources with a hard limit on how many
@@ -65,10 +68,9 @@ import org.vortikal.repository.search.query.Query;
  * @param selectedProperties
  *            The {@link PropertySelecy properties} queried for.
  * 
- * @param useDefaultExcludes
+ * @param removeFilterFlag
  *            Marks which resources to include/exclude in result. Default set to
- *            true, meaning (per. Oct. 2012) include only when published and not
- *            unpublishedCollection.
+ *            remove all unpublished resources from the result.
  * 
  * @return A <code>ResultSet</code> containing a subset of the results.
  * 
@@ -87,67 +89,65 @@ public final class Search {
     private Sorting sorting;
     private int limit = DEFAULT_LIMIT;
     private int cursor = 0;
-    private boolean useDefaultExcludes = false;
-    private boolean previewUnpublished = false;
+    private EnumSet<SearchFilterFlags> filterFlags;
 
     public Search() {
         SortingImpl defaultSorting = new SortingImpl();
         defaultSorting.addSortField(new TypedSortField(PropertySet.URI_IDENTIFIER));
         this.sorting = defaultSorting;
+        filterFlags = EnumSet.of(SearchFilterFlags.FILTER_RESOURCES_IN_UNPUBLISHED_COLLECTIONS,
+                SearchFilterFlags.FILTER_UNPUBLISHED_RESOURCES);
     }
 
     public int getCursor() {
         return this.cursor;
     }
 
-    public void setCursor(int cursor) {
+    public Search setCursor(int cursor) {
         if (cursor < 0) {
             throw new IllegalArgumentException("Cursor cannot be negative");
         }
         this.cursor = cursor;
+        return this;
     }
 
     public int getLimit() {
         return this.limit;
     }
 
-    public void setLimit(int limit) {
+    public Search setLimit(int limit) {
         if (limit < 0) {
             throw new IllegalArgumentException("Limit cannot be negative");
         }
         this.limit = limit;
+        return this;
     }
 
     public PropertySelect getPropertySelect() {
         return propertySelect;
     }
 
-    public void setPropertySelect(PropertySelect propertySelect) {
+    public Search setPropertySelect(PropertySelect propertySelect) {
         this.propertySelect = propertySelect;
+        return this;
     }
 
     public Query getQuery() {
         return query;
     }
 
-    public void setQuery(Query query) {
+    public Search setQuery(Query query) {
         this.query = query;
+        return this;
     }
 
     public Sorting getSorting() {
         return sorting;
     }
 
-    public void setSorting(Sorting sorting) {
+    public Search setSorting(Sorting sorting) {
         this.sorting = sorting;
-    }
-
-    public boolean isUseDefaultExcludes() {
-        return useDefaultExcludes;
-    }
-
-    public void setUseDefaultExcludes(boolean useDefaultExcludes) {
-        this.useDefaultExcludes = useDefaultExcludes;
+        return this;
     }
 
     @Override
@@ -185,7 +185,7 @@ public final class Search {
         if (this.sorting != other.sorting && (this.sorting == null || !this.sorting.equals(other.sorting))) {
             return false;
         }
-        if (this.useDefaultExcludes != other.useDefaultExcludes) {
+        if (!this.filterFlags.equals(other.filterFlags)) {
             return false;
         }
         if (this.limit != other.limit) {
@@ -203,18 +203,21 @@ public final class Search {
         hash = 47 * hash + (this.propertySelect != null ? this.propertySelect.hashCode() : 0);
         hash = 47 * hash + (this.query != null ? this.query.hashCode() : 0);
         hash = 47 * hash + (this.sorting != null ? this.sorting.hashCode() : 0);
-        hash = 47 * hash + (this.useDefaultExcludes ? 1 : 0);
+        hash = 47 * hash + (this.filterFlags.contains(SearchFilterFlags.FILTER_UNPUBLISHED_RESOURCES) ? 1 : 0);
+        hash = 47 * hash
+                + (this.filterFlags.contains(SearchFilterFlags.FILTER_RESOURCES_IN_UNPUBLISHED_COLLECTIONS) ? 1 : 0);
         hash = 47 * hash + this.limit;
         hash = 47 * hash + this.cursor;
         return hash;
     }
-    
-    public boolean isPreviewUnpublished(){
-        return previewUnpublished;
+
+    public boolean hasFilterFlag(SearchFilterFlags flag) {
+        return filterFlags.contains(flag);
     }
-    
-    public void setPreviewUnpublished(boolean previewUnpublished){
-        this.previewUnpublished = previewUnpublished;
+
+    public Search removeFilterFlag(SearchFilterFlags filterFlag) {
+        filterFlags.remove(filterFlag);
+        return this;
     }
 
 }

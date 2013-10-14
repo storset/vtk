@@ -45,6 +45,7 @@ import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
 import org.vortikal.repository.search.query.AndQuery;
 import org.vortikal.repository.search.query.OrQuery;
+import org.vortikal.repository.search.query.SearchFilterFlags;
 import org.vortikal.repository.search.query.TermOperator;
 import org.vortikal.repository.search.query.TypeTermQuery;
 import org.vortikal.repository.search.query.UriDepthQuery;
@@ -135,7 +136,7 @@ public class SubFolderMenuComponent extends ListMenuComponent {
         Repository repository = requestContext.getRepository();
 
         Search search = buildSearch(requestContext, menuRequest);
-       
+
         ResultSet rs = repository.search(token, search);
         if (logger.isDebugEnabled()) {
             logger.debug("Executed search: " + search + ", hits: " + rs.getSize());
@@ -180,7 +181,9 @@ public class SubFolderMenuComponent extends ListMenuComponent {
         mainQuery.add(includeFolders);
         mainQuery.add(new TypeTermQuery(menuRequest.getCollectionResourceType().getName(), TermOperator.IN));
         Search search = new Search();
-        search.setPreviewUnpublished(requestContext.isPreviewUnpublished());
+        if (RequestContext.getRequestContext().isPreviewUnpublished()) {
+            search.removeFilterFlag(SearchFilterFlags.FILTER_RESOURCES_IN_UNPUBLISHED_COLLECTIONS);
+        }
         search.setQuery(mainQuery);
         search.setLimit(menuRequest.getSearchLimit());
         search.setPropertySelect(PropertySelect.ALL);

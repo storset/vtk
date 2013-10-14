@@ -11,6 +11,7 @@ import org.vortikal.repository.Resource;
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
 import org.vortikal.repository.search.query.AndQuery;
+import org.vortikal.repository.search.query.SearchFilterFlags;
 import org.vortikal.repository.search.query.TermOperator;
 import org.vortikal.repository.search.query.TypeTermQuery;
 import org.vortikal.repository.search.query.UriPrefixQuery;
@@ -67,7 +68,9 @@ public class ResourceListComponent extends ViewRenderingDecoratorComponent {
             query.add(new UriPrefixQuery(folder.toString()));
 
             Search search = new Search();
-            search.setPreviewUnpublished(requestContext.isPreviewUnpublished());
+            if (RequestContext.getRequestContext().isPreviewUnpublished()) {
+                search.removeFilterFlag(SearchFilterFlags.FILTER_RESOURCES_IN_UNPUBLISHED_COLLECTIONS);
+            }
             if (maxItems != null) {
                 try {
                     search.setLimit(Integer.parseInt(maxItems));
@@ -99,7 +102,7 @@ public class ResourceListComponent extends ViewRenderingDecoratorComponent {
         Path parentPath = getValidPath(parentFolder);
         String parentPathString = parentPath != null ? parentPath.toString() : null;
         for (String folder : folders) {
-            
+
             folder = folder.trim();
 
             Path validPath = null;

@@ -52,6 +52,7 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
+import org.vortikal.repository.search.query.SearchFilterFlags;
 import org.vortikal.repository.search.query.UriSetQuery;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.display.collection.aggregation.AggregationResolver;
@@ -355,7 +356,9 @@ public class CollectionListingAggregationResolver implements AggregationResolver
 
                     UriSetQuery uriSetQuery = new UriSetQuery(uris);
                     Search search = new Search();
-                    search.setPreviewUnpublished(RequestContext.getRequestContext().isPreviewUnpublished());
+                    if (RequestContext.getRequestContext().isPreviewUnpublished()) {
+                        search.removeFilterFlag(SearchFilterFlags.FILTER_RESOURCES_IN_UNPUBLISHED_COLLECTIONS);
+                    }
                     search.setQuery(uriSetQuery);
                     ResultSet rs = repository.search(token, search);
                     result.addAll(rs.getAllResults());

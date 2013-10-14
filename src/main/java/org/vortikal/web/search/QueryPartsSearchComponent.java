@@ -42,6 +42,7 @@ import org.vortikal.repository.search.Search;
 import org.vortikal.repository.search.Sorting;
 import org.vortikal.repository.search.query.AndQuery;
 import org.vortikal.repository.search.query.Query;
+import org.vortikal.repository.search.query.SearchFilterFlags;
 import org.vortikal.web.RequestContext;
 
 public class QueryPartsSearchComponent extends QuerySearchComponent {
@@ -55,7 +56,9 @@ public class QueryPartsSearchComponent extends QuerySearchComponent {
         Query query = this.getQuery(collection, request);
 
         Search search = new Search();
-        search.setPreviewUnpublished(RequestContext.getRequestContext().isPreviewUnpublished());
+        if (RequestContext.getRequestContext().isPreviewUnpublished()) {
+            search.removeFilterFlag(SearchFilterFlags.FILTER_RESOURCES_IN_UNPUBLISHED_COLLECTIONS);
+        }
         search.setQuery(query);
         search.setLimit(searchLimit);
         search.setCursor(offset);

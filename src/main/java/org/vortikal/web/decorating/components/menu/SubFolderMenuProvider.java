@@ -47,6 +47,7 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
 import org.vortikal.repository.search.query.AndQuery;
+import org.vortikal.repository.search.query.SearchFilterFlags;
 import org.vortikal.repository.search.query.TermOperator;
 import org.vortikal.repository.search.query.TypeTermQuery;
 import org.vortikal.repository.search.query.UriDepthQuery;
@@ -115,7 +116,9 @@ public class SubFolderMenuProvider {
         query.add(new TypeTermQuery("collection", TermOperator.IN));
 
         Search search = new Search();
-        search.setPreviewUnpublished(requestContext.isPreviewUnpublished());
+        if (RequestContext.getRequestContext().isPreviewUnpublished()) {
+            search.removeFilterFlag(SearchFilterFlags.FILTER_RESOURCES_IN_UNPUBLISHED_COLLECTIONS);
+        }
         search.setLimit(this.collectionDisplayLimit);
         search.setQuery(query);
 
@@ -150,7 +153,7 @@ public class SubFolderMenuProvider {
     public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
         this.resourceTypeTree = resourceTypeTree;
     }
-    
+
     public void setCollectionDisplayLimit(int collectionDisplayLimit) {
         this.collectionDisplayLimit = collectionDisplayLimit;
     }

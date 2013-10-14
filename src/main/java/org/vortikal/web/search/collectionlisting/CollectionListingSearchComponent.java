@@ -51,6 +51,7 @@ import org.vortikal.repository.search.Sorting;
 import org.vortikal.repository.search.query.AndQuery;
 import org.vortikal.repository.search.query.OrQuery;
 import org.vortikal.repository.search.query.Query;
+import org.vortikal.repository.search.query.SearchFilterFlags;
 import org.vortikal.repository.search.query.TermOperator;
 import org.vortikal.repository.search.query.UriPrefixQuery;
 import org.vortikal.repository.search.query.UriSetQuery;
@@ -118,8 +119,9 @@ public class CollectionListingSearchComponent extends QueryPartsSearchComponent 
         Query query = generateQuery(request, collection, clar, localHostBaseURL, isMultiHostSearch);
 
         Search search = new Search();
-        search.setPreviewUnpublished(RequestContext.getRequestContext().isPreviewUnpublished());
-
+        if (RequestContext.getRequestContext().isPreviewUnpublished()) {
+            search.removeFilterFlag(SearchFilterFlags.FILTER_RESOURCES_IN_UNPUBLISHED_COLLECTIONS);
+        }
         search.setQuery(query);
         search.setLimit(searchLimit);
         search.setCursor(offset);

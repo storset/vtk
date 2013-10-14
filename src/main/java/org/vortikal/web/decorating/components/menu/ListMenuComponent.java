@@ -52,6 +52,7 @@ import org.vortikal.repository.search.Search;
 import org.vortikal.repository.search.query.AndQuery;
 import org.vortikal.repository.search.query.OrQuery;
 import org.vortikal.repository.search.query.Query;
+import org.vortikal.repository.search.query.SearchFilterFlags;
 import org.vortikal.repository.search.query.TermOperator;
 import org.vortikal.repository.search.query.TypeTermQuery;
 import org.vortikal.repository.search.query.UriDepthQuery;
@@ -161,7 +162,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         // Add sub menu?
         MenuItem<PropertySet> activeItem = menu.getActiveItem();
         if (activeItem != null && menuRequest.getDepth() > 1) {
-            ListMenu<PropertySet> submenu = buildSubMenu(menuRequest,request.getServletRequest().getRequestURI());
+            ListMenu<PropertySet> submenu = buildSubMenu(menuRequest, request.getServletRequest().getRequestURI());
             if (submenu != null) {
                 activeItem.setSubMenu(submenu);
             }
@@ -353,7 +354,9 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         }
 
         Search search = new Search();
-        search.setPreviewUnpublished(requestContext.isPreviewUnpublished());
+        if (RequestContext.getRequestContext().isPreviewUnpublished()) {
+            search.removeFilterFlag(SearchFilterFlags.FILTER_RESOURCES_IN_UNPUBLISHED_COLLECTIONS);
+        }
         search.setSorting(null);
         search.setQuery(q);
         search.setLimit(this.searchLimit);
@@ -418,7 +421,8 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
 
             // Hidden?
             PropertyTypeDefinition hiddenPropDef = this.menuGenerator.getHiddenPropDef();
-            if (hiddenPropDef != null && resource.getProperty(hiddenPropDef) != null && !requestURI.startsWith(uri.toString()) ) {
+            if (hiddenPropDef != null && resource.getProperty(hiddenPropDef) != null
+                    && !requestURI.startsWith(uri.toString())) {
                 continue;
             }
             childList.add(resource);
@@ -554,7 +558,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
             }
 
             boolean authenticated = "true".equals(request.getStringParameter(PARAMETER_AUTENTICATED));
-            
+
             // VTK-2460
             if (requestContext.isViewUnauthenticated()) {
                 authenticated = false;

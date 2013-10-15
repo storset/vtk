@@ -223,6 +223,7 @@ html.fullscreen-gallery * {
 }
 
 html.fullscreen-gallery .vrtx-image-listing-include,
+html.fullscreen-gallery .vrtx-image-listing-include .over,
 html.fullscreen-gallery .vrtx-image-listing-include-container,
 html.fullscreen-gallery .vrtx-image-listing-include-container-nav,
 html.fullscreen-gallery .vrtx-image-listing-include-container-nav *,

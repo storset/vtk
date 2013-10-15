@@ -83,6 +83,24 @@
     wrp.on("click mouseover mouseout", "a.prev", function (e) {
       nextPrevNavigate(e, -1);
     });
+    
+    // Fullscreen
+    wrp.on("click", "a.toggle-fullscreen", function (e) {
+      var link = $(this);
+      link.toggleClass("minimized");
+      $("html").toggleClass("fullscreen-gallery");
+      wrp.parents().toggleClass("fullwidth").toggle();
+      if(link.hasClass("minimized")) {
+        link.text(showFullscreen); 
+        $(wrapperContainer + "-description").prepend(link.remove());
+      } else {
+        link.text(closeFullscreen);
+        wrp.prepend(link.remove());
+        window.scrollTo(0, 0);
+      }
+      e.stopPropagation();
+      e.preventDefault();
+    });
 
     // Generate markup for rest of images
     var imgs = this,
@@ -97,6 +115,7 @@
     
     // Prefetch current, next and prev full images in the background
     var imageUrlsToBePrefetchedLen = imageUrlsToBePrefetched.length - 1,
+    // Caption
     errorFullImage = function() {
       $(imgs).filter("[href^='" + this.src + "']").closest("a")
              .append("<span class='loading-image loading-image-error'><p>" + loadImageErrorMsg + "</p></span>");
@@ -164,16 +183,16 @@
     
     function crossFade(current, active) {
       current.wrap("<div class='over' />").fadeTo(settings.fadeInOutTime, settings.fadedOutOpacity, function () {
-        $(this).unwrap().hide();
+        $(this).unwrap().removeClass("active-full-image").hide();
       });
-      active.fadeTo(settings.fadeInOutTime, 1, function () {
+      active.addClass("active-full-image").fadeTo(settings.fadeInOutTime, 1, function () {
         $(this).show();
       });
     }
     
     function hideShow(current, active) {
-      current.hide();
-      active.show();
+      current.removeClass("active-full-image").hide();
+      active.addClass("active-full-image").show();
     }
     
     function showImage(image, init) {
@@ -211,15 +230,19 @@
 
       // Description
       // Set 150x100px containers
-      var width = Math.max(parseInt(images[src].width, 10), 150) + "px";
-      var height = Math.max(parseInt(images[src].height, 10), 100) + "px";
-      $(wrapperContainer + "-nav a, " + wrapperContainer + "-nav span, " + wrapperContainerLink).css("height", height);
-      $(wrapperContainer + ", " + wrapperContainer + "-nav").css("width", width);
+      var width = Math.max(parseInt(images[src].width, 10), 150);
+      var height = Math.max(parseInt(images[src].height, 10), 100);
+      $(wrapperContainer + "-nav a, " + wrapperContainer + "-nav span, " + wrapperContainerLink).css("height", height + "px");
+      $(wrapperContainer + ", " + wrapperContainer + "-nav").css("width", width + "px");
       var description = $(wrapperContainer + "-description");
+      var fullscreenToggleLink = "";
+      if(!$("html").hasClass("fullscreen-gallery")) {
+        var fullscreenToggleLink = "<a href='javascript:void(0);' class='toggle-fullscreen minimized'>" + showFullscreen + "</a>";
+      }
       if(!description.length) {
-        $($.parseHTML("<div class='" + container.substring(1) + "-description' style='width: " + width + "'>" + images[src].desc + "</div>")).insertAfter(wrapperContainer);
+        $($.parseHTML("<div class='" + container.substring(1) + "-description' style='width: " + (width - 30) + "px'>" + fullscreenToggleLink + images[src].desc + "</div>")).insertAfter(wrapperContainer);
       } else {
-        description.html(images[src].desc).css("width", width);
+        description.html(fullscreenToggleLink + images[src].desc).css("width", (width - 30) + "px");
       }
       if(!init) {
         wrpThumbsLinks.filter(".active").removeClass("active").find("img").stop().fadeTo(settings.fadeThumbsInOutTime, settings.fadedThumbsOutOpacity);

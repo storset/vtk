@@ -185,14 +185,12 @@
       current.wrap("<div class='over' />").fadeTo(settings.fadeInOutTime, settings.fadedOutOpacity, function () {
         $(this).unwrap().removeClass("active-full-image").hide();
       });
-      active.addClass("active-full-image").fadeTo(settings.fadeInOutTime, 1, function () {
-        $(this).show();
-      });
+      active.addClass("active-full-image").fadeTo(settings.fadeInOutTime, 1);
     }
     
     function hideShow(current, active) {
-      current.removeClass("active-full-image").hide();
-      active.addClass("active-full-image").show();
+      current.removeClass("active-full-image");
+      active.addClass("active-full-image");
     }
     
     function showImage(image, init) {
@@ -201,14 +199,13 @@
       if (init) {
         cacheGenerateLinkImage(src, image, image.parent());
       }
-      
       var activeId = encodeURIComponent(src).replace(/(%|\.)/gim, "");
-      
       var active = $("a#" + activeId);
-      var current = $("a." + container.substring(1) + "-link").filter(":visible")
-      
+      var current = $("a." + container.substring(1) + "-link.active-full-image");
       if(active.length) {
-        if(settings.fadeInOutTime > 0 && !init) {
+        if(init) {
+          active.addClass("active-full-image");
+        } else if(settings.fadeInOutTime > 0 ) {
           crossFade(current, active);
         } else {
           hideShow(current, active);
@@ -219,7 +216,9 @@
           if(!active.length) {
             setTimeout(arguments.callee, 5);
           } else {
-            if(settings.fadeInOutTime > 0 && !init) {
+            if(init) {
+              active.addClass("active-full-image");
+            } else if(settings.fadeInOutTime > 0) {
               crossFade(current, active);
             } else {
               hideShow(current, active);

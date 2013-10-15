@@ -218,6 +218,10 @@ a.toggle-fullscreen.minimized {
   background: url(images/preview-minimize.png) no-repeat 100% 3px;
 }
 
+a.active-full-image {
+  display: block !important;
+}
+
 html.fullscreen-gallery * {
   display: none !important;
 }
@@ -227,8 +231,8 @@ html.fullscreen-gallery .vrtx-image-listing-include .over,
 html.fullscreen-gallery .vrtx-image-listing-include-container,
 html.fullscreen-gallery .vrtx-image-listing-include-container-nav,
 html.fullscreen-gallery .vrtx-image-listing-include-container-nav *,
-html.fullscreen-gallery .vrtx-image-listing-include-container .active-full-image,
-html.fullscreen-gallery .vrtx-image-listing-include-container .active-full-image img,
+html.fullscreen-gallery .vrtx-image-listing-include-container a.active-full-image,
+html.fullscreen-gallery .vrtx-image-listing-include-container a.active-full-image img,
 html.fullscreen-gallery .vrtx-image-listing-include-container-description,
 html.fullscreen-gallery .vrtx-image-listing-include-container-description *,
 html.fullscreen-gallery a.toggle-fullscreen {

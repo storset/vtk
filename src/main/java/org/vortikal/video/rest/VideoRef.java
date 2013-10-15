@@ -82,11 +82,15 @@ public class VideoRef {
             convJson.elementOpt("contentType", this.convertedVideoFileRef.contentType());
             convJson.element("localPath", this.convertedVideoFileRef.path());
             convJson.element("size", this.convertedVideoFileRef.size());
-            refJson.element("conversionVideoFile", convJson);
+            refJson.element("convertedVideoFile", convJson);
         }
 
         json.element("ref", refJson);
         return json.toString(2);
+    }
+    
+    public static Builder fromJsonString(String json) {
+        return newBuilder().fromJsonString(json);
     }
     
     public static Builder newBuilder() {
@@ -96,12 +100,17 @@ public class VideoRef {
     public Builder copyBuilder() {
         Builder b = new Builder();
         b.videoId = this.videoId;
-        b.sourceVideoFileRef = new FileRef(this.sourceVideoFileRef.contentType(), 
-                                                this.sourceVideoFileRef.path(),
-                                                this.sourceVideoFileRef.size());
-        b.convertedVideoFileRef = new FileRef(this.convertedVideoFileRef.contentType(), 
-                                                this.convertedVideoFileRef.path(),
-                                                this.convertedVideoFileRef.size());
+        if (this.sourceVideoFileRef != null) {
+            b.sourceVideoFileRef = new FileRef(this.sourceVideoFileRef.contentType(),
+                    this.sourceVideoFileRef.path(),
+                    this.sourceVideoFileRef.size());
+
+        }
+        if (this.convertedVideoFileRef != null) {
+            b.convertedVideoFileRef = new FileRef(this.convertedVideoFileRef.contentType(),
+                    this.convertedVideoFileRef.path(),
+                    this.convertedVideoFileRef.size());
+        }
         b.refUpdateTimestamp = new Date(this.refUpdateTimestamp.getTime());
         b.uploadContentType = this.uploadContentType;
         return b;
@@ -168,14 +177,14 @@ public class VideoRef {
          * @param jsonString JSON-formatted string
          * @return A <code>Builder</code> initialized by JSON string representing a VideoRef obj.
          */
-        public Builder fromJsonString(String jsonString) {
+        private Builder fromJsonString(String jsonString) {
             JSONObject json = JSONObject.fromObject(jsonString);
             if (!json.has("mediaref")
                      || !json.getBoolean("mediaref")
                      || !json.has("resourcetype")
                      || !"videoref".equals(json.getString("resourcetype"))) {
 
-                throw new IllegalArgumentException("Not a videoref: " + json);
+                throw new IllegalArgumentException("Not a proper videoref: " + json);
             }
 
             this.uploadContentType = json.optString("uploadContentType", null);
@@ -193,8 +202,8 @@ public class VideoRef {
                                             sourceJson.getString("localPath"),
                                             sourceJson.getLong("size"));
             }
-            if (ref.has("conversionVideoFile")) {
-                JSONObject convJson = ref.getJSONObject("conversionVideoFile");
+            if (ref.has("convertedVideoFile")) {
+                JSONObject convJson = ref.getJSONObject("convertedVideoFile");
                 convFileRef = new FileRef(convJson.optString("contentType", null),
                                           convJson.getString("localPath"),
                                           convJson.getLong("size"));

@@ -49,7 +49,7 @@ public class VideoApiClient {
     
     private RestTemplate restTemplate;
     private String repositoryId;
-    private String apiEntryPoint = "http://localhost:8080/videoapp/rest/v0/";
+    private String apiEntryPoint;
 
     /**
      * Create new video object in videoapp.
@@ -62,15 +62,10 @@ public class VideoApiClient {
         JSONObject postJson = new JSONObject();
         postJson.element("path", path);
         
-        JSONObject response = this.restTemplate.postForObject("http://localhost:8080/videoapp/rest/v0/videos/{host}/",
-                postJson, JSONObject.class, this.repositoryId);
-    
-        VideoId videoId = VideoId.fromString(response.getString("id"));
-        
-        return getVideo(videoId).copyBuilder()
-                                .uploadContentType(contentType).build();
+        URI newVideoLocation = this.restTemplate.postForLocation(withBaseUrl("/videos/{host}/"), postJson, this.repositoryId);
+        return getVideo(newVideoLocation).copyBuilder().uploadContentType(contentType).build();
     }
-
+    
     /**
      * Get video info from videoapp.
      * @param id
@@ -78,20 +73,31 @@ public class VideoApiClient {
      */
     public VideoRef getVideo(VideoId id) {
         JSONObject response = this.restTemplate.getForObject(
-                "http://localhost:8080/videoapp/rest/v0/videos/{host}/{numericId}",
+                withBaseUrl("/videos/{host}/{numericId}"),
                 JSONObject.class, id.host(), id.numericId());
         
-        if (!id.equals(VideoId.fromString(response.getString("videoId")))) {
-            throw new RestClientException("Unexpected videoId in response"); // XXX
+        VideoRef ref = fromVideoAppVideo(response);
+        if (!ref.videoId().equals(id)) {
+            throw new RestClientException("Unexpected videoId in response: " + ref.videoId());
         }
         
-        VideoRef.Builder b = VideoRef.newBuilder().videoId(id);
-        b.sourceVideo(videoFileRef(response.getJSONObject("sourceVideoFile")));
-        b.convertedVideo(videoFileRef(response.getJSONObject("conversionVideoFile")));
-        
-        return b.build();
+        return ref;
     }
     
+    private VideoRef getVideo(URI location) {
+        JSONObject response = this.restTemplate.getForObject(location, JSONObject.class);
+        return fromVideoAppVideo(response);
+    }
+    
+    private VideoRef fromVideoAppVideo(JSONObject video) {
+        VideoRef.Builder b = VideoRef.newBuilder().videoId(video.getString("videoId"));
+        b.sourceVideo(videoFileRef(video.getJSONObject("sourceVideoFile")));
+        if (video.has("convertedVideoFile") && !video.getJSONObject("convertedVideoFile").isNullObject()) {
+            b.convertedVideo(videoFileRef(video.getJSONObject("convertedVideoFile")));
+        }
+        return b.build();
+    }
+
     /**
      * Updated certain parts of a video ref that are non-Vortex-specific data
      * from video app. Other parts are left intact.
@@ -111,14 +117,28 @@ public class VideoApiClient {
     
     private FileRef videoFileRef(JSONObject videoFileJson) {
         String localPath = videoFileJson.getString("localPath");
-        String contentType = videoFileJson.optString("contentType", null);
+        String contentType = videoFileJson.optString("mimeType", null);
         long size = videoFileJson.getLong("size");
         if (size <= 0) {
             size = new File(localPath).length();
         }
         return new FileRef(contentType, localPath, size);
     }
-
+    
+    /**
+     * Prepends API base URL to the rest and returns the result
+     * as a string.
+     * @param rest The rest of the URL.
+     * @return complete URL with API base URL prepended.
+     */
+    private String withBaseUrl(String rest) {
+        if (this.apiEntryPoint.endsWith("/") 
+                && rest.startsWith("/")) {
+            rest = rest.substring(1);
+        }
+        return this.apiEntryPoint + rest;
+    }
+    
     @Required
     public void setRepositoryId(String repositoryId) {
         this.repositoryId = repositoryId;
@@ -129,6 +149,7 @@ public class VideoApiClient {
         this.restTemplate = restTemplate;
     }
 
+    @Required
     public void setApiEntryPoint(URI entryPointUrl) {
         this.apiEntryPoint = entryPointUrl.toString();
     }

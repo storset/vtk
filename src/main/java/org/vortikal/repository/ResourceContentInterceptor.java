@@ -187,7 +187,7 @@ public class ResourceContentInterceptor implements InitializingBean {
 
     private VideoRef loadVideoRef(Path uri, ContentStore store) throws IOException {
         String jsonString = StreamUtil.streamToString(store.getInputStream(uri), "utf-8");
-        return VideoRef.newBuilder().fromJsonString(jsonString).build();
+        return VideoRef.fromJsonString(jsonString).build();
     }
     
     private void storeVideoRef(VideoRef ref, Path uri, ContentStore store) throws IOException {
@@ -196,7 +196,7 @@ public class ResourceContentInterceptor implements InitializingBean {
     }
     
     private String getInputDirAbspath() {
-        return this.videoStorageRoot + "/input/" + this.repositoryId;
+        return this.videoStorageRoot + "/videoinput/" + this.repositoryId;
     }
 
     @Override

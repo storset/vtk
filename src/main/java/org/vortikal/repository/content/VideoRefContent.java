@@ -60,7 +60,7 @@ public class VideoRefContent implements Content {
         this.defaultContentStore = defaultContentStore;
         this.videoRefJson = StreamUtil.streamToString(
                 this.defaultContentStore.getInputStream(this.resource.getURI()), "utf-8");
-        this.videoRef = VideoRef.newBuilder().fromJsonString(this.videoRefJson).build();
+        this.videoRef = VideoRef.fromJsonString(this.videoRefJson).build();
     }
     
     @Override

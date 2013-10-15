@@ -113,8 +113,9 @@
         loadedImages[i].style.width = images[loadedImages[i].src][widthProp] + "px";
         loadedImages[i].style.height = images[loadedImages[i].src][heightProp] + "px";
       }
-      var width = Math.max(parseInt(images[src][widthProp], 10), 150);
-      var height = Math.max(parseInt(images[src][heightProp], 10), 100);
+      var width = Math.max(images[src][widthProp], 150);
+      var height = Math.max(images[src][heightProp], 100);
+
       $(wrapperContainer + "-nav a, " + wrapperContainer + "-nav span, " + wrapperContainerLink).css("height", height + "px");
       $(wrapperContainer + ", " + wrapperContainer + "-nav").css("width", width + "px");
       $(wrapperContainer + "-description").css("width", (width - 30) + "px");
@@ -248,8 +249,8 @@
       // Description
       var fullscreenToggleLink = !isFullscreen ? "<a href='javascript:void(0);' class='toggle-fullscreen minimized'>" + showFullscreen + "</a>" : "";
       // Min 150x100px containers
-      var width = Math.max(parseInt(images[src][widthProp], 10), 150);
-      var height = Math.max(parseInt(images[src][heightProp], 10), 100);
+      var width = Math.max(images[src][widthProp], 150);
+      var height = Math.max(images[src][heightProp], 100);
       $(wrapperContainer + "-nav a, " + wrapperContainer + "-nav span, " + wrapperContainerLink).css("height", height + "px");
       $(wrapperContainer + ", " + wrapperContainer + "-nav").css("width", width + "px");
       var description = $(wrapperContainer + "-description");

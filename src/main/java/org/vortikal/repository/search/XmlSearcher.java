@@ -111,7 +111,7 @@ public class XmlSearcher {
      */
     public NodeList executeQuery(String query, String sort, String maxResultsStr,
                                  String fields) throws QueryException {
-        return executeQuery(query, sort, maxResultsStr, fields, false);
+        return executeQuery(query, sort, maxResultsStr, fields, true);
     }
   
     public NodeList executeQuery(String query, String sort, String maxResultsStr,
@@ -122,13 +122,13 @@ public class XmlSearcher {
             limit = Integer.parseInt(maxResultsStr);
         } catch (NumberFormatException e) {}
 
-        Document doc = executeDocumentQuery(query, sort, limit, fields, 
+        Document doc = executeDocumentQuery(query, sort, limit, 0, fields, 
                 authorizeCurrentPrincipal, false);
         return doc.getDocumentElement().getChildNodes();
     }
 
     public Document executeDocumentQuery(String query, String sort,
-            int maxResults, String fields, boolean authorizeCurrentPrincipal, 
+            int maxResults, int offset, String fields, boolean authorizeCurrentPrincipal, 
             boolean includeUnpublished) throws QueryException {
         // VTK-2460
         if (RequestContext.getRequestContext().isViewUnauthenticated()) {
@@ -140,18 +140,17 @@ public class XmlSearcher {
             RequestContext requestContext = RequestContext.getRequestContext();
             token = requestContext.getSecurityToken();
         }
-        return executeDocumentQuery(token, query, sort, maxResults, fields, includeUnpublished);
+        return executeDocumentQuery(token, query, sort, maxResults, offset, fields, includeUnpublished);
     }
 
     private Document executeDocumentQuery(String token, String query,
-                                         String sort, int maxResults,
+                                         String sort, int maxResults, int offset,
                                          String fields, boolean includeUnpublished) throws QueryException {
         int limit = maxResults;
 
         if (maxResults > this.maxResults) {
             limit = this.maxResults;
         }
-
 
         Document doc = null;
         try {
@@ -169,6 +168,7 @@ public class XmlSearcher {
             if (envir.getSorting() != null)
                 search.setSorting(envir.getSorting());
             search.setLimit(limit);
+            search.setCursor(offset);
             search.setPropertySelect(envir.getPropertySelect());
             if (includeUnpublished) {
                 search.removeFilterFlag(SearchFilterFlags.FILTER_RESOURCES_IN_UNPUBLISHED_COLLECTIONS)

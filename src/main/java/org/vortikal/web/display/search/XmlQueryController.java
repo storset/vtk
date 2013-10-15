@@ -63,6 +63,7 @@ public class XmlQueryController implements Controller, InitializingBean {
     
     private String expressionParameterName = "query";
     private String limitParameterName = "limit";
+    private String offsetParameterName = "offset";
     private String sortParameterName = "sort";
     private String fieldsParameterName = "fields";
     private String authenticatedParameterName = "authenticated";
@@ -124,6 +125,15 @@ public class XmlQueryController implements Controller, InitializingBean {
                 maxResults = Integer.parseInt(limitStr);
             } catch (NumberFormatException e) { }
         }
+        
+        int offset = 0;
+        String offsetStr = request.getParameter(this.offsetParameterName);
+        if (offsetStr != null) {
+            try {
+                offset = Integer.parseInt(offsetStr);
+            } catch (NumberFormatException e) { }
+        }
+        
         String sortStr = request.getParameter(this.sortParameterName);
         String fields = request.getParameter(this.fieldsParameterName);
 
@@ -136,7 +146,7 @@ public class XmlQueryController implements Controller, InitializingBean {
         boolean includeUnpublished = "true".equals(request.getParameter(unpublishedParameter));
 
         Document result = this.xmlSearcher.executeDocumentQuery(query, sortStr,
-                maxResults, fields, authenticated, includeUnpublished);
+                maxResults, offset, fields, authenticated, includeUnpublished);
 
         OutputStream outputStream = null;
         response.setContentType("text/xml");

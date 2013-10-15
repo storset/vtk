@@ -240,7 +240,7 @@
         "move-4" : {
           "method" : [ "authorizeMove", "/c/published-file.txt", "/c/unpub.txt", "user1@localhost", false],
           "expected-outcome" : "FAILURE",
-          "description" : "Should fail because user1@localhost is not allowed to alter published resources at destination"
+          "description" : "Should fail because user1@localhost is not allowed to rename published resources at destination"
         },
         
         "move-5" : {

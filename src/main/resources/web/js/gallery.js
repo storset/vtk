@@ -113,11 +113,7 @@
         loadedImages[i].style.width = images[loadedImages[i].src][widthProp] + "px";
         loadedImages[i].style.height = images[loadedImages[i].src][heightProp] + "px";
       }
-      var width = Math.max(images[src][widthProp], 150);
-      var height = Math.max(images[src][heightProp], 100);
-
-      $(wrapperContainer + "-nav a, " + wrapperContainer + "-nav span, " + wrapperContainerLink).css("height", height + "px");
-      $(wrapperContainer + ", " + wrapperContainer + "-nav").css("width", width + "px");
+      var width = resizeContainers(src);
       $(wrapperContainer + "-description").css("width", (width - 30) + "px");
       
       e.stopPropagation();
@@ -248,11 +244,7 @@
 
       // Description
       var fullscreenToggleLink = !isFullscreen ? "<a href='javascript:void(0);' class='toggle-fullscreen minimized'>" + showFullscreen + "</a>" : "";
-      // Min 150x100px containers
-      var width = Math.max(images[src][widthProp], 150);
-      var height = Math.max(images[src][heightProp], 100);
-      $(wrapperContainer + "-nav a, " + wrapperContainer + "-nav span, " + wrapperContainerLink).css("height", height + "px");
-      $(wrapperContainer + ", " + wrapperContainer + "-nav").css("width", width + "px");
+      var width = resizeContainers(src);
       var description = $(wrapperContainer + "-description");
       if(!description.length) {
         $($.parseHTML("<div class='" + container.substring(1) + "-description' style='width: " + (width - 30) + "px'>" + fullscreenToggleLink + images[src].desc + "</div>")).insertAfter(wrapperContainer);
@@ -264,6 +256,15 @@
       } else {
         wrpThumbsLinks.filter(":not(.active)").find("img").stop().fadeTo(0, settings.fadedThumbsOutOpacity);
       }
+    }
+    
+    function resizeContainers(src) {
+      // Min 150x100px containers
+      var width = Math.max(images[src][widthProp], 150);
+      var height = Math.max(images[src][heightProp], 100);
+      $(wrapperContainer + "-nav a, " + wrapperContainer + "-nav span, " + wrapperContainerLink).css("height", height + "px");
+      $(wrapperContainer + ", " + wrapperContainer + "-nav").css("width", width + "px");
+      return width;
     }
 
     function centerThumbnailImage(thumb, link) {

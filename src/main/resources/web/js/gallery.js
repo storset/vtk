@@ -90,13 +90,33 @@
       link.toggleClass("minimized");
       $("html").toggleClass("fullscreen-gallery");
       wrp.parents().toggleClass("fullwidth").toggle();
+      var loadedImages = $("a" + container + "-link img");
+      var src = $("a" + container + "-link.active-full-image")[0].href;
       if(link.hasClass("minimized")) {
         link.text(showFullscreen); 
         $(wrapperContainer + "-description").prepend(link.remove());
+        for(var i = 0, len = loadedImages.length; i < len; i++) {
+          loadedImages[i].style.width = images[loadedImages[i].src].width + "px";
+          loadedImages[i].style.height = images[loadedImages[i].src].height + "px";
+        }
+        var width = Math.max(parseInt(images[src].width, 10), 150);
+        var height = Math.max(parseInt(images[src].height, 10), 100);
+        $(wrapperContainer + "-nav a, " + wrapperContainer + "-nav span, " + wrapperContainerLink).css("height", height + "px");
+        $(wrapperContainer + ", " + wrapperContainer + "-nav").css("width", width + "px");
+        $(wrapperContainer + "-description").css("width", (width - 30) + "px");
       } else {
         link.text(closeFullscreen);
         wrp.prepend(link.remove());
         window.scrollTo(0, 0);
+        for(var i = 0, len = loadedImages.length; i < len; i++) {
+          loadedImages[i].style.width = images[loadedImages[i].src].fullWidth + "px";
+          loadedImages[i].style.height = images[loadedImages[i].src].fullHeight + "px";
+        }
+        var width = Math.max(parseInt(images[src].fullWidth, 10), 150);
+        var height = Math.max(parseInt(images[src].fullHeight, 10), 100);
+        $(wrapperContainer + "-nav a, " + wrapperContainer + "-nav span, " + wrapperContainerLink).css("height", height + "px");
+        $(wrapperContainer + ", " + wrapperContainer + "-nav").css("width", width + "px");
+        $(wrapperContainer + "-description").css("width", (width - 30) + "px");
       }
       e.stopPropagation();
       e.preventDefault();
@@ -123,8 +143,16 @@
     loadImage = function(src) {
       var id = encodeURIComponent(src).replace(/(%|\.)/gim, "");
       if($("a#" + id).length) return;
+      
+      if(!$("html").hasClass("fullscreen-gallery")) {
+        var width = images[src].width;
+        var height = images[src].height;
+      } else {
+        var width = images[src].fullWidth;
+        var height = images[src].fullHeight;
+      }
       wrpContainer.append("<a id='" + id + "' style='display: none' href='" + src + "' class='" + container.substring(1) + "-link'>" +
-                            "<img src='" + src + "' alt='" + images[src].alt + "' style='width: " + images[src].width + "px; height: " + images[src].height + "px;' />" +
+                            "<img src='" + src + "' alt='" + images[src].alt + "' style='width: " + width + "px; height: " + height + "px;' />" +
                           "</a>");
     },
     prefetchCurrentNextPrevImage = function() {
@@ -227,15 +255,18 @@
 
       // Description
       // Set 150x100px containers
-      var width = Math.max(parseInt(images[src].width, 10), 150);
-      var height = Math.max(parseInt(images[src].height, 10), 100);
+      var fullscreenToggleLink = "";
+      if(!$("html").hasClass("fullscreen-gallery")) {
+        var width = Math.max(parseInt(images[src].width, 10), 150);
+        var height = Math.max(parseInt(images[src].height, 10), 100);
+        var fullscreenToggleLink = "<a href='javascript:void(0);' class='toggle-fullscreen minimized'>" + showFullscreen + "</a>";
+      } else {
+        var width = Math.max(parseInt(images[src].fullWidth, 10), 150);
+        var height = Math.max(parseInt(images[src].fullHeight, 10), 100);
+      }
       $(wrapperContainer + "-nav a, " + wrapperContainer + "-nav span, " + wrapperContainerLink).css("height", height + "px");
       $(wrapperContainer + ", " + wrapperContainer + "-nav").css("width", width + "px");
       var description = $(wrapperContainer + "-description");
-      var fullscreenToggleLink = "";
-      if(!$("html").hasClass("fullscreen-gallery")) {
-        var fullscreenToggleLink = "<a href='javascript:void(0);' class='toggle-fullscreen minimized'>" + showFullscreen + "</a>";
-      }
       if(!description.length) {
         $($.parseHTML("<div class='" + container.substring(1) + "-description' style='width: " + (width - 30) + "px'>" + fullscreenToggleLink + images[src].desc + "</div>")).insertAfter(wrapperContainer);
       } else {
@@ -260,8 +291,12 @@
     function cacheGenerateLinkImage(src, image, link) {
       images[src] = {};
       // Find image width and height "precalculated" from Vortex (properties)
-      images[src].width = parseInt(link.find("span.hiddenWidth").text(), 10);
-      images[src].height = parseInt(link.find("span.hiddenHeight").text(), 10);
+      var widths = link.find("span.hiddenWidth").text().split(",");
+      var heights = link.find("span.hiddenHeight").text().split(",");
+      images[src].width = parseInt(widths[0], 10);
+      images[src].height = parseInt(heights[0], 10);
+      images[src].fullWidth = parseInt(widths[1].replace(/[^\d]*/g, ""), 10);
+      images[src].fullHeight = parseInt(heights[1].replace(/[^\d]*/g, ""), 10);
       // HTML encode quotes in alt and title if not already encoded
       var alt = image.attr("alt");
       var title = image.attr("title");

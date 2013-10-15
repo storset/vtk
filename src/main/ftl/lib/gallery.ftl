@@ -52,7 +52,9 @@
     <#if height != "" && width != "">
       <#local width = width?number />
       <#local height = height?number />
-
+      <#local fullWidth = width />
+      <#local fullHeight = height />
+      
       <#local percentage = 1 />
       <#if (width > height)>
         <#if (width > maxWidth)>
@@ -148,8 +150,8 @@
 	          // -->
 	          </script>
 	          
-	            <span class="hiddenWidth" style="display: none">${width}</span>
-	            <span class="hiddenHeight" style="display: none">${height}</span>
+	            <span class="hiddenWidth" style="display: none">${width},${fullWidth}</span>
+	            <span class="hiddenHeight" style="display: none">${height},${fullHeight}</span>
 	          </a>
 	        
 	        

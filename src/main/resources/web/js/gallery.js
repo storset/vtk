@@ -96,7 +96,7 @@
     }
     
     // Prefetch current, next and prev full images in the background
-    var imageUrlsToBePrefetchedLen = imageUrlsToBePrefetched.length - 1;
+    var imageUrlsToBePrefetchedLen = imageUrlsToBePrefetched.length - 1,
     errorFullImage = function() {
       $(imgs).filter("[href^='" + this.src + "']").closest("a")
              .append("<span class='loading-image loading-image-error'><p>" + loadImageErrorMsg + "</p></span>");

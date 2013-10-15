@@ -193,6 +193,16 @@
       active.addClass("active-full-image");
     }
     
+    function show(current, active, init) {
+      if(init) {
+        active.addClass("active-full-image");
+      } else if(settings.fadeInOutTime > 0 ) {
+        crossFade(current, active);
+      } else {
+        hideShow(current, active);
+      }
+    }
+    
     function showImage(image, init) {
       var src = image.attr("src").split("?")[0]; /* Remove parameters when active is sent in to gallery */
 
@@ -203,26 +213,14 @@
       var active = $("a#" + activeId);
       var current = $("a." + container.substring(1) + "-link.active-full-image");
       if(active.length) {
-        if(init) {
-          active.addClass("active-full-image");
-        } else if(settings.fadeInOutTime > 0 ) {
-          crossFade(current, active);
-        } else {
-          hideShow(current, active);
-        }
+        show(current, active, init);
       } else {
         var waitForActive = setTimeout(function() {
           active = $("a#" + activeId);
           if(!active.length) {
             setTimeout(arguments.callee, 5);
           } else {
-            if(init) {
-              active.addClass("active-full-image");
-            } else if(settings.fadeInOutTime > 0) {
-              crossFade(current, active);
-            } else {
-              hideShow(current, active);
-            }
+            show(current, active, init);
           }
         }, 5);
       }

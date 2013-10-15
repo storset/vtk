@@ -165,8 +165,7 @@ public class XmlSearcher {
             search.setCursor(offset);
             search.setPropertySelect(envir.getPropertySelect());
             if (includeUnpublished) {
-                search.removeFilterFlag(Search.FilterFlag.UNPUBLISHED_COLLECTIONS).removeFilterFlag(
-                        Search.FilterFlag.UNPUBLISHED);
+                search.removeFilterFlag(Search.FilterFlag.UNPUBLISHED_COLLECTIONS, Search.FilterFlag.UNPUBLISHED);
             }
             ResultSet rs = this.searcher.execute(token, search);
 

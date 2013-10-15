@@ -31,6 +31,7 @@ void execute(context, args, out) {
         return;
     }
     search = new org.vortikal.repository.search.Search();
+    search.removeAllFilterFlags();
     search.setQuery(query);
     if (limit != null && limit >= 0) {
         search.setLimit(limit);

@@ -99,6 +99,7 @@ public class RepositorySearchResourceTemplateLocator implements ResourceTemplate
         List<ResourceTemplate> templates = new ArrayList<ResourceTemplate>();
         
         Search search = new Search();
+        search.removeAllFilterFlags();
 
         Query query = getQuery(baseUris, resourceTypes, recursive);
         

@@ -58,7 +58,6 @@ import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
-import org.vortikal.repository.search.query.SearchFilterFlags;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
@@ -68,19 +67,18 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
 
-
 /**
- * Utility class for performing searches returning result sets wrapped
- * in an XML structure.
- *
- * XXX: move this class to another package (has org.vortikal.web.*
- * dependencies among other things).
- *
+ * Utility class for performing searches returning result sets wrapped in an XML
+ * structure.
+ * 
+ * XXX: move this class to another package (has org.vortikal.web.* dependencies
+ * among other things).
+ * 
  */
 public class XmlSearcher {
 
     private static final String URL_IDENTIFIER = "url";
-    
+
     private static Log logger = LogFactory.getLog(XmlSearcher.class);
 
     private Searcher searcher;
@@ -104,37 +102,34 @@ public class XmlSearcher {
     public void setDefaultLocale(String defaultLocale) {
         this.defaultLocale = defaultLocale;
     }
-    
 
     /**
      * Should probably be deprecated?
      */
-    public NodeList executeQuery(String query, String sort, String maxResultsStr,
-                                 String fields) throws QueryException {
+    public NodeList executeQuery(String query, String sort, String maxResultsStr, String fields) throws QueryException {
         return executeQuery(query, sort, maxResultsStr, fields, true);
     }
-  
-    public NodeList executeQuery(String query, String sort, String maxResultsStr,
-            String fields, boolean authorizeCurrentPrincipal) throws QueryException {
+
+    public NodeList executeQuery(String query, String sort, String maxResultsStr, String fields,
+            boolean authorizeCurrentPrincipal) throws QueryException {
 
         int limit = this.maxResults;
         try {
             limit = Integer.parseInt(maxResultsStr);
-        } catch (NumberFormatException e) {}
+        } catch (NumberFormatException e) {
+        }
 
-        Document doc = executeDocumentQuery(query, sort, limit, 0, fields, 
-                authorizeCurrentPrincipal, false);
+        Document doc = executeDocumentQuery(query, sort, limit, 0, fields, authorizeCurrentPrincipal, false);
         return doc.getDocumentElement().getChildNodes();
     }
 
-    public Document executeDocumentQuery(String query, String sort,
-            int maxResults, int offset, String fields, boolean authorizeCurrentPrincipal, 
-            boolean includeUnpublished) throws QueryException {
+    public Document executeDocumentQuery(String query, String sort, int maxResults, int offset, String fields,
+            boolean authorizeCurrentPrincipal, boolean includeUnpublished) throws QueryException {
         // VTK-2460
         if (RequestContext.getRequestContext().isViewUnauthenticated()) {
             authorizeCurrentPrincipal = false;
         }
-        
+
         String token = null;
         if (authorizeCurrentPrincipal) {
             RequestContext requestContext = RequestContext.getRequestContext();
@@ -143,9 +138,8 @@ public class XmlSearcher {
         return executeDocumentQuery(token, query, sort, maxResults, offset, fields, includeUnpublished);
     }
 
-    private Document executeDocumentQuery(String token, String query,
-                                         String sort, int maxResults, int offset,
-                                         String fields, boolean includeUnpublished) throws QueryException {
+    private Document executeDocumentQuery(String token, String query, String sort, int maxResults, int offset,
+            String fields, boolean includeUnpublished) throws QueryException {
         int limit = maxResults;
 
         if (maxResults > this.maxResults) {
@@ -159,7 +153,7 @@ public class XmlSearcher {
         } catch (ParserConfigurationException e) {
             throw new QueryException(e.getMessage());
         }
-        
+
         try {
             SearchEnvironment envir = new SearchEnvironment(sort, fields);
 
@@ -171,15 +165,15 @@ public class XmlSearcher {
             search.setCursor(offset);
             search.setPropertySelect(envir.getPropertySelect());
             if (includeUnpublished) {
-                search.removeFilterFlag(SearchFilterFlags.FILTER_RESOURCES_IN_UNPUBLISHED_COLLECTIONS)
-                .removeFilterFlag(SearchFilterFlags.FILTER_UNPUBLISHED_RESOURCES);
+                search.removeFilterFlag(Search.FilterFlag.UNPUBLISHED_COLLECTIONS).removeFilterFlag(
+                        Search.FilterFlag.UNPUBLISHED);
             }
             ResultSet rs = this.searcher.execute(token, search);
-            
+
             addResultSetToDocument(rs, doc, envir);
         } catch (Exception e) {
             logger.warn("Error occurred while performing query: '" + query + "'", e);
-            
+
             Element errorElement = doc.createElement("error");
             doc.appendChild(errorElement);
             errorElement.setAttribute("exception", e.getClass().getName());
@@ -190,14 +184,13 @@ public class XmlSearcher {
             errorElement.appendChild(text);
 
         }
-        
+
         return doc;
     }
-    
 
     private void addResultSetToDocument(ResultSet rs, Document doc, SearchEnvironment envir) {
         long start = System.currentTimeMillis();
-        
+
         Element resultElement = doc.createElement("results");
         doc.appendChild(resultElement);
         resultElement.setAttribute("size", String.valueOf(rs.getSize()));
@@ -206,16 +199,16 @@ public class XmlSearcher {
             PropertySet propSet = i.next();
             addPropertySetToResults(doc, resultElement, propSet, envir);
         }
-        
+
         if (logger.isDebugEnabled()) {
             long now = System.currentTimeMillis();
             logger.debug("Building XML result set took " + (now - start) + " ms");
         }
     }
-    
-    private void addPropertySetToResults(Document doc, Element resultsElement, 
-                                         PropertySet propSet, SearchEnvironment envir) {
-        
+
+    private void addPropertySetToResults(Document doc, Element resultsElement, PropertySet propSet,
+            SearchEnvironment envir) {
+
         Element propertySetElement = doc.createElement("resource");
         resultsElement.appendChild(propertySetElement);
         if (envir.reportUri())
@@ -227,43 +220,42 @@ public class XmlSearcher {
         if (envir.reportUrl())
             propertySetElement.setAttribute(URL_IDENTIFIER, getUrl(propSet).toString());
 
-        for (Property prop: propSet) {
+        for (Property prop : propSet) {
             addPropertyToPropertySetElement(propSet.getURI(), propertySetElement, prop, envir);
         }
-        
+
     }
-    
+
     private URL getUrl(PropertySet propSet) {
         Path uri = propSet.getURI();
         URL url = this.linkToService.constructURL(uri);
-        if (collectionResourceTypeDef != null &&
-                collectionResourceTypeDef.getQName().equals(propSet.getResourceType())) {
+        if (collectionResourceTypeDef != null && collectionResourceTypeDef.getQName().equals(propSet.getResourceType())) {
             url.setCollection(true);
         }
         return url;
     }
-    
-    private void addPropertyToPropertySetElement(Path uri, Element propSetElement,
-                                                 Property prop, SearchEnvironment envir) {
-        
+
+    private void addPropertyToPropertySetElement(Path uri, Element propSetElement, Property prop,
+            SearchEnvironment envir) {
+
         PropertyTypeDefinition propDef = prop.getDefinition();
-        
+
         Document doc = propSetElement.getOwnerDocument();
-        
+
         Element propertyElement = doc.createElement("property");
-        
+
         String namespaceUri = propDef.getNamespace().getUri();
         if (namespaceUri != null) {
             propertyElement.setAttribute("namespace", namespaceUri);
         }
-        
+
         String prefix = propDef.getNamespace().getPrefix();
         if (prefix != null) {
             propertyElement.setAttribute("name", prefix + ":" + propDef.getName());
         } else {
             propertyElement.setAttribute("name", propDef.getName());
         }
-        
+
         Locale locale = envir.getLocale();
 
         Set<String> formatSet = envir.getFormats().getFormats(propDef);
@@ -272,10 +264,10 @@ public class XmlSearcher {
             formatSet.add(null);
         }
 
-        for (String format: formatSet) {
+        for (String format : formatSet) {
             if (propDef.isMultiple() && format == null) {
                 Element valuesElement = doc.createElement("values");
-                for (Value v: prop.getValues()) {
+                for (Value v : prop.getValues()) {
                     String valueString = propDef.getValueFormatter().valueToString(v, null, locale);
                     Element valueElement = getValueElement(propDef, uri, valueString, null, doc);
                     valuesElement.appendChild(valueElement);
@@ -300,17 +292,15 @@ public class XmlSearcher {
         propSetElement.appendChild(propertyElement);
     }
 
+    private Element getValueElement(PropertyTypeDefinition propDef, Path uri, String valueString, String format,
+            Document doc) {
 
-    
-
-    private Element getValueElement(PropertyTypeDefinition propDef, 
-                                    Path uri, String valueString, String format, 
-                                    Document doc) {
-
-        //String valueString = propDef.getValueFormatter().valueToString(value, format, locale);
+        // String valueString = propDef.getValueFormatter().valueToString(value,
+        // format, locale);
 
         Node node = null;
-        // If string value and format is url, try to create url (if it doesn't start with http?)
+        // If string value and format is url, try to create url (if it doesn't
+        // start with http?)
         if (format != null && (propDef.getType() == STRING || propDef.getType() == IMAGE_REF)) {
 
             if (format.equals("url") && !valueString.startsWith("http")) {
@@ -322,8 +312,8 @@ public class XmlSearcher {
                 } catch (Exception e) {
                     logger.warn(valueString + " led to exception ", e);
                 }
-            } 
-        }          
+            }
+        }
         if (node == null) {
             node = doc.createTextNode(valueString);
         }
@@ -331,12 +321,10 @@ public class XmlSearcher {
         valueElement.appendChild(node);
         return valueElement;
     }
-    
 
     private static class Formats {
 
-        private Map<PropertyTypeDefinition, Set<String>> formats = 
-            new HashMap<PropertyTypeDefinition, Set<String>>();
+        private Map<PropertyTypeDefinition, Set<String>> formats = new HashMap<PropertyTypeDefinition, Set<String>>();
 
         public void addFormat(PropertyTypeDefinition def, String format) {
             Set<String> s = this.formats.get(def);
@@ -354,7 +342,7 @@ public class XmlSearcher {
             }
             return set;
         }
-        
+
         @Override
         public String toString() {
             StringBuilder sb = new StringBuilder(this.getClass().getName());
@@ -363,9 +351,8 @@ public class XmlSearcher {
         }
     }
 
-
     private class SearchEnvironment {
-        
+
         private PropertySelect select = null;
         private Sorting sort;
         private Formats formats = new Formats();
@@ -374,7 +361,7 @@ public class XmlSearcher {
         private boolean reportName = false;
         private boolean reportType = false;
         private boolean reportUrl = false;
-        
+
         public SearchEnvironment(String sort, String fields) {
             this.sort = parser.parseSortString(sort);
             parseFields(fields);
@@ -396,7 +383,7 @@ public class XmlSearcher {
         public Locale getLocale() {
             return this.locale;
         }
-        
+
         @Override
         public String toString() {
             StringBuilder sb = new StringBuilder(this.getClass().getName());
@@ -406,7 +393,7 @@ public class XmlSearcher {
             sb.append(", locale = ").append(this.locale);
             return sb.toString();
         }
-        
+
         private void parseFields(String fields) {
             if (fields == null || "".equals(fields.trim())) {
                 this.select = PropertySelect.ALL;
@@ -420,7 +407,7 @@ public class XmlSearcher {
             ConfigurablePropertySelect selectedFields = new ConfigurablePropertySelect();
             this.select = selectedFields;
 
-            for (String fullyQualifiedName: fieldsArray) {
+            for (String fullyQualifiedName : fieldsArray) {
                 if ("".equals(fullyQualifiedName.trim())) {
                     continue;
                 }
@@ -440,8 +427,8 @@ public class XmlSearcher {
                 } else if (URL_IDENTIFIER.equals(name)) {
                     this.reportUrl = true;
                     continue;
-                } 
-                
+                }
+
                 String format = null;
                 int bracketStartPos = name.indexOf("[");
                 if (bracketStartPos != -1 && bracketStartPos > 1) {
@@ -457,9 +444,8 @@ public class XmlSearcher {
                     prefix = name.substring(0, separatorPos).trim();
                     name = name.substring(separatorPos + 1).trim();
                 }
-                
-                PropertyTypeDefinition def =
-                    resourceTypeTree.getPropertyDefinitionByPrefix(prefix, name);
+
+                PropertyTypeDefinition def = resourceTypeTree.getPropertyDefinitionByPrefix(prefix, name);
 
                 if (def != null && format != null) {
                     this.formats.addFormat(def, format);
@@ -467,10 +453,10 @@ public class XmlSearcher {
                 if (def != null) {
                     selectedFields.addPropertyDefinition(def);
                 }
-                //System.out.println("__formats: " + this.formats);
+                // System.out.println("__formats: " + this.formats);
             }
         }
-        
+
         private void resolveLocale() {
             try {
                 RequestContext requestContext = RequestContext.getRequestContext();
@@ -487,19 +473,18 @@ public class XmlSearcher {
                     this.locale = new Locale(lang);
                 }
 
-            } catch (Throwable t) { 
+            } catch (Throwable t) {
                 if (logger.isDebugEnabled()) {
                     logger.debug("Unable to resolve locale of resource", t);
                 }
             }
         }
-        
 
         // Splits fields on ',' characters, allowing commas to appear
         // within (non-nested) brackets.
         private List<String> splitFields(String fields) {
             List<String> results = new ArrayList<String>();
-            
+
             StringBuilder field = new StringBuilder();
             boolean insideBrackets = false;
             for (int i = 0; i < fields.length(); i++) {
@@ -524,10 +509,10 @@ public class XmlSearcher {
             if (field.length() > 0) {
                 results.add(field.toString());
             }
-            
+
             return results;
         }
-        
+
         public boolean reportUri() {
             return this.reportUri;
         }
@@ -551,8 +536,7 @@ public class XmlSearcher {
         this.linkToService = linkToService;
     }
 
-    public void setCollectionResourceTypeDef(
-            ResourceTypeDefinition collectionResourceTypeDef) {
+    public void setCollectionResourceTypeDef(ResourceTypeDefinition collectionResourceTypeDef) {
         this.collectionResourceTypeDef = collectionResourceTypeDef;
     }
 

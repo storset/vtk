@@ -47,8 +47,11 @@
     var wrpContainer = $(wrapperContainer);
     var wrpContainerLink = $(wrapperContainer + " a" + container + "-link");
     var wrpThumbsLinks = $(wrapperThumbsLinks);
-    var images = {}; 
-
+    var images = {};
+    var isFullscreen = false;
+    var widthProp = "width";
+    var heightProp = "height";
+    
     // Init first active image
     var firstImage = wrpThumbsLinks.filter(".active");
     if(!firstImage.length) return this; 
@@ -90,34 +93,32 @@
       link.toggleClass("minimized");
       $("html").toggleClass("fullscreen-gallery");
       wrp.parents().toggleClass("fullwidth").toggle();
-      var loadedImages = $("a" + container + "-link img");
-      var src = $("a" + container + "-link.active-full-image")[0].href;
       if(link.hasClass("minimized")) {
+        isFullscreen = false;
+        widthProp = "width";
+        heightProp = "height";
         link.text(showFullscreen); 
         $(wrapperContainer + "-description").prepend(link.remove());
-        for(var i = 0, len = loadedImages.length; i < len; i++) {
-          loadedImages[i].style.width = images[loadedImages[i].src].width + "px";
-          loadedImages[i].style.height = images[loadedImages[i].src].height + "px";
-        }
-        var width = Math.max(parseInt(images[src].width, 10), 150);
-        var height = Math.max(parseInt(images[src].height, 10), 100);
-        $(wrapperContainer + "-nav a, " + wrapperContainer + "-nav span, " + wrapperContainerLink).css("height", height + "px");
-        $(wrapperContainer + ", " + wrapperContainer + "-nav").css("width", width + "px");
-        $(wrapperContainer + "-description").css("width", (width - 30) + "px");
       } else {
+        isFullscreen = true;
+        widthProp = "fullWidth";
+        heightProp = "fullHeight";
         link.text(closeFullscreen);
         wrp.prepend(link.remove());
         window.scrollTo(0, 0);
-        for(var i = 0, len = loadedImages.length; i < len; i++) {
-          loadedImages[i].style.width = images[loadedImages[i].src].fullWidth + "px";
-          loadedImages[i].style.height = images[loadedImages[i].src].fullHeight + "px";
-        }
-        var width = Math.max(parseInt(images[src].fullWidth, 10), 150);
-        var height = Math.max(parseInt(images[src].fullHeight, 10), 100);
-        $(wrapperContainer + "-nav a, " + wrapperContainer + "-nav span, " + wrapperContainerLink).css("height", height + "px");
-        $(wrapperContainer + ", " + wrapperContainer + "-nav").css("width", width + "px");
-        $(wrapperContainer + "-description").css("width", (width - 30) + "px");
       }
+      var loadedImages = $("a" + container + "-link img");
+      var src = $("a" + container + "-link.active-full-image")[0].href;
+      for(var i = 0, len = loadedImages.length; i < len; i++) {
+        loadedImages[i].style.width = images[loadedImages[i].src][widthProp] + "px";
+        loadedImages[i].style.height = images[loadedImages[i].src][heightProp] + "px";
+      }
+      var width = Math.max(parseInt(images[src][widthProp], 10), 150);
+      var height = Math.max(parseInt(images[src][heightProp], 10), 100);
+      $(wrapperContainer + "-nav a, " + wrapperContainer + "-nav span, " + wrapperContainerLink).css("height", height + "px");
+      $(wrapperContainer + ", " + wrapperContainer + "-nav").css("width", width + "px");
+      $(wrapperContainer + "-description").css("width", (width - 30) + "px");
+      
       e.stopPropagation();
       e.preventDefault();
     });
@@ -135,7 +136,6 @@
     
     // Prefetch current, next and prev full images in the background
     var imageUrlsToBePrefetchedLen = imageUrlsToBePrefetched.length - 1,
-    // Caption
     errorFullImage = function() {
       $(imgs).filter("[href^='" + this.src + "']").closest("a")
              .append("<span class='loading-image loading-image-error'><p>" + loadImageErrorMsg + "</p></span>");
@@ -143,16 +143,8 @@
     loadImage = function(src) {
       var id = encodeURIComponent(src).replace(/(%|\.)/gim, "");
       if($("a#" + id).length) return;
-      
-      if(!$("html").hasClass("fullscreen-gallery")) {
-        var width = images[src].width;
-        var height = images[src].height;
-      } else {
-        var width = images[src].fullWidth;
-        var height = images[src].fullHeight;
-      }
       wrpContainer.append("<a id='" + id + "' style='display: none' href='" + src + "' class='" + container.substring(1) + "-link'>" +
-                            "<img src='" + src + "' alt='" + images[src].alt + "' style='width: " + width + "px; height: " + height + "px;' />" +
+                            "<img src='" + src + "' alt='" + images[src].alt + "' style='width: " + images[src][widthProp] + "px; height: " + images[src][heightProp] + "px;' />" +
                           "</a>");
     },
     prefetchCurrentNextPrevImage = function() {
@@ -254,16 +246,10 @@
       }
 
       // Description
-      // Set 150x100px containers
-      var fullscreenToggleLink = "";
-      if(!$("html").hasClass("fullscreen-gallery")) {
-        var width = Math.max(parseInt(images[src].width, 10), 150);
-        var height = Math.max(parseInt(images[src].height, 10), 100);
-        var fullscreenToggleLink = "<a href='javascript:void(0);' class='toggle-fullscreen minimized'>" + showFullscreen + "</a>";
-      } else {
-        var width = Math.max(parseInt(images[src].fullWidth, 10), 150);
-        var height = Math.max(parseInt(images[src].fullHeight, 10), 100);
-      }
+      var fullscreenToggleLink = !isFullscreen ? "<a href='javascript:void(0);' class='toggle-fullscreen minimized'>" + showFullscreen + "</a>" : "";
+      // Min 150x100px containers
+      var width = Math.max(parseInt(images[src][widthProp], 10), 150);
+      var height = Math.max(parseInt(images[src][heightProp], 10), 100);
       $(wrapperContainer + "-nav a, " + wrapperContainer + "-nav span, " + wrapperContainerLink).css("height", height + "px");
       $(wrapperContainer + ", " + wrapperContainer + "-nav").css("width", width + "px");
       var description = $(wrapperContainer + "-description");

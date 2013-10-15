@@ -96,32 +96,29 @@
     }
     
     // Prefetch current, next and prev full images in the background
-    var imageUrlsToBePrefetchedLen = imageUrlsToBePrefetched.length - 1,
-        imagesPrefetched = {}, // Keeps images in memory (reachable) so that don't need to prefetch again until reload
-    loadFullImage = function() {},
+    var imageUrlsToBePrefetchedLen = imageUrlsToBePrefetched.length - 1;
     errorFullImage = function() {
-      $(imgs).filter("[href^='" + this.src + "']").closest("a").append("<span class='loading-image loading-image-error'><p>" + loadImageErrorMsg + "</p></span>");
+      $(imgs).filter("[href^='" + this.src + "']").closest("a")
+             .append("<span class='loading-image loading-image-error'><p>" + loadImageErrorMsg + "</p></span>");
     },
     loadImage = function(src) {
-      imagesPrefetched[src] = new Image();
-      imagesPrefetched[src].onload = loadFullImage;
-      imagesPrefetched[src].onerror = errorFullImage;
-      imagesPrefetched[src].src = src;
+      var id = encodeURIComponent(src).replace(/(%|\.)/gim, "");
+      if($("a#" + id).length) return;
+      wrpContainer.append("<a id='" + id + "' style='display: none' href='" + src + "' class='" + container.substring(1) + "-link'>" +
+                            "<img src='" + src + "' alt='" + images[src].alt + "' style='width: " + images[src].width + "px; height: " + images[src].height + "px;' />" +
+                          "</a>");
     },
     prefetchCurrentNextPrevImage = function() {
       var active = wrpThumbsLinks.filter(".active"),
           activeIdx = active.parent().index() - 1,
           activeSrc = active.find(".vrtx-thumbnail-image")[0].src.split("?")[0],
           j = 0;
-      if(!imagesPrefetched[activeSrc]) {
-        loadImage(activeSrc);
-      }     
+      loadImage(activeSrc);
       var loadNextPrevImages = setTimeout(function() {
-        var src = imageUrlsToBePrefetched[(j === 0) ? (activeIdx + 1 > imageUrlsToBePrefetchedLen ? 0 : activeIdx + 1)   // Next, first, prev or last
-                                                    : (activeIdx - 1 < 0 ? imageUrlsToBePrefetchedLen : activeIdx - 1)];
-        if(!imagesPrefetched[src]) {
-          loadImage(src);
-        }
+        var activeIdxPlus1 = activeIdx + 1, activeIdxMinus1 = activeIdx - 1;
+        var src = imageUrlsToBePrefetched[(j === 0) ? ( activeIdxPlus1 > imageUrlsToBePrefetchedLen ? 0 :  activeIdxPlus1)   // Next, first, prev or last
+                                                    : (activeIdxMinus1 < 0 ? imageUrlsToBePrefetchedLen : activeIdxMinus1)];
+        loadImage(src);
         if(++j < 2) {
           setTimeout(arguments.callee, settings.loadNextPrevImagesInterval);
         }
@@ -165,31 +162,64 @@
       }
     }
     
+    function crossFade(current, active) {
+      current.wrap("<div class='over' />").fadeTo(settings.fadeInOutTime, settings.fadedOutOpacity, function () {
+        $(this).unwrap().hide();
+      });
+      active.fadeTo(settings.fadeInOutTime, 1, function () {
+        $(this).show();
+      });
+    }
+    
+    function hideShow(current, active) {
+      current.hide();
+      active.show();
+    }
+    
     function showImage(image, init) {
       var src = image.attr("src").split("?")[0]; /* Remove parameters when active is sent in to gallery */
-      if (settings.fadeInOutTime > 0 && !init) {
-        wrpContainer.append("<div class='over'>" + $(wrapperContainerLink).html() + "</div>");
-        $(wrapperContainerLink).remove();
-        $(".over").fadeTo(settings.fadeInOutTime, settings.fadedOutOpacity, function () {
-          $(this).remove();
-        });
-      } else {
-        if (init) {
-          cacheGenerateLinkImage(src, image, image.parent());
-        } else {
-          $(wrapperContainerLink).remove();
-        }
+
+      if (init) {
+        cacheGenerateLinkImage(src, image, image.parent());
       }
-      // Image
-      wrpContainer.append(images[src].html);
-      // Description     
-      $(wrapperContainer + "-nav a, " + wrapperContainer + "-nav span, " + wrapperContainerLink).css("height", images[src].height);
-      $(wrapperContainer + ", " + wrapperContainer + "-nav").css("width", images[src].width);
+      
+      var activeId = encodeURIComponent(src).replace(/(%|\.)/gim, "");
+      
+      var active = $("a#" + activeId);
+      var current = $("a." + container.substring(1) + "-link").filter(":visible")
+      
+      if(active.length) {
+        if(settings.fadeInOutTime > 0 && !init) {
+          crossFade(current, active);
+        } else {
+          hideShow(current, active);
+        }
+      } else {
+        var waitForActive = setTimeout(function() {
+          active = $("a#" + activeId);
+          if(!active.length) {
+            setTimeout(arguments.callee, 5);
+          } else {
+            if(settings.fadeInOutTime > 0 && !init) {
+              crossFade(current, active);
+            } else {
+              hideShow(current, active);
+            }
+          }
+        }, 5);
+      }
+
+      // Description
+      // Set 150x100px containers
+      var width = Math.max(parseInt(images[src].width, 10), 150) + "px";
+      var height = Math.max(parseInt(images[src].height, 10), 100) + "px";
+      $(wrapperContainer + "-nav a, " + wrapperContainer + "-nav span, " + wrapperContainerLink).css("height", height);
+      $(wrapperContainer + ", " + wrapperContainer + "-nav").css("width", width);
       var description = $(wrapperContainer + "-description");
       if(!description.length) {
-        $($.parseHTML("<div class='" + container.substring(1) + "-description' style='width: " + images[src].width + "'>" + images[src].desc + "</div>")).insertAfter(wrapperContainer);
+        $($.parseHTML("<div class='" + container.substring(1) + "-description' style='width: " + width + "'>" + images[src].desc + "</div>")).insertAfter(wrapperContainer);
       } else {
-        description.html(images[src].desc).css("width", images[src].width);
+        description.html(images[src].desc).css("width", width);
       }
       if(!init) {
         wrpThumbsLinks.filter(".active").removeClass("active").find("img").stop().fadeTo(settings.fadeThumbsInOutTime, settings.fadedThumbsOutOpacity);
@@ -217,13 +247,6 @@
       var title = image.attr("title");
       images[src].alt = alt ? alt.replace(/\'/g, "&#39;").replace(/\"/g, "&quot;") : null;
       images[src].title = title ? title.replace(/\'/g, "&#39;").replace(/\"/g, "&quot;") : null;
-      // Build HTML
-      images[src].html = "<a href='" + link.attr("href") + "'" + " class='" + container.substring(1) + "-link'>" +
-                           "<img src='" + src + "' alt='" + images[src].alt + "' style='width: " + images[src].width + "px; height: " + images[src].height + "px;' />" +
-                         "</a>";
-      // Set 150x100px containers
-      images[src].width = Math.max(parseInt(images[src].width, 10), 150) + "px";
-      images[src].height = Math.max(parseInt(images[src].height, 10), 100) + "px";
       // Add description
       var desc = "";
       if (images[src].title) desc += "<p class='" + container.substring(1) + "-title'>" + images[src].title + "</p>";

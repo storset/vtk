@@ -66,6 +66,7 @@ public class XmlQueryController implements Controller, InitializingBean {
     private String sortParameterName = "sort";
     private String fieldsParameterName = "fields";
     private String authenticatedParameterName = "authenticated";
+    private String unpublishedParameter = "unpublished";
     private int defaultMaxLimit = 500;
     private XmlSearcher xmlSearcher;
     private boolean defaultAuthenticated = false;
@@ -131,9 +132,11 @@ public class XmlQueryController implements Controller, InitializingBean {
         if (authenticatedParameter != null) {
             authenticated = "true".equals(authenticatedParameter);
         }
+        
+        boolean includeUnpublished = "true".equals(request.getParameter(unpublishedParameter));
 
         Document result = this.xmlSearcher.executeDocumentQuery(query, sortStr,
-                maxResults, fields, authenticated);
+                maxResults, fields, authenticated, includeUnpublished);
 
         OutputStream outputStream = null;
         response.setContentType("text/xml");

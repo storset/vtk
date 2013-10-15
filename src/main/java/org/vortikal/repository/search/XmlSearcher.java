@@ -58,6 +58,7 @@ import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
+import org.vortikal.repository.search.query.SearchFilterFlags;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
@@ -121,12 +122,14 @@ public class XmlSearcher {
             limit = Integer.parseInt(maxResultsStr);
         } catch (NumberFormatException e) {}
 
-        Document doc = executeDocumentQuery(query, sort, limit, fields, authorizeCurrentPrincipal);
+        Document doc = executeDocumentQuery(query, sort, limit, fields, 
+                authorizeCurrentPrincipal, false);
         return doc.getDocumentElement().getChildNodes();
     }
 
     public Document executeDocumentQuery(String query, String sort,
-            int maxResults, String fields, boolean authorizeCurrentPrincipal) throws QueryException {
+            int maxResults, String fields, boolean authorizeCurrentPrincipal, 
+            boolean includeUnpublished) throws QueryException {
         // VTK-2460
         if (RequestContext.getRequestContext().isViewUnauthenticated()) {
             authorizeCurrentPrincipal = false;
@@ -137,12 +140,12 @@ public class XmlSearcher {
             RequestContext requestContext = RequestContext.getRequestContext();
             token = requestContext.getSecurityToken();
         }
-        return executeDocumentQuery(token, query, sort, maxResults, fields);
+        return executeDocumentQuery(token, query, sort, maxResults, fields, includeUnpublished);
     }
 
     private Document executeDocumentQuery(String token, String query,
                                          String sort, int maxResults,
-                                         String fields) throws QueryException {
+                                         String fields, boolean includeUnpublished) throws QueryException {
         int limit = maxResults;
 
         if (maxResults > this.maxResults) {
@@ -167,6 +170,10 @@ public class XmlSearcher {
                 search.setSorting(envir.getSorting());
             search.setLimit(limit);
             search.setPropertySelect(envir.getPropertySelect());
+            if (includeUnpublished) {
+                search.removeFilterFlag(SearchFilterFlags.FILTER_RESOURCES_IN_UNPUBLISHED_COLLECTIONS)
+                .removeFilterFlag(SearchFilterFlags.FILTER_UNPUBLISHED_RESOURCES);
+            }
             ResultSet rs = this.searcher.execute(token, search);
             
             addResultSetToDocument(rs, doc, envir);

@@ -97,8 +97,8 @@ public class LuceneQueryBuilderImplTest {
     public void testGetSearchFilterDefaultExcludesFalseNoAcl() {
 
         Search search = new Search();
-        search.removeFilterFlag(SearchFilterFlags.FILTER_UNPUBLISHED_RESOURCES);
-        search.removeFilterFlag(SearchFilterFlags.FILTER_RESOURCES_IN_UNPUBLISHED_COLLECTIONS);
+        search.removeFilterFlag(Search.FilterFlag.UNPUBLISHED,
+                Search.FilterFlag.UNPUBLISHED_COLLECTIONS);
         this.assertGetSearchFilter(null, search, null);
     }
 
@@ -106,8 +106,8 @@ public class LuceneQueryBuilderImplTest {
     public void testGetSearchFilterDefaultExcludesFalseAndAcl() {
 
         Search search = new Search();
-        search.removeFilterFlag(SearchFilterFlags.FILTER_UNPUBLISHED_RESOURCES);
-        search.removeFilterFlag(SearchFilterFlags.FILTER_RESOURCES_IN_UNPUBLISHED_COLLECTIONS);
+        search.removeFilterFlag(Search.FilterFlag.UNPUBLISHED,
+                Search.FilterFlag.UNPUBLISHED_COLLECTIONS);
         this.assertGetSearchFilter(dummyAclFilter, search, dummyAclFilter);
 
     }
@@ -145,10 +145,9 @@ public class LuceneQueryBuilderImplTest {
         Filter actual = luceneQueryBuilder.buildSearchFilter(dummyToken, search, nullIndexReader);
 
         // Nothing more to do, requested configuration yields no filter
-        if (!search.hasFilterFlag(SearchFilterFlags.FILTER_UNPUBLISHED_RESOURCES) && expectedReturnAclQuery == null) {
-            assertNull(
-                    "Filter 'actual' is supposed to be NULL",
-                    actual);
+        if (!search.hasFilterFlag(Search.FilterFlag.UNPUBLISHED)
+                && expectedReturnAclQuery == null) {
+            assertNull("Filter 'actual' is supposed to be NULL", actual);
             return;
         }
 

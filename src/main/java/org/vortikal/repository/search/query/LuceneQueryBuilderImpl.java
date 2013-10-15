@@ -359,7 +359,7 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
         }
         BooleanFilter bf = null;
         // Add filters for removing default excludes if requested
-        if (search.hasFilterFlag(SearchFilterFlags.FILTER_UNPUBLISHED_RESOURCES)) {
+        if (search.hasFilterFlag(Search.FilterFlag.UNPUBLISHED)) {
             bf = buildUnpublishedFilter();
 
             // Include ACL-filter if non-null:
@@ -370,7 +370,7 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
             filter = bf;
         }
 
-        if (search.hasFilterFlag(SearchFilterFlags.FILTER_UNPUBLISHED_RESOURCES)) {
+        if (search.hasFilterFlag(Search.FilterFlag.UNPUBLISHED)) {
             filter = addUnpublishedCollectionFilter(filter);
         }
 

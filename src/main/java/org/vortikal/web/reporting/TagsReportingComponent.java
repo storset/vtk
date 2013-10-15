@@ -62,7 +62,6 @@ import org.vortikal.repository.search.Searcher;
 import org.vortikal.repository.search.query.AndQuery;
 import org.vortikal.repository.search.query.OrQuery;
 import org.vortikal.repository.search.query.Query;
-import org.vortikal.repository.search.query.SearchFilterFlags;
 import org.vortikal.repository.search.query.TermOperator;
 import org.vortikal.repository.search.query.TypeTermQuery;
 import org.vortikal.repository.search.query.UriPrefixQuery;
@@ -226,7 +225,7 @@ public class TagsReportingComponent {
         // Set up index search
         Search search = new Search();
         if (RequestContext.getRequestContext().isPreviewUnpublished()) {
-            search.removeFilterFlag(SearchFilterFlags.FILTER_RESOURCES_IN_UNPUBLISHED_COLLECTIONS);
+            search.removeFilterFlag(Search.FilterFlag.UNPUBLISHED_COLLECTIONS);
         }
         search.setQuery(masterScopeQuery);
         search.setSorting(null);

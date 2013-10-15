@@ -52,7 +52,6 @@ import org.vortikal.repository.search.Search;
 import org.vortikal.repository.search.query.AndQuery;
 import org.vortikal.repository.search.query.OrQuery;
 import org.vortikal.repository.search.query.Query;
-import org.vortikal.repository.search.query.SearchFilterFlags;
 import org.vortikal.repository.search.query.TermOperator;
 import org.vortikal.repository.search.query.TypeTermQuery;
 import org.vortikal.repository.search.query.UriDepthQuery;
@@ -355,7 +354,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
 
         Search search = new Search();
         if (RequestContext.getRequestContext().isPreviewUnpublished()) {
-            search.removeFilterFlag(SearchFilterFlags.FILTER_RESOURCES_IN_UNPUBLISHED_COLLECTIONS);
+            search.removeFilterFlag(Search.FilterFlag.UNPUBLISHED_COLLECTIONS);
         }
         search.setSorting(null);
         search.setQuery(q);

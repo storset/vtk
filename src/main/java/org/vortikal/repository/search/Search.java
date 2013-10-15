@@ -35,7 +35,6 @@ import java.util.EnumSet;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.search.query.DumpQueryTreeVisitor;
 import org.vortikal.repository.search.query.Query;
-import org.vortikal.repository.search.query.SearchFilterFlags;
 
 /**
  * Specifies a search on repository resources with a hard limit on how many
@@ -89,14 +88,13 @@ public final class Search {
     private Sorting sorting;
     private int limit = DEFAULT_LIMIT;
     private int cursor = 0;
-    private EnumSet<SearchFilterFlags> filterFlags;
+    private EnumSet<FilterFlag> filterFlags;
 
     public Search() {
         SortingImpl defaultSorting = new SortingImpl();
         defaultSorting.addSortField(new TypedSortField(PropertySet.URI_IDENTIFIER));
         this.sorting = defaultSorting;
-        filterFlags = EnumSet.of(SearchFilterFlags.FILTER_RESOURCES_IN_UNPUBLISHED_COLLECTIONS,
-                SearchFilterFlags.FILTER_UNPUBLISHED_RESOURCES);
+        filterFlags = getAllFilterFlags();
     }
 
     public int getCursor() {
@@ -203,21 +201,45 @@ public final class Search {
         hash = 47 * hash + (this.propertySelect != null ? this.propertySelect.hashCode() : 0);
         hash = 47 * hash + (this.query != null ? this.query.hashCode() : 0);
         hash = 47 * hash + (this.sorting != null ? this.sorting.hashCode() : 0);
-        hash = 47 * hash + (this.filterFlags.contains(SearchFilterFlags.FILTER_UNPUBLISHED_RESOURCES) ? 1 : 0);
-        hash = 47 * hash
-                + (this.filterFlags.contains(SearchFilterFlags.FILTER_RESOURCES_IN_UNPUBLISHED_COLLECTIONS) ? 1 : 0);
+        hash = 47 * hash + (this.filterFlags.contains(FilterFlag.UNPUBLISHED) ? 1 : 0);
+        hash = 47 * hash + (this.filterFlags.contains(FilterFlag.UNPUBLISHED_COLLECTIONS) ? 1 : 0);
         hash = 47 * hash + this.limit;
         hash = 47 * hash + this.cursor;
         return hash;
     }
 
-    public boolean hasFilterFlag(SearchFilterFlags flag) {
-        return filterFlags.contains(flag);
+    public boolean hasFilterFlag(FilterFlag... flags) {
+        for (FilterFlag flag : flags) {
+            if (!filterFlags.contains(flag))
+                return false;
+        }
+        return true;
     }
 
-    public Search removeFilterFlag(SearchFilterFlags filterFlag) {
-        filterFlags.remove(filterFlag);
+    public Search removeFilterFlag(FilterFlag... flags) {
+        for (FilterFlag flag : flags) {
+            filterFlags.remove(flag);
+        }
         return this;
     }
 
+    public Search removeAllFilterFlags() {
+        filterFlags.remove(getAllFilterFlags());
+        return this;
+    }
+
+    public Search addFilterFlagg(FilterFlag... flags) {
+        for (FilterFlag flag : flags) {
+            filterFlags.add(flag);
+        }
+        return this;
+    }
+
+    private EnumSet<FilterFlag> getAllFilterFlags() {
+        return EnumSet.of(FilterFlag.UNPUBLISHED_COLLECTIONS, FilterFlag.UNPUBLISHED);
+    }
+
+    public enum FilterFlag {
+        UNPUBLISHED, UNPUBLISHED_COLLECTIONS;
+    }
 }

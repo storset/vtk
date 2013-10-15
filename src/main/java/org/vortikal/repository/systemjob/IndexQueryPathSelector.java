@@ -46,7 +46,6 @@ import org.vortikal.repository.search.Search;
 import org.vortikal.repository.search.Searcher;
 import org.vortikal.repository.search.Sorting;
 import org.vortikal.repository.search.query.Query;
-import org.vortikal.repository.search.query.SearchFilterFlags;
 import org.vortikal.security.SecurityContext;
 
 /**
@@ -80,7 +79,7 @@ public class IndexQueryPathSelector implements PathSelector {
         search.setSorting(sort);
         search.setLimit(this.limit);
         if(!useDefaultExcludes){
-            search.removeFilterFlag(SearchFilterFlags.FILTER_RESOURCES_IN_UNPUBLISHED_COLLECTIONS);
+            search.removeAllFilterFlags();
         }
         search.setPropertySelect(PropertySelect.NONE);
         ResultSet results = this.searcher.execute(token, search);

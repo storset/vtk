@@ -61,7 +61,7 @@ import org.vortikal.repository.search.query.OrQuery;
 import org.vortikal.repository.search.query.PropertyExistsQuery;
 import org.vortikal.repository.search.query.PropertyTermQuery;
 import org.vortikal.repository.search.query.Query;
-import org.vortikal.repository.search.query.SearchFilterFlags;
+import org.vortikal.repository.search.Search.FilterFlag;
 import org.vortikal.repository.search.query.TermOperator;
 import org.vortikal.repository.search.query.UriPrefixQuery;
 import org.vortikal.web.service.URL;
@@ -311,7 +311,7 @@ public class BrokenLinksReport extends DocumentReporter {
         // Published (true|false)
         String published = request.getParameter(FILTER_PUBLISHED_PARAM_NAME);
         if (currentResource.getProperty(unpublishedCollectionPropDef) != null) {
-            search.removeFilterFlag(SearchFilterFlags.FILTER_UNPUBLISHED_RESOURCES);
+            search.removeFilterFlag(Search.FilterFlag.UNPUBLISHED);
             PropertyTermQuery ptq = null;
             if ("false".equals(published)) {
                 ptq = new PropertyTermQuery(this.publishedPropDef, "true", TermOperator.NE);
@@ -321,7 +321,7 @@ public class BrokenLinksReport extends DocumentReporter {
             topLevelQ.add(ptq);
         } else if (published != null && "false".equals(published)) {
             // ONLY those NOT published
-            search.removeFilterFlag(SearchFilterFlags.FILTER_UNPUBLISHED_RESOURCES);
+            search.removeFilterFlag(Search.FilterFlag.UNPUBLISHED);
             PropertyTermQuery ptq = new PropertyTermQuery(this.publishedPropDef, "true", TermOperator.NE);
             topLevelQ.add(ptq);
         } 

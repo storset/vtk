@@ -55,7 +55,6 @@ import org.vortikal.repository.search.SortingImpl;
 import org.vortikal.repository.search.query.AndQuery;
 import org.vortikal.repository.search.query.OrQuery;
 import org.vortikal.repository.search.query.Query;
-import org.vortikal.repository.search.query.SearchFilterFlags;
 import org.vortikal.repository.search.query.UriPrefixQuery;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
@@ -121,7 +120,7 @@ public abstract class FilteredCollectionListingController implements ListingCont
         Search search = new Search();
 
         if (RequestContext.getRequestContext().isPreviewUnpublished()) {
-            search.removeFilterFlag(SearchFilterFlags.FILTER_RESOURCES_IN_UNPUBLISHED_COLLECTIONS);
+            search.removeFilterFlag(Search.FilterFlag.UNPUBLISHED_COLLECTIONS);
         }
 
         UriPrefixQuery uriQuery = new UriPrefixQuery(collection.getURI().toString(), false);

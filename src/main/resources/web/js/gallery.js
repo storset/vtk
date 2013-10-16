@@ -92,14 +92,13 @@
     // Fullscreen toggle interaction
     wrp.on("click", "a.toggle-fullscreen", function (e) {
       $("html").toggleClass("fullscreen-gallery");
+      isFullscreen = $("html").hasClass("fullscreen-gallery");
       wrp.parents().toggleClass("fullwidth").toggle();
-      if(!$("html").hasClass("fullscreen-gallery")) {
-        isFullscreen = false;
+      if(!isFullscreen) {
         widthProp = "width";
         heightProp = "height";
         resizeToggleFullscreen();
       } else {
-        isFullscreen = true;
         widthProp = "fullWidth";
         heightProp = "fullHeight";
         if(!wrp.find("> .fullscreen-gallery-topline").length) {

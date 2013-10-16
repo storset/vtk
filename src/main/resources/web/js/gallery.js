@@ -42,7 +42,7 @@
     var wrapperContainer = wrapper + " " + container;
     var wrapperContainerLink = wrapperContainer + " a" + container + "-link";
     var wrapperThumbsLinks = wrapper + " li a";
-    var wrapperNav = container + "-nav"
+    var wrapperNav = container + "-nav";
     
     // Cache containers and image HTML with src as hash
     var wrpContainer = $(wrapperContainer);

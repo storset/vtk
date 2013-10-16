@@ -124,6 +124,27 @@
       e.stopPropagation();
       e.preventDefault();
     });
+    
+    
+    $(window).on("resize", function(e) {
+      console.log("sdff");
+      for(var key in images) {
+        var image = images[key];
+        var dimsFull = windowScaleFullDims(image.fullWidthOrig, image.fullHeightOrig);
+        image.fullWidth = dimsFull[0];
+        image.fullHeight = dimsFull[1];
+      }
+      if(isFullscreen) {
+        var loadedImages = $("a" + container + "-link img");
+        var src = $("a" + container + "-link.active-full-image")[0].href;
+        var width = resizeContainers(src);
+        $(wrapperContainer + "-description").css("width", (width - 30) + "px");
+        for(var i = 0, len = loadedImages.length; i < len; i++) {
+          loadedImages[i].style.width = images[loadedImages[i].src][widthProp] + "px";
+          loadedImages[i].style.height = images[loadedImages[i].src][heightProp] + "px";
+        }
+      }
+    });
 
     // Generate markup for rest of images
     var imgs = this,
@@ -268,6 +289,32 @@
         wrpThumbsLinks.filter(":not(.active)").find("img").stop().fadeTo(0, settings.fadedThumbsOutOpacity);
       }
     }
+
+    function cacheGenerateLinkImage(src, image, link) {
+      images[src] = {};
+      // Find image width and height "precalculated" from Vortex (properties)
+      for(var i = 0, len = imageUrlsToBePrefetched.length; i < len; i++) {
+        var dims = imageUrlsToBePrefetched[i];
+        if(dims.url === src) break;
+      }
+      images[src].width = parseInt(dims.width, 10);
+      images[src].height = parseInt(dims.height, 10);
+      images[src].fullWidthOrig = parseInt(dims.fullWidth.replace(/[^\d]*/g, ""), 10);
+      images[src].fullHeightOrig = parseInt(dims.fullHeight.replace(/[^\d]*/g, ""), 10);
+      var dimsFull = windowScaleFullDims(images[src].fullWidthOrig, images[src].fullHeightOrig);
+      images[src].fullWidth = dimsFull[0];
+      images[src].fullHeight = dimsFull[1];
+      // HTML encode quotes in alt and title if not already encoded
+      var alt = image.attr("alt");
+      var title = image.attr("title");
+      images[src].alt = alt ? alt.replace(/\'/g, "&#39;").replace(/\"/g, "&quot;") : null;
+      images[src].title = title ? title.replace(/\'/g, "&#39;").replace(/\"/g, "&quot;") : null;
+      // Add description
+      var desc = "";
+      if (images[src].title) desc += "<p class='" + container.substring(1) + "-title'>" + images[src].title + "</p>";
+      if (images[src].alt)   desc += images[src].alt;
+      images[src].desc = desc;
+    }
     
     function resizeContainers(src) {
       // Min 150x100px containers
@@ -288,28 +335,25 @@
     function centerDimension(thumb, tDim, tCDim, cssProperty) { // Center thumbDimension in thumbContainerDimension
       thumb.css(cssProperty, ((tDim > tCDim) ? ((tDim - tCDim) / 2) * -1 : (tDim < tCDim) ? (tCDim - tDim) / 2 : 0) + "px");
     }
-
-    function cacheGenerateLinkImage(src, image, link) {
-      images[src] = {};
-      // Find image width and height "precalculated" from Vortex (properties)
-      for(var i = 0, len = imageUrlsToBePrefetched.length; i < len; i++) {
-        var dims = imageUrlsToBePrefetched[i];
-        if(dims.url === src) break;
+  
+    function windowScaleFullDims(w, h) {
+      var gcdVal = gcd(w, h);
+      var aspectRatioOver = w/gcdVal;
+      var aspectRatioUnder = h/gcdVal;
+      var winWidth = $(window).width();
+      var winHeight = $(window).height();
+      if(w > winWidth || h > winHeight) {
+        if(w >= h) {
+          return [winWidth, Math.round(winWidth / (aspectRatioOver / aspectRatioUnder))];
+        } else {
+          return [Math.round(winHeight * (aspectRatioOver / aspectRatioUnder)), winHeight];
+        }
+      } else {
+        return [w, h];
       }
-      images[src].width = parseInt(dims.width, 10);
-      images[src].height = parseInt(dims.height, 10);
-      images[src].fullWidth = parseInt(dims.fullWidth.replace(/[^\d]*/g, ""), 10);
-      images[src].fullHeight = parseInt(dims.fullHeight.replace(/[^\d]*/g, ""), 10);
-      // HTML encode quotes in alt and title if not already encoded
-      var alt = image.attr("alt");
-      var title = image.attr("title");
-      images[src].alt = alt ? alt.replace(/\'/g, "&#39;").replace(/\"/g, "&quot;") : null;
-      images[src].title = title ? title.replace(/\'/g, "&#39;").replace(/\"/g, "&quot;") : null;
-      // Add description
-      var desc = "";
-      if (images[src].title) desc += "<p class='" + container.substring(1) + "-title'>" + images[src].title + "</p>";
-      if (images[src].alt)   desc += images[src].alt;
-      images[src].desc = desc;
+    }
+    function gcd(a, b) {
+      return (b === 0) ? a : gcd (b, a%b);
     }
   };
 })(jQuery);

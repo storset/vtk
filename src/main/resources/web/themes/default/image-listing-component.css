@@ -245,6 +245,7 @@ html.fullscreen-gallery .fullwidth {
   padding: 0 !important;
   border: none !important;
   background: transparent !important;
+  min-width: 0 !important;
 }
 
 html.fullscreen-gallery body.fullwidth {

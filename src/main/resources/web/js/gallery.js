@@ -112,15 +112,7 @@
         wrp.prepend(link.remove());
         window.scrollTo(0, 0);
       }
-      var loadedImages = $("a" + container + "-link img");
-      var src = $("a" + container + "-link.active-full-image")[0].href;
-      for(var i = 0, len = loadedImages.length; i < len; i++) {
-        loadedImages[i].style.width = images[loadedImages[i].src][widthProp] + "px";
-        loadedImages[i].style.height = images[loadedImages[i].src][heightProp] + "px";
-      }
-      var width = resizeContainers(src);
-      $(wrapperContainer + "-description").css("width", (width - 30) + "px");
-      
+      resizeToggleFullscreen();
       e.stopPropagation();
       e.preventDefault();
     });
@@ -134,14 +126,7 @@
         image.fullHeight = dimsFull[1];
       }
       if(isFullscreen) {
-        var loadedImages = $("a" + container + "-link img");
-        var src = $("a" + container + "-link.active-full-image")[0].href;
-        var width = resizeContainers(src);
-        $(wrapperContainer + "-description").css("width", (width - 30) + "px");
-        for(var i = 0, len = loadedImages.length; i < len; i++) {
-          loadedImages[i].style.width = images[loadedImages[i].src][widthProp] + "px";
-          loadedImages[i].style.height = images[loadedImages[i].src][heightProp] + "px";
-        }
+        resizeToggleFullscreen();
       }
     });
 
@@ -324,6 +309,16 @@
       wrpNav.css("width", width + "px");
       wrpContainer.css("width", width + "px");
       return width;
+    }
+    
+    function resizeToggleFullscreen() {
+      var loadedImages = $("a" + container + "-link img");
+      var src = $("a" + container + "-link.active-full-image")[0].href;
+      for(var i = 0, len = loadedImages.length; i < len; i++) {
+        loadedImages[i].style.width = images[loadedImages[i].src][widthProp] + "px";
+        loadedImages[i].style.height = images[loadedImages[i].src][heightProp] + "px";
+      }
+      $(wrapperContainer + "-description").css("width", (resizeContainers(src) - 30) + "px");
     }
 
     function centerThumbnailImage(thumb, link) {

@@ -52,7 +52,7 @@
         wrpThumbsLinks = $(wrapper + " li a"), wrpNav = $(container + "-nav"),
         wrpNavNextPrev = wrpNav.find("a"), wrpNavNext = wrpNavNextPrev.filter(".next"),
         wrpNavPrev = wrpNavNextPrev.filter(".prev"), wrpNavNextPrevSpans = wrpNavNextPrev.find("span"),
-        images = {}, isFullscreen = false,
+        images = {}, imageUrlsToBePrefetchedLen = imageUrlsToBePrefetched.length - 1, isFullscreen = false,
         widthProp = "width", heightProp = "height";
     
     // Init first active image
@@ -107,36 +107,22 @@
           wrp.prepend("<div class='fullscreen-gallery-topline'><a href='javascript:void(0);' class='toggle-fullscreen'>" + closeFullscreen + "</a></div>");
         }
         window.scrollTo(0, 0);
-        for(var key in images) {
-          var image = images[key];
-          var dimsFull = windowScaleFullDims(image.fullWidthOrig, image.fullHeightOrig, encodeURIComponent(key).replace(/(%|\.)/gim, ""));
-          image.fullWidth = dimsFull[0];
-          image.fullHeight = dimsFull[1];
-        }
-        resizeToggleFullscreen();
+        resizeFullscreen();
       }    
       e.stopPropagation();
       e.preventDefault();
     });
     
-    // Scale full width image/containers according to window width/height
+    // Fullscreen resize
     $(window).resize($.throttle(250, function () {
       if(isFullscreen) {
-        for(var key in images) {
-          var image = images[key];
-          var dimsFull = windowScaleFullDims(image.fullWidthOrig, image.fullHeightOrig, encodeURIComponent(key).replace(/(%|\.)/gim, ""));
-          image.fullWidth = dimsFull[0];
-          image.fullHeight = dimsFull[1];
-        }
-        resizeToggleFullscreen();
+        resizeFullscreen();
       }
     }));
 
     // Generate markup for rest of images
-    var imgs = this,
-        centerThumbnailImageFunc = centerThumbnailImage, 
-        cacheGenerateLinkImageFunc = cacheGenerateLinkImage,
-        link2, image2;
+    var imgs = this, centerThumbnailImageFunc = centerThumbnailImage, 
+        cacheGenerateLinkImageFunc = cacheGenerateLinkImage, link2, image2;
     for(var j = 0, len2 = imgs.length; j < len2; j++) {
       link2 = $(imgs[j]);
       image2 = link2.find("img.vrtx-thumbnail-image");
@@ -145,41 +131,12 @@
     }
     
     // Prefetch current, next and prev full images in the background
-    var imageUrlsToBePrefetchedLen = imageUrlsToBePrefetched.length - 1,
-    errorFullImage = function() {
-      $(imgs).filter("[href^='" + this.src + "']").closest("a")
-             .append("<span class='loading-image loading-image-error'><p>" + loadImageErrorMsg + "</p></span>");
-    },
-    loadImage = function(src) {
-      var id = encodeURIComponent(src).replace(/(%|\.)/gim, "");
-      if($("a#" + id).length) return;
-      $($.parseHTML("<div id='" + id + "-description' class='" + container.substring(1) + "-description" + (!images[src].desc ? " empty-description" : "") + "' style='display: none; width: " + (images[src].width - 30) + "px'><a href='javascript:void(0);' class='toggle-fullscreen minimized'>" + showFullscreen + "</a>" + images[src].desc + "</div>")).insertBefore(wrapper + "-thumbs");
-      wrpContainer.append("<a id='" + id + "' style='display: none' href='" + src + "' class='" + container.substring(1) + "-link'>" +
-                            "<img src='" + src + "' alt='" + images[src].alt + "' style='width: " + images[src][widthProp] + "px; height: " + images[src][heightProp] + "px;' />" +
-                          "</a>");
-    },
-    prefetchCurrentNextPrevImage = function() {
-      var active = wrpThumbsLinks.filter(".active"),
-          activeIdx = active.parent().index() - 1,
-          activeSrc = active.find(".vrtx-thumbnail-image")[0].src.split("?")[0],
-          i = 0;
-      loadImage(activeSrc);
-      var loadNextPrevImages = setTimeout(function() {
-        var activeIdxPlus1 = activeIdx + 1, activeIdxMinus1 = activeIdx - 1;
-        var src = imageUrlsToBePrefetched[(i === 0) ? ( activeIdxPlus1 > imageUrlsToBePrefetchedLen ? 0 :  activeIdxPlus1)   // Next, first, prev or last
-                                                    : (activeIdxMinus1 < 0 ? imageUrlsToBePrefetchedLen : activeIdxMinus1)].url;
-        loadImage(src);
-        if(++i < 2) {
-          setTimeout(arguments.callee, settings.loadNextPrevImagesInterval);
-        }
-      }, settings.loadNextPrevImagesInterval);
-    };
-    
     prefetchCurrentNextPrevImage();
     
     wrp.removeClass("loading");
   
     return imgs; /* Make chainable */
+    
     
     function navigate(elm) {
       var img = elm.find("img.vrtx-thumbnail-image");
@@ -215,6 +172,35 @@
           e.preventDefault();
         }
       }
+    }
+    
+    function loadImage(src) {
+      var id = encodeURIComponent(src).replace(/(%|\.)/gim, "");
+      if($("a#" + id).length) return;
+      var description = "<div id='" + id + "-description' class='" + container.substring(1) + "-description" + (!images[src].desc ? " empty-description" : "") + "' style='display: none; width: " + (images[src].width - 30) + "px'>" +
+                          "<a href='javascript:void(0);' class='toggle-fullscreen minimized'>" + showFullscreen + "</a>" + images[src].desc
+                      + "</div>";
+      $($.parseHTML(description)).insertBefore(wrapper + "-thumbs");
+      wrpContainer.append("<a id='" + id + "' style='display: none' href='" + src + "' class='" + container.substring(1) + "-link'>" +
+                            "<img src='" + src + "' alt='" + images[src].alt + "' style='width: " + images[src][widthProp] + "px; height: " + images[src][heightProp] + "px;' />" +
+                          "</a>");
+    }
+    
+    function prefetchCurrentNextPrevImage() {
+      var active = wrpThumbsLinks.filter(".active"),
+          activeIdx = active.parent().index() - 1,
+          activeSrc = active.find(".vrtx-thumbnail-image")[0].src.split("?")[0],
+          i = 0;
+      loadImage(activeSrc);
+      var loadNextPrevImages = setTimeout(function() {
+        var activeIdxPlus1 = activeIdx + 1, activeIdxMinus1 = activeIdx - 1;
+        var src = imageUrlsToBePrefetched[(i === 0) ? ( activeIdxPlus1 > imageUrlsToBePrefetchedLen ? 0 :  activeIdxPlus1)   // Next, first, prev or last
+                                                    : (activeIdxMinus1 < 0 ? imageUrlsToBePrefetchedLen : activeIdxMinus1)].url;
+        loadImage(src);
+        if(++i < 2) {
+          setTimeout(arguments.callee, settings.loadNextPrevImagesInterval);
+        }
+      }, settings.loadNextPrevImagesInterval);
     }
 
     function showImageCrossFade(current, active) {
@@ -317,17 +303,18 @@
       }
       resizeContainers(src);
     }
-
-    function centerThumbnailImage(thumb, link) {
-      centerDimension(thumb, thumb.width(), link.width(), "marginLeft"); // Horizontal dimension
-      centerDimension(thumb, thumb.height(), link.height(), "marginTop"); // Vertical dimension
-    }
-
-    function centerDimension(thumb, tDim, tCDim, cssProperty) { // Center thumbDimension in thumbContainerDimension
-      thumb.css(cssProperty, ((tDim > tCDim) ? ((tDim - tCDim) / 2) * -1 : (tDim < tCDim) ? (tCDim - tDim) / 2 : 0) + "px");
+    
+    function resizeFullscreen() {
+      for(var key in images) {
+        var image = images[key];
+        var dimsFull = calculateFullscreenImageDimensions(image.fullWidthOrig, image.fullHeightOrig, encodeURIComponent(key).replace(/(%|\.)/gim, ""));
+        image.fullWidth = dimsFull[0];
+        image.fullHeight = dimsFull[1];
+      }
+      resizeToggleFullscreen();
     }
   
-    function windowScaleFullDims(w, h, id) {
+    function calculateFullscreenImageDimensions(w, h, id) {
       var gcdVal = gcd(w, h);
       var aspectRatioOver = w/gcdVal;
       var aspectRatioUnder = h/gcdVal;
@@ -355,6 +342,15 @@
     
     function gcd(a, b) {
       return (b === 0) ? a : gcd (b, a%b);
+    }
+
+    function centerThumbnailImage(thumb, link) {
+      centerDimension(thumb, thumb.width(), link.width(), "marginLeft"); // Horizontal dimension
+      centerDimension(thumb, thumb.height(), link.height(), "marginTop"); // Vertical dimension
+    }
+
+    function centerDimension(thumb, tDim, tCDim, cssProperty) { // Center thumbDimension in thumbContainerDimension
+      thumb.css(cssProperty, ((tDim > tCDim) ? ((tDim - tCDim) / 2) * -1 : (tDim < tCDim) ? (tCDim - tDim) / 2 : 0) + "px");
     }
   };
 })(jQuery);

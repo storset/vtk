@@ -93,7 +93,8 @@
         heightProp = "fullHeight";
         if(!wrp.find("> .fullscreen-gallery-topline").length) {
           var link = $(this);
-          wrp.prepend("<div class='fullscreen-gallery-topline'><a href='javascript:void(0);' class='toggle-fullscreen'>" + closeFullscreen + "</a></div>");
+          var extraHtml = typeof vrtxSGalleryFullscreenAddExtraHtml === "function" ? vrtxSGalleryFullscreenAddExtraHtml() : "";
+          wrp.prepend("<div class='fullscreen-gallery-topline'><a href='javascript:void(0);' class='toggle-fullscreen'>" + extraHtml + closeFullscreen + "</a></div>");
         }
         window.scrollTo(0, 0);
         resizeFullscreen();

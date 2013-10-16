@@ -127,7 +127,6 @@
     
     
     $(window).on("resize", function(e) {
-      console.log("sdff");
       for(var key in images) {
         var image = images[key];
         var dimsFull = windowScaleFullDims(image.fullWidthOrig, image.fullHeightOrig);

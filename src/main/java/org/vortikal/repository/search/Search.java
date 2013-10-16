@@ -67,9 +67,6 @@ import org.vortikal.repository.search.query.Query;
  * @param selectedProperties
  *            The {@link PropertySelecy properties} queried for.
  * 
- * @param removeFilterFlag
- *            Marks which resources to include/exclude in result. Default set to
- *            remove all unpublished resources from the result.
  * 
  * @return A <code>ResultSet</code> containing a subset of the results.
  * 
@@ -208,6 +205,11 @@ public final class Search {
         return hash;
     }
 
+    /*
+     * Checks which filter flags that are configured for the current search.
+     * 
+     * @return true if all listed flags are set for the search object.
+     */
     public boolean hasFilterFlag(FilterFlag... flags) {
         for (FilterFlag flag : flags) {
             if (!filterFlags.contains(flag))
@@ -216,6 +218,10 @@ public final class Search {
         return true;
     }
 
+    /*
+     * Remove search filter flags. Default set to remove all unpublished
+     * resources from the result.
+     */
     public Search removeFilterFlag(FilterFlag... flags) {
         for (FilterFlag flag : flags) {
             filterFlags.remove(flag);
@@ -223,11 +229,16 @@ public final class Search {
         return this;
     }
 
+    /* Removes all filter flags from search. */
     public Search removeAllFilterFlags() {
         filterFlags.remove(getAllFilterFlags());
         return this;
     }
 
+    /*
+     * Set Serach filter flags. Default set to remove all unpublished resources
+     * from the result.
+     */
     public Search addFilterFlagg(FilterFlag... flags) {
         for (FilterFlag flag : flags) {
             filterFlags.add(flag);

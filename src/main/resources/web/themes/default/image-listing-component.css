@@ -185,7 +185,7 @@ a.toggle-fullscreen {
   display: inline-block;
   float: right;
   background: url(images/preview-maximize.png) no-repeat 100% 3px;
-  padding: 2px 24px 11px 0;
+  padding: 2px 24px 1px 0;
   text-decoration: none !important;
 }
 
@@ -195,7 +195,6 @@ a.toggle-fullscreen:hover {
 
 a.toggle-fullscreen.minimized {
   background: url(images/preview-minimize.png) no-repeat 100% 3px;
-  padding-bottom: 1px;
 }
 
 a.active-full-image {
@@ -219,16 +218,6 @@ html.fullscreen-gallery a.toggle-fullscreen {
   display: block !important;
 }
 
-html.fullscreen-gallery .vrtx-image-listing-include-container-description {
-  border: none;
-  background: transparent !important;
-}
-
-html.fullscreen-gallery .vrtx-image-listing-include .vrtx-image-listing-include-container img {
-  max-height: none;
-  height: auto !important;
-}
-
 html.fullscreen-gallery .vrtx-image-listing-include-container,
 html.fullscreen-gallery .vrtx-image-listing-include-container-nav,
 html.fullscreen-gallery .vrtx-image-listing-include .vrtx-image-listing-include-container img,
@@ -248,7 +237,18 @@ html.fullscreen-gallery .fullwidth {
   min-width: 0 !important;
 }
 
-html.fullscreen-gallery body.fullwidth {
-  padding: 20px !important;
-  width: auto !important;
+html.fullscreen-gallery .vrtx-image-listing-include .vrtx-image-listing-include-container img {
+  max-height: none;
+}
+
+html.fullscreen-gallery a.toggle-fullscreen {
+  padding-bottom: 11px;
+  margin-right: 38px;
+}
+
+html.fullscreen-gallery .vrtx-image-listing-include-container-description {
+  border: none;
+  background: transparent !important;
+  padding-left: 38px;
+  padding-right: 38px;
 }

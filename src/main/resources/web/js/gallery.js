@@ -125,8 +125,8 @@
       e.preventDefault();
     });
     
-    
-    $(window).on("resize", function(e) {
+    // Scale full width image/containers according to window width/height
+    $(window).on("resize", function(e) { // TODO: throttle
       for(var key in images) {
         var image = images[key];
         var dimsFull = windowScaleFullDims(image.fullWidthOrig, image.fullHeightOrig);

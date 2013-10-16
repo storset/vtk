@@ -278,7 +278,6 @@
 
     function cacheGenerateLinkImage(src, image, link) {
       images[src] = {};
-      
       // Find image width and height "precalculated" from Vortex (properties)
       for(var i = 0, len = imageUrlsToBePrefetched.length; i < len; i++) {
         var dims = imageUrlsToBePrefetched[i];
@@ -288,7 +287,6 @@
       images[src].height = parseInt(dims.height, 10);
       images[src].fullWidth = parseInt(dims.fullWidth.replace(/[^\d]*/g, ""), 10);
       images[src].fullHeight = parseInt(dims.fullHeight.replace(/[^\d]*/g, ""), 10);
-
       // HTML encode quotes in alt and title if not already encoded
       var alt = image.attr("alt");
       var title = image.attr("title");

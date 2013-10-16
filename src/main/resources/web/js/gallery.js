@@ -32,14 +32,10 @@
 (function ($) {
   $.fn.vrtxSGallery = function (wrapper, container, maxWidth, options) {
     settings = jQuery.extend({ // Default animation settings
-      fadeInOutTime: 250,
-      fadedOutOpacity: 0,
-      fadeThumbsInOutTime: 250,
-      fadedThumbsOutOpacity: 0.6,
-      fadeNavInOutTime: 250,
-      fadedInActiveNavOpacity: 0.5,
-      fadedNavOpacity: 0.2,
-      loadNextPrevImagesInterval: 20
+      fadeInOutTime: 250, fadedOutOpacity: 0,
+      fadeThumbsInOutTime: 250, fadedThumbsOutOpacity: 0.6,
+      fadeNavInOutTime: 250, fadedInActiveNavOpacity: 0.5,
+      fadedNavOpacity: 0.2, loadNextPrevImagesInterval: 20
     }, options || {});
     
     var wrp = $(wrapper);

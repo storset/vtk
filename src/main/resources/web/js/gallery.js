@@ -48,29 +48,20 @@
     wrp.find(container + "-pure-css").addClass(container.substring(1));
     wrp.find(container + "-nav-pure-css").addClass(container.substring(1) + "-nav");
     wrp.find(wrapper + "-thumbs-pure-css").addClass(wrapper.substring(1) + "-thumbs");
-
-    var wrapperContainer = wrapper + " " + container;
-    var wrapperContainerLink = wrapperContainer + " a" + container + "-link";
-
-    // Cache containers and image HTML with src as hash
-    var wrpContainer = $(wrapperContainer);
-    var wrpContainerLink = $(wrapperContainer + " a" + container + "-link");
-    var wrpThumbsLinks = $(wrapper + " li a");
-    var wrpNav = $(container + "-nav");
-    var wrpNavNextPrev = wrpNav.find("a");
-    var wrpNavNext = wrpNavNextPrev.filter(".next");
-    var wrpNavPrev = wrpNavNextPrev.filter(".prev");
-    var wrpNavNextPrevSpans = wrpNavNextPrev.find("span");
     
-    var images = {};
-    var isFullscreen = false;
-    var widthProp = "width";
-    var heightProp = "height";
+    // Cache containers and image HTML with src as hash
+    var wrapperContainer = wrapper + " " + container;
+    var wrapperContainerLink = wrapperContainer + " a" + container + "-link",
+        wrpContainer = $(wrapperContainer), wrpContainerLink = $(wrapperContainer + " a" + container + "-link"),
+        wrpThumbsLinks = $(wrapper + " li a"), wrpNav = $(container + "-nav"),
+        wrpNavNextPrev = wrpNav.find("a"), wrpNavNext = wrpNavNextPrev.filter(".next"),
+        wrpNavPrev = wrpNavNextPrev.filter(".prev"), wrpNavNextPrevSpans = wrpNavNextPrev.find("span"),
+        images = {}, isFullscreen = false,
+        widthProp = "width", heightProp = "height";
     
     // Init first active image
     var firstImage = wrpThumbsLinks.filter(".active");
     if(!firstImage.length) return this; 
-    
     showImage(firstImage.find("img.vrtx-thumbnail-image"), true);
     $(wrpNavNextPrev, wrpNavNextPrevSpans).fadeTo(0, 0);
     

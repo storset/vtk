@@ -208,25 +208,25 @@
       }
     }
     
-    function crossFade(current, active) {
+    function showImageCrossFade(current, active) {
       current.wrap("<div class='over' />").fadeTo(settings.fadeInOutTime, settings.fadedOutOpacity, function () {
         $(this).unwrap().removeClass("active-full-image").hide();
       });
       active.addClass("active-full-image").fadeTo(0, 0).fadeTo(settings.fadeInOutTime, 1);
     }
     
-    function hideShow(current, active) {
+    function showImageToggle(current, active) {
       current.removeClass("active-full-image");
       active.addClass("active-full-image");
     }
     
-    function show(current, active, init) {
+    function showImageStrategy(current, active, init) {
       if(init) {
         active.addClass("active-full-image");
       } else if(settings.fadeInOutTime > 0 ) {
-        crossFade(current, active);
+        howImageCrossFade(current, active);
       } else {
-        hideShow(current, active);
+        showImageToggle(current, active);
       }
     }
     
@@ -240,14 +240,14 @@
       var active = $("a#" + activeId);
       var current = $("a." + container.substring(1) + "-link.active-full-image");
       if(active.length) {
-        show(current, active, init);
+        showImageStrategy(current, active, init);
       } else {
         var waitForActive = setTimeout(function() {
           active = $("a#" + activeId);
           if(!active.length) {
             setTimeout(arguments.callee, 5);
           } else {
-            show(current, active, init);
+            showImageStrategy(current, active, init);
           }
         }, 5);
       }

@@ -119,6 +119,12 @@
         resizeFullscreen();
       }
     }));
+    $(window).bind('orientationchange', function () {
+      resizeFullscreen();
+    });
+    $(document).on('triggerResponsiveDesign', function(e, eventInfo) { 
+      resizeFullscreen();
+    });
 
     // Generate markup for rest of images
     var imgs = this, centerThumbnailImageFunc = centerThumbnailImage, 

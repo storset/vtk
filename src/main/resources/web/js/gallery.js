@@ -114,9 +114,9 @@
       }
       var loadedImages = $("a" + container + "-link img");
       var src = $("a" + container + "-link.active-full-image")[0].href;
-      for(var i = 0, len = loadedImages.length; i < len; i++) {
-        loadedImages[i].style.width = images[loadedImages[i].src][widthProp] + "px";
-        loadedImages[i].style.height = images[loadedImages[i].src][heightProp] + "px";
+      for(var j = 0, len = loadedImages.length; j < len; j++) {
+        loadedImages[j].style.width = images[loadedImages[j].src][widthProp] + "px";
+        loadedImages[j].style.height = images[loadedImages[j].src][heightProp] + "px";
       }
       var width = resizeContainers(src);
       $(wrapperContainer + "-description").css("width", (width - 30) + "px");
@@ -291,8 +291,8 @@
     function cacheGenerateLinkImage(src, image, link) {
       images[src] = {};
       // Find image width and height "precalculated" from Vortex (properties)
-      for(var i = 0, len = imageUrlsToBePrefetched.length; i < len; i++) {
-        var dims = imageUrlsToBePrefetched[i];
+      for(var j = 0, len = imageUrlsToBePrefetched.length; j < len; j++) {
+        var dims = imageUrlsToBePrefetched[j];
         if(dims.url === src) break;
       }
       images[src].width = parseInt(dims.width, 10);

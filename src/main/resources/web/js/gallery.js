@@ -83,7 +83,7 @@
     wrp.on("click", "a.toggle-fullscreen", function (e) {
       $("html").toggleClass("fullscreen-gallery");
       isFullscreen = $("html").hasClass("fullscreen-gallery");
-      wrp.parents().toggleClass("fullwidth").toggle();
+      wrp.parents().toggleClass("fullwidth");
       if(!isFullscreen) {
         widthProp = "width";
         heightProp = "height";

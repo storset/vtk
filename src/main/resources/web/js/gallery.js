@@ -153,7 +153,7 @@
       var loadNextPrevImages = setTimeout(function() {
         var activeIdxPlus1 = activeIdx + 1, activeIdxMinus1 = activeIdx - 1;
         var src = imageUrlsToBePrefetched[(j === 0) ? ( activeIdxPlus1 > imageUrlsToBePrefetchedLen ? 0 :  activeIdxPlus1)   // Next, first, prev or last
-                                                    : (activeIdxMinus1 < 0 ? imageUrlsToBePrefetchedLen : activeIdxMinus1)];
+                                                    : (activeIdxMinus1 < 0 ? imageUrlsToBePrefetchedLen : activeIdxMinus1)].url;
         loadImage(src);
         if(++j < 2) {
           setTimeout(arguments.callee, settings.loadNextPrevImagesInterval);
@@ -278,13 +278,17 @@
 
     function cacheGenerateLinkImage(src, image, link) {
       images[src] = {};
+      
       // Find image width and height "precalculated" from Vortex (properties)
-      var widths = link.find("span.hiddenWidth").text().split(",");
-      var heights = link.find("span.hiddenHeight").text().split(",");
-      images[src].width = parseInt(widths[0], 10);
-      images[src].height = parseInt(heights[0], 10);
-      images[src].fullWidth = parseInt(widths[1].replace(/[^\d]*/g, ""), 10);
-      images[src].fullHeight = parseInt(heights[1].replace(/[^\d]*/g, ""), 10);
+      for(var i = 0, len = imageUrlsToBePrefetched.length; i < len; i++) {
+        var dims = imageUrlsToBePrefetched[i];
+        if(dims.url === src) break;
+      }
+      images[src].width = parseInt(dims.width, 10);
+      images[src].height = parseInt(dims.height, 10);
+      images[src].fullWidth = parseInt(dims.fullWidth.replace(/[^\d]*/g, ""), 10);
+      images[src].fullHeight = parseInt(dims.fullHeight.replace(/[^\d]*/g, ""), 10);
+
       // HTML encode quotes in alt and title if not already encoded
       var alt = image.attr("alt");
       var title = image.attr("title");

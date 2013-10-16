@@ -141,17 +141,10 @@
 	              <span><img class="vrtx-full-image" src="${url?html}" alt='${description}' /></span> 
 	            </#if>
 	          </#if>
-	          <script type="text/javascript"><!--
-	            <#if imageListing != "">
-	              imageUrlsToBePrefetched.push('${url?split("?")[0]?html}');
-	            <#else>
-	              imageUrlsToBePrefetched.push('${url?html}');
-	            </#if>
-	          // -->
-	          </script>
-	          
-	            <span class="hiddenWidth" style="display: none">${width},${fullWidth}</span>
-	            <span class="hiddenHeight" style="display: none">${height},${fullHeight}</span>
+	            <script type="text/javascript"><!--
+	              imageUrlsToBePrefetched.push({url: <#if imageListing != "">'${url?split("?")[0]?html}'<#else>'${url?html}'</#if>, width: '${width}', height: '${height}', fullWidth: '${fullWidth}', fullHeight: '${fullHeight}'});
+	            // -->
+	            </script>
 	          </a>
 	        
 	        

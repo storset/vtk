@@ -184,7 +184,7 @@
 a.toggle-fullscreen {
   display: inline-block;
   float: right;
-  background: url(images/preview-maximize.png) no-repeat 100% 3px;
+  background: url(images/preview-minimize.png) no-repeat 100% 3px;
   padding: 2px 24px 1px 0;
   text-decoration: none !important;
 }
@@ -194,9 +194,10 @@ a.toggle-fullscreen:hover {
 }
 
 a.toggle-fullscreen.minimized {
-  background: url(images/preview-minimize.png) no-repeat 100% 3px;
+  background: url(images/preview-maximize.png) no-repeat 100% 3px;
 }
 
+.active-description,
 a.active-full-image {
   display: block !important;
 }
@@ -212,24 +213,17 @@ html.fullscreen-gallery .vrtx-image-listing-include-container-nav,
 html.fullscreen-gallery .vrtx-image-listing-include-container-nav *,
 html.fullscreen-gallery .vrtx-image-listing-include-container a.active-full-image,
 html.fullscreen-gallery .vrtx-image-listing-include-container a.active-full-image img,
-html.fullscreen-gallery .vrtx-image-listing-include-container-description,
-html.fullscreen-gallery .vrtx-image-listing-include-container-description *,
-html.fullscreen-gallery a.toggle-fullscreen {
+html.fullscreen-gallery .vrtx-image-listing-include-container-description.active-description,
+html.fullscreen-gallery .vrtx-image-listing-include-container-description * {
   display: block !important;
 }
 
-html.fullscreen-gallery .vrtx-image-listing-include-container,
-html.fullscreen-gallery .vrtx-image-listing-include-container-nav,
-html.fullscreen-gallery .vrtx-image-listing-include .vrtx-image-listing-include-container img,
-html.fullscreen-gallery .vrtx-image-listing-include-container-description {
-  max-width: 100%;
-}
-
+html.fullscreen-gallery .vrtx-image-listing-include,
 html.fullscreen-gallery,
 html.fullscreen-gallery .fullwidth {
   display: block !important;
   width: 100% !important;
-  height: 100% !important;
+  height: auto !important;
   margin: 0 !important;
   padding: 0 !important;
   border: none !important;
@@ -241,14 +235,33 @@ html.fullscreen-gallery .vrtx-image-listing-include .vrtx-image-listing-include-
   max-height: none;
 }
 
-html.fullscreen-gallery a.toggle-fullscreen {
+.vrtx-image-listing-include .fullscreen-gallery-topline,
+html.fullscreen-gallery .vrtx-image-listing-include a.toggle-fullscreen.minimized {
+  display: none !important;
+}
+
+.vrtx-image-listing-include .fullscreen-gallery-topline {
+  overflow: hidden;
+  padding: 15px 50px 20px;
+}
+
+html.fullscreen-gallery .vrtx-image-listing-include .fullscreen-gallery-topline,
+html.fullscreen-gallery .vrtx-image-listing-include .fullscreen-gallery-topline * {
+  display: block !important;
+}
+
+html.fullscreen-gallery .vrtx-image-listing-include > a.toggle-fullscreen {
   padding-bottom: 11px;
-  margin-right: 38px;
 }
 
 html.fullscreen-gallery .vrtx-image-listing-include-container-description {
   border: none;
   background: transparent !important;
-  padding-left: 38px;
-  padding-right: 38px;
+  margin: 0 !important;
+  padding: 15px 50px 25px !important;
+  width: auto !important;
+}
+
+html.fullscreen-gallery .vrtx-image-listing-include-container-description.empty-description {
+  display: none !important;
 }

@@ -19,6 +19,16 @@
  *
  */
 
+/*
+ * jQuery throttle / debounce - v1.1 - 3/7/2010
+ * http://benalman.com/projects/jquery-throttle-debounce-plugin/
+ * 
+ * Copyright (c) 2010 "Cowboy" Ben Alman
+ * Dual licensed under the MIT and GPL licenses.
+ * http://benalman.com/about/license/
+ */
+(function(b,c){var $=b.jQuery||b.Cowboy||(b.Cowboy={}),a;$.throttle=a=function(e,f,j,i){var h,d=0;if(typeof f!=="boolean"){i=j;j=f;f=c}function g(){var o=this,m=+new Date()-d,n=arguments;function l(){d=+new Date();j.apply(o,n)}function k(){h=c}if(i&&!h){l()}h&&clearTimeout(h);if(i===c&&m>e){l()}else{if(f!==true){h=setTimeout(i?k:l,i===c?e-m:e)}}}if($.guid){g.guid=j.guid=j.guid||$.guid++}return g};$.debounce=function(d,e,f){return f===c?a(d,e,false):a(d,f,e!==false)}})(this);
+    
 (function ($) {
   $.fn.vrtxSGallery = function (wrapper, container, maxWidth, options) {
     settings = jQuery.extend({ // Default animation settings
@@ -94,41 +104,46 @@
     
     // Fullscreen toggle interaction
     wrp.on("click", "a.toggle-fullscreen", function (e) {
-      var link = $(this);
-      link.toggleClass("minimized");
       $("html").toggleClass("fullscreen-gallery");
       wrp.parents().toggleClass("fullwidth").toggle();
-      if(link.hasClass("minimized")) {
+      if(!$("html").hasClass("fullscreen-gallery")) {
         isFullscreen = false;
         widthProp = "width";
         heightProp = "height";
-        link.text(showFullscreen); 
-        $(wrapperContainer + "-description").prepend(link.remove());
+        resizeToggleFullscreen();
       } else {
         isFullscreen = true;
         widthProp = "fullWidth";
         heightProp = "fullHeight";
-        link.text(closeFullscreen);
-        wrp.prepend(link.remove());
+        if(!wrp.find("> .fullscreen-gallery-topline").length) {
+          var link = $(this);
+          wrp.prepend("<div class='fullscreen-gallery-topline'><a href='javascript:void(0);' class='toggle-fullscreen'>" + closeFullscreen + "</a></div>");
+        }
         window.scrollTo(0, 0);
-      }
-      resizeToggleFullscreen();
+        for(var key in images) {
+          var image = images[key];
+          var dimsFull = windowScaleFullDims(image.fullWidthOrig, image.fullHeightOrig, encodeURIComponent(key).replace(/(%|\.)/gim, ""));
+          image.fullWidth = dimsFull[0];
+          image.fullHeight = dimsFull[1];
+        }
+        resizeToggleFullscreen();
+      }    
       e.stopPropagation();
       e.preventDefault();
     });
     
     // Scale full width image/containers according to window width/height
-    $(window).on("resize", function(e) { // TODO: throttle
-      for(var key in images) {
-        var image = images[key];
-        var dimsFull = windowScaleFullDims(image.fullWidthOrig, image.fullHeightOrig);
-        image.fullWidth = dimsFull[0];
-        image.fullHeight = dimsFull[1];
-      }
+    $(window).resize($.throttle(250, function () {
       if(isFullscreen) {
+        for(var key in images) {
+          var image = images[key];
+          var dimsFull = windowScaleFullDims(image.fullWidthOrig, image.fullHeightOrig, encodeURIComponent(key).replace(/(%|\.)/gim, ""));
+          image.fullWidth = dimsFull[0];
+          image.fullHeight = dimsFull[1];
+        }
         resizeToggleFullscreen();
       }
-    });
+    }));
 
     // Generate markup for rest of images
     var imgs = this,
@@ -151,6 +166,7 @@
     loadImage = function(src) {
       var id = encodeURIComponent(src).replace(/(%|\.)/gim, "");
       if($("a#" + id).length) return;
+      $($.parseHTML("<div id='" + id + "-description' class='" + container.substring(1) + "-description" + (!images[src].desc ? " empty-description" : "") + "' style='display: none; width: " + (images[src].width - 30) + "px'><a href='javascript:void(0);' class='toggle-fullscreen minimized'>" + showFullscreen + "</a>" + images[src].desc + "</div>")).insertBefore(wrapper + "-thumbs");
       wrpContainer.append("<a id='" + id + "' style='display: none' href='" + src + "' class='" + container.substring(1) + "-link'>" +
                             "<img src='" + src + "' alt='" + images[src].alt + "' style='width: " + images[src][widthProp] + "px; height: " + images[src][heightProp] + "px;' />" +
                           "</a>");
@@ -198,7 +214,7 @@
           wrpNavNext.stop().fadeTo(settings.fadeNavInOutTime, settings.fadedInActiveNavOpacity);
         }
       } else if (e.type == "mouseout") {
-        wrp.find("a.prev, a.prev span, a.next, a.next span").stop().fadeTo(settings.fadeNavInOutTime, 0);
+        $(wrpNavNextPrev, wrpNavNextPrevSpans).stop().fadeTo(settings.fadeNavInOutTime, 0);
       } else {
         var activeThumb = wrpThumbsLinks.filter(".active").parent();
         var elm = isNext ? activeThumb.next("li") : activeThumb.prev("li");
@@ -226,7 +242,9 @@
       active.addClass("active-full-image");
     }
     
-    function showImageStrategy(current, active, init) {
+    function showImageDescStrategy(current, active, currentDesc, activeDesc, init) {
+      currentDesc.removeClass("active-description");
+      activeDesc.addClass("active-description");
       if(init) {
         active.addClass("active-full-image");
       } else if(settings.fadeInOutTime > 0 ) {
@@ -243,30 +261,23 @@
         cacheGenerateLinkImage(src, image, image.parent());
       }
       var activeId = encodeURIComponent(src).replace(/(%|\.)/gim, "");
+      
       var active = $("a#" + activeId);
-      var current = $("a." + container.substring(1) + "-link.active-full-image");
+      var current = $("a" + container + "-link.active-full-image");
+      var currentDesc = $(container + "-description.active-description");
       if(active.length) {
-        showImageStrategy(current, active, init);
+        showImageDescStrategy(current, active, currentDesc, $("#" + activeId + "-description"), init);
       } else {
         var waitForActive = setTimeout(function() {
           active = $("a#" + activeId);
           if(!active.length) {
             setTimeout(arguments.callee, 5);
           } else {
-            showImageStrategy(current, active, init);
+            showImageDescStrategy(current, active, currentDesc, $("#" + activeId + "-description"), init);
           }
         }, 5);
       }
-
-      // Description
-      var fullscreenToggleLink = !isFullscreen ? "<a href='javascript:void(0);' class='toggle-fullscreen minimized'>" + showFullscreen + "</a>" : "";
-      var width = resizeContainers(src);
-      var description = $(wrapperContainer + "-description");
-      if(!description.length) {
-        $($.parseHTML("<div class='" + container.substring(1) + "-description' style='width: " + (width - 30) + "px'>" + fullscreenToggleLink + images[src].desc + "</div>")).insertAfter(wrapperContainer);
-      } else {
-        description.html(fullscreenToggleLink + images[src].desc).css("width", (width - 30) + "px");
-      }
+      resizeContainers(src);
       if(!init) {
         wrpThumbsLinks.filter(".active").removeClass("active").find("img").stop().fadeTo(settings.fadeThumbsInOutTime, settings.fadedThumbsOutOpacity);
       } else {
@@ -285,9 +296,6 @@
       images[src].height = parseInt(dims.height, 10);
       images[src].fullWidthOrig = parseInt(dims.fullWidth.replace(/[^\d]*/g, ""), 10);
       images[src].fullHeightOrig = parseInt(dims.fullHeight.replace(/[^\d]*/g, ""), 10);
-      var dimsFull = windowScaleFullDims(images[src].fullWidthOrig, images[src].fullHeightOrig);
-      images[src].fullWidth = dimsFull[0];
-      images[src].fullHeight = dimsFull[1];
       // HTML encode quotes in alt and title if not already encoded
       var alt = image.attr("alt");
       var title = image.attr("title");
@@ -308,7 +316,9 @@
       $(wrpNavNextPrev, wrpNavNextPrevSpans).css("height", height + "px");
       wrpNav.css("width", width + "px");
       wrpContainer.css("width", width + "px");
-      return width;
+      if(!isFullscreen) {
+        $(wrapperContainer + "-description").css("width", (width - 30)); 
+      }
     }
     
     function resizeToggleFullscreen() {
@@ -318,7 +328,7 @@
         loadedImages[i].style.width = images[loadedImages[i].src][widthProp] + "px";
         loadedImages[i].style.height = images[loadedImages[i].src][heightProp] + "px";
       }
-      $(wrapperContainer + "-description").css("width", (resizeContainers(src) - 30) + "px");
+      resizeContainers(src);
     }
 
     function centerThumbnailImage(thumb, link) {
@@ -330,22 +340,32 @@
       thumb.css(cssProperty, ((tDim > tCDim) ? ((tDim - tCDim) / 2) * -1 : (tDim < tCDim) ? (tCDim - tDim) / 2 : 0) + "px");
     }
   
-    function windowScaleFullDims(w, h) {
+    function windowScaleFullDims(w, h, id) {
       var gcdVal = gcd(w, h);
       var aspectRatioOver = w/gcdVal;
       var aspectRatioUnder = h/gcdVal;
       var winWidth = $(window).width();
-      var winHeight = $(window).height();
+      var desc = $("#" + id + "-description");
+      var descHeight = !desc.hasClass("empty-description") ? desc.outerHeight(true) : 0;
+      var winHeight = $(window).height() - (descHeight + $(".fullscreen-gallery-topline").outerHeight(true)) - 20;
       if(w > winWidth || h > winHeight) {
-        if(w >= h) {
-          return [winWidth, Math.round(winWidth / (aspectRatioOver / aspectRatioUnder))];
+        if(h > winHeight) {
+          var newDim = [Math.round(winHeight * (aspectRatioOver / aspectRatioUnder)), winHeight];
+          if(newDim[0] > winWidth) {
+            var newDim = [winWidth, Math.round(winWidth / (aspectRatioOver / aspectRatioUnder))];
+          }
         } else {
-          return [Math.round(winHeight * (aspectRatioOver / aspectRatioUnder)), winHeight];
+          var newDim = [winWidth, Math.round(winWidth / (aspectRatioOver / aspectRatioUnder))];
+          if(newDim[1] > winHeight) {
+            var newDim = [Math.round(winHeight * (aspectRatioOver / aspectRatioUnder)), winHeight];
+          }
         }
+        return [newDim[0], newDim[1]];
       } else {
         return [w, h];
       }
     }
+    
     function gcd(a, b) {
       return (b === 0) ? a : gcd (b, a%b);
     }

@@ -64,7 +64,7 @@
     showImage(firstImage.find("img.vrtx-thumbnail-image"), true);
     $(wrpNavNextPrev, wrpNavNextPrevSpans).fadeTo(0, 0);
     
-    // Thumbs
+    // Thumbs interaction
     wrp.on("mouseover mouseout click", "li a", function (e) {
       var elm = $(this);
       if (e.type == "mouseover" || e.type == "mouseout") {
@@ -76,7 +76,7 @@
       }
     });
 
-    // Navigation handlers
+    // Navigation interaction
     $(document).keydown(function (e) {
       if (e.keyCode == 39) {
         nextPrevNavigate(e, 1);
@@ -92,7 +92,7 @@
       nextPrevNavigate(e, -1);
     });
     
-    // Fullscreen
+    // Fullscreen toggle interaction
     wrp.on("click", "a.toggle-fullscreen", function (e) {
       var link = $(this);
       link.toggleClass("minimized");
@@ -114,9 +114,9 @@
       }
       var loadedImages = $("a" + container + "-link img");
       var src = $("a" + container + "-link.active-full-image")[0].href;
-      for(var j = 0, len = loadedImages.length; j < len; j++) {
-        loadedImages[j].style.width = images[loadedImages[j].src][widthProp] + "px";
-        loadedImages[j].style.height = images[loadedImages[j].src][heightProp] + "px";
+      for(var i = 0, len = loadedImages.length; i < len; i++) {
+        loadedImages[i].style.width = images[loadedImages[i].src][widthProp] + "px";
+        loadedImages[i].style.height = images[loadedImages[i].src][heightProp] + "px";
       }
       var width = resizeContainers(src);
       $(wrapperContainer + "-description").css("width", (width - 30) + "px");
@@ -128,12 +128,13 @@
     // Generate markup for rest of images
     var imgs = this,
         centerThumbnailImageFunc = centerThumbnailImage, 
-        cacheGenerateLinkImageFunc = cacheGenerateLinkImage, link, image;
-    for(var i = 0, len = imgs.length; i < len; i++) {
-      link = $(imgs[i]);
-      image = link.find("img.vrtx-thumbnail-image");
-      centerThumbnailImageFunc(image, link);
-      cacheGenerateLinkImageFunc(image.attr("src").split("?")[0], image, link);
+        cacheGenerateLinkImageFunc = cacheGenerateLinkImage,
+        link2, image2;
+    for(var j = 0, len2 = imgs.length; j < len2; j++) {
+      link2 = $(imgs[j]);
+      image2 = link2.find("img.vrtx-thumbnail-image");
+      centerThumbnailImageFunc(image2, link2);
+      cacheGenerateLinkImageFunc(image2.attr("src").split("?")[0], image2, link2);
     }
     
     // Prefetch current, next and prev full images in the background
@@ -153,14 +154,14 @@
       var active = wrpThumbsLinks.filter(".active"),
           activeIdx = active.parent().index() - 1,
           activeSrc = active.find(".vrtx-thumbnail-image")[0].src.split("?")[0],
-          j = 0;
+          i = 0;
       loadImage(activeSrc);
       var loadNextPrevImages = setTimeout(function() {
         var activeIdxPlus1 = activeIdx + 1, activeIdxMinus1 = activeIdx - 1;
-        var src = imageUrlsToBePrefetched[(j === 0) ? ( activeIdxPlus1 > imageUrlsToBePrefetchedLen ? 0 :  activeIdxPlus1)   // Next, first, prev or last
+        var src = imageUrlsToBePrefetched[(i === 0) ? ( activeIdxPlus1 > imageUrlsToBePrefetchedLen ? 0 :  activeIdxPlus1)   // Next, first, prev or last
                                                     : (activeIdxMinus1 < 0 ? imageUrlsToBePrefetchedLen : activeIdxMinus1)].url;
         loadImage(src);
-        if(++j < 2) {
+        if(++i < 2) {
           setTimeout(arguments.callee, settings.loadNextPrevImagesInterval);
         }
       }, settings.loadNextPrevImagesInterval);
@@ -207,7 +208,7 @@
         }
       }
     }
-    
+
     function showImageCrossFade(current, active) {
       current.wrap("<div class='over' />").fadeTo(settings.fadeInOutTime, settings.fadedOutOpacity, function () {
         $(this).unwrap().removeClass("active-full-image").hide();
@@ -291,8 +292,8 @@
     function cacheGenerateLinkImage(src, image, link) {
       images[src] = {};
       // Find image width and height "precalculated" from Vortex (properties)
-      for(var j = 0, len = imageUrlsToBePrefetched.length; j < len; j++) {
-        var dims = imageUrlsToBePrefetched[j];
+      for(var i = 0, len = imageUrlsToBePrefetched.length; i < len; i++) {
+        var dims = imageUrlsToBePrefetched[i];
         if(dims.url === src) break;
       }
       images[src].width = parseInt(dims.width, 10);

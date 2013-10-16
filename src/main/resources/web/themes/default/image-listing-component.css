@@ -37,7 +37,6 @@
   border: 2px solid #ccc;
 }
 
-/* Unobtrusive JavaScript */
 .vrtx-image-listing-include ul li a {
   display: block;
   width: 107px;
@@ -56,35 +55,8 @@
   -ms-interpolation-mode : bicubic;
 }
 
-/* Unobtrusive JavaScript */
 .vrtx-image-listing-include ul.vrtx-image-listing-include-thumbs-pure-css {
-  width: 258px;
-  position: relative;
-}
-
-.vrtx-image-listing-include ul.vrtx-image-listing-include-thumbs {
   width: auto;
-  position: static;
-}
-
-.vrtx-image-listing-include ul.vrtx-image-listing-include-thumbs-pure-css li a span {
-  display: block;
-  position: absolute;
-  left: -2000px;
-  visibility: hidden;
-}
-
-.vrtx-image-listing-include ul.vrtx-image-listing-include-thumbs-pure-css li a:hover span {
-  left: 260px;
-  visibility: visible;
-  z-index: 99999;
-}
-
-.vrtx-image-listing-include ul.vrtx-image-listing-include-thumbs-pure-css li a span img {
-  height: auto;
-  max-width: 250px;
-  max-height: 300px;
-  margin-top: -112px;
 }
 
 .vrtx-image-listing-include ul.vrtx-image-listing-include-thumbs li a span {
@@ -119,7 +91,6 @@
 .vrtx-image-listing-include .vrtx-image-listing-include-container-pure-css {
   display: none;
 }
-/* ^ Unobtrusive JavaScript */
 
 .vrtx-image-listing-include .vrtx-image-listing-include-container {
   display: block;
@@ -140,7 +111,6 @@
   margin: 0 auto;
 }
 
-/* Unobtrusive JavaScript */
 .vrtx-image-listing-include-container-nav-pure-css {
   display: none;	
 }

@@ -41,14 +41,12 @@
 
     var wrapperContainer = wrapper + " " + container;
     var wrapperContainerLink = wrapperContainer + " a" + container + "-link";
-    var wrapperThumbsLinks = wrapper + " li a";
-    var wrapperNav = container + "-nav";
-    
+
     // Cache containers and image HTML with src as hash
     var wrpContainer = $(wrapperContainer);
     var wrpContainerLink = $(wrapperContainer + " a" + container + "-link");
-    var wrpThumbsLinks = $(wrapperThumbsLinks);
-    var wrpNav = $(wrapperNav);
+    var wrpThumbsLinks = $(wrapper + " li a");
+    var wrpNav = $(container + "-nav");
     var wrpNavNextPrev = wrpNav.find("a");
     var wrpNavNext = wrpNavNextPrev.filter(".next");
     var wrpNavPrev = wrpNavNextPrev.filter(".prev");

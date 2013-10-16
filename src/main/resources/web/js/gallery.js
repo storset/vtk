@@ -108,9 +108,6 @@
         resizeFullscreen();
       }
     }));
-    $(window).bind('orientationchange', function () {
-      resizeFullscreen();
-    });
     $.vrtxSGalleryResize = function() {
       resizeFullscreen();
     };

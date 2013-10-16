@@ -235,6 +235,21 @@ html.fullscreen-gallery .vrtx-image-listing-include .vrtx-image-listing-include-
   max-height: none;
 }
 
+html.fullscreen-gallery .vrtx-image-listing-include .vrtx-image-listing-include-container-nav a.prev,
+html.fullscreen-gallery .vrtx-image-listing-include .vrtx-image-listing-include-container-nav a.next,
+html.fullscreen-gallery .vrtx-image-listing-include .vrtx-image-listing-include-container-nav span.prev-transparent-block,
+html.fullscreen-gallery .vrtx-image-listing-include .vrtx-image-listing-include-container-nav span.next-transparent-block {
+  width: 55px;
+}
+
+html.fullscreen-gallery .vrtx-image-listing-include .vrtx-image-listing-include-container-nav a.prev {
+  background-image: url(icons/prev-gallery-big.png);
+}
+
+html.fullscreen-gallery .vrtx-image-listing-include .vrtx-image-listing-include-container-nav a.next {
+  background-image: url(icons/next-gallery-big.png);
+}
+
 .vrtx-image-listing-include .fullscreen-gallery-topline,
 html.fullscreen-gallery .vrtx-image-listing-include a.toggle-fullscreen.minimized {
   display: none !important;
@@ -242,7 +257,7 @@ html.fullscreen-gallery .vrtx-image-listing-include a.toggle-fullscreen.minimize
 
 .vrtx-image-listing-include .fullscreen-gallery-topline {
   overflow: hidden;
-  padding: 15px 50px 20px;
+  padding: 15px 55px 20px;
 }
 
 html.fullscreen-gallery .vrtx-image-listing-include .fullscreen-gallery-topline,
@@ -258,7 +273,7 @@ html.fullscreen-gallery .vrtx-image-listing-include-container-description {
   border: none;
   background: transparent !important;
   margin: 0 !important;
-  padding: 15px 50px 25px !important;
+  padding: 15px 55px 25px !important;
   width: auto !important;
 }
 

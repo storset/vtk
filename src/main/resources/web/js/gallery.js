@@ -42,11 +42,18 @@
     var wrapperContainer = wrapper + " " + container;
     var wrapperContainerLink = wrapperContainer + " a" + container + "-link";
     var wrapperThumbsLinks = wrapper + " li a";
+    var wrapperNav = container + "-nav"
     
     // Cache containers and image HTML with src as hash
     var wrpContainer = $(wrapperContainer);
     var wrpContainerLink = $(wrapperContainer + " a" + container + "-link");
     var wrpThumbsLinks = $(wrapperThumbsLinks);
+    var wrpNav = $(wrapperNav);
+    var wrpNavNextPrev = wrpNav.find("a");
+    var wrpNavNext = wrpNavNextPrev.filter(".next");
+    var wrpNavPrev = wrpNavNextPrev.filter(".prev");
+    var wrpNavNextPrevSpans = wrpNavNextPrev.find("span");
+    
     var images = {};
     var isFullscreen = false;
     var widthProp = "width";
@@ -57,7 +64,7 @@
     if(!firstImage.length) return this; 
     
     showImage(firstImage.find("img.vrtx-thumbnail-image"), true);
-    wrp.find("a.prev, a.prev span, a.next, a.next span").fadeTo(0, 0);
+    $(wrpNavNextPrev, wrpNavNextPrevSpans).fadeTo(0, 0);
     
     // Thumbs
     wrp.on("mouseover mouseout click", "li a", function (e) {
@@ -178,9 +185,14 @@
     function nextPrevNavigate(e, dir) {
       var isNext = dir > 0;	
       if (e.type == "mouseover") {
-        wrp.find("a.next span, a.prev span").stop().fadeTo(settings.fadeNavInOutTime, settings.fadedNavOpacity);   /* XXX: some filtering instead below */
-        wrp.find("a." + (isNext ? "next" : "prev")).stop().fadeTo(settings.fadeNavInOutTime, 1);
-        wrp.find("a." + (isNext ? "prev" : "next")).stop().fadeTo(settings.fadeNavInOutTime, settings.fadedInActiveNavOpacity);
+        wrpNavNextPrevSpans.stop().fadeTo(settings.fadeNavInOutTime, settings.fadedNavOpacity);   /* XXX: some filtering instead below */
+        if(isNext) {
+          wrpNavNext.stop().fadeTo(settings.fadeNavInOutTime, 1);
+          wrpNavPrev.stop().fadeTo(settings.fadeNavInOutTime, settings.fadedInActiveNavOpacity);
+        } else {
+          wrpNavPrev.stop().fadeTo(settings.fadeNavInOutTime, 1);
+          wrpNavNext.stop().fadeTo(settings.fadeNavInOutTime, settings.fadedInActiveNavOpacity);
+        }
       } else if (e.type == "mouseout") {
         wrp.find("a.prev, a.prev span, a.next, a.next span").stop().fadeTo(settings.fadeNavInOutTime, 0);
       } else {
@@ -262,8 +274,10 @@
       // Min 150x100px containers
       var width = Math.max(images[src][widthProp], 150);
       var height = Math.max(images[src][heightProp], 100);
-      $(wrapperContainer + "-nav a, " + wrapperContainer + "-nav span, " + wrapperContainerLink).css("height", height + "px");
-      $(wrapperContainer + ", " + wrapperContainer + "-nav").css("width", width + "px");
+      $(wrapperContainerLink).css("height", height + "px");
+      $(wrpNavNextPrev, wrpNavNextPrevSpans).css("height", height + "px");
+      wrpNav.css("width", width + "px");
+      wrpContainer.css("width", width + "px");
       return width;
     }
 

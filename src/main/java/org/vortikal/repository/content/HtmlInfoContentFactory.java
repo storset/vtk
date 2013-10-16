@@ -30,6 +30,7 @@
  */
 package org.vortikal.repository.content;
 
+import java.io.InputStream;
 import java.util.Stack;
 
 import org.vortikal.text.html.TagsoupParserFactory;
@@ -50,7 +51,7 @@ public class HtmlInfoContentFactory implements ContentFactory {
 
     @Override
     public Object getContentRepresentation(Class<?> clazz,
-            InputStreamWrapper content) throws Exception {
+            InputStream content) throws Exception {
         HtmlInfo map = new HtmlInfo();
         org.ccil.cowan.tagsoup.Parser parser = TagsoupParserFactory.newParser(true);
         Handler handler = new Handler(map);

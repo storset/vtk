@@ -85,7 +85,7 @@ public class ContentRepresentationRegistry implements ApplicationContextAware, I
         }
     }
 
-    public Object createRepresentation(Class<?> clazz, InputStreamWrapper content) throws Exception {
+    public Object createRepresentation(Class<?> clazz, InputStream content) throws Exception {
 
         ContentFactory factory = this.contentFactories.get(clazz);
 
@@ -95,9 +95,9 @@ public class ContentRepresentationRegistry implements ApplicationContextAware, I
 
         // The default representations:
         if (clazz == byte[].class) {
-            return getContentAsByteArray(content.getInputStream());
+            return getContentAsByteArray(content);
         } else if (clazz == java.nio.ByteBuffer.class) {
-            return ByteBuffer.wrap(getContentAsByteArray(content.getInputStream()));
+            return ByteBuffer.wrap(getContentAsByteArray(content));
         }
 
         throw new UnsupportedContentRepresentationException("Content type '" + clazz.getName() + "' not supported.");

@@ -42,9 +42,9 @@ public class AudioFileContentFactory implements ContentFactory {
         return new Class<?>[] {AudioFileFormat.class};
     }
     
-    public Object getContentRepresentation(Class<?> clazz,  InputStreamWrapper content)
+    public Object getContentRepresentation(Class<?> clazz,  InputStream content)
         throws Exception {
-        InputStream is = new BufferedInputStream(content.getInputStream());
+        InputStream is = new BufferedInputStream(content);
         AudioFileFormat audioFileFormat = AudioSystem.getAudioFileFormat(is);
         return audioFileFormat;
     }

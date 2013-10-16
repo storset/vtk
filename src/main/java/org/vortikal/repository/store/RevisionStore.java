@@ -37,7 +37,6 @@ import java.util.List;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceImpl;
 import org.vortikal.repository.Revision;
-import org.vortikal.repository.content.InputStreamWrapper;
 
 public interface RevisionStore {
 
@@ -51,7 +50,7 @@ public interface RevisionStore {
 
     public void delete(ResourceImpl resource, Revision revision) throws DataAccessException;
 
-    public InputStreamWrapper getContent(ResourceImpl resource, Revision revision) throws DataAccessException;
+    public InputStream getContent(ResourceImpl resource, Revision revision) throws DataAccessException;
 
     public long getContentLength(ResourceImpl resource, Revision revision) throws DataAccessException;
 

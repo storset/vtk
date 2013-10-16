@@ -64,7 +64,6 @@ import org.springframework.transaction.support.TransactionTemplate;
 import org.vortikal.repository.Revision.Type;
 import org.vortikal.repository.content.ContentImpl;
 import org.vortikal.repository.content.ContentRepresentationRegistry;
-import org.vortikal.repository.content.InputStreamWrapper;
 import org.vortikal.repository.event.ACLModificationEvent;
 import org.vortikal.repository.event.ContentModificationEvent;
 import org.vortikal.repository.event.InheritablePropertiesModificationEvent;
@@ -300,7 +299,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             this.authorizationManager.authorizeRead(uri, principal);
         }
 
-        return this.contentStore.getInputStream(uri).getInputStream();
+        return this.contentStore.getInputStream(uri);
     }
 
     @Transactional
@@ -1922,7 +1921,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             }
 
             @Override
-            public InputStreamWrapper getInputStream(Path uri) throws DataAccessException {
+            public InputStream getInputStream(Path uri) throws DataAccessException {
                 return revisionStore.getContent(resource, revision);
             }
 

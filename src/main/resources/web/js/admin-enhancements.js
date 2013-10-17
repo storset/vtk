@@ -2216,6 +2216,7 @@ function editorInteraction(bodyId, vrtxAdm, _$) {
               title: vrtxAdm.serverFacade.errorMessages.lockStolenTitle
             });
             d.open();
+            
           } else {
             var customTitle = vrtxAdm.serverFacade.errorMessages.customTitle[xhr.status];
             var d = new VrtxMsgDialog({
@@ -3415,6 +3416,8 @@ VrtxAdmin.prototype.serverFacade = {
         async: false,
         success: function (results, status, resp) { // Exists - soneone has locked it
           msg = useStatusCodeInMsg ? serverFacade.errorMessages.s404 : "LOCKED";
+          $("#resourceMenuRight").html($($.parseHTML(results)).find("#resourceMenuRight").html());
+          vrtxAdmin.globalAsyncComplete();
         },
         error: function (xhr, textStatus) {         // Removed/moved
           msg = (useStatusCodeInMsg ? status + " - " : "") + serverFacade.errorMessages.s404;

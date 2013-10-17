@@ -95,22 +95,20 @@ public class LuceneQueryBuilderImplTest {
 
     @Test
     public void testGetSearchFilterDefaultExcludesFalseNoAcl() {
-        
-        Search search = new Search();
-        search.setUseDefaultExcludes(false);
-        search.setPreviewUnpublished(true);
-        this.assertGetSearchFilter(null, search, null);
 
+        Search search = new Search();
+        search.removeFilterFlag(Search.FilterFlag.UNPUBLISHED,
+                Search.FilterFlag.UNPUBLISHED_COLLECTIONS);
+        this.assertGetSearchFilter(null, search, null);
     }
 
     @Test
     public void testGetSearchFilterDefaultExcludesFalseAndAcl() {
-        
+
         Search search = new Search();
-        search.setUseDefaultExcludes(false);
-        search.setPreviewUnpublished(true);
-        Filter expected = dummyAclFilter;
-        this.assertGetSearchFilter(expected, search, dummyAclFilter);
+        search.removeFilterFlag(Search.FilterFlag.UNPUBLISHED,
+                Search.FilterFlag.UNPUBLISHED_COLLECTIONS);
+        this.assertGetSearchFilter(dummyAclFilter, search, dummyAclFilter);
 
     }
 
@@ -118,9 +116,7 @@ public class LuceneQueryBuilderImplTest {
     public void testGetSearchFilterDefaultExcludesNoAcl() {
 
         Search search = new Search();
-        search.setUseDefaultExcludes(true);
-        search.setPreviewUnpublished(false);
-        Filter expected = luceneQueryBuilder.buildDefaultExcludesFilter();
+        Filter expected = luceneQueryBuilder.buildUnpublishedFilter();
         expected = luceneQueryBuilder.addUnpublishedCollectionFilter(expected);
         this.assertGetSearchFilter(expected, search, null);
 
@@ -130,9 +126,7 @@ public class LuceneQueryBuilderImplTest {
     public void testGetSearchFilterDefaultExcludesAndAcl() {
 
         Search search = new Search();
-        search.setUseDefaultExcludes(true);
-        search.setPreviewUnpublished(false);
-        BooleanFilter expected = luceneQueryBuilder.buildDefaultExcludesFilter();
+        BooleanFilter expected = luceneQueryBuilder.buildUnpublishedFilter();
         expected.add(dummyAclFilter, BooleanClause.Occur.MUST);
         expected = luceneQueryBuilder.addUnpublishedCollectionFilter(expected);
         this.assertGetSearchFilter(expected, search, dummyAclFilter);
@@ -151,10 +145,9 @@ public class LuceneQueryBuilderImplTest {
         Filter actual = luceneQueryBuilder.buildSearchFilter(dummyToken, search, nullIndexReader);
 
         // Nothing more to do, requested configuration yields no filter
-        if (!search.isUseDefaultExcludes() && expectedReturnAclQuery == null) {
-            assertNull(
-                    "Filter 'actual' is supposed to be NULL when useDafaultExcludes=" + search.isUseDefaultExcludes(),
-                    actual);
+        if (!search.hasFilterFlag(Search.FilterFlag.UNPUBLISHED)
+                && expectedReturnAclQuery == null) {
+            assertNull("Filter 'actual' is supposed to be NULL", actual);
             return;
         }
 

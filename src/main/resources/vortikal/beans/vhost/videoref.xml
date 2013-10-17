@@ -47,7 +47,7 @@
   
   <bean id="mediaref.video.contentHandlingInterceptor"
        class="org.vortikal.repository.ResourceContentInterceptor">
-    <property name="videoStorageRoot" value="/home/oyvind/usit/vrtxdata/vidstor" />
+    <property name="videoStorageRoot" value="${mediaref.videoapp.videoStorageRootPath}" />
     <property name="repositoryId" value="${repositoryID}" />
     <property name="videoApiClient" ref="mediaref.video.appclient" />
   </bean>
@@ -81,7 +81,7 @@
       </bean>
     </property>
     <property name="repositoryId" value="${repositoryID}" />
-    <property name="apiEntryPoint" value="${mediaref.videoapp.apiEntryPoint}" />
+    <property name="apiBaseUrl" value="${mediaref.videoapp.apiBaseUrl}" />
   </bean>
   
 </beans>

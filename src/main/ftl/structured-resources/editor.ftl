@@ -23,8 +23,14 @@
   </#if>
   
   <script type="text/javascript"><!--
+    var DATE_PICKER_INITIALIZED = $.Deferred();
     $(window).load(function() {
-      initDatePicker(datePickerLang); // TODO: this would never run if resources hangs
+      datepickerEditor = new VrtxDatepicker({
+        language: datePickerLang,
+        after: function() {
+          DATE_PICKER_INITIALIZED.resolve();
+        }
+      });
     });
 
     $(document).ready(function() {
@@ -60,7 +66,7 @@
     function performSave() {
       var ok = validTextLengthsInEditor(false);
       if(!ok) return false; 
-      saveDateAndTimeFields(); // js/datepicker/datepicker-admin.js
+      datepickerEditor.prepareForSave(); // js/datepicker/datepicker-admin.js
       saveMultipleInputFields();
       
       /* Trim box URLs */

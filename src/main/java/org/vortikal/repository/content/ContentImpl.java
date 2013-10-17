@@ -85,7 +85,7 @@ public class ContentImpl implements Content {
             
 
             try {
-                InputStreamWrapper pw  = this.contentStore.getInputStream(uri);
+                InputStream pw  = this.contentStore.getInputStream(uri);
                 
                 //TODO: write temp file if we must ?? 
                 

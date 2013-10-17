@@ -49,12 +49,10 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.orm.ibatis.SqlMapClientCallback;
 import org.vortikal.repository.Acl;
-import org.vortikal.repository.Path;
 import org.vortikal.repository.Privilege;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceImpl;
 import org.vortikal.repository.Revision;
-import org.vortikal.repository.content.InputStreamWrapper;
 import org.vortikal.repository.store.db.AbstractSqlMapDataAccessor;
 import org.vortikal.security.Principal;
 import org.vortikal.security.Principal.Type;
@@ -209,7 +207,7 @@ public class DefaultRevisionStore extends AbstractSqlMapDataAccessor implements 
 
     
     @Override
-    public InputStreamWrapper getContent(ResourceImpl resource, Revision revision)
+    public InputStream getContent(ResourceImpl resource, Revision revision)
             throws DataAccessException {
         File revisionFile = revisionFile(resource, revision, false);
         if (!revisionFile.exists()) {
@@ -217,8 +215,7 @@ public class DefaultRevisionStore extends AbstractSqlMapDataAccessor implements 
                     + ": no file: " + revisionFile.getAbsolutePath());
         }
         try {
-            InputStream in = new FileInputStream(revisionFile);
-            return new InputStreamWrapper(in, Path.fromString(revisionFile.getAbsolutePath()));
+            return new FileInputStream(revisionFile);
         } catch (IOException e) {
             throw new DataAccessException(e);
         }

@@ -4,33 +4,62 @@
  *  API: http://api.jqueryui.com/accordion/
  *  
  *  * Requires Dejavu OOP library
- *  
- *  TODO: generalize more function updateHeader()
- *  TODO: add function for adding header populators in elem
+ *  * Requires but Lazy-loads jQuery UI library (if not defined) on open
  */
 
 var VrtxAccordionInterface = dejavu.Interface.declare({
-  $name: "VrtxAccordionInterface"
+  $name: "VrtxAccordionInterface",
+  create: function() {},
+  destroy: function() {},
+  refresh: function() {},
+  closeActiveHidden: function() {},
+  __getFieldString: function(field) {},
+  __findMultiContentMatch: function(elm) {},
+  __findSingleContentMatch: function(elm) {},
+  __headerCheckNoContentOrNoTitle: function(elm) {},
+  updateHeader: function(elem, isJson, init) {}
 });
 
 var VrtxAccordion = dejavu.Class.declare({
   $name: "VrtxAccordion",
   $implements: [VrtxAccordionInterface],
+  $constants: {
+    headerMultipleCheckClass: ".header-empty-check-and",
+    headerSingleCheckClass: ".header-empty-check-or",
+    headerPopulatorsClass: ".header-populators",
+    headerPopulatorsFallbackClass: ".header-fallback-populator",
+    headerRegexRemoveMarkup: /(<([^>]+)>|[\t\r]+)/ig,
+    headerEllipsisStart: 30
+  },
   __opts: {},
   initialize: function (opts) {
     this.__opts = opts;
   },
   create: function() {
     var accordion = this;
-    accordion.destroy(); // Destroy if already exists
-    accordion.__opts.elem.accordion({
-      header: accordion.__opts.headerSelector,
-      heightStyle: "content",
-      collapsible: true,
-      active: accordion.__opts.activeElem ? accordion.__opts.activeElem : false,
-      activate: function (e, ui) {
-        if(accordion.__opts.onActivate) accordion.__opts.onActivate(e, ui, accordion);
-      }
+    // TODO: rootUrl and jQueryUiVersion should be retrieved from Vortex config/properties somehow
+    var rootUrl = "/vrtx/__vrtx/static-resources";
+    var jQueryUiVersion = "1.10.3";
+    
+    var futureUi = $.Deferred();
+    if (typeof $.ui === "undefined") {
+      $.getScript(rootUrl + "/jquery/plugins/ui/jquery-ui-" + jQueryUiVersion + ".custom/js/jquery-ui-" + jQueryUiVersion + ".custom.min.js", function () {
+        futureUi.resolve();
+      });
+    } else {
+      futureUi.resolve();
+    }
+    $.when(futureUi).done(function() {
+      accordion.destroy(); // Destroy if already exists
+      accordion.__opts.elem.accordion({
+        header: accordion.__opts.headerSelector,
+        heightStyle: "content",
+        collapsible: true,
+        active: accordion.__opts.activeElem ? accordion.__opts.activeElem : false,
+        activate: function (e, ui) {
+          if(accordion.__opts.onActivate) accordion.__opts.onActivate(e, ui, accordion);
+        }
+      });
     });
   },
   destroy: function() {
@@ -47,67 +76,53 @@ var VrtxAccordion = dejavu.Class.declare({
       this.__opts.elem.accordion("option", "active", false);
     }
   },
-  updateHeader: function(elem, isJson, init) {
-    
-    var emptyCheckAND = function(elm) { // XXX: Make more general - assumption inputs
-      var checkAND = elm.find(".header-empty-check-and");
-      var i = checkAND.length;
-      if(i > 0) {
-        for(;i--;) {
-          var inputs = $(checkAND[i]).find("input[type='text']");
-          var j = inputs.length;
-          var allOfThem = true;
-          for(;j--;) {
-            if(inputs[j].value === "") {
-              allOfThem = false;
-              break;
-            }
-          }
-          if(allOfThem) { // Find 1 with all values - return !empty
-            return false;
-          }
-        }
-      }
-      return true;
-    };
-    
-    var emptyCheckOR = function(elm) { // XXX: Make more general - assumption CK and single
-      var checkOR = elm.find(".header-empty-check-or textarea");
-      var i = checkOR.length;
-      if(i > 0) {
-        var oneOfThem = false;
-        for(;i--;) {
-          var inputId = checkOR[i].id;
-          var str = "";
-          if (isCkEditor(inputId)) { // Check if CK
-            str = getCkValue(inputId); // Get CK content
-          }
-          if(str !== "") {
-            oneOfThem = true;
-            break;
-          }
-        }
-        if(oneOfThem) { // Find 1 with one value - return !empty
+  __getFieldString: function(field) {
+    var fieldId = field.id;
+    if (isCkEditor(fieldId)) { // Check if CK
+      var str = getCkValue(fieldId); // Get CK content
+    } else {
+      var str = field.value; // Get input text
+    }
+    return str;
+  },
+  __findMultiContentMatch: function(elm) {
+    var containers = elm.find(this.$static.headerMultipleCheckClass);
+    var i = containers.length;
+    for(;i--;) {
+      var inputs = $(containers[i]).find("input[type='text'], textarea");
+      var j = inputs.length;
+      for(;j--;) {
+        if("" === this.__getFieldString(inputs[j])) { // All need to have content for match
           return false;
         }
       }
       return true;
-    };
-    
-    var noContentOrNoTitle = function() {
-      var lang = (vrtxAdmin !== "undefined") ? vrtxAdmin.lang : $("body").attr("lang");
-      if(!emptyCheckAND(elm) || !emptyCheckOR(elm)) {
-        return (lang !== "en") ? "Ingen tittel" : "No title"; 
-      } else {
-        return (lang !== "en") ? "Intet innhold" : "No content";  
+    }
+  },
+  __findSingleContentMatch: function(elm) {
+    var inputs = elm.find(this.$static.headerSingleCheckClass + " input[type='text'], " + this.$static.headerSingleCheckClass + " textarea");
+    var i = inputs.length;
+    for(;i--;) {
+      if("" !== this.__getFieldString(inputs[i])) { // One need to have content for match
+        return true;
       }
-    };
-
+    }
+  },
+  __headerCheckNoContentOrNoTitle: function(elm) {
+    if(!this.__opts.noTitleText) {
+      var lang = (vrtxAdmin !== "undefined") ? vrtxAdmin.lang : $("body").attr("lang");
+      this.__opts.noTitleText = (lang !== "en") ? "Ingen tittel" : "No title";
+      this.__opts.noContentText = (lang !== "en") ? "Intet innhold" : "No content"; 
+    }
+    return (this.__findMultiContentMatch(elm) || this.__findSingleContentMatch(elm)) ? this.__opts.noTitleText : this.__opts.noContentText;
+  },
+  updateHeader: function(elem, isJson, init) {
     if (typeof elem.closest !== "function") elem = $(elem);
-    var elm = isJson ? elem.closest(".vrtx-json-element") : elem.closest(".vrtx-grouped");
-    if (elm.length) { // Prime header populators
+    var elm = isJson ? elem.closest(".vrtx-json-element") 
+                     : elem.closest(".vrtx-grouped"); // XXX: extract
+    if (elm.length) { // Header populators
       var str = "";
-      var fields = elm.find(".header-populators");
+      var fields = elm.find(this.$static.headerPopulatorsClass);
       if (!fields.length) return;
       for (var i = 0, len = fields.length; i < len; i++) {
         var val = fields[i].value;
@@ -115,26 +130,21 @@ var VrtxAccordion = dejavu.Class.declare({
         str += (str.length) ? ", " + val : val;
       }
       if (!str.length) { // Fallback header populator
-        var field = elm.find(".header-fallback-populator");
+        var field = elm.find(this.$static.headerPopulatorsFallbackClass);
         if (field.length) {
-          var fieldId = field.attr("id");
-          if (isCkEditor(fieldId)) { // Check if CK
-            str = getCkValue(fieldId); // Get CK content
-          } else {
-            str = field.val();
-          }
+          str = this.__getFieldString(field);
           if (field.is("textarea")) { // Remove markup and tabs
-            str = $.trim(str.replace(/(<([^>]+)>|[\t\r]+)/ig, ""));
+            str = $.trim(str.replace(this.$static.headerRegexRemoveMarkup, ""));
           }
           if (typeof str !== "undefined") {
-            if (str.length > 30) {
-              str = str.substring(0, 30) + "...";
+            if (str.length > this.$static.headerEllipsisStart) {
+              str = str.substring(0, this.$static.headerEllipsisStart) + "...";
             } else if (!str.length) {
-              str = noContentOrNoTitle();
+              str = this.__headerCheckNoContentOrNoTitle(elm);
             }
           }
         } else {
-          str = noContentOrNoTitle();
+          str = this.__headerCheckNoContentOrNoTitle(elm);
         }
       }
       var header = elm.find("> .header");

@@ -71,14 +71,19 @@ vrtxAdmin._$(document).ready(function() {
     
     vrtxAdm.cachedAppContent.on("click", "#vrtx-report-filters #vrtx-report-filters-show-hide-advanced", function(e) { // Show / hide advanced settings
       var container = _$("#vrtx-report-filters-folders-include-exclude");
+      var brokenLinksAnimation = new VrtxAnimation({
+        elem: container,
+        afterIn: function() {
+          $("#vrtx-report-filters-show-hide-advanced").text(filtersAdvancedHide + "...");
+        },
+        afterOut: function() {
+          $("#vrtx-report-filters-show-hide-advanced").text(filtersAdvancedShow + "...");
+        }
+      });
       if(container.css("display") != "none") {
-        container.slideUp(vrtxAdm.transitionSpeed, vrtxAdmin.transitionEasingSlideUp, function() {
-          _$("#vrtx-report-filters-show-hide-advanced").text(filtersAdvancedShow + "...");
-        });
+        brokenLinksAnimation.bottomUp();
       } else {
-        container.slideDown(vrtxAdm.transitionSpeed, vrtxAdmin.transitionEasingSlideDown, function() {
-          _$("#vrtx-report-filters-show-hide-advanced").text(filtersAdvancedHide + "...");
-        });
+        brokenLinksAnimation.topDown();
       }
       e.stopPropagation();
       e.preventDefault();

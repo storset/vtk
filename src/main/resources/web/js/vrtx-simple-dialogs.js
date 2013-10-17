@@ -20,6 +20,8 @@ var VrtxSimpleDialogInterface = dejavu.Interface.declare({
 var AbstractVrtxSimpleDialog = dejavu.AbstractClass.declare({
   $name: "AbstractVrtxSimpleDialog",        // Meta-attribute useful for debugging
   $implements: [VrtxSimpleDialogInterface],
+  __opts: {},
+  __dialogOpts: {},
   initialize: function(opts) {              // Constructor
       this.__opts = opts;
       this.__addDOM();
@@ -44,8 +46,6 @@ var AbstractVrtxSimpleDialog = dejavu.AbstractClass.declare({
                              };
       this.__dialogOpts = dialogOpts;
   },
-  __opts: {},
-  __dialogOpts: {},
   __generateOkCancel: function() {
     var buttons = {};
     if (this.__opts.hasOk) {
@@ -81,7 +81,7 @@ var AbstractVrtxSimpleDialog = dejavu.AbstractClass.declare({
   open: function () {
     var dialog = this;
     
-    // TODO: these should be retrieved from Vortex config/properties somehow
+    // TODO: rootUrl and jQueryUiVersion should be retrieved from Vortex config/properties somehow
     var rootUrl = "/vrtx/__vrtx/static-resources";
     var jQueryUiVersion = "1.10.3";
     
@@ -93,31 +93,7 @@ var AbstractVrtxSimpleDialog = dejavu.AbstractClass.declare({
     } else {
       futureUi.resolve();
     }
-    var futureTree = $.Deferred();
-    if (typeof $.fn.treeview !== "function" && dialog.__opts.requiresTree) {
-      $.getScript(location.protocol + "//" + location.host + rootUrl + "/jquery/plugins/jquery.treeview.js", function () {
-        $.getScript(location.protocol + "//" + location.host + rootUrl + "/jquery/plugins/jquery.treeview.async.js", function () {
-          $.getScript(location.protocol + "//" + location.host + rootUrl + "/jquery/plugins/jquery.scrollTo.min.js", function () {
-            futureTree.resolve();
-          });
-        });
-      });
-    } else {
-      futureTree.resolve();
-    }
-    var futureDatepicker = $.Deferred();
-    if (typeof initDatePicker !== "function" && dialog.__opts.requiresDatepicker) {
-      $.getScript(rootUrl + "/js/datepicker/datepicker-admin.js", function() {
-        $.getScript(rootUrl + "/jquery/plugins/ui/jquery-ui-" + jQueryUiVersion + ".custom/js/jquery.ui.datepicker-no.js", function() {
-          $.getScript(rootUrl + "/jquery/plugins/ui/jquery-ui-" + jQueryUiVersion + ".custom/js/jquery.ui.datepicker-nn.js", function() {
-            futureDatepicker.resolve(); 
-          });
-        });
-      });
-    } else {
-      futureDatepicker.resolve(); 
-    }
-    $.when(futureUi, futureTree, futureDatepicker).done(function() {
+    $.when(futureUi).done(function() {
       dialog.__opts.elm = $(dialog.__opts.selector);
       dialog.__opts.elm.dialog(dialog.__dialogOpts);
       dialog.__opts.elm.dialog("open");
@@ -164,7 +140,6 @@ var VrtxHtmlDialog = dejavu.Class.declare({
       hasCancel: opts.btnTextCancel,
       btnTextOk: opts.btnTextOk,
       btnTextCancel: opts.btnTextCancel,
-      requiresTree: opts.requiresTree,
       requiresDatepicker: opts.requiresDatepicker,
       onOpen: opts.onOpen
     });

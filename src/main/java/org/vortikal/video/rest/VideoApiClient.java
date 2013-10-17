@@ -49,7 +49,7 @@ public class VideoApiClient {
     
     private RestTemplate restTemplate;
     private String repositoryId;
-    private String apiEntryPoint;
+    private String apiBaseUrl;
 
     /**
      * Create new video object in videoapp.
@@ -132,11 +132,14 @@ public class VideoApiClient {
      * @return complete URL with API base URL prepended.
      */
     private String withBaseUrl(String rest) {
-        if (this.apiEntryPoint.endsWith("/") 
+        if (this.apiBaseUrl.endsWith("/") 
                 && rest.startsWith("/")) {
             rest = rest.substring(1);
+        } else if (! (this.apiBaseUrl.endsWith("/")
+                || rest.startsWith("/"))) {
+            rest = "/" + rest;
         }
-        return this.apiEntryPoint + rest;
+        return this.apiBaseUrl + rest;
     }
     
     @Required
@@ -150,7 +153,7 @@ public class VideoApiClient {
     }
 
     @Required
-    public void setApiEntryPoint(URI entryPointUrl) {
-        this.apiEntryPoint = entryPointUrl.toString();
+    public void setApiBaseUrl(URI baseUrl) {
+        this.apiBaseUrl = baseUrl.toString();
     }
 }

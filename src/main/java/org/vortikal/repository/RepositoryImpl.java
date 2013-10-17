@@ -64,7 +64,6 @@ import org.springframework.transaction.support.TransactionTemplate;
 import org.vortikal.repository.Revision.Type;
 import org.vortikal.repository.content.ContentImpl;
 import org.vortikal.repository.content.ContentRepresentationRegistry;
-import org.vortikal.repository.content.InputStreamWrapper;
 import org.vortikal.repository.event.ACLModificationEvent;
 import org.vortikal.repository.event.ContentModificationEvent;
 import org.vortikal.repository.event.InheritablePropertiesModificationEvent;
@@ -308,7 +307,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             return rci.interceptGetInputStream(r, this.contentStore);
         }
 
-        return this.contentStore.getInputStream(uri).getInputStream();
+        return this.contentStore.getInputStream(uri);
     }
     
 
@@ -1850,7 +1849,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
 
             // Set use default excludes to true, exclude not published and
             // unpublishedCollection resources from search
-            search.setUseDefaultExcludes(true);
 
             long before = System.currentTimeMillis();
             try {
@@ -2001,7 +1999,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             }
 
             @Override
-            public InputStreamWrapper getInputStream(Path uri) throws DataAccessException {
+            public InputStream getInputStream(Path uri) throws DataAccessException {
                 return revisionStore.getContent(resource, revision);
             }
 

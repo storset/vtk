@@ -359,9 +359,9 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
         }
         BooleanFilter bf = null;
         // Add filters for removing default excludes if requested
-        if (search.isUseDefaultExcludes()) {
-             bf = buildDefaultExcludesFilter();
-                        
+        if (search.hasFilterFlag(Search.FilterFlag.UNPUBLISHED)) {
+            bf = buildUnpublishedFilter();
+
             // Include ACL-filter if non-null:
             if (filter != null) {
                 bf.add(filter, BooleanClause.Occur.MUST);
@@ -369,15 +369,16 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
 
             filter = bf;
         }
-        
-        if(!search.isPreviewUnpublished()){
+
+        if (search.hasFilterFlag(Search.FilterFlag.UNPUBLISHED)) {
             filter = addUnpublishedCollectionFilter(filter);
         }
 
         return filter;
+
     }
 
-    BooleanFilter buildDefaultExcludesFilter() {
+    BooleanFilter buildUnpublishedFilter() {
         BooleanFilter bf = new BooleanFilter();
 
         // Filter to include only published resources:
@@ -392,11 +393,10 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
         if (filter != null) {
             bf.add(filter, Occur.MUST);
         }
-        
+
         // Filter to exclude unpublishedCollection resources:
         // Avoid using cache-wrapper for FieldValueFilter, since that can
         // lead to memory leaks in Lucene.
-        
 
         bf.add(new FieldValueFilter(FieldNames.getSearchFieldName(this.unpublishedCollectionPropDef, false), true),
                 BooleanClause.Occur.MUST);

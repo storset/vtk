@@ -30,6 +30,7 @@
  */
 package org.vortikal.repository.content;
 
+import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.Collection;
 import java.util.HashMap;
@@ -85,7 +86,7 @@ public class ContentRepresentationRegistry implements ApplicationContextAware, I
         }
     }
 
-    public Object createRepresentation(Class<?> clazz, InputStreamWrapper content) throws Exception {
+    public Object createRepresentation(Class<?> clazz, InputStream content) throws Exception {
 
         ContentFactory factory = this.contentFactories.get(clazz);
 
@@ -95,9 +96,9 @@ public class ContentRepresentationRegistry implements ApplicationContextAware, I
 
         // The default representations:
         if (clazz == byte[].class) {
-            return StreamUtil.readInputStream(content.getInputStream());
+            return StreamUtil.readInputStream(content);
         } else if (clazz == java.nio.ByteBuffer.class) {
-            return ByteBuffer.wrap(StreamUtil.readInputStream(content.getInputStream()));
+            return ByteBuffer.wrap(StreamUtil.readInputStream(content));
         }
 
         throw new UnsupportedContentRepresentationException("Content type '" + clazz.getName() + "' not supported.");

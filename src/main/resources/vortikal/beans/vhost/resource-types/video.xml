@@ -44,6 +44,7 @@
         <ref bean="asWebpageAssertion" />
       </list>
     </property>
+    <property name="handler" ref="displayUnpublishedPageHandler" />
   </bean>
 
 
@@ -82,7 +83,7 @@
     </property>
     <property name="posterImagePropDef" ref="posterImagePropDef" />
     <property name="generatedPosterImagePropDef" ref="generatedPosterImagePropDef" />
-    <property name="viewService" ref="viewService" />
+    <property name="viewService" ref="editor.loadImageService" />
     <property name="thumbnailService" ref="displayThumbnailService" />
   </bean>
 
@@ -142,17 +143,6 @@
     <property name="type" value="HTML" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
     <property name="mandatory" value="false" />
-  </bean>
-
-  <bean id="mediaPlayerService.urlProvider" class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
-    <property name="modelName" value="previewImage" />
-    <property name="urlName" value="URL" />
-    <property name="service" ref="mediaPlayerService" />
-    <property name="staticURLParameters">
-      <map>
-        <entry key="vrtxPreviewUnpublished" value="true" />
-      </map>
-    </property>
   </bean>
 
   <bean id="posterImagePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">

@@ -730,7 +730,7 @@ function unsavedChangesInEditor() {
   var contents = vrtxAdmin.cachedContent;
 
   var currentStateOfInputFields = contents.find("input").not("[type=submit]").not("[type=button]")
-    .not("[type=checkbox]").not("[type=radio]"),
+                                                        .not("[type=checkbox]").not("[type=radio]"),
     textLen = currentStateOfInputFields.length,
     currentStateOfSelects = contents.find("select"),
     selectsLen = currentStateOfSelects.length,
@@ -975,14 +975,23 @@ VrtxEditor.prototype.initShowHide = function initShowHide() {
 
   vrtxAdm.cachedAppContent.on("change", "#resource\\.courseContext\\.course-status", function (e) {
     var courseStatus = _$(this);
+    var animation = new VrtxAnimation({
+      animationSpeed: vrtxAdm.transitionDropdownSpeed,
+      easeIn: "swing",
+      easeOut: "swing",
+      afterIn: function(animation) {
+        animation.__opts.elem.removeClass("hidden");
+      },
+      afterOut: function(animation) {
+        animation.__opts.elem.addClass("hidden");
+      }
+    })
     if (courseStatus.val() === "continued-as") {
-      _$("#vrtx-resource\\.courseContext\\.course-continued-as.hidden").slideDown(vrtxAdm.transitionDropdownSpeed, "swing", function () {
-        _$(this).removeClass("hidden");
-      });
+      animation.updateElem(_$("#vrtx-resource\\.courseContext\\.course-continued-as.hidden"));
+      animation.topDown();
     } else {
-      _$("#vrtx-resource\\.courseContext\\.course-continued-as:not(.hidden)").slideUp(vrtxAdm.transitionDropdownSpeed, "swing", function () {
-        _$(this).addClass("hidden");
-      });
+      animation.updateElem(_$("#vrtx-resource\\.courseContext\\.course-continued-as:not(.hidden)"));
+      animation.bottomUp();
     }
     e.stopPropagation();
   });
@@ -1052,10 +1061,14 @@ function toggleShowHideBoolean(props, show, init) {
       theProps.hide();
     }
   } else {
+    var animation = new VrtxAnimation({
+      animationSpeed: vrtxAdmin.transitionPropSpeed,
+      elem: theProps
+    });
     if (show) {
-      theProps.slideDown(vrtxAdmin.transitionPropSpeed, vrtxAdmin.transitionEasingSlideDown);
+      animation.topDown();
     } else {
-      theProps.slideUp(vrtxAdmin.transitionPropSpeed, vrtxAdmin.transitionEasingSlideUp);
+      animation.bottomUp();
     }
   }
 }
@@ -1416,9 +1429,7 @@ function addJsonField(btn) {
         for (i = 0; i < ckSimpleHtmlsLen; i++) {
           vrtxEditor.newEditor(ckSimpleHtmls[i], false, false, requestLang, cssFileList, "true");
         }
-        for (i = 0; i < dateTimesLen; i++) {
-          displayDateAsMultipleInputFields(dateTimes[i]);
-        }
+        datepickerEditor.initFields(dateTimes);
       } else {
         setTimeout(checkForAppendComplete, 25);
       }
@@ -1501,8 +1512,8 @@ function swapContent(moveBtn, move) {
     swapElementFn(element1, element2);
 
     if (hasAccordion && !runOnce) {
-      jsonAccordion.updateHeader(element1, true, false);
-      jsonAccordion.updateHeader(element2, true, false);
+      accordionJson.updateHeader(element1, true, false);
+      accordionJson.updateHeader(element2, true, false);
       runOnce = true;
     }
     /* Do we need these on all elements? */

@@ -39,12 +39,19 @@
   'webProtocol' missing">
 </#if>
 
+<#-- Used for switching off Ajax POST on preview for image/audio/video and use default height when those are unpublished -->
+<#assign resourceType = resourceContext.currentResource.getResourceType() />
+<#assign isImageAudioVideo = (resourceType = "image" || resourceType = "audio" || resourceType = "video") />
+<#assign hasNotPreviewIframeCommunication = isImageAudioVideo && !resourceContext.currentResource.isPublished() />
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <title>${(title.title)?default(resourceContext.currentResource.name)}</title>
     <script type="text/javascript"><!--
       var previewLoadingMsg = "${vrtx.getMsg('preview.loadingMsg')}";
+      var hasPreviewIframeCommunication = <#if hasNotPreviewIframeCommunication>false<#else>true</#if>;
+      var isImageAudioVideo = <#if isImageAudioVideo>true<#else>false</#if>;
     // --> 
     </script> 
   </head>
@@ -97,8 +104,10 @@
         <#assign mailSubject = resourceContext.currentResource.title?url('UTF-8') />  
         <ul id="preview-actions">
           <li><a id="preview-actions-share" href="mailto:?subject=${mailSubject}&amp;body=${vrtx.getMsg('preview.actions.share.mail.body', '', ['${resourceContext.currentServiceURL?url("UTF-8")}', '${resourceContext.principal.description?url("UTF-8")}'])}">${vrtx.getMsg("preview.actions.share")}</a></li>
+          <#if !hasNotPreviewIframeCommunication>
           <li><a id="preview-actions-print" href="javascript:void(0);">${vrtx.getMsg("preview.actions.print")}</a></li>
           <li><a id="preview-actions-fullscreen-toggle" href="javascript:void(0);">${vrtx.getMsg("preview.actions.fullscreen-toggle.open")}</a></li>
+          </#if>
         </ul>
       </div>
     </div>
@@ -116,5 +125,3 @@
     </div>
   </body>
 </html>
-
-

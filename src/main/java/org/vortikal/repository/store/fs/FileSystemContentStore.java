@@ -43,7 +43,6 @@ import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.IllegalOperationException;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.RecoverableResource;
-import org.vortikal.repository.content.InputStreamWrapper;
 import org.vortikal.repository.store.ContentStore;
 import org.vortikal.repository.store.DataAccessException;
 import org.vortikal.util.io.StreamUtil;
@@ -135,12 +134,11 @@ public class FileSystemContentStore implements InitializingBean, ContentStore {
     }
 
     @Override
-    public InputStreamWrapper getInputStream(Path uri) throws DataAccessException {
+    public InputStream getInputStream(Path uri) throws DataAccessException {
         String fileName = getLocalFilename(uri);
 
         try {
-            InputStream in = new FileInputStream(new File(fileName));
-            return new InputStreamWrapper(in, Path.fromString(fileName));
+            return new FileInputStream(new File(fileName));
         } catch (IOException e) {
             throw new DataAccessException("Get input stream [" + uri + "] failed", e);
         }

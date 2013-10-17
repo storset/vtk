@@ -21,8 +21,7 @@ are necessary:
   repositoryTrashCanDirectory = [an empty directory for storing "deleted" files]
   repositoryRevisionDirectory = [an empty directory for storing file revisions]
   databaseURL = [your JDBC URL, e.g. jdbc:postgresql:my-user>]
-  xslFilePath = [the path to webdocuments]
-
+  
 4. Run the command 'mvn jetty:run' (standing in the project
    directory). 
 
@@ -37,10 +36,3 @@ are necessary:
 7. Custom bean definitions and overriding can be placed in the file
    ~/.vrtx-context.xml (loaded if it exists).
 
-8. Serving static resources from the file system: add an entry to the
-   ~/.vrtx-context.xml file:
-
-  <bean class="org.vortikal.web.StaticResourceLocation">
-    <property name="uriPrefix" value="/my/uri/prefix" />
-    <property name="resourceLocation" value="file:///my/file/path" />
-  </bean>

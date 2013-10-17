@@ -227,6 +227,7 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
 
             try {
                 currentURL.addParameter(ieReturnURL, URLEncoder.encode(resourceURL.toString(), "UTF-8"));
+                setHeaders(response);
                 response.sendRedirect(currentURL.toString());
             } catch (UnsupportedEncodingException ue) {
                 ue.printStackTrace();

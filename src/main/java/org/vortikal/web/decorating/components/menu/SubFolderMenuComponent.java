@@ -135,7 +135,7 @@ public class SubFolderMenuComponent extends ListMenuComponent {
         Repository repository = requestContext.getRepository();
 
         Search search = buildSearch(requestContext, menuRequest);
-       
+
         ResultSet rs = repository.search(token, search);
         if (logger.isDebugEnabled()) {
             logger.debug("Executed search: " + search + ", hits: " + rs.getSize());
@@ -180,7 +180,9 @@ public class SubFolderMenuComponent extends ListMenuComponent {
         mainQuery.add(includeFolders);
         mainQuery.add(new TypeTermQuery(menuRequest.getCollectionResourceType().getName(), TermOperator.IN));
         Search search = new Search();
-        search.setPreviewUnpublished(requestContext.isPreviewUnpublished());
+        if (RequestContext.getRequestContext().isPreviewUnpublished()) {
+            search.removeFilterFlag(Search.FilterFlag.UNPUBLISHED_COLLECTIONS);
+        }
         search.setQuery(mainQuery);
         search.setLimit(menuRequest.getSearchLimit());
         search.setPropertySelect(PropertySelect.ALL);

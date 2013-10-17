@@ -115,7 +115,9 @@ public class SubFolderMenuProvider {
         query.add(new TypeTermQuery("collection", TermOperator.IN));
 
         Search search = new Search();
-        search.setPreviewUnpublished(requestContext.isPreviewUnpublished());
+        if (RequestContext.getRequestContext().isPreviewUnpublished()) {
+            search.removeFilterFlag(Search.FilterFlag.UNPUBLISHED_COLLECTIONS);
+        }
         search.setLimit(this.collectionDisplayLimit);
         search.setQuery(query);
 
@@ -150,7 +152,7 @@ public class SubFolderMenuProvider {
     public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
         this.resourceTypeTree = resourceTypeTree;
     }
-    
+
     public void setCollectionDisplayLimit(int collectionDisplayLimit) {
         this.collectionDisplayLimit = collectionDisplayLimit;
     }

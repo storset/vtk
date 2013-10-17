@@ -79,6 +79,11 @@
       </map>
     </property>
     <property name="handler" ref="structuredResources.editHandler" />
+    <property name="urlPostProcessors">
+      <list>
+        <ref bean="editor.urlPostProcessor" />
+      </list>
+    </property>
   </bean>
 
   <bean id="editableResourcesAssertion" class="org.vortikal.web.service.AndAssertion">

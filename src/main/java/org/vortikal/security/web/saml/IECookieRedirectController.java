@@ -1,6 +1,7 @@
 package org.vortikal.security.web.saml;
 
 import java.net.URLDecoder;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -21,6 +22,8 @@ public class IECookieRedirectController implements Controller {
     private String uioAuthIDP;
     private String uioAuthSSO;
     private String ieReturnURL;
+
+    private Map<String, String> staticHeaders = new HashMap<String, String>();
 
     private static Log authLogger = LogFactory.getLog("org.vortikal.security.web.AuthLog");
 
@@ -90,6 +93,7 @@ public class IECookieRedirectController implements Controller {
             }
         }
 
+        // setHeaders(response);
         response.sendRedirect(returnURL);
         return null;
     }
@@ -112,6 +116,16 @@ public class IECookieRedirectController implements Controller {
 
     public void setIeReturnURL(String ieReturnURL) {
         this.ieReturnURL = ieReturnURL;
+    }
+
+    public void setStaticHeaders(Map<String, String> staticHeaders) {
+        this.staticHeaders = staticHeaders;
+    }
+
+    private void setHeaders(HttpServletResponse response) {
+        for (String header : this.staticHeaders.keySet()) {
+            response.setHeader(header, this.staticHeaders.get(header));
+        }
     }
 
     public void setiECookieStore(IECookieStore iECookieStore) {

@@ -2,7 +2,6 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
 
-
   <bean id="publish.globalPublishService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="manageService" />
     <property name="assertions">
@@ -226,7 +225,7 @@
           <property name="parameterName" value="action" />
           <property name="parameterValue" value="unpublish-resources" />
         </bean>
-        <ref bean="requiresPublishUnpublishPermissionAssertion" /> 
+        <ref bean="requiresPublishUnpublishPermissionAssertion" />
         <ref bean="resourceInCollection" />
       </list>
     </property>
@@ -289,7 +288,6 @@
       <list>
         <ref bean="resourceIsNotPublishedAssertion" />
         <ref bean="notViewUnpublishedAssertion" />
-        <ref bean="notViewUnpublishedRefererAssertion" />
       </list>
     </property>
     <property name="handler" ref="displayUnpublishedPageHandler" />

@@ -67,7 +67,9 @@ public class ResourceListComponent extends ViewRenderingDecoratorComponent {
             query.add(new UriPrefixQuery(folder.toString()));
 
             Search search = new Search();
-            search.setPreviewUnpublished(requestContext.isPreviewUnpublished());
+            if (RequestContext.getRequestContext().isPreviewUnpublished()) {
+                search.removeFilterFlag(Search.FilterFlag.UNPUBLISHED_COLLECTIONS);
+            }
             if (maxItems != null) {
                 try {
                     search.setLimit(Integer.parseInt(maxItems));
@@ -99,7 +101,7 @@ public class ResourceListComponent extends ViewRenderingDecoratorComponent {
         Path parentPath = getValidPath(parentFolder);
         String parentPathString = parentPath != null ? parentPath.toString() : null;
         for (String folder : folders) {
-            
+
             folder = folder.trim();
 
             Path validPath = null;

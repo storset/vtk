@@ -355,7 +355,9 @@ public class CollectionListingAggregationResolver implements AggregationResolver
 
                     UriSetQuery uriSetQuery = new UriSetQuery(uris);
                     Search search = new Search();
-                    search.setPreviewUnpublished(RequestContext.getRequestContext().isPreviewUnpublished());
+                    if (RequestContext.getRequestContext().isPreviewUnpublished()) {
+                        search.removeFilterFlag(Search.FilterFlag.UNPUBLISHED_COLLECTIONS);
+                    }
                     search.setQuery(uriSetQuery);
                     ResultSet rs = repository.search(token, search);
                     result.addAll(rs.getAllResults());

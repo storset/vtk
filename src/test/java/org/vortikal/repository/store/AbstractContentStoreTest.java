@@ -174,7 +174,7 @@ public abstract class AbstractContentStoreTest extends TestCase {
         getStore().storeContent(p, new ByteArrayInputStream(content));
         
         // Verify length
-        InputStream input = getStore().getInputStream(p).getInputStream();
+        InputStream input = getStore().getInputStream(p);
         assertNotNull(input);
         
         byte[] content2 = getContent(input);
@@ -189,7 +189,7 @@ public abstract class AbstractContentStoreTest extends TestCase {
         getStore().storeContent(p, new ByteArrayInputStream("".getBytes()));
         assertEquals(0, getStore().getContentLength(p));
         
-        input = getStore().getInputStream(p2).getInputStream();
+        input = getStore().getInputStream(p2);
         content2 = getContent(input);
         assertTrue(equals(content, content2));
         
@@ -257,14 +257,14 @@ public abstract class AbstractContentStoreTest extends TestCase {
 //         assertFalse(getStore().isCollection("/a/d/file4.txt"));
 
         // Verify content
-        byte[] content = getContent(getStore().getInputStream(Path.fromString("/a/x/file1.txt")).getInputStream());
+        byte[] content = getContent(getStore().getInputStream(Path.fromString("/a/x/file1.txt")));
         assertTrue(equals(contentFile1, content));
-        content = getContent(getStore().getInputStream(Path.fromString("/a/x/file2.txt")).getInputStream());
+        content = getContent(getStore().getInputStream(Path.fromString("/a/x/file2.txt")));
         assertTrue(equals(contentFile2, content));
-        content = getContent(getStore().getInputStream(Path.fromString("/a/x/file3.txt")).getInputStream());
+        content = getContent(getStore().getInputStream(Path.fromString("/a/x/file3.txt")));
         assertTrue(equals(contentFile3, content));
         
-        content = getContent(getStore().getInputStream(Path.fromString("/a/d/file4.txt")).getInputStream());
+        content = getContent(getStore().getInputStream(Path.fromString("/a/d/file4.txt")));
         assertTrue(equals(new byte[0], content));
                 
         // Rename '/a' subtree, then re-check consistency
@@ -291,14 +291,14 @@ public abstract class AbstractContentStoreTest extends TestCase {
 //         assertFalse(getStore().isCollection("/Copy of a/d/file4.txt"));
 
         // Verify content
-        content = getContent(getStore().getInputStream(Path.fromString("/Copy of a/x/file1.txt")).getInputStream());
+        content = getContent(getStore().getInputStream(Path.fromString("/Copy of a/x/file1.txt")));
         assertTrue(equals(contentFile1, content));
-        content = getContent(getStore().getInputStream(Path.fromString("/Copy of a/x/file2.txt")).getInputStream());
+        content = getContent(getStore().getInputStream(Path.fromString("/Copy of a/x/file2.txt")));
         assertTrue(equals(contentFile2, content));
-        content = getContent(getStore().getInputStream(Path.fromString("/Copy of a/x/file3.txt")).getInputStream());
+        content = getContent(getStore().getInputStream(Path.fromString("/Copy of a/x/file3.txt")));
         assertTrue(equals(contentFile3, content));
         
-        content = getContent(getStore().getInputStream(Path.fromString("/Copy of a/d/file4.txt")).getInputStream());
+        content = getContent(getStore().getInputStream(Path.fromString("/Copy of a/d/file4.txt")));
         assertTrue(equals(new byte[0], content));
                 
 
@@ -418,7 +418,7 @@ public abstract class AbstractContentStoreTest extends TestCase {
 //         assertTrue(getStore().exists("/off_limits/i_will_survive.txt"));
 //         assertFalse(getStore().isCollection("/off_limits/i_will_survive.txt"));
         byte[] originalContent = "I Will Surviveeee !".getBytes();
-        byte[] content = getContent(getStore().getInputStream(Path.fromString("/off_limits/i_will_survive.txt")).getInputStream());
+        byte[] content = getContent(getStore().getInputStream(Path.fromString("/off_limits/i_will_survive.txt")));
         assertTrue(equals(originalContent, content));
         
         // Verify all worker areas in content store (should conform to specific pattern)

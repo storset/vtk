@@ -30,6 +30,8 @@
  */
 package org.vortikal.repository.content;
 
+import java.io.InputStream;
+
 
 /**
  * TODO: parameterize interface
@@ -38,6 +40,6 @@ public interface ContentFactory {
 
     public Class<?>[] getRepresentationClasses();
 
-    public Object getContentRepresentation(Class<?> clazz,  InputStreamWrapper content) throws Exception;
+    public Object getContentRepresentation(Class<?> clazz,  InputStream content) throws Exception;
 
 }

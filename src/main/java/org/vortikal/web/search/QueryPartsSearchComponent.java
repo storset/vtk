@@ -55,7 +55,9 @@ public class QueryPartsSearchComponent extends QuerySearchComponent {
         Query query = this.getQuery(collection, request);
 
         Search search = new Search();
-        search.setPreviewUnpublished(RequestContext.getRequestContext().isPreviewUnpublished());
+        if (RequestContext.getRequestContext().isPreviewUnpublished()) {
+            search.removeFilterFlag(Search.FilterFlag.UNPUBLISHED_COLLECTIONS);
+        }
         search.setQuery(query);
         search.setLimit(searchLimit);
         search.setCursor(offset);

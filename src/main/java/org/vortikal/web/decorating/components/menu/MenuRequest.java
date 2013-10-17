@@ -400,7 +400,9 @@ public class MenuRequest {
         mainQuery.add(new UriPrefixQuery(uri.toString()));
         mainQuery.add(new TypeTermQuery(this.collectionResourceType.getName(), TermOperator.IN));
         Search search = new Search();
-        search.setPreviewUnpublished(requestContext.isPreviewUnpublished());
+        if (RequestContext.getRequestContext().isPreviewUnpublished()) {
+            search.removeFilterFlag(Search.FilterFlag.UNPUBLISHED_COLLECTIONS);
+        }
         search.setQuery(mainQuery);
         search.setLimit(searchLimit);
         search.setPropertySelect(PropertySelect.ALL);

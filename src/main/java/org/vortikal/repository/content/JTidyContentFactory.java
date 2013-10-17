@@ -30,6 +30,7 @@
  */
 package org.vortikal.repository.content;
 
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 
@@ -49,7 +50,7 @@ public class JTidyContentFactory implements ContentFactory {
     
     private static PrintWriter NULL_WRITER = new PrintWriter(new NullOutputStream());
 
-    public Object getContentRepresentation(Class<?> clazz,  InputStreamWrapper content) throws Exception {
+    public Object getContentRepresentation(Class<?> clazz,  InputStream content) throws Exception {
         Tidy tidy = new Tidy();
         tidy.setQuiet(true);
         tidy.setOnlyErrors(true);
@@ -57,7 +58,7 @@ public class JTidyContentFactory implements ContentFactory {
         tidy.setErrout(NULL_WRITER);
         
         try {
-            Document document = tidy.parseDOM(content.getInputStream(), null);
+            Document document = tidy.parseDOM(content, null);
 
             if (clazz == Document.class) {
                 return document;
@@ -70,7 +71,7 @@ public class JTidyContentFactory implements ContentFactory {
         } finally {
             // Not sure whether JTidy closes the file correctly on
             // errors
-            content.getInputStream().close();
+            content.close();
         }
     }
     

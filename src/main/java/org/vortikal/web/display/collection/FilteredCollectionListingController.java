@@ -119,7 +119,10 @@ public abstract class FilteredCollectionListingController implements ListingCont
     protected ResultSet search(Resource collection, AndQuery baseQuery, int offset) {
         Search search = new Search();
 
-        search.setPreviewUnpublished(RequestContext.getRequestContext().isPreviewUnpublished());
+        if (RequestContext.getRequestContext().isPreviewUnpublished()) {
+            search.removeFilterFlag(Search.FilterFlag.UNPUBLISHED_COLLECTIONS);
+        }
+
         UriPrefixQuery uriQuery = new UriPrefixQuery(collection.getURI().toString(), false);
 
         // Initially no multi host search
@@ -155,8 +158,6 @@ public abstract class FilteredCollectionListingController implements ListingCont
             baseQuery.add(uriQuery);
         }
         search.setQuery(baseQuery);
-
-        search.setUseDefaultExcludes(true);
         search.setSorting(getDefaultSearchSorting(collection));
 
         ConfigurablePropertySelect propertySelect = getPropertySelect();

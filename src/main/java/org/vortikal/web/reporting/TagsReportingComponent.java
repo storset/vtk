@@ -224,11 +224,12 @@ public class TagsReportingComponent {
 
         // Set up index search
         Search search = new Search();
-        search.setPreviewUnpublished(requestContext.isPreviewUnpublished());
+        if (RequestContext.getRequestContext().isPreviewUnpublished()) {
+            search.removeFilterFlag(Search.FilterFlag.UNPUBLISHED_COLLECTIONS);
+        }
         search.setQuery(masterScopeQuery);
         search.setSorting(null);
         search.setLimit(Integer.MAX_VALUE);
-        search.setUseDefaultExcludes(true);
         ConfigurablePropertySelect propSelect = new ConfigurablePropertySelect();
         propSelect.addPropertyDefinition(tagsPropDef);
         search.setPropertySelect(propSelect);

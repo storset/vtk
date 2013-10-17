@@ -21,12 +21,13 @@
       previewLoading,
       animationOff = false,
       surplusAnimationSpeed = 200;
-
+ 
   var crossDocComLink = new CrossDocComLink();
   crossDocComLink.setUpReceiveDataHandler(function(cmdParams, source) {
     postback = true;
     var vrtxAdm = vrtxAdmin;
     var previewIframe = $("iframe#previewIframe")[0];
+    
     switch(cmdParams[0]) {
       case "preview-loaded":
         crossDocComLink.postCmdToIframe(previewIframe, "admin-min-height|" + previewIframeMinHeight);
@@ -144,9 +145,9 @@
     if(isPreviewMode) {
    
       htmlTag = $("html");
-      
+    
       // As we can't check on matchMedia and Modernizr is not included in admin yet - hide if <= IE8
-      if(vrtxAdm.isIE8 || vrtxAdm.isMobileWebkitDevice) {
+      if(vrtxAdm.isIE8 || vrtxAdm.isMobileWebkitDevice || !hasPreviewIframeCommunication) {
         $("#preview-mode").hide();
       } else {
         vrtxAdm.cachedContent.on("click", "#preview-mode a", function(e) {
@@ -154,11 +155,11 @@
           if(!htmlTag.hasClass("mobile")) {
             $.bbq.pushState({"mobile": "on"});
             $("#previewIframeWrapper").css("height", $("#previewIframe").height());
-            crossDocComLink.postCmdToIframe(previewIframe, "update-height-vertical");
+            if(hasPreviewIframeCommunication) crossDocComLink.postCmdToIframe(previewIframe, "update-height-vertical");
           } else {
             $.bbq.removeState("mobile", "orientation");
             $("#previewIframeWrapper").css("height", "auto");
-            crossDocComLink.postCmdToIframe(previewIframe, "restore-height");
+            if(hasPreviewIframeCommunication) crossDocComLink.postCmdToIframe(previewIframe, "restore-height");
             htmlTag.removeClass("horizontal");
             htmlTag.removeClass("animated");
             htmlTag.removeClass("change-bg");
@@ -177,6 +178,7 @@
           e.stopPropagation();
         });
         $(document).on("keyup", function(e) {
+          if(!hasPreviewIframeCommunication) return;
           if(htmlTag.hasClass("mobile")) {
             var isHorizontal = $("html").hasClass("horizontal");
             if((e.which === 39 && isHorizontal) || (e.which === 37 && !isHorizontal)) {
@@ -214,10 +216,10 @@
             var previewIframe = $("iframe#previewIframe")[0];
             if(!htmlTag.hasClass("horizontal")) {
               $.bbq.pushState({"orientation": "horizontal"});
-              crossDocComLink.postCmdToIframe(previewIframe, "update-height-horizontal");
+              if(hasPreviewIframeCommunication) crossDocComLink.postCmdToIframe(previewIframe, "update-height-horizontal");
             } else {
               $.bbq.removeState("orientation");
-              crossDocComLink.postCmdToIframe(previewIframe, "update-height-vertical");
+              if(hasPreviewIframeCommunication) crossDocComLink.postCmdToIframe(previewIframe, "update-height-vertical");
             }
             if(!animationOff) {
               if(!htmlTag.hasClass("animated")) {
@@ -232,29 +234,30 @@
           e.stopPropagation();
         });
       }
-
-      vrtxAdm.cachedContent.on("click", "#preview-actions-print", function(e) {
-        var previewIframe = $("iframe#previewIframe")[0];
-        crossDocComLink.postCmdToIframe(previewIframe, "print");
-        e.preventDefault();
-        e.stopPropagation();
-      });
+      if(hasPreviewIframeCommunication) {
+        vrtxAdm.cachedContent.on("click", "#preview-actions-print", function(e) {
+          var previewIframe = $("iframe#previewIframe")[0];
+          crossDocComLink.postCmdToIframe(previewIframe, "print");
+          e.preventDefault();
+          e.stopPropagation();
+        });
           
-      vrtxAdm.cachedContent.on("click", "#preview-actions-fullscreen-toggle", function(e) {
-        htmlTag.toggleClass('fullscreen-toggle-open');
-        if(htmlTag.hasClass('fullscreen-toggle-open')) {
-          $.bbq.pushState({"fullscreen": "on"});
-          $(this).text(fullscreenToggleClose);
-          vrtxAdm.initStickyBar("#preview-mode-actions", "vrtx-sticky-preview-mode-actions", 2);
-          $(window).trigger("scroll");
-        } else {
-          $.bbq.removeState("fullscreen");
-          $(this).text(fullscreenToggleOpen);
-          vrtxAdm.destroyStickyBar("#preview-mode-actions", "vrtx-sticky-preview-mode-actions");
-        }
-        e.preventDefault();
-        e.stopPropagation();
-      });	
+        vrtxAdm.cachedContent.on("click", "#preview-actions-fullscreen-toggle", function(e) {
+           htmlTag.toggleClass('fullscreen-toggle-open');
+          if(htmlTag.hasClass('fullscreen-toggle-open')) {
+            $.bbq.pushState({"fullscreen": "on"});
+            $(this).text(fullscreenToggleClose);
+            vrtxAdm.initStickyBar("#preview-mode-actions", "vrtx-sticky-preview-mode-actions", 2);
+            $(window).trigger("scroll");
+          } else {
+            $.bbq.removeState("fullscreen");
+            $(this).text(fullscreenToggleOpen);
+            vrtxAdm.destroyStickyBar("#preview-mode-actions", "vrtx-sticky-preview-mode-actions");
+          }
+          e.preventDefault();
+          e.stopPropagation();
+        });
+      }
 
       var appContentHeight = vrtxAdm.cachedAppContent.height();
       var appHeadWrapperHeight = vrtxAdm.cachedBody.find("#app-head-wrapper").outerHeight(true);
@@ -287,6 +290,10 @@
       previewLoading.find("#preview-loading-inner").css({
         height: availWinHeight + "px"
       });
+      
+      if(!hasPreviewIframeCommunication) {
+        previewLoadingComplete($("iframe#previewIframe")[0], previewIframeMinHeight, previewLoading, vrtxAdm);
+      }
     }
   });
 

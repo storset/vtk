@@ -36,6 +36,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.content.VideoRefContent;
@@ -56,9 +58,13 @@ import org.vortikal.video.rest.VideoRef;
  */
 public class ResourceContentInterceptor implements InitializingBean {
 
+    private static final String VIDEO_INPUT_DIR = "videoinput";
+    
     private String videoStorageRoot;
     private String repositoryId;
     private VideoApiClient videoapp;
+    
+    private final Log logger = LogFactory.getLog(ResourceContentInterceptor.class);
     
     // TODO maybe use assertions instead of these predicate methods:
     public boolean isSupportedContentType(String contentType) {
@@ -200,13 +206,19 @@ public class ResourceContentInterceptor implements InitializingBean {
     }
 
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() throws IOException {
         File rootDir = new File(this.videoStorageRoot);
         if (!rootDir.isDirectory()) {
             throw new IOException("Not a directory: " + this.videoStorageRoot);
         }
         if (!rootDir.isAbsolute()) {
             throw new IOException("Not an absolute path: " + this.videoStorageRoot);
+        }
+        
+        File inputDir = new File(getInputDirAbspath());
+        if (!inputDir.exists()) {
+            inputDir.mkdirs();
+            logger.info("Created video input directory: " + inputDir);
         }
     }
     

@@ -2337,28 +2337,33 @@ function ajaxSave() {
 }
 
 function isServerLastModifiedNewerThanClientLastModified(aboutLastModifiedString) {
-  aboutLastModifiedString = $.trim(aboutLastModifiedString.replace(/(av|by).*/, ""));
-  var rDay = parseInt(aboutLastModifiedString.match(/(\d{2})(\,|\.)/)[1]);
-  var rMonth = {"jan":0, "feb":1, "mar":2, "apr":3,
-                "mai":4, "may":4, "jul":5, "jun":6, 
-                "aug":7, "sep":8, "oct":9, "okt":9,
-                "nov":10, "dec":11, "des":11}[aboutLastModifiedString.match(/(\w{3})(\.| )/)[1].toLowerCase()];
-  var rYear = parseInt(aboutLastModifiedString.match(/(\d{4}) /)[1]);
-  var rHours = parseInt(aboutLastModifiedString.match(/ (\d{2}):/)[1]);
-  var rMinutes = parseInt(aboutLastModifiedString.match(/ \d{2}:(\d{2}):/)[1]);
-  var rSeconds = parseInt(aboutLastModifiedString.match(/ \d{2}:\d{2}:(\d{2})/)[1]);
-  var isHours12 = aboutLastModifiedString.match(/ \d{2}:\d{2}:\d{2} (AM|PM)/);
-  if(isHours12 != null) { // 24 hours
-    rHours = isHours12[1] == "PM" ? rHours + 12
-                                   : isHours12[1] == "AM" && rHours === 12 ? rHours = 0
-                                                                           : rHours;
+  try {
+    aboutLastModifiedString = $.trim(aboutLastModifiedString.replace(/(av|by).*/, ""));
+    var rDay = parseInt(aboutLastModifiedString.match(/(\d{2})(\,|\.)/)[1]);
+    var rMonth = {"jan":0, "feb":1, "mar":2, "apr":3,
+                  "mai":4, "may":4, "jul":5, "jun":6, 
+                  "aug":7, "sep":8, "oct":9, "okt":9,
+                  "nov":10, "dec":11, "des":11}[aboutLastModifiedString.match(/(\w{3})(\.| )/)[1].toLowerCase()];
+    var rYear = parseInt(aboutLastModifiedString.match(/(\d{4}) /)[1]);
+    var rHours = parseInt(aboutLastModifiedString.match(/ (\d{2}):/)[1]);
+    var rMinutes = parseInt(aboutLastModifiedString.match(/ \d{2}:(\d{2}):/)[1]);
+    var rSeconds = parseInt(aboutLastModifiedString.match(/ \d{2}:\d{2}:(\d{2})/)[1]);
+    var isHours12 = aboutLastModifiedString.match(/ \d{2}:\d{2}:\d{2} (AM|PM)/);
+    if(isHours12 != null) { // 24 hours
+      rHours = isHours12[1] == "PM" ? rHours + 12
+                                     : isHours12[1] == "AM" && rHours === 12 ? rHours = 0
+                                                                             : rHours;
+    }
+    var rDate = new Date(rYear, rMonth, rDay, rHours, rMinutes, rSeconds);
+    var utc = rDate.getTime() + (rDate.getTimezoneOffset() * 60000);
+    var rDate2 = new Date(utc + (3600000*+2)); // Servers in Oslo
+    
+    // If newer than loaded time return true
+    return rDate2.toISOString() > loadedTime.toISOString();
+  } catch(ex) {
+    vrtxAdmin.log(ex);
+    return false; 
   }
-  var rDate = new Date(rYear, rMonth, rDay, rHours, rMinutes, rSeconds);
-  var utc = rDate.getTime() + (rDate.getTimezoneOffset() * 60000);
-  var rDate2 = new Date(utc + (3600000*+2)); // Servers in Oslo
-  
-  // If newer than loaded time return true
-  return rDate2.toISOString() > loadedTime.toISOString();
 }
 
 function reAuthenticateRetokenizeForms(link) {  

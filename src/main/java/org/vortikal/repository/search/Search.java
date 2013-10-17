@@ -231,7 +231,7 @@ public final class Search {
 
     /* Removes all filter flags from search. */
     public Search removeAllFilterFlags() {
-        filterFlags.remove(getAllFilterFlags());
+        filterFlags.removeAll(getAllFilterFlags());
         return this;
     }
 

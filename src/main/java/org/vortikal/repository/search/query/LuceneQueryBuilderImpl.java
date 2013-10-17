@@ -370,7 +370,7 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
             filter = bf;
         }
 
-        if (search.hasFilterFlag(Search.FilterFlag.UNPUBLISHED)) {
+        if (search.hasFilterFlag(Search.FilterFlag.UNPUBLISHED_COLLECTIONS)) {
             filter = addUnpublishedCollectionFilter(filter);
         }
 

@@ -298,6 +298,7 @@
       if(!isFullscreen) {
         activeDesc.css("width", (width - 30)); 
       }
+      if(typeof vrtxSGalleryResizeContainersAfter === "function") vrtxSGalleryResizeContainersAfter(src, active, activeDesc);
     }
 
     function resizeToggleFullscreen() {

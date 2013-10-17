@@ -37,6 +37,8 @@
     offline: "${vrtx.getMsg('ajaxError.offline')}",
     lockStolen: "${vrtx.getMsg('ajaxError.lockStolen')}",
     lockStolenTitle: "${vrtx.getMsg('ajaxError.lockStolen.title')}",
+    outOfDate: "${vrtx.getMsg('ajaxError.out-of-date')}",
+    outOfDateTitle: "${vrtx.getMsg('ajaxError.out-of-date.title')}",
     sessionInvalid: "${vrtx.getMsg('ajaxError.sessionInvalid')}",
     sessionInvalidTitle: "${vrtx.getMsg('ajaxError.sessionInvalid.title')}",
     sessionInvalidOk: "${vrtx.getMsg('ajaxError.sessionInvalid.ok')}",

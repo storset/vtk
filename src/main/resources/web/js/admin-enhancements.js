@@ -34,7 +34,10 @@
     1. Config
 \*-------------------------------------------------------------------*/
 
-var startLoadTime = +new Date();
+// Client date
+var startLoadTime = new Date();
+var loadedTime = startLoadTime;
+startLoadTime = +startLoadTime; // => Unix-time
 
 /**
  * Creates an instance of VrtxAdmin
@@ -2206,24 +2209,32 @@ function editorInteraction(bodyId, vrtxAdm, _$) {
       }).fail(function (xhr, textStatus) {
         if (xhr !== null) {
           /* Fail in performSave() for exceeding 1500 chars in intro/add.content is handled in editor.js with popup */
-
-          var msg = vrtxAdmin.serverFacade.error(xhr, textStatus, false);
-          if(msg === "RE_AUTH") {
-            reAuthenticateRetokenizeForms(link);
-          } else if(msg === "LOCKED") {
+          
+          if(xhr === "UPDATED_IN_BACKGROUND") {
             var d = new VrtxMsgDialog({
-              msg: vrtxAdm.serverFacade.errorMessages.lockStolen,
-              title: vrtxAdm.serverFacade.errorMessages.lockStolenTitle
+              msg: vrtxAdm.serverFacade.errorMessages.outOfDate,
+              title: vrtxAdm.serverFacade.errorMessages.outOfDateTitle
             });
             d.open();
-            
+            return false;
           } else {
-            var customTitle = vrtxAdm.serverFacade.errorMessages.customTitle[xhr.status];
-            var d = new VrtxMsgDialog({
-              msg: msg,
-              title: customTitle ? customTitle : vrtxAdm.serverFacade.errorMessages.title + " " + xhr.status
-            });
-            d.open();
+            var msg = vrtxAdmin.serverFacade.error(xhr, textStatus, false);
+            if(msg === "RE_AUTH") {
+              reAuthenticateRetokenizeForms(link);
+            } else if(msg === "LOCKED") {
+              var d = new VrtxMsgDialog({
+                msg: vrtxAdm.serverFacade.errorMessages.lockStolen,
+                title: vrtxAdm.serverFacade.errorMessages.lockStolenTitle
+              });
+              d.open();
+            } else {
+              var customTitle = vrtxAdm.serverFacade.errorMessages.customTitle[xhr.status];
+              var d = new VrtxMsgDialog({
+                msg: msg,
+                title: customTitle ? customTitle : vrtxAdm.serverFacade.errorMessages.title + " " + xhr.status
+              });
+              d.open();
+            }
           }
         }
       });
@@ -2268,6 +2279,52 @@ function ajaxSave() {
       return false;
     }
   }
+
+  var proceed = true;
+  vrtxAdmin._$.ajax({
+    type: "GET",
+    url: location.pathname + "?vrtx=admin&mode=about",
+    async: false,
+    cache: false,
+    success: function (results, status, resp) {
+      
+      // Get server resource last-modified UTC time
+      var resourceChangedTime = $($.parseHTML(results)).find(".prop-lastModified .value").text();
+      resourceChangedTime = $.trim(resourceChangedTime.replace(/(av|by).*/, ""));
+      var rDay = parseInt(resourceChangedTime.match(/(\d{2})(\,|\.)/)[1]);
+      var rMonth = {"jan":0, "feb":1, "mar":2, "apr":3,
+                    "mai":4, "may":4, "jul":5, "jun":6, 
+                    "aug":7, "sep":8, "oct":9, "okt":9,
+                    "nov":10, "dec":11, "des":11}[resourceChangedTime.match(/(\w{3})(\.| )/)[1].toLowerCase()];
+      var rYear = parseInt(resourceChangedTime.match(/(\d{4}) /)[1]);
+      var rHours = parseInt(resourceChangedTime.match(/ (\d{2}):/)[1]);
+      var rMinutes = parseInt(resourceChangedTime.match(/ \d{2}:(\d{2}):/)[1]);
+      var rSeconds = parseInt(resourceChangedTime.match(/ \d{2}:\d{2}:(\d{2})/)[1]);
+      var isHours12 = resourceChangedTime.match(/ \d{2}:\d{2}:\d{2} (AM|PM)/);
+      if(isHours12 != null) { // 24 hours
+        rHours = isHours12[1] == "PM" ? rHours + 12
+                                       : isHours12[1] == "AM" && rHours === 12 ? rHours = 0
+                                                                               : rHours;
+      }
+      var rDate = new Date(rYear, rMonth, rDay, rHours, rMinutes, rSeconds);
+      utc = rDate.getTime() + (rDate.getTimezoneOffset() * 60000);
+      rDate2 = new Date(utc + (3600000*+2)); // Servers in Oslo
+      
+      // If newer than loaded time, give msg to user and deny saving
+      if(rDate2.toISOString() > loadedTime.toISOString()) {
+        d.close();
+        vrtxAdm.asyncEditorSavedDeferred.rejectWith(this, ["UPDATED_IN_BACKGROUND", ""]);
+        proceed = false;
+      }
+    },
+    error: function (xhr, textStatus) {
+      d.close();
+      vrtxAdm.asyncEditorSavedDeferred.rejectWith(this, [xhr, textStatus]);
+      proceed = false;
+    }
+  });
+  
+  if(!proceed) return false;
   
   // TODO: rootUrl and jQueryUiVersion should be retrieved from Vortex config/properties somehow
   var rootUrl = "/vrtx/__vrtx/static-resources";
@@ -2282,7 +2339,8 @@ function ajaxSave() {
   $.when(futureFormAjax).done(function() {
     _$("#editor").ajaxSubmit({
       success: function () {
-        var endTime = new Date() - startTime;
+        loadedTime = new Date();
+        var endTime = loadedTime - startTime;
         var waitMinMs = 800;
         if (endTime >= waitMinMs) { // Wait minimum 0.8s
           d.close();
@@ -3631,6 +3689,29 @@ function unique(array) {
   for (i = 0; i < l; i += 1) o[array[i]] = array[i];
   for (i in o) r.push(o[i]);
   return r;
+}
+
+if (!Date.prototype.toISOString) {
+  (function() {
+    function pad(number) {
+      var r = String(number);
+      if (r.length === 1) {
+        r = '0' + r;
+      }
+      return r;
+    }
+ 
+    Date.prototype.toISOString = function() {
+      return this.getUTCFullYear()
+        + '-' + pad(this.getUTCMonth() + 1)
+        + '-' + pad(this.getUTCDate())
+        + 'T' + pad(this.getUTCHours())
+        + ':' + pad(this.getUTCMinutes())
+        + ':' + pad(this.getUTCSeconds())
+        + '.' + String((this.getUTCMilliseconds()/1000).toFixed(3).slice(2, 5))
+        + 'Z';
+    };
+  }());
 }
 
 

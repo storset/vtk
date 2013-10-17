@@ -276,6 +276,15 @@
       if (images[src].alt)   desc += images[src].alt;
       images[src].desc = desc;
     }
+
+    function centerThumbnailImage(thumb, link) {
+      centerDimension(thumb, thumb.width(), link.width(), "marginLeft"); // Horizontal dimension
+      centerDimension(thumb, thumb.height(), link.height(), "marginTop"); // Vertical dimension
+    }
+
+    function centerDimension(thumb, tDim, tCDim, cssProperty) { // Center thumbDimension in thumbContainerDimension
+      thumb.css(cssProperty, ((tDim > tCDim) ? ((tDim - tCDim) / 2) * -1 : (tDim < tCDim) ? (tCDim - tDim) / 2 : 0) + "px");
+    }
     
     function resizeContainers(src, active, activeDesc) {
       // Min 150x100px containers
@@ -290,7 +299,7 @@
         activeDesc.css("width", (width - 30)); 
       }
     }
-    
+
     function resizeToggleFullscreen() {
       var loadedImages = $("a" + container + "-link img");
       var link = $("a" + container + "-link.active-full-image");
@@ -303,6 +312,7 @@
       resizeContainers(src, link, desc);
     }
     
+    /* Should only occur once or on window resize */
     var ww = 0, wh = 0;
     function resizeFullscreen() {
       var winWidth = $(window).width();
@@ -355,15 +365,6 @@
     
     function gcd(a, b) {
       return (b === 0) ? a : gcd (b, a%b);
-    }
-
-    function centerThumbnailImage(thumb, link) {
-      centerDimension(thumb, thumb.width(), link.width(), "marginLeft"); // Horizontal dimension
-      centerDimension(thumb, thumb.height(), link.height(), "marginTop"); // Vertical dimension
-    }
-
-    function centerDimension(thumb, tDim, tCDim, cssProperty) { // Center thumbDimension in thumbContainerDimension
-      thumb.css(cssProperty, ((tDim > tCDim) ? ((tDim - tCDim) / 2) * -1 : (tDim < tCDim) ? (tCDim - tDim) / 2 : 0) + "px");
     }
   };
 })(jQuery);

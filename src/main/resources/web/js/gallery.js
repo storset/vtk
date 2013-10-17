@@ -345,6 +345,7 @@
       var desc = wrp.find("#" + id + "-description");
       var descHeight = !desc.hasClass("empty-description") ? desc.outerHeight(true) : 0;
       var winHeight = winHeight - (descHeight + toplineHeight) - 20;
+      /* TODO: I've feeling this code can be reduced, but not 100% sure */
       if(w > winWidth || h > winHeight) {
         if(h > winHeight) {
           var newDim = [Math.round(winHeight * aspectRatio), winHeight];

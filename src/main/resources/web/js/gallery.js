@@ -320,7 +320,7 @@
       if(ww != winWidth && wh != winHeight) {
         var toplineHeight = wrp.find(".fullscreen-gallery-topline").outerHeight(true);
         var cacheCalculateFullscreenImageDimensions = calculateFullscreenImageDimensions;
-        wrp.find(container + "-description.active-description").addClass("hola");
+        wrp.find(container + "-description.active-description").addClass("maintain-active-description");
         wrp.find(container + "-description").filter(":not(.empty-description)").addClass("active-description");
         for(var key in images) {
           var image = images[key];
@@ -330,8 +330,8 @@
         }
         ww = winWidth, wh = winHeight;
         var timer = setTimeout(function() {
-          wrp.find(container + "-description.active-description").filter(":not(.hola)").removeClass("active-description");
-          wrp.find(container + "-description.hola").removeClass("hola");
+          wrp.find(container + "-description.active-description").filter(":not(.maintain-active-description)").removeClass("active-description");
+          wrp.find(container + "-description.maintain-active-description").removeClass("maintain-active-description");
           resizeToggleFullscreen();
         }, 50);
       } else {

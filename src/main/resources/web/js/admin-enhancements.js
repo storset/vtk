@@ -2279,28 +2279,8 @@ function ajaxSave() {
       return false;
     }
   }
-
-  var proceed = true;
-  vrtxAdmin._$.ajax({
-    type: "GET",
-    url: location.pathname + "?vrtx=admin&mode=about",
-    async: false,
-    cache: false,
-    success: function (results, status, resp) {
-      var aboutLastModifiedString = $($.parseHTML(results)).find(".prop-lastModified .value").text();
-      if(isServerLastModifiedNewerThanClientLastModified(aboutLastModifiedString)) {
-        d.close();
-        vrtxAdm.asyncEditorSavedDeferred.rejectWith(this, ["UPDATED_IN_BACKGROUND", ""]);
-        proceed = false;
-      }
-    },
-    error: function (xhr, textStatus) {
-      d.close();
-      vrtxAdm.asyncEditorSavedDeferred.rejectWith(this, [xhr, textStatus]);
-      proceed = false;
-    }
-  });
-  if(!proceed) return false;
+  
+  if(!isServerLastModifiedOlderThanClientLastModified(d)) return false;
   
   // TODO: rootUrl and jQueryUiVersion should be retrieved from Vortex config/properties somehow
   var rootUrl = "/vrtx/__vrtx/static-resources";
@@ -2336,15 +2316,37 @@ function ajaxSave() {
   });
 }
 
-function isServerLastModifiedNewerThanClientLastModified(aboutLastModifiedString) {
+function isServerLastModifiedOlderThanClientLastModified(d) {
+  var olderThanMs = 3000; // Ignore changes in 3 seconds to avoid most strange cases
+  
+  var isOlder = true;
+  vrtxAdmin._$.ajax({
+    type: "GET",
+    url: location.pathname + "?vrtx=admin&mode=about",
+    async: false,
+    cache: false,
+    success: function (results, status, resp) {
+      var aboutLastModifiedString = $($.parseHTML(results)).find(".prop-lastModified .value").text();
+      if(isServerLastModifiedNewerThanClientLastModified(aboutLastModifiedString, olderThanMs)) {
+        d.close();
+        vrtxAdmin.asyncEditorSavedDeferred.rejectWith(this, ["UPDATED_IN_BACKGROUND", ""]);
+        isOlder = false;
+      }
+    },
+    error: function (xhr, textStatus) {
+      d.close();
+      vrtxAdmin.asyncEditorSavedDeferred.rejectWith(this, [xhr, textStatus]);
+      isOlder = false;
+    }
+  });
+  return isOlder;
+}
+
+function isServerLastModifiedNewerThanClientLastModified(aboutLastModifiedString, olderThanMs) {
   try {
     aboutLastModifiedString = $.trim(aboutLastModifiedString.replace(/(av|by).*/, ""));
     var day = parseInt(aboutLastModifiedString.match(/(\d{1,2})(\,|\.)/)[1]);
-    // Test: http://jsfiddle.net/sce2P/3/
-    var month = {"jan":0,  "feb":1,  "mar":2,  "apr":3,
-                 "mai":4,  "may":4,  "jun":5,  "jul":6, 
-                 "aug":7,  "sep":8,  "oct":9,  "okt":9,
-                 "nov":10, "dec":11, "des":11}[aboutLastModifiedString.match(/(\w{3})(\.| |\w{1,2}(\.| ))/)[1].toLowerCase()];
+    var month = monthAbbrToNum(aboutLastModifiedString);
     var year = parseInt(aboutLastModifiedString.match(/(\d{4}) /)[1]);
     var hours = parseInt(aboutLastModifiedString.match(/ (\d{2}):/)[1]);
     var minutes = parseInt(aboutLastModifiedString.match(/ \d{2}:(\d{2}):/)[1]);
@@ -2359,12 +2361,20 @@ function isServerLastModifiedNewerThanClientLastModified(aboutLastModifiedString
     var utc = date.getTime() + (date.getTimezoneOffset() * 60000);
     var date2 = new Date(utc + (3600000*+2)); // Servers in Oslo
 
-    // If more than 3 seconds newer than loaded time return true
-    return (((+new Date(date2.toISOString())) - (+new Date(loadedTime.toISOString()))) > 3000);
+    // If  newer than loaded time return true
+    return (((+new Date(date2.toISOString())) - (+new Date(loadedTime.toISOString()))) > olderThanMs);
   } catch(ex) { // Parse error, let the user save
     vrtxAdmin.log(ex);
     return false; 
   }
+}
+
+// Test: http://jsfiddle.net/sce2P/4/
+function monthAbbrToNum(aboutLastModifiedString) {
+  return {"jan":0,  "feb":1,  "mar":2,  "apr":3,
+          "mai":4,  "may":4,  "jun":5,  "jul":6, 
+          "aug":7,  "sep":8,  "oct":9,  "okt":9,
+          "nov":10, "dec":11, "des":11}[aboutLastModifiedString.match(/(\w{3})(\.| |\w{1,2}(\.| ))/)[1].toLowerCase()];
 }
 
 function reAuthenticateRetokenizeForms(link) {  

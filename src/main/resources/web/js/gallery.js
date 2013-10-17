@@ -229,21 +229,24 @@
       var activeId = encodeURIComponent(src).replace(/(%|\.)/gim, "");
       
       var active = $("a#" + activeId);
+      var activeDesc = $("#" + activeId + "-description");
       var current = $("a" + container + "-link.active-full-image");
       var currentDesc = $(container + "-description.active-description");
       if(active.length) {
-        showImageDescStrategy(current, active, currentDesc, $("#" + activeId + "-description"), init);
+        resizeContainers(src, active, activeDesc);
+        showImageDescStrategy(current, active, currentDesc, activeDesc, init);
       } else {
         var waitForActive = setTimeout(function() {
           active = $("a#" + activeId);
-          if(!active.length) {
+          activeDesc = $("#" + activeId + "-description");
+          if(!active.length && !activeDesc.length) {
             setTimeout(arguments.callee, 5);
           } else {
-            showImageDescStrategy(current, active, currentDesc, $("#" + activeId + "-description"), init);
+            resizeContainers(src, active, activeDesc);
+            showImageDescStrategy(current, active, currentDesc, activeDesc, init);
           }
         }, 5);
       }
-      resizeContainers(src);
       if(!init) {
         wrpThumbsLinks.filter(".active").removeClass("active").find("img").stop().fadeTo(settings.fadeThumbsInOutTime, settings.fadedThumbsOutOpacity);
       } else {
@@ -274,33 +277,36 @@
       images[src].desc = desc;
     }
     
-    function resizeContainers(src) {
+    function resizeContainers(src, active, activeDesc) {
       // Min 150x100px containers
       var width = Math.max(images[src][widthProp], 150);
       var height = Math.max(images[src][heightProp], 100);
-      $(wrapperContainerLink).css("height", height + "px");
-      $(wrpNavNextPrev, wrpNavNextPrevSpans).css("height", height + "px");
+      active.css("height", height + "px");
+      wrpNavNextPrev.css("height", height + "px");
+      wrpNavNextPrevSpans.css("height", height + "px");
       wrpNav.css("width", width + "px");
       wrpContainer.css("width", width + "px");
       if(!isFullscreen) {
-        $(wrapperContainer + "-description").css("width", (width - 30)); 
+        activeDesc.css("width", (width - 30)); 
       }
     }
     
     function resizeToggleFullscreen() {
       var loadedImages = $("a" + container + "-link img");
-      var src = $("a" + container + "-link.active-full-image")[0].href;
+      var link = $("a" + container + "-link.active-full-image");
+      var src = link[0].href;
+      var desc = $(container + "-description.active-description");
       for(var i = 0, len = loadedImages.length; i < len; i++) {
         loadedImages[i].style.width = images[loadedImages[i].src][widthProp] + "px";
         loadedImages[i].style.height = images[loadedImages[i].src][heightProp] + "px";
       }
-      resizeContainers(src);
+      resizeContainers(src, link, desc);
     }
     
     function resizeFullscreen() {
       var winWidth = $(window).width();
       var winHeight = $(window).height();
-      var toplineHeight = $(".fullscreen-gallery-topline").outerHeight(true);
+      var toplineHeight = wrp.find(".fullscreen-gallery-topline").outerHeight(true);
       var cacheCalculateFullscreenImageDimensions = calculateFullscreenImageDimensions;
       for(var key in images) {
         var image = images[key];
@@ -314,7 +320,7 @@
     function calculateFullscreenImageDimensions(w, h, id, winWidth, winHeight, toplineHeight) {
       var gcdVal = gcd(w, h);
       var aspectRatio = (w/gcdVal) / (h/gcdVal);
-      var desc = $("#" + id + "-description");
+      var desc = wrp.find("#" + id + "-description");
       var descHeight = !desc.hasClass("empty-description") ? desc.outerHeight(true) : 0;
       var winHeight = winHeight - (descHeight + toplineHeight) - 20;
       if(w > winWidth || h > winHeight) {

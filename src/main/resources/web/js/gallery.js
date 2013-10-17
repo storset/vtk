@@ -298,33 +298,35 @@
     }
     
     function resizeFullscreen() {
+      var winWidth = $(window).width();
+      var winHeight = $(window).height();
+      var toplineHeight = $(".fullscreen-gallery-topline").outerHeight(true);
+      var cacheCalculateFullscreenImageDimensions = calculateFullscreenImageDimensions;
       for(var key in images) {
         var image = images[key];
-        var dimsFull = calculateFullscreenImageDimensions(image.fullWidthOrig, image.fullHeightOrig, encodeURIComponent(key).replace(/(%|\.)/gim, ""));
+        var dimsFull = cacheCalculateFullscreenImageDimensions(image.fullWidthOrig, image.fullHeightOrig, encodeURIComponent(key).replace(/(%|\.)/gim, ""), winWidth, winHeight, toplineHeight);
         image.fullWidth = dimsFull[0];
         image.fullHeight = dimsFull[1];
       }
       resizeToggleFullscreen();
     }
   
-    function calculateFullscreenImageDimensions(w, h, id) {
+    function calculateFullscreenImageDimensions(w, h, id, winWidth, winHeight, toplineHeight) {
       var gcdVal = gcd(w, h);
-      var aspectRatioOver = w/gcdVal;
-      var aspectRatioUnder = h/gcdVal;
-      var winWidth = $(window).width();
+      var aspectRatio = (w/gcdVal) / (h/gcdVal);
       var desc = $("#" + id + "-description");
       var descHeight = !desc.hasClass("empty-description") ? desc.outerHeight(true) : 0;
-      var winHeight = $(window).height() - (descHeight + $(".fullscreen-gallery-topline").outerHeight(true)) - 20;
+      var winHeight = winHeight - (descHeight + toplineHeight) - 20;
       if(w > winWidth || h > winHeight) {
         if(h > winHeight) {
-          var newDim = [Math.round(winHeight * (aspectRatioOver / aspectRatioUnder)), winHeight];
+          var newDim = [Math.round(winHeight * aspectRatio), winHeight];
           if(newDim[0] > winWidth) {
-            var newDim = [winWidth, Math.round(winWidth / (aspectRatioOver / aspectRatioUnder))];
+            var newDim = [winWidth, Math.round(winWidth / aspectRatio)];
           }
         } else {
-          var newDim = [winWidth, Math.round(winWidth / (aspectRatioOver / aspectRatioUnder))];
+          var newDim = [winWidth, Math.round(winWidth / aspectRatio)];
           if(newDim[1] > winHeight) {
-            var newDim = [Math.round(winHeight * (aspectRatioOver / aspectRatioUnder)), winHeight];
+            var newDim = [Math.round(winHeight * aspectRatio), winHeight];
           }
         }
         return [newDim[0], newDim[1]];

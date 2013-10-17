@@ -2361,10 +2361,15 @@ function isServerLastModifiedNewerThanClientLastModified(aboutLastModifiedString
     var utc = date.getTime() + (date.getTimezoneOffset() * 60000);
     var date2 = new Date(utc + (3600000*+2)); // Servers in Oslo
 
-    // If  newer than loaded time return true
-    return (((+new Date(date2.toISOString())) - (+new Date(loadedTime.toISOString()))) > olderThanMs);
+    var serverTime = +new Date(date2.toISOString());
+    var clientTime = +new Date(loadedTime.toISOString());
+    // If server last-modified is newer than loaded time return true
+    var diff = serverTime - clientTime;
+    var isNewer = diff > olderThanMs;
+    vrtxAdmin.log({msg: "\n\tServer: " + serverTime + "\n\tClient: " + clientTime + "\n\tisNewer: " + isNewer + " (" + diff + "ms)"});
+    return isNewer;
   } catch(ex) { // Parse error, let the user save
-    vrtxAdmin.log(ex);
+    vrtxAdmin.log({msg: ex});
     return false; 
   }
 }

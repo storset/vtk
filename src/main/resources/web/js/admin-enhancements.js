@@ -2210,6 +2210,12 @@ function editorInteraction(bodyId, vrtxAdm, _$) {
           var msg = vrtxAdmin.serverFacade.error(xhr, textStatus, false);
           if(msg === "RE_AUTH") {
             reAuthenticateRetokenizeForms(link);
+          } else if(msg === "LOCKED") {
+            var d = new VrtxMsgDialog({
+              msg: vrtxAdm.serverFacade.errorMessages.lockStolen,
+              title: vrtxAdm.serverFacade.errorMessages.lockStolenTitle
+            });
+            d.open();
           } else {
             var customTitle = vrtxAdm.serverFacade.errorMessages.customTitle[xhr.status];
             var d = new VrtxMsgDialog({
@@ -3402,7 +3408,19 @@ VrtxAdmin.prototype.serverFacade = {
     } else if (status === 403) {
       msg = (useStatusCodeInMsg ? status + " - " : "") + this.errorMessages.s403;
     } else if (status === 404) {
-      msg = (useStatusCodeInMsg ? status + " - " : "") + this.errorMessages.s404;
+      var serverFacade = this;
+      vrtxAdmin._$.ajax({
+        type: "GET",
+        url: location.href,
+        async: false,
+        success: function (results, status, resp) { // Exists - soneone has locked it
+          msg = useStatusCodeInMsg ? serverFacade.errorMessages.s404 : "LOCKED";
+        },
+        error: function (xhr, textStatus) {         // Removed/moved
+          msg = (useStatusCodeInMsg ? status + " - " : "") + serverFacade.errorMessages.s404;
+        }
+      });
+      
     } else {
       msg = (useStatusCodeInMsg ? status + " - " : "") + this.errorMessages.general + " " + textStatus;
     }

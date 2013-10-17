@@ -2340,10 +2340,11 @@ function isServerLastModifiedNewerThanClientLastModified(aboutLastModifiedString
   try {
     aboutLastModifiedString = $.trim(aboutLastModifiedString.replace(/(av|by).*/, ""));
     var day = parseInt(aboutLastModifiedString.match(/(\d{1,2})(\,|\.)/)[1]);
-    var month = {"jan":0, "feb":1, "mar":2, "apr":3,
-                 "mai":4, "may":4, "jul":5, "jun":6, 
-                 "aug":7, "sep":8, "oct":9, "okt":9,
-                 "nov":10, "dec":11, "des":11}[aboutLastModifiedString.match(/(\w{3})(\.| )/)[1].toLowerCase()];
+    // Test: http://jsfiddle.net/sce2P/3/
+    var month = {"jan":0,  "feb":1,  "mar":2,  "apr":3,
+                 "mai":4,  "may":4,  "jun":5,  "jul":6, 
+                 "aug":7,  "sep":8,  "oct":9,  "okt":9,
+                 "nov":10, "dec":11, "des":11}[aboutLastModifiedString.match(/(\w{3})(\.| |\w{1,2}(\.| ))/)[1].toLowerCase()];
     var year = parseInt(aboutLastModifiedString.match(/(\d{4}) /)[1]);
     var hours = parseInt(aboutLastModifiedString.match(/ (\d{2}):/)[1]);
     var minutes = parseInt(aboutLastModifiedString.match(/ \d{2}:(\d{2}):/)[1]);

@@ -321,7 +321,7 @@
         ww = winWidth, wh = winHeight;
         var timer = setTimeout(function() {
           wrp.find(container + "-description.active-description").filter(":not(.hola)").removeClass("active-description");
-          wrp.find(container + "-description.active-hola").removeClass("hola");
+          wrp.find(container + "-description.hola").removeClass("hola");
           resizeToggleFullscreen();
         }, 50);
       } else {

@@ -50,11 +50,6 @@
   border: none;
 }
 
-/* IE 7 better downscaling */
-*:first-child+html .vrtx-image-listing-include ul img {
-  -ms-interpolation-mode : bicubic;
-}
-
 .vrtx-image-listing-include ul.vrtx-image-listing-include-thumbs-pure-css {
   width: auto;
 }

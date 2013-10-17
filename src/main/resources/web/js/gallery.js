@@ -303,16 +303,20 @@
       resizeContainers(src, link, desc);
     }
     
+    var ww = 0, wh = 0;
     function resizeFullscreen() {
       var winWidth = $(window).width();
       var winHeight = $(window).height();
-      var toplineHeight = wrp.find(".fullscreen-gallery-topline").outerHeight(true);
-      var cacheCalculateFullscreenImageDimensions = calculateFullscreenImageDimensions;
-      for(var key in images) {
-        var image = images[key];
-        var dimsFull = cacheCalculateFullscreenImageDimensions(image.fullWidthOrig, image.fullHeightOrig, encodeURIComponent(key).replace(/(%|\.)/gim, ""), winWidth, winHeight, toplineHeight);
-        image.fullWidth = dimsFull[0];
-        image.fullHeight = dimsFull[1];
+      if(ww != winWidth && wh != winHeight) {
+        var toplineHeight = wrp.find(".fullscreen-gallery-topline").outerHeight(true);
+        var cacheCalculateFullscreenImageDimensions = calculateFullscreenImageDimensions;
+        for(var key in images) {
+          var image = images[key];
+          var dimsFull = cacheCalculateFullscreenImageDimensions(image.fullWidthOrig, image.fullHeightOrig, encodeURIComponent(key).replace(/(%|\.)/gim, ""), winWidth, winHeight, toplineHeight);
+          image.fullWidth = dimsFull[0];
+          image.fullHeight = dimsFull[1];
+        }
+        ww = winWidth, wh = winHeight;
       }
       resizeToggleFullscreen();
     }

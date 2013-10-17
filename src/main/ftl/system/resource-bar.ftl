@@ -6,6 +6,9 @@
 <#assign resource = resourceContext.currentResource />
 <#assign lang = vrtx.getMsg("eventListing.calendar.lang", "en") />
 
+<#assign lastModified = resource.getLastModified() />
+<span id="resource-last-modified">${lastModified?string("yyyy")},${lastModified?string("MM")},${lastModified?string("dd")},${lastModified?string("HH")},${lastModified?string("mm")},${lastModified?string("ss")}</span>
+
 <script type="text/javascript"><!--
   if(vrtxAdmin.isIE7 || vrtxAdmin.isIETridentInComp) {
     if(vrtxAdmin.isIETridentInComp) {

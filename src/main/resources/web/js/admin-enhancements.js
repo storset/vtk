@@ -34,10 +34,8 @@
     1. Config
 \*-------------------------------------------------------------------*/
 
-// Client date
-var startLoadTime = new Date();
-var loadedTime = startLoadTime;
-startLoadTime = +startLoadTime; // => Unix-time
+
+var startLoadTime = +new Date();
 
 /**
  * Creates an instance of VrtxAdmin
@@ -152,6 +150,8 @@ vrtxAdmin._$(document).ready(function () {
   vrtxAdm.cachedBody.addClass("js");
   if (vrtxAdm.runReadyLoad === false) return; // XXX: return if should not run all of ready() code
 
+  vrtxAdm.client = $("#resource-last-modified").text().split(",");
+  
   vrtxAdm.miscAdjustments();
   vrtxAdm.initDropdowns();
   vrtxAdm.initTooltips();
@@ -2295,8 +2295,8 @@ function ajaxSave() {
   $.when(futureFormAjax).done(function() {
     _$("#editor").ajaxSubmit({
       success: function () {
-        loadedTime = new Date();
-        var endTime = loadedTime - startTime;
+        updateClientLastModified();
+        var endTime = new Date() - startTime;
         var waitMinMs = 800;
         if (endTime >= waitMinMs) { // Wait minimum 0.8s
           d.close();
@@ -2316,6 +2316,17 @@ function ajaxSave() {
   });
 }
 
+function updateClientLastModified() {
+  vrtxAdmin._$.ajax({
+    type: "GET",
+    url: location.pathname + "?vrtx=admin&mode=about",
+    cache: false,
+    success: function (results, status, resp) {
+      vrtxAdmin.client = $($.parseHTML(results)).find("#resource-last-modified").text().split(",");
+    }
+  });
+}
+
 function isServerLastModifiedOlderThanClientLastModified(d) {
   var olderThanMs = 3000; // Ignore changes in 3 seconds to avoid most strange cases
   
@@ -2326,8 +2337,8 @@ function isServerLastModifiedOlderThanClientLastModified(d) {
     async: false,
     cache: false,
     success: function (results, status, resp) {
-      var aboutLastModifiedString = $($.parseHTML(results)).find(".prop-lastModified .value").text();
-      if(isServerLastModifiedNewerThanClientLastModified(aboutLastModifiedString, olderThanMs)) {
+      vrtxAdmin.server = $($.parseHTML(results)).find("#resource-last-modified").text().split(",");
+      if(isServerLastModifiedNewerThanClientLastModified(olderThanMs)) {
         d.close();
         vrtxAdmin.asyncEditorSavedDeferred.rejectWith(this, ["UPDATED_IN_BACKGROUND", ""]);
         isOlder = false;
@@ -2342,44 +2353,25 @@ function isServerLastModifiedOlderThanClientLastModified(d) {
   return isOlder;
 }
 
-function isServerLastModifiedNewerThanClientLastModified(aboutLastModifiedString, olderThanMs) {
-  try {
-    aboutLastModifiedString = $.trim(aboutLastModifiedString.replace(/(av|by).*/, ""));
-    var day = parseInt(aboutLastModifiedString.match(/(\d{1,2})(\,|\.)/)[1]);
-    var month = monthAbbrToNum(aboutLastModifiedString);
-    var year = parseInt(aboutLastModifiedString.match(/(\d{4}) /)[1]);
-    var hours = parseInt(aboutLastModifiedString.match(/ (\d{2}):/)[1]);
-    var minutes = parseInt(aboutLastModifiedString.match(/ \d{2}:(\d{2}):/)[1]);
-    var seconds = parseInt(aboutLastModifiedString.match(/ \d{2}:\d{2}:(\d{2})/)[1]);
-    var isHours12 = aboutLastModifiedString.match(/ \d{2}:\d{2}:\d{2} (AM|PM)/);
-    if(isHours12 != null) { // 24 hours
-      hours = isHours12[1] == "PM" ? hours + 12
-                                   : isHours12[1] == "AM" && hours === 12 ? hours = 0
-                                                                          : hours;
-    }
-    var date = new Date(year, month, day, hours, minutes, seconds);
-    var utc = date.getTime() + (date.getTimezoneOffset() * 60000);
-    var date2 = new Date(utc + (3600000*+2)); // Servers in Oslo
+function isServerLastModifiedNewerThanClientLastModified(olderThanMs) {
+  try {            
+    var client = vrtxAdmin.client;
+    var server = vrtxAdmin.server;
+    var serverTime = new Date(parseInt(server[0], 10), (parseInt(server[1], 10) - 1), parseInt(server[2], 10),
+                              parseInt(server[3], 10), parseInt(server[4], 10), parseInt(server[5], 10));
+    var clientTime = new Date(parseInt(client[0], 10), (parseInt(client[1], 10) - 1), parseInt(client[2], 10),
+                              parseInt(client[3], 10), parseInt(client[4], 10), parseInt(client[5], 10));
 
-    var serverTime = +new Date(date2.toISOString());
-    var clientTime = +new Date(loadedTime.toISOString());
     // If server last-modified is newer than loaded time return true
-    var diff = serverTime - clientTime;
+    var diff = +serverTime - +clientTime;
     var isNewer = diff > olderThanMs;
     vrtxAdmin.log({msg: "\n\tServer: " + serverTime + "\n\tClient: " + clientTime + "\n\tisNewer: " + isNewer + " (" + diff + "ms)"});
+    
     return isNewer;
   } catch(ex) { // Parse error, let the user save
     vrtxAdmin.log({msg: ex});
     return false; 
   }
-}
-
-// Test: http://jsfiddle.net/sce2P/4/
-function monthAbbrToNum(aboutLastModifiedString) {
-  return {"jan":0,  "feb":1,  "mar":2,  "apr":3,
-          "mai":4,  "may":4,  "jun":5,  "jul":6, 
-          "aug":7,  "sep":8,  "oct":9,  "okt":9,
-          "nov":10, "dec":11, "des":11}[aboutLastModifiedString.match(/(\w{3})(\.| |\w{1,2}(\.| ))/)[1].toLowerCase()];
 }
 
 function reAuthenticateRetokenizeForms(link) {  

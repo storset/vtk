@@ -35,6 +35,8 @@ import java.io.File;
 import java.net.URI;
 import java.util.Date;
 import net.sf.json.JSONObject;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
@@ -50,6 +52,8 @@ public class VideoApiClient {
     private RestTemplate restTemplate;
     private String repositoryId;
     private String apiBaseUrl;
+    
+    private Log logger = LogFactory.getLog(VideoApiClient.class);
 
     /**
      * Create new video object in videoapp.
@@ -63,6 +67,8 @@ public class VideoApiClient {
         postJson.element("path", path);
         
         URI newVideoLocation = this.restTemplate.postForLocation(withBaseUrl("/videos/{host}/"), postJson, this.repositoryId);
+        logger.debug("newVideoLocation = " + newVideoLocation);
+        
         return getVideo(newVideoLocation).copyBuilder().uploadContentType(contentType).build();
     }
     

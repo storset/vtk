@@ -169,6 +169,8 @@ var VrtxConfirmDialog = dejavu.Class.declare({
       title: opts.title,
       hasOk: true,
       hasCancel: true,
+      btnTextOk: opts.btnTextOk,
+      btnTextCancel: opts.btnTextCancel,
       onOk: opts.onOk,
       onOkOpts: opts.onOkOpts,
       onCancel: opts.onCancel

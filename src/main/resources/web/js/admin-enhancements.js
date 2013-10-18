@@ -2213,9 +2213,15 @@ function editorInteraction(bodyId, vrtxAdm, _$) {
           /* Fail in performSave() for exceeding 1500 chars in intro/add.content is handled in editor.js with popup */
           
           if(xhr === "UPDATED_IN_BACKGROUND") {
-            var d = new VrtxMsgDialog({
+            var d = new VrtxConfirmDialog({
               msg: vrtxAdm.serverFacade.errorMessages.outOfDate,
-              title: vrtxAdm.serverFacade.errorMessages.outOfDateTitle
+              title: vrtxAdm.serverFacade.errorMessages.outOfDateTitle,
+              btnTextOk: "Overskriv",
+              onOk: function() {
+                vrtxAdm.client = vrtxAdm.server;
+                $("input[name='" + vrtxAdm.editorSaveButtonName + "']").click();
+              },
+              onCancel: function () {}
             });
             d.open();
             return false;
@@ -2360,6 +2366,7 @@ function isServerLastModifiedNewerThanClientLastModified(olderThanMs) {
     // If server last-modified is newer than loaded time return true
     var diff = +serverTime - +clientTime;
     var isNewer = diff > olderThanMs;
+    
     vrtxAdmin.log({msg: "\n\tServer: " + serverTime + "\n\tClient: " + clientTime + "\n\tisNewer: " + isNewer + " (" + diff + "ms)"});
     
     return isNewer;

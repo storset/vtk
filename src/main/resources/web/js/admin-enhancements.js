@@ -2214,7 +2214,8 @@ function editorInteraction(bodyId, vrtxAdm, _$) {
           
           if(xhr === "UPDATED_IN_BACKGROUND") {
             var d = new VrtxConfirmDialog({
-              msg: vrtxAdm.serverFacade.errorMessages.outOfDate.replace(/^([^.]+)( \.)/, "$1 " + vrtxAdm.serverModifiedBy + "."),
+              msg: vrtxAdm.serverFacade.errorMessages.outOfDate.replace(/^([^.]+)( \.)/, "$1:</p><p><strong>" +
+                   vrtxAdm.serverModifiedBy + " " + serverTimeFormatToClientTimeFormat(vrtxAdmin.serverLastModified).toLocaleString() + "</strong></p><p>"),
               title: vrtxAdm.serverFacade.errorMessages.outOfDateTitle,
               btnTextOk: vrtxAdm.serverFacade.errorMessages.outOfDateOverwriteOk,
               onOk: function() {
@@ -2357,12 +2358,8 @@ function isServerLastModifiedOlderThanClientLastModified(d) {
 
 function isServerLastModifiedNewerThanClientLastModified(olderThanMs) {
   try {            
-    var client = vrtxAdmin.clientLastModified;
-    var server = vrtxAdmin.serverLastModified;
-    var serverTime = new Date(parseInt(server[0], 10), (parseInt(server[1], 10) - 1), parseInt(server[2], 10),
-                              parseInt(server[3], 10), parseInt(server[4], 10), parseInt(server[5], 10));
-    var clientTime = new Date(parseInt(client[0], 10), (parseInt(client[1], 10) - 1), parseInt(client[2], 10),
-                              parseInt(client[3], 10), parseInt(client[4], 10), parseInt(client[5], 10));
+    var serverTime = serverTimeFormatToClientTimeFormat(vrtxAdmin.serverLastModified);
+    var clientTime = serverTimeFormatToClientTimeFormat(vrtxAdmin.clientLastModified);
     // If server last-modified is newer than client last-modified return true
     var diff = +serverTime - +clientTime;
     var isNewer = diff > olderThanMs;
@@ -2372,6 +2369,11 @@ function isServerLastModifiedNewerThanClientLastModified(olderThanMs) {
     vrtxAdmin.log({msg: ex});
     return true; 
   }
+}
+
+function serverTimeFormatToClientTimeFormat(time) {
+  return new Date(parseInt(time[0], 10), (parseInt(time[1], 10) - 1), parseInt(time[2], 10),
+                  parseInt(time[3], 10), parseInt(time[4], 10), parseInt(time[5], 10));
 }
 
 function reAuthenticateRetokenizeForms(link) {  

@@ -601,7 +601,7 @@ a:hover {
 
 /* 3.2 Resource title */
 
-#resource-last-modified {
+.hidden-server-info {
   display: none;
 }
 

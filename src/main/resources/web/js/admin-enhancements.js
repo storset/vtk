@@ -2214,7 +2214,7 @@ function editorInteraction(bodyId, vrtxAdm, _$) {
           
           if(xhr === "UPDATED_IN_BACKGROUND") {
             var d = new VrtxConfirmDialog({
-              msg: vrtxAdm.serverFacade.errorMessages.outOfDate,
+              msg: vrtxAdm.serverFacade.errorMessages.outOfDate.replace(/^([^.]+)( \.)/, "$1 " + vrtxAdm.serverModifiedBy + "."),
               title: vrtxAdm.serverFacade.errorMessages.outOfDateTitle,
               btnTextOk: vrtxAdm.serverFacade.errorMessages.outOfDateOverwriteOk,
               onOk: function() {
@@ -2303,7 +2303,7 @@ function ajaxSave() {
   $.when(futureFormAjax).done(function() {
     _$("#editor").ajaxSubmit({
       success: function(results, status, xhr) { 
-        vrtxAdmin.clientLastModified = $($.parseHTML(results)).find("#resource-last-modified").text().split(",");
+        vrtxAdm.clientLastModified = $($.parseHTML(results)).find("#resource-last-modified").text().split(",");
         var endTime = new Date() - startTime;
         var waitMinMs = 800;
         if (endTime >= waitMinMs) { // Wait minimum 0.8s
@@ -2339,6 +2339,7 @@ function isServerLastModifiedOlderThanClientLastModified(d) {
     cache: false,
     success: function (results, status, resp) {
       vrtxAdmin.serverLastModified = $($.parseHTML(results)).find("#resource-last-modified").text().split(",");
+      vrtxAdmin.serverModifiedBy = $($.parseHTML(results)).find("#resource-last-modified-by").text();
       if(isServerLastModifiedNewerThanClientLastModified(olderThanMs)) {
         d.close();
         vrtxAdmin.asyncEditorSavedDeferred.rejectWith(this, ["UPDATED_IN_BACKGROUND", ""]);

@@ -150,7 +150,7 @@ vrtxAdmin._$(document).ready(function () {
   vrtxAdm.cachedBody.addClass("js");
   if (vrtxAdm.runReadyLoad === false) return; // XXX: return if should not run all of ready() code
 
-  vrtxAdm.client = $("#resource-last-modified").text().split(",");
+  vrtxAdm.clientLastModified = $("#resource-last-modified").text().split(",");
   
   vrtxAdm.miscAdjustments();
   vrtxAdm.initDropdowns();
@@ -2216,9 +2216,9 @@ function editorInteraction(bodyId, vrtxAdm, _$) {
             var d = new VrtxConfirmDialog({
               msg: vrtxAdm.serverFacade.errorMessages.outOfDate,
               title: vrtxAdm.serverFacade.errorMessages.outOfDateTitle,
-              btnTextOk: "Overskriv",
+              btnTextOk: vrtxAdm.serverFacade.errorMessages.outOfDateOverwriteOk,
               onOk: function() {
-                vrtxAdm.client = vrtxAdm.server;
+                vrtxAdm.clientLastModified = vrtxAdm.serverLastModified;
                 $("input[name='" + vrtxAdm.editorSaveButtonName + "']").click();
               },
               onCancel: function () {}
@@ -2303,7 +2303,7 @@ function ajaxSave() {
   $.when(futureFormAjax).done(function() {
     _$("#editor").ajaxSubmit({
       success: function(results, status, xhr) { 
-        vrtxAdmin.client = $($.parseHTML(results)).find("#resource-last-modified").text().split(",");
+        vrtxAdmin.clientLastModified = $($.parseHTML(results)).find("#resource-last-modified").text().split(",");
         var endTime = new Date() - startTime;
         var waitMinMs = 800;
         if (endTime >= waitMinMs) { // Wait minimum 0.8s
@@ -2325,7 +2325,7 @@ function ajaxSave() {
 }
 
 function updateClientLastModifiedAlreadyRetrieved() {
-  vrtxAdmin.client = $("#resource-last-modified").text().split(",");
+  vrtxAdmin.clientLastModified = $("#resource-last-modified").text().split(",");
 }
 
 function isServerLastModifiedOlderThanClientLastModified(d) {
@@ -2338,7 +2338,7 @@ function isServerLastModifiedOlderThanClientLastModified(d) {
     async: false,
     cache: false,
     success: function (results, status, resp) {
-      vrtxAdmin.server = $($.parseHTML(results)).find("#resource-last-modified").text().split(",");
+      vrtxAdmin.serverLastModified = $($.parseHTML(results)).find("#resource-last-modified").text().split(",");
       if(isServerLastModifiedNewerThanClientLastModified(olderThanMs)) {
         d.close();
         vrtxAdmin.asyncEditorSavedDeferred.rejectWith(this, ["UPDATED_IN_BACKGROUND", ""]);
@@ -2356,23 +2356,20 @@ function isServerLastModifiedOlderThanClientLastModified(d) {
 
 function isServerLastModifiedNewerThanClientLastModified(olderThanMs) {
   try {            
-    var client = vrtxAdmin.client;
-    var server = vrtxAdmin.server;
+    var client = vrtxAdmin.clientLastModified;
+    var server = vrtxAdmin.serverLastModified;
     var serverTime = new Date(parseInt(server[0], 10), (parseInt(server[1], 10) - 1), parseInt(server[2], 10),
                               parseInt(server[3], 10), parseInt(server[4], 10), parseInt(server[5], 10));
     var clientTime = new Date(parseInt(client[0], 10), (parseInt(client[1], 10) - 1), parseInt(client[2], 10),
                               parseInt(client[3], 10), parseInt(client[4], 10), parseInt(client[5], 10));
-
-    // If server last-modified is newer than loaded time return true
+    // If server last-modified is newer than client last-modified return true
     var diff = +serverTime - +clientTime;
     var isNewer = diff > olderThanMs;
-    
     vrtxAdmin.log({msg: "\n\tServer: " + serverTime + "\n\tClient: " + clientTime + "\n\tisNewer: " + isNewer + " (" + diff + "ms)"});
-    
     return isNewer;
-  } catch(ex) { // Parse error, let the user save
+  } catch(ex) { // Parse error, return true (we don't know)
     vrtxAdmin.log({msg: ex});
-    return false; 
+    return true; 
   }
 }
 

@@ -21,7 +21,7 @@
   }
   var cancelI18n = '${vrtx.getMsg("editor.cancel")}',
       datePickerLang = "${lang}",
-      loadingSubfolders = '${vrtx.getMsg("manage.load-subfolders")}';
+      loadingSubfolders = '${vrtx.getMsg("manage.load-subfolders")}',
       publishing = {
         msg: {
           error: {
@@ -42,6 +42,7 @@
     lockStolenTitle: "${vrtx.getMsg('ajaxError.lockStolen.title')}",
     outOfDate: "${vrtx.getMsg('ajaxError.out-of-date')}",
     outOfDateTitle: "${vrtx.getMsg('ajaxError.out-of-date.title')}",
+    outOfDateOverwriteOk: "${vrtx.getMsg('ajaxError.out-of-date.overwrite')}",
     sessionInvalid: "${vrtx.getMsg('ajaxError.sessionInvalid')}",
     sessionInvalidTitle: "${vrtx.getMsg('ajaxError.sessionInvalid.title')}",
     sessionInvalidOk: "${vrtx.getMsg('ajaxError.sessionInvalid.ok')}",

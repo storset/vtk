@@ -2217,7 +2217,11 @@ function editorInteraction(bodyId, vrtxAdm, _$) {
               msg: vrtxAdm.serverFacade.errorMessages.outOfDate.replace(/^([^.]+)( \.)/, "$1:</p><p><strong>" +
                    vrtxAdm.serverModifiedBy + " " + serverTimeFormatToClientTimeFormat(vrtxAdmin.serverLastModified).toLocaleString() + "</strong></p><p>"),
               title: vrtxAdm.serverFacade.errorMessages.outOfDateTitle,
+              width: 500,
               btnTextOk: vrtxAdm.serverFacade.errorMessages.outOfDateOverwriteOk,
+              extraBtns: [{ btnText: vrtxAdm.serverFacade.errorMessages.outOfDateRefreshOk, onOk: function() {
+                location.reload(true);
+              }}],
               onOk: function() {
                 vrtxAdm.clientLastModified = vrtxAdm.serverLastModified;
                 $("input[name='" + vrtxAdm.editorSaveButtonName + "']").click();

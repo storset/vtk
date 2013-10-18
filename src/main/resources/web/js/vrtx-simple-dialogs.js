@@ -28,7 +28,7 @@ var AbstractVrtxSimpleDialog = dejavu.AbstractClass.declare({
       var dialogOpts =     { modal: true,                        
                              autoOpen: false,
                              resizable: false,
-                             buttons: this.__generateOkCancel() };
+                             buttons: this.__generateButtons() };
       if (opts.width)      { dialogOpts.width = opts.width; }
       if (opts.height)     { dialogOpts.height = opts.height; }
       if (opts.unclosable) { dialogOpts.closeOnEscape = false; }
@@ -46,7 +46,7 @@ var AbstractVrtxSimpleDialog = dejavu.AbstractClass.declare({
                              };
       this.__dialogOpts = dialogOpts;
   },
-  __generateOkCancel: function() {
+  __generateButtons: function() {
     var buttons = {};
     if (this.__opts.hasOk) {
       var ok = this.__opts.btnTextOk || "Ok";
@@ -55,6 +55,15 @@ var AbstractVrtxSimpleDialog = dejavu.AbstractClass.declare({
         $(this).dialog("close");
         if(dialog.__opts.onOk) dialog.__opts.onOk(dialog.__opts.onOkOpts);
       };
+    }
+    if(this.__opts.extraBtns) {
+      for(var i = 0, len = this.__opts.extraBtns.length; i < len; i++) {
+        var extraBtn = this.__opts.extraBtns[i];
+        buttons[extraBtn.btnText] = function() {
+          $(this).dialog("close");
+          if(extraBtn.onOk) extraBtn.onOk(extraBtn.onOkOpts);
+        };
+      }
     }
     if (this.__opts.hasCancel) {
       var cancel = this.__opts.btnTextCancel || ((typeof cancelI18n != "undefined") ? cancelI18n : "Cancel");
@@ -167,13 +176,16 @@ var VrtxConfirmDialog = dejavu.Class.declare({
       selector: "#dialog-confirm",
       msg: opts.msg,
       title: opts.title,
+      width: opts.width,
+      height: opts.height,
       hasOk: true,
       hasCancel: true,
       btnTextOk: opts.btnTextOk,
       btnTextCancel: opts.btnTextCancel,
       onOk: opts.onOk,
       onOkOpts: opts.onOkOpts,
-      onCancel: opts.onCancel
+      onCancel: opts.onCancel,
+      extraBtns: opts.extraBtns
     });
   }
 });

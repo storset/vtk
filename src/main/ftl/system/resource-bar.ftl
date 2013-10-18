@@ -44,6 +44,7 @@
     lockStolenTitle: "${vrtx.getMsg('ajaxError.lockStolen.title')}",
     outOfDate: "${vrtx.getMsg('ajaxError.out-of-date')}",
     outOfDateTitle: "${vrtx.getMsg('ajaxError.out-of-date.title')}",
+    outOfDateRefreshOk: "${vrtx.getMsg('ajaxError.out-of-date.refresh')}",
     outOfDateOverwriteOk: "${vrtx.getMsg('ajaxError.out-of-date.overwrite')}",
     sessionInvalid: "${vrtx.getMsg('ajaxError.sessionInvalid')}",
     sessionInvalidTitle: "${vrtx.getMsg('ajaxError.sessionInvalid.title')}",

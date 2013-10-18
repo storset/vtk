@@ -2323,7 +2323,7 @@ function updateClientLastModifiedAlreadyRetrieved() {
 }
 
 function isServerLastModifiedOlderThanClientLastModified(d) {
-  var olderThanMs = 3000; // Ignore changes in 3 seconds to avoid most strange cases
+  var olderThanMs = 1000; // Ignore changes in 1 second to avoid most strange cases
   
   var isOlder = true;
   vrtxAdmin._$.ajax({

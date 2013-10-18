@@ -285,19 +285,21 @@ VrtxAdmin.prototype.initResourceMenus = function initResourceMenus() {
     });
     vrtxAdm.completeFormAsync({
       selector: "form#" + publishUnpublishService + "-form input[type=submit]",
-      updateSelectors: ["#resource-title", "#directory-listing", ".prop-lastModified"],
+      updateSelectors: ["#resource-title", "#directory-listing", ".prop-lastModified", "#resource-last-modified"],
       funcComplete: (isSavingBeforePublish ? function (link) { // Save async
         $(".vrtx-focus-button.vrtx-save-button input").click();
         vrtxAdm.completeFormAsyncPost({ // Publish async
-          updateSelectors: ["#resource-title"],
+          updateSelectors: ["#resource-title", "#resource-last-modified"],
           link: link,
           form: $("#vrtx-publish-document-form"),
           funcComplete: function () {
+            updateClientLastModifiedAlreadyRetrieved();
             vrtxAdm.globalAsyncComplete();
           }
         });
         return false;
       } : function(link) {
+        updateClientLastModifiedAlreadyRetrieved();
         vrtxAdm.globalAsyncComplete();
       }),
       post: (!isSavingBeforePublish && (typeof isImageAudioVideo !== "boolean" || !isImageAudioVideo))
@@ -437,7 +439,7 @@ VrtxAdmin.prototype.initGlobalDialogs = function initGlobalDialogs() {
   
   vrtxAdm.completeFormAsync({
     selector: "#dialog-html-advanced-publish-settings-content #submitButtons input",
-    updateSelectors: ["#resource-title", "#directory-listing", ".prop-lastModified"],
+    updateSelectors: ["#resource-title", "#directory-listing", ".prop-lastModified", "#resource-last-modified"],
     post: true,
     isUndecoratedService: true,
     funcProceedCondition: function(options) {
@@ -460,11 +462,11 @@ VrtxAdmin.prototype.initGlobalDialogs = function initGlobalDialogs() {
       }
       
       datepickerApsD.prepareForSave();
-      
       vrtxAdm.completeFormAsyncPost(options);
     },
     funcComplete: function () {
       apsD.close();
+      updateClientLastModifiedAlreadyRetrieved();
       vrtxAdm.globalAsyncComplete();
     }
   });
@@ -2314,6 +2316,10 @@ function ajaxSave() {
       }
     });
   });
+}
+
+function updateClientLastModifiedAlreadyRetrieved() {
+  vrtxAdmin.client = $("#resource-last-modified").text().split(",");
 }
 
 function updateClientLastModified() {

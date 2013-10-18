@@ -2296,8 +2296,8 @@ function ajaxSave() {
   }
   $.when(futureFormAjax).done(function() {
     _$("#editor").ajaxSubmit({
-      success: function () {
-        updateClientLastModified();
+      success: function(results, status, xhr) { 
+        vrtxAdmin.client = $($.parseHTML(results)).find("#resource-last-modified").text().split(",");
         var endTime = new Date() - startTime;
         var waitMinMs = 800;
         if (endTime >= waitMinMs) { // Wait minimum 0.8s
@@ -2320,17 +2320,6 @@ function ajaxSave() {
 
 function updateClientLastModifiedAlreadyRetrieved() {
   vrtxAdmin.client = $("#resource-last-modified").text().split(",");
-}
-
-function updateClientLastModified() {
-  vrtxAdmin._$.ajax({
-    type: "GET",
-    url: location.pathname + "?vrtx=admin&mode=about",
-    cache: false,
-    success: function (results, status, resp) {
-      vrtxAdmin.client = $($.parseHTML(results)).find("#resource-last-modified").text().split(",");
-    }
-  });
 }
 
 function isServerLastModifiedOlderThanClientLastModified(d) {

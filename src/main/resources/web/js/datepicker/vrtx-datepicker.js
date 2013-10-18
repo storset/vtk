@@ -56,7 +56,7 @@ var VrtxDatepicker = dejavu.Class.declare({
     }
     $.when(futureUi).done(function() {
       var futureDatepickerLang = $.Deferred();
-      if (opts.language !== "" && !$.datepicker.regional[opts.language]) {
+      if (opts.language != "" && opts.language != "en" && !$.datepicker.regional[opts.language]) {
         $.getScript(rootUrl + "/jquery/plugins/ui/jquery-ui-" + jQueryUiVersion + ".custom/js/jquery.ui.datepicker-" + opts.language + ".js", function() {
           futureDatepickerLang.resolve(); 
           $.datepicker.setDefaults($.datepicker.regional[opts.language]);

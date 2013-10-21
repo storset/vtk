@@ -50,7 +50,8 @@
     var firstImage = wrpThumbsLinks.filter(".active");
     if(!firstImage.length) return this; 
     showImage(firstImage.find("img.vrtx-thumbnail-image"), true);
-    $(wrpNavNextPrev, wrpNavNextPrevSpans).fadeTo(0, 0);
+    wrpNavNextPrev.fadeTo(0, 0);
+    wrpNavNextPrevSpans.fadeTo(0, 0);
     
     // Thumbs interaction
     wrp.on("mouseover mouseout click", "li a", function (e) {
@@ -143,14 +144,9 @@
     function nextPrevNavigate(e, dir) {
       var isNext = dir > 0;	
       if (e.type == "mouseover") {
+        wrpNavNext.stop().fadeTo(settings.fadeNavInOutTime, isNext ? 1 : settings.fadedInActiveNavOpacity);
+        wrpNavPrev.stop().fadeTo(settings.fadeNavInOutTime, isNext ? settings.fadedInActiveNavOpacity : 1);
         wrpNavNextPrevSpans.stop().fadeTo(settings.fadeNavInOutTime, settings.fadedNavOpacity);   /* XXX: some filtering instead below */
-        if(isNext) {
-          wrpNavNext.stop().fadeTo(settings.fadeNavInOutTime, 1);
-          wrpNavPrev.stop().fadeTo(settings.fadeNavInOutTime, settings.fadedInActiveNavOpacity);
-        } else {
-          wrpNavPrev.stop().fadeTo(settings.fadeNavInOutTime, 1);
-          wrpNavNext.stop().fadeTo(settings.fadeNavInOutTime, settings.fadedInActiveNavOpacity);
-        }
       } else if (e.type == "mouseout") {
         $(wrpNavNextPrev, wrpNavNextPrevSpans).stop().fadeTo(settings.fadeNavInOutTime, 0);
       } else {

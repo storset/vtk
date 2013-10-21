@@ -185,21 +185,19 @@
           activeIdx = active.parent().index() - 1,
           activeSrc = active.find(".vrtx-thumbnail-image")[0].src.split("?")[0],
           alternate = false,
-          activeIdxMinus = 0,
-          activeIdxPlus = 0,
           num = 2,
           i = 1;
       loadImage(activeSrc);
       var loadNextPrevImages = setTimeout(function() {
         if(alternate) {
-          loadImage(imageUrlsToBePrefetched[activeIdxMinus].url);
-          i++;
-        } else {
-          activeIdxMinus = activeIdx - i;
+          var activeIdxMinus = activeIdx - i;
           if(activeIdxMinus < 0) {
             activeIdxMinus = imageUrlsToBePrefetchedLen - (~activeIdxMinus);
           }
-          activeIdxPlus = activeIdx + i;
+          loadImage(imageUrlsToBePrefetched[activeIdxMinus].url);
+          i++;
+        } else {
+          var activeIdxPlus = activeIdx + i;
           if(activeIdxPlus > imageUrlsToBePrefetchedLen) {
             activeIdxPlus = activeIdxPlus - imageUrlsToBePrefetchedLen - 1;
           }

@@ -44,7 +44,7 @@
         wrpNavNextPrev = wrpNav.find("a"), wrpNavNext = wrpNavNextPrev.filter(".next"),
         wrpNavPrev = wrpNavNextPrev.filter(".prev"), wrpNavNextPrevSpans = wrpNavNextPrev.find("span"),
         images = {}, imageUrlsToBePrefetchedLen = imageUrlsToBePrefetched.length - 1, isFullscreen = false,
-        widthProp = "width", heightProp = "height";
+        widthProp = "width", heightProp = "height", minusWidth = 0;
     
     // Init first active image
     var firstImage = wrpThumbsLinks.filter(".active");
@@ -86,6 +86,7 @@
       $("html").toggleClass("fullscreen-gallery");
       isFullscreen = $("html").hasClass("fullscreen-gallery");
       wrp.parents().toggleClass("fullwidth");
+      if(typeof vrtxSGalleryFullscreenToggleBefore === "function") minusWidth = vrtxSGalleryFullscreenToggleBefore(isFullscreen);
       if(!isFullscreen) {
         widthProp = "width";
         heightProp = "height";
@@ -336,7 +337,7 @@
         descriptionContainers.addClass("active-description-recalc");
         for(var key in images) {
           var image = images[key];
-          var dimsFull = cacheCalculateFullscreenImageDimensions(image.fullWidthOrig, image.fullHeightOrig, genId(key), winWidth, winHeight, toplineHeight);
+          var dimsFull = cacheCalculateFullscreenImageDimensions(image.fullWidthOrig - minusWidth, image.fullHeightOrig, genId(key), winWidth, winHeight, toplineHeight);
           image.fullWidth = dimsFull[0];
           image.fullHeight = dimsFull[1];
         }

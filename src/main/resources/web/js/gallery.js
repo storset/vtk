@@ -169,7 +169,7 @@
     }
     
     function loadImage(src) {
-      var id = encodeURIComponent(src).replace(/(%|\.)/gim, "");
+      var id = genId(src);
       if($("a#" + id).length) return;
       var description = "<div id='" + id + "-description' class='" + container.substring(1) + "-description" + (!images[src].desc ? " empty-description" : "") + "' style='display: none; width: " + (images[src].width - 30) + "px'>" +
                           "<a href='javascript:void(0);' class='toggle-fullscreen minimized'>" + showFullscreen + "</a>" + images[src].desc
@@ -239,7 +239,7 @@
       if (init) {
         cacheGenerateLinkImage(activeSrc, image, image.parent());
       }
-      var activeId = encodeURIComponent(activeSrc).replace(/(%|\.)/gim, "");
+      var activeId =  genId(activeSrc);
       
       var active = $("a#" + activeId);
       var activeDesc = $("#" + activeId + "-description");
@@ -338,7 +338,7 @@
         descriptionContainers.addClass("active-description-recalc");
         for(var key in images) {
           var image = images[key];
-          var dimsFull = cacheCalculateFullscreenImageDimensions(image.fullWidthOrig, image.fullHeightOrig, encodeURIComponent(key).replace(/(%|\.)/gim, ""), winWidth, winHeight, toplineHeight);
+          var dimsFull = cacheCalculateFullscreenImageDimensions(image.fullWidthOrig, image.fullHeightOrig, genId(key), winWidth, winHeight, toplineHeight);
           image.fullWidth = dimsFull[0];
           image.fullHeight = dimsFull[1];
         }
@@ -379,6 +379,10 @@
     
     function gcd(a, b) {
       return (b === 0) ? a : gcd (b, a%b);
+    }
+    
+    function genId(src) {
+      return encodeURIComponent(src).replace(/(%|\.)/gim, "");
     }
   };
 })(jQuery);

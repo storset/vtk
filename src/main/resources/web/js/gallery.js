@@ -177,6 +177,7 @@
       wrpContainer.append("<a id='" + id + "' style='display: none' href='" + src + "' class='" + container.substring(1) + "-link'>" +
                             "<img src='" + src + "' alt='" + images[src].alt + "' style='width: " + images[src][widthProp] + "px; height: " + images[src][heightProp] + "px;' />" +
                           "</a>");
+      if(typeof vrtxSGalleryLoadImageAfter === "function") vrtxSGalleryLoadImageAfter(isFullscreen, id);
     }
     
     function prefetchCurrentNextPrevNthImages(n) {

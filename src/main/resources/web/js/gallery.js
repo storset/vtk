@@ -234,19 +234,19 @@
     }
     
     function showImage(image, init) {
-      var src = image.attr("src").split("?")[0]; /* Remove parameters when active is sent in to gallery */
+      var activeSrc = image.attr("src").split("?")[0]; /* Remove parameters when active is sent in to gallery */
 
       if (init) {
-        cacheGenerateLinkImage(src, image, image.parent());
+        cacheGenerateLinkImage(activeSrc, image, image.parent());
       }
-      var activeId = encodeURIComponent(src).replace(/(%|\.)/gim, "");
+      var activeId = encodeURIComponent(activeSrc).replace(/(%|\.)/gim, "");
       
       var active = $("a#" + activeId);
       var activeDesc = $("#" + activeId + "-description");
       var current = $("a" + container + "-link.active-full-image");
       var currentDesc = $(container + "-description.active-description");
       if(active.length) {
-        resizeContainers(src, active, activeDesc);
+        resizeContainers(activeSrc, active, activeDesc);
         showImageDescStrategy(current, active, currentDesc, activeDesc, init);
       } else {
         var waitForActive = setTimeout(function() {
@@ -255,7 +255,7 @@
           if(!active.length && !activeDesc.length) { // Are we (image and description) ready?
             setTimeout(arguments.callee, 5);
           } else {
-            resizeContainers(src, active, activeDesc);
+            resizeContainers(activeSrc, active, activeDesc);
             showImageDescStrategy(current, active, currentDesc, activeDesc, init);
           }
         }, 5);
@@ -299,10 +299,9 @@
       thumb.css(cssProperty, ((tDim > tCDim) ? ((tDim - tCDim) / 2) * -1 : (tDim < tCDim) ? (tCDim - tDim) / 2 : 0) + "px");
     }
     
-    function resizeContainers(src, active, activeDesc) {
-      // Min 150x100px containers
-      var width = Math.max(images[src][widthProp], 150);
-      var height = Math.max(images[src][heightProp], 100);
+    function resizeContainers(activeSrc, active, activeDesc) {
+      var width = Math.max(images[activeSrc][widthProp], 150); // Min 150x100px containers
+      var height = Math.max(images[activeSrc][heightProp], 100);
       active.css("height", height + "px");
       wrpNavNextPrev.css("height", height + "px");
       wrpNavNextPrevSpans.css("height", height + "px");
@@ -315,15 +314,17 @@
     }
 
     function resizeToggleFullscreen() {
+      // Update all images dimensions
       var loadedImages = $("a" + container + "-link img");
-      var link = $("a" + container + "-link.active-full-image");
-      var src = link[0].href;
-      var desc = $(container + "-description.active-description");
       for(var i = loadedImages.length; i--;) {
         loadedImages[i].style.width = images[loadedImages[i].src][widthProp] + "px";
         loadedImages[i].style.height = images[loadedImages[i].src][heightProp] + "px";
       }
-      resizeContainers(src, link, desc);
+      // Resize active containers
+      var active = $("a" + container + "-link.active-full-image");
+      var activeSrc = active[0].href;
+      var activeDesc = $(container + "-description.active-description");
+      resizeContainers(activeSrc, active, activeDesc);
     }
     
     var curWinWidth = 0, curWinHeight = 0;

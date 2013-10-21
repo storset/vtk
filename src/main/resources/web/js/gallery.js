@@ -185,7 +185,7 @@
           activeIdx = active.parent().index() - 1,
           activeSrc = active.find(".vrtx-thumbnail-image")[0].src.split("?")[0],
           alternate = false,
-          num = 2,
+          n = 1, // +- range from current image
           i = 1;
       loadImage(activeSrc);
       var loadNextPrevImages = setTimeout(function() {
@@ -204,7 +204,7 @@
           loadImage(imageUrlsToBePrefetched[activeIdxPlus].url);
         }
         alternate = !alternate;
-        if(i < num) {
+        if(i <= n) {
           setTimeout(arguments.callee, settings.loadNextPrevImagesInterval);
         }
       }, settings.loadNextPrevImagesInterval);

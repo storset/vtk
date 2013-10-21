@@ -313,15 +313,14 @@
       resizeContainers(src, link, desc);
     }
     
-    /* Should only occur once or on window resize */
     var curWinWidth = 0, curWinHeight = 0;
     function resizeFullscreen() {
       var winWidth = $(window).width();
       var winHeight = $(window).height();
-      if(curWinWidth != winWidth && curWinHeight != winHeight) {
+      if(curWinWidth != winWidth && curWinHeight != winHeight) { /* Only occur on init or window resize */
         var toplineHeight = wrp.find(".fullscreen-gallery-topline").outerHeight(true);
         var cacheCalculateFullscreenImageDimensions = calculateFullscreenImageDimensions;
-        var descriptionContainers = wrp.find(container + "-description").filter(":not(.empty-description)");
+        var descriptionContainers = wrp.find(container + "-description").filter(":not(.empty-description)"); // Don't calculate empty descriptions
         descriptionContainers.addClass("active-description-recalc");
         for(var key in images) {
           var image = images[key];
@@ -330,7 +329,7 @@
           image.fullHeight = dimsFull[1];
         }
         curWinWidth = winWidth, curWinHeight = winHeight;
-        var timer = setTimeout(function() {
+        var timer = setTimeout(function() { // Give time to find new heights for loop above
           descriptionContainers.removeClass("active-description-recalc");
           resizeToggleFullscreen();
         }, 50);

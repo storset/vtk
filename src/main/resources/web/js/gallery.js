@@ -94,6 +94,7 @@
         widthProp = "fullWidth";
         heightProp = "fullHeight";
         if(!wrp.find("> .fullscreen-gallery-topline").length) {
+          $("html").addClass("fullscreen-gallery-big-arrows");
           var link = $(this);
           var extraHtml = typeof vrtxSGalleryFullscreenAddExtraHtml === "function" ? vrtxSGalleryFullscreenAddExtraHtml() : "";
           wrp.prepend("<div class='fullscreen-gallery-topline'>" + extraHtml + "<a href='javascript:void(0);' class='toggle-fullscreen'>" + closeFullscreen + "</a></div>");

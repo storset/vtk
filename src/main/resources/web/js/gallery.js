@@ -252,7 +252,7 @@
         var waitForActive = setTimeout(function() {
           active = $("a#" + activeId);
           activeDesc = $("#" + activeId + "-description");
-          if(!active.length && !activeDesc.length) {
+          if(!active.length && !activeDesc.length) { // Are we (image and description) ready?
             setTimeout(arguments.callee, 5);
           } else {
             resizeContainers(src, active, activeDesc);

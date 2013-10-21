@@ -184,14 +184,26 @@
       var active = wrpThumbsLinks.filter(".active"),
           activeIdx = active.parent().index() - 1,
           activeSrc = active.find(".vrtx-thumbnail-image")[0].src.split("?")[0],
-          i = 0;
+          num = 2,
+          i = 1;
       loadImage(activeSrc);
       var loadNextPrevImages = setTimeout(function() {
-        var activeIdxPlus1 = activeIdx + 1, activeIdxMinus1 = activeIdx - 1;
-        var src = imageUrlsToBePrefetched[(i === 0) ? ( activeIdxPlus1 > imageUrlsToBePrefetchedLen ? 0 :  activeIdxPlus1)   // Next, first, prev or last
-                                                    : (activeIdxMinus1 < 0 ? imageUrlsToBePrefetchedLen : activeIdxMinus1)].url;
-        loadImage(src);
-        if(++i < 2) {
+        if(i % num === 0) {
+          var activeIdxMinus = activeIdx - i,
+              under = 0 - activeIdxMinus;
+          if(under > 0) {
+            activeIdxMinus = imageUrlsToBePrefetchedLen - (under - 1);
+          }
+          loadImage(imageUrlsToBePrefetched[activeIdxMinus].url);
+        } else {
+          var activeIdxPlus = activeIdx + i,
+              over = imageUrlsToBePrefetchedLen - activeIdxPlus;
+          if(over < 0) {
+            activeIdxPlus = 0 + (~over + 1);
+          }
+          loadImage(imageUrlsToBePrefetched[activeIdxPlus].url);
+        }
+        if(i++ < num) {
           setTimeout(arguments.callee, settings.loadNextPrevImagesInterval);
         }
       }, settings.loadNextPrevImagesInterval);

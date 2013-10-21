@@ -183,7 +183,7 @@
     function prefetchCurrentNextPrevNthImages(n) {
       var active = wrpThumbsLinks.filter(".active"),
           activeIdx = active.parent().index() - 1,
-          activeSrc = active.find(".vrtx-thumbnail-image")[0].src.split("?")[0],
+          activeSrc = active[0].href.split("?")[0],
           alternate = false,
           i = 1;
       loadImage(activeSrc);
@@ -234,7 +234,7 @@
     }
     
     function showImage(image, init) {
-      var activeSrc = image.attr("src").split("?")[0]; /* Remove parameters when active is sent in to gallery */
+      var activeSrc = image[0].src.split("?")[0]; /* Remove parameters when active is sent in to gallery */
 
       if (init) {
         cacheGenerateLinkImage(activeSrc, image, image.parent());
@@ -322,7 +322,7 @@
       }
       // Resize active containers
       var active = $("a" + container + "-link.active-full-image");
-      var activeSrc = active[0].href;
+      var activeSrc = active[0].href.split("?")[0];
       var activeDesc = $(container + "-description.active-description");
       resizeContainers(activeSrc, active, activeDesc);
     }

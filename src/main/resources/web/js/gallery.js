@@ -209,11 +209,13 @@
       }, settings.loadNextPrevImagesInterval);
     }
 
-    function showImageCrossFade(current, active) {
+    function showImageCrossFade(current, active, activeSrc, activeDesc) {
       current.wrap("<div class='over' />").fadeTo(settings.fadeInOutTime, settings.fadedOutOpacity, function () {
         $(this).unwrap().removeClass("active-full-image").hide();
       });
-      active.addClass("active-full-image").fadeTo(0, 0).fadeTo(settings.fadeInOutTime, 1);
+      active.addClass("active-full-image").fadeTo(0, 0).fadeTo(settings.fadeInOutTime, 1, function () {
+        resizeContainers(activeSrc, active, activeDesc);
+      });
     }
     
     function showImageToggle(current, active) {
@@ -221,15 +223,17 @@
       active.addClass("active-full-image");
     }
     
-    function showImageDescStrategy(current, active, currentDesc, activeDesc, init) {
+    function showImageDescStrategy(current, active, activeSrc, currentDesc, activeDesc, init) {
       currentDesc.removeClass("active-description");
       activeDesc.addClass("active-description");
       if(init) {
         active.addClass("active-full-image");
+        resizeContainers(activeSrc, active, activeDesc);
       } else if(settings.fadeInOutTime > 0 ) {
-        showImageCrossFade(current, active);
+        showImageCrossFade(current, active, activeSrc, activeDesc);
       } else {
         showImageToggle(current, active);
+        resizeContainers(activeSrc, active, activeDesc);
       }
     }
     
@@ -246,7 +250,6 @@
       var current = $("a" + container + "-link.active-full-image");
       var currentDesc = $(container + "-description.active-description");
       if(active.length) {
-        resizeContainers(activeSrc, active, activeDesc);
         showImageDescStrategy(current, active, currentDesc, activeDesc, init);
       } else {
         var waitForActive = setTimeout(function() {
@@ -255,8 +258,7 @@
           if(!active.length && !activeDesc.length) { // Are we (image and description) ready?
             setTimeout(arguments.callee, 5);
           } else {
-            resizeContainers(activeSrc, active, activeDesc);
-            showImageDescStrategy(current, active, currentDesc, activeDesc, init);
+            showImageDescStrategy(current, active, activeSrc, currentDesc, activeDesc, init);
           }
         }, 5);
       }

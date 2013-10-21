@@ -121,7 +121,7 @@
       link2 = $(imgs[j]);
       image2 = link2.find("img.vrtx-thumbnail-image");
       centerThumbnailImageFunc(image2, link2);
-      cacheGenerateLinkImageFunc(image2.attr("src").split("?")[0], image2, link2);
+      cacheGenerateLinkImageFunc(image2[0].src.split("?")[0]);
     }
     
     // Prefetch current, next and prev full images in the background
@@ -237,7 +237,7 @@
       var activeSrc = image[0].src.split("?")[0]; /* Remove parameters when active is sent in to gallery */
 
       if (init) {
-        cacheGenerateLinkImage(activeSrc, image, image.parent());
+        cacheGenerateLinkImage(activeSrc);
       }
       var activeId =  genId(activeSrc);
       
@@ -267,7 +267,7 @@
       }
     }
 
-    function cacheGenerateLinkImage(src, image, link) {
+    function cacheGenerateLinkImage(src) {
       images[src] = {};
       // Find image width and height "precalculated" from Vortex (properties)
       for(var i = 0, len = imageUrlsToBePrefetched.length; i < len; i++) {
@@ -279,10 +279,10 @@
       images[src].fullWidthOrig = parseInt(dims.fullWidth.replace(/[^\d]*/g, ""), 10);
       images[src].fullHeightOrig = parseInt(dims.fullHeight.replace(/[^\d]*/g, ""), 10);
       // HTML encode quotes in alt and title if not already encoded
-      var alt = image.attr("alt");
-      var title = image.attr("title");
-      images[src].alt = alt ? alt.replace(/\'/g, "&#39;").replace(/\"/g, "&quot;") : null;
-      images[src].title = title ? title.replace(/\'/g, "&#39;").replace(/\"/g, "&quot;") : null;
+      var alt = dims.alt;
+      var title = dims.title;
+      images[src].alt = alt != "" ? $("<div/>").html(alt).text().replace(/\'/g, "&#39;").replace(/\"/g, "&quot;") : null;
+      images[src].title = title != "" ? $("<div/>").html(title).text().replace(/\'/g, "&#39;").replace(/\"/g, "&quot;") : null;
       // Add description
       var desc = "";
       if (images[src].title) desc += "<p class='" + container.substring(1) + "-title'>" + images[src].title + "</p>";

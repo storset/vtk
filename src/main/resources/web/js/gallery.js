@@ -250,7 +250,7 @@
       var current = $("a" + container + "-link.active-full-image");
       var currentDesc = $(container + "-description.active-description");
       if(active.length) {
-        showImageDescStrategy(current, active, currentDesc, activeDesc, init);
+        showImageDescStrategy(current, active, activeSrc, currentDesc, activeDesc, init);
       } else {
         var waitForActive = setTimeout(function() {
           active = $("a#" + activeId);

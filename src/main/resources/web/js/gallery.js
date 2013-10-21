@@ -306,7 +306,7 @@
       var link = $("a" + container + "-link.active-full-image");
       var src = link[0].href;
       var desc = $(container + "-description.active-description");
-      for(var i = 0, len = loadedImages.length; i < len; i++) {
+      for(var i = loadedImages.length; i--;) {
         loadedImages[i].style.width = images[loadedImages[i].src][widthProp] + "px";
         loadedImages[i].style.height = images[loadedImages[i].src][heightProp] + "px";
       }

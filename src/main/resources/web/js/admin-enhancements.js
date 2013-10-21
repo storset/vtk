@@ -994,15 +994,21 @@ var VrtxTree = dejavu.Class.declare({
     if (typeof $.fn.treeview !== "function") {
       $.getScript(location.protocol + "//" + location.host + rootUrl + "/jquery/plugins/jquery.treeview.js", function () {
         $.getScript(location.protocol + "//" + location.host + rootUrl + "/jquery/plugins/jquery.treeview.async.js", function () {
-          $.getScript(location.protocol + "//" + location.host + rootUrl + "/jquery/plugins/jquery.scrollTo.min.js", function () {
-            futureTree.resolve();
-          });
+          futureTree.resolve();
         });
       });
     } else {
       futureTree.resolve();
     }
-    $.when(futureTree).done(function() {
+    var futureScrollTo = $.Deferred();
+    if(typeof $.fn.scrollTo !== "function" && tree.__opts.scrollToContent) {
+      $.getScript(location.protocol + "//" + location.host + rootUrl + "/jquery/plugins/jquery.scrollTo.min.js", function () {
+        futureScrollTo.resolve();
+      });
+    } else {
+      futureScrollTo.resolve();
+    }
+    $.when(futureTree, futureScrollTo).done(function() {
       opts.elem.treeview({
         animated: "fast",
         url: location.protocol + '//' + location.host + location.pathname + "?vrtx=admin&uri=&" + opts.service + "&ts=" + (+new Date()),

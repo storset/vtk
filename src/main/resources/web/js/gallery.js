@@ -1,6 +1,7 @@
 /*
  * Vortex Simple Gallery jQuery plugin
- * w/ paging, centered thumbnail navigation and crossfade effect (dimensions from server)
+ * w/ paging, centered thumbnail navigation, fullscreen mode,
+ * [n-1, n+1] full image prefetching and crossfade effect (dimensions from server)
  *
  * Copyright (C) 2010- Øyvind Hatland - University Of Oslo / USIT
  *

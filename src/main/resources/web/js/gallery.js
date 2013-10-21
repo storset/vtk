@@ -125,7 +125,7 @@
     }
     
     // Prefetch current, next and prev full images in the background
-    prefetchCurrentNextPrevImage();
+    prefetchCurrentNextPrevNthImage(1);
     
     wrp.removeClass("loading");
   
@@ -136,7 +136,7 @@
       var img = elm.find("img.vrtx-thumbnail-image");
       showImage(img, false);
       elm.addClass("active");
-      prefetchCurrentNextPrevImage();
+      prefetchCurrentNextPrevNthImage(1);
       img.stop().fadeTo(0, 1);
     }
     
@@ -180,12 +180,11 @@
                           "</a>");
     }
     
-    function prefetchCurrentNextPrevImage() {
+    function prefetchCurrentNextPrevNthImage(n) {
       var active = wrpThumbsLinks.filter(".active"),
           activeIdx = active.parent().index() - 1,
           activeSrc = active.find(".vrtx-thumbnail-image")[0].src.split("?")[0],
           alternate = false,
-          n = 1, // +- range from current image
           i = 1;
       loadImage(activeSrc);
       var loadNextPrevImages = setTimeout(function() {

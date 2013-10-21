@@ -214,7 +214,7 @@
       if(init) {
         active.addClass("active-full-image");
       } else if(settings.fadeInOutTime > 0 ) {
-        howImageCrossFade(current, active);
+        showImageCrossFade(current, active);
       } else {
         showImageToggle(current, active);
       }

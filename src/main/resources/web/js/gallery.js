@@ -314,11 +314,11 @@
     }
     
     /* Should only occur once or on window resize */
-    var ww = 0, wh = 0;
+    var curWinWidth = 0, curWinHeight = 0;
     function resizeFullscreen() {
       var winWidth = $(window).width();
       var winHeight = $(window).height();
-      if(ww != winWidth && wh != winHeight) {
+      if(curWinWidth != winWidth && curWinHeight != winHeight) {
         var toplineHeight = wrp.find(".fullscreen-gallery-topline").outerHeight(true);
         var cacheCalculateFullscreenImageDimensions = calculateFullscreenImageDimensions;
         var descriptionContainers = wrp.find(container + "-description").filter(":not(.empty-description)");
@@ -329,7 +329,7 @@
           image.fullWidth = dimsFull[0];
           image.fullHeight = dimsFull[1];
         }
-        ww = winWidth, wh = winHeight;
+        curWinWidth = winWidth, curWinHeight = winHeight;
         var timer = setTimeout(function() {
           descriptionContainers.removeClass("active-description-recalc");
           resizeToggleFullscreen();

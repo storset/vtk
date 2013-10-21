@@ -101,7 +101,8 @@
         }
         window.scrollTo(0, 0);
         resizeFullscreen();
-      }    
+      }
+      if(typeof vrtxSGalleryFullscreenToggleAfter === "function") vrtxSGalleryFullscreenToggleAfter(isFullscreen);
       e.stopPropagation();
       e.preventDefault();
     });

@@ -185,11 +185,11 @@
           alternate = false,
           i = 1;
       loadImage(activeSrc);
-      var loadNextPrevImages = setTimeout(function() {
+      var loadNextPrevImages = setTimeout(function() {   
         if(alternate) {
           var activeIdxMinus = activeIdx - i;
           if(activeIdxMinus < 0) {
-            activeIdxMinus = imageUrlsToBePrefetchedLen - (~activeIdxMinus);
+            activeIdxMinus = imageUrlsToBePrefetchedLen - (~activeIdxMinus); // ~n = (-|+)n-1
           }
           loadImage(imageUrlsToBePrefetched[activeIdxMinus].url);
           i++;

@@ -278,7 +278,7 @@
       images[src].height = parseInt(dims.height, 10);
       images[src].fullWidthOrig = parseInt(dims.fullWidth.replace(/[^\d]*/g, ""), 10);
       images[src].fullHeightOrig = parseInt(dims.fullHeight.replace(/[^\d]*/g, ""), 10);
-      // HTML encode quotes in alt and title if not already encoded
+      // HTML unescape and encode quotes in alt and title if not already encoded
       var alt = dims.alt;
       var title = dims.title;
       images[src].alt = alt != "" ? $("<div/>").html(alt).text().replace(/\'/g, "&#39;").replace(/\"/g, "&quot;") : null;

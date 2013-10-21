@@ -110,8 +110,8 @@
         resizeFullscreen();
       }
     }));
-    $.vrtxSGalleryResize = function() {
-      resizeFullscreen();
+    $.vrtxSGalleryResize = function(forceResize) {
+      resizeFullscreen(forceResize);
     };
 
     // Generate markup for rest of images
@@ -328,10 +328,10 @@
     }
     
     var curWinWidth = 0, curWinHeight = 0;
-    function resizeFullscreen() {
+    function resizeFullscreen(forceResize) {
       var winWidth = $(window).width();
       var winHeight = $(window).height();
-      if(curWinWidth != winWidth && curWinHeight != winHeight) { /* Only occur on init or window resize */
+      if(forceResize || (curWinWidth != winWidth && curWinHeight != winHeight)) { /* Only occur on init or window resize */
         var toplineHeight = wrp.find(".fullscreen-gallery-topline").outerHeight(true);
         var cacheCalculateFullscreenImageDimensions = calculateFullscreenImageDimensions;
         var descriptionContainers = wrp.find(container + "-description").filter(":not(.empty-description)"); // Don't calculate empty descriptions

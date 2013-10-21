@@ -293,6 +293,7 @@
       </#if>
       </#if>
       
+      <#-- I have no idea what this VTK-2012 hack is supposed ot do, but whatever it is, it's not going to work -->
       <#-- Title for aggregation and manually approve when recursive isn't present -->
       <#if name == "recursive-listing"><#assign recursivePresent = "true" /></#if>
       <#if name == "display-aggregation" && !recursivePresent?exists>

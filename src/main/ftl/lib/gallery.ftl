@@ -107,6 +107,7 @@
 	  <#if (activeImage == url) >
 	     <a href="${url?html}" class="active">
 	       <img class="vrtx-thumbnail-image" src="${url?html}?vrtx=thumbnail" alt='${description}' <#if showTitle>title="${title}"</#if> />
+	       <span><img class="vrtx-full-image" src="${url?split("?")[0]?html}" alt='${description}' /></span>
 	   <#else>
 	     <a href="${url?html}">
 	       <img class="vrtx-thumbnail-image" src="${url?html}?vrtx=thumbnail" alt='${description}' <#if showTitle>title="${title}"</#if> />
@@ -116,6 +117,7 @@
 	     <#if (imageEntry_index == 0) >
 	       <a href="${url?html}" class="active">
 	         <img class="vrtx-thumbnail-image" src="${url?html}?vrtx=thumbnail" alt='${description}' <#if showTitle>title="${title}"</#if> />
+	         <span><img class="vrtx-full-image" src="${url?split("?")[0]?html}" alt='${description}' /></span>
 	     <#else>
 	       <a href="${url?html}">
 	         <img class="vrtx-thumbnail-image" src="${url?html}?vrtx=thumbnail" alt='${description}' <#if showTitle>title="${title}"</#if> />
@@ -128,26 +130,18 @@
 	     <#if (imageEntry_index == 0) >
             <a href="${finalFolderUrl}?actimg=${url?html}&amp;display=gallery" class="active">
               <img class="vrtx-thumbnail-image" src="${url?html}?vrtx=thumbnail" alt='${description}' <#if showTitle>title="${title}"</#if> />
+              <span><img class="vrtx-full-image" src="${url?html}" alt='${description}' /></span>
          <#else>
             <a href="${finalFolderUrl}?actimg=${url?html}&amp;display=gallery">
               <img class="vrtx-thumbnail-image" src="${url?html}?vrtx=thumbnail" alt='${description}' <#if showTitle>title="${title}"</#if> /> 
          </#if>
 	   </#if>
 	 </#if>   
-	          <#if (count < 2)>
-	            <#if imageListing != "">
-	              <span><img class="vrtx-full-image" src="${url?split("?")[0]?html}" alt='${description}' /></span>
-	            <#else>
-	              <span><img class="vrtx-full-image" src="${url?html}" alt='${description}' /></span> 
-	            </#if>
-	          </#if>
-	            <script type="text/javascript"><!--
-	              imageUrlsToBePrefetched.push({url: <#if imageListing != "">'${url?split("?")[0]?html}'<#else>'${url?html}'</#if>, width: '${width}', height: '${height}', fullWidth: '${fullWidth}', fullHeight: '${fullHeight}'});
-	            // -->
-	            </script>
-	          </a>
-	        
-	        
+	     <script type="text/javascript"><!--
+	       imageUrlsToBePrefetched.push({url: <#if imageListing != "">'${url?split("?")[0]?html}'<#else>'${url?html}'</#if>, width: '${width}', height: '${height}', fullWidth: '${fullWidth}', fullHeight: '${fullHeight}'});
+	     // -->
+	     </script>
+	   </a>    
       </li>
     <#local count = count+1 />
   </#list>

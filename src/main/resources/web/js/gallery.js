@@ -198,7 +198,7 @@
         } else {
           var activeIdxPlus = activeIdx + i;
           if(activeIdxPlus > imageUrlsToBePrefetchedLen) {
-            activeIdxPlus = activeIdxPlus - imageUrlsToBePrefetchedLen - 1;
+            activeIdxPlus = ~(imageUrlsToBePrefetchedLen - activeIdxPlus);
           }
           loadImage(imageUrlsToBePrefetched[activeIdxPlus].url);
         }

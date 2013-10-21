@@ -337,7 +337,7 @@
         descriptionContainers.addClass("active-description-recalc");
         for(var key in images) {
           var image = images[key];
-          var dimsFull = cacheCalculateFullscreenImageDimensions(image.fullWidthOrig - minusWidth, image.fullHeightOrig, genId(key), winWidth, winHeight, toplineHeight);
+          var dimsFull = cacheCalculateFullscreenImageDimensions(image.fullWidthOrig, image.fullHeightOrig, genId(key), winWidth, winHeight, toplineHeight);
           image.fullWidth = dimsFull[0];
           image.fullHeight = dimsFull[1];
         }
@@ -356,7 +356,8 @@
       var aspectRatio = (w/gcdVal) / (h/gcdVal);
       var desc = wrp.find("#" + id + "-description");
       var descHeight = !desc.hasClass("empty-description") ? desc.outerHeight(true) : 0;
-      var winHeight = winHeight - (descHeight + toplineHeight) - 20;
+      winHeight = winHeight - (descHeight + toplineHeight) - 20;
+      winWidth = winWidth - minusWidth;
       /* TODO: I've feeling this code can be reduced, but not 100% sure */
       if(w > winWidth || h > winHeight) {
         if(h > winHeight) {

@@ -112,6 +112,8 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
 
     private Assertion manageAssertion;
 
+    private String backstepParameter = "backsteps";
+
     @Override
     public void challenge(HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationProcessingException, ServletException, IOException {
@@ -198,6 +200,12 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
             URL resourceURL = this.login.getRelayStateURL(request);
 
             resourceURL.removeParameter("authTicket");
+
+            String backstepValue = request.getParameter(backstepParameter);
+
+            if (backstepValue != null) {
+                resourceURL.addParameter(backstepParameter, backstepValue);
+            }
 
             cookieMap.put(uioAuthIDP, this.getIdentifier());
             cookieMap.put(vrtxAuthSP, this.getIdentifier());

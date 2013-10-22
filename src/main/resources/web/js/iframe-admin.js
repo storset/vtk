@@ -100,6 +100,9 @@
   function updateHashShareLink(link) {
     if(location.hash.length <= 1) {
       var hash = "";
+      if(window.history && window.history.pushState) { 
+        window.history.pushState("", "", window.location.pathname + window.location.search) 
+      }
     } else {
       var hash = location.hash;
     }

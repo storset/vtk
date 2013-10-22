@@ -51,9 +51,6 @@
 
   <bean id="repository.systemjob.inProcessMetadataProvider" class="org.vortikal.repository.systemjob.InProcessMetadataProvider">
     <property name="thumbnailPropDef" ref="thumbnailPropDef" />
-    <property name="imageService">
-      <bean class="org.vortikal.graphics.ImageServiceImpl" />
-    </property>
     <property name="width" value="${resourcetype.image.thumbnail.width}" />
     <property name="maxSourceImageFileSize" value="${resourcetype.image.thumbnail.maxSourceImageFileSize}" />
     <property name="maxSourceImageRawMemoryUsage" value="${resourcetype.image.thumbnail.maxSourceImageRawMemoryUsage}" />

@@ -32,20 +32,14 @@ package org.vortikal.repository.systemjob;
 
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
-import java.io.InputStream;
-import java.util.Iterator;
 import java.util.Set;
 
 import javax.imageio.ImageIO;
-import javax.imageio.ImageReader;
-import javax.imageio.stream.FileCacheImageInputStream;
-import javax.imageio.stream.ImageInputStream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
-import org.vortikal.graphics.ImageService;
-import org.vortikal.graphics.ScaledImage;
+import org.vortikal.graphics.ImageUtil;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
@@ -58,7 +52,6 @@ import org.vortikal.repository.resourcetype.Value;
 
 public class InProcessMetadataProvider implements MediaMetadataProvider {
 
-    private ImageService imageService;
     private int width;
     private Set<String> supportedFormats;
     private boolean scaleUp = false;
@@ -94,7 +87,7 @@ public class InProcessMetadataProvider implements MediaMetadataProvider {
         // Check max source image memory usage constraint
         Dimension dim = null;
         try {
-            dim = getImageDimension(repository.getInputStream(token, path, true));
+            dim = ImageUtil.getImageStreamDimension(repository.getInputStream(token, path, true));
         } catch (Throwable t) {
             logger.info("Failed to read image " + path, t);
             setThumbnailGeneratorStatus(repository, context, token, resource, "CORRUPT");
@@ -114,7 +107,7 @@ public class InProcessMetadataProvider implements MediaMetadataProvider {
             }
         }
 
-        BufferedImage image = null;
+        BufferedImage image;
         try {
             image = ImageIO.read(repository.getInputStream(token, path, true));
         } catch (Throwable t) {
@@ -158,15 +151,14 @@ public class InProcessMetadataProvider implements MediaMetadataProvider {
             return;
         }
 
-        ScaledImage thumbnail = imageService.scaleImage(image, imageFormat, width, ImageService.HEIGHT_ANY);
-        String thumbnailFormat;
-        if (imageFormat.equalsIgnoreCase("gif") || imageFormat.equalsIgnoreCase("png"))
+        BufferedImage thumbnail = ImageUtil.downscaleToWidth(image, width);
+        String thumbnailFormat = "jpeg";
+        if (imageFormat.equalsIgnoreCase("gif") || imageFormat.equalsIgnoreCase("png")) {
             thumbnailFormat = "png";
-        else
-            thumbnailFormat = !imageFormat.equalsIgnoreCase("jpeg") ? "jpeg" : imageFormat;
-
+        }
+        
         Property property = thumbnailPropDef.createProperty();
-        property.setBinaryValue(thumbnail.getImageBytes(thumbnailFormat), "image/" + thumbnailFormat);
+        property.setBinaryValue(ImageUtil.getImageBytes(thumbnail, thumbnailFormat), "image/" + thumbnailFormat);
         resource.addProperty(property);
 
         if (resource.getLock() == null) {
@@ -193,26 +185,6 @@ public class InProcessMetadataProvider implements MediaMetadataProvider {
         }
     }
 
-    private Dimension getImageDimension(InputStream content) throws Exception {
-
-        ImageInputStream iis = new FileCacheImageInputStream(content, null);
-        try {
-            Iterator<ImageReader> readers = ImageIO.getImageReaders(iis);
-            if (readers.hasNext()) {
-                ImageReader reader = readers.next();
-                reader.setInput(iis);
-                int width = reader.getWidth(reader.getMinIndex());
-                int height = reader.getHeight(reader.getMinIndex());
-                reader.dispose();
-                return new Dimension(width, height);
-            }
-        } finally {
-            iis.close();
-        }
-
-        return null;
-    }
-
     /**
      * Estimates the raw memory usage for an image where each pixel uses 24 bits
      * or 3 bytes of memory.
@@ -223,11 +195,6 @@ public class InProcessMetadataProvider implements MediaMetadataProvider {
      */
     private long estimateMemoryUsage(Dimension dim) {
         return (long) dim.height * (long) dim.width * 24 / 8;
-    }
-
-    @Required
-    public void setImageService(ImageService imageService) {
-        this.imageService = imageService;
     }
 
     @Required

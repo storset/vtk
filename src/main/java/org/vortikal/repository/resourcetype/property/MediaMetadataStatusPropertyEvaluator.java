@@ -4,7 +4,6 @@ import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertyEvaluationContext;
 import org.vortikal.repository.PropertyEvaluationContext.Type;
 import org.vortikal.repository.resourcetype.PropertyEvaluator;
-import org.vortikal.repository.resourcetype.Value;
 
 public class MediaMetadataStatusPropertyEvaluator implements PropertyEvaluator {
 
@@ -15,8 +14,8 @@ public class MediaMetadataStatusPropertyEvaluator implements PropertyEvaluator {
                 && ctx.getEvaluationType() != Type.Create) {
             return true;
         }
-
-        property.setValue(new Value("GENERATE", org.vortikal.repository.resourcetype.PropertyType.Type.STRING));
+        
+        property.setStringValue("GENERATE");
 
         return true;
     }

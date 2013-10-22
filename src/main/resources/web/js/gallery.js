@@ -1,6 +1,7 @@
 /*
  * Vortex Simple Gallery jQuery plugin
- * w/ paging, centered thumbnail navigation and crossfade effect (dimensions from server)
+ * w/ paging, centered thumbnail navigation, fullscreen mode,
+ * [n-1, n+1] full image prefetching and crossfade effect (dimensions from server)
  *
  * Copyright (C) 2010- Øyvind Hatland - University Of Oslo / USIT
  *
@@ -43,13 +44,14 @@
         wrpNavNextPrev = wrpNav.find("a"), wrpNavNext = wrpNavNextPrev.filter(".next"),
         wrpNavPrev = wrpNavNextPrev.filter(".prev"), wrpNavNextPrevSpans = wrpNavNextPrev.find("span"),
         images = {}, imageUrlsToBePrefetchedLen = imageUrlsToBePrefetched.length - 1, isFullscreen = false,
-        widthProp = "width", heightProp = "height";
+        widthProp = "width", heightProp = "height", minusWidth = 0;
     
     // Init first active image
     var firstImage = wrpThumbsLinks.filter(".active");
     if(!firstImage.length) return this; 
     showImage(firstImage.find("img.vrtx-thumbnail-image"), true);
-    $(wrpNavNextPrev, wrpNavNextPrevSpans).fadeTo(0, 0);
+    wrpNavNextPrev.fadeTo(0, 0);
+    wrpNavNextPrevSpans.fadeTo(0, 0);
     
     // Thumbs interaction
     wrp.on("mouseover mouseout click", "li a", function (e) {
@@ -84,6 +86,7 @@
       $("html").toggleClass("fullscreen-gallery");
       isFullscreen = $("html").hasClass("fullscreen-gallery");
       wrp.parents().toggleClass("fullwidth");
+      if(typeof vrtxSGalleryFullscreenToggleBefore === "function") minusWidth = vrtxSGalleryFullscreenToggleBefore(isFullscreen);
       if(!isFullscreen) {
         widthProp = "width";
         heightProp = "height";
@@ -92,13 +95,15 @@
         widthProp = "fullWidth";
         heightProp = "fullHeight";
         if(!wrp.find("> .fullscreen-gallery-topline").length) {
+          $("html").addClass("fullscreen-gallery-big-arrows");
           var link = $(this);
           var extraHtml = typeof vrtxSGalleryFullscreenAddExtraHtml === "function" ? vrtxSGalleryFullscreenAddExtraHtml() : "";
           wrp.prepend("<div class='fullscreen-gallery-topline'>" + extraHtml + "<a href='javascript:void(0);' class='toggle-fullscreen'>" + closeFullscreen + "</a></div>");
         }
         window.scrollTo(0, 0);
         resizeFullscreen();
-      }    
+      }
+      if(typeof vrtxSGalleryFullscreenToggleAfter === "function") vrtxSGalleryFullscreenToggleAfter(isFullscreen);
       e.stopPropagation();
       e.preventDefault();
     });
@@ -109,8 +114,8 @@
         resizeFullscreen();
       }
     }));
-    $.vrtxSGalleryResize = function() {
-      resizeFullscreen();
+    $.vrtxSGalleryResize = function(forceResize) {
+      resizeFullscreen(forceResize);
     };
 
     // Generate markup for rest of images
@@ -120,11 +125,11 @@
       link2 = $(imgs[j]);
       image2 = link2.find("img.vrtx-thumbnail-image");
       centerThumbnailImageFunc(image2, link2);
-      cacheGenerateLinkImageFunc(image2.attr("src").split("?")[0], image2, link2);
+      cacheGenerateLinkImageFunc(image2[0].src.split("?")[0]);
     }
     
     // Prefetch current, next and prev full images in the background
-    prefetchCurrentNextPrevImage();
+    prefetchCurrentNextPrevNthImages(1);
     
     wrp.removeClass("loading");
   
@@ -135,21 +140,16 @@
       var img = elm.find("img.vrtx-thumbnail-image");
       showImage(img, false);
       elm.addClass("active");
-      prefetchCurrentNextPrevImage();
+      prefetchCurrentNextPrevNthImages(1);
       img.stop().fadeTo(0, 1);
     }
     
     function nextPrevNavigate(e, dir) {
       var isNext = dir > 0;	
       if (e.type == "mouseover") {
+        wrpNavNext.stop().fadeTo(settings.fadeNavInOutTime, isNext ? 1 : settings.fadedInActiveNavOpacity);
+        wrpNavPrev.stop().fadeTo(settings.fadeNavInOutTime, isNext ? settings.fadedInActiveNavOpacity : 1);
         wrpNavNextPrevSpans.stop().fadeTo(settings.fadeNavInOutTime, settings.fadedNavOpacity);   /* XXX: some filtering instead below */
-        if(isNext) {
-          wrpNavNext.stop().fadeTo(settings.fadeNavInOutTime, 1);
-          wrpNavPrev.stop().fadeTo(settings.fadeNavInOutTime, settings.fadedInActiveNavOpacity);
-        } else {
-          wrpNavPrev.stop().fadeTo(settings.fadeNavInOutTime, 1);
-          wrpNavNext.stop().fadeTo(settings.fadeNavInOutTime, settings.fadedInActiveNavOpacity);
-        }
       } else if (e.type == "mouseout") {
         $(wrpNavNextPrev, wrpNavNextPrevSpans).stop().fadeTo(settings.fadeNavInOutTime, 0);
       } else {
@@ -168,7 +168,7 @@
     }
     
     function loadImage(src) {
-      var id = encodeURIComponent(src).replace(/(%|\.)/gim, "");
+      var id = genId(src);
       if($("a#" + id).length) return;
       var description = "<div id='" + id + "-description' class='" + container.substring(1) + "-description" + (!images[src].desc ? " empty-description" : "") + "' style='display: none; width: " + (images[src].width - 30) + "px'>" +
                           "<a href='javascript:void(0);' class='toggle-fullscreen minimized'>" + showFullscreen + "</a>" + images[src].desc
@@ -177,30 +177,45 @@
       wrpContainer.append("<a id='" + id + "' style='display: none' href='" + src + "' class='" + container.substring(1) + "-link'>" +
                             "<img src='" + src + "' alt='" + images[src].alt + "' style='width: " + images[src][widthProp] + "px; height: " + images[src][heightProp] + "px;' />" +
                           "</a>");
+      if(typeof vrtxSGalleryLoadImageAfter === "function") vrtxSGalleryLoadImageAfter(isFullscreen, id);
     }
     
-    function prefetchCurrentNextPrevImage() {
+    function prefetchCurrentNextPrevNthImages(n) {
       var active = wrpThumbsLinks.filter(".active"),
           activeIdx = active.parent().index() - 1,
-          activeSrc = active.find(".vrtx-thumbnail-image")[0].src.split("?")[0],
-          i = 0;
+          activeSrc = active[0].href.split("?")[0],
+          alternate = false,
+          i = 1;
       loadImage(activeSrc);
-      var loadNextPrevImages = setTimeout(function() {
-        var activeIdxPlus1 = activeIdx + 1, activeIdxMinus1 = activeIdx - 1;
-        var src = imageUrlsToBePrefetched[(i === 0) ? ( activeIdxPlus1 > imageUrlsToBePrefetchedLen ? 0 :  activeIdxPlus1)   // Next, first, prev or last
-                                                    : (activeIdxMinus1 < 0 ? imageUrlsToBePrefetchedLen : activeIdxMinus1)].url;
-        loadImage(src);
-        if(++i < 2) {
+      var loadNextPrevImages = setTimeout(function() {   
+        if(alternate) {
+          var activeIdxMinus = activeIdx - i;
+          if(activeIdxMinus < 0) {
+            activeIdxMinus = imageUrlsToBePrefetchedLen - (~activeIdxMinus); // ~n = (-|+)n-1
+          }
+          loadImage(imageUrlsToBePrefetched[activeIdxMinus].url);
+          i++;
+        } else {
+          var activeIdxPlus = activeIdx + i;
+          if(activeIdxPlus > imageUrlsToBePrefetchedLen) {
+            activeIdxPlus = ~(imageUrlsToBePrefetchedLen - activeIdxPlus);
+          }
+          loadImage(imageUrlsToBePrefetched[activeIdxPlus].url);
+        }
+        alternate = !alternate;
+        if(i <= n) {
           setTimeout(arguments.callee, settings.loadNextPrevImagesInterval);
         }
       }, settings.loadNextPrevImagesInterval);
     }
 
-    function showImageCrossFade(current, active) {
+    function showImageCrossFade(current, active, activeSrc, activeDesc) {
       current.wrap("<div class='over' />").fadeTo(settings.fadeInOutTime, settings.fadedOutOpacity, function () {
         $(this).unwrap().removeClass("active-full-image").hide();
       });
-      active.addClass("active-full-image").fadeTo(0, 0).fadeTo(settings.fadeInOutTime, 1);
+      active.addClass("active-full-image").fadeTo(0, 0).fadeTo(settings.fadeInOutTime, 1, function () {
+        resizeContainers(activeSrc, active, activeDesc);
+      });
     }
     
     function showImageToggle(current, active) {
@@ -208,42 +223,45 @@
       active.addClass("active-full-image");
     }
     
-    function showImageDescStrategy(current, active, currentDesc, activeDesc, init) {
+    function showImageDescStrategy(current, active, activeSrc, currentDesc, activeDesc, init) {
       currentDesc.removeClass("active-description");
       activeDesc.addClass("active-description");
       if(init) {
         active.addClass("active-full-image");
+        resizeContainers(activeSrc, active, activeDesc);
       } else if(settings.fadeInOutTime > 0 ) {
-        howImageCrossFade(current, active);
+        showImageCrossFade(current, active, activeSrc, activeDesc);
       } else {
         showImageToggle(current, active);
+        resizeContainers(activeSrc, active, activeDesc);
       }
     }
     
     function showImage(image, init) {
-      var src = image.attr("src").split("?")[0]; /* Remove parameters when active is sent in to gallery */
+      var activeSrc = image[0].src.split("?")[0]; /* Remove parameters when active is sent in to gallery */
 
       if (init) {
-        cacheGenerateLinkImage(src, image, image.parent());
+        cacheGenerateLinkImage(activeSrc);
       }
-      var activeId = encodeURIComponent(src).replace(/(%|\.)/gim, "");
+      var activeId =  genId(activeSrc);
       
       var active = $("a#" + activeId);
+      var activeDesc = $("#" + activeId + "-description");
       var current = $("a" + container + "-link.active-full-image");
       var currentDesc = $(container + "-description.active-description");
       if(active.length) {
-        showImageDescStrategy(current, active, currentDesc, $("#" + activeId + "-description"), init);
+        showImageDescStrategy(current, active, activeSrc, currentDesc, activeDesc, init);
       } else {
         var waitForActive = setTimeout(function() {
           active = $("a#" + activeId);
-          if(!active.length) {
+          activeDesc = $("#" + activeId + "-description");
+          if(!active.length && !activeDesc.length) { // Are we (image and description) ready?
             setTimeout(arguments.callee, 5);
           } else {
-            showImageDescStrategy(current, active, currentDesc, $("#" + activeId + "-description"), init);
+            showImageDescStrategy(current, active, activeSrc, currentDesc, activeDesc, init);
           }
         }, 5);
       }
-      resizeContainers(src);
       if(!init) {
         wrpThumbsLinks.filter(".active").removeClass("active").find("img").stop().fadeTo(settings.fadeThumbsInOutTime, settings.fadedThumbsOutOpacity);
       } else {
@@ -251,7 +269,7 @@
       }
     }
 
-    function cacheGenerateLinkImage(src, image, link) {
+    function cacheGenerateLinkImage(src) {
       images[src] = {};
       // Find image width and height "precalculated" from Vortex (properties)
       for(var i = 0, len = imageUrlsToBePrefetched.length; i < len; i++) {
@@ -262,69 +280,104 @@
       images[src].height = parseInt(dims.height, 10);
       images[src].fullWidthOrig = parseInt(dims.fullWidth.replace(/[^\d]*/g, ""), 10);
       images[src].fullHeightOrig = parseInt(dims.fullHeight.replace(/[^\d]*/g, ""), 10);
-      // HTML encode quotes in alt and title if not already encoded
-      var alt = image.attr("alt");
-      var title = image.attr("title");
-      images[src].alt = alt ? alt.replace(/\'/g, "&#39;").replace(/\"/g, "&quot;") : null;
-      images[src].title = title ? title.replace(/\'/g, "&#39;").replace(/\"/g, "&quot;") : null;
+      // HTML unescape and encode quotes in alt and title if not already encoded
+      var alt = dims.alt;
+      var title = dims.title;
+      images[src].alt = alt != "" ? $("<div/>").html(alt).text().replace(/\'/g, "&#39;").replace(/\"/g, "&quot;") : null;
+      images[src].title = title != "" ? $("<div/>").html(title).text().replace(/\'/g, "&#39;").replace(/\"/g, "&quot;") : null;
       // Add description
       var desc = "";
       if (images[src].title) desc += "<p class='" + container.substring(1) + "-title'>" + images[src].title + "</p>";
       if (images[src].alt)   desc += images[src].alt;
       images[src].desc = desc;
     }
+
+    function centerThumbnailImage(thumb, link) {
+      centerDimension(thumb, thumb.width(), link.width(), "marginLeft"); // Horizontal dimension
+      centerDimension(thumb, thumb.height(), link.height(), "marginTop"); // Vertical dimension
+    }
+
+    function centerDimension(thumb, tDim, tCDim, cssProperty) { // Center thumbDimension in thumbContainerDimension
+      thumb.css(cssProperty, ((tDim > tCDim) ? ((tDim - tCDim) / 2) * -1 : (tDim < tCDim) ? (tCDim - tDim) / 2 : 0) + "px");
+    }
     
-    function resizeContainers(src) {
-      // Min 150x100px containers
-      var width = Math.max(images[src][widthProp], 150);
-      var height = Math.max(images[src][heightProp], 100);
-      $(wrapperContainerLink).css("height", height + "px");
-      $(wrpNavNextPrev, wrpNavNextPrevSpans).css("height", height + "px");
+    function resizeContainers(activeSrc, active, activeDesc) {
+      var width = Math.max(images[activeSrc][widthProp], 150); // Min 150x100px containers
+      var height = Math.max(images[activeSrc][heightProp], 100);
+      active.css("height", height + "px");
+      wrpNavNextPrev.css("height", height + "px");
+      wrpNavNextPrevSpans.css("height", height + "px");
       wrpNav.css("width", width + "px");
       wrpContainer.css("width", width + "px");
       if(!isFullscreen) {
-        $(wrapperContainer + "-description").css("width", (width - 30)); 
+        activeDesc.css("width", (width - 30)); 
       }
+      if(typeof vrtxSGalleryResizeContainersAfter === "function") vrtxSGalleryResizeContainersAfter(activeSrc, active, activeDesc);
     }
-    
+
     function resizeToggleFullscreen() {
+      // Update all images dimensions
       var loadedImages = $("a" + container + "-link img");
-      var src = $("a" + container + "-link.active-full-image")[0].href;
-      for(var i = 0, len = loadedImages.length; i < len; i++) {
+      for(var i = loadedImages.length; i--;) {
         loadedImages[i].style.width = images[loadedImages[i].src][widthProp] + "px";
         loadedImages[i].style.height = images[loadedImages[i].src][heightProp] + "px";
       }
-      resizeContainers(src);
+      // Resize active containers
+      var active = $("a" + container + "-link.active-full-image");
+      var activeSrc = active[0].href.split("?")[0];
+      var activeDesc = $(container + "-description.active-description");
+      resizeContainers(activeSrc, active, activeDesc);
     }
     
-    function resizeFullscreen() {
-      for(var key in images) {
-        var image = images[key];
-        var dimsFull = calculateFullscreenImageDimensions(image.fullWidthOrig, image.fullHeightOrig, encodeURIComponent(key).replace(/(%|\.)/gim, ""));
-        image.fullWidth = dimsFull[0];
-        image.fullHeight = dimsFull[1];
+    var curWinWidth = 0, curWinHeight = 0;
+    function resizeFullscreen(forceResize) {
+      var winWidth = $(window).width();
+      var winHeight = $(window).height();
+      if(forceResize || (curWinWidth != winWidth && curWinHeight != winHeight)) { /* Only occur on init or window resize */
+        var toplineHeight = wrp.find(".fullscreen-gallery-topline").outerHeight(true);
+        var cacheCalculateFullscreenImageDimensions = calculateFullscreenImageDimensions;
+        if(!minusWidth) {
+          var descriptionContainers = wrp.find(container + "-description").filter(":not(.empty-description)"); // Don't calculate empty descriptions
+          descriptionContainers.addClass("active-description-recalc");
+        }
+        for(var key in images) {
+          var image = images[key];
+          var dimsFull = cacheCalculateFullscreenImageDimensions(image.fullWidthOrig, image.fullHeightOrig, genId(key), winWidth, winHeight, toplineHeight);
+          image.fullWidth = dimsFull[0];
+          image.fullHeight = dimsFull[1];
+        }
+        curWinWidth = winWidth, curWinHeight = winHeight;
+        if(!minusWidth) {
+          var timer = setTimeout(function() { // Give time to find new heights for loop above
+            descriptionContainers.removeClass("active-description-recalc");
+            resizeToggleFullscreen();
+          }, 50);
+        } else {
+          resizeToggleFullscreen();
+        }
+      } else {
+        resizeToggleFullscreen();
       }
-      resizeToggleFullscreen();
     }
   
-    function calculateFullscreenImageDimensions(w, h, id) {
+    function calculateFullscreenImageDimensions(w, h, id, winWidth, winHeight, toplineHeight) {
       var gcdVal = gcd(w, h);
-      var aspectRatioOver = w/gcdVal;
-      var aspectRatioUnder = h/gcdVal;
-      var winWidth = $(window).width();
-      var desc = $("#" + id + "-description");
+      var aspectRatio = (w/gcdVal) / (h/gcdVal);
+      var desc = wrp.find("#" + id + "-description");
       var descHeight = !desc.hasClass("empty-description") ? desc.outerHeight(true) : 0;
-      var winHeight = $(window).height() - (descHeight + $(".fullscreen-gallery-topline").outerHeight(true)) - 20;
+      winHeight = winHeight - (descHeight + toplineHeight) - 20;
+      winWidth = winWidth - minusWidth;
+      /* TODO: I've feeling this code can be reduced, but not 100% sure */
       if(w > winWidth || h > winHeight) {
         if(h > winHeight) {
-          var newDim = [Math.round(winHeight * (aspectRatioOver / aspectRatioUnder)), winHeight];
+          var newDim = [Math.round(winHeight * aspectRatio), winHeight];
           if(newDim[0] > winWidth) {
-            var newDim = [winWidth, Math.round(winWidth / (aspectRatioOver / aspectRatioUnder))];
+            var newDim = [winWidth, Math.round(winWidth / aspectRatio)];
           }
         } else {
-          var newDim = [winWidth, Math.round(winWidth / (aspectRatioOver / aspectRatioUnder))];
+          var newDim = [winWidth, Math.round(winWidth / aspectRatio)];
           if(newDim[1] > winHeight) {
-            var newDim = [Math.round(winHeight * (aspectRatioOver / aspectRatioUnder)), winHeight];
+            var newDim = [Math.round(winHeight * aspectRatio), winHeight];
           }
         }
         return [newDim[0], newDim[1]];
@@ -336,14 +389,9 @@
     function gcd(a, b) {
       return (b === 0) ? a : gcd (b, a%b);
     }
-
-    function centerThumbnailImage(thumb, link) {
-      centerDimension(thumb, thumb.width(), link.width(), "marginLeft"); // Horizontal dimension
-      centerDimension(thumb, thumb.height(), link.height(), "marginTop"); // Vertical dimension
-    }
-
-    function centerDimension(thumb, tDim, tCDim, cssProperty) { // Center thumbDimension in thumbContainerDimension
-      thumb.css(cssProperty, ((tDim > tCDim) ? ((tDim - tCDim) / 2) * -1 : (tDim < tCDim) ? (tCDim - tDim) / 2 : 0) + "px");
+    
+    function genId(src) {
+      return encodeURIComponent(src).replace(/(%|\.)/gim, "");
     }
   };
 })(jQuery);

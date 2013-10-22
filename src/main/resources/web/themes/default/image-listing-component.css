@@ -193,8 +193,13 @@ a.toggle-fullscreen.minimized {
 }
 
 .active-description,
+.active-description-recalc,
 a.active-full-image {
   display: block !important;
+}
+
+html.fullscreen-gallery .vrtx-image-listing-include-container-description.active-description-recalc {
+  visibility: hidden;
 }
 
 html.fullscreen-gallery * {
@@ -209,6 +214,7 @@ html.fullscreen-gallery .vrtx-image-listing-include-container-nav *,
 html.fullscreen-gallery .vrtx-image-listing-include-container a.active-full-image,
 html.fullscreen-gallery .vrtx-image-listing-include-container a.active-full-image img,
 html.fullscreen-gallery .vrtx-image-listing-include-container-description.active-description,
+html.fullscreen-gallery .vrtx-image-listing-include-container-description.active-description-recalc,
 html.fullscreen-gallery .vrtx-image-listing-include-container-description * {
   display: block !important;
 }
@@ -230,18 +236,18 @@ html.fullscreen-gallery .vrtx-image-listing-include .vrtx-image-listing-include-
   max-height: none;
 }
 
-html.fullscreen-gallery .vrtx-image-listing-include .vrtx-image-listing-include-container-nav a.prev,
-html.fullscreen-gallery .vrtx-image-listing-include .vrtx-image-listing-include-container-nav a.next,
-html.fullscreen-gallery .vrtx-image-listing-include .vrtx-image-listing-include-container-nav span.prev-transparent-block,
-html.fullscreen-gallery .vrtx-image-listing-include .vrtx-image-listing-include-container-nav span.next-transparent-block {
+html.fullscreen-gallery.fullscreen-gallery-big-arrows .vrtx-image-listing-include .vrtx-image-listing-include-container-nav a.prev,
+html.fullscreen-gallery.fullscreen-gallery-big-arrows .vrtx-image-listing-include .vrtx-image-listing-include-container-nav a.next,
+html.fullscreen-gallery.fullscreen-gallery-big-arrows .vrtx-image-listing-include .vrtx-image-listing-include-container-nav span.prev-transparent-block,
+html.fullscreen-gallery.fullscreen-gallery-big-arrows .vrtx-image-listing-include .vrtx-image-listing-include-container-nav span.next-transparent-block {
   width: 55px;
 }
 
-html.fullscreen-gallery .vrtx-image-listing-include .vrtx-image-listing-include-container-nav a.prev {
+html.fullscreen-gallery.fullscreen-gallery-big-arrows .vrtx-image-listing-include .vrtx-image-listing-include-container-nav a.prev {
   background-image: url(icons/prev-gallery-big.png);
 }
 
-html.fullscreen-gallery .vrtx-image-listing-include .vrtx-image-listing-include-container-nav a.next {
+html.fullscreen-gallery.fullscreen-gallery-big-arrows .vrtx-image-listing-include .vrtx-image-listing-include-container-nav a.next {
   background-image: url(icons/next-gallery-big.png);
 }
 

@@ -6,6 +6,11 @@
 <#assign resource = resourceContext.currentResource />
 <#assign lang = vrtx.getMsg("eventListing.calendar.lang", "en") />
 
+<#assign lastModified = resource.getLastModified() />
+<#assign modifiedBy = resource.getModifiedBy() />
+<span id="resource-last-modified" class="hidden-server-info">${lastModified?string("yyyy")},${lastModified?string("MM")},${lastModified?string("dd")},${lastModified?string("HH")},${lastModified?string("mm")},${lastModified?string("ss")}</span>
+<span id="resource-last-modified-by" class="hidden-server-info">${modifiedBy}</span>
+
 <script type="text/javascript"><!--
   if(vrtxAdmin.isIE7 || vrtxAdmin.isIETridentInComp) {
     if(vrtxAdmin.isIETridentInComp) {
@@ -18,7 +23,7 @@
   }
   var cancelI18n = '${vrtx.getMsg("editor.cancel")}',
       datePickerLang = "${lang}",
-      loadingSubfolders = '${vrtx.getMsg("manage.load-subfolders")}';
+      loadingSubfolders = '${vrtx.getMsg("manage.load-subfolders")}',
       publishing = {
         msg: {
           error: {
@@ -35,6 +40,12 @@
     abort: "${vrtx.getMsg('ajaxError.abort')}",
     parsererror: "${vrtx.getMsg('ajaxError.parsererror')}", 
     offline: "${vrtx.getMsg('ajaxError.offline')}",
+    lockStolen: "${vrtx.getMsg('ajaxError.lockStolen')}",
+    lockStolenTitle: "${vrtx.getMsg('ajaxError.lockStolen.title')}",
+    outOfDate: "${vrtx.getMsg('ajaxError.out-of-date')}",
+    outOfDateTitle: "${vrtx.getMsg('ajaxError.out-of-date.title')}",
+    outOfDateRefreshOk: "${vrtx.getMsg('ajaxError.out-of-date.refresh')}",
+    outOfDateOverwriteOk: "${vrtx.getMsg('ajaxError.out-of-date.overwrite')}",
     sessionInvalid: "${vrtx.getMsg('ajaxError.sessionInvalid')}",
     sessionInvalidTitle: "${vrtx.getMsg('ajaxError.sessionInvalid.title')}",
     sessionInvalidOk: "${vrtx.getMsg('ajaxError.sessionInvalid.ok')}",

@@ -34,6 +34,7 @@
     1. Config
 \*-------------------------------------------------------------------*/
 
+
 var startLoadTime = +new Date();
 
 /**
@@ -149,6 +150,8 @@ vrtxAdmin._$(document).ready(function () {
   vrtxAdm.cachedBody.addClass("js");
   if (vrtxAdm.runReadyLoad === false) return; // XXX: return if should not run all of ready() code
 
+  vrtxAdm.clientLastModified = $("#resource-last-modified").text().split(",");
+  
   vrtxAdm.miscAdjustments();
   vrtxAdm.initDropdowns();
   vrtxAdm.initTooltips();
@@ -282,19 +285,21 @@ VrtxAdmin.prototype.initResourceMenus = function initResourceMenus() {
     });
     vrtxAdm.completeFormAsync({
       selector: "form#" + publishUnpublishService + "-form input[type=submit]",
-      updateSelectors: ["#resource-title", "#directory-listing", ".prop-lastModified"],
+      updateSelectors: ["#resource-title", "#directory-listing", ".prop-lastModified", "#resource-last-modified"],
       funcComplete: (isSavingBeforePublish ? function (link) { // Save async
         $(".vrtx-focus-button.vrtx-save-button input").click();
         vrtxAdm.completeFormAsyncPost({ // Publish async
-          updateSelectors: ["#resource-title"],
+          updateSelectors: ["#resource-title", "#resource-last-modified"],
           link: link,
           form: $("#vrtx-publish-document-form"),
           funcComplete: function () {
+            updateClientLastModifiedAlreadyRetrieved();
             vrtxAdm.globalAsyncComplete();
           }
         });
         return false;
       } : function(link) {
+        updateClientLastModifiedAlreadyRetrieved();
         vrtxAdm.globalAsyncComplete();
       }),
       post: (!isSavingBeforePublish && (typeof isImageAudioVideo !== "boolean" || !isImageAudioVideo))
@@ -434,7 +439,7 @@ VrtxAdmin.prototype.initGlobalDialogs = function initGlobalDialogs() {
   
   vrtxAdm.completeFormAsync({
     selector: "#dialog-html-advanced-publish-settings-content #submitButtons input",
-    updateSelectors: ["#resource-title", "#directory-listing", ".prop-lastModified"],
+    updateSelectors: ["#resource-title", "#directory-listing", ".prop-lastModified", "#resource-last-modified"],
     post: true,
     isUndecoratedService: true,
     funcProceedCondition: function(options) {
@@ -457,11 +462,11 @@ VrtxAdmin.prototype.initGlobalDialogs = function initGlobalDialogs() {
       }
       
       datepickerApsD.prepareForSave();
-      
       vrtxAdm.completeFormAsyncPost(options);
     },
     funcComplete: function () {
       apsD.close();
+      updateClientLastModifiedAlreadyRetrieved();
       vrtxAdm.globalAsyncComplete();
     }
   });
@@ -989,15 +994,21 @@ var VrtxTree = dejavu.Class.declare({
     if (typeof $.fn.treeview !== "function") {
       $.getScript(location.protocol + "//" + location.host + rootUrl + "/jquery/plugins/jquery.treeview.js", function () {
         $.getScript(location.protocol + "//" + location.host + rootUrl + "/jquery/plugins/jquery.treeview.async.js", function () {
-          $.getScript(location.protocol + "//" + location.host + rootUrl + "/jquery/plugins/jquery.scrollTo.min.js", function () {
-            futureTree.resolve();
-          });
+          futureTree.resolve();
         });
       });
     } else {
       futureTree.resolve();
     }
-    $.when(futureTree).done(function() {
+    var futureScrollTo = $.Deferred();
+    if(typeof $.fn.scrollTo !== "function" && tree.__opts.scrollToContent) {
+      $.getScript(location.protocol + "//" + location.host + rootUrl + "/jquery/plugins/jquery.scrollTo.min.js", function () {
+        futureScrollTo.resolve();
+      });
+    } else {
+      futureScrollTo.resolve();
+    }
+    $.when(futureTree, futureScrollTo).done(function() {
       opts.elem.treeview({
         animated: "fast",
         url: location.protocol + '//' + location.host + location.pathname + "?vrtx=admin&uri=&" + opts.service + "&ts=" + (+new Date()),
@@ -2206,17 +2217,43 @@ function editorInteraction(bodyId, vrtxAdm, _$) {
       }).fail(function (xhr, textStatus) {
         if (xhr !== null) {
           /* Fail in performSave() for exceeding 1500 chars in intro/add.content is handled in editor.js with popup */
-
-          var msg = vrtxAdmin.serverFacade.error(xhr, textStatus, false);
-          if(msg === "RE_AUTH") {
-            reAuthenticateRetokenizeForms(link);
-          } else {
-            var customTitle = vrtxAdm.serverFacade.errorMessages.customTitle[xhr.status];
-            var d = new VrtxMsgDialog({
-              msg: msg,
-              title: customTitle ? customTitle : vrtxAdm.serverFacade.errorMessages.title + " " + xhr.status
+          
+          if(xhr === "UPDATED_IN_BACKGROUND") {
+            var d = new VrtxConfirmDialog({
+              msg: vrtxAdm.serverFacade.errorMessages.outOfDate.replace(/^([^.]+)( \.)/, "$1:</p><p><strong>" +
+                   vrtxAdm.serverModifiedBy + " " + serverTimeFormatToClientTimeFormat(vrtxAdmin.serverLastModified).toLocaleString() + "</strong></p><p>"),
+              title: vrtxAdm.serverFacade.errorMessages.outOfDateTitle,
+              width: 500,
+              btnTextOk: vrtxAdm.serverFacade.errorMessages.outOfDateOverwriteOk,
+              extraBtns: [{ btnText: vrtxAdm.serverFacade.errorMessages.outOfDateRefreshOk, onOk: function() {
+                location.reload(true);
+              }}],
+              onOk: function() {
+                vrtxAdm.clientLastModified = vrtxAdm.serverLastModified;
+                $("input[name='" + vrtxAdm.editorSaveButtonName + "']").click();
+              },
+              onCancel: function () {}
             });
             d.open();
+            return false;
+          } else {
+            var msg = vrtxAdmin.serverFacade.error(xhr, textStatus, false);
+            if(msg === "RE_AUTH") {
+              reAuthenticateRetokenizeForms(link);
+            } else if(msg === "LOCKED") {
+              var d = new VrtxMsgDialog({
+                msg: vrtxAdm.serverFacade.errorMessages.lockStolen,
+                title: vrtxAdm.serverFacade.errorMessages.lockStolenTitle
+              });
+              d.open();
+            } else {
+              var customTitle = vrtxAdm.serverFacade.errorMessages.customTitle[xhr.status];
+              var d = new VrtxMsgDialog({
+                msg: msg,
+                title: customTitle ? customTitle : vrtxAdm.serverFacade.errorMessages.title + " " + xhr.status
+              });
+              d.open();
+            }
           }
         }
       });
@@ -2262,6 +2299,8 @@ function ajaxSave() {
     }
   }
   
+  if(!isServerLastModifiedOlderThanClientLastModified(d)) return false;
+  
   // TODO: rootUrl and jQueryUiVersion should be retrieved from Vortex config/properties somehow
   var rootUrl = "/vrtx/__vrtx/static-resources";
   var futureFormAjax = $.Deferred();
@@ -2274,7 +2313,8 @@ function ajaxSave() {
   }
   $.when(futureFormAjax).done(function() {
     _$("#editor").ajaxSubmit({
-      success: function () {
+      success: function(results, status, xhr) { 
+        vrtxAdm.clientLastModified = $($.parseHTML(results)).find("#resource-last-modified").text().split(",");
         var endTime = new Date() - startTime;
         var waitMinMs = 800;
         if (endTime >= waitMinMs) { // Wait minimum 0.8s
@@ -2293,6 +2333,57 @@ function ajaxSave() {
       }
     });
   });
+}
+
+function updateClientLastModifiedAlreadyRetrieved() {
+  vrtxAdmin.clientLastModified = $("#resource-last-modified").text().split(",");
+}
+
+function isServerLastModifiedOlderThanClientLastModified(d) {
+  var olderThanMs = 1000; // Ignore changes in 1 second to avoid most strange cases
+  
+  var isOlder = true;
+  vrtxAdmin._$.ajax({
+    type: "GET",
+    url: location.pathname + "?vrtx=admin&mode=about",
+    async: false,
+    cache: false,
+    success: function (results, status, resp) {
+      vrtxAdmin.serverLastModified = $($.parseHTML(results)).find("#resource-last-modified").text().split(",");
+      vrtxAdmin.serverModifiedBy = $($.parseHTML(results)).find("#resource-last-modified-by").text();
+      if(isServerLastModifiedNewerThanClientLastModified(olderThanMs)) {
+        d.close();
+        vrtxAdmin.asyncEditorSavedDeferred.rejectWith(this, ["UPDATED_IN_BACKGROUND", ""]);
+        isOlder = false;
+      }
+    },
+    error: function (xhr, textStatus) {
+      d.close();
+      vrtxAdmin.asyncEditorSavedDeferred.rejectWith(this, [xhr, textStatus]);
+      isOlder = false;
+    }
+  });
+  return isOlder;
+}
+
+function isServerLastModifiedNewerThanClientLastModified(olderThanMs) {
+  try {            
+    var serverTime = serverTimeFormatToClientTimeFormat(vrtxAdmin.serverLastModified);
+    var clientTime = serverTimeFormatToClientTimeFormat(vrtxAdmin.clientLastModified);
+    // If server last-modified is newer than client last-modified return true
+    var diff = +serverTime - +clientTime;
+    var isNewer = diff > olderThanMs;
+    vrtxAdmin.log({msg: "\n\tServer: " + serverTime + "\n\tClient: " + clientTime + "\n\tisNewer: " + isNewer + " (" + diff + "ms)"});
+    return isNewer;
+  } catch(ex) { // Parse error, return true (we don't know)
+    vrtxAdmin.log({msg: ex});
+    return true; 
+  }
+}
+
+function serverTimeFormatToClientTimeFormat(time) {
+  return new Date(parseInt(time[0], 10), (parseInt(time[1], 10) - 1), parseInt(time[2], 10),
+                  parseInt(time[3], 10), parseInt(time[4], 10), parseInt(time[5], 10));
 }
 
 function reAuthenticateRetokenizeForms(link) {  
@@ -3402,7 +3493,21 @@ VrtxAdmin.prototype.serverFacade = {
     } else if (status === 403) {
       msg = (useStatusCodeInMsg ? status + " - " : "") + this.errorMessages.s403;
     } else if (status === 404) {
-      msg = (useStatusCodeInMsg ? status + " - " : "") + this.errorMessages.s404;
+      var serverFacade = this;
+      vrtxAdmin._$.ajax({
+        type: "GET",
+        url: location.href,
+        async: false,
+        success: function (results, status, resp) { // Exists - soneone has locked it
+          msg = useStatusCodeInMsg ? serverFacade.errorMessages.s404 : "LOCKED";
+          $("#resourceMenuRight").html($($.parseHTML(results)).find("#resourceMenuRight").html());
+          vrtxAdmin.globalAsyncComplete();
+        },
+        error: function (xhr, textStatus) {         // Removed/moved
+          msg = (useStatusCodeInMsg ? status + " - " : "") + serverFacade.errorMessages.s404;
+        }
+      });
+      
     } else {
       msg = (useStatusCodeInMsg ? status + " - " : "") + this.errorMessages.general + " " + textStatus;
     }
@@ -3611,7 +3716,6 @@ function unique(array) {
   for (i in o) r.push(o[i]);
   return r;
 }
-
 
 /*-------------------------------------------------------------------*\
     14. Override JavaScript / jQuery

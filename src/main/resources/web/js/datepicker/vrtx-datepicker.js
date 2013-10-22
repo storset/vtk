@@ -54,20 +54,22 @@ var VrtxDatepicker = dejavu.Class.declare({
     } else {
       futureUi.resolve();
     }
-    var futureDatepickerLang = $.Deferred();
-    if (opts.language && opts.language !== "en") {
-      $.getScript(rootUrl + "/jquery/plugins/ui/jquery-ui-" + jQueryUiVersion + ".custom/js/jquery.ui.datepicker-" + opts.language + ".js", function() {
+    $.when(futureUi).done(function() {
+      var futureDatepickerLang = $.Deferred();
+      if (opts.language != "" && opts.language != "en" && !$.datepicker.regional[opts.language]) {
+        $.getScript(rootUrl + "/jquery/plugins/ui/jquery-ui-" + jQueryUiVersion + ".custom/js/jquery.ui.datepicker-" + opts.language + ".js", function() {
+          futureDatepickerLang.resolve(); 
+          $.datepicker.setDefaults($.datepicker.regional[opts.language]);
+        });
+      } else {
         futureDatepickerLang.resolve(); 
+      }
+      $.when(futureDatepickerLang).done(function() {
+        datepick.initFields(datepick.__opts.contents.find(".date"));
+        datepick.__initTimeHelp();
+        datepick.__initDefaultEndDates();
+        if(opts.after) opts.after();
       });
-    } else {
-      futureDatepickerLang.resolve(); 
-    }
-    $.when(futureUi, futureDatepickerLang).done(function() {
-      $.datepicker.setDefaults($.datepicker.regional[opts.language]);
-      datepick.initFields(datepick.__opts.contents.find(".date"));
-      datepick.__initTimeHelp();
-      datepick.__initDefaultEndDates();
-      if(opts.after) opts.after();
     });
   },
   initFields: function(dateFields) {

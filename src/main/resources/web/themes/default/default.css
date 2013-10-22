@@ -601,6 +601,10 @@ a:hover {
 
 /* 3.2 Resource title */
 
+.hidden-server-info {
+  display: none;
+}
+
 #title-container {
   position: relative;
 }

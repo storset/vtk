@@ -336,10 +336,8 @@
       if(forceResize || (curWinWidth != winWidth && curWinHeight != winHeight)) { /* Only occur on init or window resize */
         var toplineHeight = wrp.find(".fullscreen-gallery-topline").outerHeight(true);
         var cacheCalculateFullscreenImageDimensions = calculateFullscreenImageDimensions;
-        if(!minusWidth) {
-          var descriptionContainers = wrp.find(container + "-description").filter(":not(.empty-description)"); // Don't calculate empty descriptions
-          descriptionContainers.addClass("active-description-recalc");
-        }
+        var descriptionContainers = wrp.find(container + "-description").filter(":not(.empty-description)"); // Don't calculate empty descriptions
+        descriptionContainers.addClass("active-description-recalc");
         for(var key in images) {
           var image = images[key];
           var dimsFull = cacheCalculateFullscreenImageDimensions(image.fullWidthOrig, image.fullHeightOrig, genId(key), winWidth, winHeight, toplineHeight);
@@ -347,14 +345,10 @@
           image.fullHeight = dimsFull[1];
         }
         curWinWidth = winWidth, curWinHeight = winHeight;
-        if(!minusWidth) {
-          var timer = setTimeout(function() { // Give time to find new heights for loop above
-            descriptionContainers.removeClass("active-description-recalc");
-            resizeToggleFullscreen();
-          }, 50);
-        } else {
+        var timer = setTimeout(function() { // Give time to find new heights for loop above
+          descriptionContainers.removeClass("active-description-recalc");
           resizeToggleFullscreen();
-        }
+        }, 50);
       } else {
         resizeToggleFullscreen();
       }

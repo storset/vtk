@@ -151,7 +151,8 @@
         wrpNavPrev.stop().fadeTo(settings.fadeNavInOutTime, isNext ? settings.fadedInActiveNavOpacity : 1);
         wrpNavNextPrevSpans.stop().fadeTo(settings.fadeNavInOutTime, settings.fadedNavOpacity);   /* XXX: some filtering instead below */
       } else if (e.type == "mouseout") {
-        $(wrpNavNextPrev, wrpNavNextPrevSpans).stop().fadeTo(settings.fadeNavInOutTime, 0);
+        wrpNavNextPrevSpans.stop().fadeTo(settings.fadeNavInOutTime, 0);
+        wrpNavNextPrev.stop().fadeTo(settings.fadeNavInOutTime, 0); 
       } else {
         var activeThumb = wrpThumbsLinks.filter(".active").parent();
         var elm = isNext ? activeThumb.next("li") : activeThumb.prev("li");

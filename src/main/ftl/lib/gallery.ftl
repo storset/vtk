@@ -104,7 +104,7 @@
 
     <#assign url = imageEntry.url />
 	<#if imageListing != "">
-	   <#if ((activeImage = "" && imageEntry_index == 0) || (activeImage != "" && activeImage == url)) >
+	   <#if ((activeImage == "" && imageEntry_index == 0) || (activeImage != "" && activeImage == url)) >
 	     <a href="${url?html}" class="active">
 	       <img class="vrtx-thumbnail-image" src="${url?html}?vrtx=thumbnail" alt='${description}' <#if showTitle>title="${title}"</#if> />
 	       <span><img class="vrtx-full-image" src="${url?split("?")[0]?html}" alt='${description}' /></span>

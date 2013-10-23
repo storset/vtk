@@ -117,17 +117,10 @@
     $.vrtxSGalleryResize = function(forceResize) {
       resizeFullscreen(forceResize);
     };
-
-    // Generate markup for rest of images
-    var imgs = this, centerThumbnailImageFunc = centerThumbnailImage, 
-        cacheGenerateLinkImageFunc = cacheGenerateLinkImage, link2, image2;
-    for(var j = 0, len2 = imgs.length; j < len2; j++) {
-      link2 = $(imgs[j]);
-      image2 = link2.find("img.vrtx-thumbnail-image");
-      centerThumbnailImageFunc(image2, link2);
-      cacheGenerateLinkImageFunc(image2[0].src.split("?")[0]);
-    }
     
+    var imgs = this;
+    processLinkImages(imgs);
+
     // Prefetch current, next and prev full images in the background
     prefetchCurrentNextPrevNthImages(1);
     
@@ -267,6 +260,18 @@
         wrpThumbsLinks.filter(".active").removeClass("active").find("img").stop().fadeTo(settings.fadeThumbsInOutTime, settings.fadedThumbsOutOpacity);
       } else {
         wrpThumbsLinks.filter(":not(.active)").find("img").stop().fadeTo(0, settings.fadedThumbsOutOpacity);
+      }
+    }
+    
+    function processLinkImages(imgs) {
+      var centerThumbnailImageFunc = centerThumbnailImage, 
+          cacheGenerateLinkImageFunc = cacheGenerateLinkImage,
+          link, image;
+      for(var i = 0, len = imgs.length; i < len; i++) {
+        link = $(imgs[i]);
+        image = link.find("img.vrtx-thumbnail-image");
+        centerThumbnailImageFunc(image, link);
+        cacheGenerateLinkImageFunc(image[0].src.split("?")[0]);
       }
     }
 

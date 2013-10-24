@@ -64,6 +64,10 @@ public class ImageMetadataJob extends AbstractResourceJob {
     private PropertyTypeDefinition imageWidthPropDef;
     
     private final Log logger = LogFactory.getLog(ImageMetadataJob.class.getName());
+
+    public ImageMetadataJob() {
+        setAbortOnException(false);
+    }
     
     @Override
     protected void executeForResource(Resource resource, ExecutionContext ctx) throws Exception {

@@ -53,9 +53,8 @@ import org.vortikal.security.SecurityContext;
  * <p>
  * The class has a number of configurable properties for controlling behaviour
  * <ul>
- * <li><code>abortOnException</code> - whether to continue with current or
- * not when an execution for a single resource results in an exception being
- * thrown.
+ * <li><code>abortOnException</code> - whether to continue with current job as a whole 
+ * when an exception is thrown during processing of a single resource.
  * <li><code>abortOnInterrupt</code> - whether to continue with job or
  * not when job thread is interrupted during execution.
  * <li><code>ignoreLockedResources</code> - control whether to ignore locked

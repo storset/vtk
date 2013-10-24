@@ -106,11 +106,11 @@
 	<#if imageListing != "">
 	   <#if ((activeImage == "" && imageEntry_index == 0) || (activeImage != "" && activeImage == url)) >
 	     <a href="${url?html}" class="active">
-	       <img class="vrtx-thumbnail-image" src="${url?html}?vrtx=thumbnail" alt='${description}' <#if showTitle>title="${title}"</#if> />
-	       <span><img class="vrtx-full-image" src="${url?split("?")[0]?html}" alt='${description}' /></span>
+	       <img class="vrtx-thumbnail-image" src="${url.protocolRelativeURL()?html}?vrtx=thumbnail" alt='${description}' <#if showTitle>title="${title}"</#if> />
+	       <span><img class="vrtx-full-image" src="${url.protocolRelativeURL()?split("?")[0]?html}" alt='${description}' /></span>
 	   <#else>
 	     <a href="${url?html}">
-	       <img class="vrtx-thumbnail-image" src="${url?html}?vrtx=thumbnail" alt='${description}' <#if showTitle>title="${title}"</#if> />
+	       <img class="vrtx-thumbnail-image" src="${url.protocolRelativeURL()?html}?vrtx=thumbnail" alt='${description}' <#if showTitle>title="${title}"</#if> />
 	   </#if>
 	 <#else>
 	   <#assign finalFolderUrl = vrtx.relativeLinkConstructor(folderUrl, 'viewService') />
@@ -119,15 +119,15 @@
 	   </#if>
 	   <#if (imageEntry_index == 0) >
           <a href="${finalFolderUrl}?actimg=${url?html}&amp;display=gallery" class="active">
-            <img class="vrtx-thumbnail-image" src="${url?html}?vrtx=thumbnail" alt='${description}' <#if showTitle>title="${title}"</#if> />
-            <span><img class="vrtx-full-image" src="${url?html}" alt='${description}' /></span>
+            <img class="vrtx-thumbnail-image" src="${url.protocolRelativeURL()?html}?vrtx=thumbnail" alt='${description}' <#if showTitle>title="${title}"</#if> />
+            <span><img class="vrtx-full-image" src="${url.protocolRelativeURL()?html}" alt='${description}' /></span>
        <#else>
          <a href="${finalFolderUrl}?actimg=${url?html}&amp;display=gallery">
-            <img class="vrtx-thumbnail-image" src="${url?html}?vrtx=thumbnail" alt='${description}' <#if showTitle>title="${title}"</#if> /> 
+            <img class="vrtx-thumbnail-image" src="${url.protocolRelativeURL()?html}?vrtx=thumbnail" alt='${description}' <#if showTitle>title="${title}"</#if> /> 
        </#if>
 	 </#if> 
 	      <script type="text/javascript"><!--
-	        imageUrlsToBePrefetched.push({url: <#if imageListing != "">'${url?split("?")[0]?html}'<#else>'${url?html}'</#if>, width: '${width}', height: '${height}', fullWidth: '${fullWidth}', fullHeight: '${fullHeight}', alt: '${description?js_string}', title: <#if showTitle>'${title?js_string}'<#else>''</#if>});
+	        imageUrlsToBePrefetched.push({url: <#if imageListing != "">'${url.protocolRelativeURL()?split("?")[0]?html}'<#else>'${url?html}'</#if>, width: '${width}', height: '${height}', fullWidth: '${fullWidth}', fullHeight: '${fullHeight}', alt: '${description?js_string}', title: <#if showTitle>'${title?js_string}'<#else>''</#if>});
 	      // -->
 	      </script>
 	    </a>    

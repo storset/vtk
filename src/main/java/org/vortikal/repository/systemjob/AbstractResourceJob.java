@@ -101,7 +101,7 @@ public abstract class AbstractResourceJob extends RepositoryJob {
                 ctx.incrementCount();
                 
                 if (logger.isDebugEnabled()) {
-                    logger.debug("Executing job for path " + path 
+                    logger.debug("Executing job " + getId() + " for path " + path 
                             + " [" + ctx.getCount() + "/" + ctx.getTotal() + "]");
                 }
                 

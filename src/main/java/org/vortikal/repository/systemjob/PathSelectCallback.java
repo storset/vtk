@@ -39,12 +39,13 @@ import org.vortikal.repository.Path;
 public interface PathSelectCallback {
 
     /**
-     * Called every time a new batch starts, with total number of selected
+     * Called once when new batch starts, with total number of selected
      * paths in batch. 
      * 
      * @param total total number of paths in batch, or -1 if unknown in advance.
+     * @throws Exception
      */
-    public void beginBatch(int total);
+    public void beginBatch(int total) throws Exception;
     
     /**
      * Called once for every path in selection.

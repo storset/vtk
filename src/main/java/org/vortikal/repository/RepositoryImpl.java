@@ -839,7 +839,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         }
 
         if (!(resource instanceof ResourceImpl)) {
-            throw new IllegalOperationException("Can't store unknown implementation of resource..");
+            throw new IllegalOperationException("Can't store unknown implementation of Resource..");
         }
         final Path uri = resource.getURI();
 

@@ -53,7 +53,7 @@ import org.vortikal.security.SecurityContext;
  */
 public class IndexQueryPathSelector implements PathSelector {
 
-    private static Log logger = LogFactory.getLog(IndexQueryPathSelector.class);
+    private final Log logger = LogFactory.getLog(IndexQueryPathSelector.class);
     
     protected Searcher searcher;
     protected Parser parser;
@@ -66,9 +66,8 @@ public class IndexQueryPathSelector implements PathSelector {
     private int limit = 2000;
 
     @Override
-    public void selectWithCallback(Repository repository,
-                                   SystemChangeContext context,
-                                   PathSelectCallback callback) throws Exception{
+    public void selectWithCallback(Repository repository, SystemChangeContext context,
+                PathSelectCallback callback) throws Exception {
 
         final String token = SecurityContext.exists() ? SecurityContext.getSecurityContext().getToken() : null;
                 

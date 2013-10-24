@@ -153,7 +153,7 @@ public final class ImageUtil {
     /**
      * Encode a {@link BufferedImage} to given format and return the data.
      * @param image image in memory
-     * @param format image format name (typicall same as file format extension)
+     * @param format image format name (typically same as file format extension)
      * @return encoded image data in requested format as a byte array
      * @throws IOException 
      */

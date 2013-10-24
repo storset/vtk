@@ -23,10 +23,10 @@
     <property name="resourceTypeTree" ref="resourceTypeTree" />
   </bean>
 
-
-  <bean id="repository.systemjob.mediaMetadataJob" class="org.vortikal.repository.systemjob.MediaMetadataJob" parent="repository.systemjob" depends-on="resourceTypeTree">
+  <!-- Image metadata, including thumbnail -->
+  <bean id="repository.systemjob.imageMetadataJob" class="org.vortikal.repository.systemjob.ImageMetadataJob" parent="repository.systemjob" depends-on="resourceTypeTree">
     <property name="triggerExpression" value="${repository.media.generator.interval}" />
-    <property name="id" value="media-metadata-generator" />
+    <property name="id" value="image-metadata-generator" />
     <property name="pathSelector">
       <bean class="org.vortikal.repository.systemjob.IndexQueryPathSelector" parent="repository.systemjob.indexPathSelector">
         <property name="limit" value="${repository.media.generator.batch}" />
@@ -45,16 +45,10 @@
         <value>media-metadata-status</value>
       </list>
     </property>
-    <property name="mediaMetadataProvider" ref="repository.systemjob.inProcessMetadataProvider" />
-  </bean>
-
-
-  <bean id="repository.systemjob.inProcessMetadataProvider" class="org.vortikal.repository.systemjob.InProcessMetadataProvider">
-    <property name="thumbnailPropDef" ref="thumbnailPropDef" />
+    
     <property name="width" value="${resourcetype.image.thumbnail.width}" />
     <property name="maxSourceImageFileSize" value="${resourcetype.image.thumbnail.maxSourceImageFileSize}" />
     <property name="maxSourceImageRawMemoryUsage" value="${resourcetype.image.thumbnail.maxSourceImageRawMemoryUsage}" />
-    <property name="scaleUp" value="false" />
     <property name="supportedFormats">
       <set>
         <value>jpeg</value>
@@ -66,13 +60,14 @@
       </set>
     </property>
     <property name="mediaMetadataStatusPropDef" ref="mediaMetadataStatusPropDef" />
+    <property name="thumbnailPropDef" ref="thumbnailPropDef" />
     <property name="imageHeightPropDef" ref="mediaHeightPropDef" />
     <property name="imageWidthPropDef" ref="mediaWidthPropDef" />
   </bean>
 
 
   <!-- Resource publisher periodic job -->
-  <bean id="repository.systemjob.publisher" class="org.vortikal.repository.systemjob.InvokeStoreJob" parent="repository.systemjob">
+  <bean id="repository.systemjob.publisher" class="org.vortikal.repository.systemjob.StoreResourceJob" parent="repository.systemjob">
     <property name="triggerExpression" value="${repository.publisher.interval}" />
     <property name="id" value="published-status" />
     <property name="pathSelector">

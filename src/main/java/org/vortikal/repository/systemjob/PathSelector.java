@@ -35,10 +35,25 @@ import org.vortikal.repository.SystemChangeContext;
 import org.vortikal.repository.Repository;
 
 /**
- *
+ * A path selector interface. A path selector is an implementation that
+ * selects a set of repository resource paths for a system job to work.
+ * For each path, the provided {@link PathSelectCallback} should be invoked
+ * once with the path.
  */
 public interface PathSelector {
 
+    /**
+     * When invoked, the path selector will execute its selection process
+     * and invoke the provided {@link PathSelectCallback} once for each
+     * selected path, possibly using the provided repository and system change
+     * context.
+     * 
+     * @param repository a {@link Repository}
+     * @param context a {@link SystemChangeContext}
+     * @param callback instance of <code>PathSelectCallback</code> provided by client
+     * code.
+     * @throws Exception 
+     */
     public void selectWithCallback(Repository repository,
                                    SystemChangeContext context,
                                    PathSelectCallback callback) throws Exception;

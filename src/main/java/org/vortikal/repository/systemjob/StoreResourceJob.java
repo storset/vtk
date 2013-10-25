@@ -28,16 +28,25 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 package org.vortikal.repository.systemjob;
 
-import org.vortikal.repository.Path;
-import org.vortikal.repository.Repository;
+
 import org.vortikal.repository.Resource;
-import org.vortikal.repository.SystemChangeContext;
 
-interface MediaMetadataProvider {
+/**
+ * A repository job which simply stores all resources matched by
+ * the path selector. Resources are stored with the <code>SystemChangeContext</code>.
+ */
+public class StoreResourceJob extends AbstractResourceJob {
 
-    public void generateMetadata(final Repository repository, final SystemChangeContext context, String token,
-            Path path, Resource resource) throws Exception;
-
+    public StoreResourceJob() {
+        setAbortOnException(false);
+    }
+    
+    @Override
+    protected void executeForResource(Resource resource, ExecutionContext ctx) throws Exception {
+        ctx.getRepository().store(ctx.getToken(), resource, ctx.getSystemChangeContext());
+    }
+    
 }

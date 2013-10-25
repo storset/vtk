@@ -48,12 +48,12 @@ import org.vortikal.web.service.URL;
  */
 public class ConfigurableRedirector implements HandlerInterceptor, Controller  {
     
-    private String protocol;
-    private String redirectToHostName;
-    private String port;
-    private Map<String, String> addedParameters;
-    private Map<String, String> replacedParameters;
-    private Set<String> removedParameters;
+    protected String protocol;
+    protected String redirectToHostName;
+    protected String port;
+    protected Map<String, String> addedParameters;
+    protected Map<String, String> replacedParameters;
+    protected Set<String> removedParameters;
 
     public void setProtocol(String protocol) {
         this.protocol = protocol;

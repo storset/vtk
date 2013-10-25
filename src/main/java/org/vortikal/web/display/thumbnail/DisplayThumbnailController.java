@@ -49,6 +49,7 @@ import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.util.io.StreamUtil;
 import org.vortikal.web.RequestContext;
+import org.vortikal.web.service.URL;
 
 public class DisplayThumbnailController implements Controller, LastModified {
 
@@ -83,13 +84,13 @@ public class DisplayThumbnailController implements Controller, LastModified {
         Property thumbnail = image.getProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.THUMBNAIL_PROP_NAME);
 
         if (thumbnail == null || StringUtils.isBlank(thumbnail.getBinaryContentType())) {
-            String resourceType = image.getResourceType().trim();
+            String resourceType = image.getResourceType();
             if ("image".equals(resourceType)) {
                 if (log.isDebugEnabled()) {
                     String detailedMessage = thumbnail == null ? "no thumbnail found (null)" : "no mimetype set";
                     log.debug("Cannot display thumbnail for image: " + uri + ", " + detailedMessage);
                 }
-                response.sendRedirect(uri.toString());
+                response.sendRedirect(URL.encode(uri).toString());
             } else if ("audio".equals(resourceType)) {
                 InputStream in = this.getClass().getResourceAsStream(ADUIO_LOGO);
                 response.setContentType(AUDIO_LOGO_CONTENT_TYPE);

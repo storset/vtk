@@ -1,4 +1,4 @@
-/* Copyright (c) 2012, University of Oslo, Norway
+/* Copyright (c) 2013, University of Oslo, Norway
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,40 +28,33 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 package org.vortikal.repository.systemjob;
 
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
-import java.io.InputStream;
-import java.util.Iterator;
 import java.util.Set;
-
 import javax.imageio.ImageIO;
-import javax.imageio.ImageReader;
-import javax.imageio.stream.FileCacheImageInputStream;
-import javax.imageio.stream.ImageInputStream;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
-import org.vortikal.graphics.ImageService;
-import org.vortikal.graphics.ScaledImage;
-import org.vortikal.repository.Namespace;
+import org.vortikal.graphics.ImageUtil;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
-import org.vortikal.repository.SystemChangeContext;
-import org.vortikal.repository.resourcetype.PropertyType;
+import org.vortikal.repository.ResourceLockedException;
+import org.vortikal.repository.ResourceNotFoundException;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
-import org.vortikal.repository.resourcetype.Value;
 
-public class InProcessMetadataProvider implements MediaMetadataProvider {
+/**
+ * Update metadata properties defined by resource type <code>media-mixin</code>
+ * for resources of type <code>image</code>.
+ */
+public class ImageMetadataJob extends AbstractResourceJob {
 
-    private ImageService imageService;
     private int width;
     private Set<String> supportedFormats;
-    private boolean scaleUp = false;
     private long maxSourceImageFileSize = 35000000;
     private long maxSourceImageRawMemoryUsage = 100000000;
 
@@ -69,148 +62,147 @@ public class InProcessMetadataProvider implements MediaMetadataProvider {
     private PropertyTypeDefinition mediaMetadataStatusPropDef;
     private PropertyTypeDefinition imageHeightPropDef;
     private PropertyTypeDefinition imageWidthPropDef;
+    
+    private final Log logger = LogFactory.getLog(ImageMetadataJob.class.getName());
 
-    private final Log logger = LogFactory.getLog(getClass());
-
-    @Override
-    public void generateMetadata(final Repository repository, final SystemChangeContext context, String token,
-            Path path, Resource resource) throws Exception {
-        generateImageMetadata(repository, context, token, path, resource);
+    public ImageMetadataJob() {
+        setAbortOnException(false);
     }
+    
+    @Override
+    protected void executeForResource(Resource resource, ExecutionContext ctx) throws Exception {
 
-    private void generateImageMetadata(final Repository repository, final SystemChangeContext context, String token,
-            Path path, Resource resource) throws Exception {
-        if (resource == null) {
+        // Sanity check resource type
+        if (!"image".equals(resource.getResourceType())) {
+            logger.warn("Expected resource of type image, but got type " 
+                    + resource.getResourceType() + " for resource at " + resource.getURI());
             return;
         }
+        
+        final Repository repository = ctx.getRepository();
+        final String token = ctx.getToken();
+        final Path path = resource.getURI();
+        
+        resource.removeProperty(thumbnailPropDef);
+        resource.removeProperty(imageHeightPropDef);
+        resource.removeProperty(imageWidthPropDef);
+        
+        Dimension dim;
+        try {
+            dim = ImageUtil.getImageStreamDimension(repository.getInputStream(token, path, true));
+            if (dim == null) {
+                logger.warn("Failed to read image dimension for " + path);
+                storeWithStatus(resource, ctx, "CORRUPT");
+                return;
+            }
+        } catch (Exception e) {
+            logger.warn("Failed to read image dimension for " + path, e);
+            storeWithStatus(resource, ctx, "CORRUPT");
+            return;
+        }
+
+        // Add dimension props now, even if we can't create thumbnail later:
+        Property imageHeightProp = imageHeightPropDef.createProperty();
+        imageHeightProp.setIntValue(dim.height);
+        resource.addProperty(imageHeightProp);
+
+        Property imageWidthProp = imageWidthPropDef.createProperty();
+        imageWidthProp.setIntValue(dim.width);
+        resource.addProperty(imageWidthProp);
 
         // Check max source content length constraint
         if (resource.getContentLength() >= maxSourceImageFileSize) {
             logger.info("Image size exceeds maximum limit: " + path);
-            setThumbnailGeneratorStatus(repository, context, token, resource, "IMAGE_SIZE_EXCEEDS_LIMIT");
+            storeWithStatus(resource, ctx, "IMAGE_SIZE_EXCEEDS_LIMIT");
             return;
         }
 
         // Check max source image memory usage constraint
-        Dimension dim = null;
-        try {
-            dim = getImageDimension(repository.getInputStream(token, path, true));
-        } catch (Throwable t) {
-            logger.info("Failed to read image " + path, t);
-            setThumbnailGeneratorStatus(repository, context, token, resource, "CORRUPT");
+        long estimatedMemoryUsage = estimateMemoryUsage(dim);
+        if (logger.isDebugEnabled()) {
+            logger.debug("Estimated memory usage for image " + path + " of " + dim.width + "x" + dim.height + " = "
+                    + estimatedMemoryUsage + " bytes");
+        }
+        if (estimatedMemoryUsage > maxSourceImageRawMemoryUsage) {
+            logger.info("Estimated memory usage of image exceeds limit: " + path);
+            storeWithStatus(resource, ctx, "MEMORY_USAGE_EXCEEDS_LIMIT");
             return;
-
         }
-        if (dim != null) {
-            long estimatedMemoryUsage = estimateMemoryUsage(dim);
-            if (logger.isDebugEnabled()) {
-                logger.debug("Estimated memory usage for image " + path + " of " + dim.width + "x" + dim.height + " = "
-                        + estimatedMemoryUsage + " bytes");
-            }
-            if (estimatedMemoryUsage > maxSourceImageRawMemoryUsage) {
-                logger.info("Estimated memory usage of image exceeds limit: " + path);
-                setThumbnailGeneratorStatus(repository, context, token, resource, "MEMORY_USAGE_EXCEEDS_LIMIT");
-                return;
-            }
-        }
-
-        BufferedImage image = null;
+        
+        BufferedImage image;
         try {
             image = ImageIO.read(repository.getInputStream(token, path, true));
-        } catch (Throwable t) {
-            logger.info("Failed to read image " + path, t);
-            setThumbnailGeneratorStatus(repository, context, token, resource, "CORRUPT");
+        } catch (Exception e) {
+            logger.warn("Failed to read image at " + path, e);
+            storeWithStatus(resource, ctx, "CORRUPT");
             return;
         }
         if (image == null) {
-            logger.info("Failed to read image " + path);
-            setThumbnailGeneratorStatus(repository, context, token, resource, "CORRUPT");
+            logger.warn("Failed to read image at " + path);
+            storeWithStatus(resource, ctx, "CORRUPT");
             return;
         }
 
-        Property contentType = resource.getProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTTYPE_PROP_NAME);
-
-        String mimetype = contentType.getStringValue();
+        String mimetype = resource.getContentType();
         String imageFormat = mimetype.substring(mimetype.lastIndexOf("/") + 1);
 
         if (!supportedFormats.contains(imageFormat.toLowerCase())) {
             logger.info("Unsupported format of image " + path + ": " + imageFormat);
-            setThumbnailGeneratorStatus(repository, context, token, resource, "UNSUPPORTED_FORMAT");
+            storeWithStatus(resource, ctx, "UNSUPPORTED_FORMAT");
             return;
         }
-        
 
-        if (dim != null) {
-            Property imageHeightProp = imageHeightPropDef.createProperty();
-            imageHeightProp.setIntValue(dim.height);
-            resource.addProperty(imageHeightProp);
-
-            Property imageWidthProp = imageWidthPropDef.createProperty();
-            imageWidthProp.setIntValue(dim.width);
-            resource.addProperty(imageWidthProp);
-        }
-
-        if (!scaleUp && image.getWidth() <= width) {
+        if (image.getWidth() <= width) {
             if (logger.isDebugEnabled()) {
-                logger.debug("Will not create thumbnail for image " + path + ": configured not to scale up");
+                logger.debug("Will not create thumbnail for image " + path + ": width less than/equal to " + width);
             }
-            setThumbnailGeneratorStatus(repository, context, token, resource, "CONFIGURED_NOT_TO_SCALE_UP");
+            storeWithStatus(resource, ctx, "TOO_SMALL_FOR_THUMBNAIL");
             return;
         }
 
-        ScaledImage thumbnail = imageService.scaleImage(image, imageFormat, width, ImageService.HEIGHT_ANY);
-        String thumbnailFormat;
-        if (imageFormat.equalsIgnoreCase("gif") || imageFormat.equalsIgnoreCase("png"))
+        BufferedImage thumbnail = ImageUtil.downscaleToWidth(image, width); // Potentially time consuming part
+        String thumbnailFormat = "jpeg";
+        if (imageFormat.equalsIgnoreCase("gif") || imageFormat.equalsIgnoreCase("png")) {
             thumbnailFormat = "png";
-        else
-            thumbnailFormat = !imageFormat.equalsIgnoreCase("jpeg") ? "jpeg" : imageFormat;
+        }
 
         Property property = thumbnailPropDef.createProperty();
-        property.setBinaryValue(thumbnail.getImageBytes(thumbnailFormat), "image/" + thumbnailFormat);
+        property.setBinaryValue(ImageUtil.getImageBytes(thumbnail, thumbnailFormat), "image/" + thumbnailFormat);
         resource.addProperty(property);
 
-        if (resource.getLock() == null) {
-            resource.removeProperty(mediaMetadataStatusPropDef);
-            repository.store(token, resource, context);
-            logger.info("Created thumbnail for " + resource);
-        } else {
-            logger.warn("Resource " + resource + " currently locked, will not invoke store.");
-
-        }
+        resource.removeProperty(mediaMetadataStatusPropDef);
+        storeIfUnmodified(resource, ctx);
     }
-
-    private void setThumbnailGeneratorStatus(final Repository repository, final SystemChangeContext context,
-            final String token, Resource resource, String status) {
+    
+    private void storeWithStatus(Resource resource, ExecutionContext ctx, String status) {
         Property statusProp = mediaMetadataStatusPropDef.createProperty();
-        statusProp.setValue(new Value(status, org.vortikal.repository.resourcetype.PropertyType.Type.STRING));
+        statusProp.setStringValue(status);
         resource.addProperty(statusProp);
-        try {
-            repository.store(token, resource, context);
-        } catch (Exception e) {
-            e.printStackTrace();
-            // Resource currently locked or moved.. try again in next
-            // batch
-        }
+        storeIfUnmodified(resource, ctx);
     }
 
-    private Dimension getImageDimension(InputStream content) throws Exception {
-
-        ImageInputStream iis = new FileCacheImageInputStream(content, null);
+    private void storeIfUnmodified(Resource resource, ExecutionContext ctx) {
         try {
-            Iterator<ImageReader> readers = ImageIO.getImageReaders(iis);
-            if (readers.hasNext()) {
-                ImageReader reader = readers.next();
-                reader.setInput(iis);
-                int width = reader.getWidth(reader.getMinIndex());
-                int height = reader.getHeight(reader.getMinIndex());
-                reader.dispose();
-                return new Dimension(width, height);
+            // To minimize potential race between initial load of resource and completed
+            // thumbnail generation, we sanity check last modified time before storing.
+            Resource current = ctx.getRepository().retrieve(ctx.getToken(), resource.getURI(), false);
+            if (!current.getLastModified().equals(resource.getLastModified())) {
+                logger.warn("Resource " + resource.getURI() 
+                        + " was modified during image metadata extraction, skipping store.");
+                return;
             }
-        } finally {
-            iis.close();
+            
+            ctx.getRepository().store(ctx.getToken(), resource, ctx.getSystemChangeContext());
+            if (resource.getProperty(thumbnailPropDef) != null) {
+                logger.info("Created thumbnail for " + resource);
+            }
+        } catch (ResourceLockedException e) {
+            logger.warn("Store of " + resource + " failed due to resource being locked.");
+        } catch (ResourceNotFoundException e) {
+            // ignore
+        } catch (Exception e) {
+            logger.warn("Exception while trying to store " + resource, e);
         }
-
-        return null;
     }
 
     /**
@@ -224,12 +216,7 @@ public class InProcessMetadataProvider implements MediaMetadataProvider {
     private long estimateMemoryUsage(Dimension dim) {
         return (long) dim.height * (long) dim.width * 24 / 8;
     }
-
-    @Required
-    public void setImageService(ImageService imageService) {
-        this.imageService = imageService;
-    }
-
+    
     @Required
     public void setWidth(int width) {
         if (width <= 1) {
@@ -241,10 +228,6 @@ public class InProcessMetadataProvider implements MediaMetadataProvider {
     @Required
     public void setSupportedFormats(Set<String> supportedFormats) {
         this.supportedFormats = supportedFormats;
-    }
-
-    public void setScaleUp(boolean scaleUp) {
-        this.scaleUp = scaleUp;
     }
 
     public void setMaxSourceImageFileSize(long maxSourceImageFileSize) {
@@ -292,5 +275,4 @@ public class InProcessMetadataProvider implements MediaMetadataProvider {
     public void setImageWidthPropDef(PropertyTypeDefinition imageWidthPropDef) {
         this.imageWidthPropDef = imageWidthPropDef;
     }
-
 }

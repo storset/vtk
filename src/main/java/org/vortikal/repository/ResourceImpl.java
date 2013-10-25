@@ -343,7 +343,7 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(this.getClass().getName());
+        sb.append(this.getClass().getSimpleName());
         sb.append(": [").append(this.uri).append("]");
         return sb.toString();
     }

@@ -42,7 +42,6 @@ import org.springframework.validation.Errors;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 import org.vortikal.repository.Path;
-import org.vortikal.repository.Privilege;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
@@ -90,7 +89,7 @@ public class ImageEditController extends ResourceEditController {
 
         if (wrapper.isSaveCopy() && this.editImageService != null && this.copyHelper != null
                 && this.saveImageHelper != null) {
-            InputStream is = saveImageHelper.saveImage(resource, repository, token, resource.getURI(),
+            InputStream is = saveImageHelper.getEditedImageInputStream(resource, repository, token, resource.getURI(),
                     wrapper.getCropX(), wrapper.getCropY(), wrapper.getCropWidth(), wrapper.getCropHeight(),
                     wrapper.getNewWidth(), wrapper.getNewHeight());
 
@@ -108,7 +107,7 @@ public class ImageEditController extends ResourceEditController {
 
         if (this.editImageService != null && this.copyHelper != null && this.saveImageHelper != null) {
 
-            InputStream is = saveImageHelper.saveImage(resource, repository, token, resource.getURI(),
+            InputStream is = saveImageHelper.getEditedImageInputStream(resource, repository, token, resource.getURI(),
                     wrapper.getCropX(), wrapper.getCropY(), wrapper.getCropWidth(), wrapper.getCropHeight(),
                     wrapper.getNewWidth(), wrapper.getNewHeight());
             if (is != null) {
@@ -173,16 +172,6 @@ public class ImageEditController extends ResourceEditController {
 
     public void setCopyHelper(CopyHelper copyHelper) {
         this.copyHelper = copyHelper;
-    }
-
-    @Required
-    public void setResourceManager(ResourceWrapperManager resourceManager) {
-        this.resourceManager = resourceManager;
-    }
-
-    public void setPropertyEditPreprocessors(
-            Map<PropertyTypeDefinition, PropertyEditPreprocessor> propertyEditPreprocessors) {
-        this.propertyEditPreprocessors = propertyEditPreprocessors;
     }
 
     public void setHeightPropDef(PropertyTypeDefinition hightPropDef) {

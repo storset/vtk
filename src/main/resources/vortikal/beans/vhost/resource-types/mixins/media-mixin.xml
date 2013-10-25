@@ -34,8 +34,12 @@
       <bean id="mediaMetadataStatusEvaluator" class="org.vortikal.repository.resourcetype.property.MediaMetadataStatusPropertyEvaluator" />
     </property>
 
+    <!-- XXX Is a vocabulary for this property necessary, and does it makes sense when
+         it contains image specific values ?
+         media-mixin type should be more general, no ? -->
     <property name="vocabulary">
       <bean class="org.vortikal.repository.resourcetype.ValueVocabulary">
+        <!-- XXX commentsEnabled !?: -->
         <property name="messageSourceBaseName" value="vortikal.beans.vhost.resource-types.properties.commentsEnabled" />
         <property name="type" value="STRING" />
         <property name="values">
@@ -56,6 +60,11 @@
               <constructor-arg value="UNSUPPORTED_FORMAT" />
               <constructor-arg ref="TYPE_STRING" />
             </bean>
+            <bean class="org.vortikal.repository.resourcetype.Value">
+              <constructor-arg value="TOO_SMALL_FOR_THUMBNAIL" />
+              <constructor-arg ref="TYPE_STRING" />
+            </bean>
+            <!-- XXX legacy value should be removed, but kept for compat. for now: -->
             <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg value="CONFIGURED_NOT_TO_SCALE_UP" />
               <constructor-arg ref="TYPE_STRING" />

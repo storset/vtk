@@ -42,26 +42,18 @@ import javax.imageio.ImageWriteParam;
 import javax.imageio.ImageWriter;
 import javax.imageio.stream.ImageOutputStream;
 
-import org.springframework.beans.factory.annotation.Required;
-import org.vortikal.graphics.ImageServiceImpl;
+import org.vortikal.graphics.ImageUtil;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 
 /**
- * Controller that saves image content on resource
- */
+ * Helper for saving image content on resource.
+   */
 public class SaveImageHelper {
 
-    private ImageServiceImpl imageService;
-
-    @Required
-    public void setImageService(ImageServiceImpl imageService) {
-        this.imageService = imageService;
-    }
-
-    public InputStream saveImage(Resource resource, Repository repository, String token, Path uri, int cropX,
-            int cropY, int cropWidth, int cropHeight, int newWidth, int newHeight) throws Exception {
+    public InputStream getEditedImageInputStream(Resource resource, Repository repository, String token, Path uri,
+            int cropX, int cropY, int cropWidth, int cropHeight, int newWidth, int newHeight) throws Exception {
 
         // Check whether all is zero (default values when image is not supported
         // in editor or JS is turned off)
@@ -92,7 +84,7 @@ public class SaveImageHelper {
 
         image = image.getSubimage(cropX, cropY, cropWidth, cropHeight);
 
-        BufferedImage scaledImage = imageService.getScaledInstance(image, newWidth, newHeight); // Bilinear
+        BufferedImage scaledImage = ImageUtil.downscale(image, newWidth, newHeight); // Bilinear
 
         // Find a writer
         ImageWriter writer = null;

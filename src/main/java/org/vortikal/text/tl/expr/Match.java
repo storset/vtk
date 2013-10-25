@@ -43,7 +43,6 @@ public class Match extends Operator {
     public Object eval(Context ctx, ExpressionNode... nodes) {
         Object o1 = nodes[0].eval(ctx);
         Object o2 = nodes[1].eval(ctx);
-        System.out.println("__match: " + o1 + ", " + o2);
         if (o1 == null && o2 == null) {
             return false;
         } else if (o1 == null && o2 != null) {

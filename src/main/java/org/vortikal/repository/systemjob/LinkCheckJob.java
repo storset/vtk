@@ -51,24 +51,21 @@ import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.ContentStream;
 import org.vortikal.repository.Lock;
-import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Repository.Depth;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceLockedException;
-import org.vortikal.repository.ResourceNotFoundException;
 import org.vortikal.repository.SystemChangeContext;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.util.text.JSONDefaultHandler;
 import org.vortikal.web.display.linkcheck.LinkChecker;
 import org.vortikal.web.display.linkcheck.LinkChecker.LinkCheckResult;
 import org.vortikal.web.service.CanonicalUrlConstructor;
 import org.vortikal.web.service.URL;
 
-public class LinkCheckJob extends RepositoryJob {
-    private PathSelector pathSelector;
+public class LinkCheckJob extends AbstractResourceJob {
+    
     private PropertyTypeDefinition linkCheckPropDef;
     private PropertyTypeDefinition linksPropDef;
     private LinkChecker linkChecker;
@@ -80,68 +77,43 @@ public class LinkCheckJob extends RepositoryJob {
     
     private CanonicalUrlConstructor urlConstructor;
     
-    // TODO these should probably be configurable
     private static final int MAX_BROKEN_LINKS = 100;   // max number of broken links we bother storing
     private static final int MAX_CHECK_LINKS = 100;    // max number of links to check per resource per round
     
     private static final Log logger = LogFactory.getLog(LinkCheckJob.class);
 
+    public LinkCheckJob() {
+        setIgnoreLockedResources(false);
+    }
+    
     @Override
-    public void executeWithRepository(final Repository repository,
-                                      final SystemChangeContext context) throws Exception {
-        if (repository.isReadOnly()) {
-            return;
-        }
-
-        final String token = SecurityContext.exists() ? SecurityContext.getSecurityContext().getToken() : null;
-        final UpdateBatch batch = new UpdateBatch(repository, token, context, this.updateBatch, this.useRepositoryLocks);
-        this.pathSelector.selectWithCallback(repository, context, new PathSelectCallback() {
-
-            int count = 0;
-            int total = -1;
-
-            @Override
-            public void beginBatch(int total) {
-                this.total = total;
-                this.count = 0;
-                logger.info("Running job " + getId()
-                        + ", " + (this.total >= 0 ? this.total : "?") + " resource(s) selected in batch.");
-            }
-
-            @Override
-            public void select(Path path) throws Exception {
-                ++this.count;
-                try {
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("Invoke job " + getId() + " on " + path
-                                + " [" + this.count + "/" + (this.total > 0 ? this.total : "?") + "]");
-                    }
-                    Resource resource = repository.retrieve(token, path, false);
-                    Property prop = linkCheck(resource, context);
-                    if (prop != null) {
-                        resource.addProperty(prop);
-                    } else {
-                        // Delete any old stale value
-                        resource.removeProperty(linkCheckPropDef);
-                    }
-                    batch.add(resource);
-
-                } catch (ResourceNotFoundException rnfe) {
-                    // Resource is no longer there after search (deleted, moved
-                    // or renamed)
-                    // Maybe just log at debug-level here
-                    logger.warn("A resource ("
-                            + path
-                            + ") that was to be affected by a systemjob was no longer available: "
-                            + rnfe.getMessage());
-                }
-            }
-        });
-        batch.flush();
+    protected void executeBegin(ExecutionContext ctx) throws Exception {
+        ctx.setAttribute("UpdateBatch", 
+                new UpdateBatch(ctx.getRepository(), ctx.getToken(), ctx.getSystemChangeContext(),
+                        this.updateBatch, this.useRepositoryLocks));
     }
 
+    @Override
+    protected void executeForResource(Resource resource, ExecutionContext ctx) throws Exception {
+        Property prop = linkCheck(resource, ctx.getSystemChangeContext());
+        if (prop != null) {
+            resource.addProperty(prop);
+        } else {
+            // Delete any old stale value
+            resource.removeProperty(linkCheckPropDef);
+        }
+        UpdateBatch b = (UpdateBatch)ctx.getAttribute("UpdateBatch");
+        b.add(resource);
+    }
     
-    private Property linkCheck(final Resource resource, final SystemChangeContext context) throws InterruptedException {
+    @Override
+    protected void executeEnd(ExecutionContext ctx) throws Exception {
+        UpdateBatch b = (UpdateBatch)ctx.getAttribute("UpdateBatch");
+        b.flush();
+    }
+
+    private Property linkCheck(final Resource resource, final SystemChangeContext context)
+            throws InterruptedException {
 
         Property linksProp = resource.getProperty(this.linksPropDef);
         if (linksProp == null) {
@@ -417,12 +389,12 @@ public class LinkCheckJob extends RepositoryJob {
     }
     
     private static class UpdateBatch {
-        private Repository repository;
-        private SystemChangeContext context;
-        private String token;
-        private int batchSize;
+        private final Repository repository;
+        private final SystemChangeContext context;
+        private final String token;
+        private final int batchSize;
         private boolean locking = false;
-        private List<Resource> updateList = new ArrayList<Resource>();
+        private final List<Resource> updateList = new ArrayList<Resource>();
 
         public UpdateBatch(Repository repository, String token, SystemChangeContext context, int batchSize, boolean locking) {
             this.repository = repository;
@@ -512,11 +484,6 @@ public class LinkCheckJob extends RepositoryJob {
     @Required
     public void setLinksPropDef(PropertyTypeDefinition linksPropDef) {
         this.linksPropDef = linksPropDef;
-    }
-
-    @Required
-    public void setPathSelector(PathSelector pathSelector) {
-        this.pathSelector = pathSelector;
     }
 
     @Required

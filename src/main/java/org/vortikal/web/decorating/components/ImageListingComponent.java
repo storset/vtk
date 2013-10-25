@@ -118,10 +118,10 @@ public class ImageListingComponent extends ViewRenderingDecoratorComponent {
             return;
         }
 
-        Listing events = searchComponent.execute(RequestContext.getRequestContext().getServletRequest(),
+        Listing images = searchComponent.execute(RequestContext.getRequestContext().getServletRequest(),
                 requestedResource, 1, searchLimit, 0);
 
-        model.put("images", events.getEntries());
+        model.put("images", images.getEntries());
         model.put("folderTitle", requestedResource.getTitle());
         model.put("folderUrl", pathUriParameter);
         model.put("fadeEffect", fadeEffect);

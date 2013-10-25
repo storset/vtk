@@ -154,7 +154,7 @@ public abstract class AbstractTask implements Task {
      * @throws InterruptedException if interrupt flag for current thread is raised.
      */
     public void checkForInterrupt() throws InterruptedException {
-        if (Thread.currentThread().isInterrupted()) {
+        if (Thread.interrupted()) {
             throw new InterruptedException("Interrupted during task execution");
         }
     }

@@ -33,12 +33,9 @@ package org.vortikal.repository.content;
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.io.InputStream;
-import java.util.Iterator;
 
 import javax.imageio.ImageIO;
-import javax.imageio.ImageReader;
-import javax.imageio.stream.FileCacheImageInputStream;
-import javax.imageio.stream.ImageInputStream;
+import org.vortikal.graphics.ImageUtil;
 
 public class ImageContentFactory implements ContentFactory {
 
@@ -61,7 +58,7 @@ public class ImageContentFactory implements ContentFactory {
         
         try {
             if (clazz == Dimension.class) {
-                return getImageDimension(content);
+                return ImageUtil.getImageStreamDimension(content);
             } else if (clazz == BufferedImage.class) {
                 return ImageIO.read(content);                
             } else {
@@ -72,26 +69,6 @@ public class ImageContentFactory implements ContentFactory {
             // ImageIO.read documentation states that it does not close the input stream.
             content.close();
         }
-    }
-    
-    private Dimension getImageDimension(InputStream content) throws Exception {
-
-        ImageInputStream iis = new FileCacheImageInputStream(content, null);
-        try {
-            Iterator<ImageReader> readers = ImageIO.getImageReaders(iis);
-            if (readers.hasNext()) {
-                ImageReader reader = readers.next();
-                reader.setInput(iis);
-                int width = reader.getWidth(reader.getMinIndex());
-                int height = reader.getHeight(reader.getMinIndex());
-                reader.dispose();
-                return new Dimension(width, height);
-            }
-        } finally {
-            iis.close();
-        }
-
-        return null;
     }
 
 }

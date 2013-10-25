@@ -140,7 +140,7 @@ var VrtxHtmlDialog = dejavu.Class.declare({
       selector: "#dialog-html-" + opts.name,
       msg: opts.html,
       title: opts.title,
-      hasHtml: opts.true,
+      hasHtml: true,
       width: opts.width,
       height: opts.height,
       onOk: opts.onOk,

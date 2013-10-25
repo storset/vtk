@@ -402,30 +402,41 @@
     <property name="resourceManager" ref="editor.unstructuredXhtmlResourceManager" />
     <property name="formView" value="editor.editView" />
     <property name="successView" value="redirectToManage" />
+    <property name="copyHelper" ref="copyHelperImageEdit" />
+    <property name="editService" ref="editor.unstructuredXhtmlEditService" />
+    <property name="previewService" ref="previewService" />
   </bean>
 
   <bean id="editor.ooXmlEditHandler" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
     <property name="viewName" value="editor.ooXmlEditView" />
   </bean>
 
-  <bean id="editor.collectionEditHandler" class="org.vortikal.edit.editor.ResourceEditController">
-    <property name="resourceManager" ref="editor.collectionResourceManager" />
+  <bean id="editor.abstractEditHandler" abstract="true" class="org.vortikal.edit.editor.ResourceEditController">
+    <property name="copyHelper" ref="copyHelper" />
     <property name="formView" value="editor.editView" />
-    <property name="successView" value="redirectToPreviewCollection" />
+  </bean>
+  
+  <bean id="editor.abstractEditCollectionHandler" abstract="true" parent="editor.abstractEditHandler">
+    <property name="editService" ref="editor.collectionEditService" />
+    <property name="previewService" ref="previewCollectionListingService" />
   </bean>
 
+  <bean id="editor.collectionEditHandler" parent="editor.abstractEditCollectionHandler">
+    <property name="resourceManager" ref="editor.collectionResourceManager" />
+    <property name="successView" value="redirectToPreviewCollection" />
+  </bean>
 
   <bean id="editor.imageEditHandler" class="org.vortikal.edit.editor.ImageEditController">
     <property name="resourceManager" ref="editor.imageResourceManager" />
     <property name="formView" value="editor.editView" />
     <property name="successView" value="redirectToManage" />
     <property name="loadImageService" ref="editor.loadImageService" />
-    <property name="editImageService" ref="editor.imageEditService" />
     <property name="saveImageHelper">
       <bean class="org.vortikal.web.actions.SaveImageHelper" />
     </property>
     <property name="copyHelper" ref="copyHelperImageEdit" />
-
+    <property name="editService" ref="editor.imageEditService" />
+    <property name="previewService" ref="previewImageService" />
     <property name="heightPropDef" ref="mediaHeightPropDef" />
     <property name="widthPropDef" ref="mediaWidthPropDef" />
   </bean>
@@ -434,77 +445,70 @@
     <property name="copyThenStoreAction" ref="copy.imageCopyThenStoreAction" />
   </bean>
 
-  <bean id="editor.videoEditHandler" class="org.vortikal.edit.editor.ResourceEditController">
+  <bean id="editor.videoEditHandler" parent="editor.abstractEditHandler">
     <property name="resourceManager" ref="editor.videoResourceManager" />
-    <property name="formView" value="editor.editView" />
     <property name="successView" value="redirectToManage" />
+    <property name="editService" ref="editor.videoEditService" />
+    <property name="previewService" ref="previewMediaService" />
   </bean>
 
-  <bean id="editor.audioEditHandler" class="org.vortikal.edit.editor.ResourceEditController">
+  <bean id="editor.audioEditHandler" parent="editor.abstractEditHandler">
     <property name="resourceManager" ref="editor.audioResourceManager" />
-    <property name="formView" value="editor.editView" />
     <property name="successView" value="redirectToManage" />
+    <property name="editService" ref="editor.audioEditService" />
+    <property name="previewService" ref="previewMediaService" />
   </bean>
 
-  <bean id="editor.personEditHandler" class="org.vortikal.edit.editor.ResourceEditController">
+  <bean id="editor.personEditHandler" parent="editor.abstractEditCollectionHandler">
     <property name="resourceManager" ref="editor.personResourceManager" />
-    <property name="formView" value="editor.editView" />
     <property name="successView" value="redirectToPreviewCollection" />
   </bean>
 
-
-  <bean id="editor.projectEditHandler" class="org.vortikal.edit.editor.ResourceEditController">
+  <bean id="editor.projectEditHandler" parent="editor.abstractEditCollectionHandler">
     <property name="resourceManager" ref="editor.projectResourceManager" />
-    <property name="formView" value="editor.editView" />
     <property name="successView" value="redirectToPreviewCollection" />
   </bean>
 
-  <bean id="editor.researchGroupEditHandler" class="org.vortikal.edit.editor.ResourceEditController">
+  <bean id="editor.researchGroupEditHandler" parent="editor.abstractEditCollectionHandler">
     <property name="resourceManager" ref="editor.researchGroupResourceManager" />
-    <property name="formView" value="editor.editView" />
     <property name="successView" value="redirectToPreviewCollection" />
   </bean>
 
-  <bean id="editor.imageListingEditHandler" class="org.vortikal.edit.editor.ResourceEditController">
+  <bean id="editor.imageListingEditHandler" parent="editor.abstractEditCollectionHandler">
     <property name="resourceManager" ref="editor.imageListingResourceManager" />
-    <property name="formView" value="editor.editView" />
     <property name="successView" value="redirectToPreviewCollection" />
   </bean>
 
-  <bean id="editor.messageListingEditHandler" class="org.vortikal.edit.editor.ResourceEditController">
+  <bean id="editor.messageListingEditHandler" parent="editor.abstractEditCollectionHandler">
     <property name="resourceManager" ref="editor.messageListingResourceManager" />
-    <property name="formView" value="editor.editView" />
     <property name="successView" value="redirectToPreviewCollection" />
   </bean>
 
-  <bean id="editor.audioVideoListingEditHandler" class="org.vortikal.edit.editor.ResourceEditController">
+  <bean id="editor.audioVideoListingEditHandler" parent="editor.abstractEditCollectionHandler">
     <property name="resourceManager" ref="editor.audioVideoListingResourceManager" />
-    <property name="formView" value="editor.editView" />
     <property name="successView" value="redirectToPreviewCollection" />
   </bean>
 
-  <bean id="editor.articleListingEditHandler" class="org.vortikal.edit.editor.ResourceEditController">
+  <bean id="editor.articleListingEditHandler" parent="editor.abstractEditCollectionHandler">
     <property name="resourceManager" ref="editor.articleListingResourceManager" />
-    <property name="formView" value="editor.editView" />
     <property name="successView" value="redirectToPreviewCollection" />
   </bean>
 
-  <bean id="editor.blogListingEditHandler" class="org.vortikal.edit.editor.ResourceEditController">
+  <bean id="editor.blogListingEditHandler" parent="editor.abstractEditCollectionHandler">
     <property name="resourceManager" ref="editor.blogListingResourceManager" />
-    <property name="formView" value="editor.editView" />
     <property name="successView" value="redirectToPreviewCollection" />
   </bean>
 
-  <bean id="editor.eventListingEditHandler" class="org.vortikal.edit.editor.ResourceEditController">
+  <bean id="editor.eventListingEditHandler" parent="editor.abstractEditCollectionHandler">
     <property name="resourceManager" ref="editor.eventListingResourceManager" />
-    <property name="formView" value="editor.editView" />
     <property name="successView" value="redirectToPreviewCollection" />
   </bean>
 
-  <bean id="editor.editHandler" class="org.vortikal.edit.editor.ResourceEditController">
+  <bean id="editor.editHandler" parent="editor.abstractEditHandler">
     <property name="resourceManager" ref="resourceManager" />
-    <property name="formView" value="editor.editView" />
     <property name="successView" value="redirectToManage" />
+    <property name="editService" ref="editor.documentEditService" />
+    <property name="previewService" ref="previewService" />
     <property name="propertyEditPreprocessors">
       <map>
         <entry key-ref="tagsPropDef" value-ref="editor.propertyEditPreprocessors" />

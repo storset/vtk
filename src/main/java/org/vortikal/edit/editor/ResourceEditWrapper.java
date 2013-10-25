@@ -123,6 +123,7 @@ public class ResourceEditWrapper extends ResourceWrapper {
 
     private boolean save = false;
     private boolean saveCopy = false;
+    private boolean saveCopyPreview = false;
     private boolean view = false;
 
     public boolean isSave() {
@@ -139,6 +140,14 @@ public class ResourceEditWrapper extends ResourceWrapper {
     
     public void setSaveCopy(boolean saveCopy) {
         this.saveCopy = saveCopy;
+    }
+    
+    public boolean isSaveCopyPreview() {
+        return this.saveCopyPreview;
+    }
+    
+    public void setSaveCopyPreview(boolean saveCopyPreview) {
+        this.saveCopyPreview = saveCopyPreview;
     }
 
     public void setView(boolean view) {

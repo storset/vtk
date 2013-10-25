@@ -57,9 +57,7 @@ import org.vortikal.web.service.URL;
 public class ImageEditController extends ResourceEditController {
 
     private Service loadImageService;
-    private Service editImageService;
     private SaveImageHelper saveImageHelper;
-    private CopyHelper copyHelper;
     private PropertyTypeDefinition heightPropDef;
     private PropertyTypeDefinition widthPropDef;
 
@@ -87,17 +85,14 @@ public class ImageEditController extends ResourceEditController {
       
         repository.store(token, resource);
 
-        if (wrapper.isSaveCopy() && this.editImageService != null && this.copyHelper != null
-                && this.saveImageHelper != null) {
+        if ((wrapper.isSaveCopy() || wrapper.isSaveCopyPreview()) && this.saveImageHelper != null) {
             InputStream is = saveImageHelper.getEditedImageInputStream(resource, repository, token, resource.getURI(),
                     wrapper.getCropX(), wrapper.getCropY(), wrapper.getCropWidth(), wrapper.getCropHeight(),
                     wrapper.getNewWidth(), wrapper.getNewHeight());
-
-            Path destUri = this.copyHelper.copyResource(resource.getURI(), resource.getURI(), repository, token,
-                    wrapper.getResource(), is);
-            URL editServiceUrl = editImageService.constructURL(destUri);
-            this.resourceManager.unlock();
-            return new ModelAndView(new RedirectView(editServiceUrl.toString()));
+            RedirectView redirectView = this.makeCopy(wrapper, is, repository, token);
+            if(redirectView != null) {
+                return new ModelAndView(redirectView);
+            }
         }
 
         if (!wrapper.isSave()) {
@@ -105,8 +100,7 @@ public class ImageEditController extends ResourceEditController {
             return new ModelAndView(getSuccessView(), new HashMap<String, Object>());
         }
 
-        if (this.editImageService != null && this.copyHelper != null && this.saveImageHelper != null) {
-
+        if (this.saveImageHelper != null) {
             InputStream is = saveImageHelper.getEditedImageInputStream(resource, repository, token, resource.getURI(),
                     wrapper.getCropX(), wrapper.getCropY(), wrapper.getCropWidth(), wrapper.getCropHeight(),
                     wrapper.getNewWidth(), wrapper.getNewHeight());
@@ -162,16 +156,8 @@ public class ImageEditController extends ResourceEditController {
         this.loadImageService = loadImageService;
     }
 
-    public void setEditImageService(Service editImageService) {
-        this.editImageService = editImageService;
-    }
-
     public void setSaveImageHelper(SaveImageHelper saveImageHelper) {
         this.saveImageHelper = saveImageHelper;
-    }
-
-    public void setCopyHelper(CopyHelper copyHelper) {
-        this.copyHelper = copyHelper;
     }
 
     public void setHeightPropDef(PropertyTypeDefinition hightPropDef) {

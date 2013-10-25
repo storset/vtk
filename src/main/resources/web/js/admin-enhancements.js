@@ -2220,19 +2220,13 @@ function editorInteraction(bodyId, vrtxAdm, _$) {
           
           if(xhr === "UPDATED_IN_BACKGROUND") {
             var d = new VrtxConfirmDialog({
-              msg: vrtxAdm.serverFacade.errorMessages.outOfDate.replace(/^([^.]+)( \.)/, "$1:</p><p><strong>" +
-                   vrtxAdm.serverModifiedBy + " " + serverTimeFormatToClientTimeFormat(vrtxAdmin.serverLastModified).toLocaleString() + "</strong></p><p>"),
+              msg: vrtxAdm.serverFacade.errorMessages.outOfDate.replace(/XX/, "8 minutter").replace(/YY/, vrtxAdm.serverModifiedBy),
               title: vrtxAdm.serverFacade.errorMessages.outOfDateTitle,
-              width: 500,
-              btnTextOk: vrtxAdm.serverFacade.errorMessages.outOfDateOverwriteOk,
-              extraBtns: [{ btnText: vrtxAdm.serverFacade.errorMessages.outOfDateRefreshOk, onOk: function() {
-                location.reload(true);
-              }}],
+              btnTextOk: vrtxAdm.serverFacade.errorMessages.outOfDateOk,
+              width: 450,
               onOk: function() {
-                vrtxAdm.clientLastModified = vrtxAdm.serverLastModified;
-                $("input[name='" + vrtxAdm.editorSaveButtonName + "']").click();
-              },
-              onCancel: function () {}
+                // Copy with changes
+              }
             });
             d.open();
             return false;
@@ -2241,9 +2235,14 @@ function editorInteraction(bodyId, vrtxAdm, _$) {
             if(msg === "RE_AUTH") {
               reAuthenticateRetokenizeForms(link);
             } else if(msg === "LOCKED") {
-              var d = new VrtxMsgDialog({
+              var d = new VrtxConfirmDialog({
                 msg: vrtxAdm.serverFacade.errorMessages.lockStolen,
-                title: vrtxAdm.serverFacade.errorMessages.lockStolenTitle
+                title: vrtxAdm.serverFacade.errorMessages.lockStolenTitle,
+                btnTextOk: vrtxAdm.serverFacade.errorMessages.lockStolenOk,
+                width: 450,
+                onOk: function() {
+               // Copy with changes
+                }
               });
               d.open();
             } else {

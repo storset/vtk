@@ -38,6 +38,12 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.vortikal.util.cache.SimpleCache;
 
+/**
+ * Used to temporarily store cookies for use with the IE cookie handler.
+ * 
+ * Token is removed after it has been set by the cookie handler
+ */
+
 public class IECookieStore {
 
     private SimpleCache<String, Map<String, String>> cache = null;

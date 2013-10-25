@@ -6,6 +6,14 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.ModelAndView;
 import org.vortikal.web.service.URL;
 
+/**
+ * Extends the standard ConfigurableRedirector class with handling of the backsteps parameter.
+ * 
+ * This parameter is used to facilitate correct handling of the back button in IE10.
+ * 
+ * The parameter is sent from the IDP and handled by javascript to skip to the correct back position.
+ */
+
 public class IEConfigurableRedirector extends ConfigurableRedirector {
 
     private String backstepParameter = "backsteps";

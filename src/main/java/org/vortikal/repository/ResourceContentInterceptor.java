@@ -58,7 +58,7 @@ import org.vortikal.video.rest.VideoRef;
  */
 public class ResourceContentInterceptor implements InitializingBean {
 
-    private static final String VIDEO_INPUT_DIR = "videoinput";
+    private static final String VIDEO_INPUT_DIRNAME = "videoinput";
     
     private String videoStorageRoot;
     private String repositoryId;
@@ -119,7 +119,7 @@ public class ResourceContentInterceptor implements InitializingBean {
                          .sourceVideo(newRef.sourceVideo())
                          .convertedVideo(newRef.convertedVideo())
                          .build();
-        } catch (Exception e) {
+        } catch (IOException io) {
             ref = newRef;
         }
         
@@ -202,7 +202,7 @@ public class ResourceContentInterceptor implements InitializingBean {
     }
     
     private String getInputDirAbspath() {
-        return this.videoStorageRoot + "/videoinput/" + this.repositoryId;
+        return this.videoStorageRoot + "/" + VIDEO_INPUT_DIRNAME + "/" + this.repositoryId;
     }
 
     @Override

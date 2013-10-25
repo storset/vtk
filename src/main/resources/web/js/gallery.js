@@ -280,7 +280,7 @@
       // Find image width and height "precalculated" from Vortex (properties)
       for(var i = 0, len = imageUrlsToBePrefetched.length; i < len; i++) {
         var dims = imageUrlsToBePrefetched[i];
-        if(dims.url === src) break;
+        if(dims.url === "//" + src.split("//")[1]) break;
       }
       images[src].width = parseInt(dims.width, 10);
       images[src].height = parseInt(dims.height, 10);

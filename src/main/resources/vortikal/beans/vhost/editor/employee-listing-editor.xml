@@ -11,9 +11,8 @@
     <property name="handler" ref="editor.employeeEditHandler" />
   </bean>
 
-  <bean id="editor.employeeEditHandler" class="org.vortikal.edit.editor.ResourceEditController">
+  <bean id="editor.employeeEditHandler" parent="editor.abstractEditCollectionHandler">
     <property name="resourceManager" ref="editor.employeeResourceManager" />
-    <property name="formView" value="editor.editView" />
     <property name="successView" value="redirectToPreviewCollection" />
   </bean>
 

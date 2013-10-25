@@ -161,7 +161,10 @@
       }
     }
     
-    function loadImage(src) {
+    function loadImage(src) {      
+      if(src.indexOf("//") === 0) {
+        src = location.protocol + src;
+      }
       var id = genId(src);
       if($("a#" + id).length) return;
       var description = "<div id='" + id + "-description' class='" + container.substring(1) + "-description" + (!images[src].desc ? " empty-description" : "") + "' style='display: none; width: " + (images[src].width - 30) + "px'>" +
@@ -232,7 +235,7 @@
     }
     
     function showImage(image, init) {
-      var activeSrc = image[0].src.split("?")[0]; /* Remove parameters when active is sent in to gallery */
+      var activeSrc = image[0].src.split("?")[0];
 
       if (init) {
         cacheGenerateLinkImage(activeSrc);
@@ -278,9 +281,10 @@
     function cacheGenerateLinkImage(src) {
       images[src] = {};
       // Find image width and height "precalculated" from Vortex (properties)
+      var protocolRelativeSrc = "//" + src.split("//")[1];
       for(var i = 0, len = imageUrlsToBePrefetched.length; i < len; i++) {
         var dims = imageUrlsToBePrefetched[i];
-        if(dims.url === src) break;
+        if(dims.url === protocolRelativeSrc) break;
       }
       images[src].width = parseInt(dims.width, 10);
       images[src].height = parseInt(dims.height, 10);

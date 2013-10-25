@@ -30,6 +30,7 @@
  */
 package org.vortikal.edit.editor;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -42,6 +43,8 @@ import org.springframework.validation.Errors;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
+import org.springframework.web.servlet.view.RedirectView;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Privilege;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
@@ -49,11 +52,16 @@ import org.vortikal.repository.ResourceWrapper;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.Principal;
 import org.vortikal.web.RequestContext;
+import org.vortikal.web.actions.copymove.CopyHelper;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.ServiceUnlinkableException;
 
 public class ResourceEditController extends SimpleFormController {
 
+    private CopyHelper copyHelper;
+    private Service editService;
+    private Service previewService;
+    
     protected List<Service> tooltipServices;
     protected ResourceWrapperManager resourceManager;
     protected Map<PropertyTypeDefinition, PropertyEditPreprocessor> propertyEditPreprocessors;
@@ -144,6 +152,21 @@ public class ResourceEditController extends SimpleFormController {
 
         return model;
     }
+    
+    protected RedirectView makeCopy(ResourceEditWrapper wrapper, InputStream is, Repository repository, String token) throws Exception {
+      if ((wrapper.isSaveCopy() || wrapper.isSaveCopyPreview()) && copyHelper != null) {
+            Resource resource = wrapper.getResource();
+            Path destUri = copyHelper.copyResource(resource.getURI(), resource.getURI(), repository, token,
+                        wrapper.getResource(), is);
+            this.resourceManager.unlock();
+            if(!wrapper.isSaveCopyPreview()) {
+              return new RedirectView(editService.constructURL(destUri).toString());
+            } else {
+              return new RedirectView(previewService.constructURL(destUri).toString());  
+            }
+      }
+      return null;
+    }
 
     public void setTooltipServices(List<Service> tooltipServices) {
         this.tooltipServices = tooltipServices;
@@ -177,6 +200,21 @@ public class ResourceEditController extends SimpleFormController {
     public void setPropertyEditPreprocessors(
             Map<PropertyTypeDefinition, PropertyEditPreprocessor> propertyEditPreprocessors) {
         this.propertyEditPreprocessors = propertyEditPreprocessors;
+    }
+    
+    @Required
+    public void setCopyHelper(CopyHelper copyHelper) {
+        this.copyHelper = copyHelper;
+    }
+    
+    @Required
+    public void setEditService(Service editService) {
+        this.editService = editService;
+    }
+    
+    @Required
+    public void setPreviewService(Service previewService) {
+        this.previewService = previewService;
     }
 
 }

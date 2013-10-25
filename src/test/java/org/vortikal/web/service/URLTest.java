@@ -1,4 +1,4 @@
-/* Copyright (c) 2009, University of Oslo, Norway
+/* Copyright (c) 2009,2013, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -34,6 +34,7 @@ import java.util.Map;
 
 import junit.framework.TestCase;
 
+import org.junit.Test;
 import org.vortikal.repository.Path;
 
 public class URLTest extends TestCase {
@@ -275,5 +276,20 @@ public class URLTest extends TestCase {
         URL url2 = URL.parse("https://b/c");
         assertEquals("https://domain.com/img/logo.png", url2.relativeURL(url.protocolRelativeURL()).toString());
     }
+
+	@Test
+	public void testSetParameterWhenNoParameterBeforeThenSetNew() {
+		assertEquals("http://localhost/?param=a", URL.parse("http://localhost/").setParameter("param", "a").toString());
+	}
+
+	@Test
+	public void testSetParameterWhenSameParameterThenNoChange() {
+		assertEquals("http://localhost/?param=a", URL.parse("http://localhost/?param=a").setParameter("param", "a").toString());
+	}
+	
+	@Test
+	public void testSetParameterWhenNewParameterIsDifferentThenReplaceWithNew() {
+		assertEquals("http://localhost/?param=a", URL.parse("http://localhost/?param=b").setParameter("param", "a").toString());
+	}
     
 }

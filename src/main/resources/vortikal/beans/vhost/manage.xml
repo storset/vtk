@@ -1367,6 +1367,7 @@
     <property name="referenceDataProviders">
       <list>
         <ref bean="resourceContextProvider" />
+        <ref bean="serverNowTimeProvider" />
         <ref bean="resourceMenuLeftProvider" />
         <ref bean="resourceMenuRightProvider" />
         <ref bean="manage.refreshLockURLProvider" />

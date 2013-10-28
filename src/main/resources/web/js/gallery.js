@@ -292,7 +292,7 @@
         if(dims.url === protocolRelativeSrc) break;
       }
       var maxWidth = $(".vrtx-image-listing-include").parent().width();
-      var maxHeight = 380;
+      var maxHeight = Math.ceil(maxWidth/1.335);
       var resized = calculateImageDimensions(parseInt(dims.width, 10), parseInt(dims.height, 10), maxWidth, maxHeight);   
       images[src].width = resized[0];
       images[src].height = resized[1];

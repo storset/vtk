@@ -1,10 +1,9 @@
 .vrtx-image-listing-include {
-  border: 3px solid #aaa;
   /* clear: both; */
   float: left;
   padding: 5px 10px 10px;
   margin-bottom: 10px;
-  width: 97%;
+  width: 100%;
 }
 
 .vrtx-image-listing-include-title {
@@ -90,13 +89,11 @@
 .vrtx-image-listing-include .vrtx-image-listing-include-container {
   display: block;
   overflow: hidden;
-  width: 507px;
   position: relative;
   margin: 0 auto;
 }
 
 .vrtx-image-listing-include .vrtx-image-listing-include-container img {
-  max-height: 380px;
   width: auto;
   height: auto;
 }

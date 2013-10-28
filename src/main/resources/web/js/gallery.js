@@ -44,7 +44,8 @@
         wrpNavNextPrev = wrpNav.find("a"), wrpNavNext = wrpNavNextPrev.filter(".next"),
         wrpNavPrev = wrpNavNextPrev.filter(".prev"), wrpNavNextPrevSpans = wrpNavNextPrev.find("span"),
         images = {}, imageUrlsToBePrefetchedLen = imageUrlsToBePrefetched.length - 1, isFullscreen = false,
-        widthProp = "width", heightProp = "height", isResponsive = false;
+        widthProp = "width", heightProp = "height", isResponsive = false,
+        maxRegularWidth = 507, maxRegularHeight = 380;
     
     // Init first active image
     var firstImage = wrpThumbsLinks.filter(".active");
@@ -291,8 +292,8 @@
         var dims = imageUrlsToBePrefetched[i];
         if(dims.url === protocolRelativeSrc) break;
       }
-      var maxWidth = $(".vrtx-image-listing-include").parent().width();
-      var maxHeight = Math.ceil(maxWidth/1.335);
+      maxRegularWidth = $(".vrtx-image-listing-include").parent().width();
+      maxRegularHeight = Math.ceil(maxWidth/1.335);
       var resized = calculateImageDimensions(parseInt(dims.width, 10), parseInt(dims.height, 10), maxWidth, maxHeight);   
       images[src].width = resized[0];
       images[src].height = resized[1];
@@ -395,12 +396,10 @@
         var cacheCalculateFullscreenImageDimensions = calculateFullscreenImageDimensions;
         var descriptionContainers = wrp.find(container + "-description").filter(":not(.empty-description)"); // Don't calculate empty descriptions
         descriptionContainers.addClass("active-description-recalc");
-        var maxWidth = $(".vrtx-image-listing-include").width();
-        var maxHeight = 380;
         for(var key in images) {
           var image = images[key];
           if(isResponsive) {
-            var resized = cacheCalculateImageDimensions(parseInt(image.width, 10), parseInt(image.height, 10), maxWidth, maxHeight);   
+            var resized = cacheCalculateImageDimensions(parseInt(image.width, 10), parseInt(image.height, 10), maxRegularWidth, maxRegularHeight);   
             image.width = resized[0];
             image.height = resized[1];
           }

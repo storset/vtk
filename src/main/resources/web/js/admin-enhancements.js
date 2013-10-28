@@ -2236,7 +2236,7 @@ function editorInteraction(bodyId, vrtxAdm, _$) {
               btnTextOk: vrtxAdm.serverFacade.errorMessages.outOfDateOk,
               width: 450,
               onOk: function() {
-             // Copy with changes
+                // Copy with changes
               }
             });
             d.open();
@@ -2247,7 +2247,7 @@ function editorInteraction(bodyId, vrtxAdm, _$) {
               reAuthenticateRetokenizeForms(link);
             } else if(msg === "LOCKED") {
               var d = new VrtxConfirmDialog({
-                msg: vrtxAdm.serverFacade.errorMessages.lockStolen,
+                msg: vrtxAdm.serverFacade.errorMessages.lockStolen.replace(/XX/, vrtxAdm.lockedBy),
                 title: vrtxAdm.serverFacade.errorMessages.lockStolenTitle,
                 btnTextOk: vrtxAdm.serverFacade.errorMessages.lockStolenOk,
                 width: 450,
@@ -3511,6 +3511,7 @@ VrtxAdmin.prototype.serverFacade = {
         async: false,
         success: function (results, status, resp) { // Exists - soneone has locked it
           msg = useStatusCodeInMsg ? serverFacade.errorMessages.s404 : "LOCKED";
+          vrtxAdm.lockedBy = $($.parseHTML(results)).find("#resource-locked-by").html();
           $("#resourceMenuRight").html($($.parseHTML(results)).find("#resourceMenuRight").html());
           vrtxAdmin.globalAsyncComplete();
         },

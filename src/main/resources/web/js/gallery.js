@@ -91,7 +91,6 @@
       if(!isFullscreen) {
         widthProp = "width";
         heightProp = "height";
-        resizeFullscreen();
       } else {
         widthProp = "fullWidth";
         heightProp = "fullHeight";
@@ -102,8 +101,8 @@
         }
         toggleFullscreenResponsive(htmlTag);
         window.scrollTo(0, 0);
-        resizeFullscreen();
       }
+      resizeFullscreen(true);
       e.stopPropagation();
       e.preventDefault();
     });

@@ -63,10 +63,6 @@ public class IEConfigurableRedirector extends ConfigurableRedirector {
             url.removeParameter(backstepParameter);
             backstepFragment = "#" + backstepParameter + "=" + backstepValue;
         }
-        if (!backstepFragment.equals("")) {
-            response.sendRedirect(url.toString() + backstepFragment);
-        } else {
-            response.sendRedirect(url.toString());
-        }
+        response.sendRedirect(url.toString() + backstepFragment);
     }
 }

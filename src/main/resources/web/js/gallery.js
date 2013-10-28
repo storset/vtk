@@ -295,11 +295,12 @@
       }
       maxRegularWidth = wrp.parent().width();
       maxRegularHeight = Math.ceil(maxRegularWidth/1.335);
-      var resized = calculateImageDimensions(parseInt(dims.width, 10), parseInt(dims.height, 10), maxRegularWidth, maxRegularHeight);   
-      images[src].width = resized[0];
-      images[src].height = resized[1];
       images[src].fullWidthOrig = parseInt(dims.fullWidth.replace(/[^\d]*/g, ""), 10);
       images[src].fullHeightOrig = parseInt(dims.fullHeight.replace(/[^\d]*/g, ""), 10);
+      var regularDims = calculateImageDimensions(images[src].fullWidthOrig, images[src].fullHeightOrig, maxRegularWidth, maxRegularHeight);   
+      images[src].width = regularDims[0];
+      images[src].height = regularDims[1];
+
       // HTML unescape and encode quotes in alt and title if not already encoded
       var alt = dims.alt;
       var title = dims.title;
@@ -401,7 +402,7 @@
         maxRegularHeight = Math.ceil(maxRegularWidth/1.335);
         for(var key in images) {
           var image = images[key];
-          var dimsRegular = cacheCalculateImageDimensions(parseInt(image.width, 10), parseInt(image.height, 10), maxRegularWidth, maxRegularHeight);   
+          var dimsRegular = cacheCalculateImageDimensions(image.fullWidthOrig, image.fullHeightOrig, maxRegularWidth, maxRegularHeight);   
           image.width = dimsRegular[0];
           image.height = dimsRegular[1];
           var dimsFull = cacheCalculateFullscreenImageDimensions(image.fullWidthOrig, image.fullHeightOrig, genId(key), winWidth, winHeight, toplineHeight);

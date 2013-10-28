@@ -294,7 +294,7 @@
         if(dims.url === protocolRelativeSrc) break;
       }
       maxRegularWidth = wrp.parent().width();
-      maxRegularHeight = Math.ceil(maxRegularWidth/1.335);
+      maxRegularHeight = Math.round(maxRegularWidth/(4/3));
       images[src].fullWidthOrig = parseInt(dims.fullWidth.replace(/[^\d]*/g, ""), 10);
       images[src].fullHeightOrig = parseInt(dims.fullHeight.replace(/[^\d]*/g, ""), 10);
       var regularDims = calculateImageDimensions(images[src].fullWidthOrig, images[src].fullHeightOrig, maxRegularWidth, maxRegularHeight);   
@@ -399,7 +399,7 @@
         var descriptionContainers = wrp.find(container + "-description").filter(":not(.empty-description)"); // Don't calculate empty descriptions
         descriptionContainers.addClass("active-description-recalc");
         maxRegularWidth = wrp.parent().width();
-        maxRegularHeight = Math.ceil(maxRegularWidth/1.335);
+        maxRegularHeight = Math.round(maxRegularWidth/(4/3));
         for(var key in images) {
           var image = images[key];
           var dimsRegular = cacheCalculateImageDimensions(image.fullWidthOrig, image.fullHeightOrig, maxRegularWidth, maxRegularHeight);   

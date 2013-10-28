@@ -82,8 +82,8 @@
     });
     
     // Fullscreen toggle interaction
+    var htmlTag = $("html");
     wrp.on("click", "a.toggle-fullscreen", function (e) {
-      var htmlTag = $("html");
       htmlTag.toggleClass("fullscreen-gallery");
       isFullscreen = htmlTag.hasClass("fullscreen-gallery");
       wrp.parents().toggleClass("fullwidth");
@@ -112,18 +112,23 @@
     });
     
     // Fullscreen resize
-    $(window).resize($.throttle(250, function () {
+    $(window).resize($.debounce(250, function () {
       if(isFullscreen || isResponsive) {
-        resizeFullscreen();
+        resizeFullscreen(true);
       }
     }));
     $(window).on("orientationchange", $.throttle(250, function (e) {
       if(isResponsive && e.orientation == "landscape") {
-        resizeFullscreen();
+        resizeFullscreen(true);
       }
     }));
     $.vrtxSGalleryToggleResponsive = function(responsive) {
       isResponsive = responsive;
+      if(!isResponsive) {
+        htmlTag.addClass("fullscreen-gallery-big-arrows");
+      } else {
+        htmlTag.removeClass("fullscreen-gallery-big-arrows");
+      }
     };
     
     var imgs = this;
@@ -354,11 +359,19 @@
       var winHeight = $(window).height();
       if(forceResize || (curWinWidth != winWidth && curWinHeight != winHeight)) { /* Only occur on init or window resize */
         var toplineHeight = wrp.find(".fullscreen-gallery-topline").outerHeight(true);
+        var cacheCalculateImageDimensions = calculateImageDimensions;
         var cacheCalculateFullscreenImageDimensions = calculateFullscreenImageDimensions;
         var descriptionContainers = wrp.find(container + "-description").filter(":not(.empty-description)"); // Don't calculate empty descriptions
         descriptionContainers.addClass("active-description-recalc");
+        var maxWidth = $(".vrtx-image-listing-include").width();
+        var maxHeight = 380;
         for(var key in images) {
           var image = images[key];
+          if(isResponsive) {
+            var resized = cacheCalculateImageDimensions(parseInt(image.width, 10), parseInt(image.height, 10), maxWidth, maxHeight);   
+            image.width = resized[0];
+            image.height = resized[1];
+          }
           var dimsFull = cacheCalculateFullscreenImageDimensions(image.fullWidthOrig, image.fullHeightOrig, genId(key), winWidth, winHeight, toplineHeight);
           image.fullWidth = dimsFull[0];
           image.fullHeight = dimsFull[1];

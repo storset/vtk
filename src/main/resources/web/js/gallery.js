@@ -115,12 +115,13 @@
       }
     }));
     $(window).on("orientationchange", $.throttle(250, function (e) {
-      if(isResponsive && e.orientation == "landscape") {
-        resizeFullscreen(true);
-      }
+      resizeFullscreen(true);
     }));
     $.vrtxSGalleryToggleResponsive = function(responsive) {
       isResponsive = responsive;
+      if(!isFullscreen && !isResponsive) {
+        resizeFullscreen(true);
+      }
       toggleFullscreenResponsive($("html"));
     };
     
@@ -400,11 +401,9 @@
         maxRegularHeight = Math.ceil(maxRegularWidth/1.335);
         for(var key in images) {
           var image = images[key];
-          if(isResponsive) {
-            var resized = cacheCalculateImageDimensions(parseInt(image.width, 10), parseInt(image.height, 10), maxRegularWidth, maxRegularHeight);   
-            image.width = resized[0];
-            image.height = resized[1];
-          }
+          var dimsRegular = cacheCalculateImageDimensions(parseInt(image.width, 10), parseInt(image.height, 10), maxRegularWidth, maxRegularHeight);   
+          image.width = dimsRegular[0];
+          image.height = dimsRegular[1];
           var dimsFull = cacheCalculateFullscreenImageDimensions(image.fullWidthOrig, image.fullHeightOrig, genId(key), winWidth, winHeight, toplineHeight);
           image.fullWidth = dimsFull[0];
           image.fullHeight = dimsFull[1];

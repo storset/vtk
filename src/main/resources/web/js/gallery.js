@@ -43,8 +43,9 @@
         wrpThumbs = $(wrapper + " ul"), wrpThumbsLinks = wrpThumbs.find("li a"), wrpNav = $(container + "-nav"),
         wrpNavNextPrev = wrpNav.find("a"), wrpNavNext = wrpNavNextPrev.filter(".next"),
         wrpNavPrev = wrpNavNextPrev.filter(".prev"), wrpNavNextPrevSpans = wrpNavNextPrev.find("span"),
-        images = {}, imageUrlsToBePrefetchedLen = imageUrlsToBePrefetched.length - 1, isFullscreen = false,
-        widthProp = "width", heightProp = "height", isResponsive = false,
+        images = {}, imageUrlsToBePrefetchedLen = imageUrlsToBePrefetched.length - 1,
+        isFullscreen = false, isResponsive = false,
+        widthProp = "width", heightProp = "height",
         maxRegularWidth = 507, maxRegularHeight = 380;
     
     // Init first active image

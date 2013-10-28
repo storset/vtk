@@ -1,4 +1,4 @@
-/* Copyright (c) 2009, University of Oslo, Norway
+/* Copyright (c) 2006, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -30,42 +30,19 @@
  */
 package org.vortikal.repository.content;
 
-import java.io.InputStream;
+import org.vortikal.repository.RepositoryException;
 
-import net.sf.json.JSONObject;
-
-import org.vortikal.util.io.StreamUtil;
-
-/**
- * Content factory for <code>net.sf.json.JSONObject</code> objects.
- */
-public class JSONObjectContentFactory implements ContentFactory {
-
-    private int maxLength = 1000000;
+public class UnsupportedContentRepresentation extends
+        RepositoryException {
     
-    @Override
-    public Class<?>[] getRepresentationClasses() {
-        return new Class[] {JSONObject.class};
+    private static final long serialVersionUID = 2809890152005653498L;
+
+    public UnsupportedContentRepresentation(String msg) {
+        super(msg);
     }
     
-    @Override
-    public JSONObject getContentRepresentation(Class clazz,  InputStream content) throws Exception {
-        if (clazz != JSONObject.class) {
-            throw new UnsupportedContentRepresentation("Unsupported representation: " + clazz);
-        }
-        
-        byte[] buffer = StreamUtil.readInputStream(content, this.maxLength + 1);
-        if (buffer.length > this.maxLength) {
-            throw new Exception("Unable to parse content: maximum size exceeded: " 
-                    + this.maxLength);
-        }
-        String s = new String(buffer, "utf-8");    
-        return JSONObject.fromObject(s);
+    public UnsupportedContentRepresentation(String msg, Throwable cause) {
+        super(msg, cause);
     }
-
-    public void setMaxLength(int maxLength) {
-        this.maxLength = maxLength;
-    }
-
 
 }

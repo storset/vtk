@@ -31,8 +31,8 @@
 package org.vortikal.repository.content;
 
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.PrintWriter;
+import org.vortikal.util.io.NullOutputStream;
 
 import org.w3c.dom.Document;
 import org.w3c.tidy.Tidy;
@@ -44,18 +44,18 @@ import org.w3c.tidy.Tidy;
  */
 public class JTidyContentFactory implements ContentFactory {
 
+    @Override
     public Class<?>[] getRepresentationClasses() {
         return new Class[] {Document.class, Tidy.class};
     }
     
-    private static PrintWriter NULL_WRITER = new PrintWriter(new NullOutputStream());
-
-    public Object getContentRepresentation(Class<?> clazz,  InputStream content) throws Exception {
+    @Override
+    public Object getContentRepresentation(Class clazz,  InputStream content) throws Exception {
         Tidy tidy = new Tidy();
         tidy.setQuiet(true);
         tidy.setOnlyErrors(true);
         tidy.setShowWarnings(false);
-        tidy.setErrout(NULL_WRITER);
+        tidy.setErrout(new PrintWriter(NullOutputStream.INSTANCE));
         
         try {
             Document document = tidy.parseDOM(content, null);
@@ -65,7 +65,7 @@ public class JTidyContentFactory implements ContentFactory {
             } else if (clazz == Tidy.class) {
                 return tidy;
             } else {
-                throw new UnsupportedContentRepresentationException(
+                throw new UnsupportedContentRepresentation(
                     "Class " + clazz.getName() + " not supported by this content factory");
             }
         } finally {
@@ -74,19 +74,5 @@ public class JTidyContentFactory implements ContentFactory {
             content.close();
         }
     }
-    
-    private static class NullOutputStream extends OutputStream {
-
-        public void close() { }
-
-        public void flush() { }
-
-        public void write(byte[] b) { }
-
-        public void write(byte[] b, int off, int len) { }
-
-        public void write(int b) { }
-    }
-
     
 }

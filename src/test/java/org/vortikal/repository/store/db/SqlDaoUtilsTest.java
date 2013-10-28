@@ -66,7 +66,7 @@ public class SqlDaoUtilsTest extends TestCase {
         PropHolder holder1 = newTestHolder();
         
         // Test basic requirements of equals and hashcode wrt. consistency
-        assertFalse(holder1.equals(null));
+        assertNotNull(holder1);
         assertTrue(holder1.equals(holder1)); // Reflexivity
         assertEquals(holder1.hashCode(), holder1.hashCode());
         

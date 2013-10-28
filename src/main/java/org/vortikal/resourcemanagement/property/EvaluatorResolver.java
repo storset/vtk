@@ -134,7 +134,7 @@ public class EvaluatorResolver {
             } else {
                 JSONObject json;
                 try {
-                    json = (JSONObject) ctx.getContent().getContentRepresentation(JSONObject.class);
+                    json = ctx.getContent().getContentRepresentation(JSONObject.class);
                 } catch (Exception e) {
                     throw new PropertyEvaluationException("Unable to get JSON representation of content", e);
                 }
@@ -284,7 +284,7 @@ public class EvaluatorResolver {
 
             JSONObject json;
             try {
-                json = (JSONObject) ctx.getContent().getContentRepresentation(JSONObject.class);
+                json = ctx.getContent().getContentRepresentation(JSONObject.class);
             } catch (Exception e) {
                 throw new PropertyEvaluationException("Unable to get JSON representation of content", e);
             }

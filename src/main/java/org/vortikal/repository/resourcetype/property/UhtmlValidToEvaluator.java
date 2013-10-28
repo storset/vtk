@@ -53,7 +53,7 @@ public class UhtmlValidToEvaluator implements PropertyEvaluator {
         Document document = null;
         
         try {
-            document = (Document) ctx.getContent().getContentRepresentation(Document.class);
+            document = ctx.getContent().getContentRepresentation(Document.class);
         } catch (Exception e) {
             throw new PropertyEvaluationException(
                     "Unable to get DOM representation of content", e);

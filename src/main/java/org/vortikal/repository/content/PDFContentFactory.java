@@ -42,10 +42,13 @@ public class PDFContentFactory implements ContentFactory {
     }
 
     @Override
-    public Object getContentRepresentation(Class<?> clazz, InputStream content)
+    public PDDocument getContentRepresentation(Class clazz, InputStream content)
             throws Exception {
-        PDDocument document = PDDocument.load(content);
-        return document;
+        if (clazz != PDDocument.class) {
+            throw new UnsupportedContentRepresentation("Unsupported representation: " + clazz);
+        }
+        
+        return PDDocument.load(content);
     }
 
 }

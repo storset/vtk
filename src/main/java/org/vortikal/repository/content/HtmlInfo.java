@@ -69,6 +69,7 @@ public class HtmlInfo {
         this.body = body;
     }
     
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder("{");
         sb.append("docType: ").append(this.docType);

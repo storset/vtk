@@ -36,8 +36,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Calendar;
 import java.util.Random;
+import org.apache.commons.io.FileUtils;
 
 import org.apache.log4j.BasicConfigurator;
+
 import org.vortikal.repository.Path;
 import org.vortikal.repository.store.AbstractContentStoreTest;
 import org.vortikal.repository.store.ContentStore;
@@ -47,25 +49,29 @@ public class FileSystemContentStoreTest extends AbstractContentStoreTest {
 
     private ContentStore store;
 
-    private String tmpDir;
+    private String storeDir;
 
     @Override
     protected void setUp() throws Exception {
         BasicConfigurator.configure();
         super.setUp();
-        FileSystemContentStore store = new FileSystemContentStore();
-        this.tmpDir = System.getProperty("java.io.tmpdir") + "/contentStore" + getRandomIntAsString();
+        this.storeDir = System.getProperty("java.io.tmpdir") + "/contentStore" + getRandomIntAsString();
         
-        File tmpDirFile = new File(this.tmpDir);
-        tmpDirFile.mkdir();
-        store.setRepositoryDataDirectory(this.tmpDir);
-        setStore(store);
+        File storeDirFile = new File(this.storeDir);
+        if (!storeDirFile.mkdir()) {
+            throw new IOException("could not make temp dir " + this.storeDir);
+        }
+        
+        FileSystemContentStore store = new FileSystemContentStore();
+        store.setRepositoryDataDirectory(this.storeDir);
+        this.store = store;
     }
 
     @Override
     protected void tearDown() throws Exception {
         super.tearDown();
-        
+
+        FileUtils.deleteDirectory(new File(this.storeDir));
     }
     
     private String getRandomIntAsString() {
@@ -77,11 +83,6 @@ public class FileSystemContentStoreTest extends AbstractContentStoreTest {
     public ContentStore getStore() {
         return this.store;
     }
-
-    public void setStore(ContentStore store) {
-        this.store = store;
-    }
-    
     
     @Override
     public void testCreateResource() throws IOException {

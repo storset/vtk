@@ -85,7 +85,7 @@ public class JSONObjectSelectAssertion implements RepositoryContentEvaluationAss
         if (resource.isCollection()) return false;
         
         try {
-            JSONObject object = (JSONObject) content.getContentRepresentation(net.sf.json.JSONObject.class);
+            JSONObject object = content.getContentRepresentation(net.sf.json.JSONObject.class);
 
             Object o = JSON.select(object, this.expression);
             if (this.expectedValues == null || this.expectedValues.isEmpty()) {

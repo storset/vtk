@@ -54,7 +54,7 @@ public class PDFTitleEvaluator implements PropertyEvaluator {
         PDDocument doc = null;
         try {
 
-            stream = (InputStream) ctx.getContent().getContentRepresentation(InputStream.class);
+            stream = ctx.getContent().getContentRepresentation(InputStream.class);
             doc = PDDocument.load(stream);
             PDDocumentInformation info = doc.getDocumentInformation();
             String title = info.getTitle();

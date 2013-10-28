@@ -41,7 +41,6 @@ import java.util.Map;
 import org.vortikal.repository.IllegalOperationException;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.RecoverableResource;
-import org.vortikal.repository.content.InputStreamWrapper;
 import org.vortikal.repository.store.ContentStore;
 import org.vortikal.repository.store.DataAccessException;
 
@@ -62,6 +61,7 @@ public class MemoryContentStore implements ContentStore {
 
     private final DirectoryNode root = new DirectoryNode(URI_COMPONENT_SEPARATOR);
 
+    @Override
     public synchronized void createResource(Path uri, boolean isCollection) throws DataAccessException {
         String name = uri.getName();
         DirectoryNode parent = getParent(uri);
@@ -86,6 +86,7 @@ public class MemoryContentStore implements ContentStore {
         }
     }
 
+    @Override
     public long getContentLength(Path uri) throws DataAccessException, IllegalOperationException {
         Node node = getNode(uri);
 
@@ -100,6 +101,7 @@ public class MemoryContentStore implements ContentStore {
 
     }
 
+    @Override
     public void deleteResource(Path uri) {
         String name = uri.getName();
         DirectoryNode parent = getParent(uri);
@@ -111,7 +113,8 @@ public class MemoryContentStore implements ContentStore {
         }
     }
 
-    public InputStreamWrapper getInputStream(Path uri) throws DataAccessException {
+    @Override
+    public InputStream getInputStream(Path uri) throws DataAccessException {
         Node node = getNode(uri);
 
         if (node == null) {
@@ -122,11 +125,10 @@ public class MemoryContentStore implements ContentStore {
             throw new DataAccessException("Node is a directory.");
         }
 
-        InputStream in = new ByteArrayInputStream(((ContentNode) node).content);
-        InputStreamWrapper pw = new InputStreamWrapper(in);
-        return pw;
+        return new ByteArrayInputStream(((ContentNode) node).content);
     }
 
+    @Override
     public void storeContent(Path uri, InputStream inputStream) throws DataAccessException {
 
         Node node = getNode(uri);
@@ -155,6 +157,7 @@ public class MemoryContentStore implements ContentStore {
         }
     }
 
+    @Override
     public synchronized void copy(Path srcURI, Path destURI) throws DataAccessException {
         Node srcNode = getNode(srcURI);
 
@@ -172,11 +175,17 @@ public class MemoryContentStore implements ContentStore {
             throw new DataAccessException("Cannot copy: destination parent node does not exist.");
         }
 
-        Node copy = (Node) srcNode.clone();
+        Node copy;
+        try {
+            copy = (Node) srcNode.clone();
+        } catch (CloneNotSupportedException ex) {
+            throw new DataAccessException("internal error");
+        }
         copy.name = destNodeName;
         parent.entries.put(destNodeName, copy);
     }
 
+    @Override
     public synchronized void move(Path srcURI, Path destURI) throws DataAccessException {
         copy(srcURI, destURI);
         deleteResource(srcURI);
@@ -258,7 +267,8 @@ public class MemoryContentStore implements ContentStore {
             this.name = name;
         }
 
-        public abstract Object clone();
+        @Override
+        public abstract Object clone() throws CloneNotSupportedException;
     }
 
     private class ContentNode extends Node {
@@ -269,11 +279,13 @@ public class MemoryContentStore implements ContentStore {
             this.content = new byte[0];
         }
 
+        @Override
         public String toString() {
             return "ContentNode[" + super.name + "]";
         }
 
-        public Object clone() {
+        @Override
+        public Object clone() throws CloneNotSupportedException {
             ContentNode n = new ContentNode(this.name);
             n.content = new byte[this.content.length];
             System.arraycopy(this.content, 0, n.content, 0, this.content.length);
@@ -289,12 +301,14 @@ public class MemoryContentStore implements ContentStore {
             this.entries = new HashMap<String, Node>();
         }
 
+        @Override
         public String toString() {
             return "DirectoryNode[" + super.name + "]";
         }
 
         // recursive clone of entire (sub)tree (for copying)
-        public Object clone() {
+        @Override
+        public Object clone() throws CloneNotSupportedException {
             DirectoryNode n = new DirectoryNode(this.name);
             n.entries = new HashMap<String, Node>(this.entries.size());
             for (String key : this.entries.keySet()) {

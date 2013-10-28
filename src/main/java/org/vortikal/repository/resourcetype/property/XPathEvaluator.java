@@ -104,7 +104,7 @@ public class XPathEvaluator implements PropertyEvaluator {
         try {
             XPath xpath = createXPath(ctx);
             Document doc = null;
-            doc = (Document) ctx.getContent().getContentRepresentation(Document.class);
+            doc = ctx.getContent().getContentRepresentation(Document.class);
             if (doc == null) {
                 return false;
             }

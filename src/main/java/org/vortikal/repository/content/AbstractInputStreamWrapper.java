@@ -33,14 +33,21 @@ package org.vortikal.repository.content;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class InputStreamWrapper extends InputStream {
-    private InputStream inputStream;
+/**
+ * Abstract wrapper for input streams, which is itself an {@link InputStream}.
+ * By default, all <code>InputStream</code> calls are delegated directly to the
+ * wrapped instance. Individual methods may be overridden to customize
+ * behaviour.
+ */
+public abstract class AbstractInputStreamWrapper extends InputStream {
 
-    public InputStreamWrapper(InputStream content){
-        this.inputStream = content;
+    private final InputStream inputStream;
+
+    public AbstractInputStreamWrapper(InputStream is) {
+        this.inputStream = is;
     }
-    
-    public InputStream getInputStream() {
+
+    public InputStream getWrappedStream() {
         return inputStream;
     }
 

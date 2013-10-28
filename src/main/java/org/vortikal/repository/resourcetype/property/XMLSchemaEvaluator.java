@@ -45,16 +45,17 @@ import org.vortikal.repository.resourcetype.PropertyEvaluator;
  */
 public class XMLSchemaEvaluator implements PropertyEvaluator {
 
-    private String xmlSchemaAttributeNamespace = "http://www.w3.org/2001/XMLSchema-instance";
-    private String xmlSchemaAttributeName = "noNamespaceSchemaLocation";
+    private final String xmlSchemaAttributeNamespace = "http://www.w3.org/2001/XMLSchema-instance";
+    private final String xmlSchemaAttributeName = "noNamespaceSchemaLocation";
 
+    @Override
     public boolean evaluate(Property property, PropertyEvaluationContext ctx) throws PropertyEvaluationException {
         if (ctx.getContent() == null) {
             return false;
         }
         String schemaLocation = null;
         try {
-            Document doc = (Document) ctx.getContent().getContentRepresentation(org.jdom.Document.class);
+            Document doc = ctx.getContent().getContentRepresentation(org.jdom.Document.class);
             Element root = doc.getRootElement();
             Namespace ns = Namespace.getNamespace(this.xmlSchemaAttributeNamespace);
             schemaLocation = root.getAttributeValue(this.xmlSchemaAttributeName, ns);

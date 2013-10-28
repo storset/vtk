@@ -48,13 +48,39 @@ import org.vortikal.repository.RecoverableResource;
  */
 public interface ContentStore {
 
+    /**
+     * Create a new empty node in content store. Node may be either
+     * content/file or a collection.
+     * @param uri path to new resource
+     * @param isCollection if <code>true</code> a collection node is created,
+     *        otherwise an empty content node.
+     * @throws DataAccessException 
+     */
     public void createResource(Path uri, boolean isCollection)
             throws DataAccessException;
 
+    /**
+     * Get length of file node at path, in number of bytes.
+     * @param uri path to a file node.
+     * @return length of file in number of bytes
+     * @throws DataAccessException if I/O-error or path is directory node.
+     */
     public long getContentLength(Path uri) throws DataAccessException;
 
+    /**
+     * Delete node at path. If the path points to a directory node, then
+     * the entire tree shall be deleted.
+     * @param uri path to node
+     * @throws DataAccessException if I/O-error
+     */
     public void deleteResource(Path uri) throws DataAccessException;
 
+    /**
+     * Get an input stream for file node at path.
+     * @param uri
+     * @return
+     * @throws DataAccessException 
+     */
     public InputStream getInputStream(Path uri) throws DataAccessException;
 
     /**
@@ -64,7 +90,7 @@ public interface ContentStore {
      * 
      * @param uri
      * @param inputStream
-     * @throws IOException
+     * @throws DataAccessException in case of errors.
      */
     public void storeContent(Path uri, InputStream inputStream) throws DataAccessException;
 

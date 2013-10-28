@@ -56,8 +56,7 @@ public class HtmlPropertyEvaluator implements PropertyEvaluator {
         }
 
         try {
-            HtmlInfo htmlInfo = (HtmlInfo) 
-                ctx.getContent().getContentRepresentation(HtmlInfo.class);
+            HtmlInfo htmlInfo = ctx.getContent().getContentRepresentation(HtmlInfo.class);
             if ("doctype".equals(this.field)) {
                 String doctype = htmlInfo.getDocType();
                 if (doctype == null) {

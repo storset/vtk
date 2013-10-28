@@ -1,21 +1,21 @@
-/* Copyright (c) 2006, University of Oslo, Norway
+/* Copyright (c) 2013, University of Oslo, Norway
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
  * met:
- * 
+ *
  *  * Redistributions of source code must retain the above copyright
  *    notice, this list of conditions and the following disclaimer.
- * 
+ *
  *  * Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
- * 
+ *
  *  * Neither the name of the University of Oslo nor the names of its
  *    contributors may be used to endorse or promote products derived from
  *    this software without specific prior written permission.
- *      
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
  * IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
  * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
@@ -28,21 +28,47 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repository.content;
+package org.vortikal.util.io;
 
-import org.vortikal.repository.RepositoryException;
+import java.io.OutputStream;
 
-public class UnsupportedContentRepresentationException extends
-        RepositoryException {
-    
-    private static final long serialVersionUID = 2809890152005653498L;
+/**
+ * An {@link OutputStream} which accepts, but discards all data written to it.
+ * Use {@link #INSTANCE } to access the singleton instance of this class.
+ */
+public final class NullOutputStream extends OutputStream {
 
-    public UnsupportedContentRepresentationException(String msg) {
-        super(msg);
+    /**
+     * Singleton immutable thread safe instance of this class.
+     */
+    public static final NullOutputStream INSTANCE = new NullOutputStream();
+
+    private NullOutputStream() {
     }
-    
-    public UnsupportedContentRepresentationException(String msg, Throwable cause) {
-        super(msg, cause);
+
+    @Override
+    public String toString() {
+        return NullOutputStream.class.getSimpleName();
+    }
+
+    @Override
+    public void close() {
+    }
+
+    @Override
+    public void flush() {
+    }
+
+    @Override
+    public void write(byte[] b) {
+    }
+
+    @Override
+    public void write(byte[] b, int off, int len) {
+    }
+
+    @Override
+    public void write(int b) {
     }
 
 }

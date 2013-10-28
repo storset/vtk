@@ -38,15 +38,18 @@ import javax.sound.sampled.AudioSystem;
 
 public class AudioFileContentFactory implements ContentFactory {
 
+    @Override
     public Class<?>[] getRepresentationClasses() {
         return new Class<?>[] {AudioFileFormat.class};
     }
     
-    public Object getContentRepresentation(Class<?> clazz,  InputStream content)
-        throws Exception {
+    @Override
+    public AudioFileFormat getContentRepresentation(Class clazz, InputStream content) throws Exception {
+        if (clazz != AudioFileFormat.class) {
+             throw new UnsupportedContentRepresentation(clazz.getName());
+        }
         InputStream is = new BufferedInputStream(content);
-        AudioFileFormat audioFileFormat = AudioSystem.getAudioFileFormat(is);
-        return audioFileFormat;
+        return AudioSystem.getAudioFileFormat(is);
     }
 
 }

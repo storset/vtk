@@ -136,7 +136,7 @@
   </bean>
 
   <bean id="displayVideoResource" class="org.vortikal.web.display.media.DisplayMediaController">
-    <property name="mediaPlayer" ref="mediaPlayer" />
+    <property name="mediaPlayer" ref="previewMediaPlayer" />
     <property name="viewName" value="viewMediaPlayer" />
     <property name="descriptionPropDef" ref="videoHtmlDescriptionPropDef" />
   </bean>

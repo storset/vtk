@@ -294,7 +294,7 @@
       }
       maxRegularWidth = wrp.parent().width();
       maxRegularHeight = Math.ceil(maxRegularWidth/1.335);
-      var resized = calculateImageDimensions(parseInt(dims.width, 10), parseInt(dims.height, 10), maxWidth, maxHeight);   
+      var resized = calculateImageDimensions(parseInt(dims.width, 10), parseInt(dims.height, 10), maxRegularWidth, maxRegularHeight);   
       images[src].width = resized[0];
       images[src].height = resized[1];
       images[src].fullWidthOrig = parseInt(dims.fullWidth.replace(/[^\d]*/g, ""), 10);

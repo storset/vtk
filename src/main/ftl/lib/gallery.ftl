@@ -23,6 +23,7 @@
 	  showImageDescription = "${vrtx.getMsg('imageListing.description.show')}";
 	  hideImageDescription = "${vrtx.getMsg('imageListing.description.hide')}";
 	  showFullscreen = "${vrtx.getMsg('imageListing.fullscreen.show')}";
+	  showFullscreenResponsive = "${vrtx.getMsg('imageListing.fullscreen.show.responsive')}";
 	  closeFullscreen = "${vrtx.getMsg('imageListing.fullscreen.close')}";
 	  
 	  $(wrapper + " li a").vrtxSGallery(wrapper, container, options);			  

@@ -119,8 +119,14 @@
     }));
     $.vrtxSGalleryToggleResponsive = function(responsive) {
       isResponsive = responsive;
+      
       if(!isFullscreen && !isResponsive) {
         resizeFullscreen(true);
+      }
+      if(isResponsive) {
+        $(".toggle-fullscreen.minimized").text(showFullscreenResponsive);
+      } else {
+        $(".toggle-fullscreen.minimized").text(showFullscreen);
       }
       toggleFullscreenResponsive($("html"));
     };
@@ -175,7 +181,7 @@
       var id = genId(src);
       if($("a#" + id).length) return;
       var description = "<div id='" + id + "-description' class='" + container.substring(1) + "-description" + (!images[src].desc ? " empty-description" : "") + "' style='display: none; width: " + (images[src].width - 30) + "px'>" +
-                          "<a href='javascript:void(0);' class='toggle-fullscreen minimized'>" + showFullscreen + "</a>" + images[src].desc
+                          "<a href='javascript:void(0);' class='toggle-fullscreen minimized'>" + (isResponsive ? showFullscreenResponsive : showFullscreen) + "</a>" + images[src].desc
                       + "</div>";
       $($.parseHTML(description)).insertBefore(wrapper + "-thumbs");
       wrpContainer.append("<a id='" + id + "' style='display: none' href='" + src + "' class='" + container.substring(1) + "-link'>" +

@@ -177,7 +177,7 @@ a.toggle-fullscreen {
   display: inline-block;
   float: right;
   background: url(images/preview-minimize.png) no-repeat 100% 3px;
-  padding: 2px 24px 1px 0;
+  padding: 2px 24px 10px 10px;
   text-decoration: none !important;
 }
 

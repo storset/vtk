@@ -292,8 +292,8 @@
         var dims = imageUrlsToBePrefetched[i];
         if(dims.url === protocolRelativeSrc) break;
       }
-      maxRegularWidth = $(".vrtx-image-listing-include").parent().width();
-      maxRegularHeight = Math.ceil(maxWidth/1.335);
+      maxRegularWidth = wrp.parent().width();
+      maxRegularHeight = Math.ceil(maxRegularWidth/1.335);
       var resized = calculateImageDimensions(parseInt(dims.width, 10), parseInt(dims.height, 10), maxWidth, maxHeight);   
       images[src].width = resized[0];
       images[src].height = resized[1];
@@ -396,6 +396,8 @@
         var cacheCalculateFullscreenImageDimensions = calculateFullscreenImageDimensions;
         var descriptionContainers = wrp.find(container + "-description").filter(":not(.empty-description)"); // Don't calculate empty descriptions
         descriptionContainers.addClass("active-description-recalc");
+        maxRegularWidth = wrp.parent().width();
+        maxRegularHeight = Math.ceil(maxRegularWidth/1.335);
         for(var key in images) {
           var image = images[key];
           if(isResponsive) {

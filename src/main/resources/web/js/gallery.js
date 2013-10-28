@@ -291,7 +291,7 @@
         var dims = imageUrlsToBePrefetched[i];
         if(dims.url === protocolRelativeSrc) break;
       }
-      var maxWidth = $(".vrtx-image-listing-include").width();
+      var maxWidth = $(".vrtx-image-listing-include").parent().width();
       var maxHeight = 380;
       var resized = calculateImageDimensions(parseInt(dims.width, 10), parseInt(dims.height, 10), maxWidth, maxHeight);   
       images[src].width = resized[0];

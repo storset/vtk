@@ -42,7 +42,7 @@
   <bean id="viewImageInfoService.urlProvider" class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
     <property name="modelName" value="previewImage" />
     <property name="urlName" value="URL" />
-    <property name="service" ref="editor.loadImageService" />
+    <property name="service" ref="viewImageInfoService" />
   </bean>
 
   <bean id="editor.loadImageService.urlProvider" class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
@@ -56,6 +56,7 @@
     <property name="order" value="-1" />
     <property name="assertions">
       <list>
+        <ref bean="resourceIsPublishedAssertion" />
         <ref bean="contentTypeMatchesImage" />
         <ref bean="asWebpageAssertion" />
       </list>

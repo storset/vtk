@@ -82,8 +82,8 @@
     });
     
     // Fullscreen toggle interaction
-    var htmlTag = $("html");
     wrp.on("click", "a.toggle-fullscreen", function (e) {
+      var htmlTag = $("html");
       htmlTag.toggleClass("fullscreen-gallery");
       isFullscreen = htmlTag.hasClass("fullscreen-gallery");
       wrp.parents().toggleClass("fullwidth");
@@ -99,11 +99,7 @@
           var extraHtml = typeof vrtxSGalleryFullscreenAddExtraHtml === "function" ? vrtxSGalleryFullscreenAddExtraHtml() : "";
           wrp.prepend("<div class='fullscreen-gallery-topline'>" + extraHtml + "<a href='javascript:void(0);' class='toggle-fullscreen'>" + closeFullscreen + "</a></div>");
         }
-        if(!isResponsive) {
-          htmlTag.addClass("fullscreen-gallery-big-arrows");
-        } else {
-          htmlTag.removeClass("fullscreen-gallery-big-arrows");
-        }
+        toggleFullscreenResponsive(htmlTag);
         window.scrollTo(0, 0);
         resizeFullscreen();
       }
@@ -124,11 +120,7 @@
     }));
     $.vrtxSGalleryToggleResponsive = function(responsive) {
       isResponsive = responsive;
-      if(!isResponsive) {
-        htmlTag.addClass("fullscreen-gallery-big-arrows");
-      } else {
-        htmlTag.removeClass("fullscreen-gallery-big-arrows");
-      }
+      toggleFullscreenResponsive($("html"));
     };
     
     var imgs = this;
@@ -324,6 +316,33 @@
 
     function centerDimension(thumb, tDim, tCDim, cssProperty) { // Center thumbDimension in thumbContainerDimension
       thumb.css(cssProperty, ((tDim > tCDim) ? ((tDim - tCDim) / 2) * -1 : (tDim < tCDim) ? (tCDim - tDim) / 2 : 0) + "px");
+    }
+    
+    var runnedOnce = false;
+    function toggleFullscreenResponsive(htmlTag) {
+      if(!isFullscreen) return;
+      if(!isResponsive) {
+        htmlTag.addClass("fullscreen-gallery-big-arrows");
+        $(container + "-description").removeClass("hidden-description");
+      } else {
+        htmlTag.removeClass("fullscreen-gallery-big-arrows");
+        $(container + "-description").addClass("hidden-description");
+        if(!runnedOnce) {
+          wrp.find("> .fullscreen-gallery-topline").prepend("<a style='display: none' href='javascript:void(0);' class='fullscreen-gallery-responsive-toggle-description'>" + showImageDescription + "</a>");
+          $(document).on("click", "a.fullscreen-gallery-responsive-toggle-description", function(e) {
+            var link = $(this);
+            if(link.text() == showImageDescription) {
+              link.text(hideImageDescription);
+            } else {
+              link.text(showImageDescription);
+            }
+            $(container + "-description").toggleClass("hidden-description");
+            e.stopPropagation();
+            e.preventDefault();
+          });
+          runnedOnce = true;
+        }
+      }
     }
     
     function resizeContainers(activeSrc, active, activeDesc) {

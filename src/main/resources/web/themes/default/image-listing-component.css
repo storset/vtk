@@ -278,6 +278,7 @@ html.fullscreen-gallery .vrtx-image-listing-include-container-description {
   width: auto !important;
 }
 
+html.fullscreen-gallery .vrtx-image-listing-include-container-description.hidden-description,
 html.fullscreen-gallery .vrtx-image-listing-include-container-description.empty-description {
   display: none !important;
 }

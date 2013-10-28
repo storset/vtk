@@ -20,6 +20,8 @@
 	  }
 	  loadImageErrorMsg = "${vrtx.getMsg('imageListing.loading-image.error')}";
 	  loadImageMsg = "${vrtx.getMsg('imageListing.loading-image')}";
+	  showImageDescription = "${vrtx.getMsg('imageListing.description.show')}";
+	  hideImageDescription = "${vrtx.getMsg('imageListing.description.hide')}";
 	  showFullscreen = "${vrtx.getMsg('imageListing.fullscreen.show')}";
 	  closeFullscreen = "${vrtx.getMsg('imageListing.fullscreen.close')}";
 	  

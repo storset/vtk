@@ -40,7 +40,7 @@
     var wrapperContainer = wrapper + " " + container;
     var wrapperContainerLink = wrapperContainer + " a" + container + "-link",
         wrpContainer = $(wrapperContainer), wrpContainerLink = $(wrapperContainer + " a" + container + "-link"),
-        wrpThumbsLinks = $(wrapper + " li a"), wrpNav = $(container + "-nav"),
+        wrpThumbs = $(wrapper + " ul"), wrpThumbsLinks = wrpThumbs.find("li a"), wrpNav = $(container + "-nav"),
         wrpNavNextPrev = wrpNav.find("a"), wrpNavNext = wrpNavNextPrev.filter(".next"),
         wrpNavPrev = wrpNavNextPrev.filter(".prev"), wrpNavNextPrevSpans = wrpNavNextPrev.find("span"),
         images = {}, imageUrlsToBePrefetchedLen = imageUrlsToBePrefetched.length - 1, isFullscreen = false,
@@ -91,7 +91,7 @@
       if(!isFullscreen) {
         widthProp = "width";
         heightProp = "height";
-        resizeToggleFullscreen();
+        resizeFullscreen();
       } else {
         widthProp = "fullWidth";
         heightProp = "fullHeight";
@@ -293,7 +293,7 @@
         var dims = imageUrlsToBePrefetched[i];
         if(dims.url === protocolRelativeSrc) break;
       }
-      maxRegularWidth = wrp.parent().width();
+      maxRegularWidth = wrpThumbs.is(":visible") ? Math.min(wrpThumbs.width(), wrp.parent().width()) : wrp.parent().width();
       maxRegularHeight = Math.round(maxRegularWidth/(4/3));
       images[src].fullWidthOrig = parseInt(dims.fullWidth.replace(/[^\d]*/g, ""), 10);
       images[src].fullHeightOrig = parseInt(dims.fullHeight.replace(/[^\d]*/g, ""), 10);
@@ -398,7 +398,7 @@
         var cacheCalculateFullscreenImageDimensions = calculateFullscreenImageDimensions;
         var descriptionContainers = wrp.find(container + "-description").filter(":not(.empty-description)"); // Don't calculate empty descriptions
         descriptionContainers.addClass("active-description-recalc");
-        maxRegularWidth = wrp.parent().width();
+        maxRegularWidth = wrpThumbs.is(":visible") ? Math.min(wrpThumbs.width(), wrp.parent().width()) : wrp.parent().width();
         maxRegularHeight = Math.round(maxRegularWidth/(4/3));
         for(var key in images) {
           var image = images[key];

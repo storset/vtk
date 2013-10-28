@@ -227,6 +227,7 @@
     function showImageDescStrategy(current, active, activeSrc, currentDesc, activeDesc, init) {
       currentDesc.removeClass("active-description");
       activeDesc.addClass("active-description");
+      toggleFullscreenResponsiveShowHideLink(activeDesc);
       if(init) {
         active.addClass("active-full-image");
         resizeContainers(activeSrc, active, activeDesc);
@@ -323,24 +324,36 @@
       if(!isFullscreen) return;
       if(!isResponsive) {
         htmlTag.addClass("fullscreen-gallery-big-arrows");
-        $(container + "-description").removeClass("hidden-description");
       } else {
         htmlTag.removeClass("fullscreen-gallery-big-arrows");
-        $(container + "-description").addClass("hidden-description");
         if(!runnedOnce) {
           wrp.find("> .fullscreen-gallery-topline").prepend("<a style='display: none' href='javascript:void(0);' class='fullscreen-gallery-responsive-toggle-description'>" + showImageDescription + "</a>");
           $(document).on("click", "a.fullscreen-gallery-responsive-toggle-description", function(e) {
             var link = $(this);
             if(link.text() == showImageDescription) {
               link.text(hideImageDescription);
+              wrp.removeClass("hidden-descriptions");
             } else {
               link.text(showImageDescription);
+              wrp.addClass("hidden-descriptions");
             }
-            $(container + "-description").toggleClass("hidden-description");
             e.stopPropagation();
             e.preventDefault();
           });
+          wrp.addClass("hidden-descriptions");
           runnedOnce = true;
+        }
+        toggleFullscreenResponsiveShowHideLink($(container + "-description.active-description"));
+      }
+    }
+    
+    function toggleFullscreenResponsiveShowHideLink(activeDesc) {
+      if(isResponsive && isFullscreen) {
+        var hasDescription = !activeDesc.hasClass("empty-description");
+        if(hasDescription && !wrp.hasClass("has-description")) {
+          wrp.addClass("has-description");
+        } else if(!hasDescription) {
+          wrp.removeClass("has-description");
         }
       }
     }

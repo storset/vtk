@@ -252,7 +252,8 @@ html.fullscreen-gallery.fullscreen-gallery-big-arrows .vrtx-image-listing-includ
 }
 
 .vrtx-image-listing-include .fullscreen-gallery-topline,
-html.fullscreen-gallery .vrtx-image-listing-include a.toggle-fullscreen.minimized {
+html.fullscreen-gallery .vrtx-image-listing-include a.toggle-fullscreen.minimized,
+html.fullscreen-gallery .vrtx-image-listing-include a.fullscreen-gallery-responsive-toggle-description {
   display: none !important;
 }
 

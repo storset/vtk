@@ -21,14 +21,14 @@
  */
 
 (function ($) {
-  $.fn.vrtxSGallery = function (wrapper, container, maxWidth, options) {
+  $.fn.vrtxSGallery = function (wrapper, container, options) {
     settings = jQuery.extend({ // Default animation settings
       fadeInOutTime: 250, fadedOutOpacity: 0,
       fadeThumbsInOutTime: 250, fadedThumbsOutOpacity: 0.6,
       fadeNavInOutTime: 250, fadedInActiveNavOpacity: 0.5,
       fadedNavOpacity: 0.2, loadNextPrevImagesInterval: 20
     }, options || {});
-    
+
     var wrp = $(wrapper);
 
     // Unobtrusive
@@ -44,7 +44,7 @@
         wrpNavNextPrev = wrpNav.find("a"), wrpNavNext = wrpNavNextPrev.filter(".next"),
         wrpNavPrev = wrpNavNextPrev.filter(".prev"), wrpNavNextPrevSpans = wrpNavNextPrev.find("span"),
         images = {}, imageUrlsToBePrefetchedLen = imageUrlsToBePrefetched.length - 1, isFullscreen = false,
-        widthProp = "width", heightProp = "height", minusWidth = 0;
+        widthProp = "width", heightProp = "height", isResponsive = false;
     
     // Init first active image
     var firstImage = wrpThumbsLinks.filter(".active");
@@ -83,10 +83,10 @@
     
     // Fullscreen toggle interaction
     wrp.on("click", "a.toggle-fullscreen", function (e) {
-      $("html").toggleClass("fullscreen-gallery");
-      isFullscreen = $("html").hasClass("fullscreen-gallery");
+      var htmlTag = $("html");
+      htmlTag.toggleClass("fullscreen-gallery");
+      isFullscreen = htmlTag.hasClass("fullscreen-gallery");
       wrp.parents().toggleClass("fullwidth");
-      if(typeof vrtxSGalleryFullscreenToggleBefore === "function") minusWidth = vrtxSGalleryFullscreenToggleBefore(isFullscreen);
       if(!isFullscreen) {
         widthProp = "width";
         heightProp = "height";
@@ -95,27 +95,35 @@
         widthProp = "fullWidth";
         heightProp = "fullHeight";
         if(!wrp.find("> .fullscreen-gallery-topline").length) {
-          $("html").addClass("fullscreen-gallery-big-arrows");
           var link = $(this);
           var extraHtml = typeof vrtxSGalleryFullscreenAddExtraHtml === "function" ? vrtxSGalleryFullscreenAddExtraHtml() : "";
           wrp.prepend("<div class='fullscreen-gallery-topline'>" + extraHtml + "<a href='javascript:void(0);' class='toggle-fullscreen'>" + closeFullscreen + "</a></div>");
         }
+        if(!isResponsive) {
+          htmlTag.addClass("fullscreen-gallery-big-arrows");
+        } else {
+          htmlTag.removeClass("fullscreen-gallery-big-arrows");
+        }
         window.scrollTo(0, 0);
         resizeFullscreen();
       }
-      if(typeof vrtxSGalleryFullscreenToggleAfter === "function") vrtxSGalleryFullscreenToggleAfter(isFullscreen);
       e.stopPropagation();
       e.preventDefault();
     });
     
     // Fullscreen resize
     $(window).resize($.throttle(250, function () {
-      if(isFullscreen) {
+      if(isFullscreen || isResponsive) {
         resizeFullscreen();
       }
     }));
-    $.vrtxSGalleryResize = function(forceResize) {
-      resizeFullscreen(forceResize);
+    $(window).on("orientationchange", $.throttle(250, function (e) {
+      if(isResponsive && e.orientation == "landscape") {
+        resizeFullscreen();
+      }
+    }));
+    $.vrtxSGalleryToggleResponsive = function(responsive) {
+      isResponsive = responsive;
     };
     
     var imgs = this;
@@ -174,7 +182,6 @@
       wrpContainer.append("<a id='" + id + "' style='display: none' href='" + src + "' class='" + container.substring(1) + "-link'>" +
                             "<img src='" + src + "' alt='" + images[src].alt + "' style='width: " + images[src][widthProp] + "px; height: " + images[src][heightProp] + "px;' />" +
                           "</a>");
-      if(typeof vrtxSGalleryLoadImageAfter === "function") vrtxSGalleryLoadImageAfter(isFullscreen, id);
     }
     
     function prefetchCurrentNextPrevNthImages(n) {
@@ -286,8 +293,11 @@
         var dims = imageUrlsToBePrefetched[i];
         if(dims.url === protocolRelativeSrc) break;
       }
-      images[src].width = parseInt(dims.width, 10);
-      images[src].height = parseInt(dims.height, 10);
+      var maxWidth = $(".vrtx-image-listing-include").width();
+      var maxHeight = 380;
+      var resized = calculateImageDimensions(parseInt(dims.width, 10), parseInt(dims.height, 10), maxWidth, maxHeight);   
+      images[src].width = resized[0];
+      images[src].height = resized[1];
       images[src].fullWidthOrig = parseInt(dims.fullWidth.replace(/[^\d]*/g, ""), 10);
       images[src].fullHeightOrig = parseInt(dims.fullHeight.replace(/[^\d]*/g, ""), 10);
       // HTML unescape and encode quotes in alt and title if not already encoded
@@ -322,7 +332,6 @@
       if(!isFullscreen) {
         activeDesc.css("width", (width - 30)); 
       }
-      if(typeof vrtxSGalleryResizeContainersAfter === "function") vrtxSGalleryResizeContainersAfter(activeSrc, active, activeDesc);
     }
 
     function resizeToggleFullscreen() {
@@ -365,23 +374,25 @@
     }
   
     function calculateFullscreenImageDimensions(w, h, id, winWidth, winHeight, toplineHeight) {
-      var gcdVal = gcd(w, h);
-      var aspectRatio = (w/gcdVal) / (h/gcdVal);
       var desc = wrp.find("#" + id + "-description");
       var descHeight = !desc.hasClass("empty-description") ? desc.outerHeight(true) : 0;
       winHeight = winHeight - (descHeight + toplineHeight) - 20;
-      winWidth = winWidth - minusWidth;
-      /* TODO: I've feeling this code can be reduced, but not 100% sure */
-      if(w > winWidth || h > winHeight) {
-        if(h > winHeight) {
-          var newDim = [Math.round(winHeight * aspectRatio), winHeight];
-          if(newDim[0] > winWidth) {
-            var newDim = [winWidth, Math.round(winWidth / aspectRatio)];
+      return calculateImageDimensions(w, h, winWidth, winHeight);
+    }
+    
+    function calculateImageDimensions(w, h, maxW, maxH) {
+      var gcdVal = gcd(w, h);
+      var aspectRatio = (w/gcdVal) / (h/gcdVal);
+      if(w > maxW || h > maxH) {
+        if(h > maxH) {
+          var newDim = [Math.round(maxH * aspectRatio), maxH];
+          if(newDim[0] > maxW) {
+            var newDim = [maxW, Math.round(maxW / aspectRatio)];
           }
         } else {
-          var newDim = [winWidth, Math.round(winWidth / aspectRatio)];
-          if(newDim[1] > winHeight) {
-            var newDim = [Math.round(winHeight * aspectRatio), winHeight];
+          var newDim = [maxW, Math.round(maxW / aspectRatio)];
+          if(newDim[1] > maxH) {
+            var newDim = [Math.round(maxH * aspectRatio), maxH];
           }
         }
         return [newDim[0], newDim[1]];
@@ -389,6 +400,7 @@
         return [w, h];
       }
     }
+    
     
     function gcd(a, b) {
       return (b === 0) ? a : gcd (b, a%b);

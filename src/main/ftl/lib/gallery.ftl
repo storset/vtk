@@ -7,7 +7,7 @@
   -
   -->
 
-<#macro galleryJSInit maxWidth fadeEffect>
+<#macro galleryJSInit fadeEffect>
   <script type="text/javascript"><!--
     $(document).ready(function() {
       $(".vrtx-image-listing-include").addClass("loading");
@@ -23,7 +23,7 @@
 	  showFullscreen = "${vrtx.getMsg('imageListing.fullscreen.show')}";
 	  closeFullscreen = "${vrtx.getMsg('imageListing.fullscreen.close')}";
 	  
-	  $(wrapper + " li a").vrtxSGallery(wrapper, container, ${maxWidth}, options);			  
+	  $(wrapper + " li a").vrtxSGallery(wrapper, container, options);			  
     });
   // -->
   </script>
@@ -35,7 +35,7 @@
   </div>
 </#macro>
 
-<#macro galleryListImages images maxWidth maxHeight activeImage="" imageListing="">
+<#macro galleryListImages images activeImage="" imageListing="">
   <#local count = 1 />
   <script type="text/javascript">
     var imageUrlsToBePrefetched = [];
@@ -47,35 +47,9 @@
     <#local title = vrtx.propValue(image, 'title')?html?replace("'", "&#39;") />
     <#local width = vrtx.propValue(image, 'pixelWidth') />
     <#local height = vrtx.propValue(image, 'pixelHeight') />
+    <#local fullWidth = vrtx.propValue(image, 'pixelWidth') />
+    <#local fullHeight = vrtx.propValue(image, 'pixelHeight') />
     <#local photographer = vrtx.propValue(image, "photographer")?html?replace("'", "&#39;") />
-    
-    <#if height != "" && width != "">
-      <#local width = width?number />
-      <#local height = height?number />
-      <#local fullWidth = width />
-      <#local fullHeight = height />
-      
-      <#local percentage = 1 />
-      <#if (width > height)>
-        <#if (width > maxWidth)>
-          <#local percentage = (maxWidth / width) />
-        </#if>
-      <#else>
-        <#if (height > maxHeight)>
-          <#local percentage = (maxHeight / height) />
-        </#if>
-      </#if>
-      <#local width = (width * percentage)?round />
-      <#local height = (height * percentage)?round />
-      <#if (height > maxHeight)>
-        <#local percentage = (maxHeight / height) />
-        <#local width = (width * percentage)?round />
-        <#local height = (height * percentage)?round />
-      </#if>
-    <#else>
-      <#local width = 0 />
-      <#local height = 0 />
-    </#if>
     
     <#if count % 4 == 0 && count % 5 == 0>
       <li class="vrtx-thumb-last vrtx-thumb-last-four vrtx-thumb-last-five">

@@ -100,13 +100,6 @@ public class LinkCheckerTest {
     }
 
     @Test
-    public void testValidateStatusError() {
-
-        // XXX test
-
-    }
-
-    @Test
     public void testIDN() throws java.net.MalformedURLException {
         java.net.URL url = new java.net.URL("http://www.øl.com/#/BedsteBryggeprocess");
         assertEquals(new java.net.URL("http://www.xn--l-4ga.com/#/BedsteBryggeprocess"), 

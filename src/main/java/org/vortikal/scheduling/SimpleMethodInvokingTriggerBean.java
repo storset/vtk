@@ -102,7 +102,7 @@ public class SimpleMethodInvokingTriggerBean implements BeanNameAware,
 
     public static final int REPEAT_INDEFINITELY = -1;
     
-    Log logger = LogFactory.getLog(SimpleMethodInvokingTriggerBean.class);
+    private final Log logger = LogFactory.getLog(SimpleMethodInvokingTriggerBean.class);
     
     private String beanName;
     private Thread triggerThread;
@@ -133,6 +133,7 @@ public class SimpleMethodInvokingTriggerBean implements BeanNameAware,
     /* (non-Javadoc)
      * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
      */
+    @Override
     public void afterPropertiesSet() throws BeanInitializationException {
         
         if (this.targetObject == null) {

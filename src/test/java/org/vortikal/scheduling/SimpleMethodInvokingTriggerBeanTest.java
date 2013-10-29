@@ -1,6 +1,9 @@
 package org.vortikal.scheduling;
 
-import junit.framework.TestCase;
+import org.junit.After;
+import org.junit.Before;
+import static org.junit.Assert.*;
+import org.junit.Test;
 
 import org.springframework.beans.factory.BeanInitializationException;
 
@@ -9,39 +12,36 @@ import org.springframework.beans.factory.BeanInitializationException;
 /**
  * Test case  for {@link org.vortikal.scheduling.SimpleMethodInvokingTriggerBean}.
  * 
- * @author oyviste
- *
  */
-public class SimpleMethodInvokingTriggerBeanTest extends TestCase {
+public class SimpleMethodInvokingTriggerBeanTest {
     
     private SimpleMethodInvokingTriggerBean trigger;
     private int triggerCount;
     private boolean testFailed;
     private boolean triggered;
     private StringBuffer errors;
-    private String threadName = "test-trigger-thread";
-    Object[] args = new Object[]{
+    private final String threadName = "test-trigger-thread";
+    private final Object[] args = new Object[]{
             "test-arg-1",
             new Integer(100)
     };
-    
-    protected void setUp() throws Exception {
-        super.setUp();
-        
+
+    @Before
+    public void setUp() throws Exception {
         this.triggerCount = 0;
         this.testFailed = false;
         this.triggered = false;
         this.errors = new StringBuffer();
         this.trigger = new SimpleMethodInvokingTriggerBean();
-        
+    }
+    
+    @After
+    public void tearDown() throws Exception {
+        this.trigger.stop(true);
     }
 
-    protected void tearDown() throws Exception {
-        // TODO Auto-generated method stub
-        super.tearDown();
-    }
-
-    public void testWrongArgumentsProperAbort() throws Exception {
+    @Test
+    public void wrongArgumentsProperAbort() throws Exception {
         
         this.trigger.setStartDelay(0);
         this.trigger.setRepeatInterval(50);
@@ -73,7 +73,8 @@ public class SimpleMethodInvokingTriggerBeanTest extends TestCase {
         
     }
     
-    public void testTriggeringTargetMethodThrowsException() throws Exception {
+    @Test
+    public void triggeringTargetMethodThrowsException() throws Exception {
         
         this.trigger.setStartDelay(0);
         this.trigger.setRepeatInterval(50);
@@ -113,7 +114,8 @@ public class SimpleMethodInvokingTriggerBeanTest extends TestCase {
         assertTrue(this.triggered);
     }
     
-    public void testTriggering() throws Exception {
+    @Test
+    public void triggering() throws Exception {
         
         this.trigger.setStartDelay(0);
         this.trigger.setRepeatInterval(50);
@@ -158,8 +160,9 @@ public class SimpleMethodInvokingTriggerBeanTest extends TestCase {
             fail("Triggered after being stopped !");
         }
     }
-    
-    public void testRepeatCount() {
+
+    @Test
+    public void repeatCount() {
         this.trigger.setStartDelay(0);
         this.trigger.setRepeatInterval(1);
         this.trigger.setRepeatCount(3);

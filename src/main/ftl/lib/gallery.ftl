@@ -9,11 +9,11 @@
 
 <#macro galleryJSInit fadeEffect>
   <script type="text/javascript"><!--
+	var wrapper = ".vrtx-image-listing-include";
     $(document).ready(function() {
-      $(".vrtx-image-listing-include").addClass("loading");
+      $(wrapper).addClass("loading");
     });
     $(window).load(function() {	
-	  var wrapper = ".vrtx-image-listing-include";	
 	  var container = ".vrtx-image-listing-include-container";	  
 	  $(wrapper + " li a").vrtxSGallery(wrapper, container, {
 	    fadeInOutTime : ${fadeEffect},

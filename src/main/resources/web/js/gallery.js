@@ -109,14 +109,20 @@
     });
     
     // Fullscreen resize
-    $(window).resize($.debounce(250, function () {
-      if(isFullscreen || isResponsive) {
-        resizeFullscreen(true);
+    var maxRuns = 0;
+    $(window).resize($.debounce(150, function () {
+      if (maxRuns < 2) {
+        if(isFullscreen || isResponsive) {
+          resizeFullscreen(true);
+        }
+        maxRuns++;
+      } else {
+        maxRuns = 0; /* IE8: let it rest */
       }
     }));
-    $(window).on("orientationchange", $.throttle(250, function (e) {
+    $(window).on("orientationchange", function (e) {
       resizeFullscreen(true);
-    }));
+    });
     $.vrtxSGalleryToggleResponsive = function(responsive) {
       isResponsive = responsive;
       

@@ -15,18 +15,16 @@
     $(window).load(function() {	
 	  var wrapper = ".vrtx-image-listing-include";	
 	  var container = ".vrtx-image-listing-include-container";	  
-	  var options = {
-	    fadeInOutTime : ${fadeEffect}
-	  }
-	  loadImageErrorMsg = "${vrtx.getMsg('imageListing.loading-image.error')}";
-	  loadImageMsg = "${vrtx.getMsg('imageListing.loading-image')}";
-	  showImageDescription = "${vrtx.getMsg('imageListing.description.show')}";
-	  hideImageDescription = "${vrtx.getMsg('imageListing.description.hide')}";
-	  showFullscreen = "${vrtx.getMsg('imageListing.fullscreen.show')}";
-	  showFullscreenResponsive = "${vrtx.getMsg('imageListing.fullscreen.show.responsive')}";
-	  closeFullscreen = "${vrtx.getMsg('imageListing.fullscreen.close')}";
-	  
-	  $(wrapper + " li a").vrtxSGallery(wrapper, container, options);			  
+	  $(wrapper + " li a").vrtxSGallery(wrapper, container, {
+	    fadeInOutTime : ${fadeEffect},
+	    i18n: {
+	      showImageDescription: "${vrtx.getMsg('imageListing.description.show')}",
+	      hideImageDescription: "${vrtx.getMsg('imageListing.description.hide')}",
+	      showFullscreen: "${vrtx.getMsg('imageListing.fullscreen.show')}",
+	      showFullscreenResponsive: "${vrtx.getMsg('imageListing.fullscreen.show.responsive')}",
+	      closeFullscreen: "${vrtx.getMsg('imageListing.fullscreen.close')}"
+	    }
+	  });			  
     });
   // -->
   </script>

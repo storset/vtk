@@ -98,7 +98,7 @@
         if(!wrp.find("> .fullscreen-gallery-topline").length) {
           var link = $(this);
           var extraHtml = typeof vrtxSGalleryFullscreenAddExtraHtml === "function" ? vrtxSGalleryFullscreenAddExtraHtml() : "";
-          wrp.prepend("<div class='fullscreen-gallery-topline'>" + extraHtml + "<a href='javascript:void(0);' class='toggle-fullscreen'>" + closeFullscreen + "</a></div>");
+          wrp.prepend("<div class='fullscreen-gallery-topline'>" + extraHtml + "<a href='javascript:void(0);' class='toggle-fullscreen'>" + settings.i18n.closeFullscreen + "</a></div>");
         }
         toggleFullscreenResponsive(htmlTag);
         window.scrollTo(0, 0);
@@ -124,9 +124,9 @@
         resizeFullscreen(true);
       }
       if(isResponsive) {
-        $(".toggle-fullscreen.minimized").text(showFullscreenResponsive);
+        $(".toggle-fullscreen.minimized").text(settings.i18n.showFullscreenResponsive);
       } else {
-        $(".toggle-fullscreen.minimized").text(showFullscreen);
+        $(".toggle-fullscreen.minimized").text(settings.i18n.showFullscreen);
       }
       toggleFullscreenResponsive($("html"));
     };
@@ -181,7 +181,7 @@
       var id = genId(src);
       if($("a#" + id).length) return;
       var description = "<div id='" + id + "-description' class='" + container.substring(1) + "-description" + (!images[src].desc ? " empty-description" : "") + "' style='display: none; width: " + (images[src].width - 30) + "px'>" +
-                          "<a href='javascript:void(0);' class='toggle-fullscreen minimized'>" + (isResponsive ? showFullscreenResponsive : showFullscreen) + "</a>" + images[src].desc
+                          "<a href='javascript:void(0);' class='toggle-fullscreen minimized'>" + (isResponsive ? settings.i18n.showFullscreenResponsive : settings.i18n.showFullscreen) + "</a>" + images[src].desc
                       + "</div>";
       $($.parseHTML(description)).insertBefore(wrapper + "-thumbs");
       wrpContainer.append("<a id='" + id + "' style='display: none' href='" + src + "' class='" + container.substring(1) + "-link'>" +
@@ -336,14 +336,14 @@
       } else {
         htmlTag.removeClass("fullscreen-gallery-big-arrows");
         if(!runnedOnce) {
-          wrp.find("> .fullscreen-gallery-topline").prepend("<a style='display: none' href='javascript:void(0);' class='fullscreen-gallery-responsive-toggle-description'>" + showImageDescription + "</a>");
+          wrp.find("> .fullscreen-gallery-topline").prepend("<a style='display: none' href='javascript:void(0);' class='fullscreen-gallery-responsive-toggle-description'>" + settings.i18n.showImageDescription + "</a>");
           $(document).on("click", "a.fullscreen-gallery-responsive-toggle-description", function(e) {
             var link = $(this);
-            if(link.text() == showImageDescription) {
-              link.text(hideImageDescription);
+            if(link.text() == settings.i18n.showImageDescription) {
+              link.text(settings.i18n.hideImageDescription);
               wrp.removeClass("hidden-descriptions");
             } else {
-              link.text(showImageDescription);
+              link.text(settings.i18n.showImageDescription);
               wrp.addClass("hidden-descriptions");
             }
             e.stopPropagation();

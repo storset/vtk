@@ -76,7 +76,7 @@ public class XMLStylesheetEvaluator
             return false;
         }
         try {
-            Document doc = (Document) ctx.getContent().getContentRepresentation(org.jdom.Document.class);
+            Document doc = ctx.getContent().getContentRepresentation(org.jdom.Document.class);
             if (doc == null) {
                 if (this.logger.isDebugEnabled()) {
                     this.logger.debug("Content representation '"

@@ -37,7 +37,7 @@ import java.io.InputStreamReader;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.vortikal.repository.content.InputStreamWrapper;
+import org.vortikal.repository.content.AbstractInputStreamWrapper;
 import org.vortikal.util.codec.MD5;
 
 import difflib.Delta;
@@ -56,11 +56,11 @@ public final class Revisions {
         return new ChecksumWrapper(input);
     }
     
-    public static class ChecksumWrapper extends InputStreamWrapper {
+    public static class ChecksumWrapper extends AbstractInputStreamWrapper {
         private MD5.MD5InputStream md5Wrapper;
         private ChecksumWrapper(InputStream input) {
             super(MD5.wrap(input));
-            this.md5Wrapper = (MD5.MD5InputStream)super.getInputStream();
+            this.md5Wrapper = (MD5.MD5InputStream)super.getWrappedStream();
         }
         
         public String checksum() {

@@ -14,6 +14,14 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 
+/**
+ * Used to set cookies in the other cookie store in IE.
+ * 
+ * IE browser working in the UiO domain have separate cookie stores for view and manage.
+ * 
+ * When cookies are set (login) for one store, this controller sets them for the other store.
+ */
+
 public class IECookieRedirectController implements Controller {
 
     private String ieCookieTicket;

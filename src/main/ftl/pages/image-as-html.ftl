@@ -29,7 +29,7 @@
   </div>
   
 <#if src?exists>
-    <a href="${previewImage.URL?html}"><img src="${previewImage.URL?html}" alt="image" /></a>
+    <a href="${src?html}"><img src="${src?html}" alt="image" /></a>
 </#if>
 
 <#if description?exists >
@@ -43,7 +43,7 @@
 
 <h2>${vrtx.getMsg('imageAsHtml.source')}</h2>
 <p id="vrtx-image-view-link">
-  <a href="${previewImage.URL?html}">${resource.name?html}</a>
+  <a href="${src?html}">${resource.name?html}</a>
   <#if pixelHeight != "" && pixelWidth != "">
     &nbsp;(${pixelWidth} x ${pixelHeight} px)
   </#if>

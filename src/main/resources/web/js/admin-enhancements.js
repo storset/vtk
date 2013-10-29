@@ -2219,8 +2219,19 @@ function editorInteraction(bodyId, vrtxAdm, _$) {
           /* Fail in performSave() for exceeding 1500 chars in intro/add.content is handled in editor.js with popup */
           
           if(xhr === "UPDATED_IN_BACKGROUND") {
+            var serverTime = serverTimeFormatToClientTimeFormat(vrtxAdmin.serverLastModified);
+            var nowTime = serverTimeFormatToClientTimeFormat(vrtxAdmin.serverNowTime);
+            var ago = "";
+            var agoSeconds = ((+nowTime) - (+serverTime)) / 1000;
+            if(agoSeconds >= 60) {
+              agoMinutes = Math.floor(agoSeconds / 60);
+              agoSeconds = agoSeconds % 60;
+              ago = agoMinutes + " min " + agoSeconds + "s";
+            } else {
+              ago = agoSeconds + "s";
+            }
             var d = new VrtxConfirmDialog({
-              msg: vrtxAdm.serverFacade.errorMessages.outOfDate.replace(/XX/, "8 minutter").replace(/YY/, vrtxAdm.serverModifiedBy),
+              msg: vrtxAdm.serverFacade.errorMessages.outOfDate.replace(/XX/, ago).replace(/YY/, vrtxAdm.serverModifiedBy),
               title: vrtxAdm.serverFacade.errorMessages.outOfDateTitle,
               btnTextOk: vrtxAdm.serverFacade.errorMessages.outOfDateOk,
               width: 450,
@@ -2236,12 +2247,12 @@ function editorInteraction(bodyId, vrtxAdm, _$) {
               reAuthenticateRetokenizeForms(link);
             } else if(msg === "LOCKED") {
               var d = new VrtxConfirmDialog({
-                msg: vrtxAdm.serverFacade.errorMessages.lockStolen,
+                msg: vrtxAdm.serverFacade.errorMessages.lockStolen.replace(/XX/, vrtxAdm.lockedBy),
                 title: vrtxAdm.serverFacade.errorMessages.lockStolenTitle,
                 btnTextOk: vrtxAdm.serverFacade.errorMessages.lockStolenOk,
                 width: 450,
                 onOk: function() {
-               // Copy with changes
+                  // Copy with changes
                 }
               });
               d.open();
@@ -2348,6 +2359,7 @@ function isServerLastModifiedOlderThanClientLastModified(d) {
     async: false,
     cache: false,
     success: function (results, status, resp) {
+      vrtxAdmin.serverNowTime = $($.parseHTML(results)).find("#server-now-time").text().split(",");
       vrtxAdmin.serverLastModified = $($.parseHTML(results)).find("#resource-last-modified").text().split(",");
       vrtxAdmin.serverModifiedBy = $($.parseHTML(results)).find("#resource-last-modified-by").text();
       if(isServerLastModifiedNewerThanClientLastModified(olderThanMs)) {
@@ -3499,6 +3511,7 @@ VrtxAdmin.prototype.serverFacade = {
         async: false,
         success: function (results, status, resp) { // Exists - soneone has locked it
           msg = useStatusCodeInMsg ? serverFacade.errorMessages.s404 : "LOCKED";
+          vrtxAdm.lockedBy = $($.parseHTML(results)).find("#resource-locked-by").html();
           $("#resourceMenuRight").html($($.parseHTML(results)).find("#resourceMenuRight").html());
           vrtxAdmin.globalAsyncComplete();
         },

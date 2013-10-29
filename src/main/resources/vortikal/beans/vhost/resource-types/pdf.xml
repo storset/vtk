@@ -28,7 +28,8 @@
     <property name="pattern" value="(application/pdf|text/pdf)" />
   </bean>
 
-
+  <!-- Should be OverridingPropertyTypeDefinition ?`Either we enable title extraction, or we remove
+  the support. -->
   <bean id="pdfTitlePropDef"
         class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
     <property name="name" value="title" />

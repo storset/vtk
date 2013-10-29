@@ -1,10 +1,9 @@
 .vrtx-image-listing-include {
-  border: 3px solid #aaa;
   /* clear: both; */
   float: left;
   padding: 5px 10px 10px;
   margin-bottom: 10px;
-  width: 97%;
+  width: 100%;
 }
 
 .vrtx-image-listing-include-title {
@@ -90,13 +89,11 @@
 .vrtx-image-listing-include .vrtx-image-listing-include-container {
   display: block;
   overflow: hidden;
-  width: 507px;
   position: relative;
   margin: 0 auto;
 }
 
 .vrtx-image-listing-include .vrtx-image-listing-include-container img {
-  max-height: 380px;
   width: auto;
   height: auto;
 }
@@ -144,11 +141,11 @@
 }
 
 .vrtx-image-listing-include .vrtx-image-listing-include-container-nav a.prev {
-   background: url(icons/prev-gallery.png) no-repeat center left;
+   background: url("icons/prev-gallery.png") no-repeat center left;
 }
 
 .vrtx-image-listing-include .vrtx-image-listing-include-container-nav a.next {
-   background: url(icons/next-gallery.png) no-repeat center left;
+   background: url("icons/next-gallery.png") no-repeat center left;
 }
 
 .vrtx-image-listing-include .vrtx-image-listing-include-container-nav a.prev {
@@ -180,7 +177,7 @@ a.toggle-fullscreen {
   display: inline-block;
   float: right;
   background: url(images/preview-minimize.png) no-repeat 100% 3px;
-  padding: 2px 24px 1px 0;
+  padding: 2px 24px 10px 10px;
   text-decoration: none !important;
 }
 
@@ -244,15 +241,16 @@ html.fullscreen-gallery.fullscreen-gallery-big-arrows .vrtx-image-listing-includ
 }
 
 html.fullscreen-gallery.fullscreen-gallery-big-arrows .vrtx-image-listing-include .vrtx-image-listing-include-container-nav a.prev {
-  background-image: url(icons/prev-gallery-big.png);
+  background-image: url("icons/prev-gallery-big.png");
 }
 
 html.fullscreen-gallery.fullscreen-gallery-big-arrows .vrtx-image-listing-include .vrtx-image-listing-include-container-nav a.next {
-  background-image: url(icons/next-gallery-big.png);
+  background-image: url("icons/next-gallery-big.png");
 }
 
 .vrtx-image-listing-include .fullscreen-gallery-topline,
-html.fullscreen-gallery .vrtx-image-listing-include a.toggle-fullscreen.minimized {
+html.fullscreen-gallery .vrtx-image-listing-include a.toggle-fullscreen.minimized,
+html.fullscreen-gallery .vrtx-image-listing-include a.fullscreen-gallery-responsive-toggle-description {
   display: none !important;
 }
 
@@ -278,6 +276,7 @@ html.fullscreen-gallery .vrtx-image-listing-include-container-description {
   width: auto !important;
 }
 
+html.fullscreen-gallery .vrtx-image-listing-include-container-description.hidden-description,
 html.fullscreen-gallery .vrtx-image-listing-include-container-description.empty-description {
   display: none !important;
 }

@@ -96,6 +96,7 @@ public class ContentRegexpEvaluator implements PropertyEvaluator {
         Charset.forName(this.characterEncoding);
     }
     
+    @Override
     public boolean evaluate(Property property, PropertyEvaluationContext ctx) throws PropertyEvaluationException {
         if (this.maxLength > 0 && ctx.getNewResource().getContentLength() > this.maxLength) {
             return false;
@@ -106,7 +107,7 @@ public class ContentRegexpEvaluator implements PropertyEvaluator {
                 return false;
             }
             try {
-                byte[] buffer = (byte[]) ctx.getContent().getContentRepresentation(byte[].class);
+                byte[] buffer = ctx.getContent().getContentRepresentation(byte[].class);
                 String contentString = new String(buffer, this.characterEncoding);
                 Matcher matcher = this.compiledPattern.matcher(contentString);
                 if (!matcher.find()) {

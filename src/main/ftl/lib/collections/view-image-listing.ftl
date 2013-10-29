@@ -111,19 +111,16 @@
 <#macro displayGallery imageListing collection>
   <#local images = imageListing.entries />
   <#if (images?size > 0)>
-    <#assign maxWidth = 635 />
-    <#assign maxHeight = 380 />
-  
     <div class="vrtx-image-listing-include" id="vrtx-image-folder-gallery">
       <#local activeImage = "" />
       <#if RequestParameters['actimg']?exists>
         <#local activeImage = RequestParameters['actimg'] />
       </#if>
 
-      <@gallery.galleryJSInit maxWidth 0 />
+      <@gallery.galleryJSInit 0 />
 
       <ul class="vrtx-image-listing-include-thumbs-pure-css">
-        <@gallery.galleryListImages images maxWidth maxHeight activeImage imageListing />
+        <@gallery.galleryListImages images activeImage imageListing />
       </ul>
    </div>
  </#if>

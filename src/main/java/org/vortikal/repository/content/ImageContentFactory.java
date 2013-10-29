@@ -53,21 +53,21 @@ public class ImageContentFactory implements ContentFactory {
     }
 
     @Override
-    public Object getContentRepresentation(Class<?> clazz,  InputStream content)
+    public Object getContentRepresentation(Class clazz,  InputStream is)
         throws Exception {
         
         try {
             if (clazz == Dimension.class) {
-                return ImageUtil.getImageStreamDimension(content);
+                return ImageUtil.getImageStreamDimension(is);
             } else if (clazz == BufferedImage.class) {
-                return ImageIO.read(content);                
+                return ImageIO.read(is);                
             } else {
-                throw new IllegalArgumentException("Unsupported content representation class: " + clazz.getName());
+                throw new UnsupportedContentRepresentation("Unsupported content representation: " + clazz);
             }
 
         } finally {
             // ImageIO.read documentation states that it does not close the input stream.
-            content.close();
+            is.close();
         }
     }
 

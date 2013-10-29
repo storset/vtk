@@ -39,18 +39,26 @@ import org.vortikal.repository.PropertyEvaluationContext;
 import org.vortikal.repository.PropertyEvaluationContext.Type;
 import org.vortikal.repository.resourcetype.PropertyEvaluator;
 
-
+/**
+ * XXX this evaluator is not able to extract much interesting since it's using
+ * javax.sound and without any interesting audio SPI impls available. Likely, it
+ * can be discarded entirely, since we should probably avoid extracting data
+ * from complex multimedia formats in-process. Better to use external system for
+ * audio file storage and metadata extraction in the future. (For simpler
+ * installations, an out of process ffmpeg-based metadata-extractor can be created,
+ * but we won't do it in the near future.)
+ */
 public class AudioFilePropertyEvaluator implements PropertyEvaluator {
 
-    private static Log logger = LogFactory.getLog(AudioFilePropertyEvaluator.class);
+    private final Log logger = LogFactory.getLog(AudioFilePropertyEvaluator.class);
 
     private String audioFileProperty;
 
     public void setAudioFileProperty(String audioFileProperty) {
         this.audioFileProperty = audioFileProperty;
     }
-    
 
+    @Override
     public boolean evaluate(Property property, PropertyEvaluationContext ctx) throws PropertyEvaluationException {
         if (ctx.getEvaluationType() != Type.ContentChange && ctx.getEvaluationType() != Type.Create) {
             return false;
@@ -59,8 +67,7 @@ public class AudioFilePropertyEvaluator implements PropertyEvaluator {
         AudioFileFormat audioFileFormat = null;
 
         try {
-            audioFileFormat = (AudioFileFormat) ctx.getContent().getContentRepresentation(
-                AudioFileFormat.class);
+            audioFileFormat = ctx.getContent().getContentRepresentation(AudioFileFormat.class);
         } catch (Exception e) {
             if (logger.isDebugEnabled()) {
                 logger.debug("Unable to get AudioFileFormat representation of content", e);
@@ -69,7 +76,7 @@ public class AudioFilePropertyEvaluator implements PropertyEvaluator {
         }
 
         String propertyValue = (String) audioFileFormat.properties()
-            .get(this.audioFileProperty);
+                .get(this.audioFileProperty);
 
         if (propertyValue == null) {
             return false;
@@ -78,6 +85,4 @@ public class AudioFilePropertyEvaluator implements PropertyEvaluator {
         return true;
     }
 
-    
 }
-

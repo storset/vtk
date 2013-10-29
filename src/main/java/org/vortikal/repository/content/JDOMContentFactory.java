@@ -48,7 +48,10 @@ public class JDOMContentFactory implements ContentFactory {
     
 
     @Override
-    public Object getContentRepresentation(Class<?> clazz,  InputStream content) throws Exception {
+    public Document getContentRepresentation(Class clazz,  InputStream content) throws Exception {
+        if (clazz != Document.class) {
+            throw new UnsupportedContentRepresentation("Unsupported representation: " + clazz);
+        }
         SAXBuilder saxBuilder = new SAXBuilder();
         saxBuilder.setValidation(false);
         saxBuilder.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);

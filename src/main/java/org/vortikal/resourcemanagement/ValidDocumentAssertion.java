@@ -63,8 +63,7 @@ public class ValidDocumentAssertion implements RepositoryContentEvaluationAssert
         if (resource.isCollection()) return false;
         
         try {
-            JSONObject object = 
-                (JSONObject) content.getContentRepresentation(net.sf.json.JSONObject.class);
+            JSONObject object = content.getContentRepresentation(net.sf.json.JSONObject.class);
 
             Object o = JSON.select(object, "resourcetype");
             if (o == null) {

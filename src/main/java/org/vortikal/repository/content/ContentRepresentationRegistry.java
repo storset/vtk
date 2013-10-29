@@ -30,6 +30,8 @@
  */
 package org.vortikal.repository.content;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.Collection;
@@ -42,7 +44,6 @@ import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.vortikal.util.io.StreamUtil;
 
 /**
  * A resource content representation registry.
@@ -86,7 +87,7 @@ public class ContentRepresentationRegistry implements ApplicationContextAware, I
         }
     }
 
-    public Object createRepresentation(Class<?> clazz, InputStream content) throws Exception {
+    public <T> T createRepresentation(Class<T> clazz, InputStream content) throws Exception {
 
         ContentFactory factory = this.contentFactories.get(clazz);
 
@@ -96,13 +97,24 @@ public class ContentRepresentationRegistry implements ApplicationContextAware, I
 
         // The default representations:
         if (clazz == byte[].class) {
-            return StreamUtil.readInputStream(content);
+            return (T)getContentAsByteArray(content);
         } else if (clazz == java.nio.ByteBuffer.class) {
-            return ByteBuffer.wrap(StreamUtil.readInputStream(content));
+            return (T)ByteBuffer.wrap(getContentAsByteArray(content));
         }
 
-        throw new UnsupportedContentRepresentationException("Content type '" + clazz.getName() + "' not supported.");
+        throw new UnsupportedContentRepresentation("Content type '" + clazz.getName() + "' not supported.");
+    }
 
+    private static byte[] getContentAsByteArray(InputStream content) throws IOException {
+        ByteArrayOutputStream bout = new ByteArrayOutputStream();
+
+        int n;
+        byte[] buffer = new byte[5000];
+        while ((n = content.read(buffer, 0, buffer.length)) != -1) {
+            bout.write(buffer, 0, n);
+        }
+
+        return bout.toByteArray();
     }
 
 }

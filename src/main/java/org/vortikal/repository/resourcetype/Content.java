@@ -44,12 +44,13 @@ public interface Content {
     /**
      * Gets the content representation specified by a given class.
      *
+     * @param <T> type of instance returned
      * @param clazz the class of the desired content representation
      * @return the content representation, or <code>null</code> if no
      * such representation is available.
-     * @exception Exception if an error occurs
+     * @throws Exception if an error occurs
      */
-    public Object getContentRepresentation(Class<?> clazz) throws Exception;
+    public <T> T getContentRepresentation(Class<T> clazz) throws Exception;
     
 
     /**
@@ -60,7 +61,6 @@ public interface Content {
      * @exception IOException if an error occurs
      */
     public InputStream getContentInputStream() throws IOException;
-    
 
 
     /**

@@ -44,21 +44,8 @@ import org.vortikal.repository.Path;
  * Test case for <code>org.vortikal.repositoryimpl.dao.MemoryContentStore</code> 
  * implementation.
  * 
- * @author oyviste
- *
  */
 public abstract class AbstractContentStoreTest extends TestCase {
-
-    //private MemoryContentStore store;
-
-//    protected void setUp() throws Exception {
-//        super.setUp();
-//        store = new MemoryContentStore();
-//    }
-//
-//    protected void tearDown() throws Exception {
-//        super.tearDown();
-//    }
 
     public abstract ContentStore getStore();
 
@@ -108,53 +95,57 @@ public abstract class AbstractContentStoreTest extends TestCase {
         } catch (IllegalOperationException ioe) {
             // OK
         }
-
     }
 
     /*
      * Test method for
      * 'org.vortikal.repositoryimpl.dao.MemoryContentStore.deleteResource(String)'
      */
-    public void testDeleteResource() throws IOException {
+    public void testDeleteResource() {
         // Test delete of simple file
         getStore().createResource(Path.fromString("/short-lived-file.txt"), false);
 
-//         assertEquals(true, getStore().exists("/short-lived-file.txt")
-//                 && !getStore().isCollection("/short-lived-file.txt"));
+         assertEquals(true, fileExists(Path.fromString("/short-lived-file.txt")));
 
-//         // Now delete file ..
-//         getStore().deleteResource("/short-lived-file.txt");
 
-//         // .. and test that it does not exist anymore.
-//         assertEquals(false, getStore().exists("/short-lived-file.txt"));
+         // Now delete file ..
+         getStore().deleteResource(Path.fromString("/short-lived-file.txt"));
 
-//         // Create two small sub-directories
-//         getStore().createResource("/a", true);
-//         getStore().createResource("/a/b", true);
-//         getStore().createResource("/a/b/file1.txt", false);
-//         getStore().createResource("/a/b/file2.txt", false);
-//         getStore().createResource("/a/b/file3.txt", false);
+         // .. and test that it does not exist anymore.
+         assertEquals(false, fileExists(Path.fromString("/short-lived-file.txt")));
 
-//         getStore().createResource("/foo-file.bar", false);
+         // Create two small sub-directories
+         getStore().createResource(Path.fromString("/a"), true);
+         getStore().createResource(Path.fromString("/a/b"), true);
+         getStore().createResource(Path.fromString("/a/b/file1.txt"), false);
+         getStore().createResource(Path.fromString("/a/b/file2.txt"), false);
+         getStore().createResource(Path.fromString("/a/b/file3.txt"), false);
 
-//         // Delete subtree '/a/b'
-//         getStore().deleteResource("/a/b");
+         getStore().createResource(Path.fromString("/foo-file.bar"), false);
 
-//         // Check that subtree does not exist (or any if its sub-nodes)
-//         assertEquals(false, getStore().exists("/a/b"));
-//         assertEquals(false, getStore().exists("/a/b/file1.txt"));
-//         assertEquals(false, getStore().exists("/a/b/file2.txt"));
-//         assertEquals(false, getStore().exists("/a/b/file3.txt"));
+         // Delete subtree '/a/b'
+         getStore().deleteResource(Path.fromString("/a/b"));
 
-//         getStore().deleteResource("/a");
+         // Check that subtree does not exist (or any if its sub-nodes)
+         assertEquals(false, fileExists(Path.fromString("/a/b/file1.txt")));
+         assertEquals(false, fileExists(Path.fromString("/a/b/file2.txt")));
+         assertEquals(false, fileExists(Path.fromString("/a/b/file3.txt")));
 
-//         assertEquals(false, getStore().exists("/a"));
-//         assertEquals(true, getStore().exists("/foo-file.bar"));
+         getStore().deleteResource(Path.fromString("/a"));
 
-//         // Check that root node cannot be deleted
-//         getStore().deleteResource("/");
-//         assertEquals(true, getStore().exists("/") && getStore().isCollection("/"));
+         assertEquals(true, fileExists(Path.fromString("/foo-file.bar")));
 
+         // Check that root node cannot be deleted
+         getStore().deleteResource(Path.fromString("/"));
+    }
+    
+    private boolean fileExists(Path path) {
+        try {
+            getStore().getContentLength(path);
+            return true;
+        } catch (DataAccessException e) {
+            return false;
+        } 
     }
 
     /*
@@ -180,7 +171,7 @@ public abstract class AbstractContentStoreTest extends TestCase {
         byte[] content2 = getContent(input);
         
         // Check that received content is what we originally stored
-        assertTrue(equals(content, content2));
+        assertTrue(blobsEqual(content, content2));
         
         // Copy content and test again
         getStore().copy(p, p2);
@@ -191,7 +182,7 @@ public abstract class AbstractContentStoreTest extends TestCase {
         
         input = getStore().getInputStream(p2);
         content2 = getContent(input);
-        assertTrue(equals(content, content2));
+        assertTrue(blobsEqual(content, content2));
         
     }
     
@@ -200,11 +191,11 @@ public abstract class AbstractContentStoreTest extends TestCase {
      * 'org.vortikal.repositoryimpl.dao.MemoryContentStore.copy(String, String)'
      */
     public void testCopy() throws IOException {
-        
+
         byte[] contentFile1 = "I'm the contents of file1.txt".getBytes();
         byte[] contentFile2 = "I'm the contents of file2.txt".getBytes();
         byte[] contentFile3 = "foo bar baz mik mak hey ho ØÆÅ øæå".getBytes();
-        
+
         // Create content tree
         getStore().createResource(Path.fromString("/a"), true);
         getStore().createResource(Path.fromString("/a/b"), true);
@@ -214,97 +205,65 @@ public abstract class AbstractContentStoreTest extends TestCase {
         getStore().createResource(Path.fromString("/d"), true);
         getStore().createResource(Path.fromString("/d/e"), true);
         getStore().createResource(Path.fromString("/d/file4.txt"), false);
-        
+
         // Insert some content
         getStore().storeContent(Path.fromString("/a/b/file1.txt"), new ByteArrayInputStream(contentFile1));
         getStore().storeContent(Path.fromString("/a/b/file2.txt"), new ByteArrayInputStream(contentFile2));
         getStore().storeContent(Path.fromString("/a/b/file3.txt"), new ByteArrayInputStream(contentFile3));
 
-//         // Copy subtree '/d' to '/a/d', then check consistency      
-         getStore().copy(Path.fromString("/d"), Path.fromString("/a/d"));
-//         assertTrue(getStore().exists("/a/d"));
-//         assertTrue(getStore().isCollection("/a/d"));
-//         assertTrue(getStore().exists("/a/d/e"));
-//         assertTrue(getStore().isCollection("/a/d/e"));
-//         assertTrue(getStore().exists("/a/d/file4.txt"));
-//         assertFalse(getStore().isCollection("/a/d/file4.txt"));
+        // Copy subtree '/d' to '/a/d', then check consistency      
+        getStore().copy(Path.fromString("/d"), Path.fromString("/a/d"));
+        assertTrue(fileExists(Path.fromString("/a/d/file4.txt")));
 
-//         // Delete subtree '/d'
-//         getStore().deleteResource("/d");
-//         assertFalse(getStore().exists("/d"));
-        
-//         // Rename/move subtree '/a/b' to '/a/x'
+        // Delete subtree '/d'
+        getStore().deleteResource(Path.fromString("/d"));
+        assertFalse(fileExists(Path.fromString("/d/file4.txt")));
+
+        // Rename/move subtree '/a/b' to '/a/x'
         getStore().move(Path.fromString("/a/b"), Path.fromString("/a/x"));
-//         getStore().copy("/a/b", "/a/x");
-//         getStore().deleteResource("/a/b");
-        
-//         // Check consistency of entire '/a' subtree
-//         assertTrue(getStore().exists("/a"));
-//         assertTrue(getStore().isCollection("/a"));
-//         assertTrue(getStore().exists("/a/x"));
-//         assertTrue(getStore().isCollection("/a/x"));
-//         assertTrue(getStore().exists("/a/x/file1.txt"));
-//         assertFalse(getStore().isCollection("/a/x/file1.txt"));
-//         assertTrue(getStore().exists("/a/x/file2.txt"));
-//         assertFalse(getStore().isCollection("/a/x/file2.txt"));
-//         assertTrue(getStore().exists("/a/x/file3.txt"));
-//         assertFalse(getStore().isCollection("/a/x/file3.txt"));
-//         assertTrue(getStore().exists("/a/d"));
-//         assertTrue(getStore().isCollection("/a/d"));
-//         assertTrue(getStore().exists("/a/d/e"));
-//         assertTrue(getStore().isCollection("/a/d/e"));
-//         assertTrue(getStore().exists("/a/d/file4.txt"));
-//         assertFalse(getStore().isCollection("/a/d/file4.txt"));
+
+        // Check consistency of '/a' subtree
+        assertTrue(fileExists(Path.fromString("/a/x/file1.txt")));
+        assertTrue(fileExists(Path.fromString("/a/x/file2.txt")));
+        assertTrue(fileExists(Path.fromString("/a/x/file3.txt")));
+        assertTrue(fileExists(Path.fromString("/a/d/file4.txt")));
 
         // Verify content
         byte[] content = getContent(getStore().getInputStream(Path.fromString("/a/x/file1.txt")));
-        assertTrue(equals(contentFile1, content));
+        assertTrue(blobsEqual(contentFile1, content));
         content = getContent(getStore().getInputStream(Path.fromString("/a/x/file2.txt")));
-        assertTrue(equals(contentFile2, content));
+        assertTrue(blobsEqual(contentFile2, content));
         content = getContent(getStore().getInputStream(Path.fromString("/a/x/file3.txt")));
-        assertTrue(equals(contentFile3, content));
-        
+        assertTrue(blobsEqual(contentFile3, content));
+
         content = getContent(getStore().getInputStream(Path.fromString("/a/d/file4.txt")));
-        assertTrue(equals(new byte[0], content));
-                
+        assertTrue(blobsEqual(new byte[0], content));
+
         // Rename '/a' subtree, then re-check consistency
         getStore().copy(Path.fromString("/a"), Path.fromString("/Copy of a"));
         getStore().deleteResource(Path.fromString("/a"));
-//         assertFalse(getStore().exists("/a"));
-        
-//         // Check consistency of entire '/Copy of a' subtree
-//         assertTrue(getStore().exists("/Copy of a"));
-//         assertTrue(getStore().isCollection("/Copy of a"));
-//         assertTrue(getStore().exists("/Copy of a/x"));
-//         assertTrue(getStore().isCollection("/Copy of a/x"));
-//         assertTrue(getStore().exists("/Copy of a/x/file1.txt"));
-//         assertFalse(getStore().isCollection("/Copy of a/x/file1.txt"));
-//         assertTrue(getStore().exists("/Copy of a/x/file2.txt"));
-//         assertFalse(getStore().isCollection("/Copy of a/x/file2.txt"));
-//         assertTrue(getStore().exists("/Copy of a/x/file3.txt"));
-//         assertFalse(getStore().isCollection("/Copy of a/x/file3.txt"));
-//         assertTrue(getStore().exists("/Copy of a/d"));
-//         assertTrue(getStore().isCollection("/Copy of a/d"));
-//         assertTrue(getStore().exists("/Copy of a/d/e"));
-//         assertTrue(getStore().isCollection("/Copy of a/d/e"));
-//         assertTrue(getStore().exists("/Copy of a/d/file4.txt"));
-//         assertFalse(getStore().isCollection("/Copy of a/d/file4.txt"));
+        assertFalse(fileExists(Path.fromString("/a")));
+
+        // Check consistency of '/Copy of a' subtree
+        assertTrue(fileExists(Path.fromString("/Copy of a/x/file1.txt")));
+        assertTrue(fileExists(Path.fromString("/Copy of a/x/file2.txt")));
+        assertTrue(fileExists(Path.fromString("/Copy of a/x/file3.txt")));
+        assertTrue(fileExists(Path.fromString("/Copy of a/d/file4.txt")));
 
         // Verify content
         content = getContent(getStore().getInputStream(Path.fromString("/Copy of a/x/file1.txt")));
-        assertTrue(equals(contentFile1, content));
+        assertTrue(blobsEqual(contentFile1, content));
         content = getContent(getStore().getInputStream(Path.fromString("/Copy of a/x/file2.txt")));
-        assertTrue(equals(contentFile2, content));
+        assertTrue(blobsEqual(contentFile2, content));
         content = getContent(getStore().getInputStream(Path.fromString("/Copy of a/x/file3.txt")));
-        assertTrue(equals(contentFile3, content));
-        
+        assertTrue(blobsEqual(contentFile3, content));
+
         content = getContent(getStore().getInputStream(Path.fromString("/Copy of a/d/file4.txt")));
-        assertTrue(equals(new byte[0], content));
-                
+        assertTrue(blobsEqual(new byte[0], content));
 
     }
 
-    private boolean equals(byte[] content1, byte[] content2) {
+    private boolean blobsEqual(byte[] content1, byte[] content2) {
         if (content1.length != content2.length) return false;
         for (int i=0; i< content1.length; i++) {
             if (content1[i] != content2[i]) return false;
@@ -330,7 +289,7 @@ public abstract class AbstractContentStoreTest extends TestCase {
     public void testMultithreadedAccessAndModification() throws IOException {
         
         // The number of threads to run concurrently against content store
-        int numWorkers = 1000;
+        int numWorkers = 100;
         
         final class Worker implements Runnable {
             ContentStore store;
@@ -343,6 +302,7 @@ public abstract class AbstractContentStoreTest extends TestCase {
                 this.workdir = workdir;
             }
             
+            @Override
             public void run() {
                 // Create a small structure under workdir, insert thread name
                 // into a file, and generally mess about ..
@@ -372,8 +332,8 @@ public abstract class AbstractContentStoreTest extends TestCase {
                     this.store.copy(Path.fromString(this.workdir + "/worker_name.txt"), Path.fromString(this.workdir + "/name.txt"));
                     this.store.deleteResource(Path.fromString(this.workdir + "/worker_name.txt"));
                     
-                } catch (Exception io) {
-                    fail("Un-expected Exception while working in '" + this.workdir + "': " + io.getMessage());
+                } catch (DataAccessException de) {
+                    fail("Un-expected Exception while working in '" + this.workdir + "': " + de.getMessage());
                 }
             }
         }
@@ -393,7 +353,6 @@ public abstract class AbstractContentStoreTest extends TestCase {
                             "/workers_play_area/worker" + i, getStore());
             
             threads[i] = new Thread(group, worker, worker.name);
-            
         }
         
         // Start all threads concurrently, as fast as possible
@@ -413,32 +372,18 @@ public abstract class AbstractContentStoreTest extends TestCase {
         
         // Verify content store structures:
         // Verify off-limits subtree
-//         assertTrue(getStore().exists("/off_limits"));
-//         assertTrue(getStore().isCollection("/off_limits"));
-//         assertTrue(getStore().exists("/off_limits/i_will_survive.txt"));
-//         assertFalse(getStore().isCollection("/off_limits/i_will_survive.txt"));
+        assertTrue(fileExists(Path.fromString("/off_limits/i_will_survive.txt")));
         byte[] originalContent = "I Will Surviveeee !".getBytes();
         byte[] content = getContent(getStore().getInputStream(Path.fromString("/off_limits/i_will_survive.txt")));
-        assertTrue(equals(originalContent, content));
-        
+        assertTrue(blobsEqual(originalContent, content));
+
         // Verify all worker areas in content store (should conform to specific pattern)
-        for (int i=0; i<numWorkers; i++) {
-//             assertTrue(getStore().exists("/workers_play_area/worker" + i));
-//             assertTrue(getStore().isCollection("/workers_play_area/worker" + i));
-            
-//             assertTrue(getStore().exists("/workers_play_area/worker" + i + "/name.txt"));
-//             assertFalse(getStore().isCollection("/workers_play_area/worker" + i + "/name.txt"));
-//             content = getContent(getStore().getInputStream("/workers_play_area/worker" + i + "/name.txt"));
-//             assertTrue(equals(content, ("Worker # " + i).getBytes()));
-            
-//             assertFalse(getStore().exists("/workers_play_area/worker" + i + "/a"));
-            
-//             assertTrue(getStore().exists("/workers_play_area/worker" + i + "/x"));
-//             assertTrue(getStore().isCollection("/workers_play_area/worker" + i + "/x"));
-//             assertTrue(getStore().exists("/workers_play_area/worker" + i + "/x/AN_EMPTY_FILE.dat"));
-//             assertTrue(getStore().exists("/workers_play_area/worker" + i + "/x/AN_EMPTY_FILE2.dat"));
-//             assertFalse(getStore().isCollection("/workers_play_area/worker" + i + "/x/AN_EMPTY_FILE2.dat"));
-//             assertFalse(getStore().isCollection("/workers_play_area/worker" + i + "/x/AN_EMPTY_FILE2.dat"));
+        for (int i = 0; i < numWorkers; i++) {
+             assertTrue(fileExists(Path.fromString("/workers_play_area/worker" + i + "/name.txt")));
+             content = getContent(getStore().getInputStream(Path.fromString("/workers_play_area/worker" + i + "/name.txt")));
+             assertTrue(blobsEqual(content, ("Worker # " + i).getBytes()));
+             assertTrue(fileExists(Path.fromString("/workers_play_area/worker" + i + "/x/AN_EMPTY_FILE.dat")));
+             assertTrue(fileExists(Path.fromString("/workers_play_area/worker" + i + "/x/AN_EMPTY_FILE2.dat")));
         }
     }
 }

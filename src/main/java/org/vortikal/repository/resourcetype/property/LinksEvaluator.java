@@ -145,7 +145,7 @@ public class LinksEvaluator implements LatePropertyEvaluator {
                 } else if ("text/html".equals(resource.getContentType())) {
                     extractFromHtml(ctx.getContent().getContentInputStream(), collector, LinkSource.CONTENT);
                 } else if ("text/xml".equals(resource.getContentType())) {
-                    Document doc = (Document)ctx.getContent().getContentRepresentation(Document.class);
+                    Document doc = ctx.getContent().getContentRepresentation(Document.class);
                     extractFromXml(doc, collector, LinkSource.CONTENT);
                 }
             }

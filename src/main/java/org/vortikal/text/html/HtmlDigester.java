@@ -44,6 +44,8 @@ import org.apache.commons.lang.StringUtils;
 import org.w3c.tidy.Tidy;
 
 import com.googlecode.htmlcompressor.compressor.HtmlCompressor;
+import java.io.PrintWriter;
+import org.vortikal.util.io.NullOutputStream;
 
 /**
  * XXX Should also handle inputstreams and doms
@@ -178,6 +180,10 @@ public class HtmlDigester {
         // style...>? Print body only?
         Tidy tidy = new Tidy();
         tidy.setPrintBodyOnly(true);
+        tidy.setQuiet(true);
+        tidy.setOnlyErrors(true);
+        tidy.setShowWarnings(false);
+        tidy.setErrout(new PrintWriter(NullOutputStream.INSTANCE));
         tidy.setMakeClean(true);
         tidy.setDropFontTags(true);
         tidy.setDropProprietaryAttributes(true);

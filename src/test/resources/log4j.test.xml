@@ -17,6 +17,8 @@
   <logger name="org.apache.commons.dbcp"><level value="info" /></logger>
   <logger name="org.hsqldb"><level value="info" /></logger>
   
+  <!-- Silence warning noise during test -->
+  <logger name="org.vortikal.scheduling.SimpleMethodInvokingTriggerBean"><level value="fatal"/></logger>
 
 <!--
   <logger name="org.aopalliance"><level value="debug" /></logger>

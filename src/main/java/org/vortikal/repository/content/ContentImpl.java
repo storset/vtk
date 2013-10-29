@@ -51,15 +51,13 @@ import org.vortikal.repository.store.ContentStore;
  * 
  * Representations are created and cached lazily, when requested.
  * 
- * @author oyviste
- *
  */
 public class ContentImpl implements Content {
 
-    private ContentStore contentStore;
-    private Path uri;
-    private ContentRepresentationRegistry contentRegistry;
-    private Map<Class<?>, Object> cachedRepresentations;
+    private final ContentStore contentStore;
+    private final Path uri;
+    private final ContentRepresentationRegistry contentRegistry;
+    private final Map<Class<?>, Object> cachedRepresentations;
     
     public ContentImpl(Path uri, ContentStore contentStore,
                        ContentRepresentationRegistry contentRegistry) {
@@ -70,25 +68,20 @@ public class ContentImpl implements Content {
     }
     
     @Override
-    public Object getContentRepresentation(Class<?> clazz) throws Exception {
+    public <T> T getContentRepresentation(Class<T> clazz) throws Exception {
         // Make sure we have original content from inputstream 
         // before we do anything else. 
         
         // We don't cache InputStream representations
         if (clazz == java.io.InputStream.class) {
-            return this.contentStore.getInputStream(uri); 
+            return (T)this.contentStore.getInputStream(uri); 
         }
         
         Object representation = this.cachedRepresentations.get(clazz);
         if (representation == null) {
             // Lazy load representation
-            
-
             try {
                 InputStream pw  = this.contentStore.getInputStream(uri);
-                
-                //TODO: write temp file if we must ?? 
-                
                 representation = this.contentRegistry.createRepresentation(clazz, pw);
                 
             } finally {
@@ -99,8 +92,7 @@ public class ContentImpl implements Content {
             }
             // Don't cache large buffers:
             if (clazz == byte[].class) {
-                int length = ((byte[]) representation).length;
-                if (length <= 1000000) {
+                if (((byte[]) representation).length <= 1000000) {
                     this.cachedRepresentations.put(clazz, representation);
                 }
             } else {
@@ -108,13 +100,13 @@ public class ContentImpl implements Content {
             }
         }
         
-        return representation;
+        return (T)representation;
     }
     
     @Override
     public InputStream getContentInputStream() throws IOException {
         try {
-            return (InputStream) getContentRepresentation(java.io.InputStream.class);
+            return getContentRepresentation(java.io.InputStream.class);
         } catch (Exception e) {
             throw new IOException("Unable to create input stream representation: " + e.getMessage());
         }
@@ -124,7 +116,5 @@ public class ContentImpl implements Content {
     public long getContentLength() throws IOException {
         return this.contentStore.getContentLength(uri);
     }
-
-
  
 }

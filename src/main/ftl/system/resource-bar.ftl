@@ -8,8 +8,16 @@
 
 <#assign lastModified = resource.getLastModified() />
 <#assign modifiedBy = resource.getModifiedBy() />
+<span id="server-now-time" class="hidden-server-info">${nowTime?string("yyyy")},${nowTime?string("MM")},${nowTime?string("dd")},${nowTime?string("HH")},${nowTime?string("mm")},${nowTime?string("ss")}</span>
 <span id="resource-last-modified" class="hidden-server-info">${lastModified?string("yyyy")},${lastModified?string("MM")},${lastModified?string("dd")},${lastModified?string("HH")},${lastModified?string("mm")},${lastModified?string("ss")}</span>
-<span id="resource-last-modified-by" class="hidden-server-info">${modifiedBy}</span>
+<span id="resource-last-modified-by" class="hidden-server-info">${modifiedBy?html}</span>
+<#if resourceContext.currentResource.lock?exists && resourceContext.currentResource.lock.principal?exists>
+  <#assign lockedBy = resourceContext.currentResource.lock.principal.name />
+  <#if resourceContext.currentResource.lock.principal.URL?exists>
+    <#assign lockedBy = resourceContext.currentResource.lock.principal.description />
+  </#if>
+  <span id="resource-locked-by" class="hidden-server-info">${lockedBy?html}</span>
+</#if>
 
 <script type="text/javascript"><!--
   if(vrtxAdmin.isIE7 || vrtxAdmin.isIETridentInComp) {

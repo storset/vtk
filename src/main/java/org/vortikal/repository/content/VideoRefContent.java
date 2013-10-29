@@ -64,7 +64,7 @@ public class VideoRefContent implements Content {
     }
     
     @Override
-    public Object getContentRepresentation(Class<?> clazz) throws Exception {
+    public Object getContentRepresentation(Class clazz) throws Exception {
         if (clazz == net.sf.json.JSONObject.class) {
             // Return VideoRef JSON content
             return JSONObject.fromObject(this.videoRefJson);
@@ -76,7 +76,7 @@ public class VideoRefContent implements Content {
         // TODO Possibly delegate to defaultContent.
         //      (would in that case need to override the defaultContentStore used by defaultContent)
 //        return this.defaultContent.getContentRepresentation(clazz);
-        throw new UnsupportedContentRepresentationException("Unsupported: " + clazz);
+        throw new UnsupportedContentRepresentation("Unsupported: " + clazz);
     }
 
     @Override

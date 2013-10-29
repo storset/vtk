@@ -65,17 +65,17 @@ public class FileSystemContentStore implements InitializingBean, ContentStore {
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        this.createRootDirectory(this.repositoryDataDirectory);
-        this.createRootDirectory(this.repositoryTrashCanDirectory);
+        createRootDirectory(this.repositoryDataDirectory);
+        createRootDirectory(this.repositoryTrashCanDirectory);
     }
 
     @Override
-    public void createResource(Path uri, boolean isCollection) throws DataAccessException {
+    public void createResource(Path uri, boolean collection) throws DataAccessException {
 
         String fileName = getLocalFilename(uri);
 
         try {
-            if (isCollection) {
+            if (collection) {
                 if (logger.isDebugEnabled()) {
                     logger.debug("Creating directory " + fileName);
                 }

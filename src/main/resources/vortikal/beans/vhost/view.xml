@@ -237,6 +237,9 @@
     <property name="revisionRequestParameter" value="revision" />
     <property name="resourceWrapperManager" ref="resourceManager" />
   </bean>
+  
+  <bean id="serverNowTimeProvider" 
+        class="org.vortikal.web.referencedata.provider.ServerNowTimeProvider" />
 
   <bean id="switchLocaleActionsProvider" 
         class="org.vortikal.web.referencedata.provider.SwitchLocaleProvider">

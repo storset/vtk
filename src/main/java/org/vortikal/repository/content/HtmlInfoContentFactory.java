@@ -50,8 +50,12 @@ public class HtmlInfoContentFactory implements ContentFactory {
     }
 
     @Override
-    public Object getContentRepresentation(Class<?> clazz,
-            InputStream content) throws Exception {
+    public HtmlInfo getContentRepresentation(Class clazz, InputStream content) 
+            throws Exception {
+        
+        if (clazz != HtmlInfo.class) {
+            throw new UnsupportedContentRepresentation("Unsupported representation: " + clazz);
+        }
         HtmlInfo map = new HtmlInfo();
         org.ccil.cowan.tagsoup.Parser parser = TagsoupParserFactory.newParser(true);
         Handler handler = new Handler(map);
@@ -61,7 +65,7 @@ public class HtmlInfoContentFactory implements ContentFactory {
         
         try {
             parser.parse(input);
-        } catch (StopException t) { 
+        } catch (StopException t) {
         } finally {
             content.close();
         }
@@ -72,10 +76,10 @@ public class HtmlInfoContentFactory implements ContentFactory {
     private static class StopException extends RuntimeException { }
 
     private static class Handler implements ContentHandler, LexicalHandler {
-        private HtmlInfo htmlInfo;
+        private final HtmlInfo htmlInfo;
         
-        private Stack<String> stack = new Stack<String>();
-        private StringBuilder title = new StringBuilder();
+        private final Stack<String> stack = new Stack<String>();
+        private final StringBuilder title = new StringBuilder();
 
         public Handler(HtmlInfo map) {
             this.htmlInfo = map;

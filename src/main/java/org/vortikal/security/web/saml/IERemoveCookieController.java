@@ -14,6 +14,14 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.web.service.URL;
 
+/**
+ * Used to remove cookies in the other cookie store in IE.
+ * 
+ * IE browser working in the UiO domain have separate cookie stores for view and manage.
+ * 
+ * When cookies are removed (logout) for one store, this controller removes them for the other store.
+ */
+
 public class IERemoveCookieController implements Controller {
 
     private String spCookieDomain = null;

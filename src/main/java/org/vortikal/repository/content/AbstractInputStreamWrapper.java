@@ -1,4 +1,4 @@
-/* Copyright (c) 2009, University of Oslo, Norway
+/* Copyright (c) 2011, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -30,42 +30,69 @@
  */
 package org.vortikal.repository.content;
 
+import java.io.IOException;
 import java.io.InputStream;
 
-import net.sf.json.JSONObject;
-
-import org.vortikal.util.io.StreamUtil;
-
 /**
- * Content factory for <code>net.sf.json.JSONObject</code> objects.
+ * Abstract wrapper for input streams, which is itself an {@link InputStream}.
+ * By default, all <code>InputStream</code> calls are delegated directly to the
+ * wrapped instance. Individual methods may be overridden to customize
+ * behaviour.
  */
-public class JSONObjectContentFactory implements ContentFactory {
+public abstract class AbstractInputStreamWrapper extends InputStream {
 
-    private int maxLength = 1000000;
-    
+    private final InputStream inputStream;
+
+    public AbstractInputStreamWrapper(InputStream is) {
+        this.inputStream = is;
+    }
+
+    public InputStream getWrappedStream() {
+        return inputStream;
+    }
+
     @Override
-    public Class<?>[] getRepresentationClasses() {
-        return new Class[] {JSONObject.class};
+    public int read() throws IOException {
+        return this.inputStream.read();
     }
-    
+
     @Override
-    public JSONObject getContentRepresentation(Class clazz,  InputStream content) throws Exception {
-        if (clazz != JSONObject.class) {
-            throw new UnsupportedContentRepresentation("Unsupported representation: " + clazz);
-        }
-        
-        byte[] buffer = StreamUtil.readInputStream(content, this.maxLength + 1);
-        if (buffer.length > this.maxLength) {
-            throw new Exception("Unable to parse content: maximum size exceeded: " 
-                    + this.maxLength);
-        }
-        String s = new String(buffer, "utf-8");    
-        return JSONObject.fromObject(s);
+    public int read(byte[] b) throws IOException {
+        return this.inputStream.read(b);
     }
 
-    public void setMaxLength(int maxLength) {
-        this.maxLength = maxLength;
+    @Override
+    public int read(byte[] b, int off, int len) throws IOException {
+        return this.inputStream.read(b, off, len);
     }
 
+    @Override
+    public long skip(long n) throws IOException {
+        return this.inputStream.skip(n);
+    }
 
+    @Override
+    public int available() throws IOException {
+        return this.inputStream.available();
+    }
+
+    @Override
+    public void close() throws IOException {
+        this.inputStream.close();
+    }
+
+    @Override
+    public synchronized void mark(int readlimit) {
+        this.inputStream.mark(readlimit);
+    }
+
+    @Override
+    public synchronized void reset() throws IOException {
+        this.inputStream.reset();
+    }
+
+    @Override
+    public boolean markSupported() {
+        return this.inputStream.markSupported();
+    }
 }

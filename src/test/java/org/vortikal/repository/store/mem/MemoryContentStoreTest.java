@@ -40,16 +40,19 @@ public class MemoryContentStoreTest extends AbstractContentStoreTest {
 
     private MemoryContentStore store;
 
+    @Override
     protected void setUp() throws Exception {
         BasicConfigurator.configure();
         super.setUp();
         this.store = new MemoryContentStore();
     }
 
+    @Override
     protected void tearDown() throws Exception {
         super.tearDown();
     }
 
+    @Override
     public ContentStore getStore() {
         return this.store;
     }

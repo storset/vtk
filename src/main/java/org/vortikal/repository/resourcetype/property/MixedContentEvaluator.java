@@ -174,7 +174,7 @@ public class MixedContentEvaluator implements LatePropertyEvaluator {
                     checkHtml(ctx.getContent().getContentInputStream(), report);
                     
                 } else if ("text/xml".equals(resource.getContentType())) {
-                    Document doc = (Document)ctx.getContent().getContentRepresentation(Document.class);
+                    Document doc = ctx.getContent().getContentRepresentation(Document.class);
                     checkXml(doc, report);
                 }
             }

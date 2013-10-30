@@ -21,7 +21,7 @@
  */
 
 (function ($) {
-  $.fn.vrtxSGallery = function (wrapper, container, options) {
+  $.fn.vrtxSGallery = function (wrapper, container, unique, options) {
     settings = jQuery.extend({ // Default animation settings
       fadeInOutTime: 250, fadedOutOpacity: 0,
       fadeThumbsInOutTime: 250, fadedThumbsOutOpacity: 0.6,
@@ -30,19 +30,21 @@
     }, options || {});
 
     var wrp = $(wrapper);
-
+    
     // Unobtrusive
     wrp.find(container + "-pure-css").addClass(container.substring(1));
     wrp.find(container + "-nav-pure-css").addClass(container.substring(1) + "-nav");
-    wrp.find(wrapper + "-thumbs-pure-css").addClass(wrapper.substring(1) + "-thumbs");
+    wrp.find(container.replace("-container", "") + "-thumbs-pure-css").addClass(container.substring(1).replace("-container", "") + "-thumbs");
     
     // Cache containers and image HTML with src as hash
-    var wrapperContainer = wrapper + " " + container;
-    var wrapperContainerLink = wrapperContainer + " a" + container + "-link",
-        wrpContainer = $(wrapperContainer), wrpContainerLink = $(wrapperContainer + " a" + container + "-link"),
-        wrpThumbs = $(wrapper + " ul"), wrpThumbsLinks = wrpThumbs.find("li a"), wrpNav = $(container + "-nav"),
-        wrpNavNextPrev = wrpNav.find("a"), wrpNavNext = wrpNavNextPrev.filter(".next"),
-        wrpNavPrev = wrpNavNextPrev.filter(".prev"), wrpNavNextPrevSpans = wrpNavNextPrev.find("span"),
+    var wrpContainer = wrp.find(container + "-pure-css"),
+        wrpThumbs = wrp.find("ul"),
+        wrpThumbsLinks = wrpThumbs.find("li a"),
+        wrpNav = wrp.find(container + "-nav"),
+        wrpNavNextPrev = wrpNav.find("a"),
+        wrpNavNext = wrpNavNextPrev.filter(".next"),
+        wrpNavPrev = wrpNavNextPrev.filter(".prev"),
+        wrpNavNextPrevSpans = wrpNavNextPrev.find("span"),
         images = {}, imageUrlsToBePrefetchedLen = imageUrlsToBePrefetched.length - 1,
         isFullscreen = false, isResponsive = false,
         widthProp = "width", heightProp = "height",
@@ -130,9 +132,9 @@
         resizeFullscreen(true);
       }
       if(isResponsive) {
-        $(".toggle-fullscreen.minimized").text(settings.i18n.showFullscreenResponsive);
+        wrp.find(".toggle-fullscreen.minimized").text(settings.i18n.showFullscreenResponsive);
       } else {
-        $(".toggle-fullscreen.minimized").text(settings.i18n.showFullscreen);
+        wrp.find(".toggle-fullscreen.minimized").text(settings.i18n.showFullscreen);
       }
       toggleFullscreenResponsive($("html"));
     };
@@ -185,11 +187,11 @@
         src = location.protocol + src;
       }
       var id = genId(src);
-      if($("a#" + id).length) return;
+      if(wrp.find("a#" + id).length) return;
       var description = "<div id='" + id + "-description' class='" + container.substring(1) + "-description" + (!images[src].desc ? " empty-description" : "") + "' style='display: none; width: " + (images[src].width - 30) + "px'>" +
                           "<a href='javascript:void(0);' class='toggle-fullscreen minimized'>" + (isResponsive ? settings.i18n.showFullscreenResponsive : settings.i18n.showFullscreen) + "</a>" + images[src].desc
                       + "</div>";
-      $($.parseHTML(description)).insertBefore(wrapper + "-thumbs");
+      $($.parseHTML(description)).insertBefore(wrpThumbs);
       wrpContainer.append("<a id='" + id + "' style='display: none' href='" + src + "' class='" + container.substring(1) + "-link'>" +
                             "<img src='" + src + "' alt='" + images[src].alt + "' style='width: " + images[src][widthProp] + "px; height: " + images[src][heightProp] + "px;' />" +
                           "</a>");
@@ -198,7 +200,7 @@
     function prefetchCurrentNextPrevNthImages(n) {
       var active = wrpThumbsLinks.filter(".active"),
           activeIdx = active.parent().index() - 1,
-          activeSrc = active[0].href.split("?")[0],
+          activeSrc = active.find("img.vrtx-thumbnail-image")[0].src.split("?")[0],
           alternate = false,
           i = 1;
       loadImage(activeSrc);
@@ -259,18 +261,18 @@
       if (init) {
         cacheGenerateLinkImage(activeSrc);
       }
-      var activeId =  genId(activeSrc);
+      var activeId = genId(activeSrc);
       
-      var active = $("a#" + activeId);
-      var activeDesc = $("#" + activeId + "-description");
-      var current = $("a" + container + "-link.active-full-image");
-      var currentDesc = $(container + "-description.active-description");
+      var active = wrp.find("a#" + activeId);
+      var activeDesc = wrp.find("#" + activeId + "-description");
+      var current = wrp.find("a" + container + "-link.active-full-image");
+      var currentDesc = wrp.find(container + "-description.active-description");
       if(active.length) {
         showImageDescStrategy(current, active, activeSrc, currentDesc, activeDesc, init);
       } else {
         var waitForActive = setTimeout(function() {
-          active = $("a#" + activeId);
-          activeDesc = $("#" + activeId + "-description");
+          active = wrp.find("a#" + activeId);
+          activeDesc = wrp.find("#" + activeId + "-description");
           if(!active.length && !activeDesc.length) { // Are we (image and description) ready?
             setTimeout(arguments.callee, 5);
           } else {
@@ -343,7 +345,7 @@
         htmlTag.removeClass("fullscreen-gallery-big-arrows");
         if(!runnedOnce) {
           wrp.find("> .fullscreen-gallery-topline").prepend("<a style='display: none' href='javascript:void(0);' class='fullscreen-gallery-responsive-toggle-description'>" + settings.i18n.showImageDescription + "</a>");
-          $(document).on("click", "a.fullscreen-gallery-responsive-toggle-description", function(e) {
+          wrp.on("click", "a.fullscreen-gallery-responsive-toggle-description", function(e) {
             var link = $(this);
             if(link.text() == settings.i18n.showImageDescription) {
               link.text(settings.i18n.hideImageDescription);
@@ -358,7 +360,7 @@
           wrp.addClass("hidden-descriptions");
           runnedOnce = true;
         }
-        toggleFullscreenResponsiveShowHideLink($(container + "-description.active-description"));
+        toggleFullscreenResponsiveShowHideLink(wrp.find(container + "-description.active-description"));
       }
     }
     
@@ -388,15 +390,15 @@
 
     function resizeToggleFullscreen() {
       // Update all images dimensions
-      var loadedImages = $("a" + container + "-link img");
+      var loadedImages = wrp.find("a" + container + "-link img");
       for(var i = loadedImages.length; i--;) {
         loadedImages[i].style.width = images[loadedImages[i].src][widthProp] + "px";
         loadedImages[i].style.height = images[loadedImages[i].src][heightProp] + "px";
       }
       // Resize active containers
-      var active = $("a" + container + "-link.active-full-image");
+      var active = wrp.find("a" + container + "-link.active-full-image");
       var activeSrc = active[0].href.split("?")[0];
-      var activeDesc = $(container + "-description.active-description");
+      var activeDesc = wrp.find(container + "-description.active-description");
       resizeContainers(activeSrc, active, activeDesc);
     }
     
@@ -458,14 +460,13 @@
         return [w, h];
       }
     }
-    
-    
+
     function gcd(a, b) {
       return (b === 0) ? a : gcd (b, a%b);
     }
-    
+
     function genId(src) {
-      return encodeURIComponent(src).replace(/(%|\.)/gim, "");
+      return encodeURIComponent(src + "-" + unique).replace(/(%|\.)/gim, "");
     }
   };
 })(jQuery);

@@ -51,6 +51,7 @@ public class ImageListingController extends CollectionListingController {
                 && this.supportedDisplayTypes.contains(displayTypeParam)) {
             model.put("displayTypeParam", displayTypeParam);
         }
+        model.put("unique", System.nanoTime() + "");
 
         super.runSearch(request, collection, model, pageLimit);
 

@@ -11,7 +11,7 @@
 </#if>
 
 <#if images?exists>
-  <div class="vrtx-image-listing-include">
+  <div class="vrtx-image-listing-include" id="vrtx-image-listing-include-${unique}">
     <span class="vrtx-image-listing-include-title"><a href="${folderUrl}?display=gallery">${folderTitle}</a></span>
     <#if type?exists && type = 'gallery'>
       <@gallery.galleryJSInit fadeEffect />

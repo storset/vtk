@@ -111,7 +111,7 @@
 <#macro displayGallery imageListing collection>
   <#local images = imageListing.entries />
   <#if (images?size > 0)>
-    <div class="vrtx-image-listing-include" id="vrtx-image-folder-gallery">
+    <div class="vrtx-image-listing-include" id="vrtx-image-listing-include-${unique}">
       <#local activeImage = "" />
       <#if RequestParameters['actimg']?exists>
         <#local activeImage = RequestParameters['actimg'] />

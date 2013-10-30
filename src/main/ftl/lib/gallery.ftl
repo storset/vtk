@@ -9,13 +9,12 @@
 
 <#macro galleryJSInit fadeEffect>
   <script type="text/javascript"><!--
-	var wrapper = ".vrtx-image-listing-include";
     $(document).ready(function() {
-      $(wrapper).addClass("loading");
+      $("#vrtx-image-listing-include-${unique}").addClass("loading");
     });
     $(window).load(function() {	
 	  var container = ".vrtx-image-listing-include-container";	  
-	  $(wrapper + " li a").vrtxSGallery(wrapper, container, {
+	  $("#vrtx-image-listing-include-${unique}" + " li a").vrtxSGallery("#vrtx-image-listing-include-${unique}", container, "${unique}", {
 	    fadeInOutTime : ${fadeEffect},
 	    i18n: {
 	      showImageDescription: "${vrtx.getMsg('imageListing.description.show')}",

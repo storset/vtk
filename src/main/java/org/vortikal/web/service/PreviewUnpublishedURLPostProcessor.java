@@ -33,17 +33,16 @@ package org.vortikal.web.service;
 
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.web.RequestContext;
 
 public class PreviewUnpublishedURLPostProcessor implements URLPostProcessor {
 
     private PropertyTypeDefinition unpublishedCollectionPropDef;
 
     public void processURL(URL url, Resource resource, Service service) throws Exception {
-
         if (resource.getProperty(unpublishedCollectionPropDef) != null) {
-            url.addParameter("vrtxPreviewUnpublished", "true");
+            url.addParameter(RequestContext.PREVIEW_UNPUBLISHED_PARAM_NAME, RequestContext.PREVIEW_UNPUBLISHED_PARAM_VALUE);
         }
-
     }
 
     public void processURL(URL url, Service service) throws Exception {

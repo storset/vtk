@@ -381,8 +381,6 @@
     <property name="viewName" value="previewViewIframe" />
     <property name="service" ref="viewService" />
     <property name="displayWorkingRevision" value="true" />
-    <property name="previewUnpublished" value="true" />
-    <property name="previewUnpublishedCollection" value="true" />
   </bean>
 
 
@@ -409,8 +407,6 @@
     <property name="viewName" value="previewPopup" />
     <property name="service" ref="viewService" />
     <property name="displayWorkingRevision" value="true" />
-    <property name="previewUnpublished" value="true" />
-    <property name="previewUnpublishedCollection" value="true" />
   </bean>
 
 

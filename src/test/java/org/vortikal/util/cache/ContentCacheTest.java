@@ -214,7 +214,7 @@ public class ContentCacheTest {
         ExecutorService es = Executors.newFixedThreadPool(data.size());
         List<Future<String>> results = new ArrayList<Future<String>>(data.size());
         for (Map.Entry<String,String> entry: data.entrySet()) {
-            GetValidator gv = new GetValidator(entry.getKey(), entry.getValue(), 750);
+            GetValidator gv = new GetValidator(entry.getKey(), entry.getValue(), 1000);
             Future<String> f = es.submit(gv);
             results.add(f);
         }

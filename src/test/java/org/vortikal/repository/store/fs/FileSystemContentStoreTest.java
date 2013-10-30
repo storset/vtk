@@ -36,7 +36,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Calendar;
 import java.util.Random;
-import org.apache.commons.io.FileUtils;
+
 
 import org.apache.log4j.BasicConfigurator;
 
@@ -71,7 +71,12 @@ public class FileSystemContentStoreTest extends AbstractContentStoreTest {
     protected void tearDown() throws Exception {
         super.tearDown();
 
-        FileUtils.deleteDirectory(new File(this.storeDir));
+        // Clean out store before next test or at end
+        File storeDirFile = new File(this.storeDir);
+        for (String rootChild: storeDirFile.list()) {
+            this.store.deleteResource(Path.fromString("/" + rootChild));
+        }
+        storeDirFile.delete();
     }
     
     private String getRandomIntAsString() {

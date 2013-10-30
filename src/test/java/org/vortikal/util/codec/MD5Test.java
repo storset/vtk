@@ -33,8 +33,8 @@ package org.vortikal.util.codec;
 import java.io.ByteArrayInputStream;
 
 import junit.framework.TestCase;
+import org.vortikal.util.io.NullOutputStream;
 
-import org.apache.commons.io.output.NullOutputStream;
 import org.vortikal.util.io.StreamUtil;
 
 public class MD5Test extends TestCase {
@@ -52,7 +52,7 @@ public class MD5Test extends TestCase {
         String s = "bar";
         byte[] buf = s.getBytes();
         MD5.MD5InputStream is = MD5.wrap(new ByteArrayInputStream(buf));
-        StreamUtil.pipe(is, new NullOutputStream());
+        StreamUtil.pipe(is, NullOutputStream.INSTANCE);
         
         String sum1 = MD5.md5sum(new ByteArrayInputStream(buf));
         String sum2 = MD5.md5sum(buf);

@@ -73,6 +73,7 @@ public class AggregatedFeedsComponentTest extends TestCase {
     
     private class FeedLoader implements ContentCacheLoader<String, SyndFeed> {
 
+        @Override
         public SyndFeed load(String identifier) throws Exception {
             return getFeed(getClass().getResourceAsStream(identifier));
         }

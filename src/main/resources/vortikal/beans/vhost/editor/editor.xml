@@ -402,7 +402,7 @@
     <property name="resourceManager" ref="editor.unstructuredXhtmlResourceManager" />
     <property name="formView" value="editor.editView" />
     <property name="successView" value="redirectToManage" />
-    <property name="copyHelper" ref="copyHelperImageEdit" />
+    <property name="copyHelper" ref="copyHelperThenStore" />
     <property name="editService" ref="editor.unstructuredXhtmlEditService" />
     <property name="previewService" ref="previewService" />
   </bean>
@@ -412,7 +412,7 @@
   </bean>
 
   <bean id="editor.abstractEditHandler" abstract="true" class="org.vortikal.edit.editor.ResourceEditController">
-    <property name="copyHelper" ref="copyHelper" />
+    <property name="copyHelper" ref="copyHelperThenStore" />
     <property name="formView" value="editor.editView" />
   </bean>
   
@@ -434,15 +434,11 @@
     <property name="saveImageHelper">
       <bean class="org.vortikal.web.actions.SaveImageHelper" />
     </property>
-    <property name="copyHelper" ref="copyHelperImageEdit" />
+    <property name="copyHelper" ref="copyHelperThenStore" />
     <property name="editService" ref="editor.imageEditService" />
     <property name="previewService" ref="previewImageService" />
     <property name="heightPropDef" ref="mediaHeightPropDef" />
     <property name="widthPropDef" ref="mediaWidthPropDef" />
-  </bean>
-
-  <bean id="copyHelperImageEdit" class="org.vortikal.web.actions.copymove.CopyHelper">
-    <property name="copyThenStoreAction" ref="copy.imageCopyThenStoreAction" />
   </bean>
 
   <bean id="editor.videoEditHandler" parent="editor.abstractEditHandler">

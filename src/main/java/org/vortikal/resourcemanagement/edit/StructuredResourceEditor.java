@@ -44,10 +44,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import net.sf.json.JSONObject;
 
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
+import org.springframework.web.servlet.view.RedirectView;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Privilege;
 import org.vortikal.repository.Repository;
@@ -67,10 +69,15 @@ import org.vortikal.text.html.HtmlFragment;
 import org.vortikal.text.html.HtmlPageFilter;
 import org.vortikal.text.html.HtmlPageParser;
 import org.vortikal.web.RequestContext;
+import org.vortikal.web.actions.copymove.CopyHelper;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
 public class StructuredResourceEditor extends SimpleFormController {
+    
+    private CopyHelper copyHelper;
+    protected Service editService;
+    protected Service previewService;
 
     private StructuredResourceManager resourceManager;
     private HtmlPageFilter safeHtmlFilter;
@@ -144,7 +151,9 @@ public class StructuredResourceEditor extends SimpleFormController {
 
         boolean makePublicVersion = form.getMakePublicVersionAction() != null;
         boolean deleteWorkingCopy = form.getDeleteWorkingCopyAction() != null;
-
+        boolean saveCopy = form.getSaveCopyAction() != null;
+        boolean saveViewCopy = form.getSaveViewCopyAction() != null;
+        
         Revision workingCopy = null;
 
         for (Revision rev : repository.getRevisions(token, uri)) {
@@ -179,6 +188,18 @@ public class StructuredResourceEditor extends SimpleFormController {
             repository.storeContent(token, uri, stream, workingCopy);
             form.setWorkingCopy(true);
 
+        } else if(saveCopy || saveViewCopy) {
+            Resource resource = repository.retrieve(token, uri, false);
+            Path destUri = copyHelper.makeDestUri(uri, repository, token, resource);
+            // Copy resource
+            repository.copy(token, resource.getURI(), destUri, false, true);
+            // Store updated preserved properties
+            repository.storeContent(token, destUri, stream);
+            unlock();
+            if(saveCopy) {
+                return new ModelAndView(new RedirectView(editService.constructURL(destUri).toString()));   
+            }
+            return new ModelAndView(new RedirectView(previewService.constructURL(destUri).toString()));  
         } else {
             List<Revision> revisions = repository.getRevisions(token, uri);
             Revision prev = revisions.size() == 0 ? null : revisions.get(0);
@@ -352,5 +373,20 @@ public class StructuredResourceEditor extends SimpleFormController {
 
     public Service getListComponentsService() {
         return listComponentsService;
+    }
+    
+    @Required
+    public void setCopyHelper(CopyHelper copyHelper) {
+        this.copyHelper = copyHelper;
+    }
+    
+    @Required
+    public void setEditService(Service editService) {
+        this.editService = editService;
+    }
+    
+    @Required
+    public void setPreviewService(Service previewService) {
+        this.previewService = previewService;
     }
 }

@@ -125,6 +125,8 @@ public class ImageListingComponent extends ViewRenderingDecoratorComponent {
         model.put("folderTitle", requestedResource.getTitle());
         model.put("folderUrl", pathUriParameter);
         model.put("fadeEffect", fadeEffect);
+        
+        model.put("unique", System.nanoTime() + "");
 
     }
 

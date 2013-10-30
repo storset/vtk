@@ -288,6 +288,7 @@
       <list>
         <ref bean="resourceIsNotPublishedAssertion" />
         <ref bean="notViewUnpublishedAssertion" />
+        <ref bean="notViewUnpublishedRefererAssertion" />
       </list>
     </property>
     <property name="handler" ref="displayUnpublishedPageHandler" />
@@ -348,7 +349,7 @@
 
   <bean id="notViewUnpublishedRefererAssertion" class="org.vortikal.web.service.RequestHeaderRegexpAssertion">
     <property name="header" value="Referer" />
-    <property name="pattern" value=".*vrtxPreviewUnpublished.*" />
+    <property name="pattern" value=".*[\?&amp;]vrtxPreviewUnpublished=true.*" />
     <property name="invert" value="true" />
   </bean>
 

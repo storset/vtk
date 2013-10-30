@@ -739,6 +739,8 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
           funcComplete: function () {
             if (vrtxAdm.reloadFromServer) {
               location.reload(true);
+            } else {
+              vrtxAdm.globalAsyncComplete();
             }
           },
           post: true,
@@ -766,6 +768,9 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
                             "#resourceMenuRight"],
           errorContainer: "errorContainer",
           errorContainerInsertAfter: ".groups-wrapper",
+          funcComplete: function () {
+            vrtxAdm.globalAsyncComplete();
+          },
           post: true
         });
       }
@@ -2236,7 +2241,11 @@ function editorInteraction(bodyId, vrtxAdm, _$) {
               btnTextOk: vrtxAdm.serverFacade.errorMessages.outOfDateOk,
               width: 450,
               onOk: function() {
-                // Copy with changes
+                if(isRedirectView) {
+                  $("#saveViewCopyButton").click();
+                } else {
+                  $("#saveCopyButton").click();
+                }
               }
             });
             d.open();
@@ -2246,14 +2255,14 @@ function editorInteraction(bodyId, vrtxAdm, _$) {
             if(msg === "RE_AUTH") {
               reAuthenticateRetokenizeForms(link);
             } else if(msg === "LOCKED") {
-              var d = new VrtxConfirmDialog({
+              var d = new VrtxMsgDialog({
                 msg: vrtxAdm.serverFacade.errorMessages.lockStolen.replace(/XX/, vrtxAdm.lockedBy),
-                title: vrtxAdm.serverFacade.errorMessages.lockStolenTitle,
+                title: vrtxAdm.serverFacade.errorMessages.lockStolenTitle/*,
                 btnTextOk: vrtxAdm.serverFacade.errorMessages.lockStolenOk,
                 width: 450,
                 onOk: function() {
                   // Copy with changes
-                }
+                }*/
               });
               d.open();
             } else {

@@ -74,6 +74,12 @@ import org.springframework.beans.factory.InitializingBean;
  *
  * @param <K> key of the cached objects
  * @param <V> value of the cached objects
+ * 
+ * XXX Should probably not allow unlimited number of asynchronous refresh threads
+ * to be created. What if the loader is slow and a common and expired key is requested
+ * several times ? That will dispatch a new async refresh thread for each
+ * get on that key, which will all hit loader pretty hard or bog down system.
+ * Switch to a queue and fixed max number of refresh threads instead ?
  */
 public final class ContentCache<K, V> implements InitializingBean, DisposableBean {
     
@@ -164,16 +170,15 @@ public final class ContentCache<K, V> implements InitializingBean, DisposableBea
         if (item == null) {
             if (logger.isDebugEnabled()) {
                 logger.debug("Caching object: '" + identifier + "'");
-            }
-            cacheItem(identifier);
+            } 
+            item = cacheItem(identifier);
         }
-        item = this.cache.get(identifier);
+
         if (item.getTimestamp().getTime() + this.cacheTimeout <= System.currentTimeMillis()) {
             if (this.asynchronousRefresh) {
                 triggerAsynchronousRefresh(identifier);
             } else {
-                cacheItem(identifier);
-                item = this.cache.get(identifier);
+                item = cacheItem(identifier);
             }
         }
         if (logger.isTraceEnabled()) {
@@ -182,8 +187,14 @@ public final class ContentCache<K, V> implements InitializingBean, DisposableBea
         return item.getObject();
     }
     
-    
-    private void cacheItem(K identifier) throws Exception {
+    /**
+     * 
+     * @param identifier cache key to pass to laoder
+     * @return newly loaded item, or item already in cache if it has not
+     *         expired.
+     * @throws Exception in case of loader failure
+     */
+    private Item cacheItem(K identifier) throws Exception {
 
         Item item = this.cache.get(identifier);
         long now = System.currentTimeMillis();
@@ -191,13 +202,18 @@ public final class ContentCache<K, V> implements InitializingBean, DisposableBea
         if (item == null ||
             (item.getTimestamp().getTime() + this.cacheTimeout <= now)) {
             V object = this.loader.load(identifier);
-            this.cache.put(identifier, new Item(identifier, object));
+            Item newItem = new Item(identifier, object);
+            this.cache.put(identifier, newItem);
+            item = newItem;
         }
+        
+        return item;
     }
 
 
     private void triggerAsynchronousRefresh(final K identifier) {
         Runnable fetcher = new Runnable() {
+           @Override
            public void run() {
               try {
                  cacheItem(identifier);

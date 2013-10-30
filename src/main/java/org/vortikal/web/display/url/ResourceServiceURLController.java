@@ -1,4 +1,4 @@
-/* Copyright (c) 2004, University of Oslo, Norway
+/* Copyright (c) 2004,2013, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -39,9 +39,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
-import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Path;
-import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.Revision;
@@ -78,9 +76,6 @@ public class ResourceServiceURLController implements Controller {
     private String webProtocol;
     private String webProtocolRestricted;
     private boolean displayWorkingRevision;
-    private boolean previewUnpublished;
-    private boolean previewUnpublishedCollection;
-
     private PropertyTypeDefinition unpublishedCollectionPropDef;
 
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -127,7 +122,7 @@ public class ResourceServiceURLController implements Controller {
                 }
             }
             if (vrtxPreviewUnpublished) {
-                resourceViewURL.addParameter("vrtxPreviewUnpublished", "true");
+                resourceViewURL.addParameter(RequestContext.PREVIEW_UNPUBLISHED_PARAM_NAME, RequestContext.PREVIEW_UNPUBLISHED_PARAM_VALUE);
             }
         }
 
@@ -179,14 +174,6 @@ public class ResourceServiceURLController implements Controller {
 
     public void setDisplayWorkingRevision(boolean displayWorkingRevision) {
         this.displayWorkingRevision = displayWorkingRevision;
-    }
-
-    public void setPreviewUnpublished(boolean previewUnpublished) {
-        this.previewUnpublished = previewUnpublished;
-    }
-
-    public void setPreviewUnpublishedCollection(boolean previewUnpublishedCollection) {
-        this.previewUnpublishedCollection = previewUnpublishedCollection;
     }
 
     public void setUnpublishedCollectionPropDef(PropertyTypeDefinition unpublishedCollectionPropDef) {

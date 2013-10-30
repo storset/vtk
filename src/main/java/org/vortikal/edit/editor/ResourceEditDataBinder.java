@@ -80,6 +80,8 @@ public class ResourceEditDataBinder extends ServletRequestDataBinder {
                 command.setView(true);
             } else if (request.getParameter("savecopy") != null) {
                 command.setSaveCopy(true);
+            } else if (request.getParameter("saveviewcopy") != null) {
+                command.setSaveViewCopy(true); 
             } else {
                 return;
             }

@@ -53,6 +53,8 @@ public class FormSubmitCommand extends UpdateCancelCommand {
     private String saveWorkingCopyAction;
     private String makePublicVersionAction;
     private String deleteWorkingCopyAction;
+    private String saveCopyAction;
+    private String saveViewCopyAction;
     private boolean workingCopy;
     private boolean published;
     private boolean onlyWriteUnpublished;
@@ -262,6 +264,22 @@ public class FormSubmitCommand extends UpdateCancelCommand {
 
     public void setDeleteWorkingCopyAction(String deleteWorkingCopyAction) {
         this.deleteWorkingCopyAction = deleteWorkingCopyAction;
+    }
+    
+    public String getSaveCopyAction() {
+        return saveCopyAction;
+    }
+
+    public void setSaveCopyAction(String saveCopyAction) {
+        this.saveCopyAction = saveCopyAction;
+    }
+    
+    public String getSaveViewCopyAction() {
+        return saveViewCopyAction;
+    }
+
+    public void setSaveViewCopyAction(String saveViewCopyAction) {
+        this.saveViewCopyAction = saveViewCopyAction;
     }
 
     public boolean isWorkingCopy() {

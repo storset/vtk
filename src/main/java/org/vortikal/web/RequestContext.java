@@ -1,4 +1,4 @@
-/* Copyright (c) 2004, University of Oslo, Norway
+/* Copyright (c) 2004,2013, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -56,6 +56,10 @@ import org.vortikal.web.service.URL;
  * 
  */
 public class RequestContext {
+
+	public static final String PREVIEW_UNPUBLISHED_PARAM_NAME = "vrtxPreviewUnpublished";
+	public static final String PREVIEW_UNPUBLISHED_PARAM_VALUE = "true";
+	private static final String HTTP_REFERER = "Referer";
 
     private final HttpServletRequest servletRequest;
     private final SecurityContext securityContext;
@@ -304,10 +308,25 @@ public class RequestContext {
     }
 
     public boolean isPreviewUnpublished() {
-        if (servletRequest == null) {
-            return false;
+    	boolean result = false;
+        if (servletRequest != null) {
+            result = servletRequest.getParameter(PREVIEW_UNPUBLISHED_PARAM_NAME) != null;
+            if (!result)
+            {
+                String referer = servletRequest.getHeader(HTTP_REFERER);
+                if (referer != null)
+                {
+                	try {
+                        URL refererUrl = URL.parse(referer);
+                        result = refererUrl.getParameter(PREVIEW_UNPUBLISHED_PARAM_NAME) != null;
+					} catch (Exception e) {
+						//probably invalid url
+						result = false;
+					}
+                }
+            }
         }
-        return servletRequest.getParameter("vrtxPreviewUnpublished") != null;
+        return result;
     }
 
 }

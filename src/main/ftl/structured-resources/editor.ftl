@@ -52,7 +52,7 @@
       });
       
       // Save and versioning
-      _$("#editor").on("click", "#saveAndViewButton, #saveWorkingCopyAction, #makePublicVersionAction, #deleteWorkingCopyAction", function(e) {
+      _$("#editor").on("click", "#saveAndViewButton, #saveViewCopyButton, #saveCopyButton, #saveWorkingCopyAction, #makePublicVersionAction, #deleteWorkingCopyAction", function(e) {
         var ok = performSave();
         if(!ok) return false;
       });
@@ -221,6 +221,12 @@
       <div class="vrtx-button vrtx-save-button">
         <input type="submit" id="saveAndViewButton" name="updateViewAction"  value="${vrtx.getMsg('editor.saveAndView')}" />
       </div>
+      <div class="vrtx-button vrtx-hidden-button">
+        <input type="submit" id="saveCopyButton" name="saveCopyAction" value="${vrtx.getMsg("editor.saveCopy")}" />
+      </div>
+      <div class="vrtx-button vrtx-hidden-button">
+        <input type="submit" id="saveViewCopyButton" name="saveViewCopyAction" value="${vrtx.getMsg("editor.saveCopy")}" />
+      </div>
       <div class="vrtx-focus-button vrtx-save-button"> 
         <input type="submit" id="updateAction" name="updateAction" value="${vrtx.getMsg('editor.save')}" />
       </div>
@@ -235,6 +241,12 @@
     <#elseif form.workingCopy>
       <div class="vrtx-button vrtx-save-button">
         <input type="submit" id="saveAndViewButton" name="updateViewAction"  value="${vrtx.getMsg('editor.saveAndView')}" />
+      </div>
+      <div class="vrtx-button vrtx-hidden-button">
+        <input type="submit" id="saveCopyButton" name="saveCopyAction" value="${vrtx.getMsg("editor.saveCopy")}" />
+      </div>
+      <div class="vrtx-button vrtx-hidden-button">
+        <input type="submit" id="saveViewCopyButton" name="saveViewCopyAction" value="${vrtx.getMsg("editor.saveCopy")}" />
       </div>
       <div class="vrtx-focus-button vrtx-save-button">
         <input type="submit" id="saveWorkingCopyAction" name="saveWorkingCopyAction" value="${vrtx.getMsg('editor.save')}" />
@@ -258,6 +270,12 @@
       <#if !form.onlyWriteUnpublished>
         <div class="vrtx-button vrtx-save-button">
           <input type="submit" id="saveAndViewButton" name="updateViewAction"  value="${vrtx.getMsg('editor.saveAndView')}" />
+        </div>
+        <div class="vrtx-button vrtx-hidden-button">
+          <input type="submit" id="saveCopyButton" name="saveCopyAction" value="${vrtx.getMsg("editor.saveCopy")}" />
+        </div>
+        <div class="vrtx-button vrtx-hidden-button">
+          <input type="submit" id="saveViewCopyButton" name="saveViewCopyAction" value="${vrtx.getMsg("editor.saveCopy")}" />
         </div>
         <div class="vrtx-focus-button vrtx-save-button">
           <input type="submit" id="updateAction" name="updateAction" value="${vrtx.getMsg('editor.save')}" />

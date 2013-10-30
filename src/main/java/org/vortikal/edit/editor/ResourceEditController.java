@@ -59,11 +59,11 @@ import org.vortikal.web.service.ServiceUnlinkableException;
 public class ResourceEditController extends SimpleFormController {
 
     private CopyHelper copyHelper;
-    private Service editService;
-    private Service previewService;
+    protected Service editService;
+    protected Service previewService;
     
-    protected List<Service> tooltipServices;
     protected ResourceWrapperManager resourceManager;
+    protected List<Service> tooltipServices;
     protected Map<PropertyTypeDefinition, PropertyEditPreprocessor> propertyEditPreprocessors;
 
     public ResourceEditController() {
@@ -82,10 +82,19 @@ public class ResourceEditController extends SimpleFormController {
         RequestContext requestContext = RequestContext.getRequestContext();
         Principal principal = requestContext.getPrincipal();
         Repository repository = requestContext.getRepository();
+        String token = requestContext.getSecurityToken();
 
         if (wrapper.hasErrors()) {
             Map<String, Object> model = getModelProperties(command, resource, principal, repository);
             return new ModelAndView(getFormView(), model);
+        }
+        
+        if (wrapper.isSaveCopy() || wrapper.isSaveViewCopy()) {
+            Path destUri = this.makeCopy(wrapper, null, repository, token);
+            if(!wrapper.isSaveViewCopy()) {
+              return new ModelAndView(new RedirectView(editService.constructURL(destUri).toString()));
+            }
+            return new ModelAndView(new RedirectView(previewService.constructURL(destUri).toString()));  
         }
 
         if (!wrapper.isSave()) {
@@ -153,19 +162,11 @@ public class ResourceEditController extends SimpleFormController {
         return model;
     }
     
-    protected RedirectView makeCopy(ResourceEditWrapper wrapper, InputStream is, Repository repository, String token) throws Exception {
-      if ((wrapper.isSaveCopy() || wrapper.isSaveCopyPreview()) && copyHelper != null) {
-            Resource resource = wrapper.getResource();
-            Path destUri = copyHelper.copyResource(resource.getURI(), resource.getURI(), repository, token,
-                        wrapper.getResource(), is);
-            this.resourceManager.unlock();
-            if(!wrapper.isSaveCopyPreview()) {
-              return new RedirectView(editService.constructURL(destUri).toString());
-            } else {
-              return new RedirectView(previewService.constructURL(destUri).toString());  
-            }
-      }
-      return null;
+    protected Path makeCopy(ResourceEditWrapper wrapper, InputStream is, Repository repository, String token) throws Exception {
+        Resource resource = wrapper.getResource();
+        Path destUri = copyHelper.copyResource(resource.getURI(), resource.getURI(), repository, token, resource, is);
+        this.resourceManager.unlock();
+        return destUri;
     }
 
     public void setTooltipServices(List<Service> tooltipServices) {

@@ -50,7 +50,6 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.Principal;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.actions.SaveImageHelper;
-import org.vortikal.web.actions.copymove.CopyHelper;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
@@ -82,24 +81,25 @@ public class ImageEditController extends ResourceEditController {
         Property imageWidthProp = widthPropDef.createProperty();
         imageWidthProp.setIntValue(wrapper.getNewWidth());
         resource.addProperty(imageWidthProp);
-      
-        repository.store(token, resource);
 
-        if ((wrapper.isSaveCopy() || wrapper.isSaveCopyPreview()) && this.saveImageHelper != null) {
+        if (wrapper.isSaveCopy() || wrapper.isSaveViewCopy()) {
             InputStream is = saveImageHelper.getEditedImageInputStream(resource, repository, token, resource.getURI(),
                     wrapper.getCropX(), wrapper.getCropY(), wrapper.getCropWidth(), wrapper.getCropHeight(),
                     wrapper.getNewWidth(), wrapper.getNewHeight());
-            RedirectView redirectView = this.makeCopy(wrapper, is, repository, token);
-            if(redirectView != null) {
-                return new ModelAndView(redirectView);
+            Path destUri = this.makeCopy(wrapper, is, repository, token);
+            if(!wrapper.isSaveViewCopy()) {
+              return new ModelAndView(new RedirectView(this.editService.constructURL(destUri).toString()));
             }
+            return new ModelAndView(new RedirectView(this.previewService.constructURL(destUri).toString())); 
         }
 
         if (!wrapper.isSave()) {
             this.resourceManager.unlock();
             return new ModelAndView(getSuccessView(), new HashMap<String, Object>());
         }
-
+        
+        repository.store(token, resource);
+        
         if (this.saveImageHelper != null) {
             InputStream is = saveImageHelper.getEditedImageInputStream(resource, repository, token, resource.getURI(),
                     wrapper.getCropX(), wrapper.getCropY(), wrapper.getCropWidth(), wrapper.getCropHeight(),
@@ -156,6 +156,7 @@ public class ImageEditController extends ResourceEditController {
         this.loadImageService = loadImageService;
     }
 
+    @Required
     public void setSaveImageHelper(SaveImageHelper saveImageHelper) {
         this.saveImageHelper = saveImageHelper;
     }

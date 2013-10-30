@@ -31,13 +31,14 @@
 package org.vortikal.web.actions.copymove;
 
 import java.io.InputStream;
-import java.util.Set;
+import java.util.HashSet;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.resourcetype.MixinResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.web.RequestContext;
 
@@ -46,8 +47,9 @@ import org.vortikal.web.RequestContext;
  */
 public class CopyThenStoreAction {
     
-    private Set<PropertyTypeDefinition> preservedProperties;
-
+    private HashSet<PropertyTypeDefinition> preservedProperties;
+    private HashSet<MixinResourceTypeDefinition> preservedMixinProperties;
+    
     public void process(Path copyUri, Resource src, InputStream stream) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
         Repository repository = requestContext.getRepository();
@@ -58,9 +60,17 @@ public class CopyThenStoreAction {
         
         // Store updated preserved properties
         Resource newRsrc = repository.retrieve(token, copyUri, true);
-        for (Property prop : src) { 
-          if (preservedProperties.contains(prop.getDefinition())) {
+        for (Property prop : src) {
+          PropertyTypeDefinition propDef = prop.getDefinition();
+          if (preservedProperties.contains(propDef)) {
             newRsrc.addProperty(prop);
+          }
+          for(MixinResourceTypeDefinition mixinProps : preservedMixinProperties) {
+              for(PropertyTypeDefinition mixinProp : mixinProps.getPropertyTypeDefinitions()) {
+                  if(mixinProp.equals(propDef)) {
+                      newRsrc.addProperty(prop);
+                  }
+              }
           }
         }
         repository.store(token, newRsrc);
@@ -72,7 +82,11 @@ public class CopyThenStoreAction {
     }
 
     @Required
-    public void setPreservedProperties(Set<PropertyTypeDefinition> preservedProperties) {
+    public void setPreservedProperties(HashSet<PropertyTypeDefinition> preservedProperties) {
         this.preservedProperties = preservedProperties;
+    }
+
+    public void setPreservedMixinProperties(HashSet<MixinResourceTypeDefinition> preservedMixinProperties) {
+        this.preservedMixinProperties = preservedMixinProperties;
     }
 }

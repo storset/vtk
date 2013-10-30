@@ -391,6 +391,9 @@
     <property name="formView" value="structuredResources.editView" />
     <property name="successView" value="redirectToManage" />
     <property name="listComponentsService" ref="jsonDocumentsComponentsService" />
+    <property name="copyHelper" ref="copyHelper" />
+    <property name="editService" ref="structuredResources.editService" />
+    <property name="previewService" ref="structuredResources.previewService" />
   </bean>
 
   <bean id="structuredResources.viewResolver" parent="decoratorViewResolver">

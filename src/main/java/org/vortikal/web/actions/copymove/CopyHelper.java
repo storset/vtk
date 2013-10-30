@@ -47,17 +47,22 @@ public class CopyHelper {
 
     public Path copyResource(Path uri, Path destUri, Repository repository, String token, Resource src, InputStream is)
             throws Exception {
-        int number = 1;
-        while (repository.exists(token, destUri)) {
-            destUri = appendCopySuffix(destUri, number, src);
-            number++;
-        }
+        destUri = makeDestUri(destUri, repository, token, src);
         if (this.copyThenStoreAction != null && src != null) {
             this.copyThenStoreAction.process(destUri, src, is);
         } else if (this.copyAction != null) {
             this.copyAction.process(uri, destUri, null);
         } else {
             repository.copy(token, uri, destUri, false, false);
+        }
+        return destUri;
+    }
+    
+    public Path makeDestUri(Path destUri, Repository repository, String token, Resource src) throws Exception {
+        int number = 1;
+        while (repository.exists(token, destUri)) {
+            destUri = appendCopySuffix(destUri, number, src);
+            number++;
         }
         return destUri;
     }

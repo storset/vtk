@@ -64,7 +64,7 @@
         });
         
         // Save and copy
-        _$("#editor").on("click", "#saveAndViewButton, #saveCopyButton", function(e) {
+        _$("#editor").on("click", "#saveAndViewButton, #saveViewCopyButton, #saveCopyButton", function(e) {
           var ok = performSave();
           if(!ok) return false;
           if(typeof vrtxImageEditor !== "undefined" && vrtxImageEditor.save && !vrtxImageEditor.savedImage) {
@@ -188,9 +188,7 @@
         
         <div class="submitButtons submit-extra-buttons">
             <a class="vrtx-button" id="vrtx-save-view-shortcut" href="javascript:void(0)"><span>${vrtx.getMsg("editor.saveAndView")}</span></a>
-          <#if supportedImageEditor>
-            <a class="vrtx-button" id="vrtx-save-copy-shortcut" href="javascript:void(0)"><span>${vrtx.getMsg("editor.saveCopy")}</span></a>
-          </#if>
+            <a class="vrtx-button <#if !supportedImageEditor>vrtx-hidden-button</#if>" id="vrtx-save-copy-shortcut" href="javascript:void(0)"><span>${vrtx.getMsg("editor.saveCopy")}</span></a>
           <span id="vrtx-save">
             <a class="vrtx-focus-button" id="vrtx-save-shortcut" href="javascript:void(0)"><span>${vrtx.getMsg("editor.save")}</span></a>
           </span>
@@ -239,11 +237,12 @@
         <div class="vrtx-button vrtx-save-button">
           <input type="submit" id="saveAndViewButton" name="saveview"  value="${vrtx.getMsg("editor.saveAndView")}"  />
         </div>
-        <#if supportedImageEditor>
-           <div class="vrtx-button">
-             <input type="submit" id="saveCopyButton" name="savecopy" value="${vrtx.getMsg("editor.saveCopy")}" />
-           </div>
-        </#if>
+        <div class="vrtx-button <#if !supportedImageEditor>vrtx-hidden-button</#if>">
+          <input type="submit" id="saveCopyButton" name="savecopy" value="${vrtx.getMsg("editor.saveCopy")}" />
+        </div>
+        <div class="vrtx-button vrtx-hidden-button">
+          <input type="submit" id="saveViewCopyButton" name="saveviewcopy" value="${vrtx.getMsg("editor.saveCopy")}" />
+        </div>
         <div class="vrtx-focus-button vrtx-save-button">
           <input type="submit" id="saveButton" name="save" value="${vrtx.getMsg("editor.save")}" />
         </div>

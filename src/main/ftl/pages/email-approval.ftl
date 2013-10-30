@@ -20,7 +20,7 @@
   <#if mailResponse?has_content && mailResponse = "OK">
      <p><@vrtx.msg code="email.form.success" args=[emailSentTo] /></p>
      <div class="vrtx-button">
-       <button id="email-approval-success" onclick="javascript:vrtxSimpleDialogs.closeDialog('#dialog-html-send-approval');"><@vrtx.msg code="email.form.close" default="Close" /></button>
+       <button id="email-approval-success" onclick='javascript:$("#dialog-html-send-approval").dialog("close");'><@vrtx.msg code="email.form.close" default="Close" /></button>
      </div>
   <#else>
     <#assign uri = vrtx.linkConstructor("", "emailApprovalService") />
@@ -69,7 +69,7 @@
           <input type="submit" class="submit-email-form" value="${vrtx.getMsg('send-to-approval.submit')}" name="submit" />
         </div>
         <div class="vrtx-button"> 
-          <input type="button" onclick="javascript:vrtxSimpleDialogs.closeDialog('#dialog-html-send-approval');" class="cancel-email-form" value="${vrtx.getMsg('editor.cancel')}" name="cancel" />
+          <input type="button" onclick='javascript:$("#dialog-html-send-approval").dialog("close");' class="cancel-email-form" value="${vrtx.getMsg('editor.cancel')}" name="cancel" />
         </div>
       </div>
     </form>

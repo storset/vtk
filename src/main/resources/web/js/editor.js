@@ -1941,8 +1941,8 @@ VrtxEditor.prototype.openSendToApprovalOpen = function openSendToApprovalOpen(di
     name: "send-approval",
     html: dialogManageCreate.html(),
     title: link.title,
-    width: 410,
-    height: (hasEmailFrom ? 620 : 545)
+    width: 430,
+    height: 620
   });
   d.open();
   var dialog = _$(".ui-dialog");

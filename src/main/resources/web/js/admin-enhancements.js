@@ -739,6 +739,8 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
           funcComplete: function () {
             if (vrtxAdm.reloadFromServer) {
               location.reload(true);
+            } else {
+              vrtxAdm.globalAsyncComplete();
             }
           },
           post: true,
@@ -766,6 +768,9 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
                             "#resourceMenuRight"],
           errorContainer: "errorContainer",
           errorContainerInsertAfter: ".groups-wrapper",
+          funcComplete: function () {
+            vrtxAdm.globalAsyncComplete();
+          },
           post: true
         });
       }

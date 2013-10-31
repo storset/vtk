@@ -1526,7 +1526,7 @@ function createFuncComplete() {
   var notRecommendedTemplates = $("#vrtx-create-templates-not-recommended");
   if(notRecommendedTemplates.length) {
     notRecommendedTemplates.hide();
-    $("<a id='vrtx-create-templates-not-recommended-toggle' href='javascript:void(0);'>Vis flere maler</a>").insertBefore(notRecommendedTemplates);
+    $("<a id='vrtx-create-templates-not-recommended-toggle' href='javascript:void(0);'>" + createShowMoreTemplates + "</a>").insertBefore(notRecommendedTemplates);
     $("#vrtx-create-templates-not-recommended-toggle").click(function(e) {
       $(this).hide().next().toggle().parent().find(".radio-buttons:first input:first").click();
       e.stopPropagation();

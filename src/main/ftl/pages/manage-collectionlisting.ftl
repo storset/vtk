@@ -61,6 +61,8 @@
     var multipleFilesInfoText = '<strong>${vrtx.getMsg("tabMenuRight.fileUploadMultipleInfo.line1")}</strong><br />'
                               + '${vrtx.getMsg("tabMenuRight.fileUploadMultipleInfo.line2")}';
     var fileUploadMoreFilesTailMessage = '${vrtx.getMsg("tabMenuRight.fileUploadMoreFilesTailMessage")}';
+    
+    var createShowMoreTemplates = '${vrtx.getMsg("actions.createDocumentService.showMore")}';
   //-->
   </script>
 

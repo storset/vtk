@@ -783,7 +783,7 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
       var SUBMIT_SET_INHERITED_PERMISSIONS = false;
       vrtxAdm.cachedDoc.on("click", "#permissions\\.toggleInheritance\\.submit", function (e) {
         if (!SUBMIT_SET_INHERITED_PERMISSIONS) {
-          var d = new VrtxConfirmDialog({
+          var d = new               Dialog({
             msg: confirmSetInheritedPermissionsMsg,
             title: confirmSetInheritedPermissionsTitle,
             onOk: function () {

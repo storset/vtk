@@ -82,17 +82,6 @@ public class ImageEditController extends ResourceEditController {
         imageWidthProp.setIntValue(wrapper.getNewWidth());
         resource.addProperty(imageWidthProp);
 
-        if (wrapper.isSaveCopy() || wrapper.isSaveViewCopy()) {
-            InputStream is = saveImageHelper.getEditedImageInputStream(resource, repository, token, resource.getURI(),
-                    wrapper.getCropX(), wrapper.getCropY(), wrapper.getCropWidth(), wrapper.getCropHeight(),
-                    wrapper.getNewWidth(), wrapper.getNewHeight());
-            Path destUri = this.makeCopy(wrapper, is, repository, token);
-            if(!wrapper.isSaveViewCopy()) {
-              return new ModelAndView(new RedirectView(this.editService.constructURL(destUri).toString()));
-            }
-            return new ModelAndView(new RedirectView(this.previewService.constructURL(destUri).toString())); 
-        }
-
         if (!wrapper.isSave()) {
             this.resourceManager.unlock();
             return new ModelAndView(getSuccessView(), new HashMap<String, Object>());

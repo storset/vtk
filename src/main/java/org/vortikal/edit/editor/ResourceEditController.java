@@ -57,11 +57,6 @@ import org.vortikal.web.service.Service;
 import org.vortikal.web.service.ServiceUnlinkableException;
 
 public class ResourceEditController extends SimpleFormController {
-
-    private CopyHelper copyHelper;
-    protected Service editService;
-    protected Service previewService;
-    
     protected ResourceWrapperManager resourceManager;
     protected List<Service> tooltipServices;
     protected Map<PropertyTypeDefinition, PropertyEditPreprocessor> propertyEditPreprocessors;
@@ -87,14 +82,6 @@ public class ResourceEditController extends SimpleFormController {
         if (wrapper.hasErrors()) {
             Map<String, Object> model = getModelProperties(command, resource, principal, repository);
             return new ModelAndView(getFormView(), model);
-        }
-        
-        if (wrapper.isSaveCopy() || wrapper.isSaveViewCopy()) {
-            Path destUri = this.makeCopy(wrapper, null, repository, token);
-            if(!wrapper.isSaveViewCopy()) {
-              return new ModelAndView(new RedirectView(editService.constructURL(destUri).toString()));
-            }
-            return new ModelAndView(new RedirectView(previewService.constructURL(destUri).toString()));  
         }
 
         if (!wrapper.isSave()) {
@@ -161,13 +148,6 @@ public class ResourceEditController extends SimpleFormController {
 
         return model;
     }
-    
-    protected Path makeCopy(ResourceEditWrapper wrapper, InputStream is, Repository repository, String token) throws Exception {
-        Resource resource = wrapper.getResource();
-        Path destUri = copyHelper.copyResource(resource.getURI(), resource.getURI(), repository, token, resource, is);
-        this.resourceManager.unlock();
-        return destUri;
-    }
 
     public void setTooltipServices(List<Service> tooltipServices) {
         this.tooltipServices = tooltipServices;
@@ -201,21 +181,6 @@ public class ResourceEditController extends SimpleFormController {
     public void setPropertyEditPreprocessors(
             Map<PropertyTypeDefinition, PropertyEditPreprocessor> propertyEditPreprocessors) {
         this.propertyEditPreprocessors = propertyEditPreprocessors;
-    }
-    
-    @Required
-    public void setCopyHelper(CopyHelper copyHelper) {
-        this.copyHelper = copyHelper;
-    }
-    
-    @Required
-    public void setEditService(Service editService) {
-        this.editService = editService;
-    }
-    
-    @Required
-    public void setPreviewService(Service previewService) {
-        this.previewService = previewService;
     }
 
 }

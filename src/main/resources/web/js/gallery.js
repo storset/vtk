@@ -57,6 +57,8 @@
     wrpNavNextPrev.fadeTo(0, 0);
     wrpNavNextPrevSpans.fadeTo(0, 0);
     
+    $("html").addClass("fullscreen-gallery-big-arrows");
+    
     // Thumbs interaction
     wrp.on("mouseover mouseout click", "li a", function (e) {
       var elm = $(this);
@@ -131,12 +133,15 @@
       if(!isFullscreen && !isResponsive) {
         resizeFullscreen(true);
       }
+      var htmlTag = $("html");
       if(isResponsive) {
         wrp.find(".toggle-fullscreen.minimized").text(settings.i18n.showFullscreenResponsive);
+        htmlTag.removeClass("fullscreen-gallery-big-arrows");
       } else {
         wrp.find(".toggle-fullscreen.minimized").text(settings.i18n.showFullscreen);
+        htmlTag.addClass("fullscreen-gallery-big-arrows");
       }
-      toggleFullscreenResponsive($("html"));
+      toggleFullscreenResponsive(htmlTag);
     };
     
     var imgs = this;
@@ -339,10 +344,7 @@
     var runnedOnce = false;
     function toggleFullscreenResponsive(htmlTag) {
       if(!isFullscreen) return;
-      if(!isResponsive) {
-        htmlTag.addClass("fullscreen-gallery-big-arrows");
-      } else {
-        htmlTag.removeClass("fullscreen-gallery-big-arrows");
+      if(isResponsive) {
         if(!runnedOnce) {
           wrp.find("> .fullscreen-gallery-topline").prepend("<a style='display: none' href='javascript:void(0);' class='fullscreen-gallery-responsive-toggle-description'>" + settings.i18n.showImageDescription + "</a>");
           wrp.on("click", "a.fullscreen-gallery-responsive-toggle-description", function(e) {

@@ -35,6 +35,11 @@ public class CopyBackupController implements Controller {
             return null;
         }
         
+        int uriLen = uri.length() - 1;
+        if(uri.lastIndexOf("/") == uriLen) {
+            uri = uri.substring(0, uriLen);
+        }
+        
         // Retrieve resource
         RequestContext requestContext = RequestContext.getRequestContext();
         Path resourceToCopySrcUri = Path.fromString(uri);
@@ -50,7 +55,7 @@ public class CopyBackupController implements Controller {
         response.setContentType("text/plain;charset=utf-8");
         PrintWriter writer = response.getWriter();
         try {
-            writer.print("{ 'uri': '" + resourceCopyDestUri + "' }");
+            writer.print("[{\"uri\":\"" + resourceCopyDestUri + "\" }]");
         } finally {
             writer.close();
         }

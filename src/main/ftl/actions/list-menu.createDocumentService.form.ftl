@@ -25,7 +25,7 @@
           <#assign splitAfterRecommenedTitle>
             </ul>
             <div id="vrtx-create-templates-not-recommended">
-              <h4><@vrtx.msg code="actions.createDocumentService.subtitle.not-recommended" default="Other available templates (not recommended)" /></h4>
+              <h4><@vrtx.msg code="actions.createDocumentService.subtitle.not-recommended" default="Other available templates" /></h4>
               <ul class="radio-buttons">
           </#assign>
         </#if>

@@ -15,12 +15,12 @@
 
 <#-- Print exception detail and stack trace if debug is set: -->
   <h1 class="errorHeader">${error.errorDescription}</h1>
-  <p class="errorMessage">${error.exception.message}</p>
+  <p class="errorMessage">${error.exception.message?default('No message')}</p>
 <#if !debug><!--</#if>
   <div class="exception">
     <h2>Error detail (for debugging purposes):</h2>
     <div class="exceptionClass">Exception: ${error.exception.class.name}</div>
-    <div class="exceptionMessage">Message: ${error.exception.message}</div>
+    <div class="exceptionMessage">Message: ${error.exception.message?default('No message')}</div>
     
     <div class="exceptionStacktrace">
       Stacktrace:

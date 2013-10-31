@@ -165,6 +165,26 @@
       </list>
     </property>
   </bean>
+
+  <bean id="copyBackupService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="manageService" />
+    <property name="order" value="-9999" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="service" />
+          <property name="parameterValue" value="copy-resource-backup" />
+        </bean>
+        <bean class="org.vortikal.web.service.RequestParameterExistsAssertion">
+          <property name="parameterName" value="uri" />
+        </bean>
+        <ref bean="resourceNotRootAssertion" />
+        <ref bean="requiresReadPermissionAssertion" />
+        <ref bean="writeParentPermissionAssertion" />
+      </list>
+    </property>
+    <property name="handler" ref="copyBackupHandler" />
+  </bean>      
   
  <bean id="moveResourceService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="manageService" />
@@ -208,7 +228,12 @@
     class="org.vortikal.web.actions.copymove.CopyMoveController">
     <property name="viewName" value="manageCollectionListing" />
   </bean>
-
+  
+  <bean id="copyBackupHandler" 
+    class="org.vortikal.web.actions.copymove.CopyBackupController">
+    <property name="copyHelper" ref="copyHelper" />
+  </bean>
+  
   <bean id="moveHandler" 
     class="org.vortikal.web.actions.copymove.CopyMoveController">
     <property name="viewName" value="manageCollectionListing" />

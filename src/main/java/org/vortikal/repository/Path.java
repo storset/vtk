@@ -93,7 +93,8 @@ public final class Path implements Comparable<Path>, Serializable {
         if (path == null
               || path.length() >= MAX_LENGTH
               || !path.startsWith("/")
-              || path.contains("//")
+              || path.contain
+              s("//")
               || path.contains("/../")
               || path.endsWith("/..")
               //|| path.endsWith("/.")

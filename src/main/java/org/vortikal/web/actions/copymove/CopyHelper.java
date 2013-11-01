@@ -43,14 +43,11 @@ public class CopyHelper {
 
     private static final Pattern COPY_SUFFIX_PATTERN = Pattern.compile("\\(\\d+\\)$");
     private CopyAction copyAction;
-    private CopyThenStoreAction copyThenStoreAction;
 
     public Path copyResource(Path uri, Path destUri, Repository repository, String token, Resource src, InputStream is)
             throws Exception {
         destUri = makeDestUri(destUri, repository, token, src);
-        if (this.copyThenStoreAction != null && src != null) {
-            this.copyThenStoreAction.process(destUri, src, is);
-        } else if (this.copyAction != null) {
+        if (this.copyAction != null) {
             this.copyAction.process(uri, destUri, null);
         } else {
             repository.copy(token, uri, destUri, false, false);
@@ -105,10 +102,6 @@ public class CopyHelper {
 
     public void setCopyAction(CopyAction copyAction) {
         this.copyAction = copyAction;
-    }
-
-    public void setCopyThenStoreAction(CopyThenStoreAction copyThenStoreAction) {
-        this.copyThenStoreAction = copyThenStoreAction;
     }
 
 }

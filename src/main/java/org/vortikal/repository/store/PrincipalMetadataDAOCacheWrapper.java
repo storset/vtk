@@ -57,6 +57,7 @@ public class PrincipalMetadataDAOCacheWrapper implements PrincipalMetadataDAO, I
     public void afterPropertiesSet() throws Exception {
         SimpleCacheImpl<String, CacheItem> cacheImpl = new SimpleCacheImpl<String, CacheItem>(this.timeoutSeconds);
         cacheImpl.setRefreshTimestampOnGet(false);
+        cacheImpl.afterPropertiesSet();
         this.cache = cacheImpl;
     }
 

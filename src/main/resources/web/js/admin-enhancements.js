@@ -113,6 +113,7 @@ function VrtxAdmin() {
 
   // Application logic
   this.editorSaveButtonName = "";
+  this.editorSaveIsRedirectView = false;
   this.asyncEditorSavedDeferred = null;
   this.asyncGetFormsInProgress = 0;
   this.asyncGetStatInProgress = false;
@@ -707,7 +708,7 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
     case "vrtx-editor":
     case "vrtx-edit-plaintext":
     case "vrtx-visual-profile":
-      editorInteraction(bodyId, vrtxAdm, _$);
+      editorInteraction(vrtxAdm, _$);
       break;
     case "vrtx-preview":
     case "vrtx-revisions":
@@ -1525,7 +1526,7 @@ function createFuncComplete() {
   var notRecommendedTemplates = $("#vrtx-create-templates-not-recommended");
   if(notRecommendedTemplates.length) {
     notRecommendedTemplates.hide();
-    $("<a id='vrtx-create-templates-not-recommended-toggle' href='javascript:void(0);'>Vis flere maler</a>").insertBefore(notRecommendedTemplates);
+    $("<a id='vrtx-create-templates-not-recommended-toggle' href='javascript:void(0);'>" + createShowMoreTemplates + "</a>").insertBefore(notRecommendedTemplates);
     $("#vrtx-create-templates-not-recommended-toggle").click(function(e) {
       $(this).hide().next().toggle().parent().find(".radio-buttons:first input:first").click();
       e.stopPropagation();
@@ -2190,7 +2191,7 @@ VrtxAdmin.prototype.buildFileList = function buildFileList(boxes, boxesSize, use
     7. Editor and Save-robustness (also for plaintext and vis. profile)
 \*-------------------------------------------------------------------*/
 
-function editorInteraction(bodyId, vrtxAdm, _$) {
+function editorInteraction(vrtxAdm, _$) {
   if (_$("form#editor").length) {
     // Dropdowns
     vrtxAdm.dropdownPlain("#editor-help-menu");
@@ -2207,78 +2208,79 @@ function editorInteraction(bodyId, vrtxAdm, _$) {
     vrtxAdm.cachedAppContent.on("click", ".vrtx-save-button input", function (e) {
       var link = _$(this);
       vrtxAdm.editorSaveButtonName = link.attr("name");
-      var isRedirectView = (this.id === "saveAndViewButton" || this.id === "saveViewAction");
+      vrtxAdm.editorSaveIsRedirectView = (this.id === "saveAndViewButton" || this.id === "saveViewAction");
       ajaxSave();
-      $.when(vrtxAdm.asyncEditorSavedDeferred).done(function () {
+      _$.when(vrtxAdm.asyncEditorSavedDeferred).done(function () {
         vrtxAdm.removeMsg("error");
-        if(isRedirectView) {
-          var isCollection = $("#resource-title.true").length;
+        if(vrtxAdm.editorSaveIsRedirectView) {
+          var isCollection = _$("#resource-title.true").length;
           if(isCollection) {
             location.href = "./?vrtx=admin&action=preview";
           } else {
             location.href = location.pathname + "/?vrtx=admin";
           }
         }
-      }).fail(function (xhr, textStatus) {
-        if (xhr !== null) {
-          /* Fail in performSave() for exceeding 1500 chars in intro/add.content is handled in editor.js with popup */
-          
-          if(xhr === "UPDATED_IN_BACKGROUND") {
-            var serverTime = serverTimeFormatToClientTimeFormat(vrtxAdmin.serverLastModified);
-            var nowTime = serverTimeFormatToClientTimeFormat(vrtxAdmin.serverNowTime);
-            var ago = "";
-            var agoSeconds = ((+nowTime) - (+serverTime)) / 1000;
-            if(agoSeconds >= 60) {
-              agoMinutes = Math.floor(agoSeconds / 60);
-              agoSeconds = agoSeconds % 60;
-              ago = agoMinutes + " min " + agoSeconds + "s";
-            } else {
-              ago = agoSeconds + "s";
-            }
-            var d = new VrtxConfirmDialog({
-              msg: vrtxAdm.serverFacade.errorMessages.outOfDate.replace(/XX/, ago).replace(/YY/, vrtxAdm.serverModifiedBy),
-              title: vrtxAdm.serverFacade.errorMessages.outOfDateTitle,
-              btnTextOk: vrtxAdm.serverFacade.errorMessages.outOfDateOk,
-              width: 450,
-              onOk: function() {
-                if(isRedirectView) {
-                  $("#saveViewCopyButton").click();
-                } else {
-                  $("#saveCopyButton").click();
-                }
-              }
-            });
-            d.open();
-            return false;
-          } else {
-            var msg = vrtxAdmin.serverFacade.error(xhr, textStatus, false);
-            if(msg === "RE_AUTH") {
-              reAuthenticateRetokenizeForms(link);
-            } else if(msg === "LOCKED") {
-              var d = new VrtxMsgDialog({
-                msg: vrtxAdm.serverFacade.errorMessages.lockStolen.replace(/XX/, vrtxAdm.lockedBy),
-                title: vrtxAdm.serverFacade.errorMessages.lockStolenTitle/*,
-                btnTextOk: vrtxAdm.serverFacade.errorMessages.lockStolenOk,
-                width: 450,
-                onOk: function() {
-                  // Copy with changes
-                }*/
-              });
-              d.open();
-            } else {
-              var customTitle = vrtxAdm.serverFacade.errorMessages.customTitle[xhr.status];
-              var d = new VrtxMsgDialog({
-                msg: msg,
-                title: customTitle ? customTitle : vrtxAdm.serverFacade.errorMessages.title + " " + xhr.status
-              });
-              d.open();
-            }
-          }
-        }
-      });
+      }).fail(handleAjaxSaveErrors);
       e.stopPropagation();
       e.preventDefault();
     });
+  }
+}
+
+function handleAjaxSaveErrors(xhr, textStatus) {
+  var vrtxAdm = vrtxAdmin,
+  _$ = vrtxAdm._$;
+  
+  if (xhr !== null) {
+    /* Fail in performSave() for exceeding 1500 chars in intro/add.content is handled in editor.js with popup */
+    
+    if(xhr === "UPDATED_IN_BACKGROUND") {
+      var serverTime = serverTimeFormatToClientTimeFormat(vrtxAdmin.serverLastModified);
+      var nowTime = serverTimeFormatToClientTimeFormat(vrtxAdmin.serverNowTime);
+      var ago = "";
+      var agoSeconds = ((+nowTime) - (+serverTime)) / 1000;
+      if(agoSeconds >= 60) {
+        agoMinutes = Math.floor(agoSeconds / 60);
+        agoSeconds = agoSeconds % 60;
+        ago = agoMinutes + " min " + agoSeconds + "s";
+      } else {
+        ago = agoSeconds + "s";
+      }
+      var d = new VrtxConfirmDialog({
+        msg: vrtxAdm.serverFacade.errorMessages.outOfDate.replace(/XX/, ago).replace(/YY/, vrtxAdm.serverModifiedBy),
+        title: vrtxAdm.serverFacade.errorMessages.outOfDateTitle,
+        btnTextOk: vrtxAdm.serverFacade.errorMessages.outOfDateOk,
+        width: 450,
+        onOk: function() {
+          ajaxSaveAsCopy();
+        }
+      });
+      d.open();
+      return false;
+    } else {
+      var msg = vrtxAdmin.serverFacade.error(xhr, textStatus, false);
+      if(msg === "RE_AUTH") {
+        reAuthenticateRetokenizeForms(link);
+      } else if(msg === "LOCKED") {
+        var d = new VrtxConfirmDialog({
+          msg: vrtxAdm.serverFacade.errorMessages.lockStolen.replace(/XX/, vrtxAdm.lockedBy),
+          title: vrtxAdm.serverFacade.errorMessages.lockStolenTitle,
+          btnTextOk: vrtxAdm.serverFacade.errorMessages.lockStolenOk,
+          width: 450,
+          onOk: function() {
+            ajaxSaveAsCopy();
+          }
+        });
+        d.open();
+      } else {
+        var customTitle = vrtxAdm.serverFacade.errorMessages.customTitle[xhr.status];
+        var d = new VrtxMsgDialog({
+          msg: msg,
+          title: customTitle ? customTitle : vrtxAdm.serverFacade.errorMessages.title + " " + xhr.status
+        });
+        d.open();
+      }
+    }
   }
 }
 
@@ -2288,6 +2290,52 @@ function ctrlSEventHandler(_$, e) {
   }
   e.preventDefault();
   return false;
+}
+
+function ajaxSaveAsCopy() {
+  var vrtxAdm = vrtxAdmin,
+  _$ = vrtxAdm._$;
+  
+  // Create copy
+  vrtxAdm.serverFacade.getJSON(location.pathname + "?vrtx=admin&service=copy-resource-backup&uri=" + location.pathname, {
+    success: function (results, status, resp) {
+      var copyUri = results[0].uri;
+      var copyEditUri = copyUri + "?vrtx=admin&mode=editor&action=edit";
+      
+      // Open editor for copy in iframe to create lock and get token
+      vrtxAdm.cachedBody.append("<iframe id='copy-edit-iframe' style='display: none' src='" + copyEditUri + "'></frame>");
+      var waitForCopyEditor = setTimeout(function() {
+        var copyIframe = vrtxAdm.cachedBody.find("iframe#copy-edit-iframe");
+        var copyIframeContents = copyIframe.contents();
+        if(copyIframeContents) {
+          var copyEditEditorToken = copyIframeContents.find("form#editor input[name='csrf-prevention-token']");
+          if(copyEditEditorToken.length) { // Update form with copy token and action
+            var editor = _$("form#editor");
+            editor.find("input[name='csrf-prevention-token']").val(copyEditEditorToken.val());
+            editor.attr("action", copyEditUri);
+            vrtxAdm.clientLastModified = vrtxAdm.serverLastModified; // Proceed
+            ajaxSave();
+            $.when(vrtxAdm.asyncEditorSavedDeferred).done(function () {
+              if(!vrtxAdm.editorSaveIsRedirectView) {
+                location.href = copyEditUri;
+              } else {
+                var isCollection = $("#resource-title.true").length;
+                if(isCollection) {
+                  location.href = copyEditUri.split("?")[0] + "?vrtx=admin&action=preview";
+                } else {
+                  location.href = copyEditUri.split("?")[0] + "/?vrtx=admin";
+                }
+              }
+            }).fail(handleAjaxSaveErrors);
+          } else {
+            setTimeout(arguments.callee, 15);
+          }
+        } else {
+          setTimeout(arguments.callee, 15);
+        }
+      }, 15);
+    }
+  });
 }
 
 function ajaxSave() {

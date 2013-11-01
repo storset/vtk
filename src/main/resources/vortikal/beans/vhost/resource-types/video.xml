@@ -47,30 +47,6 @@
   </bean>
 
 
-  <bean id="unpublishedVideoPlayerService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="parent" ref="mediaPlayerService" />
-    <property name="assertions">
-      <list>
-        <ref bean="contentTypeMatchesVideo" />
-        <ref bean="asWebpageAssertion" />
-        <ref bean="resourceIsNotPublishedAssertion" />
-      </list>
-    </property>
-    <property name="handler" ref="displayUnpublihsedVideoResource" />
-  </bean>
-
-  <bean id="upublishedAudioPlayerService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="parent" ref="mediaPlayerService" />
-    <property name="assertions">
-      <list>
-        <ref bean="contentTypeMatchesAudio" />
-        <ref bean="asWebpageAssertion" />
-        <ref bean="resourceIsNotPublishedAssertion" />
-      </list>
-    </property>
-    <property name="handler" ref="displayUnpublishedAudioResource" />
-  </bean>
-
 
   <bean id="videoPlayerService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="mediaPlayerService" />
@@ -78,7 +54,6 @@
       <list>
         <ref bean="contentTypeMatchesVideo" />
         <ref bean="asWebpageAssertion" />
-        <ref bean="resourceIsPublishedAssertion" />
       </list>
     </property>
     <property name="handler" ref="displayVideoResource" />
@@ -90,7 +65,6 @@
       <list>
         <ref bean="contentTypeMatchesAudio" />
         <ref bean="asWebpageAssertion" />
-        <ref bean="resourceIsPublishedAssertion" />
       </list>
     </property>
     <property name="handler" ref="displayAudioResource" />
@@ -113,22 +87,6 @@
     <property name="thumbnailService" ref="displayThumbnailService" />
   </bean>
 
-  <bean id="previewMediaPlayer" class="org.vortikal.web.display.media.MediaPlayer">
-    <property name="extentionToMimetype">
-      <map>
-        <entry key="mp4" value="video/mp4" />
-        <entry key="mov" value="video/quicktime" />
-        <entry key="mp3" value="audio/mpeg" />
-        <entry key="swf" value="application/x-shockwave-flash" />
-        <entry key="flv" value="video/x-flv" />
-      </map>
-    </property>
-    <property name="posterImagePropDef" ref="posterImagePropDef" />
-    <property name="generatedPosterImagePropDef" ref="generatedPosterImagePropDef" />
-    <property name="viewService" ref="editor.loadImageService" />
-    <property name="thumbnailService" ref="displayThumbnailService" />
-  </bean>
-
   <bean id="displayAudioResource" class="org.vortikal.web.display.media.DisplayMediaController">
     <property name="mediaPlayer" ref="mediaPlayer" />
     <property name="viewName" value="viewMediaPlayer" />
@@ -136,19 +94,7 @@
   </bean>
 
   <bean id="displayVideoResource" class="org.vortikal.web.display.media.DisplayMediaController">
-    <property name="mediaPlayer" ref="previewMediaPlayer" />
-    <property name="viewName" value="viewMediaPlayer" />
-    <property name="descriptionPropDef" ref="videoHtmlDescriptionPropDef" />
-  </bean>
-
-  <bean id="displayUnpublishedAudioResource" class="org.vortikal.web.display.media.DisplayMediaController">
-    <property name="mediaPlayer" ref="previewMediaPlayer" />
-    <property name="viewName" value="viewMediaPlayer" />
-    <property name="descriptionPropDef" ref="audioHtmlDescriptionPropDef" />
-  </bean>
-
-  <bean id="displayUnpublihsedVideoResource" class="org.vortikal.web.display.media.DisplayMediaController">
-    <property name="mediaPlayer" ref="previewMediaPlayer" />
+    <property name="mediaPlayer" ref="mediaPlayer" />
     <property name="viewName" value="viewMediaPlayer" />
     <property name="descriptionPropDef" ref="videoHtmlDescriptionPropDef" />
   </bean>

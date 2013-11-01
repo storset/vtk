@@ -157,6 +157,9 @@ public class MediaPlayer {
 
     public void createLocalUrlToMediaFile(String resourceReferance, Map<String, Object> model) {
         URL url = createUrl(resourceReferance);
+        if (RequestContext.getRequestContext().isPreviewUnpublished()) {
+            url.setParameter("vrtxPreviewUnpublished", "true");
+        }
         if (url != null) {
             model.put("media", url);
         }

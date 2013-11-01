@@ -11,7 +11,7 @@
     <property name="handler" ref="editor.blogListingEditHandler" />
   </bean>
 
-  <bean id="editor.blogListingEditHandler" parent="editor.abstractEditCollectionHandler">
+  <bean id="editor.blogListingEditHandler" parent="editor.editCollectionHandler">
     <property name="resourceManager" ref="editor.blogListingResourceManager" />
     <property name="successView" value="redirectToManage" />
   </bean>

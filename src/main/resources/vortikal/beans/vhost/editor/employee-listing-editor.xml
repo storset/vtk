@@ -11,7 +11,7 @@
     <property name="handler" ref="editor.employeeEditHandler" />
   </bean>
 
-  <bean id="editor.employeeEditHandler" parent="editor.abstractEditCollectionHandler">
+  <bean id="editor.employeeEditHandler" parent="editor.editCollectionHandler">
     <property name="resourceManager" ref="editor.employeeResourceManager" />
     <property name="successView" value="redirectToPreviewCollection" />
   </bean>

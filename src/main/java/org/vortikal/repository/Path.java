@@ -93,11 +93,10 @@ public final class Path implements Comparable<Path>, Serializable {
         if (path == null
               || path.length() >= MAX_LENGTH
               || !path.startsWith("/")
-              || path.contain
-              s("//")
+              || path.contains("//")
               || path.contains("/../")
               || path.endsWith("/..")
-              //|| path.endsWith("/.")
+              || path.endsWith("/.")
               || (!path.equals("/") && path.endsWith("/"))) {
 
             throw new IllegalArgumentException("Invalid path: '" + path + "'");

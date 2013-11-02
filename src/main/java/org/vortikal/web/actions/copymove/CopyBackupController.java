@@ -18,25 +18,20 @@ public class CopyBackupController implements Controller {
 
     @Override
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        String uri = null;
+        Path resourceToCopySrcUri = null;
         try {
-            uri = (String) request.getParameter("uri");
+            resourceToCopySrcUri = Path.fromStringWithTrailingSlash((String) request.getParameter("uri"));
         } catch (Exception e) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return null;
         }
-        if (uri == null) {
+        if (resourceToCopySrcUri == null) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return null;
         }
-        int uriLen = uri.length() - 1;
-        if(uri.lastIndexOf("/") == uriLen) {
-            uri = uri.substring(0, uriLen);
-        }
-        
+
         // Retrieve resource
         RequestContext requestContext = RequestContext.getRequestContext();
-        Path resourceToCopySrcUri = Path.fromString(uri);
         String token = requestContext.getSecurityToken();
         Repository repository = requestContext.getRepository();
         Resource resource = repository.retrieve(token, resourceToCopySrcUri, false);

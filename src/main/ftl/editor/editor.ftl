@@ -64,7 +64,7 @@
         });
         
         // Save and copy
-        _$("#editor").on("click", "#saveAndViewButton, #saveViewCopyButton, #saveCopyButton", function(e) {
+        _$("#editor").on("click", "#saveAndViewButton, #saveCopyButton", function(e) {
           var ok = performSave();
           if(!ok) return false;
           if(typeof vrtxImageEditor !== "undefined" && vrtxImageEditor.save && !vrtxImageEditor.savedImage) {
@@ -112,7 +112,7 @@
       function performSave() {
         var ok = validTextLengthsInEditor(true);
         if(!ok) return false;
-      
+        
         saveMultipleInputFields();
         vrtxEditor.needToConfirm = false;
         return true;

@@ -2314,6 +2314,7 @@ function ajaxSaveAsCopy() {
             editor.find("input[name='csrf-prevention-token']").val(copyEditEditorToken.val());
             editor.attr("action", copyEditUri);
             vrtxAdm.clientLastModified = vrtxAdm.serverLastModified; // Proceed
+            copyIframe.remove();
             ajaxSave();
             $.when(vrtxAdm.asyncEditorSavedDeferred).done(function () {
               if(!vrtxAdm.editorSaveIsRedirectView) {

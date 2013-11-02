@@ -50,11 +50,15 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.Principal;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.actions.SaveImageHelper;
+import org.vortikal.web.actions.copymove.CopyHelper;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
 public class ImageEditController extends ResourceEditController {
 
+    private CopyHelper copyHelper;
+    protected Service editService;
+    
     private Service loadImageService;
     private SaveImageHelper saveImageHelper;
     private PropertyTypeDefinition heightPropDef;
@@ -82,6 +86,14 @@ public class ImageEditController extends ResourceEditController {
         imageWidthProp.setIntValue(wrapper.getNewWidth());
         resource.addProperty(imageWidthProp);
 
+        if (wrapper.isSaveCopy()) {
+            InputStream is = saveImageHelper.getEditedImageInputStream(resource, repository, token, resource.getURI(),
+                    wrapper.getCropX(), wrapper.getCropY(), wrapper.getCropWidth(), wrapper.getCropHeight(), wrapper.getNewWidth(), wrapper.getNewHeight());
+            Path destUri = copyHelper.copyResource(resource.getURI(), resource.getURI(), repository, token, resource, is);
+            this.resourceManager.unlock();
+            return new ModelAndView(new RedirectView(this.editService.constructURL(destUri).toString()));
+        }
+        
         if (!wrapper.isSave()) {
             this.resourceManager.unlock();
             return new ModelAndView(getSuccessView(), new HashMap<String, Object>());
@@ -156,6 +168,16 @@ public class ImageEditController extends ResourceEditController {
 
     public void setWidthPropDef(PropertyTypeDefinition widthPropDef) {
         this.widthPropDef = widthPropDef;
+    }
+    
+    @Required
+    public void setCopyHelper(CopyHelper copyHelper) {
+        this.copyHelper = copyHelper;
+    }
+    
+    @Required
+    public void setEditService(Service editService) {
+        this.editService = editService;
     }
 
 }

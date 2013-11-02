@@ -248,6 +248,20 @@
     <property name="copyAction" ref="copy.unpublishAfterCopyAction" />
   </bean>
   <bean id="copy.unpublishAfterCopyAction" class="org.vortikal.web.actions.copymove.UnpublishAfterCopyAction" />
+ 
+  <bean id="copyHelperThenStore" class="org.vortikal.web.actions.copymove.CopyHelper">
+    <property name="storeAfterCopyAction" ref="copy.imageStoreAfterCopyAction" />
+  </bean>
+  <bean id="copy.imageStoreAfterCopyAction" class="org.vortikal.web.actions.copymove.StoreAfterCopyAction">
+    <property name="preservedProperties">
+      <list>
+        <ref bean="userTitlePropDef" />
+        <ref bean="imageHtmlDescriptionPropDef" />
+        <ref bean="photographerPropDef" />
+      </list>
+    </property>
+  </bean> 
+  
   <bean id="copyHelper" class="org.vortikal.web.actions.copymove.CopyHelper" />
 
   <bean id="moveToSelectedFolderHandler" class="org.vortikal.web.actions.copymove.CopyMoveToSelectedFolderController">

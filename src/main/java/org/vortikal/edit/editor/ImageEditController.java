@@ -78,7 +78,7 @@ public class ImageEditController extends ResourceEditController {
             return new ModelAndView(getFormView(), model);
         }
         
-        if (!wrapper.isSave()) {
+        if (!wrapper.isSave() && !wrapper.isSaveCopy() && !wrapper.isView()) {
             this.resourceManager.unlock();
             return new ModelAndView(getSuccessView(), new HashMap<String, Object>());
         }

@@ -1,13 +1,7 @@
 package org.vortikal.web.actions.copymove;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
@@ -35,7 +29,6 @@ public class CopyBackupController implements Controller {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return null;
         }
-        
         int uriLen = uri.length() - 1;
         if(uri.lastIndexOf("/") == uriLen) {
             uri = uri.substring(0, uriLen);
@@ -52,6 +45,7 @@ public class CopyBackupController implements Controller {
         Path resourceCopyDestUri = copyHelper.makeDestUri(resourceToCopySrcUri, repository, token, resource);
         repository.copy(token, resourceToCopySrcUri, resourceCopyDestUri, false, true);
 
+        // Return 201 with destination uri in the Location-header
         response.setStatus(HttpServletResponse.SC_CREATED);
         response.setHeader("Location", resourceCopyDestUri.toString());
         

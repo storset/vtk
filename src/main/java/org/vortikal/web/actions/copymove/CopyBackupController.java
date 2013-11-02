@@ -28,10 +28,11 @@ public class CopyBackupController implements Controller {
         try {
             uri = (String) request.getParameter("uri");
         } catch (Exception e) {
-            badRequest(e, response);
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return null;
         }
         if (uri == null) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return null;
         }
         
@@ -51,26 +52,10 @@ public class CopyBackupController implements Controller {
         Path resourceCopyDestUri = copyHelper.makeDestUri(resourceToCopySrcUri, repository, token, resource);
         repository.copy(token, resourceToCopySrcUri, resourceCopyDestUri, false, true);
 
-        response.setStatus(HttpServletResponse.SC_OK);
-        response.setContentType("text/plain;charset=utf-8");
-        PrintWriter writer = response.getWriter();
-        try {
-            writer.print("[{\"uri\":\"" + resourceCopyDestUri + "\" }]");
-        } finally {
-            writer.close();
-        }
+        response.setStatus(HttpServletResponse.SC_CREATED);
+        response.setHeader("Location", resourceCopyDestUri.toString());
         
         return null;
-    }
-    
-    private void badRequest(Throwable e, HttpServletResponse response) throws IOException {
-        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        PrintWriter writer = response.getWriter();
-        try {
-            writer.write(e.getMessage());
-        } finally {
-            writer.close();
-        }
     }
 
     @Required

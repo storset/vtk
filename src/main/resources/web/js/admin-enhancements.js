@@ -2299,7 +2299,7 @@ function ajaxSaveAsCopy() {
   // Create copy
   vrtxAdm.serverFacade.getJSON(location.pathname + "?vrtx=admin&service=copy-resource-backup&uri=" + location.pathname, {
     success: function (results, status, resp) {
-      var copyUri = results[0].uri;
+      var copyUri = resp.getResponseHeader('Location');
       var copyEditUri = copyUri + "?vrtx=admin&mode=editor&action=edit";
       
       // Open editor for copy in iframe to create lock and get token

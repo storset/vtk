@@ -77,7 +77,12 @@ public class ImageEditController extends ResourceEditController {
             Map<String, Object> model = getModelProperties(command, resource, principal, repository);
             return new ModelAndView(getFormView(), model);
         }
-
+        
+        if (!wrapper.isSave()) {
+            this.resourceManager.unlock();
+            return new ModelAndView(getSuccessView(), new HashMap<String, Object>());
+        }
+        
         Property imageHeightProp = heightPropDef.createProperty();
         imageHeightProp.setIntValue(wrapper.getNewHeight());
         resource.addProperty(imageHeightProp);
@@ -85,29 +90,20 @@ public class ImageEditController extends ResourceEditController {
         Property imageWidthProp = widthPropDef.createProperty();
         imageWidthProp.setIntValue(wrapper.getNewWidth());
         resource.addProperty(imageWidthProp);
+        
+        InputStream is = saveImageHelper.getEditedImageInputStream(resource, repository, token, resource.getURI(),
+                wrapper.getCropX(), wrapper.getCropY(), wrapper.getCropWidth(), wrapper.getCropHeight(),
+                wrapper.getNewWidth(), wrapper.getNewHeight());
 
         if (wrapper.isSaveCopy()) {
-            InputStream is = saveImageHelper.getEditedImageInputStream(resource, repository, token, resource.getURI(),
-                    wrapper.getCropX(), wrapper.getCropY(), wrapper.getCropWidth(), wrapper.getCropHeight(), wrapper.getNewWidth(), wrapper.getNewHeight());
             Path destUri = copyHelper.copyResource(resource.getURI(), resource.getURI(), repository, token, resource, is);
             this.resourceManager.unlock();
             return new ModelAndView(new RedirectView(this.editService.constructURL(destUri).toString()));
         }
-        
-        if (!wrapper.isSave()) {
-            this.resourceManager.unlock();
-            return new ModelAndView(getSuccessView(), new HashMap<String, Object>());
-        }
-        
+
         repository.store(token, resource);
-        
-        if (this.saveImageHelper != null) {
-            InputStream is = saveImageHelper.getEditedImageInputStream(resource, repository, token, resource.getURI(),
-                    wrapper.getCropX(), wrapper.getCropY(), wrapper.getCropWidth(), wrapper.getCropHeight(),
-                    wrapper.getNewWidth(), wrapper.getNewHeight());
-            if (is != null) {
-                repository.storeContent(token, wrapper.getURI(), is);
-            }
+        if (is != null) {
+            repository.storeContent(token, wrapper.getURI(), is);
         }
 
         if (!wrapper.isView()) {

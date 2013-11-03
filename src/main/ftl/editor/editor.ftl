@@ -202,6 +202,17 @@
         </div>
       </div>
     </div>
+    <#if resource.isCollection() && resource.getURI() != "/">
+      <#assign backupURL = vrtx.linkConstructor("../", 'copyBackupService') />
+    <#else>
+      <#assign backupURL = vrtx.linkConstructor(".", 'copyBackupService') />
+    </#if>
+    <#assign backupViewURL = vrtx.relativeLinkConstructor("", 'viewService') />
+    <form id="backupForm" action="${backupURL}" method="post" accept-charset="UTF-8">
+      <@vrtx.csrfPreventionToken url=backupURL />
+      <input type="hidden" name="uri" value="${backupViewURL}" />
+    </form>
+    
     <form action="" method="post" id="editor">
       <div class="properties"<#if isImage> id="image-properties"</#if>>
         <@propsForm resource.preContentProperties />

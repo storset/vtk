@@ -185,6 +185,13 @@
     </div>
   </div>
 
+  <#assign backupURL = vrtx.linkConstructor(".", 'copyBackupService') />
+  <#assign backupViewURL = vrtx.relativeLinkConstructor("", 'viewService') />
+  <form id="backupForm" action="${backupURL}" method="post" accept-charset="UTF-8">
+    <@vrtx.csrfPreventionToken url=backupURL />
+    <input type="hidden" name="uri" value="${backupViewURL}" />
+  </form>
+    
   <form action="${form.submitURL?html}" method="post" id="editor"<#if form.getResource().getType().getName()?exists> class="vrtx-${form.getResource().getType().getName()}"</#if>>
     <div class="properties <#if (!form.workingCopy && form.hasPublishDate && form.onlyWriteUnpublished)>hidden-props</#if>">
       <#list form.elements as elementBox>

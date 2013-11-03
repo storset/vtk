@@ -1,5 +1,7 @@
 package org.vortikal.web.actions.copymove;
 
+import java.net.URLDecoder;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -20,7 +22,8 @@ public class CopyBackupController implements Controller {
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
         Path resourceToCopySrcUri = null;
         try {
-            resourceToCopySrcUri = Path.fromStringWithTrailingSlash((String) request.getParameter("uri"));
+            String uri = URLDecoder.decode((String) request.getParameter("uri"), "UTF-8");
+            resourceToCopySrcUri = Path.fromStringWithTrailingSlash(uri);
         } catch (Exception e) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return null;

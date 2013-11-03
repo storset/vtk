@@ -171,16 +171,13 @@
     <property name="order" value="-9999" />
     <property name="assertions">
       <list>
+        <ref bean="manage.postRequestAssertion" />
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
           <property name="parameterName" value="service" />
           <property name="parameterValue" value="copy-resource-backup" />
         </bean>
-        <bean class="org.vortikal.web.service.RequestParameterExistsAssertion">
-          <property name="parameterName" value="uri" />
-        </bean>
-        <ref bean="resourceNotRootAssertion" />
-        <ref bean="requiresReadPermissionAssertion" />
-        <ref bean="writeParentPermissionAssertion" />
+        <ref bean="writePermissionAssertion" />
+        <ref bean="resourceInCollection" />
       </list>
     </property>
     <property name="handler" ref="copyBackupHandler" />

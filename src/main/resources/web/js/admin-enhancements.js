@@ -2297,7 +2297,13 @@ function ajaxSaveAsCopy() {
   _$ = vrtxAdm._$;
   
   // Create copy
-  vrtxAdm.serverFacade.getJSON(location.pathname + "?vrtx=admin&service=copy-resource-backup&uri=" + location.pathname, {
+  if(location.pathname == "/") {
+    return false; 
+  }
+  var form = $("#backupForm");
+  var url = form.attr("action");
+  var dataString = form.serialize();
+  vrtxAdm.serverFacade.postHtml(url, dataString, {
     success: function (results, status, resp) {
       var copyUri = resp.getResponseHeader('Location');
       var copyEditUri = copyUri + "?vrtx=admin&mode=editor&action=edit";
@@ -3569,7 +3575,7 @@ VrtxAdmin.prototype.serverFacade = {
         async: false,
         success: function (results, status, resp) { // Exists - soneone has locked it
           msg = useStatusCodeInMsg ? serverFacade.errorMessages.s404 : "LOCKED";
-          vrtxAdm.lockedBy = $($.parseHTML(results)).find("#resource-locked-by").html();
+          vrtxAdmin.lockedBy = $($.parseHTML(results)).find("#resource-locked-by").html();
           $("#resourceMenuRight").html($($.parseHTML(results)).find("#resourceMenuRight").html());
           vrtxAdmin.globalAsyncComplete();
         },

@@ -1,8 +1,5 @@
 package org.vortikal.web.actions.copymove;
 
-import java.net.URLDecoder;
-import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -23,7 +20,7 @@ public class CopyBackupController implements Controller {
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
         Path resourceToCopySrcUri = null;
         try {
-            String uri = URLDecoder.decode((String) request.getParameter("uri"), "UTF-8");
+            String uri = (String) request.getParameter("uri");
             resourceToCopySrcUri = Path.fromStringWithTrailingSlash(uri);
         } catch (Exception e) {
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
@@ -40,7 +37,8 @@ public class CopyBackupController implements Controller {
         Repository repository = requestContext.getRepository();
         Resource resource = repository.retrieve(token, resourceToCopySrcUri, false);
         
-        if(resource.getURI().getParent() != requestContext.getResourceURI()) {
+        // If resource is a collection OR parent resource does NOT equals request resource
+        if(resource.isCollection() || !requestContext.getResourceURI().equals(resource.getURI().getParent())) {
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             return null;
         }

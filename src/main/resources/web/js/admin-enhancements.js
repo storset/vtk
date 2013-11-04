@@ -2297,8 +2297,8 @@ function ajaxSaveAsCopy() {
   _$ = vrtxAdm._$;
   
   // Create copy
-  if(location.pathname == "/") {
-    return false; 
+  if(/\\\/$/i.test(location.pathname)) { // Not folder
+    return false; // TODO: msg dialog
   }
   var form = $("#backupForm");
   var url = form.attr("action");
@@ -2306,7 +2306,7 @@ function ajaxSaveAsCopy() {
   vrtxAdm.serverFacade.postHtml(url, dataString, {
     success: function (results, status, resp) {
       var copyUri = resp.getResponseHeader('Location');
-      var copyEditUri = copyUri + "?vrtx=admin&mode=editor&action=edit";
+      var copyEditUri = copyUri + location.search;
       
       // Open editor for copy in iframe to create lock and get token
       vrtxAdm.serverFacade.getHtml(copyEditUri, {
@@ -2323,12 +2323,7 @@ function ajaxSaveAsCopy() {
             if(!vrtxAdm.editorSaveIsRedirectView) {
               location.href = copyEditUri;
             } else {
-              var isCollection = $("#resource-title.true").length;
-              if(isCollection) {
-                location.href = copyEditUri.split("?")[0] + "?vrtx=admin&action=preview";
-              } else {
-                location.href = copyEditUri.split("?")[0] + "/?vrtx=admin";
-              }
+              location.href = copyEditUri.split("?")[0] + "/?vrtx=admin";
             }
           }).fail(handleAjaxSaveErrors);
         }

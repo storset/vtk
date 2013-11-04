@@ -176,6 +176,10 @@
   margin-top: 0;
 }
 
+.vrtx-image-listing-include-container-description p:last-child {
+  margin-bottom: 0;
+}
+
 a.toggle-fullscreen {
   display: inline-block;
   float: right;

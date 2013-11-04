@@ -186,7 +186,12 @@ public class LinkChecker {
         Status status;
         String reason = null;
         try {
-            status = validateURL(url, sendReferrer ? base : null);
+            status = validateURL(url, sendReferrer ? base : null, "HEAD");
+            if (status == Status.NOT_FOUND) {
+                // XXX VTK-3434 Some broken servers return different result codes based on HEAD versus GET, so we retry...
+                logger.info("Validate (HEAD returned NOT_FOUND, retrying with GET): href='" + url + "'");
+                status = validateURL(url, sendReferrer ? base : null, "GET");
+            }
         } catch (Throwable t) {
             status = Status.ERROR;
             reason = t.getMessage();
@@ -204,16 +209,16 @@ public class LinkChecker {
         return result;
     }
     
-    private Status validateURL(java.net.URL url, URL referrer) {
+    private Status validateURL(java.net.URL url, URL referrer, String method) {
         HttpURLConnection urlConnection = null;
         try {
-            urlConnection = createHeadRequest(url, referrer);
+            urlConnection = createRequest(url, referrer, method);
             urlConnection.connect();
             int  httpResponseCode = urlConnection.getResponseCode();
             if (httpResponseCode == HttpURLConnection.HTTP_MOVED_PERM
                     || httpResponseCode == HttpURLConnection.HTTP_MOVED_TEMP
                     || httpResponseCode == HttpURLConnection.HTTP_SEE_OTHER) {
-                httpResponseCode = checkMoved(urlConnection, httpResponseCode, referrer);
+                httpResponseCode = checkMoved(urlConnection, httpResponseCode, referrer, method);
             }
             if (httpResponseCode == HttpURLConnection.HTTP_NOT_FOUND 
                 || httpResponseCode == HttpURLConnection.HTTP_GONE) {
@@ -233,7 +238,7 @@ public class LinkChecker {
         }
     }
 
-    private int checkMoved(HttpURLConnection urlConnection, int responseCode, URL referrer) throws IOException {
+    private int checkMoved(HttpURLConnection urlConnection, int responseCode, URL referrer, String method) throws IOException {
         int retry = 0;
         // try a maximum of three times
         while (retry < 3
@@ -243,7 +248,7 @@ public class LinkChecker {
             if (location == null) {
                 return responseCode;
             }
-            urlConnection = createHeadRequest(toIDN(new java.net.URL(location)), referrer);
+            urlConnection = createRequest(toIDN(new java.net.URL(location)), referrer, method);
             urlConnection.connect();
             responseCode = urlConnection.getResponseCode();
             retry++;
@@ -251,9 +256,9 @@ public class LinkChecker {
         return responseCode;
     }
     
-    private HttpURLConnection createHeadRequest(java.net.URL url, URL referrer) throws IOException {
+    private HttpURLConnection createRequest(java.net.URL url, URL referrer, String method) throws IOException {
         HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-        urlConnection.setRequestMethod("HEAD");
+        urlConnection.setRequestMethod(method);
         urlConnection.setConnectTimeout(this.connectTimeout);
         urlConnection.setReadTimeout(this.readTimeout);
         urlConnection.setRequestProperty("User-Agent", this.userAgent);

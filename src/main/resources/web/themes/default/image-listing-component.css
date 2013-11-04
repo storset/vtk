@@ -165,11 +165,15 @@
 }
 
 .vrtx-image-listing-include-container-description {
-  margin: 0px 5px 20px 5px;
-  padding: 14px;
+  margin: 0 0 20px 0;
+  padding: 10px 14px;
   background: #f7f7f7;
   border: 1px solid #e3e3e3;
   overflow: hidden;
+}
+
+.vrtx-image-listing-include-container-description a.toggle-fullscreen + p {
+  margin-top: 0;
 }
 
 a.toggle-fullscreen {
@@ -185,7 +189,8 @@ a.toggle-fullscreen:hover {
 }
 
 a.toggle-fullscreen.minimized {
-  background: url(images/preview-maximize.png) no-repeat 100% 3px;
+  padding: 2px 24px 0 10px;
+  background: url(images/preview-maximize.png) no-repeat 100% 2px;
 }
 
 .active-description,

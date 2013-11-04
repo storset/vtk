@@ -2284,61 +2284,6 @@ function handleAjaxSaveErrors(xhr, textStatus) {
   }
 }
 
-function ctrlSEventHandler(_$, e) {
-  if (!_$("#dialog-loading:visible").length) {
-    _$(".vrtx-focus-button:last input").click();
-  }
-  e.preventDefault();
-  return false;
-}
-
-function ajaxSaveAsCopy() {
-  var vrtxAdm = vrtxAdmin,
-  _$ = vrtxAdm._$;
-
-  if(/\/$/i.test(location.pathname)) { // Folder
-    var d = new VrtxMsgDialog({
-      msg: vrtxAdm.serverFacade.errorMessages.cantBackupFolder,
-      title: vrtxAdm.serverFacade.errorMessages.cantBackupFolderTitle,
-      width: 400
-    });
-    d.open();
-    return false;
-  }
-  
-  // POST create the copy
-  var form = $("#backupForm");
-  var url = form.attr("action");
-  var dataString = form.serialize();
-  vrtxAdm.serverFacade.postHtml(url, dataString, {
-    success: function (results, status, resp) {
-      var copyUri = resp.getResponseHeader('Location');
-      var copyEditUri = copyUri + location.search;
-      
-      // GET editor for the copy to get token etc.
-      vrtxAdm.serverFacade.getHtml(copyEditUri, {
-        success: function (results, status, resp) {
-
-          // Update form with the copy token and set action to copy uri
-          var copyEditEditorToken = $($.parseHTML(results)).find("form#editor input[name='csrf-prevention-token']");
-          var editor = _$("form#editor");
-          editor.find("input[name='csrf-prevention-token']").val(copyEditEditorToken.val());
-          editor.attr("action", copyEditUri);
-          vrtxAdm.clientLastModified = vrtxAdm.serverLastModified; // Make sure we can proceed
-          ajaxSave();
-          $.when(vrtxAdm.asyncEditorSavedDeferred).done(function () {
-            if(!vrtxAdm.editorSaveIsRedirectView) {
-              location.href = copyEditUri;
-            } else {
-              location.href = copyEditUri.split("?")[0] + "/?vrtx=admin";
-            }
-          }).fail(handleAjaxSaveErrors);
-        }
-      });
-    }
-  });
-}
-
 function ajaxSave() {
   var vrtxAdm = vrtxAdmin,
     _$ = vrtxAdm._$;
@@ -2400,6 +2345,53 @@ function ajaxSave() {
         vrtxAdm.asyncEditorSavedDeferred.rejectWith(this, [xhr, textStatus]);
       }
     });
+  });
+}
+
+function ajaxSaveAsCopy() {
+  var vrtxAdm = vrtxAdmin,
+  _$ = vrtxAdm._$;
+
+  if(/\/$/i.test(location.pathname)) { // Folder
+    var d = new VrtxMsgDialog({
+      msg: vrtxAdm.serverFacade.errorMessages.cantBackupFolder,
+      title: vrtxAdm.serverFacade.errorMessages.cantBackupFolderTitle,
+      width: 400
+    });
+    d.open();
+    return false;
+  }
+  
+  // POST create the copy
+  var form = $("#backupForm");
+  var url = form.attr("action");
+  var dataString = form.serialize();
+  vrtxAdm.serverFacade.postHtml(url, dataString, {
+    success: function (results, status, resp) {
+      var copyUri = resp.getResponseHeader('Location');
+      var copyEditUri = copyUri + location.search;
+      
+      // GET editor for the copy to get token etc.
+      vrtxAdm.serverFacade.getHtml(copyEditUri, {
+        success: function (results, status, resp) {
+
+          // Update form with the copy token and set action to copy uri
+          var copyEditEditorToken = $($.parseHTML(results)).find("form#editor input[name='csrf-prevention-token']");
+          var editor = _$("form#editor");
+          editor.find("input[name='csrf-prevention-token']").val(copyEditEditorToken.val());
+          editor.attr("action", copyEditUri);
+          vrtxAdm.clientLastModified = vrtxAdm.serverLastModified; // Make sure we can proceed
+          ajaxSave();
+          $.when(vrtxAdm.asyncEditorSavedDeferred).done(function () {
+            if(!vrtxAdm.editorSaveIsRedirectView) {
+              location.href = copyEditUri;
+            } else {
+              location.href = copyEditUri.split("?")[0] + "/?vrtx=admin";
+            }
+          }).fail(handleAjaxSaveErrors);
+        }
+      });
+    }
   });
 }
 
@@ -2526,6 +2518,14 @@ function retokenizeFormsOpenSaveDialog(link, d2) {
       d.open();
     }
   });
+}
+
+function ctrlSEventHandler(_$, e) {
+  if (!_$("#dialog-loading:visible").length) {
+    _$(".vrtx-focus-button:last input").click();
+  }
+  e.preventDefault();
+  return false;
 }
 
 

@@ -1,6 +1,7 @@
 package org.vortikal.web.actions.copymove;
 
 import java.net.URLDecoder;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -25,11 +26,11 @@ public class CopyBackupController implements Controller {
             String uri = URLDecoder.decode((String) request.getParameter("uri"), "UTF-8");
             resourceToCopySrcUri = Path.fromStringWithTrailingSlash(uri);
         } catch (Exception e) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             return null;
         }
         if (resourceToCopySrcUri == null) {
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             return null;
         }
 
@@ -38,6 +39,11 @@ public class CopyBackupController implements Controller {
         String token = requestContext.getSecurityToken();
         Repository repository = requestContext.getRepository();
         Resource resource = repository.retrieve(token, resourceToCopySrcUri, false);
+        
+        if(resource.getURI().getParent() != requestContext.getResourceURI()) {
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            return null;
+        }
         
         // Copy resource
         Path resourceCopyDestUri = copyHelper.makeDestUri(resourceToCopySrcUri, repository, token, resource);

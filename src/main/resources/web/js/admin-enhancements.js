@@ -2306,7 +2306,7 @@ function ajaxSaveAsCopy() {
     return false;
   }
   
-  // Create copy
+  // POST create the copy
   var form = $("#backupForm");
   var url = form.attr("action");
   var dataString = form.serialize();
@@ -2315,16 +2315,16 @@ function ajaxSaveAsCopy() {
       var copyUri = resp.getResponseHeader('Location');
       var copyEditUri = copyUri + location.search;
       
-      // Open editor for copy in iframe to create lock and get token
+      // GET editor for the copy to get token etc.
       vrtxAdm.serverFacade.getHtml(copyEditUri, {
         success: function (results, status, resp) {
 
-          // Update form with copy token and action
+          // Update form with the copy token and set action to copy uri
           var copyEditEditorToken = $($.parseHTML(results)).find("form#editor input[name='csrf-prevention-token']");
           var editor = _$("form#editor");
           editor.find("input[name='csrf-prevention-token']").val(copyEditEditorToken.val());
           editor.attr("action", copyEditUri);
-          vrtxAdm.clientLastModified = vrtxAdm.serverLastModified; // Proceed
+          vrtxAdm.clientLastModified = vrtxAdm.serverLastModified; // Make sure we can proceed
           ajaxSave();
           $.when(vrtxAdm.asyncEditorSavedDeferred).done(function () {
             if(!vrtxAdm.editorSaveIsRedirectView) {

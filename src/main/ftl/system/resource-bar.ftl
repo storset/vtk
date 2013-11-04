@@ -54,6 +54,8 @@
     outOfDate: "${vrtx.getMsg('ajaxError.out-of-date')}",
     outOfDateTitle: "${vrtx.getMsg('ajaxError.out-of-date.title')}",
     outOfDateOk: "${vrtx.getMsg('ajaxError.out-of-date.ok')}",
+    cantBackupFolderTitle: "${vrtx.getMsg('ajaxError.cant-backup-folder.title')}",
+    cantBackupFolder: "${vrtx.getMsg('ajaxError.cant-backup-folder')}",
     sessionInvalid: "${vrtx.getMsg('ajaxError.sessionInvalid')}",
     sessionInvalidTitle: "${vrtx.getMsg('ajaxError.sessionInvalid.title')}",
     sessionInvalidOk: "${vrtx.getMsg('ajaxError.sessionInvalid.ok')}",

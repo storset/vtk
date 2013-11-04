@@ -2295,11 +2295,16 @@ function ctrlSEventHandler(_$, e) {
 function ajaxSaveAsCopy() {
   var vrtxAdm = vrtxAdmin,
   _$ = vrtxAdm._$;
+
+  if(/\\\/$/i.test(location.pathname)) { // Folder
+    var d = new VrtxMsgDialog({
+      msg: vrtxAdm.serverFacade.errorMessages.cantBackupFolder,
+      title: vrtxAdm.serverFacade.errorMessages.cantBackupFolderTitle
+    });
+    d.open();
+  }
   
   // Create copy
-  if(/\\\/$/i.test(location.pathname)) { // Not folder
-    return false; // TODO: msg dialog
-  }
   var form = $("#backupForm");
   var url = form.attr("action");
   var dataString = form.serialize();

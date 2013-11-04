@@ -163,6 +163,8 @@ var VrtxMsgDialog = dejavu.Class.declare({
       selector: "#dialog-message",
       msg: opts.msg,
       title: opts.title,
+      width: opts.width,
+      height: opts.height,
       hasOk: true
     });
   }

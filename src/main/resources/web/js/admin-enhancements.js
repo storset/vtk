@@ -2296,12 +2296,14 @@ function ajaxSaveAsCopy() {
   var vrtxAdm = vrtxAdmin,
   _$ = vrtxAdm._$;
 
-  if(/\\\/$/i.test(location.pathname)) { // Folder
+  if(/\/$/i.test(location.pathname)) { // Folder
     var d = new VrtxMsgDialog({
       msg: vrtxAdm.serverFacade.errorMessages.cantBackupFolder,
-      title: vrtxAdm.serverFacade.errorMessages.cantBackupFolderTitle
+      title: vrtxAdm.serverFacade.errorMessages.cantBackupFolderTitle,
+      width: 400
     });
     d.open();
+    return false;
   }
   
   // Create copy

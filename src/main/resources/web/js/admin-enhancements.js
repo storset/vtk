@@ -2386,7 +2386,7 @@ function ajaxSaveAsCopy() {
             if(!vrtxAdm.editorSaveIsRedirectView) {
               location.href = copyEditUri;
             } else {
-              location.href = copyEditUri.split("?")[0] + "/?vrtx=admin";
+              location.href = copyUri + "/?vrtx=admin";
             }
           }).fail(handleAjaxSaveErrors);
         }

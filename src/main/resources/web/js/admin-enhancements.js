@@ -2309,38 +2309,30 @@ function ajaxSaveAsCopy() {
       var copyEditUri = copyUri + "?vrtx=admin&mode=editor&action=edit";
       
       // Open editor for copy in iframe to create lock and get token
-      vrtxAdm.cachedBody.append("<iframe id='copy-edit-iframe' style='display: none' src='" + copyEditUri + "'></frame>");
-      var waitForCopyEditor = setTimeout(function() {
-        var copyIframe = vrtxAdm.cachedBody.find("iframe#copy-edit-iframe");
-        var copyIframeContents = copyIframe.contents();
-        if(copyIframeContents) {
-          var copyEditEditorToken = copyIframeContents.find("form#editor input[name='csrf-prevention-token']");
-          if(copyEditEditorToken.length) { // Update form with copy token and action
-            var editor = _$("form#editor");
-            editor.find("input[name='csrf-prevention-token']").val(copyEditEditorToken.val());
-            editor.attr("action", copyEditUri);
-            vrtxAdm.clientLastModified = vrtxAdm.serverLastModified; // Proceed
-            copyIframe.remove();
-            ajaxSave();
-            $.when(vrtxAdm.asyncEditorSavedDeferred).done(function () {
-              if(!vrtxAdm.editorSaveIsRedirectView) {
-                location.href = copyEditUri;
+      vrtxAdm.serverFacade.getHtml(copyEditUri, {
+        success: function (results, status, resp) {
+
+          // Update form with copy token and action
+          var copyEditEditorToken = $($.parseHTML(results)).find("form#editor input[name='csrf-prevention-token']");
+          var editor = _$("form#editor");
+          editor.find("input[name='csrf-prevention-token']").val(copyEditEditorToken.val());
+          editor.attr("action", copyEditUri);
+          vrtxAdm.clientLastModified = vrtxAdm.serverLastModified; // Proceed
+          ajaxSave();
+          $.when(vrtxAdm.asyncEditorSavedDeferred).done(function () {
+            if(!vrtxAdm.editorSaveIsRedirectView) {
+              location.href = copyEditUri;
+            } else {
+              var isCollection = $("#resource-title.true").length;
+              if(isCollection) {
+                location.href = copyEditUri.split("?")[0] + "?vrtx=admin&action=preview";
               } else {
-                var isCollection = $("#resource-title.true").length;
-                if(isCollection) {
-                  location.href = copyEditUri.split("?")[0] + "?vrtx=admin&action=preview";
-                } else {
-                  location.href = copyEditUri.split("?")[0] + "/?vrtx=admin";
-                }
+                location.href = copyEditUri.split("?")[0] + "/?vrtx=admin";
               }
-            }).fail(handleAjaxSaveErrors);
-          } else {
-            setTimeout(arguments.callee, 15);
-          }
-        } else {
-          setTimeout(arguments.callee, 15);
+            }
+          }).fail(handleAjaxSaveErrors);
         }
-      }, 15);
+      });
     }
   });
 }

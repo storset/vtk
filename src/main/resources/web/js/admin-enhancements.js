@@ -3601,7 +3601,7 @@ VrtxAdmin.prototype.serverFacade = {
         type: "GET",
         url: location.href,
         async: false,
-        success: function (results, status, resp) { // Exists - soneone has locked it
+        success: function (results, status, resp) {
           msg = useStatusCodeInMsg ? serverFacade.errorMessages.s423 : "LOCKED";
           results = $($.parseHTML(results));
           vrtxAdmin.lockedBy = results.find("#resource-locked-by").html();

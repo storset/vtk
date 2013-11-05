@@ -113,6 +113,7 @@ function VrtxAdmin() {
 
   // Application logic
   this.editorSaveButtonName = "";
+  this.editorSaveButton = null;
   this.editorSaveIsRedirectView = false;
   this.asyncEditorSavedDeferred = null;
   this.asyncGetFormsInProgress = 0;
@@ -2208,6 +2209,7 @@ function editorInteraction(vrtxAdm, _$) {
     vrtxAdm.cachedAppContent.on("click", ".vrtx-save-button input", function (e) {
       var link = _$(this);
       vrtxAdm.editorSaveButtonName = link.attr("name");
+      vrtxAdm.editorSaveButton = link;
       vrtxAdm.editorSaveIsRedirectView = (this.id === "saveAndViewButton" || this.id === "saveViewAction");
       ajaxSave();
       _$.when(vrtxAdm.asyncEditorSavedDeferred).done(function () {
@@ -2260,7 +2262,7 @@ function handleAjaxSaveErrors(xhr, textStatus) {
     } else {
       var msg = vrtxAdmin.serverFacade.error(xhr, textStatus, false);
       if(msg === "RE_AUTH") {
-        reAuthenticateRetokenizeForms(link);
+        reAuthenticateRetokenizeForms();
       } else if(msg === "LOCKED") {
         var d = new VrtxConfirmDialog({
           msg: vrtxAdm.serverFacade.errorMessages.lockStolen.replace(/XX/, vrtxAdm.lockedBy),
@@ -2450,7 +2452,7 @@ function serverTimeFormatToClientTimeFormat(time) {
                   parseInt(time[3], 10), parseInt(time[4], 10), parseInt(time[5], 10));
 }
 
-function reAuthenticateRetokenizeForms(link) {  
+function reAuthenticateRetokenizeForms() {  
   // Open reauth dialog
   var d = new VrtxHtmlDialog({
     name: "reauth-open",
@@ -2477,7 +2479,7 @@ function reAuthenticateRetokenizeForms(link) {
             if(xhr.status === 0) {
               setTimeout(self, timerDelay);
             } else {
-              retokenizeFormsOpenSaveDialog(link, d2);
+              retokenizeFormsOpenSaveDialog(d2);
             }
           } 
         });
@@ -2493,7 +2495,7 @@ function reAuthenticateRetokenizeForms(link) {
   cancelBtnSpan.unwrap();
 }
 
-function retokenizeFormsOpenSaveDialog(link, d2) {
+function retokenizeFormsOpenSaveDialog(d2) {
   // Repopulate tokens
   var current = $("body input[name='csrf-prevention-token']");
   var currentLen = current.length;
@@ -2514,7 +2516,7 @@ function retokenizeFormsOpenSaveDialog(link, d2) {
         title: vrtxAdmin.serverFacade.errorMessages.sessionValidatedTitle,
         onOk: function() {
           // Trigger save
-          link.click();
+          vrtxAdm.editorSaveButton.click();
         },
         btnTextOk: vrtxAdmin.serverFacade.errorMessages.sessionValidatedOk
       });

@@ -3595,19 +3595,22 @@ VrtxAdmin.prototype.serverFacade = {
     } else if (status === 403) {
       msg = (useStatusCodeInMsg ? status + " - " : "") + this.errorMessages.s403;
     } else if (status === 404) {
+      msg = (useStatusCodeInMsg ? status + " - " : "") + serverFacade.errorMessages.s404;
+    } else if (status === 423) {
       var serverFacade = this;
       vrtxAdmin._$.ajax({
         type: "GET",
         url: location.href,
         async: false,
         success: function (results, status, resp) { // Exists - soneone has locked it
-          msg = useStatusCodeInMsg ? serverFacade.errorMessages.s404 : "LOCKED";
-          vrtxAdmin.lockedBy = $($.parseHTML(results)).find("#resource-locked-by").html();
-          $("#resourceMenuRight").html($($.parseHTML(results)).find("#resourceMenuRight").html());
+          msg = useStatusCodeInMsg ? serverFacade.errorMessages.s423 : "LOCKED";
+          results = $($.parseHTML(results));
+          vrtxAdmin.lockedBy = results.find("#resource-locked-by").html();
+          $("#resourceMenuRight").html(results.find("#resourceMenuRight").html());
           vrtxAdmin.globalAsyncComplete();
         },
-        error: function (xhr, textStatus) {         // Removed/moved
-          msg = (useStatusCodeInMsg ? status + " - " : "") + serverFacade.errorMessages.s404;
+        error: function (xhr, textStatus) {
+          msg = serverFacade.error(xhr, textStatus, useStatusCodeInMsg);
         }
       });
     } else if (status === 4233) { // Parent locked

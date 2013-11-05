@@ -70,10 +70,11 @@
     s401: "${vrtx.getMsg('ajaxError.s401')}",
     s403: "${vrtx.getMsg('ajaxError.s403')}",
     s404: "${vrtx.getMsg('ajaxError.s404')}",
-    s4223: "${vrtx.getMsg('ajaxError.locked.parent')}", 
+    s423: "${vrtx.getMsg('ajaxError.s423')}",
+    s4223: "${vrtx.getMsg('ajaxError.s423.parent')}", 
     customTitle: {
       "0": "${vrtx.getMsg('ajaxError.offline.title')}",
-      "4223": "${vrtx.getMsg('ajaxError.locked.parent.title')}"
+      "4223": "${vrtx.getMsg('ajaxError.s423.parent.title')}"
     }
   };
   if(vrtxAdmin.hasFreeze) { // Make immutable

@@ -39,10 +39,11 @@
   <script type="text/javascript"><!--
     function sharedTextChange() {
       $("#${inputFieldName}Descriptions").find(".shared-text-description").hide();
-      if($("#${inputFieldName}").val() != "") {
-        var clazz = $("#${inputFieldName}").val().replace(/\./g, "\\.")
-                                                 .replace(/\+/g, "\\+")
-                                                 .replace(/\//g, "\\/");
+      var val = $("#${inputFieldName}").val();
+      if(val != "") {
+        var clazz = val.replace(/\./g, "\\.")
+                       .replace(/\+/g, "\\+")
+                       .replace(/\//g, "\\/");
         $("#${inputFieldName}Descriptions").find("." + clazz).show();
       }
     }

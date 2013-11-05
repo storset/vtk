@@ -2464,7 +2464,7 @@ function ajaxSaveAsCopy() {
     },
     error: function (xhr, textStatus, errMsg) {
       if(xhr.status === 423) {
-        xhr.status = 4223;
+        xhr.status = 4233;
         handleAjaxSaveErrors(xhr, textStatus);
       }
       handleAjaxSaveErrors(xhr, textStatus);
@@ -3564,7 +3564,6 @@ VrtxAdmin.prototype.serverFacade = {
   error: function (xhr, textStatus, useStatusCodeInMsg) { // TODO: detect function origin
     var status = xhr.status;
     var msg = "";
-    
     if (textStatus === "timeout") {
       msg = this.errorMessages.timeout;
     } else if (textStatus === "abort") {
@@ -3614,7 +3613,7 @@ VrtxAdmin.prototype.serverFacade = {
         }
       });
     } else if (status === 4233) { // Parent locked
-      msg = (useStatusCodeInMsg ? status + " - " : "") + serverFacade.errorMessages.s4223;
+      msg = (useStatusCodeInMsg ? status + " - " : "") + serverFacade.errorMessages.s4233;
     } else {
       msg = (useStatusCodeInMsg ? status + " - " : "") + this.errorMessages.general + " " + textStatus;
     }

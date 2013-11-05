@@ -2425,14 +2425,12 @@ function ajaxSaveAsCopy() {
   var form = $("#backupForm");
   var url = form.attr("action");
   var dataString = form.serialize();
-
   _$.ajax({
     type: "POST",
     url: url,
     data: dataString,
     dataType: "html",
     contentType: "application/x-www-form-urlencoded;charset=UTF-8",
-    cache: false,
     success: function (results, status, resp) {
       var copyUri = resp.getResponseHeader('Location');
       var copyEditUri = copyUri + location.search;
@@ -2442,7 +2440,6 @@ function ajaxSaveAsCopy() {
         type: "GET",
         url: copyEditUri,
         dataType: "html",
-        cache: false,
         success: function (results, status, resp) {
 
           // Update form with the copy token and set action to copy uri

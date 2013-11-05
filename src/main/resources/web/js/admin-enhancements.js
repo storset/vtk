@@ -2320,6 +2320,9 @@ function ajaxSave() {
   if (typeof $.fn.ajaxSubmit !== "function") {
     $.getScript(rootUrl + "/jquery/plugins/jquery.form.js", function () {
       futureFormAjax.resolve();
+    }).fail(function(xhr, textStatus, errMsg) {
+      d.close();
+      vrtxAdm.asyncEditorSavedDeferred.rejectWith(this, [xhr, textStatus]);
     });
   } else {
     futureFormAjax.resolve();
@@ -2418,7 +2421,7 @@ function isServerLastModifiedOlderThanClientLastModified(d) {
         isOlder = false;
       }
     },
-    error: function (xhr, textStatus) {
+    error: function (xhr, textStatus, errMsg) {
       d.close();
       vrtxAdmin.asyncEditorSavedDeferred.rejectWith(this, [xhr, textStatus]);
       isOlder = false;

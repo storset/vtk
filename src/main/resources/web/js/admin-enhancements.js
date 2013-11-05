@@ -3594,7 +3594,7 @@ VrtxAdmin.prototype.serverFacade = {
     } else if (status === 403) {
       msg = (useStatusCodeInMsg ? status + " - " : "") + this.errorMessages.s403;
     } else if (status === 404) {
-      msg = (useStatusCodeInMsg ? status + " - " : "") + serverFacade.errorMessages.s404;
+      msg = (useStatusCodeInMsg ? status + " - " : "") + this.errorMessages.s404;
     } else if (status === 423) {
       var serverFacade = this;
       vrtxAdmin._$.ajax({
@@ -3613,7 +3613,7 @@ VrtxAdmin.prototype.serverFacade = {
         }
       });
     } else if (status === 4233) { // Parent locked
-      msg = (useStatusCodeInMsg ? status + " - " : "") + serverFacade.errorMessages.s4233;
+      msg = (useStatusCodeInMsg ? status + " - " : "") + this.errorMessages.s4233;
     } else {
       msg = (useStatusCodeInMsg ? status + " - " : "") + this.errorMessages.general + " " + textStatus;
     }

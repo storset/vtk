@@ -2463,6 +2463,10 @@ function ajaxSaveAsCopy() {
       });
     },
     error: function (xhr, textStatus, errMsg) {
+      if(xhr.status === 423) {
+        xhr.status = 4223;
+        handleAjaxSaveErrors(xhr, textStatus);
+      }
       handleAjaxSaveErrors(xhr, textStatus);
     }
   });
@@ -3606,7 +3610,8 @@ VrtxAdmin.prototype.serverFacade = {
           msg = (useStatusCodeInMsg ? status + " - " : "") + serverFacade.errorMessages.s404;
         }
       });
-      
+    } else if (status === 4233) { // Parent locked
+      msg = (useStatusCodeInMsg ? status + " - " : "") + serverFacade.errorMessages.s4223;
     } else {
       msg = (useStatusCodeInMsg ? status + " - " : "") + this.errorMessages.general + " " + textStatus;
     }

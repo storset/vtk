@@ -11,6 +11,7 @@ import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.ResourceLockedException;
 import org.vortikal.web.RequestContext;
 
 
@@ -46,9 +47,18 @@ public class CopyBackupController implements Controller {
         }
         
         // Copy resource
-        Path resourceCopyDestUri = copyHelper.makeDestUri(resourceToCopySrcUri, repository, token, resource);
-        repository.copy(token, resourceToCopySrcUri, resourceCopyDestUri, false, true);
-
+        Path resourceCopyDestUri = null;
+        try {
+          resourceCopyDestUri = copyHelper.makeDestUri(resourceToCopySrcUri, repository, token, resource);
+          repository.copy(token, resourceToCopySrcUri, resourceCopyDestUri, false, true);
+        } catch (ResourceLockedException rle) {
+          response.setStatus(423);
+          return null;
+        } catch (Exception e) {
+          response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+          return null;
+        }
+        
         // Return 201 with destination uri in the Location-header
         response.setStatus(HttpServletResponse.SC_CREATED);
         response.setHeader("Location", resourceCopyDestUri.toString());

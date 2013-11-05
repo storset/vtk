@@ -176,7 +176,6 @@
           <property name="parameterName" value="service" />
           <property name="parameterValue" value="copy-resource-backup" />
         </bean>
-        <ref bean="writePermissionAssertion" />
         <ref bean="resourceInCollection" />
       </list>
     </property>

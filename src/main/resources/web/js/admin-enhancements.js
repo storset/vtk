@@ -2353,53 +2353,6 @@ function ajaxSave() {
   });
 }
 
-function ajaxSaveAsCopy() {
-  var vrtxAdm = vrtxAdmin,
-  _$ = vrtxAdm._$;
-
-  if(/\/$/i.test(location.pathname)) { // Folder
-    var d = new VrtxMsgDialog({
-      msg: vrtxAdm.serverFacade.errorMessages.cantBackupFolder,
-      title: vrtxAdm.serverFacade.errorMessages.cantBackupFolderTitle,
-      width: 400
-    });
-    d.open();
-    return false;
-  }
-  
-  // POST create the copy
-  var form = $("#backupForm");
-  var url = form.attr("action");
-  var dataString = form.serialize();
-  vrtxAdm.serverFacade.postHtml(url, dataString, {
-    success: function (results, status, resp) {
-      var copyUri = resp.getResponseHeader('Location');
-      var copyEditUri = copyUri + location.search;
-      
-      // GET editor for the copy to get token etc.
-      vrtxAdm.serverFacade.getHtml(copyEditUri, {
-        success: function (results, status, resp) {
-
-          // Update form with the copy token and set action to copy uri
-          var copyEditEditorToken = $($.parseHTML(results)).find("form#editor input[name='csrf-prevention-token']");
-          var editor = _$("form#editor");
-          editor.find("input[name='csrf-prevention-token']").val(copyEditEditorToken.val());
-          editor.attr("action", copyEditUri);
-          vrtxAdm.clientLastModified = vrtxAdm.serverLastModified; // Make sure we can proceed
-          ajaxSave();
-          $.when(vrtxAdm.asyncEditorSavedDeferred).done(function () {
-            if(!vrtxAdm.editorSaveIsRedirectView) {
-              location.href = copyEditUri;
-            } else {
-              location.href = copyUri + "/?vrtx=admin";
-            }
-          }).fail(handleAjaxSaveErrors);
-        }
-      });
-    }
-  });
-}
-
 function updateClientLastModifiedAlreadyRetrieved() {
   vrtxAdmin.clientLastModified = $("#resource-last-modified").text().split(",");
 }
@@ -2452,6 +2405,72 @@ function serverTimeFormatToClientTimeFormat(time) {
                   parseInt(time[3], 10), parseInt(time[4], 10), parseInt(time[5], 10));
 }
 
+/* After reject save */
+
+function ajaxSaveAsCopy() {
+  var vrtxAdm = vrtxAdmin,
+  _$ = vrtxAdm._$;
+
+  if(/\/$/i.test(location.pathname)) { // Folder
+    var d = new VrtxMsgDialog({
+      msg: vrtxAdm.serverFacade.errorMessages.cantBackupFolder,
+      title: vrtxAdm.serverFacade.errorMessages.cantBackupFolderTitle,
+      width: 400
+    });
+    d.open();
+    return false;
+  }
+  
+  // POST create the copy
+  var form = $("#backupForm");
+  var url = form.attr("action");
+  var dataString = form.serialize();
+
+  _$.ajax({
+    type: "POST",
+    url: url,
+    data: dataString,
+    dataType: "html",
+    contentType: "application/x-www-form-urlencoded;charset=UTF-8",
+    cache: false,
+    success: function (results, status, resp) {
+      var copyUri = resp.getResponseHeader('Location');
+      var copyEditUri = copyUri + location.search;
+      
+      // GET editor for the copy to get token etc.
+      _$.ajax({
+        type: "GET",
+        url: copyEditUri,
+        dataType: "html",
+        cache: false,
+        success: function (results, status, resp) {
+
+          // Update form with the copy token and set action to copy uri
+          var copyEditEditorToken = _$(_$.parseHTML(results)).find("form#editor input[name='csrf-prevention-token']");
+          var editor = _$("form#editor");
+          editor.find("input[name='csrf-prevention-token']").val(copyEditEditorToken.val());
+          editor.attr("action", copyEditUri);
+          vrtxAdm.clientLastModified = vrtxAdm.serverLastModified; // Make sure we can proceed
+          ajaxSave();
+          _$.when(vrtxAdm.asyncEditorSavedDeferred).done(function () {
+            if(!vrtxAdm.editorSaveIsRedirectView) {
+              location.href = copyEditUri;
+            } else {
+              location.href = copyUri + "/?vrtx=admin";
+            }
+          }).fail(handleAjaxSaveErrors);
+        },
+        error: function (xhr, textStatus, errMsg) {
+          handleAjaxSaveErrors(xhr, textStatus);
+        }
+      });
+    },
+    error: function (xhr, textStatus, errMsg) {
+      handleAjaxSaveErrors(xhr, textStatus);
+    }
+  });
+}
+
 function reAuthenticateRetokenizeForms() {  
   // Open reauth dialog
   var d = new VrtxHtmlDialog({
@@ -2481,7 +2500,7 @@ function reAuthenticateRetokenizeForms() {
             } else {
               retokenizeFormsOpenSaveDialog(d2);
             }
-          } 
+          }
         });
       }, timerDelay);
     },
@@ -2499,7 +2518,11 @@ function retokenizeFormsOpenSaveDialog(d2) {
   // Repopulate tokens
   var current = $("body input[name='csrf-prevention-token']");
   var currentLen = current.length;
-  vrtxAdmin.serverFacade.getHtml(location.href, {
+  
+  $.ajax({
+    type: "GET",
+    url: location.href,
+    cache: false,
     success: function (results, status, resp) {
       var updated = $($.parseHTML(results)).find("input[name='csrf-prevention-token']");
       for(var i = 0; i < currentLen; i++) {
@@ -2521,6 +2544,10 @@ function retokenizeFormsOpenSaveDialog(d2) {
         btnTextOk: vrtxAdmin.serverFacade.errorMessages.sessionValidatedOk
       });
       d.open();
+    },
+    error: function (xhr, textStatus, errMsg) {
+      d2.close();
+      handleAjaxSaveErrors(xhr, textStatus);
     }
   });
 }

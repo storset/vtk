@@ -2516,7 +2516,7 @@ function retokenizeFormsOpenSaveDialog(d2) {
         title: vrtxAdmin.serverFacade.errorMessages.sessionValidatedTitle,
         onOk: function() {
           // Trigger save
-          vrtxAdm.editorSaveButton.click();
+          vrtxAdmin.editorSaveButton.click();
         },
         btnTextOk: vrtxAdmin.serverFacade.errorMessages.sessionValidatedOk
       });

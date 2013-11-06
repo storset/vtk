@@ -38,7 +38,6 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
-import org.vortikal.repository.search.QueryException;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.reporting.TagsReportingComponent;
 import org.vortikal.web.reporting.TagsReportingComponent.TagFrequency;

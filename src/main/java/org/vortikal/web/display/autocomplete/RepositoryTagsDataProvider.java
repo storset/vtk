@@ -38,7 +38,6 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
-import org.vortikal.repository.search.QueryException;
 import org.vortikal.web.reporting.TagsReportingComponent;
 import org.vortikal.web.reporting.TagsReportingComponent.TagFrequency;
 import org.vortikal.web.tags.Tag;

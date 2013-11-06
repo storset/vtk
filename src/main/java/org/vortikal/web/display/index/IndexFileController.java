@@ -31,7 +31,6 @@
 package org.vortikal.web.display.index;
 
 import java.util.Enumeration;
-import java.util.List;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
@@ -92,9 +91,7 @@ public class IndexFileController implements Controller, LastModified, Initializi
         return -1L;
     }
 
-    public ModelAndView handleRequest(HttpServletRequest request,
-                                      HttpServletResponse response)
-        throws Exception {
+    public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
         RequestContext requestContext = RequestContext.getRequestContext();
         String token = requestContext.getSecurityToken();
@@ -104,45 +101,42 @@ public class IndexFileController implements Controller, LastModified, Initializi
         if (!res.isCollection()) {
             throw new IllegalStateException("Resource " + res + " is not a collection");
         }
-        
+
         Path indexURI = requestContext.getIndexFileURI();
         Resource indexFile = null;
         try {
             indexFile = repository.retrieve(token, indexURI, true);
-        } catch (AuthenticationException e) { 
+        } catch (AuthenticationException e) {
             throw e;
-        } catch (AuthorizationException e) { 
+        } catch (AuthorizationException e) {
             throw e;
-        } catch (Throwable t) { 
+        } catch (Throwable t) {
             throw new IllegalStateException("No index file found under " + res, t);
         }
         if (indexFile.isCollection()) {
-            throw new IllegalStateException("Index file '" + indexURI
-                                            + "' not a regular file");
+            throw new IllegalStateException("Index file '" + indexURI + "' not a regular file");
         }
         URL indexFileURL = URL.create(request);
         indexFileURL.setCollection(false);
         indexFileURL.setPath(indexURI);
-        
-        /* Forwarding parameters for the index page request */ 
+
+        /* Forwarding parameters for the index page request */
         Enumeration<String> p = request.getParameterNames();
-        while(p.hasMoreElements()){
+        while (p.hasMoreElements()) {
             String key = p.nextElement();
             indexFileURL.addParameter(key, request.getParameter(key));
         }
-        
+
         if (logger.isDebugEnabled()) {
             logger.debug("Dispatch index file request to: " + indexFileURL);
         }
         ConfigurableRequestWrapper requestWrapper = new ConfigurableRequestWrapper(request, indexFileURL);
 
-        String servletName = (String) request.getAttribute(
-                VortikalServlet.SERVLET_NAME_REQUEST_ATTRIBUTE);
+        String servletName = (String) request.getAttribute(VortikalServlet.SERVLET_NAME_REQUEST_ATTRIBUTE);
         RequestDispatcher rd = this.servletContext.getNamedDispatcher(servletName);
-        
+
         if (rd == null) {
-            throw new RuntimeException(
-                "No request dispatcher for name '" + servletName + "' available");
+            throw new RuntimeException("No request dispatcher for name '" + servletName + "' available");
         }
 
         try {

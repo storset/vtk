@@ -28,7 +28,6 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package org.vortikal.web.actions.repo;
 
 import java.util.Map;
@@ -37,7 +36,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.AuthorizationManager;
-import org.vortikal.web.RequestContext;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 
 /**
@@ -46,7 +44,7 @@ import org.vortikal.web.referencedata.ReferenceDataProvider;
 public class RepositoryReadOnlyStateProvider implements ReferenceDataProvider {
 
     private AuthorizationManager authorizationManager;
-    
+
     @Override
     public void referenceData(Map<String, Object> model, HttpServletRequest request) throws Exception {
         model.put("globalReadOnly", this.authorizationManager.isReadOnly());

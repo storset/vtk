@@ -561,6 +561,7 @@
          value="${VRTX_CSRF_PREVENTION_HANDLER.newToken(url)}" />
 </#macro>
 
+
 <#--
  * displayTime
  *

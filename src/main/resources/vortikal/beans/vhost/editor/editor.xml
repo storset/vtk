@@ -422,6 +422,8 @@
     <property name="formView" value="editor.editView" />
     <property name="successView" value="redirectToManage" />
     <property name="loadImageService" ref="editor.loadImageService" />
+    <property name="copyHelper" ref="copyHelperThenStore" />
+    <property name="editService" ref="editor.imageEditService" />
     <property name="saveImageHelper">
       <bean class="org.vortikal.web.actions.SaveImageHelper" />
     </property>

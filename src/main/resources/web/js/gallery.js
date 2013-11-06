@@ -114,8 +114,8 @@
     
     // Fullscreen resize
     var maxRuns = 0;
-    $(window).resize($.debounce(150, function () {
-      if (maxRuns < 2) {
+    $(window).resize($.throttle(250, function () {
+      if (maxRuns < 2 || !$.browser.msie) {
         if(isFullscreen || isResponsive) {
           resizeFullscreen(true);
         }

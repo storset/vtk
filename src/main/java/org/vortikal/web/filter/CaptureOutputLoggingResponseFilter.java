@@ -57,27 +57,27 @@ import org.vortikal.web.servlet.HeaderAwareResponseWrapper;
 
 /**
  * HTTP protocol logger/dumper. Logs headers and body by providing a request and
- * response filter in bean context, and then logging the captured data when
- * a {@link ServletRequestHandletEvent } is received.
+ * response filter in bean context, and then logging the captured data when a
+ * {@link ServletRequestHandletEvent } is received.
  * 
  * There is one log message sent per request-response cycle, and log output will
- * consist of multiple lines of data. So configuring a separate log appender/formatter
- * for this class makes sense. It will generally use a logger with the same
- * name as the fully qualified class, but if a specific service is configured, that
- * service name will be appended to the logger id.
+ * consist of multiple lines of data. So configuring a separate log
+ * appender/formatter for this class makes sense. It will generally use a logger
+ * with the same name as the fully qualified class, but if a specific service is
+ * configured, that service name will be appended to the logger id.
  * 
  * Note: in order for logging to occur, you must also configure an instance of
  * {@link CaptureInputRequestFilter} in the bean context.
  * 
  * @see CaptureInputRequestFilter
  */
-public class CaptureOutputLoggingResponseFilter extends AbstractResponseFilter 
-    implements ApplicationListener<ServletRequestHandledEvent>, InitializingBean {
+public class CaptureOutputLoggingResponseFilter extends AbstractResponseFilter implements
+        ApplicationListener<ServletRequestHandledEvent>, InitializingBean {
 
     private int maxLogBytesBody = 4096;
     private Service service;
     private Log logger;
-        
+
     @Override
     public void afterPropertiesSet() throws Exception {
         String loggerId = CaptureOutputLoggingResponseFilter.class.getName();
@@ -86,7 +86,7 @@ public class CaptureOutputLoggingResponseFilter extends AbstractResponseFilter
         }
         this.logger = LogFactory.getLog(loggerId);
     }
-    
+
     @Override
     public HttpServletResponse filter(HttpServletRequest request, HttpServletResponse response) {
 
@@ -108,19 +108,19 @@ public class CaptureOutputLoggingResponseFilter extends AbstractResponseFilter
         // data to log
 
         BaseContext ctx = BaseContext.getContext();
-        CaptureInputRequestWrapper reqWrap = (CaptureInputRequestWrapper) ctx.getAttribute(CaptureInputRequestWrapper.class
-                .getName());
-        CaptureOutputResponseWrapper resWrap = (CaptureOutputResponseWrapper) ctx.getAttribute(CaptureOutputResponseWrapper.class
-                .getName());
+        CaptureInputRequestWrapper reqWrap = (CaptureInputRequestWrapper) ctx
+                .getAttribute(CaptureInputRequestWrapper.class.getName());
+        CaptureOutputResponseWrapper resWrap = (CaptureOutputResponseWrapper) ctx
+                .getAttribute(CaptureOutputResponseWrapper.class.getName());
 
         if (reqWrap == null) {
             logger.warn("No request wrapper found in thread local context, check that input capture filter is configured.");
         }
-        
+
         if (reqWrap == null || resWrap == null) {
             return;
         }
-        
+
         StringBuilder logbuf = new StringBuilder();
 
         // Request
@@ -130,11 +130,11 @@ public class CaptureOutputLoggingResponseFilter extends AbstractResponseFilter
         addHeadersForLogging(reqWrap, logbuf);
         logbuf.append('\n');
         byte[] body = reqWrap.getInputBytes();
-        
+
         if (body.length > 0) {
             addBytesForLogging(body, reqWrap.getHeader("Content-Type"), logbuf);
         }
-        
+
         // Response
         logbuf.append("\n--- RESPONSE:\n");
         logbuf.append(resWrap.getStatus()).append('\n');
@@ -143,14 +143,16 @@ public class CaptureOutputLoggingResponseFilter extends AbstractResponseFilter
         body = resWrap.getOutputBytes();
 
         if (body.length > 0) {
-            addBytesForLogging(body, resWrap.getHeaderValue("Content-Type") != null ? resWrap.getHeaderValue("Content-Type").toString() : null, logbuf);
+            addBytesForLogging(body,
+                    resWrap.getHeaderValue("Content-Type") != null ? resWrap.getHeaderValue("Content-Type").toString()
+                            : null, logbuf);
         }
-        
+
         logbuf.append("\n--- END\n");
-        
+
         logger.info(logbuf.toString());
     }
-    
+
     private boolean logForService(Service requestService) {
         if (this.service == null) {
             return true;
@@ -163,30 +165,30 @@ public class CaptureOutputLoggingResponseFilter extends AbstractResponseFilter
         }
         return false;
     }
-    
+
+    @SuppressWarnings("unchecked")
     private void addHeadersForLogging(CaptureInputRequestWrapper requestWrapper, StringBuilder logBuffer) {
         Enumeration<String> headerNames = requestWrapper.getHeaderNames();
         while (headerNames.hasMoreElements()) {
             String headerName = headerNames.nextElement();
-            if (!headerName.equalsIgnoreCase("Authorization")
-                 && !headerName.equalsIgnoreCase("SSL_SERVER_CERT")) {
+            if (!headerName.equalsIgnoreCase("Authorization") && !headerName.equalsIgnoreCase("SSL_SERVER_CERT")) {
                 logBuffer.append(headerName).append(": ").append(requestWrapper.getHeader(headerName)).append('\n');
             } else {
                 logBuffer.append(headerName).append(": ****\n");
             }
         }
     }
-    
+
     private void addHeadersForLogging(CaptureOutputResponseWrapper responseWrapper, StringBuilder logBuffer) {
-        for (Iterator<String> it= responseWrapper.getHeaderNames(); it.hasNext(); ) {
+        for (Iterator<String> it = responseWrapper.getHeaderNames(); it.hasNext();) {
             String header = it.next();
             List<?> values = responseWrapper.getHeaderValues(header);
-            for (Object value: values) {
+            for (Object value : values) {
                 logBuffer.append(header).append(": ").append(value).append('\n');
             }
         }
     }
-    
+
     private void addBytesForLogging(byte[] data, String contentType, StringBuilder logBuffer) {
         int logBytes = Math.min(maxLogBytesBody, data.length);
         String rawString = getRawAsciiString(data, 0, logBytes, isProbablyBinary(contentType));
@@ -195,12 +197,12 @@ public class CaptureOutputLoggingResponseFilter extends AbstractResponseFilter
             logBuffer.append(" [").append(data.length - logBytes).append(" more bytes truncated ...]");
         }
     }
-    
+
     private String getRawAsciiString(byte[] b, int offset, int length, boolean replaceUnprintable) {
         char[] rawChars = new char[b.length];
         int j = 0;
         for (int i = offset; i < length; i++) {
-            char c = (char)b[i];
+            char c = (char) b[i];
             if (replaceUnprintable && (c < 0x20 || c > 0x7F)) {
                 c = '.';
             }
@@ -208,16 +210,15 @@ public class CaptureOutputLoggingResponseFilter extends AbstractResponseFilter
         }
         return new String(rawChars, 0, j);
     }
-    
+
     private boolean isProbablyBinary(String contentTypeHeaderValue) {
-        if (contentTypeHeaderValue == null) return true;
+        if (contentTypeHeaderValue == null)
+            return true;
         if (contentTypeHeaderValue.matches("^[^/]+/xml")) {
             return false;
         }
         return !contentTypeHeaderValue.startsWith("text/");
     }
-
-
 
     private class CaptureOutputResponseWrapper extends HeaderAwareResponseWrapper {
 
@@ -235,7 +236,7 @@ public class CaptureOutputLoggingResponseFilter extends AbstractResponseFilter
             }
             return new PrintWriter(this.writerWrapper);
         }
-        
+
         @Override
         public ServletOutputStream getOutputStream() throws IOException {
             if (this.streamWrapper == null) {
@@ -254,7 +255,7 @@ public class CaptureOutputLoggingResponseFilter extends AbstractResponseFilter
             return new byte[0];
         }
     }
-    
+
     private class WriterCopyWrapper extends Writer {
 
         private Writer wrappedWriter;
@@ -264,7 +265,7 @@ public class CaptureOutputLoggingResponseFilter extends AbstractResponseFilter
             this.wrappedWriter = wrappedWriter;
             this.streamCopyBuffer = new StringWriter();
         }
-        
+
         @Override
         public void write(char[] cbuf, int off, int len) throws IOException {
             this.wrappedWriter.write(cbuf, off, len);
@@ -275,28 +276,27 @@ public class CaptureOutputLoggingResponseFilter extends AbstractResponseFilter
         public void close() throws IOException {
             this.wrappedWriter.close();
         }
-        
+
         @Override
         public void flush() throws IOException {
             this.wrappedWriter.flush();
         }
-        
+
         String getOutputString() {
             return this.streamCopyBuffer.toString();
         }
-    }        
-
+    }
 
     private class OutputStreamCopyWrapper extends ServletOutputStream {
 
         private ByteArrayOutputStream streamCopyBuffer;
         private OutputStream wrappedStream;
-        
+
         OutputStreamCopyWrapper(OutputStream wrappedStream) {
             this.wrappedStream = wrappedStream;
             this.streamCopyBuffer = new ByteArrayOutputStream();
         }
-        
+
         @Override
         public void write(int b) throws IOException {
             this.wrappedStream.write(b);
@@ -309,16 +309,16 @@ public class CaptureOutputLoggingResponseFilter extends AbstractResponseFilter
         public void close() throws IOException {
             this.wrappedStream.close();
         }
-        
+
         public byte[] getOutputBytes() {
             return this.streamCopyBuffer.toByteArray();
         }
     }
-    
+
     /**
      * Set max number of raw bytes to log for body of request and response.
      * Default value is 4096 bytes.
-     *
+     * 
      * @param maxLogBytesBody
      */
     public void setMaxLogBytesBody(int maxLogBytesBody) {
@@ -327,14 +327,15 @@ public class CaptureOutputLoggingResponseFilter extends AbstractResponseFilter
         }
         this.maxLogBytesBody = maxLogBytesBody;
     }
-    
+
     /**
      * Set an explicit service filter for logging. Only requests for this
      * particular service (or any child service) will be logged.
-     * @param service 
+     * 
+     * @param service
      */
     public void setService(Service service) {
         this.service = service;
     }
-   
+
 }

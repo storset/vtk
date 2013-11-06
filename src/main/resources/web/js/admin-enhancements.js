@@ -113,6 +113,7 @@ function VrtxAdmin() {
 
   // Application logic
   this.editorSaveButtonName = "";
+  this.editorSaveButton = null;
   this.editorSaveIsRedirectView = false;
   this.asyncEditorSavedDeferred = null;
   this.asyncGetFormsInProgress = 0;
@@ -2208,6 +2209,7 @@ function editorInteraction(vrtxAdm, _$) {
     vrtxAdm.cachedAppContent.on("click", ".vrtx-save-button input", function (e) {
       var link = _$(this);
       vrtxAdm.editorSaveButtonName = link.attr("name");
+      vrtxAdm.editorSaveButton = link;
       vrtxAdm.editorSaveIsRedirectView = (this.id === "saveAndViewButton" || this.id === "saveViewAction");
       ajaxSave();
       _$.when(vrtxAdm.asyncEditorSavedDeferred).done(function () {
@@ -2260,7 +2262,7 @@ function handleAjaxSaveErrors(xhr, textStatus) {
     } else {
       var msg = vrtxAdmin.serverFacade.error(xhr, textStatus, false);
       if(msg === "RE_AUTH") {
-        reAuthenticateRetokenizeForms(link);
+        reAuthenticateRetokenizeForms();
       } else if(msg === "LOCKED") {
         var d = new VrtxConfirmDialog({
           msg: vrtxAdm.serverFacade.errorMessages.lockStolen.replace(/XX/, vrtxAdm.lockedBy),
@@ -2282,60 +2284,6 @@ function handleAjaxSaveErrors(xhr, textStatus) {
       }
     }
   }
-}
-
-function ctrlSEventHandler(_$, e) {
-  if (!_$("#dialog-loading:visible").length) {
-    _$(".vrtx-focus-button:last input").click();
-  }
-  e.preventDefault();
-  return false;
-}
-
-function ajaxSaveAsCopy() {
-  var vrtxAdm = vrtxAdmin,
-  _$ = vrtxAdm._$;
-  
-  // Create copy
-  vrtxAdm.serverFacade.getJSON(location.pathname + "?vrtx=admin&service=copy-resource-backup&uri=" + location.pathname, {
-    success: function (results, status, resp) {
-      var copyUri = results[0].uri;
-      var copyEditUri = copyUri + "?vrtx=admin&mode=editor&action=edit";
-      
-      // Open editor for copy in iframe to create lock and get token
-      vrtxAdm.cachedBody.append("<iframe id='copy-edit-iframe' style='display: none' src='" + copyEditUri + "'></frame>");
-      var waitForCopyEditor = setTimeout(function() {
-        var copyIframe = vrtxAdm.cachedBody.find("iframe#copy-edit-iframe");
-        var copyIframeContents = copyIframe.contents();
-        if(copyIframeContents) {
-          var copyEditEditorToken = copyIframeContents.find("form#editor input[name='csrf-prevention-token']");
-          if(copyEditEditorToken.length) { // Update form with copy token and action
-            var editor = _$("form#editor");
-            editor.find("input[name='csrf-prevention-token']").val(copyEditEditorToken.val());
-            editor.attr("action", copyEditUri);
-            vrtxAdm.clientLastModified = vrtxAdm.serverLastModified; // Proceed
-            ajaxSave();
-            $.when(vrtxAdm.asyncEditorSavedDeferred).done(function () {
-              if(!vrtxAdm.editorSaveIsRedirectView) {
-                location.href = copyEditUri;
-              } else {
-                var isCollection = $("#resource-title.true").length;
-                if(isCollection) {
-                  location.href = copyEditUri.split("?")[0] + "?vrtx=admin&action=preview";
-                } else {
-                  location.href = copyEditUri.split("?")[0] + "/?vrtx=admin";
-                }
-              }
-            }).fail(handleAjaxSaveErrors);
-          } else {
-            setTimeout(arguments.callee, 15);
-          }
-        } else {
-          setTimeout(arguments.callee, 15);
-        }
-      }, 15);
-    }
-  });
 }
 
 function ajaxSave() {
@@ -2374,6 +2322,9 @@ function ajaxSave() {
   if (typeof $.fn.ajaxSubmit !== "function") {
     $.getScript(rootUrl + "/jquery/plugins/jquery.form.js", function () {
       futureFormAjax.resolve();
+    }).fail(function(xhr, textStatus, errMsg) {
+      d.close();
+      vrtxAdm.asyncEditorSavedDeferred.rejectWith(this, [xhr, textStatus]);
     });
   } else {
     futureFormAjax.resolve();
@@ -2425,7 +2376,7 @@ function isServerLastModifiedOlderThanClientLastModified(d) {
         isOlder = false;
       }
     },
-    error: function (xhr, textStatus) {
+    error: function (xhr, textStatus, errMsg) {
       d.close();
       vrtxAdmin.asyncEditorSavedDeferred.rejectWith(this, [xhr, textStatus]);
       isOlder = false;
@@ -2454,7 +2405,74 @@ function serverTimeFormatToClientTimeFormat(time) {
                   parseInt(time[3], 10), parseInt(time[4], 10), parseInt(time[5], 10));
 }
 
-function reAuthenticateRetokenizeForms(link) {  
+/* After reject save */
+
+function ajaxSaveAsCopy() {
+  var vrtxAdm = vrtxAdmin,
+  _$ = vrtxAdm._$;
+
+  if(/\/$/i.test(location.pathname)) { // Folder
+    var d = new VrtxMsgDialog({
+      msg: vrtxAdm.serverFacade.errorMessages.cantBackupFolder,
+      title: vrtxAdm.serverFacade.errorMessages.cantBackupFolderTitle,
+      width: 400
+    });
+    d.open();
+    return false;
+  }
+  
+  // POST create the copy
+  var form = $("#backupForm");
+  var url = form.attr("action");
+  var dataString = form.serialize();
+  _$.ajax({
+    type: "POST",
+    url: url,
+    data: dataString,
+    dataType: "html",
+    contentType: "application/x-www-form-urlencoded;charset=UTF-8",
+    success: function (results, status, resp) {
+      var copyUri = resp.getResponseHeader('Location');
+      var copyEditUri = copyUri + location.search;
+      
+      // GET editor for the copy to get token etc.
+      _$.ajax({
+        type: "GET",
+        url: copyEditUri,
+        dataType: "html",
+        success: function (results, status, resp) {
+
+          // Update form with the copy token and set action to copy uri
+          var copyEditEditorToken = _$(_$.parseHTML(results)).find("form#editor input[name='csrf-prevention-token']");
+          var editor = _$("form#editor");
+          editor.find("input[name='csrf-prevention-token']").val(copyEditEditorToken.val());
+          editor.attr("action", copyEditUri);
+          vrtxAdm.clientLastModified = vrtxAdm.serverLastModified; // Make sure we can proceed
+          ajaxSave();
+          _$.when(vrtxAdm.asyncEditorSavedDeferred).done(function () {
+            if(!vrtxAdm.editorSaveIsRedirectView) {
+              location.href = copyEditUri;
+            } else {
+              location.href = copyUri + "/?vrtx=admin";
+            }
+          }).fail(handleAjaxSaveErrors);
+        },
+        error: function (xhr, textStatus, errMsg) {
+          handleAjaxSaveErrors(xhr, textStatus);
+        }
+      });
+    },
+    error: function (xhr, textStatus, errMsg) {
+      if(xhr.status === 423) {
+        xhr.status = 4233;
+        handleAjaxSaveErrors(xhr, textStatus);
+      }
+      handleAjaxSaveErrors(xhr, textStatus);
+    }
+  });
+}
+
+function reAuthenticateRetokenizeForms() {  
   // Open reauth dialog
   var d = new VrtxHtmlDialog({
     name: "reauth-open",
@@ -2481,9 +2499,9 @@ function reAuthenticateRetokenizeForms(link) {
             if(xhr.status === 0) {
               setTimeout(self, timerDelay);
             } else {
-              retokenizeFormsOpenSaveDialog(link, d2);
+              retokenizeFormsOpenSaveDialog(d2);
             }
-          } 
+          }
         });
       }, timerDelay);
     },
@@ -2497,11 +2515,15 @@ function reAuthenticateRetokenizeForms(link) {
   cancelBtnSpan.unwrap();
 }
 
-function retokenizeFormsOpenSaveDialog(link, d2) {
+function retokenizeFormsOpenSaveDialog(d2) {
   // Repopulate tokens
   var current = $("body input[name='csrf-prevention-token']");
   var currentLen = current.length;
-  vrtxAdmin.serverFacade.getHtml(location.href, {
+  
+  $.ajax({
+    type: "GET",
+    url: location.href,
+    cache: false,
     success: function (results, status, resp) {
       var updated = $($.parseHTML(results)).find("input[name='csrf-prevention-token']");
       for(var i = 0; i < currentLen; i++) {
@@ -2518,13 +2540,25 @@ function retokenizeFormsOpenSaveDialog(link, d2) {
         title: vrtxAdmin.serverFacade.errorMessages.sessionValidatedTitle,
         onOk: function() {
           // Trigger save
-          link.click();
+          vrtxAdmin.editorSaveButton.click();
         },
         btnTextOk: vrtxAdmin.serverFacade.errorMessages.sessionValidatedOk
       });
       d.open();
+    },
+    error: function (xhr, textStatus, errMsg) {
+      d2.close();
+      handleAjaxSaveErrors(xhr, textStatus);
     }
   });
+}
+
+function ctrlSEventHandler(_$, e) {
+  if (!_$("#dialog-loading:visible").length) {
+    _$(".vrtx-focus-button:last input").click();
+  }
+  e.preventDefault();
+  return false;
 }
 
 
@@ -3530,7 +3564,6 @@ VrtxAdmin.prototype.serverFacade = {
   error: function (xhr, textStatus, useStatusCodeInMsg) { // TODO: detect function origin
     var status = xhr.status;
     var msg = "";
-    
     if (textStatus === "timeout") {
       msg = this.errorMessages.timeout;
     } else if (textStatus === "abort") {
@@ -3561,22 +3594,26 @@ VrtxAdmin.prototype.serverFacade = {
     } else if (status === 403) {
       msg = (useStatusCodeInMsg ? status + " - " : "") + this.errorMessages.s403;
     } else if (status === 404) {
+      msg = (useStatusCodeInMsg ? status + " - " : "") + this.errorMessages.s404;
+    } else if (status === 423) {
       var serverFacade = this;
       vrtxAdmin._$.ajax({
         type: "GET",
         url: location.href,
         async: false,
-        success: function (results, status, resp) { // Exists - soneone has locked it
-          msg = useStatusCodeInMsg ? serverFacade.errorMessages.s404 : "LOCKED";
-          vrtxAdm.lockedBy = $($.parseHTML(results)).find("#resource-locked-by").html();
-          $("#resourceMenuRight").html($($.parseHTML(results)).find("#resourceMenuRight").html());
+        success: function (results, status, resp) {
+          msg = useStatusCodeInMsg ? serverFacade.errorMessages.s423 : "LOCKED";
+          results = $($.parseHTML(results));
+          vrtxAdmin.lockedBy = results.find("#resource-locked-by").html();
+          $("#resourceMenuRight").html(results.find("#resourceMenuRight").html());
           vrtxAdmin.globalAsyncComplete();
         },
-        error: function (xhr, textStatus) {         // Removed/moved
-          msg = (useStatusCodeInMsg ? status + " - " : "") + serverFacade.errorMessages.s404;
+        error: function (xhr, textStatus) {
+          msg = serverFacade.error(xhr, textStatus, useStatusCodeInMsg);
         }
       });
-      
+    } else if (status === 4233) { // Parent locked
+      msg = (useStatusCodeInMsg ? status + " - " : "") + this.errorMessages.s4233;
     } else {
       msg = (useStatusCodeInMsg ? status + " - " : "") + this.errorMessages.general + " " + textStatus;
     }

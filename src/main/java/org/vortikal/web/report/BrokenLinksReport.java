@@ -61,7 +61,6 @@ import org.vortikal.repository.search.query.OrQuery;
 import org.vortikal.repository.search.query.PropertyExistsQuery;
 import org.vortikal.repository.search.query.PropertyTermQuery;
 import org.vortikal.repository.search.query.Query;
-import org.vortikal.repository.search.Search.FilterFlag;
 import org.vortikal.repository.search.query.TermOperator;
 import org.vortikal.repository.search.query.UriPrefixQuery;
 import org.vortikal.web.service.URL;
@@ -324,8 +323,8 @@ public class BrokenLinksReport extends DocumentReporter {
             search.removeFilterFlag(Search.FilterFlag.UNPUBLISHED);
             PropertyTermQuery ptq = new PropertyTermQuery(this.publishedPropDef, "true", TermOperator.NE);
             topLevelQ.add(ptq);
-        } 
-        
+        }
+
         return search;
     }
 

@@ -73,7 +73,7 @@
     </#if>
     
     <#if photographer != "">
-      <#local description = description + " ${vrtx.getMsg('imageAsHtml.byline')}: " + photographer + "." />
+      <#local description = description + " &lt;p&gt;${vrtx.getMsg('imageAsHtml.byline')}: " + photographer + ".&lt;/p&gt;" />
     </#if>
 
     <#assign url = imageEntry.url />

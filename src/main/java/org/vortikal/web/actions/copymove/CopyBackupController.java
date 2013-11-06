@@ -1,13 +1,9 @@
 package org.vortikal.web.actions.copymove;
 
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.net.URLDecoder;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
@@ -15,6 +11,7 @@ import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.ResourceLockedException;
 import org.vortikal.web.RequestContext;
 
 
@@ -24,53 +21,49 @@ public class CopyBackupController implements Controller {
 
     @Override
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        String uri = null;
+        Path resourceToCopySrcUri = null;
         try {
-            uri = (String) request.getParameter("uri");
+            String uri = URLDecoder.decode((String) request.getParameter("uri"), "UTF-8");
+            resourceToCopySrcUri = Path.fromStringWithTrailingSlash(uri);
         } catch (Exception e) {
-            badRequest(e, response);
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             return null;
         }
-        if (uri == null) {
+        if (resourceToCopySrcUri == null) {
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             return null;
         }
-        
-        int uriLen = uri.length() - 1;
-        if(uri.lastIndexOf("/") == uriLen) {
-            uri = uri.substring(0, uriLen);
-        }
-        
+
         // Retrieve resource
         RequestContext requestContext = RequestContext.getRequestContext();
-        Path resourceToCopySrcUri = Path.fromString(uri);
         String token = requestContext.getSecurityToken();
         Repository repository = requestContext.getRepository();
         Resource resource = repository.retrieve(token, resourceToCopySrcUri, false);
         
-        // Copy resource
-        Path resourceCopyDestUri = copyHelper.makeDestUri(resourceToCopySrcUri, repository, token, resource);
-        repository.copy(token, resourceToCopySrcUri, resourceCopyDestUri, false, true);
-
-        response.setStatus(HttpServletResponse.SC_OK);
-        response.setContentType("text/plain;charset=utf-8");
-        PrintWriter writer = response.getWriter();
-        try {
-            writer.print("[{\"uri\":\"" + resourceCopyDestUri + "\" }]");
-        } finally {
-            writer.close();
+        // If resource is a collection OR parent resource does NOT equals request resource
+        if(resource.isCollection() || !requestContext.getResourceURI().equals(resource.getURI().getParent())) {
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            return null;
         }
         
-        return null;
-    }
-    
-    private void badRequest(Throwable e, HttpServletResponse response) throws IOException {
-        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        PrintWriter writer = response.getWriter();
+        // Copy resource
+        Path resourceCopyDestUri = null;
         try {
-            writer.write(e.getMessage());
-        } finally {
-            writer.close();
+          resourceCopyDestUri = copyHelper.makeDestUri(resourceToCopySrcUri, repository, token, resource);
+          repository.copy(token, resourceToCopySrcUri, resourceCopyDestUri, false, true);
+        } catch (ResourceLockedException rle) {
+          response.setStatus(423);
+          return null;
+        } catch (Exception e) {
+          response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+          return null;
         }
+        
+        // Return 201 with destination uri in the Location-header
+        response.setStatus(HttpServletResponse.SC_CREATED);
+        response.setHeader("Location", resourceCopyDestUri.toString());
+        
+        return null;
     }
 
     @Required

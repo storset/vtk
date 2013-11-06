@@ -337,10 +337,9 @@ public class ManuallyApproveResourcesSearcher {
             if (url.getHost().equals(localHostURL.getHost())) {
                 // Is an url ref to a resource on local host
                 return url.getPath();
-            } else {
-                // Is an url to resource on some other host
-                return null;
             }
+            // Is an url to resource on some other host
+            return null;
         } catch (Exception e) {
             // Not an url, continue and assume a path
         }

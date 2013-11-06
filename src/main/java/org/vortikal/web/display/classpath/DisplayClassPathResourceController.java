@@ -33,7 +33,6 @@ package org.vortikal.web.display.classpath;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.URLConnection;
 import java.util.Collection;
 import java.util.HashMap;
@@ -64,15 +63,16 @@ import org.vortikal.web.service.URL;
 
 /**
  * Controller that serves class path resources.
- *
- * <p>Configurable JavaBean properties:
+ * 
+ * <p>
+ * Configurable JavaBean properties:
  * <ul>
- *   <li><code>headers</code> - map of (name, value) pairs that will 
- *   be sent as response headers</li> 
+ * <li><code>headers</code> - map of (name, value) pairs that will be sent as
+ * response headers</li>
  * </ul>
  */
-public class DisplayClassPathResourceController 
-  implements Controller, LastModified, InitializingBean, ApplicationContextAware {
+public class DisplayClassPathResourceController implements Controller, LastModified, InitializingBean,
+        ApplicationContextAware {
 
     private Log logger = LogFactory.getLog(this.getClass());
     private Map<Path, String> locationsMap;
@@ -84,7 +84,7 @@ public class DisplayClassPathResourceController
     public void setApplicationContext(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
     }
-    
+
     public void setHeaders(Map<String, String> headers) {
         this.headers = headers;
     }
@@ -92,17 +92,16 @@ public class DisplayClassPathResourceController
     public void setHandleLastModified(boolean handleLastModified) {
         this.handleLastModified = handleLastModified;
     }
-    
-    @SuppressWarnings("unchecked")
+
     @Override
     public void afterPropertiesSet() throws Exception {
 
         Map<String, StaticResourceLocation> matchingBeans = BeanFactoryUtils.beansOfTypeIncludingAncestors(
-            this.applicationContext, StaticResourceLocation.class, true, false);
+                this.applicationContext, StaticResourceLocation.class, true, false);
         Collection<StaticResourceLocation> allLocations = matchingBeans.values();
         this.locationsMap = new HashMap<Path, String>();
 
-        for (StaticResourceLocation location: allLocations) {
+        for (StaticResourceLocation location : allLocations) {
             Path uri = location.getPrefix();
             String resourceLocation = location.getResourceLocation();
             this.locationsMap.put(uri, resourceLocation);
@@ -112,10 +111,8 @@ public class DisplayClassPathResourceController
         }
     }
 
-
     @Override
-    public ModelAndView handleRequest(HttpServletRequest request,
-            HttpServletResponse response) throws Exception {
+    public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
         if (!("GET".equals(request.getMethod()) || "HEAD".equals(request.getMethod()))) {
             response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
@@ -125,9 +122,11 @@ public class DisplayClassPathResourceController
         Resource resource = resolveResource(request);
         if (resource == null || !resource.exists()) {
             if (this.logger.isDebugEnabled()) {
-                this.logger.debug("Unable to serve resource: " + resource
-                                  + " from " + resource.getDescription()
-                                  + ": resource does not exist");
+                StringBuilder sb = new StringBuilder("Unable to serve resource: " + resource);
+                if (resource != null) {
+                    sb.append(" from " + resource.getDescription() + ": resource does not exist");
+                }
+                this.logger.debug(sb.toString());
             }
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
             return null;
@@ -137,33 +136,30 @@ public class DisplayClassPathResourceController
             Stream stream = openStream(resource);
             InputStream inStream = stream.stream;
             int contentLength = stream.contentLength;
-            
+
             response.setContentType(MimeHelper.map(request.getRequestURI()));
             if (contentLength != -1) {
-            	response.setContentLength(contentLength);
+                response.setContentLength(contentLength);
             }
-            for (String header: this.headers.keySet()) {
+            for (String header : this.headers.keySet()) {
                 response.addHeader(header, this.headers.get(header));
             }
-            
+
             if ("GET".equals(request.getMethod())) {
                 StreamUtil.pipe(inStream, response.getOutputStream(), 4096, true);
             }
-            
+
             if (this.logger.isDebugEnabled()) {
-                this.logger.debug("Successfully served resource: " + resource
-                                  + " from " + resource.getDescription());
+                this.logger.debug("Successfully served resource: " + resource + " from " + resource.getDescription());
             }
         } catch (IOException e) {
             if (this.logger.isDebugEnabled()) {
-                this.logger.debug("Unable to serve resource: " + resource
-                                  + " from " + resource.getDescription(), e);
+                this.logger.debug("Unable to serve resource: " + resource + " from " + resource.getDescription(), e);
             }
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
         }
         return null;
     }
-
 
     @Override
     public long getLastModified(HttpServletRequest request) {
@@ -190,8 +186,7 @@ public class DisplayClassPathResourceController
         int contentLength = -1;
         InputStream stream;
     }
-    
-    
+
     private Stream openStream(Resource resource) throws IOException {
         Stream stream = new Stream();
         if (resource instanceof ClassPathResource) {
@@ -248,8 +243,8 @@ public class DisplayClassPathResourceController
         if (loc.startsWith("file://")) {
             String actualPath = loc.substring("file://".length());
             return new FileSystemResource(actualPath);
-        } 
-        
+        }
+
         if (loc.startsWith("classpath://")) {
             String actualPath = loc.substring("classpath://".length());
             return new ClassPathResource(actualPath);

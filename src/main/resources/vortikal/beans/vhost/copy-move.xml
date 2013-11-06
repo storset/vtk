@@ -171,16 +171,12 @@
     <property name="order" value="-9999" />
     <property name="assertions">
       <list>
+        <ref bean="manage.postRequestAssertion" />
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
           <property name="parameterName" value="service" />
           <property name="parameterValue" value="copy-resource-backup" />
         </bean>
-        <bean class="org.vortikal.web.service.RequestParameterExistsAssertion">
-          <property name="parameterName" value="uri" />
-        </bean>
-        <ref bean="resourceNotRootAssertion" />
-        <ref bean="requiresReadPermissionAssertion" />
-        <ref bean="writeParentPermissionAssertion" />
+        <ref bean="resourceInCollection" />
       </list>
     </property>
     <property name="handler" ref="copyBackupHandler" />
@@ -248,6 +244,20 @@
     <property name="copyAction" ref="copy.unpublishAfterCopyAction" />
   </bean>
   <bean id="copy.unpublishAfterCopyAction" class="org.vortikal.web.actions.copymove.UnpublishAfterCopyAction" />
+ 
+  <bean id="copyHelperThenStore" class="org.vortikal.web.actions.copymove.CopyHelper">
+    <property name="storeAfterCopyAction" ref="copy.imageStoreAfterCopyAction" />
+  </bean>
+  <bean id="copy.imageStoreAfterCopyAction" class="org.vortikal.web.actions.copymove.StoreAfterCopyAction">
+    <property name="preservedProperties">
+      <list>
+        <ref bean="userTitlePropDef" />
+        <ref bean="imageHtmlDescriptionPropDef" />
+        <ref bean="photographerPropDef" />
+      </list>
+    </property>
+  </bean> 
+  
   <bean id="copyHelper" class="org.vortikal.web.actions.copymove.CopyHelper" />
 
   <bean id="moveToSelectedFolderHandler" class="org.vortikal.web.actions.copymove.CopyMoveToSelectedFolderController">

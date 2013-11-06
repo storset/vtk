@@ -39,7 +39,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.edit.editor.ResourceWrapperManager;
-import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.RepositoryException;
 import org.vortikal.repository.Resource;
@@ -194,13 +193,13 @@ public class ResourceContextProvider implements InitializingBean, ReferenceDataP
         resourceContextModel.put("principal", principal);
         resourceContextModel.put("currentResource", resource);
         resourceContextModel.put("currentURI", requestContext.getResourceURI());
-        if(resource != null){
+        if (resource != null) {
             resourceContextModel.put("parentURI", resource.getURI().getParent());
         }
         if (parent != null) {
             resourceContextModel.put("parentResource", parent);
         }
-        
+
         resourceContextModel.put("currentServiceName", currentService.getName());
         try {
             resourceContextModel.put("currentServiceURL", currentService.constructURL(resource, principal));

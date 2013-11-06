@@ -1,4 +1,4 @@
-/* Copyright (c) 2012, University of Oslo, Norway
+/* Copyright (c) 2012,2013 University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -107,6 +107,14 @@ public class LinkCheckerTest {
         url = new java.net.URL("http://plain-ascii.com/foo/bar");
         assertEquals(url, LinkChecker.toIDN(url));
     }
+    
+    @Test
+    public void testValidateStatusHeadNotFoundButGetOK() {
+    	// Test case taken from real issue VTK-3434
+        URL base = URL.parse("http://www.usit.uio.no/index.html");
+    	String url = "http://www.washingtonpost.com/world/national-security/nsa-collects-millions-of-e-mail-address-books-globally/2013/10/14/8e58b5be-34f9-11e3-80c6-7e6dd8d22d8f_story.html";
+        testValidation(new TestLinkCheckObject(url, base, Status.OK, null));
+    }
 
     private void testValidation(List<TestLinkCheckObject> testLinks) {
 
@@ -125,14 +133,14 @@ public class LinkCheckerTest {
         if (testLink.expectedStatus != Status.MALFORMED_URL) {
             context.checking(new Expectations() {
                 {
-                    one(mockCache).get(href);
+                    oneOf(mockCache).get(href);
                     will(returnValue(null));
                 }
             });
 
             context.checking(new Expectations() {
                 {
-                    one(mockCache).put(new Element(href, expected));
+                    oneOf(mockCache).put(new Element(href, expected));
                 }
             });
         }

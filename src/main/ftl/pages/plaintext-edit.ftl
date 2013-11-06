@@ -58,6 +58,14 @@
 </head>
 <body id="vrtx-edit-plaintext">
   <div>
+  
+    <#assign backupURL = vrtx.linkConstructor(".", 'copyBackupService') />
+    <#assign backupViewURL = vrtx.relativeLinkConstructor("", 'viewService') />
+    <form id="backupForm" action="${backupURL?html}" method="post" accept-charset="UTF-8">
+      <@vrtx.csrfPreventionToken url=backupURL />
+      <input type="hidden" name="uri" value="${backupViewURL?html}" />
+    </form>
+  
     <form id="editor" action="${plaintextEditForm.submitURL}" method="post">
       <textarea id="foo" name="content" rows="30" cols="80">${plaintextEditForm.content?html}</textarea>
       <div class="vrtx-edit-plaintext-submit-buttons submitButtons">

@@ -30,6 +30,16 @@
   <#else>
   <div class="resourceInfo visualProfile">
   <h2><@vrtx.msg code="visualProfileAspect.edit" default="Edit visual profile"/></h2>
+  
+  <#if !resourceContext.currentResource.isCollection()>
+    <#assign backupURL = vrtx.linkConstructor(".", 'copyBackupService') />
+    <#assign backupViewURL = vrtx.relativeLinkConstructor("", 'viewService') />
+    <form id="backupForm" action="${backupURL?html}" method="post" accept-charset="UTF-8">
+      <@vrtx.csrfPreventionToken url=backupURL />
+      <input type="hidden" name="uri" value="${backupViewURL?html}" />
+    </form>
+  </#if>
+  
   <form id="editor" action="${form.submitURL?html}" method="post">
     <#assign formElementsSize = form.elements?size />
     <#list form.elements as element>

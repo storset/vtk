@@ -64,7 +64,7 @@
         });
         
         // Save and copy
-        _$("#editor").on("click", "#saveAndViewButton, #saveViewCopyButton, #saveCopyButton", function(e) {
+        _$("#editor").on("click", "#saveAndViewButton, #saveCopyButton", function(e) {
           var ok = performSave();
           if(!ok) return false;
           if(typeof vrtxImageEditor !== "undefined" && vrtxImageEditor.save && !vrtxImageEditor.savedImage) {
@@ -112,7 +112,7 @@
       function performSave() {
         var ok = validTextLengthsInEditor(true);
         if(!ok) return false;
-      
+        
         saveMultipleInputFields();
         vrtxEditor.needToConfirm = false;
         return true;
@@ -202,6 +202,16 @@
         </div>
       </div>
     </div>
+    
+    <#if !resource.isCollection()>
+      <#assign backupURL = vrtx.linkConstructor(".", 'copyBackupService') />
+      <#assign backupViewURL = vrtx.relativeLinkConstructor("", 'viewService') />
+      <form id="backupForm" action="${backupURL?html}" method="post" accept-charset="UTF-8">
+        <@vrtx.csrfPreventionToken url=backupURL />
+        <input type="hidden" name="uri" value="${backupViewURL?html}" />
+      </form>
+    </#if>
+    
     <form action="" method="post" id="editor">
       <div class="properties"<#if isImage> id="image-properties"</#if>>
         <@propsForm resource.preContentProperties />

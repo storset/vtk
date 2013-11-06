@@ -37,23 +37,18 @@
   </div>
 </div>
   <script type="text/javascript"><!--
-            $(document).ready(function () {
-                var h = $("#${inputFieldName}Descriptions").find(".shared-text-description");
-                $(h).hide();
-                if($("#${inputFieldName}").val() != ""){
-                    var d =  $("#${inputFieldName}Descriptions").find("." + $("#${inputFieldName}").val().replace(/\./g, "\\."));
-                    $(d).show();
-                }
-            }); 
-  
-            $("#${inputFieldName}").change(function(){
-                var h = $("#${inputFieldName}Descriptions").find(".shared-text-description");
-                $(h).hide();
-                if($("#${inputFieldName}").val() != ""){
-                    var d =  $("#${inputFieldName}Descriptions").find("." + $("#${inputFieldName}").val().replace(/\./g, "\\."));
-                    $(d).show();
-                }
-            }); 
+    function sharedTextChange() {
+      $("#${inputFieldName}Descriptions").find(".shared-text-description").hide();
+      var val = $("#${inputFieldName}").val();
+      if(val != "") {
+        var clazz = val.replace(/\./g, "\\.")
+                       .replace(/\+/g, "\\+")
+                       .replace(/\//g, "\\/");
+        $("#${inputFieldName}Descriptions").find("." + clazz).show();
+      }
+    }
+    $(document).ready(sharedTextChange); 
+    $("#${inputFieldName}").change(sharedTextChange); 
   // -->
   </script>
 </#macro>

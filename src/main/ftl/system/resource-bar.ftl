@@ -54,6 +54,8 @@
     outOfDate: "${vrtx.getMsg('ajaxError.out-of-date')}",
     outOfDateTitle: "${vrtx.getMsg('ajaxError.out-of-date.title')}",
     outOfDateOk: "${vrtx.getMsg('ajaxError.out-of-date.ok')}",
+    cantBackupFolderTitle: "${vrtx.getMsg('ajaxError.cant-backup-folder.title')}",
+    cantBackupFolder: "${vrtx.getMsg('ajaxError.cant-backup-folder')}",
     sessionInvalid: "${vrtx.getMsg('ajaxError.sessionInvalid')}",
     sessionInvalidTitle: "${vrtx.getMsg('ajaxError.sessionInvalid.title')}",
     sessionInvalidOk: "${vrtx.getMsg('ajaxError.sessionInvalid.ok')}",
@@ -68,8 +70,11 @@
     s401: "${vrtx.getMsg('ajaxError.s401')}",
     s403: "${vrtx.getMsg('ajaxError.s403')}",
     s404: "${vrtx.getMsg('ajaxError.s404')}",
+    s423: "${vrtx.getMsg('ajaxError.s423')}",
+    s4233: "${vrtx.getMsg('ajaxError.s423.parent')}", 
     customTitle: {
-      "0": "${vrtx.getMsg('ajaxError.offline.title')}"
+      "0": "${vrtx.getMsg('ajaxError.offline.title')}",
+      "4233": "${vrtx.getMsg('ajaxError.s423.parent.title')}"
     }
   };
   if(vrtxAdmin.hasFreeze) { // Make immutable

@@ -58,9 +58,9 @@
              </div>
           </#if>
           <div class="vrtx-message-line">
-            <span class="vrtx-message-line-last-modified-date">
-              <#local lastModifiedDateProp = vrtx.prop(message, 'lastModified') />
-              <@vrtx.date value=lastModifiedDateProp.dateValue format='long' locale=locale />
+            <span class="vrtx-message-line-publish-date">
+              <#local publishDateProp = vrtx.prop(message, 'publish-date') />
+              <@vrtx.date value=publishDateProp.dateValue format='long' locale=locale />
             </span>
             <#local numberOfComments = vrtx.prop(message, "numberOfComments") />
             <#if numberOfComments?has_content >

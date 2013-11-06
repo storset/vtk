@@ -52,12 +52,7 @@ public class LinkCheckFilter implements HtmlPageFilter, HtmlNodeFilter {
 
     @Override
     public boolean match(HtmlPage page) {
-        RequestContext requestContext = RequestContext.getRequestContext();
-        if (requestContext.getPrincipal() == null) {
-            return false;
-        }
-        HttpServletRequest request = requestContext.getServletRequest();
-        return "true".equals(request.getParameter("link-check"));
+        return match();
     }
     
     @Override
@@ -74,6 +69,11 @@ public class LinkCheckFilter implements HtmlPageFilter, HtmlNodeFilter {
         if (href == null) {
             return NodeResult.keep;
         }
+        
+        if (!match()) {
+            return NodeResult.keep;
+        }
+        
         HtmlAttribute clazz = element.getAttribute("class");
         if (clazz == null) {
             clazz = new SimpleAttr("class", this.elementClass);
@@ -84,12 +84,23 @@ public class LinkCheckFilter implements HtmlPageFilter, HtmlNodeFilter {
         return NodeResult.keep;
     }
     
+    
     @Override
     public HtmlContent filterNode(HtmlContent content) {
         filter(content);
         return content;
     }
     
+    private boolean match() {
+        if (!RequestContext.exists()) return false;
+        RequestContext requestContext = RequestContext.getRequestContext();
+        if (requestContext.getPrincipal() == null) {
+            return false;
+        }
+        HttpServletRequest request = requestContext.getServletRequest();
+        return "true".equals(request.getParameter("link-check"));
+    }
+        
     private static class SimpleAttr implements HtmlAttribute {
         private String name, value;
         private boolean singleQuotes = false;

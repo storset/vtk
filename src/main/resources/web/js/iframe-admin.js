@@ -111,7 +111,7 @@
     var msgLines = decodeURI(msg).split("\n");
       
     var msgUrlLineNr = 2;
-    var replacedUrl = encodeURIComponent(decodeURIComponent(msgLines[msgUrlLineNr]).replace(/#.*$/, "") + location.hash);
+    var replacedUrl = decodeURIComponent(msgLines[msgUrlLineNr]).replace(/#.*$/, "") + location.hash;
     msgLines[msgUrlLineNr] = replacedUrl;
 
     link[0].href = encodeURI(msgLines.join("\n"));

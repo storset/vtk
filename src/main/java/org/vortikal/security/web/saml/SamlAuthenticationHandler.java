@@ -201,9 +201,17 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
 
             resourceURL.removeParameter("authTicket");
 
+            boolean inManageMode = false;
+            if (manageAssertion.matches(request, null, null)) {
+                inManageMode = true;
+            }
+
             String backstepValue = request.getParameter(backstepParameter);
 
-            if (backstepValue != null) {
+            if (backstepValue != null && !inManageMode) {
+                if (request.getParameter("authTarget") == null) {
+                    resourceURL.addParameter("authTarget", "https");
+                }
                 resourceURL.addParameter(backstepParameter, backstepValue);
             }
 
@@ -214,10 +222,6 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
 
             String cookieTicket = iECookieStore.addToken(request, cookieMap).toString();
 
-            boolean inManageMode = false;
-            if (manageAssertion.matches(request, null, null)) {
-                inManageMode = true;
-            }
 
             URL currentURL = null;
             if (inManageMode) {

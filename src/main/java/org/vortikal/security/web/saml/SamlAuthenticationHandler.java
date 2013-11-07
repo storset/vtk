@@ -209,7 +209,7 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
             String backstepValue = request.getParameter(backstepParameter);
 
             if (backstepValue != null && !inManageMode) {
-                if (request.getParameter("authTarget") == null) {
+                if (resourceURL.getParameter("authTarget") == null) {
                     resourceURL.addParameter("authTarget", "https");
                 }
                 resourceURL.addParameter(backstepParameter, backstepValue);

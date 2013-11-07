@@ -114,7 +114,7 @@
     var replacedUrl = encodeURIComponent($.trim(decodeURIComponent(msgLines[msgUrlLineNr]).replace(/#.*$/, "")) + location.hash);
     msgLines[msgUrlLineNr] = replacedUrl;
 
-    link[0].href = msgLines.join(encodeURI("\n"));
+    link[0].href = msgLines.join(encodeURI("\n")); // Beware: encodeURI() around msgLines gives too much encoding in Thunderbird e-mail
   }
 
   // Remove preview-loading overlay and set height

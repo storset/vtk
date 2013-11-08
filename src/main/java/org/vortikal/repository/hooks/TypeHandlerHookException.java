@@ -29,37 +29,16 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.vortikal.util.web;
+package org.vortikal.repository.hooks;
 
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import org.springframework.http.client.SimpleClientHttpRequestFactory;
-import org.vortikal.util.codec.Base64;
+import org.vortikal.repository.RepositoryException;
 
 /**
- * Extends {@link SimpleClientHttpRequestFactory} and provides preemptive
- * basic authentication for created HTTP requests.
- * 
+ * Thrown by repository if failure occurs in a {@link TypeHandlerHooks}.
  */
-public class BasicAuthHttpRequestFactory extends SimpleClientHttpRequestFactory {
-
-    private String username;
-    private String password;
-
-    @Override
-    protected void prepareConnection(HttpURLConnection connection, String httpMethod) throws IOException {
-        super.prepareConnection(connection, httpMethod);
-        String u = this.username != null ? this.username : "";
-        String p = this.password != null ? this.password : "";
-        String encoded = Base64.encode(u + ":" + p);
-        connection.addRequestProperty("Authorization", "Basic " + encoded);
-    }
+public class TypeHandlerHookException extends RepositoryException {
     
-    public void setUsername(String username) {
-        this.username = username;
-    }
-    
-    public void setPassword(String password) {
-        this.password = password;
+    public TypeHandlerHookException(String message, Throwable cause) {
+        super(message, cause);
     }
 }

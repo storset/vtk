@@ -29,7 +29,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.vortikal.video.rest;
+package org.vortikal.videoref;
 
 import java.io.File;
 import java.net.URI;
@@ -47,13 +47,13 @@ import org.vortikal.repository.Resource;
  * 
  * TODO exceptions and error handling.
  */
-public class VideoApiClient {
+public class VideoappClient {
     
     private RestTemplate restTemplate;
     private String repositoryId;
     private String apiBaseUrl;
     
-    private Log logger = LogFactory.getLog(VideoApiClient.class);
+    private final Log logger = LogFactory.getLog(VideoappClient.class);
 
     /**
      * Create new video object in videoapp.
@@ -97,6 +97,7 @@ public class VideoApiClient {
     
     private VideoRef fromVideoAppVideo(JSONObject video) {
         VideoRef.Builder b = VideoRef.newBuilder().videoId(video.getString("videoId"));
+        b.status(video.getString("status"));
         b.sourceVideo(videoFileRef(video.getJSONObject("sourceVideoFile")));
         if (video.has("convertedVideoFile") && !video.getJSONObject("convertedVideoFile").isNullObject()) {
             b.convertedVideo(videoFileRef(video.getJSONObject("convertedVideoFile")));
@@ -111,14 +112,15 @@ public class VideoApiClient {
      * @param oldRef
      * @return a refreshed <code>VideoRef</code> instance.
      */
-    public VideoRef refreshVideo(VideoRef oldRef) {
+    public VideoRef refreshVideoRef(VideoRef oldRef) {
         VideoRef newRef = getVideo(oldRef.videoId());
         
         VideoRef.Builder refreshedBuilder = oldRef.copyBuilder();
         
         return refreshedBuilder.refUpdateTimestamp(new Date())
                         .sourceVideo(newRef.sourceVideo())
-                        .convertedVideo(newRef.convertedVideo()).build();
+                        .convertedVideo(newRef.convertedVideo())
+                        .status(newRef.status()).build();
     }
     
     private FileRef videoFileRef(JSONObject videoFileJson) {

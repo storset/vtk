@@ -39,6 +39,7 @@ import org.vortikal.util.text.JSON;
 
 import net.sf.json.JSONNull;
 import net.sf.json.JSONObject;
+import org.vortikal.repository.PropertyEvaluationContext.Type;
 
 import org.vortikal.repository.resourcetype.PropertyEvaluator;
 import org.vortikal.repository.resourcetype.ValueFactory;
@@ -49,23 +50,25 @@ import org.vortikal.repository.resourcetype.ValueFactory;
  */
 public class JsonExtractEvaluator implements PropertyEvaluator {
 
-    private ValueFactory vf;
+    private ValueFactory valueFactory;
     private String expression;
+    private boolean alwaysEvaluate = false;
     
     @Override
     public boolean evaluate(Property property, PropertyEvaluationContext ctx) throws PropertyEvaluationException {
         if (ctx.getContent() == null) {
             return false;
         }
-        if (ctx.getEvaluationType() == PropertyEvaluationContext.Type.ContentChange
-                || ctx.getEvaluationType() == PropertyEvaluationContext.Type.Create) {
+        if (alwaysEvaluate 
+                || ctx.getEvaluationType() == Type.ContentChange
+                || ctx.getEvaluationType() == Type.Create) {
 
             try {
                 JSONObject json = (JSONObject)ctx.getContent().getContentRepresentation(JSONObject.class);
-                Object o = JSON.select(json, this.expression);
+                Object o = JSON.select(json, expression);
                 if (o != null && !(o instanceof JSONNull)) {
                     String stringValue = o.toString();
-                    property.setValue(this.vf.createValue(stringValue, property.getType()));
+                    property.setValue(valueFactory.createValue(stringValue, property.getType()));
                     return true;
                 }
             } catch (Exception e) {}
@@ -84,6 +87,17 @@ public class JsonExtractEvaluator implements PropertyEvaluator {
     
     @Required
     public void setValueFactory(ValueFactory vf) {
-        this.vf = vf;
+        this.valueFactory = vf;
+    }
+
+    /**
+     * Specify whether to always evaluate from content regardless of current
+     * {@link Type evaluation type}. Normally, evaluation only occurs
+     * when content changes, but this setting can override that.
+     * 
+     * @param alwaysEvaluate 
+     */
+    public void setAlwaysEvaluate(boolean alwaysEvaluate) {
+        this.alwaysEvaluate = alwaysEvaluate;
     }
 }

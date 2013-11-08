@@ -40,8 +40,16 @@ import org.vortikal.repository.resourcetype.Content;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.Principal;
 
+/**
+ * Holds property evaluation state and info for and a single resource being
+ * changed.
+ */
 public class PropertyEvaluationContext {
 
+    /**
+     * Specifies what type of change that is occuring to resource under
+     * evaluation.
+     */
     public enum Type {
         Create,
         ContentChange,

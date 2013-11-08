@@ -1,4 +1,4 @@
-  /* Copyright (c) 2013, University of Oslo, Norway
+/* Copyright (c) 2013, University of Oslo, Norway
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,51 +28,21 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
-package org.vortikal.video.rest;
+package org.vortikal.repository;
 
 /**
- *
+ * Thrown when requested content for a resource is not available. Only ever
+ * thrown by
+ * {@link Repository#getAlternativeContent(java.lang.String, org.vortikal.repository.Path, boolean, java.lang.String) }.
  */
-public class FileRef {
-    
-    private final String contentType;
-    private final String path;
-    private final long size;
+public class NoSuchContentException extends RepositoryException {
 
-    public FileRef(String contentType, String path, long size) {
-        if (path == null) {
-            throw new IllegalArgumentException("path cannot be null");
-        }
-        if (size < 0) {
-            throw new IllegalArgumentException("size cannot be < 0");
-        }
-        this.path = path;
-        this.size = size;
-        this.contentType = contentType;
-    }
-
-    /**
-     * 
-     * @return Content type of media file. May be <code>null</code>.
-     */
-    public String contentType() {
-        return this.contentType;
-    }
-
-    /**
-     * 
-     * @return Local path to media file.
-     */
-    public String path() {
-        return this.path;
+    public NoSuchContentException(String message) {
+        super(message);
     }
     
-    /**
-     * @return Size of referenced media file in bytes.
-     */
-    public long size() {
-        return this.size;
+    public NoSuchContentException(String message, Throwable cause) {
+        super(message, cause);
     }
 
 }

@@ -50,9 +50,9 @@
     <property name="resourceTypeTree" ref="resourceTypeTree" />
     <property name="tempDir" value="${repository.tempDir}" />
     <property name="transactionManager" ref="repository.transactionManager"/>
-    <property name="contentHandlingInterceptors">
+    <property name="typeHandlerHooks">
       <list>
-        <ref bean="mediaref.video.contentHandlingInterceptor" />
+        <ref bean="videoref.videoContentHooks" />
       </list>
     </property>
   </bean>

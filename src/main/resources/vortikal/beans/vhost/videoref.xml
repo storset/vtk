@@ -35,40 +35,48 @@
             <bean class="org.vortikal.repository.resourcetype.property.JsonExtractEvaluator">
               <property name="valueFactory" ref="valueFactory" />
               <property name="expression" value="ref.videoId" />
+              <property name="alwaysEvaluate" value="true" />
             </bean>
           </property>
         </bean>
         
+        <!-- videoStatus property -->
+        <bean class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+          <property name="name" value="videoStatus" />
+          <property name="namespace" ref="DEFAULT_NAMESPACE" />
+          <property name="type" value="STRING" />
+          <property name="propertyEvaluator">
+            <bean class="org.vortikal.repository.resourcetype.property.JsonExtractEvaluator">
+              <property name="valueFactory" ref="valueFactory" />
+              <property name="expression" value="ref.status" />
+              <property name="alwaysEvaluate" value="true" />
+            </bean>
+          </property>
+        </bean>
+
         <!-- TODO add overriding contentType propdef with evaluator which looks in
              videoref (if available), falls back to standard evaluator otherwise. -->
       </list>
     </property>
   </bean>
   
-  <bean id="mediaref.video.contentHandlingInterceptor"
-       class="org.vortikal.repository.ResourceContentInterceptor">
+  <bean id="videoref.videoContentHooks"
+       class="org.vortikal.videoref.VideoContentHooks">
     <property name="videoStorageRoot" value="${mediaref.videoapp.videoStorageRootPath}" />
+    <property name="videoApiClient" ref="videoref.videoapp.client" />
     <property name="repositoryId" value="${repositoryID}" />
-    <property name="videoApiClient" ref="mediaref.video.appclient" />
-  </bean>
-  
-  <bean id="mediaref.video.restTemplate" class="org.springframework.web.client.RestTemplate" >
-    <constructor-arg>
-      <bean class="org.vortikal.util.web.BasicAuthHttpRequestFactory">
-        <property name="username" value="${mediaref.videoapp.username}" />
-        <property name="password" value="${mediaref.videoapp.password}" />
-      </bean>
-    </constructor-arg>
   </bean>
   
   <!-- Videoapp client -->
-  <bean id="mediaref.video.appclient" class="org.vortikal.video.rest.VideoApiClient">
+  <bean id="videoref.videoapp.client" class="org.vortikal.videoref.VideoappClient">
     <property name="restTemplate">
-      <bean id="mediaref.video.restTemplate" class="org.springframework.web.client.RestTemplate" >
+      <bean class="org.springframework.web.client.RestTemplate" >
         <constructor-arg>
           <bean class="org.vortikal.util.web.BasicAuthHttpRequestFactory">
             <property name="username" value="${mediaref.videoapp.username}" />
             <property name="password" value="${mediaref.videoapp.password}" />
+            <property name="connectTimeout" value="2000" />
+            <property name="readTimeout" value="60000" />
           </bean>
         </constructor-arg>
         <property name="messageConverters">

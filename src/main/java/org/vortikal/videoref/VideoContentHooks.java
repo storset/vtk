@@ -28,8 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
-package org.vortikal.repository;
+package org.vortikal.videoref;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -40,45 +39,55 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
-import org.vortikal.repository.content.VideoRefContent;
+import org.vortikal.repository.ContentStream;
+import org.vortikal.repository.InheritablePropertiesStoreContext;
+import org.vortikal.repository.Namespace;
+import org.vortikal.repository.NoSuchContentException;
+import org.vortikal.repository.Path;
+import org.vortikal.repository.Property;
+import org.vortikal.repository.ResourceImpl;
+import org.vortikal.repository.SystemChangeContext;
+import org.vortikal.repository.hooks.DefaultTypeHanderHooks;
 import org.vortikal.repository.resourcetype.Content;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.store.ContentStore;
 import org.vortikal.util.io.StreamUtil;
 import org.vortikal.util.io.StreamUtil.TempFile;
-import org.vortikal.video.rest.VideoApiClient;
-import org.vortikal.video.rest.VideoRef;
 
 /**
- * Interceptor which allows for specialized handling of resource content and
- * control over how resource shall be stored in regular repository.
- * 
- * TODO Rename and pull out a general interface, if we decide for this approach.
- *      Might be "content-centric" or just a generic set of well-defined hook points.
+ * Type handler extension which allows for specialized handling of video content
+ * and control over how resource shall be stored in regular repository.
  */
-public class ResourceContentInterceptor implements InitializingBean {
+public class VideoContentHooks extends DefaultTypeHanderHooks
+        implements InitializingBean {
 
     private static final String VIDEO_INPUT_DIRNAME = "videoinput";
-    
+
     private String videoStorageRoot;
+    private VideoappClient videoapp;
     private String repositoryId;
-    private VideoApiClient videoapp;
-    
-    private final Log logger = LogFactory.getLog(ResourceContentInterceptor.class);
-    
-    // TODO maybe use assertions instead of these predicate methods:
-    public boolean isSupportedContentType(String contentType) {
-        return contentType != null &&
-                ("video".equals(contentType) || contentType.startsWith("video/"));
+
+    private final Log logger = LogFactory.getLog(VideoContentHooks.class);
+
+    @Override
+    public String getApplicableContent() {
+        return "video/";
+    }
+
+    @Override
+    public String getApplicableResourceType() {
+        return "videoref";
+    }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName();
     }
     
-    public boolean isSupportedResourceType(String resourceType) {
-        return "videoref".equals(resourceType);
-    }
-    
-    public ResourceImpl interceptCreate(ResourceImpl resource,
-            InputStream stream, String contentType, ContentStore defaultContentStore) 
-            throws IOException {
+    @Override
+    public ResourceImpl onCreateDocument(ResourceImpl resource, InputStream stream,
+            String contentType)
+            throws Exception {
 
         // Dump input stream to file in video storage input area
         String name = resource.getURI().getName();
@@ -86,18 +95,32 @@ public class ResourceContentInterceptor implements InitializingBean {
 
         // Make a videoapp API call to create new getVideo
         VideoRef ref = this.videoapp.createVideo(resource, tempFile.getFile().getAbsolutePath(), contentType);
-        
+
         tempFile.delete();
-        
+
         // Store videoref getVideo JSON as resource main content
-        storeVideoRef(ref, resource.getURI(), defaultContentStore);
+        storeVideoRef(ref, resource.getURI(), getContentStore());
 
         // Return new resource for further type evaluation in repository
         return resource;
     }
-    
-    public ResourceImpl interceptStoreContent(ResourceImpl resource, InputStream stream, String contentType,
-            ContentStore defaultContentStore)
+
+    @Override
+    public ContentStream onGetAlternativeContentStream(ResourceImpl resource, String contentIdentifier)
+            throws NoSuchContentException, Exception {
+
+        if ("application/json".equals(contentIdentifier)) {
+            long length = getContentStore().getContentLength(resource.getURI());
+            InputStream stream = getContentStore().getInputStream(resource.getURI());
+            return new ContentStream(stream, length);
+        }
+
+        throw new NoSuchContentException("No such alternative content :"
+                + contentIdentifier + " for resource at " + resource.getURI());
+    }
+
+    @Override
+    public ResourceImpl onStoreContent(ResourceImpl resource, InputStream stream, String contentType)
             throws IOException {
 
         // Dump input stream to file in video storage input area
@@ -108,36 +131,44 @@ public class ResourceContentInterceptor implements InitializingBean {
         // Make a videoapp API call to create new getVideo
         VideoRef newRef = this.videoapp.createVideo(resource, tempFile.getFile().getAbsolutePath(), contentType);
         tempFile.delete();
-        
+
         // Preserve any Vortex-specific data in old ref
         VideoRef ref;
         try {
             // Refresh old ref with new videoId
-            VideoRef oldRef = loadVideoRef(resource.getURI(), defaultContentStore);
+            VideoRef oldRef = loadVideoRef(resource.getURI(), getContentStore());
             VideoRef.Builder oldRefBuilder = oldRef.copyBuilder();
             ref = oldRefBuilder.videoId(newRef.videoId())
-                         .sourceVideo(newRef.sourceVideo())
-                         .convertedVideo(newRef.convertedVideo())
-                         .build();
+                    .sourceVideo(newRef.sourceVideo())
+                    .convertedVideo(newRef.convertedVideo())
+                    .build();
         } catch (IOException io) {
             ref = newRef;
         }
-        
+
         ref = ref.copyBuilder().uploadContentType(contentType)
-                               .refUpdateTimestamp(new Date()).build();
-        
+                .refUpdateTimestamp(new Date()).build();
+
         // Store videoref getVideo JSON as resource main content
-        storeVideoRef(ref, resource.getURI(), defaultContentStore);
+        storeVideoRef(ref, resource.getURI(), getContentStore());
 
         return resource;
     }
-    
-    
-    public ResourceImpl interceptStore(ResourceImpl resource, ContentStore store) 
+
+    @Override
+    public ResourceImpl onStore(ResourceImpl resource)
             throws IOException {
-        
-        // Do not allow changing contentType, set contentType from source stream or original upload type.
-        VideoRef ref = loadVideoRef(resource.getURI(), store);
+
+        VideoRef ref = loadVideoRef(resource.getURI(), getContentStore());
+
+        // Try updating videoref metadata from videoapp
+        try {
+            ref = this.videoapp.refreshVideoRef(ref);
+            storeVideoRef(ref, resource.getURI(), getContentStore());
+        } catch (Exception e) {
+            logger.warn("Failed to refresh video metadata for " + resource.getURI(), e);
+        }
+
         String contentType;
         if (ref.sourceVideo() != null && ref.sourceVideo().contentType() != null) {
             contentType = ref.sourceVideo().contentType();
@@ -149,58 +180,52 @@ public class ResourceContentInterceptor implements InitializingBean {
 
         // XXX Should be AuthorizationException on attempt to change contentType-prop
         //     for videoref resource type (now we just silently modify).
-        Property contentTypeProp = resource.getProperty(Namespace.DEFAULT_NAMESPACE, 
-                                            PropertyType.CONTENTTYPE_PROP_NAME);
+        Property contentTypeProp = resource.getProperty(Namespace.DEFAULT_NAMESPACE,
+                PropertyType.CONTENTTYPE_PROP_NAME);
         contentTypeProp.setStringValue(contentType);
-        
+
         return resource;
     }
-    
-    public ResourceImpl interceptStoreSystemChange(ResourceImpl resource, ContentStore store, SystemChangeContext context) 
-        throws IOException {
-        return interceptStore(resource, store);
-    }
-    
-    public ResourceImpl interceptStoreInheritableProps(ResourceImpl resource, ContentStore store,
-                            InheritablePropertiesStoreContext context) 
-        throws IOException {
-        return interceptStore(resource, store);
-    }
-    
-    public InputStream interceptGetInputStream(ResourceImpl resource, ContentStore store) 
+
+    @Override
+    public ResourceImpl onStoreSystemChange(ResourceImpl resource, SystemChangeContext context)
             throws IOException {
-        
-        VideoRef ref = loadVideoRef(resource.getURI(), store);
-        
+        return onStore(resource);
+    }
+
+    @Override
+    public ResourceImpl onStoreInheritableProps(ResourceImpl resource, InheritablePropertiesStoreContext context)
+            throws IOException {
+        return onStore(resource);
+    }
+
+    @Override
+    public InputStream onGetInputStream(ResourceImpl resource) throws IOException {
+
+        VideoRef ref = loadVideoRef(resource.getURI(), getContentStore());
+
         if (ref.sourceVideo() != null) {
             return new FileInputStream(new File(ref.sourceVideo().path()));
         }
 
         throw new IOException("Stream not found");
     }
-    
-    public Content interceptGetContentForEvaluation(Resource resource, 
-                   final Content defaultContent, ContentStore defaultContentStore) throws IOException {
-        
-        return new VideoRefContent(resource, defaultContent, defaultContentStore);
-    }
-    
-    public ResourceImpl interceptRetrieve(ResourceImpl resource, ContentStore store) throws IOException {
-        
-        // Currently a no-op.
-        return resource;
+
+    @Override
+    public Content getContentForEvaluation(ResourceImpl resource, Content defaultContent) throws IOException {
+        return new VideoRefContent(resource, defaultContent, getContentStore());
     }
 
     private VideoRef loadVideoRef(Path uri, ContentStore store) throws IOException {
         String jsonString = StreamUtil.streamToString(store.getInputStream(uri), "utf-8");
         return VideoRef.fromJsonString(jsonString).build();
     }
-    
+
     private void storeVideoRef(VideoRef ref, Path uri, ContentStore store) throws IOException {
         InputStream jsonStream = StreamUtil.stringToStream(ref.toJsonString(), "utf-8");
         store.storeContent(uri, jsonStream);
     }
-    
+
     private String getInputDirAbspath() {
         return this.videoStorageRoot + "/" + VIDEO_INPUT_DIRNAME + "/" + this.repositoryId;
     }
@@ -214,28 +239,27 @@ public class ResourceContentInterceptor implements InitializingBean {
         if (!rootDir.isAbsolute()) {
             throw new IOException("Not an absolute path: " + this.videoStorageRoot);
         }
-        
+
         File inputDir = new File(getInputDirAbspath());
         if (!inputDir.exists()) {
             inputDir.mkdirs();
             logger.info("Created video input directory: " + inputDir);
         }
     }
-    
 
     @Required
     public void setVideoStorageRoot(String rootPath) {
         this.videoStorageRoot = rootPath;
     }
-    
+
+    @Required
+    public void setVideoApiClient(VideoappClient videoapp) {
+        this.videoapp = videoapp;
+    }
+
     @Required
     public void setRepositoryId(String repositoryId) {
         this.repositoryId = repositoryId;
-    }
-    
-    @Required
-    public void setVideoApiClient(VideoApiClient videoapp) {
-        this.videoapp = videoapp;
     }
 
 }

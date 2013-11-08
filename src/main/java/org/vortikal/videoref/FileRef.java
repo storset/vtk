@@ -1,4 +1,4 @@
-/* Copyright (c) 2013, University of Oslo, Norway
+  /* Copyright (c) 2013, University of Oslo, Norway
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,37 +29,50 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.vortikal.util.web;
-
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import org.springframework.http.client.SimpleClientHttpRequestFactory;
-import org.vortikal.util.codec.Base64;
+package org.vortikal.videoref;
 
 /**
- * Extends {@link SimpleClientHttpRequestFactory} and provides preemptive
- * basic authentication for created HTTP requests.
- * 
+ *
  */
-public class BasicAuthHttpRequestFactory extends SimpleClientHttpRequestFactory {
+public class FileRef {
+    
+    private final String contentType;
+    private final String path;
+    private final long size;
 
-    private String username;
-    private String password;
+    public FileRef(String contentType, String path, long size) {
+        if (path == null) {
+            throw new IllegalArgumentException("path cannot be null");
+        }
+        if (size < 0) {
+            throw new IllegalArgumentException("size cannot be < 0");
+        }
+        this.path = path;
+        this.size = size;
+        this.contentType = contentType;
+    }
 
-    @Override
-    protected void prepareConnection(HttpURLConnection connection, String httpMethod) throws IOException {
-        super.prepareConnection(connection, httpMethod);
-        String u = this.username != null ? this.username : "";
-        String p = this.password != null ? this.password : "";
-        String encoded = Base64.encode(u + ":" + p);
-        connection.addRequestProperty("Authorization", "Basic " + encoded);
+    /**
+     * 
+     * @return Content type of media file. May be <code>null</code>.
+     */
+    public String contentType() {
+        return this.contentType;
+    }
+
+    /**
+     * 
+     * @return Local path to media file.
+     */
+    public String path() {
+        return this.path;
     }
     
-    public void setUsername(String username) {
-        this.username = username;
+    /**
+     * @return Size of referenced media file in bytes.
+     */
+    public long size() {
+        return this.size;
     }
-    
-    public void setPassword(String password) {
-        this.password = password;
-    }
+
 }

@@ -32,23 +32,30 @@ package org.vortikal.repository;
 
 import java.io.InputStream;
 
+/**
+ * A content stream provides an {@link InputStream} with a known length.
+ */
 public class ContentStream {
     
-    private InputStream stream;
-    private long length;
-
+    private final InputStream stream;
+    private final long length;
 
     public ContentStream(InputStream stream, long length) {
         this.stream = stream;
         this.length = length;
     }
 
-
+    /**
+     * @return an {@link InputStream}
+     */
     public InputStream getStream() {
         return this.stream;
     }
 
-
+    /**
+     * 
+     * @return length of input stream retured by {@link #getStream() }.
+     */
     public long getLength() {
         return this.length;
     }

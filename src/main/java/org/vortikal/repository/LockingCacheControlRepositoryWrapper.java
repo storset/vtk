@@ -372,6 +372,18 @@ public class LockingCacheControlRepositoryWrapper implements Repository {
     }
 
     @Override
+    public ContentStream getAlternativeContentStream(String token, Path uri, boolean forProcessing, String contentIdentifier)
+            throws NoSuchContentException, ResourceNotFoundException, AuthorizationException, AuthenticationException, Exception {
+
+        List<Path> locked = this.lockManager.lock(uri, false);
+        try {
+            return this.wrappedRepository.getAlternativeContentStream(token, uri, forProcessing, contentIdentifier); // Tx
+        } finally {
+            this.lockManager.unlock(locked, false);
+        }
+    }
+
+    @Override
     public boolean isReadOnly() {
         return this.wrappedRepository.isReadOnly(); // Tx
     }
@@ -715,6 +727,7 @@ public class LockingCacheControlRepositoryWrapper implements Repository {
         }
         this.tempDir = tmp;
     }
+
 
 
     

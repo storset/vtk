@@ -29,7 +29,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.vortikal.video.rest;
+package org.vortikal.videoref;
 
 import java.util.Date;
 import net.sf.json.JSONObject;
@@ -42,6 +42,7 @@ public class VideoRef {
     private final VideoId videoId;
     private final Date refUpdateTimestamp;      // Timestamp of last reference update from video system
     private final String uploadContentType;     // Original content type of video when uploaded to Vortex
+    private final String status;                // Video status
     private final FileRef sourceVideoFileRef;
     private final FileRef convertedVideoFileRef;
     
@@ -51,6 +52,7 @@ public class VideoRef {
         this.convertedVideoFileRef = builder.convertedVideoFileRef;
         this.refUpdateTimestamp = builder.refUpdateTimestamp;
         this.uploadContentType = builder.uploadContentType;
+        this.status = builder.status;
     }
     
     /**
@@ -67,6 +69,7 @@ public class VideoRef {
         JSONObject refJson = new JSONObject();
 
         refJson.element("videoId", this.videoId.toString());
+        refJson.element("status", this.status);
         refJson.element("refUpdateTimestamp", this.refUpdateTimestamp.getTime());
 
         if (this.sourceVideoFileRef != null) {
@@ -100,6 +103,7 @@ public class VideoRef {
     public Builder copyBuilder() {
         Builder b = new Builder();
         b.videoId = this.videoId;
+        b.status = this.status;
         if (this.sourceVideoFileRef != null) {
             b.sourceVideoFileRef = new FileRef(this.sourceVideoFileRef.contentType(),
                     this.sourceVideoFileRef.path(),
@@ -120,11 +124,17 @@ public class VideoRef {
         private VideoId videoId;
         private Date refUpdateTimestamp;
         private String uploadContentType;
+        private String status;
         private FileRef sourceVideoFileRef;
         private FileRef convertedVideoFileRef;
         
         public Builder videoId(String videoId) {
             this.videoId = VideoId.fromString(videoId);
+            return this;
+        }
+        
+        public Builder status(String status) {
+            this.status = status;
             return this;
         }
         
@@ -170,6 +180,9 @@ public class VideoRef {
             if (this.refUpdateTimestamp == null) {
                 this.refUpdateTimestamp = new Date();
             }
+            if (this.status == null) {
+                this.status = "unknown";
+            }
             return new VideoRef(this);
         }
         
@@ -210,11 +223,11 @@ public class VideoRef {
             }
             
             this.videoId = VideoId.fromString(ref.getString("videoId"));
+            this.status = ref.getString("status");
             this.sourceVideoFileRef = sourceFileRef;
             this.convertedVideoFileRef = convFileRef;
             return this;
         }
-        
     }
     
     public VideoId videoId() {
@@ -235,6 +248,10 @@ public class VideoRef {
     
     public String uploadContentType() {
         return this.uploadContentType;
+    }
+    
+    public String status() {
+        return this.status;
     }
 
     @Override

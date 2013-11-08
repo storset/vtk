@@ -29,7 +29,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.vortikal.repository.content;
+package org.vortikal.videoref;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -37,10 +37,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import net.sf.json.JSONObject;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.content.UnsupportedContentRepresentation;
 import org.vortikal.repository.resourcetype.Content;
 import org.vortikal.repository.store.ContentStore;
 import org.vortikal.util.io.StreamUtil;
-import org.vortikal.video.rest.VideoRef;
+import org.vortikal.videoref.VideoRef;
 
 /**
  * Special implementation of {@link Content} for videoref resource type.
@@ -59,7 +60,7 @@ public class VideoRefContent implements Content {
         this.defaultContent = defaultContent;
         this.defaultContentStore = defaultContentStore;
         this.videoRefJson = StreamUtil.streamToString(
-                this.defaultContentStore.getInputStream(this.resource.getURI()), "utf-8");
+                this.defaultContentStore.getInputStream(resource.getURI()), "utf-8");
         this.videoRef = VideoRef.fromJsonString(this.videoRefJson).build();
     }
     

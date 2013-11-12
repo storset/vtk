@@ -3007,7 +3007,8 @@ table.resourceInfo.revisions tr:nth-child(even) td {
 /* Resource bar messages */
 
 #app-content > div.message,
-#app-content > div.infomessage {
+#app-content > div.infomessage,
+#app-content > noscript > div.infomessage {
   background-color: #fff;
   border: 1px solid #d9d9d9;
   padding: 12px 14px 11px 14px;
@@ -3015,11 +3016,13 @@ table.resourceInfo.revisions tr:nth-child(even) td {
 }
 
 #app-content > div.infomessage,
+#app-content > noscript > div.infomessage,
 #app-content > div.errormessage {
   padding-left: 46px;
 }
 
-#app-content > div.infomessage {
+#app-content > div.infomessage,
+#app-content > noscript > div.infomessage {
   background: #fff url(images/info.png) no-repeat 14px 8px;
 }
 

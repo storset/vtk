@@ -3,6 +3,11 @@
 <#import "/lib/vortikal.ftl" as vrtx />
 <#import "/lib/ping.ftl" as ping />
 
+  
+<noscript>
+  <div class="message infomessage">${vrtx.getMsg("msg.browser.javascript-off")}</div>
+</noscript>
+
 <#assign resource = resourceContext.currentResource />
 <#assign lang = vrtx.getMsg("eventListing.calendar.lang", "en") />
 
@@ -18,7 +23,6 @@
   </#if>
   <span id="resource-locked-by" class="hidden-server-info">${lockedBy?html}</span>
 </#if>
-
 <script type="text/javascript"><!--
   if(vrtxAdmin.isIE7 || vrtxAdmin.isIETridentInComp) {
     if(vrtxAdmin.isIETridentInComp) {
@@ -97,7 +101,7 @@
 
 <#macro gen resource resourceMenuLeft="" resourceMenuRight="">
   <div id="title-container">
-  
+
     <#-- Compact when no items in resourceLeftMenu and no items with buttons (taking more v.space) in resourceMenuRight -->
     <#local compactClass = "" />
     

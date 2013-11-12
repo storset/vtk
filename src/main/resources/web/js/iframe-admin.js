@@ -98,7 +98,7 @@
   }
   
   function updateHashShareLink(link) {
-    if(location.hash.length <= 1) {
+    if(location.hash.length === 1) {
       var hash = "";
       if(window.history && window.history.pushState) { 
         window.history.pushState("", "", window.location.pathname + window.location.search) 
@@ -111,10 +111,10 @@
     var msgLines = decodeURI(msg).split("\n");
       
     var msgUrlLineNr = 2;
-    var replacedUrl = encodeURIComponent(decodeURIComponent(msgLines[msgUrlLineNr]).replace(/#.*$/, "") + location.hash);
+    var replacedUrl = encodeURIComponent($.trim(decodeURIComponent(msgLines[msgUrlLineNr]).replace(/#.*$/, "")) + location.hash);
     msgLines[msgUrlLineNr] = replacedUrl;
 
-    link[0].href = encodeURI(msgLines.join("\n"));
+    link[0].href = msgLines.join(encodeURI("\n")); // Beware: encodeURI() around msgLines gives too much encoding in Thunderbird e-mail
   }
 
   // Remove preview-loading overlay and set height

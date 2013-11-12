@@ -108,25 +108,6 @@ public interface TypeHandlerHooks {
     String getApplicableResourceType();
 
     /**
-     * Called once by repository at initialization time to provide access to the
-     * default content store. If you need this in your hooks, you should store a
-     * reference to it in this method.
-     *
-     * @param repositoryContentStore the repository default content store.
-     */
-    void setContentStore(ContentStore repositoryContentStore);
-
-    /**
-     * Called once by repository at initialization time to provide access to the
-     * {@link ContentRepresentationRegistry}. If you need this in your hooks,
-     * you should store a reference to it.
-     *
-     * @param contentRepresentationRegistry an instance of
-     * {@link ContentRepresentationRegistry} used by repository.
-     */
-    void setContentRepresentationRegistry(ContentRepresentationRegistry contentRepresentationRegistry);
-
-    /**
      * Called by repository to get an instance of {@link Content} for evaluation
      * purposes.
      *
@@ -229,8 +210,7 @@ public interface TypeHandlerHooks {
      * <p>
      * <strong>The implementation is given the responsibility of actually
      * storing the provided content stream. The repository will not store to the
-     * default content store ! This is in contrast to other hooks available,
-     * since the input stream can generally only be consumed once.
+     * default content store !
      * </strong>
      *
      * @param resource the resource for which content is being stored.
@@ -239,7 +219,7 @@ public interface TypeHandlerHooks {
      * @return the resource (may be modified)
      * @throws Exception in case of errors
      */
-    ResourceImpl onStoreContent(ResourceImpl resource, InputStream stream, String contentType) throws Exception;
+    ResourceImpl storeContent(ResourceImpl resource, InputStream stream, String contentType) throws Exception;
 
     /**
      * Hook method called when {@link Repository#getInputStream(java.lang.String, org.vortikal.repository.Path, boolean)
@@ -254,7 +234,7 @@ public interface TypeHandlerHooks {
      * @return an input stream for the resource
      * @throws Exception in case of errors
      */
-    InputStream onGetInputStream(ResourceImpl resource) throws Exception;
+    InputStream getInputStream(ResourceImpl resource) throws Exception;
 
     /**
      * Hook method called on {@link Repository#createDocument(java.lang.String, org.vortikal.repository.Path, java.io.InputStream)
@@ -275,7 +255,7 @@ public interface TypeHandlerHooks {
      *
      * @throws Exception in case of errors
      */
-    ResourceImpl onCreateDocument(ResourceImpl resource,
+    ResourceImpl storeContentOnCreate(ResourceImpl resource,
             InputStream stream, String contentType) throws Exception;
 
     /**

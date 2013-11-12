@@ -60,13 +60,14 @@
     </property>
   </bean>
   
-  <bean id="videoref.videoContentHooks"
+  <!-- Repository integration -->
+  <bean id="videoref.videoContentHooks" parent="abstractTypeHandlerHooks"
        class="org.vortikal.videoref.VideoContentHooks">
     <property name="videoStorageRoot" value="${mediaref.videoapp.videoStorageRootPath}" />
     <property name="videoApiClient" ref="videoref.videoapp.client" />
     <property name="repositoryId" value="${repositoryID}" />
   </bean>
-  
+
   <!-- Videoapp client -->
   <bean id="videoref.videoapp.client" class="org.vortikal.videoref.VideoappClient">
     <property name="restTemplate">

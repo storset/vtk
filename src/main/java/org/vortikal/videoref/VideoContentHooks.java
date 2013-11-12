@@ -85,7 +85,7 @@ public class VideoContentHooks extends DefaultTypeHanderHooks
     }
     
     @Override
-    public ResourceImpl onCreateDocument(ResourceImpl resource, InputStream stream,
+    public ResourceImpl storeContentOnCreate(ResourceImpl resource, InputStream stream,
             String contentType)
             throws Exception {
 
@@ -120,7 +120,7 @@ public class VideoContentHooks extends DefaultTypeHanderHooks
     }
 
     @Override
-    public ResourceImpl onStoreContent(ResourceImpl resource, InputStream stream, String contentType)
+    public ResourceImpl storeContent(ResourceImpl resource, InputStream stream, String contentType)
             throws IOException {
 
         // Dump input stream to file in video storage input area
@@ -200,7 +200,7 @@ public class VideoContentHooks extends DefaultTypeHanderHooks
     }
 
     @Override
-    public InputStream onGetInputStream(ResourceImpl resource) throws IOException {
+    public InputStream getInputStream(ResourceImpl resource) throws IOException {
 
         VideoRef ref = loadVideoRef(resource.getURI(), getContentStore());
 

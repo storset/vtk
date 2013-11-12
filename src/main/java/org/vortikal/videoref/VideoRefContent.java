@@ -41,7 +41,6 @@ import org.vortikal.repository.content.UnsupportedContentRepresentation;
 import org.vortikal.repository.resourcetype.Content;
 import org.vortikal.repository.store.ContentStore;
 import org.vortikal.util.io.StreamUtil;
-import org.vortikal.videoref.VideoRef;
 
 /**
  * Special implementation of {@link Content} for videoref resource type.

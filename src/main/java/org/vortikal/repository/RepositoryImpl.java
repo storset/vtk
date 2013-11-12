@@ -72,6 +72,7 @@ import org.vortikal.repository.event.InheritablePropertiesModificationEvent;
 import org.vortikal.repository.event.ResourceCreationEvent;
 import org.vortikal.repository.event.ResourceDeletionEvent;
 import org.vortikal.repository.event.ResourceModificationEvent;
+import org.vortikal.repository.hooks.TypeHandlerHooksHelper;
 import org.vortikal.repository.resourcetype.Content;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.search.QueryException;
@@ -128,7 +129,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     private File tempDir;
 
     // Registered type handler hook extensions
-    private List<TypeHandlerHooks> typeHandlerHooks = Collections.emptyList();
+    private TypeHandlerHooksHelper typeHandlerHooksHelper;
 
     // Default value of 60 days before recoverable resources are purged from
     // trash can
@@ -143,7 +144,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
 
     private static final int FILE_COPY_BUF_SIZE = 122880;
 
-    private final Log logger = LogFactory.getLog(getClass());
     private final Log searchLogger = LogFactory.getLog(RepositoryImpl.class.getName() + ".Search");
     private final Log trashLogger = LogFactory.getLog(RepositoryImpl.class.getName() + ".Trash");
     
@@ -199,7 +199,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         
         try {
             ResourceImpl toReturn = (ResourceImpl)resource.clone();
-            TypeHandlerHooks hooks = getTypeHandlerHooks(toReturn);
+            TypeHandlerHooks hooks = typeHandlerHooksHelper.getTypeHandlerHooks(toReturn);
             if (hooks != null) {
                 try {
                     return hooks.onRetrieve(toReturn);
@@ -316,10 +316,10 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             this.authorizationManager.authorizeRead(uri, principal);
         }
         
-        TypeHandlerHooks hooks = getTypeHandlerHooks(r);
+        TypeHandlerHooks hooks = typeHandlerHooksHelper.getTypeHandlerHooks(r);
         if (hooks != null) {
             try {
-                return hooks.onGetInputStream(r);
+                return hooks.getInputStream(r);
             } catch (Exception e) {
                 throw new TypeHandlerHookException("failed in onGetInputStream hook", e);
             }
@@ -371,6 +371,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         return this.revisionStore.getContent(r, revision);
     }
 
+    @Transactional
     @Override
     public ContentStream getAlternativeContentStream(String token, Path uri, boolean forProcessing, String contentIdentifier) 
             throws NoSuchContentException, ResourceNotFoundException, AuthorizationException, AuthenticationException, Exception {
@@ -394,7 +395,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             this.authorizationManager.authorizeRead(uri, principal);
         }
 
-        TypeHandlerHooks hooks = getTypeHandlerHooks(r);
+        TypeHandlerHooks hooks = typeHandlerHooksHelper.getTypeHandlerHooks(r);
         if (hooks != null) {
             try {
                 return hooks.onGetAlternativeContentStream(r, contentIdentifier);
@@ -439,7 +440,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             }
         }
         
-        TypeHandlerHooks hooks = getTypeHandlerHooks(collection);
+        TypeHandlerHooks hooks = typeHandlerHooksHelper.getTypeHandlerHooks(collection);
         if (hooks != null) {
             try {
                 return hooks.onListChildren(list);
@@ -550,7 +551,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             ResourceImpl newResource = src.createCopy(destUri, copyAcl ? src.getAcl() : destParent.getAcl());
             Content content = getContent(src);
             
-            TypeHandlerHooks hooks = getTypeHandlerHooks(src);
+            TypeHandlerHooks hooks = typeHandlerHooksHelper.getTypeHandlerHooks(src);
             if (hooks != null) {
                 try {
                     hooks.onCopy(src, dest);
@@ -642,8 +643,8 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         if (dest != null) {
             this.dao.delete(dest);
             this.contentStore.deleteResource(dest.getURI());
-            this.context
-                    .publishEvent(new ResourceDeletionEvent(this, dest.getURI(), dest.getID(), dest.isCollection()));
+            this.context.publishEvent(new ResourceDeletionEvent(this, dest.getURI(), 
+                    dest.getID(), dest.isCollection()));
         }
 
         try {
@@ -675,7 +676,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             content = getContent(src);
 
             // Let hooks process move
-            TypeHandlerHooks hooks = getTypeHandlerHooks(src);
+            TypeHandlerHooks hooks = typeHandlerHooksHelper.getTypeHandlerHooks(src);
             if (hooks != null) {
                 try {
                     hooks.onMove(src, newResource);
@@ -733,7 +734,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         this.context.publishEvent(new ContentModificationEvent(this, (Resource) parentCollection.clone(),
                 originalParent));
 
-        TypeHandlerHooks hooks = getTypeHandlerHooks(resourceToDelete);
+        TypeHandlerHooks hooks = typeHandlerHooksHelper.getTypeHandlerHooks(resourceToDelete);
         if (hooks != null) {
             try {
                 hooks.onDelete(resourceToDelete, restorable);
@@ -982,7 +983,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             
             ResourceImpl suppliedResource = (ResourceImpl) resource;
 
-            TypeHandlerHooks hooks = getTypeHandlerHooks(original);
+            TypeHandlerHooks hooks = typeHandlerHooksHelper.getTypeHandlerHooks(original);
             if (hooks != null) {
                 try {
                     suppliedResource = hooks.onStore(suppliedResource);
@@ -1018,7 +1019,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
 
             ResourceImpl suppliedResource = (ResourceImpl) resource;
 
-            TypeHandlerHooks hooks = getTypeHandlerHooks(original);
+            TypeHandlerHooks hooks = typeHandlerHooksHelper.getTypeHandlerHooks(original);
             if (hooks != null) {
                 try {
                     suppliedResource = hooks.onStoreSystemChange(suppliedResource, context);
@@ -1058,7 +1059,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
 
             ResourceImpl suppliedResource = (ResourceImpl) resource;
 
-            TypeHandlerHooks hooks = getTypeHandlerHooks(original);
+            TypeHandlerHooks hooks = typeHandlerHooksHelper.getTypeHandlerHooks(original);
             if (hooks != null) {
                 try {
                     suppliedResource = hooks.onStoreInheritableProps(suppliedResource, context);
@@ -1123,10 +1124,10 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             
             // Check if contentType has interceptor for storage
             String contentType = MimeHelper.map(uri.getName());
-            TypeHandlerHooks hooks = getTypeHandlerHooks(contentType);
+            TypeHandlerHooks hooks = typeHandlerHooksHelper.getTypeHandlerHooks(contentType);
             if (hooks != null) {
                 try {
-                    newResource = hooks.onCreateDocument(newResource, inStream, contentType);
+                    newResource = hooks.storeContentOnCreate(newResource, inStream, contentType);
                     Content content = hooks.getContentForEvaluation(newResource, getDefaultContent(newResource));
                     newResource = this.resourceHelper.create(principal, newResource, false, content);
                 } catch (Exception e) {
@@ -1146,27 +1147,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         } catch (CloneNotSupportedException e) {
             throw new IOException("Failed to clone object", e);
         }
-    }
-    
-    private TypeHandlerHooks getTypeHandlerHooks(ResourceImpl r) {
-        for (TypeHandlerHooks hooks : this.typeHandlerHooks) {
-            if (r.getResourceType().equals(hooks.getApplicableResourceType())) {
-                return hooks;
-            }
-        }
-
-        return null;
-    }
-
-    private TypeHandlerHooks getTypeHandlerHooks(String contentType) {
-        for (TypeHandlerHooks hooks : this.typeHandlerHooks) {
-            String applicableContent = hooks.getApplicableContent();
-            if (contentType.startsWith(applicableContent) 
-                    || contentType.equals(applicableContent))
-                return hooks;
-        }
-
-        return null;
     }
     
     /**
@@ -1198,10 +1178,10 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         try {
             final ResourceImpl original = (ResourceImpl) r.clone();
 
-            TypeHandlerHooks hooks = getTypeHandlerHooks(r);
+            TypeHandlerHooks hooks = typeHandlerHooksHelper.getTypeHandlerHooks(r);
             if (hooks != null) {
                 try {
-                    r = hooks.onStoreContent(r, byteStream, MimeHelper.map(uri.getName()));
+                    r = hooks.storeContent(r, byteStream, MimeHelper.map(uri.getName()));
                 } catch (Exception e) {
                     throw new TypeHandlerHookException("failed in onStoreContent hook", e);
                 }
@@ -2030,6 +2010,11 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     public void setRepositoryResourceHelper(RepositoryResourceHelper resourceHelper) {
         this.resourceHelper = resourceHelper;
     }
+    
+    @Required
+    public void setTypeHandlerHooksHelper(TypeHandlerHooksHelper helper) {
+        this.typeHandlerHooksHelper = helper;
+    }
 
     @Required
     public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
@@ -2039,82 +2024,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     @Required
     public void setContentRepresentationRegistry(ContentRepresentationRegistry contentRepresentationRegistry) {
         this.contentRepresentationRegistry = contentRepresentationRegistry;
-    }
-    
-    private void initTypeHandlerHooks() {
-        for (TypeHandlerHooks hooks: this.typeHandlerHooks) {
-            hooks.setContentRepresentationRegistry(this.contentRepresentationRegistry);
-            hooks.setContentStore(this.contentStore);
-        }
-        if (! this.typeHandlerHooks.isEmpty()) {
-            logger.info("Initialized type handler extensions: " + this.typeHandlerHooks);
-        }
-    }
-
-    /**
-     * Register extensions for custom type and content handling in
-     * repository. <strong>Overlapping type applicability is not allowed amongst
-     * the registered type handler hooks and will cause repository
-     * initialization to fail.</strong>
-     *
-     * @param hooks list of type handlers to register
-     */
-    public void setTypeHandlerHooks(final List<TypeHandlerHooks> hooks) {
-        final Set<String> contentSpecs = new HashSet<String>();
-        final Set<String> typeSpecs = new HashSet<String>();
-    
-        // Validate
-        for (TypeHandlerHooks h: hooks) {
-            String applicableContent = h.getApplicableContent();
-            if (applicableContent == null 
-                    || applicableContent.isEmpty()
-                    || applicableContent.startsWith("/") 
-                    || applicableContent.equals("/")
-                    || applicableContent.matches("/{2,}")) {
-                throw new IllegalArgumentException(
-                        "Invalid content type specification from type handler hooks: " + h);
-            }
-            
-            String contentGroup;
-            String contentSubType = null;
-            if (applicableContent.contains("/") && !applicableContent.endsWith("/")) {
-                contentGroup = applicableContent.substring(0, applicableContent.indexOf("/"));
-                contentSubType = applicableContent.substring(applicableContent.indexOf("/")+1, 
-                        applicableContent.length());
-            } else {
-                if (applicableContent.endsWith("/")) {
-                    contentGroup = applicableContent.substring(0, applicableContent.length()-1);
-                } else {
-                    contentGroup = applicableContent;
-                }
-            }
-            
-            if (contentSubType != null) {
-                if (!contentSpecs.add(contentGroup + "/" + contentSubType)
-                        || contentSpecs.contains(contentGroup)) {
-                    throw new IllegalArgumentException("Overlapping type applicability in configured type handler hooks");
-                }
-            } else {
-                if (!contentSpecs.add(contentGroup)) {
-                    throw new IllegalArgumentException("Overlapping type applicability in configured type handler hooks");
-                }
-            }
-            
-            String resourceType = h.getApplicableResourceType();
-            if (resourceType == null
-                    || resourceType.isEmpty()
-                    || "resource".equals(resourceType)
-                    || "file".equals(resourceType)
-                    || "collection".equals(resourceType)) {
-                throw new IllegalArgumentException("Invalid or illegal resource type specification in type handler hooks: " + h);
-            }
-            
-            if (!typeSpecs.add(resourceType)) {
-                throw new IllegalArgumentException("Overlapping type applicability in configured type handler hooks");
-            }
-        }
-        
-        this.typeHandlerHooks = hooks;
     }
     
     @Required
@@ -2167,7 +2076,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         if (resource == null || resource.isCollection()) {
             return null;
         }
-        TypeHandlerHooks hooks = getTypeHandlerHooks(resource);
+        TypeHandlerHooks hooks = typeHandlerHooksHelper.getTypeHandlerHooks(resource);
         if (hooks != null) {
             try {
                 return hooks.getContentForEvaluation(resource, getDefaultContent(resource));
@@ -2266,7 +2175,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
 
     public void init() {
         mm.init();
-        initTypeHandlerHooks();
     }
 
     public void destroy() {

@@ -41,6 +41,8 @@ import org.vortikal.repository.content.ContentRepresentationRegistry;
 import org.vortikal.repository.resourcetype.Content;
 import org.vortikal.repository.store.ContentStore;
 
+import org.springframework.beans.factory.annotation.Required;
+
 /**
  * Default implementation of {@link TypeHandlerHooks} with no-op hooks
  * and access to {@link ContentStore content store} and
@@ -53,17 +55,19 @@ public abstract class DefaultTypeHanderHooks implements TypeHandlerHooks {
     private ContentRepresentationRegistry contentRepresentationRegistry;
 
     /**
-     * {@inheritDoc }
+     * Set the default repository {@link ContentStore}.
+     * @param repositoryContentStore the content store
      */
-    @Override
+    @Required
     public void setContentStore(ContentStore repositoryContentStore) {
         this.contentStore = repositoryContentStore;
     }
 
     /**
-     * {@inheritDoc }
+     * Set the default repository {@link ContentRepresentationRegistry}.
+     * @param contentRepresentationRegistry  the content representation registry
      */
-    @Override
+    @Required
     public void setContentRepresentationRegistry(ContentRepresentationRegistry contentRepresentationRegistry) {
         this.contentRepresentationRegistry = contentRepresentationRegistry;
     }
@@ -136,8 +140,9 @@ public abstract class DefaultTypeHanderHooks implements TypeHandlerHooks {
      * {@inheritDoc }
      */
     @Override
-    public ResourceImpl onStoreContent(ResourceImpl resource, InputStream stream, 
+    public ResourceImpl storeContent(ResourceImpl resource, InputStream stream, 
             String contentType) throws Exception {
+        getContentStore().storeContent(resource.getURI(), stream);
         return resource;
     }
 
@@ -145,7 +150,7 @@ public abstract class DefaultTypeHanderHooks implements TypeHandlerHooks {
      * {@inheritDoc }
      */
     @Override
-    public InputStream onGetInputStream(ResourceImpl resource) throws Exception {
+    public InputStream getInputStream(ResourceImpl resource) throws Exception {
         return getContentStore().getInputStream(resource.getURI());
     }
 
@@ -162,7 +167,7 @@ public abstract class DefaultTypeHanderHooks implements TypeHandlerHooks {
      * {@inheritDoc }
      */
     @Override
-    public ResourceImpl onCreateDocument(ResourceImpl resource, InputStream stream, 
+    public ResourceImpl storeContentOnCreate(ResourceImpl resource, InputStream stream, 
             String contentType) throws Exception {
         getContentStore().storeContent(resource.getURI(), stream);
         return resource;

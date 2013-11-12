@@ -59,7 +59,7 @@ public class JsonExtractEvaluator implements PropertyEvaluator {
         if (ctx.getContent() == null) {
             return false;
         }
-        if (alwaysEvaluate 
+        if (alwaysEvaluate
                 || ctx.getEvaluationType() == Type.ContentChange
                 || ctx.getEvaluationType() == Type.Create) {
 

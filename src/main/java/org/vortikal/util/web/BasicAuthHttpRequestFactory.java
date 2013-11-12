@@ -39,7 +39,6 @@ import org.vortikal.util.codec.Base64;
 /**
  * Extends {@link SimpleClientHttpRequestFactory} and provides preemptive
  * basic authentication for created HTTP requests.
- * 
  */
 public class BasicAuthHttpRequestFactory extends SimpleClientHttpRequestFactory {
 

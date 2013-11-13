@@ -1,7 +1,8 @@
 resourcetype exam {
 
   properties {
-    title : string overrides title,
+    tittel : string,
+    title : derived (tittel) eval ("exam"?localized) overrides title,
     content : html noextract
   }
 
@@ -30,6 +31,7 @@ resourcetype exam {
   }
 
   localization {
+    exam : (en : "Examination: Time and place", no : "Eksamen: Tid og sted", nn : "Eksamen: Tid og stad"),
     title : (en : "Title", no : "Tittel", nn : "Tittel"),
     header : (en : "Edit exam", no : "Rediger eksamen", nn : "Rediger eksamen"),
     content : (en : "Content", no : "Innhold", nn : "Innhald")

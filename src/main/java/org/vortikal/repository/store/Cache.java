@@ -200,7 +200,7 @@ public class Cache implements DataAccessor, InitializingBean {
                 .currentTimeMillis());
 
         if (this.logger.isInfoEnabled() && davLockTimedOut) {
-            this.logger.info("Dropping cached copy of " + r.getURI() + " (DAV lock timed out)");
+            this.logger.info("Dropping cached copy of " + uri + " (DAV lock timed out)");
         }
 
         if (r != null && !davLockTimedOut) {
@@ -257,7 +257,7 @@ public class Cache implements DataAccessor, InitializingBean {
                     .currentTimeMillis());
 
             if (this.logger.isInfoEnabled() && davlockTimedOut) {
-                this.logger.info("Dropping cached copy of " + r.getURI() + " (lock timed out)");
+                this.logger.info("Dropping cached copy of " + uri + " (lock timed out)");
             }
 
             if (r == null || davlockTimedOut) {

@@ -218,9 +218,9 @@
 
       <!-- Build info: Provide local hostname as property ${hostname} using a Groovy script. -->
       <plugin>
-        <groupId>org.codehaus.groovy.maven</groupId>
+        <groupId>org.codehaus.gmaven</groupId>
         <artifactId>gmaven-plugin</artifactId>
-        <version>1.0</version>
+        <version>1.5</version>
         <executions>
           <execution>
             <id>add-hostname-property</id>
@@ -230,7 +230,7 @@
             </goals>
             <configuration>
               <source>
-                project.properties["hostname"] = java.net.InetAddress.getLocalHost().getHostName();
+                project.properties["hostname"] = java.net.InetAddress.getLocalHost().getHostName()
               </source>
             </configuration>
           </execution>
@@ -243,10 +243,10 @@
             </goals>
             <configuration>
               <source>
-                log.info("Build information - " + project.name);
-                log.info("Version: " + project.version);
-                log.info("Revision: " + project.properties["buildNumber"]);
-                log.info("Branch: " + project.properties["scmBranch"]);
+                log.info("Build information - " + project.name)
+                log.info("Version: " + project.version)
+                log.info("Revision: " + project.properties["buildNumber"])
+                log.info("Branch: " + project.properties["scmBranch"])
               </source>
             </configuration>
           </execution>

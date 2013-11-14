@@ -7,6 +7,8 @@ resourcetype exam {
   }
 
   edit-rules {
+    tittel (size[1]),
+    tittel (class[ui-helper-hidden]),
     title (class[ui-helper-hidden]),
     content (class[ui-helper-hidden])
   }

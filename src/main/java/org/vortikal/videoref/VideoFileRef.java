@@ -31,16 +31,21 @@
 
 package org.vortikal.videoref;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  *
  */
-public class FileRef {
+public class VideoFileRef {
     
     private final String contentType;
     private final String path;
     private final long size;
+    private final Map<String,Object> metadata;
 
-    public FileRef(String contentType, String path, long size) {
+    public VideoFileRef(String contentType, String path, long size, Map<String,Object> metadata) {
         if (path == null) {
             throw new IllegalArgumentException("path cannot be null");
         }
@@ -50,6 +55,7 @@ public class FileRef {
         this.path = path;
         this.size = size;
         this.contentType = contentType;
+        this.metadata = metadata != null ? new HashMap<String,Object>(metadata) : Collections.<String,Object>emptyMap();
     }
 
     /**
@@ -61,7 +67,6 @@ public class FileRef {
     }
 
     /**
-     * 
      * @return Local path to media file.
      */
     public String path() {
@@ -73,6 +78,15 @@ public class FileRef {
      */
     public long size() {
         return this.size;
+    }
+
+    /**
+     * Loosely defined video file metadata. 
+     * @return an immutable map of key value pairs with metadata objects. Returns
+     * an empty map if no metadata is available.
+     */
+    public Map<String,Object> metadata() {
+        return Collections.unmodifiableMap(this.metadata);
     }
 
 }

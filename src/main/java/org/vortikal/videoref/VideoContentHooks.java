@@ -48,8 +48,10 @@ import org.vortikal.repository.Property;
 import org.vortikal.repository.ResourceImpl;
 import org.vortikal.repository.SystemChangeContext;
 import org.vortikal.repository.hooks.DefaultTypeHanderHooks;
+import org.vortikal.repository.resourcetype.BufferedBinaryValue;
 import org.vortikal.repository.resourcetype.Content;
 import org.vortikal.repository.resourcetype.PropertyType;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.store.ContentStore;
 import org.vortikal.util.io.StreamUtil;
 import org.vortikal.util.io.StreamUtil.TempFile;
@@ -67,6 +69,12 @@ public class VideoContentHooks extends DefaultTypeHanderHooks
     private VideoappClient videoapp;
     private String repositoryId;
 
+    private PropertyTypeDefinition generatedPosterImagePropDef;
+    private PropertyTypeDefinition mediaMetadataStatusPropDef;
+    private PropertyTypeDefinition mediaHeightPropDef;
+    private PropertyTypeDefinition mediaWidthPropDef;
+    private PropertyTypeDefinition mediaDurationPropDef;
+    
     private final Log logger = LogFactory.getLog(VideoContentHooks.class);
 
     @Override
@@ -89,20 +97,7 @@ public class VideoContentHooks extends DefaultTypeHanderHooks
             String contentType)
             throws Exception {
 
-        // Dump input stream to file in video storage input area
-        String name = resource.getURI().getName();
-        TempFile tempFile = StreamUtil.streamToTempFile(stream, -1, new File(getInputDirAbspath()), name);
-
-        // Make a videoapp API call to create new getVideo
-        VideoRef ref = this.videoapp.createVideo(resource, tempFile.getFile().getAbsolutePath(), contentType);
-
-        tempFile.delete();
-
-        // Store videoref getVideo JSON as resource main content
-        storeVideoRef(ref, resource.getURI(), getContentStore());
-
-        // Return new resource for further type evaluation in repository
-        return resource;
+        return storeContent(resource, stream, contentType);
     }
 
     @Override
@@ -128,32 +123,21 @@ public class VideoContentHooks extends DefaultTypeHanderHooks
         // XXX consuming entire input stream, but need a way to revert if this all fails (fallback to regular store in repo).
         TempFile tempFile = StreamUtil.streamToTempFile(stream, -1, new File(getInputDirAbspath()), name);
 
-        // Make a videoapp API call to create new getVideo
-        VideoRef newRef = this.videoapp.createVideo(resource, tempFile.getFile().getAbsolutePath(), contentType);
+        // Make a videoapp call to create a new video object
+        VideoRef newVideoRef = videoapp.createVideo(resource, tempFile.getFile().getAbsolutePath(), contentType);
         tempFile.delete();
 
-        // Preserve any Vortex-specific data in old ref
-        VideoRef ref;
-        try {
-            // Refresh old ref with new videoId
-            VideoRef oldRef = loadVideoRef(resource.getURI(), getContentStore());
-            VideoRef.Builder oldRefBuilder = oldRef.copyBuilder();
-            ref = oldRefBuilder.videoId(newRef.videoId())
-                    .sourceVideo(newRef.sourceVideo())
-                    .convertedVideo(newRef.convertedVideo())
-                    .build();
-        } catch (IOException io) {
-            ref = newRef;
-        }
+        // Store new video object ref on resource
+        VideoRef ref = newVideoRef.copyBuilder().uploadContentType(contentType)
+                          .refUpdateTimestamp(new Date()).build();
 
-        ref = ref.copyBuilder().uploadContentType(contentType)
-                .refUpdateTimestamp(new Date()).build();
-
-        // Store videoref getVideo JSON as resource main content
         storeVideoRef(ref, resource.getURI(), getContentStore());
+
+        updateMediaProperties(ref, resource);
 
         return resource;
     }
+    
 
     @Override
     public ResourceImpl onStore(ResourceImpl resource)
@@ -163,7 +147,7 @@ public class VideoContentHooks extends DefaultTypeHanderHooks
 
         // Try updating videoref metadata from videoapp
         try {
-            ref = this.videoapp.refreshVideoRef(ref);
+            ref = videoapp.refreshFromVideoapp(ref);
             storeVideoRef(ref, resource.getURI(), getContentStore());
         } catch (Exception e) {
             logger.warn("Failed to refresh video metadata for " + resource.getURI(), e);
@@ -183,6 +167,8 @@ public class VideoContentHooks extends DefaultTypeHanderHooks
         Property contentTypeProp = resource.getProperty(Namespace.DEFAULT_NAMESPACE,
                 PropertyType.CONTENTTYPE_PROP_NAME);
         contentTypeProp.setStringValue(contentType);
+        
+        updateMediaProperties(ref, resource);
 
         return resource;
     }
@@ -216,6 +202,46 @@ public class VideoContentHooks extends DefaultTypeHanderHooks
         return new VideoRefContent(resource, defaultContent, getContentStore());
     }
 
+    // Adds media mixin props to resource based on data in video ref
+    private void updateMediaProperties(VideoRef ref, ResourceImpl resource) {
+        Property prop = mediaDurationPropDef.createProperty();
+        prop.setIntValue((int)ref.durationSeconds());
+        resource.addProperty(prop);
+        
+        if (ref.sourceVideo() != null) {
+            VideoFileRef sourceVideo = ref.sourceVideo();
+            Object value = sourceVideo.metadata().get("width");
+            if (value != null && value.getClass() == Integer.class) {
+                prop = mediaWidthPropDef.createProperty();
+                prop.setIntValue(((Integer)value).intValue());
+                resource.addProperty(prop);
+            }
+
+            value = sourceVideo.metadata().get("height");
+            if (value != null && value.getClass() == Integer.class) {
+                prop = mediaHeightPropDef.createProperty();
+                prop.setIntValue(((Integer)value).intValue());
+                resource.addProperty(prop);
+            }
+        }
+
+        if (ref.hasGeneratedThumbnail()) {
+            BufferedBinaryValue b = ref.generatedThumbnail();
+            prop = generatedPosterImagePropDef.createProperty();
+            prop.setBinaryValue(b.getBytes(), b.getContentType());
+            resource.addProperty(prop);
+        }
+        
+        // Metadata status
+        if ("completed".equals(ref.status())) {
+            resource.removeProperty(mediaMetadataStatusPropDef);
+        } else {
+            prop = mediaMetadataStatusPropDef.createProperty();
+            prop.setStringValue("GENERATE");
+            resource.addProperty(prop);
+        }
+    }
+    
     private VideoRef loadVideoRef(Path uri, ContentStore store) throws IOException {
         String jsonString = StreamUtil.streamToString(store.getInputStream(uri), "utf-8");
         return VideoRef.fromJsonString(jsonString).build();
@@ -227,17 +253,17 @@ public class VideoContentHooks extends DefaultTypeHanderHooks
     }
 
     private String getInputDirAbspath() {
-        return this.videoStorageRoot + "/" + VIDEO_INPUT_DIRNAME + "/" + this.repositoryId;
+        return videoStorageRoot + "/" + VIDEO_INPUT_DIRNAME + "/" + repositoryId;
     }
 
     @Override
     public void afterPropertiesSet() throws IOException {
-        File rootDir = new File(this.videoStorageRoot);
+        File rootDir = new File(videoStorageRoot);
         if (!rootDir.isDirectory()) {
-            throw new IOException("Not a directory: " + this.videoStorageRoot);
+            throw new IOException("Not a directory: " + videoStorageRoot);
         }
         if (!rootDir.isAbsolute()) {
-            throw new IOException("Not an absolute path: " + this.videoStorageRoot);
+            throw new IOException("Not an absolute path: " + videoStorageRoot);
         }
 
         File inputDir = new File(getInputDirAbspath());
@@ -262,4 +288,45 @@ public class VideoContentHooks extends DefaultTypeHanderHooks
         this.repositoryId = repositoryId;
     }
 
+    /**
+     * @param propDef the thumbnailPropDef to set
+     */
+    @Required
+    public void setGeneratedPosterImagePropDef(PropertyTypeDefinition propDef) {
+        this.generatedPosterImagePropDef = propDef;
+    }
+
+    /**
+     * @param mediaMetadataStatusPropDef the mediaMetadataStatusPropDef to set
+     */
+    @Required
+    public void setMediaMetadataStatusPropDef(PropertyTypeDefinition mediaMetadataStatusPropDef) {
+        this.mediaMetadataStatusPropDef = mediaMetadataStatusPropDef;
+    }
+
+    /**
+     * @param mediaHeightPropDef the mediaHeightPropDef to set
+     */
+    @Required
+    public void setMediaHeightPropDef(PropertyTypeDefinition mediaHeightPropDef) {
+        this.mediaHeightPropDef = mediaHeightPropDef;
+    }
+
+    /**
+     * @param mediaWidthPropDef the mediaWidthPropDef to set
+     */
+    @Required
+    public void setMediaWidthPropDef(PropertyTypeDefinition mediaWidthPropDef) {
+        this.mediaWidthPropDef = mediaWidthPropDef;
+    }
+
+    /**
+     * @param mediaDurationPropDef the mediaDurationPropDef to set
+     */
+    @Required
+    public void setMediaDurationPropDef(PropertyTypeDefinition mediaDurationPropDef) {
+        this.mediaDurationPropDef = mediaDurationPropDef;
+    }
+
+    
 }

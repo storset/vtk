@@ -66,6 +66,14 @@
     <property name="videoStorageRoot" value="${mediaref.videoapp.videoStorageRootPath}" />
     <property name="videoApiClient" ref="videoref.videoapp.client" />
     <property name="repositoryId" value="${repositoryID}" />
+    
+    <!-- Video super type propdefs -->
+    <property name="generatedPosterImagePropDef" ref="generatedPosterImagePropDef" />
+    <!-- Media-mixin prop defs -->
+    <property name="mediaDurationPropDef" ref="mediaDurationPropDef" />
+    <property name="mediaHeightPropDef" ref="mediaHeightPropDef" />
+    <property name="mediaWidthPropDef" ref="mediaWidthPropDef" />
+    <property name="mediaMetadataStatusPropDef" ref="mediaMetadataStatusPropDef" />
   </bean>
 
   <!-- Videoapp client -->

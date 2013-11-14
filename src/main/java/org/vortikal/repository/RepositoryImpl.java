@@ -2076,6 +2076,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         if (resource == null || resource.isCollection()) {
             return null;
         }
+
         TypeHandlerHooks hooks = typeHandlerHooksHelper.getTypeHandlerHooks(resource);
         if (hooks != null) {
             try {
@@ -2084,7 +2085,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
                 throw new IOException("failed in getContentForEvaluation hook", e);
             }
         }
-        
+
         return getDefaultContent(resource);
     }
 

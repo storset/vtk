@@ -67,7 +67,7 @@ public class TypeHandlerHooksHelper implements ApplicationContextAware, Initiali
      */
     public TypeHandlerHooks getTypeHandlerHooks(ResourceImpl r) {
         for (TypeHandlerHooks hooks : this.typeHandlerHooks) {
-            if (r.getResourceType().equals(hooks.getApplicableResourceType())) {
+            if (hooks.getApplicableResourceType().equals(r.getResourceType())) {
                 return hooks;
             }
         }
@@ -85,7 +85,10 @@ public class TypeHandlerHooksHelper implements ApplicationContextAware, Initiali
     public TypeHandlerHooks getTypeHandlerHooks(String contentType) {
         for (TypeHandlerHooks hooks : this.typeHandlerHooks) {
             String applicableContent = hooks.getApplicableContent();
-            if (contentType.startsWith(applicableContent) 
+            if (applicableContent.contains("/")) {
+                applicableContent = applicableContent.substring(0, applicableContent.indexOf("/"));
+            }
+            if (contentType.startsWith(applicableContent + "/")
                     || contentType.equals(applicableContent))
                 return hooks;
         }
@@ -132,8 +135,8 @@ public class TypeHandlerHooksHelper implements ApplicationContextAware, Initiali
                 contentSubType = applicableContent.substring(applicableContent.indexOf("/")+1, 
                         applicableContent.length());
             } else {
-                if (applicableContent.endsWith("/")) {
-                    contentGroup = applicableContent.substring(0, applicableContent.length()-1);
+                if (applicableContent.endsWith("/") || applicableContent.endsWith("/*")) {
+                    contentGroup = applicableContent.substring(0, applicableContent.lastIndexOf("/"));
                 } else {
                     contentGroup = applicableContent;
                 }

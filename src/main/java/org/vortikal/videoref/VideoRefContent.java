@@ -73,9 +73,6 @@ public class VideoRefContent implements Content {
             return getContentInputStream();
         }
 
-        // TODO Possibly delegate to defaultContent.
-        //      (would in that case need to override the defaultContentStore used by defaultContent)
-//        return this.defaultContent.getContentRepresentation(clazz);
         throw new UnsupportedContentRepresentation("Unsupported: " + clazz);
     }
 

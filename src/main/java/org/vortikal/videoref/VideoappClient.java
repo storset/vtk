@@ -34,6 +34,8 @@ package org.vortikal.videoref;
 import java.io.File;
 import java.net.URI;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import net.sf.json.JSONObject;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -95,42 +97,73 @@ public class VideoappClient {
         return fromVideoAppVideo(response);
     }
     
-    private VideoRef fromVideoAppVideo(JSONObject video) {
-        VideoRef.Builder b = VideoRef.newBuilder().videoId(video.getString("videoId"));
-        b.status(video.getString("status"));
-        b.sourceVideo(videoFileRef(video.getJSONObject("sourceVideoFile")));
-        if (video.has("convertedVideoFile") && !video.getJSONObject("convertedVideoFile").isNullObject()) {
-            b.convertedVideo(videoFileRef(video.getJSONObject("convertedVideoFile")));
+    private VideoRef fromVideoAppVideo(JSONObject videoObject) {
+        VideoRef.Builder b = VideoRef.newBuilder().videoId(videoObject.getString("videoId"));
+        b.status(videoObject.getString("status"));
+        b.durationSeconds(videoObject.getDouble("duration"));
+        b.sourceVideo(videoFileRef(videoObject.getJSONObject("sourceVideoFile")));
+        if (videoObject.has("convertedVideoFile") && !videoObject.getJSONObject("convertedVideoFile").isNullObject()) {
+            b.convertedVideo(videoFileRef(videoObject.getJSONObject("convertedVideoFile")));
+        }
+        if (videoObject.has("thumbnailGenerated") && videoObject.has("thumbnailGeneratedMimeType")) {
+            b.generatedThumbnail(videoObject.getString("thumbnailGenerated"), videoObject.getString("thumbnailGeneratedMimeType"));
         }
         return b.build();
     }
 
-    /**
-     * Updated certain parts of a video ref that are non-Vortex-specific data
-     * from video app. Other parts are left intact.
-     * 
-     * @param oldRef
-     * @return a refreshed <code>VideoRef</code> instance.
-     */
-    public VideoRef refreshVideoRef(VideoRef oldRef) {
-        VideoRef newRef = getVideo(oldRef.videoId());
-        
-        VideoRef.Builder refreshedBuilder = oldRef.copyBuilder();
-        
-        return refreshedBuilder.refUpdateTimestamp(new Date())
-                        .sourceVideo(newRef.sourceVideo())
-                        .convertedVideo(newRef.convertedVideo())
-                        .status(newRef.status()).build();
-    }
-    
-    private FileRef videoFileRef(JSONObject videoFileJson) {
+    private VideoFileRef videoFileRef(JSONObject videoFileJson) {
         String localPath = videoFileJson.getString("localPath");
         String contentType = videoFileJson.optString("mimeType", null);
         long size = videoFileJson.getLong("size");
         if (size <= 0) {
             size = new File(localPath).length();
         }
-        return new FileRef(contentType, localPath, size);
+        
+        Map<String,Object> metadata = new HashMap<String,Object>();
+        metadata.put("width", videoFileJson.optInt("width"));
+        metadata.put("height", videoFileJson.optInt("height"));
+        metadata.put("acodec", videoFileJson.optString("acodec"));
+        metadata.put("vcodec", videoFileJson.optString("vcodec"));
+        
+        return new VideoFileRef(contentType, localPath, size, metadata);
+    }
+    
+    /**
+     * Updated certain parts of a video ref that are non-Vortex-specific data
+     * from video app. This method will fetch updated data about the video
+     * from the videoapp and apply that to a refreshed reference.
+     * 
+     * @see #refreshVideoRef(org.vortikal.videoref.VideoRef, org.vortikal.videoref.VideoRef) 
+     * @param oldRef the old referenced to be updated
+     * @return a refreshed <code>VideoRef</code> instance with updated data
+     * from videoapp.
+     */
+    public VideoRef refreshFromVideoapp(VideoRef oldRef) {
+        VideoRef newRef = getVideo(oldRef.videoId());
+        return refreshVideoRef(oldRef, newRef);
+    }
+    
+    /**
+     * Refresh data in <code>oldRef</code> with data in <code>newRef</code>
+     * that are non-Vortex-specific from videoapp. The video id in both
+     * references must be the same.
+     * 
+     * @param oldRef the old reference
+     * @param newRef the new reference 
+     * @return a new video reference based on <code>oldRef</code>, but with
+     *         refreshed videoapp-data from <code>newRef</code>.
+     */
+    public VideoRef refreshVideoRef(VideoRef oldRef, VideoRef newRef) {
+        if (!oldRef.videoId().equals(newRef.videoId())) {
+            throw new IllegalArgumentException("videoId must be the same in oldRef and newRef");
+        }
+        
+        return oldRef.copyBuilder().refUpdateTimestamp(new Date())
+                        .sourceVideo(newRef.sourceVideo())
+                        .convertedVideo(newRef.convertedVideo())
+                        .status(newRef.status())
+                        .durationSeconds(newRef.durationSeconds())
+                        .generatedThumbnail(newRef.generatedThumbnail()).build();
     }
     
     /**

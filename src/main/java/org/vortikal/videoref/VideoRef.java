@@ -33,9 +33,13 @@ package org.vortikal.videoref;
 
 import java.util.Date;
 import net.sf.json.JSONObject;
+import org.apache.commons.codec.binary.Base64;
+import org.vortikal.repository.resourcetype.BufferedBinaryValue;
 
 /**
  * Vortex video reference.
+ * Instances of this class should be strictly immutable and
+ * construction of new instances follows the builder pattern.
  */
 public class VideoRef {
     
@@ -43,8 +47,10 @@ public class VideoRef {
     private final Date refUpdateTimestamp;      // Timestamp of last reference update from video system
     private final String uploadContentType;     // Original content type of video when uploaded to Vortex
     private final String status;                // Video status
-    private final FileRef sourceVideoFileRef;
-    private final FileRef convertedVideoFileRef;
+    private final double durationSeconds;        // Video duration in seconds
+    private final BufferedBinaryValue generatedThumbnail;
+    private final VideoFileRef sourceVideoFileRef;
+    private final VideoFileRef convertedVideoFileRef;
     
     private VideoRef(Builder builder) {
         this.videoId = builder.videoId;
@@ -53,6 +59,8 @@ public class VideoRef {
         this.refUpdateTimestamp = builder.refUpdateTimestamp;
         this.uploadContentType = builder.uploadContentType;
         this.status = builder.status;
+        this.durationSeconds = builder.durationSeconds;
+        this.generatedThumbnail = builder.generatedThumbnail;
     }
     
     /**
@@ -70,6 +78,7 @@ public class VideoRef {
 
         refJson.element("videoId", this.videoId.toString());
         refJson.element("status", this.status);
+        refJson.element("durationSeconds", this.durationSeconds);
         refJson.element("refUpdateTimestamp", this.refUpdateTimestamp.getTime());
 
         if (this.sourceVideoFileRef != null) {
@@ -77,6 +86,7 @@ public class VideoRef {
             sourceJson.elementOpt("contentType", this.sourceVideoFileRef.contentType());
             sourceJson.element("localPath", this.sourceVideoFileRef.path());
             sourceJson.element("size", this.sourceVideoFileRef.size());
+            sourceJson.element("metadata", this.sourceVideoFileRef.metadata());
             refJson.element("sourceVideoFile", sourceJson);
         }
 
@@ -85,7 +95,15 @@ public class VideoRef {
             convJson.elementOpt("contentType", this.convertedVideoFileRef.contentType());
             convJson.element("localPath", this.convertedVideoFileRef.path());
             convJson.element("size", this.convertedVideoFileRef.size());
+            convJson.element("metadata", this.convertedVideoFileRef.metadata());
             refJson.element("convertedVideoFile", convJson);
+        }
+        
+        if (this.generatedThumbnail != null) {
+            refJson.element("generatedThumbnail",
+                    Base64.encodeBase64String(this.generatedThumbnail.getBytes()));
+            refJson.element("generatedThumbnailMimeType", 
+                    this.generatedThumbnail.getContentType());
         }
 
         json.element("ref", refJson);
@@ -104,19 +122,27 @@ public class VideoRef {
         Builder b = new Builder();
         b.videoId = this.videoId;
         b.status = this.status;
+        b.durationSeconds = this.durationSeconds;
         if (this.sourceVideoFileRef != null) {
-            b.sourceVideoFileRef = new FileRef(this.sourceVideoFileRef.contentType(),
+            b.sourceVideoFileRef = new VideoFileRef(this.sourceVideoFileRef.contentType(),
                     this.sourceVideoFileRef.path(),
-                    this.sourceVideoFileRef.size());
+                    this.sourceVideoFileRef.size(),
+                    this.sourceVideoFileRef.metadata());
 
         }
         if (this.convertedVideoFileRef != null) {
-            b.convertedVideoFileRef = new FileRef(this.convertedVideoFileRef.contentType(),
+            b.convertedVideoFileRef = new VideoFileRef(this.convertedVideoFileRef.contentType(),
                     this.convertedVideoFileRef.path(),
-                    this.convertedVideoFileRef.size());
+                    this.convertedVideoFileRef.size(),
+                    this.convertedVideoFileRef.metadata());
         }
         b.refUpdateTimestamp = new Date(this.refUpdateTimestamp.getTime());
         b.uploadContentType = this.uploadContentType;
+        if (this.generatedThumbnail != null) {
+            try {
+                b.generatedThumbnail = (BufferedBinaryValue) this.generatedThumbnail.clone();
+            } catch (CloneNotSupportedException c) {}
+        }
         return b;
     }
     
@@ -125,8 +151,10 @@ public class VideoRef {
         private Date refUpdateTimestamp;
         private String uploadContentType;
         private String status;
-        private FileRef sourceVideoFileRef;
-        private FileRef convertedVideoFileRef;
+        private double durationSeconds;
+        private VideoFileRef sourceVideoFileRef;
+        private VideoFileRef convertedVideoFileRef;
+        private BufferedBinaryValue generatedThumbnail;
         
         public Builder videoId(String videoId) {
             this.videoId = VideoId.fromString(videoId);
@@ -135,6 +163,23 @@ public class VideoRef {
         
         public Builder status(String status) {
             this.status = status;
+            return this;
+        }
+        
+        public Builder durationSeconds(double durationSeconds) {
+            this.durationSeconds = durationSeconds;
+            return this;
+        }
+        
+        public Builder generatedThumbnail(BufferedBinaryValue generatedThumbnail) {
+            try {
+                this.generatedThumbnail = (BufferedBinaryValue)generatedThumbnail.clone();
+            } catch (CloneNotSupportedException c) {}
+            return this;
+        }
+        
+        public Builder generatedThumbnail(String b64data, String contentType) {
+            this.generatedThumbnail = new BufferedBinaryValue(Base64.decodeBase64(b64data), contentType);
             return this;
         }
         
@@ -153,26 +198,16 @@ public class VideoRef {
             return this;
         }
         
-        public Builder sourceVideo(FileRef fileRef) {
+        public Builder sourceVideo(VideoFileRef fileRef) {
             this.sourceVideoFileRef = fileRef;
             return this;
         }
         
-        public Builder convertedVideo(FileRef fileRef) {
+        public Builder convertedVideo(VideoFileRef fileRef) {
             this.convertedVideoFileRef = fileRef;
             return this;
         }
         
-        public Builder sourceVideo(String contentType, String path, long size) {
-            this.sourceVideoFileRef = new FileRef(contentType, path, size);
-            return this;
-        }
-        
-        public Builder convertedVideo(String contentType, String path, long size) {
-            this.convertedVideoFileRef = new FileRef(contentType, path, size);
-            return this;
-        }
-
         public VideoRef build() {
             if (this.videoId == null) {
                 throw new IllegalStateException("Video id must be set");
@@ -206,24 +241,34 @@ public class VideoRef {
             
             this.refUpdateTimestamp = new Date(ref.getLong("refUpdateTimestamp"));
             
-            FileRef sourceFileRef = null;
-            FileRef convFileRef = null;
+            VideoFileRef sourceFileRef = null;
+            VideoFileRef convFileRef = null;
             
             if (ref.has("sourceVideoFile")) {
                 JSONObject sourceJson = ref.getJSONObject("sourceVideoFile");
-                sourceFileRef = new FileRef(sourceJson.optString("contentType", null),
+                sourceFileRef = new VideoFileRef(sourceJson.optString("contentType", null),
                                             sourceJson.getString("localPath"),
-                                            sourceJson.getLong("size"));
+                                            sourceJson.getLong("size"),
+                                            sourceJson.getJSONObject("metadata"));
             }
             if (ref.has("convertedVideoFile")) {
                 JSONObject convJson = ref.getJSONObject("convertedVideoFile");
-                convFileRef = new FileRef(convJson.optString("contentType", null),
+                convFileRef = new VideoFileRef(convJson.optString("contentType", null),
                                           convJson.getString("localPath"),
-                                          convJson.getLong("size"));
+                                          convJson.getLong("size"),
+                                          convJson.getJSONObject("metadata"));
+            }
+            if (ref.has("generatedThumbnail") && ref.has("generatedThumbnailMimeType")) {
+                try {
+                    byte[] data = Base64.decodeBase64(ref.getString("generatedThumbnail"));
+                    String contentType = ref.getString("generatedThumbnailMimeType");
+                    this.generatedThumbnail = new BufferedBinaryValue(data, contentType);
+                } catch (Exception e) {}
             }
             
             this.videoId = VideoId.fromString(ref.getString("videoId"));
-            this.status = ref.getString("status");
+            this.status = ref.optString("status", "unknown");
+            this.durationSeconds = ref.optDouble("durationSeconds", 0d);
             this.sourceVideoFileRef = sourceFileRef;
             this.convertedVideoFileRef = convFileRef;
             return this;
@@ -234,24 +279,72 @@ public class VideoRef {
         return this.videoId;
     }
     
-    public FileRef sourceVideo() {
+    /**
+     * Get source video file reference.
+     * @return source video file reference, or <code>null</code> if not
+     * available.
+     */
+    public VideoFileRef sourceVideo() {
         return this.sourceVideoFileRef;
     }
     
-    public FileRef convertedVideo() {
+    /**
+     * Get converted video file reference.
+     * @return converted video file reference, or <code>null</code> if not
+     * available.
+     */
+    public VideoFileRef convertedVideo() {
         return this.convertedVideoFileRef;
     }
-    
+
+    /**
+     * Get timestamp for when this video reference was last updated.
+     * @return timestamp of last update time for this reference.
+     */
     public Date refUpdateTimestamp() {
         return new Date(this.refUpdateTimestamp.getTime());
     }
-    
+
+    /**
+     * Get content type of video as guessed by Vortex at upload time.
+     * @return content type as string
+     */
     public String uploadContentType() {
         return this.uploadContentType;
     }
     
+    /**
+     * @return video processing status as a string.
+     */
     public String status() {
         return this.status;
+    }
+    
+    public double durationSeconds() {
+        return this.durationSeconds;
+    }
+
+    /**
+     * @return <code>true</code> if this video file reference has
+     * a generated thumbnail image.
+     */
+    public boolean hasGeneratedThumbnail() {
+        return this.generatedThumbnail != null;
+    }
+
+    /**
+     * Return binary value for thumbnail image that was automatically
+     * created for the video. This data is fetched from the videoapp.
+     * @return binary value buffer, or <code>null</code> if no generated
+     * thumbnail is available.
+     */
+    public BufferedBinaryValue generatedThumbnail() {
+        if (this.generatedThumbnail == null) return null;
+        try {
+            return (BufferedBinaryValue)this.generatedThumbnail.clone();
+        } catch (CloneNotSupportedException c) {
+            return null; // dead code required by Java. Hooray.
+        }
     }
 
     @Override

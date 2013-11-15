@@ -1170,7 +1170,7 @@ VrtxAdmin.prototype.dropdown = function dropdown(options) {
     var dropdownClickArea = options.start ? ":nth-child(3)" : ".first";
 
     list.find("li").not(startDropdown).remove();
-    list.find("li" + dropdownClickArea).append("<span id='dropdown-shortcut-menu-click-area'></span>");
+    list.find("li" + dropdownClickArea).append("<span tabindex='0' id='dropdown-shortcut-menu-click-area'></span>");
 
     var shortcutMenu = listParent.find(".dropdown-shortcut-menu-container");
     shortcutMenu.find("li" + startDropdown).remove();
@@ -1190,6 +1190,12 @@ VrtxAdmin.prototype.dropdown = function dropdown(options) {
       vrtxAdm.openDropdown(shortcutMenu);
       e.stopPropagation();
       e.preventDefault();
+    });
+    list.find("li.dropdown-init #dropdown-shortcut-menu-click-area").keyup(function (e) {
+      if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
+        vrtxAdm.closeDropdowns();
+        vrtxAdm.openDropdown(shortcutMenu);
+      }
     });
 
     list.find("li.dropdown-init #dropdown-shortcut-menu-click-area").hover(function () {

@@ -39,28 +39,30 @@
 
 body #app-head-wrapper a:focus,
 body #app-content a:focus,
-body #app-footer-wrapper a:focus,
-body #app-head-wrapper a:focus span,
-body #app-content a:focus span,
-body #app-footer-wrapper a:focus span,
+body #app-footer-wrapper a:focus {
+  background-color: #FFDE00 !important;
+  color: #000 !important;
+  outline: 1px solid #000 !important;
+}
+
+body.forms-new .ui-dialog .ui-dialog-buttonpane button:focus span,
+body #app-content .vrtx-button:focus,
+body #app-content .vrtx-focus-button:focus,
+body #app-content .vrtx-button-small:focus,
 body #app-content input[type='submit']:focus,
 body #app-content input[type='reset']:focus,
 body #app-content input[type='button']:focus,
-body #app-content button:focus {
-  background-color: #FFDE00 !important;
+body #app-content button:focus,
+body #app-tabs ul li a:focus {
+  background: #FFDE00 !important;
   color: #000 !important;
+  outline: 1px solid #000 !important;
 }
 
-body #app-content .vrtx-button:focus,
-body #app-content .vrtx-button input:focus,
-body #app-content .vrtx-button button:focus,
-body #app-content .vrtx-focus-button:focus,
-body #app-content .vrtx-focus-button input:focus,
-body #app-content .vrtx-focus-button button:focus,
-body #app-content .vrtx-button-small:focus,
-body #app-content .vrtx-button-small input:focus,
-body #app-content .vrtx-button-small button:focus,
-body #app-tabs ul li a:focus {
+body #app-content .vrtx-button:focus span,
+body #app-content .vrtx-focus-button:focus span,
+body #app-content .vrtx-button-small:focus span,
+body.forms-new .ui-dialog .ui-dialog-buttonpane button:focus span:after {
   background: #FFDE00 !important;
   color: #000 !important;
 }

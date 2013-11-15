@@ -1748,7 +1748,7 @@ VrtxAdmin.prototype.initFileUpload = function initFileUpload() {
   if (!form.length) return;
   var inputFile = form.find("#file");
 
-  _$("<div class='vrtx-textfield vrtx-file-upload'><input id='fake-file' type='text' /><a class='vrtx-button vrtx-file-upload'><span>Browse...</span></a></div>'")
+  _$("<div class='vrtx-textfield vrtx-file-upload'><input tabindex='-1' id='fake-file' type='text' /><a tabindex='-1' class='vrtx-button vrtx-file-upload'><span>Browse...</span></a></div>'")
     .insertAfter(inputFile);
 
   inputFile.addClass("js-on").change(function (e) {
@@ -1771,6 +1771,12 @@ VrtxAdmin.prototype.initFileUpload = function initFileUpload() {
     _$("a.vrtx-file-upload").addClass("hover");
   }, function () {
     _$("a.vrtx-file-upload").removeClass("hover");
+  });
+  inputFile.focus(function () {
+    _$("a.vrtx-file-upload").addClass("active");
+  })
+  .blur(function() {
+    _$("a.vrtx-file-upload").removeClass("active");
   });
 
   if (vrtxAdm.supportsReadOnly(document.getElementById("fake-file"))) {

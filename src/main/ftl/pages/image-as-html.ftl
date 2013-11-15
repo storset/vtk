@@ -29,7 +29,7 @@
   </div>
   
 <#if src?exists>
-    <a href="${src?html}"><img src="${src?html}" alt="image" /></a>
+  <a href="${src?html}"><img src="${src?html}" alt="" /></a>
 </#if>
 
 <#if description?exists >

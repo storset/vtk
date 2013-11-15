@@ -50,11 +50,7 @@
 	    	  <#local thumbnail = "" />
 	   	    </#if>
             <a class="vrtx-image" href="${researchGroupEntry.url?html}">
-              <#if caption != ''>
-                <img src="${thumbnail?html}" alt="${captionFlattened}" />
-              <#else>
-                <img src="${thumbnail?html}" alt="${vrtx.getMsg("article.introductionImageAlt")}" />
-              </#if>
+              <img src="${thumbnail?html}" alt="" />
             </a>
           </#if>
           <div class="vrtx-title">

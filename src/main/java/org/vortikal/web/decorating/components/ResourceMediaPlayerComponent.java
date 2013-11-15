@@ -47,6 +47,7 @@ public class ResourceMediaPlayerComponent extends ViewRenderingDecoratorComponen
 
     protected MediaPlayer mediaPlayer;
 
+    @Override
     protected void processModel(Map<String, Object> model, DecoratorRequest request, DecoratorResponse response)
             throws Exception {
 

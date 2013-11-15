@@ -69,7 +69,7 @@ public class VideoContentHooks extends DefaultTypeHanderHooks
     private VideoappClient videoapp;
     private String repositoryId;
 
-    private PropertyTypeDefinition generatedPosterImagePropDef;
+    private PropertyTypeDefinition thumbnailPropDef;
     private PropertyTypeDefinition mediaMetadataStatusPropDef;
     private PropertyTypeDefinition mediaHeightPropDef;
     private PropertyTypeDefinition mediaWidthPropDef;
@@ -78,13 +78,18 @@ public class VideoContentHooks extends DefaultTypeHanderHooks
     private final Log logger = LogFactory.getLog(VideoContentHooks.class);
 
     @Override
-    public String getApplicableContent() {
-        return "video/";
+    public boolean handleCreateForContent(String contentType) {
+        return contentType.startsWith("video/");
     }
 
     @Override
-    public String getApplicableResourceType() {
-        return "videoref";
+    public boolean handleResourceType(String resourceType) {
+        return "videoref".equals(resourceType);
+    }
+
+    @Override
+    public boolean handleCreateCollection() {
+        return false;
     }
 
     @Override
@@ -227,12 +232,12 @@ public class VideoContentHooks extends DefaultTypeHanderHooks
 
         if (ref.hasGeneratedThumbnail()) {
             BufferedBinaryValue b = ref.generatedThumbnail();
-            prop = generatedPosterImagePropDef.createProperty();
+            prop = thumbnailPropDef.createProperty();
             prop.setBinaryValue(b.getBytes(), b.getContentType());
             resource.addProperty(prop);
         }
         
-        // Metadata status
+        // Metadata status set according to video status
         if ("completed".equals(ref.status())) {
             resource.removeProperty(mediaMetadataStatusPropDef);
         } else {
@@ -289,14 +294,6 @@ public class VideoContentHooks extends DefaultTypeHanderHooks
     }
 
     /**
-     * @param propDef the thumbnailPropDef to set
-     */
-    @Required
-    public void setGeneratedPosterImagePropDef(PropertyTypeDefinition propDef) {
-        this.generatedPosterImagePropDef = propDef;
-    }
-
-    /**
      * @param mediaMetadataStatusPropDef the mediaMetadataStatusPropDef to set
      */
     @Required
@@ -326,6 +323,14 @@ public class VideoContentHooks extends DefaultTypeHanderHooks
     @Required
     public void setMediaDurationPropDef(PropertyTypeDefinition mediaDurationPropDef) {
         this.mediaDurationPropDef = mediaDurationPropDef;
+    }
+
+    /**
+     * @param thumbnailPropDef the thumbnailPropDef to set
+     */
+    @Required
+    public void setThumbnailPropDef(PropertyTypeDefinition thumbnailPropDef) {
+        this.thumbnailPropDef = thumbnailPropDef;
     }
 
     

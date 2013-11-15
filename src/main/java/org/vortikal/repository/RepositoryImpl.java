@@ -443,7 +443,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         TypeHandlerHooks hooks = typeHandlerHooksHelper.getTypeHandlerHooks(collection);
         if (hooks != null) {
             try {
-                return hooks.onListChildren(list);
+                return hooks.onListChildren((ResourceImpl)collection.clone(), list);
             } catch (Exception e){
                 throw new TypeHandlerHookException("failed in onListChildren hook", e);
             }
@@ -490,6 +490,16 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             newResource.setInheritedAcl(true);
             int aclIneritedFrom = parent.isInheritedAcl() ? parent.getAclInheritedFrom() : parent.getID();
             newResource.setAclInheritedFrom(aclIneritedFrom);
+            
+            TypeHandlerHooks hooks = typeHandlerHooksHelper.getTypeHandlerHooksForCreateCollection();
+            if (hooks != null) {
+                try {
+                    hooks.onCreateCollection(newResource);
+                } catch (Exception e) {
+                    throw new TypeHandlerHookException("failed in onCreateCollection hook", e);
+                }
+            }
+            
             newResource = this.resourceHelper.create(principal, newResource, true, content);
             
             // Store new collection resource

@@ -171,9 +171,9 @@ public class VideoRef {
             return this;
         }
         
-        public Builder generatedThumbnail(BufferedBinaryValue generatedThumbnail) {
+        public Builder generatedThumbnail(BufferedBinaryValue thumbnailImage) {
             try {
-                this.generatedThumbnail = (BufferedBinaryValue)generatedThumbnail.clone();
+                this.generatedThumbnail = (BufferedBinaryValue)thumbnailImage.clone();
             } catch (CloneNotSupportedException c) {}
             return this;
         }
@@ -336,7 +336,7 @@ public class VideoRef {
      * Return binary value for thumbnail image that was automatically
      * created for the video. This data is fetched from the videoapp.
      * @return binary value buffer, or <code>null</code> if no generated
-     * thumbnail is available.
+     * thumbnail image is available.
      */
     public BufferedBinaryValue generatedThumbnail() {
         if (this.generatedThumbnail == null) return null;

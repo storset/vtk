@@ -3,7 +3,6 @@ package org.vortikal.web;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import junit.framework.TestCase;
 
 import org.jmock.Mockery;
 import org.jmock.integration.junit4.JUnit4Mockery;
@@ -13,7 +12,7 @@ import org.vortikal.repository.Repository;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.service.Service;
 
-public abstract class AbstractControllerTest extends TestCase {
+public abstract class AbstractControllerTest {
 
     static {
         System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.Log4JLogger");
@@ -26,9 +25,7 @@ public abstract class AbstractControllerTest extends TestCase {
     protected final Service mockService = context.mock(Service.class);
     protected final Repository mockRepository = context.mock(Repository.class);
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    public void setUp() throws Exception {
         BaseContext.pushContext();
         SecurityContext securityContext = new SecurityContext(null, null);
         SecurityContext.setSecurityContext(securityContext);

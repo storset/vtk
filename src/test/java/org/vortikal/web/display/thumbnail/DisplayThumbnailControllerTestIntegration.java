@@ -8,8 +8,11 @@ import java.io.InputStream;
 
 import javax.imageio.ImageIO;
 import javax.servlet.ServletOutputStream;
+import static junit.framework.TestCase.assertNull;
 
 import org.jmock.Expectations;
+import org.junit.Before;
+import org.junit.Test;
 import org.springframework.web.servlet.ModelAndView;
 import org.vortikal.repository.ContentStream;
 import org.vortikal.repository.Namespace;
@@ -30,8 +33,9 @@ public class DisplayThumbnailControllerTestIntegration extends AbstractControlle
     protected final Property mockThumbnail = context.mock(Property.class);
     private final String thumbnailMimeType = "image/png";
 
+    @Before
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
         controller = new DisplayThumbnailController();
     }
@@ -42,26 +46,28 @@ public class DisplayThumbnailControllerTestIntegration extends AbstractControlle
         return requestPath;
     }
 
-    public void testDisplayNullThumbnail() throws Exception {
+    @Test
+    public void noThumbnailAvailableWillRedirect() throws Exception {
         prepareRequest(false, true);
 
         // No thumbnail, so we should redirect
         context.checking(new Expectations() {
             {
-                one(mockResponse).sendRedirect(requestPath.toString());
+                oneOf(mockResponse).sendRedirect(requestPath.toString());
             }
         });
 
         handleRequest();
     }
 
-    public void testDisplayNoMimeTypeThumbnail() throws Exception {
+    @Test
+    public void displayNoMimeTypeThumbnail() throws Exception {
         prepareRequest(true, true);
 
         // No mimetype for binary data, so we should redirect
         context.checking(new Expectations() {
             {
-                one(mockThumbnail).getBinaryContentType();
+                oneOf(mockThumbnail).getBinaryContentType();
                 will(returnValue(""));
             }
         });
@@ -69,7 +75,8 @@ public class DisplayThumbnailControllerTestIntegration extends AbstractControlle
         handleRequest();
     }
 
-    public void testDisplayThumbnail() throws Exception {
+    @Test
+    public void displayThumbnail() throws Exception {
         prepareRequest(true, false);
 
         BufferedImage image = ImageIO.read(this.getClass().getResourceAsStream("testImage.gif"));
@@ -88,25 +95,25 @@ public class DisplayThumbnailControllerTestIntegration extends AbstractControlle
         });
         context.checking(new Expectations() {
             {
-                one(mockThumbnail).getBinaryStream();
+                oneOf(mockThumbnail).getBinaryStream();
                 will(returnValue(contentStream));
             }
         });
         context.checking(new Expectations() {
             {
-                one(mockResponse).setContentType(thumbnailMimeType);
+                oneOf(mockResponse).setContentType(thumbnailMimeType);
             }
         });
         context.checking(new Expectations() {
             {
-                one(mockResponse).setContentLength(imageBytes.length);
+                oneOf(mockResponse).setContentLength(imageBytes.length);
             }
         });
 
         final ServletOutputStream responseOut = new MockServletOutputStream();
         context.checking(new Expectations() {
             {
-                one(mockResponse).getOutputStream();
+                oneOf(mockResponse).getOutputStream();
                 will(returnValue(responseOut));
             }
         });
@@ -118,14 +125,14 @@ public class DisplayThumbnailControllerTestIntegration extends AbstractControlle
         // Retrieve the image to display thumbnail for
         context.checking(new Expectations() {
             {
-                one(mockRepository).retrieve(null, requestPath, true);
-                will(returnValue(getImage(withThumbnail)));
+                oneOf(mockRepository).retrieve(null, requestPath, true);
+                will(returnValue(getImageResource(withThumbnail)));
             }
         });
         if (expectRedirect) {
             context.checking(new Expectations() {
                 {
-                    one(mockResponse).sendRedirect(requestPath.toString());
+                    oneOf(mockResponse).sendRedirect(requestPath.toString());
                 }
             });
         }
@@ -136,7 +143,7 @@ public class DisplayThumbnailControllerTestIntegration extends AbstractControlle
         assertNull("Unexpected model&view was returned", result);
     }
 
-    private Resource getImage(boolean withThumbnail) throws IOException {
+    private Resource getImageResource(boolean withThumbnail) throws IOException {
         ResourceImpl image = new ResourceImpl(requestPath);
         image.setResourceType("image");
 
@@ -148,7 +155,7 @@ public class DisplayThumbnailControllerTestIntegration extends AbstractControlle
 
             context.checking(new Expectations() {
                 {
-                    one(mockThumbnail).getDefinition();
+                    oneOf(mockThumbnail).getDefinition();
                     will(returnValue(thumbnailPropDef));
                 }
             });

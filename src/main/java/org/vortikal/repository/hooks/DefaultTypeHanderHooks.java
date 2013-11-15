@@ -106,7 +106,7 @@ public abstract class DefaultTypeHanderHooks implements TypeHandlerHooks {
      * {@inheritDoc }
      */
     @Override
-    public ResourceImpl[] onListChildren(ResourceImpl[] children) throws Exception {
+    public ResourceImpl[] onListChildren(ResourceImpl parent, ResourceImpl[] children) throws Exception {
         return children;
     }
 
@@ -114,12 +114,20 @@ public abstract class DefaultTypeHanderHooks implements TypeHandlerHooks {
      * {@inheritDoc }
      */
     @Override
+    public ResourceImpl onCreateCollection(ResourceImpl newCollection) throws Exception {
+        return newCollection;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    @Override
     public ResourceImpl onStore(ResourceImpl resource) throws Exception {
         return resource;
     }
 
     /**
-     * {@inheritDoc }
+     * @inheritDoc 
      */
     @Override
     public ResourceImpl onStoreSystemChange(ResourceImpl resource, 

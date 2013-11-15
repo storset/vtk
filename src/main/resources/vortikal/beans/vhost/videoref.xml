@@ -67,9 +67,8 @@
     <property name="videoApiClient" ref="videoref.videoapp.client" />
     <property name="repositoryId" value="${repositoryID}" />
     
-    <!-- Video super type propdefs -->
-    <property name="generatedPosterImagePropDef" ref="generatedPosterImagePropDef" />
     <!-- Media-mixin prop defs -->
+    <property name="thumbnailPropDef" ref="thumbnailPropDef" />
     <property name="mediaDurationPropDef" ref="mediaDurationPropDef" />
     <property name="mediaHeightPropDef" ref="mediaHeightPropDef" />
     <property name="mediaWidthPropDef" ref="mediaWidthPropDef" />
@@ -100,5 +99,34 @@
     <property name="repositoryId" value="${repositoryID}" />
     <property name="apiBaseUrl" value="${mediaref.videoapp.apiBaseUrl}" />
   </bean>
+  
+  <!-- System job for storing videoref resources with media-metadata-status = 'GENERATE' -->
+  <!-- Image metadata, including thumbnail -->
+  <bean id="videoref.updateJob" class="org.vortikal.repository.systemjob.StoreResourceJob"
+        parent="repository.systemjob" depends-on="resourceTypeTree">
+    <property name="triggerExpression" value="60" />
+    <property name="id" value="videoref-updater" />
+    <property name="pathSelector">
+      <bean class="org.vortikal.repository.systemjob.IndexQueryPathSelector" parent="repository.systemjob.indexPathSelector">
+        <property name="limit" value="20" />
+        <property name="queryString">
+          <value>
+            type IN videoref AND media-metadata-status = GENERATE
+          </value>
+        </property>
+      </bean>
+    </property>
+    <property name="affectedPropDefPointers">
+      <list>
+        <value>videoStatus</value>
+        <value>duration</value>
+        <value>thumbnail</value>
+        <value>pixelHeight</value>
+        <value>pixelWidth</value>
+        <value>media-metadata-status</value>
+      </list>
+    </property>
+  </bean>
+  
   
 </beans>

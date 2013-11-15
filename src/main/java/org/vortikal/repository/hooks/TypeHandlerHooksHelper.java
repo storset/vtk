@@ -33,10 +33,8 @@ package org.vortikal.repository.hooks;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeansException;
@@ -67,7 +65,7 @@ public class TypeHandlerHooksHelper implements ApplicationContextAware, Initiali
      */
     public TypeHandlerHooks getTypeHandlerHooks(ResourceImpl r) {
         for (TypeHandlerHooks hooks : this.typeHandlerHooks) {
-            if (hooks.getApplicableResourceType().equals(r.getResourceType())) {
+            if (hooks.handleResourceType(r.getResourceType())) {
                 return hooks;
             }
         }
@@ -84,15 +82,25 @@ public class TypeHandlerHooksHelper implements ApplicationContextAware, Initiali
      */
     public TypeHandlerHooks getTypeHandlerHooks(String contentType) {
         for (TypeHandlerHooks hooks : this.typeHandlerHooks) {
-            String applicableContent = hooks.getApplicableContent();
-            if (applicableContent.contains("/")) {
-                applicableContent = applicableContent.substring(0, applicableContent.indexOf("/"));
-            }
-            if (contentType.startsWith(applicableContent + "/")
-                    || contentType.equals(applicableContent))
+            if (hooks.handleCreateForContent(contentType)) {
                 return hooks;
+            }
         }
 
+        return null;
+    }
+
+    /**
+     * Get hooks registered for invocation upon collection creation.
+     * @return a registered type handler or <code>null</code> if no such handler
+     * exists.
+     */
+    public TypeHandlerHooks getTypeHandlerHooksForCreateCollection() {
+        for (TypeHandlerHooks hooks : this.typeHandlerHooks) {
+            if (hooks.handleCreateCollection()) {
+                return hooks;
+            }
+        }
         return null;
     }
 
@@ -102,70 +110,9 @@ public class TypeHandlerHooksHelper implements ApplicationContextAware, Initiali
                 = this.context.getBeansOfType(TypeHandlerHooks.class);
 
         List<TypeHandlerHooks> hooks = new ArrayList<TypeHandlerHooks>(typeHandlerBeans.values());
-        validateTypeHandlerHooks(hooks);
-        for (TypeHandlerHooks hook : hooks) {
-            logger.info("Registered TypeHandlerHooks extension: " + hook
-                    + ", content type pattern = " + hook.getApplicableContent()
-                    + ", resource type = " + hook.getApplicableResourceType());
-        }
+        logger.info("Registered TypeHandlerHooks extension(s): " + hooks);
 
         this.typeHandlerHooks = hooks;
-    }
-
-    private void validateTypeHandlerHooks(List<TypeHandlerHooks> hooks) {
-        final Set<String> contentSpecs = new HashSet<String>();
-        final Set<String> typeSpecs = new HashSet<String>();
-    
-        // Validate type handler configuration 
-        for (TypeHandlerHooks h: hooks) {
-            String applicableContent = h.getApplicableContent();
-            if (applicableContent == null 
-                    || applicableContent.isEmpty()
-                    || applicableContent.startsWith("/") 
-                    || applicableContent.equals("/")
-                    || applicableContent.matches("/{2,}")) {
-                throw new IllegalArgumentException(
-                        "Invalid content type specification from type handler: " + h);
-            }
-            
-            String contentGroup;
-            String contentSubType = null;
-            if (applicableContent.contains("/") && !applicableContent.endsWith("/")) {
-                contentGroup = applicableContent.substring(0, applicableContent.indexOf("/"));
-                contentSubType = applicableContent.substring(applicableContent.indexOf("/")+1, 
-                        applicableContent.length());
-            } else {
-                if (applicableContent.endsWith("/") || applicableContent.endsWith("/*")) {
-                    contentGroup = applicableContent.substring(0, applicableContent.lastIndexOf("/"));
-                } else {
-                    contentGroup = applicableContent;
-                }
-            }
-            
-            if (contentSubType != null) {
-                if (!contentSpecs.add(contentGroup + "/" + contentSubType)
-                        || contentSpecs.contains(contentGroup)) {
-                    throw new IllegalArgumentException("Overlapping type applicability in configured type handlers");
-                }
-            } else {
-                if (!contentSpecs.add(contentGroup)) {
-                    throw new IllegalArgumentException("Overlapping type applicability in configured type handlers");
-                }
-            }
-            
-            String resourceType = h.getApplicableResourceType();
-            if (resourceType == null
-                    || resourceType.isEmpty()
-                    || "resource".equals(resourceType)
-                    || "file".equals(resourceType)
-                    || "collection".equals(resourceType)) {
-                throw new IllegalArgumentException("Invalid or illegal resource type specification in type handler: " + h);
-            }
-            
-            if (!typeSpecs.add(resourceType)) {
-                throw new IllegalArgumentException("Overlapping type applicability in configured type handlers");
-            }
-        }
     }
 
     @Override

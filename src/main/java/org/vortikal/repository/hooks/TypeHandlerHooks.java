@@ -78,34 +78,35 @@ import org.vortikal.repository.store.ContentStore;
 public interface TypeHandlerHooks {
 
     /**
-     * Will be called by repository to determine the content type (media type)
-     * for which this instance applies. Used when new resources are created.
+     * Will be called by repository to determine if content type (media type)
+     * can be handled on creation of new documents.
+     * 
+     * Note that  if multiple type handler hooks overlap in the types of
+     * content they can handle, the selected hooks instance will be arbitrary
+     * (but consistent for the lifetime of the current jvm). Avoid that situation.
+     * 
+     * @param contentType the content type identifier on the form "type/subtype".
      *
-     * @return A string identifying the content type. May be only the overall
-     * media type group (string before "/", like "video/") or a specific fully
-     * qualified type/subtype.
+     * @return <code>true/<code> if the hooks should be invoked for the content type.
      */
-    String getApplicableContent();
+    boolean handleCreateForContent(String contentType);
 
     /**
      * Will be called by repository to determine what resource type the hooks
      * apply for.
+     * 
+     * @param resourceType The resource type. May be <code>null</code> in some situations,
+     * so be prepared to handle that.
      *
-     * <p>
-     * Certain types are reserved and cannot have associated hooks. In case such
-     * a type is return by this method, an error will be thrown by repository at
-     * initialization time.
-     *
-     * <p>
-     * Reserved types are:
-     * <ul><li>resource
-     * <li>collection
-     * <li>file
-     * </ul>
-     *
-     * @return string with the type identifier.
+     * @return <code>true</code> if hooks should be called for resource type.
      */
-    String getApplicableResourceType();
+    boolean handleResourceType(String resourceType);
+    
+    /**
+     * @return <code>true</code> if hook {@link #onCreateCollection(org.vortikal.repository.ResourceImpl) }
+     * should be called upon creation of new collections.
+     */
+    boolean handleCreateCollection();
 
     /**
      * Called by repository to get an instance of {@link Content} for evaluation
@@ -147,11 +148,12 @@ public interface TypeHandlerHooks {
      * Called just before returning list of children in
      * {@link Repository#listChildren(java.lang.String, org.vortikal.repository.Path, boolean) listChildren}.
      *
+     * @param parent the existing parent resource
      * @param children list of resources to be returned. May be modified freely.
      * @return a list of children to be returned to client code.
      * @throws Exception in case of errors.
      */
-    ResourceImpl[] onListChildren(ResourceImpl[] children) throws Exception;
+    ResourceImpl[] onListChildren(ResourceImpl parent, ResourceImpl[] children) throws Exception;
 
     /**
      * Called before storing resource in
@@ -236,6 +238,14 @@ public interface TypeHandlerHooks {
      */
     InputStream getInputStream(ResourceImpl resource) throws Exception;
 
+    /**
+     * Invoked upon creation of a new collection before type evaluation occurs.
+     * @param newCollection the new collection resource
+     * @return new collection resource to be passed on to type evaluation.
+     * @throws Exception in case of errors
+     */
+    ResourceImpl onCreateCollection(ResourceImpl newCollection) throws Exception;
+    
     /**
      * Hook method called on {@link Repository#createDocument(java.lang.String, org.vortikal.repository.Path, java.io.InputStream)
      * document creation}.

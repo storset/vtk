@@ -1,7 +1,8 @@
 resourcetype schedule {
 
   properties {
-    title : string required overrides title,
+    tittel : string,
+    title : derived (tittel) eval ("schedule"?localized) overrides title,
     course-code : string,
     year : string,
     semester : string,
@@ -14,6 +15,8 @@ resourcetype schedule {
   }
 
   edit-rules {
+    tittel (size[1]),
+    tittel (class[ui-helper-hidden]),
     course-code tooltip (en : "(Course code)", no : "(Emnekode)", nn : "(Emnekode)"),
     title (class[ui-helper-hidden]),
     year (class[ui-helper-hidden]),
@@ -86,6 +89,7 @@ resourcetype schedule {
   }
 
   localization {
+    schedule : (en : "Schedule", no : "Timeplan", nn : "Timeplan"),
     title : (en : "Title", no : "Tittel", nn : "Tittel"),
     header : (en : "Edit schedule", no : "Rediger timeplan", nn : "Rediger timeplan"),
     course-code : (en : "Show schedule from", no : "Vis timeplan for", nn : "Vis timeplan for"),

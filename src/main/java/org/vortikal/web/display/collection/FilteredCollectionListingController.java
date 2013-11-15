@@ -84,23 +84,14 @@ public abstract class FilteredCollectionListingController implements ListingCont
     private List<String> filterWhitelistExceptions;
 
     /**
-     * XXX
-     * 
-     * Should be handled by SearchComponent. Filters can be set using an
-     * interface for filter resolving.
-     * 
+     * Sets up, prepares and runs search. Puts results on model for view.
      */
     abstract public void runSearch(HttpServletRequest request, Resource collection, Map<String, Object> model,
             int pageLimit) throws Exception;
 
     /**
-     * XXX
-     * 
-     * Remove, implement interface/impl pattern for filter resolving instead. A
-     * filtered collection listing has one or more filter resolvers that set
+     * A filtered collection listing has one or more filter resolvers that set
      * configured filters on search.
-     * 
-     * 
      */
     protected Map<String, List<String>> explicitlySetFilters(Resource collection, Map<String, List<String>> filters) {
         // By default this does nothing. Can be overridden to handle special
@@ -109,14 +100,12 @@ public abstract class FilteredCollectionListingController implements ListingCont
     }
 
     /**
-     * XXX
-     * 
-     * Hack method to run search in concrete classes. Should be done by a
-     * SearchCompoenent, e.g. CollectionListingSearchComponent which handles
-     * aggregation, multihost search, caching, sorting and property selects.
-     * 
+     * Run the actual search, handling sorting, offset, limit and potential
+     * aggregation.
      */
-    protected ResultSet search(Resource collection, AndQuery baseQuery, int offset) {
+    protected ResultSet search(Resource collection, Query query, int offset) {
+
+        AndQuery and = query instanceof AndQuery ? (AndQuery) query : new AndQuery();
         Search search = new Search();
 
         if (RequestContext.getRequestContext().isPreviewUnpublished()) {
@@ -153,11 +142,11 @@ public abstract class FilteredCollectionListingController implements ListingCont
         }
 
         if (aggregationQuery != null) {
-            baseQuery.add(aggregationQuery);
+            and.add(aggregationQuery);
         } else {
-            baseQuery.add(uriQuery);
+            and.add(uriQuery);
         }
-        search.setQuery(baseQuery);
+        search.setQuery(and);
         search.setSorting(getDefaultSearchSorting(collection));
 
         ConfigurablePropertySelect propertySelect = getPropertySelect();

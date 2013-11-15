@@ -534,6 +534,7 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
               selectorClass: "vrtx-admin-form",
               insertAfterOrReplaceClass: "#active-tab ul#tabMenuRight",
               nodeType: "div",
+              focusElement: "input[type='text']",
               funcComplete: function (p) {
                 createFuncComplete();
               },
@@ -2989,7 +2990,11 @@ VrtxAdmin.prototype.addNewMarkup = function addNewMarkup(options, selectorClass,
     easeIn: transitionEasingSlideDown,
     easeOut: transitionEasingSlideUp,
     afterIn: function(animation) {
-      animation.__opts.elem.find("input[type=text]:visible:first").focus();
+      if(options.focusElement) {
+        animation.__opts.elem.find(options.focusElement).filter(":visible").filter(":first").focus();
+      } else {
+        animation.__opts.elem.find("textarea, input, select, button").filter(":visible").filter(":first").focus();
+      }
     }
   });
   animation.topDown();

@@ -35,6 +35,38 @@
 	1. General
 \*-----------------------------------------*/
 
+/* High contrast tab color */
+
+body #app-head-wrapper a:focus,
+body #app-content a:focus,
+body #app-footer-wrapper a:focus,
+body #app-head-wrapper a:focus span,
+body #app-content a:focus span,
+body #app-footer-wrapper a:focus span,
+body #app-content input[type='submit']:focus,
+body #app-content input[type='reset']:focus,
+body #app-content input[type='button']:focus,
+body #app-content button:focus {
+  background-color: #FFDE00 !important;
+  color: #000 !important;
+}
+
+body #app-content .vrtx-button:focus,
+body #app-content .vrtx-button input:focus,
+body #app-content .vrtx-button button:focus,
+body #app-content .vrtx-focus-button:focus,
+body #app-content .vrtx-focus-button input:focus,
+body #app-content .vrtx-focus-button button:focus,
+body #app-content .vrtx-button-small:focus,
+body #app-content .vrtx-button-small input:focus,
+body #app-content .vrtx-button-small button:focus,
+body #app-tabs ul li a:focus {
+  background: #FFDE00 !important;
+  color: #000 !important;
+}
+
+/* ^ High contrast tab color */
+
 html {
   background-color: #F8F8F8;
 }

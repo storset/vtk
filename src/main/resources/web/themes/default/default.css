@@ -55,30 +55,25 @@ body #app-tabs ul li a:focus {
   outline: 1px solid #000 !important;
 }
 
-a.vrtx-file-upload.active,
+#app-content a.vrtx-file-upload.active,
 body.forms-new .ui-dialog .ui-dialog-buttonpane button:focus span,
-body .vrtx-button:focus,
-body .vrtx-focus-button:focus,
-body .vrtx-button-small:focus,
-body input[type='submit']:focus,
-body input[type='reset']:focus,
-body input[type='button']:focus,
-body button:focus,
+body #app-content .vrtx-button:focus,
+body #app-content .vrtx-focus-button:focus,
+body #app-content .vrtx-button-small:focus,
+body #app-content input[type='submit']:focus,
+body #app-content input[type='reset']:focus,
+body #app-content input[type='button']:focus,
+body #app-content button:focus,
 body #app-tabs ul li a:focus {
-  /* background: #FFDE00 !important;
-  color: #000 !important; */
-  outline: 1px solid #000 !important;
+  background-color: #FFDE00 !important;
+  color: #000 !important;
+  border-color: #000 !important;
+  outline: 0 !important;
 }
 
-/*
-body .vrtx-button:focus span,
-body .vrtx-focus-button:focus span,
-body .vrtx-button-small:focus span,
-body.forms-new .ui-dialog .ui-dialog-buttonpane button:focus span:after {
-  background: #FFDE00 !important;
+body #app-content .vrtx-focus-button:focus * {
   color: #000 !important;
 }
-*/
 
 /* ^ High contrast tab color */
 
@@ -1004,23 +999,32 @@ ul.dropdown-shortcut-menu li.dropdown-init .dropdown-shortcut-menu-click-area {
   -moz-border-radius-bottomright: 5px;
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
+  background-image: url("images/dropdown-arrow.png");
+  background-position: 8px 12px;
+  background-repeat: no-repeat;
 }
 
 ul.dropdown-shortcut-menu.dropdown-shortcut-menu-small li.dropdown-init .dropdown-shortcut-menu-click-area {
+  background-image: url("images/dropdown-arrow-small.png");
+  background-position: 8px 11px;
   height: 25px;
   width: 26px;
 }
 
 ul.dropdown-shortcut-menu li.dropdown-init .dropdown-shortcut-menu-click-area:hover {
-  background: #2b81c8;
+  background-color: #2b81c8;
   border-color: #23659c;
   height: 30px;
   top: -1px;
   right: -1px;
+  background-image: url("images/dropdown-arrow-hover.png");
+  background-position: 7px 13px;
 }
 
 ul.dropdown-shortcut-menu.dropdown-shortcut-menu-small li.dropdown-init .dropdown-shortcut-menu-click-area:hover {
   height: 26px;
+  background-image: url("images/dropdown-arrow-small-hover.png");
+  background-position: 7px 12px;
 }
 
 div.dropdown-shortcut-menu-container ul,

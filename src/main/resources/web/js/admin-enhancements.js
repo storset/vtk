@@ -154,8 +154,8 @@ vrtxAdmin._$(document).ready(function () {
 
   vrtxAdm.clientLastModified = $("#resource-last-modified").text().split(",");
   
-  vrtxAdm.miscAdjustments();
   vrtxAdm.initDropdowns();
+  vrtxAdm.miscAdjustments();
   vrtxAdm.initTooltips();
   vrtxAdm.initResourceMenus();
   vrtxAdm.initGlobalDialogs();

@@ -51,7 +51,7 @@ body #app-tabs ul li a:focus {
   outline: 1px solid #000 !important;
 }
 
-#dropdown-shortcut-menu-click-area:focus {
+.dropdown-shortcut-menu-click-area:focus {
   outline: 1px solid #000 !important;
 }
 
@@ -670,7 +670,7 @@ a:hover {
 }
 
 #resource-title h1 {
-  margin:  0 0 15px 36px;
+  margin: 0 0 15px 36px;
   float: left;
   min-width: 85px; /* at least as wide as 'Endre navn' in dropdown + 15px */
   max-width: 35%;
@@ -802,10 +802,7 @@ ul.publishing-document li,
 #editor-help-menu,
 #collection-more-menu,
 #editor-menu-wrapper,
-#editor-button-row {
-  display: inline-block;
-}
-
+#editor-button-row,
 ul.publishing-document {
   display: inline-block;
 }
@@ -908,175 +905,150 @@ ul.publishing-document {
 #resourceMenuLeft li,
 #editor-menu li,
 #editor-button-row li {
-  background: url(images/dropdown-left.gif) no-repeat -5px 0;
-  display: inline-block;
-  height: 27px;
-  white-space: nowrap;
-  overflow: visible;
-  margin: 0 0 0 1px;
+ 
 }
 
-ul.dropdown-shortcut-menu li.first,
-#resourceMenuLeft li.first,
-#editor-menu li.first,
-#editor-button-row li.first {
-  background-position: 0 0;
-  margin: 0;
-}
+.button-row li.first {
 
-ul.dropdown-shortcut-menu li a,
-#resourceMenuLeft li a,
-#resourceMenuLeft li form input[type=submit],
-#editor-menu li a,
-#editor-button-row li a {
-  color: #363534;
-  background: url(images/button-open-right.png) no-repeat top right;
-  display: inline-block;
-  height: 23px;
-  padding: 4px 15px 0 14px;
-  margin: 0 -5px 0 0;
 }
 
 ul.dropdown-shortcut-menu.dropdown-shortcut-menu-small li a {
-  height: 21px;
-  padding: 4px 12px 0 11px;
+  
 }
 
 ul.dropdown-shortcut-menu.dropdown-shortcut-menu-small {
-  padding-right: 25px;
+  
 }
 
-#resourceMenuLeft li form input[type=submit] {
-  height: 28px;
-  padding-top: 1px;
-  margin-top: -1px !important;
+.dropdown-shortcut-menu-container form input[type=submit] {
+  color: #005AAB;
 }
 
 #resourceMenuLeft li.last a,
 #resourceMenuLeft li.last form input[type=submit],
 #editor-menu li.last a,
 #editor-button-row li.last a {
-  background: url(images/button-closed-right.gif) no-repeat top right;
+  
 }
 
 #resourceMenuLeft li:hover,
 #editor-menu li:hover,
 #editor-button-row li:hover {
-  background-image: url(images/dropdown-left-rollover.gif);
-  margin-right: -5px;
+  
 }
 
 #resourceMenuLeft li:hover a,
 #resourceMenuLeft li:hover form input[type=submit],
 #editor-menu li:hover a,
 #editor-button-row li:hover a {
-  background: none;
-  color: #fff;
-  text-decoration: none;
-  margin: 0px;
-  cursor: pointer;
+ 
 }
 
 #resourceMenuLeft li.last:hover,
 #resourceMenuLeft li.last:hover form input[type=submit],
 #editor-menu li.last:hover,
 #editor-button-row li.last:hover {
-  margin-right: 0px;
+ 
 }
 
 #resourceMenuLeft li.last:hover a,
 #resourceMenuLeft li.last:hover form input[type=submit],
 #editor-menu li.last:hover a,
 #editor-button-row li.last:hover a {
-  background: url(images/button-closed-right-rollover.gif) no-repeat top right;
-  margin: 0 -5px 0 0;
+ 
 }
 
 #resource-title .dropdown-shortcut-menu-container li form {
-  padding: 0 !important;
+  
 }
 
 #resource-title .dropdown-shortcut-menu-container li form input[type=submit] {
-  cursor: pointer;
-  color: #005aab !important;
-  border: none;
-  padding: 8px 14px 7px 14px !important;
+  
 }
 
 /* Dropdown */
 
+ul.button-row li {
+  -webkit-border-radius: 0px;
+  -moz-border-radius: 0px;
+  border-radius: 0px;
+  margin-left: -5px !important;
+}
+
+ul.button-row li.first {
+  -webkit-border-top-left-radius: 5px;
+  -webkit-border-bottom-left-radius: 5px;
+  -moz-border-radius-topleft: 5px;
+  -moz-border-radius-bottomleft: 5px;
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+}
+
+ul.button-row li.last {
+  -webkit-border-top-right-radius: 5px;
+  -webkit-border-bottom-right-radius: 5px;
+  -moz-border-radius-topright: 5px;
+  -moz-border-radius-bottomright: 5px;
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+
 ul.dropdown-shortcut-menu li.dropdown-init {
-  display: inline-block !important;
-  border: none;
-  background: url(images/dropdown-left.gif) no-repeat -5px 0;
-  margin-right: 0px !important;
-}
-
-ul.dropdown-shortcut-menu li.dropdown-init.first {
-  background-position: 0 0;
-}
-
-ul.dropdown-shortcut-menu.dropdown-shortcut-menu-small li.dropdown-init {
-  background-image: url(images/button-small-left.png);
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
 }
 
 ul.dropdown-shortcut-menu li.dropdown-init a,
 ul.dropdown-shortcut-menu li.dropdown-init form input[type=submit] {
-  background: url(images/dropdown-right.gif) no-repeat top right !important;
-  padding-right: 44px !important;
+  
 }
 
 ul.dropdown-shortcut-menu.dropdown-shortcut-menu-small li.dropdown-init a {
-  background: url(images/dropdown-small-right.png) no-repeat top right !important;
-  padding-right: 35px !important;
-  margin-right: -24px;
+  
 }
 
 ul.dropdown-shortcut-menu li.dropdown-init:hover {
-  background-image: url(images/dropdown-left-rollover.gif) !important;
+  
 }
 
 ul.dropdown-shortcut-menu.dropdown-shortcut-menu-small li.dropdown-init:hover {
-  background-image: url(images/button-small-left-rollover.png) !important;
+  
 }
 
 ul.dropdown-shortcut-menu li.dropdown-init.unhover.first {
-  background: url(images/dropdown-left.gif) no-repeat top left !important;
+  
 }
 
 ul.dropdown-shortcut-menu.dropdown-shortcut-menu-small li.dropdown-init.unhover.first {
-  background: url(images/button-small-left.png) no-repeat top left !important;
+  
 }
 
 ul.dropdown-shortcut-menu li.dropdown-init.unhover {
-  background: url(images/dropdown-left.gif) no-repeat -5px 0 !important;
+  
 }
 
 ul.dropdown-shortcut-menu.dropdown-shortcut-menu-small li.dropdown-init.unhover {
-  background: url(images/button-small-left.png) no-repeat -5px 0 !important;
+  
 }
 
 ul.dropdown-shortcut-menu li.dropdown-init:hover a,
 ul.dropdown-shortcut-menu li.dropdown-init:hover form input[type=submit] {
-  margin: 0 -5px 0 0 !important;
-  color: #fff;
-  text-decoration: none;
+  
 }
 
 ul.dropdown-shortcut-menu li.dropdown-init a.hover,
 ul.dropdown-shortcut-menu li.dropdown-init form.hover input[type=submit] {
-  background-image: url(images/dropdown-right-rollover.gif) !important;
-  color: #363534 !important;
-  margin: 0 -5px 0 0 !important;
+  
 }
 
 ul.dropdown-shortcut-menu.dropdown-shortcut-menu-small li.dropdown-init:hover a,
 ul.dropdown-shortcut-menu.dropdown-shortcut-menu-small li.dropdown-init a.hover {
-  margin-right: -24px !important;
+  
 }
 
 ul.dropdown-shortcut-menu.dropdown-shortcut-menu-small li.dropdown-init a.hover {
-  background-image: url(images/dropdown-small-right-rollover.png) !important;
+  
 }
 
 div.dropdown-shortcut-menu-container,
@@ -1104,43 +1076,62 @@ ul.dropdown-shortcut-menu-container {
   right: -5px;
 }
 
-#editor-menu-wrapper div.dropdown-shortcut-menu-container {
-  right: 0px;
-}
-
 .global-menu div.dropdown-shortcut-menu-container {
   top: 37px;
 }
 
-#editor-menu-wrapper div.dropdown-shortcut-menu-container {
-  top: 28px;
+#editor-menu-wrapper {
+  position: relative;
 }
 
-#editor-menu-wrapper,
+#editor-menu-wrapper div.dropdown-shortcut-menu-container {
+  top: 28px;
+  right: 0px;
+}
+
 ul.dropdown-shortcut-menu li.dropdown-init {
   position: relative;
+  padding-right: 26px !important;
 }
 
 #editor-menu-wrapper #editor-menu {
   padding: 0 7px 0 0;
 }
 
-ul.dropdown-shortcut-menu li.dropdown-init #dropdown-shortcut-menu-click-area {
-  display: block;
-  width: 28px;
-  height: 28px;
+ul.dropdown-shortcut-menu li.dropdown-init .dropdown-shortcut-menu-click-area {
+  border-left: 1px solid #cbcbcb;
   position: absolute;
-  right: -5px;
-  top: 0;
+  top: 0px;
+  right: 0px;
+  height: 29px;
+  width: 26px;
+  padding: 0;
+  margin: 0;
   cursor: pointer
+  -webkit-border-top-right-radius: 5px;
+  -webkit-border-bottom-right-radius: 5px;
+  -moz-border-radius-topright: 5px;
+  -moz-border-radius-bottomright: 5px;
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
 }
 
-ul.dropdown-shortcut-menu.dropdown-shortcut-menu-small li.dropdown-init #dropdown-shortcut-menu-click-area {
-  width: 24px;
+ul.dropdown-shortcut-menu.dropdown-shortcut-menu-small li.dropdown-init .dropdown-shortcut-menu-click-area {
   height: 25px;
-  top: 1px;
-  right: -24px;
-}  
+  width: 26px;
+}
+
+ul.dropdown-shortcut-menu li.dropdown-init .dropdown-shortcut-menu-click-area:hover {
+  background: #2b81c8;
+  border-color: #23659c;
+  height: 30px;
+  top: -1px;
+  right: -1px;
+}
+
+ul.dropdown-shortcut-menu.dropdown-shortcut-menu-small li.dropdown-init .dropdown-shortcut-menu-click-area:hover {
+  height: 26px;
+}
 
 div.dropdown-shortcut-menu-container ul,
 div.dropdown-shortcut-menu-container ul li,
@@ -3286,24 +3277,18 @@ div.vrtx-admin-form {
   width: 100%;
 }
 
-/* Smaller font-size in resource-info tables */
+/* Smaller button in resource-info tables */
 
 .resourceInfo .vrtx-button-small {
   margin-left: 2px;
 }
 
-.resourceInfo table .vrtx-button-small input,
-.resourceInfo table .vrtx-button-small button,
-.resourceInfo table .vrtx-button-small span {
+.resourceInfo table .vrtx-button-small > * {
   font-size: 0.846em;
+  padding: 2px 13px;
 }
 
-.resourceInfo table .vrtx-button-small span {
-  height: 20px;
-  padding: 5px 9px 0 8px;
-}
-
-/* ^ Smaller font-size in resource-info tables */
+/* ^ Smaller button in resource-info tables */
 
 /* Date */
 .vrtx-date {
@@ -3392,16 +3377,6 @@ div.vrtx-admin-form {
  */
 #directory-listing tr input, x:-moz-any-link, x:only-child {
   margin: 3px 3px 3px 4px;
-}
-
-/* Fix bug in Firefox with to much padding on form input in dropdown */
-#resource-title .dropdown-shortcut-menu-container li form input[type=submit], x:-moz-any-link, x:only-child  {
-  padding-left: 12px !important;
-  padding-right: 12px !important;
-}
-
-#resource-title ul.dropdown-shortcut-menu li.dropdown-init form input[type=submit], x:-moz-any-link, x:only-child  {
-  padding-right: 41px !important;  
 }
 
 /* ^ UiO design - Vortex */

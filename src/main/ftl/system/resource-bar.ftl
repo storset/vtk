@@ -122,7 +122,7 @@
         </#if>
       </#compress></h1>
       <#if browseURL?exists && editField?exists><#-- TODO: fix this hack for browse -->
-        <ul class="list-menu" id="resourceMenuLeft">
+        <ul class="list-menu button-row" id="resourceMenuLeft">
           <li class="createLinkToResourceService first last">
             <a href="javascript:updateParent('${editField}', '${browseURL}')"><@vrtx.msg code="resourceMenuLeft.createLinkToResourceService" default="Create link" /></a>
           </li>

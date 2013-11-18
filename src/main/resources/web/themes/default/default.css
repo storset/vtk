@@ -902,68 +902,8 @@ ul.publishing-document {
   float: left;
 }
 
-#resourceMenuLeft li,
-#editor-menu li,
-#editor-button-row li {
- 
-}
-
-.button-row li.first {
-
-}
-
-ul.dropdown-shortcut-menu.dropdown-shortcut-menu-small li a {
-  
-}
-
-ul.dropdown-shortcut-menu.dropdown-shortcut-menu-small {
-  
-}
-
 .dropdown-shortcut-menu-container form input[type=submit] {
   color: #005AAB;
-}
-
-#resourceMenuLeft li.last a,
-#resourceMenuLeft li.last form input[type=submit],
-#editor-menu li.last a,
-#editor-button-row li.last a {
-  
-}
-
-#resourceMenuLeft li:hover,
-#editor-menu li:hover,
-#editor-button-row li:hover {
-  
-}
-
-#resourceMenuLeft li:hover a,
-#resourceMenuLeft li:hover form input[type=submit],
-#editor-menu li:hover a,
-#editor-button-row li:hover a {
- 
-}
-
-#resourceMenuLeft li.last:hover,
-#resourceMenuLeft li.last:hover form input[type=submit],
-#editor-menu li.last:hover,
-#editor-button-row li.last:hover {
- 
-}
-
-#resourceMenuLeft li.last:hover a,
-#resourceMenuLeft li.last:hover form input[type=submit],
-#editor-menu li.last:hover a,
-#editor-button-row li.last:hover a {
- 
-}
-
-#resource-title .dropdown-shortcut-menu-container li form {
-  
-}
-
-#resource-title .dropdown-shortcut-menu-container li form input[type=submit] {
-  
 }
 
 /* Dropdown */
@@ -997,58 +937,6 @@ ul.dropdown-shortcut-menu li.dropdown-init {
   -webkit-border-radius: 5px;
   -moz-border-radius: 5px;
   border-radius: 5px;
-}
-
-ul.dropdown-shortcut-menu li.dropdown-init a,
-ul.dropdown-shortcut-menu li.dropdown-init form input[type=submit] {
-  
-}
-
-ul.dropdown-shortcut-menu.dropdown-shortcut-menu-small li.dropdown-init a {
-  
-}
-
-ul.dropdown-shortcut-menu li.dropdown-init:hover {
-  
-}
-
-ul.dropdown-shortcut-menu.dropdown-shortcut-menu-small li.dropdown-init:hover {
-  
-}
-
-ul.dropdown-shortcut-menu li.dropdown-init.unhover.first {
-  
-}
-
-ul.dropdown-shortcut-menu.dropdown-shortcut-menu-small li.dropdown-init.unhover.first {
-  
-}
-
-ul.dropdown-shortcut-menu li.dropdown-init.unhover {
-  
-}
-
-ul.dropdown-shortcut-menu.dropdown-shortcut-menu-small li.dropdown-init.unhover {
-  
-}
-
-ul.dropdown-shortcut-menu li.dropdown-init:hover a,
-ul.dropdown-shortcut-menu li.dropdown-init:hover form input[type=submit] {
-  
-}
-
-ul.dropdown-shortcut-menu li.dropdown-init a.hover,
-ul.dropdown-shortcut-menu li.dropdown-init form.hover input[type=submit] {
-  
-}
-
-ul.dropdown-shortcut-menu.dropdown-shortcut-menu-small li.dropdown-init:hover a,
-ul.dropdown-shortcut-menu.dropdown-shortcut-menu-small li.dropdown-init a.hover {
-  
-}
-
-ul.dropdown-shortcut-menu.dropdown-shortcut-menu-small li.dropdown-init a.hover {
-  
 }
 
 div.dropdown-shortcut-menu-container,

@@ -97,7 +97,7 @@ resourcetype program-document {
         [else]
           <div class="vrtx-introduction-image">
         [endif]
-            <img src="[val img-uri]" alt="[localized 'introduction-image-alt']"/>
+            <img src="[val img-uri]" alt=""/>
           </div>
       [endif]
       ##
@@ -289,18 +289,10 @@ resourcetype program-document {
               <div class="vrtx-frontpage-box-picture">
                 [if url != null && url != ""]
                   <a href="[val url]">
-                    [if title != null && title != ""]
-                      <img src="[val picture]" alt="[val title]" />
-                    [else]
-                      <img src="[val picture]" alt="[val picture]" />
-                    [endif]
+                    <img src="[val picture]" alt="" />
                   </a>
                 [else]
-                  [if title != null && title != ""]
-                    <img src="[val picture]" alt="[val title]" />
-                  [else]
-                    <img src="[val picture]" alt="[val picture]" />
-                  [endif]
+                  <img src="[val picture]" alt="" />
                 [endif]
               </div>
             [endif]

@@ -43,12 +43,12 @@
 <form name="vrtx-confirm-copy-move" id="vrtx-confirm-copy-move" action="${formURL}" method="post">
   <div class="submitButtons">
     <div class="vrtx-focus-button">
-      <button tabindex="1" type="submit" value="ok" id="confirmAction" name="confirm-action">
+      <button type="submit" value="ok" id="confirmAction" name="confirm-action">
         ${vrtx.getMsg("copyMove.discloseWarning.ok")}
       </button>
     </div>
     <div class="vrtx-button">
-      <button tabindex="2" type="submit" value="cancel" id="cancelAction" name="cancel-action">
+      <button type="submit" value="cancel" id="cancelAction" name="cancel-action">
         ${vrtx.getMsg("copyMove.discloseWarning.cancel")}
       </button>
     </div>
@@ -64,7 +64,7 @@
 	   setTimeout("focus();",0);
 	   $("#cancelAction").parent().remove(); 
 	   $("#vrtx-confirm-copy-move .submitButtons")
-	     .append('<div class="vrtx-button"><button tabindex="2" type="button" id="cancelAction" name="cancelAction">'
+	     .append('<div class="vrtx-button"><button type="button" id="cancelAction" name="cancelAction">'
 	           + '${vrtx.getMsg("copyMove.discloseWarning.cancel")}</button></div>');
 	});
         //-->

@@ -1141,25 +1141,33 @@ function getMultipleFieldsBoxesTemplates() {
 /* Multiple comma seperated input textfields */
 function initMultipleInputFields() {
   getMultipleFieldsBoxesTemplates();
-  vrtxAdmin.cachedAppContent.on("click", ".vrtx-multipleinputfield button.remove", function (e) {
-    removeFormField($(this));
-    e.preventDefault();
-    e.stopPropagation();
+  vrtxAdmin.cachedAppContent.on("click keyup", ".vrtx-multipleinputfield button.remove", function (e) {
+    if(e.type == "click" || ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13))) {
+      removeFormField($(this));
+      e.preventDefault();
+      e.stopPropagation();
+    }
   });
-  vrtxAdmin.cachedAppContent.on("click", ".vrtx-multipleinputfield button.movedown", function (e) {
-    swapContentTmp($(this), 1);
-    e.preventDefault();
-    e.stopPropagation();
+  vrtxAdmin.cachedAppContent.on("click keyup", ".vrtx-multipleinputfield button.movedown", function (e) {
+    if(e.type == "click" || ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13))) {
+      swapContentTmp($(this), 1);
+      e.preventDefault();
+      e.stopPropagation();
+    }
   });
-  vrtxAdmin.cachedAppContent.on("click", ".vrtx-multipleinputfield button.moveup", function (e) {
-    swapContentTmp($(this), -1);
-    e.preventDefault();
-    e.stopPropagation();
+  vrtxAdmin.cachedAppContent.on("click keyup", ".vrtx-multipleinputfield button.moveup", function (e) {
+    if(e.type == "click" || ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13))) {
+      swapContentTmp($(this), -1);
+      e.preventDefault();
+      e.stopPropagation();
+    }
   });
-  vrtxAdmin.cachedAppContent.on("click", ".vrtx-multipleinputfield button.browse-resource-ref", function (e) {
-    browseServer($(this).closest(".vrtx-multipleinputfield").find('input').attr('id'), vrtxAdmin.multipleFormGroupingPaths.baseCKURL, vrtxAdmin.multipleFormGroupingPaths.baseFolderURL, vrtxAdmin.multipleFormGroupingPaths.basePath, 'File');
-    e.preventDefault();
-    e.stopPropagation();
+  vrtxAdmin.cachedAppContent.on("click keyup", ".vrtx-multipleinputfield button.browse-resource-ref", function (e) {
+    if(e.type == "click" || ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13))) {
+      browseServer($(this).closest(".vrtx-multipleinputfield").find('input').attr('id'), vrtxAdmin.multipleFormGroupingPaths.baseCKURL, vrtxAdmin.multipleFormGroupingPaths.baseFolderURL, vrtxAdmin.multipleFormGroupingPaths.basePath, 'File');
+      e.preventDefault();
+      e.stopPropagation();
+    }
   });
 }
 
@@ -1265,7 +1273,7 @@ function removeFormField(input) {
   if(fields.length === (vrtxEditor.multipleFieldsBoxes[name].limit - 1)) {
     $(".vrtx-" + name + "-limit-reached").remove();
     $("#vrtx-" + name + "-add").show();
-  } 
+  }
   var moveUpFirst = fields.filter(":first").find("button.moveup");
   var moveDownLast = fields.filter(":last").find("button.movedown");
   if (moveUpFirst.length) moveUpFirst.parent().remove();
@@ -1330,25 +1338,33 @@ function initJsonMovableElements() {
     JSON_ELEMENTS_INITIALIZED.resolve();
   });
 
-  vrtxAdmin.cachedAppContent.on("click", ".vrtx-json .vrtx-move-down-button", function (e) {
-    swapContent($(this), 1);
-    e.stopPropagation();
-    e.preventDefault();
+  vrtxAdmin.cachedAppContent.on("click keyup", ".vrtx-json .vrtx-move-down-button", function (e) {
+    if(e.type == "click" || ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13))) {
+      swapContent($(this), 1);
+      e.stopPropagation();
+      e.preventDefault();
+    }
   });
-  vrtxAdmin.cachedAppContent.on("click", ".vrtx-json .vrtx-move-up-button", function (e) {
-    swapContent($(this), -1);
-    e.stopPropagation();
-    e.preventDefault();
+  vrtxAdmin.cachedAppContent.on("click keyup", ".vrtx-json .vrtx-move-up-button", function (e) {
+    if(e.type == "click" || ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13))) {
+      swapContent($(this), -1);
+      e.stopPropagation();
+      e.preventDefault();
+    }
   });
-  vrtxAdmin.cachedAppContent.on("click", ".vrtx-json .vrtx-add-button", function (e) {
-    addJsonField($(this));
-    e.stopPropagation();
-    e.preventDefault();
+  vrtxAdmin.cachedAppContent.on("click keyup", ".vrtx-json .vrtx-add-button", function (e) {
+    if(e.type == "click" || ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13))) {
+      addJsonField($(this));
+      e.stopPropagation();
+      e.preventDefault();
+    }
   });
-  vrtxAdmin.cachedAppContent.on("click", ".vrtx-json .vrtx-remove-button", function (e) {
-    removeJsonField($(this));
-    e.stopPropagation();
-    e.preventDefault();
+  vrtxAdmin.cachedAppContent.on("click keyup", ".vrtx-json .vrtx-remove-button", function (e) {
+    if(e.type == "click" || ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13))) {
+      removeJsonField($(this));
+      e.stopPropagation();
+      e.preventDefault();
+    }
   });
 }
 

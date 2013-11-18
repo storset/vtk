@@ -49,12 +49,8 @@ resourcetype structured-document {
           <div class="vrtx-introduction-image">
         [endif]
         
-         [if caption != null]
-           <img src="[val img-uri]" alt="[val caption # unescaped 'flattened']"/>
-         [else]
-           <img src="[val img-uri]" alt="[localized 'introduction-image-alt']"/>
-         [endif]
-     
+         <img src="[val img-uri]" alt="" />
+
          [if caption != null]
            <div class="vrtx-imagetext">
              <div class="vrtx-imagedescription">[val caption # unescaped]</div>
@@ -136,7 +132,6 @@ resourcetype structured-document {
     introduction : (en : "Introduction", no : "Innledning", nn : "Innleiing"),
     picture : (en: "Image", no: "Bilde", nn : "Bilete"),
     hidePicture : (en : "Hide image in document", no : "Skjul bilde i dokument", nn : "Skjul bilete i dokument"),
-    introduction-image-alt : (en : "Image", no : "Bilde", nn : "Bilete"),
     photo-prefix : (en : "Photo", no : "Foto", nn : "Photo"),
     caption : (en : "Image caption", no : "Bildetekst", nn : "Bilettekst"),
     preview : (en : "Preview", no : "Forhåndsvisning", nn : "Førehandsvisning"),

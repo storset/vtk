@@ -186,7 +186,7 @@ resourcetype organizational-unit {
         [else]
           <div class="vrtx-introduction-image">
         [endif]
-          <img src="[val img-uri]" alt="[localized 'introduction-image-alt']"/>
+          <img src="[val img-uri]" alt="" />
         </div>
       [endif]
       ##
@@ -346,7 +346,6 @@ resourcetype organizational-unit {
     fax : (en : "Fax", no : "Faks", nn : "Faks"),
     email : (en : "Email", no : "E-post", nn : "E-post"),
     picture : (en: "Picture of unit", no: "Bilde av enheten", nn : "Bilde av enheten"),
-    introduction-image-alt : (en : "Image", no : "Bilde", nn : "Bilete"),
     introduction : (en: "Introduction", no: "Innledning", nn : "Innleiing"),
     responsibilities : (en : "Responsibilities", no : "Ansvarsområder", nn : "Ansvarsområder"),
     employees : (en : "Staff", no : "Ansatte", nn : "Ansatte"),

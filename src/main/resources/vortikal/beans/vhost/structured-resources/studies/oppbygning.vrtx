@@ -125,9 +125,9 @@ resourcetype oppbygning {
         [endif]
 
         [if caption != null]
-          <img src="[val img-uri]" alt="[val caption # unescaped 'flattened']"/>
+          <img src="[val img-uri]" alt=""/>
         [else]
-          <img src="[val img-uri]" alt="[localized 'introduction-image-alt']"/>
+          <img src="[val img-uri]" alt=""/>
         [endif]
 
         [if caption != null]
@@ -201,7 +201,6 @@ resourcetype oppbygning {
     oppbygning : (en : "Programme structure", no : "Oppbygging og gjennomføring", nn : "Oppbygging og gjennomføring"),
     introduction : (en : "Introduction",no : "Innledning", nn : "Innleiing"),
     picture : (en: "Image", no: "Bilde", nn : "Bilete"),
-    introduction-image-alt : (en: "Image", en: "Bilde", en: "Bilete"),
     caption : (en : "Image caption", no : "Bildetekst", nn : "Bilettekst"),
     photo-prefix : (en : "Photo", no : "Foto", nn : "Photo"),
     gradsnavn : (en : "Name of degree (shared text)", no : "Gradsnavn (fellestekst)", nn : "Gradsnamn (fellestekst)"),

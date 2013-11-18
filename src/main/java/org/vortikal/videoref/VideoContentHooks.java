@@ -333,5 +333,4 @@ public class VideoContentHooks extends DefaultTypeHanderHooks
         this.thumbnailPropDef = thumbnailPropDef;
     }
 
-    
 }

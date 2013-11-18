@@ -28,25 +28,24 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 package org.vortikal.videoref;
 
 /**
- * Video object "URNs" or identifiers.
- *
+ * Identifier for videoapp token objects.
  */
-public class VideoId extends AbstractId {
-
-    private VideoId(String id) {
-        super(id, "video");
-    }
-
-    /**
-     * Create a video object identifier.
-     * @param id fully qualified video identifier string
-     * @return an instance of this class based on video identifier string.
-     */
-    public static VideoId fromString(String id) {
-        return new VideoId(id);
+public class TokenId extends AbstractId {
+ 
+    private TokenId(String id) {
+        super(id, "token");
     }
     
+    /**
+     * Create a token object identifier.
+     * @param id fully qualified token identifier string
+     * @return an instance of this class based on token identifier string.
+     */
+    public static TokenId fromString(String id) {
+        return new TokenId(id);
+    }
 }

@@ -28,25 +28,57 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 package org.vortikal.videoref;
 
-/**
- * Video object "URNs" or identifiers.
- *
- */
-public class VideoId extends AbstractId {
+import java.net.URI;
 
-    private VideoId(String id) {
-        super(id, "video");
+/**
+ * References to video streaming resources for a video object. Such references
+ * are only valid for a limited amount of time, so the same can be said about
+ * objects of this class.
+ */
+public class StreamingRef {
+    
+    private Token token;
+    private URI hlsStream;
+    private URI hdsStream;
+    
+    public StreamingRef(Token token, URI hlsStream, URI hdsStream) {
+        if (token == null) {
+            throw new IllegalArgumentException("token cannot be null");
+        }
+        if (hlsStream == null) {
+            throw new IllegalArgumentException("hlsStream cannot be null");
+        }
+        if (hdsStream == null) {
+            throw new IllegalArgumentException("hdsStream cannot be null");
+        }
+        
+        this.token = token;
+        this.hlsStream = hlsStream;
+        this.hdsStream = hdsStream;
     }
 
     /**
-     * Create a video object identifier.
-     * @param id fully qualified video identifier string
-     * @return an instance of this class based on video identifier string.
+     * @return the token
      */
-    public static VideoId fromString(String id) {
-        return new VideoId(id);
+    public Token token() {
+        return token;
     }
-    
+
+    /**
+     * @return URI to the "Apple HTTP Live Streaming" stream
+     */
+    public URI hlsStream() {
+        return hlsStream;
+    }
+
+    /**
+     * @return URI to the "Adobe HTTP Dynamic Streaming" stream
+     */
+    public URI hdsStream() {
+        return hdsStream;
+    }
+
 }

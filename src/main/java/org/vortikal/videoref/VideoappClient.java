@@ -167,19 +167,59 @@ public class VideoappClient {
     }
     
     /**
+     * Requesting streaming of video.
+     * 
+     * @param videoId the video object identifier to 
+     * @return a {@link StreamingRef} with info about streams. Note that the
+     * validity of such a reference will expire in a certain amount of time.
+     */
+    public StreamingRef requestStreaming(VideoId videoId) {
+        // TODO @videoapp, give Location of newly created object and use that here
+        // Create token for streaming
+        JSONObject response = this.restTemplate.postForObject(withBaseUrl("/videos/{host}/{videoId}/tokens/?return-stream-uris=true"), 
+                null, JSONObject.class, repositoryId, videoId.numericId());
+        
+        final TokenId tokenId = TokenId.fromString(response.getString("tokenId"));
+
+        // TODO: these should not be part of 201 Created response, but instead part of GET on token object.
+        // TODO: these URIs should be absolute and include host
+        final String hlsStreamUri = response.getString("appleHttp");
+        final String hdsStreamUri = response.getString("flashHttp");
+        
+        // Get newly created token object
+        response = this.restTemplate.getForObject(withBaseUrl("/videos/{host}/{videoId}/tokens/{tokenId}"),JSONObject.class,
+                repositoryId, videoId.numericId(), tokenId.numericId());
+        
+        if (! TokenId.fromString(response.getString("tokenId")).equals(tokenId)) {
+            throw new IllegalStateException("Unexpected token id in response");
+        }
+        if (! VideoId.fromString(response.getString("videoRef")).equals(videoId)) {
+            throw new IllegalStateException("Unexpected video id in response");
+        }
+        
+        final String tokenValue = response.getString("tokenValue");
+        
+        // TODO do not hard code 60s expiry time here, get value from videoapp instead
+        Token token = new Token(tokenId, tokenValue, new Date(new Date().getTime() + 60000), videoId);
+        
+        return new StreamingRef(token, URI.create(hlsStreamUri), URI.create(hdsStreamUri));
+    }
+    
+    /**
      * Prepends API base URL to the rest and returns the result
      * as a string.
      * @param rest The rest of the URL.
      * @return complete URL with API base URL prepended.
      */
     private String withBaseUrl(String rest) {
-        if (this.apiBaseUrl.endsWith("/") 
-                && rest.startsWith("/")) {
-            rest = rest.substring(1);
-        } else if (! (this.apiBaseUrl.endsWith("/")
+        
+        if (! (this.apiBaseUrl.endsWith("/") 
                 || rest.startsWith("/"))) {
             rest = "/" + rest;
+        } else if (this.apiBaseUrl.endsWith("/") && rest.startsWith("/")) {
+            rest = rest.substring(1);
         }
+        
         return this.apiBaseUrl + rest;
     }
     

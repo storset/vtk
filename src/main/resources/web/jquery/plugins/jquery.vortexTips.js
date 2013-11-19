@@ -81,7 +81,10 @@
           nPos.left = left;
           tip.css('position', 'absolute').css('z-index', '1000').css('width', opts.containerWidth + 'px');        
         }
-        tip.css(nPos).fadeIn(opts.animInSpeed);
+        tip.css(nPos).fadeIn(opts.animInSpeed, function() {
+          var button = $(this).find(".vrtx-button, .vrtx-button-small");
+          if(button.length) button.filter(":first")[0].focus();
+        });
         if (opts.extra) {
           tipExtra.css(ePos).fadeIn(opts.animInSpeed);
         }

@@ -13,14 +13,12 @@
       <div class="vrtx-textfield">
         <input type="text" size="30" name="${spring.status.expression}" value="${spring.status.value?if_exists}" />
       </div>
-      <p>
-      <div>Enter comma separated list of paths to ignore. Paths <b>MUST</b> be entered as they are written in the manifest, i.e. all 
-      start with a slash ("/") and collections also end with one.<br/>
+      <p>Enter comma separated list of paths to ignore. Paths <b>MUST</b> be entered as they are written in the manifest, i.e. all 
+      start with a slash ("/") and collections also end with one.</p>
       <div class="vrtx-textfield">
-        <input type="text" size="30" name="ignorableResources" id="ignorableResources" value="" /></div>
+        <input type="text" size="30" name="ignorableResources" id="ignorableResources" value="" />
       </div>
-      <div style="font-size: 0.769em">Disclaimer: If you don't know what the contents of this field does, then for the love of God don't put anything in it.</div>
-      </p>
+      <p style="font-size: 0.769em">Disclaimer: If you don't know what the contents of this field does, then for the love of God don't put anything in it.</p>
       <@actionsLib.genOkCancelButtons "save" "cancelAction" "actions.createArchive.save" "actions.createArchive.cancel" />
     </form>
   </div>

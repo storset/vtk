@@ -958,11 +958,8 @@ ul.dropdown-shortcut-menu-container {
 }
 
 .global-menu div.dropdown-shortcut-menu-container {
-  right: -5px;
-}
-
-.global-menu div.dropdown-shortcut-menu-container {
-  top: 37px;
+  right: 0px;
+  top: 41px;
 }
 
 #editor-menu-wrapper {
@@ -970,8 +967,8 @@ ul.dropdown-shortcut-menu-container {
 }
 
 #editor-menu-wrapper div.dropdown-shortcut-menu-container {
-  top: 28px;
-  right: 0px;
+  right: 7px;
+  top: 32px;
 }
 
 ul.dropdown-shortcut-menu li.dropdown-init {
@@ -2844,7 +2841,7 @@ table.resourceInfo.revisions tr:nth-child(even) td {
 
 #vrtx-revisions .resourceInfo td.vrtx-revisions-buttons-column {
   font-size: 1em;
-  width: 320px;
+  width: 340px;
   padding: 11px;
 } 
 

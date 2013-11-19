@@ -1776,10 +1776,10 @@ VrtxAdmin.prototype.initFileUpload = function initFileUpload() {
     _$("a.vrtx-file-upload").removeClass("hover");
   });
   inputFile.focus(function () {
-    _$("a.vrtx-file-upload").addClass("active");
+    _$("a.vrtx-file-upload").addClass("focus");
   })
   .blur(function() {
-    _$("a.vrtx-file-upload").removeClass("active");
+    _$("a.vrtx-file-upload").removeClass("focus");
   });
 
   if (vrtxAdm.supportsReadOnly(document.getElementById("fake-file"))) {

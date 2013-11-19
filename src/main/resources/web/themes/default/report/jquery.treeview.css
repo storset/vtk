@@ -86,3 +86,7 @@
 .treeview li.not-inherited > span.folder.restricted {
   background-image: url(../images/folder-small-restricted-own-permissions.gif);
 }
+
+.treeview span.folder.unpublished {
+  background-image: url(../images/folder-small-unpublished.png);
+}

@@ -45,7 +45,7 @@
             <#list filter?keys as parameterKey>
               <#assign url = filter[parameterKey].url>
               <#assign marked = filter[parameterKey].marked>
-              <#if (parameterKey = "all" || (facets?exists && facets[parameterKey]?exists && facets[parameterKey]))>
+              <#if (parameterKey = "all" || (!facets?exists || (facets[parameterKey]?exists && facets[parameterKey])))>
                 <li id="vrtx-listing-filter-parameter-${filterKey}-${parameterKey}" class="vrtx-listing-filter-parameter<#if parameterKey = "all"> vrtx-listing-filter-parameter-all</#if><#if marked> vrtx-listing-filter-parameter-selected</#if>">
                   <#if parameterKey = "all"> 
                     <a href="${url}">${vrtx.getMsg("listing-filters.${filterKey}.all")}</a>
@@ -55,7 +55,7 @@
                     <#else>
                       <a href="${url}">${vrtx.getMsg("listing-filters.${filterKey}.filter.h")} 20${parameterKey?substring(1)}</a>
                     </#if>
-                  <#elseif (facets?exists && facets[parameterKey]?exists && facets[parameterKey])>
+                  <#elseif (!facets?exists || (facets[parameterKey]?exists && facets[parameterKey]))>
                     <a href="${url}">${vrtx.getMsg("listing-filters.${filterKey}.filter.${parameterKey}")}</a>
                   </#if>
                 </li>

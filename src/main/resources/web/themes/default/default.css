@@ -46,6 +46,7 @@ body #app-footer-wrapper a:focus {
 }
 */
 
+.vrtx-button.focus,
 *:focus {
   outline: 1px dashed #333 !important;
 }

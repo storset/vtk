@@ -1172,7 +1172,8 @@ VrtxAdmin.prototype.dropdown = function dropdown(options) {
 
     list.find("li").not(startDropdown).remove();
     list.find("li" + dropdownClickArea).append("<span tabindex='0' class='dropdown-shortcut-menu-click-area'></span>");
-var shortcutMenu = listParent.find(".dropdown-shortcut-menu-container");
+    var shortcutMenu = listParent.find(".dropdown-shortcut-menu-container");
+    
     setTimeout(function() {
     
     shortcutMenu.find("li" + startDropdown).remove();

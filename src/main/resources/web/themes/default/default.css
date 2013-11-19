@@ -37,12 +37,14 @@
 
 /* High contrast tab color */
 
+/*
 body #app-head-wrapper a:focus,
 body #app-footer-wrapper a:focus {
   background-color: #FFDE00 !important;
   color: #000 !important;
   outline: 1px dashed #333 !important;
 }
+*/
 
 *:focus {
   outline: 1px dashed #333 !important;

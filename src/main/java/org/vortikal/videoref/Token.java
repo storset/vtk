@@ -103,7 +103,7 @@ public class Token {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "[" + tokenId + "]";
+        return "Token{" + "tokenId=" + tokenId + ", videoId=" + videoId + ", tokenValue=" + tokenValue + ", expiryTime=" + expiryTime + '}';
     }
     
 }

@@ -81,4 +81,9 @@ public class StreamingRef {
         return hdsStream;
     }
 
+    @Override
+    public String toString() {
+        return "StreamingRef{" + "token=" + token.tokenId() + ", hlsStream=" + hlsStream + ", hdsStream=" + hdsStream + '}';
+    }
+
 }

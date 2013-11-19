@@ -40,6 +40,8 @@ import net.sf.json.JSONObject;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.vortikal.repository.Resource;
@@ -176,25 +178,28 @@ public class VideoappClient {
     public StreamingRef requestStreaming(VideoId videoId) {
         // TODO @videoapp, give Location of newly created object and use that here
         // Create token for streaming
-        JSONObject response = this.restTemplate.postForObject(withBaseUrl("/videos/{host}/{videoId}/tokens/?return-stream-uris=true"), 
-                null, JSONObject.class, repositoryId, videoId.numericId());
+
+        ResponseEntity<JSONObject> responseEntity = 
+                this.restTemplate.postForEntity(withBaseUrl("/videos/{host}/{videoId}/tokens/?return-stream-uris=true"), 
+                        new JSONObject(), JSONObject.class, repositoryId, videoId.numericId());
         
-        final TokenId tokenId = TokenId.fromString(response.getString("tokenId"));
+        final URI location = responseEntity.getHeaders().getLocation();
+        JSONObject response = responseEntity.getBody();
 
         // TODO: these should not be part of 201 Created response, but instead part of GET on token object.
-        // TODO: these URIs should be absolute and include host
         final String hlsStreamUri = response.getString("appleHttp");
         final String hdsStreamUri = response.getString("flashHttp");
         
+        final TokenId tokenId = TokenId.fromString(response.getString("tokenId"));
+        
         // Get newly created token object
-        response = this.restTemplate.getForObject(withBaseUrl("/videos/{host}/{videoId}/tokens/{tokenId}"),JSONObject.class,
-                repositoryId, videoId.numericId(), tokenId.numericId());
+        response = this.restTemplate.getForObject(location, JSONObject.class);
         
         if (! TokenId.fromString(response.getString("tokenId")).equals(tokenId)) {
-            throw new IllegalStateException("Unexpected token id in response");
+            throw new RestClientException("Unexpected token id in response");
         }
         if (! VideoId.fromString(response.getString("videoRef")).equals(videoId)) {
-            throw new IllegalStateException("Unexpected video id in response");
+            throw new RestClientException("Unexpected video id in response");
         }
         
         final String tokenValue = response.getString("tokenValue");

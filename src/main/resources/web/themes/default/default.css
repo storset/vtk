@@ -35,7 +35,7 @@
 	1. General
 \*-----------------------------------------*/
 
-/* High contrast tab color */
+/* Focus/active */
 
 /*
 body #app-head-wrapper a:focus,
@@ -50,13 +50,13 @@ body #app-footer-wrapper a:focus {
   outline: 1px dashed #333 !important;
 }
 
-input[type='text'],
-input[type='password'],
-textarea {
+input[type='text']:focus,
+input[type='password']:focus,
+textarea:focus {
   outline: 0 !important;
 }
 
-/* ^ High contrast tab color */
+/* ^ Focus/active */
 
 html {
   background-color: #F8F8F8;

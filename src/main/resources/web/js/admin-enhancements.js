@@ -505,9 +505,10 @@ VrtxAdmin.prototype.globalAsyncComplete = function globalAsyncComplete() {
     }
   }
   $("#advanced-publish-settings-content").remove();
-  vrtxAdm.adjustResourceTitle();
+
   vrtxAdm.initResourceTitleDropdown();
   vrtxAdm.initPublishingDropdown();
+  vrtxAdm.adjustResourceTitle();
   vrtxAdm.updateCollectionListingInteraction();
 };
 

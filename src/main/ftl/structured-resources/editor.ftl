@@ -130,11 +130,11 @@
           </#if>
           <@genEditorHelpMenu />
         <#elseif form.workingCopy>
-          <ul id="editor-button-row">
+          <ul class="button-row" id="editor-button-row">
             <li class="first">
               <a href="javascript:void(0)" id="vrtx-save-view-shortcut">${vrtx.getMsg("editor.saveAndView")}</a>
             </li>
-            <li><span id="vrtx-save">
+            <li class="save"><span id="vrtx-save">
               <a class="vrtx-focus-button" href="javascript:void(0)" id="vrtx-save-working-copy-shortcut">${vrtx.getMsg("editor.save")}</a>
               </span>
             </li>
@@ -145,7 +145,7 @@
           <span id="buttons-or-text"><@vrtx.msg code="editor.orText" default="or" /></span>
           &nbsp;
           <div id="editor-menu-wrapper">
-            <ul id="editor-menu">
+            <ul class="button-row" id="editor-menu">
               <li class="first">
                 <#if (form.hasPublishDate && !form.onlyWriteUnpublished) || !form.hasPublishDate>
                   <a href="javascript:void(0)" id="vrtx-make-public-version-shortcut">${vrtx.getMsg("editor.makePublicVersion")}</a>
@@ -160,11 +160,11 @@
           </div>
           <@genEditorHelpMenu />
         <#else>
-          <ul id="editor-button-row">
+          <ul class="button-row" id="editor-button-row">
             <li class="first">
               <a href="javascript:void(0)" id="vrtx-save-view-shortcut">${vrtx.getMsg("editor.saveAndView")}</a>
             </li>
-            <li><span id="vrtx-save">
+            <li class="save"><span id="vrtx-save">
               <a class="vrtx-focus-button" href="javascript:void(0)" id="vrtx-save-shortcut">${vrtx.getMsg("editor.save")}</span></a>
             </li>
             <li class="last">

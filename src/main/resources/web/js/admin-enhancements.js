@@ -154,8 +154,8 @@ vrtxAdmin._$(document).ready(function () {
 
   vrtxAdm.clientLastModified = $("#resource-last-modified").text().split(",");
   
-  vrtxAdm.miscAdjustments();
   vrtxAdm.initDropdowns();
+  vrtxAdm.miscAdjustments();
   vrtxAdm.initTooltips();
   vrtxAdm.initResourceMenus();
   vrtxAdm.initGlobalDialogs();
@@ -1171,14 +1171,15 @@ VrtxAdmin.prototype.dropdown = function dropdown(options) {
     var dropdownClickArea = options.start ? ":nth-child(3)" : ".first";
 
     list.find("li").not(startDropdown).remove();
-    list.find("li" + dropdownClickArea).append("<span tabindex='0' id='dropdown-shortcut-menu-click-area'></span>");
+    list.find("li" + dropdownClickArea).append("<span tabindex='0' class='dropdown-shortcut-menu-click-area'></span>");
 
     var shortcutMenu = listParent.find(".dropdown-shortcut-menu-container");
     shortcutMenu.find("li" + startDropdown).remove();
     if (options.calcTop) {
       shortcutMenu.css("top", (list.position().top + list.height() - (parseInt(list.css("marginTop"), 10) * -1) + 1) + "px");
     }
-    var left = (list.width() + 5)
+    
+    var left = (list.width() - shortcutMenu.width());
     if (options.calcLeft) {
       left += list.position().left;
     }
@@ -1186,20 +1187,20 @@ VrtxAdmin.prototype.dropdown = function dropdown(options) {
 
     list.find("li" + dropdownClickArea).addClass("dropdown-init");
 
-    list.find("li.dropdown-init #dropdown-shortcut-menu-click-area").click(function (e) {
+    list.find("li.dropdown-init .dropdown-shortcut-menu-click-area").click(function (e) {
       vrtxAdm.closeDropdowns();
       vrtxAdm.openDropdown(shortcutMenu);
       e.stopPropagation();
       e.preventDefault();
     });
-    list.find("li.dropdown-init #dropdown-shortcut-menu-click-area").keyup(function (e) {
+    list.find("li.dropdown-init .dropdown-shortcut-menu-click-area").keyup(function (e) {
       if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
         vrtxAdm.closeDropdowns();
         vrtxAdm.openDropdown(shortcutMenu);
       }
     });
 
-    list.find("li.dropdown-init #dropdown-shortcut-menu-click-area").hover(function () {
+    list.find("li.dropdown-init .dropdown-shortcut-menu-click-area").hover(function () {
       var area = _$(this);
       area.parent().toggleClass('unhover');
       area.prev().toggleClass('hover');
@@ -3609,6 +3610,7 @@ VrtxAdmin.prototype.serverFacade = {
     } else if (status === 401) {
       msg = (useStatusCodeInMsg ? status + " - " : "") + this.errorMessages.s401;
     } else if (status === 403) {
+      /* Handle server down => up */
       msg = (useStatusCodeInMsg ? status + " - " : "") + this.errorMessages.s403;
     } else if (status === 404) {
       var serverFacade = this;

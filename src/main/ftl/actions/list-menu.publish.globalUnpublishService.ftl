@@ -14,7 +14,7 @@
 
 <#if writePermission.permissionsQueryResult = 'true'>
   <#if !resourceContext.currentResource.isCollection()>
-    <ul class="publishing-document">
+    <ul class="publishing-document button-row-small">
       <li class="first">
         <a id="vrtx-unpublish-document" title="${titleMsg}" href="${actionURL?html}">
           ${item.title?html}

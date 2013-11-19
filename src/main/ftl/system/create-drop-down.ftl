@@ -19,7 +19,7 @@
                           + "/" + upFinalUrl?substring(upFinalUrl?index_of("?"), upFinalUrl?length) />
     </#if>
 
-    <ul class="manage-create">
+    <ul class="manage-create button-row">
       <li class="manage-create-drop first">
         <a id="manage-create-drop-document" title="<@vrtx.msg code="manage.choose-location.document" default="Choose where you would like to create document" />" href="${docFinalUrl?html}">
           <@vrtx.msg code="manage.document" default="Create document" />

@@ -31,8 +31,11 @@
     var tipText;
     var fadeOutTimer;
 
-    $(this).on("mouseenter mouseleave", subSelector, function (e) {
-      if (e.type == "mouseenter") {
+    var toggleOn = false;
+    $(this).on("mouseenter mouseleave keyup", subSelector, function (e) {
+      if (e.type == "mouseenter" || (((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) && !toggleOn)) {
+        toggleOn = true;
+        
         var link = $(this);
         if (typeof linkTriggeredMouseEnter !== "undefined" && linkTriggeredMouseEnter) {
           linkTriggeredMouseEnter.attr('title', linkTriggeredMouseEnterTipText);
@@ -88,7 +91,10 @@
         if (opts.extra) {
           tipExtra.css(ePos).fadeIn(opts.animInSpeed);
         }
-      } else if (e.type == "mouseleave") {
+        e.stopPropagation();
+      } else if (e.type == "mouseleave" || (((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) && toggleOn)) {
+        toggleOn = false;
+      
         var link = $(this);
         if (typeof link.attr("href") === "undefined" && !link.is("abbr")) {
           link = link.find("a");
@@ -104,8 +110,8 @@
             $(this).remove();
           });
         }, opts.animOutPreDelay);
+        e.stopPropagation();
       }
-      e.stopPropagation();
     });
   }
 })(jQuery);

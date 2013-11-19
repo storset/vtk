@@ -38,41 +38,20 @@
 /* High contrast tab color */
 
 body #app-head-wrapper a:focus,
-body #app-content a:focus,
 body #app-footer-wrapper a:focus {
   background-color: #FFDE00 !important;
   color: #000 !important;
-  outline: 1px solid #000 !important;
+  outline: 1px dashed #333 !important;
 }
 
-body #app-tabs ul li a:focus {
-  background: #FFDE00 !important;
-  color: #000 !important;
-  outline: 1px solid #000 !important;
+*:focus {
+  outline: 1px dashed #333 !important;
 }
 
-.dropdown-shortcut-menu-click-area:focus {
-  outline: 1px solid #000 !important;
-}
-
-#app-content a.vrtx-file-upload.active,
-body.forms-new .ui-dialog .ui-dialog-buttonpane button:focus span,
-body #app-content .vrtx-button:focus,
-body #app-content .vrtx-focus-button:focus,
-body #app-content .vrtx-button-small:focus,
-body #app-content input[type='submit']:focus,
-body #app-content input[type='reset']:focus,
-body #app-content input[type='button']:focus,
-body #app-content button:focus,
-body #app-tabs ul li a:focus {
-  background-color: #FFDE00 !important;
-  color: #000 !important;
-  border-color: #000 !important;
+input[type='text'],
+input[type='password'],
+textarea {
   outline: 0 !important;
-}
-
-body #app-content .vrtx-focus-button:focus * {
-  color: #000 !important;
 }
 
 /* ^ High contrast tab color */

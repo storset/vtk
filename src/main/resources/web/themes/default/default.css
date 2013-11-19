@@ -1018,8 +1018,8 @@ div.dropdown-shortcut-menu-container ul li a,
 ul.dropdown-shortcut-menu-container li a,
 div.dropdown-shortcut-menu-container ul li span,
 ul.dropdown-shortcut-menu-container li span,
-div.dropdown-shortcut-menu-container ul li form,
-ul.dropdown-shortcut-menu-container li form {
+div.dropdown-shortcut-menu-container ul li form input[type='submit'],
+ul.dropdown-shortcut-menu-container li form input[type='submit'] {
   border-bottom: 1px solid #cbcbcb; 
   padding: 8px 14px 7px 14px !important;
   background-color: #fff;
@@ -1027,12 +1027,24 @@ ul.dropdown-shortcut-menu-container li form {
   white-space: nowrap;
 }
 
+div.dropdown-shortcut-menu-container ul li form,
+ul.dropdown-shortcut-menu-container li form {
+  display: block;
+}
+
 div.dropdown-shortcut-menu-container ul li a:hover,
 ul.dropdown-shortcut-menu-container li a:hover,
-div.dropdown-shortcut-menu-container ul li form:hover,
-ul.dropdown-shortcut-menu-container li form:hover {
+div.dropdown-shortcut-menu-container ul li form input[type='submit']:hover,
+ul.dropdown-shortcut-menu-container li form input[type='submit']:hover {
   background-color: #ecf3f9;
   cursor: pointer;
+}
+
+div.dropdown-shortcut-menu-container ul li form input[type='submit'],
+ul.dropdown-shortcut-menu-container li form input[type='submit'] {
+  float: left;
+  text-align: left;
+  width: 100%;
 }
 
 div.dropdown-shortcut-menu-container ul li a:hover,

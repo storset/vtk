@@ -10,7 +10,8 @@
                            http://www.springframework.org/schema/context/spring-context.xsd
                            http://www.springframework.org/schema/util
                            http://www.springframework.org/schema/util/spring-util.xsd">
-  
+
+  <!-- Resource type definition for 'videoref' type. -->  
   <bean id="mediaref.videorefType"
         class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
     <property name="name" value="videoref"/>
@@ -26,40 +27,42 @@
     </property>
     <property name="propertyTypeDefinitions">
       <list>
-        <!-- videoId property -->
-        <bean class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
-          <property name="name" value="videoId" />
-          <property name="namespace" ref="DEFAULT_NAMESPACE" />
-          <property name="type" value="STRING" />
-          <property name="propertyEvaluator">
-            <bean class="org.vortikal.repository.resourcetype.property.JsonExtractEvaluator">
-              <property name="valueFactory" ref="valueFactory" />
-              <property name="expression" value="ref.videoId" />
-              <property name="alwaysEvaluate" value="true" />
-            </bean>
-          </property>
-        </bean>
-        
-        <!-- videoStatus property -->
-        <bean class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
-          <property name="name" value="videoStatus" />
-          <property name="namespace" ref="DEFAULT_NAMESPACE" />
-          <property name="type" value="STRING" />
-          <property name="propertyEvaluator">
-            <bean class="org.vortikal.repository.resourcetype.property.JsonExtractEvaluator">
-              <property name="valueFactory" ref="valueFactory" />
-              <property name="expression" value="ref.status" />
-              <property name="alwaysEvaluate" value="true" />
-            </bean>
-          </property>
-        </bean>
-
+        <ref bean="videoref.videoIdPropDef" />
+        <ref bean="videoref.videoStatusPropDef" />
         <!-- TODO add overriding contentType propdef with evaluator which looks in
              videoref (if available), falls back to standard evaluator otherwise. -->
       </list>
     </property>
   </bean>
-  
+
+  <!-- videoId property of resource type videoref -->
+  <bean id="videoref.videoIdPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+    <property name="name" value="videoId" />
+    <property name="namespace" ref="DEFAULT_NAMESPACE" />
+    <property name="type" value="STRING" />
+    <property name="propertyEvaluator">
+      <bean class="org.vortikal.repository.resourcetype.property.JsonExtractEvaluator">
+        <property name="valueFactory" ref="valueFactory" />
+        <property name="expression" value="ref.videoId" />
+        <property name="alwaysEvaluate" value="true" />
+      </bean>
+    </property>
+  </bean>
+        
+  <!-- videoStatus property of resource type videoref -->
+  <bean id="videoref.videoStatusPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+    <property name="name" value="videoStatus" />
+    <property name="namespace" ref="DEFAULT_NAMESPACE" />
+    <property name="type" value="STRING" />
+    <property name="propertyEvaluator">
+      <bean class="org.vortikal.repository.resourcetype.property.JsonExtractEvaluator">
+        <property name="valueFactory" ref="valueFactory" />
+        <property name="expression" value="ref.status" />
+        <property name="alwaysEvaluate" value="true" />
+      </bean>
+    </property>
+  </bean>
+    
   <!-- Repository integration -->
   <bean id="videoref.videoContentHooks" parent="abstractTypeHandlerHooks"
        class="org.vortikal.videoref.VideoContentHooks">
@@ -128,5 +131,76 @@
     </property>
   </bean>
   
+  <!-- Abstract service for external streaming of videoref resources. -->
+  <bean id="videoref.streamService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="viewService" />
+    <property name="order" value="-1" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="vrtx" />
+          <property name="parameterValue" value="stream" />
+        </bean>
+        <bean class="org.vortikal.web.service.ResourceTypeAssertion">
+          <property name="repository" ref="repository" />
+          <property name="resourceTypeDefinition" ref="mediaref.videorefType" />
+        </bean>
+      </list>
+    </property>
+  </bean>
   
+  <!-- Service streaming videoref resources using Adobe HTTP Dynamic Streaming -->
+  <bean id="videoref.hdsStreamService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="videoref.streamService" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="type" />
+          <property name="parameterValue" value="hds" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler">
+      <bean class="org.vortikal.videoref.StreamingUrlRedirectController">
+        <property name="videoappClient" ref="videoref.videoapp.client" />
+        <property name="streamType" value="ADOBE_HDS" />
+        <property name="videoIdPropDef" ref="videoref.videoIdPropDef" />
+      </bean>
+    </property>
+  </bean>
+  
+  <!-- Service streaming videoref resources using Apple HTTP Live Streaming -->
+  <bean id="videoref.hlsStreamService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="videoref.streamService" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="type" />
+          <property name="parameterValue" value="hls" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler">
+      <bean class="org.vortikal.videoref.StreamingUrlRedirectController">
+        <property name="videoappClient" ref="videoref.videoapp.client" />
+        <property name="streamType" value="APPLE_HLS" />
+        <property name="videoIdPropDef" ref="videoref.videoIdPropDef" />
+      </bean>
+    </property>
+  </bean>
+  
+  <!-- Reference data provider for streaming URLs -->
+  <bean id="videoref.hdsStreamUrlProvider" class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
+    <property name="modelName" value="streamingUrls" />
+    <property name="urlName" value="hdsStreamUrl" />
+    <property name="service" ref="videoref.hdsStreamService" />
+    <property name="matchAssertions" value="true" />
+  </bean>
+  <bean id="videoref.hlsStreamUrlProvider" class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
+    <property name="modelName" value="streamingUrls" />
+    <property name="urlName" value="hlsStreamUrl" />
+    <property name="service" ref="videoref.hlsStreamService" />
+    <property name="matchAssertions" value="true" />
+  </bean>
+
 </beans>

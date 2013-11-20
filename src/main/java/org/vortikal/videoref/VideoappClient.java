@@ -186,7 +186,7 @@ public class VideoappClient {
         final URI location = responseEntity.getHeaders().getLocation();
         JSONObject response = responseEntity.getBody();
 
-        // TODO: these should not be part of 201 Created response, but instead part of GET on token object.
+        // TODO: these should not be part of 201 Created response, but instead part of GET on token object or something
         final String hlsStreamUri = response.getString("appleHttp");
         final String hdsStreamUri = response.getString("flashHttp");
         

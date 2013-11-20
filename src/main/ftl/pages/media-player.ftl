@@ -33,5 +33,13 @@
 
 <@mediaPlayer.mediaPlayer />
 
+<h2>Streaming links</h2>
+<#if streamingUrls.hdsStreamUrl?exists>
+  <p><a href="${streamingUrls.hdsStreamUrl?html}">Adobe Http Dynamic Streaming stream</a></p>
+</#if>
+<#if streamingUrls.hlsStreamUrl?exists>
+  <p><a href="${streamingUrls.hlsStreamUrl?html}">Apple Http Live Streaming stream</a></p>
+</#if>
+
 </body>
 </html>

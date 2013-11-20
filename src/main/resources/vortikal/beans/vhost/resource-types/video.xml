@@ -110,6 +110,8 @@
     <property name="referenceDataProviders">
       <list>
         <ref bean="resourceContextProvider" />
+        <ref bean="videoref.hdsStreamUrlProvider" />
+        <ref bean="videoref.hlsStreamUrlProvider" />
       </list>
     </property>
     <property name="attributesMap">

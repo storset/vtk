@@ -115,7 +115,7 @@
     // Fullscreen resize
     var maxRuns = 0;
     $(window).resize($.throttle(250, function () {
-      if (maxRuns < 2 || !$.browser.msie) {
+      if (maxRuns < 2 || (!$.browser.msie && !/iPad/.test(navigator.userAgent))) {
         if(isFullscreen || isResponsive) {
           resizeFullscreen(true);
         }

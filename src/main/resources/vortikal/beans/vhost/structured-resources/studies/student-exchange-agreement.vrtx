@@ -1,0 +1,135 @@
+resourcetype student-exchange-agreement {
+
+  properties {
+    tittel : string,
+    title : derived (tittel) eval ("student-exchange-agreement"?localized) overrides title,
+
+    owner-of-agreement : string,
+    type-of-agreement : string,
+    type-of-agreement-other-text-field : html noextract,
+
+    bachelor : boolean defaultvalue("false"),
+    master : boolean defaultvalue("false"),
+    phd : boolean defaultvalue("false"),
+    profesjonsstudium : boolean defaultvalue("false"),
+    specialist : boolean defaultvalue("false"),
+
+    introduction : html noextract,
+    who-can-apply : html noextract,
+    language : html noextract,
+    courses : html noextract,
+    length-of-semester : html noextract,
+
+    tuition : boolean,
+    scholarship : boolean,
+    fees-text-field : html noextract,
+
+    housing : html noextract,
+    content : html noextract,
+
+    exchange-leave-text-field : html noextract,
+    exchange-leave-shared-text : string,
+
+    contact : string,
+    earlier-students : html noextract
+  }
+
+  edit-rules {
+    tittel (size[1]),
+    tittel (class[ui-helper-hidden]),
+
+    type-of-agreement (dropdown),
+    type-of-agreement-other-text-field (class[if-type-of-agreement-other]),
+
+    group level (bachelor, master, phd, profesjonsstudium, specialist) (after type-of-agreement-other-text-field),
+
+    who-can-apply tooltip (en : "subjects, grade average, credits, other admission criteria, number of students ",
+                           no : "fag, karaktersnitt, studiepoeng, andre opptakskrav, evt. antall plasser",
+                           nn : "fag, karaktersnitt, studiepoeng, andre opptakskrav, evt. talet på plassar"),
+    language tooltip (en : "Language of instruction, language requirements/recommendations and language courses",
+                      no : "Undervisningsspråk, språkkrav/-anbefaling og språkkurs",
+                      nn : "Undervisningsspråk, språkkrav/-tilråding og språkkurs"),
+    courses tooltip (en : "Courses, options, accreditation",
+                     no : "Emner, studiemuligheter, uttelling",
+                     nn : "Emner, studiemoglegheiter, uttelling"),
+
+    group fees (tuition, scholarship, fees-text-field) (after length-of-semester),
+
+    fees tooltip (en : "School fees, semester fees, scholarships",
+                  no : "skoleavgift, semesteravgift, stipendmuligheter",
+                  nn : "skoleavgift, semesteravgift, stipendmoglegheiter"),
+
+    group exchange-leave (exchange-leave-text-field, exchange-leave-shared-text) (after content)
+  }
+
+  view {
+    ##
+    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+    <html xmlns="http://www.w3.org/1999/xhtml">
+      <head>
+        <title>[call "resource:property" {"id":"title"}]</title>
+      </head>
+      <body id="vrtx-student-exchange-agreement">
+        <h1>[call "resource:property" {"id":"title"}]</h1>
+        <div>
+        </div>
+      </body>
+    </html>
+    ##
+  }
+
+  vocabulary {
+    type-of-agreement {
+      en : ("erasmus" = "Erasmus", "nordplus" = "Nordplus", "nordlys" = "Nordlys", "bilateral" = "Bilateral", "uio-avtale" = "UIO-avtale", "other" = "Other"),
+      no : ("erasmus" = "Erasmus", "nordplus" = "Nordplus", "nordlys" = "Nordlys", "bilateral" = "Bilateral", "uio-avtale" = "UIO-avtale", "other" = "Annet"),
+      nn : ("erasmus" = "Erasmus", "nordplus" = "Nordplus", "nordlys" = "Nordlys", "bilateral" = "Bilateral", "uio-avtale" = "UIO-avtale", "other" = "Anna")
+    },
+    tuition {
+      en : ("true" = "Yes", "false" = "No"),
+      no : ("true" = "Ja", "false" = "Nei"),
+      nn : ("true" = "Ja", "false" = "Nei")
+    },
+    scholarship {
+      en : ("true" = "Yes", "false" = "No"),
+      no : ("true" = "Ja", "false" = "Nei"),
+      nn : ("true" = "Ja", "false" = "Nei")
+    }
+  }
+
+  localization {
+    header : (en : "Edit student exchange agreement", no : "Rediger utvekslingsavtale", nn : "Rediger utvekslingsavtale"),
+    student-exchange-agreement : (en : "Student exchange agreement", no : "Utvekslingsavtale", nn : "Utvekslingsavtale"),
+
+    owner-of-agreement : (en : "Owner of agreement", no : "Avtaleeier", nn : "Avtaleeigar"), 
+    type-of-agreement : (en : "Type of agreement", no : "Avtaletype", nn : "Avtaletype"),
+    type-of-agreement-other-text-field : (en : "Other", no : "Annet", nn : "Annet"),
+
+    level : (en : "Level", no : "Nivå", nn : "Nivå"),
+    bachelor : (en : "Bachelor", no : "Bachelor", nn : "Bachelor"),
+    master : (en : "Master", no : "Master", nn : "Master"),
+    phd : (no : "PhD", nn : "PhD", en : "PhD"),
+    profesjonsstudium : (en : " Profesjonsstudium", no : "Profesjonsstudium", nn : "Profesjonsstudium"),
+    specialist : (en : "Specialist", no : "Spesialist", nn : "Spesialist"),
+
+    introduction : (en : "Introduction", no : "Innledning", nn : "Innleiing"), 
+    who-can-apply : (en : "Who can apply?", no : "Hvem kan søke?", nn : "Kven kan søkje"),
+    language : (en : "Language", no : "Språk", nn : "Språk"),
+    courses : (en : "What can you study?", no : "Hvilke emner kan jeg ta?", nn : "Kva emne kan eg ta?"),
+    length-of-semester : (en : "How long is the semester", no : "Hvor lenge varer semesteret", nn : "Kor lenge varer semesteret"),
+
+    fees : (en : "Fees?", no : "Hva koster det?", nn : "Kva kostar det?"),
+    tuition : (en : "Tuition payments", no : "Skolepenger", nn : "Skolepengar"),
+    scholarship : (en : "Scholarship", no : "Stipend", nn : "Stipend"),
+
+    housing : (en : "Housing", no : "Bolig", nn : "Bolig"),
+    content : (en : "Content", no : "Innhold", nn : "Innhald"),
+
+    exchange-leave : (en : "Exchange?", no : "Vil du dra?", nn : "Vil du dra?"),
+    exchange-leave-text-field : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
+    exchange-leave-shared-text : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
+
+    contact : (en : "Contact", no : "Kontakt", nn : "Kontakt"),
+    earlier-students : (en : "Previous students experiences", no : "Studenter som har vært her tidligere", nn : "Studenter som har vore her tidlegare")
+  }
+
+}

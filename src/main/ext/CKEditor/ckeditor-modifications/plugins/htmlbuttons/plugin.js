@@ -1,6 +1,6 @@
 /*
  * @file HTML Buttons plugin for CKEditor
- * Copyright (C) 2012 Alfonso Martínez de Lizarrondo
+ * Copyright (C) 2012 Alfonso Martï¿½nez de Lizarrondo
  * A simple plugin to help create custom buttons to insert HTML blocks
  */
 
@@ -66,8 +66,8 @@ var studyHtmlBody = "\
   <table class='vrtx-courseplan-table'>\n\
 	<tbody>\n\
 		<tr>\n\
-			<td class='small'>\n\
-				6. semester</td>\n\
+			<th scope='row' class='small'>\n\
+				6. semester</th>\n\
 			<td class='large'>\n\
 				&nbsp;</td>\n\
 			<td class='large'>\n\
@@ -76,8 +76,8 @@ var studyHtmlBody = "\
 				&nbsp;</td>\n\
 		</tr>\n\
 		<tr>\n\
-			<td class='small'>\n\
-				5. semester</td>\n\
+			<th scope='row' class='small'>\n\
+				5. semester</th>\n\
 			<td class='large'>\n\
 				&nbsp;</td>\n\
 			<td class='large'>\n\
@@ -86,8 +86,8 @@ var studyHtmlBody = "\
 				&nbsp;</td>\n\
 		</tr>\n\
 		<tr>\n\
-			<td class='small'>\n\
-				4. semester</td>\n\
+			<th scope='row' class='small'>\n\
+				4. semester</th>\n\
 			<td class='large'>\n\
 				&nbsp;</td>\n\
 			<td class='large'>\n\
@@ -96,8 +96,8 @@ var studyHtmlBody = "\
 				&nbsp;</td>\n\
 		</tr>\n\
 		<tr>\n\
-			<td class='small'>\n\
-				3. semester</td>\n\
+			<th scope='row' class='small'>\n\
+				3. semester</th>\n\
 			<td class='large'>\n\
 				&nbsp;</td>\n\
 			<td class='large'>\n\
@@ -106,8 +106,8 @@ var studyHtmlBody = "\
 				&nbsp;</td>\n\
 		</tr>\n\
 		<tr>\n\
-			<td class='small'>\n\
-				2. semester</td>\n\
+			<th scope='row' class='small'>\n\
+				2. semester</th>\n\
 			<td class='large'>\n\
 				&nbsp;</td>\n\
 			<td class='large'>\n\
@@ -116,8 +116,8 @@ var studyHtmlBody = "\
 				&nbsp;</td>\n\
 		</tr>\n\
 		<tr>\n\
-			<td class='small'>\n\
-				1. semester</td>\n\
+			<th scope='row' class='small'>\n\
+				1. semester</th>\n\
 			<td class='large'>\n\
 				&nbsp;</td>\n\
 			<td class='large'>\n\
@@ -126,8 +126,8 @@ var studyHtmlBody = "\
 				&nbsp;</td>\n\
 		</tr>\n\
 		<tr>\n\
-			<td class='small'>\n\
-				&nbsp;</td>\n\
+			<th scope='row' class='small'>\n\
+				&nbsp;</th>\n\
 			<td class='large'>\n\
 				10 studiepoeng</td>\n\
 			<td class='large'>\n\

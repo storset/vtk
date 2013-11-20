@@ -35,47 +35,29 @@
 	1. General
 \*-----------------------------------------*/
 
-/* High contrast tab color */
+/* Focus/active */
 
+/*
 body #app-head-wrapper a:focus,
-body #app-content a:focus,
 body #app-footer-wrapper a:focus {
   background-color: #FFDE00 !important;
   color: #000 !important;
-  outline: 1px solid #000 !important;
+  outline: 1px dashed #333 !important;
+}
+*/
+
+.vrtx-button.focus,
+*:focus {
+  outline: 1px dashed #333 !important;
 }
 
-body #app-tabs ul li a:focus {
-  background: #FFDE00 !important;
-  color: #000 !important;
-  outline: 1px solid #000 !important;
-}
-
-.dropdown-shortcut-menu-click-area:focus {
-  outline: 1px solid #000 !important;
-}
-
-#app-content a.vrtx-file-upload.active,
-body.forms-new .ui-dialog .ui-dialog-buttonpane button:focus span,
-body #app-content .vrtx-button:focus,
-body #app-content .vrtx-focus-button:focus,
-body #app-content .vrtx-button-small:focus,
-body #app-content input[type='submit']:focus,
-body #app-content input[type='reset']:focus,
-body #app-content input[type='button']:focus,
-body #app-content button:focus,
-body #app-tabs ul li a:focus {
-  background-color: #FFDE00 !important;
-  color: #000 !important;
-  border-color: #000 !important;
+input[type='text']:focus,
+input[type='password']:focus,
+textarea:focus {
   outline: 0 !important;
 }
 
-body #app-content .vrtx-focus-button:focus * {
-  color: #000 !important;
-}
-
-/* ^ High contrast tab color */
+/* ^ Focus/active */
 
 html {
   background-color: #F8F8F8;
@@ -958,11 +940,8 @@ ul.dropdown-shortcut-menu-container {
 }
 
 .global-menu div.dropdown-shortcut-menu-container {
-  right: -5px;
-}
-
-.global-menu div.dropdown-shortcut-menu-container {
-  top: 37px;
+  right: 0px;
+  top: 41px;
 }
 
 #editor-menu-wrapper {
@@ -970,8 +949,8 @@ ul.dropdown-shortcut-menu-container {
 }
 
 #editor-menu-wrapper div.dropdown-shortcut-menu-container {
-  top: 28px;
-  right: 0px;
+  right: 7px;
+  top: 32px;
 }
 
 ul.dropdown-shortcut-menu li.dropdown-init {
@@ -1040,8 +1019,8 @@ div.dropdown-shortcut-menu-container ul li a,
 ul.dropdown-shortcut-menu-container li a,
 div.dropdown-shortcut-menu-container ul li span,
 ul.dropdown-shortcut-menu-container li span,
-div.dropdown-shortcut-menu-container ul li form,
-ul.dropdown-shortcut-menu-container li form {
+div.dropdown-shortcut-menu-container ul li form input[type='submit'],
+ul.dropdown-shortcut-menu-container li form input[type='submit'] {
   border-bottom: 1px solid #cbcbcb; 
   padding: 8px 14px 7px 14px !important;
   background-color: #fff;
@@ -1049,12 +1028,24 @@ ul.dropdown-shortcut-menu-container li form {
   white-space: nowrap;
 }
 
+div.dropdown-shortcut-menu-container ul li form,
+ul.dropdown-shortcut-menu-container li form {
+  display: block;
+}
+
 div.dropdown-shortcut-menu-container ul li a:hover,
 ul.dropdown-shortcut-menu-container li a:hover,
-div.dropdown-shortcut-menu-container ul li form:hover,
-ul.dropdown-shortcut-menu-container li form:hover {
+div.dropdown-shortcut-menu-container ul li form input[type='submit']:hover,
+ul.dropdown-shortcut-menu-container li form input[type='submit']:hover {
   background-color: #ecf3f9;
   cursor: pointer;
+}
+
+div.dropdown-shortcut-menu-container ul li form input[type='submit'],
+ul.dropdown-shortcut-menu-container li form input[type='submit'] {
+  float: left;
+  text-align: left;
+  width: 100%;
 }
 
 div.dropdown-shortcut-menu-container ul li a:hover,
@@ -2844,7 +2835,7 @@ table.resourceInfo.revisions tr:nth-child(even) td {
 
 #vrtx-revisions .resourceInfo td.vrtx-revisions-buttons-column {
   font-size: 1em;
-  width: 320px;
+  width: 340px;
   padding: 11px;
 } 
 

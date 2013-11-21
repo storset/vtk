@@ -1,4 +1,4 @@
-/* Copyright (c) 2005, 2008 University of Oslo, Norway
+/* Copyright (c) 2005, 2008, 2013 University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -76,7 +76,7 @@ import org.vortikal.web.actions.convert.CopyAction;
 public class CopyMoveToSelectedFolderController implements Controller {
 
     private static Log logger = LogFactory.getLog(CopyMoveToSelectedFolderController.class);
-    static final String COPYMOVE_SESSION_ATTRIBUTE = "copymovesession";
+    public static final String COPYMOVE_SESSION_ATTRIBUTE = "copymovesession";
     private String viewName = "DEFAULT_VIEW_NAME";
     private CopyHelper copyHelper;
 
@@ -87,22 +87,41 @@ public class CopyMoveToSelectedFolderController implements Controller {
     @Override
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
-        RequestContext requestContext = RequestContext.getRequestContext();
-        String token = requestContext.getSecurityToken();
-        Path destinationUri = requestContext.getCurrentCollection();
-        Repository repository = requestContext.getRepository();
-
         CopyMoveSessionBean sessionBean = (CopyMoveSessionBean) request.getSession(true).getAttribute(
                 COPYMOVE_SESSION_ATTRIBUTE);
         if (sessionBean == null) {
             return new ModelAndView(this.viewName);
         }
         if (request.getParameter("cancel-action") != null) {
+        	// User declined to confirm the copy/move
+            return new ModelAndView(this.viewName);
+        }
+        if (request.getParameter("clear-action") != null) {
+        	// Drop out of copy/move state and return to normal state
+            request.getSession(true).removeAttribute(COPYMOVE_SESSION_ATTRIBUTE);
             return new ModelAndView(this.viewName);
         }
         long before = System.currentTimeMillis();
+        performAction(sessionBean);
 
-        String action = sessionBean.getAction();
+        // Removing session variable
+        request.getSession(true).removeAttribute(COPYMOVE_SESSION_ATTRIBUTE);
+
+        if (logger.isDebugEnabled()) {
+            long total = System.currentTimeMillis() - before;
+            logger.debug("Milliseconds spent on this copy/move operation: " + total);
+        }
+
+        return new ModelAndView(this.viewName);
+    }
+
+	private void performAction(CopyMoveSessionBean sessionBean) throws Exception {
+        RequestContext requestContext = RequestContext.getRequestContext();
+        String token = requestContext.getSecurityToken();
+        Path destinationUri = requestContext.getCurrentCollection();
+        Repository repository = requestContext.getRepository();
+		
+		String action = sessionBean.getAction();
         boolean moveAction = "move-resources".equals(action);
 
         List<String> filesToMoveOrCopy = sessionBean.getFilesToBeCopied();
@@ -167,17 +186,7 @@ public class CopyMoveToSelectedFolderController implements Controller {
             }
             requestContext.addErrorMessage(msg);
         }
-
-        // Removing session variable
-        request.getSession(true).removeAttribute(COPYMOVE_SESSION_ATTRIBUTE);
-
-        if (logger.isDebugEnabled()) {
-            long total = System.currentTimeMillis() - before;
-            logger.debug("Milliseconds spent on this copy/move operation: " + total);
-        }
-
-        return new ModelAndView(this.viewName);
-    }
+	}
 
     private void addToFailures(Map<String, List<Path>> failures, Path fileUri, String msgKey, String failureType) {
         String key = msgKey.concat(failureType);

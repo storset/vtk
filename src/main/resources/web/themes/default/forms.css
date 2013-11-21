@@ -194,7 +194,8 @@
 
 /* Textfields */
 
-.forms-new .vrtx-textfield {
+.forms-new .vrtx-textfield,
+.forms-new .vrtx-textfield-big {
   background: #fff;
   height: 26px;
   padding: 1px 8px 0 6px;
@@ -205,7 +206,8 @@
   border-radius: 5px;
 }
 
-.forms-new .vrtx-textfield input {
+.forms-new .vrtx-textfield input,
+.forms-new .vrtx-textfield-big input {
   height: 22px;
   margin: 0;
   padding: 0;
@@ -216,19 +218,10 @@
 .forms-new .vrtx-textfield-big {
   height: 29px;
   padding: 4px 11px 0 11px;
-  display: inline-block;
-  border: 1px solid #919191;
-  -webkit-border-radius: 5px;
-  -moz-border-radius: 5px;
-  border-radius: 5px;
 }
 
 .forms-new .vrtx-textfield-big input {
   height: 23px;
-  margin: 0;
-  padding: 0;
-  display: block;
-  display: inline-block;
 }
 
 /* ^ Textfields */
@@ -363,11 +356,8 @@
   width: 100%;
 }
 
+.forms-new #email-approval-form label.first,
 .forms-new #dialog-html-advanced-publish-settings-content label:first-child {
-  margin-top: 0px;
-}
-
-.forms-new #email-approval-form label.first {
   margin-top: 0px;
 }
 

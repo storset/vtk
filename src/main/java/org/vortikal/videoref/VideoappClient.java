@@ -40,7 +40,6 @@ import net.sf.json.JSONObject;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
@@ -160,22 +159,13 @@ public class VideoappClient {
             throw new IllegalArgumentException("videoId must be the same in oldRef and newRef");
         }
         
-        VideoRef.Builder builder = oldRef.copyBuilder().refUpdateTimestamp(new Date());
-        
-        if (newRef.sourceVideo() != null) {
-            builder.sourceVideo(newRef.sourceVideo());
-        }
-        if (newRef.convertedVideo() != null) {
-            builder.convertedVideo(newRef.convertedVideo());
-        }
-
-        builder.status(newRef.status()).durationSeconds(newRef.durationSeconds());
-        
-        if (newRef.generatedThumbnail() != null) {
-            builder.generatedThumbnail(newRef.generatedThumbnail());
-        }
-        
-        return builder.build();
+        return oldRef.copyBuilder()
+                     .refUpdateTimestamp(new Date())
+                     .sourceVideo(newRef.sourceVideo())
+                     .convertedVideo(newRef.convertedVideo())
+                     .generatedThumbnail(newRef.generatedThumbnail())
+                     .status(newRef.status())
+                     .durationSeconds(newRef.durationSeconds()).build();
     }
     
     /**

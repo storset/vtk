@@ -173,7 +173,7 @@ public class VideoRef {
         
         public Builder generatedThumbnail(BufferedBinaryValue thumbnailImage) {
             try {
-                this.generatedThumbnail = (BufferedBinaryValue)thumbnailImage.clone();
+                this.generatedThumbnail = thumbnailImage != null ? (BufferedBinaryValue)thumbnailImage.clone() : null;
             } catch (CloneNotSupportedException c) {}
             return this;
         }

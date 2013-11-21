@@ -145,6 +145,12 @@
           <property name="repository" ref="repository" />
           <property name="resourceTypeDefinition" ref="mediaref.videorefType" />
         </bean>
+        <!-- Video conversion needs to be complete for streaming to be available: -->
+        <bean class="org.vortikal.web.service.ResourcePropertyAssertion">
+          <property name="namespace" ref="DEFAULT_NAMESPACE" />
+          <property name="name" value="videoStatus" />    
+          <property name="value" value="completed" />
+        </bean>
       </list>
     </property>
   </bean>

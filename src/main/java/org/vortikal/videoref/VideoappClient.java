@@ -160,12 +160,22 @@ public class VideoappClient {
             throw new IllegalArgumentException("videoId must be the same in oldRef and newRef");
         }
         
-        return oldRef.copyBuilder().refUpdateTimestamp(new Date())
-                        .sourceVideo(newRef.sourceVideo())
-                        .convertedVideo(newRef.convertedVideo())
-                        .status(newRef.status())
-                        .durationSeconds(newRef.durationSeconds())
-                        .generatedThumbnail(newRef.generatedThumbnail()).build();
+        VideoRef.Builder builder = oldRef.copyBuilder().refUpdateTimestamp(new Date());
+        
+        if (newRef.sourceVideo() != null) {
+            builder.sourceVideo(newRef.sourceVideo());
+        }
+        if (newRef.convertedVideo() != null) {
+            builder.convertedVideo(newRef.convertedVideo());
+        }
+
+        builder.status(newRef.status()).durationSeconds(newRef.durationSeconds());
+        
+        if (newRef.generatedThumbnail() != null) {
+            builder.generatedThumbnail(newRef.generatedThumbnail());
+        }
+        
+        return builder.build();
     }
     
     /**

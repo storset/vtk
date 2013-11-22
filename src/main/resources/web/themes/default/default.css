@@ -3176,6 +3176,23 @@ div.vrtx-admin-form {
   margin-left: 7px;
 }
 
+.forms-new .vrtx-cancel-link {
+  display: inline-block;
+  font-size: 0.1em;
+  overflow: hidden;
+  text-indent: -9999;
+  width: 10px;
+  height: 10px;
+  position: relative;
+  top: -4px;
+  left: 7px;
+  background: url(images/resource-menu-dialog-close.png) no-repeat center center;
+}
+
+.forms-new .vrtx-cancel-link:hover {
+  cursor: pointer;
+}
+
 /* File upload (JS progressive enhancement)
  *
  * Credits technique: http://www.quirksmode.org/dom/inputfile.html

@@ -26,12 +26,10 @@
 
 <#if !resourcesDisclosed?exists>
   <form id="vrtx-copy-to-selected-folder" action="${actionURL?html}" method="${method}" class="vrtx-admin-button">
-     <div class="vrtx-button-small"><button title="${titleMsg}" type="submit"
-          id="vrtx-copy-to-selected-folder.submit"
-          value="copy-resources-to-this-folder" name="action">${item.title?html}</button></div>
-     <div class="vrtx-button-small"><button title="${clearTitleMsg}" type="submit"
-          id="vrtx-copy-to-selected-folder.clear"
-          value="clear-action" name="clear-action">x</button></div>
+     <div class="vrtx-button-small">
+       <button title="${titleMsg}" type="submit" value="copy-resources-to-this-folder" name="action">${item.title?html}</button>
+     </div>
+     <button class="vrtx-cancel-link" title="${clearTitleMsg}" type="submit" value="clear-action" name="clear-action">x</button>
   </form>
 <#else>
   <a class="vrtx-button-small vrtx-copy-move-to-selected-folder-disclosed" title="${titleMsg}" id="vrtx-copy-to-selected-folder" href="${actionURL?html}"><span>${item.title?html}</span></a>

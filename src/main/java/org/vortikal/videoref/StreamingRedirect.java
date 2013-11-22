@@ -47,15 +47,16 @@ import org.vortikal.util.io.StreamUtil;
 import org.vortikal.web.RequestContext;
 
 /**
- *
+ * Request streaming of resource from videoapp and redirect client to
+ * stream location.
  */
-public class StreamingUrlRedirectController implements Controller {
+public class StreamingRedirect implements Controller {
 
     private VideoappClient videoappClient;
     private StreamType streamType = StreamType.ADOBE_HDS;
     private PropertyTypeDefinition videoIdPropDef;
     
-    private final Log logger = LogFactory.getLog(StreamingUrlRedirectController.class.getName());
+    private final Log logger = LogFactory.getLog(StreamingRedirect.class.getName());
 
     public enum StreamType {
         APPLE_HLS,
@@ -90,7 +91,7 @@ public class StreamingUrlRedirectController implements Controller {
 
         StreamingRef ref = videoappClient.requestStreaming(videoId);
 
-        response.setStatus(303);
+        response.setStatus(302);
         if (streamType == StreamType.ADOBE_HDS) {
             response.setHeader("Location", ref.hdsStream().toString());
             return null;

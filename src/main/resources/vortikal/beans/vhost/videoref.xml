@@ -167,7 +167,7 @@
       </list>
     </property>
     <property name="handler">
-      <bean class="org.vortikal.videoref.StreamingUrlRedirectController">
+      <bean class="org.vortikal.videoref.StreamingRedirect">
         <property name="videoappClient" ref="videoref.videoapp.client" />
         <property name="streamType" value="ADOBE_HDS" />
         <property name="videoIdPropDef" ref="videoref.videoIdPropDef" />
@@ -187,7 +187,7 @@
       </list>
     </property>
     <property name="handler">
-      <bean class="org.vortikal.videoref.StreamingUrlRedirectController">
+      <bean class="org.vortikal.videoref.StreamingRedirect">
         <property name="videoappClient" ref="videoref.videoapp.client" />
         <property name="streamType" value="APPLE_HLS" />
         <property name="videoIdPropDef" ref="videoref.videoIdPropDef" />

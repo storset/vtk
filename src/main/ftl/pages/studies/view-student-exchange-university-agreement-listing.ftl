@@ -45,7 +45,7 @@
           <tr>
             <th class="sortable"><@vrtx.msg code="${collection.resourceType}.owner-of-agreement" default="Owner of agreement" /></th>
             <th class="sortable"><@vrtx.msg code="${collection.resourceType}.level" default="Level" /></th>
-            <th class="sortable"><@vrtx.msg code="${collection.resourceType}.type" default="Type" /></th>
+            <th class="sortable"><@vrtx.msg code="${collection.resourceType}.type-of-agreement" default="Type" /></th>
           </tr>
         </thead>
         <tbody>
@@ -57,7 +57,7 @@
             <tr>
               <td><a href="${uri?html}">${title?html}</a></td>
               <td>${level?html}</td>
-              <td>${type?html}</td>
+              <td><@vrtx.msg code="${collection.resourceType}.type-of-agreement.${type?html}" default="${type?html}" /></td>
             </tr>
           </#list>
         </tbody>
@@ -82,7 +82,7 @@
   <#list levels as level>
     <#if vrtx.propValue(res, level)?eval>
       <#assign localizedLevel>
-        <@vrtx.msg code="${collection.resourceType}.${level}" default="${level}" />
+        <@vrtx.msg code="${collection.resourceType}.level.${level?html}" default="${level}" />
       </#assign>
       <#if (acc != "")>
         <#assign acc = acc + ", " + localizedLevel />

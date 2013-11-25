@@ -36,16 +36,16 @@
     <#if (result?exists && result?has_content)>
       <#if from?exists && to?exists && total?exists>
         <div id="vrtx-${collection.resourceType}-hits">
-          <@vrtx.msg code="vrtx-${collection.resourceType}.from-to-total" args=[from, to, total] default="Showing " + from + "-" +  to + " of " + total + " resources" />
+          <@vrtx.msg code="${collection.resourceType}.from-to-total" args=[from, to, total] default="Showing " + from + "-" +  to + " of " + total + " resources" />
         </div>
       </#if>
 
       <table id="vrtx-${collection.resourceType}-results" class="sortable">
         <thead>
           <tr>
-            <th class="sortable">Test</th>
-            <th class="sortable">Test</th>
-            <th class="sortable">Test</th>
+            <th class="sortable"><@vrtx.msg code="${collection.resourceType}.owner-of-agreement" default="Owner of agreement" /></th>
+            <th class="sortable"><@vrtx.msg code="${collection.resourceType}.level" default="Level" /></th>
+            <th class="sortable"><@vrtx.msg code="${collection.resourceType}.type" default="Type" /></th>
           </tr>
         </thead>
         <tbody>

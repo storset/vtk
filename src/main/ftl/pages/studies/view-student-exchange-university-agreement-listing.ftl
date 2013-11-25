@@ -50,12 +50,12 @@
         </thead>
         <tbody>
           <#list result as res>
-            <#assign title = vrtx.propValue(res, 'title') />
+            <#assign owner = vrtx.propValue(res, 'owner-of-agreement') />
             <#assign uri = vrtx.getUri(res) />
             <#assign type = vrtx.propValue(res, 'type-of-agreement') />
             <#assign level = checkAndAddLevels(res, ['bachelor', 'master', 'phd', 'profesjonsstudium', 'specialist']) />
             <tr>
-              <td><a href="${uri?html}">${title?html}</a></td>
+              <td><a href="${uri?html}">${owner?html}</a></td>
               <td>${level?html}</td>
               <td><@vrtx.msg code="${collection.resourceType}.type-of-agreement.${type?html}" default="${type?html}" /></td>
             </tr>

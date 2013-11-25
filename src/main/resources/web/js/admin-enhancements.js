@@ -571,7 +571,7 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
             }
           }
       }
-
+      
       tabMenuServices = ["collectionListing\\.action\\.move-resources", "collectionListing\\.action\\.copy-resources"];
       resourceMenuServices = ["moveToSelectedFolderService", "copyToSelectedFolderService"];
       // TODO: This map/lookup-obj is a little hacky..

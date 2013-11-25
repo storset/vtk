@@ -64,14 +64,151 @@ resourcetype student-exchange-agreement {
 
   view {
     ##
+    [def name resource-prop-obj-val(".", "studentExchangeUniversityAgreementListing.name")]
+    [def country resource-prop-obj-val(".", "studentExchangeUniversityAgreementListing.country")]
+    [def city resource-prop-obj-val(".", "studentExchangeUniversityAgreementListing.city")]
+    [def picture resource-prop-obj-val(".", "studentExchangeUniversityAgreementListing.picture")]
+    [def web-address resource-prop-obj-val(".", "studentExchangeUniversityAgreementListing.webAddress")]
+    [def erasmus resource-prop-obj-val(".", "studentExchangeUniversityAgreementListing.erasmusCode")]
+    [def locale resource-locale()]
+    [def document structured-document()]
+    [def owner-of-agreement document.properties.owner-of-agreement]
+    [def type-of-agreement document.properties.type-of-agreement]
+    [def type-of-agreement-other-text-field document.properties.type-of-agreement-other-text-field]
+    [def bachelor document.properties.bachelor]
+    [def master document.properties.master]
+    [def phd document.properties.phd]
+    [def profesjonsstudium document.properties.profesjonsstudium]
+    [def specialist document.properties.specialist]
+    [def introduction document.properties.introduction]
+    [def who-can-apply document.properties.who-can-apply]
+    [def language document.properties.language]
+    [def courses document.properties.courses]
+    [def length-of-semester document.properties.length-of-semester]
+    [def tuition document.properties.tuition]
+    [def scholarship document.properties.scholarship]
+    [def fees-text-field document.properties.fees-text-field]
+    [def housing document.properties.housing]
+    [def content document.properties.content]
+    [def exchange-leave-text-field document.properties.exchange-leave-text-field]
+    [def exchange-leave-shared-text document.properties.exchange-leave-shared-text]
+    [def contact document.properties.contact]
+    [def earlier-students document.properties.earlier-students]
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml">
       <head>
-        <title>[call "resource:property" {"id":"title"}]</title>
+        <title>[call "resource:contextual-title-new"]</title>
       </head>
       <body id="vrtx-student-exchange-agreement">
-        <h1>[call "resource:property" {"id":"title"}]</h1>
-        <div>
+        <div id="vrtx-content">
+          <div id="vrtx-main-content">
+            <h1>[localized 'student-exchange-agreement-between'] [val name] [localized 'and'] [val owner-of-agreement]</h1>
+            [if who-can-apply != null && who-can-apply != ""]
+              <h2>[localized 'who-can-apply']</h2>
+              <p>[val who-can-apply # unescaped]</p>
+            [endif]
+            [if language != null && language != ""]
+              <h2>[localized 'language']</h2>
+              <p>[val language # unescaped]</p>
+            [endif]
+            [if courses != null && courses != ""]
+              <h2>[localized 'courses']</h2>
+              <p>[val courses # unescaped]</p>
+            [endif]
+            [if length-of-semester != null && length-of-semester != ""]
+              <h2>[localized 'length-of-semester']</h2>
+              <p>[val length-of-semester # unescaped]</p>
+            [endif]
+            <h2>[localized 'fees']</h2>
+            [if tuition != null]
+              <p>[localized 'tuition']: [val tuition]</p>
+            [endif]
+            [if scholarship != null]
+              <p>[localized 'scholarship']: [val scholarship]</p>
+            [endif]
+            [if fees-text-field != null && fees-text-field != ""]
+              <p>[val fees-text-field # unescaped]</p>
+            [endif]
+            [if housing != null && housing != ""]
+              <h2>[localized 'housing']</h2>
+              <p>[val housing # unescaped]</p>
+            [endif]
+            [if content != null && content != ""]
+              <h2>[localized 'content']</h2>
+              <p>[val content # unescaped]</p>
+            [endif]
+            [if (exchange-leave-text-field != null && exchange-leave-text-field != "") || (exchange-leave-shared-text != null && exchange-leave-shared-text != "")]
+              <h2>[localized 'exchange-leave']</h2>
+              [if exchange-leave-text-field != null && exchange-leave-text-field != ""]
+                <p>[val exchange-leave-text-field # unescaped]</p>
+              [endif]
+              [if exchange-leave-shared-text != null && exchange-leave-shared-text != ""]
+                <p>[val exchange-leave-shared-text # unescaped]</p>
+              [endif]
+            [endif]
+          </div>
+          <div id="vrtx-additional-content">
+            <div id="vrtx-student-exchange-agreement-university-info" class="vrtx-frontpage-box vrtx-distach-bottom">
+              <table>
+                <caption>[localized 'about'] [val name]</caption>
+                <tbody>
+                  <tr>
+                    <td colspan="2"><img src="[val picture]" alt="" /></td>
+                  <tr>
+                    <th scope="row">[localized 'country']<td>[val country]</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">[localized 'city']<td>[val city]</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">[localized 'webpage']<td><a href="[val web-address]">[val web-address]</a></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div id="vrtx-student-exchange-agreement-info" class="vrtx-frontpage-box vrtx-distach-bottom">
+              <table>
+                <caption>[localized 'agreement-info']</caption>
+                <tbody>
+                  <tr>
+                    <th scope="row">[localized 'type-of-agreement']</th>
+                    <td>[if type-of-agreement != null && type-of-agreement != "" && type-of-agreement != "other"][val type-of-agreement][elseif type-of-agreement = "other"][val type-of-agreement-other-text-field][endif]</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">[localized 'study-level']</th>
+                    <td>
+                      [def totCount 0]
+                      [def levels #({'prop': {'k': 'bachelor',          'v': bachelor}},
+                                    {'prop': {'k': 'master',            'v': master}},
+                                    {'prop': {'k': 'phd',               'v': phd}},
+                                    {'prop': {'k': 'profesjonsstudium', 'v': profesjonsstudium}},
+                                    {'prop': {'k': 'specialist',        'v': specialist}})]
+                      [list levels level]
+                        [if level.prop.v = "true"]
+                          [def totCount totCount + 1]
+                        [endif]
+                      [endlist]
+                      [def count 0]
+                      [list levels level][if level.prop.v = "true"][if (count = (totCount - 1)) && totCount > 1] [localized 'and'] [elseif count > 0], [endif][def k level.prop.k][localized k][def count count + 1][endif][endlist]
+                    </td>
+                  </tr>
+                  <tr>
+                    <th scope="row">[localized 'owner-of-agreement']</th>
+                    <td>[val owner-of-agreement]</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div id="vrtx-student-exchange-agreement-contact" class="vrtx-frontpage-box vrtx-distach-bottom">
+              <h2>[localized 'contact']</h2>
+              <p>[val contact]</p>
+            </div>
+            <div id="vrtx-student-exchange-agreement-contact" class="vrtx-frontpage-box">
+              <h2>[localized 'earlier-students']</h2></p>
+              [if erasmus != null && erasmus != "" && type-of-agreement != null && type-of-agreement = "erasmus"]<p><a href="http://www.iris.siu.no/iris.nsf/wwwRSV?SearchView&Query=[val erasmus]">[localized 'question']</a></p>[endif]
+              [if earlier-students != null && earlier-students != ""]<p>[val earlier-students # unescaped]</p>[endif]
+            </div>
+          </div>
         </div>
       </body>
     </html>
@@ -128,6 +265,13 @@ resourcetype student-exchange-agreement {
     exchange-leave-text-field : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
     exchange-leave-shared-text : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
 
+    about : ( en: "About the", no: "Om", nn: "Om"),
+    agreement-info : ( en: "About the agreement", no: "Fakta om avtalen", nn: "Fakta Om avtalen"),
+    country : ( en: "Country", no: "Land", nn: "Land"),
+    city : ( en: "City", no: "By", nn: "By"),
+    webpage : ( en: "Webpage", no: "Nettside", nn: "Nettside"),
+    study-level : (en : "Study level", no : "Studienivå", nn : "Studienivå"),
+    and : (en : "and", no : "og", nn : "og"),
     contact : (en : "Contact", no : "Kontakt", nn : "Kontakt"),
     earlier-students : (en : "Previous students experiences", no : "Studenter som har vært her tidligere", nn : "Studenter som har vore her tidlegare")
   }

@@ -84,9 +84,9 @@
       <#assign localizedLevel>
         <@vrtx.msg code="${collection.resourceType}.${level}" default="${level}" />
       </#assign>
-      <#if (level_index > 0 && !level_has_next)>
+      <#if (acc != "" && !level_has_next)>
         <#assign acc = acc + "and " + localizedLevel />
-      <#elseif (level_index > 0)>
+      <#elseif (acc != "")>
         <#assign acc = acc + ", " + localizedLevel />
       <#else> 
         <#assign acc = localizedLevel />

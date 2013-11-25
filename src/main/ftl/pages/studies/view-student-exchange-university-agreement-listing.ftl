@@ -40,15 +40,26 @@
         </div>
       </#if>
 
-      <div id="vrtx-${collection.resourceType}-results">
-        <ul>
+      <table id="vrtx-${collection.resourceType}-results">
+        <thead>
+          <tr>
+            <th>Test</th>
+            <th>Test</th>
+            <th>Test</th>
+          </tr>
+        </thead>
+        <tbody>
           <#list result as res>
             <#assign title = vrtx.propValue(res, 'title') />
             <#assign uri = vrtx.getUri(res) />
-            <li><a href="${uri}">${title}</a></li>
+            <tr>
+              <td><a href="${uri}">${title}</a></td>
+              <td><a href="${uri}">${title}</a></td>
+              <td><a href="${uri}">${title}</a></td>
+            </tr>
           </#list>
-        </ul>
-      </div>
+        </tbody>
+      </table>
 
       <#if pageThroughUrls?exists && (pageThroughUrls?size > 1) >
         <div class="vrtx-paging-feed-wrapper">

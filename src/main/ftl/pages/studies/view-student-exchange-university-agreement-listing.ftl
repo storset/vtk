@@ -91,6 +91,9 @@
       </#if>
     </#if>
   </#list>
-  <#assign acc = acc?replace(',([^,]+)$', ' and $1', 'r') />
+  <#assign localizedAnd>
+    <@vrtx.msg code="${collection.resourceType}.level.and" default="and" />
+  </#assign>
+  <#assign acc = acc?replace(',([^,]+)$', ' ${localizedAnd?html} $1', 'r') />
   <#return acc />
 </#function>

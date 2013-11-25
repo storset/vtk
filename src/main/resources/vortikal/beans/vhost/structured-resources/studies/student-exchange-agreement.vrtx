@@ -176,7 +176,21 @@ resourcetype student-exchange-agreement {
                   </tr>
                   <tr>
                     <th scope="row">[localized 'study-level']</th>
-                    <td>[val bachelor] [val master] [val phd] [val profesjonsstudium] [val specialist]</td>
+                    <td>
+                      [def totCount 0]
+                      [def levels #({'prop': {'k': 'bachelor',          'v': bachelor}},
+                                    {'prop': {'k': 'master',            'v': master}},
+                                    {'prop': {'k': 'phd',               'v': phd}},
+                                    {'prop': {'k': 'profesjonsstudium', 'v': profesjonsstudium}},
+                                    {'prop': {'k': 'specialist',        'v': specialist}})]
+                      [list levels level]
+                        [if level.prop.v = "true"]
+                          [def totCount totCount + 1]
+                        [endif]
+                      [endlist]
+                      [def count 0]
+                      [list levels level][if level.prop.v = "true"][if (count = (totCount - 1)) && totCount > 1] [localized 'and'] [elseif count > 0], [endif][def k level.prop.k][localized k][def count count + 1][endif][endlist]
+                    </td>
                   </tr>
                   <tr>
                     <th scope="row">[localized 'owner-of-agreement']</th>
@@ -253,6 +267,7 @@ resourcetype student-exchange-agreement {
 
     about : ( en: "About", no: "Om", nn: "Om"),
     agreement-info : ( en: "About the agreement", no: "Fakta om avtalen", nn: "Fakta Om avtalen"),
+    and : (en : "and", no : "og", nn : "og"),
     contact : (en : "Contact", no : "Kontakt", nn : "Kontakt"),
     earlier-students : (en : "Previous students experiences", no : "Studenter som har vært her tidligere", nn : "Studenter som har vore her tidlegare")
   }

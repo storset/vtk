@@ -251,6 +251,7 @@ resourcetype student-exchange-agreement {
     exchange-leave-text-field : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
     exchange-leave-shared-text : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
 
+    agreement-info : ( en: "About the agreement", no: "Fakta om avtalen", nn: "Fakta Om avtalen"),
     contact : (en : "Contact", no : "Kontakt", nn : "Kontakt"),
     earlier-students : (en : "Previous students experiences", no : "Studenter som har vært her tidligere", nn : "Studenter som har vore her tidlegare")
   }

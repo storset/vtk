@@ -161,7 +161,7 @@ resourcetype student-exchange-agreement {
                     <th scope="row">[localized 'city']<td>[val city]</td>
                   </tr>
                   <tr>
-                    <th scope="row">[localized 'webpage']<td>[val web-address]</td>
+                    <th scope="row">[localized 'webpage']<td><a href="[val web-address]">[val web-address]</a></td>
                   </tr>
                 </tbody>
               </table>
@@ -267,6 +267,10 @@ resourcetype student-exchange-agreement {
 
     about : ( en: "About", no: "Om", nn: "Om"),
     agreement-info : ( en: "About the agreement", no: "Fakta om avtalen", nn: "Fakta Om avtalen"),
+    country : ( en: "Country", no: "Land", nn: "Land"),
+    city : ( en: "City", no: "By", nn: "By"),
+    webpage : ( en: "Webpage", no: "Nettside", nn: "Nettside"),
+    study-level : (en : "Study level", no : "Studienivå", nn : "Studienivå"),
     and : (en : "and", no : "og", nn : "og"),
     contact : (en : "Contact", no : "Kontakt", nn : "Kontakt"),
     earlier-students : (en : "Previous students experiences", no : "Studenter som har vært her tidligere", nn : "Studenter som har vore her tidlegare")

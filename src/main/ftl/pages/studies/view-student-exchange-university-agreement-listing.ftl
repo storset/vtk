@@ -40,22 +40,23 @@
         </div>
       </#if>
 
-      <table id="vrtx-${collection.resourceType}-results">
+      <table id="vrtx-${collection.resourceType}-results" class="sortable">
         <thead>
           <tr>
-            <th>Test</th>
-            <th>Test</th>
-            <th>Test</th>
+            <th class="sortable">Test</th>
+            <th class="sortable">Test</th>
+            <th class="sortable">Test</th>
           </tr>
         </thead>
         <tbody>
           <#list result as res>
             <#assign title = vrtx.propValue(res, 'title') />
             <#assign uri = vrtx.getUri(res) />
+            <#assign type = vrtx.propValue(res, 'type-of-agreement') />
             <tr>
-              <td><a href="${uri}">${title}</a></td>
-              <td><a href="${uri}">${title}</a></td>
-              <td><a href="${uri}">${title}</a></td>
+              <td><a href="${uri?html}">${title?html}</a></td>
+              <td>test</td>
+              <td>${type?html}</td>
             </tr>
           </#list>
         </tbody>

@@ -53,15 +53,10 @@
             <#assign title = vrtx.propValue(res, 'title') />
             <#assign uri = vrtx.getUri(res) />
             <#assign type = vrtx.propValue(res, 'type-of-agreement') />
-            <#assign acc = "" />
-            <#assign acc = checkAndAddLevel(res, 'bachelor', acc) />
-            <#assign acc = checkAndAddLevel(res, 'master', acc) />
-            <#assign acc = checkAndAddLevel(res, 'phd', acc) />
-            <#assign acc = checkAndAddLevel(res, 'profesjonsstudium', acc) />
-            <#assign acc = checkAndAddLevel(res, 'specialist', acc) />
+            <#assign level = checkAndAddLevels(res, ['bachelor', 'master', 'phd', 'profesjonsstudium', 'specialist']) />
             <tr>
               <td><a href="${uri?html}">${title?html}</a></td>
-              <td>${acc?html}</td>
+              <td>${level?html}</td>
               <td>${type?html}</td>
             </tr>
           </#list>
@@ -82,12 +77,21 @@
   </body>
 </html>
 
-<#function checkAndAddLevel res level acc>
-  <#if vrtx.propValue(res, level)?eval>
-    <#assign returnVal>
-      <@vrtx.msg code="${collection.resourceType}.${level}" default="${level}" />
-    </#assign>
-    <#return acc + returnVal />
-  </#if>
+<#function checkAndAddLevels res levels>
+  <#assign acc = "" />
+  <#list levels as level>
+    <#if vrtx.propValue(res, level)?eval>
+      <#assign localizedLevel>
+        <@vrtx.msg code="${collection.resourceType}.${level}" default="${level}" />
+      </#assign>
+      <#if (level_index > 0 && !level_has_next)>
+        <#assign acc = acc + "and " + localizedLevel />
+      <#elseif (level_index > 0)>
+        <#assign acc = acc + ", " + localizedLevel />
+      <#else> 
+        <#assign acc = localizedLevel />
+      </#if>
+    </#if>
+  </#list>  
   <#return acc />
 </#function>

@@ -195,7 +195,7 @@
     </property>
   </bean>
   
-  <!-- Reference data provider for streaming URLs -->
+  <!-- Reference data providers for streaming URLs -->
   <bean id="videoref.hdsStreamUrlProvider" class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
     <property name="modelName" value="streamingUrls" />
     <property name="urlName" value="hdsStreamUrl" />
@@ -208,5 +208,12 @@
     <property name="service" ref="videoref.hlsStreamService" />
     <property name="matchAssertions" value="true" />
   </bean>
+  <!-- Provider for direct streaming URLs -->
+  <bean id="videoref.directStreamingUrlsProvider" class="org.vortikal.videoref.StreamingDirectUrlProvider">
+    <property name="videoIdPropDef" ref="videoref.videoIdPropDef" />
+    <property name="videoStatusPropDef" ref="videoref.videoStatusPropDef" />
+    <property name="videoappClient" ref="videoref.videoapp.client" />
+  </bean>
+  
 
 </beans>

@@ -44,5 +44,12 @@
 <#else>
 <p>Streaming links not yet available. Try again in a few moments.</p>
 </#if>
+
+
+<#if directStreamingUrls?exists>
+  <p>HDS direct stream: ${directStreamingUrls.hdsStreamUrl}</p>
+  <p>HLS direct stream: ${directStreamingUrls.hlsStreamUrl}</p>
+</#if>
+
 </body>
 </html>

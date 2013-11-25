@@ -95,7 +95,7 @@ public class Login extends SamlService {
     }
 
     public boolean isUnsolicitedLoginResponse(HttpServletRequest req) {
-        // XXX: Check for responseID?
+        // XXX: Check for responseID here ?  Currently checked in #login(HttpServletRequest) using requestID
         return isLoginResponse(req) && req.getSession(false) == null;
     }
 

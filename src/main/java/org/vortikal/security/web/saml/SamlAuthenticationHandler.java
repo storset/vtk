@@ -114,11 +114,21 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
 
     private String backstepParameter = "backsteps";
 
+    private final Log authDebugLog = LogFactory.getLog("org.vortikal.security.web.AUTH_DEBUG");
+
     @Override
     public void challenge(HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationProcessingException, ServletException, IOException {
         if ("POST".equals(request.getMethod())) {
             this.postHandler.saveState(request, response);
+
+            // Debugging VTK-2653
+            if (authDebugLog.isDebugEnabled()) {
+                authDebugLog.debug("Saved lost POST state"
+                        + (request.getParameter("RelayState") != null ? ", RelayState: " + request.getParameter("RelayState") : "")
+                        + ", requestURL: " + request.getRequestURL() + (request.getQueryString() != null ? "?" + request.getQueryString() : "")
+                        + ", remote addr: " + request.getRemoteAddr());
+            }
         }
         this.challenge.challenge(request, response);
         setHeaders(response);
@@ -189,6 +199,13 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
         }
 
         if (this.postHandler.hasSavedState(request)) {
+            // Debugging VTK-2653
+            if (authDebugLog.isDebugEnabled()) {
+                authDebugLog.debug("postAuthentication: Replaying lost POST for requestURL: "
+                + request.getRequestURL() + (request.getQueryString() != null ? "?" + request.getQueryString() : "")
+                + ", remote addr: " + request.getRemoteAddr());
+            }
+            
             this.postHandler.redirect(request, response);
             setHeaders(response);
             return true;

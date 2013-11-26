@@ -544,11 +544,13 @@ div#resource\.poster-image\.preview.no-preview img {
 }
 
 .cke_chrome .vrtx-button:hover,
+.cke_chrome .vrtx-button:focus,
 .cke_chrome .vrtx-button.hover {
   background: url(images/focus-button-left.gif) no-repeat 0 0 !important;
 }
 
 .cke_chrome .vrtx-button.vrtx-focus-button:hover,
+.cke_chrome .vrtx-button.vrtx-focus-button:focus,
 .cke_chrome .vrtx-button.vrtx-focus-button.hover {
   background: url(images/focus-button-left-rollover.gif) no-repeat 0 0 !important;
 }
@@ -560,6 +562,7 @@ div#resource\.poster-image\.preview.no-preview img {
 }
 
 .cke_chrome .vrtx-button:hover,
+.cke_chrome .vrtx-button:focus,
 .cke_chrome .vrtx-button.hover {
   background-image: url(images/dropdown-left-rollover.gif) !important;
 }
@@ -590,6 +593,7 @@ div#resource\.poster-image\.preview.no-preview img {
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#71b2e9', endColorstr='#3d95e0',GradientType=0 ); /* IE6-9 */
 }
 
+.cke_dialog a.cke_dialog_ui_button_ok:focus,
 .cke_dialog a.cke_dialog_ui_button_ok:hover {
   text-shadow: none;
   border-color: #2d81c8;
@@ -609,6 +613,7 @@ div#resource\.poster-image\.preview.no-preview img {
 
 #editor .cke_chrome .cke_rcombo a,
 #editor .cke_chrome .cke_rcombo a:active,
+#editor .cke_chrome .cke_rcombo a:focus,
 #editor .cke_chrome .cke_rcombo a:hover {
   background-image: none;
   background-position: 0 0

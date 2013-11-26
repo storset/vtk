@@ -44,7 +44,6 @@ body #app-footer-wrapper a:focus {
   color: #000 !important;
   outline: 1px dashed #333 !important;
 }
-*/
 
 .vrtx-button.focus,
 *:focus {
@@ -56,6 +55,7 @@ input[type='password']:focus,
 textarea:focus {
   outline: 0 !important;
 }
+*/
 
 /* ^ Focus/active */
 
@@ -141,6 +141,7 @@ a {
   text-decoration: none;
 }
 
+a:focus,
 a:hover {
   text-decoration: underline;
 }
@@ -266,6 +267,7 @@ a:hover {
   background: url(images/app-head-breadcrumb-bg.png) repeat-x left top;
 }
 
+.js .navigate-crumbs:focus,
 .js .navigate-crumbs:hover {
   cursor: pointer;
   background: #4a9ce2 url(images/app-head-breadcrumb-delimiter-rollover-left.png) no-repeat -10px bottom;
@@ -334,11 +336,13 @@ a:hover {
   background: url(images/breadcrumbs-right-nav.png) no-repeat center center;
 }
 
+.js #navigate-crumbs-left:focus span.navigate-crumbs-icon,
 .js #navigate-crumbs-left:hover span.navigate-crumbs-icon {
   top: 11px;
   background-image: url(images/breadcrumbs-left-nav-rollover.png);
 }
 
+.js #navigate-crumbs-right:focus span.navigate-crumbs-icon,
 .js #navigate-crumbs-right:hover span.navigate-crumbs-icon {
   top: 11px;
   background-image: url(images/breadcrumbs-right-nav-rollover.png);
@@ -413,42 +417,52 @@ a:hover {
 
 /* Hover */
 
+#app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb span.vrtx-breadcrumb-level:focus,
 #app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb span.vrtx-breadcrumb-level:hover {
   background: #4a9ce2 url(images/app-head-breadcrumb-delimiter-rollover-left.png) no-repeat left bottom;
   margin-left: -10px;
 }
 
+#app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb span.vrtx-breadcrumb-level:focus a,
 #app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb span.vrtx-breadcrumb-level:hover a {
   color: #fff;
   padding-left: 21px;
 }
 
+#app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb span.vrtx-breadcrumb-level:focus span.vrtx-breadcrumb-delimiter,
 #app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb span.vrtx-breadcrumb-level:hover span.vrtx-breadcrumb-delimiter {
   background: url(images/app-head-breadcrumb-delimiter-rollover-right.png) no-repeat right bottom;
   height: 33px;
   margin-top: -1px;
 }
 
+#app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb span.vrtx-breadcrumb-level.vrtx-breadcrumb-level-1:focus,
+#app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb span.vrtx-breadcrumb-level.vrtx-breadcrumb-left:focus,
 #app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb span.vrtx-breadcrumb-level.vrtx-breadcrumb-level-1:hover,
 #app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb span.vrtx-breadcrumb-level.vrtx-breadcrumb-left:hover {
   background: #4a9ce2;
   margin-left: -11px;
 }
 
+#app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb span.vrtx-breadcrumb-level.vrtx-breadcrumb-level-1:focus a,
+#app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb span.vrtx-breadcrumb-level.vrtx-breadcrumb-left:focus a,
 #app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb span.vrtx-breadcrumb-level.vrtx-breadcrumb-level-1:hover a,
 #app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb span.vrtx-breadcrumb-level.vrtx-breadcrumb-left:hover a {
   padding-left: 11px;
 }
 
+#app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb span.vrtx-breadcrumb-level.vrtx-breadcrumb-before-active:focus span.vrtx-breadcrumb-delimiter,
 #app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb span.vrtx-breadcrumb-level.vrtx-breadcrumb-before-active:hover span.vrtx-breadcrumb-delimiter {
   background-image: url(images/app-head-breadcrumb-delimiter-rollover-right-active.png);
 }
 
+#app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb span.vrtx-breadcrumb-level.vrtx-breadcrumb-active:focus,
 #app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb span.vrtx-breadcrumb-level.vrtx-breadcrumb-active:hover {
   background: #d9d9d9 url(images/app-head-breadcrumb-active-bg.png) no-repeat right bottom;
   margin: 1px 0 0 0;
 }
 
+#app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb span.vrtx-breadcrumb-level.vrtx-breadcrumb-active.vrtx-breadcrumb-left:focus,
 #app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb span.vrtx-breadcrumb-level.vrtx-breadcrumb-active.vrtx-breadcrumb-left:hover {
   margin-left: -11px;
 }
@@ -477,10 +491,12 @@ a:hover {
   height: 18px;
 }
 
+#app-head-wrapper #line-top #uiologo a:focus,
 #app-head-wrapper #line-top #uiologo a:hover {
   background: url(images/uio-app-uio-small-black.png) no-repeat 0 -17px;
 }
 
+#app-head-wrapper #line-top #uiologo.english-uiologo a:focus,
 #app-head-wrapper #line-top #uiologo.english-uiologo a:hover {
   background-image: url(images/uio-app-uio-small-black-eng.png);
 }
@@ -571,6 +587,7 @@ a:hover {
   font-weight: normal;
 }
 
+#app-head #app-name a:focus,
 #app-head #app-name a:hover {
   text-decoration: none;
   color: #0b5a9d;
@@ -994,6 +1011,7 @@ ul.dropdown-shortcut-menu.dropdown-shortcut-menu-small li.dropdown-init .dropdow
   width: 26px;
 }
 
+ul.dropdown-shortcut-menu li.dropdown-init .dropdown-shortcut-menu-click-area:focus,
 ul.dropdown-shortcut-menu li.dropdown-init .dropdown-shortcut-menu-click-area:hover {
   background-color: #2b81c8;
   border-color: #23659c;
@@ -1004,6 +1022,7 @@ ul.dropdown-shortcut-menu li.dropdown-init .dropdown-shortcut-menu-click-area:ho
   background-position: 7px 13px;
 }
 
+ul.dropdown-shortcut-menu.dropdown-shortcut-menu-small li.dropdown-init .dropdown-shortcut-menu-click-area:focus,
 ul.dropdown-shortcut-menu.dropdown-shortcut-menu-small li.dropdown-init .dropdown-shortcut-menu-click-area:hover {
   height: 25px;
   background-image: url("images/dropdown-arrow-small-hover.png");
@@ -1040,7 +1059,11 @@ ul.dropdown-shortcut-menu-container li form {
 div.dropdown-shortcut-menu-container ul li a:hover,
 ul.dropdown-shortcut-menu-container li a:hover,
 div.dropdown-shortcut-menu-container ul li form input[type='submit']:hover,
-ul.dropdown-shortcut-menu-container li form input[type='submit']:hover {
+ul.dropdown-shortcut-menu-container li form input[type='submit']:hover,
+div.dropdown-shortcut-menu-container ul li a:focus,
+ul.dropdown-shortcut-menu-container li a:focus,
+div.dropdown-shortcut-menu-container ul li form input[type='submit']:focus,
+ul.dropdown-shortcut-menu-container li form input[type='submit']:focus {
   background-color: #ecf3f9;
   cursor: pointer;
 }
@@ -1053,7 +1076,9 @@ ul.dropdown-shortcut-menu-container li form input[type='submit'] {
 }
 
 div.dropdown-shortcut-menu-container ul li a:hover,
-ul.dropdown-shortcut-menu-container li a:hover {
+ul.dropdown-shortcut-menu-container li a:hover,
+div.dropdown-shortcut-menu-container ul li a:focus,
+ul.dropdown-shortcut-menu-container li a:focus {
   text-decoration: none;
 }
 
@@ -1068,11 +1093,13 @@ div.dropdown-shortcut-menu-container form .vrtx-button button {
   color: #005aab;
 }
 
-div.dropdown-shortcut-menu-container form .vrtx-button:hover {
+div.dropdown-shortcut-menu-container form .vrtx-button:hover,
+div.dropdown-shortcut-menu-container form .vrtx-button:focus {
   background: none;
 }
 
-div.dropdown-shortcut-menu-container form .vrtx-button button:hover {
+div.dropdown-shortcut-menu-container form .vrtx-button button:hover,
+div.dropdown-shortcut-menu-container form .vrtx-button button:focus {
   background: none;
   color: #005aab;
 }
@@ -1374,7 +1401,8 @@ div.dropdown-shortcut-menu-container form .vrtx-button button {
 
 /* Override this class to get different colors and size on a specific tab */
 
-#app-tabs ul li a:hover {
+#app-tabs ul li a:hover,
+#app-tabs ul li a:focus {
   background: #4a9ce2;
   color: #fff;
   border-color: #4a9ce2; 
@@ -1383,14 +1411,16 @@ div.dropdown-shortcut-menu-container form .vrtx-button button {
   padding-left: 20px;
 }
 
-#app-tabs ul li.activeTab a:hover {
+#app-tabs ul li.activeTab a:hover,
+#app-tabs ul li.activeTab a:focus {
   border-color: #d8d8d8;
   margin-left: 0px;
   padding-left: 19px;
 }
 
 #app-tabs ul li.activeTab a,
-#app-tabs ul li.activeTab a:hover {
+#app-tabs ul li.activeTab a:hover,
+#app-tabs ul li.activeTab a:focus {
   background: #fff;
   color: #363534;
   border-bottom: 1px solid #fff;

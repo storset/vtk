@@ -892,6 +892,10 @@ ul.button-row li {
   margin-left: -5px !important;
 }
 
+ul.button-row li.first {
+  margin-left: 0px !important;
+}
+
 ul.button-row li.first,
 ul.button-row li.first a {
   -webkit-border-top-left-radius: 5px;

@@ -47,7 +47,6 @@ import org.vortikal.web.AbstractControllerTest;
  * 
  * @author Gyrd Thane Lange
  */
-
 public class CopyMoveToSelectedFolderControllerTest extends AbstractControllerTest {
 	
 	private CopyMoveToSelectedFolderController controller = null;

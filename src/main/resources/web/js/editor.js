@@ -49,11 +49,14 @@ function VrtxEditor() {
   /** Radios at init */
   this.editorInitRadios = [];
 
-  /** Select fields show/hide mappings */
+  /** Select fields show/hide mappings 
+    * Mapping: "select-id": ["option-value-1", ..., "option-value-n"]
+    */
   this.selectMappings = {
     "teachingsemester":  ["particular-semester", "every-other"],
     "examsemester":      ["particular-semester", "every-other"],
-    "typeToDisplay":     ["so", "nm", "em"]
+    "typeToDisplay":     ["so", "nm", "em"],
+    "type-of-agreement": ["other"]
   };
 
   /** Initial state for the need to confirm navigation away from editor */

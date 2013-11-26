@@ -262,6 +262,7 @@
 /* Selects - otherwise (reversed logic) */
 
 /* Hide only if JS is turned on */
+#editor.select-type-of-agreement .if-type-of-agreement-other,
 #editor.select-teachingsemester .if-teachingsemester-particular,
 #editor.select-teachingsemester .teachingsemester-every-other-semester,
 #editor.select-examsemester .if-examsemester-particular,
@@ -269,6 +270,8 @@
   display: none;
 }
 
+#editor.select-type-of-agreement .if-type-of-agreement-other label,
+#editor.select-type-of-agreement .if-type-of-agreement-other .header,
 #editor.select-teachingsemester-particular-semester .if-teachingsemester-particular label,
 #editor.select-teachingsemester-every-other .teachingsemester-every-other-semester .header,
 #editor.select-examsemester-particular-semester .if-examsemester-particular label,
@@ -276,6 +279,7 @@
   display: none;
 }
 
+#editor.select-type-of-agreement-other .if-type-of-agreement-other,
 #editor.select-teachingsemester-particular-semester .if-teachingsemester-particular,
 #editor.select-teachingsemester-every-other .teachingsemester-every-other-semester,
 #editor.select-teachingsemester-other .teachingsemester-other,
@@ -283,6 +287,8 @@
 #editor.select-examsemester-every-other .examsemester-every-other-semester {
   display: block;
 }
+
+
 
 /* Radios */
 

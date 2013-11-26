@@ -990,14 +990,14 @@ ul.dropdown-shortcut-menu li.dropdown-init .dropdown-shortcut-menu-click-area {
 ul.dropdown-shortcut-menu.dropdown-shortcut-menu-small li.dropdown-init .dropdown-shortcut-menu-click-area {
   background-image: url("images/dropdown-arrow-small.png");
   background-position: 8px 11px;
-  height: 25px;
+  height: 24px;
   width: 26px;
 }
 
 ul.dropdown-shortcut-menu li.dropdown-init .dropdown-shortcut-menu-click-area:hover {
   background-color: #2b81c8;
   border-color: #23659c;
-  height: 30px;
+  height: 29px;
   top: -1px;
   right: -1px;
   background-image: url("images/dropdown-arrow-hover.png");
@@ -1005,7 +1005,7 @@ ul.dropdown-shortcut-menu li.dropdown-init .dropdown-shortcut-menu-click-area:ho
 }
 
 ul.dropdown-shortcut-menu.dropdown-shortcut-menu-small li.dropdown-init .dropdown-shortcut-menu-click-area:hover {
-  height: 26px;
+  height: 25px;
   background-image: url("images/dropdown-arrow-small-hover.png");
   background-position: 7px 12px;
 }

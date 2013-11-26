@@ -3280,4 +3280,9 @@ div.vrtx-admin-form {
   margin: 3px 3px 3px 4px;
 }
 
+#resource-title .dropdown-shortcut-menu-container li form input[type="submit"], x:-moz-any-link, x:only-child {
+  padding-left: 11px !important;
+  padding-right: 11px !important;
+}
+
 /* ^ UiO design - Vortex */

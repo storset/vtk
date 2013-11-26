@@ -74,8 +74,8 @@
     </mailingList>
   </mailingLists>
   <scm>
-    <connection>scm:svn:svn://svn.uio.no/svnroot/vortikal/trunk</connection>
-    <developerConnection>scm:svn:svn+ssh://svn.uio.no/svnroot/vortikal/trunk</developerConnection>
+    <connection>scm:svn:svn://svn.uio.no/svnroot/vortikal/branches/stable-54.X</connection>
+    <developerConnection>scm:svn:svn+ssh://svn.uio.no/svnroot/vortikal/branches/stable-54.X</developerConnection>
   </scm>
   <licenses>
     <license>

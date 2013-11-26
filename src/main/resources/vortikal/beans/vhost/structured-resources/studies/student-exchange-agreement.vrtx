@@ -20,8 +20,8 @@ resourcetype student-exchange-agreement {
     courses : html noextract,
     length-of-semester : html noextract,
 
-    tuition : boolean,
-    scholarship : boolean,
+    tuition-yes : boolean,
+    tuition-no : boolean,
     fees-text-field : html noextract,
 
     housing : html noextract,
@@ -38,7 +38,14 @@ resourcetype student-exchange-agreement {
     tittel (size[1]),
     tittel (class[ui-helper-hidden]),
 
-    type-of-agreement (dropdown),
+    owner-of-agreement (class[vrtx-shared-text],
+                        attribute[vrtx-shared-text-path:/vrtx/fellestekst/utvekslingsavtale],
+                        attribute[vrtx-shared-text-file-name:avtaleeier]),
+
+    type-of-agreement (dropdown,
+                        class[vrtx-shared-text-view],
+                        attribute[vrtx-shared-text-path:/vrtx/fellestekst/utvekslingsavtale],
+                        attribute[vrtx-shared-text-file-name:avtaletype]),
     type-of-agreement-other-text-field (class[if-type-of-agreement-other]),
 
     group level (bachelor, master, phd, profesjonsstudium, specialist) (after type-of-agreement-other-text-field),
@@ -53,13 +60,21 @@ resourcetype student-exchange-agreement {
                      no : "Emner, studiemuligheter, uttelling",
                      nn : "Emner, studiemoglegheiter, uttelling"),
 
-    group fees (tuition, scholarship, fees-text-field) (after length-of-semester),
+    group fees (tuition-yes, tuition-no, scholarship, fees-text-field) (after length-of-semester),
 
     fees tooltip (en : "School fees, semester fees, scholarships",
                   no : "skoleavgift, semesteravgift, stipendmuligheter",
                   nn : "skoleavgift, semesteravgift, stipendmoglegheiter"),
 
-    group exchange-leave (exchange-leave-text-field, exchange-leave-shared-text) (after content)
+    exchange-leave-shared-text (class[vrtx-shared-text],
+                                attribute[vrtx-shared-text-path:/vrtx/fellestekst/utvekslingsavtale],
+                                attribute[vrtx-shared-text-file-name:vil-du-dra]),
+    group exchange-leave (exchange-leave-text-field, exchange-leave-shared-text) (after content),
+
+    contact (class[vrtx-shared-text],
+             attribute[vrtx-shared-text-path:/vrtx/fellestekst/utvekslingsavtale],
+             attribute[vrtx-shared-text-file-name:kontakt]),
+    contact (after exchange-leave)
   }
 
   view {
@@ -102,22 +117,22 @@ resourcetype student-exchange-agreement {
       <body id="vrtx-student-exchange-agreement">
         <div id="vrtx-content">
           <div id="vrtx-main-content">
-            <h1>[localized 'student-exchange-agreement-between'] [val name] [localized 'and'] [val owner-of-agreement]</h1>
+            <h1>[localized 'student-exchange-agreement-between'] [val name] [localized 'and'] [call "include:shared-text" {"propName":"owner-of-agreement"}]</h1>
             [if who-can-apply != null && who-can-apply != ""]
               <h2>[localized 'who-can-apply']</h2>
-              <p>[val who-can-apply # unescaped]</p>
+              [val who-can-apply # unescaped]
             [endif]
             [if language != null && language != ""]
               <h2>[localized 'language']</h2>
-              <p>[val language # unescaped]</p>
+              [val language # unescaped]
             [endif]
             [if courses != null && courses != ""]
               <h2>[localized 'courses']</h2>
-              <p>[val courses # unescaped]</p>
+              [val courses # unescaped]
             [endif]
             [if length-of-semester != null && length-of-semester != ""]
               <h2>[localized 'length-of-semester']</h2>
-              <p>[val length-of-semester # unescaped]</p>
+              [val length-of-semester # unescaped]
             [endif]
             <h2>[localized 'fees']</h2>
             [if tuition != null]
@@ -127,23 +142,23 @@ resourcetype student-exchange-agreement {
               <p>[localized 'scholarship']: [val scholarship]</p>
             [endif]
             [if fees-text-field != null && fees-text-field != ""]
-              <p>[val fees-text-field # unescaped]</p>
+              [val fees-text-field # unescaped]
             [endif]
             [if housing != null && housing != ""]
               <h2>[localized 'housing']</h2>
-              <p>[val housing # unescaped]</p>
+              [val housing # unescaped]
             [endif]
             [if content != null && content != ""]
               <h2>[localized 'content']</h2>
-              <p>[val content # unescaped]</p>
+              [val content # unescaped]
             [endif]
             [if (exchange-leave-text-field != null && exchange-leave-text-field != "") || (exchange-leave-shared-text != null && exchange-leave-shared-text != "")]
               <h2>[localized 'exchange-leave']</h2>
               [if exchange-leave-text-field != null && exchange-leave-text-field != ""]
-                <p>[val exchange-leave-text-field # unescaped]</p>
+                [val exchange-leave-text-field # unescaped]
               [endif]
               [if exchange-leave-shared-text != null && exchange-leave-shared-text != ""]
-                <p>[val exchange-leave-shared-text # unescaped]</p>
+                [call "include:shared-text" {"propName":"exchange-leave-shared-text"}]
               [endif]
             [endif]
           </div>
@@ -172,7 +187,7 @@ resourcetype student-exchange-agreement {
                 <tbody>
                   <tr>
                     <th scope="row">[localized 'type-of-agreement']</th>
-                    <td>[if type-of-agreement != null && type-of-agreement != "" && type-of-agreement != "other"][val type-of-agreement][elseif type-of-agreement = "other"][val type-of-agreement-other-text-field][endif]</td>
+                    <td>[if type-of-agreement != null && type-of-agreement != "" && type-of-agreement != "other"][call "include:shared-text" {"propName":"type-of-agreement"}][elseif type-of-agreement = "other"][val type-of-agreement-other-text-field][endif]</td>
                   </tr>
                   <tr>
                     <th scope="row">[localized 'study-level']</th>
@@ -194,19 +209,19 @@ resourcetype student-exchange-agreement {
                   </tr>
                   <tr>
                     <th scope="row">[localized 'owner-of-agreement']</th>
-                    <td>[val owner-of-agreement]</td>
+                    <td>[call "include:shared-text" {"propName":"owner-of-agreement"}]</td>
                   </tr>
                 </tbody>
               </table>
             </div>
             <div id="vrtx-student-exchange-agreement-contact" class="vrtx-frontpage-box vrtx-distach-bottom">
               <h2>[localized 'contact']</h2>
-              <p>[val contact]</p>
+              [call "include:shared-text" {"propName":"contact"}]
             </div>
-            <div id="vrtx-student-exchange-agreement-contact" class="vrtx-frontpage-box">
+            <div id="vrtx-student-exchange-agreement-earlier-students" class="vrtx-frontpage-box">
               <h2>[localized 'earlier-students']</h2></p>
-              [if erasmus != null && erasmus != "" && type-of-agreement != null && type-of-agreement = "erasmus"]<p><a href="http://www.iris.siu.no/iris.nsf/wwwRSV?SearchView&Query=[val erasmus]">[localized 'question']</a></p>[endif]
-              [if earlier-students != null && earlier-students != ""]<p>[val earlier-students # unescaped]</p>[endif]
+              [if erasmus != null && erasmus != "" && type-of-agreement != null && type-of-agreement = "erasmus"]<p><a href="http://www.iris.siu.no/iris.nsf/wwwRSV?SearchView&Query=[val erasmus]">[localized 'iris-reports']</a></p>[endif]
+              [if earlier-students != null && earlier-students != ""][val earlier-students # unescaped][endif]
             </div>
           </div>
         </div>
@@ -220,16 +235,6 @@ resourcetype student-exchange-agreement {
       en : ("erasmus" = "Erasmus", "nordplus" = "Nordplus", "nordlys" = "Nordlys", "bilateral" = "Bilateral", "uio-avtale" = "UIO-avtale", "other" = "Other"),
       no : ("erasmus" = "Erasmus", "nordplus" = "Nordplus", "nordlys" = "Nordlys", "bilateral" = "Bilateral", "uio-avtale" = "UIO-avtale", "other" = "Annet"),
       nn : ("erasmus" = "Erasmus", "nordplus" = "Nordplus", "nordlys" = "Nordlys", "bilateral" = "Bilateral", "uio-avtale" = "UIO-avtale", "other" = "Anna")
-    },
-    tuition {
-      en : ("true" = "Yes", "false" = "No"),
-      no : ("true" = "Ja", "false" = "Nei"),
-      nn : ("true" = "Ja", "false" = "Nei")
-    },
-    scholarship {
-      en : ("true" = "Yes", "false" = "No"),
-      no : ("true" = "Ja", "false" = "Nei"),
-      nn : ("true" = "Ja", "false" = "Nei")
     }
   }
 
@@ -273,7 +278,8 @@ resourcetype student-exchange-agreement {
     study-level : (en : "Study level", no : "Studienivå", nn : "Studienivå"),
     and : (en : "and", no : "og", nn : "og"),
     contact : (en : "Contact", no : "Kontakt", nn : "Kontakt"),
-    earlier-students : (en : "Previous students experiences", no : "Studenter som har vært her tidligere", nn : "Studenter som har vore her tidlegare")
+    earlier-students : (en : "Previous students experiences", no : "Studenter som har vært her tidligere", nn : "Studenter som har vore her tidlegare"),
+    iris-reports : (en : "IRIS - Student reports", no : "Studentrapporter i IRIS", nn : "Studentrapportar i IRIS")
   }
 
 }

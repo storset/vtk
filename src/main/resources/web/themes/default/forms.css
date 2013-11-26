@@ -141,15 +141,16 @@
   border: none;
 }
 
-.button-row-small li > *,
+.button-row-small li a,
+.button-row-small li input[type="submit"],
 .forms-new .vrtx-button-small > * {
   padding: 3px 13px 4px;
 }
 
 .button-row li a:hover,
 .button-row-small a:hover,
-.button-row li input:hover,
-.button-row-small input:hover,
+.button-row li input[type="submit"]:hover,
+.button-row-small input[type="submit"]:hover,
 .forms-new .ui-dialog .ui-dialog-buttonpane button:hover,
 .forms-new .vrtx-button:hover,
 .forms-new .vrtx-button.hover,

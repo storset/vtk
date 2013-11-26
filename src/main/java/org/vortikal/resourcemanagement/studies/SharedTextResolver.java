@@ -76,6 +76,7 @@ public class SharedTextResolver {
 
     private static final String SHARED_TEXT_DEFAULT_PATH = "/vrtx/fellestekst";
     private static final String SHARED_TEXT_EDITHINT_CLASS = "vrtx-shared-text";
+    private static final String SHARED_TEXT_EDITHINT_CLASS_VIEW = "vrtx-shared-text-view";
     private static final String SHARED_TEXT_EDITHINT_ATTRIBUTE_PATH = "vrtx-shared-text-path";
     private static final String SHARED_TEXT_EDITHINT_ATTRIBUTE_FILENAME = "vrtx-shared-text-file-name";
 
@@ -84,7 +85,7 @@ public class SharedTextResolver {
     private HtmlPageParser htmlParser;
 
     @SuppressWarnings("unchecked")
-    public Map<String, JSONObject> getSharedTextValues(String docType, PropertyTypeDefinition propDef) {
+    public Map<String, JSONObject> getSharedTextValues(String docType, PropertyTypeDefinition propDef, boolean view) {
 
         // No propdef to work on
         if (propDef == null) {
@@ -100,7 +101,11 @@ public class SharedTextResolver {
 
         // Necessary edithint class not set for shared texts
         Set<String> classes = editHints.get("class");
-        if (classes == null || !classes.contains(SHARED_TEXT_EDITHINT_CLASS)) {
+        if (classes == null || !(classes.contains(SHARED_TEXT_EDITHINT_CLASS) || classes.contains(SHARED_TEXT_EDITHINT_CLASS_VIEW))) {
+            return null;
+        }
+        
+        if (classes.contains(SHARED_TEXT_EDITHINT_CLASS_VIEW) && !view) {
             return null;
         }
 
@@ -202,7 +207,7 @@ public class SharedTextResolver {
             Map<String, Map<String, JSONObject>> sharedTextPropsMap = new HashMap<String, Map<String, JSONObject>>();
 
             for (PropertyTypeDefinition propDef : propTypeDefs) {
-                Map<String, JSONObject> sharedTexts = getSharedTextValues(resource.getResourceType(), propDef);
+                Map<String, JSONObject> sharedTexts = getSharedTextValues(resource.getResourceType(), propDef, false);
                 if (sharedTexts != null) {
                     sharedTextPropsMap.put(propDef.getName(), sharedTexts);
                 }

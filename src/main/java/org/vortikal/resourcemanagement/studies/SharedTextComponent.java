@@ -76,7 +76,7 @@ public class SharedTextComponent extends ViewRenderingDecoratorComponent {
         }
 
         Map<String, JSONObject> resolvedsharedTexts = sharedTextResolver.getSharedTextValues(
-                resource.getResourceType(), prop.getDefinition());
+                resource.getResourceType(), prop.getDefinition(), true);
 
         if (resolvedsharedTexts == null || resolvedsharedTexts.isEmpty()) {
             return;

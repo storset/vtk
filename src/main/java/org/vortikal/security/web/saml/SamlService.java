@@ -46,6 +46,8 @@ import javax.servlet.http.HttpSession;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -123,6 +125,7 @@ public abstract class SamlService {
 
     private String logoutURL;
 
+    protected final Log authDebugLog = LogFactory.getLog("org.vortikal.security.web.AUTH_DEBUG");
 
     protected UUID getRequestIDSessionAttribute(HttpServletRequest request, URL url) {
         HttpSession session = request.getSession(false);
@@ -152,6 +155,16 @@ public abstract class SamlService {
             }
 
             url.setCollection(false);
+            // Debugging VTK-2653
+            if (authDebugLog.isDebugEnabled()) {
+                StackTraceElement[] stackTrace = new Throwable().getStackTrace();
+                String callerName = stackTrace.length > 1 ? stackTrace[1].getMethodName() : "<unknown>";
+                authDebugLog.debug("Setting requestID " + uuid + " for URL " + url
+                        + " in session, called by: " + callerName + ", requestURL: " 
+                        + request.getRequestURL() + (request.getQueryString() != null ? "?" + request.getQueryString() : "")
+                        + ", remote addr: " + request.getRemoteAddr());
+            }
+            
             attr.put(url, uuid);
         }
     }

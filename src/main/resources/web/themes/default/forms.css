@@ -98,8 +98,10 @@
   border-radius: 5px;
 }
 
-.button-row li > *,
-.button-row-small li > *,
+.button-row li a,
+.button-row-small li a,
+.button-row-small li input[type="submit"],
+.button-row li input[type="submit"],
 .forms-new .vrtx-button > *,
 .forms-new .ui-dialog .ui-dialog-buttonpane button > *,
 .forms-new .vrtx-focus-button > *,
@@ -144,8 +146,10 @@
   padding: 3px 13px 4px;
 }
 
-.button-row li > *:hover,
-.button-row-small li > *:hover,
+.button-row li a:hover,
+.button-row-small a:hover,
+.button-row li input:hover,
+.button-row-small input:hover,
 .forms-new .ui-dialog .ui-dialog-buttonpane button:hover,
 .forms-new .vrtx-button:hover,
 .forms-new .vrtx-button.hover,

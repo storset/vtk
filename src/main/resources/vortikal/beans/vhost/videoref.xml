@@ -103,6 +103,12 @@
     <property name="apiBaseUrl" value="${mediaref.videoapp.apiBaseUrl}" />
   </bean>
   
+  <!-- Video DAO support -->
+  <bean id="videoref.daoSupport" class="org.vortikal.videoref.VideoDaoSupport">
+    <property name="dataSource" ref="repository.dataSource" />
+    <property name="videoIdProperty" ref="videoref.videoIdPropDef" />
+  </bean>
+  
   <!-- System job for storing videoref resources with media-metadata-status = 'GENERATE' -->
   <!-- Image metadata, including thumbnail -->
   <bean id="videoref.updateJob" class="org.vortikal.repository.systemjob.StoreResourceJob"

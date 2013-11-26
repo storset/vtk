@@ -54,7 +54,11 @@
 
            <#if introImg?has_content && articles.hasDisplayPropDef(introImg.definition.name)>
                <a class="vrtx-image" href="${entry.url?html}">
-                  <img src="${thumbnail?html}" alt="" />
+                 <#if caption != ''>
+                    <img src="${thumbnail?html}" alt="${captionFlattened}" />
+                  <#else>
+                    <img src="${thumbnail?html}" alt="${vrtx.getMsg("article.introductionImageAlt")}" />
+                  </#if>
                </a>
            </#if>
 

@@ -5,7 +5,6 @@
 
 <#assign headerMsg = vrtx.getMsg("copyMove.copy-resources.header") />
 <#assign titleMsg = vrtx.getMsg("copyMove.copy.title") />
-<#assign clearTitleMsg = vrtx.getMsg("copyMove.copy.clear.title") />
 <#assign filesI18n = vrtx.getMsg("copyMove.files") /> 
 <#assign filesTipI18n = vrtx.getMsg("copyMove.files.copy.tip.title") /> 
 <#assign actionURL = item.url />
@@ -26,10 +25,9 @@
 
 <#if !resourcesDisclosed?exists>
   <form id="vrtx-copy-to-selected-folder" action="${actionURL?html}" method="${method}" class="vrtx-admin-button">
-     <div class="vrtx-button-small">
-       <button title="${titleMsg}" type="submit" value="copy-resources-to-this-folder" name="action">${item.title?html}</button>
-     </div>
-     <button class="vrtx-cancel-link" title="${clearTitleMsg}" type="submit" value="clear-action" name="clear-action">x</button>
+     <div class="vrtx-button-small"><button title="${titleMsg}" type="submit"
+          id="vrtx-copy-to-selected-folder.submit"
+          value="copy-resources-to-this-folder" name="action">${item.title?html}</button></div>
   </form>
 <#else>
   <a class="vrtx-button-small vrtx-copy-move-to-selected-folder-disclosed" title="${titleMsg}" id="vrtx-copy-to-selected-folder" href="${actionURL?html}"><span>${item.title?html}</span></a>

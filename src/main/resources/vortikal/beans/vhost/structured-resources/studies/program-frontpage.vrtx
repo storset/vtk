@@ -118,19 +118,18 @@ resourcetype program-frontpage : program-document {
     facts {
       ##
       [resource-props "."]
+      <h2>[localized 'facts']</h2>
       [def org full-time + 'check']
-      
       <table id="vrtx-program-facts">
-        <caption>[localized 'facts']</caption>
         <tbody>
           [if study-points != null]
-            <tr><th scope="row" class="vrtx-program-fact-header">[localized 'study-points']:</th><td><strong>[val study-points]</strong></td></tr>
+            <tr><td class="vrtx-program-fact-header">[localized 'study-points']:</td><td><strong>[val study-points]</strong></td></tr>
           [endif]
           [if duration != null]
-            <tr><th scope="row" class="vrtx-program-fact-header">[localized 'duration']:</th><td><strong>[val duration] [call "comp:years"]</strong></td></tr>
+            <tr><td class="vrtx-program-fact-header">[localized 'duration']:</td><td><strong>[val duration] [call "comp:years"]</strong></td></tr>
           [endif]
           [if org = 'falsecheck']
-            <tr><th scope="row" class="vrtx-program-fact-header">[localized 'organization']:</th><td><strong>[localized 'parttime']</strong></td></tr>
+            <tr><td class="vrtx-program-fact-header">[localized 'organization']:</td><td><strong>[localized 'parttime']</strong></td></tr>
           [endif]
         </tbody>
       </table>

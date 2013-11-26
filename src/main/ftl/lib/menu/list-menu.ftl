@@ -43,11 +43,7 @@
       </#list>
 
       <#if (size > 0)>
-        <#if menu.label == "resourceMenuLeft">
-          <ul class="list-menu button-row" id="${menu.label}">
-        <#else>
-          <ul class="list-menu" id="${menu.label}">
-        </#if>
+        <ul class="list-menu" id="${menu.label}">
         <#assign count = 1 />
         <#list menu.items as item>
           <#if item.url?exists>

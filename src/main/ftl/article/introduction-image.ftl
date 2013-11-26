@@ -24,7 +24,7 @@
   
 <#if introductionImage != "">
   <#if imageRes == "">
-    <img class="vrtx-introduction-image" src="${introductionImage}" alt="" />
+    <img class="vrtx-introduction-image" src="${introductionImage}" alt="${vrtx.getMsg("article.introductionImageAlt")}" />
   <#else>
     <#assign pixelWidth = imageRes.getValueByName("pixelWidth")?default("") />
     <#assign photographer = imageRes.getValueByName("photographer")?default("") />
@@ -36,7 +36,7 @@
       
     <#if caption != ""><#-- Caption is set -->
       <div class="vrtx-introduction-image" <#if style?has_content>style="${style}"</#if>>
-               <img src="${introductionImage}" alt="" />
+               <img src="${introductionImage}" alt="${captionFlattened}" />
           <div class="vrtx-imagetext">
                <div class="vrtx-imagedescription">${caption}</div>
                <span class="vrtx-photo">
@@ -49,7 +49,7 @@
     <#else>
        <#if photographer != ""><#-- No caption but image author set -->
           <div class="vrtx-introduction-image" <#if style?has_content>style="${style}"</#if>>
-          <img src="${introductionImage}" alt="" />
+          <img src="${introductionImage}" alt="${vrtx.getMsg("article.introductionImageAlt")}" />
             <div class="vrtx-imagetext">
               <span class="vrtx-photo">
                 <span class="vrtx-photo-prefix"><@vrtx.msg code="article.photoprefix" />: </span>${photographer}
@@ -57,7 +57,7 @@
             </div>
           </div>
        <#else><#-- No caption or image author set -->
-          <img class="vrtx-introduction-image" src="${introductionImage}" alt="" />
+          <img class="vrtx-introduction-image" src="${introductionImage}" alt="${vrtx.getMsg("article.introductionImageAlt")}" />
        </#if>
         </#if>
   </#if>

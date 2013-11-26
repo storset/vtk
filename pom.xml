@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <groupId>vortikal</groupId>
   <artifactId>vortikal</artifactId>
-  <version>55-SNAPSHOT</version>
+  <version>54.1</version>
   <packaging>jar</packaging>
   <name>The Vortikal Web Framework</name>
   <url>http://www.uio.no/tjenester/it/web/vortex/</url>
@@ -218,9 +217,9 @@
 
       <!-- Build info: Provide local hostname as property ${hostname} using a Groovy script. -->
       <plugin>
-        <groupId>org.codehaus.gmaven</groupId>
+        <groupId>org.codehaus.groovy.maven</groupId>
         <artifactId>gmaven-plugin</artifactId>
-        <version>1.5</version>
+        <version>1.0</version>
         <executions>
           <execution>
             <id>add-hostname-property</id>
@@ -230,7 +229,7 @@
             </goals>
             <configuration>
               <source>
-                project.properties["hostname"] = java.net.InetAddress.getLocalHost().getHostName()
+                project.properties["hostname"] = java.net.InetAddress.getLocalHost().getHostName();
               </source>
             </configuration>
           </execution>
@@ -243,10 +242,10 @@
             </goals>
             <configuration>
               <source>
-                log.info("Build information - " + project.name)
-                log.info("Version: " + project.version)
-                log.info("Revision: " + project.properties["buildNumber"])
-                log.info("Branch: " + project.properties["scmBranch"])
+                log.info("Build information - " + project.name);
+                log.info("Version: " + project.version);
+                log.info("Revision: " + project.properties["buildNumber"]);
+                log.info("Branch: " + project.properties["scmBranch"]);
               </source>
             </configuration>
           </execution>

@@ -24,7 +24,7 @@
      <form method="post" action="${actionURL?html}" name="unlockForm">
        <@vrtx.csrfPreventionToken url=actionURL />
        <div id="manage.unlockFormService" class="vrtx-button-small vrtx-admin-button" title="${titleMsg}">
-         <input type="submit" name="unlock" value="${item.title?html}" />
+         <input tabindex="1" type="submit" name="unlock" value="${item.title?html}" />
        </div>
      </form>
   <#else>

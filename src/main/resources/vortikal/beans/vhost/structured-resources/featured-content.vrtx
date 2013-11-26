@@ -32,7 +32,7 @@ resourcetype featured-content {
                 [if webaddress != null && webaddress != ""]
                   <a href="[val webaddress]">
                 [endif]
-                <img src="[val picture]" alt="" />
+                <img src="[val picture]" alt="[localized 'featuredPictureAlt'] [val thetitle]" />
                 [if webaddress != null && webaddress != ""]
                   </a>
                 [endif]
@@ -106,6 +106,7 @@ resourcetype featured-content {
      featuredTitle : (en : "Title", no : "Tittel", nn : "Tittel"),
      featuredDate : (en : "Date", no : "Dato", nn : "Dato"),
      featuredPicture : (en : "Picture", no : "Bilde", nn : "Bilete"),
+     featuredPictureAlt : (en : "Picture to ", no : "Bilde til ", nn : "Bilete til "),
      featuredContent : (en : "Content", no : "Innhold", nn : "Innhald"),
      featuredWebaddress : (en : "Webaddress", no : "Webadresse", nn : "Webadresse"),
      featuredWebaddressText : (en : "Link text", no : "Lenketekst", nn : "Lenketekst"),

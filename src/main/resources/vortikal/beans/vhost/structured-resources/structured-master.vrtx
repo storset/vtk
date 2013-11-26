@@ -109,7 +109,11 @@ resourcetype structured-master{
           <div class="vrtx-introduction-image">
         [endif]
 
-        <img src="[val img-uri]" alt="" />
+        [if caption != null]
+          <img src="[val img-uri]" alt="[val caption # unescaped 'flattened']"/>
+        [else]
+          <img src="[val img-uri]" alt="[localized 'introduction-image-alt']"/>
+        [endif]
 
         [if caption != null]
           <div class="vrtx-imagetext">

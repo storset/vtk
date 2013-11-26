@@ -32,14 +32,14 @@
 </#if>
 <#if propResource?has_content && propResource.inherited >
     <#if resource.published >
-      <abbr tabindex="0" class="tooltips" title="<@vrtx.msg code="publish.unpublished.published.info.${resourceType}" />"></abbr>
+      <abbr class="tooltips" title="<@vrtx.msg code="publish.unpublished.published.info.${resourceType}" />"></abbr>
     <#else> 
-      <abbr tabindex="0" class="tooltips" title="<@vrtx.msg code="publish.unpublished.unpublishedCollection.info.${resourceType}" />"></abbr>
+      <abbr class="tooltips" title="<@vrtx.msg code="publish.unpublished.unpublishedCollection.info.${resourceType}" />"></abbr>
     </#if>
 <#elseif propResource?has_content && !propParent?has_content>  
-  <abbr tabindex="0" class="tooltips" title="<@vrtx.msg code="unpublishedCollection.info" />"></abbr>
+  <abbr class="tooltips" title="<@vrtx.msg code="unpublishedCollection.info" />"></abbr>
 <#elseif propParent?has_content >
-  <abbr tabindex="0" class="tooltips" title="<@vrtx.msg code="publish.unpublished.unpublishedCollection.info.${resourceType}" />"></abbr>
+  <abbr class="tooltips" title="<@vrtx.msg code="publish.unpublished.unpublishedCollection.info.${resourceType}" />"></abbr>
 </#if> 
 </p>
 </#macro>

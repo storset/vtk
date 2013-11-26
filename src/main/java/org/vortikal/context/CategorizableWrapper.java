@@ -34,7 +34,6 @@ import java.util.Collections;
 import java.util.Set;
 
 import org.springframework.beans.factory.FactoryBean;
-import org.springframework.beans.factory.annotation.Required;
 
 /**
  * Convenience wrapper that can be used as an alternative to implementing 
@@ -57,26 +56,18 @@ public class CategorizableWrapper<T> implements Categorizable, FactoryBean<T> {
 
     @Override
     public Class<?> getObjectType() {
-        // This method may be called before instance is fully initialized, so
-        // be prepared for that. (See FactoryBean interface docs.)
-        if (bean != null) {
-            return bean.getClass();
-        }
-
-        return null;
+        return bean.getClass();
     }
 
     @Override
     public boolean isSingleton() {
         return true;
     }
-
-    @Required
+    
     public void setCategory(String category) {
         this.category = category;
     }
 
-    @Required
     public void setBean(T target) {
         this.bean = target;
     }

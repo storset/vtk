@@ -57,14 +57,12 @@ crossDocComLink.setUpReceiveDataHandler(function(cmdParams, source) {
       sentPreviewLoaded = false;
   
   $(document).ready(function () {
-    if (window != top) { // Obs IE bug: http://stackoverflow.com/questions/4850978/ie-bug-window-top-false
-	  waitMaxForPreviewLoadedTimer = setTimeout(function() {
-        sendPreviewLoaded(); 
-      }, waitMaxForPreviewLoaded);
-      $(window).load(function (e) {
-        sendPreviewLoaded(); 
-      });
-    }
+	waitMaxForPreviewLoadedTimer = setTimeout(function() {
+      sendPreviewLoaded(); 
+    }, waitMaxForPreviewLoaded);
+    $(window).load(function (e) {
+      sendPreviewLoaded(); 
+    });
   });
 
   function sendPreviewLoaded() {

@@ -45,9 +45,6 @@ import net.sf.json.JSONObject;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
-import org.vortikal.repository.Namespace;
-import org.vortikal.repository.Path;
-import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
@@ -130,13 +127,9 @@ public class CreateDropDownController implements Controller {
             }
 
             o.put("hasChildren", provider.hasChildren(r, token));
-            Path uri = r.getURI();
-            o.put("text", uri.isRoot() ? repository.getId() : r.getName());
-            o.put("uri", uri.toString());
-            
-            Property prop = r.getProperty(Namespace.DEFAULT_NAMESPACE, "unpublishedCollection");
-            boolean unpublished = prop != null || !r.isPublished();
-            o.put("spanClasses", "folder" + (!unpublished ? "" : " unpublished"));
+            o.put("text", r.getURI().isRoot() ? repository.getId() : r.getName());
+            o.put("uri", r.getURI().toString());
+            o.put("spanClasses", "folder");
             o.put("title", title);
 
             list.add(o);

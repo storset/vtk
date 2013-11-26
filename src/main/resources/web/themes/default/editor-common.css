@@ -81,7 +81,7 @@ h2 {
 .vrtx-image-ref-browse .vrtx-button,
 .vrtx-media-ref .vrtx-button,
 .vrtx-resource-ref .vrtx-button {
-  margin-left: 11px;
+  margin-left: 20px;
 }
 
 .featured-articles-row,
@@ -377,7 +377,7 @@ div#vrtx-resource\.picture div.input-and-button-container .vrtx-textfield input 
 }
 
 div#vrtx-resource\.picture div.input-and-button-container .vrtx-textfield {
-  margin-right: 11px;
+  margin-right: 20px;
 }
 
 div.introImageAndCaption div#picture\.preview,

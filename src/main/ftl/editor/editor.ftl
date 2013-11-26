@@ -493,7 +493,7 @@
                 <#-- HACKS 2012 start -->
                 <#-- Tooltip for aggregation and manually approve -->
                 <#if name = "display-aggregation" || name = "display-manually-approved">
-                  <abbr tabindex="0" class="tooltips" title="${vrtx.getMsg('editor.manually-approve-aggregation.info')}"></abbr>
+                  <abbr class="tooltips" title="${vrtx.getMsg('editor.manually-approve-aggregation.info')}"></abbr>
                 </#if>
                 <#-- HACKS 2012 end -->
               </div>
@@ -588,7 +588,7 @@
         <label class="resource.${name}" for="resource.${name}.unspecified">${nullValue?html}</label>
       </#if>
       <#if name = "recursive-listing">
-        <abbr tabindex="0" class="tooltips" title="${vrtx.getMsg('editor.recursive-listing.info')}"></abbr>
+        <abbr class="tooltips" title="${vrtx.getMsg('editor.recursive-listing.info')}"></abbr>
       </#if>
     </div>
   </#if>

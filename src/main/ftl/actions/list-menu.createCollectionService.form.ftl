@@ -58,7 +58,7 @@
       <div class="vrtx-checkbox" id="vrtx-checkbox-hide-from-navigation">
         <input type="checkbox"  id="${publishBind?html}" name="${publishBind?html}" checked />
         <label for="publish"><@vrtx.msg code="publish.action.publish" default="Publish" /></label>
-        <abbr tabindex="0" class="tooltips" title="<@vrtx.msg code="unpublishedCollection.info" />"></abbr>
+        <abbr class="tooltips" title="<@vrtx.msg code="unpublishedCollection.info" />"></abbr>
       </div>
 
       <@actionsLib.genOkCancelButtons "save" "cancelAction" "actions.createCollectionService.save" "actions.createCollectionService.cancel" />

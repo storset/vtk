@@ -228,10 +228,10 @@ resourcetype person {
               <img class="vrtx-person-image" src="[val img-uri]" alt="[localized 'picture-alt-found']&nbsp;[localized 'picture-alt-unknown-person']" />
             [endif]
           [else]
-            <img class="vrtx-person-image" src="[val img-uri]" alt="" />
+            <img class="vrtx-person-image" src="[val img-uri]" alt="[localized 'picture-alt']" />
           [endif]
         [else]
-          <img class="vrtx-person-image" src="[val img-uri]" alt="" />
+          <img class="vrtx-person-image" src="[val img-uri]" alt="[localized 'picture-alt']" />
         [endif]
       [endif]
       ##

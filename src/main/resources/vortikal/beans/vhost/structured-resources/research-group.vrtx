@@ -87,7 +87,11 @@ resourcetype research-group {
           <div class="vrtx-introduction-image">
         [endif]
         
-        <img src="[val img-uri]" alt=""/>
+        [if caption != null]
+          <img src="[val img-uri]" alt="[val caption # unescaped 'flattened']"/>
+        [else]
+          <img src="[val img-uri]" alt="[localized 'introduction-image-alt']"/>
+        [endif]
      
         [if caption != null]
           <div class="vrtx-imagetext">
@@ -229,6 +233,7 @@ resourcetype research-group {
     name : (en : "Name", no : "Navn", nn : "Navn"),
     introduction : (en : "Introduction",no : "Innledning", nn : "Innleiing"),
     picture : (en: "Image", no: "Bilde", nn : "Bilete"),
+    introduction-image-alt : (en: "Image", en: "Bilde", en: "Bilete"),
     caption : (en : "Image caption", no : "Bildetekst", nn : "Bilettekst"),
     photo-prefix : (en : "Photo", no : "Foto", nn : "Photo"),
     hidePicture : (en : "Hide image in research group", no : "Skjul bilde i forskergruppe", nn : "Skjul bilete i forskargruppe"),

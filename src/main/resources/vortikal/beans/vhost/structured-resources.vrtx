@@ -27,6 +27,5 @@ include structured-resources/studies/course-description.vrtx
 include structured-resources/studies/ub-mapping.vrtx
 include structured-resources/studies/course-group.vrtx
 include structured-resources/studies/semester-page.vrtx
-include structured-resources/studies/student-exchange-agreement.vrtx
 
 include structured-resources/publications/unit-publications.vrtx

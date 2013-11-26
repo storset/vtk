@@ -35,30 +35,6 @@
 	1. General
 \*-----------------------------------------*/
 
-/* Focus/active */
-
-/*
-body #app-head-wrapper a:focus,
-body #app-footer-wrapper a:focus {
-  background-color: #FFDE00 !important;
-  color: #000 !important;
-  outline: 1px dashed #333 !important;
-}
-*/
-
-.vrtx-button.focus,
-*:focus {
-  outline: 1px dashed #333 !important;
-}
-
-input[type='text']:focus,
-input[type='password']:focus,
-textarea:focus {
-  outline: 0 !important;
-}
-
-/* ^ Focus/active */
-
 html {
   background-color: #F8F8F8;
 }
@@ -647,7 +623,7 @@ a:hover {
 }
 
 #resource-title h1 {
-  margin: 0 0 15px 36px;
+  margin:  0 0 15px 36px;
   float: left;
   min-width: 85px; /* at least as wide as 'Endre navn' in dropdown + 15px */
   max-width: 35%;
@@ -779,7 +755,10 @@ ul.publishing-document li,
 #editor-help-menu,
 #collection-more-menu,
 #editor-menu-wrapper,
-#editor-button-row,
+#editor-button-row {
+  display: inline-block;
+}
+
 ul.publishing-document {
   display: inline-block;
 }
@@ -879,43 +858,178 @@ ul.publishing-document {
   float: left;
 }
 
-.dropdown-shortcut-menu-container form input[type=submit] {
-  color: #005AAB;
+#resourceMenuLeft li,
+#editor-menu li,
+#editor-button-row li {
+  background: url(images/dropdown-left.gif) no-repeat -5px 0;
+  display: inline-block;
+  height: 27px;
+  white-space: nowrap;
+  overflow: visible;
+  margin: 0 0 0 1px;
+}
+
+ul.dropdown-shortcut-menu li.first,
+#resourceMenuLeft li.first,
+#editor-menu li.first,
+#editor-button-row li.first {
+  background-position: 0 0;
+  margin: 0;
+}
+
+ul.dropdown-shortcut-menu li a,
+#resourceMenuLeft li a,
+#resourceMenuLeft li form input[type=submit],
+#editor-menu li a,
+#editor-button-row li a {
+  color: #363534;
+  background: url(images/button-open-right.png) no-repeat top right;
+  display: inline-block;
+  height: 23px;
+  padding: 4px 15px 0 14px;
+  margin: 0 -5px 0 0;
+}
+
+ul.dropdown-shortcut-menu.dropdown-shortcut-menu-small li a {
+  height: 21px;
+  padding: 4px 12px 0 11px;
+}
+
+ul.dropdown-shortcut-menu.dropdown-shortcut-menu-small {
+  padding-right: 25px;
+}
+
+#resourceMenuLeft li form input[type=submit] {
+  height: 28px;
+  padding-top: 1px;
+  margin-top: -1px !important;
+}
+
+#resourceMenuLeft li.last a,
+#resourceMenuLeft li.last form input[type=submit],
+#editor-menu li.last a,
+#editor-button-row li.last a {
+  background: url(images/button-closed-right.gif) no-repeat top right;
+}
+
+#resourceMenuLeft li:hover,
+#editor-menu li:hover,
+#editor-button-row li:hover {
+  background-image: url(images/dropdown-left-rollover.gif);
+  margin-right: -5px;
+}
+
+#resourceMenuLeft li:hover a,
+#resourceMenuLeft li:hover form input[type=submit],
+#editor-menu li:hover a,
+#editor-button-row li:hover a {
+  background: none;
+  color: #fff;
+  text-decoration: none;
+  margin: 0px;
+  cursor: pointer;
+}
+
+#resourceMenuLeft li.last:hover,
+#resourceMenuLeft li.last:hover form input[type=submit],
+#editor-menu li.last:hover,
+#editor-button-row li.last:hover {
+  margin-right: 0px;
+}
+
+#resourceMenuLeft li.last:hover a,
+#resourceMenuLeft li.last:hover form input[type=submit],
+#editor-menu li.last:hover a,
+#editor-button-row li.last:hover a {
+  background: url(images/button-closed-right-rollover.gif) no-repeat top right;
+  margin: 0 -5px 0 0;
+}
+
+#resource-title .dropdown-shortcut-menu-container li form {
+  padding: 0 !important;
+}
+
+#resource-title .dropdown-shortcut-menu-container li form input[type=submit] {
+  cursor: pointer;
+  color: #005aab !important;
+  border: none;
+  padding: 8px 14px 7px 14px !important;
 }
 
 /* Dropdown */
 
-ul.button-row li {
-  -webkit-border-radius: 0px;
-  -moz-border-radius: 0px;
-  border-radius: 0px;
-  margin-left: -5px !important;
-}
-
-ul.button-row li.first,
-ul.button-row li.first a {
-  -webkit-border-top-left-radius: 5px;
-  -webkit-border-bottom-left-radius: 5px;
-  -moz-border-radius-topleft: 5px;
-  -moz-border-radius-bottomleft: 5px;
-  border-top-left-radius: 5px;
-  border-bottom-left-radius: 5px;
-}
-
-ul.button-row li.last,
-ul.button-row li.last a {
-  -webkit-border-top-right-radius: 5px;
-  -webkit-border-bottom-right-radius: 5px;
-  -moz-border-radius-topright: 5px;
-  -moz-border-radius-bottomright: 5px;
-  border-top-right-radius: 5px;
-  border-bottom-right-radius: 5px;
-}
-
 ul.dropdown-shortcut-menu li.dropdown-init {
-  -webkit-border-radius: 5px;
-  -moz-border-radius: 5px;
-  border-radius: 5px;
+  display: inline-block !important;
+  border: none;
+  background: url(images/dropdown-left.gif) no-repeat -5px 0;
+  margin-right: 0px !important;
+}
+
+ul.dropdown-shortcut-menu li.dropdown-init.first {
+  background-position: 0 0;
+}
+
+ul.dropdown-shortcut-menu.dropdown-shortcut-menu-small li.dropdown-init {
+  background-image: url(images/button-small-left.png);
+}
+
+ul.dropdown-shortcut-menu li.dropdown-init a,
+ul.dropdown-shortcut-menu li.dropdown-init form input[type=submit] {
+  background: url(images/dropdown-right.gif) no-repeat top right !important;
+  padding-right: 44px !important;
+}
+
+ul.dropdown-shortcut-menu.dropdown-shortcut-menu-small li.dropdown-init a {
+  background: url(images/dropdown-small-right.png) no-repeat top right !important;
+  padding-right: 35px !important;
+  margin-right: -24px;
+}
+
+ul.dropdown-shortcut-menu li.dropdown-init:hover {
+  background-image: url(images/dropdown-left-rollover.gif) !important;
+}
+
+ul.dropdown-shortcut-menu.dropdown-shortcut-menu-small li.dropdown-init:hover {
+  background-image: url(images/button-small-left-rollover.png) !important;
+}
+
+ul.dropdown-shortcut-menu li.dropdown-init.unhover.first {
+  background: url(images/dropdown-left.gif) no-repeat top left !important;
+}
+
+ul.dropdown-shortcut-menu.dropdown-shortcut-menu-small li.dropdown-init.unhover.first {
+  background: url(images/button-small-left.png) no-repeat top left !important;
+}
+
+ul.dropdown-shortcut-menu li.dropdown-init.unhover {
+  background: url(images/dropdown-left.gif) no-repeat -5px 0 !important;
+}
+
+ul.dropdown-shortcut-menu.dropdown-shortcut-menu-small li.dropdown-init.unhover {
+  background: url(images/button-small-left.png) no-repeat -5px 0 !important;
+}
+
+ul.dropdown-shortcut-menu li.dropdown-init:hover a,
+ul.dropdown-shortcut-menu li.dropdown-init:hover form input[type=submit] {
+  margin: 0 -5px 0 0 !important;
+  color: #fff;
+  text-decoration: none;
+}
+
+ul.dropdown-shortcut-menu li.dropdown-init a.hover,
+ul.dropdown-shortcut-menu li.dropdown-init form.hover input[type=submit] {
+  background-image: url(images/dropdown-right-rollover.gif) !important;
+  color: #363534 !important;
+  margin: 0 -5px 0 0 !important;
+}
+
+ul.dropdown-shortcut-menu.dropdown-shortcut-menu-small li.dropdown-init:hover a,
+ul.dropdown-shortcut-menu.dropdown-shortcut-menu-small li.dropdown-init a.hover {
+  margin-right: -24px !important;
+}
+
+ul.dropdown-shortcut-menu.dropdown-shortcut-menu-small li.dropdown-init a.hover {
+  background-image: url(images/dropdown-small-right-rollover.png) !important;
 }
 
 div.dropdown-shortcut-menu-container,
@@ -940,71 +1054,46 @@ ul.dropdown-shortcut-menu-container {
 }
 
 .global-menu div.dropdown-shortcut-menu-container {
-  right: 0px;
-  top: 41px;
-}
-
-#editor-menu-wrapper {
-  position: relative;
+  right: -5px;
 }
 
 #editor-menu-wrapper div.dropdown-shortcut-menu-container {
-  right: 7px;
-  top: 32px;
+  right: 0px;
 }
 
+.global-menu div.dropdown-shortcut-menu-container {
+  top: 37px;
+}
+
+#editor-menu-wrapper div.dropdown-shortcut-menu-container {
+  top: 28px;
+}
+
+#editor-menu-wrapper,
 ul.dropdown-shortcut-menu li.dropdown-init {
   position: relative;
-  padding-right: 26px !important;
 }
 
 #editor-menu-wrapper #editor-menu {
   padding: 0 7px 0 0;
 }
 
-ul.dropdown-shortcut-menu li.dropdown-init .dropdown-shortcut-menu-click-area {
-  border-left: 1px solid #cbcbcb;
+ul.dropdown-shortcut-menu li.dropdown-init #dropdown-shortcut-menu-click-area {
+  display: block;
+  width: 28px;
+  height: 28px;
   position: absolute;
-  top: 0px;
-  right: 0px;
-  height: 29px;
-  width: 26px;
-  padding: 0;
-  margin: 0;
+  right: -5px;
+  top: 0;
   cursor: pointer
-  -webkit-border-top-right-radius: 5px;
-  -webkit-border-bottom-right-radius: 5px;
-  -moz-border-radius-topright: 5px;
-  -moz-border-radius-bottomright: 5px;
-  border-top-right-radius: 5px;
-  border-bottom-right-radius: 5px;
-  background-image: url("images/dropdown-arrow.png");
-  background-position: 8px 12px;
-  background-repeat: no-repeat;
 }
 
-ul.dropdown-shortcut-menu.dropdown-shortcut-menu-small li.dropdown-init .dropdown-shortcut-menu-click-area {
-  background-image: url("images/dropdown-arrow-small.png");
-  background-position: 8px 11px;
+ul.dropdown-shortcut-menu.dropdown-shortcut-menu-small li.dropdown-init #dropdown-shortcut-menu-click-area {
+  width: 24px;
   height: 25px;
-  width: 26px;
-}
-
-ul.dropdown-shortcut-menu li.dropdown-init .dropdown-shortcut-menu-click-area:hover {
-  background-color: #2b81c8;
-  border-color: #23659c;
-  height: 30px;
-  top: -1px;
-  right: -1px;
-  background-image: url("images/dropdown-arrow-hover.png");
-  background-position: 7px 13px;
-}
-
-ul.dropdown-shortcut-menu.dropdown-shortcut-menu-small li.dropdown-init .dropdown-shortcut-menu-click-area:hover {
-  height: 26px;
-  background-image: url("images/dropdown-arrow-small-hover.png");
-  background-position: 7px 12px;
-}
+  top: 1px;
+  right: -24px;
+}  
 
 div.dropdown-shortcut-menu-container ul,
 div.dropdown-shortcut-menu-container ul li,
@@ -1019,8 +1108,8 @@ div.dropdown-shortcut-menu-container ul li a,
 ul.dropdown-shortcut-menu-container li a,
 div.dropdown-shortcut-menu-container ul li span,
 ul.dropdown-shortcut-menu-container li span,
-div.dropdown-shortcut-menu-container ul li form input[type='submit'],
-ul.dropdown-shortcut-menu-container li form input[type='submit'] {
+div.dropdown-shortcut-menu-container ul li form,
+ul.dropdown-shortcut-menu-container li form {
   border-bottom: 1px solid #cbcbcb; 
   padding: 8px 14px 7px 14px !important;
   background-color: #fff;
@@ -1028,24 +1117,12 @@ ul.dropdown-shortcut-menu-container li form input[type='submit'] {
   white-space: nowrap;
 }
 
-div.dropdown-shortcut-menu-container ul li form,
-ul.dropdown-shortcut-menu-container li form {
-  display: block;
-}
-
 div.dropdown-shortcut-menu-container ul li a:hover,
 ul.dropdown-shortcut-menu-container li a:hover,
-div.dropdown-shortcut-menu-container ul li form input[type='submit']:hover,
-ul.dropdown-shortcut-menu-container li form input[type='submit']:hover {
+div.dropdown-shortcut-menu-container ul li form:hover,
+ul.dropdown-shortcut-menu-container li form:hover {
   background-color: #ecf3f9;
   cursor: pointer;
-}
-
-div.dropdown-shortcut-menu-container ul li form input[type='submit'],
-ul.dropdown-shortcut-menu-container li form input[type='submit'] {
-  float: left;
-  text-align: left;
-  width: 100%;
 }
 
 div.dropdown-shortcut-menu-container ul li a:hover,
@@ -2702,6 +2779,18 @@ h3.resourceInfoHeader {
   padding: 5px 15px;
 }
 
+/* 
+#vrtx-resource-visit-tab-menu li.first {
+  background: url(images/report-tab-fade-to-left.png) no-repeat bottom left;
+  margin-right: 0;
+}
+
+#vrtx-resource-visit-tab-menu li.last {
+  background: url(images/report-tab-fade-to-right.png) no-repeat bottom right;
+  margin-left: 0;
+} 
+*/
+
 #vrtx-resource-visit-tab-menu li a,
 #vrtx-manually-approve-tab-menu li a {
   background: url(images/report-tab-middle.png) repeat-x 0px 25px;
@@ -2835,7 +2924,7 @@ table.resourceInfo.revisions tr:nth-child(even) td {
 
 #vrtx-revisions .resourceInfo td.vrtx-revisions-buttons-column {
   font-size: 1em;
-  width: 340px;
+  width: 320px;
   padding: 11px;
 } 
 
@@ -2918,8 +3007,7 @@ table.resourceInfo.revisions tr:nth-child(even) td {
 /* Resource bar messages */
 
 #app-content > div.message,
-#app-content > div.infomessage,
-#app-content > noscript > div.infomessage {
+#app-content > div.infomessage {
   background-color: #fff;
   border: 1px solid #d9d9d9;
   padding: 12px 14px 11px 14px;
@@ -2927,13 +3015,11 @@ table.resourceInfo.revisions tr:nth-child(even) td {
 }
 
 #app-content > div.infomessage,
-#app-content > noscript > div.infomessage,
 #app-content > div.errormessage {
   padding-left: 46px;
 }
 
-#app-content > div.infomessage,
-#app-content > noscript > div.infomessage {
+#app-content > div.infomessage {
   background: #fff url(images/info.png) no-repeat 14px 8px;
 }
 
@@ -3150,19 +3236,26 @@ div.vrtx-admin-form {
   width: 100%;
 }
 
-/* Smaller button in resource-info tables */
+/* Smaller font-size in resource-info tables */
 
 .resourceInfo .vrtx-button-small {
   margin-left: 2px;
 }
 
-.resourceInfo table .vrtx-button-small > * {
+.resourceInfo table .vrtx-button-small input,
+.resourceInfo table .vrtx-button-small button,
+.resourceInfo table .vrtx-button-small span {
   font-size: 0.846em;
-  padding: 2px 13px;
 }
 
-/* Date */
+.resourceInfo table .vrtx-button-small span {
+  height: 20px;
+  padding: 5px 9px 0 8px;
+}
 
+/* ^ Smaller font-size in resource-info tables */
+
+/* Date */
 .vrtx-date {
   margin-right: 20px;
 }
@@ -3173,31 +3266,6 @@ div.vrtx-admin-form {
 
 .vrtx-minutes {
   margin-left: 7px;
-}
-
-/* Cancel link */
-
-.forms-new .vrtx-cancel-link {
-  visibility: hidden;
-  display: inline-block;
-  font-size: 0.1em;
-  overflow: hidden;
-  text-indent: -9999;
-  width: 10px;
-  height: 10px;
-  position: relative;
-  top: -4px;
-  left: 7px;
-  background: url(images/resource-menu-dialog-close.png) no-repeat center center;
-}
-
-.forms-new .moveToSelectedFolderService:hover .vrtx-cancel-link,
-.forms-new .copyToSelectedFolderService:hover .vrtx-cancel-link {
-  visibility: visible;
-}
-
-.forms-new .vrtx-cancel-link:hover {
-  cursor: pointer;
 }
 
 /* File upload (JS progressive enhancement)
@@ -3274,6 +3342,16 @@ div.vrtx-admin-form {
  */
 #directory-listing tr input, x:-moz-any-link, x:only-child {
   margin: 3px 3px 3px 4px;
+}
+
+/* Fix bug in Firefox with to much padding on form input in dropdown */
+#resource-title .dropdown-shortcut-menu-container li form input[type=submit], x:-moz-any-link, x:only-child  {
+  padding-left: 12px !important;
+  padding-right: 12px !important;
+}
+
+#resource-title ul.dropdown-shortcut-menu li.dropdown-init form input[type=submit], x:-moz-any-link, x:only-child  {
+  padding-right: 41px !important;  
 }
 
 /* ^ UiO design - Vortex */

@@ -1,8 +1,7 @@
 resourcetype schedule {
 
   properties {
-    tittel : string,
-    title : derived (tittel) eval ("schedule"?localized) overrides title,
+    title : string required overrides title,
     course-code : string,
     year : string,
     semester : string,
@@ -15,8 +14,6 @@ resourcetype schedule {
   }
 
   edit-rules {
-    tittel (size[1]),
-    tittel (class[ui-helper-hidden]),
     course-code tooltip (en : "(Course code)", no : "(Emnekode)", nn : "(Emnekode)"),
     title (class[ui-helper-hidden]),
     year (class[ui-helper-hidden]),
@@ -44,11 +41,9 @@ resourcetype schedule {
       [def locale resource-locale()]
       <iframe frameborder="0" 
               id="timeplaner" 
-              scrolling="no"
-              title="[localized 'schedule']" 
+              scrolling="no" 
               src="/studier/timeplaner/calendar.php?type=module&amp;embed=1&amp;ar=[val year]&amp;sem=[val term]&amp;id=[val course-code]-[if course-version != null && course-version != ""][val course-version][else]1[endif]&amp;path=[val path][if overview != null && overview != ""]&amp;over=[val overview][else]&amp;over=1[endif][if locale != null && locale = "en"]&amp;lang=en[endif][if calweek != null && calweek]&amp;calweek=1[endif]" 
               width="100%">
-        [localized 'iframe-not-supported'] [localized 'iframe-not-supported-title-prefix'] "[localized 'schedule']". [localized 'iframe-not-supported-link-prefix'] <a href="/studier/timeplaner/calendar.php?type=module&amp;embed=1&amp;ar=[val year]&amp;sem=[val term]&amp;id=[val course-code]-[if course-version != null && course-version != ""][val course-version][else]1[endif]&amp;path=[val path][if overview != null && overview != ""]&amp;over=[val overview][else]&amp;over=1[endif][if locale != null && locale = "en"]&amp;lang=en[endif][if calweek != null && calweek]&amp;calweek=1[endif]">[localized 'iframe-not-supported-link-content']</a>.
       </iframe>
       ##
     }
@@ -91,7 +86,6 @@ resourcetype schedule {
   }
 
   localization {
-    schedule : (en : "Schedule", no : "Timeplan", nn : "Timeplan"),
     title : (en : "Title", no : "Tittel", nn : "Tittel"),
     header : (en : "Edit schedule", no : "Rediger timeplan", nn : "Rediger timeplan"),
     course-code : (en : "Show schedule from", no : "Vis timeplan for", nn : "Vis timeplan for"),
@@ -102,11 +96,7 @@ resourcetype schedule {
     course-version : (en : "Course version in FS/Syllabus", no : "Emneversjon i FS/Syllabus", nn : "Emneversjon i FS/Syllabus"),
     calweek : (en : "Calendar week view", no : "Kalenderuke-visning", nn : "Kalenderuke-visning"),
     comment : (en : "Introductory comment", no : "Innledende kommentar", nn : "Innleiande kommentar"),
-    content : (en : "Content", no : "Innhold", nn : "Innhald"),
-    iframe-not-supported: (en : "Your user agent does not support frames or is currently configured not to display frames.", no : "Nettleseren din støtter ikke frames eller er ikke konfiguert for å vise frames.", nn : "Nettlesaren din støttar ikkje frames eller er ikkje konfiguert for å visa frames."),
-    iframe-not-supported-title-prefix: (en : "The frame should've shown:", no : "Framen skulle ha vist:", nn : "Framen skulle ha vist:"),
-    iframe-not-supported-link-prefix: (en : "However, you may visit", no : "Men du kan besøke", nn : "Men du kan besøke"),
-    iframe-not-supported-link-content: (en : "the related document", no : "det relaterte dokumentet", nn : "det relaterte dokumentet")
+    content : (en : "Content", no : "Innhold", nn : "Innhald")
   }
 
 }

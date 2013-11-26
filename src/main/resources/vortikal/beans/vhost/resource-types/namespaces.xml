@@ -109,10 +109,5 @@
     <constructor-arg value="course-description-listing" />
     <constructor-arg value="http://www.uio.no/resource-types/course-description-listing" />
   </bean>
-
-  <bean id="STUDENT_EXCHANGE_UNIVERSITY_AGREEMENT_LISTING_NAMESPACE" class="org.vortikal.repository.Namespace">
-    <constructor-arg value="student-exchange-university-agreement-listing" />
-    <constructor-arg value="http://www.uio.no/resource-types/student-exchange-university-agreement-listing" />
-  </bean>
   
 </beans>

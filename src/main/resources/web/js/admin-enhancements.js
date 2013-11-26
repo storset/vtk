@@ -154,8 +154,8 @@ vrtxAdmin._$(document).ready(function () {
 
   vrtxAdm.clientLastModified = $("#resource-last-modified").text().split(",");
   
-  vrtxAdm.initDropdowns();
   vrtxAdm.miscAdjustments();
+  vrtxAdm.initDropdowns();
   vrtxAdm.initTooltips();
   vrtxAdm.initResourceMenus();
   vrtxAdm.initGlobalDialogs();
@@ -505,10 +505,9 @@ VrtxAdmin.prototype.globalAsyncComplete = function globalAsyncComplete() {
     }
   }
   $("#advanced-publish-settings-content").remove();
-
+  vrtxAdm.adjustResourceTitle();
   vrtxAdm.initResourceTitleDropdown();
   vrtxAdm.initPublishingDropdown();
-  vrtxAdm.adjustResourceTitle();
   vrtxAdm.updateCollectionListingInteraction();
 };
 
@@ -535,7 +534,6 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
               selectorClass: "vrtx-admin-form",
               insertAfterOrReplaceClass: "#active-tab ul#tabMenuRight",
               nodeType: "div",
-              focusElement: "input[type='text']",
               funcComplete: function (p) {
                 createFuncComplete();
               },
@@ -571,7 +569,7 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
             }
           }
       }
-      
+
       tabMenuServices = ["collectionListing\\.action\\.move-resources", "collectionListing\\.action\\.copy-resources"];
       resourceMenuServices = ["moveToSelectedFolderService", "copyToSelectedFolderService"];
       // TODO: This map/lookup-obj is a little hacky..
@@ -1172,38 +1170,29 @@ VrtxAdmin.prototype.dropdown = function dropdown(options) {
     var dropdownClickArea = options.start ? ":nth-child(3)" : ".first";
 
     list.find("li").not(startDropdown).remove();
-    list.find("li" + dropdownClickArea).append("<span tabindex='0' class='dropdown-shortcut-menu-click-area'></span>");
+    list.find("li" + dropdownClickArea).append("<span id='dropdown-shortcut-menu-click-area'></span>");
+
     var shortcutMenu = listParent.find(".dropdown-shortcut-menu-container");
-    
-    setTimeout(function() {
-    
     shortcutMenu.find("li" + startDropdown).remove();
     if (options.calcTop) {
-      shortcutMenu.css("top", (list.position().top + list.height() - (parseInt(list.css("marginTop"), 10) * -1) + 2) + "px");
-    } 
-    var left = (list.width() - list.find(".dropdown-shortcut-menu-click-area").width() - 2);
+      shortcutMenu.css("top", (list.position().top + list.height() - (parseInt(list.css("marginTop"), 10) * -1) + 1) + "px");
+    }
+    var left = (list.width() + 5)
     if (options.calcLeft) {
       left += list.position().left;
     }
     shortcutMenu.css("left", left + "px");
-    }, 500);
 
     list.find("li" + dropdownClickArea).addClass("dropdown-init");
 
-    list.find("li.dropdown-init .dropdown-shortcut-menu-click-area").click(function (e) {
+    list.find("li.dropdown-init #dropdown-shortcut-menu-click-area").click(function (e) {
       vrtxAdm.closeDropdowns();
       vrtxAdm.openDropdown(shortcutMenu);
       e.stopPropagation();
       e.preventDefault();
     });
-    list.find("li.dropdown-init .dropdown-shortcut-menu-click-area").keyup(function (e) {
-      if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
-        vrtxAdm.closeDropdowns();
-        vrtxAdm.openDropdown(shortcutMenu);
-      }
-    });
 
-    list.find("li.dropdown-init .dropdown-shortcut-menu-click-area").hover(function () {
+    list.find("li.dropdown-init #dropdown-shortcut-menu-click-area").hover(function () {
       var area = _$(this);
       area.parent().toggleClass('unhover');
       area.prev().toggleClass('hover');
@@ -1752,7 +1741,7 @@ VrtxAdmin.prototype.initFileUpload = function initFileUpload() {
   if (!form.length) return;
   var inputFile = form.find("#file");
 
-  _$("<div class='vrtx-textfield vrtx-file-upload'><input tabindex='-1' id='fake-file' type='text' /><a tabindex='-1' class='vrtx-button vrtx-file-upload'><span>Browse...</span></a></div>'")
+  _$("<div class='vrtx-textfield vrtx-file-upload'><input id='fake-file' type='text' /><a class='vrtx-button vrtx-file-upload'><span>Browse...</span></a></div>'")
     .insertAfter(inputFile);
 
   inputFile.addClass("js-on").change(function (e) {
@@ -1775,12 +1764,6 @@ VrtxAdmin.prototype.initFileUpload = function initFileUpload() {
     _$("a.vrtx-file-upload").addClass("hover");
   }, function () {
     _$("a.vrtx-file-upload").removeClass("hover");
-  });
-  inputFile.focus(function () {
-    _$("a.vrtx-file-upload").addClass("focus");
-  })
-  .blur(function() {
-    _$("a.vrtx-file-upload").removeClass("focus");
   });
 
   if (vrtxAdm.supportsReadOnly(document.getElementById("fake-file"))) {
@@ -3000,11 +2983,7 @@ VrtxAdmin.prototype.addNewMarkup = function addNewMarkup(options, selectorClass,
     easeIn: transitionEasingSlideDown,
     easeOut: transitionEasingSlideUp,
     afterIn: function(animation) {
-      if(options.focusElement) {
-        animation.__opts.elem.find(options.focusElement).filter(":visible").filter(":first").focus();
-      } else {
-        animation.__opts.elem.find("textarea, input, select, button").filter(":visible").filter(":first").focus();
-      }
+      animation.__opts.elem.find("input[type=text]:visible:first").focus();
     }
   });
   animation.topDown();
@@ -3613,7 +3592,6 @@ VrtxAdmin.prototype.serverFacade = {
     } else if (status === 401) {
       msg = (useStatusCodeInMsg ? status + " - " : "") + this.errorMessages.s401;
     } else if (status === 403) {
-      /* Handle server down => up */
       msg = (useStatusCodeInMsg ? status + " - " : "") + this.errorMessages.s403;
     } else if (status === 404) {
       var serverFacade = this;

@@ -29,11 +29,11 @@ ${vrtx.getMsg("confirm-publish.confirmation.publish")}?
 <form name="vrtx-publish-resource" id="vrtx-publish-resource" action="${url}" method="post">
   <div class="submitButtons">
     <div class="vrtx-focus-button">
-      <input type="submit" id="publishResourceAction" 
+      <input tabindex="1" type="submit" id="publishResourceAction" 
              name="publishResourceAction" value="${vrtx.getMsg("confirm-delete.ok")}" />
     </div>
     <div class="vrtx-button">
-      <input type="submit" id="publishResourceCancelAction"  
+      <input tabindex="2" type="submit" id="publishResourceCancelAction"  
              name="publishResourceCancelAction" value="${vrtx.getMsg("confirm-delete.cancel")}"  />
     </div>
   </div>

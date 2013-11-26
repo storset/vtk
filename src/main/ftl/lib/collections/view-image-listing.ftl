@@ -74,7 +74,7 @@
             <div class="vrtx-image-container">
               <a href="${imageEntry.url?html}?vrtx=view-as-webpage">
                 <#-- ${vrtx.relativeLinkConstructor(imageEntry.url, 'displayThumbnailService')} is no good! -->
-                <img src="${imageEntry.url.protocolRelativeURL()?html}?vrtx=thumbnail" title="${title}" alt="" />
+                <img src="${imageEntry.url.protocolRelativeURL()?html}?vrtx=thumbnail" title="${title}" alt="${title}" />
               </a>
             </div>
 
@@ -150,7 +150,7 @@
           <tr>
             <#local title = vrtx.propValue(image, 'title')?html />
             <#-- ${vrtx.relativeLinkConstructor(url, 'displayThumbnailService')} is no good! -->
-            <td class="vrtx-table-image"><a href="${url?html}?vrtx=view-as-webpage"><img src="${url.protocolRelativeURL()?html}?vrtx=thumbnail" alt="" /></a></td>
+            <td class="vrtx-table-image"><a href="${url?html}?vrtx=view-as-webpage"><img src="${url.protocolRelativeURL()?html}?vrtx=thumbnail" alt="${title}" /></a></td>
             <td class="vrtx-table-title"><a href="${url?html}?vrtx=view-as-webpage">${title}</a></td>
             <#local description = vrtx.propValue(image, 'image-description')?html />
             <td class="vrtx-table-description">

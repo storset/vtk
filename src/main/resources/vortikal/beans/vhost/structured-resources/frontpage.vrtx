@@ -89,10 +89,18 @@ resourcetype frontpage {
             <div class="vrtx-frontpage-box-picture">
               [if url != null && url != ""]
                 <a href="[val url]">
-                  <img src="[val picture]" alt="" />
+                [if title != null && title != ""]
+                  <img src="[val picture]" alt="[val title]" />
+                [else]
+                  <img src="[val picture]" alt="[val picture]" />
+                [endif]
                 </a>
               [else]
-                <img src="[val picture]" alt="" />
+                [if title != null && title != ""]
+                  <img src="[val picture]" alt="[val title]" />
+                [else]
+                  <img src="[val picture]" alt="[val picture]" />
+                [endif]
               [endif]
             </div>
           [endif]
@@ -185,10 +193,18 @@ resourcetype frontpage {
                   <div class="vrtx-frontpage-box-picture">
                     [if url != null && url != ""]
                       <a href="[val url]">
-                        <img src="[val picture]" alt="" />
+                        [if title != null && title != ""]
+                          <img src="[val picture]" alt="[val title]" />
+                        [else]
+                          <img src="[val picture]" alt="[val picture]" />
+                        [endif]
                       </a>
                     [else]
-                      <img src="[val picture]" alt="" />
+                      [if title != null && title != ""]
+                        <img src="[val picture]" alt="[val title]" />
+                      [else]
+                        <img src="[val picture]" alt="[val picture]" />
+                      [endif]
                     [endif]
                   </div>
                 [endif]
@@ -248,7 +264,7 @@ resourcetype frontpage {
               [def style concat("width:", pixel-width, "px")]
               [if caption != null]
                 <div class="vrtx-introduction-image" style="[val style]">
-                  <img src="[val picture]" alt="" />
+                  <img src="[val picture]" alt="[val caption # unescaped 'flattened']"/>
                   <div class="vrtx-imagetext">
                     <div class="vrtx-imagedescription">[val caption # unescaped]</div>
                     [if photographer != null]
@@ -261,7 +277,7 @@ resourcetype frontpage {
               [else]
                 [if photographer != null]
                   <div class="vrtx-introduction-image" style="[val style]">
-                    <img src="[val picture]" alt="" />
+                    <img src="[val picture]" alt="[localized 'introduction-image-alt']" />
                     <div class="vrtx-imagetext">
                       <span class="vrtx-photo">
                         <span class="vrtx-photo-prefix">[localized "photo-prefix"]: </span>[val photographer]
@@ -269,14 +285,14 @@ resourcetype frontpage {
                     </div>
                   </div>
                 [else]
-                  <img class="vrtx-introduction-image" src="[val picture]" alt="" />
+                  <img class="vrtx-introduction-image" src="[val picture]" alt="[localized 'introduction-image-alt']" />
                 [endif]
               [endif]
             [else]
-              <img class="vrtx-introduction-image" src="[val picture]" alt="" />
+              <img class="vrtx-introduction-image" src="[val picture]" alt="[localized 'introduction-image-alt']" />
             [endif]
           [else]
-            <img class="vrtx-introduction-image" src="[val picture]" alt="" />
+            <img class="vrtx-introduction-image" src="[val picture]" alt="[localized 'introduction-image-alt']" />
           [endif]
         [endif]
       
@@ -341,6 +357,7 @@ resourcetype frontpage {
      title : (en : "Title", no : "Tittel", nn : "Tittel"),
      introduction : (en : "Introduction", no : "Innledning", nn : "Innleiing"),
      picture : (en: "Image", no: "Bilde", nn : "Bilete"),
+     introduction-image-alt : (en : "Image", no : "Bilde", nn : "Bilete"),
      photo-prefix : (en : "Photo", no : "Foto", nn : "Photo"),
      caption : (en : "Image caption", no : "Bildetekst", nn : "Bilettekst"),
      main-content : (en : "Main content", no : "Hovedinnhold", nn : "Hovedinnhold"),

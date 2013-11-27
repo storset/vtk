@@ -11,7 +11,40 @@
 
 <#macro mediaPlayer >
 
-  <#if media?exists && streamType?exists>
+  <#if directStreamingUrls?exists>
+
+    <#assign dateStr = nanoTime?c />
+    <#assign strobeVersion = "10.1.0" />
+
+    <p>Debug: Streaming video from Wowza</p>
+    <script type="text/javascript"><!--
+      if (typeof swfobject == 'undefined') {
+        document.write("<scr" + "ipt src='/vrtx/__vrtx/static-resources/flash/StrobeMediaPlayback_1.5.1-patched/10.1/scripts/swfobject.js' type='text/javascript'><\/script>");
+      }
+    // -->
+    </script>
+
+    <div id="mediaspiller-${dateStr}">
+      <a class="vrtx-media" href="${media?html}">
+	    <img src="/vrtx/__vrtx/static-resources/themes/default/icons/video-noflash.png" width="500" height="279" alt="<@vrtx.msg code="article.media-file" />"/>
+	  </a>
+    </div>
+    <script type="text/javascript"><!--
+      var flashvars = {
+  	    src: "${directStreamingUrls.hdsStreamUrl?url("UTF-8")}",
+  	    streamType: "live"
+  	    <#if poster?exists>,poster: "${poster?html}" </#if>
+  	    <#if autoplay?exists>,autoPlay: "${autoplay}"</#if>
+	  };
+	  var params = {																																														
+	    allowFullScreen: "true",
+	    allowscriptaccess: "always"
+	  };
+	  swfobject.embedSWF("${strobe?html}", "mediaspiller-${dateStr}", "${width}", "${height}", "${strobeVersion}", false, flashvars, params);
+	// -->
+    </script>
+
+  <#elseif media?exists && streamType?exists>
 
     <#assign dateStr = nanoTime?c />
     <#assign strobeVersion = "10.1.0" />

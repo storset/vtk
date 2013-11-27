@@ -53,7 +53,7 @@ public class VideoDaoSupport extends JdbcDaoSupport {
      * 
      * @throws DataAccessException in case of database query errors
      */
-    public int countReferences(VideoId videoId) {
+    public int countReferences(VideoId videoId) throws DataAccessException {
         
         String nsUri = videoIdProperty.getNamespace().getUri();
         String name = videoIdProperty.getName();

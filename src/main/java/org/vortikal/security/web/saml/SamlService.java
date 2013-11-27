@@ -130,12 +130,33 @@ public abstract class SamlService {
     protected UUID getRequestIDSessionAttribute(HttpServletRequest request, URL url) {
         HttpSession session = request.getSession(false);
         if (session == null) {
+            // Debugging VTK-2653
+            if (authDebugLog.isDebugEnabled()) {
+                StackTraceElement[] stackTrace = new Throwable().getStackTrace();
+                String callerName = stackTrace.length > 1 ? stackTrace[1].getMethodName() : "<unknown>";
+                authDebugLog.debug("No session available when looking for requestID for URL " + url
+                        + ", called by: " + callerName + ", requestURL: "
+                        + request.getRequestURL() + (request.getQueryString() != null ? "?" + request.getQueryString() : "")
+                        + ", remote addr: " + request.getRemoteAddr());
+            }
+
             return null;
         }
         synchronized (session.getId().intern()) {
             @SuppressWarnings("unchecked")
             Map<URL, UUID> attr = (Map<URL, UUID>) session.getAttribute(REQUEST_ID_SESSION_ATTR);
             if (attr == null) {
+                // Debugging VTK-2653
+                if (authDebugLog.isDebugEnabled()) {
+                    StackTraceElement[] stackTrace = new Throwable().getStackTrace();
+                    String callerName = stackTrace.length > 1 ? stackTrace[1].getMethodName() : "<unknown>";
+                    authDebugLog.debug("Map not found in session " + session.getId() 
+                            + " when looking for requestID for URL " + url
+                            + ", called by: " + callerName + ", requestURL: "
+                            + request.getRequestURL() + (request.getQueryString() != null ? "?" + request.getQueryString() : "")
+                            + ", remote addr: " + request.getRemoteAddr());
+                }
+                
                 return null;
             }
             url.setCollection(false);
@@ -159,8 +180,9 @@ public abstract class SamlService {
             if (authDebugLog.isDebugEnabled()) {
                 StackTraceElement[] stackTrace = new Throwable().getStackTrace();
                 String callerName = stackTrace.length > 1 ? stackTrace[1].getMethodName() : "<unknown>";
-                authDebugLog.debug("Setting requestID " + uuid + " for URL " + url
-                        + " in session, called by: " + callerName + ", requestURL: " 
+                authDebugLog.debug("Setting in session " + session.getId() + ", requestID " 
+                        + uuid + " for URL " + url
+                        + ", called by: " + callerName + ", requestURL: " 
                         + request.getRequestURL() + (request.getQueryString() != null ? "?" + request.getQueryString() : "")
                         + ", remote addr: " + request.getRemoteAddr());
             }

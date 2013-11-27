@@ -1267,23 +1267,33 @@ VrtxAdmin.prototype.initScrollBreadcrumbs = function initScrollBreadcrumbs() {
   vrtxAdm.crumbsInner.wrap("<div id='vrtx-breadcrumb-outer' />");
       
   var navHtml = "<span id='navigate-crumbs-left-coverup' />" +
-                "<a id='navigate-crumbs-left' class='navigate-crumbs'><span class='navigate-crumbs-icon'></span><span class='navigate-crumbs-dividor'></span></a>" +
-                "<a id='navigate-crumbs-right' class='navigate-crumbs'><span class='navigate-crumbs-icon'></span><span class='navigate-crumbs-dividor'></span></a>";                                      
+                "<a tabindex='0' id='navigate-crumbs-left' class='navigate-crumbs'><span class='navigate-crumbs-icon'></span><span class='navigate-crumbs-dividor'></span></a>" +
+                "<a tabindex='0' id='navigate-crumbs-right' class='navigate-crumbs'><span class='navigate-crumbs-icon'></span><span class='navigate-crumbs-dividor'></span></a>";                                      
       
   $("#vrtx-breadcrumb").append(navHtml);
       
   vrtxAdm.crumbsLeft = $("#navigate-crumbs-left");
   vrtxAdm.crumbsLeftCoverUp = $("#navigate-crumbs-left-coverup");
   vrtxAdm.crumbsRight = $("#navigate-crumbs-right"); 
-  vrtxAdm.cachedDoc.on("click", "#navigate-crumbs-left", function(e) {
-    vrtxAdmin.scrollBreadcrumbsLeft();
-    e.stopPropagation();
-    e.preventDefault();
+  vrtxAdm.cachedDoc.on("keydown", ".vrtx-breadcrumb-level", function(e) {
+    if((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
+      location.href = $(this).find("a").attr("href");
+      e.stopPropagation();
+    }  
   });
-  vrtxAdm.cachedDoc.on("click", "#navigate-crumbs-right", function(e) {
-    vrtxAdmin.scrollBreadcrumbsRight();
-    e.stopPropagation();
-    e.preventDefault();
+  vrtxAdm.cachedDoc.on("click keyup", "#navigate-crumbs-left", function(e) {
+    if(e.type == "click" || ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13))) {
+      vrtxAdmin.scrollBreadcrumbsLeft();
+      e.stopPropagation();
+      e.preventDefault();
+    }
+  });
+  vrtxAdm.cachedDoc.on("click keyup", "#navigate-crumbs-right", function(e) {
+    if(e.type == "click" || ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13))) {
+      vrtxAdmin.scrollBreadcrumbsRight();
+      e.stopPropagation();
+      e.preventDefault();
+    }
   }); 
   /* TODO: replace with stacking of blue/hovered element above nav(?) */
   vrtxAdm.cachedDoc.on("mouseover mouseout", ".vrtx-breadcrumb-level", function(e) {

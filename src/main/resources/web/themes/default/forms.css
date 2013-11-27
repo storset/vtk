@@ -98,8 +98,10 @@
   border-radius: 5px;
 }
 
-.button-row li > *,
-.button-row-small li > *,
+.button-row li a,
+.button-row-small li a,
+.button-row-small li input[type="submit"],
+.button-row li input[type="submit"],
 .forms-new .vrtx-button > *,
 .forms-new .ui-dialog .ui-dialog-buttonpane button > *,
 .forms-new .vrtx-focus-button > *,
@@ -139,19 +141,30 @@
   border: none;
 }
 
-.button-row-small li > *,
+.button-row-small li a,
+.button-row-small li input[type="submit"],
 .forms-new .vrtx-button-small > * {
   padding: 3px 13px 4px;
 }
 
-.button-row li > *:hover,
-.button-row-small li > *:hover,
+.button-row li a:hover,
+.button-row li a:focus,
+.button-row-small a:hover,
+.button-row-small a:focus,
+.button-row li input[type="submit"]:hover,
+.button-row li input[type="submit"]:focus,
+.button-row-small input[type="submit"]:hover,
+.button-row-small input[type="submit"]:focus,
 .forms-new .ui-dialog .ui-dialog-buttonpane button:hover,
+.forms-new .ui-dialog .ui-dialog-buttonpane button:focus,
 .forms-new .vrtx-button:hover,
+.forms-new .vrtx-button:focus,
 .forms-new .vrtx-button.hover,
 .forms-new .vrtx-focus-button:hover,
+.forms-new .vrtx-focus-button:focus,
 .forms-new .vrtx-focus-button.hover,
 .forms-new .vrtx-button-small:hover,
+.forms-new .vrtx-button-small:focus,
 .forms-new .vrtx-button-small.hover {
   background: #4195db;
   color: #fff;
@@ -159,9 +172,12 @@
 }
 
 .forms-new .ui-dialog .ui-dialog-buttonpane button:hover > *,
+.forms-new .ui-dialog .ui-dialog-buttonpane button:focus > *,
 .forms-new .vrtx-button:hover > *,
+.forms-new .vrtx-button:focus > *,
 .forms-new .vrtx-button.hover > *,
 .forms-new .vrtx-button-small:hover > *,
+.forms-new .vrtx-button-small:focus > *,
 .forms-new .vrtx-button-small.hover > * {
   color: #fff;
 }

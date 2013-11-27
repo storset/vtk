@@ -69,10 +69,7 @@ public class ActionsHelper {
         } catch (ResourceLockedException rle) {
             addToFailures(failures, uri, deleteMsgKey, "locked");
         } catch (Exception ex) {
-            StringBuilder msg = new StringBuilder("Could not perform ");
-            msg.append("delete of ").append(uri);
-            msg.append(": ").append(ex.getMessage());
-            logger.warn(msg);
+            logger.warn("Unable to delete " + uri, ex);
             addToFailures(failures, uri, deleteMsgKey, "generic");
         }
     }

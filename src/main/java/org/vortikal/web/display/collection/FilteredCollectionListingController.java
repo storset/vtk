@@ -40,6 +40,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.repository.MultiHostSearcher;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Path;
@@ -50,6 +51,7 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.search.ConfigurablePropertySelect;
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
+import org.vortikal.repository.search.Searcher;
 import org.vortikal.repository.search.Sorting;
 import org.vortikal.repository.search.SortingImpl;
 import org.vortikal.repository.search.query.AndQuery;
@@ -61,11 +63,12 @@ import org.vortikal.web.RequestContext;
 import org.vortikal.web.display.collection.aggregation.AggregationResolver;
 import org.vortikal.web.display.collection.aggregation.CollectionListingAggregatedResources;
 import org.vortikal.web.display.listing.ListingPager;
+import org.vortikal.web.display.listing.ListingPagingLink;
 import org.vortikal.web.search.SearchSorting;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
-public abstract class FilteredCollectionListingController implements ListingController {
+public abstract class FilteredCollectionListingController implements Controller {
 
     private static final String filterNamespace = "filter.";
 
@@ -82,22 +85,7 @@ public abstract class FilteredCollectionListingController implements ListingCont
     private List<String> configurablePropertySelectPointers;
     protected Service viewService;
     private List<String> filterWhitelistExceptions;
-
-    /**
-     * Sets up, prepares and runs search. Puts results on model for view.
-     */
-    abstract public void runSearch(HttpServletRequest request, Resource collection, Map<String, Object> model,
-            int pageLimit) throws Exception;
-
-    /**
-     * A filtered collection listing has one or more filter resolvers that set
-     * configured filters on search.
-     */
-    protected Map<String, List<String>> explicitlySetFilters(Resource collection, Map<String, List<String>> filters) {
-        // By default this does nothing. Can be overridden to handle special
-        // filters that cannot be created with beans.
-        return filters;
-    }
+    protected Searcher searcher;
 
     /**
      * Run the actual search, handling sorting, offset, limit and potential
@@ -168,27 +156,56 @@ public abstract class FilteredCollectionListingController implements ListingCont
         return rs;
     }
 
+    abstract protected Query buildBaseQuery(HttpServletRequest request, Map<String, Object> conf, Resource collection)
+            throws Exception;
+
+    abstract protected Query buildFilterQuery(HttpServletRequest request, Map<String, Object> conf,
+            Resource collection, Map<String, List<String>> filters) throws Exception;
+
+    abstract protected Map<String, List<String>> runFacetSearch(HttpServletRequest request, Map<String, Object> conf,
+            Resource collection, Query query, Map<String, List<String>> filters) throws Exception;
+
+    abstract protected ResultSet runSearch(HttpServletRequest request, Map<String, Object> conf, Resource collection,
+            Query query) throws Exception;
+
+    private Query combineQueries(Query one, Query two) {
+        AndQuery andQuery = new AndQuery();
+        andQuery.add(one);
+        andQuery.add(two);
+        return andQuery;
+    }
+
+    protected Map<String, List<String>> getFilters() {
+        return filters;
+    }
+
     @Override
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
         Map<String, Object> model = new HashMap<String, Object>();
+        Map<String, Object> conf = new HashMap<String, Object>();
 
         Repository repository = RequestContext.getRequestContext().getRepository();
         String token = RequestContext.getRequestContext().getSecurityToken();
         Resource collection = repository.retrieve(token, URL.toPath(request), false);
 
-        Map<String, List<String>> currentFilters = new LinkedHashMap<String, List<String>>(filters);
-        currentFilters = explicitlySetFilters(collection, currentFilters);
+        Query baseQuery = buildBaseQuery(request, conf, collection);
 
-        model.put("collection", collection);
+        Map<String, List<String>> filters = runFacetSearch(request, conf, collection, baseQuery, getFilters());
 
-        if (currentFilters != null) {
-            Map<String, Map<String, FilterURL>> urlFilters = new LinkedHashMap<String, Map<String, FilterURL>>();
+        Query filterQuery = buildFilterQuery(request, conf, collection, filters);
+
+        Query fullQuery = filterQuery != null ? combineQueries(baseQuery, filterQuery) : baseQuery;
+
+        ResultSet rs = runSearch(request, conf, collection, fullQuery);
+
+        Map<String, Map<String, FilterURL>> urlFilters = new LinkedHashMap<String, Map<String, FilterURL>>();
+        if (filters != null) {
             Map<String, FilterURL> urlList;
             FilterURL filterUrl;
 
             String parameterKey;
-            for (String filter : currentFilters.keySet()) {
-                List<String> parameterValues = currentFilters.get(filter);
+            for (String filter : filters.keySet()) {
+                List<String> parameterValues = filters.get(filter);
                 urlList = new LinkedHashMap<String, FilterURL>();
                 parameterKey = filterNamespace + filter;
 
@@ -220,13 +237,29 @@ public abstract class FilteredCollectionListingController implements ListingCont
 
                 urlFilters.put(filter, urlList);
             }
-
-            model.put("filters", urlFilters);
         }
 
-        runSearch(request, collection, model, pageLimit);
+        int page = ListingPager.getPage(request, ListingPager.UPCOMING_PAGE_PARAM);
+        int offset = (page - 1) * pageLimit;
+        List<ListingPagingLink> urls = ListingPager.generatePageThroughUrls(rs.getTotalHits(), getPageLimit(),
+                URL.create(request), page);
+
+        model.put("filters", urlFilters);
+        model.put("result", rs.getAllResults());
+        model.put("page", page);
+        model.put("pageThroughUrls", urls);
+        model.put("from", offset + 1);
+        model.put("to", offset + Math.min(pageLimit, rs.getSize()));
+        model.put("total", rs.getTotalHits());
+        model.put("collection", collection);
+        model.put("conf", conf);
 
         return new ModelAndView(viewName, model);
+    }
+
+    protected class FilterResult {
+        ResultSet rs;
+        List<String> facets;
     }
 
     public class FilterURL {
@@ -247,10 +280,8 @@ public abstract class FilteredCollectionListingController implements ListingCont
         }
     }
 
-    protected boolean valueExistsInFilters(Resource collection, String parameterKey, String parameterValue)
-            throws Exception {
-        Map<String, List<String>> currentFilters = new LinkedHashMap<String, List<String>>(filters);
-        currentFilters = explicitlySetFilters(collection, currentFilters);
+    protected boolean valueExistsInFilters(Resource collection, String parameterKey, String parameterValue,
+            Map<String, List<String>> filters) throws Exception {
 
         if (parameterKey != null && parameterKey.startsWith(filterNamespace)) {
             parameterKey = parameterKey.substring(filterNamespace.length());
@@ -260,7 +291,7 @@ public abstract class FilteredCollectionListingController implements ListingCont
             return true;
         }
 
-        List<String> filter = currentFilters.get(parameterKey);
+        List<String> filter = filters.get(parameterKey);
         if (filter != null) {
             return filter.contains(parameterValue);
         }
@@ -347,6 +378,11 @@ public abstract class FilteredCollectionListingController implements ListingCont
 
     public void setFilterWhitelistExceptions(List<String> filterWhitelistExceptions) {
         this.filterWhitelistExceptions = filterWhitelistExceptions;
+    }
+
+    @Required
+    public void setSearcher(Searcher searcher) {
+        this.searcher = searcher;
     }
 
 }

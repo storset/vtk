@@ -30,6 +30,7 @@
  */
 package org.vortikal.web.display.collection;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -94,7 +95,7 @@ public abstract class FilteredCollectionListingController implements Controller 
     protected ResultSet search(Resource collection, Query query, int offset) {
 
         AndQuery andQuery = (AndQuery) (query instanceof AndQuery ? query : new AndQuery().add(query));
-        
+
         Search search = new Search();
 
         if (RequestContext.getRequestContext().isPreviewUnpublished()) {
@@ -157,17 +158,16 @@ public abstract class FilteredCollectionListingController implements Controller 
         return rs;
     }
 
-    abstract protected Query buildBaseQuery(HttpServletRequest request, Map<String, Object> conf, Resource collection)
-            throws Exception;
+    abstract protected Query buildBaseQuery(HttpServletRequest request, Map<String, Object> conf, Resource collection);
 
     abstract protected Query buildFilterQuery(HttpServletRequest request, Map<String, Object> conf,
-            Resource collection, Map<String, List<String>> filters) throws Exception;
+            Resource collection, Map<String, List<String>> filters);
 
     abstract protected Map<String, List<String>> runFacetSearch(HttpServletRequest request, Map<String, Object> conf,
-            Resource collection, Query query, Map<String, List<String>> filters) throws Exception;
+            Resource collection, Query query, Map<String, List<String>> filters);
 
     abstract protected ResultSet runSearch(HttpServletRequest request, Map<String, Object> conf, Resource collection,
-            Query query) throws Exception;
+            Query query);
 
     private Query combineQueries(Query one, Query two) {
         AndQuery andQuery = new AndQuery();
@@ -281,8 +281,30 @@ public abstract class FilteredCollectionListingController implements Controller 
         }
     }
 
-    protected boolean valueExistsInFilters(Resource collection, String parameterKey, String parameterValue,
-            Map<String, List<String>> filters) throws Exception {
+    protected Map<String, List<String>> getRequestFilters(HttpServletRequest request, Map<String, List<String>> filters) {
+
+        Map<String, List<String>> requestFilters = new HashMap<String, List<String>>();
+
+        String[] parameterValues;
+        for (String parameterKey : filters.keySet()) {
+            parameterValues = request.getParameterValues(filterNamespace + parameterKey);
+            if (parameterValues != null) {
+                List<String> requestParameterValues = new ArrayList<String>();
+                for (String parameterValue : parameterValues) {
+                    if (parameterValue != null && valueExistsInFilters(parameterKey, parameterValue, filters)) {
+                        requestParameterValues.add(parameterValue);
+                    }
+                }
+                if (!requestParameterValues.isEmpty()) {
+                    requestFilters.put(parameterKey, requestParameterValues);
+                }
+            }
+        }
+
+        return requestFilters;
+    }
+
+    private boolean valueExistsInFilters(String parameterKey, String parameterValue, Map<String, List<String>> filters) {
 
         if (parameterKey != null && parameterKey.startsWith(filterNamespace)) {
             parameterKey = parameterKey.substring(filterNamespace.length());

@@ -93,7 +93,8 @@ public abstract class FilteredCollectionListingController implements Controller 
      */
     protected ResultSet search(Resource collection, Query query, int offset) {
 
-        AndQuery and = query instanceof AndQuery ? (AndQuery) query : new AndQuery();
+        AndQuery andQuery = (AndQuery) (query instanceof AndQuery ? query : new AndQuery().add(query));
+        
         Search search = new Search();
 
         if (RequestContext.getRequestContext().isPreviewUnpublished()) {
@@ -130,11 +131,11 @@ public abstract class FilteredCollectionListingController implements Controller 
         }
 
         if (aggregationQuery != null) {
-            and.add(aggregationQuery);
+            andQuery.add(aggregationQuery);
         } else {
-            and.add(uriQuery);
+            andQuery.add(uriQuery);
         }
-        search.setQuery(and);
+        search.setQuery(andQuery);
         search.setSorting(getDefaultSearchSorting(collection));
 
         ConfigurablePropertySelect propertySelect = getPropertySelect();

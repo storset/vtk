@@ -64,7 +64,8 @@ public class ImageUtilTest extends TestCase {
     
     @Override
     protected void tearDown() throws Exception {
-        System.setProperty("java.awt.headless", headless);
+        System.setProperty("java.awt.headless",
+                headless != null ? headless : "false");
     }
     
     // Check that returned image has equal dimensions when trying to

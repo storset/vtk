@@ -31,6 +31,7 @@
 package org.vortikal.web.display.collection;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -120,6 +121,7 @@ public abstract class FilteredCollectionListingController implements Controller 
 
     /* Override if special filter handling is needed. */
     protected Map<String, List<String>> getFilters() {
+
         return filters;
     }
 
@@ -313,7 +315,7 @@ public abstract class FilteredCollectionListingController implements Controller 
     }
 
     public void setFilters(Map<String, List<String>> filters) {
-        this.filters = filters;
+        this.filters = Collections.unmodifiableMap(filters);
     }
 
     public void setPageLimit(int pageLimit) {

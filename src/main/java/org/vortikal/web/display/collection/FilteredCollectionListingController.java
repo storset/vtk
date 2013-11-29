@@ -42,9 +42,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
-import org.vortikal.repository.MultiHostSearcher;
 import org.vortikal.repository.Namespace;
-import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceTypeTree;
@@ -56,13 +54,10 @@ import org.vortikal.repository.search.Searcher;
 import org.vortikal.repository.search.Sorting;
 import org.vortikal.repository.search.SortingImpl;
 import org.vortikal.repository.search.query.AndQuery;
-import org.vortikal.repository.search.query.OrQuery;
 import org.vortikal.repository.search.query.Query;
 import org.vortikal.repository.search.query.UriPrefixQuery;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
-import org.vortikal.web.display.collection.aggregation.AggregationResolver;
-import org.vortikal.web.display.collection.aggregation.CollectionListingAggregatedResources;
 import org.vortikal.web.display.listing.ListingPager;
 import org.vortikal.web.display.listing.ListingPagingLink;
 import org.vortikal.web.search.SearchSorting;
@@ -78,23 +73,14 @@ public abstract class FilteredCollectionListingController implements Controller 
     private int pageLimit = 25;
     protected ResourceTypeTree resourceTypeTree;
 
-    // XXX NO. These shoudn't be here. SearchComponent, more specifically
-    // CollectionListingSearchComponent -> Reuse!!!
-    protected MultiHostSearcher multiHostSearcher;
-    protected AggregationResolver aggregationResolver;
     private SearchSorting defaultSearchSorting;
     private List<String> configurablePropertySelectPointers;
     protected Service viewService;
     private List<String> filterWhitelistExceptions;
     protected Searcher searcher;
 
-    /**
-     * Run the actual search, handling sorting, offset, limit and potential
-     * aggregation.
-     */
+    /* Override if other searcher is needed. (Example: multihostSearcher) */
     protected ResultSet search(Resource collection, Query query, int offset) {
-
-        AndQuery andQuery = (AndQuery) (query instanceof AndQuery ? query : new AndQuery().add(query));
 
         Search search = new Search();
 
@@ -102,41 +88,7 @@ public abstract class FilteredCollectionListingController implements Controller 
             search.removeFilterFlag(Search.FilterFlag.UNPUBLISHED_COLLECTIONS);
         }
 
-        UriPrefixQuery uriQuery = new UriPrefixQuery(collection.getURI().toString(), false);
-
-        // Initially no multi host search
-        boolean isMultiHostSearch = false;
-
-        // Initially no aggregation
-        OrQuery aggregationQuery = null;
-
-        // Resolve aggregation
-        CollectionListingAggregatedResources aggregateResources = aggregationResolver
-                .getAggregatedResources(collection);
-
-        // Check if any reference to resources from another host
-        if (aggregateResources != null) {
-            URL localHostBaseURL = viewService.constructURL(Path.ROOT);
-
-            isMultiHostSearch = multiHostSearcher.isMultiHostSearchEnabled()
-                    && aggregateResources.includesResourcesFromOtherHosts(localHostBaseURL);
-
-            Query resolvedAggregationquery = aggregateResources
-                    .getAggregationQuery(localHostBaseURL, isMultiHostSearch);
-            if (resolvedAggregationquery != null) {
-                aggregationQuery = new OrQuery();
-                aggregationQuery.add(uriQuery);
-                aggregationQuery.add(resolvedAggregationquery);
-            }
-
-        }
-
-        if (aggregationQuery != null) {
-            andQuery.add(aggregationQuery);
-        } else {
-            andQuery.add(uriQuery);
-        }
-        search.setQuery(andQuery);
+        search.setQuery(query);
         search.setSorting(getDefaultSearchSorting(collection));
 
         ConfigurablePropertySelect propertySelect = getPropertySelect();
@@ -147,15 +99,8 @@ public abstract class FilteredCollectionListingController implements Controller 
         search.setCursor(offset);
         search.setLimit(pageLimit);
 
-        ResultSet rs = null;
         String token = SecurityContext.getSecurityContext().getToken();
-        // Most common case
-        if (!isMultiHostSearch) {
-            rs = RequestContext.getRequestContext().getRepository().search(token, search);
-        } else {
-            rs = multiHostSearcher.search(token, search);
-        }
-        return rs;
+        return RequestContext.getRequestContext().getRepository().search(token, search);
     }
 
     abstract protected Query buildBaseQuery(HttpServletRequest request, Map<String, Object> conf, Resource collection);
@@ -166,9 +111,6 @@ public abstract class FilteredCollectionListingController implements Controller 
     abstract protected Map<String, List<String>> runFacetSearch(HttpServletRequest request, Map<String, Object> conf,
             Resource collection, Query query, Map<String, List<String>> filters);
 
-    abstract protected ResultSet runSearch(HttpServletRequest request, Map<String, Object> conf, Resource collection,
-            Query query);
-
     private Query combineQueries(Query one, Query two) {
         AndQuery andQuery = new AndQuery();
         andQuery.add(one);
@@ -176,8 +118,15 @@ public abstract class FilteredCollectionListingController implements Controller 
         return andQuery;
     }
 
+    /* Override if special filter handling is needed. */
     protected Map<String, List<String>> getFilters() {
         return filters;
+    }
+
+    /* Override if other locations are needed. (Examples: Aggregation or prefix) */
+    protected Query getLocationQuery(Resource collection) {
+
+        return new UriPrefixQuery(collection.getURI().toString(), false);
     }
 
     @Override
@@ -189,15 +138,20 @@ public abstract class FilteredCollectionListingController implements Controller 
         String token = RequestContext.getRequestContext().getSecurityToken();
         Resource collection = repository.retrieve(token, URL.toPath(request), false);
 
-        Query baseQuery = buildBaseQuery(request, conf, collection);
+        int page = ListingPager.getPage(request, ListingPager.UPCOMING_PAGE_PARAM);
+        int offset = (page - 1) * pageLimit;
 
-        Map<String, List<String>> filters = runFacetSearch(request, conf, collection, baseQuery, getFilters());
+        Query locationQuery = getLocationQuery(collection);
+        Query baseQuery = buildBaseQuery(request, conf, collection);
+        Query facetQuery = baseQuery != null ? combineQueries(locationQuery, baseQuery) : locationQuery;
+
+        Map<String, List<String>> filters = runFacetSearch(request, conf, collection, facetQuery, getFilters());
 
         Query filterQuery = buildFilterQuery(request, conf, collection, filters);
 
-        Query fullQuery = filterQuery != null ? combineQueries(baseQuery, filterQuery) : baseQuery;
+        Query fullQuery = filterQuery != null ? combineQueries(facetQuery, filterQuery) : facetQuery;
 
-        ResultSet rs = runSearch(request, conf, collection, fullQuery);
+        ResultSet rs = search(collection, fullQuery, offset);
 
         Map<String, Map<String, FilterURL>> urlFilters = new LinkedHashMap<String, Map<String, FilterURL>>();
         if (filters != null) {
@@ -240,8 +194,6 @@ public abstract class FilteredCollectionListingController implements Controller 
             }
         }
 
-        int page = ListingPager.getPage(request, ListingPager.UPCOMING_PAGE_PARAM);
-        int offset = (page - 1) * pageLimit;
         List<ListingPagingLink> urls = ListingPager.generatePageThroughUrls(rs.getTotalHits(), getPageLimit(),
                 URL.create(request), page);
 
@@ -347,6 +299,10 @@ public abstract class FilteredCollectionListingController implements Controller 
         return propertySelect;
     }
 
+    protected int getPageLimit() {
+        return pageLimit;
+    }
+
     protected Sorting getDefaultSearchSorting(Resource collection) {
         return new SortingImpl(defaultSearchSorting.getSortFields(collection));
     }
@@ -366,23 +322,9 @@ public abstract class FilteredCollectionListingController implements Controller 
         this.pageLimit = pageLimit;
     }
 
-    protected int getPageLimit() {
-        return pageLimit;
-    }
-
     @Required
     public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
         this.resourceTypeTree = resourceTypeTree;
-    }
-
-    @Required
-    public void setMultiHostSearcher(MultiHostSearcher multiHostSearcher) {
-        this.multiHostSearcher = multiHostSearcher;
-    }
-
-    @Required
-    public void setAggregationResolver(AggregationResolver aggregationResolver) {
-        this.aggregationResolver = aggregationResolver;
     }
 
     @Required

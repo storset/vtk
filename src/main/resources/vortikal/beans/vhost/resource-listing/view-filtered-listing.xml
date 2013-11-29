@@ -5,8 +5,6 @@
   <bean id="filteredListing.abstract.handler" abstract="true"
     class="org.vortikal.web.display.collection.FilteredCollectionListingController">
     <property name="viewName" value="filteredListing.view" />
-    <property name="multiHostSearcher" ref="multiHostSearcher" />
-    <property name="aggregationResolver" ref="aggregationResolver" />
     <property name="defaultSearchSorting" ref="filteredListing.defaultSearchSorting" />
     <property name="viewService" ref="viewService" />
     <property name="resourceTypeTree" ref="resourceTypeTree" />

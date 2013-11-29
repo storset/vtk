@@ -79,10 +79,11 @@
 
 <#function checkAndAddLevels res levels>
   <#assign acc = "" />
-  <#list levels as level>
-    <#if vrtx.propValue(res, level)?eval>
+  <#list levels as lvl>
+    <#assign level = vrtx.propValue(res, lvl) />
+    <#if level?has_content && level?eval>
       <#assign localizedLevel>
-        <@vrtx.msg code="${collection.resourceType}.level.${level?html}" default="${level}" />
+        <@vrtx.msg code="${collection.resourceType}.level.${lvl?html}" default="${level}" />
       </#assign>
       <#if (acc != "")>
         <#assign acc = acc + ", " + localizedLevel />

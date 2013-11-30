@@ -32,18 +32,22 @@
 package org.vortikal.scheduling;
 
 /**
- * Task interface.
+ * Task interface. Tasks are scheduled for execution by a {@link TaskManager}.
  */
 public interface Task extends Runnable {
     
-    public String getId();
-    
-    public void setId(String id);
-    
-    public boolean isEnabled();
-    
-    public void setEnabled(boolean enabled);
-    
-    public TriggerSpecification getTriggerSpecification();
+    /**
+     * Return a task identifier as a string.
+     * @return an identifier as a string. This method should never return <code>null</code>.
+     */
+    String getId();
+
+    /**
+     * Provide a <code>TriggerSpecification</code> which determines when and how
+     * often this task shold be triggered.
+     * @return an instance of <code>TriggerSpecification</code>, or <code>null</code> if
+     * no triggering should be done for this task.
+     */
+    TriggerSpecification getTriggerSpecification();
     
 }

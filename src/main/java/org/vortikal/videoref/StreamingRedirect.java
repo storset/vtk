@@ -91,7 +91,7 @@ public class StreamingRedirect implements Controller {
 
         StreamingRef ref = videoappClient.requestStreaming(videoId);
 
-        response.setStatus(302);
+        response.setStatus(303);
         if (streamType == StreamType.ADOBE_HDS) {
             response.setHeader("Location", ref.hdsStream().toString());
             return null;

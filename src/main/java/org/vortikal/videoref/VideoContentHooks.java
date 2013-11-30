@@ -155,7 +155,9 @@ public class VideoContentHooks extends DefaultTypeHanderHooks
             ref = videoapp.refreshFromVideoapp(ref);
             storeVideoRef(ref, resource.getURI(), getContentStore());
         } catch (Exception e) {
-            logger.warn("Failed to refresh video metadata for " + resource.getURI(), e);
+            // Don't fail entire store just because videoapp is down
+            logger.warn("Failed to refresh video metadata for " + resource.getURI() + ": " 
+                    + e.getClass().getSimpleName() + ":" + e.getMessage());
         }
 
         String contentType;
@@ -238,6 +240,8 @@ public class VideoContentHooks extends DefaultTypeHanderHooks
         }
         
         // Metadata status set according to video status
+        // TODO need to formalize which video states in videoapp can be considered final
+        //      with no need for further refreshing.
         if ("completed".equals(ref.status())) {
             resource.removeProperty(mediaMetadataStatusPropDef);
         } else {

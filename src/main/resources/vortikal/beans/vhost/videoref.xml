@@ -109,12 +109,17 @@
     <property name="videoIdProperty" ref="videoref.videoIdPropDef" />
   </bean>
   
-  <!-- System job for storing videoref resources with media-metadata-status = 'GENERATE' -->
-  <!-- Image metadata, including thumbnail -->
-  <bean id="videoref.updateJob" class="org.vortikal.repository.systemjob.StoreResourceJob"
+  <!-- System job for storing videoref resources with media-metadata-status = 'GENERATE'. 
+       This job is present as a fallback in case some video update notifications from
+       videoapp could not be processed for various reasons. We cannot in general
+       rely on proper reception of all video update notification messages. This job
+       will make sure that videos in a non-final metadata-state will be refreshed
+       from videoapp.
+  -->
+    <bean id="videoref.updateJob" class="org.vortikal.repository.systemjob.StoreResourceJob"
         parent="repository.systemjob" depends-on="resourceTypeTree">
     <property name="triggerExpression" value="60" />
-    <property name="id" value="videoref-updater" />
+    <property name="id" value="videoref-periodic-refresh" />
     <property name="pathSelector">
       <bean class="org.vortikal.repository.systemjob.IndexQueryPathSelector" parent="repository.systemjob.indexPathSelector">
         <property name="limit" value="20" />
@@ -179,6 +184,11 @@
         <property name="videoIdPropDef" ref="videoref.videoIdPropDef" />
       </bean>
     </property>
+    <property name="attributes">
+      <map>
+        <entry key="remove-caching" value="true" />
+      </map>
+    </property>
   </bean>
   
   <!-- Service streaming videoref resources using Apple HTTP Live Streaming -->
@@ -198,6 +208,11 @@
         <property name="streamType" value="APPLE_HLS" />
         <property name="videoIdPropDef" ref="videoref.videoIdPropDef" />
       </bean>
+    </property>
+    <property name="attributes">
+      <map>
+        <entry key="remove-caching" value="true" />
+      </map>
     </property>
   </bean>
   
@@ -221,5 +236,58 @@
     <property name="videoappClient" ref="videoref.videoapp.client" />
   </bean>
   
+  <!-- Service for videoapp support/callback API -->
+  <bean id="videoref.supportApiService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="viewService" />
+    <property name="order" value="-1" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestURIRegexpAssertion">
+          <property name="pattern" value="^${appResources.baseURL}/videoref/callback/rest/v0.*"/>
+        </bean>
+<!--        <bean class="org.vortikal.web.service.RequestProtocolAssertion">
+          <property name="protocol" value="${webProtocolRestricted}"/>
+        </bean>
+        <bean class="org.vortikal.web.service.IsAuthenticatedAssertion">
+          <property name="requiresAuthentication" value="true"/>
+        </bean>-->
+<!--        <bean class="org.vortikal.web.service.PrincipalMatchAssertion">
+          <property name="principalManager" ref="principalManager" />
+          <property name="principals">
+            <set>
+              <value>videoapp@localhost</value>
+            </set>
+          </property>
+        </bean>-->
+      </list>
+    </property>
+    <property name="handler">
+      <bean class="org.vortikal.videoref.VideoappCallbackService" >
+        <property name="apiBaseUri" value="${appResources.baseURL}/videoref/callback/rest/v0" />
+        <property name="videoDaoSupport" ref="videoref.daoSupport" />
+        <property name="repositoryId" value="${repositoryID}" />
+      </bean>
+    </property>
+  </bean>
 
+
+    <!-- This job queues video update notification events and processes them
+    asynchronously. -->    
+    <bean id="videoref.updateEventHandlerTask" class="org.vortikal.videoref.VideoUpdateEventHandler"
+          parent="repository.systemjob" depends-on="resourceTypeTree">
+      <property name="triggerExpression" value="2" />
+      <property name="id" value="videoref-update-event-handler" />
+      <property name="affectedPropDefPointers">
+        <list>
+          <value>videoStatus</value>
+          <value>duration</value>
+          <value>thumbnail</value>
+          <value>pixelHeight</value>
+          <value>pixelWidth</value>
+          <value>media-metadata-status</value>
+        </list>
+      </property>
+      <property name="videoDaoSupport" ref="videoref.daoSupport" />
+    </bean>
+  
 </beans>

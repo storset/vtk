@@ -44,6 +44,7 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.repository.Namespace;
+import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceTypeTree;
@@ -59,6 +60,7 @@ import org.vortikal.repository.search.query.Query;
 import org.vortikal.repository.search.query.UriPrefixQuery;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
+import org.vortikal.web.decorating.components.menu.SubFolderMenuProvider;
 import org.vortikal.web.display.listing.ListingPager;
 import org.vortikal.web.display.listing.ListingPagingLink;
 import org.vortikal.web.search.SearchSorting;
@@ -79,6 +81,8 @@ public abstract class FilteredCollectionListingController implements Controller 
     protected Service viewService;
     private List<String> filterWhitelistExceptions;
     protected Searcher searcher;
+    private PropertyTypeDefinition showSubfolderMenuPropDef;
+    private SubFolderMenuProvider subFolderMenuProvider;
 
     /* Override if other searcher is needed. (Example: multihostSearcher) */
     protected ResultSet search(Resource collection, Query query, int offset) {
@@ -198,6 +202,12 @@ public abstract class FilteredCollectionListingController implements Controller 
 
         List<ListingPagingLink> urls = ListingPager.generatePageThroughUrls(rs.getTotalHits(), getPageLimit(),
                 URL.create(request), page);
+
+        Property showSubfolderMenu = collection.getProperty(showSubfolderMenuPropDef);
+        if (showSubfolderMenu != null && showSubfolderMenu.getBooleanValue()) {
+            model.put("showSubfolderMenu",
+                    subFolderMenuProvider.getSubfolderMenuWithGeneratedResultSets(collection, request));
+        }
 
         model.put("filters", urlFilters);
         model.put("result", rs.getAllResults());
@@ -350,6 +360,16 @@ public abstract class FilteredCollectionListingController implements Controller 
     @Required
     public void setSearcher(Searcher searcher) {
         this.searcher = searcher;
+    }
+
+    @Required
+    public void setShowSubfolderMenu(PropertyTypeDefinition showSubfolderMenuPropDef) {
+        this.showSubfolderMenuPropDef = showSubfolderMenuPropDef;
+    }
+
+    @Required
+    public void setSubFolderMenuProvider(SubFolderMenuProvider subFolderMenuProvider) {
+        this.subFolderMenuProvider = subFolderMenuProvider;
     }
 
 }

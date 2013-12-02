@@ -32,6 +32,22 @@
   </head>
   <body id="vrtx-${collection.resourceType}">
     <h1>${collection.title?html}<#if conf?exists && conf.currentUrl?exists> (${vrtx.getMsg("listing-filters.title.discontinued")})</#if></h1>
+    
+    <#if showSubfolderMenu?exists>
+      <#if (showSubfolderMenu.size > 0) && showSubfolderMenu.resultSets?exists>
+        <#assign counter = 0>
+        <div>
+        <#list showSubfolderMenu.resultSets as resultSet>
+          <#list resultSet.items as item>
+            <#if item.url?exists && item.label?exists>
+              <#assign counter = counter + 1>
+              <a href="${item.url?html}">${item.label?html}</a>
+            </#if>
+          </#list>
+        </#list>
+        </div>
+      </#if>
+    </#if>
 
     <#if filters?exists>
       <div id="vrtx-listing-filters" class="vrtx-listing-filters-${filters?size}-col">

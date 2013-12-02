@@ -9,7 +9,7 @@
     <property name="viewService" ref="viewService" />
     <property name="resourceTypeTree" ref="resourceTypeTree" />
     <property name="searcher" ref="systemIndexSearcher" />
-    <property name="showSubfolderMenu" ref="collection.showSubfolderMenu" />
+    <property name="showSubfolderMenu" ref="collection.showSubfolderMenuPropDef" />
     <property name="subFolderMenuProvider" ref="subFolderMenuProvider" />
   </bean>
 
@@ -21,6 +21,31 @@
     </property>
     <property name="resourceTypeTree" ref="resourceTypeTree" />
     <property name="defaultSortOrder" ref="SORT_ORDER.ASC" />
+  </bean>
+
+  <bean id="hideLevelFilterPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+    <property name="name" value="hide-level-filter" />
+    <property name="type" value="BOOLEAN" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
+    <property name="mandatory" value="false" />
+    <property name="vocabulary">
+      <bean class="org.vortikal.repository.resourcetype.ValueVocabulary">
+        <property name="values">
+          <list>
+            <ref bean="VALUE_TRUE" />
+          </list>
+        </property>
+      </bean>
+    </property>
+    <property name="metadata">
+      <map>
+        <entry key="editingHints">
+          <map>
+            <entry key="hideLabel" value="true" />
+          </map>
+        </entry>
+      </map>
+    </property>
   </bean>
 
   <bean id="filteredListing.viewResolver" parent="decoratorViewResolver">

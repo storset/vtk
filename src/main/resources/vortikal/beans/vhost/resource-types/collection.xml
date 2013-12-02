@@ -303,6 +303,12 @@
               </constructor-arg>
               <constructor-arg ref="TYPE_STRING" />
             </bean>
+            <bean class="org.vortikal.repository.resourcetype.Value">
+              <constructor-arg type="java.lang.String">
+                <value>student-exchange-agreement-listing</value>
+              </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
+            </bean>
           </list>
         </property>
       </bean>
@@ -561,7 +567,7 @@
     </property>
   </bean>
 
-  <bean id="collection.showSubfolderMenu" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+  <bean id="collection.showSubfolderMenuPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
     parent="abstractPropDef">
     <property name="name" value="show-subfolder-menu"/>
     <property name="type" value="BOOLEAN"/>

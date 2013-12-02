@@ -32,6 +32,7 @@
 package org.vortikal.scheduling;
 
 import org.jmock.Expectations;
+import static org.jmock.Expectations.returnValue;
 import org.jmock.auto.Mock;
 import org.jmock.integration.junit4.JUnitRuleMockery;
 import org.jmock.lib.concurrent.Synchroniser;
@@ -42,6 +43,8 @@ import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
+import org.springframework.util.ErrorHandler;
+
 
 /**
  *
@@ -193,5 +196,31 @@ public class TaskManagerTest {
         tm.scheduleTask(other);
         Thread.sleep(100);
         assertTrue(tm.isDone("other"));
+    }
+    
+    @Test
+    public void taskThrowsException() throws InterruptedException {
+        
+        final Throwable taskFail = new RuntimeException("Task failed");
+        
+        context.checking(new Expectations(){{
+            allowing(task).getId();
+            will(returnValue("test-task"));
+            allowing(task).getTriggerSpecification();
+            will(returnValue(new OneShotTriggerSpecification()));
+            allowing(task).run();
+            will(throwException(taskFail));
+        }});
+        
+        ts.setErrorHandler(new ErrorHandler(){
+            @Override
+            public void handleError(Throwable t) {
+                assertSame(t, taskFail);
+            }
+        });
+        
+        tm.scheduleTask(task);
+        Thread.sleep(100);
+        assertTrue(tm.isDone("test-task"));
     }
 }

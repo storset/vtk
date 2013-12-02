@@ -116,7 +116,7 @@
        will make sure that videos in a non-final metadata-state will be refreshed
        from videoapp.
   -->
-    <bean id="videoref.updateJob" class="org.vortikal.repository.systemjob.StoreResourceJob"
+    <bean id="videoref.periodicRefreshTask" class="org.vortikal.repository.systemjob.StoreResourceJob"
         parent="repository.systemjob" depends-on="resourceTypeTree">
     <property name="triggerExpression" value="60" />
     <property name="id" value="videoref-periodic-refresh" />
@@ -266,6 +266,7 @@
         <property name="apiBaseUri" value="${appResources.baseURL}/videoref/callback/rest/v0" />
         <property name="videoDaoSupport" ref="videoref.daoSupport" />
         <property name="repositoryId" value="${repositoryID}" />
+        <property name="videoUpdateTask" ref="videoref.updateNotifyHandlerTask" />
       </bean>
     </property>
   </bean>
@@ -273,7 +274,7 @@
 
     <!-- This job queues video update notification events and processes them
     asynchronously. -->    
-    <bean id="videoref.updateEventHandlerTask" class="org.vortikal.videoref.VideoUpdateEventHandler"
+    <bean id="videoref.updateNotifyHandlerTask" class="org.vortikal.videoref.VideoUpdateTask"
           parent="repository.systemjob" depends-on="resourceTypeTree">
       <property name="triggerExpression" value="2" />
       <property name="id" value="videoref-update-event-handler" />

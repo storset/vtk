@@ -169,6 +169,16 @@ public class VideoappClient {
     }
     
     /**
+     * Notify video app about download of source stream from Vortex.
+     * @param videoId 
+     */
+    public void notifyDownload(VideoId videoId) {
+
+        // TODO implement me with short TCP timeouts, since this will
+        // be invoked every time getInputStream() from Repository is called.
+    }
+    
+    /**
      * Requesting streaming of video.
      * 
      * @param videoId the video object identifier to 

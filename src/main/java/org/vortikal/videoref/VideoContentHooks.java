@@ -242,7 +242,9 @@ public class VideoContentHooks extends DefaultTypeHanderHooks
         // Metadata status set according to video status
         // TODO need to formalize which video states in videoapp can be considered final
         //      with no need for further refreshing.
-        if ("completed".equals(ref.status())) {
+        // Trenger task scheduler i videoapp (for opprydding).
+        
+        if ("completed".equals(ref.status()) || "not-converted".equals(ref.status())) {
             resource.removeProperty(mediaMetadataStatusPropDef);
         } else {
             prop = mediaMetadataStatusPropDef.createProperty();

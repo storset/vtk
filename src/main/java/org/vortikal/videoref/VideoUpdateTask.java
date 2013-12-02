@@ -51,42 +51,61 @@ import org.vortikal.repository.systemjob.StoreResourceJob;
  * another in FIFO order. Job will wait for events in its {@link Runnable#run() run method },
  * and it will not finish until interrupted or other error occurs.
  */
-public class VideoUpdateEventHandler extends StoreResourceJob implements ApplicationListener<VideoUpdatedEvent> {
+public class VideoUpdateTask extends StoreResourceJob {
 
     private static final int MAX_QUEUED_EVENTS = 100;
     
     private VideoDaoSupport videoDaoSupport;
 
-    private final BlockingQueue<VideoUpdatedEvent> eventQueue = 
-            new LinkedBlockingQueue<VideoUpdatedEvent>(MAX_QUEUED_EVENTS);
+    private final BlockingQueue<VideoId> eventQueue = 
+            new LinkedBlockingQueue<VideoId>(MAX_QUEUED_EVENTS);
     
     private final PathSelectorImpl pathSelector = new PathSelectorImpl();
     
-    private final Log logger = LogFactory.getLog(VideoUpdateEventHandler.class.getName());
+    private final Log logger = LogFactory.getLog(VideoUpdateTask.class.getName());
 
-    public VideoUpdateEventHandler() {
+    public VideoUpdateTask() {
         super.setPathSelector(pathSelector);
     }
 
-    @Override
-    public void onApplicationEvent(VideoUpdatedEvent event) {
-        if (! eventQueue.offer(event)) {
-            logger.warn("Event queue full, event was discarded: " + event);
+    /**
+     * Call to notify about an updated video id. It will be added to a queue
+     * which is processed by a background thread. All resources referencing the
+     * video id will be stored [refreshed] eventually. Video ids are processed
+     * in FIFO order.
+     *
+     * <p>Calls to this method are non-blocking.
+     *
+     * @param videoId the video id
+     * @throws IllegalStateException if the queue of video ids to process is full
+     */
+    public void videoUpdated(VideoId videoId) throws IllegalStateException {
+        if (! eventQueue.offer(videoId)) {
+            logger.warn("Event queue full, update notification for video " + videoId + " was discarded");
+            throw new IllegalStateException("Video update queue full, try again later.");
         }
     }
 
+    /**
+     * Start polling queue for work and process any elements appearing.
+     * <p>Queue elements are processed in FIFO order.
+     * 
+     * <p>This method runs until interrupted or some runtime exception is thrown
+     * by the code it invokes. Therefore, it should be called periodically, so
+     * errors don't stop the work queue polling entirely.
+     */
     @Override
     public void run() {
         // Set up paths for next round before delegating run to super class
         try {
             for (;;) {
-                // Blocks on queue until event becomes available
-                VideoUpdatedEvent eventToProcess = eventQueue.take();
+                // Blocks on queue until an element becomes available
+                VideoId videoToProcess = eventQueue.take();
                 if (logger.isDebugEnabled()) {
-                    logger.debug("Processing video update event: " + eventToProcess);
+                    logger.debug("Processing video update event: " + videoToProcess);
                 }
 
-                final List<Path> paths = videoDaoSupport.listPaths(eventToProcess.videoId());
+                final List<Path> paths = videoDaoSupport.listPaths(videoToProcess);
                 pathSelector.setPaths(paths);
 
                 // Store resources at paths to refresh videoref metadata

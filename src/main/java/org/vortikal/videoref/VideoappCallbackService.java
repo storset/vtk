@@ -32,7 +32,6 @@
 package org.vortikal.videoref;
 
 import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -40,10 +39,7 @@ import java.util.HashMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import net.sf.json.JSONObject;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Required;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.mvc.Controller;
@@ -56,7 +52,7 @@ import org.vortikal.web.view.JsonObjectView;
 /**
  * Testing REST service ..
  */
-public class VideoappCallbackService implements Controller, ApplicationContextAware {
+public class VideoappCallbackService implements Controller {
 
     public static final int API_VERSION = 0;
     
@@ -64,7 +60,7 @@ public class VideoappCallbackService implements Controller, ApplicationContextAw
     private String repositoryId;
     private final View view;
     private VideoDaoSupport videoDaoSupport;
-    private ApplicationContext applicationContext;
+    private VideoUpdateTask videoUpdateTask;
 
     public VideoappCallbackService() {
         JsonObjectView jsonView = new JsonObjectView();
@@ -108,7 +104,7 @@ public class VideoappCallbackService implements Controller, ApplicationContextAw
             } else {
                 handleNotFound(request, response, model);
             }
-        } 
+        }
         
         return new ModelAndView(view, model);
     }
@@ -160,7 +156,7 @@ public class VideoappCallbackService implements Controller, ApplicationContextAw
 
         VideoId id = videoIdFromInput(subPaths.get(0));
         if (id == null) {
-            model.put("status", 400);
+            model.put("status", 404);
             model.put("json", errorBody("Invalid video id: " + subPaths.get(0)));
             return;
         }
@@ -189,17 +185,27 @@ public class VideoappCallbackService implements Controller, ApplicationContextAw
             model.put("json", errorBody("Invalid video id: " + request.getParameter("videoId")));
             return;
         }
+        
         if (!"POST".equals(request.getMethod())) {
-            model.put("status", 400);
+            model.put("status", 405);
+            response.addHeader("Allow", "POST");
             model.put("json", errorBody("POST method required"));
             return;
         }
         
-        applicationContext.publishEvent(new VideoUpdatedEvent(this, videoId));
+        // Refresh video data for all resources which reference the given video id
+        // by notifying system job
+        try {
+            videoUpdateTask.videoUpdated(videoId);
+        } catch (IllegalStateException e) {
+            model.put("status", 507); // HTTP 507 "Insufficient storage"
+            model.put("json", errorBody(e.getMessage()));
+            return;
+        }
         
-        // Refresh video data for all resources which reference the given video id.
-        // Dispatch one-shot system job for this purpose.
-        model.put("json", body("videoId", videoId.toString(), "notifyUpdateReceived", true));
+        // Put something in response
+        model.put("json", body("videoId", videoId.toString(),
+                               "notifyUpdateReceived", true));
     }
     
     private VideoId videoIdFromInput(String input) {
@@ -259,9 +265,12 @@ public class VideoappCallbackService implements Controller, ApplicationContextAw
         this.videoDaoSupport = videoDaoSupport;
     }
 
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        this.applicationContext = applicationContext;
+    /**
+     * @param videoUpdateTask the videoUpdateTask to set
+     */
+    @Required
+    public void setVideoUpdateTask(VideoUpdateTask videoUpdateTask) {
+        this.videoUpdateTask = videoUpdateTask;
     }
-    
+
 }

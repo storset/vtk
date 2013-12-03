@@ -233,19 +233,6 @@ td.vrtx-report-diagram-text {
   width: 30%;
 }
 
-/* NEXT VERSION
-#vrtx-report-broken-links-info {
-  font-size: 1.077em;
-  margin: 0 0 15px 0;
-}
-
-#vrtx-report-broken-links-info .vrtx-report-broken-links-info-number {
-  font-size: 1.286em;
-  font-weight: bold;
-  color: #959595;
-}
-*/
-
 /* Broken links */
 
 table.report-broken-links td {

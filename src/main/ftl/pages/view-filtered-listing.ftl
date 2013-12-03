@@ -32,7 +32,6 @@
   </head>
   <body id="vrtx-${collection.resourceType}">
     <h1>${collection.title?html}<#if conf?exists && conf.currentUrl?exists> (${vrtx.getMsg("listing-filters.title.discontinued")})</#if></h1>
-    
     <#if showSubfolderMenu?exists>
       <div class="vrtx-subfolder-menu">
         <#if showSubfolderMenu.resultSets?has_content>

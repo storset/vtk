@@ -404,16 +404,6 @@ div.vrtx-report #vrtx-report-help {
   padding-left: 27px;
 }
 
-/*
-#vrtx-report-help-inherited {
-  background: url(images/treeview-gray-line-4px-extra.gif) no-repeat -5px 0;
-}
-
-#vrtx-report-help-not-inherited {
-  background: url(images/treeview-gray-line-not-inherited.gif) no-repeat -5px 0;
-}
-*/
-
 .vrtx-report-help-allowed-for-all-inherited-folder,
 .vrtx-report-help-allowed-for-all-not-inherited-folder {
   width: 21px;

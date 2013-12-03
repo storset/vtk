@@ -34,19 +34,21 @@
     <h1>${collection.title?html}<#if conf?exists && conf.currentUrl?exists> (${vrtx.getMsg("listing-filters.title.discontinued")})</#if></h1>
     
     <#if showSubfolderMenu?exists>
-      <#if (showSubfolderMenu.size > 0) && showSubfolderMenu.resultSets?exists>
-        <#assign counter = 0>
-        <div>
-        <#list showSubfolderMenu.resultSets as resultSet>
-          <#list resultSet.items as item>
-            <#if item.url?exists && item.label?exists>
-              <#assign counter = counter + 1>
-              <a href="${item.url?html}">${item.label?html}</a>
-            </#if>
+      <div class="vrtx-subfolder-menu">
+        <#if showSubfolderMenu.resultSets?has_content>
+          <#assign currentCount = 1 />
+          <#list showSubfolderMenu.resultSets as resultSet>
+            <ul class="resultset-${currentCount?html}">
+              <#list resultSet.itemsSorted as item>
+                <#if item.url?exists && item.label?exists>
+                  <li><a href="${item.url?html}">${item.label?html}</a></li>
+                </#if>     
+              </#list>
+            </ul>
+            <#assign currentCount = currentCount + 1 />
           </#list>
-        </#list>
-        </div>
-      </#if>
+        </#if>
+      </div>
     </#if>
 
     <#if filters?exists>

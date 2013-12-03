@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, 2007, University of Oslo, Norway
+/* Copyright (c) 2006, 2007, 2013 University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -49,14 +49,15 @@ import org.springframework.beans.factory.InitializingBean;
  * 
  * You can set refreshTimestampOnGet to false if you don't want to 
  * refresh an item's time stamp when it's retrieved from the cache. 
+ * @param <K> type of cache keys
+ * @param <V> type of cache values
  */
 public class SimpleCacheImpl<K, V> implements SimpleCache<K, V>, BeanNameAware,
                                         InitializingBean, DisposableBean {
     
-    private static Log logger = LogFactory.getLog(SimpleCacheImpl.class);
-
+    private final Log logger = LogFactory.getLog(SimpleCacheImpl.class);
     
-    private Map<K, Item> cache = new ConcurrentHashMap<K, Item>();
+    private final Map<K, Item> cache = new ConcurrentHashMap<K, Item>();
     private int timeoutSeconds = 0;
     private boolean refreshTimestampOnGet = true;
 
@@ -64,9 +65,7 @@ public class SimpleCacheImpl<K, V> implements SimpleCache<K, V>, BeanNameAware,
     
     private CleanupThread cleanupThread;
 
-
     public SimpleCacheImpl() {}
-
 
     public SimpleCacheImpl(int timeoutSeconds) {
         this.timeoutSeconds = timeoutSeconds;
@@ -78,6 +77,7 @@ public class SimpleCacheImpl<K, V> implements SimpleCache<K, V>, BeanNameAware,
     }
 
 
+    @Override
     public void put(K key, V value) {
         this.cache.put(key, new Item(value));
     }
@@ -88,11 +88,13 @@ public class SimpleCacheImpl<K, V> implements SimpleCache<K, V>, BeanNameAware,
     }
 
 
+    @Override
     public void setBeanName(String name) {
         this.name = name;
     }
 
 
+    @Override
     public void afterPropertiesSet() {
         if (this.timeoutSeconds > 0) {
             this.cleanupThread = new CleanupThread(this.timeoutSeconds);
@@ -101,6 +103,7 @@ public class SimpleCacheImpl<K, V> implements SimpleCache<K, V>, BeanNameAware,
     }
     
 
+    @Override
     public void destroy() {
         if (this.cleanupThread != null) {
             this.cleanupThread.interrupt();
@@ -108,6 +111,7 @@ public class SimpleCacheImpl<K, V> implements SimpleCache<K, V>, BeanNameAware,
     }
     
 
+    @Override
     public V get(K key) {
         if (key == null) {
             return null;
@@ -127,6 +131,7 @@ public class SimpleCacheImpl<K, V> implements SimpleCache<K, V>, BeanNameAware,
     }
 
 
+    @Override
     public V remove(K key) {
         if (key == null) {
             return null;
@@ -139,10 +144,12 @@ public class SimpleCacheImpl<K, V> implements SimpleCache<K, V>, BeanNameAware,
     }
 
     
+    @Override
     public Set<K> getKeys() {
         return Collections.unmodifiableSet(this.cache.keySet());
     }
 
+    @Override
     public int getSize() {
         return this.cache.size();
     }
@@ -152,6 +159,7 @@ public class SimpleCacheImpl<K, V> implements SimpleCache<K, V>, BeanNameAware,
      * Cleans up expired cached information periodically.
      * 
      */
+    @Override
     public void cleanupExpiredItems() {
 
         if (this.timeoutSeconds < 1) return;
@@ -193,7 +201,7 @@ public class SimpleCacheImpl<K, V> implements SimpleCache<K, V>, BeanNameAware,
 
     private class CleanupThread extends Thread {
 
-        private long sleepSeconds;
+        private final long sleepSeconds;
         private boolean alive = true;
     
         public CleanupThread(long sleepSeconds) {
@@ -201,6 +209,7 @@ public class SimpleCacheImpl<K, V> implements SimpleCache<K, V>, BeanNameAware,
             super.setDaemon(true);
         }
 
+        @Override
         public void run() {
 
             while (this.alive) {

@@ -90,8 +90,9 @@ public class Logout extends SamlService {
         }
 
         // Generate request ID, save in session
-        UUID requestID = UUID.randomUUID();
-        setRequestIDSessionAttribute(request, savedURL, requestID);
+        final UUID requestID = UUID.randomUUID();
+//        setRequestIDSessionAttribute(request, savedURL, requestID);
+        storeRequestId(request, savedURL, requestID);
 
         String relayState = savedURL.toString();
 
@@ -161,11 +162,13 @@ public class Logout extends SamlService {
         }
         URL url = URL.parse(relayState);
 
-        UUID expectedRequestID = getRequestIDSessionAttribute(request, url);
+//        UUID expectedRequestID = getRequestIDSessionAttribute(request, url);
+        UUID expectedRequestID = getRequestId(request, url);
         if (expectedRequestID == null) {
-            throw new InvalidRequestException("Missing request ID attribute in session");
+            throw new InvalidRequestException("Missing request ID");
         }
-        setRequestIDSessionAttribute(request, url, null);
+//        setRequestIDSessionAttribute(request, url, null);
+        removeRequestId(request, url);
 
         if (authLogger.isDebugEnabled()) {
             authLogger.debug(request.getRemoteAddr() + " - request-URI: " + request.getRequestURI() + " - "

@@ -71,6 +71,7 @@
     <property name="logoutURL" value="${saml.logoutURL}"/>
     <property name="serviceIdentifier" value="${saml.serviceIdentifier}"/>
     <property name="certKey" value="${saml.idpCertKey}"/>
+    <property name="requestIdStore" ref="saml.requestIdStore" />
   </bean>
 
   <bean id="saml.challenge" class="org.vortikal.security.web.saml.Challenge"
@@ -315,6 +316,14 @@
   </bean>
   <bean id="saml.ieCookieStore.cache" class="org.vortikal.util.cache.SimpleCacheImpl">
     <property name="timeoutSeconds" value="3600" />
+  </bean>
+  
+  
+  <!-- Global store for SAML-redirect request identififers. See related methods
+  in SamlService class for a more detailed description. -->
+  <bean id="saml.requestIdStore" class="org.vortikal.util.cache.SimpleCacheImpl">
+    <property name="timeoutSeconds" value="1800" /> <!-- Should be same timeout as sessions in general. -->
+    <property name="refreshTimestampOnGet" value="false" />
   </bean>
 
 </beans>

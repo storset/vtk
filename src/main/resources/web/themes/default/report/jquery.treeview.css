@@ -1,40 +1,45 @@
-/* USIT heavily modified */
+/* jQuery TreeView - USIT heavily modified */
 
 .treeview, .treeview ul { 
-	padding: 0 !important;
-	margin: 0 !important;
-	list-style: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  list-style: none !important;
 }
 
 .treeview ul {
-	margin-top: 4px;
+  margin-top: 4px;
 }
 
 .treeview .hitarea {
-	background: url(images/treeview-default.gif) -64px -25px no-repeat;
-	height: 16px;
-	width: 20px;
-	margin-left: -20px;
-    float: left;
-	cursor: pointer;
+  background: url(images/treeview-default.gif) -64px -25px no-repeat;
+  height: 16px;
+  width: 20px;
+  margin-left: -20px;
+  float: left;
+  cursor: pointer;
 }
 
 .treeview li { 
-	margin: 0;
-	padding: 3px 0pt 3px 20px;
+  margin: 0;
+  padding: 3px 0pt 3px 20px;
 }
 
 .treeview a.selected {
-	background-color: #eee;
+  background-color: #eee;
 }
 
-#treecontrol { margin: 1em 0; display: none; }
+#treecontrol { 
+  margin: 1em 0; display: none;
+}
 
 .treeview a {
   text-decoration: none;
 }
 
-.treeview .hover { text-decoration: underline; cursor: pointer; }
+.treeview .hover {
+  text-decoration: underline;
+  cursor: pointer;
+}
 
 .treeview .expandable-hitarea {
   background: url(../images/tree-expand.gif) no-repeat 0 0 !important;

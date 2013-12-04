@@ -77,7 +77,7 @@ public class URL implements Serializable {
     private static final String PROTOCOL_HTTPS = "https";
     private static final String PROTOCL_RTMP = "rtmp";
 
-    private static List<String> protocols = Arrays.asList(PROTOCOL_HTTP, PROTOCOL_HTTPS, PROTOCL_RTMP);
+    private static final List<String> PROTOCOLS = Arrays.asList(PROTOCOL_HTTP, PROTOCOL_HTTPS, PROTOCL_RTMP);
 
     /**
      * Construct a new <code>URL</code> instance that is a copy if the provided
@@ -111,7 +111,7 @@ public class URL implements Serializable {
     }
 
     public URL(String protocol, String host, Path path) {
-        if (!(protocols.contains(protocol))) {
+        if (!(PROTOCOLS.contains(protocol))) {
             throw new IllegalArgumentException("Unknown protocol: '" + protocol + "'");
         }
         if (host == null || "".equals(host.trim())) {
@@ -144,7 +144,7 @@ public class URL implements Serializable {
         if (protocol != null) {
             protocol = protocol.trim();
         }
-        if (!(protocols.contains(protocol))) {
+        if (!(PROTOCOLS.contains(protocol))) {
             throw new IllegalArgumentException("Unknown protocol: '" + protocol + "'");
         }
 
@@ -772,7 +772,7 @@ public class URL implements Serializable {
                 break;
             }
         }
-        if (!(protocols.contains(protocol.toString()))) {
+        if (!(PROTOCOLS.contains(protocol.toString()))) {
             throw new IllegalArgumentException("Malformed URL: '" + url + "'");
         }
         if (host.length() == 0) {

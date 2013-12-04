@@ -101,7 +101,7 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
     private static Log authLogger = LogFactory.getLog("org.vortikal.security.web.AuthLog");
 
     private IECookieStore iECookieStore;
-
+    
     private static boolean ieCookieHandlingEnabled;
 
     private Service redirectToViewService;

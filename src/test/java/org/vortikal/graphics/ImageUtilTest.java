@@ -46,6 +46,7 @@ import junit.framework.TestCase;
 import org.apache.commons.lang.StringUtils;
 
 public class ImageUtilTest extends TestCase {
+    private String headless = null;
     
     private final String pngImage = "originalPNGImage.png";
     private final String jpgImage = "originalJPGImage.jpg";
@@ -57,6 +58,14 @@ public class ImageUtilTest extends TestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
+        headless = System.getProperty("java.awt.headless");
+        System.setProperty("java.awt.headless", "true");
+    }
+    
+    @Override
+    protected void tearDown() throws Exception {
+        System.setProperty("java.awt.headless",
+                headless != null ? headless : "false");
     }
     
     // Check that returned image has equal dimensions when trying to

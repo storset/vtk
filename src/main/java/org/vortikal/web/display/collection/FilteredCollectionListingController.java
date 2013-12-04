@@ -30,6 +30,8 @@
  */
 package org.vortikal.web.display.collection;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -40,9 +42,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
-import org.vortikal.repository.MultiHostSearcher;
+import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.repository.Namespace;
-import org.vortikal.repository.Path;
+import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceTypeTree;
@@ -50,22 +52,22 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.search.ConfigurablePropertySelect;
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
+import org.vortikal.repository.search.Searcher;
 import org.vortikal.repository.search.Sorting;
 import org.vortikal.repository.search.SortingImpl;
 import org.vortikal.repository.search.query.AndQuery;
-import org.vortikal.repository.search.query.OrQuery;
 import org.vortikal.repository.search.query.Query;
 import org.vortikal.repository.search.query.UriPrefixQuery;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
-import org.vortikal.web.display.collection.aggregation.AggregationResolver;
-import org.vortikal.web.display.collection.aggregation.CollectionListingAggregatedResources;
+import org.vortikal.web.decorating.components.menu.SubFolderMenuProvider;
 import org.vortikal.web.display.listing.ListingPager;
+import org.vortikal.web.display.listing.ListingPagingLink;
 import org.vortikal.web.search.SearchSorting;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
-public abstract class FilteredCollectionListingController implements ListingController {
+public abstract class FilteredCollectionListingController implements Controller {
 
     private static final String filterNamespace = "filter.";
 
@@ -74,79 +76,24 @@ public abstract class FilteredCollectionListingController implements ListingCont
     private int pageLimit = 25;
     protected ResourceTypeTree resourceTypeTree;
 
-    // XXX NO. These shoudn't be here. SearchComponent, more specifically
-    // CollectionListingSearchComponent -> Reuse!!!
-    protected MultiHostSearcher multiHostSearcher;
-    protected AggregationResolver aggregationResolver;
     private SearchSorting defaultSearchSorting;
     private List<String> configurablePropertySelectPointers;
     protected Service viewService;
     private List<String> filterWhitelistExceptions;
+    protected Searcher searcher;
+    private PropertyTypeDefinition showSubfolderMenuPropDef;
+    private SubFolderMenuProvider subFolderMenuProvider;
 
-    /**
-     * Sets up, prepares and runs search. Puts results on model for view.
-     */
-    abstract public void runSearch(HttpServletRequest request, Resource collection, Map<String, Object> model,
-            int pageLimit) throws Exception;
-
-    /**
-     * A filtered collection listing has one or more filter resolvers that set
-     * configured filters on search.
-     */
-    protected Map<String, List<String>> explicitlySetFilters(Resource collection, Map<String, List<String>> filters) {
-        // By default this does nothing. Can be overridden to handle special
-        // filters that cannot be created with beans.
-        return filters;
-    }
-
-    /**
-     * Run the actual search, handling sorting, offset, limit and potential
-     * aggregation.
-     */
+    /* Override if other searcher is needed. (Example: multihostSearcher) */
     protected ResultSet search(Resource collection, Query query, int offset) {
 
-        AndQuery and = query instanceof AndQuery ? (AndQuery) query : new AndQuery();
         Search search = new Search();
 
         if (RequestContext.getRequestContext().isPreviewUnpublished()) {
             search.removeFilterFlag(Search.FilterFlag.UNPUBLISHED_COLLECTIONS);
         }
 
-        UriPrefixQuery uriQuery = new UriPrefixQuery(collection.getURI().toString(), false);
-
-        // Initially no multi host search
-        boolean isMultiHostSearch = false;
-
-        // Initially no aggregation
-        OrQuery aggregationQuery = null;
-
-        // Resolve aggregation
-        CollectionListingAggregatedResources aggregateResources = aggregationResolver
-                .getAggregatedResources(collection);
-
-        // Check if any reference to resources from another host
-        if (aggregateResources != null) {
-            URL localHostBaseURL = viewService.constructURL(Path.ROOT);
-
-            isMultiHostSearch = multiHostSearcher.isMultiHostSearchEnabled()
-                    && aggregateResources.includesResourcesFromOtherHosts(localHostBaseURL);
-
-            Query resolvedAggregationquery = aggregateResources
-                    .getAggregationQuery(localHostBaseURL, isMultiHostSearch);
-            if (resolvedAggregationquery != null) {
-                aggregationQuery = new OrQuery();
-                aggregationQuery.add(uriQuery);
-                aggregationQuery.add(resolvedAggregationquery);
-            }
-
-        }
-
-        if (aggregationQuery != null) {
-            and.add(aggregationQuery);
-        } else {
-            and.add(uriQuery);
-        }
-        search.setQuery(and);
+        search.setQuery(query);
         search.setSorting(getDefaultSearchSorting(collection));
 
         ConfigurablePropertySelect propertySelect = getPropertySelect();
@@ -157,38 +104,69 @@ public abstract class FilteredCollectionListingController implements ListingCont
         search.setCursor(offset);
         search.setLimit(pageLimit);
 
-        ResultSet rs = null;
         String token = SecurityContext.getSecurityContext().getToken();
-        // Most common case
-        if (!isMultiHostSearch) {
-            rs = RequestContext.getRequestContext().getRepository().search(token, search);
-        } else {
-            rs = multiHostSearcher.search(token, search);
-        }
-        return rs;
+        return RequestContext.getRequestContext().getRepository().search(token, search);
+    }
+
+    abstract protected Query buildBaseQuery(HttpServletRequest request, Map<String, Object> conf, Resource collection);
+
+    abstract protected Query buildFilterQuery(HttpServletRequest request, Map<String, Object> conf,
+            Resource collection, Map<String, List<String>> filters);
+
+    abstract protected Map<String, List<String>> runFacetSearch(HttpServletRequest request, Map<String, Object> conf,
+            Resource collection, Query query, Map<String, List<String>> filters);
+
+    private Query combineQueries(Query one, Query two) {
+        AndQuery andQuery = new AndQuery();
+        andQuery.add(one);
+        andQuery.add(two);
+        return andQuery;
+    }
+
+    /* Override if special filter handling is needed. */
+    protected Map<String, List<String>> getFilters() {
+
+        return filters;
+    }
+
+    /* Override if other locations are needed. (Examples: Aggregation or prefix) */
+    protected Query getLocationQuery(Resource collection) {
+
+        return new UriPrefixQuery(collection.getURI().toString(), false);
     }
 
     @Override
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
         Map<String, Object> model = new HashMap<String, Object>();
+        Map<String, Object> conf = new HashMap<String, Object>();
 
         Repository repository = RequestContext.getRequestContext().getRepository();
         String token = RequestContext.getRequestContext().getSecurityToken();
         Resource collection = repository.retrieve(token, URL.toPath(request), false);
 
-        Map<String, List<String>> currentFilters = new LinkedHashMap<String, List<String>>(filters);
-        currentFilters = explicitlySetFilters(collection, currentFilters);
+        int page = ListingPager.getPage(request, ListingPager.UPCOMING_PAGE_PARAM);
+        int offset = (page - 1) * pageLimit;
 
-        model.put("collection", collection);
+        Query locationQuery = getLocationQuery(collection);
+        Query baseQuery = buildBaseQuery(request, conf, collection);
+        Query facetQuery = baseQuery != null ? combineQueries(locationQuery, baseQuery) : locationQuery;
 
-        if (currentFilters != null) {
-            Map<String, Map<String, FilterURL>> urlFilters = new LinkedHashMap<String, Map<String, FilterURL>>();
+        Map<String, List<String>> filters = runFacetSearch(request, conf, collection, facetQuery, getFilters());
+
+        Query filterQuery = buildFilterQuery(request, conf, collection, filters);
+
+        Query fullQuery = filterQuery != null ? combineQueries(facetQuery, filterQuery) : facetQuery;
+
+        ResultSet rs = search(collection, fullQuery, offset);
+
+        Map<String, Map<String, FilterURL>> urlFilters = new LinkedHashMap<String, Map<String, FilterURL>>();
+        if (filters != null) {
             Map<String, FilterURL> urlList;
             FilterURL filterUrl;
 
             String parameterKey;
-            for (String filter : currentFilters.keySet()) {
-                List<String> parameterValues = currentFilters.get(filter);
+            for (String filter : filters.keySet()) {
+                List<String> parameterValues = filters.get(filter);
                 urlList = new LinkedHashMap<String, FilterURL>();
                 parameterKey = filterNamespace + filter;
 
@@ -220,13 +198,33 @@ public abstract class FilteredCollectionListingController implements ListingCont
 
                 urlFilters.put(filter, urlList);
             }
-
-            model.put("filters", urlFilters);
         }
 
-        runSearch(request, collection, model, pageLimit);
+        List<ListingPagingLink> urls = ListingPager.generatePageThroughUrls(rs.getTotalHits(), getPageLimit(),
+                URL.create(request), page);
+
+        Property showSubfolderMenu = collection.getProperty(showSubfolderMenuPropDef);
+        if (showSubfolderMenu != null && showSubfolderMenu.getBooleanValue()) {
+            model.put("showSubfolderMenu",
+                    subFolderMenuProvider.getSubfolderMenuWithGeneratedResultSets(collection, request));
+        }
+
+        model.put("filters", urlFilters);
+        model.put("result", rs.getAllResults());
+        model.put("page", page);
+        model.put("pageThroughUrls", urls);
+        model.put("from", offset + 1);
+        model.put("to", offset + Math.min(pageLimit, rs.getSize()));
+        model.put("total", rs.getTotalHits());
+        model.put("collection", collection);
+        model.put("conf", conf);
 
         return new ModelAndView(viewName, model);
+    }
+
+    protected class FilterResult {
+        ResultSet rs;
+        List<String> facets;
     }
 
     public class FilterURL {
@@ -247,10 +245,30 @@ public abstract class FilteredCollectionListingController implements ListingCont
         }
     }
 
-    protected boolean valueExistsInFilters(Resource collection, String parameterKey, String parameterValue)
-            throws Exception {
-        Map<String, List<String>> currentFilters = new LinkedHashMap<String, List<String>>(filters);
-        currentFilters = explicitlySetFilters(collection, currentFilters);
+    protected Map<String, List<String>> getRequestFilters(HttpServletRequest request, Map<String, List<String>> filters) {
+
+        Map<String, List<String>> requestFilters = new HashMap<String, List<String>>();
+
+        String[] parameterValues;
+        for (String parameterKey : filters.keySet()) {
+            parameterValues = request.getParameterValues(filterNamespace + parameterKey);
+            if (parameterValues != null) {
+                List<String> requestParameterValues = new ArrayList<String>();
+                for (String parameterValue : parameterValues) {
+                    if (parameterValue != null && valueExistsInFilters(parameterKey, parameterValue, filters)) {
+                        requestParameterValues.add(parameterValue);
+                    }
+                }
+                if (!requestParameterValues.isEmpty()) {
+                    requestFilters.put(parameterKey, requestParameterValues);
+                }
+            }
+        }
+
+        return requestFilters;
+    }
+
+    private boolean valueExistsInFilters(String parameterKey, String parameterValue, Map<String, List<String>> filters) {
 
         if (parameterKey != null && parameterKey.startsWith(filterNamespace)) {
             parameterKey = parameterKey.substring(filterNamespace.length());
@@ -260,7 +278,7 @@ public abstract class FilteredCollectionListingController implements ListingCont
             return true;
         }
 
-        List<String> filter = currentFilters.get(parameterKey);
+        List<String> filter = filters.get(parameterKey);
         if (filter != null) {
             return filter.contains(parameterValue);
         }
@@ -293,6 +311,10 @@ public abstract class FilteredCollectionListingController implements ListingCont
         return propertySelect;
     }
 
+    protected int getPageLimit() {
+        return pageLimit;
+    }
+
     protected Sorting getDefaultSearchSorting(Resource collection) {
         return new SortingImpl(defaultSearchSorting.getSortFields(collection));
     }
@@ -303,7 +325,7 @@ public abstract class FilteredCollectionListingController implements ListingCont
     }
 
     public void setFilters(Map<String, List<String>> filters) {
-        this.filters = filters;
+        this.filters = Collections.unmodifiableMap(filters);
     }
 
     public void setPageLimit(int pageLimit) {
@@ -312,23 +334,9 @@ public abstract class FilteredCollectionListingController implements ListingCont
         this.pageLimit = pageLimit;
     }
 
-    protected int getPageLimit() {
-        return pageLimit;
-    }
-
     @Required
     public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
         this.resourceTypeTree = resourceTypeTree;
-    }
-
-    @Required
-    public void setMultiHostSearcher(MultiHostSearcher multiHostSearcher) {
-        this.multiHostSearcher = multiHostSearcher;
-    }
-
-    @Required
-    public void setAggregationResolver(AggregationResolver aggregationResolver) {
-        this.aggregationResolver = aggregationResolver;
     }
 
     @Required
@@ -347,6 +355,21 @@ public abstract class FilteredCollectionListingController implements ListingCont
 
     public void setFilterWhitelistExceptions(List<String> filterWhitelistExceptions) {
         this.filterWhitelistExceptions = filterWhitelistExceptions;
+    }
+
+    @Required
+    public void setSearcher(Searcher searcher) {
+        this.searcher = searcher;
+    }
+
+    @Required
+    public void setShowSubfolderMenu(PropertyTypeDefinition showSubfolderMenuPropDef) {
+        this.showSubfolderMenuPropDef = showSubfolderMenuPropDef;
+    }
+
+    @Required
+    public void setSubFolderMenuProvider(SubFolderMenuProvider subFolderMenuProvider) {
+        this.subFolderMenuProvider = subFolderMenuProvider;
     }
 
 }

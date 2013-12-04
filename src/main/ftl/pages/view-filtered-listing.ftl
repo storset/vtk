@@ -32,6 +32,23 @@
   </head>
   <body id="vrtx-${collection.resourceType}">
     <h1>${collection.title?html}<#if conf?exists && conf.currentUrl?exists> (${vrtx.getMsg("listing-filters.title.discontinued")})</#if></h1>
+    <#if showSubfolderMenu?exists>
+      <div class="vrtx-subfolder-menu">
+        <#if showSubfolderMenu.resultSets?has_content>
+          <#assign currentCount = 1 />
+          <#list showSubfolderMenu.resultSets as resultSet>
+            <ul class="resultset-${currentCount?html}">
+              <#list resultSet.itemsSorted as item>
+                <#if item.url?exists && item.label?exists>
+                  <li><a href="${item.url?html}">${item.label?html}</a></li>
+                </#if>     
+              </#list>
+            </ul>
+            <#assign currentCount = currentCount + 1 />
+          </#list>
+        </#if>
+      </div>
+    </#if>
 
     <#if filters?exists>
       <div id="vrtx-listing-filters" class="vrtx-listing-filters-${filters?size}-col">
@@ -45,21 +62,19 @@
             <#list filter?keys as parameterKey>
               <#assign url = filter[parameterKey].url>
               <#assign marked = filter[parameterKey].marked>
-              <#if (parameterKey = "all" || (!facets?exists || (facets[parameterKey]?exists && facets[parameterKey])))>
-                <li id="vrtx-listing-filter-parameter-${filterKey}-${parameterKey}" class="vrtx-listing-filter-parameter<#if parameterKey = "all"> vrtx-listing-filter-parameter-all</#if><#if marked> vrtx-listing-filter-parameter-selected</#if>">
-                  <#if parameterKey = "all"> 
-                    <a href="${url}">${vrtx.getMsg("listing-filters.${filterKey}.all")}</a>
-                  <#elseif (filterKey = "semester" && facets?exists && facets[parameterKey]?exists && facets[parameterKey])><#-- TODO: Hack to avoid year in i18n -->
-                    <#if parameterKey?starts_with("v")>
-                      <a href="${url}">${vrtx.getMsg("listing-filters.${filterKey}.filter.v")} 20${parameterKey?substring(1)}</a>
-                    <#else>
-                      <a href="${url}">${vrtx.getMsg("listing-filters.${filterKey}.filter.h")} 20${parameterKey?substring(1)}</a>
-                    </#if>
-                  <#elseif (!facets?exists || (facets[parameterKey]?exists && facets[parameterKey]))>
-                    <a href="${url}">${vrtx.getMsg("listing-filters.${filterKey}.filter.${parameterKey}")}</a>
+              <li id="vrtx-listing-filter-parameter-${filterKey}-${parameterKey}" class="vrtx-listing-filter-parameter<#if parameterKey = "all"> vrtx-listing-filter-parameter-all</#if><#if marked> vrtx-listing-filter-parameter-selected</#if>">
+                <#if parameterKey = "all"> 
+                  <a href="${url}">${vrtx.getMsg("listing-filters.${filterKey}.all")}</a>
+                <#elseif filterKey = "semester"><#-- TODO: Hack to avoid year in i18n -->
+                  <#if parameterKey?starts_with("v")>
+                    <a href="${url}">${vrtx.getMsg("listing-filters.${filterKey}.filter.v")} 20${parameterKey?substring(1)}</a>
+                  <#else>
+                    <a href="${url}">${vrtx.getMsg("listing-filters.${filterKey}.filter.h")} 20${parameterKey?substring(1)}</a>
                   </#if>
-                </li>
-              </#if>
+                <#else>
+                  <a href="${url}">${vrtx.getMsg("listing-filters.${filterKey}.filter.${parameterKey}")}</a>
+                </#if>
+              </li>
             </#list>
             </ul>
           </div>

@@ -1,4 +1,4 @@
-/* Copyright (c) 2007, University of Oslo, Norway
+/* Copyright (c) 2007,2013, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -31,12 +31,13 @@
 package org.vortikal.util.cache;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+
+import net.sf.ehcache.Cache;
+import net.sf.ehcache.CacheManager;
+import net.sf.ehcache.Ehcache;
+import net.sf.ehcache.Element;
+import net.sf.ehcache.config.CacheConfiguration;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -87,12 +88,13 @@ public final class ContentCache<K, V> implements InitializingBean, DisposableBea
 
     private String name;
     private ContentCacheLoader<K, V> loader;
-    private int cacheTimeout;
-    private ConcurrentHashMap<K, Item> cache = new ConcurrentHashMap<K, Item>();
+    private long cacheTimeoutMilliSeconds;
+    private Ehcache cache = null;
     private boolean asynchronousRefresh = false;
     private int refreshInterval = -1;
     private RefreshThread refreshThread;
     private int maxItems = -1;
+    boolean useSharedCaches = false;
     
     public void setName(String name) {
         this.name = name;
@@ -102,12 +104,12 @@ public final class ContentCache<K, V> implements InitializingBean, DisposableBea
         this.loader = loader;
     }
     
-    public void setCacheSeconds(int cacheSeconds) {
-        this.cacheTimeout = cacheSeconds * 1000;
+    public void setCacheSeconds(long cacheSeconds) {
+        this.cacheTimeoutMilliSeconds = cacheSeconds * 1000;
     }
 
-    public void setCacheMilliSeconds(int cacheTimeout) {
-        this.cacheTimeout = cacheTimeout;
+    public void setCacheMilliSeconds(long cacheTimeout) {
+        this.cacheTimeoutMilliSeconds = cacheTimeout;
     }
 
     public void setAsynchronousRefresh(boolean asynchronousRefresh) {
@@ -121,7 +123,10 @@ public final class ContentCache<K, V> implements InitializingBean, DisposableBea
     public void setMaxItems(int maxItems) {
         this.maxItems = maxItems;
     }
-    
+
+    public void setUseSharedCaches(boolean useSharedCaches) {
+        this.useSharedCaches = useSharedCaches;
+    }
 
     @Override
     public void afterPropertiesSet() {
@@ -135,6 +140,28 @@ public final class ContentCache<K, V> implements InitializingBean, DisposableBea
             throw new BeanInitializationException(
                 "JavaBean property 'maxItems' has an illegal value: specify "
                 + "either a positive or negative integer");
+        }
+        
+        if (useSharedCaches) {
+            // Since cache manager is a singleton, this will reuse and share named caches in the JVM
+            CacheManager cacheManager = CacheManager.create();
+            this.cache = cacheManager.getEhcache(name);
+            if (this.cache == null) {
+                if (this.maxItems < 0) {
+                    // Will read configuration from XML file
+                    this.cache = cacheManager.addCacheIfAbsent(name);
+                } else {
+                    // Explicit configuration
+                    CacheConfiguration cacheConfig = new CacheConfiguration(name, maxItems);
+                    this.cache = new Cache(cacheConfig);
+                    cacheManager.addCache(cache);
+                }
+            }
+        } else {
+            int maxElementsInMemory = maxItems > 0 ? maxItems : 0;
+            CacheConfiguration cacheConfig = new CacheConfiguration(name, maxElementsInMemory);
+            this.cache = new Cache(cacheConfig);
+            this.cache.initialise();
         }
 
         if (this.refreshInterval > 0) {
@@ -155,18 +182,15 @@ public final class ContentCache<K, V> implements InitializingBean, DisposableBea
         if (identifier == null) {
             throw new IllegalArgumentException("Cache identifiers cannot be NULL");
         }
-        if (this.cacheTimeout <= 0) {
+        if (this.cacheTimeoutMilliSeconds <= 0) {
             if (logger.isTraceEnabled()) {
                 logger.trace("Returning uncached object: '" + identifier + "'");
             }
             return this.loader.load(identifier);
         }
-        if (this.refreshThread == null && this.cache.size() > this.maxItems) {
-            // Shrink cache synchronously (no refresh thread)
-            removeOldestExceedingSizeLimit();
-        }
 
-        Item item = this.cache.get(identifier);
+        @SuppressWarnings("unchecked")
+        Item item = (Item)this.cache.get(identifier);
         if (item == null) {
             if (logger.isDebugEnabled()) {
                 logger.debug("Caching object: '" + identifier + "'");
@@ -174,7 +198,10 @@ public final class ContentCache<K, V> implements InitializingBean, DisposableBea
             item = cacheItem(identifier);
         }
 
-        if (item.getTimestamp().getTime() + this.cacheTimeout <= System.currentTimeMillis()) {
+        if (item.isTimedOut()) {
+            if (logger.isTraceEnabled()) {
+                logger.trace("Object '" + item.out() + "' is timed out");
+            }
             if (this.asynchronousRefresh) {
                 triggerAsynchronousRefresh(identifier);
             } else {
@@ -184,29 +211,29 @@ public final class ContentCache<K, V> implements InitializingBean, DisposableBea
         if (logger.isTraceEnabled()) {
             logger.trace("Returning object '" + item + "' from cache");
         }
-        return item.getObject();
+        return (V)item.getObjectValue();
     }
     
     /**
      * 
-     * @param identifier cache key to pass to laoder
+     * @param identifier cache key to pass to loader
      * @return newly loaded item, or item already in cache if it has not
      *         expired.
      * @throws Exception in case of loader failure
      */
     private Item cacheItem(K identifier) throws Exception {
 
-        Item item = this.cache.get(identifier);
-        long now = System.currentTimeMillis();
-
-        if (item == null ||
-            (item.getTimestamp().getTime() + this.cacheTimeout <= now)) {
+        @SuppressWarnings("unchecked")
+        Item item = (Item)this.cache.getQuiet(identifier);
+        if (item == null || item.isTimedOut()) {
+            if (logger.isTraceEnabled()) {
+                logger.trace("Loading for '" + identifier + "', existing item=" + item);
+            }
             V object = this.loader.load(identifier);
             Item newItem = new Item(identifier, object);
-            this.cache.put(identifier, newItem);
+            this.cache.put(newItem);
             item = newItem;
         }
-        
         return item;
     }
 
@@ -225,59 +252,19 @@ public final class ContentCache<K, V> implements InitializingBean, DisposableBea
         new Thread(fetcher, this.name + ".async-refresh").start();
     }
 
-
-    private synchronized void removeOldestExceedingSizeLimit() {
-        if (this.maxItems <= 0) return;
-        int size = this.cache.size();
-        int n = size - this.maxItems;
-        if (n <= 0) return;
-
-
-        List<Map.Entry<K, Item>> sortedList =
-            new ArrayList<Map.Entry<K, Item>>(this.cache.entrySet());
-
-        Collections.sort(sortedList, new Comparator<Map.Entry<K, Item>>() {
-                @Override
-                public int compare(Map.Entry<K, Item> entry1, Map.Entry<K, Item> entry2) {
-                    Item i1 = entry1.getValue();
-                    Item i2 = entry2.getValue();
-
-                    return new Long(i1.getTimestamp().getTime()).compareTo(
-                        new Long(i2.getTimestamp().getTime()));
-                }
-            });
-        
-        List<Map.Entry<K, Item>> removeList = sortedList.subList(0, n);
-        if (logger.isDebugEnabled()) {
-            logger.debug("Cache size limit exceeded, removing " + n
-                         + " oldest items (of total " + size + ")");
-        }
-
-        for (Map.Entry<K, Item> entry: removeList) {
-            Item item = entry.getValue();
-            this.cache.remove(item.getKey());
-        }
-    }
-    
-
+   
     private synchronized void refreshExpired() {
-        int size = this.cache.size();
-        if (size > this.maxItems) {
-            removeOldestExceedingSizeLimit();
-            size = this.cache.size();
-        }
+        int size = this.cache.getSize();
 
         List<K> refreshList = new ArrayList<K>();
-
-        for (Map.Entry<K, Item> entry: this.cache.entrySet()) {
-            K identifier = entry.getKey();
-            Item item =  entry.getValue();
-            long now = System.currentTimeMillis();
-            if (item.getTimestamp().getTime() + this.cacheTimeout < now) {
+        for (K identifier: (List<K>)cache.getKeys()) {
+            Item item = (Item)cache.getQuiet(identifier);
+            if (item.isTimedOut())
+            {
                 refreshList.add(identifier);
             }
         }
-
+            
         if (logger.isTraceEnabled()) {
             logger.trace("Checking expired items: " + refreshList.size()
                          + " expired items found (of total " + size + ")");
@@ -295,43 +282,44 @@ public final class ContentCache<K, V> implements InitializingBean, DisposableBea
         }
     }
 
-    public void clear() {
-        this.cache.clear();
+    public int getSize() {
+        return this.cache.getSize();
     }
     
-
-    private class Item {
-        private K key;
-        private V object;
-        private Date timestamp;
-
-        public Item(K key, V object) {
-            this.key = key;
-            this.object = object;
-            this.timestamp = new Date();
-        }
-        public Object getKey() {
-            return this.key;
-        }
-        public V getObject() {
-            return this.object;
-        }
-        public Date getTimestamp() {
-            return this.timestamp;
+    public void clear() {
+        this.cache.removeAll();
+    }
+    
+    private class Item extends Element {
+        private static final long serialVersionUID = -1448257203055826861L;
+        private long itemTimeoutMilliSeconds;
+        private long createdAtMilliSeconds;
+        
+        public Item(final Object key, final Object value) {
+            super(key, value);
+            this.setEternal(true);
+            this.createdAtMilliSeconds = System.currentTimeMillis();
+            this.itemTimeoutMilliSeconds = cacheTimeoutMilliSeconds;
         }
 
-        @Override
-        public String toString() {
-            StringBuilder sb = new StringBuilder("item: [");
-            sb.append(this.key.toString()).append("=");
-            sb.append(this.object.getClass().getName());
-            sb.append("; timestamp=").append(this.timestamp);
-            sb.append("]");
-            return sb.toString();
+        /**
+         * Standard Eh elements only work with second resolution.
+         * We override and use milliseconds instead.
+         * This should make the tests work, but EhCache may use other methods internally... :-/
+         */
+        public boolean isTimedOut() {
+            return (createdAtMilliSeconds + itemTimeoutMilliSeconds) < System.currentTimeMillis();
         }
         
+        /**
+         * Argh! toString() is declared "final" in ancestor so we use this instead.
+         * @return
+         */
+        public String out() {
+            return toString() + "[createdAtMs=" + createdAtMilliSeconds + ", itemTimeOutMs=" + itemTimeoutMilliSeconds + "]";
+        }
     }
-
+    
     private class RefreshThread extends Thread {
 
         private long sleepSeconds;

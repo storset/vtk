@@ -233,19 +233,6 @@ td.vrtx-report-diagram-text {
   width: 30%;
 }
 
-/* NEXT VERSION
-#vrtx-report-broken-links-info {
-  font-size: 1.077em;
-  margin: 0 0 15px 0;
-}
-
-#vrtx-report-broken-links-info .vrtx-report-broken-links-info-number {
-  font-size: 1.286em;
-  font-weight: bold;
-  color: #959595;
-}
-*/
-
 /* Broken links */
 
 table.report-broken-links td {
@@ -403,16 +390,6 @@ div.vrtx-report #vrtx-report-help {
 #vrtx-report-help-allowed-for-all {
   padding-left: 27px;
 }
-
-/*
-#vrtx-report-help-inherited {
-  background: url(images/treeview-gray-line-4px-extra.gif) no-repeat -5px 0;
-}
-
-#vrtx-report-help-not-inherited {
-  background: url(images/treeview-gray-line-not-inherited.gif) no-repeat -5px 0;
-}
-*/
 
 .vrtx-report-help-allowed-for-all-inherited-folder,
 .vrtx-report-help-allowed-for-all-not-inherited-folder {

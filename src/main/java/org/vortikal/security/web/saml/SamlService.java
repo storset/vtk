@@ -90,6 +90,7 @@ import org.opensaml.xml.validation.ValidationException;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Path;
 import org.vortikal.security.AuthenticationProcessingException;
+import org.vortikal.util.cache.SimpleCache;
 import org.vortikal.web.InvalidRequestException;
 import org.vortikal.web.service.URL;
 import org.w3c.dom.Document;
@@ -105,8 +106,8 @@ public abstract class SamlService {
         }
     }
 
-    private static final String REQUEST_ID_SESSION_ATTR = SamlAuthenticationHandler.class.getName()
-            + ".SamlSavedRequestIDS";
+//    private static final String REQUEST_ID_SESSION_ATTR = SamlAuthenticationHandler.class.getName()
+//            + ".SamlSavedRequestIDS";
 
     private CertificateManager certificateManager;
 
@@ -127,69 +128,133 @@ public abstract class SamlService {
 
     protected final Log authDebugLog = LogFactory.getLog("org.vortikal.security.web.AUTH_DEBUG");
 
-    protected UUID getRequestIDSessionAttribute(HttpServletRequest request, URL url) {
-        HttpSession session = request.getSession(false);
-        if (session == null) {
-            // Debugging VTK-2653
-            if (authDebugLog.isDebugEnabled()) {
-                StackTraceElement[] stackTrace = new Throwable().getStackTrace();
-                String callerName = stackTrace.length > 1 ? stackTrace[1].getMethodName() : "<unknown>";
-                authDebugLog.debug("No session available when looking for requestID for URL " + url
-                        + ", called by: " + callerName + ", requestURL: "
-                        + request.getRequestURL() + (request.getQueryString() != null ? "?" + request.getQueryString() : "")
-                        + ", remote addr: " + request.getRemoteAddr());
-            }
+    private SimpleCache<String,UUID> requestIdStore;
 
-            return null;
-        }
-        synchronized (session.getId().intern()) {
-            @SuppressWarnings("unchecked")
-            Map<URL, UUID> attr = (Map<URL, UUID>) session.getAttribute(REQUEST_ID_SESSION_ATTR);
-            if (attr == null) {
-                // Debugging VTK-2653
-                if (authDebugLog.isDebugEnabled()) {
-                    StackTraceElement[] stackTrace = new Throwable().getStackTrace();
-                    String callerName = stackTrace.length > 1 ? stackTrace[1].getMethodName() : "<unknown>";
-                    authDebugLog.debug("Map not found in session " + session.getId() 
-                            + " when looking for requestID for URL " + url
-                            + ", called by: " + callerName + ", requestURL: "
-                            + request.getRequestURL() + (request.getQueryString() != null ? "?" + request.getQueryString() : "")
-                            + ", remote addr: " + request.getRemoteAddr());
-                }
-                
-                return null;
-            }
-            url.setCollection(false);
-            return attr.get(url);
+    /**
+     * Remove a previously stored SAML request-ID when it is no longer needed for
+     * validation.
+     * @param request the current request
+     * @param url the authticket URL associated with the request ID
+     */
+    protected void removeRequestId(HttpServletRequest request, URL url) {
+        url.setCollection(false); // Normalize last slash
+        String key = request.getRemoteAddr() + "-" + url.toString();
+        UUID removed = requestIdStore.remove(key);
+        if (authDebugLog.isDebugEnabled()) {
+            authDebugLog.debug("Removed request-ID " + removed + " for URL " + url 
+            + ", remote addr: " + request.getRemoteAddr());
         }
     }
-
-
-    public void setRequestIDSessionAttribute(HttpServletRequest request, URL url, UUID uuid) {
-        HttpSession session = request.getSession(true);
-        synchronized (session.getId().intern()) {
-            @SuppressWarnings("unchecked")
-            Map<URL, UUID> attr = (Map<URL, UUID>) session.getAttribute(REQUEST_ID_SESSION_ATTR);
-            if (attr == null) {
-                attr = new HashMap<URL, UUID>();
-                session.setAttribute(REQUEST_ID_SESSION_ATTR, attr);
-            }
-
-            url.setCollection(false);
-            // Debugging VTK-2653
-            if (authDebugLog.isDebugEnabled()) {
-                StackTraceElement[] stackTrace = new Throwable().getStackTrace();
-                String callerName = stackTrace.length > 1 ? stackTrace[1].getMethodName() : "<unknown>";
-                authDebugLog.debug("Setting in session " + session.getId() + ", requestID " 
-                        + uuid + " for URL " + url
-                        + ", called by: " + callerName + ", requestURL: " 
-                        + request.getRequestURL() + (request.getQueryString() != null ? "?" + request.getQueryString() : "")
-                        + ", remote addr: " + request.getRemoteAddr());
-            }
-            
-            attr.put(url, uuid);
+    
+    /**
+     * Get a stored SAML request ID for the given URL and request. The request
+     * ID is looked up by the authticket URL and the client remote address combined.
+     * 
+     * @param request the current request.
+     * @param url a mutable authticket URL associated with the current SAML transaction
+     * @return a UUID for the given URL+client, or <code>null</code> if none found.
+     */
+    protected UUID getRequestId(HttpServletRequest request, URL url) {
+        url.setCollection(false); // Normalize last slash
+        String key = request.getRemoteAddr() + "-" + url.toString();
+        UUID requestId = requestIdStore.get(key);
+        if (authDebugLog.isDebugEnabled()) {
+            authDebugLog.debug("Got request-ID " + requestId + " for URL " + url
+            + ", remote addr: " + request.getRemoteAddr());
+        }
+        return requestId;
+    }
+    
+    /**
+     * Store a SAML request ID for the given URL and remote client. The request-ID
+     * is mapped by the authticket URL and the client remote address together.
+     * 
+     * <p>A request-ID is valid for a limited amount of time, and the store
+     * will remove old entries automatically. The timeout is similar to that
+     * of the http session itself.
+     * 
+     * @param request the current request
+     * @param url a mutable authticket URL associated with the current SAML transaction
+     * @param uuid the UUID to store as value
+     */
+    protected void storeRequestId(HttpServletRequest request, URL url, UUID uuid) {
+        url.setCollection(false); // Normalize last slash
+        String key = request.getRemoteAddr() + "-" + url.toString();
+        requestIdStore.put(key, uuid);
+        if (authDebugLog.isDebugEnabled()) {
+            authDebugLog.debug("Stored request-ID " + uuid + " for URL " + url 
+                    + ", remote addr: " + request.getRemoteAddr());
         }
     }
+    
+//    /**
+//     * Get request id from session.
+//     */
+//    protected UUID getRequestIDSessionAttribute(HttpServletRequest request, URL url) {
+//        HttpSession session = request.getSession(false);
+//        if (session == null) {
+//            // Debugging VTK-2653
+//            if (authDebugLog.isDebugEnabled()) {
+//                StackTraceElement[] stackTrace = new Throwable().getStackTrace();
+//                String callerName = stackTrace.length > 1 ? stackTrace[1].getMethodName() : "<unknown>";
+//                authDebugLog.debug("No session available when looking for requestID for URL " + url
+//                        + ", called by: " + callerName + ", requestURL: "
+//                        + request.getRequestURL() + (request.getQueryString() != null ? "?" + request.getQueryString() : "")
+//                        + ", remote addr: " + request.getRemoteAddr());
+//            }
+//
+//            return null;
+//        }
+//        synchronized (session.getId().intern()) {
+//            @SuppressWarnings("unchecked")
+//            Map<URL, UUID> attr = (Map<URL, UUID>) session.getAttribute(REQUEST_ID_SESSION_ATTR);
+//            if (attr == null) {
+//                // Debugging VTK-2653
+//                if (authDebugLog.isDebugEnabled()) {
+//                    StackTraceElement[] stackTrace = new Throwable().getStackTrace();
+//                    String callerName = stackTrace.length > 1 ? stackTrace[1].getMethodName() : "<unknown>";
+//                    authDebugLog.debug("Map not found in session " + session.getId() 
+//                            + " when looking for requestID for URL " + url
+//                            + ", called by: " + callerName + ", requestURL: "
+//                            + request.getRequestURL() + (request.getQueryString() != null ? "?" + request.getQueryString() : "")
+//                            + ", remote addr: " + request.getRemoteAddr());
+//                }
+//                
+//                return null;
+//            }
+//            url.setCollection(false);
+//            return attr.get(url);
+//        }
+//    }
+
+//    /**
+//     * Set an URL request ID in session.
+//     */
+//    public void setRequestIDSessionAttribute(HttpServletRequest request, URL url, UUID uuid) {
+//        HttpSession session = request.getSession(true);
+//        synchronized (session.getId().intern()) {
+//            @SuppressWarnings("unchecked")
+//            Map<URL, UUID> attr = (Map<URL, UUID>) session.getAttribute(REQUEST_ID_SESSION_ATTR);
+//            if (attr == null) {
+//                attr = new HashMap<URL, UUID>();
+//                session.setAttribute(REQUEST_ID_SESSION_ATTR, attr);
+//            }
+//
+//            url.setCollection(false);
+//            // Debugging VTK-2653
+//            if (authDebugLog.isDebugEnabled()) {
+//                StackTraceElement[] stackTrace = new Throwable().getStackTrace();
+//                String callerName = stackTrace.length > 1 ? stackTrace[1].getMethodName() : "<unknown>";
+//                authDebugLog.debug("Setting in session " + session.getId() + ", requestID " 
+//                        + uuid + " for URL " + url
+//                        + ", called by: " + callerName + ", requestURL: " 
+//                        + request.getRequestURL() + (request.getQueryString() != null ? "?" + request.getQueryString() : "")
+//                        + ", remote addr: " + request.getRemoteAddr());
+//            }
+//            
+//            attr.put(url, uuid);
+//        }
+//    }
 
 
     @Required
@@ -577,5 +642,17 @@ public abstract class SamlService {
             return super.buildRedirectURL(messageContext, request.getDestination(), encoded);
         }
 
+    }
+
+    /**
+     * Store for temporary auth-ticket URLs to request-ID mappings. The configured
+     * cache should have a timeout, so stale entries for unused or incomplete
+     * login/logout attempts are cleared eventually.
+     *
+     * @param requestIdStore a properly configured <code>SimpleCache</code> instance.
+     */
+    @Required
+    public void setRequestIdStore(SimpleCache<String,UUID> requestIdStore) {
+        this.requestIdStore = requestIdStore;
     }
 }

@@ -31,7 +31,6 @@
 package org.vortikal.security.web.saml;
 
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.UUID;
@@ -39,6 +38,7 @@ import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import org.apache.commons.codec.binary.Base64;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -52,7 +52,7 @@ public class Challenge extends SamlService {
     private static Log logger = LogFactory.getLog(Challenge.class);
 
     private String urlSessionAttribute = null;
-
+    
     public void setUrlSessionAttribute(String urlSessionAttribute) {
         if (urlSessionAttribute != null && !"".equals(urlSessionAttribute.trim())) {
             this.urlSessionAttribute = urlSessionAttribute;
@@ -104,31 +104,35 @@ public class Challenge extends SamlService {
         if (this.urlSessionAttribute != null) {
             session.setAttribute(this.urlSessionAttribute, url);
         }
-        UUID requestID = UUID.randomUUID();
+        final UUID requestID = UUID.randomUUID();
 
-        try {
-            byte[] bytesOfMessage = requestID.toString().getBytes("UTF-8");
-            MessageDigest md = MessageDigest.getInstance("MD5");
-            byte[] thedigest = md.digest(bytesOfMessage);
-            if (request.getParameter("authTicket") != null) {
-                url.removeParameter("authTicket");
-            }
-            url.addParameter("authTicket", URLEncoder.encode(thedigest.toString(), "UTF-8"));
-        } catch (UnsupportedEncodingException e) {
-            logger.error(e);
-        } catch (NoSuchAlgorithmException e) {
-            logger.error(e);
-        }
+        url.setParameter("authTicket", authTicketValueFromUUID(requestID));
 
         String relayState = url.toString();
 
         SamlConfiguration samlConfiguration = newSamlConfiguration(request);
 
-        // Generate request ID, save in session
-        setRequestIDSessionAttribute(request, url, requestID);
+        // Store generated request ID
+        storeRequestId(request, url, requestID);
+//        setRequestIDSessionAttribute(request, url, requestID);
 
         String redirectURL = urlToLoginServiceForDomain(samlConfiguration, requestID, relayState);
         response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
         response.setHeader("Location", redirectURL.toString());
+    }
+    
+    private String authTicketValueFromUUID(UUID uuid) {
+        try {
+            byte[] uuidStringBytes = uuid.toString().getBytes("UTF-8");
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            byte[] digestBytes = md.digest(uuidStringBytes);
+            return Base64.encodeBase64URLSafeString(digestBytes);
+        } catch (UnsupportedEncodingException ex) {
+            logger.error(ex);
+            return uuid.toString();
+        } catch (NoSuchAlgorithmException ex) {
+            logger.error(ex);
+            return uuid.toString();
+        }
     }
 }

@@ -176,7 +176,7 @@ resourcetype student-exchange-agreement {
                     <th scope="row">[localized 'city']<td>[val city]</td>
                   </tr>
                   <tr>
-                    <th scope="row">[localized 'webpage']<td><a href="[val web-address]">[val web-address]</a></td>
+                    <th scope="row">[localized 'webpage']<td><a href="[val web-address]">[localized 'webpage-text']</a></td>
                   </tr>
                 </tbody>
               </table>
@@ -241,6 +241,7 @@ resourcetype student-exchange-agreement {
   localization {
     header : (en : "Edit student exchange agreement", no : "Rediger utvekslingsavtale", nn : "Rediger utvekslingsavtale"),
     student-exchange-agreement : (en : "Student exchange agreement", no : "Utvekslingsavtale", nn : "Utvekslingsavtale"),
+    student-exchange-agreement-between : (en : "Exchange agreement between", no : "Utvekslingsavtale mellom", nn : "Utvekslingsavtale mellom"),
 
     owner-of-agreement : (en : "Owner of agreement", no : "Avtaleeier", nn : "Avtaleeigar"), 
     type-of-agreement : (en : "Type of agreement", no : "Avtaletype", nn : "Avtaletype"),
@@ -275,6 +276,7 @@ resourcetype student-exchange-agreement {
     country : ( en: "Country", no: "Land", nn: "Land"),
     city : ( en: "City", no: "By", nn: "By"),
     webpage : ( en: "Webpage", no: "Nettside", nn: "Nettside"),
+    webpage-text : ( en: "Webpage for international students", no: "Nettsted for internasjonale studenter", nn: "Nettstad for internasjonale studentar"),
     study-level : (en : "Study level", no : "Studienivå", nn : "Studienivå"),
     and : (en : "and", no : "og", nn : "og"),
     contact : (en : "Contact", no : "Kontakt", nn : "Kontakt"),

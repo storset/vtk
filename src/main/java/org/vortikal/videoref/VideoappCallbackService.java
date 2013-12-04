@@ -45,7 +45,7 @@ import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.mvc.Controller;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
-import org.vortikal.web.view.JsonObjectView;
+import org.vortikal.web.view.JsonView;
 
 
         
@@ -58,18 +58,10 @@ public class VideoappCallbackService implements Controller {
     
     private String apiBaseUri;
     private String repositoryId;
-    private final View view;
+    private View view;
     private VideoDaoSupport videoDaoSupport;
     private VideoUpdateTask videoUpdateTask;
 
-    public VideoappCallbackService() {
-        JsonObjectView jsonView = new JsonObjectView();
-        jsonView.setHttpStatusKey("status");
-        jsonView.setModelKey("json");
-        jsonView.setIndentFactor(2);
-        view = jsonView;
-    }
-    
     @Override
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
@@ -271,6 +263,14 @@ public class VideoappCallbackService implements Controller {
     @Required
     public void setVideoUpdateTask(VideoUpdateTask videoUpdateTask) {
         this.videoUpdateTask = videoUpdateTask;
+    }
+
+    /**
+     * @param view the view to set
+     */
+    @Required
+    public void setView(View view) {
+        this.view = view;
     }
 
 }

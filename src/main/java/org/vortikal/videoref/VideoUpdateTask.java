@@ -37,7 +37,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
-import org.springframework.context.ApplicationListener;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.SystemChangeContext;

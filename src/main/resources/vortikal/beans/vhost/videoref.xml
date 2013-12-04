@@ -9,7 +9,8 @@
                            http://www.springframework.org/schema/context
                            http://www.springframework.org/schema/context/spring-context.xsd
                            http://www.springframework.org/schema/util
-                           http://www.springframework.org/schema/util/spring-util.xsd">
+                           http://www.springframework.org/schema/util/spring-util.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.1.xsd" xmlns:aop="http://www.springframework.org/schema/aop">
 
   <!-- Resource type definition for 'videoref' type. -->  
   <bean id="mediaref.videorefType"
@@ -267,6 +268,13 @@
         <property name="videoDaoSupport" ref="videoref.daoSupport" />
         <property name="repositoryId" value="${repositoryID}" />
         <property name="videoUpdateTask" ref="videoref.updateNotifyHandlerTask" />
+        <property name="view">
+          <bean class="org.vortikal.web.view.JsonView">
+            <property name="modelKey" value="json" />
+            <property name="indentFactor" value="2" />
+            <property name="httpStatusKey" value="status" />
+          </bean>
+        </property>
       </bean>
     </property>
   </bean>

@@ -42,14 +42,15 @@ import org.springframework.web.servlet.view.AbstractView;
 import org.vortikal.util.io.StreamUtil;
 
 import net.sf.json.JSON;
+import net.sf.json.JSONSerializer;
 
 /**
- * Simple JSON object view, which serialises a net.sf.json.JSON instance to the
- * output stream, optionally with pretty printing and a custom HTTP status code.
+ * Simple JSON view, which an object using the <code>net.sf.json.JSONObject</code>
+ * library.
  * 
  * <p>Bean properties:
  *  <ul>
- *   <li><code>modelKey</code> - key used to lookup the {@link JSON} instance in model.
+ *   <li><code>modelKey</code> - key used to lookup the object to serialize in model.
  * Default value "jsonObject".
  *   <li><code>httpStatusKey</code> - key used to lookup optional HTTP status code. The
  * status code should be an <code>Integer</code> instance.
@@ -57,7 +58,7 @@ import net.sf.json.JSON;
  * with the indent factor requested. Default is -1 (no pretty printing).
  * </ul>
  */
-public class JsonObjectView extends AbstractView {
+public class JsonView extends AbstractView {
 
     private String modelKey = "jsonObject";
     private String httpStatusKey = "httpStatus";
@@ -67,10 +68,17 @@ public class JsonObjectView extends AbstractView {
     protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request,
                                            HttpServletResponse response) throws Exception {
 
-        JSON json = (JSON)model.get(modelKey);
-        if (json == null) {
+        if (!model.containsKey(modelKey)) {
             throw new IllegalArgumentException("Missing object with key '" 
                                                 + modelKey + "' in model data.");
+        }
+        
+        Object toSerialize = model.get(modelKey);
+        JSON json;
+        if (toSerialize instanceof JSON) {
+            json = (JSON)toSerialize;
+        } else {
+            json = JSONSerializer.toJSON(toSerialize);
         }
 
         response.setContentType("application/json; charset=UTF-8");

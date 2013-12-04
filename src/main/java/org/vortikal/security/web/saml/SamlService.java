@@ -128,9 +128,6 @@ public abstract class SamlService {
 
     protected final Log authDebugLog = LogFactory.getLog("org.vortikal.security.web.AUTH_DEBUG");
 
-    // Store temporary auth-ticket URLs to request-ID mappings. The configured
-    // cache should have a timeout, so stale entries for unused or incomplete
-    // login/logout attempts are cleared eventually.
     private SimpleCache<String,UUID> requestIdStore;
 
     /**
@@ -230,9 +227,9 @@ public abstract class SamlService {
 //        }
 //    }
 
-    /**
-     * Set an URL request ID in session.
-     */
+//    /**
+//     * Set an URL request ID in session.
+//     */
 //    public void setRequestIDSessionAttribute(HttpServletRequest request, URL url, UUID uuid) {
 //        HttpSession session = request.getSession(true);
 //        synchronized (session.getId().intern()) {
@@ -647,6 +644,13 @@ public abstract class SamlService {
 
     }
 
+    /**
+     * Store for temporary auth-ticket URLs to request-ID mappings. The configured
+     * cache should have a timeout, so stale entries for unused or incomplete
+     * login/logout attempts are cleared eventually.
+     *
+     * @param requestIdStore a properly configured <code>SimpleCache</code> instance.
+     */
     @Required
     public void setRequestIdStore(SimpleCache<String,UUID> requestIdStore) {
         this.requestIdStore = requestIdStore;

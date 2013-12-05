@@ -75,6 +75,7 @@ resourcetype hvordan-soke {
     innpassing-tidl-utdanning (class[vrtx-shared-text]),
     group regelverk (relatert-innhold-regelverk, regelverk-fri),
     relatert-innhold-regelverk (class[vrtx-shared-text]),
+    other (class[vrtx-pseudo-grouped]),
     other (after regelverk),
     tittel (size[1]),
     tittel (class[ui-helper-hidden])

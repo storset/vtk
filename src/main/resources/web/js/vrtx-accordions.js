@@ -61,7 +61,7 @@ var VrtxAccordion = dejavu.Class.declare({
           if(accordion.__opts.onActivate) accordion.__opts.onActivate(e, ui, accordion);
         }
       };
-      if(this.__opts.animationSpeed) {
+      if(accordion.__opts.animationSpeed) {
         initOpts.animate.duration = animationSpeed;
       }
       accordion.__opts.elem.accordion(initOpts);

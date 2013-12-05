@@ -100,8 +100,8 @@ resourcetype student-exchange-agreement {
     [def language document.properties.language]
     [def courses document.properties.courses]
     [def length-of-semester document.properties.length-of-semester]
-    [def tuition document.properties.tuition]
-    [def scholarship document.properties.scholarship]
+    [def tuition-yes document.properties.tuition-yes]
+    [def tuition-no document.properties.tuition-no]
     [def fees-text-field document.properties.fees-text-field]
     [def housing document.properties.housing]
     [def content document.properties.content]
@@ -135,11 +135,11 @@ resourcetype student-exchange-agreement {
               [val length-of-semester # unescaped]
             [endif]
             <h2>[localized 'fees']</h2>
-            [if tuition != null]
-              <p>[localized 'tuition']: [val tuition]</p>
+            [if tuition-yes != null]
+              <p>[localized 'tuition-yes']: [val tuition-yes]</p>
             [endif]
-            [if scholarship != null]
-              <p>[localized 'scholarship']: [val scholarship]</p>
+            [if tuition-no != null]
+              <p>[localized 'tuition-no']: [val tuition-no]</p>
             [endif]
             [if fees-text-field != null && fees-text-field != ""]
               [val fees-text-field # unescaped]

@@ -108,6 +108,11 @@ public abstract class FilteredCollectionListingController implements Controller 
         return RequestContext.getRequestContext().getRepository().search(token, search);
     }
 
+    /* Override if other locations are needed. (Examples: Aggregation or prefix) */
+    protected Query getLocationQuery(Resource collection) {
+        return new UriPrefixQuery(collection.getURI().toString(), false);
+    }
+
     abstract protected Query buildBaseQuery(HttpServletRequest request, Map<String, Object> conf, Resource collection);
 
     abstract protected Query buildFilterQuery(HttpServletRequest request, Map<String, Object> conf,
@@ -125,14 +130,7 @@ public abstract class FilteredCollectionListingController implements Controller 
 
     /* Override if special filter handling is needed. */
     protected Map<String, List<String>> getFilters() {
-
         return filters;
-    }
-
-    /* Override if other locations are needed. (Examples: Aggregation or prefix) */
-    protected Query getLocationQuery(Resource collection) {
-
-        return new UriPrefixQuery(collection.getURI().toString(), false);
     }
 
     @Override

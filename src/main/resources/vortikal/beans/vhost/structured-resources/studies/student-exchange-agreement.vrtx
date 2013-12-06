@@ -14,7 +14,7 @@ resourcetype student-exchange-agreement {
     profesjonsstudium : boolean defaultvalue("false"),
     specialist : boolean defaultvalue("false"),
 
-    introduction : html noextract,
+    student-exchange-intro : html noextract,
     who-can-apply : html noextract,
     language : html noextract,
     courses : html noextract,
@@ -95,7 +95,7 @@ resourcetype student-exchange-agreement {
     [def phd document.properties.phd]
     [def profesjonsstudium document.properties.profesjonsstudium]
     [def specialist document.properties.specialist]
-    [def introduction document.properties.introduction]
+    [def student-exchange-intro document.properties.student-exchange-intro]
     [def who-can-apply document.properties.who-can-apply]
     [def language document.properties.language]
     [def courses document.properties.courses]
@@ -118,6 +118,10 @@ resourcetype student-exchange-agreement {
         <div id="vrtx-content">
           <div id="vrtx-main-content">
             <h1>[localized 'student-exchange-agreement-between'] [val name] [localized 'and'] [call "include:shared-text" {"propName":"owner-of-agreement"}]</h1>
+            [if student-exchange-intro != null && student-exchange-intro != ""]
+              <h2>[localized 'student-exchange-intro']</h2>
+              [val student-exchange-intro # unescaped]
+            [endif]
             [if who-can-apply != null && who-can-apply != ""]
               <h2>[localized 'who-can-apply']</h2>
               [val who-can-apply # unescaped]
@@ -254,7 +258,7 @@ resourcetype student-exchange-agreement {
     profesjonsstudium : (en : " Profesjonsstudium", no : "Profesjonsstudium", nn : "Profesjonsstudium"),
     specialist : (en : "Specialist", no : "Spesialist", nn : "Spesialist"),
 
-    introduction : (en : "Introduction", no : "Innledning", nn : "Innleiing"), 
+    student-exchange-intro : (en : "Introduction", no : "Innledning", nn : "Innleiing"), 
     who-can-apply : (en : "Who can apply?", no : "Hvem kan søke?", nn : "Kven kan søkje"),
     language : (en : "Language", no : "Språk", nn : "Språk"),
     courses : (en : "What can you study?", no : "Hvilke emner kan jeg ta?", nn : "Kva emne kan eg ta?"),

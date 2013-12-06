@@ -511,7 +511,7 @@ resourcetype hvordan-soke {
     opptakskrav-generelle-master : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
 
     spesielle-view : (en : "Special admission requirements", no : "Spesielle opptakskrav", nn : "Spesielle opptakskrav"),
-    spesielle-admin : (en : "Admission requirements: Special (All)", no : "Opptakskrav: Spesielle (Alle)", nn : "Opptakkrav: Spesielle (Alle)"),
+    spesielle-admin : (en : "Admission requirements: Special (All)", no : "Opptakskrav: Spesielle (Alle)", nn : "Opptakskrav: Spesielle (Alle)"),
     spesielle-fri : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
     opptakskrav-spesielle : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
 

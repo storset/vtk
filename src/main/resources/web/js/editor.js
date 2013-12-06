@@ -1736,7 +1736,7 @@ VrtxEditor.prototype.accordionGroupedInit = function accordionGroupedInit(subGro
 
   var accordionWrpId = "accordion-grouped"; // TODO: multiple accordion group pr. page
   var groupedSelector = ".vrtx-grouped" + ((typeof subGroupedSelector !== "undefined") ? subGroupedSelector : "") +
-    ", .vrtx-pseudo-grouped" + ((typeof subGroupedSelector !== "undefined") ? subGroupedSelector : ""),
+                        ", .vrtx-pseudo-grouped" + ((typeof subGroupedSelector !== "undefined") ? subGroupedSelector : ""),
     grouped = vrtxEdit.editorForm.find(groupedSelector);
 
   grouped.wrapAll("<div id='" + accordionWrpId + "' />");

@@ -51,7 +51,8 @@ var VrtxAccordion = dejavu.Class.declare({
     }
     $.when(futureUi).done(function() {
       accordion.destroy(); // Destroy if already exists
-      accordion.__opts.elem.accordion({
+      
+      var initOpts = {
         header: accordion.__opts.headerSelector,
         heightStyle: "content",
         collapsible: true,
@@ -59,7 +60,11 @@ var VrtxAccordion = dejavu.Class.declare({
         activate: function (e, ui) {
           if(accordion.__opts.onActivate) accordion.__opts.onActivate(e, ui, accordion);
         }
-      });
+      };
+      if(accordion.__opts.animationSpeed) {
+        initOpts.animate.duration = animationSpeed;
+      }
+      accordion.__opts.elem.accordion(initOpts);
     });
   },
   destroy: function() {

@@ -476,7 +476,7 @@
         </div>
 
       <#else>
-      
+
         <#if (propDef.vocabulary)?exists>
           <#local allowedValues = propDef.vocabulary.allowedValues />
 
@@ -540,6 +540,17 @@
               </#list>
             </select>
           </#if>
+        <#elseif sharedTextIdentificators?exists && sharedTextName?exists && sharedTextName == name>
+          <select name="resource.${name}" id="resource.${name}">
+            <option value="">unspecified</option>
+            <#list sharedTextIdentificators as identificator>
+              <#if identificator == value>
+                <option selected="selected" value="${identificator?html}">${identificator?html}</option>
+              <#else>
+                <option value="${identificator?html}">${identificator?html}</option>
+              </#if>
+            </#list>
+          </select>
         <#else>
 
           <#if name = 'recursive-listing-subfolders'>

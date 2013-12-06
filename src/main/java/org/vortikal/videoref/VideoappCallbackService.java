@@ -45,7 +45,6 @@ import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.mvc.Controller;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
-import org.vortikal.web.view.JsonView;
 
 
         
@@ -170,6 +169,12 @@ public class VideoappCallbackService implements Controller {
 
     private void handleUpdateNotification(HttpServletRequest request, HttpServletResponse response,
             Map<String,Object> model) throws Exception {
+
+        if (request.getParameter("videoId") == null) {
+            model.put("status", 400);
+            model.put("json", errorBody("Missing required parameter 'videoId'"));
+            return;
+        }
         
         VideoId videoId = videoIdFromInput(request.getParameter("videoId"));
         if (videoId == null) {

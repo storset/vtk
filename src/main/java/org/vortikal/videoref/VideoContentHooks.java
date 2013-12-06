@@ -198,6 +198,7 @@ public class VideoContentHooks extends DefaultTypeHanderHooks
         VideoRef ref = loadVideoRef(resource.getURI(), getContentStore());
 
         if (ref.sourceVideo() != null) {
+            videoapp.notifyDownload(ref.videoId());
             return new FileInputStream(new File(ref.sourceVideo().path()));
         }
 

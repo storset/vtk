@@ -36,7 +36,12 @@ import java.net.URI;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import net.sf.json.JSONObject;
+import org.apache.commons.httpclient.methods.RequestEntity;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
@@ -57,6 +62,8 @@ public class VideoappClient {
     private String apiBaseUrl;
     
     private final Log logger = LogFactory.getLog(VideoappClient.class);
+    
+    private final Executor asyncMessageExecutor = Executors.newCachedThreadPool();
 
     /**
      * Create new video object in videoapp.
@@ -169,13 +176,31 @@ public class VideoappClient {
     }
     
     /**
-     * Notify video app about download of source stream from Vortex.
-     * @param videoId 
+     * Notify videoapp about download of source stream from Vortex.
+     * 
+     * <p>This method is non-blocking and returns immediately.
+     * 
+     * @param videoId the video id for which source stream has been requested in Vortex.
      */
-    public void notifyDownload(VideoId videoId) {
+    public void notifyDownload(final VideoId videoId) {
 
         // TODO implement me with short TCP timeouts, since this will
         // be invoked every time getInputStream() from Repository is called.
+        logger.debug("notifyDownload: " + videoId);
+        
+        final Runnable r = new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    restTemplate.getForObject(withBaseUrl("/videos/{host}/{numericId}?notifyDownload=true"),
+                            JSONObject.class, repositoryId, videoId.numericId());
+                } catch (Exception e) {
+                    logger.warn("Exception while notifying of video download, videoId = " + videoId + ": " + e.getMessage());
+                }
+            }
+        };
+
+        asyncMessageExecutor.execute(r);
     }
     
     /**
@@ -218,6 +243,11 @@ public class VideoappClient {
         Token token = new Token(tokenId, tokenValue, new Date(new Date().getTime() + 60000), videoId);
         
         return new StreamingRef(token, URI.create(hlsStreamUri), URI.create(hdsStreamUri));
+    }
+    
+    private Future<ResponseEntity> executeAsyncRequest(RequestEntity request) {
+        
+        return null;
     }
     
     /**

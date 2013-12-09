@@ -79,74 +79,89 @@ public class CreateDropDownController implements Controller {
         writeResults(resources, request, response, token);
         return null;
     }
+    
+    private JSONObject generateJSONObjectNode(Resource resource, String token, HttpServletRequest request, Map<String, String> urlParameteres, String buttonText) {
+        JSONObject o = new JSONObject();
+        Principal principal = RequestContext.getRequestContext().getPrincipal();
 
-    private void badRequest(Throwable e, HttpServletResponse response) throws IOException {
-        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        PrintWriter writer = response.getWriter();
+        String title;
         try {
-            writer.write(e.getMessage());
-        } finally {
-            writer.close();
+            String url = service.constructURL(resource, principal, urlParameteres).getPathRepresentation();     
+
+            title = "<a target=&quot;_top&quot; class=&quot;vrtx-button-small&quot; href=&quot;" + url + "&quot;>"
+                    + "<span>" + provider.getLocalizedTitle(request, buttonText, null) + "</span>" + "</a>";
+        } catch (ServiceUnlinkableException e) {
+            title = "<span class=&quot;no-create-permission&quot;>"
+                    + provider.getLocalizedTitle(request, "manage.no-permission", null) + "</span>";
+        } catch (Exception e) {
+            return null;
         }
+
+        o.put("hasChildren", provider.hasChildren(resource, token));           // Node has children (sub-tree)
+        Path uri = resource.getURI();
+        o.put("text", uri.isRoot() ? repository.getId() : resource.getName()); // Node name
+        o.put("uri", uri.toString());                                          // Node URI
+        
+        boolean unpublished = resource.getProperty(Namespace.DEFAULT_NAMESPACE, "unpublishedCollection") != null 
+                           || !resource.isPublished();
+        
+        o.put("spanClasses", "folder" + (!unpublished ? "" : " unpublished")); // Node classes
+        o.put("title", title);                                                 // Node title
+        
+        return o;
+    }
+    
+    private String getNodeButtonText(String serviceParam) {
+        if (serviceParam != null) {
+            if (serviceParam.equals("upload-file-from-drop-down")) {
+                return "manage.upload-here";
+            } else if (serviceParam.equals("view-report-from-drop-down")) {
+                return "manage.view-this";
+            }
+        }
+        return "manage.place-here";
+    }
+    
+    private Map<String, String> getReportType(String reportType) {
+        Map<String, String> typeParam = new HashMap<String, String>();
+        if(reportType != null) {
+            typeParam.put("report-type", reportType);
+        }
+        return typeParam;
     }
 
     private void writeResults(List<Resource> resources, HttpServletRequest request, HttpServletResponse response,
             String token) throws Exception {
-        JSONArray list = new JSONArray();
 
-        String buttonText = request.getParameter("service");
-        if (buttonText != null && buttonText.equals("upload-file-from-drop-down")) {
-            buttonText = "manage.upload-here";
-        } else if (buttonText != null && buttonText.equals("view-report-from-drop-down")) {
-            buttonText = "manage.view-this";
-        } else {
-            buttonText = "manage.place-here";
-        }
+        String buttonText = getNodeButtonText(request.getParameter("service"));
+        Map<String, String> urlParameteres = getReportType(request.getParameter("report-type"));
         
-        // XXX: More general
-        Map<String, String> typeParam = new HashMap<String, String>();
-        String reportType = request.getParameter("report-type");
-        if(reportType != null) {
-            typeParam.put("report-type", reportType);
-        }
-
+        JSONArray listNodes = new JSONArray();
         for (Resource r : resources) {
-            JSONObject o = new JSONObject();
-
-            Principal principal = RequestContext.getRequestContext().getPrincipal();
-
-            String title;
-            try {
-                String url = service.constructURL(r, principal, typeParam).getPathRepresentation();     
-
-                title = "<a target=&quot;_top&quot; class=&quot;vrtx-button-small&quot; href=&quot;" + url + "&quot;>"
-                        + "<span>" + provider.getLocalizedTitle(request, buttonText, null) + "</span>" + "</a>";
-            } catch (ServiceUnlinkableException e) {
-                title = "<span class=&quot;no-create-permission&quot;>"
-                        + provider.getLocalizedTitle(request, "manage.no-permission", null) + "</span>";
-            } catch (Exception e) {
+            JSONObject node = generateJSONObjectNode(r, token, request, urlParameteres, buttonText);
+            if(listNodes != null) {
+                listNodes.add(node);
+            } else {
                 response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                 return;
             }
-
-            o.put("hasChildren", provider.hasChildren(r, token));
-            Path uri = r.getURI();
-            o.put("text", uri.isRoot() ? repository.getId() : r.getName());
-            o.put("uri", uri.toString());
-            
-            Property prop = r.getProperty(Namespace.DEFAULT_NAMESPACE, "unpublishedCollection");
-            boolean unpublished = prop != null || !r.isPublished();
-            o.put("spanClasses", "folder" + (!unpublished ? "" : " unpublished"));
-            o.put("title", title);
-
-            list.add(o);
         }
 
         response.setStatus(HttpServletResponse.SC_OK);
         response.setContentType("text/plain;charset=utf-8");
+        
+        write(listNodes.toString(1), response);
+    }
+
+    private void badRequest(Throwable e, HttpServletResponse response) throws IOException {
+        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        write(e.getMessage(), response);
+    }
+    
+    private void write(String responseText, HttpServletResponse response) throws IOException {
         PrintWriter writer = response.getWriter();
         try {
-            writer.print(list.toString(1));
+            writer.write(responseText);
         } finally {
             writer.close();
         }

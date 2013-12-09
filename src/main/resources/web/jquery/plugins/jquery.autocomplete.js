@@ -705,21 +705,25 @@
                 + ((i == (max - 1)) ? " " + CLASSES.LAST : "")
                 + ((i == 0) ? " " + CLASSES.FIRST : "");
       
-        if(i == (max-1) && formattedMoreLink != null) { // More link - move from first to last after "max"
+        if(i == (max-1) && formattedMoreLink != null) { // More link - move from first to last
           cls += " " + CLASSES.MORE;
           formatted = formattedMoreLink.replace(/^###MORE###LINK###[\s]*/, "");
           formattedMoreLink = null;
         } else {
-          if (!data[i])
+          if (!data[i]) {
+            i--;
             continue;
+          }
           
           var formatted = options.formatItem(data[i].data, i + 1, max, data[i].value, term);
-          if (formatted === false)
+          if (formatted === false) {
+            i--;
             continue;
+          }
                 
           if(/^###MORE###LINK###.*$/.test(formatted)) {
             formattedMoreLink = formatted;
-            max++;
+            i--;
             continue;
           }
         }

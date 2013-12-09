@@ -70,6 +70,9 @@ public class CreateDropDownController implements Controller {
        public static String CLASSES_FOLDER = "folder";
        public static String CLASSES_UNPUBLISHED = "unpublished";
     }
+    
+    private static String PARAMETER_SERVICE = "service";
+    private static String PARAMETER_REPORT_TYPE = "report-type";
 
     @Override
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -94,8 +97,8 @@ public class CreateDropDownController implements Controller {
     private void writeResults(List<Resource> resources, HttpServletRequest request, HttpServletResponse response,
             String token) throws Exception {
 
-        String buttonText = getButtonText(request.getParameter("service"));
-        Map<String, String> uriParameters = getReportType(request.getParameter("report-type"));
+        String buttonText = getButtonText(request.getParameter(PARAMETER_SERVICE));
+        Map<String, String> uriParameters = getReportType(request.getParameter(PARAMETER_REPORT_TYPE));
         
         JSONArray listNodes = new JSONArray();
         for (Resource resource : resources) {

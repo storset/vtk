@@ -101,12 +101,12 @@ public class CreateDropDownController implements Controller {
         response.setStatus(HttpServletResponse.SC_OK);
         response.setContentType("text/plain;charset=utf-8");
         
-        write(listNodes.toString(1), response);
+        writeResponse(listNodes.toString(1), response);
     }
 
     private void badRequest(Throwable e, HttpServletResponse response) throws IOException {
         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        write(e.getMessage(), response);
+        writeResponse(e.getMessage(), response);
     }
     
     private JSONObject generateJSONObjectNode(Resource resource, String token, HttpServletRequest request, Map<String, String> uriParameters, String buttonText) {
@@ -140,7 +140,7 @@ public class CreateDropDownController implements Controller {
         return o;
     }
     
-    private void write(String responseText, HttpServletResponse response) throws IOException {
+    private void writeResponse(String responseText, HttpServletResponse response) throws IOException {
         PrintWriter writer = response.getWriter();
         try {
             writer.write(responseText);

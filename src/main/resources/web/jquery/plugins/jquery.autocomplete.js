@@ -709,32 +709,31 @@
     function fillList() {
       list.empty();
       var len = data.length;
-      var max = limitNumberOfItems(data.length);
-      var formattedMoreLink = null;
-      var dataMoreLink = null;
-      
+      var max = limitNumberOfItems(len);
+
       if(len > 0) {
         var j = len - 1;
         var formattedMoreLink = options.formatItem(data[j].data, j + 1, max, data[j].value, term);
         if(/^###MORE###LINK###.*$/.test(formatted)) {
-          formattedMoreLink = formattedMoreLink.replace(/^###MORE###LINK###[\s]*$/, "");
-          dataMoreLink = data[j];
+          var formattedMoreLink = formattedMoreLink.replace(/^###MORE###LINK###[\s]*/, "");
+          var dataMoreLink = data[j];
           max--;
+        } else {
+          var formattedMoreLink = null;
         }
       }
       for ( var i = 0; i < max; i++) {
-        var dt = data[i];
-        if (!dt)
+        if (!data[i])
             continue;
           
-        var formatted = options.formatItem(dt.data, i + 1, max, dt.value, term);
+        var formatted = options.formatItem(data[i].data, i + 1, max, data[i].value, term);
         if (formatted === false)
           continue;
        
         addLi(formatted, addCls(i, max), dt);
       }
       
-      if(formattedMoreLink) {
+      if(formattedMoreLink != null) {
         addLi(formattedMoreLink, addCls(max, max + 1), dataMoreLink);
       }
       

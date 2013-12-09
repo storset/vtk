@@ -47,8 +47,10 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Path;
+import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.Principal;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
@@ -59,6 +61,7 @@ public class CreateDropDownController implements Controller {
     private CreateDropDownProvider provider;
     private Service service;
     private Repository repository;
+    private PropertyTypeDefinition unpublishedCollectionPropDef;
     
     private static class Node {
        public static String URI = "uri"; 
@@ -142,7 +145,7 @@ public class CreateDropDownController implements Controller {
         }
         Path uri = resource.getURI();
         
-        boolean unpublished = resource.getProperty(Namespace.DEFAULT_NAMESPACE, "unpublishedCollection") != null 
+        boolean unpublished = resource.getProperty(unpublishedCollectionPropDef) != null 
                 || !resource.isPublished();
         
         o.put(Node.URI, uri.toString());
@@ -177,7 +180,7 @@ public class CreateDropDownController implements Controller {
     private Map<String, String> getReportType(String reportType) {
         Map<String, String> uriParameters = new HashMap<String, String>();
         if(reportType != null) {
-            uriParameters.put("report-type", reportType);
+            uriParameters.put(PARAMETER_REPORT_TYPE, reportType);
         }
         return uriParameters;
     }
@@ -190,6 +193,11 @@ public class CreateDropDownController implements Controller {
     @Required
     public void setProvider(CreateDropDownProvider provider) {
         this.provider = provider;
+    }
+    
+    @Required
+    public void setUnpublishedCollectionPropDef(PropertyTypeDefinition prop) {
+        this.unpublishedCollectionPropDef = prop;
     }
 
     @Required

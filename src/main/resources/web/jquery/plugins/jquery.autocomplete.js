@@ -700,7 +700,7 @@
       $.data(li, CLASSES.DATA, dt);
     }
     
-    function addCls(i) {
+    function addCls(i, max) {
       return ((i % 2 == 0) ? CLASSES.EVEN : CLASSES.ODD)
            + ((i == (max - 1)) ? " " + CLASSES.LAST : "")
            + ((i == 0) ? " " + CLASSES.FIRST : "");
@@ -731,11 +731,11 @@
         if (formatted === false)
           continue;
        
-        addLi(formatted, addCls(i), dt);
+        addLi(formatted, addCls(i, max), dt);
       }
       
       if(formattedMoreLink) {
-        addLi(formattedMoreLink, addCls(max), dataMoreLink);
+        addLi(formattedMoreLink, addCls(max, max + 1), dataMoreLink);
       }
       
       listItems = list.find("li");

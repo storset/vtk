@@ -694,40 +694,48 @@
     function limitNumberOfItems(available) {
       return options.max && options.max < available ? options.max : available;
     }
+    
+    function addLi(formatted, cls, dt) {
+      var li = $("<li/>").html(options.highlight(formatted, term)).addClass(cls).appendTo(list)[0];           
+      $.data(li, CLASSES.DATA, dt);
+    }
+    
+    function addCls(i) {
+      return ((i % 2 == 0) ? CLASSES.EVEN : CLASSES.ODD)
+           + ((i == (max - 1)) ? " " + CLASSES.LAST : "")
+           + ((i == 0) ? " " + CLASSES.FIRST : "");
+    }
 
     function fillList() {
       list.empty();
+      var len = data.length;
       var max = limitNumberOfItems(data.length);
       var formattedMoreLink = null;
-      var offset = 0;
+      var dataMoreLink = null;
       
-      for ( var i = 0; i < (max+offset); i++) {
-        var cls = "";
-        if(i == ((max+offset)-1) && formattedMoreLink != null) { // More link - move from first to last
-          cls = CLASSES.MORE + " ";
-          formatted = formattedMoreLink.replace(/^###MORE###LINK###[\s]*/, "");
-          formattedMoreLink = null;
-        } else {
-          if (!data[i])
+      if(len > 0) {
+        var j = len - 1;
+        var formattedMoreLink = options.formatItem(data[j].data, j + 1, max, data[j].value, term);
+        if(/^###MORE###LINK###.*$/.test(formatted)) {
+          formattedMoreLink = formattedMoreLink.replace(/^###MORE###LINK###[\s]*$/, "");
+          dataMoreLink = data[j];
+          max--;
+        }
+      }
+      for ( var i = 0; i < max; i++) {
+        var dt = data[i];
+        if (!dt)
             continue;
           
-          var formatted = options.formatItem(data[i].data, i + 1, max, data[i].value, term);
-          if (formatted === false)
-            continue;
-                
-          if(/^###MORE###LINK###.*$/.test(formatted)) {
-            formattedMoreLink = formatted;
-            offset++;
-            continue;
-          }
-        }
-        
-        cls += ((i % 2 == offset) ? CLASSES.EVEN : CLASSES.ODD)
-             + ((i == ((max+offset) - 1)) ? " " + CLASSES.LAST : "")
-             + ((i == offset) ? " " + CLASSES.FIRST : "");
-        
-        var li = $("<li/>").html(options.highlight(formatted, term)).addClass(cls).appendTo(list)[0];           
-        $.data(li, CLASSES.DATA, data[i]);
+        var formatted = options.formatItem(dt.data, i + 1, max, dt.value, term);
+        if (formatted === false)
+          continue;
+       
+        addLi(formatted, addCls(i), dt);
+      }
+      
+      if(formattedMoreLink) {
+        addLi(formattedMoreLink, addCls(max), dataMoreLink);
       }
       
       listItems = list.find("li");

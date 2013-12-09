@@ -731,7 +731,7 @@
         if (formatted === false)
           continue;
        
-        addLi(formatted, addCls(i, max), dt);
+        addLi(formatted, addCls(i, max), data[i]);
       }
       
       if(formattedMoreLink != null) {

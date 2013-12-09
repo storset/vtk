@@ -66,6 +66,9 @@ public class CreateDropDownController implements Controller {
        public static String CLASSES = "spanClasses";
        public static String HAS_CHILDREN = "hasChildren";
        public static String TEXT = "text";
+       
+       public static String CLASSES_FOLDER = "folder";
+       public static String CLASSES_UNPUBLISHED = "unpublished";
     }
 
     @Override
@@ -141,7 +144,7 @@ public class CreateDropDownController implements Controller {
         
         o.put(Node.URI, uri.toString());
         o.put(Node.TITLE, title);
-        o.put(Node.CLASSES, "folder" + (!unpublished ? "" : " unpublished"));
+        o.put(Node.CLASSES, Node.CLASSES_FOLDER + (!unpublished ? "" : " " + Node.CLASSES_UNPUBLISHED));
         o.put(Node.HAS_CHILDREN, provider.hasChildren(resource, token));
         o.put(Node.TEXT, uri.isRoot() ? repository.getId() : resource.getName());
 

@@ -80,13 +80,42 @@ public class CreateDropDownController implements Controller {
         return null;
     }
     
-    private JSONObject generateJSONObjectNode(Resource resource, String token, HttpServletRequest request, Map<String, String> urlParameteres, String buttonText) {
+
+    private void writeResults(List<Resource> resources, HttpServletRequest request, HttpServletResponse response,
+            String token) throws Exception {
+
+        String buttonText = getButtonText(request.getParameter("service"));
+        Map<String, String> uriParameters = getReportType(request.getParameter("report-type"));
+        
+        JSONArray listNodes = new JSONArray();
+        for (Resource resource : resources) {
+            JSONObject node = generateJSONObjectNode(resource, token, request, uriParameters, buttonText);
+            if(listNodes != null) {
+                listNodes.add(node);
+            } else {
+                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                return;
+            }
+        }
+
+        response.setStatus(HttpServletResponse.SC_OK);
+        response.setContentType("text/plain;charset=utf-8");
+        
+        write(listNodes.toString(1), response);
+    }
+
+    private void badRequest(Throwable e, HttpServletResponse response) throws IOException {
+        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        write(e.getMessage(), response);
+    }
+    
+    private JSONObject generateJSONObjectNode(Resource resource, String token, HttpServletRequest request, Map<String, String> uriParameters, String buttonText) {
         JSONObject o = new JSONObject();
         Principal principal = RequestContext.getRequestContext().getPrincipal();
 
         String title;
         try {
-            String url = service.constructURL(resource, principal, urlParameteres).getPathRepresentation();     
+            String url = service.constructURL(resource, principal, uriParameters).getPathRepresentation();     
 
             title = "<a target=&quot;_top&quot; class=&quot;vrtx-button-small&quot; href=&quot;" + url + "&quot;>"
                     + "<span>" + provider.getLocalizedTitle(request, buttonText, null) + "</span>" + "</a>";
@@ -111,7 +140,16 @@ public class CreateDropDownController implements Controller {
         return o;
     }
     
-    private String getNodeButtonText(String serviceParam) {
+    private void write(String responseText, HttpServletResponse response) throws IOException {
+        PrintWriter writer = response.getWriter();
+        try {
+            writer.write(responseText);
+        } finally {
+            writer.close();
+        }
+    }
+    
+    private String getButtonText(String serviceParam) {
         if (serviceParam != null) {
             if (serviceParam.equals("upload-file-from-drop-down")) {
                 return "manage.upload-here";
@@ -123,48 +161,11 @@ public class CreateDropDownController implements Controller {
     }
     
     private Map<String, String> getReportType(String reportType) {
-        Map<String, String> typeParam = new HashMap<String, String>();
+        Map<String, String> uriParameters = new HashMap<String, String>();
         if(reportType != null) {
-            typeParam.put("report-type", reportType);
+            uriParameters.put("report-type", reportType);
         }
-        return typeParam;
-    }
-
-    private void writeResults(List<Resource> resources, HttpServletRequest request, HttpServletResponse response,
-            String token) throws Exception {
-
-        String buttonText = getNodeButtonText(request.getParameter("service"));
-        Map<String, String> urlParameteres = getReportType(request.getParameter("report-type"));
-        
-        JSONArray listNodes = new JSONArray();
-        for (Resource r : resources) {
-            JSONObject node = generateJSONObjectNode(r, token, request, urlParameteres, buttonText);
-            if(listNodes != null) {
-                listNodes.add(node);
-            } else {
-                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                return;
-            }
-        }
-
-        response.setStatus(HttpServletResponse.SC_OK);
-        response.setContentType("text/plain;charset=utf-8");
-        
-        write(listNodes.toString(1), response);
-    }
-
-    private void badRequest(Throwable e, HttpServletResponse response) throws IOException {
-        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        write(e.getMessage(), response);
-    }
-    
-    private void write(String responseText, HttpServletResponse response) throws IOException {
-        PrintWriter writer = response.getWriter();
-        try {
-            writer.write(responseText);
-        } finally {
-            writer.close();
-        }
+        return uriParameters;
     }
 
     @Required

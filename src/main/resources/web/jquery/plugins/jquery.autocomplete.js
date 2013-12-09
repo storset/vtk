@@ -699,35 +699,32 @@
       list.empty();
       var max = limitNumberOfItems(data.length);
       var formattedMoreLink = null;
+      var offset = 0;
       
-      for ( var i = 0; i < max; i++) {
+      for ( var i = 0; i < (max+offset); i++) {
         var cls = "";
-        if(i == (max-1) && formattedMoreLink != null) { // More link - move from first to last
+        if(i == ((max+offset)-1) && formattedMoreLink != null) { // More link - move from first to last
           cls = CLASSES.MORE + " ";
           formatted = formattedMoreLink.replace(/^###MORE###LINK###[\s]*/, "");
           formattedMoreLink = null;
         } else {
-          if (!data[i]) {
-            i--;
+          if (!data[i])
             continue;
-          }
           
           var formatted = options.formatItem(data[i].data, i + 1, max, data[i].value, term);
-          if (formatted === false) {
-            i--;
+          if (formatted === false)
             continue;
-          }
                 
           if(/^###MORE###LINK###.*$/.test(formatted)) {
             formattedMoreLink = formatted;
-            i--;
+            offset++;
             continue;
           }
         }
         
-        cls += ((i % 2 == 0) ? CLASSES.EVEN : CLASSES.ODD)
-             + ((i == (max - 1)) ? " " + CLASSES.LAST : "")
-             + ((i == 0) ? " " + CLASSES.FIRST : "");
+        cls += ((i % 2 == offset) ? CLASSES.EVEN : CLASSES.ODD)
+             + ((i == ((max+offset) - 1)) ? " " + CLASSES.LAST : "")
+             + ((i == offset) ? " " + CLASSES.FIRST : "");
         
         var li = $("<li/>").html(options.highlight(formatted, term)).addClass(cls).appendTo(list)[0];           
         $.data(li, CLASSES.DATA, data[i]);

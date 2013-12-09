@@ -1,4 +1,4 @@
-/* Copyright (c) 2011, University of Oslo, Norway
+/* Copyright (c) 2011, 2013 University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -47,7 +47,6 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Path;
-import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
@@ -60,6 +59,14 @@ public class CreateDropDownController implements Controller {
     private CreateDropDownProvider provider;
     private Service service;
     private Repository repository;
+    
+    private static class Node {
+       public static String URI = "uri"; 
+       public static String TITLE = "title";
+       public static String CLASSES = "spanClasses";
+       public static String HAS_CHILDREN = "hasChildren";
+       public static String TEXT = "text";
+    }
 
     @Override
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -97,10 +104,12 @@ public class CreateDropDownController implements Controller {
                 return;
             }
         }
-
+        goodRequest(listNodes, response);
+    }
+    
+    private void goodRequest(JSONArray listNodes, HttpServletResponse response) throws IOException {
         response.setStatus(HttpServletResponse.SC_OK);
         response.setContentType("text/plain;charset=utf-8");
-        
         writeResponse(listNodes.toString(1), response);
     }
 
@@ -125,18 +134,17 @@ public class CreateDropDownController implements Controller {
         } catch (Exception e) {
             return null;
         }
-
-        o.put("hasChildren", provider.hasChildren(resource, token));           // Node has children (sub-tree)
         Path uri = resource.getURI();
-        o.put("text", uri.isRoot() ? repository.getId() : resource.getName()); // Node name
-        o.put("uri", uri.toString());                                          // Node URI
         
         boolean unpublished = resource.getProperty(Namespace.DEFAULT_NAMESPACE, "unpublishedCollection") != null 
-                           || !resource.isPublished();
+                || !resource.isPublished();
         
-        o.put("spanClasses", "folder" + (!unpublished ? "" : " unpublished")); // Node classes
-        o.put("title", title);                                                 // Node title
-        
+        o.put(Node.URI, uri.toString());
+        o.put(Node.TITLE, title);
+        o.put(Node.CLASSES, "folder" + (!unpublished ? "" : " unpublished"));
+        o.put(Node.HAS_CHILDREN, provider.hasChildren(resource, token));
+        o.put(Node.TEXT, uri.isRoot() ? repository.getId() : resource.getName());
+
         return o;
     }
     

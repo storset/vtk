@@ -439,7 +439,7 @@
     minChars: 1,
     delay: 400,
     matchCase: false,
-    matchSubset: true,
+    matchSubset: false,
     matchContains: false,
     cacheLength: 10,
     max: 100,
@@ -698,26 +698,34 @@
     function fillList() {
       list.empty();
       var max = limitNumberOfItems(data.length);
+      var formattedMoreLink = null;
+      
       for ( var i = 0; i < max; i++) {
-        if (!data[i])
-          continue;
-        var formatted = options.formatItem(data[i].data, i + 1, max, data[i].value, term);
-        if (formatted === false)
-          continue;
+        if(i == (max-1) && formattedMoreLink != null) {
+          cls += " " + CLASSES.MORE;
+          formatted = formattedMoreLink.replace(/^###MORE###LINK###[\s]*/, "");
+          formattedMoreLink = null;
+        } else {
+          if (!data[i])
+            continue;
           
+          var formatted = options.formatItem(data[i].data, i + 1, max, data[i].value, term);
+          if (formatted === false)
+            continue;
+                
+          if(/^###MORE###LINK###.*$/.test(formatted)) {
+            formattedMoreLink = formatted;
+            max++;
+            continue;
+          }
+        }
         var cls = ((i % 2 == 0) ? CLASSES.EVEN : CLASSES.ODD)
                 + ((i == (max - 1)) ? " " + CLASSES.LAST : "")
                 + ((i == 0) ? " " + CLASSES.FIRST : "");
-                
-        if(/^###MORE###LINK###.*$/.test(formatted)) {
-          formatted = formatted.replace(/^###MORE###LINK###[\s]*/, "");
-          cls += " " + CLASSES.MORE;
-        }
-        
-        var li = $("<li/>").html(options.highlight(formatted, term)).addClass(cls).appendTo(list)[0];
-                           
+        var li = $("<li/>").html(options.highlight(formatted, term)).addClass(cls).appendTo(list)[0];           
         $.data(li, CLASSES.DATA, data[i]);
       }
+      
       listItems = list.find("li");
       if (options.selectFirst) {
         listItems.slice(0, 1).addClass(CLASSES.ACTIVE);

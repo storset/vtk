@@ -701,7 +701,11 @@
       var formattedMoreLink = null;
       
       for ( var i = 0; i < max; i++) {
-        if(i == (max-1) && formattedMoreLink != null) {
+        var cls = ((i % 2 == 0) ? CLASSES.EVEN : CLASSES.ODD)
+                + ((i == (max - 1)) ? " " + CLASSES.LAST : "")
+                + ((i == 0) ? " " + CLASSES.FIRST : "");
+      
+        if(i == (max-1) && formattedMoreLink != null) { // More link - move from first to last after "max"
           cls += " " + CLASSES.MORE;
           formatted = formattedMoreLink.replace(/^###MORE###LINK###[\s]*/, "");
           formattedMoreLink = null;
@@ -719,9 +723,6 @@
             continue;
           }
         }
-        var cls = ((i % 2 == 0) ? CLASSES.EVEN : CLASSES.ODD)
-                + ((i == (max - 1)) ? " " + CLASSES.LAST : "")
-                + ((i == 0) ? " " + CLASSES.FIRST : "");
         var li = $("<li/>").html(options.highlight(formatted, term)).addClass(cls).appendTo(list)[0];           
         $.data(li, CLASSES.DATA, data[i]);
       }

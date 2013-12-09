@@ -711,18 +711,19 @@
       var len = data.length;
       var max = limitNumberOfItems(len);
 
+      var offset = 0;
       if(len > 0) {
         var j = len - 1;
         var formattedMoreLink = options.formatItem(data[j].data, j + 1, max, data[j].value, term);
         if(/^###MORE###LINK###.*$/.test(formatted)) {
           var formattedMoreLink = formattedMoreLink.replace(/^###MORE###LINK###[\s]*/, "");
           var dataMoreLink = data[j];
-          max--;
+          var offset = 1;
         } else {
           var formattedMoreLink = null;
         }
       }
-      for ( var i = 0; i < max; i++) {
+      for ( var i = 0; i < (max-offset); i++) {
         if (!data[i])
             continue;
           
@@ -734,7 +735,7 @@
       }
       
       if(formattedMoreLink != null) {
-        addLi(formattedMoreLink, addCls(max, max + 1), dataMoreLink);
+        addLi(formattedMoreLink, addCls(max-offset, max), dataMoreLink);
       }
       
       listItems = list.find("li");

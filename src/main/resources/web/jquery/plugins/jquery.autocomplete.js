@@ -715,12 +715,12 @@
       if(len > 0) {
         var j = len - 1;
         var formattedMoreLink = options.formatItem(data[j].data, j + 1, max, data[j].value, term);
-        if(/^###MORE###LINK###.*$/.test(formatted)) {
-          var formattedMoreLink = formattedMoreLink.replace(/^###MORE###LINK###[\s]*/, "");
+        if(/^###MORE###LINK###.*$/.test(formattedMoreLink)) {
+          formattedMoreLink = formattedMoreLink.replace(/^###MORE###LINK###[\s]*/, "");
           var dataMoreLink = data[j];
           var offset = 1;
         } else {
-          var formattedMoreLink = null;
+          formattedMoreLink = null;
         }
       }
       for ( var i = 0; i < (max-offset); i++) {
@@ -735,7 +735,7 @@
       }
       
       if(formattedMoreLink != null) {
-        addLi(formattedMoreLink, addCls(max-offset, max), dataMoreLink);
+        addLi(formattedMoreLink, addCls(max-offset, max) + " " + CLASSES.MORE, dataMoreLink);
       }
       
       listItems = list.find("li");

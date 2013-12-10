@@ -54,19 +54,11 @@ public class ListResourcesProvider {
     private Repository repository;
     private org.springframework.web.servlet.support.RequestContext springRequestContext;
 
-    public List<Resource> buildSearchAndPopulateResources(Path uri, String token, HttpServletRequest request) {
+    public List<Resource> buildSearchAndPopulateResources(Path uri, String token, HttpServletRequest request) throws Exception {
 
         this.springRequestContext = new org.springframework.web.servlet.support.RequestContext(request);
 
-        Resource[] resourcesArr = null;
-
-        try {
-            resourcesArr = this.repository.listChildren(token, uri, false);
-        } catch (ResourceNotFoundException e1) {
-        } catch (AuthorizationException e1) {
-        } catch (AuthenticationException e1) {
-        } catch (Exception e1) {
-        }
+        Resource[] resourcesArr = this.repository.listChildren(token, uri, false);
 
         List<Resource> resources = new ArrayList<Resource>();
 

@@ -30,6 +30,8 @@
  */
 package org.vortikal.web.actions.create;
 
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,18 +44,18 @@ import net.sf.json.JSONObject;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.Principal;
-import org.vortikal.web.JSONController;
 import org.vortikal.web.JSONTreeHelper;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.ServiceUnlinkableException;
 
-public class CreateDropDownController extends JSONController {
+public class CreateDropDownController implements Controller {
 
     private CreateDropDownProvider provider;
     private Service service;
@@ -65,8 +67,16 @@ public class CreateDropDownController extends JSONController {
 
     @Override
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        boolean success = handleUri(request, response);
-        if(!success) return null;
+        String uri = null;
+        try {
+            uri = (String) request.getParameter("uri");
+        } catch (Exception e) {
+            badRequest(e, response);
+            return null;
+        }
+        if (uri == null) {
+            return null;
+        }
         
         String token = RequestContext.getRequestContext().getSecurityToken();
         List<Resource> resources = provider.buildSearchAndPopulateResources(uri, token);
@@ -87,7 +97,27 @@ public class CreateDropDownController extends JSONController {
         }
         okRequest(listNodes, response);
     }
+    
 
+    private void okRequest(JSONArray arr, HttpServletResponse response) throws IOException {
+        response.setStatus(HttpServletResponse.SC_OK);
+        response.setContentType("text/plain;charset=utf-8"); /* XXX: Should be application/json? */
+        writeResponse(arr.toString(1), response);
+    }
+
+    private void badRequest(Throwable e, HttpServletResponse response) throws IOException {
+        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        writeResponse(e.getMessage(), response);
+    }
+    
+    private void writeResponse(String responseText, HttpServletResponse response) throws IOException {
+        PrintWriter writer = response.getWriter();
+        try {
+            writer.write(responseText);
+        } finally {
+            writer.close();
+        }
+    }
     
     private JSONObject generateJSONObjectNode(Resource resource, String token, HttpServletRequest request, Map<String, String> uriParameters, String buttonText) {
         JSONObject o = new JSONObject();

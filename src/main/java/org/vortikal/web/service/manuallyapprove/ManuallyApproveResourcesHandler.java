@@ -30,6 +30,8 @@
  */
 package org.vortikal.web.service.manuallyapprove;
 
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -44,6 +46,7 @@ import net.sf.json.JSONObject;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.repository.MultiHostSearcher;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
@@ -53,7 +56,6 @@ import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.security.SecurityContext;
-import org.vortikal.web.JSONController;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.URL;
 
@@ -68,7 +70,7 @@ import org.vortikal.web.service.URL;
  * anything else other than manually approval).
  * 
  */
-public class ManuallyApproveResourcesHandler extends JSONController {
+public class ManuallyApproveResourcesHandler implements Controller {
 
     private ManuallyApproveResourcesSearcher searcher;
 
@@ -193,7 +195,15 @@ public class ManuallyApproveResourcesHandler extends JSONController {
             arr.add(obj);
         }
         
-        okRequest(arr, response, true);
+        response.setStatus(HttpServletResponse.SC_OK);
+        response.setContentType("text/plain;charset=utf-8");
+        PrintWriter writer = response.getWriter();
+        try {
+            writer.write(arr.toString(1));
+        } finally {
+            writer.flush();
+            writer.close();
+        }
 
         return null;
     }

@@ -30,6 +30,8 @@
  */
 package org.vortikal.web.service;
 
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -40,25 +42,33 @@ import net.sf.json.JSONObject;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.repository.Acl;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Privilege;
 import org.vortikal.repository.Resource;
 import org.vortikal.text.html.HtmlUtil;
-import org.vortikal.web.JSONController;
 import org.vortikal.web.JSONTreeHelper;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.provider.ListResourcesProvider;
 
-public class ListResourcesService extends JSONController {
+public class ListResourcesService implements Controller {
 
     private ListResourcesProvider provider;
     private Service permissionsService;
 
     @Override
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        boolean success = handleUri(request, response);
-        if(!success) return null;
+        String uri = null;
+        try {
+            uri = (String) request.getParameter("uri");
+        } catch (Exception e) {
+            badRequest(e, response);
+            return null;
+        }
+        if (uri == null) {
+            return null;
+        }
         
         RequestContext requestContext = RequestContext.getRequestContext();
         String token = requestContext.getSecurityToken();
@@ -67,6 +77,26 @@ public class ListResourcesService extends JSONController {
         return null;
     }
 
+    private void okRequest(JSONArray arr, HttpServletResponse response) throws IOException {
+        response.setStatus(HttpServletResponse.SC_OK);
+        response.setContentType("text/plain;charset=utf-8"); /* XXX: Should be application/json? */
+        writeResponse(arr.toString(1), response);
+    }
+
+    private void badRequest(Throwable e, HttpServletResponse response) throws IOException {
+        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        writeResponse(e.getMessage(), response);
+    }
+    
+    private void writeResponse(String responseText, HttpServletResponse response) throws IOException {
+        PrintWriter writer = response.getWriter();
+        try {
+            writer.write(responseText);
+        } finally {
+            writer.close();
+        }
+    }
+    
     private void writeResults(List<Resource> resources, HttpServletRequest request, HttpServletResponse response)
             throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
@@ -149,7 +179,7 @@ public class ListResourcesService extends JSONController {
             list.add(o);
         }
         
-        super.okRequest(list, response);
+        okRequest(list, response);
     }
 
     private void genEditOrViewButton(HttpServletRequest request, Resource r, boolean authorizedToAdmin,

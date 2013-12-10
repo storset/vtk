@@ -31,6 +31,8 @@
 package org.vortikal.web.display.linkcheck;
 
 import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,15 +44,15 @@ import net.sf.json.JSONObject;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.util.web.LinkTypesPrefixes;
-import org.vortikal.web.JSONController;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.display.linkcheck.LinkChecker.LinkCheckResult;
 import org.vortikal.web.service.URL;
 
-public class LinkCheckController extends JSONController {
+public class LinkCheckController implements Controller {
 
     private LinkChecker linkChecker;
     
@@ -96,6 +98,26 @@ public class LinkCheckController extends JSONController {
         okRequest(list, response);
     }
 
+    private void okRequest(JSONArray arr, HttpServletResponse response) throws IOException {
+        response.setStatus(HttpServletResponse.SC_OK);
+        response.setContentType("text/plain;charset=utf-8"); /* XXX: Should be application/json? */
+        writeResponse(arr.toString(1), response);
+    }
+
+    private void badRequest(Throwable e, HttpServletResponse response) throws IOException {
+        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        writeResponse(e.getMessage(), response);
+    }
+    
+    private void writeResponse(String responseText, HttpServletResponse response) throws IOException {
+        PrintWriter writer = response.getWriter();
+        try {
+            writer.write(responseText);
+        } finally {
+            writer.close();
+        }
+    }
+
     private List<String> readInput(HttpServletRequest request) throws Exception {
         String contentType = request.getContentType();
         if (contentType == null || !contentType.startsWith("text/plain")) {
@@ -122,6 +144,14 @@ public class LinkCheckController extends JSONController {
             return urls;
         } finally {
             reader.close();
+        }
+    }
+    
+    private static class BadRequestException extends Exception {
+        private static final long serialVersionUID = -8967067839019333139L;
+
+        public BadRequestException(String msg) {
+            super(msg);
         }
     }
 

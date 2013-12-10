@@ -18,6 +18,11 @@
 
   <bean id="listResources.handler" class="org.vortikal.web.service.ListResourcesService">
     <property name="provider" ref="listResources.provider" />
+    <property name="aclTooltipHelper" ref="aclTooltipHelper" />
+  </bean>
+  
+  <bean id="aclTooltipHelper" class="org.vortikal.web.ACLTooltipHelper">
+    <property name="repository" ref="repository" />
     <property name="permissionsService" ref="permissionsService" />
   </bean>
   

@@ -30,7 +30,6 @@
  */
 package org.vortikal.web.service.manuallyapprove;
 
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashSet;
 import java.util.List;
@@ -80,7 +79,7 @@ public class ManuallyApproveResourcesHandler implements Controller {
     
     private static final String URI = "uri"; 
     private static final String TITLE = "title";
-    private static final String SRC = "source";
+    private static final String SOURCE = "source";
     private static final String PUBLISHED = "published";
     private static final String APPROVED = "approved";
 
@@ -189,7 +188,7 @@ public class ManuallyApproveResourcesHandler implements Controller {
             JSONObject obj = new JSONObject();
             obj.put(TITLE, m.getTitle());
             obj.put(URI, m.getUrl().toString());
-            obj.put(SRC, m.getSource());
+            obj.put(SOURCE, m.getSource());
             obj.put(PUBLISHED, m.getPublishDateAsString());
             obj.put(APPROVED, approved);
             arr.add(obj);

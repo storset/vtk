@@ -83,13 +83,7 @@ public class CreateDropDownController extends JSONController {
         
         JSONArray listNodes = new JSONArray();
         for (Resource resource : resources) {
-            JSONObject node = generateJSONObjectNode(resource, token, request, uriParameters, buttonText);
-            if(listNodes != null) {
-                listNodes.add(node);
-            } else {
-                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                return;
-            }
+            listNodes.add(generateJSONObjectNode(resource, token, request, uriParameters, buttonText));
         }
         okRequest(listNodes, response);
     }

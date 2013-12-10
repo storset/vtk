@@ -74,7 +74,7 @@ public abstract class JSONController implements Controller {
         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         writeResponse(e.getMessage(), response, false);
     }
-
+    
     protected static class BadRequestException extends Exception {
         private static final long serialVersionUID = -8967067839019333139L;
 
@@ -83,6 +83,19 @@ public abstract class JSONController implements Controller {
         }
     }
     
+    protected void serverErrorRequest(Throwable e, HttpServletResponse response) throws IOException {
+        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        writeResponse(e.getMessage(), response, false);
+    }
+    
+    protected static class InternalServerErrorException extends Exception {
+        private static final long serialVersionUID = 3805010992058080085L;
+
+        public InternalServerErrorException(String msg) {
+            super(msg);
+        }
+    }
+
     protected void writeResponse(String responseText, HttpServletResponse response, boolean isFlush) throws IOException {
         PrintWriter writer = response.getWriter();
         try {

@@ -16,8 +16,12 @@ public class ACLTooltipHelper {
     private Repository repository;
     private org.springframework.web.servlet.support.RequestContext springRequestContext;
 
-    public String generateTitle(Resource r, String name, HttpServletRequest request, boolean authorizedToAdmin, boolean authorizedToRead) {
+    public String generateTitle(Resource r, String name, HttpServletRequest request) {
+        RequestContext requestContext = RequestContext.getRequestContext();
+        
         Acl acl = r.getAcl();
+        boolean authorizedToRead = authorizedTo(acl, requestContext.getPrincipal(), Privilege.READ);
+        boolean authorizedToAdmin = authorizedTo(acl, requestContext.getPrincipal(), Privilege.ALL);
         
         StringBuilder title = new StringBuilder();
         

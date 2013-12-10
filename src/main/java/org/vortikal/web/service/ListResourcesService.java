@@ -109,7 +109,6 @@ public class ListResourcesService implements Controller {
 
             Acl acl = r.getAcl();
             boolean authorizedToRead = aclTooltipHelper.authorizedTo(acl, requestContext.getPrincipal(), Privilege.READ);
-            boolean authorizedToAdmin = aclTooltipHelper.authorizedTo(acl, requestContext.getPrincipal(), Privilege.ALL);
 
             String listClasses = "";
             String spanClasses = "";
@@ -132,7 +131,7 @@ public class ListResourcesService implements Controller {
             }
             
             String name = HtmlUtil.encodeBasicEntities(r.getName());
-            String title = aclTooltipHelper.generateTitle(r, name, request, authorizedToAdmin, authorizedToRead);
+            String title = aclTooltipHelper.generateTitle(r, name, request);
 
             // Add to JSON-object
             o.put(JSONTreeHelper.TEXT, name);

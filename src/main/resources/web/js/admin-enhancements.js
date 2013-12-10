@@ -238,6 +238,13 @@ VrtxAdmin.prototype.initTooltips = function initTooltips() {
     yOffset: -8,
     extra: true
   });
+  this.cachedBody.vortexTips(".permission-tooltips", {
+    appendTo: "#contents",
+    containerWidth: 400,
+    animOutPreDelay: 4000,
+    xOffset: 10,
+    yOffset: -8
+  });
 }
 
 /*

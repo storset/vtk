@@ -30,7 +30,6 @@
  */
 package org.vortikal.web.service.manuallyapprove;
 
-import java.io.PrintWriter;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -45,7 +44,6 @@ import net.sf.json.JSONObject;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.repository.MultiHostSearcher;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;

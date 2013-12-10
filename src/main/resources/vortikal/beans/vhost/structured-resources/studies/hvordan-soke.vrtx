@@ -67,7 +67,7 @@ resourcetype hvordan-soke {
     pris (after studieplasser),
     group rangering-sokere (rangering-av-sokere, rangering-sokere-fri),
     rangering-av-sokere (class[vrtx-shared-text]),
-    group quota (poenggrenser-forstegang-alle-kvalifiserte, forstevitnemal-kvote-fri, poenggrenser-ordinar-alle-kvalifiserte, ordinar-kvote-alle-kvalifiserte-fri, poenggrenser-aar, poenggrenser-poengberegning),
+    group credit-limits (poenggrenser-aar, poenggrenser-forstegang-alle-kvalifiserte, forstevitnemal-kvote-fri, poenggrenser-ordinar-alle-kvalifiserte, ordinar-kvote-alle-kvalifiserte-fri, poenggrenser-poengberegning),
     poenggrenser-forstegang-alle-kvalifiserte (class[vrtx-shared-text]),
     poenggrenser-ordinar-alle-kvalifiserte (class[vrtx-shared-text]),
     poenggrenser-poengberegning (class[vrtx-shared-text]),
@@ -530,7 +530,7 @@ resourcetype hvordan-soke {
     rangering-sokere-fri : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
     rangering-av-sokere : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
 
-    quota : (en : "Quota (SO)", no : "Kvote (Grunnstudier)", nn : "Kvote (Grunnstudium)"),
+    credit-limits : (en : "Credit limits (SO)", no : "Poenggrenser (Grunnstudier)", nn : "Poenggrenser (Grunnstudium)"),
     forstevitnemal-kvote-fri : (en : "First certificate quota optional text", no : "Kvote for førstegangsvitnemål valgfri tekst", nn : "Kvote for førstegongsvitnemål valfri tekst"),
     poenggrenser-forstegang-alle-kvalifiserte : (en : "First certificate quota shared text", no : "Kvote for førstegangsvitnemål fellestekst", nn : "Kvote for førstegongsvitnemål fellestekst"),
     forstevitnemal-kvote-view : (en : "First certificate quota: ", no : "Kvote for førstegangsvitnemål: ", nn : "Kvote for førstegongsvitnemål: "),

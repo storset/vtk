@@ -60,7 +60,7 @@ resourcetype student-exchange-agreement {
                      no : "Emner, studiemuligheter, uttelling",
                      nn : "Emner, studiemoglegheiter, uttelling"),
 
-    group fees (tuition-yes, tuition-no, scholarship, fees-text-field) (after length-of-semester),
+    group fees (tuition-yes, tuition-no, fees-text-field) (after length-of-semester),
 
     fees tooltip (en : "School fees, semester fees, scholarships",
                   no : "skoleavgift, semesteravgift, stipendmuligheter",
@@ -119,7 +119,6 @@ resourcetype student-exchange-agreement {
           <div id="vrtx-main-content">
             <h1>[localized 'student-exchange-agreement-between'] [val name] [localized 'and'] [call "include:shared-text" {"propName":"owner-of-agreement"}]</h1>
             [if student-exchange-intro != null && student-exchange-intro != ""]
-              <h2>[localized 'student-exchange-intro']</h2>
               [val student-exchange-intro # unescaped]
             [endif]
             [if who-can-apply != null && who-can-apply != ""]
@@ -139,11 +138,11 @@ resourcetype student-exchange-agreement {
               [val length-of-semester # unescaped]
             [endif]
             <h2>[localized 'fees']</h2>
-            [if tuition-yes != null]
-              <p>[localized 'tuition-yes']: [val tuition-yes]</p>
+            [if tuition-yes != null && tuition-yes]
+              <p>[localized 'tuition-yes']</p>
             [endif]
-            [if tuition-no != null]
-              <p>[localized 'tuition-no']: [val tuition-no]</p>
+            [if tuition-no != null && tuition-no]
+              <p>[localized 'tuition-no']</p>
             [endif]
             [if fees-text-field != null && fees-text-field != ""]
               [val fees-text-field # unescaped]
@@ -265,8 +264,9 @@ resourcetype student-exchange-agreement {
     length-of-semester : (en : "How long is the semester", no : "Hvor lenge varer semesteret", nn : "Kor lenge varer semesteret"),
 
     fees : (en : "Fees?", no : "Hva koster det?", nn : "Kva kostar det?"),
-    tuition : (en : "Tuition payments", no : "Skolepenger", nn : "Skolepengar"),
-    scholarship : (en : "Scholarship", no : "Stipend", nn : "Stipend"),
+    tuition-yes : (en : "With tuition payments", no : "Med skolepenger", nn : "Med skolepengar"),
+    tuition-no : (en : "Without tuition payments", no : "Uten skolepenger", nn : "Uten skolepengar"),
+    fees-text-field : (en : "Tuition payments optional text", no : "Skolepenger valgfri tekst", nn : "Skolepenger valfri tekst"),
 
     housing : (en : "Housing", no : "Bolig", nn : "Bolig"),
     content : (en : "Content", no : "Innhold", nn : "Innhald"),

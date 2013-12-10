@@ -1,4 +1,4 @@
-/* Copyright (c) 2011, University of Oslo, Norway
+/* Copyright (c) 2011, 2013 University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -50,6 +50,7 @@ import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.Principal;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
@@ -60,6 +61,21 @@ public class CreateDropDownController implements Controller {
     private CreateDropDownProvider provider;
     private Service service;
     private Repository repository;
+    private PropertyTypeDefinition unpublishedCollectionPropDef;
+    
+    private static class Node {
+       public static String URI = "uri"; 
+       public static String TITLE = "title";
+       public static String CLASSES = "spanClasses";
+       public static String HAS_CHILDREN = "hasChildren";
+       public static String TEXT = "text";
+       
+       public static String CLASSES_FOLDER = "folder";
+       public static String CLASSES_UNPUBLISHED = "unpublished";
+    }
+    
+    private static String PARAMETER_SERVICE = "service";
+    private static String PARAMETER_REPORT_TYPE = "report-type";
 
     @Override
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -79,77 +95,94 @@ public class CreateDropDownController implements Controller {
         writeResults(resources, request, response, token);
         return null;
     }
+    
+
+    private void writeResults(List<Resource> resources, HttpServletRequest request, HttpServletResponse response,
+            String token) throws Exception {
+
+        String buttonText = getButtonText(request.getParameter(PARAMETER_SERVICE));
+        Map<String, String> uriParameters = getReportType(request.getParameter(PARAMETER_REPORT_TYPE));
+        
+        JSONArray listNodes = new JSONArray();
+        for (Resource resource : resources) {
+            JSONObject node = generateJSONObjectNode(resource, token, request, uriParameters, buttonText);
+            if(listNodes != null) {
+                listNodes.add(node);
+            } else {
+                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                return;
+            }
+        }
+        goodRequest(listNodes, response);
+    }
+    
+    private void goodRequest(JSONArray listNodes, HttpServletResponse response) throws IOException {
+        response.setStatus(HttpServletResponse.SC_OK);
+        response.setContentType("text/plain;charset=utf-8");
+        writeResponse(listNodes.toString(1), response);
+    }
 
     private void badRequest(Throwable e, HttpServletResponse response) throws IOException {
         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        writeResponse(e.getMessage(), response);
+    }
+    
+    private JSONObject generateJSONObjectNode(Resource resource, String token, HttpServletRequest request, Map<String, String> uriParameters, String buttonText) {
+        JSONObject o = new JSONObject();
+        Principal principal = RequestContext.getRequestContext().getPrincipal();
+
+        String title;
+        try {
+            String url = service.constructURL(resource, principal, uriParameters).getPathRepresentation();     
+
+            title = "<a target=&quot;_top&quot; class=&quot;vrtx-button-small&quot; href=&quot;" + url + "&quot;>"
+                    + "<span>" + provider.getLocalizedTitle(request, buttonText, null) + "</span>" + "</a>";
+        } catch (ServiceUnlinkableException e) {
+            title = "<span class=&quot;no-create-permission&quot;>"
+                    + provider.getLocalizedTitle(request, "manage.no-permission", null) + "</span>";
+        } catch (Exception e) {
+            return null;
+        }
+        Path uri = resource.getURI();
+        
+        boolean unpublished = resource.getProperty(unpublishedCollectionPropDef) != null 
+                || !resource.isPublished();
+        
+        o.put(Node.URI, uri.toString());
+        o.put(Node.TITLE, title);
+        o.put(Node.CLASSES, Node.CLASSES_FOLDER + (!unpublished ? "" : " " + Node.CLASSES_UNPUBLISHED));
+        o.put(Node.HAS_CHILDREN, provider.hasChildren(resource, token));
+        o.put(Node.TEXT, uri.isRoot() ? repository.getId() : resource.getName());
+
+        return o;
+    }
+    
+    private void writeResponse(String responseText, HttpServletResponse response) throws IOException {
         PrintWriter writer = response.getWriter();
         try {
-            writer.write(e.getMessage());
+            writer.write(responseText);
         } finally {
             writer.close();
         }
     }
-
-    private void writeResults(List<Resource> resources, HttpServletRequest request, HttpServletResponse response,
-            String token) throws Exception {
-        JSONArray list = new JSONArray();
-
-        String buttonText = request.getParameter("service");
-        if (buttonText != null && buttonText.equals("upload-file-from-drop-down")) {
-            buttonText = "manage.upload-here";
-        } else if (buttonText != null && buttonText.equals("view-report-from-drop-down")) {
-            buttonText = "manage.view-this";
-        } else {
-            buttonText = "manage.place-here";
-        }
-        
-        // XXX: More general
-        Map<String, String> typeParam = new HashMap<String, String>();
-        String reportType = request.getParameter("report-type");
-        if(reportType != null) {
-            typeParam.put("report-type", reportType);
-        }
-
-        for (Resource r : resources) {
-            JSONObject o = new JSONObject();
-
-            Principal principal = RequestContext.getRequestContext().getPrincipal();
-
-            String title;
-            try {
-                String url = service.constructURL(r, principal, typeParam).getPathRepresentation();     
-
-                title = "<a target=&quot;_top&quot; class=&quot;vrtx-button-small&quot; href=&quot;" + url + "&quot;>"
-                        + "<span>" + provider.getLocalizedTitle(request, buttonText, null) + "</span>" + "</a>";
-            } catch (ServiceUnlinkableException e) {
-                title = "<span class=&quot;no-create-permission&quot;>"
-                        + provider.getLocalizedTitle(request, "manage.no-permission", null) + "</span>";
-            } catch (Exception e) {
-                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                return;
+    
+    private String getButtonText(String serviceParam) {
+        if (serviceParam != null) {
+            if (serviceParam.equals("upload-file-from-drop-down")) {
+                return "manage.upload-here";
+            } else if (serviceParam.equals("view-report-from-drop-down")) {
+                return "manage.view-this";
             }
-
-            o.put("hasChildren", provider.hasChildren(r, token));
-            Path uri = r.getURI();
-            o.put("text", uri.isRoot() ? repository.getId() : r.getName());
-            o.put("uri", uri.toString());
-            
-            Property prop = r.getProperty(Namespace.DEFAULT_NAMESPACE, "unpublishedCollection");
-            boolean unpublished = prop != null || !r.isPublished();
-            o.put("spanClasses", "folder" + (!unpublished ? "" : " unpublished"));
-            o.put("title", title);
-
-            list.add(o);
         }
-
-        response.setStatus(HttpServletResponse.SC_OK);
-        response.setContentType("text/plain;charset=utf-8");
-        PrintWriter writer = response.getWriter();
-        try {
-            writer.print(list.toString(1));
-        } finally {
-            writer.close();
+        return "manage.place-here";
+    }
+    
+    private Map<String, String> getReportType(String reportType) {
+        Map<String, String> uriParameters = new HashMap<String, String>();
+        if(reportType != null) {
+            uriParameters.put(PARAMETER_REPORT_TYPE, reportType);
         }
+        return uriParameters;
     }
 
     @Required
@@ -160,6 +193,11 @@ public class CreateDropDownController implements Controller {
     @Required
     public void setProvider(CreateDropDownProvider provider) {
         this.provider = provider;
+    }
+    
+    @Required
+    public void setUnpublishedCollectionPropDef(PropertyTypeDefinition prop) {
+        this.unpublishedCollectionPropDef = prop;
     }
 
     @Required

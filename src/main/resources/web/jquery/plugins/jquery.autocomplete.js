@@ -439,7 +439,7 @@
     minChars: 1,
     delay: 400,
     matchCase: false,
-    matchSubset: true,
+    matchSubset: false,
     matchContains: false,
     cacheLength: 10,
     max: 100,
@@ -694,30 +694,50 @@
     function limitNumberOfItems(available) {
       return options.max && options.max < available ? options.max : available;
     }
+    
+    function addLi(formatted, cls, dt) {
+      var li = $("<li/>").html(options.highlight(formatted, term)).addClass(cls).appendTo(list)[0];           
+      $.data(li, CLASSES.DATA, dt);
+    }
+    
+    function addCls(i, max) {
+      return ((i % 2 == 0) ? CLASSES.EVEN : CLASSES.ODD)
+           + ((i == (max - 1)) ? " " + CLASSES.LAST : "")
+           + ((i == 0) ? " " + CLASSES.FIRST : "");
+    }
 
     function fillList() {
       list.empty();
-      var max = limitNumberOfItems(data.length);
-      for ( var i = 0; i < max; i++) {
+      var len = data.length;
+      var max = limitNumberOfItems(len);
+
+      var offset = 0;
+      if(len > 0) {
+        var j = len - 1;
+        var formattedMoreLink = options.formatItem(data[j].data, j + 1, max, data[j].value, term);
+        if(/^###MORE###LINK###.*$/.test(formattedMoreLink)) {
+          formattedMoreLink = formattedMoreLink.replace(/^###MORE###LINK###[\s]*/, "");
+          var dataMoreLink = data[j];
+          var offset = 1;
+        } else {
+          formattedMoreLink = null;
+        }
+      }
+      for ( var i = 0; i < (max-offset); i++) {
         if (!data[i])
-          continue;
+            continue;
+          
         var formatted = options.formatItem(data[i].data, i + 1, max, data[i].value, term);
         if (formatted === false)
           continue;
-          
-        var cls = ((i % 2 == 0) ? CLASSES.EVEN : CLASSES.ODD)
-                + ((i == (max - 1)) ? " " + CLASSES.LAST : "")
-                + ((i == 0) ? " " + CLASSES.FIRST : "");
-                
-        if(/^###MORE###LINK###.*$/.test(formatted)) {
-          formatted = formatted.replace(/^###MORE###LINK###[\s]*/, "");
-          cls += " " + CLASSES.MORE;
-        }
-        
-        var li = $("<li/>").html(options.highlight(formatted, term)).addClass(cls).appendTo(list)[0];
-                           
-        $.data(li, CLASSES.DATA, data[i]);
+       
+        addLi(formatted, addCls(i, max), data[i]);
       }
+      
+      if(formattedMoreLink != null) {
+        addLi(formattedMoreLink, addCls(max-offset, max) + " " + CLASSES.MORE, dataMoreLink);
+      }
+      
       listItems = list.find("li");
       if (options.selectFirst) {
         listItems.slice(0, 1).addClass(CLASSES.ACTIVE);

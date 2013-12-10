@@ -38,29 +38,26 @@ import javax.servlet.http.HttpServletResponse;
 
 import net.sf.json.JSONArray;
 
-import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 
-/* Handles basic JSON MVC requests that with an "uri" as parameter */
+/* Abstract class that handles basic JSON requests with an "uri" as parameter */
 
 public abstract class JSONController  implements Controller {
     
     protected String uri = null;
-
-    @Override
-    public ModelAndView handleRequest(HttpServletRequest request,
-            HttpServletResponse response) throws Exception {
+    
+    protected boolean handleUri(HttpServletRequest request, HttpServletResponse response) throws IOException {
         try {
             uri = (String) request.getParameter("uri");
         } catch (Exception e) {
             badRequest(e, response);
-            return null;
+            return false;
         }
         if (uri == null) {
-            return null;
+            return false;
         }
         
-        return null;
+        return true;
     }
     
     protected void goodRequest(JSONArray arr, HttpServletResponse response) throws IOException {

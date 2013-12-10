@@ -60,17 +60,14 @@ public class CreateDropDownController extends JSONController {
     private Repository repository;
     private PropertyTypeDefinition unpublishedCollectionPropDef;
     
-    private static class Node {
-
-    }
-    
     private static String PARAMETER_SERVICE = "service";
     private static String PARAMETER_REPORT_TYPE = "report-type";
 
     @Override
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        super.handleRequest(request, response);
-
+        boolean success = handleUri(request, response);
+        if(!success) return null;
+        
         String token = RequestContext.getRequestContext().getSecurityToken();
         List<Resource> resources = provider.buildSearchAndPopulateResources(uri, token);
         writeResults(resources, request, response, token);

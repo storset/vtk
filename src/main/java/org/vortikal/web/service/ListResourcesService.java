@@ -57,8 +57,9 @@ public class ListResourcesService extends JSONController {
 
     @Override
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        super.handleRequest(request, response);
-
+        boolean success = handleUri(request, response);
+        if(!success) return null;
+        
         RequestContext requestContext = RequestContext.getRequestContext();
         String token = requestContext.getSecurityToken();
         List<Resource> resources = this.provider.buildSearchAndPopulateResources(Path.fromString(uri), token, request);

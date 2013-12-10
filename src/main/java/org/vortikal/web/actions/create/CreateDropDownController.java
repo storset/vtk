@@ -91,7 +91,7 @@ public class CreateDropDownController extends JSONController {
                 return;
             }
         }
-        goodRequest(listNodes, response);
+        okRequest(listNodes, response);
     }
 
     

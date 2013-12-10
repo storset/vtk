@@ -88,7 +88,7 @@ public class LinkCheckController extends JSONController {
             }
             list.add(o);
         }
-        goodRequest(list, response);
+        okRequest(list, response);
     }
 
     private List<String> readInput(HttpServletRequest request) throws Exception {

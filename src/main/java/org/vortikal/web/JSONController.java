@@ -60,7 +60,7 @@ public abstract class JSONController implements Controller {
         return true;
     }
     
-    protected void goodRequest(JSONArray arr, HttpServletResponse response) throws IOException {
+    protected void okRequest(JSONArray arr, HttpServletResponse response) throws IOException {
         response.setStatus(HttpServletResponse.SC_OK);
         response.setContentType("text/plain;charset=utf-8"); /* XXX: Should be application/json? */
         writeResponse(arr.toString(1), response);

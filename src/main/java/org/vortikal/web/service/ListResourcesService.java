@@ -149,7 +149,7 @@ public class ListResourcesService extends JSONController {
             list.add(o);
         }
         
-        super.goodRequest(list, response);
+        super.okRequest(list, response);
     }
 
     private void genEditOrViewButton(HttpServletRequest request, Resource r, boolean authorizedToAdmin,

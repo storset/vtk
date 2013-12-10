@@ -55,6 +55,7 @@ import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.security.SecurityContext;
+import org.vortikal.web.JSONController;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.URL;
 
@@ -69,7 +70,7 @@ import org.vortikal.web.service.URL;
  * anything else other than manually approval).
  * 
  */
-public class ManuallyApproveResourcesHandler implements Controller {
+public class ManuallyApproveResourcesHandler extends JSONController {
 
     private ManuallyApproveResourcesSearcher searcher;
 
@@ -186,11 +187,8 @@ public class ManuallyApproveResourcesHandler implements Controller {
             obj.put("approved", approved);
             arr.add(obj);
         }
-        response.setContentType("text/plain;charset=utf-8");
-        PrintWriter writer = response.getWriter();
-        writer.print(arr);
-        writer.flush();
-        writer.close();
+        
+        okRequest(arr, response, true);
 
         return null;
     }

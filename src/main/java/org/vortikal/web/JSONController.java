@@ -61,14 +61,18 @@ public abstract class JSONController implements Controller {
     }
     
     protected void okRequest(JSONArray arr, HttpServletResponse response) throws IOException {
+        okRequest(arr, response, false);
+    }
+
+    protected void okRequest(JSONArray arr, HttpServletResponse response, boolean isFlush) throws IOException {
         response.setStatus(HttpServletResponse.SC_OK);
         response.setContentType("text/plain;charset=utf-8"); /* XXX: Should be application/json? */
-        writeResponse(arr.toString(1), response);
+        writeResponse(arr.toString(1), response, isFlush);
     }
 
     protected void badRequest(Throwable e, HttpServletResponse response) throws IOException {
         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        writeResponse(e.getMessage(), response);
+        writeResponse(e.getMessage(), response, false);
     }
 
     protected static class BadRequestException extends Exception {
@@ -79,11 +83,12 @@ public abstract class JSONController implements Controller {
         }
     }
     
-    protected void writeResponse(String responseText, HttpServletResponse response) throws IOException {
+    protected void writeResponse(String responseText, HttpServletResponse response, boolean isFlush) throws IOException {
         PrintWriter writer = response.getWriter();
         try {
             writer.write(responseText);
         } finally {
+            if(isFlush) writer.flush();
             writer.close();
         }
     }

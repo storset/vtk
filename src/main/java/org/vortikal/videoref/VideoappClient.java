@@ -37,13 +37,13 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
-import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import net.sf.json.JSONObject;
-import org.apache.commons.httpclient.methods.RequestEntity;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClientException;
@@ -55,7 +55,7 @@ import org.vortikal.repository.Resource;
  * 
  * TODO exceptions and error handling.
  */
-public class VideoappClient {
+public class VideoappClient implements DisposableBean {
     
     private RestTemplate restTemplate;
     private String repositoryId;
@@ -63,7 +63,7 @@ public class VideoappClient {
     
     private final Log logger = LogFactory.getLog(VideoappClient.class);
     
-    private final Executor asyncMessageExecutor = Executors.newCachedThreadPool();
+    private final ExecutorService asyncMessageExecutor = Executors.newCachedThreadPool();
 
     /**
      * Create new video object in videoapp.
@@ -183,24 +183,10 @@ public class VideoappClient {
      * @param videoId the video id for which source stream has been requested in Vortex.
      */
     public void notifyDownload(final VideoId videoId) {
-
-        // TODO implement me with short TCP timeouts, since this will
-        // be invoked every time getInputStream() from Repository is called.
         logger.debug("notifyDownload: " + videoId);
         
-        final Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    restTemplate.getForObject(withBaseUrl("/videos/{host}/{numericId}?notifyDownload=true"),
-                            JSONObject.class, repositoryId, videoId.numericId());
-                } catch (Exception e) {
-                    logger.warn("Exception while notifying of video download, videoId = " + videoId + ": " + e.getMessage());
-                }
-            }
-        };
-
-        asyncMessageExecutor.execute(r);
+        asyncGetForResponseEntity(withBaseUrl("/videos/{host}/{numericId}?notifyDownload=true"), 
+                JSONObject.class, repositoryId, videoId.numericId());
     }
     
     /**
@@ -245,9 +231,25 @@ public class VideoappClient {
         return new StreamingRef(token, URI.create(hlsStreamUri), URI.create(hdsStreamUri));
     }
     
-    private Future<ResponseEntity> executeAsyncRequest(RequestEntity request) {
-        
-        return null;
+    private <T> Future<ResponseEntity<T>> asyncGetForResponseEntity(
+             final String url, final Class<T> responseType, final Object... urlVars) {
+        return asyncMessageExecutor.submit(new Callable<ResponseEntity<T>>(){
+            @Override
+            public ResponseEntity<T> call() throws Exception {
+                return restTemplate.getForEntity(url, responseType, urlVars);
+            }
+        });
+    }
+    
+    private <T> Future<ResponseEntity<T>> asyncPostForResponseEntity(
+            final String url, final Object request, 
+            final Class<T> responseType, final Object... urlVars) {
+        return asyncMessageExecutor.submit(new Callable<ResponseEntity<T>>(){
+            @Override
+            public ResponseEntity<T> call() throws Exception {
+                return restTemplate.postForEntity(url, request, responseType, urlVars);
+            }
+        });
     }
     
     /**
@@ -281,5 +283,10 @@ public class VideoappClient {
     @Required
     public void setApiBaseUrl(URI baseUrl) {
         this.apiBaseUrl = baseUrl.toString();
+    }
+
+    @Override
+    public void destroy() throws Exception {
+        asyncMessageExecutor.shutdown();
     }
 }

@@ -44,7 +44,7 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
-import org.vortikal.util.web.ProtocolPrefixes;
+import org.vortikal.util.web.LinkTypesPrefixes;
 import org.vortikal.web.JSONController;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.display.linkcheck.LinkChecker.LinkCheckResult;
@@ -132,8 +132,8 @@ public class LinkCheckController extends JSONController {
         if ("".equals(input.trim())) {
             return null;
         }
-        if (input.startsWith(ProtocolPrefixes.ANCHOR) || input.startsWith(ProtocolPrefixes.MAIL_TO) || input.startsWith(ProtocolPrefixes.FTP)
-                || input.startsWith(ProtocolPrefixes.JAVASCRIPT) || input.startsWith(ProtocolPrefixes.FILE) || input.startsWith(ProtocolPrefixes.WEBCAL)) {
+        if (input.startsWith(LinkTypesPrefixes.ANCHOR) || input.startsWith(LinkTypesPrefixes.MAIL_TO) || input.startsWith(LinkTypesPrefixes.FTP)
+                || input.startsWith(LinkTypesPrefixes.JAVASCRIPT) || input.startsWith(LinkTypesPrefixes.FILE) || input.startsWith(LinkTypesPrefixes.WEBCAL)) {
             return null;
         }
         return input;

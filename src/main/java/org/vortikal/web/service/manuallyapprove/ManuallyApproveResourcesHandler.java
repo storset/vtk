@@ -76,6 +76,13 @@ public class ManuallyApproveResourcesHandler extends JSONController {
 
     private static final String LOCATIONS_PARAM = "locations";
     private static final String AGGREGATE_PARAM = "aggregate";
+    private static final String APPROVED_ONLY_PARAM = "approved-only";
+    
+    private static final String URI = "uri"; 
+    private static final String TITLE = "title";
+    private static final String SRC = "source";
+    private static final String PUBLISHED = "published";
+    private static final String APPROVED = "approved";
 
     private PropertyTypeDefinition manuallyApproveFromPropDef;
     private PropertyTypeDefinition manuallyApprovedResourcesPropDef;
@@ -172,7 +179,7 @@ public class ManuallyApproveResourcesHandler extends JSONController {
             return null;
         }
 
-        boolean approvedOnly = request.getParameter("approved-only") != null;
+        boolean approvedOnly = request.getParameter(APPROVED_ONLY_PARAM) != null;
         JSONArray arr = new JSONArray();
         for (ManuallyApproveResource m : result) {
             boolean approved = m.isApproved();
@@ -180,11 +187,11 @@ public class ManuallyApproveResourcesHandler extends JSONController {
                 continue;
             }
             JSONObject obj = new JSONObject();
-            obj.put("title", m.getTitle());
-            obj.put("uri", m.getUrl().toString());
-            obj.put("source", m.getSource());
-            obj.put("published", m.getPublishDateAsString());
-            obj.put("approved", approved);
+            obj.put(TITLE, m.getTitle());
+            obj.put(URI, m.getUrl().toString());
+            obj.put(SRC, m.getSource());
+            obj.put(PUBLISHED, m.getPublishDateAsString());
+            obj.put(APPROVED, approved);
             arr.add(obj);
         }
         

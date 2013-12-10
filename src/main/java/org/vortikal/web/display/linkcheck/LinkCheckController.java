@@ -44,6 +44,7 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.util.web.LinkTypes;
 import org.vortikal.web.JSONController;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.display.linkcheck.LinkChecker.LinkCheckResult;
@@ -56,15 +57,6 @@ public class LinkCheckController extends JSONController {
     private final static String LINK = "link";
     private final static String STATUS = "status";
     private final static String MSG = "msg";
-    
-    private final class LinkTypes {
-        public final static String ANCHOR = "#";
-        public final static String MAIL_TO = "mailto:";
-        public final static String FTP = "ftp:";
-        public final static String JAVASCRIPT = "javascript:";
-        public final static String FILE = "file:";
-        public final static String WEBCAL = "webcal:";
-    }
 
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
         List<String> urls;

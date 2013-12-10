@@ -1,4 +1,4 @@
-/* Copyright (c) 2010, University of Oslo, Norway
+/* Copyright (c) 2010, 2013, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -31,8 +31,6 @@
 package org.vortikal.web.display.linkcheck;
 
 import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,18 +42,17 @@ import net.sf.json.JSONObject;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.web.JSONController;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.display.linkcheck.LinkChecker.LinkCheckResult;
 import org.vortikal.web.service.URL;
 
-public class LinkCheckController implements Controller {
+public class LinkCheckController extends JSONController {
 
     private LinkChecker linkChecker;
 
-    @Override
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
         List<String> urls;
         try {
@@ -80,16 +77,6 @@ public class LinkCheckController implements Controller {
         return results;
     }
 
-    private void badRequest(Throwable e, HttpServletResponse response) throws IOException {
-        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        PrintWriter writer = response.getWriter();
-        try {
-            writer.write(e.getMessage());
-        } finally {
-            writer.close();
-        }
-    }
-
     private void writeResults(List<LinkCheckResult> results, HttpServletResponse response) throws Exception {
         JSONArray list = new JSONArray();
         for (LinkCheckResult result : results) {
@@ -101,14 +88,7 @@ public class LinkCheckController implements Controller {
             }
             list.add(o);
         }
-        response.setStatus(HttpServletResponse.SC_OK);
-        response.setContentType("text/plain;charset=utf-8");
-        PrintWriter writer = response.getWriter();
-        try {
-            writer.print(list.toString(1));
-        } finally {
-            writer.close();
-        }
+        goodRequest(list, response);
     }
 
     private List<String> readInput(HttpServletRequest request) throws Exception {

@@ -42,7 +42,7 @@ import org.springframework.web.servlet.mvc.Controller;
 
 /* Abstract class that handles basic JSON requests with an "uri" as parameter */
 
-public abstract class JSONController  implements Controller {
+public abstract class JSONController implements Controller {
     
     protected String uri = null;
     

@@ -36,6 +36,7 @@ import java.net.URL;
 
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import org.vortikal.util.web.LinkTypes;
 
 public class URLTemplateSource implements TemplateSource {
 
@@ -54,7 +55,7 @@ public class URLTemplateSource implements TemplateSource {
     }
     
     public long getLastModified() throws Exception {
-        if (this.url.startsWith("file://")) {
+        if (this.url.startsWith(LinkTypes.FILE + "//")) {
             URL fileURL = new URL(this.url);
             File file = new File(fileURL.getFile());
             return file.lastModified();

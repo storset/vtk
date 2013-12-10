@@ -235,8 +235,7 @@ public class CollectionListingProvider implements ReferenceDataProvider {
                 // do nothing
             }
             if (aclTooltipHelper != null) {
-                permissionTooltips[i] = aclTooltipHelper.generateTitle(child,
-                        HtmlUtil.encodeBasicEntities(child.getName()), request);
+                permissionTooltips[i] = aclTooltipHelper.generateTitle(child, request);
             }
         }
         collectionListingModel.put("permissionTooltips", permissionTooltips);

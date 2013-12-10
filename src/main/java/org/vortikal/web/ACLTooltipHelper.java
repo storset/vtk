@@ -15,6 +15,10 @@ public class ACLTooltipHelper {
     private Service permissionsService;
     private Repository repository;
     private org.springframework.web.servlet.support.RequestContext springRequestContext;
+    
+    public String generateTitle(Resource r, HttpServletRequest request) {
+        return generateTitle(r, null, request);
+    }
 
     public String generateTitle(Resource r, String name, HttpServletRequest request) {
         RequestContext requestContext = RequestContext.getRequestContext();
@@ -24,10 +28,12 @@ public class ACLTooltipHelper {
         boolean authorizedToAdmin = authorizedTo(acl, requestContext.getPrincipal(), Privilege.ALL);
         
         StringBuilder title = new StringBuilder();
-        
         this.springRequestContext = new org.springframework.web.servlet.support.RequestContext(request);
 
-        title.append("<span id=&quot;title-wrapper&quot;><strong id=&quot;title&quot;>" + name + "</strong>");
+        title.append("<span id=&quot;title-wrapper&quot;>");
+        if(name != null) {
+            title.append("<strong id=&quot;title&quot;>" + name + "</strong>");
+        }
         if (r.isInheritedAcl()) {
             title.append(" " + getLocalizedTitle(request, "report.list-resources.inherited-permissions", null));
             genEditOrViewButton(request, r, authorizedToAdmin, authorizedToRead, title);

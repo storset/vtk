@@ -1837,6 +1837,17 @@ body#vrtx-report-broken-links #directory-listing td.vrtx-report-broken-links {
   color: #549401;
 }
 
+#directory-listing td span.inherited-permission {
+  color: #999999;
+  display: inline-block;
+  font-size: 1.5em;
+  left: 0;
+  line-height: 1;
+  margin: -5px 0;
+  position: relative;
+  top: 2px;
+}
+
 #directory-listing td span.restricted,
 #directory-listing td span.restricted a,
 #resourceMenuRight span.restricted {

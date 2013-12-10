@@ -59,6 +59,7 @@ import org.vortikal.resourcemanagement.StructuredResource;
 import org.vortikal.resourcemanagement.StructuredResourceDescription;
 import org.vortikal.resourcemanagement.StructuredResourceManager;
 import org.vortikal.text.html.TagsoupParserFactory;
+import org.vortikal.util.web.LinkTypesPrefixes;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -187,7 +188,7 @@ public class MixedContentEvaluator implements LatePropertyEvaluator {
         }
         value = value.toLowerCase();
         return (value.startsWith("http://") 
-                || value.startsWith("javascript:") 
+                || value.startsWith(LinkTypesPrefixes.JAVASCRIPT) 
                 || value.startsWith("data:"));
     }
     

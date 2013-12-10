@@ -57,7 +57,7 @@ import org.springframework.web.servlet.mvc.LastModified;
 import org.vortikal.repository.Path;
 import org.vortikal.util.io.StreamUtil;
 import org.vortikal.util.repository.MimeHelper;
-import org.vortikal.util.web.WebProtocols;
+import org.vortikal.util.web.ProtocolPrefixes;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.StaticResourceLocation;
 import org.vortikal.web.service.URL;
@@ -241,8 +241,8 @@ public class DisplayClassPathResourceController implements Controller, LastModif
         }
         loc += uri;
 
-        if (loc.startsWith(WebProtocols.FILE + "//")) {
-            String actualPath = loc.substring((WebProtocols.FILE + "//").length());
+        if (loc.startsWith(ProtocolPrefixes.FILE + "//")) {
+            String actualPath = loc.substring((ProtocolPrefixes.FILE + "//").length());
             return new FileSystemResource(actualPath);
         }
 

@@ -30,8 +30,6 @@
  */
 package org.vortikal.web.actions.create;
 
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,19 +42,18 @@ import net.sf.json.JSONObject;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.Controller;
-import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Path;
-import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.Principal;
+import org.vortikal.web.JSONController;
+import org.vortikal.web.JSONTreeHelper;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.ServiceUnlinkableException;
 
-public class CreateDropDownController implements Controller {
+public class CreateDropDownController extends JSONController {
 
     private CreateDropDownProvider provider;
     private Service service;
@@ -64,14 +61,7 @@ public class CreateDropDownController implements Controller {
     private PropertyTypeDefinition unpublishedCollectionPropDef;
     
     private static class Node {
-       public static String URI = "uri"; 
-       public static String TITLE = "title";
-       public static String CLASSES = "spanClasses";
-       public static String HAS_CHILDREN = "hasChildren";
-       public static String TEXT = "text";
-       
-       public static String CLASSES_FOLDER = "folder";
-       public static String CLASSES_UNPUBLISHED = "unpublished";
+
     }
     
     private static String PARAMETER_SERVICE = "service";
@@ -79,16 +69,7 @@ public class CreateDropDownController implements Controller {
 
     @Override
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        String uri = null;
-        try {
-            uri = (String) request.getParameter("uri");
-        } catch (Exception e) {
-            badRequest(e, response);
-            return null;
-        }
-        if (uri == null) {
-            return null;
-        }
+        super.handleRequest(request, response);
 
         String token = RequestContext.getRequestContext().getSecurityToken();
         List<Resource> resources = provider.buildSearchAndPopulateResources(uri, token);
@@ -100,8 +81,8 @@ public class CreateDropDownController implements Controller {
     private void writeResults(List<Resource> resources, HttpServletRequest request, HttpServletResponse response,
             String token) throws Exception {
 
-        String buttonText = getButtonText(request.getParameter(PARAMETER_SERVICE));
-        Map<String, String> uriParameters = getReportType(request.getParameter(PARAMETER_REPORT_TYPE));
+        String buttonText = mapServiceParamToButtonText(request.getParameter(PARAMETER_SERVICE));
+        Map<String, String> uriParameters = getReportTypeParam(request.getParameter(PARAMETER_REPORT_TYPE));
         
         JSONArray listNodes = new JSONArray();
         for (Resource resource : resources) {
@@ -115,17 +96,7 @@ public class CreateDropDownController implements Controller {
         }
         goodRequest(listNodes, response);
     }
-    
-    private void goodRequest(JSONArray listNodes, HttpServletResponse response) throws IOException {
-        response.setStatus(HttpServletResponse.SC_OK);
-        response.setContentType("text/plain;charset=utf-8");
-        writeResponse(listNodes.toString(1), response);
-    }
 
-    private void badRequest(Throwable e, HttpServletResponse response) throws IOException {
-        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        writeResponse(e.getMessage(), response);
-    }
     
     private JSONObject generateJSONObjectNode(Resource resource, String token, HttpServletRequest request, Map<String, String> uriParameters, String buttonText) {
         JSONObject o = new JSONObject();
@@ -148,25 +119,17 @@ public class CreateDropDownController implements Controller {
         boolean unpublished = resource.getProperty(unpublishedCollectionPropDef) != null 
                 || !resource.isPublished();
         
-        o.put(Node.URI, uri.toString());
-        o.put(Node.TITLE, title);
-        o.put(Node.CLASSES, Node.CLASSES_FOLDER + (!unpublished ? "" : " " + Node.CLASSES_UNPUBLISHED));
-        o.put(Node.HAS_CHILDREN, provider.hasChildren(resource, token));
-        o.put(Node.TEXT, uri.isRoot() ? repository.getId() : resource.getName());
+        o.put(JSONTreeHelper.URI, uri.toString());
+        o.put(JSONTreeHelper.TITLE, title);
+        o.put(JSONTreeHelper.CLASSES_SPAN, JSONTreeHelper.CLASSES_FOLDER + (!unpublished ? "" : " " + JSONTreeHelper.CLASSES_UNPUBLISHED));
+        o.put(JSONTreeHelper.HAS_CHILDREN, provider.hasChildren(resource, token));
+        o.put(JSONTreeHelper.TEXT, uri.isRoot() ? repository.getId() : resource.getName());
 
         return o;
     }
+
     
-    private void writeResponse(String responseText, HttpServletResponse response) throws IOException {
-        PrintWriter writer = response.getWriter();
-        try {
-            writer.write(responseText);
-        } finally {
-            writer.close();
-        }
-    }
-    
-    private String getButtonText(String serviceParam) {
+    private String mapServiceParamToButtonText(String serviceParam) {
         if (serviceParam != null) {
             if (serviceParam.equals("upload-file-from-drop-down")) {
                 return "manage.upload-here";
@@ -177,7 +140,7 @@ public class CreateDropDownController implements Controller {
         return "manage.place-here";
     }
     
-    private Map<String, String> getReportType(String reportType) {
+    private Map<String, String> getReportTypeParam(String reportType) {
         Map<String, String> uriParameters = new HashMap<String, String>();
         if(reportType != null) {
             uriParameters.put(PARAMETER_REPORT_TYPE, reportType);

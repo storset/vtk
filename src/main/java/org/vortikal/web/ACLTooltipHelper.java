@@ -35,11 +35,23 @@ public class ACLTooltipHelper {
             title.append("<strong id=&quot;title&quot;>" + name + "</strong>");
         }
         if (r.isInheritedAcl()) {
-            title.append(" " + getLocalizedTitle(request, "report.list-resources.inherited-permissions", null));
+            String inheritedPermissionTitle = getLocalizedTitle(request, "report.list-resources.inherited-permissions", null);
+            if(name == null) {
+                inheritedPermissionTitle = inheritedPermissionTitle.substring(0, 1).toUpperCase() + inheritedPermissionTitle.substring(1);
+            } else {
+                inheritedPermissionTitle = " " + inheritedPermissionTitle;
+            }
+            title.append(inheritedPermissionTitle);
             genEditOrViewButton(request, r, authorizedToAdmin, authorizedToRead, title);
             title.append("</span><span class=&quot;inherited-permissions&quot;>");
         } else {
-            title.append(" " + getLocalizedTitle(request, "report.list-resources.own-permissions", null));
+            String inheritedPermissionTitle = getLocalizedTitle(request, "report.list-resources.own-permissions", null);
+            if(name == null) {
+                inheritedPermissionTitle = inheritedPermissionTitle.substring(0, 1).toUpperCase() + inheritedPermissionTitle.substring(1);
+            } else {
+                inheritedPermissionTitle = " " + inheritedPermissionTitle;
+            }
+            title.append(inheritedPermissionTitle);
             genEditOrViewButton(request, r, authorizedToAdmin, authorizedToRead, title);
             title.append("</span>");
         }

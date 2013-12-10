@@ -45,7 +45,7 @@ import javax.xml.transform.stream.StreamSource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.vortikal.util.repository.InvalidURIException;
-import org.vortikal.util.web.LinkTypes;
+import org.vortikal.util.web.WebProtocols;
 
 
 /**
@@ -57,7 +57,7 @@ import org.vortikal.util.web.LinkTypes;
  */
 public class FileURIResolver implements StylesheetURIResolver {
 
-    public static final String PROTOCOL_PREFIX = LinkTypes.FILE + "//";
+    public static final String PROTOCOL_PREFIX = WebProtocols.FILE + "//";
     protected Log logger = LogFactory.getLog(this.getClass());
     
     /**

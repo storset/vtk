@@ -60,8 +60,8 @@ public class CreateDropDownController extends JSONController {
     private Repository repository;
     private PropertyTypeDefinition unpublishedCollectionPropDef;
     
-    private static String PARAMETER_SERVICE = "service";
-    private static String PARAMETER_REPORT_TYPE = "report-type";
+    private final static String PARAMETER_SERVICE = "service";
+    private final static String PARAMETER_REPORT_TYPE = "report-type";
 
     @Override
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {

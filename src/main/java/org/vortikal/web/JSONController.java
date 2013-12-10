@@ -46,7 +46,7 @@ public abstract class JSONController implements Controller {
     
     protected String uri = null;
     
-    protected boolean handleUri(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    protected boolean handleUri(HttpServletRequest request, HttpServletResponse response) throws Exception {
         try {
             uri = (String) request.getParameter("uri");
         } catch (Exception e) {
@@ -54,6 +54,7 @@ public abstract class JSONController implements Controller {
             return false;
         }
         if (uri == null) {
+            serverErrorRequest(new InternalServerErrorException("URI is null"), response);
             return false;
         }
         

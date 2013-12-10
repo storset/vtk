@@ -52,6 +52,19 @@ import org.vortikal.web.service.URL;
 public class LinkCheckController extends JSONController {
 
     private LinkChecker linkChecker;
+    
+    private final static String LINK = "link";
+    private final static String STATUS = "status";
+    private final static String MSG = "msg";
+    
+    private final class LinkTypes {
+        public final static String ANCHOR = "#";
+        public final static String MAIL_TO = "mailto:";
+        public final static String FTP = "ftp:";
+        public final static String JAVASCRIPT = "javascript:";
+        public final static String FILE = "file:";
+        public final static String WEBCAL = "webcal:";
+    }
 
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
         List<String> urls;
@@ -81,10 +94,10 @@ public class LinkCheckController extends JSONController {
         JSONArray list = new JSONArray();
         for (LinkCheckResult result : results) {
             JSONObject o = new JSONObject();
-            o.put("link", result.getLink());
-            o.put("status", result.getStatus().toString());
+            o.put(LINK, result.getLink());
+            o.put(STATUS, result.getStatus().toString());
             if (result.getReason() != null) {
-                o.put("message", result.getReason());
+                o.put(MSG, result.getReason());
             }
             list.add(o);
         }
@@ -127,8 +140,8 @@ public class LinkCheckController extends JSONController {
         if ("".equals(input.trim())) {
             return null;
         }
-        if (input.startsWith("#") || input.startsWith("mailto:") || input.startsWith("ftp:")
-                || input.startsWith("javascript:") || input.startsWith("file:") || input.startsWith("webcal:")) {
+        if (input.startsWith(LinkTypes.ANCHOR) || input.startsWith(LinkTypes.MAIL_TO) || input.startsWith(LinkTypes.FTP)
+                || input.startsWith(LinkTypes.JAVASCRIPT) || input.startsWith(LinkTypes.FILE) || input.startsWith(LinkTypes.WEBCAL)) {
             return null;
         }
         return input;

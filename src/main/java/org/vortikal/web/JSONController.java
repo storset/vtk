@@ -70,6 +70,14 @@ public abstract class JSONController implements Controller {
         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         writeResponse(e.getMessage(), response);
     }
+
+    protected static class BadRequestException extends Exception {
+        private static final long serialVersionUID = -8967067839019333139L;
+
+        public BadRequestException(String msg) {
+            super(msg);
+        }
+    }
     
     protected void writeResponse(String responseText, HttpServletResponse response) throws IOException {
         PrintWriter writer = response.getWriter();

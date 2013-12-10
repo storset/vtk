@@ -145,14 +145,6 @@ public class LinkCheckController extends JSONController {
         }
     }
 
-    private static class BadRequestException extends Exception {
-        private static final long serialVersionUID = -8967067839019333139L;
-
-        public BadRequestException(String msg) {
-            super(msg);
-        }
-    }
-
     @Required
     public void setLinkChecker(LinkChecker linkChecker) {
         this.linkChecker = linkChecker;

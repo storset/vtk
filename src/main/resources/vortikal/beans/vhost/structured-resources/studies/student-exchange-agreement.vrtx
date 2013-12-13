@@ -92,6 +92,8 @@ resourcetype student-exchange-agreement {
     content (class[vrtx-sea-accordion]),
     content (class[vrtx-pseudo-grouped]),
     exchange-leave (class[vrtx-sea-accordion]),
+    contact (class[vrtx-sea-accordion]),
+    contact (class[vrtx-pseudo-grouped]),
     earlier-students (class[vrtx-sea-accordion]),
     earlier-students (class[vrtx-pseudo-grouped])
   }

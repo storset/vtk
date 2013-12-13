@@ -98,11 +98,19 @@
       <#break>
 
     <#case "boolean">
+    
+      <#assign classes1 = getEdithintClasses(elem) />
+      <#if classes1?has_content >
+        <#assign classes1 = elem.name + ' ' + classes1 />
+      <#else>
+        <#assign classes1 = elem.name />
+      </#if>
+    
       <@vrtxBoolean.printPropertyEditView
         title=localizedTitle
         inputFieldName=elem.name
         value=elem.value
-        classes=elem.name
+        classes=classes1
         description=elem.description
         tooltip=form.resource.getLocalizedTooltip(elem.name, locale)
         defaultValue=elem.getDefaultValue()
@@ -329,7 +337,7 @@
         title=jsonAttr
         inputFieldName=tmpName
         value=value
-        classes=cssClass  />
+        classes=""  />
       <#break>
 
    <#case "image_ref">

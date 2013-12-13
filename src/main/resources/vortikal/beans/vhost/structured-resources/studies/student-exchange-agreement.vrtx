@@ -65,7 +65,15 @@ resourcetype student-exchange-agreement {
     fees tooltip (en : "School fees, semester fees, scholarships",
                   no : "skoleavgift, semesteravgift, stipendmuligheter",
                   nn : "skoleavgift, semesteravgift, stipendmoglegheiter"),
-
+                  
+    bachelor (class[vrtx-checkbox]),
+    master (class[vrtx-checkbox]),
+    phd (class[vrtx-checkbox]),
+    profesjonsstudium (class[vrtx-checkbox]),
+    specialist (class[vrtx-checkbox]),
+    tuition-yes (class[vrtx-checkbox]),
+    tuition-no (class[vrtx-checkbox]),
+    
     exchange-leave-shared-text (class[vrtx-shared-text],
                                 attribute[vrtx-shared-text-path:/vrtx/fellestekst/utvekslingsavtale],
                                 attribute[vrtx-shared-text-file-name:vil-du-dra]),

@@ -140,30 +140,46 @@ public class VideoappCallbackService implements Controller {
             return;
         }
         
-        if (subPaths.size() > 1) {
-            handleNotFound(request, response, model);
-            return;
-        }
-
-        VideoId id = videoIdFromInput(subPaths.get(0));
+        String videoIdPathElement = subPaths.get(0);
+        subPaths.remove(0);
+        
+        VideoId id = videoIdFromInput(videoIdPathElement);
         if (id == null) {
             model.put("status", 404);
-            model.put("json", errorBody("Invalid video id: " + subPaths.get(0)));
+            model.put("json", errorBody("Invalid video id: " + videoIdPathElement));
             return;
         }
-
+        
         int refCount = videoDaoSupport.countReferences(id);
         if (refCount == 0) {
             // Map zero refcount to 404 not found
             handleNotFound(request, response, model);
             return;
         }
+        
+        if (! subPaths.isEmpty()) {
+            if (subPaths.size() == 1 && "uris".equals(subPaths.get(0))) {
+                handleVideoRefUris(id, request, response, model);
+                return;
+            } else {
+                handleNotFound(request, response, model);
+                return;
+            }
+        }
 
-        model.put("json", body("videoId", id.toString(), 
-                               "refcount", refCount,
+        model.put("json", body("videoId", id.toString(),
+                               "refCount", refCount,
+                               "refListURI", videoUriTemplate().pathSegment("uris")
+                                             .buildAndExpand(id.numericId()).toUriString(),
                                "notifyUpdateURI", updateUriTemplate()
                                        .buildAndExpand(id.numericId())
                                        .toUriString()));
+    }
+    
+    private void handleVideoRefUris(VideoId id, HttpServletRequest reqest,
+            HttpServletResponse response, Map<String,Object> model) {
+
+        model.put("json", videoDaoSupport.listURIs(id));
     }
 
 

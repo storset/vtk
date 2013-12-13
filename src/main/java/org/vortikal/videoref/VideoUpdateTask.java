@@ -31,6 +31,7 @@
 
 package org.vortikal.videoref;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -104,11 +105,16 @@ public class VideoUpdateTask extends StoreResourceJob {
                     logger.debug("Processing video update event: " + videoToProcess);
                 }
 
-                final List<Path> paths = videoDaoSupport.listPaths(videoToProcess);
-                pathSelector.setPaths(paths);
+                final List<Path> pathsToProcess = new ArrayList<Path>();
+                for (String uri: videoDaoSupport.listURIs(videoToProcess)) {
+                    if (uri.startsWith("/")) {
+                        pathsToProcess.add(Path.fromString(uri));
+                    }
+                }
+                pathSelector.setPaths(pathsToProcess);
 
                 // Store resources at paths to refresh videoref metadata
-                if (!paths.isEmpty()) {
+                if (!pathsToProcess.isEmpty()) {
                     super.run();
                 }
             }

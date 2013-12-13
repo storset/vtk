@@ -278,10 +278,10 @@
       </bean>
     </property>
   </bean>
-
-
+  
+  
   <!-- This job queues video update notification events and processes them
-  asynchronously. -->    
+  asynchronously. -->
   <bean id="videoref.updateNotifyHandlerTask" class="org.vortikal.videoref.VideoUpdateTask"
           parent="repository.systemjob" depends-on="resourceTypeTree">
     <property name="triggerExpression" value="2" />

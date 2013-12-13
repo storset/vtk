@@ -74,7 +74,10 @@ public class VideoappClient implements DisposableBean {
      */
     public VideoRef createVideo(Resource newResource, String path, String contentType) {
         JSONObject postJson = new JSONObject();
-        postJson.element("path", path);
+        postJson.element("path", path); // Endres til "uploadPath"
+        
+        // New param: "isInterlaced" from client
+        // New param: "basedOnVideoId" for changes to video which will require re-encoding
         
         URI newVideoLocation = this.restTemplate.postForLocation(withBaseUrl("/videos/{host}/"), postJson, this.repositoryId);
         logger.debug("newVideoLocation = " + newVideoLocation);
@@ -178,14 +181,16 @@ public class VideoappClient implements DisposableBean {
     /**
      * Notify videoapp about download of source stream from Vortex.
      * 
-     * <p>This method is non-blocking and returns immediately.
+     * <p>This method is non-blocking and returns immediately, and the result
+     * of the notification is discarded.
      * 
      * @param videoId the video id for which source stream has been requested in Vortex.
      */
     public void notifyDownload(final VideoId videoId) {
         logger.debug("notifyDownload: " + videoId);
         
-        asyncGetForResponseEntity(withBaseUrl("/videos/{host}/{numericId}?notifyDownload=true"), 
+        // TODO Add Vortex URI to request
+        asyncGetForResponseEntity(withBaseUrl("/videos/notifyDownload?videoId=video:localhost:33&vortexURI=   &vortexURI=..."), 
                 JSONObject.class, repositoryId, videoId.numericId());
     }
     
@@ -213,7 +218,9 @@ public class VideoappClient implements DisposableBean {
         
         final TokenId tokenId = TokenId.fromString(response.getString("tokenId"));
         
-        // Get newly created token object
+        
+        // Get newly created token object 
+        // TODO should get tokenValue in create-call, so this will be unnecessary.
         response = this.restTemplate.getForObject(location, JSONObject.class);
         
         if (! TokenId.fromString(response.getString("tokenId")).equals(tokenId)) {

@@ -76,16 +76,17 @@ public class VideoDaoSupport extends JdbcDaoSupport {
     }
     
     /**
-     * Get list of paths for all resources which reference the given video id.
-     * (The list does not include resources in trash that reference the video id.)
+     * Get list of URIs for all resources which reference the given video id.
+     * The list may include resources with a "trash-NNN"-URI.
      * 
      * @param videoId the video id
-     * @return list of resource paths
+     * @return list of resource URIs as strings. The list may include trash URIs. which
+     * are not strictly valid repository paths.
      * @throws DataAccessException in case of database query errors
      * 
-     * TODO allowing setting of limit on number of paths returned. 
+     * TODO allowing setting of limit on number of paths returned.
      */
-    public List<Path> listPaths(VideoId videoId) throws DataAccessException {
+    public List<String> listURIs(VideoId videoId) throws DataAccessException {
 
         String nsUri = videoIdProperty.getNamespace().getUri();
         String name = videoIdProperty.getName();
@@ -93,8 +94,7 @@ public class VideoDaoSupport extends JdbcDaoSupport {
         
         String sql = "SELECT vr.uri as uri FROM vortex_resource vr"
                      + " INNER JOIN extra_prop_entry p ON vr.resource_id = p.resource_id"
-                     + " WHERE vr.uri LIKE '/%'"
-                     + " AND p.name_space " + (nsUri == null ? "is null" : "= ?")
+                     + " WHERE p.name_space " + (nsUri == null ? "is null" : "= ?")
                      + " AND p.name = ? AND p.value = ?";
         
         List<Map<String,Object>> results;
@@ -104,11 +104,12 @@ public class VideoDaoSupport extends JdbcDaoSupport {
             results = getJdbcTemplate().queryForList(sql, nsUri, name, value);
         }
         
-        List<Path> paths = new ArrayList<Path>(results.size());
+        List<String> uris = new ArrayList<String>(results.size());
         for (Map<String,Object> row: results) {
-            paths.add(Path.fromString((String)row.get("uri")));
+            uris.add((String)row.get("uri"));
         }
-        return paths;
+        
+        return uris;
     }
     
     /**

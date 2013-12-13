@@ -4,8 +4,8 @@
   <#if value=="" >
   <#local value = defaultValue />
   </#if>
-  <div class="vrtx-radio ${classes}">
-    <div class="vrtx-radio-buttons">
+  <div class="vrtx-checkbox ${classes}">
+    <div class="vrtx-checkbox-buttons">
       <input name="${inputFieldName}" id="${inputFieldName}-true" type="checkbox" value="true" <#if value == "true" > checked="checked" </#if> />
       <label for="${inputFieldName}-true">${title}</label> <#if "${tooltip}" != ""><div class="tooltip">${tooltip}</div></#if>
     </div>

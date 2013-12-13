@@ -38,7 +38,7 @@ import static org.junit.Assert.*;
 /**
  *
  */
-public class AbstractTaskTest {
+public class TaskTest {
 
     private class Task extends AbstractTask {
         @Override

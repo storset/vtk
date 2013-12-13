@@ -4,6 +4,7 @@
 
 <#import "/pages/studies/view-course-group-listing.ftl" as courseGroup />
 <#import "/pages/studies/view-course-description-listing.ftl" as courseDescription />
+<#import "/pages/studies/view-student-exchange-agreement-listing.ftl" as studentExchangeAgreement />
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -94,6 +95,8 @@
           <@courseGroup.displayResult result />
         <#elseif collection.resourceType = 'course-description-listing'>
           <@courseDescription.displayResult result />
+        <#elseif collection.resourceType = 'student-exchange-agreement-listing'>
+          <@studentExchangeAgreement.displayResult result />
         <#else>
           <ul>
             <#list result as res>

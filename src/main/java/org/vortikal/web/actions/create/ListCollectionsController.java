@@ -55,9 +55,9 @@ import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.ServiceUnlinkableException;
 
-public class CreateDropDownController implements Controller {
+public class ListCollectionsController implements Controller {
 
-    private CreateDropDownProvider provider;
+    private ListCollectionsProvider provider;
     private Service service;
     private Repository repository;
     private PropertyTypeDefinition unpublishedCollectionPropDef;
@@ -175,7 +175,7 @@ public class CreateDropDownController implements Controller {
     }
 
     @Required
-    public void setProvider(CreateDropDownProvider provider) {
+    public void setProvider(ListCollectionsProvider provider) {
         this.provider = provider;
     }
     

@@ -1809,7 +1809,7 @@ function accordionJsonRefresh(elem, active) {
 function accordionContentSplitHeaderPopulators(init) {
   var sharedTextItems = $("#editor.vrtx-shared-text #shared-text-box .vrtx-json-element");
   var semesterResourceLinksItems = $("#editor.vrtx-semester-page .vrtx-grouped[class*=link-box]");
-  
+
   if(sharedTextItems.length) {
     if (!init) {
       sharedTextItems = sharedTextItems.filter(":last");
@@ -1824,7 +1824,7 @@ function accordionContentSplitHeaderPopulators(init) {
         semesterResourceLinksItems.find(".vrtx-json-element:last").addClass("header-empty-check-and"); 
       });
     }
-  } 
+  }
 }
 
 /*-------------------------------------------------------------------*\
@@ -1903,6 +1903,8 @@ VrtxEditor.prototype.initStudyDocTypes = function initStudyDocTypes() {
   } else if (vrtxEdit.editorForm.hasClass("vrtx-semester-page")) {
     setShowHideBooleanNewEditor("cloned-course", "div.cloned-course-code", false);
     vrtxEdit.accordionGroupedInit("[class*=link-box]");
+  } else if (vrtxEdit.editorForm.hasClass("vrtx-student-exchange-agreement")) {
+    vrtxEdit.accordionGroupedInit(".vrtx-sea-accordion");
   } else if (vrtxEdit.editorForm.hasClass("vrtx-samlet-program")) {
     var samletElm = vrtxEdit.editorForm.find(".samlet-element");
     vrtxEdit.replaceTag(samletElm, "h6", "strong");

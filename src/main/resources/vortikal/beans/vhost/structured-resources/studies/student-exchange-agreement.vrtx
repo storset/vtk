@@ -65,7 +65,15 @@ resourcetype student-exchange-agreement {
     fees tooltip (en : "School fees, semester fees, scholarships",
                   no : "skoleavgift, semesteravgift, stipendmuligheter",
                   nn : "skoleavgift, semesteravgift, stipendmoglegheiter"),
-
+                  
+    bachelor (class[vrtx-checkbox]),
+    master (class[vrtx-checkbox]),
+    phd (class[vrtx-checkbox]),
+    profesjonsstudium (class[vrtx-checkbox]),
+    specialist (class[vrtx-checkbox]),
+    tuition-yes (class[vrtx-checkbox]),
+    tuition-no (class[vrtx-checkbox]),
+    
     exchange-leave-shared-text (class[vrtx-shared-text],
                                 attribute[vrtx-shared-text-path:/vrtx/fellestekst/utvekslingsavtale],
                                 attribute[vrtx-shared-text-file-name:vil-du-dra]),
@@ -74,7 +82,28 @@ resourcetype student-exchange-agreement {
     contact (class[vrtx-shared-text],
              attribute[vrtx-shared-text-path:/vrtx/fellestekst/utvekslingsavtale],
              attribute[vrtx-shared-text-file-name:kontakt]),
-    contact (after exchange-leave)
+    contact (after exchange-leave),
+    
+    student-exchange-intro (class[vrtx-sea-accordion]),
+    student-exchange-intro (class[vrtx-pseudo-grouped]),
+    who-can-apply (class[vrtx-sea-accordion]),
+    who-can-apply (class[vrtx-pseudo-grouped]),
+    language (class[vrtx-sea-accordion]),
+    language (class[vrtx-pseudo-grouped]),
+    courses (class[vrtx-sea-accordion]),
+    courses (class[vrtx-pseudo-grouped]),
+    length-of-semester (class[vrtx-sea-accordion]),
+    length-of-semester (class[vrtx-pseudo-grouped]),
+    fees (class[vrtx-sea-accordion]),
+    housing (class[vrtx-sea-accordion]),
+    housing (class[vrtx-pseudo-grouped]),
+    content (class[vrtx-sea-accordion]),
+    content (class[vrtx-pseudo-grouped]),
+    exchange-leave (class[vrtx-sea-accordion]),
+    contact (class[vrtx-sea-accordion]),
+    contact (class[vrtx-pseudo-grouped]),
+    earlier-students (class[vrtx-sea-accordion]),
+    earlier-students (class[vrtx-pseudo-grouped])
   }
 
   view {

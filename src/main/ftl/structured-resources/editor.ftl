@@ -202,10 +202,11 @@
           <#elseif elementBox.metaData['vertical']?exists>
             <#assign groupClass = groupClass + "-vertical" />
           </#if>
+
           <#if elementBox.name?exists>
             <#assign groupName = elementBox["name"] />
             <#assign groupClass = groupClass + " ${groupName?string}" />
-            <div class="${groupClass}">
+            <div class="${groupClass} <#if elementBox["metaData"]["class"]?exists>${elementBox["metaData"]["class"]}</#if>">
               <#assign localizedHeader = form.resource.getLocalizedMsg(elementBox.name, locale, null) />
               <div class="header">${localizedHeader}</div>
           <#else>

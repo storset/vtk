@@ -18,7 +18,7 @@
     <property name="handler" ref="createDocumentDropDown.handler" />
   </bean>
 
-  <bean id="createDocumentDropDown.handler" class="org.vortikal.web.actions.create.CreateDropDownController">
+  <bean id="createDocumentDropDown.handler" class="org.vortikal.web.actions.create.ListCollectionsController">
     <property name="provider" ref="createDropDown.provider" />
     <property name="unpublishedCollectionPropDef" ref="unpublishedCollectionPropDef" />
     <property name="service" ref="createDocumentService" />
@@ -39,7 +39,7 @@
     <property name="handler" ref="createCollectionDropDown.handler" />
   </bean>
 
-  <bean id="createCollectionDropDown.handler" class="org.vortikal.web.actions.create.CreateDropDownController">
+  <bean id="createCollectionDropDown.handler" class="org.vortikal.web.actions.create.ListCollectionsController">
     <property name="provider" ref="createDropDown.provider" />
     <property name="unpublishedCollectionPropDef" ref="unpublishedCollectionPropDef" />
     <property name="service" ref="createCollectionService" />
@@ -60,7 +60,7 @@
     <property name="handler" ref="uploadFileDropDown.handler" />
   </bean>
 
-  <bean id="uploadFileDropDown.handler" class="org.vortikal.web.actions.create.CreateDropDownController">
+  <bean id="uploadFileDropDown.handler" class="org.vortikal.web.actions.create.ListCollectionsController">
     <property name="provider" ref="createDropDown.provider" />
     <property name="unpublishedCollectionPropDef" ref="unpublishedCollectionPropDef" />
     <property name="service" ref="fileUploadService" />
@@ -84,14 +84,14 @@
     <property name="handler" ref="viewReport.handler" />
   </bean>
 
-  <bean id="viewReport.handler" class="org.vortikal.web.actions.create.CreateDropDownController">
+  <bean id="viewReport.handler" class="org.vortikal.web.actions.create.ListCollectionsController">
     <property name="provider" ref="createDropDown.provider" />
     <property name="unpublishedCollectionPropDef" ref="unpublishedCollectionPropDef" />
     <property name="service" ref="reportService" />
     <property name="repository" ref="repository" />
   </bean>
   
-  <bean id="createDropDown.provider" class="org.vortikal.web.actions.create.CreateDropDownProvider">
+  <bean id="createDropDown.provider" class="org.vortikal.web.actions.create.ListCollectionsProvider">
     <property name="searcher" ref="systemIndexSearcher" />
     <property name="repository" ref="repository" />
   </bean>

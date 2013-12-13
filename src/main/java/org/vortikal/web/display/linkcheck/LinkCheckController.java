@@ -1,4 +1,4 @@
-/* Copyright (c) 2010, University of Oslo, Norway
+/* Copyright (c) 2010, 2013, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -47,6 +47,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.util.web.LinkTypesPrefixes;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.display.linkcheck.LinkChecker.LinkCheckResult;
 import org.vortikal.web.service.URL;
@@ -54,8 +55,11 @@ import org.vortikal.web.service.URL;
 public class LinkCheckController implements Controller {
 
     private LinkChecker linkChecker;
+    
+    private final static String LINK = "link";
+    private final static String STATUS = "status";
+    private final static String MSG = "msg";
 
-    @Override
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
         List<String> urls;
         try {
@@ -80,32 +84,35 @@ public class LinkCheckController implements Controller {
         return results;
     }
 
-    private void badRequest(Throwable e, HttpServletResponse response) throws IOException {
-        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        PrintWriter writer = response.getWriter();
-        try {
-            writer.write(e.getMessage());
-        } finally {
-            writer.close();
-        }
-    }
-
     private void writeResults(List<LinkCheckResult> results, HttpServletResponse response) throws Exception {
         JSONArray list = new JSONArray();
         for (LinkCheckResult result : results) {
             JSONObject o = new JSONObject();
-            o.put("link", result.getLink());
-            o.put("status", result.getStatus().toString());
+            o.put(LINK, result.getLink());
+            o.put(STATUS, result.getStatus().toString());
             if (result.getReason() != null) {
-                o.put("message", result.getReason());
+                o.put(MSG, result.getReason());
             }
             list.add(o);
         }
+        okRequest(list, response);
+    }
+
+    private void okRequest(JSONArray arr, HttpServletResponse response) throws IOException {
         response.setStatus(HttpServletResponse.SC_OK);
-        response.setContentType("text/plain;charset=utf-8");
+        response.setContentType("text/plain;charset=utf-8"); /* XXX: Should be application/json? */
+        writeResponse(arr.toString(1), response);
+    }
+
+    private void badRequest(Throwable e, HttpServletResponse response) throws IOException {
+        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        writeResponse(e.getMessage(), response);
+    }
+    
+    private void writeResponse(String responseText, HttpServletResponse response) throws IOException {
         PrintWriter writer = response.getWriter();
         try {
-            writer.print(list.toString(1));
+            writer.write(responseText);
         } finally {
             writer.close();
         }
@@ -139,6 +146,14 @@ public class LinkCheckController implements Controller {
             reader.close();
         }
     }
+    
+    private static class BadRequestException extends Exception {
+        private static final long serialVersionUID = -8967067839019333139L;
+
+        public BadRequestException(String msg) {
+            super(msg);
+        }
+    }
 
     private String sanitize(String input) {
         if (input == null) {
@@ -147,8 +162,8 @@ public class LinkCheckController implements Controller {
         if ("".equals(input.trim())) {
             return null;
         }
-        if (input.startsWith("#") || input.startsWith("mailto:") || input.startsWith("ftp:")
-                || input.startsWith("javascript:") || input.startsWith("file:") || input.startsWith("webcal:")) {
+        if (input.startsWith(LinkTypesPrefixes.ANCHOR) || input.startsWith(LinkTypesPrefixes.MAIL_TO) || input.startsWith(LinkTypesPrefixes.FTP)
+                || input.startsWith(LinkTypesPrefixes.JAVASCRIPT) || input.startsWith(LinkTypesPrefixes.FILE) || input.startsWith(LinkTypesPrefixes.WEBCAL)) {
             return null;
         }
         return input;
@@ -162,14 +177,6 @@ public class LinkCheckController implements Controller {
             return !r.isReadRestricted();
         } catch (Exception e) {
             return false;
-        }
-    }
-
-    private static class BadRequestException extends Exception {
-        private static final long serialVersionUID = -8967067839019333139L;
-
-        public BadRequestException(String msg) {
-            super(msg);
         }
     }
 

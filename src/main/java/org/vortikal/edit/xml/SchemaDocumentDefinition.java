@@ -53,6 +53,7 @@ import org.jdom.Text;
 import org.jdom.filter.Filter;
 import org.jdom.input.SAXBuilder;
 import org.vortikal.util.text.StructuredText;
+import org.vortikal.util.web.LinkTypesPrefixes;
 
 
 
@@ -153,7 +154,7 @@ public class SchemaDocumentDefinition {
                         + "Only relative URLs or 'file:' and 'http[s]:' "
                         + "type URLs are supported.");
 
-            } else if (location.startsWith("file:")
+            } else if (location.startsWith(LinkTypesPrefixes.FILE)
                     || location.matches("https?://.*")) {
                 // Absolute URL
                 includeURL = new URL(location);

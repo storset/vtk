@@ -41,6 +41,7 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.BeanInitializationException;
+import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Acl;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Privilege;
@@ -51,8 +52,10 @@ import org.vortikal.repository.TypeInfo;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
+import org.vortikal.text.html.HtmlUtil;
 import org.vortikal.util.repository.ResourceSorter;
 import org.vortikal.util.repository.ResourceSorter.Order;
+import org.vortikal.web.ACLTooltipHelper;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.service.Service;
@@ -125,6 +128,7 @@ public class CollectionListingProvider implements ReferenceDataProvider {
     private Service browsingService;
     private boolean retrieveForProcessing = false;
     private Set<ResourceTypeDefinition> matchingResourceTypes = null;
+    private ACLTooltipHelper aclTooltipHelper;
 
     public void setBrowsingService(Service browsingService) {
         this.browsingService = browsingService;
@@ -204,7 +208,9 @@ public class CollectionListingProvider implements ReferenceDataProvider {
 
         @SuppressWarnings("unchecked")
         Map<String, String>[] childLinks = new HashMap[children.length];
+        String[] permissionTooltips = new String[children.length];
         String[] browsingLinks = new String[children.length];
+        
         for (int i = 0; i < children.length; i++) {
             Resource child = children[i];
             Map<String, String> linkMap = new HashMap<String, String>();
@@ -228,7 +234,11 @@ public class CollectionListingProvider implements ReferenceDataProvider {
             } catch (ServiceUnlinkableException e) {
                 // do nothing
             }
+            if (aclTooltipHelper != null) {
+                permissionTooltips[i] = aclTooltipHelper.generateTitle(child, request);
+            }
         }
+        collectionListingModel.put("permissionTooltips", permissionTooltips);
         collectionListingModel.put("childLinks", childLinks);
         collectionListingModel.put("browsingLinks", browsingLinks);
 
@@ -271,7 +281,6 @@ public class CollectionListingProvider implements ReferenceDataProvider {
             }
         }
         model.put("hasWriteUnpublished", hasWriteUnpublished);
-        
         model.put("collectionListing", collectionListingModel);
     }
 
@@ -323,6 +332,10 @@ public class CollectionListingProvider implements ReferenceDataProvider {
 
     public void setMatchingResourceTypes(Set<ResourceTypeDefinition> matchingResourceTypes) {
         this.matchingResourceTypes = matchingResourceTypes;
+    }
+    
+    public void setAclTooltipHelper(ACLTooltipHelper aclTooltipHelper) {
+        this.aclTooltipHelper = aclTooltipHelper;
     }
 
 }

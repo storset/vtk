@@ -4,6 +4,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.servlet.ModelAndView;
+import org.vortikal.util.web.LinkTypesPrefixes;
 import org.vortikal.web.service.URL;
 
 /**
@@ -61,7 +62,7 @@ public class IEConfigurableRedirector extends ConfigurableRedirector {
         if (url.getParameter(backstepParameter) != null) {
             String backstepValue = url.getParameter(backstepParameter);
             url.removeParameter(backstepParameter);
-            backstepFragment = "#" + backstepParameter + "=" + backstepValue;
+            backstepFragment = LinkTypesPrefixes.ANCHOR + backstepParameter + "=" + backstepValue;
         }
         response.sendRedirect(url.toString() + backstepFragment);
     }

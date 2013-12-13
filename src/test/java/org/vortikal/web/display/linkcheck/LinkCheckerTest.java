@@ -103,9 +103,15 @@ public class LinkCheckerTest {
     public void testIDN() throws java.net.MalformedURLException {
         java.net.URL url = new java.net.URL("http://www.øl.com/#/BedsteBryggeprocess");
         assertEquals(new java.net.URL("http://www.xn--l-4ga.com/#/BedsteBryggeprocess"), 
-                LinkChecker.toIDN(url));
+                LinkChecker.escape(url));
         url = new java.net.URL("http://plain-ascii.com/foo/bar");
-        assertEquals(url, LinkChecker.toIDN(url));
+        assertEquals(url, LinkChecker.escape(url));
+    }
+    
+    @Test
+    public void testNonAscii() throws java.net.MalformedURLException {
+        java.net.URL url = new java.net.URL("http://www.example.com/a–b"); // "a" <ndash> "b"
+        assertEquals(new java.net.URL("http://www.example.com/a%E2%80%93b"), LinkChecker.escape(url));
     }
     
     @Test

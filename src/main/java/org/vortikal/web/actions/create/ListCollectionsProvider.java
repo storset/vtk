@@ -51,13 +51,13 @@ import org.vortikal.repository.search.query.TypeTermQuery;
 import org.vortikal.repository.search.query.UriDepthQuery;
 import org.vortikal.repository.search.query.UriPrefixQuery;
 
-public class CreateDropDownProvider {
+public class ListCollectionsProvider {
 
     private Searcher searcher;
     private Repository repository;
     private final int maxLimit = 500;
 
-    private static Log logger = LogFactory.getLog(CreateDropDownProvider.class);
+    private static Log logger = LogFactory.getLog(ListCollectionsProvider.class);
 
     public List<Resource> buildSearchAndPopulateResources(String uri, String token) {
         AndQuery mainQuery = new AndQuery();

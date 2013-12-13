@@ -1789,6 +1789,11 @@ body#vrtx-report-broken-links #directory-listing td.vrtx-report-broken-links {
   border-bottom: 1px solid #c7dadf;
 }
 
+#directory-listing tr:hover td.permissions a,
+#directory-listing tr.hover td.permissions a {
+  border-bottom: 1px dotted #888;
+}
+
 #directory-listing tr#trash-can-empty:hover td,
 #directory-listing tr#trash-can-empty.hover td,
 #directory-listing tr#collectionlisting-empty:hover td,
@@ -1825,15 +1830,32 @@ body#vrtx-report-broken-links #directory-listing td.vrtx-report-broken-links {
 }
 
 #directory-listing td span.allowed-for-all,
+#directory-listing td span.allowed-for-all a,
 #resourceMenuRight span.allowed-for-all,
 #resourceMenuRight span.published,
 #publishing-status span.published {
   color: #549401;
 }
 
+#directory-listing td span.inherited-permission {
+  color: #999999;
+  display: inline-block;
+  font-size: 1.5em;
+  left: 0;
+  line-height: 1;
+  margin: -5px 0;
+  position: relative;
+  top: 2px;
+}
+
 #directory-listing td span.restricted,
+#directory-listing td span.restricted a,
 #resourceMenuRight span.restricted {
   color: #ed1c24;
+}
+
+#directory-listing td.permissions span a:hover {
+  text-decoration: none;
 }
 
 #resourceMenuRight span.unpublished,
@@ -1849,6 +1871,7 @@ body#vrtx-report-broken-links #directory-listing td.vrtx-report-broken-links {
 
 .unpublished .published span,
 .unpublished .permissions span,
+.unpublished .permissions span a,
 .unpublished td.resource-type,
 .unpublished td.last-modified {
   color: #9a9996 !important;

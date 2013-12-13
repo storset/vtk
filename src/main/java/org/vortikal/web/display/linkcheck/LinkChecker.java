@@ -35,6 +35,7 @@ import java.io.Serializable;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
+import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 
 import net.sf.ehcache.Ehcache;
@@ -134,19 +135,25 @@ public class LinkChecker {
         return true;
     }
     
-    public static java.net.URL toIDN(java.net.URL url) throws MalformedURLException {
-        String host = url.getHost();
-        if (isAscii(host)) {
-            return url;
+    public static java.net.URL escape(java.net.URL url) 
+            throws MalformedURLException {
+        java.net.URL result = url;
+        String frag = url.getRef() != null ? "#" + url.getRef() : "";
+        
+        if (!isAscii(url.getHost())) {
+            String host = java.net.IDN.toASCII(url.getHost());
+            result = new java.net.URL(url.getProtocol(), host, url.getPort(), 
+                    url.getFile() + frag);
         }
-
-        String s = url.toString();
-        int start = s.indexOf(host, 0);
-        StringBuilder sb = new StringBuilder();
-        sb.append(s.substring(0, start));
-        sb.append(java.net.IDN.toASCII(host));
-        sb.append(s.substring(start + host.length()));
-        return new java.net.URL(sb.toString());
+        
+        if (!isAscii(url.getFile())) {
+            try {
+            java.net.URI uri = new java.net.URI(url.getFile());
+            result = new java.net.URL(url.getProtocol(), url.getHost(), 
+                    url.getPort(), uri.toASCIIString() + frag);
+            } catch (URISyntaxException e) { }
+        }
+        return result;
     }
 
     private LinkCheckResult validateInternal(String href, URL base, boolean sendReferrer) {
@@ -169,7 +176,7 @@ public class LinkChecker {
 
         java.net.URL url = null;
         try {
-            url = toIDN(new java.net.URL(normalized));
+            url = escape(new java.net.URL(normalized));
         } catch (MalformedURLException e) {
             return new LinkCheckResult(href, Status.MALFORMED_URL, e.getMessage());
         }
@@ -188,7 +195,7 @@ public class LinkChecker {
         try {
             status = validateURL(url, sendReferrer ? base : null, "HEAD");
             if (status == Status.NOT_FOUND) {
-                // XXX VTK-3434 Some broken servers return different result codes based on HEAD versus GET, so we retry...
+                // Some broken servers return different result codes based on HEAD versus GET, so we retry...
                 logger.info("Validate (HEAD returned NOT_FOUND, retrying with GET): href='" + url + "'");
                 status = validateURL(url, sendReferrer ? base : null, "GET");
             }
@@ -196,7 +203,7 @@ public class LinkChecker {
             status = Status.ERROR;
             reason = t.getMessage();
         }
-        // XXX VTK-3162 Any status other than explicit NOT_FOUND is considered
+        // Any status other than explicit NOT_FOUND is considered
         // to be ok. This to reduce unnecessary noise produced by generic/random
         // errors and timeouts.
         if (status != Status.NOT_FOUND) {
@@ -248,7 +255,7 @@ public class LinkChecker {
             if (location == null) {
                 return responseCode;
             }
-            urlConnection = createRequest(toIDN(new java.net.URL(location)), referrer, method);
+            urlConnection = createRequest(escape(new java.net.URL(location)), referrer, method);
             urlConnection.connect();
             responseCode = urlConnection.getResponseCode();
             retry++;

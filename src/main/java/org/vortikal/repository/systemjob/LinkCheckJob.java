@@ -59,6 +59,7 @@ import org.vortikal.repository.ResourceLockedException;
 import org.vortikal.repository.SystemChangeContext;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.util.text.JSONDefaultHandler;
+import org.vortikal.util.web.LinkTypesPrefixes;
 import org.vortikal.web.display.linkcheck.LinkChecker;
 import org.vortikal.web.display.linkcheck.LinkChecker.LinkCheckResult;
 import org.vortikal.web.service.CanonicalUrlConstructor;
@@ -278,7 +279,7 @@ public class LinkCheckJob extends AbstractResourceJob {
             String scheme = schemeMatcher.group(1);
             return "http".equalsIgnoreCase(scheme) || "https".equalsIgnoreCase(scheme);
         }
-        return ! href.startsWith("#");
+        return ! href.startsWith(LinkTypesPrefixes.ANCHOR);
     }
     
     private boolean shouldResetState(LinkCheckState state, Resource resource, SystemChangeContext context) {

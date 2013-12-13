@@ -375,6 +375,8 @@
         <configuration>
           <skip>${test.skip}</skip>
           <useFile>false</useFile>
+          <forkCount>2</forkCount>
+          <reuseForks>true</reuseForks>
           <systemProperties>
             <property>
               <name>log4j.configuration</name>

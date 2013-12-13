@@ -216,11 +216,13 @@
                 <#break>
             
               <#case "permissions">
+                <#assign hasTooltip = collectionListing.permissionTooltips[child_index]?exists />
                 <#if restricted != "restricted" >
-                  <span class="allowed-for-all">${vrtx.getMsg("collectionListing.permissions.readAll")}</span>
+                  <span class="allowed-for-all<#if hasTooltip> permission-tooltips</#if>"><#if hasTooltip><a href='javascript:void(0);' title='${collectionListing.permissionTooltips[child_index]}'></#if>${vrtx.getMsg("collectionListing.permissions.readAll")}<#if hasTooltip></a></#if></span>
                 <#else>
-                  <span class="restricted">${vrtx.getMsg("collectionListing.permissions.restricted")}</span>
+                  <span class="restricted<#if hasTooltip> permission-tooltips</#if>"><#if hasTooltip><a href='javascript:void(0);' title='${collectionListing.permissionTooltips[child_index]}'></#if>${vrtx.getMsg("collectionListing.permissions.restricted")}<#if hasTooltip></a></#if></span>
                 </#if>
+                <#if !child.isInheritedAcl()><span class="inherited-permission">&bull;</span></#if>
                 <#break>
             
              <#case "published">

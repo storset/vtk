@@ -43,6 +43,15 @@ h2 {
   margin-top: 20px;
 }
 
+.vrtx-checkbox {
+  margin-top: 5px;
+}
+
+.vrtx-checkbox label {
+  position: relative;
+  top: -2px;
+}
+
 .property-item,
 .html-content,
 .vrtx-grouped,

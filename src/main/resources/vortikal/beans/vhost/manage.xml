@@ -1812,6 +1812,7 @@
 
   <bean id="manageCollectionlistingProvider" class="org.vortikal.web.referencedata.provider.CollectionListingProvider">
     <property name="browsingService" ref="manageService" />
+    <property name="aclTooltipHelper" ref="aclTooltipHelper" />
     <property name="childInfoItems">
       <list>
         <value>name</value>

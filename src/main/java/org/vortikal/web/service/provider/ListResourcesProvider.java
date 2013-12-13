@@ -36,16 +36,9 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Required;
-import org.vortikal.repository.Acl;
-import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.Path;
-import org.vortikal.repository.Privilege;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
-import org.vortikal.repository.ResourceNotFoundException;
-import org.vortikal.security.AuthenticationException;
-import org.vortikal.security.Principal;
-import org.vortikal.security.PrincipalFactory;
 import org.vortikal.util.repository.ResourceSorter;
 import org.vortikal.util.repository.ResourceSorter.Order;
 
@@ -54,19 +47,11 @@ public class ListResourcesProvider {
     private Repository repository;
     private org.springframework.web.servlet.support.RequestContext springRequestContext;
 
-    public List<Resource> buildSearchAndPopulateResources(Path uri, String token, HttpServletRequest request) {
+    public List<Resource> buildSearchAndPopulateResources(Path uri, String token, HttpServletRequest request) throws Exception {
 
         this.springRequestContext = new org.springframework.web.servlet.support.RequestContext(request);
 
-        Resource[] resourcesArr = null;
-
-        try {
-            resourcesArr = this.repository.listChildren(token, uri, false);
-        } catch (ResourceNotFoundException e1) {
-        } catch (AuthorizationException e1) {
-        } catch (AuthenticationException e1) {
-        } catch (Exception e1) {
-        }
+        Resource[] resourcesArr = this.repository.listChildren(token, uri, false);
 
         List<Resource> resources = new ArrayList<Resource>();
 
@@ -79,72 +64,6 @@ public class ListResourcesProvider {
         }
 
         return resources;
-    }
-
-    public boolean authorizedTo(Acl acl, Principal principal, Privilege privilege) {
-        return repository.authorize(principal, acl, privilege);
-    }
-
-    public String[] getAclFormatted(Acl acl, HttpServletRequest request) {
-        String[] aclFormatted = { "", "", "" }; // READ, READ_WRITE, ALL
-
-        for (Privilege action : Privilege.values()) {
-            String actionName = action.getName();
-            Principal[] privilegedUsers = acl.listPrivilegedUsers(action);
-            Principal[] privilegedGroups = acl.listPrivilegedGroups(action);
-            Principal[] privilegedPseudoPrincipals = acl.listPrivilegedPseudoPrincipals(action);
-            StringBuilder combined = new StringBuilder();
-            int i = 0;
-            int len = privilegedPseudoPrincipals.length + privilegedUsers.length + privilegedGroups.length;
-            boolean all = false;
-
-            for (Principal p : privilegedPseudoPrincipals) {
-                String pseudo = this.getLocalizedTitle(request, "pseudoPrincipal." + p.getName(), null);
-                if (p.getName() == PrincipalFactory.NAME_ALL) {
-                    all = true;
-                    combined.append(pseudo);
-                }
-                if ((len == 1 || i == len - 1) && !all) {
-                    combined.append(pseudo);
-                } else if (!all) {
-                    combined.append(pseudo + ", ");
-                }
-                i++;
-            }
-            if (!all) {
-                for (Principal p : privilegedUsers) {
-                    if (len == 1 || i == len - 1) {
-                        combined.append(p.getDescription());
-                    } else {
-                        combined.append(p.getDescription() + ", ");
-                    }
-                    i++;
-                }
-                for (Principal p : privilegedGroups) {
-                    if (len == 1 || i == len - 1) {
-                        combined.append(p.getDescription());
-                    } else {
-                        combined.append(p.getDescription() + ", ");
-                    }
-                    i++;
-                }
-            }
-            if (actionName == "read") {
-                aclFormatted[0] = combined.toString();
-            } else if (actionName == "read-write") {
-                aclFormatted[1] = combined.toString();
-            } else if (actionName == "all") {
-                aclFormatted[2] = combined.toString();
-            }
-        }
-        return aclFormatted;
-    }
-
-    public String getLocalizedTitle(HttpServletRequest request, String key, Object[] params) {
-        if (params != null) {
-            return this.springRequestContext.getMessage(key, params);
-        }
-        return this.springRequestContext.getMessage(key);
     }
 
     @Required

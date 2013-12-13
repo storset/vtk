@@ -329,7 +329,7 @@
         title=jsonAttr
         inputFieldName=tmpName
         value=value
-        classes=""  />
+        classes=cssClass  />
       <#break>
 
    <#case "image_ref">

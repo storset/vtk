@@ -74,7 +74,26 @@ resourcetype student-exchange-agreement {
     contact (class[vrtx-shared-text],
              attribute[vrtx-shared-text-path:/vrtx/fellestekst/utvekslingsavtale],
              attribute[vrtx-shared-text-file-name:kontakt]),
-    contact (after exchange-leave)
+    contact (after exchange-leave),
+    
+    student-exchange-intro (class[vrtx-sea-accordion]),
+    student-exchange-intro (class[vrtx-pseudo-grouped]),
+    who-can-apply (class[vrtx-sea-accordion]),
+    who-can-apply (class[vrtx-pseudo-grouped]),
+    language (class[vrtx-sea-accordion]),
+    language (class[vrtx-pseudo-grouped]),
+    courses (class[vrtx-sea-accordion]),
+    courses (class[vrtx-pseudo-grouped]),
+    length-of-semester (class[vrtx-sea-accordion]),
+    length-of-semester (class[vrtx-pseudo-grouped]),
+    fees (class[vrtx-sea-accordion]),
+    housing (class[vrtx-sea-accordion]),
+    housing (class[vrtx-pseudo-grouped]),
+    content (class[vrtx-sea-accordion]),
+    content (class[vrtx-pseudo-grouped]),
+    exchange-leave (class[vrtx-sea-accordion]),
+    earlier-students (class[vrtx-sea-accordion]),
+    earlier-students (class[vrtx-pseudo-grouped])
   }
 
   view {

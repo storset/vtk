@@ -25,14 +25,14 @@
       </#list>
     </#if>
   
-    <title>${collection.title?html}<#if conf?exists && conf.currentUrl?exists> (${vrtx.getMsg("listing-filters.title.discontinued")})</#if></title>
+    <title>${collection.title?html}<#if collectionSpecificValues?exists && collectionSpecificValues.currentUrl?exists> (${vrtx.getMsg("listing-filters.title.discontinued")})</#if></title>
   
     <#if page?has_content>
       <#if "${page}" != "1"><meta name="robots" content="noindex, follow"/></#if>
     </#if>
   </head>
   <body id="vrtx-${collection.resourceType}">
-    <h1>${collection.title?html}<#if conf?exists && conf.currentUrl?exists> (${vrtx.getMsg("listing-filters.title.discontinued")})</#if></h1>
+    <h1>${collection.title?html}<#if collectionSpecificValues?exists && collectionSpecificValues.currentUrl?exists> (${vrtx.getMsg("listing-filters.title.discontinued")})</#if></h1>
     <#if showSubfolderMenu?exists>
       <div class="vrtx-subfolder-menu">
         <#if showSubfolderMenu.resultSets?has_content>
@@ -119,12 +119,12 @@
       </div>
     </#if>
     
-    <#if conf?exists>
+    <#if collectionSpecificValues?exists>
       <div id="vrtx-listing-filter-status">
-        <#if conf.discontinuedUrl?exists>
-          <a href="${conf.discontinuedUrl}">${vrtx.getMsg("listing-filters.status.filter.${collection.resourceType}.discontinued")}</a>
-        <#elseif conf.currentUrl?exists>
-          <a href="${conf.currentUrl}">${vrtx.getMsg("listing-filters.status.filter.${collection.resourceType}.current")}</a>
+        <#if collectionSpecificValues.discontinuedUrl?exists>
+          <a href="${collectionSpecificValues.discontinuedUrl}">${vrtx.getMsg("listing-filters.status.filter.${collection.resourceType}.discontinued")}</a>
+        <#elseif collectionSpecificValues.currentUrl?exists>
+          <a href="${collectionSpecificValues.currentUrl}">${vrtx.getMsg("listing-filters.status.filter.${collection.resourceType}.current")}</a>
         </#if>
       </div>
     </#if>

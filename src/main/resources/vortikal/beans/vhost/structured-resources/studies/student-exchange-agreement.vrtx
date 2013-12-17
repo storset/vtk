@@ -1,17 +1,16 @@
 resourcetype student-exchange-agreement {
 
   properties {
-    tittel : string,
-    title : derived (tittel) eval ("student-exchange-agreement"?localized) overrides title,
-
     owner-of-agreement : string,
     type-of-agreement : string,
     type-of-agreement-other-text-field : html noextract,
 
+    title : derived (owner-of-agreement) eval ("student-exchange-agreement-between"?localized + " " + "studentExchangeUniversityAgreementListing.name"?contextual + " " + "and"?localized + " " + owner-of-agreement?sharedText) overrides title,
+
     bachelor : boolean defaultvalue("false"),
     master : boolean defaultvalue("false"),
     phd : boolean defaultvalue("false"),
-    profesjonsstudium : boolean defaultvalue("false"),
+    profession : boolean defaultvalue("false"),
     specialist : boolean defaultvalue("false"),
 
     student-exchange-intro : html noextract,
@@ -35,9 +34,6 @@ resourcetype student-exchange-agreement {
   }
 
   edit-rules {
-    tittel (size[1]),
-    tittel (class[ui-helper-hidden]),
-
     owner-of-agreement (class[vrtx-shared-text],
                         attribute[vrtx-shared-text-path:/vrtx/fellestekst/utvekslingsavtale],
                         attribute[vrtx-shared-text-file-name:avtaleeier]),
@@ -48,32 +44,17 @@ resourcetype student-exchange-agreement {
                         attribute[vrtx-shared-text-file-name:avtaletype]),
     type-of-agreement-other-text-field (class[if-type-of-agreement-other]),
 
-    group level (bachelor, master, phd, profesjonsstudium, specialist) (after type-of-agreement-other-text-field),
-
-    who-can-apply tooltip (en : "subjects, grade average, credits, other admission criteria, number of students ",
-                           no : "fag, karaktersnitt, studiepoeng, andre opptakskrav, evt. antall plasser",
-                           nn : "fag, karaktersnitt, studiepoeng, andre opptakskrav, evt. talet på plassar"),
-    language tooltip (en : "Language of instruction, language requirements/recommendations and language courses",
-                      no : "Undervisningsspråk, språkkrav/-anbefaling og språkkurs",
-                      nn : "Undervisningsspråk, språkkrav/-tilråding og språkkurs"),
-    courses tooltip (en : "Courses, options, accreditation",
-                     no : "Emner, studiemuligheter, uttelling",
-                     nn : "Emner, studiemoglegheiter, uttelling"),
-
-    group fees (tuition-yes, tuition-no, fees-text-field) (after length-of-semester),
-
-    fees tooltip (en : "School fees, semester fees, scholarships",
-                  no : "skoleavgift, semesteravgift, stipendmuligheter",
-                  nn : "skoleavgift, semesteravgift, stipendmoglegheiter"),
-                  
+    group level (bachelor, master, phd, profession, specialist) (after type-of-agreement-other-text-field),
     bachelor (class[vrtx-checkbox]),
     master (class[vrtx-checkbox]),
     phd (class[vrtx-checkbox]),
-    profesjonsstudium (class[vrtx-checkbox]),
+    profession (class[vrtx-checkbox]),
     specialist (class[vrtx-checkbox]),
+
+    group fees (tuition-yes, tuition-no, fees-text-field) (after length-of-semester),
     tuition-yes (class[vrtx-checkbox]),
     tuition-no (class[vrtx-checkbox]),
-    
+
     exchange-leave-shared-text (class[vrtx-shared-text],
                                 attribute[vrtx-shared-text-path:/vrtx/fellestekst/utvekslingsavtale],
                                 attribute[vrtx-shared-text-file-name:vil-du-dra]),
@@ -83,7 +64,7 @@ resourcetype student-exchange-agreement {
              attribute[vrtx-shared-text-path:/vrtx/fellestekst/utvekslingsavtale],
              attribute[vrtx-shared-text-file-name:kontakt]),
     contact (after exchange-leave),
-    
+
     student-exchange-intro (class[vrtx-sea-accordion]),
     student-exchange-intro (class[vrtx-pseudo-grouped]),
     who-can-apply (class[vrtx-sea-accordion]),
@@ -108,6 +89,7 @@ resourcetype student-exchange-agreement {
 
   view {
     ##
+    [def title resource-prop-obj-val(".", "title")]
     [def name resource-prop-obj-val(".", "studentExchangeUniversityAgreementListing.name")]
     [def country resource-prop-obj-val(".", "studentExchangeUniversityAgreementListing.country")]
     [def city resource-prop-obj-val(".", "studentExchangeUniversityAgreementListing.city")]
@@ -122,7 +104,7 @@ resourcetype student-exchange-agreement {
     [def bachelor document.properties.bachelor]
     [def master document.properties.master]
     [def phd document.properties.phd]
-    [def profesjonsstudium document.properties.profesjonsstudium]
+    [def profession document.properties.profession]
     [def specialist document.properties.specialist]
     [def student-exchange-intro document.properties.student-exchange-intro]
     [def who-can-apply document.properties.who-can-apply]
@@ -146,7 +128,7 @@ resourcetype student-exchange-agreement {
       <body id="vrtx-student-exchange-agreement">
         <div id="vrtx-content">
           <div id="vrtx-main-content">
-            <h1>[localized 'student-exchange-agreement-between'] [val name] [localized 'and'] [call "include:shared-text" {"propName":"owner-of-agreement"}]</h1>
+            <h1>[val title]</h1>
             [if student-exchange-intro != null && student-exchange-intro != ""]
               [val student-exchange-intro # unescaped]
             [endif]
@@ -167,12 +149,6 @@ resourcetype student-exchange-agreement {
               [val length-of-semester # unescaped]
             [endif]
             <h2>[localized 'fees']</h2>
-            [if tuition-yes != null && tuition-yes]
-              <p>[localized 'tuition-yes']</p>
-            [endif]
-            [if tuition-no != null && tuition-no]
-              <p>[localized 'tuition-no']</p>
-            [endif]
             [if fees-text-field != null && fees-text-field != ""]
               [val fees-text-field # unescaped]
             [endif]
@@ -219,7 +195,7 @@ resourcetype student-exchange-agreement {
                 <tbody>
                   <tr>
                     <th scope="row">[localized 'type-of-agreement']</th>
-                    <td>[if type-of-agreement != null && type-of-agreement != "" && type-of-agreement != "other"][call "include:shared-text" {"propName":"type-of-agreement"}][elseif type-of-agreement = "other"][val type-of-agreement-other-text-field][endif]</td>
+                    <td>[if type-of-agreement != null && type-of-agreement != "" && type-of-agreement != "other"][call "include:shared-text" {"propName":"type-of-agreement"}][elseif type-of-agreement = "other" && type-of-agreement-other-text-field != null && type-of-agreement-other-text-field != ""][val type-of-agreement-other-text-field][endif]</td>
                   </tr>
                   <tr>
                     <th scope="row">[localized 'study-level']</th>
@@ -228,7 +204,7 @@ resourcetype student-exchange-agreement {
                       [def levels #({'prop': {'k': 'bachelor',          'v': bachelor}},
                                     {'prop': {'k': 'master',            'v': master}},
                                     {'prop': {'k': 'phd',               'v': phd}},
-                                    {'prop': {'k': 'profesjonsstudium', 'v': profesjonsstudium}},
+                                    {'prop': {'k': 'profession',        'v': profession}},
                                     {'prop': {'k': 'specialist',        'v': specialist}})]
                       [list levels level]
                         [if level.prop.v = "true"]
@@ -275,7 +251,7 @@ resourcetype student-exchange-agreement {
     student-exchange-agreement : (en : "Student exchange agreement", no : "Utvekslingsavtale", nn : "Utvekslingsavtale"),
     student-exchange-agreement-between : (en : "Exchange agreement between", no : "Utvekslingsavtale mellom", nn : "Utvekslingsavtale mellom"),
 
-    owner-of-agreement : (en : "Owner of agreement", no : "Avtaleeier", nn : "Avtaleeigar"), 
+    owner-of-agreement : (en : "Owner of agreement", no : "Avtaleeier", nn : "Avtaleeigar"),
     type-of-agreement : (en : "Type of agreement", no : "Avtaletype", nn : "Avtaletype"),
     type-of-agreement-other-text-field : (en : "Other", no : "Annet", nn : "Annet"),
 
@@ -283,16 +259,16 @@ resourcetype student-exchange-agreement {
     bachelor : (en : "Bachelor", no : "Bachelor", nn : "Bachelor"),
     master : (en : "Master", no : "Master", nn : "Master"),
     phd : (no : "PhD", nn : "PhD", en : "PhD"),
-    profesjonsstudium : (en : " Profesjonsstudium", no : "Profesjonsstudium", nn : "Profesjonsstudium"),
+    profession : (en : " Profession", no : "Profesjonsstudium", nn : "Profesjonsstudium"),
     specialist : (en : "Specialist", no : "Spesialist", nn : "Spesialist"),
 
-    student-exchange-intro : (en : "Introduction", no : "Innledning", nn : "Innleiing"), 
-    who-can-apply : (en : "Who can apply?", no : "Hvem kan søke?", nn : "Kven kan søkje"),
-    language : (en : "Language", no : "Språk", nn : "Språk"),
-    courses : (en : "What can you study?", no : "Hvilke emner kan jeg ta?", nn : "Kva emne kan eg ta?"),
+    student-exchange-intro : (en : "Introduction", no : "Innledning", nn : "Innleiing"),
+    who-can-apply : (en : "Who can apply? (Subjects, grade average, credits, other admission criteria, number of students)", no : "Hvem kan søke? (Fag, karaktersnitt, studiepoeng, andre opptakskrav, evt. antall plasser)", nn : "Kven kan søkje? (Fag, karaktersnitt, studiepoeng, andre opptakskrav, evt. talet på plassar)"),
+    language : (en : "Language (Language of instruction, language requirements/recommendations and language courses)", no : "Språk (Undervisningsspråk, språkkrav/-anbefaling og språkkurs)", nn : "Språk (Undervisningsspråk, språkkrav/-tilråding og språkkurs)"),
+    courses : (en : "What can you study? (Courses, options, accreditation)", no : "Hvilke emner kan jeg ta? (Emner, studiemuligheter, uttelling)", nn : "Kva emne kan eg ta? (Emner, studiemoglegheiter, uttelling)"),
     length-of-semester : (en : "How long is the semester", no : "Hvor lenge varer semesteret", nn : "Kor lenge varer semesteret"),
 
-    fees : (en : "Fees?", no : "Hva koster det?", nn : "Kva kostar det?"),
+    fees : (en : "Fees? (School fees, semester fees, scholarships)", no : "Hva koster det? (Skoleavgift, semesteravgift, stipendmuligheter)", nn : "Kva kostar det? (Skoleavgift, semesteravgift, stipendmoglegheiter)"),
     tuition-yes : (en : "With tuition payments", no : "Med skolepenger", nn : "Med skolepengar"),
     tuition-no : (en : "Without tuition payments", no : "Uten skolepenger", nn : "Uten skolepengar"),
     fees-text-field : (en : "Tuition payments optional text", no : "Skolepenger valgfri tekst", nn : "Skolepenger valfri tekst"),

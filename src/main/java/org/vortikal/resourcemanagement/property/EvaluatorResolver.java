@@ -59,7 +59,9 @@ import org.vortikal.resourcemanagement.ServiceDefinition;
 import org.vortikal.resourcemanagement.SimplePropertyDescription;
 import org.vortikal.resourcemanagement.StructuredResourceDescription;
 import org.vortikal.resourcemanagement.service.ExternalServiceInvoker;
+import org.vortikal.resourcemanagement.studies.SharedTextResolver;
 import org.vortikal.text.html.HtmlDigester;
+import org.vortikal.text.html.HtmlUtil;
 import org.vortikal.util.text.JSON;
 
 public class EvaluatorResolver {
@@ -68,6 +70,8 @@ public class EvaluatorResolver {
     private ExternalServiceInvoker serviceInvoker;
     private HtmlDigester htmlDigester;
     private Locale defaultLocale;
+    private SharedTextResolver sharedTextResolver;
+    private HtmlUtil htmlUtil;
 
     public PropertyEvaluator createPropertyEvaluator(PropertyDescription desc,
             StructuredResourceDescription resourceDesc) {
@@ -316,6 +320,25 @@ public class EvaluatorResolver {
                     locale = EvaluatorResolver.this.defaultLocale;
                 }
                 return resourceDesc.getLocalizedMsg(propValue, locale, null);
+            case SHARED_TEXT:
+                // Original resource is used to fetch locale and property type
+                // definition in resolveSharedText. Property is used to fetch
+                // the new value for the shared text.
+                Property prop = ctx.getNewResource().getProperty(Namespace.STRUCTURED_RESOURCE_NAMESPACE, propName);
+                String sharedText = sharedTextResolver.resolveSharedText(ctx.getOriginalResource(), prop);
+
+                if (sharedText != null) {
+                    sharedText = htmlUtil.flatten(sharedText);
+                }
+                return sharedText;
+            case CONTEXTUAL:
+                String contextual = null;
+                for (Property property : ctx.getOriginalResource().getProperties()) {
+                    if (property.getDefinition().getName().equals(propName)) {
+                        contextual = property.getStringValue();
+                    }
+                }
+                return contextual;
             default:
                 return null;
             }
@@ -444,6 +467,16 @@ public class EvaluatorResolver {
     @Required
     public void setDefaultLocale(Locale defaultLocale) {
         this.defaultLocale = defaultLocale;
+    }
+
+    @Required
+    public void setSharedTextResolver(SharedTextResolver sharedTextResolver) {
+        this.sharedTextResolver = sharedTextResolver;
+    }
+
+    @Required
+    public void setHtmlUtil(HtmlUtil htmlUtil) {
+        this.htmlUtil = htmlUtil;
     }
 
 }

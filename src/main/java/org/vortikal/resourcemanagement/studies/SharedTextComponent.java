@@ -30,10 +30,7 @@
  */
 package org.vortikal.resourcemanagement.studies;
 
-import java.util.Locale;
 import java.util.Map;
-
-import net.sf.json.JSONObject;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Required;
@@ -46,12 +43,10 @@ import org.vortikal.web.RequestContext;
 import org.vortikal.web.decorating.DecoratorRequest;
 import org.vortikal.web.decorating.DecoratorResponse;
 import org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent;
-import org.vortikal.web.servlet.ResourceAwareLocaleResolver;
 
 public class SharedTextComponent extends ViewRenderingDecoratorComponent {
 
     private SharedTextResolver sharedTextResolver;
-    private ResourceAwareLocaleResolver localeResolver;
 
     @Override
     protected void processModel(Map<String, Object> model, DecoratorRequest request, DecoratorResponse response)
@@ -75,33 +70,10 @@ public class SharedTextComponent extends ViewRenderingDecoratorComponent {
             return;
         }
 
-        Map<String, JSONObject> resolvedsharedTexts = sharedTextResolver.getSharedTextValues(
-                resource.getResourceType(), prop.getDefinition(), true);
+        String sharedText = sharedTextResolver.resolveSharedText(resource, prop);
 
-        if (resolvedsharedTexts == null || resolvedsharedTexts.isEmpty()) {
+        if (sharedText == null) {
             return;
-        }
-
-        String key = prop.getStringValue();
-        Locale locale = localeResolver.resolveResourceLocale(resource);
-        String localeString = locale.toString().toLowerCase();
-
-        JSONObject propSharedText;
-        if (!resolvedsharedTexts.containsKey(key) || (propSharedText = resolvedsharedTexts.get(key)) == null) {
-            return;
-        }
-
-        String sharedText;
-        try {
-            if (localeString.contains("ny")) {
-                sharedText = propSharedText.get("description-nn").toString();
-            } else if (!localeString.contains("en")) {
-                sharedText = propSharedText.get("description-no").toString();
-            } else {
-                sharedText = propSharedText.get("description-en").toString();
-            }
-        } catch (Exception e) {
-            sharedText = "";
         }
 
         model.put("sharedText", sharedText);
@@ -110,11 +82,6 @@ public class SharedTextComponent extends ViewRenderingDecoratorComponent {
     @Required
     public void setSharedTextResolver(SharedTextResolver sharedTextResolver) {
         this.sharedTextResolver = sharedTextResolver;
-    }
-
-    @Required
-    public void setLocaleResolver(ResourceAwareLocaleResolver localeResolver) {
-        this.localeResolver = localeResolver;
     }
 
 }

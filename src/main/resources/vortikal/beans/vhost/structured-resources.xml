@@ -498,6 +498,7 @@
     <property name="resourceTypeTree" ref="resourceTypeTree" />
     <property name="safeHtmlFilter" ref="sharedTextResolver.filter" />
     <property name="htmlParser" ref="decorating.htmlParser" />
+    <property name="localeResolver" ref="viewServiceResourceAwareLocaleResolver" />
   </bean>
 
   <bean id="sharedTextResolver.filter" class="org.vortikal.text.html.SimpleHtmlPageFilter">
@@ -509,7 +510,6 @@
     <property name="namespace" ref="decorating.includeNamespace" />
     <property name="name" value="shared-text" />
     <property name="sharedTextResolver" ref="sharedTextResolver" />
-    <property name="localeResolver" ref="viewServiceResourceAwareLocaleResolver" />
     <property name="view" ref="decorating.sharedTextComponent.view" />
   </bean>
 

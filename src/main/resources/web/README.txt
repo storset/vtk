@@ -6,10 +6,12 @@ Flash
 
 ├── flash
 │   ├── audioplayer.swf (http://wpaudioplayer.com/)
-│   ├── StrobeMediaPlayback_1.5.1-patched (http://www.osmf.org/strobe_mediaplayback.html)
+│   ├── SMP_2.0.2494-patched (http://www.osmf.org/strobe_mediaplayback.html)
+│   │   ├── 10.2
+│   ├── StrobeMediaPlayback_1.5.1-patched [OLD version] (http://www.osmf.org/strobe_mediaplayback.html)
 │   │   ├── 10.1
-│   ├── StrobeMediaPlayback_vortikal_patch
-│   └── STROBE-UPDATE-HOWTO
+│   ├── OSMF-2.0-patches
+│   └── SMP-BUILD-README.txt
 ..
 
 

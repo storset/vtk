@@ -10,7 +10,7 @@ Flash
 │   │   ├── 10.2
 │   ├── StrobeMediaPlayback_1.5.1-patched [OLD version] (http://www.osmf.org/strobe_mediaplayback.html)
 │   │   ├── 10.1
-│   ├── OSMF-2.0-patches
+│   ├── OSMF_2.0-patches
 │   └── SMP-BUILD-README.txt
 ..
 

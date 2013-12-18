@@ -19,7 +19,7 @@
     <p>Debug: Streaming video from Wowza</p>
     <script type="text/javascript"><!--
       if (typeof swfobject == 'undefined') {
-        document.write("<scr" + "ipt src='/vrtx/__vrtx/static-resources/flash/StrobeMediaPlayback_1.5.1-patched/10.1/scripts/swfobject.js' type='text/javascript'><\/script>");
+        document.write("<scr" + "ipt src='/vrtx/__vrtx/static-resources/flash/SMP_2.0.2494-patched/10.2/lib/swfobject.js' type='text/javascript'><\/script>");
       }
     // -->
     </script>
@@ -51,7 +51,7 @@
 
     <script type="text/javascript"><!--
       if (typeof swfobject == 'undefined') {
-        document.write("<scr" + "ipt src='/vrtx/__vrtx/static-resources/flash/StrobeMediaPlayback_1.5.1-patched/10.1/scripts/swfobject.js' type='text/javascript'><\/script>");
+        document.write("<scr" + "ipt src='/vrtx/__vrtx/static-resources/flash/SMP_2.0.2494-patched/10.2/lib/swfobject.js' type='text/javascript'><\/script>");
       }
     // -->
     </script>
@@ -83,7 +83,7 @@
 
     <script type="text/javascript"><!--
       if (typeof swfobject == 'undefined') {
-        document.write("<scr" + "ipt src='/vrtx/__vrtx/static-resources/flash/StrobeMediaPlayback_1.5.1-patched/10.1/scripts/swfobject.js' type='text/javascript'><\/script>");
+        document.write("<scr" + "ipt src='/vrtx/__vrtx/static-resources/flash/SMP_2.0.2494-patched/10.2/lib/swfobject.js' type='text/javascript'><\/script>");
       }
     // -->
     </script>

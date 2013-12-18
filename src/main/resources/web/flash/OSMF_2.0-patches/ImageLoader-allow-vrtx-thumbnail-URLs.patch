@@ -1,0 +1,17 @@
+diff -w -uNr OSMF.orig/framework/OSMF/org/osmf/elements/ImageLoader.as OSMF/framework/OSMF/org/osmf/elements/ImageLoader.as
+--- OSMF.orig/framework/OSMF/org/osmf/elements/ImageLoader.as	2012-03-21 10:45:08.000000000 +0100
++++ OSMF/framework/OSMF/org/osmf/elements/ImageLoader.as	2013-12-18 12:59:55.293276486 +0100
+@@ -89,6 +89,12 @@
+ 				urlResource.url != null)
+ 			{
+ 				var url:URL = new URL(urlResource.url);
++				
++				// Allow Vortex resource thumbnail URLs
++				if (url.getParamValue("vrtx") == "thumbnail") {
++					return true;
++				}
++				
+ 				return (url.path.search(/\.gif$|\.jpg$|\.png$/i) != -1);
+ 			}	
+ 			return false;
+

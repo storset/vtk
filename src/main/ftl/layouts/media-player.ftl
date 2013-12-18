@@ -10,11 +10,13 @@
 <#import "/lib/vortikal.ftl" as vrtx />
 
 <#macro mediaPlayer >
+  
+  <#-- Minimum Flash Player version required: -->
+  <#assign flashPlayerVersion = "10.2.0" />
 
   <#if media?exists && streamType?exists>
 
     <#assign dateStr = nanoTime?c />
-    <#assign strobeVersion = "10.1.0" />
 
     <script type="text/javascript"><!--
       if (typeof swfobject == 'undefined') {
@@ -39,14 +41,13 @@
 	    allowFullScreen: "true",
 	    allowscriptaccess: "always"
 	  };
-	  swfobject.embedSWF("${strobe?html}", "mediaspiller-${dateStr}", "${width}", "${height}", "${strobeVersion}", false, flashvars, params);
+	  swfobject.embedSWF("${strobe?html}", "mediaspiller-${dateStr}", "${width}", "${height}", "${flashPlayerVersion}", false, flashvars, params);
 	// -->
     </script>
 
   <#elseif media?exists && contentType?exists>
 
     <#assign dateStr = nanoTime?c />
-    <#assign strobeVersion = "10.1.0" />
 
     <script type="text/javascript"><!--
       if (typeof swfobject == 'undefined') {
@@ -74,7 +75,7 @@
 		  menu: "false",
 		  wmode: "transparent"
 	    };	
-	    swfobject.embedSWF("${audioFlashPlayerFlashURL?html}", "mediaspiller-${dateStr}", "290", "24", "${strobeVersion}",false,flashvars,params);
+	    swfobject.embedSWF("${audioFlashPlayerFlashURL?html}", "mediaspiller-${dateStr}", "290", "24", "${flashPlayerVersion}",false,flashvars,params);
 	  // -->
 	  </script>
 
@@ -115,7 +116,7 @@
 		};
 		var flashparams = {};
 		var flashattr = {};
-		swfobject.embedSWF("${media?html}", "mediaspiller-${dateStr}", "${width}", "${height}", "${strobeVersion}", false, flashvars, flashparams, flashattr);
+		swfobject.embedSWF("${media?html}", "mediaspiller-${dateStr}", "${width}", "${height}", "${flashPlayerVersion}", false, flashvars, flashparams, flashattr);
 	  // -->
 	  </script>
 
@@ -147,7 +148,7 @@
 		  allowFullScreen: "true",
 		  allowscriptaccess: "always"
 	    };
-	    swfobject.embedSWF("${strobe?html}", "mediaspiller-${dateStr}", "${width}", "${height}", "${strobeVersion}", false, flashvars, params);
+	    swfobject.embedSWF("${strobe?html}", "mediaspiller-${dateStr}", "${width}", "${height}", "${flashPlayerVersion}", false, flashvars, params);
 	  // -->
 	  </script>
 	  <#if contentType == "video/mp4" && !media?starts_with("rtmp")>

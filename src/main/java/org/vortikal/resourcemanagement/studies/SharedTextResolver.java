@@ -33,14 +33,16 @@ package org.vortikal.resourcemanagement.studies;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Path;
+import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceTypeTree;
@@ -51,6 +53,7 @@ import org.vortikal.text.html.HtmlPageFilter;
 import org.vortikal.text.html.HtmlPageParser;
 import org.vortikal.util.io.StreamUtil;
 import org.vortikal.web.RequestContext;
+import org.vortikal.web.servlet.ResourceAwareLocaleResolver;
 
 /**
  * UiO specific.
@@ -83,6 +86,7 @@ public class SharedTextResolver {
     private ResourceTypeTree resourceTypeTree;
     private HtmlPageFilter safeHtmlFilter;
     private HtmlPageParser htmlParser;
+    private ResourceAwareLocaleResolver localeResolver;
 
     @SuppressWarnings("unchecked")
     public Map<String, JSONObject> getSharedTextValues(String docType, PropertyTypeDefinition propDef, boolean view) {
@@ -101,10 +105,11 @@ public class SharedTextResolver {
 
         // Necessary edithint class not set for shared texts
         Set<String> classes = editHints.get("class");
-        if (classes == null || !(classes.contains(SHARED_TEXT_EDITHINT_CLASS) || classes.contains(SHARED_TEXT_EDITHINT_CLASS_VIEW))) {
+        if (classes == null
+                || !(classes.contains(SHARED_TEXT_EDITHINT_CLASS) || classes.contains(SHARED_TEXT_EDITHINT_CLASS_VIEW))) {
             return null;
         }
-        
+
         if (classes.contains(SHARED_TEXT_EDITHINT_CLASS_VIEW) && !view) {
             return null;
         }
@@ -126,6 +131,110 @@ public class SharedTextResolver {
                 }
             }
         }
+
+        return getSharedTextValuesMap(sharedTextPath, sharedTextFileName);
+    }
+
+    public Map<String, Map<String, JSONObject>> resolveSharedTexts() throws Exception {
+
+        RequestContext requestContext = RequestContext.getRequestContext();
+        String token = requestContext.getSecurityToken();
+        Repository repository = requestContext.getRepository();
+        Path currentResource = requestContext.getResourceURI();
+        Resource resource = repository.retrieve(token, currentResource, false);
+
+        ResourceTypeDefinition rtd = resourceTypeTree.getResourceTypeDefinitionByName(resource.getResourceType());
+        PropertyTypeDefinition[] propTypeDefs = rtd.getPropertyTypeDefinitions();
+
+        if (propTypeDefs != null) {
+
+            Map<String, Map<String, JSONObject>> sharedTextPropsMap = new HashMap<String, Map<String, JSONObject>>();
+
+            for (PropertyTypeDefinition propDef : propTypeDefs) {
+                Map<String, JSONObject> sharedTexts = getSharedTextValues(resource.getResourceType(), propDef, false);
+                if (sharedTexts != null) {
+                    sharedTextPropsMap.put(propDef.getName(), sharedTexts);
+                }
+            }
+
+            if (!sharedTextPropsMap.isEmpty()) {
+                return sharedTextPropsMap;
+            }
+        }
+
+        return null;
+    }
+
+    public String resolveSharedText(Resource resource, Property prop) {
+        Map<String, JSONObject> resolvedsharedTexts = getSharedTextValues(resource.getResourceType(),
+                prop.getDefinition(), true);
+
+        if (resolvedsharedTexts == null || resolvedsharedTexts.isEmpty()) {
+            return null;
+        }
+
+        String key = prop.getStringValue();
+        Locale locale = localeResolver.resolveResourceLocale(resource);
+        String localeString = locale.toString().toLowerCase();
+
+        JSONObject propSharedText;
+        if (!resolvedsharedTexts.containsKey(key) || (propSharedText = resolvedsharedTexts.get(key)) == null) {
+            return null;
+        }
+
+        String sharedText;
+        try {
+            if (localeString.contains("ny")) {
+                sharedText = propSharedText.get("description-nn").toString();
+            } else if (!localeString.contains("en")) {
+                sharedText = propSharedText.get("description-no").toString();
+            } else {
+                sharedText = propSharedText.get("description-en").toString();
+            }
+        } catch (Exception e) {
+            sharedText = "";
+        }
+
+        return sharedText;
+    }
+
+    public Map<String, String> getLocalizedSharedTextValues(Locale locale, String docType, String propertyName) {
+
+        Map<String, String> sharedTextMap = new HashMap<String, String>();
+
+        // Invalid path
+        if (docType == null || propertyName == null) {
+            return sharedTextMap;
+        }
+
+        String sharedTextPath = SHARED_TEXT_DEFAULT_PATH.concat("/").concat(docType);
+        Map<String, JSONObject> sharedTextValuesMap = getSharedTextValuesMap(sharedTextPath, propertyName);
+
+        if (sharedTextValuesMap == null || sharedTextValuesMap.isEmpty()) {
+            return sharedTextMap;
+        }
+
+        String localeString = locale.toString().toLowerCase();
+        if (localeString.contains("ny")) {
+            localeString = "description-nn";
+        } else if (!localeString.contains("en")) {
+            localeString = "description-no";
+        } else {
+            localeString = "description-en";
+        }
+
+        for (String key : sharedTextValuesMap.keySet()) {
+            try {
+                sharedTextMap.put(key, sharedTextValuesMap.get(key).get(localeString).toString());
+            } catch (Exception e) {
+                sharedTextMap.put(key, "");
+            }
+        }
+
+        return sharedTextMap;
+    }
+
+    private Map<String, JSONObject> getSharedTextValuesMap(String sharedTextPath, String sharedTextFileName) {
 
         // The resulting return object
         Map<String, JSONObject> sharedTextValuesMap = new LinkedHashMap<String, JSONObject>();
@@ -151,7 +260,7 @@ public class SharedTextResolver {
             String jsonString = StreamUtil.streamToString(stream, "utf-8");
             JSONObject document = JSONObject.fromObject(jsonString);
 
-            List<Object> json = (List<Object>) document.getJSONObject("properties").get("shared-text-box");
+            JSONArray json = document.getJSONObject("properties").getJSONArray("shared-text-box");
 
             for (Object obj : json) {
                 JSONObject jsonObj = JSONObject.fromObject(obj);
@@ -191,36 +300,6 @@ public class SharedTextResolver {
         return j;
     }
 
-    public Map<String, Map<String, JSONObject>> resolveSharedTexts() throws Exception {
-
-        RequestContext requestContext = RequestContext.getRequestContext();
-        String token = requestContext.getSecurityToken();
-        Repository repository = requestContext.getRepository();
-        Path currentResource = requestContext.getResourceURI();
-        Resource resource = repository.retrieve(token, currentResource, false);
-
-        ResourceTypeDefinition rtd = resourceTypeTree.getResourceTypeDefinitionByName(resource.getResourceType());
-        PropertyTypeDefinition[] propTypeDefs = rtd.getPropertyTypeDefinitions();
-
-        if (propTypeDefs != null) {
-
-            Map<String, Map<String, JSONObject>> sharedTextPropsMap = new HashMap<String, Map<String, JSONObject>>();
-
-            for (PropertyTypeDefinition propDef : propTypeDefs) {
-                Map<String, JSONObject> sharedTexts = getSharedTextValues(resource.getResourceType(), propDef, false);
-                if (sharedTexts != null) {
-                    sharedTextPropsMap.put(propDef.getName(), sharedTexts);
-                }
-            }
-
-            if (!sharedTextPropsMap.isEmpty()) {
-                return sharedTextPropsMap;
-            }
-        }
-
-        return null;
-    }
-
     @Required
     public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
         this.resourceTypeTree = resourceTypeTree;
@@ -234,6 +313,11 @@ public class SharedTextResolver {
     @Required
     public void setHtmlParser(HtmlPageParser htmlParser) {
         this.htmlParser = htmlParser;
+    }
+
+    @Required
+    public void setLocaleResolver(ResourceAwareLocaleResolver localeResolver) {
+        this.localeResolver = localeResolver;
     }
 
 }

@@ -113,13 +113,15 @@ public abstract class FilteredCollectionListingController implements Controller 
         return new UriPrefixQuery(collection.getURI().toString(), false);
     }
 
-    abstract protected Query buildBaseQuery(HttpServletRequest request, Map<String, Object> conf, Resource collection);
+    abstract protected Query buildBaseQuery(HttpServletRequest request, Map<String, Object> collectionSpecificValues,
+            Resource collection);
 
-    abstract protected Query buildFilterQuery(HttpServletRequest request, Map<String, Object> conf,
+    abstract protected Query buildFilterQuery(HttpServletRequest request, Map<String, Object> collectionSpecificValues,
             Resource collection, Map<String, List<String>> filters);
 
-    abstract protected Map<String, List<String>> runFacetSearch(HttpServletRequest request, Map<String, Object> conf,
-            Resource collection, Query query, Map<String, List<String>> filters);
+    abstract protected Map<String, List<String>> runFacetSearch(HttpServletRequest request,
+            Map<String, Object> collectionSpecificValues, Resource collection, Query query,
+            Map<String, List<String>> filters);
 
     private Query combineQueries(Query one, Query two) {
         AndQuery andQuery = new AndQuery();
@@ -133,25 +135,32 @@ public abstract class FilteredCollectionListingController implements Controller 
         return filters;
     }
 
+    /* Override if collection requires specific values for view. */
+    protected Map<String, Object> getCollectionSpecificValues(Resource collection) {
+        return new HashMap<String, Object>();
+    }
+
     @Override
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        Map<String, Object> model = new HashMap<String, Object>();
-        Map<String, Object> conf = new HashMap<String, Object>();
 
         Repository repository = RequestContext.getRequestContext().getRepository();
         String token = RequestContext.getRequestContext().getSecurityToken();
         Resource collection = repository.retrieve(token, URL.toPath(request), false);
 
+        Map<String, Object> model = new HashMap<String, Object>();
+        Map<String, Object> collectionSpecificValues = getCollectionSpecificValues(collection);
+
         int page = ListingPager.getPage(request, ListingPager.UPCOMING_PAGE_PARAM);
         int offset = (page - 1) * pageLimit;
 
         Query locationQuery = getLocationQuery(collection);
-        Query baseQuery = buildBaseQuery(request, conf, collection);
+        Query baseQuery = buildBaseQuery(request, collectionSpecificValues, collection);
         Query facetQuery = baseQuery != null ? combineQueries(locationQuery, baseQuery) : locationQuery;
 
-        Map<String, List<String>> filters = runFacetSearch(request, conf, collection, facetQuery, getFilters());
+        Map<String, List<String>> filters = runFacetSearch(request, collectionSpecificValues, collection, facetQuery,
+                getFilters());
 
-        Query filterQuery = buildFilterQuery(request, conf, collection, filters);
+        Query filterQuery = buildFilterQuery(request, collectionSpecificValues, collection, filters);
 
         Query fullQuery = filterQuery != null ? combineQueries(facetQuery, filterQuery) : facetQuery;
 
@@ -215,7 +224,7 @@ public abstract class FilteredCollectionListingController implements Controller 
         model.put("to", offset + Math.min(pageLimit, rs.getSize()));
         model.put("total", rs.getTotalHits());
         model.put("collection", collection);
-        model.put("conf", conf);
+        model.put("collectionSpecificValues", collectionSpecificValues);
 
         return new ModelAndView(viewName, model);
     }

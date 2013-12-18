@@ -38,7 +38,7 @@ import java.util.Map;
 public class DerivedPropertyEvaluationDescription {
 
     public enum Operator {
-        EXISTS, TRUNCATE, ISTRUNCATED, LOCALIZED
+        EXISTS, TRUNCATE, ISTRUNCATED, LOCALIZED, SHARED_TEXT, CONTEXTUAL
     }
 
     private static final Map<String, Operator> OPERATORS = new HashMap<String, Operator>();
@@ -47,6 +47,8 @@ public class DerivedPropertyEvaluationDescription {
         OPERATORS.put("truncate", Operator.TRUNCATE);
         OPERATORS.put("istruncated", Operator.ISTRUNCATED);
         OPERATORS.put("localized", Operator.LOCALIZED);
+        OPERATORS.put("sharedText", Operator.SHARED_TEXT);
+        OPERATORS.put("contextual", Operator.CONTEXTUAL);
     }
 
     private List<EvaluationElement> evaluationElements = new ArrayList<EvaluationElement>();

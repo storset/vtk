@@ -6,11 +6,32 @@
      <property name="schemaCache" ref="xmlSchemaRegistry.cache" />
    </bean>
 
-   <bean id="xmlSchemaRegistry.cache" class="org.vortikal.util.cache.ContentCache">
+   <!--
+   <bean id="xmlSchemaRegistry.cache" class="org.vortikal.util.cache.ContentCacheImpl">
      <property name="name" value="${repositoryID}.xmlSchemaCache" />
      <property name="cacheLoader" ref="xmlSchemaRegistry.cache.loader" />
      <property name="cacheSeconds" value="${xmlSchemaRegistry.cacheSeconds}" />
      <property name="refreshInterval" value="${xmlSchemaRegistry.cacheRefreshInterval}" />
+   </bean>
+   -->
+   
+   <bean id="xmlSchemaRegistry.cache" class="org.vortikal.util.cache.EhContentCache">
+     <property name="cache">
+       <bean class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+         <property name="cacheManager" ref="ehCacheManager" />
+         <property name="cacheName" value="org.vortikal.XML_SCHEMA_REGISTRY_CACHE"/>
+         <property name="maxElementsInMemory" value="100" />
+         <property name="timeToIdle" value="0" />
+         <property name="timeToLive" value="${xmlSchemaRegistry.cacheSeconds}" />
+         <property name="cacheEntryFactory">
+           <bean class="org.vortikal.util.cache.ContentCacheLoaderEhcacheAdapter">
+             <constructor-arg>
+               <ref bean="xmlSchemaRegistry.cache.loader" />
+             </constructor-arg>
+           </bean>
+         </property>
+       </bean>
+     </property>
    </bean>
 
    <bean id="xmlSchemaRegistry.cache.loader" class="org.vortikal.util.cache.loaders.JDOMCacheLoader">

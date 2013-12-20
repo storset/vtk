@@ -34,6 +34,9 @@ package org.vortikal.util.cache;
  * Interface to be implemented by clients of {@link
  * ContentCache}. Implementations are responsible for loading an
  * object from an item identifier.
+ * 
+ * @param <K> identifier type for loader objects
+ * @param <V> value type for loaded objects
  */
 public interface ContentCacheLoader<K, V> {
 

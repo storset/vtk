@@ -252,7 +252,7 @@
           </execution>
         </executions>
       </plugin>
-      <!-- Build info: provide various bits of build info as properties. -->
+      <!-- Build info: provide various bits of build info as properties.  -->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>buildnumber-maven-plugin</artifactId>

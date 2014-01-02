@@ -1240,6 +1240,18 @@ div.dropdown-shortcut-menu-container form .vrtx-button button {
   font-size: 0.867em;
 }
 
+.tip table td,
+.tip table th {
+  vertical-align: top;
+  padding-bottom: 3px;
+}
+
+.tip table th {
+  padding-right: 10px;
+  font-weight: normal;
+  white-space: nowrap;
+}
+
 #title-container abbr {
   color: #797979;
   cursor: pointer;

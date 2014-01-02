@@ -63,17 +63,17 @@ public class ACLTooltipHelper {
         String[] aclFormatted = getAclFormatted(acl, request);
 
         String read = aclFormatted[0].isEmpty() ? notAssigned : aclFormatted[0];
-        title.append("<tr><td>" + getLocalizedTitle(request, "permissions.privilege.read", null)
-                + ":</td><td>" + read + "</td></tr>");
+        title.append("<tr><th scope=&quot;row&quot;>" + getLocalizedTitle(request, "permissions.privilege.read", null)
+                + ":</th><td>" + read + "</td></tr>");
 
         String write = aclFormatted[1].isEmpty() ? notAssigned : aclFormatted[1];
-        title.append("<tr><td>" + getLocalizedTitle(request, "permissions.privilege.read-write", null)
-                + ":</td><td>" + write + "</td></tr>");
+        title.append("<tr><th scope=&quot;row&quot;>" + getLocalizedTitle(request, "permissions.privilege.read-write", null)
+                + ":</th><td>" + write + "</td></tr>");
 
         String admin = aclFormatted[2].isEmpty() ? notAssigned : aclFormatted[2];
-        title.append("<tr><td>"
+        title.append("<tr><th scope=&quot;row&quot;>"
                 + getLocalizedTitle(request, "report.list-resources.admin-permission", null)
-                + ":</td><td>" + admin + "</td></tr>");
+                + ":</th><td>" + admin + "</td></tr>");
 
         title.append("</tbody></table>");
 

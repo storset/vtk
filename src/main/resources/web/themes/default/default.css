@@ -1301,6 +1301,9 @@ div.dropdown-shortcut-menu-container form .vrtx-button button {
 .tip.vrtx-create-tree {
   padding: 4px 0px 4px 0 !important;
   border: none !important;
+  -moz-box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+  box-shadow: none !important;
   background-color: #ecf3f9;
   border-top: 1px solid #c7dadf !important;
   border-bottom: 1px solid #c7dadf !important;

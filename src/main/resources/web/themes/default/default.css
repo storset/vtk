@@ -1541,7 +1541,7 @@ span.vrtx-help-step-by-step-cmd {
 }
 
 .vrtx-admin-form p#vrtx-file-upload-info-text {
-  margin-top: 10px;
+  margin: 10px 0 0;
 }
 
 .vrtx-admin-form .vrtx-admin-label {

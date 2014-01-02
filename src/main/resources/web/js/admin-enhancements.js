@@ -2558,6 +2558,7 @@ function retokenizeFormsOpenSaveDialog(d2) {
     type: "GET",
     url: location.href,
     cache: false,
+    dataType: "html",
     success: function (results, status, resp) {
       var updated = $($.parseHTML(results)).find("form#editor input[name='csrf-prevention-token']");
       for(var i = 0; i < currentLen; i++) {

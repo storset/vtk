@@ -1209,7 +1209,9 @@ div.dropdown-shortcut-menu-container form .vrtx-button button {
 /* Tooltip */
 
 .tip {
-  border: 1px solid #cbcbcb;
+  -moz-box-shadow: 0px 0px 0px 6px rgba(160,160,160,0.5);
+  -webkit-box-shadow: 0px 0px 0px 6px rgba(160,160,160,0.5);
+  box-shadow: 0px 0px 0px 6px rgba(160,160,160,0.5);
   padding: 14px;
   background-color: #fff;
 }
@@ -1220,7 +1222,7 @@ div.dropdown-shortcut-menu-container form .vrtx-button button {
 
 .tip #title-wrapper {
   display: block;
-  padding-bottom: 5px;
+  padding-bottom: 10px;
   margin-bottom: 10px;
   background: url(images/line-dotted.gif) repeat-x bottom left;
 }
@@ -1228,6 +1230,14 @@ div.dropdown-shortcut-menu-container form .vrtx-button button {
 .tip.file #title-wrapper,
 .tip.folder #title-wrapper {
   padding-bottom: 11px;
+}
+
+.tip.permission-tooltips #title-wrapper {
+  font-size: 1.154em;
+}
+
+.tip.permission-tooltips #title-wrapper .vrtx-button-small {
+  font-size: 0.867em;
 }
 
 #title-container abbr {

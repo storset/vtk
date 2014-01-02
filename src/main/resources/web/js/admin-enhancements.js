@@ -2551,7 +2551,7 @@ function reAuthenticateRetokenizeForms() {
 
 function retokenizeFormsOpenSaveDialog(d2) {
   // Repopulate tokens
-  var current = $("body input[name='csrf-prevention-token']");
+  var current = $("form#editor input[name='csrf-prevention-token']");
   var currentLen = current.length;
   
   $.ajax({
@@ -2559,7 +2559,7 @@ function retokenizeFormsOpenSaveDialog(d2) {
     url: location.href,
     cache: false,
     success: function (results, status, resp) {
-      var updated = $($.parseHTML(results)).find("input[name='csrf-prevention-token']");
+      var updated = $($.parseHTML(results)).find("form#editor input[name='csrf-prevention-token']");
       for(var i = 0; i < currentLen; i++) {
         current[i].value = updated[i].value;
       }

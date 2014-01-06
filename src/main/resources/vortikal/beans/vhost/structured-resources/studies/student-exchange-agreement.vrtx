@@ -133,22 +133,22 @@ resourcetype student-exchange-agreement {
               [val student-exchange-intro # unescaped]
             [endif]
             [if who-can-apply != null && who-can-apply != ""]
-              <h2>[localized 'who-can-apply']</h2>
+              <h2>[localized 'who-can-apply-view']</h2>
               [val who-can-apply # unescaped]
             [endif]
             [if language != null && language != ""]
-              <h2>[localized 'language']</h2>
+              <h2>[localized 'language-view']</h2>
               [val language # unescaped]
             [endif]
             [if courses != null && courses != ""]
-              <h2>[localized 'courses']</h2>
+              <h2>[localized 'courses-view']</h2>
               [val courses # unescaped]
             [endif]
             [if length-of-semester != null && length-of-semester != ""]
               <h2>[localized 'length-of-semester']</h2>
               [val length-of-semester # unescaped]
             [endif]
-            <h2>[localized 'fees']</h2>
+            <h2>[localized 'fees-view']</h2>
             [if fees-text-field != null && fees-text-field != ""]
               [val fees-text-field # unescaped]
             [endif]
@@ -184,7 +184,7 @@ resourcetype student-exchange-agreement {
                     <th scope="row">[localized 'city']<td>[val city]</td>
                   </tr>
                   <tr>
-                    <th scope="row">[localized 'webpage']<td><a href="[val web-address]">[localized 'webpage-text']</a></td>
+                    <th scope="row">[localized 'webpage']<td><a href="[val web-address]">[val web-address]</a></td>
                   </tr>
                 </tbody>
               </table>
@@ -264,17 +264,21 @@ resourcetype student-exchange-agreement {
 
     student-exchange-intro : (en : "Introduction", no : "Innledning", nn : "Innleiing"),
     who-can-apply : (en : "Who can apply? (Subjects, grade average, credits, other admission criteria, number of students)", no : "Hvem kan søke? (Fag, karaktersnitt, studiepoeng, andre opptakskrav, evt. antall plasser)", nn : "Kven kan søkje? (Fag, karaktersnitt, studiepoeng, andre opptakskrav, evt. talet på plassar)"),
+    who-can-apply-view : (en : "Who can apply?", no : "Hvem kan søke?", nn : "Kven kan søkje?"),
     language : (en : "Language (Language of instruction, language requirements/recommendations and language courses)", no : "Språk (Undervisningsspråk, språkkrav/-anbefaling og språkkurs)", nn : "Språk (Undervisningsspråk, språkkrav/-tilråding og språkkurs)"),
+    language-view : (en : "Language", no : "Språk", nn : "Språk"),
     courses : (en : "What can you study? (Courses, options, accreditation)", no : "Hvilke emner kan jeg ta? (Emner, studiemuligheter, uttelling)", nn : "Kva emne kan eg ta? (Emner, studiemoglegheiter, uttelling)"),
-    length-of-semester : (en : "How long is the semester", no : "Hvor lenge varer semesteret", nn : "Kor lenge varer semesteret"),
+    courses-view : (en : "What can you study?", no : "Hvilke emner kan jeg ta?", nn : "Kva emne kan eg ta?"),
+    length-of-semester : (en : "How long is the semester?", no : "Hvor lenge varer semesteret?", nn : "Kor lenge varer semesteret?"),
 
     fees : (en : "Fees? (School fees, semester fees, scholarships)", no : "Hva koster det? (Skoleavgift, semesteravgift, stipendmuligheter)", nn : "Kva kostar det? (Skoleavgift, semesteravgift, stipendmoglegheiter)"),
+    fees-view : (en : "Fees?", no : "Hva koster det?", nn : "Kva kostar det?"),
     tuition-yes : (en : "With tuition payments", no : "Med skolepenger", nn : "Med skolepengar"),
     tuition-no : (en : "Without tuition payments", no : "Uten skolepenger", nn : "Uten skolepengar"),
     fees-text-field : (en : "Tuition payments optional text", no : "Skolepenger valgfri tekst", nn : "Skolepenger valfri tekst"),
 
     housing : (en : "Housing", no : "Bolig", nn : "Bolig"),
-    content : (en : "Content", no : "Innhold", nn : "Innhald"),
+    content : (en : "Other", no : "Annet", nn : "Anna"),
 
     exchange-leave : (en : "Exchange?", no : "Vil du dra?", nn : "Vil du dra?"),
     exchange-leave-text-field : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),

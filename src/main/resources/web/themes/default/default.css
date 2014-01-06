@@ -1239,7 +1239,6 @@ div.dropdown-shortcut-menu-container form .vrtx-button button {
 
 .tip #title-wrapper .vrtx-button-small {
   font-size: 0.867em;
-  /* margin: 10px 0 0; */
 }
 
 .tip table td,
@@ -2122,7 +2121,6 @@ body#vrtx-report-broken-links #directory-listing td.vrtx-report-broken-links {
 #preview-mode li.active-mode:hover span {
   background: url(images/report-filter-hover-right.png) no-repeat top right;
   display: inline-block;
-  /* color: #fff; */
 }
 
 body#vrtx-preview {

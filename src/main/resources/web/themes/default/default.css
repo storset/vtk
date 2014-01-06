@@ -1013,8 +1013,8 @@ ul.dropdown-shortcut-menu.dropdown-shortcut-menu-small li.dropdown-init .dropdow
 
 ul.dropdown-shortcut-menu li.dropdown-init .dropdown-shortcut-menu-click-area:focus,
 ul.dropdown-shortcut-menu li.dropdown-init .dropdown-shortcut-menu-click-area:hover {
-  background-color: #2b81c8;
-  border-color: #23659c;
+  background-color: #4195db;
+  border-color: #4195db;
   height: 29px;
   top: -1px;
   right: -1px;
@@ -3225,6 +3225,17 @@ div.vrtx-admin-form {
   width: 100%;
 }
 
+div.globalmenu .vrtx-button,
+div.expandedForm .vrtx-button,
+div.solidExpandedForm .vrtx-button,
+tr.expandedForm td .vrtx-button,
+div.globalmenu .vrtx-button-small,
+div.expandedForm .vrtx-button-small,
+div.solidExpandedForm .vrtx-button-small,
+tr.expandedForm td .vrtx-button-small {
+  background: #f7f7f7;
+}
+
 /* Smaller button in resource-info tables */
 
 .resourceInfo .vrtx-button-small {
@@ -3234,6 +3245,12 @@ div.vrtx-admin-form {
 .resourceInfo table .vrtx-button-small > * {
   font-size: 0.846em;
   padding: 2px 13px;
+}
+
+.resourceInfo table .vrtx-button-small:hover > *,
+.resourceInfo table .vrtx-button-small:focus > *,
+.resourceInfo table .vrtx-button-small.hover > * {
+  padding: 3px 14px;
 }
 
 /* Date */

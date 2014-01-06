@@ -119,6 +119,7 @@
 .forms-new .vrtx-focus-button {
   background: #2b81c8;
   color: #fff;
+  border: none;
 }
 
 .forms-new .ui-dialog .ui-dialog-buttonpane button:first-child > *,
@@ -169,6 +170,21 @@
   background: #4195db;
   color: #fff;
   text-decoration: none;
+  border: none;
+}
+
+.forms-new .ui-dialog .ui-dialog-buttonpane button:hover > *,
+.forms-new .ui-dialog .ui-dialog-buttonpane button:focus > *,
+.forms-new .vrtx-button:hover > *,
+.forms-new .vrtx-button:focus > *,
+.forms-new .vrtx-button.hover > * {
+  padding: 6px 16px 7px;
+}
+
+.forms-new .vrtx-button-small:hover > *,
+.forms-new .vrtx-button-small:focus > *,
+.forms-new .vrtx-button-small.hover > * {
+  padding: 4px 14px 5px;
 }
 
 .forms-new .ui-dialog .ui-dialog-buttonpane button:hover > *,

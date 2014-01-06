@@ -17,7 +17,7 @@
 (function ($) {
   $.fn.vortexTips = function (subSelector, opts) {
 	opts.animInSpeed = opts.animInSpeed || 300;
-	opts.animOutPreDelay = opts.animOutPreDelay || 250;
+	opts.expandHoverToTipBox = opts.expandHoverToTipBox || false;
 	opts.animOutSpeed = opts.animOutSpeed || 300;
 	opts.autoWidth = opts.autoWidth || false;
 	opts.extra = opts.extra || false;
@@ -30,8 +30,9 @@
     var tipExtra;
     var tipText;
     var fadeOutTimer;
-
     var toggleOn = false;
+    var hoverTip = false;
+    
     $(this).on("mouseenter mouseleave keyup", subSelector, function (e) {
       if (e.type == "mouseenter" || (((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) && !toggleOn)) {
         toggleOn = true;
@@ -93,24 +94,38 @@
         }
         e.stopPropagation();
       } else if (e.type == "mouseleave" || (((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) && toggleOn)) {
-        toggleOn = false;
-      
         var link = $(this);
-        if (typeof link.attr("href") === "undefined" && !link.is("abbr")) {
-          link = link.find("a");
-        }
-        link.attr('title', tipText);
-        fadeOutTimer = setTimeout(function () {
-          if (opts.extra) {
-            tipExtra.fadeOut(opts.animOutSpeed, function () {
-              $(this).remove();
-            });
-          }
-          tip.fadeOut(opts.animOutSpeed, function () {
-            $(this).remove();
+        if(opts.expandHoverToTipBox) {
+          tip.on("mouseenter", function (e) {
+            hoverTip = true;
           });
-        }, opts.animOutPreDelay);
-        e.stopPropagation();
+          tip.on("mouseleave", function (e) {
+            hoverTip = false;
+            tip.off("mouseenter");
+            tip.off("mouseleave");
+            link.trigger("mouseleave");
+          });
+        }
+        if(!(opts.expandHoverToTipBox && hoverTip)) {
+          toggleOn = false;
+          if (typeof link.attr("href") === "undefined" && !link.is("abbr")) {
+            link = link.find("a");
+          }
+          link.attr('title', tipText);
+          fadeOutTimer = setTimeout(function () {
+            if(!(opts.expandHoverToTipBox && hoverTip)) {
+              if (opts.extra) {
+                tipExtra.fadeOut(opts.animOutSpeed, function () {
+                  $(this).remove();
+                });
+              }
+              tip.fadeOut(opts.animOutSpeed, function () {
+                $(this).remove();
+              });
+            }
+          }, opts.expandHoverToTipBox ? 250 : 0);
+          e.stopPropagation();
+        }
       }
     });
   }

@@ -220,7 +220,7 @@ VrtxAdmin.prototype.initTooltips = function initTooltips() {
   $("#title-container").vortexTips("abbr.delayed", {
     appendTo: "#title-container",
     containerWidth: 200,
-    animOutPreDelay: 4000,
+    expandHoverToTipBox: true,
     xOffset: 20,
     yOffset: 0
   });
@@ -233,7 +233,6 @@ VrtxAdmin.prototype.initTooltips = function initTooltips() {
   this.cachedBody.vortexTips(".ui-dialog:visible .tree-create li span.folder", {
     appendTo: ".vrtx-create-tree",
     containerWidth: 80,
-    animOutPreDelay: 4000,
     xOffset: 10,
     yOffset: -8,
     extra: true
@@ -241,7 +240,7 @@ VrtxAdmin.prototype.initTooltips = function initTooltips() {
   this.cachedBody.vortexTips("td.permissions span.permission-tooltips", {
     appendTo: "#contents",
     containerWidth: 340,
-    animOutPreDelay: 4000,
+    expandHoverToTipBox: true,
     xOffset: 10,
     yOffset: -8
   });

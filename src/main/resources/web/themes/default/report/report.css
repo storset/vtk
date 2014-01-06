@@ -260,11 +260,11 @@ td.vrtx-report-broken-links li {
   float: left;
 }
 
-#vrtx-report-filters ul.vrtx-report-filter-last#vrtx-report-filter-created-by-you-acl {
+#vrtx-report-filters ul.vrtx-report-filter-last#vrtx-report-filter-my-documents {
   background: none;
 }
 
-#vrtx-report-filters ul#vrtx-report-filter-created-by-you-acl {
+#vrtx-report-filters ul#vrtx-report-filter-cmy-documents {
   margin-top: -12px;
 }
 

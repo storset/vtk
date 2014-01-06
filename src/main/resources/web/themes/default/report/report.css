@@ -350,15 +350,15 @@ td.vrtx-report-broken-links li {
 .tip.file,
 .tip.folder {
   background-repeat: no-repeat;
-  background-position: 12px 10px;
+  background-position: 15px 16px;
 }
 
 .tip.file #title {
-  padding-left: 22px;
+  padding-left: 26px;
 }
 
 .tip.folder #title {
-  padding-left: 26px;
+  padding-left: 30px;
 }
 
 .tip.allowed-for-all.folder               { background-image: url(../images/folder-small.gif);                            }

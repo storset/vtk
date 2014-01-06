@@ -1218,26 +1218,23 @@ div.dropdown-shortcut-menu-container form .vrtx-button button {
 
 .tip h4 {
   margin-top: 0px;
+  font-weight: normal;
 }
 
 .tip #title-wrapper {
   display: block;
-  padding-bottom: 10px;
+  padding-bottom: 11px;
   margin-bottom: 10px;
   background: url(images/line-dotted.gif) repeat-x bottom left;
 }
 
-.tip.file #title-wrapper,
-.tip.folder #title-wrapper {
-  padding-bottom: 11px;
-}
-
-.tip.permission-tooltips #title-wrapper {
+.tip #title-wrapper {
   font-size: 1.154em;
 }
 
-.tip.permission-tooltips #title-wrapper .vrtx-button-small {
+.tip #title-wrapper .vrtx-button-small {
   font-size: 0.867em;
+  /* margin: 10px 0 0; */
 }
 
 .tip table td,
@@ -1263,10 +1260,6 @@ div.dropdown-shortcut-menu-container form .vrtx-button button {
   margin-top: 0px;
   margin-bottom: 0px;
   padding-left: 10px;
-}
-
-#vrtx-editor .tip.property-item #title-wrapper {
-  font-weight: bold;
 }
 
 #vrtx-editor .tip.property-item ul a,

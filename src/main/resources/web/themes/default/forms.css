@@ -99,9 +99,9 @@
 }
 
 .button-row li a,
+.button-row li input[type="submit"],
 .button-row-small li a,
 .button-row-small li input[type="submit"],
-.button-row li input[type="submit"],
 .forms-new .vrtx-button > *,
 .forms-new .ui-dialog .ui-dialog-buttonpane button > *,
 .forms-new .vrtx-focus-button > *,
@@ -114,11 +114,30 @@
   cursor: pointer;
 }
 
+.button-row li,
+.button-row-small li,
+.button-row-small li,
+.button-row li {
+  border: none;
+}
+
+.button-row li a,
+.button-row li input[type="submit"],
+.button-row-small li a,
+.button-row-small li input[type="submit"] {
+  border: 1px solid #cbcbcb;
+}
+
 .button-row li.save,
 .forms-new .ui-dialog .ui-dialog-buttonpane button:first-child,
 .forms-new .vrtx-focus-button {
   background: #2b81c8;
   color: #fff;
+  border: none;
+}
+
+.button-row li.save a,
+.button-row li.save input[type="submit"] {
   border: none;
 }
 
@@ -150,10 +169,10 @@
 
 .button-row li a:hover,
 .button-row li a:focus,
-.button-row-small a:hover,
-.button-row-small a:focus,
 .button-row li input[type="submit"]:hover,
 .button-row li input[type="submit"]:focus,
+.button-row-small a:hover,
+.button-row-small a:focus,
 .button-row-small input[type="submit"]:hover,
 .button-row-small input[type="submit"]:focus,
 .forms-new .ui-dialog .ui-dialog-buttonpane button:hover,
@@ -173,6 +192,10 @@
   border: none;
 }
 
+.button-row li a:hover,
+.button-row li a:focus,
+.button-row li input[type="submit"]:hover,
+.button-row li input[type="submit"]:focus,
 .forms-new .ui-dialog .ui-dialog-buttonpane button:hover > *,
 .forms-new .ui-dialog .ui-dialog-buttonpane button:focus > *,
 .forms-new .vrtx-button:hover > *,
@@ -181,6 +204,8 @@
   padding: 6px 16px 7px;
 }
 
+.button-row-small a:hover,
+.button-row-small a:focus,
 .forms-new .vrtx-button-small:hover > *,
 .forms-new .vrtx-button-small:focus > *,
 .forms-new .vrtx-button-small.hover > * {

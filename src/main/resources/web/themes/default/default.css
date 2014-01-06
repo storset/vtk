@@ -914,7 +914,9 @@ ul.button-row li.first {
 }
 
 ul.button-row li.first,
-ul.button-row li.first a {
+ul.button-row li.first a,
+ul.button-row-small li.first,
+ul.button-row-small li.first a {
   -webkit-border-top-left-radius: 5px;
   -webkit-border-bottom-left-radius: 5px;
   -moz-border-radius-topleft: 5px;
@@ -924,7 +926,9 @@ ul.button-row li.first a {
 }
 
 ul.button-row li.last,
-ul.button-row li.last a {
+ul.button-row li.last a,
+ul.button-row-small li.last,
+ul.button-row-small li.last a {
   -webkit-border-top-right-radius: 5px;
   -webkit-border-bottom-right-radius: 5px;
   -moz-border-radius-topright: 5px;
@@ -984,12 +988,12 @@ ul.dropdown-shortcut-menu li.dropdown-init {
 }
 
 ul.dropdown-shortcut-menu li.dropdown-init .dropdown-shortcut-menu-click-area {
-  border-left: 1px solid #cbcbcb;
+  border: 1px solid #cbcbcb;
   position: absolute;
   top: 0px;
   right: 0px;
   height: 28px;
-  width: 26px;
+  width: 25px;
   padding: 0;
   margin: 0;
   cursor: pointer
@@ -1008,23 +1012,24 @@ ul.dropdown-shortcut-menu.dropdown-shortcut-menu-small li.dropdown-init .dropdow
   background-image: url("images/dropdown-arrow-small.png");
   background-position: 8px 11px;
   height: 24px;
-  width: 26px;
+  width: 25px;
 }
 
 ul.dropdown-shortcut-menu li.dropdown-init .dropdown-shortcut-menu-click-area:focus,
 ul.dropdown-shortcut-menu li.dropdown-init .dropdown-shortcut-menu-click-area:hover {
   background-color: #4195db;
   border-color: #4195db;
-  height: 29px;
-  top: -1px;
-  right: -1px;
+  border-width: 0 0 0 1px;
+  height: 30px;
+  top: 0;
+  right: 0;
   background-image: url("images/dropdown-arrow-hover.png");
   background-position: 7px 13px;
 }
 
 ul.dropdown-shortcut-menu.dropdown-shortcut-menu-small li.dropdown-init .dropdown-shortcut-menu-click-area:focus,
 ul.dropdown-shortcut-menu.dropdown-shortcut-menu-small li.dropdown-init .dropdown-shortcut-menu-click-area:hover {
-  height: 25px;
+  height: 26px;
   background-image: url("images/dropdown-arrow-small-hover.png");
   background-position: 7px 12px;
 }

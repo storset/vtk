@@ -253,17 +253,20 @@ td.vrtx-report-broken-links li {
   clear: both;
 }
 
-/* Responsive width distribution */
-
 #vrtx-report-filters ul {
-  /* margin-right: 10%; */
   margin-right: 15px;
   padding: 7px 10px 7px 0px;
   background: url(../images/seperator-grey-gradient.png) no-repeat center right;
   float: left;
 }
 
-/* ^ Responsive width distribution */
+#vrtx-report-filters ul.vrtx-report-filter-last#vrtx-report-filter-created-by-you-acl {
+  background: none;
+}
+
+#vrtx-report-filters ul#vrtx-report-filter-created-by-you-acl {
+  margin-top: -12px;
+}
 
 /* Remove "Other:" */
 #vrtx-report-filters ul li#vrtx-report-filter-link-type-other {

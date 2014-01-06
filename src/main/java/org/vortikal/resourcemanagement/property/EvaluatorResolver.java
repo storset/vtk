@@ -325,7 +325,10 @@ public class EvaluatorResolver {
                 // definition in resolveSharedText. Property is used to fetch
                 // the new value for the shared text.
                 Property prop = ctx.getNewResource().getProperty(Namespace.STRUCTURED_RESOURCE_NAMESPACE, propName);
-                String sharedText = sharedTextResolver.resolveSharedText(ctx.getOriginalResource(), prop);
+                String sharedText = null;
+                if (prop != null) {
+                    sharedText = sharedTextResolver.resolveSharedText(ctx.getOriginalResource(), prop);
+                }
 
                 if (sharedText != null) {
                     sharedText = htmlUtil.flatten(sharedText);

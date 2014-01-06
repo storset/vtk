@@ -1252,6 +1252,7 @@ div.dropdown-shortcut-menu-container form .vrtx-button button {
   padding-right: 10px;
   font-weight: normal;
   white-space: nowrap;
+  text-align: left;
 }
 
 #title-container abbr {

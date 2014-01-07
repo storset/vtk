@@ -93,7 +93,6 @@ CSS and icons
 └── themes
     └── default
         ├── default.css
-        ├── default-ie6.css
         ├── default-ie7.css
         ├── editor-common.css
         ├── editor.css

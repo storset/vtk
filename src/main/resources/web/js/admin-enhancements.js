@@ -646,11 +646,14 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
 
       for (i = resourceMenuServices.length; i--;) {
         vrtxAdm.cachedAppContent.on("click", "#resourceMenuRight li." + resourceMenuServices[i] + " button", function (e) {
+        
           var button = _$(this);
           var form = button.closest("form");
           var url = form.attr("action");
           var li = form.closest("li");
           var dataString = form.serialize() + "&" + button.attr("name") + "=" + button.val();
+          form.find(".vrtx-button-small").remove();
+          form.find(".vrtx-cancel-link").replaceWith("<span class='vrtx-show-processing' />");
           vrtxAdm.serverFacade.postHtml(url, dataString, {
             success: function (results, status, resp) {
               var copyMoveAnimation = new VrtxAnimation({

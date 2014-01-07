@@ -1,3 +1,9 @@
+/*
+ *
+ *  Vortex IE 8
+ *
+ */
+
 .treeview li {
   float: left;
   clear: left;
@@ -14,3 +20,5 @@
 .tip {
   border: 1px solid #a0a0a0;
 }
+
+/* ^ Vortex IE 8 */

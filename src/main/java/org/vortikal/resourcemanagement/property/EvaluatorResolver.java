@@ -328,10 +328,9 @@ public class EvaluatorResolver {
                 String sharedText = null;
                 if (prop != null) {
                     sharedText = sharedTextResolver.resolveSharedText(ctx.getOriginalResource(), prop);
-                }
-
-                if (sharedText != null) {
-                    sharedText = htmlUtil.flatten(sharedText);
+                    if (sharedText != null) {
+                        sharedText = htmlUtil.flatten(sharedText);
+                    }
                 }
                 return sharedText;
             case CONTEXTUAL:

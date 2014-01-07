@@ -1217,8 +1217,10 @@ div.dropdown-shortcut-menu-container form .vrtx-button button {
   -moz-box-shadow: 0px 0px 0px 6px rgba(160,160,160,0.5);
   -webkit-box-shadow: 0px 0px 0px 6px rgba(160,160,160,0.5);
   box-shadow: 0px 0px 0px 6px rgba(160,160,160,0.5);
+  border: 1px solid #a0a0a0;
   padding: 14px;
   background-color: #fff;
+  display: none;
 }
 
 .tip h4 {
@@ -1241,6 +1243,34 @@ div.dropdown-shortcut-menu-container form .vrtx-button button {
   font-size: 0.867em;
 }
 
+.tip.file,
+.tip.folder {
+  background-repeat: no-repeat;
+  background-position: 15px 16px;
+}
+
+.tip.file #title {
+  padding-left: 26px;
+}
+
+.tip.folder #title {
+  padding-left: 30px;
+}
+
+.tip.allowed-for-all.folder               { background-image: url(../images/folder-small.gif);                            }
+.tip.allowed-for-all.not-inherited.folder { background-image: url(../images/folder-small-own-permissions.gif);            }
+.tip.allowed-for-all.file                 { background-image: url(../images/file-small.gif);                              }
+.tip.allowed-for-all.not-inherited.file   { background-image: url(../images/file-small-own-permissions.gif);              }
+.tip.restricted.folder                    { background-image: url(../images/folder-small-restricted.gif);                 }
+.tip.restricted.not-inherited.folder      { background-image: url(../images/folder-small-restricted-own-permissions.gif); }
+.tip.restricted.file                      { background-image: url(../images/file-small-restricted.gif);                   }
+.tip.restricted.not-inherited.file        { background-image: url(../images/file-small-restricted-own-permissions.gif);   }
+
+.tip table td {
+  padding: 2px 6px 2px 0;
+  vertical-align: top;
+}
+
 .tip table td,
 .tip table th {
   vertical-align: top;
@@ -1252,6 +1282,11 @@ div.dropdown-shortcut-menu-container form .vrtx-button button {
   font-weight: normal;
   white-space: nowrap;
   text-align: left;
+}
+
+.tip .inherited-permissions table td,
+.tip .inherited-permissions table th {
+  color: #999;
 }
 
 #title-container abbr {

@@ -87,7 +87,7 @@
         }
         tip.css(nPos).fadeIn(opts.animInSpeed, function() {
           var button = $(this).find(".vrtx-button, .vrtx-button-small");
-          if(button.length) button.filter(":first")[0].focus();
+          if(button.length && button.is(":visible")) button.filter(":first")[0].focus();
         });
         if (opts.extra) {
           tipExtra.css(ePos).fadeIn(opts.animInSpeed);

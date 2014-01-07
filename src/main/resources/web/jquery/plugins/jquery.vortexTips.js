@@ -9,7 +9,8 @@
  *
  *  * Delegate mouseover/mouseleave to affect added nodes dynamically (http://stackoverflow.com/questions/3367769/using-delegate-with-hover)
  *  * Independent/multiple tips in different contexts (by appendTo)
- *  * Configure different speeds for fadeIn, fadeOutPreDelay and fadeOut
+ *  * Configure different speeds for fadeIn and fadeOut
+ *  * Possible to expand hover area to tip-box
  *  * Changed positioning 'algorithm'
  *  * Caching
  *
@@ -17,8 +18,8 @@
 (function ($) {
   $.fn.vortexTips = function (subSelector, opts) {
 	opts.animInSpeed = opts.animInSpeed || 300;
-	opts.expandHoverToTipBox = opts.expandHoverToTipBox || false;
 	opts.animOutSpeed = opts.animOutSpeed || 300;
+	opts.expandHoverToTipBox = opts.expandHoverToTipBox || false;
 	opts.autoWidth = opts.autoWidth || false;
 	opts.extra = opts.extra || false;
 	  

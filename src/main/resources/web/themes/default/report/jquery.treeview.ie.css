@@ -10,3 +10,7 @@
   height: 0;
   clear: both;
 }
+
+.tip {
+  border: 1px solid #a0a0a0;
+}

@@ -33,7 +33,7 @@ resourcetype research-group {
   }
     
   services {
-    participantsUsernames participantsFullNameService requires(participantUsernames) affects(participantsCachedFullNames)
+    participantsUsernames participantsFullNameService affects(participantsCachedFullNames)
   }
 
   view-components {

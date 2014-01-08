@@ -605,13 +605,40 @@
     <property name="feedBuilder" ref="decorating.feedComponent.feedBuilder" />
   </bean>
 
-  <bean id="decorating.feedComponent.contentCache" class="org.vortikal.util.cache.ContentCache">
+  
+  <!-- If trouble with new EhContentCache, use this instead: -->
+  <!--
+  <bean id="decorating.feedComponent.contentCache" class="org.vortikal.util.cache.ContentCacheImpl">
     <property name="name" value="${repositoryID}.decorating.feedCache" />
     <property name="cacheLoader" ref="decorating.feedComponent.contentCache.loader" />
     <property name="cacheSeconds" value="${decorating.feedComponent.cacheTimeoutSeconds}" />
     <property name="asynchronousRefresh" value="true" />
     <property name="refreshInterval" value="30" />
     <property name="maxItems" value="${decorating.feedComponent.maxCachedItems}" />
+  </bean>
+  -->
+  
+  <bean id="decorating.feedComponent.contentCache" class="org.vortikal.util.cache.EhContentCache">
+    <property name="cache" ref="decorating.feedComponent.contentCache.cache" />
+  </bean>
+  
+  <bean id="decorating.feedComponent.contentCache.cache"
+        class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+    <property name="cacheManager" ref="ehCacheManager" />
+    <property name="cacheName" value="org.vortikal.FEED_COMPONENT_CACHE"/>
+    <property name="maxElementsInMemory" value="${decorating.feedComponent.maxCachedItems}" />
+    <property name="maxElementsOnDisk" value="2000" />
+    <property name="eternal" value="false"/>
+    <property name="overflowToDisk" value="true"/>
+    <property name="timeToIdle" value="0" />
+    <property name="timeToLive" value="${decorating.includeComponent.cacheTimeoutSeconds}" />
+    <property name="cacheEntryFactory">
+      <bean class="org.vortikal.util.cache.ContentCacheLoaderEhcacheAdapter">
+        <constructor-arg>
+          <ref bean="decorating.feedComponent.contentCache.loader" />
+        </constructor-arg>
+      </bean>
+    </property>
   </bean>
 
   <bean id="decorating.feedComponent.contentCache.loader" class="org.vortikal.web.decorating.components.SyndFeedLoader">
@@ -724,13 +751,37 @@
     </property>
   </bean>
 
-  <bean id="decorating.includeComponent.httpIncludeCache" class="org.vortikal.util.cache.ContentCache">
+  <!-- If trouble with new EhContentCache, use this instead: -->
+<!--  <bean id="decorating.includeComponent.httpIncludeCache" class="org.vortikal.util.cache.ContentCacheImpl">
     <property name="name" value="${repositoryID}.decorating.includeCache" />
     <property name="cacheLoader" ref="decorating.includeComponent.httpIncludeCache.loader" />
     <property name="cacheSeconds" value="${decorating.includeComponent.cacheTimeoutSeconds}" />
     <property name="asynchronousRefresh" value="false" />
     <property name="refreshInterval" value="30" />
     <property name="maxItems" value="${decorating.includeComponent.maxCachedItems}" />
+  </bean>-->
+  
+  <bean id="decorating.includeComponent.httpIncludeCache" class="org.vortikal.util.cache.EhContentCache">
+    <property name="cache" ref="decorating.includeComponent.httpIncludeCache.cache"/>
+  </bean>
+  
+  <bean id="decorating.includeComponent.httpIncludeCache.cache"
+        class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+    <property name="cacheManager" ref="ehCacheManager" />
+    <property name="cacheName" value="org.vortikal.HTTP_INCLUDE_CACHE"/>
+    <property name="maxElementsInMemory" value="${decorating.includeComponent.maxCachedItems}" />
+    <property name="maxElementsOnDisk" value="2000" />
+    <property name="eternal" value="false"/>
+    <property name="overflowToDisk" value="true"/>
+    <property name="timeToIdle" value="0" />
+    <property name="timeToLive" value="${decorating.includeComponent.cacheTimeoutSeconds}" />
+    <property name="cacheEntryFactory">
+      <bean class="org.vortikal.util.cache.ContentCacheLoaderEhcacheAdapter">
+        <constructor-arg>
+          <ref bean="decorating.includeComponent.httpIncludeCache.loader" />
+        </constructor-arg>
+      </bean>
+    </property>
   </bean>
 
   <bean id="decorating.includeComponent.httpIncludeCache.loader" class="org.vortikal.web.decorating.components.URLObjectLoader">

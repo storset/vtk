@@ -81,7 +81,7 @@
     <h3>${vrtx.getMsg("message-listing.edit-message")}<a href="javascript:void(0)" id="vrtx-close-simple-structured-editor"></a></h3>
   </#if>
   <#if url?exists>
-    <form  action="" method="post">
+    <form action="" method="post">
       <@vrtx.csrfPreventionToken url />
       <div class="properties">
         <div id="vrtx-resource.userTitle" class="userTitle property-item">
@@ -110,7 +110,7 @@
       </div>
     </form>
     <#if !isCollection>
-      <form  action="" method="post" id="vrtx-message-delete">
+      <form action="" method="post" id="vrtx-message-delete">
         <@vrtx.csrfPreventionToken url />
         <span id="buttons-or-text"><@vrtx.msg code="editor.orText" default="or" /></span>
         &nbsp;

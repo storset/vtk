@@ -252,7 +252,7 @@
           </execution>
         </executions>
       </plugin>
-      <!-- Build info: provide various bits of build info as properties. -->
+      <!-- Build info: provide various bits of build info as properties.  -->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>buildnumber-maven-plugin</artifactId>
@@ -396,7 +396,7 @@
     <dependency>
       <groupId>net.sf.ehcache</groupId>
       <artifactId>ehcache-core</artifactId>
-      <version>2.4.7</version>
+      <version>2.4.8</version>
     </dependency>
 
     <!-- Joda -->

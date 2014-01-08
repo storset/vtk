@@ -107,11 +107,18 @@ implements ServletContextAware {
     private HtmlPageParser htmlParser;
     private QueryStringPreProcessor uriPreProcessor;
 
-    @Required public void setServletContext(ServletContext servletContext) {
+    @Required
+    @Override
+    public void setServletContext(ServletContext servletContext) {
         this.servletContext = servletContext;
     }
 
-    @Required public void setHttpIncludeCache(ContentCache<String, URLObject> httpIncludeCache) {
+    /**
+     *
+     * @param httpIncludeCache
+     */
+    @Required
+    public void setHttpIncludeCache(ContentCache<String, URLObject> httpIncludeCache) {
         this.httpIncludeCache = httpIncludeCache;
     }
 

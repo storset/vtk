@@ -41,6 +41,7 @@ import org.jdom.input.SAXBuilder;
  */
 public class JDOMCacheLoader extends  URLConnectionCacheLoader<Document> {
 
+    @Override
     protected Document handleConnection(URLConnection connection) throws Exception {
         return new SAXBuilder().build(connection.getInputStream());
     }

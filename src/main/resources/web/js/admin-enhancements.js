@@ -220,7 +220,7 @@ VrtxAdmin.prototype.initTooltips = function initTooltips() {
   $("#title-container").vortexTips("abbr.delayed", {
     appendTo: "#title-container",
     containerWidth: 200,
-    animOutPreDelay: 4000,
+    expandHoverToTipBox: true,
     xOffset: 20,
     yOffset: 0
   });
@@ -233,7 +233,6 @@ VrtxAdmin.prototype.initTooltips = function initTooltips() {
   this.cachedBody.vortexTips(".ui-dialog:visible .tree-create li span.folder", {
     appendTo: ".vrtx-create-tree",
     containerWidth: 80,
-    animOutPreDelay: 4000,
     xOffset: 10,
     yOffset: -8,
     extra: true
@@ -241,7 +240,7 @@ VrtxAdmin.prototype.initTooltips = function initTooltips() {
   this.cachedBody.vortexTips("td.permissions span.permission-tooltips", {
     appendTo: "#contents",
     containerWidth: 340,
-    animOutPreDelay: 4000,
+    expandHoverToTipBox: true,
     xOffset: 10,
     yOffset: -8
   });
@@ -647,11 +646,14 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
 
       for (i = resourceMenuServices.length; i--;) {
         vrtxAdm.cachedAppContent.on("click", "#resourceMenuRight li." + resourceMenuServices[i] + " button", function (e) {
+        
           var button = _$(this);
           var form = button.closest("form");
           var url = form.attr("action");
           var li = form.closest("li");
           var dataString = form.serialize() + "&" + button.attr("name") + "=" + button.val();
+          form.find(".vrtx-button-small").remove();
+          form.find(".vrtx-cancel-link").replaceWith("<span class='vrtx-show-processing' />");
           vrtxAdm.serverFacade.postHtml(url, dataString, {
             success: function (results, status, resp) {
               var copyMoveAnimation = new VrtxAnimation({
@@ -2551,15 +2553,16 @@ function reAuthenticateRetokenizeForms() {
 
 function retokenizeFormsOpenSaveDialog(d2) {
   // Repopulate tokens
-  var current = $("body input[name='csrf-prevention-token']");
+  var current = $("form#editor input[name='csrf-prevention-token']");
   var currentLen = current.length;
   
   $.ajax({
     type: "GET",
     url: location.href,
-    cache: false,
+    cache: true,
+    dataType: "html",
     success: function (results, status, resp) {
-      var updated = $($.parseHTML(results)).find("input[name='csrf-prevention-token']");
+      var updated = $($.parseHTML(results)).find("form#editor input[name='csrf-prevention-token']");
       for(var i = 0; i < currentLen; i++) {
         current[i].value = updated[i].value;
       }

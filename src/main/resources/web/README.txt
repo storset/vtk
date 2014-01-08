@@ -25,7 +25,8 @@ jQuery library and jQuery plugins
 │       ├── jquery.autocomplete.css
 │       ├── jquery.autocomplete.js
 │       ├── jquery.form.js
-│       ├── jquery.scrollTo-1.4.2-min.js
+│       ├── jquery.hotkeys.js
+│       ├── jquery.scrollTo.min.js
 │       ├── jquery.treeview.async.js
 │       ├── jquery.treeview.js
 │       ├── jquery.treeview.min.js
@@ -58,10 +59,9 @@ JavaScript and plain JS plugins
 ├── cross-doc-com-link.js
 ├── datepicker
 ├── editor.js
-├── editor-showhide.js
+├── frameworks
 ├── gallery.js
 ├── iframe-admin.js
-├── iframe-create-dropdown.js
 ├── iframe-view.js
 ├── iframe-view-media.js
 ├── image-editor
@@ -72,18 +72,19 @@ JavaScript and plain JS plugins
 ├── open-webdav.js
 ├── plugins
 │   ├── mustache.js
-│   ├── shortcut.js
 │   ├── tablesort-1.5.min.js
 │   └── tablesort-customsort.js
-├── shared-text-extension.js
-├── share-subscribe.js
+├── reports
 ├── templates
 │   ├── manually-approve.mustache
 │   ├── multiple-inputfields.mustache
-│   ├── README
+│   ├── README.txt
 │   └── templates.mustache
 ├── toc.js
-└── visualize-broken-links.js
+├── toggle.js
+├── visualize-broken-links.js
+├── vrtx-accordions.js
+└── vrtx-simple-dialogs.js
 ..
 
 
@@ -93,7 +94,6 @@ CSS and icons
 └── themes
     └── default
         ├── default.css
-        ├── default-ie6.css
         ├── default-ie7.css
         ├── editor-common.css
         ├── editor.css

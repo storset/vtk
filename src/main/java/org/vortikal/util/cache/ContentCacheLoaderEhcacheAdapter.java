@@ -1,21 +1,21 @@
-/* Copyright (c) 2010, University of Oslo, Norway
+/* Copyright (c) 2013, University of Oslo, Norway
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
  * met:
- * 
+ *
  *  * Redistributions of source code must retain the above copyright
  *    notice, this list of conditions and the following disclaimer.
- * 
+ *
  *  * Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
- * 
+ *
  *  * Neither the name of the University of Oslo nor the names of its
  *    contributors may be used to endorse or promote products derived from
  *    this software without specific prior written permission.
- *      
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
  * IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
  * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
@@ -28,40 +28,31 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.decorating.components;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Serializable;
+package org.vortikal.util.cache;
 
-public class URLObject implements Serializable {
+import net.sf.ehcache.constructs.blocking.CacheEntryFactory;
+
+/**
+ * Adapts {@link ContentCacheLoader} to Ehcache's {@link CacheEntryFactory}.
+ */
+public class ContentCacheLoaderEhcacheAdapter implements CacheEntryFactory {
+
+    private ContentCacheLoader loader;
     
-    private static final long serialVersionUID = 1L; // bump if class changes in incompatible ways, serialization-wise.
-    
-    private final String content, contentType, characterEncoding;
-
-    public URLObject(String content, String contentType,
-            String characterEncoding) {
-        this.content = content;
-        this.contentType = contentType;
-        this.characterEncoding = characterEncoding;
-    }
-
-    public String getContent() {
-        return this.content;
-    }
-
-    public String getContentType() {
-        return this.contentType;
-    }
-
-    public String getCharacterEncoding() {
-        return this.characterEncoding;
+    /**
+     * Construct adapter providing a {@link CacheEntryFactory} interface 
+     * for a single <code>ContentCacheLoader</code> instance.
+     * 
+     * @param loader The <code>ContentCacheLoader</code> to wrap.
+     */
+    public ContentCacheLoaderEhcacheAdapter(ContentCacheLoader loader) {
+        this.loader = loader;
     }
     
-    public InputStream getInputStream() throws IOException {
-        return new ByteArrayInputStream(this.content.getBytes(this.characterEncoding));
-    }
+    @Override
+    public Object createEntry(Object o) throws Exception {
+        return loader.load(o);
+    }    
     
 }

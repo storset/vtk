@@ -914,7 +914,9 @@ ul.button-row li.first {
 }
 
 ul.button-row li.first,
-ul.button-row li.first a {
+ul.button-row li.first a,
+ul.button-row-small li.first,
+ul.button-row-small li.first a {
   -webkit-border-top-left-radius: 5px;
   -webkit-border-bottom-left-radius: 5px;
   -moz-border-radius-topleft: 5px;
@@ -924,7 +926,9 @@ ul.button-row li.first a {
 }
 
 ul.button-row li.last,
-ul.button-row li.last a {
+ul.button-row li.last a,
+ul.button-row-small li.last,
+ul.button-row-small li.last a {
   -webkit-border-top-right-radius: 5px;
   -webkit-border-bottom-right-radius: 5px;
   -moz-border-radius-topright: 5px;
@@ -984,12 +988,12 @@ ul.dropdown-shortcut-menu li.dropdown-init {
 }
 
 ul.dropdown-shortcut-menu li.dropdown-init .dropdown-shortcut-menu-click-area {
-  border-left: 1px solid #cbcbcb;
+  border: 1px solid #cbcbcb;
   position: absolute;
   top: 0px;
   right: 0px;
   height: 28px;
-  width: 26px;
+  width: 25px;
   padding: 0;
   margin: 0;
   cursor: pointer
@@ -1008,23 +1012,24 @@ ul.dropdown-shortcut-menu.dropdown-shortcut-menu-small li.dropdown-init .dropdow
   background-image: url("images/dropdown-arrow-small.png");
   background-position: 8px 11px;
   height: 24px;
-  width: 26px;
+  width: 25px;
 }
 
 ul.dropdown-shortcut-menu li.dropdown-init .dropdown-shortcut-menu-click-area:focus,
 ul.dropdown-shortcut-menu li.dropdown-init .dropdown-shortcut-menu-click-area:hover {
-  background-color: #2b81c8;
-  border-color: #23659c;
-  height: 29px;
-  top: -1px;
-  right: -1px;
+  background-color: #4195db;
+  border-color: #4195db;
+  border-width: 0 0 0 1px;
+  height: 30px;
+  top: 0;
+  right: 0;
   background-image: url("images/dropdown-arrow-hover.png");
   background-position: 7px 13px;
 }
 
 ul.dropdown-shortcut-menu.dropdown-shortcut-menu-small li.dropdown-init .dropdown-shortcut-menu-click-area:focus,
 ul.dropdown-shortcut-menu.dropdown-shortcut-menu-small li.dropdown-init .dropdown-shortcut-menu-click-area:hover {
-  height: 25px;
+  height: 26px;
   background-image: url("images/dropdown-arrow-small-hover.png");
   background-position: 7px 12px;
 }
@@ -1209,25 +1214,78 @@ div.dropdown-shortcut-menu-container form .vrtx-button button {
 /* Tooltip */
 
 .tip {
-  border: 1px solid #cbcbcb;
+  -moz-box-shadow: 0px 0px 0px 6px rgba(160,160,160,0.5);
+  -webkit-box-shadow: 0px 0px 0px 6px rgba(160,160,160,0.5);
+  box-shadow: 0px 0px 0px 6px rgba(160,160,160,0.5);
   padding: 14px;
   background-color: #fff;
+  display: none;
 }
 
 .tip h4 {
   margin-top: 0px;
+  font-weight: normal;
 }
 
 .tip #title-wrapper {
   display: block;
-  padding-bottom: 5px;
+  padding-bottom: 11px;
   margin-bottom: 10px;
   background: url(images/line-dotted.gif) repeat-x bottom left;
 }
 
-.tip.file #title-wrapper,
-.tip.folder #title-wrapper {
-  padding-bottom: 11px;
+.tip #title-wrapper {
+  font-size: 1.154em;
+}
+
+.tip #title-wrapper .vrtx-button-small {
+  font-size: 0.867em;
+}
+
+.tip.file,
+.tip.folder {
+  background-repeat: no-repeat;
+  background-position: 15px 16px;
+}
+
+.tip.file #title {
+  padding-left: 26px;
+}
+
+.tip.folder #title {
+  padding-left: 30px;
+}
+
+.tip.allowed-for-all.folder               { background-image: url(../images/folder-small.gif);                            }
+.tip.allowed-for-all.not-inherited.folder { background-image: url(../images/folder-small-own-permissions.gif);            }
+.tip.allowed-for-all.file                 { background-image: url(../images/file-small.gif);                              }
+.tip.allowed-for-all.not-inherited.file   { background-image: url(../images/file-small-own-permissions.gif);              }
+.tip.restricted.folder                    { background-image: url(../images/folder-small-restricted.gif);                 }
+.tip.restricted.not-inherited.folder      { background-image: url(../images/folder-small-restricted-own-permissions.gif); }
+.tip.restricted.file                      { background-image: url(../images/file-small-restricted.gif);                   }
+.tip.restricted.not-inherited.file        { background-image: url(../images/file-small-restricted-own-permissions.gif);   }
+
+.tip table td {
+  padding: 2px 6px 2px 0;
+  vertical-align: top;
+}
+
+.tip table td,
+.tip table th {
+  vertical-align: top;
+  padding-bottom: 3px;
+}
+
+.tip table th {
+  padding-right: 10px;
+  font-weight: normal;
+  white-space: nowrap;
+  text-align: left;
+}
+
+.tip .inherited-permissions table td,
+.tip .inherited-permissions table th {
+  color: #999;
 }
 
 #title-container abbr {
@@ -1241,10 +1299,6 @@ div.dropdown-shortcut-menu-container form .vrtx-button button {
   margin-top: 0px;
   margin-bottom: 0px;
   padding-left: 10px;
-}
-
-#vrtx-editor .tip.property-item #title-wrapper {
-  font-weight: bold;
 }
 
 #vrtx-editor .tip.property-item ul a,
@@ -1279,6 +1333,9 @@ div.dropdown-shortcut-menu-container form .vrtx-button button {
 .tip.vrtx-create-tree {
   padding: 4px 0px 4px 0 !important;
   border: none !important;
+  -moz-box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+  box-shadow: none !important;
   background-color: #ecf3f9;
   border-top: 1px solid #c7dadf !important;
   border-bottom: 1px solid #c7dadf !important;
@@ -1519,7 +1576,7 @@ span.vrtx-help-step-by-step-cmd {
 }
 
 .vrtx-admin-form p#vrtx-file-upload-info-text {
-  margin-top: 10px;
+  margin: 10px 0 0;
 }
 
 .vrtx-admin-form .vrtx-admin-label {
@@ -2098,7 +2155,6 @@ body#vrtx-report-broken-links #directory-listing td.vrtx-report-broken-links {
 #preview-mode li.active-mode:hover span {
   background: url(images/report-filter-hover-right.png) no-repeat top right;
   display: inline-block;
-  /* color: #fff; */
 }
 
 body#vrtx-preview {
@@ -3207,6 +3263,17 @@ div.vrtx-admin-form {
   width: 100%;
 }
 
+div.globalmenu .vrtx-button,
+div.expandedForm .vrtx-button,
+div.solidExpandedForm .vrtx-button,
+tr.expandedForm td .vrtx-button,
+div.globalmenu .vrtx-button-small,
+div.expandedForm .vrtx-button-small,
+div.solidExpandedForm .vrtx-button-small,
+tr.expandedForm td .vrtx-button-small {
+  background: #f7f7f7;
+}
+
 /* Smaller button in resource-info tables */
 
 .resourceInfo .vrtx-button-small {
@@ -3216,6 +3283,12 @@ div.vrtx-admin-form {
 .resourceInfo table .vrtx-button-small > * {
   font-size: 0.846em;
   padding: 2px 13px;
+}
+
+.resourceInfo table .vrtx-button-small:hover > *,
+.resourceInfo table .vrtx-button-small:focus > *,
+.resourceInfo table .vrtx-button-small.hover > * {
+  padding: 3px 14px;
 }
 
 /* Date */
@@ -3234,7 +3307,7 @@ div.vrtx-admin-form {
 
 /* Cancel link */
 
-.forms-new .vrtx-cancel-link {
+#app-content .vrtx-cancel-link {
   display: inline-block;
   font-size: 0.1em;
   overflow: hidden;
@@ -3247,8 +3320,15 @@ div.vrtx-admin-form {
   background: url(images/resource-menu-dialog-close.png) no-repeat center center;
 }
 
-.forms-new .vrtx-cancel-link:hover {
+#app-content .vrtx-cancel-link:hover {
   cursor: pointer;
+}
+
+#app-content .vrtx-show-processing {
+  background: url(images/spinner.gif) no-repeat center left;
+  display: block;
+  width: 16px;
+  height: 16px;
 }
 
 /* File upload (JS progressive enhancement)

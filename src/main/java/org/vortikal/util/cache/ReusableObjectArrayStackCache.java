@@ -37,6 +37,7 @@ package org.vortikal.util.cache;
  * {@link #putInstance(Object)}. It has a maximum capacity which can
  * optionally be set using constructor {@link #ReusableObjectArrayStackCache(int) }.
  *  
+ * @param <T> type of objects stored in cache
  * @see org.vortikal.util.cache.ReusableObjectCache
  */
 public class ReusableObjectArrayStackCache<T> implements ReusableObjectCache<T> {
@@ -44,7 +45,7 @@ public class ReusableObjectArrayStackCache<T> implements ReusableObjectCache<T> 
     public static final int DEFAULT_CAPACITY = 10;
     
     private int top = -1;
-    private T[] stack;
+    private final T[] stack;
     
     /**
      * Construct an instance with a default maximum capacity.
@@ -67,20 +68,25 @@ public class ReusableObjectArrayStackCache<T> implements ReusableObjectCache<T> 
     /**
      * @see org.vortikal.util.cache.ReusableObjectCache#getInstance()
      */
+    @Override
     public final T getInstance() {
         return pop();
     }
     
     /**
+     * @param object
      * @see org.vortikal.util.cache.ReusableObjectCache#putInstance(Object)
      */
+    @Override
     public final boolean putInstance(T object) {
         return push(object);
     }
     
     /**
+     * @return number of objects currently in cache
      * @see org.vortikal.util.cache.ReusableObjectCache#size()
      */
+    @Override
     public final synchronized int size() {
         return this.top + 1;
     }

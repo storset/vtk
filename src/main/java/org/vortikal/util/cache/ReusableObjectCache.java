@@ -40,6 +40,7 @@ package org.vortikal.util.cache;
  * and that have expensive constructors, such as {@link java.text.SimpleDateFormat}.
  * 
  * @author oyviste
+ * @param <T> type of objects stored in the cache
  *
  */
 public interface ReusableObjectCache<T> {

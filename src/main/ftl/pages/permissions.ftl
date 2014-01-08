@@ -49,9 +49,13 @@
             id="permissions.toggleInheritance" class="vrtx-admin-button">
         <#if resourceContext.currentResource.inheritedAcl>
           <div id="permissions-inheritance">
-          <@vrtx.msg code="permissions.isInherited" default="Inherited permissions" />
-          <#if aclInfo.aclEditURLs.inheritance?exists>
-            &nbsp;<div class="vrtx-button-small"><input type="submit" id="permissions.toggleInheritance.submit" name="confirmation" value="<@vrtx.msg code="permissions.setCustom" default="Edit" />" /></div>
+          <@vrtx.msg code="permissions.isInherited" default="Inherited permissions" /><#t/>
+          <#t/><#if aclInfo.aclEditURLs.inheritance?exists>&nbsp;<#t/>
+            <#t/><#if resourceContext.requestContext.indexFile><#t/>
+              <#t/><abbr title="${vrtx.getMsg('permissions.inherited.index-file')}" class="tooltips" tabindex="0"></abbr>
+            <#else>
+              <#t/><div class="vrtx-button-small"><input type="submit" id="permissions.toggleInheritance.submit" name="confirmation" value="<@vrtx.msg code="permissions.setCustom" default="Edit" />" /></div>
+            </#if>
           </#if>
           </div>
         <#else>

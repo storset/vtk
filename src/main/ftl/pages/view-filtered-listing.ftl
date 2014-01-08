@@ -24,9 +24,9 @@
         <script type="text/javascript" src="${jsURL}"></script>
       </#list>
     </#if>
-  
+
     <title>${collection.title?html}<#if collectionSpecificValues?exists && collectionSpecificValues.currentUrl?exists> (${vrtx.getMsg("listing-filters.title.discontinued")})</#if></title>
-  
+
     <#if page?has_content>
       <#if "${page}" != "1"><meta name="robots" content="noindex, follow"/></#if>
     </#if>
@@ -42,7 +42,7 @@
               <#list resultSet.itemsSorted as item>
                 <#if item.url?exists && item.label?exists>
                   <li><a href="${item.url?html}">${item.label?html}</a></li>
-                </#if>     
+                </#if>
               </#list>
             </ul>
             <#assign currentCount = currentCount + 1 />
@@ -64,7 +64,7 @@
               <#assign url = filter[parameterKey].url>
               <#assign marked = filter[parameterKey].marked>
               <li id="vrtx-listing-filter-parameter-${filterKey}-${parameterKey}" class="vrtx-listing-filter-parameter<#if parameterKey = "all"> vrtx-listing-filter-parameter-all</#if><#if marked> vrtx-listing-filter-parameter-selected</#if>">
-                <#if parameterKey = "all"> 
+                <#if parameterKey = "all">
                   <a href="${url}">${vrtx.getMsg("listing-filters.${filterKey}.all")}</a>
                 <#elseif filterKey = "semester"><#-- TODO: Hack to avoid year in i18n -->
                   <#if parameterKey?starts_with("v")>
@@ -118,7 +118,7 @@
         <@vrtx.msg code="listing-filters.${collection.resourceType}.no-result" default="No result" />
       </div>
     </#if>
-    
+
     <#if collectionSpecificValues?exists>
       <div id="vrtx-listing-filter-status">
         <#if collectionSpecificValues.discontinuedUrl?exists>

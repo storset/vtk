@@ -28,7 +28,7 @@ crossDocComLink.setUpReceiveDataHandler(function(cmdParams, source) {
       break;
       
     /* Mobile preview */
-        
+     
     case "update-height-vertical":
       var computedHeight = document.body.offsetHeight;
       crossDocComLink.postCmdToParent("preview-height-update|" + computedHeight);

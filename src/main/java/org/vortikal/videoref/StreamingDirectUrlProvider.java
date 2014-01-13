@@ -73,8 +73,8 @@ public class StreamingDirectUrlProvider implements ReferenceDataProvider {
 
     private String modelName = "directStreamingUrls";
     private VideoappClient videoappClient;
-    private PropertyTypeDefinition videoIdPropDef;
-    private PropertyTypeDefinition videoStatusPropDef;
+    private PropertyTypeDefinition videoIdPropDef; // TODO remove, not needed.
+    private PropertyTypeDefinition videoStatusPropDef; // TODO remove, not needed.
     
     private final Log logger = LogFactory.getLog(StreamingDirectUrlProvider.class.getName());
     
@@ -87,28 +87,17 @@ public class StreamingDirectUrlProvider implements ReferenceDataProvider {
             if (!"videoref".equals(r.getResourceType())) {
                 return;
             }
+
+            ContentStream cs = repo.getAlternativeContentStream(rc.getSecurityToken(),
+                    rc.getResourceURI(), true, "application/json");
+            VideoRef ref = VideoRef.fromJsonString(StreamUtil.streamToString(cs.getStream())).build();
             
-            Property statusProp = r.getProperty(videoStatusPropDef);
-            if (statusProp == null || !"completed".equals(statusProp.getStringValue())) {
+            if (!ref.isStreamable()) {
                 return;
             }
             
-            VideoId videoId = null;
-            Property videoIdProp = r.getProperty(videoIdPropDef);
-            if (videoIdProp != null) {
-                videoId = VideoId.fromString(videoIdProp.getStringValue());
-            }
-            
-            if (videoId == null) {
-                // Try to obtain via alternative content
-                logger.warn("Videoref resource " + rc.getResourceURI() + " missing videoId property");
-                ContentStream cs = repo.getAlternativeContentStream(rc.getSecurityToken(),
-                        rc.getResourceURI(), true, "application/json");
-                VideoRef ref = VideoRef.fromJsonString(StreamUtil.streamToString(cs.getStream())).build();
-                videoId = ref.videoId();
-            }
-            
-            StreamingRef s = videoappClient.requestStreaming(videoId);
+            VideoId videoId = ref.videoId();
+            StreamingRef s = videoappClient.requestStreaming(r.getURI(), videoId);
             Map<String,URL> submodel = new HashMap<String,URL>();
             model.put(modelName, submodel);
 

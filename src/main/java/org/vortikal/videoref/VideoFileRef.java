@@ -43,9 +43,11 @@ public class VideoFileRef {
     private final String contentType;
     private final String path;
     private final long size;
+    private final boolean sourceVideoFile;
     private final Map<String,Object> metadata;
 
-    public VideoFileRef(String contentType, String path, long size, Map<String,Object> metadata) {
+    public VideoFileRef(String contentType, String path, long size, 
+            boolean sourceVideoFile, Map<String,Object> metadata) {
         if (path == null) {
             throw new IllegalArgumentException("path cannot be null");
         }
@@ -55,6 +57,7 @@ public class VideoFileRef {
         this.path = path;
         this.size = size;
         this.contentType = contentType;
+        this.sourceVideoFile = sourceVideoFile;
         this.metadata = metadata != null ? new HashMap<String,Object>(metadata) : Collections.<String,Object>emptyMap();
     }
 
@@ -78,6 +81,14 @@ public class VideoFileRef {
      */
     public long size() {
         return this.size;
+    }
+    
+    /**
+     * @return <code>true</code> if the video file is the original uploaded
+     * source video file, <code>false</code> otherwise.
+     */
+    public boolean isSourceVideoFile() {
+        return this.sourceVideoFile;
     }
 
     /**

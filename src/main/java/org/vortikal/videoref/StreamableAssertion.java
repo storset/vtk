@@ -1,4 +1,4 @@
-/* Copyright (c) 2013, University of Oslo, Norway
+/* Copyright (c) 2014, University of Oslo, Norway
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,62 +31,45 @@
 
 package org.vortikal.videoref;
 
-import java.net.URI;
+import org.vortikal.repository.ContentStream;
+import org.vortikal.repository.Repository;
+import org.vortikal.repository.Resource;
+import org.vortikal.security.Principal;
+import org.vortikal.util.io.StreamUtil;
+import org.vortikal.web.RequestContext;
+import org.vortikal.web.service.AbstractRepositoryAssertion;
+import org.vortikal.web.service.Assertion;
 
 /**
- * Identifier for videoapp token objects: absolute hierarchical URIs with only path specified.
+ * Assertion on streamability of videoref resources.
  */
-public class TokenId {
- 
-    private final URI uri;
-    
-    /**
-     * Construct a token identifier using the given URI. Only the path part
-     * of the URI is used, and that path should be absolute.
-     * @param uri 
-     */
-    private TokenId(String uri) {
-        URI u = URI.create(uri);
-        this.uri = URI.create(u.getPath());
-    }
+public class StreamableAssertion extends AbstractRepositoryAssertion {
 
-    public TokenId(URI uri) {
-        this.uri = uri;
-    }
-    
-    public URI uri() {
-        return this.uri;
-    }
-    
     @Override
-    public String toString() {
-        return this.uri.getPath();
-    }
-    
-    public static TokenId fromString(String uri) {
-        return new TokenId(uri);
-    }
-    
-    @Override
-    public int hashCode() {
-        int hash = 5;
-        hash = 89 * hash + (this.uri != null ? this.uri.hashCode() : 0);
-        return hash;
+    public boolean matches(Resource resource, Principal principal) {
+        if (!"videoref".equals(resource.getResourceType())) {
+            return false;
+        }
+        
+        if (!RequestContext.exists()) {
+            return false;
+        }
+        
+        try {
+            RequestContext rc = RequestContext.getRequestContext();
+            Repository repo = rc.getRepository();
+            ContentStream cs = repo.getAlternativeContentStream(rc.getSecurityToken(),
+                    rc.getResourceURI(), true, "application/json");
+            VideoRef ref = VideoRef.fromJsonString(StreamUtil.streamToString(cs.getStream())).build();
+            return ref.isStreamable();
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final TokenId other = (TokenId) obj;
-        if (this.uri != other.uri && (this.uri == null || !this.uri.equals(other.uri))) {
-            return false;
-        }
-        return true;
+    public boolean conflicts(Assertion assertion) {
+        return false;
     }
     
 }

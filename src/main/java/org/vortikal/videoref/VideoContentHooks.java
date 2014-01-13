@@ -198,7 +198,7 @@ public class VideoContentHooks extends DefaultTypeHanderHooks
         VideoRef ref = loadVideoRef(resource.getURI(), getContentStore());
 
         if (ref.sourceVideo() != null) {
-            videoapp.notifyDownload(ref.videoId());
+            videoapp.notifyDownload(resource.getURI(), ref.videoId());
             return new FileInputStream(new File(ref.sourceVideo().path()));
         }
 
@@ -240,12 +240,17 @@ public class VideoContentHooks extends DefaultTypeHanderHooks
             resource.addProperty(prop);
         }
         
-        // Metadata status set according to video status
-        // TODO need to formalize which video states in videoapp can be considered final
-        //      with no need for further refreshing.
-        // Trenger task scheduler i videoapp (for opprydding).
+        // Media metadata status property used as refresh flag.
+        // When video is in non-final state in videoapp, then we set
+        // media metadata status to GENERATE to do periodic updates in Vortex.
         
-        if ("completed".equals(ref.status()) || "not-converted".equals(ref.status())) {
+        if ("completed".equals(ref.status()) 
+                || "error".equals(ref.status())
+                || "not-converted".equals(ref.status())) {
+            
+            // TODO the property is re-added by evaluator it seems – investigate this.
+            // Likely the property is unsuitable for this use case, and we should
+            // use another property for periodic refresh job query.
             resource.removeProperty(mediaMetadataStatusPropDef);
         } else {
             prop = mediaMetadataStatusPropDef.createProperty();

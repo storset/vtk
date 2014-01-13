@@ -42,14 +42,13 @@
 	    allowFullScreen: "true",
 	    allowscriptaccess: "always"
 	  };
-	  swfobject.embedSWF("${strobe?html}", "mediaspiller-${dateStr}", "${width}", "${height}", "${strobeVersion}", false, flashvars, params);
+	  swfobject.embedSWF("${strobe?html}", "mediaspiller-${dateStr}", "${width}", "${height}", "${flashPlayerVersion}", false, flashvars, params);
 	// -->
     </script>
 
   <#elseif media?exists && streamType?exists>
 
     <#assign dateStr = nanoTime?c />
-    <#assign strobeVersion = "10.1.0" />
 
     <script type="text/javascript"><!--
       if (typeof swfobject == 'undefined') {

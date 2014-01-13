@@ -90,8 +90,6 @@ public class VideoappCallbackService implements Controller {
             if ("videos".equals(apiPath.get(0))) {
                 apiPath.remove(0);
                 handleVideos(request, response, model, apiPath);
-            } else if ("notifyUpdate".equals(apiPath.get(0))) {
-                handleUpdateNotification(request, response, model);
             } else {
                 handleNotFound(request, response, model);
             }
@@ -104,16 +102,16 @@ public class VideoappCallbackService implements Controller {
         return UriComponentsBuilder.fromPath(apiBaseUri).pathSegment("videos");
     }
     
-    private UriComponentsBuilder updateBaseUri() {
-        return UriComponentsBuilder.fromPath(apiBaseUri).pathSegment("notifyUpdate");
+    private UriComponentsBuilder resourcesUriTemplate() {
+        return videosBaseUri().pathSegment("resources").queryParam("videoExternalId", "{videoExternalId}");
     }
     
     private UriComponentsBuilder videoUriTemplate() {
-        return videosBaseUri().pathSegment("{numericId}");
+        return videosBaseUri().queryParam("videoExternalId", "{videoExternalId}");
     }
     
     private UriComponentsBuilder updateUriTemplate() {
-        return updateBaseUri().queryParam("videoId", "{videoId}");
+        return videosBaseUri().pathSegment("notifyUpdate").queryParam("videoExternalId", "{videoExternalId}");
     }
 
     private void handleNotFound(HttpServletRequest request, HttpServletResponse response, 
@@ -126,27 +124,40 @@ public class VideoappCallbackService implements Controller {
             Map<String, Object> model) throws Exception {
         model.put("json", body("version", API_VERSION,
                                "description", "Vortex videoapp callback support service",
-                               "videosBaseURI", videosBaseUri().build().toUriString(),
-                               "notifyUpdateBaseURI", updateBaseUri().build().toUriString()));
+                               "videosBaseURI", videosBaseUri().build().toUriString()));
+                               
     }
     
     private void handleVideos(HttpServletRequest request, HttpServletResponse response,
             Map<String, Object> model, List<String> subPaths) throws Exception {
 
-        if (subPaths.isEmpty()) {
-            model.put("json", 
-                    body("description",
-                         "Listing not available. Use numeric identifier as next path segment to get single video."));
+        if (! subPaths.isEmpty()) {
+            if (subPaths.size() == 1 && "resources".equals(subPaths.get(0))) {
+                handleVideoRefResources(request, response, model);
+                return;
+            } 
+            
+            if (subPaths.size() == 1 && "notifyUpdate".equals(subPaths.get(0))) {
+                handleUpdateNotification(request, response, model);
+                return;
+            }
+            
+            handleNotFound(request, response, model);
             return;
         }
         
-        String videoIdPathElement = subPaths.get(0);
-        subPaths.remove(0);
+        if (request.getParameter("videoExternalId") == null) {
+            model.put("json", 
+                    body("description",
+                         "Listing not available. Use 'videoExternalId' param to get single video."));
+            return;
+        }
         
-        VideoId id = videoIdFromInput(videoIdPathElement);
+        String videoIdParam = request.getParameter("videoExternalId");
+        VideoId id = videoIdFromInput(videoIdParam);
         if (id == null) {
             model.put("status", 404);
-            model.put("json", errorBody("Invalid video id: " + videoIdPathElement));
+            model.put("json", errorBody("Invalid video id, expected parameter 'videoExternalId' to provide it."));
             return;
         }
         
@@ -156,46 +167,48 @@ public class VideoappCallbackService implements Controller {
             handleNotFound(request, response, model);
             return;
         }
-        
-        if (! subPaths.isEmpty()) {
-            if (subPaths.size() == 1 && "uris".equals(subPaths.get(0))) {
-                handleVideoRefUris(id, request, response, model);
-                return;
-            } else {
-                handleNotFound(request, response, model);
-                return;
-            }
-        }
 
-        model.put("json", body("videoId", id.toString(),
+        model.put("json", body("videoExternalId", id.toString(),
                                "refCount", refCount,
-                               "refListURI", videoUriTemplate().pathSegment("uris")
-                                             .buildAndExpand(id.numericId()).toUriString(),
+                               "refListURI", resourcesUriTemplate().buildAndExpand(id.toString()).toUriString(),
                                "notifyUpdateURI", updateUriTemplate()
-                                       .buildAndExpand(id.numericId())
+                                       .buildAndExpand(id.toString())
                                        .toUriString()));
     }
     
-    private void handleVideoRefUris(VideoId id, HttpServletRequest reqest,
+    private void handleVideoRefResources(HttpServletRequest request,
             HttpServletResponse response, Map<String,Object> model) {
 
-        model.put("json", videoDaoSupport.listURIs(id));
+        if (request.getParameter("videoExternalId") == null) {
+            model.put("status", 400);
+            model.put("json", errorBody("Missing required parameter 'videoExternalId'"));
+            return;
+        }
+        
+        VideoId videoId = videoIdFromInput(request.getParameter("videoExternalId"));
+        if (videoId == null) {
+            model.put("status", 400);
+            model.put("json", errorBody("Invalid video id: " + request.getParameter("videoExternalId")));
+            return;
+        }
+        
+        model.put("json", videoDaoSupport.listURIs(videoId));
     }
 
 
     private void handleUpdateNotification(HttpServletRequest request, HttpServletResponse response,
             Map<String,Object> model) throws Exception {
 
-        if (request.getParameter("videoId") == null) {
+        if (request.getParameter("videoExternalId") == null) {
             model.put("status", 400);
-            model.put("json", errorBody("Missing required parameter 'videoId'"));
+            model.put("json", errorBody("Missing required parameter 'videoExternalId'"));
             return;
         }
         
-        VideoId videoId = videoIdFromInput(request.getParameter("videoId"));
+        VideoId videoId = videoIdFromInput(request.getParameter("videoExternalId"));
         if (videoId == null) {
             model.put("status", 400);
-            model.put("json", errorBody("Invalid video id: " + request.getParameter("videoId")));
+            model.put("json", errorBody("Invalid video id: " + request.getParameter("videoExternalId")));
             return;
         }
         
@@ -217,18 +230,14 @@ public class VideoappCallbackService implements Controller {
         }
         
         // Put something in response
-        model.put("json", body("videoId", videoId.toString(),
+        model.put("json", body("videoExternalId", videoId.toString(),
                                "notifyUpdateReceived", true));
     }
     
     private VideoId videoIdFromInput(String input) {
         if (input == null) return null;
         try {
-            return VideoId.fromString(URLDecoder.decode(input, "utf-8"));
-        } catch (Exception e) {}
-        
-        try {
-            return VideoId.fromString("video:" + repositoryId + ":" + input);
+            return VideoId.fromString(input);
         } catch (Exception e) {}
         
         return null;

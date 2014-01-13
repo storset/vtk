@@ -30,6 +30,7 @@
       <list>
         <ref bean="videoref.videoIdPropDef" />
         <ref bean="videoref.videoStatusPropDef" />
+        <ref bean="videoref.streamablePercentCompletePropDef" />
         <!-- TODO add overriding contentType propdef with evaluator which looks in
         videoref (if available), falls back to standard evaluator otherwise. -->
       </list>
@@ -63,7 +64,21 @@
       </bean>
     </property>
   </bean>
-    
+  
+  <!-- videoStreamablePercentComplete property of resource type videoref -->
+  <bean id="videoref.streamablePercentCompletePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+    <property name="name" value="videoStreamablePercentComplete" />
+    <property name="namespace" ref="DEFAULT_NAMESPACE" />
+    <property name="type" value="INT" />
+    <property name="propertyEvaluator">
+      <bean class="org.vortikal.repository.resourcetype.property.JsonExtractEvaluator">
+        <property name="valueFactory" ref="valueFactory" />
+        <property name="expression" value="ref.streamablePercentComplete" />
+        <property name="alwaysEvaluate" value="true" />
+      </bean>
+    </property>
+  </bean>
+  
   <!-- Repository integration -->
   <bean id="videoref.videoContentHooks" parent="abstractTypeHandlerHooks"
         class="org.vortikal.videoref.VideoContentHooks">
@@ -157,12 +172,7 @@
           <property name="repository" ref="repository" />
           <property name="resourceTypeDefinition" ref="mediaref.videorefType" />
         </bean>
-        <!-- Video conversion needs to be complete for streaming to be available: -->
-        <bean class="org.vortikal.web.service.ResourcePropertyAssertion">
-          <property name="namespace" ref="DEFAULT_NAMESPACE" />
-          <property name="name" value="videoStatus" />    
-          <property name="value" value="completed" />
-        </bean>
+        <bean class="org.vortikal.videoref.StreamableAssertion" />
       </list>
     </property>
   </bean>

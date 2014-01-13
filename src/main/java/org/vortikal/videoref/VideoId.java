@@ -30,23 +30,58 @@
  */
 package org.vortikal.videoref;
 
+import java.net.URI;
+
 /**
- * Video object "URNs" or identifiers.
- *
+ * Identifier for videoapp token objects: absolute hierarchical URIs with only
+ * a path specified.
  */
-public class VideoId extends AbstractId {
+public class VideoId  {
 
-    private VideoId(String id) {
-        super(id, "video");
-    }
-
-    /**
-     * Create a video object identifier.
-     * @param id fully qualified video identifier string
-     * @return an instance of this class based on video identifier string.
-     */
-    public static VideoId fromString(String id) {
-        return new VideoId(id);
+    private URI uri;
+    
+    private VideoId(String uri) {
+        URI u = URI.create(uri);
+        this.uri = URI.create(u.getPath());
     }
     
+    public VideoId(URI uri) {
+        this.uri = URI.create(uri.getPath());
+    }
+    
+    public URI uri() {
+        return this.uri;
+    }
+
+    @Override
+    public String toString() {
+        return this.uri.getPath();
+    }
+    
+    public static VideoId fromString(String uri) {
+        return new VideoId(uri);
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 97 * hash + (this.uri != null ? this.uri.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final VideoId other = (VideoId) obj;
+        if (this.uri != other.uri && (this.uri == null || !this.uri.equals(other.uri))) {
+            return false;
+        }
+        return true;
+    }
+        
 }

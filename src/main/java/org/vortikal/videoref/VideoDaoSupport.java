@@ -37,7 +37,6 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.support.JdbcDaoSupport;
-import org.vortikal.repository.Path;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 
 /**

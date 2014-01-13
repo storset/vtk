@@ -1,4 +1,4 @@
-/* Copyright (c) 2013, University of Oslo, Norway
+/* Copyright (c) 2013,2014 University of Oslo, Norway
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,6 +40,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -48,6 +49,7 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Resource;
 
 /**
@@ -59,7 +61,7 @@ public class VideoappClient implements DisposableBean {
     
     private RestTemplate restTemplate;
     private String repositoryId;
-    private String apiBaseUrl;
+    private URI apiBase;
     
     private final Log logger = LogFactory.getLog(VideoappClient.class);
     
@@ -67,6 +69,7 @@ public class VideoappClient implements DisposableBean {
 
     /**
      * Create new video object in videoapp.
+     * 
      * @param newResource
      * @param path
      * @param contentType
@@ -74,12 +77,14 @@ public class VideoappClient implements DisposableBean {
      */
     public VideoRef createVideo(Resource newResource, String path, String contentType) {
         JSONObject postJson = new JSONObject();
-        postJson.element("path", path); // Endres til "uploadPath"
-        
+        postJson.element("uploadFilePath", path);
+
         // New param: "isInterlaced" from client
-        // New param: "basedOnVideoId" for changes to video which will require re-encoding
+        // New param: "basedOnExternalVideoId" for changes to video which will require re-encoding
+        // TODO: how to supply these through repositry API ? Might need alternative
+        // ways of creating videos...
         
-        URI newVideoLocation = this.restTemplate.postForLocation(withBaseUrl("/videos/{host}/"), postJson, this.repositoryId);
+        URI newVideoLocation = this.restTemplate.postForLocation(withBaseUri("videos/{host}/"), postJson, this.repositoryId);
         logger.debug("newVideoLocation = " + newVideoLocation);
         
         return getVideo(newVideoLocation).copyBuilder().uploadContentType(contentType).build();
@@ -91,13 +96,10 @@ public class VideoappClient implements DisposableBean {
      * @return 
      */
     public VideoRef getVideo(VideoId id) {
-        JSONObject response = this.restTemplate.getForObject(
-                withBaseUrl("/videos/{host}/{numericId}"),
-                JSONObject.class, id.host(), id.numericId());
-        
-        VideoRef ref = fromVideoAppVideo(response);
+        String location = withBaseUri(id.uri());
+        VideoRef ref = getVideo(URI.create(location));
         if (!ref.videoId().equals(id)) {
-            throw new RestClientException("Unexpected videoId in response: " + ref.videoId());
+            throw new RestClientException("Unexpected videoExternalId in response: " + ref.videoId());
         }
         
         return ref;
@@ -109,34 +111,52 @@ public class VideoappClient implements DisposableBean {
     }
     
     private VideoRef fromVideoAppVideo(JSONObject videoObject) {
-        VideoRef.Builder b = VideoRef.newBuilder().videoId(videoObject.getString("videoId"));
+        VideoRef.Builder b = VideoRef.newBuilder().videoId(videoObject.getString("videoExternalId"));
         b.status(videoObject.getString("status"));
         b.durationSeconds(videoObject.getDouble("duration"));
-        b.sourceVideo(videoFileRef(videoObject.getJSONObject("sourceVideoFile")));
-        if (videoObject.has("convertedVideoFile") && !videoObject.getJSONObject("convertedVideoFile").isNullObject()) {
-            b.convertedVideo(videoFileRef(videoObject.getJSONObject("convertedVideoFile")));
+        b.streamablePercentComplete(videoObject.getInt("streamablePercentComplete"));
+        
+        VideoFileRef[] fileRefs = videoFileRefs(videoObject);
+        for (VideoFileRef ref: fileRefs) {
+            if (ref.isSourceVideoFile()) {
+                b.sourceVideo(ref);
+            } else {
+                b.convertedVideo(ref);
+            }
         }
-        if (videoObject.has("thumbnailGenerated") && videoObject.has("thumbnailGeneratedMimeType")) {
-            b.generatedThumbnail(videoObject.getString("thumbnailGenerated"), videoObject.getString("thumbnailGeneratedMimeType"));
+        
+        if (videoObject.has("thumbnail")) {
+            JSONObject thumbnailObject = videoObject.getJSONObject("thumbnail");
+            b.generatedThumbnail(thumbnailObject.getString("encodedThumbnail"), thumbnailObject.getString("mimeType"));
         }
         return b.build();
     }
 
-    private VideoFileRef videoFileRef(JSONObject videoFileJson) {
-        String localPath = videoFileJson.getString("localPath");
-        String contentType = videoFileJson.optString("mimeType", null);
-        long size = videoFileJson.getLong("size");
-        if (size <= 0) {
-            size = new File(localPath).length();
+    private VideoFileRef[] videoFileRefs(JSONObject videoObject) {
+        JSONArray a = videoObject.getJSONArray("videoFiles");
+        VideoFileRef[] refs = new VideoFileRef[a.size()];
+        for (int i=0; i<refs.length; i++) {
+            JSONObject videoFileJson = a.getJSONObject(i);
+            
+            String localPath = videoFileJson.getString("localPath");
+            String contentType = videoFileJson.optString("mimeType", null);
+            long size = videoFileJson.getLong("size");
+            if (size <= 0) {
+                size = new File(localPath).length();
+            }
+            boolean sourceVideo = videoFileJson.getBoolean("isSourceVideo");
+
+            Map<String, Object> metadata = new HashMap<String, Object>();
+            metadata.put("width", videoFileJson.optInt("width"));
+            metadata.put("height", videoFileJson.optInt("height"));
+            metadata.put("acodec", videoFileJson.optString("acodec"));
+            metadata.put("vcodec", videoFileJson.optString("vcodec"));
+            metadata.put("interlaced", videoFileJson.optBoolean("isInterlaced"));
+
+            refs[i] = new VideoFileRef(contentType, localPath, size, sourceVideo, metadata);
         }
         
-        Map<String,Object> metadata = new HashMap<String,Object>();
-        metadata.put("width", videoFileJson.optInt("width"));
-        metadata.put("height", videoFileJson.optInt("height"));
-        metadata.put("acodec", videoFileJson.optString("acodec"));
-        metadata.put("vcodec", videoFileJson.optString("vcodec"));
-        
-        return new VideoFileRef(contentType, localPath, size, metadata);
+        return refs;
     }
     
     /**
@@ -164,7 +184,7 @@ public class VideoappClient implements DisposableBean {
      * @return a new video reference based on <code>oldRef</code>, but with
      *         refreshed videoapp-data from <code>newRef</code>.
      */
-    public VideoRef refreshVideoRef(VideoRef oldRef, VideoRef newRef) {
+    private VideoRef refreshVideoRef(VideoRef oldRef, VideoRef newRef) {
         if (!oldRef.videoId().equals(newRef.videoId())) {
             throw new IllegalArgumentException("videoId must be the same in oldRef and newRef");
         }
@@ -175,6 +195,7 @@ public class VideoappClient implements DisposableBean {
                      .convertedVideo(newRef.convertedVideo())
                      .generatedThumbnail(newRef.generatedThumbnail())
                      .status(newRef.status())
+                     .streamablePercentComplete(newRef.streamablePercentComplete())
                      .durationSeconds(newRef.durationSeconds()).build();
     }
     
@@ -184,58 +205,50 @@ public class VideoappClient implements DisposableBean {
      * <p>This method is non-blocking and returns immediately, and the result
      * of the notification is discarded.
      * 
+     * @param vortexUri the Vortex resource through which download of the video occured
      * @param videoId the video id for which source stream has been requested in Vortex.
      */
-    public void notifyDownload(final VideoId videoId) {
-        logger.debug("notifyDownload: " + videoId);
-        
-        // TODO Add Vortex URI to request
-        asyncGetForResponseEntity(withBaseUrl("/videos/notifyDownload?videoId=video:localhost:33&vortexURI=   &vortexURI=..."), 
-                JSONObject.class, repositoryId, videoId.numericId());
+    public void notifyDownload(Path vortexUri, VideoId videoId) {
+        logger.debug("notifyDownload: " + videoId + ", path: " + vortexUri);
+
+        URI requestPath = URI.create(videoId.toString() + "/notifyDownload").normalize();
+
+        JSONObject requestEntity = new JSONObject();
+        requestEntity.put("userUrlPath", vortexUri.toString());
+                        
+        asyncPostForResponseEntity(withBaseUri(requestPath), requestEntity, JSONObject.class);
     }
     
     /**
      * Requesting streaming of video.
      * 
-     * @param videoId the video object identifier to 
+     * @param vortexUri the Vortex resource for which video streaming is requested
+     * @param videoId the video object identifier
      * @return a {@link StreamingRef} with info about streams. Note that the
      * validity of such a reference will expire in a certain amount of time.
      */
-    public StreamingRef requestStreaming(VideoId videoId) {
-        // TODO @videoapp, give Location of newly created object and use that here
+    public StreamingRef requestStreaming(Path vortexUri, VideoId videoId) {
         // Create token for streaming
+        
+        URI requestPath = URI.create(videoId.uri().getPath() + "/tokens").normalize();
+        JSONObject requestEntity = new JSONObject();
+        requestEntity.put("userUrlPath", vortexUri.toString());
 
         ResponseEntity<JSONObject> responseEntity = 
-                this.restTemplate.postForEntity(withBaseUrl("/videos/{host}/{videoId}/tokens/?return-stream-uris=true"), 
-                        new JSONObject(), JSONObject.class, repositoryId, videoId.numericId());
+                this.restTemplate.postForEntity(withBaseUri(requestPath), 
+                        requestEntity, JSONObject.class);
         
-        final URI location = responseEntity.getHeaders().getLocation();
         JSONObject response = responseEntity.getBody();
 
-        // TODO: these should not be part of 201 Created response, but instead part of GET on token object or something
-        final String hlsStreamUri = response.getString("appleHttp");
-        final String hdsStreamUri = response.getString("flashHttp");
+        URI hlsStreamUri = URI.create(response.getString("appleHttpUrl"));
+        URI hdsStreamUri = URI.create(response.getString("flashHttpUrl"));
+        TokenId tokenId = TokenId.fromString(response.getString("tokenExternalId"));
+        String tokenValue = response.getString("tokenValue");
+        Date tokenExpiry = new Date(new Date().getTime() + response.getInt("tokenExpiry")*1000);
         
-        final TokenId tokenId = TokenId.fromString(response.getString("tokenId"));
+        Token token = new Token(tokenId, tokenValue, tokenExpiry, videoId);
         
-        
-        // Get newly created token object 
-        // TODO should get tokenValue in create-call, so this will be unnecessary.
-        response = this.restTemplate.getForObject(location, JSONObject.class);
-        
-        if (! TokenId.fromString(response.getString("tokenId")).equals(tokenId)) {
-            throw new RestClientException("Unexpected token id in response");
-        }
-        if (! VideoId.fromString(response.getString("videoRef")).equals(videoId)) {
-            throw new RestClientException("Unexpected video id in response");
-        }
-        
-        final String tokenValue = response.getString("tokenValue");
-        
-        // TODO do not hard code 60s expiry time here, get value from videoapp instead
-        Token token = new Token(tokenId, tokenValue, new Date(new Date().getTime() + 60000), videoId);
-        
-        return new StreamingRef(token, URI.create(hlsStreamUri), URI.create(hdsStreamUri));
+        return new StreamingRef(token, hlsStreamUri, hdsStreamUri);
     }
     
     private <T> Future<ResponseEntity<T>> asyncGetForResponseEntity(
@@ -260,21 +273,29 @@ public class VideoappClient implements DisposableBean {
     }
     
     /**
-     * Prepends API base URL to the rest and returns the result
-     * as a string.
-     * @param rest The rest of the URL.
-     * @return complete URL with API base URL prepended.
+     * Prepends API base URI to the rest and returns the result
+     * as a string (not encoded). If the rest is an absolute path, any path
+     * in the API base URI is replaced.
+     * 
+     * @param rest The rest of the URL, typically a path. Can contain {}-params for later interpolation.
+     * @return complete URI with API base prepended as a string, not encoded.
      */
-    private String withBaseUrl(String rest) {
-        
-        if (! (this.apiBaseUrl.endsWith("/") 
-                || rest.startsWith("/"))) {
-            rest = "/" + rest;
-        } else if (this.apiBaseUrl.endsWith("/") && rest.startsWith("/")) {
-            rest = rest.substring(1);
+    private String withBaseUri(String rest) {
+        if (rest.startsWith("/")) {
+            return apiBase.getScheme() + "://" + apiBase.getHost() 
+                    + (apiBase.getPort() != 80 ? ":" + apiBase.getPort() : "") + rest;
+        } else {
+            String base = apiBase.toString();
+            if (!base.endsWith("/")) {
+                return base + "/" + rest;
+            } else {
+                return base + rest;
+            }
         }
-        
-        return this.apiBaseUrl + rest;
+    }
+    
+    private String withBaseUri(URI rest) {
+        return apiBase.resolve(rest).toString();
     }
     
     @Required
@@ -289,7 +310,7 @@ public class VideoappClient implements DisposableBean {
 
     @Required
     public void setApiBaseUrl(URI baseUrl) {
-        this.apiBaseUrl = baseUrl.toString();
+        this.apiBase = baseUrl;
     }
 
     @Override

@@ -89,15 +89,15 @@ public class StreamingRedirect implements Controller {
             videoId = ref.videoId();
         }
 
-        StreamingRef ref = videoappClient.requestStreaming(videoId);
+        StreamingRef ref = videoappClient.requestStreaming(r.getURI(), videoId);
 
         response.setStatus(303);
         if (streamType == StreamType.ADOBE_HDS) {
-            response.setHeader("Location", ref.hdsStream().toString());
+            response.setHeader("Location", ref.hdsStream().toASCIIString());
             return null;
         }
         if (streamType == StreamType.APPLE_HLS) {
-            response.setHeader("Location", ref.hlsStream().toString());
+            response.setHeader("Location", ref.hlsStream().toASCIIString());
             return null;
         }
         

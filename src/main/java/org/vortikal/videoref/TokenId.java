@@ -51,7 +51,7 @@ public class TokenId {
     }
 
     public TokenId(URI uri) {
-        this.uri = uri;
+        this.uri = URI.create(uri.getPath());
     }
     
     public URI uri() {

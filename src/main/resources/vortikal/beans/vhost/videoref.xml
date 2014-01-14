@@ -149,6 +149,7 @@
     <property name="affectedPropDefPointers">
       <list>
         <value>videoStatus</value>
+        <value>videoStreamablePercentComplete</value>
         <value>duration</value>
         <value>thumbnail</value>
         <value>pixelHeight</value>
@@ -242,8 +243,6 @@
   </bean>
   <!-- Provider for direct streaming URLs -->
   <bean id="videoref.directStreamingUrlsProvider" class="org.vortikal.videoref.StreamingDirectUrlProvider">
-    <property name="videoIdPropDef" ref="videoref.videoIdPropDef" />
-    <property name="videoStatusPropDef" ref="videoref.videoStatusPropDef" />
     <property name="videoappClient" ref="videoref.videoapp.client" />
   </bean>
   
@@ -299,6 +298,7 @@
     <property name="affectedPropDefPointers">
       <list>
         <value>videoStatus</value>
+        <value>videoStreamablePercentComplete</value>
         <value>duration</value>
         <value>thumbnail</value>
         <value>pixelHeight</value>

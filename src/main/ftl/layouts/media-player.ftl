@@ -27,7 +27,7 @@
     </script>
 
     <div id="mediaspiller-${dateStr}">
-      <a class="vrtx-media" href="${media?html}">
+      <a class="vrtx-media" href="${streamingUrls.hlsStreamUrl?html}">
 	    <img src="/vrtx/__vrtx/static-resources/themes/default/icons/video-noflash.png" width="500" height="279" alt="<@vrtx.msg code="article.media-file" />"/>
 	  </a>
     </div>

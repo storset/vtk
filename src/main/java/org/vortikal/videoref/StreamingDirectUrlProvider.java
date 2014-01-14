@@ -39,7 +39,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.ContentStream;
-import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
@@ -73,8 +72,6 @@ public class StreamingDirectUrlProvider implements ReferenceDataProvider {
 
     private String modelName = "directStreamingUrls";
     private VideoappClient videoappClient;
-    private PropertyTypeDefinition videoIdPropDef; // TODO remove, not needed.
-    private PropertyTypeDefinition videoStatusPropDef; // TODO remove, not needed.
     
     private final Log logger = LogFactory.getLog(StreamingDirectUrlProvider.class.getName());
     
@@ -123,19 +120,4 @@ public class StreamingDirectUrlProvider implements ReferenceDataProvider {
         this.videoappClient = videoappClient;
     }
 
-    /**
-     * @param videoIdPropDef the videoIdPropDef to set
-     */
-    @Required
-    public void setVideoIdPropDef(PropertyTypeDefinition videoIdPropDef) {
-        this.videoIdPropDef = videoIdPropDef;
-    }
-
-    /**
-     * @param videoStatusPropDef the videoStatusPropDef to set
-     */
-    @Required
-    public void setVideoStatusPropDef(PropertyTypeDefinition videoStatusPropDef) {
-        this.videoStatusPropDef = videoStatusPropDef;
-    }
 }

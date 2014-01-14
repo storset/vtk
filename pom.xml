@@ -123,16 +123,6 @@
         <enabled>true</enabled>
       </snapshots>
     </repository>
-    <repository>
-      <id>nexus-internal</id>
-      <url>https://repo.usit.uio.no/nexus/content/groups/internal/</url>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
   </repositories>
 
   <properties>

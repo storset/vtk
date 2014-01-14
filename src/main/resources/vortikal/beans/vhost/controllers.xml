@@ -41,9 +41,5 @@
     <property name="ignoreLastModifiedOnCollections" value="true" />
   </bean>
 
-  <bean id="displayRevisionsDifferenceHandler" 
-    class="org.vortikal.web.display.diff.DisplayDifferenceController">
-<!--     <property name="viewName" value="displayHTMLResource" /> -->
-  </bean>
   
 </beans>

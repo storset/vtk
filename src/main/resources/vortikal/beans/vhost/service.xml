@@ -433,23 +433,6 @@
     <property name="handler" ref="displayHTMLResourceHandler" />
   </bean>
 
-  <bean id="displayRevisionsDifferenceService" class="org.vortikal.web.service.ServiceImpl">
-    <description>
-      Visually display difference between two revisions of a resource.
-    </description>
-    <property name="parent" ref="displayResourceService" />
-    <property name="assertions">
-      <list>
-        <bean class="org.vortikal.web.service.RequestParameterAssertion">
-          <property name="parameterName" value="vrtx" />
-          <property name="parameterValue" value="diff" />
-        </bean>
-      </list>
-    </property>
-    <property name="handler" ref="displayRevisionsDifferenceHandler" />
-  </bean>
-
-
   <!-- **************** -->
   <!-- ASSERTIONS       -->
   <!-- **************** -->

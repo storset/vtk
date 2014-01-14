@@ -31,6 +31,8 @@
 package org.vortikal.web.display.diff;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletRequest;
@@ -63,8 +65,6 @@ import org.vortikal.web.servlet.VortikalServlet;
 public class DisplayRevisionsDifferenceController extends ParameterizableViewController implements Controller, InitializingBean {
 
     private static Log logger = LogFactory.getLog(DisplayRevisionsDifferenceController.class);
-    private HttpServletRequest request;
-    private HttpServletResponse response;
    
     public void afterPropertiesSet() throws Exception {
     }
@@ -73,11 +73,9 @@ public class DisplayRevisionsDifferenceController extends ParameterizableViewCon
     protected ModelAndView handleRequestInternal(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
         
-        this.request = request;
-        this.response = response;
         String revisionParam = request.getParameter("revision");
         if (revisionParam == null) {
-            return badRequest("'revision' argument must be supplied");
+            return badRequest("'revision' argument must be supplied", response);
         }
         String revisionNameA = null;
         String revisionNameB = null;
@@ -91,18 +89,23 @@ public class DisplayRevisionsDifferenceController extends ParameterizableViewCon
                 int revisionNumber = Integer.parseInt(revisionParam);
                 revisionNameA = "" + (revisionNumber - 1); 
             } catch (NumberFormatException e) {
-                return badRequest("'revision' must be either an integer or a comma separated pair");
+                return badRequest("'revision' must be either an integer or a comma separated pair", response);
             }
         }
-        String content = diffRevisions(revisionNameA, revisionNameB);
-        response.getWriter().write(content);
-        return null;
+        String content = diffRevisions(revisionNameA, revisionNameB, request);
+        
+        Map<String, Object> model = new HashMap<String, Object>();
+        model.put("revisionA", revisionNameA);
+        model.put("revisionB", revisionNameB);
+        model.put("content", content);
+        
+        return new ModelAndView(getViewName(), model);
     }
 
     /*
      * For aborting the request with a HTTP Bad Request response.
      */
-    private ModelAndView badRequest(String errorMessage) throws IOException {
+    private ModelAndView badRequest(String errorMessage, HttpServletResponse response) throws IOException {
         logger.error(errorMessage);
         response.sendError(HttpServletResponse.SC_BAD_REQUEST, errorMessage);
         return null;
@@ -115,9 +118,9 @@ public class DisplayRevisionsDifferenceController extends ParameterizableViewCon
      * I.e. it is assumed that the revisions names are valid an existing,
      * and that a null result for a revision is not returned.
      */
-    private String diffRevisions(String revisionNameA, String revisionNameB) throws Exception {
-        String contentA = getContentForRevision(revisionNameA);
-        String contentB = getContentForRevision(revisionNameB);
+    private String diffRevisions(String revisionNameA, String revisionNameB, HttpServletRequest request) throws Exception {
+        String contentA = getContentForRevision(revisionNameA, request);
+        String contentB = getContentForRevision(revisionNameB, request);
         return getHtmlDifferences(contentA, contentB);
     }
     
@@ -129,10 +132,12 @@ public class DisplayRevisionsDifferenceController extends ParameterizableViewCon
     /*
      * Use internal request to look up a plain version of the given revision of the resource.
      */
-    private String getContentForRevision(String revisionName) throws Exception {
+    private String getContentForRevision(String revisionName, HttpServletRequest request) throws Exception {
         URL forwardURL = URL.create(request);
         forwardURL.clearParameters();
-        forwardURL.addParameter("revision", revisionName);
+        if (!"HEAD".equals(revisionName)) {
+            forwardURL.addParameter("revision", revisionName);
+        }
         forwardURL.addParameter("x-decorating-mode", "plain");
 
         if (logger.isDebugEnabled()) {
@@ -149,6 +154,10 @@ public class DisplayRevisionsDifferenceController extends ParameterizableViewCon
 
         BufferedResponse bufferedResponse = new BufferedResponse();
         rd.include(requestWrapper, bufferedResponse);
+        int status = bufferedResponse.getStatus();
+        if (status < 200 || status > 299) {
+            throw new Exception("Internal request " + forwardURL + " failed with HTTP status " + status);
+        }
         return bufferedResponse.getContentString();
     }
 

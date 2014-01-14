@@ -127,7 +127,7 @@ public class DisplayRevisionsDifferenceController extends ParameterizableViewCon
     }
 
     /*
-     * Use internal request to look a plain version of the given revision of the resource.
+     * Use internal request to look up a plain version of the given revision of the resource.
      */
     private String getContentForRevision(String revisionName) throws Exception {
         URL forwardURL = URL.create(request);

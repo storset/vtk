@@ -646,7 +646,6 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
 
       for (i = resourceMenuServices.length; i--;) {
         vrtxAdm.cachedAppContent.on("click", "#resourceMenuRight li." + resourceMenuServices[i] + " button", function (e) {
-        
           var button = _$(this);
           var form = button.closest("form");
           var url = form.attr("action");

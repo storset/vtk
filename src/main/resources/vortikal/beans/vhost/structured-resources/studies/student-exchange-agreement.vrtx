@@ -171,6 +171,10 @@ resourcetype student-exchange-agreement {
             [endif]
           </div>
           <div id="vrtx-additional-content">
+            [def contact-div-bool contact != null]
+            [def iris-bool erasmus != null && erasmus != "" && type-of-agreement != null && type-of-agreement = "erasmus"]
+            [def earlier-students-bool earlier-students != null && earlier-students != ""]
+            [def earlier-students-div-bool earlier-students-bool || iris-bool]
             <div id="vrtx-student-exchange-agreement-university-info" class="vrtx-frontpage-box vrtx-distach-bottom">
               <table>
                 <caption>[localized 'about'] [val name]</caption>
@@ -189,15 +193,15 @@ resourcetype student-exchange-agreement {
                 </tbody>
               </table>
             </div>
-            <div id="vrtx-student-exchange-agreement-info" class="vrtx-frontpage-box vrtx-distach-bottom">
+            <div id="vrtx-student-exchange-agreement-info" class="vrtx-frontpage-box[if contact-div-bool] vrtx-distach-bottom[endif]">
               <table>
                 <caption>[localized 'agreement-info']</caption>
                 <tbody>
                   <tr>
                     <th scope="row">[localized 'type-of-agreement']</th>
-                    <td>[if type-of-agreement != null && type-of-agreement != "" && type-of-agreement != "other"][call "include:shared-text" {"propName":"type-of-agreement"}][elseif type-of-agreement = "other" && type-of-agreement-other-text-field != null && type-of-agreement-other-text-field != ""][val type-of-agreement-other-text-field][endif]</td>
+                    <td>[if type-of-agreement != null && type-of-agreement != ""][if type-of-agreement != "other"][call "include:shared-text" {"propName":"type-of-agreement"}][elseif type-of-agreement = "other" && type-of-agreement-other-text-field != null && type-of-agreement-other-text-field != ""][val type-of-agreement-other-text-field][endif][endif]</td>
                   </tr>
-                  <tr>
+                 <tr>
                     <th scope="row">[localized 'study-level']</th>
                     <td>
                       [def totCount 0]
@@ -222,15 +226,19 @@ resourcetype student-exchange-agreement {
                 </tbody>
               </table>
             </div>
-            <div id="vrtx-student-exchange-agreement-contact" class="vrtx-frontpage-box vrtx-distach-bottom">
+            [if contact-div-bool]
+            <div id="vrtx-student-exchange-agreement-contact" class="vrtx-frontpage-box[if earlier-students-div-bool] vrtx-distach-bottom[endif]">
               <h2>[localized 'contact']</h2>
               [call "include:shared-text" {"propName":"contact"}]
             </div>
-            <div id="vrtx-student-exchange-agreement-earlier-students" class="vrtx-frontpage-box">
-              <h2>[localized 'earlier-students']</h2></p>
-              [if erasmus != null && erasmus != "" && type-of-agreement != null && type-of-agreement = "erasmus"]<p><a href="http://www.iris.siu.no/iris.nsf/wwwRSV?SearchView&Query=[val erasmus]">[localized 'iris-reports']</a></p>[endif]
-              [if earlier-students != null && earlier-students != ""][val earlier-students # unescaped][endif]
-            </div>
+            [endif]
+            [if earlier-students-div-bool]
+              <div id="vrtx-student-exchange-agreement-earlier-students" class="vrtx-frontpage-box">
+                <h2>[localized 'earlier-students']</h2></p>
+                [if iris-bool]<p><a href="http://www.iris.siu.no/iris.nsf/wwwRSV?SearchView&Query=[val erasmus]">[localized 'iris-reports']</a></p>[endif]
+                [if earlier-students-bool][val earlier-students # unescaped][endif]
+              </div>
+            [endif]
           </div>
         </div>
       </body>

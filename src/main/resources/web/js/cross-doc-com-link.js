@@ -5,9 +5,9 @@
  */
 
 function CrossDocComLink() {
-    this.hasPostMessage = window['postMessage'] && (!($.browser.opera && $.browser.version < 9.65));
-    this.postOrigin = "*";
-    this.predefinedCommands = null;
+  this.hasPostMessage = window['postMessage'] && (!($.browser.opera && $.browser.version < 9.65));
+  this.postOrigin = "*";
+  this.predefinedCommands = null;
 }
 
 /* POST BACK TO SOURCE */

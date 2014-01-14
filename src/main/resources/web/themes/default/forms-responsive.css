@@ -69,6 +69,7 @@
 
   .forms-new .vrtx-textfield {
     padding: 0;
+    border: none;
   }
 
   .forms-new .vrtx-textfield,

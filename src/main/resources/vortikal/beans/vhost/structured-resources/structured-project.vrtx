@@ -35,7 +35,7 @@ resourcetype structured-project {
   }
     
   services {
-    participantsUsernames participantsFullNameService requires(participantsUsernames) affects(participantsCachedFullNames)
+    participantsUsernames participantsFullNameService affects(participantsCachedFullNames)
   }
 
   view-components {

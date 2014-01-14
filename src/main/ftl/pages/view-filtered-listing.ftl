@@ -36,6 +36,7 @@
     <#if showSubfolderMenu?exists>
       <div class="vrtx-subfolder-menu">
         <#if showSubfolderMenu.resultSets?has_content>
+          <div class="menu-title">Tittel</div>
           <#assign currentCount = 1 />
           <#list showSubfolderMenu.resultSets as resultSet>
             <ul class="resultset-${currentCount?html}">
@@ -52,7 +53,7 @@
     </#if>
 
     <#if filters?exists>
-      <div id="vrtx-listing-filters" class="vrtx-listing-filters-${filters?size}-col">
+      <div id="vrtx-listing-filters" class="vrtx-listing-filters-${filters?size}-col<#if showSubfolderMenu?exists> vrtx-listing-filters-collapsed</#if>">
         <#list filters?keys as filterKey>
           <#assign filter = filters[filterKey]>
           <div class="vrtx-listing-filters-section <#if (filterKey_index = (filters?size - 1))>vrtx-listing-filters-section-last</#if>" id="vrtx-listing-filters-section-${filterKey}">

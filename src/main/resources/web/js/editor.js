@@ -154,7 +154,9 @@ $(document).ready(function () {
   $.when(futureStickyBar).done(function() {     
     var editorStickyBar = new VrtxStickyBar({
       wrapperId: "#vrtx-editor-title-submit-buttons",
-      stickyClass: "vrtx-sticky-editor-title-submit-buttons"
+      stickyClass: "vrtx-sticky-editor-title-submit-buttons",
+      contentsId: "#contents",
+      outerContentsId: "#main"
     });
   });
 

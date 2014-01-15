@@ -18,32 +18,34 @@ var VrtxStickyBar = dejavu.Class.declare({
     var wrapperId = opts.wrapperId;
     var stickyClass = opts.stickyClass;
     var extraWidth = opts.extraWidth || 0;
+    var contents = $(opts.contentsId);
+    var main = $(opts.outerContentsId);
       
     var wrapper = $(wrapperId);
     var thisWindow = $(window);
-    if (wrapper.length && !vrtxAdmin.isIPhone) { // Turn off for iPhone. 
+    if (wrapper.length && !/iphone/.test(navigator.userAgent.toLowerCase())) { // Turn off for iPhone. 
       var wrapperPos = wrapper.offset();
-      if (vrtxAdmin.isIE8) {
+      if ($.browser.msie && $.browser.version <= 8) {
         wrapper.append("<span class='sticky-bg-ie8-below'></span>");
       }
       thisWindow.on("scroll", function () {
         if (thisWindow.scrollTop() >= wrapperPos.top + 1) {
           if (!wrapper.hasClass(stickyClass)) {
             wrapper.addClass(stickyClass);
-            vrtxAdmin.cachedContent.css("paddingTop", wrapper.outerHeight(true) + "px");
+            contents.css("paddingTop", wrapper.outerHeight(true) + "px");
           }
-          wrapper.css("width", ($("#main").outerWidth(true) - 2 + extraWidth) + "px");
+          wrapper.css("width", (main.outerWidth(true) - 2 + extraWidth) + "px");
         } else {
           if (wrapper.hasClass(stickyClass)) {
             wrapper.removeClass(stickyClass);
             wrapper.css("width", "auto");
-            vrtxAdmin.cachedContent.css("paddingTop", "0px");
+            contents.css("paddingTop", "0px");
           }
         }
       });
       thisWindow.on("resize", function () {
         if (thisWindow.scrollTop() >= wrapperPos.top + 1) {
-          wrapper.css("width", ($("#main").outerWidth(true) - 2 + extraWidth) + "px");
+          wrapper.css("width", (main.outerWidth(true) - 2 + extraWidth) + "px");
         }
       });
     }
@@ -56,7 +58,7 @@ var VrtxStickyBar = dejavu.Class.declare({
     if (wrapper.hasClass(this.__opts.stickyClass)) {
       wrapper.removeClass(this.__opts.stickyClass);
       wrapper.css("width", "auto");
-      vrtxAdmin.cachedContent.css("paddingTop", "0px");
+      $(this.__opts.contentsId).css("paddingTop", "0px");
     }
   }        
 });

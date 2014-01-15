@@ -256,6 +256,8 @@
               editorStickyBar = new VrtxStickyBar({
                  wrapperId: "#preview-mode-actions",
                  stickyClass: "vrtx-sticky-preview-mode-actions",
+                 contentsId: "#contents",
+                 outerContentsId: "#main",
                  extraWidth: 2
               });
             });

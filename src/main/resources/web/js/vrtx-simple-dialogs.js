@@ -191,5 +191,3 @@ var VrtxConfirmDialog = dejavu.Class.declare({
     });
   }
 });
-
-/* ^ Dialogs and interface to jQuery UI */

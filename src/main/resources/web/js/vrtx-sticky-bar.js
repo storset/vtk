@@ -17,9 +17,9 @@ var VrtxStickyBar = dejavu.Class.declare({
     this.__opts = opts;
     var wrapperId = opts.wrapperId;
     var stickyClass = opts.stickyClass;
-    var extraWidth = opts.extraWidth || 0;
     var contents = $(opts.contentsId);
     var main = $(opts.outerContentsId);
+    var extraWidth = opts.extraWidth || 0;
       
     var wrapper = $(wrapperId);
     var thisWindow = $(window);

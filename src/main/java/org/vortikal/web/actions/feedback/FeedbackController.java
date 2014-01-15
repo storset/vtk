@@ -145,8 +145,10 @@ public class FeedbackController implements Controller {
             org.springframework.web.servlet.support.RequestContext springRequestContext = 
                     new org.springframework.web.servlet.support.RequestContext(request);
             
+            boolean yourCommentIsMail = request.getParameter("yourcommentismail") != null;
+            
             String mailBody = "";
-            if(request.getParameter("yourcommentismail") != null) {
+            if(yourCommentIsMail) {
                 mailBody = yourComment;
             } else {
                 mailBody = mailTemplateProvider.generateMailBody(title, url, this.sender, yourComment, this.siteName);
@@ -157,7 +159,8 @@ public class FeedbackController implements Controller {
                     recipients,
                     this.sender,
                     false,
-                    springRequestContext.getMessage("feedback.mail.subject-header-prefix") + ": " + title
+                    yourCommentIsMail ? title 
+                                      : springRequestContext.getMessage("feedback.mail.subject-header-prefix") + ": " + title
             );
 
             mailExecutor.enqueue(mimeMessage);

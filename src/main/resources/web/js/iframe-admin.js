@@ -244,18 +244,28 @@
           e.preventDefault();
           e.stopPropagation();
         });
-          
+        
+        var editorStickyBar = null;
         vrtxAdm.cachedContent.on("click", "#preview-actions-fullscreen-toggle", function(e) {
-           htmlTag.toggleClass('fullscreen-toggle-open');
+          htmlTag.toggleClass('fullscreen-toggle-open');
           if(htmlTag.hasClass('fullscreen-toggle-open')) {
             $.bbq.pushState({"fullscreen": "on"});
             $(this).text(fullscreenToggleClose);
-            vrtxAdm.initStickyBar("#preview-mode-actions", "vrtx-sticky-preview-mode-actions", 2);
+            var futureStickyBar = (typeof VrtxStickyBar === "undefined") ? $.getScript("/vrtx/__vrtx/static-resources/js/vrtx-sticky-bar.js") : $.Deferred().resolve();
+            $.when(futureStickyBar).done(function() {     
+              editorStickyBar = new VrtxStickyBar({
+                 wrapperId: "#preview-mode-actions",
+                 stickyClass: "vrtx-sticky-preview-mode-actions",
+                 extraWidth: 2
+              });
+            });
             $(window).trigger("scroll");
           } else {
             $.bbq.removeState("fullscreen");
             $(this).text(fullscreenToggleOpen);
-            vrtxAdm.destroyStickyBar("#preview-mode-actions", "vrtx-sticky-preview-mode-actions");
+            if(editorStickyBar != null) {
+              editorStickyBar.destroy();
+            }
           }
           e.preventDefault();
           e.stopPropagation();

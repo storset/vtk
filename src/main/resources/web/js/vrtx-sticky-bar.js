@@ -20,15 +20,18 @@ var VrtxStickyBar = dejavu.Class.declare({
     var contents = $(opts.contentsId);
     var main = $(opts.outerContentsId);
     var extraWidth = opts.extraWidth || 0;
+    var bottomSticky = opts.isBottomSticky || false;
       
     var wrapper = $(wrapperId);
     var thisWindow = $(window);
     var ua = navigator.userAgent.toLowerCase();
     if (wrapper.length && !/iphone/.test(ua)) { // Turn off for iPhone. 
-      var wrapperPos = wrapper.offset();
       if (navigator.appName == "Microsoft Internet Explorer" && /msie 8/.test(ua)) { // Shadow below in IE8
         wrapper.append("<span class='sticky-bg-ie8-below'></span>");
-      }
+      } 
+      
+      // Scroll and resize
+      var wrapperPos = wrapper.offset();
       thisWindow.on("scroll", function () {
         if (thisWindow.scrollTop() >= wrapperPos.top + 1) {
           if (!wrapper.hasClass(stickyClass)) {
@@ -49,6 +52,7 @@ var VrtxStickyBar = dejavu.Class.declare({
           wrapper.css("width", (main.outerWidth(true) - 2 + extraWidth) + "px");
         }
       });
+      
     }
   },
   destroy: function () {

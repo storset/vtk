@@ -196,6 +196,7 @@ resourcetype student-exchange-agreement {
               [if universityFolderPath != null]
                 [def resourceType resource-prop(universityFolderPath, "resourceType")]
                 [if resourceType = "student-exchange-university-agreement-listing"]
+                  <hr />
                   <a href="[val universityFolderPath]">[localized "all-agreements-with-university-link"]</a>
                 [endif]
               [endif]

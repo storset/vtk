@@ -192,6 +192,13 @@ resourcetype student-exchange-agreement {
                   </tr>
                 </tbody>
               </table>
+              [def universityFolderPath resource-prop("./","uri")]
+              [if universityFolderPath != null]
+                [def resourceType resource-prop(universityFolderPath, "resourceType")]
+                [if resourceType = "student-exchange-university-agreement-listing"]
+                  <a href="[val universityFolderPath]">[localized "all-agreements-with-university-link"]</a>
+                [endif]
+              [endif]
             </div>
             <div id="vrtx-student-exchange-agreement-info" class="vrtx-frontpage-box[if contact-div-bool] vrtx-distach-bottom[endif]">
               <table>
@@ -297,7 +304,7 @@ resourcetype student-exchange-agreement {
     country : ( en: "Country", no: "Land", nn: "Land"),
     city : ( en: "City", no: "By", nn: "By"),
     webpage : ( en: "Webpage", no: "Nettside", nn: "Nettside"),
-    webpage-text : ( en: "Webpage for international students", no: "Nettsted for internasjonale studenter", nn: "Nettstad for internasjonale studentar"),
+    all-agreements-with-university-link : ( en: "All agreements with this university", no: "Alle avtaler med dette universitetet", nn: "Alle avtalar med dette universitetet"),
     study-level : (en : "Study level", no : "Studienivå", nn : "Studienivå"),
     and : (en : "and", no : "og", nn : "og"),
     contact : (en : "Contact", no : "Kontakt", nn : "Kontakt"),

@@ -20,7 +20,6 @@ var VrtxStickyBar = dejavu.Class.declare({
     var contents = $(opts.contentsId);
     var main = $(opts.outerContentsId);
     var extraWidth = opts.extraWidth || 0;
-    var bottomSticky = opts.isBottomSticky || false;
       
     var wrapper = $(wrapperId);
     var thisWindow = $(window);
@@ -29,11 +28,20 @@ var VrtxStickyBar = dejavu.Class.declare({
       if (navigator.appName == "Microsoft Internet Explorer" && /msie 8/.test(ua)) { // Shadow below in IE8
         wrapper.append("<span class='sticky-bg-ie8-below'></span>");
       } 
+
+      var wrapperPos = wrapper.offset();
+      
+      var shouldStick = function() {
+        if(opts.isBottomSticky) {
+          return (thisWindow.scrollTop() + thisWindow.height()) <= (wrapperPos.top - 1 + wrapper.height());
+        } else {
+          return thisWindow.scrollTop() >= wrapperPos.top + 1;
+        }
+      };
       
       // Scroll and resize
-      var wrapperPos = wrapper.offset();
       thisWindow.on("scroll", function () {
-        if (thisWindow.scrollTop() >= wrapperPos.top + 1) {
+        if (shouldStick()) {
           if (!wrapper.hasClass(stickyClass)) {
             wrapper.addClass(stickyClass);
             contents.css("paddingTop", wrapper.outerHeight(true) + "px");
@@ -48,7 +56,7 @@ var VrtxStickyBar = dejavu.Class.declare({
         }
       });
       thisWindow.on("resize", function () {
-        if (thisWindow.scrollTop() >= wrapperPos.top + 1) {
+        if (shouldStick()) {
           wrapper.css("width", (main.outerWidth(true) - 2 + extraWidth) + "px");
         }
       });

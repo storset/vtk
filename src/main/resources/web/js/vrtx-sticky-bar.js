@@ -30,7 +30,9 @@ var VrtxStickyBar = dejavu.Class.declare({
       } 
 
       var wrapperPos = wrapper.offset();
-      
+      if(opts.isBottomSticky) {
+        wrapper.addClass("sticky-bottom");
+      }
       var shouldStick = function() {
         if(opts.isBottomSticky) {
           return (thisWindow.scrollTop() + thisWindow.height()) <= (wrapperPos.top - 1 + wrapper.height());
@@ -70,6 +72,9 @@ var VrtxStickyBar = dejavu.Class.declare({
     var wrapper = $(this.__opts.wrapperId);
     if (wrapper.hasClass(this.__opts.stickyClass)) {
       wrapper.removeClass(this.__opts.stickyClass);
+      if (wrapper.hasClass("sticky-bottom")) {
+        wrapper.removeClass("sticky-bottom");
+      }
       wrapper.css("width", "auto");
       $(this.__opts.contentsId).css("paddingTop", "0px");
     }

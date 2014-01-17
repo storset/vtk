@@ -48,6 +48,7 @@ public class VideoRef {
     private final String uploadContentType;     // Original content type of video when uploaded to Vortex
     private final String status;                // Video status
     private final double durationSeconds;        // Video duration in seconds
+    private final boolean streamable;
     private final int streamablePercentComplete;
     private final BufferedBinaryValue generatedThumbnail;
     private final VideoFileRef sourceVideoFileRef;
@@ -61,6 +62,7 @@ public class VideoRef {
         this.uploadContentType = builder.uploadContentType;
         this.status = builder.status;
         this.durationSeconds = builder.durationSeconds;
+        this.streamable = builder.streamable;
         this.streamablePercentComplete = builder.streamablePercentComplete;
         this.generatedThumbnail = builder.generatedThumbnail;
     }
@@ -81,6 +83,7 @@ public class VideoRef {
         refJson.element("videoId", this.videoId.toString());
         refJson.element("status", this.status);
         refJson.element("durationSeconds", this.durationSeconds);
+        refJson.element("streamable", this.streamable);
         refJson.element("streamablePercentComplete", this.streamablePercentComplete);
         refJson.element("refUpdateTimestamp", this.refUpdateTimestamp.getTime());
 
@@ -126,6 +129,7 @@ public class VideoRef {
         b.videoId = this.videoId;
         b.status = this.status;
         b.durationSeconds = this.durationSeconds;
+        b.streamable = this.streamable;
         b.streamablePercentComplete = this.streamablePercentComplete;
         if (this.sourceVideoFileRef != null) {
             b.sourceVideoFileRef = new VideoFileRef(this.sourceVideoFileRef.contentType(),
@@ -158,6 +162,7 @@ public class VideoRef {
         private String uploadContentType;
         private String status;
         private double durationSeconds;
+        private boolean streamable;
         private int streamablePercentComplete;
         private VideoFileRef sourceVideoFileRef;
         private VideoFileRef convertedVideoFileRef;
@@ -170,6 +175,11 @@ public class VideoRef {
         
         public Builder status(String status) {
             this.status = status;
+            return this;
+        }
+        
+        public Builder streamable(boolean value) {
+            this.streamable = value;
             return this;
         }
         
@@ -283,7 +293,8 @@ public class VideoRef {
             this.videoId = VideoId.fromString(ref.getString("videoId"));
             this.status = ref.optString("status", "unknown");
             this.durationSeconds = ref.optDouble("durationSeconds", 0d);
-            this.streamablePercentComplete = ref.optInt("streamablePercentComplete", 0);
+            this.streamable = ref.optBoolean("streamable", false);
+            this.streamablePercentComplete = ref.optInt("streamablePercentComplete", this.streamable ? 100 : 0);
             this.sourceVideoFileRef = sourceFileRef;
             this.convertedVideoFileRef = convFileRef;
             return this;
@@ -344,7 +355,7 @@ public class VideoRef {
     }
     
     public boolean isStreamable() {
-        return this.streamablePercentComplete == 100;
+        return this.streamable;
     }
 
     /**

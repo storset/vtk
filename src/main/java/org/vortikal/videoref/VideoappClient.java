@@ -114,7 +114,9 @@ public class VideoappClient implements DisposableBean {
         VideoRef.Builder b = VideoRef.newBuilder().videoId(videoObject.getString("videoExternalId"));
         b.status(videoObject.getString("status"));
         b.durationSeconds(videoObject.getDouble("duration"));
-        b.streamablePercentComplete(videoObject.getInt("streamablePercentComplete"));
+        b.streamable(videoObject.getBoolean("isStreamable"));
+        b.streamablePercentComplete(videoObject.optInt("streamablePercentComplete", 
+                (videoObject.getBoolean("isStreamable") ? 100 : 0)));
         
         VideoFileRef[] fileRefs = videoFileRefs(videoObject);
         for (VideoFileRef ref: fileRefs) {
@@ -195,6 +197,7 @@ public class VideoappClient implements DisposableBean {
                      .convertedVideo(newRef.convertedVideo())
                      .generatedThumbnail(newRef.generatedThumbnail())
                      .status(newRef.status())
+                     .streamable(newRef.isStreamable())
                      .streamablePercentComplete(newRef.streamablePercentComplete())
                      .durationSeconds(newRef.durationSeconds()).build();
     }

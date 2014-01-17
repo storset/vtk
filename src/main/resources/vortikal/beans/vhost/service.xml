@@ -433,8 +433,6 @@
     <property name="handler" ref="displayHTMLResourceHandler" />
   </bean>
 
-
-
   <!-- **************** -->
   <!-- ASSERTIONS       -->
   <!-- **************** -->

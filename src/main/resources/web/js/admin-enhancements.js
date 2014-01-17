@@ -133,7 +133,6 @@ function VrtxAdmin() {
 
 var vrtxAdmin = new VrtxAdmin();
 
-
 /*-------------------------------------------------------------------*\
     2. DOM is ready
        readyState === "complete" || "DOMContentLoaded"-event (++)
@@ -1456,56 +1455,6 @@ VrtxAdmin.prototype.mapShortcut = function mapShortcut(selectors, reroutedSelect
     e.stopPropagation();
     e.preventDefault();
   });
-};
-
-VrtxAdmin.prototype.initStickyBar = function initStickyBar(wrapperId, stickyClass, extraWidth) {
-  var vrtxAdm = vrtxAdmin,
-    _$ = vrtxAdm._$;
-
-  var wrapper = _$(wrapperId);
-  var thisWindow = _$(window);
-  if (wrapper.length && !vrtxAdm.isIPhone) { // Turn off for iPhone. 
-    var wrapperPos = wrapper.offset();
-    if (vrtxAdm.isIE8) {
-      wrapper.append("<span class='sticky-bg-ie8-below'></span>");
-    }
-    thisWindow.on("scroll", function () {
-      if (thisWindow.scrollTop() >= wrapperPos.top + 1) {
-        if (!wrapper.hasClass(stickyClass)) {
-          wrapper.addClass(stickyClass);
-          vrtxAdmin.cachedContent.css("paddingTop", wrapper.outerHeight(true) + "px");
-        }
-        wrapper.css("width", (_$("#main").outerWidth(true) - 2 + extraWidth) + "px");
-      } else {
-        if (wrapper.hasClass(stickyClass)) {
-          wrapper.removeClass(stickyClass);
-          wrapper.css("width", "auto");
-          vrtxAdmin.cachedContent.css("paddingTop", "0px");
-        }
-      }
-    });
-    thisWindow.on("resize", function () {
-      if (thisWindow.scrollTop() >= wrapperPos.top + 1) {
-        wrapper.css("width", (_$("#main").outerWidth(true) - 2 + extraWidth) + "px");
-      }
-    });
-  }
-};
-
-VrtxAdmin.prototype.destroyStickyBar = function destroyStickyBar(wrapperId, stickyClass) {
-  var _$ = this._$;
-  
-  var thisWindow = _$(window);
-  thisWindow.off("scroll");
-  thisWindow.off("resize");
-  
-  var wrapper = _$(wrapperId);
-  
-  if (wrapper.hasClass(stickyClass)) {
-    wrapper.removeClass(stickyClass);
-    wrapper.css("width", "auto");
-    vrtxAdmin.cachedContent.css("paddingTop", "0px");
-  }
 };
 
 VrtxAdmin.prototype.logoutButtonAsLink = function logoutButtonAsLink() {

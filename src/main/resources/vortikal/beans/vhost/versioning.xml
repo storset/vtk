@@ -2,6 +2,46 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
 
+  <bean id="versioning.displayDiffService" class="org.vortikal.web.service.ServiceImpl">
+    <description>
+      Visually display difference between two revisions of a resource.
+    </description>
+    <!--property name="parent" ref="displayResourceService" /-->
+    <property name="parent" ref="structuredResources.displayService" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="vrtx" />
+          <property name="parameterValue" value="diff" />
+        </bean>
+        <bean parent="abstractResourcePrincipalPermissionAssertion">
+          <property name="requiresAuthentication" value="true" />
+          <property name="considerLocks" value="false" />
+          <property name="permission" value="READ" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="versioning.displayDiffHandler" />
+  </bean>
+
+
+  <bean id="versioning.displayDiffHandler"
+    class="org.vortikal.web.display.diff.DisplayRevisionsDifferenceController">
+    <property name="viewName" value="versioning.displayDiff" />
+  </bean>
+
+  <bean id="versioning.displayDiffViewResolver" parent="decoratorViewResolver">
+    <property name="views">
+      <map>
+        <entry key="versioning.displayDiff"  value-ref="versioning.displayDiffView" />
+      </map>
+    </property>
+  </bean>
+
+  <bean id="versioning.displayDiffView" parent="freemarkerView">
+    <property name="url" value="pages/display-diff.ftl" />
+  </bean>
+
   <bean id="versioning.displayRevisionsService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="manageService" />
     <property name="categories">
@@ -20,6 +60,7 @@
     <property name="assertions">
       <list>
         <ref bean="versioning.displayActionParameter" />
+        <!-- XXX: false when repo read-only: -->
         <ref bean="versioning.displayPermissionAssertion" />
         <ref bean="json.isManagedObjectResourceType" />
         <ref bean="showVersioningForResourceAssertion" />

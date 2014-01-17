@@ -149,7 +149,17 @@ $(document).ready(function () {
 
   vrtxEdit.initPreviewImage();
   vrtxEdit.initSendToApproval();
-  vrtxAdmin.initStickyBar("#vrtx-editor-title-submit-buttons", "vrtx-sticky-editor-title-submit-buttons", 0);
+
+  var futureStickyBar = (typeof VrtxStickyBar === "undefined") ? $.getScript("/vrtx/__vrtx/static-resources/js/vrtx-sticky-bar.js") : $.Deferred().resolve();
+  $.when(futureStickyBar).done(function() {     
+    var editorStickyBar = new VrtxStickyBar({
+      wrapperId: "#vrtx-editor-title-submit-buttons",
+      stickyClass: "vrtx-sticky-editor-title-submit-buttons",
+      contentsId: "#contents",
+      outerContentsId: "#main"
+    });
+  });
+
   vrtxEdit.addSaveHelpCKMaximized();
   vrtxEdit.initShowHide();
   vrtxEdit.initStudyDocTypes();

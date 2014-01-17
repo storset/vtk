@@ -53,11 +53,6 @@
       <url>http://www.uio.no/?vrtx=person-view=rezam</url>
     </developer>
     <developer>
-      <id>korvald</id>
-      <name>Magnus Korvald</name>
-      <url>http://www.uio.no/?vrtx=person-view=korvald</url>
-    </developer>
-    <developer>
       <id>oyvihatl</id>
       <name>Øyvind Hatland</name>
       <url>http://www.uio.no/?vrtx=person-view=oyvihatl</url>
@@ -747,6 +742,12 @@
       <groupId>org.antlr</groupId>
       <artifactId>antlr-runtime</artifactId>
       <version>3.4</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.outerj.daisy</groupId>
+      <artifactId>daisydiff</artifactId>
+      <version>1.2</version>
     </dependency>
 
   </dependencies>

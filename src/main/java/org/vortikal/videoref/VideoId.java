@@ -53,6 +53,25 @@ public class VideoId  {
         return this.uri;
     }
 
+    /**
+     * Extract video hostname from URI path.
+     * @return 
+     */
+    public String hostname() {
+        String path = uri.normalize().getPath();
+        if (path.endsWith("/")) {
+            path = path.substring(0, path.length()-1);
+        }
+        int i = path.lastIndexOf('/');
+        if (i != -1) {
+            int j = path.lastIndexOf('/', i-1);
+            if (j != -1 && j < i-1) {
+                return path.substring(j+1,i);
+            }
+        }
+        throw new IllegalStateException("Could not extract hostname from URI path");
+    }
+
     @Override
     public String toString() {
         return this.uri.getPath();

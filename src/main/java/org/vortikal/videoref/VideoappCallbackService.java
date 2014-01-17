@@ -154,25 +154,26 @@ public class VideoappCallbackService implements Controller {
         }
         
         String videoIdParam = request.getParameter("videoExternalId");
-        VideoId id = videoIdFromInput(videoIdParam);
-        if (id == null) {
+        VideoId videoId = videoIdFromInput(videoIdParam);
+        if (videoId == null) {
             model.put("status", 404);
             model.put("json", errorBody("Invalid video id, expected parameter 'videoExternalId' to provide it."));
             return;
         }
         
-        int refCount = videoDaoSupport.countReferences(id);
-        if (refCount == 0) {
-            // Map zero refcount to 404 not found
-            handleNotFound(request, response, model);
+        if (!isValidHost(videoId)) {
+            model.put("status", 400);
+            model.put("json", errorBody("Unexpected Vortex hostname in video id: " + videoId + ", expected host " + repositoryId));
             return;
         }
+        
+        int refCount = videoDaoSupport.countReferences(videoId);
 
-        model.put("json", body("videoExternalId", id.toString(),
+        model.put("json", body("videoExternalId", videoId.toString(),
                                "refCount", refCount,
-                               "refListURI", resourcesUriTemplate().buildAndExpand(id.toString()).toUriString(),
+                               "refListURI", resourcesUriTemplate().buildAndExpand(videoId.toString()).toUriString(),
                                "notifyUpdateURI", updateUriTemplate()
-                                       .buildAndExpand(id.toString())
+                                       .buildAndExpand(videoId.toString())
                                        .toUriString()));
     }
     
@@ -189,6 +190,13 @@ public class VideoappCallbackService implements Controller {
         if (videoId == null) {
             model.put("status", 400);
             model.put("json", errorBody("Invalid video id: " + request.getParameter("videoExternalId")));
+            return;
+        }
+        
+        if (!isValidHost(videoId)) {
+            model.put("status", 400);
+            model.put("json", errorBody("Unexpected Vortex hostname in video id: " 
+                    + videoId + ", expected host " + repositoryId));
             return;
         }
         
@@ -209,6 +217,13 @@ public class VideoappCallbackService implements Controller {
         if (videoId == null) {
             model.put("status", 400);
             model.put("json", errorBody("Invalid video id: " + request.getParameter("videoExternalId")));
+            return;
+        }
+        
+        if (!isValidHost(videoId)) {
+            model.put("status", 400);
+            model.put("json", errorBody("Unexpected Vortex hostname in video id: " 
+                    + videoId + ", expected host " + repositoryId));
             return;
         }
         
@@ -241,6 +256,10 @@ public class VideoappCallbackService implements Controller {
         } catch (Exception e) {}
         
         return null;
+    }
+    
+    private boolean isValidHost(VideoId videoId) {
+        return repositoryId.equals(videoId.hostname());
     }
     
     private JSONObject body(Object... keyValue) {

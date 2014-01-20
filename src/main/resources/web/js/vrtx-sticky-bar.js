@@ -28,7 +28,13 @@ var VrtxStickyBar = dejavu.Class.declare({
     var ua = navigator.userAgent.toLowerCase();
     if (wrapper.length && !/iphone/.test(ua)) { // Turn off for iPhone. 
       if (navigator.appName == "Microsoft Internet Explorer" && /msie 8/.test(ua)) { // Shadow below in IE8
-        wrapper.append("<span class='sticky-bg-ie8-below'></span>");
+        var imageStickyShadow = "<span class='sticky-bg-ie8-below' />";
+        if(opts.isBottomSticky) {
+          wrapper.prepend(imageStickyShadow);
+        } else {
+          wrapper.append(imageStickyShadow);
+        }
+        wrapper.addClass("ie8");
       }
 
       var wrapperPos = wrapper.offset();

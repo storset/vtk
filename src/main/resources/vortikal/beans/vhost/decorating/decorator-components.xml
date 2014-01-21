@@ -361,7 +361,7 @@
             <map>
               <entry key="Facebook" value="http://www.facebook.com/share.php?u=%{url}" />
               <entry key="FacebookAPI"
-                value="http://www.facebook.com/sharer/sharer.php?s=100&amp;amp;p[url]=%{url}&amp;amp;p[title]=%{title}&amp;amp;p[summary]=%{introduction}&amp;amp;p[images][0]=%{picture}" />
+                value="http://www.facebook.com/sharer/sharer.php?s=100&amp;amp;p%5Burl%5D=%{url}&amp;amp;p%5Btitle%5D=%{title}&amp;amp;p%5Bsummary%5D=%{introduction}&amp;amp;p%5Bimages%5D%5B0%5D=%{picture}" />
               <entry key="Twitter" value="http://twitter.com/intent/tweet?text=%{title}&amp;amp;url=%{url}" />
             </map>
           </property>

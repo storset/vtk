@@ -42,12 +42,9 @@ resourcetype schedule {
       [def course-version document.properties.course-version]
       [def calweek document.properties.calweek]
       [def locale resource-locale()]
-      <iframe frameborder="0" 
-              id="timeplaner" 
-              scrolling="no"
+      <iframe id="timeplaner" 
               title="[localized 'schedule']" 
-              src="/studier/timeplaner/calendar.php?type=module&amp;embed=1&amp;ar=[val year]&amp;sem=[val term]&amp;id=[val course-code]-[if course-version != null && course-version != ""][val course-version][else]1[endif]&amp;path=[val path][if overview != null && overview != ""]&amp;over=[val overview][else]&amp;over=1[endif][if locale != null && locale = "en"]&amp;lang=en[endif][if calweek != null && calweek]&amp;calweek=1[endif]" 
-              width="100%">
+              src="/studier/timeplaner/calendar.php?type=module&amp;embed=1&amp;ar=[val year]&amp;sem=[val term]&amp;id=[val course-code]-[if course-version != null && course-version != ""][val course-version][else]1[endif]&amp;path=[val path][if overview != null && overview != ""]&amp;over=[val overview][else]&amp;over=1[endif][if locale != null && locale = "en"]&amp;lang=en[endif][if calweek != null && calweek]&amp;calweek=1[endif]">
         [localized 'iframe-not-supported'] [localized 'iframe-not-supported-title-prefix'] "[localized 'schedule']". [localized 'iframe-not-supported-link-prefix'] <a href="/studier/timeplaner/calendar.php?type=module&amp;embed=1&amp;ar=[val year]&amp;sem=[val term]&amp;id=[val course-code]-[if course-version != null && course-version != ""][val course-version][else]1[endif]&amp;path=[val path][if overview != null && overview != ""]&amp;over=[val overview][else]&amp;over=1[endif][if locale != null && locale = "en"]&amp;lang=en[endif][if calweek != null && calweek]&amp;calweek=1[endif]">[localized 'iframe-not-supported-link-content']</a>.
       </iframe>
       ##

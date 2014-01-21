@@ -83,7 +83,7 @@
   <#local masters = masterListing.entries />
   <#if (masters?size > 0)>
     <div class="vrtx-master-table">
-      <table class="sortable" cellpadding="5" border="1">
+      <table class="sortable" border="1">
         <thead>
           <tr>
             <th id="vrtx-table-title" class="sortable-text">${vrtx.getMsg("property.title")}</th>

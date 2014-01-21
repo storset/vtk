@@ -11,7 +11,7 @@ resourcetype oppbygning {
     gradsnavn-en : string,
     vitnemaal: string,
     fellestekst-fakultet : string,
-    fellestekst-fakultet-fri: html,
+    fellestekst-fakultet-fri: html noextract,
     related-content : html noextract,
     tittel : string,
     title : derived (tittel) eval ("oppbygning"?localized) overrides title

@@ -597,10 +597,14 @@ maxHeight, minHeight, toolbar, complete, resizable, baseDocumentUrl, simple) {
       config.format_tags = 'p;h1;h2;h3;h4;h5;h6;pre;div';
     } else {
       config.format_tags = 'p;h2;h3;h4;h5;h6;pre;div';
-    }
+    }    
   } else {
     config.removePlugins = 'elementspath';
   }
+  
+  if ($("form#editor").hasClass("vrtx-frontpage")) {
+	config.format_tags = 'p;h3;h4;h5;h6;pre;div';
+  } 
 
   config.resize_enabled = resizable;
   config.toolbarCanCollapse = false;

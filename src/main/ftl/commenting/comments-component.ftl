@@ -124,8 +124,8 @@
     <#elseif !principal?exists>
       <#assign completeLoginURL>${loginURL?html}&amp;anchor=comment-form</#assign>
       <#assign defaultMsg><a class="button" href="${completeLoginURL}"><span>Log in</span></a> to comment</#assign>
-      <span id="add-comment-login"><@vrtx.rawMsg code="commenting.not-logged-in" default=defaultMsg args=[completeLoginURL] /></span>
-      <span id="add-comment-webid"><@vrtx.rawMsg code="commenting.not-logged-in.webid" default="" /></span>
+      <div id="add-comment-login"><@vrtx.rawMsg code="commenting.not-logged-in" default=defaultMsg args=[completeLoginURL] /></div>
+      <div id="add-comment-webid"><@vrtx.rawMsg code="commenting.not-logged-in.webid" default="" /></div>
     <#elseif repositoryReadOnly>
        <p><@vrtx.msg code="commenting.read.only"
                     default="You cannot add comments because the system is currently in read only mode." /></p>

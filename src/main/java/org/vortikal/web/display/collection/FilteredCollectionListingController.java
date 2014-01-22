@@ -81,7 +81,6 @@ public abstract class FilteredCollectionListingController implements Controller 
     protected Service viewService;
     private List<String> filterWhitelistExceptions;
     protected Searcher searcher;
-    private PropertyTypeDefinition showSubfolderMenuPropDef;
     private SubFolderMenuProvider subFolderMenuProvider;
 
     /* Override if other searcher is needed. (Example: multihostSearcher) */
@@ -210,7 +209,7 @@ public abstract class FilteredCollectionListingController implements Controller 
         List<ListingPagingLink> urls = ListingPager.generatePageThroughUrls(rs.getTotalHits(), getPageLimit(),
                 URL.create(request), page);
 
-        Property showSubfolderMenu = collection.getProperty(showSubfolderMenuPropDef);
+        Property showSubfolderMenu = null;
         if (showSubfolderMenu != null && showSubfolderMenu.getBooleanValue()) {
             model.put("showSubfolderMenu",
                     subFolderMenuProvider.getSubfolderMenuWithGeneratedResultSets(collection, request));
@@ -367,11 +366,6 @@ public abstract class FilteredCollectionListingController implements Controller 
     @Required
     public void setSearcher(Searcher searcher) {
         this.searcher = searcher;
-    }
-
-    @Required
-    public void setShowSubfolderMenu(PropertyTypeDefinition showSubfolderMenuPropDef) {
-        this.showSubfolderMenuPropDef = showSubfolderMenuPropDef;
     }
 
     @Required

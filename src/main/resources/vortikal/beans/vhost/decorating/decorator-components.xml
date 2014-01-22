@@ -606,8 +606,6 @@
   </bean>
 
   
-  <!-- If trouble with new EhContentCache, use this instead: -->
-  <!--
   <bean id="decorating.feedComponent.contentCache" class="org.vortikal.util.cache.ContentCacheImpl">
     <property name="name" value="${repositoryID}.decorating.feedCache" />
     <property name="cacheLoader" ref="decorating.feedComponent.contentCache.loader" />
@@ -616,8 +614,10 @@
     <property name="refreshInterval" value="30" />
     <property name="maxItems" value="${decorating.feedComponent.maxCachedItems}" />
   </bean>
-  -->
   
+
+  <!-- Config for new Ehcache based content-cache for feeds (as a replacement for the above). -->  
+  <!-- 
   <bean id="decorating.feedComponent.contentCache" class="org.vortikal.util.cache.EhContentCache">
     <property name="cache" ref="decorating.feedComponent.contentCache.cache" />
   </bean>
@@ -640,6 +640,7 @@
       </bean>
     </property>
   </bean>
+  -->
 
   <bean id="decorating.feedComponent.contentCache.loader" class="org.vortikal.web.decorating.components.SyndFeedLoader">
     <property name="connectTimeoutSeconds" value="${decorating.feedComponent.connectTimeoutSeconds}" />
@@ -751,16 +752,17 @@
     </property>
   </bean>
 
-  <!-- If trouble with new EhContentCache, use this instead: -->
-<!--  <bean id="decorating.includeComponent.httpIncludeCache" class="org.vortikal.util.cache.ContentCacheImpl">
+  <bean id="decorating.includeComponent.httpIncludeCache" class="org.vortikal.util.cache.ContentCacheImpl">
     <property name="name" value="${repositoryID}.decorating.includeCache" />
     <property name="cacheLoader" ref="decorating.includeComponent.httpIncludeCache.loader" />
     <property name="cacheSeconds" value="${decorating.includeComponent.cacheTimeoutSeconds}" />
     <property name="asynchronousRefresh" value="false" />
     <property name="refreshInterval" value="30" />
     <property name="maxItems" value="${decorating.includeComponent.maxCachedItems}" />
-  </bean>-->
+  </bean>
   
+  <!-- Config for new Ehcache based content-cache for http includes (as a replacement for the above). -->  
+  <!--
   <bean id="decorating.includeComponent.httpIncludeCache" class="org.vortikal.util.cache.EhContentCache">
     <property name="cache" ref="decorating.includeComponent.httpIncludeCache.cache"/>
   </bean>
@@ -783,6 +785,7 @@
       </bean>
     </property>
   </bean>
+  -->
 
   <bean id="decorating.includeComponent.httpIncludeCache.loader" class="org.vortikal.web.decorating.components.URLObjectLoader">
     <property name="connectTimeoutSeconds" value="${decorating.includeComponent.connectTimeoutSeconds}" />

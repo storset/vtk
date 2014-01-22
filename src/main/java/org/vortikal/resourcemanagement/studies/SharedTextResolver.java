@@ -48,6 +48,7 @@ import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
+import org.vortikal.security.SecurityContext;
 import org.vortikal.text.html.HtmlFragment;
 import org.vortikal.text.html.HtmlPageFilter;
 import org.vortikal.text.html.HtmlPageParser;
@@ -83,6 +84,7 @@ public class SharedTextResolver {
     private static final String SHARED_TEXT_EDITHINT_ATTRIBUTE_PATH = "vrtx-shared-text-path";
     private static final String SHARED_TEXT_EDITHINT_ATTRIBUTE_FILENAME = "vrtx-shared-text-file-name";
 
+    private Repository repository;
     private ResourceTypeTree resourceTypeTree;
     private HtmlPageFilter safeHtmlFilter;
     private HtmlPageParser htmlParser;
@@ -139,7 +141,6 @@ public class SharedTextResolver {
 
         RequestContext requestContext = RequestContext.getRequestContext();
         String token = requestContext.getSecurityToken();
-        Repository repository = requestContext.getRepository();
         Path currentResource = requestContext.getResourceURI();
         Resource resource = repository.retrieve(token, currentResource, false);
 
@@ -245,9 +246,10 @@ public class SharedTextResolver {
             return sharedTextValuesMap;
         }
 
-        RequestContext requestContext = RequestContext.getRequestContext();
-        String token = requestContext.getSecurityToken();
-        Repository repository = requestContext.getRepository();
+        String token = null;
+        if (SecurityContext.getSecurityContext() != null) {
+            token = SecurityContext.getSecurityContext().getToken();
+        }
 
         try {
 
@@ -298,6 +300,11 @@ public class SharedTextResolver {
             }
         }
         return j;
+    }
+
+    @Required
+    public void setRepository(Repository repository) {
+        this.repository = repository;
     }
 
     @Required

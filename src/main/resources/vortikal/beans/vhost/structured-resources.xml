@@ -495,6 +495,7 @@
 
   <!-- ### SHARED TEXT ### -->
   <bean id="sharedTextResolver" class="org.vortikal.resourcemanagement.studies.SharedTextResolver">
+    <property name="repository" ref="repository" />
     <property name="resourceTypeTree" ref="resourceTypeTree" />
     <property name="safeHtmlFilter" ref="sharedTextResolver.filter" />
     <property name="htmlParser" ref="decorating.htmlParser" />

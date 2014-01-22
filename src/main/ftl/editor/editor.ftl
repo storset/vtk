@@ -542,7 +542,7 @@
           </#if>
         <#elseif sharedTextIdentificators?exists && sharedTextName?exists && sharedTextName == name>
           <select name="resource.${name}" id="resource.${name}">
-            <option value="">unspecified</option>
+            <option value="">${vrtx.getMsg("default.unspecified")}</option>
             <#list sharedTextIdentificators as identificator>
               <#if identificator == value>
                 <option selected="selected" value="${identificator?html}">${identificator?html}</option>

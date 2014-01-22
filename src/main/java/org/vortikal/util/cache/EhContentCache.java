@@ -60,6 +60,7 @@ import org.springframework.beans.factory.annotation.Required;
 public class EhContentCache<K, V>  implements ContentCache<K, V>, InitializingBean, DisposableBean {
     
     private SelfPopulatingCache cache;
+    private boolean requireSerializable = true;
     private int refreshIntervalSeconds = -1;
     private ScheduledExecutorService refreshExecutor;
     
@@ -92,10 +93,13 @@ public class EhContentCache<K, V>  implements ContentCache<K, V>, InitializingBe
         
         // TODO cache exceptions for a short time (grace time) before letting loaders retry.
         // This may prove useful when loaders are slow and eventually fail (timeout on web resources for instance).
-        
         Element e = cache.get(identifier);
         if (e != null) {
-            return (V)e.getValue();
+            if (requireSerializable) {
+                return (V) e.getValue();
+            } else {
+                return (V) e.getObjectValue();
+            }
         }
         return null; // consider throwing exception here instead. (null Element is impossible with SelfPopulatingCache.)
     }
@@ -131,6 +135,15 @@ public class EhContentCache<K, V>  implements ContentCache<K, V>, InitializingBe
      */
     public void setRefreshIntervalSeconds(int refreshIntervalSeconds) {
         this.refreshIntervalSeconds = refreshIntervalSeconds;
+    }
+
+    /**
+     * Whether to use Ehcache API which requires keys and values to be
+     * serializable or not.
+     * @param requireSerializable 
+     */
+    public void setRequireSerializable(boolean requireSerializable) {
+        this.requireSerializable = requireSerializable;
     }
     
 }

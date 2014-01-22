@@ -36,7 +36,7 @@
     <#if showSubfolderMenu?exists>
       <div class="vrtx-subfolder-menu">
         <#if showSubfolderMenu.resultSets?has_content>
-          <div class="menu-title">Tittel</div>
+          <div class="menu-title"><#if showSubfolderTitle?exists>${showSubfolderTitle?html}<#else>${vrtx.getMsg("viewCollectionListing.subareas")}</#if></div>
           <#assign currentCount = 1 />
           <#list showSubfolderMenu.resultSets as resultSet>
             <ul class="resultset-${currentCount?html}">

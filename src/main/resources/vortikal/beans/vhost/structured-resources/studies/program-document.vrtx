@@ -6,11 +6,11 @@ resourcetype program-document {
     name-nn : string,
     name-en : string,
     interviewTitle : string,
-    interviewContent : html,
+    interviewContent : html noextract,
     interviewLinkText : string, 
     interviewUrl : resource_ref, 
     contactTitle : string,
-    contactContent : html,
+    contactContent : html noextract,
     contactLinkText : string, 
     contactUrl : resource_ref,
     additional-content : json (boxTitle : string, boxType : string, boxPicture : image_ref, boxContent : html, boxUrlText : string, boxUrl : resource_ref) multiple noextract

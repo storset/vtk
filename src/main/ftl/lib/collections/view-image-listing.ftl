@@ -130,7 +130,7 @@
   <#local images = imageListing.entries />
   <#if (images?size > 0)>
     <div class="vrtx-image-table">
-      <table class="rowstyle-alt colstyle-alt no-arrow" cellpadding="5" border="1">
+      <table class="rowstyle-alt colstyle-alt no-arrow" border="1">
         <thead>
           <tr>
             <th id="vrtx-table-image">${vrtx.getMsg("property.resourceType.image")}</th>

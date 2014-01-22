@@ -7,7 +7,8 @@
 
   <#if (persons?size > 0)>
     <div class="vrtx-person-search-hits">
-      <table class="vrtx-person-listing" summary="${vrtx.getMsg("person-listing.overview-of")} ${title?html}">
+      <#-- Removed until HTML5: summary="${vrtx.getMsg("person-listing.overview-of")} ${title?html}" -->
+      <table class="vrtx-person-listing">
         <#if numberOfRecords?exists>
           <caption>
             ${vrtx.getMsg("person-listing.persons")} ${numberOfRecords["elementsOnPreviousPages"]} -

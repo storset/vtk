@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+
+  <bean id="showSubfolderMixinResourceTypeDef" class="org.vortikal.repository.resourcetype.MixinResourceTypeDefinitionImpl">
+    <property name="name" value="show-subfolder-mixin" />
+    <property name="namespace" ref="DEFAULT_NAMESPACE" />
+    <property name="propertyTypeDefinitions">
+      <list>
+        <ref bean="showSubfolderTitlePropDef" />
+        <ref bean="showSubfolderMenuPropDef" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="showSubfolderTitlePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+    parent="abstractPropDef">
+    <property name="contentRelation" value="PRE_CONTENT" />
+    <property name="name" value="show-subfolder-title" />
+    <property name="type" value="STRING" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
+  </bean>
+
+  <bean id="showSubfolderMenuPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+    parent="abstractPropDef">
+    <property name="name" value="show-subfolder-menu" />
+    <property name="type" value="BOOLEAN" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
+    <property name="mandatory" value="false" />
+    <property name="vocabulary">
+      <bean class="org.vortikal.repository.resourcetype.ValueVocabulary">
+        <property name="type" value="BOOLEAN" />
+        <property name="messageSourceBaseName" value="vortikal.beans.vhost.resource-types.mixins.properties.show-subfolder-menu" />
+        <property name="values">
+          <list>
+            <bean class="org.vortikal.repository.resourcetype.Value">
+              <constructor-arg type="boolean">
+                <value>true</value>
+              </constructor-arg>
+            </bean>
+          </list>
+        </property>
+      </bean>
+    </property>
+    <property name="metadata">
+      <map>
+        <entry key="editingHints">
+          <map>
+            <entry key="radio" value="true" />
+          </map>
+        </entry>
+      </map>
+    </property>
+  </bean>
+
+</beans>

@@ -20,14 +20,22 @@ var VrtxStickyBar = dejavu.Class.declare({
     var contents = $(opts.contentsId);
     var main = $(opts.outerContentsId);
     var extraWidth = opts.extraWidth || 0;
+    var stickFn = opts.stick || null;
+    var unstickFn = opts.unstick || null;
       
     var wrapper = $(wrapperId);
     var thisWindow = $(window);
     var ua = navigator.userAgent.toLowerCase();
     if (wrapper.length && !/iphone/.test(ua)) { // Turn off for iPhone. 
       if (navigator.appName == "Microsoft Internet Explorer" && /msie 8/.test(ua)) { // Shadow below in IE8
-        wrapper.append("<span class='sticky-bg-ie8-below'></span>");
-      } 
+        var imageStickyShadow = "<span class='sticky-bg-ie8-below' />";
+        if(opts.isBottomSticky) {
+          wrapper.prepend(imageStickyShadow);
+        } else {
+          wrapper.append(imageStickyShadow);
+        }
+        wrapper.addClass("ie8");
+      }
 
       var wrapperPos = wrapper.offset();
       if(opts.isBottomSticky) {
@@ -47,6 +55,9 @@ var VrtxStickyBar = dejavu.Class.declare({
           if (!wrapper.hasClass(stickyClass)) {
             wrapper.addClass(stickyClass);
             contents.css("paddingTop", wrapper.outerHeight(true) + "px");
+            if(stickFn != null) {
+              stickFn();
+            }
           }
           wrapper.css("width", (main.outerWidth(true) - 2 + extraWidth) + "px");
         } else {
@@ -54,6 +65,9 @@ var VrtxStickyBar = dejavu.Class.declare({
             wrapper.removeClass(stickyClass);
             wrapper.css("width", "auto");
             contents.css("paddingTop", "0px");
+            if(unstickFn != null) {
+              unstickFn();
+            }
           }
         }
       });

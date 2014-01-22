@@ -26,8 +26,8 @@ resourcetype student-exchange-agreement {
     housing : html noextract,
     content : html noextract,
 
-    exchange-leave-text-field : html noextract,
-    exchange-leave-shared-text : string,
+    how-to-apply-text-field : html noextract,
+    how-to-apply-shared-text : string,
 
     contact : string,
     earlier-students : html noextract
@@ -55,15 +55,15 @@ resourcetype student-exchange-agreement {
     tuition-yes (class[vrtx-checkbox]),
     tuition-no (class[vrtx-checkbox]),
 
-    exchange-leave-shared-text (class[vrtx-shared-text],
+    how-to-apply-shared-text (class[vrtx-shared-text],
                                 attribute[vrtx-shared-text-path:/vrtx/fellestekst/utvekslingsavtale],
                                 attribute[vrtx-shared-text-file-name:vil-du-dra]),
-    group exchange-leave (exchange-leave-text-field, exchange-leave-shared-text) (after content),
+    group how-to-apply (how-to-apply-text-field, how-to-apply-shared-text) (after content),
 
     contact (class[vrtx-shared-text],
              attribute[vrtx-shared-text-path:/vrtx/fellestekst/utvekslingsavtale],
              attribute[vrtx-shared-text-file-name:kontakt]),
-    contact (after exchange-leave),
+    contact (after how-to-apply),
 
     student-exchange-intro (class[vrtx-sea-accordion]),
     student-exchange-intro (class[vrtx-pseudo-grouped]),
@@ -80,7 +80,7 @@ resourcetype student-exchange-agreement {
     housing (class[vrtx-pseudo-grouped]),
     content (class[vrtx-sea-accordion]),
     content (class[vrtx-pseudo-grouped]),
-    exchange-leave (class[vrtx-sea-accordion]),
+    how-to-apply (class[vrtx-sea-accordion]),
     contact (class[vrtx-sea-accordion]),
     contact (class[vrtx-pseudo-grouped]),
     earlier-students (class[vrtx-sea-accordion]),
@@ -116,8 +116,8 @@ resourcetype student-exchange-agreement {
     [def fees-text-field document.properties.fees-text-field]
     [def housing document.properties.housing]
     [def content document.properties.content]
-    [def exchange-leave-text-field document.properties.exchange-leave-text-field]
-    [def exchange-leave-shared-text document.properties.exchange-leave-shared-text]
+    [def how-to-apply-text-field document.properties.how-to-apply-text-field]
+    [def how-to-apply-shared-text document.properties.how-to-apply-shared-text]
     [def contact document.properties.contact]
     [def earlier-students document.properties.earlier-students]
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -160,13 +160,13 @@ resourcetype student-exchange-agreement {
               <h2>[localized 'content']</h2>
               [val content # unescaped]
             [endif]
-            [if (exchange-leave-text-field != null && exchange-leave-text-field != "") || (exchange-leave-shared-text != null && exchange-leave-shared-text != "")]
-              <h2>[localized 'exchange-leave']</h2>
-              [if exchange-leave-text-field != null && exchange-leave-text-field != ""]
-                [val exchange-leave-text-field # unescaped]
+            [if (how-to-apply-text-field != null && how-to-apply-text-field != "") || (how-to-apply-shared-text != null && how-to-apply-shared-text != "")]
+              <h2>[localized 'how-to-apply']</h2>
+              [if how-to-apply-text-field != null && how-to-apply-text-field != ""]
+                [val how-to-apply-text-field # unescaped]
               [endif]
-              [if exchange-leave-shared-text != null && exchange-leave-shared-text != ""]
-                [call "include:shared-text" {"propName":"exchange-leave-shared-text"}]
+              [if how-to-apply-shared-text != null && how-to-apply-shared-text != ""]
+                [call "include:shared-text" {"propName":"how-to-apply-shared-text"}]
               [endif]
             [endif]
           </div>
@@ -276,9 +276,9 @@ resourcetype student-exchange-agreement {
     housing : (en : "Housing", no : "Bolig", nn : "Bolig"),
     content : (en : "Other", no : "Annet", nn : "Anna"),
 
-    exchange-leave : (en : "Exchange?", no : "Vil du dra?", nn : "Vil du dra?"),
-    exchange-leave-text-field : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
-    exchange-leave-shared-text : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
+    how-to-apply : (en : "How to apply", no : "Slik søker du", nn : "Slik søkjer du"),
+    how-to-apply-text-field : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
+    how-to-apply-shared-text : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
 
     about : ( en: "About the", no: "Om", nn: "Om"),
     agreement-info : ( en: "About the agreement", no: "Fakta om avtalen", nn: "Fakta Om avtalen"),

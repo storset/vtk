@@ -82,6 +82,8 @@ public abstract class FilteredCollectionListingController implements Controller 
     private List<String> filterWhitelistExceptions;
     protected Searcher searcher;
     private SubFolderMenuProvider subFolderMenuProvider;
+    private PropertyTypeDefinition showSubfolderMenuPropDef;
+    private PropertyTypeDefinition showSubfolderTitlePropDef;
 
     /* Override if other searcher is needed. (Example: multihostSearcher) */
     protected ResultSet search(Resource collection, Query query, int offset) {
@@ -209,10 +211,14 @@ public abstract class FilteredCollectionListingController implements Controller 
         List<ListingPagingLink> urls = ListingPager.generatePageThroughUrls(rs.getTotalHits(), getPageLimit(),
                 URL.create(request), page);
 
-        Property showSubfolderMenu = null;
+        Property showSubfolderMenu = collection.getProperty(showSubfolderMenuPropDef);
         if (showSubfolderMenu != null && showSubfolderMenu.getBooleanValue()) {
             model.put("showSubfolderMenu",
                     subFolderMenuProvider.getSubfolderMenuWithGeneratedResultSets(collection, request));
+            Property showSubfolderTitle = collection.getProperty(showSubfolderTitlePropDef);
+            if (showSubfolderTitle != null) {
+                model.put("showSubfolderTitle", showSubfolderTitle.getStringValue());
+            }
         }
 
         model.put("filters", urlFilters);
@@ -371,6 +377,16 @@ public abstract class FilteredCollectionListingController implements Controller 
     @Required
     public void setSubFolderMenuProvider(SubFolderMenuProvider subFolderMenuProvider) {
         this.subFolderMenuProvider = subFolderMenuProvider;
+    }
+
+    @Required
+    public void setShowSubfolderMenuPropDef(PropertyTypeDefinition showSubfolderMenuPropDef) {
+        this.showSubfolderMenuPropDef = showSubfolderMenuPropDef;
+    }
+
+    @Required
+    public void setShowSubfolderTitlePropDef(PropertyTypeDefinition showSubfolderTitlePropDef) {
+        this.showSubfolderTitlePropDef = showSubfolderTitlePropDef;
     }
 
 }

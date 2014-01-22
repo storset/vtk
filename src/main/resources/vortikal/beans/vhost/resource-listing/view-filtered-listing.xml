@@ -10,6 +10,8 @@
     <property name="resourceTypeTree" ref="resourceTypeTree" />
     <property name="searcher" ref="systemIndexSearcher" />
     <property name="subFolderMenuProvider" ref="subFolderMenuProvider" />
+    <property name="showSubfolderMenuPropDef" ref="showSubfolderMenuPropDef" />
+    <property name="showSubfolderTitlePropDef" ref="showSubfolderTitlePropDef" />
   </bean>
 
   <bean id="filteredListing.defaultSearchSorting" class="org.vortikal.web.search.SearchSorting" depends-on="resourceTypeTree">

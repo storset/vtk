@@ -50,7 +50,6 @@
   <import resource="browse.xml" />
   <import resource="webdav.xml" />
   <import resource="source.xml" />
-  <import resource="windows-webdav-explorer.xml" />
   <import resource="plaintextedit.xml" />
   <import resource="versioning.xml" />
   <import resource="copy-move.xml" />

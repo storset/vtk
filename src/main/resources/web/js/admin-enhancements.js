@@ -321,7 +321,12 @@ VrtxAdmin.prototype.initResourceMenus = function initResourceMenus() {
     simultanSliding: true
   });
   vrtxAdm.completeFormAsync({
-    selector: "form#manage\\.unlockFormService-form input[type=submit]"
+    selector: "form#manage\\.unlockFormService-form input[type=submit]",
+    updateSelectors: ["#resourceMenuRight", "#contents"],
+    funcComplete: function() {
+      vrtxAdm.globalAsyncComplete();
+    },
+    post: (bodyId !== "vrtx-editor" && bodyId !== "vrtx-edit-plaintext" && bodyId !== "")
   });
   vrtxAdm.completeFormAsync({
     selector: "li.manage\\.unlockFormService form[name=unlockForm]",
@@ -3124,12 +3129,19 @@ VrtxAdmin.prototype.completeFormAsyncPost = function completeFormAsyncPost(optio
           animation.bottomUp();
         } else {
           var sameMode = false;
-          if (url.indexOf("&mode=") !== -1) {
+          var isMode = url.indexOf("&mode=") !== -1;
+          var isAction = url.indexOf("&action=") !== -1;
+          if (isMode) {
             if (gup("mode", url) === gup("mode", modeUrl)) {
               sameMode = true;
             }
           }
-          if (isUndecoratedService || (modeUrl.indexOf("&mode=") !== -1 && !sameMode)) { // When we need the 'mode=' HTML. TODO: should only run when updateSelector is inside content
+          if (isAction) {
+            if (gup("action", url) === gup("action", modeUrl)) {
+              sameMode = true;
+            }
+          }
+          if (isUndecoratedService || ((isMode || isAction) && !sameMode)) { // When we need the 'mode=' or 'action=' HTML. TODO: should only run when updateSelector is inside content
             vrtxAdmin.serverFacade.getHtml(modeUrl, {
               success: function (results, status, resp) {
                 for (var i = updateSelectors.length; i--;) {

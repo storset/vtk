@@ -214,7 +214,7 @@ public abstract class FilteredCollectionListingController implements Controller 
         Property showSubfolderMenu = collection.getProperty(showSubfolderMenuPropDef);
         if (showSubfolderMenu != null && showSubfolderMenu.getBooleanValue()) {
             model.put("showSubfolderMenu",
-                    subFolderMenuProvider.getSubfolderMenuWithGeneratedResultSets(collection, request));
+                    subFolderMenuProvider.getSubfolderMenuWithThreeGeneratedResultSets(collection, request));
             Property showSubfolderTitle = collection.getProperty(showSubfolderTitlePropDef);
             if (showSubfolderTitle != null) {
                 model.put("showSubfolderTitle", showSubfolderTitle.getStringValue());

@@ -981,6 +981,7 @@ ul.dropdown-shortcut-menu-container {
 ul.dropdown-shortcut-menu li.dropdown-init {
   position: relative;
   padding-right: 26px !important;
+  line-height: 17px;
 }
 
 #editor-menu-wrapper #editor-menu {
@@ -1025,6 +1026,7 @@ ul.dropdown-shortcut-menu li.dropdown-init .dropdown-shortcut-menu-click-area:ho
   right: 0;
   background-image: url("images/dropdown-arrow-hover.png");
   background-position: 7px 13px;
+  outline: none;
 }
 
 ul.dropdown-shortcut-menu.dropdown-shortcut-menu-small li.dropdown-init .dropdown-shortcut-menu-click-area:focus,

@@ -1198,6 +1198,9 @@ VrtxAdmin.prototype.dropdown = function dropdown(options) {
     list.find("li" + dropdownClickArea).addClass("dropdown-init");
 
     list.find("li.dropdown-init .dropdown-shortcut-menu-click-area").click(function (e) {
+      if(shortcutMenu.filter(":visible").length) {
+        $(this)[0].blur();
+      }
       vrtxAdm.closeDropdowns();
       vrtxAdm.openDropdown(shortcutMenu);
       e.stopPropagation();

@@ -92,7 +92,7 @@ var AbstractVrtxSimpleDialog = dejavu.AbstractClass.declare({
     
     // TODO: rootUrl and jQueryUiVersion should be retrieved from Vortex config/properties somehow
     var rootUrl = "/vrtx/__vrtx/static-resources";
-    var jQueryUiVersion = "1.10.3";
+    var jQueryUiVersion = "1.10.4";
     
     var futureUi = $.Deferred();
     if (typeof $.ui === "undefined") {

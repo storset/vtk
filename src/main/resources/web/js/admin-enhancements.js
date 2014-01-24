@@ -2982,7 +2982,7 @@ VrtxAdmin.prototype.addNewMarkup = function addNewMarkup(options, selectorClass,
       } else {
         var inputs = animation.__opts.elem.find("textarea, input[type='text'], select").filter(":visible");
         if(inputs.length) {
-          inputs.filter(":first").focus();
+          inputs.filter(":first")[0].focus();
         } else {
           input = animation.__opts.elem.find(".vrtx-focus-button, .vrtx-button, .vrtx-button-small").filter(":visible").filter(":first");
           if(input.length) {

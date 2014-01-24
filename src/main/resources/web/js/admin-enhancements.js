@@ -232,6 +232,7 @@ VrtxAdmin.prototype.initTooltips = function initTooltips() {
   this.cachedBody.vortexTips(".ui-dialog:visible .tree-create li span.folder", {
     appendTo: ".vrtx-create-tree",
     containerWidth: 80,
+    expandHoverToTipBox: true,
     xOffset: 10,
     yOffset: -8,
     extra: true

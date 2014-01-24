@@ -338,7 +338,7 @@ public class CollectionListingAggregationResolver implements AggregationResolver
         }
         try {
 
-            if (multiHostSearcher.isMultiHostSearchEnabled()) {
+            if (multiHostSearcher.isMultiHostSearchEnabled() && includesOtherHostRef(getLocalHostUrl(), urls)) {
                 Set<PropertySet> tmp = multiHostSearcher.retrieve(token, urls);
                 if (tmp != null) {
                     result.addAll(tmp);
@@ -402,6 +402,15 @@ public class CollectionListingAggregationResolver implements AggregationResolver
         } catch (Exception e) {
             return null;
         }
+    }
+
+    private boolean includesOtherHostRef(URL host, Set<URL> urls) {
+        for (URL url : urls) {
+            if (!url.getHost().equals(host.getHost())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Required

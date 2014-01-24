@@ -87,9 +87,9 @@
           tip.css('position', 'absolute').css('z-index', '1000').css('width', opts.containerWidth + 'px');        
         }
         tip.css(nPos).fadeIn(opts.animInSpeed, function() {
-          var button = $(this).find(".vrtx-button, .vrtx-button-small");
-          if(button.length && button.is(":visible")) {
-            $("<span style='outline: none;' tabindex='-1' />").insertBefore(button.filter(":first"))[0].focus();
+          var buttons = $(this).find(".vrtx-button, .vrtx-button-small").filter(":visible");
+          if(buttons.length) {
+            $("<div style='display: inline-block; outline: none;' tabindex='-1' />").insertBefore(buttons.filter(":first")).focus();
           }
         });
         if (opts.extra) {

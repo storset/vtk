@@ -2980,7 +2980,15 @@ VrtxAdmin.prototype.addNewMarkup = function addNewMarkup(options, selectorClass,
       if(options.focusElement) {
         animation.__opts.elem.find(options.focusElement).filter(":visible").filter(":first").focus();
       } else {
-        animation.__opts.elem.find("textarea, input, select, button").filter(":visible").filter(":first").focus();
+        var inputs = animation.__opts.elem.find("textarea, input[type='text'], select").filter(":visible");
+        if(inputs.length) {
+          inputs.filter(":first").focus();
+        } else {
+          input = animation.__opts.elem.find(".vrtx-focus-button, .vrtx-button, .vrtx-button-small").filter(":visible").filter(":first");
+          if(input.length) {
+            $("<span style='outline: none;' tabindex='-1' />").insertBefore(input)[0].focus();
+          }
+        }
       }
     }
   });

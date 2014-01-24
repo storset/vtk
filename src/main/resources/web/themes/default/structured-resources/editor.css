@@ -334,6 +334,28 @@
   background-color: #eee;
 }
 
+.vrtx-json #main-content .vrtx-json-element .vrtx-button,
+.vrtx-json #contact-supervisor-box .vrtx-json-element .vrtx-button,
+.vrtx-json #additional-content .vrtx-json-element .vrtx-button,
+.vrtx-json #featured-items .vrtx-json-element .vrtx-button {
+  background: #F7F7F7;
+}
+
+.forms-new .vrtx-json #main-content .vrtx-json-element .vrtx-button:hover,
+.forms-new .vrtx-json #main-content .vrtx-json-element .vrtx-button.hover,
+.forms-new .vrtx-json #main-content .vrtx-json-element .vrtx-button:active,
+.forms-new .vrtx-json #contact-supervisor-box .vrtx-json-element .vrtx-button:hover,
+.forms-new .vrtx-json #contact-supervisor-box .vrtx-json-element .vrtx-button.hover,
+.forms-new .vrtx-json #contact-supervisor-box .vrtx-json-element .vrtx-button:active,
+.forms-new .vrtx-json #additional-content .vrtx-json-element .vrtx-button:hover,
+.forms-new .vrtx-json #additional-content .vrtx-json-element .vrtx-button.hover,
+.forms-new .vrtx-json #additional-content .vrtx-json-element .vrtx-button:active,
+.forms-new .vrtx-json #featured-items .vrtx-json-element .vrtx-button:hover,
+.forms-new .vrtx-json #featured-items .vrtx-json-element .vrtx-button.hover,
+.forms-new .vrtx-json #featured-items .vrtx-json-element .vrtx-button:active {
+  background: #4195db;
+}
+
 .vrtx-json.vrtx-json-accordion .vrtx-json-element .vrtx-remove-button,
 .vrtx-json #main-content .vrtx-json-element .vrtx-remove-button,
 .vrtx-json #contact-supervisor-box .vrtx-json-element .vrtx-remove-button,

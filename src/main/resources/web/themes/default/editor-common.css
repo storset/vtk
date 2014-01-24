@@ -537,43 +537,13 @@ div#resource\.poster-image\.preview.no-preview img {
 /* Override CK for injected save/help */
 
 .cke_chrome .vrtx-button {
-  background: url(images/dropdown-left.gif) no-repeat 0 0 !important;
-  display: inline-block;
-  height: 27px !important;
-  white-space: nowrap !important;
-  overflow: visible !important;
-  margin: 0 !important;
-  cursor: pointer !important;
-  text-decoration: none !important;
-  margin-left: 20px !important;
-}
-
-.cke_chrome .vrtx-button.vrtx-focus-button {
-  background: url(images/focus-button-left.gif) no-repeat 0 0 !important;
-}
-
-.cke_chrome .vrtx-button:hover,
-.cke_chrome .vrtx-button:focus,
-.cke_chrome .vrtx-button.hover {
-  background: url(images/focus-button-left.gif) no-repeat 0 0 !important;
-}
-
-.cke_chrome .vrtx-button.vrtx-focus-button:hover,
-.cke_chrome .vrtx-button.vrtx-focus-button:focus,
-.cke_chrome .vrtx-button.vrtx-focus-button.hover {
-  background: url(images/focus-button-left-rollover.gif) no-repeat 0 0 !important;
+  margin: 0 0 0 10px !important;
 }
 
 .cke_chrome .vrtx-button span,
 .cke_chrome #editor-help-menu a {
   font: normal 13px/1.3 Arial, sans-serif !important;
   cursor: pointer !important;  
-}
-
-.cke_chrome .vrtx-button:hover,
-.cke_chrome .vrtx-button:focus,
-.cke_chrome .vrtx-button.hover {
-  background-image: url(images/dropdown-left-rollover.gif) !important;
 }
 
 .cke_chrome #editor-help-menu {

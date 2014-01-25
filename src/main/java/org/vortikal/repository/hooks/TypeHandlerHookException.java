@@ -37,6 +37,10 @@ import org.vortikal.repository.RepositoryException;
  * Thrown by repository if failure occurs in a {@link TypeHandlerHooks}.
  */
 public class TypeHandlerHookException extends RepositoryException {
+
+    public TypeHandlerHookException(String message) {
+        super(message);
+    }
     
     public TypeHandlerHookException(String message, Throwable cause) {
         super(message, cause);

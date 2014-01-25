@@ -263,7 +263,7 @@ public interface TypeHandlerHooks {
      * @param contentType the guessed content type of the input stream.
      * @return the resource to be stored (may be modified).
      *
-     * @throws Exception in case of errors
+     * @throws Exception in case of errors.
      */
     ResourceImpl storeContentOnCreate(ResourceImpl resource,
             InputStream stream, String contentType) throws Exception;

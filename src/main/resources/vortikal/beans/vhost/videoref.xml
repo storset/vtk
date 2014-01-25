@@ -12,6 +12,8 @@
                            http://www.springframework.org/schema/util/spring-util.xsd
        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.1.xsd" xmlns:aop="http://www.springframework.org/schema/aop">
 
+  <!-- This file depends on video.xml and the resource type for video defined there. -->
+  
   <!-- Resource type definition for 'videoref' type. -->  
   <bean id="mediaref.videorefType"
         class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
@@ -85,6 +87,10 @@
     <property name="videoStorageRoot" value="${mediaref.videoapp.videoStorageRootPath}" />
     <property name="videoApiClient" ref="videoref.videoapp.client" />
     <property name="repositoryId" value="${repositoryID}" />
+    
+    <!-- Content matching -->
+    <property name="videoContentTypePattern" value="^application/mxf$|^video/.+" /><!-- Same as in video.xml -->
+    <property name="videoContentTypeExceptionPattern" value=".*mpegurl.*" /> <!-- Avoid playlist types under "video/" -->
     
     <!-- Media-mixin prop defs -->
     <property name="thumbnailPropDef" ref="thumbnailPropDef" />

@@ -25,13 +25,13 @@
       </list>
     </property>
   </bean>
-
+  
   <bean id="contentTypeMatchesVideo" class="org.vortikal.web.service.ResourceContentTypeRegexpAssertion">
-    <property name="pattern" value="video/(.+)" />
+    <property name="pattern" value="^application/mxf$|^video/.+" />
   </bean>
 
   <bean id="contentTypeMatchesAudioOrVideo" class="org.vortikal.web.service.ResourceContentTypeRegexpAssertion">
-    <property name="pattern" value="(video/(.+))||(audio/(.+))" />
+    <property name="pattern" value="^application/mxf|^video/.+|^audio/.+" />
   </bean>
 
   <bean id="mediaPlayerService" class="org.vortikal.web.service.ServiceImpl">

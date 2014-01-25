@@ -35,6 +35,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
+import java.util.regex.Pattern;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -48,6 +49,7 @@ import org.vortikal.repository.Property;
 import org.vortikal.repository.ResourceImpl;
 import org.vortikal.repository.SystemChangeContext;
 import org.vortikal.repository.hooks.DefaultTypeHanderHooks;
+import org.vortikal.repository.hooks.UnsupportedContentException;
 import org.vortikal.repository.resourcetype.BufferedBinaryValue;
 import org.vortikal.repository.resourcetype.Content;
 import org.vortikal.repository.resourcetype.PropertyType;
@@ -74,12 +76,25 @@ public class VideoContentHooks extends DefaultTypeHanderHooks
     private PropertyTypeDefinition mediaHeightPropDef;
     private PropertyTypeDefinition mediaWidthPropDef;
     private PropertyTypeDefinition mediaDurationPropDef;
-    
+
     private final Log logger = LogFactory.getLog(VideoContentHooks.class);
+
+    private Pattern videoContentTypePattern;
+    private Pattern videoContentTypeExceptionPattern;
 
     @Override
     public boolean handleCreateForContent(String contentType) {
-        return contentType.startsWith("video/");
+        if (videoContentTypePattern.matcher(contentType).matches()) {
+            if (videoContentTypeExceptionPattern != null) {
+                if (videoContentTypeExceptionPattern.matcher(contentType).matches()) {
+                    return false;
+                }
+            }
+            
+            return true;
+        }
+        
+        return false;
     }
 
     @Override
@@ -96,7 +111,7 @@ public class VideoContentHooks extends DefaultTypeHanderHooks
     public String toString() {
         return getClass().getSimpleName();
     }
-    
+
     @Override
     public ResourceImpl storeContentOnCreate(ResourceImpl resource, InputStream stream,
             String contentType)
@@ -134,7 +149,7 @@ public class VideoContentHooks extends DefaultTypeHanderHooks
 
         // Store new video object ref on resource
         VideoRef ref = newVideoRef.copyBuilder().uploadContentType(contentType)
-                          .refUpdateTimestamp(new Date()).build();
+                .refUpdateTimestamp(new Date()).build();
 
         storeVideoRef(ref, resource.getURI(), getContentStore());
 
@@ -142,7 +157,6 @@ public class VideoContentHooks extends DefaultTypeHanderHooks
 
         return resource;
     }
-    
 
     @Override
     public ResourceImpl onStore(ResourceImpl resource)
@@ -156,7 +170,7 @@ public class VideoContentHooks extends DefaultTypeHanderHooks
             storeVideoRef(ref, resource.getURI(), getContentStore());
         } catch (Exception e) {
             // Don't fail entire store just because videoapp is down
-            logger.warn("Failed to refresh video metadata for " + resource.getURI() + ": " 
+            logger.warn("Failed to refresh video metadata for " + resource.getURI() + ": "
                     + e.getClass().getSimpleName() + ":" + e.getMessage());
         }
 
@@ -174,7 +188,7 @@ public class VideoContentHooks extends DefaultTypeHanderHooks
         Property contentTypeProp = resource.getProperty(Namespace.DEFAULT_NAMESPACE,
                 PropertyType.CONTENTTYPE_PROP_NAME);
         contentTypeProp.setStringValue(contentType);
-        
+
         updateMediaProperties(ref, resource);
 
         return resource;
@@ -213,22 +227,22 @@ public class VideoContentHooks extends DefaultTypeHanderHooks
     // Adds media mixin props to resource based on data in video ref
     private void updateMediaProperties(VideoRef ref, ResourceImpl resource) {
         Property prop = mediaDurationPropDef.createProperty();
-        prop.setIntValue((int)ref.durationSeconds());
+        prop.setIntValue((int) ref.durationSeconds());
         resource.addProperty(prop);
-        
+
         if (ref.sourceVideo() != null) {
             VideoFileRef sourceVideo = ref.sourceVideo();
             Object value = sourceVideo.metadata().get("width");
             if (value != null && value.getClass() == Integer.class) {
                 prop = mediaWidthPropDef.createProperty();
-                prop.setIntValue(((Integer)value).intValue());
+                prop.setIntValue(((Integer) value).intValue());
                 resource.addProperty(prop);
             }
 
             value = sourceVideo.metadata().get("height");
             if (value != null && value.getClass() == Integer.class) {
                 prop = mediaHeightPropDef.createProperty();
-                prop.setIntValue(((Integer)value).intValue());
+                prop.setIntValue(((Integer) value).intValue());
                 resource.addProperty(prop);
             }
         }
@@ -239,15 +253,14 @@ public class VideoContentHooks extends DefaultTypeHanderHooks
             prop.setBinaryValue(b.getBytes(), b.getContentType());
             resource.addProperty(prop);
         }
-        
+
         // Media metadata status property used as refresh flag.
         // When video is in non-final state in videoapp, then we set
         // media metadata status to GENERATE to do periodic updates in Vortex.
-        
-        if ("completed".equals(ref.status()) 
+        if ("completed".equals(ref.status())
                 || "error".equals(ref.status())
                 || "not-converted".equals(ref.status())) {
-            
+
             // TODO the property is re-added by evaluator it seems – investigate this.
             // Likely the property is unsuitable for this use case, and we should
             // use another property for periodic refresh job query.
@@ -258,7 +271,7 @@ public class VideoContentHooks extends DefaultTypeHanderHooks
             resource.addProperty(prop);
         }
     }
-    
+
     private VideoRef loadVideoRef(Path uri, ContentStore store) throws IOException {
         String jsonString = StreamUtil.streamToString(store.getInputStream(uri), "utf-8");
         return VideoRef.fromJsonString(jsonString).build();
@@ -343,6 +356,33 @@ public class VideoContentHooks extends DefaultTypeHanderHooks
     @Required
     public void setThumbnailPropDef(PropertyTypeDefinition thumbnailPropDef) {
         this.thumbnailPropDef = thumbnailPropDef;
+    }
+
+    /**
+     * Pattern to be used for matching all content types that should be handled
+     * by videoapp at resource creation time.
+     *
+     * @param contentTypePattern pattern to match content types that should
+     * be handled by videoapp
+     */
+    @Required
+    public void setVideoContentTypePattern(Pattern contentTypePattern) {
+        this.videoContentTypePattern = contentTypePattern;
+    }
+
+    /**
+     * Pattern to be used for content types that shall be explicitly not handled
+     * by videoapp at resource creation time. If the pattern in {@link #setVideoContentTypePattern(java.util.regex.Pattern)
+     * }
+     * matches, then any exception pattern configured by this method is checked.
+     * If the exception pattern matches as well, then the content will not be handled by
+     * videoapp.
+     *
+     * @param contentTypePattern pattern that should match explicit exclusions
+     * of content types that videoapp should not handle.
+     */
+    public void setVideoContentTypeExceptionPattern(Pattern contentTypePattern) {
+        this.videoContentTypeExceptionPattern = contentTypePattern;
     }
 
 }

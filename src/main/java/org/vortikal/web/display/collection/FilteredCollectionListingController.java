@@ -95,7 +95,7 @@ public abstract class FilteredCollectionListingController implements Controller 
         }
 
         search.setQuery(query);
-        search.setSorting(getDefaultSearchSorting(collection));
+        search.setSorting(getSearchSorting(collection));
 
         ConfigurablePropertySelect propertySelect = getPropertySelect();
         if (propertySelect != null) {
@@ -327,7 +327,7 @@ public abstract class FilteredCollectionListingController implements Controller 
         return pageLimit;
     }
 
-    protected Sorting getDefaultSearchSorting(Resource collection) {
+    protected Sorting getSearchSorting(Resource collection) {
         return new SortingImpl(defaultSearchSorting.getSortFields(collection));
     }
 

@@ -3328,6 +3328,10 @@ tr.expandedForm td .vrtx-button-small {
   cursor: pointer;
 }
 
+#app-content .vrtx-cancel-link:focus {
+  outline: 1px solid #aaa;
+}
+
 #app-content .vrtx-show-processing {
   background: url(images/spinner.gif) no-repeat center left;
   display: block;

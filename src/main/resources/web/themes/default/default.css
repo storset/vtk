@@ -3316,7 +3316,7 @@ tr.expandedForm td .vrtx-button-small {
   font-size: 1px;
   height: 12px;
   width: 12px;
-  left: 7px;
+  margin-left: 7px;
   position: relative;
   top: -3.8em;
   color: #F8F8F8;

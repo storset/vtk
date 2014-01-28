@@ -37,7 +37,7 @@
 	     containerWidth: 400,
 	     expandHoverToTipBox: true,
 	     xOffset: 30,
-	     yOffset: 80
+	     yOffset: 115
        });
      });
   // -->

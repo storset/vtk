@@ -602,9 +602,9 @@ maxHeight, minHeight, toolbar, complete, resizable, baseDocumentUrl, simple) {
     config.removePlugins = 'elementspath';
   }
   
-  if ($("form#editor").hasClass("vrtx-frontpage")) {
-	config.format_tags = 'p;h3;h4;h5;h6;pre;div';
-  } 
+  //  if ($("form#editor").hasClass("vrtx-frontpage")) {
+  //	config.format_tags = 'p;h3;h4;h5;h6;pre;div';
+  //  } 
 
   config.resize_enabled = resizable;
   config.toolbarCanCollapse = false;

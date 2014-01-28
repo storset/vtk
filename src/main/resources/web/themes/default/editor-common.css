@@ -401,16 +401,19 @@ div.introImageAndCaption .vrtx-image-ref-preview {
 
 .vrtx-image-ref-preview,
 div#resource\.poster-image\.preview,
+div#resource\.studentExchangeUniversityAgreementListing\.picture\.preview,
 div#resource\.picture\.preview {
   position: relative;
 }
 
-div#resource\.poster-image\.preview {
+div#resource\.poster-image\.preview,
+div#resource\.studentExchangeUniversityAgreementListing\.picture\.preview {
   margin-top: 20px;
 }
 
 .vrtx-image-ref-preview span,
 div#resource\.poster-image\.preview span,
+div#resource\.studentExchangeUniversityAgreementListing\.picture\.preview span,
 div#resource\.picture\.preview span {
   color: #9d9d9d;
   font-size: 1.15em;
@@ -425,7 +428,8 @@ div#resource\.picture\.preview span {
 
 .vrtx-image-ref-preview.no-preview span,
 div#resource\.picture\.preview.no-preview span,
-div#resource\.poster-image\.preview.no-preview span {
+div#resource\.poster-image\.preview.no-preview span,
+div#resource\.studentExchangeUniversityAgreementListing\.picture\.preview.no-preview span {
   display: block;
 }
 
@@ -433,7 +437,8 @@ div#resource\.poster-image\.preview.no-preview span {
 
 .vrtx-image-ref-preview-inner,
 div#resource\.picture\.preview-inner,
-div#resource\.poster-image\.preview-inner {
+div#resource\.poster-image\.preview-inner,
+div#resource\.studentExchangeUniversityAgreementListing\.picture\.preview-inner {
   max-width: 170px;
   max-height: 138px;
   overflow: hidden;
@@ -441,7 +446,8 @@ div#resource\.poster-image\.preview-inner {
 
 .vrtx-image-ref-preview-inner img,
 div#vrtx-resource\.picture img,
-div#vrtx-resource\.poster-image img {
+div#vrtx-resource\.poster-image img,
+div#vrtx-resource\.studentExchangeUniversityAgreementListing\.picture img {
   max-width: 170px;
   max-height: 138px;
   margin-top: 0px;
@@ -450,7 +456,8 @@ div#vrtx-resource\.poster-image img {
 
 .vrtx-image-ref-preview.no-preview img,
 div#resource\.picture\.preview.no-preview img,
-div#resource\.poster-image\.preview.no-preview img {
+div#resource\.poster-image\.preview.no-preview img,
+div#resource\.studentExchangeUniversityAgreementListing\.picture\.preview.no-preview img {
   width: 168px;
   height: 136px;
   border: 1px solid #D3D3D3;

@@ -189,7 +189,7 @@ public class PostCommentController extends SimpleFormController {
         PolicyFactory policy = new HtmlPolicyBuilder()
         	.allowStandardUrlProtocols()
         	.allowAttributes("href").onElements("a")
-        	.allowElements("a", "p", "ul", "li", "ol", "em", "strong", "cite", "code", "strike", "u")
+        	.allowElements("a", "p", "ul", "li", "ol", "em", "strong", "cite", "code", "s", "u")
         	.toFactory();
         String sanitizedText = policy.sanitize(text);
         logger.debug("After sanitizing: '" + sanitizedText + "'");

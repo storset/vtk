@@ -1015,16 +1015,27 @@ VrtxEditor.prototype.initShowHide = function initShowHide() {
   _$("#resource\\.courseContext\\.course-status").change();
   
   // Show/hide mappings for radios/booleans
+  
+  // Exchange sub-folder title
+  
+  setShowHideBooleanOldEditor("#resource\\.show-subfolder-menu\\.true, #resource\\.show-subfolder-menu\\.unspecified",
+    "#vrtx-resource\\.show-subfolder-title",
+    "#resource\\.show-subfolder-menu\\.unspecified:checked",
+    "");
+    
+  // Recursive
 
   setShowHideBooleanOldEditor("#resource\\.recursive-listing\\.false, #resource\\.recursive-listing\\.unspecified",
     "#vrtx-resource\\.recursive-listing-subfolders",
     "#resource\\.recursive-listing\\.false:checked",
     "false");
+    
+  // Calendar title
 
   setShowHideBooleanOldEditor("#resource\\.display-type\\.unspecified, #resource\\.display-type\\.calendar",
     "#vrtx-resource\\.event-type-title",
     "#resource\\.display-type\\.calendar:checked",
-  null);
+    null);
 
   setShowHideBooleanOldEditor("#resource\\.display-type\\.unspecified, #resource\\.display-type\\.calendar",
     "#vrtx-resource\\.hide-additional-content",

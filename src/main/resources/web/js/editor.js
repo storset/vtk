@@ -904,7 +904,7 @@ function hideImagePreviewCaption(input, isInit) {
   if (captionWrp.length) {
     captionWrp.find(".caption").fadeOut(fadeSpeed);
     captionWrp.animate({
-      height: "58px"
+      height: "59px"
     }, fadeSpeed);
   }
 }

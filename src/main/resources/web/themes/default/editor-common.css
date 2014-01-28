@@ -47,9 +47,11 @@ h2 {
   margin-top: 5px;
 }
 
-.vrtx-checkbox label {
-  position: relative;
-  top: -2px;
+.vrtx-radio-button > *,
+.vrtx-radio-buttons > *,
+.vrtx-checkbox-square > *,
+.vrtx-checkbox > * {
+  vertical-align: middle;
 }
 
 .property-item,

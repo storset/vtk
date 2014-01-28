@@ -169,6 +169,10 @@ resourcetype student-exchange-agreement {
                 [call "include:shared-text" {"propName":"how-to-apply-shared-text"}]
               [endif]
             [endif]
+            <div class="vrtx-social-components">
+              [call "resource:email-friend"]
+              [call "resource:share-at"]
+            </div>
           </div>
           <div id="vrtx-additional-content">
             [def contact-div-bool contact != null]

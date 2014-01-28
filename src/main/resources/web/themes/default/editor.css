@@ -81,12 +81,9 @@
   min-width: 0;
 }
 
-input[type=radio] {
-  margin: 0 3px 6px 1px;
-}
-
-input[type=checkbox] {
-  margin: 0 3px 0 0;
+#vrtx-resource\.display-aggregation.property-item .vrtx-checkbox-square > *,
+#vrtx-resource\.display-manually-approved.property-item .vrtx-checkbox-square > * {
+  vertical-align: bottom;
 }
 
 /* Manual approval */

@@ -47,11 +47,16 @@ h2 {
   margin-top: 5px;
 }
 
-.vrtx-radio-button > *,
-.vrtx-radio-buttons > *,
-.vrtx-checkbox-square > *,
-.vrtx-checkbox > * {
-  vertical-align: middle;
+.vrtx-radio-button > label,
+.vrtx-radio-button > input[type='radio'],
+.vrtx-radio-buttons > label,
+.vrtx-radio-buttons > input[type='radio'],
+.vrtx-checkbox-square > label,
+.vrtx-checkbox-square > input[type='radio'],
+.vrtx-checkbox > label,
+.vrtx-checkbox > input[type='radio'] {
+  vertical-align: top;
+  line-height: 1;
 }
 
 .property-item,

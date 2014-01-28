@@ -322,12 +322,7 @@ VrtxAdmin.prototype.initResourceMenus = function initResourceMenus() {
     simultanSliding: true
   });
   vrtxAdm.completeFormAsync({
-    selector: "form#manage\\.unlockFormService-form input[type=submit]",
-    updateSelectors: ["#resourceMenuRight", "#contents"],
-    funcComplete: function() {
-      vrtxAdm.globalAsyncComplete();
-    },
-    post: (bodyId !== "vrtx-editor" && bodyId !== "vrtx-edit-plaintext" && bodyId !== "")
+    selector: "form#manage\\.unlockFormService-form input[type=submit]"
   });
   vrtxAdm.completeFormAsync({
     selector: "li.manage\\.unlockFormService form[name=unlockForm]",
@@ -3138,19 +3133,16 @@ VrtxAdmin.prototype.completeFormAsyncPost = function completeFormAsyncPost(optio
           animation.bottomUp();
         } else {
           var sameMode = false;
-          var isMode = url.indexOf("&mode=") !== -1;
-          var isAction = url.indexOf("&action=") !== -1;
-          if (isMode) {
+          var remoteIsMode = url.indexOf("&mode=") !== -1;
+          var pageIsMode = modeUrl.indexOf("&mode=") !== -1;
+          var remoteIsRevisions = url.indexOf("&action=revisions") !== -1;
+          var pageIsRevisions = modeUrl.indexOf("&action=revisions") !== -1;
+          if (remoteIsMode) {
             if (gup("mode", url) === gup("mode", modeUrl)) {
               sameMode = true;
             }
           }
-          if (isAction) {
-            if (gup("action", url) === gup("action", modeUrl)) {
-              sameMode = true;
-            }
-          }
-          if (isUndecoratedService || ((isMode || isAction) && !sameMode)) { // When we need the 'mode=' or 'action=' HTML. TODO: should only run when updateSelector is inside content
+          if (isUndecoratedService || (pageIsMode && !sameMode) || (pageIsRevisions != remoteIsRevisions)) { // When we need the 'mode=' or 'action=revisions' HTML. TODO: should only run when updateSelector is inside content
             vrtxAdmin.serverFacade.getHtml(modeUrl, {
               success: function (results, status, resp) {
                 for (var i = updateSelectors.length; i--;) {

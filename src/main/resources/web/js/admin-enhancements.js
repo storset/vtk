@@ -654,8 +654,10 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
           var url = form.attr("action");
           var li = form.closest("li");
           var dataString = form.serialize() + "&" + button.attr("name") + "=" + button.val();
-          form.find(".vrtx-button-small").remove();
-          form.find(".vrtx-cancel-link").replaceWith("<span class='vrtx-show-processing' />");
+          if(button.attr("name") != "clear-action") {
+            form.find(".vrtx-button-small").remove();
+            form.find(".vrtx-cancel-link").replaceWith("<span class='vrtx-show-processing' />");
+          }
           vrtxAdm.serverFacade.postHtml(url, dataString, {
             success: function (results, status, resp) {
               var copyMoveAnimation = new VrtxAnimation({

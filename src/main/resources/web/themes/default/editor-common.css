@@ -55,7 +55,7 @@ h2 {
 .vrtx-checkbox-square > input[type='radio'],
 .vrtx-checkbox > label,
 .vrtx-checkbox > input[type='radio'] {
-  vertical-align: bottom;
+  vertical-align: top;
   line-height: 1;
 }
 

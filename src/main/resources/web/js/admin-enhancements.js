@@ -313,6 +313,7 @@ VrtxAdmin.prototype.initResourceMenus = function initResourceMenus() {
       post: (!isSavingBeforePublish && (typeof isImageAudioVideo !== "boolean" || !isImageAudioVideo))
     });
   }
+  
   // Unlock form
   vrtxAdm.getFormAsync({
     selector: "#title-container a#manage\\.unlockFormService",
@@ -321,11 +322,11 @@ VrtxAdmin.prototype.initResourceMenus = function initResourceMenus() {
     nodeType: "div",
     simultanSliding: true
   });
-  // Regular unlock lock from other user
+  // Regular POST unlock lock from other user
   vrtxAdm.completeFormAsync({
     selector: "form#manage\\.unlockFormService-form input[type=submit]"
   });
-  // AJAX unlock own lock
+  // AJAX POST unlock own lock
   vrtxAdm.completeFormAsync({
     selector: "li.manage\\.unlockFormService form[name=unlockForm]",
     updateSelectors: ["#resourceMenuRight", "#contents"],

@@ -114,8 +114,6 @@
   cursor: pointer;
 }
 
-.button-row li,
-.button-row-small li,
 .button-row-small li,
 .button-row li {
   border: none;

@@ -3421,6 +3421,15 @@ tr.expandedForm td .vrtx-button-small {
   margin: 3px 3px 3px 4px;
 }
 
+#resource-title .button-row li form input[type="submit"] x:-moz-any-link, x:only-child {
+  padding: 5px 15px 6px;
+}
+
+#resource-title .button-row li form input[type="submit"]:hover x:-moz-any-link, x:only-child,
+#resource-title .button-row li form input[type="submit"]:focus x:-moz-any-link, x:only-child {
+  padding: 6px 16px 7px;  
+}
+
 #resource-title .dropdown-shortcut-menu-container li form input[type="submit"], x:-moz-any-link, x:only-child {
   padding-left: 11px !important;
   padding-right: 11px !important;

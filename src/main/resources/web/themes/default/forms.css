@@ -114,6 +114,10 @@
   cursor: pointer;
 }
 
+.button-row li form input[type="submit"] {
+  padding: 6px 15px 7px;
+}
+
 .button-row-small li,
 .button-row li {
   border: none;
@@ -200,6 +204,11 @@
 .forms-new .vrtx-button:focus > *,
 .forms-new .vrtx-button.hover > * {
   padding: 6px 16px 7px;
+}
+
+.button-row li form input[type="submit"]:hover,
+.button-row li form input[type="submit"]:focus {
+  padding: 7px 16px 8px;  
 }
 
 .button-row-small a:hover,

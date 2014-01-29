@@ -148,8 +148,8 @@ resourcetype student-exchange-agreement {
               <h2>[localized 'length-of-semester']</h2>
               [val length-of-semester # unescaped]
             [endif]
-            <h2>[localized 'fees-view']</h2>
             [if fees-text-field != null && fees-text-field != ""]
+              <h2>[localized 'fees-view']</h2>
               [val fees-text-field # unescaped]
             [endif]
             [if housing != null && housing != ""]

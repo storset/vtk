@@ -915,8 +915,10 @@ ul.button-row li.first {
 
 ul.button-row li.first,
 ul.button-row li.first a,
+ul.button-row li.first form input,
 ul.button-row-small li.first,
-ul.button-row-small li.first a {
+ul.button-row-small li.first a,
+ul.button-row-small li.first form input {
   -webkit-border-top-left-radius: 5px;
   -webkit-border-bottom-left-radius: 5px;
   -moz-border-radius-topleft: 5px;
@@ -927,8 +929,10 @@ ul.button-row-small li.first a {
 
 ul.button-row li.last,
 ul.button-row li.last a,
+ul.button-row li.last form input,
 ul.button-row-small li.last,
-ul.button-row-small li.last a {
+ul.button-row-small li.last a,
+ul.button-row-small li.last form input {
   -webkit-border-top-right-radius: 5px;
   -webkit-border-bottom-right-radius: 5px;
   -moz-border-radius-topright: 5px;
@@ -937,7 +941,8 @@ ul.button-row-small li.last a {
   border-bottom-right-radius: 5px;
 }
 
-ul.dropdown-shortcut-menu li.dropdown-init {
+ul.dropdown-shortcut-menu li.dropdown-init,
+ul.dropdown-shortcut-menu li.dropdown-init form {
   -webkit-border-radius: 5px;
   -moz-border-radius: 5px;
   border-radius: 5px;

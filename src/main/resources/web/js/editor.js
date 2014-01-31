@@ -684,6 +684,7 @@ VrtxEditor.prototype.addSaveHelpCKMaximized = function addSaveHelpCKMaximized() 
     stickyBar.hide();
     
     vrtxAdm.cachedBody.addClass("forms-new");
+    vrtxAdm.cachedBody.addClass("js");
 
     var ckInject = _$(this).closest(".cke_reset")
       .find(".cke_toolbar_end:last");
@@ -698,9 +699,6 @@ VrtxEditor.prototype.addSaveHelpCKMaximized = function addSaveHelpCKMaximized() 
       var saveInjected = ckInject.find(".ck-injected-save-help > a");
       if (!saveInjected.hasClass("vrtx-button")) {
         saveInjected.addClass("vrtx-button");
-        if (!saveInjected.find("> span").length) {
-          saveInjected.wrapInner("<span />");
-        }
       } else {
         saveInjected.removeClass("vrtx-focus-button");
       }

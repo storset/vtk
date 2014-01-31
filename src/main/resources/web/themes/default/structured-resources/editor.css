@@ -343,16 +343,16 @@
 
 .forms-new .vrtx-json #main-content .vrtx-json-element .vrtx-button:hover,
 .forms-new .vrtx-json #main-content .vrtx-json-element .vrtx-button.hover,
-.forms-new .vrtx-json #main-content .vrtx-json-element .vrtx-button:active,
+.forms-new .vrtx-json #main-content .vrtx-json-element .vrtx-button:focus,
 .forms-new .vrtx-json #contact-supervisor-box .vrtx-json-element .vrtx-button:hover,
 .forms-new .vrtx-json #contact-supervisor-box .vrtx-json-element .vrtx-button.hover,
-.forms-new .vrtx-json #contact-supervisor-box .vrtx-json-element .vrtx-button:active,
+.forms-new .vrtx-json #contact-supervisor-box .vrtx-json-element .vrtx-button:focus,
 .forms-new .vrtx-json #additional-content .vrtx-json-element .vrtx-button:hover,
 .forms-new .vrtx-json #additional-content .vrtx-json-element .vrtx-button.hover,
-.forms-new .vrtx-json #additional-content .vrtx-json-element .vrtx-button:active,
+.forms-new .vrtx-json #additional-content .vrtx-json-element .vrtx-button:focus,
 .forms-new .vrtx-json #featured-items .vrtx-json-element .vrtx-button:hover,
 .forms-new .vrtx-json #featured-items .vrtx-json-element .vrtx-button.hover,
-.forms-new .vrtx-json #featured-items .vrtx-json-element .vrtx-button:active {
+.forms-new .vrtx-json #featured-items .vrtx-json-element .vrtx-button:focus {
   background: #4195db;
 }
 

@@ -3279,15 +3279,15 @@ tr.expandedForm td .vrtx-button-small {
 
 /* Smaller button in resource-info tables */
 
-.resourceInfo .vrtx-button-small {
+.forms-new .resourceInfo table .vrtx-button-small {
   margin-left: 2px;
   font-size: 0.846em;
   padding: 2px 13px;
 }
 
-.resourceInfo table .vrtx-button-small:hover,
-.resourceInfo table .vrtx-button-small:focus,
-.resourceInfo table .vrtx-button-small.hover {
+.forms-new .resourceInfo table .vrtx-button-small:hover,
+.forms-new .resourceInfo table .vrtx-button-small:focus,
+.forms-new .resourceInfo table .vrtx-button-small.hover {
   padding: 3px 14px;
 }
 

@@ -42,14 +42,10 @@
       <@actionsLib.genErrorMessages spring.status.errorMessages />
 
       <h4 class="vrtx-admin-label"><@vrtx.msg code="actions.createCollectionService.title" default="Title" /></h4>
-      <div class="vrtx-textfield" id="vrtx-textfield-collection-title">
-        <input type="text" id="${titleBind?html}" name="${titleBind?html}" value="${newColTitle?html}" size="40" />
-      </div>
+      <input class="vrtx-textfield" id="vrtx-textfield-collection-title" type="text" id="${titleBind?html}" name="${titleBind?html}" value="${newColTitle?html}" size="40" />
 
       <h4 class="vrtx-admin-label"><@vrtx.msg code="actions.createCollectionService.collection-name" default="Folder name" /></h4>
-      <div class="vrtx-textfield" id="vrtx-textfield-collection-name">
-        <input type="text" id="${nameBind?html}" name="${nameBind?html}" value="${newColName?html}" size="15" maxlength="50" />
-      </div>
+      <input class="vrtx-textfield" id="vrtx-textfield-collection-name" type="text" id="${nameBind?html}" name="${nameBind?html}" value="${newColName?html}" size="15" maxlength="50" />
 
       <@spring.bind "createCollectionForm" + ".publish" />
       <#assign publishBind = spring.status.expression>

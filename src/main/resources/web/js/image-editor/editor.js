@@ -291,11 +291,11 @@ VrtxImageEditor.prototype.displayDimensions = function displayDimensions(w, h) {
     var dimensionHtml = '<div id="vrtx-image-dimensions-crop">' +
                           '<div class="vrtx-label-and-text">' +
                             '<div class="property-label">' + widthText + '</div>' +
-                            '<div class="vrtx-textfield" id="vrtx-textfield-width"><input id="resource-width" type="text" value="' + w + '" size="4" /></div>' +
+                            '<input class="vrtx-textfield" id="resource-width" type="text" value="' + w + '" size="4" />' +
                           '</div>' +
                           '<div class="vrtx-label-and-text">' +
                             '<div class="property-label">' + heightText + '</div>' +
-                            '<div class="vrtx-textfield" id="vrtx-textfield-height"><input id="resource-height" type="text" value="' + h + '" size="4" /></div>' +
+                            '<input class="vrtx-textfield" id="resource-height" type="text" value="' + h + '" size="4" />' +
                           '</div>';
     if(this.canvasSupported) {                      
       dimensionHtml += '<div id="vrtx-image-crop-button"><div class="vrtx-button">' +

@@ -5,9 +5,7 @@
 		<label for="${inputFieldName}">${title}</label>
 	</div>
 	<div class="vrtx-resource-ref-browse">
-	   <div class="vrtx-textfield">
-	     <input type="text" id="${inputFieldName}" name="${inputFieldName}" value="${value?html}" size="${inputFieldSize}" />
-	   </div>
+	   <input class="vrtx-textfield" type="text" id="${inputFieldName}" name="${inputFieldName}" value="${value?html}" size="${inputFieldSize}" />
 	   <div class="vrtx-button">
          <button type="button" onclick="browseServer('${inputFieldName}', '${fckeditorBase.url?html}', '${baseFolder}','${fckBrowse.url.pathRepresentation}','File');"><@vrtx.msg code="editor.browseImages"/></button>
 	   </div>

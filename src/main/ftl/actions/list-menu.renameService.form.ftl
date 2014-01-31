@@ -11,9 +11,7 @@
       <@spring.bind "renameCommand" + ".name" /> 
       <@actionsLib.genErrorMessages spring.status.errorMessages />
       <#assign confirm = renameCommand.confirmOverwrite />
-      <div class="vrtx-textfield">
-        <input type="text" size="40" name="name" value="${spring.status.value?html}" <#if confirm> readonly="readonly" </#if> />
-      </div>
+      <input class="vrtx-textfield" type="text" size="40" name="name" value="${spring.status.value?html}" <#if confirm> readonly="readonly" </#if> />
       <div id="submitButtons">
         <div class="vrtx-focus-button">
       	  <#if confirm>

@@ -54,9 +54,7 @@
           ${element.label?html}
       <#elseif element.type == 'string'>
         <h3>${element.label?html}</h3>
-        <div class="vrtx-textfield">
-          <input type="text" name="${element.identifier?html}" value="${element.value?default('')?html}" />
-        </div>
+        <input class="vrtx-textfield" type="text" name="${element.identifier?html}" value="${element.value?default('')?html}" />
 
       <#elseif element.type == 'enum'>
         <h3>${element.label?html}</h3> 

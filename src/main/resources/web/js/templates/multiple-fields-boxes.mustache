@@ -2,9 +2,7 @@
 
 <div class="{{ classes }}">
   <label for="{{ inputFieldName  }}">{{ elemTitle }}</label>
-  <div class="inputfield vrtx-textfield">
-    <input size="40" type="text" name="{{ inputFieldName }}" id="{{ inputFieldName }}" />
-  </div>
+  <input class="vrtx-textfield inputfield" size="40" type="text" name="{{ inputFieldName }}" id="{{ inputFieldName }}" />
 </div>
 
 ### {{! HTML }}
@@ -45,9 +43,7 @@
 
 <div class="vrtx-string">
   <label for="{{ inputFieldName }}">{{ elemTitle }}</label>
-  <div class="inputfield vrtx-textfield">
-    <input size="20" type="text" name="{{ inputFieldName }}" id="{{ inputFieldName }}" value="" class="date" />
-  </div>
+  <input class="vrtx-textfield inputfield date" size="20" type="text" name="{{ inputFieldName }}" id="{{ inputFieldName }}" value="" />
 </div>
 
 ### {{! BROWSE }}
@@ -57,9 +53,7 @@
     <label for="{{ inputFieldName }}">{{ elemTitle }}</label>
   </div>
   <div class="{{ clazz }}-browse">
-    <div class="vrtx-textfield">
-      <input type="text" name="{{ inputFieldName }}" id="{{ inputFieldName }}" value="" size="{{ size }}" />
-    </div>
+    <input class="vrtx-textfield" type="text" name="{{ inputFieldName }}" id="{{ inputFieldName }}" value="" size="{{ size }}" />
     <div class="vrtx-button">
       <button type="button" onclick="browseServer('{{ inputFieldName }}', '{{ baseCKURL }}', '{{ baseFolderURL }}', '{{ basePath }}', '{{ type }}');">
         {{ browseButtonText }}
@@ -76,9 +70,7 @@
     <label for="{{ inputFieldName }}">{{ elemTitle }}</label>
   </div>
   <div class="{{ clazz }}-browse">
-    <div class="vrtx-textfield">
-      <input type="text" class="preview-image-inputfield" name="{{ inputFieldName }}" id="{{ inputFieldName }}" value="" size="{{ size }}" />
-    </div>
+    <input class="vrtx-textfield preview-image-inputfield" type="text" name="{{ inputFieldName }}" id="{{ inputFieldName }}" value="" size="{{ size }}" />
     <div class="vrtx-button">
       <button type="button" onclick="browseServer('{{ inputFieldName }}', '{{ baseCKURL }}', '{{ baseFolderURL }}', '{{ basePath }}', '{{ type }}');">
         {{ browseButtonText }}
@@ -143,9 +135,7 @@
   {{/isDropdown}}
 
   {{^isDropdown}}
-    <div class="vrtx-textfield">
-      <input value="{{ value }}" type="text" size="{{ size }}" id="{{ idstr }}{{ i }}" />
-    </div>
+    <input class="vrtx-textfield" value="{{ value }}" type="text" size="{{ size }}" id="{{ idstr }}{{ i }}" />
   {{/isDropdown}}
   
   {{{ browseButton }}}

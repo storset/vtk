@@ -828,9 +828,9 @@ ul.publishing-document {
 
 /* Dropdown */
 
-#editor-help-menu.js-on,
-#collection-more-menu.js-on,
-#locale-selection.js-on {
+.js #editor-help-menu,
+.js #collection-more-menu,
+.js #locale-selection {
   position: relative;
 }
 
@@ -843,18 +843,18 @@ ul.publishing-document {
   margin-left: 5px;
 }
 
-#tabMenuRight #collection-more-menu.js-on li {
+.js #tabMenuRight #collection-more-menu li {
   float: none;
 }
 
-#tabMenuRight #collection-more-menu.js-on > a,
-#tabMenuRight #collection-more-menu.js-on li a {
+.js #tabMenuRight #collection-more-menu > a,
+.js #tabMenuRight #collection-more-menu li a {
   margin: 0;
 }
 
-#editor-help-menu.js-on ul.dropdown-shortcut-menu-container,
-#collection-more-menu.js-on ul.dropdown-shortcut-menu-container,
-#locale-selection.js-on ul.dropdown-shortcut-menu-container {
+.js #editor-help-menu ul.dropdown-shortcut-menu-container,
+.js #collection-more-menu ul.dropdown-shortcut-menu-container,
+.js #locale-selection ul.dropdown-shortcut-menu-container {
   display: none;
   top: 24px;
   left: auto;
@@ -862,24 +862,24 @@ ul.publishing-document {
   /* right: -72px; */
 }
 
-#locale-selection.js-on ul.dropdown-shortcut-menu-container li a,
-#locale-selection.js-on ul.dropdown-shortcut-menu-container li span {
+.js #locale-selection ul.dropdown-shortcut-menu-container li a,
+.js #locale-selection ul.dropdown-shortcut-menu-container li span {
   padding-left: 28px !important;
 }
 
-#locale-selection.js-on ul.dropdown-shortcut-menu-container li.active span {
+.js #locale-selection ul.dropdown-shortcut-menu-container li.active span {
   background: url(images/list-active.gif) no-repeat 10px 10px;
 }
 
-#locale-selection.js-on #locale-selection-header,
-#collection-more-menu.js-on #collection-more-menu-header,
-#editor-help-menu.js-on #editor-help-menu-header {
+.js #locale-selection #locale-selection-header,
+.js #collection-more-menu #collection-more-menu-header,
+.js #editor-help-menu #editor-help-menu-header {
   background: url(images/arrow-down.png) no-repeat 100% 8px;
   padding-right: 12px;
   display: inline-block;
 }
 
-#collection-more-menu.js-on #collection-more-menu-header {
+.js #collection-more-menu #collection-more-menu-header {
   background-position: 100% 13px;
   padding-left: 0px;
 }
@@ -1637,13 +1637,13 @@ span.vrtx-help-step-by-step-cmd {
   display: none;
 }
 
-.vrtx-admin-form #vrtx-textfield-file-name input[disabled],
+.vrtx-admin-form input[disabled]#vrtx-textfield-file-name,
 .vrtx-admin-form #vrtx-textfield-file-type.disabled {
   color: #777 !important;
 }
 
-.vrtx-admin-form.file-name-from-title #vrtx-textfield-file-name input,
-.vrtx-admin-form.file-name-from-title #vrtx-textfield-collection-name input,
+.vrtx-admin-form.file-name-from-title #vrtx-textfield-file-name,
+.vrtx-admin-form.file-name-from-title #vrtx-textfield-collection-name,
 .vrtx-admin-form.file-name-from-title #vrtx-textfield-file-type {
   color: #555;
 }
@@ -1672,13 +1672,13 @@ span.vrtx-help-step-by-step-cmd {
   margin-left: 18px;
 }
 
-.js .vrtx-admin-form #vrtx-textfield-collection-name input,
-.js .vrtx-admin-form #vrtx-textfield-file-name input {
+.js .vrtx-admin-form #vrtx-textfield-collection-name,
+.js .vrtx-admin-form #vrtx-textfield-file-name {
   width: 35px;
 }
 
-.vrtx-admin-form #vrtx-checkbox-hide-from-navigation input,
-.vrtx-admin-form #vrtx-checkbox-is-index input {
+.vrtx-admin-form #vrtx-checkbox-hide-from-navigation,
+.vrtx-admin-form #vrtx-checkbox-is-index {
   display: block;
   float: left;
   margin: 1px 6px 0 0;
@@ -2664,8 +2664,8 @@ body#vrtx-permissions .addUser {
   width: 200px; 
 }
 
-.vrtx-autocomplete-username .vrtx-textfield,
-.vrtx-autocomplete-tag .vrtx-textfield,
+.vrtx-autocomplete-username.vrtx-textfield,
+.vrtx-autocomplete-tag.vrtx-textfield,
 #principalList .vrtx-textfield {
   position: relative;
 }
@@ -3355,21 +3355,6 @@ tr.expandedForm td .vrtx-button-small {
   z-index: 999;
 }
 
-#file-upload-container input.js-on {
-  z-index: 999;
-  position: relative;
-  left: 328px;
-  background: none;
-  width: 83px;
-  height: 25px;
-  cursor: pointer !important;
-
-  /* Transparent */
-  opacity: 0;
-  -moz-opacity: 0;
-  filter:alpha(opacity: 0);
-}
-
 #file-upload-container .vrtx-textfield {
   position: absolute;
   top: 0px;
@@ -3378,7 +3363,7 @@ tr.expandedForm td .vrtx-button-small {
   z-index: 1;
 }
 
-#file-upload-container .vrtx-textfield input#fake-file {
+#file-upload-container input#fake-file {
   position: absolute;
   top: 0px;
   right: 0px;
@@ -3386,12 +3371,25 @@ tr.expandedForm td .vrtx-button-small {
   z-index: 1;
 }
 
+.js #file-upload-container input#file {
+  z-index: 999;
+  position: relative;
+  left: 328px;
+  background: none;
+  width: 87px;
+  height: 27px;
+  cursor: pointer !important;
+
+  /* Transparent */
+  opacity: 0;
+  -moz-opacity: 0;
+  filter:alpha(opacity: 0);
+}
+
 #file-upload-container a.vrtx-file-upload {
-  margin-left: 10px;
-  margin-bottom: -2px;
   position: absolute;
   top: 0px;
-  right: -100px;
+  left: 330px;
   z-index: 1;
 }
 

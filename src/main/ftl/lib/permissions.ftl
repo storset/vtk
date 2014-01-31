@@ -297,10 +297,8 @@
       
       <#-- Add -->
       <span class="add${capitalizedType}">
-        <div class="vrtx-textfield">
-          <input type="text" id="${spring.status.expression}" name="${spring.status.expression}" value="${value?html}" />
-        </div>
-        
+        <input class="vrtx-textfield" type="text" id="${spring.status.expression}" name="${spring.status.expression}" value="${value?html}" />
+
         <#if type == "user">
           <@spring.bind formName + ".ac_userNames" />
           <#assign value=""/>

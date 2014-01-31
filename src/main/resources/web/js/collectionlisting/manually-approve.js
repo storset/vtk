@@ -38,7 +38,6 @@ $(window).load(function() {
       retrieveResources(".", locations, aggregatedlocations, true);
       var html = $.mustache(MANUALLY_APPROVE_TEMPLATES["menu"], { approveShowAll: approveShowAll, 
                                                                   approveShowApprovedOnly: approveShowApprovedOnly });  
-    
       $($.parseHTML(html)).insertAfter("#manually-approve-container-title"); 
     });
   } else {
@@ -53,7 +52,7 @@ $(document).ready(function() {
     vrtxAdmin.cachedAppContent.on("click", "#vrtx-manually-approve-tab-menu a", function(e) {
       var elem = $(this);
       var parent = elem.parent();
-      elem.replaceWith("<span>" + elem.html() + "</span>"); // todo: use wrap()'
+      elem.replaceWith("<span>" + elem.html() + "</span>"); // todo: use wrap()
       if(parent.hasClass("last")) {
         APPROVED_ONLY = true;
         parent.attr("class", "active active-last");

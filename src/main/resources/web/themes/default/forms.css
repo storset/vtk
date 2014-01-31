@@ -39,7 +39,7 @@
   outline: none;
 }
 
-.forms-new textarea.round-corners {
+.forms-new textarea {
   -webkit-border-radius: 5px;
   -moz-border-radius: 5px;
   border-radius: 5px; 
@@ -49,14 +49,20 @@
 .forms-new input[type=button],
 .forms-new input[type=file],
 .forms-new input[type=image],
-.forms-new input[type=password],
 .forms-new input[type=reset],
 .forms-new input[type=submit],
-.forms-new input[type=text],
 .forms-new button,
 .forms-new .ui-dialog .ui-dialog-buttonpane button {
   border: 1px solid transparent;
   background: transparent;
+  font-family: inherit;
+  font-size: 100%;
+  font-style: inherit; 
+  font-weight: inherit;
+}
+
+.forms-new input[type=password],
+.forms-new input[type=text] {
   font-family: inherit;
   font-size: 100%;
   font-style: inherit; 
@@ -261,31 +267,20 @@
 .forms-new .vrtx-textfield,
 .forms-new .vrtx-textfield-big {
   background: #fff;
-  height: 26px;
-  padding: 1px 8px 0 6px;
-  display: inline-block;
   border: 1px solid #919191;
+  height: 26px;
+  padding: 1px 8px 0 8px;
+  display: inline-block;
   -webkit-border-radius: 5px;
   -moz-border-radius: 5px;
   border-radius: 5px;
-}
-
-.forms-new .vrtx-textfield input,
-.forms-new .vrtx-textfield-big input {
-  height: 22px;
-  margin: 0;
-  padding: 0;
   display: block;
   display: inline-block;
 }
 
 .forms-new .vrtx-textfield-big {
-  height: 29px;
-  padding: 4px 11px 0 11px;
-}
-
-.forms-new .vrtx-textfield-big input {
-  height: 23px;
+  height: 30px;
+  padding: 3px 10px 0;
 }
 
 /* ^ Textfields */
@@ -425,7 +420,7 @@
   margin-top: 0px;
 }
 
-.forms-new #email-approval-form .vrtx-textfield input {
+.forms-new #email-approval-form .vrtx-textfield {
   width: 385px;
 }
 

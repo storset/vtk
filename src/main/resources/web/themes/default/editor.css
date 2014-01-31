@@ -37,8 +37,8 @@
   margin-right: 5px;
 }
 
-.media .vrtx-textfield,
-.image-ref .vrtx-textfield {
+.media.vrtx-textfield,
+.image-ref.vrtx-textfield {
   margin-right: 20px;
 }
 
@@ -284,7 +284,7 @@ h3#vrtx-image-editor-preview {
   margin-bottom: 20px;
 }
 
-#vrtx-image-dimensions-crop .vrtx-textfield#vrtx-textfield-height {
+#vrtx-image-dimensions-crop .vrtx-textfield#resource-height {
   margin-bottom: 0px;
 }
 

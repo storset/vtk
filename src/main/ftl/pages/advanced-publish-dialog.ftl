@@ -17,13 +17,9 @@
     <form method="post" action="${actionURL?html}">
       <fieldset>
        <label for="publishDate"><@vrtx.msg code="publishing.publish-date" default="Publish on" /> </label>
-       <div class="vrtx-textfield">
-         <@dateTimeInput "publish-date" "publishDate"/>
-       </div>
+       <@dateTimeInput "publish-date" "publishDate"/>
        <label for="unpublishDate"><@vrtx.msg code="publishing.unpublish-date" default="Unpublish on" /></label>
-       <div class="vrtx-textfield">
-         <@dateTimeInput "unpublish-date" "unpublishDate" />
-       </div>
+       <@dateTimeInput "unpublish-date" "unpublishDate" />
        <@vrtx.csrfPreventionToken url=actionURL />
        <div id="submitButtons" class="submitButtons">
           <div class="vrtx-focus-button">
@@ -47,5 +43,5 @@
     <#if dateValue?has_content && timeValue?has_content >
         <#local dateTimeValue = dateValue + " " + timeValue />
     </#if>
-    <input class="date" type="text" id="${id}" name="${id}" value="${dateTimeValue}" />
+    <input class="vrtx-textfield date" type="text" id="${id}" name="${id}" value="${dateTimeValue}" />
 </#macro>

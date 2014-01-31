@@ -411,7 +411,7 @@
   display: none !important;
 }
 
-#resource-links .vrtx-textfield input{
+#resource-links .vrtx-textfield {
   width: 160px;
 }
 

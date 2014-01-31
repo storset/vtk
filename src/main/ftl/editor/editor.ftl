@@ -98,8 +98,8 @@
             // Employee listing
             enhanceMultipleInputFields("tag-search-suggestions", false, false, 50);
             
-            var manuallyApproveButton = $("#manually-approve-container-title");
-            manuallyApproveButton.parent().find("> div:first-child").append(manuallyApproveButton.remove());
+            // var manuallyApproveButton = $("#manually-approve-container-title");
+            // manuallyApproveButton.parent().find("> div:first-child").append(manuallyApproveButton.remove());
             MULTIPLE_INPUT_FIELD_INITIALIZED.resolve();
           });
         }
@@ -358,21 +358,13 @@
         <#if value = '' && name='userTitle' && resource.resourceType != 'employee-listing'>
           <#local value = resource.title?html />
         </#if>
-        <#if name='userTitle'>
-          <div class="vrtx-textfield-big">
-        <#else>
-          <div class="vrtx-textfield">
-        </#if>
-            <input type="text" id="resource.${name}" name="resource.${name}" value="${value?html}" size="32" />
-          </div>
+          <input <#if name='userTitle'>class="vrtx-textfield-big"<#else>class="vrtx-textfield"</#if> type="text" id="resource.${name}" name="resource.${name}" value="${value?html}" size="32" />
         <#if description != "">
           <span class="input-description">(${description})</span>
         </#if>
 
       <#elseif name = 'media'>
-        <div class="vrtx-textfield">
-          <input type="text" id="resource.${name}"  name="resource.${name}" value="${value?html}" />
-        </div>
+        <input class="vrtx-textfield" type="text" id="resource.${name}"  name="resource.${name}" value="${value?html}" />
         <div class="vrtx-button">
           <button type="button" onclick="browseServer('resource.${name}', '${fckeditorBase.url?html}', '${baseFolder}',
                   '${fckBrowse.url.pathRepresentation}', 'Media');"><@vrtx.msg code="editor.browseMediaFiles"/></button>
@@ -383,9 +375,7 @@
         <#if name == "picture">
         <div class="picture-and-caption">
           <div class="input-and-button-container">
-            <div class="vrtx-textfield">
-              <input type="text" class="preview-image-inputfield" id="resource.${name}" name="resource.${name}" value="${value?html}" />
-            </div>
+            <input type="text" class="vrtx-textfield preview-image-inputfield" id="resource.${name}" name="resource.${name}" value="${value?html}" />
             <div class="vrtx-button">
               <button type="button" onclick="browseServer('resource.${name}', '${fckeditorBase.url?html}', '${baseFolder}',
                 '${fckBrowse.url.pathRepresentation}');"><@vrtx.msg code="editor.browseImages"/></button>
@@ -414,9 +404,7 @@
         
           <div class="image-ref vrtx-image-ref.${name}">
             <div class="input-and-button-container.${name}">
-              <div class="vrtx-textfield">
-                <input type="text" class="preview-image-inputfield" id="resource.${name}" name="resource.${name}" value="${value?html}" />
-              </div>
+              <input type="text" class="vrtx-textfield preview-image-inputfield" id="resource.${name}" name="resource.${name}" value="${value?html}" />
               <div class="vrtx-button">
                 <button type="button" onclick="browseServer('resource.${name}', '${fckeditorBase.url?html}', '${baseFolder}',
                   '${fckBrowse.url.pathRepresentation}');"><@vrtx.msg code="editor.browseImages"/></button>
@@ -464,16 +452,10 @@
         </#if>
 
         <#local uniqueName = 'cal_' + propDef_index />
-        <div class="vrtx-textfield vrtx-date">
-          <input size="10" maxlength="10" type="text" class="date" id="resource.${name}" name="resource.${name}.date" value="${dateVal}" />
-        </div>
-        <div class="vrtx-textfield vrtx-hours">
-          <input size="2" maxlength="2" type="text" class="hours" id="resource.${name}.hours" name="resource.${name}.hours" value="${hours}" />
-        </div>
-          <span class="colon">:</span>
-        <div class="vrtx-textfield vrtx-minutes">
-          <input size="2" maxlength="2" type="text" class="minutes" id="resource.${name}.minutes" name="resource.${name}.minutes" value="${minutes}" />
-        </div>
+        <input size="10" maxlength="10" type="text" class="vrtx-date date" id="resource.${name}" name="resource.${name}.date" value="${dateVal}" />
+        <input size="2" maxlength="2" type="text" class="vrtx-date hours" id="resource.${name}.hours" name="resource.${name}.hours" value="${hours}" />
+        <span class="colon">:</span>
+        <input size="2" maxlength="2" type="text" class="vrtx-date minutes" id="resource.${name}.minutes" name="resource.${name}.minutes" value="${minutes}" />
 
       <#else>
 
@@ -556,9 +538,8 @@
           <#if name = 'recursive-listing-subfolders'>
             <label>${vrtx.getMsg("editor.recursive-listing.featured-articles")}</label>
           </#if>
-          <div class="vrtx-textfield">
-            <input type="text" id="resource.${name}" name="resource.${name}" value="${value?html}" size="32" <#if multiple>class="vrtx-multiple"</#if> />
-          </div>
+          <input class="vrtx-textfield<#if multiple> vrtx-multiple</#if>" type="text" id="resource.${name}" name="resource.${name}" value="${value?html}" size="32" />
+    
           <#if name = 'recursive-listing-subfolders'>
             <label class="tooltip">${vrtx.getMsg("editor.recursive-listing.featured-articles.hint")}</label>
           </#if>

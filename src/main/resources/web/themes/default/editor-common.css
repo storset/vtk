@@ -230,7 +230,7 @@ div.manually-approve-from table input {
 .properties > div.title input,
 .properties > div.name input,
 .properties > div.userTitle input {
-  width: 522px;
+  width: 525px;
 }
 
 #vrtx-simple-editor div.userTitle input {
@@ -310,12 +310,12 @@ div.description textarea {
 
 /* Event */
 
-.vrtx-textfield.vrtx-date input {
+.vrtx-textfield.vrtx-date {
   width: 67px;
 }
 
-.vrtx-textfield.vrtx-hours input,
-.vrtx-textfield.vrtx-minutes input {
+.vrtx-textfield.vrtx-hours,
+.vrtx-textfield.vrtx-minutes {
   width: 17px;
 }
 
@@ -395,8 +395,8 @@ div.introImageAndCaption .hidePicture > label {
   white-space: nowrap;
 }
 
-div.introImageAndCaption div.vrtx-image-ref-browse .vrtx-textfield input#picture,
-div#vrtx-resource\.picture div.input-and-button-container .vrtx-textfield input {
+div.introImageAndCaption div.vrtx-image-ref-browse input#picture.vrtx-textfield,
+div#vrtx-resource\.picture div.input-and-button-container input.vrtx-textfield {
   width: 200px;
 }
 

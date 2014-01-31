@@ -29,24 +29,20 @@
       <@vrtx.csrfPreventionToken uri />
       
       <label for="emailTo" class="first"><@vrtx.msg code="email.form.to" default="Send e-mail to" /></label> 
-      <div class="vrtx-textfield">
-        <#if emailSavedTo?has_content>
-          <input type="text" id="emailTo" name="emailTo" value="${emailSavedTo?html}" />
-        <#else>
-          <input type="text" id="emailTo" name="emailTo" value="<#if editorialContacts??>${editorialContacts}</#if>" />
-        </#if>
-      </div>
+      <#if emailSavedTo?has_content>
+        <input class="vrtx-textfield" type="text" id="emailTo" name="emailTo" value="${emailSavedTo?html}" />
+      <#else>
+        <input class="vrtx-textfield" type="text" id="emailTo" name="emailTo" value="<#if editorialContacts??>${editorialContacts}</#if>" />
+      </#if>
       <div class="email-help"><@vrtx.msg code="email.form.to-tooltip" default="Use comma as a separator if sending to more than one e-mail recipient" /></div> 
       
       <#if userEmailFrom??>
         <label for="emailFrom"><@vrtx.msg code="email.form.from" default="Your e-mail address" /></label>
-        <div class="vrtx-textfield">
-          <#if emailSavedFrom?has_content>
-            <input type="text" id="emailFrom" name="emailFrom" value="${emailSavedFrom?html}" />
-          <#else>
-            <input type="text" id="emailFrom" name="emailFrom" value="" />
-          </#if>
-        </div>
+        <#if emailSavedFrom?has_content>
+          <input class="vrtx-textfield" type="text" id="emailFrom" name="emailFrom" value="${emailSavedFrom?html}" />
+        <#else>
+          <input class="vrtx-textfield" type="text" id="emailFrom" name="emailFrom" value="" />
+        </#if>
       </#if>
       
       <#if emailBody?has_content>

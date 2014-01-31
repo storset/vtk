@@ -24,32 +24,24 @@
 	    </#list>
 	  </select>
     <#else>
-      <#if inputFieldName == "title">
-        <div class="vrtx-textfield-big">
-      <#else>
-        <#if multiple && dropdown && valuemap?exists && valuemap?is_hash>
-          <#if value=="" >
-            <#local value=defaultValue />
-          </#if>
-          <div class="vrtx-textfield vrtx-multiple-dropdown">
-          <script type="text/javascript"><!--
-            var dropdown${inputFieldName} = [
-              <#list valuemap?keys as key>
-                { 
-                  key: "${key?html}",
-                  value: "${valuemap[key]}"
-                } 
-                <#if (key_index < (valuemap?size - 1))>, </#if>
-              </#list>
-            ];
-          // -->
-          </script>
-        <#else>
-          <div class="vrtx-textfield">
+      <#if multiple && dropdown && valuemap?exists && valuemap?is_hash>
+        <#if value=="" >
+          <#local value=defaultValue />
         </#if>
+        <script type="text/javascript"><!--
+          var dropdown${inputFieldName} = [
+            <#list valuemap?keys as key>
+              { 
+                key: "${key?html}",
+                value: "${valuemap[key]}"
+              } 
+              <#if (key_index < (valuemap?size - 1))>, </#if>
+            </#list>
+          ];
+        // -->
+        </script>
       </#if>
-	    <input size="${inputFieldSize}" type="text" name="${inputFieldName}" id="${inputFieldName}" value="${value?html}" />
-	  </div>
+	  <input <#if inputFieldName == "title">class="vrtx-textfield-big"<#elseif multiple && dropdown && valuemap?exists && valuemap?is_hash>class="vrtx-textfield vrtx-multiple-dropdown"<#else>class="vrtx-textfield"</#if> size="${inputFieldSize}" type="text" name="${inputFieldName}" id="${inputFieldName}" value="${value?html}" />
     </#if>
     <#if "${tooltip}" != ""><div class="tooltip">${tooltip}</div></#if>
   </div>

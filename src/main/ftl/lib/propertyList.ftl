@@ -544,9 +544,7 @@
             <#if inputSize &gt; 99>
               <textarea name="value" rows="5" cols="60">${value}</textarea>
             <#else>
-              <div class="vrtx-textfield">
-                <input type="text" id="value" name="value" value="${value}" size="${inputSize}" />
-              </div>
+              <input class="vrtx-textfield" type="text" id="value" name="value" value="${value}" size="${inputSize}" />
               <#if item.format?exists>(${item.format})</#if>
             </#if>
             <#if form.hierarchicalHelpUrl?exists>

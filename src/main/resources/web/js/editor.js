@@ -726,7 +726,7 @@ function storeInitPropValues(contents) {
   var vrtxEdit = vrtxEditor;
 
   var inputFields = contents.find("input").not("[type=submit]").not("[type=button]")
-    .not("[type=checkbox]").not("[type=radio]");
+                            .not("[type=checkbox]").not("[type=radio]");
   var selects = contents.find("select");
   var checkboxes = contents.find("input[type=checkbox]:checked");
   var radioButtons = contents.find("input[type=radio]:checked");
@@ -1200,30 +1200,30 @@ function initMultipleInputFields() {
 }
 
 function enhanceMultipleInputFields(name, isMovable, isBrowsable, limit) { // TODO: simplify
-  var inputField = $("." + name + " input[type=text]");
+  var inputField = $("." + name + " input[type='text']");
   if (!inputField.length) return;
 
   // Config
   var size = inputField.attr("size");
-  var inputFieldParent = inputField.parent();
-  var isDropdown = inputFieldParent.hasClass("vrtx-multiple-dropdown");
+  
+  var isDropdown = inputField.hasClass("vrtx-multiple-dropdown");
   isMovable = !isDropdown && isMovable;
-  var inputFieldWrp = inputFieldParent.parent();
-  if (inputFieldWrp.hasClass("vrtx-resource-ref-browse")) {
+
+  var inputFieldParent = inputField.parent();
+  if (inputFieldParent.hasClass("vrtx-resource-ref-browse")) {
     isBrowsable = true;
-    inputFieldParent.next().filter(".vrtx-button").hide();
+    inputField.next().filter(".vrtx-button").hide();
   }
 
-  inputFieldWrp.addClass("vrtx-multipleinputfields").data("name", name); // Don't like to do this need get it easily
-  inputFieldParent.removeClass("vrtx-textfield").append(vrtxEditor.mustacheFacade.getMultipleInputFieldsAddButton(name, size, isBrowsable, isMovable, isDropdown));
+  inputFieldParent.addClass("vrtx-multipleinputfields").data("name", name); // Don't like to do this need get it easily
+  $($.parseHTML(vrtxEditor.mustacheFacade.getMultipleInputFieldsAddButton(name, size, isBrowsable, isMovable, isDropdown), document, true)).insertAfter(inputField);
 
   var inputFieldVal = inputField.hide().val();
   var formFields = inputFieldVal.split(",");
 
-  vrtxEditor.multipleFieldsBoxes[name] = { counter: 1, // 1-index
-                                           limit: limit };
+  vrtxEditor.multipleFieldsBoxes[name] = { counter: 1, limit: limit };
 
-  var addFormFieldFunc = addFormField, html = ""; /* ENHANCE PART */
+  var addFormFieldFunc = addFormField, html = "";
   for (var i = 0, len = formFields.length; i < len; i++) {
     html += addFormFieldFunc(name, len, $.trim(formFields[i]), size, isBrowsable, isMovable, isDropdown, true);
   }

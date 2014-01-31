@@ -72,7 +72,7 @@ function VrtxAdmin() {
   this.isMobileWebkitDevice = (this.isIPhone || this.isIPad || this.isAndroid);
   this.isWin = ((this.ua.indexOf("win") != -1) || (this.ua.indexOf("16bit") != -1));
   this.supportsFileList = window.FileList;
-  this.animateTableRows = !this.isIE;
+  this.animateTableRows = !this.isIE9;
   this.hasFreeze = typeof Object.freeze !== "undefined"; // ECMAScript 5 check
   this.hasConsole = typeof console !== "undefined";
   this.hasConsoleLog = this.hasConsole && console.log;
@@ -741,10 +741,7 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
           isReplacing: true,
           nodeType: "div",
           funcComplete: initPermissionForm,
-          simultanSliding: false,
-          transitionSpeed: 0,
-          transitionEasingSlideDown: "linear",
-          transitionEasingSlideUp: "linear"
+          simultanSliding: false
         });
         vrtxAdm.completeFormAsync({
           selector: "div.permissions-" + privilegiesPermissions[i] + "-wrapper .submitButtons input",
@@ -761,10 +758,7 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
               vrtxAdm.globalAsyncComplete();
             }
           },
-          post: true,
-          transitionSpeed: 0,
-          transitionEasingSlideDown: "linear",
-          transitionEasingSlideUp: "linear"
+          post: true
         });
       }
 
@@ -921,7 +915,7 @@ var VrtxAnimation = dejavu.Class.declare({
   $implements: [VrtxAnimationInterface],
   $constants: {
     // TODO: remove vrtxAdmin dependency
-    animationSpeed: typeof vrtxAdmin !== "undefined" && vrtxAdmin.isMobileWebkitDevice ? 0 : 200,
+    animationSpeed: (typeof vrtxAdmin !== "undefined" && vrtxAdmin.isMobileWebkitDevice) ? 0 : 200,
     easeIn: (typeof vrtxAdmin !== "undefined" && !(vrtxAdmin.isIE && vrtxAdmin.browserVersion < 10) && !vrtxAdmin.isMobileWebkitDevice) ? "easeInQuad" : "linear",
     easeOut: (typeof vrtxAdmin !== "undefined" && !(vrtxAdmin.isIE && vrtxAdmin.browserVersion < 10) && !vrtxAdmin.isMobileWebkitDevice) ? "easeOutQuad" : "linear"
   },

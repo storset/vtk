@@ -126,19 +126,11 @@
 }
 
 #manually-approve-container > *.approve-page-hidden {
-  opacity: 0; 
-  height: 0px;
-  overflow: hidden;
+  display: none;
 }
 
 #manually-approve-container > * {
-  opacity: 1;
-  height: auto;
-  /*
-  -moz-transition: all 500ms ease-in-out;
-  -webkit-transition: 500ms ease-in-out;
-  transition: 500ms ease-in-out;
-  */
+  
 }
 
 #manually-approve-container table {

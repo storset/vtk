@@ -568,6 +568,7 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
                 selectorClass: "vrtx-admin-form",
                 insertAfterOrReplaceClass: "#active-tab ul#tabMenuRight",
                 nodeType: "div",
+                focusElement: "",
                 funcComplete: function (p) {
                   vrtxAdm.initFileUpload();
                 },
@@ -1779,11 +1780,14 @@ VrtxAdmin.prototype.initFileUpload = function initFileUpload() {
     _$("a.vrtx-file-upload").removeClass("hover");
   });
   inputFile.focus(function () {
-    _$("a.vrtx-file-upload").addClass("focus");
+    _$("a.vrtx-file-upload").addClass("hover");
   })
   .blur(function() {
-    _$("a.vrtx-file-upload").removeClass("focus");
+    _$("a.vrtx-file-upload").removeClass("hover");
   });
+  
+  $("<div id='upload-focus' style='display: inline-block; outline: none;' tabindex='-1' />").insertBefore("#file");
+  $("#upload-focus")[0].focus();
 
   if (vrtxAdm.supportsReadOnly(document.getElementById("fake-file"))) {
     form.find("#fake-file").attr("readOnly", "readOnly");
@@ -3003,8 +3007,10 @@ VrtxAdmin.prototype.addNewMarkup = function addNewMarkup(options, selectorClass,
     easeIn: transitionEasingSlideDown,
     easeOut: transitionEasingSlideUp,
     afterIn: function(animation) {
-      if(options.focusElement) {
-        animation.__opts.elem.find(options.focusElement).filter(":visible").filter(":first").focus();
+      if(options.focusElement != null) {
+        if(options.focusElement != "") {
+          animation.__opts.elem.find(options.focusElement).filter(":visible").filter(":first").focus();
+        }
       } else {
         var inputs = animation.__opts.elem.find("textarea, input[type='text'], select").filter(":visible");
         if(inputs.length) {

@@ -129,11 +129,11 @@
         </ul>
       </#if>
 
-      <#if resourceMenuRight != "">
-        <@listMenu.listMenu menu=resourceMenuRight displayForms=true prepend="" append=""/>
-      </#if>
       <#if resourceMenuLeft != "">
         <@listMenu.listMenu menu=resourceMenuLeft displayForms=true prepend="" append=""/>
+      </#if>
+      <#if resourceMenuRight != "">
+        <@listMenu.listMenu menu=resourceMenuRight displayForms=true prepend="" append=""/>
       </#if>
     </div>
   </div>

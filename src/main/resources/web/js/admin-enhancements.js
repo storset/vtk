@@ -262,7 +262,7 @@ VrtxAdmin.prototype.initResourceMenus = function initResourceMenus() {
     vrtxAdm.getFormAsync({
       selector: "#title-container a#" + resourceMenuLeftServices[i],
       selectorClass: "globalmenu",
-      insertAfterOrReplaceClass: "ul#resourceMenuLeft",
+      insertAfterOrReplaceClass: "#resource-title > ul:last",
       nodeType: "div",
       simultanSliding: true
     });
@@ -280,8 +280,7 @@ VrtxAdmin.prototype.initResourceMenus = function initResourceMenus() {
     vrtxAdm.getFormAsync({
       selector: "#title-container a#" + publishUnpublishService,
       selectorClass: "globalmenu",
-      insertAfterOrReplaceClass: "ul#resourceMenuLeft",
-      secondaryInsertAfterOrReplaceClass: "ul#resourceMenuRight",
+      insertAfterOrReplaceClass: "#resource-title > ul:last",
       nodeType: "div",
       simultanSliding: true,
       funcComplete: (isSavingBeforePublish ? function (p) {
@@ -1428,9 +1427,24 @@ VrtxAdmin.prototype.adjustResourceTitle = function adjustResourceTitle() {
   var resourceMenuLeft = this._$("#resourceMenuLeft");
   if (resourceMenuLeft.length) {
     var title = this._$("h1");
-    var resourceMenuRightHeight = this._$("#resourceMenuRight").outerHeight(true);
-    var resourceMenuLeftTopAdjustments = Math.min(0, title.outerHeight(true) - resourceMenuRightHeight);
-    resourceMenuLeft.css("marginTop", resourceMenuLeftTopAdjustments + "px");
+    var resourceMenuRight = this._$("#resourceMenuRight"); 
+
+    // Top adjust
+    var titleHeight = title.outerHeight(true) - 34;
+    var resourceMenuLeftHeight = resourceMenuLeft.outerHeight(true);
+    resourceMenuRight.css("marginTop", -(resourceMenuLeftHeight + titleHeight) + "px");
+    
+    // Left adjust
+    var w1 = title.outerWidth(true);
+    var w2 = resourceMenuLeft.outerWidth(true);
+    if(w1 > w2) {
+      resourceMenuRight.css("marginLeft", ((w1 - w2) + 25) + "px");
+    }
+    
+    // Old - reversed float
+    // var resourceMenuRightHeight = this._$("#resourceMenuRight").outerHeight(true);
+    // var resourceMenuLeftTopAdjustments = Math.min(0, title.outerHeight(true) - resourceMenuRightHeight);
+    // resourceMenuLeft.css("marginTop", resourceMenuLeftTopAdjustments + "px");
   }
 };
 

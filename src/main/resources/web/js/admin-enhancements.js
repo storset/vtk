@@ -1488,7 +1488,19 @@ VrtxAdmin.prototype.logoutButtonAsLink = function logoutButtonAsLink() {
 
 function createFuncComplete() {
   var vrtxAdm = vrtxAdmin;
-
+  
+  vrtxAdm.cachedDoc.on("keydown", "#active-tab .vrtx-admin-form .radio-buttons input[type='radio']", function(e) {
+    if(isMultipleKey(e, [37, 38, 39, 40])) {
+      var checkBox = $(this);
+      var waitAndRefocus = setTimeout(function() {
+        var checked = checkBox.closest(".radio-buttons").find("input:checked");
+        if(checked.length) {
+          checked[0].focus();
+        }
+      }, 15);
+    }
+  });
+  
   vrtxAdm.cachedDoc.on("keyup", "#vrtx-div-collection-title input[type='text']", $.debounce(50, true, function () {
     createTitleChange($(this), $("#vrtx-div-collection-name input[type='text']"), null);
   }));
@@ -1563,7 +1575,7 @@ function createChangeTemplate(hasTitle) {
 
   var name = $("#name");
   growField(name, name.val(), 5, isIndexOrReplaceTitle ? 35 : 100, 530);
-
+  
   if (vrtxAdmin.createResourceReplaceTitle) {
     $(".vrtx-admin-form").addClass("file-name-from-title");
   }
@@ -3832,6 +3844,19 @@ function unique(array) {
   for (i = 0; i < l; i += 1) o[array[i]] = array[i];
   for (i in o) r.push(o[i]);
   return r;
+}
+
+/* 
+ * Check keyboard input 
+ */
+function isKey(e, keyCode) {
+  return ((e.which && e.which == keyCode) || (e.keyCode && e.keyCode == keyCode));
+}
+
+function isMultipleKey(e, keyCodes) {
+  for(var i = 0, len = keyCodes.length; i < len; i++) {
+    if(isKey(e, keyCodes[i])) return true;
+  }
 }
 
 /*-------------------------------------------------------------------*\

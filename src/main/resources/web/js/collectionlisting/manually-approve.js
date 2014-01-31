@@ -118,7 +118,7 @@ $(document).ready(function() {
     
     // Paging - next
     manuallyApproveContainer.on("click", ".next", function(e) {
-      var that = $(this).parent();
+      var that = $(this).parent().parent();
       var next = that.next();
       if (next.attr("id") && next.attr("id").indexOf("approve-page") != -1) {
         that.hide();
@@ -129,7 +129,7 @@ $(document).ready(function() {
 
     // Paging - previous
     manuallyApproveContainer.on("click", ".prev", function(e) {
-      var that = $(this).parent();
+      var that = $(this).parent().parent();
       var prev = that.prev();
       if (prev.attr("id") && prev.attr("id").indexOf("approve-page") != -1) {
         that.hide();
@@ -355,16 +355,17 @@ function generateTableEndAndPageInfo(pages, prPage, len, lastRow) {
 }
 
 function generateNavAndEndPage(i, html, prPage, remainder, pages, totalPages) {
-  var html = $.mustache(MANUALLY_APPROVE_TEMPLATES["navigation-next"], { pages: pages,
-                                                                         approveNext: approveNext,
-                                                                         nextPrPage: (pages < totalPages || remainder == 0) ? prPage : remainder });
+  var html = "<div class='prev-next'>";
   if (i > prPage) {
     var prevPage = pages - 2;
     html += $.mustache(MANUALLY_APPROVE_TEMPLATES["navigation-prev"], { prevPage: prevPage,
                                                                         approvePrev: approvePrev,
                                                                         prPage: prPage });
   }
-  html += "</div>";
+  html += $.mustache(MANUALLY_APPROVE_TEMPLATES["navigation-next"], { pages: pages,
+                                                                     approveNext: approveNext,
+                                                                     nextPrPage: (pages < totalPages || remainder == 0) ? prPage : remainder });
+  html += "</div></div>";
   return html;
 }
 

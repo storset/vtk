@@ -235,7 +235,8 @@ VrtxAdmin.prototype.initTooltips = function initTooltips() {
     expandHoverToTipBox: true,
     xOffset: 10,
     yOffset: -8,
-    extra: true
+    extra: true,
+	keySpaceTriggersOpen: true
   });
   this.cachedBody.vortexTips("td.permissions span.permission-tooltips", {
     appendTo: "#contents",

@@ -37,7 +37,8 @@
 	     containerWidth: 400,
 	     expandHoverToTipBox: true,
 	     xOffset: 30,
-	     yOffset: 115
+	     yOffset: 115,
+	     keySpaceTriggersOpen: true
        });
      });
   // -->

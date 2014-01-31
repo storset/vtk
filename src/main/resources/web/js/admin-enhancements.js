@@ -1434,7 +1434,7 @@ VrtxAdmin.prototype.adjustResourceTitle = function adjustResourceTitle() {
 };
 
 function interceptEnterKey() {
-  vrtxAdmin.cachedAppContent.delegate("form#editor input", "keypress", function (e) {
+  vrtxAdmin.cachedAppContent.delegate("form#editor input, form[name='collectionListingForm'] input, form.trashcan input", "keypress", function (e) {
     if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
       e.preventDefault(); // cancel the default browser click
     }

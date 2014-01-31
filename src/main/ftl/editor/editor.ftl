@@ -187,16 +187,16 @@
         <h2>${header}</h2>
         
         <div class="submitButtons submit-extra-buttons">
-            <a class="vrtx-button" id="vrtx-save-view-shortcut" href="javascript:void(0)"><span>${vrtx.getMsg("editor.saveAndView")}</span></a>
+            <a class="vrtx-button" id="vrtx-save-view-shortcut" href="javascript:void(0)">${vrtx.getMsg("editor.saveAndView")}</a>
             <#if supportedImageEditor><a class="vrtx-button" id="vrtx-save-copy-shortcut" href="javascript:void(0)"><span>${vrtx.getMsg("editor.saveCopy")}</span></a></#if>
           <span id="vrtx-save">
-            <a class="vrtx-focus-button" id="vrtx-save-shortcut" href="javascript:void(0)"><span>${vrtx.getMsg("editor.save")}</span></a>
+            <a class="vrtx-focus-button" id="vrtx-save-shortcut" href="javascript:void(0)">${vrtx.getMsg("editor.save")}</a>
           </span>
-            <a class="vrtx-button" id="vrtx-cancel-shortcut" href="javascript:void(0)"><span>${vrtx.getMsg("editor.cancel")}</span></a>
+            <a class="vrtx-button" id="vrtx-cancel-shortcut" href="javascript:void(0)">${vrtx.getMsg("editor.cancel")}</a>
             <#if !hasPublishDate && onlyWriteUnpublished>
               <span id="buttons-or-text"><@vrtx.msg code="editor.orText" default="or" /></span>
               &nbsp;
-              <a class="vrtx-button" href="javascript:void(0)" id="vrtx-send-to-approval-shortcut"><span>${vrtx.getMsg('send-to-approval.title')}</span></a>
+              <a class="vrtx-button" href="javascript:void(0)" id="vrtx-send-to-approval-shortcut">${vrtx.getMsg('send-to-approval.title')}</a>
             </#if>
             <@genEditorHelpMenu resource.resourceType isCollection />
         </div>
@@ -244,24 +244,16 @@
       </#if>
 
       <div id="submit" class="submitButtons save-cancel">
-        <div class="vrtx-button vrtx-save-button">
-          <input type="submit" id="saveAndViewButton" name="saveview"  value="${vrtx.getMsg("editor.saveAndView")}"  />
-        </div>
+        <input class="vrtx-button vrtx-save-button" type="submit" id="saveAndViewButton" name="saveview"  value="${vrtx.getMsg("editor.saveAndView")}"  />
         <#if supportedImageEditor>
-          <div class="vrtx-button">
-            <input type="submit" id="saveCopyButton" name="savecopy" value="${vrtx.getMsg("editor.saveCopy")}" />
-          </div>
+          <input class="vrtx-button" type="submit" id="saveCopyButton" name="savecopy" value="${vrtx.getMsg("editor.saveCopy")}" />
         </#if>
-        <div class="vrtx-focus-button vrtx-save-button">
-          <input type="submit" id="saveButton" name="save" value="${vrtx.getMsg("editor.save")}" />
-        </div>
-        <div class="vrtx-button">
-          <input type="submit" id="cancel" name="cancel" value="${vrtx.getMsg("editor.cancel")}" />
-        </div>
+        <input class="vrtx-focus-button vrtx-save-button" type="submit" id="saveButton" name="save" value="${vrtx.getMsg("editor.save")}" />
+        <input class="vrtx-button" type="submit" id="cancel" name="cancel" value="${vrtx.getMsg("editor.cancel")}" />
         <#if !hasPublishDate && onlyWriteUnpublished>
           <span id="buttons-or-text"><@vrtx.msg code="editor.orText" default="or" /></span>
           &nbsp;
-          <a class="vrtx-button" title="${vrtx.getMsg('send-to-approval.title')}" id="vrtx-send-to-approval" href="?vrtx=admin&action=email-approval"><span>${vrtx.getMsg('send-to-approval.title')}</span></a>
+          <a class="vrtx-button" title="${vrtx.getMsg('send-to-approval.title')}" id="vrtx-send-to-approval" href="?vrtx=admin&action=email-approval">${vrtx.getMsg('send-to-approval.title')}</a>
         </#if>
       </div>
 
@@ -365,10 +357,8 @@
 
       <#elseif name = 'media'>
         <input class="vrtx-textfield" type="text" id="resource.${name}"  name="resource.${name}" value="${value?html}" />
-        <div class="vrtx-button">
-          <button type="button" onclick="browseServer('resource.${name}', '${fckeditorBase.url?html}', '${baseFolder}',
-                  '${fckBrowse.url.pathRepresentation}', 'Media');"><@vrtx.msg code="editor.browseMediaFiles"/></button>
-        </div>
+        <button class="vrtx-button" type="button" onclick="browseServer('resource.${name}', '${fckeditorBase.url?html}', '${baseFolder}',
+                '${fckBrowse.url.pathRepresentation}', 'Media');"><@vrtx.msg code="editor.browseMediaFiles"/></button>
         
       <#elseif type = 'IMAGE_REF'>
       
@@ -376,10 +366,8 @@
         <div class="picture-and-caption">
           <div class="input-and-button-container">
             <input type="text" class="vrtx-textfield preview-image-inputfield" id="resource.${name}" name="resource.${name}" value="${value?html}" />
-            <div class="vrtx-button">
-              <button type="button" onclick="browseServer('resource.${name}', '${fckeditorBase.url?html}', '${baseFolder}',
-                '${fckBrowse.url.pathRepresentation}');"><@vrtx.msg code="editor.browseImages"/></button>
-            </div>
+            <button class="vrtx-button" type="button" onclick="browseServer('resource.${name}', '${fckeditorBase.url?html}', '${baseFolder}',
+                                                               '${fckBrowse.url.pathRepresentation}');"><@vrtx.msg code="editor.browseImages"/></button>
           </div>
           <div id="resource.${name}.preview"<#if !value?has_content> class="no-preview"</#if>>
             <div class="resource.${name}.preview-inner property-label"><@vrtx.msg code="editor.image.preview-title"/></div>
@@ -405,10 +393,8 @@
           <div class="image-ref vrtx-image-ref.${name}">
             <div class="input-and-button-container.${name}">
               <input type="text" class="vrtx-textfield preview-image-inputfield" id="resource.${name}" name="resource.${name}" value="${value?html}" />
-              <div class="vrtx-button">
-                <button type="button" onclick="browseServer('resource.${name}', '${fckeditorBase.url?html}', '${baseFolder}',
-                  '${fckBrowse.url.pathRepresentation}');"><@vrtx.msg code="editor.browseImages"/></button>
-              </div>
+              <button class="vrtx-button" type="button" onclick="browseServer('resource.${name}', '${fckeditorBase.url?html}', '${baseFolder}',
+                                                                 '${fckBrowse.url.pathRepresentation}');"><@vrtx.msg code="editor.browseImages"/></button>
             </div>
             <div id="resource.${name}.preview"<#if !value?has_content> class="no-preview"</#if>>
               <div class="resource.${name}.preview-inner property-label"><@vrtx.msg code="editor.image.preview-title"/></div>
@@ -549,8 +535,8 @@
 
           <#if name = 'manually-approve-from'>
             <div id="manually-approve-container-title">
-              <a class="vrtx-button" id="manually-approve-refresh" href="."><span>
-                <div id="manually-approve-refresh-icon"></div>${vrtx.getMsg("editor.manually-approve-refresh")}</span>
+              <a class="vrtx-button" id="manually-approve-refresh" href=".">
+                <span id="manually-approve-refresh-icon"></span>${vrtx.getMsg("editor.manually-approve-refresh")}
               </a>
             </div>
             <div id="manually-approve-container">

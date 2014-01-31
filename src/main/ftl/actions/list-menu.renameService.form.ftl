@@ -13,16 +13,12 @@
       <#assign confirm = renameCommand.confirmOverwrite />
       <input class="vrtx-textfield" type="text" size="40" name="name" value="${spring.status.value?html}" <#if confirm> readonly="readonly" </#if> />
       <div id="submitButtons">
-        <div class="vrtx-focus-button">
-      	  <#if confirm>
-      	    <input type="submit" name="overwrite" value="<@vrtx.msg code="actions.renameService.overwrite" default="Overwrite"/>" />
-      	  <#else>
-            <input type="submit" name="save" value="<@vrtx.msg code="actions.renameService.save" default="Save"/>" />
-          </#if>
-        </div>
-        <div class="vrtx-button">
-          <input type="submit" name="cancel" value="<@vrtx.msg code="actions.renameService.cancel" default="Cancel"/>" />
-        </div>
+      	<#if confirm>
+      	  <input class="vrtx-focus-button" type="submit" name="overwrite" value="<@vrtx.msg code="actions.renameService.overwrite" default="Overwrite"/>" />
+      	<#else>
+          <input class="vrtx-focus-button" type="submit" name="save" value="<@vrtx.msg code="actions.renameService.save" default="Save"/>" />
+        </#if>
+        <input class="vrtx-button" type="submit" name="cancel" value="<@vrtx.msg code="actions.renameService.cancel" default="Cancel"/>" />
       </div>
     </form>
   </div>

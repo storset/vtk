@@ -6,9 +6,7 @@
 	</div>
 	<div class="vrtx-image-ref-browse">
 	  <input type="text" class="vrtx-textfield preview-image-inputfield" id="${inputFieldName}" name="${inputFieldName}" value="${name?html}" size="30" />
-	  <div class="vrtx-button">
-        <button type="button" onclick="browseServer('${inputFieldName}', '${fckeditorBase.url?html}', '${baseFolder}','${fckBrowse.url.pathRepresentation}');"><@vrtx.msg code="editor.browseImages"/></button>
-      </div>
+      <button class="vrtx-button" type="button" onclick="browseServer('${inputFieldName}', '${fckeditorBase.url?html}', '${baseFolder}','${fckBrowse.url.pathRepresentation}');"><@vrtx.msg code="editor.browseImages"/></button>
 	</div>
 	<div id="${inputFieldName}.preview" class="vrtx-image-ref-preview<#if !value?has_content> no-preview</#if>">
 	  <label for="${inputFieldName}.preview"><@vrtx.msg code="editor.image.preview-title"/></label>

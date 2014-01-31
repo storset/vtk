@@ -22,12 +22,8 @@
        <@dateTimeInput "unpublish-date" "unpublishDate" />
        <@vrtx.csrfPreventionToken url=actionURL />
        <div id="submitButtons" class="submitButtons">
-          <div class="vrtx-focus-button">
-            <input type="submit" id="updateAction" name="updateAction" value="${vrtx.getMsg("editor.save")}"  />
-          </div>
-          <div class="vrtx-button">
-            <input type="submit" id="cancelAction" name="cancelAction" value="${vrtx.getMsg("editor.cancel")}" />
-          </div>
+         <input class="vrtx-focus-button" type="submit" id="updateAction" name="updateAction" value="${vrtx.getMsg("editor.save")}"  />
+         <input class="vrtx-button" type="submit" id="cancelAction" name="cancelAction" value="${vrtx.getMsg("editor.cancel")}" />
        </div>
       </fieldset>
     </form>

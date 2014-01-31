@@ -1488,13 +1488,13 @@ VrtxAdmin.prototype.logoutButtonAsLink = function logoutButtonAsLink() {
 function createFuncComplete() {
   var vrtxAdm = vrtxAdmin;
 
-  vrtxAdm.cachedDoc.on("keyup", "#vrtx-textfield-collection-title", $.debounce(50, true, function () {
-    createTitleChange($(this), $("#vrtx-textfield-collection-name"), null);
+  vrtxAdm.cachedDoc.on("keyup", "#vrtx-div-collection-title input[type='text']", $.debounce(50, true, function () {
+    createTitleChange($(this), $("#vrtx-div-collection-name input[type='text']"), null);
   }));
-  vrtxAdm.cachedDoc.on("keyup", "#vrtx-textfield-file-title", $.debounce(50, true, function () {
-    createTitleChange($(this), $("#vrtx-textfield-file-name"), $("#isIndex"));
+  vrtxAdm.cachedDoc.on("keyup", "#vrtx-div-file-title input[type='text']", $.debounce(50, true, function () {
+    createTitleChange($(this), $("#vrtx-div-file-name input[type='text']"), $("#isIndex"));
   }));
-  vrtxAdm.cachedDoc.on("keyup", "#vrtx-textfield-file-name, #vrtx-textfield-collection-namex", $.debounce(50, true, function () {
+  vrtxAdm.cachedDoc.on("keyup", "#vrtx-div-file-name input[type='text'], #vrtx-div-collection-name input[type='text']", $.debounce(50, true, function () {
     createFileNameChange($(this));
   }));
 
@@ -1528,7 +1528,7 @@ function createChangeTemplate(hasTitle) {
   if (checked.length) {
     var templateFile = checked.val();
     if (templateFile.indexOf(".") !== -1) {
-      var fileType = $("#vrtx-textfield-file-type");
+      var fileType = $("#vrtx-div-file-type input[type='text']");
       if (fileType.length) {
         fileTypeEnding = templateFile.split(".")[1];
         fileType.text("." + fileTypeEnding);
@@ -1543,7 +1543,7 @@ function createChangeTemplate(hasTitle) {
       indexCheckbox.parent().hide();
       if (indexCheckbox.is(":checked")) {
         indexCheckbox.removeAttr("checked");
-        createCheckUncheckIndexFile($("#vrtx-textfield-file-name"), indexCheckbox);
+        createCheckUncheckIndexFile($("#vrtx-div-file-name input[type='text']"), indexCheckbox);
       }
     } else {
       indexCheckbox.parent().show();

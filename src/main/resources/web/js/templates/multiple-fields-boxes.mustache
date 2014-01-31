@@ -54,11 +54,9 @@
   </div>
   <div class="{{ clazz }}-browse">
     <input class="vrtx-textfield" type="text" name="{{ inputFieldName }}" id="{{ inputFieldName }}" value="" size="{{ size }}" />
-    <div class="vrtx-button">
-      <button type="button" onclick="browseServer('{{ inputFieldName }}', '{{ baseCKURL }}', '{{ baseFolderURL }}', '{{ basePath }}', '{{ type }}');">
-        {{ browseButtonText }}
-      </button>
-    </div>
+    <button class="vrtx-button" type="button" onclick="browseServer('{{ inputFieldName }}', '{{ baseCKURL }}', '{{ baseFolderURL }}', '{{ basePath }}', '{{ type }}');">
+      {{ browseButtonText }}
+    </button>
   </div>
   {{{ preview }}}
 </div>
@@ -71,11 +69,9 @@
   </div>
   <div class="{{ clazz }}-browse">
     <input class="vrtx-textfield preview-image-inputfield" type="text" name="{{ inputFieldName }}" id="{{ inputFieldName }}" value="" size="{{ size }}" />
-    <div class="vrtx-button">
-      <button type="button" onclick="browseServer('{{ inputFieldName }}', '{{ baseCKURL }}', '{{ baseFolderURL }}', '{{ basePath }}', '{{ type }}');">
-        {{ browseButtonText }}
-      </button>
-    </div>
+    <button class="vrtx-button" type="button" onclick="browseServer('{{ inputFieldName }}', '{{ baseCKURL }}', '{{ baseFolderURL }}', '{{ basePath }}', '{{ type }}');">
+      {{ browseButtonText }}
+    </button>
   </div>
   <div id="{{ inputFieldName }}.preview" class="vrtx-image-ref-preview no-preview" style="display: none">
     <label for="{{ inputFieldName }}.preview">{{ previewTitle }}</label>
@@ -88,25 +84,19 @@
 
 ### {{! ADD, REMOVE, MOVE UP, MOVE DOWN }}
 
-<div class="vrtx-button vrtx-{{ clazz }}-button">
-  <input type="button" value="{{ buttonText }}" />
-</div>
+<input class="vrtx-button vrtx-{{ clazz }}-button" type="button" value="{{ buttonText }}" />
 
 ### {{! BUTTON }}
 
-<div class="vrtx-button">
-  <button class="{{ type }}{{ name }}" type="button" id="{{ idstr }}{{ type }}">
-    {{ buttonText }}
-  </button>
-</div>
+<button class="vrtx-button {{ type }}{{ name }}" type="button" id="{{ idstr }}{{ type }}">
+  {{ buttonText }}
+</button>
 
 ### {{! ADD BUTTON }}
 
-<div id="vrtx-{{ name }}-add" class="vrtx-button">
-  <button onclick="addFormField('{{ name }}', 1, null, '{{ size }}', {{ isBrowsable }}, {{ isMovable }}, {{ isDropdown }}, false); return false;">
-    {{ buttonText }}
-  </button>
-</div>
+<button id="vrtx-{{ name }}-add" class="vrtx-button" onclick="addFormField('{{ name }}', 1, null, '{{ size }}', {{ isBrowsable }}, {{ isMovable }}, {{ isDropdown }}, false); return false;">
+  {{ buttonText }}
+</button>
 
 ### {{! MULTIPLE INPUTFIELD AND DROPDOWN }}
 

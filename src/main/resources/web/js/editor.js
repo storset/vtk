@@ -1304,8 +1304,8 @@ function removeFormField(input) {
   }
   var moveUpFirst = fields.filter(":first").find("button.moveup");
   var moveDownLast = fields.filter(":last").find("button.movedown");
-  if (moveUpFirst.length) moveUpFirst.parent().remove();
-  if (moveDownLast.length) moveDownLast.parent().remove();
+  if (moveUpFirst.length) moveUpFirst.remove();
+  if (moveDownLast.length) moveDownLast.remove();
 }
 
 function swapContentTmp(moveBtn, move) {

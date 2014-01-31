@@ -19,9 +19,7 @@
 <body>
   <#if mailResponse?has_content && mailResponse = "OK">
      <p><@vrtx.msg code="email.form.success" args=[emailSentTo] /></p>
-     <div class="vrtx-button">
-       <button id="email-approval-success" onclick='javascript:$("#dialog-html-send-approval").dialog("close");'><@vrtx.msg code="email.form.close" default="Close" /></button>
-     </div>
+     <button class="vrtx-button" id="email-approval-success" onclick='javascript:$("#dialog-html-send-approval").dialog("close");'><@vrtx.msg code="email.form.close" default="Close" /></button>
   <#else>
     <#assign uri = vrtx.linkConstructor("", "emailApprovalService") />
 
@@ -61,12 +59,8 @@
       </#if>
       
       <div id="submitButtons">
-        <div class="vrtx-focus-button"> 
-          <input type="submit" class="submit-email-form" value="${vrtx.getMsg('send-to-approval.submit')}" name="submit" />
-        </div>
-        <div class="vrtx-button"> 
-          <input type="button" onclick='javascript:$("#dialog-html-send-approval").dialog("close");' class="cancel-email-form" value="${vrtx.getMsg('editor.cancel')}" name="cancel" />
-        </div>
+        <input class="vrtx-focus-button submit-email-form" type="submit" value="${vrtx.getMsg('send-to-approval.submit')}" name="submit" />
+        <input class="vrtx-button cancel-email-form" type="button" onclick='javascript:$("#dialog-html-send-approval").dialog("close");' value="${vrtx.getMsg('editor.cancel')}" name="cancel" />
       </div>
     </form>
 

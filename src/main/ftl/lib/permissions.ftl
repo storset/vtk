@@ -130,7 +130,7 @@
       <#if group_index &lt; groups?size - 1>,<#t/></#if>
     </#list>
     <#if aclInfo.aclEditURLs[privilegeName]?exists>
-      &nbsp;<a class="vrtx-button-small full-ajax" href="${aclInfo.aclEditURLs[privilegeName]?html}"><span><@vrtx.msg code="permissions.privilege.edit" default="edit" /></span></a>&nbsp;&nbsp;
+      &nbsp;<a class="vrtx-button-small full-ajax" href="${aclInfo.aclEditURLs[privilegeName]?html}"><@vrtx.msg code="permissions.privilege.edit" default="edit" /></a>&nbsp;&nbsp;
     </#if>
     <@displayAboutPropShortcut privilegeName "read-write-unpublished" "editorial-contacts" true true "- " />
   <#else>
@@ -140,7 +140,7 @@
       <@vrtx.msg code="permissions.not.assigned" default="Not assigned" /> <#t/>
     </#if>
     <#if aclInfo.aclEditURLs[privilegeName]?exists>
-      &nbsp;<a class="vrtx-button-small full-ajax" href="${aclInfo.aclEditURLs[privilegeName]?html}"><span><@vrtx.msg code="permissions.privilege.edit" default="edit" /></span></a>&nbsp;&nbsp;
+      &nbsp;<a class="vrtx-button-small full-ajax" href="${aclInfo.aclEditURLs[privilegeName]?html}"><@vrtx.msg code="permissions.privilege.edit" default="edit" /></a>&nbsp;&nbsp;
     </#if>
   </#if>
 </#macro>
@@ -182,12 +182,8 @@
     </ul>
     <@displayAboutPropShortcut privilegeName "read-write-unpublished" "editorial-contacts" true true "<p>" "</p>" />
     <div id="submitButtons" class="submitButtons">
-      <div class="vrtx-focus-button">
-        <input type="submit" name="saveAction" value="<@vrtx.msg code="permissions.save" default="Save"/>" />
-      </div>
-      <div class="vrtx-button">
-        <input type="submit" name="cancelAction" value="<@vrtx.msg code="permissions.cancel" default="Cancel"/>" />
-      </div>
+      <input class="vrtx-focus-button" type="submit" name="saveAction" value="<@vrtx.msg code="permissions.save" default="Save"/>" />
+      <input class="vrtx-button" type="submit" name="cancelAction" value="<@vrtx.msg code="permissions.cancel" default="Cancel"/>" />
     </div>
   </form>
 </#macro>
@@ -307,11 +303,8 @@
           </#if>
           <input type="hidden" id="ac_userNames" name="ac_userNames" value="${value?html}" />
         </#if>
-        
-        <div class="vrtx-button">
-          <input class="add${capitalizedType}Button" type="submit" name="add${capitalizedType}Action"
-                       value="<@vrtx.msg code="permissions.add${capitalizedType}" default="Add ${capitalizedType}"/>" />
-        </div>
+        <input class="vrtx-button add${capitalizedType}Button" type="submit" name="add${capitalizedType}Action"
+               value="<@vrtx.msg code="permissions.add${capitalizedType}" default="Add ${capitalizedType}"/>" />
       </span>
     </fieldset>
   </li>

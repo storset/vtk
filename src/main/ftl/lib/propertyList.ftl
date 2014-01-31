@@ -575,14 +575,8 @@
       </#if>
 
       <@formSubmitWrapper item>
-        <div class="vrtx-focus-button">
-          <input type="submit" name="save"
-                 value="<@vrtx.msg code="propertyEditor.save" default="Save"/>" />
-        </div>
-        <div class="vrtx-button">
-          <input type="submit" name="cancelAction"
-                 value="<@vrtx.msg code="propertyEditor.cancel" default="Cancel"/>" />
-      </div>
+        <input class="vrtx-focus-button" type="submit" name="save" value="<@vrtx.msg code="propertyEditor.save" default="Save"/>" />
+        <input class="vrtx-button" type="submit" name="cancelAction" value="<@vrtx.msg code="propertyEditor.cancel" default="Cancel"/>" />
       </@formSubmitWrapper>
       </@formWrapper>
     </form>
@@ -637,9 +631,9 @@
            code="${msgPrefix}.toggle.unset" default="${defaultToggle}" />
       </#if>
     </#local>
-     &nbsp;<a class="vrtx-button-small" href="${item.toggleURL?html}"><span>${label}</span></a>
+     &nbsp;<a class="vrtx-button-small" href="${item.toggleURL?html}">${label}</a>
   <#elseif item.editURL?exists>
-     &nbsp;<a class="vrtx-button-small" href="${item.editURL?html}"><span><@vrtx.msg code="propertyEditor.edit" default="edit" /></span></a>
+     &nbsp;<a class="vrtx-button-small" href="${item.editURL?html}"><@vrtx.msg code="propertyEditor.edit" default="edit" /></a>
   </#if>
 </#macro>
 

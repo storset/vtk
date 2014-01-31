@@ -828,12 +828,6 @@ ul.publishing-document {
 
 /* Dropdown */
 
-.js #editor-help-menu,
-.js #collection-more-menu,
-.js #locale-selection {
-  position: relative;
-}
-
 #tabMenuRight li.more-menu {
   background: url("images/seperator-grey-gradient.png") no-repeat scroll left top transparent;
   padding-left: 15px;
@@ -841,6 +835,12 @@ ul.publishing-document {
 
 #editor-help-menu {
   margin-left: 5px;
+}
+
+.js #editor-help-menu,
+.js #collection-more-menu,
+.js #locale-selection {
+  position: relative;
 }
 
 .js #tabMenuRight #collection-more-menu li {
@@ -900,25 +900,31 @@ ul.publishing-document {
   color: #005AAB;
 }
 
-/* Dropdown */
+/* Button-row / Dropdown */
 
-ul.button-row li {
-  -webkit-border-radius: 0px;
-  -moz-border-radius: 0px;
-  border-radius: 0px;
-  margin-left: -5px !important;
+.forms-new ul.button-row li,
+.forms-new ul.button-row-small li {
+  float: left;
 }
 
-ul.button-row li.first {
-  margin-left: 0px !important;
+.forms-new ul.button-row li.dropdown-init,
+.forms-new ul.button-row-small li.dropdown-init {
+  float: none;
 }
 
-ul.button-row li.first,
+.forms-new ul.button-row li a,
+.forms-new ul.button-row li input[type='text'],
+.forms-new ul.button-row-small li a,
+.forms-new ul.button-row-small li input[type='text'] {
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  border-radius: 0;
+}
+
 ul.button-row li.first a,
-ul.button-row li.first form input,
-ul.button-row-small li.first,
+ul.button-row li.first input[type='text'],
 ul.button-row-small li.first a,
-ul.button-row-small li.first form input {
+ul.button-row-small li.first input[type='text'] {
   -webkit-border-top-left-radius: 5px;
   -webkit-border-bottom-left-radius: 5px;
   -moz-border-radius-topleft: 5px;
@@ -927,25 +933,16 @@ ul.button-row-small li.first form input {
   border-bottom-left-radius: 5px;
 }
 
-ul.button-row li.last,
 ul.button-row li.last a,
-ul.button-row li.last form input,
-ul.button-row-small li.last,
+ul.button-row li.last input[type='text'],
 ul.button-row-small li.last a,
-ul.button-row-small li.last form input {
+ul.button-row-small li.last input[type='text'] {
   -webkit-border-top-right-radius: 5px;
   -webkit-border-bottom-right-radius: 5px;
   -moz-border-radius-topright: 5px;
   -moz-border-radius-bottomright: 5px;
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
-}
-
-ul.dropdown-shortcut-menu li.dropdown-init,
-ul.dropdown-shortcut-menu li.dropdown-init form {
-  -webkit-border-radius: 5px;
-  -moz-border-radius: 5px;
-  border-radius: 5px;
 }
 
 div.dropdown-shortcut-menu-container,
@@ -1009,9 +1006,7 @@ ul.dropdown-shortcut-menu li.dropdown-init .dropdown-shortcut-menu-click-area {
   -moz-border-radius-bottomright: 5px;
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
-  background-image: url("images/dropdown-arrow.png");
-  background-position: 8px 12px;
-  background-repeat: no-repeat;
+  background: #e7e7e7 url("images/dropdown-arrow.png") no-repeat 8px 12px;
 }
 
 ul.dropdown-shortcut-menu.dropdown-shortcut-menu-small li.dropdown-init .dropdown-shortcut-menu-click-area {
@@ -1032,6 +1027,7 @@ ul.dropdown-shortcut-menu li.dropdown-init .dropdown-shortcut-menu-click-area:ho
   background-image: url("images/dropdown-arrow-hover.png");
   background-position: 7px 13px;
   outline: none;
+  cursor: pointer;
 }
 
 ul.dropdown-shortcut-menu.dropdown-shortcut-menu-small li.dropdown-init .dropdown-shortcut-menu-click-area:focus,
@@ -1410,11 +1406,6 @@ div.dropdown-shortcut-menu-container form .vrtx-button button {
   margin-bottom: -3px;
 }
 
-.vrtx-admin-form .tooltips {
-  margin-left: 0px;
-  margin-bottom: -3px;
-}
-
 /* ^ Tooltip */
 
 /* ^ 3.2 Resource title */
@@ -1595,13 +1586,6 @@ span.vrtx-help-step-by-step-cmd {
   margin-top: 10px;
 }
 
-.vrtx-admin-form #vrtx-textfield-file-title,
-.vrtx-admin-form #vrtx-textfield-file-name,
-.vrtx-admin-form #vrtx-textfield-collection-title,
-.vrtx-admin-form #vrtx-textfield-collection-name {
-  clear: left;
-}
-
 .vrtx-admin-form #createCollectionService-form .radio-buttons,
 .vrtx-admin-form #vrtx-create-document-templates {
   background: transparent url("images/line-dotted-tighter.gif") repeat-x scroll left bottom;
@@ -1632,29 +1616,31 @@ span.vrtx-help-step-by-step-cmd {
   margin: 2px 0 8px 22px;
 }
 
+.vrtx-admin-form #vrtx-div-file-title,
+.vrtx-admin-form #vrtx-div-file-name,
+.vrtx-admin-form #vrtx-div-collection-title,
+.vrtx-admin-form #vrtx-div-collection-name {
+  clear: left;
+}
+
 .vrtx-admin-form #initCreateChangeTemplate,
 .vrtx-admin-form #vrtx-div-file-title {
   display: none;
 }
 
-.vrtx-admin-form input[disabled]#vrtx-textfield-file-name,
-.vrtx-admin-form #vrtx-textfield-file-type.disabled {
+.vrtx-admin-form #vrtx-div-file-name input[type='text'][disabled],
+.vrtx-admin-form #vrtx-div-file-type input[type='text'].disabled {
   color: #777 !important;
 }
 
-.vrtx-admin-form.file-name-from-title #vrtx-textfield-file-name,
-.vrtx-admin-form.file-name-from-title #vrtx-textfield-collection-name,
-.vrtx-admin-form.file-name-from-title #vrtx-textfield-file-type {
+.vrtx-admin-form.file-name-from-title #vrtx-div-file-name input[type='text'],
+.vrtx-admin-form.file-name-from-title #vrtx-div-collection-name input[type='text'],
+.vrtx-admin-form.file-name-from-title #vrtx-div-file-type input[type='text'] {
   color: #555;
 }
 
-.vrtx-admin-form #vrtx-textfield-file-type {
-  float: left;
-  padding: 7px 0 0 5px;
-}
-
-.vrtx-admin-form #vrtx-textfield-collection-name,
-.vrtx-admin-form #vrtx-textfield-file-name,
+.vrtx-admin-form #vrtx-div-file-name input[type='text'],
+.vrtx-admin-form #vrtx-div-collection-name input[type='text'],
 .vrtx-admin-form #vrtx-checkbox-hide-from-navigation,
 .vrtx-admin-form #vrtx-checkbox-is-index {
   float: left;
@@ -1664,24 +1650,30 @@ span.vrtx-help-step-by-step-cmd {
 .vrtx-admin-form #vrtx-checkbox-is-index {
   background: transparent url("images/seperator-grey-gradient-small-darker.png") no-repeat scroll left center;
   height: 23px;
-  margin: 0 0 0 23px;
+  margin: 1px 6px 0 18px;
   padding: 7px 0 0 18px;
 }
 
-.vrtx-admin-form #vrtx-checkbox-is-index {
-  margin-left: 18px;
-}
-
-.js .vrtx-admin-form #vrtx-textfield-collection-name,
-.js .vrtx-admin-form #vrtx-textfield-file-name {
+.vrtx-admin-form #vrtx-textfield-collection-name,
+.vrtx-admin-form #vrtx-textfield-file-name {
   width: 35px;
 }
 
-.vrtx-admin-form #vrtx-checkbox-hide-from-navigation,
-.vrtx-admin-form #vrtx-checkbox-is-index {
-  display: block;
+.vrtx-admin-form #vrtx-textfield-file-type {
   float: left;
-  margin: 1px 6px 0 0;
+  padding: 7px 0 0 5px;
+}
+
+.vrtx-admin-form #vrtx-checkbox-hide-from-navigation label,
+.vrtx-admin-form #vrtx-checkbox-is-index label {
+  line-height: 1;
+  vertical-align: top;
+}
+
+.vrtx-admin-form #vrtx-checkbox-hide-from-navigation,
+.vrtx-admin-form #vrtx-textfield-file-type,
+.vrtx-admin-form #vrtx-checkbox-is-index {
+  
 }
 
 /* ^ Tab forms */
@@ -3289,16 +3281,13 @@ tr.expandedForm td .vrtx-button-small {
 
 .resourceInfo .vrtx-button-small {
   margin-left: 2px;
-}
-
-.resourceInfo table .vrtx-button-small > * {
   font-size: 0.846em;
   padding: 2px 13px;
 }
 
-.resourceInfo table .vrtx-button-small:hover > *,
-.resourceInfo table .vrtx-button-small:focus > *,
-.resourceInfo table .vrtx-button-small.hover > * {
+.resourceInfo table .vrtx-button-small:hover,
+.resourceInfo table .vrtx-button-small:focus,
+.resourceInfo table .vrtx-button-small.hover {
   padding: 3px 14px;
 }
 

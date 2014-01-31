@@ -41,20 +41,22 @@
       <#assign nameBind = spring.status.expression>
       <@actionsLib.genErrorMessages spring.status.errorMessages />
 
-      <h4 class="vrtx-admin-label"><@vrtx.msg code="actions.createCollectionService.title" default="Title" /></h4>
-      <input class="vrtx-textfield" id="vrtx-textfield-collection-title" type="text" id="${titleBind?html}" name="${titleBind?html}" value="${newColTitle?html}" size="40" />
-
-      <h4 class="vrtx-admin-label"><@vrtx.msg code="actions.createCollectionService.collection-name" default="Folder name" /></h4>
-      <input class="vrtx-textfield" id="vrtx-textfield-collection-name" type="text" id="${nameBind?html}" name="${nameBind?html}" value="${newColName?html}" size="15" maxlength="50" />
-
-      <@spring.bind "createCollectionForm" + ".publish" />
-      <#assign publishBind = spring.status.expression>
-      <@actionsLib.genErrorMessages spring.status.errorMessages />
-
-      <div class="vrtx-checkbox" id="vrtx-checkbox-hide-from-navigation">
-        <input type="checkbox"  id="${publishBind?html}" name="${publishBind?html}" checked />
-        <label for="publish"><@vrtx.msg code="publish.action.publish" default="Publish" /></label>
-        <abbr tabindex="0" class="tooltips" title="<@vrtx.msg code="unpublishedCollection.info" />"></abbr>
+      <div id="vrtx-div-collection-title">
+        <h4 class="vrtx-admin-label"><@vrtx.msg code="actions.createCollectionService.title" default="Title" /></h4>
+        <input class="vrtx-textfield" type="text" id="${titleBind?html}" name="${titleBind?html}" value="${newColTitle?html}" size="40" />
+      </div>
+      
+      <div id="vrtx-div-collection-name">
+        <h4 class="vrtx-admin-label"><@vrtx.msg code="actions.createCollectionService.collection-name" default="Folder name" /></h4>
+        <input class="vrtx-textfield" type="text" id="${nameBind?html}" name="${nameBind?html}" value="${newColName?html}" size="15" maxlength="50" />
+        <@spring.bind "createCollectionForm" + ".publish" />
+        <#assign publishBind = spring.status.expression>
+        <@actionsLib.genErrorMessages spring.status.errorMessages />
+        <div class="vrtx-checkbox" id="vrtx-checkbox-hide-from-navigation">
+          <input type="checkbox"  id="${publishBind?html}" name="${publishBind?html}" checked />
+          <label for="publish"><@vrtx.msg code="publish.action.publish" default="Publish" /></label>
+          <abbr tabindex="0" class="tooltips" title="<@vrtx.msg code="unpublishedCollection.info" />"></abbr>
+        </div>
       </div>
 
       <@actionsLib.genOkCancelButtons "save" "cancelAction" "actions.createCollectionService.save" "actions.createCollectionService.cancel" />

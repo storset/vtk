@@ -45,8 +45,7 @@
       <#assign defaultNotInherited = vrtx.getMsg("permissions.notInherited", "Custom permissions") />
 
       <#if aclInfo.aclEditURLs?exists && aclInfo.aclEditURLs.inheritance?exists>
-      <form action="${aclInfo.aclEditURLs.inheritance?html}" method="post"
-            id="permissions.toggleInheritance" class="vrtx-admin-button">
+      <form action="${aclInfo.aclEditURLs.inheritance?html}" method="post" id="permissions.toggleInheritance">
         <#if resourceContext.currentResource.inheritedAcl>
           <div id="permissions-inheritance">
           <@vrtx.msg code="permissions.isInherited" default="Inherited permissions" /><#t/>
@@ -54,7 +53,7 @@
             <#t/><#if resourceContext.requestContext.indexFile><#t/>
               <#t/><abbr title="${vrtx.getMsg('permissions.inherited.index-file')}" class="tooltips" tabindex="0"></abbr>
             <#else>
-              <#t/><div class="vrtx-button-small"><input type="submit" id="permissions.toggleInheritance.submit" name="confirmation" value="<@vrtx.msg code="permissions.setCustom" default="Edit" />" /></div>
+              <#t/><input class="vrtx-button-small" type="submit" id="permissions.toggleInheritance.submit" name="confirmation" value="<@vrtx.msg code="permissions.setCustom" default="Edit" />" />
             </#if>
           </#if>
           </div>
@@ -72,7 +71,7 @@
                   confirmSetInheritedPermissionsTitle = '${permissionsSetInherited}';
             // -->
             </script>
-            &nbsp;<div class="vrtx-button-small"><input type="submit" id="permissions.toggleInheritance.submit" name="confirmation" value="${permissionsSetInherited}" /></div>
+            &nbsp;<input class="vrtx-button-small" type="submit" id="permissions.toggleInheritance.submit" name="confirmation" value="${permissionsSetInherited}" />
           </div>
           </#if>
         </#if>

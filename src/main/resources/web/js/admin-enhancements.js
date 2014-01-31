@@ -3682,7 +3682,9 @@ function openGeneral(url, width, height, winTitle, sOptions) {
 function SetUrl(url) {
   url = decodeURIComponent(url);
   if (urlobj) {
-    document.getElementById(urlobj).value = url;
+    var elem = document.getElementById(urlobj);
+    elem.value = url;
+    elem.focus();
   }
   oWindow = null;
   if (typestr === "Image" && typeof previewImage !== "undefined") {

@@ -955,9 +955,10 @@ function previewImage(urlobj) {
           previewNode.find("img").attr("alt", "thumbnail");
         }
         showImagePreviewCaption(elm);
+        elm.focus();
       } else {
         hideImagePreviewCaption(elm, false);
-      }
+      } 
     }
   }
 }
@@ -1276,8 +1277,10 @@ function addFormField(name, len, value, size, isBrowsable, isMovable, isDropdown
         last.append(moveDownButton);
       }
     }
-    $($.parseHTML(html, document, true)).insertBefore("#vrtx-" + name + "-add");
-    
+    var addBtn = $("#vrtx-" + name + "-add");
+    $($.parseHTML(html, document, true)).insertBefore(addBtn);
+    addBtn.prev().find("input[type='text']")[0].focus();
+
     autocompleteUsername(".vrtx-autocomplete-username", idstr + i);
     
     // Hide add button if limit is reached
@@ -1296,7 +1299,10 @@ function removeFormField(input) {
   var field = input.closest(".vrtx-multipleinputfield");
   var name = parent.data("name");
   field.remove();
+  
   var fields = parent.find(".vrtx-multipleinputfield");
+  fields.filter(":first").find("input[type='text']")[0].focus();
+  
   // Show add button if is within limit again
   if(fields.length === (vrtxEditor.multipleFieldsBoxes[name].limit - 1)) {
     $(".vrtx-" + name + "-limit-reached").remove();
@@ -1316,6 +1322,7 @@ function swapContentTmp(moveBtn, move) {
   var tmp = curElmInput.val();
   curElmInput.val(movedElmInput.val());
   movedElmInput.val(tmp);
+  movedElmInput[0].focus();
 }
 
 /* DEHANCE PART */

@@ -172,6 +172,10 @@ input[type=checkbox] {
   padding-top: 0px;
 }
 
+#app-content .submit-extra-buttons #editor-button-row {
+  margin-bottom: -10px;
+}
+
 #app-content .vrtx-sticky-editor-title-submit-buttons {
   position: fixed;
   top: 0px;

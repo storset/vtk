@@ -2198,7 +2198,7 @@ function editorInteraction(vrtxAdm, _$) {
     }));
     
     // Save
-    vrtxAdm.cachedAppContent.on("click", ".vrtx-save-button input", function (e) {
+    vrtxAdm.cachedAppContent.on("click", ".vrtx-save-button", function (e) {
       var link = _$(this);
       vrtxAdm.editorSaveButtonName = link.attr("name");
       vrtxAdm.editorSaveButton = link;
@@ -2548,7 +2548,7 @@ function retokenizeFormsOpenSaveDialog(d2) {
 
 function ctrlSEventHandler(_$, e) {
   if (!_$("#dialog-loading:visible").length) {
-    _$(".vrtx-focus-button:last input").click();
+    _$(".vrtx-focus-button:last").click();
   }
   e.preventDefault();
   return false;

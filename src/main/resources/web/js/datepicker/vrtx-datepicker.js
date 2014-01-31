@@ -145,14 +145,14 @@ var VrtxDatepicker = dejavu.Class.declare({
   __initTimeHelp: function() {
     var datepick = this;
     
-    datepick.__opts.contents.on("change", ".vrtx-" + datepick.$static.timeHours + " input", function () {
+    datepick.__opts.contents.on("change", ".vrtx-" + datepick.$static.timeHours, function () {
       var hh = $(this);
-      var mm = hh.parent().nextAll(".vrtx-" + datepick.$static.timeMinutes).filter(":first").find("input"); // Relative to
+      var mm = hh.nextAll(".vrtx-" + datepick.$static.timeMinutes).filter(":first"); // Relative to
       datepick.__timeHelp(hh, mm);
     });
-    datepick.__opts.contents.on("change", ".vrtx-" + datepick.$static.timeMinutes + " input", function () {
+    datepick.__opts.contents.on("change", ".vrtx-" + datepick.$static.timeMinutes, function () {
       var mm = $(this);
-      var hh = mm.parent().prevAll(".vrtx-" + datepick.$static.timeHours).filter(":first").find("input"); // Relative to
+      var hh = mm.prevAll(".vrtx-" + datepick.$static.timeHours).filter(":first"); // Relative to
       datepick.__timeHelp(hh, mm);
     });
   },

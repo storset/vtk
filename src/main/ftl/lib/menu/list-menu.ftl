@@ -78,9 +78,9 @@
         <#assign size = size+1 />
         <#if size == 1>
           <ul class="list-menu" id="${menu.label}">
-            <li class="readPermission first last">
+            <li class="readPermission first">
         <#else>
-          <li class="readPermission last">
+          <li class="readPermission">
         </#if>
             <h3>${vrtx.getMsg("collectionListing.permissions")}</h3>
             <#if !resourceContext.currentResource.readRestricted >
@@ -88,6 +88,10 @@
             <#else>
               <p><span class="restricted">${vrtx.getMsg("collectionListing.permissions.restricted")}</span></p>
             </#if>
+          </li>
+          <li class="resourceType last">
+            <h3>Type</h3>
+            <p><span>${vrtx.getMsg("resourcetype.name.${resourceContext.currentResource.resourceType}")}</span></p>
           </li>
       </#if>
       
@@ -104,4 +108,8 @@
       </#recover>
     </#if>
   </#if>
+</#macro>
+
+<#macro listItem>
+
 </#macro>

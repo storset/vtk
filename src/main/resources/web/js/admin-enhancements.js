@@ -575,7 +575,12 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
                 simultanSliding: true
               });
               vrtxAdm.completeFormAsync({
-                selector: "form#" + tabMenuServices[i] + "-form input[type=submit]"
+                selector: "form#" + tabMenuServices[i] + "-form input[type=submit]",
+                funcBeforeComplete: function() {
+                  // Uploading..
+                  var dd2 = new VrtxLoadingDialog({title: "Uploading file(s)..."});
+                  dd2.open();
+                }
               });
               vrtxAdm.initFileUpload(); // when error message
             }
@@ -1768,17 +1773,10 @@ VrtxAdmin.prototype.initFileUpload = function initFileUpload() {
     form.find("#fake-file").val(filePath);
   });
 
-  inputFile.hover(function () {
-    _$("a.vrtx-file-upload").addClass("hover");
-  }, function () {
-    _$("a.vrtx-file-upload").removeClass("hover");
-  });
-  inputFile.focus(function () {
-    _$("a.vrtx-file-upload").addClass("hover");
-  })
-  .blur(function() {
-    _$("a.vrtx-file-upload").removeClass("hover");
-  });
+  inputFile.hover(function () { _$("a.vrtx-file-upload").addClass("hover");
+  }, function () {              _$("a.vrtx-file-upload").removeClass("hover"); });
+  inputFile.focus(function () { _$("a.vrtx-file-upload").addClass("hover");    })
+  .blur(function() {            _$("a.vrtx-file-upload").removeClass("hover"); });
   
   $("<div id='upload-focus' style='display: inline-block; outline: none;' tabindex='-1' />").insertBefore("#file");
   $("#upload-focus")[0].focus();

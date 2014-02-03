@@ -1052,6 +1052,7 @@ div.dropdown-shortcut-menu-container ul li span,
 ul.dropdown-shortcut-menu-container li span,
 div.dropdown-shortcut-menu-container ul li form input[type='submit'],
 ul.dropdown-shortcut-menu-container li form input[type='submit'] {
+  border: none;
   border-bottom: 1px solid #cbcbcb; 
   padding: 8px 14px 7px 14px !important;
   background-color: #fff;

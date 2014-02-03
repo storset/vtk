@@ -28,9 +28,7 @@
   <p>
     <form class="webConsole" action="${commandForm.submitURL}" method="post">
       <pre>Enter command:</pre>
-      <div class="vrtx-textfield">
-        <input type="text" name="command" size="60" />
-      </div>
+      <input class="vrtx-textfield" type="text" name="command" size="60" />
     </form>
   </p>
   </#if>
@@ -40,7 +38,7 @@
 <#if commandForm.command?exists>[${commandForm.command?html}]:</#if>
       </pre>
       <textarea cols="80" rows="20">
-${commandForm.result?html}
+        ${commandForm.result?html}
       </textarea>
     </p>
   </#if>

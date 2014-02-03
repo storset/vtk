@@ -43,6 +43,15 @@ var AbstractVrtxSimpleDialog = dejavu.AbstractClass.declare({
                                if(dialog.__opts.cancelIsNotAButton) {
                                  ctx.find(".ui-dialog-buttonpane button:last-child span").unwrap().addClass("cancel-is-not-a-button");
                                }
+                               var inputs = ctx.find("textarea, input[type='text'], select").filter(":visible");
+                               if(inputs.length) {
+                                 inputs.filter(":first")[0].focus();
+                               } else {
+                                 input = ctx.find(".ui-dialog-buttonpane, .vrtx-focus-button, .vrtx-button, .vrtx-button-small").filter(":visible").filter(":first");
+                                 if(input.length) {
+                                   $("<span style='outline: none;' tabindex='-1' />").insertBefore(input)[0].focus();
+                                 }
+                               }
                              };
       this.__dialogOpts = dialogOpts;
   },
@@ -92,7 +101,7 @@ var AbstractVrtxSimpleDialog = dejavu.AbstractClass.declare({
     
     // TODO: rootUrl and jQueryUiVersion should be retrieved from Vortex config/properties somehow
     var rootUrl = "/vrtx/__vrtx/static-resources";
-    var jQueryUiVersion = "1.10.3";
+    var jQueryUiVersion = "1.10.4";
     
     var futureUi = $.Deferred();
     if (typeof $.ui === "undefined") {

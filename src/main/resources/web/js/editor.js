@@ -602,9 +602,9 @@ maxHeight, minHeight, toolbar, complete, resizable, baseDocumentUrl, simple) {
     config.removePlugins = 'elementspath';
   }
   
-  if ($("form#editor").hasClass("vrtx-frontpage")) {
-	config.format_tags = 'p;h3;h4;h5;h6;pre;div';
-  } 
+  //  if ($("form#editor").hasClass("vrtx-frontpage")) {
+  //	config.format_tags = 'p;h3;h4;h5;h6;pre;div';
+  //  } 
 
   config.resize_enabled = resizable;
   config.toolbarCanCollapse = false;
@@ -684,6 +684,7 @@ VrtxEditor.prototype.addSaveHelpCKMaximized = function addSaveHelpCKMaximized() 
     stickyBar.hide();
     
     vrtxAdm.cachedBody.addClass("forms-new");
+    vrtxAdm.cachedBody.addClass("js");
 
     var ckInject = _$(this).closest(".cke_reset")
       .find(".cke_toolbar_end:last");
@@ -698,9 +699,6 @@ VrtxEditor.prototype.addSaveHelpCKMaximized = function addSaveHelpCKMaximized() 
       var saveInjected = ckInject.find(".ck-injected-save-help > a");
       if (!saveInjected.hasClass("vrtx-button")) {
         saveInjected.addClass("vrtx-button");
-        if (!saveInjected.find("> span").length) {
-          saveInjected.wrapInner("<span />");
-        }
       } else {
         saveInjected.removeClass("vrtx-focus-button");
       }
@@ -726,7 +724,7 @@ function storeInitPropValues(contents) {
   var vrtxEdit = vrtxEditor;
 
   var inputFields = contents.find("input").not("[type=submit]").not("[type=button]")
-    .not("[type=checkbox]").not("[type=radio]");
+                            .not("[type=checkbox]").not("[type=radio]");
   var selects = contents.find("select");
   var checkboxes = contents.find("input[type=checkbox]:checked");
   var radioButtons = contents.find("input[type=radio]:checked");
@@ -904,7 +902,7 @@ function hideImagePreviewCaption(input, isInit) {
   if (captionWrp.length) {
     captionWrp.find(".caption").fadeOut(fadeSpeed);
     captionWrp.animate({
-      height: "58px"
+      height: "59px"
     }, fadeSpeed);
   }
 }
@@ -955,9 +953,10 @@ function previewImage(urlobj) {
           previewNode.find("img").attr("alt", "thumbnail");
         }
         showImagePreviewCaption(elm);
+        elm.focus();
       } else {
         hideImagePreviewCaption(elm, false);
-      }
+      } 
     }
   }
 }
@@ -1015,16 +1014,27 @@ VrtxEditor.prototype.initShowHide = function initShowHide() {
   _$("#resource\\.courseContext\\.course-status").change();
   
   // Show/hide mappings for radios/booleans
+  
+  // Exchange sub-folder title
+  
+  setShowHideBooleanOldEditor("#resource\\.show-subfolder-menu\\.true, #resource\\.show-subfolder-menu\\.unspecified",
+    "#vrtx-resource\\.show-subfolder-title",
+    "#resource\\.show-subfolder-menu\\.unspecified:checked",
+    "");
+    
+  // Recursive
 
   setShowHideBooleanOldEditor("#resource\\.recursive-listing\\.false, #resource\\.recursive-listing\\.unspecified",
     "#vrtx-resource\\.recursive-listing-subfolders",
     "#resource\\.recursive-listing\\.false:checked",
     "false");
+    
+  // Calendar title
 
   setShowHideBooleanOldEditor("#resource\\.display-type\\.unspecified, #resource\\.display-type\\.calendar",
     "#vrtx-resource\\.event-type-title",
     "#resource\\.display-type\\.calendar:checked",
-  null);
+    null);
 
   setShowHideBooleanOldEditor("#resource\\.display-type\\.unspecified, #resource\\.display-type\\.calendar",
     "#vrtx-resource\\.hide-additional-content",
@@ -1189,30 +1199,30 @@ function initMultipleInputFields() {
 }
 
 function enhanceMultipleInputFields(name, isMovable, isBrowsable, limit) { // TODO: simplify
-  var inputField = $("." + name + " input[type=text]");
+  var inputField = $("." + name + " input[type='text']");
   if (!inputField.length) return;
 
   // Config
   var size = inputField.attr("size");
-  var inputFieldParent = inputField.parent();
-  var isDropdown = inputFieldParent.hasClass("vrtx-multiple-dropdown");
+  
+  var isDropdown = inputField.hasClass("vrtx-multiple-dropdown");
   isMovable = !isDropdown && isMovable;
-  var inputFieldWrp = inputFieldParent.parent();
-  if (inputFieldWrp.hasClass("vrtx-resource-ref-browse")) {
+
+  var inputFieldParent = inputField.parent();
+  if (inputFieldParent.hasClass("vrtx-resource-ref-browse")) {
     isBrowsable = true;
-    inputFieldParent.next().filter(".vrtx-button").hide();
+    inputField.next().filter(".vrtx-button").hide();
   }
 
-  inputFieldWrp.addClass("vrtx-multipleinputfields").data("name", name); // Don't like to do this need get it easily
-  inputFieldParent.removeClass("vrtx-textfield").append(vrtxEditor.mustacheFacade.getMultipleInputFieldsAddButton(name, size, isBrowsable, isMovable, isDropdown));
+  inputFieldParent.addClass("vrtx-multipleinputfields").data("name", name); // Don't like to do this need get it easily
+  $($.parseHTML(vrtxEditor.mustacheFacade.getMultipleInputFieldsAddButton(name, size, isBrowsable, isMovable, isDropdown), document, true)).insertAfter(inputField);
 
   var inputFieldVal = inputField.hide().val();
   var formFields = inputFieldVal.split(",");
 
-  vrtxEditor.multipleFieldsBoxes[name] = { counter: 1, // 1-index
-                                           limit: limit };
+  vrtxEditor.multipleFieldsBoxes[name] = { counter: 1, limit: limit };
 
-  var addFormFieldFunc = addFormField, html = ""; /* ENHANCE PART */
+  var addFormFieldFunc = addFormField, html = "";
   for (var i = 0, len = formFields.length; i < len; i++) {
     html += addFormFieldFunc(name, len, $.trim(formFields[i]), size, isBrowsable, isMovable, isDropdown, true);
   }
@@ -1253,7 +1263,6 @@ function addFormField(name, len, value, size, isBrowsable, isMovable, isDropdown
     browseButton = vrtxEditor.mustacheFacade.getMultipleInputfieldsInteractionsButton("browse", "-resource-ref", idstr, vrtxAdmin.multipleFormGroupingMessages.browse);
   }
 
-
   var html = vrtxEditor.mustacheFacade.getMultipleInputfield(name, idstr, i, value, size, browseButton, removeButton, moveUpButton, moveDownButton, isDropdown);
 
   vrtxEditor.multipleFieldsBoxes[name].counter++;
@@ -1266,7 +1275,10 @@ function addFormField(name, len, value, size, isBrowsable, isMovable, isDropdown
         last.append(moveDownButton);
       }
     }
-    $($.parseHTML(html, document, true)).insertBefore("#vrtx-" + name + "-add");
+    var addBtn = $("#vrtx-" + name + "-add");
+    $($.parseHTML(html, document, true)).insertBefore(addBtn);
+    addBtn.prev().find("input[type='text']")[0].focus();
+
     autocompleteUsername(".vrtx-autocomplete-username", idstr + i);
     
     // Hide add button if limit is reached
@@ -1285,7 +1297,10 @@ function removeFormField(input) {
   var field = input.closest(".vrtx-multipleinputfield");
   var name = parent.data("name");
   field.remove();
+  
   var fields = parent.find(".vrtx-multipleinputfield");
+  fields.filter(":first").find("input[type='text']")[0].focus();
+  
   // Show add button if is within limit again
   if(fields.length === (vrtxEditor.multipleFieldsBoxes[name].limit - 1)) {
     $(".vrtx-" + name + "-limit-reached").remove();
@@ -1293,8 +1308,8 @@ function removeFormField(input) {
   }
   var moveUpFirst = fields.filter(":first").find("button.moveup");
   var moveDownLast = fields.filter(":last").find("button.movedown");
-  if (moveUpFirst.length) moveUpFirst.parent().remove();
-  if (moveDownLast.length) moveDownLast.parent().remove();
+  if (moveUpFirst.length) moveUpFirst.remove();
+  if (moveDownLast.length) moveDownLast.remove();
 }
 
 function swapContentTmp(moveBtn, move) {
@@ -1305,6 +1320,7 @@ function swapContentTmp(moveBtn, move) {
   var tmp = curElmInput.val();
   curElmInput.val(movedElmInput.val());
   movedElmInput.val(tmp);
+  movedElmInput[0].focus();
 }
 
 /* DEHANCE PART */

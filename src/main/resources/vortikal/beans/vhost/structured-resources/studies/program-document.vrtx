@@ -106,7 +106,9 @@ resourcetype program-document {
     interview-box {
       ##
       [resource-props "."]
-      [if interviewTitle != null || interviewContent != null || interviewLinkText != null || interviewUrl  != null]
+      [def document structured-document()]
+      [def interviewContent document.properties.interviewContent]
+      [if interviewTitle != null || interviewContent != null || interviewLinkText != null || interviewUrl != null]
         <div class="vrtx-frontpage-box white-box two-column-feed">
         [if interviewTitle != null && interviewTitle != ""]
           [if interviewUrl != null && interviewUrl != ""]
@@ -193,6 +195,8 @@ resourcetype program-document {
     contact-box {
       ##
       [resource-props "."]
+      [def document structured-document()]
+      [def contactContent document.properties.contactContent]
       [if contactTitle != null && contactTitle != ""]
         [if contactUrl != null && contactUrl != ""]
           <h2><a href="[val contactUrl]">[val contactTitle]</a></h2>

@@ -44,7 +44,7 @@ var VrtxDatepicker = dejavu.Class.declare({
     
     // TODO: rootUrl and jQueryUiVersion should be retrieved from Vortex config/properties somehow
     var rootUrl = "/vrtx/__vrtx/static-resources";
-    var jQueryUiVersion = "1.10.3";
+    var jQueryUiVersion = "1.10.4";
     
     var futureUi = $.Deferred();
     if (typeof $.ui === "undefined") {
@@ -95,17 +95,11 @@ var VrtxDatepicker = dejavu.Class.declare({
       date = new String(elem[0].value).split(" ");
     }
 
-    var dateField = "<div class='vrtx-textfield vrtx-" + this.$static.timeDate + "'>"
-                  +   "<input type='text' maxlength='" + this.$static.timeMaxLengths.date + "' size='8' id='" + name + "-" + this.$static.timeDate + "' value='" + date[0] + "' />"
-                  + "</div>";
-    var hoursField = "<div class='vrtx-textfield vrtx-" + this.$static.timeHours + "'>"
-                     + "<input type='text' maxlength='" + this.$static.timeMaxLengths.hours + "' size='1' id='" + name + "-" + this.$static.timeHours + "' value='" + hours + "' />"
-                   + "</div>";
-    var minutesField = "<div class='vrtx-textfield vrtx-" + this.$static.timeMinutes + "'>"
-                     +   "<input type='text' maxlength='" + this.$static.timeMaxLengths.minutes + "' size='1' id='" + name + "-" + this.$static.timeMinutes + "' value='" + minutes + "' />"
-                     + "</div>";
-    elem.parent().hide();
-    elem.parent().after(dateField + hoursField + "<span class='vrtx-time-seperator'>:</span>" + minutesField);
+    var dateField =  "<input class='vrtx-textfield vrtx-" + this.$static.timeDate + "' type='text' maxlength='" + this.$static.timeMaxLengths.date + "' size='8' id='" + name + "-" + this.$static.timeDate + "' value='" + date[0] + "' />";
+    var hoursField = "<input class='vrtx-textfield vrtx-" + this.$static.timeHours + "' type='text' maxlength='" + this.$static.timeMaxLengths.hours + "' size='1' id='" + name + "-" + this.$static.timeHours + "' value='" + hours + "' />";
+    var minutesField = "<input class='vrtx-textfield vrtx-" + this.$static.timeMinutes + "' type='text' maxlength='" + this.$static.timeMaxLengths.minutes + "' size='1' id='" + name + "-" + this.$static.timeMinutes + "' value='" + minutes + "' />";
+    elem.hide();
+    elem.after(dateField + hoursField + "<span class='vrtx-time-seperator'>:</span>" + minutesField);
     $("#" + fieldName + "-" + this.$static.timeDate).datepicker({
       dateFormat: 'yy-mm-dd',
       /* fix buggy IE focus functionality: 
@@ -151,14 +145,14 @@ var VrtxDatepicker = dejavu.Class.declare({
   __initTimeHelp: function() {
     var datepick = this;
     
-    datepick.__opts.contents.on("change", ".vrtx-" + datepick.$static.timeHours + " input", function () {
+    datepick.__opts.contents.on("change", ".vrtx-" + datepick.$static.timeHours, function () {
       var hh = $(this);
-      var mm = hh.parent().nextAll(".vrtx-" + datepick.$static.timeMinutes).filter(":first").find("input"); // Relative to
+      var mm = hh.nextAll(".vrtx-" + datepick.$static.timeMinutes).filter(":first"); // Relative to
       datepick.__timeHelp(hh, mm);
     });
-    datepick.__opts.contents.on("change", ".vrtx-" + datepick.$static.timeMinutes + " input", function () {
+    datepick.__opts.contents.on("change", ".vrtx-" + datepick.$static.timeMinutes, function () {
       var mm = $(this);
-      var hh = mm.parent().prevAll(".vrtx-" + datepick.$static.timeHours).filter(":first").find("input"); // Relative to
+      var hh = mm.prevAll(".vrtx-" + datepick.$static.timeHours).filter(":first"); // Relative to
       datepick.__timeHelp(hh, mm);
     });
   },

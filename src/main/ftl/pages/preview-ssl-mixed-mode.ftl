@@ -59,8 +59,8 @@
 
     <p class="larger-p">${vrtx.getMsg('preview.sslMixedContent.desc')}</p>
 
-    <#--a class="vrtx-button" href="${resourceReference?html}" target="vrtx_preview_popup"><span>${vrtx.getMsg('preview.sslMixedContent.open')}</span></a-->
-    <a id="vrtx-preview-popup-open" class="vrtx-focus-button" href="${preview.popupURL?html}" target="vrtx_preview_popup"><span>${vrtx.getMsg('preview.sslMixedContent.open')}</span></a-->
+    <#--a class="vrtx-button" href="${resourceReference?html}" target="vrtx_preview_popup">${vrtx.getMsg('preview.sslMixedContent.open')}</a-->
+    <a id="vrtx-preview-popup-open" class="vrtx-focus-button" href="${preview.popupURL?html}" target="vrtx_preview_popup">${vrtx.getMsg('preview.sslMixedContent.open')}</a-->
    
     <#assign prop = vrtx.getProp(resourceContext.currentResource, 'sslMixedMode') />
     <p class="previewUnavailableReasons"><strong>${vrtx.getMsg('preview.sslMixedContent.reasons.desc')}</strong></p>

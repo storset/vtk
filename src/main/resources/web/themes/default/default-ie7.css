@@ -59,12 +59,12 @@ body#vrtx-permissions .removePermission {
   display: inline;
 }
 
-.vrtx-textfield input {
+.vrtx-textfield {
   padding-top: 4px;
   margin-top: -2px;
 }
 
-.vrtx-textfield-big input {
+.vrtx-textfield-big {
   padding-top: 8px;
   margin-top: -2px;
 }

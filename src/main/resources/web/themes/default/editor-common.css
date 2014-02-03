@@ -43,13 +43,28 @@ h2 {
   margin-top: 20px;
 }
 
+input[type=radio] {
+  margin: 0 3px 6px 1px;
+}
+
+input[type=checkbox] {
+  margin: 0 3px 0 0;
+}
+
 .vrtx-checkbox {
   margin-top: 5px;
 }
 
-.vrtx-checkbox label {
-  position: relative;
-  top: -2px;
+.vrtx-radio-button > label,
+.vrtx-radio-button > input[type='radio'],
+.vrtx-radio-buttons > label,
+.vrtx-radio-buttons > input[type='radio'],
+.vrtx-checkbox-square > label,
+.vrtx-checkbox-square > input[type='radio'],
+.vrtx-checkbox > label,
+.vrtx-checkbox > input[type='radio'] {
+  vertical-align: top;
+  line-height: 1;
 }
 
 .property-item,
@@ -157,6 +172,10 @@ h2 {
   padding-top: 0px;
 }
 
+#app-content .submit-extra-buttons #editor-button-row {
+  margin-bottom: -10px;
+}
+
 #app-content .vrtx-sticky-editor-title-submit-buttons {
   position: fixed;
   top: 0px;
@@ -215,7 +234,7 @@ div.manually-approve-from table input {
 .properties > div.title input,
 .properties > div.name input,
 .properties > div.userTitle input {
-  width: 522px;
+  width: 525px;
 }
 
 #vrtx-simple-editor div.userTitle input {
@@ -295,12 +314,12 @@ div.description textarea {
 
 /* Event */
 
-.vrtx-textfield.vrtx-date input {
+.vrtx-textfield.vrtx-date {
   width: 67px;
 }
 
-.vrtx-textfield.vrtx-hours input,
-.vrtx-textfield.vrtx-minutes input {
+.vrtx-textfield.vrtx-hours,
+.vrtx-textfield.vrtx-minutes {
   width: 17px;
 }
 
@@ -380,8 +399,8 @@ div.introImageAndCaption .hidePicture > label {
   white-space: nowrap;
 }
 
-div.introImageAndCaption div.vrtx-image-ref-browse .vrtx-textfield input#picture,
-div#vrtx-resource\.picture div.input-and-button-container .vrtx-textfield input {
+div.introImageAndCaption div.vrtx-image-ref-browse input#picture.vrtx-textfield,
+div#vrtx-resource\.picture div.input-and-button-container input.vrtx-textfield {
   width: 200px;
 }
 
@@ -401,16 +420,19 @@ div.introImageAndCaption .vrtx-image-ref-preview {
 
 .vrtx-image-ref-preview,
 div#resource\.poster-image\.preview,
+div#resource\.studentExchangeUniversityAgreementListing\.picture\.preview,
 div#resource\.picture\.preview {
   position: relative;
 }
 
-div#resource\.poster-image\.preview {
+div#resource\.poster-image\.preview,
+div#resource\.studentExchangeUniversityAgreementListing\.picture\.preview {
   margin-top: 20px;
 }
 
 .vrtx-image-ref-preview span,
 div#resource\.poster-image\.preview span,
+div#resource\.studentExchangeUniversityAgreementListing\.picture\.preview span,
 div#resource\.picture\.preview span {
   color: #9d9d9d;
   font-size: 1.15em;
@@ -425,7 +447,8 @@ div#resource\.picture\.preview span {
 
 .vrtx-image-ref-preview.no-preview span,
 div#resource\.picture\.preview.no-preview span,
-div#resource\.poster-image\.preview.no-preview span {
+div#resource\.poster-image\.preview.no-preview span,
+div#resource\.studentExchangeUniversityAgreementListing\.picture\.preview.no-preview span {
   display: block;
 }
 
@@ -433,7 +456,8 @@ div#resource\.poster-image\.preview.no-preview span {
 
 .vrtx-image-ref-preview-inner,
 div#resource\.picture\.preview-inner,
-div#resource\.poster-image\.preview-inner {
+div#resource\.poster-image\.preview-inner,
+div#resource\.studentExchangeUniversityAgreementListing\.picture\.preview-inner {
   max-width: 170px;
   max-height: 138px;
   overflow: hidden;
@@ -441,7 +465,8 @@ div#resource\.poster-image\.preview-inner {
 
 .vrtx-image-ref-preview-inner img,
 div#vrtx-resource\.picture img,
-div#vrtx-resource\.poster-image img {
+div#vrtx-resource\.poster-image img,
+div#vrtx-resource\.studentExchangeUniversityAgreementListing\.picture img {
   max-width: 170px;
   max-height: 138px;
   margin-top: 0px;
@@ -450,7 +475,8 @@ div#vrtx-resource\.poster-image img {
 
 .vrtx-image-ref-preview.no-preview img,
 div#resource\.picture\.preview.no-preview img,
-div#resource\.poster-image\.preview.no-preview img {
+div#resource\.poster-image\.preview.no-preview img,
+div#resource\.studentExchangeUniversityAgreementListing\.picture\.preview.no-preview img {
   width: 168px;
   height: 136px;
   border: 1px solid #D3D3D3;
@@ -537,43 +563,13 @@ div#resource\.poster-image\.preview.no-preview img {
 /* Override CK for injected save/help */
 
 .cke_chrome .vrtx-button {
-  background: url(images/dropdown-left.gif) no-repeat 0 0 !important;
-  display: inline-block;
-  height: 27px !important;
-  white-space: nowrap !important;
-  overflow: visible !important;
-  margin: 0 !important;
-  cursor: pointer !important;
-  text-decoration: none !important;
-  margin-left: 20px !important;
+  margin: 0 0 0 10px !important;
 }
 
-.cke_chrome .vrtx-button.vrtx-focus-button {
-  background: url(images/focus-button-left.gif) no-repeat 0 0 !important;
-}
-
-.cke_chrome .vrtx-button:hover,
-.cke_chrome .vrtx-button:focus,
-.cke_chrome .vrtx-button.hover {
-  background: url(images/focus-button-left.gif) no-repeat 0 0 !important;
-}
-
-.cke_chrome .vrtx-button.vrtx-focus-button:hover,
-.cke_chrome .vrtx-button.vrtx-focus-button:focus,
-.cke_chrome .vrtx-button.vrtx-focus-button.hover {
-  background: url(images/focus-button-left-rollover.gif) no-repeat 0 0 !important;
-}
-
-.cke_chrome .vrtx-button span,
+.cke_chrome .vrtx-button,
 .cke_chrome #editor-help-menu a {
   font: normal 13px/1.3 Arial, sans-serif !important;
   cursor: pointer !important;  
-}
-
-.cke_chrome .vrtx-button:hover,
-.cke_chrome .vrtx-button:focus,
-.cke_chrome .vrtx-button.hover {
-  background-image: url(images/dropdown-left-rollover.gif) !important;
 }
 
 .cke_chrome #editor-help-menu {

@@ -38,7 +38,6 @@ $(window).load(function() {
       retrieveResources(".", locations, aggregatedlocations, true);
       var html = $.mustache(MANUALLY_APPROVE_TEMPLATES["menu"], { approveShowAll: approveShowAll, 
                                                                   approveShowApprovedOnly: approveShowApprovedOnly });  
-    
       $($.parseHTML(html)).insertAfter("#manually-approve-container-title"); 
     });
   } else {
@@ -53,7 +52,7 @@ $(document).ready(function() {
     vrtxAdmin.cachedAppContent.on("click", "#vrtx-manually-approve-tab-menu a", function(e) {
       var elem = $(this);
       var parent = elem.parent();
-      elem.replaceWith("<span>" + elem.html() + "</span>"); // todo: use wrap()'
+      elem.replaceWith("<span>" + elem.html() + "</span>"); // todo: use wrap()
       if(parent.hasClass("last")) {
         APPROVED_ONLY = true;
         parent.attr("class", "active active-last");
@@ -119,22 +118,22 @@ $(document).ready(function() {
     
     // Paging - next
     manuallyApproveContainer.on("click", ".next", function(e) {
-      var that = $(this).parent();
+      var that = $(this).parent().parent();
       var next = that.next();
       if (next.attr("id") && next.attr("id").indexOf("approve-page") != -1) {
-        that.hide();
-        next.show();
+        that.addClass("approve-page-hidden");
+        next.removeClass("approve-page-hidden");
       }
       return false;
     });
 
     // Paging - previous
     manuallyApproveContainer.on("click", ".prev", function(e) {
-      var that = $(this).parent();
+      var that = $(this).parent().parent();
       var prev = that.prev();
       if (prev.attr("id") && prev.attr("id").indexOf("approve-page") != -1) {
-        that.hide();
-        prev.show();
+        that.addClass("approve-page-hidden");
+        prev.removeClass("approve-page-hidden");
       }
       return false;
     });
@@ -274,7 +273,7 @@ function generateManuallyApprovedContainer(resources, isInit, approvedTextfield)
         table.find("input").removeAttr("disabled");
         var manuallyApproveContainer = $("#manually-approve-container");
         if (moreThanOnePage) {
-          $("#manually-approve-container #approve-page-" + (pages - 1)).hide();
+          $("#manually-approve-container #approve-page-" + (pages - 1)).addClass("approve-page-hidden");
         }
         html = generateStartPageAndTableHeadFunc(pages);
       }
@@ -316,7 +315,7 @@ function generateManuallyApprovedContainer(resources, isInit, approvedTextfield)
       }); 
       $("#approve-spinner").remove();
       if (len > prPage) {
-        $("#manually-approve-container #approve-page-" + pages).hide();
+        $("#manually-approve-container #approve-page-" + pages).addClass("approve-page-hidden");
       }
       if(isInit) { // TODO (or feature): user will get unsaved msg until all pages with checkboxes is loaded async (difficult to avoid without running some code twice)
         MANUALLY_APPROVE_INITIALIZED.resolve();
@@ -356,16 +355,17 @@ function generateTableEndAndPageInfo(pages, prPage, len, lastRow) {
 }
 
 function generateNavAndEndPage(i, html, prPage, remainder, pages, totalPages) {
-  var html = $.mustache(MANUALLY_APPROVE_TEMPLATES["navigation-next"], { pages: pages,
-                                                                         approveNext: approveNext,
-                                                                         nextPrPage: (pages < totalPages || remainder == 0) ? prPage : remainder });
+  var html = "<div class='prev-next'>";
   if (i > prPage) {
     var prevPage = pages - 2;
     html += $.mustache(MANUALLY_APPROVE_TEMPLATES["navigation-prev"], { prevPage: prevPage,
                                                                         approvePrev: approvePrev,
                                                                         prPage: prPage });
   }
-  html += "</div>";
+  html += $.mustache(MANUALLY_APPROVE_TEMPLATES["navigation-next"], { pages: pages,
+                                                                     approveNext: approveNext,
+                                                                     nextPrPage: (pages < totalPages || remainder == 0) ? prPage : remainder });
+  html += "</div></div>";
   return html;
 }
 

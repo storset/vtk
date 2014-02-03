@@ -88,9 +88,7 @@
           <div class="property-label">
             ${vrtx.getMsg("property.title")}
           </div>
-          <div class="vrtx-textfield">
-            <input type="text" name="title" id="title"<#if properties?exists && properties.title?exists> value="${properties.title?html}"</#if> />
-          </div>
+          <input class="vrtx-textfield" type="text" name="title" id="title"<#if properties?exists && properties.title?exists> value="${properties.title?html}"</#if> />
         </div>
         <div id="vrtx-message" class="property-item">
           <div class="property-label">
@@ -99,15 +97,11 @@
           <textarea id="message" name="message"><#if properties?exists && properties.message?exists>${properties.message?html}</#if></textarea>
         </div>
       </div>
-      <div class="vrtx-focus-button">
-        <input type="submit" id="save" name="save" value="${vrtx.getMsg("editor.save")}" />
-      </div>
+      <input class="vrtx-focus-button" type="submit" id="save" name="save" value="${vrtx.getMsg("editor.save")}" />
     </form>
     <form action="" method="post" id="vrtx-message-cancel">
       <@vrtx.csrfPreventionToken url />
-      <div class="vrtx-button">
-        <input type="submit" id="cancel" name="cancel" value="${vrtx.getMsg("editor.cancel")}" />
-      </div>
+      <input class="vrtx-button" type="submit" id="cancel" name="cancel" value="${vrtx.getMsg("editor.cancel")}" />
     </form>
     <#if !isCollection>
       <form action="" method="post" id="vrtx-message-delete">
@@ -115,9 +109,7 @@
         <span id="buttons-or-text"><@vrtx.msg code="editor.orText" default="or" /></span>
         &nbsp;
         <input name="${url.path}" value="${url.path}" type="hidden" />
-        <div class="vrtx-button">
-          <input type="submit" name="delete" value="${vrtx.getMsg("tabMenuRight.deleteResourcesService")}" />
-        </div>
+        <input class="vrtx-button" type="submit" name="delete" value="${vrtx.getMsg("tabMenuRight.deleteResourcesService")}" />
       </form>
     </#if>
   </#if>

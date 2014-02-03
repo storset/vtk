@@ -18,21 +18,19 @@
 <h3>${headerMsg}</h3>
 <#if session.filesToBeCopied?exists>
   <p>
-    <abbr title="<h4 id='title-wrapper'>${filesTipI18n}</h4><@vrtx.fileNamesAsLimitedList session.filesToBeCopied />">
+    <abbr tabindex="0" title="<h4 id='title-wrapper'>${filesTipI18n}</h4><@vrtx.fileNamesAsLimitedList session.filesToBeCopied />">
       ${session.filesToBeCopied?size} ${filesI18n}
     </abbr>
   </p>
 </#if>
 
 <#if !resourcesDisclosed?exists>
-  <form id="vrtx-move-to-selected-folder" action="${actionURL?html}" method="${method}" class="vrtx-admin-button">
-     <div class="vrtx-button-small first">
-       <button title="${titleMsg}" type="submit" value="copy-resources-to-this-folder" name="action">${item.title?html}</button>
-     </div>
+  <form id="vrtx-move-to-selected-folder" action="${actionURL?html}" method="${method}">
+     <button class="vrtx-button-small first" title="${titleMsg}" type="submit" value="copy-resources-to-this-folder" name="action">${item.title?html}</button>
      <button class="vrtx-cancel-link" title="${clearTitleMsg}" type="submit" value="clear-action" name="clear-action">x</button>
   </form>
 <#else>
-  <a class="vrtx-button-small vrtx-copy-move-to-selected-folder-disclosed" title="${titleMsg}" id="vrtx-move-to-selected-folder" href="${actionURL?html}"><span>${item.title?html}</span></a>
+  <a class="vrtx-button-small vrtx-copy-move-to-selected-folder-disclosed" title="${titleMsg}" id="vrtx-move-to-selected-folder" href="${actionURL?html}">${item.title?html}</a>
 </#if>
 
 <#recover>

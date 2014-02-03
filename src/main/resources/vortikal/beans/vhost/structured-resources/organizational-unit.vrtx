@@ -152,10 +152,11 @@ resourcetype organizational-unit {
     
     responsibilities {
       ##
-      [def resp resource-prop(".", "responsibilities")]
-      [if resp != null && resp != ""]
+      [def document structured-document()]
+      [def responsibilities document.properties.responsibilities]
+      [if responsibilities != null && responsibilities != ""]
         <div class="vrtx-organizational-unit-responsibilities">
-          [val resp # unescaped]
+          [val responsibilities # unescaped]
         </div>
       [endif]
       ##
@@ -253,6 +254,7 @@ resourcetype organizational-unit {
         [resource-props "."]
         [def document structured-document()]
         [def subsubunits document.properties.showExtendedUnitList]
+        [def responsibilities document.properties.responsibilities]
         [if subsubunits = "true"]
           <div id="vrtx-main-content" class="vrtx-hide-additional-content-true">
             <div class="vrtx-frontpage-box white-box">

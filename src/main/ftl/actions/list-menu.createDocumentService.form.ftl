@@ -87,24 +87,20 @@
        
       <div id="vrtx-div-file-title">
         <h4 class="vrtx-admin-label"><@vrtx.msg code="actions.createDocumentService.title" default="Title" /></h4>
-        <div class="vrtx-textfield" id="vrtx-textfield-file-title">
-          <input type="text" id="${titleBind?html}" name="${titleBind?html}" value="${newDocTitle?html}" size="40" />
-        </div>
+        <input class="vrtx-textfield" type="text" id="${titleBind?html}" name="${titleBind?html}" value="${newDocTitle?html}" size="40" />
       </div>
 
       <div id="vrtx-div-file-name">
         <h4 class="vrtx-admin-label"><@vrtx.msg code="actions.createDocumentService.filename" default="Filename" /></h4>
-        <div class="vrtx-textfield" id="vrtx-textfield-file-name">
-          <input type="text" id="${nameBind?html}" name="${nameBind?html}" value="${newDocName?html}" size="15" maxlength="50" />
+        <input class="vrtx-textfield" type="text" id="${nameBind?html}" name="${nameBind?html}" value="${newDocName?html}" size="15" maxlength="50" />
+        <span id="vrtx-textfield-file-type"></span>
+        <div class="vrtx-checkbox" id="vrtx-checkbox-is-index">
+          <input type="checkbox"  id="${isIndexBind}" name="${isIndexBind}" <#if isIndex>checked="checked"</#if> />
+          <label for="${isIndexBind?html}"><@vrtx.msg code="actions.createDocumentService.index" default="Is index-page" /></label>
+          <abbr tabindex="0" title="${vrtx.getMsg("actions.tooltip.isIndexPage")}" class="tooltips"></abbr>
         </div>
       </div>
-      <span id="vrtx-textfield-file-type"></span>
-      <div class="vrtx-checkbox" id="vrtx-checkbox-is-index">
-        <input type="checkbox"  id="${isIndexBind}" name="${isIndexBind}" <#if isIndex>checked="checked"</#if> />
-        <label for="${isIndexBind?html}"><@vrtx.msg code="actions.createDocumentService.index" default="Is index-page" /></label>
-        <abbr tabindex="0" title="${vrtx.getMsg("actions.tooltip.isIndexPage")}" class="tooltips"></abbr>
-      </div>
-
+      
       <@actionsLib.genOkCancelButtons "save" "cancelAction" "actions.createDocumentService.save" "actions.createDocumentService.cancel" />
     </form>
   </div>

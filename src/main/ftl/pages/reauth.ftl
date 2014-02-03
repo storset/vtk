@@ -35,6 +35,6 @@
   </head>
   <body>
     <h1>${vrtx.getMsg("reauth.title")}</h1>
-    <a id="vrtx-reauth-close" class="vrtx-button" href="javascript:void(0);"><span>${vrtx.getMsg("reauth.close")}</span></a>
+    <a id="vrtx-reauth-close" class="vrtx-button" href="javascript:void(0);">${vrtx.getMsg("reauth.close")}</a>
   </body>
 </html>

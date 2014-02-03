@@ -19,9 +19,7 @@
 <body>
   <#if mailResponse?has_content && mailResponse = "OK">
      <p><@vrtx.msg code="email.form.success" args=[emailSentTo] /></p>
-     <div class="vrtx-button">
-       <button id="email-approval-success" onclick='javascript:$("#dialog-html-send-approval").dialog("close");'><@vrtx.msg code="email.form.close" default="Close" /></button>
-     </div>
+     <button class="vrtx-button" id="email-approval-success" onclick='javascript:$("#dialog-html-send-approval").dialog("close");'><@vrtx.msg code="email.form.close" default="Close" /></button>
   <#else>
     <#assign uri = vrtx.linkConstructor("", "emailApprovalService") />
 
@@ -29,24 +27,20 @@
       <@vrtx.csrfPreventionToken uri />
       
       <label for="emailTo" class="first"><@vrtx.msg code="email.form.to" default="Send e-mail to" /></label> 
-      <div class="vrtx-textfield">
-        <#if emailSavedTo?has_content>
-          <input type="text" id="emailTo" name="emailTo" value="${emailSavedTo?html}" />
-        <#else>
-          <input type="text" id="emailTo" name="emailTo" value="<#if editorialContacts??>${editorialContacts}</#if>" />
-        </#if>
-      </div>
+      <#if emailSavedTo?has_content>
+        <input class="vrtx-textfield" type="text" id="emailTo" name="emailTo" value="${emailSavedTo?html}" />
+      <#else>
+        <input class="vrtx-textfield" type="text" id="emailTo" name="emailTo" value="<#if editorialContacts??>${editorialContacts}</#if>" />
+      </#if>
       <div class="email-help"><@vrtx.msg code="email.form.to-tooltip" default="Use comma as a separator if sending to more than one e-mail recipient" /></div> 
       
       <#if userEmailFrom??>
         <label for="emailFrom"><@vrtx.msg code="email.form.from" default="Your e-mail address" /></label>
-        <div class="vrtx-textfield">
-          <#if emailSavedFrom?has_content>
-            <input type="text" id="emailFrom" name="emailFrom" value="${emailSavedFrom?html}" />
-          <#else>
-            <input type="text" id="emailFrom" name="emailFrom" value="" />
-          </#if>
-        </div>
+        <#if emailSavedFrom?has_content>
+          <input class="vrtx-textfield" type="text" id="emailFrom" name="emailFrom" value="${emailSavedFrom?html}" />
+        <#else>
+          <input class="vrtx-textfield" type="text" id="emailFrom" name="emailFrom" value="" />
+        </#if>
       </#if>
       
       <#if emailBody?has_content>
@@ -65,12 +59,8 @@
       </#if>
       
       <div id="submitButtons">
-        <div class="vrtx-focus-button"> 
-          <input type="submit" class="submit-email-form" value="${vrtx.getMsg('send-to-approval.submit')}" name="submit" />
-        </div>
-        <div class="vrtx-button"> 
-          <input type="button" onclick='javascript:$("#dialog-html-send-approval").dialog("close");' class="cancel-email-form" value="${vrtx.getMsg('editor.cancel')}" name="cancel" />
-        </div>
+        <input class="vrtx-focus-button submit-email-form" type="submit" value="${vrtx.getMsg('send-to-approval.submit')}" name="submit" />
+        <input class="vrtx-button cancel-email-form" type="button" onclick='javascript:$("#dialog-html-send-approval").dialog("close");' value="${vrtx.getMsg('editor.cancel')}" name="cancel" />
       </div>
     </form>
 

@@ -19,9 +19,9 @@ vrtxAdmin._$(document).ready(function() {
      var html = "<div id='vrtx-report-filters-folders-include-exclude' class='solidExpandedForm'>"
                 + "<h3>" + filtersAdvancedTitle + "</h3>"
                 + "<div id='vrtx-report-filters-folders-exclude' class='report-filters-folders-exclude'><h4>" + filtersAdvancedExcludeTitle + "</h4>"
-                + "<div class='vrtx-textfield'><input type='text' id='exclude-folders' size='25' /></div></div>"
+                + "<input class='vrtx-textfield' type='text' id='exclude-folders' size='25' /></div>"
                 + "<div id='vrtx-report-filters-folders-include' class='report-filters-folders-include'><h4>" + filtersAdvancedIncludeTitle + "</h4>"
-                + "<div class='vrtx-textfield'><input type='text' id='include-folders' size='25' /></div></div>"
+                + "<input class='vrtx-textfield' type='text' id='include-folders' size='25' /></div>"
                 + "<a class='vrtx-button'><span>" + filtersAdvancedUpdate + "</span></a>"
              + "</div>";
      _$(html).insertAfter(brokenLinksFilters);

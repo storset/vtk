@@ -10,9 +10,7 @@
       <h3 class="nonul"><@vrtx.msg code="actions.createMinutes" default="Make minutes"/>:</h3>
       <@spring.bind "command.name" /> 
       <@actionsLib.genErrorMessages spring.status.errorMessages />
-      <div class="vrtx-textfield">
-        <input type="text" size="30" name="${spring.status.expression}" value="${spring.status.value?if_exists}" />
-      </div>
+      <input class="vrtx-textfield" type="text" size="30" name="${spring.status.expression}" value="${spring.status.value?if_exists}" />
       <@actionsLib.genOkCancelButtons "save" "cancelAction" "actions.createMinutes.save" "actions.createMinutes.cancel" />
     </form>
   </div>

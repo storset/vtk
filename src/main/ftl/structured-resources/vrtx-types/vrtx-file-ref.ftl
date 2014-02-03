@@ -4,8 +4,6 @@
 	<div>
       <label for="${inputFieldName}">${title}</label>
 	</div>
-	<div class="vrtx-textfield">
-	  <input type="file" id="${inputFieldName}" />
-	</div>
+	<input class="vrtx-textfield" type="file" id="${inputFieldName}" />
   </div>
 </#macro>

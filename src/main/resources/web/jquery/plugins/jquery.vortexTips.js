@@ -22,7 +22,9 @@
 	opts.expandHoverToTipBox = opts.expandHoverToTipBox || false;
 	opts.autoWidth = opts.autoWidth || false;
 	opts.extra = opts.extra || false;
-	  
+	
+	var keyTriggersOpen = opts.keySpaceTriggersOpen ? 32 : 13;
+
     var html = '<span class="tip ' + opts.appendTo.substring(1) + '">&nbsp;</span>';
     if (opts.extra) {
       var extraHtml = '<span class="tipextra ' + opts.appendTo.substring(1) + '">&nbsp;</span>';
@@ -35,7 +37,7 @@
     var hoverTip = false;
     
     $(this).on("mouseenter mouseleave keyup", subSelector, function (e) {
-      if (e.type == "mouseenter" || (((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) && !toggleOn)) {
+      if (e.type == "mouseenter" || (((e.which && e.which == keyTriggersOpen) || (e.keyCode && e.keyCode == keyTriggersOpen)) && !toggleOn)) {
         toggleOn = true;
         
         var link = $(this);
@@ -87,14 +89,16 @@
           tip.css('position', 'absolute').css('z-index', '1000').css('width', opts.containerWidth + 'px');        
         }
         tip.css(nPos).fadeIn(opts.animInSpeed, function() {
-          var button = $(this).find(".vrtx-button, .vrtx-button-small");
-          if(button.length && button.is(":visible")) button.filter(":first")[0].focus();
+          var buttons = $(this).find(".vrtx-button, .vrtx-button-small").filter(":visible");
+          if(buttons.length) {
+            $("<div style='display: inline-block; outline: none;' tabindex='-1' />").insertBefore(buttons.filter(":first")).focus();
+          }
         });
         if (opts.extra) {
           tipExtra.css(ePos).fadeIn(opts.animInSpeed);
         }
         e.stopPropagation();
-      } else if (e.type == "mouseleave" || (((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) && toggleOn)) {
+      } else if (e.type == "mouseleave" || (((e.which && e.which == keyTriggersOpen) || (e.keyCode && e.keyCode == keyTriggersOpen)) && toggleOn)) {
         var link = $(this);
         if(opts.expandHoverToTipBox) {
           tip.on("mouseenter", function (e) {
@@ -124,7 +128,7 @@
                 $(this).remove();
               });
             }
-          }, opts.expandHoverToTipBox ? 250 : 0);
+          }, opts.expandHoverToTipBox ? 350 : 0);
           e.stopPropagation();
         }
       }

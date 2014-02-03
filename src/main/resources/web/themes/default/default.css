@@ -828,12 +828,6 @@ ul.publishing-document {
 
 /* Dropdown */
 
-#editor-help-menu.js-on,
-#collection-more-menu.js-on,
-#locale-selection.js-on {
-  position: relative;
-}
-
 #tabMenuRight li.more-menu {
   background: url("images/seperator-grey-gradient.png") no-repeat scroll left top transparent;
   padding-left: 15px;
@@ -843,18 +837,24 @@ ul.publishing-document {
   margin-left: 5px;
 }
 
-#tabMenuRight #collection-more-menu.js-on li {
+.js #editor-help-menu,
+.js #collection-more-menu,
+.js #locale-selection {
+  position: relative;
+}
+
+.js #tabMenuRight #collection-more-menu li {
   float: none;
 }
 
-#tabMenuRight #collection-more-menu.js-on > a,
-#tabMenuRight #collection-more-menu.js-on li a {
+.js #tabMenuRight #collection-more-menu > a,
+.js #tabMenuRight #collection-more-menu li a {
   margin: 0;
 }
 
-#editor-help-menu.js-on ul.dropdown-shortcut-menu-container,
-#collection-more-menu.js-on ul.dropdown-shortcut-menu-container,
-#locale-selection.js-on ul.dropdown-shortcut-menu-container {
+.js #editor-help-menu ul.dropdown-shortcut-menu-container,
+.js #collection-more-menu ul.dropdown-shortcut-menu-container,
+.js #locale-selection ul.dropdown-shortcut-menu-container {
   display: none;
   top: 24px;
   left: auto;
@@ -862,24 +862,24 @@ ul.publishing-document {
   /* right: -72px; */
 }
 
-#locale-selection.js-on ul.dropdown-shortcut-menu-container li a,
-#locale-selection.js-on ul.dropdown-shortcut-menu-container li span {
+.js #locale-selection ul.dropdown-shortcut-menu-container li a,
+.js #locale-selection ul.dropdown-shortcut-menu-container li span {
   padding-left: 28px !important;
 }
 
-#locale-selection.js-on ul.dropdown-shortcut-menu-container li.active span {
+.js #locale-selection ul.dropdown-shortcut-menu-container li.active span {
   background: url(images/list-active.gif) no-repeat 10px 10px;
 }
 
-#locale-selection.js-on #locale-selection-header,
-#collection-more-menu.js-on #collection-more-menu-header,
-#editor-help-menu.js-on #editor-help-menu-header {
+.js #locale-selection #locale-selection-header,
+.js #collection-more-menu #collection-more-menu-header,
+.js #editor-help-menu #editor-help-menu-header {
   background: url(images/arrow-down.png) no-repeat 100% 8px;
   padding-right: 12px;
   display: inline-block;
 }
 
-#collection-more-menu.js-on #collection-more-menu-header {
+.js #collection-more-menu #collection-more-menu-header {
   background-position: 100% 13px;
   padding-left: 0px;
 }
@@ -900,23 +900,31 @@ ul.publishing-document {
   color: #005AAB;
 }
 
-/* Dropdown */
+/* Button-row / Dropdown */
 
-ul.button-row li {
-  -webkit-border-radius: 0px;
-  -moz-border-radius: 0px;
-  border-radius: 0px;
-  margin-left: -5px !important;
+.forms-new ul.button-row li,
+.forms-new ul.button-row-small li {
+  float: left;
 }
 
-ul.button-row li.first {
-  margin-left: 0px !important;
+.forms-new ul.button-row li.dropdown-init,
+.forms-new ul.button-row-small li.dropdown-init {
+  float: none;
 }
 
-ul.button-row li.first,
+.forms-new ul.button-row li a,
+.forms-new ul.button-row li input[type='text'],
+.forms-new ul.button-row-small li a,
+.forms-new ul.button-row-small li input[type='text'] {
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  border-radius: 0;
+}
+
 ul.button-row li.first a,
-ul.button-row-small li.first,
-ul.button-row-small li.first a {
+ul.button-row li.first input[type='text'],
+ul.button-row-small li.first a,
+ul.button-row-small li.first input[type='text'] {
   -webkit-border-top-left-radius: 5px;
   -webkit-border-bottom-left-radius: 5px;
   -moz-border-radius-topleft: 5px;
@@ -925,22 +933,16 @@ ul.button-row-small li.first a {
   border-bottom-left-radius: 5px;
 }
 
-ul.button-row li.last,
 ul.button-row li.last a,
-ul.button-row-small li.last,
-ul.button-row-small li.last a {
+ul.button-row li.last input[type='text'],
+ul.button-row-small li.last a,
+ul.button-row-small li.last input[type='text'] {
   -webkit-border-top-right-radius: 5px;
   -webkit-border-bottom-right-radius: 5px;
   -moz-border-radius-topright: 5px;
   -moz-border-radius-bottomright: 5px;
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
-}
-
-ul.dropdown-shortcut-menu li.dropdown-init {
-  -webkit-border-radius: 5px;
-  -moz-border-radius: 5px;
-  border-radius: 5px;
 }
 
 div.dropdown-shortcut-menu-container,
@@ -981,6 +983,7 @@ ul.dropdown-shortcut-menu-container {
 ul.dropdown-shortcut-menu li.dropdown-init {
   position: relative;
   padding-right: 26px !important;
+  line-height: 17px;
 }
 
 #editor-menu-wrapper #editor-menu {
@@ -1003,9 +1006,7 @@ ul.dropdown-shortcut-menu li.dropdown-init .dropdown-shortcut-menu-click-area {
   -moz-border-radius-bottomright: 5px;
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
-  background-image: url("images/dropdown-arrow.png");
-  background-position: 8px 12px;
-  background-repeat: no-repeat;
+  background: #e7e7e7 url("images/dropdown-arrow.png") no-repeat 8px 12px;
 }
 
 ul.dropdown-shortcut-menu.dropdown-shortcut-menu-small li.dropdown-init .dropdown-shortcut-menu-click-area {
@@ -1025,6 +1026,8 @@ ul.dropdown-shortcut-menu li.dropdown-init .dropdown-shortcut-menu-click-area:ho
   right: 0;
   background-image: url("images/dropdown-arrow-hover.png");
   background-position: 7px 13px;
+  outline: none;
+  cursor: pointer;
 }
 
 ul.dropdown-shortcut-menu.dropdown-shortcut-menu-small li.dropdown-init .dropdown-shortcut-menu-click-area:focus,
@@ -1393,17 +1396,14 @@ div.dropdown-shortcut-menu-container form .vrtx-button button {
   height: 15px;
   display: block;
   display: inline-block;
-  margin: 0 0 -3px 3px;
+  margin: 0 0 0 3px;
   cursor: pointer;
   border: none;
 }
 
 #title-container .tooltips {
   border-bottom: none;
-}
-
-.vrtx-admin-form .tooltips {
-  margin-left: 0px;
+  margin-bottom: -3px;
 }
 
 /* ^ Tooltip */
@@ -1586,13 +1586,6 @@ span.vrtx-help-step-by-step-cmd {
   margin-top: 10px;
 }
 
-.vrtx-admin-form #vrtx-textfield-file-title,
-.vrtx-admin-form #vrtx-textfield-file-name,
-.vrtx-admin-form #vrtx-textfield-collection-title,
-.vrtx-admin-form #vrtx-textfield-collection-name {
-  clear: left;
-}
-
 .vrtx-admin-form #createCollectionService-form .radio-buttons,
 .vrtx-admin-form #vrtx-create-document-templates {
   background: transparent url("images/line-dotted-tighter.gif") repeat-x scroll left bottom;
@@ -1623,29 +1616,31 @@ span.vrtx-help-step-by-step-cmd {
   margin: 2px 0 8px 22px;
 }
 
+.vrtx-admin-form #vrtx-div-file-title,
+.vrtx-admin-form #vrtx-div-file-name,
+.vrtx-admin-form #vrtx-div-collection-title,
+.vrtx-admin-form #vrtx-div-collection-name {
+  clear: left;
+}
+
 .vrtx-admin-form #initCreateChangeTemplate,
 .vrtx-admin-form #vrtx-div-file-title {
   display: none;
 }
 
-.vrtx-admin-form #vrtx-textfield-file-name input[disabled],
-.vrtx-admin-form #vrtx-textfield-file-type.disabled {
+.vrtx-admin-form #vrtx-div-file-name input[type='text'][disabled],
+.vrtx-admin-form #vrtx-div-file-type input[type='text'].disabled {
   color: #777 !important;
 }
 
-.vrtx-admin-form.file-name-from-title #vrtx-textfield-file-name input,
-.vrtx-admin-form.file-name-from-title #vrtx-textfield-collection-name input,
-.vrtx-admin-form.file-name-from-title #vrtx-textfield-file-type {
+.vrtx-admin-form.file-name-from-title #vrtx-div-file-name input[type='text'],
+.vrtx-admin-form.file-name-from-title #vrtx-div-collection-name input[type='text'],
+.vrtx-admin-form.file-name-from-title #vrtx-div-file-type input[type='text'] {
   color: #555;
 }
 
-.vrtx-admin-form #vrtx-textfield-file-type {
-  float: left;
-  padding: 7px 0 0 5px;
-}
-
-.vrtx-admin-form #vrtx-textfield-collection-name,
-.vrtx-admin-form #vrtx-textfield-file-name,
+.vrtx-admin-form #vrtx-div-file-name input[type='text'],
+.vrtx-admin-form #vrtx-div-collection-name input[type='text'],
 .vrtx-admin-form #vrtx-checkbox-hide-from-navigation,
 .vrtx-admin-form #vrtx-checkbox-is-index {
   float: left;
@@ -1655,24 +1650,30 @@ span.vrtx-help-step-by-step-cmd {
 .vrtx-admin-form #vrtx-checkbox-is-index {
   background: transparent url("images/seperator-grey-gradient-small-darker.png") no-repeat scroll left center;
   height: 23px;
-  margin: 0 0 0 23px;
+  margin: 1px 6px 0 18px;
   padding: 7px 0 0 18px;
 }
 
-.vrtx-admin-form #vrtx-checkbox-is-index {
-  margin-left: 18px;
-}
-
-.js .vrtx-admin-form #vrtx-textfield-collection-name input,
-.js .vrtx-admin-form #vrtx-textfield-file-name input {
+.vrtx-admin-form #vrtx-textfield-collection-name,
+.vrtx-admin-form #vrtx-textfield-file-name {
   width: 35px;
 }
 
-.vrtx-admin-form #vrtx-checkbox-hide-from-navigation input,
-.vrtx-admin-form #vrtx-checkbox-is-index input {
-  display: block;
+.vrtx-admin-form #vrtx-textfield-file-type {
   float: left;
-  margin: 1px 6px 0 0;
+  padding: 7px 0 0 5px;
+}
+
+.vrtx-admin-form #vrtx-checkbox-hide-from-navigation label,
+.vrtx-admin-form #vrtx-checkbox-is-index label {
+  line-height: 1;
+  vertical-align: top;
+}
+
+.vrtx-admin-form #vrtx-checkbox-hide-from-navigation,
+.vrtx-admin-form #vrtx-textfield-file-type,
+.vrtx-admin-form #vrtx-checkbox-is-index {
+  
 }
 
 /* ^ Tab forms */
@@ -2655,8 +2656,8 @@ body#vrtx-permissions .addUser {
   width: 200px; 
 }
 
-.vrtx-autocomplete-username .vrtx-textfield,
-.vrtx-autocomplete-tag .vrtx-textfield,
+.vrtx-autocomplete-username.vrtx-textfield,
+.vrtx-autocomplete-tag.vrtx-textfield,
 #principalList .vrtx-textfield {
   position: relative;
 }
@@ -3278,32 +3279,29 @@ tr.expandedForm td .vrtx-button-small {
 
 /* Smaller button in resource-info tables */
 
-.resourceInfo .vrtx-button-small {
+.forms-new .resourceInfo table .vrtx-button-small {
   margin-left: 2px;
-}
-
-.resourceInfo table .vrtx-button-small > * {
   font-size: 0.846em;
   padding: 2px 13px;
 }
 
-.resourceInfo table .vrtx-button-small:hover > *,
-.resourceInfo table .vrtx-button-small:focus > *,
-.resourceInfo table .vrtx-button-small.hover > * {
+.forms-new .resourceInfo table .vrtx-button-small:hover,
+.forms-new .resourceInfo table .vrtx-button-small:focus,
+.forms-new .resourceInfo table .vrtx-button-small.hover {
   padding: 3px 14px;
 }
 
 /* Date */
 
-.vrtx-date {
+.forms-new .vrtx-date {
   margin-right: 20px;
 }
 
-.vrtx-hours {
+.forms-new .vrtx-hours {
   margin-right: 10px;
 }
 
-.vrtx-minutes {
+.forms-new .vrtx-minutes {
   margin-left: 7px;
 }
 
@@ -3311,19 +3309,23 @@ tr.expandedForm td .vrtx-button-small {
 
 #app-content .vrtx-cancel-link {
   display: inline-block;
-  font-size: 0.1em;
-  overflow: hidden;
-  text-indent: -9999;
-  width: 10px;
-  height: 10px;
+  font-size: 1px;
+  height: 12px;
+  width: 12px;
+  margin-left: 7px;
   position: relative;
-  top: -4px;
-  left: 7px;
+  top: -3.8em;
+  color: #F8F8F8;
   background: url(images/resource-menu-dialog-close.png) no-repeat center center;
+  border: none;
 }
 
 #app-content .vrtx-cancel-link:hover {
   cursor: pointer;
+}
+
+#app-content .vrtx-cancel-link:focus {
+  outline: 1px solid #aaa;
 }
 
 #app-content .vrtx-show-processing {
@@ -3343,21 +3345,6 @@ tr.expandedForm td .vrtx-button-small {
   z-index: 999;
 }
 
-#file-upload-container input.js-on {
-  z-index: 999;
-  position: relative;
-  left: 328px;
-  background: none;
-  width: 83px;
-  height: 25px;
-  cursor: pointer !important;
-
-  /* Transparent */
-  opacity: 0;
-  -moz-opacity: 0;
-  filter:alpha(opacity: 0);
-}
-
 #file-upload-container .vrtx-textfield {
   position: absolute;
   top: 0px;
@@ -3366,7 +3353,7 @@ tr.expandedForm td .vrtx-button-small {
   z-index: 1;
 }
 
-#file-upload-container .vrtx-textfield input#fake-file {
+#file-upload-container input#fake-file {
   position: absolute;
   top: 0px;
   right: 0px;
@@ -3374,12 +3361,25 @@ tr.expandedForm td .vrtx-button-small {
   z-index: 1;
 }
 
+.js #file-upload-container input#file {
+  z-index: 999;
+  position: relative;
+  left: 328px;
+  background: none;
+  width: 87px;
+  height: 27px;
+  cursor: pointer !important;
+
+  /* Transparent */
+  opacity: 0;
+  -moz-opacity: 0;
+  filter:alpha(opacity: 0);
+}
+
 #file-upload-container a.vrtx-file-upload {
-  margin-left: 10px;
-  margin-bottom: -2px;
   position: absolute;
   top: 0px;
-  right: -100px;
+  left: 330px;
   z-index: 1;
 }
 
@@ -3407,6 +3407,15 @@ tr.expandedForm td .vrtx-button-small {
  */
 #directory-listing tr input, x:-moz-any-link, x:only-child {
   margin: 3px 3px 3px 4px;
+}
+
+#resource-title .button-row li form input[type="submit"], x:-moz-any-link, x:only-child {
+  padding: 5px 15px 6px;
+}
+
+#resource-title .button-row li form input[type="submit"]:hover, x:-moz-any-link, x:only-child,
+#resource-title .button-row li form input[type="submit"]:focus, x:-moz-any-link, x:only-child {
+  padding: 6px 16px 7px;  
 }
 
 #resource-title .dropdown-shortcut-menu-container li form input[type="submit"], x:-moz-any-link, x:only-child {

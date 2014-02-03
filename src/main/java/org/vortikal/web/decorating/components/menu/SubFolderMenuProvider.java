@@ -82,6 +82,19 @@ public class SubFolderMenuProvider {
         return getSubfolderMenu(rs, collection, token, locale, resultSets, sortProperty);
     }
 
+    public Map<String, Object> getSubfolderMenuWithThreeGeneratedResultSets(Resource collection,
+            HttpServletRequest request) {
+        RequestContext requestContext = RequestContext.getRequestContext();
+        String token = requestContext.getSecurityToken();
+        ResultSet rs = listCollections(collection.getURI(), requestContext);
+
+        Locale locale = new org.springframework.web.servlet.support.RequestContext(request).getLocale();
+
+        PropertyTypeDefinition sortProperty = getSearchSorting(collection);
+
+        return getSubfolderMenu(rs, collection, token, locale, 3, sortProperty);
+    }
+
     public Map<String, Object> getSubfolderMenu(ResultSet rs, Resource collection, String token, Locale locale,
             int resultSets, PropertyTypeDefinition sortProperty) {
         String title = null;

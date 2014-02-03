@@ -110,10 +110,8 @@
             </script>
             
             <form id="vrtx-admin-ownership-form" action="${ownerItem.toggleURL?html}" method="post">
-              <div class="vrtx-button-small">
-                <input id="vrtx-admin-ownership-button" type="submit" 
-                       name="confirmation" value="${editAction}" />
-              </div>
+              <input class="vrtx-button-small" id="vrtx-admin-ownership-button" type="submit" 
+                     name="confirmation" value="${editAction}" />
             </form>
           </#if>
         </td>

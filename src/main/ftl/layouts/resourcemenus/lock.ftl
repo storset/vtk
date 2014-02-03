@@ -30,7 +30,7 @@
   <#if lockUnlockActions?exists>
     <#list lockUnlockActions.items as item>
       <#if item.label = 'manage.unlockFormService' && item.url?exists>
-        <p><a class="vrtx-button-small" href="${item.url?html}"><span>${item.title}</span></a></p>
+        <p><a class="vrtx-button-small" href="${item.url?html}">${item.title}</a></p>
       </#if>
     </#list>
   </#if>

@@ -2,9 +2,7 @@
 <#macro printPropertyEditView title inputFieldName value="" tooltip="" classes="">
   <div class="vrtx-string ${classes}">
     <label for="${inputFieldName}">${title}</label>
-    <div class="inputfield vrtx-textfield">
-      <input size="12" type="text" name="${inputFieldName}" id="${inputFieldName}" value="${value?html}" class="date" />
-    </div>
+    <input size="12" type="text" name="${inputFieldName}" id="${inputFieldName}" value="${value?html}" class="inputfield vrtx-textfield date" />
     <#if "${tooltip}" != ""><div class="tooltip">${tooltip}</div></#if>
   </div>
 </#macro>

@@ -23,7 +23,7 @@
 .forms-new fieldset,
 .forms-new input,
 .forms-new button,
-.forms-new .ui-dialog
+.forms-new .ui-dialog,
 .forms-new .ui-dialog-buttonpane button {
   margin: 0;
   padding: 0;
@@ -37,9 +37,6 @@
 .forms-new textarea {
   border: 1px solid #919191;
   outline: none;
-}
-
-.forms-new textarea.round-corners {
   -webkit-border-radius: 5px;
   -moz-border-radius: 5px;
   border-radius: 5px; 
@@ -49,38 +46,38 @@
 .forms-new input[type=button],
 .forms-new input[type=file],
 .forms-new input[type=image],
-.forms-new input[type=password],
 .forms-new input[type=reset],
 .forms-new input[type=submit],
+.forms-new input[type=password],
 .forms-new input[type=text],
 .forms-new button,
 .forms-new .ui-dialog .ui-dialog-buttonpane button {
-  border: 1px solid transparent;
-  background: transparent;
   font-family: inherit;
   font-size: 100%;
   font-style: inherit; 
   font-weight: inherit;
 }
 
-.forms-new .ui-dialog .ui-dialog-buttonpane button:focus,
-.forms-new button:focus,
 .forms-new input[type=button]:focus,
-.forms-new input[type=file]:focus,
-.forms-new input[type=image]:focus ,
-.forms-new input[type=password]:focus ,
-.forms-new input[type=reset]:focus ,
-.forms-new input[type=submit]:focus ,
-.forms-new input[type=text]:focus {
+.forms-new input[type=file:focus],
+.forms-new input[type=image]:focus,
+.forms-new input[type=reset]:focus,
+.forms-new input[type=submit]:focus,
+.forms-new input[type=password]:focus,
+.forms-new input[type=text]:focus,
+.forms-new button:focus,
+.forms-new .ui-dialog .ui-dialog-buttonpane button:focus {
   outline: 0;
 }
 
 /* Buttons */
 
-.button-row li,
-.button-row-small li,
-.forms-new .vrtx-button,
+.button-row li > a,
+.button-row li input[type='submit'],
+.button-row-small li > a,
+.button-row-small li input[type='text'],
 .forms-new .ui-dialog .ui-dialog-buttonpane button,
+.forms-new .vrtx-button,
 .forms-new .vrtx-focus-button,
 .forms-new .vrtx-button-small {
   background: #e7e7e7;
@@ -89,43 +86,13 @@
   display: inline-block;
   white-space: nowrap;
   overflow: visible;
-  margin: 0;
-  padding: 0;
   cursor: pointer;
   text-decoration: none !important;
   -webkit-border-radius: 5px;
   -moz-border-radius: 5px;
   border-radius: 5px;
-}
-
-.button-row li a,
-.button-row li input[type="submit"],
-.button-row-small li a,
-.button-row-small li input[type="submit"],
-.forms-new .vrtx-button > *,
-.forms-new .ui-dialog .ui-dialog-buttonpane button > *,
-.forms-new .vrtx-focus-button > *,
-.forms-new .vrtx-button-small > * {
-  color: #000;
   padding: 5px 15px 6px;
   margin: 0;
-  border: none;
-  display: inline-block;
-  cursor: pointer;
-}
-
-.button-row li,
-.button-row-small li,
-.button-row-small li,
-.button-row li {
-  border: none;
-}
-
-.button-row li a,
-.button-row li input[type="submit"],
-.button-row-small li a,
-.button-row-small li input[type="submit"] {
-  border: 1px solid #cbcbcb;
 }
 
 .button-row li.save,
@@ -134,36 +101,16 @@
   background: #2b81c8;
   color: #fff;
   border: none;
-}
-
-.button-row li.save a,
-.button-row li.save input[type="submit"] {
-  border: none;
-}
-
-.forms-new .ui-dialog .ui-dialog-buttonpane button:first-child > *,
-.forms-new .vrtx-focus-button > * {
-  color: #fff;
   padding: 6px 16px 7px;
 }
 
-.button-row li.save > * {
-  margin: 0;
+.forms-new .ui-dialog .ui-dialog-buttonpane button span {
   padding: 0;
-}
-
-.button-row li.save > * > * {
-  padding: 6px 16px 7px;
-  margin: 0 !important;
-  -webkit-border-radius: 0px !important;
-  -moz-border-radius: 0px !important;
-  border-radius: 0px !important;
-  border: none;
 }
 
 .button-row-small li a,
 .button-row-small li input[type="submit"],
-.forms-new .vrtx-button-small > * {
+.forms-new .vrtx-button-small {
   padding: 3px 13px 4px;
 }
 
@@ -190,36 +137,30 @@
   color: #fff;
   text-decoration: none;
   border: none;
+  padding: 6px 16px 7px;
 }
 
-.button-row li a:hover,
-.button-row li a:focus,
-.button-row li input[type="submit"]:hover,
-.button-row li input[type="submit"]:focus,
-.forms-new .ui-dialog .ui-dialog-buttonpane button:hover > *,
-.forms-new .ui-dialog .ui-dialog-buttonpane button:focus > *,
-.forms-new .vrtx-button:hover > *,
-.forms-new .vrtx-button:focus > *,
-.forms-new .vrtx-button.hover > * {
-  padding: 6px 16px 7px;
+.button-row li form input[type="submit"]:hover,
+.button-row li form input[type="submit"]:focus {
+  padding: 7px 16px 8px;  
 }
 
 .button-row-small a:hover,
 .button-row-small a:focus,
-.forms-new .vrtx-button-small:hover > *,
-.forms-new .vrtx-button-small:focus > *,
-.forms-new .vrtx-button-small.hover > * {
+.forms-new .vrtx-button-small:hover,
+.forms-new .vrtx-button-small:focus,
+.forms-new .vrtx-button-small.hover {
   padding: 4px 14px 5px;
 }
 
-.forms-new .ui-dialog .ui-dialog-buttonpane button:hover > *,
-.forms-new .ui-dialog .ui-dialog-buttonpane button:focus > *,
-.forms-new .vrtx-button:hover > *,
-.forms-new .vrtx-button:focus > *,
-.forms-new .vrtx-button.hover > *,
-.forms-new .vrtx-button-small:hover > *,
-.forms-new .vrtx-button-small:focus > *,
-.forms-new .vrtx-button-small.hover > * {
+.forms-new .ui-dialog .ui-dialog-buttonpane button:hover,
+.forms-new .ui-dialog .ui-dialog-buttonpane button:focus,
+.forms-new .vrtx-button:hover,
+.forms-new .vrtx-button:focus,
+.forms-new .vrtx-button.hover,
+.forms-new .vrtx-button-small:hover,
+.forms-new .vrtx-button-small:focus,
+.forms-new .vrtx-button-small.hover {
   color: #fff;
 }
 
@@ -247,6 +188,27 @@
   margin-left: 5px;
 }
 
+/* Special button */
+
+.button-row li.save a,
+.button-row li.save input[type="submit"] {
+  border: none;
+}
+
+.button-row li.save > * {
+  margin: 0;
+  padding: 0;
+}
+
+.button-row li.save > * > * {
+  padding: 6px 16px 7px;
+  margin: 0 !important;
+  -webkit-border-radius: 0px !important;
+  -moz-border-radius: 0px !important;
+  border-radius: 0px !important;
+  border: none;
+}
+
 /* ^ Buttons */
 
 /* Textfields */
@@ -254,31 +216,20 @@
 .forms-new .vrtx-textfield,
 .forms-new .vrtx-textfield-big {
   background: #fff;
-  height: 26px;
-  padding: 1px 8px 0 6px;
-  display: inline-block;
   border: 1px solid #919191;
+  height: 26px;
+  padding: 1px 8px 0 8px;
+  display: inline-block;
   -webkit-border-radius: 5px;
   -moz-border-radius: 5px;
   border-radius: 5px;
-}
-
-.forms-new .vrtx-textfield input,
-.forms-new .vrtx-textfield-big input {
-  height: 22px;
-  margin: 0;
-  padding: 0;
   display: block;
   display: inline-block;
 }
 
 .forms-new .vrtx-textfield-big {
-  height: 29px;
-  padding: 4px 11px 0 11px;
-}
-
-.forms-new .vrtx-textfield-big input {
-  height: 23px;
+  height: 30px;
+  padding: 3px 10px 0;
 }
 
 /* ^ Textfields */
@@ -418,7 +369,7 @@
   margin-top: 0px;
 }
 
-.forms-new #email-approval-form .vrtx-textfield input {
+.forms-new #email-approval-form .vrtx-textfield {
   width: 385px;
 }
 

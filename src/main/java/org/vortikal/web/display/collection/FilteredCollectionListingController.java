@@ -95,7 +95,7 @@ public abstract class FilteredCollectionListingController implements Controller 
         }
 
         search.setQuery(query);
-        search.setSorting(getDefaultSearchSorting(collection));
+        search.setSorting(getSearchSorting(collection));
 
         ConfigurablePropertySelect propertySelect = getPropertySelect();
         if (propertySelect != null) {
@@ -214,7 +214,7 @@ public abstract class FilteredCollectionListingController implements Controller 
         Property showSubfolderMenu = collection.getProperty(showSubfolderMenuPropDef);
         if (showSubfolderMenu != null && showSubfolderMenu.getBooleanValue()) {
             model.put("showSubfolderMenu",
-                    subFolderMenuProvider.getSubfolderMenuWithGeneratedResultSets(collection, request));
+                    subFolderMenuProvider.getSubfolderMenuWithThreeGeneratedResultSets(collection, request));
             Property showSubfolderTitle = collection.getProperty(showSubfolderTitlePropDef);
             if (showSubfolderTitle != null) {
                 model.put("showSubfolderTitle", showSubfolderTitle.getStringValue());
@@ -327,7 +327,7 @@ public abstract class FilteredCollectionListingController implements Controller 
         return pageLimit;
     }
 
-    protected Sorting getDefaultSearchSorting(Resource collection) {
+    protected Sorting getSearchSorting(Resource collection) {
         return new SortingImpl(defaultSearchSorting.getSortFields(collection));
     }
 

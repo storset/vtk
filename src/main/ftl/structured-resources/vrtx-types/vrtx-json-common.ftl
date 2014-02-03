@@ -218,10 +218,7 @@
               <@printJsonProperyEditView jsonAttr.type jsonAttrLocalizedTitle tmpName "" elem attrName jsonAttr locale />
             </#list>
             <input type="hidden" class="id" value="${counter}" />
-
-            <div class="vrtx-button vrtx-remove-button">
-              <input type="button" value="${vrtx.getMsg("editor.remove")}" />
-            </div>
+            <input class="vrtx-button vrtx-remove-button" type="button" value="${vrtx.getMsg("editor.remove")}" />
           </div>
         </#if>
 
@@ -242,21 +239,15 @@
              </#list>
              
        	     <input type="hidden" class="id" value="${counter}" />
-
-       	     <div class="vrtx-button vrtx-remove-button">
-               <input type="button" value="${vrtx.getMsg("editor.remove")}" />
-             </div>
+       	     
+             <input class="vrtx-button vrtx-remove-button" type="button" value="${vrtx.getMsg("editor.remove")}" />
 
        	     <#if !cssClass?contains("vrtx-multiple-immovable")>
                <#if (counter > 0) >
-                 <div class="vrtx-button vrtx-move-up-button">
-                   <input type="button" value="&uarr; ${vrtx.getMsg("editor.move-up")}"  />
-                 </div>
+                 <input class="vrtx-button vrtx-move-up-button" type="button" value="&uarr; ${vrtx.getMsg("editor.move-up")}" />
                </#if>
                <#if map_has_next >
-                 <div class="vrtx-button vrtx-move-down-button">
-                   <input type="button" value="&darr; ${vrtx.getMsg("editor.move-down")}"  />
-                 </div>
+                 <input class="vrtx-button vrtx-move-down-button" type="button" value="&darr; ${vrtx.getMsg("editor.move-down")}" />
                </#if>
              </#if>
 

@@ -69,15 +69,9 @@
     <form id="editor" action="${plaintextEditForm.submitURL}" method="post">
       <textarea id="foo" name="content" rows="30" cols="80">${plaintextEditForm.content?html}</textarea>
       <div class="vrtx-edit-plaintext-submit-buttons submitButtons">
-        <div class="vrtx-button vrtx-save-button">
-          <input type="submit" id="saveViewAction" name="saveViewAction" value="<@vrtx.msg code="plaintextEditForm.saveAndView" default="Save and view"/>" />
-        </div>
-        <div class="vrtx-focus-button vrtx-save-button">
-          <input type="submit" id="saveAction" name="saveAction" value="<@vrtx.msg code="plaintextEditForm.save" default="Save"/>" />
-        </div>
-        <div class="vrtx-button">
-          <input type="submit" id="cancelAction" name="cancelAction" value="<@vrtx.msg code="plaintextEditForm.cancel" default="Cancel"/>" />
-        </div>
+        <input class="vrtx-button vrtx-save-button" type="submit" id="saveViewAction" name="saveViewAction" value="<@vrtx.msg code="plaintextEditForm.saveAndView" default="Save and view"/>" />
+        <input class="vrtx-focus-button vrtx-save-button" type="submit" id="saveAction" name="saveAction" value="<@vrtx.msg code="plaintextEditForm.save" default="Save"/>" />
+        <input class="vrtx-button" type="submit" id="cancelAction" name="cancelAction" value="<@vrtx.msg code="plaintextEditForm.cancel" default="Cancel"/>" />
         <#if plaintextEditForm.tooltips?exists>
           <#list plaintextEditForm.tooltips as tooltip>
            <div class="contextual-help"><a href="javascript:void(0);" onclick="javascript:open('${tooltip.url?html}', 'componentList', 'width=650,height=450,resizable=yes,right=0,top=0,screenX=0,screenY=0,scrollbars=yes');">

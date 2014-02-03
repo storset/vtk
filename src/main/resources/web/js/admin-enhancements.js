@@ -667,10 +667,6 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
               var copyMoveAfter = function() {
                 resourceMenuRight.html(results.find("#resourceMenuRight").html());
                 vrtxAdm.displayInfoMsg(results.find(".infomessage").html());
-                var resourceTitle = resourceMenuRight.closest("#resource-title");
-                if (resourceTitle.hasClass("compact")) { // Instant compact => expanded
-                  resourceTitle.removeClass("compact");
-                }
               };
               
               if (copyMoveExists !== "") {
@@ -725,10 +721,6 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
                   vrtxAdm.cachedContent.html(_$($.parseHTML(results)).find("#contents").html());
                   vrtxAdm.updateCollectionListingInteraction();
                   li.remove();
-                  var resourceTitle = _$($.parseHTML(results)).find("#resource-title");
-                  if (resourceTitle.hasClass("compact")) { // Instant compact => expanded
-                    $("#resource-title").addClass("compact");
-                  }
                 }
               });
               copyMoveAnimation.leftOut();
@@ -3195,15 +3187,6 @@ VrtxAdmin.prototype.completeFormAsyncPost = function completeFormAsyncPost(optio
                 var outer = vrtxAdm.outerHTML(_$.parseHTML(results), updateSelectors[i]);
                 vrtxAdm.cachedBody.find(updateSelectors[i]).replaceWith(outer);
               }
-              var resultsResourceTitle = _$($.parseHTML(results)).find("#resource-title");
-              var currentResourceTitle = vrtxAdm.cachedBody.find("#resource-title");
-              if (resultsResourceTitle.length && currentResourceTitle.length) {
-                if (resultsResourceTitle.hasClass("compact") && !currentResourceTitle.hasClass("compact")) {
-                  currentResourceTitle.addClass("compact");
-                } else if (!resultsResourceTitle.hasClass("compact") && currentResourceTitle.hasClass("compact")) {
-                  currentResourceTitle.removeClass("compact");
-                }
-              }
               if (funcComplete) {
                 funcComplete();
               }
@@ -3228,15 +3211,6 @@ VrtxAdmin.prototype.completeFormAsyncPost = function completeFormAsyncPost(optio
                   var outer = vrtxAdm.outerHTML(_$.parseHTML(results), updateSelectors[i]);
                   vrtxAdm.cachedBody.find(updateSelectors[i]).replaceWith(outer);
                 }
-                var resultsResourceTitle = _$($.parseHTML(results)).find("#resource-title");
-                var currentResourceTitle = vrtxAdm.cachedBody.find("#resource-title");
-                if (resultsResourceTitle.length && currentResourceTitle.length) {
-                  if (resultsResourceTitle.hasClass("compact") && !currentResourceTitle.hasClass("compact")) {
-                    currentResourceTitle.addClass("compact");
-                  } else if (!resultsResourceTitle.hasClass("compact") && currentResourceTitle.hasClass("compact")) {
-                    currentResourceTitle.removeClass("compact");
-                  }
-                }
                 if (funcComplete) {
                   funcComplete();
                 }
@@ -3256,15 +3230,6 @@ VrtxAdmin.prototype.completeFormAsyncPost = function completeFormAsyncPost(optio
             for (var i = updateSelectors.length; i--;) {
               var outer = vrtxAdm.outerHTML(_$.parseHTML(results), updateSelectors[i]);
               vrtxAdm.cachedBody.find(updateSelectors[i]).replaceWith(outer);
-            }
-            var resultsResourceTitle = _$(_$.parseHTML(results)).find("#resource-title");
-            var currentResourceTitle = vrtxAdm.cachedBody.find("#resource-title");
-            if (resultsResourceTitle.length && currentResourceTitle.length) {
-              if (resultsResourceTitle.hasClass("compact") && !currentResourceTitle.hasClass("compact")) {
-                currentResourceTitle.addClass("compact");
-              } else if (!resultsResourceTitle.hasClass("compact") && currentResourceTitle.hasClass("compact")) {
-                currentResourceTitle.removeClass("compact");
-              }
             }
             if (funcComplete) {
               funcComplete();

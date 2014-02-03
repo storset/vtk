@@ -104,19 +104,8 @@
 
 <#macro gen resource resourceMenuLeft="" resourceMenuRight="">
   <div id="title-container">
-
-    <#-- Compact when no items in resourceLeftMenu and no items with buttons (taking more v.space) in resourceMenuRight -->
-    <#local compactClass = "" />
     
-    <#if (resourceMenuLeftServicesLinkable?? && resourceMenuRightServicesLinkable??)>
-      <#if (resourceMenuLeftServicesLinkable == 0 
-         && (writePermission.permissionsQueryResult = 'false' || resourceMenuRightServicesLinkable == 0))
-         && !(resourceMenuRightServicesLinkable >= 1 && unlockPermission.permissionsQueryResult = 'true' && writePermission.permissionsQueryResult = 'false' && !publishLink.url?? && !unpublishLink.url??)>
-        <#local compactClass = " compact" />
-      </#if>
-    </#if>
-    
-    <div id="resource-title" class="<@vrtx.resourceToIconResolver resource /> ${resource.collection?string}${compactClass}">
+    <div id="resource-title" class="<@vrtx.resourceToIconResolver resource /> ${resource.collection?string}">
       <h1><#compress>
         <#if resource.URI == '/'>
           ${repositoryID?html}

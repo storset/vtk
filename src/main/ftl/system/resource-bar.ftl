@@ -36,6 +36,7 @@
   var cancelI18n = '${vrtx.getMsg("editor.cancel")}',
       datePickerLang = "${lang}",
       loadingSubfolders = '${vrtx.getMsg("manage.load-subfolders")}',
+      uploadingFiles = '${vrtx.getMsg("uploading-files")}',
       publishing = {
         msg: {
           error: {
@@ -60,6 +61,8 @@
     outOfDateOk: "${vrtx.getMsg('ajaxError.out-of-date.ok')}",
     cantBackupFolderTitle: "${vrtx.getMsg('ajaxError.cant-backup-folder.title')}",
     cantBackupFolder: "${vrtx.getMsg('ajaxError.cant-backup-folder')}",
+    uploadingFilesFailedTitle: "${vrtx.getMsg('ajaxError.uploading-files.title')}",
+    uploadingFilesFailed: "${vrtx.getMsg('ajaxError.uploading-files')}",
     sessionInvalid: "${vrtx.getMsg('ajaxError.sessionInvalid')}",
     sessionInvalidTitle: "${vrtx.getMsg('ajaxError.sessionInvalid.title')}",
     sessionInvalidOk: "${vrtx.getMsg('ajaxError.sessionInvalid.ok')}",

@@ -576,11 +576,10 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
               });
               vrtxAdm.completeFormAsync({
                 selector: "form#" + tabMenuServices[i] + "-form input[type=submit]",
-                updateSelectors: ["#directory-listing"],
+                updateSelectors: ["#contents"],
                 post: true,
-                funcProceedCondition: function(options) {
-                  // Uploading..
-                  var uploadingD = new VrtxLoadingDialog({title: "Uploading file(s)..."});
+                funcProceedCondition: function(options) { // Upload with jQuery.form.js
+                  var uploadingD = new VrtxLoadingDialog({title: uploadingFiles});
                   uploadingD.open();
                   
                   var rootUrl = "/vrtx/__vrtx/static-resources";
@@ -590,6 +589,10 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
                       futureFormAjax.resolve();
                     }).fail(function(xhr, textStatus, errMsg) {
                       uploadingD.close();
+                      var uploadingFailedD = new VrtxMsgDialog({ title: xhr.status + " " + vrtxAdm.serverFacade.errorMessages.uploadingFilesFailedTitle,
+                                                                 msg: vrtxAdm.serverFacade.errorMessages.uploadingFilesFailed
+                                                              });
+                      uploadingFailedD.open();
                     });
                   } else {
                     futureFormAjax.resolve();
@@ -605,9 +608,10 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
                           easeOut: opts.transitionEasingSlideUp,
                           afterOut: function(animation) {
                             for (var i = opts.updateSelectors.length; i--;) {
-                              var outer = vrtxAdm.outerHTML(_$.parseHTML(results), updateSelectors[i]);
+                              var outer = vrtxAdm.outerHTML(_$.parseHTML(results), opts.updateSelectors[i]);
                               vrtxAdm.cachedBody.find(opts.updateSelectors[i]).replaceWith(outer);
                             }
+                            vrtxAdm.updateCollectionListingInteraction();
                             if (opts.funcComplete) {
                               opts.funcComplete();
                             }
@@ -617,16 +621,11 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
                         uploadingD.close();
                       },
                       error: function (xhr, textStatus, errMsg) {
-                        var animation = new VrtxAnimation({
-                          elem: opts.form.parent(),
-                          animationSpeed: opts.transitionSpeed,
-                          easeIn: opts.transitionEasingSlideDown,
-                          easeOut: opts.transitionEasingSlideUp,
-                          afterOut: function(animation) {
-                            alert("Alt gikk til helvetica");
-                          }
-                        });
                         uploadingD.close();
+                        var uploadingFailedD = new VrtxMsgDialog({ title: xhr.status + " " + vrtxAdm.serverFacade.errorMessages.uploadingFilesFailedTitle,
+                                                                 msg: vrtxAdm.serverFacade.errorMessages.uploadingFilesFailed
+                                                              });
+                        uploadingFailedD.open();
                       }
                     });
                   });

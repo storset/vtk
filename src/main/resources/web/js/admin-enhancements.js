@@ -561,7 +561,7 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
             });
           } else {
             if (vrtxAdm.isIPhone || vrtxAdm.isIPad) { // TODO: feature detection
-              $("ul#tabMenuRight li." + tabMenuServices[i]).remove();
+              _$("ul#tabMenuRight li." + tabMenuServices[i]).remove();
             } else {
               vrtxAdm.getFormAsync({
                 selector: "ul#tabMenuRight a#" + tabMenuServices[i],
@@ -576,10 +576,36 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
               });
               vrtxAdm.completeFormAsync({
                 selector: "form#" + tabMenuServices[i] + "-form input[type=submit]",
-                funcBeforeComplete: function() {
+                post: true,
+                funcProceedCondition: function() {
                   // Uploading..
-                  var dd2 = new VrtxLoadingDialog({title: "Uploading file(s)..."});
-                  dd2.open();
+                  var uploadingD = new VrtxLoadingDialog({title: "Uploading file(s)..."});
+                  uploadingD.open();
+                  
+                  var rootUrl = "/vrtx/__vrtx/static-resources";
+                  var futureFormAjax = _$.Deferred();
+                  if (typeof _$.fn.ajaxSubmit !== "function") {
+                    _$.getScript(rootUrl + "/jquery/plugins/jquery.form.js", function () {
+                      futureFormAjax.resolve();
+                    }).fail(function(xhr, textStatus, errMsg) {
+                      uploadingD.close();
+                    });
+                  } else {
+                    futureFormAjax.resolve();
+                  }
+                  _$.when(futureFormAjax).done(function() {
+                    _$("#fileUploadService-form").ajaxSubmit({
+                      success: function(results, status, xhr) {
+                        alert("alt vel");
+                        uploadingD.close();
+                      },
+                      error: function (xhr, textStatus, errMsg) {
+                        alert("foobar");
+                        uploadingD.close();
+                      }
+                    });
+                  });
+                  return false;
                 }
               });
               vrtxAdm.initFileUpload(); // when error message

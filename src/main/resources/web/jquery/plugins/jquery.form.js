@@ -234,10 +234,10 @@ $.fn.ajaxSubmit = function(options) {
     log("fileAPI :" + fileAPI);
     var shouldUseFrame = (hasFileInputs || multipart) && !fileAPI;
     
-     // USIT added name of clicked button
-     if(typeof vrtxAdmin !== "undefined" && vrtxAdmin.editorSaveButtonName != "") {
-       options.data += "&" + vrtxAdmin.editorSaveButtonName;
-     }
+    // USIT added name of clicked button
+    if(typeof vrtxAdmin !== "undefined" && vrtxAdmin.editorSaveButtonName != "") {
+      options.data += "&" + vrtxAdmin.editorSaveButtonName;
+    }
 
     var jqxhr;
 

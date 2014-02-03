@@ -576,8 +576,9 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
               });
               vrtxAdm.completeFormAsync({
                 selector: "form#" + tabMenuServices[i] + "-form input[type=submit]",
+                updateSelectors: ["#directory-listing"],
                 post: true,
-                funcProceedCondition: function() {
+                funcProceedCondition: function(options) {
                   // Uploading..
                   var uploadingD = new VrtxLoadingDialog({title: "Uploading file(s)..."});
                   uploadingD.open();
@@ -596,11 +597,35 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
                   _$.when(futureFormAjax).done(function() {
                     _$("#fileUploadService-form").ajaxSubmit({
                       success: function(results, status, xhr) {
-                        alert("alt vel");
+                        var opts = options;
+                        var animation = new VrtxAnimation({
+                          elem: opts.form.parent(),
+                          animationSpeed: opts.transitionSpeed,
+                          easeIn: opts.transitionEasingSlideDown,
+                          easeOut: opts.transitionEasingSlideUp,
+                          afterOut: function(animation) {
+                            for (var i = opts.updateSelectors.length; i--;) {
+                              var outer = vrtxAdm.outerHTML(_$.parseHTML(results), updateSelectors[i]);
+                              vrtxAdm.cachedBody.find(opts.updateSelectors[i]).replaceWith(outer);
+                            }
+                            if (opts.funcComplete) {
+                              opts.funcComplete();
+                            }
+                          }
+                        });
+                        animation.bottomUp();
                         uploadingD.close();
                       },
                       error: function (xhr, textStatus, errMsg) {
-                        alert("foobar");
+                        var animation = new VrtxAnimation({
+                          elem: opts.form.parent(),
+                          animationSpeed: opts.transitionSpeed,
+                          easeIn: opts.transitionEasingSlideDown,
+                          easeOut: opts.transitionEasingSlideUp,
+                          afterOut: function(animation) {
+                            alert("Alt gikk til helvetica");
+                          }
+                        });
                         uploadingD.close();
                       }
                     });

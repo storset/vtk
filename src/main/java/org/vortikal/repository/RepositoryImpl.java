@@ -73,6 +73,7 @@ import org.vortikal.repository.event.ResourceCreationEvent;
 import org.vortikal.repository.event.ResourceDeletionEvent;
 import org.vortikal.repository.event.ResourceModificationEvent;
 import org.vortikal.repository.hooks.TypeHandlerHooksHelper;
+import org.vortikal.repository.hooks.UnsupportedContentException;
 import org.vortikal.repository.resourcetype.Content;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.search.QueryException;
@@ -1140,6 +1141,13 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
                     newResource = hooks.storeContentOnCreate(newResource, inStream, contentType);
                     Content content = hooks.getContentForEvaluation(newResource, getDefaultContent(newResource));
                     newResource = this.resourceHelper.create(principal, newResource, false, content);
+                } catch (UnsupportedContentException uce) {
+                    // Fallback-process the content, as typehandler did not accept it.
+                    ContentStream cs = uce.getContentStream();
+                    this.contentStore.storeContent(uri, cs.getStream());
+                    // Run through type evaluation
+                    newResource = this.resourceHelper.create(principal, newResource, false, getDefaultContent(newResource));
+                    
                 } catch (Exception e) {
                     throw new TypeHandlerHookException("failed in onCreateDocument hook", e);
                 }

@@ -57,6 +57,11 @@ public class UnsupportedContentException extends TypeHandlerHookException {
         this.content = content;
     }
     
+    public UnsupportedContentException(String message, ContentStream content, Throwable cause) {
+        super(message, cause);
+        this.content = content;
+    }
+    
     /**
      * Convenience constructor which provides a <code>ContentStream</code>
      * backed by a <code>TempFile</code> instance.
@@ -73,11 +78,26 @@ public class UnsupportedContentException extends TypeHandlerHookException {
     }
     
     /**
+     * Convenience constructor which provides a <code>ContentStream</code>
+     * backed by a <code>TempFile</code> instance.
+     * 
+     * @param message
+     * @param contentFile 
+     */
+    public UnsupportedContentException(String message, TempFile contentFile, Throwable cause) throws IOException {
+        super(message, cause);
+        try {
+            this.content = new ContentStream(contentFile.getFileInputStream(),
+                           contentFile.getFile().length());
+        } catch (IOException io) {}
+    }
+    
+    /**
      * Get a <code>ContentStream</code> representation of the content that
      * was unsupported. May return <code>null</code> if none could be provided.
      * @return a content stream, or <code>null</code> if none could be provided.
      */
-    public ContentStream getContent() {
+    public ContentStream getContentStream() {
         return this.content;
     }
 

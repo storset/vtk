@@ -46,17 +46,22 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.hooks.UnsupportedContentException;
 
 /**
  * Quick prototype
  * 
- * TODO exceptions and error handling.
- */
+ * TODO exceptions and error handling. Consider not exposing the calling
+ * layer to HTTP exceptions directly. (Wrap them as causes for "VideoappException et al." instead.)
+ * 
+  */
 public class VideoappClient implements DisposableBean {
     
     private RestTemplate restTemplate;

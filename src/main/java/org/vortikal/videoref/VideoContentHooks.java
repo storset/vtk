@@ -40,6 +40,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.client.HttpClientErrorException;
 import org.vortikal.repository.ContentStream;
 import org.vortikal.repository.InheritablePropertiesStoreContext;
 import org.vortikal.repository.Namespace;
@@ -113,16 +115,8 @@ public class VideoContentHooks extends DefaultTypeHanderHooks
     }
 
     @Override
-    public ResourceImpl storeContentOnCreate(ResourceImpl resource, InputStream stream,
-            String contentType)
-            throws Exception {
-
-        return storeContent(resource, stream, contentType);
-    }
-
-    @Override
     public ContentStream onGetAlternativeContentStream(ResourceImpl resource, String contentIdentifier)
-            throws NoSuchContentException, Exception {
+            throws NoSuchContentException {
 
         if ("application/json".equals(contentIdentifier)) {
             long length = getContentStore().getContentLength(resource.getURI());
@@ -135,16 +129,42 @@ public class VideoContentHooks extends DefaultTypeHanderHooks
     }
 
     @Override
+    public ResourceImpl storeContentOnCreate(ResourceImpl resource, InputStream stream,
+            String contentType)
+            throws Exception {
+
+        return storeContent(resource, stream, contentType);
+    }
+
+    @Override
     public ResourceImpl storeContent(ResourceImpl resource, InputStream stream, String contentType)
-            throws IOException {
+            throws IOException, UnsupportedContentException {
 
         // Dump input stream to file in video storage input area
         String name = resource.getURI().getName();
-        // XXX consuming entire input stream, but need a way to revert if this all fails (fallback to regular store in repo).
         TempFile tempFile = StreamUtil.streamToTempFile(stream, -1, new File(getInputDirAbspath()), name);
 
-        // Make a videoapp call to create a new video object
-        VideoRef newVideoRef = videoapp.createVideo(resource, tempFile.getFile().getAbsolutePath(), contentType);
+        VideoRef newVideoRef;
+        try {
+            // Make a videoapp call to create a new video object
+            newVideoRef = videoapp.createVideo(resource, tempFile.getFile().getAbsolutePath(), contentType);
+        } catch (HttpClientErrorException videoappException) {
+            if (videoappException.getStatusCode() == HttpStatus.BAD_REQUEST) {
+                // Log a warning, since this will be handled transparently by repository and not logged elsewhere.
+                logger.warn("Videoapp did not accept uploaded content for resource " + resource.getURI(), videoappException);
+                // Reference to temp-file provided in exception for fallback-processing.
+                throw new UnsupportedContentException(
+                        "Videoapp did not accept uploaded content for resource " 
+                                + resource, tempFile, videoappException);
+            }
+            
+            // Regard input as consumed, even though an error occured.
+            tempFile.delete();
+            throw videoappException;
+        }
+        
+        // TODO this step should be unnecessary in production env (videoapp takes full ownership and
+        // responsibility of input file as soon as the probe step is successful).
         tempFile.delete();
 
         // Store new video object ref on resource

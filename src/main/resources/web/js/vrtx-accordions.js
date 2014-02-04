@@ -62,7 +62,9 @@ var VrtxAccordion = dejavu.Class.declare({
         }
       };
       if(accordion.__opts.animationSpeed) {
-        initOpts.animate.duration = accordion.__opts.animationSpeed;
+        initOpts.animate = {
+          duration: accordion.__opts.animationSpeed
+        };
       }
       accordion.__opts.elem.accordion(initOpts);
     });

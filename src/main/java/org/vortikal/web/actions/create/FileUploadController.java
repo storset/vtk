@@ -31,6 +31,9 @@
 package org.vortikal.web.actions.create;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -96,23 +99,44 @@ public class FileUploadController extends SimpleFormController {
         Repository repository = requestContext.getRepository();
         Path uri = requestContext.getResourceURI();
         
+        String userProcessedUrisSkip = request.getParameter("userProcessedUrisSkip");
+        String userProcessedUrisOverwrite = request.getParameter("userProcessedUrisOverwrite");
+        String[] urisSkip  = {};
+        String[] urisOverwrite = {};
+        if(userProcessedUrisSkip != null) {
+            urisSkip = userProcessedUrisSkip.split(",");
+        }
+        if(userProcessedUrisOverwrite != null) {
+            urisOverwrite = userProcessedUrisOverwrite.split(",");
+        }
+
         // Check request to see if there is any cached info about file item names
         List<String> fileItemNames = (List<String>)request.getAttribute("org.vortikal.MultipartUploadWrapper.FileItemNames");
         if (fileItemNames != null) {
+            ArrayList<Path> existingUris = new ArrayList<Path>();
+            
             // ok, use this to check for name collisions, so we can fail as early as possible.
             for (String name: fileItemNames) {
                 name = stripWindowsPath(name);
                 if (name == null || name.trim().equals("")) {
-                    return new ModelAndView(getSuccessView());
+                   continue;
                 }
                 Path itemPath = uri.extend(fixFileName(name));
-                if (repository.exists(token, itemPath)) {
-                    errors.rejectValue("file", "manage.upload.resource.exists",
-                            "A resource with the same name already exists");
-                    return showForm(request, response, errors);
+                if (repository.exists(token, itemPath) && !(Arrays.asList(urisOverwrite).contains(itemPath.toString()) 
+                                                         || Arrays.asList(urisSkip).contains(itemPath.toString()))) {
+                    existingUris.add(itemPath);
+                    continue;
                 }
             }
+            
+            // return existing paths to make the user choose between skipping or overwriting them
+            if(!existingUris.isEmpty()) {
+                errors.rejectValue("file", "manage.upload.resource.exists", "Resource(s) with the same name already exists");
+                fileUploadCommand.setExistingUris(existingUris);
+                return processFormSubmission(request, response, fileUploadCommand, errors);
+            }
         }
+       
         
         // Iterate input stream. We can only safely consume the data once.
         FileItemIterator iter = upload.getItemIterator(request);
@@ -121,21 +145,16 @@ public class FileUploadController extends SimpleFormController {
             FileItemStream uploadItem = iter.next();
             if (!uploadItem.isFormField()) {
                 String name = stripWindowsPath(uploadItem.getName());
-
                 if (name == null || name.trim().equals("")) {
-                    return new ModelAndView(getSuccessView());
+                    continue;
                 }
                 
                 String fixedName = fixFileName(name);
                 Path itemPath = uri.extend(fixedName);
-                if (repository.exists(token, itemPath)) {
-                    errors.rejectValue("file", "manage.upload.resource.exists",
-                            "A resource with the same name already exists");
-                    // Clean up already created temporary files
-                    for (StreamUtil.TempFile t: fileMap.values()) {
-                        t.delete();
-                    }
-                    return showForm(request, response, errors);
+                
+                // Skip or overwrite
+                if (repository.exists(token, itemPath) && !Arrays.asList(urisOverwrite).contains(itemPath.toString())) {
+                    continue;
                 }
                 
                 StreamUtil.TempFile tmpFile = StreamUtil.streamToTempFile(uploadItem.openStream(), this.tempDir);

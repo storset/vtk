@@ -600,31 +600,83 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
                   _$.when(futureFormAjax).done(function() {
                     _$("#fileUploadService-form").ajaxSubmit({
                       success: function(results, status, xhr) {
+                        var result = _$.parseHTML(results);
+                        var existingUris = _$(result).find("#file-upload-existing-uris");
                         var opts = options;
-                        var animation = new VrtxAnimation({
-                          elem: opts.form.parent(),
-                          animationSpeed: opts.transitionSpeed,
-                          easeIn: opts.transitionEasingSlideDown,
-                          easeOut: opts.transitionEasingSlideUp,
-                          afterOut: function(animation) {
-                            for (var i = opts.updateSelectors.length; i--;) {
-                              var outer = vrtxAdm.outerHTML(_$.parseHTML(results), opts.updateSelectors[i]);
-                              vrtxAdm.cachedBody.find(opts.updateSelectors[i]).replaceWith(outer);
-                            }
-                            vrtxAdm.updateCollectionListingInteraction();
-                            if (opts.funcComplete) {
-                              opts.funcComplete();
+                        
+                        if(existingUris.length) {
+                          var existingUrisArr = existingUris.text().split("#");
+                          var userProcessedUrisSkipArr = [];
+                          var userProcessedUrisOverwriteArr = [];
+                          var userProcessNextUri= function() {
+                            if(existingUrisArr.length) {
+                              var uri = existingUrisArr.pop();
+                              var actionExistingFileDialog = new VrtxConfirmDialog({
+                                msg: uri,
+                                title: "Denne filen finnes fra før",
+                                onOk: function () {  // Don't keep file
+                                  userProcessedUrisSkipArr.push(uri);
+                                  userProcessNextUri();
+                                },
+                                btnTextOk: "Hopp over",
+                                extraBtns: [{
+                                  btnText: "Skriv over",
+                                  onOk: function () { // Keep/overwrite file
+                                    userProcessedUrisOverwriteArr.push(uri);
+                                    userProcessNextUri();
+                                  }
+                                }],
+                                onCancel: function() {
+                                  uploadingD.close();
+                                  var animation = new VrtxAnimation({
+                                    elem: opts.form.parent(),
+                                    animationSpeed: opts.transitionSpeed,
+                                    easeIn: opts.transitionEasingSlideDown,
+                                    easeOut: opts.transitionEasingSlideUp
+                                  });
+                                  animation.bottomUp();
+                                }
+                              });
+                              actionExistingFileDialog.open();
+                            } else { // User has decided for all existing uris
+                              if(userProcessedUrisSkipArr.length) {
+                                var valueSkip = userProcessedUrisSkipArr.join(",");
+                                opts.form.append("<input name='userProcessedUrisSkip' type='hidden' value='" + valueSkip + "' />");
+                              }
+                              if(userProcessedUrisOverwriteArr.length) {
+                                var valueOverwrite = userProcessedUrisOverwriteArr.join(",");
+                                opts.form.append("<input name='userProcessedUrisOverwrite' type='hidden' value='" + valueOverwrite + "' />");
+                              }
+                              opts.funcProceedCondition(opts);
                             }
                           }
-                        });
-                        animation.bottomUp();
-                        uploadingD.close();
+                          userProcessNextUri();
+                        } else {
+                          uploadingD.close();
+                          var animation = new VrtxAnimation({
+                            elem: opts.form.parent(),
+                            animationSpeed: opts.transitionSpeed,
+                            easeIn: opts.transitionEasingSlideDown,
+                            easeOut: opts.transitionEasingSlideUp,
+                            afterOut: function(animation) {
+                              for (var i = opts.updateSelectors.length; i--;) {
+                                var outer = vrtxAdm.outerHTML(result, opts.updateSelectors[i]);
+                                vrtxAdm.cachedBody.find(opts.updateSelectors[i]).replaceWith(outer);
+                              }
+                              vrtxAdm.updateCollectionListingInteraction();
+                              if (opts.funcComplete) {
+                                opts.funcComplete();
+                              }
+                            }
+                          });
+                          animation.bottomUp();
+                        }
                       },
                       error: function (xhr, textStatus, errMsg) {
                         uploadingD.close();
                         var uploadingFailedD = new VrtxMsgDialog({ title: xhr.status + " " + vrtxAdm.serverFacade.errorMessages.uploadingFilesFailedTitle,
-                                                                 msg: vrtxAdm.serverFacade.errorMessages.uploadingFilesFailed
-                                                              });
+                                                                   msg: vrtxAdm.serverFacade.errorMessages.uploadingFilesFailed
+                                                                });
                         uploadingFailedD.open();
                       }
                     });

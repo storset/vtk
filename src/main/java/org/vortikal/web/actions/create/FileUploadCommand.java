@@ -30,12 +30,16 @@
  */
 package org.vortikal.web.actions.create;
 
+import java.util.ArrayList;
+
+import org.vortikal.repository.Path;
 import org.vortikal.web.actions.UpdateCancelCommand;
 
 
 public class FileUploadCommand extends UpdateCancelCommand {
 
     private String file;
+    private ArrayList<Path> existingUris;
 
     public FileUploadCommand(String submitURL) {
         super(submitURL);
@@ -47,6 +51,14 @@ public class FileUploadCommand extends UpdateCancelCommand {
     
     public String getFile() {
         return this.file;
+    }
+
+    public ArrayList<Path> getExistingUris() {
+        return existingUris;
+    }
+
+    public void setExistingUris(ArrayList<Path> existingUris) {
+        this.existingUris = existingUris;
     }
     
 }

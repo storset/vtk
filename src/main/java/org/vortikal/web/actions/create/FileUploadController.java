@@ -157,6 +157,8 @@ public class FileUploadController extends SimpleFormController {
                     continue;
                 }
                 
+                System.out.println("--------------------------------" + itemPath.toString());
+                
                 StreamUtil.TempFile tmpFile = StreamUtil.streamToTempFile(uploadItem.openStream(), this.tempDir);
                 fileMap.put(itemPath, tmpFile);
             }
@@ -170,6 +172,9 @@ public class FileUploadController extends SimpleFormController {
                 logger.debug("Uploaded resource will be: " + path);
             }
             try {
+                if(repository.exists(token, path)) {
+                    repository.delete(token, path, false);
+                }
                 repository.createDocument(token, path, tempFile.getFileInputStream());
                 tempFile.delete();
             } catch (Exception e) {

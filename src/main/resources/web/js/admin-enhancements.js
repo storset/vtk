@@ -579,7 +579,7 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
                 updateSelectors: ["#contents"],
                 post: true,
                 funcProceedCondition: function(options) { // Upload with jQuery.form.js
-                  var uploadingD = new VrtxLoadingDialog({title: uploading.in-progress});
+                  var uploadingD = new VrtxLoadingDialog({title: uploading.inprogress});
                   uploadingD.open();
                   
                   var rootUrl = "/vrtx/__vrtx/static-resources";

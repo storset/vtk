@@ -67,7 +67,7 @@
 .forms-new input[type=text]:focus,
 .forms-new button:focus,
 .forms-new .ui-dialog .ui-dialog-buttonpane button:focus {
-  outline: 0;
+  outline: none;
 }
 
 /* Buttons */

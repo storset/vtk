@@ -31,7 +31,6 @@
 package org.vortikal.web.actions.create;
 
 import java.util.ArrayList;
-
 import org.vortikal.repository.Path;
 import org.vortikal.web.actions.UpdateCancelCommand;
 

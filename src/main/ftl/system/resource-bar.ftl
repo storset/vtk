@@ -36,15 +36,12 @@
   var cancelI18n = '${vrtx.getMsg("editor.cancel")}',
       datePickerLang = "${lang}",
       loadingSubfolders = '${vrtx.getMsg("manage.load-subfolders")}',
-      uploadingFiles = '${vrtx.getMsg("uploading-files")}',
-      publishing = {
-        msg: {
-          error: {
-            unpublishDateBefore: '${vrtx.getMsg("publishing.edit.invalid.unpublishDateBefore")}',
-            unpublishDateNonExisting: '${vrtx.getMsg("publishing.edit.invalid.unpublishDateNonExisting")}'
-          }
-        }
-      };
+      uploading.in-progress = '${vrtx.getMsg("uploading.in-progress")}',
+      uploading.existing.title =  '${vrtx.getMsg("uploading.existing.title")}',
+      uploading.existing.skip = '${vrtx.getMsg("uploading.existing.skip")}',
+      uploading.existing.overwrite = '${vrtx.getMsg("uploading.existing.overwrite")}',
+      publishing.msg.error.unpublishDateBefore = '${vrtx.getMsg("publishing.edit.invalid.unpublishDateBefore")}',
+      publishing.msg.error.unpublishDateNonExisting = '${vrtx.getMsg("publishing.edit.invalid.unpublishDateNonExisting")}';
   
   vrtxAdmin.serverFacade.errorMessages = {
     title: "${vrtx.getMsg('ajaxError.title')}", 

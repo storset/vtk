@@ -579,7 +579,7 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
                 updateSelectors: ["#contents"],
                 post: true,
                 funcProceedCondition: function(options) { // Upload with jQuery.form.js
-                  var uploadingD = new VrtxLoadingDialog({title: uploadingFiles});
+                  var uploadingD = new VrtxLoadingDialog({title: uploading.in-progress});
                   uploadingD.open();
                   
                   var rootUrl = "/vrtx/__vrtx/static-resources";
@@ -613,14 +613,14 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
                               var uri = existingUrisArr.pop();
                               var actionExistingFileDialog = new VrtxConfirmDialog({
                                 msg: uri,
-                                title: "Denne filen finnes fra før",
+                                title: uploading.existing.title,
                                 onOk: function () {  // Don't keep file
                                   userProcessedUrisSkipArr.push(uri);
                                   userProcessNextUri();
                                 },
-                                btnTextOk: "Hopp over",
+                                btnTextOk: uploading.existing.skip,
                                 extraBtns: [{
-                                  btnText: "Skriv over",
+                                  btnText: uploading.existing.overwrite,
                                   onOk: function () { // Keep/overwrite file
                                     userProcessedUrisOverwriteArr.push(uri);
                                     userProcessNextUri();

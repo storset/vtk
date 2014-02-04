@@ -424,7 +424,6 @@
 .forms-new input[type=submit],
 .forms-new input[type=text] { /* input reset */
   -webkit-appearance: none;
-  -webkit-border-radius: 0;
 }
 
 /* ^ Webkit fixes - typical apple mobile devices */

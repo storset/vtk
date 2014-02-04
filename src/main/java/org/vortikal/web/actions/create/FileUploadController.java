@@ -99,6 +99,7 @@ public class FileUploadController extends SimpleFormController {
         Repository repository = requestContext.getRepository();
         Path uri = requestContext.getResourceURI();
         
+        String userProcessed = request.getParameter("userProcessed");
         String userProcessedUrisSkip = request.getParameter("userProcessedUrisSkip");
         String userProcessedUrisOverwrite = request.getParameter("userProcessedUrisOverwrite");
         String[] urisSkip  = {};
@@ -122,10 +123,16 @@ public class FileUploadController extends SimpleFormController {
                    continue;
                 }
                 Path itemPath = uri.extend(fixFileName(name));
-                if (repository.exists(token, itemPath) && !(Arrays.asList(urisOverwrite).contains(itemPath.toString()) 
-                                                         || Arrays.asList(urisSkip).contains(itemPath.toString()))) {
-                    existingUris.add(itemPath);
-                    continue;
+                if (repository.exists(token, itemPath)) {
+                    if (userProcessed != null) {
+                       if(!(Arrays.asList(urisOverwrite).contains(itemPath.toString()) 
+                         || Arrays.asList(urisSkip).contains(itemPath.toString()))) {
+                           existingUris.add(itemPath);  
+                       }
+                    } else {
+                       errors.rejectValue("file", "manage.upload.resource.exists", "Resource(s) with the same name already exists");
+                       return showForm(request, response, errors);
+                    }
                 }
             }
             
@@ -153,12 +160,21 @@ public class FileUploadController extends SimpleFormController {
                 Path itemPath = uri.extend(fixedName);
                 
                 // Skip or overwrite
-                if (repository.exists(token, itemPath) && !Arrays.asList(urisOverwrite).contains(itemPath.toString())) {
-                    continue;
+                if (repository.exists(token, itemPath)) {
+                    if (userProcessed != null) {
+                        if(!Arrays.asList(urisOverwrite).contains(itemPath.toString())) {
+                            continue;
+                        }
+                    } else {
+                        errors.rejectValue("file", "manage.upload.resource.exists", "Resource(s) with the same name already exists");
+                        // Clean up already created temporary files
+                        for (StreamUtil.TempFile t: fileMap.values()) {
+                            t.delete();
+                        }
+                        return showForm(request, response, errors);
+                    }
                 }
-                
-                System.out.println("--------------------------------" + itemPath.toString());
-                
+
                 StreamUtil.TempFile tmpFile = StreamUtil.streamToTempFile(uploadItem.openStream(), this.tempDir);
                 fileMap.put(itemPath, tmpFile);
             }

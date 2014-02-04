@@ -598,6 +598,7 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
                     futureFormAjax.resolve();
                   }
                   _$.when(futureFormAjax).done(function() {
+                    _$("#fileUploadService-form").append("<input name='userProcessed' type='hidden' value='yes' />");
                     _$("#fileUploadService-form").ajaxSubmit({
                       success: function(results, status, xhr) {
                         var result = _$.parseHTML(results);

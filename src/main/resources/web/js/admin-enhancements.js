@@ -3443,7 +3443,7 @@ VrtxAdmin.prototype.displayErrorContainers = function displayErrorContainers(res
     wrapper.find("div." + errorContainer).html(_$(results).find("div." + errorContainer).html());
   } else {
     var outer = vrtxAdmin.outerHTML(results, "div." + errorContainer);
-    _$(outer).insertAfter(wrapper.find(errorContainerInsertAfter));
+    _$(outer).attr("role", "alert").insertAfter(wrapper.find(errorContainerInsertAfter));
   }
 };
 
@@ -3485,6 +3485,7 @@ VrtxAdmin.prototype.displayMsg = function displayMsg(msg, type) {
 
   var current = (type === "info") ? "infomessage" : "errormessage";
   var other = (type === "info") ? "errormessage" : "infomessage";
+  var role = (type === "info") ? "status" : "alert";
 
   var currentMsg = vrtxAdm.cachedAppContent.find("> ." + current);
   var otherMsg = vrtxAdm.cachedAppContent.find("> ." + other);
@@ -3493,8 +3494,9 @@ VrtxAdmin.prototype.displayMsg = function displayMsg(msg, type) {
       currentMsg.html(msg).fadeTo(100, 0.25).fadeTo(100, 1);
     } else if (otherMsg.length) {
       otherMsg.html(msg).removeClass(other).addClass(current).fadeTo(100, 0.25).fadeTo(100, 1);
+      otherMsg.attr("role", role);
     } else {
-      vrtxAdm.cachedAppContent.prepend("<div class='" + current + " message'>" + msg + "</div>");
+      vrtxAdm.cachedAppContent.prepend("<div class='" + current + " message' role='" + role +"'>" + msg + "</div>");
     }
   } else {
     if (currentMsg.length) {

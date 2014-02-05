@@ -3534,7 +3534,7 @@ VrtxAdmin.prototype.removeMsg = function removeMsg(type) {
 VrtxAdmin.prototype.displayDialogErrorMsg = function displayDialogErrorMsg(selector, msg) {
   var msgWrp = $(".dialog-error-msg");
   if(!msgWrp.length) {
-    $("<p class='dialog-error-msg'>" + msg + "</p>").insertBefore(selector);
+    $("<p class='dialog-error-msg' role='alert'>" + msg + "</p>").insertBefore(selector);
   } else {
     msgWrp.text(msg);
   } 

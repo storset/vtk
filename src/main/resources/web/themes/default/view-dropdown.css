@@ -14,7 +14,8 @@
   text-decoration: none !important;
 }
 
-.vrtx-dropdown-component a:hover {
+.vrtx-dropdown-component a:hover,
+.vrtx-dropdown-component a:focus {
   text-decoration: underline !important;
 }
 
@@ -24,7 +25,8 @@
 }
 
 .vrtx-dropdown-component .vrtx-dropdown-link.active,
-.vrtx-dropdown-component .vrtx-dropdown-link:hover {
+.vrtx-dropdown-component .vrtx-dropdown-link:hover,
+.vrtx-dropdown-component .vrtx-dropdown-link:focus {
   background-image: url(images/dropdown-toggle-white-bg-hover.png);
 }
 

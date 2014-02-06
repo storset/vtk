@@ -80,5 +80,5 @@
   <import resource="simple-structured-editor.xml" />
   
   <!-- videoref support and videoapp integration -->
-  <import resource="videoref.xml" />
+  <import resource="videoapp.xml" />
 </beans>

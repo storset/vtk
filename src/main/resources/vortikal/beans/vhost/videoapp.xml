@@ -12,9 +12,25 @@
                            http://www.springframework.org/schema/util/spring-util.xsd
        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.1.xsd" xmlns:aop="http://www.springframework.org/schema/aop">
 
-  <!-- This file depends on video.xml and the resource type for video defined there. -->
+  <description>
+       Extension: videoapp.xml
+
+       Introduces the 'videoref' resource type and require repository integration
+       for special handling of video content.
+       
+       Required configuration placeholders (see vortikal.properties for default values):
+       videoapp.username
+       videoapp.password
+       videoapp.apiBaseUrl
+       videoapp.videoStorageRootPath
+       videoapp.supportApiBaseUri
+    
+       This file depends on video.xml from Vortikal and the resource type
+       for 'video' defined there. Avoid hard incoming dependencies on beans defined
+       here, as this extension should be explicitly optional.
+  </description>
   
-  <!-- Resource type definition for 'videoref' type. -->  
+  <!-- Resource type definition for 'videoref' type. -->
   <bean id="mediaref.videorefType"
         class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
     <property name="name" value="videoref"/>
@@ -84,7 +100,7 @@
   <!-- Repository integration -->
   <bean id="videoref.videoContentHooks" parent="abstractTypeHandlerHooks"
         class="org.vortikal.videoref.VideoContentHooks">
-    <property name="videoStorageRoot" value="${mediaref.videoapp.videoStorageRootPath}" />
+    <property name="videoStorageRoot" value="${videoapp.videoStorageRootPath}" />
     <property name="videoApiClient" ref="videoref.videoapp.client" />
     <property name="repositoryId" value="${repositoryID}" />
     
@@ -106,8 +122,8 @@
       <bean class="org.springframework.web.client.RestTemplate" >
         <constructor-arg>
           <bean class="org.vortikal.util.web.BasicAuthHttpRequestFactory">
-            <property name="username" value="${mediaref.videoapp.username}" />
-            <property name="password" value="${mediaref.videoapp.password}" />
+            <property name="username" value="${videoapp.username}" />
+            <property name="password" value="${videoapp.password}" />
             <property name="connectTimeout" value="2000" />
             <property name="readTimeout" value="60000" />
           </bean>
@@ -122,7 +138,7 @@
       </bean>
     </property>
     <property name="repositoryId" value="${repositoryID}" />
-    <property name="apiBaseUrl" value="${mediaref.videoapp.apiBaseUrl}" />
+    <property name="apiBaseUrl" value="${videoapp.apiBaseUrl}" />
   </bean>
   
   <!-- Video DAO support -->
@@ -252,6 +268,20 @@
     <property name="videoappClient" ref="videoref.videoapp.client" />
   </bean>
   
+  <!-- Categorizable wrappers for injection into media player views using CategoryResolvingFactoryBean -->
+  <bean id="videoref.hdsStreamUrlProvider.categoryWrapper" class="org.vortikal.context.CategorizableWrapper">
+    <property name="bean" ref="videoref.hdsStreamUrlProvider" />
+    <property name="category" value="displayMediaResourceView.referenceDataProvider" />
+  </bean>
+  <bean id="videoref.hlsStreamUrlProvider.categoryWrapper" class="org.vortikal.context.CategorizableWrapper">
+    <property name="bean" ref="videoref.hlsStreamUrlProvider" />
+    <property name="category" value="displayMediaResourceView.referenceDataProvider" />
+  </bean>
+  <bean id="videoref.directStreamingUrlsProvider.categoryWrapper" class="org.vortikal.context.CategorizableWrapper">
+    <property name="bean" ref="videoref.directStreamingUrlsProvider" />
+    <property name="category" value="displayMediaResourceView.referenceDataProvider" />
+  </bean>
+  
   <!-- Service for videoapp support/callback API -->
   <bean id="videoref.supportApiService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="viewService" />
@@ -261,6 +291,7 @@
         <bean class="org.vortikal.web.service.RequestURIRegexpAssertion">
           <property name="pattern" value="^${appResources.baseURL}/videoref/callback/rest/v0.*"/>
         </bean>
+        <!-- TODO: restrict support service access when entering production env: -->
         <!--        <bean class="org.vortikal.web.service.RequestProtocolAssertion">
           <property name="protocol" value="${webProtocolRestricted}"/>
         </bean>

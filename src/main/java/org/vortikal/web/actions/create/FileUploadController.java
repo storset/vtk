@@ -100,6 +100,7 @@ public class FileUploadController extends SimpleFormController {
         Repository repository = requestContext.getRepository();
         Path uri = requestContext.getResourceURI();
         
+        // When JavaScript is enabled: let the user decide if want to skip or overwrite existing paths
         String userProcessed = request.getParameter("userProcessed");
         String userProcessedUrisSkip = request.getParameter("userProcessedUrisSkip");
         String userProcessedUrisOverwrite = request.getParameter("userProcessedUrisOverwrite");
@@ -113,13 +114,12 @@ public class FileUploadController extends SimpleFormController {
         }
 
         // Check request to see if there is any cached info about file item names
-
         List<String> fileItemNames = (List<String>) request.getAttribute("org.vortikal.MultipartUploadWrapper.FileItemNames");
         if (fileItemNames != null) {
             ArrayList<Path> existingUris = new ArrayList<Path>();
             
             // ok, use this to check for name collisions, so we can fail as early as possible.
-            for (String name: fileItemNames) {
+            for (String name : fileItemNames) {
                 name = stripWindowsPath(name);
                 if (name == null || name.trim().equals("")) {
                     errors.rejectValue("file", "manage.upload.resource.name-problem", "A resource has an illegal name");
@@ -129,7 +129,7 @@ public class FileUploadController extends SimpleFormController {
                 if (repository.exists(token, itemPath)) {
                     if (userProcessed != null) {
                        if(!(Arrays.asList(urisOverwrite).contains(itemPath.toString()) 
-                         || Arrays.asList(urisSkip).contains(itemPath.toString()))) {
+                         || Arrays.asList(urisSkip).contains(itemPath.toString()))) { // If existing path is not processed by user
                            existingUris.add(itemPath);  
                        }
                     } else {
@@ -139,7 +139,7 @@ public class FileUploadController extends SimpleFormController {
                 }
             }
             
-            // return existing paths to make the user choose between skipping or overwriting them
+            // Return existing paths to let the user process them
             if(!existingUris.isEmpty()) {
                 errors.rejectValue("file", "manage.upload.resource.exists", "A resource of this name already exists");
                 fileUploadCommand.setExistingUris(existingUris);
@@ -163,9 +163,8 @@ public class FileUploadController extends SimpleFormController {
                 String fixedName = fixFileName(name);
                 Path itemPath = uri.extend(fixedName);
                 
-                // Skip or overwrite
                 if (repository.exists(token, itemPath)) {
-                    if (userProcessed != null) {
+                    if (userProcessed != null) { // Skip or overwrite decided by user
                         if(!Arrays.asList(urisOverwrite).contains(itemPath.toString())) {
                             continue;
                         }

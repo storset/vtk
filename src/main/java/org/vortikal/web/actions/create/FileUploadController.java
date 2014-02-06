@@ -102,7 +102,7 @@ public class FileUploadController extends SimpleFormController {
         String userProcessed = request.getParameter("userProcessed");
         String userProcessedUrisSkip = request.getParameter("userProcessedUrisSkip");
         String userProcessedUrisOverwrite = request.getParameter("userProcessedUrisOverwrite");
-        String[] urisSkip  = {};
+        String[] urisSkip = {};
         String[] urisOverwrite = {};
         if(userProcessedUrisSkip != null) {
             urisSkip = userProcessedUrisSkip.split(",");

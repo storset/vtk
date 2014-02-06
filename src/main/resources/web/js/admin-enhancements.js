@@ -601,9 +601,10 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
                   }
                   _$.when(futureFormAjax).done(function() {
                     _$("#fileUploadService-form").append("<input name='userProcessed' type='hidden' value='yes' />");
+                    _$("#dialog-loading-content").append("<p id='dialog-uploading-percent' />");
                     _$("#fileUploadService-form").ajaxSubmit({
                       uploadProgress: function(event, position, total, percent) {
-                        vrtxAdm.log({msg: "Upload completion: " + percent});
+                        _$("#dialog-uploading-percent").text(percent + "%");
                       },
                       success: function(results, status, xhr) {
                         var result = _$.parseHTML(results);

@@ -1,4 +1,4 @@
-/* Copyright (c) 2009, University of Oslo, Norway
+/* Copyright (c) 2014, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -30,37 +30,51 @@
  */
 package org.vortikal.repository.store;
 
-import java.util.List;
-
 /**
- * Simplistic and generic interface for accessing principal metadata as
- * "attribute -> list of values"-mappings.
+ * A principal's affiliation to a unit.
  * 
- * This will typically be used by {@link org.vortikal.security.PrincipalFactory}
- * when creating {@link org.vortikal.security.Principal} instances.
+ * @see PrincipalAffiliation
  * 
  */
-public interface PrincipalMetadata extends Metadata {
+public class PrincipalMetadataUnitAffiliation {
 
-    /**
-     * Get the qualified name of the principal to which this instance's metadata
-     * applies.
-     * 
-     * @see org.vortikal.security.Principal#getQualifiedName()
-     * 
-     * @return The qualified name as a <code>String</code>.
-     */
-    public String getQualifiedName();
+    // The type of affiliation
+    private String type;
 
-    /**
-     * 
-     * @return The user id as a <code>String</code>
-     */
-    public String getUid();
-    
-    /**
-     * @return The user's affiliations to units.
-     */
-    public List<PrincipalMetadataUnitAffiliation> getAffiliations();
+    // Whether or not the affiliation is the primary
+    private boolean primary;
+
+    // The actual unit of affiliation
+    private UnitMetadata unit;
+
+    public PrincipalMetadataUnitAffiliation(String type, boolean primary, UnitMetadata unit) {
+        this.type = type;
+        this.primary = primary;
+        this.unit = unit;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public boolean isPrimary() {
+        return primary;
+    }
+
+    public UnitMetadata getUnit() {
+        return unit;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("type=").append(this.type).append(";");
+        sb.append("primary=").append(this.primary).append(";");
+        sb.append("unit=");
+        if (this.unit != null) {
+            sb.append(this.unit.getValue("areacode"));
+        }
+        return sb.toString();
+    }
 
 }

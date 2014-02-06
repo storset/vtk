@@ -30,6 +30,8 @@
  */
 package org.vortikal.repository.store;
 
+import java.util.List;
+
 /**
  * Basic impl of <code>PrincipalMetadata</code>.
  * 
@@ -40,24 +42,37 @@ public class PrincipalMetadataImpl extends MetadataImpl implements PrincipalMeta
     public static final String UID_ATTRIBUTE = "uid";
 
     private String qualifiedName;
+    private List<PrincipalMetadataUnitAffiliation> affiliations;
 
     public PrincipalMetadataImpl(String qualifiedName) {
+        this(qualifiedName, null);
+    }
+
+    public PrincipalMetadataImpl(String qualifiedName, List<PrincipalMetadataUnitAffiliation> affiliations) {
         if (qualifiedName == null) {
             throw new IllegalArgumentException("Qualified name cannot be null");
         }
         this.qualifiedName = qualifiedName;
+        this.affiliations = affiliations;
     }
 
+    @Override
     public String getQualifiedName() {
         return this.qualifiedName;
     }
 
+    @Override
     public String getUid() {
         String uid = (String) this.getValue(UID_ATTRIBUTE);
         if (uid == null) {
             uid = (String) this.getValue("username");
         }
         return uid;
+    }
+
+    @Override
+    public List<PrincipalMetadataUnitAffiliation> getAffiliations() {
+        return this.affiliations;
     }
 
     @Override

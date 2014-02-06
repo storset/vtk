@@ -24,33 +24,33 @@
   <script type="text/javascript" src="${md5jsURL?html}"></script>
   <script type="text/javascript" src="/vrtx/__vrtx/static-resources/jquery/plugins/jquery.hotkeys.js"></script> 
   <script type="text/javascript"><!--
+  
+    var UNSAVED_CHANGES_CONFIRMATION = '<@vrtx.msg code='manage.unsavedChangesConfirmation' />';
     var ajaxSaveText = "<@vrtx.msg code='editor.save-plaintext-edit-ajax-loading-title' />";
-
-    $(document).ready(function() {
-      $("#app-content").on("click", "#saveViewAction", function(e) {
-        performSave();
-      });
-    });
 
     var before = null;
     var saveButton = false;
+    
     function performSave() {
-       saveButton = true;
-       return true;
+      saveButton = true;
+      return true;
     }
     
-    window.onload = function() {
-       before = hex_md5(document.getElementById("plaintext").value);
+    function saveInitChangesInPlaintextEditor() {
+      before = hex_md5(document.getElementById("foo").value);
     }
 
-    window.onbeforeunload = function() {
-       if (saveButton) return;
-       var now = hex_md5(document.getElementById("plaintext").value);
-       if (before == now) {
-          return;
-       }
-       return '<@vrtx.msg code='manage.unsavedChangesConfirmation' />';
+    function unsavedChangesInPlaintextEditorMessage() {
+      if (saveButton) return;
+      var now = hex_md5(document.getElementById("foo").value);
+      if (before == now) {
+        return;
+      }
+      return UNSAVED_CHANGES_CONFIRMATION;
     }
+    
+    window.onload = saveInitChangesInPlaintextEditor;
+    window.onbeforeunload = unsavedChangesInPlaintextEditorMessage;
 
     // -->
   </script>
@@ -67,7 +67,7 @@
     </form>
   
     <form id="editor" action="${plaintextEditForm.submitURL}" method="post">
-      <textarea id="plaintext" name="content" rows="30" cols="80">${plaintextEditForm.content?html}</textarea>
+      <textarea id="foo" name="content" rows="30" cols="80">${plaintextEditForm.content?html}</textarea>
       <div class="vrtx-edit-plaintext-submit-buttons submitButtons">
         <input class="vrtx-button vrtx-save-button" type="submit" id="saveViewAction" name="saveViewAction" value="<@vrtx.msg code="plaintextEditForm.saveAndView" default="Save and view"/>" />
         <input class="vrtx-focus-button vrtx-save-button" type="submit" id="saveAction" name="saveAction" value="<@vrtx.msg code="plaintextEditForm.save" default="Save"/>" />

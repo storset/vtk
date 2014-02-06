@@ -1495,7 +1495,7 @@ VrtxAdmin.prototype.miscAdjustments = function miscAdjustments() {
   vrtxAdm.adjustResourceTitle();
   
   // Ignore all AJAX errors when user navigate away (abort)
-  if(typeof unsavedChangesInEditorMessage !== "function") {
+  if(typeof unsavedChangesInEditorMessage !== "function" && typeof unsavedChangesInPlaintextEditorMessage !== "function") {
     var ignoreAjaxErrorOnBeforeUnload = function() {
       vrtxAdm.ignoreAjaxErrors = true;
     };

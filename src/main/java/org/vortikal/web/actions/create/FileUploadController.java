@@ -33,6 +33,7 @@ package org.vortikal.web.actions.create;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -112,7 +113,8 @@ public class FileUploadController extends SimpleFormController {
         }
 
         // Check request to see if there is any cached info about file item names
-        List<String> fileItemNames = (List<String>)request.getAttribute("org.vortikal.MultipartUploadWrapper.FileItemNames");
+
+        List<String> fileItemNames = (List<String>) request.getAttribute("org.vortikal.MultipartUploadWrapper.FileItemNames");
         if (fileItemNames != null) {
             ArrayList<Path> existingUris = new ArrayList<Path>();
             
@@ -120,7 +122,8 @@ public class FileUploadController extends SimpleFormController {
             for (String name: fileItemNames) {
                 name = stripWindowsPath(name);
                 if (name == null || name.trim().equals("")) {
-                   continue;
+                    errors.rejectValue("file", "manage.upload.resource.exists", "Resource(s) with the same name already exists");
+                    return showForm(request, response, errors);
                 }
                 Path itemPath = uri.extend(fixFileName(name));
                 if (repository.exists(token, itemPath)) {
@@ -153,7 +156,8 @@ public class FileUploadController extends SimpleFormController {
             if (!uploadItem.isFormField()) {
                 String name = stripWindowsPath(uploadItem.getName());
                 if (name == null || name.trim().equals("")) {
-                    continue;
+                    errors.rejectValue("file", "manage.upload.resource.exists", "Resource(s) with the same name already exists");
+                    return showForm(request, response, errors);
                 }
                 
                 String fixedName = fixFileName(name);

@@ -2111,14 +2111,6 @@ body#vrtx-report-broken-links #directory-listing td.vrtx-report-broken-links {
 
 /* 3.6 Permissions / About / Publishing / View / Plaintext-edit / Visual profile / Versioning  */
 
-#dialog-loading-content #dialog-upload-percent {
-  margin-top: 10px;
-  color: #666;
-  text-align: right;
-  width: 100%;
-  display: block;
-}
-
 #vrtx-report-filters ul.vrtx-report-filter-last {
   margin-right: 0;
 }
@@ -3378,6 +3370,14 @@ tr.expandedForm td .vrtx-button-small {
   top: 0px;
   left: 330px;
   z-index: 1;
+}
+
+#dialog-uploading-percent {
+  margin-top: 10px;
+  color: #666;
+  text-align: right;
+  width: 100%;
+  display: block;
 }
 
 /* Tooltips */

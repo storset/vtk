@@ -3373,12 +3373,13 @@ tr.expandedForm td .vrtx-button-small {
 }
 
 #dialog-uploading-percent {
-  margin-top: 10px;
+  margin-top: 8px;
   margin-bottom: -10px;
-  color: #666;
+  color: #444;
   text-align: right;
   width: 100%;
   display: block;
+  font-size: 0.867em;
 }
 
 /* Tooltips */

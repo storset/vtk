@@ -225,7 +225,7 @@
         </div>
       </#if>
 
-      <div class="properties">
+      <div class="properties<#if (resource.content)?exists> properties-post</#if>">
         <@propsForm resource.postContentProperties />
       </div>
  
@@ -438,11 +438,11 @@
         </#if>
 
         <#local uniqueName = 'cal_' + propDef_index />
-        <input size="10" maxlength="10" type="text" class="vrtx-date date" id="resource.${name}" name="resource.${name}.date" value="${dateVal}" />
-        <input size="2" maxlength="2" type="text" class="vrtx-date hours" id="resource.${name}.hours" name="resource.${name}.hours" value="${hours}" />
-        <span class="colon">:</span>
-        <input size="2" maxlength="2" type="text" class="vrtx-date minutes" id="resource.${name}.minutes" name="resource.${name}.minutes" value="${minutes}" />
-
+        
+        <#t><input size="8" maxlength="10" type="text" class="vrtx-textfield vrtx-date date" id="resource.${name}" name="resource.${name}.date" value="${dateVal}" />
+        <#t><input size="1" maxlength="2" type="text" class="vrtx-textfield vrtx-hours hours" id="resource.${name}.hours" name="resource.${name}.hours" value="${hours}" />
+        <#t><span class="colon">:</span>
+        <#t><input size="1" maxlength="2" type="text" class="vrtx-textfield vrtx-minutes minutes" id="resource.${name}.minutes" name="resource.${name}.minutes" value="${minutes}" />
       <#else>
 
         <#if (propDef.vocabulary)?exists>

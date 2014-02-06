@@ -1,4 +1,4 @@
-/* Copyright (c) 2004, University of Oslo, Norway
+/* Copyright (c) 2004-2014, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -33,8 +33,6 @@ package org.vortikal.web.actions.create;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -114,6 +112,7 @@ public class FileUploadController extends SimpleFormController {
         }
 
         // Check request to see if there is any cached info about file item names
+        @SuppressWarnings("unchecked")
         List<String> fileItemNames = (List<String>) request.getAttribute("org.vortikal.MultipartUploadWrapper.FileItemNames");
         if (fileItemNames != null) {
             ArrayList<Path> existingUris = new ArrayList<Path>();

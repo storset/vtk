@@ -1849,7 +1849,7 @@ VrtxAdmin.prototype.initFileUpload = function initFileUpload() {
   if (!form.length) return;
   var inputFile = form.find("#file");
 
-  _$("<input class='vrtx-textfield vrtx-file-upload' tabindex='-1' id='fake-file' type='text' /><a tabindex='-1' class='vrtx-button vrtx-file-upload'><span>Browse...</span></a>")
+  _$("<input class='vrtx-textfield vrtx-file-upload' tabindex='-1' id='fake-file' type='text' /><a tabindex='-1' class='vrtx-button vrtx-file-upload'>Browse...</a>")
     .insertAfter(inputFile);
 
   inputFile.change(function (e) {

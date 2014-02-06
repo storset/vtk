@@ -22,7 +22,7 @@ vrtxAdmin._$(document).ready(function() {
                 + "<input class='vrtx-textfield' type='text' id='exclude-folders' size='25' /></div>"
                 + "<div id='vrtx-report-filters-folders-include' class='report-filters-folders-include'><h4>" + filtersAdvancedIncludeTitle + "</h4>"
                 + "<input class='vrtx-textfield' type='text' id='include-folders' size='25' /></div>"
-                + "<a class='vrtx-button'><span>" + filtersAdvancedUpdate + "</span></a>"
+                + "<a class='vrtx-button'>" + filtersAdvancedUpdate + "</a>"
              + "</div>";
      _$(html).insertAfter(brokenLinksFilters);
      

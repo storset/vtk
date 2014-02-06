@@ -146,8 +146,8 @@ public class FileUploadController extends SimpleFormController {
             
             // Return existing paths to let the user process them
             if(!existingUris.isEmpty()) {
-                errors.rejectValue("file", "manage.upload.resource.exists", "A resource of this name already exists");
                 fileUploadCommand.setExistingUris(existingUris);
+                errors.rejectValue("file", "manage.upload.resource.exists", "A resource of this name already exists");
                 return processFormSubmission(request, response, fileUploadCommand, errors);
             }
         }
@@ -176,11 +176,11 @@ public class FileUploadController extends SimpleFormController {
                             continue;
                         }
                     } else {
-                        errors.rejectValue("file", "manage.upload.resource.exists", "A resource of this name already exists");
                         // Clean up already created temporary files
                         for (StreamUtil.TempFile t: fileMap.values()) {
                             t.delete();
                         }
+                        errors.rejectValue("file", "manage.upload.resource.exists", "A resource of this name already exists");
                         return showForm(request, response, errors);
                     }
                 }
@@ -205,12 +205,13 @@ public class FileUploadController extends SimpleFormController {
                 tempFile.delete();
             } catch (Exception e) {
                 logger.warn("Caught exception while performing file upload", e);
-                errors.rejectValue("file", "manage.upload.error",
-                        "An unexpected error occurred while processing file upload");
+
                 // Clean now to free up temp files faster
                 for (StreamUtil.TempFile t : fileMap.values()) {
                     t.delete();
                 }
+                errors.rejectValue("file", "manage.upload.error",
+                        "An unexpected error occurred while processing file upload");
                 return showForm(request, response, errors);
             }
         }

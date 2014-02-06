@@ -91,8 +91,8 @@ vrtxAdmin._$(document).ready(function() {
     vrtxAdm.cachedAppContent.on("click", "#vrtx-report-filters-folders-include-exclude a.vrtx-button", function(e) { // Filter exclude and include folders
       saveMultipleInputFields(); // Multiple to comma-separated
       // Build query string
-      var includeFolders = unique($("#include-folders").val().split(",")); // Get included folders and remove duplicates
-      var excludeFolders = unique($("#exclude-folders").val().split(",")); // Get excluded folders and remove duplicates
+      var includeFolders = unique(_$("#include-folders").val().split(",")); // Get included folders and remove duplicates
+      var excludeFolders = unique(_$("#exclude-folders").val().split(",")); // Get excluded folders and remove duplicates
       var includeFoldersLen = includeFolders.length, excludeFoldersLen = excludeFolders.length,
           includeQueryString = "", excludeQueryString = ""; 
       for(var i = 0; i < includeFoldersLen; i++) {

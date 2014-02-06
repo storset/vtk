@@ -125,7 +125,12 @@ public class FileUploadController extends SimpleFormController {
                     errors.rejectValue("file", "manage.upload.resource.name-problem", "A resource has an illegal name");
                     return showForm(request, response, errors);
                 }
-                Path itemPath = uri.extend(fixFileName(name));
+                String fixedName = fixFileName(name);
+                if (fixedName.equals("")) {
+                    errors.rejectValue("file", "manage.upload.resource.name-problem", "A resource has an illegal name");
+                    return showForm(request, response, errors);
+                }
+                Path itemPath = uri.extend(fixedName);
                 if (repository.exists(token, itemPath)) {
                     if (userProcessed != null) {
                        if(!(Arrays.asList(urisOverwrite).contains(itemPath.toString()) 
@@ -159,10 +164,12 @@ public class FileUploadController extends SimpleFormController {
                     errors.rejectValue("file", "manage.upload.resource.name-problem", "A resource has an illegal name");
                     return showForm(request, response, errors);
                 }
-                
                 String fixedName = fixFileName(name);
+                if (fixedName.equals("")) {
+                    errors.rejectValue("file", "manage.upload.resource.name-problem", "A resource has an illegal name");
+                    return showForm(request, response, errors);
+                }
                 Path itemPath = uri.extend(fixedName);
-                
                 if (repository.exists(token, itemPath)) {
                     if (userProcessed != null) { // Skip or overwrite decided by user
                         if(!Arrays.asList(urisOverwrite).contains(itemPath.toString())) {

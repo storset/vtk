@@ -577,6 +577,8 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
               vrtxAdm.completeFormAsync({
                 selector: "form#" + tabMenuServices[i] + "-form input[type=submit]",
                 updateSelectors: ["#contents"],
+                errorContainer: "errorContainer",
+                errorContainerInsertAfter: "h3",
                 post: true,
                 funcProceedCondition: function(options) { // Upload with jQuery.form.js
                   var uploadingD = new VrtxLoadingDialog({title: uploading.inprogress});
@@ -654,23 +656,27 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
                           userProcessNextUri();
                         } else {
                           uploadingD.close();
-                          var animation = new VrtxAnimation({
-                            elem: opts.form.parent(),
-                            animationSpeed: opts.transitionSpeed,
-                            easeIn: opts.transitionEasingSlideDown,
-                            easeOut: opts.transitionEasingSlideUp,
-                            afterOut: function(animation) {
-                              for (var i = opts.updateSelectors.length; i--;) {
-                                var outer = vrtxAdm.outerHTML(result, opts.updateSelectors[i]);
-                                vrtxAdm.cachedBody.find(opts.updateSelectors[i]).replaceWith(outer);
+                          if (vrtxAdm.hasErrorContainers(result, opts.errorContainer)) {
+                            vrtxAdm.displayErrorContainers(result, opts.form, opts.errorContainerInsertAfter, opts.errorContainer);
+                          } else {
+                            var animation = new VrtxAnimation({
+                              elem: opts.form.parent(),
+                              animationSpeed: opts.transitionSpeed,
+                              easeIn: opts.transitionEasingSlideDown,
+                              easeOut: opts.transitionEasingSlideUp,
+                              afterOut: function(animation) {
+                                for (var i = opts.updateSelectors.length; i--;) {
+                                  var outer = vrtxAdm.outerHTML(result, opts.updateSelectors[i]);
+                                  vrtxAdm.cachedBody.find(opts.updateSelectors[i]).replaceWith(outer);
+                                }
+                                vrtxAdm.updateCollectionListingInteraction();
+                                if (opts.funcComplete) {
+                                  opts.funcComplete();
+                                }
                               }
-                              vrtxAdm.updateCollectionListingInteraction();
-                              if (opts.funcComplete) {
-                                opts.funcComplete();
-                              }
-                            }
-                          });
-                          animation.bottomUp();
+                            });
+                            animation.bottomUp();
+                          }
                         }
                       },
                       error: function (xhr, textStatus, errMsg) {

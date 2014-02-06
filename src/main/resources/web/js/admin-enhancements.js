@@ -602,6 +602,9 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
                   _$.when(futureFormAjax).done(function() {
                     _$("#fileUploadService-form").append("<input name='userProcessed' type='hidden' value='yes' />");
                     _$("#fileUploadService-form").ajaxSubmit({
+                      uploadProgress: function(event, position, total, percent) {
+                        vrtxAdm.log({msg: "Upload completion: " + percent});
+                      },
                       success: function(results, status, xhr) {
                         var result = _$.parseHTML(results);
                         var existingUris = _$(result).find("#file-upload-existing-uris");
@@ -611,7 +614,7 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
                           var existingUrisArr = existingUris.text().split("#");
                           var userProcessedUrisSkipArr = [];
                           var userProcessedUrisOverwriteArr = [];
-                          var userProcessNextUri= function() {
+                          var userProcessNextUri = function() {
                             if(existingUrisArr.length) {
                               var uri = existingUrisArr.pop();
                               var actionExistingFileDialog = new VrtxConfirmDialog({

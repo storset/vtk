@@ -79,6 +79,4 @@
   <import resource="scheduling/scheduling.xml" />
   <import resource="simple-structured-editor.xml" />
   
-  <!-- videoref support and videoapp integration -->
-  <import resource="videoapp.xml" />
 </beans>

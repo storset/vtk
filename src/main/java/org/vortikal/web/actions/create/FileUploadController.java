@@ -122,7 +122,7 @@ public class FileUploadController extends SimpleFormController {
             for (String name: fileItemNames) {
                 name = stripWindowsPath(name);
                 if (name == null || name.trim().equals("")) {
-                    errors.rejectValue("file", "manage.upload.resource.exists", "Resource(s) with the same name already exists");
+                    errors.rejectValue("file", "manage.upload.resource.name-problem", "A resource has an illegal name");
                     return showForm(request, response, errors);
                 }
                 Path itemPath = uri.extend(fixFileName(name));
@@ -133,7 +133,7 @@ public class FileUploadController extends SimpleFormController {
                            existingUris.add(itemPath);  
                        }
                     } else {
-                       errors.rejectValue("file", "manage.upload.resource.exists", "Resource(s) with the same name already exists");
+                       errors.rejectValue("file", "manage.upload.resource.exists", "A resource of this name already exists");
                        return showForm(request, response, errors);
                     }
                 }
@@ -141,7 +141,7 @@ public class FileUploadController extends SimpleFormController {
             
             // return existing paths to make the user choose between skipping or overwriting them
             if(!existingUris.isEmpty()) {
-                errors.rejectValue("file", "manage.upload.resource.exists", "Resource(s) with the same name already exists");
+                errors.rejectValue("file", "manage.upload.resource.exists", "A resource of this name already exists");
                 fileUploadCommand.setExistingUris(existingUris);
                 return processFormSubmission(request, response, fileUploadCommand, errors);
             }
@@ -156,7 +156,7 @@ public class FileUploadController extends SimpleFormController {
             if (!uploadItem.isFormField()) {
                 String name = stripWindowsPath(uploadItem.getName());
                 if (name == null || name.trim().equals("")) {
-                    errors.rejectValue("file", "manage.upload.resource.exists", "Resource(s) with the same name already exists");
+                    errors.rejectValue("file", "manage.upload.resource.name-problem", "A resource has an illegal name");
                     return showForm(request, response, errors);
                 }
                 
@@ -170,7 +170,7 @@ public class FileUploadController extends SimpleFormController {
                             continue;
                         }
                     } else {
-                        errors.rejectValue("file", "manage.upload.resource.exists", "Resource(s) with the same name already exists");
+                        errors.rejectValue("file", "manage.upload.resource.exists", "A resource of this name already exists");
                         // Clean up already created temporary files
                         for (StreamUtil.TempFile t: fileMap.values()) {
                             t.delete();

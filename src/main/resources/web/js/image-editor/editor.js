@@ -298,9 +298,9 @@ VrtxImageEditor.prototype.displayDimensions = function displayDimensions(w, h) {
                             '<input class="vrtx-textfield" id="resource-height" type="text" value="' + h + '" size="4" />' +
                           '</div>';
     if(this.canvasSupported) {                      
-      dimensionHtml += '<div id="vrtx-image-crop-button"><div class="vrtx-button">' +
-                       '<input type="button" id="vrtx-image-crop" value="' + startCropText + '..." /></div></div>' +
-                       '<div id="vrtx-image-info" style="margin-top: 10px"></div>';
+      dimensionHtml += '<div id="vrtx-image-crop-button">' +
+                         '<input class="vrtx-button" type="button" id="vrtx-image-crop" value="' + startCropText + '..." />' +
+                       '</div><div id="vrtx-image-info"></div>';
     }
     dimensionHtml  += '</div>';
     $(dimensionHtml).insertBefore("#vrtx-image-editor-preview");

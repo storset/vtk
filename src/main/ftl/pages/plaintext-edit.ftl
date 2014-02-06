@@ -40,12 +40,12 @@
     }
     
     window.onload = function() {
-       before = hex_md5(document.getElementById("foo").value);
+       before = hex_md5(document.getElementById("plaintext").value);
     }
 
     window.onbeforeunload = function() {
        if (saveButton) return;
-       var now = hex_md5(document.getElementById("foo").value);
+       var now = hex_md5(document.getElementById("plaintext").value);
        if (before == now) {
           return;
        }
@@ -67,7 +67,7 @@
     </form>
   
     <form id="editor" action="${plaintextEditForm.submitURL}" method="post">
-      <textarea id="foo" name="content" rows="30" cols="80">${plaintextEditForm.content?html}</textarea>
+      <textarea id="plaintext" name="content" rows="30" cols="80">${plaintextEditForm.content?html}</textarea>
       <div class="vrtx-edit-plaintext-submit-buttons submitButtons">
         <input class="vrtx-button vrtx-save-button" type="submit" id="saveViewAction" name="saveViewAction" value="<@vrtx.msg code="plaintextEditForm.saveAndView" default="Save and view"/>" />
         <input class="vrtx-focus-button vrtx-save-button" type="submit" id="saveAction" name="saveAction" value="<@vrtx.msg code="plaintextEditForm.save" default="Save"/>" />

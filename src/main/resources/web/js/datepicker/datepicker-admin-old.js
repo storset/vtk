@@ -15,26 +15,29 @@ function initDatePicker(language) {
   $(".date").datepicker({
     dateFormat: 'yy-mm-dd'
   });
+  
+  var startDateElm = $("#resource\\.start-date");
+  var endDateElm = $("#resource\\.end-date");
 
-  if (!$("#resource\\.start-date").length || !$("#resource\\.end-date").length) {
+  if (!startDateElm.length || !endDateElm.length) {
     return;
   }
 
-  var startDate = $("#resource\\.start-date").datepicker('getDate');
+  var startDate = startDateElm.datepicker('getDate');
   if (startDate != null) {
-    setDefaultEndDate();
+    setDefaultEndDate(startDateElm, endDateElm);
   }
 
-  $("#resource\\.start-date").change(function () {
-    setDefaultEndDate();
+  startDateElm.change(function () {
+    setDefaultEndDate(startDateElm, endDateElm);
   });
 }
 
-function setDefaultEndDate() {
-  var endDate = $("#resource\\.end-date").val();
-  var startDate = $("#resource\\.start-date").datepicker('getDate');
+function setDefaultEndDate(startDateElm, endDateElm) {
+  var endDate = endDateElm.val();
+  var startDate = startDateElm.datepicker('getDate');
   if (endDate == "") {
-    $("#resource\\.end-date").datepicker('option', 'defaultDate', startDate);
+    endDateElm.datepicker('option', 'defaultDate', startDate);
   }
 }
 

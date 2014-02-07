@@ -10,5 +10,13 @@
    if(typeof vrtxAdmin !== "undefined" && vrtxAdmin.editorSaveButtonName != "") {
      options.data += "&" + vrtxAdmin.editorSaveButtonName;
    }
+   
+   and in $.fn.formToArray():
+   
+   // USIT added: possible to skip uploading files
+   if(typeof vrtxAdmin !== "undefined" && vrtxAdmin.uploadSkippedFiles[files[j].name]) {
+   } else {
+     a.push({name: n, value: files[j], type: el.type});
+   }
 
    API: http://malsup.com/jquery/form/#api

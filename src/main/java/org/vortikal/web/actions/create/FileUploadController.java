@@ -46,6 +46,7 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.validation.BindException;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.vortikal.repository.Path;
@@ -84,41 +85,19 @@ public class FileUploadController extends SimpleFormController {
     protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command,
             BindException errors) throws Exception {
 
-        FileUploadCommand fileUploadCommand = (FileUploadCommand) command;
-
-        if (fileUploadCommand.getCancelAction() != null) {
-            fileUploadCommand.setDone(true);
-            return new ModelAndView(getSuccessView());
-        }
-
-        ServletFileUpload upload = new ServletFileUpload();
-
         RequestContext requestContext = RequestContext.getRequestContext();
         String token = requestContext.getSecurityToken();
         Repository repository = requestContext.getRepository();
         Path uri = requestContext.getResourceURI();
         
-        // When JavaScript is enabled: let the user decide if want to skip or overwrite existing paths
-        String userProcessed = request.getParameter("userProcessed");
-        String userProcessedUrisSkip = request.getParameter("userProcessedUrisSkip");
-        String userProcessedUrisOverwrite = request.getParameter("userProcessedUrisOverwrite");
-        String[] urisSkip = {};
-        String[] urisOverwrite = {};
-        if(userProcessedUrisSkip != null) {
-            urisSkip = userProcessedUrisSkip.split(",");
-        }
-        if(userProcessedUrisOverwrite != null) {
-            urisOverwrite = userProcessedUrisOverwrite.split(",");
-        }
-
-        // Check request to see if there is any cached info about file item names
-        @SuppressWarnings("unchecked")
-        List<String> fileItemNames = (List<String>) request.getAttribute("org.vortikal.MultipartUploadWrapper.FileItemNames");
-        if (fileItemNames != null) {
-            ArrayList<Path> existingUris = new ArrayList<Path>();
-            
-            // ok, use this to check for name collisions, so we can fail as early as possible.
-            for (String name : fileItemNames) {
+        FileUploadCommand fileUploadCommand = (FileUploadCommand) command;
+        
+        String filenamesChecking = request.getParameter("filenames");
+        if(filenamesChecking != null) {
+            String[] filenames = filenamesChecking.split(",");
+            ArrayList<String> existingUris = new ArrayList<String>();
+            ArrayList<String> existingUrisFixed = new ArrayList<String>();
+            for(String name : filenames) {
                 name = stripWindowsPath(name);
                 if (name == null || name.trim().equals("")) {
                     errors.rejectValue("file", "manage.upload.resource.name-problem", "A resource has an illegal name");
@@ -131,91 +110,100 @@ public class FileUploadController extends SimpleFormController {
                 }
                 Path itemPath = uri.extend(fixedName);
                 if (repository.exists(token, itemPath)) {
-                    if (userProcessed != null) {
-                       if(!(Arrays.asList(urisOverwrite).contains(itemPath.toString()) 
-                         || Arrays.asList(urisSkip).contains(itemPath.toString()))) { // If existing path is not processed by user
-                           existingUris.add(itemPath);  
-                       }
-                    } else {
-                       errors.rejectValue("file", "manage.upload.resource.exists", "A resource of this name already exists");
-                       return showForm(request, response, errors);
-                    }
+                    existingUris.add(name); 
+                    existingUrisFixed.add(fixedName);
                 }
             }
-            
             // Return existing paths to let the user process them
-            if(!existingUris.isEmpty()) {
-                fileUploadCommand.setExistingUris(existingUris);
-                errors.rejectValue("file", "manage.upload.resource.exists", "A resource of this name already exists");
-                return processFormSubmission(request, response, fileUploadCommand, errors);
+            fileUploadCommand.setExistingUris(existingUris);
+            fileUploadCommand.setExistingUrisFixed(existingUrisFixed);
+            errors.rejectValue("file", "manage.upload.resource.exists", "A resource of this name already exists");
+            return processFormSubmission(request, response, fileUploadCommand, errors);
+        } else {
+
+            if (fileUploadCommand.getCancelAction() != null) {
+                fileUploadCommand.setDone(true);
+                return new ModelAndView(getSuccessView());
             }
-        }
-       
-        
-        // Iterate input stream. We can only safely consume the data once.
-        FileItemIterator iter = upload.getItemIterator(request);
-        Map<Path, StreamUtil.TempFile> fileMap = new LinkedHashMap<Path, StreamUtil.TempFile>();
-        while (iter.hasNext()) {
-            FileItemStream uploadItem = iter.next();
-            if (!uploadItem.isFormField()) {
-                String name = stripWindowsPath(uploadItem.getName());
-                if (name == null || name.trim().equals("")) {
-                    errors.rejectValue("file", "manage.upload.resource.name-problem", "A resource has an illegal name");
-                    return showForm(request, response, errors);
-                }
-                String fixedName = fixFileName(name);
-                if (fixedName.equals("")) {
-                    errors.rejectValue("file", "manage.upload.resource.name-problem", "A resource has an illegal name");
-                    return showForm(request, response, errors);
-                }
-                Path itemPath = uri.extend(fixedName);
-                if (repository.exists(token, itemPath)) {
-                    if (userProcessed != null) { // Skip or overwrite decided by user
-                        if(!Arrays.asList(urisOverwrite).contains(itemPath.toString())) {
-                            continue;
-                        }
-                    } else {
-                        // Clean up already created temporary files
-                        for (StreamUtil.TempFile t: fileMap.values()) {
-                            t.delete();
-                        }
+
+            ServletFileUpload upload = new ServletFileUpload();
+
+            boolean shouldOverwriteExisting = request.getParameter("overwrite") != null;
+
+            // Check request to see if there is any cached info about file item names
+            @SuppressWarnings("unchecked")
+            List<String> fileItemNames = (List<String>) request.getAttribute("org.vortikal.MultipartUploadWrapper.FileItemNames");
+            if (fileItemNames != null && !shouldOverwriteExisting) {
+                // ok, use this to check for name collisions, so we can fail as early as possible.
+                for (String name : fileItemNames) {
+                    name = stripWindowsPath(name);
+                    if (name == null || name.trim().equals("")) {
+                        errors.rejectValue("file", "manage.upload.resource.name-problem", "A resource has an illegal name");
+                        return showForm(request, response, errors);
+                    }
+                    String fixedName = fixFileName(name);
+                    if (fixedName.equals("")) {
+                        errors.rejectValue("file", "manage.upload.resource.name-problem", "A resource has an illegal name");
+                        return showForm(request, response, errors);
+                    }
+                    Path itemPath = uri.extend(fixedName);
+                    if (repository.exists(token, itemPath)) {
                         errors.rejectValue("file", "manage.upload.resource.exists", "A resource of this name already exists");
                         return showForm(request, response, errors);
                     }
                 }
+            }
 
-                StreamUtil.TempFile tmpFile = StreamUtil.streamToTempFile(uploadItem.openStream(), this.tempDir);
-                fileMap.put(itemPath, tmpFile);
-            }
-        }
-        
-        // Write files
-        for (Map.Entry<Path,StreamUtil.TempFile> entry: fileMap.entrySet()) {
-            Path path = entry.getKey();
-            StreamUtil.TempFile tempFile = entry.getValue();
-            if (logger.isDebugEnabled()) {
-                logger.debug("Uploaded resource will be: " + path);
-            }
-            try {
-                if(repository.exists(token, path)) {
-                    repository.delete(token, path, false);
+            // Iterate input stream. We can only safely consume the data once.
+            FileItemIterator iter = upload.getItemIterator(request);
+            Map<Path, StreamUtil.TempFile> fileMap = new LinkedHashMap<Path, StreamUtil.TempFile>();
+            while (iter.hasNext()) {
+                FileItemStream uploadItem = iter.next();
+                if (!uploadItem.isFormField()) {
+                    String name = stripWindowsPath(uploadItem.getName());
+                    Path itemPath = uri.extend(fixFileName(name));
+                    if (!shouldOverwriteExisting) { // Overwrite decided by user
+                        if (repository.exists(token, itemPath)) {
+                            // Clean up already created temporary files
+                            for (StreamUtil.TempFile t: fileMap.values()) {
+                                t.delete();
+                            }
+                            errors.rejectValue("file", "manage.upload.resource.exists", "A resource of this name already exists");
+                            return showForm(request, response, errors);
+                        }
+                    }
+                    StreamUtil.TempFile tmpFile = StreamUtil.streamToTempFile(uploadItem.openStream(), this.tempDir);
+                    fileMap.put(itemPath, tmpFile);
                 }
-                repository.createDocument(token, path, tempFile.getFileInputStream());
-                tempFile.delete();
-            } catch (Exception e) {
-                logger.warn("Caught exception while performing file upload", e);
+            }
 
-                // Clean now to free up temp files faster
-                for (StreamUtil.TempFile t : fileMap.values()) {
-                    t.delete();
+            // Write files
+            for (Map.Entry<Path,StreamUtil.TempFile> entry: fileMap.entrySet()) {
+                Path path = entry.getKey();
+                StreamUtil.TempFile tempFile = entry.getValue();
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Uploaded resource will be: " + path);
                 }
-                errors.rejectValue("file", "manage.upload.error",
-                        "An unexpected error occurred while processing file upload");
-                return showForm(request, response, errors);
+                try {
+                    if(repository.exists(token, path)) {
+                        repository.delete(token, path, false);
+                    }
+                    repository.createDocument(token, path, tempFile.getFileInputStream());
+                    tempFile.delete();
+                } catch (Exception e) {
+                    logger.warn("Caught exception while performing file upload", e);
+
+                    // Clean now to free up temp files faster
+                    for (StreamUtil.TempFile t : fileMap.values()) {
+                        t.delete();
+                    }
+                    errors.rejectValue("file", "manage.upload.error",
+                    "An unexpected error occurred while processing file upload");
+                    return showForm(request, response, errors);
+                }
             }
+            fileUploadCommand.setDone(true);
         }
-        
-        fileUploadCommand.setDone(true);
         return new ModelAndView(getSuccessView());
     }
 

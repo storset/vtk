@@ -8,11 +8,6 @@
   <div class="expandedForm vrtx-admin-form">
     <form name="fileUploadService" id="fileUploadService-form" action="${uploadForm.submitURL?html}" method="post" enctype="multipart/form-data">
       <h3><@vrtx.msg code="actions.fileUploadService" default="Upload File"/></h3>
-
-      <#if uploadForm.existingUris?has_content>
-        <span id="file-upload-existing-uris"><#list uploadForm.existingUris as uri>${uri?html}<#if uri_has_next>#</#if></#list></span>
-      </#if>
-      
       <@spring.bind "uploadForm.file" />
       <@actionsLib.genErrorMessages spring.status.errorMessages />
       <div id="file-upload-container">
@@ -20,6 +15,17 @@
       </div>
       <@actionsLib.genOkCancelButtons "save" "cancelAction" "actions.fileUploadService.save" "actions.fileUploadService.cancel" />
     </form>
+    
+    <form name="fileUploadCheckService" id="fileUploadCheckService-form" action="${uploadForm.submitURL?html}" method="post" enctype="multipart/form-data">
+      <#if uploadForm.existingUris?has_content>
+        <span id="file-upload-existing-uris"><#list uploadForm.existingUris as uri>${uri?html}<#if uri_has_next>#</#if></#list></span>
+      </#if>
+      <#if uploadForm.existingUrisFixed?has_content>
+        <span id="file-upload-existing-uris-fixed"><#list uploadForm.existingUrisFixed as uri>${uri?html}<#if uri_has_next>#</#if></#list></span>
+      </#if>
+      <@actionsLib.genErrorMessages spring.status.errorMessages />
+    </form>
+    
   </div>
 </#if>
 

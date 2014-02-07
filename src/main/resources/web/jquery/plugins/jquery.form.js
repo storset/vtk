@@ -234,7 +234,7 @@ $.fn.ajaxSubmit = function(options) {
     log("fileAPI :" + fileAPI);
     var shouldUseFrame = (hasFileInputs || multipart) && !fileAPI;
     
-    // USIT added name of clicked button
+    // USIT added: name of clicked button
     if(typeof vrtxAdmin !== "undefined" && vrtxAdmin.editorSaveButtonName != "") {
       options.data += "&" + vrtxAdmin.editorSaveButtonName;
     }
@@ -1004,7 +1004,13 @@ $.fn.formToArray = function(semantic, elements) {
             var files = el.files;
             if (files.length) {
                 for (j=0; j < files.length; j++) {
-                    a.push({name: n, value: files[j], type: el.type});
+                   // USIT added: possible to skip uploading files
+                   if(typeof vrtxAdmin !== "undefined" && vrtxAdmin.uploadSkippedFiles[files[j].name]) {
+                       vrtxAdmin.log({msg: "Skip: " + files[j].name}); 
+                   } else {
+                       a.push({name: n, value: files[j], type: el.type});
+                       vrtxAdmin.log({msg: "Upload and overwrite: " + files[j].name});
+                   }
                 }
             }
             else {

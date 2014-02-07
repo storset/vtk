@@ -120,6 +120,7 @@ function VrtxAdmin() {
   this.asyncGetStatInProgress = false;
   this.createResourceReplaceTitle = true;
   this.createDocumentFileName = "";
+  this.uploadSkippedFiles = {};
   this.trashcanCheckedFiles = 0;
 
   this.reloadFromServer = false; // changed by funcProceedCondition and used by funcComplete in completeFormAsync for admin-permissions
@@ -581,16 +582,12 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
                 errorContainerInsertAfter: "h3",
                 post: true,
                 funcProceedCondition: function(options) { // Upload with jQuery.form.js
-                  var uploadingD = new VrtxLoadingDialog({title: uploading.inprogress});
-                  uploadingD.open();
-                  
                   var rootUrl = "/vrtx/__vrtx/static-resources";
                   var futureFormAjax = _$.Deferred();
                   if (typeof _$.fn.ajaxSubmit !== "function") {
                     _$.getScript(rootUrl + "/jquery/plugins/jquery.form.js", function () {
                       futureFormAjax.resolve();
                     }).fail(function(xhr, textStatus, errMsg) {
-                      uploadingD.close();
                       var uploadingFailedD = new VrtxMsgDialog({ title: xhr.status + " " + vrtxAdm.serverFacade.errorMessages.uploadingFilesFailedTitle,
                                                                  msg: vrtxAdm.serverFacade.errorMessages.uploadingFilesFailed
                                                               });
@@ -600,65 +597,34 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
                     futureFormAjax.resolve();
                   }
                   _$.when(futureFormAjax).done(function() {
-                    _$("#fileUploadService-form").append("<input name='userProcessed' type='hidden' value='yes' />");
-                    _$("#dialog-loading-content").append("<div id='dialog-uploading-percent' />");
-                    _$("#fileUploadService-form").ajaxSubmit({
-                      uploadProgress: function(event, position, total, percent) {
-                        _$("#dialog-uploading-percent").text(percent + "%");
-                      },
-                      success: function(results, status, xhr) {
-                        var result = _$.parseHTML(results);
-                        var existingUris = _$(result).find("#file-upload-existing-uris");
-                        var opts = options;
-                        
-                        if(existingUris.length) {
-                          var existingUrisArr = existingUris.text().split("#");
-                          var userProcessedUrisSkipArr = [];
-                          var userProcessedUrisOverwriteArr = [];
-                          var userProcessNextUri = function() {
-                            if(existingUrisArr.length) {
-                              var uri = existingUrisArr.pop();
-                              var actionExistingFileDialog = new VrtxConfirmDialog({
-                                msg: uri,
-                                title: uploading.existing.title,
-                                onOk: function () {  // Don't keep file
-                                  userProcessedUrisSkipArr.push(uri);
-                                  userProcessNextUri();
-                                },
-                                btnTextOk: uploading.existing.skip,
-                                extraBtns: [{
-                                  btnText: uploading.existing.overwrite,
-                                  onOk: function () { // Keep/overwrite file
-                                    userProcessedUrisOverwriteArr.push(uri);
-                                    userProcessNextUri();
-                                  }
-                                }],
-                                onCancel: function() {
-                                  uploadingD.close();
-                                  var animation = new VrtxAnimation({
-                                    elem: opts.form.parent(),
-                                    animationSpeed: opts.transitionSpeed,
-                                    easeIn: opts.transitionEasingSlideDown,
-                                    easeOut: opts.transitionEasingSlideUp
-                                  });
-                                  animation.bottomUp();
-                                }
-                              });
-                              actionExistingFileDialog.open();
-                            } else { // User has decided for all existing uris
-                              if(userProcessedUrisSkipArr.length) {
-                                var valueSkip = userProcessedUrisSkipArr.join(",");
-                                opts.form.append("<input name='userProcessedUrisSkip' type='hidden' value='" + valueSkip + "' />");
-                              }
-                              if(userProcessedUrisOverwriteArr.length) {
-                                var valueOverwrite = userProcessedUrisOverwriteArr.join(",");
-                                opts.form.append("<input name='userProcessedUrisOverwrite' type='hidden' value='" + valueOverwrite + "' />");
-                              }
-                              opts.funcProceedCondition(opts);
-                            }
-                          }
-                          userProcessNextUri();
-                        } else {
+                    var fileField = _$("#file");
+                    var filePaths = "";
+                    var numberOfFiles = 0;
+                    if (vrtxAdm.supportsFileList) {
+                      var files = fileField[0].files;
+                      for (var i = 0, len = files.length; i < len; i++) {
+                        filePaths += files[i].name + ",";
+                      }
+                      numberOfFiles = len;
+                    } else {
+                      filePaths = fileField.val().substring(fileField.val().lastIndexOf("\\") + 1);
+                      numberOfFiles = 1;
+                    }
+                    _$("#fileUploadCheckService-form").append("<input type='hidden' name='filenames' value='" + filePaths + "' />");
+                    
+                    var uploadNonExisting = function() {
+                      var uploadingD = new VrtxLoadingDialog({title: uploading.inprogress});
+                      uploadingD.open();
+                      _$("#dialog-loading-content").append("<div id='dialog-uploading-percent' />");
+                      _$("#fileUploadService-form").append("<input type='hidden' name='overwrite' value='overwrite' />");
+                      _$("#fileUploadService-form").ajaxSubmit({
+                        uploadProgress: function(event, position, total, percent) {
+                          _$("#dialog-uploading-percent").text(percent + "%");
+                        },
+                        success: function(results, status, xhr) {
+                          var result = _$.parseHTML(results);
+                          var opts = options;
+                          vrtxAdm.uploadSkippedFiles = {};
                           uploadingD.close();
                           if (vrtxAdm.hasErrorContainers(result, opts.errorContainer)) {
                             vrtxAdm.displayErrorContainers(result, opts.form, opts.errorContainerInsertAfter, opts.errorContainer);
@@ -681,14 +647,81 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
                             });
                             animation.bottomUp();
                           }
+                        },
+                        error: function (xhr, textStatus, errMsg) {
+                          uploadingD.close();
+                          var uploadingFailedD = new VrtxMsgDialog({ title: xhr.status + " " + vrtxAdm.serverFacade.errorMessages.uploadingFilesFailedTitle,
+                                                                       msg: vrtxAdm.serverFacade.errorMessages.uploadingFilesFailed
+                                                                    });
+                          uploadingFailedD.open();
                         }
-                      },
-                      error: function (xhr, textStatus, errMsg) {
-                        uploadingD.close();
-                        var uploadingFailedD = new VrtxMsgDialog({ title: xhr.status + " " + vrtxAdm.serverFacade.errorMessages.uploadingFilesFailedTitle,
-                                                                   msg: vrtxAdm.serverFacade.errorMessages.uploadingFilesFailed
-                                                                });
-                        uploadingFailedD.open();
+                      });
+                    };
+                    
+                    _$("#fileUploadCheckService-form").ajaxSubmit({
+                      success: function(results, status, xhr) {
+                        var result = _$.parseHTML(results);
+                        var opts = options;
+                        var existingUris = _$(result).find("#file-upload-existing-uris");
+                        if(existingUris.length) {
+                          var existingUrisFixed = _$(result).find("#file-upload-existing-uris-fixed");
+                          var existingUrisArr = existingUris.text().split("#");
+                          var existingUrisFixedArr = existingUrisFixed.text().split("#");
+                          var userProcessNextUri = function() {
+                            if(existingUrisArr.length) {
+                              var uri = existingUrisArr.pop();
+                              var fixedUri = existingUrisFixedArr.pop();
+                              var actionExistingFileDialog = new VrtxConfirmDialog({
+                                msg: fixedUri,
+                                title: uploading.existing.title,
+                                onOk: function () {  // Don't keep file
+                                  vrtxAdm.uploadSkippedFiles[uri] = "skip";
+                                  userProcessNextUri();
+                                },
+                                btnTextOk: uploading.existing.skip,
+                                extraBtns: [{
+                                  btnText: uploading.existing.overwrite,
+                                  onOk: function () { // Keep/overwrite file
+                                    userProcessNextUri();
+                                  }
+                                }],
+                                onCancel: function() {
+                                  vrtxAdm.uploadSkippedFiles = {};
+                                  var animation = new VrtxAnimation({
+                                    elem: opts.form.parent(),
+                                    animationSpeed: opts.transitionSpeed,
+                                    easeIn: opts.transitionEasingSlideDown,
+                                    easeOut: opts.transitionEasingSlideUp
+                                  });
+                                  animation.bottomUp();
+                                }
+                              });
+                              actionExistingFileDialog.open();
+                            } else { // User has decided for all existing uris
+                              var numberOfSkippedFiles = 0;
+                              for (skippedFile in vrtxAdm.uploadSkippedFiles) {
+                                if (vrtxAdm.uploadSkippedFiles[skippedFile]) {
+                                  numberOfSkippedFiles++;
+                                }
+                              }
+                              if(numberOfFiles > numberOfSkippedFiles) {
+                                uploadNonExisting();
+                              } else {
+                                vrtxAdm.uploadSkippedFiles = {};
+                                var animation = new VrtxAnimation({
+                                  elem: opts.form.parent(),
+                                  animationSpeed: opts.transitionSpeed,
+                                  easeIn: opts.transitionEasingSlideDown,
+                                  easeOut: opts.transitionEasingSlideUp
+                                });
+                                animation.bottomUp();
+                              }
+                            }
+                          }
+                          userProcessNextUri();
+                        } else {
+                          uploadNonExisting();
+                        }
                       }
                     });
                   });
@@ -3162,20 +3195,20 @@ VrtxAdmin.prototype.completeFormAsync = function completeFormAsync(options) {
       link = _$(this),
       isCancelAction = link.attr("name").toLowerCase().indexOf("cancel") != -1;
 
-    if (!post) {
-      if (isCancelAction && !isReplacing) {
-        var animation = new VrtxAnimation({
-          elem: $(".expandedForm"),
-          animationSpeed: transitionSpeed,
-          easeIn: transitionEasingSlideDown,
-          easeOut: transitionEasingSlideUp,
-          afterOut: function(animation) {
-            animation.__opts.elem.remove();
-          }
-        });
-        animation.bottomUp();
-        e.preventDefault();
-      } else {
+    if (isCancelAction && !isReplacing) {
+      var animation = new VrtxAnimation({
+        elem: $(".expandedForm"),
+        animationSpeed: transitionSpeed,
+        easeIn: transitionEasingSlideDown,
+        easeOut: transitionEasingSlideUp,
+        afterOut: function(animation) {
+          animation.__opts.elem.remove();
+        }
+      });
+      animation.bottomUp();
+      e.preventDefault();
+    } else {
+      if (!post) {
         e.stopPropagation();
         if(!isCancelAction && funcBeforeComplete) {
           funcBeforeComplete();
@@ -3186,17 +3219,17 @@ VrtxAdmin.prototype.completeFormAsync = function completeFormAsync(options) {
         } else {
           return;
         }
-      }
-    } else {
-      options.form = link.closest("form");
-      options.link = link;
-      if (!isCancelAction && funcProceedCondition) {
-        funcProceedCondition(options);
       } else {
-        vrtxAdm.completeFormAsyncPost(options);
+        options.form = link.closest("form");
+        options.link = link;
+        if (!isCancelAction && funcProceedCondition) {
+          funcProceedCondition(options);
+        } else {
+          vrtxAdm.completeFormAsyncPost(options);
+        }
+        e.stopPropagation();
+        e.preventDefault();
       }
-      e.stopPropagation();
-      e.preventDefault();
     }
   });
 };

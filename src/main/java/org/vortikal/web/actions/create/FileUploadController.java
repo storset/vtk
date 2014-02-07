@@ -115,6 +115,9 @@ public class FileUploadController extends SimpleFormController {
                 }
             }
             // Return existing paths to let the user process them
+            if(existingUris.isEmpty()) {
+                return new ModelAndView(getSuccessView());
+            }
             fileUploadCommand.setExistingUris(existingUris);
             fileUploadCommand.setExistingUrisFixed(existingUrisFixed);
             errors.rejectValue("file", "manage.upload.resource.exists", "A resource of this name already exists");

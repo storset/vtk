@@ -1840,6 +1840,7 @@ function ajaxUpload(options) {
             var existingFilenamesFixed = existingFilenamesFixedField.text().split("#");
             
             var existingFilenamesLen = existingFilenames.length;
+            
             var userProcessNextFilename = function() {
               if(existingFilenames.length) {
                 var filename = existingFilenames.pop();

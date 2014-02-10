@@ -3392,7 +3392,6 @@ VrtxAdmin.prototype.removePermissionAsync = function removePermissionAsync(selec
     var link = _$(this);
     var form = link.closest("form");
     var url = form.attr("action");
-    var listElement = link.parent();
 
     var dataString = "&csrf-prevention-token=" + form.find("input[name='csrf-prevention-token']").val() +
                      "&" + encodeURIComponent(link.attr("name"));

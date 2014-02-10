@@ -39,21 +39,19 @@ vrtxAdmin._$(document).ready(function() {
 
      var pairs = location.search.split(/\&/),
          includedFolders = "", excludedFolders = "", query = "", pair = "";
-     for(var i = 0, pairsLen = pairs.length; i < pairsLen; i++) { // Add include folders
-       if(pairs[i].match(/^include-path/g)) {
+     for(var i = 0, pairsLen = pairs.length; i < pairsLen; i++) {
+       if(pairs[i].match(/^include-path/g)) { // Add include folders
          pair = decodeURIComponent(pairs[i]);
          includedFolders += pair.split("=")[1] + ", ";
          query += "&" + pair;
        }
-     }
-     for(i = 0; i < pairsLen; i++) { // Add exclude folders
-       if(pairs[i].match(/^exclude-path/g)) {
+       if(pairs[i].match(/^exclude-path/g)) { // Add exclude folders
          pair = decodeURIComponent(pairs[i]);
          excludedFolders += pair.split("=")[1] + ", ";
          query += "&" + pair;
-       }   
+       }
      }
-    
+
      var filterLinks = _$("#vrtx-report-filters ul a");
      i = filterLinks.length;
      while(i--) {
@@ -74,10 +72,10 @@ vrtxAdmin._$(document).ready(function() {
       var brokenLinksAnimation = new VrtxAnimation({
         elem: container,
         afterIn: function() {
-          $("#vrtx-report-filters-show-hide-advanced").text(filtersAdvancedHide + "...");
+          _$("#vrtx-report-filters-show-hide-advanced").text(filtersAdvancedHide + "...");
         },
         afterOut: function() {
-          $("#vrtx-report-filters-show-hide-advanced").text(filtersAdvancedShow + "...");
+          _$("#vrtx-report-filters-show-hide-advanced").text(filtersAdvancedShow + "...");
         }
       });
       if(container.css("display") != "none") {
@@ -98,13 +96,13 @@ vrtxAdmin._$(document).ready(function() {
       for(var i = 0; i < includeFoldersLen; i++) {
         var theIncludeFolder = $.trim(includeFolders[i]);
         if(theIncludeFolder.length) {
-          includeQueryString += "&include-path=" + encodeURIComponent(theIncludeFolder);
+          includeQueryString += "&include-path=" + encodeURIComponent(theIncludeFolder.replace(/\/$/, ''));
         }     
       }
       for(i = 0; i < excludeFoldersLen; i++) {
         var theExcludeFolder = $.trim(excludeFolders[i]);
         if(theExcludeFolder.length) {
-          excludeQueryString += "&exclude-path=" + encodeURIComponent(theExcludeFolder);
+          excludeQueryString += "&exclude-path=" + encodeURIComponent(theExcludeFolder.replace(/\/$/, ''));
         }
       }
       // Update URL in address bar

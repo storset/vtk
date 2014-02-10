@@ -408,6 +408,7 @@ div#vrtx-resource\.picture div.input-and-button-container input.vrtx-textfield {
   width: 200px;
 }
 
+div#vrtx-resource\.poster-image div.input-and-button-container\.poster-image .vrtx-textfield,
 div#vrtx-resource\.picture div.input-and-button-container .vrtx-textfield {
   margin-right: 11px;
 }

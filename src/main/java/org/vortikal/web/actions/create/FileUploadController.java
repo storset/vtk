@@ -89,12 +89,14 @@ public class FileUploadController extends SimpleFormController {
         Path uri = requestContext.getResourceURI();
         
         FileUploadCommand fileUploadCommand = (FileUploadCommand) command;
-        
-        String filenamesChecking = request.getParameter("filenames");
-        if(filenamesChecking != null) {
-            String[] filenames = filenamesChecking.split(",");
-            ArrayList<String> existingUris = new ArrayList<String>();
-            ArrayList<String> existingUrisFixed = new ArrayList<String>();
+
+        String filenamesToBeChecked = request.getParameter("filenamesToBeChecked");
+        if(filenamesToBeChecked != null) {
+            String[] filenames = filenamesToBeChecked.split(",");
+
+            ArrayList<String> existingFilenames = new ArrayList<String>();
+            ArrayList<String> existingFilenamesFixed = new ArrayList<String>();
+            
             for(String name : filenames) {
                 name = stripWindowsPath(name);
                 if (name == null || name.trim().equals("")) {
@@ -108,16 +110,17 @@ public class FileUploadController extends SimpleFormController {
                 }
                 Path itemPath = uri.extend(fixedName);
                 if (repository.exists(token, itemPath)) {
-                    existingUris.add(name); 
-                    existingUrisFixed.add(fixedName);
+                    existingFilenames.add(name); 
+                    existingFilenamesFixed.add(fixedName);
                 }
             }
             // Return existing paths to let the user process them
-            if(existingUris.isEmpty()) {
+            if(existingFilenames.isEmpty()) {
                 return new ModelAndView(getSuccessView());
             }
-            fileUploadCommand.setExistingUris(existingUris);
-            fileUploadCommand.setExistingUrisFixed(existingUrisFixed);
+            
+            fileUploadCommand.setExistingFilenames(existingFilenames);
+            fileUploadCommand.setExistingFilenamesFixed(existingFilenamesFixed);
             errors.rejectValue("file", "manage.upload.resource.exists", "A resource of this name already exists");
             return processFormSubmission(request, response, fileUploadCommand, errors);
         } else {

@@ -17,11 +17,11 @@
     </form>
     
     <form name="fileUploadCheckService" id="fileUploadCheckService-form" action="${uploadForm.submitURL?html}" method="post" enctype="multipart/form-data">
-      <#if uploadForm.existingUris?has_content>
-        <span id="file-upload-existing-uris"><#list uploadForm.existingUris as uri>${uri?html}<#if uri_has_next>#</#if></#list></span>
+      <#if uploadForm.existingFilenames?has_content>
+        <span id="file-upload-existing-filenames"><#list uploadForm.existingFilenames as filename>${filename?html}<#if filename_has_next>#</#if></#list></span>
       </#if>
-      <#if uploadForm.existingUrisFixed?has_content>
-        <span id="file-upload-existing-uris-fixed"><#list uploadForm.existingUrisFixed as uri>${uri?html}<#if uri_has_next>#</#if></#list></span>
+      <#if uploadForm.existingFilenamesFixed?has_content>
+        <span id="file-upload-existing-filenames-fixed"><#list uploadForm.existingFilenamesFixed as filename>${filename?html}<#if filename_has_next>#</#if></#list></span>
       </#if>
       <@actionsLib.genErrorMessages spring.status.errorMessages />
     </form>

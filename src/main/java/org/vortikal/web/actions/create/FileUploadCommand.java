@@ -38,8 +38,8 @@ import org.vortikal.web.actions.UpdateCancelCommand;
 public class FileUploadCommand extends UpdateCancelCommand {
 
     private String file;
-    private ArrayList<String> existingUris;
-    private ArrayList<String> existingUrisFixed;
+    private ArrayList<String> existingFilenames;
+    private ArrayList<String> existingFilenamesFixed;
     
     public FileUploadCommand(String submitURL) {
         super(submitURL);
@@ -53,21 +53,20 @@ public class FileUploadCommand extends UpdateCancelCommand {
         return this.file;
     }
 
-    public ArrayList<String> getExistingUris() {
-        return existingUris;
+    public ArrayList<String> getExistingFilenames() {
+        return existingFilenames;
     }
 
-    public void setExistingUris(ArrayList<String> existingUris) {
-        this.existingUris = existingUris;
+    public void setExistingFilenames(ArrayList<String> existingFilenames) {
+        this.existingFilenames = existingFilenames;
     }
     
-    public ArrayList<String> getExistingUrisFixed() {
-        return existingUrisFixed;
+    public ArrayList<String> getExistingFilenamesFixed() {
+        return existingFilenamesFixed;
     }
 
-    public void setExistingUrisFixed(ArrayList<String> existingUrisFixed) {
-        this.existingUrisFixed = existingUrisFixed;
+    public void setExistingFilenamesFixed(ArrayList<String> existingFilenamesFixed) {
+        this.existingFilenamesFixed = existingFilenamesFixed;
     }
     
 }
-

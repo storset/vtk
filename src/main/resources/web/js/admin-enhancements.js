@@ -1818,9 +1818,9 @@ function ajaxUpload(options) {
     }
     
     var checkForm = _$("#fileUploadCheckService-form");
-    var filenamesToCheckField = checkForm.find("input[name='filenames']");
+    var filenamesToCheckField = checkForm.find("input[name='filenamesToBeChecked']");
     if(!filenamesToCheckField.length) {
-      checkForm.append("<input type='hidden' name='filenames' value='" + filePaths + "' />");
+      checkForm.append("<input type='hidden' name='filenamesToBeChecked' value='" + filePaths + "' />");
     } else {
       filenamesToCheckField.val(filePaths);
     }
@@ -1830,38 +1830,39 @@ function ajaxUpload(options) {
       success: function(results, status, xhr) {
         var result = _$.parseHTML(results);
         var opts = options;
-        var existingUris = _$(result).find("#file-upload-existing-uris");
-        if (!existingUris.length && vrtxAdm.hasErrorContainers(result, opts.errorContainer)) {
+        var existingFilenamesField = _$(result).find("#file-upload-existing-filenames");
+        if (!existingFilenamesField.length && vrtxAdm.hasErrorContainers(result, opts.errorContainer)) {
           vrtxAdm.displayErrorContainers(result, opts.form, opts.errorContainerInsertAfter, opts.errorContainer);
         } else {
-          if(existingUris.length) {
-            var existingUrisFixed = _$(result).find("#file-upload-existing-uris-fixed");
-            var existingUrisArr = existingUris.text().split("#");
-            var existingUrisTotalLen = existingUrisArr.length;
-            var existingUrisFixedArr = existingUrisFixed.text().split("#");
-            var userProcessNextUri = function() {
-              if(existingUrisArr.length) {
-                var uri = existingUrisArr.pop();
-                var fixedUri = existingUrisFixedArr.pop();
-                if(existingUrisTotalLen == 1 && numberOfFiles == 1) {
+          if(existingFilenamesField.length) {
+            var existingFilenamesFixedField = _$(result).find("#file-upload-existing-filenames-fixed");
+            var existingFilenames = existingFilenamesField.text().split("#");
+            var existingFilenamesFixed = existingFilenamesFixedField.text().split("#");
+            
+            var existingFilenamesLen = existingFilenames.length;
+            var userProcessNextFilename = function() {
+              if(existingFilenames.length) {
+                var filename = existingFilenames.pop();
+                var fixedFilename = existingFilenamesFixed.pop();
+                if(existingFilenamesLen == 1 && numberOfFiles == 1) {
                   var skipOverwriteDialogOpts = {
                     msg: fixedUri,
                     title: uploading.existing.title,
-                    onOk: userProcessNextUri,  // Don't keep file
+                    onOk: userProcessNextFilename, // Keep/overwrite file
                     btnTextOk: uploading.existing.overwrite
                   };
                 } else {
                   var skipOverwriteDialogOpts = {
-                    msg: fixedUri,
+                    msg: fixedFilename,
                     title: uploading.existing.title,
                     onOk: function () {  // Don't keep file
-                      vrtxAdm.uploadSkippedFiles[uri] = "skip";
-                      userProcessNextUri();
+                      vrtxAdm.uploadSkippedFiles[filename] = "skip";
+                      userProcessNextFilename();
                     },
                     btnTextOk: uploading.existing.skip,
                     extraBtns: [{
                       btnText: uploading.existing.overwrite,
-                      onOk: userProcessNextUri // Keep/overwrite file
+                      onOk: userProcessNextFilename // Keep/overwrite file
                     }]
                   };
                 }
@@ -1898,7 +1899,7 @@ function ajaxUpload(options) {
                 }
               }
             }
-            userProcessNextUri();
+            userProcessNextFilename();
           } else {
             ajaxUploadPerform(opts);
           }

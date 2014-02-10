@@ -77,40 +77,43 @@ resourcetype program-frontpage : program-document {
       [def folder resource(thispath)]
       [def fs-program-code resource-prop-obj-val(".", "programContext.fs-program-code")]
       [if folder != null && fs-program-code != null && fs-program-code != ""]
-        <div class="vrtx-frontpage-box white-box vrtx-program-options">
-          <h2><a href="[val thispath]">[localized 'program-options-title']</a></h2>
-          [if typeof(programOptionSearch) = 'function']
-            [def active programOptionSearch(fs-program-code, 'aktivt', locale)]
-            [list active res]
-              [def url view-url(res)]
-              [def name resource-prop-obj-val(res, "name")]
-              [if url != null && url != "" && name != null && name != ""]
-                [def splitPosition ceil(_size / 2)]
-                [if _index = 0]
-                  <ul class="left">
-                [elseif _index = splitPosition]
-                  </ul><ul class="right">
-                [endif]
-                <li><a href="[val url]">[val name]</a></li>
-              [endif]
-              [if _size = _index + 1]</ul>[endif]
-            [endlist]
-          [endif]
-          <div class="vrtx-program-options-inactive">
+        [def published resource-prop-obj-val(folder, "published")]
+        [if published]
+          <div class="vrtx-frontpage-box white-box vrtx-program-options">
+            <h2><a href="[val thispath]">[localized 'program-options-title']</a></h2>
             [if typeof(programOptionSearch) = 'function']
-              [def inactive programOptionSearch(fs-program-code, 'under-utfasing', locale)]
-              <ul>
-                [list inactive res]
-                  [def url view-url(res)]
-                  [def name resource-prop-obj-val(res, "name")]
-                  [if url != null && url != "" && name != null && name != ""]
-                    <li><a href="[val url]">[val name]</a></li>
+              [def active programOptionSearch(fs-program-code, 'aktivt', locale)]
+              [list active res]
+                [def url view-url(res)]
+                [def name resource-prop-obj-val(res, "name")]
+                [if url != null && url != "" && name != null && name != ""]
+                  [def splitPosition ceil(_size / 2)]
+                  [if _index = 0]
+                    <ul class="left">
+                  [elseif _index = splitPosition]
+                    </ul><ul class="right">
                   [endif]
-                [endlist]
-              </ul>
+                  <li><a href="[val url]">[val name]</a></li>
+                [endif]
+                [if _size = _index + 1]</ul>[endif]
+              [endlist]
             [endif]
+            <div class="vrtx-program-options-inactive">
+              [if typeof(programOptionSearch) = 'function']
+                [def inactive programOptionSearch(fs-program-code, 'under-utfasing', locale)]
+                <ul>
+                  [list inactive res]
+                    [def url view-url(res)]
+                    [def name resource-prop-obj-val(res, "name")]
+                    [if url != null && url != "" && name != null && name != ""]
+                      <li><a href="[val url]">[val name]</a></li>
+                    [endif]
+                  [endlist]
+                </ul>
+              [endif]
+            </div>
           </div>
-        </div>
+        [endif]
       [endif]
       ##
     }

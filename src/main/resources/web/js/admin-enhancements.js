@@ -1847,9 +1847,7 @@ function ajaxUpload(options) {
                   var skipOverwriteDialogOpts = {
                     msg: fixedUri,
                     title: uploading.existing.title,
-                    onOk: function () {  // Don't keep file
-                      userProcessNextUri();
-                    },
+                    onOk: userProcessNextUri,  // Don't keep file
                     btnTextOk: uploading.existing.overwrite
                   };
                 } else {
@@ -1863,9 +1861,7 @@ function ajaxUpload(options) {
                     btnTextOk: uploading.existing.skip,
                     extraBtns: [{
                       btnText: uploading.existing.overwrite,
-                      onOk: function () { // Keep/overwrite file
-                        userProcessNextUri();
-                      }
+                      onOk: userProcessNextUri // Keep/overwrite file
                     }]
                   };
                 }

@@ -1809,24 +1809,24 @@ function ajaxUpload(options) {
     var numberOfFiles = 0;
     if (vrtxAdm.supportsFileList) {
       var files = fileField[0].files;
-      for (var i = 0, len = files.length; i < len; i++) {
+      for (var i = 0, numberOfFiles = files.length; i < numberOfFiles; i++) {
         filePaths += files[i].name + ",";
       }
-      numberOfFiles = len;
     } else {
       filePaths = fileField.val().substring(fileField.val().lastIndexOf("\\") + 1);
       numberOfFiles = 1;
     }
     
-    var filenamesField = _$("#fileUploadCheckService-form").find("input[name='filenames']");
-    if(!filenamesField.length) {
-      _$("#fileUploadCheckService-form").append("<input type='hidden' name='filenames' value='" + filePaths + "' />");
+    var checkForm = _$("#fileUploadCheckService-form");
+    var filenamesToCheckField = checkForm.find("input[name='filenames']");
+    if(!filenamesToCheckField.length) {
+      checkForm.append("<input type='hidden' name='filenames' value='" + filePaths + "' />");
     } else {
-      filenamesField.val(filePaths);
+      filenamesToCheckField.val(filePaths);
     }
     vrtxAdm.removeErrorContainers(options.form, options.errorContainerInsertAfter, options.errorContainer);
 
-    _$("#fileUploadCheckService-form").ajaxSubmit({
+    checkForm.ajaxSubmit({
       success: function(results, status, xhr) {
         var result = _$.parseHTML(results);
         var opts = options;
@@ -1916,8 +1916,8 @@ function ajaxUploadPerform(opts) {
   var uploadingD = new VrtxLoadingDialog({title: uploading.inprogress});
   uploadingD.open();
   _$("#dialog-loading-content").append("<div id='dialog-uploading-percent' />");
-  _$("#fileUploadService-form").append("<input type='hidden' name='overwrite' value='overwrite' />");
-  _$("#fileUploadService-form").ajaxSubmit({
+  opts.form.append("<input type='hidden' name='overwrite' value='overwrite' />");
+  opts.form.ajaxSubmit({
     uploadProgress: function(event, position, total, percent) {
       _$("#dialog-uploading-percent").text(percent + "%");
     },

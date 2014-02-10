@@ -3429,9 +3429,9 @@ VrtxAdmin.prototype.addPermissionAsync = function addPermissionAsync(selector, u
     var textfield = parent.find("input[type=text]");
     var textfieldName = textfield.attr("name");
     var textfieldVal = textfield.val();
-    var dataString = textfieldName + "=" + textfieldVal +
-      "&csrf-prevention-token=" + form.find("input[name='csrf-prevention-token']").val() +
-      "&" + link.attr("name");
+    var dataString = textfieldName + "=" + encodeURIComponent(textfieldVal) +
+                     "&csrf-prevention-token=" + form.find("input[name='csrf-prevention-token']").val() +
+                     "&" + link.attr("name");
 
     var hiddenAC = parent.find("input#ac_userNames");
     if (hiddenAC.length) {

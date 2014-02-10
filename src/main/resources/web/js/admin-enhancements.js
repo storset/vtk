@@ -1877,8 +1877,8 @@ function ajaxUpload(options) {
                   });
                   animation.bottomUp();
                 }
-                var actionExistingFileDialog = new VrtxConfirmDialog(skipOverwriteDialogOpts);
-                actionExistingFileDialog.open();
+                var userDecideExistingFileDialog = new VrtxConfirmDialog(skipOverwriteDialogOpts);
+                userDecideExistingFileDialog.open();
               } else { // User has decided for all existing uris
                 var numberOfSkippedFiles = 0;
                 for (skippedFile in vrtxAdm.uploadSkippedFiles) {

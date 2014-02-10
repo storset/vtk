@@ -94,7 +94,7 @@ resourcetype semester-page {
         [if uri != null && uri != ""]
           [def resource resource(uri)]
           [if resource != null]
-            [def published resource-prop-obj-val(resource, "published") ]
+            [def published resource-prop-obj-val(resource, "published")]
             [if published]
               [def count count + 1]
               [if count = 1]
@@ -500,7 +500,7 @@ resourcetype semester-page {
     cloned-course-title : (en : "Joint teaching", no : "Felles undervisning", nn : "Felles undervisning"),
     cloned-course-code : (en : "Fill in course code", no : "Skriv inn emnekode", nn : "Skriv inn emnekode"),
     cloned-course-text-start : (en : "This course has jointly taught classes with ", no : "Emnet har felles undervisning med ", nn : "Emnet har felles undervisning med "),
-    cloned-course-text-end : (en : ".", no : ". Se semestersiden til dette emnet for timeplan og beskjeder.", nn : ". Sjå semestersida til dette emnet for timeplan og meldingar."),
+    cloned-course-text-end : (en : ". See this course's semester page for schedule and messages.", no : ". Se semestersiden til dette emnet for timeplan og beskjeder.", nn : ". Sjå semestersida til dette emnet for timeplan og meldingar."),
     fronter : (en : "Fronter", no : "Fronter", nn : "Fronter"),
     fronter-text : (en : "This course uses the learning platform Fronter.", no : "Dette emnet bruker læringsplattformen Fronter.", nn : "Dette emnet nyttar læringsplattforma Fronter."),
     log-into-fronter : (en : "Log into Fronter", no : "Logg på Fronter", nn : "Logg på Fronter"),

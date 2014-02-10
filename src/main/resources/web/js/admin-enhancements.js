@@ -1846,7 +1846,7 @@ function ajaxUpload(options) {
                 var fixedFilename = existingFilenamesFixed.pop();
                 if(existingFilenamesLen == 1 && numberOfFiles == 1) {
                   var skipOverwriteDialogOpts = {
-                    msg: fixedUri,
+                    msg: fixedFilename,
                     title: uploading.existing.title,
                     onOk: userProcessNextFilename, // Keep/overwrite file
                     btnTextOk: uploading.existing.overwrite

@@ -1837,36 +1837,49 @@ function ajaxUpload(options) {
           if(existingUris.length) {
             var existingUrisFixed = _$(result).find("#file-upload-existing-uris-fixed");
             var existingUrisArr = existingUris.text().split("#");
+            var existingUrisTotalLen = existingUrisArr.length;
             var existingUrisFixedArr = existingUrisFixed.text().split("#");
             var userProcessNextUri = function() {
               if(existingUrisArr.length) {
                 var uri = existingUrisArr.pop();
                 var fixedUri = existingUrisFixedArr.pop();
-                var actionExistingFileDialog = new VrtxConfirmDialog({
-                  msg: fixedUri,
-                  title: uploading.existing.title,
-                  onOk: function () {  // Don't keep file
-                    vrtxAdm.uploadSkippedFiles[uri] = "skip";
-                    userProcessNextUri();
-                  },
-                  btnTextOk: uploading.existing.skip,
-                  extraBtns: [{
-                    btnText: uploading.existing.overwrite,
-                    onOk: function () { // Keep/overwrite file
+                if(existingUrisTotalLen == 1) {
+                  var skipOverwriteDialogOpts = {
+                    msg: fixedUri,
+                    title: uploading.existing.title,
+                    onOk: function () {  // Don't keep file
                       userProcessNextUri();
-                    }
-                  }],
-                  onCancel: function() {
-                    vrtxAdm.uploadSkippedFiles = {};
-                    var animation = new VrtxAnimation({
-                      elem: opts.form.parent(),
-                      animationSpeed: opts.transitionSpeed,
-                      easeIn: opts.transitionEasingSlideDown,
-                      easeOut: opts.transitionEasingSlideUp
-                    });
-                    animation.bottomUp();
-                  }
-                });
+                    },
+                    btnTextOk: uploading.existing.overwrite
+                  };
+                } else {
+                  var skipOverwriteDialogOpts = {
+                    msg: fixedUri,
+                    title: uploading.existing.title,
+                    onOk: function () {  // Don't keep file
+                      vrtxAdm.uploadSkippedFiles[uri] = "skip";
+                      userProcessNextUri();
+                    },
+                    btnTextOk: uploading.existing.skip,
+                    extraBtns: [{
+                      btnText: uploading.existing.overwrite,
+                      onOk: function () { // Keep/overwrite file
+                        userProcessNextUri();
+                      }
+                    }]
+                  };
+                }
+                skipOverwriteDialogOpts.onCancel = function() {
+                  vrtxAdm.uploadSkippedFiles = {};
+                  var animation = new VrtxAnimation({
+                    elem: opts.form.parent(),
+                    animationSpeed: opts.transitionSpeed,
+                    easeIn: opts.transitionEasingSlideDown,
+                    easeOut: opts.transitionEasingSlideUp
+                  });
+                  animation.bottomUp();
+                }
+                var actionExistingFileDialog = new VrtxConfirmDialog(skipOverwriteDialogOpts);
                 actionExistingFileDialog.open();
               } else { // User has decided for all existing uris
                 var numberOfSkippedFiles = 0;

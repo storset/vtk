@@ -1843,7 +1843,7 @@ function ajaxUpload(options) {
               if(existingUrisArr.length) {
                 var uri = existingUrisArr.pop();
                 var fixedUri = existingUrisFixedArr.pop();
-                if(existingUrisTotalLen == 1) {
+                if(existingUrisTotalLen == 1 && numberOfFiles == 1) {
                   var skipOverwriteDialogOpts = {
                     msg: fixedUri,
                     title: uploading.existing.title,

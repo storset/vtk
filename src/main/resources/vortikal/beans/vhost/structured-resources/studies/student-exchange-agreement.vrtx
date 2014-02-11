@@ -7,11 +7,11 @@ resourcetype student-exchange-agreement {
 
     title : derived (owner-of-agreement) eval ("student-exchange-agreement-between"?localized + " " + "studentExchangeUniversityAgreementListing.name"?contextual + " " + "and"?localized + " " + owner-of-agreement?sharedText) overrides title,
 
-    bachelor : boolean defaultvalue("false"),
-    master : boolean defaultvalue("false"),
-    phd : boolean defaultvalue("false"),
-    programme-of-professional-study : boolean defaultvalue("false"),
-    specialist : boolean defaultvalue("false"),
+    bachelor : boolean,
+    master : boolean,
+    phd : boolean,
+    programme-of-professional-study : boolean,
+    specialist : boolean,
 
     student-exchange-intro : html noextract,
     who-can-apply : html noextract,

@@ -1,9 +1,7 @@
 <#ftl strip_whitespace=true>
 <#macro printPropertyEditView title inputFieldName description value="" tooltip="" classes="" defaultValue="true">
   <#assign locale = springMacroRequestContext.getLocale() />
-  <#if value=="" >
-  <#local value = defaultValue />
-  </#if>
+
   
   <#if classes?contains("vrtx-checkbox")>
     <div class="vrtx-checkbox ${classes}">
@@ -13,6 +11,9 @@
       </div>
     </div>
   <#else>
+    <#if value=="" >
+      <#local value = defaultValue />
+    </#if>
     <div class="vrtx-radio ${classes}"> 
       <label>${title}</label><#if "${tooltip}" != ""><div class="tooltip">${tooltip}</div></#if>
       <div class="vrtx-radio-buttons">

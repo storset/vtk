@@ -1917,11 +1917,12 @@ function ajaxUploadPerform(opts) {
 
   var uploadingD = new VrtxLoadingDialog({title: uploading.inprogress});
   uploadingD.open();
-  _$("#dialog-loading-content").append("<div id='dialog-uploading-percent' />");
+  _$("#dialog-loading-content").append("<div id='dialog-uploading-bar' /><div id='dialog-uploading-percent' />");
   opts.form.append("<input type='hidden' name='overwrite' value='overwrite' />");
   opts.form.ajaxSubmit({
     uploadProgress: function(event, position, total, percent) {
       _$("#dialog-uploading-percent").text(percent + "%");
+      _$("#dialog-uploading-bar").css("width", percent + "%");
     },
     success: function(results, status, xhr) {
       var result = _$.parseHTML(results);

@@ -3372,14 +3372,28 @@ tr.expandedForm td .vrtx-button-small {
   z-index: 1;
 }
 
+#dialog-loading-content img {
+  opacity: 0.7;
+}
+
 #dialog-uploading-percent {
-  margin-top: 8px;
-  margin-bottom: -10px;
-  color: #444;
-  text-align: right;
-  width: 100%;
-  display: block;
-  font-size: 0.867em;
+  margin-top: 10px;
+  margin-bottom: -15px;
+  color: #2b2b2b;
+  text-align: center;
+  font-size: 1.231em;
+}
+
+#dialog-uploading-bar {
+  background-color: #459CE5;
+  height: 13px;
+  margin-top: -13px;
+  position: relative;
+  width: 0;
+  z-index: 1;
+  border-radius: 2px;
+  -moz-border-radius: 2px;
+  -webkit-border-radius: 2px;
 }
 
 /* Tooltips */

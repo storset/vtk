@@ -17,7 +17,7 @@
   </bean>
 
   <bean id="editor.blogListingResourceManager" class="org.vortikal.edit.editor.ResourceWrapperManager">
- <property name="htmlParser" ref="decorating.htmlParser" />
+    <property name="htmlParser" ref="decorating.htmlParser" />
     <property name="htmlPropsFilter" ref="resourceManager.htmlPropsFilter" />
     <property name="contentResourceType" ref="documentResourceTypeDefinition" />
     <property name="editPropertyProvider">
@@ -32,6 +32,7 @@
             <ref bean="importancePropDef" />
             <ref bean="hiddenPropDef" />
             <ref bean="pageLimitPropDef" />
+            <ref bean="linkOtherLanguagePropDef" />
           </list>
         </property>
       </bean>

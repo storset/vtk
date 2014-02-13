@@ -33,6 +33,7 @@
             <ref bean="employeeListing.tagSearchSuggestionsPropDef" />
             <ref bean="employeeListing.displayTagsPropDef" />
             <ref bean="employeeListing.displayAffiliationTabsPropDef" />
+            <ref bean="linkOtherLanguagePropDef" />
           </list>
         </property>
       </bean>

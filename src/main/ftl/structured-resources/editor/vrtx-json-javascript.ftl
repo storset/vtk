@@ -3,6 +3,8 @@
 
 <#macro script>
   <#assign locale = springMacroRequestContext.getLocale() />
+  <#assign contentLocale = resourceContext.currentResource.getContentLocale() />
+
   <script type="text/javascript" src="${webResources?html}/jquery/plugins/jquery.scrollTo.min.js"></script>
   <script type="text/javascript"><!--
   
@@ -52,7 +54,7 @@
                 </#list>
                 vrtxEditor.multipleBoxesTemplatesContract[${i}].a[${j}].valuemap = valuemap;
               </#if>
-              vrtxEditor.multipleBoxesTemplatesContract[${i}].a[${j}].title = "${form.resource.getLocalizedMsg(jsonAttr.name, locale, null)}";
+              vrtxEditor.multipleBoxesTemplatesContract[${i}].a[${j}].title = "${form.resource.getLocalizedMsg(jsonAttr.name, locale, contentLocale, null)}";
               <#assign j = j + 1 />
             </#list>
             <#assign i = i + 1 />

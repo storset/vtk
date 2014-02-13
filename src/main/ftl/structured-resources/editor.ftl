@@ -104,7 +104,9 @@
 <body id="vrtx-editor">
 
   <#assign locale = springMacroRequestContext.getLocale() />
-  <#assign header = form.resource.getLocalizedMsg("header", locale, null) />
+  <#assign contentLocale = resourceContext.currentResource.getContentLocale() />
+  
+  <#assign header = form.resource.getLocalizedMsg("header", locale, contentLocale, null) />
   
   <#if form.workingCopy>
     <div class="tabMessage-big">
@@ -207,7 +209,7 @@
             <#assign groupName = elementBox["name"] />
             <#assign groupClass = groupClass + " ${groupName?string}" />
             <div class="${groupClass} <#if elementBox["metaData"]["class"]?exists>${elementBox["metaData"]["class"]}</#if>">
-              <#assign localizedHeader = form.resource.getLocalizedMsg(elementBox.name, locale, null) />
+              <#assign localizedHeader = form.resource.getLocalizedMsg(elementBox.name, locale, contentLocale, null) />
               <div class="header">${localizedHeader}</div>
           <#else>
             <div class="${groupClass}">
@@ -215,7 +217,7 @@
         </#if>
 
         <#list elementBox.formElements as elem>
-          <@vrtxJSONCommon.printPropertyEditView form elem locale />
+          <@vrtxJSONCommon.printPropertyEditView form elem locale contentLocale />
         </#list>
   
         <#if elementBox.formElements?size &gt; 1>

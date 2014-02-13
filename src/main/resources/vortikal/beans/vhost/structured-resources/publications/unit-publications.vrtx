@@ -6,13 +6,15 @@ resourcetype unit-publications {
     areacode : string trim,
     selectedPublications : html noextract,
     showAdditionalContent : boolean defaultvalue("true"),
-    related-content : html noextract
+    related-content : html noextract,
+    link-other-language: resource_ref
   }
 
   edit-rules {
     areacode (size[8]),
     group publications (areacode, selectedPublications) (after introduction),
-    group related-content-group (showAdditionalContent, related-content) (after selectedPublications)
+    group related-content-group (showAdditionalContent, related-content) (after selectedPublications),
+    link-other-language (after related-content-group)
   }
 
   view-components {
@@ -22,6 +24,15 @@ resourcetype unit-publications {
       [def v resource-prop(".", "title")]
       [if v != null]
         [val v]
+      [endif]
+      ##
+    }
+    
+    link-other-language {
+      ##
+      [def link resource-prop(".", "link-other-language")]
+      [if link != null]
+        <a id="vrtx-change-language-link" href="[val link]">[localized "link-language"]</a>
       [endif]
       ##
     }
@@ -101,6 +112,7 @@ resourcetype unit-publications {
           <div id="vrtx-main-content" class="vrtx-hide-additional-content-true">
         [endif]
             <h1>[call "comp:title"]</h1>
+            [call "comp:link-other-language"]
             [call "comp:introduction"]
             [call "comp:publications"]
             [call "comp:related-content-in-main-column"]
@@ -130,7 +142,13 @@ resourcetype unit-publications {
     related-content : (en : "Content", no : "Innhold", nn : "Innhold"),
     related-content-group : (en : "Related content", no : "Relatert innhold", nn : "Relatert innhald"),
     related-content : (en : "Related content", no : "Relatert innhold", nn : "Relatert innhold"),
-    header : (en : "Edit unit publications", no : "Rediger enhetspublikasjoner", nn : "Rediger enhetspublikasjoner")
+    header : (en : "Edit unit publications", no : "Rediger enhetspublikasjoner", nn : "Rediger enhetspublikasjoner"),
+    link-language: (en : "Norwegian", no : "English", nn : "English"),
+    link-other-language {
+      en: (en : "Link to norwegian version", no : "Link to english version", nn : "Link to english version"),
+      no: (en : "Lenke til norsk versjon", no : "Lenke til engelsk versjon", nn : "Lenke til engelsk versjon"),
+      nn: (en : "Lenke til norsk versjon", no : "Lenke til engelsk versjon", nn : "Lenke til engelsk versjon")
+    }
   }
 
 }

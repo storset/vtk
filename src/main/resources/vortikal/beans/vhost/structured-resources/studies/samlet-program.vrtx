@@ -2,7 +2,8 @@ resourcetype samlet-program : samlet {
 
   properties {
     tittel : string,
-    title : derived (tittel) eval ("samlet-program"?localized) overrides title
+    title : derived (tittel) eval ("samlet-program"?localized) overrides title,
+    link-other-language: resource_ref
   }
 
   edit-rules {
@@ -89,6 +90,7 @@ resourcetype samlet-program : samlet {
           <div id="vrtx-main-content" class="vrtx-hide-additional-content-true">
             <div>[localized 'samlet']<span class="programkode">[call "comp:programkode"]</span></div>
             [call "comp:program-facts"]
+            [call "comp:link-other-language"]
             <div class="samlet-element">[call "comp:include-study-file" {"file" : "hvorfor-velge"}]</div>
             <div class="samlet-element">[call "comp:include-study-file" {"file" : "why-choose"}]</div>
             <div class="samlet-element">[call "comp:include-study-file" {"file" : "hva-lerer-du"}]</div>

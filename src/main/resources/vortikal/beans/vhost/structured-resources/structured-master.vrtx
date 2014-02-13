@@ -1,4 +1,4 @@
-resourcetype structured-master{
+resourcetype structured-master {
 
   properties {
     title : string overrides title,
@@ -11,7 +11,8 @@ resourcetype structured-master{
     supervisorsUsernames : string multiple,
     supervisors : json (supervisorName:string, supervisorUrl:string) multiple,
     credits : string,
-    related-content : html noextract
+    related-content : html noextract,
+    link-other-language: resource_ref
   }
   
   edit-rules {
@@ -143,6 +144,15 @@ resourcetype structured-master{
       [endif]
       ##
     }
+    
+    link-other-language {
+      ##
+      [def link resource-prop(".", "link-other-language")]
+      [if link != null]
+        <a id="vrtx-change-language-link" href="[val link]">[localized "link-language"]</a>
+      [endif]
+      ##
+    }
   }
 
   view {
@@ -157,6 +167,7 @@ resourcetype structured-master{
         <div id="vrtx-content">
           <div id="vrtx-main-content">
             <h1>[call "json:field" {"select":"title"}]</h1>
+            [call "comp:link-other-language"]
             [call "comp:introduction"]
             [call "comp:introduction-image"]
             [call "json:field" {"select":"content"}]
@@ -217,6 +228,12 @@ resourcetype structured-master{
       no : "Antall veiledere som skal vises",
       nn : "Antall veiledarar som skal visast"),
     completed : (en : "not available", no : "ikke tilgjengelig", nn : "ikkje tilgjengeleg"),
-    completedMsg : (en : "The project is no longer available", no : "Oppgaven er ikke lenger tilgjengelig", nn : "Oppgaven er ikkje lenger tilgjengeleg")
+    completedMsg : (en : "The project is no longer available", no : "Oppgaven er ikke lenger tilgjengelig", nn : "Oppgaven er ikkje lenger tilgjengeleg"),
+    link-language: (en : "Norwegian", no : "English", nn : "English"),
+    link-other-language {
+      en: (en : "Link to norwegian version", no : "Link to english version", nn : "Link to english version"),
+      no: (en : "Lenke til norsk versjon", no : "Lenke til engelsk versjon", nn : "Lenke til engelsk versjon"),
+      nn: (en : "Lenke til norsk versjon", no : "Lenke til engelsk versjon", nn : "Lenke til engelsk versjon")
+    }
   }
 }

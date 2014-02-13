@@ -53,7 +53,7 @@ public final class StructuredResourceDescription {
     private List<ServiceDefinition> services;
 
     private List<ComponentDefinition> componentDefinitions = new ArrayList<ComponentDefinition>();
-    private HashMap<String, Map<Locale, String>> localization = new HashMap<String, Map<Locale, String>>();
+    private HashMap<String, Map<Locale, Map<Locale, String>>> localization = new HashMap<String, Map<Locale, Map<Locale, String>>>();
     private HashMap<String, Map<Locale, String>> tooltips = new HashMap<String, Map<Locale, String>>();
 
     private static final String DEFAULT_LANG = "en";
@@ -191,12 +191,12 @@ public final class StructuredResourceDescription {
         return localizedMessage != null ? localizedMessage : "";
     }
 
-    public void addLocalization(String name, Map<Locale, String> m) {
+    public void addLocalization(String name, Map<Locale, Map<Locale, String>> m) {
         localization.put(name, m);
     }
 
-    public Map<String, Map<Locale, String>> getAllLocalization() {
-        Map<String, Map<Locale, String>> locales = new HashMap<String, Map<Locale, String>>();
+    public Map<String, Map<Locale, Map<Locale, String>>> getAllLocalization() {
+        Map<String, Map<Locale, Map<Locale, String>>> locales = new HashMap<String, Map<Locale, Map<Locale, String>>>();
         if (this.inheritsFrom != null) {
             StructuredResourceDescription parent = this.manager.get(this.inheritsFrom);
             locales.putAll(parent.getAllLocalization());
@@ -208,15 +208,30 @@ public final class StructuredResourceDescription {
     public StructuredResource buildResource(InputStream source) throws Exception {
         return StructuredResource.create(this, source);
     }
+    
+    public String getLocalizedMsg(String key, Locale locale, Object[] param) {
+       return getLocalizedMsg(key, locale, locale, param); 
+    }
 
     // XXX: handle parameters
-    public String getLocalizedMsg(String key, Locale locale, Object[] param) {
-        Map<Locale, String> localizationMap = this.getAllLocalization().get(key);
+    public String getLocalizedMsg(String key, Locale locale1, Locale locale2, Object[] param) {
+        Map<Locale, Map <Locale, String>> localizationMap = this.getAllLocalization().get(key);
         if (localizationMap == null) {
             return key;
         }
-        String lang = locale == null ? DEFAULT_LANG : locale.getLanguage();
-        String localizedMessage = localizationMap.get(new Locale(lang));
+        Locale lang1 = new Locale(locale1 == null ? DEFAULT_LANG : locale1.getLanguage());
+
+        Map <Locale, String> localizedMessages = localizationMap.get(lang1);
+        String localizedMessage = null;
+        if(localizedMessages != null) {
+            // More than one language in localizationMap: use second language as second key
+            if(localizedMessages.size() > 1) {
+                Locale lang2 = new Locale(locale2 == null ? DEFAULT_LANG : locale2.getLanguage());
+                localizedMessage = localizedMessages.get(lang2);
+            } else { // Otherwise: use first language as second key
+                localizedMessage = localizedMessages.get(lang1);
+            }
+        }
         return localizedMessage != null ? localizedMessage : key;
     }
 

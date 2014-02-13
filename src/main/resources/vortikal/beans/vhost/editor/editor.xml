@@ -507,7 +507,6 @@
         <property name="preContentProperties">
           <list>
             <ref bean="htmlTitlePropDef" />
-            <ref bean="linkOtherLanguagePropDef" />
           </list>
         </property>
       </bean>

@@ -90,6 +90,15 @@ resourcetype samlet {
     [endif]
     ##
     }
+    
+    link-other-language {
+      ##
+      [def link resource-prop(".", "link-other-language")]
+      [if link != null]
+        <a id="vrtx-change-language-link" href="[val link]">[localized "link-language"]</a>
+      [endif]
+      ##
+    }
 
   }
 
@@ -125,6 +134,12 @@ resourcetype samlet {
     odont : (en : "Faculty of Dentistry", no : "Det odontologiske fakultet", nn : "Det odontologiske fakultet"),
     sv : (en : "Faculty of Social Sciences", no : "Det samfunnsvitenskapelige fakultet", nn : "Det samfunnsvitenskapelige fakultet"),
     tf : (en : "Faculty of Theology", no : "Det teologiske fakultet", nn : "Det teologiske fakultet"),
-    uv : (en : "Faculty of Educational Sciences", no : "Det utdanningsvitenskapelige fakultet", nn : "Det utdanningsvitenskapelige fakultet")
+    uv : (en : "Faculty of Educational Sciences", no : "Det utdanningsvitenskapelige fakultet", nn : "Det utdanningsvitenskapelige fakultet"),
+    link-language: (en : "Norwegian", no : "English", nn : "English"),
+    link-other-language {
+      en: (en : "Link to norwegian version", no : "Link to english version", nn : "Link to english version"),
+      no: (en : "Lenke til norsk versjon", no : "Lenke til engelsk versjon", nn : "Lenke til engelsk versjon"),
+      nn: (en : "Lenke til norsk versjon", no : "Lenke til engelsk versjon", nn : "Lenke til engelsk versjon")
+    }
   }
 }

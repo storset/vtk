@@ -162,8 +162,8 @@ public class StructuredResource {
         return Collections.unmodifiableCollection(this.properties.keySet());
     }
 
-    public String getLocalizedMsg(String key, Locale locale, Object[] param) {
-        return this.desc.getLocalizedMsg(key, locale, param);
+    public String getLocalizedMsg(String key, Locale locale, Locale contentLocale, Object[] param) {
+        return this.desc.getLocalizedMsg(key, locale, contentLocale, param);
     }
 
     public String getLocalizedTooltip(String key, Locale locale) {

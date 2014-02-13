@@ -8,7 +8,8 @@ resourcetype frontpage {
     main-content : json (boxTitle : string, boxCssSizeAndPlacement : string, boxCssColor : string, boxType : string, boxPicture : image_ref, boxContent : html, boxUrlText : string, boxUrl : resource_ref) multiple noextract,
     additional-content : json (boxTitle : string, boxType : string, boxPicture : image_ref, boxContent : html, boxUrlText : string, boxUrl : resource_ref) multiple noextract,
     showAdditionalContent : boolean defaultvalue("true"),
-    cssUrl : string
+    cssUrl : string,
+    link-other-language: resource_ref
   }
 
   edit-rules {
@@ -16,7 +17,8 @@ resourcetype frontpage {
     main-content:boxCssSizeAndPlacement (dropdown),
     main-content:boxCssColor (dropdown),
     group introImageAndCaption (picture, caption) (after introduction),
-    group relatedContent (showAdditionalContent, additional-content) (after main-content)
+    group relatedContent (showAdditionalContent, additional-content) (after main-content),
+    link-other-language (after relatedContent)
   }
 
   view-components {
@@ -287,6 +289,15 @@ resourcetype frontpage {
       [endif]
       ##
     }
+    
+    link-other-language {
+      ##
+      [def link resource-prop(".", "link-other-language")]
+      [if link != null]
+        <a id="vrtx-change-language-link" href="[val link]">[localized "link-language"]</a>
+      [endif]
+      ##
+    }
 
   }
 
@@ -307,6 +318,7 @@ resourcetype frontpage {
           <div id="vrtx-content" class="vrtx-frontpage-wide">
         [endif]
           <h1>[call "comp:title"]</h1>
+          [call "comp:link-other-language"]
           <div id="vrtx-main-content">
             [call "comp:frontpage-introduction"]
             [call "comp:main-content" {"document":document}]
@@ -355,6 +367,12 @@ resourcetype frontpage {
      boxUrl : (en : "Webaddress", no : "Webadresse", nn : "Webadresse"),
      header : (en : "Edit frontpage", no : "Rediger forside", nn : "Rediger forside"),
      showAdditionalContent : (en : "Show in right-column", no : "Vis i høyrekolonne", nn : "Vis i høyrekolonne"),
-     cssUrl : (en : "Include CSS", no : "Inkluder CSS", nn : "Inkluder CSS")
+     cssUrl : (en : "Include CSS", no : "Inkluder CSS", nn : "Inkluder CSS"),
+     link-language: (en : "Norwegian", no : "English", nn : "English"),
+     link-other-language {
+       en: (en : "Link to norwegian version", no : "Link to english version", nn : "Link to english version"),
+       no: (en : "Lenke til norsk versjon", no : "Lenke til engelsk versjon", nn : "Lenke til engelsk versjon"),
+       nn: (en : "Lenke til norsk versjon", no : "Lenke til engelsk versjon", nn : "Lenke til engelsk versjon")
+     }
   }
 }

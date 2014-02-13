@@ -30,7 +30,9 @@ resourcetype student-exchange-agreement {
     how-to-apply-shared-text : string,
 
     contact : string,
-    earlier-students : html noextract
+    earlier-students : html noextract,
+    
+    link-other-language: resource_ref
   }
 
   edit-rules {
@@ -86,6 +88,17 @@ resourcetype student-exchange-agreement {
     earlier-students (class[vrtx-sea-accordion]),
     earlier-students (class[vrtx-pseudo-grouped])
   }
+  
+  view-components {
+    link-other-language {
+      ##
+      [def link resource-prop(".", "link-other-language")]
+      [if link != null]
+        <a id="vrtx-change-language-link" href="[val link]">[localized "link-language"]</a>
+      [endif]
+      ##
+    }
+  }
 
   view {
     ##
@@ -129,6 +142,7 @@ resourcetype student-exchange-agreement {
         <div id="vrtx-content">
           <div id="vrtx-main-content">
             <h1>[val title]</h1>
+            [call "comp:link-other-language"]
             [if student-exchange-intro != null && student-exchange-intro != ""]
               [val student-exchange-intro # unescaped]
             [endif]
@@ -294,7 +308,13 @@ resourcetype student-exchange-agreement {
     and : (en : "and", no : "og", nn : "og"),
     contact : (en : "Contact", no : "Kontakt", nn : "Kontakt"),
     earlier-students : (en : "Previous students experiences", no : "Studenter som har vært her tidligere", nn : "Studenter som har vore her tidlegare"),
-    iris-reports : (en : "IRIS - Student reports", no : "Studentrapporter i IRIS", nn : "Studentrapportar i IRIS")
+    iris-reports : (en : "IRIS - Student reports", no : "Studentrapporter i IRIS", nn : "Studentrapportar i IRIS"),
+    link-language: (en : "Norwegian", no : "English", nn : "English"),
+    link-other-language {
+      en: (en : "Link to norwegian version", no : "Link to english version", nn : "Link to english version"),
+      no: (en : "Lenke til norsk versjon", no : "Lenke til engelsk versjon", nn : "Lenke til engelsk versjon"),
+      nn: (en : "Lenke til norsk versjon", no : "Lenke til engelsk versjon", nn : "Lenke til engelsk versjon")
+    }
   }
 
 }

@@ -6,7 +6,8 @@ resourcetype ub-mapping {
         prefix : string,
         mappinglink-no : string,
         mappinglink-en : string
-    ) multiple noextract
+    ) multiple noextract,
+    link-other-language: resource_ref
   }
 
   view-components {
@@ -30,6 +31,15 @@ resourcetype ub-mapping {
       [endif]
       ##
     }
+    
+    link-other-language {
+      ##
+      [def link resource-prop(".", "link-other-language")]
+      [if link != null]
+        <a id="vrtx-change-language-link" href="[val link]">[localized "link-language"]</a>
+      [endif]
+      ##
+    }
 
   }
 
@@ -41,6 +51,7 @@ resourcetype ub-mapping {
         <title>[call "resource:property" {"id":"title"}]</title>
       </head>
       <body id="vrtx-ub-mappings">
+        [call "comp:link-other-language"]
         [call "comp:mappings"]
       </body>
     </html>
@@ -53,6 +64,12 @@ resourcetype ub-mapping {
     mappings : (en : "Mappings:", no : "Mappinger:", nn : "Mappinger:"),
     prefix : (en : "Prefix", no : "Prefiks", nn : "Prefiks"),
     mappinglink-no : (en : "Norwegian webaddress", no : "Norsk webadresse", nn : "Norsk webadresse"),
-    mappinglink-en : (en : "English webaddress", no : "Engelsk webadresse", nn : "Engelsk webadresse")
+    mappinglink-en : (en : "English webaddress", no : "Engelsk webadresse", nn : "Engelsk webadresse"),
+    link-language: (en : "Norwegian", no : "English", nn : "English"),
+    link-other-language {
+      en: (en : "Link to norwegian version", no : "Link to english version", nn : "Link to english version"),
+      no: (en : "Lenke til norsk versjon", no : "Lenke til engelsk versjon", nn : "Lenke til engelsk versjon"),
+      nn: (en : "Lenke til norsk versjon", no : "Lenke til engelsk versjon", nn : "Lenke til engelsk versjon")
+    }
   }
 } 

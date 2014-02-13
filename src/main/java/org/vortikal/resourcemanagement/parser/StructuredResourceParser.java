@@ -197,12 +197,27 @@ public class StructuredResourceParser implements InitializingBean {
         if (!hasContent(propertyDescriptions)) {
             return;
         }
+        
         for (CommonTree propDesc : propertyDescriptions) {
-            Map<Locale, String> localizationMap = new HashMap<Locale, String>();
+            Map<Locale, Map<Locale, String>> localizationMap = new HashMap<Locale, Map<Locale, String>>();
             for (CommonTree lang : (List<CommonTree>) propDesc.getChildren()) {
+                Locale locale = LocaleUtils.toLocale(lang.getText());
+                HashMap<Locale, String> localizationViewMap = new HashMap<Locale, String>();
                 for (CommonTree label : (List<CommonTree>) lang.getChildren()) {
-                    Locale locale = LocaleUtils.toLocale(lang.getText());
-                    localizationMap.put(locale, label.getText());
+                    List<CommonTree> view = (List<CommonTree>) label.getChildren();
+                    if(view == null) {
+                        localizationViewMap.put(locale, label.getText());
+                        localizationMap.put(locale, localizationViewMap);
+                        localizationViewMap = new HashMap<Locale, String>();
+                    } else {
+                        Locale localeView = LocaleUtils.toLocale(label.getText());
+                        for (CommonTree labelView : view) {
+                            localizationViewMap.put(localeView, labelView.getText());
+                        }
+                    }
+                }
+                if(!localizationViewMap.isEmpty()) {
+                    localizationMap.put(locale, localizationViewMap);
                 }
             }
             srd.addLocalization(propDesc.getText(), localizationMap);

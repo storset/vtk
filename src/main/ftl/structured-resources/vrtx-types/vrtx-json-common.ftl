@@ -10,9 +10,8 @@
 <#import "vrtx-shared-text.ftl" as vrtxSharedText />
 <#import "vrtx-resource-ref.ftl" as vrtxResourceRef />
 
-<#macro printPropertyEditView form elem locale>
-
-  <#assign localizedTitle = form.resource.getLocalizedMsg(elem.name, locale, null) />
+<#macro printPropertyEditView form elem locale contentLocale>
+  <#assign localizedTitle = form.resource.getLocalizedMsg(elem.name, locale, contentLocale, null) />
   <#assign hasEdithint = elem.description.edithints?exists />
 
   <#switch elem.description.type>
@@ -214,7 +213,7 @@
             <#list elem.description.attributes as jsonAttr>
               <#assign attrName = jsonAttr.name />
               <#assign tmpName = inputFieldName + "." + attrName + "." + counter />
-              <#assign jsonAttrLocalizedTitle = form.resource.getLocalizedMsg(attrName, locale, null) />
+              <#assign jsonAttrLocalizedTitle = form.resource.getLocalizedMsg(attrName, locale, contentLocale, null) />
               <@printJsonProperyEditView jsonAttr.type jsonAttrLocalizedTitle tmpName "" elem attrName jsonAttr locale />
             </#list>
             <input type="hidden" class="id" value="${counter}" />
@@ -230,7 +229,7 @@
              <#list elem.description.attributes as jsonAttr>
                <#assign attrName = jsonAttr.name />
                <#assign tmpName = inputFieldName + "." + attrName + "." + counter />
-               <#assign jsonAttrLocalizedTitle = form.resource.getLocalizedMsg(attrName, locale, null) />
+               <#assign jsonAttrLocalizedTitle = form.resource.getLocalizedMsg(attrName, locale, contentLocale, null) />
                <#if map[attrName]?exists >
                  <@printJsonProperyEditView jsonAttr.type jsonAttrLocalizedTitle tmpName map[attrName] elem attrName jsonAttr locale />
                <#else>

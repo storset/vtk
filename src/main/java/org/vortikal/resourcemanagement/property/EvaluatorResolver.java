@@ -319,7 +319,7 @@ public class EvaluatorResolver {
                 if (locale == null) {
                     locale = EvaluatorResolver.this.defaultLocale;
                 }
-                return resourceDesc.getLocalizedMsg(propValue, locale, null);
+                return resourceDesc.getLocalizedMsg(propValue, locale, locale, null);
             case SHARED_TEXT:
                 // Original resource is used to fetch locale and property type
                 // definition in resolveSharedText. Property is used to fetch

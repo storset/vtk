@@ -2,7 +2,8 @@ resourcetype samlet-retning : samlet {
 
   properties {
     tittel : string,
-    title : derived (tittel) eval ("samlet-retning"?localized) overrides title
+    title : derived (tittel) eval ("samlet-retning"?localized) overrides title,
+    link-other-language: resource_ref
   }
 
   edit-rules {
@@ -59,6 +60,7 @@ resourcetype samlet-retning : samlet {
         <div id="vrtx-content">
           <div id="vrtx-main-content" class="vrtx-hide-additional-content-true">
             <h1>[call "comp:title"]</h1>
+            [call "comp:link-other-language"]
             [def progpath resource-prop("./", "uri")]
             [def thispath progpath + '/index.html']
             [def facts json-resource(thispath)]

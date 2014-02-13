@@ -2,7 +2,8 @@ resourcetype featured-content {
 
   properties {
     title : string overrides title,
-    featured-items : json (featuredStickTitle : string, featuredTitle : string, featuredDate : datetime, featuredPicture : image_ref, featuredContent : html, featuredWebaddressText : string, featuredWebaddress : resource_ref) multiple noextract
+    featured-items : json (featuredStickTitle : string, featuredTitle : string, featuredDate : datetime, featuredPicture : image_ref, featuredContent : html, featuredWebaddressText : string, featuredWebaddress : resource_ref) multiple noextract,
+    link-other-language: resource_ref
   }
   
   view-components {
@@ -83,6 +84,15 @@ resourcetype featured-content {
       [endif]
       ##
     }
+
+    link-other-language {
+      ##
+      [def link resource-prop(".", "link-other-language")]
+      [if link != null]
+        <a id="vrtx-change-language-link" href="[val link]">[localized "link-language"]</a>
+      [endif]
+      ##
+    }
   }
 
   view {
@@ -109,6 +119,12 @@ resourcetype featured-content {
      featuredContent : (en : "Content", no : "Innhold", nn : "Innhald"),
      featuredWebaddress : (en : "Webaddress", no : "Webadresse", nn : "Webadresse"),
      featuredWebaddressText : (en : "Link text", no : "Lenketekst", nn : "Lenketekst"),
-     header : (en : "Edit featured content", no : "Rediger fremhevet innhold", nn : "Rediger fremhevet innhald")
+     header : (en : "Edit featured content", no : "Rediger fremhevet innhold", nn : "Rediger fremhevet innhald"),
+     link-language: (en : "Norwegian", no : "English", nn : "English"),
+     link-other-language {
+       en: (en : "Link to norwegian version", no : "Link to english version", nn : "Link to english version"),
+       no: (en : "Lenke til norsk versjon", no : "Lenke til engelsk versjon", nn : "Lenke til engelsk versjon"),
+       nn: (en : "Lenke til norsk versjon", no : "Lenke til engelsk versjon", nn : "Lenke til engelsk versjon")
+     }
   }
 }

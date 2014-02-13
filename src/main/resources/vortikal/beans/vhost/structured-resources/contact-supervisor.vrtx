@@ -2,7 +2,8 @@ resourcetype contact-supervisor {
 
   properties {
     title : string overrides title,
-    contact-supervisor-box : json ( id : string, description : html, contactInfo : html) multiple noextract
+    contact-supervisor-box : json ( id : string, description : html, contactInfo : html) multiple noextract,
+    link-other-language: resource_ref
   }
   
   view-components {
@@ -48,6 +49,15 @@ resourcetype contact-supervisor {
       [endif]
       ##
     }
+    
+    link-other-language {
+      ##
+      [def link resource-prop(".", "link-other-language")]
+      [if link != null]
+        <a id="vrtx-change-language-link" href="[val link]">[localized "link-language"]</a>
+      [endif]
+      ##
+    }
   }
   
   view {
@@ -61,6 +71,7 @@ resourcetype contact-supervisor {
         <div id="vrtx-content">
           <div id="vrtx-main-content">
             <h1>[call "comp:title"]</h1>
+            [call "comp:link-other-language"]
             [call "comp:contact-supervisor-box"]
           </div>
         </div>
@@ -78,6 +89,12 @@ resourcetype contact-supervisor {
     contactInfo : (en : "Contact Info", no : "Kontaktinformasjon", nn : "Kontaktinformasjon"),
     description : (en : "Description", no : "Beskrivelse", nn : "Beskrivelse"),
     boxUrl : (en : "Webaddress", no : "Webadresse", nn : "Webadresse"),
-    header : (en : "Edit contact supervisor", no : "Rediger kontaktveileder", nn : "Rediger kontaktveileder")
+    header : (en : "Edit contact supervisor", no : "Rediger kontaktveileder", nn : "Rediger kontaktveileder"),
+    link-language: (en : "Norwegian", no : "English", nn : "English"),
+    link-other-language {
+      en: (en : "Link to norwegian version", no : "Link to english version", nn : "Link to english version"),
+      no: (en : "Lenke til norsk versjon", no : "Lenke til engelsk versjon", nn : "Lenke til engelsk versjon"),
+      nn: (en : "Lenke til norsk versjon", no : "Lenke til engelsk versjon", nn : "Lenke til engelsk versjon")
+    }
   }
 }

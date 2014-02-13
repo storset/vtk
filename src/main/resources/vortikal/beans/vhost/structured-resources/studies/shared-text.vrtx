@@ -1,7 +1,8 @@
 resourcetype shared-text {
 
   properties {
-    shared-text-box : json (title : string, id : string, description-en : html,description-no : html,description-nn : html) multiple noextract
+    shared-text-box : json (title : string, id : string, description-en : html,description-no : html,description-nn : html) multiple noextract,
+    link-other-language: resource_ref
   }
 
   edit-rules {
@@ -64,6 +65,16 @@ resourcetype shared-text {
     [endif]
     ##
     }
+    
+    link-other-language {
+      ##
+      [def link resource-prop(".", "link-other-language")]
+      [if link != null]
+        <a id="vrtx-change-language-link" href="[val link]">[localized "link-language"]</a>
+      [endif]
+      ##
+    }
+    
   }
   
   view {
@@ -76,6 +87,7 @@ resourcetype shared-text {
       <body id="vrtx-shared-text">
         <div id="vrtx-content">
           <div id="vrtx-main-content">
+            [call "comp:link-other-language"]
             [call "comp:shared-text-box"]
           </div>
         </div>
@@ -94,6 +106,12 @@ resourcetype shared-text {
      description-no : (en : "Norwegian Bokmål", no : "Bokmål", nn : "Bokmål"),
      description-nn : (en : "Norwegian Nynorsk", no : "Nynorsk", nn : "Nynorsk"),
      boxUrl : (en : "Webaddress", no : "Webadresse", nn : "Webadresse"),
-     header : (en : "Edit shared text", no : "Rediger fellestekst", nn : "Rediger fellestekst")
+     header : (en : "Edit shared text", no : "Rediger fellestekst", nn : "Rediger fellestekst"),
+     link-language: (en : "Norwegian", no : "English", nn : "English"),
+     link-other-language {
+       en: (en : "Link to norwegian version", no : "Link to english version", nn : "Link to english version"),
+       no: (en : "Lenke til norsk versjon", no : "Lenke til engelsk versjon", nn : "Lenke til engelsk versjon"),
+       nn: (en : "Lenke til norsk versjon", no : "Lenke til engelsk versjon", nn : "Lenke til engelsk versjon")
+     }
   }
 }

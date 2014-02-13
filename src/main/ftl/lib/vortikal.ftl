@@ -742,3 +742,11 @@
     <#local c = c + 1 />
   </#list>
 </#macro>
+
+
+<#macro displayLinkOtherLang resource>
+  <#assign linkOtherLanguage = vrtx.propValue(resource, "linkOtherLanguage") />
+  <#if linkOtherLanguage?has_content>
+    <a id="vrtx-change-language-link" href="${linkOtherLanguage?html}"><@vrtx.msg code="link-other-language" /></a>
+  </#if>
+</#macro>

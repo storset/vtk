@@ -117,10 +117,7 @@
       </#if>
     </h1>
       
-    <#assign linkOtherLanguage = vrtx.propValue(resource, "linkOtherLanguage") />
-    <#if linkOtherLanguage?has_content>
-      <a id="vrtx-change-language-link" href="${linkOtherLanguage?html}"><@vrtx.msg code="link-other-language" /></a>
-    </#if>
+    <@vrtx.displayLinkOtherLang resource />
     
     <#if page == 1>
       <#-- Introduction and image -->

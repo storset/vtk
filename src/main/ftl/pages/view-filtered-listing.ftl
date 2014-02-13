@@ -33,6 +33,7 @@
   </head>
   <body id="vrtx-${collection.resourceType}">
     <h1>${collection.title?html}<#if collectionSpecificValues?exists && collectionSpecificValues.currentUrl?exists> (${vrtx.getMsg("listing-filters.title.discontinued")})</#if></h1>
+    <@vrtx.displayLinkOtherLang resource />
     <#if showSubfolderMenu?exists>
       <div class="vrtx-subfolder-menu">
         <#if showSubfolderMenu.resultSets?has_content>

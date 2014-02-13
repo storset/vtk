@@ -17,8 +17,7 @@ resourcetype frontpage {
     main-content:boxCssSizeAndPlacement (dropdown),
     main-content:boxCssColor (dropdown),
     group introImageAndCaption (picture, caption) (after introduction),
-    group relatedContent (showAdditionalContent, additional-content) (after main-content),
-    link-other-language (after relatedContent)
+    group relatedContent (showAdditionalContent, additional-content) (after main-content)
   }
 
   view-components {

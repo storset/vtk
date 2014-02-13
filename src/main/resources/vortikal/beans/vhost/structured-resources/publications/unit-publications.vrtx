@@ -13,8 +13,7 @@ resourcetype unit-publications {
   edit-rules {
     areacode (size[8]),
     group publications (areacode, selectedPublications) (after introduction),
-    group related-content-group (showAdditionalContent, related-content) (after selectedPublications),
-    link-other-language (after related-content-group)
+    group related-content-group (showAdditionalContent, related-content) (after selectedPublications)
   }
 
   view-components {

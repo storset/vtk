@@ -30,8 +30,7 @@ resourcetype oppbygning {
     gradsnavn-no (after gradsnavn),
     group fellestekster-fakultet (fellestekst-fakultet, fellestekst-fakultet-fri) (after vitnemaal),
     related-content (after fellestekster-fakultet),
-    fellestekst-fakultet (class[vrtx-shared-text]),
-    link-other-language (after related-content)
+    fellestekst-fakultet (class[vrtx-shared-text])
   }
 
   view-components {

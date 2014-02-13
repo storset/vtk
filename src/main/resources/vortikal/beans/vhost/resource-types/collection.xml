@@ -18,6 +18,7 @@
         <ref bean="navigationMixinResourceTypeDef" />
         <ref bean="additionalContentMixinResourceTypeDef" />
         <ref bean="showSubfolderMixinResourceTypeDef" />
+        <ref bean="linkOtherLanguageMixinResourceTypeDef" />
       </list>
     </property>
     <property name="parentTypeDefinition" ref="resourceResourceTypeDefinition" />
@@ -41,7 +42,7 @@
         <ref bean="collection.hideIconPropDef" />
         <ref bean="hideNumberOfCommentsPropDef" />
         <ref bean="editorialContactsPropDef" />
-        <ref bean="unpublishedCollectionPropDef"  />
+        <ref bean="unpublishedCollectionPropDef" />
       </list>
     </property>
   </bean>

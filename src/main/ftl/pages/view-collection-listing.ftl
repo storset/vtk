@@ -116,6 +116,12 @@
         <#if "${page}" != "1"> - <@vrtx.msg code="viewCollectionListing.page" /> ${page}</#if>
       </#if>
     </h1>
+      
+    <#assign linkOtherLanguage = vrtx.propValue(resource, "linkOtherLanguage") />
+    <#if linkOtherLanguage?has_content>
+      <a id="vrtx-change-language-link" href="${linkOtherLanguage?html}"><@vrtx.msg code="link-other-language" /></a>
+    </#if>
+    
     <#if page == 1>
       <#-- Introduction and image -->
       <#assign introduction = vrtx.getIntroduction(resource) />

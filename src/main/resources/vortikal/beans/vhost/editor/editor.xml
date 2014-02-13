@@ -507,6 +507,7 @@
         <property name="preContentProperties">
           <list>
             <ref bean="htmlTitlePropDef" />
+            <ref bean="linkOtherLanguagePropDef" />
           </list>
         </property>
       </bean>
@@ -591,6 +592,7 @@
             <ref bean="collection.hideIntroductionPropDef" />
             <ref bean="collection.hideIconPropDef" />
             <ref bean="additionalContentPropDef" />
+            <ref bean="linkOtherLanguagePropDef" />
           </list>
         </property>
       </bean>
@@ -617,6 +619,7 @@
             <ref bean="pageLimitPropDef" />
             <ref bean="displayAggregationPropDef" />
             <ref bean="aggregationPropDef" />
+            <ref bean="linkOtherLanguagePropDef" />
           </list>
         </property>
       </bean>
@@ -644,6 +647,7 @@
             <ref bean="aggregationPropDef" />
             <ref bean="projectListing.displayTypePropDef" />
             <ref bean="additionalContentPropDef" />
+            <ref bean="linkOtherLanguagePropDef" />
           </list>
         </property>
       </bean>
@@ -670,6 +674,7 @@
             <ref bean="aggregationPropDef" />
             <ref bean="researchGroupListing.displayTypePropDef" />
             <ref bean="additionalContentPropDef" />
+            <ref bean="linkOtherLanguagePropDef" />
           </list>
         </property>
       </bean>
@@ -694,6 +699,7 @@
             <ref bean="aggregationPropDef" />
             <ref bean="collection.sortingPropDef" />
             <ref bean="imageListing.displayTypePropDef" />
+            <ref bean="linkOtherLanguagePropDef" />
           </list>
         </property>
       </bean>
@@ -719,6 +725,7 @@
             <ref bean="displayAggregationPropDef" />
             <ref bean="aggregationPropDef" />
             <ref bean="collection.sortingPropDef" />
+            <ref bean="linkOtherLanguagePropDef" />
           </list>
         </property>
       </bean>
@@ -756,6 +763,7 @@
             <ref bean="articleListing.hideIntroductionImagePropDef" />
             <ref bean="hideNumberOfCommentsPropDef" />
             <ref bean="additionalContentPropDef" />
+            <ref bean="linkOtherLanguagePropDef" />
           </list>
         </property>
       </bean>
@@ -778,6 +786,7 @@
             <ref bean="pageLimitPropDef" />
             <ref bean="displayAggregationPropDef" />
             <ref bean="aggregationPropDef" />
+            <ref bean="linkOtherLanguagePropDef" />
           </list>
         </property>
       </bean>
@@ -802,6 +811,7 @@
             <ref bean="pageLimitPropDef" />
             <ref bean="blogListing.recursiveListingPropDef" />
             <ref bean="additionalContentPropDef" />
+            <ref bean="linkOtherLanguagePropDef" />
           </list>
         </property>
       </bean>
@@ -838,6 +848,7 @@
             <ref bean="eventListing.displayTypePropDef" />
             <ref bean="eventListing.eventTypeTitlePropDef" />
             <ref bean="additionalContentPropDef" />
+            <ref bean="linkOtherLanguagePropDef" />
           </list>
         </property>
       </bean>

@@ -403,11 +403,13 @@ div.introImageAndCaption .hidePicture > label {
   white-space: nowrap;
 }
 
+div#vrtx-resource\.linkOtherLanguage .vrtx-textfield,
 div.introImageAndCaption div.vrtx-image-ref-browse input#picture.vrtx-textfield,
 div#vrtx-resource\.picture div.input-and-button-container input.vrtx-textfield {
   width: 200px;
 }
 
+div#vrtx-resource\.linkOtherLanguage .vrtx-textfield,
 div#vrtx-resource\.poster-image div.input-and-button-container\.poster-image .vrtx-textfield,
 div#vrtx-resource\.picture div.input-and-button-container .vrtx-textfield {
   margin-right: 11px;

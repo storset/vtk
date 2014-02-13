@@ -307,12 +307,19 @@
         <#local localizedName>
           <@vrtx.msg code="proptype.name.${resource.resourceType}.${name}" />
         </#local>
+      <#elseif name = "linkOtherLanguage">
+        <#local localizedName>
+          <#if resource.contentLanguage = "en">
+            <@vrtx.msg code="proptype.name.${name}.en" />
+          <#else>
+            <@vrtx.msg code="proptype.name.${name}.no" />
+          </#if>
+        </#local>
       <#else>
         <#local localizedName = propDef.getLocalizedName(locale) />
       </#if>
       
       <#local value = resource.getValue(propDef) />
-
       <#local description = propDef.getDescription(locale)?default("") />
 
       <#local type = propDef.type />
@@ -359,6 +366,11 @@
         <input class="vrtx-textfield" type="text" id="resource.${name}"  name="resource.${name}" value="${value?html}" />
         <button class="vrtx-button" type="button" onclick="browseServer('resource.${name}', '${fckeditorBase.url?html}', '${baseFolder}',
                 '${fckBrowse.url.pathRepresentation}', 'Media');"><@vrtx.msg code="editor.browseMediaFiles"/></button>
+                
+      <#elseif name = 'linkOtherLanguage'>
+        <input class="vrtx-textfield" type="text" id="resource.${name}"  name="resource.${name}" value="${value?html}" />
+        <button class="vrtx-button" type="button" onclick="browseServer('resource.${name}', '${fckeditorBase.url?html}', '${baseFolder}',
+                '${fckBrowse.url.pathRepresentation}', 'File');"><@vrtx.msg code="editor.browseMediaFiles"/></button>
         
       <#elseif type = 'IMAGE_REF'>
       

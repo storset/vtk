@@ -33,8 +33,8 @@ resourcetype exam {
         <title>[call "resource:contextual-title-new"]</title>
       </head>
       <body id="vrtx-exam">
-        <h1>[call "resource:property" {"id":"title"}]</h1>
         [call "comp:link-other-language"]
+        <h1>[call "resource:property" {"id":"title"}]</h1>
         [call "json:field" {"select":"content"}]
       </body>
     </html>

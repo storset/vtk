@@ -141,8 +141,8 @@ resourcetype student-exchange-agreement {
       <body id="vrtx-student-exchange-agreement">
         <div id="vrtx-content">
           <div id="vrtx-main-content">
-            <h1>[val title]</h1>
             [call "comp:link-other-language"]
+            <h1>[val title]</h1>
             [if student-exchange-intro != null && student-exchange-intro != ""]
               [val student-exchange-intro # unescaped]
             [endif]

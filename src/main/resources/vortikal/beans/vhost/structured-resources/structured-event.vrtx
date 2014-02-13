@@ -108,8 +108,8 @@ resourcetype structured-event : structured-document {
           [else]
             <div id="vrtx-main-content" class="vrtx-hide-additional-content-true">
           [endif]
-              <h1>[call "comp:title"]</h1>
               [call "comp:link-other-language"]
+              <h1>[call "comp:title"]</h1>
               [call "comp:introduction"]
               <div class="vrtx-byline">
                 [call "resource:time-and-place"]

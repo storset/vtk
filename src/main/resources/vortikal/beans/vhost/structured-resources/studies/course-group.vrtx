@@ -50,8 +50,8 @@ resourcetype course-group {
       <body id="vrtx-course-group">
         <div id="vrtx-content">
           <div id="vrtx-main-content">
-            <h1>[if course-group-scope != null && course-group-scope != ""][val course-group-scope]-[localized 'localized-group'][endif][if title != null && title != ""] - [val title][endif]</h1>
             [call "comp:link-other-language"]
+            <h1>[if course-group-scope != null && course-group-scope != ""][val course-group-scope]-[localized 'localized-group'][endif][if title != null && title != ""] - [val title][endif]</h1>
             [if course-group-about != null && course-group-about != ""]
               <h2>[localized 'course-group-about']</h2>
               [val course-group-about # unescaped]

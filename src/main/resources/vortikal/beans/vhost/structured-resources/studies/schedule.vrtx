@@ -72,8 +72,8 @@ resourcetype schedule {
         <title>[call "resource:contextual-title-new"]</title>
       </head>
       <body id="vrtx-schedule">
-        <h1>[call "resource:property" {"id":"title"}]</h1>
         [call "comp:link-other-language"]
+        <h1>[call "resource:property" {"id":"title"}]</h1>
         <div>
           [call "comp:iframe"]
         </div>

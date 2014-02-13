@@ -194,8 +194,8 @@ resourcetype research-group {
         <div id="vrtx-content">
           [def document structured-document()]
           <div id="vrtx-main-content">
-            <h1>[call "json:field" {"select":"name"}]</h1>
             [call "comp:link-other-language"]
+            <h1>[call "json:field" {"select":"name"}]</h1>
             [call "comp:introduction"]
             [def theHidePicture document.properties.hidePicture]
             [if theHidePicture = "false" || theHidePicture = null]

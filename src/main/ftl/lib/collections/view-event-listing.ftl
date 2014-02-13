@@ -44,24 +44,24 @@
     <div id="vrtx-main-content" class="vrtx-calendar-listing vrtx-no-daily-events">
   </#if>
   <#if allupcoming?has_content>
+      <@vrtx.displayLinkOtherLang resource />
 	  <h1>${allupcomingTitle?html}</h1>
-	  <@vrtx.displayLinkOtherLang resource />
 	  <#if allupcoming.entries?size &gt; 0 >
 	    <@displayStandard allupcoming hideNumberOfComments displayMoreURLs false />
 	  <#else>
 	    <p class="vrtx-events-no-planned">${allupcomingNoPlannedTitle?html}</p>
 	  </#if>
   <#elseif allprevious?has_content>
-    <h1>${allpreviousTitle?html}</h1>
     <@vrtx.displayLinkOtherLang resource />
+    <h1>${allpreviousTitle?html}</h1>
     <#if allprevious.entries?size &gt; 0 >
       <@displayStandard allprevious hideNumberOfComments displayMoreURLs false />
     <#else>
 	    <p class="vrtx-events-no-planned">${allpreviousNoPlannedTitle?html}</p>
     </#if>
   <#elseif specificDate?has_content && specificDate>
-    <h1 class="vrtx-events-specific-date">${specificDateEventsTitle?html}</h1>
     <@vrtx.displayLinkOtherLang resource />
+    <h1 class="vrtx-events-specific-date">${specificDateEventsTitle?html}</h1>
     <#if specificDateEvents?has_content && specificDateEvents.entries?size &gt; 0>
       <@displayStandard specificDateEvents hideNumberOfComments displayMoreURLs=false />
     <#else>
@@ -69,9 +69,9 @@
     </#if>
   <#else>
     <div class="vrtx-events-calendar-introduction">
+      <@vrtx.displayLinkOtherLang resource />
       <#local title = vrtx.propValue(collection, "title", "flattened") />
       <h1>${title}</h1>
-      <@vrtx.displayLinkOtherLang resource />
       <#local introduction = vrtx.getIntroduction(collection) />
       <#local introductionImage = vrtx.propValue(collection, "picture") />
       <#if introduction?has_content || introductionImage != "">

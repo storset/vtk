@@ -110,8 +110,8 @@ resourcetype unit-publications {
         [else]
           <div id="vrtx-main-content" class="vrtx-hide-additional-content-true">
         [endif]
-            <h1>[call "comp:title"]</h1>
             [call "comp:link-other-language"]
+            <h1>[call "comp:title"]</h1>
             [call "comp:introduction"]
             [call "comp:publications"]
             [call "comp:related-content-in-main-column"]

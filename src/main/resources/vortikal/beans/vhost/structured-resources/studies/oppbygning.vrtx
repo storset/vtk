@@ -187,8 +187,8 @@ resourcetype oppbygning {
         <div id="vrtx-content">
           [def document structured-document()]
           <div id="vrtx-main-content" class="vrtx-hide-additional-content-true">
-            <h1>[localized 'oppbygning']</h1>
             [call "comp:link-other-language"]
+            <h1>[localized 'oppbygning']</h1>
             [call "comp:introduction"]
             [call "comp:introduction-image"]
             [call "json:field" {"select":"content-study"}]

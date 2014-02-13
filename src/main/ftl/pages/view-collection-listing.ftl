@@ -106,6 +106,7 @@
   </#if>
   
 <#if !isEventCalendarListing>
+    <@vrtx.displayLinkOtherLang resource />
 	<#if viewOngoingMastersLink?exists>
 		<h1><@master.completed />
 	<#else>
@@ -116,8 +117,6 @@
         <#if "${page}" != "1"> - <@vrtx.msg code="viewCollectionListing.page" /> ${page}</#if>
       </#if>
     </h1>
-      
-    <@vrtx.displayLinkOtherLang resource />
     
     <#if page == 1>
       <#-- Introduction and image -->

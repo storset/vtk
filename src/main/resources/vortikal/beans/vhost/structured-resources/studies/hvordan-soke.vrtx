@@ -411,8 +411,8 @@ resourcetype hvordan-soke {
           [def other document.properties.other]
 
           <div id="vrtx-main-content" class="vrtx-hide-additional-content-false">
-            <h1>[localized 'title']</h1>
             [call "comp:link-other-language"]
+            <h1>[localized 'title']</h1>
             <h2>[localized 'opptak']</h2>
 
             [call "comp:frist-frekvens"]

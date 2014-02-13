@@ -70,8 +70,8 @@ resourcetype contact-supervisor {
       <body id="vrtx-contact-supervisor">
         <div id="vrtx-content">
           <div id="vrtx-main-content">
-            <h1>[call "comp:title"]</h1>
             [call "comp:link-other-language"]
+            <h1>[call "comp:title"]</h1>
             [call "comp:contact-supervisor-box"]
           </div>
         </div>

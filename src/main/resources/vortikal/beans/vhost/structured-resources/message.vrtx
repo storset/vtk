@@ -43,8 +43,8 @@ resourcetype structured-message {
       <body id="vrtx-message">
         <div id="vrtx-content">
           <div id="vrtx-main-content">
-            <h1>[call "resource:property" {"id":"title"}]</h1>
             [call "comp:link-other-language"]
+            <h1>[call "resource:property" {"id":"title"}]</h1>
             <div>
               [call "json:field" {"select":"message"}]
             </div>

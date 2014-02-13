@@ -88,9 +88,9 @@ resourcetype samlet-program : samlet {
         <div id="vrtx-content">
           [def document structured-document()]
           <div id="vrtx-main-content" class="vrtx-hide-additional-content-true">
+            [call "comp:link-other-language"]
             <div>[localized 'samlet']<span class="programkode">[call "comp:programkode"]</span></div>
             [call "comp:program-facts"]
-            [call "comp:link-other-language"]
             <div class="samlet-element">[call "comp:include-study-file" {"file" : "hvorfor-velge"}]</div>
             <div class="samlet-element">[call "comp:include-study-file" {"file" : "why-choose"}]</div>
             <div class="samlet-element">[call "comp:include-study-file" {"file" : "hva-lerer-du"}]</div>

@@ -86,8 +86,8 @@ resourcetype structured-article : structured-document {
         [else]
           <div id="vrtx-main-content" class="vrtx-hide-additional-content-true">
         [endif]
-            <h1>[call "comp:title"]</h1>
             [call "comp:link-other-language"]
+            <h1>[call "comp:title"]</h1>
             [call "comp:introduction"]
             [def theHidePicture document.properties.hidePicture]
             [if theHidePicture = "false" || theHidePicture = null]

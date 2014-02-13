@@ -316,8 +316,8 @@ resourcetype frontpage {
         [else]
           <div id="vrtx-content" class="vrtx-frontpage-wide">
         [endif]
-          <h1>[call "comp:title"]</h1>
           [call "comp:link-other-language"]
+          <h1>[call "comp:title"]</h1>
           <div id="vrtx-main-content">
             [call "comp:frontpage-introduction"]
             [call "comp:main-content" {"document":document}]

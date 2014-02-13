@@ -166,8 +166,8 @@ resourcetype structured-master {
         [call "comp:completed-msg"]
         <div id="vrtx-content">
           <div id="vrtx-main-content">
-            <h1>[call "json:field" {"select":"title"}]</h1>
             [call "comp:link-other-language"]
+            <h1>[call "json:field" {"select":"title"}]</h1>
             [call "comp:introduction"]
             [call "comp:introduction-image"]
             [call "json:field" {"select":"content"}]

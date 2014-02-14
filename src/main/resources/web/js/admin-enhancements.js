@@ -1971,6 +1971,7 @@ function ajaxUploadPerform(opts) {
     if(uploadXhr != null) {
       uploadXhr.abort();
     }
+    uploadingD.close();
     e.stopPropagation();
     e.preventDefault();
   });

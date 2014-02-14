@@ -134,6 +134,18 @@ function VrtxAdmin() {
 
 var vrtxAdmin = new VrtxAdmin();
 
+var keys = {
+  BACKSPACE: 8,
+  TAB: 9,
+  ENTER: 13,
+  ESCAPE: 27,
+  SPACE: 32,
+  LEFT_ARROW: 37,
+  UP_ARROW: 38,
+  RIGHT_ARROW: 39,
+  DOWN_ARROW: 40,
+};
+
 /*-------------------------------------------------------------------*\
     2. DOM is ready
        readyState === "complete" || "DOMContentLoaded"-event (++)
@@ -1497,7 +1509,7 @@ function createFuncComplete() {
   var vrtxAdm = vrtxAdmin;
   
   vrtxAdm.cachedDoc.on("keydown", "#active-tab .vrtx-admin-form .radio-buttons input[type='radio']", function(e) {
-    if(isMultipleKey(e, [37, 38, 39, 40])) {
+    if(isMultipleKey(e, [keys.LEFT_ARROW, keys.UP_ARROW, keys.RIGHT_ARROW, keys.DOWN_ARROW])) {
       var checkBox = $(this);
       var waitAndRefocus = setTimeout(function() {
         var checked = checkBox.closest(".radio-buttons").find("input:checked");
@@ -1918,13 +1930,13 @@ function ajaxUploadPerform(opts) {
   var uploadingD = new VrtxLoadingDialog({title: uploading.inprogress});
   uploadingD.open();
   _$("#dialog-loading-content").append("<div id='dialog-uploading-bar' /><div id='dialog-uploading-percent'>&nbsp;</div><a id='dialog-uploading-abort' href='javascript:void(0);'>Avbryt</a>");
-  _$("<span id="dialog-uploading-focus" style='outline: none;' tabindex='-1' />").insertBefore("#dialog-uploading-abort")[0].focus();
+  _$("<span id='dialog-uploading-focus' style='outline: none;' tabindex='-1' />").insertBefore("#dialog-uploading-abort")[0].focus();
   _$("#dialog-uploading-focus").keydown(function(e) {
-    if (isKey(e, 9)) { 
+    if (isKey(e, keys.TAB)) { 
       $(this).next().show()[0].focus();
       return false;
     }
-  })
+  });
 
   var uploadXhr = null;
   

@@ -84,14 +84,9 @@ localization
 localizationentry
 	:	NAME COLON LP (namevaluepair (COMMA namevaluepair)*) RP
 		-> ^(NAME (namevaluepair)*)
-	|	NAME LCB (localizationlangentry (COMMA localizationlangentry)*)  RCB
-		-> ^(NAME (localizationlangentry)*)
+	|	NAME LCB (localizationentry (COMMA localizationentry)*)  RCB
+		-> ^(NAME (localizationentry)*)
 	;
-	
-localizationlangentry
-	:	NAME COLON LP (namevaluepair (COMMA namevaluepair)*) RP
-		-> ^(NAME (namevaluepair)*)
-    ;
     
 resourceprops
 	:	PROPERTIES LCB

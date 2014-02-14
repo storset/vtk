@@ -1918,7 +1918,13 @@ function ajaxUploadPerform(opts) {
   var uploadingD = new VrtxLoadingDialog({title: uploading.inprogress});
   uploadingD.open();
   _$("#dialog-loading-content").append("<div id='dialog-uploading-bar' /><div id='dialog-uploading-percent'>&nbsp;</div><a id='dialog-uploading-abort' href='javascript:void(0);'>Avbryt</a>");
-  _$("<span style='outline: none;' tabindex='-1' />").insertBefore("#dialog-uploading-abort")[0].focus();
+  _$("<span id="dialog-uploading-focus" style='outline: none;' tabindex='-1' />").insertBefore("#dialog-uploading-abort")[0].focus();
+  _$("#dialog-uploading-focus").keydown(function(e) {
+    if (isKey(e, 9)) { 
+      $(this).next().show()[0].focus();
+      return false;
+    }
+  })
 
   var uploadXhr = null;
   

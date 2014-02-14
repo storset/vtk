@@ -1918,11 +1918,17 @@ function ajaxUploadPerform(opts) {
   var uploadingD = new VrtxLoadingDialog({title: uploading.inprogress});
   uploadingD.open();
   _$("#dialog-loading-content").append("<div id='dialog-uploading-bar' /><div id='dialog-uploading-percent' /><a id='dialog-uploading-abort' href='javascript:void(0);'>Avbryt</a>");
+  
+  var uploadXhr = null;
+  
   opts.form.append("<input type='hidden' name='overwrite' value='overwrite' />");
-  var uploadXhr = opts.form.ajaxSubmit({
+  opts.form.ajaxSubmit({
     uploadProgress: function(event, position, total, percent) { // Show upload progress
       _$("#dialog-uploading-percent").text(percent + "%");
       _$("#dialog-uploading-bar").css("width", percent + "%");
+    },
+    beforeSend: function(xhr) {
+        uploadXhr = xhr;
     },
     success: function(results, status, xhr) {
       var result = _$.parseHTML(results);
@@ -1960,8 +1966,9 @@ function ajaxUploadPerform(opts) {
   });
     
   $(document).on("click", "#dialog-uploading-abort", function(e) {
-    alert("test");
-    uploadXhr.abort();
+    if(uploadXhr != null) {
+      uploadXhr.abort();
+    }
     e.stopPropagation();
     e.preventDefault();
   });

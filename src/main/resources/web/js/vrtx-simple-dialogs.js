@@ -51,7 +51,7 @@ var AbstractVrtxSimpleDialog = dejavu.AbstractClass.declare({
                                  if(input.length) {
                                    $("<span style='outline: none;' tabindex='-1' />").insertBefore(input)[0].focus();
                                  } else {
-                                   input = ctx.find("a");
+                                   input = ctx.find("a").filter(":first");
                                    if(input.length) {
                                      $("<span style='outline: none;' tabindex='-1' />").insertBefore(input)[0].focus();
                                    }

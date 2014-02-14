@@ -309,10 +309,10 @@
         </#local>
       <#elseif name = "linkOtherLanguage">
         <#local localizedName>
-          <#if resource.contentLanguage = "en">
-            <@vrtx.msg code="proptype.name.${name}.en" />
-          <#else>
+          <#if resource.contentLanguage?exists && resource.contentLanguage = "no">
             <@vrtx.msg code="proptype.name.${name}.no" />
+          <#else>
+            <@vrtx.msg code="proptype.name.${name}.en" />
           </#if>
         </#local>
       <#else>

@@ -123,10 +123,10 @@ var AbstractVrtxSimpleDialog = dejavu.AbstractClass.declare({
     });
   },
   close: function () {
-    this.__opts.elm.dialog("close");
+    $(".ui-dialog-content").filter(":visible").dialog("close");
   },
   destroy: function () {
-    this.__opts.elm.dialog("destroy");
+    $(".ui-dialog-content").filter(":visible").dialog("destroy");
     this.__opts.elm.remove();
   }        
 });

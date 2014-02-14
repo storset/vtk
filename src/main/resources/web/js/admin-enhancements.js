@@ -1976,9 +1976,8 @@ function ajaxUploadPerform(opts) {
     e.preventDefault();
   };
     
-  $(document)
-    .off("click", "#dialog-uploading-abort", ajaxUploadAbort)
-    .on("click", "#dialog-uploading-abort", ajaxUploadAbort);
+  $(document).off("click", "#dialog-uploading-abort", ajaxUploadAbort)
+              .on("click", "#dialog-uploading-abort", ajaxUploadAbort);
 
 }
 

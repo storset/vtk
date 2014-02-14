@@ -3382,6 +3382,7 @@ tr.expandedForm td .vrtx-button-small {
   color: #2b2b2b;
   text-align: center;
   font-size: 1.231em;
+  position: relative;
 }
 
 #dialog-uploading-bar {
@@ -3394,6 +3395,15 @@ tr.expandedForm td .vrtx-button-small {
   border-radius: 2px;
   -moz-border-radius: 2px;
   -webkit-border-radius: 2px;
+}
+
+#dialog-uploading-abort {
+  position: absolute;
+  bottom: 0px;
+  right: 0px;
+  color: #005aab;
+  font-weight: bold;
+  font-size: 0.813em;
 }
 
 /* Tooltips */

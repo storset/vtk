@@ -158,6 +158,8 @@ public class FileUploadController extends SimpleFormController {
                 }
             }
 
+            System.out.println("_____________________________________START GENERATING TEMP____________________________________________");
+            
             // Iterate input stream. We can only safely consume the data once.
             FileItemIterator iter = upload.getItemIterator(request);
             Map<Path, StreamUtil.TempFile> fileMap = new LinkedHashMap<Path, StreamUtil.TempFile>();

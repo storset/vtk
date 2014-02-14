@@ -1960,21 +1960,25 @@ function ajaxUploadPerform(opts) {
       if(uploadXhr == null) {
         uploadingD.close();
         var uploadingFailedD = new VrtxMsgDialog({ title: xhr.status + " " + vrtxAdm.serverFacade.errorMessages.uploadingFilesFailedTitle,
-                                                    msg: vrtxAdm.serverFacade.errorMessages.uploadingFilesFailed
-                                                });
+                                                   msg: vrtxAdm.serverFacade.errorMessages.uploadingFilesFailed
+                                                 });
         uploadingFailedD.open();
       }
     }
   });
     
-  $(document).on("click", "#dialog-uploading-abort", function(e) {
+  var ajaxUploadAbort = function(e) {
     if(uploadXhr != null) {
       uploadXhr.abort();
     }
     uploadingD.close();
     e.stopPropagation();
     e.preventDefault();
-  });
+  };
+    
+  $(document)
+    .off("click", "#dialog-uploading-abort", ajaxUploadAbort)
+    .on("click", "#dialog-uploading-abort", ajaxUploadAbort);
 
 }
 

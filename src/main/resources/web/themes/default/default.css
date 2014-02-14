@@ -3404,6 +3404,12 @@ tr.expandedForm td .vrtx-button-small {
   color: #005aab;
   font-weight: bold;
   font-size: 0.813em;
+  display: none;
+}
+
+#dialog-uploading-abort:hover,
+#dialog-uploading-abort:focus {
+  display: inline;
 }
 
 /* Tooltips */

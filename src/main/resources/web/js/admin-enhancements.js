@@ -1957,11 +1957,13 @@ function ajaxUploadPerform(opts) {
       }
     },
     error: function (xhr, textStatus, errMsg) {
-      uploadingD.close();
-      var uploadingFailedD = new VrtxMsgDialog({ title: xhr.status + " " + vrtxAdm.serverFacade.errorMessages.uploadingFilesFailedTitle,
-                                                  msg: vrtxAdm.serverFacade.errorMessages.uploadingFilesFailed
+      if(uploadXhr == null) {
+        uploadingD.close();
+        var uploadingFailedD = new VrtxMsgDialog({ title: xhr.status + " " + vrtxAdm.serverFacade.errorMessages.uploadingFilesFailedTitle,
+                                                    msg: vrtxAdm.serverFacade.errorMessages.uploadingFilesFailed
                                                 });
-      uploadingFailedD.open();
+        uploadingFailedD.open();
+      }
     }
   });
     

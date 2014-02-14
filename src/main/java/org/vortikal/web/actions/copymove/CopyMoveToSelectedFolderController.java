@@ -1,4 +1,4 @@
-/* Copyright (c) 2005, 2008, 2013 University of Oslo, Norway
+/* Copyright (c) 2005, 2008, 2013-2014 University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -56,6 +56,18 @@ import org.vortikal.web.actions.convert.CopyAction;
 /**
  * A controller that copies (or moves) resources from one folder to another
  * based on a set of resources stored in a session variable
+ * 
+ * 1. If client has JavaScript enabled ("overwrite"-parameter is sent), the user
+ * can decide to skip or overwrite existing resources (VTK-3525).
+ * Exceptions:
+ * - Copying existing resources to same folder duplicates them
+ * - Moving existing resources to same folder gives error-message but files is kept in session
+ * 
+ * 2. Otherwise gives error-messages for moving existing resources and remove them from session,
+ * Copying always duplicates existing resources. Copies and moves the resources that are
+ * not giving error-messages.
+ * 
+ * 
  * <p>
  * Configurable properties:
  * <ul>
@@ -102,20 +114,28 @@ public class CopyMoveToSelectedFolderController implements Controller {
             return new ModelAndView(this.viewName);
         }
         long before = System.currentTimeMillis();
-        performAction(sessionBean);
+        ArrayList<String> userProcessExistingFileNames = performAction(sessionBean);
+        if(userProcessExistingFileNames == null) {
+            // Removing session variable
+            request.getSession(true).removeAttribute(COPYMOVE_SESSION_ATTRIBUTE);
 
-        // Removing session variable
-        request.getSession(true).removeAttribute(COPYMOVE_SESSION_ATTRIBUTE);
-
-        if (logger.isDebugEnabled()) {
-            long total = System.currentTimeMillis() - before;
-            logger.debug("Milliseconds spent on this copy/move operation: " + total);
+            if (logger.isDebugEnabled()) {
+                long total = System.currentTimeMillis() - before;
+                logger.debug("Milliseconds spent on this copy/move operation: " + total);
+            }
+            return new ModelAndView(this.viewName);
+        } else {
+            Map<String, Object> model = new HashMap<String, Object>();
+            if(userProcessExistingFileNames.size() == 0) {
+                model.put("moveToSameFolder", "yes");
+            } else {
+                model.put("existingFilenames", userProcessExistingFileNames);
+            }
+            return new ModelAndView(this.viewName, model);
         }
-
-        return new ModelAndView(this.viewName);
     }
 
-	private void performAction(CopyMoveSessionBean sessionBean) throws Exception {
+	private ArrayList<String> performAction(CopyMoveSessionBean sessionBean) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
         String token = requestContext.getSecurityToken();
         Path destinationUri = requestContext.getCurrentCollection();
@@ -123,6 +143,12 @@ public class CopyMoveToSelectedFolderController implements Controller {
 		
 		String action = sessionBean.getAction();
         boolean moveAction = "move-resources".equals(action);
+        boolean shouldOverwriteExisting = requestContext.getServletRequest().getParameter("overwrite") != null;
+        String existingSkippedFiles = requestContext.getServletRequest().getParameter("existing-skipped-files");
+        String[] existingSkippedFilesArr = null;
+        if(existingSkippedFiles != null) {
+            existingSkippedFilesArr = existingSkippedFiles.split(",");
+        }
 
         List<String> filesToMoveOrCopy = sessionBean.getFilesToBeCopied();
 
@@ -143,23 +169,42 @@ public class CopyMoveToSelectedFolderController implements Controller {
 
             String name = fileUri.getName();
             Path newResourceUri = destinationUri.extend(name);
+            boolean isSameFolder = newResourceUri.toString().equals(fileUri.toString());
 
+            if(isSameFolder && moveAction && shouldOverwriteExisting) { // Move to same folder
+                return new ArrayList<String>();
+            }
+
+            boolean gatherExistingFilenames = false;
             try {
-
-                if (moveAction) {
-                    // Special case of moving to self -> throws
-                    // IllegalOperationException, but we want a more specific
-                    // error message (naming conflict)
-                    if (repository.exists(token, newResourceUri)) {
+                if (repository.exists(token, newResourceUri) && !(!moveAction && isSameFolder)) { // Duplicate if copy to same folder
+                    if(existingSkippedFilesArr == null) {
                         this.addToFailures(failures, fileUri, msgKey, "namingConflict");
+                        gatherExistingFilenames = true;
                         continue;
+                    } else {
+                        boolean isSkippingFile = false;
+                        for(String existingSkippedFile : existingSkippedFilesArr) {
+                            if(fileUri.toString().equals(existingSkippedFile)) {
+                                isSkippingFile = true;
+                                break;
+                            }
+                        }
+                        if(isSkippingFile) { // Skip
+                            continue;
+                        } else { // Overwrite
+                            repository.delete(token, newResourceUri, false);
+                        }
                     }
-                    repository.move(token, fileUri, newResourceUri, false);
-
-                } else {
-                    Path destUri = newResourceUri;
-                    Resource src = repository.retrieve(token, fileUri, false);
-                    newResourceUri = this.copyHelper.copyResource(fileUri, destUri, repository, token, src, null);
+                }
+                if(!gatherExistingFilenames || !shouldOverwriteExisting) {
+                    if (moveAction) {
+                        repository.move(token, fileUri, newResourceUri, false);
+                    } else {
+                        Path destUri = newResourceUri;
+                        Resource src = repository.retrieve(token, fileUri, false);
+                        newResourceUri = this.copyHelper.copyResource(fileUri, destUri, repository, token, src, null);
+                    }
                 }
 
             } catch (AuthorizationException ae) {
@@ -177,15 +222,27 @@ public class CopyMoveToSelectedFolderController implements Controller {
             }
         }
 
+        ArrayList<String> existingFilenames = new ArrayList<String>();
         for (Entry<String, List<Path>> entry : failures.entrySet()) {
             String key = entry.getKey();
             List<Path> failedResources = entry.getValue();
-            Message msg = new Message(key);
-            for (Path p : failedResources) {
-                msg.addMessage(p.getName());
+            
+            if(key.contains("namingConflict") && shouldOverwriteExisting) {
+                for (Path p : failedResources) {
+                    existingFilenames.add(p.toString());
+                }
+            } else {
+              Message msg = new Message(key);
+              for (Path p : failedResources) {
+                  msg.addMessage(p.getName());
+              }
+              requestContext.addErrorMessage(msg);
             }
-            requestContext.addErrorMessage(msg);
         }
+        if(existingFilenames.size() > 0 && requestContext.getErrorMessages().size() == 0) {
+            return existingFilenames;
+        }
+        return null;
 	}
 
     private void addToFailures(Map<String, List<Path>> failures, Path fileUri, String msgKey, String failureType) {

@@ -25,6 +25,13 @@
 </#if>
 
 <#if !resourcesDisclosed?exists>
+  <#if moveToSameFolder?has_content>
+    <span id="move-to-same-folder">yes</span>
+  </#if>
+  <#if existingFilenames?has_content>
+    <span id="copy-move-existing-filenames"><#list existingFilenames as filename>${filename?html}<#if filename_has_next>#</#if></#list></span>
+    <span id="copy-move-number-of-files">${session.filesToBeCopied?size}</span>
+  </#if>
   <form id="vrtx-move-to-selected-folder" action="${actionURL?html}" method="${method}">
      <button class="vrtx-button-small first" title="${titleMsg}" type="submit" value="copy-resources-to-this-folder" name="action">${item.title?html}</button>
      <button class="vrtx-cancel-link" title="${clearTitleMsg}" type="submit" value="clear-action" name="clear-action">x</button>

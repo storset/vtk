@@ -44,6 +44,11 @@
           overwrite: '${vrtx.getMsg("uploading.existing.overwrite")}'
         }
       },
+      move = {
+        existing: {
+          sameFolder: '${vrtx.getMsg("move.existing.same-folder")}'
+        }
+      },
       publishing = {
          msg: {
            error: {

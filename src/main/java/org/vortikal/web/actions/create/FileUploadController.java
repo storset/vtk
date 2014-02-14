@@ -54,6 +54,14 @@ import org.vortikal.util.io.StreamUtil;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 
+/**
+ * A controller that uploads resources
+ * 
+ * 1. If client has JavaScript enabled ("overwrite"-parameter is sent), the user
+ * can decide to skip or overwrite existing resources before uploading (VTK-3484).
+ * 
+ * 2. Otherwise gives error-message and upload nothing if existing resources
+ */
 @SuppressWarnings("deprecation")
 public class FileUploadController extends SimpleFormController {
 

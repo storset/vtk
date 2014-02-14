@@ -228,7 +228,7 @@ VrtxAdmin.prototype.initTooltips = function initTooltips() {
     appendTo: "#contents",
     containerWidth: 320,
     xOffset: 20,
-    yOffset: -30
+    yOffset: -15
   });
   this.cachedBody.vortexTips(".ui-dialog:visible .tree-create li span.folder", {
     appendTo: ".vrtx-create-tree",

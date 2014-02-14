@@ -143,12 +143,6 @@ public class CopyMoveToSelectedFolderController implements Controller {
 		
 		String action = sessionBean.getAction();
         boolean moveAction = "move-resources".equals(action);
-        boolean shouldOverwriteExisting = requestContext.getServletRequest().getParameter("overwrite") != null;
-        String existingSkippedFiles = requestContext.getServletRequest().getParameter("existing-skipped-files");
-        String[] existingSkippedFilesArr = null;
-        if(existingSkippedFiles != null) {
-            existingSkippedFilesArr = existingSkippedFiles.split(",");
-        }
 
         List<String> filesToMoveOrCopy = sessionBean.getFilesToBeCopied();
 
@@ -157,6 +151,14 @@ public class CopyMoveToSelectedFolderController implements Controller {
         // paths to resources that failed.
         Map<String, List<Path>> failures = new HashMap<String, List<Path>>();
         String msgKey = "manage".concat(moveAction ? ".move" : ".copy").concat(".error.");
+
+        boolean shouldOverwriteExisting = requestContext.getServletRequest().getParameter("overwrite") != null;
+        String existingSkippedFiles = requestContext.getServletRequest().getParameter("existing-skipped-files");
+        String[] existingSkippedFilesArr = null;
+        if(existingSkippedFiles != null) {
+            existingSkippedFilesArr = existingSkippedFiles.split(",");
+        }
+        boolean gatherExistingFilenames = false;
 
         for (String filePath : filesToMoveOrCopy) {
 
@@ -171,13 +173,12 @@ public class CopyMoveToSelectedFolderController implements Controller {
             Path newResourceUri = destinationUri.extend(name);
             boolean isSameFolder = newResourceUri.toString().equals(fileUri.toString());
 
-            if(isSameFolder && moveAction && shouldOverwriteExisting) { // Move to same folder
+            if(isSameFolder && moveAction && shouldOverwriteExisting) { // Give error-message if moving to same folder
                 return new ArrayList<String>();
             }
 
-            boolean gatherExistingFilenames = false;
             try {
-                if (repository.exists(token, newResourceUri) && !(!moveAction && isSameFolder)) { // Duplicate if copy to same folder
+                if (repository.exists(token, newResourceUri) && !(!moveAction && isSameFolder)) { // Duplicate if copying to same folder
                     if(existingSkippedFilesArr == null) {
                         this.addToFailures(failures, fileUri, msgKey, "namingConflict");
                         gatherExistingFilenames = true;

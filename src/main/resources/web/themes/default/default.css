@@ -3408,7 +3408,7 @@ tr.expandedForm td .vrtx-button-small {
 }
 
 .ui-dialog:hover #dialog-uploading-abort,
-.ui-dialog:focus #dialog-uploading-abort {
+.ui-dialog #dialog-uploading-abort:focus {
   display: inline;
 }
 

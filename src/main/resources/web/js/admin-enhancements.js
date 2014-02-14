@@ -1919,8 +1919,6 @@ function ajaxUploadPerform(opts) {
   uploadingD.open();
   _$("#dialog-loading-content").append("<div id='dialog-uploading-bar' /><div id='dialog-uploading-percent'>&nbsp;</div><a id='dialog-uploading-abort' href='javascript:void(0);'>Avbryt</a>");
 
-  return false;
-
   var uploadXhr = null;
   
   opts.form.append("<input type='hidden' name='overwrite' value='overwrite' />");

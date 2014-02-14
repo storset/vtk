@@ -1933,7 +1933,7 @@ function ajaxUploadPerform(opts) {
   _$("<span id='dialog-uploading-focus' style='outline: none;' tabindex='-1' />").insertBefore("#dialog-uploading-abort")[0].focus();
   _$("#dialog-uploading-focus").keydown(function(e) {
     if (isKey(e, keys.TAB)) { 
-      $(this).next().show()[0].focus();
+      $(this).next().addClass("tab-visible")[0].focus();
       return false;
     }
   });
@@ -1991,6 +1991,7 @@ function ajaxUploadPerform(opts) {
       uploadXhr.abort();
     }
     uploadingD.close();
+    $(this).prev().removeClass("tab-visible");
     e.stopPropagation();
     e.preventDefault();
   };

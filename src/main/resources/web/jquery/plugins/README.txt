@@ -15,7 +15,7 @@
    and in $.fn.formToArray() in loop that adds files to formdata:
    ------------------------------------------------------------------------------------
    // USIT added: possible to skip uploading files
-   if(typeof vrtxAdmin !== "undefined" && vrtxAdmin.uploadSkippedFiles[files[j].name]) {
+   if(typeof vrtxAdmin !== "undefined" && vrtxAdmin.uploadCopyMoveSkippedFiles[files[j].name]) {
    } else {
      a.push({name: n, value: files[j], type: el.type});
    }

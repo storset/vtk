@@ -1005,7 +1005,7 @@ $.fn.formToArray = function(semantic, elements) {
             if (files.length) {
                 for (j=0; j < files.length; j++) {
                    // USIT added: possible to skip uploading files
-                   if(typeof vrtxAdmin !== "undefined" && vrtxAdmin.uploadSkippedFiles[files[j].name]) {
+                   if(typeof vrtxAdmin !== "undefined" && vrtxAdmin.uploadCopyMoveSkippedFiles[files[j].name]) {
                        vrtxAdmin.log({msg: "Skip: " + files[j].name}); 
                    } else {
                        a.push({name: n, value: files[j], type: el.type});

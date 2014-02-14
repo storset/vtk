@@ -120,7 +120,7 @@ function VrtxAdmin() {
   this.asyncGetStatInProgress = false;
   this.createResourceReplaceTitle = true;
   this.createDocumentFileName = "";
-  this.uploadSkippedFiles = {};
+  this.uploadCopyMoveSkippedFiles = {};
   this.trashcanCheckedFiles = 0;
 
   this.reloadFromServer = false; // changed by funcProceedCondition and used by funcComplete in completeFormAsync for admin-permissions
@@ -678,6 +678,7 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
             form.find(".vrtx-button-small").show();
             form.find(".vrtx-cancel-link").show();
             form.find(".vrtx-show-processing").remove();
+            vrtxAdm.uploadCopyMoveSkippedFiles = {};
           };
           
           vrtxAdm.serverFacade.postHtml(url, dataString + "&overwrite", {
@@ -695,7 +696,7 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
                 userProcessExistingFiles(existingFilenames, null, numberOfFiles, 
                   function() {
                     var skippedFiles = "";
-                    for(key in vrtxAdm.uploadSkippedFiles) {
+                    for(key in vrtxAdm.uploadCopyMoveSkippedFiles) {
                       skippedFiles += key + ",";
                     }
                     form.find("#existing-skipped-files").remove();
@@ -1888,7 +1889,7 @@ function ajaxUpload(options) {
                 ajaxUploadPerform(opts);
               },
               function() {
-                vrtxAdm.uploadSkippedFiles = {};
+                vrtxAdm.uploadCopyMoveSkippedFiles = {};;
                 var animation = new VrtxAnimation({
                   elem: opts.form.parent(),
                   animationSpeed: opts.transitionSpeed,
@@ -1929,7 +1930,7 @@ function userProcessExistingFiles(filenames, filenamesFixed, numberOfFiles, comp
           msg: filenameFixed,
           title: uploading.existing.title,
           onOk: function () {  // Skip file
-            vrtxAdm.uploadSkippedFiles[filename] = "skip";
+            vrtxAdm.uploadCopyMoveSkippedFiles[filename] = "skip";
             userProcessNextFilename();
           },
           btnTextOk: uploading.existing.skip,
@@ -1944,8 +1945,8 @@ function userProcessExistingFiles(filenames, filenamesFixed, numberOfFiles, comp
       userDecideExistingFileDialog.open();
     } else { // User has decided for all existing uris
       var numberOfSkippedFiles = 0;
-       for (skippedFile in vrtxAdm.uploadSkippedFiles) {
-         if (vrtxAdm.uploadSkippedFiles[skippedFile]) {
+       for (skippedFile in vrtxAdm.uploadCopyMoveSkippedFiles) {
+         if (vrtxAdm.uploadCopyMoveSkippedFiles[skippedFile]) {
            numberOfSkippedFiles++;
          }
        }
@@ -1987,7 +1988,7 @@ function ajaxUploadPerform(opts) {
     },
     success: function(results, status, xhr) {
       var result = _$.parseHTML(results);
-      vrtxAdm.uploadSkippedFiles = {};
+      vrtxAdm.uploadCopyMoveSkippedFiles = {};
       uploadingD.close();
       if (vrtxAdm.hasErrorContainers(result, opts.errorContainer)) {
         vrtxAdm.displayErrorContainers(result, opts.form, opts.errorContainerInsertAfter, opts.errorContainer);

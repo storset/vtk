@@ -1928,7 +1928,7 @@ function ajaxUploadPerform(opts) {
       _$("#dialog-uploading-bar").css("width", percent + "%");
     },
     beforeSend: function(xhr) {
-        uploadXhr = xhr;
+      uploadXhr = xhr;
     },
     success: function(results, status, xhr) {
       var result = _$.parseHTML(results);

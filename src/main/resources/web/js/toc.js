@@ -3,12 +3,21 @@
  *
  */
 
-var tocTargetId = ""; /* Possible to override with a target for toc defined typical in document.ready() on a site.
-                       * XXX: not global
-                       */
-window.onload = function () {
-  new tocGen('toc');
-};
+var tocTargetId = ""; /* Possible to override with a target for toc defined typical in document.ready() on a site.*/
+var tocGenElem = null;
+try {                   
+  document.addEventListener("DOMContentLoaded", function(event) {
+    if(tocGenElem == null) {
+      tocGenElem = new tocGen('toc');
+    }
+  });
+} catch(e) {           
+  window.onload = function () {
+    if(tocGenElem == null) {
+      tocGenElem = new tocGen('toc');
+    }
+  };
+}
 
 /*
  * This script was originally written By Brady Mulhollem - WebTech101.com

@@ -106,7 +106,7 @@ function forceScrollToTocIdIfNotScrolled() {
         location.hash = location.hash;
       }
     }
-  } catch(e) {alert(e)}
+  } catch(e) {}
 }
 
 // This function is stolen (legally) from quirksmode.org (and modified by USIT)

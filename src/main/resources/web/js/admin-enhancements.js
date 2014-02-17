@@ -2117,7 +2117,7 @@ VrtxAdmin.prototype.collectionListingInteraction = function collectionListingInt
             msg: dialogTemplate.find(".vrtx-confirm-copy-move-explanation").text(),
             title: dialogTemplate.find(".vrtx-confirm-copy-move-confirmation").text(),
             onOk: function () {
-              dialogTemplate.find(".vrtx-focus-button button").trigger("click");
+              dialogTemplate.find(".vrtx-focus-button").trigger("click");
             }
           });
           d.open();

@@ -46,7 +46,7 @@
       },
       move = {
         existing: {
-          sameFolder: '${vrtx.getMsg("move.existing.same-folder")}'
+          sameFolder: "${vrtx.getMsg("move.existing.same-folder")}"
         }
       },
       publishing = {

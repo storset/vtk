@@ -126,7 +126,6 @@ function VrtxAdmin() {
   this.trashcanCheckedFiles = 0;
   
   this.keys = {
-    BACKSPACE: 8,
     TAB: 9,
     ENTER: 13,
     ESCAPE: 27,
@@ -134,7 +133,7 @@ function VrtxAdmin() {
     LEFT_ARROW: 37,
     UP_ARROW: 38,
     RIGHT_ARROW: 39,
-    DOWN_ARROW: 40,
+    DOWN_ARROW: 40
   };
 
   this.reloadFromServer = false; // changed by funcProceedCondition and used by funcComplete in completeFormAsync for admin-permissions

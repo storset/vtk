@@ -9,6 +9,7 @@ try {
   document.addEventListener("DOMContentLoaded", function(event) {
     if(tocGenElem == null) {
       tocGenElem = new tocGen('toc');
+      forceScrollToTocIdIfNotScrolled();
     }
   });
 } catch(e) {           
@@ -90,6 +91,15 @@ tocGen.prototype.getId = function (ob) {
   }
   return ob.id;
 };
+
+// Added by USIT
+function forceScrollToTocIdIfNotScrolled() {
+  var doc = document.documentElement;
+  var top = (window.pageYOffset || doc.scrollTop)  - (doc.clientTop || 0);
+  if(top == 0 && location.hash && /#toc[\d]{1}/.test(location.hash)) {
+    location.hash = location.hash;
+  }
+}
 
 // This function is stolen (legally) from quirksmode.org (and modified by USIT)
 // For >= IE7 (can be removed soon)

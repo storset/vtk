@@ -118,10 +118,11 @@ function VrtxAdmin() {
   this.asyncEditorSavedDeferred = null;
   this.asyncGetFormsInProgress = 0;
   this.asyncGetStatInProgress = false;
-  this.createResourceReplaceTitle = true;
-  this.createDocumentFileName = "";
+  
   this.uploadCopyMoveSkippedFiles = {};
   this.uploadDisplayRemainingBytes = false;
+  this.createResourceReplaceTitle = true;
+  this.createDocumentFileName = "";
   this.trashcanCheckedFiles = 0;
 
   this.reloadFromServer = false; // changed by funcProceedCondition and used by funcComplete in completeFormAsync for admin-permissions

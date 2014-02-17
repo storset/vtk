@@ -1971,8 +1971,8 @@ function ajaxUploadPerform(opts, size) {
   uploadingD.open();
   
   var uploadDialogExtra = "";
-  if(vrtxAdm.uploadDisplaySize) {
-    var uploadDialogExtra = "<div id='dialog-uploading-bytes'>&nbsp;</div>";
+  if(vrtxAdm.uploadDisplaySize && size > 0) {
+    uploadDialogExtra = "<div id='dialog-uploading-bytes'>&nbsp;</div>";
   }
   
   _$("#dialog-loading-content").append("<div id='dialog-uploading-bar' /><div id='dialog-uploading-percent'>&nbsp;</div>" + uploadDialogExtra + "<a id='dialog-uploading-abort' href='javascript:void(0);'>Avbryt</a>");
@@ -1990,7 +1990,7 @@ function ajaxUploadPerform(opts, size) {
   opts.form.ajaxSubmit({
     uploadProgress: function(event, position, total, percent) { // Show upload progress
       _$("#dialog-uploading-percent").text(percent + "%");
-      if(size > 0 && vrtxAdm.uploadDisplaySize) {
+      if(vrtxAdm.uploadDisplaySize && size > 0) {
         var d = 1;
         var kb = 1000;
         var mb = 1000000;

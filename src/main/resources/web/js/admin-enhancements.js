@@ -121,7 +121,7 @@ function VrtxAdmin() {
   this.createResourceReplaceTitle = true;
   this.createDocumentFileName = "";
   this.uploadCopyMoveSkippedFiles = {};
-  this.uploadDisplaySize = false;
+  this.uploadDisplayRemainingBytes = false;
   this.trashcanCheckedFiles = 0;
 
   this.reloadFromServer = false; // changed by funcProceedCondition and used by funcComplete in completeFormAsync for admin-permissions
@@ -1971,7 +1971,7 @@ function ajaxUploadPerform(opts, size) {
   uploadingD.open();
   
   var uploadDialogExtra = "";
-  if(vrtxAdm.uploadDisplaySize && size > 0) {
+  if(vrtxAdm.uploadDisplayRemainingBytes && size > 0) {
     uploadDialogExtra = "<div id='dialog-uploading-bytes'>&nbsp;</div>";
   }
   
@@ -1990,7 +1990,7 @@ function ajaxUploadPerform(opts, size) {
   opts.form.ajaxSubmit({
     uploadProgress: function(event, position, total, percent) { // Show upload progress
       _$("#dialog-uploading-percent").text(percent + "%");
-      if(vrtxAdm.uploadDisplaySize && size > 0) {
+      if(vrtxAdm.uploadDisplayRemainingBytes && size > 0) {
         var d = 1;
         var kb = 1000;
         var mb = 1000000;

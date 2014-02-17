@@ -1217,7 +1217,7 @@ VrtxAdmin.prototype.dropdown = function dropdown(options) {
     var dropdownClickArea = options.start ? ":nth-child(3)" : ".first";
 
     list.find("li").not(startDropdown).remove();
-    list.find("li" + dropdownClickArea).append("<span tabindex='0' class='dropdown-shortcut-menu-click-area'></span>");
+    list.find("li" + dropdownClickArea).append("<a tabindex='0' class='dropdown-shortcut-menu-click-area' />");
     var shortcutMenu = listParent.find(".dropdown-shortcut-menu-container");
     
     setTimeout(function() {
@@ -1811,7 +1811,7 @@ VrtxAdmin.prototype.initFileUpload = function initFileUpload() {
   inputFile.focus(function () { _$("a.vrtx-file-upload").addClass("hover");    })
   .blur(function() {            _$("a.vrtx-file-upload").removeClass("hover"); });
   
-  $("<div id='upload-focus' style='display: inline-block; outline: none;' tabindex='-1' />").insertBefore("#file");
+  $("<a id='upload-focus' style='display: inline-block; outline: none;' tabindex='-1' />").insertBefore("#file");
   $("#upload-focus")[0].focus();
 
   if (vrtxAdm.supportsReadOnly(document.getElementById("fake-file"))) {
@@ -1969,7 +1969,7 @@ function ajaxUploadPerform(opts, size) {
   }
   
   _$("#dialog-loading-content").append("<div id='dialog-uploading-bar' /><div id='dialog-uploading-percent'>&nbsp;</div>" + uploadDialogExtra + "<a id='dialog-uploading-abort' href='javascript:void(0);'>Avbryt</a>");
-  _$("<span id='dialog-uploading-focus' style='outline: none;' tabindex='-1' />").insertBefore("#dialog-uploading-abort")[0].focus();
+  _$("<a id='dialog-uploading-focus' style='outline: none;' tabindex='-1' />").insertBefore("#dialog-uploading-abort")[0].focus();
   _$("#dialog-uploading-focus").keydown(function(e) {
     if (isKey(e, vrtxAdm.keys.TAB)) { 
       $(this).next().addClass("tab-visible")[0].focus();
@@ -3273,7 +3273,7 @@ VrtxAdmin.prototype.addNewMarkup = function addNewMarkup(options, selectorClass,
         } else {
           input = animation.__opts.elem.find(".vrtx-focus-button, .vrtx-button, .vrtx-button-small").filter(":visible").filter(":first");
           if(input.length) {
-            $("<span style='outline: none;' tabindex='-1' />").insertBefore(input)[0].focus();
+            $("<a style='outline: none;' tabindex='-1' />").insertBefore(input)[0].focus();
           }
         }
       }

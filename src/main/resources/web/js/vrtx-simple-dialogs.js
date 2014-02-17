@@ -49,7 +49,7 @@ var AbstractVrtxSimpleDialog = dejavu.AbstractClass.declare({
                                } else {
                                  input = ctx.find(".ui-dialog-buttonpane, .vrtx-focus-button, .vrtx-button, .vrtx-button-small").filter(":visible").filter(":first");
                                  if(input.length) {
-                                   $("<span style='outline: none;' tabindex='-1' />").insertBefore(input)[0].focus();
+                                   $("<a style='outline: none;' tabindex='-1' />").insertBefore(input)[0].focus();
                                  }
                                }
                              };

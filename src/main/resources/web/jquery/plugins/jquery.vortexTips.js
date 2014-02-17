@@ -91,7 +91,7 @@
         tip.css(nPos).fadeIn(opts.animInSpeed, function() {
           var buttons = $(this).find(".vrtx-button, .vrtx-button-small").filter(":visible");
           if(buttons.length) {
-            $("<div style='display: inline-block; outline: none;' tabindex='-1' />").insertBefore(buttons.filter(":first")).focus();
+            $("<a style='display: inline-block; outline: none;' tabindex='-1' />").insertBefore(buttons.filter(":first")).focus();
           }
         });
         if (opts.extra) {

@@ -97,7 +97,7 @@ function forceScrollToTocIdIfNotScrolled() {
   var doc = document.documentElement;
   var top = (window.pageYOffset || doc.scrollTop)  - (doc.clientTop || 0);
   if(top == 0 && location.hash && /#toc[\d]{1}/.test(location.hash)) {
-    location.hash = location.hash;
+    location.hash = location.hash; // Force scroll after toc is generated if not already has scrolled
   }
 }
 

@@ -121,6 +121,7 @@ function VrtxAdmin() {
   this.createResourceReplaceTitle = true;
   this.createDocumentFileName = "";
   this.uploadCopyMoveSkippedFiles = {};
+  this.uploadDisplaySize = false;
   this.trashcanCheckedFiles = 0;
 
   this.reloadFromServer = false; // changed by funcProceedCondition and used by funcComplete in completeFormAsync for admin-permissions
@@ -1853,10 +1854,12 @@ function ajaxUpload(options) {
     var fileField = _$("#file");
     var filePaths = "";
     var numberOfFiles = 0;
+    var size = 0;
     if (vrtxAdm.supportsFileList) {
       var files = fileField[0].files;
       for (var i = 0, numberOfFiles = files.length; i < numberOfFiles; i++) {
         filePaths += files[i].name + ",";
+        size += files[i].size;
       }
     } else {
       filePaths = fileField.val().substring(fileField.val().lastIndexOf("\\") + 1);
@@ -1886,7 +1889,7 @@ function ajaxUpload(options) {
             var existingFilenamesFixed = existingFilenamesFixedField.text().split("#");
             userProcessExistingFiles(existingFilenames, existingFilenamesFixed, numberOfFiles, 
               function() {
-                ajaxUploadPerform(opts);
+                ajaxUploadPerform(opts, size);
               },
               function() {
                 vrtxAdm.uploadCopyMoveSkippedFiles = {};;
@@ -1901,7 +1904,7 @@ function ajaxUpload(options) {
               false
             );
           } else {
-            ajaxUploadPerform(opts);
+            ajaxUploadPerform(opts, size);
           }
         }
       }
@@ -1960,13 +1963,19 @@ function userProcessExistingFiles(filenames, filenamesFixed, numberOfFiles, comp
   userProcessNextFilename();
 }
 
-function ajaxUploadPerform(opts) {
+function ajaxUploadPerform(opts, size) {
   var vrtxAdm = vrtxAdmin,
   _$ = vrtxAdm._$;
 
   var uploadingD = new VrtxLoadingDialog({title: uploading.inprogress});
   uploadingD.open();
-  _$("#dialog-loading-content").append("<div id='dialog-uploading-bar' /><div id='dialog-uploading-percent'>&nbsp;</div><a id='dialog-uploading-abort' href='javascript:void(0);'>Avbryt</a>");
+  
+  var uploadDialogExtra = "";
+  if(vrtxAdm.uploadDisplaySize) {
+    var uploadDialogExtra = "<div id='dialog-uploading-bytes'>&nbsp;</div>";
+  }
+  
+  _$("#dialog-loading-content").append("<div id='dialog-uploading-bar' /><div id='dialog-uploading-percent'>&nbsp;</div>" + uploadDialogExtra + "<a id='dialog-uploading-abort' href='javascript:void(0);'>Avbryt</a>");
   _$("<span id='dialog-uploading-focus' style='outline: none;' tabindex='-1' />").insertBefore("#dialog-uploading-abort")[0].focus();
   _$("#dialog-uploading-focus").keydown(function(e) {
     if (isKey(e, keys.TAB)) { 
@@ -1981,7 +1990,22 @@ function ajaxUploadPerform(opts) {
   opts.form.ajaxSubmit({
     uploadProgress: function(event, position, total, percent) { // Show upload progress
       _$("#dialog-uploading-percent").text(percent + "%");
+      if(size > 0 && vrtxAdm.uploadDisplaySize) {
+        var d = 1;
+        var kb = 1000;
+        var mb = 1000000;
+        var unit = " b";
+        if(size > (mb*10)) {
+          d = mb;
+          unit = " MB";
+        } else if(size > (kb*10)) {
+          d = kb;
+          unit = " KB";
+        }
+        _$("#dialog-uploading-bytes").text(Math.floor((size * (percent/100)) / d) + "/" + Math.floor(size / d) + unit);
+      }
       _$("#dialog-uploading-bar").css("width", percent + "%");
+      
     },
     beforeSend: function(xhr) {
       uploadXhr = xhr;

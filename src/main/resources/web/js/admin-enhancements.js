@@ -49,23 +49,24 @@ function VrtxAdmin() {
 
   // Browser info/capabilities: used for e.g. progressive enhancement and performance scaling based on knowledge of current JS-engine
   this.ua = navigator.userAgent.toLowerCase();
-  this.isIE = this._$.browser.msie;
-  this.browserVersion = this._$.browser.version;
+  this.isIE = /(msie) ([\w.]+)/.test(this.ua);
+  var ieVersion = /(msie) ([\w.]+)/.exec(this.ua);
+  this.browserVersion = (ieVersion != null) ? ieVersion[2] : "0";
   this.isIE9 = this.isIE && this.browserVersion <= 9;
   this.isIE8 = this.isIE && this.browserVersion <= 8;
   this.isIE7 = this.isIE && this.browserVersion <= 7;
   this.isIE6 = this.isIE && this.browserVersion <= 6;
   this.isIETridentInComp = this.isIE7 && /trident/.test(this.ua);
-  this.isOpera = this._$.browser.opera;
-  this.isSafari = this._$.browser.safari;
   this.isIPhone = /iphone/.test(this.ua);
   this.isIPad = /ipad/.test(this.ua);
   this.isAndroid = /android/.test(this.ua); // http://www.gtrifonov.com/2011/04/15/google-android-user-agent-strings-2/
   this.isMobileWebkitDevice = (this.isIPhone || this.isIPad || this.isAndroid);
   this.isWin = ((this.ua.indexOf("win") != -1) || (this.ua.indexOf("16bit") != -1));
+  
   this.supportsFileList = window.FileList;
   this.animateTableRows = !this.isIE9;
   this.hasFreeze = typeof Object.freeze !== "undefined"; // ECMAScript 5 check
+  
   this.hasConsole = typeof console !== "undefined";
   this.hasConsoleLog = this.hasConsole && console.log;
   this.hasConsoleError = this.hasConsole && console.error;
@@ -150,7 +151,7 @@ vrtxAdmin._$(document).ready(function () {
     _$ = vrtxAdm._$;
 
   vrtxAdm.cacheDOMNodesForReuse();
-  
+
   var bodyId = vrtxAdm.cachedBody.attr("id");
   bodyId = (typeof bodyId !== "undefined") ? bodyId : "";
   vrtxAdm.bodyId = bodyId;
@@ -4060,7 +4061,7 @@ VrtxAdmin.prototype.zebraTables = function zebraTables(selector) {
   var _$ = this._$;
   var table = _$("table" + selector);
   if (!table.length) return;
-  if ((vrtxAdmin.isIE && vrtxAdmin.browserVersion < 9) || vrtxAdmin.isOpera) { // http://www.quirksmode.org/css/contents.html
+  if ((vrtxAdmin.isIE && vrtxAdmin.browserVersion < 9)) { // http://www.quirksmode.org/css/contents.html
     table.find("tbody tr:odd").addClass("even"); // hmm.. somehow even is odd and odd is even
     table.find("tbody tr:first-child").addClass("first");
   }

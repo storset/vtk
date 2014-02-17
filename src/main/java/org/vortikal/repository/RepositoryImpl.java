@@ -2173,8 +2173,12 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
                             + " recoverable resources that are overdue for permanent deletion.");
                     for (RecoverableResource rr : overdue) {
                         trashLogger.info("Permanently deleting recoverable resource: " + rr);
-                        dao.deleteRecoverable(rr);
-                        contentStore.deleteRecoverable(rr);
+                        try {
+                            dao.deleteRecoverable(rr);
+                            contentStore.deleteRecoverable(rr);
+                        } catch (Throwable t) {
+                            trashLogger.warn("Could not permanently delete recoverable resource: " + rr, t);
+                        }
                     }
                 }
                 List<RecoverableResource> orphans = dao.getTrashCanOrphans();
@@ -2182,8 +2186,12 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
                     trashLogger.info("Found " + orphans.size() + " recoverable resources that are orphans.");
                     for (RecoverableResource rr : orphans) {
                         trashLogger.info("Permanently deleting orphan: " + rr);
-                        dao.deleteRecoverable(rr);
-                        contentStore.deleteRecoverable(rr);
+                        try {
+                            dao.deleteRecoverable(rr);
+                            contentStore.deleteRecoverable(rr);
+                        } catch (Throwable t) {
+                            trashLogger.warn("Could not permanently delete orphan: " + rr, t);
+                        }
                     }
                 }
                 lastRun = new Date();

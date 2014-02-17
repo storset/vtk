@@ -81,8 +81,8 @@
 
   $(document).ready(function() {
      $('iframe').load(function() {
-        $(this).contents().find("a").attr("target", "vrtx-preview-window");
-        
+        $(this).contents().find("a, form").attr("target", "vrtx-preview-window");
+
         <#if visualizeBrokenLinks?exists && visualizeBrokenLinks = 'true'> 
         
         $("body").prepend('<span id="vrtx-link-check-spinner"><@vrtx.msg code="linkcheck.spinner" default="Checking links..."/></span>');

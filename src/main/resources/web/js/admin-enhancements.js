@@ -61,14 +61,6 @@ function VrtxAdmin() {
   this.isIPhone = /iphone/.test(this.ua);
   this.isIPad = /ipad/.test(this.ua);
   this.isAndroid = /android/.test(this.ua); // http://www.gtrifonov.com/2011/04/15/google-android-user-agent-strings-2/
-  this.androidVersion = (function() { // Determine if iframes should be made into l$
-    var androidVersion = navigator.userAgent.match(/Android ([^\s]+)/);
-    if (androidVersion && androidVersion.length === 2) {
-      return parseFloat(androidVersion[1]);
-    } else {
-      return 0;
-    }
-  }());
   this.isMobileWebkitDevice = (this.isIPhone || this.isIPad || this.isAndroid);
   this.isWin = ((this.ua.indexOf("win") != -1) || (this.ua.indexOf("16bit") != -1));
   this.supportsFileList = window.FileList;

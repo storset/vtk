@@ -94,11 +94,19 @@ tocGen.prototype.getId = function (ob) {
 
 // Added by USIT
 function forceScrollToTocIdIfNotScrolled() {
-  var doc = document.documentElement;
-  var top = (window.pageYOffset || doc.scrollTop)  - (doc.clientTop || 0);
-  if(top == 0 && location.hash && /#toc[\d]{1}/.test(location.hash)) {
-    location.hash = location.hash; // Force scroll after toc is generated if not already has scrolled
-  }
+  try {
+    var doc = document.documentElement;
+    var top = (window.pageYOffset || doc.scrollTop)  - (doc.clientTop || 0);
+    if(top == 0 && location.hash && /#toc[\d]{1}/.test(location.hash)) {
+      // Force scroll after toc is generated if not already has scrolled
+      var elm = document.getElementById(location.hash.split("#")[1]);
+      if(typeof elm.scrollIntoView === "function") {
+        elm.scrollIntoView();
+      } else {
+        location.hash = location.hash;
+      }
+    }
+  } catch(e) {alert(e)}
 }
 
 // This function is stolen (legally) from quirksmode.org (and modified by USIT)

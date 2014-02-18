@@ -49,7 +49,7 @@
 </#macro>
 
 <#macro initFlash url isStream=false isAudio=false isSWF=false>
-  <#local flashUrl = strobe />
+  <#local flashUrl = strobe?html />
   
   <script type="text/javascript"><!--
     if (typeof swfobject == 'undefined') {
@@ -96,12 +96,12 @@
 		menu: "false",
 	    wmode: "transparent"
 	  };	
-	  <#local flashUrl = audioFlashPlayerFlashURL />
+	  <#local flashUrl = audioFlashPlayerFlashURL?html />
 	  <#local width = "290" />
 	  <#local height = "24" />
     </#if>
     
-    swfobject.embedSWF("${flashUrl}?html", "mediaspiller-${dateStr}", "${width}", "${height}", "${flashPlayerVersion}", false, flashvars, flashparams);
+    swfobject.embedSWF("${flashUrl}", "mediaspiller-${dateStr}", "${width}", "${height}", "${flashPlayerVersion}", false, flashvars, flashparams);
   // -->
   </script>
 </#macro>

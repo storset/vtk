@@ -35,7 +35,7 @@
   <div id="mediaspiller-${dateStr}"<#if showPlayButton = "true"> class="vrtx-media-player-no-flash"</#if>>
     <a class="vrtx-media" href="${url}">
 	  <img src="<#if poster?exists>${poster?html}<#else>/vrtx/__vrtx/static-resources/themes/default/icons/${imgSrc}</#if>" width="${width}" height="${height}" alt="${alt}"/>
-      <a class="playbutton" href="${url}"></a>
+      <#if showPlayButton = "true"><a class="playbutton" href="${url}"></a></#if>
     </a>
   </div>
 </#macro>

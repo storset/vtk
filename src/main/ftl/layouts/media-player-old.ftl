@@ -43,7 +43,7 @@
     <#if contentType == "audio" || contentType == "audio/mpeg" || contentType == "audio/mp3" || contentType == "audio/x-mpeg">
       <@mpLib.includeFlash />
       <#-- <script type="text/javascript" src="${audioFlashPlayerJsURL?html}/"></script> -->
-	  <@mpLib.genPlaceholder "${media?html}" "${dateStr}" "true" />
+	  <@mpLib.genPlaceholder "${media?html}" "${dateStr}" true />
 	  
 	  <script type="text/javascript"><!--
 	    var flashvars = {
@@ -101,7 +101,7 @@
 
     <#elseif (!streamType?exists) && contentType == "video/x-flv" || contentType == "video/mp4">
       <@mpLib.includeFlash />
-	  <@mpLib.genPlaceholder "${media?html}" "${dateStr}" "false" "true" />
+	  <@mpLib.genPlaceholder "${media?html}" "${dateStr}" false true />
 	  
 	  <script type="text/javascript"><!--
 	    var flashvars = {

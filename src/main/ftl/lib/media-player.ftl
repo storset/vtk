@@ -19,8 +19,8 @@
   </script>
 </#macro>
 
-<#macro genPlaceholder url dateStr isAudio="false" showPlayButton="false">
-  <#if isAudio = "false">
+<#macro genPlaceholder url dateStr isAudio=false showPlayButton=false>
+  <#if isAudio>
     <#local imgSrc = "video-noflash.png" />
     <#local width = "500" />
     <#local height = "279" />
@@ -32,21 +32,21 @@
     <#local alt = vrtx.getMsg("article.audio-file") />
   </#if>
   <@genPlayButtonCSS showPlayButton />
-  <div id="mediaspiller-${dateStr}"<#if showPlayButton = "true"> class="vrtx-media-player-no-flash"</#if>>
+  <div id="mediaspiller-${dateStr}"<#if showPlayButton> class="vrtx-media-player-no-flash"</#if>>
     <a class="vrtx-media" href="${url}">
 	  <img src="<#if poster?exists>${poster?html}<#else>/vrtx/__vrtx/static-resources/themes/default/icons/${imgSrc}</#if>" width="${width}" height="${height}" alt="${alt}"/>
-      <#if showPlayButton = "true"><a class="playbutton" href="${url}"></a></#if>
+      <#if showPlayButton><a class="playbutton" href="${url}"></a></#if>
     </a>
   </div>
 </#macro>
 
 <#macro genPlayButtonCSS showPlayButton>
-  <#if showPlayButton = "true">
+  <#if showPlayButton>
     <style type="text/css">
       .vrtx-media-player-no-flash, .vrtx-media-player-no-flash img { width: 507px; height: 282px; float: left; }
       .vrtx-media-player-no-flash { background-color: #000000; position: relative; }
       .vrtx-media-player-no-flash .playbutton { 
-        position: absolute; /* take out of flow */ top: 90px; left: 195px; width: 115px; height: 106px; display: block;
+        position: absolute; top: 90px; left: 195px; width: 115px; height: 106px; display: block;
       }
       .vrtx-media-player-no-flash .playbutton,.vrtx-media-player-no-flash .playbutton:visited,.vrtx-media-player-no-flash .playbutton:active {
         background: url('/vrtx/__vrtx/static-resources/themes/default/icons/video-playbutton.png') no-repeat center center;

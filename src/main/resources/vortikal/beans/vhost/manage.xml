@@ -332,7 +332,9 @@
     </property>
     <property name="assertions">
       <list>
-        <ref bean="resourceIsLocked" />
+        <bean class="org.vortikal.web.service.ResourceLockedAssertion">
+          <property name="byCurrentUser" value="false" />
+        </bean>
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
           <property name="parameterName" value="action" />
           <property name="parameterValue" value="unlock-form" />
@@ -456,9 +458,6 @@
       </list>
     </property>
     <property name="handler" ref="renameHandler" />
-  </bean>
-
-  <bean id="resourceIsLocked" class="org.vortikal.web.service.ResourceIsLockedAssertion">
   </bean>
 
   <bean id="aclInheritanceService" class="org.vortikal.web.service.ServiceImpl">

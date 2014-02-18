@@ -59,7 +59,9 @@
   </script>
   <script type="text/javascript"><!--
     var flashvars = {
-      <#if autoplay?exists>autoplay: "${autoplay}"</#if>
+      <#if autoplay?exists>
+        autoplay: "${autoplay}"
+      </#if>
     };
     var flashparams = {};
     

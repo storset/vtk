@@ -92,6 +92,9 @@ public class CopyMoveToSelectedFolderControllerTest extends AbstractControllerTe
 			//allowing(mockRequest).getSession(false); will(returnValue(mockHttpSession));
 			//allowing(mockRequest).getMethod(); will(returnValue("POST"));
 			//allowing(mockRequest).getParameterNames(); will(returnValue(new Vector<String>().elements()));
+			allowing(mockRequest).getParameter("overwrite"); will(returnValue(null));
+			allowing(mockRequest).getParameter("existing-skipped-files"); will(returnValue(null));
+            
 			allowing(mockRequest).getParameter("cancel-action"); will(returnValue(withCancel ? "" : null));
 			allowing(mockRequest).getParameter("clear-action"); will(returnValue(withClear ? "" : null));
 		}});

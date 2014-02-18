@@ -42,6 +42,7 @@
                  controller="true" loop="false" scale="aspect" pluginspage="http://www.apple.com/quicktime/download/">
           </embed>
         </object>
+        
         <@genDownloadLink />
       
       <#elseif contentType == "application/x-shockwave-flash"

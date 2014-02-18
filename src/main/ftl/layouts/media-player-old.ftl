@@ -29,7 +29,8 @@
 	    <@genDownloadLink "audio" />
 	  
       <#elseif contentType == "video/quicktime" >
-        <object classid="clsid:02BF25D5-8C17-4B23-BC80-D3488ABDDC6B" id="testid" width="${width}" height="${height}" codebase="http://www.apple.com/qtactivex/qtplugin.cab">
+        <object classid="clsid:02BF25D5-8C17-4B23-BC80-D3488ABDDC6B" id="testid" width="${width}" height="${height}" 
+                codebase="http://www.apple.com/qtactivex/qtplugin.cab">
           <param name="src" value="${media?html}"/>
           <param name="autoplay" value="<#if autoplay?exists && autoplay = "true">true<#else>false</#if>"/>
           <param name="controller" value="true"/>

@@ -26,6 +26,8 @@
     };
     var flashparams = {};
     
+    <#-- Video -->
+    
     <#if !isAudio>
 	  <#if !isSWF>
         flashvars.src = "${url}";
@@ -37,9 +39,15 @@
 	      allowFullScreen: "true",
 	      allowscriptaccess: "always"
 	    };
+	    
+	  <#-- SWF -->
+	  
 	  <#else>
 	    <#local flashUrl = url />
 	  </#if>
+	  
+	<#-- Audio -->
+	
     <#else>
 	  flashvars.playerID = "1";
   	  flashvars.soundFile = "${url}";

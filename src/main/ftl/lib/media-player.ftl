@@ -77,9 +77,6 @@
         <#else>
           flashvars.poster = "/vrtx/__vrtx/static-resources/themes/default/icons/video-noflash.png";
         </#if>
-        <#if autoplay?exists>
-          flashvars.autoPlay = "${autoplay}";
-        </#if>
 	    flashparams = {																																														
 	      allowFullScreen: "true",
 	      allowscriptaccess: "always"

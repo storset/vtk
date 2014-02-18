@@ -13,7 +13,6 @@
     </#list>
   </#if>
   <style type="text/css">
-    /* When no decoration */
     a.vrtx-media {
       clear: left;
       display: block;

@@ -3,7 +3,7 @@
 <#--
   - File: media-player-old.ftl
   - 
-  - Description: Media player
+  - Description: Media player old
   - 	
   -->
 

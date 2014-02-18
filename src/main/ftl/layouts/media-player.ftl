@@ -3,7 +3,7 @@
 <#--
   - File: media-player.ftl
   - 
-  - Description: Article media player
+  - Description: Media player component
   - 	
   -->
 

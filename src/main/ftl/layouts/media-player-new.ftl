@@ -3,7 +3,7 @@
 <#--
   - File: media-player-new.ftl
   - 
-  - Description: Media player
+  - Description: Media player new
   - 	
   -->
 

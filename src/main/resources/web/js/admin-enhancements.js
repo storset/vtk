@@ -1537,7 +1537,7 @@ function createFuncComplete() {
   var vrtxAdm = vrtxAdmin;
   
   vrtxAdm.cachedDoc.on("keydown", "#active-tab .vrtx-admin-form .radio-buttons input[type='radio']", function(e) {
-    if(isMultipleKey(e, [vrtxAdm.keys.LEFT_ARROW, vrtxAdm.keys.UP_ARROW, vrtxAdm.keys.RIGHT_ARROW, vrtxAdm.keys.DOWN_ARROW])) {
+    if(isOneOfKeys(e, [vrtxAdm.keys.LEFT_ARROW, vrtxAdm.keys.UP_ARROW, vrtxAdm.keys.RIGHT_ARROW, vrtxAdm.keys.DOWN_ARROW])) {
       var checkBox = $(this);
       var waitAndRefocus = setTimeout(function() {
         var checked = checkBox.closest(".radio-buttons").find("input:checked");
@@ -4105,7 +4105,7 @@ function isKey(e, keyCode) {
   return ((e.which && e.which == keyCode) || (e.keyCode && e.keyCode == keyCode));
 }
 
-function isMultipleKey(e, keyCodes) {
+function isOneOfKeys(e, keyCodes) {
   for(var i = 0, len = keyCodes.length; i < len; i++) {
     if(isKey(e, keyCodes[i])) return true;
   }

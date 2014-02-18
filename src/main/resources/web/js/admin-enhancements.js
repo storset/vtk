@@ -1984,18 +1984,13 @@ function ajaxUploadPerform(opts, size) {
     uploadProgress: function(event, position, total, percent) { // Show upload progress
       _$("#dialog-uploading-percent").text(percent + "%");
       if(vrtxAdm.uploadDisplayRemainingBytes && size > 0) {
-        var d = 1;
-        var kb = 1000;
-        var mb = 1000000;
-        var unit = " b";
-        if(size > (mb*10)) {
-          d = mb;
-          unit = " MB";
-        } else if(size > (kb*10)) {
-          d = kb;
-          unit = " KB";
+        var s = { "MB": 1000000, "KB": 1000, "b":  1 };
+        for(key in s) {
+          if(size >= s[key]) {
+            var d = s[key], unit = key; break;
+          }
         }
-        _$("#dialog-uploading-bytes").text(Math.floor((size * (percent/100)) / d) + "/" + Math.floor(size / d) + unit);
+        _$("#dialog-uploading-bytes").text(Math.round((size * (percent/100)) / d) + "/" + Math.round(size / d) + unit);
       }
       _$("#dialog-uploading-bar").css("width", percent + "%");
       

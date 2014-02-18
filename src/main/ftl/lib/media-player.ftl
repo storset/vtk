@@ -23,7 +23,13 @@
     <#local height = "82" />
     <#local alt = vrtx.getMsg("article.audio-file") />
   </#if>
+  
   <@genPlayButtonCSS showPlayButton />
+  
+  <div id="mediaspiller-${dateStr}-print" class="vrtx-media-player-print<#if showPlayButton> vrtx-media-player-no-flash</#if>">
+    <img src="<#if poster?exists>${poster?html}<#else>/vrtx/__vrtx/static-resources/themes/default/icons/${imgSrc}</#if>" width="${width}" height="${height}" alt="${alt}"/>
+    <#if showPlayButton><a class="playbutton" href="${url}"></a></#if>
+  </div>
   <div id="mediaspiller-${dateStr}"<#if showPlayButton> class="vrtx-media-player-no-flash"</#if>>
     <a class="vrtx-media" href="${url}">
 	  <img src="<#if poster?exists>${poster?html}<#else>/vrtx/__vrtx/static-resources/themes/default/icons/${imgSrc}</#if>" width="${width}" height="${height}" alt="${alt}"/>
@@ -33,19 +39,20 @@
 </#macro>
 
 <#macro genPlayButtonCSS showPlayButton>
-  <#if showPlayButton>
-    <style type="text/css">
-      .vrtx-media-player-no-flash, .vrtx-media-player-no-flash img { width: 507px; height: 282px; float: left; }
-      .vrtx-media-player-no-flash { background-color: #000000; position: relative; }
-      .vrtx-media-player-no-flash .playbutton { 
-        position: absolute; top: 90px; left: 195px; width: 115px; height: 106px; display: block;
-      }
-      .vrtx-media-player-no-flash .playbutton,.vrtx-media-player-no-flash .playbutton:visited,.vrtx-media-player-no-flash .playbutton:active {
-        background: url('/vrtx/__vrtx/static-resources/themes/default/icons/video-playbutton.png') no-repeat center center;
-      }
-      .vrtx-media-player-no-flash .playbutton:hover { background-image: url('/vrtx/__vrtx/static-resources/themes/default/icons/video-playbutton-hover.png'); }
-    </style>
-  </#if>
+  <style type="text/css">
+    .vrtx-media-player-print { display: none; }
+    <#if !showPlayButton>
+    .vrtx-media-player-no-flash, .vrtx-media-player-no-flash img { width: 507px; height: 282px; float: left; }
+    .vrtx-media-player-no-flash { background-color: #000000; position: relative; }
+    .vrtx-media-player-no-flash .playbutton { 
+      position: absolute; top: 90px; left: 195px; width: 115px; height: 106px; display: block;
+    }
+    .vrtx-media-player-no-flash .playbutton,.vrtx-media-player-no-flash .playbutton:visited,.vrtx-media-player-no-flash .playbutton:active {
+      background: url('/vrtx/__vrtx/static-resources/themes/default/icons/video-playbutton.png') no-repeat center center;
+    }
+    .vrtx-media-player-no-flash .playbutton:hover { background-image: url('/vrtx/__vrtx/static-resources/themes/default/icons/video-playbutton-hover.png'); }
+    </#if>
+  </style>
 </#macro>
 
 <#macro initFlash url isStream=false isAudio=false isSWF=false>

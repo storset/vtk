@@ -34,30 +34,6 @@
 	1. General
 \*-----------------------------------------*/
 
-/* Focus/active */
-
-/*
-body #app-head-wrapper a:focus,
-body #app-footer-wrapper a:focus {
-  background-color: #FFDE00 !important;
-  color: #000 !important;
-  outline: 1px dashed #333 !important;
-}
-
-.vrtx-button.focus,
-*:focus {
-  outline: 1px dashed #333 !important;
-}
-
-input[type='text']:focus,
-input[type='password']:focus,
-textarea:focus {
-  outline: 0 !important;
-}
-*/
-
-/* ^ Focus/active */
-
 html {
   background-color: #F8F8F8;
 }

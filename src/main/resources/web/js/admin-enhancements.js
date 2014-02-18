@@ -1984,7 +1984,7 @@ function ajaxUploadPerform(opts, size) {
     uploadProgress: function(event, position, total, percent) { // Show upload progress
       _$("#dialog-uploading-percent").text(percent + "%");
       if(vrtxAdm.uploadDisplayRemainingBytes && size > 0) {
-        var s = { "MB": 1000000, "KB": 1000, "b":  1 };
+        var s = { "GB": 1e9, "MB": 1e6, "KB": 1e3, "b":  1 };
         for(key in s) {
           if(size >= s[key]) {
             var d = s[key], unit = key; break;

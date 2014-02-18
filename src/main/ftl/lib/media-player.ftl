@@ -72,14 +72,14 @@
         <#if isStream>
           flashvars.streamType = "live";
         </#if>
-  	    <#if poster?exists>
-  	      flashvars.poster = "${poster?url("UTF-8")}";
-  		<#else>
-  		  flashvars.poster = "/vrtx/__vrtx/static-resources/themes/default/icons/video-noflash.png";
-  		</#if>
-  	    <#if autoplay?exists>
-  	      flashvars.autoPlay = "${autoplay}";
-  	    </#if>
+        <#if poster?exists>
+          flashvars.poster = "${poster?url("UTF-8")}";
+        <#else>
+          flashvars.poster = "/vrtx/__vrtx/static-resources/themes/default/icons/video-noflash.png";
+        </#if>
+        <#if autoplay?exists>
+          flashvars.autoPlay = "${autoplay}";
+        </#if>
 	    flashparams = {																																														
 	      allowFullScreen: "true",
 	      allowscriptaccess: "always"

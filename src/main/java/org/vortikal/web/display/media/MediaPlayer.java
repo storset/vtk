@@ -31,6 +31,7 @@
 package org.vortikal.web.display.media;
 
 import java.util.Map;
+import org.springframework.beans.factory.annotation.Required;
 
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.Path;
@@ -39,29 +40,29 @@ import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.AuthenticationException;
+import org.vortikal.util.repository.MimeHelper;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
 public class MediaPlayer {
 
-    protected Map<String, String> extentionToMimetype;
-    protected Service viewService;
+    private Service viewService;
     private Service thumbnailService;
     private PropertyTypeDefinition posterImagePropDef;
-    private PropertyTypeDefinition generatedPosterImagePropDef;
+    private PropertyTypeDefinition thumbnailPropDef;
 
-    public void addMediaPlayer(Map<String, Object> model, String resourceReferance, String height, String width,
+    public void addMediaPlayer(Map<String, Object> model, String resourceRef, String height, String width,
             String autoplay, String contentType, String streamType, String poster, String showDL)
             throws AuthorizationException {
 
-        if (URL.isEncoded(resourceReferance)) {
-            resourceReferance = URL.decode(resourceReferance);
+        if (URL.isEncoded(resourceRef)) {
+            resourceRef = URL.decode(resourceRef);
         }
 
         Resource mediaResource = null;
         try {
-            mediaResource = getLocalResource(resourceReferance);
+            mediaResource = getLocalResource(resourceRef);
         } catch (AuthorizationException e) {
             return; // not able to read local resource - abort
         } catch (AuthenticationException e) {
@@ -75,42 +76,41 @@ public class MediaPlayer {
             model.put("width", width);
         }
 
-        if (autoplay != null && !"".equals(autoplay))
+        if (autoplay != null && !autoplay.isEmpty())
             model.put("autoplay", autoplay);
 
-        if (streamType != null && !"".equals(streamType))
+        if (streamType != null && !streamType.isEmpty())
             model.put("streamType", streamType);
 
         model.put("showDL", showDL != null && showDL.equalsIgnoreCase("true") ? "true" : "false");
 
-        if (poster != null && !"".equals(poster))
+        if (poster != null && !poster.isEmpty())
             model.put("poster", poster);
         else
             addPoster(mediaResource, model);
 
-        String extension = getExtension(resourceReferance);
-        if (contentType != null && !"".equals(contentType)) {
+        if (contentType != null && !contentType.isEmpty()) {
             model.put("contentType", contentType);
         } else if (mediaResource != null) {
             model.put("contentType", mediaResource.getContentType());
-        } else if (getExtentionToMimetype().containsKey(extension)) {
-            model.put("contentType", getExtentionToMimetype().get(extension));
+        } else {
+            model.put("contentType", MimeHelper.map(resourceRef));
         }
-        model.put("extension", extension);
+        model.put("extension", MimeHelper.findExtension(resourceRef));
         model.put("nanoTime", System.nanoTime());
 
-        createLocalUrlToMediaFile(resourceReferance, model);
+        createLocalUrlToMediaFile(resourceRef, model);
     }
 
-    public void addMediaPlayer(Map<String, Object> model, String resourceReferance) throws AuthorizationException {
+    public void addMediaPlayer(Map<String, Object> model, String resourceRef) throws AuthorizationException {
 
-        if (URL.isEncoded(resourceReferance)) {
-            resourceReferance = URL.decode(resourceReferance);
+        if (URL.isEncoded(resourceRef)) {
+            resourceRef = URL.decode(resourceRef);
         }
 
         Resource mediaResource = null;
         try {
-            mediaResource = getLocalResource(resourceReferance);
+            mediaResource = getLocalResource(resourceRef);
         } catch (AuthorizationException e) {
             return; // not able to read local resource - abort
         } catch (AuthenticationException e) {
@@ -120,39 +120,27 @@ public class MediaPlayer {
         }
 
         addPoster(mediaResource, model);
-        model.put("extension", getExtension(resourceReferance));
+        model.put("extension", MimeHelper.findExtension(resourceRef));
 
         if (mediaResource != null) {
             model.put("contentType", mediaResource.getContentType());
         } else {
-            model.put("contentType", extentionToMimetype.get(getExtension(resourceReferance)));
+            model.put("contentType", MimeHelper.map(resourceRef));
         }
 
         model.put("nanoTime", System.nanoTime());
-        createLocalUrlToMediaFile(resourceReferance, model);
+        createLocalUrlToMediaFile(resourceRef, model);
     }
 
-    public Resource getLocalResource(String resourceReferance) throws Exception {
-        Resource mediaResource = null;
-        if (resourceReferance != null && resourceReferance.startsWith("/")) {
+    public Resource getLocalResource(String resourceRef) throws Exception {
+        if (resourceRef != null && resourceRef.startsWith("/")) {
             RequestContext requestContext = RequestContext.getRequestContext();
             Repository repository = requestContext.getRepository();
             String token = requestContext.getSecurityToken();
-            try {
-                mediaResource = repository.retrieve(token, Path.fromString(resourceReferance), true);
-            } catch (Exception e) {
-                throw e;
-            }
+            return repository.retrieve(token, Path.fromString(resourceRef), true);
         }
-        return mediaResource;
-    }
-
-    public String getExtension(String url) {
-        if (url != null && url.contains(".")) {
-            String[] s = url.split("\\.");
-            return s[s.length - 1];
-        }
-        return "";
+        
+        return null;
     }
 
     public void createLocalUrlToMediaFile(String resourceReferance, Map<String, Object> model) {
@@ -170,7 +158,7 @@ public class MediaPlayer {
             return;
         URL poster = null;
         Property posterImageProp = mediaFile.getProperty(posterImagePropDef);
-        Property thumbnail = mediaFile.getProperty(generatedPosterImagePropDef);
+        Property thumbnail = mediaFile.getProperty(thumbnailPropDef);
         if (posterImageProp != null) {
             poster = createUrl(posterImageProp.getStringValue());
         } else if (thumbnail != null) {
@@ -193,7 +181,7 @@ public class MediaPlayer {
             try {
                 Path uri = null;
                 uri = Path.fromString(resourceReferance);
-                localURL = getViewService().constructURL(uri);
+                localURL = this.viewService.constructURL(uri);
             } catch (Exception e) {
                 // ignore
             }
@@ -215,44 +203,27 @@ public class MediaPlayer {
         return null;
     }
 
-    public Map<String, String> getExtentionToMimetype() {
-        return extentionToMimetype;
-    }
-
-    public void setExtentionToMimetype(Map<String, String> extentionToMimetype) {
-        this.extentionToMimetype = extentionToMimetype;
-    }
-
+    @Required
     public void setViewService(Service viewService) {
         this.viewService = viewService;
     }
 
-    public Service getViewService() {
-        return viewService;
-    }
-
+    @Required
     public void setPosterImagePropDef(PropertyTypeDefinition posterImagePropDef) {
         this.posterImagePropDef = posterImagePropDef;
     }
 
-    public PropertyTypeDefinition getPosterImagePropDef() {
-        return posterImagePropDef;
-    }
-
-    public void setGeneratedPosterImagePropDef(PropertyTypeDefinition generatedPosterImagePropDef) {
-        this.generatedPosterImagePropDef = generatedPosterImagePropDef;
-    }
-
-    public PropertyTypeDefinition getGeneratedPosterImagePropDef() {
-        return generatedPosterImagePropDef;
-    }
-
+    @Required
     public void setThumbnailService(Service thumbnailService) {
         this.thumbnailService = thumbnailService;
     }
 
-    public Service getThumbnailService() {
-        return thumbnailService;
+    /**
+     * @param thumbnailPropDef the thumbnailPropDef to set
+     */
+    @Required
+    public void setThumbnailPropDef(PropertyTypeDefinition thumbnailPropDef) {
+        this.thumbnailPropDef = thumbnailPropDef;
     }
 
 }

@@ -50,6 +50,9 @@
     <property name="resourceTypeTree" ref="resourceTypeTree" />
     <property name="tempDir" value="${repository.tempDir}" />
     <property name="transactionManager" ref="repository.transactionManager"/>
+    <property name="typeHandlerHooksHelper">
+      <bean class="org.vortikal.repository.hooks.TypeHandlerHooksHelper" />
+    </property>
   </bean>
 
   <!-- Repository lock and cache control wrapper -->
@@ -149,6 +152,15 @@
       property, that's just about all of them
     </description>
     <property name="repository" ref="repository" />
+  </bean>
+  
+  <bean id="abstractTypeHandlerHooks" abstract="true">
+    <description>Abstract bean config for TypeHandlerHooks beans
+    extending DefaultTypeHandlerHooks. Sets contentStore and content
+    RepresentationRegistry properties.
+    </description>
+    <property name="contentStore" ref="repository.fsContentStore" />
+    <property name="contentRepresentationRegistry" ref="contentRepresentationRegistry" />
   </bean>
 
   <bean id="repositoryResourceHelper" class="org.vortikal.repository.RepositoryResourceHelper">
@@ -251,5 +263,5 @@
 
   <!-- ## Will search across multiple hosts when configured to do so ## -->
   <bean id="multiHostSearcher" class="org.vortikal.repository.MultiHostSearcher" />
-
+  
 </beans>

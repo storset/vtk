@@ -1,4 +1,4 @@
-/* Copyright (c) 2011, University of Oslo, Norway
+/* Copyright (c) 2013, University of Oslo, Norway
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,25 +29,36 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.vortikal.scheduling;
+package org.vortikal.util.web;
+
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.vortikal.util.codec.Base64;
 
 /**
- * Task interface. Tasks are scheduled for execution by a {@link TaskManager}.
+ * Extends {@link SimpleClientHttpRequestFactory} and provides preemptive
+ * basic authentication for created HTTP requests.
  */
-public interface Task extends Runnable {
-    
-    /**
-     * Return a task identifier as a string.
-     * @return an identifier as a string. This method should never return <code>null</code>.
-     */
-    String getId();
+public class BasicAuthHttpRequestFactory extends SimpleClientHttpRequestFactory {
 
-    /**
-     * Provide a <code>TriggerSpecification</code> which determines when and how
-     * often this task shold be triggered.
-     * @return an instance of <code>TriggerSpecification</code>, or <code>null</code> if
-     * no triggering should be done for this task.
-     */
-    TriggerSpecification getTriggerSpecification();
+    private String username;
+    private String password;
+
+    @Override
+    protected void prepareConnection(HttpURLConnection connection, String httpMethod) throws IOException {
+        super.prepareConnection(connection, httpMethod);
+        String u = this.username != null ? this.username : "";
+        String p = this.password != null ? this.password : "";
+        String encoded = Base64.encode(u + ":" + p);
+        connection.addRequestProperty("Authorization", "Basic " + encoded);
+    }
     
+    public void setUsername(String username) {
+        this.username = username;
+    }
+    
+    public void setPassword(String password) {
+        this.password = password;
+    }
 }

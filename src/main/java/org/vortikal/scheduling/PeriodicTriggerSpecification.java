@@ -43,6 +43,7 @@ public class PeriodicTriggerSpecification implements TriggerSpecification {
     /**
      * 
      * @param seconds The seconds between each period
+     * @param initialDelaySeconds number of seconds to wait initially before first invocation.
      * @param fixedRate if seconds should be interpreted as fixed rate insteead of
      *                  fixed delay between each invocation.
      */

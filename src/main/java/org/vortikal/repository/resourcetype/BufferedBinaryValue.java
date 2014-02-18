@@ -38,15 +38,18 @@ import org.vortikal.repository.store.DataAccessException;
 
 /**
  * Binary value buffer.
+ * Note that this class is not strictly immutable, since it provides
+ * access to internal byte array containing the actual value.
  */
-public final class BufferedBinaryValue implements BinaryValue {
+public final class BufferedBinaryValue implements BinaryValue, Cloneable {
 
-    private final byte[] buffer;
-    private final String contentType;
+    private byte[] buffer;
+    private String contentType;
 
     /**
      * Construct a buffered binary value.
-     * @param buffer 
+     * @param buffer byte array containing the octets of this value
+     * @param contentType the media type of the data in this value
      */
     public BufferedBinaryValue(byte[] buffer, String contentType) {
         if (buffer == null) throw new IllegalArgumentException("buffer cannot be null");
@@ -68,6 +71,16 @@ public final class BufferedBinaryValue implements BinaryValue {
     @Override
     public byte[] getBytes() {
         return this.buffer;
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        BufferedBinaryValue clone = (BufferedBinaryValue)super.clone();
+        byte[] copy = new byte[this.buffer.length];
+        System.arraycopy(this.buffer, 0, copy, 0, this.buffer.length);
+        clone.buffer = copy;
+        clone.contentType = this.contentType;
+        return clone;
     }
 
     @Override

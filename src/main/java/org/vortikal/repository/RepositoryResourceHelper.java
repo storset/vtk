@@ -366,7 +366,7 @@ public class RepositoryResourceHelper {
             }
         }
         
-        if (ctx.getEvaluationType() == Type.PropertiesChange || 
+        if (ctx.getEvaluationType() == Type.PropertiesChange ||
             ctx.getEvaluationType() == Type.SystemPropertiesChange ||
             ctx.getEvaluationType() == Type.InheritablePropertiesChange) {
             // Check for user change or addition

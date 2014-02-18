@@ -31,8 +31,12 @@
 package org.vortikal.web.actions.copymove;
 
 import javax.servlet.http.HttpSession;
+import static junit.framework.TestCase.assertNull;
+import static junit.framework.TestCase.assertNotNull;
 
 import org.jmock.Expectations;
+import org.junit.Before;
+import org.junit.Test;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.web.servlet.ModelAndView;
 import org.vortikal.repository.Path;
@@ -43,7 +47,6 @@ import org.vortikal.web.AbstractControllerTest;
  * 
  * @author Gyrd Thane Lange
  */
-
 public class CopyMoveToSelectedFolderControllerTest extends AbstractControllerTest {
 	
 	private CopyMoveToSelectedFolderController controller = null;
@@ -57,21 +60,25 @@ public class CopyMoveToSelectedFolderControllerTest extends AbstractControllerTe
 	}
 	
 	@Override
-	protected void setUp() throws Exception {
+    @Before
+	public void setUp() throws Exception {
 		super.setUp();
 		controller = new CopyMoveToSelectedFolderController();
 	}
 
+    @Test
 	public void testNormal() throws Exception {
 		doRequest(false, false);
 		assertNull("session bean should be cleared", sessionBeanAfterRequest);
 	}
 
+    @Test
 	public void testCancel() throws Exception {
 		doRequest(true, false);
 		assertNotNull("session bean should be intact", sessionBeanAfterRequest);
 	}
 
+    @Test
 	public void testClear() throws Exception {
 		doRequest(false, true);
 		assertNull("session bean should be cleared", sessionBeanAfterRequest);
@@ -100,6 +107,7 @@ public class CopyMoveToSelectedFolderControllerTest extends AbstractControllerTe
 		
 		result = controller.handleRequest(mockRequest, mockResponse);
 		sessionBeanAfterRequest = (CopyMoveSessionBean) mockHttpSession.getAttribute(CopyMoveToSelectedFolderController.COPYMOVE_SESSION_ATTRIBUTE);
+
 		assertNotNull(result);
 	}
 	

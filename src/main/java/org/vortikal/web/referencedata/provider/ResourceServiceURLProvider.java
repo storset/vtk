@@ -143,7 +143,7 @@ public class ResourceServiceURLProvider implements ReferenceDataProvider {
         String token = requestContext.getSecurityToken();
         Resource resource = null;
         Path uri = requestContext.getResourceURI();
-        
+
         if (this.linkToParent) {
             uri = uri.getParent();
         }
@@ -199,9 +199,9 @@ public class ResourceServiceURLProvider implements ReferenceDataProvider {
         }
     }
     
-
+    @Override
     public String toString() {
-        StringBuffer sb = new StringBuffer(this.getClass().getName());
+        StringBuilder sb = new StringBuilder(this.getClass().getName());
         sb.append(" [ ");
         sb.append("modelName = ").append(this.modelName);
         sb.append(", service = ").append(this.service.getName());

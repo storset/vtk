@@ -47,7 +47,38 @@ import org.vortikal.security.Principal;
 public interface Repository {
     
     /**
+     * Hierarchical depth of an operation, for instance with regard to locking.
+     */
+    public static enum Depth {
+        ZERO("0"), ONE("1"), INF("infinity");
+
+        private String val;
+
+        private Depth(String val) {
+            this.val = val;
+        }
+
+        @Override
+        public String toString() {
+            return this.val;
+        }
+
+        public static Depth fromString(String s) {
+            if ("0".equals(s)) {
+                return ZERO;
+            } else if ("1".equals(s)) {
+                return ONE;
+            } else if ("infinity".equals(s)) {
+                return INF;
+            } else {
+                throw new IllegalArgumentException("Unknown value: " + s);
+            }
+        }
+    }
+    
+    /**
      * Is the repository globally set to read only mode?
+     * @return <code>true</code> if repository is in read-only mode.
      */
     public boolean isReadOnly();
 
@@ -56,18 +87,22 @@ public interface Repository {
      * @param path The path to test.
      * @param forDelete whether to check read-only state wrt. deletion
      *        of path, or just modification of the path or any of its descendants.
+     * @return read-only state
      */
     public boolean isReadOnly(Path path, boolean forDelete);
-    
+
     /**
      * Returns list of path roots which have been set to read-only. If no paths
      * have been set to read-only, then the empty list is returned.
+     * @return list of {@link Path paths} which are read-only roots.
      */
     public List<Path> getReadOnlyRoots();
     
     /**
      * Set repository read only option dynamically.
      * 
+     * @param token security token
+     * @param readOnly desired read-only state
      * @exception AuthorizationException
      *                if an authenticated user is not authorized to set
      *                repository properties
@@ -150,18 +185,20 @@ public interface Repository {
      * 
      * @param token
      *            identifies the client's authenticated session
-     * @exception ResourceNotFoundException
+     * @param resource the resource to store
+     * @return a refreshed instance of the newly stored resource
+     * @throws ResourceNotFoundException
      *                if the URI does not identify an existing resource
-     * @exception AuthorizationException
+     * @throws AuthorizationException
      *                if an authenticated user is not authorized to access the
      *                resource
-     * @exception AuthenticationException
+     * @throws AuthenticationException
      *                if the resource demands authorization and the client does
      *                not supply a token identifying a valid client session
-     * @exception ReadOnlyException
+     * @throws ReadOnlyException
      *                if the resource is read-only or the repository is in
      *                read-only mode
-     * @exception Exception
+     * @throws Exception
      *                if an I/O error occurs
      */
     public Resource store(String token, Resource resource) throws ResourceNotFoundException, AuthorizationException,
@@ -255,7 +292,41 @@ public interface Repository {
     public InputStream getInputStream(String token, Path uri, boolean forProcessing) throws ResourceNotFoundException,
             AuthorizationException, AuthenticationException, Exception;
 
+    /**
+     * Obtains input stream for a particular revision. Not all resource types
+     * have revision support.
+     * 
+     * @param token
+     * @param uri
+     * @param forProcessing
+     * @param revision
+     * @return
+     * @throws ResourceNotFoundException
+     * @throws AuthorizationException
+     * @throws AuthenticationException
+     * @throws Exception 
+     */
     public InputStream getInputStream(String token, Path uri, boolean forProcessing, Revision revision) throws ResourceNotFoundException,
+            AuthorizationException, AuthenticationException, Exception;
+    
+    /**
+     * Obtains an alternative {@link ContentStream content stream} for the
+     * resource at the given path. The repository generally does not
+     * support alternative streams, but they may be available through
+     * extensions. To get an alternative stream, you must know the particular
+     * content identifier, which may be extension-specific.
+     * 
+     * @param token
+     * @param uri
+     * @param forProcessing
+     * @param contentIdentifier an implementation specific content identifier.
+     * @return instance of {@link ContentStream} with alternative content
+     * @throws NoSuchContentException if no such alternative content exists for
+     * the given resource.
+     */
+    public ContentStream getAlternativeContentStream(String token, Path uri, boolean forProcessing,
+            String contentIdentifier)
+            throws NoSuchContentException, ResourceNotFoundException,
             AuthorizationException, AuthenticationException, Exception;
     
     /**
@@ -318,32 +389,6 @@ public interface Repository {
     public Resource createCollection(String token, Path uri) throws AuthorizationException, AuthenticationException,
             IllegalOperationException, ResourceLockedException, ReadOnlyException, Exception;
 
-    public static enum Depth {
-        ZERO("0"), ONE("1"), INF("infinity");
-
-        private String val;
-
-        private Depth(String val) {
-            this.val = val;
-        }
-
-        @Override
-        public String toString() {
-            return this.val;
-        }
-
-        public static Depth fromString(String s) {
-            if ("0".equals(s)) {
-                return ZERO;
-            } else if ("1".equals(s)) {
-                return ONE;
-            } else if ("infinity".equals(s)) {
-                return INF;
-            } else {
-                throw new IllegalArgumentException("Unknown value: " + s);
-            }
-        }
-    }
 
     /**
      * Performs a copy operation on a resource.
@@ -659,14 +704,31 @@ public interface Repository {
     public Resource storeACL(String token, Path uri, Acl acl) throws ResourceNotFoundException, AuthorizationException,
             AuthenticationException, IllegalOperationException, ReadOnlyException, Exception;
 
-    // HACK
-    // Add this for now to be used in ResourceArchiver when expanding archive
-    // And for UiOProppatchController when setting ACLs from WebDAV without validation.
-    public Resource storeACL(String token, Path uri, Acl acl, boolean validateACL) throws ResourceNotFoundException,
+    /**
+     * Store ACL, like {@link #storeACL(java.lang.String, org.vortikal.repository.Path, org.vortikal.repository.Acl) }, but
+     * with optionally disabling ACL validation.
+     * 
+     * Used by resource archiver expansion and from WebADV special propset APIs.
+     * @see #storeACL(java.lang.String, org.vortikal.repository.Path, org.vortikal.repository.Acl) 
+     * @param validateAcl whether to validate ACL before store or not
+     */
+    public Resource storeACL(String token, Path uri, Acl acl, boolean validateAcl) throws ResourceNotFoundException,
             AuthorizationException, AuthenticationException, IllegalOperationException, ReadOnlyException, Exception;
 
-    // END HACK
-    
+    /**
+     * Delete ACL at the given path (turn <strong>on</strong> inheritance from
+     * nearest ancestor node).
+     *
+     * @param token
+     * @param uri
+     * @return
+     * @throws ResourceNotFoundException
+     * @throws AuthorizationException
+     * @throws AuthenticationException
+     * @throws IllegalOperationException
+     * @throws ReadOnlyException
+     * @throws Exception
+     */
     public Resource deleteACL(String token, Path uri) throws ResourceNotFoundException, AuthorizationException,
             AuthenticationException, IllegalOperationException, ReadOnlyException, Exception;
 
@@ -827,6 +889,8 @@ public interface Repository {
 
     /**
      * Get the repository ID.
+     * @return repository identifier as a string. This is usually the same
+     * as the fully qualified host name.
      */
     public String getId();
 

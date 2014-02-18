@@ -40,8 +40,10 @@ import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Acl;
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.Comment;
+import org.vortikal.repository.ContentStream;
 import org.vortikal.repository.FailedDependencyException;
 import org.vortikal.repository.IllegalOperationException;
+import org.vortikal.repository.NoSuchContentException;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Privilege;
 import org.vortikal.repository.ReadOnlyException;
@@ -227,13 +229,19 @@ public class RequestLocalRepository implements Repository {
 
         return this.repository.getInputStream(token, uri, forProcessing);
     }
-
+    
     @Override
     public InputStream getInputStream(String token, Path uri, boolean forProcessing, Revision revision) throws Exception {
 
         return this.repository.getInputStream(token, uri, forProcessing, revision);
     }
 
+    @Override
+    public ContentStream getAlternativeContentStream(String token, Path uri, boolean forProcessing, String contentIdentifier) 
+            throws NoSuchContentException, ResourceNotFoundException, AuthorizationException, AuthenticationException, Exception {
+        return this.repository.getAlternativeContentStream(token, uri, forProcessing, contentIdentifier);
+    }
+    
     @Override
     public Resource createDocument(String token, Path uri, InputStream inStream) throws Exception {
 
@@ -514,4 +522,5 @@ public class RequestLocalRepository implements Repository {
             AuthenticationException, Exception {
         this.repository.deleteRevision(token, uri, revision);
     }
+
 }

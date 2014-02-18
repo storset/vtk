@@ -1,4 +1,4 @@
-/* Copyright (c) 2011, University of Oslo, Norway
+/* Copyright (c) 2013, University of Oslo, Norway
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,25 +29,20 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.vortikal.scheduling;
+package org.vortikal.repository.hooks;
+
+import org.vortikal.repository.RepositoryException;
 
 /**
- * Task interface. Tasks are scheduled for execution by a {@link TaskManager}.
+ * Thrown by repository if failure occurs in a {@link TypeHandlerHooks}.
  */
-public interface Task extends Runnable {
-    
-    /**
-     * Return a task identifier as a string.
-     * @return an identifier as a string. This method should never return <code>null</code>.
-     */
-    String getId();
+public class TypeHandlerHookException extends RepositoryException {
 
-    /**
-     * Provide a <code>TriggerSpecification</code> which determines when and how
-     * often this task shold be triggered.
-     * @return an instance of <code>TriggerSpecification</code>, or <code>null</code> if
-     * no triggering should be done for this task.
-     */
-    TriggerSpecification getTriggerSpecification();
+    public TypeHandlerHookException(String message) {
+        super(message);
+    }
     
+    public TypeHandlerHookException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

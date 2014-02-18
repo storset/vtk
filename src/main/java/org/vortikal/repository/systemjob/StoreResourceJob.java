@@ -43,10 +43,9 @@ public class StoreResourceJob extends AbstractResourceJob {
     public StoreResourceJob() {
         setAbortOnException(false);
     }
-    
+
     @Override
     protected void executeForResource(Resource resource, ExecutionContext ctx) throws Exception {
         ctx.getRepository().store(ctx.getToken(), resource, ctx.getSystemChangeContext());
     }
-    
 }

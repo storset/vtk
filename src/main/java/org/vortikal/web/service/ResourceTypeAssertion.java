@@ -77,11 +77,13 @@ public class ResourceTypeAssertion extends AbstractRepositoryAssertion {
         this.repository = repository;
     }
 
+    @Override
     public boolean conflicts(Assertion assertion) {
         // XXX: implement
         return false;
     }
 
+    @Override
     public boolean matches(Resource resource, Principal principal) {
 
         if (resource == null) {

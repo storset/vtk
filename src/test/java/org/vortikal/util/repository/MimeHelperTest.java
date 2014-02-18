@@ -1,4 +1,4 @@
-/* Copyright (c) 2011, University of Oslo, Norway
+/* Copyright (c) 2013, University of Oslo, Norway
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,25 +29,44 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.vortikal.scheduling;
+package org.vortikal.util.repository;
+
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 /**
- * Task interface. Tasks are scheduled for execution by a {@link TaskManager}.
+ *
  */
-public interface Task extends Runnable {
+public class MimeHelperTest {
     
     /**
-     * Return a task identifier as a string.
-     * @return an identifier as a string. This method should never return <code>null</code>.
+     * Test of map method, of class MimeHelper.
      */
-    String getId();
+    @Test
+    public void map() {
+        assertEquals("video/mp4", MimeHelper.map("video.mp4"));
+        assertEquals("video/mp4", MimeHelper.map("foo/bar/video.mp4"));
+        assertEquals("video/mp4", MimeHelper.map("http://foo.com/bar/video.mp4"));
+        assertEquals("application/octet-stream", MimeHelper.map("special.file.nonExistingExtension"));
+        assertEquals("application/octet-stream", MimeHelper.map("foo"));
+        assertEquals("application/octet-stream", MimeHelper.map("foo."));
+        assertEquals("text/plain", MimeHelper.map(".txt"));
+    }
 
     /**
-     * Provide a <code>TriggerSpecification</code> which determines when and how
-     * often this task shold be triggered.
-     * @return an instance of <code>TriggerSpecification</code>, or <code>null</code> if
-     * no triggering should be done for this task.
+     * Test of findExtension method, of class MimeHelper.
      */
-    TriggerSpecification getTriggerSpecification();
-    
+    @Test
+    public void findExtension() {
+        assertEquals("mp3", MimeHelper.findExtension("audio.mp3"));
+        assertEquals("mp3", MimeHelper.findExtension(".mp3"));
+        assertEquals("mp3", MimeHelper.findExtension("/foo/bar/audio.mp3"));
+        assertEquals("mp3", MimeHelper.findExtension("http://foo.com/bar/audio.mp3"));
+        assertEquals("", MimeHelper.findExtension(""));
+        assertEquals("", MimeHelper.findExtension("."));
+        assertEquals("", MimeHelper.findExtension("a"));
+        assertEquals("", MimeHelper.findExtension("a."));
+        assertEquals("b", MimeHelper.findExtension("a.b"));
+    }
+
 }

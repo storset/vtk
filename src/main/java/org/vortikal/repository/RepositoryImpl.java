@@ -30,6 +30,8 @@
  */
 package org.vortikal.repository;
 
+import org.vortikal.repository.hooks.TypeHandlerHooks;
+import org.vortikal.repository.hooks.TypeHandlerHookException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -70,6 +72,8 @@ import org.vortikal.repository.event.InheritablePropertiesModificationEvent;
 import org.vortikal.repository.event.ResourceCreationEvent;
 import org.vortikal.repository.event.ResourceDeletionEvent;
 import org.vortikal.repository.event.ResourceModificationEvent;
+import org.vortikal.repository.hooks.TypeHandlerHooksHelper;
+import org.vortikal.repository.hooks.UnsupportedContentException;
 import org.vortikal.repository.resourcetype.Content;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.search.QueryException;
@@ -88,6 +92,7 @@ import org.vortikal.security.InvalidPrincipalException;
 import org.vortikal.security.Principal;
 import org.vortikal.security.token.TokenManager;
 import org.vortikal.util.io.StreamUtil;
+import org.vortikal.util.repository.MimeHelper;
 
 /**
  * A semi-transactional implementation of the
@@ -124,6 +129,9 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     private int maxResourceChildren = 3000;
     private File tempDir;
 
+    // Registered type handler hook extensions
+    private TypeHandlerHooksHelper typeHandlerHooksHelper;
+
     // Default value of 60 days before recoverable resources are purged from
     // trash can
     private int permanentDeleteOverdueLimitInDays = 60;
@@ -137,9 +145,9 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
 
     private static final int FILE_COPY_BUF_SIZE = 122880;
 
-    private static Log searchLogger = LogFactory.getLog(RepositoryImpl.class.getName() + ".Search");
-    private static Log trashLogger = LogFactory.getLog(RepositoryImpl.class.getName() + ".Trash");
-
+    private final Log searchLogger = LogFactory.getLog(RepositoryImpl.class.getName() + ".Search");
+    private final Log trashLogger = LogFactory.getLog(RepositoryImpl.class.getName() + ".Trash");
+    
     @Override
     public boolean isReadOnly() {
         return this.authorizationManager.isReadOnly();
@@ -189,9 +197,19 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         } else {
             this.authorizationManager.authorizeRead(uri, principal);
         }
-
+        
         try {
-            return (Resource) resource.clone();
+            ResourceImpl toReturn = (ResourceImpl)resource.clone();
+            TypeHandlerHooks hooks = typeHandlerHooksHelper.getTypeHandlerHooks(toReturn);
+            if (hooks != null) {
+                try {
+                    return hooks.onRetrieve(toReturn);
+                } catch (Exception e){
+                    throw new TypeHandlerHookException("Failed in onRetrieve hook", e);
+                }
+            }
+            
+            return toReturn;
         } catch (CloneNotSupportedException e) {
             throw new IOException("Failed to clone object", e);
         }
@@ -298,9 +316,19 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         } else {
             this.authorizationManager.authorizeRead(uri, principal);
         }
-
+        
+        TypeHandlerHooks hooks = typeHandlerHooksHelper.getTypeHandlerHooks(r);
+        if (hooks != null) {
+            try {
+                return hooks.getInputStream(r);
+            } catch (Exception e) {
+                throw new TypeHandlerHookException("failed in onGetInputStream hook", e);
+            }
+        }
+        
         return this.contentStore.getInputStream(uri);
     }
+    
 
     @Transactional
     @Override
@@ -328,6 +356,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         for (Revision rev : revisions) {
             if (rev.getID() == revision.getID()) {
                 found = true;
+                break;
             }
         }
         if (!found) {
@@ -343,6 +372,44 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         return this.revisionStore.getContent(r, revision);
     }
 
+    @Transactional
+    @Override
+    public ContentStream getAlternativeContentStream(String token, Path uri, boolean forProcessing, String contentIdentifier) 
+            throws NoSuchContentException, ResourceNotFoundException, AuthorizationException, AuthenticationException, Exception {
+
+        if (contentIdentifier == null) {
+            throw new IllegalArgumentException("Content identifier null");
+        }
+        
+        Principal principal = this.tokenManager.getPrincipal(token);
+        ResourceImpl r = this.dao.load(uri);
+
+        if (r == null) {
+            throw new ResourceNotFoundException(uri);
+        } else if (r.isCollection()) {
+            throw new IllegalOperationException("Resource is collection");
+        }
+
+        if (forProcessing) {
+            this.authorizationManager.authorizeReadProcessed(uri, principal);
+        } else {
+            this.authorizationManager.authorizeRead(uri, principal);
+        }
+
+        TypeHandlerHooks hooks = typeHandlerHooksHelper.getTypeHandlerHooks(r);
+        if (hooks != null) {
+            try {
+                return hooks.onGetAlternativeContentStream(r, contentIdentifier);
+            } catch (Exception e) {
+                throw new TypeHandlerHookException("failed in onGetInputStream hook", e);
+            }
+        }
+
+        // Since alternative content streams can only be available through
+        // extensions, we fail if no hooks match the type and can provide it.
+        throw new NoSuchContentException("No content with identifier " + contentIdentifier + " available for resource at " + uri);
+    }
+    
     @Transactional
     @Override
     public Resource[] listChildren(String token, Path uri, boolean forProcessing) throws ResourceNotFoundException,
@@ -371,6 +438,15 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
 
             } catch (CloneNotSupportedException e) {
                 throw new IOException("Failed to clone object", e);
+            }
+        }
+        
+        TypeHandlerHooks hooks = typeHandlerHooksHelper.getTypeHandlerHooks(collection);
+        if (hooks != null) {
+            try {
+                return hooks.onListChildren((ResourceImpl)collection.clone(), list);
+            } catch (Exception e){
+                throw new TypeHandlerHookException("failed in onListChildren hook", e);
             }
         }
 
@@ -415,6 +491,16 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             newResource.setInheritedAcl(true);
             int aclIneritedFrom = parent.isInheritedAcl() ? parent.getAclInheritedFrom() : parent.getID();
             newResource.setAclInheritedFrom(aclIneritedFrom);
+            
+            TypeHandlerHooks hooks = typeHandlerHooksHelper.getTypeHandlerHooksForCreateCollection();
+            if (hooks != null) {
+                try {
+                    hooks.onCreateCollection(newResource);
+                } catch (Exception e) {
+                    throw new TypeHandlerHookException("failed in onCreateCollection hook", e);
+                }
+            }
+            
             newResource = this.resourceHelper.create(principal, newResource, true, content);
             
             // Store new collection resource
@@ -475,6 +561,16 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             PropertySetImpl fixedProps = this.resourceHelper.getFixedCopyProperties(src, principal, destUri);
             ResourceImpl newResource = src.createCopy(destUri, copyAcl ? src.getAcl() : destParent.getAcl());
             Content content = getContent(src);
+            
+            TypeHandlerHooks hooks = typeHandlerHooksHelper.getTypeHandlerHooks(src);
+            if (hooks != null) {
+                try {
+                    hooks.onCopy(src, dest);
+                } catch (Exception e) {
+                    throw new TypeHandlerHookException("failed in onCopy hook", e);
+                }
+            }
+            
             // XXX: why nameChange() on copy?
             newResource = this.resourceHelper.nameChange(src, newResource, principal, content);
 
@@ -558,8 +654,8 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         if (dest != null) {
             this.dao.delete(dest);
             this.contentStore.deleteResource(dest.getURI());
-            this.context
-                    .publishEvent(new ResourceDeletionEvent(this, dest.getURI(), dest.getID(), dest.isCollection()));
+            this.context.publishEvent(new ResourceDeletionEvent(this, dest.getURI(), 
+                    dest.getID(), dest.isCollection()));
         }
 
         try {
@@ -589,6 +685,17 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             newResource.setInheritedAcl(src.isInheritedAcl());
             newResource.setAclInheritedFrom(src.getAclInheritedFrom());
             content = getContent(src);
+
+            // Let hooks process move
+            TypeHandlerHooks hooks = typeHandlerHooksHelper.getTypeHandlerHooks(src);
+            if (hooks != null) {
+                try {
+                    hooks.onMove(src, newResource);
+                } catch (Exception e) {
+                    throw new TypeHandlerHookException("failed in onMove hook", e);
+                }
+            }
+            
             newResource = this.resourceHelper.nameChange(src, newResource, principal, content);
             newResource = this.dao.move(src, newResource);
             this.contentStore.move(src.getURI(), newResource.getURI());
@@ -638,6 +745,15 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         this.context.publishEvent(new ContentModificationEvent(this, (Resource) parentCollection.clone(),
                 originalParent));
 
+        TypeHandlerHooks hooks = typeHandlerHooksHelper.getTypeHandlerHooks(resourceToDelete);
+        if (hooks != null) {
+            try {
+                hooks.onDelete(resourceToDelete, restorable);
+            } catch (Exception e) {
+                throw new TypeHandlerHookException("failed in onDelete hook", e);
+            }
+        }
+        
         if (restorable) {
             // Check ACL before moving to trash can,
             // if inherited, take snapshot of current ACL
@@ -875,8 +991,18 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
 
         try {
             ResourceImpl originalClone = (ResourceImpl) original.clone();
-
+            
             ResourceImpl suppliedResource = (ResourceImpl) resource;
+
+            TypeHandlerHooks hooks = typeHandlerHooksHelper.getTypeHandlerHooks(original);
+            if (hooks != null) {
+                try {
+                    suppliedResource = hooks.onStore(suppliedResource);
+                } catch (Exception e) {
+                    throw new TypeHandlerHookException("failed in onStore hook", e);
+                }
+            }
+            
             ResourceImpl newResource;
             Content content = getContent(original);
 
@@ -903,6 +1029,16 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             ResourceImpl originalClone = (ResourceImpl) original.clone();
 
             ResourceImpl suppliedResource = (ResourceImpl) resource;
+
+            TypeHandlerHooks hooks = typeHandlerHooksHelper.getTypeHandlerHooks(original);
+            if (hooks != null) {
+                try {
+                    suppliedResource = hooks.onStoreSystemChange(suppliedResource, context);
+                } catch (Exception e) {
+                    throw new TypeHandlerHookException("failed in onStoreSystemChange hook", e);
+                }
+            }
+            
             ResourceImpl newResource;
             Content content = getContent(original);
 
@@ -933,6 +1069,16 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             ResourceImpl originalClone = (ResourceImpl) original.clone();
 
             ResourceImpl suppliedResource = (ResourceImpl) resource;
+
+            TypeHandlerHooks hooks = typeHandlerHooksHelper.getTypeHandlerHooks(original);
+            if (hooks != null) {
+                try {
+                    suppliedResource = hooks.onStoreInheritableProps(suppliedResource, context);
+                } catch (Exception e) {
+                    throw new TypeHandlerHookException("failed in onStoreInheritableProps hook", e);
+                }
+            }
+            
             ResourceImpl newResource;
             Content content = getContent(original);
 
@@ -957,8 +1103,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             AuthorizationException, AuthenticationException, ResourceLockedException, ReadOnlyException, IOException {
 
         Principal principal = this.tokenManager.getPrincipal(token);
-        ResourceImpl resource = this.dao.load(uri);
-        if (resource != null) {
+        if (this.dao.load(uri) != null) {
             throw new ResourceOverwriteException(uri);
         }
         ResourceImpl parent = this.dao.load(uri.getParent());
@@ -977,21 +1122,41 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             // Store content modification on parent
             final ResourceImpl originalParent = (ResourceImpl) parent.clone();
             parent.addChildURI(uri);
-            Content content = getContent(parent);
-            parent = this.resourceHelper.contentModification(parent, principal, content);
+            parent = this.resourceHelper.contentModification(parent, principal, getContent(parent));
             parent = this.dao.store(parent);
             this.context.publishEvent(new ContentModificationEvent(this, (Resource) parent.clone(), originalParent));
 
             // Set up new resource
-            this.contentStore.storeContent(uri, inStream);
             ResourceImpl newResource = new ResourceImpl(uri);
-            content = getContent(newResource);
             newResource.setAcl(parent.getAcl());
             newResource.setInheritedAcl(true);
             int aclIneritedFrom = parent.isInheritedAcl() ? parent.getAclInheritedFrom() : parent.getID();
             newResource.setAclInheritedFrom(aclIneritedFrom);
-            newResource = this.resourceHelper.create(principal, newResource, false, content);
             
+            // Check if contentType has interceptor for storage
+            String contentType = MimeHelper.map(uri.getName());
+            TypeHandlerHooks hooks = typeHandlerHooksHelper.getTypeHandlerHooks(contentType);
+            if (hooks != null) {
+                try {
+                    newResource = hooks.storeContentOnCreate(newResource, inStream, contentType);
+                    Content content = hooks.getContentForEvaluation(newResource, getDefaultContent(newResource));
+                    newResource = this.resourceHelper.create(principal, newResource, false, content);
+                } catch (UnsupportedContentException uce) {
+                    // Fallback-process the content, as typehandler did not accept it.
+                    ContentStream cs = uce.getContentStream();
+                    this.contentStore.storeContent(uri, cs.getStream());
+                    // Run through type evaluation
+                    newResource = this.resourceHelper.create(principal, newResource, false, getDefaultContent(newResource));
+                    
+                } catch (Exception e) {
+                    throw new TypeHandlerHookException("failed in onCreateDocument hook", e);
+                }
+            } else {
+                this.contentStore.storeContent(uri, inStream);
+                // Run through type evaluation
+                newResource = this.resourceHelper.create(principal, newResource, false, getContent(newResource));
+            }
+                    
             // Store new resource
             newResource = this.dao.store(newResource);
             this.context.publishEvent(new ResourceCreationEvent(this, (Resource) newResource.clone()));
@@ -1001,7 +1166,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             throw new IOException("Failed to clone object", e);
         }
     }
-
+    
     /**
      * Requests that an InputStream be written to a resource.
      */
@@ -1029,9 +1194,19 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         }
         
         try {
-            final Resource original = (ResourceImpl) r.clone();
+            final ResourceImpl original = (ResourceImpl) r.clone();
 
-            this.contentStore.storeContent(uri, byteStream);
+            TypeHandlerHooks hooks = typeHandlerHooksHelper.getTypeHandlerHooks(r);
+            if (hooks != null) {
+                try {
+                    r = hooks.storeContent(r, byteStream, MimeHelper.map(uri.getName()));
+                } catch (Exception e) {
+                    throw new TypeHandlerHookException("failed in onStoreContent hook", e);
+                }
+            } else {
+                this.contentStore.storeContent(uri, byteStream);
+            }
+
             Content content = getContent(r);
             r = this.resourceHelper.contentModification(r, principal, content);
 
@@ -1044,7 +1219,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             throw new IOException("Failed to clone object", e);
         }
     }
-
+    
     /**
      * Requests that an InputStream be written to a resource.
      * Used to update contents of working copy revision.
@@ -1102,8 +1277,8 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         String uid = principal.getQualifiedName();
         Type type = existing.getType();
         Date timestamp = new Date();
-        String checksum = null;
-        Integer changeAmount = null;
+        String checksum;
+        Integer changeAmount;
 
         File tempFile = null;
         try {
@@ -1402,7 +1577,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         long revisionId = this.revisionStore.newRevisionID();
         Integer changeAmount = null;
         String uid = resource.getModifiedBy().getQualifiedName();
-        String checksum = null;
+        String checksum;
         Date timestamp = resource.getLastModified();
         Acl acl = type == Type.WORKING_COPY ? null : resource.getAcl();
 
@@ -1853,6 +2028,11 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     public void setRepositoryResourceHelper(RepositoryResourceHelper resourceHelper) {
         this.resourceHelper = resourceHelper;
     }
+    
+    @Required
+    public void setTypeHandlerHooksHelper(TypeHandlerHooksHelper helper) {
+        this.typeHandlerHooksHelper = helper;
+    }
 
     @Required
     public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
@@ -1863,7 +2043,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     public void setContentRepresentationRegistry(ContentRepresentationRegistry contentRepresentationRegistry) {
         this.contentRepresentationRegistry = contentRepresentationRegistry;
     }
-
+    
     @Required
     public void setTempDir(String tempDir) {
         File f = new File(tempDir);
@@ -1900,12 +2080,31 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         }
         this.permanentDeleteOverdueLimitInDays = permanentDeleteOverdueLimitInDays;
     }
-
-    private Content getContent(Resource resource) {
+    
+    // Get default content with NO hook overrides
+    private Content getDefaultContent(ResourceImpl resource) throws IOException {
         if (resource == null || resource.isCollection()) {
             return null;
         }
         return new ContentImpl(resource.getURI(), this.contentStore, this.contentRepresentationRegistry);
+    }
+
+    // Get content with possible hook override
+    private Content getContent(ResourceImpl resource) throws IOException {
+        if (resource == null || resource.isCollection()) {
+            return null;
+        }
+
+        TypeHandlerHooks hooks = typeHandlerHooksHelper.getTypeHandlerHooks(resource);
+        if (hooks != null) {
+            try {
+                return hooks.getContentForEvaluation(resource, getDefaultContent(resource));
+            } catch (Exception e) {
+                throw new IOException("failed in getContentForEvaluation hook", e);
+            }
+        }
+
+        return getDefaultContent(resource);
     }
 
     private Content getContent(final ResourceImpl resource, final Revision revision) {
@@ -1986,7 +2185,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         this.maintenanceIntervalSeconds = interval;
     }
 
-    private static Log periodicLogger = LogFactory.getLog(RepositoryImpl.class.getName() + ".Maintenance");
+    private final Log periodicLogger = LogFactory.getLog(RepositoryImpl.class.getName() + ".Maintenance");
     private Set<Integer> revisionGCHours = new HashSet<Integer>(Arrays.asList(new Integer[] { 3 }));
     private Set<Integer> trashCanPurgeHours = new HashSet<Integer>(Arrays.asList(new Integer[] { 4 }));
     private int maintenanceIntervalSeconds = 600;

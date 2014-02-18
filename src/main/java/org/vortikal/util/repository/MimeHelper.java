@@ -82,7 +82,16 @@ public class MimeHelper {
         return properties.getProperty(extension, DEFAULT_MIME_TYPE);
     }
 
-    protected static String findExtension(String fileName) {
+    /**
+     * Attempts to extract file extension from the given file name or file path.
+     * If file name has no extension part, then the empty string is returned.
+     * Otherwise a lower cased file extension without the leading dot is returned.
+     * 
+     * @param fileName the file name or file path
+     * @return lower cased file extension without leading dot, or empty string
+     *     if no file extension was found.
+     */
+    public static String findExtension(String fileName) {
         if (fileName.indexOf(".") < 0) {
             return "";
         }

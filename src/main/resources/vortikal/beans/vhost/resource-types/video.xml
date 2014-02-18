@@ -16,7 +16,6 @@
     <property name="propertyTypeDefinitions">
       <list>
         <ref bean="posterImagePropDef" />
-        <ref bean="generatedPosterImagePropDef" />
         <ref bean="videoHtmlDescriptionPropDef" />
       </list>
     </property>
@@ -26,13 +25,13 @@
       </list>
     </property>
   </bean>
-
+  
   <bean id="contentTypeMatchesVideo" class="org.vortikal.web.service.ResourceContentTypeRegexpAssertion">
-    <property name="pattern" value="video/(.+)" />
+    <property name="pattern" value="^application/mxf$|^video/.+" />
   </bean>
 
   <bean id="contentTypeMatchesAudioOrVideo" class="org.vortikal.web.service.ResourceContentTypeRegexpAssertion">
-    <property name="pattern" value="(video/(.+))||(audio/(.+))" />
+    <property name="pattern" value="^application/mxf|^video/.+|^audio/.+" />
   </bean>
 
   <bean id="mediaPlayerService" class="org.vortikal.web.service.ServiceImpl">
@@ -45,8 +44,6 @@
       </list>
     </property>
   </bean>
-
-
 
   <bean id="videoPlayerService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="mediaPlayerService" />
@@ -72,19 +69,10 @@
 
 
   <bean id="mediaPlayer" class="org.vortikal.web.display.media.MediaPlayer">
-    <property name="extentionToMimetype">
-      <map>
-        <entry key="mp4" value="video/mp4" />
-        <entry key="mov" value="video/quicktime" />
-        <entry key="mp3" value="audio/mpeg" />
-        <entry key="swf" value="application/x-shockwave-flash" />
-        <entry key="flv" value="video/x-flv" />
-      </map>
-    </property>
     <property name="posterImagePropDef" ref="posterImagePropDef" />
-    <property name="generatedPosterImagePropDef" ref="generatedPosterImagePropDef" />
     <property name="viewService" ref="viewService" />
     <property name="thumbnailService" ref="displayThumbnailService" />
+    <property name="thumbnailPropDef" ref="thumbnailPropDef" />
   </bean>
 
   <bean id="displayAudioResource" class="org.vortikal.web.display.media.DisplayMediaController">
@@ -106,7 +94,7 @@
       </map>
     </property>
   </bean>
-
+  
   <bean name="displayMediaResourceView" parent="freemarkerView">
     <property name="url" value="pages/media-player.ftl" />
     <property name="attributes">
@@ -119,11 +107,25 @@
         <entry key="strobe" value="${flash.baseURL}/SMP_2.0.2494-patched/10.2/StrobeMediaPlayback.swf" />
       </map>
     </property>
-    <property name="referenceDataProviders">
+    
+    <property name="referenceDataProviderList">
       <list>
         <ref bean="resourceContextProvider" />
+        <!-- Allow dynamic inclusion of further data providers (from optional extensions). -->      
+        <bean class="org.vortikal.context.CategoryResolvingFactoryBean">
+          <property name="category" value="displayMediaResourceView.referenceDataProvider" />
+        </bean>
       </list>
     </property>
+    
+<!--    <property name="referenceDataProviders">
+      <list>
+        <ref bean="resourceContextProvider" />
+        <ref bean="videoref.hdsStreamUrlProvider" />
+        <ref bean="videoref.hlsStreamUrlProvider" />
+        <ref bean="videoref.directStreamingUrlsProvider" />
+      </list>
+    </property>-->
     <property name="attributesMap">
       <map>
         <entry key="jsURLs">
@@ -153,12 +155,4 @@
     <property name="mandatory" value="false" />
   </bean>
 
-  <bean id="generatedPosterImagePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
-    parent="abstractPropDef">
-    <property name="name" value="generated-poster-image" />
-    <property name="type" value="BINARY" />
-    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
-    <property name="mandatory" value="false" />
-  </bean>
-  
 </beans>

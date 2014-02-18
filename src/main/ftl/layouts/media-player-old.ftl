@@ -10,59 +10,61 @@
 <#import "/lib/media-player.ftl" as mpLib />
  
 <#macro mediaPlayer>
-
-  <#if media?exists && streamType?exists>
+  <#if media?exists>
+    <#if streamType?exists>
   
-    <@mpLib.genPlaceholder "${media?html}" />
-    <@mpLib.initFlash '${media?url("UTF-8")}' true />
+      <@mpLib.genPlaceholder "${media?html}" />
+      <@mpLib.initFlash '${media?url("UTF-8")}' true />
 
-  <#elseif media?exists && contentType?exists>
-    <#if contentType == "audio" 
-      || contentType == "audio/mpeg"
-      || contentType == "audio/mp3"
-      || contentType == "audio/x-mpeg">
+    <#elseif contentType?exists>
+    
+      <#if contentType == "audio" 
+        || contentType == "audio/mpeg"
+        || contentType == "audio/mp3"
+        || contentType == "audio/x-mpeg">
 
-	  <@mpLib.genPlaceholder "${media?html}" true />
-      <@mpLib.initFlash '${media?url("UTF-8")}' false true />
+	    <@mpLib.genPlaceholder "${media?html}" true />
+        <@mpLib.initFlash '${media?url("UTF-8")}' false true />
 
-	  <@genDownloadLink "audio" />
+	    <@genDownloadLink "audio" />
 	  
-    <#elseif contentType == "video/quicktime" >
-      <object classid="clsid:02BF25D5-8C17-4B23-BC80-D3488ABDDC6B" id="testid" width="${width}" height="${height}" codebase="http://www.apple.com/qtactivex/qtplugin.cab">
-        <param name="src" value="${media?html}"/>
-        <param name="autoplay" value="<#if autoplay?exists && autoplay = "true">true<#else>false</#if>"/>
-        <param name="controller" value="true"/>
-        <param name="loop" value="false"/>
-        <param name="scale" value="aspect" />
-        <embed src="${media?html}" 
-               width="${width}" 
-               height="${height}"
-               autoplay="<#if autoplay?exists && autoplay = "true">true<#else>false</#if>"
-               controller="true" loop="false" scale="aspect" pluginspage="http://www.apple.com/quicktime/download/">
-        </embed>
-      </object>
-      <@genDownloadLink />
+      <#elseif contentType == "video/quicktime" >
+        <object classid="clsid:02BF25D5-8C17-4B23-BC80-D3488ABDDC6B" id="testid" width="${width}" height="${height}" codebase="http://www.apple.com/qtactivex/qtplugin.cab">
+          <param name="src" value="${media?html}"/>
+          <param name="autoplay" value="<#if autoplay?exists && autoplay = "true">true<#else>false</#if>"/>
+          <param name="controller" value="true"/>
+          <param name="loop" value="false"/>
+          <param name="scale" value="aspect" />
+          <embed src="${media?html}" 
+                 width="${width}" 
+                 height="${height}"
+                 autoplay="<#if autoplay?exists && autoplay = "true">true<#else>false</#if>"
+                 controller="true" loop="false" scale="aspect" pluginspage="http://www.apple.com/quicktime/download/">
+          </embed>
+        </object>
+        <@genDownloadLink />
       
-    <#elseif contentType == "application/x-shockwave-flash"
-                         && extension == "swf">
+      <#elseif contentType == "application/x-shockwave-flash"
+                           && extension == "swf">
     
-	  <@mpLib.genPlaceholder "${media?html}" />
-	  <@mpLib.initFlash '${media?url("UTF-8")}' false false true />
+	    <@mpLib.genPlaceholder "${media?html}" />
+	    <@mpLib.initFlash '${media?url("UTF-8")}' false false true />
 
-    <#elseif contentType == "video/x-flv"
-          || contentType == "video/mp4">
+      <#elseif contentType == "video/x-flv"
+            || contentType == "video/mp4">
     
-	  <@mpLib.genPlaceholder "${media?html}" false true />
-	  <@mpLib.initFlash '${media?url("UTF-8")}' />
+	    <@mpLib.genPlaceholder "${media?html}" false true />
+	    <@mpLib.initFlash '${media?url("UTF-8")}' />
 	  
-	  <#if contentType == "video/mp4" && !media?starts_with("rtmp")>
-        <@genDownloadLink "video" />
-	  </#if>
+	    <#if contentType == "video/mp4" && !media?starts_with("rtmp")>
+          <@genDownloadLink "video" />
+	    </#if>
 	  
-    <#else>
+      <#else>
     
-      <@genDownloadLink "media" true />
+        <@genDownloadLink "media" true />
       
+      </#if>
     </#if>
   </#if>
 </#macro>

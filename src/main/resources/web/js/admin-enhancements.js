@@ -1045,6 +1045,7 @@ var VrtxTree = dejavu.Class.declare({
     var rootUrl = "/vrtx/__vrtx/static-resources";
     var jQueryUiVersion = "1.10.4";
     
+    $.loadCSS(location.protocol + "//" + location.host + rootUrl + "/themes/default/report/jquery.treeview.css");
     var futureTree = $.Deferred();
     if (typeof $.fn.treeview !== "function") {
       $.getScript(location.protocol + "//" + location.host + rootUrl + "/jquery/plugins/jquery.treeview.js", function () {
@@ -4091,8 +4092,7 @@ function gup(name, url) {
  * Credits: http://www.shamasis.net/2009/09/fast-algorithm-to-find-unique-items-in-javascript-array/
  */
 function unique(array) {
-  var o = {}, i, l = array.length,
-    r = [];
+  var o = {}, i, l = array.length, r = [];
   for (i = 0; i < l; i += 1) o[array[i]] = array[i];
   for (i in o) r.push(o[i]);
   return r;
@@ -4157,6 +4157,18 @@ jQuery.cachedScript = function (url, options) {
     url: url
   });
   return jQuery.ajax(options);
+};
+
+$.loadCSS = function(url) {
+  var ss = document.styleSheets;
+  for (var i = 0, len = ss.length; i < len; i++) {
+    if (ss[i].href == url) return;
+  }
+  if (document.createStyleSheet) {
+    document.createStyleSheet(url);
+  } else {
+    $('<link rel="stylesheet" type="text/css" href="' + url + '" />').appendTo('head');
+  }
 };
 
 /* A little faster dynamic click handler 

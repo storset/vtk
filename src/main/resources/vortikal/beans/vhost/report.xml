@@ -450,6 +450,7 @@
       <map>
         <entry key="cssURLs">
           <list>
+            <value>${themeBaseURL}/report/jquery.treeview.css</value>
             <value>${themeBaseURL}/report/report.css</value>
           </list>
         </entry>

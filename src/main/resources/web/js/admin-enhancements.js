@@ -1537,7 +1537,7 @@ function createFuncComplete() {
   var vrtxAdm = vrtxAdmin;
   
   vrtxAdm.cachedDoc.on("keydown", "#active-tab .vrtx-admin-form .radio-buttons input[type='radio']", function(e) {
-    if(isOneOfKeys(e, [vrtxAdm.keys.LEFT_ARROW, vrtxAdm.keys.UP_ARROW, vrtxAdm.keys.RIGHT_ARROW, vrtxAdm.keys.DOWN_ARROW])) {
+    if(isKey(e, [vrtxAdm.keys.LEFT_ARROW, vrtxAdm.keys.UP_ARROW, vrtxAdm.keys.RIGHT_ARROW, vrtxAdm.keys.DOWN_ARROW])) {
       var checkBox = $(this);
       var waitAndRefocus = setTimeout(function() {
         var checked = checkBox.closest(".radio-buttons").find("input:checked");
@@ -1971,7 +1971,7 @@ function ajaxUploadPerform(opts, size) {
   _$("#dialog-loading-content").append("<div id='dialog-uploading-bar' /><div id='dialog-uploading-percent'>&nbsp;</div>" + uploadDialogExtra + "<a id='dialog-uploading-abort' href='javascript:void(0);'>Avbryt</a>");
   _$("<a id='dialog-uploading-focus' style='outline: none;' tabindex='-1' />").insertBefore("#dialog-uploading-abort")[0].focus();
   _$("#dialog-uploading-focus").keydown(function(e) {
-    if (isKey(e, vrtxAdm.keys.TAB)) { 
+    if (isKey(e, [vrtxAdm.keys.TAB])) { 
       $(this).next().addClass("tab-visible")[0].focus();
       return false;
     }
@@ -4101,13 +4101,9 @@ function unique(array) {
 /* 
  * Check keyboard input 
  */
-function isKey(e, keyCode) {
-  return ((e.which && e.which == keyCode) || (e.keyCode && e.keyCode == keyCode));
-}
-
-function isOneOfKeys(e, keyCodes) {
-  for(var i = 0, len = keyCodes.length; i < len; i++) {
-    if(isKey(e, keyCodes[i])) return true;
+function isKey(e, keyCodes) {
+  for(var i = keyCodes.length; i--;) {
+    if((e.which && e.which == keyCodes[i]) || (e.keyCode && e.keyCode == keyCodes[i])) return true;
   }
 }
 

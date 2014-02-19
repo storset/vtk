@@ -2968,77 +2968,57 @@ function versioningInteraction(bodyId, vrtxAdm, _$) {
   if (bodyId == "vrtx-revisions") {
 
     // Delete revisions
-    vrtxAdm.cachedContent.on("click", ".vrtx-revisions-delete-form input[type=submit]", function (e) {
-      var link = _$(this);
-      var form = link.closest("form");
-      var url = form.attr("action");
-      var dataString = form.serialize();
-      vrtxAdm.serverFacade.postHtml(url, dataString, {
-        success: function (results, status, resp) {
-          var tr = form.closest("tr");
-          if (vrtxAdm.animateTableRows) {
-            tr.prepareTableRowForSliding().hide(0).slideDown(0, "linear");
-          }
-          // Check when multiple animations are complete; credits: http://tinyurl.com/83oodnp
-          var animA = tr.find("td").animate({
-            paddingTop: '0px',
-            paddingBottom: '0px'
-          },
-          vrtxAdm.transitionDropdownSpeed, vrtxAdm.transitionEasingSlideUp, _$.noop);
-          var animB = tr.slideUp(vrtxAdm.transitionDropdownSpeed, vrtxAdm.transitionEasingSlideUp, _$.noop);
-          _$.when(animA, animB).done(function () {
-            var result = _$($.parseHTML(results));
-            vrtxAdm.cachedContent.html(result.find("#contents").html());
-            _$("#app-tabs").html(result.find("#app-tabs").html());
-          });
+    vrtxAdm.setupClickPostHtml({
+      selector: ".vrtx-revisions-delete-form input[type=submit]",
+      fnComplete: function(resultElm, form) {
+        var tr = form.closest("tr");
+        if (vrtxAdm.animateTableRows) {
+          tr.prepareTableRowForSliding().hide(0).slideDown(0, "linear");
         }
-      });
-      e.stopPropagation();
-      e.preventDefault();
+        // Check when multiple animations are complete; credits: http://tinyurl.com/83oodnp
+        var animA = tr.find("td").animate({
+          paddingTop: '0px',
+          paddingBottom: '0px'
+        },
+        vrtxAdm.transitionDropdownSpeed, vrtxAdm.transitionEasingSlideUp, _$.noop);
+        var animB = tr.slideUp(vrtxAdm.transitionDropdownSpeed, vrtxAdm.transitionEasingSlideUp, _$.noop);
+        _$.when(animA, animB).done(function () {
+          vrtxAdm.cachedContent.html(resultElm.find("#contents").html());
+          _$("#app-tabs").html(resultElm.find("#app-tabs").html());
+        });
+      }
     });
 
     // Restore revisions
-    vrtxAdm.cachedContent.on("click", ".vrtx-revisions-restore-form input[type=submit]", function (e) {
-      var link = _$(this);
-      var form = link.closest("form");
-      var url = form.attr("action");
-      var dataString = form.serialize();
-      _$("td.vrtx-revisions-buttons-column input").attr("disabled", "disabled"); // Lock buttons
-      vrtxAdm.serverFacade.postHtml(url, dataString, {
-        success: function (results, status, resp) {
-          vrtxAdm.cachedContent.html($($.parseHTML(results)).find("#contents").html());
-          if (typeof versionsRestoredInfoMsg !== "undefined") {
-            var revisionNr = url.substring(url.lastIndexOf("=") + 1, url.length);
-            var versionsRestoredInfoMsgTmp = versionsRestoredInfoMsg.replace("X", revisionNr);
-            vrtxAdm.displayInfoMsg(versionsRestoredInfoMsgTmp);
-          }
-          scroll(0, 0);
-        },
-        error: function (xhr, textStatus) {
-          _$("td.vrtx-revisions-buttons-column input").removeAttr("disabled"); // Unlock buttons
+    vrtxAdm.setupClickPostHtml({
+      selector: ".vrtx-revisions-restore-form input[type=submit]",
+      fnBeforePost: function() {
+        _$("td.vrtx-revisions-buttons-column input").attr("disabled", "disabled"); // Lock buttons
+      },
+      fnComplete: function(resultElm, form, url) {
+        vrtxAdm.cachedContent.html(resultElm.find("#contents").html());
+        if (typeof versionsRestoredInfoMsg !== "undefined") {
+          var revisionNr = url.substring(url.lastIndexOf("=") + 1, url.length);
+          var versionsRestoredInfoMsgTmp = versionsRestoredInfoMsg.replace("X", revisionNr);
+          vrtxAdm.displayInfoMsg(versionsRestoredInfoMsgTmp);
         }
-      });
-      e.stopPropagation();
-      e.preventDefault();
+        window.scroll(0, 0);
+      },
+      fnError: function() {
+        _$("td.vrtx-revisions-buttons-column input").removeAttr("disabled"); // Unlock buttons
+      }
     });
 
     // Make working copy into current version
-    vrtxAdm.cachedContent.on("click", "#vrtx-revisions-make-current-form input[type=submit]", function (e) {
-      var link = _$(this);
-      var form = link.closest("form");
-      var url = form.attr("action");
-      var dataString = form.serialize();
-      vrtxAdm.serverFacade.postHtml(url, dataString, {
-        success: function (results, status, resp) {
-          vrtxAdm.cachedContent.html(_$($.parseHTML(results)).find("#contents").html());
-          _$("#app-tabs").html(_$($.parseHTML(results)).find("#app-tabs").html());
-          if (typeof versionsMadeCurrentInfoMsg !== "undefined") {
-            vrtxAdm.displayInfoMsg(versionsMadeCurrentInfoMsg);
-          }
+    vrtxAdm.setupClickPostHtml({
+      selector: "#vrtx-revisions-make-current-form input[type=submit]",
+      fnComplete: function(resultElm, form, url) {
+        vrtxAdm.cachedContent.html(resultElm.find("#contents").html());
+        _$("#app-tabs").html(resultElm.find("#app-tabs").html());
+        if (typeof versionsMadeCurrentInfoMsg !== "undefined") {
+          vrtxAdm.displayInfoMsg(versionsMadeCurrentInfoMsg);
         }
-      });
-      e.stopPropagation();
-      e.preventDefault();
+      }
     });
   }
 }
@@ -3506,7 +3486,10 @@ VrtxAdmin.prototype.setupClickPostHtml = function setupClickPostHtml(opts) {
     var form = link.closest("form");
     var url = form.attr("action");
     var dataString = form.serialize() + "&" + encodeURIComponent(link.attr("name"));
-    vrtxAdmin.serverFacade.postHtml(url, dataString, {
+    if(opts.fnBeforePost) {
+      opts.fnBeforePost();
+    }
+    vrtxAdm.serverFacade.postHtml(url, dataString, {
       success: function (results, status, resp) {
         var resultsElm = _$($.parseHTML(results));
         
@@ -3517,8 +3500,13 @@ VrtxAdmin.prototype.setupClickPostHtml = function setupClickPostHtml(opts) {
             form.find(opts.updateSelector).html(resultsElm.find(opts.updateSelector).html());
           }
           if(opts.fnComplete) {
-            opts.fnComplete(resultsElm);
+            opts.fnComplete(resultsElm, form, url);
           }
+        }
+      },
+      error: function (xhr, textStatus) {
+        if(opts.fnError) {
+          opts.fnError(xhr, textStatus, form, url);
         }
       }
     });

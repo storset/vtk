@@ -828,12 +828,12 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
       // Remove/add permissions
       vrtxAdm.setupClickPostHtml({
         selector: "input.removePermission",
-        updateSelector: ".principalList",
+        updateSelectors: [".principalList"],
         fnComplete: initSimplifiedPermissionForm
       });
       vrtxAdm.setupClickPostHtml({
         selector: "span.addGroup input[type='submit']",
-        updateSelector: ".principalList",
+        updateSelectors: [".principalList"],
         errorContainer: "errorContainer",
         errorContainerInsertAfter: ".groups-wrapper",
         fnComplete: function() {
@@ -843,7 +843,7 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
       });
       vrtxAdm.setupClickPostHtml({
         selector: "span.addUser input[type='submit']",
-        updateSelector: ".principalList",
+        updateSelectors: [".principalList"],
         errorContainer: "errorContainer",
         errorContainerInsertAfter: ".users-wrapper",
         fnComplete: function() {
@@ -2992,11 +2992,11 @@ function versioningInteraction(bodyId, vrtxAdm, _$) {
     // Restore revisions
     vrtxAdm.setupClickPostHtml({
       selector: ".vrtx-revisions-restore-form input[type=submit]",
+      updateSelectors: ["#contents"],
       fnBeforePost: function() {
         _$("td.vrtx-revisions-buttons-column input").attr("disabled", "disabled"); // Lock buttons
       },
       fnComplete: function(resultElm, form, url) {
-        vrtxAdm.cachedContent.html(resultElm.find("#contents").html());
         if (typeof versionsRestoredInfoMsg !== "undefined") {
           var revisionNr = url.substring(url.lastIndexOf("=") + 1, url.length);
           var versionsRestoredInfoMsgTmp = versionsRestoredInfoMsg.replace("X", revisionNr);
@@ -3012,9 +3012,8 @@ function versioningInteraction(bodyId, vrtxAdm, _$) {
     // Make working copy into current version
     vrtxAdm.setupClickPostHtml({
       selector: "#vrtx-revisions-make-current-form input[type=submit]",
+      updateSelectors: ["#contents", "#app-tabs"],
       fnComplete: function(resultElm, form, url) {
-        vrtxAdm.cachedContent.html(resultElm.find("#contents").html());
-        _$("#app-tabs").html(resultElm.find("#app-tabs").html());
         if (typeof versionsMadeCurrentInfoMsg !== "undefined") {
           vrtxAdm.displayInfoMsg(versionsMadeCurrentInfoMsg);
         }
@@ -3471,7 +3470,7 @@ VrtxAdmin.prototype.completeFormAsyncPost = function completeFormAsyncPost(optio
 };
 
 /**
- * Setup a standard link async-posting a form
+ * Setup a link that is async-posting a form
  * 
  * @this {VrtxAdmin}
  * @param {object} opts
@@ -3496,8 +3495,10 @@ VrtxAdmin.prototype.setupClickPostHtml = function setupClickPostHtml(opts) {
         if (opts.errorContainer && vrtxAdm.hasErrorContainers(resultsElm, opts.errorContainer)) {
           vrtxAdm.displayErrorContainers(resultsElm, form, opts.errorContainerInsertAfter, opts.errorContainer);
         } else {
-          if(opts.updateSelector) {
-            form.find(opts.updateSelector).html(resultsElm.find(opts.updateSelector).html());
+          if(opts.updateSelectors) {
+            for(var i = 0, len = opts.updateSelectors.length; i < len; i++) {
+              vrtxAdm.cachedAppContent.find(opts.updateSelectors[i]).html(resultsElm.find(opts.updateSelectors[i]).html());
+            }
           }
           if(opts.fnComplete) {
             opts.fnComplete(resultsElm, form, url);
@@ -3510,6 +3511,7 @@ VrtxAdmin.prototype.setupClickPostHtml = function setupClickPostHtml(opts) {
         }
       }
     });
+    e.stopPropagation();
     e.preventDefault();
   });
 };

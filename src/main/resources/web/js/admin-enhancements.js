@@ -740,23 +740,17 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
       vrtxAdm.collectionListingInteraction();
       break;
     case "vrtx-trash-can":
-      vrtxAdm.cachedContent.on("click", "input.deleteResourcePermanent", function (e) {
-        if (vrtxAdm.trashcanCheckedFiles >= (vrtxAdm.cachedContent.find("tbody tr").length - 1)) return; // Redirect if empty trash can
-        vrtxAdm.trashcanCheckedFiles = 0;
-        var input = _$(this);
-        var form = input.closest("form");
-        var url = form.attr("action");
-        var dataString = form.serialize() + "&" + input.attr("name");
-        vrtxAdm.serverFacade.postHtml(url, dataString, {
-          success: function (results, status, resp) {
-            var result = _$($.parseHTML(results));
-            vrtxAdm.displayErrorMsg(result.find(".errormessage").html());
-            vrtxAdm.cachedContent.html(result.find("#contents").html());
-            vrtxAdm.updateCollectionListingInteraction();
-          }
-        });
-        e.stopPropagation();
-        e.preventDefault();
+      vrtxAdm.setupClickPostHtml({
+        selector: "input.deleteResourcePermanent",
+        updateSelectors: ["#contents"],
+        fnBeforePost: function() {
+          if (vrtxAdm.trashcanCheckedFiles >= (vrtxAdm.cachedContent.find("tbody tr").length - 1)) return false;
+          vrtxAdm.trashcanCheckedFiles = 0;
+        },
+        fnComplete: function(resultElm) {
+          vrtxAdm.displayErrorMsg(resultElm.find(".errormessage").html());
+          vrtxAdm.updateCollectionListingInteraction();
+        }
       });
       vrtxAdm.collectionListingInteraction();
       break;
@@ -3481,13 +3475,14 @@ VrtxAdmin.prototype.setupClickPostHtml = function setupClickPostHtml(opts) {
     _$ = vrtxAdm._$;
 
   vrtxAdm.cachedAppContent.on("click", opts.selector, function (e) {
+    if(opts.fnBeforePost) {
+      var retVal = opts.fnBeforePost();
+      if(retVal === false) return;
+    }
     var link = _$(this);
     var form = link.closest("form");
     var url = form.attr("action");
     var dataString = form.serialize() + "&" + encodeURIComponent(link.attr("name"));
-    if(opts.fnBeforePost) {
-      opts.fnBeforePost();
-    }
     vrtxAdm.serverFacade.postHtml(url, dataString, {
       success: function (results, status, resp) {
         var resultsElm = _$($.parseHTML(results));

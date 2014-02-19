@@ -3479,18 +3479,18 @@ VrtxAdmin.prototype.completeSimpleFormAsync = function completeSimpleFormAsync(o
     }
     vrtxAdm.serverFacade.postHtml(url, dataString, {
       success: function (results, status, resp) {
-        var resultsElm = _$($.parseHTML(results));
+        var resultElm = _$($.parseHTML(results));
         
-        if (opts.errorContainer && vrtxAdm.hasErrorContainers(resultsElm, opts.errorContainer)) {
-          vrtxAdm.displayErrorContainers(resultsElm, form, opts.errorContainerInsertAfter, opts.errorContainer);
+        if (opts.errorContainer && vrtxAdm.hasErrorContainers(resultElm, opts.errorContainer)) {
+          vrtxAdm.displayErrorContainers(resultElm, form, opts.errorContainerInsertAfter, opts.errorContainer);
         } else {
           if(opts.updateSelectors) {
             for(var i = 0, len = opts.updateSelectors.length; i < len; i++) {
-              vrtxAdm.cachedAppContent.find(opts.updateSelectors[i]).html(resultsElm.find(opts.updateSelectors[i]).html());
+              vrtxAdm.cachedAppContent.find(opts.updateSelectors[i]).html(resultElm.find(opts.updateSelectors[i]).html());
             }
           }
           if(opts.fnComplete) {
-            opts.fnComplete(resultsElm, form, url, link);
+            opts.fnComplete(resultElm, form, url, link);
           }
         }
       },

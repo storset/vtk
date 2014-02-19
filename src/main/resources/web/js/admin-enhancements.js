@@ -721,22 +721,17 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
           e.preventDefault();
         });
       }
-      vrtxAdm.cachedContent.on("click", "input#collectionListing\\.action\\.unpublish-resources, input#collectionListing\\.action\\.publish-resources, input#collectionListing\\.action\\.delete-resources", function (e) {
-        var input = _$(this);
-        var form = input.closest("form");
-        var url = form.attr("action");
-        var dataString = form.serialize() + "&" + input.attr("name") + "=" + input.val();
-        vrtxAdm.serverFacade.postHtml(url, dataString, {
-          success: function (results, status, resp) {
-            var result = _$($.parseHTML(results));
-            vrtxAdm.displayErrorMsg(result.find(".errormessage").html());
-            vrtxAdm.cachedContent.html(result.find("#contents").html());
-            vrtxAdm.updateCollectionListingInteraction();
-          }
-        });
-        e.stopPropagation();
-        e.preventDefault();
+      
+      vrtxAdm.setupClickPostHtml({
+        selector: "input#collectionListing\\.action\\.unpublish-resources, input#collectionListing\\.action\\.publish-resources, input#collectionListing\\.action\\.delete-resources",
+        updateSelectors: ["#contents"],
+        useClickVal: true,
+        fnComplete: function(resultElm) {
+          vrtxAdm.displayErrorMsg(resultElm.find(".errormessage").html());
+          vrtxAdm.updateCollectionListingInteraction();
+        }
       });
+      
       vrtxAdm.collectionListingInteraction();
       break;
     case "vrtx-trash-can":
@@ -3483,6 +3478,9 @@ VrtxAdmin.prototype.setupClickPostHtml = function setupClickPostHtml(opts) {
     var form = link.closest("form");
     var url = form.attr("action");
     var dataString = form.serialize() + "&" + encodeURIComponent(link.attr("name"));
+    if(opts.useClickVal) {
+      dataString += "=" + encodeURIComponent(link.val());
+    }
     vrtxAdm.serverFacade.postHtml(url, dataString, {
       success: function (results, status, resp) {
         var resultsElm = _$($.parseHTML(results));
@@ -3506,7 +3504,6 @@ VrtxAdmin.prototype.setupClickPostHtml = function setupClickPostHtml(opts) {
         }
       }
     });
-    e.stopPropagation();
     e.preventDefault();
   });
 };

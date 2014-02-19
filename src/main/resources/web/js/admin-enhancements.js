@@ -826,10 +826,32 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
       }
 
       // Remove/add permissions
-      vrtxAdm.removePermissionAsync("input.removePermission", ".principalList");
-      vrtxAdm.addPermissionAsync("span.addGroup", ".principalList", ".groups-wrapper", "errorContainer");
-      vrtxAdm.addPermissionAsync("span.addUser", ".principalList", ".users-wrapper", "errorContainer");
-
+      vrtxAdm.setupClickPostHtml({
+        selector: "input.removePermission",
+        updateSelector: ".principalList",
+        fnComplete: initSimplifiedPermissionForm
+      });
+      vrtxAdm.setupClickPostHtml({
+        selector: "span.addGroup input[type='submit']",
+        updateSelector: ".principalList",
+        errorContainer: "errorContainer",
+        errorContainerInsertAfter: ".groups-wrapper",
+        fnComplete: function() {
+          $("input#groupNames").val("");
+          initSimplifiedPermissionForm();
+        }
+      });
+      vrtxAdm.setupClickPostHtml({
+        selector: "span.addUser input[type='submit']",
+        updateSelector: ".principalList",
+        errorContainer: "errorContainer",
+        errorContainerInsertAfter: ".users-wrapper",
+        fnComplete: function() {
+          $("input#userNames").val("");
+          initSimplifiedPermissionForm();
+        }
+      });
+      
       var SUBMIT_SET_INHERITED_PERMISSIONS = false;
       vrtxAdm.cachedDoc.on("click", "#permissions\\.toggleInheritance\\.submit", function (e) {
         if (!SUBMIT_SET_INHERITED_PERMISSIONS) {
@@ -3469,78 +3491,34 @@ VrtxAdmin.prototype.completeFormAsyncPost = function completeFormAsyncPost(optio
 };
 
 /**
- * Remove permission async
- *
+ * Setup a standard link async-posting a form
+ * 
  * @this {VrtxAdmin}
- * @param {string} selector Selector for links that should do removal async
- * @param {string} updateSelector The selector for container to be updated on success
+ * @param {object} opts
  */
-VrtxAdmin.prototype.removePermissionAsync = function removePermissionAsync(selector, updateSelector) {
+VrtxAdmin.prototype.setupClickPostHtml = function setupClickPostHtml(opts) {
   var args = arguments,
     vrtxAdm = this,
     _$ = vrtxAdm._$;
 
-  vrtxAdm.cachedAppContent.on("click", selector, function (e) {
+  vrtxAdm.cachedAppContent.on("click", opts.selector, function (e) {
     var link = _$(this);
     var form = link.closest("form");
     var url = form.attr("action");
-
-    var dataString = "&csrf-prevention-token=" + form.find("input[name='csrf-prevention-token']").val() +
-                     "&" + encodeURIComponent(link.attr("name"));
-
+    var dataString = form.serialize() + "&" + encodeURIComponent(link.attr("name"));
     vrtxAdmin.serverFacade.postHtml(url, dataString, {
       success: function (results, status, resp) {
-        form.find(updateSelector).html(_$($.parseHTML(results)).find(updateSelector).html());
-        initSimplifiedPermissionForm();
-      }
-    });
-    e.preventDefault();
-  });
-};
-
-/**
- * Add permission async
- *
- * @this {VrtxAdmin}
- * @param {string} selector Selector for links that should do add async
- * @param {string} updateSelector The selector for container to be updated on success
- * @param {string} errorContainerInsertAfter Selector where to place the new error container
- * @param {string} errorContainer The className of the error container
- */
-VrtxAdmin.prototype.addPermissionAsync = function addPermissionAsync(selector, updateSelector, errorContainerInsertAfter, errorContainer) {
-  var args = arguments,
-    vrtxAdm = this,
-    _$ = vrtxAdm._$;
-
-  vrtxAdm.cachedAppContent.on("click", selector + " input[type=submit]", function (e) {
-    var link = _$(this);
-    var form = link.closest("form");
-    var url = form.attr("action");
-    var parent = link.parent().parent();
-    var textfield = parent.find("input[type=text]");
-    var textfieldName = textfield.attr("name");
-    var textfieldVal = textfield.val();
-    var dataString = textfieldName + "=" + encodeURIComponent(textfieldVal) +
-                     "&csrf-prevention-token=" + form.find("input[name='csrf-prevention-token']").val() +
-                     "&" + link.attr("name");
-
-    var hiddenAC = parent.find("input#ac_userNames");
-    if (hiddenAC.length) {
-      var hiddenACName = hiddenAC.attr("name");
-      var hiddenACVal = hiddenAC.val();
-      dataString += "&" + hiddenACName + "=" + hiddenACVal;
-    }
-
-    vrtxAdmin.serverFacade.postHtml(url, dataString, {
-      success: function (results, status, resp) {
-        if (vrtxAdm.hasErrorContainers(_$.parseHTML(results), errorContainer)) {
-          vrtxAdm.displayErrorContainers(_$.parseHTML(results), form, errorContainerInsertAfter, errorContainer);
+        var resultsElm = _$($.parseHTML(results));
+        
+        if (opts.errorContainer && vrtxAdm.hasErrorContainers(resultsElm, opts.errorContainer)) {
+          vrtxAdm.displayErrorContainers(resultsElm, form, opts.errorContainerInsertAfter, opts.errorContainer);
         } else {
-          var upSelector = form.find(updateSelector);
-          upSelector.parent().find("div." + errorContainer).remove();
-          upSelector.html(_$(_$.parseHTML(results)).find(updateSelector).html());
-          textfield.val("");
-          initSimplifiedPermissionForm();
+          if(opts.updateSelector) {
+            form.find(opts.updateSelector).html(resultsElm.find(opts.updateSelector).html());
+          }
+          if(opts.fnComplete) {
+            opts.fnComplete(resultsElm);
+          }
         }
       }
     });

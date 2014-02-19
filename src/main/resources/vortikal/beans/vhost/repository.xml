@@ -159,7 +159,7 @@
     extending DefaultTypeHandlerHooks. Sets contentStore and content
     RepresentationRegistry properties.
     </description>
-    <property name="contentStore" ref="repository.fsContentStore" />
+    <property name="contentStore" ref="${repository.contentStore}" />
     <property name="contentRepresentationRegistry" ref="contentRepresentationRegistry" />
   </bean>
 

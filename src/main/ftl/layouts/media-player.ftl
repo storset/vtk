@@ -12,7 +12,7 @@
 <#import "/layouts/media-player-old.ftl" as mpOld />
 
 <#macro mediaPlayer>
-  <#locale dateStr = 0 />
+  <#local dateStr = 0 />
   <#if nanoTime?has_content>
     <#local dateStr = nanoTime?c />
   </#if>

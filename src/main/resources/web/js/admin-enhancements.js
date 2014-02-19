@@ -602,57 +602,48 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
         "collectionListing.action.copy-resources": "copyToSelectedFolderService"
       };
       for (i = tabMenuServices.length; i--;) {
-        vrtxAdm.cachedContent.on("click", "input#" + tabMenuServices[i], function (e) {
-          var input = _$(this);
-          var form = input.closest("form");
-          var url = form.attr("action");
-          var li = "li." + tabMenuServicesInjectMap[input.attr("id")];
-          var dataString = form.serialize() + "&" + input.attr("name") + "=" + input.val();
-          vrtxAdm.serverFacade.postHtml(url, dataString, {
-            success: function (results, status, resp) {
-              var resourceMenuRight = $("#resourceMenuRight");
-              var copyMoveExists = "";
-              for (var key in tabMenuServicesInjectMap) {
-                var copyMove = resourceMenuRight.find("li." + tabMenuServicesInjectMap[key]);
-                if (copyMove.length) {
-                  copyMoveExists = copyMove;
-                  break;
-                }
-              }
-              results = _$($.parseHTML(results));
-              
-              var copyMoveAfter = function() {
-                resourceMenuRight.html(results.find("#resourceMenuRight").html());
-                vrtxAdm.displayInfoMsg(results.find(".infomessage").html());
-              };
-              
-              if (copyMoveExists !== "") {
-                var copyMoveAnimation = new VrtxAnimation({
-                  elem: copyMoveExists,
-                  outerWrapperElem: resourceMenuRight,
-                  after: function() {
-                    copyMoveExists.remove();
-                    copyMoveAfter();
-                    copyMoveAnimation.update({
-                      elem: resourceMenuRight.find(li),
-                      outerWrapperElem: resourceMenuRight
-                    })
-                    copyMoveAnimation.rightIn();
-                  }
-                });
-                copyMoveAnimation.leftOut();
-              } else {
-                copyMoveAfter();
-                var copyMoveAnimation = new VrtxAnimation({
-                  elem: resourceMenuRight.find(li),
-                  outerWrapperElem: resourceMenuRight
-                });
-                copyMoveAnimation.rightIn();
+        vrtxAdm.setupClickPostHtml({
+          selector: "input#" + tabMenuServices[i],
+          useClickVal: true,
+          fnComplete: function(resultElm, form, url, link) {
+            var li = "li." + tabMenuServicesInjectMap[link.attr("id")];
+            var resourceMenuRight = $("#resourceMenuRight");
+            var copyMoveExists = "";
+            for (var key in tabMenuServicesInjectMap) {
+              var copyMove = resourceMenuRight.find("li." + tabMenuServicesInjectMap[key]);
+              if (copyMove.length) {
+                copyMoveExists = copyMove;
+                break;
               }
             }
-          });
-          e.stopPropagation();
-          e.preventDefault();
+            var copyMoveAfter = function() {
+              resourceMenuRight.html(resultElm.find("#resourceMenuRight").html());
+              vrtxAdm.displayInfoMsg(resultElm.find(".infomessage").html());
+            };
+            if (copyMoveExists !== "") {
+              var copyMoveAnimation = new VrtxAnimation({
+                elem: copyMoveExists,
+                outerWrapperElem: resourceMenuRight,
+                after: function() {
+                  copyMoveExists.remove();
+                  copyMoveAfter();
+                  copyMoveAnimation.update({
+                    elem: resourceMenuRight.find(li),
+                    outerWrapperElem: resourceMenuRight
+                  })
+                  copyMoveAnimation.rightIn();
+                }
+              });
+              copyMoveAnimation.leftOut();
+            } else {
+              copyMoveAfter();
+              var copyMoveAnimation = new VrtxAnimation({
+                elem: resourceMenuRight.find(li),
+                outerWrapperElem: resourceMenuRight
+              });
+              copyMoveAnimation.rightIn();
+            }
+          }
         });
       }
 
@@ -668,7 +659,7 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
               _$("<span class='vrtx-show-processing' />").insertBefore(form.find(".vrtx-cancel-link"));
             }
           },
-          fnComplete: function(resultElm, form, url) {
+          fnComplete: function(resultElm, form) {
             var cancelFn = function() {
               form.find(".vrtx-button-small").show();
               form.find(".vrtx-cancel-link").show();
@@ -3491,13 +3482,13 @@ VrtxAdmin.prototype.setupClickPostHtml = function setupClickPostHtml(opts) {
             }
           }
           if(opts.fnComplete) {
-            opts.fnComplete(resultsElm, form, url);
+            opts.fnComplete(resultsElm, form, url, link);
           }
         }
       },
       error: function (xhr, textStatus) {
         if(opts.fnError) {
-          opts.fnError(xhr, textStatus, form, url);
+          opts.fnError(xhr, textStatus, form, url, link);
         }
       }
     });

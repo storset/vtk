@@ -2944,23 +2944,8 @@ function versioningInteraction(bodyId, vrtxAdm, _$) {
     // Delete revisions
     vrtxAdm.completeSimpleFormAsync({
       selector: ".vrtx-revisions-delete-form input[type=submit]",
-      fnComplete: function(resultElm, form) {
-        var tr = form.closest("tr");
-        if (vrtxAdm.animateTableRows) {
-          tr.prepareTableRowForSliding().hide(0).slideDown(0, "linear");
-        }
-        // Check when multiple animations are complete; credits: http://tinyurl.com/83oodnp
-        var animA = tr.find("td").animate({
-          paddingTop: '0px',
-          paddingBottom: '0px'
-        },
-        vrtxAdm.transitionDropdownSpeed, vrtxAdm.transitionEasingSlideUp, _$.noop);
-        var animB = tr.slideUp(vrtxAdm.transitionDropdownSpeed, vrtxAdm.transitionEasingSlideUp, _$.noop);
-        _$.when(animA, animB).done(function () {
-          vrtxAdm.cachedContent.html(resultElm.find("#contents").html());
-          _$("#app-tabs").html(resultElm.find("#app-tabs").html());
-        });
-      }
+      updateSelectors: ["#app-tabs", "#contents"],
+      rowFromFormAnimateOut: true
     });
 
     // Restore revisions
@@ -3484,13 +3469,41 @@ VrtxAdmin.prototype.completeSimpleFormAsync = function completeSimpleFormAsync(o
         if (opts.errorContainer && vrtxAdm.hasErrorContainers(resultElm, opts.errorContainer)) {
           vrtxAdm.displayErrorContainers(resultElm, form, opts.errorContainerInsertAfter, opts.errorContainer);
         } else {
-          if(opts.updateSelectors) {
-            for(var i = 0, len = opts.updateSelectors.length; i < len; i++) {
-              vrtxAdm.cachedAppContent.find(opts.updateSelectors[i]).html(resultElm.find(opts.updateSelectors[i]).html());
+          var fnInternalComplete = function() {
+            if(opts.updateSelectors) {
+              for(var i = 0, len = opts.updateSelectors.length; i < len; i++) {
+                vrtxAdm.cachedAppContent.find(opts.updateSelectors[i]).html(resultElm.find(opts.updateSelectors[i]).html());
+              }
             }
-          }
-          if(opts.fnComplete) {
-            opts.fnComplete(resultElm, form, url, link);
+            if(opts.fnComplete) {
+              opts.fnComplete(resultElm, form, url, link);
+            }
+          };
+          if(opts.rowFromFormAnimateOut || opts.rowCheckedAnimateOut) {
+            var trs = opts.rowFromFormAnimateOut ? [form.closest("tr")] : form.find("tr")
+                                                                              .filter(function(i) { 
+                                                                                return $(this).find("td.checkbox input:checked").length }
+                                                                              );
+            var futureAnims = [];
+            for(var i = 0, len = trs.length; i < len; i++) {
+              var tr = $(trs[i]);
+              if (vrtxAdm.animateTableRows) {
+                tr.prepareTableRowForSliding().hide(0).slideDown(0, "linear");
+              }
+              var animA = tr.find("td").animate({
+                paddingTop: '0px',
+                paddingBottom: '0px'
+              },
+              vrtxAdm.transitionDropdownSpeed, vrtxAdm.transitionEasingSlideUp, _$.noop);
+              var animB = tr.slideUp(vrtxAdm.transitionDropdownSpeed, vrtxAdm.transitionEasingSlideUp, _$.noop);
+              futureAnims.push(animA);
+              futureAnims.push(animB);
+            }      
+            _$.when.apply($, futureAnims).done(function () {
+              fnInternalComplete();
+            });
+          } else {
+            fnInternalComplete();
           }
         }
       },

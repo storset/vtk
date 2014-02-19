@@ -657,71 +657,65 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
       }
 
       for (i = resourceMenuServices.length; i--;) {
-        vrtxAdm.cachedAppContent.on("click", "#resourceMenuRight li." + resourceMenuServices[i] + " button", function (e) {
-          var button = _$(this);
-          var form = button.closest("form");
-          var url = form.attr("action");
-          var li = form.closest("li");
-          var dataString = form.serialize() + "&" + button.attr("name") + "=" + button.val();
-          if(button.attr("name") != "clear-action") {
-            form.find(".vrtx-button-small").hide();
-            form.find(".vrtx-cancel-link").hide();
-            _$("<span class='vrtx-show-processing' />").insertBefore(form.find(".vrtx-cancel-link"));
-          }
-          var cancelFn = function() {
-            form.find(".vrtx-button-small").show();
-            form.find(".vrtx-cancel-link").show();
-            form.find(".vrtx-show-processing").remove();
-            vrtxAdm.uploadCopyMoveSkippedFiles = {};
-          };
-          
-          vrtxAdm.serverFacade.postHtml(url, dataString + "&overwrite", {
-            success: function (results, status, resp) {
-              var resultElm = _$(_$.parseHTML(results));
-
-              var existingFilenamesField = resultElm.find("#copy-move-existing-filenames");
-              var moveToSameFolder = resultElm.find("#move-to-same-folder");
-              if(moveToSameFolder.length) {
-                cancelFn();
-                vrtxAdm.displayErrorMsg(move.existing.sameFolder);
-              } else if(existingFilenamesField.length) {
-                var existingFilenames = existingFilenamesField.text().split("#");
-                var numberOfFiles = parseInt(resultElm.find("#copy-move-number-of-files").text(), 10);
-                userProcessExistingFiles(existingFilenames, null, numberOfFiles, 
-                  function() {
-                    var skippedFiles = "";
-                    for(key in vrtxAdm.uploadCopyMoveSkippedFiles) {
-                      skippedFiles += key + ",";
-                    }
-                    form.find("#existing-skipped-files").remove();
-                    form.append("<input id='existing-skipped-files' name='existing-skipped-files' type='hidden' value='" + skippedFiles + "' />");
-                    cancelFn();
-                    button.click();
-                  },
-                  cancelFn,
-                  true
-                );
-              } else {
-                form.find("#existing-skipped-files").remove();
-                var copyMoveAnimation = new VrtxAnimation({
-                  elem: li,
-                  outerWrapperElem: $("#resourceMenuRight"),
-                  after: function() {
-                    vrtxAdm.displayErrorMsg(resultElm.find(".errormessage").html());
-                    vrtxAdm.cachedContent.html(resultElm.find("#contents").html());
-                    vrtxAdm.updateCollectionListingInteraction();
-                    li.remove();
-                  }
-                });
-                copyMoveAnimation.leftOut();
-              }
+        vrtxAdm.setupClickPostHtml({
+          selector: "#resourceMenuRight li." + resourceMenuServices[i] + " button",
+          useClickVal: true,
+          useExtraParams: "&overwrite",
+          fnBeforePost: function(form, link) {
+            if(link.attr("name") != "clear-action") {
+              form.find(".vrtx-button-small").hide();
+              form.find(".vrtx-cancel-link").hide();
+              _$("<span class='vrtx-show-processing' />").insertBefore(form.find(".vrtx-cancel-link"));
             }
-          });
-          e.stopPropagation();
-          e.preventDefault();
+          },
+          fnComplete: function(resultElm, form, url) {
+            var cancelFn = function() {
+              form.find(".vrtx-button-small").show();
+              form.find(".vrtx-cancel-link").show();
+              form.find(".vrtx-show-processing").remove();
+              vrtxAdm.uploadCopyMoveSkippedFiles = {};
+            };
+            var li = form.closest("li");
+            var existingFilenamesField = resultElm.find("#copy-move-existing-filenames");
+            var moveToSameFolder = resultElm.find("#move-to-same-folder");
+            if(moveToSameFolder.length) {
+              cancelFn();
+              vrtxAdm.displayErrorMsg(move.existing.sameFolder);
+            } else if(existingFilenamesField.length) {
+              var existingFilenames = existingFilenamesField.text().split("#");
+              var numberOfFiles = parseInt(resultElm.find("#copy-move-number-of-files").text(), 10);
+              userProcessExistingFiles(existingFilenames, null, numberOfFiles, 
+                function() {
+                  var skippedFiles = "";
+                  for(key in vrtxAdm.uploadCopyMoveSkippedFiles) {
+                    skippedFiles += key + ",";
+                  }
+                  form.find("#existing-skipped-files").remove();
+                  form.append("<input id='existing-skipped-files' name='existing-skipped-files' type='hidden' value='" + skippedFiles + "' />");
+                  cancelFn();
+                  button.click();
+                },
+                cancelFn,
+                true
+              );
+            } else {
+              form.find("#existing-skipped-files").remove();
+              var copyMoveAnimation = new VrtxAnimation({
+                elem: li,
+                outerWrapperElem: $("#resourceMenuRight"),
+                after: function() {
+                  vrtxAdm.displayErrorMsg(resultElm.find(".errormessage").html());
+                  vrtxAdm.cachedContent.html(resultElm.find("#contents").html());
+                  vrtxAdm.updateCollectionListingInteraction();
+                  li.remove();
+                }
+              });
+              copyMoveAnimation.leftOut();
+            }
+          }
         });
       }
-      
+
       vrtxAdm.setupClickPostHtml({
         selector: "input#collectionListing\\.action\\.unpublish-resources, input#collectionListing\\.action\\.publish-resources, input#collectionListing\\.action\\.delete-resources",
         updateSelectors: ["#contents"],
@@ -3470,16 +3464,19 @@ VrtxAdmin.prototype.setupClickPostHtml = function setupClickPostHtml(opts) {
     _$ = vrtxAdm._$;
 
   vrtxAdm.cachedAppContent.on("click", opts.selector, function (e) {
-    if(opts.fnBeforePost) {
-      var retVal = opts.fnBeforePost();
-      if(retVal === false) return;
-    }
     var link = _$(this);
     var form = link.closest("form");
     var url = form.attr("action");
     var dataString = form.serialize() + "&" + encodeURIComponent(link.attr("name"));
     if(opts.useClickVal) {
       dataString += "=" + encodeURIComponent(link.val());
+    }
+    if(opts.useExtraParams) {
+      dataString += opts.useExtraParams;
+    }
+    if(opts.fnBeforePost) {
+      var retVal = opts.fnBeforePost(form, link);
+      if(retVal === false) return;
     }
     vrtxAdm.serverFacade.postHtml(url, dataString, {
       success: function (results, status, resp) {

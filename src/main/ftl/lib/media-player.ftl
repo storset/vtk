@@ -9,9 +9,8 @@
 
 <#-- Minimum Flash Player version required: -->
 <#assign flashPlayerVersion = "10.2.0" />
-<#assign dateStr = nanoTime?c />
 
-<#macro genPlaceholder url isAudio=false showPlayButton=false>
+<#macro genPlaceholder url dateStr isAudio=false showPlayButton=false>
   <#if !isAudio>
     <#local imgSrc = "video-noflash.png" />
     <#local width = "500" />
@@ -55,7 +54,7 @@
   </style>
 </#macro>
 
-<#macro initFlash url isStream=false isAudio=false isSWF=false>
+<#macro initFlash url dateStr isStream=false isAudio=false isSWF=false>
   <#local flashUrl = strobe?html />
   
   <script type="text/javascript"><!--

@@ -9,12 +9,12 @@
 
 <#import "/lib/media-player.ftl" as mpLib />
  
-<#macro mediaPlayer>
+<#macro mediaPlayer dateStr>
   <#if media?exists>
     <#if streamType?exists>
   
-      <@mpLib.genPlaceholder "${media?html}" />
-      <@mpLib.initFlash '${media?url("UTF-8")}' true />
+      <@mpLib.genPlaceholder "${media?html}" dateStr />
+      <@mpLib.initFlash '${media?url("UTF-8")}' dateStr true />
 
     <#elseif contentType?exists>
     
@@ -23,8 +23,8 @@
         || contentType == "audio/mp3"
         || contentType == "audio/x-mpeg">
 
-	    <@mpLib.genPlaceholder "${media?html}" true />
-        <@mpLib.initFlash '${media?url("UTF-8")}' false true />
+	    <@mpLib.genPlaceholder "${media?html}" dateStr true />
+        <@mpLib.initFlash '${media?url("UTF-8")}' dateStr false true />
 
 	    <@genDownloadLink "audio" />
 	  
@@ -49,14 +49,14 @@
       <#elseif contentType == "application/x-shockwave-flash"
                            && extension == "swf">
     
-	    <@mpLib.genPlaceholder "${media?html}" />
-	    <@mpLib.initFlash '${media?url("UTF-8")}' false false true />
+	    <@mpLib.genPlaceholder "${media?html}" dateStr />
+	    <@mpLib.initFlash '${media?url("UTF-8")}' dateStr false false true />
 
       <#elseif contentType == "video/x-flv"
             || contentType == "video/mp4">
     
-	    <@mpLib.genPlaceholder "${media?html}" false true />
-	    <@mpLib.initFlash '${media?url("UTF-8")}' />
+	    <@mpLib.genPlaceholder "${media?html}" dateStr false true />
+	    <@mpLib.initFlash '${media?url("UTF-8")}' dateStr />
 	  
 	    <#if contentType == "video/mp4" && !media?starts_with("rtmp")>
           <@genDownloadLink "video" />

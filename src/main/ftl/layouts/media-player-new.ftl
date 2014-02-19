@@ -9,9 +9,9 @@
 
 <#import "/lib/media-player.ftl" as mpLib />
 
-<#macro mediaPlayer>
+<#macro mediaPlayer dateStr>
   <p>Debug: Streaming video from Wowza</p>
 
-  <@mpLib.genPlaceholder "${streamingUrls.hlsStreamUrl?html}" />
-  <@mpLib.initFlash '${directStreamingUrls.hdsStreamUrl?url("UTF-8")}' true />
+  <@mpLib.genPlaceholder "${streamingUrls.hlsStreamUrl?html}" dateStr />
+  <@mpLib.initFlash '${directStreamingUrls.hdsStreamUrl?url("UTF-8")}' dateStr true  />
 </#macro>

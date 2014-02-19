@@ -651,7 +651,7 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
         vrtxAdm.completeSimpleFormAsync({
           selector: "#resourceMenuRight li." + resourceMenuServices[i] + " button",
           useClickVal: true,
-          useExtraParams: "&overwrite",
+          extraParams: "&overwrite",
           fnBeforePost: function(form, link) {
             if(link.attr("name") != "clear-action") {
               form.find(".vrtx-button-small").hide();
@@ -659,7 +659,7 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
               _$("<span class='vrtx-show-processing' />").insertBefore(form.find(".vrtx-cancel-link"));
             }
           },
-          fnComplete: function(resultElm, form) {
+          fnComplete: function(resultElm, form, url, link) {
             var cancelFn = function() {
               form.find(".vrtx-button-small").show();
               form.find(".vrtx-cancel-link").show();
@@ -684,7 +684,7 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
                   form.find("#existing-skipped-files").remove();
                   form.append("<input id='existing-skipped-files' name='existing-skipped-files' type='hidden' value='" + skippedFiles + "' />");
                   cancelFn();
-                  button.click();
+                  link.click();
                 },
                 cancelFn,
                 true
@@ -3444,10 +3444,18 @@ VrtxAdmin.prototype.completeFormAsyncPost = function completeFormAsyncPost(optio
 };
 
 /**
- * Setup a link that is async-posting a form
+ * Complete a simple form async
  * 
  * @this {VrtxAdmin}
- * @param {object} opts
+ * @param {object} options Configuration
+ * @param {string} options.selector Selector for links that should complete a form async
+ * @param {boolean} options.useClickVal Clicked element value is included in the POST
+ * @param {boolean} options.extraParams Extra parameters that should be included in the POST
+ * @param {string} options.updateSelectors One or more containers that should update after POST
+ * @param {string} options.errorContainer The className of the error container
+ * @param {string} options.errorContainerInsertAfter Selector where to place the new error container
+ * @param {function} options.fnBeforePost Callback function to run before POST
+ * @param {function} options.fnComplete Callback function to run on success
  */
 VrtxAdmin.prototype.completeSimpleFormAsync = function completeSimpleFormAsync(opts) {
   var args = arguments,
@@ -3462,8 +3470,8 @@ VrtxAdmin.prototype.completeSimpleFormAsync = function completeSimpleFormAsync(o
     if(opts.useClickVal) {
       dataString += "=" + encodeURIComponent(link.val());
     }
-    if(opts.useExtraParams) {
-      dataString += opts.useExtraParams;
+    if(opts.extraParams) {
+      dataString += opts.extraParams;
     }
     if(opts.fnBeforePost) {
       var retVal = opts.fnBeforePost(form, link);

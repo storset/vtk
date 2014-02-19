@@ -642,7 +642,7 @@ a:hover {
   margin: 0 0 15px 36px;
   float: left;
   min-width: 85px; /* at least as wide as 'Endre navn' in dropdown + 15px */
-  max-width: 35%;
+  max-width: 15%;
 }
 #resource-title h1 .title-split {
   display: block;
@@ -1099,7 +1099,7 @@ div.dropdown-shortcut-menu-container form .vrtx-button button {
 
 #resourceMenuRight {
   float: left;
-  width: 53%;
+  width: 70%;
   min-height: 86px;
   margin: -12px 0 20px 25px;
   padding: 0 0 0 25px;

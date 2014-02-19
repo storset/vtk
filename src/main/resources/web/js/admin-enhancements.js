@@ -1471,7 +1471,21 @@ VrtxAdmin.prototype.adjustResourceTitle = function adjustResourceTitle() {
   var resourceMenuLeft = this._$("#resourceMenuLeft");
   if (resourceMenuLeft.length) {
     var title = this._$("h1");
-    var resourceMenuRight = this._$("#resourceMenuRight"); 
+    var resourceMenuRight = this._$("#resourceMenuRight");
+    
+    var menuLen = resourceMenuRight.find("> li").length;
+    var resourceTitle = this._$("#resource-title");
+    if(menuLen == 5) {
+      if(!resourceTitle.hasClass("narrow")) {
+        resourceTitle.addClass("narrow");
+        resourceTitle.removeClass("narrower");
+      }
+    } else if(menuLen == 4) {
+      if(!resourceTitle.hasClass("narrower")) {
+        resourceTitle.addClass("narrower");
+        resourceTitle.removeClass("narrow");
+      }
+    }
 
     // Top adjust
     var titleHeight = title.outerHeight(true) - 34;
@@ -4185,7 +4199,6 @@ jQuery.fn.extend({
 
 vrtxAdmin._$(window).resize(vrtxAdmin._$.debounce(0, function () {
   if (vrtxAdmin.runReadyLoad) {
-    console.log("A");
     vrtxAdmin.scrollBreadcrumbsRight();
     vrtxAdmin.adjustResourceTitle();
   }

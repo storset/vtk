@@ -602,7 +602,7 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
         "collectionListing.action.copy-resources": "copyToSelectedFolderService"
       };
       for (i = tabMenuServices.length; i--;) {
-        vrtxAdm.setupClickPostHtml({
+        vrtxAdm.completeSimpleFormAsync({
           selector: "input#" + tabMenuServices[i],
           useClickVal: true,
           fnComplete: function(resultElm, form, url, link) {
@@ -648,7 +648,7 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
       }
 
       for (i = resourceMenuServices.length; i--;) {
-        vrtxAdm.setupClickPostHtml({
+        vrtxAdm.completeSimpleFormAsync({
           selector: "#resourceMenuRight li." + resourceMenuServices[i] + " button",
           useClickVal: true,
           useExtraParams: "&overwrite",
@@ -707,7 +707,7 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
         });
       }
 
-      vrtxAdm.setupClickPostHtml({
+      vrtxAdm.completeSimpleFormAsync({
         selector: "input#collectionListing\\.action\\.unpublish-resources, input#collectionListing\\.action\\.publish-resources, input#collectionListing\\.action\\.delete-resources",
         updateSelectors: ["#contents"],
         useClickVal: true,
@@ -720,7 +720,7 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
       vrtxAdm.collectionListingInteraction();
       break;
     case "vrtx-trash-can":
-      vrtxAdm.setupClickPostHtml({
+      vrtxAdm.completeSimpleFormAsync({
         selector: "input.deleteResourcePermanent",
         updateSelectors: ["#contents"],
         fnBeforePost: function() {
@@ -800,12 +800,12 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
       }
 
       // Remove/add permissions
-      vrtxAdm.setupClickPostHtml({
+      vrtxAdm.completeSimpleFormAsync({
         selector: "input.removePermission",
         updateSelectors: [".principalList"],
         fnComplete: initSimplifiedPermissionForm
       });
-      vrtxAdm.setupClickPostHtml({
+      vrtxAdm.completeSimpleFormAsync({
         selector: "span.addGroup input[type='submit']",
         updateSelectors: [".principalList"],
         errorContainer: "errorContainer",
@@ -815,7 +815,7 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
           initSimplifiedPermissionForm();
         }
       });
-      vrtxAdm.setupClickPostHtml({
+      vrtxAdm.completeSimpleFormAsync({
         selector: "span.addUser input[type='submit']",
         updateSelectors: [".principalList"],
         errorContainer: "errorContainer",
@@ -2942,7 +2942,7 @@ function versioningInteraction(bodyId, vrtxAdm, _$) {
   if (bodyId == "vrtx-revisions") {
 
     // Delete revisions
-    vrtxAdm.setupClickPostHtml({
+    vrtxAdm.completeSimpleFormAsync({
       selector: ".vrtx-revisions-delete-form input[type=submit]",
       fnComplete: function(resultElm, form) {
         var tr = form.closest("tr");
@@ -2964,7 +2964,7 @@ function versioningInteraction(bodyId, vrtxAdm, _$) {
     });
 
     // Restore revisions
-    vrtxAdm.setupClickPostHtml({
+    vrtxAdm.completeSimpleFormAsync({
       selector: ".vrtx-revisions-restore-form input[type=submit]",
       updateSelectors: ["#contents"],
       fnBeforePost: function() {
@@ -2984,7 +2984,7 @@ function versioningInteraction(bodyId, vrtxAdm, _$) {
     });
 
     // Make working copy into current version
-    vrtxAdm.setupClickPostHtml({
+    vrtxAdm.completeSimpleFormAsync({
       selector: "#vrtx-revisions-make-current-form input[type=submit]",
       updateSelectors: ["#contents", "#app-tabs"],
       fnComplete: function(resultElm, form, url) {
@@ -3449,7 +3449,7 @@ VrtxAdmin.prototype.completeFormAsyncPost = function completeFormAsyncPost(optio
  * @this {VrtxAdmin}
  * @param {object} opts
  */
-VrtxAdmin.prototype.setupClickPostHtml = function setupClickPostHtml(opts) {
+VrtxAdmin.prototype.completeSimpleFormAsync = function completeSimpleFormAsync(opts) {
   var args = arguments,
     vrtxAdm = this,
     _$ = vrtxAdm._$;

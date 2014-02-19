@@ -707,8 +707,9 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
         });
       }
 
+      // Publish / unpublish resources
       vrtxAdm.completeSimpleFormAsync({
-        selector: "input#collectionListing\\.action\\.unpublish-resources, input#collectionListing\\.action\\.publish-resources, input#collectionListing\\.action\\.delete-resources",
+        selector: "input#collectionListing\\.action\\.unpublish-resources, input#collectionListing\\.action\\.publish-resources",
         updateSelectors: ["#contents"],
         useClickVal: true,
         fnComplete: function(resultElm) {
@@ -717,12 +718,25 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
         }
       });
       
+      // Delete resources
+      vrtxAdm.completeSimpleFormAsync({
+        selector: "input#collectionListing\\.action\\.delete-resources",
+        updateSelectors: ["#contents"],
+        useClickVal: true,
+        rowCheckedAnimateOut: true,
+        fnComplete: function(resultElm) {
+          vrtxAdm.displayErrorMsg(resultElm.find(".errormessage").html());
+          vrtxAdm.updateCollectionListingInteraction();
+        }
+      });
+
       vrtxAdm.collectionListingInteraction();
       break;
     case "vrtx-trash-can":
       vrtxAdm.completeSimpleFormAsync({
         selector: "input.deleteResourcePermanent",
         updateSelectors: ["#contents"],
+        rowCheckedAnimateOut: true,
         fnBeforePost: function() {
           if (vrtxAdm.trashcanCheckedFiles >= (vrtxAdm.cachedContent.find("tbody tr").length - 1)) return false;
           vrtxAdm.trashcanCheckedFiles = 0;
@@ -3484,24 +3498,31 @@ VrtxAdmin.prototype.completeSimpleFormAsync = function completeSimpleFormAsync(o
                                                                               .filter(function(i) { 
                                                                                 return $(this).find("td.checkbox input:checked").length }
                                                                               );
-            var futureAnims = [];
-            for(var i = 0, len = trs.length; i < len; i++) {
-              var tr = $(trs[i]);
-              if (vrtxAdm.animateTableRows) {
-                tr.prepareTableRowForSliding().hide(0).slideDown(0, "linear");
+            if (vrtxAdm.animateTableRows) {
+              var futureAnims = [];
+              for(var i = 0, len = trs.length; i < len; i++) {
+                var tr = $(trs[i]);
+                if (vrtxAdm.animateTableRows) {
+                  tr.prepareTableRowForSliding().hide(0).finish().slideDown(0, "linear", function() {
+                    var animA = tr.find("td").finish().animate({ 
+                        paddingTop: '0px',
+                        paddingBottom: '0px' 
+                      },
+                      vrtxAdm.transitionDropdownSpeed,
+                      vrtxAdm.transitionEasingSlideUp
+                    );
+                    var animB = tr.slideUp(vrtxAdm.transitionDropdownSpeed, vrtxAdm.transitionEasingSlideUp);
+                    futureAnims.push(animA);
+                    futureAnims.push(animB);
+                  });
+                }
               }
-              var animA = tr.find("td").animate({
-                paddingTop: '0px',
-                paddingBottom: '0px'
-              },
-              vrtxAdm.transitionDropdownSpeed, vrtxAdm.transitionEasingSlideUp, _$.noop);
-              var animB = tr.slideUp(vrtxAdm.transitionDropdownSpeed, vrtxAdm.transitionEasingSlideUp, _$.noop);
-              futureAnims.push(animA);
-              futureAnims.push(animB);
-            }      
-            _$.when.apply($, futureAnims).done(function () {
+              _$.when.apply(_$, futureAnims).done(function () {
+                fnInternalComplete();
+              });
+            } else {
               fnInternalComplete();
-            });
+            }
           } else {
             fnInternalComplete();
           }

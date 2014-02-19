@@ -37,13 +37,8 @@ if (window != top) { // Obs IE bug: http://stackoverflow.com/questions/4850978/i
     }
     var viewportMetaTag = previewViewIframe.contents().find("meta[name='viewport']");
     if(viewportMetaTag.length && viewportMetaTag.attr("content").indexOf("width=device-width") === -1) {
-      if(isVertical) {
-        previewViewIframeWrp.addClass("mobile-none-responsive");
-        previewViewIframeWrp.removeClass("mobile-none-responsive-horizontal");
-      } else {
-        previewViewIframeWrp.addClass("mobile-none-responsive-horizontal");
-        previewViewIframeWrp.removeClass("mobile-none-responsive");
-      }
+      previewViewIframeWrp.addClass(isVertical ? "mobile-none-responsive" : "mobile-none-responsive-horizontal");
+      previewViewIframeWrp.removeClass(isVertical ? "mobile-none-responsive-horizontal" : "mobile-none-responsive");
     } else {
       try {
         var iframe = previewViewIframe[0];

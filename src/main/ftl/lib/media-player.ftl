@@ -4,12 +4,23 @@
   - File: media-player.ftl
   - 
   - Description: Media player library
-  - 	
+  -
   -->
 
 <#-- Minimum Flash Player version required: -->
 <#assign flashPlayerVersion = "10.2.0" />
 
+<#--
+ * genPlaceholder
+ *
+ * Generates a placeholder for a media file
+ *
+ * @param url the HTML-escaped URL to the media file
+ * @param dateStr Unix-time in nanoseconds
+ * @param isAudio (optional) is placeholder an audio file
+ * @param showPlayButton (optional) do we want to show placeholder play button
+ *
+-->
 <#macro genPlaceholder url dateStr isAudio=false showPlayButton=false>
   <#if !isAudio>
     <#local imgSrc = "video-noflash.png" />
@@ -37,6 +48,14 @@
   </div>
 </#macro>
 
+<#--
+ * genPlayButtonCSS
+ *
+ * Generates CSS for play button
+ *
+ * @param showPlayButton (optional) do we want to show placeholder play button
+ *
+-->
 <#macro genPlayButtonCSS showPlayButton>
   <style type="text/css">
     .vrtx-media-player-print { display: none; }
@@ -54,6 +73,18 @@
   </style>
 </#macro>
 
+<#--
+ * initFlash
+ *
+ * Initialize Flash with JavaScript
+ *
+ * @param url the URL-escaped (UTF-8) URL to the media file
+ * @param dateStr Unix-time in nanoseconds
+ * @param isStream (optional) is a live stream
+ * @param isAudio (optional) is an audio file
+ * @param isSWF (optional) is a Shockwave-SWF file
+ *
+-->
 <#macro initFlash url dateStr isStream=false isAudio=false isSWF=false>
   <#local flashUrl = strobe?html />
   

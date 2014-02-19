@@ -738,7 +738,7 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
         updateSelectors: ["#contents"],
         rowCheckedAnimateOut: true,
         fnBeforePost: function() {
-          if (vrtxAdm.trashcanCheckedFiles >= (vrtxAdm.cachedContent.find("tbody tr").length - 1)) return false;
+          if (vrtxAdm.trashcanCheckedFiles >= vrtxAdm.cachedContent.find("tbody tr").length) return false;
           vrtxAdm.trashcanCheckedFiles = 0;
         },
         fnComplete: function(resultElm) {

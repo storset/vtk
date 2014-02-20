@@ -24,10 +24,12 @@ resourcetype student-exchange-agreement {
     fees-text-field : html noextract,
 
     housing : html noextract,
-    content : html noextract,
+    visa-shared-text : string,
+    visa-text-field : html noextract,
+    other : html noextract,
 
-    how-to-apply-text-field : html noextract,
     how-to-apply-shared-text : string,
+    how-to-apply-text-field : html noextract,
 
     contact : string,
     earlier-students : html noextract,
@@ -57,10 +59,15 @@ resourcetype student-exchange-agreement {
     tuition-yes (class[vrtx-checkbox]),
     tuition-no (class[vrtx-checkbox]),
 
+    visa-shared-text (class[vrtx-shared-text],
+                                attribute[vrtx-shared-text-path:/vrtx/fellestekst/utvekslingsavtale],
+                                attribute[vrtx-shared-text-file-name:visum]),
+    group visa (visa-shared-text, visa-text-field) (after housing),
+
     how-to-apply-shared-text (class[vrtx-shared-text],
                                 attribute[vrtx-shared-text-path:/vrtx/fellestekst/utvekslingsavtale],
-                                attribute[vrtx-shared-text-file-name:vil-du-dra]),
-    group how-to-apply (how-to-apply-text-field, how-to-apply-shared-text) (after content),
+                                attribute[vrtx-shared-text-file-name:slik-soker-du]),
+    group how-to-apply (how-to-apply-shared-text, how-to-apply-text-field) (after other),
 
     contact (class[vrtx-shared-text],
              attribute[vrtx-shared-text-path:/vrtx/fellestekst/utvekslingsavtale],
@@ -80,8 +87,10 @@ resourcetype student-exchange-agreement {
     fees (class[vrtx-sea-accordion]),
     housing (class[vrtx-sea-accordion]),
     housing (class[vrtx-pseudo-grouped]),
-    content (class[vrtx-sea-accordion]),
-    content (class[vrtx-pseudo-grouped]),
+    visa (class[vrtx-sea-accordion]),
+    visa (class[vrtx-pseudo-grouped]),
+    other (class[vrtx-sea-accordion]),
+    other (class[vrtx-pseudo-grouped]),
     how-to-apply (class[vrtx-sea-accordion]),
     contact (class[vrtx-sea-accordion]),
     contact (class[vrtx-pseudo-grouped]),
@@ -127,9 +136,11 @@ resourcetype student-exchange-agreement {
     [def tuition-no document.properties.tuition-no]
     [def fees-text-field document.properties.fees-text-field]
     [def housing document.properties.housing]
-    [def content document.properties.content]
-    [def how-to-apply-text-field document.properties.how-to-apply-text-field]
+    [def visa-shared-text document.properties.visa-shared-text]
+    [def visa-text-field document.properties.visa-text-field]
+    [def other document.properties.other]
     [def how-to-apply-shared-text document.properties.how-to-apply-shared-text]
+    [def how-to-apply-text-field document.properties.how-to-apply-text-field]
     [def contact document.properties.contact]
     [def earlier-students document.properties.earlier-students]
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -169,17 +180,26 @@ resourcetype student-exchange-agreement {
               <h2>[localized 'housing']</h2>
               [val housing # unescaped]
             [endif]
-            [if content != null && content != ""]
-              <h2>[localized 'content']</h2>
-              [val content # unescaped]
-            [endif]
-            [if (how-to-apply-text-field != null && how-to-apply-text-field != "") || (how-to-apply-shared-text != null && how-to-apply-shared-text != "")]
-              <h2>[localized 'how-to-apply']</h2>
-              [if how-to-apply-text-field != null && how-to-apply-text-field != ""]
-                [val how-to-apply-text-field # unescaped]
+            [if (visa-shared-text != null && visa-shared-text != "") || (visa-text-field != null && visa-text-field != "")]
+              <h2>[localized 'visa']</h2>
+              [if visa-shared-text != null && visa-shared-text != ""]
+                [call "include:shared-text" {"propName":"visa-shared-text"}]
               [endif]
+              [if visa-text-field != null && visa-text-field != ""]
+                [val visa-text-field # unescaped]
+              [endif]
+            [endif]
+            [if other != null && other != ""]
+              <h2>[localized 'other']</h2>
+              [val other # unescaped]
+            [endif]
+            [if (how-to-apply-shared-text != null && how-to-apply-shared-text != "") || (how-to-apply-text-field != null && how-to-apply-text-field != "")]
+              <h2>[localized 'how-to-apply']</h2>
               [if how-to-apply-shared-text != null && how-to-apply-shared-text != ""]
                 [call "include:shared-text" {"propName":"how-to-apply-shared-text"}]
+              [endif]
+              [if how-to-apply-text-field != null && how-to-apply-text-field != ""]
+                [val how-to-apply-text-field # unescaped]
               [endif]
             [endif]
             <div class="vrtx-social-components">
@@ -299,11 +319,14 @@ resourcetype student-exchange-agreement {
     fees-text-field : (en : "Tuition payments optional text", no : "Skolepenger valgfri tekst", nn : "Skolepenger valfri tekst"),
 
     housing : (en : "Housing", no : "Bolig", nn : "Bolig"),
-    content : (en : "Other", no : "Annet", nn : "Anna"),
+    visa : (en : "Visa", no : "Visum", nn : "Visum"),
+    visa-shared-text : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
+    visa-text-field : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
+    other : (en : "Other", no : "Annet", nn : "Anna"),
 
     how-to-apply : (en : "How to apply", no : "Slik søker du", nn : "Slik søkjer du"),
-    how-to-apply-text-field : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
     how-to-apply-shared-text : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
+    how-to-apply-text-field : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
 
     about : ( en: "About the university", no: "Om universitetet", nn: "Om universitetet"),
     agreement-info : ( en: "About the agreement", no: "Fakta om avtalen", nn: "Fakta Om avtalen"),

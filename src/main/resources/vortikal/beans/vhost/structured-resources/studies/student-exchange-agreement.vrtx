@@ -324,7 +324,7 @@ resourcetype student-exchange-agreement {
     and : (en : "and", no : "og", nn : "og"),
     contact : (en : "Contact", no : "Kontakt", nn : "Kontakt"),
     earlier-students : (en : "Previous students experiences", no : "Studenter som har vært her tidligere", nn : "Studenter som har vore her tidlegare"),
-    iris-reports : (en : "IRIS - Student reports", no : "Studentrapporter i IRIS", nn : "Studentrapportar i IRIS"),
+    iris-reports : (en : "IRIS - Student reports", no : "Studentrapporter i IRIS", nn : "Studentrapportar i IRIS")
   }
 
 }

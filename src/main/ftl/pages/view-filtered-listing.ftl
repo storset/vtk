@@ -56,9 +56,7 @@
     <#if filters?exists>
       <div id="vrtx-listing-filters" class="vrtx-listing-filters-${filters?size}-col<#if showSubfolderMenu?exists> vrtx-listing-filters-collapsed</#if>">
         <script type="text/javascript"><!--
-          var listingFilters = {
-            "vrtx-${collection.resourceType}": [<#list filters?keys as filterKey>"${filterKey?html}"<#if filterKey_has_next>, </#if></#list>]
-          };
+          var listingFilters = [<#list filters?keys as filterKey>"${filterKey?html}"<#if filterKey_has_next>, </#if></#list>];
         // -->
         </script>
         <#list filters?keys as filterKey>

@@ -103,7 +103,6 @@ resourcetype student-exchange-agreement {
   view {
     ##
     [def title resource-prop-obj-val(".", "title")]
-    [def name resource-prop-obj-val(".", "studentExchangeUniversityAgreementListing.name")]
     [def country resource-prop-obj-val(".", "studentExchangeUniversityAgreementListing.country")]
     [def city resource-prop-obj-val(".", "studentExchangeUniversityAgreementListing.city")]
     [def picture resource-prop-obj-val(".", "studentExchangeUniversityAgreementListing.picture")]
@@ -194,7 +193,7 @@ resourcetype student-exchange-agreement {
             [def earlier-students-bool earlier-students != null && earlier-students != ""]
             [def earlier-students-div-bool earlier-students-bool || iris-bool]
             <div id="vrtx-student-exchange-agreement-university-info" class="vrtx-frontpage-box vrtx-distach-bottom">
-              <h2>[localized 'about'] [val name]</h2>
+              <h2>[localized 'about']</h2>
               <img src="[val picture]" alt="" />
               <h3>[localized 'country']</h3>
               <p>[val country]</p>
@@ -211,24 +210,32 @@ resourcetype student-exchange-agreement {
                 [endif]
               [endif]
             </div>
-            <div id="vrtx-student-exchange-agreement-info" class="vrtx-frontpage-box[if contact-div-bool] vrtx-distach-bottom[endif]">
+            <div id="vrtx-student-exchange-agreement-info" class="vrtx-frontpage-box[if contact-div-bool || earlier-students-div-bool] vrtx-distach-bottom[endif]">
               <h2>[localized 'agreement-info']</h2>
-              <h3>[localized 'type-of-agreement']</h3>
-              [if type-of-agreement != null && type-of-agreement != ""][if type-of-agreement != "other"][call "include:shared-text" {"propName":"type-of-agreement"}][elseif type-of-agreement = "other" && type-of-agreement-other-text-field != null && type-of-agreement-other-text-field != ""][val type-of-agreement-other-text-field][endif][endif]
-              <h3>[localized 'study-level']</h3>
-                [def totCount 0]
-                [def levels #({'prop': {'k': 'bachelor',                                'v': bachelor}},
-                              {'prop': {'k': 'master',                                  'v': master}},
-                              {'prop': {'k': 'phd',                                     'v': phd}},
-                              {'prop': {'k': 'programme-of-professional-study',         'v': programme-of-professional-study}},
-                              {'prop': {'k': 'specialist',                              'v': specialist}})]
-                [list levels level]
-                  [if level.prop.v = "true"]
-                    [def totCount totCount + 1]
-                  [endif]
-                [endlist]
-                [def count 0]
-              <p>[list levels level][if level.prop.v = "true"][if (count = (totCount - 1)) && totCount > 1] [localized 'and'] [elseif count > 0], [endif][def k level.prop.k][localized k][def count count + 1][endif][endlist]</p>
+              [if type-of-agreement != null && type-of-agreement != ""]
+                <h3>[localized 'type-of-agreement']</h3>
+                [if type-of-agreement != "other"]
+                  [call "include:shared-text" {"propName":"type-of-agreement"}]
+                [elseif type-of-agreement = "other" && type-of-agreement-other-text-field != null && type-of-agreement-other-text-field != ""]
+                  [val type-of-agreement-other-text-field]
+                [endif]
+              [endif]
+              [def totCount 0]
+              [def levels #({'prop': {'k': 'bachelor',                                'v': bachelor}},
+                            {'prop': {'k': 'master',                                  'v': master}},
+                            {'prop': {'k': 'phd',                                     'v': phd}},
+                            {'prop': {'k': 'programme-of-professional-study',         'v': programme-of-professional-study}},
+                            {'prop': {'k': 'specialist',                              'v': specialist}})]
+              [list levels level]
+                [if level.prop.v = "true"]
+                  [def totCount totCount + 1]
+                [endif]
+              [endlist]
+              [def count 0]
+              [if totCount != 0]
+                <h3>[localized 'study-level']</h3>
+                <p>[list levels level][if level.prop.v = "true"][if (count = (totCount - 1)) && totCount > 1] [localized 'and'] [elseif count > 0], [endif][def k level.prop.k][localized k][def count count + 1][endif][endlist]</p>
+              [endif]
               <h3>[localized 'owner-of-agreement']</h3>
               [call "include:shared-text" {"propName":"owner-of-agreement"}]
             </div>
@@ -298,7 +305,7 @@ resourcetype student-exchange-agreement {
     how-to-apply-text-field : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
     how-to-apply-shared-text : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
 
-    about : ( en: "About the", no: "Om", nn: "Om"),
+    about : ( en: "About the university", no: "Om universitetet", nn: "Om universitetet"),
     agreement-info : ( en: "About the agreement", no: "Fakta om avtalen", nn: "Fakta Om avtalen"),
     country : ( en: "Country", no: "Land", nn: "Land"),
     city : ( en: "City", no: "By", nn: "By"),

@@ -54,6 +54,10 @@
 
     <#if filters?exists>
       <div id="vrtx-listing-filters" class="vrtx-listing-filters-${filters?size}-col<#if showSubfolderMenu?exists> vrtx-listing-filters-collapsed</#if>">
+        <script type="text/javascript"><!--
+          var listingFilters = [<#list filters?keys as filterKey>"${filterKey?html}"<#if filterKey_has_next>, </#if></#list>];
+        // -->
+        </script>
         <#list filters?keys as filterKey>
           <#assign filter = filters[filterKey]>
           <div class="vrtx-listing-filters-section <#if (filterKey_index = (filters?size - 1))>vrtx-listing-filters-section-last</#if>" id="vrtx-listing-filters-section-${filterKey}">

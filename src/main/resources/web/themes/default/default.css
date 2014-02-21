@@ -2126,9 +2126,56 @@ body#vrtx-report-broken-links #directory-listing td.vrtx-report-broken-links {
 
 /* ^ Icons */
 
+.vrtx-admin-form #vrtx-checkbox-hide-from-navigation label,
+.vrtx-admin-form #vrtx-checkbox-is-index label {
+  vertical-align: top;
+}
+
 /* ^ 3.5 Directorylisting */
 
 /* 3.6 Permissions / About / Publishing / View / Plaintext-edit / Visual profile / Versioning  */
+
+.vrtx-radio-button > *  {
+  margin: 0;
+}
+.vrtx-radio-button  {
+  margin-bottom: 10px;
+}
+.vrtx-radio-button:last-child {
+  margin-bottom: 0px;
+}
+ul.radio-buttons li {
+  margin-bottom: 5px;
+}
+ul.radio-buttons li:last-child {
+  margin-bottom: 0px;
+}
+.vrtx-checkbox {
+  margin-top: 5px;
+}
+
+ul.radio-buttons input[type='radio'],
+.vrtx-radio-button input[type='radio'],
+.vrtx-checkbox-square input[type='checkbox'],
+.vrtx-checkbox input[type='checkbox'] {
+  margin: 0 3px 0 0;
+}
+
+ul.radio-buttons li > * {
+  vertical-align: middle;
+}
+
+.vrtx-radio-button label,
+.vrtx-radio-button input[type='radio'],
+.vrtx-radio-buttons label,
+.vrtx-radio-buttons input[type='radio'],
+.vrtx-checkbox-square label,
+.vrtx-checkbox-square input[type='checkbox'],
+.vrtx-checkbox label,
+.vrtx-checkbox input[type='checkbox'] {
+  vertical-align: top;
+  line-height: 1;
+}
 
 #vrtx-report-filters ul.vrtx-report-filter-last {
   margin-right: 0;

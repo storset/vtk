@@ -43,30 +43,6 @@ h2 {
   margin-top: 20px;
 }
 
-input[type=radio] {
-  margin: 0 3px 6px 1px;
-}
-
-input[type=checkbox] {
-  margin: 0 3px 0 0;
-}
-
-.vrtx-checkbox {
-  margin-top: 5px;
-}
-
-.vrtx-radio-button > label,
-.vrtx-radio-button > input[type='radio'],
-.vrtx-radio-buttons > label,
-.vrtx-radio-buttons > input[type='radio'],
-.vrtx-checkbox-square > label,
-.vrtx-checkbox-square > input[type='radio'],
-.vrtx-checkbox > label,
-.vrtx-checkbox > input[type='radio'] {
-  vertical-align: top;
-  line-height: 1;
-}
-
 .property-item,
 .html-content,
 .vrtx-grouped,

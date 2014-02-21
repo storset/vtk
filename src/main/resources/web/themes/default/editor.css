@@ -57,7 +57,20 @@
 #vrtx-resource\.recursive-listing-subfolders,
 #vrtx-resource\.aggregation,
 #vrtx-resource\.manually-approve-from {
-  margin-left: 22px;
+  margin-left: 20px;
+}
+
+#vrtx-resource\.hide-props .property-item,
+#vrtx-resource\.display-props .property-item,
+#vrtx-resource\.display-manually-approved {
+  margin-bottom: 13px;
+  margin-top: 0;
+}
+
+#vrtx-resource\.display-manually-approved,
+#vrtx-resource\.display-aggregation {
+  margin-bottom: 0;
+  margin-top: 13px;
 }
 
 #vrtx-resource\.manually-approve-from,
@@ -66,10 +79,9 @@
   margin-bottom: 20px;
 }
 
-#vrtx-resource\.hide-props .property-item,
-#vrtx-resource\.display-props .property-item,
-#vrtx-resource\.display-manually-approved {
-  margin-top: 10px;
+#vrtx-resource\.display-manually-approved .tooltips,
+#vrtx-resource\.display-aggregation .tooltips {
+  margin-bottom: -0.1em;
 }
 
 #vrtx-resource\.featured-articles.property-item,

@@ -1277,7 +1277,10 @@ function addFormField(name, len, value, size, isBrowsable, isMovable, isDropdown
     }
     var addBtn = $("#vrtx-" + name + "-add");
     $($.parseHTML(html, document, true)).insertBefore(addBtn);
-    addBtn.prev().find("input[type='text']")[0].focus();
+    var focusable = addBtn.prev().find("input[type='text'], select")
+    if(focusable.length) {
+      focusable[0].focus();
+    }
 
     autocompleteUsername(".vrtx-autocomplete-username", idstr + i);
     
@@ -1297,9 +1300,15 @@ function removeFormField(input) {
   var field = input.closest(".vrtx-multipleinputfield");
   var name = parent.data("name");
   field.remove();
-  
+
   var fields = parent.find(".vrtx-multipleinputfield");
-  fields.filter(":first").find("input[type='text']")[0].focus();
+  var firstField = fields.filter(":first");
+  if(firstField.length) {
+    var focusable = firstField.find("input[type='text'], select");
+    if(focusable.length) {
+      focusable[0].focus();
+    }
+  }
   
   // Show add button if is within limit again
   if(fields.length === (vrtxEditor.multipleFieldsBoxes[name].limit - 1)) {

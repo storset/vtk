@@ -2139,14 +2139,14 @@ ul.radio-buttons li > * {
   vertical-align: middle;
 }
 
-.vrtx-radio-button > label,
-.vrtx-radio-button > input[type='radio'],
-.vrtx-radio-buttons > label,
-.vrtx-radio-buttons > input[type='radio'],
-.vrtx-checkbox-square > label,
-.vrtx-checkbox-square > input[type='checkbox'],
-.vrtx-checkbox > label,
-.vrtx-checkbox > input[type='checkbox'] {
+.vrtx-radio-button label,
+.vrtx-radio-button input[type='radio'],
+.vrtx-radio-buttons label,
+.vrtx-radio-buttons input[type='radio'],
+.vrtx-checkbox-square label,
+.vrtx-checkbox-square input[type='checkbox'],
+.vrtx-checkbox label,
+.vrtx-checkbox input[type='checkbox'] {
   vertical-align: top;
   line-height: 1;
 }

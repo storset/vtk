@@ -9,6 +9,8 @@ resourcetype student-exchange-agreement {
 
     title : derived (owner-of-agreement) eval ("student-exchange-agreement-between"?localized + " " + "studentExchangeUniversityAgreementListing.name"?contextual + " " + "and"?localized + " " + owner-of-agreement?sharedText) overrides title,
 
+    titleOwner : derived (owner-of-agreement) eval (owner-of-agreement?sharedText),
+
     bachelor : boolean,
     master : boolean,
     phd : boolean,
@@ -116,6 +118,7 @@ resourcetype student-exchange-agreement {
   view {
     ##
     [def title resource-prop-obj-val(".", "title")]
+    [def name resource-prop-obj-val(".", "studentExchangeUniversityAgreementListing.name")]
     [def country resource-prop-obj-val(".", "studentExchangeUniversityAgreementListing.country")]
     [def city resource-prop-obj-val(".", "studentExchangeUniversityAgreementListing.city")]
     [def picture resource-prop-obj-val(".", "studentExchangeUniversityAgreementListing.picture")]
@@ -125,6 +128,7 @@ resourcetype student-exchange-agreement {
     [def document structured-document()]
     [def owner-of-agreement document.properties.owner-of-agreement]
     [def type-of-agreement document.properties.type-of-agreement]
+    [def titleOwner resource-prop-obj-val(".", "titleOwner")]
     [def type-of-agreement-other-text-field document.properties.type-of-agreement-other-text-field]
     [def bachelor document.properties.bachelor]
     [def master document.properties.master]
@@ -158,8 +162,8 @@ resourcetype student-exchange-agreement {
             [call "comp:link-other-language"]
             <h1>
               <span class="vrtx-student-exchange-agreement-prefix">[localized 'student-exchange-agreement-between']</span>
-              <span class="vrtx-student-exchange-agreement-with">MIT</span>
-              <span class="vrtx-student-exchange-agreement-owner">UIO</span>
+              <span class="vrtx-student-exchange-agreement-with">[val name]</span>
+              <span class="vrtx-student-exchange-agreement-owner">[localized 'and'] [val titleOwner]</span>
             </h1>
             [if student-exchange-intro != null && student-exchange-intro != ""]
               <div class="vrtx-introduction">

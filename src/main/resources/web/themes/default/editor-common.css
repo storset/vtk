@@ -60,11 +60,11 @@ input[type=checkbox] {
 .vrtx-radio-buttons > label,
 .vrtx-radio-buttons > input[type='radio'],
 .vrtx-checkbox-square > label,
-.vrtx-checkbox-square > input[type='radio'],
+.vrtx-checkbox-square > input[type='checkbox'],
 .vrtx-checkbox > label,
-.vrtx-checkbox > input[type='radio'] {
+.vrtx-checkbox > input[type='checkbox'] {
   vertical-align: top;
-  line-height: 1; /* FF moves up radio */
+  line-height: 1;
 }
 
 .property-item,

@@ -204,7 +204,6 @@
           <#elseif elementBox.metaData['vertical']?exists>
             <#assign groupClass = groupClass + "-vertical" />
           </#if>
-
           <#if elementBox.name?exists>
             <#assign groupName = elementBox["name"] />
             <#assign groupClass = groupClass + " ${groupName?string}" />

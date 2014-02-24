@@ -30,7 +30,6 @@
  */
 package org.vortikal.repository.store;
 
-import java.util.List;
 
 /**
  * Simplistic and generic interface for accessing principal metadata as
@@ -57,10 +56,5 @@ public interface PrincipalMetadata extends Metadata {
      * @return The user id as a <code>String</code>
      */
     public String getUid();
-    
-    /**
-     * @return The user's affiliations to units.
-     */
-    public List<PrincipalMetadataUnitAffiliation> getAffiliations();
 
 }

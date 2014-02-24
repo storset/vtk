@@ -1142,35 +1142,7 @@ div.dropdown-shortcut-menu-container form .vrtx-button button {
 #resourceMenuRight > li.publish\.globalPublishService,
 #resourceMenuRight > li.publish\.globalUnpublishService,
 #resourceMenuRight > li.manage\.unlockFormService {
-  max-width: 30%;
-}
-
-#resource-title.narrower h1 {
-  max-width: 27%;
-}
-
-#resource-title.narrower #resourceMenuRight {
-  width: 61%;
-}
-
-#resource-title.narrower #resourceMenuRight > li.publish\.globalPublishService,
-#resource-title.narrower #resourceMenuRight > li.publish\.globalUnpublishService,
-#resource-title.narrower #resourceMenuRight > li.manage\.unlockFormService {
-  max-width: 17%;
-}
-
-#resource-title.narrow h1 {
-  max-width: 12%;
-}
-
-#resource-title.narrow #resourceMenuRight {
-  width: 75%;
-}
-
-#resource-title.narrow #resourceMenuRight > li.publish\.globalPublishService,
-#resource-title.narrow #resourceMenuRight > li.publish\.globalUnpublishService,
-#resource-title.narrow #resourceMenuRight > li.manage\.unlockFormService {
-  width: 11%;
+  max-width: 130px;
 }
 
 #resource-title h1,
@@ -2943,6 +2915,12 @@ h3.resourceInfoHeader {
   }
   #vrtx-resource-visit-info {
     bottom: 90px;
+  }
+}
+
+@media screen and (max-width: 1270px) {
+  #resource-title #resourceMenuRight {
+    margin-right: -40%;
   }
 }
 

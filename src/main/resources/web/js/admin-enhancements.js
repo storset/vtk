@@ -1472,20 +1472,6 @@ VrtxAdmin.prototype.adjustResourceTitle = function adjustResourceTitle() {
   if (resourceMenuLeft.length) {
     var title = this._$("h1");
     var resourceMenuRight = this._$("#resourceMenuRight");
-    
-    var menuLen = resourceMenuRight.find("> li").length;
-    var resourceTitle = this._$("#resource-title");
-    if(menuLen == 5) {
-      if(!resourceTitle.hasClass("narrow")) {
-        resourceTitle.addClass("narrow");
-        resourceTitle.removeClass("narrower");
-      }
-    } else if(menuLen == 4) {
-      if(!resourceTitle.hasClass("narrower")) {
-        resourceTitle.addClass("narrower");
-        resourceTitle.removeClass("narrow");
-      }
-    }
 
     // Top adjust
     var titleHeight = title.outerHeight(true) - 34;

@@ -214,13 +214,17 @@ resourcetype student-exchange-agreement {
             [def earlier-students-div-bool earlier-students-bool || iris-bool]
             <div id="vrtx-student-exchange-agreement-university-info" class="vrtx-frontpage-box vrtx-distach-bottom">
               <h2>[localized 'about']</h2>
-              <img src="[val picture]" alt="" />
+              [if picture != null && picture != ""]
+                <img src="[val picture]" alt="" />
+              [endif]
               <h3>[localized 'country']</h3>
               <p>[val country]</p>
               <h3>[localized 'city']</h3>
               <p>[val city]</p>
-              <h3>[localized 'webpage']</h3>
-              <p><a href="[val web-address]">[val web-address]</a></p>
+              [if webpage != null && webpage != ""]
+                <h3>[localized 'webpage']</h3>
+                <p><a href="[val web-address]">[val web-address]</a></p>
+              [endif]
               [def universityFolderPath resource-prop("./","uri")]
               [if universityFolderPath != null]
                 [def resourceType resource-prop(universityFolderPath, "resourceType")]

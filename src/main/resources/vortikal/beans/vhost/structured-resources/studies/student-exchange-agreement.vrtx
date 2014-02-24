@@ -221,7 +221,7 @@ resourcetype student-exchange-agreement {
               <p>[val country]</p>
               <h3>[localized 'city']</h3>
               <p>[val city]</p>
-              [if webpage != null && webpage != ""]
+              [if web-address != null && web-address != ""]
                 <h3>[localized 'webpage']</h3>
                 <p><a href="[val web-address]">[val web-address]</a></p>
               [endif]

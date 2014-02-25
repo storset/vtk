@@ -1789,8 +1789,8 @@ VrtxEditor.prototype.accordionGroupedInit = function accordionGroupedInit(subGro
       accordionGrouped.updateHeader(ui.oldHeader, false, false);
     }
   };
-  if(typeof customSpeed !== "undefined") {
-    opts.animationSpeed = customSpeed;
+  if(typeof customSpeed !== "undefined" && customSpeed === "fast") {
+    opts.animationSpeed = 200;
   }
   accordionGrouped = new VrtxAccordion(opts);
 
@@ -1807,6 +1807,7 @@ VrtxEditor.prototype.accordionGroupedInit = function accordionGroupedInit(subGro
   }
   
   accordionGrouped.create();
+  opts.elem.addClass("fast");
 };
 
 function accordionJsonInit() {
@@ -1949,7 +1950,7 @@ VrtxEditor.prototype.initStudyDocTypes = function initStudyDocTypes() {
   } else if (vrtxEdit.editorForm.hasClass("vrtx-student-exchange-agreement")) {
     vrtxEdit.accordionGroupedInit(".vrtx-sea-accordion");
   } else if (vrtxEdit.editorForm.hasClass("vrtx-frontpage")) {
-    vrtxEdit.accordionGroupedInit(".vrtx-sea-accordion", 100);
+    vrtxEdit.accordionGroupedInit(".vrtx-sea-accordion", "fast");
   } else if (vrtxEdit.editorForm.hasClass("vrtx-samlet-program")) {
     var samletElm = vrtxEdit.editorForm.find(".samlet-element");
     vrtxEdit.replaceTag(samletElm, "h6", "strong");

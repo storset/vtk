@@ -156,6 +156,9 @@ vrtxAdmin._$(document).ready(function () {
   bodyId = (typeof bodyId !== "undefined") ? bodyId : "";
   vrtxAdm.bodyId = bodyId;
   vrtxAdm.cachedBody.addClass("js");
+  if(vrtxAdm.isIE8) {
+    vrtxAdm.cachedBody.addClass("ie8");
+  }
   if (vrtxAdm.runReadyLoad === false) return; // XXX: return if should not run all of ready() code
 
   vrtxAdm.clientLastModified = $("#resource-last-modified").text().split(",");

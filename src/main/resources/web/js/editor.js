@@ -1944,6 +1944,8 @@ VrtxEditor.prototype.initStudyDocTypes = function initStudyDocTypes() {
     vrtxEdit.accordionGroupedInit("[class*=link-box]");
   } else if (vrtxEdit.editorForm.hasClass("vrtx-student-exchange-agreement")) {
     vrtxEdit.accordionGroupedInit(".vrtx-sea-accordion");
+  } else if (vrtxEdit.editorForm.hasClass("vrtx-frontpage")) {
+    vrtxEdit.accordionGroupedInit(".vrtx-sea-accordion");
   } else if (vrtxEdit.editorForm.hasClass("vrtx-samlet-program")) {
     var samletElm = vrtxEdit.editorForm.find(".samlet-element");
     vrtxEdit.replaceTag(samletElm, "h6", "strong");

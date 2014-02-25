@@ -17,7 +17,11 @@ resourcetype frontpage {
     main-content:boxCssSizeAndPlacement (dropdown),
     main-content:boxCssColor (dropdown),
     group introImageAndCaption (picture, caption) (after introduction),
-    group relatedContent (showAdditionalContent, additional-content) (after main-content)
+    group relatedContent (showAdditionalContent, additional-content) (after main-content),
+    cssUrl (class[vrtx-sea-accordion]),
+    cssUrl (class[vrtx-pseudo-grouped]),
+    link-other-language (class[vrtx-sea-accordion]),
+    link-other-language (class[vrtx-pseudo-grouped])
   }
 
   view-components {

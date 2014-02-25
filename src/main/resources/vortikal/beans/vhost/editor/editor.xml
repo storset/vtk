@@ -303,7 +303,6 @@
           <property name="path" value="${editor.fck.resourcesURL}" />
           <property name="modelName" value="fckeditorBase" />
         </bean>
-
         <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
           <property name="service" ref="viewService" />
           <property name="modelName" value="fckeditorBase" />
@@ -402,6 +401,7 @@
     <property name="resourceManager" ref="editor.unstructuredXhtmlResourceManager" />
     <property name="formView" value="editor.editView" />
     <property name="successView" value="redirectToManage" />
+    <property name="defaultLocale" value="${view.defaultLocale}" />
   </bean>
 
   <bean id="editor.ooXmlEditHandler" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
@@ -410,6 +410,7 @@
 
   <bean id="editor.abstractEditHandler" abstract="true" class="org.vortikal.edit.editor.ResourceEditController">
     <property name="formView" value="editor.editView" />
+    <property name="defaultLocale" value="${view.defaultLocale}" />
   </bean>
 
   <bean id="editor.editCollectionHandler" parent="editor.abstractEditHandler">
@@ -429,6 +430,7 @@
     </property>
     <property name="heightPropDef" ref="mediaHeightPropDef" />
     <property name="widthPropDef" ref="mediaWidthPropDef" />
+    <property name="defaultLocale" value="${view.defaultLocale}" />
   </bean>
 
   <bean id="editor.videoEditHandler" parent="editor.abstractEditHandler">

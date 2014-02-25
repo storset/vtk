@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 import org.vortikal.resourcemanagement.EditRule;
 import org.vortikal.resourcemanagement.EditRule.EditRuleType;
@@ -57,6 +58,7 @@ public class FormSubmitCommand extends UpdateCancelCommand {
     private boolean published;
     private boolean onlyWriteUnpublished;
     private boolean hasPublishDate;
+    private Locale defaultLocale;
     
     private StructuredResource resource;
     private List<FormElementBox> elements = new ArrayList<FormElementBox>();
@@ -64,7 +66,7 @@ public class FormSubmitCommand extends UpdateCancelCommand {
 
     public FormSubmitCommand(StructuredResource resource, URL url, 
             URL listComponentServiceURL, boolean workingCopy, boolean published, boolean hasPublishDate,
-            boolean onlyWriteUnpublished) {
+            boolean onlyWriteUnpublished, Locale defaultLocale) {
         super(url.toString());
         this.listComponentServiceURL = listComponentServiceURL;
         this.resource = resource;
@@ -72,6 +74,7 @@ public class FormSubmitCommand extends UpdateCancelCommand {
         this.published = published;
         this.hasPublishDate = hasPublishDate;
         this.onlyWriteUnpublished = onlyWriteUnpublished;
+        this.defaultLocale = defaultLocale;
         StructuredResourceDescription type = resource.getType();
 
         for (PropertyDescription def : type.getAllPropertyDescriptions()) {
@@ -294,5 +297,13 @@ public class FormSubmitCommand extends UpdateCancelCommand {
     
     public void setOnlyWriteUnpublished(boolean onlyWriteUnpublished) {
         this.onlyWriteUnpublished = onlyWriteUnpublished;
+    }
+    
+    public Locale getDefaultLocale() {
+        return this.defaultLocale;
+    }
+    
+    public void setDefaultLocale(Locale defaultLocale) {
+        this.defaultLocale = defaultLocale;
     }
 }

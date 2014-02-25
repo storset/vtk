@@ -104,7 +104,11 @@
 <body id="vrtx-editor">
 
   <#assign locale = springMacroRequestContext.getLocale() />
-  <#assign contentLocale = resourceContext.currentResource.getContentLocale() />
+  
+  <#assign contentLocale = form.defaultLocale />
+  <#if resourceContext.currentResource.contentLanguage?exists>
+    <#assign contentLocale = resourceContext.currentResource.getContentLocale() />
+  </#if>
   
   <#assign header = form.resource.getLocalizedMsg("header", locale, contentLocale, null) />
   

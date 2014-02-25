@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.ServletRequest;
@@ -44,6 +45,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import net.sf.json.JSONObject;
 
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
@@ -62,10 +64,12 @@ import org.vortikal.resourcemanagement.PropertyDescription;
 import org.vortikal.resourcemanagement.StructuredResource;
 import org.vortikal.resourcemanagement.StructuredResourceDescription;
 import org.vortikal.resourcemanagement.StructuredResourceManager;
+import org.vortikal.resourcemanagement.property.EvaluatorResolver;
 import org.vortikal.security.Principal;
 import org.vortikal.text.html.HtmlFragment;
 import org.vortikal.text.html.HtmlPageFilter;
 import org.vortikal.text.html.HtmlPageParser;
+import org.vortikal.util.repository.LocaleHelper;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
@@ -74,6 +78,7 @@ public class StructuredResourceEditor extends SimpleFormController {
     private StructuredResourceManager resourceManager;
     private HtmlPageFilter safeHtmlFilter;
     private Service listComponentsService;
+    private Locale defaultLocale;
 
     public StructuredResourceEditor() {
         super();
@@ -117,8 +122,14 @@ public class StructuredResourceEditor extends SimpleFormController {
         URL url = RequestContext.getRequestContext().getService().constructURL(uri);
         URL listComponentServiceURL = listComponentsService.constructURL(uri);
 
+        
+        Locale locale = resource.getContentLocale();
+        if(locale == null) {
+            locale = this.defaultLocale;
+        }
+        
         return new FormSubmitCommand(structuredResource, url, listComponentServiceURL, workingCopy != null, published,
-                hasPublishDate, onlyWriteUnpublished);
+                hasPublishDate, onlyWriteUnpublished, locale);
     }
 
     @Override
@@ -351,5 +362,10 @@ public class StructuredResourceEditor extends SimpleFormController {
 
     public Service getListComponentsService() {
         return listComponentsService;
+    }
+    
+    @Required
+    public void setDefaultLocale(Locale defaultLocale) {
+        this.defaultLocale = defaultLocale;
     }
 }

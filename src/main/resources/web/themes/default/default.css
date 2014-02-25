@@ -2902,6 +2902,12 @@ h3.resourceInfoHeader {
   display: block;
 }
 
+@media screen and (max-width: 1270px) {
+  #resource-title #resourceMenuRight {
+    margin-right: -40%;
+  }
+}
+
 @media screen and (max-width: 1170px) {
   .vrtx-resource-visit-stat {
     width: 20%;
@@ -2915,12 +2921,6 @@ h3.resourceInfoHeader {
   }
   #vrtx-resource-visit-info {
     bottom: 90px;
-  }
-}
-
-@media screen and (max-width: 1270px) {
-  #resource-title #resourceMenuRight {
-    margin-right: -40%;
   }
 }
 

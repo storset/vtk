@@ -1315,10 +1315,14 @@ VrtxAdmin.prototype.hideTips = function hideTips() {
  */
 VrtxAdmin.prototype.initScrollBreadcrumbs = function initScrollBreadcrumbs() {
   var vrtxAdm = this;
-  
+
   var crumbs = $(".vrtx-breadcrumb-level, .vrtx-breadcrumb-level-no-url"), i = crumbs.length, crumbsWidth = 0;
   while(i--) {
-    crumbsWidth += $(crumbs[i]).outerWidth(true) + 2;
+    var crumb = $(crumbs[i]);
+    crumbsWidth += crumb.outerWidth(true) + 2;
+    // Accessibility
+    crumb.filter(":not(.vrtx-breadcrumb-active)").attr("tabindex", "0");
+    crumb.find("a").attr("tabindex", "-1");
   }
   crumbs.wrapAll("<div id='vrtx-breadcrumb-inner' style='width: " + crumbsWidth + "px' />");
   vrtxAdm.crumbsWidth = crumbsWidth;

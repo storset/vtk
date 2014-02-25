@@ -181,7 +181,7 @@
   border-color: #d9d9d9;
 }
 
-.ui-accordion > div > .header.ui-accordion-header.ui-accordion-header-active {
+.ui-accordion > div > .header.ui-accordion-header.ui-corner-top {
   border-bottom: none;
 }
 
@@ -204,8 +204,8 @@
   background: #ecf3f9;
 }
 
-.ui-accordion > div > .header.ui-accordion-header.ui-state-active,
-.ui-accordion > div > .header.ui-accordion-header.ui-state-hover.ui-state-active {
+.ui-accordion > div > .header.ui-accordion-header.ui-corner-top,
+.ui-accordion > div > .header.ui-accordion-header.ui-state-hover.ui-corner-top {
   background: none;
 }
 

@@ -26,7 +26,7 @@
 	    <@mpLib.genPlaceholder "${media?html}" dateStr true />
         <@mpLib.initFlash '${media?url("UTF-8")}' dateStr false true />
 
-	    <@genDownloadLink "audio" />
+	    <@mpLib.genDownloadLink "${media?html}" "audio" />
 	  
       <#elseif contentType == "video/quicktime" >
         <object classid="clsid:02BF25D5-8C17-4B23-BC80-D3488ABDDC6B" id="testid" width="${width}" height="${height}" 
@@ -44,7 +44,7 @@
           </embed>
         </object>
         
-        <@genDownloadLink />
+        <@mpLib.genDownloadLink "${media?html}" />
       
       <#elseif contentType == "application/x-shockwave-flash"
                            && extension == "swf">
@@ -59,28 +59,14 @@
 	    <@mpLib.initFlash '${media?url("UTF-8")}' dateStr />
 	  
 	    <#if contentType == "video/mp4" && !media?starts_with("rtmp")>
-          <@genDownloadLink "video" />
+          <@mpLib.genDownloadLink "${media?html}" "video" />
 	    </#if>
 	  
       <#else>
     
-        <@genDownloadLink "media" true />
+        <@mpLib.genDownloadLink "${media?html}" "media" true />
       
       </#if>
     </#if>
-  </#if>
-</#macro>
-
-<#macro genDownloadLink type="media" bypass=false>
-  <#if bypass || (showDL?exists && showDL == "true")>
-    <a class="vrtx-media" href="${media?html}">
-      <#if type = "video">
-        <@vrtx.msg code="article.video-file" />
-      <#elseif type = "audio">
-        <@vrtx.msg code="article.audio-file" />
-      <#else>
-        <@vrtx.msg code="article.media-file" />
-      </#if>
-    </a>
   </#if>
 </#macro>

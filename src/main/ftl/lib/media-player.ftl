@@ -142,3 +142,27 @@
   // -->
   </script>
 </#macro>
+
+<#--
+ * genDownloadLink
+ *
+ * Generate download link to media file
+ *
+ * @param url the URL-escaped (UTF-8) URL to the media file
+ * @param type (optional) can specify more narrow file type: "audio" or "video"
+ * @param bypass (optional) can bypass check for showDL-boolean
+ *
+-->
+<#macro genDownloadLink url type="media" bypass=false>
+  <#if bypass || (showDL?exists && showDL == "true")>
+    <a class="vrtx-media" href="${url?html}">
+      <#if type = "video">
+        <@vrtx.msg code="article.video-file" />
+      <#elseif type = "audio">
+        <@vrtx.msg code="article.audio-file" />
+      <#else>
+        <@vrtx.msg code="article.media-file" />
+      </#if>
+    </a>
+  </#if>
+</#macro>

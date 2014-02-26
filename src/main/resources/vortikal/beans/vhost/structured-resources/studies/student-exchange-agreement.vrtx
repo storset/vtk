@@ -36,9 +36,7 @@ resourcetype student-exchange-agreement {
     how-to-apply-text-field : html noextract,
 
     contact : string,
-    earlier-students : html noextract,
-    
-    link-other-language: resource_ref
+    earlier-students : html noextract
   }
 
   edit-rules {
@@ -148,7 +146,6 @@ resourcetype student-exchange-agreement {
       <body id="vrtx-student-exchange-agreement">
         <div id="vrtx-content">
           <div id="vrtx-main-content">
-            [call "comp:link-other-language"]
             <h1>
               <span class="vrtx-student-exchange-agreement-prefix">[localized 'student-exchange-agreement-between']</span>
               <span class="vrtx-student-exchange-agreement-with">[val name]</span>
@@ -350,13 +347,7 @@ resourcetype student-exchange-agreement {
     contact : (en : "Contact", no : "Kontakt", nn : "Kontakt"),
     earlier-students : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
     earlier-students-plus-info : (en : "Previous students experiences", no : "Studenter som har vært her tidligere", nn : "Studenter som har vore her tidlegare"),
-    iris-reports : (en : "IRIS - Student reports", no : "Studentrapporter i IRIS", nn : "Studentrapportar i IRIS"),
-    link-language: (en : "Norwegian", no : "English", nn : "English"),
-    link-other-language {
-      en: (en : "Link to norwegian version", no : "Link to english version", nn : "Link to english version"),
-      no: (en : "Lenke til norsk versjon", no : "Lenke til engelsk versjon", nn : "Lenke til engelsk versjon"),
-      nn: (en : "Lenke til norsk versjon", no : "Lenke til engelsk versjon", nn : "Lenke til engelsk versjon")
-    }
+    iris-reports : (en : "IRIS - Student reports", no : "Studentrapporter i IRIS", nn : "Studentrapportar i IRIS")
   }
 
 }

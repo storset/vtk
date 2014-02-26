@@ -77,7 +77,6 @@ resourcetype shared-text {
       <body id="vrtx-shared-text">
         <div id="vrtx-content">
           <div id="vrtx-main-content">
-            [call "comp:link-other-language"]
             [call "comp:shared-text-box"]
           </div>
         </div>

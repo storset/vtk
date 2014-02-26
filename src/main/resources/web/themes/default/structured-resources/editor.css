@@ -246,6 +246,10 @@
   background: #ecf3f9;
 }
 
+.ui-accordion .vrtx-grouped .header.ui-accordion-header.ui-state-hover label {
+  cursor: pointer;
+}
+
 .ui-accordion > div > .header.ui-accordion-header.ui-corner-top,
 .ui-accordion > div > .header.ui-accordion-header.ui-state-hover.ui-corner-top {
   background: none;

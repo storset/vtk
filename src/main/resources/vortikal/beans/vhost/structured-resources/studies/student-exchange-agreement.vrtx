@@ -103,17 +103,6 @@ resourcetype student-exchange-agreement {
     contact (class[vrtx-pseudo-grouped]),
     earlier-students-plus-info (class[vrtx-sea-accordion])
   }
-  
-  view-components {
-    link-other-language {
-      ##
-      [def link resource-prop(".", "link-other-language")]
-      [if link != null]
-        <a id="vrtx-change-language-link" href="[val link]">[localized "link-language"]</a>
-      [endif]
-      ##
-    }
-  }
 
   view {
     ##

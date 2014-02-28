@@ -669,7 +669,6 @@ resourcetype course-description {
       [def other-text-field document.properties.other-text-field]
       [if other-text-field != null && other-text-field != ""]
         <div id="other">
-          <h2>[localized 'other-text-field']</h2>
           [val other-text-field # unescaped]
         </div>
       [endif]

@@ -110,9 +110,6 @@ import org.vortikal.web.service.ServiceUnlinkableException;
  * the property list
  * <li><code>propertyMapModelName</code> - the name to use (in the model) for
  * the property map
- * <li><code>editHooks</code> - a list of {@link PropertyEditHook} objects,
- * allowing hooks to be run when specific properties are created, removed and
- * edited.
  * </ul>
  * 
  */

@@ -114,6 +114,8 @@ function VrtxAdmin() {
   
   this.uploadCopyMoveSkippedFiles = {};
   this.uploadDisplayRemainingBytes = false;
+  this.uploadCompleteTimeoutBeforeProcessingDialog = 2000; // 2s
+  
   this.createResourceReplaceTitle = true;
   this.createDocumentFileName = "";
   this.trashcanCheckedFiles = 0;
@@ -2021,7 +2023,7 @@ function ajaxUploadPerform(opts, size) {
             processesD = new VrtxLoadingDialog({title: uploading.processes});
             processesD.open();
           }
-        }, 2000);
+        }, vrtxAdm.uploadCompleteTimeoutBeforeProcessingDialog);
       }
     },
     beforeSend: function(xhr) {

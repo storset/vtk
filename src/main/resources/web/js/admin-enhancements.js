@@ -1996,6 +1996,8 @@ function ajaxUploadPerform(opts, size) {
   });
 
   var uploadXhr = null;
+  var processesD = null;
+  var stillProcesses = false:
   
   opts.form.append("<input type='hidden' name='overwrite' value='overwrite' />");
   opts.form.ajaxSubmit({
@@ -2011,15 +2013,30 @@ function ajaxUploadPerform(opts, size) {
         _$("#dialog-uploading-bytes").text(Math.round((size * (percent/100)) / d) + "/" + Math.round(size / d) + unit);
       }
       _$("#dialog-uploading-bar").css("width", percent + "%");
-      
+      if(percent >= 100) {
+        stillProcesses = true:
+        var waitAndProcess = setTimeout(function() {
+          if(stillProcesses) {
+            uploadingD.close();
+            processesD = new VrtxLoadingDialog({title: uploading.processes});
+            processesD.open();
+          }
+        }, 2000);
+      }
     },
     beforeSend: function(xhr) {
       uploadXhr = xhr;
     },
     success: function(results, status, xhr) {
+      stillProcesses = false;
+      if(processesD != null) {
+        processesD.close();
+      } else {
+        uploadingD.close();
+      }
+      
       var result = _$.parseHTML(results);
       vrtxAdm.uploadCopyMoveSkippedFiles = {};
-      uploadingD.close();
       if (vrtxAdm.hasErrorContainers(result, opts.errorContainer)) {
         vrtxAdm.displayErrorContainers(result, opts.form, opts.errorContainerInsertAfter, opts.errorContainer);
       } else {

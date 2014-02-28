@@ -861,7 +861,7 @@
         <ref bean="xhtml10TransTypePropDef" />
         <ref bean="commentsEnabledPropDef" />
 
-        <!-- Obsolete -->
+        <!-- Unpublished collection inheritable property -->
         <ref bean="unpublishedCollectionPropDef" />
 
         <!-- Editorial contacts -->

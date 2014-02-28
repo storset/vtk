@@ -1997,7 +1997,7 @@ function ajaxUploadPerform(opts, size) {
 
   var uploadXhr = null;
   var processesD = null;
-  var stillProcesses = false:
+  var stillProcesses = false;
   
   opts.form.append("<input type='hidden' name='overwrite' value='overwrite' />");
   opts.form.ajaxSubmit({
@@ -2014,7 +2014,7 @@ function ajaxUploadPerform(opts, size) {
       }
       _$("#dialog-uploading-bar").css("width", percent + "%");
       if(percent >= 100) {
-        stillProcesses = true:
+        stillProcesses = true;
         var waitAndProcess = setTimeout(function() {
           if(stillProcesses) {
             uploadingD.close();
@@ -2028,6 +2028,8 @@ function ajaxUploadPerform(opts, size) {
       uploadXhr = xhr;
     },
     success: function(results, status, xhr) {
+      //var debugProcessingTimer = setTimeout(function() {
+    
       stillProcesses = false;
       if(processesD != null) {
         processesD.close();
@@ -2058,6 +2060,8 @@ function ajaxUploadPerform(opts, size) {
         });
         animation.bottomUp();
       }
+      
+      //}, 4000);
     },
     error: function (xhr, textStatus, errMsg) {
       if(uploadXhr == null) {

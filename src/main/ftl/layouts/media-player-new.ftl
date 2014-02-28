@@ -13,5 +13,5 @@
   <@mpLib.genPlaceholder "${streamingUrls.hlsStreamUrl?html}" dateStr />
   <@mpLib.initFlash '${directStreamingUrls.hdsStreamUrl?url("UTF-8")}' dateStr true  />
   
-  <@mpLib.genDownloadLink "${streamingUrls.hlsStreamUrl?html}" />
+  <@mpLib.genDownloadLink "${media?html}" />
 </#macro>

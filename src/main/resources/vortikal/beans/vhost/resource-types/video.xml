@@ -26,20 +26,12 @@
     </property>
   </bean>
   
-  <bean id="contentTypeMatchesVideo" class="org.vortikal.web.service.ResourceContentTypeRegexpAssertion">
-    <property name="pattern" value="^application/mxf$|^video/.+" />
-  </bean>
-
-  <bean id="contentTypeMatchesAudioOrVideo" class="org.vortikal.web.service.ResourceContentTypeRegexpAssertion">
-    <property name="pattern" value="^application/mxf|^video/.+|^audio/.+" />
-  </bean>
-
   <bean id="mediaPlayerService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="viewService" />
     <property name="order" value="-1" />
     <property name="assertions">
       <list>
-        <ref bean="contentTypeMatchesAudioOrVideo" />
+        <ref bean="contentTypeMatchesMedia" />
         <ref bean="asWebpageAssertion" />
       </list>
     </property>

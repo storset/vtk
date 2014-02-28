@@ -84,7 +84,7 @@
   
 </head>
 <body id="vrtx-${resource.resourceType}">
-  
+
   <#assign page = page?default(1) />
 
   <#assign isBlogListing = resource.resourceType = 'blog-listing' />

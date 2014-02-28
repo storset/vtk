@@ -67,25 +67,18 @@
            <li class="vrtx-image-entry">
          </#if>
          
-         <#local resourceType = "" />
-         <#if r.resourceType?exists>
-            <#local resourceType = r.resourceType />
-         </#if>
-         
-         <#local contentType = vrtx.propValue(r, 'contentType') />
          <div class="vrtx-image-container">
-         
-           <#if resourceType == "audio">
+           <#if vrtx.isOfType("audio", r.resourceType) >
              <a href="${entry.url?html}">
                <img src="/vrtx/__vrtx/static-resources/themes/default/icons/audio-icon.png" alt="" />
              </a>
-           <#elseif resourceType == "video">
-               <#local introImgURI = vrtx.propValue(r, 'poster-image') />
-	           <#if introImgURI?exists && introImgURI != "">
-	    			<#local thumbnail =  vrtx.relativeLinkConstructor(introImgURI, 'displayThumbnailService') />
-	    	  	<#else>
-	    			<#local thumbnail =  vrtx.relativeLinkConstructor(r.URI, 'displayThumbnailService') />
-	   		   	</#if>
+           <#elseif vrtx.isOfType("video", r.resourceType)>
+               <#local posterImgURI = vrtx.propValue(r, 'poster-image') />
+	           <#if posterImgURI?exists && posterImgURI != "">
+	    	       <#local thumbnail =  vrtx.relativeLinkConstructor(posterImgURI, 'displayThumbnailService') />
+	    	   <#else>
+	    		<#local thumbnail =  vrtx.relativeLinkConstructor(r.URI, 'displayThumbnailService') />
+	   	   </#if>
             	<a href="${entry.url?html}">
             	  <img src="${thumbnail?html}" alt="" />
              	</a>

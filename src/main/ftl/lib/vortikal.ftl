@@ -446,6 +446,25 @@
   <#return propVal />
 </#function>
 
+<#--
+ * isOfType
+ *
+ * Function to query resource type hierarchy.
+ *
+ * Test if a resource type is of another [super/mixin] type.
+ *
+ * @param superType the super/mixin type name as a string
+ * @param testType the test type name as a string.
+ * @return true if testType is descendant type of superType, false otherwise.
+-->
+<#function isOfType superTypeName testTypeName>
+  <#if VRTX_RESOURCE_TYPE_TREE?exists>
+    <#local superDef = VRTX_RESOURCE_TYPE_TREE.getResourceTypeDefinitionByName(superTypeName) />
+    <#return VRTX_RESOURCE_TYPE_TREE.isContainedType(superDef, testTypeName) />
+  </#if>
+  <#return false />
+</#function>
+
 <#function getPropValue resource name format='long' prefix=''>
   <#local def = '' />
   <#if VRTX_RESOURCE_TYPE_TREE?exists>

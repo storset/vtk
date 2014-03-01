@@ -1,7 +1,7 @@
 <#ftl strip_whitespace=true>
 
 <#--
-  - File: media-player.ftl
+  - File: layouts/media-player.ftl
   - 
   - Description: Media player component
   - 	

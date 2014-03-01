@@ -1,7 +1,7 @@
 <#ftl strip_whitespace=true>
 
 <#--
-  - File: media-player.ftl
+  - File: lib/media-player.ftl
   - 
   - Description: Media player library
   -

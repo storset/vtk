@@ -33,7 +33,7 @@ package org.vortikal.web.view.freemarker;
 import org.springframework.core.Ordered;
 
 /** Interface defining a freemarker template location path to be used in
- * conjunction with <code>MultiTemplateLocationsFreeMarkerConfigurer<code>.
+ * conjunction with {@link MultiTemplateLocationsFreeMarkerConfigurer}.
  *
  */
 public interface FreeMarkerTemplateLocation extends Ordered {

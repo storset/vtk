@@ -99,25 +99,11 @@
         <entry key="strobe" value="${flash.baseURL}/SMP_2.0.2494-patched/10.2/StrobeMediaPlayback.swf" />
       </map>
     </property>
-    
-    <property name="referenceDataProviderList">
+    <property name="referenceDataProviders">
       <list>
         <ref bean="resourceContextProvider" />
-        <!-- Allow dynamic inclusion of further data providers (from optional extensions). -->      
-        <bean class="org.vortikal.context.CategoryResolvingFactoryBean">
-          <property name="category" value="displayMediaResourceView.referenceDataProvider" />
-        </bean>
       </list>
     </property>
-    
-<!--    <property name="referenceDataProviders">
-      <list>
-        <ref bean="resourceContextProvider" />
-        <ref bean="videoref.hdsStreamUrlProvider" />
-        <ref bean="videoref.hlsStreamUrlProvider" />
-        <ref bean="videoref.directStreamingUrlsProvider" />
-      </list>
-    </property>-->
     <property name="attributesMap">
       <map>
         <entry key="jsURLs">

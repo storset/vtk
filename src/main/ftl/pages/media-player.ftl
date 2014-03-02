@@ -30,7 +30,9 @@
   </div>
 </#if>
 
-<@mediaPlayer.mediaPlayer />
+<#assign dateStr = 0 />
+<#if nanoTime?has_content><#assign dateStr = nanoTime?c /></#if>
+<@mediaPlayer.mediaPlayer dateStr />
 
 </body>
 </html>

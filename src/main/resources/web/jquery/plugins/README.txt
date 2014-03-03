@@ -20,5 +20,17 @@
      a.push({name: n, value: files[j], type: el.type});
    }
    ------------------------------------------------------------------------------------
-
+   
+   and in $.fieldValue() to filter out CSS added by Chrome:
+   ------------------------------------------------------------------------------------
+   var val = $(el).val();
+   try {
+     val = val.replace(/<span style="font-size: 14px;">([^<]*)<\/span>/g, "$1", "");
+     val = val.replace(/<(p|em|strong|s|ul|ol) style="font-size: 14px;">/g, "<$1>", "");
+   } catch(err) {
+     vrtxAdmin.log({msg: err});
+   }
+   return val;
+   ------------------------------------------------------------------------------------
+   
    API: http://malsup.com/jquery/form/#api

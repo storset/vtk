@@ -70,6 +70,7 @@
     <property name="reporters">
       <list>
         <ref bean="lastModifiedReporter" />
+        <ref bean="unpublishedReporter" />
         <ref bean="brokenLinksCollectionReport" />
       </list>
     </property>
@@ -177,6 +178,15 @@
     <property name="sortPropDef" ref="lastModifiedPropDef" />
     <property name="titlePropDef" ref="titlePropDef" />
     <property name="type" value="file" />
+    <property name="sortOrder" ref="SORT_ORDER.DESC" />
+  </bean>
+  
+  <bean id="unpublishedReporter" class="org.vortikal.web.report.UnpublishedReporter" parent="documentReporter">
+    <property name="name" value="unpublished" />
+    <property name="sortPropDef" ref="lastModifiedPropDef" />
+    <property name="titlePropDef" ref="titlePropDef" />
+    <property name="type" value="resource" />
+    <property name="publishedPropDef" ref="publishedPropDef" />
     <property name="sortOrder" ref="SORT_ORDER.DESC" />
   </bean>
 

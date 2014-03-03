@@ -40,12 +40,14 @@ import org.vortikal.repository.search.Search;
 import org.vortikal.repository.search.SortFieldDirection;
 import org.vortikal.repository.search.SortingImpl;
 import org.vortikal.repository.search.query.AndQuery;
-import org.vortikal.repository.search.query.PropertyExistsQuery;
 import org.vortikal.repository.search.query.PropertyTermQuery;
 import org.vortikal.repository.search.query.TermOperator;
 import org.vortikal.repository.search.query.TypeTermQuery;
 import org.vortikal.repository.search.query.UriPrefixQuery;
 
+/* XXX: DocumentReporter should probably be renamed to StandardReporter or something like that
+ *      as now also is used for all resources (unpublished in this report)
+ */
 public class UnpublishedReporter extends DocumentReporter {
 
     private PropertyTypeDefinition titlePropDef;

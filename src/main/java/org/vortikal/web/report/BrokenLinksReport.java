@@ -115,9 +115,13 @@ public class BrokenLinksReport extends DocumentReporter {
     private String viewNameCollection;
     private String nameCollection;
     
-    private void populateMap(String token, Resource resource, Map<String, Object> result, HttpServletRequest request) {
+    private void populateMap(String token, Resource resource, Map<String, Object> result, HttpServletRequest request, boolean isCollectionView) {
         URL reportURL = super.getReportService().constructURL(resource).addParameter(REPORT_TYPE_PARAM, getName());
 
+        if(isCollectionView) {
+            reportURL.addParameter(COLLECTION_VIEW_PARAM_NAME, "");
+        }
+        
         Map<String, List<FilterOption>> filters = new LinkedHashMap<String, List<FilterOption>>();
 
         String linkType = request.getParameter(FILTER_LINK_TYPE_PARAM_NAME);
@@ -185,7 +189,7 @@ public class BrokenLinksReport extends DocumentReporter {
 
             result = super.getReportContent(token, resource, request);
 
-            populateMap(token, resource, result, request);
+            populateMap(token, resource, result, request, false);
 
             result.put("brokenLinkCount", getBrokenLinkCount(token, resource, request, (String) result.get("linkType")));
             
@@ -195,7 +199,7 @@ public class BrokenLinksReport extends DocumentReporter {
             
             result.put(REPORT_NAME, nameCollection);
 
-            populateMap(token, resource, result, request);
+            populateMap(token, resource, result, request, true);
 
             Accumulator accumulator = getBrokenLinkAccumulator(token, resource, request, (String) result.get("linkType"));
 

@@ -56,7 +56,7 @@ var VrtxAccordion = dejavu.Class.declare({
         header: accordion.__opts.headerSelector,
         heightStyle: "content",
         collapsible: true,
-        active: accordion.__opts.activeElem ? accordion.__opts.activeElem : false,
+        active: accordion.__opts.activeElem != null ? accordion.__opts.activeElem : false,
         activate: function (e, ui) {
           if(accordion.__opts.onActivate) accordion.__opts.onActivate(e, ui, accordion);
         }

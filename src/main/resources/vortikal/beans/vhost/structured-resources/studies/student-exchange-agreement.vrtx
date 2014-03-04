@@ -36,9 +36,7 @@ resourcetype student-exchange-agreement {
     how-to-apply-text-field : html noextract,
 
     contact : string,
-    earlier-students : html noextract,
-    
-    link-other-language: resource_ref
+    earlier-students : html noextract
   }
 
   edit-rules {
@@ -103,17 +101,6 @@ resourcetype student-exchange-agreement {
     contact (class[vrtx-pseudo-grouped]),
     earlier-students-plus-info (class[vrtx-sea-accordion])
   }
-  
-  view-components {
-    link-other-language {
-      ##
-      [def link resource-prop(".", "link-other-language")]
-      [if link != null]
-        <a id="vrtx-change-language-link" href="[val link]">[localized "link-language"]</a>
-      [endif]
-      ##
-    }
-  }
 
   view {
     ##
@@ -159,7 +146,6 @@ resourcetype student-exchange-agreement {
       <body id="vrtx-student-exchange-agreement">
         <div id="vrtx-content">
           <div id="vrtx-main-content">
-            [call "comp:link-other-language"]
             <h1>
               <span class="vrtx-student-exchange-agreement-prefix">[localized 'student-exchange-agreement-between']</span>
               <span class="vrtx-student-exchange-agreement-with">[val name]</span>
@@ -285,7 +271,7 @@ resourcetype student-exchange-agreement {
             [endif]
             [if earlier-students-div-bool]
               <div id="vrtx-student-exchange-agreement-earlier-students" class="vrtx-frontpage-box">
-                <h2>[localized 'earlier-students']</h2></p>
+                <h2>[localized 'earlier-students-plus-info']</h2></p>
                 [if iris-bool]<p><a href="http://www.iris.siu.no/iris.nsf/wwwRSV?SearchView&Query=[val erasmus]">[localized 'iris-reports']</a></p>[endif]
                 [if earlier-students-bool][val earlier-students # unescaped][endif]
               </div>
@@ -355,19 +341,13 @@ resourcetype student-exchange-agreement {
     country : ( en: "Country", no: "Land", nn: "Land"),
     city : ( en: "City", no: "By", nn: "By"),
     webpage : ( en: "Webpage", no: "Nettside", nn: "Nettside"),
-    all-agreements-with-university-link : ( en: "All agreements with this university", no: "Alle avtaler med dette universitetet", nn: "Alle avtalar med dette universitetet"),
+    all-agreements-with-university-link : ( en: "All agreements with this university", no: "Alle avtaler med dette universitetet", nn: "Alle avtaler med dette universitetet"),
     study-level : (en : "Study level", no : "Studienivå", nn : "Studienivå"),
     and : (en : "and", no : "og", nn : "og"),
     contact : (en : "Contact", no : "Kontakt", nn : "Kontakt"),
     earlier-students : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
-    earlier-students-plus-info : (en : "Previous students experiences", no : "Studenter som har vært her tidligere", nn : "Studenter som har vore her tidlegare"),
-    iris-reports : (en : "IRIS - Student reports", no : "Studentrapporter i IRIS", nn : "Studentrapportar i IRIS"),
-    link-language: (en : "Norwegian", no : "English", nn : "English"),
-    link-other-language {
-      en: (en : "Link to norwegian version", no : "Link to english version", nn : "Link to english version"),
-      no: (en : "Lenke til norsk versjon", no : "Lenke til engelsk versjon", nn : "Lenke til engelsk versjon"),
-      nn: (en : "Lenke til norsk versjon", no : "Lenke til engelsk versjon", nn : "Lenke til engelsk versjon")
-    }
+    earlier-students-plus-info : (en : "Previous student experiences", no : "Studenter som har vært her tidligere", nn : "Studenter som har vore her tidlegare"),
+    iris-reports : (en : "IRIS - Student reports", no : "Studentrapporter i IRIS", nn : "Studentrapportar i IRIS")
   }
 
 }

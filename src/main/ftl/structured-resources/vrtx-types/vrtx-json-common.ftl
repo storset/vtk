@@ -136,13 +136,14 @@
 
     <#case "resource_ref">
       <#assign fieldSize = getEdithintFieldSize(elem) />
+      <#assign classes = getEdithintClasses(elem) />
       <@vrtxResourceRef.printPropertyEditView
         title=localizedTitle
         inputFieldName=elem.name
         value=elem.getFormatedValue()
         name=elem.value
         baseFolder=resourceContext.parentURI
-        classes=elem.name
+        classes=elem.name + " " + classes
         tooltip=form.resource.getLocalizedTooltip(elem.name, locale)
         inputFieldSize=fieldSize
       />

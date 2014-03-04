@@ -10,8 +10,7 @@ resourcetype course-group {
     courses-in-group : html noextract,
     relevant-study-programmes : html noextract,
     course-group-other : html noextract,
-    studinfo-kontakt : string,
-    link-other-language: resource_ref
+    studinfo-kontakt : string
   }
 
   edit-rules {
@@ -19,17 +18,6 @@ resourcetype course-group {
     course-group-scope (dropdown),
     studinfo-kontakt (class[vrtx-shared-text],
                       attribute[vrtx-shared-text-path:/vrtx/fellestekst/studinfo-kontakt])
-  }
-  
-  view-components {
-    link-other-language {
-      ##
-      [def link resource-prop(".", "link-other-language")]
-      [if link != null]
-        <a id="vrtx-change-language-link" href="[val link]">[localized "link-language"]</a>
-      [endif]
-      ##
-    }
   }
 
   view {
@@ -50,7 +38,6 @@ resourcetype course-group {
       <body id="vrtx-course-group">
         <div id="vrtx-content">
           <div id="vrtx-main-content">
-            [call "comp:link-other-language"]
             <h1>[if course-group-scope != null && course-group-scope != ""][val course-group-scope]-[localized 'localized-group'][endif][if title != null && title != ""] - [val title][endif]</h1>
             [if course-group-about != null && course-group-about != ""]
               <h2>[localized 'course-group-about']</h2>
@@ -107,12 +94,6 @@ resourcetype course-group {
     relevant-study-programmes : (en : "Relevant for the following study programmes and programme options", no : "Relevant for følgende studieprogrammer og studieretninger", nn : "Relevant for følgjande studieprogram og studieretningar"),
     courses-in-group : (en : "Courses in group", no : "Emner i emnegruppen", nn : "Emner i emnegruppa"),
     course-group-other : (en : "Other", no : "Annet", nn : "Anna"),
-    studinfo-kontakt : (en : "Contact", no : "Kontakt", nn : "Kontakt"),
-    link-language: (en : "Norwegian", no : "English", nn : "English"),
-    link-other-language {
-      en: (en : "Link to norwegian version", no : "Link to english version", nn : "Link to english version"),
-      no: (en : "Lenke til norsk versjon", no : "Lenke til engelsk versjon", nn : "Lenke til engelsk versjon"),
-      nn: (en : "Lenke til norsk versjon", no : "Lenke til engelsk versjon", nn : "Lenke til engelsk versjon")
-    }
+    studinfo-kontakt : (en : "Contact", no : "Kontakt", nn : "Kontakt")
   }
 }

@@ -120,19 +120,24 @@
   </bean>
 
   <bean id="contentTypeMatchesImage" class="org.vortikal.web.service.ResourceContentTypeRegexpAssertion">
-    <property name="pattern" value="image/(.+)" />
-  </bean>
-
-  <bean id="contentTypeMatchesMedia" class="org.vortikal.web.service.ResourceContentTypeRegexpAssertion">
-    <property name="pattern" value="(audio/(.+))|(video/(.+))" />
+    <property name="pattern" value="image/.+" />
   </bean>
 
   <bean id="contentTypeMatchesAudio" class="org.vortikal.web.service.ResourceContentTypeRegexpAssertion">
-    <property name="pattern" value="(audio/(.+))" />
+    <property name="pattern" value="audio/.+" />
   </bean>
   
   <bean id="contentTypeMatchesVideo" class="org.vortikal.web.service.ResourceContentTypeRegexpAssertion">
-    <property name="pattern" value="(video/(.+))" />
+    <property name="pattern" value="^video/.+|^application/mxf$" />
+  </bean>
+
+  <bean id="contentTypeMatchesMedia" class="org.vortikal.web.service.OrAssertion">
+    <property name="assertions">
+      <list>
+        <ref bean="contentTypeMatchesAudio" />
+        <ref bean="contentTypeMatchesVideo" />
+      </list>
+    </property>
   </bean>
 
   <bean id="contentTypeMatchesZip" class="org.vortikal.web.service.ResourceContentTypeRegexpAssertion">

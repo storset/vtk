@@ -35,14 +35,14 @@
         </#if>
         <#if (elem_index < (crumbsSize - 1))>
           <#if elem.URL??>
-            <span tabindex="0" class="vrtx-breadcrumb-level vrtx-breadcrumb-level-${counter?html}<#if (elem_index == (crumbsSize - 2))> vrtx-breadcrumb-before-active</#if>">
-            <a tabindex="-1" href="${elem.URL?html}">${name?html}</a>
+            <span class="vrtx-breadcrumb-level vrtx-breadcrumb-level-${counter?html}<#if (elem_index == (crumbsSize - 2))> vrtx-breadcrumb-before-active</#if>">
+            <a href="${elem.URL?html}">${name?html}</a>
           <#else>
-            <span tabindex="0" class="vrtx-breadcrumb-level-no-url vrtx-breadcrumb-level-${counter?html}<#if (elem_index == (crumbsSize - 2))> vrtx-breadcrumb-before-active</#if>">
-            <span tabindex="-1" class="vrtx-no-url">${name?html}</span>
+            <span class="vrtx-breadcrumb-level-no-url vrtx-breadcrumb-level-${counter?html}<#if (elem_index == (crumbsSize - 2))> vrtx-breadcrumb-before-active</#if>">
+            <span class="vrtx-no-url">${name?html}</span>
           </#if>
         <#else>
-          <span tabindex="0" class="vrtx-breadcrumb-level vrtx-breadcrumb-level-${counter?html} vrtx-breadcrumb-active">${name?html}
+          <span class="vrtx-breadcrumb-level vrtx-breadcrumb-level-${counter?html} vrtx-breadcrumb-active">${name?html}
         </#if>
         <#if elem.delimiter?exists>
       	  <span class="vrtx-breadcrumb-delimiter">${elem.delimiter?html}</span>

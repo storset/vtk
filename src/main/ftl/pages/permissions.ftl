@@ -51,7 +51,7 @@
           <@vrtx.msg code="permissions.isInherited" default="Inherited permissions" /><#t/>
           <#t/><#if aclInfo.aclEditURLs.inheritance?exists>&nbsp;<#t/>
             <#t/><#if resourceContext.requestContext.indexFile><#t/>
-              <#t/><abbr title="${vrtx.getMsg('permissions.inherited.index-file')}" class="tooltips" tabindex="0"></abbr>
+              <#t/><abbr tabindex="0" title="${vrtx.getMsg('permissions.inherited.index-file')}" class="tooltips"></abbr>
             <#else>
               <#t/><input class="vrtx-button-small" type="submit" id="permissions.toggleInheritance.submit" name="confirmation" value="<@vrtx.msg code="permissions.setCustom" default="Edit" />" />
             </#if>

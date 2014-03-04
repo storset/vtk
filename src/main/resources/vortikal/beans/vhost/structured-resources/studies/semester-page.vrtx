@@ -39,8 +39,7 @@ resourcetype semester-page {
     teachers : json (teacherName : string, teacherUrl : string) multiple,
     studinfo-kontakt : string,
     tittel : string,
-    title : derived (tittel) eval ("semester-page"?localized) overrides title,
-    link-other-language: resource_ref
+    title : derived (tittel) eval ("semester-page"?localized) overrides title
   }
 
   edit-rules {
@@ -218,16 +217,6 @@ resourcetype semester-page {
       [endif]
       ##
     }
-    
-    link-other-language {
-      ##
-      [def link resource-prop(".", "link-other-language")]
-      [if link != null]
-        <a id="vrtx-change-language-link" href="[val link]">[localized "link-language"]</a>
-      [endif]
-      ##
-    }
-
   }
 
   view {
@@ -346,7 +335,6 @@ resourcetype semester-page {
         <div id="vrtx-content">
           <div id="vrtx-main-content">
             <div class="vrtx-frontpage-box white-box">
-              [call "comp:link-other-language"]
               <h1>[localized 'semesterpage-for'] [if course-code != null && course-code != ""][val course-code][endif][if course-code != null && course-code != "" && semester != null && semester != ""] - [endif][if semester != null && semester != ""][val semester][endif]</h1>
               [call "comp:show-static-links-if-published"]
             </div>
@@ -522,12 +510,6 @@ resourcetype semester-page {
     teachers : (en : "Other teachers", no : "Andre faglærere", nn : "Andre faglærarar"),
     teacherName : (en : "Name", no : "Navn", nn : "Namn"),
     teacherUrl : (en : "Webaddress", no : "Nettadresse", nn : "Nettadresse"),
-    semester-page : (en : "Semester page", no : "Semesterside", nn : "Semesterside"),
-    link-language: (en : "Norwegian", no : "English", nn : "English"),
-    link-other-language {
-      en: (en : "Link to norwegian version", no : "Link to english version", nn : "Link to english version"),
-      no: (en : "Lenke til norsk versjon", no : "Lenke til engelsk versjon", nn : "Lenke til engelsk versjon"),
-      nn: (en : "Lenke til norsk versjon", no : "Lenke til engelsk versjon", nn : "Lenke til engelsk versjon")
-    }
+    semester-page : (en : "Semester page", no : "Semesterside", nn : "Semesterside")
   }
 }

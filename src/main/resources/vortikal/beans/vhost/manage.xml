@@ -861,7 +861,7 @@
         <ref bean="xhtml10TransTypePropDef" />
         <ref bean="commentsEnabledPropDef" />
 
-        <!-- Obsolete -->
+        <!-- Unpublished collection inheritable property -->
         <ref bean="unpublishedCollectionPropDef" />
 
         <!-- Editorial contacts -->
@@ -869,6 +869,11 @@
 
         <!-- Collection type -->
         <ref bean="collection.typePropDef" />
+        
+        <!-- Media-mxin type -->
+        <ref bean="mediaHeightPropDef" />
+        <ref bean="mediaWidthPropDef" />
+        <ref bean="mediaDurationPropDef" />
       </list>
     </property>
     <property name="propertyListModelName" value="basicPropList" />

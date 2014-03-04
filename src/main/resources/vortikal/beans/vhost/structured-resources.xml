@@ -391,6 +391,7 @@
     <property name="formView" value="structuredResources.editView" />
     <property name="successView" value="redirectToManage" />
     <property name="listComponentsService" ref="jsonDocumentsComponentsService" />
+    <property name="defaultLocale" value="${view.defaultLocale}" />
   </bean>
 
   <bean id="structuredResources.viewResolver" parent="decoratorViewResolver">
@@ -427,7 +428,6 @@
         <entry key="helpURL.editor.nn" value="${helpURL.editor.nn}" />
         <entry key="helpURL.editor.en" value="${helpURL.editor.en}" />
       </map>
-
     </property>
     <property name="referenceDataProviders">
       <list>

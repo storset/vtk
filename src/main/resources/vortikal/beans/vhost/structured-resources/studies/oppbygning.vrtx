@@ -14,8 +14,7 @@ resourcetype oppbygning {
     fellestekst-fakultet-fri: html noextract,
     related-content : html noextract,
     tittel : string,
-    title : derived (tittel) eval ("oppbygning"?localized) overrides title,
-    link-other-language: resource_ref
+    title : derived (tittel) eval ("oppbygning"?localized) overrides title
   }
   
   edit-rules {
@@ -165,15 +164,6 @@ resourcetype oppbygning {
       [endif]
       ##
     }
-    
-    link-other-language {
-      ##
-      [def link resource-prop(".", "link-other-language")]
-      [if link != null]
-        <a id="vrtx-change-language-link" href="[val link]">[localized "link-language"]</a>
-      [endif]
-      ##
-    }
   }
 
   view {
@@ -187,7 +177,6 @@ resourcetype oppbygning {
         <div id="vrtx-content">
           [def document structured-document()]
           <div id="vrtx-main-content" class="vrtx-hide-additional-content-true">
-            [call "comp:link-other-language"]
             <h1>[localized 'oppbygning']</h1>
             [call "comp:introduction"]
             [call "comp:introduction-image"]
@@ -225,12 +214,6 @@ resourcetype oppbygning {
     content-study : (en : "Content", no :"Innhold",nn : "Innhold"),
     header : (en : "Edit programme structure", no : "Rediger oppbygging og gjennomføring", nn : "Rediger oppbygging og gjennomføring"),
     publishedDate : (en : "Published", no :"Publisert", nn:"Publisert"),
-    lastModifiedDate : (en : "Last modified", no : "Sist endret", nn : "Sist endra"),
-    link-language: (en : "Norwegian", no : "English", nn : "English"),
-    link-other-language {
-      en: (en : "Link to norwegian version", no : "Link to english version", nn : "Link to english version"),
-      no: (en : "Lenke til norsk versjon", no : "Lenke til engelsk versjon", nn : "Lenke til engelsk versjon"),
-      nn: (en : "Lenke til norsk versjon", no : "Lenke til engelsk versjon", nn : "Lenke til engelsk versjon")
-    }
+    lastModifiedDate : (en : "Last modified", no : "Sist endret", nn : "Sist endra")
   }
 }

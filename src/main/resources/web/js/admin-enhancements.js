@@ -114,6 +114,8 @@ function VrtxAdmin() {
   
   this.uploadCopyMoveSkippedFiles = {};
   this.uploadDisplayRemainingBytes = false;
+  this.uploadCompleteTimeoutBeforeProcessingDialog = 2000; // 2s
+  
   this.createResourceReplaceTitle = true;
   this.createDocumentFileName = "";
   this.trashcanCheckedFiles = 0;
@@ -156,6 +158,9 @@ vrtxAdmin._$(document).ready(function () {
   bodyId = (typeof bodyId !== "undefined") ? bodyId : "";
   vrtxAdm.bodyId = bodyId;
   vrtxAdm.cachedBody.addClass("js");
+  if(vrtxAdm.isIE8) {
+    vrtxAdm.cachedBody.addClass("ie8");
+  }
   if (vrtxAdm.runReadyLoad === false) return; // XXX: return if should not run all of ready() code
 
   vrtxAdm.clientLastModified = $("#resource-last-modified").text().split(",");
@@ -1315,10 +1320,14 @@ VrtxAdmin.prototype.hideTips = function hideTips() {
  */
 VrtxAdmin.prototype.initScrollBreadcrumbs = function initScrollBreadcrumbs() {
   var vrtxAdm = this;
-  
+
   var crumbs = $(".vrtx-breadcrumb-level, .vrtx-breadcrumb-level-no-url"), i = crumbs.length, crumbsWidth = 0;
   while(i--) {
-    crumbsWidth += $(crumbs[i]).outerWidth(true) + 2;
+    var crumb = $(crumbs[i]);
+    crumbsWidth += crumb.outerWidth(true) + 2;
+    // Accessibility
+    crumb.filter(":not(.vrtx-breadcrumb-active)").attr("tabindex", "0");
+    crumb.find("a").attr("tabindex", "-1");
   }
   crumbs.wrapAll("<div id='vrtx-breadcrumb-inner' style='width: " + crumbsWidth + "px' />");
   vrtxAdm.crumbsWidth = crumbsWidth;
@@ -1989,6 +1998,8 @@ function ajaxUploadPerform(opts, size) {
   });
 
   var uploadXhr = null;
+  var processesD = null;
+  var stillProcesses = false;
   
   opts.form.append("<input type='hidden' name='overwrite' value='overwrite' />");
   opts.form.ajaxSubmit({
@@ -2004,15 +2015,32 @@ function ajaxUploadPerform(opts, size) {
         _$("#dialog-uploading-bytes").text(Math.round((size * (percent/100)) / d) + "/" + Math.round(size / d) + unit);
       }
       _$("#dialog-uploading-bar").css("width", percent + "%");
-      
+      if(percent >= 100) {
+        stillProcesses = true;
+        var waitAndProcess = setTimeout(function() {
+          if(stillProcesses) {
+            uploadingD.close();
+            processesD = new VrtxLoadingDialog({title: uploading.processes});
+            processesD.open();
+          }
+        }, vrtxAdm.uploadCompleteTimeoutBeforeProcessingDialog);
+      }
     },
     beforeSend: function(xhr) {
       uploadXhr = xhr;
     },
     success: function(results, status, xhr) {
+      //var debugProcessingTimer = setTimeout(function() {
+    
+      stillProcesses = false;
+      if(processesD != null) {
+        processesD.close();
+      } else {
+        uploadingD.close();
+      }
+      
       var result = _$.parseHTML(results);
       vrtxAdm.uploadCopyMoveSkippedFiles = {};
-      uploadingD.close();
       if (vrtxAdm.hasErrorContainers(result, opts.errorContainer)) {
         vrtxAdm.displayErrorContainers(result, opts.form, opts.errorContainerInsertAfter, opts.errorContainer);
       } else {
@@ -2034,6 +2062,8 @@ function ajaxUploadPerform(opts, size) {
         });
         animation.bottomUp();
       }
+      
+      //}, 4000);
     },
     error: function (xhr, textStatus, errMsg) {
       if(uploadXhr == null) {

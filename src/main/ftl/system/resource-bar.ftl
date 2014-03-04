@@ -38,6 +38,7 @@
       loadingSubfolders = '${vrtx.getMsg("manage.load-subfolders")}',
       uploading = {
         inprogress: '${vrtx.getMsg("uploading.in-progress")}',
+        processes: '${vrtx.getMsg("uploading.processes")}',
         existing: {
           title: '${vrtx.getMsg("uploading.existing.title")}',
           skip: '${vrtx.getMsg("uploading.existing.skip")}',

@@ -1769,7 +1769,7 @@ VrtxEditor.prototype.mustacheFacade = {
  * Initialize grouped as accordion
  * @this {VrtxEditor}
  */
-VrtxEditor.prototype.accordionGroupedInit = function accordionGroupedInit(subGroupedSelector) { /* param name pending */
+VrtxEditor.prototype.accordionGroupedInit = function accordionGroupedInit(subGroupedSelector, customSpeed) { /* param name pending */
   var vrtxEdit = this,
     _$ = vrtxAdmin._$;
 
@@ -1782,13 +1782,17 @@ VrtxEditor.prototype.accordionGroupedInit = function accordionGroupedInit(subGro
 
   accordionContentSplitHeaderPopulators(true);
   
-  accordionGrouped = new VrtxAccordion({
+  var opts = {
     elem: vrtxEdit.editorForm.find("#" + accordionWrpId),
     headerSelector: "> div > .header",
     onActivate: function (e, ui, accordion) {
       accordionGrouped.updateHeader(ui.oldHeader, false, false);
     }
-  });
+  };
+  if(typeof customSpeed !== "undefined" && customSpeed === "fast") {
+    opts.animationSpeed = 200;
+  }
+  accordionGrouped = new VrtxAccordion(opts);
 
   // Because accordion needs one content wrapper
   for (var i = grouped.length; i--;) {
@@ -1803,6 +1807,7 @@ VrtxEditor.prototype.accordionGroupedInit = function accordionGroupedInit(subGro
   }
   
   accordionGrouped.create();
+  opts.elem.addClass("fast");
 };
 
 function accordionJsonInit() {
@@ -1944,6 +1949,8 @@ VrtxEditor.prototype.initStudyDocTypes = function initStudyDocTypes() {
     vrtxEdit.accordionGroupedInit("[class*=link-box]");
   } else if (vrtxEdit.editorForm.hasClass("vrtx-student-exchange-agreement")) {
     vrtxEdit.accordionGroupedInit(".vrtx-sea-accordion");
+  } else if (vrtxEdit.editorForm.hasClass("vrtx-frontpage")) {
+    vrtxEdit.accordionGroupedInit(".vrtx-sea-accordion", "fast");
   } else if (vrtxEdit.editorForm.hasClass("vrtx-samlet-program")) {
     var samletElm = vrtxEdit.editorForm.find(".samlet-element");
     vrtxEdit.replaceTag(samletElm, "h6", "strong");

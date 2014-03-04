@@ -3,7 +3,11 @@
 
 <#macro script>
   <#assign locale = springMacroRequestContext.getLocale() />
-  <#assign contentLocale = resourceContext.currentResource.getContentLocale() />
+
+  <#assign contentLocale = form.defaultLocale />
+  <#if resourceContext.currentResource.contentLanguage?exists>
+    <#assign contentLocale = resourceContext.currentResource.getContentLocale() />
+  </#if>
 
   <script type="text/javascript" src="${webResources?html}/jquery/plugins/jquery.scrollTo.min.js"></script>
   <script type="text/javascript"><!--

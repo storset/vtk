@@ -250,7 +250,7 @@
   <!-- ^ [1] DEPRECATED / TO BE PHASED OUT -->
 
   <bean id="decorating.includeMediaComponent" class="org.vortikal.web.decorating.components.IncludeMediaPlayerComponent"
-    parent="decorating.resourceMediaComponent">
+        parent="decorating.resourceMediaComponent">
     <property name="namespace" ref="decorating.includeNamespace" />
     <property name="examples">
       <map>

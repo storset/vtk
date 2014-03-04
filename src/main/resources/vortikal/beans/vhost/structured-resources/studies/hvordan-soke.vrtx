@@ -37,8 +37,7 @@ resourcetype hvordan-soke {
     regelverk-fri: html noextract,
     other: html noextract,
     tittel : string,
-    title : derived (tittel) eval ("title"?localized) overrides title,
-    link-other-language: resource_ref
+    title : derived (tittel) eval ("title"?localized) overrides title
  }
 
   edit-rules {
@@ -384,15 +383,6 @@ resourcetype hvordan-soke {
       [endif]
       ##
     }
-    
-    link-other-language {
-      ##
-      [def link resource-prop(".", "link-other-language")]
-      [if link != null]
-        <a id="vrtx-change-language-link" href="[val link]">[localized "link-language"]</a>
-      [endif]
-      ##
-    }
   }
 
 
@@ -411,7 +401,6 @@ resourcetype hvordan-soke {
           [def other document.properties.other]
 
           <div id="vrtx-main-content" class="vrtx-hide-additional-content-false">
-            [call "comp:link-other-language"]
             <h1>[localized 'title']</h1>
             <h2>[localized 'opptak']</h2>
 
@@ -565,12 +554,6 @@ resourcetype hvordan-soke {
     regelverk-fri : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
     relatert-innhold-regelverk : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
 
-    other : (en : "Other", no : "Annet", nn : "Anna"),
-    link-language: (en : "Norwegian", no : "English", nn : "English"),
-    link-other-language {
-      en: (en : "Link to norwegian version", no : "Link to english version", nn : "Link to english version"),
-      no: (en : "Lenke til norsk versjon", no : "Lenke til engelsk versjon", nn : "Lenke til engelsk versjon"),
-      nn: (en : "Lenke til norsk versjon", no : "Lenke til engelsk versjon", nn : "Lenke til engelsk versjon")
-    }
+    other : (en : "Other", no : "Annet", nn : "Anna")
   }
 }

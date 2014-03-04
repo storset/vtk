@@ -40,6 +40,11 @@
         <#global baseFolder = resourceContext.parentURI?html />
       </#if>
     </#if>
+    
+    <#assign contentLanguage = defaultLocale />
+    <#if resource.contentLanguage?exists>
+      <#assign contentLanguage = resource.contentLanguage />
+    </#if>    
 
     <script type="text/javascript"><!--
       var MULTIPLE_INPUT_FIELD_INITIALIZED;
@@ -308,8 +313,8 @@
           <@vrtx.msg code="proptype.name.${resource.resourceType}.${name}" />
         </#local>
       <#elseif name = "linkOtherLanguage">
-        <#local localizedName>
-          <#if resource.contentLanguage?exists && (resource.contentLanguage = "no" || resource.contentLanguage = "en")>
+        <#local localizedName>      
+          <#if contentLanguage = "no" || contentLanguage = "en">
             <@vrtx.msg code="proptype.name.${name}.en" />
           <#else>
             <@vrtx.msg code="proptype.name.${name}.no" />

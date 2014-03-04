@@ -36,6 +36,7 @@ public class FreeMarkerTemplateLocationImpl implements
     private String location;
     private int order = Integer.MAX_VALUE;
     
+    @Override
     public String getLocation() {
         return this.location;
     }
@@ -44,6 +45,7 @@ public class FreeMarkerTemplateLocationImpl implements
         this.location = location;
     }
 
+    @Override
     public int getOrder() {
         return this.order;
     }
@@ -52,8 +54,9 @@ public class FreeMarkerTemplateLocationImpl implements
         this.order = order;
     }
 
+    @Override
     public String toString() {
-        StringBuffer sb = new StringBuffer(this.getClass().getName());
+        StringBuilder sb = new StringBuilder(this.getClass().getName());
         sb.append(" [").append("location: ").append(this.location).append("]");
         return sb.toString();
     }

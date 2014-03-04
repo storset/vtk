@@ -154,6 +154,7 @@ public class PrincipalManagerImpl implements PrincipalManager, InitializingBean 
 
             // Refresh cached groups periodically, regardless of user activity:
             cache.setRefreshTimestampOnGet(false);
+            cache.afterPropertiesSet();
             
             this.groupMembershipCache = cache;
         }

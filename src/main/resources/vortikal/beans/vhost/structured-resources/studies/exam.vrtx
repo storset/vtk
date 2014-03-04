@@ -3,8 +3,7 @@ resourcetype exam {
   properties {
     tittel : string,
     title : derived (tittel) eval ("exam"?localized) overrides title,
-    content : html noextract,
-    link-other-language: resource_ref
+    content : html noextract
   }
 
   edit-rules {
@@ -12,17 +11,6 @@ resourcetype exam {
     tittel (class[ui-helper-hidden]),
     title (class[ui-helper-hidden]),
     content (class[ui-helper-hidden])
-  }
-  
-  view-components {
-    link-other-language {
-      ##
-      [def link resource-prop(".", "link-other-language")]
-      [if link != null]
-        <a id="vrtx-change-language-link" href="[val link]">[localized "link-language"]</a>
-      [endif]
-      ##
-    }
   }
 
   view {
@@ -33,7 +21,6 @@ resourcetype exam {
         <title>[call "resource:contextual-title-new"]</title>
       </head>
       <body id="vrtx-exam">
-        [call "comp:link-other-language"]
         <h1>[call "resource:property" {"id":"title"}]</h1>
         [call "json:field" {"select":"content"}]
       </body>
@@ -45,12 +32,6 @@ resourcetype exam {
     exam : (en : "Examination: Time and place", no : "Eksamen: Tid og sted", nn : "Eksamen: Tid og stad"),
     title : (en : "Title", no : "Tittel", nn : "Tittel"),
     header : (en : "Edit exam", no : "Rediger eksamen", nn : "Rediger eksamen"),
-    content : (en : "Content", no : "Innhold", nn : "Innhald"),
-    link-language: (en : "Norwegian", no : "English", nn : "English"),
-    link-other-language {
-      en: (en : "Link to norwegian version", no : "Link to english version", nn : "Link to english version"),
-      no: (en : "Lenke til norsk versjon", no : "Lenke til engelsk versjon", nn : "Lenke til engelsk versjon"),
-      nn: (en : "Lenke til norsk versjon", no : "Lenke til engelsk versjon", nn : "Lenke til engelsk versjon")
-    }
+    content : (en : "Content", no : "Innhold", nn : "Innhald")
   }
 }

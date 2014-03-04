@@ -286,6 +286,19 @@
     <!-- Type of XHTML document -->
     <@propList.editOrDisplayProperty modelName='aboutItems' propertyName = 'xhtml10-type' />
 
+    <!-- Media info -->
+    <#if aboutItems['pixelWidth']?? && aboutItems['pixelWidth'].property??>
+      <@propList.defaultPropertyDisplay propName='pixelWidth' name=vrtx.getMsg("proptype.name.pixelWidth") value=aboutItems['pixelWidth'].property.intValue />
+    </#if>
+    <#if aboutItems['pixelWidth']?? && aboutItems['pixelHeight'].property??>
+      <@propList.defaultPropertyDisplay propName='pixelHeight' name=vrtx.getMsg("proptype.name.pixelHeight") value=aboutItems['pixelHeight'].property.intValue />
+    </#if>
+    <#if aboutItems['duration']?? && aboutItems['duration'].property??>
+      <#assign timeValue>
+        <@vrtx.displayTime aboutItems['duration'].property.intValue />
+      </#assign>
+      <@propList.defaultPropertyDisplay propName='duration' name=vrtx.getMsg("proptype.name.duration") value=timeValue />
+    </#if>
   </#if>
   </table>
   </div>

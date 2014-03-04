@@ -33,6 +33,7 @@ package org.vortikal.edit.editor;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -56,6 +57,7 @@ public class ResourceEditController extends SimpleFormController {
     protected ResourceWrapperManager resourceManager;
     protected List<Service> tooltipServices;
     protected Map<PropertyTypeDefinition, PropertyEditPreprocessor> propertyEditPreprocessors;
+    protected Locale defaultLocale;
 
     public ResourceEditController() {
         super();
@@ -104,6 +106,7 @@ public class ResourceEditController extends SimpleFormController {
         model.put("published", resource.isPublished());
         model.put("hasPublishDate", resource.hasPublishDate());
         model.put("onlyWriteUnpublished", !repository.authorize(principal, resource.getAcl(), Privilege.READ_WRITE));
+        model.put("defaultLocale", this.defaultLocale);
         return model;
     }
 
@@ -140,6 +143,7 @@ public class ResourceEditController extends SimpleFormController {
         model.put("published", resource.isPublished());
         model.put("hasPublishDate", resource.hasPublishDate());
         model.put("onlyWriteUnpublished", !repository.authorize(principal, resource.getAcl(), Privilege.READ_WRITE));
+        model.put("defaultLocale", this.defaultLocale);
         model.put("tooltips", resolveTooltips(resource, principal));
 
         return model;
@@ -172,6 +176,11 @@ public class ResourceEditController extends SimpleFormController {
     @Required
     public void setResourceManager(ResourceWrapperManager resourceManager) {
         this.resourceManager = resourceManager;
+    }
+    
+    @Required
+    public void setDefaultLocale(Locale defaultLocale) {
+        this.defaultLocale = defaultLocale;
     }
 
     public void setPropertyEditPreprocessors(

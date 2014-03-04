@@ -110,9 +110,6 @@ import org.vortikal.web.service.ServiceUnlinkableException;
  * the property list
  * <li><code>propertyMapModelName</code> - the name to use (in the model) for
  * the property map
- * <li><code>editHooks</code> - a list of {@link PropertyEditHook} objects,
- * allowing hooks to be run when specific properties are created, removed and
- * edited.
  * </ul>
  * 
  */
@@ -125,7 +122,6 @@ public class PropertyEditController extends SimpleFormController implements Refe
     private String toggleRequestParameter = "toggle";
 
     private PropertyTypeDefinition[] propertyTypeDefinitions;
-    private PropertyEditHook[] editHooks;
 
     private ValueFactory valueFactory;
 
@@ -366,17 +362,6 @@ public class PropertyEditController extends SimpleFormController implements Refe
                                     .toString() : property.getValue().toString();
                             this.logger.debug("Setting property '" + property + "'for resource " + resource
                                     + " to value " + debugOutput);
-                        }
-                    }
-                    if (this.editHooks != null) {
-                        for (int j = 0; j < this.editHooks.length; j++) {
-                            PropertyEditHook hook = this.editHooks[j];
-                            if (created)
-                                hook.created(def, resource);
-                            if (removed)
-                                hook.removed(def, resource);
-                            if (modified)
-                                hook.modified(def, resource);
                         }
                     }
 
@@ -636,10 +621,6 @@ public class PropertyEditController extends SimpleFormController implements Refe
     @Required
     public void setPropertyTypeDefinitions(PropertyTypeDefinition[] propertyTypeDefinitions) {
         this.propertyTypeDefinitions = propertyTypeDefinitions;
-    }
-
-    public void setEditHooks(PropertyEditHook[] editHooks) {
-        this.editHooks = editHooks;
     }
 
     @Required

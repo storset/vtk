@@ -11,8 +11,7 @@ resourcetype schedule {
     course-version : string,
     calweek : boolean defaultvalue("false"),
     comment : simple_html,
-    content : html noextract,
-    link-other-language: resource_ref
+    content : html noextract
   }
 
   edit-rules {
@@ -52,16 +51,6 @@ resourcetype schedule {
       </iframe>
       ##
     }
-    
-    link-other-language {
-      ##
-      [def link resource-prop(".", "link-other-language")]
-      [if link != null]
-        <a id="vrtx-change-language-link" href="[val link]">[localized "link-language"]</a>
-      [endif]
-      ##
-    }
-
   }
 
   view {
@@ -72,7 +61,6 @@ resourcetype schedule {
         <title>[call "resource:contextual-title-new"]</title>
       </head>
       <body id="vrtx-schedule">
-        [call "comp:link-other-language"]
         <h1>[call "resource:property" {"id":"title"}]</h1>
         <div>
           [call "comp:iframe"]
@@ -116,13 +104,7 @@ resourcetype schedule {
     iframe-not-supported: (en : "Your user agent does not support frames or is currently configured not to display frames.", no : "Nettleseren din støtter ikke frames eller er ikke konfiguert for å vise frames.", nn : "Nettlesaren din støttar ikkje frames eller er ikkje konfiguert for å visa frames."),
     iframe-not-supported-title-prefix: (en : "The frame should've shown:", no : "Framen skulle ha vist:", nn : "Framen skulle ha vist:"),
     iframe-not-supported-link-prefix: (en : "However, you may visit", no : "Men du kan besøke", nn : "Men du kan besøke"),
-    iframe-not-supported-link-content: (en : "the related document", no : "det relaterte dokumentet", nn : "det relaterte dokumentet"),
-    link-language: (en : "Norwegian", no : "English", nn : "English"),
-    link-other-language {
-      en: (en : "Link to norwegian version", no : "Link to english version", nn : "Link to english version"),
-      no: (en : "Lenke til norsk versjon", no : "Lenke til engelsk versjon", nn : "Lenke til engelsk versjon"),
-      nn: (en : "Lenke til norsk versjon", no : "Lenke til engelsk versjon", nn : "Lenke til engelsk versjon")
-    }
+    iframe-not-supported-link-content: (en : "the related document", no : "det relaterte dokumentet", nn : "det relaterte dokumentet")
   }
 
 }

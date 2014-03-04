@@ -106,20 +106,14 @@ public class BrokenLinksReport extends DocumentReporter {
     private final static String INCLUDE_PATH_PARAM_NAME = "include-path";
     private final static String EXCLUDE_PATH_PARAM_NAME = "exclude-path";
     
-    private final static String COLLECTION_VIEW_PARAM_NAME = "collection";
-    
     private Service brokenLinksToTsvReportService;
     private int pageSize = 25;
-    
-    private String viewNameSelected;
-    private String viewNameCollection;
-    private String nameCollection;
-    
+   
     private void populateMap(String token, Resource resource, Map<String, Object> result, HttpServletRequest request, boolean isCollectionView) {
         URL reportURL = super.getReportService().constructURL(resource).addParameter(REPORT_TYPE_PARAM, getName());
 
         if(isCollectionView) {
-            reportURL.addParameter(COLLECTION_VIEW_PARAM_NAME, "");
+            reportURL.addParameter(getAlternativeName(), "");
         }
         
         Map<String, List<FilterOption>> filters = new LinkedHashMap<String, List<FilterOption>>();
@@ -184,9 +178,7 @@ public class BrokenLinksReport extends DocumentReporter {
         Map<String, Object> result = new HashMap<String, Object>();
         
         /* Regular view */
-        if(request.getParameter(COLLECTION_VIEW_PARAM_NAME) == null) {
-            viewNameSelected = viewName;
-
+        if(request.getParameter(getAlternativeName()) == null) {
             result = super.getReportContent(token, resource, request);
 
             populateMap(token, resource, result, request, false);
@@ -195,9 +187,7 @@ public class BrokenLinksReport extends DocumentReporter {
             
         /* Collection view */
         } else {
-            viewNameSelected = this.viewNameCollection;
-            
-            result.put(REPORT_NAME, nameCollection);
+            result.put(REPORT_NAME, getAlternativeName());
 
             populateMap(token, resource, result, request, true);
 
@@ -693,20 +683,4 @@ public class BrokenLinksReport extends DocumentReporter {
     public void setPageSize(int pageSize) {
         this.pageSize = pageSize;
     }
-    
-    @Required
-    public void setViewNameCollection(String viewNameCollection) {
-        this.viewNameCollection = viewNameCollection;
-    }
-    
-    @Required
-    public void setNameCollection(String nameCollection) {
-        this.nameCollection = nameCollection;
-    }
-    
-    @Override
-    public String getViewName() {
-        return this.viewNameSelected;
-    }
-
 }

@@ -135,11 +135,11 @@
 
   <bean id="brokenLinksReport" class="org.vortikal.web.report.BrokenLinksReport" parent="reporter">
     <property name="name" value="broken-links" />
-    <property name="nameCollection" value="broken-links-collection" />
+    <property name="viewName" value="brokenLinksReport" />
+    <property name="alternativeName" value="broken-links-collection" />
+    <property name="alternativeViewName" value="brokenLinksCollectionReport" />
     <property name="manageService" ref="manageService" />
     <property name="reportService" ref="reportService" />
-    <property name="viewName" value="brokenLinksReport" />
-    <property name="viewNameCollection" value="brokenLinksCollectionReport" />
     <property name="pageSize" value="25" />
     <property name="linkStatusPropDef" ref="linkStatusPropDef" />
     <property name="linkCheckPropDef" ref="linkCheckPropDef" />

@@ -117,7 +117,15 @@ public class ReportHandler implements Controller {
                 typeParam.put(AbstractReporter.REPORT_TYPE_PARAM, reportType);
                 model.put("viewReportServiceURL", viewReportService.constructURL(resource, securityContext.getPrincipal(), typeParam));
 
-                return new ModelAndView(reporter.getViewName(), model);
+                String selectedViewName = reporter.getViewName();
+                
+                String alternativeViewName = reporter.getAlternativeViewName();
+                String alternativeName = reporter.getAlternativeName();
+                if(alternativeViewName != null && alternativeName != null && request.getParameter(alternativeName) != null) {
+                    selectedViewName = alternativeViewName;
+                }
+                
+                return new ModelAndView(selectedViewName, model);
             }
         }
 

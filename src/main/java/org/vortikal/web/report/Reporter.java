@@ -45,6 +45,10 @@ public interface Reporter {
     public String getName();
 
     public String getViewName();
+    
+    public String getAlternativeName();
+    
+    public String getAlternativeViewName();
 
     public boolean isResolvePrincipalLink();
 

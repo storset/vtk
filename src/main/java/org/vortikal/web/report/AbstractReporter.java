@@ -41,7 +41,7 @@ public abstract class AbstractReporter implements Reporter {
     public static final String REPORT_NAME = "reportname";
 
     private String name;
-    private String viewName;
+    protected String viewName;
     protected Searcher searcher;
     protected Repository repository;
     private boolean enabled = true;

@@ -939,6 +939,17 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
       });
       
       break;
+    case "vrtx-report-broken-links":
+      $(document).on("click", "#is-collection-view input", function(e) {
+        if(!$(this).is(":checked")) {
+          location.href = location.href.replace("&collection", "");
+        } else {
+          location.href = location.href + "&collection";
+        }
+        e.stopPropagation();
+        e.preventDefault();
+      });
+      break;
     default:
       // noop
       break;

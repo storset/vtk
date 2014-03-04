@@ -46,14 +46,14 @@ import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.web.RequestContext;
-import org.vortikal.web.report.BrokenLinksCollectionReport.CollectionStats;
+import org.vortikal.web.report.BrokenLinksReport.CollectionStats;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.view.freemarker.MessageLocalizer;
 
 public class BrokenLinksToTsvController implements Controller {
 
     private Service reportService;
-    private BrokenLinksCollectionReport brokenLinksReporter;
+    private BrokenLinksReport brokenLinksReporter;
     private String webHostName;
 
     @Override
@@ -113,7 +113,7 @@ public class BrokenLinksToTsvController implements Controller {
     }
 
     @Required
-    public void setBrokenLinksReporter(BrokenLinksCollectionReport brokenLinksReporter) {
+    public void setBrokenLinksReporter(BrokenLinksReport brokenLinksReporter) {
         this.brokenLinksReporter = brokenLinksReporter;
     }
 

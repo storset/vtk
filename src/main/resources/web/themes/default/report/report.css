@@ -245,6 +245,19 @@ td.vrtx-report-broken-links li {
   margin: 0 0 2px 0 !important;
 }
 
+#vrtx-report-broken-links #vrtx-report-info-paging-top {
+  float: left;
+  margin-bottom: 15px;
+}
+
+#vrtx-report-broken-links #is-collection-view {
+  float: right;
+}
+
+#vrtx-report-broken-links #is-collection-view *:hover {
+  cursor: pointer;
+}
+
 /* Filters */
 
 #vrtx-report-filters {

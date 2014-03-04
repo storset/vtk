@@ -68,7 +68,7 @@
   
   <@generateFilters report.filters />
 
-  <#if (report.result?exists && report.result?size > 0)>
+  <#if report.result?has_content>
     <#--
       <p id="vrtx-report-broken-links-info">
         <span class="vrtx-report-broken-links-info-number">${report.brokenLinkCount} <@vrtx.msg code="report.${report.reportname}.info.total-broken-links-count" /></span>
@@ -82,6 +82,14 @@
                  default="Listing results " + report.from + "–"
                  + report.to + " of total " + report.total + " of web pages with " + report.brokenLinkCount + " broken" /> ${linkTypeLocalization?lower_case}
     </p>
+  </#if>
+    
+  <div id="is-collection-view" class="vrtx-checkbox">
+    <input id="is-collection" type="checkbox" value="" />
+    <label for="is-collection"><@vrtx.msg code="report.broken-links.switch-view" /></label>
+  </div>
+  
+  <#if report.result?has_content>  
     <div class="vrtx-report">
       <table id="directory-listing" class="report-broken-links">
         <thead>

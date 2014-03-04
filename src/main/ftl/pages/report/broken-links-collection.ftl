@@ -73,6 +73,14 @@
                  args=[report.documentSum, report.sum]
                  default="There is a total of " + report.documentSum + " web pages with " + report.sum + " broken" /> ${linkTypeLocalization?lower_case}
     </p>
+  </#if>
+
+  <div id="is-collection-view" class="vrtx-checkbox">
+    <input id="is-collection" type="checkbox" value="" checked="checked" />
+    <label for="is-collection"><@vrtx.msg code="report.broken-links.switch-view" /></label>
+  </div>
+  
+  <#if report.map?has_content>  
     <div class="vrtx-report">
       <table id="directory-listing" class="report-broken-links-collection">
         <thead>

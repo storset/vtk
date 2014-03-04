@@ -942,9 +942,9 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
     case "vrtx-report-broken-links":
       $(document).on("click", "#is-collection-view input", function(e) {
         if(!$(this).is(":checked")) {
-          location.href = location.href.replace("&broken-links-collection", "");
+          location.href = location.href.replace("&" + this.name, "");
         } else {
-          location.href = location.href + "&broken-links-collection";
+          location.href = location.href + "&" + this.name;
         }
         e.stopPropagation();
         e.preventDefault();

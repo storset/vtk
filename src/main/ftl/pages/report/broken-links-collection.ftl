@@ -76,7 +76,7 @@
   </#if>
 
   <div id="is-collection-view" class="vrtx-checkbox">
-    <input id="is-collection" type="checkbox" value="" checked="checked" />
+    <input name="broken-links-collection" id="is-collection" type="checkbox" checked="checked" />
     <label for="is-collection"><@vrtx.msg code="report.broken-links.switch-view" /></label>
   </div>
   

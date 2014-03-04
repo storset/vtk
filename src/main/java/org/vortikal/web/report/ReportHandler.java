@@ -121,8 +121,14 @@ public class ReportHandler implements Controller {
                 
                 String alternativeViewName = reporter.getAlternativeViewName();
                 String alternativeName = reporter.getAlternativeName();
-                if(alternativeViewName != null && alternativeName != null && request.getParameter(alternativeName) != null) {
-                    selectedViewName = alternativeViewName;
+                if(alternativeViewName != null && alternativeName != null) {
+                    model.put("alternativeName", alternativeName);
+                    if(request.getParameter(alternativeName) != null) {
+                        selectedViewName = alternativeViewName;
+                        model.put("isAlternativeView", true);
+                    } else {
+                        model.put("isAlternativeView", false);
+                    }
                 }
                 
                 return new ModelAndView(selectedViewName, model);

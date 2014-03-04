@@ -250,11 +250,11 @@ td.vrtx-report-broken-links li {
   margin-bottom: 15px;
 }
 
-#vrtx-report-broken-links #is-collection-view {
+#vrtx-report-broken-links .vrtx-report-alternative-view-switch {
   float: right;
 }
 
-#vrtx-report-broken-links #is-collection-view *:hover {
+#vrtx-report-broken-links .vrtx-report-alternative-view-switch *:hover {
   cursor: pointer;
 }
 

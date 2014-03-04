@@ -1,5 +1,6 @@
 <#ftl strip_whitespace=true>
 <#import "/lib/vortikal.ftl" as vrtx />
+<#import "/lib/report.ftl" as reportLib />
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
@@ -83,10 +84,9 @@
                  + report.to + " of total " + report.total + " of web pages with " + report.brokenLinkCount + " broken" /> ${linkTypeLocalization?lower_case}
     </p>
 
-    <div id="is-collection-view" class="vrtx-checkbox">
-      <input name="broken-links-collection" id="is-collection" type="checkbox" />
-      <label for="is-collection"><@vrtx.msg code="report.broken-links.switch-view" /></label>
-    </div>
+    <#if alternativeName?has_content>
+      <@reportLib.alternativeViewCheckbox alternativeName "report.broken-links.switch-view" isAlternativeView />
+    </#if>
   
     <div class="vrtx-report">
       <table id="directory-listing" class="report-broken-links">

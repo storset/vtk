@@ -82,14 +82,12 @@
                  default="Listing results " + report.from + "–"
                  + report.to + " of total " + report.total + " of web pages with " + report.brokenLinkCount + " broken" /> ${linkTypeLocalization?lower_case}
     </p>
-  </#if>
-    
-  <div id="is-collection-view" class="vrtx-checkbox">
-    <input id="is-collection" type="checkbox" value="" />
-    <label for="is-collection"><@vrtx.msg code="report.broken-links.switch-view" /></label>
-  </div>
+
+    <div id="is-collection-view" class="vrtx-checkbox">
+      <input id="is-collection" type="checkbox" value="" />
+      <label for="is-collection"><@vrtx.msg code="report.broken-links.switch-view" /></label>
+    </div>
   
-  <#if report.result?has_content>  
     <div class="vrtx-report">
       <table id="directory-listing" class="report-broken-links">
         <thead>
@@ -204,7 +202,7 @@
       </p>
     </#if>
   <#else>
-    <p id="vrtx-report-broken-links-info"><@vrtx.msg code="report.${report.reportname}.info.web-pages.none-found" />${linkTypeLocalization?lower_case}.<span class="vrtx-report-broken-links-info-number">&nbsp;</span></p>
+    <p id="vrtx-report-broken-links-info"><@vrtx.msg code="report.${report.reportname}.info.web-pages.none-found" /> ${linkTypeLocalization?lower_case}.<span class="vrtx-report-broken-links-info-number">&nbsp;</span></p>
   </#if>
 
   <#macro generateFilters filters>

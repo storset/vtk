@@ -453,6 +453,22 @@
   width: 600px;
 }
 
+.vrtx-json .vrtx-json-element .boxPictureAlt {
+  margin-top: 20px;
+  float: none;
+}
+
+.vrtx-json .vrtx-json-element .vrtx-image-ref-alt-text .vrtx-image-ref-preview-inner,
+.vrtx-json .vrtx-json-element .vrtx-image-ref-alt-text .boxPictureAlt {
+  float: left;
+  margin-top: 0;
+}
+
+.vrtx-json .vrtx-json-element .vrtx-image-ref-alt-text .boxPictureAlt {
+  margin-left: 20px;
+  margin-top: -27px;
+}
+
 .vrtx-json .vrtx-json-element .vrtx-html iframe {
   width: 576px;
 }

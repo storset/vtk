@@ -5,8 +5,8 @@ resourcetype frontpage {
     introduction : simple_html,
     picture : image_ref,
     caption : simple_html,
-    main-content : json (boxTitle : string, boxCssSizeAndPlacement : string, boxCssColor : string, boxType : string, boxPicture : image_ref, boxContent : html, boxUrlText : string, boxUrl : resource_ref) multiple noextract,
-    additional-content : json (boxTitle : string, boxType : string, boxPicture : image_ref, boxContent : html, boxUrlText : string, boxUrl : resource_ref) multiple noextract,
+    main-content : json (boxTitle : string, boxCssSizeAndPlacement : string, boxCssColor : string, boxType : string, boxPicture : image_ref, boxPictureAlt : string, boxContent : html, boxUrlText : string, boxUrl : resource_ref) multiple noextract,
+    additional-content : json (boxTitle : string, boxType : string, boxPicture : image_ref, boxPictureAlt : string, boxContent : html, boxUrlText : string, boxUrl : resource_ref) multiple noextract,
     showAdditionalContent : boolean defaultvalue("true"),
     cssUrl : string,
     link-other-language: resource_ref
@@ -36,6 +36,7 @@ resourcetype frontpage {
           [def color box.boxCssColor]
           [def title box.boxTitle]
           [def picture box.boxPicture]
+          [def alt box.boxPictureAlt]
           [def content box.boxContent]
           [def url box.boxUrl]
           [def urlText box.boxUrlText]
@@ -94,10 +95,10 @@ resourcetype frontpage {
             <div class="vrtx-frontpage-box-picture">
               [if url != null && url != ""]
                 <a href="[val url]">
-                  <img src="[val picture]" alt="" />
+                  <img src="[val picture]" alt="[if alt != null && url != ""][val alt][endif]" />
                 </a>
               [else]
-                <img src="[val picture]" alt="" />
+                <img src="[val picture]" alt="[if alt != null && url != ""][val alt][endif]" />
               [endif]
             </div>
           [endif]
@@ -136,6 +137,7 @@ resourcetype frontpage {
               [def type box.boxType]
               [def title box.boxTitle]
               [def picture box.boxPicture]
+              [def alt box.boxPictureAlt]
               [def content box.boxContent]
               [def url box.boxUrl]
               [def urlText box.boxUrlText]
@@ -190,10 +192,10 @@ resourcetype frontpage {
                   <div class="vrtx-frontpage-box-picture">
                     [if url != null && url != ""]
                       <a href="[val url]">
-                        <img src="[val picture]" alt="" />
+                        <img src="[val picture]" alt="[if alt != null && url != ""][val alt][endif]" />
                       </a>
                     [else]
-                      <img src="[val picture]" alt="" />
+                      <img src="[val picture]" alt="[if alt != null && url != ""][val alt][endif]" />
                     [endif]
                   </div>
                 [endif]
@@ -207,7 +209,7 @@ resourcetype frontpage {
                   [if url != null && url != ""]
                     <span><a href="[val url]">[val urlText]</a></span>
                   [else]
-                   <span>[val urlText]</span>
+                    <span>[val urlText]</span>
                   [endif]
                   </div>
                 [endif]
@@ -365,6 +367,7 @@ resourcetype frontpage {
      boxCssSizeAndPlacement : (en : "Size and placement", no : "Størrelse og plassering", nn : "Størrelse og plassering"),
      boxCssColor : (en : "Color", no : "Farge", nn : "Farge"),
      boxPicture : (en: "Image", no: "Bilde", nn : "Bilete"),
+     boxPictureAlt : (en: "Alternative text", no: "Alternativ tekst", nn : "Alternativ tekst"),
      boxContent : (en : "Content", no : "Innhold", nn : "Innhald"),
      boxUrlText : (en : "Link text", no : "Lenketekst", nn : "Lenketekst"),
      boxUrl : (en : "Webaddress", no : "Webadresse", nn : "Webadresse"),

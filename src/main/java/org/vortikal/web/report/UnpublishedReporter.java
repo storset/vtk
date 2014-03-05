@@ -67,6 +67,7 @@ public class UnpublishedReporter extends DocumentReporter {
             query.add(new TypeTermQuery(type, TermOperator.EQ));
         }
         
+        /* Explicit not published */
         query.add(new PropertyTermQuery(publishedPropDef, "true", TermOperator.NE));
         
         /* In current resource but not in /vrtx. */
@@ -77,9 +78,10 @@ public class UnpublishedReporter extends DocumentReporter {
 
         Search search = new Search();
         SortingImpl sorting = new SortingImpl();
-        search.removeAllFilterFlags();
         sorting.addSortField(new PropertySortField(this.sortPropDef, this.sortOrder));
-
+        
+        /* Include unpublished */
+        search.removeAllFilterFlags();
         search.setSorting(sorting);
         search.setQuery(query);
         search.setLimit(DEFAULT_SEARCH_LIMIT);

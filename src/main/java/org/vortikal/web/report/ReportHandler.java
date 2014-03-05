@@ -119,6 +119,7 @@ public class ReportHandler implements Controller {
 
                 String selectedViewName = reporter.getViewName();
                 
+                /* Possible to switch to an alternative view */
                 String alternativeViewName = reporter.getAlternativeViewName();
                 String alternativeName = reporter.getAlternativeName();
                 if(alternativeViewName != null && alternativeName != null) {

@@ -459,6 +459,11 @@
   float: none;
 }
 
+.vrtx-json .vrtx-json-element .boxPictureAlt input,
+.vrtx-json .vrtx-json-element .featuredPictureAlt input {
+  width: 230px;
+}
+
 .vrtx-json .vrtx-json-element .vrtx-image-ref-alt-text .vrtx-image-ref-preview-inner,
 .vrtx-json .vrtx-json-element .vrtx-image-ref-alt-text .boxPictureAlt,
 .vrtx-json .vrtx-json-element .vrtx-image-ref-alt-text .featuredPictureAlt {

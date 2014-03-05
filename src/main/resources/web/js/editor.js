@@ -866,7 +866,7 @@ VrtxEditor.prototype.initPreviewImage = function initPreviewImage() {
     }
   }
   
-  var altTexts = $(".boxPictureAlt");
+  var altTexts = $(".boxPictureAlt, .featuredPictureAlt");
   for (var i = altTexts.length; i--;) {
     var altText = $(altTexts[i]);
     var imageRef = altText.prev(".vrtx-image-ref");

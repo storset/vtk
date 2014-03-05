@@ -2,7 +2,7 @@ resourcetype featured-content {
 
   properties {
     title : string overrides title,
-    featured-items : json (featuredStickTitle : string, featuredTitle : string, featuredDate : datetime, featuredPicture : image_ref, featuredContent : html, featuredWebaddressText : string, featuredWebaddress : resource_ref) multiple noextract
+    featured-items : json (featuredStickTitle : string, featuredTitle : string, featuredDate : datetime, featuredPicture : image_ref, featuredPictureAlt : string, featuredContent : html, featuredWebaddressText : string, featuredWebaddress : resource_ref) multiple noextract
   }
   
   view-components {
@@ -17,6 +17,7 @@ resourcetype featured-content {
           [def thetitle item.featuredTitle]
           [def date item.featuredDate]
           [def picture item.featuredPicture]
+          [def alt item.featuredPictureAlt]
           [def content item.featuredContent]
           [def webaddress item.featuredWebaddress]
           [def urlText item.featuredWebaddressText]
@@ -32,7 +33,7 @@ resourcetype featured-content {
                 [if webaddress != null && webaddress != ""]
                   <a href="[val webaddress]">
                 [endif]
-                <img src="[val picture]" alt="" />
+                <img src="[val picture]" alt="[if alt != null && alt != ""][val alt][endif]" />
                 [if webaddress != null && webaddress != ""]
                   </a>
                 [endif]
@@ -107,6 +108,7 @@ resourcetype featured-content {
      featuredTitle : (en : "Title", no : "Tittel", nn : "Tittel"),
      featuredDate : (en : "Date", no : "Dato", nn : "Dato"),
      featuredPicture : (en : "Picture", no : "Bilde", nn : "Bilete"),
+     featuredPictureAlt : (en : "Alternative text", no : "Alternativ tekst", nn : "Alternativ tekst"),
      featuredContent : (en : "Content", no : "Innhold", nn : "Innhald"),
      featuredWebaddress : (en : "Webaddress", no : "Webadresse", nn : "Webadresse"),
      featuredWebaddressText : (en : "Link text", no : "Lenketekst", nn : "Lenketekst"),

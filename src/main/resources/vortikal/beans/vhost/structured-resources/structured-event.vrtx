@@ -13,7 +13,7 @@ resourcetype structured-event : structured-document {
 
   edit-rules {
     caption (size[small]),
-    group introImageAndCaption (picture, caption, hidePicture) (after introduction),
+    group introImageAndCaption (picture, caption, hidePicture, pictureAlt) (after introduction),
     title (size[large]),
     group timeAndPlace (start-date, end-date, location, mapurl) (after introImageAndCaption) horizontal,
     location (size[small]),

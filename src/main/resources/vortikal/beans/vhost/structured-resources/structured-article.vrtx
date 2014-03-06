@@ -10,7 +10,7 @@ resourcetype structured-article : structured-document {
 
   edit-rules {
     caption (size[small]),
-    group introImageAndCaption (picture, caption, hidePicture) (after introduction),
+    group introImageAndCaption (picture, caption, hidePicture, pictureAlt) (after introduction),
     group relatedContent (showAdditionalContent, related-content) (after tags),
     author (after introImageAndCaption),
     title (size[large]),

@@ -577,6 +577,7 @@
             <ref bean="userTitlePropDef" />
             <ref bean="introductionPropDef" />
             <ref bean="introductionImagePropDef" />
+            <ref bean="introductionImageAltPropDef" />
             <ref bean="introductionImageCaptionPropDef" />
             <ref bean="navigationTitlePropDef" />
             <ref bean="importancePropDef" />
@@ -612,6 +613,7 @@
             <ref bean="userTitlePropDef" />
             <ref bean="introductionPropDef" />
             <ref bean="introductionImagePropDef" />
+            <ref bean="introductionImageAltPropDef" />
             <ref bean="introductionImageCaptionPropDef" />
             <ref bean="personListing.additionalContentPropDef" />
             <ref bean="navigationTitlePropDef" />
@@ -639,6 +641,7 @@
             <ref bean="userTitlePropDef" />
             <ref bean="introductionPropDef" />
             <ref bean="introductionImagePropDef" />
+            <ref bean="introductionImageAltPropDef" />
             <ref bean="introductionImageCaptionPropDef" />
             <ref bean="navigationTitlePropDef" />
             <ref bean="importancePropDef" />
@@ -666,6 +669,7 @@
             <ref bean="userTitlePropDef" />
             <ref bean="introductionPropDef" />
             <ref bean="introductionImagePropDef" />
+            <ref bean="introductionImageAltPropDef" />
             <ref bean="introductionImageCaptionPropDef" />
             <ref bean="navigationTitlePropDef" />
             <ref bean="importancePropDef" />
@@ -718,6 +722,7 @@
             <ref bean="userTitlePropDef" />
             <ref bean="introductionPropDef" />
             <ref bean="introductionImagePropDef" />
+            <ref bean="introductionImageAltPropDef" />
             <ref bean="introductionImageCaptionPropDef" />
             <ref bean="navigationTitlePropDef" />
             <ref bean="importancePropDef" />
@@ -744,6 +749,7 @@
             <ref bean="userTitlePropDef" />
             <ref bean="introductionPropDef" />
             <ref bean="introductionImagePropDef" />
+            <ref bean="introductionImageAltPropDef" />
             <ref bean="introductionImageCaptionPropDef" />
             <ref bean="navigationTitlePropDef" />
             <ref bean="importancePropDef" />
@@ -805,6 +811,7 @@
             <ref bean="userTitlePropDef" />
             <ref bean="introductionPropDef" />
             <ref bean="introductionImagePropDef" />
+            <ref bean="introductionImageAltPropDef" />
             <ref bean="introductionImageCaptionPropDef" />
             <ref bean="navigationTitlePropDef" />
             <ref bean="importancePropDef" />
@@ -830,6 +837,7 @@
             <ref bean="userTitlePropDef" />
             <ref bean="introductionPropDef" />
             <ref bean="introductionImagePropDef" />
+            <ref bean="introductionImageAltPropDef" />
             <ref bean="introductionImageCaptionPropDef" />
             <ref bean="navigationTitlePropDef" />
             <ref bean="importancePropDef" />

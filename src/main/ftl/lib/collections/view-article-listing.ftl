@@ -35,27 +35,22 @@
           <#local caption = vrtx.propValue(entryPropSet, 'caption')  />
           <#local publishDateProp = vrtx.prop(entryPropSet, 'publish-date') />
 
-          <#-- Flattened caption for alt-tag in image -->
-          <#local captionFlattened>
-            <@vrtx.flattenHtml value=caption escape=true />
-          </#local>
-
           <#local articleType = "vrtx-default-article" />
           <#if articles.name == "articleListing.featuredArticles">
             <#local articleType = "vrtx-featured-article" />
           </#if>
           <div id="vrtx-result-${i}" class="vrtx-resource ${articleType}<#if listingView == "2columns"> ${articleType}-<#if i % 2 == 0>right<#else>left</#if></#if><#if listingView == "2columns+prio"> ${articleType}-<#if ((i+1) % 2 == 0)>right<#else>left</#if></#if>">
           <#local introImgURI = vrtx.propValue(entryPropSet, 'picture') />
-          <#if introImgURI?exists>
-    			<#local thumbnail =  vrtx.relativeLinkConstructor(introImgURI, 'displayThumbnailService') />
-    	  <#else>
-    			<#local thumbnail = "" />
+           <#if introImgURI?exists>
+    		 <#local thumbnail =  vrtx.relativeLinkConstructor(introImgURI, 'displayThumbnailService') />
+    	   <#else>
+    	     <#local thumbnail = "" />
    		   </#if>
-
            <#if introImg?has_content && articles.hasDisplayPropDef(introImg.definition.name)>
-               <a class="vrtx-image" href="${entry.url?html}">
-                  <img src="${thumbnail?html}" alt="" />
-               </a>
+             <#local introImgAlt = vrtx.propValue(entryPropSet, 'pictureAlt') />
+             <a class="vrtx-image" href="${entry.url?html}">
+               <img src="${thumbnail?html}" alt="<#if introImgAlt?exists>${introImgAlt?html}</#if>" />
+             </a>
            </#if>
 
             <div class="vrtx-title">

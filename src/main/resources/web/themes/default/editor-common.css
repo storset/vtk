@@ -308,7 +308,7 @@ div.description textarea {
 /* Image and caption */
 
 div.caption textarea {
-  height: 127px;
+  height: 107px;
   width: 352px !important;
 }
 
@@ -331,44 +331,25 @@ form.vrtx-program-option-frontpage #additional-content .header {
 
 div.introImageAndCaption,
 div#vrtx-resource\.picture {
-  width: 547px;
   position: relative;
   overflow: hidden;
   margin-bottom: 20px;
-  height: 244px;
 }
 
+div#vrtx-resource\.picture,
 div.introImageAndCaption,
 div.introImageAndCaption .vrtx-image-ref {
   margin-top: 0px;
 }
 
-div#vrtx-resource\.picture {
-  height: 241px;
-}
-
 div.introImageAndCaption .caption,
 div#vrtx-resource\.picture .caption {
-  position: absolute;
-  top: 75px;
-  left: 0px;
-  width: 355px;
-  margin-bottom: 0px;
-}
-
-div#vrtx-resource\.picture .caption {
-  top: 52px;
+  width: 355px; 
 }
 
 div.introImageAndCaption iframe,
 div#vrtx-resource\.picture iframe {
   width: 331px !important;
-}
-
-div.introImageAndCaption .hidePicture {
-  left: 374px;
-  position: absolute;
-  top: 170px;
 }
 
 div.introImageAndCaption .hidePicture .vrtx-radio-buttons label {
@@ -392,9 +373,24 @@ div#vrtx-resource\.picture div.input-and-button-container .vrtx-textfield {
 }
 
 div.introImageAndCaption div#picture\.preview,
-div#vrtx-resource\.picture div#resource\.picture\.preview {
-  margin: -57px 0 0 375px;
-  float: none;
+div#vrtx-resource\.picture div#resource\.picture\.preview,
+div.introImageAndCaption .caption,
+div.introImageAndCaption .pictureAlt,
+div#vrtx-resource\.picture .caption,
+div#vrtx-resource\.picture .pictureAlt {
+  margin-top: 20px;
+  margin-right: 20px;
+  float: left;
+  clear: none;
+}
+
+div.introImageAndCaption .hidePicture,
+div#vrtx-resource\.picture .hidePicture {
+  margin-top: 20px;
+}
+
+.pictureAlt input {
+  width: 230px;
 }
 
 div.introImageAndCaption .vrtx-image-ref-preview {

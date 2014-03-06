@@ -173,6 +173,10 @@
           <property name="preventDisplayProperty" ref="articleListing.hideIntroductionImagePropDef" />
         </bean>
         <bean class="org.vortikal.web.search.PropertyDisplayConfig">
+          <property name="displayProperty" ref="introductionImageAltPropDef" />
+          <property name="preventDisplayProperty" ref="articleListing.hideIntroductionImagePropDef" />
+        </bean>
+        <bean class="org.vortikal.web.search.PropertyDisplayConfig">
           <property name="displayProperty" ref="introductionPropDef" />
           <property name="preventDisplayProperty" ref="articleListing.hideIntroductionPropDef" />
         </bean>

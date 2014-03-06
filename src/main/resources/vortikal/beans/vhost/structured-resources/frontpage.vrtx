@@ -4,6 +4,7 @@ resourcetype frontpage {
     title : string overrides title,
     introduction : simple_html,
     picture : image_ref,
+    pictureAlt : string,
     caption : simple_html,
     main-content : json (boxTitle : string, boxCssSizeAndPlacement : string, boxCssColor : string, boxType : string, boxPicture : image_ref, boxPictureAlt : string, boxContent : html, boxUrlText : string, boxUrl : resource_ref) multiple noextract,
     additional-content : json (boxTitle : string, boxType : string, boxPicture : image_ref, boxPictureAlt : string, boxContent : html, boxUrlText : string, boxUrl : resource_ref) multiple noextract,
@@ -16,7 +17,7 @@ resourcetype frontpage {
     caption (size[small]),
     main-content:boxCssSizeAndPlacement (dropdown),
     main-content:boxCssColor (dropdown),
-    group introImageAndCaption (picture, caption) (after introduction),
+    group introImageAndCaption (picture, caption, pictureAlt) (after introduction),
     group relatedContent (showAdditionalContent, additional-content) (after main-content),
     cssUrl (class[vrtx-sea-accordion]),
     cssUrl (class[vrtx-pseudo-grouped]),
@@ -255,7 +256,7 @@ resourcetype frontpage {
               [def style concat("width:", pixel-width, "px")]
               [if caption != null]
                 <div class="vrtx-introduction-image" style="[val style]">
-                  <img src="[val picture]" alt="" />
+                  <img src="[val picture]" alt="[if pictureAlt != null && pictureAlt != ""][val pictureAlt][endif]" />
                   <div class="vrtx-imagetext">
                     <div class="vrtx-imagedescription">[val caption # unescaped]</div>
                     [if photographer != null]
@@ -268,7 +269,7 @@ resourcetype frontpage {
               [else]
                 [if photographer != null]
                   <div class="vrtx-introduction-image" style="[val style]">
-                    <img src="[val picture]" alt="" />
+                    <img src="[val picture]" alt="[if pictureAlt != null && pictureAlt != ""][val pictureAlt][endif]" />
                     <div class="vrtx-imagetext">
                       <span class="vrtx-photo">
                         <span class="vrtx-photo-prefix">[localized "photo-prefix"]: </span>[val photographer]
@@ -280,10 +281,10 @@ resourcetype frontpage {
                 [endif]
               [endif]
             [else]
-              <img class="vrtx-introduction-image" src="[val picture]" alt="" />
+              <img class="vrtx-introduction-image" src="[val picture]" alt="[if pictureAlt != null && pictureAlt != ""][val pictureAlt][endif]" />
             [endif]
           [else]
-            <img class="vrtx-introduction-image" src="[val picture]" alt="" />
+            <img class="vrtx-introduction-image" src="[val picture]" alt="[if pictureAlt != null && pictureAlt != ""][val pictureAlt][endif]" />
           [endif]
         [endif]
       
@@ -358,6 +359,7 @@ resourcetype frontpage {
      title : (en : "Title", no : "Tittel", nn : "Tittel"),
      introduction : (en : "Introduction", no : "Innledning", nn : "Innleiing"),
      picture : (en: "Image", no: "Bilde", nn : "Bilete"),
+     pictureAlt: (en: "Alternative text", no: "Alternativ tekst", nn : "Alternativ tekst"),
      photo-prefix : (en : "Photo", no : "Foto", nn : "Photo"),
      caption : (en : "Image caption", no : "Bildetekst", nn : "Bilettekst"),
      main-content : (en : "Main content", no : "Hovedinnhold", nn : "Hovedinnhold"),

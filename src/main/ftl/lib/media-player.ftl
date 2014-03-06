@@ -148,7 +148,7 @@
  *
  * Generate download link to media file
  *
- * @param url the URL-escaped (UTF-8) URL to the media file
+ * @param url the HTML-escaped URL to the media file
  * @param type (optional) can specify more narrow file type: "audio" or "video"
  * @param bypass (optional) can bypass check for showDL-boolean
  *

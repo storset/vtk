@@ -72,7 +72,7 @@
     <p id="vrtx-report-info-paging-top">
       <@vrtx.msg code="report.${report.reportname}.about"
                  args=[report.documentSum, report.sum]
-                 default="There is a total of " + report.documentSum + " web pages with " + report.sum + " broken" /> ${linkTypeLocalization?lower_case}
+                 default="There is a total of " + report.documentSum + " web pages with " + report.sum + " broken" /> ${linkTypeLocalization?lower_case} <@vrtx.msg code="report.${report.reportname}.postfix" default="ordered by subfolders" />
     </p>
   </#if>
   

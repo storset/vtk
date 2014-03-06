@@ -364,7 +364,7 @@ div.introImageAndCaption .hidePicture .vrtx-radio-buttons label:after {
 }
 
 div.introImageAndCaption .hidePicture .vrtx-radio-buttons label:last-child:after {
-  height: 20px;
+  height: 15px;
 }
 
 div.introImageAndCaption .hidePicture > label {
@@ -380,7 +380,7 @@ div#vrtx-resource\.picture div.input-and-button-container input.vrtx-textfield {
 div#vrtx-resource\.linkOtherLanguage .vrtx-textfield,
 div#vrtx-resource\.poster-image div.input-and-button-container\.poster-image .vrtx-textfield,
 div#vrtx-resource\.picture div.input-and-button-container .vrtx-textfield {
-  margin-right: 11px;
+  margin-right: 20px;
 }
 
 div.introImageAndCaption div#picture\.preview,

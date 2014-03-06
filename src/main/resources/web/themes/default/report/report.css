@@ -305,6 +305,11 @@ td.vrtx-report-broken-links li {
   margin-right: 30px;
 }
 
+#vrtx-report-filters-folders-include-add,
+#vrtx-report-filters-folders-exclude-add {
+  clear: left;
+}
+
 #vrtx-report-filters-folders-include-exclude > div {
   margin-bottom: 20px;
 }

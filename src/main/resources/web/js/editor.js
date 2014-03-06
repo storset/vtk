@@ -457,7 +457,7 @@ VrtxEditor.prototype.newEditor = function newEditor(name, completeEditor, withou
     vrtxEdit.setCKEditorConfig(name, linkBrowseUrl, null, null, defaultLanguage, cssFileList, 150, 400, 40, vrtxEdit.CKEditorToolbars.inlineToolbar,
     isCompleteEditor, false, baseDocumentUrl, isSimpleHTML);
   } else if (vrtxEdit.contains(name, "caption")) {
-    vrtxEdit.setCKEditorConfig(name, linkBrowseUrl, null, null, defaultLanguage, cssFileList, 77, 400, 40, vrtxEdit.CKEditorToolbars.inlineToolbar,
+    vrtxEdit.setCKEditorConfig(name, linkBrowseUrl, null, null, defaultLanguage, cssFileList, 55, 400, 40, vrtxEdit.CKEditorToolbars.inlineToolbar,
     isCompleteEditor, false, baseDocumentUrl, isSimpleHTML);
   } else if (vrtxEdit.contains(name, "frist-frekvens-fri") || // Studies  
              vrtxEdit.contains(name, "metode-fri") ||

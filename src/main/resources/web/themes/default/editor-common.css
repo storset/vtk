@@ -356,6 +356,17 @@ div.introImageAndCaption .hidePicture .vrtx-radio-buttons label {
   display: inline !important; 
 }
 
+div.introImageAndCaption .hidePicture .vrtx-radio-buttons label:after {
+  display: block !important;
+  content: ".";
+  visibility: hidden;
+  height: 7px;
+}
+
+div.introImageAndCaption .hidePicture .vrtx-radio-buttons label:last-child:after {
+  height: 20px;
+}
+
 div.introImageAndCaption .hidePicture > label {
   white-space: nowrap;
 }
@@ -387,6 +398,11 @@ div#vrtx-resource\.picture .pictureAlt {
 div.introImageAndCaption .hidePicture,
 div#vrtx-resource\.picture .hidePicture {
   margin-top: 20px;
+}
+
+div.introImageAndCaption .hidePicture + .pictureAlt,
+div#vrtx-resource\.picture .hidePicture + .pictureAlt {
+  margin-top: 0px;
 }
 
 .pictureAlt input {
@@ -438,7 +454,7 @@ div#resource\.picture\.preview-inner,
 div#resource\.poster-image\.preview-inner,
 div#resource\.studentExchangeUniversityAgreementListing\.picture\.preview-inner {
   max-width: 170px;
-  max-height: 138px;
+  max-height: 115px;
   min-width: 95px;
   overflow: hidden;
 }
@@ -448,7 +464,7 @@ div#vrtx-resource\.picture img,
 div#vrtx-resource\.poster-image img,
 div#vrtx-resource\.studentExchangeUniversityAgreementListing\.picture img {
   max-width: 170px;
-  max-height: 138px;
+  max-height: 115px;
   margin-top: 0px;
   overflow: hidden;
 }
@@ -458,7 +474,7 @@ div#resource\.picture\.preview.no-preview img,
 div#resource\.poster-image\.preview.no-preview img,
 div#resource\.studentExchangeUniversityAgreementListing\.picture\.preview.no-preview img {
   width: 168px;
-  height: 136px;
+  height: 113px;
   border: 1px solid #D3D3D3;
 }
 

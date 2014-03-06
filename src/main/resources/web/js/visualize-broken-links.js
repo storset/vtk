@@ -20,7 +20,7 @@ function visualizeBrokenLinks(options) {
   // Clone only content inside UiO decoration (if exists)
   var links = context.contents().find("#right-main, #total-main").clone();
   if(!links.length) {
-    links = context.contents().clone();
+    links = context.contents().find("body").clone();
   }
   // Remove components without user content
   links.find("table.vrtx-unit-listing, table.vrtx-person-listing, .vrtx-alphabetical-project-listing, .vrtx-alphabetical-master-listing, .vrtx-listing-filter-results, .vrtx-listing-filter-status, .vrtx-listing-completed-ongoing, #vrtx-events-nav, .vrtx-paging-feed-wrapper, .comments, .comments-header, .vrtx-subfolder-menu, .vrtx-tab-menu, .vrtx-breadcrumb-menu, #vrtx-tags, .vrtx-tags, .vrtx-tags-service, .vrtx-tag-cloud").remove();

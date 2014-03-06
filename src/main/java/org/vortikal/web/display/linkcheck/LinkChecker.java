@@ -35,6 +35,7 @@ import java.io.Serializable;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 
@@ -128,35 +129,42 @@ public class LinkChecker {
         return result;
     }
     
-    private static boolean isAscii(String s) {
+    private boolean isASCII(String s) {
         for (int i = 0; i < s.length(); i++) {
             if (s.charAt(i) > 0x7f) return false;
         }
         return true;
     }
     
-    public static java.net.URL escape(java.net.URL url) 
+    private java.net.URL escape(java.net.URL url) 
             throws MalformedURLException {
-        java.net.URL result = url;
-        String frag = url.getRef() != null ? "#" + url.getRef() : "";
         
-        if (!isAscii(url.getHost())) {
+        // Hostname may need IDN-encoding
+        if (!isASCII(url.getHost())) {
+            String frag = url.getRef() != null ? "#" + url.getRef() : "";
             String host = java.net.IDN.toASCII(url.getHost());
-            result = new java.net.URL(url.getProtocol(), host, url.getPort(), 
-                    url.getFile() + frag);
+            url = new java.net.URL(url.getProtocol(), host, url.getPort(), url.getFile() + frag);
         }
         
-        if (!isAscii(url.getFile())) {
+        // URL may already be encoded, or it may not, at this point.
+        URI uri;
+        try {
+            uri = url.toURI(); // This validates URI syntax of URL
+        } catch (URISyntaxException e) {
+            // Something is not proper, build new URI which does encoding of each component
             try {
-            java.net.URI uri = new java.net.URI(url.getFile());
-            result = new java.net.URL(url.getProtocol(), url.getHost(), 
-                    url.getPort(), uri.toASCIIString() + frag);
-            } catch (URISyntaxException e) { }
+                uri = new URI(url.getProtocol(), null, url.getHost(), url.getPort(), 
+                          url.getPath(), url.getQuery(), url.getRef());
+            } catch (URISyntaxException ue) {
+                throw new MalformedURLException(ue.getMessage());
+            }
         }
-        return result;
-    }
 
-    private LinkCheckResult validateInternal(String href, URL base, boolean sendReferrer) {
+        // This step encodes any non-ASCII chars
+        return new java.net.URL(uri.toASCIIString());
+    }
+    
+    private LinkCheckResult validateInternal(final String href, URL base, boolean sendReferrer) {
         if (href == null) {
             throw new IllegalArgumentException("Link argument cannot be NULL");
         }
@@ -164,23 +172,23 @@ public class LinkChecker {
             throw new IllegalArgumentException("Base argument cannot be NULL");
         }
         
-        String normalized = href;
-        
+        String absolute = href;
         if (URL.isRelativeURL(href)) {
             try {
-                normalized = base.relativeURL(href).toString();
+                absolute = base.relativeURL(href).toString();
             } catch (Throwable t) {
                 return new LinkCheckResult(href, Status.MALFORMED_URL, t.getMessage());
             }
         }
 
-        java.net.URL url = null;
+        java.net.URL urlToCheck = null;
         try {
-            url = escape(new java.net.URL(normalized));
+            urlToCheck = escape(new java.net.URL(absolute));
         } catch (MalformedURLException e) {
             return new LinkCheckResult(href, Status.MALFORMED_URL, e.getMessage());
         }
-        final String cacheKey = url.toString();
+        
+        final String cacheKey = urlToCheck.toString();
         Element cached = this.cache.get(cacheKey);
         if (cached != null) {
             LinkCheckResult r = (LinkCheckResult) cached.getValue();
@@ -193,11 +201,11 @@ public class LinkChecker {
         Status status;
         String reason = null;
         try {
-            status = validateURL(url, sendReferrer ? base : null, "HEAD");
+            status = validateURL(urlToCheck, sendReferrer ? base : null, "HEAD");
             if (status == Status.NOT_FOUND) {
                 // Some broken servers return different result codes based on HEAD versus GET, so we retry...
-                logger.info("Validate (HEAD returned NOT_FOUND, retrying with GET): href='" + url + "'");
-                status = validateURL(url, sendReferrer ? base : null, "GET");
+                logger.info("Validate (HEAD returned NOT_FOUND, retrying with GET): href='" + urlToCheck + "'");
+                status = validateURL(urlToCheck, sendReferrer ? base : null, "GET");
             }
         } catch (Throwable t) {
             status = Status.ERROR;

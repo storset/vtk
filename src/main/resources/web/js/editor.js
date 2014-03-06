@@ -929,7 +929,7 @@ function showImagePreviewCaption(input) {
     captionWrp.find(".hidePicture").fadeIn("fast");
     captionWrp.find(".pictureAlt").fadeIn("fast");
     captionWrp.animate({
-      height: "246px"
+      height: "223px"
     }, "fast");
   }
 }

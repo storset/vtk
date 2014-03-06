@@ -62,7 +62,7 @@
         <a href="${serviceURL?html}" ><@vrtx.msg code="report.back" default="Back" /></a>
       </div>
     </div>
-    <h2><@vrtx.msg code="report.${report.reportname}.title" /> ${linkTypeLocalization?lower_case}
+    <h2><@vrtx.msg code="report.${report.reportname}.title" /> ${linkTypeLocalization?lower_case} <@vrtx.msg code="report.${report.reportname}.postfix" default="ordered by subfolders" />
     <a id="vrtx-report-view-other" title="${vrtx.getMsg('manage.choose-location.choose-collection')}" href="${viewReportServiceURL?html}"><@vrtx.msg code="report.view-other-link" default="View other folder" />...</a></h2>
   </div>
 
@@ -72,7 +72,7 @@
     <p id="vrtx-report-info-paging-top">
       <@vrtx.msg code="report.${report.reportname}.about"
                  args=[report.documentSum, report.sum]
-                 default="There is a total of " + report.documentSum + " web pages with " + report.sum + " broken" /> ${linkTypeLocalization?lower_case} <@vrtx.msg code="report.${report.reportname}.postfix" default="ordered by subfolders" />
+                 default="There is a total of " + report.documentSum + " web pages with " + report.sum + " broken" /> ${linkTypeLocalization?lower_case}
     </p>
   </#if>
   

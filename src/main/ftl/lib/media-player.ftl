@@ -155,7 +155,7 @@
 -->
 <#macro genDownloadLink url type="media" bypass=false>
   <#if bypass || (showDL?exists && showDL == "true")>
-    <a class="vrtx-media" href="${url?html}">
+    <a class="vrtx-media" href="${url}">
       <#if type = "video">
         <@vrtx.msg code="article.video-file" />
       <#elseif type = "audio">

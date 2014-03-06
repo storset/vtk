@@ -43,7 +43,9 @@
           <th id="vrtx-report-last-modified"><@vrtx.msg code="report.last-modified" default="Last modified" /></th>
           <th id="vrtx-report-modified-by"><@vrtx.msg code="report.modified-by" default="Modified by" /></th>
           <th id="vrtx-report-permissions"><@vrtx.msg code="collectionListing.permissions" default="Permissions"/></th>
-          <th id="vrtx-report-published"><@vrtx.msg code="report.published" default="Published" /></th>
+          <#if report.reportname != "unpublished">
+            <th id="vrtx-report-published"><@vrtx.msg code="report.published" default="Published" /></th>
+          </#if>
         </tr>
       </thead>
       <tbody>
@@ -64,10 +66,12 @@
         <#if report.viewURLs[res_index]?exists>
           <#assign url = report.viewURLs[res_index] />
         </#if>
-        <#assign published = vrtx.propValue(res, 'published') />
-        <#assign publishedStatus = vrtx.getMsg("report.yes", "Yes")>
-        <#if published = "false">
-          <#assign publishedStatus = vrtx.getMsg("report.no", "No")>
+        <#if report.reportname != "unpublished">
+          <#assign published = vrtx.propValue(res, 'published') />
+          <#assign publishedStatus = vrtx.getMsg("report.yes", "Yes")>
+          <#if published = "false">
+            <#assign publishedStatus = vrtx.getMsg("report.no", "No")>
+          </#if>
         </#if>
         
           <#assign isCollection = vrtx.propValue(res, 'collection') />
@@ -109,7 +113,9 @@
             <#else>
               <td class="vrtx-report-permissions"><span class="allowed-for-all">${isReadRestricted?html}</span></td>
             </#if>
-            <td class="vrtx-report-published">${publishedStatus?html}</td>
+            <#if report.reportname != "unpublished">
+              <td class="vrtx-report-published">${publishedStatus?html}</td>
+            </#if>
           </tr>
         </#list>
         </tbody>

@@ -1166,7 +1166,14 @@ $.fieldValue = function(el, successful) {
         }
         return a;
     }
-    return $(el).val();
+    var val = $(el).val();
+    try {
+      val = val.replace(/<span style="font-size: 14px;">([^<]*)<\/span>/g, "$1", "");
+      val = val.replace(/<(p|em|strong|s|ul|ol) style="font-size: 14px;">/g, "<$1>", "");
+    } catch(err) {
+      vrtxAdmin.log({msg: err});
+    }
+    return val;
 };
 
 /**

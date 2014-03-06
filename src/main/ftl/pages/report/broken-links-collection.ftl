@@ -1,5 +1,6 @@
 <#ftl strip_whitespace=true>
 <#import "/lib/vortikal.ftl" as vrtx />
+<#import "/lib/report.ftl" as reportLib />
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
@@ -73,6 +74,13 @@
                  args=[report.documentSum, report.sum]
                  default="There is a total of " + report.documentSum + " web pages with " + report.sum + " broken" /> ${linkTypeLocalization?lower_case}
     </p>
+  </#if>
+  
+  <#if alternativeName?has_content>
+    <@reportLib.alternativeViewCheckbox alternativeName "report.broken-links.switch-view" isAlternativeView />
+  </#if>
+  
+  <#if report.map?has_content>  
     <div class="vrtx-report">
       <table id="directory-listing" class="report-broken-links-collection">
         <thead>

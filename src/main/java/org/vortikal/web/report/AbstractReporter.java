@@ -40,8 +40,10 @@ public abstract class AbstractReporter implements Reporter {
     public static final String REPORT_TYPE_PARAM = "report-type";
     public static final String REPORT_NAME = "reportname";
 
-    private String name;
-    private String viewName;
+    protected String name;
+    protected String viewName;
+    protected String alternativeName;
+    protected String alternativeViewName;
     protected Searcher searcher;
     protected Repository repository;
     private boolean enabled = true;
@@ -63,6 +65,22 @@ public abstract class AbstractReporter implements Reporter {
     @Required
     public void setViewName(String viewName) {
         this.viewName = viewName;
+    }
+    
+    public String getAlternativeName() {
+        return alternativeName;
+    }
+
+    public void setAlternativeName(String alternativeName) {
+        this.alternativeName = alternativeName;
+    }
+
+    public String getAlternativeViewName() {
+        return alternativeViewName;
+    }
+
+    public void setAlternativeViewName(String alternativeViewName) {
+        this.alternativeViewName = alternativeViewName;
     }
 
     @Required

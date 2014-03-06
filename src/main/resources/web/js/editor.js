@@ -865,7 +865,15 @@ VrtxEditor.prototype.initPreviewImage = function initPreviewImage() {
       hideImagePreviewCaption($(previewInputFields[i]), true);
     }
   }
-
+  
+  var altTexts = $(".boxPictureAlt, .featuredPictureAlt");
+  for (var i = altTexts.length; i--;) {
+    var altText = $(altTexts[i]);
+    var imageRef = altText.prev(".vrtx-image-ref");
+    imageRef.addClass("vrtx-image-ref-alt-text");
+    imageRef.find(".vrtx-image-ref-preview").append(altText.remove());
+  }
+  
   /* Inputfield events for image preview */
   vrtxAdmin.cachedDoc.on("blur", "input.preview-image-inputfield", function (e) {
     previewImage(this.id);

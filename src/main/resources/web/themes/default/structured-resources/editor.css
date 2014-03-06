@@ -453,6 +453,30 @@
   width: 600px;
 }
 
+.vrtx-json .vrtx-json-element .boxPictureAlt,
+.vrtx-json .vrtx-json-element .featuredPictureAlt {
+  margin-top: 20px;
+  float: none;
+}
+
+.vrtx-json .vrtx-json-element .boxPictureAlt input,
+.vrtx-json .vrtx-json-element .featuredPictureAlt input {
+  width: 230px;
+}
+
+.vrtx-json .vrtx-json-element .vrtx-image-ref-alt-text .vrtx-image-ref-preview-inner,
+.vrtx-json .vrtx-json-element .vrtx-image-ref-alt-text .boxPictureAlt,
+.vrtx-json .vrtx-json-element .vrtx-image-ref-alt-text .featuredPictureAlt {
+  float: left;
+  margin-top: 0;
+}
+
+.vrtx-json .vrtx-json-element .vrtx-image-ref-alt-text .boxPictureAlt,
+.vrtx-json .vrtx-json-element .vrtx-image-ref-alt-text .featuredPictureAlt {
+  margin-left: 20px;
+  margin-top: -27px;
+}
+
 .vrtx-json .vrtx-json-element .vrtx-html iframe {
   width: 576px;
 }

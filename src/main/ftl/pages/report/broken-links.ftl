@@ -1,5 +1,6 @@
 <#ftl strip_whitespace=true>
 <#import "/lib/vortikal.ftl" as vrtx />
+<#import "/lib/report.ftl" as reportLib />
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
@@ -68,7 +69,7 @@
   
   <@generateFilters report.filters />
 
-  <#if (report.result?exists && report.result?size > 0)>
+  <#if report.result?has_content>
     <#--
       <p id="vrtx-report-broken-links-info">
         <span class="vrtx-report-broken-links-info-number">${report.brokenLinkCount} <@vrtx.msg code="report.${report.reportname}.info.total-broken-links-count" /></span>
@@ -82,6 +83,11 @@
                  default="Listing results " + report.from + "–"
                  + report.to + " of total " + report.total + " of web pages with " + report.brokenLinkCount + " broken" /> ${linkTypeLocalization?lower_case}
     </p>
+
+    <#if alternativeName?has_content>
+      <@reportLib.alternativeViewCheckbox alternativeName "report.broken-links.switch-view" isAlternativeView />
+    </#if>
+  
     <div class="vrtx-report">
       <table id="directory-listing" class="report-broken-links">
         <thead>
@@ -196,7 +202,7 @@
       </p>
     </#if>
   <#else>
-    <p id="vrtx-report-broken-links-info"><@vrtx.msg code="report.${report.reportname}.info.web-pages.none-found" />${linkTypeLocalization?lower_case}.<span class="vrtx-report-broken-links-info-number">&nbsp;</span></p>
+    <p id="vrtx-report-broken-links-info"><@vrtx.msg code="report.${report.reportname}.info.web-pages.none-found" /> ${linkTypeLocalization?lower_case}.<span class="vrtx-report-broken-links-info-number">&nbsp;</span></p>
   </#if>
 
   <#macro generateFilters filters>

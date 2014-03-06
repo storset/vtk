@@ -236,10 +236,10 @@ public final class Search {
     }
 
     /*
-     * Set Serach filter flags. Default set to remove all unpublished resources
+     * Set Search filter flags. Default set to remove all unpublished resources
      * from the result.
      */
-    public Search addFilterFlagg(FilterFlag... flags) {
+    public Search addFilterFlag(FilterFlag... flags) {
         for (FilterFlag flag : flags) {
             filterFlags.add(flag);
         }

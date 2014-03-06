@@ -1,4 +1,4 @@
-/* Copyright (c) 2012, University of Oslo, Norway
+/* Copyright (c) 2012, 2014, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -34,15 +34,19 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
+import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.json.simple.JSONValue;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.ContentStream;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Resource;
@@ -63,13 +67,14 @@ import org.vortikal.repository.search.query.PropertyTermQuery;
 import org.vortikal.repository.search.query.Query;
 import org.vortikal.repository.search.query.TermOperator;
 import org.vortikal.repository.search.query.UriPrefixQuery;
+import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
 public class BrokenLinksReport extends DocumentReporter {
 
     private PropertyTypeDefinition linkStatusPropDef;
     private PropertyTypeDefinition linkCheckPropDef;
-    protected PropertyTypeDefinition brokenLinksCountPropDef;
+    private PropertyTypeDefinition brokenLinksCountPropDef;
     private PropertyTypeDefinition sortPropDef;
     private PropertyTypeDefinition publishedPropDef;
     private PropertyTypeDefinition indexFilePropDef;
@@ -83,27 +88,34 @@ public class BrokenLinksReport extends DocumentReporter {
     private Parser parser;
     private String queryFilterExpression;
 
-    protected final static String FILTER_READ_RESTRICTION_PARAM_NAME = "read-restriction";
-    protected final static String FILTER_READ_RESTRICTION_PARAM_DEFAULT_VALUE = "all";
+    private final static String FILTER_READ_RESTRICTION_PARAM_NAME = "read-restriction";
+    private final static String FILTER_READ_RESTRICTION_PARAM_DEFAULT_VALUE = "all";
     private final static String[] FILTER_READ_RESTRICTION_PARAM_VALUES = { FILTER_READ_RESTRICTION_PARAM_DEFAULT_VALUE,
             "false", "true" };
 
-    protected final static String FILTER_LINK_TYPE_PARAM_NAME = "link-type";
-    protected final static String FILTER_LINK_TYPE_PARAM_DEFAULT_VALUE = "anchor-img";
+    private final static String FILTER_LINK_TYPE_PARAM_NAME = "link-type";
+    private final static String FILTER_LINK_TYPE_PARAM_DEFAULT_VALUE = "anchor-img";
 
     private final static String[] FILTER_LINK_TYPE_PARAM_VALUES = { FILTER_LINK_TYPE_PARAM_DEFAULT_VALUE, "img",
             "anchor", "other" };
 
-    protected final static String FILTER_PUBLISHED_PARAM_NAME = "published";
-    protected final static String FILTER_PUBLISHED_PARAM_DEFAULT_VALUE = "true";
+    private final static String FILTER_PUBLISHED_PARAM_NAME = "published";
+    private final static String FILTER_PUBLISHED_PARAM_DEFAULT_VALUE = "true";
     private final static String[] FILTER_PUBLISHED_PARAM_VALUES = { FILTER_PUBLISHED_PARAM_DEFAULT_VALUE, "false" };
 
-    protected final static String INCLUDE_PATH_PARAM_NAME = "include-path";
-    protected final static String EXCLUDE_PATH_PARAM_NAME = "exclude-path";
-
-    protected void populateMap(String token, Resource resource, Map<String, Object> result, HttpServletRequest request) {
+    private final static String INCLUDE_PATH_PARAM_NAME = "include-path";
+    private final static String EXCLUDE_PATH_PARAM_NAME = "exclude-path";
+    
+    private Service brokenLinksToTsvReportService;
+    private int pageSize = 25;
+   
+    private void populateMap(String token, Resource resource, Map<String, Object> result, HttpServletRequest request, boolean isCollectionView) {
         URL reportURL = super.getReportService().constructURL(resource).addParameter(REPORT_TYPE_PARAM, getName());
 
+        if(isCollectionView) {
+            reportURL.addParameter(getAlternativeName(), "");
+        }
+        
         Map<String, List<FilterOption>> filters = new LinkedHashMap<String, List<FilterOption>>();
 
         String linkType = request.getParameter(FILTER_LINK_TYPE_PARAM_NAME);
@@ -162,11 +174,99 @@ public class BrokenLinksReport extends DocumentReporter {
 
     @Override
     public Map<String, Object> getReportContent(String token, Resource resource, HttpServletRequest request) {
-        Map<String, Object> result = super.getReportContent(token, resource, request);
+        
+        Map<String, Object> result = new HashMap<String, Object>();
+        
+        /* Regular view */
+        if(request.getParameter(getAlternativeName()) == null) {
+            result = super.getReportContent(token, resource, request);
 
-        populateMap(token, resource, result, request);
+            populateMap(token, resource, result, request, false);
 
-        result.put("brokenLinkCount", getBrokenLinkCount(token, resource, request, (String) result.get("linkType")));
+            result.put("brokenLinkCount", getBrokenLinkCount(token, resource, request, (String) result.get("linkType")));
+            
+        /* Collection view */
+        } else {
+            result.put(REPORT_NAME, getAlternativeName());
+
+            populateMap(token, resource, result, request, true);
+
+            Accumulator accumulator = getBrokenLinkAccumulator(token, resource, request, (String) result.get("linkType"));
+
+            int page = 1;
+            try {
+                page = Integer.parseInt(request.getParameter("page"));
+            } catch (Exception e) {
+            }
+
+            Map<String, CollectionStats> map = new LinkedHashMap<String, CollectionStats>();
+            if ((pageSize * page) - pageSize < accumulator.map.size()) {
+                URL currentPage = URL.create(request).removeParameter("page");
+                if (page > 1) {
+                    result.put("prev", new URL(currentPage).addParameter("page", String.valueOf(page - 1)));
+                }
+                if (pageSize * page < accumulator.map.size()) {
+                    result.put("next", new URL(currentPage).addParameter("page", String.valueOf(page + 1)));
+                }
+
+                Iterator<Entry<String, CollectionStats>> it = accumulator.map.entrySet().iterator();
+                int count = 0;
+                Resource r;
+                Path uri;
+                CollectionStats cs;
+                while (it.hasNext() && ++count <= pageSize * page) {
+                    Entry<String, CollectionStats> pairs = (Entry<String, CollectionStats>) it.next();
+                    if (count > (pageSize * page) - pageSize && count <= pageSize * page) {
+                        cs = pairs.getValue();
+                        uri = Path.fromString(pairs.getKey());
+                        cs.url = getReportService().constructURL(uri).addParameter(REPORT_TYPE_PARAM, "broken-links");
+                        try {
+                            r = repository.retrieve(token, uri, false);
+                            cs.title = r.getTitle();
+                        } catch (Exception e) {
+                            cs.title = uri.getName();
+                        }
+                        map.put(pairs.getKey(), cs);
+                    }
+                }
+                result.put("map", map);
+            }
+
+            result.put("sum", accumulator.sum);
+            result.put("documentSum", accumulator.documentSum);
+
+            if (accumulator.sum > 0) {
+                String linkType = request.getParameter(FILTER_LINK_TYPE_PARAM_NAME);
+                String published = request.getParameter(FILTER_PUBLISHED_PARAM_NAME);
+                String readRestriction = request.getParameter(FILTER_READ_RESTRICTION_PARAM_NAME);
+
+                if (linkType == null)
+                    linkType = FILTER_LINK_TYPE_PARAM_DEFAULT_VALUE;
+                if (published == null)
+                    published = FILTER_PUBLISHED_PARAM_DEFAULT_VALUE;
+                if (readRestriction == null)
+                    readRestriction = FILTER_READ_RESTRICTION_PARAM_DEFAULT_VALUE;
+
+                Map<String, String> usedFilters = new LinkedHashMap<String, String>();
+                usedFilters.put(FILTER_LINK_TYPE_PARAM_NAME, linkType);
+                usedFilters.put(FILTER_PUBLISHED_PARAM_NAME, published);
+                usedFilters.put(FILTER_READ_RESTRICTION_PARAM_NAME, readRestriction);
+
+                URL exportURL = this.brokenLinksToTsvReportService.constructURL(resource, null, usedFilters, false);
+
+                String[] exclude = request.getParameterValues(EXCLUDE_PATH_PARAM_NAME);
+                if (exclude != null)
+                    for (String value : exclude)
+                        exportURL.addParameter(EXCLUDE_PATH_PARAM_NAME, value);
+
+                String[] include = request.getParameterValues(INCLUDE_PATH_PARAM_NAME);
+                if (include != null)
+                    for (String value : include)
+                        exportURL.addParameter(INCLUDE_PATH_PARAM_NAME, value);
+
+                result.put("brokenLinksToTsvReportService", exportURL);
+            }
+        }
 
         return result;
     }
@@ -196,6 +296,7 @@ public class BrokenLinksReport extends DocumentReporter {
         }
 
         // Search callback which sums up broken link counts
+        @SuppressWarnings("hiding")
         final class Accumulator implements Searcher.MatchCallback {
             int sum = 0;
             final String[] includeTypes;
@@ -226,6 +327,152 @@ public class BrokenLinksReport extends DocumentReporter {
         Accumulator accumulator = new Accumulator(includeTypes, excludeTypes);
         searcher.iterateMatching(token, search, accumulator);
         return accumulator.sum;
+    }
+    
+    public Map<String, CollectionStats> getAccumulatorMap(String token, Resource currentResource,
+            HttpServletRequest request) {
+        String linkType = request.getParameter(FILTER_LINK_TYPE_PARAM_NAME);
+        if (linkType == null)
+            linkType = FILTER_LINK_TYPE_PARAM_DEFAULT_VALUE;
+
+        return getBrokenLinkAccumulator(token, currentResource, request, linkType).map;
+    }
+
+    private Accumulator getBrokenLinkAccumulator(String token, Resource currentResource, HttpServletRequest request,
+            final String linkType) {
+        // Set up search
+        Search search = getSearch(token, currentResource, request);
+        search.setLimit(Integer.MAX_VALUE);
+        ConfigurablePropertySelect cfg = new ConfigurablePropertySelect();
+        cfg.addPropertyDefinition(this.brokenLinksCountPropDef);
+        search.setPropertySelect(cfg);
+        search.setSorting(null);
+
+        // Set up include/exclude link types sum of broken links
+        String[] includeTypes;
+        String[] excludeTypes = new String[0];
+        if (FILTER_LINK_TYPE_PARAM_DEFAULT_VALUE.equals(linkType) || linkType == null) {
+            includeTypes = new String[] { "BROKEN_LINKS_ANCHOR", "BROKEN_LINKS_IMG" };
+        } else if ("anchor".equals(linkType)) {
+            includeTypes = new String[] { "BROKEN_LINKS_ANCHOR" };
+        } else if ("img".equals(linkType)) {
+            includeTypes = new String[] { "BROKEN_LINKS_IMG" };
+        } else {
+            includeTypes = new String[] { "BROKEN_LINKS" };
+            excludeTypes = new String[] { "BROKEN_LINKS_IMG", "BROKEN_LINKS_ANCHOR" };
+        }
+
+        Map<String, CollectionStats> map = new TreeMap<String, CollectionStats>();
+        for (Path uri : currentResource.getChildURIs()) {
+            map.put(uri.toString(), new CollectionStats());
+        }
+
+        Accumulator accumulator = new Accumulator(includeTypes, excludeTypes, map,
+                currentResource.getURI().getDepth() + 1);
+
+        // No need to do search if no children
+        if (map.isEmpty()) {
+            return accumulator;
+        }
+
+        searcher.iterateMatching(token, search, accumulator);
+
+        // Remove entries with value of 0 or less
+        Iterator<Map.Entry<String, CollectionStats>> iter = accumulator.map.entrySet().iterator();
+        while (iter.hasNext()) {
+            Map.Entry<String, CollectionStats> entry = iter.next();
+            if (entry.getValue().linkCount <= 0) {
+                iter.remove();
+            }
+        }
+
+        return accumulator;
+    }
+
+    public class CollectionStats {
+        int documentCount;
+        int linkCount;
+        String title;
+        URL url;
+
+        public CollectionStats() {
+            this(0, 0);
+        }
+
+        public CollectionStats(int documentCount, int linkCount) {
+            this.documentCount = documentCount;
+            this.linkCount = linkCount;
+        }
+
+        public int getLinkCount() {
+            return linkCount;
+        }
+
+        public int getDocumentCount() {
+            return documentCount;
+        }
+
+        public String getTitle() {
+            return title;
+        }
+
+        public URL getUrl() {
+            return url;
+        }
+    }
+
+    // Search callback which sums up broken link counts
+    final class Accumulator implements Searcher.MatchCallback {
+        int sum = 0, documentSum = 0;
+        int depth, count, optInt;
+        final String[] includeTypes;
+        final String[] excludeTypes;
+        Map<String, CollectionStats> map;
+
+        Accumulator(String[] includeTypes, String[] excludeTypes, Map<String, CollectionStats> map, int depth) {
+            this.depth = depth;
+            this.includeTypes = includeTypes;
+            this.excludeTypes = excludeTypes;
+            this.map = map;
+        }
+
+        @Override
+        public boolean matching(PropertySet propertySet) throws Exception {
+            Property prop = propertySet.getProperty(brokenLinksCountPropDef);
+            if (prop == null) {
+                return true;
+            }
+
+            if (propertySet.getURI().getDepth() == depth) {
+                return true;
+            }
+
+            CollectionStats cs = map.get(propertySet.getURI().getPath(depth).toString());
+            if (cs == null) {
+                return true;
+            }
+
+            count = 0;
+            net.sf.json.JSONObject obj = prop.getJSONValue();
+            for (String includeType : this.includeTypes) {
+                optInt = obj.optInt(includeType);
+                sum += optInt;
+                cs.linkCount += optInt;
+                count += optInt;
+            }
+            for (String excludeType : this.excludeTypes) {
+                optInt = obj.optInt(excludeType);
+                sum -= optInt;
+                cs.linkCount -= optInt;
+                count -= optInt;
+            }
+            if (count > 0) {
+                cs.documentCount++;
+                documentSum++;
+            }
+
+            return true;
+        }
     }
 
     @Override
@@ -427,5 +674,13 @@ public class BrokenLinksReport extends DocumentReporter {
     public void setQueryFilterExpression(String exp) {
         this.queryFilterExpression = exp;
     }
-
+    
+    @Required
+    public void setBrokenLinksToTsvReportService(Service brokenLinksToTsvReportService) {
+        this.brokenLinksToTsvReportService = brokenLinksToTsvReportService;
+    }
+    
+    public void setPageSize(int pageSize) {
+        this.pageSize = pageSize;
+    }
 }

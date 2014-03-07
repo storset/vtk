@@ -124,16 +124,11 @@
       } 
       
       // Async. save i18n
-      <#if isCollection>
-        var ajaxSaveText = "<@vrtx.msg code='editor.save-folder-ajax-loading-title' />";
-      <#elseif isImage>
-        var ajaxSaveText = "<@vrtx.msg code='editor.save-image-ajax-loading-title' />";   
-      <#elseif isAudio>
-        var ajaxSaveText = "<@vrtx.msg code='editor.save-audio-ajax-loading-title' />";         
-      <#elseif isVideo>
-        var ajaxSaveText = "<@vrtx.msg code='editor.save-video-ajax-loading-title' />";         
-      <#else>
-        var ajaxSaveText = "<@vrtx.msg code='editor.save-doc-ajax-loading-title' />";
+      <#if isCollection> var ajaxSaveText = "<@vrtx.msg code='editor.save-folder-ajax-loading-title' />";
+      <#elseif isImage>  var ajaxSaveText = "<@vrtx.msg code='editor.save-image-ajax-loading-title' />";   
+      <#elseif isAudio>  var ajaxSaveText = "<@vrtx.msg code='editor.save-audio-ajax-loading-title' />";         
+      <#elseif isVideo>  var ajaxSaveText = "<@vrtx.msg code='editor.save-video-ajax-loading-title' />";         
+      <#else>            var ajaxSaveText = "<@vrtx.msg code='editor.save-doc-ajax-loading-title' />";
       </#if>
       
       // Manually approve i18n

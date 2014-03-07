@@ -62,7 +62,7 @@
         <a href="${serviceURL?html}" ><@vrtx.msg code="report.back" default="Back" /></a>
       </div>
     </div>
-    <h2><@vrtx.msg code="report.${report.reportname}.title" /> ${linkTypeLocalization?lower_case}
+    <h2><@vrtx.msg code="report.${report.reportname}.title" /> ${linkTypeLocalization?lower_case} <@vrtx.msg code="report.${report.reportname}.postfix" default="ordered by subfolders" />
     <a id="vrtx-report-view-other" title="${vrtx.getMsg('manage.choose-location.choose-collection')}" href="${viewReportServiceURL?html}"><@vrtx.msg code="report.view-other-link" default="View other folder" />...</a></h2>
   </div>
 

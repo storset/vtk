@@ -3,6 +3,7 @@ resourcetype oppbygning {
   properties {
     introduction : simple_html,
     picture : image_ref,
+    pictureAlt: string,
     caption : simple_html,
     content-study : html noextract,
     gradsnavn : string,
@@ -21,7 +22,7 @@ resourcetype oppbygning {
     tittel (size[1]),
     tittel (class[ui-helper-hidden])
     caption (size[small]),
-    group introImageAndCaption (picture, caption) (after introduction),
+    group introImageAndCaption (picture, caption, pictureAlt) (after introduction),
     gradsnavn (class[vrtx-shared-text]),
     group grader (gradsnavn, gradsnavn-no, gradsnavn-nn, gradsnavn-en, vitnemaal) (after content-study),
     vitnemaal (class[vrtx-shared-text]),
@@ -96,6 +97,7 @@ resourcetype oppbygning {
     introduction-image {
       ##
       [def img-uri resource-prop(".", "picture")]
+      [def pictureAlt resource-prop(".", "pictureAlt")]
       [def caption resource-prop(".", "caption")]
       [def pixel-width null]
       [def img null]
@@ -124,11 +126,7 @@ resourcetype oppbygning {
           <div class="vrtx-introduction-image">
         [endif]
 
-        [if caption != null]
-          <img src="[val img-uri]" alt=""/>
-        [else]
-          <img src="[val img-uri]" alt=""/>
-        [endif]
+        <img src="[val img-uri]" alt="[if pictureAlt != null && pictureAlt != ""][val pictureAlt][endif]" />
 
         [if caption != null]
           <div class="vrtx-imagetext">
@@ -201,6 +199,7 @@ resourcetype oppbygning {
     oppbygning : (en : "Programme structure", no : "Oppbygging og gjennomføring", nn : "Oppbygging og gjennomføring"),
     introduction : (en : "Introduction",no : "Innledning", nn : "Innleiing"),
     picture : (en: "Image", no: "Bilde", nn : "Bilete"),
+    pictureAlt: (en: "Alternative text", no: "Alternativ tekst", nn : "Alternativ tekst"),
     caption : (en : "Image caption", no : "Bildetekst", nn : "Bilettekst"),
     photo-prefix : (en : "Photo", no : "Foto", nn : "Photo"),
     gradsnavn : (en : "Name of degree (shared text)", no : "Gradsnavn (fellestekst)", nn : "Gradsnamn (fellestekst)"),

@@ -1,4 +1,4 @@
-/* Copyright (c) 2009, University of Oslo, Norway
+/* Copyright (c) 2014, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -30,31 +30,43 @@
  */
 package org.vortikal.repository.store;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-/**
- * Simplistic and generic interface for accessing principal metadata as
- * "attribute -> list of values"-mappings.
- * 
- * This will typically be used by {@link org.vortikal.security.PrincipalFactory}
- * when creating {@link org.vortikal.security.Principal} instances.
- * 
- */
-public interface PrincipalMetadata extends Metadata {
+public final class PrincipalMetadata {
 
-    /**
-     * Get the qualified name of the principal to which this instance's metadata
-     * applies.
-     * 
-     * @see org.vortikal.security.Principal#getQualifiedName()
-     * 
-     * @return The qualified name as a <code>String</code>.
-     */
-    public String getQualifiedName();
+	private Map<String, List<Object>> attributes;
 
-    /**
-     * 
-     * @return The user id as a <code>String</code>
-     */
-    public String getUid();
+	public PrincipalMetadata(Map<String, List<Object>> attributes) {
+		this.attributes = attributes;
+	}
+
+	public Object getValue(String attributeName) {
+		Object result = null;
+		if (this.attributes != null) {
+			List<Object> values = this.attributes.get(attributeName);
+			if (values != null && !values.isEmpty()) {
+				result = values.get(0);
+			}
+		}
+		return result;
+	}
+
+	public List<Object> getValues(String attributeName) {
+		List<Object> result = null;
+		if (this.attributes != null) {
+			List<Object> values = this.attributes.get(attributeName);
+			if (values != null) {
+				result = Collections.unmodifiableList(values);
+			}
+		}
+		return result;
+	}
+
+	public Set<String> getAttributeNames() {
+		return Collections.unmodifiableSet(this.attributes.keySet());
+	}
 
 }

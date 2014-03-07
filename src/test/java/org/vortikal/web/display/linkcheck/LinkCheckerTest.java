@@ -40,9 +40,11 @@ import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
 
 import org.jmock.Expectations;
-import org.jmock.Mockery;
-import org.jmock.integration.junit4.JUnit4Mockery;
+import static org.jmock.Expectations.any;
+import static org.jmock.Expectations.returnValue;
+import org.jmock.integration.junit4.JUnitRuleMockery;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.vortikal.web.display.linkcheck.LinkChecker.LinkCheckResult;
 import org.vortikal.web.display.linkcheck.LinkChecker.Status;
@@ -50,8 +52,10 @@ import org.vortikal.web.service.URL;
 
 public class LinkCheckerTest {
 
+    @Rule
+    public final JUnitRuleMockery context = new JUnitRuleMockery();
+    
     private LinkChecker linkChecker = new LinkChecker();
-    private Mockery context = new JUnit4Mockery();
     private Ehcache mockCache;
 
     @Before
@@ -82,6 +86,50 @@ public class LinkCheckerTest {
     }
 
     @Test
+    public void testValidateStatusOkWhenRedirected() {
+        List<TestLinkCheckObject> testRedirectLinks = new ArrayList<TestLinkCheckObject>();
+        testRedirectLinks.add(new TestLinkCheckObject("/vrtx", URL.parse("http://www.uio.no/index.html"), Status.OK, null));
+        testValidation(testRedirectLinks);
+    }
+    
+    @Test
+    public void testLinksWithSpaces() {
+        
+        final String unencodedAbsolute = "http://www.uio.no/a thing with spaces.pdf";
+        final String alreadyEncodedAbsolute = "http://www.uio.no/a%20thing%20with%20spaces.pdf";
+        final String unencodedHostRelative = "/a thing with spaces.pdf";
+        final String encodedHostRelative = "/a%20thing%20with%20spaces.pdf";
+        
+        final String expectedEncodedUrl = "http://www.uio.no/a%20thing%20with%20spaces.pdf";
+        
+        context.checking(new Expectations() {
+            {
+                exactly(4).of(mockCache).get(expectedEncodedUrl);
+                // Pretend the link was in cache to avoid hitting network
+                will(onConsecutiveCalls(
+                   returnValue(new Element(expectedEncodedUrl, new LinkCheckResult(unencodedAbsolute, Status.NOT_FOUND))),
+                   returnValue(new Element(expectedEncodedUrl, new LinkCheckResult(alreadyEncodedAbsolute, Status.NOT_FOUND))),
+                   returnValue(new Element(expectedEncodedUrl, new LinkCheckResult(unencodedHostRelative, Status.NOT_FOUND))),
+                   returnValue(new Element(expectedEncodedUrl, new LinkCheckResult(encodedHostRelative, Status.NOT_FOUND)))));
+            }
+        });
+        
+        URL base = URL.parse("http://www.uio.no/index.html");
+
+        // Test unencoded absolute link
+        linkChecker.validate(unencodedAbsolute, base);
+        
+        // Test already encoded absolute link
+        linkChecker.validate(alreadyEncodedAbsolute, base);
+        
+        // Test unencoded host relative link
+        linkChecker.validate(unencodedHostRelative, base);
+        
+        // Test already encoded host relative link
+        linkChecker.validate(encodedHostRelative, base);
+    }
+    
+    @Test
     public void testValidateStatusNotFound() {
 
         URL base = URL.parse("http://www.usit.uio.no/index.html");
@@ -107,17 +155,34 @@ public class LinkCheckerTest {
 
     @Test
     public void testIDN() throws java.net.MalformedURLException {
-        java.net.URL url = new java.net.URL("http://www.øl.com/#/BedsteBryggeprocess");
-        assertEquals(new java.net.URL("http://www.xn--l-4ga.com/#/BedsteBryggeprocess"), 
-                LinkChecker.escape(url));
-        url = new java.net.URL("http://plain-ascii.com/foo/bar");
-        assertEquals(url, LinkChecker.escape(url));
+        context.checking(new Expectations() {
+            {
+                oneOf(mockCache).get("http://www.xn--l-4ga.com/#/BedsteBryggeprocess");
+                will(returnValue(null));
+
+                oneOf(mockCache).get("http://plain-ascii.com/foo/bar");
+                will(returnValue(null));
+                
+                exactly(2).of(mockCache).put(with(any(Element.class)));
+            }
+        });
+        
+        linkChecker.validate("http://www.øl.com/#/BedsteBryggeprocess", URL.parse("http://www.uio.no/index.html"));
+        linkChecker.validate("http://plain-ascii.com/foo/bar", URL.parse("http://www.uio.no/index.html"));
     }
     
     @Test
     public void testNonAscii() throws java.net.MalformedURLException {
-        java.net.URL url = new java.net.URL("http://www.example.com/a–b"); // "a" <ndash> "b"
-        assertEquals(new java.net.URL("http://www.example.com/a%E2%80%93b"), LinkChecker.escape(url));
+        context.checking(new Expectations() {
+            {
+                oneOf(mockCache).get("http://www.example.com/a%E2%80%93b");
+                will(returnValue(null));
+                oneOf(mockCache).put(with(any(Element.class)));
+            }
+        });
+
+        linkChecker.validate("http://www.example.com/a–b", // "a" <ndash> "b"
+                             URL.parse("http://www.uio.no/"));
     }
     
     @Test
@@ -145,19 +210,16 @@ public class LinkCheckerTest {
         if (testLink.expectedStatus != Status.MALFORMED_URL) {
             context.checking(new Expectations() {
                 {
-                    oneOf(mockCache).get(href);
+                    oneOf(mockCache).get(with(any(String.class)));
                     will(returnValue(null));
-                }
-            });
-
-            context.checking(new Expectations() {
-                {
-                    oneOf(mockCache).put(new Element(href, expected));
+                    
+                    oneOf(mockCache).put(with(any(Element.class)));
                 }
             });
         }
         LinkCheckResult actual = linkChecker.validate(href, testLink.testBase);
         assertNotNull("Did not return expected link check result for '" + testLink.testHref + "'", actual);
+        assertEquals("Input href not equal to link in result", href, actual.getLink());
         assertEquals("Did not return expected status for '" + testLink.testHref + "'", expected.getStatus(),
                 actual.getStatus());
 

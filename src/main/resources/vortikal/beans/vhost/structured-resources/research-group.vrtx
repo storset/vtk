@@ -5,6 +5,7 @@ resourcetype research-group {
     title : derived (name) eval (name) overrides title,
     introduction : simple_html,
     picture : image_ref,
+    pictureAlt: string,
     caption : simple_html,
     hidePicture : boolean defaultvalue("false"),
     content : html noextract,
@@ -24,7 +25,7 @@ resourcetype research-group {
     participantsUsernames (class[vrtx-autocomplete-username]),
     caption (size[small]),
     numberOfParticipantsToDisplay (dropdown),
-    group introImageAndCaption (picture, caption, hidePicture) (after introduction),
+    group introImageAndCaption (picture, caption, hidePicture, pictureAlt) (after introduction),
     tags tooltip (en : "(Tag1, Tag2, ...)", no : "(Emneord1, Emneord2, ...)", nn : "(Emneord1, Emneord2, ...)"),
     tags (class[vrtx-autocomplete-tag])
   }
@@ -63,6 +64,7 @@ resourcetype research-group {
     introduction-image {
       ##
       [def img-uri resource-prop(".", "picture")]
+      [def pictureAlt resource-prop(".", "pictureAlt")]
       [def caption resource-prop(".", "caption")]
       [def pixel-width null]
       [def img null]
@@ -88,7 +90,7 @@ resourcetype research-group {
           <div class="vrtx-introduction-image">
         [endif]
         
-        <img src="[val img-uri]" alt=""/>
+        <img src="[val img-uri]" alt="[if pictureAlt != null && pictureAlt != ""][val pictureAlt][endif]"/>
      
         [if caption != null]
           <div class="vrtx-imagetext">
@@ -240,6 +242,7 @@ resourcetype research-group {
     name : (en : "Name", no : "Navn", nn : "Navn"),
     introduction : (en : "Introduction",no : "Innledning", nn : "Innleiing"),
     picture : (en: "Image", no: "Bilde", nn : "Bilete"),
+    pictureAlt: (en: "Alternative text", no: "Alternativ tekst", nn : "Alternativ tekst"),
     caption : (en : "Image caption", no : "Bildetekst", nn : "Bilettekst"),
     photo-prefix : (en : "Photo", no : "Foto", nn : "Photo"),
     hidePicture : (en : "Hide image in research group", no : "Skjul bilde i forskergruppe", nn : "Skjul bilete i forskargruppe"),

@@ -457,7 +457,7 @@ VrtxEditor.prototype.newEditor = function newEditor(name, completeEditor, withou
     vrtxEdit.setCKEditorConfig(name, linkBrowseUrl, null, null, defaultLanguage, cssFileList, 150, 400, 40, vrtxEdit.CKEditorToolbars.inlineToolbar,
     isCompleteEditor, false, baseDocumentUrl, isSimpleHTML);
   } else if (vrtxEdit.contains(name, "caption")) {
-    vrtxEdit.setCKEditorConfig(name, linkBrowseUrl, null, null, defaultLanguage, cssFileList, 78, 400, 40, vrtxEdit.CKEditorToolbars.inlineToolbar,
+    vrtxEdit.setCKEditorConfig(name, linkBrowseUrl, null, null, defaultLanguage, cssFileList, 55, 400, 40, vrtxEdit.CKEditorToolbars.inlineToolbar,
     isCompleteEditor, false, baseDocumentUrl, isSimpleHTML);
   } else if (vrtxEdit.contains(name, "frist-frekvens-fri") || // Studies  
              vrtxEdit.contains(name, "metode-fri") ||
@@ -618,13 +618,9 @@ maxHeight, minHeight, toolbar, complete, resizable, baseDocumentUrl, simple) {
   config.autoGrow_minHeight = minHeight + 'px';
 
   config.forcePasteAsPlainText = false;
-
   config.disableObjectResizing = true;
-
   config.disableNativeSpellChecker = false;
-
   config.allowedContent = true;
-  
   config.linkShowTargetTab = false;
 
   config.keystrokes =
@@ -858,14 +854,7 @@ function validTextLengthsInEditorError(elm, isOldEditor) {
 VrtxEditor.prototype.initPreviewImage = function initPreviewImage() {
   var _$ = vrtxAdmin._$;
 
-  /* Hide image previews on init (unobtrusive) */
-  var previewInputFields = _$("input.preview-image-inputfield");
-  for (var i = previewInputFields.length; i--;) {
-    if (previewInputFields[i].value === "") {
-      hideImagePreviewCaption($(previewInputFields[i]), true);
-    }
-  }
-  
+  // Box pictures
   var altTexts = $(".boxPictureAlt, .featuredPictureAlt");
   for (var i = altTexts.length; i--;) {
     var altText = $(altTexts[i]);
@@ -874,9 +863,31 @@ VrtxEditor.prototype.initPreviewImage = function initPreviewImage() {
     imageRef.find(".vrtx-image-ref-preview").append(altText.remove());
   }
   
+  // Introduction pictures
+  var introImageAndCaption = _$(".introImageAndCaption, #vrtx-resource\\.picture");
+  var injectionPoint = introImageAndCaption.find(".picture-and-caption, .vrtx-image-ref");
+  var caption = introImageAndCaption.find(".caption");
+  var hidePicture = introImageAndCaption.find(".hidePicture");
+  var pictureAlt = introImageAndCaption.next(".pictureAlt");
+  if(caption.length)     injectionPoint.append(caption.remove());
+  if(hidePicture.length) injectionPoint.append(hidePicture.remove());
+  if(pictureAlt.length)  injectionPoint.append(pictureAlt.remove());
+  if(!pictureAlt.length)  {
+    pictureAlt = introImageAndCaption.find(".pictureAlt");
+    injectionPoint.append(pictureAlt.remove());
+  }
+  
+  /* Hide image previews on init (unobtrusive) */
+  var previewInputFields = _$("input.preview-image-inputfield");
+  for (i = previewInputFields.length; i--;) {
+    if (previewInputFields[i].value === "") {
+      hideImagePreviewCaption($(previewInputFields[i]), true);
+    }
+  }
+  
   /* Inputfield events for image preview */
   vrtxAdmin.cachedDoc.on("blur", "input.preview-image-inputfield", function (e) {
-    previewImage(this.id);
+    previewImage(this.id, true);
   });
 
   vrtxAdmin.cachedDoc.on("keydown", "input.preview-image-inputfield", _$.debounce(50, true, function (e) { // ENTER-key
@@ -895,20 +906,11 @@ function hideImagePreviewCaption(input, isInit) {
 
   previewImg.fadeOut(fadeSpeed);
 
-  var captionWrp = input.closest(".introImageAndCaption");
-  if (!captionWrp.length) {
-    captionWrp = input.closest(".picture-and-caption");
-    if (captionWrp.length) {
-      captionWrp = captionWrp.parent();
-    }
-  } else {
-    var hidePicture = captionWrp.find(".hidePicture");
-    if (hidePicture.length) {
-      hidePicture.fadeOut(fadeSpeed);
-    }
-  }
+  var captionWrp = input.closest(".introImageAndCaption, #vrtx-resource\\.picture");
   if (captionWrp.length) {
     captionWrp.find(".caption").fadeOut(fadeSpeed);
+    captionWrp.find(".hidePicture").fadeOut(fadeSpeed);
+    captionWrp.find(".pictureAlt").fadeOut(fadeSpeed);
     captionWrp.animate({
       height: "59px"
     }, fadeSpeed);
@@ -916,35 +918,23 @@ function hideImagePreviewCaption(input, isInit) {
 }
 
 function showImagePreviewCaption(input) {
-  var previewImg = $("div#" + input[0].id.replace(/\./g, '\\.') + '\\.preview:hidden');
+  var previewImg = $("div#" + input[0].id.replace(/\./g, '\\.') + '\\.preview');
   if (!previewImg.length) return;
 
   previewImg.fadeIn("fast");
 
-  var captionWrp = input.closest(".introImageAndCaption");
-  var oldHeight = 0;
-  if (!captionWrp.length) {
-    captionWrp = input.closest(".picture-and-caption");
-    if (captionWrp.length) {
-      captionWrp = captionWrp.parent();
-      oldHeight = 241;
-    }
-  } else {
-    oldHeight = 244;
-    var hidePicture = captionWrp.find(".hidePicture");
-    if (hidePicture.length) {
-      hidePicture.fadeIn("fast");
-    }
-  }
+  var captionWrp = input.closest(".introImageAndCaption, #vrtx-resource\\.picture");
   if (captionWrp.length) {
     captionWrp.find(".caption").fadeIn("fast");
+    captionWrp.find(".hidePicture").fadeIn("fast");
+    captionWrp.find(".pictureAlt").fadeIn("fast");
     captionWrp.animate({
-      height: oldHeight + "px"
+      height: "225px"
     }, "fast");
   }
 }
 
-function previewImage(urlobj) {
+function previewImage(urlobj, isBlurEvent) {
   if (typeof urlobj === "undefined") return;
 
   urlobj = urlobj.replace(/\./g, '\\.');
@@ -961,7 +951,7 @@ function previewImage(urlobj) {
           previewNode.find("img").attr("alt", "thumbnail");
         }
         showImagePreviewCaption(elm);
-        elm.focus();
+        if(typeof isBlurEvent === "undefined") elm.focus();
       } else {
         hideImagePreviewCaption(elm, false);
       } 

@@ -35,7 +35,7 @@ package org.vortikal.repository.store;
  * Basic impl of <code>PrincipalMetadata</code>.
  * 
  */
-public class PrincipalMetadataImpl extends MetadataImpl implements PrincipalMetadata {
+public class PrincipalMetadataImpl extends MetadataImpl {
 
     public static final String DESCRIPTION_ATTRIBUTE = "description";
     public static final String UID_ATTRIBUTE = "uid";

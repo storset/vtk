@@ -85,9 +85,6 @@
     
     <div class="vrtx-event-component-main">
       <#if conf.showPicture && introImg?has_content>
-        <#local captionFlattened>
-          <@vrtx.flattenHtml value=caption escape=true />
-        </#local>
         <div class="vrtx-event-component-picture">
           <#local introImgURI = vrtx.propValue(event, 'picture') />
           <#if introImgURI?exists>
@@ -95,8 +92,9 @@
           <#else>
             <#local thumbnail = "" />
           </#if>
+          <#local pictureAlt = vrtx.propValue(event, 'pictureAlt') />
           <a class="vrtx-image" href="${uri?html}">
-            <img src="${thumbnail?html}" alt="" />
+            <img src="${thumbnail?html}" alt="<#if pictureAlt?has_content>${pictureAlt?html}</#if>" />
           </a>
         </div>
      </#if>
@@ -174,8 +172,9 @@
       <#else>
         <#local thumbnail = "" />
       </#if>
+        <#local pictureAlt = vrtx.propValue(event, 'pictureAlt') />
         <a class="vrtx-image" href="${eventEntry.url?html}">
-          <img src="${thumbnail?html}" alt="" />
+          <img src="${thumbnail?html}" alt="<#if pictureAlt?has_content>${pictureAlt?html}</#if>" />
         </a>
       </div>
     </#if>

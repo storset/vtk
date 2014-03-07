@@ -16,6 +16,7 @@ resourcetype organizational-unit {
     title : derived (name) eval (name)
       overrides title default name,
     picture : image_ref,
+    pictureAlt: string,
     introduction : simple_html,
     responsibilities : html noextract,
     selectedEmployees : string multiple,
@@ -165,6 +166,7 @@ resourcetype organizational-unit {
     introduction-image {
       ##
       [def img-uri resource-prop(".", "picture")]
+      [def pictureAlt resource-prop(".", "pictureAlt")]
       [def caption resource-prop(".", "caption")]
       [def pixel-width null]
       [def img null]
@@ -187,7 +189,7 @@ resourcetype organizational-unit {
         [else]
           <div class="vrtx-introduction-image">
         [endif]
-          <img src="[val img-uri]" alt="" />
+          <img src="[val img-uri]" alt="[if pictureAlt != null && pictureAlt != ""][val pictureAlt][endif]" />
         </div>
       [endif]
       ##
@@ -348,6 +350,7 @@ resourcetype organizational-unit {
     fax : (en : "Fax", no : "Faks", nn : "Faks"),
     email : (en : "Email", no : "E-post", nn : "E-post"),
     picture : (en: "Picture of unit", no: "Bilde av enheten", nn : "Bilde av enheten"),
+    pictureAlt: (en: "Alternative text", no: "Alternativ tekst", nn : "Alternativ tekst"),
     introduction : (en: "Introduction", no: "Innledning", nn : "Innleiing"),
     responsibilities : (en : "Responsibilities", no : "Ansvarsområder", nn : "Ansvarsområder"),
     employees : (en : "Staff", no : "Ansatte", nn : "Ansatte"),

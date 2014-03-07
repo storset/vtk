@@ -17,11 +17,6 @@
 <#assign introductionImage = vrtx.propValue(resource, "picture") />
 <#assign caption = vrtx.propValue(resource, "caption") />
   
-<#-- Flattened caption for alt-tag in image -->
-<#assign captionFlattened>
-    <@vrtx.flattenHtml value=caption escape=true />
-</#assign>
-  
 <#if introductionImage != "">
   <#if imageRes == "">
     <img class="vrtx-introduction-image" src="${introductionImage}" alt="" />

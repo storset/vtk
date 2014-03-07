@@ -4,6 +4,7 @@ resourcetype structured-document {
     title : string overrides title,
     introduction : simple_html,
     picture : image_ref,
+    pictureAlt: string,
     caption : simple_html,
     hidePicture : boolean defaultvalue("false"),
     content : html noextract,
@@ -25,6 +26,7 @@ resourcetype structured-document {
     introduction-image {
       ##
       [def img-uri resource-prop(".", "picture")]
+      [def pictureAlt resource-prop(".", "pictureAlt")]
       [def caption resource-prop(".", "caption")]
       [def pixel-width null]
       [def img null]
@@ -50,7 +52,7 @@ resourcetype structured-document {
           <div class="vrtx-introduction-image">
         [endif]
         
-         <img src="[val img-uri]" alt="" />
+         <img src="[val img-uri]" alt="[if pictureAlt != null && pictureAlt != ""][val pictureAlt][endif]" />
 
          [if caption != null]
            <div class="vrtx-imagetext">
@@ -142,6 +144,7 @@ resourcetype structured-document {
     title : (en : "Title", no : "Tittel", nn : "Tittel"),
     introduction : (en : "Introduction", no : "Innledning", nn : "Innleiing"),
     picture : (en: "Image", no: "Bilde", nn : "Bilete"),
+    pictureAlt: (en: "Alternative text", no: "Alternativ tekst", nn : "Alternativ tekst"),
     hidePicture : (en : "Hide image in document", no : "Skjul bilde i dokument", nn : "Skjul bilete i dokument"),
     photo-prefix : (en : "Photo", no : "Foto", nn : "Photo"),
     caption : (en : "Image caption", no : "Bildetekst", nn : "Bilettekst"),

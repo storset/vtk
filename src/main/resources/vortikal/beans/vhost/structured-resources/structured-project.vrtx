@@ -6,6 +6,7 @@ resourcetype structured-project {
     status-ongoing : boolean,
     introduction : simple_html,
     picture : image_ref,
+    pictureAlt: string,
     caption : simple_html,
     hidePicture : boolean defaultvalue("false"),
     content : html noextract,
@@ -25,7 +26,7 @@ resourcetype structured-project {
     participantsUsernames (class[vrtx-autocomplete-username]),
     caption (size[small]),
     numberOfParticipantsToDisplay (dropdown),
-    group introImageAndCaption (picture, caption, hidePicture) (after introduction),
+    group introImageAndCaption (picture, caption, hidePicture, pictureAlt) (after introduction),
     tags tooltip (en : "(Tag1, Tag2, ...)", no : "(Emneord1, Emneord2, ...)", nn : "(Emneord1, Emneord2, ...)"),
     tags (class[vrtx-autocomplete-tag])
   }
@@ -75,6 +76,7 @@ resourcetype structured-project {
     introduction-image {
       ##
       [def img-uri resource-prop(".", "picture")]
+      [def pictureAlt resource-prop(".", "pictureAlt")]
       [def caption resource-prop(".", "caption")]
       [def pixel-width null]
       [def img null]
@@ -100,7 +102,7 @@ resourcetype structured-project {
           <div class="vrtx-introduction-image">
         [endif]
         
-        <img src="[val img-uri]" alt="" />
+        <img src="[val img-uri]" alt="[if pictureAlt != null && pictureAlt != ""][val pictureAlt][endif]" />
 
         [if caption != null]
           <div class="vrtx-imagetext">

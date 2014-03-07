@@ -186,7 +186,9 @@
     <div class="vrtx-resource" id="vrtx-result-${i}">
       <#if introImageProp != "">
       <a href="${resourceEntry.url?html}" class="vrtx-image">
-        <#assign src = vrtx.propValue(resource, 'picture', 'thumbnail') /><img src="${src?html}" />
+        <#assign src = vrtx.propValue(resource, 'picture', 'thumbnail') />
+        <#assign alt = vrtx.propValue(resource, 'pictureAlt') />
+        <img src="${src?html}" alt="${alt?html}" />
       </a>
       </#if>
       <div class="vrtx-title">

@@ -33,11 +33,7 @@
   <#if (resourceEntries?size > 0)>
      <script type="text/javascript"><!--
        $(window).load(function() {
-         if($("#right-main").length) {
-           var cut = ".last-four";
-         } else {
-           var cut = ".last-five";
-         }
+         var cut = $("#right-main").length ? ".last-four" : ".last-five";
 	     $('ul.vrtx-image-listing').find(".vrtx-image-entry:not(" + cut + ")")
 	       .css("marginRight", "18px !important;").end()
 	       .masonry({singleMode: false});

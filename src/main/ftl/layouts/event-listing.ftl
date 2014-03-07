@@ -162,9 +162,6 @@
     <#local caption = vrtx.propValue(event, 'caption')  />
     
     <#if conf.showPicture && introImg?has_content>
-      <#local captionFlattened>
-        <@vrtx.flattenHtml value=caption escape=true />
-      </#local>
       <div class="vrtx-event-component-picture">
       <#local introImgURI = vrtx.propValue(event, 'picture') />
       <#if introImgURI?exists>

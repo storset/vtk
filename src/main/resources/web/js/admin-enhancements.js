@@ -1610,7 +1610,7 @@ function createChangeTemplate(hasTitle) {
   if (checked.length) {
     var templateFile = checked.val();
     if (templateFile.indexOf(".") !== -1) {
-      var fileType = $("#vrtx-div-file-type input[type='text']");
+      var fileType = $("#vrtx-textfield-file-type");
       if (fileType.length) {
         fileTypeEnding = templateFile.split(".")[1];
         fileType.text("." + fileTypeEnding);
@@ -1653,9 +1653,9 @@ function createChangeTemplate(hasTitle) {
 function createCheckUncheckIndexFile(nameField, indexCheckbox) {
   if (indexCheckbox.is(":checked")) {
     vrtxAdmin.createDocumentFileName = nameField.val();
-    nameField.val('index');
     growField(nameField, 'index', 5, 35, 530);
-
+    nameField.val("index");
+    
     nameField[0].disabled = true;
     $("#vrtx-textfield-file-type").addClass("disabled");
   } else {
@@ -2130,8 +2130,8 @@ VrtxAdmin.prototype.collectionListingInteraction = function collectionListingInt
 
   if (!vrtxAdm.cachedDirectoryListing.length) return;
 
-  vrtxAdmin.cachedAppContent.on("click", "#vrtx-checkbox-is-index", function (e) {
-    createCheckUncheckIndexFile($("#vrtx-textfield-file-name"), $(this));
+  vrtxAdmin.cachedAppContent.on("click", "#vrtx-checkbox-is-index #isIndex", function (e) {
+    createCheckUncheckIndexFile($("#vrtx-div-file-name input[type='text']"), $(this));
     e.stopPropagation();
   });
   vrtxAdmin.cachedAppContent.on("click", ".radio-buttons input", function (e) {

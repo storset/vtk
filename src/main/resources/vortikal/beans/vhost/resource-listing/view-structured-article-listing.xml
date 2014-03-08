@@ -22,6 +22,7 @@
         <value>title</value>
         <value>publish-date</value>
         <value>resource:picture</value>
+        <value>resource:pictureAlt</value>
         <value>resource:caption</value>
         <value>resource:introduction</value>
         <value>resource:hasBodyContent</value>

@@ -18,7 +18,7 @@ var VrtxStickyBar = dejavu.Class.declare({
     var wrapperId = opts.wrapperId;
     var stickyClass = opts.stickyClass;
     var contents = $(opts.contentsId);
-    var main = $(opts.outerContentsId);
+    var main = opts.outerContentsId ? $(opts.outerContentsId) : contents;
     var extraWidth = opts.extraWidth || 0;
     var stickFn = opts.stick || null;
     var unstickFn = opts.unstick || null;
@@ -49,12 +49,16 @@ var VrtxStickyBar = dejavu.Class.declare({
         }
       };
       
+      if(opts.alwaysFixed) {
+        contents.css("paddingTop", wrapper.outerHeight(true) + "px");
+      }
+      
       // Scroll and resize
       thisWindow.on("scroll", function () {
         if (shouldStick()) {
           if (!wrapper.hasClass(stickyClass)) {
             wrapper.addClass(stickyClass);
-            contents.css("paddingTop", wrapper.outerHeight(true) + "px");
+            if(!opts.alwaysFixed) contents.css("paddingTop", wrapper.outerHeight(true) + "px");
             if(stickFn != null) {
               stickFn();
             }
@@ -64,7 +68,7 @@ var VrtxStickyBar = dejavu.Class.declare({
           if (wrapper.hasClass(stickyClass)) {
             wrapper.removeClass(stickyClass);
             wrapper.css("width", "auto");
-            contents.css("paddingTop", "0px");
+            if(!opts.alwaysFixed) contents.css("paddingTop", "0px");
             if(unstickFn != null) {
               unstickFn();
             }

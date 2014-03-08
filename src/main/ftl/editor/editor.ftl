@@ -134,8 +134,8 @@
       // Manually approve i18n
       var approveGeneratingPage = "<@vrtx.msg code='editor.manually-approve.generating-page' />",
           approveRetrievingData = "<@vrtx.msg code='editor.manually-approve.retrieving-data' />",
-          approvePrev = "<@vrtx.msg code='imageListing.previous' />",
-          approveNext = "<@vrtx.msg code='imageListing.next' />",
+          approvePrev = "<@vrtx.msg code='previous' />",
+          approveNext = "<@vrtx.msg code='next' />",
           approveShowing = "<@vrtx.msg code='editor.manually-approve.table-showing' />",
           approveOf = "<@vrtx.msg code='person-listing.of' />",
           approveTableTitle = "<@vrtx.msg code='proptype.name.title' />",

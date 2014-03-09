@@ -1156,22 +1156,34 @@ public class URL implements Serializable {
     }
 
     /**
-     * Verify whether a given string is URL encoded or not
+     * Test if all of the following character classes are percent-encoded in
+     * the input string:
+     * <ul>
+     *   <li>8 bit octets (likely part of UTF-8 sequences)</li>
+     *   <li>Unprintable 7 bit octets</li>
+     *   <li>Whitespace 7 bit octets</li>
+     * </ul>
+     * <p>Any occurence the '%' char must be followed by two hexidecimal digits for the
+     * string to be considered properly encoded. 
      * 
-     * @param value
-     *            given characters
-     * @return true if the given character array is 7 bit ASCII-compatible.
+     * <p>The method does not test for unencoded printable ASCII chars which may be
+     * unsafe or reserved in parts of a URL. The string is only analyzed at character level.
+     * 
+     * @param value the input string to test
+     * @return true if all chars are either 7 bit printable ASCII and not white space, or
+     * properly percent-encoded triplets.
      */
     public static boolean isEncoded(String value) {
-        char[] original = value.toCharArray();
-        for (int i = 0; i < original.length; i++) {
-            int c = original[i];
-            if (c > 128) {
-                return false;
-            } else if (c == ' ') {
+        char[] chars = value.toCharArray();
+        for (int i = 0; i < chars.length; i++) {
+            int c = chars[i];
+            if (c >= 0x7f || c <= 0x20) {
                 return false;
             } else if (c == '%') {
-                if (Character.digit(original[++i], 16) == -1 || Character.digit(original[++i], 16) == -1) {
+                if (i >= chars.length - 2) {
+                    return false;
+                }
+                if (Character.digit(chars[++i], 16) == -1 || Character.digit(chars[++i], 16) == -1) {
                     return false;
                 }
             }

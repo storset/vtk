@@ -3,7 +3,7 @@
 <#--
   - File: layouts/media-player.ftl
   - 
-  - Description: Media player macro
+  - Description: Media player macro.
   -
   -->
 
@@ -13,7 +13,7 @@
 <#macro mediaPlayer dateStr>
   <#if media?exists>
     <#if streamType?exists>
-  
+
       <@mpLib.genPlaceholder "${media?html}" dateStr />
       <@mpLib.initFlash '${media?url("UTF-8")}' dateStr true />
 
@@ -55,7 +55,7 @@
 
       <#elseif contentType == "video/x-flv"
             || contentType == "video/mp4">
-    
+
 	    <@mpLib.genPlaceholder "${media?html}" dateStr false true />
 	    <@mpLib.initFlash '${media?url("UTF-8")}' dateStr />
 	  
@@ -64,12 +64,12 @@
 	    </#if>
 	  
       <#else>
-    
+
         <@mpLib.genDownloadLink "${media?html}" "media" true />
       
       </#if>
     </#if>
-  </#if>
+  </#if><#-- if media?exists -->
 </#macro>
 
 <#-- When this layout template is invoked as "page" for components: -->

@@ -45,6 +45,15 @@ import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
+/**
+ * XXX This class needs complete documentation on model attributes for the two
+ * main "provider" methods.
+ * 
+ * <p>Class adds model data required for displaying media files
+ * in web pages using an embedded player/placeholder and download link. Used
+ * both by component for insertion at arbitrary locations in HTML documents or
+ * the web page view of Vortex media resources.
+ */
 public class MediaPlayer {
 
     private Service viewService;
@@ -52,23 +61,48 @@ public class MediaPlayer {
     private PropertyTypeDefinition posterImagePropDef;
     private PropertyTypeDefinition thumbnailPropDef;
 
-    public void addMediaPlayer(Map<String, Object> model, String resourceRef, String height, String width,
+    /**
+     * Provided model data:
+     * <ul>
+     *   <li><code>mediaResource</code> - if media reference points to a local
+     * resource, then the {@link Resource} will be provided under this key if it
+     * could be retrieved from the repository.</li>
+     *   <li><code>media</code> - a {@link URL} instance pointing to the media.
+     *   <li>TODO complete me</li>
+     * </ul>
+     * 
+     * @param model model to add data to
+     * @param mediaRef the media resource URI as a string
+     * @param height height of inserted video
+     * @param width width of inserted video
+     * @param autoplay whether to setup player to start automatically or not.
+     * @param contentType 
+     * @param streamType
+     * @param poster
+     * @param showDL
+     * @throws AuthorizationException 
+     */
+    public void addMediaPlayer(Map<String, Object> model, String mediaRef, String height, String width,
             String autoplay, String contentType, String streamType, String poster, String showDL)
             throws AuthorizationException {
 
-        if (URL.isEncoded(resourceRef)) {
-            resourceRef = URL.decode(resourceRef);
+        if (URL.isEncoded(mediaRef)) {
+            mediaRef = URL.decode(mediaRef);
         }
 
         Resource mediaResource = null;
         try {
-            mediaResource = getLocalResource(resourceRef);
+            mediaResource = getLocalResource(mediaRef);
         } catch (AuthorizationException e) {
             return; // not able to read local resource - abort
         } catch (AuthenticationException e) {
             return; // not able to read local resource - abort
         } catch (Exception e) {
             // ignore
+        }
+        
+        if (mediaResource != null) {
+            model.put("mediaResource", mediaResource);
         }
 
         if ((height != null && !"".equals(height)) && (width != null && !"".equals(width))) {
@@ -87,30 +121,41 @@ public class MediaPlayer {
         if (poster != null && !poster.isEmpty())
             model.put("poster", poster);
         else
-            addPoster(mediaResource, model);
+            addPosterUrl(mediaResource, model);
 
         if (contentType != null && !contentType.isEmpty()) {
             model.put("contentType", contentType);
         } else if (mediaResource != null) {
             model.put("contentType", mediaResource.getContentType());
         } else {
-            model.put("contentType", MimeHelper.map(resourceRef));
+            model.put("contentType", MimeHelper.map(mediaRef));
         }
-        model.put("extension", MimeHelper.findExtension(resourceRef));
+        model.put("extension", MimeHelper.findExtension(mediaRef));
         model.put("nanoTime", System.nanoTime());
 
-        createLocalUrlToMediaFile(resourceRef, model);
+        addMediaUrl(mediaRef, model);
     }
 
-    public void addMediaPlayer(Map<String, Object> model, String resourceRef) throws AuthorizationException {
+    /**
+     * Provided model data:
+     * <ul>
+     *   <li><code>mediaResource</code> - if media reference points to a local
+     * resource, then the {@link Resource} will be provided under this key if it
+     * could successfully be retrieved from the repository.</li>
+     *   <li><code>media</code> - a {@link URL} instance pointing to the media.
+     *   <li>TODO complete me</li>
+     * </ul>
+     * 
+     **/ 
+    public void addMediaPlayer(Map<String, Object> model, String mediaRef) throws AuthorizationException {
 
-        if (URL.isEncoded(resourceRef)) {
-            resourceRef = URL.decode(resourceRef);
+        if (URL.isEncoded(mediaRef)) {
+            mediaRef = URL.decode(mediaRef);
         }
 
         Resource mediaResource = null;
         try {
-            mediaResource = getLocalResource(resourceRef);
+            mediaResource = getLocalResource(mediaRef);
         } catch (AuthorizationException e) {
             return; // not able to read local resource - abort
         } catch (AuthenticationException e) {
@@ -119,20 +164,25 @@ public class MediaPlayer {
             // ignore
         }
 
-        addPoster(mediaResource, model);
-        model.put("extension", MimeHelper.findExtension(resourceRef));
+        if (mediaResource != null) {
+            model.put("mediaResource", mediaResource);
+        }
+
+        addPosterUrl(mediaResource, model);
+        model.put("extension", MimeHelper.findExtension(mediaRef));
 
         if (mediaResource != null) {
             model.put("contentType", mediaResource.getContentType());
         } else {
-            model.put("contentType", MimeHelper.map(resourceRef));
+            model.put("contentType", MimeHelper.map(mediaRef));
         }
 
         model.put("nanoTime", System.nanoTime());
-        createLocalUrlToMediaFile(resourceRef, model);
+        
+        addMediaUrl(mediaRef, model);
     }
 
-    public Resource getLocalResource(String resourceRef) throws Exception {
+    private Resource getLocalResource(String resourceRef) throws Exception {
         if (resourceRef != null && resourceRef.startsWith("/")) {
             RequestContext requestContext = RequestContext.getRequestContext();
             Repository repository = requestContext.getRepository();
@@ -143,7 +193,10 @@ public class MediaPlayer {
         return null;
     }
 
-    public void createLocalUrlToMediaFile(String resourceReferance, Map<String, Object> model) {
+    // Adds media URL to model. Local resources are resolved to absolute
+    // URLs and external URLs are parsed for validity. In case of invalid
+    // URL, nothing is added to model.
+    private void addMediaUrl(String resourceReferance, Map<String, Object> model) {
         URL url = createUrl(resourceReferance);
         if (RequestContext.getRequestContext().isPreviewUnpublished()) {
             url.setParameter("vrtxPreviewUnpublished", "true");
@@ -153,7 +206,7 @@ public class MediaPlayer {
         }
     }
 
-    public void addPoster(Resource mediaFile, Map<String, Object> model) {
+    private void addPosterUrl(Resource mediaFile, Map<String, Object> model) {
         if (mediaFile == null)
             return;
         URL poster = null;
@@ -170,17 +223,16 @@ public class MediaPlayer {
         }
     }
 
-    public URL createUrl(String resourceReferance) {
+    private URL createUrl(String mediaRef) {
 
-        if (URL.isEncoded(resourceReferance)) {
-            resourceReferance = URL.decode(resourceReferance);
+        if (URL.isEncoded(mediaRef)) {
+            mediaRef = URL.decode(mediaRef);
         }
 
-        if (resourceReferance != null && resourceReferance.startsWith("/")) {
+        if (mediaRef != null && mediaRef.startsWith("/")) {
             URL localURL = null;
             try {
-                Path uri = null;
-                uri = Path.fromString(resourceReferance);
+                Path uri = Path.fromString(mediaRef);
                 localURL = this.viewService.constructURL(uri);
             } catch (Exception e) {
                 // ignore
@@ -192,7 +244,7 @@ public class MediaPlayer {
         } else {
             URL externalURL = null;
             try {
-                externalURL = URL.parse(resourceReferance);
+                externalURL = URL.parse(mediaRef);
             } catch (Exception e) {
                 // ignore
             }

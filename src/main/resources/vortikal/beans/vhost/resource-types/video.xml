@@ -99,11 +99,6 @@
         <entry key="strobe" value="${flash.baseURL}/SMP_2.0.2494-patched/10.2/StrobeMediaPlayback.swf" />
       </map>
     </property>
-    <property name="referenceDataProviders">
-      <list>
-        <ref bean="resourceContextProvider" />
-      </list>
-    </property>
     <property name="attributesMap">
       <map>
         <entry key="jsURLs">

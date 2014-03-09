@@ -32,12 +32,16 @@ package org.vortikal.web.decorating.components;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import org.springframework.beans.factory.annotation.Required;
 
 import org.vortikal.web.decorating.DecoratorRequest;
 import org.vortikal.web.decorating.DecoratorResponse;
+import org.vortikal.web.display.media.MediaPlayer;
 
-public class IncludeMediaPlayerComponent extends ResourceMediaPlayerComponent {
+public class IncludeMediaPlayerComponent extends ViewRenderingDecoratorComponent {
 
+    private MediaPlayer mediaPlayer;
+    
     private final static String PARAMETER_URL = "url";
     private final static String PARAMETER_URL_DESCRIPTION = "Media file url or uri";
     private final static String PARAMETER_HEIGHT = "height";
@@ -55,9 +59,10 @@ public class IncludeMediaPlayerComponent extends ResourceMediaPlayerComponent {
     private final static String PARAMETER_SHOW_DOWNLOAD_LINK = "show-download-link";
     private final static String PARAMETER_SHOW_DOWNLOAD_LINK_DESC = "Shows download link if set to 'true'. Default is 'false'";
 
+    @Override
     protected void processModel(Map<String, Object> model, DecoratorRequest request, DecoratorResponse response)
             throws Exception {
-
+        
         String url = request.getStringParameter(PARAMETER_URL);
         String height = request.getStringParameter(PARAMETER_HEIGHT);
         String width = request.getStringParameter(PARAMETER_WIDTH);
@@ -68,8 +73,11 @@ public class IncludeMediaPlayerComponent extends ResourceMediaPlayerComponent {
         String showDL = request.getStringParameter(PARAMETER_SHOW_DOWNLOAD_LINK);
 
         mediaPlayer.addMediaPlayer(model, url, height, width, autoplay, contentType, streamType, poster, showDL);
+
+        super.processModel(model, request, response);
     }
 
+    @Override
     protected Map<String, String> getParameterDescriptionsInternal() {
         Map<String, String> map = new LinkedHashMap<String, String>();
         map.put(PARAMETER_URL, PARAMETER_URL_DESCRIPTION);
@@ -81,5 +89,10 @@ public class IncludeMediaPlayerComponent extends ResourceMediaPlayerComponent {
         map.put(PARAMETER_POSTER, PARAMETER_POSTER_DESC);
         map.put(PARAMETER_SHOW_DOWNLOAD_LINK, PARAMETER_SHOW_DOWNLOAD_LINK_DESC);
         return map;
+    }
+
+    @Required
+    public void setMediaPlayer(MediaPlayer mediaPlayer) {
+        this.mediaPlayer = mediaPlayer;
     }
 }

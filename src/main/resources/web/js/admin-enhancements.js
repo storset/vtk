@@ -154,6 +154,9 @@ var VrtxAnimation = function(opts) {
       }
     });
   }
+  obj.call = function(args) {
+    console.log(args);
+  };
   /* TODO: Is it possible to handle unknown function names/properties (so can avoid partly interface duplication)?
            Seems like using overridden .call(fn[, arg]) instead of fn() is the only way..
            http://stackoverflow.com/questions/2666602/is-there-a-way-to-catch-an-attempt-to-access-a-non-existant-property-or-method */
@@ -193,7 +196,7 @@ vrtxAdmin._$(document).ready(function () {
   vrtxAdm.clientLastModified = $("#resource-last-modified").text().split(",");
   
   vrtxAdm.initDropdowns();
-  vrtxAdm.miscAdjustments();
+  vrtxAdm.initMiscAdjustments();
   vrtxAdm.initTooltips();
   vrtxAdm.initResourceMenus();
   vrtxAdm.initGlobalDialogs();
@@ -1298,7 +1301,7 @@ VrtxAdmin.prototype.scrollBreadcrumbsHorizontal = function scrollBreadcrumbsHori
  *
  */
  
-VrtxAdmin.prototype.miscAdjustments = function miscAdjustments() {
+VrtxAdmin.prototype.initMiscAdjustments = function initMiscAdjustments() {
   var vrtxAdm = this;
 
    // Remove active tab if it has no children

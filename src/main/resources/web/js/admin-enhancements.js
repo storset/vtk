@@ -135,6 +135,31 @@ function VrtxAdmin() {
 
 var vrtxAdmin = new VrtxAdmin();
 
+var VrtxTree = function(opts) {
+  var that = this;
+  if(typeof VrtxTreeInterface === "undefined") {
+    $.when(vrtxAdmin.requiredScriptsLoaded).done(function() {
+      console.log("a");
+      that = new VrtxTree(opts);
+    });
+  }
+};
+var VrtxAnimation = function(opts) {
+  var that = this;
+  if(typeof VrtxAnimationInterface === "undefined") {
+    $.when(vrtxAdmin.requiredScriptsLoaded).done(function() {
+      console.log("b");
+      that = new VrtxAnimation(opts);
+    });
+  }
+  that.update = function(opts) {},
+  that.updateElem = function(elem) {},
+  that.rightIn = function() {},
+  that.leftOut = function() {},
+  that.topDown = function() {},
+  that.bottomUp = function() {}
+};
+
 /*-------------------------------------------------------------------*\
     2. DOM is ready
        readyState === "complete" || "DOMContentLoaded"-event (++)

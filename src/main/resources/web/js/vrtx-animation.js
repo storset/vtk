@@ -4,6 +4,9 @@
  *  API: http://api.jqueryui.com/accordion/
  *  
  *  * Requires Dejavu OOP library
+ *
+ *  TODO: Support CSS3 animations (progressively)
+ *
  */
  
 var VrtxAnimationInterface = dejavu.Interface.declare({

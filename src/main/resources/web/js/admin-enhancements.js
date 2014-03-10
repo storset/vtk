@@ -135,11 +135,11 @@ function VrtxAdmin() {
 
 var vrtxAdmin = new VrtxAdmin();
 
+// Required components at init (resolved by script-retrieval)
 var VrtxTree = function(opts) {
   var that = this;
   if(typeof VrtxTreeInterface === "undefined") {
     $.when(vrtxAdmin.requiredScriptsLoaded).done(function() {
-      console.log("a");
       that = new VrtxTree(opts);
     });
   }
@@ -148,7 +148,6 @@ var VrtxAnimation = function(opts) {
   var that = this;
   if(typeof VrtxAnimationInterface === "undefined") {
     $.when(vrtxAdmin.requiredScriptsLoaded).done(function() {
-      console.log("b");
       that = new VrtxAnimation(opts);
     });
   }

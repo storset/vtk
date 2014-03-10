@@ -1103,7 +1103,7 @@ VrtxAdmin.prototype.dropdown = function dropdown(options) {
     var shortcutMenu = listParent.find(".dropdown-shortcut-menu-container");
     shortcutMenu.find("li" + startDropdown).remove();
     
-    setTimeout(function() { // Adjust positioning
+    setTimeout(function() { // Adjust positioning of dropdown container
       if (options.calcTop) {
         shortcutMenu.css("top", (list.position().top + list.height() - (parseInt(list.css("marginTop"), 10) * -1) + 2) + "px");
       } 

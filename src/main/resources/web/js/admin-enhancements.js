@@ -146,12 +146,6 @@ vrtxAdmin._$(document).ready(function () {
     _$ = vrtxAdm._$;
 
   vrtxAdm.cacheDOMNodesForReuse();
-  
-  // Load required init components (animations and trees)
-  vrtxAdm.requiredScriptsLoaded = $.Deferred();
-  vrtxAdm.loadScripts(["/vrtx/__vrtx/static-resources/js/vrtx-animation.js", 
-                       "/vrtx/__vrtx/static-resources/js/vrtx-tree.js"],
-                       vrtxAdm.requiredScriptsLoaded);
 
   var bodyId = vrtxAdm.cachedBody.attr("id");
   bodyId = (typeof bodyId !== "undefined") ? bodyId : "";
@@ -161,6 +155,12 @@ vrtxAdmin._$(document).ready(function () {
     vrtxAdm.cachedBody.addClass("ie8");
   }
   if (vrtxAdm.runReadyLoad === false) return; // XXX: return if should not run all of ready() code
+
+  // Load required init components (animations and trees)
+  vrtxAdm.requiredScriptsLoaded = $.Deferred();
+  vrtxAdm.loadScripts(["/vrtx/__vrtx/static-resources/js/vrtx-animation.js", 
+                       "/vrtx/__vrtx/static-resources/js/vrtx-tree.js"],
+                       vrtxAdm.requiredScriptsLoaded);
 
   vrtxAdm.clientLastModified = $("#resource-last-modified").text().split(",");
   

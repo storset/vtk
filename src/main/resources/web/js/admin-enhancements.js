@@ -193,6 +193,7 @@ vrtxAdmin._$(document).ready(function () {
                        "/vrtx/__vrtx/static-resources/js/vrtx-tree.js"],
                        vrtxAdm.requiredScriptsLoaded);
   // }, 4000);
+  
   vrtxAdm.clientLastModified = $("#resource-last-modified").text().split(",");
   
   vrtxAdm.initDropdowns();

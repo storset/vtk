@@ -924,14 +924,14 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
         }
       }
 
-      var SUBMIT_TAKE_OWNERSHIP = false;
+      var takenOwnership = false;
       vrtxAdm.cachedDoc.on("submit", "#vrtx-admin-ownership-form", function (e) {
-        if (!SUBMIT_TAKE_OWNERSHIP) {
+        if (!takenOwnership) {
           var d = new VrtxConfirmDialog({
             msg: confirmTakeOwnershipMsg,
             title: confirmTakeOwnershipTitle,
             onOk: function () {
-              SUBMIT_TAKE_OWNERSHIP = true;
+              takenOwnership = true;
               _$("#vrtx-admin-ownership-form").submit();
             }
           });

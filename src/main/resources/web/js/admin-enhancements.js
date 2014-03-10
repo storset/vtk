@@ -165,9 +165,6 @@ var VrtxAnimation = function(opts) {
       }
     });
   }
-  obj.call = function(args) {
-    console.log(args);
-  };
   /* TODO: Is it possible to handle unknown function names/properties (so can avoid partly interface duplication)?
            Seems like using overridden .call(fn[, arg]) instead of fn() is the only way..
            http://stackoverflow.com/questions/2666602/is-there-a-way-to-catch-an-attempt-to-access-a-non-existant-property-or-method */

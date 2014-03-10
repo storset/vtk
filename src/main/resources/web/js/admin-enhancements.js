@@ -148,21 +148,8 @@ vrtxAdmin._$(document).ready(function () {
   vrtxAdm.cacheDOMNodesForReuse();
   
   vrtxAdm.requiredScriptsLoaded = $.Deferred();
-  var futureScripts = [];
-  var futureScriptAnimations = $.Deferred();
-  var futureScriptTree = $.Deferred();
-  futureScripts.push(futureScriptAnimations);
-  futureScripts.push(futureScriptTree);
-  vrtxAdm.loadScript("/vrtx/__vrtx/static-resources/js/vrtx-animation.js", function() {
-    futureScriptAnimations.resolve();
-  });
-  
-  vrtxAdm.loadScript("/vrtx/__vrtx/static-resources/js/vrtx-tree.js", function() {
-    futureScriptTree.resolve();        
-  });
-  _$.when.apply(_$, futureScripts).done(function () {
-    vrtxAdm.requiredScriptsLoaded.resolve();
-  });
+  vrtxAdm.loadScripts(["/vrtx/__vrtx/static-resources/js/vrtx-animation.js", 
+                       "/vrtx/__vrtx/static-resources/js/vrtx-tree.js"], vrtxAdm.requiredScriptsLoaded);
 
   var bodyId = vrtxAdm.cachedBody.attr("id");
   bodyId = (typeof bodyId !== "undefined") ? bodyId : "";
@@ -3869,6 +3856,23 @@ VrtxAdmin.prototype.outerHTML = function outerHTML(selector, subselector) {
 };
 
 /**
+ * Load multiple scripts Async / lazy-loading
+ *
+ * @this {VrtxAdmin}
+ * @param {string} url The url to the script
+ * @param {function} deferred Future that will be resolved when all scripts are loaded
+ */
+VrtxAdmin.prototype.loadScripts = function loadScript(urls, deferred) {
+  var futureScripts = [];
+  for(var i = 0, len = urls.length; i < len; i++) {
+    futureScripts.push(this.loadScript(urls[i]));
+  }
+  $.when.apply($, futureScripts).done(function () {
+    deferred.resolve();
+  });
+};
+
+/**
  * Load script Async / lazy-loading
  *
  * @this {VrtxAdmin}
@@ -3876,7 +3880,7 @@ VrtxAdmin.prototype.outerHTML = function outerHTML(selector, subselector) {
  * @param {function} callback Callback function to run on success
  */
 VrtxAdmin.prototype.loadScript = function loadScript(url, callback) {
-  $.cachedScript(url).done(callback).fail(function (jqxhr, settings, exception) {
+  return $.cachedScript(url).done(callback).fail(function (jqxhr, settings, exception) {
     vrtxAdmin.log({
       msg: exception
     });

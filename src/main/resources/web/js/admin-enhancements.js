@@ -137,32 +137,32 @@ var vrtxAdmin = new VrtxAdmin();
 
 // Required components at init dummy containers (resolved by script-retrieval)
 var VrtxTree = function(opts) {
-  var that = this;
+  var obj = this;
   if(typeof VrtxTreeInterface === "undefined") {
     $.when(vrtxAdmin.requiredScriptsLoaded).done(function() {
-      that = new VrtxTree(opts); // Resolve and replace dummy object
+      obj = new VrtxTree(opts); // Resolve and replace dummy object
     });
   }
 };
 var VrtxAnimation = function(opts) {
-  var that = this, thatApplied = [];
+  var obj = this, objApplied = [];
   if(typeof VrtxAnimationInterface === "undefined") {
     $.when(vrtxAdmin.requiredScriptsLoaded).done(function() {
-      that = new VrtxAnimation(opts);; // Resolve and replace dummy object
-      for(var i = 0, len = thatApplied.length; i < len; i++) {
-        that[thatApplied[i].fn](thatApplied[i].args);
+      obj = new VrtxAnimation(opts);; // Resolve and replace dummy object
+      for(var i = 0, len = objApplied.length; i < len; i++) {
+        obj[objApplied[i].fn](objApplied[i].args);
       }
     });
   }
   /* TODO: is it possible to handle unknown function names/properties (so can avoid partly interface duplication)?
      http://stackoverflow.com/questions/2666602/is-there-a-way-to-catch-an-attempt-to-access-a-non-existant-property-or-method
   */
-  that.update = function update(opts)         { thatApplied.push({fn: arguments.callee.name, args: opts}); };
-  that.updateElem = function updateElem(elem) { thatApplied.push({fn: arguments.callee.name, args: elem}); };
-  that.rightIn = function rightIn()           { thatApplied.push({fn: arguments.callee.name, args: null}); };
-  that.leftOut = function leftOut()           { thatApplied.push({fn: arguments.callee.name, args: null}); };
-  that.topDown = function topDown()           { thatApplied.push({fn: arguments.callee.name, args: null}); };
-  that.bottomUp = function bottomUp()         { thatApplied.push({fn: arguments.callee.name, args: null}); };
+  obj.update = function update(opts)         { objApplied.push({fn: arguments.callee.name, args: opts}); };
+  obj.updateElem = function updateElem(elem) { objApplied.push({fn: arguments.callee.name, args: elem}); };
+  obj.rightIn = function rightIn()           { objApplied.push({fn: arguments.callee.name, args: null}); };
+  obj.leftOut = function leftOut()           { objApplied.push({fn: arguments.callee.name, args: null}); };
+  obj.topDown = function topDown()           { objApplied.push({fn: arguments.callee.name, args: null}); };
+  obj.bottomUp = function bottomUp()         { objApplied.push({fn: arguments.callee.name, args: null}); };
 };
 
 /*-------------------------------------------------------------------*\
@@ -188,10 +188,11 @@ vrtxAdmin._$(document).ready(function () {
 
   // Load required init components (animations and trees)
   vrtxAdm.requiredScriptsLoaded = $.Deferred();
+  // setTimeout(function() {
   vrtxAdm.loadScripts(["/vrtx/__vrtx/static-resources/js/vrtx-animation.js", 
                        "/vrtx/__vrtx/static-resources/js/vrtx-tree.js"],
                        vrtxAdm.requiredScriptsLoaded);
-
+  // }, 4000);
   vrtxAdm.clientLastModified = $("#resource-last-modified").text().split(",");
   
   vrtxAdm.initDropdowns();

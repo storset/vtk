@@ -142,7 +142,11 @@ function VrtxAdmin() {
 
 var vrtxAdmin = new VrtxAdmin();
 
-// Required init components dummy containers (resolved and overwritten when script-retrieval is done)
+/* Required init components dummy containers
+ *
+ * Resolved, overwritten and applied in the future when script-retrieval is done
+ * (not in year 2525 but some ms or s later depending on downlink connection speed)
+ */
 var VrtxTree = function(opts) {
   var obj = this;
   if(typeof VrtxTreeInterface === "undefined") {

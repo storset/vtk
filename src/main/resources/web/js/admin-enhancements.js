@@ -74,7 +74,8 @@ function VrtxAdmin() {
   /** Language extracted from cookie */
   this.lang = readCookie("vrtx.manage.language", "no");
 
-  // Autocomplete parameters
+  /** Permissions autocomplete parameters
+   * @type object */
   this.permissionsAutocompleteParams = {
     minChars: 4,
     selectFirst: false,
@@ -83,6 +84,8 @@ function VrtxAdmin() {
     minWidth: 180,
     adjustForParentWidth: 15
   };
+  /** Username autocomplete parameters
+   * @type object */
   this.usernameAutocompleteParams = {
     minChars: 2,
     selectFirst: false,
@@ -92,6 +95,8 @@ function VrtxAdmin() {
     minWidth: 180,
     adjustForParentWidth: 15
   };
+  /** Tag autocomplete parameters
+   * @type object */
   this.tagAutocompleteParams = {
     minChars: 1,
     minWidth: 180,

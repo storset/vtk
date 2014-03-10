@@ -129,6 +129,8 @@ function VrtxAdmin() {
   });
   this.runReadyLoad = true;
   this.bodyId = "";
+  
+  this.requiredScriptsLoaded = null;
 }
 
 var vrtxAdmin = new VrtxAdmin();
@@ -144,6 +146,23 @@ vrtxAdmin._$(document).ready(function () {
     _$ = vrtxAdm._$;
 
   vrtxAdm.cacheDOMNodesForReuse();
+  
+  vrtxAdm.requiredScriptsLoaded = $.Deferred();
+  var futureScripts = [];
+  var futureScriptAnimations = $.Deferred();
+  var futureScriptTree = $.Deferred();
+  futureScripts.push(futureScriptAnimations);
+  futureScripts.push(futureScriptTree);
+  vrtxAdm.loadScript("/vrtx/__vrtx/static-resources/js/vrtx-animation.js", function() {
+    futureScriptAnimations.resolve();
+  });
+  
+  vrtxAdm.loadScript("/vrtx/__vrtx/static-resources/js/vrtx-tree.js", function() {
+    futureScriptTree.resolve();        
+  });
+  _$.when.apply(_$, futureScripts).done(function () {
+    vrtxAdm.requiredScriptsLoaded.resolve();
+  });
 
   var bodyId = vrtxAdm.cachedBody.attr("id");
   bodyId = (typeof bodyId !== "undefined") ? bodyId : "";
@@ -946,178 +965,6 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
       break;
   }
 };
-
-/* 
- * VrtxAnimation
- *
- */
- 
-var VrtxAnimationInterface = dejavu.Interface.declare({
-  $name: "VrtxAnimationInterface",
-  __opts: {},
-  __prepareHorizontalMove: function() {},
-  __horizontalMove: function() {},
-  update: function(opts) {},
-  updateElem: function(elem) {},
-  rightIn: function() {},
-  leftOut: function() {},
-  topDown: function() {},
-  bottomUp: function() {}
-});
- 
-var VrtxAnimation = dejavu.Class.declare({
-  $name: "VrtxAnimation",
-  $implements: [VrtxAnimationInterface],
-  $constants: {
-    // TODO: remove vrtxAdmin dependency
-    animationSpeed: (typeof vrtxAdmin !== "undefined" && vrtxAdmin.isMobileWebkitDevice) ? 0 : 200,
-    easeIn: (typeof vrtxAdmin !== "undefined" && !(vrtxAdmin.isIE && vrtxAdmin.browserVersion < 10) && !vrtxAdmin.isMobileWebkitDevice) ? "easeInQuad" : "linear",
-    easeOut: (typeof vrtxAdmin !== "undefined" && !(vrtxAdmin.isIE && vrtxAdmin.browserVersion < 10) && !vrtxAdmin.isMobileWebkitDevice) ? "easeOutQuad" : "linear"
-  },
-  __opts: {},
-  initialize: function(opts) {
-    this.__opts = opts;
-  },
-  __prepareHorizontalMove: function() {
-    if(this.__opts.outerWrapperElem && !this.__opts.outerWrapperElem.hasClass("overflow-hidden")) {
-      this.__opts.outerWrapperElem.addClass("overflow-hidden");
-    }
-    return this.__opts.elem.outerWidth(true);
-  },
-  __horizontalMove: function(left, easing) {
-    var animation = this;
-    animation.__opts.elem.animate({
-      "marginLeft": left + "px"
-    }, animation.__opts.animationSpeed || animation.$static.animationSpeed, easing, function() {
-      if(animation.__opts.outerWrapperElem) animation.__opts.outerWrapperElem.removeClass("overflow-hidden");
-      if(animation.__opts.after) animation.__opts.after(animation);
-      // TODO: closures pr. direction if needed also for horizontal animation
-      if(animation.__opts.afterIn) animation.__opts.afterIn(animation);
-      if(animation.__opts.afterOut) animation.__opts.afterOut(animation);
-    });
-  },
-  update: function(opts) {
-    this.__opts = opts;
-  },
-  updateElem: function(elem) {
-    this.__opts.elem = elem;
-  },
-  rightIn: function() {
-    var width = this.__prepareHorizontalMove();
-    this.__opts.elem.css("marginLeft", -width);
-    this.__horizontalMove(0, this.__opts.easeIn || this.$static.easeIn);
-  },
-  leftOut: function() {
-    var width = this.__prepareHorizontalMove();
-    this.__horizontalMove(-width, this.__opts.easeOut || this.$static.easeOut);
-  },
-  topDown: function() {
-    var animation = this;
-    animation.__opts.elem.slideDown(
-        animation.__opts.animationSpeed || animation.$static.animationSpeed,
-        animation.__opts.easeIn || animation.$static.easeIn, function() {
-      if(animation.__opts.after) animation.__opts.after(animation);
-      if(animation.__opts.afterIn) animation.__opts.afterIn(animation);
-    });
-  },
-  bottomUp: function() {
-    var animation = this;
-    animation.__opts.elem.slideUp(
-        animation.__opts.animationSpeed || animation.$static.animationSpeed, 
-        animation.__opts.easeOut || animation.$static.easeOut, function() {
-      if(animation.__opts.after) animation.__opts.after(animation);
-      if(animation.__opts.afterOut) animation.__opts.afterOut(animation);
-    });
-  }
-});
- 
-
-/*
- * VrtxTree - facade to TreeView async
- *  
- *  * Requires Dejavu OOP library
- *  * Requires but Lazy-loads TreeView and ScrollTo libraries (if not defined) on open
- */
-
-var VrtxTreeInterface = dejavu.Interface.declare({
-  $name: "VrtxTreeInterface",
-  __opts: {},
-  __openLeaf: function() {}
-});
-
-var VrtxTree = dejavu.Class.declare({
-  $name: "VrtxTree",
-  $implements: [VrtxTreeInterface],
-  $constants: {
-    leafLoadingClass: "loading-tree-node",
-    leafSelector: "> .hitarea" // From closest li
-  },
-  __opts: {},
-  initialize: function(opts) {
-    var tree = this;
-    tree.__opts = opts;
-    tree.__opts.pathNum = 0;
-    
-    // TODO: rootUrl and jQueryUiVersion should be retrieved from Vortex config/properties somehow
-    var rootUrl = "/vrtx/__vrtx/static-resources";
-    var jQueryUiVersion = "1.10.4";
-    
-    $.loadCSS(location.protocol + "//" + location.host + rootUrl + "/themes/default/report/jquery.treeview.css");
-    var futureTree = $.Deferred();
-    if (typeof $.fn.treeview !== "function") {
-      $.getScript(location.protocol + "//" + location.host + rootUrl + "/jquery/plugins/jquery.treeview.js", function () {
-        $.getScript(location.protocol + "//" + location.host + rootUrl + "/jquery/plugins/jquery.treeview.async.js", function () {
-          futureTree.resolve();
-        });
-      });
-    } else {
-      futureTree.resolve();
-    }
-    var futureScrollTo = $.Deferred();
-    if(typeof $.fn.scrollTo !== "function" && tree.__opts.scrollToContent) {
-      $.getScript(location.protocol + "//" + location.host + rootUrl + "/jquery/plugins/jquery.scrollTo.min.js", function () {
-        futureScrollTo.resolve();
-      });
-    } else {
-      futureScrollTo.resolve();
-    }
-    $.when(futureTree, futureScrollTo).done(function() {
-      opts.elem.treeview({
-        animated: "fast",
-        url: location.protocol + '//' + location.host + location.pathname + "?vrtx=admin&uri=&" + opts.service + "&ts=" + (+new Date()),
-        service: opts.service,
-        dataLoaded: function () {
-          tree.__openLeaf();
-        }
-      });
-    });
-  },
-  __openLeaf: function() {
-    var tree = this;
-    var checkLeafAvailable = setInterval(function () {
-      $("." + tree.$static.leafLoadingClass).remove();
-      var link = tree.__opts.elem.find("a[href$='" + tree.__opts.trav[tree.__opts.pathNum] + "']");
-      if (link.length) {
-        clearInterval(checkLeafAvailable);
-        var hit = link.closest("li").find(tree.$static.leafSelector);
-        hit.click();
-        if (tree.__opts.scrollToContent && (tree.__opts.pathNum == (tree.__opts.trav.length - 1))) {
-          tree.__opts.elem.css("background", "none").fadeIn(200, function () {  // Scroll to node
-            $(tree.__opts.scrollToContent).scrollTo(Math.max(0, (link.position().top - 145)), 250, {
-              easing: "swing",
-              queue: true,
-              axis: 'y',
-              complete: tree.__opts.afterTrav(link)
-            });
-          });
-        } else {
-          $("<span class='" + tree.$static.leafLoadingClass + "'>" + loadingSubfolders + "</span>").insertAfter(hit.next());
-        }
-        tree.__opts.pathNum++;
-      }
-    }, 20);
-  }
-});
 
 /**
  * Initialize dropdowns

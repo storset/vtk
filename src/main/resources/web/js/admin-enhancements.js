@@ -1101,18 +1101,17 @@ VrtxAdmin.prototype.dropdown = function dropdown(options) {
     list.find("li").not(startDropdown).remove();
     list.find("li" + dropdownClickArea).append("<span tabindex='0' class='dropdown-shortcut-menu-click-area' />");
     var shortcutMenu = listParent.find(".dropdown-shortcut-menu-container");
-    
-    setTimeout(function() {
-    
     shortcutMenu.find("li" + startDropdown).remove();
-    if (options.calcTop) {
-      shortcutMenu.css("top", (list.position().top + list.height() - (parseInt(list.css("marginTop"), 10) * -1) + 2) + "px");
-    } 
-    var left = (list.width() - list.find(".dropdown-shortcut-menu-click-area").width() - 2);
-    if (options.calcLeft) {
-      left += list.position().left;
-    }
-    shortcutMenu.css("left", left + "px");
+    
+    setTimeout(function() { // Adjust positioning
+      if (options.calcTop) {
+        shortcutMenu.css("top", (list.position().top + list.height() - (parseInt(list.css("marginTop"), 10) * -1) + 2) + "px");
+      } 
+      var left = (list.width() - list.find(".dropdown-shortcut-menu-click-area").width() - 2);
+      if (options.calcLeft) {
+        left += list.position().left;
+      }
+      shortcutMenu.css("left", left + "px");
     }, 500);
 
     list.find("li" + dropdownClickArea).addClass("dropdown-init");

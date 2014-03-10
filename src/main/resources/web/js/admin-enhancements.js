@@ -953,11 +953,11 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
         var link = _$(this);
         var liElm = link.parent();
         if (liElm.hasClass("first")) {
-          liElm.removeClass("first").addClass("active").addClass("active-first");
-          liElm.next().removeClass("active").removeClass("active-last").addClass("last");
+          liElm.removeClass("first").addClass("active active-first");
+          liElm.next().removeClass("active active-last").addClass("last");
         } else {
-          liElm.removeClass("last").addClass("active").addClass("active-last");
-          liElm.prev().removeClass("active").removeClass("active-first").addClass("first");
+          liElm.removeClass("last").addClass("active active-last");
+          liElm.prev().removeClass("active active-first").addClass("first");
         }
 
         _$("#vrtx-resource-visit-wrapper").append("<span id='urchin-loading'></span>");

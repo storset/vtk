@@ -155,8 +155,7 @@ var VrtxAnimation = function(opts) {
     });
   }
   /* TODO: is it possible to handle unknown function names/properties (so can avoid partly interface duplication)?
-     http://stackoverflow.com/questions/2666602/is-there-a-way-to-catch-an-attempt-to-access-a-non-existant-property-or-method
-  */
+     http://stackoverflow.com/questions/2666602/is-there-a-way-to-catch-an-attempt-to-access-a-non-existant-property-or-method */
   obj.update = function update(opts)         { objApplied.push({fn: arguments.callee.name, args: opts}); };
   obj.updateElem = function updateElem(elem) { objApplied.push({fn: arguments.callee.name, args: elem}); };
   obj.rightIn = function rightIn()           { objApplied.push({fn: arguments.callee.name, args: null}); };

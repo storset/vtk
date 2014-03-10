@@ -152,6 +152,9 @@ var VrtxAnimation = function(opts) {
       that = new VrtxAnimation(opts);
     });
   }
+  // TODO: is it possible to handle unknown function names/properties (so can avoid partly
+  //       interface duplication)?
+  // TODO: possible to call/apply also in the future?
   that.update = function(opts) {},
   that.updateElem = function(elem) {},
   that.rightIn = function() {},

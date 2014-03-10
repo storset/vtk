@@ -5,7 +5,7 @@
  *  
  *  * Requires Dejavu OOP library
  *
- *  TODO: Support CSS3 animations (progressively)
+ *  TODO: Progressively support CSS3 animations (requires Modernizr)
  *
  */
  

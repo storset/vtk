@@ -45,7 +45,7 @@ var VrtxAnimation = dejavu.Class.declare({
     }, animation.__opts.animationSpeed || animation.$static.animationSpeed, easing, function() {
       if(animation.__opts.outerWrapperElem) animation.__opts.outerWrapperElem.removeClass("overflow-hidden");
       if(animation.__opts.after) animation.__opts.after(animation);
-      // TODO: closures pr. direction if needed also for horizontal animation
+      // TODO: own closures pr. direction if needed also for horizontal animation
       if(animation.__opts.afterIn) animation.__opts.afterIn(animation);
       if(animation.__opts.afterOut) animation.__opts.afterOut(animation);
     });

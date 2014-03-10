@@ -178,9 +178,7 @@ vrtxAdmin._$(document).ready(function () {
 
   vrtxAdm.cacheDOMNodesForReuse();
 
-  var bodyId = vrtxAdm.cachedBody.attr("id");
-  bodyId = (typeof bodyId !== "undefined") ? bodyId : "";
-  vrtxAdm.bodyId = bodyId;
+  vrtxAdm.bodyId = vrtxAdm.cachedBody.attr("id") || "";
   vrtxAdm.cachedBody.addClass("js");
   if(vrtxAdm.isIE8) vrtxAdm.cachedBody.addClass("ie8");
   if (vrtxAdm.runReadyLoad === false) return; // XXX: return if should not run all of ready() code

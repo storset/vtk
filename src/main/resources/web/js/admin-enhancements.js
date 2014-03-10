@@ -140,26 +140,31 @@ var VrtxTree = function(opts) {
   var that = this;
   if(typeof VrtxTreeInterface === "undefined") {
     $.when(vrtxAdmin.requiredScriptsLoaded).done(function() {
-      that = new VrtxTree(opts);
+      that = new VrtxTree(opts); // Resolve and replace dummy object
     });
   }
 };
 var VrtxAnimation = function(opts) {
   var that = this;
+  var thatApplied = [];
+  
   if(typeof VrtxAnimationInterface === "undefined") {
     $.when(vrtxAdmin.requiredScriptsLoaded).done(function() {
-      that = new VrtxAnimation(opts);
+      that = new VrtxAnimation(opts);; // Resolve and replace dummy object
+      for(var i = 0, len = thatApplied.length; i < len; i++) {
+        that[thatApplied[i].fn](thatApplied[i].args);
+      }
     });
   }
   // TODO: is it possible to handle unknown function names/properties (so can avoid partly
   //       interface duplication)?
-  // TODO: possible to call/apply also in the future?
-  that.update = function(opts) {},
-  that.updateElem = function(elem) {},
-  that.rightIn = function() {},
-  that.leftOut = function() {},
-  that.topDown = function() {},
-  that.bottomUp = function() {}
+  // TODO: supports now only one argument
+  that.update = function update(opts)         { thatApplied.push({fn: arguments.callee.name, args: opts}); };
+  that.updateElem = function updateElem(elem) { thatApplied.push({fn: arguments.callee.name, args: elem}); };
+  that.rightIn = function rightIn()           { thatApplied.push({fn: arguments.callee.name, args: null}); };
+  that.leftOut = function leftOut()           { thatApplied.push({fn: arguments.callee.name, args: null}); };
+  that.topDown = function topDown()           { thatApplied.push({fn: arguments.callee.name, args: null}); };
+  that.bottomUp = function bottomUp()         { thatApplied.push({fn: arguments.callee.name, args: null}); };
 };
 
 /*-------------------------------------------------------------------*\

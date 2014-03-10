@@ -147,9 +147,11 @@ vrtxAdmin._$(document).ready(function () {
 
   vrtxAdm.cacheDOMNodesForReuse();
   
+  // Load required components
   vrtxAdm.requiredScriptsLoaded = $.Deferred();
   vrtxAdm.loadScripts(["/vrtx/__vrtx/static-resources/js/vrtx-animation.js", 
-                       "/vrtx/__vrtx/static-resources/js/vrtx-tree.js"], vrtxAdm.requiredScriptsLoaded);
+                       "/vrtx/__vrtx/static-resources/js/vrtx-tree.js"],
+                       vrtxAdm.requiredScriptsLoaded);
 
   var bodyId = vrtxAdm.cachedBody.attr("id");
   bodyId = (typeof bodyId !== "undefined") ? bodyId : "";

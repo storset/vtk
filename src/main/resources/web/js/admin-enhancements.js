@@ -135,7 +135,7 @@ function VrtxAdmin() {
 
 var vrtxAdmin = new VrtxAdmin();
 
-// Required components at init (resolved by script-retrieval)
+// Required components at init dummy containers (resolved by script-retrieval)
 var VrtxTree = function(opts) {
   var that = this;
   if(typeof VrtxTreeInterface === "undefined") {

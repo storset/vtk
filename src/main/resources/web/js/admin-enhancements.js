@@ -154,9 +154,9 @@ var VrtxAnimation = function(opts) {
       }
     });
   }
-  // TODO: is it possible to handle unknown function names/properties (so can avoid partly
-  //       interface duplication)?
-  // TODO: supports now only one argument
+  /* TODO: is it possible to handle unknown function names/properties (so can avoid partly interface duplication)?
+     http://stackoverflow.com/questions/2666602/is-there-a-way-to-catch-an-attempt-to-access-a-non-existant-property-or-method
+  */
   that.update = function update(opts)         { thatApplied.push({fn: arguments.callee.name, args: opts}); };
   that.updateElem = function updateElem(elem) { thatApplied.push({fn: arguments.callee.name, args: elem}); };
   that.rightIn = function rightIn()           { thatApplied.push({fn: arguments.callee.name, args: null}); };

@@ -185,11 +185,9 @@ vrtxAdmin._$(document).ready(function () {
 
   // Load required init components (animations and trees)
   vrtxAdm.requiredScriptsLoaded = $.Deferred();
-  // setTimeout(function() {
   vrtxAdm.loadScripts(["/vrtx/__vrtx/static-resources/js/vrtx-animation.js", 
                        "/vrtx/__vrtx/static-resources/js/vrtx-tree.js"],
                        vrtxAdm.requiredScriptsLoaded);
-  // }, 4000);
   
   vrtxAdm.clientLastModified = $("#resource-last-modified").text().split(",");
   

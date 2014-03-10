@@ -206,7 +206,8 @@ vrtxAdmin._$(document).ready(function () {
 
 
 /*-------------------------------------------------------------------*\
-    3. DOM is fully loaded ("load"-event) 
+    3. DOM is fully loaded ("load"-event)
+       TODO: unused. Are there any code that could be runned later?
 \*-------------------------------------------------------------------*/
 
 vrtxAdmin._$(window).load(function () {

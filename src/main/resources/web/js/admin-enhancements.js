@@ -171,9 +171,7 @@ var VrtxAnimation = function(opts) {
 \*-------------------------------------------------------------------*/
 
 vrtxAdmin._$(document).ready(function () {
-  var startReadyTime = +new Date(),
-    vrtxAdm = vrtxAdmin,
-    _$ = vrtxAdm._$;
+  var startReadyTime = +new Date(), vrtxAdm = vrtxAdmin, _$ = vrtxAdm._$;
 
   vrtxAdm.cacheDOMNodesForReuse();
 
@@ -181,9 +179,7 @@ vrtxAdmin._$(document).ready(function () {
   bodyId = (typeof bodyId !== "undefined") ? bodyId : "";
   vrtxAdm.bodyId = bodyId;
   vrtxAdm.cachedBody.addClass("js");
-  if(vrtxAdm.isIE8) {
-    vrtxAdm.cachedBody.addClass("ie8");
-  }
+  if(vrtxAdm.isIE8) vrtxAdm.cachedBody.addClass("ie8");
   if (vrtxAdm.runReadyLoad === false) return; // XXX: return if should not run all of ready() code
 
   // Load required init components (animations and trees)

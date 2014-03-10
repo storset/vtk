@@ -22,6 +22,14 @@
         <link rel="stylesheet" href="${cssURL}" type="text/css" />
        </#list>
     </#if>
+    <style type="text/css">
+       span.diff-html-removed {
+             text-decoration: line-through;
+       }
+       span.diff-html-added {
+             color: green;
+       }
+    </style>
     <#if jsURLs??>
       <#list jsURLs as jsURL>
         <script type="text/javascript" src="${jsURL}"></script>

@@ -434,7 +434,7 @@ VrtxAdmin.prototype.initGlobalDialogs = function initGlobalDialogs() {
               location.href = this.href;
             });
             
-            var t = new VrtxTree({
+            var tree = new VrtxTree({
               service: service,
               elem: treeElem,
               trav: treeTrav,

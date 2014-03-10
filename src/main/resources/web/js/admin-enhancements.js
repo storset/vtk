@@ -160,7 +160,7 @@ var VrtxAnimation = function(opts) {
   if(typeof VrtxAnimationInterface === "undefined") {
     $.when(vrtxAdmin.requiredScriptsLoaded).done(function() {
       obj = new VrtxAnimation(opts); // Resolve and replace dummy container
-      for(var i = 0, len = objApplied.length; i < len; i++) {
+      for(var i = 0, len = objApplied.length; i < len; i++) { // Apply functions
         obj[objApplied[i].fn](objApplied[i].args);
       }
     });

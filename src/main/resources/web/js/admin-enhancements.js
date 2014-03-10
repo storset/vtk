@@ -145,9 +145,7 @@ var VrtxTree = function(opts) {
   }
 };
 var VrtxAnimation = function(opts) {
-  var that = this;
-  var thatApplied = [];
-  
+  var that = this, thatApplied = [];
   if(typeof VrtxAnimationInterface === "undefined") {
     $.when(vrtxAdmin.requiredScriptsLoaded).done(function() {
       that = new VrtxAnimation(opts);; // Resolve and replace dummy object

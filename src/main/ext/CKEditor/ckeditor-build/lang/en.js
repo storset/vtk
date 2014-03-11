@@ -13,6 +13,7 @@ studyreferencecomponent :
         studytable :
         {
                 title           : 'Course combination',
+		default		: 'Undefined',
                 common          : 'Common',
                 specialization  : 'Specialization',
                 optional        : 'Optional',

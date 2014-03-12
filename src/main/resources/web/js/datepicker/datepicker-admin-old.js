@@ -1,5 +1,5 @@
 /*
- * Initialize Datepicker for old documenttypes and folders
+ * Initialize Datepicker - old documenttypes and folders
  *
  */
 
@@ -41,4 +41,4 @@ function setDefaultEndDate(startDateElm, endDateElm) {
   }
 }
 
-/* ^ Initialize Datepicker for old documenttypes and folders */
+/* ^ Initialize Datepicker - old documenttypes and folders */

@@ -59,6 +59,7 @@ import org.vortikal.web.service.URL;
 public class DisplayRevisionsController implements Controller {
 
     private Service viewService = null;
+    private Service viewDiffService = null;
     private Service deleteService = null;
     private Service restoreService = null;
     private String viewName = null;
@@ -85,6 +86,10 @@ public class DisplayRevisionsController implements Controller {
         URL displayURL = null;
         try {
             displayURL = this.viewService.constructURL(resource, principal);
+        } catch (Throwable t) { }
+        URL diffURL = null;
+        try {
+            diffURL = this.viewDiffService.constructURL(resource, principal);
         } catch (Throwable t) { }
         URL deleteURL = null;
         try {
@@ -115,13 +120,13 @@ public class DisplayRevisionsController implements Controller {
                 regularRevisions.add(rev);
             }
 
-            boolean haveDisplayURL = displayURL != null
+            boolean haveDiffURL = diffURL != null
                     && (revision.getType() == Revision.Type.REGULAR
                         && repository.authorize(principal, revision.getAcl(), Privilege.READ)
                         || revision.getType() == Revision.Type.WORKING_COPY);
             
-            if (haveDisplayURL) {
-                rev.put("displayURL", new URL(displayURL)
+            if (haveDiffURL) {
+                rev.put("displayURL", new URL(diffURL)
                    .setParameter("revision", revision.getName()));
             }
             
@@ -187,6 +192,11 @@ public class DisplayRevisionsController implements Controller {
     @Required
     public void setViewService(Service viewService) {
         this.viewService = viewService;
+    }
+    
+    @Required
+    public void setViewDiffService(Service viewDiffService) {
+        this.viewDiffService = viewDiffService;
     }
 
     @Required

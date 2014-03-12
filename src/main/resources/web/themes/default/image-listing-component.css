@@ -1,3 +1,8 @@
+/*
+ * Vortex - Image listing component
+ *
+ */
+
 .vrtx-image-listing-include {
   float: left;
   padding: 5px 10px 10px;
@@ -288,3 +293,5 @@ html.fullscreen-gallery .vrtx-image-listing-include-container-description.hidden
 html.fullscreen-gallery .vrtx-image-listing-include-container-description.empty-description {
   display: none !important;
 }
+
+/* ^ Vortex - Image listing component */

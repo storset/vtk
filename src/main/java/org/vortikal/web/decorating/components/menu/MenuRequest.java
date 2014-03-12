@@ -164,7 +164,6 @@ public class MenuRequest {
                         uri = uri.substring(0, uri.length() - 1);
                     }
                 }
-
                 this.currentCollectionUri = Path.fromString(uri); // override
             } catch (Throwable t) {
                 throw new DecoratorComponentException("Illegal value for parameter '"

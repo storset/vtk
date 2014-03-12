@@ -43,10 +43,6 @@
         <#local introImg = vrtx.prop(master, 'picture')  />
         <#local intro = vrtx.prop(master, 'introduction')  />
         <#local caption = vrtx.propValue(master, 'caption')  />
-        <#-- Flattened caption for alt-tag in image -->
-        <#local captionFlattened>
-          <@vrtx.flattenHtml value=caption escape=true />
-        </#local>
         <div class="vrtx-master">
           <#if introImg?has_content >
             <#local src = vrtx.propValue(master, 'picture', 'thumbnail') />
@@ -56,8 +52,9 @@
     	 	<#else>
     		  <#local thumbnail = "" />
    		   	</#if>
+   		   	<#local introImgAlt = vrtx.propValue(master, 'pictureAlt') />
             <a class="vrtx-image" href="${masterEntry.url?html}">
-              <img src="${thumbnail?html}" alt="" />
+              <img src="${thumbnail?html}" alt="<#if introImgAlt?has_content>${introImgAlt?html}</#if>" />
             </a>
           </#if>
           <div class="vrtx-title">

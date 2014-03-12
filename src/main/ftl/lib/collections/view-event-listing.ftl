@@ -192,11 +192,7 @@
   <#local endDate = vrtx.prop(event, 'end-date') />
   <#local hideEndDate = !endDate?has_content || !parent.hasDisplayPropDef(endDate.definition.name) />
   <#local hideLocation = !location?has_content || !parent.hasDisplayPropDef(location.definition.name) />
- 
-  <#-- Flattened caption for alt-tag in image -->
-  <#local captionFlattened>
-    <@vrtx.flattenHtml value=caption escape=true />
-  </#local>
+
   <div class="vrtx-resource vevent">
     <#if introImg?has_content && parent.hasDisplayPropDef(introImg.definition.name)>
       <#local introImgURI = vrtx.propValue(event, 'picture') />
@@ -205,8 +201,9 @@
 	  <#else>
 			<#local thumbnail = "" />
 	  </#if>
+	  <#local introImgAlt = vrtx.propValue(event, 'pictureAlt') />
       <a class="vrtx-image" href="${eventEntry.url?html}">
-        <img src="${thumbnail?html}" alt="" />
+        <img src="${thumbnail?html}" alt="<#if introImgAlt?has_content>${introImgAlt?html}</#if>" />
       </a>
     </#if>
     <div class="vrtx-title">

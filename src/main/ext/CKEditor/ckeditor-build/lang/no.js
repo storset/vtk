@@ -13,7 +13,8 @@ studyreferencecomponent :
         studytable :
         {
                 title           : 'Studieløptype',
-                common          : 'Felles',
+                default		: 'Ikke satt',
+		common          : 'Felles',
                 specialization  : 'Fordypning',
                 optional        : 'Valgfri',
                 master          : 'Masteroppgave'

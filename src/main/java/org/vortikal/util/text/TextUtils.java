@@ -80,6 +80,8 @@ public class TextUtils {
     
     /**
      * Render a byte array into a string of hexadecimal numbers.
+     * @param buffer containing the bytes to convert
+     * @return a character array with hexadecimal digits representing the bytes.
      */
     public static char[] toHex(byte[] buffer) {
         char[] result = new char[buffer.length * 2];

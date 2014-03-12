@@ -183,10 +183,12 @@
     <#assign resource = resourceEntry.propertySet />
     <#assign resourceTitle = vrtx.prop(resource, "title", "").getFormattedValue() />
     <#assign introImageProp = vrtx.prop(resource, "picture", "")?default("") />
+    <#assign introImageAlt = vrtx.propValue(resource, "pictureAlt") />
     <div class="vrtx-resource" id="vrtx-result-${i}">
       <#if introImageProp != "">
       <a href="${resourceEntry.url?html}" class="vrtx-image">
-        <#assign src = vrtx.propValue(resource, 'picture', 'thumbnail') /><img src="${src?html}" />
+        <#assign src = vrtx.propValue(resource, 'picture', 'thumbnail') />
+        <img src="${src?html}" alt="${introImageAlt?html}" />
       </a>
       </#if>
       <div class="vrtx-title">

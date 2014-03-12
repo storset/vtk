@@ -267,6 +267,15 @@ public class URLTest extends TestCase {
         assertTrue(URL.isEncoded("http://www.uio.no/dette%20erencoda"));
         assertTrue(URL.isEncoded("http://www.uio.no/?"));
         assertFalse(URL.isEncoded("http://www.uio.no/er dette encoda?"));
+        
+        assertFalse(URL.isEncoded("http://www.uio.no/foo\u0009bar")); // TAB
+        assertFalse(URL.isEncoded("http://www.uio.no/%"));
+        assertFalse(URL.isEncoded("http://www.uio.no/%0"));
+        assertTrue(URL.isEncoded("http://www.uio.no/%00"));
+        assertTrue(URL.isEncoded(""));
+        assertFalse(URL.isEncoded("%"));
+        assertFalse(URL.isEncoded("%%"));
+        assertTrue(URL.isEncoded("%25"));
     }
     
     public void testProtocolRelative() {

@@ -72,6 +72,9 @@ public class LastModifiedReporter extends DocumentReporter {
         SortingImpl sorting = new SortingImpl();
         sorting.addSortField(new PropertySortField(this.sortPropDef, this.sortOrder));
 
+        /* Include unpublished */
+        search.removeAllFilterFlags();
+        
         search.setSorting(sorting);
         search.setQuery(query);
         search.setLimit(DEFAULT_SEARCH_LIMIT);

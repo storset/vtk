@@ -52,7 +52,7 @@
         
       <#if caption != ""><#-- Caption is set -->
         <div class="vrtx-introduction-image" <#if style?has_content>style="${style}"</#if>>
-	      <img src="${introductionImage}" alt="${introductionImageAlt?html}" />
+	      <img src="${introductionImage}" alt="<#if introductionImageAlt?has_content>${introductionImageAlt?html}</#if>" />
           <div class="vrtx-imagetext">
             <div class="vrtx-imagedescription">${caption}</div>
             <span class="vrtx-photo">
@@ -65,7 +65,7 @@
       <#else>
         <#if photographer != ""><#-- No caption but image author set -->
           <div class="vrtx-introduction-image" <#if style?has_content>style="${style}"</#if>>
-            <img src="${introductionImage}" alt="${introductionImageAlt?html}" />
+            <img src="${introductionImage}" alt="<#if introductionImageAlt?has_content>${introductionImageAlt?html}</#if>" />
             <div class="vrtx-imagetext">
               <span class="vrtx-photo">
                 <span class="vrtx-photo-prefix"><@vrtx.msg code="article.photoprefix" />: </span>${photographer}
@@ -73,7 +73,7 @@
             </div>
           </div>
         <#else><#-- No caption or image author set -->
-          <img class="vrtx-introduction-image" src="${introductionImage}" alt="${introductionImageAlt?html}" />
+          <img class="vrtx-introduction-image" src="${introductionImage}" alt="<#if introductionImageAlt?has_content>${introductionImageAlt?html}</#if>" />
         </#if>
 	  </#if>
     </#if>

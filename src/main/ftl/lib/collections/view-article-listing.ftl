@@ -49,7 +49,7 @@
            <#if introImg?has_content && articles.hasDisplayPropDef(introImg.definition.name)>
              <#local introImgAlt = vrtx.propValue(entryPropSet, 'pictureAlt') />
              <a class="vrtx-image" href="${entry.url?html}">
-               <img src="${thumbnail?html}" alt="<#if introImgAlt?exists>${introImgAlt?html}</#if>" />
+               <img src="${thumbnail?html}" alt="<#if introImgAlt?has_content>${introImgAlt?html}</#if>" />
              </a>
            </#if>
 

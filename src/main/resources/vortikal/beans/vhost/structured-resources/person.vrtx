@@ -31,11 +31,12 @@ resourcetype person {
     groups : json (groupName:string, groupUrl:string) multiple,
     rssFeeds : json (rssTitle:string, rssUrl:string) multiple,
     tags : string multiple overrides tags,
-    related-content : html noextract
+    related-content : html noextract,
+    hideStudentAffiliation : boolean defaultvalue("false")
   }
 
   edit-rules {
-    group contactInformation (getExternalPersonInfo, firstName, surname, position, phone, mobile, fax, email, postalAddress, visitingAddress) (after username),
+    group contactInformation (getExternalPersonInfo, hideStudentAffiliation, firstName, surname, position, phone, mobile, fax, email, postalAddress, visitingAddress) (after username),
     group additionalContactInformation (alternativeVisitingAddress, building, room, availableHours, alternativeCellPhone) (after contactInformation),
     group images (picture, pressPhoto) (after additionalContactInformation) horizontal,
     group combinedPublications (getExternalScientificInformation, selectedPublications) (after tags),
@@ -170,7 +171,11 @@ resourcetype person {
               [endlist]
             </div>
           [endif]
-          [call "person:affiliation" {"primaryunit":false}]
+          [if hideStudentAffiliation != null && hideStudentAffiliation]
+            [call "person:affiliation" {"primaryunit":false, "hidestudentaff": true}]
+          [else]
+            [call "person:affiliation" {"primaryunit":false, "hidestudentaff": false}]
+          [endif]
         [endif]
       </div>
       ##
@@ -377,7 +382,12 @@ resourcetype person {
        en : ("true" = "Yes", "false" = "No"),
        no : ("true" = "Ja", "false" = "Nei"),
        nn : ("true" = "Ja", "false" = "Nei")
-     }
+     },
+     hideStudentAffiliation {
+       en : ("true" = "Yes", "false" = "No"),
+       no : ("true" = "Ja", "false" = "Nei"),
+       nn : ("true" = "Ja", "false" = "Nei")
+     } 
   }
 
   localization {
@@ -440,6 +450,7 @@ resourcetype person {
     no-external-user-metadata : (en : "Could not get user data from external service",
                                  no : "Kan ikke hente personopplysninger fra ekstern kilde",
                                  nn : "Kan ikkje hente personopplysningar frå ekstern kilde"),
-    otherUnits : (en : "Other affiliations", no : "Andre tilknytninger", nn : "Andre tilknytingar")
+    otherUnits : (en : "Other affiliations", no : "Andre tilknytninger", nn : "Andre tilknytingar"),
+    hideStudentAffiliation : (en : "Hide student affiliation", no : "Skjul studenttilknytning", nn : "Skjul studenttilknytning")
   }
 }

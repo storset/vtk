@@ -50,7 +50,7 @@ public class ResourceMediaPlayerComponent extends ViewRenderingDecoratorComponen
     @Override
     protected void processModel(Map<String, Object> model, DecoratorRequest request, DecoratorResponse response)
             throws Exception {
-
+        
         RequestContext requestContext = RequestContext.getRequestContext();
         String token = requestContext.getSecurityToken();
         Path uri = requestContext.getResourceURI();
@@ -71,6 +71,8 @@ public class ResourceMediaPlayerComponent extends ViewRenderingDecoratorComponen
 
         String resourceReferance = mediaProperty.getStringValue();
         mediaPlayer.addMediaPlayer(model, resourceReferance);
+
+        super.processModel(model, request, response);
     }
 
     @Required

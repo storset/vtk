@@ -124,23 +124,18 @@
       } 
       
       // Async. save i18n
-      <#if isCollection>
-        var ajaxSaveText = "<@vrtx.msg code='editor.save-folder-ajax-loading-title' />";
-      <#elseif isImage>
-        var ajaxSaveText = "<@vrtx.msg code='editor.save-image-ajax-loading-title' />";   
-      <#elseif isAudio>
-        var ajaxSaveText = "<@vrtx.msg code='editor.save-audio-ajax-loading-title' />";         
-      <#elseif isVideo>
-        var ajaxSaveText = "<@vrtx.msg code='editor.save-video-ajax-loading-title' />";         
-      <#else>
-        var ajaxSaveText = "<@vrtx.msg code='editor.save-doc-ajax-loading-title' />";
+      <#if isCollection> var ajaxSaveText = "<@vrtx.msg code='editor.save-folder-ajax-loading-title' />";
+      <#elseif isImage>  var ajaxSaveText = "<@vrtx.msg code='editor.save-image-ajax-loading-title' />";   
+      <#elseif isAudio>  var ajaxSaveText = "<@vrtx.msg code='editor.save-audio-ajax-loading-title' />";         
+      <#elseif isVideo>  var ajaxSaveText = "<@vrtx.msg code='editor.save-video-ajax-loading-title' />";         
+      <#else>            var ajaxSaveText = "<@vrtx.msg code='editor.save-doc-ajax-loading-title' />";
       </#if>
       
       // Manually approve i18n
       var approveGeneratingPage = "<@vrtx.msg code='editor.manually-approve.generating-page' />",
           approveRetrievingData = "<@vrtx.msg code='editor.manually-approve.retrieving-data' />",
-          approvePrev = "<@vrtx.msg code='imageListing.previous' />",
-          approveNext = "<@vrtx.msg code='imageListing.next' />",
+          approvePrev = "<@vrtx.msg code='previous' />",
+          approveNext = "<@vrtx.msg code='next' />",
           approveShowing = "<@vrtx.msg code='editor.manually-approve.table-showing' />",
           approveOf = "<@vrtx.msg code='person-listing.of' />",
           approveTableTitle = "<@vrtx.msg code='proptype.name.title' />",

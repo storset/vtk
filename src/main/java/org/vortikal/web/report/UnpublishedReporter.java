@@ -82,6 +82,7 @@ public class UnpublishedReporter extends DocumentReporter {
         
         /* Include unpublished */
         search.removeAllFilterFlags();
+        
         search.setSorting(sorting);
         search.setQuery(query);
         search.setLimit(DEFAULT_SEARCH_LIMIT);

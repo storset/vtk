@@ -40,6 +40,27 @@
 
   <bean id="versioning.displayDiffView" parent="freemarkerView">
     <property name="url" value="pages/display-diff.ftl" />
+    <property name="attributesMap">
+     <map>
+       <entry key="cssURLs">
+          <list>
+            <value>${themeBaseURL}/view-diff.css</value>
+          </list>
+        </entry>
+       <entry key="jsURLs">
+         <list>
+           <value>${webResources.baseURL}/jquery/include-jquery.js</value>
+           <value>${jsBaseURL}/frameworks/dejavu.js</value>
+           <value>${webResources.baseURL}/js/vrtx-sticky-bar.js</value>
+         </list>
+       </entry>
+     </map>
+    </property>
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="resourceContextProvider" />
+      </list>
+    </property>
   </bean>
 
   <bean id="versioning.displayRevisionsService" class="org.vortikal.web.service.ServiceImpl">
@@ -89,6 +110,7 @@
         class="org.vortikal.web.actions.versioning.DisplayRevisionsController">
     <property name="viewName" value="versioning.displayRevisions" />
     <property name="viewService" ref="decorating.viewUnpublishedService" />
+    <property name="viewDiffService" ref="versioning.displayDiffService" />
     <property name="deleteService" ref="versioning.deleteRevisionService" />
     <property name="restoreService" ref="versioning.restoreRevisionService" />
     <property name="principalFactory" ref="principalFactory" />

@@ -48,11 +48,6 @@
       <#local intro = vrtx.prop(project, 'introduction')  />
       <#local caption = vrtx.propValue(project, 'caption')  />
 
-      <#-- Flattened caption for alt-tag in image -->
-      <#local captionFlattened>
-        <@vrtx.flattenHtml value=caption escape=true />
-      </#local>
-
       <div class="vrtx-resource vrtx-project">
         <#if introImg?has_content >
           <#local src = vrtx.propValue(project, 'picture', 'thumbnail') />
@@ -62,8 +57,9 @@
     	 	<#else>
     			<#local thumbnail = "" />
    		   	</#if>
+   		   	<#local introImgAlt = vrtx.propValue(project, 'pictureAlt') />
             <a class="vrtx-image" href="${projectEntry.url?html}">
-              <img src="${thumbnail?html}" alt="" />
+              <img src="${thumbnail?html}" alt="<#if introImgAlt?has_content>${introImgAlt?html}</#if>" />
             </a>
           </#if>
           <div class="vrtx-title">

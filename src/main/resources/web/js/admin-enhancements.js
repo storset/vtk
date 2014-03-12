@@ -74,7 +74,8 @@ function VrtxAdmin() {
   /** Language extracted from cookie */
   this.lang = readCookie("vrtx.manage.language", "no");
 
-  // Autocomplete parameters
+  /** Permissions autocomplete parameters
+   * @type object */
   this.permissionsAutocompleteParams = {
     minChars: 4,
     selectFirst: false,
@@ -83,6 +84,8 @@ function VrtxAdmin() {
     minWidth: 180,
     adjustForParentWidth: 15
   };
+  /** Username autocomplete parameters
+   * @type object */
   this.usernameAutocompleteParams = {
     minChars: 2,
     selectFirst: false,
@@ -92,6 +95,8 @@ function VrtxAdmin() {
     minWidth: 180,
     adjustForParentWidth: 15
   };
+  /** Tag autocomplete parameters
+   * @type object */
   this.tagAutocompleteParams = {
     minChars: 1,
     minWidth: 180,
@@ -120,16 +125,9 @@ function VrtxAdmin() {
   this.createDocumentFileName = "";
   this.trashcanCheckedFiles = 0;
   
-  this.keys = {
-    TAB: 9,
-    ENTER: 13,
-    ESCAPE: 27,
-    SPACE: 32,
-    LEFT_ARROW: 37,
-    UP_ARROW: 38,
-    RIGHT_ARROW: 39,
-    DOWN_ARROW: 40
-  };
+  /** Keyboard keys enum
+   * @type object */
+  this.keys = { TAB: 9, ENTER: 13, ESCAPE: 27, SPACE: 32, LEFT_ARROW: 37, UP_ARROW: 38, RIGHT_ARROW: 39, DOWN_ARROW: 40 };
 
   this.reloadFromServer = false; // changed by funcProceedCondition and used by funcComplete in completeFormAsync for admin-permissions
   this.ignoreAjaxErrors = false;
@@ -138,9 +136,45 @@ function VrtxAdmin() {
   });
   this.runReadyLoad = true;
   this.bodyId = "";
+  
+  this.requiredScriptsLoaded = null;
 }
 
 var vrtxAdmin = new VrtxAdmin();
+
+/* Required init components dummy containers
+ *
+ * Resolved, overwritten and applied in the future when script-retrieval is done
+ * (not in year 2525 but some ms or s later depending on downlink connection speed)
+ */
+var VrtxTree = function(opts) {
+  var obj = this;
+  if(typeof VrtxTreeInterface === "undefined") {
+    $.when(vrtxAdmin.requiredScriptsLoaded).done(function() {
+      obj = new VrtxTree(opts); // Resolve and replace dummy container
+    });
+  }
+};
+var VrtxAnimation = function(opts) {
+  var obj = this, objApplied = [];
+  if(typeof VrtxAnimationInterface === "undefined") {
+    $.when(vrtxAdmin.requiredScriptsLoaded).done(function() {
+      obj = new VrtxAnimation(opts); // Resolve and replace dummy container
+      for(var i = 0, len = objApplied.length; i < len; i++) { // Apply functions
+        obj[objApplied[i].fn](objApplied[i].args);
+      }
+    });
+  }
+  /* TODO: Is it possible to handle unknown function names/properties (so can avoid partly interface duplication)?
+           Seems like using overridden .call(fn[, arg]) instead of fn() is the only way..
+           http://stackoverflow.com/questions/2666602/is-there-a-way-to-catch-an-attempt-to-access-a-non-existant-property-or-method */
+  obj.update = function update(opts)         { objApplied.push({fn: arguments.callee.name, args: opts}); };
+  obj.updateElem = function updateElem(elem) { objApplied.push({fn: arguments.callee.name, args: elem}); };
+  obj.rightIn = function rightIn()           { objApplied.push({fn: arguments.callee.name, args: null}); };
+  obj.leftOut = function leftOut()           { objApplied.push({fn: arguments.callee.name, args: null}); };
+  obj.topDown = function topDown()           { objApplied.push({fn: arguments.callee.name, args: null}); };
+  obj.bottomUp = function bottomUp()         { objApplied.push({fn: arguments.callee.name, args: null}); };
+};
 
 /*-------------------------------------------------------------------*\
     2. DOM is ready
@@ -148,25 +182,25 @@ var vrtxAdmin = new VrtxAdmin();
 \*-------------------------------------------------------------------*/
 
 vrtxAdmin._$(document).ready(function () {
-  var startReadyTime = +new Date(),
-    vrtxAdm = vrtxAdmin,
-    _$ = vrtxAdm._$;
+  var startReadyTime = +new Date(), vrtxAdm = vrtxAdmin, _$ = vrtxAdm._$;
 
   vrtxAdm.cacheDOMNodesForReuse();
 
-  var bodyId = vrtxAdm.cachedBody.attr("id");
-  bodyId = (typeof bodyId !== "undefined") ? bodyId : "";
-  vrtxAdm.bodyId = bodyId;
+  vrtxAdm.bodyId = vrtxAdm.cachedBody.attr("id") || "";
   vrtxAdm.cachedBody.addClass("js");
-  if(vrtxAdm.isIE8) {
-    vrtxAdm.cachedBody.addClass("ie8");
-  }
+  if(vrtxAdm.isIE8) vrtxAdm.cachedBody.addClass("ie8");
   if (vrtxAdm.runReadyLoad === false) return; // XXX: return if should not run all of ready() code
 
+  // Load required init components (animations and trees)
+  vrtxAdm.requiredScriptsLoaded = $.Deferred();
+  vrtxAdm.loadScripts(["/vrtx/__vrtx/static-resources/js/vrtx-animation.js", 
+                       "/vrtx/__vrtx/static-resources/js/vrtx-tree.js"],
+                       vrtxAdm.requiredScriptsLoaded);
+  
   vrtxAdm.clientLastModified = $("#resource-last-modified").text().split(",");
   
   vrtxAdm.initDropdowns();
-  vrtxAdm.miscAdjustments();
+  vrtxAdm.initMiscAdjustments();
   vrtxAdm.initTooltips();
   vrtxAdm.initResourceMenus();
   vrtxAdm.initGlobalDialogs();
@@ -180,7 +214,8 @@ vrtxAdmin._$(document).ready(function () {
 
 
 /*-------------------------------------------------------------------*\
-    3. DOM is fully loaded ("load"-event) 
+    3. DOM is fully loaded ("load"-event)
+       TODO: unused. Are there any code that could be runned later?
 \*-------------------------------------------------------------------*/
 
 vrtxAdmin._$(window).load(function () {
@@ -399,7 +434,7 @@ VrtxAdmin.prototype.initGlobalDialogs = function initGlobalDialogs() {
               location.href = this.href;
             });
             
-            var t = new VrtxTree({
+            var tree = new VrtxTree({
               service: service,
               elem: treeElem,
               trav: treeTrav,
@@ -889,14 +924,14 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
         }
       }
 
-      var SUBMIT_TAKE_OWNERSHIP = false;
+      var takenOwnership = false;
       vrtxAdm.cachedDoc.on("submit", "#vrtx-admin-ownership-form", function (e) {
-        if (!SUBMIT_TAKE_OWNERSHIP) {
+        if (!takenOwnership) {
           var d = new VrtxConfirmDialog({
             msg: confirmTakeOwnershipMsg,
             title: confirmTakeOwnershipTitle,
             onOk: function () {
-              SUBMIT_TAKE_OWNERSHIP = true;
+              takenOwnership = true;
               _$("#vrtx-admin-ownership-form").submit();
             }
           });
@@ -918,11 +953,11 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
         var link = _$(this);
         var liElm = link.parent();
         if (liElm.hasClass("first")) {
-          liElm.removeClass("first").addClass("active").addClass("active-first");
-          liElm.next().removeClass("active").removeClass("active-last").addClass("last");
+          liElm.removeClass("first").addClass("active active-first");
+          liElm.next().removeClass("active active-last").addClass("last");
         } else {
-          liElm.removeClass("last").addClass("active").addClass("active-last");
-          liElm.prev().removeClass("active").removeClass("active-first").addClass("first");
+          liElm.removeClass("last").addClass("active active-last");
+          liElm.prev().removeClass("active active-first").addClass("first");
         }
 
         _$("#vrtx-resource-visit-wrapper").append("<span id='urchin-loading'></span>");
@@ -955,178 +990,6 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
       break;
   }
 };
-
-/* 
- * VrtxAnimation
- *
- */
- 
-var VrtxAnimationInterface = dejavu.Interface.declare({
-  $name: "VrtxAnimationInterface",
-  __opts: {},
-  __prepareHorizontalMove: function() {},
-  __horizontalMove: function() {},
-  update: function(opts) {},
-  updateElem: function(elem) {},
-  rightIn: function() {},
-  leftOut: function() {},
-  topDown: function() {},
-  bottomUp: function() {}
-});
- 
-var VrtxAnimation = dejavu.Class.declare({
-  $name: "VrtxAnimation",
-  $implements: [VrtxAnimationInterface],
-  $constants: {
-    // TODO: remove vrtxAdmin dependency
-    animationSpeed: (typeof vrtxAdmin !== "undefined" && vrtxAdmin.isMobileWebkitDevice) ? 0 : 200,
-    easeIn: (typeof vrtxAdmin !== "undefined" && !(vrtxAdmin.isIE && vrtxAdmin.browserVersion < 10) && !vrtxAdmin.isMobileWebkitDevice) ? "easeInQuad" : "linear",
-    easeOut: (typeof vrtxAdmin !== "undefined" && !(vrtxAdmin.isIE && vrtxAdmin.browserVersion < 10) && !vrtxAdmin.isMobileWebkitDevice) ? "easeOutQuad" : "linear"
-  },
-  __opts: {},
-  initialize: function(opts) {
-    this.__opts = opts;
-  },
-  __prepareHorizontalMove: function() {
-    if(this.__opts.outerWrapperElem && !this.__opts.outerWrapperElem.hasClass("overflow-hidden")) {
-      this.__opts.outerWrapperElem.addClass("overflow-hidden");
-    }
-    return this.__opts.elem.outerWidth(true);
-  },
-  __horizontalMove: function(left, easing) {
-    var animation = this;
-    animation.__opts.elem.animate({
-      "marginLeft": left + "px"
-    }, animation.__opts.animationSpeed || animation.$static.animationSpeed, easing, function() {
-      if(animation.__opts.outerWrapperElem) animation.__opts.outerWrapperElem.removeClass("overflow-hidden");
-      if(animation.__opts.after) animation.__opts.after(animation);
-      // TODO: closures pr. direction if needed also for horizontal animation
-      if(animation.__opts.afterIn) animation.__opts.afterIn(animation);
-      if(animation.__opts.afterOut) animation.__opts.afterOut(animation);
-    });
-  },
-  update: function(opts) {
-    this.__opts = opts;
-  },
-  updateElem: function(elem) {
-    this.__opts.elem = elem;
-  },
-  rightIn: function() {
-    var width = this.__prepareHorizontalMove();
-    this.__opts.elem.css("marginLeft", -width);
-    this.__horizontalMove(0, this.__opts.easeIn || this.$static.easeIn);
-  },
-  leftOut: function() {
-    var width = this.__prepareHorizontalMove();
-    this.__horizontalMove(-width, this.__opts.easeOut || this.$static.easeOut);
-  },
-  topDown: function() {
-    var animation = this;
-    animation.__opts.elem.slideDown(
-        animation.__opts.animationSpeed || animation.$static.animationSpeed,
-        animation.__opts.easeIn || animation.$static.easeIn, function() {
-      if(animation.__opts.after) animation.__opts.after(animation);
-      if(animation.__opts.afterIn) animation.__opts.afterIn(animation);
-    });
-  },
-  bottomUp: function() {
-    var animation = this;
-    animation.__opts.elem.slideUp(
-        animation.__opts.animationSpeed || animation.$static.animationSpeed, 
-        animation.__opts.easeOut || animation.$static.easeOut, function() {
-      if(animation.__opts.after) animation.__opts.after(animation);
-      if(animation.__opts.afterOut) animation.__opts.afterOut(animation);
-    });
-  }
-});
- 
-
-/*
- * VrtxTree - facade to TreeView async
- *  
- *  * Requires Dejavu OOP library
- *  * Requires but Lazy-loads TreeView and ScrollTo libraries (if not defined) on open
- */
-
-var VrtxTreeInterface = dejavu.Interface.declare({
-  $name: "VrtxTreeInterface",
-  __opts: {},
-  __openLeaf: function() {}
-});
-
-var VrtxTree = dejavu.Class.declare({
-  $name: "VrtxTree",
-  $implements: [VrtxTreeInterface],
-  $constants: {
-    leafLoadingClass: "loading-tree-node",
-    leafSelector: "> .hitarea" // From closest li
-  },
-  __opts: {},
-  initialize: function(opts) {
-    var tree = this;
-    tree.__opts = opts;
-    tree.__opts.pathNum = 0;
-    
-    // TODO: rootUrl and jQueryUiVersion should be retrieved from Vortex config/properties somehow
-    var rootUrl = "/vrtx/__vrtx/static-resources";
-    var jQueryUiVersion = "1.10.4";
-    
-    $.loadCSS(location.protocol + "//" + location.host + rootUrl + "/themes/default/report/jquery.treeview.css");
-    var futureTree = $.Deferred();
-    if (typeof $.fn.treeview !== "function") {
-      $.getScript(location.protocol + "//" + location.host + rootUrl + "/jquery/plugins/jquery.treeview.js", function () {
-        $.getScript(location.protocol + "//" + location.host + rootUrl + "/jquery/plugins/jquery.treeview.async.js", function () {
-          futureTree.resolve();
-        });
-      });
-    } else {
-      futureTree.resolve();
-    }
-    var futureScrollTo = $.Deferred();
-    if(typeof $.fn.scrollTo !== "function" && tree.__opts.scrollToContent) {
-      $.getScript(location.protocol + "//" + location.host + rootUrl + "/jquery/plugins/jquery.scrollTo.min.js", function () {
-        futureScrollTo.resolve();
-      });
-    } else {
-      futureScrollTo.resolve();
-    }
-    $.when(futureTree, futureScrollTo).done(function() {
-      opts.elem.treeview({
-        animated: "fast",
-        url: location.protocol + '//' + location.host + location.pathname + "?vrtx=admin&uri=&" + opts.service + "&ts=" + (+new Date()),
-        service: opts.service,
-        dataLoaded: function () {
-          tree.__openLeaf();
-        }
-      });
-    });
-  },
-  __openLeaf: function() {
-    var tree = this;
-    var checkLeafAvailable = setInterval(function () {
-      $("." + tree.$static.leafLoadingClass).remove();
-      var link = tree.__opts.elem.find("a[href$='" + tree.__opts.trav[tree.__opts.pathNum] + "']");
-      if (link.length) {
-        clearInterval(checkLeafAvailable);
-        var hit = link.closest("li").find(tree.$static.leafSelector);
-        hit.click();
-        if (tree.__opts.scrollToContent && (tree.__opts.pathNum == (tree.__opts.trav.length - 1))) {
-          tree.__opts.elem.css("background", "none").fadeIn(200, function () {  // Scroll to node
-            $(tree.__opts.scrollToContent).scrollTo(Math.max(0, (link.position().top - 145)), 250, {
-              easing: "swing",
-              queue: true,
-              axis: 'y',
-              complete: tree.__opts.afterTrav(link)
-            });
-          });
-        } else {
-          $("<span class='" + tree.$static.leafLoadingClass + "'>" + loadingSubfolders + "</span>").insertAfter(hit.next());
-        }
-        tree.__opts.pathNum++;
-      }
-    }, 20);
-  }
-});
 
 /**
  * Initialize dropdowns
@@ -1246,18 +1109,17 @@ VrtxAdmin.prototype.dropdown = function dropdown(options) {
     list.find("li").not(startDropdown).remove();
     list.find("li" + dropdownClickArea).append("<span tabindex='0' class='dropdown-shortcut-menu-click-area' />");
     var shortcutMenu = listParent.find(".dropdown-shortcut-menu-container");
-    
-    setTimeout(function() {
-    
     shortcutMenu.find("li" + startDropdown).remove();
-    if (options.calcTop) {
-      shortcutMenu.css("top", (list.position().top + list.height() - (parseInt(list.css("marginTop"), 10) * -1) + 2) + "px");
-    } 
-    var left = (list.width() - list.find(".dropdown-shortcut-menu-click-area").width() - 2);
-    if (options.calcLeft) {
-      left += list.position().left;
-    }
-    shortcutMenu.css("left", left + "px");
+    
+    setTimeout(function() { // Adjust positioning of dropdown container
+      if (options.calcTop) {
+        shortcutMenu.css("top", (list.position().top + list.height() - (parseInt(list.css("marginTop"), 10) * -1) + 2) + "px");
+      } 
+      var left = (list.width() - list.find(".dropdown-shortcut-menu-click-area").width() - 2);
+      if (options.calcLeft) {
+        left += list.position().left;
+      }
+      shortcutMenu.css("left", left + "px");
     }, 500);
 
     list.find("li" + dropdownClickArea).addClass("dropdown-init");
@@ -1443,7 +1305,7 @@ VrtxAdmin.prototype.scrollBreadcrumbsHorizontal = function scrollBreadcrumbsHori
  *
  */
  
-VrtxAdmin.prototype.miscAdjustments = function miscAdjustments() {
+VrtxAdmin.prototype.initMiscAdjustments = function initMiscAdjustments() {
   var vrtxAdm = this;
 
    // Remove active tab if it has no children
@@ -1619,7 +1481,7 @@ function createChangeTemplate(hasTitle) {
   if (checked.length) {
     var templateFile = checked.val();
     if (templateFile.indexOf(".") !== -1) {
-      var fileType = $("#vrtx-div-file-type input[type='text']");
+      var fileType = $("#vrtx-textfield-file-type");
       if (fileType.length) {
         fileTypeEnding = templateFile.split(".")[1];
         fileType.text("." + fileTypeEnding);
@@ -1662,9 +1524,9 @@ function createChangeTemplate(hasTitle) {
 function createCheckUncheckIndexFile(nameField, indexCheckbox) {
   if (indexCheckbox.is(":checked")) {
     vrtxAdmin.createDocumentFileName = nameField.val();
-    nameField.val('index');
     growField(nameField, 'index', 5, 35, 530);
-
+    nameField.val("index");
+    
     nameField[0].disabled = true;
     $("#vrtx-textfield-file-type").addClass("disabled");
   } else {
@@ -2139,8 +2001,8 @@ VrtxAdmin.prototype.collectionListingInteraction = function collectionListingInt
 
   if (!vrtxAdm.cachedDirectoryListing.length) return;
 
-  vrtxAdmin.cachedAppContent.on("click", "#vrtx-checkbox-is-index", function (e) {
-    createCheckUncheckIndexFile($("#vrtx-textfield-file-name"), $(this));
+  vrtxAdmin.cachedAppContent.on("click", "#vrtx-checkbox-is-index #isIndex", function (e) {
+    createCheckUncheckIndexFile($("#vrtx-div-file-name input[type='text']"), $(this));
     e.stopPropagation();
   });
   vrtxAdmin.cachedAppContent.on("click", ".radio-buttons input", function (e) {
@@ -4031,6 +3893,23 @@ VrtxAdmin.prototype.outerHTML = function outerHTML(selector, subselector) {
 };
 
 /**
+ * Load multiple scripts Async / lazy-loading
+ *
+ * @this {VrtxAdmin}
+ * @param {string} url The url to the script
+ * @param {function} deferred Future that will be resolved when all scripts are loaded
+ */
+VrtxAdmin.prototype.loadScripts = function loadScript(urls, deferred) {
+  var futureScripts = [];
+  for(var i = 0, len = urls.length; i < len; i++) {
+    futureScripts.push(this.loadScript(urls[i]));
+  }
+  $.when.apply($, futureScripts).done(function () {
+    deferred.resolve();
+  });
+};
+
+/**
  * Load script Async / lazy-loading
  *
  * @this {VrtxAdmin}
@@ -4038,7 +3917,7 @@ VrtxAdmin.prototype.outerHTML = function outerHTML(selector, subselector) {
  * @param {function} callback Callback function to run on success
  */
 VrtxAdmin.prototype.loadScript = function loadScript(url, callback) {
-  $.cachedScript(url).done(callback).fail(function (jqxhr, settings, exception) {
+  return $.cachedScript(url).done(callback).fail(function (jqxhr, settings, exception) {
     vrtxAdmin.log({
       msg: exception
     });

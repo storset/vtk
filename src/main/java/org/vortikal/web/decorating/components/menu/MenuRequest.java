@@ -163,8 +163,11 @@ public class MenuRequest {
                     if (!"/".equals(uri) && uri.endsWith("/")) {
                         uri = uri.substring(0, uri.length() - 1);
                     }
+                    if (! uri.startsWith("/")) {
+                        Path currentCollection = RequestContext.getRequestContext().getCurrentCollection();
+                        uri = currentCollection.expand(uri).toString();
+                    }
                 }
-
                 this.currentCollectionUri = Path.fromString(uri); // override
             } catch (Throwable t) {
                 throw new DecoratorComponentException("Illegal value for parameter '"

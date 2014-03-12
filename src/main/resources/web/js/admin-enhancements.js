@@ -143,9 +143,7 @@ function VrtxAdmin() {
 var vrtxAdmin = new VrtxAdmin();
 
 /* Required init components dummy containers
- *
- * Resolved, overwritten and applied in the future when script-retrieval is done
- * (not in year 2525 but some ms or s later depending on downlink connection speed)
+ * (resolved, overwritten and applied in the future (ms / s depending on download speed) when script-retrieval is done)
  */
 var VrtxTree = function(opts) {
   var obj = this;
@@ -165,9 +163,7 @@ var VrtxAnimation = function(opts) {
       }
     });
   }
-  /* TODO: Is it possible to handle unknown function names/properties (so can avoid partly interface duplication)?
-           Seems like using overridden .call(fn[, arg]) instead of fn() is the only way..
-           http://stackoverflow.com/questions/2666602/is-there-a-way-to-catch-an-attempt-to-access-a-non-existant-property-or-method */
+  // TODO: general object prop access handling possible?
   obj.update = function update(opts)         { objApplied.push({fn: arguments.callee.name, args: opts}); };
   obj.updateElem = function updateElem(elem) { objApplied.push({fn: arguments.callee.name, args: elem}); };
   obj.rightIn = function rightIn()           { objApplied.push({fn: arguments.callee.name, args: null}); };

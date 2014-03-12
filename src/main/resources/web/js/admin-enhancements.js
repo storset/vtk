@@ -142,7 +142,7 @@ function VrtxAdmin() {
 
 var vrtxAdmin = new VrtxAdmin();
 
-/* Required init components dummy containers
+/* Dummy containers for required init components (external scripts)
  *
  * Replaced and applied in the future when script-retrieval is done
  * (you have to be really fast or have a slow connection speed to get this code running, 

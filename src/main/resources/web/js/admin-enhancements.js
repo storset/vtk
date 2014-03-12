@@ -144,8 +144,9 @@ var vrtxAdmin = new VrtxAdmin();
 
 /* Required init components dummy containers
  *
- * Replaced and applied in the future when script-retrieval is done (ms / s depending on download speed).
- * (you have to be really fast or have a slow connection speed to get this code running, but the latter could occur on e.g. a 3G-connection)
+ * Replaced and applied in the future when script-retrieval is done
+ * (you have to be really fast or have a slow connection speed to get this code running, 
+ *  but the latter could occur on e.g. a 3G-connection)
  */
 var VrtxTree = function(opts) {
   var obj = this;

@@ -34,6 +34,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -47,7 +48,6 @@ import org.vortikal.resourcemanagement.StructuredResourceDescription;
 
 public class PersonResourceTypeDefinitionTest extends StructuredResourceParserTest {
 
-    private List<String> expectedProperties;
     private Map<String, ScriptDefinition.ScriptType> expectedScripts;
 
     @Test
@@ -62,16 +62,25 @@ public class PersonResourceTypeDefinitionTest extends StructuredResourceParserTe
         // Properties
         List<PropertyDescription> properties = person.getPropertyDescriptions();
         assertNotNull(properties);
-
-        expectedProperties = Arrays.asList("username", "getExternalPersonInfo", "firstName", "surname", "position",
-                "phone", "mobile", "fax", "email", "postalAddress", "visitingAddress", "externalUserMetaData",
-                "affiliations", "alternativeVisitingAddress", "alternativeCellPhone", "title", "room",
-                "availableHours", "picture", "pressPhoto", "content", "getExternalScientificInformation",
-                "selectedPublications", "getRelatedProjects", "projects", "getRelatedGroups", "groups", "rssFeeds",
-                "tags", "related-content");
+        List<String> propertyNames = new ArrayList<String>();
         for (PropertyDescription pd : properties) {
-            String propertyName = pd.getName();
-            assertTrue("Expected property " + propertyName + " is missing", expectedProperties.contains(propertyName));
+            propertyNames.add(pd.getName());
+        }
+
+        List<String> expectedProperties = Arrays.asList("username", "getExternalPersonInfo", "firstName", "surname",
+                "position", "phone", "mobile", "fax", "email", "postalAddress", "visitingAddress",
+                "externalUserMetaData", "affiliations", "alternativeVisitingAddress", "alternativeCellPhone", "title",
+                "room", "availableHours", "picture", "pressPhoto", "content", "getExternalScientificInformation",
+                "selectedPublications", "getRelatedProjects", "projects", "getRelatedGroups", "groups", "rssFeeds",
+                "tags", "related-content", "hideStudentAffiliation");
+
+        for (String expectedProperty : expectedProperties) {
+            assertTrue("Expected property " + expectedProperty + " is missing",
+                    propertyNames.contains(expectedProperty));
+        }
+
+        for (String propertyName : propertyNames) {
+            assertTrue("Didn't expect property " + propertyName, expectedProperties.contains(propertyName));
         }
 
         // Edit rules

@@ -143,7 +143,8 @@ function VrtxAdmin() {
 var vrtxAdmin = new VrtxAdmin();
 
 /* Required init components dummy containers
- * Resolved, overwritten and applied in the future (ms / s depending on download speed) when script-retrieval is done.
+ *
+ * Replaced and applied in the future when script-retrieval is done (ms / s depending on download speed).
  * (you have to be really fast or have a slow connection speed to get this code running, but the latter could occur on e.g. a 3G-connection)
  */
 var VrtxTree = function(opts) {

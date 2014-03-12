@@ -166,7 +166,7 @@ var VrtxAnimation = function(opts) {
       }
     });
   }
-  // TODO: general object prop access handling possible?
+  // Add applied functions for future running. TODO: general object prop access handling possible?
   obj.update = function update(opts)         { objApplied.push({fn: arguments.callee.name, args: opts}); };
   obj.updateElem = function updateElem(elem) { objApplied.push({fn: arguments.callee.name, args: elem}); };
   obj.rightIn = function rightIn()           { objApplied.push({fn: arguments.callee.name, args: null}); };

@@ -225,6 +225,8 @@ public class MediaPlayer {
     }
 
     /**
+     * TODO support references relative to current resource, like "../foo.mp4".
+     * 
      * @param mediaRef link/reference to a media resource. Must either be root
      * relative path or an absolute URL with protocol.
      * 

@@ -37,6 +37,18 @@
         });
         $("#diff-show-changes-info").append('<form id="diff-show-changes-form" action="" method="get"><input id="diff-show-changes" name="diff-show-changes" type="checkbox" /><label for="diff-show-changes"><@vrtx.msg code="versions.diff.show-changes" default="Show changes" /></label></form>')
         $("#vrtx-diff-content").removeClass("show-changes");
+       
+        // Remove textual node before content (assumption)
+        try {
+          var diffNode = $("#vrtx-diff-content");
+          if(diffNode.length) {
+            var diffNodes = diffNode[0].childNodes;
+            if(diffNodes.length) {
+              $(diffNodes[0]).remove();
+            }
+          }
+        } catch(err) {}
+       
         $("#vrtx-sticky-header").on("click", "#diff-show-changes", function(e) {
           if (this.checked) {
             $("#vrtx-diff-content").addClass("show-changes");

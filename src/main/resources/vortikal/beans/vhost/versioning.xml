@@ -29,6 +29,7 @@
     class="org.vortikal.web.display.diff.DisplayRevisionsDifferenceController">
     <property name="viewName" value="versioning.displayDiff" />
     <property name="principalFactory" ref="principalFactory" />
+    <property name="viewService" ref="decorating.viewUnpublishedService" />
   </bean>
 
   <bean id="versioning.displayDiffViewResolver" parent="decoratorViewResolver">

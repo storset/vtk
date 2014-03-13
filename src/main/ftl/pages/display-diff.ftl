@@ -28,6 +28,7 @@
       </#list>
     </#if>
     <script type="text/javascript"><!--
+      
       $(document).ready(function() {
         var diffStickyBar = new VrtxStickyBar({
           wrapperId: "#vrtx-sticky-header",
@@ -35,6 +36,56 @@
           contentsId: "body",
           alwaysFixed: true
         });
+        
+        var showOriginal = location.href.indexOf("&original") !== -1;
+
+        var origWidth = 0;
+        var origHeight = 0;
+        var origTop = 0;
+        var origLeft = 0;
+        var origMB = 0;
+        
+        var stickyHeight = $("#vrtx-sticky-header").height();
+        
+        if(showOriginal) {
+          var iframe = $("#original");
+          var w = $("body");
+          iframe.css({position: "relative"});
+          var resizeOriginalIframe = function(init) {
+            if(init) {
+              console.log(iframe.offset().left);
+              origWidth = w.width();
+              origHeight = w.height() - (iframe.offset().top - stickyHeight);
+              origTop = (iframe.offset().top - stickyHeight);
+              origLeft = iframe.offset().left;
+              origMB = (w.height() - (iframe.offset().top - stickyHeight));
+              origMR = (w.width() - iframe.offset().left);
+            } else {
+              var newLeft = iframe.offset().left;
+              if(newLeft < 0) { 
+                origLeft = origLeft - (newLeft * -1);
+              } else {
+                origLeft = origLeft + newLeft;
+              }
+            }
+            iframe.css({
+              width: origWidth + "px",
+              height: origHeight + "px",
+              top: -origTop + "px",
+              left: -origLeft + "px",
+              marginBottom: -origMB + "px",
+              marginRight: -origMR + "px"
+            });
+          };
+          resizeOriginalIframe(true);
+          $(window).resize(function() {
+            resizeOriginalIframe(false);
+          });
+          $(window).load(function() {
+            resizeOriginalIframe(false);
+          });
+        }
+        
         $("#vrtx-sticky-header").on("click", "#diff-show-changes", function() {
           if(!this.checked) {
             location.href = location.href + "&" + this.name;
@@ -60,7 +111,7 @@
                  <@vrtx.msg code="proptype.name.modifiedBy" default="Modified by" /> <span id="diff-info-modified-by">${revisionBDetails.principal.description?html}</span>, <@vrtx.date value=revisionBDetails.timestamp format="longlong" />
                </span>
                <form id="diff-show-changes-form" action="" method="get">
-                 <input id="diff-show-changes" name="original" type="checkbox" <#if original?exists && !original>checked="checked"</#if> />
+                 <input id="diff-show-changes" name="original" type="checkbox" <#if !original>checked="checked"</#if> />
                  <label for="diff-show-changes"><@vrtx.msg code="versions.diff.show-changes" default="Show changes" /></label>
                </form>
              </span>
@@ -75,7 +126,12 @@
            </span>
         </div>
       </div>
+      
       ${content}
+      
+      <#if original>
+        <iframe frameborder="0" scrolling="no" id="original" src="${originalUrl}"></iframe>
+      </#if>
     </body>
   </#if>
   

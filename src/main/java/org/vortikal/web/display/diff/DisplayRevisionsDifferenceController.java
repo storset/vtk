@@ -53,6 +53,7 @@ import org.vortikal.repository.Revision;
 import org.vortikal.security.PrincipalFactory;
 import org.vortikal.security.Principal.Type;
 import org.vortikal.web.RequestContext;
+import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 import org.vortikal.web.servlet.BufferedResponse;
 import org.vortikal.web.servlet.ConfigurableRequestWrapper;
@@ -76,6 +77,7 @@ public class DisplayRevisionsDifferenceController extends ParameterizableViewCon
     private static Log logger = LogFactory.getLog(DisplayRevisionsDifferenceController.class);
 
     private PrincipalFactory principalFactory;
+    private Service viewService;
     
     private final static String ORIGINAL_PARAMETER = "original";
    
@@ -108,18 +110,18 @@ public class DisplayRevisionsDifferenceController extends ParameterizableViewCon
         
         boolean showOriginal = request.getParameter(ORIGINAL_PARAMETER) != null;
         
-        String content = "";
-        if(showOriginal) {
-            content = getContentForRevision(revisionNameB, request);;
-        } else {
-            content = diffRevisions(revisionNameA, revisionNameB, request);
-        }
+        String content = diffRevisions(revisionNameA, revisionNameB, request);
 
         Map<String, Object> model = new HashMap<String, Object>();
         model.put("revisionA", revisionNameA);
         model.put("revisionB", revisionNameB);
         model.put("content", content);
         model.put(ORIGINAL_PARAMETER, showOriginal);
+        
+        // TODO: Diff service
+        URL originalUrl = viewService.constructURL(Path.fromString(request.getRequestURI()));
+        originalUrl.addParameter("revision", revisionNameB);
+        model.put("originalUrl", originalUrl);
         
         putRevisionInfo(model, revisionNameA, revisionNameB, request, showOriginal);
         
@@ -233,5 +235,10 @@ public class DisplayRevisionsDifferenceController extends ParameterizableViewCon
     @Required
     public void setPrincipalFactory(PrincipalFactory principalFactory) {
         this.principalFactory = principalFactory;
+    }
+    
+    @Required
+    public void setViewService(Service viewService) {
+        this.viewService = viewService;
     }
 }

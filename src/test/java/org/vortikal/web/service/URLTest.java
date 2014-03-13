@@ -32,14 +32,14 @@ package org.vortikal.web.service;
 
 import java.util.Map;
 
-import junit.framework.TestCase;
-
+import static org.junit.Assert.*;
 import org.junit.Test;
 import org.vortikal.repository.Path;
 
-public class URLTest extends TestCase {
+public class URLTest {
 
-    public void testParse() {
+    @Test
+    public void parse() {
         try {
             String s = null;
             URL.parse(s);
@@ -142,7 +142,8 @@ public class URLTest extends TestCase {
         assertEquals(rtmpUrl, url.toString());
     }
     
-    public void testSplitQueryString() {
+    @Test
+    public void splitQueryString() {
         String testQueryString = "?key1=val1&key1=val2&key2=val%203";
         Map<String, String[]> splitValues = URL.splitQueryString(testQueryString);
         String[] param1 = splitValues.get("key1");
@@ -155,13 +156,15 @@ public class URLTest extends TestCase {
         assertEquals("val%203", param2[0]);
     }
 
-    public void testCharacterEncoding() {
+    @Test
+    public void characterEncoding() {
         URL x1 = URL.parse("http://example.com/%c3%b8");
         URL x2 = URL.parse("http://example.com/%f8", "iso-8859-1");
         assertEquals(x1.getPath(), x2.getPath());
     }
     
-    public void testEncode() {
+    @Test
+    public void encode() {
         assertEquals("%21", URL.encode("!"));
         //assertEquals("%2A", URL.encode("*"));
         assertEquals("%22", URL.encode("\""));
@@ -193,8 +196,8 @@ public class URLTest extends TestCase {
         assertEquals("http://foo.bar/%2520", url.toString());
     }
     
-
-    public void testDecode() {
+    @Test
+    public void decode() {
         assertEquals("\u2664", URL.decode("%E2%99%A4"));
         URL url = URL.parse("http://foo.bar/abc%28def%29?xyz=2%2B2%3D3");
         assertEquals(Path.fromString("/abc(def)"), url.getPath());
@@ -205,7 +208,8 @@ public class URLTest extends TestCase {
         assertEquals("a value", url.getParameter("a key"));
     }
     
-    public void testRelative() {
+    @Test
+    public void relativeUrl() {
         URL url = URL.parse("http://a/b/c/d?q#f");
                 
         assertEquals("http://a/b/c/g", url.relativeURL("g").toString());
@@ -252,8 +256,8 @@ public class URLTest extends TestCase {
         assertEquals("http://a/", url.relativeURL("../../../../../b/../../../../../").toString());
     }
     
-    
-    public void testIsRelative() {
+    @Test
+    public void isRelative() {
         assertFalse(URL.isRelativeURL("http://foo.bar"));
         assertFalse(URL.isRelativeURL("mailto:xyz@example.com?subject=foo&body=bar"));
         assertFalse(URL.isRelativeURL("ftp://ftp.example.com/"));
@@ -261,7 +265,8 @@ public class URLTest extends TestCase {
         assertTrue(URL.isRelativeURL("test.html?foo=bar:baaz"));
     }
     
-    public void testIsEncoded() {
+    @Test
+    public void isEncoded() {
         assertFalse(URL.isEncoded("http://www.uio.no/detteÆerikkeencoda"));
         assertFalse(URL.isEncoded("http://www.uio.no/dette%erikkeencoda"));
         assertTrue(URL.isEncoded("http://www.uio.no/dette%20erencoda"));
@@ -278,7 +283,8 @@ public class URLTest extends TestCase {
         assertTrue(URL.isEncoded("%25"));
     }
     
-    public void testProtocolRelative() {
+    @Test
+    public void protocolRelative() {
         URL url = URL.parse("http://domain.com/img/logo.png");
         assertEquals("//domain.com/img/logo.png", url.protocolRelativeURL());
 
@@ -287,17 +293,17 @@ public class URLTest extends TestCase {
     }
 
 	@Test
-	public void testSetParameterWhenNoParameterBeforeThenSetNew() {
+	public void setParameterWhenNoParameterBeforeThenSetNew() {
 		assertEquals("http://localhost/?param=a", URL.parse("http://localhost/").setParameter("param", "a").toString());
 	}
 
 	@Test
-	public void testSetParameterWhenSameParameterThenNoChange() {
+	public void setParameterWhenSameParameterThenNoChange() {
 		assertEquals("http://localhost/?param=a", URL.parse("http://localhost/?param=a").setParameter("param", "a").toString());
 	}
 	
 	@Test
-	public void testSetParameterWhenNewParameterIsDifferentThenReplaceWithNew() {
+	public void setParameterWhenNewParameterIsDifferentThenReplaceWithNew() {
 		assertEquals("http://localhost/?param=a", URL.parse("http://localhost/?param=b").setParameter("param", "a").toString());
 	}
     

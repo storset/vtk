@@ -35,27 +35,6 @@
           contentsId: "body",
           alwaysFixed: true
         });
-        $("#diff-show-changes-info").append('<form id="diff-show-changes-form" action="" method="get"><input id="diff-show-changes" name="diff-show-changes" type="checkbox" /><label for="diff-show-changes"><@vrtx.msg code="versions.diff.show-changes" default="Show changes" /></label></form>')
-        $("#vrtx-diff-content").removeClass("show-changes");
-       
-        // Remove textual node before content (assumption)
-        try {
-          var diffNode = $("#vrtx-diff-content");
-          if(diffNode.length) {
-            var diffNodes = diffNode[0].childNodes;
-            if(diffNodes.length) {
-              $(diffNodes[0]).remove();
-            }
-          }
-        } catch(err) {}
-       
-        $("#vrtx-sticky-header").on("click", "#diff-show-changes", function(e) {
-          if (this.checked) {
-            $("#vrtx-diff-content").addClass("show-changes");
-          } else {
-            $("#vrtx-diff-content").removeClass("show-changes");
-          }
-        });
       });
     // -->
     </script>
@@ -75,10 +54,10 @@
            </span>
            <span id="diff-nav">
              <#if revisionADetails?has_content>
-               <a id="diff-nav-prev" href="?vrtx=diff&revision=${revisionADetails.name}"><@vrtx.msg code="previous" default="Previous" /></a>
+               <a id="diff-nav-prev" href="?vrtx=diff&amp;revision=${revisionADetails.name}"><@vrtx.msg code="previous" default="Previous" /></a>
              </#if>
              <#if revisionBNext?has_content>  
-               <a id="diff-nav-next" href="?vrtx=diff&revision=${revisionBNext}"><@vrtx.msg code="next" default="Next" /></a>
+               <a id="diff-nav-next" href="?vrtx=diff&amp;revision=${revisionBNext}"><@vrtx.msg code="next" default="Next" /></a>
              </#if>
            </span>
          </span>

@@ -110,7 +110,6 @@ public class DisplayRevisionsDifferenceController extends ParameterizableViewCon
         model.put("revisionB", revisionNameB);
         model.put("content", content);
         putRevisionInfo(model, revisionNameA, revisionNameB, request);
-        logger.warn("model: " + model);
         
         return new ModelAndView(getViewName(), model);
     }

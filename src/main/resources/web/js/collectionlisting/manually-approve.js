@@ -320,10 +320,11 @@ var MANUALLY_APPROVE_INITIALIZED = $.Deferred();
   }
   
   function enhanceTableRows(table) {
-    var trs = table.find("tr");
-    trs.filter(":first-child").addClass("first");
-    trs.filter(":last-child").addClass("last");
-    trs.filter(":nth-child(even)").addClass("even");
+    if(vrtxAdmin.isIE8) {
+      var trs = table.find("tr");
+      trs.filter(":last-child").addClass("last");
+      trs.filter(":nth-child(even)").addClass("even");
+    }
     table.find("input").removeAttr("disabled");
   }
 

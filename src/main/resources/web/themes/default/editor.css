@@ -141,10 +141,6 @@
   display: none;
 }
 
-#manually-approve-container > * {
-  
-}
-
 #manually-approve-container table {
   width: 100%;
   table-layout: fixed;
@@ -163,20 +159,23 @@
   overflow: visible;
 }
 
-#manually-approve-container table tr.even td {
-  background-color: #F9F9F9;
-}
-
-#manually-approve-container table tr.first td {
+#manually-approve-container table tr:first-child td {
   border-top: none;
 }
 
+#manually-approve-container table tr.even td,
+#manually-approve-container table tr:nth-child(even) td {
+  background-color: #F9F9F9;
+}
+
 #manually-approve-container table th,
-#manually-approve-container table tr.last td {
+#manually-approve-container table tr.last td,
+#manually-approve-container table tr:last-child td {
   background: url(images/line-dotted.gif) repeat-x bottom left;
 }
 
-#manually-approve-container table tr.last.even td {
+#manually-approve-container table tr.last.even td,
+#manually-approve-container table tr:last-child:nth-child(even) td {
   background: #F9F9F9 url(images/line-dotted.gif) repeat-x bottom left;
 }
 

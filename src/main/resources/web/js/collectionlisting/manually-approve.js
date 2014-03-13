@@ -7,40 +7,40 @@ var MANUALLY_APPROVE_INITIALIZED = $.Deferred();
 
 (function() {
 
-  var LAST_MANUALLY_APPROVED_LOCATIONS = "",
-      MANUALLY_APPROVED_LOCATIONS_TEXTFIELD,
-      AGGREGATED_LOCATIONS_TEXTFIELD,
-      APPROVED_ONLY = false,
-      ASYNC_GEN_PAGE_TIMER,
-      MANUALLY_APPROVE_TEMPLATES = [];
+  var lastManuallyApprovedLocations = "",
+      manuallyApprovedLocationsTextfield,
+      aggregatedLocationsTextfield,
+      showApprovedOnly = false,
+      asyncGenPageTimer,
+      manuallyApproveTemplates = [];
     
   $(window).load(function() {
 
     // Retrieve initial resources
-    MANUALLY_APPROVED_LOCATIONS_TEXTFIELD = $("#resource\\.manually-approve-from");
-    AGGREGATED_LOCATIONS_TEXTFIELD = $("#resource\\.aggregation");
+    manuallyApprovedLocationsTextfield = $("#resource\\.manually-approve-from");
+    aggregatedLocationsTextfield = $("#resource\\.aggregation");
                                                                 
     // Set initial locations / aggregated locations and generate menu
-    if(MANUALLY_APPROVED_LOCATIONS_TEXTFIELD.length) {
+    if(manuallyApprovedLocationsTextfield.length) {
 	  // Retrieve HTML templates
 	  var manuallyApprovedTemplatesRetrieved = $.Deferred();
-	  MANUALLY_APPROVE_TEMPLATES = vrtxAdmin.retrieveHTMLTemplates("manually-approve",
-	                                                              ["menu", "table-start", "table-row", 
-	                                                               "table-end", "navigation-next", "navigation-prev"],
-	                                                               manuallyApprovedTemplatesRetrieved);
+	  manuallyApproveTemplates = vrtxAdmin.retrieveHTMLTemplates("manually-approve",
+	                                                             ["menu", "table-start", "table-row", 
+	                                                              "table-end", "navigation-next", "navigation-prev"],
+	                                                             manuallyApprovedTemplatesRetrieved);
       var locations, aggregatedlocations;
-      var value = MANUALLY_APPROVED_LOCATIONS_TEXTFIELD.val();
-      LAST_MANUALLY_APPROVED_LOCATIONS = $.trim(value);
-      locations = LAST_MANUALLY_APPROVED_LOCATIONS.split(",");
-      if(AGGREGATED_LOCATIONS_TEXTFIELD.length) {
-        aggregatedlocations = $.trim(AGGREGATED_LOCATIONS_TEXTFIELD.val());
+      var value = manuallyApprovedLocationsTextfield.val();
+      lastManuallyApprovedLocations = $.trim(value);
+      locations = lastManuallyApprovedLocations.split(",");
+      if(aggregatedLocationsTextfield.length) {
+        aggregatedlocations = $.trim(aggregatedLocationsTextfield.val());
         aggregatedlocations = aggregatedlocations.split(",");
       }
 
       $.when(manuallyApprovedTemplatesRetrieved).done(function() {
         retrieveResources(".", locations, aggregatedlocations, true);
-        var html = $.mustache(MANUALLY_APPROVE_TEMPLATES["menu"], { approveShowAll: approveShowAll, 
-                                                                    approveShowApprovedOnly: approveShowApprovedOnly });  
+        var html = $.mustache(manuallyApproveTemplates["menu"], { approveShowAll: approveShowAll, 
+                                                                  approveShowApprovedOnly: approveShowApprovedOnly });  
         $($.parseHTML(html)).insertAfter("#manually-approve-container-title"); 
       });
     } else {
@@ -56,14 +56,14 @@ var MANUALLY_APPROVE_INITIALIZED = $.Deferred();
       var parent = elem.parent();
       elem.replaceWith("<span>" + elem.html() + "</span>"); // todo: use wrap()
       if(parent.hasClass("last")) {
-        APPROVED_ONLY = true;
+        showApprovedOnly = true;
         parent.attr("class", "active active-last");
         var parentPrev = parent.prev();
         parentPrev.attr("class", "first");
         var parentPrevSpan = parentPrev.find("span");
         parentPrevSpan.replaceWith('<a href="javascript:void(0);">' + parentPrevSpan.html() + "</a>");
       } else {
-        APPROVED_ONLY = false;
+        showApprovedOnly = false;
         parent.attr("class", "active active-first");
         var parentNext = parent.next();
         parentNext.attr("class", "last");
@@ -75,19 +75,19 @@ var MANUALLY_APPROVE_INITIALIZED = $.Deferred();
     });
 
     vrtxAdmin.cachedAppContent.on("click", "#manually-approve-refresh", function(e) {
-      clearTimeout(ASYNC_GEN_PAGE_TIMER);
+      clearTimeout(asyncGenPageTimer);
       $("#approve-spinner").remove();
       
-      if(MANUALLY_APPROVED_LOCATIONS_TEXTFIELD && MANUALLY_APPROVED_LOCATIONS_TEXTFIELD.length) {
+      if(manuallyApprovedLocationsTextfield && manuallyApprovedLocationsTextfield.length) {
         var locations, aggregatedlocations;
         
         saveMultipleInputFields();
       
-        var value = MANUALLY_APPROVED_LOCATIONS_TEXTFIELD.val();
-        LAST_MANUALLY_APPROVED_LOCATIONS = $.trim(value);
-        locations = LAST_MANUALLY_APPROVED_LOCATIONS.split(",");
-        if(AGGREGATED_LOCATIONS_TEXTFIELD.length) {
-          aggregatedlocations = $.trim(AGGREGATED_LOCATIONS_TEXTFIELD.val());
+        var value = manuallyApprovedLocationsTextfield.val();
+        lastManuallyApprovedLocations = $.trim(value);
+        locations = lastManuallyApprovedLocations.split(",");
+        if(aggregatedLocationsTextfield.length) {
+          aggregatedlocations = $.trim(aggregatedLocationsTextfield.val());
           aggregatedlocations = aggregatedlocations.split(",");
         }
 
@@ -151,7 +151,7 @@ var MANUALLY_APPROVE_INITIALIZED = $.Deferred();
    */
   function retrieveResources(serviceUri, locations, aggregatedlocations, isInit) {
 
-    if (APPROVED_ONLY) {
+    if (showApprovedOnly) {
       var getUri = serviceUri + "/?vrtx=admin&service=manually-approve-resources&approved-only";
     } else {
       var getUri = serviceUri + "/?vrtx=admin&service=manually-approve-resources";
@@ -192,7 +192,7 @@ var MANUALLY_APPROVE_INITIALIZED = $.Deferred();
           generateManuallyApprovedContainer(results, isInit, approvedTextfield);
         } else {
           $("#approve-spinner").remove();
-          if(!APPROVED_ONLY) {
+          if(!showApprovedOnly) {
             $("#vrtx-manually-approve-tab-menu:visible").addClass("hidden");
           } else {
             $("<p id='vrtx-manually-approve-no-approved-msg'>" + approveNoApprovedMsg + "</p>")
@@ -261,7 +261,7 @@ var MANUALLY_APPROVE_INITIALIZED = $.Deferred();
     $("#approve-spinner").html(approveGeneratingPage + " <span id='approve-spinner-generated-pages'>" + pages + "</span> " + approveOf + " " + totalPages + "...");
  
     // Generate rest of pages asynchronous
-    ASYNC_GEN_PAGE_TIMER = setTimeout(function() {
+    asyncGenPageTimer = setTimeout(function() {
       html += generateTableRowFunc(resources[i], isInit, approvedTextfield);
       if ((i + 1) % prPage == 0) {
         html += generateTableEndAndPageInfoFunc(pages, prPage, len, false);
@@ -284,7 +284,7 @@ var MANUALLY_APPROVE_INITIALIZED = $.Deferred();
       }
       i++;
       if (i < len) {
-        ASYNC_GEN_PAGE_TIMER = setTimeout(arguments.callee, 1);
+        asyncGenPageTimer = setTimeout(arguments.callee, 1);
       } else {
         if (remainder != 0) {
           html += generateTableEndAndPageInfoFunc(pages, prPage, len, true);
@@ -331,7 +331,7 @@ var MANUALLY_APPROVE_INITIALIZED = $.Deferred();
   /* HTML generation functions */
   
   function generateStartPageAndTableHead(pages) {
-    return $.mustache(MANUALLY_APPROVE_TEMPLATES["table-start"], { pages: pages,
+    return $.mustache(manuallyApproveTemplates["table-start"], { pages: pages,
                                                                    approveTableTitle: approveTableTitle,
                                                                    approveTableSrc: approveTableSrc,
                                                                    approveTablePublished: approveTablePublished }); 
@@ -346,11 +346,11 @@ var MANUALLY_APPROVE_INITIALIZED = $.Deferred();
         approvedTextfield.val(resource.uri);
       }
     }
-    return $.mustache(MANUALLY_APPROVE_TEMPLATES["table-row"], { resource: resource });
+    return $.mustache(manuallyApproveTemplates["table-row"], { resource: resource });
   }
 
   function generateTableEndAndPageInfo(pages, prPage, len, lastRow) {
-    return $.mustache(MANUALLY_APPROVE_TEMPLATES["table-end"], { approveShowing: approveShowing,
+    return $.mustache(manuallyApproveTemplates["table-end"], { approveShowing: approveShowing,
                                                                  page: (((pages - 1) * prPage) + 1),
                                                                  last: lastRow ? len : pages * prPage,
                                                                  approveOf: approveOf,
@@ -361,11 +361,11 @@ var MANUALLY_APPROVE_INITIALIZED = $.Deferred();
     var html = "<div class='prev-next'>";
     if (i > prPage) {
       var prevPage = pages - 2;
-      html += $.mustache(MANUALLY_APPROVE_TEMPLATES["navigation-prev"], { prevPage: prevPage,
+      html += $.mustache(manuallyApproveTemplates["navigation-prev"], { prevPage: prevPage,
                                                                           approvePrev: approvePrev,
                                                                           prPage: prPage });
     }
-    html += $.mustache(MANUALLY_APPROVE_TEMPLATES["navigation-next"], { pages: pages,
+    html += $.mustache(manuallyApproveTemplates["navigation-next"], { pages: pages,
                                                                         approveNext: approveNext,
                                                                         nextPrPage: (pages < totalPages || remainder == 0) ? prPage : remainder });
     html += "</div></div>";

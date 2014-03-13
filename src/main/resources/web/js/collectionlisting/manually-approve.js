@@ -332,9 +332,9 @@ var MANUALLY_APPROVE_INITIALIZED = $.Deferred();
   
   function generateStartPageAndTableHead(pages) {
     return $.mustache(manuallyApproveTemplates["table-start"], { pages: pages,
-                                                                   approveTableTitle: approveTableTitle,
-                                                                   approveTableSrc: approveTableSrc,
-                                                                   approveTablePublished: approveTablePublished }); 
+                                                                 approveTableTitle: approveTableTitle,
+                                                                 approveTableSrc: approveTableSrc,
+                                                                 approveTablePublished: approveTablePublished }); 
   }
 
   function generateTableRow(resource, isInit, approvedTextfield) {
@@ -351,9 +351,9 @@ var MANUALLY_APPROVE_INITIALIZED = $.Deferred();
 
   function generateTableEndAndPageInfo(pages, prPage, len, lastRow) {
     return $.mustache(manuallyApproveTemplates["table-end"], { approveShowing: approveShowing,
-                                                                 page: (((pages - 1) * prPage) + 1),
-                                                                 last: lastRow ? len : pages * prPage,
-                                                                 approveOf: approveOf,
+                                                               page: (((pages - 1) * prPage) + 1),
+                                                               last: lastRow ? len : pages * prPage,
+                                                               approveOf: approveOf,
                                                                len: len });
   }
 
@@ -362,12 +362,12 @@ var MANUALLY_APPROVE_INITIALIZED = $.Deferred();
     if (i > prPage) {
       var prevPage = pages - 2;
       html += $.mustache(manuallyApproveTemplates["navigation-prev"], { prevPage: prevPage,
-                                                                          approvePrev: approvePrev,
-                                                                          prPage: prPage });
+                                                                        approvePrev: approvePrev,
+                                                                        prPage: prPage });
     }
     html += $.mustache(manuallyApproveTemplates["navigation-next"], { pages: pages,
-                                                                        approveNext: approveNext,
-                                                                        nextPrPage: (pages < totalPages || remainder == 0) ? prPage : remainder });
+                                                                      approveNext: approveNext,
+                                                                      nextPrPage: (pages < totalPages || remainder == 0) ? prPage : remainder });
     html += "</div></div>";
     return html;
   }

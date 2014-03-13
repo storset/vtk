@@ -35,6 +35,13 @@
           contentsId: "body",
           alwaysFixed: true
         });
+        $("#vrtx-sticky-header").on("click", "#diff-show-changes", function() {
+          if(!this.checked) {
+            location.href = location.href + "&" + this.name;
+          } else {
+            location.href = location.href.replace("&" + this.name, "");
+          }
+        });
       });
     // -->
     </script>
@@ -42,32 +49,34 @@
   
   <#assign resource = resourceContext.currentResource />
   
-  <body id="vrtx-${resource.resourceType}">
-    <div id="vrtx-sticky-header">
-      <div id="vrtx-sticky-header-inner">
-         <span id="diff-header"><@vrtx.msg code="versions.table.title" default="Version" /> ${revisionBDetails.name?html}</span>
-         <span id="diff-show-changes-info-nav">
-           <span id="diff-show-changes-info">
-             <#-- <form id="diff-show-changes-form" action="" method="get">
-               <input id="diff-show-changes" name="diff-show-changes" type="checkbox" />
-               <label for="diff-show-changes"><@vrtx.msg code="versions.diff.show-changes" default="Show changes" /></label>
-             </form> -->
-             <span id="diff-info">
-               <@vrtx.msg code="proptype.name.modifiedBy" default="Modified by" /> <span id="diff-info-modified-by">${revisionBDetails.principal.description?html}</span>, <@vrtx.date value=revisionBDetails.timestamp format="longlong" />
+  <#if revisionBDetails?exists>
+    <body id="vrtx-${resource.resourceType}">
+      <div id="vrtx-sticky-header">
+        <div id="vrtx-sticky-header-inner">
+           <span id="diff-header"><@vrtx.msg code="versions.table.title" default="Version" /> ${revisionBDetails.name?html}</span>
+           <span id="diff-show-changes-info-nav">
+             <span id="diff-show-changes-info">
+               <span id="diff-info">
+                 <@vrtx.msg code="proptype.name.modifiedBy" default="Modified by" /> <span id="diff-info-modified-by">${revisionBDetails.principal.description?html}</span>, <@vrtx.date value=revisionBDetails.timestamp format="longlong" />
+               </span>
+               <form id="diff-show-changes-form" action="" method="get">
+                 <input id="diff-show-changes" name="original" type="checkbox" <#if original?exists && !original>checked="checked"</#if> />
+                 <label for="diff-show-changes"><@vrtx.msg code="versions.diff.show-changes" default="Show changes" /></label>
+               </form>
+             </span>
+             <span id="diff-nav">
+               <#if revisionADetails?has_content>
+                 <a id="diff-nav-prev" href="?vrtx=diff&amp;revision=<#if revisionAPrevious?exists>${revisionAPrevious},</#if>${revisionADetails.name}"><@vrtx.msg code="previous" default="Previous" /></a>
+               </#if>
+               <#if revisionBNext?has_content>  
+                 <a id="diff-nav-next" href="?vrtx=diff&amp;revision=${revisionBDetails.name},${revisionBNext}"><@vrtx.msg code="next" default="Next" /></a>
+               </#if>
              </span>
            </span>
-           <span id="diff-nav">
-             <#if revisionADetails?has_content>
-               <a id="diff-nav-prev" href="?vrtx=diff&revision=${revisionADetails.name}"><@vrtx.msg code="previous" default="Previous" /></a>
-             </#if>
-             <#if revisionBNext?has_content>  
-               <a id="diff-nav-next" href="?vrtx=diff&revision=${revisionBNext}"><@vrtx.msg code="next" default="Next" /></a>
-             </#if>
-           </span>
-         </span>
+        </div>
       </div>
-    </div>
-    
-    ${content}
-  </body>
+      ${content}
+    </body>
+  </#if>
+  
 </html>

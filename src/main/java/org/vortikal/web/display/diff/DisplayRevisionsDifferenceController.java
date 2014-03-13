@@ -76,6 +76,8 @@ public class DisplayRevisionsDifferenceController extends ParameterizableViewCon
     private static Log logger = LogFactory.getLog(DisplayRevisionsDifferenceController.class);
 
     private PrincipalFactory principalFactory;
+    
+    private final static String ORIGINAL_PARAMETER = "original";
    
     public void afterPropertiesSet() throws Exception {
     }
@@ -103,13 +105,23 @@ public class DisplayRevisionsDifferenceController extends ParameterizableViewCon
                 return badRequest("'revision' must be either an integer or a comma separated pair", response);
             }
         }
-        String content = diffRevisions(revisionNameA, revisionNameB, request);
         
+        boolean showOriginal = request.getParameter(ORIGINAL_PARAMETER) != null;
+        
+        String content = "";
+        if(showOriginal) {
+            content = getContentForRevision(revisionNameB, request);;
+        } else {
+            content = diffRevisions(revisionNameA, revisionNameB, request);
+        }
+
         Map<String, Object> model = new HashMap<String, Object>();
         model.put("revisionA", revisionNameA);
         model.put("revisionB", revisionNameB);
         model.put("content", content);
-        putRevisionInfo(model, revisionNameA, revisionNameB, request);
+        model.put(ORIGINAL_PARAMETER, showOriginal);
+        
+        putRevisionInfo(model, revisionNameA, revisionNameB, request, showOriginal);
         
         return new ModelAndView(getViewName(), model);
     }
@@ -176,7 +188,7 @@ public class DisplayRevisionsDifferenceController extends ParameterizableViewCon
     /*
      * Add meta data for current revision, and list all available revisions for the resource
      */
-    private void putRevisionInfo(Map<String, Object> model, String revisionNameA, String revisionNameB, HttpServletRequest request) throws Exception {
+    private void putRevisionInfo(Map<String, Object> model, String revisionNameA, String revisionNameB, HttpServletRequest request, boolean showOriginal) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
         Repository repository = requestContext.getRepository();
         String token = requestContext.getSecurityToken();
@@ -201,13 +213,16 @@ public class DisplayRevisionsDifferenceController extends ParameterizableViewCon
                 haveRecentlySeenRevisionA = false;
             }
             if (revisionNameA.equalsIgnoreCase(revision.getName())) {
+                if (showOriginal) {
+                    rev.put("name", revision.getName() + "&amp;" + ORIGINAL_PARAMETER);
+                }
                 model.put("revisionADetails", rev);
                 haveRecentlySeenRevisionA = true;
             }
             if (revisionNameB.equalsIgnoreCase(revision.getName())) {
                 model.put("revisionBDetails", rev);
                 if (revisionBNext != null) {
-                    model.put("revisionBNext", revisionBNext);
+                    model.put("revisionBNext", revisionBNext + (showOriginal ? "&amp;" + ORIGINAL_PARAMETER : ""));
                 }
             }
             revisionBNext = revision.getName();

@@ -100,6 +100,7 @@ public class DisplayRevisionsController implements Controller {
             restoreURL = this.restoreService.constructURL(resource, principal);
         } catch (Throwable t) { }
 
+        Map<String, Object> prevRevision = null;
         for (Revision revision: revisions) {
             Map<String, Object> rev = new HashMap<String, Object>();
             rev.put("id", revision.getID());
@@ -110,15 +111,6 @@ public class DisplayRevisionsController implements Controller {
             rev.put("checksum", revision.getChecksum());
             rev.put("changeAmount", revision.getChangeAmount());
             allRevisions.add(rev);
-            
-            if (revision.getType() == Revision.Type.WORKING_COPY) {
-                workingCopy = rev;
-            } else {
-                if (latest == null) {
-                    latest = revision;
-                }
-                regularRevisions.add(rev);
-            }
 
             boolean haveDiffURL = diffURL != null
                     && (revision.getType() == Revision.Type.REGULAR
@@ -126,8 +118,23 @@ public class DisplayRevisionsController implements Controller {
                         || revision.getType() == Revision.Type.WORKING_COPY);
             
             if (haveDiffURL) {
+                if(prevRevision != null) { // XXX: Add next revision name to displayURL of previous revision (could be done more optimal)
+                    URL prevRevisionUrl = (URL) prevRevision.get("displayURL");
+                    prevRevisionUrl.setParameter("revision", revision.getName() + "," + prevRevision.get("name"));
+                    prevRevision.put("displayURL", prevRevisionUrl);
+                }
                 rev.put("displayURL", new URL(diffURL)
                    .setParameter("revision", revision.getName()));
+                prevRevision = rev;
+            }
+
+            if (revision.getType() == Revision.Type.WORKING_COPY) {
+                workingCopy = rev;
+            } else {
+                if (latest == null) {
+                    latest = revision;
+                }
+                regularRevisions.add(rev);
             }
             
             boolean haveDeleteURL = deleteURL != null;

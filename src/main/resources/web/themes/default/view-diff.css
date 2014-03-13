@@ -1,8 +1,8 @@
-#vrtx-diff-content span.diff-html-removed {
+span.diff-html-removed {
   text-decoration: line-through !important;
   display: inline !important;
 }
-#vrtx-diff-content span.diff-html-added {
+span.diff-html-added {
   color: green !important;
 }
 

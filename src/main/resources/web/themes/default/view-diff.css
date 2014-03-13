@@ -24,8 +24,8 @@
 
 #vrtx-sticky-header #vrtx-sticky-header-inner {
   margin: 0 auto;
-  width: 1020px;
-  padding: 17px 20px;
+  width: 970px;
+  padding: 25px 20px;
 }
   
 #vrtx-sticky-header.vrtx-sticky-header-shadow .sticky-bg-ie8-below {
@@ -39,9 +39,10 @@
 }
   
 #diff-header {
-  font-size: 18px;
-  font-weight: bold;
+  font-size: 23px;
+  font-weight: normal;
   float: left;
+  margin: -0.3ex 0 0 0;
 }
   
 #diff-show-changes-info-nav {
@@ -53,7 +54,7 @@
 }
 #diff-show-changes-form {
   display: inline;
-  margin: 0;
+  margin: 0 0 0 35px;
   padding: 0;
 }
 #diff-show-changes-form > *:hover {
@@ -67,7 +68,6 @@
   margin: 0;
 }
 #diff-info {
-  margin-left: 35px;
   color: #888;
 }
 #diff-info-modified-by {

@@ -35,7 +35,7 @@
           contentsId: "body",
           alwaysFixed: true
         });
-        $("#diff-show-changes-info").prepend('<form id="diff-show-changes-form" action="" method="get"><input id="diff-show-changes" name="diff-show-changes" type="checkbox" /><label for="diff-show-changes"><@vrtx.msg code="versions.diff.show-changes" default="Show changes" /></label></form>')
+        $("#diff-show-changes-info").append('<form id="diff-show-changes-form" action="" method="get"><input id="diff-show-changes" name="diff-show-changes" type="checkbox" /><label for="diff-show-changes"><@vrtx.msg code="versions.diff.show-changes" default="Show changes" /></label></form>')
         $("#vrtx-diff-content").removeClass("show-changes");
         $("#vrtx-sticky-header").on("click", "#diff-show-changes", function(e) {
           if (this.checked) {

@@ -83,8 +83,7 @@ public class MediaPlayer {
      * @throws AuthorizationException 
      */
     public void addMediaPlayer(Map<String, Object> model, String mediaRef, String height, String width,
-            String autoplay, String contentType, String streamType, String poster, String showDL)
-            throws AuthorizationException {
+            String autoplay, String contentType, String streamType, String poster, String showDL) {
 
         if (URL.isEncoded(mediaRef)) {
             mediaRef = URL.decode(mediaRef);
@@ -146,8 +145,10 @@ public class MediaPlayer {
      *   <li>TODO complete me</li>
      * </ul>
      * 
+     * @param model MVC model
+     * @param mediaRef media reference/link as string
      **/ 
-    public void addMediaPlayer(Map<String, Object> model, String mediaRef) throws AuthorizationException {
+    public void addMediaPlayer(Map<String, Object> model, String mediaRef) {
 
         if (URL.isEncoded(mediaRef)) {
             mediaRef = URL.decode(mediaRef);
@@ -280,9 +281,6 @@ public class MediaPlayer {
         this.thumbnailService = thumbnailService;
     }
 
-    /**
-     * @param thumbnailPropDef the thumbnailPropDef to set
-     */
     @Required
     public void setThumbnailPropDef(PropertyTypeDefinition thumbnailPropDef) {
         this.thumbnailPropDef = thumbnailPropDef;

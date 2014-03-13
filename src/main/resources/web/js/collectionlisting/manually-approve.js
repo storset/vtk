@@ -171,8 +171,8 @@ var MANUALLY_APPROVE_INITIALIZED = $.Deferred();
     $("#vrtx-manually-approve-no-approved-msg").remove();
   
     if(!locations.length) {
-      $("#vrtx-manually-approve-tab-menu:visible").addClass("hidden");
-      $("#manually-approve-container:visible").addClass("hidden");
+      $("#vrtx-manually-approve-tab-menu").filter(":visible").addClass("hidden");
+      $("#manually-approve-container").filter(":visible").addClass("hidden");
       return;
     }
   
@@ -235,6 +235,8 @@ var MANUALLY_APPROVE_INITIALIZED = $.Deferred();
         generateStartPageAndTableHeadFunc = generateStartPageAndTableHead,
         i = 0,
         html = generateStartPageAndTableHead(pages);
+        
+    var manuallyApproveContainer = $("#manually-approve-container");
   
     // If more than one page
     if (moreThanOnePage) {
@@ -244,14 +246,12 @@ var MANUALLY_APPROVE_INITIALIZED = $.Deferred();
       html += generateTableEndAndPageInfoFunc(pages, prPage, len, false);
       pages++;
       html += generateNavAndEndPageFunc(i, html, prPage, remainder, pages, totalPages);
-    
-      var manuallyApproveContainer = $("#manually-approve-container");
       manuallyApproveContainer.html(html);
       var manuallyApproveContainerTable = manuallyApproveContainer.find("table");
       enhanceTableRowsFunc(manuallyApproveContainerTable);
       html = generateStartPageAndTableHeadFunc(pages);
     } else {
-      $("#manually-approve-container").html(""); // clear if only one page
+      manuallyApproveContainer.html(""); // clear if only one page
     }
 
     // Update spinner with page generation progress
@@ -265,12 +265,12 @@ var MANUALLY_APPROVE_INITIALIZED = $.Deferred();
         pages++;
         if (i < len - 1) {
           html += generateNavAndEndPageFunc(i, html, prPage, remainder, pages, totalPages);
-          $("#manually-approve-container").append(html);
-          var table = $("#approve-page-" + (pages - 1) + " table");
+          manuallyApproveContainer.append(html);
+          var manuallyApprovePage = manuallyApproveContainer.find("#approve-page-" + (pages - 1));
+          var table = manuallyApproveContainer.find("table");
           enhanceTableRowsFunc(table);
-          var manuallyApproveContainer = $("#manually-approve-container");
           if (moreThanOnePage) {
-            $("#manually-approve-container #approve-page-" + (pages - 1)).addClass("approve-page-hidden");
+            manuallyApprovePage.addClass("approve-page-hidden");
           }
           html = generateStartPageAndTableHeadFunc(pages);
         }
@@ -290,10 +290,10 @@ var MANUALLY_APPROVE_INITIALIZED = $.Deferred();
                 + approvePrev + " " + prPage + "</a>";
         }
         html += "</div>";
-        $("#manually-approve-container").append(html);
-        var table = $("#approve-page-" + pages + " table");
+        manuallyApproveContainer.append(html);
+        var table = manuallyApproveContainer.find("#approve-page-" + pages + " table");
         enhanceTableRowsFunc(table);
-        $("#manually-approve-container").on("click", "th.checkbox input", function() {
+        manuallyApproveContainer.on("click", "th.checkbox input", function() {
           var checkAll = this.checked; 
           var checkboxes = $("td.checkbox input:visible");
           for(var i = 0, len = checkboxes.length; i < len; i++) {
@@ -309,7 +309,7 @@ var MANUALLY_APPROVE_INITIALIZED = $.Deferred();
         }); 
         $("#approve-spinner").remove();
         if (len > prPage) {
-          $("#manually-approve-container #approve-page-" + pages).addClass("approve-page-hidden");
+          manuallyApproveContainer.find("#approve-page-" + pages).addClass("approve-page-hidden");
         }
         if(isInit) { // TODO (or feature): user will get unsaved msg until all pages with checkboxes is loaded async (difficult to avoid without running some code twice)
           MANUALLY_APPROVE_INITIALIZED.resolve();

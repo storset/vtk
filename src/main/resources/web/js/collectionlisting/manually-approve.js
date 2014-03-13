@@ -187,18 +187,18 @@ var MANUALLY_APPROVE_INITIALIZED = $.Deferred();
     vrtxAdmin.serverFacade.getJSON(getUri + "&no-cache=" + (+new Date()), {
       success: function (results, status, resp) {
         if (results != null && results.length > 0) {
-          $("#vrtx-manually-approve-tab-menu:hidden").removeClass("hidden");
-          $("#manually-approve-container:hidden").removeClass("hidden");
+          $("#vrtx-manually-approve-tab-menu").filter(":hidden").removeClass("hidden");
+          $("#manually-approve-container").filter(":hidden").removeClass("hidden");
           generateManuallyApprovedContainer(results, isInit, approvedTextfield);
         } else {
           $("#approve-spinner").remove();
           if(!showApprovedOnly) {
-            $("#vrtx-manually-approve-tab-menu:visible").addClass("hidden");
+            $("#vrtx-manually-approve-tab-menu").filter(":visible").addClass("hidden");
           } else {
             $("<p id='vrtx-manually-approve-no-approved-msg'>" + approveNoApprovedMsg + "</p>")
               .insertAfter("#vrtx-manually-approve-tab-menu");
           }
-          $("#manually-approve-container:visible").addClass("hidden");
+          $("#manually-approve-container").filter(":visible").addClass("hidden");
           if(isInit) {
             MANUALLY_APPROVE_INITIALIZED.resolve();
           }

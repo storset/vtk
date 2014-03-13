@@ -1,11 +1,8 @@
 #vrtx-diff-content span.diff-html-removed {
-  display: none;
-}
-#vrtx-diff-content.show-changes span.diff-html-removed {
   text-decoration: line-through !important;
   display: inline !important;
 }
-#vrtx-diff-content.show-changes span.diff-html-added {
+#vrtx-diff-content span.diff-html-added {
   color: green !important;
 }
 

@@ -48,23 +48,26 @@
          <span id="diff-header"><@vrtx.msg code="versions.table.title" default="Version" /> ${revisionBDetails.name?html}</span>
          <span id="diff-show-changes-info-nav">
            <span id="diff-show-changes-info">
+             <#-- <form id="diff-show-changes-form" action="" method="get">
+               <input id="diff-show-changes" name="diff-show-changes" type="checkbox" />
+               <label for="diff-show-changes"><@vrtx.msg code="versions.diff.show-changes" default="Show changes" /></label>
+             </form> -->
              <span id="diff-info">
                <@vrtx.msg code="proptype.name.modifiedBy" default="Modified by" /> <span id="diff-info-modified-by">${revisionBDetails.principal.description?html}</span>, <@vrtx.date value=revisionBDetails.timestamp format="longlong" />
              </span>
            </span>
            <span id="diff-nav">
              <#if revisionADetails?has_content>
-               <a id="diff-nav-prev" href="?vrtx=diff&amp;revision=${revisionADetails.name}"><@vrtx.msg code="previous" default="Previous" /></a>
+               <a id="diff-nav-prev" href="?vrtx=diff&revision=${revisionADetails.name}"><@vrtx.msg code="previous" default="Previous" /></a>
              </#if>
              <#if revisionBNext?has_content>  
-               <a id="diff-nav-next" href="?vrtx=diff&amp;revision=${revisionBNext}"><@vrtx.msg code="next" default="Next" /></a>
+               <a id="diff-nav-next" href="?vrtx=diff&revision=${revisionBNext}"><@vrtx.msg code="next" default="Next" /></a>
              </#if>
            </span>
          </span>
       </div>
     </div>
-    <div id="vrtx-diff-content" class="show-changes">
-      ${content}
-    </div>
+    
+    ${content}
   </body>
 </html>

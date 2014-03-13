@@ -110,10 +110,12 @@
                <span id="diff-info">
                  <@vrtx.msg code="proptype.name.modifiedBy" default="Modified by" /> <span id="diff-info-modified-by">${revisionBDetails.principal.description?html}</span>, <@vrtx.date value=revisionBDetails.timestamp format="longlong" />
                </span>
-               <form id="diff-show-changes-form" action="" method="get">
-                 <input id="diff-show-changes" name="original" type="checkbox" <#if !original>checked="checked"</#if> />
-                 <label for="diff-show-changes"><@vrtx.msg code="versions.diff.show-changes" default="Show changes" /></label>
-               </form>
+               <#if original?exists>
+                 <form id="diff-show-changes-form" action="" method="get">
+                   <input id="diff-show-changes" name="original" type="checkbox" <#if !original>checked="checked"</#if> />
+                   <label for="diff-show-changes"><@vrtx.msg code="versions.diff.show-changes" default="Show changes" /></label>
+                 </form>
+               </#if>
              </span>
              <span id="diff-nav">
                <#if revisionADetails?has_content>
@@ -129,7 +131,7 @@
       
       ${content}
       
-      <#if original>
+      <#if original?exists && original && originalUrl?has_content>
         <iframe frameborder="0" scrolling="no" id="original" src="${originalUrl}"></iframe>
       </#if>
     </body>

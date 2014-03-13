@@ -45,14 +45,14 @@
   <body id="vrtx-${resource.resourceType}">
     <div id="vrtx-sticky-header">
       <div id="vrtx-sticky-header-inner">
-         <span id="diff-header">Versjon ${revisionB?html}</span>
+         <span id="diff-header"><@vrtx.msg code="versions.table.title" default="Version" /> ${revisionB?html}</span>
          <span id="diff-show-changes-info-nav">
            <span id="diff-show-changes-info">
              <form id="diff-show-changes-form" action="" method="get">
                <input id="diff-show-changes" name="diff-show-changes" type="checkbox" />
-               <label for="diff-show-changes">Vis endringer</label>
+               <label for="diff-show-changes"><@vrtx.msg code="versions.diff.show-changes" default="Show changes" /></label>
              </form>
-             <span id="diff-info">Endret av <span id="diff-info-modified-by">{modifisert-av}</span>, {modifisert-tid}</span>
+             <span id="diff-info"><@vrtx.msg code="proptype.name.modifiedBy" default="Modified by" /> <span id="diff-info-modified-by">{modifisert-av}</span>, {modifisert-tid}</span>
            </span>
            <span id="diff-nav">
              <a id="diff-nav-prev" href="/{forrige-url}"><@vrtx.msg code="previous" default="Previous" /></a>

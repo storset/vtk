@@ -198,10 +198,11 @@ public class MediaPlayer {
     // URL, nothing is added to model.
     private void addMediaUrl(String resourceReferance, Map<String, Object> model) {
         URL url = createUrl(resourceReferance);
-        if (RequestContext.getRequestContext().isPreviewUnpublished()) {
-            url.setParameter("vrtxPreviewUnpublished", "true");
-        }
         if (url != null) {
+            if (RequestContext.getRequestContext().isPreviewUnpublished()) {
+                url.setParameter("vrtxPreviewUnpublished", "true");
+            }
+
             model.put("media", url);
         }
     }
@@ -223,6 +224,13 @@ public class MediaPlayer {
         }
     }
 
+    /**
+     * @param mediaRef link/reference to a media resource. Must either be root
+     * relative path or an absolute URL with protocol.
+     * 
+     * @return a {@link URL} instance, or <code>null</code> if no appropriate URL
+     * could be created from reference. 
+     */
     private URL createUrl(String mediaRef) {
 
         if (URL.isEncoded(mediaRef)) {

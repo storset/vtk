@@ -75,6 +75,7 @@
 }
 #diff-nav {
   float: right;
+  margin: .5ex 0 0;
 }
   
 #vrtx-sticky-header #diff-nav a {

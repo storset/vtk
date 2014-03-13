@@ -1,0 +1,11 @@
+<div id="vrtx-content">
+<div id="vrtx-main-content" class="vrtx-hide-additional-content-false">
+<h1> Testdokument for versjoner </h1>
+<div class="vrtx-introduction">
+<p>Viser forskjeller mellom versjoner.</p>
+<p>
+<span class="diff-html-removed" id="removed-diff-0" previous="first-diff" changeId="removed-diff-0" next="last-diff">Dette er paragraf nummer to.</span>
+</p>
+</div>
+</div>
+</div>

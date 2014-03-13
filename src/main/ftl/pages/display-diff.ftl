@@ -35,6 +35,15 @@
           contentsId: "body",
           alwaysFixed: true
         });
+        $("#diff-show-changes-info").prepend('<form id="diff-show-changes-form" action="" method="get"><input id="diff-show-changes" name="diff-show-changes" type="checkbox" /><label for="diff-show-changes"><@vrtx.msg code="versions.diff.show-changes" default="Show changes" /></label></form>')
+        $("#vrtx-diff-content").removeClass("show-changes");
+        $("#vrtx-sticky-header").on("click", "#diff-show-changes", function(e) {
+          if (this.checked) {
+            $("#vrtx-diff-content").addClass("show-changes");
+          } else {
+            $("#vrtx-diff-content").removeClass("show-changes");
+          }
+        });
       });
     // -->
     </script>
@@ -48,11 +57,9 @@
          <span id="diff-header"><@vrtx.msg code="versions.table.title" default="Version" /> ${revisionBDetails.name?html}</span>
          <span id="diff-show-changes-info-nav">
            <span id="diff-show-changes-info">
-             <form id="diff-show-changes-form" action="" method="get">
-               <input id="diff-show-changes" name="diff-show-changes" type="checkbox" />
-               <label for="diff-show-changes"><@vrtx.msg code="versions.diff.show-changes" default="Show changes" /></label>
-             </form>
-             <span id="diff-info"><@vrtx.msg code="proptype.name.modifiedBy" default="Modified by" /> <span id="diff-info-modified-by">${revisionBDetails.principal.description?html}</span>, <@vrtx.date value=revisionBDetails.timestamp format="longlong" /></span>
+             <span id="diff-info">
+               <@vrtx.msg code="proptype.name.modifiedBy" default="Modified by" /> <span id="diff-info-modified-by">${revisionBDetails.principal.description?html}</span>, <@vrtx.date value=revisionBDetails.timestamp format="longlong" />
+             </span>
            </span>
            <span id="diff-nav">
              <#if revisionADetails?has_content>
@@ -65,7 +72,8 @@
          </span>
       </div>
     </div>
-    
-    ${content}
+    <div id="vrtx-diff-content" class="show-changes">
+      ${content}
+    </div>
   </body>
 </html>

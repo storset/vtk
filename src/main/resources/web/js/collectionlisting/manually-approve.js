@@ -228,6 +228,7 @@ var MANUALLY_APPROVE_INITIALIZED = $.Deferred();
         remainder = len % prPage,
         moreThanOnePage = len > prPage,
         totalPages = len > prPage ? (parseInt(len / prPage) + 1) : 1,
+        enhanceTableRowsFunc = enhanceTableRows,
         generateTableRowFunc = generateTableRow,
         generateTableEndAndPageInfoFunc = generateTableEndAndPageInfo,
         generateNavAndEndPageFunc = generateNavAndEndPage,
@@ -247,11 +248,7 @@ var MANUALLY_APPROVE_INITIALIZED = $.Deferred();
       var manuallyApproveContainer = $("#manually-approve-container");
       manuallyApproveContainer.html(html);
       var manuallyApproveContainerTable = manuallyApproveContainer.find("table");
-      // TODO: probably faster to find all trs and then filter pseudo-selectors
-      manuallyApproveContainerTable.find("tr:first-child").addClass("first");
-      manuallyApproveContainerTable.find("tr:last-child").addClass("last");
-      manuallyApproveContainerTable.find("tr:nth-child(even)").addClass("even");
-      manuallyApproveContainerTable.find("input").removeAttr("disabled");
+      enhanceTableRowsFunc(manuallyApproveContainerTable);
       html = generateStartPageAndTableHeadFunc(pages);
     } else {
       $("#manually-approve-container").html(""); // clear if only one page
@@ -270,10 +267,7 @@ var MANUALLY_APPROVE_INITIALIZED = $.Deferred();
           html += generateNavAndEndPageFunc(i, html, prPage, remainder, pages, totalPages);
           $("#manually-approve-container").append(html);
           var table = $("#approve-page-" + (pages - 1) + " table");
-          table.find("tr:first-child").addClass("first");
-          table.find("tr:last-child").addClass("last");
-          table.find("tr:nth-child(even)").addClass("even");
-          table.find("input").removeAttr("disabled");
+          enhanceTableRowsFunc(table);
           var manuallyApproveContainer = $("#manually-approve-container");
           if (moreThanOnePage) {
             $("#manually-approve-container #approve-page-" + (pages - 1)).addClass("approve-page-hidden");
@@ -298,10 +292,7 @@ var MANUALLY_APPROVE_INITIALIZED = $.Deferred();
         html += "</div>";
         $("#manually-approve-container").append(html);
         var table = $("#approve-page-" + pages + " table");
-        table.find("tr:first-child").addClass("first");
-        table.find("tr:last-child").addClass("last");
-        table.find("tr:nth-child(even)").addClass("even");
-        table.find("input").removeAttr("disabled");
+        enhanceTableRowsFunc(table);
         $("#manually-approve-container").on("click", "th.checkbox input", function() {
           var checkAll = this.checked; 
           var checkboxes = $("td.checkbox input:visible");
@@ -326,6 +317,14 @@ var MANUALLY_APPROVE_INITIALIZED = $.Deferred();
       }
     }, 1);
 
+  }
+  
+  function enhanceTableRows(table) {
+    var trs = table.find("tr");
+    trs.filter(":first-child").addClass("first");
+    trs.filter(":last-child").addClass("last");
+    trs.filter(":nth-child(even)").addClass("even");
+    table.find("input").removeAttr("disabled");
   }
 
   /* HTML generation functions */

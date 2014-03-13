@@ -191,7 +191,7 @@ public class DisplayRevisionsDifferenceController extends ParameterizableViewCon
             rev.put("id", revision.getID());
             rev.put("name", revision.getName());
             rev.put("timestamp", revision.getTimestamp());
-            rev.put("principal", this.principalFactory.getPrincipal(revision.getUid(), Type.USER));
+            rev.put("principal", this.principalFactory.getPrincipal(revision.getUid(), Type.USER)); 
             rev.put("acl", revision.getAcl());
             rev.put("checksum", revision.getChecksum());
             rev.put("changeAmount", revision.getChangeAmount());
@@ -201,11 +201,11 @@ public class DisplayRevisionsDifferenceController extends ParameterizableViewCon
                 haveRecentlySeenRevisionA = false;
             }
             if (revisionNameA.equalsIgnoreCase(revision.getName())) {
-                model.put("revisionADetails", revision);
+                model.put("revisionADetails", rev);
                 haveRecentlySeenRevisionA = true;
             }
             if (revisionNameB.equalsIgnoreCase(revision.getName())) {
-                model.put("revisionBDetails", revision);
+                model.put("revisionBDetails", rev);
                 if (revisionBNext != null) {
                     model.put("revisionBNext", revisionBNext);
                 }

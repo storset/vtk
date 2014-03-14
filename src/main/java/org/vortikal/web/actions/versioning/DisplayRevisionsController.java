@@ -192,8 +192,8 @@ public class DisplayRevisionsController implements Controller {
         model.put("displayURL", displayURL);
         if(firstRevision != null) {
             diffURL.addParameter("revision", firstRevision.getName() + ",HEAD");
+            model.put("diffURL", diffURL);
         }
-        model.put("diffURL", diffURL);
         model.put("workingCopy", workingCopy);
         model.put("allRevisions", allRevisions);
         model.put("regularRevisions", regularRevisions);

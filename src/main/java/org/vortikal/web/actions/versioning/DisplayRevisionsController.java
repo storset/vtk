@@ -90,7 +90,6 @@ public class DisplayRevisionsController implements Controller {
         URL diffURL = null;
         try {
             diffURL = this.viewDiffService.constructURL(resource, principal);
-            diffURL.addParameter("x-decorating-mode", "view-unpublished");
         } catch (Throwable t) { }
         URL deleteURL = null;
         try {

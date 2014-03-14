@@ -249,7 +249,7 @@
         vrtxAdm.cachedContent.on("click", "#preview-actions-fullscreen-toggle", function(e) {
           htmlTag.toggleClass('fullscreen-toggle-open');
           if(htmlTag.hasClass('fullscreen-toggle-open')) {
-            vrtxAdm.runReadyLoad = false;
+            vrtxAdmin.runReadyLoad = false;
             $.bbq.pushState({"fullscreen": "on"});
             $(this).text(fullscreenToggleClose);
             var futureStickyBar = (typeof VrtxStickyBar === "undefined") ? $.getScript("/vrtx/__vrtx/static-resources/js/vrtx-sticky-bar.js") : $.Deferred().resolve();
@@ -264,7 +264,7 @@
             });
             $(window).trigger("scroll");
           } else {
-            vrtxAdm.runReadyLoad = true;
+            vrtxAdmin.runReadyLoad = true;
             $.bbq.removeState("fullscreen");
             $(this).text(fullscreenToggleOpen);
             if(editorStickyBar != null) {

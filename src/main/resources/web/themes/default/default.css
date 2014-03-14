@@ -2958,10 +2958,11 @@ table.resourceInfo.revisions tr:nth-child(even) td {
 
 #vrtx-revisions .resourceInfo td.vrtx-revisions-buttons-column {
   font-size: 1em;
-  width: 340px;
+  width: 440px;
   padding: 11px;
 } 
 
+#vrtx-revisions .resourceInfo td.vrtx-revisions-buttons-column .vrtx-revision-view-changes,
 #vrtx-revisions .resourceInfo td.vrtx-revisions-buttons-column form {
   display: inline;
   margin-left: 10px;

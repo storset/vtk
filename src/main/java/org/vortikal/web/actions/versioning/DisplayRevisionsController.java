@@ -90,6 +90,7 @@ public class DisplayRevisionsController implements Controller {
         URL diffURL = null;
         try {
             diffURL = this.viewDiffService.constructURL(resource, principal);
+            diffURL.addParameter("x-decorating-mode", "view-unpublished");
         } catch (Throwable t) { }
         URL deleteURL = null;
         try {
@@ -100,7 +101,10 @@ public class DisplayRevisionsController implements Controller {
             restoreURL = this.restoreService.constructURL(resource, principal);
         } catch (Throwable t) { }
 
-        Map<String, Object> prevRevision = null;
+        Map<String, Object> prevRevisionMap = null;
+        Revision prevRevision = null;
+        Revision firstRevision = null;
+        
         for (Revision revision: revisions) {
             Map<String, Object> rev = new HashMap<String, Object>();
             rev.put("id", revision.getID());
@@ -112,20 +116,23 @@ public class DisplayRevisionsController implements Controller {
             rev.put("changeAmount", revision.getChangeAmount());
             allRevisions.add(rev);
 
-            boolean haveDiffURL = diffURL != null
+            boolean haveDisplayURL = displayURL != null
                     && (revision.getType() == Revision.Type.REGULAR
                         && repository.authorize(principal, revision.getAcl(), Privilege.READ)
-                        || revision.getType() == Revision.Type.WORKING_COPY);
+                        || revision.getType() == Revision.Type.WORKING_COPY); 
             
-            if (haveDiffURL) {
-                if(prevRevision != null) { // XXX: Add next revision name to displayURL of previous revision (could be done more optimal)
-                    URL prevRevisionUrl = (URL) prevRevision.get("displayURL");
-                    prevRevisionUrl.setParameter("revision", revision.getName() + "," + prevRevision.get("name"));
-                    prevRevision.put("displayURL", prevRevisionUrl);
+            if (haveDisplayURL) {
+                if(prevRevision != null) { 
+                    prevRevisionMap.put("diffURL", new URL(diffURL)
+                                   .setParameter("revision", revision.getName() + "," + prevRevision.getName()));
                 }
-                rev.put("displayURL", new URL(diffURL)
+                rev.put("displayURL", new URL(displayURL)
                    .setParameter("revision", revision.getName()));
-                prevRevision = rev;
+                prevRevisionMap = rev;
+                prevRevision = revision;
+                if(firstRevision == null && revision.getType() != Revision.Type.WORKING_COPY) {
+                    firstRevision = revision;
+                }
             }
 
             if (revision.getType() == Revision.Type.WORKING_COPY) {
@@ -168,6 +175,11 @@ public class DisplayRevisionsController implements Controller {
             }
         }
         
+        if(prevRevision != null) { 
+            prevRevisionMap.put("diffURL", new URL(diffURL)
+                           .setParameter("revision", prevRevision.getName()));
+        }
+        
         if (latest != null) {
             try {
                 InputStream s1 = repository.getInputStream(token, uri, true, latest);
@@ -179,7 +191,10 @@ public class DisplayRevisionsController implements Controller {
 
         model.put("resource", resource);
         model.put("displayURL", displayURL);
-        
+        if(firstRevision != null) {
+            diffURL.addParameter("revision", firstRevision.getName() + ",HEAD");
+        }
+        model.put("diffURL", diffURL);
         model.put("workingCopy", workingCopy);
         model.put("allRevisions", allRevisions);
         model.put("regularRevisions", regularRevisions);

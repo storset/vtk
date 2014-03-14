@@ -2849,7 +2849,7 @@ function autocompleteTags(selector) {
 \*-------------------------------------------------------------------*/
 
 function versioningInteraction(bodyId, vrtxAdm, _$) {
-  vrtxAdm.cachedAppContent.on("click", "a.vrtx-revision-view", function (e) {
+  vrtxAdm.cachedAppContent.on("click", "a.vrtx-revision-view, a.vrtx-revision-view-changes", function (e) {
     var openedRevision = openRegular(this.href, 1020, 800, "DisplayRevision");
     e.stopPropagation();
     e.preventDefault();

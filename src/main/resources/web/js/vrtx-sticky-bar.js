@@ -54,7 +54,7 @@ var VrtxStickyBar = dejavu.Class.declare({
       }
       
       // Scroll and resize
-      thisWindow.on("scroll", function () {
+      this.__opts.scroll = function() {
         if (shouldStick()) {
           if (!wrapper.hasClass(stickyClass)) {
             wrapper.addClass(stickyClass);
@@ -74,19 +74,22 @@ var VrtxStickyBar = dejavu.Class.declare({
             }
           }
         }
-      });
-      thisWindow.on("resize", function () {
+      };
+      
+      this.__opts.resize = function() {
         if (shouldStick()) {
           wrapper.css("width", (main.outerWidth(true) - 2 + extraWidth) + "px");
         }
-      });
+      };
       
+      thisWindow.on("scroll", this.__opts.scroll);
+      thisWindow.on("resize", this.__opts.resize);
     }
   },
   destroy: function () {
     var thisWindow = $(window);
-    thisWindow.off("scroll");
-    thisWindow.off("resize");
+    thisWindow.off("scroll", this.__opts.scroll);
+    thisWindow.off("resize", this.__opts.resize);
     var wrapper = $(this.__opts.wrapperId);
     if (wrapper.hasClass(this.__opts.stickyClass)) {
       wrapper.removeClass(this.__opts.stickyClass);

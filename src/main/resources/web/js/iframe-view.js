@@ -123,9 +123,7 @@ if (window != top) { // Obs IE bug: http://stackoverflow.com/questions/4850978/i
         iframe.style.height = originalHeight + "px";
         crossDocComLink.postCmdToParent("preview-height-update|" + (originalHeight + ($.browser.msie ? 4 : 0)));
         break;
-        
-      /* BETA functionality for mobile preview */
-        
+       
       case "zoom-in":
         mobilePreviewZoomNoneResponsive(true);
         break;

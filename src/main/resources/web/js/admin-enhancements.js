@@ -140,6 +140,8 @@ function VrtxAdmin() {
   this.requiredScriptsLoaded = null;
   
   this.messages = {}; /* Populated with i18n in resource-bar.ftl */
+  
+  this.rootUrl = "/vrtx/__vrtx/static-resources";
 }
 
 var vrtxAdmin = new VrtxAdmin();
@@ -194,8 +196,8 @@ vrtxAdmin._$(document).ready(function () {
 
   // Load required init components (animations and trees)
   vrtxAdm.requiredScriptsLoaded = $.Deferred();
-  vrtxAdm.loadScripts(["/vrtx/__vrtx/static-resources/js/vrtx-animation.js", 
-                       "/vrtx/__vrtx/static-resources/js/vrtx-tree.js"],
+  vrtxAdm.loadScripts(["/js/vrtx-animation.js", 
+                       "/js/vrtx-tree.js"],
                        vrtxAdm.requiredScriptsLoaded);
   
   vrtxAdm.clientLastModified = $("#resource-last-modified").text().split(",");
@@ -478,9 +480,7 @@ VrtxAdmin.prototype.initGlobalDialogs = function initGlobalDialogs() {
           requiresDatepicker: true,
           onOpen: function() {
             $(".ui-dialog-buttonpane").hide();
-            // TODO: rootUrl and jQueryUiVersion should be retrieved from Vortex config/properties somehow
-            var rootUrl = "/vrtx/__vrtx/static-resources";
-            var futureDatepicker = (typeof VrtxDatepicker === "undefined") ? $.getScript(rootUrl + "/js/datepicker/vrtx-datepicker.js") : $.Deferred().resolve();
+            var futureDatepicker = (typeof VrtxDatepicker === "undefined") ? $.getScript(vrtxAdm.rootUrl + "/js/datepicker/vrtx-datepicker.js") : $.Deferred().resolve();
             $.when(futureDatepicker).done(function() {
               datepickerApsD = new VrtxDatepicker({
                 language: datePickerLang,
@@ -1739,10 +1739,9 @@ function ajaxUpload(options) {
   var vrtxAdm = vrtxAdmin,
   _$ = vrtxAdm._$;
   
-  var rootUrl = "/vrtx/__vrtx/static-resources";
   var futureFormAjax = _$.Deferred();
   if (typeof _$.fn.ajaxSubmit !== "function") {
-    _$.getScript(rootUrl + "/jquery/plugins/jquery.form.js", function () {
+    _$.getScript(vrtxAdm.rootUrl + "/jquery/plugins/jquery.form.js", function () {
       futureFormAjax.resolve();
     }).fail(function(xhr, textStatus, errMsg) {
       var uploadingFailedD = new VrtxMsgDialog({ title: xhr.status + " " + vrtxAdm.serverFacade.errorMessages.uploadingFilesFailedTitle,
@@ -2520,11 +2519,9 @@ function ajaxSave() {
   
   if(!isServerLastModifiedOlderThanClientLastModified(d)) return false;
   
-  // TODO: rootUrl and jQueryUiVersion should be retrieved from Vortex config/properties somehow
-  var rootUrl = "/vrtx/__vrtx/static-resources";
   var futureFormAjax = $.Deferred();
   if (typeof $.fn.ajaxSubmit !== "function") {
-    $.getScript(rootUrl + "/jquery/plugins/jquery.form.js", function () {
+    $.getScript(vrtxAdm.rootUrl + "/jquery/plugins/jquery.form.js", function () {
       futureFormAjax.resolve();
     }).fail(function(xhr, textStatus, errMsg) {
       d.close();
@@ -3469,7 +3466,7 @@ VrtxAdmin.prototype.completeSimpleFormAsync = function completeSimpleFormAsync(o
  */
 VrtxAdmin.prototype.retrieveHTMLTemplates = function retrieveHTMLTemplates(fileName, templateNames, templatesIsRetrieved) {
   var templatesHashArray = [];
-  vrtxAdmin.serverFacade.getText("/vrtx/__vrtx/static-resources/js/templates/" + fileName + ".mustache", {
+  vrtxAdmin.serverFacade.getText(this.rootUrl + "/js/templates/" + fileName + ".mustache", {
     success: function (results, status, resp) {
       var templates = results.split("###");
       for (var i = 0, len = templates.length; i < len; i++) {
@@ -3759,7 +3756,7 @@ VrtxAdmin.prototype.serverFacade = {
       var serverFacade = this;
       vrtxAdmin._$.ajax({
         type: "GET",
-        url: "/vrtx/__vrtx/static-resources/themes/default/images/globe.png?" + (+new Date()),
+        url: vrtxAdmin.rootUrl + "/themes/default/images/globe.png?" + (+new Date()),
         async: false,
         success: function (results, status, resp) { // Online - Re-authentication needed
           msg = useStatusCodeInMsg ? serverFacade.errorMessages.sessionInvalid : "RE_AUTH";
@@ -3919,7 +3916,7 @@ VrtxAdmin.prototype.outerHTML = function outerHTML(selector, subselector) {
 VrtxAdmin.prototype.loadScripts = function loadScript(urls, deferred) {
   var futureScripts = [];
   for(var i = 0, len = urls.length; i < len; i++) {
-    futureScripts.push(this.loadScript(urls[i]));
+    futureScripts.push(this.loadScript(this.rootUrl + urls[i]));
   }
   $.when.apply($, futureScripts).done(function () {
     deferred.resolve();

@@ -46,9 +46,6 @@
         }
       },
       deleting = {
-        permanent: {
-          inprogress: '${vrtx.getMsg("deleting.permanent.in-progress")}'
-        },
         inprogress: '${vrtx.getMsg("deleting.in-progress")}'
       },
       move = {

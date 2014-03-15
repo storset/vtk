@@ -33,34 +33,34 @@
       var outdatedBrowserText = '${vrtx.getMsg("msg.browser.msie.msie6")}';
     }
   }
+  
   var cancelI18n = '${vrtx.getMsg("editor.cancel")}',
       datePickerLang = "${lang}",
-      loadingSubfolders = '${vrtx.getMsg("manage.load-subfolders")}',
-      uploading = {
-        inprogress: '${vrtx.getMsg("uploading.in-progress")}',
-        processes: '${vrtx.getMsg("uploading.processes")}',
-        existing: {
-          title: '${vrtx.getMsg("uploading.existing.title")}',
-          skip: '${vrtx.getMsg("uploading.existing.skip")}',
-          overwrite: '${vrtx.getMsg("uploading.existing.overwrite")}'
-        }
-      },
-      deleting = {
-        inprogress: '${vrtx.getMsg("deleting.in-progress")}'
-      },
-      move = {
-        existing: {
-          sameFolder: "${vrtx.getMsg("move.existing.same-folder")}"
-        }
-      },
-      publishing = {
-         msg: {
-           error: {
-             unpublishDateBefore: '${vrtx.getMsg("publishing.edit.invalid.unpublishDateBefore")}',
-             unpublishDateNonExisting: '${vrtx.getMsg("publishing.edit.invalid.unpublishDateNonExisting")}'
-           }
-         }
-      };
+      loadingSubfolders = '${vrtx.getMsg("manage.load-subfolders")}';
+  
+  vrtxAdmin.messages = {
+    upload: {
+      inprogress: '${vrtx.getMsg("uploading.in-progress")}',
+      processes: '${vrtx.getMsg("uploading.processes")}',
+      existing: {
+        title: '${vrtx.getMsg("uploading.existing.title")}',
+        skip: '${vrtx.getMsg("uploading.existing.skip")}',
+        overwrite: '${vrtx.getMsg("uploading.existing.overwrite")}'
+      }
+    },
+    deleting: {
+      inprogress: '${vrtx.getMsg("deleting.in-progress")}'
+    },
+    move: {
+      existing: {
+        sameFolder: "${vrtx.getMsg("move.existing.same-folder")}"
+      }
+    },
+    publish: {
+      unpublishDateBefore: '${vrtx.getMsg("publishing.edit.invalid.unpublishDateBefore")}',
+      unpublishDateNonExisting: '${vrtx.getMsg("publishing.edit.invalid.unpublishDateNonExisting")}'
+    }
+  }
   
   vrtxAdmin.serverFacade.errorMessages = {
     title: "${vrtx.getMsg('ajaxError.title')}", 

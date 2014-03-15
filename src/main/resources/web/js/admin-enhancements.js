@@ -138,6 +138,8 @@ function VrtxAdmin() {
   this.bodyId = "";
   
   this.requiredScriptsLoaded = null;
+  
+  this.messages = {};
 }
 
 var vrtxAdmin = new VrtxAdmin();
@@ -508,13 +510,13 @@ VrtxAdmin.prototype.initGlobalDialogs = function initGlobalDialogs() {
       
       // Check that unpublish date is not set alone
       if(unpublishDate != null && publishDate == null) {
-        vrtxAdm.displayDialogErrorMsg(dialogId + " #submitButtons", publishing.msg.error.unpublishDateNonExisting);
+        vrtxAdm.displayDialogErrorMsg(dialogId + " #submitButtons", vrtxAdmin.messages.publish.unpublishDateNonExisting);
         return; 
       }
       
       // Check that unpublish date is not before or same as publish date
       if(unpublishDate != null && (unpublishDate <= publishDate)) {
-        vrtxAdm.displayDialogErrorMsg(dialogId + " #submitButtons", publishing.msg.error.unpublishDateBefore);
+        vrtxAdm.displayDialogErrorMsg(dialogId + " #submitButtons", vrtxAdmin.messages.publish.unpublishDateBefore);
         return;
       }
       
@@ -710,7 +712,7 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
             var moveToSameFolder = resultElm.find("#move-to-same-folder");
             if(moveToSameFolder.length) {
               cancelFn();
-              vrtxAdm.displayErrorMsg(move.existing.sameFolder);
+              vrtxAdm.displayErrorMsg(vrtxAdm.messages.move.existing.sameFolder);
             } else if(existingFilenamesField.length) {
               var existingFilenames = existingFilenamesField.text().split("#");
               var numberOfFiles = parseInt(resultElm.find("#copy-move-number-of-files").text(), 10);
@@ -765,7 +767,7 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
         useClickVal: true,
         rowCheckedAnimateOut: true,
         fnBeforePost: function() {
-          deletingD = new VrtxLoadingDialog({title: deleting.inprogress});
+          deletingD = new VrtxLoadingDialog({title: vrtxAdm.messages.deleting.inprogress});
           deletingD.open();
         },
         fnComplete: function(resultElm) {
@@ -789,7 +791,7 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
             deletingPermanentEmptyFolder = true;
           }
           vrtxAdm.trashcanCheckedFiles = 0;
-          deletingPermanentD = new VrtxLoadingDialog({title: deleting.inprogress});
+          deletingPermanentD = new VrtxLoadingDialog({title: vrtxAdm.messages.deleting.inprogress});
           deletingPermanentD.open();
         },
         fnComplete: function(resultElm) {
@@ -1825,21 +1827,21 @@ function userProcessExistingFiles(filenames, filenamesFixed, numberOfFiles, comp
       if(filenamesLen == 1 && numberOfFiles == 1) {
         var skipOverwriteDialogOpts = {
           msg: filenameFixed,
-          title: uploading.existing.title,
+          title: vrtxAdm.messages.upload.existing.title,
           onOk: userProcessNextFilename, // Keep/overwrite file
-          btnTextOk: uploading.existing.overwrite
+          btnTextOk: vrtxAdm.messages.upload.existing.overwrite
         };
       } else {
         var skipOverwriteDialogOpts = {
           msg: filenameFixed,
-          title: uploading.existing.title,
+          title: vrtxAdm.messages.upload.existing.title,
           onOk: function () {  // Skip file
             vrtxAdm.uploadCopyMoveSkippedFiles[filename] = "skip";
             userProcessNextFilename();
           },
-          btnTextOk: uploading.existing.skip,
+          btnTextOk: vrtxAdm.messages.upload.existing.skip,
           extraBtns: [{
-            btnText: uploading.existing.overwrite,
+            btnText: vrtxAdm.messages.upload.existing.overwrite,
             onOk: userProcessNextFilename // Keep/overwrite file
           }]
         };
@@ -1868,7 +1870,7 @@ function ajaxUploadPerform(opts, size) {
   var vrtxAdm = vrtxAdmin,
   _$ = vrtxAdm._$;
 
-  var uploadingD = new VrtxLoadingDialog({title: uploading.inprogress});
+  var uploadingD = new VrtxLoadingDialog({title: vrtxAdm.messages.upload.inprogress});
   uploadingD.open();
   
   var uploadDialogExtra = "";
@@ -1908,7 +1910,7 @@ function ajaxUploadPerform(opts, size) {
         var waitAndProcess = setTimeout(function() {
           if(stillProcesses) {
             uploadingD.close();
-            processesD = new VrtxLoadingDialog({title: uploading.processes});
+            processesD = new VrtxLoadingDialog({title: vrtxAdm.messages.upload.processes});
             processesD.open();
           }
         }, vrtxAdm.uploadCompleteTimeoutBeforeProcessingDialog);

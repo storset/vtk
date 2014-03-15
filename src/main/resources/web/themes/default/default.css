@@ -1813,9 +1813,17 @@ body#vrtx-report-broken-links #directory-listing td.vrtx-report-broken-links {
   border-bottom: 1px dotted #888;
 }
 
-#directory-listing tr#trash-can-empty:hover td,
+#directory-listing #trash-can-empty,
+#directory-listing #collectionlisting-empty {
+  text-align: center;
+}
+
+#directory-listing #trash-can-empty td,
+#directory-listing #collectionlisting-empty td {
+  padding: 25px 0 30px 0;
+}
+
 #directory-listing tr#trash-can-empty.hover td,
-#directory-listing tr#collectionlisting-empty:hover td,
 #directory-listing tr#collectionlisting-empty.hover td {
   background: none;
 }
@@ -2513,16 +2521,6 @@ html#vrtx-preview-popup iframe#previewViewIframe {
 }
 
 /* ^ Preview popup */
-
-body#vrtx-trash-can #trash-can-empty,
-body#vrtx-manage-collectionlisting #collectionlisting-empty {
-  text-align: center;
-}
-
-body#vrtx-trash-can #trash-can-empty td,
-body#vrtx-manage-collectionlisting #collectionlisting-empty td {
-  padding: 25px 0 30px 0;
-}
 
 #permissions-read-write-admin {
   padding-bottom: 15px;

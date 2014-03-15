@@ -45,6 +45,12 @@
           overwrite: '${vrtx.getMsg("uploading.existing.overwrite")}'
         }
       },
+      deleting = {
+        permanent: {
+          inprogress: '${vrtx.getMsg("deleting.permanent.in-progress")}'
+        },
+        inprogress: '${vrtx.getMsg("deleting.in-progress")}'
+      },
       move = {
         existing: {
           sameFolder: "${vrtx.getMsg("move.existing.same-folder")}"

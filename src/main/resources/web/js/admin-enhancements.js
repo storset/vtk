@@ -758,31 +758,47 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
       });
       
       // Delete resources
+      var deletingD = null;
       vrtxAdm.completeSimpleFormAsync({
         selector: "input#collectionListing\\.action\\.delete-resources",
         updateSelectors: ["#contents"],
         useClickVal: true,
         rowCheckedAnimateOut: true,
+        fnBeforePost: function() {
+          deletingD = new VrtxLoadingDialog({title: deleting.inprogress});
+          deletingD.open();
+        },
         fnComplete: function(resultElm) {
           vrtxAdm.displayErrorMsg(resultElm.find(".errormessage").html());
           vrtxAdm.updateCollectionListingInteraction();
+          deletingD.close();
         }
       });
 
       vrtxAdm.collectionListingInteraction();
       break;
     case "vrtx-trash-can":
+      var deletingPermanentD = null;
+      var deletingPermanentEmptyFolder = false;
       vrtxAdm.completeSimpleFormAsync({
         selector: "input.deleteResourcePermanent",
         updateSelectors: ["#contents"],
         rowCheckedAnimateOut: true,
-        fnBeforePost: function() {
-          if (vrtxAdm.trashcanCheckedFiles >= vrtxAdm.cachedContent.find("tbody tr").length) return false;
+        fnBeforePost: function(form, link) {
+          if (vrtxAdm.trashcanCheckedFiles >= vrtxAdm.cachedContent.find("tbody tr").length) {
+            deletingPermanentEmptyFolder = true;
+          }
           vrtxAdm.trashcanCheckedFiles = 0;
+          deletingPermanentD = new VrtxLoadingDialog({title: deleting.inprogress});
+          deletingPermanentD.open();
         },
         fnComplete: function(resultElm) {
           vrtxAdm.displayErrorMsg(resultElm.find(".errormessage").html());
           vrtxAdm.updateCollectionListingInteraction();
+          deletingPermanentD.close();
+          if(deletingPermanentEmptyFolder) { // Redirect on empty trash can
+            location.href = "./?vrtx=admin";
+          }
         }
       });
       vrtxAdm.collectionListingInteraction();

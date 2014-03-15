@@ -139,7 +139,7 @@ function VrtxAdmin() {
   
   this.requiredScriptsLoaded = null;
   
-  this.messages = {};
+  this.messages = {}; /* Populated with i18n in resource-bar.ftl */
 }
 
 var vrtxAdmin = new VrtxAdmin();

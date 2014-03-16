@@ -30,14 +30,16 @@
  */
 package org.vortikal.web.servlet;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.*;
+import org.junit.Test;
 
 /**
  * Just for testing multi thread capability of xpath expression (= isn't thread safe)
  */
-public class BufferedResponseTest extends TestCase {
+public class BufferedResponseTest {
 
-    public void testAddContentTypeHeader() {
+    @Test
+    public void addContentTypeHeader() {
         BufferedResponse resp = new BufferedResponse();
         resp.addHeader("Content-Type", "text/html");
         String contentType = resp.getContentType();

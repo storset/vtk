@@ -32,14 +32,16 @@ package org.vortikal.edit.xml;
 
 import java.net.URL;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.*;
 
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.ProcessingInstruction;
 import org.jdom.input.SAXBuilder;
+import org.junit.Before;
+import org.junit.Test;
 
-public class SchemaDocumentDefinitionTest extends TestCase {
+public class SchemaDocumentDefinitionTest {
 
     Document testDocument;
     Document testIncludeDocument;
@@ -51,8 +53,9 @@ public class SchemaDocumentDefinitionTest extends TestCase {
     SchemaDocumentDefinition fritekst2Definition;
     SchemaDocumentDefinition fritekstOnTopLevelDefinition;
 
-    protected void setUp() throws Exception {
-        super.setUp();
+    @Before
+    public void setUp() throws Exception {
+
 
         SAXBuilder builder = new SAXBuilder(
                 "org.apache.xerces.parsers.SAXParser");
@@ -82,7 +85,8 @@ public class SchemaDocumentDefinitionTest extends TestCase {
         }
     }
 
-    public void testConstructor() {
+    @Test
+    public void constructor() {
         /* Test that the schema has included the 'fritekst' toplevel element from subschema */
         Element e = this.testIncludeDocument.getRootElement().getChild("fritekst");
         assertEquals("UNBOUNDED_ELEMENT", this.fritekstDefinition.elementType(e));
@@ -100,7 +104,8 @@ public class SchemaDocumentDefinitionTest extends TestCase {
         }
     }
 
-    public void testOnlyFritekst() {
+    @Test
+    public void onlyFritekst() {
 	Element ingress = this.fritekstOnTopLevelDocument.getRootElement()
 	    .getChild("ingress");
         this.fritekstDefinition.translateToEditingElement(ingress);
@@ -113,7 +118,8 @@ public class SchemaDocumentDefinitionTest extends TestCase {
 	assertEquals("Eva", ingress.getChild("utheving").getText());
     }
 
-    public void testOnlyFritekst2() {
+    @Test
+    public void onlyFritekst2() {
     	Element ingress = this.fritekst2OnTopLevelDocument.getRootElement().getChild("ingress");
             this.fritekst2Definition.translateToEditingElement(ingress);
 
@@ -126,7 +132,8 @@ public class SchemaDocumentDefinitionTest extends TestCase {
         }
 
 
-    public void testElementType() {
+    @Test
+    public void elementType() {
 
         assertTrue(this.testDocument.getRootElement().getName().equals("test"));
         assertTrue(this.definition.getDocType().equals("test"));
@@ -166,7 +173,8 @@ public class SchemaDocumentDefinitionTest extends TestCase {
 
 
 
-    public void testTranslateToEditingElement() {
+    @Test
+    public void translateToEditingElement() {
         this.definition.translateToEditingElement(this.testDocument.getRootElement()
                 .getChild("fritekst"));
 
@@ -196,7 +204,8 @@ public class SchemaDocumentDefinitionTest extends TestCase {
 
 
 
-    public void testBuildElement() {
+    @Test
+    public void buildElement() {
         Element element = new Element("overskrift");
         Element attributeTest1 = new Element("attributeTest1");
         Element attributeTest2 = new Element("attributeTest2");
@@ -222,7 +231,8 @@ public class SchemaDocumentDefinitionTest extends TestCase {
     
     // testing additions in fritekst-v002 Schema
     
-    public void testOnlyFritekst2new() {
+    @Test
+    public void onlyFritekst2new() {
         // <fritekst> as top level element
         Element ingress = this.fritekst2newOnTopLevelDocument.getRootElement().getChild("ingress");
         this.fritekst2Definition.translateToEditingElement(ingress);

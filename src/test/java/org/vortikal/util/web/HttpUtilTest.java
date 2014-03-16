@@ -30,12 +30,13 @@
  */
 package org.vortikal.util.web;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.*;
+import org.junit.Test;
 
-public class HttpUtilTest extends TestCase {
+public class HttpUtilTest {
 
-
-    public void testExtractHeaderField() {
+    @Test
+    public void extractHeaderField() {
 
         String testHeader = 
             "Authorization: Digest username=\"user@localhost\", " 

@@ -32,14 +32,16 @@ package org.vortikal.util.codec;
 
 import java.io.ByteArrayInputStream;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.*;
+import org.junit.Test;
 import org.vortikal.util.io.NullOutputStream;
 
 import org.vortikal.util.io.StreamUtil;
 
-public class MD5Test extends TestCase {
+public class MD5Test {
 
-    public void testMd5sum() {
+    @Test
+    public void md5sum() {
         assertEquals("900150983cd24fb0d6963f7d28e17f72", MD5.md5sum("abc"));
         assertEquals("d41d8cd98f00b204e9800998ecf8427e", MD5.md5sum(""));
         assertEquals("37b51d194a7513e45b56f6524f2d51f2", MD5.md5sum("bar"));
@@ -48,7 +50,8 @@ public class MD5Test extends TestCase {
                 MD5.md5sum("\\%$powjegpokjewgi39i310ut31+iujas0gh+2r1+ut139gtuwpjgo"));
     }
 
-    public void testStreams() throws Exception {
+    @Test
+    public void streams() throws Exception {
         String s = "bar";
         byte[] buf = s.getBytes();
         MD5.MD5InputStream is = MD5.wrap(new ByteArrayInputStream(buf));

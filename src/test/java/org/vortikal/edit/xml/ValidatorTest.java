@@ -30,15 +30,16 @@
  */
 package org.vortikal.edit.xml;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.*;
 
 import org.jdom.Document;
+import org.junit.Test;
 
 /** This test case is commented out, because the xml has to reference an external schema url 
  * for the validator to work. If you want to run it, just uncomment the commented code...
  *
  */
-public class ValidatorTest extends TestCase {
+public class ValidatorTest {
 
 //    private static final String VALIDATING_XML = "org/vortikal/edit/xml/validating.xml";
 
@@ -64,7 +65,8 @@ public class ValidatorTest extends TestCase {
 //
 //    }
 
-    public void testValidate() {
+    @Test
+    public void validate() {
 //        try {
 //            new Validator().validate(validating);
 //    

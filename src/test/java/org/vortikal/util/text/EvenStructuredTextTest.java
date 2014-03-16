@@ -32,13 +32,15 @@ package org.vortikal.util.text;
 
 import java.io.File;
 
-import junit.framework.TestCase;
-
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
 
-public class EvenStructuredTextTest extends TestCase {
+import static org.junit.Assert.*;
+import org.junit.Before;
+import org.junit.Test;
+
+public class EvenStructuredTextTest {
 
     private static final String TEST_XML = "src/test/resources/org/vortikal/util/text/nyhet.xml";
 
@@ -46,8 +48,8 @@ public class EvenStructuredTextTest extends TestCase {
 
     Document testDocument;
 
-    protected void setUp() throws Exception {
-        super.setUp();
+    @Before
+    public void setUp() throws Exception {
         this.est = new EvenStructuredText();
 
         SAXBuilder builder = new SAXBuilder(
@@ -62,11 +64,8 @@ public class EvenStructuredTextTest extends TestCase {
         }
     }
 
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-
-    public void testStripLeadingTrailingNewLines() {
+    @Test
+    public void stripLeadingTrailingNewLines() {
         String s = "\n\n\nlala\n\n\n";
         String result = "lala";
         assertEquals(result, this.est.stripLeadingTrailingNewLines(s));
@@ -80,7 +79,8 @@ public class EvenStructuredTextTest extends TestCase {
         
     }
     
-    public void testStartsEndsWithEmptyParagraph() {
+    @Test
+    public void startsEndsWithEmptyParagraph() {
         String result = "Avsnitt1";
         Element element = this.testDocument.getRootElement().getChild(
                 "fritekst");
@@ -93,7 +93,8 @@ public class EvenStructuredTextTest extends TestCase {
         assertEquals(result, this.est.parseElement(element));
     }
 
-    public void testNewlinesWithParagraph() {
+    @Test
+    public void newlinesWithParagraph() {
         String result = "paragraph";
 
         String s = "paragraph";
@@ -116,7 +117,8 @@ public class EvenStructuredTextTest extends TestCase {
 
     }
 
-    public void testNewlinesWithList() {
+    @Test
+    public void newlinesWithList() {
         String result = "- list item";
 
         String s = "- list item";
@@ -139,7 +141,8 @@ public class EvenStructuredTextTest extends TestCase {
 
     }
 
-    public void testComplexStructure() {
+    @Test
+    public void complexStructure() {
         try {
             String complex = "[sub:subscript] og [super:superscript]\\\n"
                     + "escaped newline\n*fet \\* stjerne* og _kursiv \\_ "
@@ -153,7 +156,8 @@ public class EvenStructuredTextTest extends TestCase {
         }
     }
 
-    public void testSubWithEscapedQuote() {
+    @Test
+    public void subWithEscapedQuote() {
         Element parent = new Element("parent");
         try {
             this.est.parseSub("[sub:\\]]", 0, parent);
@@ -163,7 +167,8 @@ public class EvenStructuredTextTest extends TestCase {
         assertEquals("]", parent.getChildText("sub"));
     }
 
-    public void testEscapeText() {
+    @Test
+    public void escapeText() {
         String s = "\\*bold\\*";
         String s2 = null;
         try {
@@ -178,7 +183,8 @@ public class EvenStructuredTextTest extends TestCase {
 
     // Roundtrip tests for testing escape
 
-    public void testBoldText() {
+    @Test
+    public void boldText() {
         String s = "*boldtext\\_test* \\\\* bla *\"bold_\\*text\" \\** \\* bla * bla _";
         String sback = "*boldtext\\_test* \\\\* bla *\"bold_\\*text\" \\** \\* bla \\* bla \\_";
         String s2 = null;
@@ -193,7 +199,8 @@ public class EvenStructuredTextTest extends TestCase {
         assertEquals(sback, s2);
     }
 
-    public void testItalicText() {
+    @Test
+    public void italicText() {
         String s = "Bla \\_bla _\"italic*text\" \\__ \\_ bla _ bla";
         String sback = "Bla \\_bla _\"italic*text\" \\__ \\_ bla \\_ bla";
         String s2 = null;
@@ -208,7 +215,8 @@ public class EvenStructuredTextTest extends TestCase {
         assertEquals(sback, s2);
     }
 
-    public void testSubText() {
+    @Test
+    public void subText() {
         String s = "[sub:subtext\\]_]";
         String sback = "[sub:subtext\\]_]";
         String sreparsed = null;
@@ -222,7 +230,8 @@ public class EvenStructuredTextTest extends TestCase {
         assertEquals(sback, sreparsed);
     }
 
-    public void testParagraphText() {
+    @Test
+    public void paragraphText() {
         String s = "Paragraphtext * _bla_ [ bla \n\\ -";
         String sback = "Paragraphtext \\* _bla_ \\[ bla \n\\ -";
         String s2 = null;
@@ -237,7 +246,8 @@ public class EvenStructuredTextTest extends TestCase {
         assertEquals(sback, s2);
     }
 
-    public void testListText() {
+    @Test
+    public void listText() {
         String s = "- Bla * _bla_ [ bla \n\\ -";
         String sback = "- Bla \\* _bla_ \\[ bla \n\\ -";
         String s2 = null;
@@ -254,7 +264,8 @@ public class EvenStructuredTextTest extends TestCase {
     /**
      * Link tests
      */
-    public void testLinkText() {
+    @Test
+    public void linkText() {
         String s = "Bla \\\"bla \"link*_text\":bla_bla bla_bla";
         String sback = "Bla \\\"bla \"link*_text\":bla_bla bla\\_bla";
         String s2 = null;
@@ -269,7 +280,8 @@ public class EvenStructuredTextTest extends TestCase {
         assertEquals(sback, s2);
     }
 
-    public void testEscapingInsideLink() {
+    @Test
+    public void escapingInsideLink() {
         String s = "normal link \"uio\":http://www.uio.no escaping in link \"\"bla\\\":bla\":http://www.vg.no end";
         String s2 = null;
         try {
@@ -283,7 +295,8 @@ public class EvenStructuredTextTest extends TestCase {
         assertEquals(s, s2);
     }
 
-    public void testLinkWithQuotationMarks() {
+    @Test
+    public void linkWithQuotationMarks() {
         String s = "link: dette er \"ikke lenke\", men \"\\\"det\\\":te er\\\"\":http://vg.no også bla";
         String s2 = null;
         try {
@@ -297,7 +310,8 @@ public class EvenStructuredTextTest extends TestCase {
         assertEquals(s, s2);
     }
 
-    public void testEmptyLinks() {
+    @Test
+    public void emptyLinks() {
         String s = "\"\":www.uio.no \"uio\": end";
         String s2 = null;
         try {
@@ -314,7 +328,8 @@ public class EvenStructuredTextTest extends TestCase {
     /**
      * Reference tests
      */
-    public void testNormalReferences() {
+    @Test
+    public void normalReferences() {
         String s1 = "reference-test 1 [attribute:reference]";
         String s1parsed = null;
         String s2 = "reference-test 2 [without_attribute]";
@@ -333,7 +348,8 @@ public class EvenStructuredTextTest extends TestCase {
         assertEquals(s2, s2parsed);
     }
 
-    public void testEscapedReferences() {
+    @Test
+    public void escapedReferences() {
         String s = "reference-test with escape [attribute\\:reference] [attr:ref\\]]";
         String sParsed = null;
         try {
@@ -348,7 +364,8 @@ public class EvenStructuredTextTest extends TestCase {
         assertEquals(s, sParsed);
     }
 
-    public void testEmptyAttribute() {
+    @Test
+    public void emptyAttribute() {
         String s = "reference-test empty attribute [:reference] [attr\\:ref]";
         String sParsed = null;
         try {
@@ -366,7 +383,8 @@ public class EvenStructuredTextTest extends TestCase {
     /**
      * List items tests
      */
-    public void testNormalList() {
+    @Test
+    public void normalList() {
         String s = "- listitem 1 \n- listitem 2";
         String sParsed = null;
         try {
@@ -381,7 +399,8 @@ public class EvenStructuredTextTest extends TestCase {
         assertEquals(s, sParsed);
     }
 
-    public void testNormalNumlist() {
+    @Test
+    public void normalNumlist() {
         String s = "# numlistitem 1 \n# numlistitem 2";
         String sParsed = null;
         try {
@@ -396,7 +415,8 @@ public class EvenStructuredTextTest extends TestCase {
         assertEquals(s, sParsed);
     }
 
-    public void testEscapedList() {
+    @Test
+    public void escapedList() {
         String s = "normal text \n\n\\- escaped BAJS- \\- -BAJS listitem 1 \n\\- escaped listitem 2\n\n normal text again";
         String sParsed = null;
         try {
@@ -411,7 +431,8 @@ public class EvenStructuredTextTest extends TestCase {
         assertEquals(s, sParsed);
     }
 
-    public void testEscapedNumlist() {
+    @Test
+    public void escapedNumlist() {
         String s = "normal text \n\n\\# escaped numlistitem 1 \n\\# escaped numlistitem 2\n\n normal text again";
         String sParsed = null;
         try {
@@ -430,7 +451,8 @@ public class EvenStructuredTextTest extends TestCase {
      * Newline tests
      */
 
-    public void testNewLine() {
+    @Test
+    public void newLine() {
         String s = "la\nla\nla";
         Element parsed = this.est.parseStructuredText(s);
         String reparsed = this.est.parseElement(parsed);
@@ -441,7 +463,8 @@ public class EvenStructuredTextTest extends TestCase {
      * FIXME: Escaped newline is not yet fully implementet!
      */
     // Will fail when escapable newline is implemented
-    public void testSimpleEscapedNewline() {
+    @Test
+    public void simpleEscapedNewline() {
         String s = "line\\\nnewline";
         Element e = this.est.parseStructuredText(s);
         // est.dumpXML(e, System.out);
@@ -450,7 +473,8 @@ public class EvenStructuredTextTest extends TestCase {
     }
 
     // Will fail when escapable newline is implemented
-    public void testEscapedNewline() {
+    @Test
+    public void escapedNewline() {
         String s = "text\\\n text on escaped newline \n text after normal newline";
         String sParsed = null;
         try {
@@ -469,7 +493,8 @@ public class EvenStructuredTextTest extends TestCase {
      * TODO: Feiler på escaping newline før listepunkt (som dermed egentlig ikke
      * skal bli listepunkt) *
      */
-    public void testTryingToMessUpListsWithEscape() {
+    @Test
+    public void tryingToMessUpListsWithEscape() {
         String s = "test-text\n\n\\- escaped listitem \\\n- not a listitem \\\n- another line not listitem \nend of text";
         // List adds a new newline (since escaped newline is not supported)
         String sExpectedResult = "test-text\n\n\\- escaped listitem \\\n\n- not a listitem \\\n- another line not listitem \nend of text";
@@ -489,7 +514,8 @@ public class EvenStructuredTextTest extends TestCase {
     /**
      * Test of potential outofbounds.
      */
-    public void testEndsWithUnfinishedLink() {
+    @Test
+    public void endsWithUnfinishedLink() {
         try {
             this.est.parseStructuredText("lala lala \"lala\":");
         } catch (StringIndexOutOfBoundsException e) {
@@ -497,7 +523,8 @@ public class EvenStructuredTextTest extends TestCase {
         }
     }
 
-    public void testSuperWithOneCharString() {
+    @Test
+    public void superWithOneCharString() {
         Element parent = new Element("parent");
         try {
             this.est.parseSuper("[super:1]", 0, parent);
@@ -507,7 +534,8 @@ public class EvenStructuredTextTest extends TestCase {
         assertEquals("1", parent.getChildText("sup"));
     }
 
-    public void testSuperWithEmptyString() {
+    @Test
+    public void superWithEmptyString() {
         Element parent = new Element("parent");
         try {
             this.est.parseSuper("[super:]", 0, parent);
@@ -517,7 +545,8 @@ public class EvenStructuredTextTest extends TestCase {
         assertEquals("", parent.getChildText("sup"));
     }
 
-    public void testSubWithOneCharString() {
+    @Test
+    public void subWithOneCharString() {
         Element parent = new Element("parent");
         try {
             this.est.parseSub("[sub:1]", 0, parent);
@@ -527,7 +556,8 @@ public class EvenStructuredTextTest extends TestCase {
         assertEquals("1", parent.getChildText("sub"));
     }
 
-    public void testSubWithEmptyString() {
+    @Test
+    public void subWithEmptyString() {
         Element parent = new Element("parent");
         try {
             this.est.parseSub("[sub:]", 0, parent);
@@ -537,7 +567,8 @@ public class EvenStructuredTextTest extends TestCase {
         assertEquals("", parent.getChildText("sub"));
     }
 
-    public void testLinkWithSingleCharUrlAndDescription() {
+    @Test
+    public void linkWithSingleCharUrlAndDescription() {
         String s = "\"a\":b";
         Element parsed = this.est.parseStructuredText(s);
         String reparsed = this.est.parseElement(parsed);
@@ -547,7 +578,8 @@ public class EvenStructuredTextTest extends TestCase {
     /**
      * Iterative complex tests
      */
-    public void testIterativeParsingOfComplexStructure() {
+    @Test
+    public void iterativeParsingOfComplexStructure() {
         try {
             String complex = "[sub:subscript] og [super:superscript]\\\n"
                     + "escaped newline\n*fet \\* stjerne* og _kursiv \\_ "

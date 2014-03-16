@@ -46,12 +46,13 @@ import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalFactory;
 import org.vortikal.security.PrincipalImpl;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.*;
+import org.junit.Test;
 
-public class FieldValueMapperTest extends TestCase {
+public class FieldValueMapperTest {
 
-    private FieldValueMapper fieldValueMapper;
-    private ValueFactory vf;
+    private final FieldValueMapper fieldValueMapper;
+    private final ValueFactory vf;
 
     public FieldValueMapperTest() {
         this.fieldValueMapper = new FieldValueMapper();
@@ -61,7 +62,8 @@ public class FieldValueMapperTest extends TestCase {
         this.fieldValueMapper.setValueFactory(new ValueFactoryImpl());
     }
     
-    public void testDateValueIndexFieldEncoding() {
+    @Test
+    public void dateValueIndexFieldEncoding() {
 
         String[] dateFormats = new String[] { "Long-format",
                 "yyyy-MM-dd HH:mm:ss Z", "yyyy-MM-dd HH:mm:ss",
@@ -88,7 +90,8 @@ public class FieldValueMapperTest extends TestCase {
      * Tests FieldValueMapper.getValueFromStoredBinaryField(Field,Type)
      * and   FieldValueMapper.getStoredBinaryFieldFromValue(String,Value)
      */
-    public void testBinaryMapping() {
+    @Test
+    public void binaryMapping() {
         
         Fieldable stringField = this.fieldValueMapper.getStoredBinaryFieldFromValue("string", this.vf.createValue("bâr", Type.STRING));
         Fieldable intField = this.fieldValueMapper.getStoredBinaryFieldFromValue("int", this.vf.createValue("1024", Type.INT));
@@ -136,25 +139,26 @@ public class FieldValueMapperTest extends TestCase {
         assertEquals(1024, longValue.getLongValue());
 }
     
-    public void testMultithreadedDateValueIndexFieldEncoding() {
+    @Test
+    public void multithreadedDateValueIndexFieldEncoding() {
         
         Thread[] threads = new Thread[10];
         for (int i=0; i<threads.length; i++) {
             threads[i] = new Thread(new Runnable() {
+               @Override
                public void run() {
-                   testDateValueIndexFieldEncoding();
+                   dateValueIndexFieldEncoding();
                }
             });
         }
-        
-        for (int i=0; i<threads.length; i++) {
-            threads[i].start();
+        for (Thread thread : threads) {
+            thread.start();
         }
-        
-        for (int i = 0; i < threads.length; i++) {
+        for (Thread thread : threads) {
             try {
-                threads[i].join(); } catch (InterruptedException ie) { 
-                    fail("Interrupted while waiting for test threads to finish.");}
+                thread.join();
+            }catch (InterruptedException ie) {
+                fail("Interrupted while waiting for test threads to finish.");}
         }
         
     }

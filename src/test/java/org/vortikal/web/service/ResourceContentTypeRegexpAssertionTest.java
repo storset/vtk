@@ -1,20 +1,21 @@
 package org.vortikal.web.service;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.*;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.jmock.Expectations;
+import org.jmock.Mockery;
+import org.junit.Before;
 import org.junit.Test;
-import org.vortikal.repository.Path;
-import org.vortikal.repository.ResourceImpl;
-import org.vortikal.security.InvalidPrincipalException;
+import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 import org.vortikal.security.Principal.Type;
 import org.vortikal.security.PrincipalImpl;
 
-public class ResourceContentTypeRegexpAssertionTest extends TestCase {
+public class ResourceContentTypeRegexpAssertionTest {
     
-    private ResourceContentTypeRegexpAssertion r;
-    private Principal p;
+    private ResourceContentTypeRegexpAssertion assertion;
+    private Principal principal;
     
     /* MSOffice 2007+: http://filext.com/faq/office_mime_types.php */
     
@@ -51,31 +52,32 @@ public class ResourceContentTypeRegexpAssertionTest extends TestCase {
     // And all together..
     private String[] testOoXmlContentTypes = (String[]) ArrayUtils.addAll(testWordContentTypes, (String[]) ArrayUtils.addAll(testExcelContentTypes, testPowerpointContentTypes));
     
-    public ResourceContentTypeRegexpAssertionTest() {
-        r = new ResourceContentTypeRegexpAssertion();
-        p = new MockPrincipalImpl("user", Type.USER);
+    @Before
+    public void setUp() {
+        assertion = new ResourceContentTypeRegexpAssertion();
+        principal = new PrincipalImpl("user", Type.USER);
     }
     
     @Test
-    public void testWordContentTypes() {
+    public void wordContentTypes() {
         String pattern = "application/(msword|vnd\\.(ms-word(|\\.(document|template)\\.macroEnabled\\.12)|openxmlformats-officedocument\\.wordprocessingml\\.(document|template)))";
         assertTrue(matchTestContentTypeWithPattern(testWordContentTypes, pattern));
     }
 
     @Test
-    public void testExcelContentTypes() {
+    public void excelContentTypes() {
         String pattern = "application/(ms-excel|x-msexcel|vnd\\.(ms-excel(|\\.(sheet(|\\.binary)|template|addin)\\.macroEnabled\\.12)|openxmlformats-officedocument\\.spreadsheetml\\.(sheet|template)))";
         assertTrue(matchTestContentTypeWithPattern(testExcelContentTypes, pattern));
     }
     
     @Test
-    public void testPowerpointContentTypes() {
+    public void powerpointContentTypes() {
         String pattern = "application/(ms-ppt|vnd\\.(ms-powerpoint(|\\.(addin|presentation|template|slideshow)\\.macroEnabled\\.12)|openxmlformats-officedocument\\.presentationml\\.(presentation|template|slideshow)))";
         assertTrue(matchTestContentTypeWithPattern(testPowerpointContentTypes, pattern));
     }
     
     @Test
-    public void testOoXmlContentTypes() {
+    public void ooXmlContentTypes() {
         String pattern = "application/(msword|ms-excel|x-msexcel|ms-ppt|vnd\\." +
         		       "((ms-word(|\\.(document|template)\\.macroEnabled\\.12)" +
         		        "|ms-excel(|\\.(sheet(|\\.binary)|template|addin|)\\.macroEnabled\\.12)" +
@@ -98,35 +100,17 @@ public class ResourceContentTypeRegexpAssertionTest extends TestCase {
         return true;
     }
     
-    private boolean matchTestContentTypeWithPattern(String testContentType, String pattern) {
-        r.setPattern(pattern);
-        return r.matches(new MockResource(testContentType), p);
+    private boolean matchTestContentTypeWithPattern(final String testContentType, String pattern) {
+        assertion.setPattern(pattern);
+        Mockery context = new Mockery();
+        final Resource resource = context.mock(Resource.class);
+        context.checking(new Expectations(){
+            {
+                allowing(resource).getContentType();
+                will(returnValue(testContentType));
+            }
+        });
+        return assertion.matches(resource, principal);
     }
 
-}
-
-
-@SuppressWarnings("serial")
-class MockPrincipalImpl extends PrincipalImpl {
-    public MockPrincipalImpl(String id, Type type) throws InvalidPrincipalException {
-        super(id, type);
-    }
-}
-
-class MockResource extends ResourceImpl {
-    
-    private String testContentType = "";
-    
-    public MockResource(Path uri) {
-        super(uri);
-    };
-    
-    public MockResource(String testContentType) {
-        super(Path.fromString("/"));
-        this.testContentType = testContentType.toString();
-    }
-
-    public String getContentType() {
-        return testContentType;
-    }
 }

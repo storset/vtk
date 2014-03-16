@@ -32,6 +32,7 @@ package org.vortikal.repository.store.mem;
 
 
 import org.apache.log4j.BasicConfigurator;
+import org.junit.Before;
 import org.vortikal.repository.store.AbstractContentStoreTest;
 import org.vortikal.repository.store.ContentStore;
 
@@ -40,16 +41,10 @@ public class MemoryContentStoreTest extends AbstractContentStoreTest {
 
     private MemoryContentStore store;
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         BasicConfigurator.configure();
-        super.setUp();
         this.store = new MemoryContentStore();
-    }
-
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
     }
 
     @Override

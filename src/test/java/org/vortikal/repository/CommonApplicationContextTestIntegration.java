@@ -32,6 +32,9 @@ package org.vortikal.repository;
 
 import java.util.Locale;
 
+import static org.junit.Assert.*;
+import org.junit.Test;
+
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.vortikal.security.Principal;
@@ -41,6 +44,7 @@ import org.vortikal.text.html.HtmlUtil;
 
 public class CommonApplicationContextTestIntegration extends AbstractBeanContextTestIntegration {
 
+    @Test
     public void testCommonConfiguration() {
         ApplicationContext ctx = getApplicationContext(new String[] {});
 

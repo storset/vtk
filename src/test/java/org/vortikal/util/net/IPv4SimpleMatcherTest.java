@@ -30,7 +30,8 @@
  */
 package org.vortikal.util.net;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.*;
+import org.junit.Test;
 
 /**
  * A JUnit <code>TestCase</code> for the <code>IPv4SimpleMatcher</code> class.
@@ -38,9 +39,10 @@ import junit.framework.TestCase;
  * @author oyviste
  *
  */
-public class IPv4SimpleMatcherTest extends TestCase {
+public class IPv4SimpleMatcherTest {
     
-    public void testMatches() {
+    @Test
+    public void matches() {
         
         IPv4Matcher matcher = new IPv4SimpleMatcher("192.168.0.2");
         
@@ -55,7 +57,8 @@ public class IPv4SimpleMatcherTest extends TestCase {
     }
     
     @SuppressWarnings("unused")
-    public void testConstructionWithInvalidAddress() {
+    @Test
+    public void constructionWithInvalidAddress() {
         
         try {
             String address = ".";
@@ -82,7 +85,8 @@ public class IPv4SimpleMatcherTest extends TestCase {
         } catch (IllegalArgumentException e){}
     }
     
-    public void testMatchingInvalidAddresses() {
+    @Test
+    public void matchingInvalidAddresses() {
         
         IPv4Matcher matcher = new IPv4SimpleMatcher("192.168.0.2");
 

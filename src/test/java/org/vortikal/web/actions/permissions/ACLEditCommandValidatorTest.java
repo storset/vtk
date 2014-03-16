@@ -2,23 +2,23 @@ package org.vortikal.web.actions.permissions;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import junit.framework.TestCase;
+import org.junit.Before;
 
 import org.junit.Test;
 
-public class ACLEditCommandValidatorTest extends TestCase {
+import static org.junit.Assert.*;
+
+public class ACLEditCommandValidatorTest {
 
     private ACLEditCommandValidator validator;
     
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    @Before
+    public void setUp() throws Exception {
         validator = new ACLEditCommandValidator();
     }
     
     @Test
-    public void testToCSV() {
+    public void toCSV() {
         
         String csv = "'alle@uio.no', 'vrtxadm', 'vrtx-core'";
         
@@ -31,7 +31,7 @@ public class ACLEditCommandValidatorTest extends TestCase {
     }
     
     @Test
-    public void testGetAc_userName() {
+    public void getAc_userName() {
         
         String[] ac_userNames = {"Jon Bing;jonb", "Jon Skolmen;jons"};
         List<String> userNameEntries = new ArrayList<String>();

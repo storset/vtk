@@ -1,21 +1,22 @@
 package org.vortikal.web.actions.permissions;
 
-import junit.framework.TestCase;
+
+import static org.junit.Assert.*;
+import org.junit.Before;
 
 import org.junit.Test;
 
-public class ACLEditCommandTest extends TestCase {
+public class ACLEditCommandTest {
 
     private ACLEditCommand command;
     
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    @Before
+    public void setUp() throws Exception {
         command = new ACLEditCommand("/");
     }
     
     @Test
-    public void testStripBlanks() {
+    public void stripBlanks() {
        String[] values = {" ", "  ", "vrtxadm", "vrtx-core", "Jon Bing", "jonb", null, null, "   "}; 
        String[] noBlanks = command.stripBlanks(values);
        

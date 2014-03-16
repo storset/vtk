@@ -5,20 +5,21 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Map;
 
-import junit.framework.TestCase;
 import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
+import org.junit.Before;
 
-public abstract class FreeMarkerTemplateTestIntegration extends TestCase {
+// TODO rename class to *Test
+public abstract class FreeMarkerTemplateTestIntegration {
     
     private Configuration cfg;
     private String templateLocation;
     private Map<String, Object> context;
     
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         cfg = new Configuration();
         cfg.setDirectoryForTemplateLoading(new File("src/main/ftl"));
         cfg.setObjectWrapper(new DefaultObjectWrapper());

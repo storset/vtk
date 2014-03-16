@@ -37,14 +37,15 @@ import java.io.Writer;
 import java.util.Collection;
 import java.util.Map;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.*;
 
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.jmock.integration.junit4.JUnit4Mockery;
+import org.junit.Test;
 
 
-public class DefaultTemplateParserTest extends TestCase {
+public class DefaultTemplateParserTest {
 
     private static final String EMPTY_TEMPLATE = "";
     
@@ -52,7 +53,8 @@ public class DefaultTemplateParserTest extends TestCase {
     private final DecoratorRequest mockRequest = context.mock(DecoratorRequest.class);
     private final DecoratorResponse mockResponse = context.mock(DecoratorResponse.class);
 
-    public void testEmpty() throws Exception {
+    @Test
+    public void empty() throws Exception {
         DollarSyntaxComponentParser parser = createParser();
         Reader reader = new StringReader(EMPTY_TEMPLATE);
         ComponentInvocation[] parsedTemplate = parser.parse(reader);
@@ -63,7 +65,8 @@ public class DefaultTemplateParserTest extends TestCase {
     private static final String SIMPLE_TEMPLATE_WITH_PARAMS =
         "<html>${namespace:name var1=[20] var2=[30]}</html>";
 
-    public void testSimple() throws Exception {
+    @Test
+    public void simple() throws Exception {
         DollarSyntaxComponentParser parser = createParser();
         Reader reader = new StringReader(SIMPLE_TEMPLATE_WITH_PARAMS);
         ComponentInvocation[] parsedTemplate = parser.parse(reader);
@@ -84,7 +87,8 @@ public class DefaultTemplateParserTest extends TestCase {
     private static final String MALFORMED_TEMPLATE =
         "<html>${namespace:name var1=[20}] var2=[30]]}</html>";
 
-    public void testMalformed() throws Exception {
+    @Test
+    public void malformed() throws Exception {
         DollarSyntaxComponentParser parser = createParser();
         Reader reader = new StringReader(MALFORMED_TEMPLATE);
         ComponentInvocation[] parsedTemplate = parser.parse(reader);
@@ -96,7 +100,8 @@ public class DefaultTemplateParserTest extends TestCase {
     private static final String NESTED_DIRECTIVES =
         "${${component:ref}}";
 
-    public void testMalformedNestedDirectives() throws Exception {
+    @Test
+    public void malformedNestedDirectives() throws Exception {
         DollarSyntaxComponentParser parser = createParser();
         Reader reader = new StringReader(NESTED_DIRECTIVES);
         ComponentInvocation[] parsedTemplate = parser.parse(reader);
@@ -110,6 +115,7 @@ public class DefaultTemplateParserTest extends TestCase {
     private static final String COMPLEX_TEMPLATE =
         "${<html>${namespace:name\nvar1 = [20] \r\nvar2=\r\n[30\\]] \rvar3=[400]}</html>}";
 
+    @Test
     public void testComplexTemplate() throws Exception {
         DollarSyntaxComponentParser parser = createParser();
         Reader reader = new StringReader(COMPLEX_TEMPLATE);
@@ -130,7 +136,7 @@ public class DefaultTemplateParserTest extends TestCase {
     
     private String renderComponent(ComponentInvocation inv) throws Exception {
         final Writer writer = new StringWriter();
-        context.checking(new Expectations() {{ one(mockResponse).getWriter(); will(returnValue(writer)); }});
+        context.checking(new Expectations() {{ oneOf(mockResponse).getWriter(); will(returnValue(writer)); }});
         if (inv instanceof StaticTextFragment) {
             return ((StaticTextFragment) inv).buffer.toString();
         }

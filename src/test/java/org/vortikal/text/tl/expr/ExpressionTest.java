@@ -38,32 +38,36 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.*;
+import org.junit.Before;
+import org.junit.Test;
 
 import org.vortikal.text.tl.Context;
 import org.vortikal.text.tl.Literal;
 import org.vortikal.text.tl.Symbol;
 import org.vortikal.text.tl.Token;
 
-public class ExpressionTest extends TestCase {
+public class ExpressionTest {
 
     private Set<Function> functions = new HashSet<Function>();
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    @Before
+    public void setUp() throws Exception {
+
         this.functions.add(new Concat(new Symbol("concat")));
         this.functions.add(new Length(new Symbol("length")));
         this.functions.add(new Get(new Symbol("get")));
         
         Symbol s = new Symbol("emptyfunc");
         this.functions.add(new Function(s, 0) {
+            @Override
             public Object eval(Context ctx, Object... args) {
                 return "result";
             }
         });
         s = new Symbol("map");
         this.functions.add(new Function(s) {
+            @Override
             public Object eval(Context ctx, Object... args) {
                 if (args == null || args.length % 2 != 0) {
                     throw new IllegalArgumentException(getSymbol() + " takes an even number of arguments");
@@ -78,7 +82,8 @@ public class ExpressionTest extends TestCase {
     }
 
     
-    public void testBasicExpressions() {
+    @Test
+    public void basicExpressions() {
         Object result;
         result = eval(
                 new Literal("\"literal-string\"")	
@@ -224,7 +229,8 @@ public class ExpressionTest extends TestCase {
     }
 
     
-    public void testComplexExpressions() {
+    @Test
+    public void complexExpressions() {
         Object result;
         result = eval(
                 new Literal("2"),
@@ -380,7 +386,8 @@ public class ExpressionTest extends TestCase {
     }
 
     
-    public void testFunctions() {
+    @Test
+    public void functions() {
         Context ctx = new Context(Locale.getDefault());
         ctx.define("a", "a", true);
         ctx.define("b", "b", true);
@@ -487,7 +494,8 @@ public class ExpressionTest extends TestCase {
         
     }
     
-    public void testTypeOf() throws Exception {
+    @Test
+    public void typeOf() throws Exception {
         Context ctx = new Context(Locale.getDefault());
         ctx.define("a", "a", true);
 
@@ -556,7 +564,8 @@ public class ExpressionTest extends TestCase {
         assertEquals("undefined", result);
     }
 
-    public void testUndefinedFunction() throws Exception {
+    @Test
+    public void undefinedFunction() throws Exception {
         try {
             eval(
                     new Symbol("bazza"),
@@ -575,7 +584,8 @@ public class ExpressionTest extends TestCase {
     }
     
 
-    public void testLists() {
+    @Test
+    public void lists() {
         Object result;
         List<?> list;
         result = eval(
@@ -610,7 +620,8 @@ public class ExpressionTest extends TestCase {
         assertEquals("b", list.get(1));
     }
     
-    public void testMalformedLists() {
+    @Test
+    public void malformedLists() {
         try {
             eval(
                     new Symbol("{{"),
@@ -625,7 +636,8 @@ public class ExpressionTest extends TestCase {
         }
     }
     
-    public void testMalformedMaps() {
+    @Test
+    public void malformedMaps() {
         try {
             eval(
                     new Symbol("{"),
@@ -650,7 +662,8 @@ public class ExpressionTest extends TestCase {
         }
     }
     
-    public void testBasicMaps() {
+    @Test
+    public void basicMaps() {
         Object result;
         Map<?,?> map;
         result = eval(
@@ -742,7 +755,8 @@ public class ExpressionTest extends TestCase {
         assertTrue(result instanceof Map<?,?>);
     }
     
-    public void testMapsAndFunctions() {
+    @Test
+    public void mapsAndFunctions() {
         Object result;
 
         result = eval(
@@ -886,7 +900,8 @@ public class ExpressionTest extends TestCase {
         
     }
     
-    public void testAccessors() {
+    @Test
+    public void accessors() {
         
         Object result;
 
@@ -955,7 +970,8 @@ public class ExpressionTest extends TestCase {
         assertEquals(22, result);
     }
 
-    public void testTooManyArguments() throws Exception {
+    @Test
+    public void tooManyArguments() throws Exception {
         try {
             eval(
                     new Symbol("emptyfunc"),
@@ -973,7 +989,8 @@ public class ExpressionTest extends TestCase {
         }
     }
 
-    public void testVarArgs() throws Exception {
+    @Test
+    public void varArgs() throws Exception {
         Object result;
         result = eval(
                 new Symbol("("),
@@ -1046,7 +1063,8 @@ public class ExpressionTest extends TestCase {
         assertEquals("abxycde", result);
     }
 
-    public void testMalformedExpressions() throws Exception {
+    @Test
+    public void malformedExpressions() throws Exception {
         try {
             eval(
                     new Symbol(","),

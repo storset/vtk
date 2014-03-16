@@ -34,13 +34,14 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.List;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.*;
+import org.junit.Test;
 
 import org.vortikal.repository.Path;
 import org.vortikal.util.text.PathMappingConfig.ConfigEntry;
 
 
-public class PathMappingConfigTest extends TestCase {
+public class PathMappingConfigTest {
 
     private static final String TEST_CONFIG = 
         "/ = root\n"
@@ -57,7 +58,8 @@ public class PathMappingConfigTest extends TestCase {
         + "/x/y/z[a:b,c:d]/ = exact\n"
         + "/esc/rhs = \\a\\b\\=";
     
-    public void testGet() throws Exception {
+    @Test
+    public void get() throws Exception {
         InputStream is = new ByteArrayInputStream(TEST_CONFIG.getBytes("utf-8"));
         PathMappingConfig config = new PathMappingConfig(is);
 
@@ -95,7 +97,8 @@ public class PathMappingConfigTest extends TestCase {
         assertEquals("\\a\\b=", entries.get(0).getValue());
     }
     
-    public void testGetMatchAncestors() throws Exception {
+    @Test
+    public void getMatchAncestors() throws Exception {
         String testConfig = 
                   "// = The Root Resource exactly\n"
                 + "/[lunarPhase:full moon]/ = Full Moon\n"

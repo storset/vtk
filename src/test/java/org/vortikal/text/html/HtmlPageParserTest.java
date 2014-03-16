@@ -33,12 +33,18 @@ package org.vortikal.text.html;
 import java.util.HashMap;
 import java.util.Map;
 
-import junit.framework.TestCase;
+import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertFalse;
+import static junit.framework.TestCase.assertNotNull;
+import static junit.framework.TestCase.assertTrue;
+import org.junit.Before;
+import org.junit.Test;
 
-public class HtmlPageParserTest extends TestCase {
+public class HtmlPageParserTest {
 
     private HtmlPageParser parser;
 
+    @Before
     public void setUp() {
         this.parser = new HtmlPageParser();
     }
@@ -54,7 +60,8 @@ public class HtmlPageParserTest extends TestCase {
             + "    <title>My title</title>\n"
             + "  </head>\n" + "  <body>The body</body>\n" + "</html>\n";
 
-    public void testSimpleHtmlPage() throws Exception {
+    @Test
+    public void simpleHtmlPage() throws Exception {
 
         HtmlPage page = parse(SIMPLE_XHTML_PAGE);
         assertEquals("html", page.getRootElement().getName());
@@ -63,7 +70,8 @@ public class HtmlPageParserTest extends TestCase {
         assertEquals("bar", page.getRootElement().getChildElements()[0].getAttributes()[1].getValue());
     }
 
-    public void testNodeFiltering() throws Exception {
+    @Test
+    public void nodeFiltering() throws Exception {
         HtmlPage page = parse(SIMPLE_XHTML_PAGE, new HtmlNodeFilter() {
             public HtmlContent filterNode(HtmlContent node) {
                 if (node instanceof HtmlElement) {
@@ -98,7 +106,8 @@ public class HtmlPageParserTest extends TestCase {
             + "  </body>\n"
             + "</html>\n";
 
-    public void testNestedTagFiltering() throws Exception {
+    @Test
+    public void nestedTagFiltering() throws Exception {
 
         final Map<String, HtmlElement> map = new HashMap<String, HtmlElement>();
         parse(SIMPLE_XHTML_PAGE_WITH_DIRECTIVES, new HtmlNodeFilter() {
@@ -127,7 +136,8 @@ public class HtmlPageParserTest extends TestCase {
 
     private static final String UNFORMATTED_STRING = "  body The div page div body";
 
-    public void testUnformattedString() throws Exception {
+    @Test
+    public void unformattedString() throws Exception {
         try {
             parse(UNFORMATTED_STRING);
         } catch (HtmlPageParserException e) {
@@ -137,7 +147,8 @@ public class HtmlPageParserTest extends TestCase {
 
     private static final String PARTIAL_HTML_PAGE = "  <body>The <div>page</div></body>";
 
-    public void testPartialHtmlPage() throws Exception {
+    @Test
+    public void partialHtmlPage() throws Exception {
         HtmlPage page = parse(PARTIAL_HTML_PAGE);
         assertEquals("body", page.getRootElement().getName());
         assertEquals("div", page.getRootElement().getChildElements()[0].getName());
@@ -147,7 +158,8 @@ public class HtmlPageParserTest extends TestCase {
 
     private static final String SINGLE_DOUBLE_ATTR_QUOTES = "<body attr1=\"value'1\"><div attr2='value\"2'></div></body>";
 
-    public void testAttrQuotes() throws Exception {
+    @Test
+    public void attrQuotes() throws Exception {
         HtmlPage page = parse(SINGLE_DOUBLE_ATTR_QUOTES);
         assertEquals("value'1", page.getRootElement().getAttribute("attr1").getValue());
         assertEquals("value\"2", page.getRootElement().getChildElements()[0].getAttribute("attr2").getValue());
@@ -199,7 +211,8 @@ public class HtmlPageParserTest extends TestCase {
             + "</body>\n"
             + "</html>\n";
 
-    public void testValidHtml401Trans() throws Exception {
+    @Test
+    public void validHtml401Trans() throws Exception {
         HtmlPage page = parse(VALID_HTML_401_TRANS);
         assertEquals("html", page.getRootElement().getName());
         assertEquals("head", page.getRootElement().getChildElements()[0].getName());
@@ -219,7 +232,8 @@ public class HtmlPageParserTest extends TestCase {
             + "  </frameset>\n"
             + "</frameset>\n" + "</html>\n";
 
-    public void testValidHtml401Frameset() throws Exception {
+    @Test
+    public void validHtml401Frameset() throws Exception {
         HtmlPage page = parse(SIMPLE_HTML_401_FRAMESET);
         assertEquals("frameset", page.getRootElement().getChildElements()[1].getName());
         assertEquals("rows",
@@ -238,7 +252,8 @@ public class HtmlPageParserTest extends TestCase {
             + "  <body>The body</body>\n"
             + "</html>\n";
 
-    public void testMalformedXHtml() throws Exception {
+    @Test
+    public void malformedXHtml() throws Exception {
         HtmlPage page = parse(MALFORMED_XHTML_PAGE);
         assertEquals("html", page.getRootElement().getName());
         assertEquals("head", page.getRootElement().getChildElements()[0].getName());
@@ -246,7 +261,8 @@ public class HtmlPageParserTest extends TestCase {
                 page.getRootElement().getChildElements()[0].getChildElements()[2].getContent());
     }
 
-    public void testTables() throws Exception {
+    @Test
+    public void tables() throws Exception {
         HtmlPage page = parseFile("test-tables.html", "utf-8");
         assertEquals("html", page.getRootElement().getName());
         assertEquals("head", page.getRootElement().getChildElements()[0].getName());
@@ -283,7 +299,8 @@ public class HtmlPageParserTest extends TestCase {
         assertEquals("tbody", tbody1.getName());
     }
 
-    public void testHtml401Strict() throws Exception {
+    @Test
+    public void html401Strict() throws Exception {
         HtmlPage page = parseFile("test-html401strict.html", "utf-8");
         assertEquals("html", page.getRootElement().getName());
         assertEquals("head", page.getRootElement().getChildElements()[0].getName());
@@ -341,7 +358,8 @@ public class HtmlPageParserTest extends TestCase {
         // TODO: verify the rest of the document content
     }
 
-    public void testHtmlFile1() throws Exception {
+    @Test
+    public void htmlFile1() throws Exception {
         HtmlPage page = parseFile("test-1.html", "utf-8");
         assertEquals("html", page.getRootElement().getName());
         assertEquals("head", page.getRootElement().getChildElements()[0].getName());
@@ -359,7 +377,8 @@ public class HtmlPageParserTest extends TestCase {
                         .getChildElements("span")[3].getContent());
     }
 
-    public void testHtmlBr() throws Exception {
+    @Test
+    public void htmlBr() throws Exception {
         HtmlPage page = parseFile("test-2.html", "utf-8");
         HtmlElement body = page.getRootElement().getChildElements()[1];
         HtmlElement br = body.getChildElements("p")[0].getChildElements("br")[0];
@@ -367,7 +386,8 @@ public class HtmlPageParserTest extends TestCase {
         assertEquals(br.getEnclosedContent(), "<br>");
     }
 
-    public void testHtmlHr() throws Exception {
+    @Test
+    public void htmlHr() throws Exception {
         HtmlPage page = parseFile("test-2.html", "utf-8");
         HtmlElement body = page.getRootElement().getChildElements()[1];
         HtmlElement hr = body.getChildElements("hr")[0];
@@ -390,7 +410,8 @@ public class HtmlPageParserTest extends TestCase {
         return page;
     }
 
-    public void testHtmlPageParserParseFragment() {
+    @Test
+    public void htmlPageParserParseFragment() {
         String html1 = "<p><em><s>test</s></em></p>";
         String html2 = "<p><s><em>test</em></s></p>";
         HtmlPageParser parser = new HtmlPageParser();

@@ -30,17 +30,38 @@
  */
 package org.vortikal.repository.search.preprocessor;
 
-import junit.framework.TestCase;
+import org.jmock.Expectations;
+import org.jmock.Mockery;
+import org.jmock.api.Invocation;
+import org.jmock.lib.action.CustomAction;
+import static org.junit.Assert.*;
+import org.junit.Test;
 
-import org.vortikal.repository.search.QueryException;
 
-public class OutputEscapingExpressionEvaluatorWrapperTest extends TestCase {
+public class OutputEscapingExpressionEvaluatorWrapperTest {
 
-    public void testEscapeStringValue() {
+    @Test
+    public void escapeStringValue() {
+        
+        Mockery context = new Mockery();
+        final ExpressionEvaluator dummy = context.mock(ExpressionEvaluator.class);
+        context.checking(new Expectations() {
+            {
+                allowing(dummy).evaluate(with(any(String.class)));
+                will(new CustomAction("echo 1st arg"){
+                    @Override
+                    public Object invoke(Invocation invocation) throws Throwable {
+                        return (String)invocation.getParameter(0);
+                    }
+                });
+                allowing(dummy).matches(with(any(String.class)));
+                will(returnValue(true));
+            } 
+        });
         
         OutputEscapingExpressionEvaluatorWrapper evaluator 
             = new OutputEscapingExpressionEvaluatorWrapper();
-        evaluator.setWrappedEvaluator(new DummyExpressionEvaluator());
+        evaluator.setWrappedEvaluator(dummy);
   
         assertEquals("/foo\\ bar/baz", 
                 evaluator.evaluate("/foo bar/baz"));
@@ -66,18 +87,6 @@ public class OutputEscapingExpressionEvaluatorWrapperTest extends TestCase {
         assertEquals("X",
                 evaluator.evaluate("X"));
         
-    }
-    
-}
-
-class DummyExpressionEvaluator implements ExpressionEvaluator {
-
-    public String evaluate(String token) throws QueryException {
-        return token;
-    }
-
-    public boolean matches(String token) {
-        return true;
     }
     
 }

@@ -32,11 +32,13 @@ package org.vortikal.context;
 
 import java.util.List;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.*;
+import org.junit.Test;
 
-public class CSVListFactoryBeanTest extends TestCase {
+public class CSVListFactoryBeanTest {
 
-    public void testSingletonOrPrototype() throws Exception {
+    @Test
+    public void singletonOrPrototype() throws Exception {
         CSVListFactoryBean bean = new CSVListFactoryBean();
         bean.setSingleton(true);
         bean.setCsvList("foo,bar");
@@ -53,6 +55,7 @@ public class CSVListFactoryBeanTest extends TestCase {
     }
     
     @SuppressWarnings("unchecked")
+    @Test
     public void testCSVListFactoryBean() throws Exception {
         
         // Test standard set with trimmed values

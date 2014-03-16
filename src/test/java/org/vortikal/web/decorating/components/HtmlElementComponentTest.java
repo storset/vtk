@@ -34,12 +34,13 @@ package org.vortikal.web.decorating.components;
 import java.util.HashMap;
 import java.util.Map;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.*;
+import org.junit.Test;
 
 import org.vortikal.text.html.HtmlElement;
 
 
-public class HtmlElementComponentTest extends TestCase {
+public class HtmlElementComponentTest {
 
     private static final String SIMPLE_PAGE =
         "<html>\n"
@@ -51,7 +52,8 @@ public class HtmlElementComponentTest extends TestCase {
         + "</html>\n";
 
 
-    public void testSimpleHeadExcludeTitle() throws Exception {
+    @Test
+    public void simpleHeadExcludeTitle() throws Exception {
         HtmlElementComponent component = new HtmlElementComponent();
         component.setSelect("html.head");
         component.setExclude("title");
@@ -64,7 +66,8 @@ public class HtmlElementComponentTest extends TestCase {
         assertEquals("meta", result[0].getName());
     }
 
-    public void testSimpleBody() throws Exception {
+    @Test
+    public void simpleBody() throws Exception {
         HtmlElementComponent component = new HtmlElementComponent();
         component.setSelect("html.body");
         component.setEnclosed(false);
@@ -75,7 +78,8 @@ public class HtmlElementComponentTest extends TestCase {
         assertEquals("The body", resp.getResult());
     }
 
-    public void testSimpleBodyParameters() throws Exception {
+    @Test
+    public void simpleBodyParameters() throws Exception {
         HtmlElementComponent component = new HtmlElementComponent();
         
         Map<String, Object> parameters = new HashMap<String, Object>();

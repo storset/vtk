@@ -33,11 +33,13 @@ package org.vortikal.web.actions;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.vortikal.web.service.RequestHeaderRegexpAssertion;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.*;
+import org.junit.Test;
 
-public class WebdavLinkIfIETest extends TestCase {
+public class WebdavLinkIfIETest {
 
-    public void test() {
+    @Test
+    public void userAgentMatch() {
         RequestHeaderRegexpAssertion assertion = new RequestHeaderRegexpAssertion();
         assertion.setHeader("User-Agent");
         assertion.setPattern(".*MSIE.*");

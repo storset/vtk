@@ -32,7 +32,8 @@ package org.vortikal.repository.search.preprocessor;
 
 import javax.servlet.http.HttpServletRequest;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.*;
+import org.junit.Test;
 
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.vortikal.context.BaseContext;
@@ -41,7 +42,7 @@ import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.ServiceImpl;
 
-public class CurrentDepthExpressionEvaluatorTest extends TestCase {
+public class CurrentDepthExpressionEvaluatorTest {
 
     HttpServletRequest request = new MockHttpServletRequest();
     Service service = new ServiceImpl();
@@ -49,7 +50,8 @@ public class CurrentDepthExpressionEvaluatorTest extends TestCase {
     CurrentDepthExpressionEvaluator evaluator = 
         new CurrentDepthExpressionEvaluator();
 
-    public void testMatches() {
+    @Test
+    public void matches() {
         assertTrue(evaluator.matches("currentDepth"));
         assertTrue(evaluator.matches("currentDepth+2"));
         assertTrue(evaluator.matches("currentDepth-12"));
@@ -60,13 +62,15 @@ public class CurrentDepthExpressionEvaluatorTest extends TestCase {
         assertFalse(evaluator.matches("currentDepth -12"));
     }
     
-    public void testSimpleEvaluation() {
+    @Test
+    public void simpleEvaluation() {
         assertEquals(0, getDepth("/"));
         assertEquals(1, getDepth("/lala"));
         assertEquals(3, getDepth("/la/di/da"));
     }
     
-    public void testRelativeEvaluation() {
+    @Test
+    public void relativeEvaluation() {
         assertEquals(0, getDepth("currentDepth-1", "/lala"));
         assertEquals(13, getDepth("currentDepth+10", "/lala/al/la"));
     }
@@ -80,7 +84,8 @@ public class CurrentDepthExpressionEvaluatorTest extends TestCase {
         BaseContext.pushContext();
 
         RequestContext.setRequestContext(
-                new RequestContext(request, service, Path.fromString(uri)));
+                new RequestContext(request, null, service, null, Path.fromString(uri),
+                        null, false, false, true, null));
         String s = evaluator.evaluate(token);
 
         BaseContext.popContext();

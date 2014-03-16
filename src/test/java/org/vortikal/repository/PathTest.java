@@ -32,11 +32,17 @@ package org.vortikal.repository;
 
 import java.util.List;
 
-import junit.framework.TestCase;
+import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertFalse;
+import static junit.framework.TestCase.assertNull;
+import static junit.framework.TestCase.assertTrue;
+import static junit.framework.TestCase.fail;
+import org.junit.Test;
 
-public class PathTest extends TestCase {
+public class PathTest {
 
-    public void testCommonPaths() {
+    @Test
+    public void commonPaths() {
         testCommonPath(Path.fromString("/a/b"), null, Path.ROOT);
         testCommonPath(Path.ROOT, null, Path.ROOT);
         testCommonPath(Path.fromString("/a/b/c"), Path.ROOT, Path.ROOT);
@@ -56,7 +62,8 @@ public class PathTest extends TestCase {
         assertEquals(expected, common);
     }
     
-    public void testPaths() {
+    @Test
+    public void paths() {
 
         assertInvalid(null);
         assertInvalid("");
@@ -176,7 +183,8 @@ public class PathTest extends TestCase {
         assertNull(p.expand("../../../../"));
     }
 
-    public void testFromStringWithTrailingSlash() {
+    @Test
+    public void fromStringWithTrailingSlash() {
 
         Path actual = Path.fromStringWithTrailingSlash("/test/path/");
         Path expected = Path.fromString("/test/path");

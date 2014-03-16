@@ -50,8 +50,8 @@ import org.springframework.web.servlet.mvc.ParameterizableViewController;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Revision;
-import org.vortikal.security.PrincipalFactory;
 import org.vortikal.security.Principal.Type;
+import org.vortikal.security.PrincipalFactory;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
@@ -119,7 +119,9 @@ public class DisplayRevisionsDifferenceController extends ParameterizableViewCon
         model.put(ORIGINAL_PARAMETER, showOriginal);
         
         // TODO: Diff service
-        URL originalUrl = viewService.constructURL(Path.fromString(request.getRequestURI()));
+        RequestContext requestContext = RequestContext.getRequestContext();
+        URL originalUrl = viewService.constructURL(requestContext.getResourceURI());
+
         originalUrl.addParameter("revision", revisionNameB);
         model.put("originalUrl", originalUrl);
         
@@ -159,13 +161,16 @@ public class DisplayRevisionsDifferenceController extends ParameterizableViewCon
      * Use internal request to look up a plain version of the given revision of the resource.
      */
     private String getContentForRevision(String revisionName, HttpServletRequest request) throws Exception {
+        
         URL forwardURL = URL.create(request);
         forwardURL.clearParameters();
         if (!"HEAD".equals(revisionName)) {
             forwardURL.addParameter("revision", revisionName);
         }
-        forwardURL.addParameter("x-decorating-mode", "plain");
-
+        // XXX: Service.constructURL(...)
+        forwardURL.addParameter("x-decorating-mode", "plain")
+                  .addParameter("vrtxPreviewUnpublished", "true");
+        
         if (logger.isDebugEnabled()) {
             logger.debug("Dispatch forward request to: " + forwardURL);
         }

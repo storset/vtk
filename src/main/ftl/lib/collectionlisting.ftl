@@ -270,7 +270,7 @@
     </#list>
     <#else>
       <tr id="collectionlisting-empty" class="first last">
-        <td colspan="5"><@vrtx.msg code="collectionListing.empty" default="This collection is empty"/></td>
+        <td colspan="6"><@vrtx.msg code="collectionListing.empty" default="This collection is empty"/></td>
       </tr>
     </#if> 
   </tbody>

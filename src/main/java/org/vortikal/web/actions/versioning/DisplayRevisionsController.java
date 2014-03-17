@@ -122,21 +122,21 @@ public class DisplayRevisionsController implements Controller {
             
             if (haveDisplayURL) {
                 if(prevRevision != null) { 
-                    String diffRange = "";
-                    if(prevRevision.getType() == Revision.Type.WORKING_COPY) {
-                        diffRange = "HEAD," + prevRevision.getName();
-                    } else {
-                        diffRange = revision.getName() + "," + prevRevision.getName();
-                    }
                     prevRevisionMap.put("diffURL", new URL(diffURL)
-                                   .setParameter("revision", diffRange));
+                                   .setParameter("revision", revision.getName() + "," + prevRevision.getName()));
                 }
                 rev.put("displayURL", new URL(displayURL)
                    .setParameter("revision", revision.getName()));
                 prevRevisionMap = rev;
-                prevRevision = revision;
-                if(firstRevision == null && revision.getType() != Revision.Type.WORKING_COPY) {
-                    firstRevision = revision;
+                
+                if(revision.getType() == Revision.Type.WORKING_COPY) {
+                    rev.put("diffURL", new URL(diffURL)
+                       .setParameter("revision", "HEAD," + revision.getName()));
+                } else {
+                    prevRevision = revision;
+                    if(firstRevision == null) {
+                        firstRevision = revision;
+                    }
                 }
             }
 

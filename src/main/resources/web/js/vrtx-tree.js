@@ -77,6 +77,13 @@ var VrtxTree = dejavu.Class.declare({
             });
           });
         } else {
+          if (tree.__opts.scrollToContent) { // Follow scroll
+            $(tree.__opts.scrollToContent).scrollTo(Math.max(0, (link.position().top - 145)), 20, {
+              easing: "swing",
+              queue: true,
+              axis: 'y'
+            });
+          }
           $("<span class='" + tree.$static.leafLoadingClass + "'>" + loadingSubfolders + "</span>").insertAfter(hit.next());
         }
         tree.__opts.pathNum++;

@@ -70,21 +70,10 @@ var VrtxTree = dejavu.Class.declare({
         hit.click();
         if (tree.__opts.scrollToContent && (tree.__opts.pathNum == (tree.__opts.trav.length - 1))) {
           tree.__opts.elem.css("background", "none").fadeIn(200, function () {  // Scroll to last node
-            $(tree.__opts.scrollToContent).finish().scrollTo(Math.max(0, (link.position().top - tree.$static.leafScrollTopAdjust)), tree.$static.leafScrollDelay, {
-              easing: "swing",
-              queue: true,
-              axis: 'y',
-              complete: tree.__opts.afterTrav(link)
-            });
+            tree.__scrollToLeaf(link, true);
           });
         } else {
-          if (tree.__opts.scrollToContent) { // Follow scroll
-            $(tree.__opts.scrollToContent).finish().scrollTo(Math.max(0, (link.position().top - tree.$static.leafScrollTopAdjust)), tree.$static.leafScrollDelay, {
-              easing: "swing",
-              queue: true,
-              axis: 'y'
-            });
-          }
+          tree.__scrollToLeaf(link, false);
           $("<span class='" + tree.$static.leafLoadingClass + "'>" + loadingSubfolders + "</span>").insertAfter(hit.next());
         }
         tree.__opts.pathNum++;
@@ -92,5 +81,19 @@ var VrtxTree = dejavu.Class.declare({
         setTimeout(arguments.callee, 15);
       }
     }, 15);
+  },
+  __scrollToLeaf: function(link, isLast) {
+    var tree = this;
+    if (tree.__opts.scrollToContent) {
+      var scrollOpts = {
+        easing: "swing",
+        queue: true,
+        axis: 'y'
+      };
+      if(isLast) {
+        scrollOpts.complete = tree.__opts.afterTrav(link);
+      }
+      $(tree.__opts.scrollToContent).finish().scrollTo(Math.max(0, (link.position().top - tree.$static.leafScrollTopAdjust)), tree.$static.leafScrollDelay, scrollOpts);
+    }
   }
 });

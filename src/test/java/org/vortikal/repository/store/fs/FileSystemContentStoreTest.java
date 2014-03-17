@@ -37,8 +37,11 @@ import java.io.InputStream;
 import java.util.Calendar;
 import java.util.Random;
 
-
 import org.apache.log4j.BasicConfigurator;
+import org.junit.After;
+import org.junit.Before;
+import static org.junit.Assert.*;
+import org.junit.Test;
 
 import org.vortikal.repository.Path;
 import org.vortikal.repository.store.AbstractContentStoreTest;
@@ -51,10 +54,9 @@ public class FileSystemContentStoreTest extends AbstractContentStoreTest {
 
     private String storeDir;
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         BasicConfigurator.configure();
-        super.setUp();
         this.storeDir = System.getProperty("java.io.tmpdir") + "/contentStore" + getRandomIntAsString();
         
         File storeDirFile = new File(this.storeDir);
@@ -67,9 +69,8 @@ public class FileSystemContentStoreTest extends AbstractContentStoreTest {
         this.store = store;
     }
 
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
+    @After
+    public void tearDown() throws Exception {
 
         // Clean out store before next test or at end
         File storeDirFile = new File(this.storeDir);
@@ -89,7 +90,8 @@ public class FileSystemContentStoreTest extends AbstractContentStoreTest {
         return this.store;
     }
     
-    @Override
+
+    @Test
     public void testCreateResource() throws IOException {
         Path uri = Path.fromString("/test.html");
         getStore().createResource(uri, false);
@@ -99,6 +101,7 @@ public class FileSystemContentStoreTest extends AbstractContentStoreTest {
         assertEquals(0, getStore().getContentLength(uri));
     }
 
+    @Test
     public void testStoreFileContentAndRetrieve() throws IOException {
         Path uri = Path.fromString("/test.html");
         getStore().createResource(uri, false);

@@ -40,18 +40,18 @@ import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.vortikal.repository.Resource;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.*;
 
-public class MyDocumentsReporterTest extends TestCase {
+public class MyDocumentsReporterTest {
 	
 	@Test
-	public void testCreateReporterObject() {
+	public void createReporterObject() {
 		MyDocumentsReporter myReporter = new MyDocumentsReporter();
 		assertNotNull("reporter should not be null", myReporter);
 	}
 
 	@Test
-	public void testCreateRequest() {
+	public void createRequest() {
 		MockHttpServletRequest request = newRequest("unknown");
 		assertNotNull("request should not be null", request);
 		assertEquals("req param", "unknown", request.getParameter(MyDocumentsReporter.REPORT_SUB_TYPE_REQ_ARG));
@@ -62,28 +62,18 @@ public class MyDocumentsReporterTest extends TestCase {
 		//assertEquals("query string", "", request.getQueryString());
 	}
 	
-	// 2013-10-22, GTL.
-	// The "expected" test attribute is from JUnit 4 onwards.
-	// Since we're inheriting from TestCase, we're implicitly using JUnit 3 style and the test will always fail.
-	// The try-catch is to work around the missing logic above.
 	@Test(expected = IllegalStateException.class)
-	public void testRunAReport() {
-		try {
-			MyDocumentsReporter myReporter = new MyDocumentsReporter();
-			String token = "";
-			Resource resource = null;
-			HttpServletRequest request = new MockHttpServletRequest("GET", "http://localhost:9322/?vrtx=admin&mode=report&report-type=my-documents");
-			Map<String, Object> result = myReporter.getReportContent(token, resource, request);
-			assertNotNull("result should not be null (did we get here at all?)", result);
-		} catch (IllegalStateException e) {
-			assertTrue(true);
-		} catch (Exception e) {
-			assertTrue("not the exception we expected: " + e.toString(), false);
-		}
-	}
-	
+	public void runAReport() {
+        MyDocumentsReporter myReporter = new MyDocumentsReporter();
+        String token = "";
+        Resource resource = null;
+        HttpServletRequest request = new MockHttpServletRequest("GET", "http://localhost:9322/?vrtx=admin&mode=report&report-type=my-documents");
+        Map<String, Object> result = myReporter.getReportContent(token, resource, request);
+        assertNotNull("result should not be null (did we get here at all?)", result);
+    }
+
 	@Test
-	public void testWhenAlwaysShouldReturnSubTypeInformationInMap() {
+	public void whenAlwaysShouldReturnSubTypeInformationInMap() {
 		HttpServletRequest request = newRequest("directacl");
 		MyDocumentsReporter myReporter = new MyDocumentsReporter();
 		Map<String, Object> map = new HashMap<String, Object>();
@@ -100,7 +90,7 @@ public class MyDocumentsReporterTest extends TestCase {
 	}
 
 	@Test
-	public void testGenerateUrlWhenNoneBeforeThenSetNew() {
+	public void generateUrlWhenNoneBeforeThenSetNew() {
 		HttpServletRequest request = newRequest(null);
 		MyDocumentsReporter myReporter = new MyDocumentsReporter();
 		String url = myReporter.generateUrl(request, "directacl");
@@ -108,7 +98,7 @@ public class MyDocumentsReporterTest extends TestCase {
 	}
 
 	@Test
-	public void testGenerateUrlWhenSameThenNoChange() {
+	public void generateUrlWhenSameThenNoChange() {
 		HttpServletRequest request = newRequest("directacl");
 		MyDocumentsReporter myReporter = new MyDocumentsReporter();
 		String url = myReporter.generateUrl(request, "directacl");
@@ -116,7 +106,7 @@ public class MyDocumentsReporterTest extends TestCase {
 	}
 	
 	@Test
-	public void testGenerateUrlWhenNewIsDifferentThenReplaceWithNew() {
+	public void generateUrlWhenNewIsDifferentThenReplaceWithNew() {
 		HttpServletRequest request = newRequest("createdby");
 		MyDocumentsReporter myReporter = new MyDocumentsReporter();
 		String url = myReporter.generateUrl(request, "directacl");
@@ -124,19 +114,19 @@ public class MyDocumentsReporterTest extends TestCase {
 	}
 
 	@Test
-	public void testNameOfEnumValue() {
+	public void nameOfEnumValue() {
 		assertEquals("DirectAcl", MyDocumentsReporter.ReportSubTypeEnum.DirectAcl.name());
 	}
 	
 	@Test
-	public void testWhenSubTypeNotGivenShouldResultInStandardReport() {
+	public void whenSubTypeNotGivenShouldResultInStandardReport() {
 		HttpServletRequest request = newRequest(null);
 		MyDocumentsReporter myReporter = new MyDocumentsReporter();
 		assertSubType("not-given", MyDocumentsReporter.ReportSubTypeEnum.CreatedBy, myReporter.guessSubType(request));
 	}
 	
 	@Test
-	public void testWhenSubTypeUnknownShouldResultInStandardReport() {
+	public void whenSubTypeUnknownShouldResultInStandardReport() {
 		HttpServletRequest request = newRequest("xxx");
 		MyDocumentsReporter myReporter = new MyDocumentsReporter();
 		assertSubType("unknown", MyDocumentsReporter.ReportSubTypeEnum.CreatedBy, myReporter.guessSubType(request));
@@ -150,7 +140,7 @@ public class MyDocumentsReporterTest extends TestCase {
 	}
 	
 	@Test
-	public void testWhenSubTypeGivenAsDirectAclShouldResultInDirectAcl() {
+	public void whenSubTypeGivenAsDirectAclShouldResultInDirectAcl() {
 		HttpServletRequest request = newRequest("directacl");
 		MyDocumentsReporter myReporter = new MyDocumentsReporter();
 		assertSubType("directacl", MyDocumentsReporter.ReportSubTypeEnum.DirectAcl, myReporter.guessSubType(request));

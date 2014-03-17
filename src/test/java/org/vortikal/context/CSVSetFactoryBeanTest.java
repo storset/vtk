@@ -32,37 +32,40 @@ package org.vortikal.context;
 
 import java.util.Set;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.*;
+import org.junit.Test;
 
-public class CSVSetFactoryBeanTest extends TestCase {
-    
-    public void testSingletonOrPrototype() throws Exception {
+public class CSVSetFactoryBeanTest {
+
+    @Test
+    public void singletonOrPrototype() throws Exception {
         CSVSetFactoryBean bean = new CSVSetFactoryBean();
         bean.setSingleton(true);
         bean.setCsvList("foo,bar");
         bean.afterPropertiesSet();
-        
+
         assertTrue(bean.getObject() == bean.getObject());
-        
+
         bean = new CSVSetFactoryBean();
         bean.setSingleton(false);
         bean.setCsvList("foo,bar");
         bean.afterPropertiesSet();
-        
+
         assertFalse(bean.getObject() == bean.getObject());
     }
-    
+
     @SuppressWarnings("unchecked")
+    @Test
     public void testCSVSetFactoryBean() throws Exception {
-        
+
         // Test standard set with trimmed values
         CSVSetFactoryBean bean = new CSVSetFactoryBean();
         bean.setSingleton(true);
         bean.setCsvList("foo, bar ,mik ,mak  ,foo,  bar, foo, foo, foo bar mik mak  ");
         bean.afterPropertiesSet();
-        
+
         assertEquals(Set.class, bean.getObjectType());
-        
+
         Set csvSet = (Set) bean.getObject();
         assertEquals(5, csvSet.size());
         assertTrue(csvSet.contains("foo"));
@@ -85,14 +88,14 @@ public class CSVSetFactoryBeanTest extends TestCase {
 
         csvSet = (Set) bean.getObject();
         assertEquals(1, csvSet.size());
-        
+
         // Test without trimming of values
         bean = new CSVSetFactoryBean();
         bean.setTrim(false);
         bean.setCsvList("  foo bar ,  bar  ,  mik,mak ");
         bean.afterPropertiesSet();
-        
-        csvSet = (Set)bean.getObject();
+
+        csvSet = (Set) bean.getObject();
         assertTrue(csvSet.contains("  foo bar "));
         assertTrue(csvSet.contains("  bar  "));
         assertTrue(csvSet.contains("  mik"));

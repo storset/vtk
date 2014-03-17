@@ -138,14 +138,19 @@ function VrtxAdmin() {
   this.bodyId = "";
   
   this.requiredScriptsLoaded = null;
+  
+  this.messages = {}; /* Populated with i18n in resource-bar.ftl */
+  
+  this.rootUrl = "/vrtx/__vrtx/static-resources";
 }
 
 var vrtxAdmin = new VrtxAdmin();
 
-/* Required init components dummy containers
+/* Dummy containers for required init components (external scripts)
  *
- * Resolved, overwritten and applied in the future when script-retrieval is done
- * (not in year 2525 but some ms or s later depending on downlink connection speed)
+ * Replaced and applied in the future when script-retrieval is done
+ * (you have to be really fast or have a slow connection speed to get this code running, 
+ *  but the latter could occur on e.g. a 3G-connection)
  */
 var VrtxTree = function(opts) {
   var obj = this;
@@ -165,9 +170,7 @@ var VrtxAnimation = function(opts) {
       }
     });
   }
-  /* TODO: Is it possible to handle unknown function names/properties (so can avoid partly interface duplication)?
-           Seems like using overridden .call(fn[, arg]) instead of fn() is the only way..
-           http://stackoverflow.com/questions/2666602/is-there-a-way-to-catch-an-attempt-to-access-a-non-existant-property-or-method */
+  // Add applied functions for future running. TODO: general object prop access handling possible?
   obj.update = function update(opts)         { objApplied.push({fn: arguments.callee.name, args: opts}); };
   obj.updateElem = function updateElem(elem) { objApplied.push({fn: arguments.callee.name, args: elem}); };
   obj.rightIn = function rightIn()           { objApplied.push({fn: arguments.callee.name, args: null}); };
@@ -193,8 +196,8 @@ vrtxAdmin._$(document).ready(function () {
 
   // Load required init components (animations and trees)
   vrtxAdm.requiredScriptsLoaded = $.Deferred();
-  vrtxAdm.loadScripts(["/vrtx/__vrtx/static-resources/js/vrtx-animation.js", 
-                       "/vrtx/__vrtx/static-resources/js/vrtx-tree.js"],
+  vrtxAdm.loadScripts(["/js/vrtx-animation.js", 
+                       "/js/vrtx-tree.js"],
                        vrtxAdm.requiredScriptsLoaded);
   
   vrtxAdm.clientLastModified = $("#resource-last-modified").text().split(",");
@@ -477,9 +480,7 @@ VrtxAdmin.prototype.initGlobalDialogs = function initGlobalDialogs() {
           requiresDatepicker: true,
           onOpen: function() {
             $(".ui-dialog-buttonpane").hide();
-            // TODO: rootUrl and jQueryUiVersion should be retrieved from Vortex config/properties somehow
-            var rootUrl = "/vrtx/__vrtx/static-resources";
-            var futureDatepicker = (typeof VrtxDatepicker === "undefined") ? $.getScript(rootUrl + "/js/datepicker/vrtx-datepicker.js") : $.Deferred().resolve();
+            var futureDatepicker = (typeof VrtxDatepicker === "undefined") ? $.getScript(vrtxAdm.rootUrl + "/js/datepicker/vrtx-datepicker.js") : $.Deferred().resolve();
             $.when(futureDatepicker).done(function() {
               datepickerApsD = new VrtxDatepicker({
                 language: datePickerLang,
@@ -509,13 +510,13 @@ VrtxAdmin.prototype.initGlobalDialogs = function initGlobalDialogs() {
       
       // Check that unpublish date is not set alone
       if(unpublishDate != null && publishDate == null) {
-        vrtxAdm.displayDialogErrorMsg(dialogId + " #submitButtons", publishing.msg.error.unpublishDateNonExisting);
+        vrtxAdm.displayDialogErrorMsg(dialogId + " #submitButtons", vrtxAdmin.messages.publish.unpublishDateNonExisting);
         return; 
       }
       
       // Check that unpublish date is not before or same as publish date
       if(unpublishDate != null && (unpublishDate <= publishDate)) {
-        vrtxAdm.displayDialogErrorMsg(dialogId + " #submitButtons", publishing.msg.error.unpublishDateBefore);
+        vrtxAdm.displayDialogErrorMsg(dialogId + " #submitButtons", vrtxAdmin.messages.publish.unpublishDateBefore);
         return;
       }
       
@@ -711,7 +712,7 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
             var moveToSameFolder = resultElm.find("#move-to-same-folder");
             if(moveToSameFolder.length) {
               cancelFn();
-              vrtxAdm.displayErrorMsg(move.existing.sameFolder);
+              vrtxAdm.displayErrorMsg(vrtxAdm.messages.move.existing.sameFolder);
             } else if(existingFilenamesField.length) {
               var existingFilenames = existingFilenamesField.text().split("#");
               var numberOfFiles = parseInt(resultElm.find("#copy-move-number-of-files").text(), 10);
@@ -759,31 +760,47 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
       });
       
       // Delete resources
+      var deletingD = null;
       vrtxAdm.completeSimpleFormAsync({
         selector: "input#collectionListing\\.action\\.delete-resources",
         updateSelectors: ["#contents"],
         useClickVal: true,
         rowCheckedAnimateOut: true,
+        fnBeforePost: function() {
+          deletingD = new VrtxLoadingDialog({title: vrtxAdm.messages.deleting.inprogress});
+          deletingD.open();
+        },
         fnComplete: function(resultElm) {
           vrtxAdm.displayErrorMsg(resultElm.find(".errormessage").html());
           vrtxAdm.updateCollectionListingInteraction();
+          deletingD.close();
         }
       });
 
       vrtxAdm.collectionListingInteraction();
       break;
     case "vrtx-trash-can":
+      var deletingPermanentD = null;
+      var deletingPermanentEmptyFolder = false;
       vrtxAdm.completeSimpleFormAsync({
         selector: "input.deleteResourcePermanent",
         updateSelectors: ["#contents"],
         rowCheckedAnimateOut: true,
-        fnBeforePost: function() {
-          if (vrtxAdm.trashcanCheckedFiles >= vrtxAdm.cachedContent.find("tbody tr").length) return false;
+        fnBeforePost: function(form, link) {
+          if (vrtxAdm.trashcanCheckedFiles >= vrtxAdm.cachedContent.find("tbody tr").length) {
+            deletingPermanentEmptyFolder = true;
+          }
           vrtxAdm.trashcanCheckedFiles = 0;
+          deletingPermanentD = new VrtxLoadingDialog({title: vrtxAdm.messages.deleting.inprogress});
+          deletingPermanentD.open();
         },
         fnComplete: function(resultElm) {
           vrtxAdm.displayErrorMsg(resultElm.find(".errormessage").html());
           vrtxAdm.updateCollectionListingInteraction();
+          deletingPermanentD.close();
+          if(deletingPermanentEmptyFolder) { // Redirect on empty trash can
+            location.href = "./?vrtx=admin";
+          }
         }
       });
       vrtxAdm.collectionListingInteraction();
@@ -1722,10 +1739,9 @@ function ajaxUpload(options) {
   var vrtxAdm = vrtxAdmin,
   _$ = vrtxAdm._$;
   
-  var rootUrl = "/vrtx/__vrtx/static-resources";
   var futureFormAjax = _$.Deferred();
   if (typeof _$.fn.ajaxSubmit !== "function") {
-    _$.getScript(rootUrl + "/jquery/plugins/jquery.form.js", function () {
+    _$.getScript(vrtxAdm.rootUrl + "/jquery/plugins/jquery.form.js", function () {
       futureFormAjax.resolve();
     }).fail(function(xhr, textStatus, errMsg) {
       var uploadingFailedD = new VrtxMsgDialog({ title: xhr.status + " " + vrtxAdm.serverFacade.errorMessages.uploadingFilesFailedTitle,
@@ -1810,21 +1826,21 @@ function userProcessExistingFiles(filenames, filenamesFixed, numberOfFiles, comp
       if(filenamesLen == 1 && numberOfFiles == 1) {
         var skipOverwriteDialogOpts = {
           msg: filenameFixed,
-          title: uploading.existing.title,
+          title: vrtxAdm.messages.upload.existing.title,
           onOk: userProcessNextFilename, // Keep/overwrite file
-          btnTextOk: uploading.existing.overwrite
+          btnTextOk: vrtxAdm.messages.upload.existing.overwrite
         };
       } else {
         var skipOverwriteDialogOpts = {
           msg: filenameFixed,
-          title: uploading.existing.title,
+          title: vrtxAdm.messages.upload.existing.title,
           onOk: function () {  // Skip file
             vrtxAdm.uploadCopyMoveSkippedFiles[filename] = "skip";
             userProcessNextFilename();
           },
-          btnTextOk: uploading.existing.skip,
+          btnTextOk: vrtxAdm.messages.upload.existing.skip,
           extraBtns: [{
-            btnText: uploading.existing.overwrite,
+            btnText: vrtxAdm.messages.upload.existing.overwrite,
             onOk: userProcessNextFilename // Keep/overwrite file
           }]
         };
@@ -1853,7 +1869,7 @@ function ajaxUploadPerform(opts, size) {
   var vrtxAdm = vrtxAdmin,
   _$ = vrtxAdm._$;
 
-  var uploadingD = new VrtxLoadingDialog({title: uploading.inprogress});
+  var uploadingD = new VrtxLoadingDialog({title: vrtxAdm.messages.upload.inprogress});
   uploadingD.open();
   
   var uploadDialogExtra = "";
@@ -1893,7 +1909,7 @@ function ajaxUploadPerform(opts, size) {
         var waitAndProcess = setTimeout(function() {
           if(stillProcesses) {
             uploadingD.close();
-            processesD = new VrtxLoadingDialog({title: uploading.processes});
+            processesD = new VrtxLoadingDialog({title: vrtxAdm.messages.upload.processes});
             processesD.open();
           }
         }, vrtxAdm.uploadCompleteTimeoutBeforeProcessingDialog);
@@ -2503,11 +2519,9 @@ function ajaxSave() {
   
   if(!isServerLastModifiedOlderThanClientLastModified(d)) return false;
   
-  // TODO: rootUrl and jQueryUiVersion should be retrieved from Vortex config/properties somehow
-  var rootUrl = "/vrtx/__vrtx/static-resources";
   var futureFormAjax = $.Deferred();
   if (typeof $.fn.ajaxSubmit !== "function") {
-    $.getScript(rootUrl + "/jquery/plugins/jquery.form.js", function () {
+    $.getScript(vrtxAdm.rootUrl + "/jquery/plugins/jquery.form.js", function () {
       futureFormAjax.resolve();
     }).fail(function(xhr, textStatus, errMsg) {
       d.close();
@@ -2850,7 +2864,7 @@ function autocompleteTags(selector) {
 \*-------------------------------------------------------------------*/
 
 function versioningInteraction(bodyId, vrtxAdm, _$) {
-  vrtxAdm.cachedAppContent.on("click", "a.vrtx-revision-view", function (e) {
+  vrtxAdm.cachedAppContent.on("click", "a.vrtx-revision-view, a.vrtx-revision-view-changes", function (e) {
     var openedRevision = openRegular(this.href, 1020, 800, "DisplayRevision");
     e.stopPropagation();
     e.preventDefault();
@@ -3452,7 +3466,7 @@ VrtxAdmin.prototype.completeSimpleFormAsync = function completeSimpleFormAsync(o
  */
 VrtxAdmin.prototype.retrieveHTMLTemplates = function retrieveHTMLTemplates(fileName, templateNames, templatesIsRetrieved) {
   var templatesHashArray = [];
-  vrtxAdmin.serverFacade.getText("/vrtx/__vrtx/static-resources/js/templates/" + fileName + ".mustache", {
+  vrtxAdmin.serverFacade.getText(this.rootUrl + "/js/templates/" + fileName + ".mustache", {
     success: function (results, status, resp) {
       var templates = results.split("###");
       for (var i = 0, len = templates.length; i < len; i++) {
@@ -3742,7 +3756,7 @@ VrtxAdmin.prototype.serverFacade = {
       var serverFacade = this;
       vrtxAdmin._$.ajax({
         type: "GET",
-        url: "/vrtx/__vrtx/static-resources/themes/default/images/globe.png?" + (+new Date()),
+        url: vrtxAdmin.rootUrl + "/themes/default/images/globe.png?" + (+new Date()),
         async: false,
         success: function (results, status, resp) { // Online - Re-authentication needed
           msg = useStatusCodeInMsg ? serverFacade.errorMessages.sessionInvalid : "RE_AUTH";
@@ -3902,7 +3916,7 @@ VrtxAdmin.prototype.outerHTML = function outerHTML(selector, subselector) {
 VrtxAdmin.prototype.loadScripts = function loadScript(urls, deferred) {
   var futureScripts = [];
   for(var i = 0, len = urls.length; i < len; i++) {
-    futureScripts.push(this.loadScript(urls[i]));
+    futureScripts.push(this.loadScript(this.rootUrl + urls[i]));
   }
   $.when.apply($, futureScripts).done(function () {
     deferred.resolve();

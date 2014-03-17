@@ -65,11 +65,13 @@ public class CurrentDepthExpressionEvaluator implements ExpressionEvaluator {
         this.pattern = compilePattern();
     }
 
+    @Override
     public boolean matches(String token) {
         Matcher m = this.pattern.matcher(token);
         return m.matches();
     }
     
+    @Override
     public String evaluate(String token) throws QueryException {
 
         Matcher m = this.pattern.matcher(token);

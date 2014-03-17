@@ -35,13 +35,15 @@ import java.util.Arrays;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.store.db.SqlDaoUtils.PropHolder;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.*;
+import org.junit.Test;
 
 
-public class SqlDaoUtilsTest extends TestCase {
+public class SqlDaoUtilsTest {
 
 
-    public void testGetUriSqlWildcard() {
+    @Test
+    public void getUriSqlWildcard() {
 
         assertEquals("/%", SqlDaoUtils.getUriSqlWildcard(Path.ROOT, '@'));
 
@@ -61,7 +63,8 @@ public class SqlDaoUtilsTest extends TestCase {
     // PropHolder is used for aggregation of multi-value property values from database
     // because of de-normalized storage. Usage of PropHolder class in SqlMapDataAccessor
     // relies on correct equals hand hashCode implementations.
-    public void testPropHolderHashcodeEquals() {
+    @Test
+    public void propHolderHashcodeEquals() {
         
         PropHolder holder1 = newTestHolder();
         

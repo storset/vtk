@@ -55,7 +55,10 @@
             </td> -->
             <td class="vrtx-revisions-buttons-column">
               <#if (workingCopy.displayURL)?exists>
-              <a class="vrtx-revision-view vrtx-button-small" href="${workingCopy.displayURL?html}"><@vrtx.msg code="versions.table.buttons.view" /></a>
+                <a class="vrtx-revision-view vrtx-button-small" href="${workingCopy.displayURL?html}"><@vrtx.msg code="versions.table.buttons.view" /></a>
+              </#if>
+              <#if (workingCopy.diffURL)?exists>
+                <a class="vrtx-revision-view-changes vrtx-button-small" href="${workingCopy.diffURL?html}"><@vrtx.msg code="versions.table.buttons.view-changes" /></a>
               </#if>
               <#if (workingCopy.deleteURL)?exists>
                 <form action="${workingCopy.deleteURL?html}" method="post" class="vrtx-revisions-delete-form">
@@ -81,9 +84,13 @@
           </td>-->
           <td class="vrtx-revisions-buttons-column">
             <a class="vrtx-revision-view vrtx-button-small" href="${displayURL?html}"><@vrtx.msg code="versions.table.buttons.view" /></a>
+            <#if (diffURL)?exists>
+              <a class="vrtx-revision-view-changes vrtx-button-small" href="${diffURL?html}"><@vrtx.msg code="versions.table.buttons.view-changes" /></a>
+            </#if>
           </td>
         </tr>
         <#assign number = regularRevisions?size />
+        
         <#list regularRevisions as revision>
           <tr>
             <!-- ID: ${revision.id?c}, ACL:${revision.acl?html} -->
@@ -98,6 +105,9 @@
             <td class="vrtx-revisions-buttons-column">
               <#if (revision.displayURL)?exists>
                 <a class="vrtx-revision-view vrtx-button-small" href="${revision.displayURL?html}"><@vrtx.msg code="versions.table.buttons.view" /></a>
+              </#if>
+              <#if (revision.diffURL)?exists>
+                <a class="vrtx-revision-view-changes vrtx-button-small" href="${revision.diffURL?html}"><@vrtx.msg code="versions.table.buttons.view-changes" /></a>
               </#if>
               <#if (revision.deleteURL)?exists>
                 <form action="${revision.deleteURL?html}" method="post" class="vrtx-revisions-delete-form">

@@ -4,11 +4,13 @@ import java.io.IOException;
 import java.text.Collator;
 import java.text.ParseException;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.*;
+import org.junit.Test;
 
-public class CustomSortComparatorTest extends TestCase {
+public class CustomSortComparatorTest {
 
-    public void testCollator() throws IOException, ParseException {
+    @Test
+    public void collator() throws IOException, ParseException {
         Collator collator = new CustomFieldComparatorSource().getCollator();
 
         assertEquals(-1, collator.compare("Aa", "c"));

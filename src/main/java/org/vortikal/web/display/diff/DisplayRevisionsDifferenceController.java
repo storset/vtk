@@ -31,7 +31,9 @@
 package org.vortikal.web.display.diff;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.RequestDispatcher;
@@ -41,9 +43,17 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 import org.springframework.web.servlet.mvc.ParameterizableViewController;
+import org.vortikal.repository.Path;
+import org.vortikal.repository.Repository;
+import org.vortikal.repository.Revision;
+import org.vortikal.security.Principal.Type;
+import org.vortikal.security.PrincipalFactory;
+import org.vortikal.web.RequestContext;
+import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 import org.vortikal.web.servlet.BufferedResponse;
 import org.vortikal.web.servlet.ConfigurableRequestWrapper;
@@ -65,6 +75,11 @@ import org.vortikal.web.servlet.VortikalServlet;
 public class DisplayRevisionsDifferenceController extends ParameterizableViewController implements Controller, InitializingBean {
 
     private static Log logger = LogFactory.getLog(DisplayRevisionsDifferenceController.class);
+
+    private PrincipalFactory principalFactory;
+    private Service viewService;
+    
+    private final static String ORIGINAL_PARAMETER = "original";
    
     public void afterPropertiesSet() throws Exception {
     }
@@ -92,16 +107,29 @@ public class DisplayRevisionsDifferenceController extends ParameterizableViewCon
                 return badRequest("'revision' must be either an integer or a comma separated pair", response);
             }
         }
-        String content = diffRevisions(revisionNameA, revisionNameB, request);
         
+        boolean showOriginal = request.getParameter(ORIGINAL_PARAMETER) != null;
+        
+        String content = diffRevisions(revisionNameA, revisionNameB, request);
+
         Map<String, Object> model = new HashMap<String, Object>();
         model.put("revisionA", revisionNameA);
         model.put("revisionB", revisionNameB);
         model.put("content", content);
+        model.put(ORIGINAL_PARAMETER, showOriginal);
+        
+        // TODO: Diff service
+        RequestContext requestContext = RequestContext.getRequestContext();
+        URL originalUrl = viewService.constructURL(requestContext.getResourceURI());
+
+        originalUrl.addParameter("revision", revisionNameB);
+        model.put("originalUrl", originalUrl);
+        
+        putRevisionInfo(model, revisionNameA, revisionNameB, request, showOriginal);
         
         return new ModelAndView(getViewName(), model);
     }
-
+    
     /*
      * For aborting the request with a HTTP Bad Request response.
      */
@@ -133,13 +161,16 @@ public class DisplayRevisionsDifferenceController extends ParameterizableViewCon
      * Use internal request to look up a plain version of the given revision of the resource.
      */
     private String getContentForRevision(String revisionName, HttpServletRequest request) throws Exception {
+        
         URL forwardURL = URL.create(request);
         forwardURL.clearParameters();
         if (!"HEAD".equals(revisionName)) {
             forwardURL.addParameter("revision", revisionName);
         }
-        forwardURL.addParameter("x-decorating-mode", "plain");
-
+        // XXX: Service.constructURL(...)
+        forwardURL.addParameter("x-decorating-mode", "plain")
+                  .addParameter("vrtxPreviewUnpublished", "true");
+        
         if (logger.isDebugEnabled()) {
             logger.debug("Dispatch forward request to: " + forwardURL);
         }
@@ -161,4 +192,58 @@ public class DisplayRevisionsDifferenceController extends ParameterizableViewCon
         return bufferedResponse.getContentString();
     }
 
+    /*
+     * Add meta data for current revision, and list all available revisions for the resource
+     */
+    private void putRevisionInfo(Map<String, Object> model, String revisionNameA, String revisionNameB, HttpServletRequest request, boolean showOriginal) throws Exception {
+        RequestContext requestContext = RequestContext.getRequestContext();
+        Repository repository = requestContext.getRepository();
+        String token = requestContext.getSecurityToken();
+        Path uri = requestContext.getResourceURI();
+        List<Revision> revisions = repository.getRevisions(token, uri);
+
+        List<Object> allRevisions = new ArrayList<Object>();
+        String revisionBNext = null;
+        boolean haveRecentlySeenRevisionA = false;
+        for (Revision revision: revisions) {
+            Map<String, Object> rev = new HashMap<String, Object>();
+            rev.put("id", revision.getID());
+            rev.put("name", revision.getName());
+            rev.put("timestamp", revision.getTimestamp());
+            rev.put("principal", this.principalFactory.getPrincipal(revision.getUid(), Type.USER)); 
+            rev.put("acl", revision.getAcl());
+            rev.put("checksum", revision.getChecksum());
+            rev.put("changeAmount", revision.getChangeAmount());
+            allRevisions.add(rev);
+            if (haveRecentlySeenRevisionA) {
+                model.put("revisionAPrevious", revision.getName());
+                haveRecentlySeenRevisionA = false;
+            }
+            if (revisionNameA.equalsIgnoreCase(revision.getName())) {
+                if (showOriginal) {
+                    rev.put("name", revision.getName() + "&amp;" + ORIGINAL_PARAMETER);
+                }
+                model.put("revisionADetails", rev);
+                haveRecentlySeenRevisionA = true;
+            }
+            if (revisionNameB.equalsIgnoreCase(revision.getName())) {
+                model.put("revisionBDetails", rev);
+                if (revisionBNext != null) {
+                    model.put("revisionBNext", revisionBNext + (showOriginal ? "&amp;" + ORIGINAL_PARAMETER : ""));
+                }
+            }
+            revisionBNext = revision.getName();
+        }
+        model.put("allRevisions", allRevisions);
+    }
+   
+    @Required
+    public void setPrincipalFactory(PrincipalFactory principalFactory) {
+        this.principalFactory = principalFactory;
+    }
+    
+    @Required
+    public void setViewService(Service viewService) {
+        this.viewService = viewService;
+    }
 }

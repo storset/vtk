@@ -114,15 +114,6 @@ public class RequestContext {
         }
     }
 
-    /**
-     * Creates a new request context without a resource object.
-     * 
-     * @deprecated this constructor is used only in unit tests
-     */
-    public RequestContext(HttpServletRequest servletRequest, Service service, Path uri) {
-        this(servletRequest, null, service, null, uri, null, false, false, true, null);
-    }
-
     public static void setRequestContext(RequestContext requestContext) {
         BaseContext ctx = BaseContext.getContext();
         ctx.setAttribute(RequestContext.class.getName(), requestContext);

@@ -40,9 +40,10 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFormatter;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.*;
+import org.junit.Test;
 
-public class FieldNamesTest extends TestCase {
+public class FieldNamesTest {
 
     private Property getUndefinedProperty(Namespace namespace, String name) {
         PropertyTypeDefinitionImpl propDef = new PropertyTypeDefinitionImpl();
@@ -67,7 +68,8 @@ public class FieldNamesTest extends TestCase {
         return propDef.createProperty();
     }
 
-    public void testGetSearchFieldNameProperty() {
+    @Test
+    public void getSearchFieldNameProperty() {
         
         Property prop = getUndefinedProperty(Namespace.getNamespaceFromPrefix("bar"), "foo");
         
@@ -84,7 +86,8 @@ public class FieldNamesTest extends TestCase {
         
     }
     
-    public void testGetJsonSearchFieldName() {
+    @Test
+    public void getJsonSearchFieldName() {
         Property prop = getUndefinedProperty(Namespace.STRUCTURED_RESOURCE_NAMESPACE, "complex");
         assertEquals("resource:complex@attr1", FieldNames.getJsonSearchFieldName(prop.getDefinition(), "attr1", false));
         assertEquals("l_resource:complex@attr1", FieldNames.getJsonSearchFieldName(prop.getDefinition(), "attr1", true));
@@ -94,7 +97,8 @@ public class FieldNamesTest extends TestCase {
         assertEquals("l_system-job-status@attr1", FieldNames.getJsonSearchFieldName(prop.getDefinition(), "attr1", true));
     }
     
-    public void testIsStoredFieldInNamespace() {
+    @Test
+    public void isStoredFieldInNamespace() {
         assertTrue(FieldNames.isStoredFieldInNamespace("b_title", Namespace.DEFAULT_NAMESPACE));
         assertTrue(FieldNames.isStoredFieldInNamespace("b_owner", Namespace.DEFAULT_NAMESPACE));
         assertFalse(FieldNames.isStoredFieldInNamespace("b_resource:author", Namespace.DEFAULT_NAMESPACE));
@@ -106,7 +110,8 @@ public class FieldNamesTest extends TestCase {
         assertFalse(FieldNames.isStoredFieldInNamespace("b_content:keywords", Namespace.DEFAULT_NAMESPACE));
     }
 
-    public void testGetSearchFieldNamePropertyTypeDefinition() {
+    @Test
+    public void getSearchFieldNamePropertyTypeDefinition() {
 
         PropertyTypeDefinitionImpl def = 
             new PropertyTypeDefinitionImpl();
@@ -128,7 +133,8 @@ public class FieldNamesTest extends TestCase {
         
     }
 
-    public void testGetSearchFieldNameStringString() {
+    @Test
+    public void getSearchFieldNameStringString() {
         
         String fieldName = FieldNames.getSearchFieldName("foo", null, false);
         assertEquals("foo", fieldName);
@@ -143,7 +149,8 @@ public class FieldNamesTest extends TestCase {
         assertEquals(FieldNames.LOWERCASE_FIELD_PREFIX + "foo:bar", fieldName);
     }
 
-    public void testGetStoredFieldNameProperty() {
+    @Test
+    public void getStoredFieldNameProperty() {
         
         Property prop = getUndefinedProperty(Namespace.getNamespaceFromPrefix("bar"), "foo");
         
@@ -158,7 +165,8 @@ public class FieldNamesTest extends TestCase {
         
     }
 
-    public void testGetStoredFieldNamePropertyTypeDefinition() {
+    @Test
+    public void getStoredFieldNamePropertyTypeDefinition() {
         
         PropertyTypeDefinitionImpl def = 
             new PropertyTypeDefinitionImpl();
@@ -179,7 +187,8 @@ public class FieldNamesTest extends TestCase {
         
     }
 
-    public void testGetPropertyNamespacePrefixFromStoredFieldName() {
+    @Test
+    public void getPropertyNamespacePrefixFromStoredFieldName() {
         
         String fieldName = "foo";
         
@@ -194,7 +203,8 @@ public class FieldNamesTest extends TestCase {
         assertEquals("bar", nsPrefix);
     }
 
-    public void testGetPropertyNameFromStoredFieldName() {
+    @Test
+    public void getPropertyNameFromStoredFieldName() {
         String fieldName = "b_foo";
         
         String name = FieldNames.getPropertyNameFromStoredFieldName(fieldName);

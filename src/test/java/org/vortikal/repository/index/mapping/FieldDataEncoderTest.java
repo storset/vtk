@@ -33,19 +33,13 @@ package org.vortikal.repository.index.mapping;
 import java.util.Calendar;
 import java.util.Date;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.*;
+import org.junit.Test;
 
-public class FieldDataEncoderTest extends TestCase {
+public class FieldDataEncoderTest {
 
-    protected void setUp() throws Exception {
-        super.setUp();
-    }
-
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-    
-    public void testBinaryBooleanEncoding() {
+    @Test
+    public void binaryBooleanEncoding() {
                 
         byte[] encoded = FieldDataEncoder.encodeBooleanToBinary(false);
         assertFalse(FieldDataEncoder.decodeBooleanFromBinary(encoded, 0, encoded.length));
@@ -55,7 +49,8 @@ public class FieldDataEncoderTest extends TestCase {
         
     }
     
-    public void testDateStringEncoding() {
+    @Test
+    public void dateStringEncoding() {
         
         Calendar test = Calendar.getInstance();
         
@@ -85,7 +80,8 @@ public class FieldDataEncoderTest extends TestCase {
         assertTrue(encoded2.compareTo(encoded1) < 0);
 }
 
-    public void testIntegerEncoding() {
+    @Test
+    public void integerEncoding() {
         
         int testNumber = 666;
         
@@ -114,7 +110,8 @@ public class FieldDataEncoderTest extends TestCase {
         assertTrue(encoded2.compareTo(encoded1) > 0);
     }
     
-    public void testLongEncoding() {
+    @Test
+    public void longEncoding() {
         
         long testNumber = Long.MIN_VALUE + 100;
         

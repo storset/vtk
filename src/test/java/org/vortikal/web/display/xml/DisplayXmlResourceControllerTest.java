@@ -30,17 +30,17 @@
  */
 package org.vortikal.web.display.xml;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.*;
 
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.jmock.integration.junit4.JUnit4Mockery;
+import org.junit.Before;
+import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.vortikal.context.BaseContext;
 import org.vortikal.repository.Path;
@@ -50,7 +50,7 @@ import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 
 
-public class DisplayXmlResourceControllerTest extends TestCase {
+public class DisplayXmlResourceControllerTest {
 
     private String faqSchema = "http://www.uio.no/xsd/uio/faq/v001/faq.xsd";
     private HttpServletRequest request;
@@ -62,8 +62,8 @@ public class DisplayXmlResourceControllerTest extends TestCase {
     private final Resource mockResource = context.mock(Resource.class);
     private final Repository mockRepository = context.mock(Repository.class);
 
-    protected void setUp() throws Exception {
-        super.setUp();
+    @Before
+    public void setUp() throws Exception {
         this.request = new MockHttpServletRequest();
         this.controller = new DisplayXmlResourceController();
         BaseContext.pushContext();
@@ -73,19 +73,16 @@ public class DisplayXmlResourceControllerTest extends TestCase {
         RequestContext.setRequestContext(requestContext);
     }
 
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-
-    public void testLastModified() throws Exception {
+    @Test
+    public void lastModified() throws Exception {
 
         long lastModified;
         final Date lastModifiedExpected = new Date();
         
-        context.checking(new Expectations() {{ one(mockResource).isCollection(); will(returnValue(false)); }});
-        context.checking(new Expectations() {{ one(mockResource).getLastModified(); will(returnValue(lastModifiedExpected)); }});
+        context.checking(new Expectations() {{ oneOf(mockResource).isCollection(); will(returnValue(false)); }});
+        context.checking(new Expectations() {{ oneOf(mockResource).getLastModified(); will(returnValue(lastModifiedExpected)); }});
         
-        context.checking(new Expectations() {{ one(mockRepository).retrieve(token, uri, true); will(returnValue(mockResource)); }});
+        context.checking(new Expectations() {{ oneOf(mockRepository).retrieve(token, uri, true); will(returnValue(mockResource)); }});
         
         lastModified = this.controller.getLastModified(this.request);
         assertEquals(-1, lastModified);
@@ -94,8 +91,6 @@ public class DisplayXmlResourceControllerTest extends TestCase {
         lastModified = this.controller.getLastModified(this.request);
         assertEquals(lastModifiedExpected.getTime(), lastModified);
 
-        List<String> schemaList = new ArrayList<String>();
-        schemaList.add(this.faqSchema);
     }
 }
 

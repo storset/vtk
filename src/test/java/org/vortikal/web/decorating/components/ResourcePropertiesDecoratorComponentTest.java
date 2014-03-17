@@ -30,14 +30,16 @@
  */
 package org.vortikal.web.decorating.components;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.*;
+import org.junit.Test;
 
 import org.vortikal.repository.Path;
 
-public class ResourcePropertiesDecoratorComponentTest extends TestCase {
+public class ResourcePropertiesDecoratorComponentTest {
 
     
-    public void testGetParentAtLevel() {
+    @Test
+    public void getParentAtLevel() {
         ResourcePropertiesDecoratorComponent comp = 
             new ResourcePropertiesDecoratorComponent();
 

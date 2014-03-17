@@ -14,6 +14,10 @@
           <property name="parameterName" value="vrtx" />
           <property name="parameterValue" value="diff" />
         </bean>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="vrtxPreviewUnpublished" />
+          <property name="parameterValue" value="true" />
+        </bean>
         <bean parent="abstractResourcePrincipalPermissionAssertion">
           <property name="requiresAuthentication" value="true" />
           <property name="considerLocks" value="false" />
@@ -28,6 +32,8 @@
   <bean id="versioning.displayDiffHandler"
     class="org.vortikal.web.display.diff.DisplayRevisionsDifferenceController">
     <property name="viewName" value="versioning.displayDiff" />
+    <property name="principalFactory" ref="principalFactory" />
+    <property name="viewService" ref="decorating.viewUnpublishedService" />
   </bean>
 
   <bean id="versioning.displayDiffViewResolver" parent="decoratorViewResolver">

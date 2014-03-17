@@ -30,7 +30,8 @@
  */
 package org.vortikal.util.net;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.*;
+import org.junit.Test;
 
 /**
  * A JUnit <code>TestCase</code> for the <code>IPv4WildcardMatcher</code> class.
@@ -38,9 +39,10 @@ import junit.framework.TestCase;
  * @author oyviste
  *
  */
-public class IPv4WildcardMatcherTest extends TestCase {
+public class IPv4WildcardMatcherTest {
 
-    public void testMatches() {
+    @Test
+    public void matches() {
         
         IPv4Matcher matcher = new IPv4WildcardMatcher("129.240.*");
         assertTrue(matcher.matches("129.240.1.1"));
@@ -122,7 +124,8 @@ public class IPv4WildcardMatcherTest extends TestCase {
         assertTrue(matcher.matches("10.255.255.1"));
         
     }
-    public void testInvalidMatches() {
+    @Test
+    public void invalidMatches() {
         
         try {
             IPv4Matcher matcher = new IPv4WildcardMatcher("*");
@@ -151,7 +154,8 @@ public class IPv4WildcardMatcherTest extends TestCase {
     }
     
     @SuppressWarnings("unused")
-    public void testIllegalValues() {
+    @Test
+    public void illegalValues() {
         try {
             IPv4Matcher matcher = new IPv4WildcardMatcher("10.**");
             fail("No IllegalArgumentException thrown when constructing a matcher with the wildcard '10.**'");

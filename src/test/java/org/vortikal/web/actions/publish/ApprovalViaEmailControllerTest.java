@@ -30,106 +30,92 @@
  */
 package org.vortikal.web.actions.publish;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
+import org.jmock.Expectations;
+import org.jmock.integration.junit4.JUnitRuleMockery;
 
-import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
-import org.vortikal.repository.PropertyImpl;
-import org.vortikal.repository.ResourceImpl;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.PropertyType.Type;
-import org.vortikal.repository.store.PrincipalMetadata;
 import org.vortikal.repository.store.PrincipalMetadataImpl;
-import org.vortikal.security.InvalidPrincipalException;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalFactory;
 import org.vortikal.security.PrincipalImpl;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.*;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.vortikal.repository.Resource;
+import org.vortikal.repository.store.Metadata;
+import org.vortikal.repository.store.PrincipalMetadata;
+import org.vortikal.repository.store.PrincipalMetadataDAO;
 
-public class ApprovalViaEmailControllerTest extends TestCase {
+public class ApprovalViaEmailControllerTest {
 
+    @Rule
+    public final JUnitRuleMockery context = new JUnitRuleMockery();
+    
     private ApprovalViaEmailController approvalViaEmailController;
+    private PrincipalMetadataDAO pmDao;
+    private PropertyTypeDefinition editorialContactsPropDef;
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    @Before
+    public void setUp() throws Exception {
+        pmDao = context.mock(PrincipalMetadataDAO.class);
+        editorialContactsPropDef = context.mock(PropertyTypeDefinition.class);
+        
         approvalViaEmailController = new ApprovalViaEmailController();
-        approvalViaEmailController.setEditorialContactsPropDef(null);
-        approvalViaEmailController.setPrincipalFactory(new MockPrincipalFactory());
+        approvalViaEmailController.setEditorialContactsPropDef(editorialContactsPropDef);
+        PrincipalFactory pf = new PrincipalFactory();
+        pf.setPrincipalMetadataDao(pmDao);
+        approvalViaEmailController.setPrincipalFactory(pf);
     }
 
-    public void testGetUserEmail() {
+    @Test
+    public void getUserEmail() {
+        final PrincipalImpl principal = new PrincipalImpl("oyvihatl@uio.no", Principal.Type.USER);
+
+        final PrincipalMetadata pm = context.mock(PrincipalMetadata.class);
+        
+        context.checking(new Expectations() {
+            {
+                oneOf(pmDao).getMetadata(principal, null);
+                will(returnValue(pm));
+                
+                oneOf(pm).getValue(PrincipalMetadataImpl.DESCRIPTION_ATTRIBUTE); will(returnValue(null));
+                oneOf(pm).getValue(Metadata.URL_ATTRIBUTE); will(returnValue(null));
+
+                oneOf(pm).getValues("email");
+                will(returnValue(Arrays.asList(new String[] {"oyvind.hatland@usit.uio.no"})));
+            }
+        });
+        
         assertEquals("oyvind.hatland@usit.uio.no", approvalViaEmailController.getUserEmail("oyvihatl@uio.no"));
         assertNull(approvalViaEmailController.getUserEmail("geir@ntnu.no"));
     }
 
-    public void testGetEditorialContactEmails() {
+    @Test
+    public void getEditorialContactEmails() {
+        
+        final Resource resource = context.mock(Resource.class);
+        final Property property = context.mock(Property.class);
+        final Value[] values = new Value[] {
+            new Value("vortex-core@usit.uio.no", Type.STRING),
+            new Value("resin@ulrik.uio.no", Type.STRING)
+        };
+        
+        context.checking(new Expectations(){
+            {
+                oneOf(resource).getProperty(editorialContactsPropDef);
+                will(returnValue(property));
+                oneOf(property).getValues();
+                will(returnValue(values));
+            } 
+        });
+        
         assertEquals("vortex-core@usit.uio.no, resin@ulrik.uio.no",
-                approvalViaEmailController.getEditorialContactEmails(new MockResource(Path.ROOT)));
-    }
-}
-
-class MockResource extends ResourceImpl {
-    public MockResource(Path uri) {
-        super(uri);
-    }
-
-    public Property getProperty(PropertyTypeDefinition type) {
-        if (type == null) {
-            return new MockPropertyImpl();
-        }
-        return null;
-    }
-}
-
-class MockPropertyImpl extends PropertyImpl {
-    @Override
-    public Value[] getValues() {
-        Value[] vs = new Value[2];
-        vs[0] = new Value("vortex-core@usit.uio.no", Type.STRING);
-        vs[1] = new Value("resin@ulrik.uio.no", Type.STRING);
-        return vs;
-    }
-}
-
-class MockPrincipalFactory extends PrincipalFactory {
-    @Override
-    public Principal getPrincipal(String id, Principal.Type type) throws InvalidPrincipalException {
-        return new MockPrincipalImpl(id, type);
-    }
-}
-
-@SuppressWarnings("serial")
-class MockPrincipalImpl extends PrincipalImpl {
-    public MockPrincipalImpl(String id, Type type) throws InvalidPrincipalException {
-        super(id, type);
-    }
-
-    @Override
-    public PrincipalMetadata getMetadata() {
-        return new MockPrincipalMetadata(super.getQualifiedName());
-    }
-}
-
-class MockPrincipalMetadata extends PrincipalMetadataImpl {
-    public MockPrincipalMetadata(String qualifiedName) {
-        super(qualifiedName);
-    }
-
-    @Override
-    public List<Object> getValues(String attributeName) {
-        if ("email".equals(attributeName)) { // TODO: maybe dig a little deeper
-                                             // into DAO-code etc. to make the
-                                             // test better
-            List<Object> emails = new ArrayList<Object>();
-            if ("oyvihatl@uio.no".equals(super.getQualifiedName())) {
-                emails.add(new String("oyvind.hatland@usit.uio.no"));
-            }
-            return emails;
-        }
-        return null;
+                approvalViaEmailController.getEditorialContactEmails(resource));
     }
 }

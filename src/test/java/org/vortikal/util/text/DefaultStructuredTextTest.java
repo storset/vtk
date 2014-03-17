@@ -31,32 +31,28 @@
 package org.vortikal.util.text;
 
 
-import junit.framework.TestCase;
+import static org.junit.Assert.*;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Test case for <code>org.vortikal.repositoryimpl.dao.MemoryContentStore</code> 
  * implementation.
- * 
- * @author oyviste
- *
  */
-public class DefaultStructuredTextTest extends TestCase {
+public class DefaultStructuredTextTest {
 
     private DefaultStructuredText dst; 
     
-    protected void setUp() throws Exception {
-        super.setUp();
+    @Before
+    public void setUp() throws Exception {
         this.dst = new DefaultStructuredText();
-    }
-
-    protected void tearDown() throws Exception {
-        super.tearDown();
     }
 
     /*
      * Test of potential outofbounds.
      */
-    public void testEndsWithUnfinishedLink() {
+    @Test
+    public void endsWithUnfinishedLink() {
         try {
             this.dst.parseStructuredText("lala lala \"lala\":");
         } catch (StringIndexOutOfBoundsException e) {

@@ -30,9 +30,10 @@
  */
 package org.vortikal.util.text;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.*;
+import org.junit.Test;
 
-public class HtmlExtractUtilTest extends TestCase {
+public class HtmlExtractUtilTest {
     
     private final static String XHTML_10_TRANS =
         "html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" "
@@ -42,7 +43,8 @@ public class HtmlExtractUtilTest extends TestCase {
         "HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\""
         + "\"http://www.w3.org/TR/REC-html40/loose.dtd\"";
 
-    public void testGetDocTypeFromBody() throws Exception {
+    @Test
+    public void getDocTypeFromBody() throws Exception {
         String html = "<!DOCTYPE " + XHTML_10_TRANS + ">"
             + "<html xmlns=\"http://www.w3.org/1999/xhtml\">"
             + "<head><title>My title</title></head>"
@@ -66,7 +68,8 @@ public class HtmlExtractUtilTest extends TestCase {
         assertEquals("some garbage", doctype);
     }
     
-    public void testGetCharacterEncodingFromBody() throws Exception {
+    @Test
+    public void getCharacterEncodingFromBody() throws Exception {
         String html = "<!DOCTYPE " + XHTML_10_TRANS + ">"
             + "<html xmlns=\"http://www.w3.org/1999/xhtml\">"
             + "<head><title>My title</title>"

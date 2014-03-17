@@ -3,22 +3,22 @@ package org.vortikal.web.actions.permissions;
 import java.util.ArrayList;
 import java.util.List;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.*;
+import org.junit.Before;
 
 import org.junit.Test;
 
-public class ACLEditBinderTest extends TestCase {
+public class ACLEditBinderTest {
     
     private ACLEditBinder binder;
     
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    @Before
+    public void setUp() throws Exception {
         binder = new ACLEditBinder("","");
     }
     
     @Test
-    public void testExtractGroupsAndUsersForRemoval() {
+    public void extractGroupsAndUsersForRemoval() {
         
        List<String> removedUsers = new ArrayList<String>();
        List<String> removedGroups = new ArrayList<String>();

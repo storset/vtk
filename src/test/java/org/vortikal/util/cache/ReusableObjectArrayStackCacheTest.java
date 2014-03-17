@@ -34,7 +34,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.*;
+import org.junit.Test;
 
 /**
  * <code>TestCase</code> for <code>ReusableObjectArrayStackCache</code> 
@@ -42,11 +43,12 @@ import junit.framework.TestCase;
  * @author oyviste
  *
  */
-public class ReusableObjectArrayStackCacheTest extends TestCase {
+public class ReusableObjectArrayStackCacheTest {
 
     private final String pattern = "yyyy-MM-dd HH:mm:ss:S z";
     
-    public void testFormatting() {
+    @Test
+    public void formatting() {
         
         final Date testDate = new Date();
         final ReusableObjectCache<SimpleDateFormat> cache = 
@@ -80,7 +82,8 @@ public class ReusableObjectArrayStackCacheTest extends TestCase {
         
     }
     
-    public void testStackCaching() {
+    @Test
+    public void stackCaching() {
         final ReusableObjectCache<SimpleDateFormat> cache 
             = new ReusableObjectArrayStackCache<SimpleDateFormat>(3);
         
@@ -111,7 +114,8 @@ public class ReusableObjectArrayStackCacheTest extends TestCase {
     }
     
     // Test multithreaded access and performance difference.
-    public void testMultithreadedAccess() {
+    @Test
+    public void multithreadedAccess() {
 
         final ReusableObjectCache<SimpleDateFormat> cache 
             = new ReusableObjectArrayStackCache<SimpleDateFormat>(50);

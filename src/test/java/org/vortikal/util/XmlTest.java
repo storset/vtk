@@ -31,22 +31,16 @@
 package org.vortikal.util;
 
 
-import junit.framework.TestCase;
+import static org.junit.Assert.*;
 
 import org.jdom.Document;
 import org.jdom.Element;
+import org.junit.Test;
 
-public class XmlTest extends TestCase {
+public class XmlTest {
 
-    protected void setUp() throws Exception {
-        super.setUp();
-    }
-
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-
-    public void testCreateNumericPath() {
+    @Test
+    public void createNumericPath() {
         Element e_1 = new Element("foo"), e_1_1 = new Element("foo");
         Element e_1_1_1 = new Element("foo"), e_1_2 = new Element("foo");
         new Document(e_1);

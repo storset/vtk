@@ -30,6 +30,7 @@
  */
 package org.vortikal.web.display.diff;
 
+import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.Locale;
@@ -46,12 +47,15 @@ import javax.xml.transform.stream.StreamResult;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.outerj.daisy.diff.DaisyDiff;
+import org.outerj.daisy.diff.XslFilter;
 import org.outerj.daisy.diff.helper.NekoHtmlParser;
 import org.outerj.daisy.diff.html.HTMLDiffer;
 import org.outerj.daisy.diff.html.HtmlSaxDiffOutput;
 import org.outerj.daisy.diff.html.TextNodeComparator;
 import org.outerj.daisy.diff.html.dom.DomTreeBuilder;
+import org.xml.sax.ContentHandler;
 import org.xml.sax.InputSource;
+import org.xml.sax.XMLReader;
 
 /*
  * Compute a new HTML text with mark up hints to show differences between two input texts.
@@ -66,6 +70,7 @@ public class DifferenceEngine {
     private String encoding = null;
     private Locale locale = Locale.getDefault();
     private String prefix = "diff"; // will be part of span tag id's in result
+    private String cleanupXslt = "org/outerj/daisy/diff/cleanup.xsl";
     private boolean useNeko = true;
 
     public String diff(String contentA, String contentB) throws Exception {
@@ -102,19 +107,31 @@ public class DifferenceEngine {
     }
     
     private TextNodeComparator createContentSource(InputSource inputSource, Locale locale) throws Exception {
-        DomTreeBuilder saxHandler = new DomTreeBuilder();
+        DomTreeBuilder saxDomTreeBuilder = new DomTreeBuilder();
+        ContentHandler saxHandler = AddCleanerToHandlerChain(saxDomTreeBuilder, cleanupXslt);
         if (useNeko) {
             //use CyberNeko (HTML) instead of SAXParser directly. (Neko will clean up any messy HTML).
             NekoHtmlParser parser = new NekoHtmlParser();
             parser.parse(inputSource, saxHandler);
-            TextNodeComparator comparator = new TextNodeComparator(saxHandler, locale);
-            return comparator;
         } else {
+            // XXX: should probably remove entire non-Neko option as it fails on too many documents.
             SAXParser saxParser = parserFactory.newSAXParser();
-            saxParser.parse(inputSource, saxHandler);
-            TextNodeComparator comparator = new TextNodeComparator(saxHandler, locale);
-            return comparator;
+            if (false) {
+                saxParser.parse(inputSource, saxDomTreeBuilder);
+                TextNodeComparator comparator = new TextNodeComparator(saxDomTreeBuilder, locale);
+                return comparator;
+            } else {
+                XMLReader xmlReader = saxParser.getXMLReader();
+                xmlReader.setContentHandler(saxHandler);
+                xmlReader.parse(inputSource);
+            }
         }
+        TextNodeComparator comparator = new TextNodeComparator(saxDomTreeBuilder, locale);
+        return comparator;
+    }
+    
+    private ContentHandler AddCleanerToHandlerChain(ContentHandler consumer, String xsltPath) throws IOException {
+        return new XslFilter().xsl(consumer, xsltPath);
     }
 
     /**

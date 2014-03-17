@@ -31,6 +31,9 @@
 package org.vortikal.repository;
 
 import java.util.List;
+import static org.junit.Assert.*;
+import org.junit.Before;
+import org.junit.Test;
 
 import org.springframework.context.ApplicationContext;
 
@@ -38,13 +41,14 @@ public class RepositoryTestIntegration extends AbstractBeanContextTestIntegratio
 
     private Repository repository;
 
+    @Before
     protected void setUp() throws Exception {
-        super.setUp();
         ApplicationContext ctx = getApplicationContext("resource-types/resource.xml", "repository.xml");
         repository = (Repository) ctx.getBean("repository");
     }
 
-    public void testRetrieve() throws Exception {
+    @Test
+    public void retrieve() throws Exception {
         Resource root = repository.retrieve(null, Path.ROOT, true);
         assertNotNull("No root object exists", root);
         List<Property> properties = root.getProperties();

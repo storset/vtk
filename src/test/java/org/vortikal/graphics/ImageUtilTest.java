@@ -41,11 +41,14 @@ import java.net.URL;
 
 import javax.imageio.ImageIO;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.*;
 
 import org.apache.commons.lang.StringUtils;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
-public class ImageUtilTest extends TestCase {
+public class ImageUtilTest {
     private String headless = null;
     
     private final String pngImage = "originalPNGImage.png";
@@ -55,22 +58,23 @@ public class ImageUtilTest extends TestCase {
     private final String notScaledImage = "originalNotScaledImage.png";
     private final String squeezedImage = "originalSqueezedImage.png";
     
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+
+    @Before
+    public void setUp() throws Exception {
         headless = System.getProperty("java.awt.headless");
         System.setProperty("java.awt.headless", "true");
     }
     
-    @Override
-    protected void tearDown() throws Exception {
+    @After
+    public void tearDown() throws Exception {
         System.setProperty("java.awt.headless",
                 headless != null ? headless : "false");
     }
     
     // Check that returned image has equal dimensions when trying to
     // upscale (not supported)
-    public void testUpscaleNoChange() throws IOException {
+    @Test
+    public void upscaleNoChange() throws IOException {
         BufferedImage originalImage = ImageIO.read(this.getClass().getResourceAsStream(pngImage));
         BufferedImage scaled = ImageUtil.downscale(originalImage, 4096, 4096);
         assertEquals("Expected no change in height", originalImage.getHeight(), scaled.getHeight());
@@ -78,45 +82,54 @@ public class ImageUtilTest extends TestCase {
     }
 
     // generate squeezed image using free form down-scaling
-    public void testFreeformDownscale() throws IOException {
+    @Test
+    public void freeformDownscale() throws IOException {
         assertProperResize(squeezedImage, 100, 290);
     }
     
-    public void testScaleImagePNG() throws IOException {
+    @Test
+    public void scaleImagePNG() throws IOException {
         assertProperResize(pngImage, 300, -1);
     }
     
-    public void testScaleImageJPG() throws IOException {
+    @Test
+    public void scaleImageJPG() throws IOException {
         assertProperResize(jpgImage, 300, -1);
     }
     
-    public void testScaleImageGIF() throws IOException {
+    @Test
+    public void scaleImageGIF() throws IOException {
         assertProperResize(gifImage, -1, 300);
     }
     
-    public void testScaleImageTIF() throws IOException {
+    @Test
+    public void scaleImageTIF() throws IOException {
         assertProperResize(bmpImage, 250, -1);
     }
     
-    public void testDontScaleImage() throws IOException {
+    @Test
+    public void dontScaleImage() throws IOException {
         assertProperResize(notScaledImage, -1, -1);
     }
     
-    public void testGetImageStreamDimensionPNG() throws IOException {
+    @Test
+    public void getImageStreamDimensionPNG() throws IOException {
         InputStream imageStream = this.getClass().getResourceAsStream(pngImage);
         Dimension dim = ImageUtil.getImageStreamDimension(imageStream);
         assertEquals("Unexpected width", 600, dim.width);
         assertEquals("Unexpected height", 600, dim.height);
     }
 
-    public void testGetImageStreamDimensionJPG() throws IOException {
+    @Test
+    public void getImageStreamDimensionJPG() throws IOException {
         InputStream imageStream = this.getClass().getResourceAsStream(jpgImage);
         Dimension dim = ImageUtil.getImageStreamDimension(imageStream);
         assertEquals("Unexpected width", 500, dim.width);
         assertEquals("Unexpected height", 500, dim.height);
     }
     
-    public void testGetImageBytes() throws Exception {
+    @Test
+    public void getImageBytes() throws Exception {
     	int scaledWidth = 100;
     	BufferedImage originalImage = ImageIO.read(this.getClass().getResourceAsStream(pngImage));
     	BufferedImage scaledImage = ImageUtil.downscaleToWidth(originalImage, scaledWidth);

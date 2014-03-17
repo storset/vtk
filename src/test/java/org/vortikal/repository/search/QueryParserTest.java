@@ -50,9 +50,10 @@ import org.vortikal.repository.search.query.UriPrefixQuery;
 import org.vortikal.repository.search.query.UriTermQuery;
 import org.vortikal.testing.mocktypes.MockResourceTypeTree;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.*;
+import org.junit.Test;
 
-public class QueryParserTest extends TestCase {
+public class QueryParserTest {
 
     private QueryParser queryParser;
 
@@ -60,7 +61,8 @@ public class QueryParserTest extends TestCase {
         this.queryParser = new QueryParserImpl(new MockResourceTypeTree());
     }
 
-    public void testSimplePropertyQuery() {
+    @Test
+    public void simplePropertyQuery() {
         Query q = queryParser.parse("a=b");
 
         assertTrue(q instanceof PropertyTermQuery);
@@ -72,7 +74,8 @@ public class QueryParserTest extends TestCase {
         assertEquals("b", ptq.getTerm());
     }
 
-    public void testPropertyQueryWithComplexValueAttributeSpecifier() {
+    @Test
+    public void propertyQueryWithComplexValueAttributeSpecifier() {
         Query q = queryParser.parse("a@foo.bar = v@lue");
 
         assertTrue(q instanceof PropertyTermQuery);
@@ -140,7 +143,8 @@ public class QueryParserTest extends TestCase {
         assertTrue(peq.isInverted());
     }
 
-    public void testExistsQuery() {
+    @Test
+    public void existsQuery() {
         Query q = queryParser.parse("p:r exists");
 
         assertTrue(q instanceof PropertyExistsQuery);
@@ -190,7 +194,8 @@ public class QueryParserTest extends TestCase {
         assertTrue(peq.isInverted());
     }
     
-    public void testAclQuery() {
+    @Test
+    public void aclQuery() {
         Query q = queryParser.parse("acl EXISTS");
         assertTrue(q instanceof ACLExistsQuery);
         assertFalse(((ACLExistsQuery)q).isInverted());
@@ -216,7 +221,8 @@ public class QueryParserTest extends TestCase {
         assertTrue(((ACLReadForAllQuery)q).isInverted());
     }
 
-    public void testEscaping() {
+    @Test
+    public void escaping() {
         Query q = queryParser.parse("uri = /i\\ am\\ a\\ file\\ with\\ spaces\\(YES\\)\\?\\*\\>\\<\\=\\x\\\\\\/\\ AND\\ uri\\=/hoho.txt");
 
         assertTrue(q instanceof UriTermQuery);
@@ -224,7 +230,8 @@ public class QueryParserTest extends TestCase {
         assertEquals(((UriTermQuery) q).getOperator(), TermOperator.EQ);
     }
     
-    public void testUriPrefixQuery() {
+    @Test
+    public void uriPrefixQuery() {
         Query q = queryParser.parse("uri = /foo*");
         assertTrue(q instanceof UriPrefixQuery);
         UriPrefixQuery upq = (UriPrefixQuery)q;
@@ -261,7 +268,8 @@ public class QueryParserTest extends TestCase {
         assertEquals("/", upq.getUri());
     }
     
-    public void testComplexQuery() {
+    @Test
+    public void complexQuery() {
 
         Query q = queryParser.parse("(type IN emne && emne:emnekode exists && emne:emnenavn exists" 
                 + " && foo:bar not exists && emne:status=gjeldende-versjon && depth=6)" 
@@ -332,7 +340,8 @@ public class QueryParserTest extends TestCase {
 
     }
 
-    public void testPropertyWildcardAndPrefixQuery() {
+    @Test
+    public void propertyWildcardAndPrefixQuery() {
 
         Query q = queryParser.parse("foo:bar = *suffix || foo:bar =~ PrE\\ fIx* OR foo:bar = \\(prefix\\)*" + " || a!=x* OR a=*x OR a=?x OR a !=~ *fo??o* OR foo:bar =~ *TEXAS\\ HOLD*");
 

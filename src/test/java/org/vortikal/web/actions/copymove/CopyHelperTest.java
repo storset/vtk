@@ -1,20 +1,22 @@
 package org.vortikal.web.actions.copymove;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.*;
+import org.junit.Before;
+import org.junit.Test;
 
 import org.vortikal.repository.Path;
 
-public class CopyHelperTest extends TestCase {
+public class CopyHelperTest {
     
     private CopyHelper copyHelper;
     
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    @Before
+    public void setUp() throws Exception {
         copyHelper = new CopyHelper();
     }
 
-    public void testAppendCopySuffix() {
+    @Test
+    public void appendCopySuffix() {
         Path original = Path.fromString("/lala.html");
         
         Path firstCopy = copyHelper.appendCopySuffix(original, 1);

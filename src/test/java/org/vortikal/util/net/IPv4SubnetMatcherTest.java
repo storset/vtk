@@ -30,16 +30,18 @@
  */
 package org.vortikal.util.net;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.*;
+import org.junit.Test;
 
 /**
  * A <code>TestCase</code> for the <code>IPv4SubnetMatcher</code> class.
  * 
  * @author oyviste
  */
-public class IPv4SubnetMatcherTest extends TestCase {
+public class IPv4SubnetMatcherTest {
     
-    public void testMatches() {
+    @Test
+    public void matches() {
 
         // Netmask notation (8 bits)
         IPv4Matcher matcher = new IPv4SubnetMatcher("10.0.0.0", "255.0.0.0");
@@ -133,7 +135,8 @@ public class IPv4SubnetMatcherTest extends TestCase {
         
     }
     
-    public void testMatchesWithInvalidValues() {
+    @Test
+    public void matchesWithInvalidValues() {
         IPv4Matcher matcher = new IPv4SubnetMatcher("10.0.0.0", "255.0.0.0");
         try {
             matcher.matches("10");
@@ -166,7 +169,8 @@ public class IPv4SubnetMatcherTest extends TestCase {
         }
     }
     
-    public void testConstructionWithInvalidValues() {
+    @Test
+    public void constructionWithInvalidValues() {
 
         try {
             String network = "10.";

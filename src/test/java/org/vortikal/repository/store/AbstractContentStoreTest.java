@@ -35,17 +35,18 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.*;
+import org.junit.Test;
 
 import org.vortikal.repository.IllegalOperationException;
 import org.vortikal.repository.Path;
 
 /**
- * Test case for <code>org.vortikal.repositoryimpl.dao.MemoryContentStore</code> 
- * implementation.
+ * Tests for <code>org.vortikal.repository.store.ContentStore</code> 
+ * implementations.
  * 
  */
-public abstract class AbstractContentStoreTest extends TestCase {
+public abstract class AbstractContentStoreTest {
 
     public abstract ContentStore getStore();
 
@@ -54,7 +55,8 @@ public abstract class AbstractContentStoreTest extends TestCase {
      * 'org.vortikal.repositoryimpl.dao.MemoryContentStore.createResource(String,
      * boolean)'
      */
-    public void testCreateResource() throws IOException {
+    @Test
+    public void nonExistantParent() throws IOException {
 
         // Create a test directory
         getStore().createResource(Path.fromString("/test"), true);
@@ -76,7 +78,8 @@ public abstract class AbstractContentStoreTest extends TestCase {
      * Test method for
      * 'org.vortikal.repositoryimpl.dao.MemoryContentStore.getContentLength(String)'
      */
-    public void testGetContentLength() throws IOException {
+    @Test
+    public void getContentLength() throws IOException {
         String testString = "HELLO WORLD, THIS IS CONTENT";
         byte[] content = testString.getBytes();
 
@@ -101,7 +104,8 @@ public abstract class AbstractContentStoreTest extends TestCase {
      * Test method for
      * 'org.vortikal.repositoryimpl.dao.MemoryContentStore.deleteResource(String)'
      */
-    public void testDeleteResource() {
+    @Test
+    public void deleteResource() {
         // Test delete of simple file
         getStore().createResource(Path.fromString("/short-lived-file.txt"), false);
 
@@ -152,7 +156,8 @@ public abstract class AbstractContentStoreTest extends TestCase {
      * Test method for
      * 'org.vortikal.repositoryimpl.dao.MemoryContentStore.getInputStream(String)'
      */
-    public void testGetInputStreamAndStoreContent() throws IOException {
+    @Test
+    public void getInputStreamAndStoreContent() throws IOException {
         
         String testString = "I AM A CONTENT STRING";
         byte[] content = testString.getBytes();
@@ -190,7 +195,8 @@ public abstract class AbstractContentStoreTest extends TestCase {
      * Test method for
      * 'org.vortikal.repositoryimpl.dao.MemoryContentStore.copy(String, String)'
      */
-    public void testCopy() throws IOException {
+    @Test
+    public void copy() throws IOException {
 
         byte[] contentFile1 = "I'm the contents of file1.txt".getBytes();
         byte[] contentFile2 = "I'm the contents of file2.txt".getBytes();
@@ -286,7 +292,8 @@ public abstract class AbstractContentStoreTest extends TestCase {
     /*
      * Test access and modifications by multiple concurrent threads (important).
      */
-    public void testMultithreadedAccessAndModification() throws IOException {
+    @Test
+    public void multithreadedAccessAndModification() throws IOException {
         
         // The number of threads to run concurrently against content store
         int numWorkers = 100;

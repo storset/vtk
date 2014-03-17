@@ -1,8 +1,16 @@
 span.diff-html-removed {
   text-decoration: line-through !important;
+  color: green !important;
 }
 span.diff-html-added {
   color: green !important;
+}
+
+iframe#original {
+  position: fixed;
+  bottom: 0px;
+  right: 0px;
+  border: 1px solid red;
 }
 
 #vrtx-sticky-header {
@@ -24,8 +32,8 @@ span.diff-html-added {
 
 #vrtx-sticky-header #vrtx-sticky-header-inner {
   margin: 0 auto;
-  width: 1020px;
-  padding: 17px 20px;
+  width: 970px;
+  padding: 25px 20px;
 }
   
 #vrtx-sticky-header.vrtx-sticky-header-shadow .sticky-bg-ie8-below {
@@ -39,9 +47,10 @@ span.diff-html-added {
 }
   
 #diff-header {
-  font-size: 18px;
-  font-weight: bold;
+  font-size: 23px;
+  font-weight: normal;
   float: left;
+  margin: -0.3ex 0 0 0;
 }
   
 #diff-show-changes-info-nav {
@@ -53,8 +62,11 @@ span.diff-html-added {
 }
 #diff-show-changes-form {
   display: inline;
-  margin: 0;
+  margin: 0 0 0 35px;
   padding: 0;
+}
+#diff-show-changes-form > *:hover {
+  cursor: pointer;
 }
 #diff-show-changes-form #diff-show-changes {
   margin: 0 3px 0 0;
@@ -64,7 +76,6 @@ span.diff-html-added {
   margin: 0;
 }
 #diff-info {
-  margin-left: 35px;
   color: #888;
 }
 #diff-info-modified-by {
@@ -72,6 +83,7 @@ span.diff-html-added {
 }
 #diff-nav {
   float: right;
+  margin: .5ex 0 0;
 }
   
 #vrtx-sticky-header #diff-nav a {

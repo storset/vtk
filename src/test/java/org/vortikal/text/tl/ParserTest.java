@@ -42,18 +42,19 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.*;
+import org.junit.Before;
+import org.junit.Test;
 
 import org.vortikal.text.tl.expr.Concat;
 import org.vortikal.text.tl.expr.Function;
 
-public class ParserTest extends TestCase {
+public class ParserTest {
 
     private Map<String, DirectiveNodeFactory> directiveHandlers;
     
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    @Before
+    public void setUp() throws Exception {
         Set<Function> functions = new HashSet<Function>();
         functions.add(new Concat(new Symbol("concat")));
         
@@ -99,7 +100,8 @@ public class ParserTest extends TestCase {
         this.directiveHandlers = directiveHandlers;
     }
 
-    public void testBasicSyntax() throws Exception {
+    @Test
+    public void basicSyntax() throws Exception {
         
         Context ctx = new Context(Locale.getDefault());
 
@@ -197,7 +199,8 @@ public class ParserTest extends TestCase {
         parse(template);
     }
     
-    public void testDirectiveArgs() {
+    @Test
+    public void directiveArgs() {
         List<Token> args = parseDirective("[test arg1 \"arg2\" 100]");
         assertEquals(args.size(), 3);
         assertEquals(new Symbol("arg1"), args.get(0));
@@ -224,7 +227,8 @@ public class ParserTest extends TestCase {
         assertEquals(new Literal("1"), args.get(6));
     }
     
-    public void testIf() throws Exception {
+    @Test
+    public void ifElse() throws Exception {
         Context ctx = new Context(Locale.getDefault());
         String result = parseAndRender("[if true]yes[else]no[endif]", ctx);
         assertEquals("yes", result);
@@ -262,14 +266,16 @@ public class ParserTest extends TestCase {
         assertEquals("yes", result);
     }
     
-    public void testXXX() throws Exception {
+    // TODO rename test method to something sensible
+    @Test
+    public void someThingXXX() throws Exception {
         Context ctx = new Context(Locale.getDefault());
         String result = parseAndRender("[abc]foo[/abc]", ctx);
         assertEquals("foo", result);
-        
     }
     
-    public void testValNode() throws Exception {
+    @Test
+    public void valNode() throws Exception {
         Context ctx = new Context(Locale.getDefault());
         String result = parseAndRender("[val concat('a', 'b')]", ctx);
         assertEquals("ab", result);
@@ -293,7 +299,7 @@ public class ParserTest extends TestCase {
         }
     }
 
-    public List<Token> parseDirective(String template) {
+    private List<Token> parseDirective(String template) {
         Map<String, DirectiveNodeFactory> directives = new HashMap<String, DirectiveNodeFactory>();
         List<Token> tokens = new ArrayList<Token>();
         

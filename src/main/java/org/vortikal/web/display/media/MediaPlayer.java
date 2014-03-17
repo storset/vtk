@@ -83,8 +83,7 @@ public class MediaPlayer {
      * @throws AuthorizationException 
      */
     public void addMediaPlayer(Map<String, Object> model, String mediaRef, String height, String width,
-            String autoplay, String contentType, String streamType, String poster, String showDL)
-            throws AuthorizationException {
+            String autoplay, String contentType, String streamType, String poster, String showDL) {
 
         if (URL.isEncoded(mediaRef)) {
             mediaRef = URL.decode(mediaRef);
@@ -146,8 +145,10 @@ public class MediaPlayer {
      *   <li>TODO complete me</li>
      * </ul>
      * 
+     * @param model MVC model
+     * @param mediaRef media reference/link as string
      **/ 
-    public void addMediaPlayer(Map<String, Object> model, String mediaRef) throws AuthorizationException {
+    public void addMediaPlayer(Map<String, Object> model, String mediaRef) {
 
         if (URL.isEncoded(mediaRef)) {
             mediaRef = URL.decode(mediaRef);
@@ -198,10 +199,11 @@ public class MediaPlayer {
     // URL, nothing is added to model.
     private void addMediaUrl(String resourceReferance, Map<String, Object> model) {
         URL url = createUrl(resourceReferance);
-        if (RequestContext.getRequestContext().isPreviewUnpublished()) {
-            url.setParameter("vrtxPreviewUnpublished", "true");
-        }
         if (url != null) {
+            if (RequestContext.getRequestContext().isPreviewUnpublished()) {
+                url.setParameter("vrtxPreviewUnpublished", "true");
+            }
+
             model.put("media", url);
         }
     }
@@ -223,6 +225,15 @@ public class MediaPlayer {
         }
     }
 
+    /**
+     * TODO support references relative to current resource, like "../foo.mp4".
+     * 
+     * @param mediaRef link/reference to a media resource. Must either be root
+     * relative path or an absolute URL with protocol.
+     * 
+     * @return a {@link URL} instance, or <code>null</code> if no appropriate URL
+     * could be created from reference. 
+     */
     private URL createUrl(String mediaRef) {
 
         if (URL.isEncoded(mediaRef)) {
@@ -270,9 +281,6 @@ public class MediaPlayer {
         this.thumbnailService = thumbnailService;
     }
 
-    /**
-     * @param thumbnailPropDef the thumbnailPropDef to set
-     */
     @Required
     public void setThumbnailPropDef(PropertyTypeDefinition thumbnailPropDef) {
         this.thumbnailPropDef = thumbnailPropDef;

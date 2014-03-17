@@ -8,9 +8,12 @@ import org.apache.commons.lang.StringUtils;
 
 import freemarker.template.TemplateException;
 
+import static org.junit.Assert.*;
+import org.junit.Test;
 
 public class CssRefTemplateTestIntegration extends FreeMarkerTemplateTestIntegration {
     
+    @Override
     protected void setTemplateAndContext() {
         setTemplateLocation("layouts/css-ref.ftl");
         Map<String, Object> context = new HashMap<String, Object>();
@@ -18,6 +21,7 @@ public class CssRefTemplateTestIntegration extends FreeMarkerTemplateTestIntegra
         setContext(context);
     }
 
+    @Test
     public void test() throws IOException, TemplateException {
         String result = runTemplate();
         assertNotNull("Result of templatetransformation is null", result);

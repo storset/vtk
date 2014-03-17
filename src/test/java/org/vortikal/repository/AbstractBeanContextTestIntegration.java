@@ -33,12 +33,12 @@ package org.vortikal.repository;
 import java.util.ArrayList;
 import java.util.List;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.*;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-public abstract class AbstractBeanContextTestIntegration extends TestCase {
+public abstract class AbstractBeanContextTestIntegration {
 
     private final static String configBasePath = "classpath:/vortikal/beans/vhost/";
 

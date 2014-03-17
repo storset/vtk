@@ -33,10 +33,14 @@ package org.vortikal.web.display.diff;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
+import java.io.IOException;
+
+import org.apache.axiom.attachments.utils.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.vortikal.util.io.StreamUtil;
 import org.xml.sax.InputSource;
 
 /*
@@ -50,21 +54,21 @@ public class DisplayRevisionsDifferenceTest {
     }
 
     private static Log logger = LogFactory.getLog(DisplayRevisionsDifferenceTest.class);
-  
+    
     @Test
     public void diffWhenTextChangeThenReportAsSuch() throws Exception {
         String html1 = "<html>Text1</html>";
         String html2 = "<html>Text2</html>";
         String result = diffHtml(html1, html2);
-        assertEquals("tag", "<span class=\"diff-html-removed\" id=\"removed-diff-0\" previous=\"first-diff\" changeId=\"removed-diff-0\" next=\"added-diff-0\">Text1</span><span class=\"diff-html-added\" id=\"added-diff-0\" previous=\"removed-diff-0\" changeId=\"added-diff-0\" next=\"last-diff\">Text2</span>", result);
+        assertFileEqualToResult("result1.txt", result);
     }
-
+    
     @Test
     public void diffwhenSourceContainsOuterHtmlBodyTagsThenOnlyBodyInnerHtmlIsReturned() throws Exception {
         String html1 = "<html><body><div><p>Text1</p></div></body></html>";
         String html2 = "<html><body><div><p>Text2</p></div></body></html>";
         String result = diffHtml(html1, html2);
-        assertNotEquals("tag", "", result);
+        assertFileEqualToResult("result2.txt", result);
     }
 
     @Test
@@ -72,7 +76,15 @@ public class DisplayRevisionsDifferenceTest {
         String html1 = "<html><head></head><body><div><p>Text1</p></div></body></html>";
         String html2 = "<html><head></head><body><div><p>Text2</p></div></body></html>";
         String result = diffHtml(html1, html2);
-        assertNotEquals("tag", "", result);
+        assertFileEqualToResult("result2.txt", result);
+    }
+
+    @Test
+    public void diffwhenHeaderContainsTextTheTextShouldBeRemovedBeforeComparison() throws Exception {
+        String html1 = "<html><head><title>TITLE A</title></head><body><div><p>Text1</p></div></body></html>";
+        String html2 = "<html><head><title>TITLE B</title></head><body><div><p>Text2</p></div></body></html>";
+        String result = diffHtml(html1, html2);
+        assertFileEqualToResult("result4.txt", result);
     }
 
     @Test
@@ -80,7 +92,7 @@ public class DisplayRevisionsDifferenceTest {
         String html1 = "<html><head></head><body><p>Text1</p></body></html>";
         String html2 = "<html><head></head><body><h1>Text1</h1></body></html>";
         String result = diffHtml(html1, html2);
-        assertNotEquals("tag", "", result);
+        assertFileEqualToResult("result5.txt", result);
     }
 
     /**
@@ -109,9 +121,18 @@ public class DisplayRevisionsDifferenceTest {
                 getClass().getResourceAsStream("test-ver-v4.html"),
                 true
             );
-        assertNotEquals("tag", "", result);
+        assertFileEqualToResult("result3.txt", result);
     }
 
+    private void assertFileEqualToResult(String filename, String result) throws Exception {
+        String expectedResult = fileContent(filename);
+        assertEquals("diff markup", expectedResult, result);
+    }
+
+    private String fileContent(String filename) throws IOException {
+        return StreamUtil.streamToString(getClass().getResourceAsStream(filename));
+    }
+  
     private String diffHtml(String contentA, String contentB) throws Exception {
         DifferenceEngine differ = new DifferenceEngine();
         String result = differ.diff(contentA, contentB);

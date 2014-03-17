@@ -30,12 +30,13 @@
  */
 package org.vortikal.text.html;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.*;
+import org.junit.Test;
 
+public class HtmlElementImplTest {
 
-public class HtmlElementImplTest extends TestCase {
-
-    public void testUppercaseElementName() {
+    @Test
+    public void uppercaseElementName() {
         HtmlElementImpl element = new HtmlElementImpl("lala",  false, false);
         element.addContent(new HtmlElementImpl("LALA", false, false));
         

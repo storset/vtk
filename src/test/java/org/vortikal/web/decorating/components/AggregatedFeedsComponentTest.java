@@ -34,7 +34,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.*;
 
 import org.vortikal.util.cache.ContentCacheLoader;
 import org.vortikal.web.decorating.components.AggregatedFeedsComponent.MissingPublishedDateException;
@@ -44,11 +44,13 @@ import com.sun.syndication.feed.synd.SyndFeed;
 import com.sun.syndication.io.FeedException;
 import com.sun.syndication.io.SyndFeedInput;
 import com.sun.syndication.io.XmlReader;
+import org.junit.Test;
 
-public class AggregatedFeedsComponentTest extends TestCase {
+public class AggregatedFeedsComponentTest {
 
     @SuppressWarnings("unchecked")
-    public void testSorting() throws Exception {
+    @Test
+    public void sorting() throws Exception {
         List<SyndEntry> entries = new FeedLoader().load("feed1.xml").getEntries();
 
         AggregatedFeedsComponent component = new AggregatedFeedsComponent();
@@ -59,7 +61,8 @@ public class AggregatedFeedsComponentTest extends TestCase {
     }
   
     @SuppressWarnings("unchecked")
-    public void testMissingPubDate() throws Exception {
+    @Test
+    public void missingPubDate() throws Exception {
         List<SyndEntry> entries = new FeedLoader().load("missingPubDate.xml").getEntries();
 
         AggregatedFeedsComponent component = new AggregatedFeedsComponent();

@@ -30,14 +30,16 @@
  */
 package org.vortikal.repository.search;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.*;
+import org.junit.Test;
 
 import org.vortikal.repository.PropertySet;
 import org.vortikal.testing.mocktypes.MockResourceTypeTree;
 
-public class ParserImplTest extends TestCase {
+public class ParserImplTest {
 
-    public void testParseSort() {
+    @Test
+    public void parseSort() {
         ParserImpl parser = new ParserImpl();
         parser.setParserFactory(null);
         parser.setQueryStringPreProcessor(null);

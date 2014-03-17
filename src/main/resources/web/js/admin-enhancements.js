@@ -171,12 +171,12 @@ var VrtxAnimation = function(opts) {
     });
   }
   // Add applied functions for future running. TODO: general object prop access handling possible?
-  obj.update = function update(opts)         { objApplied.push({fn: arguments.callee.name, args: opts}); };
-  obj.updateElem = function updateElem(elem) { objApplied.push({fn: arguments.callee.name, args: elem}); };
-  obj.rightIn = function rightIn()           { objApplied.push({fn: arguments.callee.name, args: null}); };
-  obj.leftOut = function leftOut()           { objApplied.push({fn: arguments.callee.name, args: null}); };
-  obj.topDown = function topDown()           { objApplied.push({fn: arguments.callee.name, args: null}); };
-  obj.bottomUp = function bottomUp()         { objApplied.push({fn: arguments.callee.name, args: null}); };
+  obj.update = function update(opts)         { var fn = arguments.callee.toString().match(/function\s+([^\s\(]+)/); if(fn.length > 1) { objApplied.push({fn: fn[1], args: opts}); } };
+  obj.updateElem = function updateElem(elem) { var fn = arguments.callee.toString().match(/function\s+([^\s\(]+)/); if(fn.length > 1) { objApplied.push({fn: fn[1], args: elem}); } };
+  obj.rightIn = function rightIn()           { var fn = arguments.callee.toString().match(/function\s+([^\s\(]+)/); if(fn.length > 1) { objApplied.push({fn: fn[1], args: null}); } };
+  obj.leftOut = function leftOut()           { var fn = arguments.callee.toString().match(/function\s+([^\s\(]+)/); if(fn.length > 1) { objApplied.push({fn: fn[1], args: null}); } };
+  obj.topDown = function topDown()           { var fn = arguments.callee.toString().match(/function\s+([^\s\(]+)/); if(fn.length > 1) { objApplied.push({fn: fn[1], args: null}); } };
+  obj.bottomUp = function bottomUp()         { var fn = arguments.callee.toString().match(/function\s+([^\s\(]+)/); if(fn.length > 1) { objApplied.push({fn: fn[1], args: null}); } };
 };
 
 /*-------------------------------------------------------------------*\
@@ -3948,7 +3948,11 @@ VrtxAdmin.prototype.loadScript = function loadScript(url, callback) {
  */
 VrtxAdmin.prototype.log = function log(options) {
   if (vrtxAdmin.hasConsoleLog) {
-    var msgMid = options.args ? " -> " + options.args.callee.name : "";
+    var fn = [];
+    if(options.args) {
+      fn = options.args.callee.toString().match(/function\s+([^\s\(]+)/);
+    }
+    var msgMid = (fn.length > 1) ? " -> " + fn[1] : "";
     console.log("Vortex admin log" + msgMid + ": " + options.msg);
   }
 };
@@ -3964,7 +3968,11 @@ VrtxAdmin.prototype.log = function log(options) {
  */
 VrtxAdmin.prototype.error = function error(options) {
   if (vrtxAdmin.hasConsoleError) {
-    var msgMid = options.args ? " -> " + options.args.callee.name : "";
+    var fn = [];
+    if(options.args) {
+      fn = options.args.callee.toString().match(/function\s+([^\s\(]+)/);
+    }
+    var msgMid = (fn.length > 1) ? " -> " + fn[1] : "";
     console.error("Vortex admin error" + msgMid + ": " + options.msg);
   } else {
     this.log(options);

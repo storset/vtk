@@ -15,7 +15,8 @@ var VrtxTree = dejavu.Class.declare({
   $name: "VrtxTree",
   $implements: [VrtxTreeInterface],
   $constants: {
-    leafOpenScrollDelay: 50,
+    leafScrollDelay: 250,
+    leafScrollTopAdjust: 145,
     leafLoadingClass: "loading-tree-node",
     leafSelector: "> .hitarea" // From closest li
   },
@@ -61,16 +62,15 @@ var VrtxTree = dejavu.Class.declare({
   },
   __openLeaf: function() {
     var tree = this;
-    var checkLeafAvailable = setInterval(function () {
+    var checkLeafAvailable = setTimeout(function () {
       $("." + tree.$static.leafLoadingClass).remove();
       var link = tree.__opts.elem.find("a[href$='" + tree.__opts.trav[tree.__opts.pathNum] + "']");
       if (link.length) {
-        clearInterval(checkLeafAvailable);
         var hit = link.closest("li").find(tree.$static.leafSelector);
         hit.click();
         if (tree.__opts.scrollToContent && (tree.__opts.pathNum == (tree.__opts.trav.length - 1))) {
-          tree.__opts.elem.css("background", "none").fadeIn(200, function () {  // Scroll to node
-            $(tree.__opts.scrollToContent).scrollTo(Math.max(0, (link.position().top - 145)), 250, {
+          tree.__opts.elem.css("background", "none").fadeIn(200, function () {  // Scroll to last node
+            $(tree.__opts.scrollToContent).finish().scrollTo(Math.max(0, (link.position().top - tree.$static.leafScrollTopAdjust)), tree.$static.leafScrollDelay, {
               easing: "swing",
               queue: true,
               axis: 'y',
@@ -79,7 +79,7 @@ var VrtxTree = dejavu.Class.declare({
           });
         } else {
           if (tree.__opts.scrollToContent) { // Follow scroll
-            $(tree.__opts.scrollToContent).scrollTo(Math.max(0, (link.position().top - 145)), tree.$static.leafOpenScrollDelay, {
+            $(tree.__opts.scrollToContent).finish().scrollTo(Math.max(0, (link.position().top - tree.$static.leafScrollTopAdjust)), tree.$static.leafScrollDelay, {
               easing: "swing",
               queue: true,
               axis: 'y'
@@ -88,7 +88,9 @@ var VrtxTree = dejavu.Class.declare({
           $("<span class='" + tree.$static.leafLoadingClass + "'>" + loadingSubfolders + "</span>").insertAfter(hit.next());
         }
         tree.__opts.pathNum++;
+      } else {
+        setTimeout(arguments.callee, 15);
       }
-    }, tree.$static.leafOpenScrollDelay);
+    }, 15);
   }
 });

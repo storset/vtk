@@ -15,6 +15,7 @@ var VrtxTree = dejavu.Class.declare({
   $name: "VrtxTree",
   $implements: [VrtxTreeInterface],
   $constants: {
+    leafOpenScrollDelay: 50,
     leafLoadingClass: "loading-tree-node",
     leafSelector: "> .hitarea" // From closest li
   },
@@ -78,7 +79,7 @@ var VrtxTree = dejavu.Class.declare({
           });
         } else {
           if (tree.__opts.scrollToContent) { // Follow scroll
-            $(tree.__opts.scrollToContent).scrollTo(Math.max(0, (link.position().top - 145)), 20, {
+            $(tree.__opts.scrollToContent).scrollTo(Math.max(0, (link.position().top - 145)), tree.$static.leafOpenScrollDelay, {
               easing: "swing",
               queue: true,
               axis: 'y'
@@ -88,6 +89,6 @@ var VrtxTree = dejavu.Class.declare({
         }
         tree.__opts.pathNum++;
       }
-    }, 20);
+    }, tree.$static.leafOpenScrollDelay);
   }
 });

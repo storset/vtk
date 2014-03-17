@@ -16,7 +16,11 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <title>Diff between ${revisionA?html} and ${revisionB?html}</title>
+    <#assign revAStandardTitle = vrtx.getMsg("versions.table.entry.name", "Version ${revisionA?lower_case}", [revisionA])/>
+    <#assign revBStandardTitle = vrtx.getMsg("versions.table.entry.name", "Version ${revisionB?lower_case}", [revisionB])/>
+    <#assign revATitle = vrtx.getMsg("versions.title.named-version.${revisionA?lower_case}", revAStandardTitle)?lower_case/>
+    <#assign revBTitle = vrtx.getMsg("versions.title.named-version.${revisionB?lower_case}", revBStandardTitle)?lower_case/>
+    <title><@vrtx.msg code="versions.diff.title" args=[revATitle?html, revBTitle?html] default="Changes in ${revATitle?html} compared to ${revBTitle?html}" /></title>
     <#if cssURLs?exists>
       <#list cssURLs as cssURL>
         <link rel="stylesheet" href="${cssURL}" type="text/css" />

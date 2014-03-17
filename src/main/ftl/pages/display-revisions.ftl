@@ -45,7 +45,7 @@
       <tbody>
         <#if workingCopy?exists>
           <tr id="vrtx-revisions-working-copy">
-            <td><@vrtx.msg code="versions.table.working-copy" /></td>
+            <td><@vrtx.msg code="versions.title.named-version.working_copy" /></td>
             <td>${workingCopy.principal.description?html}</td>
             <td><@vrtx.date value=workingCopy.timestamp format="longlong" /></td>
        <#-- <td>
@@ -74,7 +74,7 @@
           </tr>
         </#if>
         <tr>
-          <td id="vrtx-revisions-current"><strong><@vrtx.msg code="versions.table.current-version" /></strong></td>
+          <td id="vrtx-revisions-current"><strong><@vrtx.msg code="versions.title.named-version.head" /></strong></td>
           <td>${resource.modifiedBy.description?html}</td>
           <td><@vrtx.date value=resource.lastModified format="longlong" /></td>
      <#-- <td>

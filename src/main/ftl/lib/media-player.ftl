@@ -97,7 +97,7 @@
   <script type="text/javascript"><!--
     var flashvars = {
       <#if autoplay?exists>
-        autoplay: "${autoplay}"
+        autoPlay: "${autoplay}"
       </#if>
     };
     var flashparams = {};

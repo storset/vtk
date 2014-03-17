@@ -129,7 +129,7 @@ public class DisplayRevisionsController implements Controller {
                         diffRange = revision.getName() + "," + prevRevision.getName();
                     }
                     prevRevisionMap.put("diffURL", new URL(diffURL)
-                                   .setParameter("revision", diffRange);
+                                   .setParameter("revision", diffRange));
                 }
                 rev.put("displayURL", new URL(displayURL)
                    .setParameter("revision", revision.getName()));

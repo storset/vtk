@@ -47,8 +47,11 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 import org.springframework.web.servlet.mvc.ParameterizableViewController;
+import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Path;
+import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
+import org.vortikal.repository.Resource;
 import org.vortikal.repository.Revision;
 import org.vortikal.security.Principal.Type;
 import org.vortikal.security.PrincipalFactory;
@@ -200,6 +203,12 @@ public class DisplayRevisionsDifferenceController extends ParameterizableViewCon
         Repository repository = requestContext.getRepository();
         String token = requestContext.getSecurityToken();
         Path uri = requestContext.getResourceURI();
+        Resource r = repository.retrieve(token, uri, true);
+        Property title = r.getProperty(Namespace.DEFAULT_NAMESPACE, "title");
+        if (title != null && title.getValue() != null && title.getValue().getStringValue() != null) {
+            model.put("title", title.getValue().getStringValue()); 
+        }
+        
         List<Revision> revisions = repository.getRevisions(token, uri);
 
         List<Object> allRevisions = new ArrayList<Object>();

@@ -8,6 +8,7 @@
   -   revisionA - name of first revision
   -   revisionB - name of second revision
   -   content - the diff
+  -   title - title of original resource
   -  
   - Optional model data:
   -
@@ -20,7 +21,7 @@
     <#assign revBStandardTitle = vrtx.getMsg("versions.table.entry.name", "Version ${revisionB?lower_case}", [revisionB])/>
     <#assign revATitle = vrtx.getMsg("versions.title.named-version.${revisionA?lower_case}", revAStandardTitle)?lower_case/>
     <#assign revBTitle = vrtx.getMsg("versions.title.named-version.${revisionB?lower_case}", revBStandardTitle)?lower_case/>
-    <title><@vrtx.msg code="versions.diff.title" args=[revATitle?html, revBTitle?html] default="Changes in ${revATitle?html} compared to ${revBTitle?html}" /></title>
+    <title><@vrtx.msg code="versions.diff.title" args=[revATitle?html, revBTitle?html] default="Changes in ${revATitle?html} compared to ${revBTitle?html}"/>${" - " + title?html}</title>
     <#if cssURLs?exists>
       <#list cssURLs as cssURL>
         <link rel="stylesheet" href="${cssURL}" type="text/css" />

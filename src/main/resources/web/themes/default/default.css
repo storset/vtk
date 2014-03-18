@@ -2962,7 +2962,7 @@ table.resourceInfo.revisions tr:nth-child(even) td {
 
 #vrtx-revisions .resourceInfo td.vrtx-revisions-buttons-column .vrtx-revision-view-changes,
 #vrtx-revisions .resourceInfo td.vrtx-revisions-buttons-column form {
-  display: inline;
+  display: inline-block;
   margin-left: 10px;
 }
 

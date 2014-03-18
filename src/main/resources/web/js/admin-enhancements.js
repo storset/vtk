@@ -766,14 +766,20 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
         updateSelectors: ["#contents"],
         useClickVal: true,
         rowCheckedAnimateOut: true,
+        minDelay: 800,
         fnBeforePost: function() {
           deletingD = new VrtxLoadingDialog({title: vrtxAdm.messages.deleting.inprogress});
           deletingD.open();
         },
-        fnComplete: function(resultElm) {
+        fnCompleteInstant: function() {
           deletingD.close();
+        },
+        fnComplete: function(resultElm) {
           vrtxAdm.displayErrorMsg(resultElm.find(".errormessage").html());
           vrtxAdm.updateCollectionListingInteraction();
+        },
+        fnError: function() {
+          deletingD.close();
         }
       });
 
@@ -786,13 +792,18 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
         selector: "input.deleteResourcePermanent",
         updateSelectors: ["#contents"],
         rowCheckedAnimateOut: true,
+        minDelay: 800,
         fnBeforePost: function(form, link) {
           if (vrtxAdm.trashcanCheckedFiles >= vrtxAdm.cachedContent.find("tbody tr").length) {
             deletingPermanentEmptyFolder = true;
           }
           vrtxAdm.trashcanCheckedFiles = 0;
+          startTime = new Date();
           deletingPermanentD = new VrtxLoadingDialog({title: vrtxAdm.messages.deleting.inprogress});
           deletingPermanentD.open();
+        },
+        fnCompleteInstant: function() {
+          deletingPermanentD.close();
         },
         fnComplete: function(resultElm) {
           vrtxAdm.displayErrorMsg(resultElm.find(".errormessage").html());
@@ -801,6 +812,9 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
           if(deletingPermanentEmptyFolder) { // Redirect on empty trash can
             location.href = "./?vrtx=admin";
           }
+        },
+        fnError: function() {
+          deletingPermanentD.close();
         }
       });
       vrtxAdm.collectionListingInteraction();
@@ -3371,7 +3385,8 @@ VrtxAdmin.prototype.completeFormAsyncPost = function completeFormAsyncPost(optio
  * @param {string} options.errorContainer The className of the error container
  * @param {string} options.errorContainerInsertAfter Selector where to place the new error container
  * @param {function} options.fnBeforePost Callback function to run before POST
- * @param {function} options.fnComplete Callback function to run on success
+ * @param {function} options.fnComplete Callback function to run on success (after animations)
+ * @param {function} options.fnCompleteInstant Callback function to run on success (instantly)
  */
 VrtxAdmin.prototype.completeSimpleFormAsync = function completeSimpleFormAsync(opts) {
   var args = arguments,
@@ -3382,7 +3397,9 @@ VrtxAdmin.prototype.completeSimpleFormAsync = function completeSimpleFormAsync(o
     var link = _$(this);
     var form = link.closest("form");
     var url = form.attr("action");
+    var startTime = new Date();
     var dataString = form.serialize() + "&" + encodeURIComponent(link.attr("name"));
+    
     if(opts.useClickVal) {
       dataString += "=" + encodeURIComponent(link.val());
     }
@@ -3396,52 +3413,66 @@ VrtxAdmin.prototype.completeSimpleFormAsync = function completeSimpleFormAsync(o
     vrtxAdm.serverFacade.postHtml(url, dataString, {
       success: function (results, status, resp) {
         var resultElm = _$($.parseHTML(results));
-        
         if (opts.errorContainer && vrtxAdm.hasErrorContainers(resultElm, opts.errorContainer)) {
+          if(opts.fnCompleteInstant) {
+            opts.fnCompleteInstant(resultElm, form, url, link);
+          }
           vrtxAdm.displayErrorContainers(resultElm, form, opts.errorContainerInsertAfter, opts.errorContainer);
         } else {
-          var fnInternalComplete = function() {
-            if(opts.updateSelectors) {
-              for(var i = 0, len = opts.updateSelectors.length; i < len; i++) {
-                vrtxAdm.cachedAppContent.find(opts.updateSelectors[i]).html(resultElm.find(opts.updateSelectors[i]).html());
-              }
+          var completion = function() {
+            if(opts.fnCompleteInstant) {
+              opts.fnCompleteInstant(resultElm, form, url, link);
             }
-            if(opts.fnComplete) {
-              opts.fnComplete(resultElm, form, url, link);
-            }
-          };
-          if(opts.rowFromFormAnimateOut || opts.rowCheckedAnimateOut) {
-            var trs = opts.rowFromFormAnimateOut ? [form.closest("tr")] : form.find("tr")
-                                                                              .filter(function(i) { 
-                                                                                return $(this).find("td.checkbox input:checked").length }
-                                                                              );
-            if (vrtxAdm.animateTableRows) {
-              var futureAnims = [];
-              for(var i = 0, len = trs.length; i < len; i++) {
-                var tr = $(trs[i]);
-                if (vrtxAdm.animateTableRows) {
-                  tr.prepareTableRowForSliding().hide(0).finish().slideDown(0, "linear", function() {
-                    var animA = tr.find("td").finish().animate({ 
-                        paddingTop: '0px',
-                        paddingBottom: '0px' 
-                      },
-                      vrtxAdm.transitionDropdownSpeed,
-                      vrtxAdm.transitionEasingSlideUp
-                    );
-                    var animB = tr.slideUp(vrtxAdm.transitionDropdownSpeed, vrtxAdm.transitionEasingSlideUp);
-                    futureAnims.push(animA);
-                    futureAnims.push(animB);
-                  });
+            var fnInternalComplete = function() {
+              if(opts.updateSelectors) {
+                for(var i = 0, len = opts.updateSelectors.length; i < len; i++) {
+                  vrtxAdm.cachedAppContent.find(opts.updateSelectors[i]).html(resultElm.find(opts.updateSelectors[i]).html());
                 }
               }
-              _$.when.apply(_$, futureAnims).done(function () {
+              if(opts.fnComplete) {
+                opts.fnComplete(resultElm, form, url, link);
+              }
+            };
+            if(opts.rowFromFormAnimateOut || opts.rowCheckedAnimateOut) {
+              var trs = opts.rowFromFormAnimateOut ? [form.closest("tr")] : form.find("tr")
+                                                                                .filter(function(i) { 
+                                                                                  return $(this).find("td.checkbox input:checked").length }
+                                                                                );
+              if (vrtxAdm.animateTableRows) {
+                var futureAnims = [];
+                for(var i = 0, len = trs.length; i < len; i++) {
+                  var tr = $(trs[i]);
+                  if (vrtxAdm.animateTableRows) {
+                    tr.prepareTableRowForSliding().hide(0).finish().slideDown(0, "linear", function() {
+                      var animA = tr.find("td").finish().animate({ 
+                          paddingTop: '0px',
+                          paddingBottom: '0px' 
+                        },
+                        vrtxAdm.transitionDropdownSpeed,
+                        vrtxAdm.transitionEasingSlideUp
+                      );
+                      var animB = tr.slideUp(vrtxAdm.transitionDropdownSpeed, vrtxAdm.transitionEasingSlideUp);
+                      futureAnims.push(animA);
+                      futureAnims.push(animB);
+                    });
+                  }
+                }
+                _$.when.apply(_$, futureAnims).done(function () {
+                  fnInternalComplete();
+                });
+              } else {
                 fnInternalComplete();
-              });
+              }
             } else {
               fnInternalComplete();
             }
+          };
+        
+          var endTime = new Date() - startTime;
+          if (endTime >= (opts.minDelay || 0)) { // Wait minimum
+            completion();
           } else {
-            fnInternalComplete();
+            setTimeout(completion, Math.round(opts.minDelay - endTime));
           }
         }
       },

@@ -82,7 +82,8 @@ function VrtxAdmin() {
     max: 30,
     delay: 800,
     minWidth: 180,
-    adjustForParentWidth: 15
+    adjustForParentWidth: 16,
+    adjustLeft: 8
   };
   /** Username autocomplete parameters
    * @type object */
@@ -93,14 +94,16 @@ function VrtxAdmin() {
     delay: 500,
     multiple: false,
     minWidth: 180,
-    adjustForParentWidth: 15
+    adjustForParentWidth: 16,
+    adjustLeft: 8
   };
   /** Tag autocomplete parameters
    * @type object */
   this.tagAutocompleteParams = {
     minChars: 1,
     minWidth: 180,
-    adjustForParentWidth: 15
+    adjustForParentWidth: 16,
+    adjustLeft: 8
   };
 
   // Transitions

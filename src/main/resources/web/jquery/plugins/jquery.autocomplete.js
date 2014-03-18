@@ -465,7 +465,8 @@
     minWidth: null,
     adjustForParentWidth: null,
     finiteScroll: true,
-    updateInput: true
+    updateInput: true,
+    adjustLeft: 0
   };
 
   $.Autocompleter.Cache = function(options) {
@@ -812,7 +813,7 @@
         element.css( {
           width: acWidth,
           top: offset.top + input.offsetHeight,
-          left: offset.left
+          left: offset.left + options.adjustLeft
         }).show();
 
         if (options.scroll && (listItems.length > options.resultsBeforeScroll || options.resultsBeforeScroll == 0)) {

@@ -3195,12 +3195,18 @@ body#vrtx-preview .tabMessage-big {
 	5. Clearing
 \*-----------------------------------------*/
 
+#title-container,
+#title-container * {
+  zoom: 1;
+}
+
 #app-head:after,
 #app-footer:after,
 #app-content:after,
 #main:after,
 #title-container:after,
 #resource-title:after,
+#resource-title h1:after,
 ul#resourceMenuLeft:after,
 ul#resourceMenuRight:after,
 div.globalmenu:after,

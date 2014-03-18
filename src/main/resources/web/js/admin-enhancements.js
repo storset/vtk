@@ -771,9 +771,9 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
           deletingD.open();
         },
         fnComplete: function(resultElm) {
+          deletingD.close();
           vrtxAdm.displayErrorMsg(resultElm.find(".errormessage").html());
           vrtxAdm.updateCollectionListingInteraction();
-          deletingD.close();
         }
       });
 

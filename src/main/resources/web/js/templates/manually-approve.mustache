@@ -38,7 +38,7 @@
   {{/resource.approved}}
   
   <td>
-    <a class='approve-link' target='_blank' href='{{ resource.uri }}' title='{{ resource.title }}'>
+    <a tabindex="0" class='approve-link' target='_blank' href='{{ resource.uri }}' title='{{ resource.title }}'>
       {{ resource.title }}
     </a>
   </td>
@@ -56,12 +56,12 @@
 
 ### {{! NAVIGATION NEXT }}
 
-<a href='#page-{{ pages }}' class='next' id='page-{{ pages }}'>
+<a tabindex="0" href='#page-{{ pages }}' class='next' id='page-{{ pages }}'>
   {{ approveNext }} {{ nextPrPage }}
 </a>
 
 ### {{! NAVIGATION PREV }}
 
-<a href='#page-{{ prevPage }}' class='prev' id='page-{{ prevPage }}'>
+<a tabindex="0" href='#page-{{ prevPage }}' class='prev' id='page-{{ prevPage }}'>
   {{ approvePrev }} {{ prPage }}
 </a>

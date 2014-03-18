@@ -2663,6 +2663,7 @@ body#vrtx-permissions .addUser {
 
 .vrtx-textfield.ac_active_parent {
   z-index: 9999;
+  position: relative;
 }
 
 /* ^ Autocomplete */

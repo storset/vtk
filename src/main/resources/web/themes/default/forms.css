@@ -251,7 +251,6 @@
   box-shadow: 1px 1px 5px 2px #848484;
   border-radius: 7px 7px 7px 7px;
   color: #000000;
-  z-index: 102;
   position: fixed;
   padding: 20px;
   z-index: 100000 !important;

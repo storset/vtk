@@ -495,10 +495,10 @@ CKEDITOR.dialog.add( 'cellProperties', function( editor )
 											type : 'select',
 											id : 'studyType',
 											label : editor.lang.studytable.title,
-											default : '',
+											defaults : '',
 											items : 
 											[
-												[ editor.lang.studytable.default,],
+												[ editor.lang.studytable.defaults,],
 												[ editor.lang.studytable.common, 'vrtx-courseplan-common'],
 												[ editor.lang.studytable.specialization, 'vrtx-courseplan-specialization'],
 												[ editor.lang.studytable.optional, 'vrtx-courseplan-optional'],

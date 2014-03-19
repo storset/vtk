@@ -107,6 +107,7 @@ public class DynamicDecoratorTemplateFactory implements TemplateFactory, Initial
         functions.add(new RequestParameterFunction(new Symbol("request-param")));
         functions.add(new ResourceLocaleFunction(new Symbol("resource-locale")));
         functions.add(new TemplateParameterFunction(new Symbol("template-param")));
+        functions.add(new ResourceUriAspectFunction(new Symbol("resource-uri-aspect"), this.aspectsPropdef, this.fieldConfig, this.token));
         functions.add(new ResourceAspectFunction(new Symbol("resource-aspect"), this.aspectsPropdef, this.fieldConfig, this.token));
         functions.add(new ResourcePropHandler(new Symbol("resource-prop")));
         this.functions = functions;
@@ -253,6 +254,31 @@ public class DynamicDecoratorTemplateFactory implements TemplateFactory, Initial
             String aspect = o.toString();
             try {
                 return this.resolver.resolve(requestContext.getResourceURI(), aspect);
+            } catch (Throwable t) {
+                throw new RuntimeException(t);
+            }
+        }
+     }
+    
+    private static class ResourceUriAspectFunction extends Function {
+        private PropertyAspectResolver resolver = null;
+
+        public ResourceUriAspectFunction(Symbol symbol, PropertyTypeDefinition aspectsPropdef, PropertyAspectDescription fieldConfig, String token) {
+            super(symbol, 2);
+            this.resolver = new PropertyAspectResolver(aspectsPropdef, fieldConfig, token);
+        }
+        
+        @Override
+        public Object eval(Context ctx, Object... args) {
+            Object o1 = args[0];
+            Object o2 = args[1];
+            if (o1 == null || o1 == null) {
+                throw new IllegalArgumentException("Arguments must have valid names");
+            }
+            Path url = Path.fromString(o1.toString());
+            String aspect = o2.toString();
+            try {
+                return this.resolver.resolve(url, aspect);
             } catch (Throwable t) {
                 throw new RuntimeException(t);
             }

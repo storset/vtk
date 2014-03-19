@@ -30,8 +30,6 @@
  */
 package org.vortikal.repository;
 
-import org.vortikal.repository.hooks.TypeHandlerHooks;
-import org.vortikal.repository.hooks.TypeHandlerHookException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -72,6 +70,8 @@ import org.vortikal.repository.event.InheritablePropertiesModificationEvent;
 import org.vortikal.repository.event.ResourceCreationEvent;
 import org.vortikal.repository.event.ResourceDeletionEvent;
 import org.vortikal.repository.event.ResourceModificationEvent;
+import org.vortikal.repository.hooks.TypeHandlerHookException;
+import org.vortikal.repository.hooks.TypeHandlerHooks;
 import org.vortikal.repository.hooks.TypeHandlerHooksHelper;
 import org.vortikal.repository.hooks.UnsupportedContentException;
 import org.vortikal.repository.resourcetype.Content;
@@ -264,7 +264,8 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
 
         // Evaluate revision content (as content-modification)
         Content content = getContent(resource, revision);
-        ResourceImpl result = this.resourceHelper.contentModification(resource, principal, content);
+        
+        ResourceImpl result = this.resourceHelper.loadRevision(resource, principal, content, revision);
 
         // Add inherited properties (not loaded by revision store):
         for (Property p: resource) {

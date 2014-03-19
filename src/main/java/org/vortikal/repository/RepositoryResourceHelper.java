@@ -127,6 +127,17 @@ public class RepositoryResourceHelper {
         return ctx.getNewResource();
     }
 
+    public ResourceImpl loadRevision(ResourceImpl resource, Principal principal, Content content, Revision revision) throws IOException {
+        if (logger.isDebugEnabled()) {
+            logger.debug("Evaluate on load: " + resource.getURI() + ", revision " + revision);
+        }
+        PropertyEvaluationContext ctx = PropertyEvaluationContext.revisionLoadContext(resource, principal, content, revision);
+        recursiveTreeEvaluation(ctx, this.resourceTypeTree.getRoot());
+        lateEvaluation(ctx);
+        checkForDeadAndZombieProperties(ctx);
+        return ctx.getNewResource();
+    }
+
     public ResourceImpl nameChange(ResourceImpl original, ResourceImpl resource, Principal principal, Content content)
             throws IOException {
         if (logger.isDebugEnabled()) {

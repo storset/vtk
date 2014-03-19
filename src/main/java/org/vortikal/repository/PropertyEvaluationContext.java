@@ -57,13 +57,15 @@ public class PropertyEvaluationContext {
         CommentsChange,
         PropertiesChange,
         SystemPropertiesChange,
-        InheritablePropertiesChange
+        InheritablePropertiesChange,
+        LoadRevision
     }
 
     private Type evaluationType;
     private ResourceImpl originalResource;
     private ResourceImpl newResource;
     private ResourceImpl suppliedResource;
+    private Revision revision;
     private Content content;
     private boolean collection;
     private final Date time = new Date();
@@ -102,6 +104,15 @@ public class PropertyEvaluationContext {
             Content content) throws InternalRepositoryException {
         return new PropertyEvaluationContext(originalResource, originalResource.isCollection(), principal, content,
                 Type.ContentChange);
+    }
+
+    public static PropertyEvaluationContext revisionLoadContext(ResourceImpl originalResource, Principal principal,
+            Content content, Revision revision) throws InternalRepositoryException {
+        PropertyEvaluationContext ctx = new PropertyEvaluationContext(
+                originalResource, originalResource.isCollection(), principal, content,
+                Type.LoadRevision);
+        ctx.revision = revision;
+        return ctx;
     }
 
     public static PropertyEvaluationContext nameChangeContext(ResourceImpl originalResource,
@@ -176,6 +187,10 @@ public class PropertyEvaluationContext {
     public Date getTime() {
         return this.time;
     }
+    
+    public Revision getRevision() {
+        return this.revision;
+    }
 
     public void addPropertyValue(String propertyName, Object value) {
         if (this.propertyValueMap == null) {
@@ -246,5 +261,5 @@ public class PropertyEvaluationContext {
     public StoreContext getStoreContext() {
         return this.storeContext;
     }
-
+    
 }

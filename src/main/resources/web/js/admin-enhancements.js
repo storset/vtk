@@ -163,8 +163,7 @@ var VrtxAnimation = function(opts) {
       }
     });
   }
-  
- 
+
   var futureAppliedFn = function(calleeStr, args) {
     var fn = calleeStr.match(/function\s+([^\s\(]+)/); if(fn.length > 1) { objApplied.push({fn: fn[1], args: args}); }
   };
@@ -180,6 +179,7 @@ var VrtxAnimation = function(opts) {
   obj.topDown = function topDown()           { futureAppliedFn(arguments.callee.toString(), null) };
   obj.bottomUp = function bottomUp()         { futureAppliedFn(arguments.callee.toString(), null) };
 };
+
 
 /*-------------------------------------------------------------------*\
     2. DOM is ready

@@ -1,16 +1,6 @@
 /*
  *  Vortex Admin enhancements
  *
- *  Note(s):
- *
- *  Iterating-method for jQuery elements based on: http://jsperf.com/loop-through-jquery-elements/2 (among multiple tests)
- *   -> Backwards for-loop is in most cases even faster but not always desirable
- *
- *  click/onclick/binding: http://stackoverflow.com/questions/12824549/should-all-jquery-events-be-bound-to-document (No)
- *
- *  TODO: Better/revisit architecture for Async code regarding Deferred/Promise 
- *        (http://net.tutsplus.com/tutorials/javascript-ajax/wrangle-async-tasks-with-jquery-promises/)
- *
  *  ToC: 
  *
  *  1.  Config

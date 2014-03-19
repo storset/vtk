@@ -1166,6 +1166,7 @@ $.fieldValue = function(el, successful) {
         }
         return a;
     }
+    // USIT added: remove Chrome added style="font-size: 14px;"
     var val = $(el).val();
     try {
       val = val.replace(/<(span|p|em|strong|s|ul|ol) style="font-size: 14px;">/g, "<$1>", "");

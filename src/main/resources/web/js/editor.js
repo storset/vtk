@@ -1862,7 +1862,7 @@ function accordionContentSplitHeaderPopulators(init) {
     semesterResourceLinksItems.find(".vrtx-string input[id*=-title]").addClass("header-populators");
     semesterResourceLinksItems.find(".vrtx-json-element").addClass("header-empty-check-and");
     if(init) {
-      vrtxAdmin.cachedDoc.on("click", semesterResourceLinksItems.find(".vrtx-add-button input"), function(e) {
+      vrtxAdmin.cachedDoc.on("click", semesterResourceLinksItems.find(".vrtx-add-button"), function(e) {
         semesterResourceLinksItems.find(".vrtx-json-element:last").addClass("header-empty-check-and"); 
       });
     }

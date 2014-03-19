@@ -346,7 +346,7 @@ VrtxAdmin.prototype.initResourceMenus = function initResourceMenus() {
       selector: "form#" + publishUnpublishService + "-form input[type=submit]",
       updateSelectors: ["#resource-title", "#directory-listing", ".prop-lastModified", "#resource-last-modified"],
       funcComplete: (isSavingBeforePublish ? function (link) { // Save async
-        $(".vrtx-focus-button.vrtx-save-button input").click();
+        $(".vrtx-focus-button.vrtx-save-button").click();
         vrtxAdm.completeFormAsyncPost({ // Publish async
           updateSelectors: ["#resource-title", "#resource-last-modified"],
           link: link,

@@ -1275,13 +1275,14 @@ function addFormField(name, len, value, size, isBrowsable, isMovable, isDropdown
     }
     var addBtn = $("#vrtx-" + name + "-add");
     $($.parseHTML(html, document, true)).insertBefore(addBtn);
+    
+    autocompleteUsername(".vrtx-autocomplete-username", idstr + i);
+    
     var focusable = addBtn.prev().find("input[type='text'], select")
     if(focusable.length) {
       focusable[0].focus();
     }
 
-    autocompleteUsername(".vrtx-autocomplete-username", idstr + i);
-    
     // Hide add button if limit is reached
     if((len == (vrtxEditor.multipleFieldsBoxes[name].limit - 1))) {
       var moreBtn = $("#vrtx-" + name + "-add");

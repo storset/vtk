@@ -179,12 +179,7 @@ public class DisplayRevisionsController implements Controller {
                    .setParameter("revision", revision.getName()));
             }
         }
-        
-        if(prevRevision != null) { 
-            prevRevisionMap.put("diffURL", new URL(diffURL)
-                           .setParameter("revision", prevRevision.getName()));
-        }
-        
+       
         if (latest != null) {
             try {
                 InputStream s1 = repository.getInputStream(token, uri, true, latest);

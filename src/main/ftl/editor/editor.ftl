@@ -211,7 +211,7 @@
         <input type="hidden" name="uri" value="${backupViewURL?html}" />
       </form>
     </#if>
-    <#assign editURL = vrtx.linkConstructor(".", '') />
+    <#assign editURL = vrtx.linkConstructor("", '') />
     <form action="${editURL?html}" method="post" id="editor">
       <div class="properties"<#if isImage> id="image-properties"</#if>>
         <@propsForm resource.preContentProperties />

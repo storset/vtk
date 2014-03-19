@@ -164,11 +164,15 @@ var VrtxAnimation = function(opts) {
     });
   }
   
+ 
   var futureAppliedFn = function(calleeStr, args) {
     var fn = calleeStr.match(/function\s+([^\s\(]+)/); if(fn.length > 1) { objApplied.push({fn: fn[1], args: args}); }
   };
   
-  // Add applied functions for future running. TODO: general object prop access handling possible?
+  /* Add applied functions for future running.
+   * TODO: general object prop access handling possible?
+   * TODO: Firefox can use Proxy and get() for adding future applied functions(?) http://wiki.ecmascript.org/doku.php?id=harmony%3adirect_proxies
+  */
   obj.update = function update(opts)         { futureAppliedFn(arguments.callee.toString(), opts) };
   obj.updateElem = function updateElem(elem) { futureAppliedFn(arguments.callee.toString(), elem) };
   obj.rightIn = function rightIn()           { futureAppliedFn(arguments.callee.toString(), null) };

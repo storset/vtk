@@ -3193,7 +3193,7 @@ VrtxAdmin.prototype.addNewMarkup = function addNewMarkup(options, selectorClass,
 /**
  * Complete a form async
  * 
- * XXX: need some consolidating of callback functions
+ * TODO: Combine it with completeSimpleFormAsync() making this an expanded version of it for expanded slidable forms  
  *
  * @this {VrtxAdmin}
  * @param {object} options Configuration

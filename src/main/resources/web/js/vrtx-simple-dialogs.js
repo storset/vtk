@@ -48,8 +48,9 @@ var AbstractVrtxSimpleDialog = dejavu.AbstractClass.declare({
                                  var firstInput = inputs.filter(":first");
                                  if(firstInput.hasClass("vrtx-date")) {
                                    $("<a style='outline: none;' tabindex='-1' />").insertBefore(firstInput)[0].focus();
+                                 } else {
+                                   firstInput[0].focus();
                                  }
-                                 [0].focus();
                                } else {
                                  input = ctx.find(".ui-dialog-buttonpane, .vrtx-focus-button, .vrtx-button, .vrtx-button-small").filter(":visible").filter(":first");
                                  if(input.length) {

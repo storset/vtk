@@ -163,13 +163,19 @@ var VrtxAnimation = function(opts) {
       }
     });
   }
+  
+  var futureAppliedFn = function(calleeStr, args) {
+    console.log(calleeStr);
+    var fn = calleeStr.match(/function\s+([^\s\(]+)/); if(fn.length > 1) { objApplied.push({fn: fn[1], args: args}); }
+  };
+  
   // Add applied functions for future running. TODO: general object prop access handling possible?
-  obj.update = function update(opts)         { var fn = arguments.callee.toString().match(/function\s+([^\s\(]+)/); if(fn.length > 1) { objApplied.push({fn: fn[1], args: opts}); } };
-  obj.updateElem = function updateElem(elem) { var fn = arguments.callee.toString().match(/function\s+([^\s\(]+)/); if(fn.length > 1) { objApplied.push({fn: fn[1], args: elem}); } };
-  obj.rightIn = function rightIn()           { var fn = arguments.callee.toString().match(/function\s+([^\s\(]+)/); if(fn.length > 1) { objApplied.push({fn: fn[1], args: null}); } };
-  obj.leftOut = function leftOut()           { var fn = arguments.callee.toString().match(/function\s+([^\s\(]+)/); if(fn.length > 1) { objApplied.push({fn: fn[1], args: null}); } };
-  obj.topDown = function topDown()           { var fn = arguments.callee.toString().match(/function\s+([^\s\(]+)/); if(fn.length > 1) { objApplied.push({fn: fn[1], args: null}); } };
-  obj.bottomUp = function bottomUp()         { var fn = arguments.callee.toString().match(/function\s+([^\s\(]+)/); if(fn.length > 1) { objApplied.push({fn: fn[1], args: null}); } };
+  obj.update = function update(opts)         { futureAppliedFn(arguments.callee.toString(), opts) };
+  obj.updateElem = function updateElem(elem) { futureAppliedFn(arguments.callee.toString(), elem) };
+  obj.rightIn = function rightIn()           { futureAppliedFn(arguments.callee.toString(), null) };
+  obj.leftOut = function leftOut()           { futureAppliedFn(arguments.callee.toString(), null) };
+  obj.topDown = function topDown()           { futureAppliedFn(arguments.callee.toString(), null) };
+  obj.bottomUp = function bottomUp()         { futureAppliedFn(arguments.callee.toString(), null) };
 };
 
 /*-------------------------------------------------------------------*\
@@ -192,7 +198,6 @@ vrtxAdmin._$(document).ready(function () {
   vrtxAdm.loadScripts(["/js/vrtx-animation.js", 
                        "/js/vrtx-tree.js"],
                        vrtxAdm.requiredScriptsLoaded);
-  
   vrtxAdm.clientLastModified = $("#resource-last-modified").text().split(",");
   
   vrtxAdm.initDropdowns();

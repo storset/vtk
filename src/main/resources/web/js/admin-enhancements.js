@@ -170,7 +170,7 @@ var VrtxAnimation = function(opts) {
   };
   
   /* Add applied functions for future running.
-   * TODO: general object prop access handling possible?
+   * TODO: general object prop access handling possible? http://blog.calyptus.eu/seb/2010/11/javascript-proxies-leaky-this/?
    * TODO: Firefox can use Proxy and get() for adding future applied functions(?) http://wiki.ecmascript.org/doku.php?id=harmony%3adirect_proxies
   */
   obj.update = function update(opts)         { futureAppliedFn(arguments.callee.toString(), opts) };

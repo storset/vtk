@@ -36,6 +36,7 @@ import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertyEvaluationContext;
 import org.vortikal.repository.PropertySet;
+import org.vortikal.repository.Revision;
 import org.vortikal.repository.resourcetype.PropertyEvaluator;
 import org.vortikal.repository.resourcetype.PropertyType;
 
@@ -55,12 +56,16 @@ public class LastModifiedEvaluator implements PropertyEvaluator {
             throw new PropertyEvaluationException(
                 "Both propertiesLastModified and contentLastModified needed for evaluation");
         }
-
-        Date lastModified = new Date(
-            Math.max(contentLastModified.getDateValue().getTime(),
-                     propertiesLastModified.getDateValue().getTime()));
-
-        property.setDateValue(lastModified);
+        
+        if (ctx.getEvaluationType() == PropertyEvaluationContext.Type.LoadRevision) {
+            Revision rev = ctx.getRevision();
+            property.setDateValue(rev.getTimestamp());
+        } else {
+            Date lastModified = new Date(
+                    Math.max(contentLastModified.getDateValue().getTime(),
+                            propertiesLastModified.getDateValue().getTime()));
+            property.setDateValue(lastModified);
+        }
         return true;
     }
 }

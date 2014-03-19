@@ -32,7 +32,6 @@ package org.vortikal.repository.resourcetype.property;
 
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertyEvaluationContext;
-import org.vortikal.repository.Revision;
 import org.vortikal.repository.resourcetype.PropertyEvaluator;
 
 public class ContentLastModifiedEvaluator implements PropertyEvaluator {
@@ -42,9 +41,6 @@ public class ContentLastModifiedEvaluator implements PropertyEvaluator {
         if (type == PropertyEvaluationContext.Type.ContentChange
                 || type == PropertyEvaluationContext.Type.Create) {
             property.setDateValue(ctx.getTime());
-        } else if (type == PropertyEvaluationContext.Type.LoadRevision) {
-            Revision rev = ctx.getRevision();
-            property.setDateValue(rev.getTimestamp());
         }
         return true;
     }

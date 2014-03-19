@@ -2941,7 +2941,7 @@ function versioningInteraction(bodyId, vrtxAdm, _$) {
 /**
  * Retrieve a form async
  * 
- * XXX: need some consolidating of callback functions and class-filtering for getting existing form
+ * TODO: this is ripe for some cleanup
  *
  * @this {VrtxAdmin}
  * @param {object} options Configuration

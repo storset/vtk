@@ -165,7 +165,6 @@ var VrtxAnimation = function(opts) {
   }
   
   var futureAppliedFn = function(calleeStr, args) {
-    console.log(calleeStr);
     var fn = calleeStr.match(/function\s+([^\s\(]+)/); if(fn.length > 1) { objApplied.push({fn: fn[1], args: args}); }
   };
   

@@ -474,7 +474,7 @@ VrtxAdmin.prototype.initGlobalDialogs = function initGlobalDialogs() {
         }
         vrtxAdm.cachedBody.append("<div id='" + id + "'>" + _$(_$.parseHTML(results)).find("#vrtx-advanced-publish-settings-dialog").html() + "</div>");
         dialogAPS = _$("#" + id);
-        dialogAPS.hide();        
+        dialogAPS.hide();     
         apsD = new VrtxHtmlDialog({
           name: "advanced-publish-settings",
           html: dialogAPS.html(),
@@ -504,6 +504,10 @@ VrtxAdmin.prototype.initGlobalDialogs = function initGlobalDialogs() {
     updateSelectors: ["#resource-title", "#directory-listing", ".prop-lastModified", "#resource-last-modified"],
     post: true,
     isUndecoratedService: true,
+    isNotAnimated: true,
+    funcCancel: function() {
+      apsD.close();
+    },
     funcProceedCondition: function(options) {
       var dialogId = "#dialog-html-advanced-publish-settings-content";
       var dialog = $(dialogId);
@@ -3200,6 +3204,8 @@ VrtxAdmin.prototype.addNewMarkup = function addNewMarkup(options, selectorClass,
  * @param {string} options.errorContainer The className of the error container
  * @param {function} options.funcProceedCondition Callback function that proceedes with completeFormAsyncPost(options)
  * @param {function} options.funcComplete Callback function to run on success
+ * @param {function} options.funcCancel Callback function to run on cancel
+ * @param {number} options.isNotAnimated Not animated form
  * @param {number} options.transitionSpeed Transition speed in ms
  * @param {string} options.transitionEasingSlideDown Transition easing algorithm for slideDown()
  * @param {string} options.transitionEasingSlideUp Transition easing algorithm for slideUp()
@@ -3217,6 +3223,7 @@ VrtxAdmin.prototype.completeFormAsync = function completeFormAsync(options) {
       funcBeforeComplete = options.funcBeforeComplete,
       funcProceedCondition = options.funcProceedCondition,
       funcComplete = options.funcComplete,
+      funcCancel = options.funcCancel,
       transitionSpeed = options.transitionSpeed,
       transitionEasingSlideDown = options.transitionEasingSlideDown,
       transitionEasingSlideUp = options.transitionEasingSlideUp,
@@ -3225,16 +3232,19 @@ VrtxAdmin.prototype.completeFormAsync = function completeFormAsync(options) {
       isCancelAction = link.attr("name").toLowerCase().indexOf("cancel") != -1;
 
     if (isCancelAction && !isReplacing) {
-      var animation = new VrtxAnimation({
-        elem: $(".expandedForm"),
-        animationSpeed: transitionSpeed,
-        easeIn: transitionEasingSlideDown,
-        easeOut: transitionEasingSlideUp,
-        afterOut: function(animation) {
-          animation.__opts.elem.remove();
-        }
-      });
-      animation.bottomUp();
+      if(!options.isNotAnimated) {
+        var animation = new VrtxAnimation({
+          elem: $(".expandedForm"),
+          animationSpeed: transitionSpeed,
+          easeIn: transitionEasingSlideDown,
+          easeOut: transitionEasingSlideUp,
+          afterOut: function(animation) {
+            animation.__opts.elem.remove();
+          }
+        });
+        animation.bottomUp();
+      }
+      if(funcCancel) funcCancel();
       e.preventDefault();
     } else {
       if (!post) {
@@ -3339,16 +3349,18 @@ VrtxAdmin.prototype.completeFormAsyncPost = function completeFormAsyncPost(optio
                 if (funcComplete) {
                   funcComplete();
                 }
-                var animation = new VrtxAnimation({
-                  elem: form.parent(),
-                  animationSpeed: transitionSpeed,
-                  easeIn: transitionEasingSlideDown,
-                  easeOut: transitionEasingSlideUp,
-                  afterOut: function(animation) {
-                    animation.__opts.elem.remove();
-                  }
-                });
-                animation.bottomUp();
+                if(!options.isNotAnimated) {
+                  var animation = new VrtxAnimation({
+                    elem: form.parent(),
+                    animationSpeed: transitionSpeed,
+                    easeIn: transitionEasingSlideDown,
+                    easeOut: transitionEasingSlideUp,
+                    afterOut: function(animation) {
+                      animation.__opts.elem.remove();
+                    }
+                  });
+                  animation.bottomUp();
+                }
               }
             });
           } else {
@@ -3359,16 +3371,18 @@ VrtxAdmin.prototype.completeFormAsyncPost = function completeFormAsyncPost(optio
             if (funcComplete) {
               funcComplete();
             }
-            var animation = new VrtxAnimation({
-              elem: form.parent(),
-              animationSpeed: transitionSpeed,
-              easeIn: transitionEasingSlideDown,
-              easeOut: transitionEasingSlideUp,
-              afterOut: function(animation) {
-                animation.__opts.elem.remove();
-              }
-            });
-            animation.bottomUp();
+            if(!options.isNotAnimated) {
+              var animation = new VrtxAnimation({
+                elem: form.parent(),
+                animationSpeed: transitionSpeed,
+                easeIn: transitionEasingSlideDown,
+                easeOut: transitionEasingSlideUp,
+                afterOut: function(animation) {
+                  animation.__opts.elem.remove();
+                }
+              });
+              animation.bottomUp();
+            }
           }
         }
       }

@@ -638,6 +638,10 @@ a:hover {
   background: transparent url(images/file-unpublished.png) no-repeat 0px 3px;
 }
 
+.ie8 #resource-title {
+  display: inline-block;
+}
+
 #resource-title h1 {
   margin: 0 0 15px 36px;
   float: left;

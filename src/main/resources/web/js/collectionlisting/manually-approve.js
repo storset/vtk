@@ -320,11 +320,6 @@ var MANUALLY_APPROVE_INITIALIZED = $.Deferred();
   }
   
   function enhanceTableRows(table) {
-    if(vrtxAdmin.isIE8) {
-      var trs = table.find("tr");
-      trs.filter(":last-child").addClass("last");
-      trs.filter(":nth-child(even)").addClass("even");
-    }
     table.find("input").removeAttr("disabled");
   }
 

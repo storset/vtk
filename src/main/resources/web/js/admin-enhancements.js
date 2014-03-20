@@ -4176,7 +4176,7 @@ vrtxAdmin._$(window).resize(vrtxAdmin._$.debounce(20, function () {
     countResize++;
     vrtxAdmin.scrollBreadcrumbsRight();
     vrtxAdmin.adjustResourceTitle();
-  } else {
+  } else { // Let it rest a second..
     var waitResize = setTimeout(function() {
       countResize = 0;
     }, 1000);

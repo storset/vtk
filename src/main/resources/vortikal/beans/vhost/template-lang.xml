@@ -82,4 +82,12 @@
     </constructor-arg>
   </bean>
   
+  <bean id="templateLanguage.replaceFunction" class="org.vortikal.text.tl.expr.Replace">
+    <constructor-arg>
+      <bean class="org.vortikal.text.tl.Symbol">
+        <constructor-arg  value="replace" />
+      </bean>
+    </constructor-arg>
+  </bean>
+
 </beans>

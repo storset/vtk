@@ -4,6 +4,6 @@
   <title>Unsupported resource type view</title>
   </head>
   <body>
-    <h3>This resource type is not configured to work with Vortikal. Requires dedicated setup and configuration.</h3>
+    <h3>This resource type requires inclusion of "enhetSok" extension.</h3>
   </body>
 </html>

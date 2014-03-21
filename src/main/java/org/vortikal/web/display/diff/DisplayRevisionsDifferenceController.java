@@ -164,14 +164,17 @@ public class DisplayRevisionsDifferenceController extends ParameterizableViewCon
      * Use internal request to look up a plain version of the given revision of the resource.
      */
     private String getContentForRevision(String revisionName, HttpServletRequest request) throws Exception {
-        
-        URL forwardURL = URL.create(request);
+        RequestContext requestContext = RequestContext.getRequestContext();
+        Repository repository = requestContext.getRepository();
+        String token = requestContext.getSecurityToken();
+        Resource resource = repository.retrieve(token, requestContext.getResourceURI(), false);
+        URL forwardURL = viewService.constructURL(resource, requestContext.getPrincipal());
         forwardURL.clearParameters();
         if (!"HEAD".equals(revisionName)) {
             forwardURL.addParameter("revision", revisionName);
         }
-        // XXX: Service.constructURL(...)
-        forwardURL.addParameter("x-decorating-mode", "plain")
+
+        forwardURL.addParameter("x-prevent-decorating", "true")
                   .addParameter("vrtxPreviewUnpublished", "true");
         
         if (logger.isDebugEnabled()) {

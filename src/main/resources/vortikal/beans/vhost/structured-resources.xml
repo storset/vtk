@@ -171,6 +171,7 @@
         <entry key="val" value-ref="structuredResources.valDirective" />
         <entry key="list" value-ref="structuredResources.listDirective" />
         <entry key="def" value-ref="structuredResources.defDirective" />
+        <entry key="capture" value-ref="structuredResources.captureDirective" />
         <entry key="resource-props" value-ref="structuredResources.resourcePropsDirective" />
         <entry key="localized" value-ref="structuredResources.localizedDirective" />
         <entry key="call" value-ref="structuredResources.callDirective" />
@@ -224,6 +225,8 @@
     <property name="functions" ref="structuredResources.tlFunctions" />
   </bean>
 
+  <bean id="structuredResources.captureDirective" class="org.vortikal.text.tl.CaptureNodeFactory" />
+
   <bean id="structuredResources.resourcePropsDirective" class="org.vortikal.resourcemanagement.view.tl.ResourcePropsNodeFactory" />
 
   <bean id="structuredResources.localizedDirective" class="org.vortikal.resourcemanagement.view.tl.LocalizationNodeFactory">
@@ -258,6 +261,7 @@
         <ref bean="templateLanguage.toLowerCaseFunction" />
         <ref bean="templateLanguage.toUpperCaseFunction" />
         <ref bean="templateLanguage.ceilFunction" />
+        <ref bean="templateLanguage.replaceFunction" />
         <ref bean="structuredResources.requestContextFunction" />
         <ref bean="structuredResources.resourceFunction" />
         <ref bean="structuredResources.jsonResourceFunction" />
@@ -269,8 +273,52 @@
         <ref bean="structuredResources.viewURLFunction" />
         <ref bean="structuredResources.toDateFunction" />
         <ref bean="structuredResources.localizedFunction" />
+        <ref bean="structuredResources.settingsFunction" />
+
+        <ref bean="structuredResources.urlJSONFunction" />
       </set>
     </property>
+  </bean>
+
+  <bean id="structuredResources.settingsFunction"
+        class="org.vortikal.text.tl.expr.ObjectProviderFunction">
+    <constructor-arg>
+      <bean class="org.vortikal.text.tl.Symbol">
+        <constructor-arg value="settings" />
+      </bean>
+    </constructor-arg>
+    <constructor-arg>
+      <bean class="org.vortikal.context.JSONFactoryBean">
+        <constructor-arg value="${structuredResources.settings}" />
+      </bean>
+    </constructor-arg>
+  </bean>
+
+
+  <bean id="structuredResources.urlJSONFunction"
+        class="org.vortikal.resourcemanagement.view.tl.CacheLookupFunction">
+    <constructor-arg>
+      <bean class="org.vortikal.text.tl.Symbol">
+        <constructor-arg value="url-as-json" />
+      </bean>
+    </constructor-arg>
+    <constructor-arg>
+      <ref bean="structuredResources.jsonURLCache" />
+    </constructor-arg>
+  </bean>
+  
+  <bean id="structuredResources.jsonURLCache" class="org.vortikal.util.cache.ContentCacheImpl">
+    <property name="name" value="${repositoryID}.jsonURLCache" />
+    <property name="cacheLoader" ref="structuredResources.jsonURLCacheLoader" />
+    <property name="cacheSeconds" value="600" />
+    <property name="asynchronousRefresh" value="true" />
+    <property name="refreshInterval" value="30" />
+    <property name="maxItems" value="1000" />
+  </bean>
+  
+  <bean id="structuredResources.jsonURLCacheLoader" class="org.vortikal.util.cache.loaders.JSONCacheLoader">
+    <property name="connectTimeoutSeconds" value="1" />
+    <property name="readTimeoutSeconds" value="1" />
   </bean>
 
 

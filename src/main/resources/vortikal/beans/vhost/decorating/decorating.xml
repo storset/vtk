@@ -232,7 +232,6 @@
     <property name="service" ref="viewService" />
     <property name="preservedRequestParameters">
       <set>
-        <value>revision</value>
         <value>vrtxPreviewUnpublished</value>
       </set>
     </property>

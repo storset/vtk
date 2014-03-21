@@ -1,0 +1,91 @@
+resourcetype external-work-listing : structured-document {
+
+  properties {
+    areacode : string trim
+  }
+
+  edit-rules {
+    areacode (size[8])
+  }
+  
+  view-components {
+    list-external-work (response, type) {
+      ##
+      <table>
+         <tr>
+            <th>Navn</th><th>Ansatt ved</th><th>Organisasjon</th><th>Arbeidets art</th><th>Startdato</th><th>Omfang</th>
+         </tr>
+         [list response.payload elem]
+            [def record elem.record]
+            [def person elem.person]
+
+            [capture url]<a href="[val person.url]">[val person.surname], [val person.givenName]</a>[endcapture]
+            [def affiliation person.affiliations.0]
+            [def unit affiliation.unit]
+
+            [def entries record.get(type)]
+
+            [if entries]
+            [list entries entry]
+              <tr>
+              <td>[val url # unescaped]</td>
+              <td>[val unit.name]</td>
+              <td>[if entry.data.orgnavn][val entry.data.orgnavn][endif]</td>
+              <td>[val entry.data.tekst # unescaped]</td>
+              <td>[if entry.data.startdato][val entry.data.startdato][endif]</td>
+              <td>[if entry.data.omfang][val entry.data.omfang][endif]</td>
+              </tr>
+            [endlist]
+            [endif]
+         [endlist]
+      </table>
+      ##
+    }
+  }
+
+  view {
+    ##
+    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+    <html xmlns="http://www.w3.org/1999/xhtml">
+      <head>
+        <title>[call "comp:title"]</title>
+      </head>
+      <body id="vrtx-structured-article">
+        <div id="vrtx-content">
+        [def document structured-document()]
+          <div id="vrtx-main-content" class="vrtx-hide-additional-content-true">
+            <h1>[call "comp:title"]</h1>
+            [call "comp:introduction"]
+            [call "json:field" {"select":"content"}]
+
+            [def settings settings()]
+            [if ! settings.externalWorkURLTemplate]
+                No external service available
+            [else]
+            [def serviceURL replace(settings.externalWorkURLTemplate,
+                                "{areacode}", document.properties.areacode) ]
+
+            [def response url-as-json(serviceURL) ]
+
+            [if response.errorMessage]
+               Error communicating with backend: [val response.errorMessage]
+            [else]
+               <h3>Sidegjøremål (stedkode: [val document.properties.areacode])</h3>
+               [call "comp:list-external-work" { "response" : response, "type": "workEntries" }]
+               [!--
+               <h3>Eierinteresser</h3>
+               [call "comp:list-external-work" { "response" : response, "type": "ownershipEntries" }]
+               --]
+            [endif]
+            [endif]
+          </div>
+        </div>
+      </body>
+    </html>
+    ##
+  }
+  
+  localization {
+  }
+
+}

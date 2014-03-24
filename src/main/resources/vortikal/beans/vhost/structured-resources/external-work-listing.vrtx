@@ -1,21 +1,46 @@
-resourcetype external-work-listing : structured-document {
+resourcetype external-work-listing {
 
   properties {
-    areacode : string trim
+    tittel : string,
+    title : derived (tittel) eval ("atitle"?localized) overrides title,
+    areacode : string trim,
+    content : html noextract,
+    link-other-language: resource_ref
   }
 
   edit-rules {
-    areacode (size[8])
+    areacode (size[8]),
+    tittel (size[1]),
+    tittel (class[ui-helper-hidden]),
+    title (class[ui-helper-hidden])
   }
   
   view-components {
+  
+    title (unit) {
+      ##
+      [def titleValue resource-prop(".", "title")]
+      [if titleValue != null]
+        [val titleValue][if unit != null] [val unit.unit.name][endif]
+      [endif]
+      ##
+    }
+    
     list-external-work (response, type) {
       ##
-      <table>
-         <tr>
-            <th>Navn</th><th>Ansatt ved</th><th>Organisasjon</th><th>Arbeidets art</th><th>Startdato</th><th>Omfang</th>
-         </tr>
-         [list response.payload elem]
+      <table class="sortable">
+        <thead>
+          <tr>
+            <th class="sortable-text">[localized 'name']</th>
+            <th class="sortable-text">[localized 'employed-at']</th>
+            <th class="sortable-text">[localized 'organization']</th>
+            <th class="sortable-text">[localized 'type']</th>
+            <th class="sortable-date">[localized 'start-date']</th>
+            <th class="sortable-numeric">[localized 'scope']</th>
+          </tr>
+        </thead>
+        <tbody>
+          [list response.payload elem]
             [def record elem.record]
             [def person elem.person]
 
@@ -26,19 +51,29 @@ resourcetype external-work-listing : structured-document {
             [def entries record.get(type)]
 
             [if entries]
-            [list entries entry]
-              <tr>
-              <td>[val url # unescaped]</td>
-              <td>[val unit.name]</td>
-              <td>[if entry.data.orgnavn][val entry.data.orgnavn][endif]</td>
-              <td>[val entry.data.tekst # unescaped]</td>
-              <td>[if entry.data.startdato][val entry.data.startdato][endif]</td>
-              <td>[if entry.data.omfang][val entry.data.omfang][endif]</td>
-              </tr>
-            [endlist]
+              [list entries entry]
+                <tr>
+                  <td>[val url # unescaped]</td>
+                  <td>[val unit.name]</td>
+                  <td>[if entry.data.orgnavn][if entry.data.orgtype]<abbr title="[val entry.data.orgtype]">[endif][val entry.data.orgnavn][if entry.data.orgtype]</abbr>[endif][endif]</td>
+                  <td>[val entry.data.tekst # unescaped]</td>
+                  <td>[if entry.data.startdato][val entry.data.startdato][endif]</td>
+                  <td>[if entry.data.omfang][val entry.data.omfang][endif]</td>
+                </tr>
+              [endlist]
             [endif]
-         [endlist]
+          [endlist]
+        </tbody>
       </table>
+      ##
+    }
+    
+    link-other-language {
+      ##
+      [def link resource-prop(".", "link-other-language")]
+      [if link != null]
+        <a id="vrtx-change-language-link" href="[val link]">[localized "link-language"]</a>
+      [endif]
       ##
     }
   }
@@ -47,52 +82,76 @@ resourcetype external-work-listing : structured-document {
     ##
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml">
-      <head>
-        <title>[call "comp:title"]</title>
-      </head>
-      <body id="vrtx-structured-article">
-        <div id="vrtx-content">
-        [def document structured-document()]
-          <div id="vrtx-main-content" class="vrtx-hide-additional-content-true">
-            <h1>[call "comp:title"]</h1>
-            [call "comp:introduction"]
-            [call "json:field" {"select":"content"}]
-
-            [def settings settings()]
-
-            [if ! settings.services.externalWorkListing ]
-                No external service available
-            [else]
-              [def unitURL replace(settings.services.orgUnitLookup,
+       [def settings settings()]
+       [def document structured-document()]  
+          [if ! settings.services.externalWorkListing ]
+            <head>
+              <title>[call "comp:title"]</title>
+            </head>
+            <body id="vrtx-external-work">
+              <div id="vrtx-content">
+                [call "comp:link-other-language"]
+                <h1>[call "comp:title"]</h1>
+                [call "json:field" {"select":"content"}]
+            
+            No external service available
+          [else]
+            [def unitURL replace(settings.services.orgUnitLookup,
                                   "{areacode}", document.properties.areacode) ]
 
-              [def unitResponse url-as-json(unitURL) ]
+            [def unitResponse url-as-json(unitURL) ]
 
-              [if unitResponse.errorMessage]
-                 Unable to look up unit with areacode [val document.properties.areacode]:
-                 [val unitResponse.errorMessage]
-              [else]
-                [def unit unitResponse.payload]
-                [def serviceURL replace(settings.services.externalWorkListing,
+            [if unitResponse.errorMessage]
+              <head>
+                <title>[call "comp:title"]</title>
+              </head>
+              <body id="vrtx-external-work">
+                <div id="vrtx-content">
+                  [call "comp:link-other-language"]
+                  <h1>[call "comp:title"]</h1>
+                  [call "json:field" {"select":"content"}]
+                  
+              Unable to look up unit with areacode [val document.properties.areacode]:
+              [val unitResponse.errorMessage]
+            [else]
+              [def unit unitResponse.payload]
+              [def serviceURL replace(settings.services.externalWorkListing,
                                     "{areacode}", document.properties.areacode) ]
 
-                [def response url-as-json(serviceURL) ]
+              [def response url-as-json(serviceURL) ]
 
-                [if response.errorMessage]
-                   Unable to look up external work listing for areacode
-                   [val document.properties.areacode]: [val response.errorMessage]
-                   Error communicating with backend: [val response.errorMessage]
-                [else]
-                   <h3>Registrerte sidegjøremål for [val unit.unit.name] (stedkode [val document.properties.areacode])</h3>
-                   [call "comp:list-external-work" { "response" : response, "type": "workEntries" }]
-                   [!--
-                   <h3>Eierinteresser</h3>
-                   [call "comp:list-external-work" { "response" : response, "type": "ownershipEntries" }]
-                   --]
-                [endif]
+              [if response.errorMessage]
+                <head>
+                  <title>[call "comp:title"]</title>
+                </head>
+                <body id="vrtx-external-work">
+                  <div id="vrtx-content">
+                    [call "comp:link-other-language"]
+                    <h1>[call "comp:title"]</h1>
+                    [call "json:field" {"select":"content"}]
+                    
+                    Unable to look up external work listing for areacode
+                    [val document.properties.areacode]: [val response.errorMessage]
+                    Error communicating with backend: [val response.errorMessage]
+              [else]
+                <head>
+                  <title>[call "comp:title" {"unit": unit}]</title>
+                </head>
+                <body id="vrtx-external-work">
+                  <div id="vrtx-content">
+                    [call "comp:link-other-language"]
+                    <h1>[call "comp:title" {"unit": unit}]</h1>
+                    [call "json:field" {"select":"content"}]
+                
+                    <h2>[localized 'work-title']</h2>
+                    [call "comp:list-external-work" { "response" : response, "type": "workEntries" }]
+                    <!--
+                      <h2>[localized 'ownership-title']</h2>
+                      [call "comp:list-external-work" { "response" : response, "type": "ownershipEntries" }]
+                    -->
               [endif]
             [endif]
-          </div>
+          [endif]
         </div>
       </body>
     </html>
@@ -100,6 +159,24 @@ resourcetype external-work-listing : structured-document {
   }
   
   localization {
+    atitle : (en : "Registered external work and ownership interests for employees at", no : "Registrerte sidegjøremål og eierinteresser for ansatte ved", nn : "Registrerte sidegjeremål og eigarinteresser for tilsette ved"),
+    header : (en : "Edit external work and ownership interests", no : "Rediger sidegjøremål og eierinteresser", nn : "Rediger sidegjeremål og eigarinteresser"),
+    work-title : (en : "External work", no : "Sidegjøremål", nn : "Sidegjeremål"),
+    ownership-title : (en : "Ownership interests", no : "Eierinteresser", nn : "Eigarinteresser"),
+    areacode : (en : "Org. Unit ID", no : "Stedkode", nn : "Stadkode"),
+    name: (en : "Name", no : "Navn", nn : "Namn"),
+    employed-at: (en : "Employed at", no : "Ansatt ved", nn : "Ansatt ved"),
+    organization: (en : "Organization", no : "Organisasjon", nn : "Organisasjon"),
+    type: (en : "Nature of the work", no : "Arbeidets art", nn : "Arbeidets art"),
+    start-date: (en : "Start date", no : "Startdato", nn : "Startdato"),
+    scope: (en : "Scope", no : "Omfang", nn : "Omfang"),
+    content : (en : "Content", no :"Innhold", nn : "Innhold"),
+    link-language: (en : "Norwegian", no : "English", nn : "English"),
+    link-other-language {
+      en: (en : "Link to norwegian version", no : "Link to english version", nn : "Link to english version"),
+      no: (en : "Lenke til norsk versjon", no : "Lenke til engelsk versjon", nn : "Lenke til engelsk versjon"),
+      nn: (en : "Lenke til norsk versjon", no : "Lenke til engelsk versjon", nn : "Lenke til engelsk versjon")
+    }
   }
 
 }

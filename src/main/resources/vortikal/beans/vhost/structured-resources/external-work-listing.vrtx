@@ -59,24 +59,38 @@ resourcetype external-work-listing : structured-document {
             [call "json:field" {"select":"content"}]
 
             [def settings settings()]
-            [if ! settings.externalWorkURLTemplate]
+
+            [if ! settings.services.externalWorkListing ]
                 No external service available
             [else]
-            [def serviceURL replace(settings.externalWorkURLTemplate,
-                                "{areacode}", document.properties.areacode) ]
+              [def unitURL replace(settings.services.orgUnitLookup,
+                                  "{areacode}", document.properties.areacode) ]
 
-            [def response url-as-json(serviceURL) ]
+              [def unitResponse url-as-json(unitURL) ]
 
-            [if response.errorMessage]
-               Error communicating with backend: [val response.errorMessage]
-            [else]
-               <h3>Sidegjøremål (stedkode: [val document.properties.areacode])</h3>
-               [call "comp:list-external-work" { "response" : response, "type": "workEntries" }]
-               [!--
-               <h3>Eierinteresser</h3>
-               [call "comp:list-external-work" { "response" : response, "type": "ownershipEntries" }]
-               --]
-            [endif]
+              [if unitResponse.errorMessage]
+                 Unable to look up unit with areacode [val document.properties.areacode]:
+                 [val unitResponse.errorMessage]
+              [else]
+                [def unit unitResponse.payload]
+                [def serviceURL replace(settings.services.externalWorkListing,
+                                    "{areacode}", document.properties.areacode) ]
+
+                [def response url-as-json(serviceURL) ]
+
+                [if response.errorMessage]
+                   Unable to look up external work listing for areacode
+                   [val document.properties.areacode]: [val response.errorMessage]
+                   Error communicating with backend: [val response.errorMessage]
+                [else]
+                   <h3>Registrerte sidegjøremål for [val unit.unit.name] (stedkode [val document.properties.areacode])</h3>
+                   [call "comp:list-external-work" { "response" : response, "type": "workEntries" }]
+                   [!--
+                   <h3>Eierinteresser</h3>
+                   [call "comp:list-external-work" { "response" : response, "type": "ownershipEntries" }]
+                   --]
+                [endif]
+              [endif]
             [endif]
           </div>
         </div>

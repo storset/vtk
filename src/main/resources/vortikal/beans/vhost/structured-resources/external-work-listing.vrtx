@@ -1,27 +1,67 @@
 resourcetype external-work-listing {
 
   properties {
-    tittel : string,
-    title : derived (tittel) eval ("atitle"?localized) overrides title,
+    title : string overrides title,
+    introduction : simple_html,
     areacode : string trim,
-    content : html noextract,
+    showAdditionalContent : boolean defaultvalue("true"),
+    related-content : html noextract,
     link-other-language: resource_ref
   }
 
   edit-rules {
     areacode (size[8]),
-    tittel (size[1]),
-    tittel (class[ui-helper-hidden]),
-    title (class[ui-helper-hidden])
+    group related-content-group (showAdditionalContent, related-content) (after areacode)
   }
   
   view-components {
   
-    title (unit) {
+    title {
       ##
-      [def titleValue resource-prop(".", "title")]
-      [if titleValue != null]
-        [val titleValue][if unit != null] [val unit.unit.name][endif]
+      [def v resource-prop(".", "title")]
+      [if v != null]
+        [val v]
+      [endif]
+      ##
+    }
+    
+    introduction {
+      ##
+      [def intro resource-prop(".", "introduction")]
+      [if intro != null]
+        <div class="vrtx-introduction">[val intro # unescaped]</div>
+      [endif]
+      ##
+    }
+    
+    related-content-in-additional-column {
+      ##
+      [def document structured-document()]
+      [def theshowAdditionalContent document.properties.showAdditionalContent]
+      [def theRelated-content document.properties.related-content]
+      [if (theshowAdditionalContent = "true") || (theshowAdditionalContent = null)]
+        [if theRelated-content != null]
+          <div id="vrtx-additional-content">
+            <div id="vrtx-related-content">
+              [val theRelated-content # unescaped]
+            </div>
+          </div>
+        [endif]
+      [endif]
+      ##
+    }
+    
+    related-content-in-main-column {
+      ##
+      [def document structured-document()]
+      [def theshowAdditionalContent document.properties.showAdditionalContent]
+      [def theRelated-content document.properties.related-content]
+      [if (theshowAdditionalContent = "false")]
+        [if theRelated-content != null]
+          <div id="vrtx-related-content">
+            [val theRelated-content # unescaped]
+          </div>
+        [endif]
       [endif]
       ##
     }
@@ -80,20 +120,37 @@ resourcetype external-work-listing {
 
   view {
     ##
+    [def settings settings()]
+    [def document structured-document()]
+    [def theShowAdditionalContent document.properties.showAdditionalContent]  
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml">
-       [def settings settings()]
-       [def document structured-document()]  
+      <head>
+        <title>[call "comp:title"]</title>
+        <link type="text/css" rel="stylesheet" media="all" href="/vrtx/__vrtx/static-resources/jquery/plugins/ui/jquery-ui-1.10.4.custom/css/smoothness/jquery-ui-1.10.4.custom.min.css" />
+        <script type="text/javascript" src="/vrtx/__vrtx/static-resources/jquery/include-jquery.js"></script>
+        <script type="text/javascript" src="/vrtx/__vrtx/static-resources/jquery/plugins/ui/jquery-ui-1.10.4.custom/js/jquery-ui-1.10.4.custom.min.js"></script>
+        <script type="text/javascript"><!--
+          $(doument).ready(function() {
+            if(typeof $ === "object" && typeof $.ui === "object") {
+              $("#vrtx-external-work-tabs").tabs();
+            }
+          });
+          // -->
+        </script>
+      </head>
+      <body id="vrtx-external-work">
+        <div id="vrtx-content">
+        [if theShowAdditionalContent = "true" || theShowAdditionalContent = null]
+          <div id="vrtx-main-content" class="vrtx-hide-additional-content-false">
+        [else]
+          <div id="vrtx-main-content" class="vrtx-hide-additional-content-true">
+        [endif]
+          [call "comp:link-other-language"]
+          <h1>[call "comp:title"]</h1>
+          [call "comp:introduction"]
+
           [if ! settings.services.externalWorkListing ]
-            <head>
-              <title>[call "comp:title"]</title>
-            </head>
-            <body id="vrtx-external-work">
-              <div id="vrtx-content">
-                [call "comp:link-other-language"]
-                <h1>[call "comp:title"]</h1>
-                [call "json:field" {"select":"content"}]
-            
             No external service available
           [else]
             [def unitURL replace(settings.services.orgUnitLookup,
@@ -102,15 +159,6 @@ resourcetype external-work-listing {
             [def unitResponse url-as-json(unitURL) ]
 
             [if unitResponse.errorMessage]
-              <head>
-                <title>[call "comp:title"]</title>
-              </head>
-              <body id="vrtx-external-work">
-                <div id="vrtx-content">
-                  [call "comp:link-other-language"]
-                  <h1>[call "comp:title"]</h1>
-                  [call "json:field" {"select":"content"}]
-                  
               Unable to look up unit with areacode [val document.properties.areacode]:
               [val unitResponse.errorMessage]
             [else]
@@ -121,46 +169,45 @@ resourcetype external-work-listing {
               [def response url-as-json(serviceURL) ]
 
               [if response.errorMessage]
-                <head>
-                  <title>[call "comp:title"]</title>
-                </head>
-                <body id="vrtx-external-work">
-                  <div id="vrtx-content">
-                    [call "comp:link-other-language"]
-                    <h1>[call "comp:title"]</h1>
-                    [call "json:field" {"select":"content"}]
-                    
-                    Unable to look up external work listing for areacode
-                    [val document.properties.areacode]: [val response.errorMessage]
-                    Error communicating with backend: [val response.errorMessage]
+                Unable to look up external work listing for areacode
+                [val document.properties.areacode]: [val response.errorMessage]
+                Error communicating with backend: [val response.errorMessage]
               [else]
-                <head>
-                  <title>[call "comp:title" {"unit": unit}]</title>
-                </head>
-                <body id="vrtx-external-work">
-                  <div id="vrtx-content">
-                    [call "comp:link-other-language"]
-                    <h1>[call "comp:title" {"unit": unit}]</h1>
-                    [call "json:field" {"select":"content"}]
-                
-                    <h2>[localized 'work-title']</h2>
+                <div id="vrtx-external-work-tabs">
+                  <ul>
+                    <li><a href="#vrtx-external-work-tab-1" name="vrtx-external-work-tab-1">[localized 'work-title']</a></li>
+                    <li><a href="#vrtx-external-work-tab-2" name="vrtx-external-work-tab-2">[localized 'ownership-title']</a></li>
+                  </ul>
+                  <div id="vrtx-external-work-tab-1">
                     [call "comp:list-external-work" { "response" : response, "type": "workEntries" }]
-                    <!--
-                      <h2>[localized 'ownership-title']</h2>
-                      [call "comp:list-external-work" { "response" : response, "type": "ownershipEntries" }]
-                    -->
+                  <div id="vrtx-external-work-tab-2">
+                    <!-- [call "comp:list-external-work" { "response" : response, "type": "ownershipEntries" }] -->
+                  </div>
+                </div>
               [endif]
             [endif]
           [endif]
+          [call "comp:related-content-in-main-column"]
+        </div>
+        [call "comp:related-content-in-additional-column"]
         </div>
       </body>
     </html>
     ##
   }
+
+  vocabulary {
+    showAdditionalContent {
+      en : ("true" = "Yes", "false" = "No"),
+      no : ("true" = "Ja", "false" = "Nei"),
+      nn : ("true" = "Ja", "false" = "Nei")
+    }
+  }
   
   localization {
-    atitle : (en : "Registered external work and ownership interests for employees at", no : "Registrerte sidegjøremål og eierinteresser for ansatte ved", nn : "Registrerte sidegjeremål og eigarinteresser for tilsette ved"),
     header : (en : "Edit external work and ownership interests", no : "Rediger sidegjøremål og eierinteresser", nn : "Rediger sidegjeremål og eigarinteresser"),
+    title : (en : "Title", no : "Tittel", nn : "Tittel"),
+    introduction : (en : "Introduction", no : "Innledning", nn : "Innleiing"),
     work-title : (en : "External work", no : "Sidegjøremål", nn : "Sidegjeremål"),
     ownership-title : (en : "Ownership interests", no : "Eierinteresser", nn : "Eigarinteresser"),
     areacode : (en : "Org. Unit ID", no : "Stedkode", nn : "Stadkode"),
@@ -170,7 +217,9 @@ resourcetype external-work-listing {
     type: (en : "Nature of the work", no : "Arbeidets art", nn : "Arbeidets art"),
     start-date: (en : "Start date", no : "Startdato", nn : "Startdato"),
     scope: (en : "Scope", no : "Omfang", nn : "Omfang"),
-    content : (en : "Content", no :"Innhold", nn : "Innhold"),
+    showAdditionalContent : (en : "Show in right-column", no : "Vis i høyrekolonne", nn : "Vis i høgrekolonne"),
+    related-content-group : (en : "Related content", no : "Relatert innhold", nn : "Relatert innhald"),
+    related-content : (en : "Related content", no : "Relatert innhold", nn : "Relatert innhold"),
     link-language: (en : "Norwegian", no : "English", nn : "English"),
     link-other-language {
       en: (en : "Link to norwegian version", no : "Link to english version", nn : "Link to english version"),

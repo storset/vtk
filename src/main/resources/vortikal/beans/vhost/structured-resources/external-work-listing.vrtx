@@ -4,14 +4,12 @@ resourcetype external-work-listing {
     title : string overrides title,
     introduction : simple_html,
     areacode : string trim,
-    showAdditionalContent : boolean defaultvalue("true"),
-    related-content : html noextract,
+    content : html noextract,
     link-other-language: resource_ref
   }
 
   edit-rules {
-    areacode (size[8]),
-    group related-content-group (showAdditionalContent, related-content) (after areacode)
+    areacode (size[8])
   }
   
   view-components {
@@ -30,38 +28,6 @@ resourcetype external-work-listing {
       [def intro resource-prop(".", "introduction")]
       [if intro != null]
         <div class="vrtx-introduction">[val intro # unescaped]</div>
-      [endif]
-      ##
-    }
-    
-    related-content-in-additional-column {
-      ##
-      [def document structured-document()]
-      [def theshowAdditionalContent document.properties.showAdditionalContent]
-      [def theRelated-content document.properties.related-content]
-      [if (theshowAdditionalContent = "true") || (theshowAdditionalContent = null)]
-        [if theRelated-content != null]
-          <div id="vrtx-additional-content">
-            <div id="vrtx-related-content">
-              [val theRelated-content # unescaped]
-            </div>
-          </div>
-        [endif]
-      [endif]
-      ##
-    }
-    
-    related-content-in-main-column {
-      ##
-      [def document structured-document()]
-      [def theshowAdditionalContent document.properties.showAdditionalContent]
-      [def theRelated-content document.properties.related-content]
-      [if (theshowAdditionalContent = "false")]
-        [if theRelated-content != null]
-          <div id="vrtx-related-content">
-            [val theRelated-content # unescaped]
-          </div>
-        [endif]
       [endif]
       ##
     }
@@ -132,7 +98,7 @@ resourcetype external-work-listing {
         <script type="text/javascript" src="/vrtx/__vrtx/static-resources/jquery/plugins/ui/jquery-ui-1.10.4.custom/js/jquery-ui-1.10.4.custom.min.js"></script>
         <script type="text/javascript"><!--
           $(document).ready(function() {
-            if(typeof $ === "object" && typeof $.ui === "object") {
+            if(typeof $.ui === "object") {
               $("#vrtx-external-work-tabs").tabs();
             }
           });
@@ -141,15 +107,10 @@ resourcetype external-work-listing {
       </head>
       <body id="vrtx-external-work">
         <div id="vrtx-content">
-        [if theShowAdditionalContent = "true" || theShowAdditionalContent = null]
-          <div id="vrtx-main-content" class="vrtx-hide-additional-content-false">
-        [else]
-          <div id="vrtx-main-content" class="vrtx-hide-additional-content-true">
-        [endif]
           [call "comp:link-other-language"]
           <h1>[call "comp:title"]</h1>
           [call "comp:introduction"]
-
+          [call "json:field" {"select":"content"}]
           [if ! settings.services.externalWorkListing ]
             No external service available
           [else]
@@ -197,9 +158,6 @@ resourcetype external-work-listing {
               [endif]
             [endif]
           [endif]
-          [call "comp:related-content-in-main-column"]
-        </div>
-        [call "comp:related-content-in-additional-column"]
         </div>
       </body>
     </html>
@@ -227,9 +185,7 @@ resourcetype external-work-listing {
     type: (en : "Nature of the work", no : "Arbeidets art", nn : "Arbeidets art"),
     start-date: (en : "Start date", no : "Startdato", nn : "Startdato"),
     scope: (en : "Scope", no : "Omfang", nn : "Omfang"),
-    showAdditionalContent : (en : "Show in right-column", no : "Vis i høyrekolonne", nn : "Vis i høgrekolonne"),
-    related-content-group : (en : "Related content", no : "Relatert innhold", nn : "Relatert innhald"),
-    related-content : (en : "Related content", no : "Relatert innhold", nn : "Relatert innhold"),
+    content : (en : "Content", no :"Innhold", nn:"Innhald"),
     link-language: (en : "Norwegian", no : "English", nn : "English"),
     link-other-language {
       en: (en : "Link to norwegian version", no : "Link to english version", nn : "Link to english version"),

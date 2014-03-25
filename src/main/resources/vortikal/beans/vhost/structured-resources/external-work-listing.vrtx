@@ -131,7 +131,7 @@ resourcetype external-work-listing {
         <script type="text/javascript" src="/vrtx/__vrtx/static-resources/jquery/include-jquery.js"></script>
         <script type="text/javascript" src="/vrtx/__vrtx/static-resources/jquery/plugins/ui/jquery-ui-1.10.4.custom/js/jquery-ui-1.10.4.custom.min.js"></script>
         <script type="text/javascript"><!--
-          $(doument).ready(function() {
+          $(document).ready(function() {
             if(typeof $ === "object" && typeof $.ui === "object") {
               $("#vrtx-external-work-tabs").tabs();
             }

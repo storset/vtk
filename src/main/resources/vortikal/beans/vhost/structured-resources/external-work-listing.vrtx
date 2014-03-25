@@ -180,8 +180,9 @@ resourcetype external-work-listing {
                   </ul>
                   <div id="vrtx-external-work-tab-1">
                     [call "comp:list-external-work" { "response" : response, "type": "workEntries" }]
+                  </div>
                   <div id="vrtx-external-work-tab-2">
-                    <!-- [call "comp:list-external-work" { "response" : response, "type": "ownershipEntries" }] -->
+                    [call "comp:list-external-work" { "response" : response, "type": "ownershipEntries" }]
                   </div>
                 </div>
               [endif]

@@ -107,57 +107,58 @@ resourcetype external-work-listing {
       </head>
       <body id="vrtx-external-work">
         <div id="vrtx-content">
-          [call "comp:link-other-language"]
-          <h1>[call "comp:title"]</h1>
-          [call "comp:introduction"]
-          [call "json:field" {"select":"content"}]
-          [if ! settings.services.externalWorkListing ]
-            No external service available
-          [else]
-            [def areacode document.properties.areacode]
-
-            [!-- XXX: override areacode for debugging, remove later: --]
-            [def rc request-context()]
-            [if rc.request-url.parameters.areacode]
-               [def areacode rc.request-url.parameters.areacode]
-            [endif]
-
-
-            [def unitURL replace(settings.services.orgUnitLookup,
-                                  "{areacode}", areacode) ]
-
-            [def unitResponse url-as-json(unitURL) ]
-
-            [if unitResponse.errorMessage]
-              Unable to look up unit with areacode [val areacode]:
-              [val unitResponse.errorMessage]
+          <div id="vrtx-main-content" class="vrtx-hide-additional-content-true">
+            [call "comp:link-other-language"]
+            <h1>[call "comp:title"]</h1>
+            [call "comp:introduction"]
+            [call "json:field" {"select":"content"}]
+            [if ! settings.services.externalWorkListing ]
+              No external service available
             [else]
-              [def unit unitResponse.payload]
-              [def serviceURL replace(settings.services.externalWorkListing,
-                                    "{areacode}", areacode) ]
+              [def areacode document.properties.areacode]
 
-              [def response url-as-json(serviceURL) ]
+              [!-- XXX: override areacode for debugging, remove later: --]
+              [def rc request-context()]
+              [if rc.request-url.parameters.areacode]
+                [def areacode rc.request-url.parameters.areacode]
+              [endif]
 
-              [if response.errorMessage]
-                Unable to look up external work listing for areacode
-                [val areacode]: [val response.errorMessage]
-                Error communicating with backend: [val response.errorMessage]
+              [def unitURL replace(settings.services.orgUnitLookup,
+                                   "{areacode}", areacode) ]
+
+              [def unitResponse url-as-json(unitURL) ]
+
+              [if unitResponse.errorMessage]
+                Unable to look up unit with areacode [val areacode]:
+                [val unitResponse.errorMessage]
               [else]
-                <div id="vrtx-external-work-tabs">
-                  <ul>
-                    <li><a href="#vrtx-external-work-tab-1" name="vrtx-external-work-tab-1">[localized 'work-title']</a></li>
-                    <li><a href="#vrtx-external-work-tab-2" name="vrtx-external-work-tab-2">[localized 'ownership-title']</a></li>
-                  </ul>
-                  <div id="vrtx-external-work-tab-1">
-                    [call "comp:list-external-work" { "response" : response, "type": "workEntries" }]
+                [def unit unitResponse.payload]
+                [def serviceURL replace(settings.services.externalWorkListing,
+                                        "{areacode}", areacode) ]
+
+                [def response url-as-json(serviceURL) ]
+
+                [if response.errorMessage]
+                  Unable to look up external work listing for areacode
+                  [val areacode]: [val response.errorMessage]
+                  Error communicating with backend: [val response.errorMessage]
+                [else]
+                  <div id="vrtx-external-work-tabs">
+                    <ul>
+                      <li><a href="#vrtx-external-work-tab-1" name="vrtx-external-work-tab-1">[localized 'work-title']</a></li>
+                      <li><a href="#vrtx-external-work-tab-2" name="vrtx-external-work-tab-2">[localized 'ownership-title']</a></li>
+                    </ul>
+                    <div id="vrtx-external-work-tab-1">
+                      [call "comp:list-external-work" { "response" : response, "type": "workEntries" }]
+                    </div>
+                    <div id="vrtx-external-work-tab-2">
+                      [call "comp:list-external-work" { "response" : response, "type": "ownershipEntries" }]
+                    </div>
                   </div>
-                  <div id="vrtx-external-work-tab-2">
-                    [call "comp:list-external-work" { "response" : response, "type": "ownershipEntries" }]
-                  </div>
-                </div>
+                [endif]
               [endif]
             [endif]
-          [endif]
+          </div>
         </div>
       </body>
     </html>

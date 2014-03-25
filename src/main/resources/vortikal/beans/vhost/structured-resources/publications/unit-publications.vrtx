@@ -138,7 +138,6 @@ resourcetype unit-publications {
     publications : (en : "Publications", no : "Publikasjoner", nn : "Publikasjonar"),
     selectedPublications : (en : "Selected publications", no : "Utvalgte publikasjoner", nn : "Utvalde publikasjonar"),
     showAdditionalContent : (en : "Show in right-column", no : "Vis i høyrekolonne", nn : "Vis i høgrekolonne"),
-    related-content : (en : "Content", no : "Innhold", nn : "Innhold"),
     related-content-group : (en : "Related content", no : "Relatert innhold", nn : "Relatert innhald"),
     related-content : (en : "Related content", no : "Relatert innhold", nn : "Relatert innhold"),
     header : (en : "Edit unit publications", no : "Rediger enhetspublikasjoner", nn : "Rediger enhetspublikasjoner"),

@@ -34,43 +34,58 @@ resourcetype external-work-listing {
     
     list-external-work (response, type) {
       ##
-      <table class="sortable">
-        <thead>
-          <tr>
-            <th class="vrtx-external-work-name sortable-text">[localized 'name']</th>
-            <th class="vrtx-external-work-employed-at sortable-text">[localized 'employed-at']</th>
-            <th class="vrtx-external-work-organization sortable-text">[localized 'organization']</th>
-            <th class="vrtx-external-work-type sortable-text">[localized 'type']</th>
-            <th class="vrtx-external-work-start-date sortable-date">[localized 'start-date']</th>
-            <th class="vrtx-external-work-scope sortable-numeric">[localized 'scope']</th>
-          </tr>
-        </thead>
-        <tbody>
-          [list response.payload elem]
-            [def record elem.record]
-            [def person elem.person]
-
-            [capture url]<a href="[val person.url]">[val person.surname], [val person.givenName]</a>[endcapture]
-            [def affiliation person.affiliations.0]
-            [def unit affiliation.unit]
-
-            [def entries record.get(type)]
-
-            [if entries]
-              [list entries entry]
-                <tr>
-                  <td>[val url # unescaped]</td>
-                  <td>[val unit.name]</td>
-                  <td>[if entry.data.orgnavn][if entry.data.orgtype]<abbr title="[val entry.data.orgtype]">[endif][val entry.data.orgnavn][if entry.data.orgtype]</abbr>[endif][endif]</td>
-                  <td>[val entry.data.tekst # unescaped]</td>
-                  <td>[if entry.data.startdato][val entry.data.startdato][endif]</td>
-                  <td>[if entry.data.omfang][val entry.data.omfang][endif]</td>
-                </tr>
-              [endlist]
-            [endif]
+      [def count 0]
+      [list response.payload elem]
+        [def record elem.record]
+        [def entries record.get(type)]
+        [if entries]
+          [list entries entry]
+            [def count count + 1]
           [endlist]
-        </tbody>
-      </table>
+        [endif]
+      [endlist]
+      
+      [if count > 0]
+        <table class="sortable">
+          <thead>
+            <tr>
+              <th class="vrtx-external-work-name sortable-text">[localized 'name']</th>
+              <th class="vrtx-external-work-employed-at sortable-text">[localized 'employed-at']</th>
+              <th class="vrtx-external-work-organization sortable-text">[localized 'organization']</th>
+              <th class="vrtx-external-work-type sortable-text">[localized 'type']</th>
+              <th class="vrtx-external-work-start-date sortable-date">[localized 'start-date']</th>
+              <th class="vrtx-external-work-scope sortable-numeric">[localized 'scope']</th>
+            </tr>
+          </thead>
+          <tbody>
+            [list response.payload elem]
+              [def record elem.record]
+              [def person elem.person]
+
+              [capture url]<a href="[val person.url]">[val person.surname], [val person.givenName]</a>[endcapture]
+              [def affiliation person.affiliations.0]
+              [def unit affiliation.unit]
+
+              [def entries record.get(type)]
+
+              [if entries]
+                [list entries entry]
+                  <tr>
+                    <td>[val url # unescaped]</td>
+                    <td>[val unit.name]</td>
+                    <td>[if entry.data.orgnavn][if entry.data.orgtype]<abbr title="[val entry.data.orgtype]">[endif][val entry.data.orgnavn][if entry.data.orgtype]</abbr>[endif][endif]</td>
+                    <td>[val entry.data.tekst # unescaped]</td>
+                    <td>[if entry.data.startdato][val entry.data.startdato][endif]</td>
+                    <td>[if entry.data.omfang][val entry.data.omfang][endif]</td>
+                  </tr>
+                [endlist]
+              [endif]
+            [endlist]
+          </tbody>
+        </table>
+      [else]
+        <p>[localized 'nodata']</p>
+      [endif]
       ##
     }
     
@@ -180,19 +195,20 @@ resourcetype external-work-listing {
     work-title : (en : "External work", no : "Sidegjøremål", nn : "Sidegjeremål"),
     ownership-title : (en : "Ownership interests", no : "Eierinteresser", nn : "Eigarinteresser"),
     areacode : (en : "Org. Unit ID", no : "Stedkode", nn : "Stadkode"),
-    name: (en : "Name", no : "Navn", nn : "Namn"),
-    employed-at: (en : "Employed at", no : "Ansatt ved", nn : "Ansatt ved"),
-    organization: (en : "Organization", no : "Organisasjon", nn : "Organisasjon"),
-    type: (en : "Nature of the work", no : "Arbeidets art", nn : "Arbeidets art"),
-    start-date: (en : "Start date", no : "Startdato", nn : "Startdato"),
-    scope: (en : "Scope", no : "Omfang", nn : "Omfang"),
+    name : (en : "Name", no : "Navn", nn : "Namn"),
+    employed-at : (en : "Employed at", no : "Ansatt ved", nn : "Ansatt ved"),
+    organization : (en : "Organization", no : "Organisasjon", nn : "Organisasjon"),
+    type : (en : "Nature of the work", no : "Arbeidets art", nn : "Arbeidets art"),
+    start-date : (en : "Start date", no : "Startdato", nn : "Startdato"),
+    scope : (en : "Scope", no : "Omfang", nn : "Omfang"),
     content : (en : "Content", no :"Innhold", nn:"Innhald"),
-    link-language: (en : "Norwegian", no : "English", nn : "English"),
+    link-language : (en : "Norwegian", no : "English", nn : "English"),
     link-other-language {
       en: (en : "Link to norwegian version", no : "Link to english version", nn : "Link to english version"),
       no: (en : "Lenke til norsk versjon", no : "Lenke til engelsk versjon", nn : "Lenke til engelsk versjon"),
       nn: (en : "Lenke til norsk versjon", no : "Lenke til engelsk versjon", nn : "Lenke til engelsk versjon")
-    }
+    },
+    nodata : (en : "No data found", no : "Ingen data funnet", nn : "Ingen data funnet")
   }
 
 }

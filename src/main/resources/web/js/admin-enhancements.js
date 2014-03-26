@@ -2484,7 +2484,7 @@ function handleAjaxSaveErrors(xhr, textStatus) {
     } else {
       var msg = vrtxAdmin.serverFacade.error(xhr, textStatus, false);
       if(msg === "RE_AUTH") {
-        reAuthenticateRetokenizeForms();
+        reAuthenticateRetokenizeForms(true);
       } else if(msg === "LOCKED") {
         var d = new VrtxConfirmDialog({
           msg: vrtxAdm.serverFacade.errorMessages.lockStolen.replace(/XX/, vrtxAdm.lockedBy),
@@ -2692,13 +2692,15 @@ function ajaxSaveAsCopy() {
   });
 }
 
-function reAuthenticateRetokenizeForms() {  
+function reAuthenticateRetokenizeForms(isEditorSave) {  
   // Open reauth dialog
   var d = new VrtxHtmlDialog({
     name: "reauth-open",
-    html: vrtxAdmin.serverFacade.errorMessages.sessionInvalid,
-    title: vrtxAdmin.serverFacade.errorMessages.sessionInvalidTitle,
-    onOk: function() { // Log in          
+    html: isEditorSave ? vrtxAdmin.serverFacade.errorMessages.sessionInvalidSave
+                       : vrtxAdmin.serverFacade.errorMessages.sessionInvalid,
+    title: isEditorSave ? vrtxAdmin.serverFacade.errorMessages.sessionInvalidTitleSave
+                        : vrtxAdmin.serverFacade.errorMessages.sessionInvalidTitle,
+    onOk: function() { // Log in      
       // Loading..
       var d2 = new VrtxLoadingDialog({title: vrtxAdmin.serverFacade.errorMessages.sessionWaitReauthenticate});
       d2.open();
@@ -2719,7 +2721,7 @@ function reAuthenticateRetokenizeForms() {
             if(xhr.status === 0) {
               setTimeout(self, timerDelay);
             } else {
-              retokenizeFormsOpenSaveDialog(d2);
+              retokenizeFormsOpenSaveDialog(d2, isEditorSave);
             }
           }
         });
@@ -2735,9 +2737,9 @@ function reAuthenticateRetokenizeForms() {
   cancelBtnSpan.unwrap();
 }
 
-function retokenizeFormsOpenSaveDialog(d2) {
-  // Repopulate tokens
-  var current = $("form#editor input[name='csrf-prevention-token']");
+function retokenizeFormsOpenSaveDialog(d2, isEditorSave) {
+  // Repopulate all tokens
+  var current = $("input[name='csrf-prevention-token']");
   var currentLen = current.length;
   
   $.ajax({
@@ -2746,7 +2748,7 @@ function retokenizeFormsOpenSaveDialog(d2) {
     cache: true,
     dataType: "html",
     success: function (results, status, resp) {
-      var updated = $($.parseHTML(results)).find("form#editor input[name='csrf-prevention-token']");
+      var updated = $($.parseHTML(results)).find("input[name='csrf-prevention-token']");
       for(var i = 0; i < currentLen; i++) {
         current[i].value = updated[i].value;
       }
@@ -2757,19 +2759,32 @@ function retokenizeFormsOpenSaveDialog(d2) {
       // Open save dialog
       var d = new VrtxHtmlDialog({
         name: "reauth-save",
-        html: vrtxAdmin.serverFacade.errorMessages.sessionValidated,
+        html: isEditorSave ? vrtxAdmin.serverFacade.errorMessages.sessionValidatedSave 
+                           : vrtxAdmin.serverFacade.errorMessages.sessionValidated,
         title: vrtxAdmin.serverFacade.errorMessages.sessionValidatedTitle,
         onOk: function() {
           // Trigger save
-          vrtxAdmin.editorSaveButton.click();
+          if(isEditorSave) {
+            vrtxAdmin.editorSaveButton.click();
+          }
         },
-        btnTextOk: vrtxAdmin.serverFacade.errorMessages.sessionValidatedOk
+        btnTextOk: isEditorSave ? vrtxAdmin.serverFacade.errorMessages.sessionValidatedOkSave
+                                : vrtxAdmin.serverFacade.errorMessages.sessionValidatedOk
       });
       d.open();
     },
     error: function (xhr, textStatus, errMsg) {
       d2.close();
-      handleAjaxSaveErrors(xhr, textStatus);
+      if(isEditorSave) {
+        handleAjaxSaveErrors(xhr, textStatus);
+      } else {
+        var msg = vrtxAdmin.serverFacade.error(xhr, textStatus, true);
+        if(msg === "RE_AUTH") {
+          reAuthenticateRetokenizeForms(false);
+        } else {
+          vrtxAdmin.displayErrorMsg(msg);
+        }
+      }
     }
   });
 }
@@ -3736,7 +3751,12 @@ VrtxAdmin.prototype.serverFacade = {
       dataType: type,
       success: callbacks.success,
       error: function (xhr, textStatus) {
-        vrtxAdmin.displayErrorMsg(vrtxAdmin.serverFacade.error(xhr, textStatus, true));
+        var msg = vrtxAdmin.serverFacade.error(xhr, textStatus, true);
+        if(msg === "RE_AUTH") {
+          reAuthenticateRetokenizeForms(false);
+        } else {
+          vrtxAdmin.displayErrorMsg(msg);
+        }
         if (callbacks.error) {
           callbacks.error(xhr, textStatus);
         }
@@ -3767,7 +3787,12 @@ VrtxAdmin.prototype.serverFacade = {
       contentType: contentType,
       success: callbacks.success,
       error: function (xhr, textStatus) {
-        vrtxAdmin.displayErrorMsg(vrtxAdmin.serverFacade.error(xhr, textStatus, true));
+        var msg = vrtxAdmin.serverFacade.error(xhr, textStatus, true);
+        if(msg === "RE_AUTH") {
+          reAuthenticateRetokenizeForms(false);
+        } else {
+          vrtxAdmin.displayErrorMsg(msg);
+        }
         if (callbacks.error) {
           callbacks.error(xhr, textStatus);
         }
@@ -3805,7 +3830,7 @@ VrtxAdmin.prototype.serverFacade = {
         url: vrtxAdmin.rootUrl + "/themes/default/images/globe.png?" + (+new Date()),
         async: false,
         success: function (results, status, resp) { // Online - Re-authentication needed
-          msg = useStatusCodeInMsg ? serverFacade.errorMessages.sessionInvalid : "RE_AUTH";
+          msg = "RE_AUTH";
         },
         error: function (xhr, textStatus) {         // Not Online
           msg = serverFacade.errorMessages.offline;

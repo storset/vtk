@@ -128,7 +128,7 @@ resourcetype external-work-listing {
             [call "comp:introduction"]
             [call "json:field" {"select":"content"}]
             [if ! settings.services.externalWorkListing ]
-              No external service available
+              <p>No external service available</p>
             [else]
               [def areacode document.properties.areacode]
 
@@ -144,8 +144,7 @@ resourcetype external-work-listing {
               [def unitResponse url-as-json(unitURL) ]
 
               [if unitResponse.errorMessage]
-                Unable to look up unit with areacode [val areacode]:
-                [val unitResponse.errorMessage]
+                <p>Unable to look up unit with areacode [val areacode]: [val unitResponse.errorMessage]</p>
               [else]
                 [def unit unitResponse.payload]
                 [def serviceURL replace(settings.services.externalWorkListing,
@@ -154,9 +153,8 @@ resourcetype external-work-listing {
                 [def response url-as-json(serviceURL) ]
 
                 [if response.errorMessage]
-                  Unable to look up external work listing for areacode
-                  [val areacode]: [val response.errorMessage]
-                  Error communicating with backend: [val response.errorMessage]
+                  <p>Unable to look up external work listing for areacode [val areacode]: [val response.errorMessage]</p>
+                  <p>Error communicating with backend: [val response.errorMessage]</p>
                 [else]
                   <div id="vrtx-external-work-tabs">
                     <ul>

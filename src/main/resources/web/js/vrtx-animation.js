@@ -13,13 +13,14 @@ var VrtxAnimationInterface = dejavu.Interface.declare({
   $name: "VrtxAnimationInterface",
   __opts: {},
   __prepareHorizontalMove: function() {},
-  __horizontalMove: function() {},
-  update: function(opts) {},
-  updateElem: function(elem) {},
+  __horizontalMove: function(left, easing, afterSp) {},
+  __verticalMove: function(fn, easing, afterSp) {},
   rightIn: function() {},
   leftOut: function() {},
   topDown: function() {},
-  bottomUp: function() {}
+  bottomUp: function() {},
+  update: function(opts) {},
+  updateElem: function(elem) {}
 });
  
 var VrtxAnimation = dejavu.Class.declare({
@@ -59,12 +60,6 @@ var VrtxAnimation = dejavu.Class.declare({
       if(animation.__opts[afterSp]) animation.__opts[afterSp](animation);
     });
   },
-  update: function(opts) {
-    this.__opts = opts;
-  },
-  updateElem: function(elem) {
-    this.__opts.elem = elem;
-  },
   rightIn: function() {
     var width = this.__prepareHorizontalMove();
     this.__opts.elem.css("marginLeft", -width);
@@ -79,5 +74,11 @@ var VrtxAnimation = dejavu.Class.declare({
   },
   bottomUp: function() {
     this.__verticalMove("slideUp", "easeOut", "afterOut");
+  },
+  update: function(opts) {
+    this.__opts = opts;
+  },
+  updateElem: function(elem) {
+    this.__opts.elem = elem;
   }
 });

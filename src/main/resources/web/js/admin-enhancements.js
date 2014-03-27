@@ -3463,36 +3463,28 @@ VrtxAdmin.prototype.completeSimpleFormAsync = function completeSimpleFormAsync(o
                 opts.fnComplete(resultElm, form, url, link);
               }
             };
-            if(opts.rowFromFormAnimateOut || opts.rowCheckedAnimateOut) {
+            if(vrtxAdm.animateTableRows && (opts.rowFromFormAnimateOut || opts.rowCheckedAnimateOut)) {
               var trs = opts.rowFromFormAnimateOut ? [form.closest("tr")] : form.find("tr")
                                                                                 .filter(function(i) { 
                                                                                   return $(this).find("td.checkbox input:checked").length }
                                                                                 );
-              if (vrtxAdm.animateTableRows) {
-                var futureAnims = [];
-                for(var i = 0, len = trs.length; i < len; i++) {
-                  var tr = $(trs[i]);
-                  if (vrtxAdm.animateTableRows) {
-                    tr.prepareTableRowForSliding().hide(0).finish().slideDown(0, "linear", function() {
-                      var animA = tr.find("td").finish().animate({ 
-                          paddingTop: '0px',
-                          paddingBottom: '0px' 
-                        },
-                        vrtxAdm.transitionDropdownSpeed,
-                        vrtxAdm.transitionEasingSlideUp
-                      );
-                      var animB = tr.slideUp(vrtxAdm.transitionDropdownSpeed, vrtxAdm.transitionEasingSlideUp);
-                      futureAnims.push(animA);
-                      futureAnims.push(animB);
-                    });
-                  }
-                }
-                _$.when.apply(_$, futureAnims).done(function () {
-                  fnInternalComplete();
+              var futureAnims = [];
+              for(var i = 0, len = trs.length; i < len; i++) {
+                var tr = $(trs[i]);
+                tr.prepareTableRowForSliding().hide(0).finish().slideDown(0, "linear", function() {
+                  var animA = tr.find("td").finish().animate({ 
+                      paddingTop: '0px',
+                      paddingBottom: '0px' 
+                    },
+                    vrtxAdm.transitionDropdownSpeed,
+                    vrtxAdm.transitionEasingSlideUp
+                  );
+                  var animB = tr.slideUp(vrtxAdm.transitionDropdownSpeed, vrtxAdm.transitionEasingSlideUp);
+                  futureAnims.push(animA);
+                  futureAnims.push(animB);
                 });
-              } else {
-                fnInternalComplete();
               }
+              _$.when.apply(_$, futureAnims).done(fnInternalComplete);
             } else {
               fnInternalComplete();
             }
@@ -4162,7 +4154,7 @@ jQuery.cachedScript = function (url, options) {
   return jQuery.ajax(options);
 };
 
-$.loadCSS = function(url) {
+jQuery.loadCSS = function(url) {
   var ss = document.styleSheets;
   for (var i = 0, len = ss.length; i < len; i++) {
     if (ss[i].href == url) return;

@@ -26,10 +26,9 @@ var VrtxAnimation = dejavu.Class.declare({
   $name: "VrtxAnimation",
   $implements: [VrtxAnimationInterface],
   $constants: {
-    // TODO: remove vrtxAdmin dependency
-    animationSpeed: (typeof vrtxAdmin !== "undefined" && vrtxAdmin.isMobileWebkitDevice) ? 0 : 200,
-    easeIn: (typeof vrtxAdmin !== "undefined" && !(vrtxAdmin.isIE && vrtxAdmin.browserVersion < 10) && !vrtxAdmin.isMobileWebkitDevice) ? "easeInQuad" : "linear",
-    easeOut: (typeof vrtxAdmin !== "undefined" && !(vrtxAdmin.isIE && vrtxAdmin.browserVersion < 10) && !vrtxAdmin.isMobileWebkitDevice) ? "easeOutQuad" : "linear"
+    animationSpeed: /(iphone|ipad|android)/.test(navigator.userAgent.toLowerCase()) ? 0 : 200,
+    easeIn: !/msie (8|9.)/.test(navigator.userAgent.toLowerCase()) ? "easeInQuad" : "linear",
+    easeOut: !/msie (8|9.)/.test(navigator.userAgent.toLowerCase()) ? "easeOutQuad" : "linear"
   },
   __opts: {},
   initialize: function(opts) {
@@ -41,16 +40,23 @@ var VrtxAnimation = dejavu.Class.declare({
     }
     return this.__opts.elem.outerWidth(true);
   },
-  __horizontalMove: function(left, easing) {
+  __horizontalMove: function(left, easing, afterSp) {
     var animation = this;
     animation.__opts.elem.animate({
       "marginLeft": left + "px"
-    }, animation.__opts.animationSpeed || animation.$static.animationSpeed, easing, function() {
+    }, animation.__opts.animationSpeed || animation.$static.animationSpeed, this.__opts[easing] || this.$static[easing], function() {
       if(animation.__opts.outerWrapperElem) animation.__opts.outerWrapperElem.removeClass("overflow-hidden");
       if(animation.__opts.after) animation.__opts.after(animation);
-      // TODO: own closures pr. direction if needed also for horizontal animation
-      if(animation.__opts.afterIn) animation.__opts.afterIn(animation);
-      if(animation.__opts.afterOut) animation.__opts.afterOut(animation);
+      if(animation.__opts[afterSp]) animation.__opts[afterSp](animation);
+    });
+  },
+  __verticalMove: function(fn, easing, afterSp) {
+    var animation = this;
+    animation.__opts.elem[fn](
+        animation.__opts.animationSpeed || animation.$static.animationSpeed, 
+        animation.__opts[easing] || animation.$static[easing], function() {
+      if(animation.__opts.after) animation.__opts.after(animation);
+      if(animation.__opts[afterSp]) animation.__opts[afterSp](animation);
     });
   },
   update: function(opts) {
@@ -62,28 +68,16 @@ var VrtxAnimation = dejavu.Class.declare({
   rightIn: function() {
     var width = this.__prepareHorizontalMove();
     this.__opts.elem.css("marginLeft", -width);
-    this.__horizontalMove(0, this.__opts.easeIn || this.$static.easeIn);
+    this.__horizontalMove(0, "easeIn", "afterIn");
   },
   leftOut: function() {
     var width = this.__prepareHorizontalMove();
-    this.__horizontalMove(-width, this.__opts.easeOut || this.$static.easeOut);
+    this.__horizontalMove(-width, "easeOut", "afterOut");
   },
   topDown: function() {
-    var animation = this;
-    animation.__opts.elem.slideDown(
-        animation.__opts.animationSpeed || animation.$static.animationSpeed,
-        animation.__opts.easeIn || animation.$static.easeIn, function() {
-      if(animation.__opts.after) animation.__opts.after(animation);
-      if(animation.__opts.afterIn) animation.__opts.afterIn(animation);
-    });
+    this.__verticalMove("slideDown", "easeIn", "afterIn");
   },
   bottomUp: function() {
-    var animation = this;
-    animation.__opts.elem.slideUp(
-        animation.__opts.animationSpeed || animation.$static.animationSpeed, 
-        animation.__opts.easeOut || animation.$static.easeOut, function() {
-      if(animation.__opts.after) animation.__opts.after(animation);
-      if(animation.__opts.afterOut) animation.__opts.afterOut(animation);
-    });
+    this.__verticalMove("slideUp", "easeOut", "afterOut");
   }
 });

@@ -5,7 +5,7 @@
  *  
  *  * Requires Dejavu OOP library
  *
- *  TODO: Progressively support CSS3 animations (requires Modernizr)
+ *  TODO: Progressively support CSS3 animations
  *
  */
  
@@ -38,59 +38,134 @@ var VrtxAnimation = dejavu.Class.declare({
           return propArray[i];
         }
       }
+      return null;
     })()
   },
   __opts: {},
   initialize: function(opts) {
     this.__opts = opts;
+    var animation = this;
+    animation.__opts.cssTransitionEnd = (function () {
+      var props = {
+        'WebkitTransform': 'webkitTransitionEnd',
+        'MozTransform': 'transitionend',
+        'OTransform': 'oTransitionEnd otransitionend',
+        'msTransform': 'MSTransitionEnd',
+        'transform': 'transitionend'
+      };
+      return props.hasOwnProperty(animation.$static.cssTransform) ? props[animation.$static.cssTransform] : null;
+    })();
   },
   __prepareMove: function() {
     if(this.__opts.outerWrapperElem && !this.__opts.outerWrapperElem.hasClass("overflow-hidden")) {
       this.__opts.outerWrapperElem.addClass("overflow-hidden");
     }
-    return [this.__opts.elem.outerWidth(true), this.__opts.elem.outerHeight(true)];
+    return [this.__opts.elem.outerWidth(true), this.__opts.elem.height()];
   },
   __afterMove: function(afterSp) {
     if(this.__opts.outerWrapperElem) this.__opts.outerWrapperElem.removeClass("overflow-hidden");
     if(this.__opts.after) this.__opts.after(this);
     if(this.__opts[afterSp]) this.__opts[afterSp](this);
   },
-  __horizontalMove: function(fn, easing, afterSp) {
+  __horizontalMove: function(dir) {
     var width = this.__prepareMove()[0];
-    var left = (fn === "slideIn") ? 0 : -width;
-    if(fn === "slideIn") {
+
+    if(dir === "in") {
       this.__opts.elem.css("marginLeft", -width);
+      var left = 0;
+      var afterSp = "afterIn";
+    } else {
+      var left = -width;
+      var afterSp = "afterOut";
+    }
+
+    var animation = this;
+    if(true) {
+      var easing = (dir === "in") ? "easeIn" : "easeOut";
+      var speed = animation.__opts.animationSpeed || animation.$static.animationSpeed;
+      animation.__opts.elem.animate({
+        "marginLeft": left + "px"
+      }, speed, animation.__opts[easing] || animation.$static[easing], function() {
+        animation.__afterMove(afterSp);
+      });
+    } else {
+      var easing = (dir === "in") ? "ease-in" : "ease-out";
+      var speed = animation.__opts.animationSpeed || animation.$static.animationSpeed;
+      var wait = setTimeout(function() {
+        animation.__opts.elem.css({
+          "transition": "all " + speed + "ms " + easing,
+          "-webkit-transition": "all  " + speed + "ms " + easing,
+          "-moz-transition": "all " + speed + "ms " + easing,
+          "-o-transition": "all " + speed + "ms " + easing,
+          "-ms-transition": "all  " + speed + "ms " + easing,
+          "marginLeft": left + "px"
+        });
+        document.addEventListener(animation.__opts.cssTransitionEnd, function () {
+          document.removeEventListener(animation.__opts.cssTransitionEnd, arguments.callee);
+          animation.__afterMove(afterSp);
+        }, false);
+      }, 5);
+    }
+  },
+  __verticalMove: function(dir) {
+    var height = this.__prepareMove()[1];
+    
+    if(dir === "in") {
+      var top = height;
+      var afterSp = "afterIn";
+    } else {
+      var top = 0;
+      var afterSp = "afterOut";
     }
     
     var animation = this;
-    animation.__opts.elem.animate({
-      "marginLeft": left + "px"
-    }, animation.__opts.animationSpeed || animation.$static.animationSpeed,
-      animation.__opts[easing] || animation.$static[easing], function() {
-      animation.__afterMove(afterSp);
-    });
-  },
-  __verticalMove: function(fn, easing, afterSp) {
-    var height = this.__prepareMove()[1];
-    
-    var animation = this;
-    animation.__opts.elem[fn](
-        animation.__opts.animationSpeed || animation.$static.animationSpeed, 
-        animation.__opts[easing] || animation.$static[easing], function() {
-      animation.__afterMove(afterSp);
-    });
+    if(true) {
+      var easing = (dir === "in") ? "easeIn" : "easeOut";
+      var speed = animation.__opts.animationSpeed || animation.$static.animationSpeed;
+      animation.__opts.elem[fn](
+         speed, animation.__opts[easing] || animation.$static[easing], function() {
+        animation.__afterMove(afterSp);
+      });
+    } else {
+      var easing = (dir === "in") ? "ease-in" : "ease-out";
+      var elm = animation.__opts.elem.is("tr") ? animation.__opts.elem.find('td > div')
+                                               : animation.__opts.elem;
+      if(dir === "in") {
+        animation.__opts.elem.show();
+        elm.show();
+        top = elm.height();
+        elm.css("height", "0");
+      }
+      var speed = animation.__opts.animationSpeed || animation.$static.animationSpeed;
+      var wait = setTimeout(function() {
+        elm.css({
+          "transition": "all " + speed + "ms " + easing,
+          "-webkit-transition": "all  " + speed + "ms " + easing,
+          "-moz-transition": "all " + speed + "ms " + easing,
+          "-o-transition": "all " + speed + "ms " + easing,
+          "-ms-transition": "all " + speed + "ms " + easing,
+          "overflow": "hidden",
+          "height": top
+        });
+        document.addEventListener(animation.__opts.cssTransitionEnd, function () {
+          document.removeEventListener(animation.__opts.cssTransitionEnd, arguments.callee);
+          if(dir === "out") animation.__opts.elem.hide();
+          animation.__afterMove(afterSp);
+        }, false);
+      }, 5);
+    }
   },
   rightIn: function() {
-    this.__horizontalMove("slideIn", "easeIn", "afterIn");
+    this.__horizontalMove("in");
   },
   leftOut: function() {
-    this.__horizontalMove("slideOut", "easeOut", "afterOut");
+    this.__horizontalMove("out");
   },
   topDown: function() {
-    this.__verticalMove("slideDown", "easeIn", "afterIn");
+    this.__verticalMove("in");
   },
   bottomUp: function() {
-    this.__verticalMove("slideUp", "easeOut", "afterOut");
+    this.__verticalMove("out");
   },
   update: function(opts) {
     this.__opts = opts;

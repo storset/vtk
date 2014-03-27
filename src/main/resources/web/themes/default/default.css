@@ -891,18 +891,18 @@ ul.publishing-document {
 }
 
 .forms-new ul.button-row li a,
-.forms-new ul.button-row li input[type='text'],
+.forms-new ul.button-row li input[type='submit'],
 .forms-new ul.button-row-small li a,
-.forms-new ul.button-row-small li input[type='text'] {
+.forms-new ul.button-row-small li input[type='submit'] {
   -webkit-border-radius: 0;
   -moz-border-radius: 0;
   border-radius: 0;
 }
 
 ul.button-row li.first a,
-ul.button-row li.first input[type='text'],
+ul.button-row li.first input[type='submit'],
 ul.button-row-small li.first a,
-ul.button-row-small li.first input[type='text'] {
+ul.button-row-small li.first input[type='submit'] {
   -webkit-border-top-left-radius: 5px;
   -webkit-border-bottom-left-radius: 5px;
   -moz-border-radius-topleft: 5px;
@@ -912,9 +912,9 @@ ul.button-row-small li.first input[type='text'] {
 }
 
 ul.button-row li.last a,
-ul.button-row li.last input[type='text'],
+ul.button-row li.last input[type='submit'],
 ul.button-row-small li.last a,
-ul.button-row-small li.last input[type='text'] {
+ul.button-row-small li.last input[type='submit'] {
   -webkit-border-top-right-radius: 5px;
   -webkit-border-bottom-right-radius: 5px;
   -moz-border-radius-topright: 5px;

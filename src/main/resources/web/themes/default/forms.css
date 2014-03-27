@@ -75,7 +75,7 @@
 .button-row li > a,
 .button-row li input[type='submit'],
 .button-row-small li > a,
-.button-row-small li input[type='text'],
+.button-row-small li input[type='submit'],
 .forms-new .ui-dialog .ui-dialog-buttonpane button,
 .forms-new .vrtx-button,
 .forms-new .vrtx-focus-button,
@@ -108,20 +108,19 @@
   padding: 0;
 }
 
-.button-row-small li a,
-.button-row-small li input[type="submit"],
+.button-row-small li > a,
 .forms-new .vrtx-button-small {
   padding: 3px 13px 4px;
 }
 
-.button-row li a:hover,
-.button-row li a:focus,
+.button-row li > a:hover,
+.button-row li > a:focus,
 .button-row li input[type="submit"]:hover,
 .button-row li input[type="submit"]:focus,
-.button-row-small a:hover,
-.button-row-small a:focus,
-.button-row-small input[type="submit"]:hover,
-.button-row-small input[type="submit"]:focus,
+.button-row-small li > a:hover,
+.button-row-small li > a:focus,
+.button-row-small li input[type="submit"]:hover,
+.button-row-small li input[type="submit"]:focus,
 .forms-new .ui-dialog .ui-dialog-buttonpane button:hover,
 .forms-new .ui-dialog .ui-dialog-buttonpane button:focus,
 .forms-new .vrtx-button:hover,
@@ -140,18 +139,37 @@
   padding: 6px 16px 7px;
 }
 
-.button-row li form input[type="submit"]:hover,
-.button-row li form input[type="submit"]:focus {
-  padding: 7px 16px 8px;  
-}
-
-.button-row-small a:hover,
-.button-row-small a:focus,
+.button-row-small li > a:hover,
+.button-row-small li > a:focus,
 .forms-new .vrtx-button-small:hover,
 .forms-new .vrtx-button-small:focus,
 .forms-new .vrtx-button-small.hover {
   padding: 4px 14px 5px;
 }
+
+/* Forms in button row */
+.button-row li input[type="submit"] {
+  padding-top: 6px;
+  padding-bottom: 7px;
+}
+
+.button-row li input[type="submit"]:hover,
+.button-row li input[type="submit"]:focus {
+  padding-top: 7px;
+  padding-bottom: 8px;
+}
+
+.button-row-small li input[type="submit"] {
+  padding-top: 4px;
+  padding-bottom: 5px;
+}
+
+.button-row-small li input[type="submit"]:hover,
+.button-row-small input[type="submit"]:focus {
+  padding-top: 5px;
+  padding-bottom: 6px;
+}
+/* ^ Forms in button row */
 
 .forms-new .ui-dialog .ui-dialog-buttonpane button:hover,
 .forms-new .ui-dialog .ui-dialog-buttonpane button:focus,

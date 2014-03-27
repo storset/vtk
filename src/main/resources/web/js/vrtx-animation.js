@@ -122,7 +122,7 @@ var VrtxAnimation = dejavu.Class.declare({
     if(true) {
       var easing = (dir === "in") ? "easeIn" : "easeOut";
       var speed = animation.__opts.animationSpeed || animation.$static.animationSpeed;
-      animation.__opts.elem[fn](
+      animation.__opts.elem[(dir === "in") ? "slideDown" : "slideUp"](
          speed, animation.__opts[easing] || animation.$static[easing], function() {
         animation.__afterMove(afterSp);
       });

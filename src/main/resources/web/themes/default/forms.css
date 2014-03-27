@@ -165,7 +165,7 @@
 }
 
 .button-row-small li input[type="submit"]:hover,
-.button-row-small input[type="submit"]:focus {
+.button-row-small li input[type="submit"]:focus {
   padding-top: 5px;
   padding-bottom: 6px;
 }
@@ -208,7 +208,7 @@
 
 /* Special button */
 
-.button-row li.save a,
+.button-row li.save > a,
 .button-row li.save input[type="submit"] {
   border: none;
 }

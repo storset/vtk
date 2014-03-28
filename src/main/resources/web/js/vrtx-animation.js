@@ -99,7 +99,7 @@ var VrtxAnimation = dejavu.Class.declare({
           "-moz-transition": "all " + speed + "ms " + easing,
           "-o-transition": "all " + speed + "ms " + easing,
           "-ms-transition": "all  " + speed + "ms " + easing,
-          "marginLeft": left + "px"
+          "marginLeft": left
         });
         document.addEventListener(animation.__opts.cssTransitionEnd, function () {
           document.removeEventListener(animation.__opts.cssTransitionEnd, arguments.callee);

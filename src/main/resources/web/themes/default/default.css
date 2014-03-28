@@ -3258,14 +3258,14 @@ div.expandedForm,
 div.solidExpandedForm,
 tr.expandedForm td {
   margin: 5px -20px 14px -20px !important;
-  padding: 14px 19px !important;
+  padding: 14px 19px;
   background-color: #e8e8e8 !important;
   border: 1px solid #d9d9d9 !important;
 }
 
 div.globalmenu {
   margin: 0 0 20px 0 !important;
-  padding: 13px 15px !important;
+  padding: 13px 15px;
   background-color: #e8e8e8;
   border: 1px solid #d9d9d9;
   clear: left;

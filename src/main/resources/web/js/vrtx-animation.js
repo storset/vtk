@@ -135,7 +135,14 @@ var VrtxAnimation = dejavu.Class.declare({
         animation.__opts.elem.show();
         elm.show();
         top = elm.height();
+        paddingTop = elm.css("paddingTop");
+        paddingBottom = elm.css("paddingBottom");
+        elm.css("paddingTop", "0");
+        elm.css("paddingBottom", "0");
         elm.css("height", "0");
+      } else {
+        paddingTop = 0;
+        paddingBottom = 0;
       }
       var speed = animation.__opts.animationSpeed || animation.$static.animationSpeed;
       var wait = setTimeout(function() {
@@ -146,7 +153,9 @@ var VrtxAnimation = dejavu.Class.declare({
           "-o-transition": "all " + speed + "ms " + easing,
           "-ms-transition": "all " + speed + "ms " + easing,
           "overflow": "hidden",
-          "height": top
+          "height": top,
+          "paddingTop": paddingTop,
+          "paddingBottom": paddingBottom
         });
         document.addEventListener(animation.__opts.cssTransitionEnd, function () {
           document.removeEventListener(animation.__opts.cssTransitionEnd, arguments.callee);

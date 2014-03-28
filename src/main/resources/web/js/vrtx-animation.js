@@ -125,13 +125,10 @@ var VrtxAnimation = dejavu.Class.declare({
         animation.__opts.elem.show();
         elm.show();
         elm.css("marginTop", -height);
-        elm.css("opacity", 0);
         var top = 0;
-        var opacity = 1;
       } else {
         var easing = "cubic-bezier(0.03, 0.94, 0.96, 0.83)"; // http://cubic-bezier.com/#.03,.94,.96,.83
         var top = -height;
-        var opacity = 0;
       }
       var uniqueFn = {};
       var unique = +new Date();
@@ -141,16 +138,21 @@ var VrtxAnimation = dejavu.Class.declare({
         var transition = animation.$static.cssTransition;
         $("#hmw-" + unique + " > div").css({
           transition: "all " + speed + "ms " + easing,
-          "marginTop": top + "px",
-          "opacity": opacity
+          "marginTop": top + "px"
         });
         uniqueFn[unique] = function() {
           document.removeEventListener(animation.__opts.cssTransitionEnd, uniqueFn[unique]);
+          var hmw = $("#hmw-" + unique);
+          var hmwContent = hmw.find("> div");
           if(dir === "out") {
             animation.__opts.elem.hide();
-            $("#hmw-" + unique).remove();
+            if(!hmwContent.length) {
+              hmw.remove();
+            } else {
+              hmwContent.unwrap();
+            }
           } else {
-            $("#hmw-" + unique + " > div").unwrap();
+            hmwContent.unwrap();
           }
           animation.__afterMove();
         };

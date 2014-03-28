@@ -80,7 +80,7 @@ var VrtxAnimation = dejavu.Class.declare({
     }
 
     var animation = this;
-    if(true) {
+    if(animation.$static.cssTransform == null) {
       var easing = (dir === "in") ? "easeIn" : "easeOut";
       var speed = animation.__opts.animationSpeed || animation.$static.animationSpeed;
       animation.__opts.elem.animate({
@@ -89,7 +89,7 @@ var VrtxAnimation = dejavu.Class.declare({
         animation.__afterMove(afterSp);
       });
     } else {
-      var easing = (dir === "in") ? "ease-in" : "ease-out";
+      var easing = (dir === "in") ? "cubic-bezier(0.17, 0.04, 0.03, 0.94)" : "cubic-bezier(0.17, 0.04, 0.03, 0.94)";
       var speed = animation.__opts.animationSpeed || animation.$static.animationSpeed;
       var wait = setTimeout(function() {
         animation.__opts.elem.css({
@@ -119,7 +119,7 @@ var VrtxAnimation = dejavu.Class.declare({
     }
     
     var animation = this;
-    if(true) {
+    if(animation.$static.cssTransform == null) {
       var easing = (dir === "in") ? "easeIn" : "easeOut";
       var speed = animation.__opts.animationSpeed || animation.$static.animationSpeed;
       animation.__opts.elem[(dir === "in") ? "slideDown" : "slideUp"](
@@ -127,7 +127,7 @@ var VrtxAnimation = dejavu.Class.declare({
         animation.__afterMove(afterSp);
       });
     } else {
-      var easing = (dir === "in") ? "ease-in" : "ease-out";
+      var easing = (dir === "in") ? "cubic-bezier(0.17, 0.04, 0.03, 0.94)" : "cubic-bezier(0.17, 0.04, 0.03, 0.94)";
       var elm = animation.__opts.elem.is("tr") ? animation.__opts.elem.find('td > div')
                                                : animation.__opts.elem;
       if(dir === "in") {

@@ -1,9 +1,10 @@
 /*
  *  VrtxAnimation (by USIT/GPL|GUAN)
- *  
+ *
  *  PE uses CSS for moving pixels in animations (we like fine-grained control over it with JS and after-functions)
+ *  TODO: transfer minus-right/left-margin from element to wrapper until animation ends and handle case where element
+ *        initially have margin-top
  *  TODO: PE support CSS tranform2d and transform3d (with GPU-accel.)
- *  TODO: transfer minus-margin from element to wrapper until animation ends
  *
  *  * Requires Dejavu OOP library
  *

@@ -7,9 +7,8 @@
  *  
  *  * Requires Dejavu OOP library
  *
- *  Horizontal [rightIn() + leftOut()] - hides content and marginLeft it left (show) and then right (hide)
- *  Vertical [topDown() + bottomUp()] - height and padding down (show) and then up (hide)
- *                                      TODO: Same strategy as horizontal will make vertical smoother
+ *  Horizontal [rightIn() + leftOut()] - hides content and animates marginLeft in CSS/JS
+ *  Vertical [topDown() + bottomUp()] - hides content and animates marginTop in CSS and uses jQuery slideUp/slideDown in JS
  */
  
 var VrtxAnimationInterface = dejavu.Interface.declare({

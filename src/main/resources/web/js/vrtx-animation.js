@@ -46,6 +46,16 @@ var VrtxAnimation = dejavu.Class.declare({
   initialize: function(opts) {
     this.__opts = opts;
     var animation = this;
+    animation.__opts.cssTransition = (function () {
+      var props = {
+        'WebkitTransform': '-webkit-transition',
+        'MozTransform': '-moz-transition',
+        'OTransform': '-o-transition',
+        'msTransform': '-ms-transition',
+        'transform': 'transition'
+      };
+      return props.hasOwnProperty(animation.$static.cssTransform) ? props[animation.$static.cssTransform] : null;
+    })();
     animation.__opts.cssTransitionEnd = (function () {
       var props = {
         'WebkitTransform': 'webkitTransitionEnd',
@@ -90,15 +100,12 @@ var VrtxAnimation = dejavu.Class.declare({
         animation.__afterMove(afterSp);
       });
     } else {
-      var easing = (dir === "in") ? "cubic-bezier(0.17, 0.04, 0.03, 0.94)" : "cubic-bezier(0.17, 0.04, 0.03, 0.94)";
+      var easing = (dir === "in") ? "cubic-bezier(0.17, 0.04, 0.03, 0.94)" : "cubic-bezier(0.03, 0.94, 0.96, 0.83)";
       var speed = animation.__opts.animationSpeed || animation.$static.animationSpeed;
+      var transition = animation.__opts.cssTransition;
       var wait = setTimeout(function() {
         animation.__opts.elem.css({
-          "transition": "all " + speed + "ms " + easing,
-          "-webkit-transition": "all  " + speed + "ms " + easing,
-          "-moz-transition": "all " + speed + "ms " + easing,
-          "-o-transition": "all " + speed + "ms " + easing,
-          "-ms-transition": "all  " + speed + "ms " + easing,
+          transition: "all " + speed + "ms " + easing,
           "marginLeft": left
         });
         document.addEventListener(animation.__opts.cssTransitionEnd, function () {
@@ -147,12 +154,9 @@ var VrtxAnimation = dejavu.Class.declare({
       }
       var speed = animation.__opts.animationSpeed || animation.$static.animationSpeed;
       var wait = setTimeout(function() {
+        var transition = animation.__opts.cssTransition;
         elm.css({
-          "transition": "all " + speed + "ms " + easing,
-          "-webkit-transition": "all  " + speed + "ms " + easing,
-          "-moz-transition": "all " + speed + "ms " + easing,
-          "-o-transition": "all " + speed + "ms " + easing,
-          "-ms-transition": "all " + speed + "ms " + easing,
+          transition: "all " + speed + "ms " + easing,
           "overflow": "hidden",
           "height": top,
           "paddingTop": paddingTop,

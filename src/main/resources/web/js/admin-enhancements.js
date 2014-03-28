@@ -1897,7 +1897,9 @@ function ajaxUploadPerform(opts, size) {
   }
   
   _$("#dialog-loading-content").append("<div id='dialog-uploading-bar' /><div id='dialog-uploading-percent'>&nbsp;</div>" + uploadDialogExtra + "<a id='dialog-uploading-abort' href='javascript:void(0);'>Avbryt</a>");
-  _$("<a id='dialog-uploading-focus' style='outline: none;' tabindex='-1' />").insertBefore("#dialog-uploading-abort")[0].focus();
+  _$("<a id='dialog-uploading-focus' style='outline: none;' tabindex='-1' />").insertBefore("#dialog-uploading-abort")
+  var focusElm = $("#dialog-uploading-focus");
+  if(focusElm.length) focusElm.focus();
   _$("#dialog-uploading-focus").keydown(function(e) {
     if (isKey(e, [vrtxAdm.keys.TAB])) { 
       $(this).next().addClass("tab-visible")[0].focus();

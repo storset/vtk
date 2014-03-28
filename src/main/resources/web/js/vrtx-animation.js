@@ -128,10 +128,10 @@ var VrtxAnimation = dejavu.Class.declare({
         animation.__afterMove(afterSp);
       });
     } else {
-      var easing = "cubic-bezier(0.17, 0.04, 0.03, 0.94)"; // http://cubic-bezier.com/#.17,.04,.03,.94
       var elm = animation.__opts.elem.is("tr") ? animation.__opts.elem.find('td > div')
                                                : animation.__opts.elem;
       if(dir === "in") {
+        var easing = "cubic-bezier(0.17, 0.04, 0.03, 0.94)"; // http://cubic-bezier.com/#.17,.04,.03,.94
         animation.__opts.elem.show();
         elm.show();
         top = elm.height();
@@ -141,6 +141,7 @@ var VrtxAnimation = dejavu.Class.declare({
         elm.css("paddingBottom", "0");
         elm.css("height", "0");
       } else {
+        var easing = "cubic-bezier(0.03, 0.94, 0.96, 0.83)"; // http://cubic-bezier.com/#.03,.94,.96,.83
         paddingTop = 0;
         paddingBottom = 0;
       }

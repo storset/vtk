@@ -1897,8 +1897,15 @@ function ajaxUploadPerform(opts, size) {
   }
   
   _$("#dialog-loading-content").append("<div id='dialog-uploading-bar' /><div id='dialog-uploading-percent'>&nbsp;</div>" + uploadDialogExtra + "<a id='dialog-uploading-abort' href='javascript:void(0);'>Avbryt</a>");
+<<<<<<< HEAD
   _$("<a id='dialog-uploading-focus' style='outline: none;' tabindex='-1' />").insertBefore("#dialog-uploading-abort")[0].focus();
   _$("#dialog-uploading-focus").keydown(function(e) {
+=======
+  _$("<a id='dialog-uploading-focus' style='outline: none;' tabindex='-1' />").insertBefore("#dialog-uploading-abort")
+  var focusElm = $("#dialog-uploading-focus");
+  if(focusElm.length) focusElm.focus();
+  focusElm.keydown(function(e) {
+>>>>>>> a61c3e2... VTK - reuse element
     if (isKey(e, [vrtxAdm.keys.TAB])) { 
       $(this).next().addClass("tab-visible")[0].focus();
       return false;

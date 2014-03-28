@@ -61,22 +61,22 @@ var VrtxAnimation = dejavu.Class.declare({
       })();
     }
   },
-  __prepareMove: function() {
+  __prepareMove: function(dir) {
     if(this.__opts.outerWrapperElem && !this.__opts.outerWrapperElem.hasClass("overflow-hidden")) {
       this.__opts.outerWrapperElem.addClass("overflow-hidden");
     }
+    this.__opts.afterSp = this.__opts[(dir === "in") ? "afterIn" : "afterOut"];
     return [this.__opts.elem.outerWidth(true), this.__opts.elem.height()];
   },
-  __afterMove: function(afterSp) {
+  __afterMove: function() {
     if(this.__opts.outerWrapperElem) this.__opts.outerWrapperElem.removeClass("overflow-hidden");
     if(this.__opts.after) this.__opts.after(this);
-    if(this.__opts[afterSp]) this.__opts[afterSp](this);
+    if(this.__opts.afterSp) this.__opts.afterSp(this);
   },
   __horizontalMove: function(dir) {
     var width = this.__prepareMove()[0];
     var left = (dir === "in") ? 0 : -width;
-    var afterSp = (dir === "in") ? "afterIn" : "afterOut";
-    
+
     if(dir === "in") {
       this.__opts.elem.css("marginLeft", -width);
     }
@@ -87,9 +87,7 @@ var VrtxAnimation = dejavu.Class.declare({
       var speed = animation.__opts.animationSpeed || animation.$static.animationSpeed;
       animation.__opts.elem.animate({
         "marginLeft": left + "px"
-      }, speed, animation.__opts[easing] || animation.$static[easing], function() {
-        animation.__afterMove(afterSp);
-      });
+      }, speed, animation.__opts[easing] || animation.$static[easing], animation.__afterMove);
     } else {
       var easing = (dir === "in") ? "cubic-bezier(0.17, 0.04, 0.03, 0.94)" : "cubic-bezier(0.03, 0.94, 0.96, 0.83)";
       var speed = animation.__opts.animationSpeed || animation.$static.animationSpeed;
@@ -101,7 +99,7 @@ var VrtxAnimation = dejavu.Class.declare({
         });
         document.addEventListener(animation.__opts.cssTransitionEnd, function () {
           document.removeEventListener(animation.__opts.cssTransitionEnd, arguments.callee);
-          animation.__afterMove(afterSp);
+          animation.__afterMove();
         }, false);
       }, 5);
     }
@@ -109,16 +107,13 @@ var VrtxAnimation = dejavu.Class.declare({
   __verticalMove: function(dir) {
     var height = this.__prepareMove()[1];
     var top = (dir === "in") ? height : 0;
-    var afterSp = (dir === "in") ? "afterIn" : "afterOut";
 
     var animation = this;
     if(animation.$static.cssTransform == null) {
       var easing = (dir === "in") ? "easeIn" : "easeOut";
       var speed = animation.__opts.animationSpeed || animation.$static.animationSpeed;
       animation.__opts.elem[(dir === "in") ? "slideDown" : "slideUp"](
-         speed, animation.__opts[easing] || animation.$static[easing], function() {
-        animation.__afterMove(afterSp);
-      });
+         speed, animation.__opts[easing] || animation.$static[easing], animation.__afterMove);
     } else {
       var elm = animation.__opts.elem.is("tr") ? animation.__opts.elem.find('td > div')
                                                : animation.__opts.elem;
@@ -148,7 +143,7 @@ var VrtxAnimation = dejavu.Class.declare({
         document.addEventListener(animation.__opts.cssTransitionEnd, function () {
           document.removeEventListener(animation.__opts.cssTransitionEnd, arguments.callee);
           if(dir === "out") animation.__opts.elem.hide();
-          animation.__afterMove(afterSp);
+          animation.__afterMove();
         }, false);
       }, 5);
     }

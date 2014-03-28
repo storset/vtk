@@ -144,9 +144,7 @@ var VrtxAnimation = dejavu.Class.declare({
         top = elm.height();
         paddingTop = elm.css("paddingTop");
         paddingBottom = elm.css("paddingBottom");
-        elm.css("paddingTop", "0");
-        elm.css("paddingBottom", "0");
-        elm.css("height", "0");
+        elm.css({"paddingTop": "0", "paddingBottom": "0", "height": "0"});
       } else {
         var easing = "cubic-bezier(0.03, 0.94, 0.96, 0.83)"; // http://cubic-bezier.com/#.03,.94,.96,.83
         paddingTop = 0;

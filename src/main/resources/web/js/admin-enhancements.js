@@ -1900,7 +1900,7 @@ function ajaxUploadPerform(opts, size) {
   _$("<a id='dialog-uploading-focus' style='outline: none;' tabindex='-1' />").insertBefore("#dialog-uploading-abort")
   var focusElm = $("#dialog-uploading-focus");
   if(focusElm.length) focusElm.focus();
-  _$("#dialog-uploading-focus").keydown(function(e) {
+  focusElm.keydown(function(e) {
     if (isKey(e, [vrtxAdm.keys.TAB])) { 
       $(this).next().addClass("tab-visible")[0].focus();
       return false;

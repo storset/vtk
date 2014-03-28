@@ -5,9 +5,9 @@
  *  
  *  * Requires Dejavu OOP library
  *
- *  Horizontal - hides content and marginLeft it left (show) and then right (hide)
- *  Vertical - height and padding down (show) and then up (hide)
- *             TODO: Same strategy as horizontal will make vertical smoother
+ *  Horizontal [rightIn() + leftOut()] - hides content and marginLeft it left (show) and then right (hide)
+ *  Vertical [topDown() + bottomUp()] - height and padding down (show) and then up (hide)
+ *                                    TODO: Same strategy as horizontal will make vertical smoother
  */
  
 var VrtxAnimationInterface = dejavu.Interface.declare({

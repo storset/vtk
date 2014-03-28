@@ -47,29 +47,31 @@ var VrtxAnimation = dejavu.Class.declare({
   initialize: function(opts) {
     this.__opts = opts;
     var animation = this;
-    /* 1:1 prefix mapping from transform to transition.
-     * TODO: probably need feature check for transition also (but works in e.g. Chrome 32, Firefox 26 and IE10)
-     */
-    animation.__opts.cssTransition = (function () {
-      var props = {
-        'WebkitTransform': '-webkit-transition',
-        'MozTransform': '-moz-transition',
-        'OTransform': '-o-transition',
-        'msTransform': '-ms-transition',
-        'transform': 'transition'
-      };
-      return props.hasOwnProperty(animation.$static.cssTransform) ? props[animation.$static.cssTransform] : null;
-    })();
-    animation.__opts.cssTransitionEnd = (function () {
-      var props = {
-        'WebkitTransform': 'webkitTransitionEnd',
-        'MozTransform': 'transitionend',
-        'OTransform': 'oTransitionEnd otransitionend',
-        'msTransform': 'MSTransitionEnd',
-        'transform': 'transitionend'
-      };
-      return props.hasOwnProperty(animation.$static.cssTransform) ? props[animation.$static.cssTransform] : null;
-    })();
+    if(animation.$static.cssTransform != null) {
+      /* 1:1 prefix mapping from transform to transition.
+       * TODO: probably need feature check for transition also (but works in e.g. Chrome 32, Firefox 26 and IE10)
+       */
+      animation.__opts.cssTransition = (function () {
+        var props = {
+          'WebkitTransform': '-webkit-transition',
+          'MozTransform': '-moz-transition',
+          'OTransform': '-o-transition',
+          'msTransform': '-ms-transition',
+          'transform': 'transition'
+        };
+        return props.hasOwnProperty(animation.$static.cssTransform) ? props[animation.$static.cssTransform] : null;
+      })();
+      animation.__opts.cssTransitionEnd = (function () {
+        var props = {
+          'WebkitTransform': 'webkitTransitionEnd',
+          'MozTransform': 'transitionend',
+          'OTransform': 'oTransitionEnd otransitionend',
+          'msTransform': 'MSTransitionEnd',
+          'transform': 'transitionend'
+        };
+        return props.hasOwnProperty(animation.$static.cssTransform) ? props[animation.$static.cssTransform] : null;
+      })();
+    }
   },
   __prepareMove: function() {
     if(this.__opts.outerWrapperElem && !this.__opts.outerWrapperElem.hasClass("overflow-hidden")) {

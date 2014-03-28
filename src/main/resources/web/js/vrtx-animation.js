@@ -128,7 +128,7 @@ var VrtxAnimation = dejavu.Class.declare({
         animation.__afterMove(afterSp);
       });
     } else {
-      var easing = (dir === "in") ? "cubic-bezier(0.17, 0.04, 0.03, 0.94)" : "cubic-bezier(0.17, 0.04, 0.03, 0.94)";
+      var easing = "cubic-bezier(0.17, 0.04, 0.03, 0.94)"; // http://cubic-bezier.com/#.17,.04,.03,.94
       var elm = animation.__opts.elem.is("tr") ? animation.__opts.elem.find('td > div')
                                                : animation.__opts.elem;
       if(dir === "in") {

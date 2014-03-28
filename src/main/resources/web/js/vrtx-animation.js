@@ -81,14 +81,11 @@ var VrtxAnimation = dejavu.Class.declare({
   },
   __horizontalMove: function(dir) {
     var width = this.__prepareMove()[0];
-
+    var left = (dir === "in") ? 0 : -width;
+    var afterSp = (dir === "in") ? "afterIn" : "afterOut";
+    
     if(dir === "in") {
       this.__opts.elem.css("marginLeft", -width);
-      var left = 0;
-      var afterSp = "afterIn";
-    } else {
-      var left = -width;
-      var afterSp = "afterOut";
     }
 
     var animation = this;

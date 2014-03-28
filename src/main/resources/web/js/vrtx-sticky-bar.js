@@ -1,5 +1,5 @@
 /*
- *  VrtxStickyBar
+ *  VrtxStickyBar (by USIT/GPL|GUAN)
  *  
  *  * Requires Dejavu OOP library
  */

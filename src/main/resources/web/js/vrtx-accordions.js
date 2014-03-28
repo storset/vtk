@@ -1,5 +1,5 @@
 /*
- *  VrtxAccordion - facade to jQuery UI accordions
+ *  VrtxAccordion - facade to jQuery UI accordions (by USIT/GPL|GUAN)
  *  
  *  API: http://api.jqueryui.com/accordion/
  *  

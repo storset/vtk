@@ -1,5 +1,5 @@
 /*
- * VrtxTree - facade to TreeView async
+ * VrtxTree - facade to TreeView async (by USIT/GPL|GUAN)
  *  
  *  * Requires Dejavu OOP library
  *  * Requires but Lazy-loads TreeView and ScrollTo libraries (if not defined) on open

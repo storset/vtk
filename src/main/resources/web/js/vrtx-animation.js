@@ -1,6 +1,8 @@
 /* 
- * VrtxAnimation
+ *  VrtxAnimation (by USIT/GPL|GUAN)
  *  
+ *  PE uses CSS for moving pixels in animations (we like fine-grained control over it with JS and after-functions)
+ *
  *  API: http://api.jqueryui.com/accordion/
  *  
  *  * Requires Dejavu OOP library

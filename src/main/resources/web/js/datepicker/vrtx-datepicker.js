@@ -1,5 +1,5 @@
 /*
- *  VrtxDatepicker - facade to jQuery UI datepicker
+ *  VrtxDatepicker - facade to jQuery UI datepicker (by USIT/GPL|GUAN)
  *  
  *  API: http://api.jqueryui.com/datepicker/
  *  

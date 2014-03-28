@@ -1,5 +1,5 @@
 /*
- *  VrtxSimpleDialog - facade to jQuery UI dialogs
+ *  VrtxSimpleDialog - facade to jQuery UI dialogs (by USIT/GPL|GUAN)
  *  
  *  API: http://api.jqueryui.com/dialog/
  *

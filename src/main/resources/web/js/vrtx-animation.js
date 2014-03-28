@@ -98,13 +98,9 @@ var VrtxAnimation = dejavu.Class.declare({
           transition: "all " + speed + "ms " + easing,
           "marginLeft": left + "px"
         });
-        var uniqueFn = {};
-        var unique = +new Date();
-        uniqueFn[unique] = function() {
-          document.removeEventListener(animation.__opts.cssTransitionEnd, uniqueFn[unique]);
+        animation.__opts.elem.parent().one(animation.__opts.cssTransitionEnd, function() {
           animation.__afterMove();
-        };
-        document.addEventListener(animation.__opts.cssTransitionEnd, uniqueFn[unique], false);
+        });
       }, 5);
     }
   },
@@ -136,27 +132,24 @@ var VrtxAnimation = dejavu.Class.declare({
       var speed = animation.__opts.animationSpeed || animation.$static.animationSpeed;
       var wait = setTimeout(function() {
         var transition = animation.$static.cssTransition;
-        $("#hmw-" + unique + " > div").css({
+        elm = $("#hmw-" + unique + " > *");
+        elm.css({
           transition: "all " + speed + "ms " + easing,
           "marginTop": top + "px"
         });
-        uniqueFn[unique] = function() {
-          document.removeEventListener(animation.__opts.cssTransitionEnd, uniqueFn[unique]);
-          var hmw = $("#hmw-" + unique);
-          var hmwContent = hmw.find("> div");
+        elm.parent().one(animation.__opts.cssTransitionEnd, function() {
           if(dir === "out") {
             animation.__opts.elem.hide();
-            if(!hmwContent.length) {
-              hmw.remove();
+            if(!elm.length) {
+              elm.remove();
             } else {
-              hmwContent.unwrap();
+              elm.unwrap();
             }
           } else {
-            hmwContent.unwrap();
+            elm.unwrap();
           }
           animation.__afterMove();
-        };
-        document.addEventListener(animation.__opts.cssTransitionEnd, uniqueFn[unique], false);
+        });
       }, 5);
     }
   },

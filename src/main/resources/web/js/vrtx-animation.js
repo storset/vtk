@@ -38,9 +38,15 @@ var VrtxAnimation = dejavu.Class.declare({
       var propArray = ['transform', 'MozTransform', 'WebkitTransform', 'msTransform', 'OTransform'];
       var root = document.documentElement;
       for (var i = 0, len = propArray.length; i < len; i++) {
-        if (propArray[i] in root.style){
-          return propArray[i];
-        }
+        if (propArray[i] in root.style) return propArray[i];
+      }
+      return null;
+    })(),
+    cssTransition: (function () {
+      var propArray = ['transition', 'MozTransition', 'WebkitTransition', 'msTransition', 'OTransition'];
+      var root = document.documentElement;
+      for (var i = 0, len = propArray.length; i < len; i++) {
+        if (propArray[i] in root.style) return propArray[i];
       }
       return null;
     })()
@@ -49,17 +55,10 @@ var VrtxAnimation = dejavu.Class.declare({
   initialize: function(opts) {
     this.__opts = opts;
     var animation = this;
-    if(animation.$static.cssTransform != null) {
-      /* 1:1 prefix mapping from transform to transition.
-       * TODO: probably need feature check for transition also (but works in e.g. Chrome 32, Firefox 26 and IE10)
-       */
-      animation.__opts.cssTransition = (function () {
-        var props = { 'WebkitTransform': '-webkit-transition', 'MozTransform': '-moz-transition', 'OTransform': '-o-transition', 'msTransform': '-ms-transition', 'transform': 'transition' };
-        return props.hasOwnProperty(animation.$static.cssTransform) ? props[animation.$static.cssTransform] : null;
-      })();
+    if(animation.$static.cssTransform != null && animation.$static.cssTransition != null) {
       animation.__opts.cssTransitionEnd = (function () {
-        var props = { 'WebkitTransform': 'webkitTransitionEnd', 'MozTransform': 'transitionend', 'OTransform': 'oTransitionEnd otransitionend', 'msTransform': 'MSTransitionEnd', 'transform': 'transitionend' };
-        return props.hasOwnProperty(animation.$static.cssTransform) ? props[animation.$static.cssTransform] : null;
+        var props = { 'WebkitTransition': 'webkitTransitionEnd', 'MozTransition': 'transitionend', 'OTransition': 'oTransitionEnd otransitionend', 'msTransition': 'MSTransitionEnd', 'transition': 'transitionend' };
+        return props.hasOwnProperty(animation.$static.cssTransition) ? props[animation.$static.cssTransition] : null;
       })();
     }
   },
@@ -93,7 +92,7 @@ var VrtxAnimation = dejavu.Class.declare({
     } else { // CSS pixel pushing
       var easing = (dir === "in") ? "cubic-bezier(0.17, 0.04, 0.03, 0.94)" : "cubic-bezier(0.03, 0.94, 0.96, 0.83)";
       var speed = animation.__opts.animationSpeed || animation.$static.animationSpeed;
-      var transition = animation.__opts.cssTransition;
+      var transition = animation.$static.cssTransition;
       var wait = setTimeout(function() {
         animation.__opts.elem.css({
           transition: "all " + speed + "ms " + easing,
@@ -134,7 +133,7 @@ var VrtxAnimation = dejavu.Class.declare({
       }
       var speed = animation.__opts.animationSpeed || animation.$static.animationSpeed;
       var wait = setTimeout(function() {
-        var transition = animation.__opts.cssTransition;
+        var transition = animation.$static.cssTransition;
         elm.css({
           transition: "all " + speed + "ms " + easing,
           "overflow": "hidden",

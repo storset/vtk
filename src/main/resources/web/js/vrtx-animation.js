@@ -9,7 +9,7 @@
  *
  *  Horizontal [rightIn() + leftOut()] - hides content and marginLeft it left (show) and then right (hide)
  *  Vertical [topDown() + bottomUp()] - height and padding down (show) and then up (hide)
- *                                    TODO: Same strategy as horizontal will make vertical smoother
+ *                                      TODO: Same strategy as horizontal will make vertical smoother
  */
  
 var VrtxAnimationInterface = dejavu.Interface.declare({
@@ -84,12 +84,12 @@ var VrtxAnimation = dejavu.Class.declare({
     }
 
     var animation = this;
-    if(animation.$static.cssTransform == null) { // JS pixel pushing
+    if(animation.$static.cssTransform == null || animation.__opts.preferJSAnim) { // JS pixel pushing
       var easing = (dir === "in") ? "easeIn" : "easeOut";
       var speed = animation.__opts.animationSpeed || animation.$static.animationSpeed;
       animation.__opts.elem.animate({
         "marginLeft": left + "px"
-      }, speed, animation.__opts[easing] || animation.$static[easing], animation.__afterMove);
+      }, speed, animation.__opts[easing] || animation.$static[easing], function () { animation.__afterMove() });
     } else { // CSS pixel pushing
       var easing = (dir === "in") ? "cubic-bezier(0.17, 0.04, 0.03, 0.94)" : "cubic-bezier(0.03, 0.94, 0.96, 0.83)";
       var speed = animation.__opts.animationSpeed || animation.$static.animationSpeed;
@@ -111,11 +111,11 @@ var VrtxAnimation = dejavu.Class.declare({
     var top = (dir === "in") ? height : 0;
 
     var animation = this;
-    if(animation.$static.cssTransform == null) { // JS pixel pushing
+    if(animation.$static.cssTransform == null || animation.__opts.preferJSAnim) { // JS pixel pushing
       var easing = (dir === "in") ? "easeIn" : "easeOut";
       var speed = animation.__opts.animationSpeed || animation.$static.animationSpeed;
       animation.__opts.elem[(dir === "in") ? "slideDown" : "slideUp"](
-         speed, animation.__opts[easing] || animation.$static[easing], animation.__afterMove);
+         speed, animation.__opts[easing] || animation.$static[easing], function () { animation.__afterMove() });
     } else { // CSS pixel pushing
       var elm = animation.__opts.elem.is("tr") ? animation.__opts.elem.find('td > div')
                                                : animation.__opts.elem;

@@ -2544,18 +2544,18 @@ html#vrtx-preview-popup iframe#previewViewIframe {
 
 .permissions-read-wrapper .permissions-read-wrapper,
 .permissions-read-wrapper.expandedForm {
-  margin-top: -6px !important;
+  margin-top: -6px ;
 }
 
 .permissions-read-write-wrapper .permissions-read-write-wrapper,
 .permissions-read-write-wrapper.expandedForm {
-  margin-top: -1px !important;
+  margin-top: -1px;
 }
 
 .permissions-all-wrapper .permissions-all-wrapper,
 .permissions-all-wrapper.expandedForm {
-  margin-top: -1px !important;
-  margin-bottom: -16px !important;
+  margin-top: -1px;
+  margin-bottom: -16px;
 }
 
 /* ^ Remove borders around expanded forms */
@@ -3257,14 +3257,14 @@ form.vrtx-admin-form h3,
 div.expandedForm,
 div.solidExpandedForm,
 tr.expandedForm td {
-  margin: 5px -20px 14px -20px !important;
+  margin: 5px -20px 14px -20px;
   padding: 14px 19px;
   background-color: #e8e8e8 !important;
   border: 1px solid #d9d9d9 !important;
 }
 
 div.globalmenu {
-  margin: 0 0 20px 0 !important;
+  margin: 0 0 20px 0;
   padding: 13px 15px;
   background-color: #e8e8e8;
   border: 1px solid #d9d9d9;

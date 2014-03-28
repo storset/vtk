@@ -3047,7 +3047,6 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(options) {
             animationSpeed: transitionSpeed,
             easeIn: transitionEasingSlideDown,
             easeOut: transitionEasingSlideUp,
-            preferJSAnim: expandedForm.filter(".vrtx-admin-form, .globalmenu").length,
             afterOut: function(animation) {
               if (existExpandedFormIsReplaced) {
                 if (fromModeToNotMode) { // When we need the 'mode=' HTML when requesting a 'not mode=' service
@@ -3185,7 +3184,6 @@ VrtxAdmin.prototype.addNewMarkup = function addNewMarkup(options, selectorClass,
     animationSpeed: transitionSpeed,
     easeIn: transitionEasingSlideDown,
     easeOut: transitionEasingSlideUp,
-    preferJSAnim: _$(nodeType + "." + selectorClass).filter(".vrtx-admin-form, .globalmenu").length,
     afterIn: function(animation) {
       if(options.focusElement != null) {
         if(options.focusElement != "") {
@@ -3255,7 +3253,6 @@ VrtxAdmin.prototype.completeFormAsync = function completeFormAsync(options) {
           animationSpeed: transitionSpeed,
           easeIn: transitionEasingSlideDown,
           easeOut: transitionEasingSlideUp,
-          preferJSAnim: $(".expandedForm").filter(".vrtx-admin-form, .globalmenu").length,
           afterOut: function(animation) {
             animation.__opts.elem.remove();
           }
@@ -3335,7 +3332,6 @@ VrtxAdmin.prototype.completeFormAsyncPost = function completeFormAsyncPost(optio
             animationSpeed: transitionSpeed,
             easeIn: transitionEasingSlideDown,
             easeOut: transitionEasingSlideUp,
-            preferJSAnim: form.parent().filter(".vrtx-admin-form, .globalmenu").length,
             afterOut: function(animation) {
               for (var i = updateSelectors.length; i--;) {
                 var outer = vrtxAdm.outerHTML(_$.parseHTML(results), updateSelectors[i]);
@@ -3374,7 +3370,6 @@ VrtxAdmin.prototype.completeFormAsyncPost = function completeFormAsyncPost(optio
                     animationSpeed: transitionSpeed,
                     easeIn: transitionEasingSlideDown,
                     easeOut: transitionEasingSlideUp,
-                    preferJSAnim: form.parent().filter(".vrtx-admin-form, .globalmenu").length,
                     afterOut: function(animation) {
                       animation.__opts.elem.remove();
                     }
@@ -3397,7 +3392,6 @@ VrtxAdmin.prototype.completeFormAsyncPost = function completeFormAsyncPost(optio
                 animationSpeed: transitionSpeed,
                 easeIn: transitionEasingSlideDown,
                 easeOut: transitionEasingSlideUp,
-                preferJSAnim: form.parent().filter(".vrtx-admin-form, .globalmenu").length,
                 afterOut: function(animation) {
                   animation.__opts.elem.remove();
                 }

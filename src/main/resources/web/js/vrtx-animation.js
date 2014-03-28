@@ -67,7 +67,7 @@ var VrtxAnimation = dejavu.Class.declare({
       this.__opts.outerWrapperElem.addClass("overflow-hidden");
     }
     this.__opts.afterSp = this.__opts[(dir === "in") ? "afterIn" : "afterOut"];
-    return [this.__opts.elem.outerWidth(true), this.__opts.elem.height()];
+    return [this.__opts.elem.outerWidth(true), this.__opts.elem.outerHeight(true)];
   },
   __afterMove: function() {
     if(this.__opts.outerWrapperElem) this.__opts.outerWrapperElem.removeClass("overflow-hidden");
@@ -96,18 +96,20 @@ var VrtxAnimation = dejavu.Class.declare({
       var wait = setTimeout(function() {
         animation.__opts.elem.css({
           transition: "all " + speed + "ms " + easing,
-          "marginLeft": left
+          "marginLeft": left + "px"
         });
-        document.addEventListener(animation.__opts.cssTransitionEnd, function () {
-          document.removeEventListener(animation.__opts.cssTransitionEnd, arguments.callee);
+        var uniqueFn = {};
+        var unique = +new Date();
+        uniqueFn[unique] = function() {
+          document.removeEventListener(animation.__opts.cssTransitionEnd, uniqueFn[unique]);
           animation.__afterMove();
-        }, false);
+        };
+        document.addEventListener(animation.__opts.cssTransitionEnd, uniqueFn[unique], false);
       }, 5);
     }
   },
   __verticalMove: function(dir) {
     var height = this.__prepareMove()[1];
-    var top = (dir === "in") ? height : 0;
 
     var animation = this;
     if(animation.$static.cssTransform == null || animation.__opts.preferJSAnim) { // JS pixel pushing
@@ -117,35 +119,42 @@ var VrtxAnimation = dejavu.Class.declare({
          speed, animation.__opts[easing] || animation.$static[easing], function () { animation.__afterMove() });
     } else { // CSS pixel pushing
       var elm = animation.__opts.elem.is("tr") ? animation.__opts.elem.find('td > div')
-                                               : animation.__opts.elem;
+                                               : animation.__opts.elem;                                  
       if(dir === "in") {
         var easing = "cubic-bezier(0.17, 0.04, 0.03, 0.94)"; // http://cubic-bezier.com/#.17,.04,.03,.94
         animation.__opts.elem.show();
         elm.show();
-        top = elm.height();
-        paddingTop = elm.css("paddingTop");
-        paddingBottom = elm.css("paddingBottom");
-        elm.css({"paddingTop": "0", "paddingBottom": "0", "height": "0"});
+        elm.css("marginTop", -height);
+        elm.css("opacity", 0);
+        var top = 0;
+        var opacity = 1;
       } else {
         var easing = "cubic-bezier(0.03, 0.94, 0.96, 0.83)"; // http://cubic-bezier.com/#.03,.94,.96,.83
-        paddingTop = 0;
-        paddingBottom = 0;
+        var top = -height;
+        var opacity = 0;
       }
+      var uniqueFn = {};
+      var unique = +new Date();
+      elm.wrap("<div id='hmw-" + unique + "' class='horizontal-move-wrapper' style='overflow: hidden; clear: both;' />");
       var speed = animation.__opts.animationSpeed || animation.$static.animationSpeed;
       var wait = setTimeout(function() {
         var transition = animation.$static.cssTransition;
-        elm.css({
+        $("#hmw-" + unique + " > div").css({
           transition: "all " + speed + "ms " + easing,
-          "overflow": "hidden",
-          "height": top,
-          "paddingTop": paddingTop,
-          "paddingBottom": paddingBottom
+          "marginTop": top + "px",
+          "opacity": opacity
         });
-        document.addEventListener(animation.__opts.cssTransitionEnd, function () {
-          document.removeEventListener(animation.__opts.cssTransitionEnd, arguments.callee);
-          if(dir === "out") animation.__opts.elem.hide();
+        uniqueFn[unique] = function() {
+          document.removeEventListener(animation.__opts.cssTransitionEnd, uniqueFn[unique]);
+          if(dir === "out") {
+            animation.__opts.elem.hide();
+            $("#hmw-" + unique).remove();
+          } else {
+            $("#hmw-" + unique + " > div").unwrap();
+          }
           animation.__afterMove();
-        }, false);
+        };
+        document.addEventListener(animation.__opts.cssTransitionEnd, uniqueFn[unique], false);
       }, 5);
     }
   },

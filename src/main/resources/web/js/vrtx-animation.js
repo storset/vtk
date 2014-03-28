@@ -1,10 +1,10 @@
-/* 
+/*
  *  VrtxAnimation (by USIT/GPL|GUAN)
  *  
  *  PE uses CSS for moving pixels in animations (we like fine-grained control over it with JS and after-functions)
+ *  TODO: PE support CSS tranform2d and transform3d (with GPU-accel.)
+ *  TODO: transfer minus-margin from element to wrapper until animation ends
  *
- *  API: http://api.jqueryui.com/accordion/
- *  
  *  * Requires Dejavu OOP library
  *
  *  Horizontal [rightIn() + leftOut()] - hides content and animates marginLeft in CSS/JS
@@ -14,14 +14,14 @@
 var VrtxAnimationInterface = dejavu.Interface.declare({
   $name: "VrtxAnimationInterface",
   __opts: {},
-  __prepareMove: function() {},
-  __afterMove: function(afterSp) {},
+  __prepareMove: function(dir) {},
+  __afterMove: function() {},
   __horizontalMove: function(dir) {},
   __verticalMove: function(dir) {},
-  rightIn: function()Â {},
-  leftOut: function()Â {},
-  topDown: function()Â {},
-  bottomUp: function()Â {},
+  rightIn: function() {},
+  leftOut: function() {},
+  topDown: function() {},
+  bottomUp: function() {},
   update: function(opts) {},
   updateElem: function(elem) {}
 });
@@ -152,16 +152,16 @@ var VrtxAnimation = dejavu.Class.declare({
       }, 5);
     }
   },
-  rightIn: function()Â {
+  rightIn: function() {
     this.__horizontalMove("in");
   },
-  leftOut: function()Â {
+  leftOut: function() {
     this.__horizontalMove("out");
   },
-  topDown: function()Â {
+  topDown: function() {
     this.__verticalMove("in");
   },
-  bottomUp: function()Â {
+  bottomUp: function() {
     this.__verticalMove("out");
   },
   update: function(opts) {

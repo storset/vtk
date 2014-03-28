@@ -47,6 +47,9 @@ var VrtxAnimation = dejavu.Class.declare({
   initialize: function(opts) {
     this.__opts = opts;
     var animation = this;
+    /* 1:1 prefix mapping from transform to transition.
+     * TODO: probably need feature check for transition also (but works in e.g. Chrome 32, Firefox 26 and IE10)
+     */
     animation.__opts.cssTransition = (function () {
       var props = {
         'WebkitTransform': '-webkit-transition',

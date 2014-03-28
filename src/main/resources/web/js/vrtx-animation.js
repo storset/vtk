@@ -13,9 +13,10 @@
 var VrtxAnimationInterface = dejavu.Interface.declare({
   $name: "VrtxAnimationInterface",
   __opts: {},
-  __prepareHorizontalMove: function() {},
-  __horizontalMove: function(left, easing, afterSp) {},
-  __verticalMove: function(fn, easing, afterSp) {},
+  __prepareMove: function() {},
+  __afterMove: function(afterSp) {},
+  __horizontalMove: function(dir) {},
+  __verticalMove: function(dir) {},
   rightIn: function() {},
   leftOut: function() {},
   topDown: function() {},
@@ -117,15 +118,9 @@ var VrtxAnimation = dejavu.Class.declare({
   },
   __verticalMove: function(dir) {
     var height = this.__prepareMove()[1];
-    
-    if(dir === "in") {
-      var top = height;
-      var afterSp = "afterIn";
-    } else {
-      var top = 0;
-      var afterSp = "afterOut";
-    }
-    
+    var top = (dir === "in") ? height : 0;
+    var afterSp = (dir === "in") ? "afterIn" : "afterOut";
+
     var animation = this;
     if(animation.$static.cssTransform == null) {
       var easing = (dir === "in") ? "easeIn" : "easeOut";

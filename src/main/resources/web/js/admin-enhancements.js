@@ -3081,7 +3081,7 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(options) {
                     success: function (results, status, resp) {
                       var succeededAddedOriginalMarkup = vrtxAdm.addOriginalMarkup(modeUrl, _$.parseHTML(results), resultSelectorClass, expandedForm);
                       if (succeededAddedOriginalMarkup) {
-                        vrtxAdmin.addNewMarkup(options, selectorClass, transitionSpeed, transitionEasingSlideDown, transitionEasingSlideUp, form);
+                        vrtxAdmin.addNewMarkup(options, form);
                       } else {
                         if (vrtxAdm.asyncGetFormsInProgress) {
                           vrtxAdmin.asyncGetFormsInProgress--;
@@ -3111,7 +3111,7 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(options) {
                     vrtxAdmin.asyncGetFormsInProgress--;
                   }
                 } else {
-                  vrtxAdmin.addNewMarkup(options, selectorClass, transitionSpeed, transitionEasingSlideDown, transitionEasingSlideUp, form);
+                  vrtxAdmin.addNewMarkup(options, form);
                 }
               }
             }
@@ -3119,7 +3119,7 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(options) {
           animation.bottomUp();
         }
         if ((!existExpandedForm || simultanSliding) && !fromModeToNotMode) {
-          vrtxAdm.addNewMarkup(options, selectorClass, transitionSpeed, transitionEasingSlideDown, transitionEasingSlideUp, form);
+          vrtxAdm.addNewMarkup(options, form);
         }
       },
       error: function (xhr, textStatus) {
@@ -3175,10 +3175,14 @@ VrtxAdmin.prototype.addOriginalMarkup = function addOriginalMarkup(url, results,
  * @param {string} transitionEasingSlideUp Transition easing algorithm for slideUp()
  * @param {object} form The form
  */
-VrtxAdmin.prototype.addNewMarkup = function addNewMarkup(options, selectorClass, transitionSpeed, transitionEasingSlideDown, transitionEasingSlideUp, form) {
+VrtxAdmin.prototype.addNewMarkup = function addNewMarkup(options, form) {
   var vrtxAdm = this,
     insertAfterOrReplaceClass = options.insertAfterOrReplaceClass,
     secondaryInsertAfterOrReplaceClass = options.secondaryInsertAfterOrReplaceClass,
+    selectorClass = options.selectorClass,
+    transitionSpeed = options.transitionSpeed,
+    transitionEasingSlideDown = options.transitionEasingSlideDown,
+    transitionEasingSlideUp = options.transitionEasingSlideUp,
     isReplacing = options.isReplacing || false,
     nodeType = options.nodeType,
     funcComplete = options.funcComplete,

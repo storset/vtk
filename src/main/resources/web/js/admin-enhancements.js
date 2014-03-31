@@ -3833,8 +3833,6 @@ VrtxAdmin.prototype.serverFacade = {
    * Error Ajax handler
    * 
    * TODO: More specific error-messages on what action that failed with function-origin
-   * TODO: Maybe a little to complex (CC: 20) but as it is rather straightforward what's going on in it.
-   *       is probably enough to move to 2 code portion for status==0 and status==404 into own functions
    *      
    * @this {serverFacade}
    * @param {object} xhr The XMLHttpRequest object
@@ -3851,18 +3849,7 @@ VrtxAdmin.prototype.serverFacade = {
     } else if (textStatus === "parsererror") {
       msg = this.errorMessages.parsererror;
     } else if (status === 0) {   
-      var serverFacade = this;
-      vrtxAdmin._$.ajax({
-        type: "GET",
-        url: vrtxAdmin.rootUrl + "/themes/default/images/globe.png?" + (+new Date()),
-        async: false,
-        success: function (results, status, resp) { // Online - Re-authentication needed
-          msg = "RE_AUTH";
-        },
-        error: function (xhr, textStatus) {         // Not Online
-          msg = serverFacade.errorMessages.offline;
-        }
-      });
+      msg = this.errorCheckNeedReauthenticationOrOffline();
     } else if (status === 503 || (xhr.readyState === 4 && status === 200)) {
       msg = (useStatusCodeInMsg ? status + " - " : "") + this.errorMessages.down;
     } else if (status === 500) {
@@ -3871,31 +3858,49 @@ VrtxAdmin.prototype.serverFacade = {
       msg = (useStatusCodeInMsg ? status + " - " : "") + this.errorMessages.s400;
     } else if (status === 401) {
       msg = (useStatusCodeInMsg ? status + " - " : "") + this.errorMessages.s401;
-    } else if (status === 403) {
-      /* Handle server down => up */
+    } else if (status === 403) { // Handle server down => up
       msg = (useStatusCodeInMsg ? status + " - " : "") + this.errorMessages.s403;
     } else if (status === 404) {
-      var serverFacade = this;
-      vrtxAdmin._$.ajax({
-        type: "GET",
-        url: location.href,
-        async: false,
-        success: function (results, status, resp) { // Exists - Locked
-          msg = useStatusCodeInMsg ? status + " - " + serverFacade.errorMessages.s423 : "LOCKED";
-          results = $($.parseHTML(results));
-          vrtxAdmin.lockedBy = results.find("#resource-locked-by").html();
-          $("#resourceMenuRight").html(results.find("#resourceMenuRight").html());
-          vrtxAdmin.globalAsyncComplete();
-        },
-        error: function (xhr, textStatus) { // 404 - Remove/moved/renamed
-          msg = (useStatusCodeInMsg ? status + " - " : "") + serverFacade.errorMessages.s404;
-        }
-      });
+      msg = this.errorCheckLockedOr404(status, useStatusCodeInMsg);
     } else if (status === 4233) { // Parent locked
       msg = (useStatusCodeInMsg ? status + " - " : "") + this.errorMessages.s4233;
     } else {
       msg = (useStatusCodeInMsg ? status + " - " : "") + this.errorMessages.general + " " + textStatus;
     }
+    return msg;
+  },
+  errorCheckNeedReauthenticationOrOffline: function () {
+    var serverFacade = this, msg = "";
+    vrtxAdmin._$.ajax({
+      type: "GET",
+      url: vrtxAdmin.rootUrl + "/themes/default/images/globe.png?" + (+new Date()),
+      async: false,
+      success: function (results, status, resp) { // Re-authentication needed - Online
+        msg = "RE_AUTH";
+      },
+      error: function (xhr, textStatus) {         // Offline
+        msg = serverFacade.errorMessages.offline;
+      }
+    });
+    return msg;
+  },
+  errorCheckLockedOr404: function (originalStatus, useStatusCodeInMsg) {
+    var serverFacade = this, msg = "";
+    vrtxAdmin._$.ajax({
+      type: "GET",
+      url: location.href,
+      async: false,
+      success: function (results, status, resp) { // Exists - Locked
+        msg = useStatusCodeInMsg ? status + " - " + serverFacade.errorMessages.s423 : "LOCKED";
+        results = $($.parseHTML(results));
+        vrtxAdmin.lockedBy = results.find("#resource-locked-by").html();
+        $("#resourceMenuRight").html(results.find("#resourceMenuRight").html());
+        vrtxAdmin.globalAsyncComplete();
+      },
+      error: function (xhr, textStatus) { // 404 - Remove/moved/renamed
+        msg = (useStatusCodeInMsg ? originalStatus + " - " : "") + serverFacade.errorMessages.s404;
+      }
+    });
     return msg;
   },
   errorMessages: {} /* Populated with i18n in resource-bar.ftl */
@@ -4055,11 +4060,12 @@ VrtxAdmin.prototype.wrap = function wrap(node, cls, html) {
 VrtxAdmin.prototype.outerHTML = function outerHTML(selector, subselector) {
   var _$ = this._$;
   
-  if (_$(selector).find(subselector).length) {
-    if (typeof _$(selector).find(subselector)[0].outerHTML !== "undefined") {
-      return _$.parseHTML(_$(selector).find(subselector)[0].outerHTML);
+  var wrp = _$(selector)
+  if (wrp.find(subselector).length) {
+    if (typeof wrp.find(subselector)[0].outerHTML !== "undefined") {
+      return _$.parseHTML(wrp.find(subselector)[0].outerHTML);
     } else {
-      return _$.parseHTML(_$('<div>').append(_$(selector).find(subselector).clone()).html());
+      return _$.parseHTML(_$('<div>').append(wrp.find(subselector).clone()).html());
     }
   }
 };
@@ -4097,7 +4103,7 @@ VrtxAdmin.prototype.loadScript = function loadScript(url, callback) {
 };
 
 /**
- * Log to console with calle.name if exists (Function name)
+ * Log to console with function name if exists
  *
  * @this {VrtxAdmin}
  * @param {object} options Configuraton
@@ -4116,8 +4122,7 @@ VrtxAdmin.prototype.log = function log(options) {
 };
 
 /**
- * Error to console with calle.name if exists (Function name)
- * with fallback to regular log
+ * Error to console with function name if exists with fallback to regular log
  *
  * @this {VrtxAdmin}
  * @param {object} options Configuraton

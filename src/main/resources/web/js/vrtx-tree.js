@@ -63,10 +63,13 @@ var VrtxTree = dejavu.Class.declare({
   __openLeaf: function() {
     var tree = this;
     var checkLeafAvailable = setTimeout(function () {
-      $("." + tree.$static.leafLoadingClass).remove();
+      var curLoadingMsg = $("." + tree.$static.leafLoadingClass);
+      curLoadingMsg.closest("li").attr("aria-busy", "false");
+      curLoadingMsg.remove();
       var link = tree.__opts.elem.find("a[href$='" + tree.__opts.trav[tree.__opts.pathNum] + "']");
       if (link.length) {
-        var hit = link.closest("li").find(tree.$static.leafSelector);
+        var closestLi = link.closest("li");
+        var hit = closestLi.find(tree.$static.leafSelector);
         hit.click();
         if (tree.__opts.scrollToContent && (tree.__opts.pathNum == (tree.__opts.trav.length - 1))) {
           tree.__opts.elem.css("background", "none").fadeIn(200, function () {  // Scroll to last node
@@ -74,8 +77,9 @@ var VrtxTree = dejavu.Class.declare({
           });
         } else {
           tree.__scrollToLeaf(link, false);
-          $("<span class='" + tree.$static.leafLoadingClass + "'>" + loadingSubfolders + "</span>").insertAfter(hit.next());
         }
+        $("<span class='" + tree.$static.leafLoadingClass + "'>" + loadingSubfolders + "</span>").insertAfter(hit.next());
+        closestLi.attr("aria-busy", "true");
         tree.__opts.pathNum++;
       } else {
         setTimeout(arguments.callee, 15);

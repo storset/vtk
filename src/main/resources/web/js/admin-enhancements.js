@@ -3938,6 +3938,18 @@ function SetUrl(url) {
 \*-------------------------------------------------------------------*/
 
 /**
+ * ARIA-busy
+ *
+ * @this {VrtxAdmin}
+ * @param {string} idOrElm The id or jQElement
+ * @param {boolean} isBusy If the id or element is busy
+ */
+VrtxAdmin.prototype.ariaBusy = function wrap(idOrElm, isBusy) {
+  var elm = (typeof idOrElm === "string") ? $(idOrElm) : idOrElm;
+  elm.attr("aria-busy", isBusy ? "true" : "false");
+};
+
+/**
  * Wrap HTML in node
  *
  * @this {VrtxAdmin}

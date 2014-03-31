@@ -34,14 +34,13 @@
 	  }
 	  
 	  function linkCheckCompleted(requests, brokenLinks) {
-	    if(brokenLinks == 1) {
-	      $("#vrtx-link-check-spinner")
-	        .html(brokenLinks + ' <@vrtx.msg code="linkcheck.brokenlink" default=" broken link"/>')
-	        .addClass("vrtx-broken-links");
-	    } else if(brokenLinks > 1) {
-	      $("#vrtx-link-check-spinner")
-	        .html(brokenLinks + ' <@vrtx.msg code="linkcheck.brokenlinks" default=" broken links"/>')
-	        .addClass("vrtx-broken-links");
+	    if(brokenLinks > 0) {
+          var text = (brokenLinks > 1) ? '<@vrtx.msg code="linkcheck.brokenlinks" default="broken links"/>'
+                                       : '<@vrtx.msg code="linkcheck.brokenlink" default="broken link"/>';
+          $("body").find("#vrtx-link-check-spinner")
+            .html(brokenLinks + ' ' + text)
+            .addClass("vrtx-broken-links")
+	        .attr("aria-busy", "false");
 	    } else {
 	      $("#vrtx-link-check-spinner").remove();
 	    }
@@ -53,7 +52,7 @@
 	        
 	        <#if visualizeBrokenLinks?exists && visualizeBrokenLinks = 'true'> 
 	        
-	        $("#vrtx-preview-popup-iframe-wrapper").prepend('<span id="vrtx-link-check-spinner"><@vrtx.msg code="linkcheck.spinner" default="Checking links..."/></span>');
+	        $("#vrtx-preview-popup-iframe-wrapper").prepend('<span id="vrtx-link-check-spinner" aria-busy="true"><@vrtx.msg code="linkcheck.spinner" default="Checking links..."/></span>');
 	        
 	        var linkCheckURL = '${linkcheck.URL?html}';
 	        var authTarget = '${authTarget}';

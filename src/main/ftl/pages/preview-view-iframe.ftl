@@ -71,9 +71,12 @@
   
   function linkCheckCompleted(requests, brokenLinks) {
     if(brokenLinks > 0) {
+      var text = (brokenLinks > 1) ? '<@vrtx.msg code="linkcheck.brokenlinks" default="broken links"/>'
+                                   : '<@vrtx.msg code="linkcheck.brokenlink" default="broken link"/>';
       $("body").find("#vrtx-link-check-spinner")
-        .html(brokenLinks + ' <@vrtx.msg code="linkcheck.brokenlinks" default=" broken links"/>')
-        .addClass("vrtx-broken-links");
+        .html(brokenLinks + ' ' + text)
+        .addClass("vrtx-broken-links")
+	    .attr("aria-busy", "false");
     } else {
       $("body").find("#vrtx-link-check-spinner").remove();
     }
@@ -85,7 +88,7 @@
 
         <#if visualizeBrokenLinks?exists && visualizeBrokenLinks = 'true'> 
         
-        $("body").prepend('<span id="vrtx-link-check-spinner"><@vrtx.msg code="linkcheck.spinner" default="Checking links..."/></span>');
+        $("body").prepend('<span id="vrtx-link-check-spinner" aria-busy="true"><@vrtx.msg code="linkcheck.spinner" default="Checking links..."/></span>');
         
         var linkCheckURL = '${linkcheck.URL?html}';
         var authTarget = '${authTarget}';

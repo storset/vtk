@@ -123,15 +123,18 @@
     if(!vrtxAdm.isIE8 && !animationOff) {
       previewLoading.find("#preview-loading-inner").remove();
       previewLoading.fadeOut(surplusAnimationSpeed, function() {
-        vrtxAdm.cachedContent.removeAttr('style');
-        previewLoading.remove();
-        initHashParams();
+        previewLoadingCompleteAfter(previewLoading);
       });
     } else {
-      vrtxAdm.cachedContent.removeAttr('style');  
-      previewLoading.remove();
-      initHashParams();
+      previewLoadingCompleteAfter(previewLoading);
     }
+  }
+  
+  function previewLoadingCompleteAfter(previewLoading) {
+    vrtxAdmin.cachedContent.removeAttr('style');  
+    previewLoading.remove();
+    initHashParams();
+    vrtxAdmin.ariaBusy("#previewIframe", false);
   }
 
   // Find min-height
@@ -294,6 +297,8 @@
       } else {
         previewIframeMinHeight = availWinHeight;
       }
+      
+      vrtxAdmin.ariaBusy("#previewIframe", true);
       
       vrtxAdm.cachedContent.append("<span id='preview-loading'><span id='preview-loading-inner'><span>" + previewLoadingMsg + "...</span></span></span>")
                            .css({ position: "relative",

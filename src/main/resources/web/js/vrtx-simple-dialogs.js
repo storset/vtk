@@ -32,32 +32,35 @@ var AbstractVrtxSimpleDialog = dejavu.AbstractClass.declare({
       if (opts.width)      { dialogOpts.width = opts.width; }
       if (opts.height)     { dialogOpts.height = opts.height; }
       if (opts.unclosable) { dialogOpts.closeOnEscape = false; }
-                             var dialog = this;
-                             dialogOpts.open = function(e, ui) {
-                               var ctx = $(this).parent();
-                               if (dialog.__opts.unclosable) {
-                                 ctx.find(".ui-dialog-titlebar-close").hide();
-                                 ctx.find(".ui-dialog-titlebar").addClass("closable");
-                               }
-                               if(dialog.__opts.onOpen) dialog.__opts.onOpen();
-                               if(dialog.__opts.cancelIsNotAButton) {
-                                 ctx.find(".ui-dialog-buttonpane button:last-child span").unwrap().addClass("cancel-is-not-a-button");
-                               }
-                               var inputs = ctx.find("textarea, input[type='text'], select").filter(":visible");
-                               if(inputs.length) {
-                                 var firstInput = inputs.filter(":first");
-                                 if(firstInput.hasClass("vrtx-date")) {
-                                   $("<a style='outline: none;' tabindex='-1' />").insertBefore(firstInput)[0].focus();
-                                 } else {
-                                   firstInput[0].focus();
-                                 }
-                               } else {
-                                 input = ctx.find(".ui-dialog-buttonpane, .vrtx-focus-button, .vrtx-button, .vrtx-button-small").filter(":visible").filter(":first");
-                                 if(input.length) {
-                                   $("<a style='outline: none;' tabindex='-1' />").insertBefore(input)[0].focus();
-                                 }
-                               }
-                             };
+      var dialog = this;
+      dialogOpts.open = function(e, ui) {
+        var ctx = $(this).parent();
+        if (dialog.__opts.unclosable) {
+          ctx.find(".ui-dialog-titlebar-close").hide();
+          ctx.find(".ui-dialog-titlebar").addClass("closable");
+        }
+        if(dialog.__opts.onOpen) dialog.__opts.onOpen();
+        if(dialog.__opts.cancelIsNotAButton) {
+          ctx.find(".ui-dialog-buttonpane button:last-child span").unwrap().addClass("cancel-is-not-a-button");
+        }
+        var inputs = ctx.find("textarea, input[type='text'], select").filter(":visible");
+        if(inputs.length) {
+          var firstInput = inputs.filter(":first");
+          if(firstInput.hasClass("vrtx-date")) {
+            $("<a style='outline: none;' tabindex='-1' />").insertBefore(firstInput)[0].focus();
+          } else {
+            firstInput[0].focus();
+          }
+        } else {
+          input = ctx.find(".ui-dialog-buttonpane, .vrtx-focus-button, .vrtx-button, .vrtx-button-small").filter(":visible").filter(":first");
+          if(input.length) {
+            $("<a style='outline: none;' tabindex='-1' />").insertBefore(input)[0].focus();
+          }
+        }
+      };
+      dialogOpts.close = function(e, ui) {
+        if(dialog.__opts.onClose) dialog.__opts.onClose();
+      };
       this.__dialogOpts = dialogOpts;
   },
   __generateButtons: function() {
@@ -141,7 +144,13 @@ var VrtxLoadingDialog = dejavu.Class.declare({
       title: opts.title,
       hasHtml: true,
       unclosable: true,
-      width: 208
+      width: 208,
+      onOpen: function() {
+        $("body").attr("aria-busy", "true");
+      },
+      onClose: function() {
+        $("body").attr("aria-busy", "false");
+      }
     });
   }
 });

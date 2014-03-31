@@ -14,6 +14,7 @@
    <#else>
       <#assign title = vrtx.getMsg("decoration.${type}.${opt?html}") />
       <#assign titleLink = options[opt] />
+      <#assign titleLinkTip = vrtx.getMsg("decoration.${type}.tip") />
     </#if>
   </#list>
   
@@ -38,7 +39,7 @@
     // -->
     </script>
   
-    <@viewutils.displayDropdown type title titleLink false>
+    <@viewutils.displayDropdown type title titleLink false titleLinkTip>
       <#list options?keys as opt>
         <#if (opt_index > 0)>
           <#assign classes = "" />

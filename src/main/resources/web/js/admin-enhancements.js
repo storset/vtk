@@ -3994,7 +3994,7 @@ VrtxAdmin.prototype.ariaBusy = function ariaBusy(idOrElm, isBusy) {
 };
 
 /**
- * ARIA-expanded triggers ARIA-hidden (for expandable regions)
+ * ARIA-expanded and sets ARIA-hidden (for expandable regions)
  *
  * @this {VrtxAdmin}
  * @param {string} idOrElm The id or jQElement

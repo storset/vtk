@@ -3242,75 +3242,68 @@ VrtxAdmin.prototype.addNewMarkup = function addNewMarkup(options, form) {
  * TODO: Combine it with completeSimpleFormAsync() making this an expanded version of it for expanded slidable forms  
  *
  * @this {VrtxAdmin}
- * @param {object} options Configuration
- * @param {string} options.selector Selector for links that should complete a form async
- * @param {boolean} options.isReplacing Whether to replace instead of insert after
- * @param {string} options.updateSelectors One or more containers that should update after POST
- * @param {string} options.errorContainerInsertAfter Selector where to place the new error container
- * @param {string} options.errorContainer The className of the error container
- * @param {function} options.funcProceedCondition Callback function that proceedes with completeFormAsyncPost(options)
- * @param {function} options.funcComplete Callback function to run on success
- * @param {function} options.funcCancel Callback function to run on cancel
- * @param {number} options.isNotAnimated Not animated form
- * @param {number} options.transitionSpeed Transition speed in ms
- * @param {string} options.transitionEasingSlideDown Transition easing algorithm for slideDown()
- * @param {string} options.transitionEasingSlideUp Transition easing algorithm for slideUp()
- * @param {boolean} options.post POST or only cancel
+ * @param {object} opts Configuration
+ * @param {string} opts.selector Selector for links that should complete a form async
+ * @param {boolean} opts.isReplacing Whether to replace instead of insert after
+ * @param {string} opts.updateSelectors One or more containers that should update after POST
+ * @param {string} opts.errorContainerInsertAfter Selector where to place the new error container
+ * @param {string} opts.errorContainer The className of the error container
+ * @param {function} opts.funcProceedCondition Callback function that proceedes with completeFormAsyncPost(options)
+ * @param {function} opts.funcComplete Callback function to run on success
+ * @param {function} opts.funcCancel Callback function to run on cancel
+ * @param {number} opts.isNotAnimated Not animated form
+ * @param {number} opts.transitionSpeed Transition speed in ms
+ * @param {string} opts.transitionEasingSlideDown Transition easing algorithm for slideDown()
+ * @param {string} opts.transitionEasingSlideUp Transition easing algorithm for slideUp()
+ * @param {boolean} opts.post POST or only cancel
  * @return {boolean} Whether or not to proceed with regular link operation
  */
-VrtxAdmin.prototype.completeFormAsync = function completeFormAsync(options) {
+VrtxAdmin.prototype.completeFormAsync = function completeFormAsync(opts) {
   var args = arguments,
     vrtxAdm = this,
     _$ = vrtxAdm._$;
 
-  vrtxAdm.cachedBody.dynClick(options.selector, function (e) {
+  vrtxAdm.cachedBody.dynClick(opts.selector, function (e) {
 
-    var isReplacing = options.isReplacing || false,
-      funcBeforeComplete = options.funcBeforeComplete,
-      funcProceedCondition = options.funcProceedCondition,
-      funcComplete = options.funcComplete,
-      funcCancel = options.funcCancel,
-      transitionSpeed = options.transitionSpeed,
-      transitionEasingSlideDown = options.transitionEasingSlideDown,
-      transitionEasingSlideUp = options.transitionEasingSlideUp,
-      post = options.post || false,
-      link = _$(this),
-      isCancelAction = link.attr("name").toLowerCase().indexOf("cancel") != -1;
+    var link = _$(this),
+        isCancelAction = link.attr("name").toLowerCase().indexOf("cancel") != -1;
 
-    if (isCancelAction && !isReplacing) {
+    if (isCancelAction && !opts.isReplacing) {
+      var elem = $(".expandedForm");
       if(!options.isNotAnimated) {
         var animation = new VrtxAnimation({
-          elem: $(".expandedForm"),
-          animationSpeed: transitionSpeed,
-          easeIn: transitionEasingSlideDown,
-          easeOut: transitionEasingSlideUp,
+          elem: elem,
+          animationSpeed: opts.transitionSpeed,
+          easeIn: opts.transitionEasingSlideDown,
+          easeOut: opts.transitionEasingSlideUp,
           afterOut: function(animation) {
             animation.__opts.elem.remove();
           }
         });
         animation.bottomUp();
+      } else {
+        elem.remove();
       }
-      if(funcCancel) funcCancel();
+      if(opts.funcCancel) opts.funcCancel();
       e.preventDefault();
     } else {
-      if (!post) {
+      if (!opts.post) {
         e.stopPropagation();
-        if(!isCancelAction && funcBeforeComplete) {
-          funcBeforeComplete();
+        if(!isCancelAction && opts.funcBeforeComplete) {
+          opts.funcBeforeComplete();
         }
-        if (funcComplete && !isCancelAction) {
-          var returnVal = funcComplete(link);
-          return returnVal;
+        if (opts.funcComplete && !isCancelAction) {
+          return opts.funcComplete(link);
         } else {
           return;
         }
       } else {
-        options.form = link.closest("form");
-        options.link = link;
-        if (!isCancelAction && funcProceedCondition) {
-          funcProceedCondition(options);
+        opts.form = link.closest("form");
+        opts.link = link;
+        if (!isCancelAction && opts.funcProceedCondition) {
+          funcProceedCondition(opts);
         } else {
-          vrtxAdm.completeFormAsyncPost(options);
+          vrtxAdm.completeFormAsyncPost(opts);
         }
         e.stopPropagation();
         e.preventDefault();
@@ -3334,9 +3327,7 @@ VrtxAdmin.prototype.completeFormAsyncPost = function completeFormAsyncPost(opts)
        _$ = vrtxAdm._$,
       url = opts.form.attr("action"),
       modeUrl = location.href,
-      dataString = opts.form.serialize() + "&" + opts.link.attr("name"),
-      isReplacing = opts.isReplacing || false,
-      isUndecoratedService = opts.isUndecoratedService || false;
+      dataString = opts.form.serialize() + "&" + opts.link.attr("name");
 
   vrtxAdmin.serverFacade.postHtml(url, dataString, {
     success: function (results, status, resp) {
@@ -3362,7 +3353,7 @@ VrtxAdmin.prototype.completeFormAsyncPost = function completeFormAsyncPost(opts)
       if (vrtxAdm.hasErrorContainers(_$.parseHTML(results), opts.errorContainer)) {
         vrtxAdm.displayErrorContainers(_$.parseHTML(results), opts.form, opts.errorContainerInsertAfter, opts.errorContainer);
       } else {
-        if (isReplacing) {
+        if (opts.isReplacing) {
           internalAnimation(opts.form.parent(), function(animation) { 
             internalComplete(results);
           });
@@ -3377,7 +3368,7 @@ VrtxAdmin.prototype.completeFormAsyncPost = function completeFormAsyncPost(opts)
               sameMode = true;
             }
           }
-          if (isUndecoratedService || (pageIsMode && !sameMode) || (pageIsRevisions != remoteIsRevisions)) { // When we need the 'mode=' or 'action=revisions' HTML. TODO: should only run when updateSelector is inside content
+          if (opts.isUndecoratedService || (pageIsMode && !sameMode) || (pageIsRevisions != remoteIsRevisions)) { // When we need the 'mode=' or 'action=revisions' HTML. TODO: should only run when updateSelector is inside content
             vrtxAdm.serverFacade.getHtml(modeUrl, {
               success: function (results, status, resp) {
                 internalComplete(results);
@@ -3425,12 +3416,8 @@ VrtxAdmin.prototype.completeSimpleFormAsync = function completeSimpleFormAsync(o
     var startTime = new Date();
     var dataString = form.serialize() + "&" + encodeURIComponent(link.attr("name"));
     
-    if(opts.useClickVal) {
-      dataString += "=" + encodeURIComponent(link.val());
-    }
-    if(opts.extraParams) {
-      dataString += opts.extraParams;
-    }
+    if(opts.useClickVal)  dataString += "=" + encodeURIComponent(link.val());
+    if(opts.extraParams)  dataString += opts.extraParams;
     if(opts.fnBeforePost) {
       var retVal = opts.fnBeforePost(form, link);
       if(retVal === false) return;

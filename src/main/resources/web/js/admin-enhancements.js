@@ -3974,12 +3974,26 @@ function SetUrl(url) {
  * ARIA-boolean
  *
  * @this {VrtxAdmin}
+ * @param {string} ariaAttr The ARIA postfix
  * @param {string} idOrElm The id or jQElement
- * @param {boolean} isBusy If the id or element is busy
+ * @param {boolean} isTrue True or false
  */
 VrtxAdmin.prototype.ariaBool = function ariaBool(ariaAttr, idOrElm, isTrue) {
   var elm = (typeof idOrElm === "string") ? $(idOrElm) : idOrElm;
   elm.attr("aria-" + ariaAttr, isTrue ? "true" : "false");
+};
+
+/**
+ * ARIA-value
+ *
+ * @this {VrtxAdmin}
+ * @param {string} ariaAttr The ARIA postfix
+ * @param {string} idOrElm The id or jQElement
+ * @param {string} value Value to set
+ */
+VrtxAdmin.prototype.ariaVal = function ariaVal(ariaAttr, idOrElm, value) {
+  var elm = (typeof idOrElm === "string") ? $(idOrElm) : idOrElm;
+  elm.attr("aria-" + ariaAttr, value);
 };
 
 /**
@@ -3998,7 +4012,7 @@ VrtxAdmin.prototype.ariaBusy = function ariaBusy(idOrElm, isBusy) {
  *
  * @this {VrtxAdmin}
  * @param {string} idOrElm The id or jQElement
- * @param {boolean} isBusy If the id or element is busy
+ * @param {boolean} isBusy If the id or element is expanded
  */
 VrtxAdmin.prototype.ariaExpanded = function ariaExpanded(idOrElm, isExpanded) {
   this.ariaBool("expanded", idOrElm, isExpanded);
@@ -4010,7 +4024,7 @@ VrtxAdmin.prototype.ariaExpanded = function ariaExpanded(idOrElm, isExpanded) {
  *
  * @this {VrtxAdmin}
  * @param {string} idOrElm The id or jQElement
- * @param {boolean} isBusy If the id or element is busy
+ * @param {boolean} isBusy If the id or element is hidden
  */
 VrtxAdmin.prototype.ariaHidden = function ariaHidden(idOrElm, isHidden) {
   this.ariaBool("hidden", idOrElm, isHidden);

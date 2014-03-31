@@ -151,7 +151,7 @@ resourcetype structured-master {
       ##
       [def link resource-prop(".", "link-other-language")]
       [if link != null]
-        <a id="vrtx-change-language-link" href="[val link]">[localized "link-language"]</a>
+        <a id="vrtx-change-language-link" href="[val link]">[localized "link-language"]<span class="offscreen-screenreader"> [localized "link-language-offscreen"]</span></a>
       [endif]
       ##
     }
@@ -232,6 +232,7 @@ resourcetype structured-master {
     completed : (en : "not available", no : "ikke tilgjengelig", nn : "ikkje tilgjengeleg"),
     completedMsg : (en : "The project is no longer available", no : "Oppgaven er ikke lenger tilgjengelig", nn : "Oppgaven er ikkje lenger tilgjengeleg"),
     link-language: (en : "Norwegian", no : "English", nn : "English"),
+    link-language-offscreen: (en : "version of this page", no : "version of this page", nn : "version of this page"),
     link-other-language {
       en: (en : "Link to norwegian version", no : "Link to english version", nn : "Link to english version"),
       no: (en : "Lenke til norsk versjon", no : "Lenke til engelsk versjon", nn : "Lenke til engelsk versjon"),

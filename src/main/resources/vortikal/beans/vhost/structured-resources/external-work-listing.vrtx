@@ -93,7 +93,7 @@ resourcetype external-work-listing {
       ##
       [def link resource-prop(".", "link-other-language")]
       [if link != null]
-        <a id="vrtx-change-language-link" href="[val link]">[localized "link-language"]</a>
+        <a id="vrtx-change-language-link" href="[val link]">[localized "link-language"]<span class="offscreen-screenreader"> [localized "link-language-offscreen"]</span></a>
       [endif]
       ##
     }
@@ -201,6 +201,7 @@ resourcetype external-work-listing {
     scope : (en : "Scope", no : "Omfang", nn : "Omfang"),
     content : (en : "Content", no :"Innhold", nn:"Innhald"),
     link-language : (en : "Norwegian", no : "English", nn : "English"),
+    link-language-offscreen: (en : "version of this page", no : "version of this page", nn : "version of this page"),
     link-other-language {
       en: (en : "Link to norwegian version", no : "Link to english version", nn : "Link to english version"),
       no: (en : "Lenke til norsk versjon", no : "Lenke til engelsk versjon", nn : "Lenke til engelsk versjon"),

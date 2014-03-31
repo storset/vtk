@@ -19,10 +19,10 @@ var VrtxAnimationInterface = dejavu.Interface.declare({
   __afterMove: function() {},
   __horizontalMove: function(dir) {},
   __verticalMove: function(dir) {},
-  rightIn: function() {},
-  leftOut: function() {},
-  topDown: function() {},
-  bottomUp: function() {},
+  rightIn: function() {},
+  leftOut: function() {},
+  topDown: function() {},
+  bottomUp: function() {},
   update: function(opts) {},
   updateElem: function(elem) {}
 });
@@ -83,7 +83,7 @@ var VrtxAnimation = dejavu.Class.declare({
     }
 
     var animation = this;
-    if(animation.$static.cssTransform == null || animation.__opts.preferJSAnim) { // JS pixel pushing
+    if(true || animation.$static.cssTransform == null || animation.__opts.preferJSAnim) { // JS pixel pushing
       var easing = (dir === "in") ? "easeIn" : "easeOut";
       var speed = animation.__opts.animationSpeed || animation.$static.animationSpeed;
       animation.__opts.elem.animate({
@@ -108,7 +108,7 @@ var VrtxAnimation = dejavu.Class.declare({
     var height = this.__prepareMove()[1];
 
     var animation = this;
-    if(animation.$static.cssTransform == null || animation.__opts.preferJSAnim) { // JS pixel pushing
+    if(true || animation.$static.cssTransform == null || animation.__opts.preferJSAnim) { // JS pixel pushing
       var easing = (dir === "in") ? "easeIn" : "easeOut";
       var speed = animation.__opts.animationSpeed || animation.$static.animationSpeed;
       animation.__opts.elem[(dir === "in") ? "slideDown" : "slideUp"](
@@ -153,16 +153,16 @@ var VrtxAnimation = dejavu.Class.declare({
       }, 5);
     }
   },
-  rightIn: function() {
+  rightIn: function() {
     this.__horizontalMove("in");
   },
-  leftOut: function() {
+  leftOut: function() {
     this.__horizontalMove("out");
   },
-  topDown: function() {
+  topDown: function() {
     this.__verticalMove("in");
   },
-  bottomUp: function() {
+  bottomUp: function() {
     this.__verticalMove("out");
   },
   update: function(opts) {

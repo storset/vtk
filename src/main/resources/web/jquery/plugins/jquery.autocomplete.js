@@ -25,6 +25,7 @@
  * [Oct. 2013] Added option "finiteScroll" for not scrolling to top from bottom and vice versa on key/page up and down (set default to true)
  * [Oct. 2013] Added string constants to CLASSES object-literal for all CSS classes inside $.Autocompleter.Select
  * [Oct. 2013] Added option "updateInput" to make it possible to disable updating of input field on select (set default to true)
+ * [Mar. 2014] Added ARIA status and busy
  */
 
 ;

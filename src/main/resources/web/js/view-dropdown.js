@@ -53,7 +53,7 @@ $(document).ready(function() {
   $(document).off("click", ".vrtx-dropdown-component-not-toggled a.vrtx-dropdown-close-link")
               .on("click", ".vrtx-dropdown-component-not-toggled a.vrtx-dropdown-close-link", function(e) {
     var link = $(this);
-    var wrapper = link.next(".vrtx-dropdown-wrapper");      
+    var wrapper = link.closest(".vrtx-dropdown-wrapper");      
     wrapper.slideUp("fast", function() {
       ariaExpanded(wrapper, false);
     });

@@ -1865,7 +1865,7 @@ function userProcessExistingFiles(opts) {
 
   var filenamesLen = opts.filenames.length;
   var userProcessNextFilename = function() {
-    if(filenamesLen) {
+    if(opts.filenames.length) {
       var filename = opts.filenames.pop();
       var filenameFixed = opts.filenamesFixed != null ? opts.filenamesFixed.pop() : filename;
       if(filenamesLen == 1 && opts.numberOfFiles == 1) {
@@ -3323,57 +3323,49 @@ VrtxAdmin.prototype.completeFormAsync = function completeFormAsync(options) {
  * Complete a form async POST
  *
  * @this {VrtxAdmin}
- * @param {object} options Configuration
- * @param {object} options.form The form
- * @param {object} options.link The action link
+ * @param {object} opts Configuration
+ * @param {object} opts.form The form
+ * @param {object} opts.link The action link
  */
-VrtxAdmin.prototype.completeFormAsyncPost = function completeFormAsyncPost(options) {
+VrtxAdmin.prototype.completeFormAsyncPost = function completeFormAsyncPost(opts) {
+  if(opts.funcBeforeComplete) opts.funcBeforeComplete();
+
   var vrtxAdm = vrtxAdmin,
-    _$ = vrtxAdm._$,
-    selector = options.selector,
-    isReplacing = options.isReplacing || false,
-    isUndecoratedService = options.isUndecoratedService || false,
-    updateSelectors = options.updateSelectors,
-    errorContainer = options.errorContainer,
-    errorContainerInsertAfter = options.errorContainerInsertAfter,
-    funcBeforeComplete = options.funcBeforeComplete,
-    funcComplete = options.funcComplete,
-    transitionSpeed = options.transitionSpeed,
-    transitionEasingSlideDown = options.transitionEasingSlideDown,
-    transitionEasingSlideUp = options.transitionEasingSlideUp,
-    form = options.form,
-    link = options.link,
-    url = form.attr("action");
-  
-  if(funcBeforeComplete) {
-    funcBeforeComplete();
-  }
-  
-  var dataString = form.serialize() + "&" + link.attr("name"),
-      modeUrl = location.href;
+       _$ = vrtxAdm._$,
+      url = opts.form.attr("action"),
+      modeUrl = location.href,
+      dataString = opts.form.serialize() + "&" + opts.link.attr("name"),
+      isReplacing = opts.isReplacing || false,
+      isUndecoratedService = opts.isUndecoratedService || false;
 
   vrtxAdmin.serverFacade.postHtml(url, dataString, {
     success: function (results, status, resp) {
-      if (vrtxAdm.hasErrorContainers(_$.parseHTML(results), errorContainer)) {
-        vrtxAdm.displayErrorContainers(_$.parseHTML(results), form, errorContainerInsertAfter, errorContainer);
+      var internalComplete = function(res) {
+        for (var i = opts.updateSelectors.length; i--;) {
+          var outer = vrtxAdm.outerHTML(_$.parseHTML(res), opts.updateSelectors[i]);
+          vrtxAdm.cachedBody.find(opts.updateSelectors[i]).replaceWith(outer);
+        }
+        if (opts.funcComplete) opts.funcComplete();
+      };
+      var internalAnimation = function(elem, afterOut) {
+        if(opts.isNotAnimated) return;
+        var animation = new VrtxAnimation({
+          elem: elem,
+          animationSpeed: opts.transitionSpeed,
+          easeIn: opts.transitionEasingSlideDown,
+          easeOut: opts.transitionEasingSlideUp,
+          afterOut: afterOut
+        });
+        animation.bottomUp();
+      };
+    
+      if (vrtxAdm.hasErrorContainers(_$.parseHTML(results), opts.errorContainer)) {
+        vrtxAdm.displayErrorContainers(_$.parseHTML(results), opts.form, opts.errorContainerInsertAfter, opts.errorContainer);
       } else {
         if (isReplacing) {
-          var animation = new VrtxAnimation({
-            elem: form.parent(),
-            animationSpeed: transitionSpeed,
-            easeIn: transitionEasingSlideDown,
-            easeOut: transitionEasingSlideUp,
-            afterOut: function(animation) {
-              for (var i = updateSelectors.length; i--;) {
-                var outer = vrtxAdm.outerHTML(_$.parseHTML(results), updateSelectors[i]);
-                vrtxAdm.cachedBody.find(updateSelectors[i]).replaceWith(outer);
-              }
-              if (funcComplete) {
-                funcComplete();
-              }
-            }
+          internalAnimation(opts.form.parent(), function(animation) { 
+            internalComplete(results);
           });
-          animation.bottomUp();
         } else {
           var sameMode = false;
           var remoteIsMode = url.indexOf("&mode=") !== -1;
@@ -3386,49 +3378,19 @@ VrtxAdmin.prototype.completeFormAsyncPost = function completeFormAsyncPost(optio
             }
           }
           if (isUndecoratedService || (pageIsMode && !sameMode) || (pageIsRevisions != remoteIsRevisions)) { // When we need the 'mode=' or 'action=revisions' HTML. TODO: should only run when updateSelector is inside content
-            vrtxAdmin.serverFacade.getHtml(modeUrl, {
+            vrtxAdm.serverFacade.getHtml(modeUrl, {
               success: function (results, status, resp) {
-                for (var i = updateSelectors.length; i--;) {
-                  var outer = vrtxAdm.outerHTML(_$.parseHTML(results), updateSelectors[i]);
-                  vrtxAdm.cachedBody.find(updateSelectors[i]).replaceWith(outer);
-                }
-                if (funcComplete) {
-                  funcComplete();
-                }
-                if(!options.isNotAnimated) {
-                  var animation = new VrtxAnimation({
-                    elem: form.parent(),
-                    animationSpeed: transitionSpeed,
-                    easeIn: transitionEasingSlideDown,
-                    easeOut: transitionEasingSlideUp,
-                    afterOut: function(animation) {
-                      animation.__opts.elem.remove();
-                    }
-                  });
-                  animation.bottomUp();
-                }
+                internalComplete(results);
+                internalAnimation(opts.form.parent(), function(animation) {
+                  animation.__opts.elem.remove();
+                });
               }
             });
           } else {
-            for (var i = updateSelectors.length; i--;) {
-              var outer = vrtxAdm.outerHTML(_$.parseHTML(results), updateSelectors[i]);
-              vrtxAdm.cachedBody.find(updateSelectors[i]).replaceWith(outer);
-            }
-            if (funcComplete) {
-              funcComplete();
-            }
-            if(!options.isNotAnimated) {
-              var animation = new VrtxAnimation({
-                elem: form.parent(),
-                animationSpeed: transitionSpeed,
-                easeIn: transitionEasingSlideDown,
-                easeOut: transitionEasingSlideUp,
-                afterOut: function(animation) {
-                  animation.__opts.elem.remove();
-                }
-              });
-              animation.bottomUp();
-            }
+            internalComplete(results);
+            internalAnimation(opts.form.parent(), function(animation) {
+              animation.__opts.elem.remove();
+            });
           }
         }
       }
@@ -3594,7 +3556,7 @@ VrtxAdmin.prototype.hasErrorContainers = function hasErrorContainers(results, er
  */
 VrtxAdmin.prototype.displayErrorContainers = function displayErrorContainers(results, form, errorContainerInsertAfter, errorContainer) {
   var wrapper = form.find(errorContainerInsertAfter).parent(),
-    _$ = this._$;
+      _$ = this._$;
   if (wrapper.find("div." + errorContainer).length) {
     wrapper.find("div." + errorContainer).html(_$(results).find("div." + errorContainer).html());
   } else {
@@ -3604,8 +3566,7 @@ VrtxAdmin.prototype.displayErrorContainers = function displayErrorContainers(res
 };
 
 VrtxAdmin.prototype.removeErrorContainers = function removeErrorContainers(form, errorContainerInsertAfter, errorContainer) {
-  var wrapper = form.find(errorContainerInsertAfter).parent(),
-    _$ = this._$;
+  var wrapper = form.find(errorContainerInsertAfter).parent();
   if (wrapper.find("div." + errorContainer).length) {
     wrapper.find("div." + errorContainer).remove();
   }
@@ -3618,9 +3579,8 @@ VrtxAdmin.prototype.removeErrorContainers = function removeErrorContainers(form,
  * @param {string} msg The message
  */
 VrtxAdmin.prototype.displayErrorMsg = function displayErrorMsg(msg) {
-  var vrtxAdm = this;
-  if (!vrtxAdm.ignoreAjaxErrors) {
-    vrtxAdm.displayMsg(msg, "error");
+  if (!this.ignoreAjaxErrors) {
+    this.displayMsg(msg, "error");
   }
 };
 
@@ -3644,15 +3604,12 @@ VrtxAdmin.prototype.displayInfoMsg = function displayInfoMsg(msg) {
  * @param {string} type "info" or "error" message
  */
 VrtxAdmin.prototype.displayMsg = function displayMsg(msg, type) {
-  var vrtxAdm = this,
-    _$ = vrtxAdm._$;
-
   var current = (type === "info") ? "infomessage" : "errormessage";
   var other = (type === "info") ? "errormessage" : "infomessage";
   var role = (type === "info") ? "status" : "alert";
 
-  var currentMsg = vrtxAdm.cachedAppContent.find("> ." + current);
-  var otherMsg = vrtxAdm.cachedAppContent.find("> ." + other);
+  var currentMsg = this.cachedAppContent.find("> ." + current);
+  var otherMsg = this.cachedAppContent.find("> ." + other);
   if (typeof msg !== "undefined" && msg !== "") {
     if (currentMsg.length) {
       currentMsg.html(msg).fadeTo(100, 0.25).fadeTo(100, 1);
@@ -3660,7 +3617,7 @@ VrtxAdmin.prototype.displayMsg = function displayMsg(msg, type) {
       otherMsg.html(msg).removeClass(other).addClass(current).fadeTo(100, 0.25).fadeTo(100, 1);
       otherMsg.attr("role", role);
     } else {
-      vrtxAdm.cachedAppContent.prepend("<div class='" + current + " message' role='" + role +"'>" + msg + "</div>");
+      this.cachedAppContent.prepend("<div class='" + current + " message' role='" + role +"'>" + msg + "</div>");
     }
   } else {
     if (currentMsg.length) {
@@ -3679,11 +3636,8 @@ VrtxAdmin.prototype.displayMsg = function displayMsg(msg, type) {
  * @param {string} type "info" or "error" message
  */
 VrtxAdmin.prototype.removeMsg = function removeMsg(type) {
-  var vrtxAdm = this,
-    _$ = vrtxAdm._$;
-
   var current = (type === "info") ? "infomessage" : "errormessage";
-  var currentMsg = vrtxAdm.cachedAppContent.find("> ." + current);
+  var currentMsg = this.cachedAppContent.find("> ." + current);
   if (currentMsg.length) {
     currentMsg.remove();
   }

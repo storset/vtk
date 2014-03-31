@@ -1036,7 +1036,8 @@ VrtxAdmin.prototype.initDropdowns = function initDropdowns() {
   this.dropdownPlain("#locale-selection");
   this.initResourceTitleDropdown();
   this.dropdown({
-    selector: "ul.manage-create"
+    selector: "ul.manage-create",
+    title: vrtxAdmin.messages.dropdowns.createTitle
   });
   this.initPublishingDropdown();
   var vrtxAdm = this;
@@ -1060,7 +1061,8 @@ VrtxAdmin.prototype.initResourceTitleDropdown = function initResourceTitleDropdo
     proceedCondition: function (numOfListElements) {
       return numOfListElements > 1;
     },
-    calcTop: true
+    calcTop: true,
+    title: vrtxAdmin.messages.dropdowns.resourceTitle
   });
 };
 
@@ -1074,7 +1076,8 @@ VrtxAdmin.prototype.initPublishingDropdown = function initPublishingDropdown() {
     selector: "ul.publishing-document",
     small: true,
     calcTop: true,
-    calcLeft: true
+    calcLeft: true,
+    title: vrtxAdmin.messages.dropdowns.publishingTitle
   });
 };
 
@@ -1096,10 +1099,16 @@ VrtxAdmin.prototype.dropdownPlain = function dropdownPlain(selector) {
   // Remove ':' and replace <span> with <a>
   var header = parent.find(selector + "-header");
   var headerText = header.text();
-  // outerHtml
-  header.replaceWith("<a href='javascript:void(0);' id='" + selector.substring(1) + "-header'>" + headerText.substring(0, headerText.length - 1) + "</a>");
+  
+  var id = languageMenu.attr("id");
+  if(!id || id == "") {
+    id = "dropdown-shortcut-menu-container-" + Math.round(+new Date() * Math.random());
+    languageMenu.attr("id", id);
+  }
 
+  header.replaceWith("<a href='javascript:void(0);' aria-haspopup='true' aria-controls='" + id + "' id='" + selector.substring(1) + "-header'>" + headerText.substring(0, headerText.length - 1) + "</a>");
   languageMenu.addClass("dropdown-shortcut-menu-container");
+  vrtxAdm.ariaExpanded(languageMenu, false);
 
   vrtxAdm.cachedBody.on("click", selector + "-header", function (e) {
     vrtxAdm.closeDropdowns();
@@ -1134,16 +1143,18 @@ VrtxAdmin.prototype.dropdown = function dropdown(options) {
     if(options.small) {
       list.addClass("dropdown-shortcut-menu-small");
     }
+    
+    var id = "dropdown-shortcut-menu-container-" + Math.round(+new Date() * Math.random());
 
     // Move listelements except .first into container
     var listParent = list.parent();
-    listParent.append("<div class='dropdown-shortcut-menu-container'><ul>" + list.html() + "</ul></div>");
+    listParent.append("<div id='" + id + "'class='dropdown-shortcut-menu-container' aria-expanded='false' aria-hidden='true'><ul>" + list.html() + "</ul></div>");
 
     var startDropdown = options.start ? ":nth-child(-n+" + options.start + ")" : ".first";
     var dropdownClickArea = options.start ? ":nth-child(3)" : ".first";
 
     list.find("li").not(startDropdown).remove();
-    list.find("li" + dropdownClickArea).append("<span tabindex='0' class='dropdown-shortcut-menu-click-area' />");
+    list.find("li" + dropdownClickArea).append("<span title='" + options.title + "' role='link' aria-haspopup='true' aria-controls='" + id + "' tabindex='0' class='dropdown-shortcut-menu-click-area' />");
     var shortcutMenu = listParent.find(".dropdown-shortcut-menu-container");
     shortcutMenu.find("li" + startDropdown).remove();
     
@@ -1193,7 +1204,10 @@ VrtxAdmin.prototype.openDropdown = function openDropdown(elm) {
   var animation = new VrtxAnimation({
     elem: elm.not(":visible"),
     animationSpeed: vrtxAdmin.transitionDropdownSpeed,
-    easeIn: "swing"
+    easeIn: "swing",
+    after: function(animation) {
+      vrtxAdmin.ariaExpanded(animation.__opts.elem, true);
+    }
   });
   animation.topDown();
 };
@@ -1207,7 +1221,10 @@ VrtxAdmin.prototype.closeDropdowns = function closeDropdowns() {
   var animation = new VrtxAnimation({
     elem: this._$(".dropdown-shortcut-menu-container:visible"),
     animationSpeed: vrtxAdmin.transitionDropdownSpeed,
-    easeIn: "swing"
+    easeIn: "swing",
+    after: function(animation) {
+      vrtxAdmin.ariaExpanded(animation.__opts.elem, false);
+    }
   });
   animation.bottomUp();
 };
@@ -2421,7 +2438,8 @@ function editorInteraction(vrtxAdm, _$) {
     // Dropdowns
     vrtxAdm.dropdownPlain("#editor-help-menu");
     vrtxAdm.dropdown({
-      selector: "ul#editor-menu"
+      selector: "ul#editor-menu",
+      title: vrtxAdm.messages.dropdowns.editorTitle
     });
 
     // Save shortcut and AJAX
@@ -3938,15 +3956,49 @@ function SetUrl(url) {
 \*-------------------------------------------------------------------*/
 
 /**
- * ARIA-busy
+ * ARIA-boolean
  *
  * @this {VrtxAdmin}
  * @param {string} idOrElm The id or jQElement
  * @param {boolean} isBusy If the id or element is busy
  */
-VrtxAdmin.prototype.ariaBusy = function wrap(idOrElm, isBusy) {
+VrtxAdmin.prototype.ariaBool = function ariaBool(ariaAttr, idOrElm, isTrue) {
   var elm = (typeof idOrElm === "string") ? $(idOrElm) : idOrElm;
-  elm.attr("aria-busy", isBusy ? "true" : "false");
+  elm.attr("aria-" + ariaAttr, isTrue ? "true" : "false");
+};
+
+/**
+ * ARIA-busy (for loading regions)
+ *
+ * @this {VrtxAdmin}
+ * @param {string} idOrElm The id or jQElement
+ * @param {boolean} isBusy If the id or element is busy
+ */
+VrtxAdmin.prototype.ariaBusy = function ariaBusy(idOrElm, isBusy) {
+  this.ariaBool("busy", idOrElm, isBusy);
+};
+
+/**
+ * ARIA-expanded triggers ARIA-hidden (for expandable regions)
+ *
+ * @this {VrtxAdmin}
+ * @param {string} idOrElm The id or jQElement
+ * @param {boolean} isBusy If the id or element is busy
+ */
+VrtxAdmin.prototype.ariaExpanded = function ariaExpanded(idOrElm, isExpanded) {
+  this.ariaBool("expanded", idOrElm, isExpanded);
+  this.ariaBool("hidden", idOrElm, !isExpanded);
+};
+
+/**
+ * ARIA-hidden (for hidden regions)
+ *
+ * @this {VrtxAdmin}
+ * @param {string} idOrElm The id or jQElement
+ * @param {boolean} isBusy If the id or element is busy
+ */
+VrtxAdmin.prototype.ariaHidden = function ariaHidden(idOrElm, isHidden) {
+  this.ariaBool("hidden", idOrElm, isHidden);
 };
 
 /**

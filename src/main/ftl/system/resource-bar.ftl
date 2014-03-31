@@ -59,6 +59,12 @@
     publish: {
       unpublishDateBefore: '${vrtx.getMsg("publishing.edit.invalid.unpublishDateBefore")}',
       unpublishDateNonExisting: '${vrtx.getMsg("publishing.edit.invalid.unpublishDateNonExisting")}'
+    },
+    dropdowns: {
+      createTitle: '${vrtx.getMsg("dropdowns.create.title")}', 
+      resourceTitle: '${vrtx.getMsg("dropdowns.resource.title")}',
+      editorTitle: '${vrtx.getMsg("dropdowns.editor.title")}',
+      publishingTitle: '${vrtx.getMsg("dropdowns.publishing.title")}'
     }
   }
   

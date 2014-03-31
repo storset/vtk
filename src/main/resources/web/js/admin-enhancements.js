@@ -1757,10 +1757,11 @@ VrtxAdmin.prototype.initFileUpload = function initFileUpload() {
     form.find("#fake-file").val(filePath);
   });
 
-  inputFile.hover(function () { _$("a.vrtx-file-upload").addClass("hover");
-  }, function () {              _$("a.vrtx-file-upload").removeClass("hover"); });
-  inputFile.focus(function () { _$("a.vrtx-file-upload").addClass("hover");    })
-  .blur(function() {            _$("a.vrtx-file-upload").removeClass("hover"); });
+  var fileUploadLink = _$("a.vrtx-file-upload");
+  inputFile.hover(function () { fileUploadLink.addClass("hover");
+  }, function () {              fileUploadLink.removeClass("hover"); });
+  inputFile.focus(function () { fileUploadLink.addClass("hover");    })
+  .blur(function() {            fileUploadLink.removeClass("hover"); });
   
   $("<a id='upload-focus' style='display: inline-block; outline: none;' tabindex='-1' />").insertBefore("#file");
   $("#upload-focus")[0].focus();

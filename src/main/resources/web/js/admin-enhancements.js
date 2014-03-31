@@ -3301,7 +3301,7 @@ VrtxAdmin.prototype.completeFormAsync = function completeFormAsync(opts) {
         opts.form = link.closest("form");
         opts.link = link;
         if (!isCancelAction && opts.funcProceedCondition) {
-          funcProceedCondition(opts);
+          opts.funcProceedCondition(opts);
         } else {
           vrtxAdm.completeFormAsyncPost(opts);
         }

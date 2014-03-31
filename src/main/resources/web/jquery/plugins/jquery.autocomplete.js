@@ -25,7 +25,7 @@
  * [Oct. 2013] Added option "finiteScroll" for not scrolling to top from bottom and vice versa on key/page up and down (set default to true)
  * [Oct. 2013] Added string constants to CLASSES object-literal for all CSS classes inside $.Autocompleter.Select
  * [Oct. 2013] Added option "updateInput" to make it possible to disable updating of input field on select (set default to true)
- * [Mar. 2014] Added ARIA status and busy
+ * [Mar. 2014] Added ARIA status message and busy attribute to autocomplete field when loading
  */
 
 ;
@@ -274,6 +274,7 @@
       currentValue = lastWord(currentValue);
       if (currentValue.length >= options.minChars) {
         $input.addClass(options.loadingClass);
+        $input.attr("aria-busy", "true");
         if (!options.matchCase)
           currentValue = currentValue.toLowerCase();
         request(currentValue, receiveData, hideResultsNow);
@@ -427,6 +428,7 @@
 
     function stopLoading() {
       $input.removeClass(options.loadingClass);
+      $input.attr("aria-busy", "false");
     }
     ;
 
@@ -816,7 +818,18 @@
           top: offset.top + input.offsetHeight,
           left: offset.left + options.adjustLeft
         }).show();
-
+        
+        // ARIA status msg
+        var form = inputField.closets("form");
+        var statusMsg = $("html").attr("lang") == "en" ? (listItems.length <= 0 ? "No results" : (listItems.length + (listItems.length > 1 ? " results are" : " result is") + " available, use up and down arrow keys to navigate."))
+                                                       : (listItems.length <= 0 ? "Ingen resultater" : + (listItems.length + (listItems.length > 1 ? " resultater" : " resultat") + " er tilgjengelig, bruk opp og ned piltaster for å navigere."));
+        var statusElem = form.find(".ui-helper-hidden-accessible");
+        if(statusElem.length) {
+          statusElem.text(statusMsg);
+        } else {
+          form.prepend('<span role="status" aria-live="polite" class="ui-helper-hidden-accessible">' + statusMsg + '</span>');
+        }
+        
         if (options.scroll && (listItems.length > options.resultsBeforeScroll || options.resultsBeforeScroll == 0)) {
           list.scrollTop(0);
           list.css( {

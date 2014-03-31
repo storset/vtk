@@ -3821,7 +3821,9 @@ VrtxAdmin.prototype.serverFacade = {
   /**
    * Error Ajax handler
    * 
-   * XXX: More specific error-messages on what action that failed with function-origin
+   * TODO: More specific error-messages on what action that failed with function-origin
+   * TODO: Maybe a little to complex (CC: 20) but as it is rather straightforward what's going on in it.
+   *       is probably enough to move to 2 code portion for status==0 and status==404 into own functions
    *      
    * @this {serverFacade}
    * @param {object} xhr The XMLHttpRequest object

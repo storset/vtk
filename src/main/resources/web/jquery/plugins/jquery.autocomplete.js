@@ -821,6 +821,10 @@
         
         // ARIA status msg
         var form = inputField.closest("form");
+        var formFieldset = form.find("fieldset");
+        if(formFieldset.length) {
+          form = formFieldset;
+        }
         var statusMsg = $("html").attr("lang") == "en" ? (listItems.length <= 0 ? "No results" 
                                                                                 : (listItems.length + (listItems.length > 1 ? " results are" 
                                                                                                                             : " result is") + " available, use up and down arrow keys to navigate."))

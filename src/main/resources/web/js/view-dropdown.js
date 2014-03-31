@@ -52,8 +52,9 @@ $(document).ready(function() {
   });
   $(document).off("click", ".vrtx-dropdown-component-not-toggled a.vrtx-dropdown-close-link")
               .on("click", ".vrtx-dropdown-component-not-toggled a.vrtx-dropdown-close-link", function(e) {
-              
-    $(this).closest(".vrtx-dropdown-wrapper").slideUp("fast", function() {
+    var link = $(this);
+    var wrapper = link.next(".vrtx-dropdown-wrapper");      
+    wrapper.slideUp("fast", function() {
       ariaExpanded(wrapper, false);
     });
     e.stopPropagation();

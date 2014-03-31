@@ -723,8 +723,11 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
             } else if(existingFilenamesField.length) {
               var existingFilenames = existingFilenamesField.text().split("#");
               var numberOfFiles = parseInt(resultElm.find("#copy-move-number-of-files").text(), 10);
-              userProcessExistingFiles(existingFilenames, null, numberOfFiles, 
-                function() {
+              userProcessExistingFiles({
+                filenames: existingFilenames,
+                filenamesFixed: null,
+                numberOfFiles: numberOfFiles, 
+                completeFn: function() {
                   var skippedFiles = "";
                   for(key in vrtxAdm.uploadCopyMoveSkippedFiles) {
                     skippedFiles += key + ",";
@@ -734,9 +737,9 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
                   cancelFn();
                   link.click();
                 },
-                cancelFn,
-                true
-              );
+                cancelFn: cancelFn,
+                isAllSkippedEqualComplete: true
+              });
             } else {
               form.find("#existing-skipped-files").remove();
               var copyMoveAnimation = new VrtxAnimation({
@@ -1827,11 +1830,14 @@ function ajaxUpload(options) {
             var existingFilenamesFixedField = _$(result).find("#file-upload-existing-filenames-fixed");
             var existingFilenames = existingFilenamesField.text().split("#");
             var existingFilenamesFixed = existingFilenamesFixedField.text().split("#");
-            userProcessExistingFiles(existingFilenames, existingFilenamesFixed, numberOfFiles, 
-              function() {
+            userProcessExistingFiles(
+              filenames: existingFilenames,
+              filenamesFixed: existingFilenamesFixed,
+              numberOfFiles: numberOfFiles, 
+              completeFn: function() {
                 ajaxUploadPerform(opts, size);
               },
-              function() {
+              cancelFn: function() {
                 vrtxAdm.uploadCopyMoveSkippedFiles = {};;
                 var animation = new VrtxAnimation({
                   elem: opts.form.parent(),
@@ -1841,7 +1847,7 @@ function ajaxUpload(options) {
                 });
                 animation.bottomUp();
               },
-              false
+              isAllSkippedEqualComplete: false
             );
           } else {
             ajaxUploadPerform(opts, size);
@@ -1853,15 +1859,15 @@ function ajaxUpload(options) {
   return false;
 }
 
-function userProcessExistingFiles(filenames, filenamesFixed, numberOfFiles, completeFn, cancelFn, isAllSkippedEqualComplete) {
+function userProcessExistingFiles(opts) {
   var vrtxAdm = vrtxAdmin;
 
-  var filenamesLen = filenames.length;
+  var filenamesLen = opts.filenames.length;
   var userProcessNextFilename = function() {
-    if(filenames.length) {
-      var filename = filenames.pop();
-      var filenameFixed = filenamesFixed != null ? filenamesFixed.pop() : filename;
-      if(filenamesLen == 1 && numberOfFiles == 1) {
+    if(filenamesLen) {
+      var filename = opts.filenames.pop();
+      var filenameFixed = opts.filenamesFixed != null ? opts.filenamesFixed.pop() : filename;
+      if(filenamesLen == 1 && opts.numberOfFiles == 1) {
         var skipOverwriteDialogOpts = {
           msg: filenameFixed,
           title: vrtxAdm.messages.upload.existing.title,
@@ -1883,7 +1889,7 @@ function userProcessExistingFiles(filenames, filenamesFixed, numberOfFiles, comp
           }]
         };
       }
-      skipOverwriteDialogOpts.onCancel = cancelFn;
+      skipOverwriteDialogOpts.onCancel = opts.cancelFn;
       var userDecideExistingFileDialog = new VrtxConfirmDialog(skipOverwriteDialogOpts);
       userDecideExistingFileDialog.open();
     } else { // User has decided for all existing uris
@@ -1893,10 +1899,10 @@ function userProcessExistingFiles(filenames, filenamesFixed, numberOfFiles, comp
            numberOfSkippedFiles++;
          }
        }
-       if(numberOfFiles > numberOfSkippedFiles || isAllSkippedEqualComplete) {
-         completeFn();
+       if(opts.numberOfFiles > numberOfSkippedFiles || opts.isAllSkippedEqualComplete) {
+         opts.completeFn();
        } else {
-         cancelFn();
+         opts.cancelFn();
       }
     }
   }

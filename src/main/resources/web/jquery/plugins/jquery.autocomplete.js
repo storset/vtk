@@ -820,7 +820,7 @@
         }).show();
         
         // ARIA status msg
-        var form = inputField.closets("form");
+        var form = inputField.closest("form");
         var statusMsg = $("html").attr("lang") == "en" ? (listItems.length <= 0 ? "No results" : (listItems.length + (listItems.length > 1 ? " results are" : " result is") + " available, use up and down arrow keys to navigate."))
                                                        : (listItems.length <= 0 ? "Ingen resultater" : + (listItems.length + (listItems.length > 1 ? " resultater" : " resultat") + " er tilgjengelig, bruk opp og ned piltaster for å navigere."));
         var statusElem = form.find(".ui-helper-hidden-accessible");

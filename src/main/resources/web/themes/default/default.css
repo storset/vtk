@@ -3103,6 +3103,15 @@ table.resourceInfo.revisions tr:nth-child(even) td {
   text-decoration:underline;
 }
 
+.offscreen {
+  position:absolute;
+  left:-10000px;
+  top:auto;
+  width:1px;
+  height:1px;
+  overflow:hidden;
+}
+
 /* ^ System message */
 
 /* Tab message */

@@ -1830,7 +1830,7 @@ function ajaxUpload(options) {
             var existingFilenamesFixedField = _$(result).find("#file-upload-existing-filenames-fixed");
             var existingFilenames = existingFilenamesField.text().split("#");
             var existingFilenamesFixed = existingFilenamesFixedField.text().split("#");
-            userProcessExistingFiles(
+            userProcessExistingFiles({
               filenames: existingFilenames,
               filenamesFixed: existingFilenamesFixed,
               numberOfFiles: numberOfFiles, 
@@ -1848,7 +1848,7 @@ function ajaxUpload(options) {
                 animation.bottomUp();
               },
               isAllSkippedEqualComplete: false
-            );
+            });
           } else {
             ajaxUploadPerform(opts, size);
           }

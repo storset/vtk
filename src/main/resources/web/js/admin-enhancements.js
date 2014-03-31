@@ -577,6 +577,8 @@ VrtxAdmin.prototype.globalAsyncComplete = function globalAsyncComplete() {
 /*
  * Domains init
  *
+ * TODO: Too big and complex (HV: 6322, CC: 22)
+ *
  * * is based on id of body-tag
  *
  */

@@ -400,7 +400,7 @@ VrtxEditor.prototype.initCKEditors = function initCKEditors() {
  *
  * TODO: Readable opts-parameter API (less parameters)
  * TODO: Should be less-hardcoded (edit-rules?)
- * TODO: Too big and complex (CC: 65, HV: 5248)
+ * TODO: Too big and complex (HV: 5248, CC: 65)
  *
  * @this {VrtxEditor}
  * @param {string} name Name of textarea (or object with the other parameters)

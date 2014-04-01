@@ -1380,7 +1380,6 @@ VrtxAdmin.prototype.initMiscAdjustments = function initMiscAdjustments() {
   interceptEnterKey();
 
   vrtxAdm.logoutButtonAsLink();
-  
   vrtxAdm.adjustResourceTitle();
   
   // Ignore all AJAX errors when user navigate away (abort)
@@ -1424,11 +1423,6 @@ VrtxAdmin.prototype.adjustResourceTitle = function adjustResourceTitle() {
     if(w1 > w2) {
       resourceMenuRight.css("marginLeft", ((w1 - w2) + 25) + "px");
     }
-    
-    // Old - reversed float
-    // var resourceMenuRightHeight = this._$("#resourceMenuRight").outerHeight(true);
-    // var resourceMenuLeftTopAdjustments = Math.min(0, title.outerHeight(true) - resourceMenuRightHeight);
-    // resourceMenuLeft.css("marginTop", resourceMenuLeftTopAdjustments + "px");
   }
 };
 

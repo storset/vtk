@@ -2504,9 +2504,7 @@ function handleAjaxSaveErrors(xhr, textStatus) {
         title: vrtxAdm.serverFacade.errorMessages.outOfDateTitle,
         btnTextOk: vrtxAdm.serverFacade.errorMessages.outOfDateOk,
         width: 450,
-        onOk: function() {
-          ajaxSaveAsCopy();
-        }
+        onOk: ajaxSaveAsCopy
       });
       d.open();
       return false;
@@ -2520,9 +2518,7 @@ function handleAjaxSaveErrors(xhr, textStatus) {
           title: vrtxAdm.serverFacade.errorMessages.lockStolenTitle,
           btnTextOk: vrtxAdm.serverFacade.errorMessages.lockStolenOk,
           width: 450,
-          onOk: function() {
-            ajaxSaveAsCopy();
-          }
+          onOk: ajaxSaveAsCopy
         });
         d.open();
       } else {
@@ -2791,8 +2787,7 @@ function retokenizeFormsOpenSaveDialog(d2, isEditorSave) {
         html: isEditorSave ? vrtxAdmin.serverFacade.errorMessages.sessionValidatedSave 
                            : vrtxAdmin.serverFacade.errorMessages.sessionValidated,
         title: vrtxAdmin.serverFacade.errorMessages.sessionValidatedTitle,
-        onOk: function() {
-          // Trigger save
+        onOk: function() { // Trigger save or close
           if(isEditorSave) {
             vrtxAdmin.editorSaveButton.click();
           }

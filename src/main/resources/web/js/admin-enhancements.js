@@ -3232,7 +3232,7 @@ VrtxAdmin.prototype.addNewMarkup = function addNewMarkup(opts, form) {
  * @param {string} opts.transitionEasingSlideDown Transition easing algorithm for slideDown()
  * @param {string} opts.transitionEasingSlideUp Transition easing algorithm for slideUp()
  * @param {boolean} opts.post POST or only cancel
- * @return {boolean} Whether or not to proceed with regular link operation
+ * @return {boolean} Proceed with regular link operation?
  */
 VrtxAdmin.prototype.completeFormAsync = function completeFormAsync(opts) {
   var vrtxAdm = this,

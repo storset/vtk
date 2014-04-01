@@ -2986,44 +2986,36 @@ function versioningInteraction(bodyId, vrtxAdm, _$) {
  * TODO: this is ripe for some cleanup
  *
  * @this {VrtxAdmin}
- * @param {object} options Configuration
- * @param {string} options.selector Selector for links that should retrieve a form async
- * @param {string} options.selectorClass Selector for form
- * @param {string} options.insertAfterOrReplaceClass Where to put the form
- * @param {boolean} options.isReplacing Whether to replace instead of insert after
- * @param {string} options.nodeType Node type that should be replaced or inserted
- * @param {function} options.funcComplete Callback function to run on success
- * @param {boolean} options.simultanSliding Whether to slideUp existing form at the same time slideDown new form (only when there is an existing form)
- * @param {number} options.transitionSpeed Transition speed in ms
- * @param {string} options.transitionEasingSlideDown Transition easing algorithm for slideDown()
- * @param {string} options.transitionEasingSlideUp Transition easing algorithm for slideUp()
- * @return {boolean} Whether or not to proceed with regular link operation
+ * @param {object} opts Configuration
+ * @param {string} opts.selector Selector for links that should retrieve a form async
+ * @param {string} opts.selectorClass Selector for form
+ * @param {string} opts.insertAfterOrReplaceClass Where to put the form
+ * @param {boolean} opts.isReplacing Whether to replace instead of insert after
+ * @param {string} opts.nodeType Node type that should be replaced or inserted
+ * @param {function} opts.funcComplete Callback function to run on success
+ * @param {boolean} opts.simultanSliding Whether to slideUp existing form at the same time slideDown new form (only when there is an existing form)
+ * @param {number} opts.transitionSpeed Transition speed in ms
+ * @param {string} opts.transitionEasingSlideDown Transition easing algorithm for slideDown()
+ * @param {string} opts.transitionEasingSlideUp Transition easing algorithm for slideUp()
+ * @return {boolean} Proceed with regular link operation?
  */
-VrtxAdmin.prototype.getFormAsync = function getFormAsync(options) {
-  var args = arguments, // this function
-    vrtxAdm = this, // use prototypal hierarchy 
+VrtxAdmin.prototype.getFormAsync = function getFormAsync(opts) {
+  var vrtxAdm = this, // use prototypal hierarchy 
     _$ = vrtxAdm._$;
 
-  vrtxAdm.cachedBody.dynClick(options.selector, function (e) {
-    var link = _$(this);
-    var url = link.attr("href") || link.closest("form").attr("action");
-
+  vrtxAdm.cachedBody.dynClick(opts.selector, function (e) {
     if (vrtxAdm.asyncGetFormsInProgress) { // If there are any getFormAsync() in progress
       return false;
     }
     vrtxAdm.asyncGetFormsInProgress++;
-
-    var selector = options.selector,
-      selectorClass = options.selectorClass,
-      simultanSliding = options.simultanSliding,
-      transitionSpeed = options.transitionSpeed,
-      transitionEasingSlideDown = options.transitionEasingSlideDown,
-      transitionEasingSlideUp = options.transitionEasingSlideUp,
-      modeUrl = location.href,
-      fromModeToNotMode = false,
-      existExpandedFormIsReplaced = false,
-      expandedForm = $(".expandedForm"),
-      existExpandedForm = expandedForm.length;
+    
+    var link = _$(this),
+        url = link.attr("href") || link.closest("form").attr("action"),
+        modeUrl = location.href,
+        fromModeToNotMode = false,
+        existExpandedFormIsReplaced = false,
+        expandedForm = $(".expandedForm"),
+        existExpandedForm = expandedForm.length;
 
     // Make sure we get the mode markup (current page) if service is not mode
     // -- only if a expandedForm exists and is of the replaced kind..
@@ -3037,12 +3029,12 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(options) {
 
     vrtxAdmin.serverFacade.getHtml(url, {
       success: function (results, status, resp) {
-        var form = _$(_$.parseHTML(results)).find("." + selectorClass).html();
+        var form = _$(_$.parseHTML(results)).find("." + opts.selectorClass).html();
 
         // If something went wrong
         if (!form) {
           vrtxAdm.error({
-            args: args,
+            args: arguments,
             msg: "retrieved form from " + url + " is null"
           });
           if (vrtxAdm.asyncGetFormsInProgress) {
@@ -3052,36 +3044,30 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(options) {
         }
         // Another form is already open
         if (existExpandedForm) {
-          // Get class for original markup
           var resultSelectorClasses = expandedForm.attr("class").split(" ");
           var resultSelectorClass = "";
-          var ignoreClasses = {
-            "even": "",
-            "odd": "",
-            "first": "",
-            "last": ""
-          };
+          var ignoreClasses = { "even": "", "odd": "", "first": "", "last": "" };
           for (var i = resultSelectorClasses.length; i--;) {
-            var resultSelectorClassCache = resultSelectorClasses[i];
-            if (resultSelectorClassCache && resultSelectorClassCache !== "" && !(resultSelectorClassCache in ignoreClasses)) {
+            var resultSelectorClass = resultSelectorClasses[i];
+            if (resultSelectorClass && resultSelectorClass !== "" && !(resultSelectorClass in ignoreClasses)) {
               resultSelectorClass = "." + resultSelectorClasses[i];
               break;
             }
           }
-          var succeededAddedOriginalMarkup = true;
+          var succeededAddedOriginalMarkup = false;
           var animation = new VrtxAnimation({
             elem: expandedForm,
-            animationSpeed: transitionSpeed,
-            easeIn: transitionEasingSlideDown,
-            easeOut: transitionEasingSlideUp,
+            animationSpeed: opts.transitionSpeed,
+            easeIn: opts.transitionEasingSlideDown,
+            easeOut: opts.transitionEasingSlideUp,
             afterOut: function(animation) {
               if (existExpandedFormIsReplaced) {
                 if (fromModeToNotMode) { // When we need the 'mode=' HTML when requesting a 'not mode=' service
                   vrtxAdmin.serverFacade.getHtml(modeUrl, {
                     success: function (results, status, resp) {
-                      var succeededAddedOriginalMarkup = vrtxAdm.addOriginalMarkup(modeUrl, _$.parseHTML(results), resultSelectorClass, expandedForm);
+                      succeededAddedOriginalMarkup = vrtxAdm.addOriginalMarkup(modeUrl, _$.parseHTML(results), resultSelectorClass, expandedForm);
                       if (succeededAddedOriginalMarkup) {
-                        vrtxAdmin.addNewMarkup(options, form);
+                        vrtxAdmin.addNewMarkup(opts, opts.form);
                       } else {
                         if (vrtxAdm.asyncGetFormsInProgress) {
                           vrtxAdmin.asyncGetFormsInProgress--;
@@ -3099,27 +3085,27 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(options) {
                 }
               } else {
                 var node = animation.__opts.elem.parent().parent();
-                if (node.is("tr") && vrtxAdmin.animateTableRows) { // Because 'this' can be tr > td > div
+                if (node.is("tr") && vrtxAdm.animateTableRows) { // Because 'this' can be tr > td > div
                   node.remove();
                 } else {
                   animation.__opts.elem.remove();
                 }
               }
-              if (!simultanSliding && !fromModeToNotMode) {
+              if (!opts.simultanSliding && !fromModeToNotMode) {
                 if (!succeededAddedOriginalMarkup) {
                   if (vrtxAdmin.asyncGetFormsInProgress) {
                     vrtxAdmin.asyncGetFormsInProgress--;
                   }
                 } else {
-                  vrtxAdmin.addNewMarkup(options, form);
+                  vrtxAdmin.addNewMarkup(opts, form);
                 }
               }
             }
           });
           animation.bottomUp();
         }
-        if ((!existExpandedForm || simultanSliding) && !fromModeToNotMode) {
-          vrtxAdm.addNewMarkup(options, form);
+        if ((!existExpandedForm || opts.simultanSliding) && !fromModeToNotMode) {
+          vrtxAdm.addNewMarkup(opts, form);
         }
       },
       error: function (xhr, textStatus) {
@@ -3140,26 +3126,25 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(options) {
  * @param {string} url The URL for original markup
  * @param {object} results The results
  * @param {string} resultSelectorClass Selector for original form markup
- * @param {object} expanded The expanded form
- * @return {boolean} Whether it succeeded or not
+ * @param {object} expandedForm The expanded form
+ * @return {boolean} Has it succeeded?
  */
-VrtxAdmin.prototype.addOriginalMarkup = function addOriginalMarkup(url, results, resultSelectorClass, expanded) {
-  var args = arguments,
-    vrtxAdm = this;
+VrtxAdmin.prototype.addOriginalMarkup = function addOriginalMarkup(url, results, resultSelectorClass, expandedForm) {
+  var vrtxAdm = this;
 
   var resultHtml = vrtxAdm.outerHTML(results, resultSelectorClass);
   if (!resultHtml) { // If all went wrong
     vrtxAdm.error({
-      args: args,
+      args: arguments,
       msg: "trying to retrieve existing expandedForm from " + url + " returned null"
     });
     return false;
   }
-  var node = expanded.parent().parent();
+  var node = expandedForm.parent().parent();
   if (node.is("tr") && vrtxAdm.animateTableRows) { // Because 'this' can be tr > td > div
     node.replaceWith(resultHtml).show(0);
   } else {
-    expanded.replaceWith(resultHtml).show(0);
+    expandedForm.replaceWith(resultHtml).show(0);
   }
   return true;
 };
@@ -3168,57 +3153,48 @@ VrtxAdmin.prototype.addOriginalMarkup = function addOriginalMarkup(url, results,
  * Add new form markup after async retrieve
  *
  * @this {VrtxAdmin}
- * @param {object} options Configuration
+ * @param {object} opts Configuration
  * @param {string} selectorClass The selector for form
  * @param {string} transitionSpeed Transition speed in ms
  * @param {string} transitionEasingSlideDown Transition easing algorithm for slideDown()
  * @param {string} transitionEasingSlideUp Transition easing algorithm for slideUp()
  * @param {object} form The form
  */
-VrtxAdmin.prototype.addNewMarkup = function addNewMarkup(options, form) {
+VrtxAdmin.prototype.addNewMarkup = function addNewMarkup(opts, form) {
   var vrtxAdm = this,
-    insertAfterOrReplaceClass = options.insertAfterOrReplaceClass,
-    secondaryInsertAfterOrReplaceClass = options.secondaryInsertAfterOrReplaceClass,
-    selectorClass = options.selectorClass,
-    transitionSpeed = options.transitionSpeed,
-    transitionEasingSlideDown = options.transitionEasingSlideDown,
-    transitionEasingSlideUp = options.transitionEasingSlideUp,
-    isReplacing = options.isReplacing || false,
-    nodeType = options.nodeType,
-    funcComplete = options.funcComplete,
     _$ = vrtxAdm._$;
 
-  var inject = _$(insertAfterOrReplaceClass);
+  var inject = _$(opts.insertAfterOrReplaceClass);
   if (!inject.length) {
-    inject = _$(secondaryInsertAfterOrReplaceClass);
+    inject = _$(opts.secondaryInsertAfterOrReplaceClass);
   }
 
-  if (isReplacing) {
+  if (opts.isReplacing) {
     var classes = inject.attr("class");
-    inject.replaceWith(vrtxAdm.wrap(nodeType, "expandedForm expandedFormIsReplaced nodeType" + nodeType + " " + selectorClass + " " + classes, form));
+    inject.replaceWith(vrtxAdm.wrap(opts.nodeType, "expandedForm expandedFormIsReplaced nodeType" + opts.nodeType + " " + opts.selectorClass + " " + classes, form));
   } else {
-    _$(vrtxAdm.wrap(nodeType, "expandedForm nodeType" + nodeType + " " + selectorClass, form))
+    _$(vrtxAdm.wrap(opts.nodeType, "expandedForm nodeType" + opts.nodeType + " " + opts.selectorClass, form))
       .insertAfter(inject);
   }
-  if (funcComplete) {
-    funcComplete(selectorClass);
+  if (opts.funcComplete) {
+    opts.funcComplete(opts.selectorClass);
   }
   if (vrtxAdm.asyncGetFormsInProgress) {
     vrtxAdm.asyncGetFormsInProgress--;
   }
-  if (nodeType == "tr" && vrtxAdm.animateTableRows) {
-    _$(nodeType + "." + selectorClass).prepareTableRowForSliding();
+  if (opts.nodeType == "tr" && vrtxAdm.animateTableRows) {
+    _$(opts.nodeType + "." + opts.selectorClass).prepareTableRowForSliding();
   }
   
   var animation = new VrtxAnimation({
-    elem: $(nodeType + "." + selectorClass).hide(),
-    animationSpeed: transitionSpeed,
-    easeIn: transitionEasingSlideDown,
-    easeOut: transitionEasingSlideUp,
+    elem: $(opts.nodeType + "." + opts.selectorClass).hide(),
+    animationSpeed: opts.transitionSpeed,
+    easeIn: opts.transitionEasingSlideDown,
+    easeOut: opts.transitionEasingSlideUp,
     afterIn: function(animation) {
-      if(options.focusElement != null) {
-        if(options.focusElement != "") {
-          animation.__opts.elem.find(options.focusElement).filter(":visible").filter(":first").focus();
+      if(opts.focusElement != null) {
+        if(opts.focusElement != "") {
+          animation.__opts.elem.find(opts.focusElement).filter(":visible").filter(":first").focus();
         }
       } else {
         var inputs = animation.__opts.elem.find("textarea, input[type='text'], select").filter(":visible");
@@ -3248,7 +3224,7 @@ VrtxAdmin.prototype.addNewMarkup = function addNewMarkup(options, form) {
  * @param {string} opts.updateSelectors One or more containers that should update after POST
  * @param {string} opts.errorContainerInsertAfter Selector where to place the new error container
  * @param {string} opts.errorContainer The className of the error container
- * @param {function} opts.funcProceedCondition Callback function that proceedes with completeFormAsyncPost(options)
+ * @param {function} opts.funcProceedCondition Callback function that proceedes with completeFormAsyncPost(opts)
  * @param {function} opts.funcComplete Callback function to run on success
  * @param {function} opts.funcCancel Callback function to run on cancel
  * @param {number} opts.isNotAnimated Not animated form
@@ -3259,8 +3235,7 @@ VrtxAdmin.prototype.addNewMarkup = function addNewMarkup(options, form) {
  * @return {boolean} Whether or not to proceed with regular link operation
  */
 VrtxAdmin.prototype.completeFormAsync = function completeFormAsync(opts) {
-  var args = arguments,
-    vrtxAdm = this,
+  var vrtxAdm = this,
     _$ = vrtxAdm._$;
 
   vrtxAdm.cachedBody.dynClick(opts.selector, function (e) {
@@ -3270,7 +3245,7 @@ VrtxAdmin.prototype.completeFormAsync = function completeFormAsync(opts) {
 
     if (isCancelAction && !opts.isReplacing) {
       var elem = $(".expandedForm");
-      if(!options.isNotAnimated) {
+      if(!opts.isNotAnimated) {
         var animation = new VrtxAnimation({
           elem: elem,
           animationSpeed: opts.transitionSpeed,
@@ -3405,8 +3380,7 @@ VrtxAdmin.prototype.completeFormAsyncPost = function completeFormAsyncPost(opts)
  * @param {function} options.fnCompleteInstant Callback function to run on success (instantly)
  */
 VrtxAdmin.prototype.completeSimpleFormAsync = function completeSimpleFormAsync(opts) {
-  var args = arguments,
-    vrtxAdm = this,
+  var vrtxAdm = this,
     _$ = vrtxAdm._$;
 
   vrtxAdm.cachedAppContent.on("click", opts.selector, function (e) {

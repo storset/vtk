@@ -2100,7 +2100,7 @@ VrtxAdmin.prototype.collectionListingInteraction = function collectionListingInt
         msg: dialogTemplate.find(".vrtx-confirm-copy-move-explanation").text(),
         title: dialogTemplate.find(".vrtx-confirm-copy-move-confirmation").text(),
         onOk: function () {
-          dialogTemplate.find(".vrtx-focus-button button").trigger("click");
+          dialogTemplate.find(".vrtx-focus-button").trigger("click");
         }
       });
       d.open();
@@ -2417,7 +2417,7 @@ VrtxAdmin.prototype.placeDeletePermanentButtonInActiveTab = function placeDelete
  * @this {VrtxAdmin}
  * @param {array} boxes The items
  * @param {number} boxesSize The size of the boxes
- * @param {boolean} useTitle Whether to use title- instead of name-attribute
+ * @param {boolean} useTitle Use title- instead of name-attribute?
  * @return {string} The builded HTML
  */
 VrtxAdmin.prototype.buildFileList = function buildFileList(boxes, boxesSize, useTitle) {

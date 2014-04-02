@@ -818,7 +818,7 @@ function validTextLengthsInEditor(isOldEditor) {
       var txtArea = isOldEditor ? txtAreaElm : txtAreaElm.find("textarea");
       if (txtArea.length && typeof txtArea[0].name !== "undefined") {
         var ckInstance = getCkInstance(txtArea[0].name);
-        if (ckInstance && ckInstance.getData().length > MAX_LENGTH) { // && guard
+        if (ckInstance && ckInstance.getData().length > MAX_LENGTH) {
           validTextLengthsInEditorErrorFunc(txtAreaElm, isOldEditor);
           return false;
         }
@@ -2043,21 +2043,6 @@ VrtxEditor.prototype.saveSendToApproval = function saveSendToApproval(btn) {
     }
   });
 };
-
-function wrapItemsLeftRight(items, leftItems, rightItems) {
-  var len = items.length;
-  if (len == 1) {
-    items.find(leftItems).wrapAll("<div class='left' />");
-    items.find(rightItems).wrapAll("<div class='right' />");
-  } else if (len > 1) {
-    var i = len;
-    while (i--) {
-      var item = $(items[i]);
-      item.find(leftItems).wrapAll("<div class='left' />");
-      item.find(rightItems).wrapAll("<div class='right' />");
-    }
-  }
-}
 
 /* CK helper functions - XXX: facade */
 

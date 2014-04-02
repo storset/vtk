@@ -157,7 +157,7 @@ $(document).ready(function () {
     });
   });
 
-  vrtxEdit.setupCKMaximized();
+  vrtxEdit.setupMaximizedCK();
   vrtxEdit.initShowHide();
   vrtxEdit.initStudyDocTypes();
   vrtxEdit.initCKEditors();
@@ -661,12 +661,12 @@ maxHeight, minHeight, toolbar, complete, resizable, baseDocumentUrl, simple) {
   }
 };
 
-VrtxEditor.prototype.setupCKMaximized = function setupCKMaximized() {
-  vrtxAdmin.cachedAppContent.on("click", ".cke_button__maximize.cke_button_on", this.cKMaximize);
-  vrtxAdmin.cachedAppContent.on("click", ".cke_button__maximize.cke_button_off", this.cKMinimize);
+VrtxEditor.prototype.setupMaximizedCK = function setupMaximizedCK() {
+  vrtxAdmin.cachedAppContent.on("click", ".cke_button__maximize.cke_button_on", this.maximizeCK);
+  vrtxAdmin.cachedAppContent.on("click", ".cke_button__maximize.cke_button_off", this.minimizeCK);
 };
 
-VrtxEditor.prototype.cKMaximize = function cKMaximize() {
+VrtxEditor.prototype.maximizeCK = function maximizeCK() {
   var vrtxAdm = vrtxAdmin,
       _$ = vrtxAdm._$;
   
@@ -698,7 +698,7 @@ VrtxEditor.prototype.cKMaximize = function cKMaximize() {
   }
 };
 
-VrtxEditor.prototype.cKMinimize = function cKMinimize() {
+VrtxEditor.prototype.minimizeCK = function minimizeCK() {
   var _$ = vrtxAdmin._$;
   var stickyBar = _$("#vrtx-editor-title-submit-buttons");
   stickyBar.show();

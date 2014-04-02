@@ -157,7 +157,7 @@ $(document).ready(function () {
     });
   });
 
-  vrtxEdit.setupMaximizedCK();
+  vrtxEdit.setupCKEditorMaximizeMinimize();
   vrtxEdit.initShowHide();
   vrtxEdit.initStudyDocTypes();
   vrtxEdit.initCKEditors();
@@ -396,8 +396,6 @@ VrtxEditor.prototype.initCKEditors = function initCKEditors() {
 /**
  * Setup CKEditor instance config
  *
- * TODO: Less complex
- *
  * @this {VrtxEditor}
  * @param {object} opts The options
  * @param {string} opts.name Name of textarea
@@ -633,37 +631,40 @@ VrtxEditor.prototype.initCKEditorInstance = function initCKEditorInstance(opts) 
     [ CKEDITOR.CTRL + 49 /*0*/, 'button-normal' ]
   ];
 
-  // Configure tag formatting in source
+  // Setup tag formatting in source
   config.on = {
     instanceReady: function (ev) {
-      var tags = ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'];
-      for (var key in tags) {
-        this.dataProcessor.writer.setRules(tags[key], {
-          indent: false,
-          breakBeforeOpen: true,
-          breakAfterOpen: false,
-          breakBeforeClose: false,
-          breakAfterClose: true
-        });
-      }
-      tags = ['ol', 'ul', 'li'];
-      for (key in tags) {
-        this.dataProcessor.writer.setRules(tags[key], {
-          indent: true,
-          breakBeforeOpen: true,
-          breakAfterOpen: false,
-          breakBeforeClose: false,
-          breakAfterClose: true
-        });
-      }
+      vrtxEdit.setupCKEditorTagsFormatting(this, ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'], false);
+      vrtxEdit.setupCKEditorTagsFormatting(this, ['ol', 'ul', 'li'], true);
     }
   };
+  
   if (!isCkEditor(opts.name)) {
     CKEDITOR.replace(opts.name, config);
   }
 };
 
-VrtxEditor.prototype.setupMaximizedCK = function setupMaximizedCK() {
+/**
+ * Setup CKEditor instance tags formatting
+ *
+ * @this {VrtxEditor}
+ * @param {object} instance CKEditor instance
+ * @param {array} tags Tags
+ * @param {bool} isIndented If they should be indented
+ */
+VrtxEditor.prototype.setupCKEditorTagsFormatting = function setupCKEditorTagsFormatting(instance, tags, isIndented) {
+  for (key in tags) {
+    instance.dataProcessor.writer.setRules(tags[key], {
+      indent: isIndented,
+      breakBeforeOpen: true,
+      breakAfterOpen: false,
+      breakBeforeClose: false,
+      breakAfterClose: true
+    });
+  }
+};
+
+VrtxEditor.prototype.setupCKEditorMaximizeMinimize = function setupCKEditorMaximizeMinimize() {
   vrtxAdmin.cachedAppContent.on("click", ".cke_button__maximize.cke_button_on", this.maximizeCK);
   vrtxAdmin.cachedAppContent.on("click", ".cke_button__maximize.cke_button_off", this.minimizeCK);
 };

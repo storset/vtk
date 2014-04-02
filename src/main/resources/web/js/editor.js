@@ -136,14 +136,10 @@ $(document).ready(function () {
     return; /* XXX: Exit if not is in admin or have regular editor */
   }
 
-  var vrtxAdm = vrtxAdmin,
-    _$ = vrtxAdm._$;
-    
-  vrtxAdm.cacheDOMNodesForReuse();
+  vrtxAdmin.cacheDOMNodesForReuse();
 
-  // When ui-helper-hidden class is added => we need to add 'first'-class to next element (if it is not last and first of these)
+  // Skip UI helper as first element in editor
   vrtxEdit.editorForm.find(".ui-helper-hidden").filter(":not(:last)").filter(":first").next().addClass("first");
-  // XXX: make sure these are NOT first so that we can use pure CSS
 
   autocompleteUsernames(".vrtx-autocomplete-username");
   autocompleteTags(".vrtx-autocomplete-tag");

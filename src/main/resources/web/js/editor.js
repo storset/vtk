@@ -178,7 +178,7 @@ vrtxEditor.CKEditorToolbars.withoutSubSuperToolbar = [
 ];
 
 vrtxEditor.CKEditorToolbars.commentsToolbar = [
-  ['Source', 'PasteText', 'Bold', 'Italic', 'Strike', 'NumberedList', 'BulletedList', 'Link', 'Unlink'
+  ['Source', 'PasteText', 'Bold', 'Italic', 'Strike', 'NumberedList', 'BulletedList', 'Link', 'Unlink']
 ];
 
 vrtxEditor.CKEditorToolbars.completeToolbar = [

@@ -16,7 +16,8 @@
  *  7.  Show / hide
  *  8.  Multiple fields and boxes
  *  9.  Accordion grouping
- *  10. Utils
+ *  10. Send to approval
+ *  11. Utils
  */
 /*-------------------------------------------------------------------*\
     1. Config
@@ -1872,7 +1873,94 @@ function accordionContentSplitHeaderPopulators(init) {
 }
 
 /*-------------------------------------------------------------------*\
-    10. Utils
+    10. Send to approval
+\*-------------------------------------------------------------------*/
+
+VrtxEditor.prototype.initSendToApproval = function initSendToApproval() {
+  var vrtxAdm = vrtxAdmin,
+    _$ = vrtxAdm._$;
+
+  vrtxAdm.cachedDoc.on("click", "#vrtx-send-to-approval, #vrtx-send-to-approval-global", function (e) {
+    vrtxEditor.openSendToApproval(this);
+    e.stopPropagation();
+    e.preventDefault();
+  });
+
+  vrtxAdm.cachedDoc.on("click", "#dialog-html-send-approval-content .vrtx-focus-button", function (e) {
+    vrtxEditor.saveSendToApproval(_$(this));
+    e.stopPropagation();
+    e.preventDefault();
+  });
+};
+
+VrtxEditor.prototype.openSendToApproval = function openSendToApproval(link) {
+  var vrtxAdm = vrtxAdmin,
+    _$ = vrtxAdm._$;
+
+  var id = link.id + "-content";
+  var dialogManageCreate = _$("#" + id);
+  if (!dialogManageCreate.length) {
+    vrtxAdm.serverFacade.getHtml(link.href, {
+      success: function (results, status, resp) {
+        vrtxAdm.cachedBody.append("<div id='" + id + "'>" + _$(_$.parseHTML(results)).find("#contents").html() + "</div>");
+        dialogManageCreate = _$("#" + id);
+        dialogManageCreate.hide();
+        vrtxEditor.openSendToApprovalOpen(dialogManageCreate, link);
+      }
+    });
+  } else {
+    vrtxEditor.openSendToApprovalOpen(dialogManageCreate, link);
+  }
+};
+
+VrtxEditor.prototype.openSendToApprovalOpen = function openSendToApprovalOpen(dialogManageCreate, link) {
+  var vrtxAdm = vrtxAdmin,
+    _$ = vrtxAdm._$;
+
+  var hasEmailFrom = dialogManageCreate.find("#emailFrom").length;
+  var d = new VrtxHtmlDialog({
+    name: "send-approval",
+    html: dialogManageCreate.html(),
+    title: link.title,
+    width: 430,
+    height: 620
+  });
+  d.open();
+  var dialog = _$(".ui-dialog");
+  if (dialog.find("#emailTo").val().length > 0) {
+    if (hasEmailFrom) {
+      dialog.find("#emailFrom")[0].focus();
+    } else {
+      dialog.find("#yourCommentTxtArea")[0].focus();
+    }
+  }
+};
+
+VrtxEditor.prototype.saveSendToApproval = function saveSendToApproval(btn) {
+  var vrtxAdm = vrtxAdmin,
+    _$ = vrtxAdm._$;
+
+  var form = btn.closest("form");
+  var url = form.attr("action");
+  var dataString = form.serialize();
+  vrtxAdm.serverFacade.postHtml(url, dataString, {
+    success: function (results, status, resp) {
+      var formParent = form.parent();
+      formParent.html(_$($.parseHTML(results)).find("#contents").html());
+      var successWrapper = formParent.find("#email-approval-success");
+      if (successWrapper.length) { // Save async if sent mail
+        successWrapper.trigger("click");
+        setTimeout(function () {
+          _$("#vrtx-save-view-shortcut").trigger("click");
+        }, 250);
+      }
+    }
+  });
+};
+
+
+/*-------------------------------------------------------------------*\
+    11. Utils
 \*-------------------------------------------------------------------*/
 
 /**
@@ -1960,88 +2048,6 @@ VrtxEditor.prototype.initStudyDocTypes = function initStudyDocTypes() {
     vrtxEdit.replaceTag(samletElm, "h2", "h3");
     vrtxEdit.replaceTag(samletElm, "h1", "h2");
   }
-};
-
-VrtxEditor.prototype.initSendToApproval = function initSendToApproval() {
-  var vrtxAdm = vrtxAdmin,
-    _$ = vrtxAdm._$;
-
-  vrtxAdm.cachedDoc.on("click", "#vrtx-send-to-approval, #vrtx-send-to-approval-global", function (e) {
-    vrtxEditor.openSendToApproval(this);
-    e.stopPropagation();
-    e.preventDefault();
-  });
-
-  vrtxAdm.cachedDoc.on("click", "#dialog-html-send-approval-content .vrtx-focus-button", function (e) {
-    vrtxEditor.saveSendToApproval(_$(this));
-    e.stopPropagation();
-    e.preventDefault();
-  });
-};
-
-VrtxEditor.prototype.openSendToApproval = function openSendToApproval(link) {
-  var vrtxAdm = vrtxAdmin,
-    _$ = vrtxAdm._$;
-
-  var id = link.id + "-content";
-  var dialogManageCreate = _$("#" + id);
-  if (!dialogManageCreate.length) {
-    vrtxAdm.serverFacade.getHtml(link.href, {
-      success: function (results, status, resp) {
-        vrtxAdm.cachedBody.append("<div id='" + id + "'>" + _$(_$.parseHTML(results)).find("#contents").html() + "</div>");
-        dialogManageCreate = _$("#" + id);
-        dialogManageCreate.hide();
-        vrtxEditor.openSendToApprovalOpen(dialogManageCreate, link);
-      }
-    });
-  } else {
-    vrtxEditor.openSendToApprovalOpen(dialogManageCreate, link);
-  }
-};
-
-VrtxEditor.prototype.openSendToApprovalOpen = function openSendToApprovalOpen(dialogManageCreate, link) {
-  var vrtxAdm = vrtxAdmin,
-    _$ = vrtxAdm._$;
-
-  var hasEmailFrom = dialogManageCreate.find("#emailFrom").length;
-  var d = new VrtxHtmlDialog({
-    name: "send-approval",
-    html: dialogManageCreate.html(),
-    title: link.title,
-    width: 430,
-    height: 620
-  });
-  d.open();
-  var dialog = _$(".ui-dialog");
-  if (dialog.find("#emailTo").val().length > 0) {
-    if (hasEmailFrom) {
-      dialog.find("#emailFrom")[0].focus();
-    } else {
-      dialog.find("#yourCommentTxtArea")[0].focus();
-    }
-  }
-};
-
-VrtxEditor.prototype.saveSendToApproval = function saveSendToApproval(btn) {
-  var vrtxAdm = vrtxAdmin,
-    _$ = vrtxAdm._$;
-
-  var form = btn.closest("form");
-  var url = form.attr("action");
-  var dataString = form.serialize();
-  vrtxAdm.serverFacade.postHtml(url, dataString, {
-    success: function (results, status, resp) {
-      var formParent = form.parent();
-      formParent.html(_$($.parseHTML(results)).find("#contents").html());
-      var successWrapper = formParent.find("#email-approval-success");
-      if (successWrapper.length) { // Save async if sent mail
-        successWrapper.trigger("click");
-        setTimeout(function () {
-          _$("#vrtx-save-view-shortcut").trigger("click");
-        }, 250);
-      }
-    }
-  });
 };
 
 /* CK helper functions - XXX: facade */

@@ -169,52 +169,44 @@ $(document).ready(function () {
 
 /* CKEditor toolbars */
 
-vrtxEditor.CKEditorToolbars.inlineToolbar = [['Source', 'PasteText', 'Link', 'Unlink', 'Bold',
-                                         'Italic', 'Strike', 'Subscript', 'Superscript',
-                                         'SpecialChar']];
+vrtxEditor.CKEditorToolbars.inlineToolbar = [
+  ['Source', 'PasteText', 'Link', 'Unlink', 'Bold', 'Italic', 'Strike', 'Subscript', 'Superscript', 'SpecialChar']
+];
 
-vrtxEditor.CKEditorToolbars.withoutSubSuperToolbar = [['Source', 'PasteText', 'Link', 'Unlink', 'Bold',
-                                                  'Italic', 'Strike', 'SpecialChar']];
+vrtxEditor.CKEditorToolbars.withoutSubSuperToolbar = [
+  ['Source', 'PasteText', 'Link', 'Unlink', 'Bold', 'Italic', 'Strike', 'SpecialChar']
+];
 
-vrtxEditor.CKEditorToolbars.completeToolbar = [['PasteText', 'PasteFromWord', '-', 'Undo', 'Redo'], ['Replace'],
-                                              ['Link', 'Unlink', 'Anchor'], 
-                                              ['Image', 'CreateDiv', 'MediaEmbed', 'Table',
-                                              'HorizontalRule', 'SpecialChar'], ['Maximize'], ['Source'],
-                                              '/', ['Format'], ['Bold', 'Italic', 'Strike', 'Subscript', 'Superscript', 'TextColor', '-', 'RemoveFormat'] ,
-                                              ['NumberedList',
-                                              'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote']];
+vrtxEditor.CKEditorToolbars.commentsToolbar = [
+  ['Source', 'PasteText', 'Bold', 'Italic', 'Strike', 'NumberedList', 'BulletedList', 'Link', 'Unlink'
+];
 
-vrtxEditor.CKEditorToolbars.studyToolbar = [['Source', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo', '-', 'Replace',
-                                        'RemoveFormat', '-', 'Link', 'Unlink', 'Studyreferencecomponent', 'Anchor',
-                                        'Image', 'CreateDiv', 'MediaEmbed', 'Table', 'Studytable',
-                                        'HorizontalRule', 'SpecialChar'
-                                       ], ['Format', 'Bold', 'Italic',
-                                        'Subscript', 'Superscript', 'NumberedList',
-                                        'BulletedList', 'Outdent', 'Indent', 'Maximize']];
+vrtxEditor.CKEditorToolbars.completeToolbar = [
+  ['PasteText', 'PasteFromWord', '-', 'Undo', 'Redo'], ['Replace'], ['Link', 'Unlink', 'Anchor'],
+  ['Image', 'CreateDiv', 'MediaEmbed', 'Table', 'HorizontalRule', 'SpecialChar'],
+  ['Maximize'], ['Source'], '/', ['Format'], 
+  ['Bold', 'Italic', 'Strike', 'Subscript', 'Superscript', 'TextColor', '-', 'RemoveFormat'],
+  ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote']
+];
 
-vrtxEditor.CKEditorToolbars.studyRefToolbar = [['Source', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo', '-', 'Replace',
-                                              'RemoveFormat', '-', 'Link', 'Unlink', 'Studyreferencecomponent', 'Anchor',
-                                              'Image', 'CreateDiv', 'MediaEmbed', 'Table',
-                                              'HorizontalRule', 'SpecialChar'
-                                             ], ['Format', 'Bold', 'Italic',
-                                              'Subscript', 'Superscript', 'NumberedList',
-                                              'BulletedList', 'Outdent', 'Indent', 'Maximize']];
+vrtxEditor.CKEditorToolbars.studyToolbar = [
+  ['Source', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo', '-', 'Replace',
+   'RemoveFormat', '-', 'Link', 'Unlink', 'Studyreferencecomponent', 'Anchor',
+   'Image', 'CreateDiv', 'MediaEmbed', 'Table', 'Studytable', 'HorizontalRule', 'SpecialChar'],
+  ['Format', 'Bold', 'Italic', 'Subscript', 'Superscript', 'NumberedList', 'BulletedList', 'Outdent', 'Indent', 'Maximize']
+];
 
-vrtxEditor.CKEditorToolbars.messageToolbar = [['Source', 'PasteText', 'Bold', 'Italic', 'Strike', '-', 'Undo', 'Redo', '-', 'Link', 'Unlink',
-                                          'Subscript', 'Superscript', 'NumberedList', 'BulletedList', 'Outdent', 'Indent']];
+vrtxEditor.CKEditorToolbars.studyRefToolbar = [
+  ['Source', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo', '-', 'Replace',
+   'RemoveFormat', '-', 'Link', 'Unlink', 'Studyreferencecomponent', 'Anchor',
+   'Image', 'CreateDiv', 'MediaEmbed', 'Table', 'HorizontalRule', 'SpecialChar'],
+  ['Format', 'Bold', 'Italic', 'Subscript', 'Superscript', 'NumberedList', 'BulletedList', 'Outdent', 'Indent', 'Maximize']
+];
 
-
-vrtxEditor.CKEditorToolbars.completeToolbarOld = [['PasteText', 'PasteFromWord', '-', 'Undo', 'Redo'], ['Replace'],
-                                              ['Link', 'Unlink', 'Anchor'], 
-                                              ['Image', 'CreateDiv', 'MediaEmbed', 'Table',
-                                              'HorizontalRule', 'SpecialChar'], ['Maximize'], ['Source'],
-                                              '/', ['Format'], ['Bold', 'Italic', 'Strike', 'Subscript', 'Superscript', 'TextColor', '-', 'RemoveFormat'] ,
-                                              ['NumberedList',
-                                              'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote']];
-
-vrtxEditor.CKEditorToolbars.commentsToolbar = [['Source', 'PasteText', 'Bold',
-                                           'Italic', 'Strike', 'NumberedList',
-                                           'BulletedList', 'Link', 'Unlink']];
+vrtxEditor.CKEditorToolbars.messageToolbar = [
+  ['Source', 'PasteText', 'Bold', 'Italic', 'Strike', '-', 'Undo', 'Redo', '-', 'Link',
+   'Unlink', 'Subscript', 'Superscript', 'NumberedList', 'BulletedList', 'Outdent', 'Indent']
+];
 
 /* CKEditor Div containers */
 
@@ -333,8 +325,7 @@ VrtxEditor.prototype.setupCKEditorToolbar = function setupCKEditorToolbar(c, opt
   var vrtxEdit = this;
   return classification.isMain ? ((c.isCourseDescriptionB || c.isCourseGroup) ? vrtxEdit.CKEditorToolbars.studyRefToolbar 
                                                                               : (c.isStudyContent ? vrtxEdit.CKEditorToolbars.studyToolbar
-                                                                                                  : (c.isOldContent ? vrtxEdit.CKEditorToolbars.completeToolbarOld 
-                                                                                                                    : vrtxEdit.CKEditorToolbars.completeToolbar)))
+                                                                                                  : vrtxEdit.CKEditorToolbars.completeToolbar))
                                : (c.isMessage ? vrtxEdit.CKEditorToolbars.messageToolbar
                                               : (c.isStudyField ? vrtxEdit.CKEditorToolbars.studyToolbar 
                                                                 : ((c.isIntro || c.isCaption || c.isScheduleComment) ? vrtxEdit.CKEditorToolbars.inlineToolbar

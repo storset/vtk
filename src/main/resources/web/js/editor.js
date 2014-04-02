@@ -442,98 +442,58 @@ VrtxEditor.prototype.newEditor = function newEditor(name, completeEditor, withou
   var isSimpleHTML = (simpleHTML && simpleHTML == "true") ? true : false;
 
   var editorElem = this.editorForm;
+  
+  var isIntro = vrtxEdit.contains(name, "introduction") ||
+                vrtxEdit.contains(name, "resource.description") ||
+                vrtxEdit.contains(name, "resource.image-description") ||
+                vrtxEdit.contains(name, "resource.video-description") ||
+                vrtxEdit.contains(name, "resource.audio-description");
+  var isCaption = vrtxEdit.contains(name, "caption");
+  var isAdditionalContent = vrtxEdit.contains(name, "additional-content") ||
+                            vrtxEdit.contains(name, "additionalContents")
+  var isMessage = vrtxEdit.contains(name, "message");
+  
+  // Studies
+  var isStudyField = vrtxEdit.contains(name, "frist-frekvens-fri") ||
+                     vrtxEdit.contains(name, "metode-fri") ||
+                     vrtxEdit.contains(name, "internasjonale-sokere-fri") ||
+                     vrtxEdit.contains(name, "nordiske-sokere-fri") ||
+                     vrtxEdit.contains(name, "opptakskrav-fri") ||
+                     vrtxEdit.contains(name, "generelle-fri") ||
+                     vrtxEdit.contains(name, "spesielle-fri") ||
+                     vrtxEdit.contains(name, "politiattest-fri") ||
+                     vrtxEdit.contains(name, "rangering-sokere-fri") ||
+                     vrtxEdit.contains(name, "forstevitnemal-kvote-fri") ||
+                     vrtxEdit.contains(name, "ordinar-kvote-alle-kvalifiserte-fri") ||
+                     vrtxEdit.contains(name, "innpassing-tidl-utdanning-fri") ||
+                     vrtxEdit.contains(name, "regelverk-fri") ||
+                     vrtxEdit.contains(name, "description-en") ||
+                     vrtxEdit.contains(name, "description-nn") ||
+                     vrtxEdit.contains(name, "description-no");
+  var isScheduleComment = vrtxEdit.contains(name, "comment") && editorElem.hasClass("vrtx-schedule");
+
 
   // CKEditor configurations
-  if (vrtxEdit.contains(name, "introduction") ||
-      vrtxEdit.contains(name, "resource.description") ||
-      vrtxEdit.contains(name, "resource.image-description") ||
-      vrtxEdit.contains(name, "resource.video-description") ||
-      vrtxEdit.contains(name, "resource.audio-description")) {
+  if (isIntro || isCaption || isMessage || isStudyField || isScheduleComment) {
     vrtxEdit.setCKEditorConfig({
       name: name,
       linkBrowseUrl: linkBrowseUrl,
       defaultLanguage: defaultLanguage, 
       cssFileList: cssFileList,
-      height: 100,
+      height: (isMessage ? 250
+                         : (isCaption ? 55 
+                                      : ((isStudyField || isScheduleComment) ? 150 
+                                                                              : 100))),
       maxHeight: 400,
       minHeight: 40,
-      toolbar: vrtxEdit.CKEditorToolbars.inlineToolbar,
+      toolbar: (isMessage ? vrtxEdit.CKEditorToolbars.messageToolbar
+                          : (isStudyField ? vrtxEdit.CKEditorToolbars.studyToolbar 
+                                          : vrtxEdit.CKEditorToolbars.inlineToolbar)),
       complete: isCompleteEditor,
-      baseDocumentUrl: baseDocumentUrl,
+      baseDocumentUrl: isMessage ? null : baseDocumentUrl,
       simple: isSimpleHTML
     });
-  } else if (vrtxEdit.contains(name, "comment") && editorElem.hasClass("vrtx-schedule")) {
-    vrtxEdit.setCKEditorConfig({
-      name: name,
-      linkBrowseUrl: linkBrowseUrl,
-      defaultLanguage: defaultLanguage, 
-      cssFileList: cssFileList,
-      height: 150,
-      maxHeight: 400,
-      minHeight: 40,
-      toolbar: vrtxEdit.CKEditorToolbars.inlineToolbar,
-      complete: isCompleteEditor,
-      baseDocumentUrl: baseDocumentUrl,
-      simple: isSimpleHTML
-    });
-  } else if (vrtxEdit.contains(name, "caption")) {
-    vrtxEdit.setCKEditorConfig({
-      name: name,
-      linkBrowseUrl: linkBrowseUrl,
-      defaultLanguage: defaultLanguage, 
-      cssFileList: cssFileList,
-      height: 55,
-      maxHeight: 400,
-      minHeight: 40,
-      toolbar: vrtxEdit.CKEditorToolbars.inlineToolbar,
-      complete: isCompleteEditor,
-      baseDocumentUrl: baseDocumentUrl,
-      simple: isSimpleHTML
-    });
-  } else if (vrtxEdit.contains(name, "frist-frekvens-fri") || // Studies  
-             vrtxEdit.contains(name, "metode-fri") ||
-             vrtxEdit.contains(name, "internasjonale-sokere-fri") ||
-             vrtxEdit.contains(name, "nordiske-sokere-fri") ||
-             vrtxEdit.contains(name, "opptakskrav-fri") ||
-             vrtxEdit.contains(name, "generelle-fri") ||
-             vrtxEdit.contains(name, "spesielle-fri") ||
-             vrtxEdit.contains(name, "politiattest-fri") ||
-             vrtxEdit.contains(name, "rangering-sokere-fri") ||
-             vrtxEdit.contains(name, "forstevitnemal-kvote-fri") ||
-             vrtxEdit.contains(name, "ordinar-kvote-alle-kvalifiserte-fri") ||
-             vrtxEdit.contains(name, "innpassing-tidl-utdanning-fri") ||
-             vrtxEdit.contains(name, "regelverk-fri") ||
-             vrtxEdit.contains(name, "description-en") ||
-             vrtxEdit.contains(name, "description-nn") ||
-             vrtxEdit.contains(name, "description-no")) {
-    vrtxEdit.setCKEditorConfig({
-      name: name,
-      linkBrowseUrl: linkBrowseUrl,
-      defaultLanguage: defaultLanguage, 
-      cssFileList: cssFileList,
-      height: 150,
-      maxHeight: 400,
-      minHeight: 40,
-      toolbar: vrtxEdit.CKEditorToolbars.studyToolbar,
-      complete: isCompleteEditor,
-      baseDocumentUrl: baseDocumentUrl,
-      simple: isSimpleHTML
-    });
-  } else if (vrtxEdit.contains(name, "message")) {
-    vrtxEdit.setCKEditorConfig({
-      name: name,
-      linkBrowseUrl: linkBrowseUrl,
-      defaultLanguage: defaultLanguage, 
-      cssFileList: cssFileList,
-      height: 250,
-      maxHeight: 400,
-      minHeight: 40,
-      toolbar: vrtxEdit.CKEditorToolbars.messageToolbar,
-      complete: isCompleteEditor,
-      simple: isSimpleHTML
-    });
-  } else if (vrtxEdit.contains(name, "additional-content") ||
-             vrtxEdit.contains(name, "additionalContents")) { // Additional content
+  } else if (isAdditionalContent) { // Additional content
     vrtxEdit.setCKEditorConfig({
       name: name,
       linkBrowseUrl: linkBrowseUrl,

@@ -435,7 +435,7 @@ VrtxEditor.prototype.setupCKEditorInstance = function setupCKEditorInstance(opts
     complete: classification.isMain,
     resizable: vrtxEdit.setupCKEditorResizable(classification, opts),
     baseDocumentUrl: classification.isMessage ? null : vrtxAdmin.multipleFormGroupingPaths.baseDocURL,
-    simple: opts.simple
+    simple: classification.isSimple
   });
 
 };
@@ -489,6 +489,7 @@ VrtxEditor.prototype.classifyCKEditorInstance = function classifyCKEditorInstanc
   classification.isContent = name == "content" ||
                              classification.isOldContent ||
                              classification.isStudyContent;
+  classification.isSimple = classification.isOldContent && opts.simple;
                              
   // Additional-content                  
   classification.isAdditionalContent = vrtxEdit.contains(name, "additional-content") ||
@@ -592,7 +593,7 @@ VrtxEditor.prototype.initCKEditorInstance = function initCKEditorInstance(opts) 
     config.filebrowserFlashBrowseUrl = opts.flashBrowseUrl;
     config.extraPlugins = 'mediaembed,studyreferencecomponent,htmlbuttons,button-h2,button-h3,button-h4,button-h5,button-h6,button-normal';
     config.stylesSet = vrtxEdit.CKEditorDivContainerStylesSet;
-    if (name == "resource.content" && opts.simple) { // XHTML
+    if (opts.simple) { // XHTML
       config.format_tags = 'p;h1;h2;h3;h4;h5;h6;pre;div';
     } else {
       config.format_tags = 'p;h2;h3;h4;h5;h6;pre;div';

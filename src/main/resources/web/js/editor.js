@@ -449,14 +449,47 @@ VrtxEditor.prototype.newEditor = function newEditor(name, completeEditor, withou
       vrtxEdit.contains(name, "resource.image-description") ||
       vrtxEdit.contains(name, "resource.video-description") ||
       vrtxEdit.contains(name, "resource.audio-description")) {
-    vrtxEdit.setCKEditorConfig(name, linkBrowseUrl, null, null, defaultLanguage, cssFileList, 100, 400, 40, vrtxEdit.CKEditorToolbars.inlineToolbar,
-    isCompleteEditor, false, baseDocumentUrl, isSimpleHTML);
+    vrtxEdit.setCKEditorConfig({
+      name: name,
+      linkBrowseUrl: linkBrowseUrl,
+      defaultLanguage: defaultLanguage, 
+      cssFileList: cssFileList,
+      height: 100,
+      maxHeight: 400,
+      minHeight: 40,
+      toolbar: vrtxEdit.CKEditorToolbars.inlineToolbar,
+      complete: isCompleteEditor,
+      baseDocumentUrl: baseDocumentUrl,
+      simple: isSimpleHTML
+    });
   } else if (vrtxEdit.contains(name, "comment") && editorElem.hasClass("vrtx-schedule")) {
-    vrtxEdit.setCKEditorConfig(name, linkBrowseUrl, null, null, defaultLanguage, cssFileList, 150, 400, 40, vrtxEdit.CKEditorToolbars.inlineToolbar,
-    isCompleteEditor, false, baseDocumentUrl, isSimpleHTML);
+    vrtxEdit.setCKEditorConfig({
+      name: name,
+      linkBrowseUrl: linkBrowseUrl,
+      defaultLanguage: defaultLanguage, 
+      cssFileList: cssFileList,
+      height: 150,
+      maxHeight: 400,
+      minHeight: 40,
+      toolbar: vrtxEdit.CKEditorToolbars.inlineToolbar,
+      complete: isCompleteEditor,
+      baseDocumentUrl: baseDocumentUrl,
+      simple: isSimpleHTML
+    });
   } else if (vrtxEdit.contains(name, "caption")) {
-    vrtxEdit.setCKEditorConfig(name, linkBrowseUrl, null, null, defaultLanguage, cssFileList, 55, 400, 40, vrtxEdit.CKEditorToolbars.inlineToolbar,
-    isCompleteEditor, false, baseDocumentUrl, isSimpleHTML);
+    vrtxEdit.setCKEditorConfig({
+      name: name,
+      linkBrowseUrl: linkBrowseUrl,
+      defaultLanguage: defaultLanguage, 
+      cssFileList: cssFileList,
+      height: 55,
+      maxHeight: 400,
+      minHeight: 40,
+      toolbar: vrtxEdit.CKEditorToolbars.inlineToolbar,
+      complete: isCompleteEditor,
+      baseDocumentUrl: baseDocumentUrl,
+      simple: isSimpleHTML
+    });
   } else if (vrtxEdit.contains(name, "frist-frekvens-fri") || // Studies  
              vrtxEdit.contains(name, "metode-fri") ||
              vrtxEdit.contains(name, "internasjonale-sokere-fri") ||
@@ -473,17 +506,49 @@ VrtxEditor.prototype.newEditor = function newEditor(name, completeEditor, withou
              vrtxEdit.contains(name, "description-en") ||
              vrtxEdit.contains(name, "description-nn") ||
              vrtxEdit.contains(name, "description-no")) {
-    isSimpleHTML = false;
-    isCompleteEditor = true;
-    vrtxEdit.setCKEditorConfig(name, linkBrowseUrl, null, null, defaultLanguage, cssFileList, 150, 400, 40, vrtxEdit.CKEditorToolbars.studyToolbar,
-    isCompleteEditor, false, baseDocumentUrl, isSimpleHTML);
+    vrtxEdit.setCKEditorConfig({
+      name: name,
+      linkBrowseUrl: linkBrowseUrl,
+      defaultLanguage: defaultLanguage, 
+      cssFileList: cssFileList,
+      height: 150,
+      maxHeight: 400,
+      minHeight: 40,
+      toolbar: vrtxEdit.CKEditorToolbars.studyToolbar,
+      complete: isCompleteEditor,
+      baseDocumentUrl: baseDocumentUrl,
+      simple: isSimpleHTML
+    });
   } else if (vrtxEdit.contains(name, "message")) {
-    vrtxEdit.setCKEditorConfig(name, linkBrowseUrl, null, null, defaultLanguage, cssFileList, 250, 400, 40, vrtxEdit.CKEditorToolbars.messageToolbar,
-    isCompleteEditor, false, null, isSimpleHTML);
+    vrtxEdit.setCKEditorConfig({
+      name: name,
+      linkBrowseUrl: linkBrowseUrl,
+      defaultLanguage: defaultLanguage, 
+      cssFileList: cssFileList,
+      height: 250,
+      maxHeight: 400,
+      minHeight: 40,
+      toolbar: vrtxEdit.CKEditorToolbars.messageToolbar,
+      complete: isCompleteEditor,
+      simple: isSimpleHTML
+    });
   } else if (vrtxEdit.contains(name, "additional-content") ||
              vrtxEdit.contains(name, "additionalContents")) { // Additional content
-    vrtxEdit.setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, defaultLanguage, cssFileList, 150, 400, 40,
-    vrtxEdit.CKEditorToolbars.completeToolbar, true, false, baseDocumentUrl, isSimpleHTML);
+    vrtxEdit.setCKEditorConfig({
+      name: name,
+      linkBrowseUrl: linkBrowseUrl,
+      imageBrowseUrl: imageBrowseUrl,
+      flashBrowseUrl: flashBrowseUrl,
+      defaultLanguage: defaultLanguage, 
+      cssFileList: cssFileList,
+      height: 150,
+      maxHeight: 400,
+      minHeight: 40,
+      toolbar: vrtxEdit.CKEditorToolbars.completeToolbar,
+      complete: true,
+      baseDocumentUrl: baseDocumentUrl,
+      simple: isSimpleHTML
+    });
   } else if (isCompleteEditor) { // Complete editor 
     var height = 220;
     var maxHeight = 400;
@@ -531,8 +596,22 @@ VrtxEditor.prototype.newEditor = function newEditor(name, completeEditor, withou
         maxHeight = 800;
         completeTB = vrtxEdit.CKEditorToolbars.studyRefToolbar;
     }
-    vrtxEdit.setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, defaultLanguage, cssFileList, height, maxHeight, 50, completeTB,
-    isCompleteEditor, true, baseDocumentUrl, isSimpleHTML);
+    vrtxEdit.setCKEditorConfig({
+      name: name,
+      linkBrowseUrl: linkBrowseUrl,
+      imageBrowseUrl: imageBrowseUrl,
+      flashBrowseUrl: flashBrowseUrl,
+      defaultLanguage: defaultLanguage, 
+      cssFileList: cssFileList,
+      height: height,
+      maxHeight: maxHeight,
+      minHeight: 50,
+      toolbar: completeTB,
+      complete: isCompleteEditor,
+      resizable: true,
+      baseDocumentUrl: baseDocumentUrl,
+      simple: isSimpleHTML
+    });
   } else {
     var resizable = true;
     // Course description
@@ -545,8 +624,20 @@ VrtxEditor.prototype.newEditor = function newEditor(name, completeEditor, withou
        name == "tilrettelagt-eksamen-text-field") {
       resizable = false;   
     }
-    vrtxEdit.setCKEditorConfig(name, linkBrowseUrl, null, null, defaultLanguage, cssFileList, 90, 400, 40, vrtxEdit.CKEditorToolbars.withoutSubSuperToolbar,
-    isCompleteEditor, resizable, baseDocumentUrl, isSimpleHTML);
+    vrtxEdit.setCKEditorConfig({
+      name: name,
+      linkBrowseUrl: linkBrowseUrl,
+      defaultLanguage: defaultLanguage, 
+      cssFileList: cssFileList,
+      height: 90,
+      maxHeight: 400,
+      minHeight: 40,
+      toolbar: vrtxEdit.CKEditorToolbars.withoutSubSuperToolbar,
+      complete: isCompleteEditor,
+      resizable: resizable,
+      baseDocumentUrl: baseDocumentUrl,
+      simple: isSimpleHTML
+    });
   }
 
 };
@@ -554,44 +645,42 @@ VrtxEditor.prototype.newEditor = function newEditor(name, completeEditor, withou
 /**
  * Set CKEditor config for an instance
  *
- * TODO: readable opts-parameter API (verbose)
- *
  * @this {VrtxEditor}
- * @param {string} name Name of textarea
- * @param {string} linkBrowseUrl Link browse integration URL
- * @param {string} imageBrowseUrl Image browse integration URL
- * @param {string} flashBrowseUrl Flash browse integration URL
- * @param {string} defaultLanguage Language in editor 
- * @param {string} cssFileList List of CSS-files to style content in editor
- * @param {number} height Height of editor
- * @param {number} maxHeight Max height of editor
- * @param {number} minHeight Min height of editor
- * @param {object} toolbar The toolbar config
- * @param {string} complete Use complete toolbar
- * @param {boolean} resizable Possible to resize editor
- * @param {string} baseDocumentUrl URL to current document 
- * @param {string} simple Make h1 format available (for old document types)
+ * @param {object} opts The options
+ * @param {string} opts.name Name of textarea
+ * @param {string} opts.linkBrowseUrl Link browse integration URL
+ * @param {string} opts.imageBrowseUrl Image browse integration URL
+ * @param {string} opts.flashBrowseUrl Flash browse integration URL
+ * @param {string} opts.defaultLanguage Language in editor 
+ * @param {string} opts.cssFileList List of CSS-files to style content in editor
+ * @param {number} opts.height Height of editor
+ * @param {number} opts.maxHeight Max height of editor
+ * @param {number} opts.minHeight Min height of editor
+ * @param {object} opts.toolbar The toolbar config
+ * @param {string} opts.complete Use complete toolbar
+ * @param {boolean} opts.resizable Possible to resize editor
+ * @param {string} opts.baseDocumentUrl URL to current document 
+ * @param {string} opts.simple Make h1 format available (for old document types)
  */
-VrtxEditor.prototype.setCKEditorConfig = function setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, defaultLanguage, cssFileList, height,
-maxHeight, minHeight, toolbar, complete, resizable, baseDocumentUrl, simple) {
+VrtxEditor.prototype.setCKEditorConfig = function setCKEditorConfig(opts) {
   var vrtxEdit = this;
   var config = {};
 
-  config.baseHref = baseDocumentUrl;
-  config.contentsCss = cssFileList;
+  config.baseHref = opts.baseDocumentUrl;
+  config.contentsCss = opts.cssFileList;
   config.entities = false;
     
-  if (linkBrowseUrl) {
-    config.filebrowserBrowseUrl = linkBrowseUrl;
-    config.filebrowserImageBrowseLinkUrl = linkBrowseUrl;
+  if (opts.linkBrowseUrl) {
+    config.filebrowserBrowseUrl = opts.linkBrowseUrl;
+    config.filebrowserImageBrowseLinkUrl = opts.linkBrowseUrl;
   }
 
-  if (complete) {
-    config.filebrowserImageBrowseUrl = imageBrowseUrl;
-    config.filebrowserFlashBrowseUrl = flashBrowseUrl;
+  if (opts.complete) {
+    config.filebrowserImageBrowseUrl = opts.imageBrowseUrl;
+    config.filebrowserFlashBrowseUrl = opts.flashBrowseUrl;
     config.extraPlugins = 'mediaembed,studyreferencecomponent,htmlbuttons,button-h2,button-h3,button-h4,button-h5,button-h6,button-normal';
     config.stylesSet = vrtxEdit.CKEditorDivContainerStylesSet;
-    if (name == "resource.content" && simple) { // XHTML
+    if (name == "resource.content" && opts.simple) { // XHTML
       config.format_tags = 'p;h1;h2;h3;h4;h5;h6;pre;div';
     } else {
       config.format_tags = 'p;h2;h3;h4;h5;h6;pre;div';
@@ -604,16 +693,16 @@ maxHeight, minHeight, toolbar, complete, resizable, baseDocumentUrl, simple) {
   //	config.format_tags = 'p;h3;h4;h5;h6;pre;div';
   //  } 
 
-  config.resize_enabled = resizable;
+  config.resize_enabled = opts.resizable;
   config.toolbarCanCollapse = false;
   config.defaultLanguage = 'no';
-  if (defaultLanguage) {
-    config.language = defaultLanguage;
+  if (opts.defaultLanguage) {
+    config.language = opts.defaultLanguage;
   }
-  config.toolbar = toolbar;
-  config.height = height + 'px';
-  config.autoGrow_maxHeight = maxHeight + 'px';
-  config.autoGrow_minHeight = minHeight + 'px';
+  config.toolbar = opts.toolbar;
+  config.height = opts.height + 'px';
+  config.autoGrow_maxHeight = opts.maxHeight + 'px';
+  config.autoGrow_minHeight = opts.minHeight + 'px';
 
   config.forcePasteAsPlainText = false;
   config.disableObjectResizing = true;
@@ -656,8 +745,8 @@ maxHeight, minHeight, toolbar, complete, resizable, baseDocumentUrl, simple) {
       }
     }
   };
-  if (!isCkEditor(name)) {
-    CKEDITOR.replace(name, config);
+  if (!isCkEditor(opts.name)) {
+    CKEDITOR.replace(opts.name, config);
   }
 };
 

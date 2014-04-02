@@ -378,12 +378,13 @@ VrtxEditor.prototype.initCKEditors = function initCKEditors() {
   var vrtxEdit = this;
 
   /* Initialize CKEditors */
+  var i = 0;
   for (var i = 0, len = vrtxEdit.CKEditorsInit.length; i < len && i < vrtxEdit.CKEditorsInitSyncMax; i++) { // Initiate <=CKEditorsInitSyncMax CKEditors sync
-    vrtxEdit.newEditor(vrtxEdit.CKEditorsInit[i]);
+    vrtxEdit.setupCKEditorInstance(vrtxEdit.CKEditorsInit[i]);
   }
   if (len > vrtxEdit.CKEditorsInitSyncMax) {
     var ckEditorInitLoadTimer = setTimeout(function () { // Initiate >CKEditorsInitSyncMax CKEditors async
-      vrtxEdit.newEditor(vrtxEdit.CKEditorsInit[i]);
+      vrtxEdit.setupCKEditorInstance(vrtxEdit.CKEditorsInit[i]);
       i++;
       if (i < len) {
         setTimeout(arguments.callee, vrtxEdit.CKEditorsInitAsyncInterval);
@@ -393,215 +394,152 @@ VrtxEditor.prototype.initCKEditors = function initCKEditors() {
 };
 
 /**
- * Create new CKEditor instance
+ * Setup CKEditor instance config
  *
- * TODO: Readable opts-parameter API (less parameters)
- * TODO: Should be less-hardcoded (edit-rules?)
- * TODO: Too big and complex (HV: 5248, CC: 65)
+ * TODO: Too big and complex
  *
  * @this {VrtxEditor}
- * @param {string} name Name of textarea (or object with the other parameters)
- * @param {boolean} completeEditor Use complete toolbar
- * @param {boolean} withoutSubSuper Don't display sub and sup buttons in toolbar
- * @param {string} baseFolder Current folder URL for browse integration
- * @param {string} baseUrl Base URL for browse integration
- * @param {string} baseDocumentUrl URL to current document
- * @param {string} browsePath Browse integration URL
- * @param {string} defaultLanguage Language in editor
- * @param {array} cssFileList List of CSS-files to style content in editor
- * @param {string} simpleHTML Make h1 format available (for old document types)
+ * @param {object} opts The options
+ * @param {string} opts.name Name of textarea
+ * @param {boolean} opts.isCompleteEditor Use complete toolbar
+ * @param {boolean} opts.isWithoutSubSuper Don't display sub and sup buttons in toolbar
+ * @param {string} opts.defaultLanguage Language in editor
+ * @param {array} opts.cssFileList List of CSS-files to style content in editor
+ * @param {string} opts.simple Make h1 format available (for old document types)
  */
-VrtxEditor.prototype.newEditor = function newEditor(name, completeEditor, withoutSubSuper, defaultLanguage, cssFileList, simpleHTML) {
-  var vrtxEdit = this;
-
-  /* TMP inner mapping */
-  var baseFolder = vrtxAdmin.multipleFormGroupingPaths.baseFolderURL,
-    baseUrl = vrtxAdmin.multipleFormGroupingPaths.baseCKURL,
-    baseDocumentUrl = vrtxAdmin.multipleFormGroupingPaths.baseDocURL,
-    browsePath = vrtxAdmin.multipleFormGroupingPaths.basePath;
-
-  // If pregenerated parameters is used for init
-  if (typeof name === "object") {
-    var obj = name;
-    name = obj[0];
-    completeEditor = obj[1];
-    withoutSubSuper = obj[2];
-    defaultLanguage = obj[3];
-    cssFileList = obj[4];
-    simpleHTML = obj[5];
-    obj = null; // Avoid any mem leak
-  }
+VrtxEditor.prototype.setupCKEditorInstance = function setupCKEditorInstance(opts) {
+  var vrtxEdit = this,
+      baseUrl = vrtxAdmin.multipleFormGroupingPaths.baseCKURL,
+      baseFolder = vrtxAdmin.multipleFormGroupingPaths.baseFolderURL,
+      browsePath = vrtxAdmin.multipleFormGroupingPaths.basePath
+      baseDocumentUrl = vrtxAdmin.multipleFormGroupingPaths.baseDocURL;
 
   // File browser
   var linkBrowseUrl = baseUrl + '/plugins/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Connector=' + browsePath;
   var imageBrowseUrl = baseUrl + '/plugins/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Type=Image&Connector=' + browsePath;
   var flashBrowseUrl = baseUrl + '/plugins/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Type=Flash&Connector=' + browsePath;
 
-  var isCompleteEditor = completeEditor ? completeEditor : false;
-  var isWithoutSubSuper = withoutSubSuper ? withoutSubSuper : false;
-  var isSimpleHTML = (simpleHTML && simpleHTML == "true") ? true : false;
-
-  var editorElem = this.editorForm;
-  
-  var isIntro = vrtxEdit.contains(name, "introduction") ||
-                vrtxEdit.contains(name, "resource.description") ||
-                vrtxEdit.contains(name, "resource.image-description") ||
-                vrtxEdit.contains(name, "resource.video-description") ||
-                vrtxEdit.contains(name, "resource.audio-description");
-  var isCaption = vrtxEdit.contains(name, "caption");
-  var isAdditionalContent = vrtxEdit.contains(name, "additional-content") ||
-                            vrtxEdit.contains(name, "additionalContents")
-  var isMessage = vrtxEdit.contains(name, "message");
-  
-  // Studies
-  var isStudyField = vrtxEdit.contains(name, "frist-frekvens-fri") ||
-                     vrtxEdit.contains(name, "metode-fri") ||
-                     vrtxEdit.contains(name, "internasjonale-sokere-fri") ||
-                     vrtxEdit.contains(name, "nordiske-sokere-fri") ||
-                     vrtxEdit.contains(name, "opptakskrav-fri") ||
-                     vrtxEdit.contains(name, "generelle-fri") ||
-                     vrtxEdit.contains(name, "spesielle-fri") ||
-                     vrtxEdit.contains(name, "politiattest-fri") ||
-                     vrtxEdit.contains(name, "rangering-sokere-fri") ||
-                     vrtxEdit.contains(name, "forstevitnemal-kvote-fri") ||
-                     vrtxEdit.contains(name, "ordinar-kvote-alle-kvalifiserte-fri") ||
-                     vrtxEdit.contains(name, "innpassing-tidl-utdanning-fri") ||
-                     vrtxEdit.contains(name, "regelverk-fri") ||
-                     vrtxEdit.contains(name, "description-en") ||
-                     vrtxEdit.contains(name, "description-nn") ||
-                     vrtxEdit.contains(name, "description-no");
-  var isScheduleComment = vrtxEdit.contains(name, "comment") && editorElem.hasClass("vrtx-schedule");
-  var isCourseDescription = name == "teachingsemester-other" ||
-                            name == "examsemester-other" ||
-                            name == "teaching-language-text-field" ||
-                            name == "eksamensspraak-text-field" ||
-                            name == "sensur-text-field" ||
-                            name == "antall-forsok-trekk-text-field" ||
-                            name == "tilrettelagt-eksamen-text-field";
+  var c = vrtxEdit.classifyCKEditorInstance(opts.name);
 
   // CKEditor configurations
-  if (isIntro || isCaption || isMessage || isStudyField || isScheduleComment) {
-    vrtxEdit.setCKEditorConfig({
-      name: name,
-      linkBrowseUrl: linkBrowseUrl,
-      defaultLanguage: defaultLanguage, 
-      cssFileList: cssFileList,
-      height: (isMessage ? 250
-                         : (isCaption ? 55 
-                                      : ((isStudyField || isScheduleComment) ? 150 
-                                                                              : 100))),
-      maxHeight: 400,
-      minHeight: 40,
-      toolbar: (isMessage ? vrtxEdit.CKEditorToolbars.messageToolbar
-                          : (isStudyField ? vrtxEdit.CKEditorToolbars.studyToolbar 
-                                          : vrtxEdit.CKEditorToolbars.inlineToolbar)),
-      complete: isCompleteEditor,
-      baseDocumentUrl: isMessage ? null : baseDocumentUrl,
-      simple: isSimpleHTML
-    });
-  } else if (isAdditionalContent) { // Additional content
-    vrtxEdit.setCKEditorConfig({
-      name: name,
-      linkBrowseUrl: linkBrowseUrl,
-      imageBrowseUrl: imageBrowseUrl,
-      flashBrowseUrl: flashBrowseUrl,
-      defaultLanguage: defaultLanguage, 
-      cssFileList: cssFileList,
-      height: 150,
-      maxHeight: 400,
-      minHeight: 40,
-      toolbar: vrtxEdit.CKEditorToolbars.completeToolbar,
-      complete: true,
-      baseDocumentUrl: baseDocumentUrl,
-      simple: isSimpleHTML
-    });
-  } else if (isCompleteEditor) { // Complete editor 
-    var height = 220;
-    var maxHeight = 400;
-    var completeTB = vrtxEdit.CKEditorToolbars.completeToolbar;
-    if (vrtxEdit.contains("supervisor-box")) {
-      height = 130;
-      maxHeight = 300;
-    } else if (name == "content" ||
-               name == "resource.content" ||
-               name == "content-study") {
-      height = 400;
-      maxHeight = 800;
-      if (name == "resource.content") { // Old editor
-        completeTB = vrtxEdit.CKEditorToolbars.completeToolbarOld;
-      }
-      if (name == "content-study") { // Study toolbar
-        completeTB = vrtxEdit.CKEditorToolbars.studyToolbar;
-      }
-    // Course description
-    } else if (name == "course-content" ||
-               name == "learning-outcomes" ||
-               name == "opptak-og-adgang-text-field" ||
-               name == "ikke-privatist-text-field" ||
-               name == "obligatoriske-forkunnskaper-text-field" ||
-               name == "recommended-prerequisites-text-field" ||
-               name == "overlapping-courses-text-field" ||
-               name == "teaching-text-field" ||
-               name == "adgang-text-field" ||
-               name == "assessment-and-grading" ||
-               name == "hjelpemidler-text-field" ||
-               name == "klage-text-field" ||
-               name == "ny-utsatt-eksamen-text-field" ||
-               name == "evaluering-av-emnet-text-field" ||
-               name == "other-text-field") {
-        height = 200;
-        maxHeight = 400;
-        completeTB = vrtxEdit.CKEditorToolbars.studyRefToolbar;
-    // Course group
-    } else if (name == "course-group-about" ||
-               name == "courses-in-group" ||
-               name == "course-group-admission" ||
-               name == "relevant-study-programmes" ||
-               name == "course-group-other") {
-        height = 400;
-        maxHeight = 800;
-        completeTB = vrtxEdit.CKEditorToolbars.studyRefToolbar;
-    }
-    vrtxEdit.setCKEditorConfig({
-      name: name,
-      linkBrowseUrl: linkBrowseUrl,
-      imageBrowseUrl: imageBrowseUrl,
-      flashBrowseUrl: flashBrowseUrl,
-      defaultLanguage: defaultLanguage, 
-      cssFileList: cssFileList,
-      height: height,
-      maxHeight: maxHeight,
-      minHeight: 50,
-      toolbar: completeTB,
-      complete: isCompleteEditor,
-      resizable: true,
-      baseDocumentUrl: baseDocumentUrl,
-      simple: isSimpleHTML
-    });
-  } else {
-    vrtxEdit.setCKEditorConfig({
-      name: name,
-      linkBrowseUrl: linkBrowseUrl,
-      defaultLanguage: defaultLanguage, 
-      cssFileList: cssFileList,
-      height: 90,
-      maxHeight: 400,
-      minHeight: 40,
-      toolbar: vrtxEdit.CKEditorToolbars.withoutSubSuperToolbar,
-      complete: isCompleteEditor,
-      resizable: !isCourseDescription,
-      baseDocumentUrl: baseDocumentUrl,
-      simple: isSimpleHTML
-    });
-  }
+
+  var height = (c.isContent || c.isCourseGroup) ? 400 : (c.isSupervisorBox ? 130 : (c.isCourseDescriptionB ? 200 : 220));
+  var maxHeight = (c.isContent || c.isCourseGroup) ? 800 : (c.isSupervisorBox ? 300 : 400);
+  var completeTB = (c.isCourseDescriptionB || c.isCourseGroup) ? vrtxEdit.CKEditorToolbars.studyRefToolbar 
+                                                               : (c.isStudyContent ? vrtxEdit.CKEditorToolbars.studyToolbar
+                                                                             : (c.isOldContent ? vrtxEdit.CKEditorToolbars.completeToolbarOld 
+                                                                                               : vrtxEdit.CKEditorToolbars.completeToolbar));
+  vrtxEdit.initCKEditorInstance({
+    name: opts.name,
+    linkBrowseUrl: linkBrowseUrl,
+    imageBrowseUrl: (opts.isCompleteEditor || c.isAdditionalContent) ? imageBrowseUrl : null,
+    flashBrowseUrl: (opts.isCompleteEditor || c.isAdditionalContent) ? flashBrowseUrl : null,
+    defaultLanguage: opts.defaultLanguage, 
+    cssFileList: opts.cssFileList,
+    height:  opts.isCompleteEditor ? height 
+                                   : (c.isMessage ? 250
+                                                  : (c.isCaption ? 55 
+                                                                 : ((c.isStudyField || c.isScheduleComment || c.isAdditionalContent) ? 150 
+                                                                                                                                     : (c.isIntro ? 100 
+                                                                                                                                                  : 90)))),
+    maxHeight: maxHeight,
+    minHeight: opts.isCompleteEditor ? 50 : 40,
+    toolbar: (opts.isCompleteEditor || c.isAdditionalContent) ? completeTB 
+                                                              : (c.isMessage ? vrtxEdit.CKEditorToolbars.messageToolbar
+                                                                             : (c.isStudyField ? vrtxEdit.CKEditorToolbars.studyToolbar 
+                                                                                               : ((c.isIntro || c.isCaption || c.isScheduleComment) ? vrtxEdit.CKEditorToolbars.inlineToolbar
+                                                                                                                                                    : vrtxEdit.CKEditorToolbars.withoutSubSuperToolbar))),
+    complete: (opts.isCompleteEditor || c.isAdditionalContent),
+    resizable: (opts.isCompleteEditor || c.isAdditionalContent) || !(c.isCourseDescriptionA || c.isIntro || c.isCaption || c.isMessage || c.isStudyField || c.isScheduleComment),
+    baseDocumentUrl: c.isMessage ? null : baseDocumentUrl,
+    simple: opts.simple
+  });
 
 };
 
 /**
- * Set CKEditor config for an instance
+ * Classify CKEditor instance based on its name
  *
  * @this {VrtxEditor}
- * @param {object} opts The options
+ * @param {string} name Name of textarea
+ * @return {object} The classification with booleans
+ */
+VrtxEditor.prototype.classifyCKEditorInstance = function classifyCKEditorInstance(name) {
+  var vrtxEdit = this,
+      classification = {};
+
+  // Content
+  classification.isOldContent = name == "resource.content";
+  classification.isStudyContent = name == "content-study";
+  classification.isContent = name == "content" ||
+                             classification.isOldContent ||
+                             classification.isStudyContent;
+  
+  // Introduction / caption / additional-content / sp.box
+  classification.isIntro = vrtxEdit.contains(name, "introduction") ||
+                           vrtxEdit.contains(name, "resource.description") ||
+                           vrtxEdit.contains(name, "resource.image-description") ||
+                           vrtxEdit.contains(name, "resource.video-description") ||
+                           vrtxEdit.contains(name, "resource.audio-description");
+  classification.isCaption = vrtxEdit.contains(name, "caption");
+  classification.isAdditionalContent = vrtxEdit.contains(name, "additional-content") ||
+                                       vrtxEdit.contains(name, "additionalContents")
+  classification.isMessage = vrtxEdit.contains(name, "message");
+  classification.isSupervisorBox = vrtxEdit.contains("supervisor-box");
+  
+  // Studies
+  classification.isStudyField = vrtxEdit.contains(name, "frist-frekvens-fri") ||
+                                vrtxEdit.contains(name, "metode-fri") ||
+                                vrtxEdit.contains(name, "internasjonale-sokere-fri") ||
+                                vrtxEdit.contains(name, "nordiske-sokere-fri") ||
+                                vrtxEdit.contains(name, "opptakskrav-fri") ||
+                                vrtxEdit.contains(name, "generelle-fri") ||
+                                vrtxEdit.contains(name, "spesielle-fri") ||
+                                vrtxEdit.contains(name, "politiattest-fri") ||
+                                vrtxEdit.contains(name, "rangering-sokere-fri") ||
+                                vrtxEdit.contains(name, "forstevitnemal-kvote-fri") ||
+                                vrtxEdit.contains(name, "ordinar-kvote-alle-kvalifiserte-fri") ||
+                                vrtxEdit.contains(name, "innpassing-tidl-utdanning-fri") ||
+                                vrtxEdit.contains(name, "regelverk-fri") ||
+                                vrtxEdit.contains(name, "description-en") ||
+                                vrtxEdit.contains(name, "description-nn") ||
+                                vrtxEdit.contains(name, "description-no");
+  classification.isScheduleComment = vrtxEdit.contains(name, "comment") && vrtxEdit.editorForm.hasClass("vrtx-schedule");
+  classification.isCourseDescriptionA = name == "teachingsemester-other" ||
+                                        name == "examsemester-other" ||
+                                        name == "teaching-language-text-field" ||
+                                        name == "eksamensspraak-text-field" ||
+                                        name == "sensur-text-field" ||
+                                        name == "antall-forsok-trekk-text-field" ||
+                                        name == "tilrettelagt-eksamen-text-field";
+  classification.isCourseDescriptionB = name == "course-content" ||
+                                        name == "learning-outcomes" ||
+                                        name == "opptak-og-adgang-text-field" ||
+                                        name == "ikke-privatist-text-field" ||
+                                        name == "obligatoriske-forkunnskaper-text-field" ||
+                                        name == "recommended-prerequisites-text-field" ||
+                                        name == "overlapping-courses-text-field" ||
+                                        name == "teaching-text-field" ||
+                                        name == "adgang-text-field" ||
+                                        name == "assessment-and-grading" ||
+                                        name == "hjelpemidler-text-field" ||
+                                        name == "klage-text-field" ||
+                                        name == "ny-utsatt-eksamen-text-field" ||
+                                        name == "evaluering-av-emnet-text-field" ||
+                                        name == "other-text-field";
+  classification.isCourseGroup = name == "course-group-about" ||
+                                 name == "courses-in-group" ||
+                                 name == "course-group-admission" ||
+                                 name == "relevant-study-programmes" ||
+                                 name == "course-group-other";
+  return classification;
+};
+
+/**
+ * Initialize CKEditor instance with config
+ *
+ * @this {VrtxEditor}
+ * @param {object} opts The config
  * @param {string} opts.name Name of textarea
  * @param {string} opts.linkBrowseUrl Link browse integration URL
  * @param {string} opts.imageBrowseUrl Image browse integration URL
@@ -617,7 +555,7 @@ VrtxEditor.prototype.newEditor = function newEditor(name, completeEditor, withou
  * @param {string} opts.baseDocumentUrl URL to current document 
  * @param {string} opts.simple Make h1 format available (for old document types)
  */
-VrtxEditor.prototype.setCKEditorConfig = function setCKEditorConfig(opts) {
+VrtxEditor.prototype.initCKEditorInstance = function initCKEditorInstance(opts) {
   var vrtxEdit = this;
   var config = {};
 
@@ -1520,10 +1458,20 @@ function addJsonField(btn) {
     var checkForAppendComplete = setTimeout(function () {
       if ($("#" + newElementId + " .vrtx-remove-button").length) {
         for (var i = 0; i < ckHtmlsLen; i++) {
-          vrtxEditor.newEditor(ckHtmls[i], true, false, requestLang, cssFileList, "false");
+          vrtxEditor.setupCKEditorInstance({
+            name: ckHtmls[i],
+            isCompleteEditor: true,
+            defaultLanguage: requestLang,
+            cssFileList: cssFileList
+          });
         }
         for (i = 0; i < ckSimpleHtmlsLen; i++) {
-          vrtxEditor.newEditor(ckSimpleHtmls[i], false, false, requestLang, cssFileList, "true");
+          vrtxEditor.setupCKEditorInstance({
+            name: ckSimpleHtmls[i],
+            defaultLanguage: requestLang,
+            cssFileList: cssFileList,
+            simple: true
+          });
         }
         datepickerEditor.initFields(dateTimes);
       } else {

@@ -68,11 +68,19 @@
   <script type="text/javascript"><!--
       if (CKEDITOR.env.isCompatible) {
         try {
+          var editorObj = {
+            name: '${content}',
+            isCompleteEditor: ${completeEditor?string},
+            isWithoutSubSuper: ${withoutSubSuper?string},
+            defaultLanguage: '<@vrtx.requestLanguage />',
+            cssFileList: cssFileList,
+            simple: ${simpleHTML?string}
+          }
           if (typeof vrtxEditor !== "undefined") {
-            vrtxEditor.CKEditorsInit.push(['${content}', ${completeEditor?string}, ${withoutSubSuper?string}, '<@vrtx.requestLanguage />', cssFileList, ${simpleHTML?string}]);
+            vrtxEditor.CKEditorsInit.push(editorObj);
 	      } else {
 	        $(document).ready(function() {
-	          vrtxEditor.newEditor('${content}', ${completeEditor?string}, ${withoutSubSuper?string}, '<@vrtx.requestLanguage />', cssFileList, ${simpleHTML?string});
+	          vrtxEditor.setupCKEditorInstance(editorObj);
 	        });
 	      }
 	    } catch (e) {

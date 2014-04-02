@@ -396,7 +396,7 @@ VrtxEditor.prototype.initCKEditors = function initCKEditors() {
 /**
  * Setup CKEditor instance config
  *
- * TODO: Too big and complex
+ * TODO: Less complex
  *
  * @this {VrtxEditor}
  * @param {object} opts The options
@@ -411,61 +411,76 @@ VrtxEditor.prototype.setupCKEditorInstance = function setupCKEditorInstance(opts
   var vrtxEdit = this,
       baseUrl = vrtxAdmin.multipleFormGroupingPaths.baseCKURL,
       baseFolder = vrtxAdmin.multipleFormGroupingPaths.baseFolderURL,
-      browsePath = vrtxAdmin.multipleFormGroupingPaths.basePath
-      baseDocumentUrl = vrtxAdmin.multipleFormGroupingPaths.baseDocURL;
+      browsePath = vrtxAdmin.multipleFormGroupingPaths.basePath;
 
   // File browser
   var linkBrowseUrl = baseUrl + '/plugins/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Connector=' + browsePath;
   var imageBrowseUrl = baseUrl + '/plugins/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Type=Image&Connector=' + browsePath;
   var flashBrowseUrl = baseUrl + '/plugins/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Type=Flash&Connector=' + browsePath;
 
-  var c = vrtxEdit.classifyCKEditorInstance(opts.name);
+  var classification = vrtxEdit.classifyCKEditorInstance(opts);
 
-  // CKEditor configurations
-
-  var height = (c.isContent || c.isCourseGroup) ? 400 : (c.isSupervisorBox ? 130 : (c.isCourseDescriptionB ? 200 : 220));
-  var maxHeight = (c.isContent || c.isCourseGroup) ? 800 : (c.isSupervisorBox ? 300 : 400);
-  var completeTB = (c.isCourseDescriptionB || c.isCourseGroup) ? vrtxEdit.CKEditorToolbars.studyRefToolbar 
-                                                               : (c.isStudyContent ? vrtxEdit.CKEditorToolbars.studyToolbar
-                                                                             : (c.isOldContent ? vrtxEdit.CKEditorToolbars.completeToolbarOld 
-                                                                                               : vrtxEdit.CKEditorToolbars.completeToolbar));
+  // CKEditor configuration
   vrtxEdit.initCKEditorInstance({
     name: opts.name,
     linkBrowseUrl: linkBrowseUrl,
-    imageBrowseUrl: (opts.isCompleteEditor || c.isAdditionalContent) ? imageBrowseUrl : null,
-    flashBrowseUrl: (opts.isCompleteEditor || c.isAdditionalContent) ? flashBrowseUrl : null,
+    imageBrowseUrl: classification.isMain ? imageBrowseUrl : null,
+    flashBrowseUrl: classification.isMain ? flashBrowseUrl : null,
     defaultLanguage: opts.defaultLanguage, 
     cssFileList: opts.cssFileList,
-    height:  opts.isCompleteEditor ? height 
-                                   : (c.isMessage ? 250
-                                                  : (c.isCaption ? 55 
-                                                                 : ((c.isStudyField || c.isScheduleComment || c.isAdditionalContent) ? 150 
-                                                                                                                                     : (c.isIntro ? 100 
-                                                                                                                                                  : 90)))),
-    maxHeight: maxHeight,
+    height:  vrtxEdit.setupCKEditorHeight(classification, opts),
+    maxHeight: vrtxEdit.setupCKEditorMaxHeight(classification, opts),
     minHeight: opts.isCompleteEditor ? 50 : 40,
-    toolbar: (opts.isCompleteEditor || c.isAdditionalContent) ? completeTB 
-                                                              : (c.isMessage ? vrtxEdit.CKEditorToolbars.messageToolbar
-                                                                             : (c.isStudyField ? vrtxEdit.CKEditorToolbars.studyToolbar 
-                                                                                               : ((c.isIntro || c.isCaption || c.isScheduleComment) ? vrtxEdit.CKEditorToolbars.inlineToolbar
-                                                                                                                                                    : vrtxEdit.CKEditorToolbars.withoutSubSuperToolbar))),
-    complete: (opts.isCompleteEditor || c.isAdditionalContent),
-    resizable: (opts.isCompleteEditor || c.isAdditionalContent) || !(c.isCourseDescriptionA || c.isIntro || c.isCaption || c.isMessage || c.isStudyField || c.isScheduleComment),
-    baseDocumentUrl: c.isMessage ? null : baseDocumentUrl,
+    toolbar: vrtxEdit.setupCKEditorToolbar(classification, opts),
+    complete: classification.isMain,
+    resizable: vrtxEdit.setupCKEditorResizable(classification, opts),
+    baseDocumentUrl: classification.isMessage ? null : vrtxAdmin.multipleFormGroupingPaths.baseDocURL,
     simple: opts.simple
   });
 
+};
+
+/* Functions for generating CKEditor config based on classification */
+
+VrtxEditor.prototype.setupCKEditorHeight = function setupCKEditorHeight(c, opts) {
+  return opts.isCompleteEditor ? ((c.isContent || c.isCourseGroup) ? 400 : (c.isSupervisorBox ? 130 : (c.isCourseDescriptionB ? 200 : 220)))
+                               : (c.isMessage ? 250
+                                              : (c.isCaption ? 55 
+                                                             : ((c.isStudyField || c.isScheduleComment || c.isAdditionalContent) ? 150 
+                                                                                                                                 : (c.isIntro ? 100 
+                                                                                                                                              : 90))))
+};
+
+VrtxEditor.prototype.setupCKEditorMaxHeight = function setupCKEditorMaxHeight(c, opts) {
+  return (c.isContent || c.isCourseGroup) ? 800 : (c.isSupervisorBox ? 300 : 400);
+};
+
+VrtxEditor.prototype.setupCKEditorToolbar = function setupCKEditorToolbar(c, opts) {
+  var vrtxEdit = this;
+  return classification.isMain ? ((c.isCourseDescriptionB || c.isCourseGroup) ? vrtxEdit.CKEditorToolbars.studyRefToolbar 
+                                                                              : (c.isStudyContent ? vrtxEdit.CKEditorToolbars.studyToolbar
+                                                                                                  : (c.isOldContent ? vrtxEdit.CKEditorToolbars.completeToolbarOld 
+                                                                                                                    : vrtxEdit.CKEditorToolbars.completeToolbar)))
+                               : (c.isMessage ? vrtxEdit.CKEditorToolbars.messageToolbar
+                                              : (c.isStudyField ? vrtxEdit.CKEditorToolbars.studyToolbar 
+                                                                : ((c.isIntro || c.isCaption || c.isScheduleComment) ? vrtxEdit.CKEditorToolbars.inlineToolbar
+                                                                                                                     : vrtxEdit.CKEditorToolbars.withoutSubSuperToolbar)));
+};
+
+VrtxEditor.prototype.setupCKEditorResizable = function setupCKEditorResizable(c, opts) {
+  return classification.isMain || !(c.isCourseDescriptionA || c.isIntro || c.isCaption || c.isMessage || c.isStudyField || c.isScheduleComment);
 };
 
 /**
  * Classify CKEditor instance based on its name
  *
  * @this {VrtxEditor}
- * @param {string} name Name of textarea
+ * @param {object} opts Config
  * @return {object} The classification with booleans
  */
-VrtxEditor.prototype.classifyCKEditorInstance = function classifyCKEditorInstance(name) {
+VrtxEditor.prototype.classifyCKEditorInstance = function classifyCKEditorInstance(opts) {
   var vrtxEdit = this,
+      name = opts.name;
       classification = {};
 
   // Content
@@ -474,16 +489,20 @@ VrtxEditor.prototype.classifyCKEditorInstance = function classifyCKEditorInstanc
   classification.isContent = name == "content" ||
                              classification.isOldContent ||
                              classification.isStudyContent;
+                             
+  // Additional-content                  
+  classification.isAdditionalContent = vrtxEdit.contains(name, "additional-content") ||
+                                       vrtxEdit.contains(name, "additionalContents");
+                                       
+  classification.isMain = opts.isCompleteEditor || classification.isAdditionalContent;                   
   
-  // Introduction / caption / additional-content / sp.box
+  // Introduction / caption / sp.box
   classification.isIntro = vrtxEdit.contains(name, "introduction") ||
                            vrtxEdit.contains(name, "resource.description") ||
                            vrtxEdit.contains(name, "resource.image-description") ||
                            vrtxEdit.contains(name, "resource.video-description") ||
                            vrtxEdit.contains(name, "resource.audio-description");
   classification.isCaption = vrtxEdit.contains(name, "caption");
-  classification.isAdditionalContent = vrtxEdit.contains(name, "additional-content") ||
-                                       vrtxEdit.contains(name, "additionalContents")
   classification.isMessage = vrtxEdit.contains(name, "message");
   classification.isSupervisorBox = vrtxEdit.contains("supervisor-box");
   

@@ -157,7 +157,7 @@ $(document).ready(function () {
     });
   });
 
-  vrtxEdit.addSaveHelpCKMaximized();
+  vrtxEdit.setupCKMaximized();
   vrtxEdit.initShowHide();
   vrtxEdit.initStudyDocTypes();
   vrtxEdit.initCKEditors();
@@ -669,43 +669,48 @@ function commentsCkEditor() {
   });
 }
 
-VrtxEditor.prototype.addSaveHelpCKMaximized = function addSaveHelpCKMaximized() {
+VrtxEditor.prototype.cKMaximize = function cKMaximize() {
   var vrtxAdm = vrtxAdmin,
-    _$ = vrtxAdm._$;
-
-  vrtxAdm.cachedAppContent.on("click", ".cke_button__maximize.cke_button_on", function (e) {
-    var stickyBar = _$("#vrtx-editor-title-submit-buttons");
-    stickyBar.hide();
+      _$ = vrtxAdm._$;
+  
+  var stickyBar = _$("#vrtx-editor-title-submit-buttons");
+  stickyBar.hide();
     
-    vrtxAdm.cachedBody.addClass("forms-new");
-    vrtxAdm.cachedBody.addClass("js");
+  vrtxAdm.cachedBody.addClass("forms-new");
+  vrtxAdm.cachedBody.addClass("js");
 
-    var ckInject = _$(this).closest(".cke_reset")
-      .find(".cke_toolbar_end:last");
+  var ckInject = _$(this).closest(".cke_reset")
+                         .find(".cke_toolbar_end:last");
 
-    if (!ckInject.find("#editor-help-menu").length) {
-      var shortcuts = stickyBar.find(".submit-extra-buttons");
-      var save = shortcuts.find("#vrtx-save").html();
-      var helpMenu = "<div id='editor-help-menu' class='js-on'>" + shortcuts.find("#editor-help-menu").html() + "</div>";
-      ckInject.append("<div class='ck-injected-save-help'>" + save + helpMenu + "</div>");
+  if (!ckInject.find("#editor-help-menu").length) {
+    var shortcuts = stickyBar.find(".submit-extra-buttons");
+    var save = shortcuts.find("#vrtx-save").html();
+    var helpMenu = "<div id='editor-help-menu' class='js-on'>" + shortcuts.find("#editor-help-menu").html() + "</div>";
+    ckInject.append("<div class='ck-injected-save-help'>" + save + helpMenu + "</div>");
 
-      // Fix markup
-      var saveInjected = ckInject.find(".ck-injected-save-help > a");
-      if (!saveInjected.hasClass("vrtx-button")) {
-        saveInjected.addClass("vrtx-button");
-      } else {
-        saveInjected.removeClass("vrtx-focus-button");
-      }
-
+    // Fix markup
+    var saveInjected = ckInject.find(".ck-injected-save-help > a");
+    if (!saveInjected.hasClass("vrtx-button")) {
+      saveInjected.addClass("vrtx-button");
     } else {
-      ckInject.find(".ck-injected-save-help").show();
+      saveInjected.removeClass("vrtx-focus-button");
     }
-  });
-  vrtxAdm.cachedAppContent.on("click", ".cke_button__maximize.cke_button_off", function (e) {
-    var stickyBar = _$("#vrtx-editor-title-submit-buttons");
-    stickyBar.show();
-    var ckInject = _$(this).closest(".cke_reset").find(".ck-injected-save-help").hide();
-  });
+
+  } else {
+    ckInject.find(".ck-injected-save-help").show();
+  }
+};
+
+VrtxEditor.prototype.cKMinimize = function cKMinimize() {
+  var _$ = vrtxAdmin._$;
+  var stickyBar = _$("#vrtx-editor-title-submit-buttons");
+  stickyBar.show();
+  var ckInject = _$(this).closest(".cke_reset").find(".ck-injected-save-help").hide();
+};
+
+VrtxEditor.prototype.setupCKMaximized = function setupCKMaximized() {
+  vrtxAdmin.cachedAppContent.on("click", ".cke_button__maximize.cke_button_on", this.cKMaximize);
+  vrtxAdmin.cachedAppContent.on("click", ".cke_button__maximize.cke_button_off", this.cKMinimize);
 };
 
 /*-------------------------------------------------------------------*\

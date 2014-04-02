@@ -471,7 +471,13 @@ VrtxEditor.prototype.newEditor = function newEditor(name, completeEditor, withou
                      vrtxEdit.contains(name, "description-nn") ||
                      vrtxEdit.contains(name, "description-no");
   var isScheduleComment = vrtxEdit.contains(name, "comment") && editorElem.hasClass("vrtx-schedule");
-
+  var isCourseDescription = name == "teachingsemester-other" ||
+                            name == "examsemester-other" ||
+                            name == "teaching-language-text-field" ||
+                            name == "eksamensspraak-text-field" ||
+                            name == "sensur-text-field" ||
+                            name == "antall-forsok-trekk-text-field" ||
+                            name == "tilrettelagt-eksamen-text-field";
 
   // CKEditor configurations
   if (isIntro || isCaption || isMessage || isStudyField || isScheduleComment) {
@@ -573,17 +579,6 @@ VrtxEditor.prototype.newEditor = function newEditor(name, completeEditor, withou
       simple: isSimpleHTML
     });
   } else {
-    var resizable = true;
-    // Course description
-    if(name == "teachingsemester-other" ||
-       name == "examsemester-other" ||
-       name == "teaching-language-text-field" ||
-       name == "eksamensspraak-text-field" ||
-       name == "sensur-text-field" ||
-       name == "antall-forsok-trekk-text-field" ||
-       name == "tilrettelagt-eksamen-text-field") {
-      resizable = false;   
-    }
     vrtxEdit.setCKEditorConfig({
       name: name,
       linkBrowseUrl: linkBrowseUrl,
@@ -594,7 +589,7 @@ VrtxEditor.prototype.newEditor = function newEditor(name, completeEditor, withou
       minHeight: 40,
       toolbar: vrtxEdit.CKEditorToolbars.withoutSubSuperToolbar,
       complete: isCompleteEditor,
-      resizable: resizable,
+      resizable: !isCourseDescription,
       baseDocumentUrl: baseDocumentUrl,
       simple: isSimpleHTML
     });

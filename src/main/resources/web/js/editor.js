@@ -502,8 +502,8 @@ VrtxEditor.prototype.initCKEditorInstance = function initCKEditorInstance(opts) 
     }
   };
   
-  if (!isCkEditor(opts.name)) {
-    CKEDITOR.replace(opts.name, config);
+  if (!vrtxEdit.ckFacade.isInstance(opts.name)) {
+    vrtxEdit.ckFacade.init(opts, config);
   }
 };
 
@@ -571,38 +571,45 @@ VrtxEditor.prototype.minimizeCK = function minimizeCK() {
   var ckInject = _$(this).closest(".cke_reset").find(".ck-injected-save-help").hide();
 };
 
-/* CK helper functions */
-
-function swapCK(ckInstanceNameA, ckInstanceNameB) {
-  var waitAndSwap = setTimeout(function () {
-    var ckInstA = getCkInstance(ckInstanceNameA);
-    var ckInstB = getCkInstance(ckInstanceNameB);
-    var ckValA = ckInstA.getData();
-    var ckValB = ckInstB.getData();
-    ckInstA.setData(ckValB, function () {
-      ckInstB.setData(ckValA);
-    });
-  }, 10);
-}
-
-function getCkValue(instanceName) {
-  var inst = getCkInstance(instanceName);
-  return inst !== null ? inst.getData() : null;
-}
-
-function setCkValue(instanceName, data) {
-  var inst = getCkInstance(instanceName);
-  if (inst !== null && data !== null) {
-    inst.setData(data);
+/**
+ * CKEditor facade
+ * @namespace
+ */
+VrtxEditor.prototype.ckFacade = {
+  ck: CKEDITOR,
+  init: function(opts, config) {
+   
+  },
+  getInstanceValue: function(name) {
+    var inst = this.getInstance(name);
+    return inst !== null ? inst.getData() : null;
+  },
+  setInstanceValue: function(iname, data) {
+    var inst = this.getInstance(name);
+    if (inst !== null && data !== null) {
+      inst.setData(data);
+    }
+  },
+  isInstance: function(name) {
+    return this.getInstance(name) !== null;
+  },
+  getInstance: function(name) {
+    return this.ck.instances[name] || null;
+  },
+  deleteInstance: function(name) {
+    delete this.ck.instances[name];
+  },
+  swap: function(nameA, nameB) {
+    var waitAndSwap = setTimeout(function () {
+      var ckInstA = this.getInstance(nameA);
+      var ckInstB = this.getInstance(nameB);
+      var ckValA = ckInstA.getData();
+      var ckValB = ckInstB.getData();
+      ckInstA.setData(ckValB, function () {
+        ckInstB.setData(ckValA);
+      });
+    }, 10);
   }
-}
-
-function isCkEditor(instanceName) {
-  return getCkInstance(instanceName) !== null;
-}
-
-function getCkInstance(instanceName) {
-  return CKEDITOR.instances[instanceName] || null;
 }
 
 /*-------------------------------------------------------------------*\
@@ -1410,11 +1417,11 @@ function removeJsonField(btn) {
   var i = textAreas.length;
   while (i--) {
     var textAreaName = textAreas[i].name;
-    if (isCkEditor(textAreaName)) {
-      var ckInstance = getCkInstance(textAreaName);
+    if (vrtxEditor.ckFacade.isInstance(textAreaName)) {
+      var ckInstance = vrtxEditor.ckFacade.getInstance(textAreaName);
       ckInstance.destroy();
-      if (CKEDITOR.instances[textAreaName]) { /* Just in case not removed */
-        delete CKEDITOR.instances[textAreaName];
+      if (vrtxEditor.ckFacade.isInstance(textAreaName)) { /* Just in case not removed */
+        vrtxEditor.ckFacade.deleteInstance(textAreaName);
       }
     }
   }
@@ -1446,7 +1453,7 @@ function swapContent(moveBtn, move) {
   var types = j.a;
   var swapElementFn = swapElement,
     swapCKFn = swapCK,
-    isCkEditorFn = isCkEditor;
+    isCkEditorFn = vrtxEditor.ckFacade.isInstance;
   var runOnce = false;
   for (var i = 0, len = types.length; i < len; i++) {
     var field = j.name + "\\." + types[i].name + "\\.";

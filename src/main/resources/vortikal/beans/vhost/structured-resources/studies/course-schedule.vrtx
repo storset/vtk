@@ -17,5 +17,9 @@ resourcetype course-schedule {
     </html>
     ##
   }
+  
+  localization {
+    header : (en : "Edit course schedule", no : "Rediger emnetimeplan", nn : "Rediger emnetimeplan")
+  }
 
 }

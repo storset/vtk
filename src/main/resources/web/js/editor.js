@@ -298,6 +298,7 @@ VrtxEditor.prototype.setupCKEditorInstance = function setupCKEditorInstance(opts
     minHeight: opts.isCompleteEditor ? 50 : 40,
     toolbar: vrtxEdit.setupCKEditorToolbar(classification, opts),
     complete: classification.isMain,
+    requiresStudyRefPlugin: classification.requiresStudyRefPlugin,
     resizable: vrtxEdit.setupCKEditorResizable(classification, opts),
     baseDocumentUrl: classification.isMessage ? null : vrtxAdmin.multipleFormGroupingPaths.baseDocURL,
     simple: classification.isSimple
@@ -415,7 +416,10 @@ VrtxEditor.prototype.classifyCKEditorInstance = function classifyCKEditorInstanc
                                  name == "courses-in-group" ||
                                  name == "course-group-admission" ||
                                  name == "relevant-study-programmes" ||
-                                 name == "course-group-other";
+                                 name == "course-group-other";       
+                                 
+  classification.requiresStudyRefPlugin = classification.isStudyContent || classification.isCourseDescriptionB || classification.isCourseGroup || classification.isStudyField;
+         
   return classification;
 };
 
@@ -455,7 +459,11 @@ VrtxEditor.prototype.initCKEditorInstance = function initCKEditorInstance(opts) 
   if (opts.complete) {
     config.filebrowserImageBrowseUrl = opts.imageBrowseUrl;
     config.filebrowserFlashBrowseUrl = opts.flashBrowseUrl;
-    // config.extraPlugins = 'mediaembed,studyreferencecomponent,htmlbuttons,button-h2,button-h3,button-h4,button-h5,button-h6,button-normal';
+    if(opts.requiresStudyRefPlugin) {
+      config.extraPlugins = 'mediaembed,studyreferencecomponent,htmlbuttons,button-h2,button-h3,button-h4,button-h5,button-h6,button-normal';
+    } else {
+      config.extraPlugins = 'mediaembed,htmlbuttons,button-h2,button-h3,button-h4,button-h5,button-h6,button-normal';
+    }
     config.stylesSet = vrtxEdit.CKEditorDivContainerStylesSet;
     if (opts.simple) { // XHTML
       config.format_tags = 'p;h1;h2;h3;h4;h5;h6;pre;div';

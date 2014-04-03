@@ -84,6 +84,7 @@
         var hasAggregation = _$("#resource\\.aggregation").length;
         var hasManuallyApprove = _$("#resource\\.manually-approve-from").length;
         var hasTagSearchSuggestions = _$("#resource\\.tag-search-suggestions").length;
+        
         var hasMultipleInputFields = hasFeaturedArticles || hasAggregation || hasManuallyApprove || hasTagSearchSuggestions;
         if(hasMultipleInputFields) {
           var aggregationLimit = "${aggregationLimit}";
@@ -96,19 +97,15 @@
             // General/aggregation
             enhanceMultipleInputFields("aggregation", false, false, aggregationLimit);
             enhanceMultipleInputFields("manually-approve-from", false, false, aggregationLimit);
-            
-            // Article listing
-            enhanceMultipleInputFields("featured-articles", true, true, 50);
-            
-            // Employee listing
-            enhanceMultipleInputFields("tag-search-suggestions", false, false, 50);
+            enhanceMultipleInputFields("featured-articles", true, true, 50); // Article listing
+            enhanceMultipleInputFields("tag-search-suggestions", false, false, 50); // Employee listing
             
             // var manuallyApproveButton = $("#manually-approve-container-title");
             // manuallyApproveButton.parent().find("> div:first-child").append(manuallyApproveButton.remove());
             MULTIPLE_INPUT_FIELD_INITIALIZED.resolve();
           });
         }
-      }); 
+      });
 
       UNSAVED_CHANGES_CONFIRMATION = "<@vrtx.msg code='manage.unsavedChangesConfirmation' />";
       COMPLETE_UNSAVED_CHANGES_CONFIRMATION = "<@vrtx.msg code='manage.completeUnsavedChangesConfirmation' />";
@@ -121,7 +118,7 @@
         saveMultipleInputFields();
         vrtxEditor.needToConfirm = false;
         return true;
-      } 
+      }
       
       // Async. save i18n
       <#if isCollection> var ajaxSaveText = "<@vrtx.msg code='editor.save-folder-ajax-loading-title' />";

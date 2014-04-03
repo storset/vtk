@@ -1,4 +1,4 @@
-/* Copyright (c) 2009, University of Oslo, Norway
+/* Copyright (c) 2013, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -30,19 +30,41 @@
  */
 package org.vortikal.resourcemanagement.parser;
 
-public interface ParserConstants {
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
-    public static final String PROPTYPE_STRING = "string";
-    public static final String PROPTYPE_RESOURCEREF = "resource_ref";
-    public static final String PROPTYPE_HTML = "html";
-    public static final String PROPTYPE_SIMPLEHTML = "simple_html";
-    public static final String PROPTYPE_BOOLEAN = "boolean";
-    public static final String PROPTYPE_INT = "int";
-    public static final String PROPTYPE_DATETIME = "datetime";
-    public static final String PROPTYPE_IMAGEREF = "image_ref";
-    public static final String PROPTYPE_MEDIAREF = "media_ref";
-    public static final String PROPTYPE_BINARY = "binary";
-    public static final String PROPTYPE_JSON = "json";
-    public static final String PROPTYPE_JSON_BINARY = "json_binary";
+import java.util.List;
+
+import org.junit.Test;
+import org.vortikal.resourcemanagement.PropertyDescription;
+import org.vortikal.resourcemanagement.StructuredResourceDescription;
+
+public class CourseScheduleResourceTypeDefinitionTest extends StructuredResourceParserTest {
+
+    @Test
+    public void testCourseScheduleResourceType() {
+
+        StructuredResourceDescription courseSchedule = RESOURCE_PARSER.getResourceDescription("course-schedule");
+        assertNotNull(courseSchedule);
+
+        String inheritsFrom = courseSchedule.getInheritsFrom();
+        assertNull(inheritsFrom);
+
+        // Properties
+        List<PropertyDescription> properties = courseSchedule.getPropertyDescriptions();
+        assertNotNull(properties);
+
+        PropertyDescription activitiesPropDesc = null;
+        for (PropertyDescription pd : properties) {
+            if (pd.getName().equals("activities")) {
+                activitiesPropDesc = pd;
+                break;
+            }
+        }
+        assertNotNull(activitiesPropDesc);
+        assertTrue(activitiesPropDesc.getType().equals(ParserConstants.PROPTYPE_JSON_BINARY));
+
+    }
 
 }

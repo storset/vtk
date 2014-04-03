@@ -65,7 +65,7 @@ public class PropertyDescriptionParser {
                     json.setName(propDesc.getText());
                     populateJSONPropertyDescription(json, propDesc.getChildren());
                     props.add(json);
-                } else if (type == ResourcetreeLexer.BINARY) {
+                } else if (type == ResourcetreeLexer.BINARY || type == ResourcetreeLexer.JSON_BINARY) {
                     BinaryPropertyDescription bin = new BinaryPropertyDescription();
                     bin.setName(propDesc.getText());
                     populateBinaryPropertyDescription(bin, propDesc.getChildren());
@@ -85,11 +85,12 @@ public class PropertyDescriptionParser {
         for (CommonTree descEntry : propertyDescription) {
             switch (descEntry.getType()) {
             case ResourcetreeLexer.BINARY:
+            case ResourcetreeLexer.JSON_BINARY:
                 bin.setType(descEntry.getText());
                 break;
             default:
                 throw new IllegalStateException("Unknown token type for simple property description: "
-                        + descEntry.getType());
+                        + descEntry.getText());
             }
         }
     }
@@ -128,7 +129,8 @@ public class PropertyDescriptionParser {
                 p.setTrim(true);
                 break;
             default:
-                throw new IllegalStateException("Unknown token type for simple property description: " + descType);
+                throw new IllegalStateException("Unknown token type for simple property description: "
+                        + descEntry.getText());
             }
         }
 

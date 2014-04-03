@@ -53,7 +53,8 @@ public final class PropertyType {
         BOOLEAN, 
         PRINCIPAL,
         BINARY,
-        JSON;
+        JSON,
+        JSON_BINARY;
     }
     
     /*

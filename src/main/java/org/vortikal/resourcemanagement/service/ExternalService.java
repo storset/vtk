@@ -34,10 +34,6 @@ import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertyEvaluationContext;
 import org.vortikal.resourcemanagement.ServiceDefinition;
 
-//XXX Must die. No good implementation of system jobs processing
-//properties. Too tightly knit with resource type definition and requires a
-//certain order of definition to work. Simply a poor implementation.
-@Deprecated
 public interface ExternalService {
 
     public void invoke(Property invokingProperty, PropertyEvaluationContext ctx, ServiceDefinition serviceDefinition);

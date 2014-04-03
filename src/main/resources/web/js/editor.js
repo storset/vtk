@@ -254,7 +254,7 @@ VrtxEditor.prototype.initCKEditors = function initCKEditors() {
       vrtxEdit.setupCKEditorInstance(vrtxEdit.CKEditorsInit[i]);
       i++;
       if (i < len) {
-        setTimeout(arguments.callee, vrtxEdit.CKEditorsInitAsyncInterval);
+        setTimeout(ckEditorInitLoadTimer, vrtxEdit.CKEditorsInitAsyncInterval);
       }
     }, vrtxEdit.CKEditorsInitAsyncInterval);
   }
@@ -472,10 +472,7 @@ VrtxEditor.prototype.initCKEditorInstance = function initCKEditorInstance(opts) 
 
   config.resize_enabled = opts.resizable;
   config.toolbarCanCollapse = false;
-  config.defaultLanguage = 'no';
-  if (opts.defaultLanguage) {
-    config.language = opts.defaultLanguage;
-  }
+  config.defaultLanguage = opts.defaultLanguage ? opts.defaultLanguage : 'no';
   config.toolbar = opts.toolbar;
   config.height = opts.height + 'px';
   config.autoGrow_maxHeight = opts.maxHeight + 'px';

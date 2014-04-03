@@ -571,6 +571,40 @@ VrtxEditor.prototype.minimizeCK = function minimizeCK() {
   var ckInject = _$(this).closest(".cke_reset").find(".ck-injected-save-help").hide();
 };
 
+/* CK helper functions */
+
+function swapCK(ckInstanceNameA, ckInstanceNameB) {
+  var waitAndSwap = setTimeout(function () {
+    var ckInstA = getCkInstance(ckInstanceNameA);
+    var ckInstB = getCkInstance(ckInstanceNameB);
+    var ckValA = ckInstA.getData();
+    var ckValB = ckInstB.getData();
+    ckInstA.setData(ckValB, function () {
+      ckInstB.setData(ckValA);
+    });
+  }, 10);
+}
+
+function getCkValue(instanceName) {
+  var inst = getCkInstance(instanceName);
+  return inst !== null ? inst.getData() : null;
+}
+
+function setCkValue(instanceName, data) {
+  var inst = getCkInstance(instanceName);
+  if (inst !== null && data !== null) {
+    inst.setData(data);
+  }
+}
+
+function isCkEditor(instanceName) {
+  return getCkInstance(instanceName) !== null;
+}
+
+function getCkInstance(instanceName) {
+  return CKEDITOR.instances[instanceName] || null;
+}
+
 /*-------------------------------------------------------------------*\
     5. Validation and change detection
 \*-------------------------------------------------------------------*/
@@ -603,13 +637,13 @@ function unsavedChangesInEditor() {
 
   var currentStateOfInputFields = contents.find("input").not("[type=submit]").not("[type=button]")
                                                         .not("[type=checkbox]").not("[type=radio]"),
-    textLen = currentStateOfInputFields.length,
-    currentStateOfSelects = contents.find("select"),
-    selectsLen = currentStateOfSelects.length,
-    currentStateOfCheckboxes = contents.find("input[type=checkbox]:checked"),
-    checkboxLen = currentStateOfCheckboxes.length,
-    currentStateOfRadioButtons = contents.find("input[type=radio]:checked"),
-    radioLen = currentStateOfRadioButtons.length;
+      textLen = currentStateOfInputFields.length,
+      currentStateOfSelects = contents.find("select"),
+      selectsLen = currentStateOfSelects.length,
+      currentStateOfCheckboxes = contents.find("input[type=checkbox]:checked"),
+      checkboxLen = currentStateOfCheckboxes.length,
+      currentStateOfRadioButtons = contents.find("input[type=radio]:checked"),
+      radioLen = currentStateOfRadioButtons.length;
 
   // Check if count has changed
   if (textLen != vrtxEdit.editorInitInputFields.length || selectsLen != vrtxEdit.editorInitSelects.length || checkboxLen != vrtxEdit.editorInitCheckboxes.length || radioLen != vrtxEdit.editorInitRadios.length) return true;
@@ -1918,39 +1952,5 @@ VrtxEditor.prototype.initStudyDocTypes = function initStudyDocTypes() {
     vrtxEdit.replaceTag(samletElm, "h1", "h2");
   }
 };
-
-/* CK helper functions - XXX: facade */
-
-function swapCK(ckInstanceNameA, ckInstanceNameB) {
-  setTimeout(function () {
-    var ckInstA = getCkInstance(ckInstanceNameA);
-    var ckInstB = getCkInstance(ckInstanceNameB);
-    var ckValA = ckInstA.getData();
-    var ckValB = ckInstB.getData();
-    ckInstA.setData(ckValB, function () {
-      ckInstB.setData(ckValA);
-    });
-  }, 10);
-}
-
-function getCkValue(instanceName) {
-  var inst = getCkInstance(instanceName);
-  return inst !== null ? inst.getData() : null;
-}
-
-function setCkValue(instanceName, data) {
-  var inst = getCkInstance(instanceName);
-  if (inst !== null && data !== null) {
-    inst.setData(data);
-  }
-}
-
-function isCkEditor(instanceName) {
-  return getCkInstance(instanceName) !== null;
-}
-
-function getCkInstance(instanceName) {
-  return CKEDITOR.instances[instanceName] || null;
-}
 
 /* ^ Vortex Editor */

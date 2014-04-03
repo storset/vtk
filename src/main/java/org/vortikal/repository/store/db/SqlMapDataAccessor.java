@@ -1105,7 +1105,8 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
     private void storeProperties(final ResourceImpl r) {
         
         for (Property p : r) {
-            if (p.getType() == PropertyType.Type.BINARY) {
+            if (p.getType() == PropertyType.Type.BINARY ||
+                    p.getType() == PropertyType.Type.JSON_BINARY) {
                 // XXX: mem copying has to be done because of the way properties
                 // are stored: first deleted then inserted (never updated)
                 // If any binary value is of type BinaryValueReference (created only by this class)
@@ -1141,7 +1142,8 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
 
                         for (Value v : values) {
                             parameters.put("value", v.getNativeStringRepresentation());
-                            if (property.getType() == PropertyType.Type.BINARY) {
+                            if (property.getType() == PropertyType.Type.BINARY ||
+                                    property.getType() == PropertyType.Type.JSON_BINARY) {
                                 parameters.put("binaryContent", v.getBinaryValue().getBytes());
                                 parameters.put("binaryMimeType", v.getBinaryValue().getContentType());
                             }

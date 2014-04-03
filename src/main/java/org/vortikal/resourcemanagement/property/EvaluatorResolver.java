@@ -58,6 +58,7 @@ import org.vortikal.resourcemanagement.PropertyDescription;
 import org.vortikal.resourcemanagement.ServiceDefinition;
 import org.vortikal.resourcemanagement.SimplePropertyDescription;
 import org.vortikal.resourcemanagement.StructuredResourceDescription;
+import org.vortikal.resourcemanagement.parser.ParserConstants;
 import org.vortikal.resourcemanagement.service.ExternalServiceInvoker;
 import org.vortikal.resourcemanagement.studies.SharedTextResolver;
 import org.vortikal.text.html.HtmlDigester;
@@ -80,6 +81,9 @@ public class EvaluatorResolver {
         } else if (desc instanceof JSONPropertyDescription) {
             return createJSONPropertyEvaluator((JSONPropertyDescription) desc, resourceDesc);
         } else if (desc instanceof BinaryPropertyDescription) {
+            if (desc.getType().equals(ParserConstants.PROPTYPE_JSON_BINARY)) {
+                return new JSONBinaryPropertyEvaluator();
+            }
             return new BinaryPropertyEvaluator(desc);
         }
         return createDerivedPropertyEvaluator((DerivedPropertyDescription) desc, resourceDesc);
@@ -399,6 +403,16 @@ public class EvaluatorResolver {
             }
             return false;
         }
+    }
+
+    private class JSONBinaryPropertyEvaluator implements PropertyEvaluator {
+
+        @Override
+        public boolean evaluate(Property property, PropertyEvaluationContext ctx) throws PropertyEvaluationException {
+            // XXX Implement
+            return false;
+        }
+
     }
 
     private void setPropValue(Property property, Object value) {

@@ -74,6 +74,7 @@ public class StructuredResourceManager {
         PROPTYPE_MAP.put(ParserConstants.PROPTYPE_RESOURCEREF, PropertyType.Type.IMAGE_REF);
         PROPTYPE_MAP.put(ParserConstants.PROPTYPE_BINARY, PropertyType.Type.BINARY);
         PROPTYPE_MAP.put(ParserConstants.PROPTYPE_JSON, PropertyType.Type.JSON);
+        PROPTYPE_MAP.put(ParserConstants.PROPTYPE_JSON_BINARY, PropertyType.Type.JSON_BINARY);
     }
     private ResourceTypeTree resourceTypeTree;
     private PrimaryResourceTypeDefinition baseType;
@@ -271,7 +272,6 @@ public class StructuredResourceManager {
             def.setType(Type.JSON);
             def.addMetadata(PropertyTypeDefinition.METADATA_INDEXABLE_JSON, true);
         } else {
-
             def.setType(mapType(propertyDescription));
         }
         def.setProtectionLevel(RepositoryAction.UNEDITABLE_ACTION);

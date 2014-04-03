@@ -40,7 +40,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.vortikal.resourcemanagement.StructuredResourceDescription;
 import org.vortikal.resourcemanagement.StructuredResourceManager;
 
-public class StructuredResourceParserTest {
+public abstract class StructuredResourceParserTest {
 
     protected static StructuredResourceParser RESOURCE_PARSER;;
 

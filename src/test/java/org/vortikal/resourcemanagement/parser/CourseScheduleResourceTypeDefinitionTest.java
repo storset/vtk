@@ -1,4 +1,4 @@
-/* Copyright (c) 2009, University of Oslo, Norway
+/* Copyright (c) 2013, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -28,14 +28,43 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.resourcemanagement.service;
+package org.vortikal.resourcemanagement.parser;
 
-import org.vortikal.repository.Property;
-import org.vortikal.repository.PropertyEvaluationContext;
-import org.vortikal.resourcemanagement.ServiceDefinition;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
-public interface ExternalService {
+import java.util.List;
 
-    public void invoke(Property invokingProperty, PropertyEvaluationContext ctx, ServiceDefinition serviceDefinition);
+import org.junit.Test;
+import org.vortikal.resourcemanagement.PropertyDescription;
+import org.vortikal.resourcemanagement.StructuredResourceDescription;
+
+public class CourseScheduleResourceTypeDefinitionTest extends StructuredResourceParserTest {
+
+    @Test
+    public void testCourseScheduleResourceType() {
+
+        StructuredResourceDescription courseSchedule = RESOURCE_PARSER.getResourceDescription("course-schedule");
+        assertNotNull(courseSchedule);
+
+        String inheritsFrom = courseSchedule.getInheritsFrom();
+        assertNull(inheritsFrom);
+
+        // Properties
+        List<PropertyDescription> properties = courseSchedule.getPropertyDescriptions();
+        assertNotNull(properties);
+
+        PropertyDescription activitiesPropDesc = null;
+        for (PropertyDescription pd : properties) {
+            if (pd.getName().equals("activities")) {
+                activitiesPropDesc = pd;
+                break;
+            }
+        }
+        assertNotNull(activitiesPropDesc);
+        assertTrue(activitiesPropDesc.getType().equals(ParserConstants.PROPTYPE_JSON_BINARY));
+
+    }
 
 }

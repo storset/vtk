@@ -54,7 +54,7 @@
     </#if>
 
     <script type="text/javascript"><!--
-      document.getElementById("comment-syntax-desc").style.display = "none";
+       document.getElementById("comment-syntax-desc").style.display = "none";
       document.getElementById("comments-text-div").style.margin = "0";
       $("#comments-text-div").on("click", "#comments-text",function () {
         vrtxEditor.initCKEditorInstance({

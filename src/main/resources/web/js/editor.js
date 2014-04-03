@@ -455,7 +455,7 @@ VrtxEditor.prototype.initCKEditorInstance = function initCKEditorInstance(opts) 
   if (opts.complete) {
     config.filebrowserImageBrowseUrl = opts.imageBrowseUrl;
     config.filebrowserFlashBrowseUrl = opts.flashBrowseUrl;
-    config.extraPlugins = 'mediaembed,studyreferencecomponent,htmlbuttons,button-h2,button-h3,button-h4,button-h5,button-h6,button-normal';
+    // config.extraPlugins = 'mediaembed,studyreferencecomponent,htmlbuttons,button-h2,button-h3,button-h4,button-h5,button-h6,button-normal';
     config.stylesSet = vrtxEdit.CKEditorDivContainerStylesSet;
     if (opts.simple) { // XHTML
       config.format_tags = 'p;h1;h2;h3;h4;h5;h6;pre;div';
@@ -578,7 +578,7 @@ VrtxEditor.prototype.minimizeCK = function minimizeCK() {
 VrtxEditor.prototype.ckFacade = {
   ck: CKEDITOR,
   init: function(opts, config) {
-   
+    this.ck.replace(opts.name, config);
   },
   getInstanceValue: function(name) {
     var inst = this.getInstance(name);
@@ -664,7 +664,7 @@ function unsavedChangesInEditor() {
   var currentStateOfTextFields = contents.find("textarea"); // CK->checkDirty()
   if (typeof CKEDITOR !== "undefined") {
     for (i = 0, len = currentStateOfTextFields.length; i < len; i++) {
-      var ckInstance = getCkInstance(currentStateOfTextFields[i].name);
+      var ckInstance = vrtxEditor.ckFacade.getInstance(currentStateOfTextFields[i].name);
       if (ckInstance && ckInstance.checkDirty() && ckInstance.getData() !== "") {
         return true;
       }
@@ -718,7 +718,7 @@ function validTextLengthsInEditor(isOldEditor) {
       var txtAreaElm = $(currentTextAreas[i]);
       var txtArea = isOldEditor ? txtAreaElm : txtAreaElm.find("textarea");
       if (txtArea.length && typeof txtArea[0].name !== "undefined") {
-        var ckInstance = getCkInstance(txtArea[0].name);
+        var ckInstance = vrtxEditor.ckFacade.getInstance(txtArea[0].name);
         if (ckInstance && ckInstance.getData().length > MAX_LENGTH) {
           validTextLengthsInEditorErrorFunc(txtAreaElm, isOldEditor);
           return false;
@@ -1452,7 +1452,7 @@ function swapContent(moveBtn, move) {
   var j = vrtxEditor.multipleBoxesTemplatesContract[parseInt(curElm.closest(".vrtx-json").find(".vrtx-add-button").data('number'), 10)];
   var types = j.a;
   var swapElementFn = swapElement,
-    swapCKFn = swapCK,
+    swapCKFn = vrtxEditor.ckFacade.swap,
     isCkEditorFn = vrtxEditor.ckFacade.isInstance;
   var runOnce = false;
   for (var i = 0, len = types.length; i < len; i++) {

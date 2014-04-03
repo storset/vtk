@@ -3681,7 +3681,7 @@ VrtxAdmin.prototype.serverFacade = {
       success: callbacks.success,
       error: function (xhr, textStatus) {
         var msg = vrtxAdmin.serverFacade.error(xhr, textStatus, true);
-        if(msg === "RE_AUTH") {
+        if(msg === "RE_AUTH" && !vrtxAdmin.ignoreAjaxErrors) {
           reAuthenticateRetokenizeForms(false);
         } else {
           vrtxAdmin.displayErrorMsg(msg);
@@ -3717,7 +3717,7 @@ VrtxAdmin.prototype.serverFacade = {
       success: callbacks.success,
       error: function (xhr, textStatus) {
         var msg = vrtxAdmin.serverFacade.error(xhr, textStatus, true);
-        if(msg === "RE_AUTH") {
+        if(msg === "RE_AUTH" && !vrtxAdmin.ignoreAjaxErrors) {
           reAuthenticateRetokenizeForms(false);
         } else {
           vrtxAdmin.displayErrorMsg(msg);
@@ -3949,8 +3949,7 @@ VrtxAdmin.prototype.ariaHidden = function ariaHidden(idOrElm, isHidden) {
  * @return {string} HTML node
  */
 VrtxAdmin.prototype.wrap = function wrap(node, cls, html) {
-  return this._$.parseHTML("<" + node + " class='" + cls + "'>" + html +
-    "</" + node + ">");
+  return this._$.parseHTML("<" + node + " class='" + cls + "'>" + html + "</" + node + ">");
 };
 
 /**

@@ -1191,6 +1191,7 @@ VrtxAdmin.prototype.dropdown = function dropdown(options) {
     });
     list.find("li.dropdown-init .dropdown-shortcut-menu-click-area").keyup(function (e) {
       if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
+        var link = $(this);
         vrtxAdm.closeDropdowns();
         vrtxAdm.openDropdown(link, shortcutMenu);
       }

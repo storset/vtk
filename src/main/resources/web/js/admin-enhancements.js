@@ -2464,7 +2464,7 @@ function editorInteraction(vrtxAdm, _$) {
           if(isCollection) {
             location.href = "./?vrtx=admin&action=preview";
           } else {
-            location.href = location.pathname + "/?vrtx=admin";
+            location.href = location.pathname + "?vrtx=admin";
           }
         }
       }).fail(handleAjaxSaveErrors);

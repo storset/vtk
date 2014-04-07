@@ -3473,26 +3473,46 @@ VrtxAdmin.prototype.completeSimpleFormAsync = function completeSimpleFormAsync(o
 };
 
 /**
- * Retrieves HTML templates in a Mustache file seperated by ###
+ * Template Engine facade
  *
- * @this {VrtxAdmin}
- * @param {string} fileName The filename for the Mustache file
- * @param {array} templateNames Preferred name of the templates
- * @param {object} templatesIsRetrieved Deferred
- * @return {array} Templates with templateName as hash
+ * Uses Mustache
+ *
+ * @namespace
  */
-VrtxAdmin.prototype.retrieveHTMLTemplates = function retrieveHTMLTemplates(fileName, templateNames, templatesIsRetrieved) {
-  var templatesHashArray = [];
-  vrtxAdmin.serverFacade.getText(this.rootUrl + "/js/templates/" + fileName + ".mustache", {
-    success: function (results, status, resp) {
-      var templates = results.split("###");
-      for (var i = 0, len = templates.length; i < len; i++) {
-        templatesHashArray[templateNames[i]] = $.trim(templates[i]);
+VrtxAdmin.prototype.templateEngineFacade = {
+  /**
+   * Retrieve templates (splitted on ### => templateNames)
+   *
+   * @this {templateEngineFacade}
+   * @param {string} fileName The filename for the Mustache file
+   * @param {array} templateNames Templatenames
+   * @param {object} templatesIsRetrieved Deferred / Future
+   * @return {array} Templates with templateNames as hash
+   */
+  get: function (fileName, templateNames, templatesIsRetrieved) {
+    var templatesHashArray = [];
+    vrtxAdmin.serverFacade.getText(vrtxAdmin.rootUrl + "/js/templates/" + fileName + ".mustache", {
+      success: function (results, status, resp) {
+        var templates = results.split("###");
+        for (var i = 0, len = templates.length; i < len; i++) {
+          templatesHashArray[templateNames[i]] = $.trim(templates[i]);
+        }
+        templatesIsRetrieved.resolve();
       }
-      templatesIsRetrieved.resolve();
-    }
-  });
-  return templatesHashArray;
+    });
+    return templatesHashArray;
+  },
+  /**
+   * Render template
+   *
+   * @this {templateEngineFacade}
+   * @param {string} template The template
+   * @param {object} args Arguments to render in template
+   * @return {string} HTML
+   */
+  render: function(template, args) {
+    return $.mustache(template, args);
+  }
 };
 
 

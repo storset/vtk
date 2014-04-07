@@ -24,10 +24,9 @@ var MANUALLY_APPROVE_INITIALIZED = $.Deferred();
     if(manuallyApprovedLocationsTextfield.length) {
 	  // Retrieve HTML templates
 	  var manuallyApprovedTemplatesRetrieved = $.Deferred();
-	  manuallyApproveTemplates = vrtxAdmin.retrieveHTMLTemplates("manually-approve",
-	                                                             ["menu", "table-start", "table-row", 
-	                                                              "table-end", "navigation-next", "navigation-prev"],
-	                                                             manuallyApprovedTemplatesRetrieved);
+	  manuallyApproveTemplates = vrtxAdmin.templateEngineFacade.get("manually-approve",
+	    ["menu", "table-start", "table-row", "table-end", "navigation-next", "navigation-prev"],
+	  manuallyApprovedTemplatesRetrieved);
       var locations, aggregatedlocations;
       var value = manuallyApprovedLocationsTextfield.val();
       lastManuallyApprovedLocations = $.trim(value);
@@ -39,8 +38,8 @@ var MANUALLY_APPROVE_INITIALIZED = $.Deferred();
 
       $.when(manuallyApprovedTemplatesRetrieved).done(function() {
         retrieveResources(".", locations, aggregatedlocations, true);
-        var html = $.mustache(manuallyApproveTemplates["menu"], { approveShowAll: approveShowAll, 
-                                                                  approveShowApprovedOnly: approveShowApprovedOnly });  
+        var html = vrtxAdmin.templateEngineFacade.render(manuallyApproveTemplates["menu"], { approveShowAll: approveShowAll, 
+                                                                                             approveShowApprovedOnly: approveShowApprovedOnly });  
         $($.parseHTML(html)).insertAfter("#manually-approve-container-title"); 
       });
     } else {
@@ -326,10 +325,10 @@ var MANUALLY_APPROVE_INITIALIZED = $.Deferred();
   /* HTML generation functions */
   
   function generateStartPageAndTableHead(pages) {
-    return $.mustache(manuallyApproveTemplates["table-start"], { pages: pages,
-                                                                 approveTableTitle: approveTableTitle,
-                                                                 approveTableSrc: approveTableSrc,
-                                                                 approveTablePublished: approveTablePublished }); 
+    return vrtxAdmin.templateEngineFacade.render(manuallyApproveTemplates["table-start"], { pages: pages,
+                                                                                            approveTableTitle: approveTableTitle,
+                                                                                            approveTableSrc: approveTableSrc,
+                                                                                            approveTablePublished: approveTablePublished }); 
   }
 
   function generateTableRow(resource, isInit, approvedTextfield) {
@@ -341,28 +340,28 @@ var MANUALLY_APPROVE_INITIALIZED = $.Deferred();
         approvedTextfield.val(resource.uri);
       }
     }
-    return $.mustache(manuallyApproveTemplates["table-row"], { resource: resource });
+    return vrtxAdmin.templateEngineFacade.render(manuallyApproveTemplates["table-row"], { resource: resource });
   }
 
   function generateTableEndAndPageInfo(pages, prPage, len, lastRow) {
-    return $.mustache(manuallyApproveTemplates["table-end"], { approveShowing: approveShowing,
-                                                               page: (((pages - 1) * prPage) + 1),
-                                                               last: lastRow ? len : pages * prPage,
-                                                               approveOf: approveOf,
-                                                               len: len });
+    return vrtxAdmin.templateEngineFacade.render(manuallyApproveTemplates["table-end"], { approveShowing: approveShowing,
+                                                                                          page: (((pages - 1) * prPage) + 1),
+                                                                                          last: lastRow ? len : pages * prPage,
+                                                                                          approveOf: approveOf,
+                                                                                          len: len });
   }
 
   function generateNavAndEndPage(i, html, prPage, remainder, pages, totalPages) {
     var html = "<div class='prev-next'>";
     if (i > prPage) {
       var prevPage = pages - 2;
-      html += $.mustache(manuallyApproveTemplates["navigation-prev"], { prevPage: prevPage,
-                                                                        approvePrev: approvePrev,
-                                                                        prPage: prPage });
+      html += vrtxAdmin.templateEngineFacade.render(manuallyApproveTemplates["navigation-prev"], { prevPage: prevPage,
+                                                                                                   approvePrev: approvePrev,
+                                                                                                   prPage: prPage });
     }
-    html += $.mustache(manuallyApproveTemplates["navigation-next"], { pages: pages,
-                                                                      approveNext: approveNext,
-                                                                      nextPrPage: (pages < totalPages || remainder == 0) ? prPage : remainder });
+    html += vrtxAdmin.templateEngineFacade.render(manuallyApproveTemplates["navigation-next"], { pages: pages,
+                                                                                                 approveNext: approveNext,
+                                                                                                 nextPrPage: (pages < totalPages || remainder == 0) ? prPage : remainder });
     html += "</div></div>";
     return html;
   }

@@ -213,7 +213,8 @@ VrtxEditor.prototype.richtextEditorFacade = {
       requiresStudyRefPlugin: classification.requiresStudyRefPlugin,
       resizable: vrtxEdit.setupEditorResizable(classification, opts),
       baseDocumentUrl: classification.isMessage ? null : vrtxAdmin.multipleFormGroupingPaths.baseDocURL,
-      simple: classification.isSimple
+      isSimple: classification.isSimple,
+      isFrontpageBox: classification.isFrontpageBox
     });
 
   },
@@ -235,7 +236,8 @@ VrtxEditor.prototype.richtextEditorFacade = {
    * @param {string} opts.complete Use complete toolbar
    * @param {boolean} opts.resizable Possible to resize editor
    * @param {string} opts.baseDocumentUrl URL to current document 
-   * @param {string} opts.simple Make h1 format available (for old document types)
+   * @param {string} opts.isSimple Make h1 format available (for old document types)
+   * @param {string} opts.isFrontpageBox Make h2 format unavailable (for frontpage boxes)
    */
   init: function(opts) {
     var config = {};
@@ -258,7 +260,7 @@ VrtxEditor.prototype.richtextEditorFacade = {
         config.extraPlugins = 'mediaembed,htmlbuttons,button-h2,button-h3,button-h4,button-h5,button-h6,button-normal';
       }
       config.stylesSet = this.divContainerStylesSet;
-      if (opts.simple) { // XHTML
+      if (opts.isSimple) { // XHTML
         config.format_tags = 'p;h1;h2;h3;h4;h5;h6;pre;div';
       } else {
         config.format_tags = 'p;h2;h3;h4;h5;h6;pre;div';
@@ -267,7 +269,7 @@ VrtxEditor.prototype.richtextEditorFacade = {
       config.removePlugins = 'elementspath';
     }
   
-    //  if ($("form#editor").hasClass("vrtx-frontpage")) {
+    //  if (opts.isFrontpageBox) {
     //	config.format_tags = 'p;h3;h4;h5;h6;pre;div';
     //  } 
 
@@ -547,6 +549,7 @@ VrtxEditor.prototype.classifyEditorInstance = function classifyEditorInstance(op
                              classification.isOldContent ||
                              classification.isStudyContent;
   classification.isSimple = classification.isOldContent && opts.simple;
+  classification.isFrontpageBox = vrtxEdit.editorForm.hasClass("vrtx-frontpage");
                              
   // Additional-content                  
   classification.isAdditionalContent = vrtxEdit.contains(name, "additional-content") ||

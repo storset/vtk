@@ -674,11 +674,13 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
               var copyMoveAnimation = new VrtxAnimation({
                 elem: copyMoveExists,
                 outerWrapperElem: resourceMenuRight,
+                useCSSAnim: true,
                 after: function() {
                   copyMoveExists.remove();
                   copyMoveAfter();
                   copyMoveAnimation.update({
                     elem: resourceMenuRight.find(li),
+                    useCSSAnim: true,
                     outerWrapperElem: resourceMenuRight
                   })
                   copyMoveAnimation.rightIn();
@@ -689,6 +691,7 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
               copyMoveAfter();
               var copyMoveAnimation = new VrtxAnimation({
                 elem: resourceMenuRight.find(li),
+                useCSSAnim: true,
                 outerWrapperElem: resourceMenuRight
               });
               copyMoveAnimation.rightIn();
@@ -747,6 +750,7 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
               var copyMoveAnimation = new VrtxAnimation({
                 elem: li,
                 outerWrapperElem: $("#resourceMenuRight"),
+                useCSSAnim: true,
                 after: function() {
                   vrtxAdm.displayErrorMsg(resultElm.find(".errormessage").html());
                   vrtxAdm.cachedContent.html(resultElm.find("#contents").html());

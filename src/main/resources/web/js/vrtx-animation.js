@@ -83,7 +83,7 @@ var VrtxAnimation = dejavu.Class.declare({
     }
 
     var animation = this;
-    if(true || animation.$static.cssTransform == null || animation.__opts.preferJSAnim) { // JS pixel pushing
+    if(animation.$static.cssTransform == null || !animation.__opts.useCSSAnim) { // JS pixel pushing
       var easing = (dir === "in") ? "easeIn" : "easeOut";
       var speed = animation.__opts.animationSpeed || animation.$static.animationSpeed;
       animation.__opts.elem.animate({
@@ -108,7 +108,7 @@ var VrtxAnimation = dejavu.Class.declare({
     var height = this.__prepareMove(dir)[1];
 
     var animation = this;
-    if(true || animation.$static.cssTransform == null || animation.__opts.preferJSAnim) { // JS pixel pushing
+    if(animation.$static.cssTransform == null || !animation.__opts.useCSSAnim) { // JS pixel pushing
       var easing = (dir === "in") ? "easeIn" : "easeOut";
       var speed = animation.__opts.animationSpeed || animation.$static.animationSpeed;
       animation.__opts.elem[(dir === "in") ? "slideDown" : "slideUp"](

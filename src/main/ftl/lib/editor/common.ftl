@@ -37,7 +37,7 @@
     };
 	vrtxAdmin.multipleFormGroupingPaths = {
 	  <#if fckeditorBase??>
-	  baseCKURL: "${fckeditorBase.url?html}",
+	  baseBrowserURL: "${fckeditorBase.url?html}",
 	  baseFolderURL: "${baseFolder}",
 	  baseDocURL: "${fckeditorBase.documentURL?html}",
 	  basePath: "${fckBrowse.url.pathRepresentation}"
@@ -66,29 +66,27 @@
 
 <#macro createEditor content completeEditor=false withoutSubSuper=false simpleHTML=false>
   <script type="text/javascript"><!--
-      if (CKEDITOR.env.isCompatible) {
-        try {
-          var editorObj = {
-            name: '${content}',
-            isCompleteEditor: ${completeEditor?string},
-            isWithoutSubSuper: ${withoutSubSuper?string},
-            defaultLanguage: '<@vrtx.requestLanguage />',
-            cssFileList: cssFileList,
-            simple: ${simpleHTML?string}
-          }
-          if (typeof vrtxEditor !== "undefined") {
-            vrtxEditor.CKEditorsInit.push(editorObj);
-	      } else {
-	        $(document).ready(function() {
-	          vrtxEditor.setupCKEditorInstance(editorObj);
-	        });
-	      }
-	    } catch (e) {
-	      if(typeof console !== "undefined" && console.log) {
-	        console.log(e);
-	      }
+      try {
+        var editorObj = {
+          name: '${content}',
+          isCompleteEditor: ${completeEditor?string},
+          isWithoutSubSuper: ${withoutSubSuper?string},
+          defaultLanguage: '<@vrtx.requestLanguage />',
+          cssFileList: cssFileList,
+          simple: ${simpleHTML?string}
+        }
+        if (typeof vrtxEditor !== "undefined") {
+          vrtxEditor.richtextEditorFacade.editorsForInit.push(editorObj);
+	    } else {
+	      $(document).ready(function() {
+	        vrtxEditor.richtextEditorFacade.setup(editorObj);
+	      });
 	    }
-      }
+	  } catch (e) {
+	    if(typeof console !== "undefined" && console.log) {
+	      console.log(e);
+	    }
+	  }
   //-->
   </script>
 </#macro>

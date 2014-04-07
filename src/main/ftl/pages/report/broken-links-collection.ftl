@@ -37,7 +37,7 @@
         browse: "${vrtx.getMsg('editor.browseImages')}"
       };
       vrtxAdmin.multipleFormGroupingPaths = {
-        baseCKURL: "${fckeditorBase.url?html}",
+        baseBrowserURL: "${fckeditorBase.url?html}",
         baseFolderURL: "${baseFolder}",
         basePath: "${fckBrowse.url.pathRepresentation}"
       };

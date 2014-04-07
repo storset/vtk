@@ -36,7 +36,7 @@
     };
 	vrtxAdmin.multipleFormGroupingPaths = {
 	  <#if fckeditorBase??>
-	  baseCKURL: "${fckeditorBase.url?html}",
+	  baseBrowserURL: "${fckeditorBase.url?html}",
 	  baseFolderURL: "${baseFolder}",
 	  baseDocURL: "${fckeditorBase.documentURL?html}",
 	  basePath: "${fckBrowse.url.pathRepresentation}"

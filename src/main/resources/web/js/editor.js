@@ -1,15 +1,12 @@
 /*
  *  Vortex Editor
  *
- *  TODO: encapsulate in VrtxEditor
- *  TODO: JSDoc
- *
  *  ToC: 
  *
  *  1.  Config
  *  2.  DOM is fully loaded
  *  3.  DOM is ready
- *  4.  CKEditor
+ *  4.  RichTextEditor
  *  5.  Validation and change detection
  *  6.  Image preview
  *  7.  Show / hide
@@ -27,18 +24,6 @@
  */
 function VrtxEditor() {
   this.editorForm = null;
-
-  /** CKEditor toolbars */
-  this.CKEditorToolbars = {};
-  /** CKEditor div-container styles */
-  this.CKEditorDivContainerStylesSet = [{}];
-
-  /** CKEditors at init that should be created */
-  this.CKEditorsInit = [];
-  /** CKEditors created sync */
-  this.CKEditorsInitSyncMax = 15;
-  /** CKEditors async creation interval in ms */
-  this.CKEditorsInitAsyncInterval = 15;
 
   /** Text input fields at init */
   this.editorInitInputFields = [];
@@ -106,19 +91,9 @@ $(window).load(function () {
     storeInitPropValues(vrtxAdm.cachedContent);
   });
 
-  // CTRL+S save inside CKEditor
+  // CTRL+S save inside editors
   if (typeof CKEDITOR !== "undefined" && vrtxEditor.editorForm.length) { // XXX: Don't add event if not regular editor
-    CKEDITOR.on('instanceReady', function (event) {
-      _$(".cke_contents iframe").contents().find("body").bind('keydown', 'ctrl+s', $.debounce(150, true, function (e) {
-        ctrlSEventHandler(_$, e);
-      }));
-      // Fix bug (http://dev.ckeditor.com/ticket/9958) with IE triggering onbeforeunload on dialog click
-      event.editor.on('dialogShow', function(dialogShowEvent) {
-        if(CKEDITOR.env.ie) {
-          $(dialogShowEvent.data._.element.$).find('a[href*="void(0)"]').removeAttr('href');
-        }
-      });
-    });
+    vrtxEditor.richtextEditorFacade.setupCTRLS();
   }
 });
 
@@ -131,7 +106,7 @@ $(document).ready(function () {
   vrtxEdit.editorForm = $("#editor");
 
   if (!vrtxEdit.isInAdmin || !vrtxEdit.editorForm.length) {
-    vrtxEdit.initCKEditors();
+    vrtxEdit.richtextEditorFacade.setupMultiple(false);
     return; /* XXX: Exit if not is in admin or have regular editor */
   }
 
@@ -156,31 +131,314 @@ $(document).ready(function () {
     });
   });
 
-  vrtxEdit.setupCKEditorMaximizeMinimize();
   vrtxEdit.initShowHide();
   vrtxEdit.initStudyDocTypes();
-  vrtxEdit.initCKEditors();
+  vrtxEdit.richtextEditorFacade.setupMultiple(true);
 });
 
 /*-------------------------------------------------------------------*\
-    4. CKEditor
+    4. RichTextEditor
 \*-------------------------------------------------------------------*/
 
-/* CKEditor toolbars */
+/**
+ * RichTextEditor facade
+ *
+ * Uses CKEditor
+ *
+ * @namespace
+ */
+VrtxEditor.prototype.richtextEditorFacade = {
+  toolbars: {},
+  divContainerStylesSet: [{}],
+  editorsForInit: [],
+  initSyncMax: 15,
+  initAsyncInterval: 15,
+ /**
+  * Setup multiple instances
+  * @this {richtextEditorFacade}
+  */
+  setupMultiple: function(isInAdmin) {
+    if(isInAdmin) this.setupMaximizeMinimize();
+  
+    for (var i = 0, len = this.editorsForInit.length; i < len && i < this.initSyncMax; i++) { // Initiate <=CKEditorsInitSyncMax CKEditors sync
+      this.setup(this.editorsForInit[i]);
+    }
+    if (len > this.initSyncMax) {
+      var richTextEditorsInitLoadTimer = setTimeout(function () { // Initiate >CKEditorsInitSyncMax CKEditors async
+        this.setup(this.editorsForInit[i]);
+        i++;
+        if (i < len) {
+          setTimeout(richTextEditorsInitLoadTimer, this.initAsyncInterval);
+        }
+      }, this.initAsyncInterval);
+    }
+  },
+  /**
+   * Setup instance config
+   *
+   * @this {richtextEditorFacade}
+   * @param {object} opts The options
+   * @param {string} opts.name Name of textarea
+   * @param {boolean} opts.isCompleteEditor Use complete toolbar
+   * @param {boolean} opts.isWithoutSubSuper Don't display sub and sup buttons in toolbar
+   * @param {string} opts.defaultLanguage Language in editor
+   * @param {array} opts.cssFileList List of CSS-files to style content in editor
+   * @param {string} opts.simple Make h1 format available (for old document types)
+   */
+  setup: function(opts) {
+    var vrtxEdit = vrtxEditor,
+        baseUrl = vrtxAdmin.multipleFormGroupingPaths.baseBrowserURL,
+        baseFolder = vrtxAdmin.multipleFormGroupingPaths.baseFolderURL,
+        browsePath = vrtxAdmin.multipleFormGroupingPaths.basePath;
 
-vrtxEditor.CKEditorToolbars.inlineToolbar = [
+    // File browser
+    var linkBrowseUrl = baseUrl + '/plugins/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Connector=' + browsePath;
+    var imageBrowseUrl = baseUrl + '/plugins/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Type=Image&Connector=' + browsePath;
+    var flashBrowseUrl = baseUrl + '/plugins/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Type=Flash&Connector=' + browsePath;
+
+    var classification = vrtxEdit.classifyCKEditorInstance(opts);
+
+    this.init({
+      name: opts.name,
+      linkBrowseUrl: linkBrowseUrl,
+      imageBrowseUrl: classification.isMain ? imageBrowseUrl : null,
+      flashBrowseUrl: classification.isMain ? flashBrowseUrl : null,
+      defaultLanguage: opts.defaultLanguage, 
+      cssFileList: opts.cssFileList,
+      height:  vrtxEdit.setupCKEditorHeight(classification, opts),
+      maxHeight: vrtxEdit.setupCKEditorMaxHeight(classification, opts),
+      minHeight: opts.isCompleteEditor ? 50 : 40,
+      toolbar: vrtxEdit.setupCKEditorToolbar(classification, opts),
+      complete: classification.isMain,
+      requiresStudyRefPlugin: classification.requiresStudyRefPlugin,
+      resizable: vrtxEdit.setupCKEditorResizable(classification, opts),
+      baseDocumentUrl: classification.isMessage ? null : vrtxAdmin.multipleFormGroupingPaths.baseDocURL,
+      simple: classification.isSimple
+    });
+
+  },
+  /**
+   * Initialize instance with config
+   *
+   * @this {richtextEditorFacade}
+   * @param {object} opts The config
+   * @param {string} opts.name Name of textarea
+   * @param {string} opts.linkBrowseUrl Link browse integration URL
+   * @param {string} opts.imageBrowseUrl Image browse integration URL
+   * @param {string} opts.flashBrowseUrl Flash browse integration URL
+   * @param {string} opts.defaultLanguage Language in editor 
+   * @param {string} opts.cssFileList List of CSS-files to style content in editor
+   * @param {number} opts.height Height of editor
+   * @param {number} opts.maxHeight Max height of editor
+   * @param {number} opts.minHeight Min height of editor
+   * @param {object} opts.toolbar The toolbar config
+   * @param {string} opts.complete Use complete toolbar
+   * @param {boolean} opts.resizable Possible to resize editor
+   * @param {string} opts.baseDocumentUrl URL to current document 
+   * @param {string} opts.simple Make h1 format available (for old document types)
+   */
+  init: function(opts) {
+    var config = {};
+
+    config.baseHref = opts.baseDocumentUrl;
+    config.contentsCss = opts.cssFileList;
+    config.entities = false;
+    
+    if (opts.linkBrowseUrl) {
+      config.filebrowserBrowseUrl = opts.linkBrowseUrl;
+      config.filebrowserImageBrowseLinkUrl = opts.linkBrowseUrl;
+    }
+
+    if (opts.complete) {
+      config.filebrowserImageBrowseUrl = opts.imageBrowseUrl;
+      config.filebrowserFlashBrowseUrl = opts.flashBrowseUrl;
+      if(opts.requiresStudyRefPlugin) {
+        config.extraPlugins = 'mediaembed,studyreferencecomponent,htmlbuttons,button-h2,button-h3,button-h4,button-h5,button-h6,button-normal';
+      } else {
+        config.extraPlugins = 'mediaembed,htmlbuttons,button-h2,button-h3,button-h4,button-h5,button-h6,button-normal';
+      }
+      config.stylesSet = this.divContainerStylesSet;
+      if (opts.simple) { // XHTML
+        config.format_tags = 'p;h1;h2;h3;h4;h5;h6;pre;div';
+      } else {
+        config.format_tags = 'p;h2;h3;h4;h5;h6;pre;div';
+      }    
+    } else {
+      config.removePlugins = 'elementspath';
+    }
+  
+    //  if ($("form#editor").hasClass("vrtx-frontpage")) {
+    //	config.format_tags = 'p;h3;h4;h5;h6;pre;div';
+    //  } 
+
+    config.resize_enabled = opts.resizable;
+    config.toolbarCanCollapse = false;
+    config.defaultLanguage = opts.defaultLanguage ? opts.defaultLanguage : 'no';
+    config.toolbar = opts.toolbar;
+    config.height = opts.height + 'px';
+    config.autoGrow_maxHeight = opts.maxHeight + 'px';
+    config.autoGrow_minHeight = opts.minHeight + 'px';
+
+    config.forcePasteAsPlainText = false;
+    config.disableObjectResizing = true;
+    config.disableNativeSpellChecker = false;
+    config.allowedContent = true;
+    config.linkShowTargetTab = false;
+
+    // Key strokes
+    config.keystrokes = [
+      [ CKEDITOR.CTRL + 50 /*2*/, 'button-h2' ],
+      [ CKEDITOR.CTRL + 51 /*3*/, 'button-h3' ],
+      [ CKEDITOR.CTRL + 52 /*4*/, 'button-h4' ],
+      [ CKEDITOR.CTRL + 53 /*5*/, 'button-h5' ],
+      [ CKEDITOR.CTRL + 54 /*6*/, 'button-h6' ],
+      [ CKEDITOR.CTRL + 49 /*0*/, 'button-normal' ]
+    ];
+
+    // Tag formatting in source
+    var rteFacade = this;
+    config.on = {
+      instanceReady: function (ev) {
+        rteFacade.setupTagsFormatting(this, ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'], false);
+        rteFacade.setupTagsFormatting(this, ['ol', 'ul', 'li'], true);
+      }
+    };
+  
+    if (!this.isInstance(opts.name)) {
+      CKEDITOR.replace(opts.name, config);
+    }
+  },
+  /**
+   * Setup instance tags formatting
+   *
+   * @this {richTextEditorFacade}
+   * @param {object} instance CKEditor instance
+   * @param {array} tags Tags
+   * @param {bool} isIndented If they should be indented
+   */
+  setupTagsFormatting: function(instance, tags, isIndented) {
+    for (key in tags) {
+      instance.dataProcessor.writer.setRules(tags[key], {
+        indent: isIndented,
+        breakBeforeOpen: true,
+        breakAfterOpen: false,
+        breakBeforeClose: false,
+        breakAfterClose: true
+      });
+    }
+  },
+  setupCTRLS: function() {
+    CKEDITOR.on('instanceReady', function (event) {
+      _$(".cke_contents iframe").contents().find("body").bind('keydown', 'ctrl+s', $.debounce(150, true, function (e) {
+        ctrlSEventHandler(_$, e);
+      }));
+      // Fix bug (http://dev.ckeditor.com/ticket/9958) with IE triggering onbeforeunload on dialog click
+      event.editor.on('dialogShow', function(dialogShowEvent) {
+        if(CKEDITOR.env.ie) {
+          $(dialogShowEvent.data._.element.$).find('a[href*="void(0)"]').removeAttr('href');
+        }
+      });
+    });
+  },
+  setupMaximizeMinimize: function() {
+    vrtxAdmin.cachedAppContent.on("click", ".cke_button__maximize.cke_button_on", this.maximize);
+    vrtxAdmin.cachedAppContent.on("click", ".cke_button__maximize.cke_button_off", this.minimize);
+  },
+  maximize: function() {
+    var vrtxAdm = vrtxAdmin,
+        _$ = vrtxAdm._$;
+  
+    var stickyBar = _$("#vrtx-editor-title-submit-buttons");
+    stickyBar.hide();
+    
+    vrtxAdm.cachedBody.addClass("forms-new");
+    vrtxAdm.cachedBody.addClass("js");
+
+    var ckInject = _$(this).closest(".cke_reset")
+                           .find(".cke_toolbar_end:last");
+
+    if (!ckInject.find("#editor-help-menu").length) {
+      var shortcuts = stickyBar.find(".submit-extra-buttons");
+      var save = shortcuts.find("#vrtx-save").html();
+      var helpMenu = "<div id='editor-help-menu' class='js-on'>" + shortcuts.find("#editor-help-menu").html() + "</div>";
+      ckInject.append("<div class='ck-injected-save-help'>" + save + helpMenu + "</div>");
+
+      // Fix markup
+      var saveInjected = ckInject.find(".ck-injected-save-help > a");
+      if (!saveInjected.hasClass("vrtx-button")) {
+        saveInjected.addClass("vrtx-button");
+      } else {
+        saveInjected.removeClass("vrtx-focus-button");
+      }
+    } else {
+      ckInject.find(".ck-injected-save-help").show();
+    }
+  },
+  minimize: function() {
+    var _$ = vrtxAdmin._$;
+    var stickyBar = _$("#vrtx-editor-title-submit-buttons");
+    stickyBar.show();
+    var ckInject = _$(this).closest(".cke_reset").find(".ck-injected-save-help").hide();
+  },
+  getInstanceValue: function(name) {
+    var inst = this.getInstance(name);
+    return inst !== null ? inst.getData() : null;
+  },
+  updateInstances: function() {
+    for (var instance in CKEDITOR.instances) {
+      console.log(instance);
+      CKEDITOR.instances[instance].updateElement();
+    }
+  },
+  getValue: function(instance) {
+    return instance.getData();
+  },
+  setInstanceValue: function(name, data) {
+    var inst = this.getInstance(name);
+    if (inst !== null && data !== null) {
+      inst.setData(data);
+    }
+  },
+  isInstance: function(name) {
+    return this.getInstance(name) !== null;
+  },
+  isChanged: function(instance) {
+    return instance.checkDirty(); 
+  },
+  getInstance: function(name) {
+    return CKEDITOR.instances[name] || null;
+  },
+  deleteInstance: function(name) {
+    delete CKEDITOR.instances[name];
+  },
+  swap: function(nameA, nameB) {
+    var waitAndSwap = setTimeout(function () {
+      var ckInstA = this.getInstance(nameA);
+      var ckInstB = this.getInstance(nameB);
+      var ckValA = ckInstA.getData();
+      var ckValB = ckInstB.getData();
+      ckInstA.setData(ckValB, function () {
+        ckInstB.setData(ckValA);
+      });
+    }, 10);
+  }
+}
+
+/* Toolbars */
+
+vrtxEditor.richtextEditorFacade.toolbars.inlineToolbar = [
   ['Source', 'PasteText', 'Link', 'Unlink', 'Bold', 'Italic', 'Strike', 'Subscript', 'Superscript', 'SpecialChar']
 ];
 
-vrtxEditor.CKEditorToolbars.withoutSubSuperToolbar = [
+vrtxEditor.richtextEditorFacade.toolbars.withoutSubSuperToolbar = [
   ['Source', 'PasteText', 'Link', 'Unlink', 'Bold', 'Italic', 'Strike', 'SpecialChar']
 ];
 
-vrtxEditor.CKEditorToolbars.commentsToolbar = [
+vrtxEditor.richtextEditorFacade.toolbars.commentsToolbar = [
   ['Source', 'PasteText', 'Bold', 'Italic', 'Strike', 'NumberedList', 'BulletedList', 'Link', 'Unlink']
 ];
 
-vrtxEditor.CKEditorToolbars.completeToolbar = [
+vrtxEditor.richtextEditorFacade.toolbars.completeToolbar = [
   ['PasteText', 'PasteFromWord', '-', 'Undo', 'Redo'], ['Replace'], ['Link', 'Unlink', 'Anchor'],
   ['Image', 'CreateDiv', 'MediaEmbed', 'Table', 'HorizontalRule', 'SpecialChar'],
   ['Maximize'], ['Source'], '/', ['Format'], 
@@ -188,28 +446,28 @@ vrtxEditor.CKEditorToolbars.completeToolbar = [
   ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote']
 ];
 
-vrtxEditor.CKEditorToolbars.studyToolbar = [
+vrtxEditor.richtextEditorFacade.toolbars.studyToolbar = [
   ['Source', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo', '-', 'Replace',
    'RemoveFormat', '-', 'Link', 'Unlink', 'Studyreferencecomponent', 'Anchor',
    'Image', 'CreateDiv', 'MediaEmbed', 'Table', 'Studytable', 'HorizontalRule', 'SpecialChar'],
   ['Format', 'Bold', 'Italic', 'Subscript', 'Superscript', 'NumberedList', 'BulletedList', 'Outdent', 'Indent', 'Maximize']
 ];
 
-vrtxEditor.CKEditorToolbars.studyRefToolbar = [
+vrtxEditor.richtextEditorFacade.toolbars.studyRefToolbar = [
   ['Source', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo', '-', 'Replace',
    'RemoveFormat', '-', 'Link', 'Unlink', 'Studyreferencecomponent', 'Anchor',
    'Image', 'CreateDiv', 'MediaEmbed', 'Table', 'HorizontalRule', 'SpecialChar'],
   ['Format', 'Bold', 'Italic', 'Subscript', 'Superscript', 'NumberedList', 'BulletedList', 'Outdent', 'Indent', 'Maximize']
 ];
 
-vrtxEditor.CKEditorToolbars.messageToolbar = [
+vrtxEditor.richtextEditorFacade.toolbars.messageToolbar = [
   ['Source', 'PasteText', 'Bold', 'Italic', 'Strike', '-', 'Undo', 'Redo', '-', 'Link',
    'Unlink', 'Subscript', 'Superscript', 'NumberedList', 'BulletedList', 'Outdent', 'Indent']
 ];
 
-/* CKEditor Div containers */
+/* Div containers */
 
-vrtxEditor.CKEditorDivContainerStylesSet = [
+vrtxEditor.richtextEditorFacade.divContainerStylesSet = [
   { name: 'Facts left',                 element: 'div', attributes: { 'class': 'vrtx-facts-container vrtx-container-left'  } },
   { name: 'Facts right',                element: 'div', attributes: { 'class': 'vrtx-facts-container vrtx-container-right' } },
   { name: 'Image left',                 element: 'div', attributes: { 'class': 'vrtx-img-container vrtx-container-left'    } },
@@ -237,75 +495,6 @@ vrtxEditor.CKEditorDivContainerStylesSet = [
   { name: 'Img & capt right (200px)',   element: 'div', attributes: { 'class': 'vrtx-container vrtx-container-size-xxs vrtx-container-right' } }
 ];
 
-/**
- * Initialize CKEditors sync and async from CKEditorsInit array
- * @this {VrtxEditor}
- */
-VrtxEditor.prototype.initCKEditors = function initCKEditors() {
-  var vrtxEdit = this;
-
-  /* Initialize CKEditors */
-  var i = 0;
-  for (var i = 0, len = vrtxEdit.CKEditorsInit.length; i < len && i < vrtxEdit.CKEditorsInitSyncMax; i++) { // Initiate <=CKEditorsInitSyncMax CKEditors sync
-    vrtxEdit.setupCKEditorInstance(vrtxEdit.CKEditorsInit[i]);
-  }
-  if (len > vrtxEdit.CKEditorsInitSyncMax) {
-    var ckEditorInitLoadTimer = setTimeout(function () { // Initiate >CKEditorsInitSyncMax CKEditors async
-      vrtxEdit.setupCKEditorInstance(vrtxEdit.CKEditorsInit[i]);
-      i++;
-      if (i < len) {
-        setTimeout(ckEditorInitLoadTimer, vrtxEdit.CKEditorsInitAsyncInterval);
-      }
-    }, vrtxEdit.CKEditorsInitAsyncInterval);
-  }
-};
-
-/**
- * Setup CKEditor instance config
- *
- * @this {VrtxEditor}
- * @param {object} opts The options
- * @param {string} opts.name Name of textarea
- * @param {boolean} opts.isCompleteEditor Use complete toolbar
- * @param {boolean} opts.isWithoutSubSuper Don't display sub and sup buttons in toolbar
- * @param {string} opts.defaultLanguage Language in editor
- * @param {array} opts.cssFileList List of CSS-files to style content in editor
- * @param {string} opts.simple Make h1 format available (for old document types)
- */
-VrtxEditor.prototype.setupCKEditorInstance = function setupCKEditorInstance(opts) {
-  var vrtxEdit = this,
-      baseUrl = vrtxAdmin.multipleFormGroupingPaths.baseCKURL,
-      baseFolder = vrtxAdmin.multipleFormGroupingPaths.baseFolderURL,
-      browsePath = vrtxAdmin.multipleFormGroupingPaths.basePath;
-
-  // File browser
-  var linkBrowseUrl = baseUrl + '/plugins/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Connector=' + browsePath;
-  var imageBrowseUrl = baseUrl + '/plugins/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Type=Image&Connector=' + browsePath;
-  var flashBrowseUrl = baseUrl + '/plugins/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Type=Flash&Connector=' + browsePath;
-
-  var classification = vrtxEdit.classifyCKEditorInstance(opts);
-
-  // CKEditor configuration
-  vrtxEdit.initCKEditorInstance({
-    name: opts.name,
-    linkBrowseUrl: linkBrowseUrl,
-    imageBrowseUrl: classification.isMain ? imageBrowseUrl : null,
-    flashBrowseUrl: classification.isMain ? flashBrowseUrl : null,
-    defaultLanguage: opts.defaultLanguage, 
-    cssFileList: opts.cssFileList,
-    height:  vrtxEdit.setupCKEditorHeight(classification, opts),
-    maxHeight: vrtxEdit.setupCKEditorMaxHeight(classification, opts),
-    minHeight: opts.isCompleteEditor ? 50 : 40,
-    toolbar: vrtxEdit.setupCKEditorToolbar(classification, opts),
-    complete: classification.isMain,
-    requiresStudyRefPlugin: classification.requiresStudyRefPlugin,
-    resizable: vrtxEdit.setupCKEditorResizable(classification, opts),
-    baseDocumentUrl: classification.isMessage ? null : vrtxAdmin.multipleFormGroupingPaths.baseDocURL,
-    simple: classification.isSimple
-  });
-
-};
-
 /* Functions for generating CKEditor config based on classification */
 
 VrtxEditor.prototype.setupCKEditorHeight = function setupCKEditorHeight(c, opts) {
@@ -322,14 +511,14 @@ VrtxEditor.prototype.setupCKEditorMaxHeight = function setupCKEditorMaxHeight(c,
 };
 
 VrtxEditor.prototype.setupCKEditorToolbar = function setupCKEditorToolbar(c, opts) {
-  var vrtxEdit = this;
-  return classification.isMain ? ((c.isCourseDescriptionB || c.isCourseGroup) ? vrtxEdit.CKEditorToolbars.studyRefToolbar 
-                                                                              : (c.isStudyContent ? vrtxEdit.CKEditorToolbars.studyToolbar
-                                                                                                  : vrtxEdit.CKEditorToolbars.completeToolbar))
-                               : (c.isMessage ? vrtxEdit.CKEditorToolbars.messageToolbar
-                                              : (c.isStudyField ? vrtxEdit.CKEditorToolbars.studyToolbar 
-                                                                : ((c.isIntro || c.isCaption || c.isScheduleComment) ? vrtxEdit.CKEditorToolbars.inlineToolbar
-                                                                                                                     : vrtxEdit.CKEditorToolbars.withoutSubSuperToolbar)));
+  var tb = vrtxEditor.richtextEditorFacade.toolbars;
+  return classification.isMain ? ((c.isCourseDescriptionB || c.isCourseGroup) ? tb.studyRefToolbar 
+                                                                              : (c.isStudyContent ? tb.studyToolbar
+                                                                                                  : tb.completeToolbar))
+                               : (c.isMessage ? tb.messageToolbar
+                                              : (c.isStudyField ? tb.studyToolbar 
+                                                                : ((c.isIntro || c.isCaption || c.isScheduleComment) ? tb.inlineToolbar
+                                                                                                                     : tb.withoutSubSuperToolbar)));
 };
 
 VrtxEditor.prototype.setupCKEditorResizable = function setupCKEditorResizable(c, opts) {
@@ -423,202 +612,6 @@ VrtxEditor.prototype.classifyCKEditorInstance = function classifyCKEditorInstanc
   return classification;
 };
 
-/**
- * Initialize CKEditor instance with config
- *
- * @this {VrtxEditor}
- * @param {object} opts The config
- * @param {string} opts.name Name of textarea
- * @param {string} opts.linkBrowseUrl Link browse integration URL
- * @param {string} opts.imageBrowseUrl Image browse integration URL
- * @param {string} opts.flashBrowseUrl Flash browse integration URL
- * @param {string} opts.defaultLanguage Language in editor 
- * @param {string} opts.cssFileList List of CSS-files to style content in editor
- * @param {number} opts.height Height of editor
- * @param {number} opts.maxHeight Max height of editor
- * @param {number} opts.minHeight Min height of editor
- * @param {object} opts.toolbar The toolbar config
- * @param {string} opts.complete Use complete toolbar
- * @param {boolean} opts.resizable Possible to resize editor
- * @param {string} opts.baseDocumentUrl URL to current document 
- * @param {string} opts.simple Make h1 format available (for old document types)
- */
-VrtxEditor.prototype.initCKEditorInstance = function initCKEditorInstance(opts) {
-  var vrtxEdit = this;
-  var config = {};
-
-  config.baseHref = opts.baseDocumentUrl;
-  config.contentsCss = opts.cssFileList;
-  config.entities = false;
-    
-  if (opts.linkBrowseUrl) {
-    config.filebrowserBrowseUrl = opts.linkBrowseUrl;
-    config.filebrowserImageBrowseLinkUrl = opts.linkBrowseUrl;
-  }
-
-  if (opts.complete) {
-    config.filebrowserImageBrowseUrl = opts.imageBrowseUrl;
-    config.filebrowserFlashBrowseUrl = opts.flashBrowseUrl;
-    if(opts.requiresStudyRefPlugin) {
-      config.extraPlugins = 'mediaembed,studyreferencecomponent,htmlbuttons,button-h2,button-h3,button-h4,button-h5,button-h6,button-normal';
-    } else {
-      config.extraPlugins = 'mediaembed,htmlbuttons,button-h2,button-h3,button-h4,button-h5,button-h6,button-normal';
-    }
-    config.stylesSet = vrtxEdit.CKEditorDivContainerStylesSet;
-    if (opts.simple) { // XHTML
-      config.format_tags = 'p;h1;h2;h3;h4;h5;h6;pre;div';
-    } else {
-      config.format_tags = 'p;h2;h3;h4;h5;h6;pre;div';
-    }    
-  } else {
-    config.removePlugins = 'elementspath';
-  }
-  
-  //  if ($("form#editor").hasClass("vrtx-frontpage")) {
-  //	config.format_tags = 'p;h3;h4;h5;h6;pre;div';
-  //  } 
-
-  config.resize_enabled = opts.resizable;
-  config.toolbarCanCollapse = false;
-  config.defaultLanguage = opts.defaultLanguage ? opts.defaultLanguage : 'no';
-  config.toolbar = opts.toolbar;
-  config.height = opts.height + 'px';
-  config.autoGrow_maxHeight = opts.maxHeight + 'px';
-  config.autoGrow_minHeight = opts.minHeight + 'px';
-
-  config.forcePasteAsPlainText = false;
-  config.disableObjectResizing = true;
-  config.disableNativeSpellChecker = false;
-  config.allowedContent = true;
-  config.linkShowTargetTab = false;
-
-  config.keystrokes =
-  [
-    [ CKEDITOR.CTRL + 50 /*2*/, 'button-h2' ],
-    [ CKEDITOR.CTRL + 51 /*3*/, 'button-h3' ],
-    [ CKEDITOR.CTRL + 52 /*4*/, 'button-h4' ],
-    [ CKEDITOR.CTRL + 53 /*5*/, 'button-h5' ],
-    [ CKEDITOR.CTRL + 54 /*6*/, 'button-h6' ],
-    [ CKEDITOR.CTRL + 49 /*0*/, 'button-normal' ]
-  ];
-
-  // Setup tag formatting in source
-  config.on = {
-    instanceReady: function (ev) {
-      vrtxEdit.setupCKEditorTagsFormatting(this, ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'], false);
-      vrtxEdit.setupCKEditorTagsFormatting(this, ['ol', 'ul', 'li'], true);
-    }
-  };
-  
-  if (!vrtxEdit.richtextEditorFacade.isInstance(opts.name)) {
-    vrtxEdit.richtextEditorFacade.init(opts, config);
-  }
-};
-
-/**
- * Setup CKEditor instance tags formatting
- *
- * @this {VrtxEditor}
- * @param {object} instance CKEditor instance
- * @param {array} tags Tags
- * @param {bool} isIndented If they should be indented
- */
-VrtxEditor.prototype.setupCKEditorTagsFormatting = function setupCKEditorTagsFormatting(instance, tags, isIndented) {
-  for (key in tags) {
-    instance.dataProcessor.writer.setRules(tags[key], {
-      indent: isIndented,
-      breakBeforeOpen: true,
-      breakAfterOpen: false,
-      breakBeforeClose: false,
-      breakAfterClose: true
-    });
-  }
-};
-
-VrtxEditor.prototype.setupCKEditorMaximizeMinimize = function setupCKEditorMaximizeMinimize() {
-  vrtxAdmin.cachedAppContent.on("click", ".cke_button__maximize.cke_button_on", this.maximizeCK);
-  vrtxAdmin.cachedAppContent.on("click", ".cke_button__maximize.cke_button_off", this.minimizeCK);
-};
-
-VrtxEditor.prototype.maximizeCK = function maximizeCK() {
-  var vrtxAdm = vrtxAdmin,
-      _$ = vrtxAdm._$;
-  
-  var stickyBar = _$("#vrtx-editor-title-submit-buttons");
-  stickyBar.hide();
-    
-  vrtxAdm.cachedBody.addClass("forms-new");
-  vrtxAdm.cachedBody.addClass("js");
-
-  var ckInject = _$(this).closest(".cke_reset")
-                         .find(".cke_toolbar_end:last");
-
-  if (!ckInject.find("#editor-help-menu").length) {
-    var shortcuts = stickyBar.find(".submit-extra-buttons");
-    var save = shortcuts.find("#vrtx-save").html();
-    var helpMenu = "<div id='editor-help-menu' class='js-on'>" + shortcuts.find("#editor-help-menu").html() + "</div>";
-    ckInject.append("<div class='ck-injected-save-help'>" + save + helpMenu + "</div>");
-
-    // Fix markup
-    var saveInjected = ckInject.find(".ck-injected-save-help > a");
-    if (!saveInjected.hasClass("vrtx-button")) {
-      saveInjected.addClass("vrtx-button");
-    } else {
-      saveInjected.removeClass("vrtx-focus-button");
-    }
-
-  } else {
-    ckInject.find(".ck-injected-save-help").show();
-  }
-};
-
-VrtxEditor.prototype.minimizeCK = function minimizeCK() {
-  var _$ = vrtxAdmin._$;
-  var stickyBar = _$("#vrtx-editor-title-submit-buttons");
-  stickyBar.show();
-  var ckInject = _$(this).closest(".cke_reset").find(".ck-injected-save-help").hide();
-};
-
-/**
- * CKEditor facade
- * @namespace
- */
-VrtxEditor.prototype.richtextEditorFacade = {
-  ck: CKEDITOR,
-  init: function(opts, config) {
-    this.ck.replace(opts.name, config);
-  },
-  getInstanceValue: function(name) {
-    var inst = this.getInstance(name);
-    return inst !== null ? inst.getData() : null;
-  },
-  setInstanceValue: function(iname, data) {
-    var inst = this.getInstance(name);
-    if (inst !== null && data !== null) {
-      inst.setData(data);
-    }
-  },
-  isInstance: function(name) {
-    return this.getInstance(name) !== null;
-  },
-  getInstance: function(name) {
-    return this.ck.instances[name] || null;
-  },
-  deleteInstance: function(name) {
-    delete this.ck.instances[name];
-  },
-  swap: function(nameA, nameB) {
-    var waitAndSwap = setTimeout(function () {
-      var ckInstA = this.getInstance(nameA);
-      var ckInstB = this.getInstance(nameB);
-      var ckValA = ckInstA.getData();
-      var ckValB = ckInstB.getData();
-      ckInstA.setData(ckValB, function () {
-        ckInstB.setData(ckValA);
-      });
-    }, 10);
-  }
-}
 
 /*-------------------------------------------------------------------*\
     5. Validation and change detection
@@ -670,10 +663,10 @@ function unsavedChangesInEditor() {
   for (i = 0; i < radioLen; i++) if (currentStateOfRadioButtons[i].name + " " + currentStateOfRadioButtons[i].value !== vrtxEdit.editorInitRadios[i]) return true;
 
   var currentStateOfTextFields = contents.find("textarea"); // CK->checkDirty()
-  if (typeof CKEDITOR !== "undefined") {
+  if (typeof CKEDITOR != "undefined") {
     for (i = 0, len = currentStateOfTextFields.length; i < len; i++) {
-      var ckInstance = vrtxEditor.richtextEditorFacade.getInstance(currentStateOfTextFields[i].name);
-      if (ckInstance && ckInstance.checkDirty() && ckInstance.getData() !== "") {
+      var ckInstance = vrtxEdit.richtextEditorFacade.getInstance(currentStateOfTextFields[i].name);
+      if (ckInstance && vrtxEdit.richtextEditorFacade.isChanged(ckInstance) && vrtxEdit.richtextEditorFacade.getValue(ckInstance) !== "") {
         return true;
       }
     }
@@ -695,8 +688,8 @@ function validTextLengthsInEditor(isOldEditor) {
     // NEW starts on wrapper and OLD starts on field (because of slightly different semantic/markup build-up)
     INPUT_NEW = ".vrtx-string:not(.vrtx-multiple), .vrtx-resource-ref, .vrtx-image-ref, .vrtx-media-ref",
     INPUT_OLD = "input[type=text]:not(.vrtx-multiple)", // RT# 1045040 (skip aggregate and manually approve hidden input-fields)
-    CK_NEW = ".vrtx-simple-html, .vrtx-simple-html-small", // aka. textareas
-    CK_OLD = "textarea:not(#resource\\.content)";
+    RT_NEW = ".vrtx-simple-html, .vrtx-simple-html-small", // aka. textareas
+    RT_OLD = "textarea:not(#resource\\.content)";
 
   var contents = vrtxAdmin.cachedContent;
 
@@ -719,15 +712,15 @@ function validTextLengthsInEditor(isOldEditor) {
     }
   }
 
-  // Textareas that are not content-fields (CK)
-  var currentTextAreas = isOldEditor ? contents.find(CK_OLD) : contents.find(CK_NEW);
-  for (i = 0, len = currentTextAreas.length; i < len; i++) {
-    if (typeof CKEDITOR !== "undefined") {
+  // Textareas that are not content-fields (RichText)
+  if (typeof CKEDITOR != "undefined") {
+    var currentTextAreas = isOldEditor ? contents.find(RT_OLD) : contents.find(RT_NEW);
+    for (i = 0, len = currentTextAreas.length; i < len; i++) {
       var txtAreaElm = $(currentTextAreas[i]);
       var txtArea = isOldEditor ? txtAreaElm : txtAreaElm.find("textarea");
       if (txtArea.length && typeof txtArea[0].name !== "undefined") {
         var ckInstance = vrtxEditor.richtextEditorFacade.getInstance(txtArea[0].name);
-        if (ckInstance && ckInstance.getData().length > MAX_LENGTH) {
+        if (ckInstance && vrtxEditor.richtextEditorFacade.getValue(ckInstance).length > MAX_LENGTH) {
           validTextLengthsInEditorErrorFunc(txtAreaElm, isOldEditor);
           return false;
         }
@@ -1100,7 +1093,7 @@ function initMultipleInputFields() {
   });
   vrtxAdmin.cachedAppContent.on("click keyup", ".vrtx-multipleinputfield button.browse-resource-ref", function (e) {
     if(e.type == "click" || ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13))) {
-      browseServer($(this).closest(".vrtx-multipleinputfield").find('input').attr('id'), vrtxAdmin.multipleFormGroupingPaths.baseCKURL, vrtxAdmin.multipleFormGroupingPaths.baseFolderURL, vrtxAdmin.multipleFormGroupingPaths.basePath, 'File');
+      browseServer($(this).closest(".vrtx-multipleinputfield").find('input').attr('id'), vrtxAdmin.multipleFormGroupingPaths.baseBrowserURL, vrtxAdmin.multipleFormGroupingPaths.baseFolderURL, vrtxAdmin.multipleFormGroupingPaths.basePath, 'File');
       e.preventDefault();
       e.stopPropagation();
     }
@@ -1392,7 +1385,7 @@ function addJsonField(btn) {
     var checkForAppendComplete = setTimeout(function () {
       if ($("#" + newElementId + " .vrtx-remove-button").length) {
         for (var i = 0; i < ckHtmlsLen; i++) {
-          vrtxEditor.setupCKEditorInstance({
+          vrtxEditor.setupRichTextEditorInstance({
             name: ckHtmls[i],
             isCompleteEditor: true,
             defaultLanguage: requestLang,
@@ -1400,7 +1393,7 @@ function addJsonField(btn) {
           });
         }
         for (i = 0; i < ckSimpleHtmlsLen; i++) {
-          vrtxEditor.setupCKEditorInstance({
+          vrtxEditor.setupRichTextEditorInstance({
             name: ckSimpleHtmls[i],
             defaultLanguage: requestLang,
             cssFileList: cssFileList,
@@ -1461,12 +1454,12 @@ function swapContent(moveBtn, move) {
   var j = vrtxEditor.multipleBoxesTemplatesContract[parseInt(curElm.closest(".vrtx-json").find(".vrtx-add-button").data('number'), 10)];
   var types = j.a;
   var swapElementFn = swapElement,
-    swapCKFn = vrtxEditor.richtextEditorFacade.swap,
-    isCkEditorFn = vrtxEditor.richtextEditorFacade.isInstance;
+    swapEditorFn = vrtxEditor.richtextEditorFacade.swap,
+    isEditorFn = vrtxEditor.richtextEditorFacade.isInstance;
   var runOnce = false;
   for (var i = 0, len = types.length; i < len; i++) {
     var field = j.name + "\\." + types[i].name + "\\.";
-    var fieldCK = field.replace(/\\/g, "");
+    var fieldEditor = field.replace(/\\/g, "");
 
     var elementId1 = "#" + field + curCounter;
     var elementId2 = "#" + field + moveToCounter;
@@ -1474,11 +1467,11 @@ function swapContent(moveBtn, move) {
     var element2 = $(elementId2);
 
     /* We need to handle special cases like CK fields and date */
-    var ckInstanceName1 = fieldCK + curCounter;
-    var ckInstanceName2 = fieldCK + moveToCounter;
+    var ckInstanceName1 = fieldEditor + curCounter;
+    var ckInstanceName2 = fieldEditor + moveToCounter;
 
-    if (isCkEditorFn(ckInstanceName1) && isCkEditorFn(ckInstanceName2)) {
-      swapCKFn(ckInstanceName1, ckInstanceName2);
+    if (isEditorFn(ckInstanceName1) && isEditorFn(ckInstanceName2)) {
+      swapEditorFn(ckInstanceName1, ckInstanceName2);
     } else if (element1.hasClass("date") && element2.hasClass("date")) {
       var element1Wrapper = element1.closest(".vrtx-string");
       var element2Wrapper = element2.closest(".vrtx-string");
@@ -1668,7 +1661,7 @@ VrtxEditor.prototype.htmlFacade = {
       clazz: clazz,
       elemTitle: elem.title,
       inputFieldName: inputFieldName,
-      baseCKURL: vrtxAdmin.multipleFormGroupingPaths.baseCKURL,
+      baseCKURL: vrtxAdmin.multipleFormGroupingPaths.baseBrowserURL,
       baseFolderURL: vrtxAdmin.multipleFormGroupingPaths.baseFolderURL,
       basePath: vrtxAdmin.multipleFormGroupingPaths.basePath,
       browseButtonText: vrtxAdmin.multipleFormGroupingMessages.browse,

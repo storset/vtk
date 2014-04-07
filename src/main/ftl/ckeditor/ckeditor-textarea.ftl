@@ -56,13 +56,13 @@
     <script type="text/javascript"><!--
       $("#comment-syntax-desc").hide();
       $("#comments-text-div").css("margin", "0").on("click", "#comments-text",function () {
-        vrtxEditor.initCKEditorInstance({
+        vrtxEditor.richtextEditorFacade.init({
           name: "comments-text", 
           cssFileList: cssFileList, 
           height: 150,
           maxHeight: 400,
           minHeight: 40,
-          toolbar: vrtxEditor.CKEditorToolbars.commentsToolbar,
+          toolbar: vrtxEditor.richtextEditorFacade.toolbars.commentsToolbar,
           resizable: true
         });
       });

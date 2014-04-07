@@ -2552,10 +2552,8 @@ function ajaxSave() {
 
   vrtxAdm.asyncEditorSavedDeferred = _$.Deferred();
 
-  if (typeof CKEDITOR !== "undefined") {
-    for (var instance in CKEDITOR.instances) {
-      CKEDITOR.instances[instance].updateElement();
-    }
+  if(typeof CKEDITOR != "undefined") {
+    vrtxEditor.richtextEditorFacade.updateInstances();
   }
   var startTime = new Date();
   
@@ -3897,7 +3895,7 @@ function openGeneral(url, width, height, winTitle, sOptions) {
   return oWindow;
 }
 
-// Callback from the CKEditor image browser:
+// Callback from the image browser:
 function SetUrl(url) {
   url = decodeURIComponent(url);
   if (urlobj) {

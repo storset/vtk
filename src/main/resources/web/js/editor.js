@@ -196,7 +196,7 @@ VrtxEditor.prototype.richtextEditorFacade = {
     var imageBrowseUrl = baseUrl + '/plugins/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Type=Image&Connector=' + browsePath;
     var flashBrowseUrl = baseUrl + '/plugins/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Type=Flash&Connector=' + browsePath;
 
-    var classification = vrtxEdit.classifyCKEditorInstance(opts);
+    var classification = vrtxEdit.classifyEditorInstance(opts);
 
     this.init({
       name: opts.name,
@@ -205,13 +205,13 @@ VrtxEditor.prototype.richtextEditorFacade = {
       flashBrowseUrl: classification.isMain ? flashBrowseUrl : null,
       defaultLanguage: opts.defaultLanguage, 
       cssFileList: opts.cssFileList,
-      height:  vrtxEdit.setupCKEditorHeight(classification, opts),
-      maxHeight: vrtxEdit.setupCKEditorMaxHeight(classification, opts),
+      height:  vrtxEdit.setupEditorHeight(classification, opts),
+      maxHeight: vrtxEdit.setupEditorMaxHeight(classification, opts),
       minHeight: opts.isCompleteEditor ? 50 : 40,
-      toolbar: vrtxEdit.setupCKEditorToolbar(classification, opts),
+      toolbar: vrtxEdit.setupEditorToolbar(classification, opts),
       complete: classification.isMain,
       requiresStudyRefPlugin: classification.requiresStudyRefPlugin,
-      resizable: vrtxEdit.setupCKEditorResizable(classification, opts),
+      resizable: vrtxEdit.setupEditorResizable(classification, opts),
       baseDocumentUrl: classification.isMessage ? null : vrtxAdmin.multipleFormGroupingPaths.baseDocURL,
       simple: classification.isSimple
     });
@@ -495,9 +495,9 @@ vrtxEditor.richtextEditorFacade.divContainerStylesSet = [
   { name: 'Img & capt right (200px)',   element: 'div', attributes: { 'class': 'vrtx-container vrtx-container-size-xxs vrtx-container-right' } }
 ];
 
-/* Functions for generating CKEditor config based on classification */
+/* Functions for generating editor config based on classification */
 
-VrtxEditor.prototype.setupCKEditorHeight = function setupCKEditorHeight(c, opts) {
+VrtxEditor.prototype.setupEditorHeight = function setupEditorHeight(c, opts) {
   return opts.isCompleteEditor ? ((c.isContent || c.isCourseGroup) ? 400 : (c.isSupervisorBox ? 130 : (c.isCourseDescriptionB ? 200 : 220)))
                                : (c.isMessage ? 250
                                               : (c.isCaption ? 55 
@@ -506,11 +506,11 @@ VrtxEditor.prototype.setupCKEditorHeight = function setupCKEditorHeight(c, opts)
                                                                                                                                               : 90))))
 };
 
-VrtxEditor.prototype.setupCKEditorMaxHeight = function setupCKEditorMaxHeight(c, opts) {
+VrtxEditor.prototype.setupEditorMaxHeight = function setupEditorMaxHeight(c, opts) {
   return (c.isContent || c.isCourseGroup) ? 800 : (c.isSupervisorBox ? 300 : 400);
 };
 
-VrtxEditor.prototype.setupCKEditorToolbar = function setupCKEditorToolbar(c, opts) {
+VrtxEditor.prototype.setupEditorToolbar = function setupEditorToolbar(c, opts) {
   var tb = vrtxEditor.richtextEditorFacade.toolbars;
   return classification.isMain ? ((c.isCourseDescriptionB || c.isCourseGroup) ? tb.studyRefToolbar 
                                                                               : (c.isStudyContent ? tb.studyToolbar
@@ -521,7 +521,7 @@ VrtxEditor.prototype.setupCKEditorToolbar = function setupCKEditorToolbar(c, opt
                                                                                                                      : tb.withoutSubSuperToolbar)));
 };
 
-VrtxEditor.prototype.setupCKEditorResizable = function setupCKEditorResizable(c, opts) {
+VrtxEditor.prototype.setupEditorResizable = function setupEditorResizable(c, opts) {
   return classification.isMain || !(c.isCourseDescriptionA || c.isIntro || c.isCaption || c.isMessage || c.isStudyField || c.isScheduleComment);
 };
 
@@ -532,7 +532,7 @@ VrtxEditor.prototype.setupCKEditorResizable = function setupCKEditorResizable(c,
  * @param {object} opts Config
  * @return {object} The classification with booleans
  */
-VrtxEditor.prototype.classifyCKEditorInstance = function classifyCKEditorInstance(opts) {
+VrtxEditor.prototype.classifyEditorInstance = function classifyEditorInstance(opts) {
   var vrtxEdit = this,
       name = opts.name;
       classification = {};

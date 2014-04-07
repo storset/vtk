@@ -75,7 +75,7 @@ var VrtxAnimation = dejavu.Class.declare({
     if(this.__opts.afterSp) this.__opts.afterSp(this);
   },
   __horizontalMove: function(dir) {
-    var width = this.__prepareMove()[0];
+    var width = this.__prepareMove(dir)[0];
     var left = (dir === "in") ? 0 : -width;
 
     if(dir === "in") {
@@ -105,7 +105,7 @@ var VrtxAnimation = dejavu.Class.declare({
     }
   },
   __verticalMove: function(dir) {
-    var height = this.__prepareMove()[1];
+    var height = this.__prepareMove(dir)[1];
 
     var animation = this;
     if(true || animation.$static.cssTransform == null || animation.__opts.preferJSAnim) { // JS pixel pushing

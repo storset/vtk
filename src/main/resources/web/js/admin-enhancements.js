@@ -3172,7 +3172,7 @@ VrtxAdmin.prototype.addOriginalMarkup = function addOriginalMarkup(url, results,
 VrtxAdmin.prototype.addNewMarkup = function addNewMarkup(opts, form) {
   var vrtxAdm = this,
     _$ = vrtxAdm._$;
-
+    
   var inject = _$(opts.insertAfterOrReplaceClass);
   if (!inject.length) {
     inject = _$(opts.secondaryInsertAfterOrReplaceClass);
@@ -3194,7 +3194,7 @@ VrtxAdmin.prototype.addNewMarkup = function addNewMarkup(opts, form) {
   if (opts.nodeType == "tr" && vrtxAdm.animateTableRows) {
     _$(opts.nodeType + "." + opts.selectorClass).prepareTableRowForSliding();
   }
-  
+
   var animation = new VrtxAnimation({
     elem: $(opts.nodeType + "." + opts.selectorClass).hide(),
     animationSpeed: opts.transitionSpeed,

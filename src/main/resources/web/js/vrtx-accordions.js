@@ -85,8 +85,8 @@ var VrtxAccordion = dejavu.Class.declare({
   },
   __getFieldString: function(field) {
     var fieldId = field.id;
-    if (typeof vrtxEditor !== "undefined" && vrtxEditor.ckFacade.isInstance(fieldId)) { // Check if CK
-      var str = vrtxEditor.ckFacade.getInstanceValue(fieldId); // Get CK content
+    if (typeof vrtxEditor !== "undefined" && vrtxEditor.richtextEditorFacade.isInstance(fieldId)) { // Check if CK
+      var str = vrtxEditor.richtextEditorFacade.getInstanceValue(fieldId); // Get CK content
     } else {
       var str = field.value; // Get input text
     }

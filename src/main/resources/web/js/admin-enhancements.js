@@ -3035,7 +3035,7 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(opts) {
       }
       existExpandedFormIsReplaced = true;
     }
-
+    
     vrtxAdmin.serverFacade.getHtml(url, {
       success: function (results, status, resp) {
         var form = _$(_$.parseHTML(results)).find("." + opts.selectorClass).html();
@@ -3076,7 +3076,7 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(opts) {
                     success: function (results, status, resp) {
                       succeededAddedOriginalMarkup = vrtxAdm.addOriginalMarkup(modeUrl, _$.parseHTML(results), resultSelectorClass, expandedForm);
                       if (succeededAddedOriginalMarkup) {
-                        vrtxAdmin.addNewMarkup(opts, opts.form);
+                        vrtxAdmin.addNewMarkup(opts, form);
                       } else {
                         if (vrtxAdm.asyncGetFormsInProgress) {
                           vrtxAdmin.asyncGetFormsInProgress--;

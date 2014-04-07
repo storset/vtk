@@ -532,7 +532,7 @@ VrtxEditor.prototype.setupEditorResizable = function setupEditorResizable(c, opt
 };
 
 /**
- * Classify CKEditor instance based on its name
+ * Classify editor based on its name
  *
  * @this {VrtxEditor}
  * @param {object} opts Config

@@ -38,7 +38,7 @@
 	     expandHoverToTipBox: true,
 	     xOffset: 30,
 	     yOffset: 115,
-	     keySpaceTriggersOpen: true
+	     enterOpens: true
        });
      });
   // -->

@@ -1805,15 +1805,15 @@ body#vrtx-report-broken-links #directory-listing td.vrtx-report-broken-links {
   background-color: #f9f9f9;
 }
 
-#directory-listing tr:hover td,
-#directory-listing tr.hover td {
+#directory-listing tr.focus td,
+#directory-listing tr:hover td {
   background-color: #ecf3f9;
   border-top: 1px solid #c7dadf;
   border-bottom: 1px solid #c7dadf;
 }
 
-#directory-listing tr:hover td.permissions a,
-#directory-listing tr.hover td.permissions a {
+#directory-listing tr.focus td.permissions a,
+#directory-listing tr:hover td.permissions a {
   border-bottom: 1px dotted #888;
 }
 
@@ -1827,18 +1827,13 @@ body#vrtx-report-broken-links #directory-listing td.vrtx-report-broken-links {
   padding: 25px 0 30px 0;
 }
 
-#directory-listing tr#trash-can-empty.hover td,
-#directory-listing tr#collectionlisting-empty.hover td {
-  background: none;
-}
-
-#directory-listing tr.first:hover td,
-#directory-listing tr.first.hover td {
+#directory-listing tr.first.focus td,
+#directory-listing tr.first:hover td {
   border-top: none;
 }
 
-#directory-listing tr.last:hover td,
-#directory-listing tr.last.hover td {
+#directory-listing tr.last.focus td,
+#directory-listing tr.last:hover td {
   border-bottom: none;
 }
 

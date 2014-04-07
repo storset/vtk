@@ -2,17 +2,7 @@
  *  vortexTips plugin
  *  
  *  Based loosely on tinyTips v1.1 by Mike Merritt (se license.txt)
- *  Modified by �yvind Hatland (USIT)
- *  
- *  Changes
- *  -------
- *
- *  * Delegate mouseover/mouseleave to affect added nodes dynamically
- *  * Independent/multiple tips in different contexts (by appendTo)
- *  * Configure different speeds for fadeIn and fadeOut
- *  * Possible to expand hover area to tip-box
- *  * Changed positioning 'algorithm'
- *  * Caching
+ *  Modified heavily by Øyvind Hatland (USIT)
  *
  */
 (function ($) {
@@ -20,6 +10,7 @@
 	opts.animInSpeed = opts.animInSpeed || 300;
 	opts.animOutSpeed = opts.animOutSpeed || 300;
 	opts.expandHoverToTipBox = opts.expandHoverToTipBox || false;
+	opts.enterOpens = opts.enterOpens || false;
 	opts.autoWidth = opts.autoWidth || false;
 	opts.extra = opts.extra || false;
 	
@@ -33,11 +24,12 @@
     var tipExtra;
     var tipText;
     var fadeOutTimer;
+    var waitForKeyUp;
     var toggleOn = false;
     var hoverTip = false;
-    
-    $(this).on("mouseenter mouseleave keyup", subSelector, function (e) {
-      if (e.type == "mouseenter" || (((e.which && e.which == keyTriggersOpen) || (e.keyCode && e.keyCode == keyTriggersOpen)) && !toggleOn)) {
+
+    var openCloseTooltip = function(e) {
+      if (e.type == "mouseenter" || (opts.enterOpens ? (((e.which && e.which == keyTriggersOpen) || (e.keyCode && e.keyCode == keyTriggersOpen)) && !toggleOn) : (e.type == "focusin"))) {
         toggleOn = true;
         
         var link = $(this);
@@ -91,23 +83,39 @@
         tip.css(nPos).fadeIn(opts.animInSpeed, function() {
           var buttons = $(this).find(".vrtx-button, .vrtx-button-small").filter(":visible");
           if(buttons.length) {
-            $("<a style='display: inline-block; outline: none;' tabindex='-1' />").insertBefore(buttons.filter(":first")).focus();
+            $("<a class='tip-focusable' style='display: inline-block; outline: none;' tabindex='-1' />").insertBefore(buttons.filter(":first")).focus();
           }
         });
         if (opts.extra) {
           tipExtra.css(ePos).fadeIn(opts.animInSpeed);
         }
+        if(opts.enterOpens && e.type == "keyup") {
+          tip.on("focusout keyup", function (e) {
+            if(hoverTip) return;
+            if(e.type == "focusout") {
+              waitForKeyUp = window.setTimeout(function() {
+                var e2 = jQuery.Event("keyup");
+                e2.which = keyTriggersOpen;
+                link.trigger(e2);
+              }, 200);
+            } else {
+              if(waitForKeyUp) {
+                window.clearTimeout(waitForKeyUp)
+              }
+            }
+          });
+        }
         e.stopPropagation();
-      } else if (e.type == "mouseleave" || (((e.which && e.which == keyTriggersOpen) || (e.keyCode && e.keyCode == keyTriggersOpen)) && toggleOn)) {
+      } else if (e.type == "mouseleave" || (opts.enterOpens ? (((e.which && e.which == keyTriggersOpen) || (e.keyCode && e.keyCode == keyTriggersOpen)) && toggleOn) : (e.type == "focusout"))) {
         var link = $(this);
         if(opts.expandHoverToTipBox) {
-          tip.on("mouseenter", function (e) {
+          tip.on("mouseenter" + (opts.enterOpens ? "" : " focusin"), function (e) {
             hoverTip = true;
           });
-          tip.on("mouseleave", function (e) {
+          tip.on("mouseleave" + (opts.enterOpens ? "" : " focusout"), function (e) {
             hoverTip = false;
-            tip.off("mouseenter");
-            tip.off("mouseleave");
+            tip.off("mouseenter" + (opts.enterOpens ? "" : " focusin"));
+            tip.off("mouseleave" + (opts.enterOpens ? "" : " focusout"));
             link.trigger("mouseleave");
           });
         }
@@ -117,6 +125,9 @@
             link = link.find("a");
           }
           link.attr('title', tipText);
+          if(e.type == "keyup") {
+            link.focus();
+          }
           fadeOutTimer = setTimeout(function () {
             if(!(opts.expandHoverToTipBox && hoverTip)) {
               if (opts.extra) {
@@ -132,6 +143,8 @@
           e.stopPropagation();
         }
       }
-    });
+    };
+    
+    $(this).on("mouseenter mouseleave" + (opts.enterOpens ? " keyup" : " focusin focusout"), subSelector, openCloseTooltip);
   }
 })(jQuery);

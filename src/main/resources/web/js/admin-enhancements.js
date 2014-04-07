@@ -287,12 +287,13 @@ VrtxAdmin.prototype.initTooltips = function initTooltips() {
     xOffset: 10,
     yOffset: -8,
     extra: true,
-	keySpaceTriggersOpen: true
+    enterOpens: true
   });
   this.cachedBody.vortexTips("td.permissions span.permission-tooltips", {
     appendTo: "#contents",
     containerWidth: 340,
     expandHoverToTipBox: true,
+    enterOpens: true,
     xOffset: 10,
     yOffset: -8
   });
@@ -1427,23 +1428,23 @@ VrtxAdmin.prototype.adjustResourceTitle = function adjustResourceTitle() {
 };
 
 function interceptEnterKey() {
-  vrtxAdmin.cachedAppContent.delegate("form#editor input, form[name='collectionListingForm'] input, form.trashcan input", "keypress", function (e) {
+  vrtxAdmin.cachedAppContent.on("keypress", "form#editor input, form[name='collectionListingForm'] input, form.trashcan input", function (e) {
     if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
       e.preventDefault(); // cancel the default browser click
     }
   });
 }
 
-function interceptEnterKeyAndReroute(txt, btn, cb) {
-  vrtxAdmin.cachedAppContent.delegate(txt, "keypress", function (e) {
+function interceptEnterKeyAndReroute(txt, btn, fnOnKeyPress) {
+  vrtxAdmin.cachedAppContent.on("keypress", txt, function (e) {
     if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
       if ($(this).hasClass("blockSubmit")) { // submit/rerouting can be blocked elsewhere on textfield
         $(this).removeClass("blockSubmit");
       } else {
         $(btn).click(); // click the associated button
       }
-      if(typeof cb === "function") {
-        cb($(this));
+      if(typeof fnOnKeyPress === "function") {
+        fnOnKeyPress($(this));
       }
       e.preventDefault();
     }
@@ -2159,8 +2160,20 @@ VrtxAdmin.prototype.initializeCheckUncheckAll = function initializeCheckUncheckA
 
   var tdCheckbox = vrtxAdm.cachedDirectoryListing.find("td.checkbox");
   if (tdCheckbox.length) {
-    vrtxAdm.cachedDirectoryListing.find("th.checkbox").append("<input type='checkbox' name='checkUncheckAll' />");
+    var checkUncheckAll = vrtxAdm.cachedDirectoryListing.find("th.checkbox input[type='checkbox']");
+    if(!checkUncheckAll.length) {
+      vrtxAdm.cachedDirectoryListing.find("th.checkbox").append("<input type='checkbox' name='checkUncheckAll' />");
+    }
   }
+  
+  vrtxAdm.cachedDirectoryListing.on("focusin focusout", "td a, td input", function (e) {
+    if(e.type == "focusin") {
+      $(this).closest("tr").addClass("focus");
+    } else {
+      $(this).closest("tr").removeClass("focus");
+    }
+  });
+  
   // Check / uncheck all
   vrtxAdm.cachedAppContent.on("click", "th.checkbox input", function (e) {
     var trigger = this;

@@ -32,9 +32,12 @@ var VrtxTree = dejavu.Class.declare({
     
     $.loadCSS(location.protocol + "//" + location.host + rootUrl + "/themes/default/report/jquery.treeview.css");
     var futureTree = $.Deferred();
+    
+    var getScriptFn = (typeof $.cachedScript === "function") ? $.cachedScript : $.getScript;
+    
     if (typeof $.fn.treeview !== "function") {
-      $.getScript(location.protocol + "//" + location.host + rootUrl + "/jquery/plugins/jquery.treeview.js", function () {
-        $.getScript(location.protocol + "//" + location.host + rootUrl + "/jquery/plugins/jquery.treeview.async.js", function () {
+      getScriptFn(location.protocol + "//" + location.host + rootUrl + "/jquery/plugins/jquery.treeview.js").done(function () {
+        getScriptFn(location.protocol + "//" + location.host + rootUrl + "/jquery/plugins/jquery.treeview.async.js").done(function () {
           futureTree.resolve();
         });
       });
@@ -43,7 +46,7 @@ var VrtxTree = dejavu.Class.declare({
     }
     var futureScrollTo = $.Deferred();
     if(typeof $.fn.scrollTo !== "function" && tree.__opts.scrollToContent) {
-      $.getScript(location.protocol + "//" + location.host + rootUrl + "/jquery/plugins/jquery.scrollTo.min.js", function () {
+      getScriptFn(location.protocol + "//" + location.host + rootUrl + "/jquery/plugins/jquery.scrollTo.min.js").done(function () {
         futureScrollTo.resolve();
       });
     } else {

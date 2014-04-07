@@ -482,7 +482,8 @@ VrtxAdmin.prototype.initGlobalDialogs = function initGlobalDialogs() {
           requiresDatepicker: true,
           onOpen: function() {
             $(".ui-dialog-buttonpane").hide();
-            var futureDatepicker = (typeof VrtxDatepicker === "undefined") ? $.getScript(vrtxAdm.rootUrl + "/js/datepicker/vrtx-datepicker.js") : $.Deferred().resolve();
+            var getScriptFn = (typeof $.cachedScript === "function") ? $.cachedScript : $.getScript;
+            var futureDatepicker = (typeof VrtxDatepicker === "undefined") ? scriptFn(vrtxAdm.rootUrl + "/js/datepicker/vrtx-datepicker.js") : $.Deferred().resolve();
             $.when(futureDatepicker).done(function() {
               datepickerApsD = new VrtxDatepicker({
                 language: datePickerLang,
@@ -1784,7 +1785,8 @@ function ajaxUpload(options) {
   
   var futureFormAjax = _$.Deferred();
   if (typeof _$.fn.ajaxSubmit !== "function") {
-    _$.getScript(vrtxAdm.rootUrl + "/jquery/plugins/jquery.form.js", function () {
+    var getScriptFn = (typeof $.cachedScript === "function") ? $.cachedScript : $.getScript;
+    getScriptFn(vrtxAdm.rootUrl + "/jquery/plugins/jquery.form.js").done(function() {
       futureFormAjax.resolve();
     }).fail(function(xhr, textStatus, errMsg) {
       var uploadingFailedD = new VrtxMsgDialog({ title: xhr.status + " " + vrtxAdm.serverFacade.errorMessages.uploadingFilesFailedTitle,
@@ -2576,7 +2578,8 @@ function ajaxSave() {
   
   var futureFormAjax = $.Deferred();
   if (typeof $.fn.ajaxSubmit !== "function") {
-    $.getScript(vrtxAdm.rootUrl + "/jquery/plugins/jquery.form.js", function () {
+    var getScriptFn = (typeof $.cachedScript === "function") ? $.cachedScript : $.getScript;
+    getScriptFn(vrtxAdm.rootUrl + "/jquery/plugins/jquery.form.js").done(function() {
       futureFormAjax.resolve();
     }).fail(function(xhr, textStatus, errMsg) {
       d.close();

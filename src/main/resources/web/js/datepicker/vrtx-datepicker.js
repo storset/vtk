@@ -47,8 +47,11 @@ var VrtxDatepicker = dejavu.Class.declare({
     var jQueryUiVersion = "1.10.4";
     
     var futureUi = $.Deferred();
+    
+    var getScriptFn = (typeof $.cachedScript === "function") ? $.cachedScript : $.getScript;
+    
     if (typeof $.ui === "undefined") {
-      $.getScript(rootUrl + "/jquery/plugins/ui/jquery-ui-" + jQueryUiVersion + ".custom/js/jquery-ui-" + jQueryUiVersion + ".custom.min.js", function () {
+      getScriptFn(rootUrl + "/jquery/plugins/ui/jquery-ui-" + jQueryUiVersion + ".custom/js/jquery-ui-" + jQueryUiVersion + ".custom.min.js").done(function () {
         futureUi.resolve();
       });
     } else {
@@ -57,7 +60,7 @@ var VrtxDatepicker = dejavu.Class.declare({
     $.when(futureUi).done(function() {
       var futureDatepickerLang = $.Deferred();
       if (opts.language != "" && opts.language != "en" && !$.datepicker.regional[opts.language]) {
-        $.getScript(rootUrl + "/jquery/plugins/ui/jquery-ui-" + jQueryUiVersion + ".custom/js/jquery.ui.datepicker-" + opts.language + ".js", function() {
+        getScriptFn(rootUrl + "/jquery/plugins/ui/jquery-ui-" + jQueryUiVersion + ".custom/js/jquery.ui.datepicker-" + opts.language + ".js").done(function() {
           futureDatepickerLang.resolve(); 
           $.datepicker.setDefaults($.datepicker.regional[opts.language]);
         });

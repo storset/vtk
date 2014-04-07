@@ -43,7 +43,8 @@ var VrtxAccordion = dejavu.Class.declare({
     
     var futureUi = $.Deferred();
     if (typeof $.ui === "undefined") {
-      $.getScript(rootUrl + "/jquery/plugins/ui/jquery-ui-" + jQueryUiVersion + ".custom/js/jquery-ui-" + jQueryUiVersion + ".custom.min.js", function () {
+      var getScriptFn = (typeof $.cachedScript === "function") ? $.cachedScript : $.getScript;
+      getScriptFn(rootUrl + "/jquery/plugins/ui/jquery-ui-" + jQueryUiVersion + ".custom/js/jquery-ui-" + jQueryUiVersion + ".custom.min.js").done(function () {
         futureUi.resolve();
       });
     } else {

@@ -255,7 +255,8 @@
             vrtxAdmin.runReadyLoad = false;
             $.bbq.pushState({"fullscreen": "on"});
             $(this).text(fullscreenToggleClose);
-            var futureStickyBar = (typeof VrtxStickyBar === "undefined") ? $.getScript("/vrtx/__vrtx/static-resources/js/vrtx-sticky-bar.js") : $.Deferred().resolve();
+            var getScriptFn = (typeof $.cachedScript === "function") ? $.cachedScript : $.getScript;
+            var futureStickyBar = (typeof VrtxStickyBar === "undefined") ? getScriptFn("/vrtx/__vrtx/static-resources/js/vrtx-sticky-bar.js") : $.Deferred().resolve();
             $.when(futureStickyBar).done(function() {     
               editorStickyBar = new VrtxStickyBar({
                  wrapperId: "#preview-mode-actions",

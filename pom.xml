@@ -70,8 +70,8 @@
     </mailingList>
   </mailingLists>
   <scm>
-    <connection>scm:svn:svn://svn.uio.no/svnroot/vortikal/trunk</connection>
-    <developerConnection>scm:svn:svn+ssh://svn.uio.no/svnroot/vortikal/trunk</developerConnection>
+    <connection>scm:git:ssh://git@utv.uio.no:7999/gpl/vortikal.git</connection>
+    <developerConnection>scm:git:ssh://git@utv.uio.no:7999/gpl/vortikal.git</developerConnection>
   </scm>
   <licenses>
     <license>

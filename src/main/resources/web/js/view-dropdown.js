@@ -1,63 +1,75 @@
 /*
  * View dropdown
  *
- * FIXME: Turn off() first to prevent bug when JS is already included
- * TODO: use toggle.js
- *
  */
- 
+
+if(typeof viewDropdown === "undefined") {
+
+var viewDropdown = true;
 $(document).ready(function() {
-  var ariaExpanded = function (elem, isExpanded) {
-    elem.attr("aria-expanded", isExpanded ? "true" : "false");
-    elem.attr("aria-hidden", isExpanded ? "false" : "true");
+
+  var ariaDropdownState = function (link, menu, isExpanded) {
+    link.attr("aria-expanded", isExpanded ? "true" : "false");
+    menu.attr("aria-hidden", isExpanded ? "false" : "true");
   };
 
   var wrappers = $(".vrtx-dropdown-wrapper"), i = wrappers.length;
   while(i--) {
     var wrp = $(wrappers[i]);
     var a = wrp.prev();
-    var id = "vrtx-dropdown-wrapper-" + Math.round(+new Date() * Math.random());
+
+    if(wrp[0].id) {
+      var idWrp = wrp[0].id; 
+    } else {
+      var idWrp = "vrtx-dropdown-wrapper-" + Math.round(+new Date() * Math.random());
+      wrp.attr("id", idWrp);
+    }
+    if(a[0].id) {
+      var idLink = a[0].id;
+    } else {
+      var idLink = "vrtx-dropdown-link-" + Math.round((+new Date() + 1) * Math.random());
+      a.attr("id", idLink);
+    }
+
     a.attr("aria-haspopup", "true");
-    a.attr("aria-controls", id);
-    wrp.attr("id", id);
-    ariaExpanded(wrp, false);
+    a.attr("aria-controls", idWrp);
+    wrp.attr("aria-labelledby", idLink);
+    ariaDropdownState(a, wrp, false);
   }
 
-  $(document).off("click", ".vrtx-dropdown-component-toggled a.vrtx-dropdown-link")
-              .on("click", ".vrtx-dropdown-component-toggled a.vrtx-dropdown-link", function(e) {
-              
-    var link = $(this);
-    var wrapper = link.next(".vrtx-dropdown-wrapper");
-    link.toggleClass("active");
+  $(document).on("click", ".vrtx-dropdown-component-toggled a.vrtx-dropdown-link", function(e) {
+    var a = $(this);
+    var wrp = a.next(".vrtx-dropdown-wrapper");
+    a.toggleClass("active");
     if(typeof document.documentMode !== "undefined" && document.documentMode <= 7) {
-      wrapper.toggle(); // Because slide sets "overflow: hidden" causing IE7 css-bug
-      ariaExpanded(wrp, wrapper.is(":visible"));
+      wrp.toggle(); // Because slide sets "overflow: hidden" causing IE7 css-bug
+      ariaDropdownState(a, wrp, wrp.is(":visible"));
     } else {
-      wrapper.slideToggle("fast", function() {
-        ariaExpanded(wrapper, wrapper.is(":visible"));
+      wrp.slideToggle("fast", function() {
+        ariaDropdownState(a, wrp, wrp.is(":visible"));
       });
     }
     e.stopPropagation();
     e.preventDefault();
   });
-  $(document).off("click", ".vrtx-dropdown-component-not-toggled a.vrtx-dropdown-link")
-              .on("click", ".vrtx-dropdown-component-not-toggled a.vrtx-dropdown-link", function(e) {
-    var link = $(this);
-    var wrapper = link.next(".vrtx-dropdown-wrapper");
-    wrapper.slideDown("fast", function() {
-      ariaExpanded(wrapper, true);
+  $(document).on("click", ".vrtx-dropdown-component-not-toggled a.vrtx-dropdown-link", function(e) {
+    var a = $(this);
+    var wrp = a.next(".vrtx-dropdown-wrapper");
+    wrp.slideDown("fast", function() {
+      ariaDropdownState(a, wrp, true);
     });
     e.stopPropagation();
     e.preventDefault();
   });
-  $(document).off("click", ".vrtx-dropdown-component-not-toggled a.vrtx-dropdown-close-link")
-              .on("click", ".vrtx-dropdown-component-not-toggled a.vrtx-dropdown-close-link", function(e) {
-    var link = $(this);
-    var wrapper = link.closest(".vrtx-dropdown-wrapper");      
-    wrapper.slideUp("fast", function() {
-      ariaExpanded(wrapper, false);
+  $(document).on("click", ".vrtx-dropdown-component-not-toggled a.vrtx-dropdown-close-link", function(e) {
+    var a = $(this);
+    var wrp = a.closest(".vrtx-dropdown-wrapper");      
+    wrp.slideUp("fast", function() {
+      ariaDropdownState(a, wrp, false);
     });
     e.stopPropagation();
     e.preventDefault();
   });
 });
+
+}

@@ -1100,26 +1100,27 @@ VrtxAdmin.prototype.dropdownPlain = function dropdownPlain(selector) {
   var languageMenu = _$(selector + " ul");
   if (!languageMenu.length) return;
 
+  var idWrp = languageMenu.attr("id");
+  if(!idWrp || idWrp == "") {
+    idWrp = "dropdown-shortcut-menu-container-" + Math.round(+new Date() * Math.random());
+    languageMenu.attr("id", idWrp);
+  }
+  var idLink = selector.substring(1) + "-header";
+  
+  languageMenu.addClass("dropdown-shortcut-menu-container");
+  languageMenu.attr("aria-hidden", "true");
+  languageMenu.attr("aria-labelledby", idLink);
+  
   var parent = languageMenu.parent();
-
-  // Remove ':' and replace <span> with <a>
   var header = parent.find(selector + "-header");
   var headerText = header.text();
-  
-  var id = languageMenu.attr("id");
-  if(!id || id == "") {
-    id = "dropdown-shortcut-menu-container-" + Math.round(+new Date() * Math.random());
-    languageMenu.attr("id", id);
-  }
-
-  header.replaceWith("<a href='javascript:void(0);' aria-haspopup='true' aria-controls='" + id + "' id='" + selector.substring(1) + "-header'>" + headerText.substring(0, headerText.length - 1) + "</a>");
-  languageMenu.addClass("dropdown-shortcut-menu-container");
-  vrtxAdm.ariaExpanded(languageMenu, false);
+  header.replaceWith("<a href='javascript:void(0);' id='" + idLink + "' class='dropdown-shortcut-menu-click-area' aria-haspopup='true' aria-controls='" + idWrp + "' aria-expanded='false'>" + headerText.substring(0, headerText.length - 1) + "</a>");
 
   vrtxAdm.cachedBody.on("click", selector + "-header", function (e) {
     vrtxAdm.closeDropdowns();
-    vrtxAdm.openDropdown(_$(this).next(".dropdown-shortcut-menu-container"));
-
+    var link = _$(this);
+    var wrp = link.next(".dropdown-shortcut-menu-container");
+    vrtxAdm.openDropdown(link, wrp);
     e.stopPropagation();
     e.preventDefault();
   });
@@ -1150,17 +1151,18 @@ VrtxAdmin.prototype.dropdown = function dropdown(options) {
       list.addClass("dropdown-shortcut-menu-small");
     }
     
-    var id = "dropdown-shortcut-menu-container-" + Math.round(+new Date() * Math.random());
+    var idWrp = "dropdown-shortcut-menu-container-" + Math.round(+new Date() * Math.random());
+    var idLink = "dropdown-shortcut-menu-click-area-" + Math.round((+new Date() + 1) * Math.random());
 
     // Move listelements except .first into container
     var listParent = list.parent();
-    listParent.append("<div id='" + id + "'class='dropdown-shortcut-menu-container' aria-expanded='false' aria-hidden='true'><ul>" + list.html() + "</ul></div>");
+    listParent.append("<div id='" + idWrp + "'class='dropdown-shortcut-menu-container' aria-labelledby='" + idLink + "' aria-hidden='true'><ul>" + list.html() + "</ul></div>");
 
     var startDropdown = options.start ? ":nth-child(-n+" + options.start + ")" : ".first";
     var dropdownClickArea = options.start ? ":nth-child(3)" : ".first";
 
     list.find("li").not(startDropdown).remove();
-    list.find("li" + dropdownClickArea).append("<span title='" + options.title + "' role='link' aria-haspopup='true' aria-controls='" + id + "' tabindex='0' class='dropdown-shortcut-menu-click-area' />");
+    list.find("li" + dropdownClickArea).append("<span id='" + idLink + "' title='" + options.title + "' role='link' aria-haspopup='true' aria-controls='" + idWrp + "' aria-expanded='false' tabindex='0' class='dropdown-shortcut-menu-click-area' />");
     var shortcutMenu = listParent.find(".dropdown-shortcut-menu-container");
     shortcutMenu.find("li" + startDropdown).remove();
     
@@ -1178,18 +1180,19 @@ VrtxAdmin.prototype.dropdown = function dropdown(options) {
     list.find("li" + dropdownClickArea).addClass("dropdown-init");
 
     list.find("li.dropdown-init .dropdown-shortcut-menu-click-area").click(function (e) {
+      var link = $(this);
       if(shortcutMenu.filter(":visible").length) {
-        $(this)[0].blur();
+        link[0].blur();
       }
       vrtxAdm.closeDropdowns();
-      vrtxAdm.openDropdown(shortcutMenu);
+      vrtxAdm.openDropdown(link, shortcutMenu);
       e.stopPropagation();
       e.preventDefault();
     });
     list.find("li.dropdown-init .dropdown-shortcut-menu-click-area").keyup(function (e) {
       if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
         vrtxAdm.closeDropdowns();
-        vrtxAdm.openDropdown(shortcutMenu);
+        vrtxAdm.openDropdown(link, shortcutMenu);
       }
     });
 
@@ -1206,13 +1209,14 @@ VrtxAdmin.prototype.dropdown = function dropdown(options) {
  *
  * @this {VrtxAdmin}
  */
-VrtxAdmin.prototype.openDropdown = function openDropdown(elm) {
+VrtxAdmin.prototype.openDropdown = function openDropdown(link, dropdown) {
+  var vrtxAdm = this;
   var animation = new VrtxAnimation({
-    elem: elm.not(":visible"),
+    elem: dropdown.not(":visible"),
     animationSpeed: vrtxAdmin.transitionDropdownSpeed,
     easeIn: "swing",
     after: function(animation) {
-      vrtxAdmin.ariaExpanded(animation.__opts.elem, true);
+      vrtxAdm.ariaDropdownState(link, animation.__opts.elem, true);
     }
   });
   animation.topDown();
@@ -1224,12 +1228,13 @@ VrtxAdmin.prototype.openDropdown = function openDropdown(elm) {
  * @this {VrtxAdmin}
  */
 VrtxAdmin.prototype.closeDropdowns = function closeDropdowns() {
+  var vrtxAdm = this;
   var animation = new VrtxAnimation({
-    elem: this._$(".dropdown-shortcut-menu-container:visible"),
+    elem: vrtxAdm._$(".dropdown-shortcut-menu-container:visible"),
     animationSpeed: vrtxAdmin.transitionDropdownSpeed,
     easeIn: "swing",
     after: function(animation) {
-      vrtxAdmin.ariaExpanded(animation.__opts.elem, false);
+      vrtxAdm.ariaDropdownState(vrtxAdm._$(".dropdown-shortcut-menu-click-area:visible"), animation.__opts.elem, false);
     }
   });
   animation.bottomUp();
@@ -3930,15 +3935,15 @@ VrtxAdmin.prototype.ariaBusy = function ariaBusy(idOrElm, isBusy) {
 };
 
 /**
- * ARIA-expanded and sets ARIA-hidden (for expandable regions)
+ * ARIA-dropdown
  *
  * @this {VrtxAdmin}
  * @param {string} idOrElm The id or jQElement
  * @param {boolean} isBusy If the id or element is expanded
  */
-VrtxAdmin.prototype.ariaExpanded = function ariaExpanded(idOrElm, isExpanded) {
-  this.ariaBool("expanded", idOrElm, isExpanded);
-  this.ariaBool("hidden", idOrElm, !isExpanded);
+VrtxAdmin.prototype.ariaDropdownState = function ariaDropdownState(idOrElmLink, idOrElmDropdown, isExpanded) {
+  this.ariaBool("expanded", idOrElmLink, isExpanded);
+  this.ariaBool("hidden", idOrElmDropdown, !isExpanded);
 };
 
 /**

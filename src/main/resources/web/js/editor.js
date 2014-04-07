@@ -205,7 +205,7 @@ VrtxEditor.prototype.richtextEditorFacade = {
       flashBrowseUrl: classification.isMain ? flashBrowseUrl : null,
       defaultLanguage: opts.defaultLanguage, 
       cssFileList: opts.cssFileList,
-      height:  vrtxEdit.setupEditorHeight(classification, opts),
+      height: vrtxEdit.setupEditorHeight(classification, opts),
       maxHeight: vrtxEdit.setupEditorMaxHeight(classification, opts),
       minHeight: opts.isCompleteEditor ? 50 : 40,
       toolbar: vrtxEdit.setupEditorToolbar(classification, opts),
@@ -252,11 +252,7 @@ VrtxEditor.prototype.richtextEditorFacade = {
     if (opts.complete) {
       config.filebrowserImageBrowseUrl = opts.imageBrowseUrl;
       config.filebrowserFlashBrowseUrl = opts.flashBrowseUrl;
-      if(opts.requiresStudyRefPlugin) {
-        config.extraPlugins = 'mediaembed,studyreferencecomponent,htmlbuttons,button-h2,button-h3,button-h4,button-h5,button-h6,button-normal';
-      } else {
-        config.extraPlugins = 'mediaembed,htmlbuttons,button-h2,button-h3,button-h4,button-h5,button-h6,button-normal';
-      }
+      config.extraPlugins = 'mediaembed,studyreferencecomponent,htmlbuttons,button-h2,button-h3,button-h4,button-h5,button-h6,button-normal';
       config.stylesSet = this.divContainerStylesSet;
       if (opts.simple) { // XHTML
         config.format_tags = 'p;h1;h2;h3;h4;h5;h6;pre;div';
@@ -273,7 +269,10 @@ VrtxEditor.prototype.richtextEditorFacade = {
 
     config.resize_enabled = opts.resizable;
     config.toolbarCanCollapse = false;
-    config.defaultLanguage = opts.defaultLanguage ? opts.defaultLanguage : 'no';
+    config.defaultLanguage = 'no';
+    if(opts.defaultLanguage) {
+      config.language = opts.defaultLanguage;
+    }
     config.toolbar = opts.toolbar;
     config.height = opts.height + 'px';
     config.autoGrow_maxHeight = opts.maxHeight + 'px';

@@ -486,7 +486,7 @@ VrtxAdmin.prototype.initGlobalDialogs = function initGlobalDialogs() {
           onOpen: function() {
             $(".ui-dialog-buttonpane").hide();
             var getScriptFn = (typeof $.cachedScript === "function") ? $.cachedScript : $.getScript;
-            var futureDatepicker = (typeof VrtxDatepicker === "undefined") ? scriptFn(vrtxAdm.rootUrl + "/js/datepicker/vrtx-datepicker.js") : $.Deferred().resolve();
+            var futureDatepicker = (typeof VrtxDatepicker === "undefined") ? getScriptFn(vrtxAdm.rootUrl + "/js/datepicker/vrtx-datepicker.js") : $.Deferred().resolve();
             $.when(futureDatepicker).done(function() {
               datepickerApsD = new VrtxDatepicker({
                 language: datePickerLang,

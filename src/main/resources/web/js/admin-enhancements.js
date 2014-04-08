@@ -202,12 +202,18 @@ vrtxAdmin._$(document).ready(function () {
   vrtxAdm.clientLastModified = $("#resource-last-modified").text().split(",");
   
   vrtxAdm.initDropdowns();
-  vrtxAdm.initMiscAdjustments();
-  vrtxAdm.initTooltips();
-  vrtxAdm.initResourceMenus();
-  vrtxAdm.initGlobalDialogs();
-  vrtxAdm.initDomains();
   vrtxAdm.initScrollBreadcrumbs();
+  vrtxAdm.initMiscAdjustments();
+
+  var waitALittle = setTimeout(function() {
+    vrtxAdm.initTooltips();
+    vrtxAdm.initGlobalDialogs();
+  }, 15);
+  
+  var waitALittleMore = setTimeout(function() {
+    vrtxAdm.initResourceMenus();
+    vrtxAdm.initDomains();
+  }, 25);
 
   vrtxAdm.log({
     msg: "Document.ready() in " + (+new Date() - startReadyTime) + "ms."
@@ -1378,14 +1384,14 @@ VrtxAdmin.prototype.initMiscAdjustments = function initMiscAdjustments() {
    // Remove active tab if it has no children
   if (!vrtxAdm.cachedActiveTab.find(" > *").length) {
     vrtxAdm.cachedActiveTab.remove();
+  } else {
+    // Remove active tab-message if it is empty
+    var activeTabMsg = vrtxAdm.cachedActiveTab.find(" > .tabMessage");
+    if (!activeTabMsg.text().length) {
+      activeTabMsg.remove();
+    }
   }
 
-  // Remove active tab-message if it is empty
-  var activeTabMsg = vrtxAdm.cachedActiveTab.find(" > .tabMessage");
-  if (!activeTabMsg.text().length) {
-    activeTabMsg.remove();
-  }
-  
   interceptEnterKey();
 
   vrtxAdm.logoutButtonAsLink();

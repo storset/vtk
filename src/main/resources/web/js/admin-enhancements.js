@@ -24,7 +24,6 @@
     1. Config
 \*-------------------------------------------------------------------*/
 
-
 var startLoadTime = +new Date();
 
 /**
@@ -183,7 +182,6 @@ var VrtxAnimation = function(opts) {
 
 /*-------------------------------------------------------------------*\
     2. DOM is ready
-       readyState === "complete" || "DOMContentLoaded"-event (++)
 \*-------------------------------------------------------------------*/
 
 vrtxAdmin._$(document).ready(function () {
@@ -218,8 +216,7 @@ vrtxAdmin._$(document).ready(function () {
 
 
 /*-------------------------------------------------------------------*\
-    3. DOM is fully loaded ("load"-event)
-       TODO: unused. Are there any code that could be runned later?
+    3. DOM is fully loaded
 \*-------------------------------------------------------------------*/
 
 vrtxAdmin._$(window).load(function () {
@@ -2457,6 +2454,7 @@ VrtxAdmin.prototype.buildFileList = function buildFileList(boxes, boxesSize, use
   return list;
 };
 
+
 /*-------------------------------------------------------------------*\
     7. Editor and Save-robustness (also for plaintext and vis. profile)
 \*-------------------------------------------------------------------*/
@@ -4148,6 +4146,7 @@ function isKey(e, keyCodes) {
     if((e.which && e.which == keyCodes[i]) || (e.keyCode && e.keyCode == keyCodes[i])) return true;
   }
 }
+
 
 /*-------------------------------------------------------------------*\
     14. Override JavaScript / jQuery

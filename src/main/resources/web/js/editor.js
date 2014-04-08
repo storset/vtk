@@ -1388,12 +1388,13 @@ function addJsonField(btn) {
   // Init CKEditors and enhance date inputfields
   var ckHtmlsLen = ckHtmls.length,
     ckSimpleHtmlsLen = ckSimpleHtmls.length,
-    dateTimesLen = dateTimes.length;
+    dateTimesLen = dateTimes.length,
+    rteFacade = vrtxEditor.richtextEditorFacade;
   if (ckHtmlsLen || ckSimpleHtmlsLen || dateTimesLen) {
     var checkForAppendComplete = setTimeout(function () {
       if ($("#" + newElementId + " .vrtx-remove-button").length) {
         for (var i = 0; i < ckHtmlsLen; i++) {
-          vrtxEditor.setupRichTextEditorInstance({
+          rteFacade.setup({
             name: ckHtmls[i],
             isCompleteEditor: true,
             defaultLanguage: requestLang,
@@ -1401,7 +1402,7 @@ function addJsonField(btn) {
           });
         }
         for (i = 0; i < ckSimpleHtmlsLen; i++) {
-          vrtxEditor.setupRichTextEditorInstance({
+          rteFacade.setup({
             name: ckSimpleHtmls[i],
             defaultLanguage: requestLang,
             cssFileList: cssFileList,

@@ -165,13 +165,14 @@ VrtxEditor.prototype.richtextEditorFacade = {
       this.setup(this.editorsForInit[i]);
     }
     if (len > this.initSyncMax) {
+      var rteFacade = this;
       var richTextEditorsInitLoadTimer = setTimeout(function () { // Initiate >CKEditorsInitSyncMax CKEditors async
-        this.setup(this.editorsForInit[i]);
+        rteFacade.setup(rteFacade.editorsForInit[i]);
         i++;
         if (i < len) {
-          setTimeout(richTextEditorsInitLoadTimer, this.initAsyncInterval);
+          setTimeout(richTextEditorsInitLoadTimer, rteFacade.initAsyncInterval);
         }
-      }, this.initAsyncInterval);
+      }, rteFacade.initAsyncInterval);
     }
   },
   /**

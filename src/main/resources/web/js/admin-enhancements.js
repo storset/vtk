@@ -1266,29 +1266,35 @@ VrtxAdmin.prototype.hideTips = function hideTips() {
  */
 VrtxAdmin.prototype.initScrollBreadcrumbs = function initScrollBreadcrumbs() {
   var vrtxAdm = this;
+  
+  vrtxAdm.crumbsWrp = this._$("#vrtx-breadcrumb");
+  vrtxAdm.crumbs = vrtxAdm.crumbsWrp.find(".vrtx-breadcrumb-level, .vrtx-breadcrumb-level-no-url");
+  vrtxAdm.crumbs.wrapAll("<div id='vrtx-breadcrumb-outer'><div id='vrtx-breadcrumb-inner'></div></div>");
+  vrtxAdm.crumbsInner = vrtxAdm.crumbsWrp.find("#vrtx-breadcrumb-inner");
 
-  var crumbs = $(".vrtx-breadcrumb-level, .vrtx-breadcrumb-level-no-url"), i = crumbs.length, crumbsWidth = 0;
-  while(i--) {
-    var crumb = $(crumbs[i]);
-    crumbsWidth += crumb.outerWidth(true) + 2;
-    // Accessibility
-    crumb.filter(":not(.vrtx-breadcrumb-active)").attr("tabindex", "0");
-    crumb.find("a").attr("tabindex", "-1");
-  }
-  crumbs.wrapAll("<div id='vrtx-breadcrumb-inner' style='width: " + crumbsWidth + "px' />");
-  vrtxAdm.crumbsWidth = crumbsWidth;
-  vrtxAdm.crumbsInner = $("#vrtx-breadcrumb-inner");
-  vrtxAdm.crumbsInner.wrap("<div id='vrtx-breadcrumb-outer' />");
-      
   var navHtml = "<span id='navigate-crumbs-left-coverup' />" +
                 "<a tabindex='0' id='navigate-crumbs-left' class='navigate-crumbs'><span class='navigate-crumbs-icon'></span><span class='navigate-crumbs-dividor'></span></a>" +
                 "<a tabindex='0' id='navigate-crumbs-right' class='navigate-crumbs'><span class='navigate-crumbs-icon'></span><span class='navigate-crumbs-dividor'></span></a>";                                      
+  vrtxAdm.crumbsWrp.append(navHtml);
       
-  $("#vrtx-breadcrumb").append(navHtml);
-      
-  vrtxAdm.crumbsLeft = $("#navigate-crumbs-left");
-  vrtxAdm.crumbsLeftCoverUp = $("#navigate-crumbs-left-coverup");
-  vrtxAdm.crumbsRight = $("#navigate-crumbs-right"); 
+  vrtxAdm.crumbsLeft = vrtxAdm.crumbsWrp.find("#navigate-crumbs-left");
+  vrtxAdm.crumbsLeftCoverUp = vrtxAdm.crumbsWrp.find("#navigate-crumbs-left-coverup");
+  vrtxAdm.crumbsRight = vrtxAdm.crumbsWrp.find("#navigate-crumbs-right"); 
+  
+  var waitAWhile = setTimeout(function() {
+    var i = vrtxAdm.crumbs.length, crumbsWidth = 0;
+    while(i--) {
+      var crumb = $(vrtxAdm.crumbs[i]);
+      crumbsWidth += crumb.outerWidth(true) + 2;
+      crumb.filter(":not(.vrtx-breadcrumb-active)").attr("tabindex", "0");
+      crumb.find("a").attr("tabindex", "-1");
+    }
+    vrtxAdm.crumbsWidth = crumbsWidth;
+    vrtxAdm.crumbsInner.css("width", crumbsWidth + "px");
+    vrtxAdm.scrollBreadcrumbsRight();
+    vrtxAdm.crumbsInner.addClass("animate");
+  }, 120);
+
   vrtxAdm.cachedDoc.on("keydown", ".vrtx-breadcrumb-level", function(e) {
     if((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
       location.href = $(this).find("a").attr("href");
@@ -1332,8 +1338,6 @@ VrtxAdmin.prototype.initScrollBreadcrumbs = function initScrollBreadcrumbs() {
     e.stopPropagation();
     e.preventDefault();
   });     
-  vrtxAdm.scrollBreadcrumbsRight();
-  vrtxAdm.crumbsInner.addClass("animate");  
 };
 
 VrtxAdmin.prototype.scrollBreadcrumbsLeft = function scrollBreadcrumbsLeft() {

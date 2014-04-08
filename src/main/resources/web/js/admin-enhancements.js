@@ -11,12 +11,11 @@
  *  6.  Collectionlisting
  *  7.  Editor
  *  8.  Permissions
- *  9.  Versioning
- *  10. Async functions
- *  11. Async helper functions and AJAX server façade
+ *  9.  Async functions
+ *  10. Async helper functions and AJAX server façade
  *  11. CK browse server integration
- *  13. Utils
- *  14. Override JavaScript / jQuery
+ *  12. Utils
+ *  13. Override JavaScript / jQuery
  *
  */
 
@@ -203,6 +202,7 @@ vrtxAdmin._$(document).ready(function () {
   
   vrtxAdm.initDropdowns();
   vrtxAdm.initScrollBreadcrumbs();
+  vrtxAdm.initDomainsInstant();
   vrtxAdm.initMiscAdjustments();
 
   var waitALittle = setTimeout(function() {
@@ -801,8 +801,6 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
           deletingD.close();
         }
       });
-
-      vrtxAdm.collectionListingInteraction();
       break;
     case "vrtx-trash-can":
       var deletingPermanentD = null;
@@ -836,16 +834,93 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
           deletingPermanentD.close();
         }
       });
-      vrtxAdm.collectionListingInteraction();
       break;
     case "vrtx-editor":
     case "vrtx-edit-plaintext":
     case "vrtx-visual-profile":
-      editorInteraction(vrtxAdm, _$);
+      if (_$("form#editor").length) {
+        // Dropdowns
+        vrtxAdm.dropdownPlain("#editor-help-menu");
+        vrtxAdm.dropdown({
+          selector: "ul#editor-menu",
+          title: vrtxAdm.messages.dropdowns.editorTitle
+        });
+
+        // Save shortcut and AJAX
+        vrtxAdm.cachedDoc.bind('keydown', 'ctrl+s', $.debounce(150, true, function (e) {
+          ctrlSEventHandler(_$, e);
+        }));
+    
+        // Save
+        vrtxAdm.cachedAppContent.on("click", ".vrtx-save-button", function (e) {
+          var link = _$(this);
+          vrtxAdm.editorSaveButtonName = link.attr("name");
+          vrtxAdm.editorSaveButton = link;
+          vrtxAdm.editorSaveIsRedirectView = (this.id === "saveAndViewButton" || this.id === "saveViewAction");
+          ajaxSave();
+          _$.when(vrtxAdm.asyncEditorSavedDeferred).done(function () {
+            vrtxAdm.removeMsg("error");
+            if(vrtxAdm.editorSaveIsRedirectView) {
+              var isCollection = _$("#resource-title.true").length;
+              if(isCollection) {
+                location.href = "./?vrtx=admin&action=preview";
+              } else {
+                location.href = location.pathname + "?vrtx=admin";
+              }
+            }
+          }).fail(handleAjaxSaveErrors);
+          e.stopPropagation();
+          e.preventDefault();
+        });
+      }
       break;
     case "vrtx-preview":
     case "vrtx-revisions":
-      versioningInteraction(bodyId, vrtxAdm, _$);
+      vrtxAdm.cachedAppContent.on("click", "a.vrtx-revision-view, a.vrtx-revision-view-changes", function (e) {
+        var openedRevision = openRegular(this.href, 1020, 800, "DisplayRevision");
+        e.stopPropagation();
+        e.preventDefault();
+      });
+
+      if (bodyId == "vrtx-revisions") {
+        // Delete revisions
+        vrtxAdm.completeSimpleFormAsync({
+          selector: ".vrtx-revisions-delete-form input[type=submit]",
+          updateSelectors: ["#app-tabs", "#contents"],
+          rowFromFormAnimateOut: true
+        });
+
+        // Restore revisions
+        vrtxAdm.completeSimpleFormAsync({
+          selector: ".vrtx-revisions-restore-form input[type=submit]",
+          updateSelectors: ["#contents"],
+          fnBeforePost: function() {
+            _$("td.vrtx-revisions-buttons-column input").attr("disabled", "disabled"); // Lock buttons
+          },
+          fnComplete: function(resultElm, form, url) {
+            if (typeof versionsRestoredInfoMsg !== "undefined") {
+              var revisionNr = url.substring(url.lastIndexOf("=") + 1, url.length);
+              var versionsRestoredInfoMsgTmp = versionsRestoredInfoMsg.replace("X", revisionNr);
+              vrtxAdm.displayInfoMsg(versionsRestoredInfoMsgTmp);
+            }
+            window.scroll(0, 0);
+          },
+          fnError: function() {
+            _$("td.vrtx-revisions-buttons-column input").removeAttr("disabled"); // Unlock buttons
+          }
+        });
+
+        // Make working copy into current version
+        vrtxAdm.completeSimpleFormAsync({
+          selector: "#vrtx-revisions-make-current-form input[type=submit]",
+          updateSelectors: ["#contents", "#app-tabs"],
+          fnComplete: function(resultElm, form, url) {
+            if (typeof versionsMadeCurrentInfoMsg !== "undefined") {
+              vrtxAdm.displayInfoMsg(versionsMadeCurrentInfoMsg);
+            }
+          }
+        });
+      }
       break;
     case "vrtx-permissions":
       var privilegiesPermissions = ["read", "read-write", "all"];
@@ -1035,6 +1110,19 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
         e.preventDefault();
       });
       break;
+    default:
+      // noop
+      break;
+  }
+};
+
+VrtxAdmin.prototype.initDomainsInstant = function initDomainsInstant() {
+  var vrtxAdm = this;
+      
+  switch (vrtxAdm.bodyId) {
+    case "vrtx-trash-can":
+    case "vrtx-manage-collectionlisting":
+      vrtxAdm.collectionListingInteraction();
     default:
       // noop
       break;
@@ -2085,7 +2173,7 @@ VrtxAdmin.prototype.collectionListingInteraction = function collectionListingInt
     _$ = vrtxAdm._$;
 
   if (!vrtxAdm.cachedDirectoryListing.length) return;
-
+  
   vrtxAdmin.cachedAppContent.on("click", "#vrtx-checkbox-is-index #isIndex", function (e) {
     createCheckUncheckIndexFile($("#vrtx-div-file-name input[type='text']"), $(this));
     e.stopPropagation();
@@ -2476,44 +2564,6 @@ VrtxAdmin.prototype.buildFileList = function buildFileList(boxes, boxesSize, use
 /*-------------------------------------------------------------------*\
     7. Editor and Save-robustness (also for plaintext and vis. profile)
 \*-------------------------------------------------------------------*/
-
-function editorInteraction(vrtxAdm, _$) {
-  if (_$("form#editor").length) {
-    // Dropdowns
-    vrtxAdm.dropdownPlain("#editor-help-menu");
-    vrtxAdm.dropdown({
-      selector: "ul#editor-menu",
-      title: vrtxAdm.messages.dropdowns.editorTitle
-    });
-
-    // Save shortcut and AJAX
-    vrtxAdm.cachedDoc.bind('keydown', 'ctrl+s', $.debounce(150, true, function (e) {
-      ctrlSEventHandler(_$, e);
-    }));
-    
-    // Save
-    vrtxAdm.cachedAppContent.on("click", ".vrtx-save-button", function (e) {
-      var link = _$(this);
-      vrtxAdm.editorSaveButtonName = link.attr("name");
-      vrtxAdm.editorSaveButton = link;
-      vrtxAdm.editorSaveIsRedirectView = (this.id === "saveAndViewButton" || this.id === "saveViewAction");
-      ajaxSave();
-      _$.when(vrtxAdm.asyncEditorSavedDeferred).done(function () {
-        vrtxAdm.removeMsg("error");
-        if(vrtxAdm.editorSaveIsRedirectView) {
-          var isCollection = _$("#resource-title.true").length;
-          if(isCollection) {
-            location.href = "./?vrtx=admin&action=preview";
-          } else {
-            location.href = location.pathname + "?vrtx=admin";
-          }
-        }
-      }).fail(handleAjaxSaveErrors);
-      e.stopPropagation();
-      e.preventDefault();
-    });
-  }
-}
 
 function handleAjaxSaveErrors(xhr, textStatus) {
   var vrtxAdm = vrtxAdmin,
@@ -2952,61 +3002,7 @@ function autocompleteTags(selector) {
 
 
 /*-------------------------------------------------------------------*\
-    9. Versioning
-\*-------------------------------------------------------------------*/
-
-function versioningInteraction(bodyId, vrtxAdm, _$) {
-  vrtxAdm.cachedAppContent.on("click", "a.vrtx-revision-view, a.vrtx-revision-view-changes", function (e) {
-    var openedRevision = openRegular(this.href, 1020, 800, "DisplayRevision");
-    e.stopPropagation();
-    e.preventDefault();
-  });
-
-  if (bodyId == "vrtx-revisions") {
-
-    // Delete revisions
-    vrtxAdm.completeSimpleFormAsync({
-      selector: ".vrtx-revisions-delete-form input[type=submit]",
-      updateSelectors: ["#app-tabs", "#contents"],
-      rowFromFormAnimateOut: true
-    });
-
-    // Restore revisions
-    vrtxAdm.completeSimpleFormAsync({
-      selector: ".vrtx-revisions-restore-form input[type=submit]",
-      updateSelectors: ["#contents"],
-      fnBeforePost: function() {
-        _$("td.vrtx-revisions-buttons-column input").attr("disabled", "disabled"); // Lock buttons
-      },
-      fnComplete: function(resultElm, form, url) {
-        if (typeof versionsRestoredInfoMsg !== "undefined") {
-          var revisionNr = url.substring(url.lastIndexOf("=") + 1, url.length);
-          var versionsRestoredInfoMsgTmp = versionsRestoredInfoMsg.replace("X", revisionNr);
-          vrtxAdm.displayInfoMsg(versionsRestoredInfoMsgTmp);
-        }
-        window.scroll(0, 0);
-      },
-      fnError: function() {
-        _$("td.vrtx-revisions-buttons-column input").removeAttr("disabled"); // Unlock buttons
-      }
-    });
-
-    // Make working copy into current version
-    vrtxAdm.completeSimpleFormAsync({
-      selector: "#vrtx-revisions-make-current-form input[type=submit]",
-      updateSelectors: ["#contents", "#app-tabs"],
-      fnComplete: function(resultElm, form, url) {
-        if (typeof versionsMadeCurrentInfoMsg !== "undefined") {
-          vrtxAdm.displayInfoMsg(versionsMadeCurrentInfoMsg);
-        }
-      }
-    });
-  }
-}
-
-
-/*-------------------------------------------------------------------*\
-    10. Async functions  
+    9. Async functions  
 \*-------------------------------------------------------------------*/
 
 /**
@@ -3538,7 +3534,7 @@ VrtxAdmin.prototype.templateEngineFacade = {
 
 
 /*-------------------------------------------------------------------*\
-    11. Async helper functions and AJAX server façade   
+    10. Async helper functions and AJAX server façade   
 \*-------------------------------------------------------------------*/
 
 /**
@@ -3872,7 +3868,7 @@ VrtxAdmin.prototype.serverFacade = {
 
 
 /*-------------------------------------------------------------------*\
-    12. CK browse server integration
+    11. CK browse server integration
 \*-------------------------------------------------------------------*/
 
 // XXX: don't pollute global namespace
@@ -3936,7 +3932,7 @@ function SetUrl(url) {
 
 
 /*-------------------------------------------------------------------*\
-    13. Utils
+    12. Utils
 \*-------------------------------------------------------------------*/
 
 /**
@@ -4167,7 +4163,7 @@ function isKey(e, keyCodes) {
 
 
 /*-------------------------------------------------------------------*\
-    14. Override JavaScript / jQuery
+    13. Override JavaScript / jQuery
 \*-------------------------------------------------------------------*/
 
 /*  Override slideUp() / slideDown() to animate rows in a table

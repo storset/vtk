@@ -549,7 +549,17 @@ resourcetype course-description {
             [list overlapping-courses overlapping-course]
               [if (overlapping-course.credits != null && overlapping-course.credits != "") && (overlapping-course.fs-course-code != null && overlapping-course.fs-course-code != "")]
                 [def list-count list-count + 1]
-                [val overlapping-course.credits] [localized 'points-for'] [call "include:ref" {"id" : overlapping-course.fs-course-code, "referencetype" : "emne"}][if list-count = list-length - 1] [localized 'and'][elseif list-count = list-length].[else],[endif]
+                [if list-length > 1]
+                  [if list-count = 1]
+                    <ul>
+                  [endif]
+                    <li>[val overlapping-course.credits] [localized 'points-for'] [call "include:ref" {"id" : overlapping-course.fs-course-code, "referencetype" : "emne"}]</li>
+                  [if list-count = list-length]
+                    </ul>
+                  [endif]
+                [else]
+                  <p>[val overlapping-course.credits] [localized 'points-for'] [call "include:ref" {"id" : overlapping-course.fs-course-code, "referencetype" : "emne"}]</p>
+                [endif]
               [endif]
             [endlist]
           [endif]

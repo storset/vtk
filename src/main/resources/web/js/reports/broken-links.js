@@ -53,8 +53,7 @@ vrtxAdmin._$(document).ready(function() {
      }
 
      var filterLinks = _$("#vrtx-report-filters ul a");
-     i = filterLinks.length;
-     while(i--) {
+     for(var i = filterLinks.length;i--;) {
        filterLinks[i].href = filterLinks[i].href + query;
      }
     

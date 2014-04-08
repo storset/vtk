@@ -1422,10 +1422,11 @@ VrtxAdmin.prototype.initMiscAdjustments = function initMiscAdjustments() {
  * @this {VrtxAdmin}
  */
 VrtxAdmin.prototype.adjustResourceTitle = function adjustResourceTitle() {
-  var resourceMenuLeft = this._$("#resourceMenuLeft");
+  var resourceTitle = this._$("#resource-title");
+  var resourceMenuLeft = resourceTitle.find("#resourceMenuLeft");
   if (resourceMenuLeft.length) {
-    var title = this._$("h1");
-    var resourceMenuRight = this._$("#resourceMenuRight");
+    var title = resourceTitle.find("h1");
+    var resourceMenuRight = resourceTitle.find("#resourceMenuRight");
 
     // Top adjust
     var titleHeight = title.outerHeight(true) - 34;

@@ -1381,13 +1381,14 @@ VrtxAdmin.prototype.scrollBreadcrumbsHorizontal = function scrollBreadcrumbsHori
 VrtxAdmin.prototype.initMiscAdjustments = function initMiscAdjustments() {
   var vrtxAdm = this;
 
-   // Remove active tab if it has no children
-  if (!vrtxAdm.cachedActiveTab.find(" > *").length) {
+  // Remove active tab if it has no children
+  var activeTabChildren = vrtxAdm.cachedActiveTab.find("> *");
+  if (!activeTabChildren.length) {
     vrtxAdm.cachedActiveTab.remove();
   } else {
     // Remove active tab-message if it is empty
-    var activeTabMsg = vrtxAdm.cachedActiveTab.find(" > .tabMessage");
-    if (!activeTabMsg.text().length) {
+    var activeTabMsg = activeTabChildren.filter(".tabMessage");
+    if (activeTabMsg.length && !activeTabMsg.text().length) {
       activeTabMsg.remove();
     }
   }

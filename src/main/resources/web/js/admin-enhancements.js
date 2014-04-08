@@ -2875,13 +2875,13 @@ function toggleConfigCustomPermissions(selectorClass) {
       animation.__opts.elem.addClass("hidden");
     }
   });
-  vrtxAdmin.cachedAppContent.delegate("." + selectorClass + " ul.shortcuts label[for=custom]", "click", function (e) {
+  vrtxAdmin.cachedAppContent.on("click", "." + selectorClass + " ul.shortcuts label[for=custom]", function (e) {
     var elem = $(this).closest("form").find(".principalList.hidden");
     customConfigAnimation.updateElem(elem);
     customConfigAnimation.topDown();
     e.stopPropagation();
   });
-  vrtxAdmin.cachedAppContent.delegate("." + selectorClass + " ul.shortcuts label:not([for=custom])", "click", function (e) {
+  vrtxAdmin.cachedAppContent.on("click", "." + selectorClass + " ul.shortcuts label:not([for=custom])", function (e) {
     var elem = $(this).closest("form").find(".principalList:not(.hidden)");
     customConfigAnimation.updateElem(elem);
     customConfigAnimation.bottomUp();

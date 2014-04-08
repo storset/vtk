@@ -6,7 +6,7 @@
  *  1.  Config
  *  2.  DOM is fully loaded
  *  3.  DOM is ready
- *  4.  RichTextEditor
+ *  4.  RichTextEditor (CKEditor)
  *  5.  Validation and change detection
  *  6.  Image preview
  *  7.  Show / hide
@@ -138,7 +138,7 @@ $(document).ready(function () {
 });
 
 /*-------------------------------------------------------------------*\
-    4. RichTextEditor
+    4. RichTextEditor (CKEditor)
 \*-------------------------------------------------------------------*/
 
 /**

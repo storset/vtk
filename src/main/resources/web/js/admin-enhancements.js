@@ -273,9 +273,9 @@ VrtxAdmin.prototype.initTooltips = function initTooltips() {
   $("#title-container").vortexTips("abbr.delayed", {
     appendTo: "#title-container",
     containerWidth: 200,
-    expandHoverToTipBox: true,
     xOffset: 20,
-    yOffset: 0
+    yOffset: 0,
+    expandHoverToTipBox: true
   });
   $("#main").vortexTips(".tooltips", {
     appendTo: "#contents",
@@ -286,19 +286,19 @@ VrtxAdmin.prototype.initTooltips = function initTooltips() {
   this.cachedBody.vortexTips(".ui-dialog:visible .tree-create li span.folder", {
     appendTo: ".vrtx-create-tree",
     containerWidth: 80,
-    expandHoverToTipBox: true,
     xOffset: 10,
     yOffset: -8,
-    extra: true,
-    enterOpens: true
+    expandHoverToTipBox: true,
+    enterOpens: true,
+    extra: true
   });
   this.cachedBody.vortexTips("td.permissions span.permission-tooltips", {
     appendTo: "#contents",
     containerWidth: 340,
-    expandHoverToTipBox: true,
-    enterOpens: true,
     xOffset: 10,
-    yOffset: -8
+    yOffset: -8,
+    expandHoverToTipBox: true,
+    enterOpens: true
   });
 }
 

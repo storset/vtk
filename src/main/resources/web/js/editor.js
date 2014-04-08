@@ -87,22 +87,23 @@ $(document).ready(function () {
   // Skip UI helper as first element in editor
   vrtxEdit.editorForm.find(".ui-helper-hidden").filter(":not(:last)").filter(":first").next().addClass("first");
 
-  autocompleteUsernames(".vrtx-autocomplete-username");
-  autocompleteTags(".vrtx-autocomplete-tag");
-
   vrtxEdit.initPreviewImage();
-  vrtxEdit.initSendToApproval();
   
-  var getScriptFn = (typeof $.cachedScript === "function") ? $.cachedScript : $.getScript;
-  var futureStickyBar = (typeof VrtxStickyBar === "undefined") ? getScriptFn("/vrtx/__vrtx/static-resources/js/vrtx-sticky-bar.js") : $.Deferred().resolve();
-  $.when(futureStickyBar).done(function() {     
-    var editorStickyBar = new VrtxStickyBar({
-      wrapperId: "#vrtx-editor-title-submit-buttons",
-      stickyClass: "vrtx-sticky-editor-title-submit-buttons",
-      contentsId: "#contents",
-      outerContentsId: "#main"
+  var waitALittle = setTimeout(function() {
+    autocompleteUsernames(".vrtx-autocomplete-username");
+    autocompleteTags(".vrtx-autocomplete-tag");
+    vrtxEdit.initSendToApproval();
+    var getScriptFn = (typeof $.cachedScript === "function") ? $.cachedScript : $.getScript;
+    var futureStickyBar = (typeof VrtxStickyBar === "undefined") ? getScriptFn("/vrtx/__vrtx/static-resources/js/vrtx-sticky-bar.js") : $.Deferred().resolve();
+    $.when(futureStickyBar).done(function() {     
+      var editorStickyBar = new VrtxStickyBar({
+        wrapperId: "#vrtx-editor-title-submit-buttons",
+        stickyClass: "vrtx-sticky-editor-title-submit-buttons",
+        contentsId: "#contents",
+        outerContentsId: "#main"
+      });
     });
-  });
+  }, 15);
 
   vrtxEdit.initEnhancements();
   vrtxEdit.richtextEditorFacade.setupMultiple(true);

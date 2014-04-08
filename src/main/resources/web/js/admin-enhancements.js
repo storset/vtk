@@ -388,7 +388,7 @@ VrtxAdmin.prototype.initResourceMenus = function initResourceMenus() {
     funcComplete: function() {
       vrtxAdm.globalAsyncComplete();
     },
-    post: (bodyId !== "vrtx-editor" && bodyId !== "vrtx-edit-plaintext" && bodyId !== "")
+    post: (bodyId !== "vrtx-preview" && bodyId !== "vrtx-editor" && bodyId !== "vrtx-edit-plaintext" && bodyId !== "")
   });
 };
  

@@ -9,9 +9,9 @@
  *  4.  RichTextEditor (CKEditor)
  *  5.  Validation and change detection
  *  6.  Image preview
- *  7.  Show / hide
+ *  7.  Enhancements
  *  8.  Multiple fields and boxes
- *  9.  Accordion grouping
+ *  9.  Accordions
  *  10. Send to approval
  *  11. Utils
  */
@@ -104,36 +104,9 @@ $(document).ready(function () {
     });
   });
 
-  vrtxEdit.initShowHide();
-  vrtxEdit.initStudyDocTypes();
+  vrtxEdit.initEnhancements();
   vrtxEdit.richtextEditorFacade.setupMultiple(true);
 });
-
-VrtxEditor.prototype.initStudyDocTypes = function initStudyDocTypes() {
-  var vrtxEdit = this;
-
-  if (vrtxEdit.editorForm.hasClass("vrtx-hvordan-soke")) {
-    vrtxEdit.accordionGroupedInit();
-  } else if (vrtxEdit.editorForm.hasClass("vrtx-course-description")) {
-    setShowHideBooleanNewEditor("course-fee", "div.course-fee-amount", false);
-    vrtxEdit.accordionGroupedInit();
-  } else if (vrtxEdit.editorForm.hasClass("vrtx-semester-page")) {
-    setShowHideBooleanNewEditor("cloned-course", "div.cloned-course-code", false);
-    vrtxEdit.accordionGroupedInit("[class*=link-box]");
-  } else if (vrtxEdit.editorForm.hasClass("vrtx-student-exchange-agreement")) {
-    vrtxEdit.accordionGroupedInit(".vrtx-sea-accordion");
-  } else if (vrtxEdit.editorForm.hasClass("vrtx-frontpage")) {
-    vrtxEdit.accordionGroupedInit(".vrtx-sea-accordion", "fast");
-  } else if (vrtxEdit.editorForm.hasClass("vrtx-samlet-program")) {
-    var samletElm = vrtxEdit.editorForm.find(".samlet-element");
-    vrtxEdit.replaceTag(samletElm, "h6", "strong");
-    vrtxEdit.replaceTag(samletElm, "h5", "h6");
-    vrtxEdit.replaceTag(samletElm, "h4", "h5");
-    vrtxEdit.replaceTag(samletElm, "h3", "h4");
-    vrtxEdit.replaceTag(samletElm, "h2", "h3");
-    vrtxEdit.replaceTag(samletElm, "h1", "h2");
-  }
-};
 
 
 /*-------------------------------------------------------------------*\
@@ -917,10 +890,10 @@ function previewImage(urlobj, isBlurEvent) {
 
 
 /*-------------------------------------------------------------------*\
-    7. Show / hide
+    7. Enhancements
 \*-------------------------------------------------------------------*/
 
-VrtxEditor.prototype.initShowHide = function initShowHide() {
+VrtxEditor.prototype.initEnhancements = function initEnhancements() {
   var vrtxAdm = vrtxAdmin,
     _$ = vrtxAdm._$,
     vrtxEdit = this;
@@ -997,6 +970,28 @@ VrtxEditor.prototype.initShowHide = function initShowHide() {
     "calendar");
 
   vrtxEdit.setShowHideSelectNewEditor();
+
+  if (vrtxEdit.editorForm.hasClass("vrtx-hvordan-soke")) {
+    vrtxEdit.accordionGroupedInit();
+  } else if (vrtxEdit.editorForm.hasClass("vrtx-course-description")) {
+    setShowHideBooleanNewEditor("course-fee", "div.course-fee-amount", false);
+    vrtxEdit.accordionGroupedInit();
+  } else if (vrtxEdit.editorForm.hasClass("vrtx-semester-page")) {
+    setShowHideBooleanNewEditor("cloned-course", "div.cloned-course-code", false);
+    vrtxEdit.accordionGroupedInit("[class*=link-box]");
+  } else if (vrtxEdit.editorForm.hasClass("vrtx-student-exchange-agreement")) {
+    vrtxEdit.accordionGroupedInit(".vrtx-sea-accordion");
+  } else if (vrtxEdit.editorForm.hasClass("vrtx-frontpage")) {
+    vrtxEdit.accordionGroupedInit(".vrtx-sea-accordion", "fast");
+  } else if (vrtxEdit.editorForm.hasClass("vrtx-samlet-program")) {
+    var samletElm = vrtxEdit.editorForm.find(".samlet-element");
+    vrtxEdit.replaceTag(samletElm, "h6", "strong");
+    vrtxEdit.replaceTag(samletElm, "h5", "h6");
+    vrtxEdit.replaceTag(samletElm, "h4", "h5");
+    vrtxEdit.replaceTag(samletElm, "h3", "h4");
+    vrtxEdit.replaceTag(samletElm, "h2", "h3");
+    vrtxEdit.replaceTag(samletElm, "h1", "h2");
+  }
 };
 
 /*
@@ -1725,7 +1720,7 @@ VrtxEditor.prototype.htmlFacade = {
 
 
 /*-------------------------------------------------------------------*\
-    9. Accordion grouping
+    9. Accordions
 \*-------------------------------------------------------------------*/
 
 /**

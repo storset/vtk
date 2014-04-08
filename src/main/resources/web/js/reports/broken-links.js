@@ -15,7 +15,7 @@ vrtxAdmin._$(document).ready(function() {
    var brokenLinksFilters = _$("#vrtx-report-filters");
    if(brokenLinksFilters.length) {
      brokenLinksFilters.append("<a href='#' id='vrtx-report-filters-show-hide-advanced' onclick='javascript:void(0);'>" + filtersAdvancedShow + "...</a>");
-     // XXX: Generate HTML with Mustache
+     
      var html = "<div id='vrtx-report-filters-folders-include-exclude' class='solidExpandedForm'>"
                 + "<h3>" + filtersAdvancedTitle + "</h3>"
                 + "<div id='vrtx-report-filters-folders-exclude' class='report-filters-folders-exclude'><h4>" + filtersAdvancedExcludeTitle + "</h4>"

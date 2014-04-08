@@ -414,6 +414,15 @@ VrtxEditor.prototype.richtextEditorFacade = {
   getInstance: function(name) {
     return CKEDITOR.instances[name] || null;
   },
+  removeInstance: function(name) {
+    if (this.isInstance(name)) {
+      var ckInstance = this.getInstance(name);
+      ckInstance.destroy();
+      if (this.isInstance(name)) { /* Just in case not removed */
+        this.deleteInstance(name);
+      }
+    }
+  },
   deleteInstance: function(name) {
     delete CKEDITOR.instances[name];
   },
@@ -1424,21 +1433,14 @@ function addJsonField(btn) {
 }
 
 function removeJsonField(btn) {
-  var removeElement = btn.closest(".vrtx-json-element");
-  var accordionWrapper = removeElement.closest(".vrtx-json-accordion");
-  var hasAccordion = accordionWrapper.length;
-  var removeElementParent = removeElement.parent();
-  var textAreas = removeElement.find("textarea");
-  var i = textAreas.length;
-  while (i--) {
-    var textAreaName = textAreas[i].name;
-    if (vrtxEditor.richtextEditorFacade.isInstance(textAreaName)) {
-      var ckInstance = vrtxEditor.richtextEditorFacade.getInstance(textAreaName);
-      ckInstance.destroy();
-      if (vrtxEditor.richtextEditorFacade.isInstance(textAreaName)) { /* Just in case not removed */
-        vrtxEditor.richtextEditorFacade.deleteInstance(textAreaName);
-      }
-    }
+  var removeElement = btn.closest(".vrtx-json-element"),
+      accordionWrapper = removeElement.closest(".vrtx-json-accordion"),
+      hasAccordion = accordionWrapper.length,
+      removeElementParent = removeElement.parent(),
+      textAreas = removeElement.find("textarea"),
+      rteFacade = vrtxEditor.richtextEditorFacade;
+  for (var i = 0, len = textAreas.length; i < len; i++) {
+    rteFacade.removeInstance(textAreas[i].name);
   }
 
   var updateLast = removeElement.hasClass("last");

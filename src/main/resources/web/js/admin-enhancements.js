@@ -1266,12 +1266,18 @@ VrtxAdmin.prototype.hideTips = function hideTips() {
  */
 VrtxAdmin.prototype.initScrollBreadcrumbs = function initScrollBreadcrumbs() {
   var vrtxAdm = this;
-  
+
   vrtxAdm.crumbsWrp = this._$("#vrtx-breadcrumb");
   vrtxAdm.crumbs = vrtxAdm.crumbsWrp.find(".vrtx-breadcrumb-level, .vrtx-breadcrumb-level-no-url");
   vrtxAdm.crumbs.wrapAll("<div id='vrtx-breadcrumb-outer'><div id='vrtx-breadcrumb-inner'></div></div>");
   vrtxAdm.crumbsInner = vrtxAdm.crumbsWrp.find("#vrtx-breadcrumb-inner");
-
+  
+  if(vrtxAdm.crumbsInner.width() < 900) { // Don't initialize breadcrumb menu if it is narrower than min-width
+    vrtxAdm.crumbsActive = false;
+    return;  
+  }
+  vrtxAdm.crumbsActive = true;
+  
   var navHtml = "<span id='navigate-crumbs-left-coverup' />" +
                 "<a tabindex='0' id='navigate-crumbs-left' class='navigate-crumbs'><span class='navigate-crumbs-icon'></span><span class='navigate-crumbs-dividor'></span></a>" +
                 "<a tabindex='0' id='navigate-crumbs-right' class='navigate-crumbs'><span class='navigate-crumbs-icon'></span><span class='navigate-crumbs-dividor'></span></a>";                                      
@@ -4249,7 +4255,9 @@ var countResize = 0;
 vrtxAdmin._$(window).resize(vrtxAdmin._$.debounce(20, function () {
   if (vrtxAdmin.runReadyLoad && countResize < 3) {
     countResize++;
-    vrtxAdmin.scrollBreadcrumbsRight();
+    if(vrtxAdmin.crumbsActive) {
+      vrtxAdmin.scrollBreadcrumbsRight();
+    }
     vrtxAdmin.adjustResourceTitle();
   } else { // Let it rest a second..
     var waitResize = setTimeout(function() {

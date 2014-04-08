@@ -393,7 +393,6 @@ VrtxEditor.prototype.richtextEditorFacade = {
   },
   updateInstances: function() {
     for (var instance in CKEDITOR.instances) {
-      console.log(instance);
       CKEDITOR.instances[instance].updateElement();
     }
   },
@@ -419,9 +418,10 @@ VrtxEditor.prototype.richtextEditorFacade = {
     delete CKEDITOR.instances[name];
   },
   swap: function(nameA, nameB) {
+    var rteFacade = this;
     var waitAndSwap = setTimeout(function () {
-      var ckInstA = this.getInstance(nameA);
-      var ckInstB = this.getInstance(nameB);
+      var ckInstA = rteFacade.getInstance(nameA);
+      var ckInstB = rteFacade.getInstance(nameB);
       var ckValA = ckInstA.getData();
       var ckValB = ckInstB.getData();
       ckInstA.setData(ckValB, function () {
@@ -1462,8 +1462,7 @@ function swapContent(moveBtn, move) {
   var j = vrtxEditor.multipleBoxesTemplatesContract[parseInt(curElm.closest(".vrtx-json").find(".vrtx-add-button").data('number'), 10)];
   var types = j.a;
   var swapElementFn = swapElement,
-    swapEditorFn = vrtxEditor.richtextEditorFacade.swap,
-    isEditorFn = vrtxEditor.richtextEditorFacade.isInstance;
+      rteFacade = vrtxEditor.richtextEditorFacade;
   var runOnce = false;
   for (var i = 0, len = types.length; i < len; i++) {
     var field = j.name + "\\." + types[i].name + "\\.";
@@ -1478,8 +1477,8 @@ function swapContent(moveBtn, move) {
     var ckInstanceName1 = fieldEditor + curCounter;
     var ckInstanceName2 = fieldEditor + moveToCounter;
 
-    if (isEditorFn(ckInstanceName1) && isEditorFn(ckInstanceName2)) {
-      swapEditorFn(ckInstanceName1, ckInstanceName2);
+    if (rteFacade.isInstance(ckInstanceName1) && rteFacade.isInstance(ckInstanceName2)) {
+      rteFacade.swap(ckInstanceName1, ckInstanceName2);
     } else if (element1.hasClass("date") && element2.hasClass("date")) {
       var element1Wrapper = element1.closest(".vrtx-string");
       var element2Wrapper = element2.closest(".vrtx-string");

@@ -24,9 +24,10 @@
          if(!(isWin || isMac)) {
            $("#vrtx-edit-win-mac").hide(0);
          }
-         if ($.browser.msie && $.browser.version >= 7 && isWin) {  
-           $("#vrtx-open-webdav-wrapper").show(0);
-           $("#vrtx-open-webdav").click(function(e) {
+         if ($.browser.msie && $.browser.version >= 7 && isWin) {
+           var openWebdavWrp = $("#vrtx-open-webdav-wrapper");
+           openWebdavWrp.show(0);
+           openWebdavWrp.on("click", "#vrtx-open-webdav", function(e) {
              var openOffice = new ActiveXObject("Sharepoint.OpenDocuments.1").EditDocument(this.href);
              e.stopPropagation();
              e.preventDefault();

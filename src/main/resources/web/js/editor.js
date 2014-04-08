@@ -672,9 +672,10 @@ function unsavedChangesInEditor() {
 
   var currentStateOfTextFields = contents.find("textarea"); // CK->checkDirty()
   if (typeof CKEDITOR != "undefined") {
+    var rteFacade = vrtxEdit.richtextEditorFacade;
     for (i = 0, len = currentStateOfTextFields.length; i < len; i++) {
-      var ckInstance = vrtxEdit.richtextEditorFacade.getInstance(currentStateOfTextFields[i].name);
-      if (ckInstance && vrtxEdit.richtextEditorFacade.isChanged(ckInstance) && vrtxEdit.richtextEditorFacade.getValue(ckInstance) !== "") {
+      var ckInstance = rteFacade.getInstance(currentStateOfTextFields[i].name);
+      if (ckInstance && rteFacade.isChanged(ckInstance) && rteFacade.getValue(ckInstance) !== "") {
         return true;
       }
     }
@@ -693,11 +694,12 @@ function unsavedChangesInEditorMessage() {
 
 function validTextLengthsInEditor(isOldEditor) {
   var MAX_LENGTH = 1500, // Back-end limits it to 2048
+  
     // NEW starts on wrapper and OLD starts on field (because of slightly different semantic/markup build-up)
     INPUT_NEW = ".vrtx-string:not(.vrtx-multiple), .vrtx-resource-ref, .vrtx-image-ref, .vrtx-media-ref",
     INPUT_OLD = "input[type=text]:not(.vrtx-multiple)", // RT# 1045040 (skip aggregate and manually approve hidden input-fields)
-    RT_NEW = ".vrtx-simple-html, .vrtx-simple-html-small", // aka. textareas
-    RT_OLD = "textarea:not(#resource\\.content)";
+    RTE_NEW = ".vrtx-simple-html, .vrtx-simple-html-small", // aka. textareas
+    RTE_OLD = "textarea:not(#resource\\.content)";
 
   var contents = vrtxAdmin.cachedContent;
 
@@ -722,13 +724,14 @@ function validTextLengthsInEditor(isOldEditor) {
 
   // Textareas that are not content-fields (RichText)
   if (typeof CKEDITOR != "undefined") {
-    var currentTextAreas = isOldEditor ? contents.find(RT_OLD) : contents.find(RT_NEW);
+    var currentTextAreas = isOldEditor ? contents.find(RTE_OLD) : contents.find(RTE_NEW);
+    var rteFacade = vrtxEditor.richtextEditorFacade;
     for (i = 0, len = currentTextAreas.length; i < len; i++) {
       var txtAreaElm = $(currentTextAreas[i]);
       var txtArea = isOldEditor ? txtAreaElm : txtAreaElm.find("textarea");
       if (txtArea.length && typeof txtArea[0].name !== "undefined") {
-        var ckInstance = vrtxEditor.richtextEditorFacade.getInstance(txtArea[0].name);
-        if (ckInstance && vrtxEditor.richtextEditorFacade.getValue(ckInstance).length > MAX_LENGTH) {
+        var ckInstance = rteFacade.getInstance(txtArea[0].name);
+        if (ckInstance && rteFacade.getValue(ckInstance).length > MAX_LENGTH) {
           validTextLengthsInEditorErrorFunc(txtAreaElm, isOldEditor);
           return false;
         }
@@ -789,10 +792,11 @@ VrtxEditor.prototype.initPreviewImage = function initPreviewImage() {
   }
   
   /* Hide image previews on init (unobtrusive) */
-  var previewInputFields = _$("input.preview-image-inputfield");
+  var previewInputFields = _$("input.preview-image-inputfield"),
+      hideImagePreviewCaptionFunc = hideImagePreviewCaption;
   for (i = previewInputFields.length; i--;) {
     if (previewInputFields[i].value === "") {
-      hideImagePreviewCaption($(previewInputFields[i]), true);
+      hideImagePreviewCaptionFunc($(previewInputFields[i]), true);
     }
   }
   

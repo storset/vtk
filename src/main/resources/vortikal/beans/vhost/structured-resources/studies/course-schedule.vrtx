@@ -6,14 +6,6 @@ resourcetype course-schedule {
 
   view {
     ##
-    [def course-code resource-prop-obj-val(".", "courseContext.fs-course-code")]
-    [def semester-term resource-prop-obj-val(".", "semesterContext.semesterTerm")]
-    [def semester-year resource-prop-obj-val(".", "semesterContext.semesterYear")]
-    [def semester-year-short semester-year.split("^([0-9]{2})")]
-    [if semester-year-short != null && semester-year-short.length() > 0]
-      [def semester-year-short semester-year-short.1]
-    [endif]
-    
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml">
       <head>
@@ -21,11 +13,6 @@ resourcetype course-schedule {
       </head>
       <body id="vrtx-course-schedule">
         <h1>Timeplandok</h1>
-        <h2>Fra kontekstmapper</h2>
-        <ul>
-          <li>Emnekode: [val course-code]</li>
-          <li>Semester: [val semester-term][val semester-year-short]</li>
-        </ul>
       </body>
     </html>
     ##

@@ -37,10 +37,10 @@ import java.util.Locale;
 import org.antlr.runtime.tree.CommonTree;
 import org.apache.commons.lang.LocaleUtils;
 import org.vortikal.repository.resource.ResourcetreeLexer;
-import org.vortikal.resourcemanagement.JSONPropertyAttributeDescription;
-import org.vortikal.resourcemanagement.JSONPropertyDescription;
-import org.vortikal.resourcemanagement.PropertyDescription;
 import org.vortikal.resourcemanagement.StructuredResourceDescription;
+import org.vortikal.resourcemanagement.property.JSONPropertyAttributeDescription;
+import org.vortikal.resourcemanagement.property.JSONPropertyDescription;
+import org.vortikal.resourcemanagement.property.PropertyDescription;
 
 public class VocabularyDefinitionParser {
 

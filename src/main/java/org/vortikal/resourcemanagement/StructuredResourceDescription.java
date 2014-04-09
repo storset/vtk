@@ -39,7 +39,9 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import org.vortikal.resourcemanagement.DerivedPropertyEvaluationDescription.EvaluationElement;
+import org.vortikal.resourcemanagement.property.DerivedPropertyDescription;
+import org.vortikal.resourcemanagement.property.PropertyDescription;
+import org.vortikal.resourcemanagement.property.DerivedPropertyEvaluationDescription.EvaluationElement;
 
 public final class StructuredResourceDescription {
 

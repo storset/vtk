@@ -42,6 +42,8 @@ import java.util.Map;
 
 import net.sf.json.JSONObject;
 
+import org.vortikal.resourcemanagement.property.PropertyDescription;
+import org.vortikal.resourcemanagement.property.SimplePropertyDescription;
 import org.vortikal.util.io.StreamUtil;
 import org.vortikal.util.text.JSON;
 

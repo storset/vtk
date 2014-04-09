@@ -1,4 +1,4 @@
-/* Copyright (c) 2009, University of Oslo, Norway
+/* Copyright (c) 2010, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -28,27 +28,9 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.resourcemanagement;
+package org.vortikal.resourcemanagement.property;
 
-public class SimplePropertyDescription extends EditablePropertyDescription {
 
-    private boolean required;
-    private String defaultValue;
-
-    public void setRequired(boolean required) {
-        this.required = required;
-    }
-
-    public boolean isRequired() {
-        return required;
-    }
-
-    public String getDefaultValue() {
-        return defaultValue;
-    }
-
-    public void setDefaultValue(String defaultValue) {
-        this.defaultValue = defaultValue;
-    }
+public class JSONPropertyAttributeDescription extends EditablePropertyDescription {
 
 }

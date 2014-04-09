@@ -36,15 +36,15 @@ import java.util.List;
 import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.Tree;
 import org.vortikal.repository.resource.ResourcetreeLexer;
-import org.vortikal.resourcemanagement.BinaryPropertyDescription;
-import org.vortikal.resourcemanagement.DerivedPropertyDescription;
-import org.vortikal.resourcemanagement.DerivedPropertyEvaluationDescription;
-import org.vortikal.resourcemanagement.DerivedPropertyEvaluationDescription.EvaluationElement;
-import org.vortikal.resourcemanagement.DerivedPropertyEvaluationDescription.Operator;
-import org.vortikal.resourcemanagement.JSONPropertyAttributeDescription;
-import org.vortikal.resourcemanagement.JSONPropertyDescription;
-import org.vortikal.resourcemanagement.PropertyDescription;
-import org.vortikal.resourcemanagement.SimplePropertyDescription;
+import org.vortikal.resourcemanagement.property.BinaryPropertyDescription;
+import org.vortikal.resourcemanagement.property.DerivedPropertyDescription;
+import org.vortikal.resourcemanagement.property.DerivedPropertyEvaluationDescription;
+import org.vortikal.resourcemanagement.property.JSONPropertyAttributeDescription;
+import org.vortikal.resourcemanagement.property.JSONPropertyDescription;
+import org.vortikal.resourcemanagement.property.PropertyDescription;
+import org.vortikal.resourcemanagement.property.SimplePropertyDescription;
+import org.vortikal.resourcemanagement.property.DerivedPropertyEvaluationDescription.EvaluationElement;
+import org.vortikal.resourcemanagement.property.DerivedPropertyEvaluationDescription.Operator;
 import org.vortikal.resourcemanagement.StructuredResourceDescription;
 
 public class PropertyDescriptionParser {

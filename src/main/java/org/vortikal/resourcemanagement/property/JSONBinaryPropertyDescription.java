@@ -1,4 +1,4 @@
-/* Copyright (c) 2009, University of Oslo, Norway
+/* Copyright (c) 2014, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -28,42 +28,8 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.resourcemanagement;
+package org.vortikal.resourcemanagement.property;
 
-import java.util.List;
-
-public class DerivedPropertyDescription extends PropertyDescription {
-
-    private List<String> dependentProperties;
-    private DerivedPropertyEvaluationDescription evaluationDesciption;
-    private String defaultProperty;
-
-    public void setDependentProperties(List<String> dependentProperties) {
-        this.dependentProperties = dependentProperties;
-    }
-
-    public List<String> getDependentProperties() {
-        return this.dependentProperties;
-    }
-
-    public void setDefaultProperty(String defaultProperty) {
-        this.defaultProperty = defaultProperty;
-    }
-
-    public String getDefaultProperty() {
-        return this.defaultProperty;
-    }
-
-    public boolean hasDefaultProperty() {
-        return this.defaultProperty != null;
-    }
-
-    public void setEvaluationDescription(DerivedPropertyEvaluationDescription evaluationDesciption) {
-        this.evaluationDesciption = evaluationDesciption;
-    }
-
-    public DerivedPropertyEvaluationDescription getEvaluationDescription() {
-        return this.evaluationDesciption;
-    }
+public class JSONBinaryPropertyDescription extends EditablePropertyDescription {
 
 }

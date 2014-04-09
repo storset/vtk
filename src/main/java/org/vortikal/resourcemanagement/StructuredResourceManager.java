@@ -56,7 +56,11 @@ import org.vortikal.repository.resourcetype.ValueFactory;
 import org.vortikal.repository.resourcetype.ValueFormatterRegistry;
 import org.vortikal.resourcemanagement.EditRule.EditRuleType;
 import org.vortikal.resourcemanagement.parser.ParserConstants;
+import org.vortikal.resourcemanagement.property.DerivedPropertyDescription;
 import org.vortikal.resourcemanagement.property.EvaluatorResolver;
+import org.vortikal.resourcemanagement.property.JSONPropertyDescription;
+import org.vortikal.resourcemanagement.property.PropertyDescription;
+import org.vortikal.resourcemanagement.property.SimplePropertyDescription;
 import org.vortikal.web.service.RepositoryAssertion;
 
 public class StructuredResourceManager {

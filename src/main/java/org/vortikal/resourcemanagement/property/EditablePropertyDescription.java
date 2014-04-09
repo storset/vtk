@@ -28,21 +28,44 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.resourcemanagement;
+package org.vortikal.resourcemanagement.property;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
-public class JSONPropertyDescription extends EditablePropertyDescription {
+public abstract class EditablePropertyDescription extends PropertyDescription {
 
-    private List<JSONPropertyAttributeDescription> attributes = new ArrayList<JSONPropertyAttributeDescription>();
+    private Map<String, Set<Object>> edithints;
 
-    public void addAttribute(JSONPropertyAttributeDescription attribute) {
-        this.attributes.add(attribute);
+    public Map<String, Set<Object>> getEdithints() {
+        return edithints;
     }
 
-    public List<JSONPropertyAttributeDescription> getAttributes() {
-        return Collections.unmodifiableList(this.attributes);
+    public Object getEdithint(String key) {
+        if (edithints != null) {
+            Set<Object> hints = edithints.get(key);
+            return hints != null ? hints.iterator().next() : null;
+        }
+        return null;
     }
+
+    public void addEdithint(String key, Object value) {
+
+        Set<Object> hints = null;
+        if (edithints == null) {
+            edithints = new HashMap<String, Set<Object>>();
+            hints = new HashSet<Object>();
+        } else {
+            hints = edithints.get(key);
+        }
+
+        if (hints == null) {
+            hints = new HashSet<Object>();
+        }
+        hints.add(value);
+        edithints.put(key, hints);
+    }
+
 }

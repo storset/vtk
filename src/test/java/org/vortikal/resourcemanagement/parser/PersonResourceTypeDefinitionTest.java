@@ -42,9 +42,9 @@ import java.util.Map;
 
 import org.junit.Test;
 import org.vortikal.resourcemanagement.EditRule;
-import org.vortikal.resourcemanagement.PropertyDescription;
 import org.vortikal.resourcemanagement.ScriptDefinition;
 import org.vortikal.resourcemanagement.StructuredResourceDescription;
+import org.vortikal.resourcemanagement.property.PropertyDescription;
 
 public class PersonResourceTypeDefinitionTest extends StructuredResourceParserTest {
 

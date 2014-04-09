@@ -1,4 +1,4 @@
-/* Copyright (c) 2010, University of Oslo, Norway
+/* Copyright (c) 2009, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -28,8 +28,21 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.resourcemanagement;
+package org.vortikal.resourcemanagement.property;
 
-public class JSONPropertyAttributeDescription extends EditablePropertyDescription {
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
+public class JSONPropertyDescription extends EditablePropertyDescription {
+
+    private List<JSONPropertyAttributeDescription> attributes = new ArrayList<JSONPropertyAttributeDescription>();
+
+    public void addAttribute(JSONPropertyAttributeDescription attribute) {
+        this.attributes.add(attribute);
+    }
+
+    public List<JSONPropertyAttributeDescription> getAttributes() {
+        return Collections.unmodifiableList(this.attributes);
+    }
 }

@@ -38,11 +38,11 @@ import java.util.Locale;
 
 import org.vortikal.resourcemanagement.EditRule;
 import org.vortikal.resourcemanagement.EditRule.EditRuleType;
-import org.vortikal.resourcemanagement.EditablePropertyDescription;
-import org.vortikal.resourcemanagement.JSONPropertyAttributeDescription;
-import org.vortikal.resourcemanagement.JSONPropertyDescription;
-import org.vortikal.resourcemanagement.PropertyDescription;
-import org.vortikal.resourcemanagement.SimplePropertyDescription;
+import org.vortikal.resourcemanagement.property.EditablePropertyDescription;
+import org.vortikal.resourcemanagement.property.JSONPropertyAttributeDescription;
+import org.vortikal.resourcemanagement.property.JSONPropertyDescription;
+import org.vortikal.resourcemanagement.property.PropertyDescription;
+import org.vortikal.resourcemanagement.property.SimplePropertyDescription;
 import org.vortikal.resourcemanagement.StructuredResource;
 import org.vortikal.resourcemanagement.StructuredResourceDescription;
 import org.vortikal.web.actions.UpdateCancelCommand;

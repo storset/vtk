@@ -33,8 +33,8 @@ package org.vortikal.resourcemanagement.edit;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.vortikal.resourcemanagement.EditablePropertyDescription;
 import org.vortikal.resourcemanagement.ValidationError;
+import org.vortikal.resourcemanagement.property.EditablePropertyDescription;
 
 public class FormElement {
 

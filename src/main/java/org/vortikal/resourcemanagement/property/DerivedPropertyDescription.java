@@ -28,44 +28,42 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.resourcemanagement;
+package org.vortikal.resourcemanagement.property;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.List;
 
-public abstract class EditablePropertyDescription extends PropertyDescription {
+public class DerivedPropertyDescription extends PropertyDescription {
 
-    private Map<String, Set<Object>> edithints;
+    private List<String> dependentProperties;
+    private DerivedPropertyEvaluationDescription evaluationDesciption;
+    private String defaultProperty;
 
-    public Map<String, Set<Object>> getEdithints() {
-        return edithints;
+    public void setDependentProperties(List<String> dependentProperties) {
+        this.dependentProperties = dependentProperties;
     }
 
-    public Object getEdithint(String key) {
-        if (edithints != null) {
-            Set<Object> hints = edithints.get(key);
-            return hints != null ? hints.iterator().next() : null;
-        }
-        return null;
+    public List<String> getDependentProperties() {
+        return this.dependentProperties;
     }
 
-    public void addEdithint(String key, Object value) {
+    public void setDefaultProperty(String defaultProperty) {
+        this.defaultProperty = defaultProperty;
+    }
 
-        Set<Object> hints = null;
-        if (edithints == null) {
-            edithints = new HashMap<String, Set<Object>>();
-            hints = new HashSet<Object>();
-        } else {
-            hints = edithints.get(key);
-        }
+    public String getDefaultProperty() {
+        return this.defaultProperty;
+    }
 
-        if (hints == null) {
-            hints = new HashSet<Object>();
-        }
-        hints.add(value);
-        edithints.put(key, hints);
+    public boolean hasDefaultProperty() {
+        return this.defaultProperty != null;
+    }
+
+    public void setEvaluationDescription(DerivedPropertyEvaluationDescription evaluationDesciption) {
+        this.evaluationDesciption = evaluationDesciption;
+    }
+
+    public DerivedPropertyEvaluationDescription getEvaluationDescription() {
+        return this.evaluationDesciption;
     }
 
 }

@@ -35,9 +35,9 @@ import java.util.List;
 
 import org.antlr.runtime.tree.CommonTree;
 import org.vortikal.repository.resource.ResourcetreeLexer;
-import org.vortikal.resourcemanagement.PropertyDescription;
 import org.vortikal.resourcemanagement.ServiceDefinition;
 import org.vortikal.resourcemanagement.StructuredResourceDescription;
+import org.vortikal.resourcemanagement.property.PropertyDescription;
 
 public class ServiceDefinitionParser {
 

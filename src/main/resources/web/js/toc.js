@@ -82,6 +82,10 @@ function tocGen(writeTo) {
 }
 
 tocGen.prototype.addLink = function (ob) {
+  var linkInside = ob.firstChild;
+  if(linkInside && linkInside.nodeName == "A") {
+    ob = linkInside;
+  }
   var id = this.getId(ob);
   var link = '<li><a href="#' + id + '">' + ob.innerHTML + '<\/a>';
   this.writeOut += link;

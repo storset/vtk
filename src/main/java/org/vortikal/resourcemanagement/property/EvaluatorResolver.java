@@ -50,7 +50,6 @@ import org.vortikal.repository.resourcetype.ValueFormatter;
 import org.vortikal.repository.resourcetype.property.PropertyEvaluationException;
 import org.vortikal.resourcemanagement.ServiceDefinition;
 import org.vortikal.resourcemanagement.StructuredResourceDescription;
-import org.vortikal.resourcemanagement.parser.ParserConstants;
 import org.vortikal.resourcemanagement.property.DerivedPropertyEvaluationDescription.EvaluationElement;
 import org.vortikal.resourcemanagement.property.DerivedPropertyEvaluationDescription.Operator;
 import org.vortikal.resourcemanagement.service.ExternalServiceInvoker;
@@ -74,10 +73,9 @@ public class EvaluatorResolver {
             return createSimplePropertyEvaluator((SimplePropertyDescription) desc, resourceDesc);
         } else if (desc instanceof JSONPropertyDescription) {
             return createJSONPropertyEvaluator((JSONPropertyDescription) desc, resourceDesc);
+        } else if (desc instanceof JSONBinaryPropertyDescription) {
+            return new JSONBinaryPropertyEvaluator(desc);
         } else if (desc instanceof BinaryPropertyDescription) {
-            if (desc.getType().equals(ParserConstants.PROPTYPE_JSON_BINARY)) {
-                return new JSONBinaryPropertyEvaluator();
-            }
             return new BinaryPropertyEvaluator(desc);
         }
         return createDerivedPropertyEvaluator((DerivedPropertyDescription) desc, resourceDesc);
@@ -400,6 +398,10 @@ public class EvaluatorResolver {
     }
 
     private class JSONBinaryPropertyEvaluator implements PropertyEvaluator {
+
+        public JSONBinaryPropertyEvaluator(PropertyDescription desc) {
+            // XXX Needed?
+        }
 
         @Override
         public boolean evaluate(Property property, PropertyEvaluationContext ctx) throws PropertyEvaluationException {

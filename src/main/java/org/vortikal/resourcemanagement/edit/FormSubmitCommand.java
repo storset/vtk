@@ -59,14 +59,13 @@ public class FormSubmitCommand extends UpdateCancelCommand {
     private boolean onlyWriteUnpublished;
     private boolean hasPublishDate;
     private Locale defaultLocale;
-    
+
     private StructuredResource resource;
     private List<FormElementBox> elements = new ArrayList<FormElementBox>();
     private URL listComponentServiceURL;
 
-    public FormSubmitCommand(StructuredResource resource, URL url, 
-            URL listComponentServiceURL, boolean workingCopy, boolean published, boolean hasPublishDate,
-            boolean onlyWriteUnpublished, Locale defaultLocale) {
+    public FormSubmitCommand(StructuredResource resource, URL url, URL listComponentServiceURL, boolean workingCopy,
+            boolean published, boolean hasPublishDate, boolean onlyWriteUnpublished, Locale defaultLocale) {
         super(url.toString());
         this.listComponentServiceURL = listComponentServiceURL;
         this.resource = resource;
@@ -81,12 +80,13 @@ public class FormSubmitCommand extends UpdateCancelCommand {
             if (def instanceof SimplePropertyDescription) {
                 SimplePropertyDescription editable = (SimplePropertyDescription) def;
                 FormElementBox elementBox = new FormElementBox(def.getName());
-                elementBox.addFormElement(new FormElement(editable, null, resource.getProperty(def.getName()),editable.getDefaultValue()));
+                elementBox.addFormElement(new FormElement(editable, null, resource.getProperty(def.getName()), editable
+                        .getDefaultValue()));
                 this.elements.add(elementBox);
             } else if (def instanceof EditablePropertyDescription) {
                 EditablePropertyDescription editable = (EditablePropertyDescription) def;
                 FormElementBox elementBox = new FormElementBox(def.getName());
-                elementBox.addFormElement(new FormElement(editable, null, resource.getProperty(def.getName()),null));
+                elementBox.addFormElement(new FormElement(editable, null, resource.getProperty(def.getName()), null));
                 this.elements.add(elementBox);
             }
         }
@@ -258,7 +258,7 @@ public class FormSubmitCommand extends UpdateCancelCommand {
     public void setMakePublicVersionAction(String makePublicVersionAction) {
         this.makePublicVersionAction = makePublicVersionAction;
     }
-    
+
     public String getDeleteWorkingCopyAction() {
         return deleteWorkingCopyAction;
     }
@@ -270,19 +270,19 @@ public class FormSubmitCommand extends UpdateCancelCommand {
     public boolean isWorkingCopy() {
         return this.workingCopy;
     }
-    
+
     public void setWorkingCopy(boolean workingCopy) {
         this.workingCopy = workingCopy;
     }
-    
+
     public boolean isPublished() {
         return this.published;
     }
-    
+
     public void setPublished(boolean published) {
         this.published = published;
     }
-    
+
     public boolean isHasPublishDate() {
         return hasPublishDate;
     }
@@ -294,15 +294,15 @@ public class FormSubmitCommand extends UpdateCancelCommand {
     public boolean isOnlyWriteUnpublished() {
         return this.onlyWriteUnpublished;
     }
-    
+
     public void setOnlyWriteUnpublished(boolean onlyWriteUnpublished) {
         this.onlyWriteUnpublished = onlyWriteUnpublished;
     }
-    
+
     public Locale getDefaultLocale() {
         return this.defaultLocale;
     }
-    
+
     public void setDefaultLocale(Locale defaultLocale) {
         this.defaultLocale = defaultLocale;
     }

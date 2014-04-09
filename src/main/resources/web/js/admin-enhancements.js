@@ -1213,9 +1213,9 @@ VrtxAdmin.prototype.dropdownPlain = function dropdownPlain(selector) {
   header.replaceWith("<a href='javascript:void(0);' id='" + idLink + "' class='dropdown-shortcut-menu-click-area' aria-haspopup='true' aria-controls='" + idWrp + "' aria-expanded='false'>" + headerText.substring(0, headerText.length - 1) + "</a>");
 
   vrtxAdm.cachedBody.on("click", selector + "-header", function (e) {
-    vrtxAdm.closeDropdowns();
     var link = _$(this);
     var wrp = link.next(".dropdown-shortcut-menu-container");
+    vrtxAdm.closeDropdowns();
     vrtxAdm.openDropdown(link, wrp);
     e.stopPropagation();
     e.preventDefault();
@@ -1239,7 +1239,8 @@ VrtxAdmin.prototype.dropdown = function dropdown(options) {
   var list = _$(options.selector);
   if (!list.length) return;
 
-  var numOfListElements = list.find("li").length;
+  var listElements = list.find("li");
+  var numOfListElements = listElements.length;
 
   if (!options.proceedCondition || (options.proceedCondition && options.proceedCondition(numOfListElements))) {
     list.addClass("dropdown-shortcut-menu");
@@ -1257,12 +1258,12 @@ VrtxAdmin.prototype.dropdown = function dropdown(options) {
     var startDropdown = options.start ? ":nth-child(-n+" + options.start + ")" : ".first";
     var dropdownClickArea = options.start ? ":nth-child(3)" : ".first";
 
-    list.find("li").not(startDropdown).remove();
-    list.find("li" + dropdownClickArea).append("<span id='" + idLink + "' title='" + options.title + "' role='link' aria-haspopup='true' aria-controls='" + idWrp + "' aria-expanded='false' tabindex='0' class='dropdown-shortcut-menu-click-area' />");
+    listElements.not(startDropdown).remove();
+    listElements.filter("li" + dropdownClickArea).append("<span id='" + idLink + "' title='" + options.title + "' role='link' aria-haspopup='true' aria-controls='" + idWrp + "' aria-expanded='false' tabindex='0' class='dropdown-shortcut-menu-click-area' />");
     var shortcutMenu = listParent.find(".dropdown-shortcut-menu-container");
     shortcutMenu.find("li" + startDropdown).remove();
     
-    setTimeout(function() { // Adjust positioning of dropdown container
+    var waitSome = setTimeout(function() { // Adjust positioning of dropdown container
       if (options.calcTop) {
         shortcutMenu.css("top", (list.position().top + list.height() - (parseInt(list.css("marginTop"), 10) * -1) + 2) + "px");
       } 
@@ -1273,30 +1274,17 @@ VrtxAdmin.prototype.dropdown = function dropdown(options) {
       shortcutMenu.css("left", left + "px");
     }, 500);
 
-    list.find("li" + dropdownClickArea).addClass("dropdown-init");
-
-    list.find("li.dropdown-init .dropdown-shortcut-menu-click-area").click(function (e) {
-      var link = $(this);
-      if(shortcutMenu.filter(":visible").length) {
-        link[0].blur();
-      }
-      vrtxAdm.closeDropdowns();
-      vrtxAdm.openDropdown(link, shortcutMenu);
-      e.stopPropagation();
-      e.preventDefault();
-    });
-    list.find("li.dropdown-init .dropdown-shortcut-menu-click-area").keyup(function (e) {
-      if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
+    var togglerWrp = list.find("li" + dropdownClickArea);
+    togglerWrp.addClass("dropdown-init");
+  
+    togglerWrp.on("click keyup", ".dropdown-shortcut-menu-click-area", function (e) {
+      if (e.type == "click" || (e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
         var link = $(this);
         vrtxAdm.closeDropdowns();
         vrtxAdm.openDropdown(link, shortcutMenu);
+        e.stopPropagation();
+        e.preventDefault();
       }
-    });
-
-    list.find("li.dropdown-init .dropdown-shortcut-menu-click-area").hover(function () {
-      var area = _$(this);
-      area.parent().toggleClass('unhover');
-      area.prev().toggleClass('hover');
     });
   }
 };

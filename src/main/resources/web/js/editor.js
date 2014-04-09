@@ -1104,6 +1104,10 @@ VrtxEditor.prototype.showHideSelect = function showHideSelect(select, init) {
 
 /*-------------------------------------------------------------------*\
     8. Multiple fields and boxes
+    
+    THIS IS A GENERAL MESSAGE TO THE WORLD:
+    Abandon hope all ye who enter here..
+    
     XXX: refactor / combine and optimize
 \*-------------------------------------------------------------------*/
 

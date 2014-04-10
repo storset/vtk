@@ -183,7 +183,7 @@
           e.preventDefault();
           e.stopPropagation();
         });
-        $(document).on("keyup", function(e) {
+        vrtxAdm.cachedDoc.on("keyup", function(e) {
           if(!hasPreviewIframeCommunication) return;
           if(htmlTag.hasClass("mobile")) {
             var isHorizontal = $("html").hasClass("horizontal");

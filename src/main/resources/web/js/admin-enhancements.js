@@ -1100,7 +1100,7 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
       
       break;
     case "vrtx-report-broken-links":
-      $(document).on("click", ".vrtx-report-alternative-view-switch input", function(e) {
+      vrtxAdm.cachedDoc.on("click", ".vrtx-report-alternative-view-switch input", function(e) {
         if(!$(this).is(":checked")) {
           location.href = location.href.replace("&" + this.name, "");
         } else {
@@ -2122,8 +2122,8 @@ function ajaxUploadPerform(opts, size) {
     e.preventDefault();
   };
     
-  $(document).off("click", "#dialog-uploading-abort", ajaxUploadAbort)
-              .on("click", "#dialog-uploading-abort", ajaxUploadAbort);
+  vrtxAdm.cachedDoc.off("click", "#dialog-uploading-abort", ajaxUploadAbort)
+                   .on("click", "#dialog-uploading-abort", ajaxUploadAbort);
 
 }
 

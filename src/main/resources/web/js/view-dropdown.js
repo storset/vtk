@@ -6,10 +6,15 @@
 if(typeof viewDropdown === "undefined") {
 
 var viewDropdown = true;
-$(document).ready(function() {
+var doc = $(document);
+doc.ready(function() {
 
   var ariaDropdownState = function (link, menu, isExpanded) {
-    link.attr("aria-expanded", isExpanded ? "true" : "false");
+    if(isExpanded) {
+      var firstInteractiveElem = menu.find("a, input[type='button'], input[type='submit']").filter(":first");
+      if(firstInteractiveElem.length) firstInteractiveElem.focus();
+    }
+    menu.attr("aria-expanded", isExpanded ? "true" : "false");
     menu.attr("aria-hidden", isExpanded ? "false" : "true");
   };
 
@@ -37,7 +42,7 @@ $(document).ready(function() {
     ariaDropdownState(a, wrp, false);
   }
 
-  $(document).on("click", ".vrtx-dropdown-component-toggled a.vrtx-dropdown-link", function(e) {
+  doc.on("click", ".vrtx-dropdown-component-toggled a.vrtx-dropdown-link", function(e) {
     var a = $(this);
     var wrp = a.next(".vrtx-dropdown-wrapper");
     a.toggleClass("active");
@@ -52,7 +57,7 @@ $(document).ready(function() {
     e.stopPropagation();
     e.preventDefault();
   });
-  $(document).on("click", ".vrtx-dropdown-component-not-toggled a.vrtx-dropdown-link", function(e) {
+  doc.on("click", ".vrtx-dropdown-component-not-toggled a.vrtx-dropdown-link", function(e) {
     var a = $(this);
     var wrp = a.next(".vrtx-dropdown-wrapper");
     wrp.slideDown("fast", function() {
@@ -61,7 +66,7 @@ $(document).ready(function() {
     e.stopPropagation();
     e.preventDefault();
   });
-  $(document).on("click", ".vrtx-dropdown-component-not-toggled a.vrtx-dropdown-close-link", function(e) {
+  doc.on("click", ".vrtx-dropdown-component-not-toggled a.vrtx-dropdown-close-link", function(e) {
     var a = $(this);
     var wrp = a.closest(".vrtx-dropdown-wrapper");      
     wrp.slideUp("fast", function() {

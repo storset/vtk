@@ -18,8 +18,6 @@
     </#if>
   </#list>
   
-       
-  
   <#-- Rest of options => dropdown list -->
   <#if (options?size > 1)>
     <!-- begin view dropdown js -->

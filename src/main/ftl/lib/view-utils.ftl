@@ -232,7 +232,7 @@
   <div class="vrtx-${type}-component vrtx-dropdown-component <#if !displayDropdownTitleClose>vrtx-dropdown-component-toggled<#else>vrtx-dropdown-component-not-toggled</#if>">
     <#if titleLink != ''>
       <a href="${titleLink?html}" class="vrtx-${type}-title-link vrtx-dropdown-title-link">${title?html}</a>
-      <a href="javascript:void(0)" class="vrtx-${type}-link vrtx-dropdown-link" title="${titleLinkTip}"></a>
+      <a href="javascript:void(0)" class="vrtx-${type}-link vrtx-dropdown-link"><span class="offscreen-screenreader">${titleLinkTip?html}</span></a>
     <#else>
       <a href="javascript:void(0)" class="vrtx-${type}-link vrtx-dropdown-link">${title?html}</a>
     </#if>

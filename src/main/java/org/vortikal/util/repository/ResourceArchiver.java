@@ -387,7 +387,8 @@ public class ResourceArchiver {
             entry.append("name:").append(propDef.getName()).append(" ");
             if (propDef.getType() == PropertyType.Type.DATE || propDef.getType() == PropertyType.Type.TIMESTAMP) {
                 entry.append(property.getFormattedValue(dateFormat, null));
-            } else if (propDef.getType() != PropertyType.Type.BINARY) {
+            } else if (!(propDef.getType() == PropertyType.Type.BINARY 
+                    || propDef.getType() == PropertyType.Type.JSON_BINARY)) {
                 entry.append(property.getFormattedValue());
             }
 

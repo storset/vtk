@@ -100,6 +100,10 @@ public class PropertyImpl implements Cloneable, Property {
         Set<Type> TIMESTAMP = EnumSet.noneOf(Type.class);
         TIMESTAMP.add(Type.DATE);
         COMPATIBILITY_MAP.put(Type.TIMESTAMP, TIMESTAMP);
+
+        Set<Type> JSON_BINARY = EnumSet.noneOf(Type.class);
+        JSON_BINARY.add(Type.BINARY);
+        COMPATIBILITY_MAP.put(Type.JSON_BINARY, JSON_BINARY);
     }
     
     private PropertyTypeDefinition propertyTypeDefinition;
@@ -478,23 +482,26 @@ public class PropertyImpl implements Cloneable, Property {
     
     @Override
     public void setBinaryValue(byte[] buffer, String contentType) {
-        if (getType() != PropertyType.Type.BINARY) {
+        if (!(getType() == PropertyType.Type.BINARY 
+                || getType() == PropertyType.Type.JSON_BINARY)) {
             throw new IllegalOperationException("Property " + this + " not of type BINARY");
         }
-        setValue(new Value(buffer, contentType));
+        setValue(new Value(buffer, contentType, getType()));
     }
-    
+
     @Override
     public ContentStream getBinaryStream() throws IllegalOperationException {
-    	if (this.value == null || getType() != PropertyType.Type.BINARY) {
+        if (this.value == null || !(getType() == PropertyType.Type.BINARY 
+                || getType() == PropertyType.Type.JSON_BINARY)) {
             throw new IllegalOperationException("Property " + this + " not of type BINARY or is BINARY multi-value");
         }
         return this.value.getBinaryValue().getContentStream();
     }
-    
+
     @Override
     public String getBinaryContentType() throws IllegalOperationException {
-    	if (this.value == null || getType() != PropertyType.Type.BINARY) {
+        if (this.value == null || !(getType() == PropertyType.Type.BINARY 
+                || getType() == PropertyType.Type.JSON_BINARY)) {
             throw new IllegalOperationException("Property " + this + " not of type BINARY or is BINARY multi-value");
         }
         return this.value.getBinaryValue().getContentType();

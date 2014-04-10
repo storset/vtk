@@ -179,20 +179,20 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
 
     @Override
     public Property createProperty(BinaryValue[] binaryValues) throws ValueFormatException {
-        if (getType() != Type.BINARY)
+        if (!(getType() == Type.BINARY || getType() == Type.JSON_BINARY))
             throw new ValueFormatException("Cannot create property of type " + getType() + " from binary value(s)");
 
         PropertyImpl prop = new PropertyImpl();
         prop.setDefinition(this);
         if (this.isMultiple()) {
-            prop.setValues(this.valueFactory.createValues(binaryValues));
+            prop.setValues(this.valueFactory.createValues(binaryValues, type));
         } else {
             if (binaryValues.length > 1) {
                 throw new ValueFormatException("Cannot convert multiple values: " + Arrays.asList(binaryValues)
                         + " to a single-value property for property " + prop);
             }
 
-            prop.setValue(this.valueFactory.createValue(binaryValues[0]));
+            prop.setValue(this.valueFactory.createValue(binaryValues[0], getType()));
         }
 
         return prop;

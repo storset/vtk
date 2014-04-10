@@ -210,7 +210,8 @@ public class DocumentMapper implements InitializingBean {
             // Create indexed fields
             switch (property.getType()) {
             case BINARY:
-                continue; // Don't index or store BINARY property values
+            case JSON_BINARY:
+                continue; // Don't index or store BINARY or JSON_BINARY property values
 
             case JSON:
                 // Add any indexable JSON value attributes (both as lowercase

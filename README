@@ -35,4 +35,3 @@ are necessary:
 
 7. Custom bean definitions and overriding can be placed in the file
    ~/.vrtx-context.xml (loaded if it exists).
-

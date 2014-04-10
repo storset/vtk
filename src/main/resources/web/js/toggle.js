@@ -3,6 +3,7 @@
  * - Store cached refs and i18n at init in configs-obj (on toggle link id)
  * 
  * XXX: JSDoc
+ * XXX: ARIA/focus
  * 
  */
 

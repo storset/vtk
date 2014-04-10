@@ -1,0 +1,16 @@
+
+# /
+/target
+/.settings
+/.classpath
+/.project
+/.springBeans
+/maven-eclipse.xml
+/.externalToolBuilders
+/nb-configuration.xml
+
+# /src/main/antlr3/org/vortikal/repository/resource/
+/src/main/antlr3/org/vortikal/repository/resource/output
+
+# /src/main/resources/web/
+/src/main/resources/web/ckeditor-build

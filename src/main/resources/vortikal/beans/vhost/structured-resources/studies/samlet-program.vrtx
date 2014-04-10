@@ -83,7 +83,7 @@ resourcetype samlet-program : samlet {
       <head>
         <title>[localized 'samlet']</title>
       </head>
-      <body id="vrtx-structured-project">
+      <body id="vrtx-structured-article">
         <div id="vrtx-content">
           [def document structured-document()]
           <div id="vrtx-main-content" class="vrtx-hide-additional-content-true">

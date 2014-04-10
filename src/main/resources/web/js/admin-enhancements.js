@@ -1301,6 +1301,8 @@ VrtxAdmin.prototype.openDropdown = function openDropdown(link, dropdown) {
     animationSpeed: vrtxAdmin.transitionDropdownSpeed,
     easeIn: "swing",
     after: function(animation) {
+      var firstInteractiveElem = animation.__opts.elem.find("a, input[type='button'], input[type='submit']").filter(":first");
+      if(firstInteractiveElem.length) firstInteractiveElem.focus();
       vrtxAdm.ariaDropdownState(link, animation.__opts.elem, true);
     }
   });
@@ -3968,8 +3970,8 @@ VrtxAdmin.prototype.ariaBusy = function ariaBusy(idOrElm, isBusy) {
  * @param {boolean} isBusy If the id or element is expanded
  */
 VrtxAdmin.prototype.ariaDropdownState = function ariaDropdownState(idOrElmLink, idOrElmDropdown, isExpanded) {
-  this.ariaBool("expanded", idOrElmLink, isExpanded);
-  this.ariaBool("hidden", idOrElmDropdown, !isExpanded);
+  this.ariaBool("expanded", idOrElmDropdown, isExpanded);
+  this.ariaHidden(idOrElmDropdown, !isExpanded);
 };
 
 /**

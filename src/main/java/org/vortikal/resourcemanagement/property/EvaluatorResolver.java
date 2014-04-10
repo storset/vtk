@@ -413,7 +413,7 @@ public class EvaluatorResolver {
 
     private void setPropValue(Property property, Object value) {
 
-        if (property.getType() == Type.BINARY) {
+        if (property.getType() == Type.BINARY || property.getType() == Type.JSON_BINARY) {
             // Store the value of the property
             property.setBinaryValue(value.toString().getBytes(), "application/json");
         } else if (!property.getDefinition().isMultiple()) {

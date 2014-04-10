@@ -63,7 +63,7 @@ public interface ValueFactory {
      * @return
      * @throws ValueFormatException 
      */
-    public Value createValue(BinaryValue value) throws ValueFormatException;
+    public Value createValue(BinaryValue value, Type type) throws ValueFormatException;
     
     /**
      * Create values from binary value.
@@ -71,6 +71,6 @@ public interface ValueFactory {
      * @return
      * @throws ValueFormatException 
      */
-    public Value[] createValues(BinaryValue[] value) throws ValueFormatException;
+    public Value[] createValues(BinaryValue[] value, Type type) throws ValueFormatException;
     
 }

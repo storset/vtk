@@ -32,11 +32,11 @@ package org.vortikal.repository.resourcetype;
 
 import java.util.Date;
 
+import net.sf.json.JSONObject;
+
 import org.vortikal.repository.IllegalOperationException;
 import org.vortikal.repository.resourcetype.PropertyType.Type;
 import org.vortikal.security.Principal;
-
-import net.sf.json.JSONObject;
 
 public class Value implements Cloneable, Comparable<Value> {
 
@@ -123,17 +123,17 @@ public class Value implements Cloneable, Comparable<Value> {
         this.stringValue = value.toString();
     }
 
-    public Value(byte[] buffer, String contentType) {
+    public Value(byte[] buffer, String contentType, Type binaryType) {
         if (buffer == null)
             throw new IllegalArgumentException("buffer cannot be null");
-        this.type = Type.BINARY;
+        this.type = binaryType;
         this.binaryValue = new BufferedBinaryValue(buffer, contentType);
     }
 
-    Value(BinaryValue value) {
+    Value(BinaryValue value, Type binaryType) {
         if (value == null)
             throw new IllegalArgumentException("value cannot be null");
-        this.type = Type.BINARY;
+        this.type = binaryType;
         this.binaryValue = value;
     }
 
@@ -199,6 +199,7 @@ public class Value implements Cloneable, Comparable<Value> {
             return this.principalValue;
 
         case BINARY:
+        case JSON_BINARY:
             return this.binaryValue;
         }
 
@@ -234,6 +235,7 @@ public class Value implements Cloneable, Comparable<Value> {
             return (this.principalValue == null && v.getPrincipalValue() == null)
                     || (this.principalValue != null && this.principalValue.equals(v.getPrincipalValue()));
         case BINARY:
+        case JSON_BINARY:
             return (this.binaryValue == null && v.binaryValue == null)
                     || (this.binaryValue != null && this.binaryValue.equals(v.binaryValue));
 
@@ -260,6 +262,7 @@ public class Value implements Cloneable, Comparable<Value> {
         case PRINCIPAL:
             return hash + 5 + (this.principalValue == null ? 0 : this.principalValue.hashCode());
         case BINARY:
+        case JSON_BINARY:
             return this.binaryValue.hashCode();
         default:
             return hash + (this.stringValue == null ? 0 : this.stringValue.hashCode());
@@ -283,7 +286,8 @@ public class Value implements Cloneable, Comparable<Value> {
         case PRINCIPAL:
             return new Value(this.principalValue);
         case BINARY:
-            return new Value(this.binaryValue);
+        case JSON_BINARY:
+            return new Value(this.binaryValue, getType());
         default:
             return new Value(this.stringValue, this.type);
         }
@@ -307,6 +311,7 @@ public class Value implements Cloneable, Comparable<Value> {
         case PRINCIPAL:
             return this.principalValue.getQualifiedName().compareTo(other.principalValue.getQualifiedName());
         case BINARY:
+        case JSON_BINARY:
             throw new IllegalOperationException("cannot compare binary values");
         default:
             return this.stringValue.compareTo(other.stringValue);
@@ -339,6 +344,7 @@ public class Value implements Cloneable, Comparable<Value> {
             return String.valueOf(this.principalValue);
 
         case BINARY:
+        case JSON_BINARY:
             return this.binaryValue.toString();
 
         default:
@@ -383,6 +389,9 @@ public class Value implements Cloneable, Comparable<Value> {
 
         case BINARY:
             representation = "#binary";
+            break;
+        case JSON_BINARY:
+            representation = "#json_binary";
             break;
 
         case PRINCIPAL:

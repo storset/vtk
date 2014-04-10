@@ -120,7 +120,6 @@ public class ValueFactoryImpl implements ValueFactory {
                 throw new ValueFormatException("Illegal string value: empty");
             }
             return new Value(stringValue, type);
-            
 
         case BOOLEAN:
             return new Value("true".equalsIgnoreCase(stringValue));
@@ -152,28 +151,28 @@ public class ValueFactoryImpl implements ValueFactory {
 
         case PRINCIPAL:
             try {
-                Principal principal = principalFactory.getPrincipal(stringValue,
-                        Principal.Type.USER);
+                Principal principal = principalFactory.getPrincipal(stringValue, Principal.Type.USER);
                 return new Value(principal);
             } catch (InvalidPrincipalException e) {
                 throw new ValueFormatException(e.getMessage(), e);
             }
+        default:
+            throw new IllegalArgumentException("Cannot make string value '" + stringValue + "' into type '" + type
+                    + "'");
         }
-
-        throw new IllegalArgumentException("Cannot make string value '" + stringValue + "' into type '" + type + "'");
 
     }
     
     @Override
-    public Value createValue(BinaryValue binaryValue) throws ValueFormatException {
-        return new Value(binaryValue);
+    public Value createValue(BinaryValue binaryValue, Type type) throws ValueFormatException {
+        return new Value(binaryValue, type);
     }
 
     @Override
-    public Value[] createValues(BinaryValue[] binaryValues) throws ValueFormatException {
+    public Value[] createValues(BinaryValue[] binaryValues, Type type) throws ValueFormatException {
         Value[] values = new Value[binaryValues.length];
         for (int i=0; i<binaryValues.length; i++) {
-            values[i] = createValue(binaryValues[i]);
+            values[i] = createValue(binaryValues[i], type);
         }
         return values;
     }

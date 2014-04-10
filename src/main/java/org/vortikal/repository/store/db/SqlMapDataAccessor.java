@@ -1399,7 +1399,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
         for (int i = 0; i < values.length; i++) {
             BinaryValue binVal = values[i].getBinaryValue();
             if (binVal.getClass() == BinaryValueReference.class) {
-                values[i] = new Value(binVal.getBytes(), binVal.getContentType());
+                values[i] = new Value(binVal.getBytes(), binVal.getContentType(), prop.getDefinition().getType());
             }
         }
 

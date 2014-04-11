@@ -36,6 +36,9 @@ void execute(context, args, out) {
         }
 	if (p.getType() == org.vortikal.repository.resourcetype.PropertyType.Type.BINARY) {
 	    out.println(" [binary]");
+        }
+        else if (p.getType() == org.vortikal.repository.resourcetype.PropertyType.Type.JSON_BINARY) {
+	    out.println(" [json-binary]");
 	} else {
 	    out.println(p.getFormattedValue());
 	}

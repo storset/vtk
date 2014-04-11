@@ -65,6 +65,7 @@ function VrtxEditor() {
 var vrtxEditor = new VrtxEditor();
 var UNSAVED_CHANGES_CONFIRMATION;
 
+ // Accordion JSON and grouped
 var accordionJson = null;
 var accordionGrouped = null;
 

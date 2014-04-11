@@ -81,7 +81,7 @@ var VrtxAnimation = dejavu.Class.declare({
     if(dir === "in") {
       this.__opts.elem.css("marginLeft", -width);
     }
-
+    
     var animation = this;
     if(animation.$static.cssTransform == null || !animation.__opts.useCSSAnim) { // JS pixel pushing
       var easing = (dir === "in") ? "easeIn" : "easeOut";

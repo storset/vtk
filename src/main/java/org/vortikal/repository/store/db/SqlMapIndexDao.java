@@ -53,6 +53,8 @@ import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalFactory;
 
 import com.ibatis.sqlmap.client.SqlMapExecutor;
+import org.vortikal.repository.Namespace;
+import org.vortikal.repository.Property;
 
 /**
  * Index data accessor based on iBatis.
@@ -64,6 +66,8 @@ public class SqlMapIndexDao extends AbstractSqlMapDataAccessor implements IndexD
     private ResourceTypeTree resourceTypeTree;
 
     private PrincipalFactory principalFactory;
+    
+    private SqlMapDataAccessor sqlMapDataAccessor;
     
     @Override
     public void orderedPropertySetIteration(PropertySetHandler handler) 
@@ -224,6 +228,23 @@ public class SqlMapIndexDao extends AbstractSqlMapDataAccessor implements IndexD
         }
         
         return aclReadPrincipals;
+    }
+    
+    Property createProperty(SqlDaoUtils.PropHolder holder) {
+        return this.sqlMapDataAccessor.createProperty(holder);
+    }
+    
+    Property createInheritedProperty(SqlDaoUtils.PropHolder holder) {
+        return this.sqlMapDataAccessor.createInheritedProperty(holder);
+    }
+    
+    Property createProperty(Namespace ns, String name, Object value) {
+        return this.sqlMapDataAccessor.createProperty(ns, name, value);
+    }
+
+    @Required
+    public void setSqlMapDataAccessor(SqlMapDataAccessor sqlMapDataAccessor){
+        this.sqlMapDataAccessor = sqlMapDataAccessor;
     }
     
     @Required

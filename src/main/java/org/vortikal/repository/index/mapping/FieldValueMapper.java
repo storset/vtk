@@ -346,6 +346,10 @@ public final class FieldValueMapper {
             } catch (UnsupportedEncodingException ue) {
             } // Should never occur.
             break;
+            
+        case JSON_BINARY:
+            byteValue = value.getBinaryValue().getBytes();
+            break;
 
         default:
             throw new FieldDataEncodingException("Unknown or unsupported type: " + value.getType());
@@ -430,8 +434,13 @@ public final class FieldValueMapper {
                                                            field.getBinaryOffset(),
                                                            field.getBinaryLength());
             return new Value(l);
+            
+        case JSON_BINARY:
+            byte[] jsonBytes = new byte[field.getBinaryLength()];
+            System.arraycopy(valueBuf, field.getBinaryOffset(), jsonBytes, 0, jsonBytes.length);
+            return new Value(jsonBytes, "application/json", Type.JSON_BINARY);
         }
-
+        
         throw new FieldDataEncodingException("Unknown type: " + type);
     }
 

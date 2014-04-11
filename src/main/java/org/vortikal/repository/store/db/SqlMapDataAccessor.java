@@ -1250,12 +1250,6 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
                     PropertyType.CHARACTERENCODING_USER_SPECIFIED_PROP_NAME, string));
         }
 
-//        string = (String) resourceMap.get("contentLanguage");
-//        if (string != null) {
-//            resourceImpl.addProperty(createProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTLOCALE_PROP_NAME,
-//                    string));
-//        }
-
         resourceImpl.addProperty(createProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.LASTMODIFIED_PROP_NAME,
                 resourceMap.get("lastModified")));
 
@@ -1294,13 +1288,19 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
         resourceImpl.setAclInheritedFrom(aclInheritedFrom.intValue());
     }
 
-    private Property createProperty(Namespace ns, String name, Object value) {
+    /**
+     * Create property from namespace, name and value.
+     */
+    Property createProperty(Namespace ns, String name, Object value) {
         PropertyTypeDefinition propDef = this.resourceTypeTree.getPropertyTypeDefinition(ns, name);
         Property prop = propDef.createProperty(value);
         return prop;
     }
 
-    private Property createProperty(PropHolder holder) {
+    /**
+     * Create property from PropHolder instance loaded from database.
+     */
+    Property createProperty(PropHolder holder) {
         Namespace namespace = this.resourceTypeTree.getNamespace(holder.namespaceUri);
         PropertyTypeDefinition propDef = this.resourceTypeTree.getPropertyTypeDefinition(namespace, holder.name);
         if (holder.binary) {
@@ -1317,8 +1317,12 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
             return propDef.createProperty(stringValues);
         }
     }
-    
-    private Property createInheritedProperty(PropHolder holder) {
+
+    /**
+     * Create property instance from PropHolder loaded from database,
+     * with inherited flag set to <code>true</code>.
+     */
+    Property createInheritedProperty(PropHolder holder) {
         PropertyImpl impl = (PropertyImpl) createProperty(holder);
         impl.setInherited(true);
         return impl;

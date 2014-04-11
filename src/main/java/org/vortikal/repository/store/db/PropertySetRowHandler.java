@@ -268,15 +268,6 @@ class PropertySetRowHandler implements RowHandler {
             propertySet.addProperty(prop);
         }
         
-        // contentLanguage
-//        string = (String)row.get("contentLanguage");
-//        if (string != null) {
-//            propDef = this.resourceTypeTree.getPropertyTypeDefinition(
-//                    Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTLOCALE_PROP_NAME);
-//            prop = propDef.createProperty(string);
-//            propertySet.addProperty(prop);
-//        }
-        
         // lastModified
         propDef = this.resourceTypeTree.getPropertyTypeDefinition(
                 Namespace.DEFAULT_NAMESPACE, PropertyType.LASTMODIFIED_PROP_NAME);
@@ -341,15 +332,13 @@ class PropertySetRowHandler implements RowHandler {
                             new HashMap<PropHolder, List<Object>>();
         
         for (Map<String, Object> row: rowBuffer) {
-            if ((Boolean)row.get("binary")) {
-                // Skip all binary prop rows
-                continue;
-            }
             PropHolder holder = new PropHolder();
             holder.namespaceUri = (String)row.get("namespace");
             holder.name = (String)row.get("name");
             holder.resourceId = (Integer)row.get("id");
             holder.inheritable = (Boolean)row.get("inheritable");
+            holder.binary = (Boolean)row.get("binary");
+            holder.propID = row.get("propId"); // See resultMap ResourceAndExtraProperties
             
             List<Object> values = propMap.get(holder);
             if (values == null) {
@@ -357,11 +346,15 @@ class PropertySetRowHandler implements RowHandler {
                 holder.values = values;
                 propMap.put(holder, values);
             }
-            values.add(row.get("value"));
+            if (holder.binary) {
+                values.add(holder.propID);
+            } else {
+                values.add(row.get("value"));
+            }
         }
 
         for (PropHolder holder: propMap.keySet()) {
-            propertySet.addProperty(createProperty(holder));
+            propertySet.addProperty(indexDao.createProperty(holder));
         }
     }
     
@@ -446,16 +439,13 @@ class PropertySetRowHandler implements RowHandler {
         final Map<Path, Set<PropHolder>> inheritableHolderMap = new HashMap<Path, Set<PropHolder>>();
         final Map<PropHolder, List<Object>> propValuesMap = new HashMap<PropHolder, List<Object>>();
         for (Map<String, Object> propEntry : rows) {
-            if ((Boolean)propEntry.get("binary")) {
-                // Skip all binary property rows
-                continue;
-            }
             
             final PropHolder holder = new PropHolder();
             holder.namespaceUri = (String) propEntry.get("namespaceUri");
             holder.name = (String) propEntry.get("name");
             holder.resourceId = (Integer) propEntry.get("resourceId");
-            holder.propID = propEntry.get("id");
+            holder.propID = propEntry.get("id"); // See resultMap "UriAndProperty"
+            holder.binary = (Boolean)propEntry.get("binary");
             holder.inheritable = true;
             
             List<Object> values = propValuesMap.get(holder);
@@ -475,8 +465,12 @@ class PropertySetRowHandler implements RowHandler {
                 set.add(holder);
             }
 
-            // Aggregate current property's value (binary values ignored)
-            values.add(propEntry.get("value"));
+            // Aggregate current property's value
+            if (holder.binary) {
+                values.add(holder.propID);
+            } else {
+                values.add(propEntry.get("value"));
+            }
         }
 
         for (Map.Entry<Path, Set<PropHolder>> entry: inheritableHolderMap.entrySet()) {
@@ -484,29 +478,13 @@ class PropertySetRowHandler implements RowHandler {
             Set<PropHolder> propHolders = entry.getValue();
             List<Property> props = new ArrayList<Property>(propHolders.size());
             for (PropHolder holder : propHolders) {
-                Property prop = createProperty(holder);
-                // All prop instances in cache shall have inherited flag set to 'true'
-                ((PropertyImpl) prop).setInherited(true);
+                Property prop = indexDao.createInheritedProperty(holder);
                 props.add(prop);
             }
             inheritablePropsMap.put(p, props);
         }
         
         return inheritablePropsMap;
-    }
-    
-    private Property createProperty(PropHolder holder) {
-        assert (!holder.binary);
-        
-        Namespace namespace = this.resourceTypeTree.getNamespace(holder.namespaceUri);
-        PropertyTypeDefinition propDef = this.resourceTypeTree.getPropertyTypeDefinition(
-                namespace, holder.name);
-
-        String[] stringValues = new String[holder.values.size()];
-        for (int i = 0; i < stringValues.length; i++) {
-            stringValues[i] = (String) holder.values.get(i);
-        }
-        return propDef.createProperty(stringValues);
     }
     
 }

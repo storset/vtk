@@ -211,7 +211,7 @@ public class DocumentMapper implements InitializingBean {
             switch (property.getType()) {
             case BINARY:
             case JSON_BINARY:
-                continue; // Don't index or store BINARY or JSON_BINARY property values
+                break; // Don't index any binary property value types
 
             case JSON:
                 // Add any indexable JSON value attributes (both as lowercase
@@ -234,7 +234,7 @@ public class DocumentMapper implements InitializingBean {
                 doc.add(indexedField);
             }
 
-            // Create stored field-value(s) for all types except BINARY
+            // Create stored field-value(s) for all types except raw BINARY
             if (property.getType() != BINARY) {
                 for (Fieldable storedField : getStoredFieldsFromProperty(property)) {
                     doc.add(storedField);

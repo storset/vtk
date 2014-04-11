@@ -107,6 +107,7 @@
     <!-- Some columns from 'extra_prop_entry' -->
     <result property="name" column="name" />
     <result property="namespace" column="name_space" />
+    <result property="propId" column="extra_prop_entry_id" />
     <result property="value" column="value" />
     <result property="binary" column="is_binary"
             typeHandler="org.vortikal.repository.store.db.ibatis.BooleanCharTypeHandlerCallback"/>
@@ -958,6 +959,7 @@
     select r.*, 
     p.name_space,
     p.name,
+    p.extra_prop_entry_id,
     p.value,
     p.is_inheritable,
     case when p.binary_content is null then 'N' else 'Y' end as is_binary
@@ -973,6 +975,7 @@
            p.name_space,
            p.name,
            p.value,
+           p.extra_prop_entry_id,
            p.is_inheritable,
            case when p.binary_content is null then 'N' else 'Y' end as is_binary
            from vortex_resource r
@@ -990,6 +993,7 @@
            p.name_space,
            p.name,
            p.value,
+           p.extra_prop_entry_id,
            p.is_inheritable,
            case when p.binary_content is null then 'N' else 'Y' end as is_binary
        from vortex_tmp t, vortex_resource r

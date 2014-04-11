@@ -813,7 +813,7 @@
           }
         }
         
-        element.css( {
+        element.css({
           width: acWidth,
           top: offset.top + input.offsetHeight,
           left: offset.left + options.adjustLeft
@@ -831,6 +831,7 @@
                                                        : (listItems.length <= 0 ? "Ingen resultater" 
                                                                                 : (listItems.length + (listItems.length > 1 ? " resultater" 
                                                                                                                             : " resultat") + " er tilgjengelig, bruk opp og ned piltaster for å navigere."));
+                                                                                                                                                                                                                             
         var statusElem = form.find(".ui-helper-hidden-accessible");
         if(statusElem.length) {
           statusElem.text(statusMsg);
@@ -840,7 +841,7 @@
         
         if (options.scroll && (listItems.length > options.resultsBeforeScroll || options.resultsBeforeScroll == 0)) {
           list.scrollTop(0);
-          list.css( {
+          list.css({
             maxHeight :options.scrollHeight,
             overflow :'auto'
           });

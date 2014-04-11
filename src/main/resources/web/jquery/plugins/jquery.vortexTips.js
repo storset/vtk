@@ -74,13 +74,14 @@
           ePos.left = 0;
         }
         if (opts.autoWidth) {
-          tip.css('position', 'absolute').css('z-index', '1000').css('width', left + 'px');
+          var tipWidth = left;
           nPos.left = 0;
         } else {
+          var tipWidth = opts.containerWidth;
           nPos.left = left;
-          tip.css('position', 'absolute').css('z-index', '1000').css('width', opts.containerWidth + 'px');        
         }
-        tip.css(nPos).fadeIn(opts.animInSpeed, function() {
+        tip.css({'position': 'absolute', 'z-index': '1000', 'width': tipWidth + 'px'})
+           .css(nPos).fadeIn(opts.animInSpeed, function() {
           var buttons = $(this).find(".vrtx-button, .vrtx-button-small").filter(":visible");
           if(buttons.length) {
             $("<a class='tip-focusable' style='display: inline-block; outline: none;' tabindex='-1' />").insertBefore(buttons.filter(":first")).focus();

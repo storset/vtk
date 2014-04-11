@@ -42,6 +42,9 @@
                 <entry key="JSON">
                     <bean class="org.vortikal.repository.resourcetype.StringValueFormatter" />
                 </entry>
+                <entry key="JSON_BINARY">
+                    <bean class="org.vortikal.repository.resourcetype.JsonBinaryValueFormatter" />
+                </entry>
                 <entry key="INT">
                     <bean class="org.vortikal.repository.resourcetype.IntValueFormatter" />
                 </entry>

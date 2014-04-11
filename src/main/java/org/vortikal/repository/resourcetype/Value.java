@@ -126,6 +126,13 @@ public class Value implements Cloneable, Comparable<Value> {
     public Value(byte[] buffer, String contentType, Type binaryType) {
         if (buffer == null)
             throw new IllegalArgumentException("buffer cannot be null");
+        if (binaryType != Type.BINARY && binaryType != Type.JSON_BINARY) {
+            throw new IllegalArgumentException("binaryType must be either BINARY or JSON_BINARY");
+        }
+        if (binaryType == Type.JSON_BINARY && !"application/json".equals(contentType)) {
+            throw new IllegalArgumentException("Content type must be 'application/json' for JSON_BINARY type");
+        }
+        
         this.type = binaryType;
         this.binaryValue = new BufferedBinaryValue(buffer, contentType);
     }
@@ -133,6 +140,12 @@ public class Value implements Cloneable, Comparable<Value> {
     Value(BinaryValue value, Type binaryType) {
         if (value == null)
             throw new IllegalArgumentException("value cannot be null");
+        if (binaryType != Type.BINARY && binaryType != Type.JSON_BINARY) {
+            throw new IllegalArgumentException("binaryType must be either BINARY or JSON_BINARY");
+        }
+        if (binaryType == Type.JSON_BINARY && !"application/json".equals(value.getContentType())) {
+            throw new IllegalArgumentException("Content type must be 'application/json' for JSON_BINARY type");
+        }
         this.type = binaryType;
         this.binaryValue = value;
     }

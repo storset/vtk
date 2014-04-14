@@ -339,11 +339,9 @@ VrtxAdmin.prototype.initResourceMenus = function initResourceMenus() {
       nodeType: "div",
       simultanSliding: true,
       funcComplete: (isSavingBeforePublish ? function (p) {
-        if (vrtxAdm.lang === "en") {
-          $("#vrtx-publish-document-form h3").text("Are you sure you want to save and publish?");
-        } else {
-          $("#vrtx-publish-document-form h3").text("Er du sikker på at du vil lagre og publisere?");
-        }
+        var publishSaveResource = vrtxAdm.lang === "en" ? "Are you sure you want to save and publish?"
+                                                        : "Er du sikker på at du vil lagre og publisere?";
+        $("#vrtx-publish-document-form h3").text(publishSaveResourceLinkText);
       } : null)
     });
     vrtxAdm.completeFormAsync({
@@ -2022,9 +2020,16 @@ function ajaxUploadPerform(opts, size) {
     uploadDialogExtra = "<div id='dialog-uploading-bytes'>&nbsp;</div>";
   }
   
-  _$("#dialog-loading-content").append("<div id='dialog-uploading-bar' /><div id='dialog-uploading-percent'>&nbsp;</div>" + uploadDialogExtra + "<a id='dialog-uploading-abort' href='javascript:void(0);'>Avbryt</a>");
+  var dialogUploadingD = _$("#dialog-loading-content");
+  dialogUploadingD.attr("role", "progressbar");
+  dialogUploadingD.attr("aria-valuemin", "0");
+  dialogUploadingD.attr("aria-valuemax", "100");
+  dialogUploadingD.attr("aria-valuenow", "0");
+  dialogUploadingD.append("<div id='dialog-uploading-bar' /><div id='dialog-uploading-percent'>&nbsp;</div>" + uploadDialogExtra + "<a id='dialog-uploading-abort' href='javascript:void(0);'>Avbryt</a>");
   _$("<a id='dialog-uploading-focus' style='outline: none;' tabindex='-1' />").insertBefore("#dialog-uploading-abort")
+  var dialogUploadingBar = dialogUploadingD.find("#dialog-uploading-bar");
   var focusElm = $("#dialog-uploading-focus");
+  
   if(focusElm.length) focusElm.focus();
   focusElm.keydown(function(e) {
     if (isKey(e, [vrtxAdm.keys.TAB])) { 
@@ -2050,7 +2055,8 @@ function ajaxUploadPerform(opts, size) {
         }
         _$("#dialog-uploading-bytes").text(Math.round((size * (percent/100)) / d) + "/" + Math.round(size / d) + unit);
       }
-      _$("#dialog-uploading-bar").css("width", percent + "%");
+      dialogUploadingBar.css("width", percent + "%");
+      dialogUploadingD.attr("aria-valuenow", percent);
       if(percent >= 100) {
         stillProcesses = true;
         var waitAndProcess = setTimeout(function() {
@@ -2067,6 +2073,8 @@ function ajaxUploadPerform(opts, size) {
     },
     success: function(results, status, xhr) {
       //var debugProcessingTimer = setTimeout(function() {
+      dialogUploadingBar.css("width", "100%");
+      dialogUploadingD.attr("aria-valuenow", 100);
     
       stillProcesses = false;
       if(processesD != null) {

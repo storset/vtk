@@ -96,11 +96,10 @@ resourceprops
 	;
 
 propertytypedef
-	:	(derivedpropertytypedef
-	|	jsonpropertytypedef
-	|	jsonbinarypropertytypedef
-	|	plainpropertytypedef
-	|	binarypropertytypedef)
+	:	(derivedpropertytypedef 
+	| 	jsonpropertytypedef 
+	|	 plainpropertytypedef 
+	|	 binarypropertytypedef)
 	;
 
 derivedpropertytypedef
@@ -145,9 +144,6 @@ jsonpropspeclist
 
 jsonpropspec
 	:	NAME COLON PROPTYPE -> ^(NAME ^(PROPTYPE));
-
-jsonbinarypropertytypedef
-	:	NAME COLON JSON_BINARY -> ^(NAME JSON_BINARY);
 
 plainpropertytypedef
 	:	NAME COLON PROPTYPE (TRIM)? (MULTIPLE)? (REQUIRED)? (NOEXTRACT)? (overrides)?

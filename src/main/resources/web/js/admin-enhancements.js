@@ -2060,14 +2060,7 @@ function ajaxUploadPerform(opts, size) {
     success: function(results, status, xhr) {
       dialogUploadingBar.css("width", "100%");
       dialogUploadingD.attr("aria-valuenow", 100);
-    
-      stillProcesses = false;
-      if(processesD != null) {
-        processesD.close();
-      } else {
-        uploadingD.close();
-      }
-      
+
       var result = _$.parseHTML(results);
       vrtxAdm.uploadCopyMoveSkippedFiles = {};
       if (vrtxAdm.hasErrorContainers(result, opts.errorContainer)) {
@@ -2094,16 +2087,18 @@ function ajaxUploadPerform(opts, size) {
     },
     error: function (xhr, textStatus, errMsg) {
       if(uploadXhr == null) {
-        stillProcesses = false;
-        if(processesD != null) {
-          processesD.close();
-        } else {
-          uploadingD.close();
-        }
         var uploadingFailedD = new VrtxMsgDialog({ title: xhr.status + " " + vrtxAdm.serverFacade.errorMessages.uploadingFilesFailedTitle,
                                                    msg: vrtxAdm.serverFacade.errorMessages.uploadingFilesFailed
                                                  });
         uploadingFailedD.open();
+      }
+    },
+    complete: function (xhr, textStatus) {
+      stillProcesses = false;
+      if(processesD != null) {
+        processesD.close();
+      } else {
+        uploadingD.close();
       }
     }
   });

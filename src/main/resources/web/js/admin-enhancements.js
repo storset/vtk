@@ -109,7 +109,6 @@ function VrtxAdmin() {
   this.asyncGetStatInProgress = false;
   
   this.uploadCopyMoveSkippedFiles = {};
-  this.uploadDisplayRemainingBytes = false;
   this.uploadCompleteTimeoutBeforeProcessingDialog = 2000; // 2s
   
   this.createResourceReplaceTitle = true;
@@ -2015,21 +2014,17 @@ function ajaxUploadPerform(opts, size) {
   var uploadingD = new VrtxLoadingDialog({title: vrtxAdm.messages.upload.inprogress});
   uploadingD.open();
   
-  var uploadDialogExtra = "";
-  if(vrtxAdm.uploadDisplayRemainingBytes && size > 0) {
-    uploadDialogExtra = "<div id='dialog-uploading-bytes'>&nbsp;</div>";
-  }
-  
   var dialogUploadingD = _$("#dialog-loading-content");
+  // Set role and ARIA on dialog
   dialogUploadingD.attr("role", "progressbar");
   dialogUploadingD.attr("aria-valuemin", "0");
   dialogUploadingD.attr("aria-valuemax", "100");
   dialogUploadingD.attr("aria-valuenow", "0");
-  dialogUploadingD.append("<div id='dialog-uploading-bar' /><div id='dialog-uploading-percent'>&nbsp;</div>" + uploadDialogExtra + "<a id='dialog-uploading-abort' href='javascript:void(0);'>Avbryt</a>");
-  _$("<a id='dialog-uploading-focus' style='outline: none;' tabindex='-1' />").insertBefore("#dialog-uploading-abort")
+  dialogUploadingD.append("<div id='dialog-uploading-bar' /><div id='dialog-uploading-percent'>&nbsp;</div><a id='dialog-uploading-focus' style='outline: none;' tabindex='-1' /><a id='dialog-uploading-abort' href='javascript:void(0);'>Avbryt</a>");
   var dialogUploadingBar = dialogUploadingD.find("#dialog-uploading-bar");
-  var focusElm = $("#dialog-uploading-focus");
   
+  // Set focus on element before cancel link
+  var focusElm = dialogUploadingD.find("#dialog-uploading-focus");
   if(focusElm.length) focusElm.focus();
   focusElm.keydown(function(e) {
     if (isKey(e, [vrtxAdm.keys.TAB])) { 
@@ -2046,15 +2041,6 @@ function ajaxUploadPerform(opts, size) {
   opts.form.ajaxSubmit({
     uploadProgress: function(event, position, total, percent) { // Show upload progress
       _$("#dialog-uploading-percent").text(percent + "%");
-      if(vrtxAdm.uploadDisplayRemainingBytes && size > 0) {
-        var s = { "GB": 1e9, "MB": 1e6, "KB": 1e3, "b":  1 };
-        for(key in s) {
-          if(size >= s[key]) {
-            var d = s[key], unit = key; break;
-          }
-        }
-        _$("#dialog-uploading-bytes").text(Math.round((size * (percent/100)) / d) + "/" + Math.round(size / d) + unit);
-      }
       dialogUploadingBar.css("width", percent + "%");
       dialogUploadingD.attr("aria-valuenow", percent);
       if(percent >= 100) {

@@ -190,7 +190,7 @@ vrtxAdmin._$(document).ready(function () {
   vrtxAdm.bodyId = vrtxAdm.cachedBody.attr("id") || "";
   vrtxAdm.cachedBody.addClass("js");
   if(vrtxAdm.isIE8) vrtxAdm.cachedBody.addClass("ie8");
-  if (vrtxAdm.runReadyLoad === false) return; // XXX: return if should not run all of ready() code
+  if (vrtxAdm.runReadyLoad === false) return; // Return if should not run all of ready() code
 
   // Load required init components (animations and trees)
   vrtxAdm.requiredScriptsLoaded = $.Deferred();
@@ -226,7 +226,7 @@ vrtxAdmin._$(document).ready(function () {
 
 vrtxAdmin._$(window).load(function () {
   var vrtxAdm = vrtxAdmin;
-  if (vrtxAdm.runReadyLoad === false) return; // XXX: return if should not run load() code
+  if (vrtxAdm.runReadyLoad === false) return; // Return if should not run load() code
 
   vrtxAdm.log({
     msg: "Window.load() in " + (+new Date() - startLoadTime) + "ms."

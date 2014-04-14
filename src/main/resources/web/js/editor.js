@@ -80,7 +80,7 @@ $(document).ready(function () {
 
   if (!vrtxEdit.isInAdmin || !vrtxEdit.editorForm.length) {
     vrtxEdit.richtextEditorFacade.setupMultiple(false);
-    return; /* XXX: Exit if not is in admin or have regular editor */
+    return; /* Exit if not is in admin or have regular editor */
   }
 
   vrtxAdmin.cacheDOMNodesForReuse();
@@ -116,8 +116,7 @@ $(document).ready(function () {
 \*-------------------------------------------------------------------*/
 
 $(window).load(function () {
-  /* XXX: Exit if not is in admin */
-  if (!vrtxEditor.isInAdmin) return;
+  if (!vrtxEditor.isInAdmin) return; /* Exit if not is in admin */
 
   var vrtxAdm = vrtxAdmin,
     _$ = vrtxAdm._$;

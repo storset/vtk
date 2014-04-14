@@ -340,7 +340,7 @@ VrtxAdmin.prototype.initResourceMenus = function initResourceMenus() {
       funcComplete: (isSavingBeforePublish ? function (p) {
         var publishSaveResource = vrtxAdm.lang === "en" ? "Are you sure you want to save and publish?"
                                                         : "Er du sikker på at du vil lagre og publisere?";
-        $("#vrtx-publish-document-form h3").text(publishSaveResourceLinkText);
+        $("#vrtx-publish-document-form h3").text(publishSaveResource);
       } : null)
     });
     vrtxAdm.completeFormAsync({

@@ -2037,7 +2037,9 @@ function ajaxUploadPerform(opts, size) {
   var processesD = null;
   var stillProcesses = false;
   
+  // Set form to overwrite-mode
   opts.form.append("<input type='hidden' name='overwrite' value='overwrite' />");
+  
   opts.form.ajaxSubmit({
     uploadProgress: function(event, position, total, percent) { // Show upload progress
       _$("#dialog-uploading-percent").text(percent + "%");

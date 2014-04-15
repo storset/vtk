@@ -43,6 +43,6 @@ public interface ParserConstants {
     public static final String PROPTYPE_MEDIAREF = "media_ref";
     public static final String PROPTYPE_BINARY = "binary";
     public static final String PROPTYPE_JSON = "json";
-    public static final String PROPTYPE_JSON_BINARY = "json_binary";
+//    public static final String PROPTYPE_JSON_BINARY = "json_binary";
 
 }

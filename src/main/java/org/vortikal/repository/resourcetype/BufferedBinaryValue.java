@@ -32,6 +32,7 @@
 package org.vortikal.repository.resourcetype;
 
 import java.io.ByteArrayInputStream;
+import java.io.UnsupportedEncodingException;
 
 import org.vortikal.repository.ContentStream;
 import org.vortikal.repository.store.DataAccessException;
@@ -55,6 +56,22 @@ public final class BufferedBinaryValue implements BinaryValue, Cloneable {
         if (buffer == null) throw new IllegalArgumentException("buffer cannot be null");
         this.buffer = buffer;
         this.contentType = contentType;
+    }
+    
+    /**
+     * Convenience constructor for a buffered binary value from a <code>String</code>. The
+     * binary value will be the string encoded as UTF-8.
+     * @param string a string 
+     * @param contentType the content type
+     */
+    public BufferedBinaryValue(String string, String contentType) {
+        if (string == null) throw new IllegalArgumentException("string cannot be null");
+        try {
+            this.buffer = string.getBytes("UTF-8");
+            this.contentType = contentType;
+        } catch (UnsupportedEncodingException ue) {
+            throw new IllegalStateException("UTF-8 encoding not available");
+        }
     }
     
     @Override

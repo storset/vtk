@@ -413,8 +413,11 @@ public class EvaluatorResolver {
 
     private void setPropValue(Property property, Object value) {
 
-        if (property.getType() == Type.BINARY || property.getType() == Type.JSON_BINARY) {
+//        if (property.getType() == Type.BINARY || property.getType() == Type.JSON_BINARY) {
+        if (property.getType() == Type.BINARY) {
             // Store the value of the property
+            
+            // Does this make sense now that JSON_BINARY is gone: ?
             property.setBinaryValue(value.toString().getBytes(), "application/json");
         } else if (!property.getDefinition().isMultiple()) {
             // If value is collection, pick first element

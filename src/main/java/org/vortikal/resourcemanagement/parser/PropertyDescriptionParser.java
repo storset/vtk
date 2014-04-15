@@ -71,11 +71,11 @@ public class PropertyDescriptionParser {
                     bin.setName(propDesc.getText());
                     populateBinaryPropertyDescription(bin, propDesc.getChildren());
                     props.add(bin);
-                } else if (type == ResourcetreeLexer.JSON_BINARY) {
-                    JSONBinaryPropertyDescription jsonBin = new JSONBinaryPropertyDescription();
-                    jsonBin.setName(propDesc.getText());
-                    populateJSONBinaryPropertyDescription(jsonBin, propDesc.getChildren());
-                    props.add(jsonBin);
+//                } else if (type == ResourcetreeLexer.JSON_BINARY) {
+//                    JSONBinaryPropertyDescription jsonBin = new JSONBinaryPropertyDescription();
+//                    jsonBin.setName(propDesc.getText());
+//                    populateJSONBinaryPropertyDescription(jsonBin, propDesc.getChildren());
+//                    props.add(jsonBin);
                 } else {
                     SimplePropertyDescription p = new SimplePropertyDescription();
                     p.setName(propDesc.getText());
@@ -100,23 +100,23 @@ public class PropertyDescriptionParser {
         }
     }
 
-    private void populateJSONBinaryPropertyDescription(JSONBinaryPropertyDescription jsonBin,
-            List<CommonTree> propertyDescription) {
-        for (CommonTree descEntry : propertyDescription) {
-            switch (descEntry.getType()) {
-            case ResourcetreeLexer.JSON_BINARY:
-                jsonBin.setType(descEntry.getText());
-                break;
-
-            // XXX Handle other properties/attributes related to json_binary
-            // prop type
-
-            default:
-                throw new IllegalStateException("Unknown token type for simple property description: "
-                        + descEntry.getText());
-            }
-        }
-    }
+//    private void populateJSONBinaryPropertyDescription(JSONBinaryPropertyDescription jsonBin,
+//            List<CommonTree> propertyDescription) {
+//        for (CommonTree descEntry : propertyDescription) {
+//            switch (descEntry.getType()) {
+//            case ResourcetreeLexer.JSON_BINARY:
+//                jsonBin.setType(descEntry.getText());
+//                break;
+//
+//            // XXX Handle other properties/attributes related to json_binary
+//            // prop type
+//
+//            default:
+//                throw new IllegalStateException("Unknown token type for simple property description: "
+//                        + descEntry.getText());
+//            }
+//        }
+//    }
 
     private void populateSimplePropertyDescription(SimplePropertyDescription p, List<CommonTree> propertyDescription) {
 

@@ -74,13 +74,15 @@ import org.vortikal.security.Principal.Type;
 import org.vortikal.security.PrincipalFactory;
 
 import com.ibatis.sqlmap.client.SqlMapExecutor;
+import org.vortikal.repository.resourcetype.BufferedBinaryValue;
 
 /**
  * An iBATIS SQL maps implementation of the DataAccessor interface.
- * 
- * XXX XXX XXX Our DataAccessor interface declares our own DataAccessException type as thrown by all methods,
- *             but THIS CLASS IN PRACTICE MOSTLY THROWS Spring's DataAccessException. What a mess.
- * 
+ *
+ * XXX XXX XXX Our DataAccessor interface declares our own DataAccessException
+ * type as thrown by all methods, but THIS CLASS IN PRACTICE MOSTLY THROWS
+ * Spring's DataAccessException. What a mess.
+ *
  */
 public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements DataAccessor {
 
@@ -1097,16 +1099,15 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
                 p = principalFactory.getPrincipal(name, Type.USER);
             }
             Privilege action = Privilege.forName(privilege);
-            
+
             acl.addEntry(action, p);
         }
     }
 
     private void storeProperties(final ResourceImpl r) {
-        
+
         for (Property p : r) {
-            if (p.getType() == PropertyType.Type.BINARY ||
-                    p.getType() == PropertyType.Type.JSON_BINARY) {
+            if (p.getType() == PropertyType.Type.BINARY) {
                 // XXX: mem copying has to be done because of the way properties
                 // are stored: first deleted then inserted (never updated)
                 // If any binary value is of type BinaryValueReference (created only by this class)
@@ -1141,11 +1142,18 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
                         }
 
                         for (Value v : values) {
-                            parameters.put("value", v.getNativeStringRepresentation());
-                            if (property.getType() == PropertyType.Type.BINARY ||
-                                    property.getType() == PropertyType.Type.JSON_BINARY) {
+                            String nativeStringValue = v.getNativeStringRepresentation();
+                            parameters.put("value", nativeStringValue);
+                            if (property.getType() == PropertyType.Type.BINARY) {
                                 parameters.put("binaryContent", v.getBinaryValue().getBytes());
                                 parameters.put("binaryMimeType", v.getBinaryValue().getContentType());
+                            } else if (property.getType() == PropertyType.Type.JSON
+                                    && nativeStringValue.length() > Property.MAX_STRING_LENGTH) {
+                                // Store JSON with char count over max length as binary blob
+                                BinaryValue bval = new BufferedBinaryValue(nativeStringValue, "application/json");
+                                parameters.put("value", "#binary");
+                                parameters.put("binaryContent", bval.getBytes());
+                                parameters.put("binaryMimeType", bval.getContentType());
                             }
                             executor.update(batchSqlMap, parameters);
                         }
@@ -1175,8 +1183,8 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
             prop.namespaceUri = (String) propEntry.get("namespaceUri");
             prop.name = (String) propEntry.get("name");
             prop.resourceId = (Integer) propEntry.get("resourceId");
-            prop.binary = (Boolean)propEntry.get("binary");
-            
+            prop.binary = (Boolean) propEntry.get("binary");
+
             List<Object> values = propValuesMap.get(prop);
             if (values == null) {
                 values = new ArrayList<Object>(2); // Most props have only one value
@@ -1305,22 +1313,22 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
         PropertyTypeDefinition propDef = this.resourceTypeTree.getPropertyTypeDefinition(namespace, holder.name);
         if (holder.binary) {
             BinaryValueReference[] refs = new BinaryValueReference[holder.values.size()];
-            for (int i=0; i<refs.length; i++) {
-                refs[i] = new BinaryValueReference(this, (Integer)holder.values.get(i));
+            for (int i = 0; i < refs.length; i++) {
+                refs[i] = new BinaryValueReference(this, (Integer) holder.values.get(i));
             }
             return propDef.createProperty(refs);
         } else {
             String[] stringValues = new String[holder.values.size()];
-            for (int i=0; i<stringValues.length; i++) {
-                stringValues[i] = (String)holder.values.get(i);
+            for (int i = 0; i < stringValues.length; i++) {
+                stringValues[i] = (String) holder.values.get(i);
             }
             return propDef.createProperty(stringValues);
         }
     }
 
     /**
-     * Create property instance from PropHolder loaded from database,
-     * with inherited flag set to <code>true</code>.
+     * Create property instance from PropHolder loaded from database, with
+     * inherited flag set to <code>true</code>.
      */
     Property createInheritedProperty(PropHolder holder) {
         PropertyImpl impl = (PropertyImpl) createProperty(holder);

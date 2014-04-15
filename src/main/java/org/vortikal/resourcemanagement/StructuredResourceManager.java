@@ -78,7 +78,7 @@ public class StructuredResourceManager {
         PROPTYPE_MAP.put(ParserConstants.PROPTYPE_RESOURCEREF, PropertyType.Type.IMAGE_REF);
         PROPTYPE_MAP.put(ParserConstants.PROPTYPE_BINARY, PropertyType.Type.BINARY);
         PROPTYPE_MAP.put(ParserConstants.PROPTYPE_JSON, PropertyType.Type.JSON);
-        PROPTYPE_MAP.put(ParserConstants.PROPTYPE_JSON_BINARY, PropertyType.Type.JSON_BINARY);
+//        PROPTYPE_MAP.put(ParserConstants.PROPTYPE_JSON_BINARY, PropertyType.Type.JSON_BINARY);
     }
     private ResourceTypeTree resourceTypeTree;
     private PrimaryResourceTypeDefinition baseType;

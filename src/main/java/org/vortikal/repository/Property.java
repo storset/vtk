@@ -50,6 +50,21 @@ import net.sf.json.JSONObject;
  */
 public interface Property extends Cloneable {
 
+    /**
+     * Maximum length of string based values in characters.
+     * <p>
+     * Applies to {@link org.vortikal.repository.resourcetype.PropertyType types}:
+     * <ul>
+     *   <li><code>STRING</code></li>
+     *   <li><code>HTML</code></li>
+     *   <li><code>IMAGE_REF</code></li>
+     *   <li><code>PRINCIPAL</code> (length of qualified name cannot exceed this limit)</li>
+     * </ul>
+     * 
+     * Note that the type <code>JSON</code> has no limit on length.
+     */
+    public static final long MAX_STRING_LENGTH = 2048;
+    
     // IllegalOperationException thrown when property is multi-value
     public Value getValue() throws IllegalOperationException;
 

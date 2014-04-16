@@ -63,8 +63,8 @@ public class CourseScheduleResourceTypeDefinitionTest extends StructuredResource
             }
         }
         assertNotNull(activitiesPropDesc);
-        
-//        assertTrue(activitiesPropDesc.getType().equals(ParserConstants.PROPTYPE_JSON_BINARY));
+
+        assertTrue(activitiesPropDesc.getType().equals(ParserConstants.PROPTYPE_JSON));
 
     }
 

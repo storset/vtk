@@ -37,11 +37,13 @@ import java.util.Locale;
  */
 public class StringValueFormatter implements ValueFormatter {
 
-    public String valueToString(Value value, String format, Locale locale)
+     @Override
+     public String valueToString(Value value, String format, Locale locale)
             throws IllegalValueTypeException {
         return value.toString();
     }
 
+     @Override
     public Value stringToValue(String string, String format, Locale locale) {
         return new Value(string, PropertyType.Type.STRING);
     }

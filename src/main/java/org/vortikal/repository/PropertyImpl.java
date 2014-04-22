@@ -56,7 +56,7 @@ import net.sf.json.JSONObject;
  * This class represents meta information about resources. A resource
  * may have several properties set on it, each of which are identified
  * by a namespace and a name. Properties may contain arbitrary string
- * values, such as XML. The application programmer is responsible for
+ * values, such as XML and JSON. The application programmer is responsible for
  * the interpretation and processing of properties.
  * 
  * XXX: Fail in all getters if value not initialized ?
@@ -101,9 +101,6 @@ public class PropertyImpl implements Cloneable, Property {
         TIMESTAMP.add(Type.DATE);
         COMPATIBILITY_MAP.put(Type.TIMESTAMP, TIMESTAMP);
 
-        Set<Type> JSON_BINARY = EnumSet.noneOf(Type.class);
-        JSON_BINARY.add(Type.BINARY);
-        COMPATIBILITY_MAP.put(Type.JSON_BINARY, JSON_BINARY);
     }
     
     private PropertyTypeDefinition propertyTypeDefinition;
@@ -283,9 +280,8 @@ public class PropertyImpl implements Cloneable, Property {
     }
     
     @Override
-    public void setJSONValue(JSONObject value) {
-        Value v = new Value(value);
-        setValue(v);
+    public void setJSONValue(JSONObject jsonObject) {
+        setValue(new Value(jsonObject));
     }
 
     @Override
@@ -364,8 +360,8 @@ public class PropertyImpl implements Cloneable, Property {
         if (values == null || values.length == 0) 
             throw new ValueFormatException("A property must have non null value");
         
-        for (int i=0; i<values.length; i++) {
-            validateValue(values[i]);
+        for (Value v: values) {
+            validateValue(v);
         }
     }
 
@@ -375,7 +371,6 @@ public class PropertyImpl implements Cloneable, Property {
         if (value == null) {
             throw new ValueFormatException("A property cannot have a null value");
         }
-        
         
         if (value.getType() != getType()) {
             Set<Type> compatible = COMPATIBILITY_MAP.get(getType());
@@ -387,12 +382,17 @@ public class PropertyImpl implements Cloneable, Property {
             }
         }
 
-        // Check for potential null values
+        // Check for potential null values and size limitations
         switch (value.getType()) {
         case PRINCIPAL:
             if (value.getPrincipalValue() == null) {
                 throw new ValueFormatException(
                         "Principal value of property '" + this + "' cannot be null");
+            }
+            String qualifiedName = value.getPrincipalValue().getQualifiedName();
+            if (qualifiedName.length() > MAX_STRING_LENGTH) {
+                throw new ValueFormatException("Princpal name too long: " + qualifiedName.length() + " (max size = "
+                        + MAX_STRING_LENGTH + ")");
             }
             break;
         case STRING:
@@ -403,6 +403,14 @@ public class PropertyImpl implements Cloneable, Property {
                 throw new ValueFormatException(
                         "String value of property '" + this + "' cannot be null");
             }
+            // If this property is of type JSON, then any compatible value type
+            // over the normal maximum string length is allowed.
+            if (getType() != Type.JSON
+                    && value.getStringValue().length() > MAX_STRING_LENGTH) {
+                throw new ValueFormatException("String value too large for " + getType() + ": " +
+                        + value.getStringValue().length() + " (max size = " + MAX_STRING_LENGTH + ")");
+            }
+            
             break;
         case DATE:
         case TIMESTAMP:
@@ -476,33 +484,37 @@ public class PropertyImpl implements Cloneable, Property {
             } else if (i == this.values.length - 2) {
                 sb.append(separator.getFinalSeparator(value, locale));
             }
-        } 
+        }
         return sb.toString();
     }
     
     @Override
     public void setBinaryValue(byte[] buffer, String contentType) {
-        if (!(getType() == PropertyType.Type.BINARY 
-                || getType() == PropertyType.Type.JSON_BINARY)) {
-            throw new IllegalOperationException("Property " + this + " not of type BINARY");
+        if (getType() == Type.JSON) {
+            if (!"application/json".equals(contentType)) {
+                throw new IllegalArgumentException("JSON property requires application/json content type.");
+            }
+        } else if (getType() != PropertyType.Type.BINARY) {
+            throw new IllegalArgumentException("Property " + this + " not of type BINARY or JSON");
         }
         setValue(new Value(buffer, contentType, getType()));
     }
 
     @Override
     public ContentStream getBinaryStream() throws IllegalOperationException {
-        if (this.value == null || !(getType() == PropertyType.Type.BINARY 
-                || getType() == PropertyType.Type.JSON_BINARY)) {
-            throw new IllegalOperationException("Property " + this + " not of type BINARY or is BINARY multi-value");
+        if (this.value == null || (getType() != Type.BINARY && getType() != Type.JSON)) {
+            throw new IllegalOperationException("Property " + this + " not of type BINARY or JSON, or property is multi-value");
         }
         return this.value.getBinaryValue().getContentStream();
     }
 
     @Override
     public String getBinaryContentType() throws IllegalOperationException {
-        if (this.value == null || !(getType() == PropertyType.Type.BINARY 
-                || getType() == PropertyType.Type.JSON_BINARY)) {
-            throw new IllegalOperationException("Property " + this + " not of type BINARY or is BINARY multi-value");
+        if (this.value == null || (getType() != Type.BINARY && getType() != Type.JSON)) {
+            throw new IllegalOperationException("Property " + this + " not of type BINARY or JSON, or property is multi-value");
+        }
+        if (getType() == Type.JSON) {
+            return "application/json";
         }
         return this.value.getBinaryValue().getContentType();
     }

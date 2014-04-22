@@ -73,8 +73,6 @@ public class EvaluatorResolver {
             return createSimplePropertyEvaluator((SimplePropertyDescription) desc, resourceDesc);
         } else if (desc instanceof JSONPropertyDescription) {
             return createJSONPropertyEvaluator((JSONPropertyDescription) desc, resourceDesc);
-        } else if (desc instanceof JSONBinaryPropertyDescription) {
-            return new JSONBinaryPropertyEvaluator(desc);
         } else if (desc instanceof BinaryPropertyDescription) {
             return new BinaryPropertyEvaluator(desc);
         }
@@ -397,24 +395,12 @@ public class EvaluatorResolver {
         }
     }
 
-    private class JSONBinaryPropertyEvaluator implements PropertyEvaluator {
-
-        public JSONBinaryPropertyEvaluator(PropertyDescription desc) {
-            // XXX Needed?
-        }
-
-        @Override
-        public boolean evaluate(Property property, PropertyEvaluationContext ctx) throws PropertyEvaluationException {
-            // XXX Implement
-            return false;
-        }
-
-    }
-
     private void setPropValue(Property property, Object value) {
 
-        if (property.getType() == Type.BINARY || property.getType() == Type.JSON_BINARY) {
+        if (property.getType() == Type.BINARY) {
             // Store the value of the property
+
+            // Does this make sense now that JSON_BINARY is gone: ?
             property.setBinaryValue(value.toString().getBytes(), "application/json");
         } else if (!property.getDefinition().isMultiple()) {
             // If value is collection, pick first element

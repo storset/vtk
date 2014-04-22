@@ -35,8 +35,7 @@ void execute(context, args, out) {
         return;
     }
 
-    if (p.getType() == org.vortikal.repository.resourcetype.PropertyType.Type.BINARY
-        || p.getType() == org.vortikal.repository.resourcetype.PropertyType.Type.JSON_BINARY) {
+    if (p.getType() == org.vortikal.repository.resourcetype.PropertyType.Type.BINARY) {
         if (!displayBinary) {
             out.println(" [binary: " + p.getBinaryContentType() + "]");
         } else {

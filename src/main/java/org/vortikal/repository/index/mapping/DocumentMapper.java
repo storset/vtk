@@ -210,7 +210,6 @@ public class DocumentMapper implements InitializingBean {
             // Create indexed fields
             switch (property.getType()) {
             case BINARY:
-            case JSON_BINARY:
                 break; // Don't index any binary property value types
 
             case JSON:
@@ -242,51 +241,6 @@ public class DocumentMapper implements InitializingBean {
             }
         }
         
-//        // Index only properties that satisfy the following conditions:
-//        // 1) Belongs to the resource type's definition
-//        // 2) Exists in the property set.
-//        // 3) Is of type that is sensible to index for searching.
-//        // Store *all* properties, except those of type BINARY.
-//        for (PropertyTypeDefinition propDef : this.resourceTypeTree.getPropertyTypeDefinitionsIncludingAncestors(rtDef)) {
-//            Property property = propSet.getProperty(propDef);
-//
-//            if (property == null)
-//                continue;
-//
-//            // Create indexed fields
-//            switch (property.getType()) {
-//            case BINARY:
-//                continue; // Don't index or store BINARY property values
-//
-//            case JSON:
-//                // Add any indexable JSON value attributes (both as lowercase
-//                // and regular)
-//                for (Fieldable jsonAttrField : getIndexedFieldsFromJSONProperty(property)) {
-//                    doc.add(jsonAttrField);
-//                }
-//                break;
-//
-//            case STRING:
-//            case HTML:
-//                // Add lowercase version of search field for STRING and HTML
-//                // types
-//                Fieldable lowercaseIndexedField = getIndexedFieldFromProperty(property, true);
-//                doc.add(lowercaseIndexedField);
-//
-//            default:
-//                // Create regular searchable index field of value(s)
-//                Fieldable indexedField = getIndexedFieldFromProperty(property, false);
-//                doc.add(indexedField);
-//            }
-//
-//            // Create stored field-value(s) for all types except BINARY
-//            if (property.getType() != BINARY) {
-//                for (Fieldable storedField : getStoredFieldsFromProperty(property)) {
-//                    doc.add(storedField);
-//                }
-//            }
-//        }
-
         return doc;
     }
 

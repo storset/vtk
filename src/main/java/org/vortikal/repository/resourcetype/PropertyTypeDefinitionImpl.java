@@ -81,6 +81,7 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
         this.contentRelation = contentRelation;
     }
 
+    @Override
     public ContentRelation getContentRelation() {
         return this.contentRelation;
     }
@@ -96,10 +97,12 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
         this.metadata.put(key, value);
     }
 
+    @Override
     public Map<String, Object> getMetadata() {
         return Collections.unmodifiableMap(this.metadata);
     }
 
+    @Override
     public Property createProperty() {
         PropertyImpl prop = new PropertyImpl();
         prop.setDefinition(this);
@@ -111,6 +114,7 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
         return prop;
     }
 
+    @Override
     public Property createProperty(Object value) throws ValueFormatException {
 
         PropertyImpl prop = new PropertyImpl();
@@ -179,7 +183,8 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
 
     @Override
     public Property createProperty(BinaryValue[] binaryValues) throws ValueFormatException {
-        if (!(getType() == Type.BINARY || getType() == Type.JSON_BINARY))
+        
+        if (getType() != Type.BINARY && getType() != Type.JSON)
             throw new ValueFormatException("Cannot create property of type " + getType() + " from binary value(s)");
 
         PropertyImpl prop = new PropertyImpl();
@@ -221,6 +226,7 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
         this.propertyEvaluator = propertyEvaluator;
     }
 
+    @Override
     public boolean isMandatory() {
         return this.mandatory;
     }
@@ -229,10 +235,12 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
         this.mandatory = mandatory;
     }
 
+    @Override
     public boolean isMultiple() {
         return this.multiple;
     }
     
+    @Override
     public boolean isInheritable() {
         return this.inheritable;
     }
@@ -294,6 +302,7 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
         return this.allowedValues;
     }
 
+    @Override
     public Namespace getNamespace() {
         return this.namespace;
     }
@@ -331,6 +340,7 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
         this.typeLocalizationProvider = typeLocalizationProvider;
     }
 
+    @Override
     public String getLocalizedName(Locale locale) {
         if (this.typeLocalizationProvider != null) {
             return this.typeLocalizationProvider.getLocalizedPropertyName(this, locale);

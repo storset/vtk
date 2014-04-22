@@ -54,7 +54,6 @@ public final class PropertyType {
         PRINCIPAL,
         BINARY,
         JSON,
-        JSON_BINARY; // Intermediate JSON type with binary storage in backend. See VTK-3594.
     }
     
     /*

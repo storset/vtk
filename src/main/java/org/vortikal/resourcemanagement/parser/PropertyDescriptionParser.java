@@ -36,17 +36,16 @@ import java.util.List;
 import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.Tree;
 import org.vortikal.repository.resource.ResourcetreeLexer;
+import org.vortikal.resourcemanagement.StructuredResourceDescription;
 import org.vortikal.resourcemanagement.property.BinaryPropertyDescription;
 import org.vortikal.resourcemanagement.property.DerivedPropertyDescription;
 import org.vortikal.resourcemanagement.property.DerivedPropertyEvaluationDescription;
-import org.vortikal.resourcemanagement.property.JSONBinaryPropertyDescription;
+import org.vortikal.resourcemanagement.property.DerivedPropertyEvaluationDescription.EvaluationElement;
+import org.vortikal.resourcemanagement.property.DerivedPropertyEvaluationDescription.Operator;
 import org.vortikal.resourcemanagement.property.JSONPropertyAttributeDescription;
 import org.vortikal.resourcemanagement.property.JSONPropertyDescription;
 import org.vortikal.resourcemanagement.property.PropertyDescription;
 import org.vortikal.resourcemanagement.property.SimplePropertyDescription;
-import org.vortikal.resourcemanagement.property.DerivedPropertyEvaluationDescription.EvaluationElement;
-import org.vortikal.resourcemanagement.property.DerivedPropertyEvaluationDescription.Operator;
-import org.vortikal.resourcemanagement.StructuredResourceDescription;
 
 public class PropertyDescriptionParser {
 
@@ -71,11 +70,6 @@ public class PropertyDescriptionParser {
                     bin.setName(propDesc.getText());
                     populateBinaryPropertyDescription(bin, propDesc.getChildren());
                     props.add(bin);
-                } else if (type == ResourcetreeLexer.JSON_BINARY) {
-                    JSONBinaryPropertyDescription jsonBin = new JSONBinaryPropertyDescription();
-                    jsonBin.setName(propDesc.getText());
-                    populateJSONBinaryPropertyDescription(jsonBin, propDesc.getChildren());
-                    props.add(jsonBin);
                 } else {
                     SimplePropertyDescription p = new SimplePropertyDescription();
                     p.setName(propDesc.getText());
@@ -93,24 +87,6 @@ public class PropertyDescriptionParser {
             case ResourcetreeLexer.BINARY:
                 bin.setType(descEntry.getText());
                 break;
-            default:
-                throw new IllegalStateException("Unknown token type for simple property description: "
-                        + descEntry.getText());
-            }
-        }
-    }
-
-    private void populateJSONBinaryPropertyDescription(JSONBinaryPropertyDescription jsonBin,
-            List<CommonTree> propertyDescription) {
-        for (CommonTree descEntry : propertyDescription) {
-            switch (descEntry.getType()) {
-            case ResourcetreeLexer.JSON_BINARY:
-                jsonBin.setType(descEntry.getText());
-                break;
-
-            // XXX Handle other properties/attributes related to json_binary
-            // prop type
-
             default:
                 throw new IllegalStateException("Unknown token type for simple property description: "
                         + descEntry.getText());

@@ -98,8 +98,8 @@ resourceprops
 propertytypedef
 	:	(derivedpropertytypedef 
 	| 	jsonpropertytypedef 
-	|	 plainpropertytypedef 
-	|	 binarypropertytypedef)
+	|	plainpropertytypedef 
+	|	binarypropertytypedef)
 	;
 
 derivedpropertytypedef

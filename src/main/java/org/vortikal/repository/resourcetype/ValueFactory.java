@@ -60,6 +60,7 @@ public interface ValueFactory {
     /**
      * Create Value from binary value.
      * @param value
+     * @param type
      * @return
      * @throws ValueFormatException 
      */
@@ -68,6 +69,7 @@ public interface ValueFactory {
     /**
      * Create values from binary value.
      * @param value
+     * @param type
      * @return
      * @throws ValueFormatException 
      */

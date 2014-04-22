@@ -17,10 +17,10 @@
       </#if>
         <thead>
           <tr>
-            <th class="vrtx-collection-listing-title"><@vrtx.msg code="collectionListing.resourceTitle" default="Title" /></th>
+            <th scope="col" class="vrtx-collection-listing-title"><@vrtx.msg code="collectionListing.resourceTitle" default="Title" /></th>
           <#if !conf.compactView>
-            <th class="vrtx-collection-listing-modified-by"><@vrtx.msg code="collectionListing.lastModifiedBy" default="Modified by" /></th>
-            <th class="vrtx-collection-listing-last-modified"><@vrtx.msg code="collectionListing.lastModified" default="Last modified" /></th>
+            <th scope="col" class="vrtx-collection-listing-modified-by"><@vrtx.msg code="collectionListing.lastModifiedBy" default="Modified by" /></th>
+            <th scope="col" class="vrtx-collection-listing-last-modified"><@vrtx.msg code="collectionListing.lastModified" default="Last modified" /></th>
           </#if>
           </tr>
         </thead>

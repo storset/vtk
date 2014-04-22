@@ -85,9 +85,9 @@
       <table id="directory-listing" class="report-broken-links-collection">
         <thead>
           <tr>
-            <th id="vrtx-report-broken-links-collection"><@vrtx.msg code="report.${report.reportname}.collection" /></th>
-            <th id="vrtx-report-broken-links-collection-document-count"><@vrtx.msg code="report.${report.reportname}.document-count" /></th>
-            <th id="vrtx-report-broken-links-collection-count">#${linkTypeLocalization?lower_case} <@vrtx.msg code="report.${report.reportname}.count" /></th>
+            <th scope="col" id="vrtx-report-broken-links-collection"><@vrtx.msg code="report.${report.reportname}.collection" /></th>
+            <th scope="col" id="vrtx-report-broken-links-collection-document-count"><@vrtx.msg code="report.${report.reportname}.document-count" /></th>
+            <th scope="col" id="vrtx-report-broken-links-collection-count">#${linkTypeLocalization?lower_case} <@vrtx.msg code="report.${report.reportname}.count" /></th>
           </tr>
         </thead>
         <tbody>

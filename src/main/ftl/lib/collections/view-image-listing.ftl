@@ -133,14 +133,14 @@
       <table class="rowstyle-alt colstyle-alt no-arrow" border="1">
         <thead>
           <tr>
-            <th id="vrtx-table-image">${vrtx.getMsg("property.resourceType.image")}</th>
-            <th id="vrtx-table-title" class="sortable-text">${vrtx.getMsg("property.title")}</th>
-            <th id="vrtx-table-description" class="sortable-text">${vrtx.getMsg("imageListing.description")}</th>
-            <th id="vrtx-table-dimensions-width" class="sortable-numeric">${vrtx.getMsg("imageListing.width")}</th>
-            <th id="vrtx-table-dimensions-height" class="sortable-numeric">${vrtx.getMsg("imageListing.height")}</th>
-            <th id="vrtx-table-size" class="sortable-numeric">${vrtx.getMsg("property.contentLength")}</th>
-            <th id="vrtx-table-photo" class="sortable-text">${vrtx.getMsg("article.photoprefix")}</th>
-            <th id="vrtx-table-creation-time" class="sortable-sortEnglishLonghandDateFormat">${vrtx.getMsg("proptype.name.creationTime")}</th>
+            <th scope="col" id="vrtx-table-image">${vrtx.getMsg("property.resourceType.image")}</th>
+            <th scope="col" id="vrtx-table-title" class="sortable-text">${vrtx.getMsg("property.title")}</th>
+            <th scope="col" id="vrtx-table-description" class="sortable-text">${vrtx.getMsg("imageListing.description")}</th>
+            <th scope="col" id="vrtx-table-dimensions-width" class="sortable-numeric">${vrtx.getMsg("imageListing.width")}</th>
+            <th scope="col" id="vrtx-table-dimensions-height" class="sortable-numeric">${vrtx.getMsg("imageListing.height")}</th>
+            <th scope="col" id="vrtx-table-size" class="sortable-numeric">${vrtx.getMsg("property.contentLength")}</th>
+            <th scope="col" id="vrtx-table-photo" class="sortable-text">${vrtx.getMsg("article.photoprefix")}</th>
+            <th scope="col" id="vrtx-table-creation-time" class="sortable-sortEnglishLonghandDateFormat">${vrtx.getMsg("proptype.name.creationTime")}</th>
           </tr>
         </thead>
         <tbody>

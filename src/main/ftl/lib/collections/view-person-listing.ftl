@@ -18,10 +18,10 @@
         </#if>
         <thead>
           <tr>
-            <th class="vrtx-person-listing-name">${vrtx.getMsg("person-listing.name")}</th>
-            <th class="vrtx-person-listing-phone">${vrtx.getMsg("person-listing.phone")}</th>
-            <th class="vrtx-person-listing-email">${vrtx.getMsg("person-listing.email")}</th>
-            <th class="vrtx-person-listing-tags">${vrtx.getMsg("person-listing.tags")}</th>
+            <th scope="col" class="vrtx-person-listing-name">${vrtx.getMsg("person-listing.name")}</th>
+            <th scope="col" class="vrtx-person-listing-phone">${vrtx.getMsg("person-listing.phone")}</th>
+            <th scope="col" class="vrtx-person-listing-email">${vrtx.getMsg("person-listing.email")}</th>
+            <th scope="col" class="vrtx-person-listing-tags">${vrtx.getMsg("person-listing.tags")}</th>
           </tr>
         </thead>
         <tbody>

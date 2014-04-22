@@ -35,11 +35,11 @@
       <caption><@vrtx.msg code="versions.title" /></caption>
       <thead>
         <tr>
-          <th><@vrtx.msg code="versions.table.title" />  #</th>
-          <th><@vrtx.msg code="versions.table.modified-by" /></th>
-          <th><@vrtx.msg code="versions.table.time" /></th>
-          <#-- <th><@vrtx.msg code="versions.table.change-amount" /></th> -->
-          <th></th>
+          <th scope="col"><@vrtx.msg code="versions.table.title" />  #</th>
+          <th scope="col"><@vrtx.msg code="versions.table.modified-by" /></th>
+          <th scope="col"><@vrtx.msg code="versions.table.time" /></th>
+          <#-- <th scope="col"><@vrtx.msg code="versions.table.change-amount" /></th> -->
+          <th scope="col"></th>
         </tr>
       </head>
       <tbody>

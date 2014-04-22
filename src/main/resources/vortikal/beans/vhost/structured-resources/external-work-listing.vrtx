@@ -49,12 +49,12 @@ resourcetype external-work-listing {
         <table class="sortable">
           <thead>
             <tr>
-              <th class="vrtx-external-work-name sortable-text">[localized 'name']</th>
-              <th class="vrtx-external-work-employed-at sortable-text">[localized 'employed-at']</th>
-              <th class="vrtx-external-work-organization sortable-text">[localized 'organization']</th>
-              <th class="vrtx-external-work-type sortable-text">[localized 'type']</th>
-              <th class="vrtx-external-work-start-date sortable-date">[localized 'start-date']</th>
-              <th class="vrtx-external-work-scope sortable-numeric">[localized 'scope']</th>
+              <th scope="col" class="vrtx-external-work-name sortable-text">[localized 'name']</th>
+              <th scope="col" class="vrtx-external-work-employed-at sortable-text">[localized 'employed-at']</th>
+              <th scope="col" class="vrtx-external-work-organization sortable-text">[localized 'organization']</th>
+              <th scope="col" class="vrtx-external-work-type sortable-text">[localized 'type']</th>
+              <th scope="col" class="vrtx-external-work-start-date sortable-date">[localized 'start-date']</th>
+              <th scope="col" class="vrtx-external-work-scope sortable-numeric">[localized 'scope']</th>
             </tr>
           </thead>
           <tbody>

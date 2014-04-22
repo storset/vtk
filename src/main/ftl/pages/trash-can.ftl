@@ -37,7 +37,7 @@
     <thead>
       <tr id="vrtx-trash-can-header" class="directoryListingHeader">
         <@setHeader "name" "trash-can.name" />
-        <th class="checkbox"></th>
+        <th scope="col" class="checkbox"></th>
         <@setHeader "deleted-by" "trash-can.deletedBy" />
         <@setHeader "deleted-time" "trash-can.deletedTime" />
       </tr>
@@ -107,9 +107,9 @@
 <#macro setHeader id code >
   <#assign sortLink = spring.status.value[id] />
   <#if sortLink.selected>
-    <th id="vrtx-${code}" class="sortColumn" >
+    <th scope="col" id="vrtx-${code}" class="sortColumn" >
   <#else>
-    <th id="vrtx-${code}">
+    <th scope="col" id="vrtx-${code}">
   </#if>
     <a href="${sortLink.url?html}" id="${id}">
       <@vrtx.msg code="${code}" default="${id}" />

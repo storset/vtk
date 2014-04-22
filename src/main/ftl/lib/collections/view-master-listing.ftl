@@ -83,10 +83,10 @@
       <table class="sortable" border="1">
         <thead>
           <tr>
-            <th id="vrtx-table-title" class="sortable-text">${vrtx.getMsg("property.title")}</th>
-            <th id="vrtx-table-creation-time" class="sortable-sortEnglishLonghandDateFormat">${vrtx.getMsg("publish.permission.published")}</th>
-            <th id="vrtx-table-scope" class="sortable-text">${vrtx.getMsg("masterListing.scope")}</th>
-	      	<th id="vrtx-table-dimensions-height" class="sortable-text">${vrtx.getMsg("masterListing.persons")}</th>
+            <th scope="col" id="vrtx-table-title" class="sortable-text">${vrtx.getMsg("property.title")}</th>
+            <th scope="col" id="vrtx-table-creation-time" class="sortable-sortEnglishLonghandDateFormat">${vrtx.getMsg("publish.permission.published")}</th>
+            <th scope="col" id="vrtx-table-scope" class="sortable-text">${vrtx.getMsg("masterListing.scope")}</th>
+	      	<th scope="col" id="vrtx-table-dimensions-height" class="sortable-text">${vrtx.getMsg("masterListing.persons")}</th>
           </tr>
         </thead>
         <tbody>

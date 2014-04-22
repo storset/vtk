@@ -92,10 +92,10 @@
       <table id="directory-listing" class="report-broken-links">
         <thead>
           <tr>
-            <th id="vrtx-report-broken-links-web-page"><@vrtx.msg code="report.${report.reportname}.web-page" /></th>
-            <th id="vrtx-report-broken-links-count"><@vrtx.msg code="report.${report.reportname}.count" /></th>
-            <th id="vrtx-report-broken-links">${linkTypeLocalization} <@vrtx.msg code="report.${report.reportname}.list" /></th>
-            <th id="vrtx-report-last-checked"><@vrtx.msg code="report.broken-links.last-checked" default="Last checked" /></th>
+            <th scope="col" id="vrtx-report-broken-links-web-page"><@vrtx.msg code="report.${report.reportname}.web-page" /></th>
+            <th scope="col" id="vrtx-report-broken-links-count"><@vrtx.msg code="report.${report.reportname}.count" /></th>
+            <th scope="col" id="vrtx-report-broken-links">${linkTypeLocalization} <@vrtx.msg code="report.${report.reportname}.list" /></th>
+            <th scope="col" id="vrtx-report-last-checked"><@vrtx.msg code="report.broken-links.last-checked" default="Last checked" /></th>
           </tr>
         </thead>
         <tbody>

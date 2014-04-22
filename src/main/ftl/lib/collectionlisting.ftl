@@ -39,12 +39,12 @@
    <#list collectionListing.childInfoItems as item>
       <#if collectionListing.sortedBy = item>
         <#if collectionListing.invertedSort>
-          <th class="invertedSortColumn ${item}">
+          <th scope="col" class="invertedSortColumn ${item}">
         <#else>
-          <th class="sortColumn ${item}">
+          <th scope="col" class="sortColumn ${item}">
         </#if>
       <#else>
-        <th class="${item}">
+        <th scope="col" class="${item}">
       </#if>
       <#switch item>
         <#case "last-modified">
@@ -91,7 +91,7 @@
           <a href="${collectionListing.sortByLinks[item]?html}" id="${item}">
             <@vrtx.msg code="collectionListing.${item}" default="${item?cap_first}"/></a>
           <#if withForm>
-            </th><th class="checkbox">
+            </th><th scope="col" class="checkbox">
           </#if>
           <#break>
             
@@ -107,7 +107,7 @@
       </th>
     </#list>
     <#list collectionListing.linkedServiceNames as item>
-      <th>
+      <th scope="col">
       </th>
     </#list>
     </tr>

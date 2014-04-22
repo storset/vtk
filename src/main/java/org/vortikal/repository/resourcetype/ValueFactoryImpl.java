@@ -47,6 +47,10 @@ import org.vortikal.util.cache.ReusableObjectCache;
 
 /**
  * Implementation of {@link ValueFactory}.
+ * 
+ * TODO when PrincipalFactory is killed, parsing code in this class could be
+ * integrated into {@link Value} as static util methods and additional constructors,
+ * and this class and its interface could be removed as well.
  */
 public class ValueFactoryImpl implements ValueFactory {
 
@@ -151,6 +155,7 @@ public class ValueFactoryImpl implements ValueFactory {
 
         case PRINCIPAL:
             try {
+                // XXX getting principal *with metadata* and called from database layer.
                 Principal principal = principalFactory.getPrincipal(stringValue, Principal.Type.USER);
                 return new Value(principal);
             } catch (InvalidPrincipalException e) {

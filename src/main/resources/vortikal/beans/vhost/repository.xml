@@ -105,6 +105,7 @@
     <property name="optimizedAclCopySupported" value="${optimizedAclCopySupported}" />
     <property name="resourceTypeTree" ref="resourceTypeTree" />
     <property name="principalFactory" ref="principalFactory" />
+    <property name="valueFactory" ref="valueFactory" />
   </bean>
 
   <bean id="repository.fsContentStore" class="org.vortikal.repository.store.fs.FileSystemContentStore">

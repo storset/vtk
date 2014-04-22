@@ -153,22 +153,47 @@ public class PropertyImpl implements Cloneable, Property {
 
     @Override
     public void setValue(Value value) throws ValueFormatException {
-        if (this.propertyTypeDefinition.isMultiple()) {
-            throw new ValueFormatException("Property " + this + " is multi-value");
-        }
-        
-        validateValue(value);
-        this.value = value;
-        this.inherited = false;
+        setValue(value, true);
     }
     
     @Override
     public void setValues(Value[] values) throws ValueFormatException {
+        setValues(values, true);
+    }
+
+    /**
+     * Internal API: allow setting values without strict validation. Used when
+     * loading properties from DAO layer.
+     * 
+     * @param value
+     * @param strictValidation if <code>true</code>, then various format/type specific
+     * validations, such and size, will be performed.
+     * @throws ValueFormatException in case of illegal value being set
+     */
+    public void setValue(Value value, boolean strictValidation) throws ValueFormatException {
+        if (this.propertyTypeDefinition.isMultiple()) {
+            throw new ValueFormatException("Property " + this + " is multi-value");
+        }
+        
+        validateValue(value, strictValidation);
+        this.value = value;
+        this.inherited = false;
+    }
+    
+    /**
+     * Internal API: allow setting values without strict validation. Used when
+     * loading properties from DAO layer.
+     * @param value
+     * @param strictValidation if <code>true</code>, then various format/type specific
+     * validations, such and size, will be performed.
+     * @throws ValueFormatException  in case of illegal value being set
+     */
+    public void setValues(Value[] values, boolean strictValidation) throws ValueFormatException {
         if (! this.propertyTypeDefinition.isMultiple()) {
             throw new ValueFormatException("Property " + this + " is not multi-value");
         }
         
-        validateValues(values);
+        validateValues(values, strictValidation);
         this.values = values;
         this.inherited = false;
     }
@@ -355,18 +380,18 @@ public class PropertyImpl implements Cloneable, Property {
         return sb.toString();
     }
 
-    private void validateValues(Value[] values) throws ValueFormatException,
+    private void validateValues(Value[] values, boolean strictValidation) throws ValueFormatException,
                                                 ConstraintViolationException {
         if (values == null || values.length == 0) 
             throw new ValueFormatException("A property must have non null value");
         
         for (Value v: values) {
-            validateValue(v);
+            validateValue(v, strictValidation);
         }
     }
 
     
-    private void validateValue(Value value) throws ValueFormatException,
+    private void validateValue(Value value, boolean strictValidation) throws ValueFormatException,
                                                 ConstraintViolationException {
         if (value == null) {
             throw new ValueFormatException("A property cannot have a null value");
@@ -390,7 +415,7 @@ public class PropertyImpl implements Cloneable, Property {
                         "Principal value of property '" + this + "' cannot be null");
             }
             String qualifiedName = value.getPrincipalValue().getQualifiedName();
-            if (qualifiedName.length() > MAX_STRING_LENGTH) {
+            if (strictValidation && qualifiedName.length() > MAX_STRING_LENGTH) {
                 throw new ValueFormatException("Princpal name too long: " + qualifiedName.length() + " (max size = "
                         + MAX_STRING_LENGTH + ")");
             }
@@ -406,7 +431,7 @@ public class PropertyImpl implements Cloneable, Property {
             // If this property is of type JSON, then any compatible value type
             // over the normal maximum string length is allowed.
             if (getType() != Type.JSON
-                    && value.getStringValue().length() > MAX_STRING_LENGTH) {
+                    && strictValidation && value.getStringValue().length() > MAX_STRING_LENGTH) {
                 throw new ValueFormatException("String value too large for " + getType() + ": " +
                         + value.getStringValue().length() + " (max size = " + MAX_STRING_LENGTH + ")");
             }
@@ -420,7 +445,7 @@ public class PropertyImpl implements Cloneable, Property {
             }
         }
         
-        if (getType() == Type.JSON) {
+        if (strictValidation && getType() == Type.JSON) {
             try {
                 JSONObject.fromObject(value.getStringValue());
             } catch (Exception e) {
@@ -431,7 +456,7 @@ public class PropertyImpl implements Cloneable, Property {
         }
         
         Vocabulary<Value> vocabulary = this.propertyTypeDefinition.getVocabulary();
-        if (vocabulary != null && vocabulary.getAllowedValues() != null) {
+        if (strictValidation && vocabulary != null && vocabulary.getAllowedValues() != null) {
             List<Value> valuesList = Arrays.asList(vocabulary.getAllowedValues());
             if (!valuesList.contains(value)) {
                 ConstraintViolationException e = 
@@ -441,7 +466,6 @@ public class PropertyImpl implements Cloneable, Property {
                 throw e;
             }
         }
-        
     }
     
 

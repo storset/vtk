@@ -45,7 +45,7 @@ import org.vortikal.security.Principal;
  * JSON values are always stored in the stringValue field, even though they
  * can also be set and get as binary values.
  */
-public class Value implements Cloneable, Comparable<Value> {
+public class Value implements Cloneable, Comparable<Value> { 
 
     private Type type = Type.STRING;
 
@@ -122,56 +122,78 @@ public class Value implements Cloneable, Comparable<Value> {
     }
 
     /**
-     * Construct a new value, which can either be pure binary, or of JSON
-     * type (with 'application/json' content type).
+     * Construct a new value from byte buffer. Value type can either be pure binary,
+     * or of a string based type.
+     * 
      * @param buffer
      * @param contentType
-     * @param valueType 
+     * @param valueType one of BINARY, JSON, STRING, IMAGE_REF or HTML
      */
     public Value(byte[] buffer, String contentType, Type valueType) {
         if (buffer == null)
             throw new IllegalArgumentException("buffer cannot be null");
-        if (valueType != Type.BINARY && valueType != Type.JSON) {
-            throw new IllegalArgumentException("valueType must be either BINARY or JSON");
-        }
         
-        if (valueType == Type.JSON) {
-            if (!"application/json".equals(contentType)) {
-                throw new IllegalArgumentException("Content type 'application/json' required for value type JSON");
-            }
-            // Copy binary data to stringValue field
-            try {
-                this.stringValue = new String(buffer, "UTF-8");
-                this.type = Type.JSON;
-            } catch (UnsupportedEncodingException ue) {
-                throw new IllegalStateException("UTF-8 encoding not available");
-            }
-        } else {
-            this.type = Type.BINARY;
-            this.binaryValue = new BufferedBinaryValue(buffer, contentType);
+        switch (valueType) {
+            case BINARY:
+                this.type = Type.BINARY;
+                this.binaryValue = new BufferedBinaryValue(buffer, contentType);
+                break;
+                
+            case JSON:
+            case STRING:
+            case IMAGE_REF:
+            case HTML:
+                // Copy binary data to stringValue field
+                try {
+                    this.stringValue = new String(buffer, "UTF-8");
+                    this.type = valueType;
+                } catch (UnsupportedEncodingException ue) {
+                    throw new IllegalStateException("UTF-8 encoding not available");
+                }
+                break;
+                
+            default:
+                throw new IllegalArgumentException("valueType must be one of: BINARY, JSON, STRING, IMAGE_REF or HTML");
+                
         }
     }
 
     Value(BinaryValue value, Type valueType) {
         if (value == null)
             throw new IllegalArgumentException("value cannot be null");
-        if (valueType != Type.BINARY && valueType != Type.JSON) {
-            throw new IllegalArgumentException("valueType must be either BINARY or JSON");
-        }
-        if (valueType == Type.JSON) {
-            if (!"application/json".equals(value.getContentType())) {
-                throw new IllegalArgumentException("Content type must be 'application/json' for JSON value type");
-            }
-            // Copy binary data to stringValue field
-            try {
-                this.stringValue = new String(value.getBytes(), "UTF-8");
-                this.type = Type.JSON;
-            } catch (UnsupportedEncodingException ue) {
-                throw new IllegalStateException("UTF-8 encoding not available");
-            }
-        } else {
-            this.type = Type.BINARY;
-            this.binaryValue = value;
+        
+        switch (valueType) {
+            case BINARY:
+                this.type = Type.BINARY;
+                this.binaryValue = value; // Possibly lazy-loaded variant
+                break;
+                
+            case JSON:
+            case STRING:
+            case IMAGE_REF:
+            case HTML:
+                // Stay compatible with loading JSON from binary values for all string based types,
+                // since JSON props may become dead and thus will be loaded as STRING type.
+                // Validate content type, to make sure we don't allow creating garbage
+                // strings from arbitrary binary data.
+                String valueContentType = value.getContentType();
+                if (valueContentType == null
+                        || !("application/json".equals(valueContentType) || valueContentType.startsWith("text/"))) {
+                    throw new IllegalArgumentException("Content type 'application/json' or 'text/*'"
+                            + " required for creating " + valueType + " value type from binary storage");
+                }
+                // Copy binary data to stringValue field after sanity checking content type
+                try {
+                    this.stringValue = new String(value.getBytes(), "UTF-8");
+                    this.type = valueType;
+                } catch (UnsupportedEncodingException ue) {
+                    throw new IllegalStateException("UTF-8 encoding not available");
+                }
+                break;
+                
+            default:
+                throw new IllegalArgumentException("valueType must be one of: BINARY, JSON, STRING, IMAGE_REF or HTML");
+                
         }
     }
 

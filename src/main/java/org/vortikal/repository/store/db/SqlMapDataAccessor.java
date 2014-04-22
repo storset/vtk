@@ -75,6 +75,7 @@ import org.vortikal.security.PrincipalFactory;
 
 import com.ibatis.sqlmap.client.SqlMapExecutor;
 import org.vortikal.repository.resourcetype.BufferedBinaryValue;
+import org.vortikal.repository.resourcetype.ValueFactory;
 
 /**
  * An iBATIS SQL maps implementation of the DataAccessor interface.
@@ -86,14 +87,14 @@ import org.vortikal.repository.resourcetype.BufferedBinaryValue;
  */
 public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements DataAccessor {
 
-    private PrincipalFactory principalFactory;
     private ResourceTypeTree resourceTypeTree;
+    private PrincipalFactory principalFactory;
+    private ValueFactory valueFactory;
 
     private Log logger = LogFactory.getLog(this.getClass());
 
     private boolean optimizedAclCopySupported = false;
-
-
+    
     @Override
     public boolean validate() {
         throw new DataAccessException("Not implemented");
@@ -1112,6 +1113,8 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
                 // are stored: first deleted then inserted (never updated)
                 // If any binary value is of type BinaryValueReference (created only by this class)
                 // then DataAccessException will be thrown if the reference is STALE.
+                // We only do this for BINARY type, since other types stored in binary columns are always
+                // copied to string in memory at load time.
                 ensureBinaryValueBuffered(p);
             }
         }
@@ -1144,16 +1147,36 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
                         for (Value v : values) {
                             String nativeStringValue = v.getNativeStringRepresentation();
                             parameters.put("value", nativeStringValue);
+                            
                             if (property.getType() == PropertyType.Type.BINARY) {
                                 parameters.put("binaryContent", v.getBinaryValue().getBytes());
                                 parameters.put("binaryMimeType", v.getBinaryValue().getContentType());
-                            } else if (property.getType() == PropertyType.Type.JSON
-                                    && nativeStringValue.length() > Property.MAX_STRING_LENGTH) {
-                                // Store JSON with char count over max length as binary blob
-                                BinaryValue bval = new BufferedBinaryValue(nativeStringValue, "application/json");
+                            } else if (nativeStringValue.length() > Property.MAX_STRING_LENGTH) {
+                                // Store native string value as UTF-8 encoded binary data
+                                final String valueContentType;
+                                switch (property.getType()) {
+                                    case IMAGE_REF:
+                                    case HTML: 
+                                        valueContentType = "text/html"; break;
+                                    case STRING:
+                                        valueContentType = "text/plain"; break;
+                                    case JSON:
+                                        valueContentType = "application/json"; break;
+                                    default:
+                                        // For now we deny the possiblity of storing any other value types as binary values.
+                                        // This is unlikely to hit.
+                                        throw new DataAccessException("Cannot store value for property " 
+                                                + property + ": native string size limit exceeded and type cannot be stored as binary.");
+                                }
+                                
+                                BinaryValue bval = new BufferedBinaryValue(nativeStringValue, valueContentType);
                                 parameters.put("value", "#binary");
                                 parameters.put("binaryContent", bval.getBytes());
                                 parameters.put("binaryMimeType", bval.getContentType());
+                            } else {
+                                // Value stored in regular "value" column, make sure binary ref columns are null
+                                parameters.remove("binaryContent");
+                                parameters.remove("binaryMimeType");
                             }
                             executor.update(batchSqlMap, parameters);
                         }
@@ -1298,32 +1321,82 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
 
     /**
      * Create property from namespace, name and value.
+     * 
+     * Data type specific format validation is not performed here.
      */
-    Property createProperty(Namespace ns, String name, Object value) {
+    Property createProperty(Namespace ns, String name, Object objectValue) {
+        
         PropertyTypeDefinition propDef = this.resourceTypeTree.getPropertyTypeDefinition(ns, name);
-        Property prop = propDef.createProperty(value);
+        PropertyImpl prop = new PropertyImpl();
+        prop.setDefinition(propDef);
+
+        // See also PropertyTypeDefinitionImppl#createProperty(Object value) 
+        // which essentially does the same thing, but with strict validation of value.
+
+        final Value value;
+        if (objectValue instanceof Date) {
+            value = new Value((Date)objectValue, propDef.getType() == PropertyType.Type.DATE);
+        } else if (objectValue instanceof Boolean) {
+            value = new Value((Boolean)objectValue);
+        } else if (objectValue instanceof Long) {
+            value = new Value((Long)objectValue);
+        } else if (objectValue instanceof Integer) {
+            value = new Value((Integer)objectValue);
+        } else if (objectValue instanceof Principal) {
+            value = new Value((Principal)objectValue);
+        } else if (!(objectValue instanceof String)) {
+            throw new DataAccessException("Supplied object value of property [namespaces: " + ns + ", name: " + name
+                    + "] not of any supported type " + "(type was: " + objectValue.getClass() + ")");
+        } else {
+            value = new Value((String)objectValue, PropertyType.Type.STRING);
+        }
+        
+        // Set value without strict validation
+        prop.setValue(value, false);
+        
         return prop;
     }
 
     /**
-     * Create property from PropHolder instance loaded from database.
+     * Create property from raw PropHolder instance loaded from database.
+     * <p>
+     * Data type specific format validation is not performed at this stage.
      */
     Property createProperty(PropHolder holder) {
         Namespace namespace = this.resourceTypeTree.getNamespace(holder.namespaceUri);
         PropertyTypeDefinition propDef = this.resourceTypeTree.getPropertyTypeDefinition(namespace, holder.name);
-        if (holder.binary) {
-            BinaryValueReference[] refs = new BinaryValueReference[holder.values.size()];
-            for (int i = 0; i < refs.length; i++) {
-                refs[i] = new BinaryValueReference(this, (Integer) holder.values.get(i));
+        PropertyImpl prop = new PropertyImpl();
+        prop.setDefinition(propDef);
+        
+        // In case of multi-value props, some values may be stored as binary
+        // and others directly as strings for the same property, depending on size.
+        // So check each value in PropHolder.
+        Value[] values = new Value[holder.values.size()];
+        for (int i=0; i<holder.values.size(); i++) {
+            Object objectValue = holder.values.get(i);
+            if (objectValue.getClass() == String.class) {
+                values[i] = this.valueFactory.createValue((String)objectValue, propDef.getType());
+            } else if (objectValue.getClass() == Integer.class) {
+                // Value stored as binary (BLOB reference in property row)
+                BinaryValueReference binVal = new BinaryValueReference(this, (Integer)objectValue);
+                values[i] = this.valueFactory.createValue(binVal, propDef.getType());
+            } else {
+                throw new DataAccessException("Expected PropHolder value to be either string or integer reference for property " + prop);
             }
-            return propDef.createProperty(refs);
-        } else {
-            String[] stringValues = new String[holder.values.size()];
-            for (int i = 0; i < stringValues.length; i++) {
-                stringValues[i] = (String) holder.values.get(i);
-            }
-            return propDef.createProperty(stringValues);
         }
+        
+        // Set value(s) without strict validation
+        if (propDef.isMultiple()) {
+            prop.setValues(values, false);
+        } else {
+            if (values.length > 1) {
+                    throw new DataAccessException("Property " + propDef
+                            + " is not multi-value, but multiple values found in database.");
+            }
+            prop.setValue(values[0], false);
+        }
+        
+        return prop;
     }
 
     /**
@@ -1354,8 +1427,6 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
         resourceMap.put(PropertyType.CHARACTERENCODING_PROP_NAME, r.getCharacterEncoding());
         resourceMap.put(PropertyType.CHARACTERENCODING_USER_SPECIFIED_PROP_NAME, r.getUserSpecifiedCharacterEncoding());
         resourceMap.put(PropertyType.CHARACTERENCODING_GUESSED_PROP_NAME, r.getGuessedCharacterEncoding());
-        // XXX: contentLanguage should be contentLocale:
-//        map.put("contentLanguage", r.getContentLanguage());
         resourceMap.put(PropertyType.LASTMODIFIED_PROP_NAME, r.getLastModified());
         resourceMap.put(PropertyType.MODIFIEDBY_PROP_NAME, r.getModifiedBy().getQualifiedName());
         resourceMap.put(PropertyType.CONTENTLASTMODIFIED_PROP_NAME, r.getContentLastModified());
@@ -1397,7 +1468,8 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
     /**
      * Makes sure binary value is not backed only by a reference to database id.
      * If so, then copy to memory buffered value.
-     * @param prop 
+     * 
+     * @param prop must be a property with a binary value
      */
     private void ensureBinaryValueBuffered(Property prop) {
         boolean multiple = prop.getDefinition() != null && prop.getDefinition().isMultiple();
@@ -1438,6 +1510,11 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
     @Required
     public void setPrincipalFactory(PrincipalFactory principalFactory) {
         this.principalFactory = principalFactory;
+    }
+    
+    @Required
+    public void setValueFactory(ValueFactory vf) {
+        this.valueFactory = vf;
     }
 
     @Required

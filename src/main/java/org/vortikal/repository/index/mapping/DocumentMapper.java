@@ -70,6 +70,7 @@ import org.vortikal.security.PrincipalFactory;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import org.vortikal.repository.PropertyImpl;
 
 /**
  * Simple mapping from Lucene {@link org.apache.lucene.document.Document} to
@@ -342,12 +343,13 @@ public class DocumentMapper implements InitializingBean {
 
         }
         
-        Property property = def.createProperty();
-
+        PropertyImpl property = new PropertyImpl();
+        property.setDefinition(def);
+        
         if (def.isMultiple()) {
             Value[] values = this.fieldValueMapper.getValuesFromStoredBinaryFields(fieldValues, def.getType());
             
-            property.setValues(values);
+            property.setValues(values, false);
         } else {
             if (fieldValues.size() != 1) {
                 // Fail hard if multiple stored fields found for single
@@ -359,7 +361,7 @@ public class DocumentMapper implements InitializingBean {
 
             Value value = this.fieldValueMapper.getValueFromStoredBinaryField(fieldValues.get(0), def.getType());
 
-            property.setValue(value);
+            property.setValue(value, false);
         }
 
         return property;

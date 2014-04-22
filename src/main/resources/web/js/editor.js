@@ -203,8 +203,10 @@ VrtxEditor.prototype.richtextEditorFacade = {
     var imageBrowseUrl = baseUrl + '/plugins/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Type=Image&Connector=' + browsePath;
     var flashBrowseUrl = baseUrl + '/plugins/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Type=Flash&Connector=' + browsePath;
 
+    // Classify
     var classification = vrtxEdit.classifyEditorInstance(opts);
 
+    // Initialize
     this.init({
       name: opts.name,
       linkBrowseUrl: linkBrowseUrl,

@@ -61,9 +61,15 @@ h2 {
   margin: 15px 0 8px 0;
 }
 
-h3 {
+h3,
+caption {
   font-size: 1.538em;
   font-weight: normal;
+}
+
+caption {
+  text-align: left;
+  display: block;
 }
 
 h4 {
@@ -72,7 +78,8 @@ h4 {
 }
 
 h3,
-h4 { 
+h4,
+caption { 
   margin: 10px 0 8px 0; 
 }
 
@@ -2678,33 +2685,44 @@ table.privilegeTable {
 }
 
 table.resourceInfo td,
-table.privilegeTable td {
+table.resourceInfo th,
+table.privilegeTable td,
+table.privilegeTable th {
   padding: 3px 5px;
   border-top: 1px solid #F0F0F0;
   vertical-align: top;
 }
 
 table.resourceInfo tr.first td,
-table.privilegeTable tr.first td {
+table.resourceInfo tr.first th,
+table.privilegeTable tr.first td,
+table.privilegeTable tr.first th {
   border-top: none;
 }
 
 table.resourceInfo tr.even td,
+table.resourceInfo tr.even th,
 table.privilegeTable tr.even td,
-table.report-urchin-table tr.even td {
+table.privilegeTable tr.even th,
+table.report-urchin-table tr.even td,
+table.report-urchin-table tr.even th {
   background-color: #F9F9F9;
 }
 
-table.resourceInfo tr:nth-child(even) td {
+table.resourceInfo tr:nth-child(even) td,
+table.resourceInfo tr:nth-child(even) th {
   background-color: #F9F9F9;
 }
 
 table.resourceInfo tr.first td,
-table.report-urchin-table tr.first td {
+table.resourceInfo tr.first th,
+table.report-urchin-table tr.first td,
+table.report-urchin-table tr.first th {
   border-top: none;
 }
 
-table.resourceInfo tr:first-child td {
+table.resourceInfo tr:first-child td,
+table.resourceInfo tr:first-child th {
   border-top: none;
 }
 

@@ -26,13 +26,13 @@
     <title>Revisions</title>
   </head>
   <body id="vrtx-revisions">
-    <h2><@vrtx.msg code="versions.title" /></h2>
     <script type="text/javascript"><!--
       var versionsRestoredInfoMsg = "<@vrtx.msg code='versions.table.info-msg.restored-version' />";
       var versionsMadeCurrentInfoMsg = "<@vrtx.msg code='versions.table.info-msg.made-current-version' />";
     // -->
     </script>
     <table class="resourceInfo revisions">
+      <caption><@vrtx.msg code="versions.title" /></caption>
       <thead>
         <tr>
           <th><@vrtx.msg code="versions.table.title" />  #</th>

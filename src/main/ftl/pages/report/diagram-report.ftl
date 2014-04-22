@@ -21,18 +21,20 @@
     <a id="vrtx-report-view-other" title="${vrtx.getMsg('manage.choose-location.choose-collection')}" href="${viewReportServiceURL?html}"><@vrtx.msg code="report.view-other-link" default="View other folder" />...</a></h2>
   <#if (report.thirdtotal?exists && report.thirdtotal > 0)>
     <div class="vrtx-report-diagram">
-      <h3><@vrtx.msg code="report.diagram.webtypetitle" /></h3>
       <div class="vrtx-report-diagram-table">
         <table id="vrtx-report-diagram-webtypes">
+          <caption><@vrtx.msg code="report.diagram.webtypetitle" /></caption>
           <#list report.webTypes as type>
-          <tr>
-            <td class="vrtx-report-diagram-text"><#if report.webTypeURL[type_index]?exists><a href="${report.webTypeURL[type_index]?html}"><@vrtx.msg code="report.webDiagram.${type}" /></a>
-              <#else><@vrtx.msg code="report.webDiagram.${type}" /></#if></td>
-            <td class="vrtx-report-diagram-count"><#if report.webTypeCount[type_index]?exists>${report.webTypeCount[type_index]}<#else>0</#if></td>
-          </tr>
+            <tr>
+              <th scope="row" class="vrtx-report-diagram-text">
+                <#if report.webTypeURL[type_index]?exists><a href="${report.webTypeURL[type_index]?html}"><@vrtx.msg code="report.webDiagram.${type}" /></a>
+                <#else><@vrtx.msg code="report.webDiagram.${type}" /></#if>
+              </th>
+              <td class="vrtx-report-diagram-count"><#if report.webTypeCount[type_index]?exists>${report.webTypeCount[type_index]}<#else>0</#if></td>
+            </tr>
           </#list>
           <tr class="vrtx-report-diagram-total">
-            <td class="vrtx-report-diagram-text"><@vrtx.msg code="report.diagram.total" /></td>
+            <th scope="row" class="vrtx-report-diagram-text"><@vrtx.msg code="report.diagram.total" /></th>
             <td class="vrtx-report-diagram-count">${report.thirdtotal}</td>
           </tr>
         </table>
@@ -45,18 +47,20 @@
   </#if>
   <#if (report.secondtotal?exists && report.secondtotal > 0)>
     <div class="vrtx-report-diagram">
-      <h3><@vrtx.msg code="report.diagram.filetypetitle" /></h3>
       <div class="vrtx-report-diagram-table">
         <table id="vrtx-report-diagram-filetypes">
+          <caption><@vrtx.msg code="report.diagram.filetypetitle" /></caption>
           <#list report.types as type>
-          <tr>
-            <td class="vrtx-report-diagram-text"><#if report.typeURL[type_index]?exists><a href="${report.typeURL[type_index]?html}"><@vrtx.msg code="report.diagram.${type}" /></a>
-              <#else><@vrtx.msg code="report.diagram.${type}" /></#if></td>
-            <td class="vrtx-report-diagram-count"><#if report.typeCount[type_index]?exists>${report.typeCount[type_index]}<#else>0</#if></td>
-          </tr>
+            <tr>
+              <th scope="row" class="vrtx-report-diagram-text">
+                <#if report.typeURL[type_index]?exists><a href="${report.typeURL[type_index]?html}"><@vrtx.msg code="report.diagram.${type}" /></a>
+                <#else><@vrtx.msg code="report.diagram.${type}" /></#if>
+              </th>
+              <td class="vrtx-report-diagram-count"><#if report.typeCount[type_index]?exists>${report.typeCount[type_index]}<#else>0</#if></td>
+            </tr>
           </#list>
           <tr class="vrtx-report-diagram-total">
-            <td class="vrtx-report-diagram-text"><@vrtx.msg code="report.diagram.total" /></td>
+            <th scope="row" class="vrtx-report-diagram-text"><@vrtx.msg code="report.diagram.total" /></th>
             <td class="vrtx-report-diagram-count">${report.secondtotal}</td>
           </tr>
         </table>
@@ -69,19 +73,19 @@
   </#if>
   <#if (report.firsttotal?exists && report.firsttotal > 0)>
     <div class="vrtx-report-diagram vrtx-report-diagram-last">
-      <h3><@vrtx.msg code="report.diagram.folderandfiletitle" /></h3>
       <div class="vrtx-report-diagram-table">
         <table id="vrtx-report-diagram-filesandfolders">
+          <caption><@vrtx.msg code="report.diagram.folderandfiletitle" /></caption>
           <tr>
-            <td class="vrtx-report-diagram-text"><a href="${report.foldersURL?html}"><@vrtx.msg code="report.diagram.folder" /></a></td>
+            <th scope="row" class="vrtx-report-diagram-text"><a href="${report.foldersURL?html}"><@vrtx.msg code="report.diagram.folder" /></a></th>
             <td class="vrtx-report-diagram-count">${report.folders}</td>
           </tr>
           <tr>
-            <td class="vrtx-report-diagram-text"><a href="${report.filesURL?html}"><@vrtx.msg code="report.diagram.file" /></a></td>
+            <th scope="row" class="vrtx-report-diagram-text"><a href="${report.filesURL?html}"><@vrtx.msg code="report.diagram.file" /></a></th>
             <td class="vrtx-report-diagram-count">${report.files}</td>
           </tr>
           <tr class="vrtx-report-diagram-total">
-            <td class="vrtx-report-diagram-text"><@vrtx.msg code="report.diagram.total" /></td>
+            <th scope="row" class="vrtx-report-diagram-text"><@vrtx.msg code="report.diagram.total" /></th>
             <td class="vrtx-report-diagram-count">${report.firsttotal}</td>
           </tr>
         </table>

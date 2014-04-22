@@ -87,7 +87,7 @@
            privilegeHeading = privilegeHeading />
         </td>
       <#else>
-        <td class="key">${privilegeHeading}</td>
+        <th scope="row" class="key">${privilegeHeading}</th>
         <td>
           <@listPrincipals privilegeName = privilegeName />
         </td>

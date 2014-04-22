@@ -85,9 +85,9 @@
       <#assign ownerItem = aboutItems['owner'] />
       <#assign msgPrefix = propList.localizationPrefix(ownerItem) />
       <tr>
-        <td class="key">
+        <th scope="row" class="key">
           <@vrtx.msg code=msgPrefix default=ownerItem.definition.name />
-        </td>
+        </th>
         <td class="value">
           <#if owner.URL?exists>
             <a title="${owner.name?html}" href="${owner.URL?html}">${owner.description?html}</a>
@@ -308,9 +308,9 @@
 
 <#macro languagePropertyDisplay propName name value prefix=false editURL="">
   <tr class="prop-${propName}">
-    <td class="key">
+    <th scope="row" class="key">
       ${name}:
-    </td>
+    </th>
     <td class="value">
       <#if prefix?is_string>
         ${prefix}
@@ -335,9 +335,9 @@
           that are inherited, but do not belong the current resource type. -->
 <#macro generalInheritedPropertyDisplay propName name value prefix=false editURL="">
   <tr class="prop-${propName}">
-    <td class="key">
+    <th scope="row" class="key">
       ${name}:
-    </td>
+    </th>
     <td class="value">
       <#if prefix?is_string>
         ${prefix}

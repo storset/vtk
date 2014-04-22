@@ -253,9 +253,9 @@
 -->
 <#macro defaultPropertyDisplay propName name value prefix=false editURL="">
   <tr class="prop-${propName}">
-    <td class="key">
+    <th scope="row" class="key">
       ${name}:
-    </td>
+    </th>
     <td class="value">
       <#if prefix?is_string>
         ${prefix}

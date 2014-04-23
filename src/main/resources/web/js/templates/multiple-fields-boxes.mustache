@@ -18,10 +18,8 @@
   <div>
     <label>{{ elemTitle }}</label>
   </div>
-
   <input name="{{ inputFieldName }}" id="{{ inputFieldName }}-true" type="radio" value="true" />
   <label for="{{ inputFieldName }}-true">True</label>
-
   <input name="{{ inputFieldName }}" id="{{ inputFieldName }}-false" type="radio" value="false" />
   <label for="{{ inputFieldName }}-false">False</label>
 </div>
@@ -105,7 +103,7 @@
   {{#isDropdown}}
     <div class="vrtx-dropdown">
       <select id="{{ idstr }}select-{{ i }}"> </select>
-
+      
       {{! POPULATE DROPDOWN WITH PROP-VALUEMAP JS-ARRAY }}
       <script type="text/javascript"><!--
         $(function() {
@@ -133,3 +131,13 @@
   {{{ moveUpButton }}}
   {{{ moveDownButton }}}
 </div>
+
+### {{! TEXTFIELD }}
+
+<label for="{{id}}">{{label}}</label>
+<input type="textfield" id="{{id}}" name="{{name}}" />
+
+### {{! ACCORDION }}
+
+<h{{level}} class="accordion">{{title}}</h{{level}}>
+<div class="accordion-content">{{content}}</div>

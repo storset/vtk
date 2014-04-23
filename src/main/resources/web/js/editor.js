@@ -84,7 +84,7 @@ $(document).ready(function () {
     vrtxEdit.richtextEditorFacade.setupMultiple(false);
     return; /* Exit if not is in admin or have regular editor */
   }
-
+  
   vrtxAdmin.cacheDOMNodesForReuse();
 
   // Skip UI helper as first element in editor
@@ -280,7 +280,7 @@ VrtxEditor.prototype.richtextEditorFacade = {
   
     //  if (opts.isFrontpageBox) {
     //	config.format_tags = 'p;h3;h4;h5;h6;pre;div';
-    //  } 
+    //  }
 
     config.resize_enabled = opts.resizable;
     config.toolbarCanCollapse = false;

@@ -214,9 +214,7 @@ vrtxAdmin._$(document).ready(function () {
     vrtxAdm.initDomains();
   }, 25);
 
-  vrtxAdm.log({
-    msg: "Document.ready() in " + (+new Date() - startReadyTime) + "ms."
-  });
+  vrtxAdm.log({ msg: "Document.ready() in " + (+new Date() - startReadyTime) + "ms." });
 });
 
 
@@ -228,9 +226,7 @@ vrtxAdmin._$(window).load(function () {
   var vrtxAdm = vrtxAdmin;
   if (vrtxAdm.runReadyLoad === false) return; // Return if should not run load() code
 
-  vrtxAdm.log({
-    msg: "Window.load() in " + (+new Date() - startLoadTime) + "ms."
-  });
+  vrtxAdm.log({ msg: "Window.load() in " + (+new Date() - startLoadTime) + "ms." });
 });
 
 

@@ -25,6 +25,7 @@
  * @constructor
  */
 function VrtxEditor() {
+  /** The editor form */
   this.editorForm = null;
 
   /** Text input fields at init */
@@ -51,6 +52,7 @@ function VrtxEditor() {
 
   this.multipleFieldsBoxes = {}; /* Make sure every new field and box have unique id's (important for CK-fields) */
   
+  /** These needs better names. */
   this.multipleFieldsBoxesTemplates = [];
   this.multipleFieldsBoxesDeferred = null;
   this.multipleFieldsBoxesAccordionSwitchThenScrollTo = null;

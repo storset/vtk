@@ -26,6 +26,7 @@
       // Build JSON elements
       vrtxEditor.multipleBoxesTemplatesContractBuilt = $.Deferred();
       <#assign i = 0 />
+      
       <#list form.elements as elementBox>
         <#assign j = 0 />
         <#list elementBox.formElements as elem>
@@ -67,7 +68,6 @@
       </#list>
 
       vrtxEditor.multipleBoxesTemplatesContractBuilt.resolve();
-      
       initJsonMovableElements();
       
     });

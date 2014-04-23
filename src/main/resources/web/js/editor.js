@@ -129,9 +129,7 @@ $(window).load(function () {
           ((typeof JSON_ELEMENTS_INITIALIZED === "object") ? JSON_ELEMENTS_INITIALIZED : nullDeferred),
           ((typeof DATE_PICKER_INITIALIZED === "object") ? DATE_PICKER_INITIALIZED : nullDeferred),
           ((typeof IMAGE_EDITOR_INITIALIZED === "object") ? IMAGE_EDITOR_INITIALIZED : nullDeferred)).done(function () {
-    vrtxAdm.log({
-      msg: "Editor initialized."
-    });
+    vrtxAdm.log({ msg: "Editor initialized." });
     storeInitPropValues(vrtxAdm.cachedContent);
   });
 
@@ -518,7 +516,10 @@ vrtxEditor.richtextEditorFacade.divContainerStylesSet = [
   { name: 'Img & capt right (200px)',   element: 'div', attributes: { 'class': 'vrtx-container vrtx-container-size-xxs vrtx-container-right' } }
 ];
 
-/* Functions for generating editor config based on classification */
+/* Functions for generating editor config based on classification
+ *
+ * TODO: any better way to write this short and concise
+ */
 
 VrtxEditor.prototype.setupEditorHeight = function setupEditorHeight(c, opts) {
   return opts.isCompleteEditor ? ((c.isContent || c.isCourseGroup) ? 400 : (c.isSupervisorBox ? 130 : (c.isCourseDescriptionB ? 200 : 220)))
@@ -802,8 +803,9 @@ VrtxEditor.prototype.initPreviewImage = function initPreviewImage() {
   var pictureAlt = introImageAndCaption.next(".pictureAlt");
   if(caption.length)     injectionPoint.append(caption.remove());
   if(hidePicture.length) injectionPoint.append(hidePicture.remove());
-  if(pictureAlt.length)  injectionPoint.append(pictureAlt.remove());
-  if(!pictureAlt.length)  {
+  if(pictureAlt.length) {
+    injectionPoint.append(pictureAlt.remove());
+  } else {
     pictureAlt = introImageAndCaption.find(".pictureAlt");
     injectionPoint.append(pictureAlt.remove());
   }

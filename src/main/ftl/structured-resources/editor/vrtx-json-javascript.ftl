@@ -1,5 +1,5 @@
 <#ftl strip_whitespace=true>
-<#-- JSON elements/boxes interaction in new documenttypes (add, remove and move etc.) -->
+<#-- JSON contract -->
 
 <#macro script>
   <#assign locale = springMacroRequestContext.getLocale() />

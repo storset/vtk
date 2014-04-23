@@ -107,7 +107,7 @@
     <!-- Some columns from 'extra_prop_entry' -->
     <result property="name" column="name" />
     <result property="namespace" column="name_space" />
-    <result property="propId" column="extra_prop_entry_id" />
+    <result property="propId" column="extra_prop_entry_id" javaType="int" />
     <result property="value" column="value" />
     <result property="binary" column="is_binary"
             typeHandler="org.vortikal.repository.store.db.ibatis.BooleanCharTypeHandlerCallback"/>

@@ -978,43 +978,104 @@ VrtxEditor.prototype.initEnhancements = function initEnhancements() {
 
   vrtxEdit.setShowHideSelectNewEditor();
   
-  
+  // JSON "complex"
   if(vrtxEdit.editorForm.hasClass("vrtx-course-schedule")) {
-    var retrievedScheduleData = null;
+    /*
+    var retrievedScheduleData = {
+        "courseid": "EXPHIL03",
+        "terminnr": 1,
+        "plenary": [{
+          "teachingmethod": "FOR",
+          "teachingmethodname": "Forelesninger",
+          "id": "1-1",
+          "sessions": [{
+            "id": "1-1/1/3",
+            "seqno": 1,
+            "dtstart": "2014-01-13T12:15:00.000+01:00",
+            "dtend": "2014-01-13T14:00:00.000+01:00",
+            "weeknr": 3,
+            "status": "active",
+            "title": "Forelesning I",
+            "room": [{
+              "buildingid": "BL27",
+              "roomid": "1501"
+            }]
+          }]
+        }]
+     };
+    */
     var retrievedScheduleDeferred = $.Deferred();
+
     vrtxAdmin.serverFacade.getJSON(".?action=course-schedule", {
       success: function(data, xhr, textStatus) {
         retrievedScheduleData = data;
         retrievedScheduleDeferred.resolve();
       },
       error: function(xhr, textStatus) {
-        if(textStatus === "parsererror") {
-          
+        if(textStatus === "parsererror") { // Running vortikal
+          retrievedScheduleDeferred.resolve();
         }
       }
     });
+          
     $.when(retrievedScheduleDeferred).done(function() {
-      var html = "";
       if(retrievedScheduleData == null)  return;
-
-      var activities = retrievedScheduleData.activities;
-      for(var i = 0, len = activities.length; i < len; i++) {
-        html += "<h2 class='accordion'>" + activities[i].teachingmethodname + "</h2>";
-        html += "<div class='accordion-content'>";
-        var sessions = activities[i].sessions;
-        for(var j = 0, len2 = sessions.length; j < len2; j++) {
-          html += "<h3 class='accordion'>" + (sessions[j].title || sessions[j].id) + "</h3>";
-          html += "<div class='accordion-content'>"
-          html += "</div>";
-        }
-        html += "</div>";
+      
+      var html = "";
+      var plenary = retrievedScheduleData.plenary;
+      
+      var formatTime = function(t) {
+        return t === 0 ? "00" : t;
+      };
+      
+      var formatDate = function(s, e) {
+        return s.toLocaleDateString()
+                + " - kl " +
+                formatTime(s.getHours()) + ":" + formatTime(s.getMinutes()) + "&ndash;" +
+                formatTime(e.getHours()) + ":" + formatTime(e.getMinutes());
+      };
+      
+      // TODO: Mustache templates for HTML
+      for(var i = 0, len = plenary.length; i < len; i++) {
+        var pl = plenary[i];
+        html += "<div class='vrtx-grouped'>"
+          html += "<div>"
+            html += "<h2 class='header' id='" + pl.teachingmethod.toLowerCase() + "-" + pl.id + "'>" + pl.teachingmethodname + "</h2>";
+            html += "<div class='accordion-content'>";
+            var sessions = plenary[i].sessions;
+            // TODO: add to DOM onActivate
+            for(var j = 0, len2 = sessions.length; j < len2; j++) {
+              var session = sessions[j];
+              var sessionStart = new Date(session.dtstart);
+              var sessionEnd = new Date(session.dtend);
+              html += "<h3 class='sub-header'>" + formatDate(sessionStart, sessionEnd) + " " + (session.title || session.id) + "</h3>";
+              html += "<div class='accordion-content'>"
+              html += "</div>";
+            }
+            html += "</div></div></div>";
       }
-      $("#activities").append(html);
+      
+      // Add to DOM
+      $(".properties").prepend(html);
+      
+      // Accordion initialize
+      var opts = {
+        elem: vrtxEditor.editorForm.find(".vrtx-grouped"),
+        headerSelector: "h2",
+        onActivate: function (e, ui, accordion) {
+          
+        },
+        animationSpeed: 200
+      };
+      var acc = new VrtxAccordion(opts);
+      acc.create();
+      opts.elem.addClass("fast");
+      
     });
   }
 
   if (vrtxEdit.editorForm.hasClass("vrtx-hvordan-soke")) {
-    vrtxEdit.accordionGroupedInit();s
+    vrtxEdit.accordionGroupedInit();
   } else if (vrtxEdit.editorForm.hasClass("vrtx-course-description")) {
     setShowHideBooleanNewEditor("course-fee", "div.course-fee-amount", false);
     vrtxEdit.accordionGroupedInit();

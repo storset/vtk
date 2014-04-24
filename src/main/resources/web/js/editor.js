@@ -977,9 +977,44 @@ VrtxEditor.prototype.initEnhancements = function initEnhancements() {
     "calendar");
 
   vrtxEdit.setShowHideSelectNewEditor();
+  
+  
+  if(vrtxEdit.editorForm.hasClass("vrtx-course-schedule")) {
+    var retrievedScheduleData = null;
+    var retrievedScheduleDeferred = $.Deferred();
+    vrtxAdmin.serverFacade.getJSON(".?action=course-schedule", {
+      success: function(data, xhr, textStatus) {
+        retrievedScheduleData = data;
+        retrievedScheduleDeferred.resolve();
+      },
+      error: function(xhr, textStatus) {
+        if(textStatus === "parsererror") {
+          
+        }
+      }
+    });
+    $.when(retrievedScheduleDeferred).done(function() {
+      var html = "";
+      if(retrievedScheduleData == null)  return;
+
+      var activities = retrievedScheduleData.activities;
+      for(var i = 0, len = activities.length; i < len; i++) {
+        html += "<h2 class='accordion'>" + activities[i].teachingmethodname + "</h2>";
+        html += "<div class='accordion-content'>";
+        var sessions = activities[i].sessions;
+        for(var j = 0, len2 = sessions.length; j < len2; j++) {
+          html += "<h3 class='accordion'>" + (sessions[j].title || sessions[j].id) + "</h3>";
+          html += "<div class='accordion-content'>"
+          html += "</div>";
+        }
+        html += "</div>";
+      }
+      $("#activities").append(html);
+    });
+  }
 
   if (vrtxEdit.editorForm.hasClass("vrtx-hvordan-soke")) {
-    vrtxEdit.accordionGroupedInit();
+    vrtxEdit.accordionGroupedInit();s
   } else if (vrtxEdit.editorForm.hasClass("vrtx-course-description")) {
     setShowHideBooleanNewEditor("course-fee", "div.course-fee-amount", false);
     vrtxEdit.accordionGroupedInit();

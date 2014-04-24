@@ -25,6 +25,13 @@
       
       // Build JSON elements
       vrtxEditor.multipleBoxesTemplatesContractBuilt = $.Deferred();
+      
+      if($("form.vrtx-course-schedule").length) {
+        vrtxEditor.multipleBoxesTemplatesContractBuilt.resolve();
+        JSON_ELEMENTS_INITIALIZED.resolve();
+        return;
+      }
+
       <#assign i = 0 />
       
       <#list form.elements as elementBox>

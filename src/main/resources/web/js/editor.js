@@ -1005,7 +1005,6 @@ VrtxEditor.prototype.initEnhancements = function initEnhancements() {
      };
     */
     var retrievedScheduleDeferred = $.Deferred();
-
     vrtxAdmin.serverFacade.getJSON(".?action=course-schedule", {
       success: function(data, xhr, textStatus) {
         retrievedScheduleData = data;
@@ -1023,12 +1022,15 @@ VrtxEditor.prototype.initEnhancements = function initEnhancements() {
       
       var html = "";
       var plenary = retrievedScheduleData.plenary;
+      var sessionsLookup = {};
       
       var formatTime = function(t) {
         return t === 0 ? "00" : t;
       };
       
       var formatDate = function(s, e) {
+        s = new Date(s);
+        e = new Date(e);
         return s.toLocaleDateString()
                 + " - kl " +
                 formatTime(s.getHours()) + ":" + formatTime(s.getMinutes()) + "&ndash;" +
@@ -1038,39 +1040,48 @@ VrtxEditor.prototype.initEnhancements = function initEnhancements() {
       // TODO: Mustache templates for HTML
       for(var i = 0, len = plenary.length; i < len; i++) {
         var pl = plenary[i];
-        html += "<div class='vrtx-grouped'>"
-          html += "<div>"
-            html += "<h2 class='header' id='" + pl.teachingmethod.toLowerCase() + "-" + pl.id + "'>" + pl.teachingmethodname + "</h2>";
-            html += "<div class='accordion-content'>";
-            var sessions = plenary[i].sessions;
-            // TODO: add to DOM onActivate
-            for(var j = 0, len2 = sessions.length; j < len2; j++) {
-              var session = sessions[j];
-              var sessionStart = new Date(session.dtstart);
-              var sessionEnd = new Date(session.dtend);
-              html += "<h3 class='sub-header'>" + formatDate(sessionStart, sessionEnd) + " " + (session.title || session.id) + "</h3>";
-              html += "<div class='accordion-content'>"
-              html += "</div>";
-            }
-            html += "</div></div></div>";
+        var plShort = pl.teachingmethod.toLowerCase();
+        var id = plShort + "-" + pl.id;
+        
+        html += "<div><h2 class='header' id='" + id + "'>" + pl.teachingmethodname + "</h2><div class='accordion-content'>";
+
+        // Store sessions in lookup object
+        var sessions = plenary[i].sessions;
+        var sessionsHtml = "";
+        for(var j = 0, len2 = sessions.length; j < len2; j++) {
+          var session = sessions[j];
+          var sessionId = plShort + "-" + session.id.replace(/\//g, "-");
+          sessionsHtml += "<h3 class='sub-header' id='" + sessionId + "'>" + formatDate(session.dtstart, session.dtend) + " " + (session.title || session.id) + "</h3>" +
+                          "<div class='accordion-content'>" +
+                          "</div>";
+        }
+        sessionsLookup[id] = sessionsHtml;
+        
+        html += "</div></div>";
       }
       
       // Add to DOM
-      $(".properties").prepend(html);
+      $(".properties").prepend("<div class='vrtx-grouped'>" + html + "</div>");
       
       // Accordion initialize
       var opts = {
         elem: vrtxEditor.editorForm.find(".vrtx-grouped"),
         headerSelector: "h2",
         onActivate: function (e, ui, accordion) {
-          
+          // Lookup sessions and add to DOM
+          if(ui.newHeader[0]) {
+            var id = ui.newHeader[0].id;
+            var contentWrp = $("#" + id).parent().find(".accordion-content");
+            if(!contentWrp.children().length) { // If not already added
+              contentWrp.html(sessionsLookup[id]);
+            }
+          }
         },
         animationSpeed: 200
       };
       var acc = new VrtxAccordion(opts);
       acc.create();
       opts.elem.addClass("fast");
-      
     });
   }
 

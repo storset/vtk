@@ -1031,7 +1031,7 @@ VrtxEditor.prototype.initEnhancements = function initEnhancements() {
       var formatDate = function(s, e) {
         s = new Date(s);
         e = new Date(e);
-        return s.toLocaleDateString()
+        return s.getDate() + ". " + (s.getMonth() + 1) + " " + s.getFullYear() // TODO: i18n for month
                 + " - kl " +
                 formatTime(s.getHours()) + ":" + formatTime(s.getMinutes()) + "&ndash;" +
                 formatTime(e.getHours()) + ":" + formatTime(e.getMinutes());

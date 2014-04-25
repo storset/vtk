@@ -7148,8 +7148,10 @@ VrtxEditor.prototype.initEnhancements = function initEnhancements() {
       }
     });
     */
-          
-    $.when(retrievedScheduleDeferred).done(function() {
+    
+    initMultipleInputFields();
+   
+    $.when(retrievedScheduleDeferred, vrtxEditor.multipleFieldsBoxesDeferred).done(function() {
       if(retrievedScheduleData == null)  return;
       
       var html = "";
@@ -7175,7 +7177,7 @@ VrtxEditor.prototype.initEnhancements = function initEnhancements() {
       };
       
       var formatDate = function(s, e) {
-        // IE8 sucks: http://www.digital-portfolio.net/blog/view/ie8-and-iso-date-format
+        // IE8 doesn't: http://www.digital-portfolio.net/blog/view/ie8-and-iso-date-format
         var sd = s.split("T")[0].split("-");
         var st = s.split("T")[1].split(".")[0].split(":");
         var et = e.split("T")[1].split(".")[0].split(":");
@@ -7191,7 +7193,7 @@ VrtxEditor.prototype.initEnhancements = function initEnhancements() {
         var id = plShort + "-" + pl.id;
         
         // Add markup in start
-        html += "<div><h2 class='header' id='" + id + "'>" + pl.teachingmethodname + "</h2><div class='accordion-content'>";
+        html += "<div>";
 
         // Store sessions in lookup object
         var sessions = plenary[i].sessions;
@@ -7199,16 +7201,17 @@ VrtxEditor.prototype.initEnhancements = function initEnhancements() {
         for(var j = 0, len2 = sessions.length; j < len2; j++) {
           var session = sessions[j];
           var sessionId = plShort + "-" + session.id.replace(/\//g, "-");
-          sessionsHtml += "<h3 class='sub-header' id='" + sessionId + "'>" + formatDate(session.dtstart, session.dtend) + " " + (session.title || session.id) + "</h3>" +
-                          "<div class='accordion-content'>" +
-                          "</div>";
+          var sessionTitle = formatDate(session.dtstart, session.dtend) + " " + (session.title || session.id);
+          sessionsHtml += vrtxEditor.htmlFacade.getAccordionInteraction("3", sessionId, sessionTitle, "");
         }
         sessionsLookup[id] = sessionsHtml;
         
+        html += vrtxEditor.htmlFacade.getAccordionInteraction("2", id, pl.teachingmethodname, "");
+        
         // Add markup in end
-        html += "</div></div>";
+        html += "</div>";
       }
-      
+
       // Add to DOM
       $(".properties").prepend("<div class='vrtx-grouped'>" + html + "</div>");
       
@@ -7379,7 +7382,7 @@ function getMultipleFieldsBoxesTemplates() {
     vrtxEditor.multipleFieldsBoxesTemplates = vrtxAdmin.templateEngineFacade.get("multiple-fields-boxes", 
       ["string", "html", "radio", "dropdown", "date", "browse",
        "browse-images", "add-remove-move", "button", "add-button",
-       "multiple-inputfield"],
+       "multiple-inputfield", "accordion"],
     vrtxEditor.multipleFieldsBoxesDeferred);
   }
 }
@@ -7872,6 +7875,14 @@ VrtxEditor.prototype.htmlFacade = {
     return vrtxAdmin.templateEngineFacade.render(vrtxEditor.multipleFieldsBoxesTemplates["add-remove-move"], {
       clazz: clazz,
       buttonText: text
+    });
+  },
+  getAccordionInteraction: function (level, id, title, content) {
+    return vrtxAdmin.templateEngineFacade.render(vrtxEditor.multipleFieldsBoxesTemplates["accordion"], {
+      level: level,
+      id: id,
+      title: title,
+      content: content
     });
   },
   /* 

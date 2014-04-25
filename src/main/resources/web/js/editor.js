@@ -19212,7 +19212,7 @@ VrtxEditor.prototype.initEnhancements = function initEnhancements() {
       if(retrievedScheduleData == null)  return;
       
       var isEn = vrtxAdmin.lang == "en";
-      var i18nMonth = {
+      var i18n = {
         "01": "jan",
         "02": "feb",
         "03": "mar",
@@ -19224,14 +19224,11 @@ VrtxEditor.prototype.initEnhancements = function initEnhancements() {
         "09": "sept",
         "10": (isEn ? "oct" : "okt"),
         "11": (isEn ? "nov" : "nov"),
-        "12": (isEn ? "dec" : "des")
-      };
-      
-      var i18n = {
+        "12": (isEn ? "dec" : "des"),
         room: (isEn ? "room" : "rom"),
-        title: (isEn ? "Title" : "Tittel"),
-        staff: (isEn ? "Staff" : "Foreleser"),
-        resources: (isEn ? "Resources" : "Ressurser"),
+        title: (isEn ? "Title:" : "Tittel:"),
+        staff: (isEn ? "Staff:" : "Foreleser:"),
+        resources: (isEn ? "Resources:" : "Ressurser:"),
         status: (isEn ? "Cancel" : "Avlys")
       };
       
@@ -19240,7 +19237,7 @@ VrtxEditor.prototype.initEnhancements = function initEnhancements() {
         var sd = s.split("T")[0].split("-");
         var st = s.split("T")[1].split(".")[0].split(":");
         var et = e.split("T")[1].split(".")[0].split(":");
-        return sd[2] + ". " + i18nMonth[sd[1]] + " " + sd[0] + " - kl " +
+        return sd[2] + ". " + i18n[sd[1]] + " " + sd[0] + " - kl " +
                st[0] + ":" + st[1] + "&ndash;" +
                et[0] + ":" + et[1];
       };
@@ -19284,7 +19281,7 @@ VrtxEditor.prototype.initEnhancements = function initEnhancements() {
           var sessionContentVrtxStatusVal = session["vrtx-status"];
           var sessionContentHtml = vrtxEditor.htmlFacade.getStringField({title: i18n.title, name: "vrtx-title-" + sessionId, id: "vrtx-title-" + sessionId, 
                                                                          val: sessionContentVrtxTitleVal}, "vrtx-title") +
-                                   vrtxEditor.htmlFacade.getStringField({title: i18n.staff, name: "vrtx-staff-" + sessionId, id: "vrtx-staff-" + sessionId,
+                                   vrtxEditor.htmlFacade.getStringField({title: i18n.staff, name: "vrtx-autocomplete-username vrtx-staff-" + sessionId, id: "vrtx-staff-" + sessionId,
                                                                          val: sessionContentVrtxStaffVal}, "vrtx-staff") +
                                    vrtxEditor.htmlFacade.getStringField({title: i18n.resources, name: "vrtx-resources-" + sessionId, id: "vrtx-resources-" + sessionId,
                                                                          val: sessionContentVrtxResourcesVal}, "vrtx-resources") +

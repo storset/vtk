@@ -7175,6 +7175,7 @@ VrtxEditor.prototype.initEnhancements = function initEnhancements() {
       };
       
       var formatDate = function(s, e) {
+        // IE8 sucks: http://www.digital-portfolio.net/blog/view/ie8-and-iso-date-format
         var sd = s.split("T")[0].split("-");
         var st = s.split("T")[1].split(".")[0].split(":");
         var et = e.split("T")[1].split(".")[0].split(":");

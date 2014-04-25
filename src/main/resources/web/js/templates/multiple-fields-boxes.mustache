@@ -1,8 +1,8 @@
 {{! STRING }}
 
 <div class="{{ classes }}">
-  <label for="{{ inputFieldName  }}">{{ elemTitle }}</label>
-  <input class="vrtx-textfield inputfield" size="40" type="text" name="{{ inputFieldName }}" id="{{ inputFieldName }}" />
+  <label for="{{ elemId  }}">{{ elemTitle }}</label>
+  <input class="vrtx-textfield inputfield" size="40" type="text" name="{{ inputFieldName }}" value="{{ elemVal }}" id="{{ elemId }}" />
 </div>
 
 ### {{! HTML }}
@@ -22,6 +22,13 @@
   <label for="{{ inputFieldName }}-true">True</label>
   <input name="{{ inputFieldName }}" id="{{ inputFieldName }}-false" type="radio" value="false" />
   <label for="{{ inputFieldName }}-false">False</label>
+</div>
+
+### {{! CHECKBOX }}
+
+<div class="vrtx-checkbox">
+  <input name="{{ inputFieldName }}" id="{{ elemId }}" type="checkbox" {{#elemChecked}}checked="checked"{{/elemChecked}} />
+  <label for="{{ elemId }}">{{ elemTitle }}</label>
 </div>
 
 ### {{! DROPDOWN }}
@@ -133,6 +140,7 @@
 </div>
 
 ### {{! ACCORDION }}
-
-<h{{level}} class="header" id="{{id}}">{{title}}</h{{level}}>
-<div class="accordion-content">{{content}}</div>
+<div>
+  <h{{level}} class="header" id="{{id}}">{{title}}</h{{level}}>
+  <div class="accordion-content">{{{content}}}</div>
+</div>

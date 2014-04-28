@@ -130,7 +130,8 @@ $(window).load(function () {
           ((typeof MULTIPLE_INPUT_FIELD_INITIALIZED === "object") ? MULTIPLE_INPUT_FIELD_INITIALIZED : nullDeferred),
           ((typeof JSON_ELEMENTS_INITIALIZED === "object") ? JSON_ELEMENTS_INITIALIZED : nullDeferred),
           ((typeof DATE_PICKER_INITIALIZED === "object") ? DATE_PICKER_INITIALIZED : nullDeferred),
-          ((typeof IMAGE_EDITOR_INITIALIZED === "object") ? IMAGE_EDITOR_INITIALIZED : nullDeferred)).done(function () {
+          ((typeof IMAGE_EDITOR_INITIALIZED === "object") ? IMAGE_EDITOR_INITIALIZED : nullDeferred),
+          ((typeof JSON_COMPLEX_EDITOR_INITIALIZED === "object") ? JSON_COMPLEX_EDITOR_INITIALIZED : nullDeferred)).done(function () {
     vrtxAdm.log({ msg: "Editor initialized." });
     storeInitPropValues(vrtxAdm.cachedContent);
   });
@@ -655,10 +656,22 @@ function storeInitPropValues(contents) {
   var checkboxes = contents.find("input[type=checkbox]:checked");
   var radioButtons = contents.find("input[type=radio]:checked");
 
-  for (var i = 0, len = inputFields.length; i < len; i++) vrtxEdit.editorInitInputFields[i] = inputFields[i].value;
-  for (i = 0, len = selects.length; i < len; i++) vrtxEdit.editorInitSelects[i] = selects[i].value;
-  for (i = 0, len = checkboxes.length; i < len; i++) vrtxEdit.editorInitCheckboxes[i] = checkboxes[i].name;
-  for (i = 0, len = radioButtons.length; i < len; i++) vrtxEdit.editorInitRadios[i] = radioButtons[i].name + " " + radioButtons[i].value;
+  var len1 = vrtxEdit.editorInitInputFields.length;
+  for (var i = 0, len = inputFields.length; i < len; i++) {
+    vrtxEdit.editorInitInputFields[len1+i] = inputFields[i].value;
+  }
+  var len2 = vrtxEdit.editorInitSelects.length;
+  for (i = 0, len = selects.length; i < len; i++) {
+    vrtxEdit.editorInitSelects[len2+i] = selects[i].value;
+  }
+  var len3 = vrtxEdit.editorInitCheckboxes.length;
+  for (i = 0, len = checkboxes.length; i < len; i++) {
+    vrtxEdit.editorInitCheckboxes[len3+i] = checkboxes[i].name;
+  }
+  var len4 = vrtxEdit.editorInitRadios.length;
+  for (i = 0, len = radioButtons.length; i < len; i++) {
+    vrtxEdit.editorInitRadios[len4+i] = radioButtons[i].name + " " + radioButtons[i].value;
+  }
 }
 
 function unsavedChangesInEditor() {
@@ -19210,105 +19223,30 @@ VrtxEditor.prototype.initEnhancements = function initEnhancements() {
    
     $.when(retrievedScheduleDeferred, vrtxEditor.multipleFieldsBoxesDeferred).done(function() {
       if(retrievedScheduleData == null)  return;
-      
-      var isEn = vrtxAdmin.lang == "en";
-      var i18n = {
-        "01": "jan",
-        "02": "feb",
-        "03": "mar",
-        "04": "apr",
-        "05": (isEn ? "may" : "mai"),
-        "06": "jun",
-        "07": "jul",
-        "08": "aug",
-        "09": "sept",
-        "10": (isEn ? "oct" : "okt"),
-        "11": (isEn ? "nov" : "nov"),
-        "12": (isEn ? "dec" : "des"),
-        room: (isEn ? "room" : "rom"),
-        title: (isEn ? "Title:" : "Tittel:"),
-        staff: (isEn ? "Staff:" : "Foreleser:"),
-        resources: (isEn ? "Resources:" : "Ressurser:"),
-        status: (isEn ? "Cancel" : "Avlys")
-      };
-      
-      var formatDate = function(s, e) {
-        /* IE8 doesn't parse Date based on timestamp: http://www.digital-portfolio.net/blog/view/ie8-and-iso-date-format */
-        var sd = s.split("T")[0].split("-");
-        var st = s.split("T")[1].split(".")[0].split(":");
-        var et = e.split("T")[1].split(".")[0].split(":");
-        return sd[2] + ". " + i18n[sd[1]] + " " + sd[0] + " - kl " +
-               st[0] + ":" + st[1] + "&ndash;" +
-               et[0] + ":" + et[1];
-      };
-      
-      var html = "";
 
-      var plenary = retrievedScheduleData.plenary;
       var sessionsLookup = {};
-
-      for(var i = 0, len = plenary.length; i < len; i++) {
-        var pl = plenary[i];
-        var plShort = pl.teachingmethod.toLowerCase();
-        var id = plShort + "-" + pl.id;
-
-        // Store sessions in lookup object
-        var sessions = plenary[i].sessions;
-        var sessionsHtml = "";
-        sessionsLookup[id] = {};
-        sessionsLookup[id].ids = [];
-        for(var j = 0, len2 = sessions.length; j < len2; j++) {
-          var session = sessions[j];
-          var sessionId = plShort + "-" + session.id.replace(/\//g, "-");
-          sessionsLookup[id].ids.push(sessionId);
-          
-          var sessionTitle = formatDate(session.dtstart, session.dtend) + " " +
-                             (session["vrtx-title"] || session.title || session.id) +
-                             (session.room ? " - " + (session.room[0].buildingid + " " + i18n.room + " " + session.room[0].roomid) : "");
-                             
-          var sessionContentVrtxTitleVal = session["vrtx-title"];
-          var sessionContentVrtxStaffVal = (session["vrtx-staff"] ? session["vrtx-staff"].join(", ") : "")           
-          var sessionContentVrtxResourcesVal = (function() {
-            var vrtxResourcesVal = "";
-            var vrtxResources = session["vrtx-resources"];
-            if(vrtxResources) {
-              for(var k = 0, len3 = vrtxResources.length; k < len3; k++) {
-                vrtxResourcesVal += vrtxResources[k].title + "###" + vrtxResources[k].url + ","
-              }
-            }
-            return vrtxResourcesVal;
-          })();
-          var sessionContentVrtxStatusVal = session["vrtx-status"];
-          var sessionContentHtml = vrtxEditor.htmlFacade.getStringField({title: i18n.title, name: "vrtx-title-" + sessionId, id: "vrtx-title-" + sessionId, 
-                                                                         val: sessionContentVrtxTitleVal}, "vrtx-title") +
-                                   vrtxEditor.htmlFacade.getStringField({title: i18n.staff, name: "vrtx-autocomplete-username vrtx-staff-" + sessionId, id: "vrtx-staff-" + sessionId,
-                                                                         val: sessionContentVrtxStaffVal}, "vrtx-staff") +
-                                   vrtxEditor.htmlFacade.getStringField({title: i18n.resources, name: "vrtx-resources-" + sessionId, id: "vrtx-resources-" + sessionId,
-                                                                         val: sessionContentVrtxResourcesVal}, "vrtx-resources") +
-                                   vrtxEditor.htmlFacade.getCheckboxField({title: i18n.status, name: "vrtx-status-" + sessionId, id: "vrtx-status-" + sessionId,
-                                                                           checked: sessionContentVrtxStatusVal}, "vrtx-resources");
-          sessionsHtml += vrtxEditor.htmlFacade.getAccordionInteraction("4", sessionId, sessionTitle, sessionContentHtml);
-        }
-        sessionsLookup[id].html = sessionsHtml;
-
-        html += vrtxEditor.htmlFacade.getAccordionInteraction("3", id, pl.teachingmethodname, "");
-      }
-
-      // Add to DOM
-      $(".properties").prepend("<div class='vrtx-grouped'>" + html + "</div>");
       
+      // Generate HTML
+      var html = "";
+      for(var type in retrievedScheduleData) {
+        html += generateCourseScheduleHTMLForType(retrievedScheduleData, type, sessionsLookup);
+      }
+      
+      // Add HTML to DOM
+      $(".properties").prepend("<div class='vrtx-grouped'>" + html + "</div>");
+       
       // Accordion initialize
       var opts = {
         elem: vrtxEditor.editorForm.find(".vrtx-grouped"),
         headerSelector: "h3",
         onActivate: function (e, ui, accordion) {
-          // Lookup sessions and add to DOM
+          // Lookup and add sessions HTML to DOM
           if(ui.newHeader[0]) {
             var id = ui.newHeader[0].id;
             var contentWrp = $("#" + id).parent().find(".accordion-content");
             if(!contentWrp.children().length) { // If not already added
               contentWrp.html("<div class='vrtx-grouped'>" + sessionsLookup[id].html + "</div>");
-              
+               
               var opts2 = {
                 elem: contentWrp.find(".vrtx-grouped"),
                 headerSelector: "h4",
@@ -19318,9 +19256,10 @@ VrtxEditor.prototype.initEnhancements = function initEnhancements() {
               acc2.create();
               opts2.elem.addClass("fast");
               for(var i = 0, len = sessionsLookup[id].ids.length; i < len; i++) {
-                enhanceMultipleInputFields("vrtx-staff-" + sessionsLookup[id].ids[i], true, false, 999);
-                enhanceMultipleInputFields("vrtx-resources-" + sessionsLookup[id].ids[i], true, true, 999);
+                enhanceMultipleInputFields("vrtx-staff-" + sessionsLookup[id].ids[i], true, false, 20);
+                enhanceMultipleInputFields("vrtx-resources-" + sessionsLookup[id].ids[i], true, true, 50);
               }
+              storeInitPropValues(contentWrp);
             }
           }
         },
@@ -19329,6 +19268,7 @@ VrtxEditor.prototype.initEnhancements = function initEnhancements() {
       var acc = new VrtxAccordion(opts);
       acc.create();
       opts.elem.addClass("fast");
+      JSON_ELEMENTS_INITIALIZED.resolve();
     });
   } else if (vrtxEdit.editorForm.hasClass("vrtx-hvordan-soke")) {
     vrtxEdit.accordionGroupedInit();
@@ -19352,6 +19292,90 @@ VrtxEditor.prototype.initEnhancements = function initEnhancements() {
     vrtxEdit.replaceTag(samletElm, "h1", "h2");
   }
 };
+
+function generateCourseScheduleHTMLForType(data, type, sessionsLookup) {
+  var isEn = vrtxAdmin.lang == "en";
+  var i18n = {
+    "01": "jan",
+    "02": "feb",
+    "03": "mar",
+    "04": "apr",
+    "05": (isEn ? "may" : "mai"),
+    "06": "jun",
+    "07": "jul",
+    "08": "aug",
+    "09": "sept",
+    "10": (isEn ? "oct" : "okt"),
+    "11": (isEn ? "nov" : "nov"),
+    "12": (isEn ? "dec" : "des"),
+    room: (isEn ? "room" : "rom"),
+    title: (isEn ? "Title:" : "Tittel:"),
+    staff: (isEn ? "Staff:" : "Foreleser:"),
+    resources: (isEn ? "Resources:" : "Ressurser:"),
+    status: (isEn ? "Cancel" : "Avlys")
+  };
+      
+  var formatDate = function(s, e) {
+    /* IE8: http://www.digital-portfolio.net/blog/view/ie8-and-iso-date-format */
+    var sd = s.split("T")[0].split("-");
+    var st = s.split("T")[1].split(".")[0].split(":");
+    var et = e.split("T")[1].split(".")[0].split(":");
+    return sd[2] + ". " + i18n[sd[1]] + " " + sd[0] + " - kl " +
+           st[0] + ":" + st[1] + "&ndash;" +
+           et[0] + ":" + et[1];
+  };
+
+  var html = "";
+  var plenary = data[type];
+  for(var i = 0, len = plenary.length; i < len; i++) {
+   var pl = plenary[i];
+   var plShort = pl.teachingmethod.toLowerCase();
+   var id = plShort + "-" + pl.id;
+
+   // Store sessions in lookup object
+   var sessions = plenary[i].sessions;
+   var sessionsHtml = "";
+   sessionsLookup[id] = {};
+   sessionsLookup[id].ids = [];
+   for(var j = 0, len2 = sessions.length; j < len2; j++) {
+     var session = sessions[j];
+     var sessionId = plShort + "-" + session.id.replace(/\//g, "-");
+     sessionsLookup[id].ids.push(sessionId);
+          
+     var sessionTitle = formatDate(session.dtstart, session.dtend) + " " +
+                        (session["vrtx-title"] || session.title || session.id) +
+                        (session.room ? " - " + (session.room[0].buildingid + " " + i18n.room + " " + session.room[0].roomid) : "");
+                             
+     var sessionContentVrtxTitleVal = session["vrtx-title"];
+     var sessionContentVrtxStaffVal = (session["vrtx-staff"] ? session["vrtx-staff"].join(", ") : "")           
+     var sessionContentVrtxResourcesVal = (function() {
+     var vrtxResourcesVal = "";
+     var vrtxResources = session["vrtx-resources"];
+       if(vrtxResources) {
+         for(var k = 0, len3 = vrtxResources.length; k < len3; k++) {
+           vrtxResourcesVal += vrtxResources[k].title + "###" + vrtxResources[k].url + ","
+         }
+       }
+       return vrtxResourcesVal;
+     })();
+     var sessionContentVrtxStatusVal = session["vrtx-status"];
+     var sessionContentHtml = vrtxEditor.htmlFacade.getStringField({title: i18n.title, name: "vrtx-title-" + sessionId, id: "vrtx-title-" + sessionId, 
+                                                                    val: sessionContentVrtxTitleVal}, "vrtx-title") +
+                              vrtxEditor.htmlFacade.getStringField({title: i18n.staff, name: "vrtx-autocomplete-username vrtx-staff-" + sessionId, id: "vrtx-staff-" + sessionId,
+                                                                    val: sessionContentVrtxStaffVal}, "vrtx-staff") +
+                              vrtxEditor.htmlFacade.getStringField({title: i18n.resources, name: "vrtx-resources-" + sessionId, id: "vrtx-resources-" + sessionId,
+                                                                    val: sessionContentVrtxResourcesVal}, "vrtx-resources") +
+                              vrtxEditor.htmlFacade.getCheckboxField({title: i18n.status, name: "vrtx-status-" + sessionId, id: "vrtx-status-" + sessionId,
+                                                                      checked: sessionContentVrtxStatusVal}, "vrtx-resources");
+      sessionsHtml += vrtxEditor.htmlFacade.getAccordionInteraction("4", sessionId, sessionTitle, sessionContentHtml);
+    }
+    sessionsLookup[id].html = sessionsHtml;
+
+    html += vrtxEditor.htmlFacade.getAccordionInteraction("3", id, pl.teachingmethodname, "");
+  }
+
+  return html;
+}
 
 /*
  * Boolean switch show/hide

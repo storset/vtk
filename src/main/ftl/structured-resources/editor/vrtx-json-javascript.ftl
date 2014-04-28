@@ -20,17 +20,13 @@
     var JSON_ELEMENTS_INITIALIZED = $.Deferred();
     
     $(document).ready(function() {
+      if($("form.vrtx-course-schedule").length) return;
+
       // Retrieve HTML templates
       getMultipleFieldsBoxesTemplates();
       
       // Build JSON elements
       vrtxEditor.multipleBoxesTemplatesContractBuilt = $.Deferred();
-      
-      if($("form.vrtx-course-schedule").length) {
-        vrtxEditor.multipleBoxesTemplatesContractBuilt.resolve();
-        JSON_ELEMENTS_INITIALIZED.resolve();
-        return;
-      }
 
       <#assign i = 0 />
       

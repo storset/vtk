@@ -2625,6 +2625,12 @@ function ajaxSave() {
   
   if(!isServerLastModifiedOlderThanClientLastModified(d)) return false;
   
+  if(vrtxEdit.editorForm.hasClass("vrtx-course-schedule")) {
+    
+    
+    return;
+  }
+  
   var futureFormAjax = $.Deferred();
   if (typeof $.fn.ajaxSubmit !== "function") {
     var getScriptFn = (typeof $.cachedScript === "function") ? $.cachedScript : $.getScript;

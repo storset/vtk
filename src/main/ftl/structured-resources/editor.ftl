@@ -50,12 +50,6 @@
       _$("#editor").on("click", "#cancelAction", function(e) {
         vrtxEditor.needToConfirm = false;
       });
-      
-      // Save and versioning
-      _$("#editor").on("click", "#saveAndViewButton, #saveWorkingCopyAction, #makePublicVersionAction, #deleteWorkingCopyAction", function(e) {
-        var ok = performSave();
-        if(!ok) return false;
-      });
     });
     
     var CURRENT_RESOURCE_LANGAGE = "${resourceLocaleResolver.resolveLocale(null)?string}";

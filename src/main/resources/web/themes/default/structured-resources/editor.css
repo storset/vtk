@@ -290,6 +290,10 @@
   margin-top: 30px;
 }
 
+.ui-accordion > div > .header > .header-title {
+  padding-left: 50px;
+}
+
 /* ^ Accordion */
 
 /* Study enhancements */

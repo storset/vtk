@@ -172,6 +172,15 @@
   margin-bottom: 20px;
 }
 
+.accordion-title {
+  padding: 15px 15px 14px 18px;
+  margin-top: 2px;
+  margin-bottom: -3px;
+  background: #f9f9f9;
+  border: 1px solid #d9d9d9;
+  font-size: 1.15em;
+}
+
 .ui-accordion > div > .header.ui-accordion-header {
   padding: 15px 15px 14px 40px;
   border-radius: 0px;

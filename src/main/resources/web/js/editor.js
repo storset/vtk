@@ -16664,11 +16664,38 @@ function courseSchedule() {
   $.when(retrievedScheduleDeferred, vrtxEditor.multipleFieldsBoxesDeferred).done(function() {
     if(retrievedScheduleData == null)  return;
 
+    var isEn = vrtxAdmin.lang == "en",
+        i18n = {
+          "01": "jan",
+          "02": "feb",
+          "03": "mar",
+          "04": "apr",
+          "05": (isEn ? "may" : "mai"),
+          "06": "jun",
+          "07": "jul",
+          "08": "aug",
+          "09": "sept",
+          "10": (isEn ? "oct" : "okt"),
+          "11": (isEn ? "nov" : "nov"),
+          "12": (isEn ? "dec" : "des"),
+          room: (isEn ? "room" : "rom"),
+          titles: {
+            plenary: (isEn ? "Plenary teaching" : "Fellesundervisning"),
+            group: (isEn ? "Group teaching" : "Partiundervisning")
+          },
+          "vrtx-title": (isEn ? "Title:" : "Tittel:"),
+          "vrtx-staff": (isEn ? "Staff:" : "Foreleser:"),
+          "vrtx-resources": (isEn ? "Resources:" : "Ressurser:"),
+          "vrtx-status": (isEn ? "Cancel" : "Avlys")
+        };
+
     var sessionsLookup = {};
       
     // Generate HTML
-    var html = generateCourseScheduleHTMLForType(retrievedScheduleData, "plenary", sessionsLookup);
-    html += generateCourseScheduleHTMLForType(retrievedScheduleData, "group", sessionsLookup);
+    var html = "<div class='accordion-title'>" + i18n.titles.plenary + "</div>" +
+               generateCourseScheduleHTMLForType(retrievedScheduleData, "plenary", sessionsLookup, i18n) +
+               "<div class='accordion-title'>" + i18n.titles.group + "</div>" +
+               generateCourseScheduleHTMLForType(retrievedScheduleData, "group", sessionsLookup, i18n);
       
     // Add HTML to DOM
     $(".properties").prepend("<div class='vrtx-grouped'>" + html + "</div>");
@@ -16742,28 +16769,8 @@ function courseSchedule() {
   });
 }
 
-function generateCourseScheduleHTMLForType(json, type, sessionsLookup) {
-  var isEn = vrtxAdmin.lang == "en",
-      i18n = {
-        "01": "jan",
-        "02": "feb",
-        "03": "mar",
-        "04": "apr",
-        "05": (isEn ? "may" : "mai"),
-        "06": "jun",
-        "07": "jul",
-        "08": "aug",
-        "09": "sept",
-        "10": (isEn ? "oct" : "okt"),
-        "11": (isEn ? "nov" : "nov"),
-        "12": (isEn ? "dec" : "des"),
-        room: (isEn ? "room" : "rom"),
-        "vrtx-title": (isEn ? "Title:" : "Tittel:"),
-        "vrtx-staff": (isEn ? "Staff:" : "Foreleser:"),
-        "vrtx-resources": (isEn ? "Resources:" : "Ressurser:"),
-        "vrtx-status": (isEn ? "Cancel" : "Avlys")
-      },
-      generateCourseScheduleDateFunc = generateCourseScheduleDate,
+function generateCourseScheduleHTMLForType(json, type, sessionsLookup, i18n) {
+  var generateCourseScheduleDateFunc = generateCourseScheduleDate,
       generateCourseScheduleHTMLForSessionFunc = generateCourseScheduleHTMLForSession,
       jsonType = json[type],
       descs = jsonType["vrtx-editable-description"],

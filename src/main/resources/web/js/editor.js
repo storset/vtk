@@ -16701,11 +16701,19 @@ function courseSchedule() {
     $(".properties").prepend("<div class='vrtx-grouped'>" + html + "</div>");
        
     // Accordions
+    var opts = {
+      elem: vrtxEditor.editorForm.find(".properties > .vrtx-grouped"),
+      headerSelector: "h3",
+      animationSpeed: 200
+    };
+    var acc = new VrtxAccordion(opts);
+    acc.create();
+    opts.elem.addClass("fast");
+    
     var opts2 = {
       elem: vrtxEditor.editorForm.find(".vrtx-grouped .vrtx-grouped"),
       headerSelector: "h4",
-      onActivate: function (e, ui, accordion) {
-        // Lookup and add sessions HTML to DOM
+      onActivate: function (e, ui, accordion) { // Lookup and add sessions HTML to DOM
         if(ui.newHeader[0]) {
           var id = ui.newHeader[0].id;
           var contentWrp = $("#" + id).parent().find(".accordion-content");
@@ -16714,8 +16722,7 @@ function courseSchedule() {
             var opts3 = {
               elem: contentWrp.find(".vrtx-grouped"),
               headerSelector: "h5",
-              onActivate: function (e, ui, accordion) {
-                // Enhance multiple fields in session
+              onActivate: function (e, ui, accordion) { // Enhance multiple fields in session
                 if(ui.newHeader[0]) {
                   var id2 = ui.newHeader[0].id;
                   var session = sessionsLookup[id][id2];
@@ -16751,16 +16758,6 @@ function courseSchedule() {
     var acc2 = new VrtxAccordion(opts2);
     acc2.create();
     opts2.elem.addClass("fast");
-    
-    // Accordion initialize
-    var opts = {
-      elem: vrtxEditor.editorForm.find(".properties > .vrtx-grouped"),
-      headerSelector: "h3",
-      animationSpeed: 200
-    };
-    var acc = new VrtxAccordion(opts);
-    acc.create();
-    opts.elem.addClass("fast");
     
     JSON_ELEMENTS_INITIALIZED.resolve();
     

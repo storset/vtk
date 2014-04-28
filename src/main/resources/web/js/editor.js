@@ -16742,6 +16742,7 @@ function generateCourseScheduleHTMLForType(json, type, sessionsLookup) {
   var desc = jsonType["vrtx-editable-description"];
   var data = jsonType["data"];
   
+  // TODO: reduce iterations/complexity <~ O(n^5)
   for(var i = 0, len = data.length; i < len; i++) {
     var dt = data[i];
     var dtShort = dt.teachingmethod.toLowerCase();

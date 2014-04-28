@@ -16704,14 +16704,9 @@ function courseSchedule() {
                   var titleElm = session.find("> .header > .header-title");
                   var newTitle = session.find("input[name='vrtx-title']").val();
                   if(newTitle != "") {
-                    if(!titleElm.data("origtitle")) {
-                      titleElm.data("origtitle", titleElm.text());
-                    }
                     titleElm.html(newTitle);
                   } else {
-                    if(titleElm.data("origtitle")) {
-                      titleElm.html(titleElm.data("origtitle"));
-                    }
+                    titleElm.html(titleElm.attr("data-orig-title"));
                   }
                 }
               },
@@ -16808,7 +16803,7 @@ function generateCourseScheduleHTMLForType(json, type, sessionsLookup) {
 function generateCourseScheduleHTMLForSession(id, dtShort, session, sessionsLookup, descs, i18n, generateCourseScheduleDateFunc) {
   var sessionId = dtShort + "-" + session.id.replace(/\//g, "-"),
       sessionTitle = generateCourseScheduleDateFunc(session.dtstart, session.dtend, i18n) + " " +
-                     "<span class='header-title'>" + (session["vrtx-title"] || session.title || session.id) + "</span>" +
+                     "<span class='header-title' data-orig-title='" + (session.title || session.id) + "'>" + (session["vrtx-title"] || session.title || session.id) + "</span>" +
                      (session.room ? " - " + (session.room[0].buildingid + " " + i18n.room + " " + session.room[0].roomid) : ""),
       multiples = [],
       sessionContentHtml = "";

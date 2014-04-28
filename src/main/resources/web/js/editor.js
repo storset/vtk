@@ -16656,6 +16656,8 @@ function courseSchedule() {
     }
   });
   */
+  
+  vrtxEditor.editorForm.find(".properties").hide();
     
   initMultipleInputFields();
    
@@ -16697,6 +16699,20 @@ function courseSchedule() {
                     }
                     session.isEnhanced = true;
                   }
+                } else {
+                  var session = $(ui.oldHeader).closest("div");
+                  var titleElm = session.find("> .header > .header-title");
+                  var newTitle = session.find("input[name='vrtx-title']").val();
+                  if(newTitle != "") {
+                    if(!titleElm.data("origtitle")) {
+                      titleElm.data("origtitle", titleElm.text());
+                    }
+                    titleElm.html(newTitle);
+                  } else {
+                    if(titleElm.data("origtitle")) {
+                      titleElm.html(titleElm.data("origtitle"));
+                    }
+                  }
                 }
               },
               animationSpeed: 200
@@ -16724,6 +16740,10 @@ function courseSchedule() {
     opts.elem.addClass("fast");
     
     JSON_ELEMENTS_INITIALIZED.resolve();
+    
+    var waitALittle = setTimeout(function() {
+      vrtxEditor.editorForm.find(".properties").show();
+    }, 50);
   });
 }
 
@@ -16788,7 +16808,7 @@ function generateCourseScheduleHTMLForType(json, type, sessionsLookup) {
 function generateCourseScheduleHTMLForSession(id, dtShort, session, sessionsLookup, descs, i18n, generateCourseScheduleDateFunc) {
   var sessionId = dtShort + "-" + session.id.replace(/\//g, "-"),
       sessionTitle = generateCourseScheduleDateFunc(session.dtstart, session.dtend, i18n) + " " +
-                     (session["vrtx-title"] || session.title || session.id) +
+                     "<span class='header-title'>" + (session["vrtx-title"] || session.title || session.id) + "</span>" +
                      (session.room ? " - " + (session.room[0].buildingid + " " + i18n.room + " " + session.room[0].roomid) : ""),
       multiples = [],
       sessionContentHtml = "";

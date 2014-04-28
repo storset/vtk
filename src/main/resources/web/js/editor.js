@@ -16661,6 +16661,7 @@ VrtxEditor.prototype.initEnhancements = function initEnhancements() {
                 elem: contentWrp.find(".vrtx-grouped"),
                 headerSelector: "h4",
                 onActivate: function (e, ui, accordion) {
+                  // Enhance multiple fields in session
                   if(ui.newHeader[0]) {
                     var id2 = ui.newHeader[0].id;
                     if(!sessionsLookup[id][id2]) {

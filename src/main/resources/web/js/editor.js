@@ -16704,6 +16704,16 @@ VrtxEditor.prototype.initEnhancements = function initEnhancements() {
   }
 };
 
+function generateCourseScheduleDate(i18n, s, e) {
+  /* IE8: http://www.digital-portfolio.net/blog/view/ie8-and-iso-date-format */
+  var sd = s.split("T")[0].split("-");
+  var st = s.split("T")[1].split(".")[0].split(":");
+  var et = e.split("T")[1].split(".")[0].split(":");
+  return sd[2] + ". " + i18n[sd[1]] + " " + sd[0] + " - kl " +
+         st[0] + ":" + st[1] + "&ndash;" +
+         et[0] + ":" + et[1];
+}
+
 function generateCourseScheduleHTMLForType(json, type, sessionsLookup) {
   var isEn = vrtxAdmin.lang == "en";
   var i18n = {
@@ -16726,20 +16736,12 @@ function generateCourseScheduleHTMLForType(json, type, sessionsLookup) {
     "vrtx-status": (isEn ? "Cancel" : "Avlys")
   };
       
-  var formatDate = function(s, e) {
-    /* IE8: http://www.digital-portfolio.net/blog/view/ie8-and-iso-date-format */
-    var sd = s.split("T")[0].split("-");
-    var st = s.split("T")[1].split(".")[0].split(":");
-    var et = e.split("T")[1].split(".")[0].split(":");
-    return sd[2] + ". " + i18n[sd[1]] + " " + sd[0] + " - kl " +
-           st[0] + ":" + st[1] + "&ndash;" +
-           et[0] + ":" + et[1];
-  };
+  var generateCourseScheduleDateFunc = generateCourseScheduleDate;
 
   var html = "";
   
   var jsonType = json[type];
-  var desc = jsonType["vrtx-editable-description"];
+  var descs = jsonType["vrtx-editable-description"];
   var data = jsonType["data"];
   
   // TODO: reduce iterations/complexity <~ O(n^5)
@@ -16753,40 +16755,40 @@ function generateCourseScheduleHTMLForType(json, type, sessionsLookup) {
     var sessionsHtml = "";
     sessionsLookup[id] = {};
     sessionsLookup[id].ids = [];
-    for(var j = 0, len2 = sessions.length; j < len2; j++) {
+    for(var j = 0, sessionsLen = sessions.length; j < sessionsLen; j++) {
       var session = sessions[j];
       var sessionId = dtShort + "-" + session.id.replace(/\//g, "-");
       sessionsLookup[id].ids.push(sessionId);
           
-      var sessionTitle = formatDate(session.dtstart, session.dtend) + " " +
+      var sessionTitle = generateCourseScheduleDateFunc(i18n, session.dtstart, session.dtend) + " " +
                          (session["vrtx-title"] || session.title || session.id) +
                          (session.room ? " - " + (session.room[0].buildingid + " " + i18n.room + " " + session.room[0].roomid) : "");
      
       var sessionContentHtml = "";
-      for(var d in desc) {
-        var val = "";
-        switch(desc[d].type) {
+      for(var d in descs) {
+        var desc = descs[d];
+        var val = session[d];
+        var propsVal = "";
+        switch(desc.type) {
           case "json":
-            var props = session[d];
-            if(props) {
-              for(var k = 0, len3 = props.length; k < len3; k++) {
-                for(p in desc[d].props) {
-                  val += props[k][p] + "###";
+            if(val) {
+              for(var k = 0, propsLen = val.length; k < propsLen; k++) {
+                for(p in desc.props) {
+                  propsVal += val[k][p] + "###";
                 }
-                if(k < (len3 - 1)) val += ",";
+                if(k < (propsLen - 1)) propsVal += ",";
               }
             }
           case "string":
-            val = (val != "") ? val : session[d];
-            var m = (desc[d].multiple && typeof val === "array") ? val.join(", ") : val;
+            val = (propsVal != "") ? propsVal : val;
+            val = (desc.multiple && typeof val === "array") ? val.join(", ") : val;
             sessionContentHtml += vrtxEditor.htmlFacade.getStringField({ title: i18n[d],
-                                                                         name: (desc[d].autocomplete ? "vrtx-autocomplete-" + desc[d].autocomplete + " " : "") + d + "-" + sessionId,
+                                                                         name: (desc.autocomplete ? "vrtx-autocomplete-" + desc.autocomplete + " " : "") + d + "-" + sessionId,
                                                                          id: d + "-" + sessionId,
-                                                                         val: m
+                                                                         val: val
                                                                         }, d)
             break;
           case "checkbox":
-            val = session[d];
             sessionContentHtml += vrtxEditor.htmlFacade.getCheckboxField({ title: i18n[d],
                                                                            name: d + "-" + sessionId,
                                                                            id: d + "-" + sessionId,

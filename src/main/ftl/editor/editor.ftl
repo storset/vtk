@@ -84,10 +84,10 @@
             MULTIPLE_INPUT_FIELD_INITIALIZED = $.Deferred();
             
             // General/aggregation
-            enhanceMultipleInputFields("aggregation", false, false, aggregationLimit);
-            enhanceMultipleInputFields("manually-approve-from", false, false, aggregationLimit);
-            enhanceMultipleInputFields("featured-articles", true, true, 50); // Article listing
-            enhanceMultipleInputFields("tag-search-suggestions", false, false, 50); // Employee listing
+            enhanceMultipleInputFields("aggregation", false, false, aggregationLimit, null);
+            enhanceMultipleInputFields("manually-approve-from", false, false, aggregationLimit, null);
+            enhanceMultipleInputFields("featured-articles", true, true, 50, null); // Article listing
+            enhanceMultipleInputFields("tag-search-suggestions", false, false, 50, null); // Employee listing
             
             // var manuallyApproveButton = $("#manually-approve-container-title");
             // manuallyApproveButton.parent().find("> div:first-child").append(manuallyApproveButton.remove());

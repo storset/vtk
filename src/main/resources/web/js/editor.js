@@ -1031,10 +1031,10 @@ function courseSchedule() {
              "vrtx-resources": {
                type: "json",
                multiple: { movable: true },
-               props: {
-                 "title": { type: "string" },
-                 "url": { type: "resource_ref" }
-               }
+               props: [
+                 { name: "title", type: "string" },
+                 { name: "url", type: "resource_ref" }
+               ]
              },
              "vrtx-status": { type: "checkbox"  }
            },
@@ -1800,10 +1800,10 @@ function courseSchedule() {
              "vrtx-resources": {
                type: "json",
                multiple: { movable: true },
-               props: {
-                 "title": { type: "string" },
-                 "url": { type: "resource_ref" }
-               }
+               props: [
+                 { name: "title", type: "string" },
+                 { name: "url", type: "resource_ref" }
+               ]
              },
              "vrtx-status": { type: "checkbox"  }
            },
@@ -16730,7 +16730,7 @@ function courseSchedule() {
                     var multiples = session.multiples;
                     for(var i = multiplesLen = multiples.length; i--;) {
                       var m = multiples[i];
-                      enhanceMultipleInputFields(m.name + "-" + id2, m.movable, m.browsable, 50);
+                      enhanceMultipleInputFields(m.name + "-" + id2, m.movable, m.browsable, 50, m.json);
                     }
                     session.isEnhanced = true;
                   }
@@ -16818,29 +16818,32 @@ function generateCourseScheduleHTMLForSession(id, dtShort, session, sessionsLook
     var desc = descs[name],
         val = session[name],
         propsVal = "",
-        browsable = false;
+        browsable = false,
+        size = 40;
     switch(desc.type) {
       case "json":
-        for(var propName in desc.props) {
-          if(desc.multiple && desc.props[propName].type === "resource_ref") {
+        for(var i = 0, descPropsLen = desc.props.length; i < descPropsLen; i++) {
+          if(desc.multiple && desc.props[i].type === "resource_ref") {
             browsable = true;
             break;
           }
         }
         if(val) {
-          for(var k = 0, propsLen = val.length; k < propsLen; k++) {
-            for(var propName in desc.props) {
-              propsVal += val[k][propName] + "###";
+          for(var j = 0, propsLen = val.length; j < propsLen; j++) {
+            for(i = 0; i < descPropsLen; i++) {
+              propsVal += val[j][desc.props[i].name] + "###";
             }
-            if(k < (propsLen - 1)) propsVal += ",";
+            if(j < (propsLen - 1)) propsVal += ",";
           }
         }
+        size = 20;
       case "string":
         val = (propsVal != "") ? propsVal : val;
         val = (desc.multiple && typeof val === "array") ? val.join(", ") : val;
         if(desc.multiple) {
           multiples.push({
             name: name,
+            json: desc.type === "json" ? desc.props : null, 
             movable: desc.multiple.movable,
             browsable: browsable
           });
@@ -16848,7 +16851,8 @@ function generateCourseScheduleHTMLForSession(id, dtShort, session, sessionsLook
         sessionContentHtml += vrtxEditor.htmlFacade.getStringField({ title: i18n[name],
                                                                      name: (desc.autocomplete ? "vrtx-autocomplete-" + desc.autocomplete + " " : "") + name + "-" + sessionId,
                                                                      id: name + "-" + sessionId,
-                                                                     val: val
+                                                                     val: val,
+                                                                     size: size
                                                                    }, name);
         break;
       case "checkbox":
@@ -17040,14 +17044,17 @@ function initMultipleInputFields() {
   });
   vrtxAdmin.cachedAppContent.on("click keyup", ".vrtx-multipleinputfield button.browse-resource-ref", function (e) {
     if(e.type == "click" || ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13))) {
-      browseServer($(this).closest(".vrtx-multipleinputfield").find('input').attr('id'), vrtxAdmin.multipleFormGroupingPaths.baseBrowserURL, vrtxAdmin.multipleFormGroupingPaths.baseFolderURL, vrtxAdmin.multipleFormGroupingPaths.basePath, 'File');
+      var m = $(this).closest(".vrtx-multipleinputfield");
+      var elm = m.find('input.resource_ref');
+      if(!elm.length) elm = m.find('input');
+      browseServer(elm.attr('id'), vrtxAdmin.multipleFormGroupingPaths.baseBrowserURL, vrtxAdmin.multipleFormGroupingPaths.baseFolderURL, vrtxAdmin.multipleFormGroupingPaths.basePath, 'File');
       e.preventDefault();
       e.stopPropagation();
     }
   });
 }
 
-function enhanceMultipleInputFields(name, isMovable, isBrowsable, limit) { // TODO: simplify
+function enhanceMultipleInputFields(name, isMovable, isBrowsable, limit, json) { // TODO: simplify
   var inputField = $("." + name + " input[type='text']");
   if (!inputField.length) return;
 
@@ -17064,7 +17071,7 @@ function enhanceMultipleInputFields(name, isMovable, isBrowsable, limit) { // TO
   }
 
   inputFieldParent.addClass("vrtx-multipleinputfields").data("name", name); // Don't like to do this need get it easily
-  $($.parseHTML(vrtxEditor.htmlFacade.getMultipleInputFieldsAddButton(name, size, isBrowsable, isMovable, isDropdown), document, true)).insertAfter(inputField);
+  $($.parseHTML(vrtxEditor.htmlFacade.getMultipleInputFieldsAddButton(name, size, isBrowsable, isMovable, isDropdown, JSON.stringify(json, null, 2)), document, true)).insertAfter(inputField);
 
   var inputFieldVal = inputField.hide().val();
   var formFields = inputFieldVal.split(",");
@@ -17073,7 +17080,7 @@ function enhanceMultipleInputFields(name, isMovable, isBrowsable, limit) { // TO
 
   var addFormFieldFunc = addFormField, html = "";
   for (var i = 0, len = formFields.length; i < len; i++) {
-    html += addFormFieldFunc(name, len, $.trim(formFields[i]), size, isBrowsable, isMovable, isDropdown, true);
+    html += addFormFieldFunc(name, len, $.trim(formFields[i]), size, isBrowsable, isMovable, isDropdown, true, json);
   }
   html = $.parseHTML(html, document, true);
   $(html).insertBefore("#vrtx-" + name + "-add");
@@ -17088,7 +17095,7 @@ function enhanceMultipleInputFields(name, isMovable, isBrowsable, limit) { // TO
   autocompleteUsernames(".vrtx-autocomplete-username");
 }
 
-function addFormField(name, len, value, size, isBrowsable, isMovable, isDropdown, init) {
+function addFormField(name, len, value, size, isBrowsable, isMovable, isDropdown, init, json) {
   var fields = $("." + name + " div.vrtx-multipleinputfield"),
     idstr = "vrtx-" + name + "-",
     i = vrtxEditor.multipleFieldsBoxes[name].counter,
@@ -17111,8 +17118,20 @@ function addFormField(name, len, value, size, isBrowsable, isMovable, isDropdown
   if (isBrowsable) {
     browseButton = vrtxEditor.htmlFacade.getMultipleInputfieldsInteractionsButton("browse", "-resource-ref", idstr, vrtxAdmin.multipleFormGroupingMessages.browse);
   }
-
-  var html = vrtxEditor.htmlFacade.getMultipleInputfield(name, idstr, i, value, size, browseButton, removeButton, moveUpButton, moveDownButton, isDropdown);
+  
+  if(json && value && value.indexOf("###") != -1) {
+    value = value.split("###");
+    var j = 0;
+    for(var prop in json) {
+      json[prop].val = value[j];
+      j++;
+    }
+  } else if(json) {
+    for(var prop in json) {
+      json[prop].val = "";
+    }
+  }
+  var html = vrtxEditor.htmlFacade.getMultipleInputfield(name, idstr, i, value, size, browseButton, removeButton, moveUpButton, moveDownButton, isDropdown, json);
 
   vrtxEditor.multipleFieldsBoxes[name].counter++;
 
@@ -17154,7 +17173,7 @@ function removeFormField(input) {
   var fields = parent.find(".vrtx-multipleinputfield");
   var firstField = fields.filter(":first");
   if(firstField.length) {
-    var focusable = firstField.find("input[type='text'], select");
+    var focusable = firstField.find("input[type='text'], select").filter(":first");
     if(focusable.length) {
       focusable[0].focus();
     }
@@ -17174,12 +17193,14 @@ function removeFormField(input) {
 function swapContentTmp(moveBtn, move) {
   var curElm = moveBtn.closest(".vrtx-multipleinputfield");
   var movedElm = (move > 0) ? curElm.next() : curElm.prev();
-  var curElmInput = curElm.find("input");
-  var movedElmInput = movedElm.find("input");
-  var tmp = curElmInput.val();
-  curElmInput.val(movedElmInput.val());
-  movedElmInput.val(tmp);
-  movedElmInput[0].focus();
+  var curElmInputs = curElm.find("input");
+  var movedElmInputs = movedElm.find("input");
+  for(var i = curElmInputs.length;i--;) {
+    var tmp = curElmInputs[i].value;
+    curElmInputs[i].value = movedElmInputs[i].value;
+    movedElmInputs[i].value = tmp;
+  }
+  movedElmInputs.filter(":first")[0].focus();
 }
 
 /* DEHANCE PART */
@@ -17488,14 +17509,15 @@ VrtxEditor.prototype.htmlFacade = {
       buttonText: text
     });
   },
-  getMultipleInputFieldsAddButton: function (name, size, isBrowsable, isMovable, isDropdown) {
+  getMultipleInputFieldsAddButton: function (name, size, isBrowsable, isMovable, isDropdown, json) {
     return vrtxAdmin.templateEngineFacade.render(vrtxEditor.multipleFieldsBoxesTemplates["add-button"], {
       name: name,
       size: size,
       isBrowsable: isBrowsable,
       isMovable: isMovable,
       isDropdown: isDropdown,
-      buttonText: vrtxAdmin.multipleFormGroupingMessages.add
+      buttonText: vrtxAdmin.multipleFormGroupingMessages.add,
+      json: json
     });
   },
   getJsonBoxesInteractionsButton: function (clazz, text) {
@@ -17515,7 +17537,7 @@ VrtxEditor.prototype.htmlFacade = {
   /* 
    * Type / fields 
    */
-  getMultipleInputfield: function (name, idstr, i, value, size, browseButton, removeButton, moveUpButton, moveDownButton, isDropdown) {
+  getMultipleInputfield: function (name, idstr, i, value, size, browseButton, removeButton, moveUpButton, moveDownButton, isDropdown, json) {
     return vrtxAdmin.templateEngineFacade.render(vrtxEditor.multipleFieldsBoxesTemplates["multiple-inputfield"], {
       idstr: idstr,
       i: i,
@@ -17526,7 +17548,8 @@ VrtxEditor.prototype.htmlFacade = {
       moveUpButton: moveUpButton,
       moveDownButton: moveDownButton,
       isDropdown: isDropdown,
-      dropdownArray: "dropdown" + name
+      dropdownArray: "dropdown" + name,
+      json: json
     });
   },
   getTypeHtml: function (elem, inputFieldName) {
@@ -17550,7 +17573,8 @@ VrtxEditor.prototype.htmlFacade = {
         elemTitle: elem.title,
         inputFieldName: inputFieldName,
         elemId: elem.id || inputFieldName,
-        elemVal: elem.val
+        elemVal: elem.val,
+        elemSize: elem.size || 40
       });
     }
   },

@@ -2,7 +2,7 @@
 
 <div class="{{ classes }}">
   <label for="{{ elemId  }}">{{ elemTitle }}</label>
-  <input class="vrtx-textfield inputfield" size="40" type="text" name="{{ inputFieldName }}" value="{{ elemVal }}" id="{{ elemId }}" />
+  <input class="vrtx-textfield inputfield" size="{{ elemSize }}" type="text" name="{{ inputFieldName }}" value="{{ elemVal }}" id="{{ elemId }}" />
 </div>
 
 ### {{! HTML }}
@@ -99,7 +99,7 @@
 
 ### {{! ADD BUTTON }}
 
-<button id="vrtx-{{ name }}-add" class="vrtx-button" onclick="addFormField('{{ name }}', 1, null, '{{ size }}', {{ isBrowsable }}, {{ isMovable }}, {{ isDropdown }}, false); return false;">
+<button id="vrtx-{{ name }}-add" class="vrtx-button" onclick="addFormField('{{ name }}', 1, null, '{{ size }}', {{ isBrowsable }}, {{ isMovable }}, {{ isDropdown }}, false, {{ json }}); return false;">
   {{ buttonText }}
 </button>
 
@@ -130,7 +130,14 @@
   {{/isDropdown}}
 
   {{^isDropdown}}
-    <input class="vrtx-textfield" value="{{ value }}" type="text" size="{{ size }}" id="{{ idstr }}{{ i }}" />
+    {{#json}}
+      {{./}}
+        <input class="vrtx-textfield {{ type }} {{ idstr }}{{ i }}" value="{{ val }}" type="text" size="{{ size }}" id="{{ idstr }}{{name}}-{{ i }}" />
+      {{./}}
+    {{/json}}
+    {{^json}}
+      <input class="vrtx-textfield {{ idstr }}{{ i }}" value="{{ value }}" type="text" size="{{ size }}" id="{{ idstr }}{{ i }}" />
+    {{/json}}
   {{/isDropdown}}
   
   {{{ browseButton }}}

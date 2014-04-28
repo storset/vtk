@@ -16816,14 +16816,15 @@ function generateCourseScheduleHTMLForSession(id, dtShort, session, sessionsLook
         browsable = false;
     switch(desc.type) {
       case "json":
-        for(propName in desc.props) {
+        for(var propName in desc.props) {
           if(desc.multiple && desc.props[propName].type === "resource_ref") {
             browsable = true;
+            break;
           }
         }
         if(val) {
           for(var k = 0, propsLen = val.length; k < propsLen; k++) {
-            for(propName in desc.props) {
+            for(var propName in desc.props) {
               propsVal += val[k][propName] + "###";
             }
             if(k < (propsLen - 1)) propsVal += ",";

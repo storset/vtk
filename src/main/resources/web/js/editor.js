@@ -16704,7 +16704,7 @@ VrtxEditor.prototype.initEnhancements = function initEnhancements() {
   }
 };
 
-function generateCourseScheduleDate(i18n, s, e) {
+function generateCourseScheduleDate(s, e, i18n) {
   /* IE8: http://www.digital-portfolio.net/blog/view/ie8-and-iso-date-format */
   var sd = s.split("T")[0].split("-");
   var st = s.split("T")[1].split(".")[0].split(":");
@@ -16736,7 +16736,8 @@ function generateCourseScheduleHTMLForType(json, type, sessionsLookup) {
     "vrtx-status": (isEn ? "Cancel" : "Avlys")
   };
       
-  var generateCourseScheduleDateFunc = generateCourseScheduleDate;
+  var generateCourseScheduleDateFunc = generateCourseScheduleDate,
+      generateCourseScheduleHTMLForSessionFunc = generateCourseScheduleHTMLForSession;
 
   var html = "";
   
@@ -16759,54 +16760,57 @@ function generateCourseScheduleHTMLForType(json, type, sessionsLookup) {
       var session = sessions[j];
       var sessionId = dtShort + "-" + session.id.replace(/\//g, "-");
       sessionsLookup[id].ids.push(sessionId);
-          
-      var sessionTitle = generateCourseScheduleDateFunc(i18n, session.dtstart, session.dtend) + " " +
-                         (session["vrtx-title"] || session.title || session.id) +
-                         (session.room ? " - " + (session.room[0].buildingid + " " + i18n.room + " " + session.room[0].roomid) : "");
-     
-      var sessionContentHtml = "";
-      for(var d in descs) {
-        var desc = descs[d];
-        var val = session[d];
-        var propsVal = "";
-        switch(desc.type) {
-          case "json":
-            if(val) {
-              for(var k = 0, propsLen = val.length; k < propsLen; k++) {
-                for(p in desc.props) {
-                  propsVal += val[k][p] + "###";
-                }
-                if(k < (propsLen - 1)) propsVal += ",";
-              }
-            }
-          case "string":
-            val = (propsVal != "") ? propsVal : val;
-            val = (desc.multiple && typeof val === "array") ? val.join(", ") : val;
-            sessionContentHtml += vrtxEditor.htmlFacade.getStringField({ title: i18n[d],
-                                                                         name: (desc.autocomplete ? "vrtx-autocomplete-" + desc.autocomplete + " " : "") + d + "-" + sessionId,
-                                                                         id: d + "-" + sessionId,
-                                                                         val: val
-                                                                        }, d)
-            break;
-          case "checkbox":
-            sessionContentHtml += vrtxEditor.htmlFacade.getCheckboxField({ title: i18n[d],
-                                                                           name: d + "-" + sessionId,
-                                                                           id: d + "-" + sessionId,
-                                                                           checked: val
-                                                                          }, d);
-            break;
-          default:
-            break;
-        }
-      }
-      sessionsHtml += vrtxEditor.htmlFacade.getAccordionInteraction("4", sessionId, sessionTitle, sessionContentHtml);
-    }
+      sessionsHtml += generateCourseScheduleHTMLForSessionFunc(sessionId, session, descs, i18n, generateCourseScheduleDateFunc);
+    }   
     sessionsLookup[id].html = sessionsHtml;
     
     html += vrtxEditor.htmlFacade.getAccordionInteraction("3", id, dt.teachingmethodname, "");
   }
 
   return html;
+}
+
+function generateCourseScheduleHTMLForSession(sessionId, session, descs, i18n, generateCourseScheduleDateFunc) {
+  var sessionTitle = generateCourseScheduleDateFunc(session.dtstart, session.dtend, i18n) + " " +
+                     (session["vrtx-title"] || session.title || session.id) +
+                     (session.room ? " - " + (session.room[0].buildingid + " " + i18n.room + " " + session.room[0].roomid) : "");
+
+  var sessionContentHtml = "";
+  for(var d in descs) {
+    var desc = descs[d];
+    var val = session[d];
+    var propsVal = "";
+    switch(desc.type) {
+      case "json":
+        if(val) {
+          for(var k = 0, propsLen = val.length; k < propsLen; k++) {
+            for(p in desc.props) {
+              propsVal += val[k][p] + "###";
+            }
+            if(k < (propsLen - 1)) propsVal += ",";
+          }
+        }
+      case "string":
+        val = (propsVal != "") ? propsVal : val;
+        val = (desc.multiple && typeof val === "array") ? val.join(", ") : val;
+        sessionContentHtml += vrtxEditor.htmlFacade.getStringField({ title: i18n[d],
+                                                                     name: (desc.autocomplete ? "vrtx-autocomplete-" + desc.autocomplete + " " : "") + d + "-" + sessionId,
+                                                                     id: d + "-" + sessionId,
+                                                                     val: val
+                                                                   }, d)
+        break;
+      case "checkbox":
+        sessionContentHtml += vrtxEditor.htmlFacade.getCheckboxField({ title: i18n[d],
+                                                                       name: d + "-" + sessionId,
+                                                                       id: d + "-" + sessionId,
+                                                                       checked: val
+                                                                     }, d);
+        break;
+      default:
+        break;
+     }
+   }
+   return vrtxEditor.htmlFacade.getAccordionInteraction("4", sessionId, sessionTitle, sessionContentHtml);
 }
 
 /*

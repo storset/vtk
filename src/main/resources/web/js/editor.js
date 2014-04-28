@@ -16700,6 +16700,7 @@ function courseSchedule() {
     // Add HTML to DOM
     $(".properties").prepend("<div class='vrtx-grouped'>" + html + "</div>");
        
+    // Accordions
     var opts2 = {
       elem: vrtxEditor.editorForm.find(".vrtx-grouped .vrtx-grouped"),
       headerSelector: "h4",
@@ -16718,7 +16719,7 @@ function courseSchedule() {
                 if(ui.newHeader[0]) {
                   var id2 = ui.newHeader[0].id;
                   var session = sessionsLookup[id][id2];
-                  if(session && !session.isEnhanced) {
+                  if(session && !session.isEnhanced) { // If not already enhanced
                     var multiples = session.multiples;
                     for(var i = multiplesLen = multiples.length; i--;) {
                       var m = multiples[i];
@@ -16726,7 +16727,7 @@ function courseSchedule() {
                     }
                     session.isEnhanced = true;
                   }
-                } else {
+                } else { // Update custom session title on close
                   var session = $(ui.oldHeader).closest("div");
                   var titleElm = session.find("> .header > .header-title");
                   var newTitle = session.find("input[name='vrtx-title']").val();

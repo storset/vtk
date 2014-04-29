@@ -16710,9 +16710,9 @@ function courseSchedule() {
       
     // Generate HTML
     var html = "<div class='accordion-title'>" + i18n.titles.plenary + "</div>" +
-               generateCourseScheduleHTMLForType(retrievedScheduleData, "plenary", sessionsLookup, i18n) +
+               generateCourseScheduleHTMLForType(retrievedScheduleData, "plenary", true, sessionsLookup, i18n) +
                "<div class='accordion-title'>" + i18n.titles.group + "</div>" +
-               generateCourseScheduleHTMLForType(retrievedScheduleData, "group", sessionsLookup, i18n);
+               generateCourseScheduleHTMLForType(retrievedScheduleData, "group", false, sessionsLookup, i18n);
       
     // Add HTML to DOM
     $(".properties").prepend("<div class='vrtx-grouped'>" + html + "</div>"); 
@@ -16817,7 +16817,7 @@ function courseSchedule() {
   });
 }
 
-function generateCourseScheduleHTMLForType(json, type, sessionsLookup, i18n) {
+function generateCourseScheduleHTMLForType(json, type, skipTier, sessionsLookup, i18n) {
   var generateCourseScheduleDateFunc = generateCourseScheduleDate,
       generateCourseScheduleHTMLForSessionFunc = generateCourseScheduleHTMLForSession,
       jsonType = json[type],
@@ -16826,42 +16826,41 @@ function generateCourseScheduleHTMLForType(json, type, sessionsLookup, i18n) {
       dtShortLast = "",
       html = "",
       htmlMiddle = "",
-      sessionsHtml = "",
-      isTier1 = type === "plenary";
-
+      sessionsHtml = "";
+      
+  // Store sessions HTML and multiple descriptions in lookup object
   for(var i = 0, len = data.length; i < len; i++) {
     var dt = data[i],
         dtShort = dt.teachingmethod.toLowerCase(),
-        id = isTier1 ? "plenary" : dtShort + "-" + dt.id,
+        id = skipTier ? type : dtShort + "-" + dt.id,
         sessions = dt.sessions;
 
-    if(!isTier1) {
+    if(!skipTier) {
       sessionsHtml = "";
     }
-
-    // Store sessions HTML and multiple descriptions in lookup object
-    if(isTier1 && i == 0 || !isTier1) {
+    if(skipTier && i == 0 || !skipTier) {
       sessionsLookup[id] = {};
     }
     
     for(var j = 0, sessionsLen = sessions.length; j < sessionsLen; j++) {
-      sessionsHtml += generateCourseScheduleHTMLForSessionFunc(id, dtShort, sessions[j], sessionsLookup, descs, i18n, isTier1, generateCourseScheduleDateFunc);
+      sessionsHtml += generateCourseScheduleHTMLForSessionFunc(id, dtShort, sessions[j], sessionsLookup, descs, i18n, skipTier, generateCourseScheduleDateFunc);
     }
 
-    if(!isTier1) {
+    if(!skipTier) {
       sessionsLookup[id].html = sessionsHtml;
       htmlMiddle += vrtxEditor.htmlFacade.getAccordionInteraction("4", id, type, sessions[0].title, "");
-    }
-    if(!isTier1 && i > 0 && dtShort != dtShortLast) {
-      html += vrtxEditor.htmlFacade.getAccordionInteraction("3", dtShort, "", dt.teachingmethodname, "<div class='vrtx-grouped'>" + htmlMiddle + "</div>");
-      htmlMiddle = "";
+      if(i > 0 && dtShort != dtShortLast) {
+        html += vrtxEditor.htmlFacade.getAccordionInteraction("3", dtShort, "", dt.teachingmethodname, "<div class='vrtx-grouped'>" + htmlMiddle + "</div>");
+        htmlMiddle = "";
+      }
     }
     dtShortLast = dtShort;
   }
-  if(!isTier1 && len > 0) {
-    html += vrtxEditor.htmlFacade.getAccordionInteraction("3", dtShort, "", dt.teachingmethodname, "<div class='vrtx-grouped'>" + htmlMiddle + "</div>");
-  }
-  if(isTier1) {
+  if(!skipTier) {
+    if(len > 0) {
+      html += vrtxEditor.htmlFacade.getAccordionInteraction("3", dtShort, "", dt.teachingmethodname, "<div class='vrtx-grouped'>" + htmlMiddle + "</div>");
+    }
+  } else {
     sessionsLookup[id].html = sessionsHtml;
     html += vrtxEditor.htmlFacade.getAccordionInteraction("3", id, type, dt.teachingmethodname, "");
   }
@@ -16869,7 +16868,7 @@ function generateCourseScheduleHTMLForType(json, type, sessionsLookup, i18n) {
   return html;
 }
 
-function generateCourseScheduleHTMLForSession(id, dtShort, session, sessionsLookup, descs, i18n, isTier1, generateCourseScheduleDateFunc) {
+function generateCourseScheduleHTMLForSession(id, dtShort, session, sessionsLookup, descs, i18n, skipTier, generateCourseScheduleDateFunc) {
   var sessionId = dtShort + "-" + session.id.replace(/\//g, "-"),
       sessionTitle = generateCourseScheduleDateFunc(session.dtstart, session.dtend, i18n) + " " +
                      "<span class='header-title' data-orig-title='" + (session.title || session.id) + "'>" + (session["vrtx-title"] || session.title || session.id) + "</span>" +
@@ -16937,7 +16936,7 @@ function generateCourseScheduleHTMLForSession(id, dtShort, session, sessionsLook
      multiples: multiples
    };
    
-   return vrtxEditor.htmlFacade.getAccordionInteraction(!isTier1 ? "5" : "4", sessionId, "", sessionTitle, sessionContentHtml);
+   return vrtxEditor.htmlFacade.getAccordionInteraction(!skipTier ? "5" : "4", sessionId, "", sessionTitle, sessionContentHtml);
 }
 
 function generateCourseScheduleDate(s, e, i18n) {

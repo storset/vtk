@@ -16733,6 +16733,7 @@ function courseSchedule() {
             enhanceMultipleInputFields(m.name + "-" + sessionId, m.movable, m.browsable, 50, m.json);
           }
           session.isEnhanced = true;
+          $(ui.newHeader).closest(".session").addClass("session-touched");
         }
       } else { // Update custom session title on close
         var session = $(ui.oldHeader).closest("div");
@@ -16965,17 +16966,21 @@ function generateCourseScheduleDate(s, e, i18n) {
          et[0] + ":" + et[1];
 }
 
-function saveCourseSchedule() {
+function saveCourseSchedule(startTime, d) {
   var updateType = function(type) {
-    var sessions = $("." + type + " .session .accordion-content");
+    var sessions = $("." + type + " .session-touched");
+    var sessionsTouched = sessions.length;
+    
     var jsonType = retrievedScheduleData[type];
     if(!jsonType) return;
     
     var descs = jsonType["vrtx-editable-description"];
     var data = jsonType.data;
   
-    for(var i = 0, len = sessions.length; i < len; i++) {
-      var content = $(sessions[i]);
+    for(var i = 0; i < sessionsTouched; i++) {
+      var content = $(sessions[i]).find(".accordion-content");
+      if(!content.length) continue;
+
       var id = content.attr("aria-labelledby").split("-");
       var tm = id[0].toUpperCase();
       var actId = id[1] + "-" + id[2];
@@ -16998,40 +17003,69 @@ function saveCourseSchedule() {
             }
           } else {
             val = valElm.val();
-            if(desc.multiple && val.length) {
+            if(desc.multiple && val.length) { // Arrayify multiple
               val = val.split(",");
             }
-            if(desc.type === "json") {
-              var f = [];
-              for(var k = 0, len3 = desc.props.length; k < len3; k++) {
+            if(desc.type === "json") { // Extract values from JSON multiple
+              var arrProps = [];
+              for(var k = 0, len3 = desc.props.length; k < len3; k++) { // Definition
                 if(!val[k]) continue;
-                var val2 = val[k].split("###");
-                if(val2[1] != "") {
-                  var ff = {};
-                  ff[desc.props[k].name] = val2[1];
-                  f.push(ff);
+                
+                var prop = val[k].split("###");
+                if(prop[1] != "") {
+                  var newProp = {};
+                  newProp[desc.props[k].name] = prop[1];
+                  arrProps.push(newProp);
                 }
               }
-              val = f;
+              val = arrProps;
             }
           }
           
           if(val && val.length) {
-            console.log(val);
-            /*
-            for(var l = 0, len4 = data.length; l < len4; l++) {
-              if(data[l].teachingmethod === tm && data[l].id = actId) {
-                
+            // TODO: slow to iterate here each time
+            for(k = 0, len4 = data.length; k < len4; k++) {
+              if(data[k].teachingmethod === tm && data[k].id === actId) {
+                var sessions = data[k].sessions;
+                for(var l = 0, len5 = sessions.length; l < len5; l++) {
+                  if(sessions[l].id === sessId) {
+                    sessions[l][p] = val; // Update
+                    break; // I'm happy up here
+                  }
+                }
+                break; // I'm happy here also
               }
             }
-            */
           }
         }
       }
     }
+    return sessionsTouched;
   };
-  updateType("plenary");
-  updateType("group");
+  var sessionsTouched = 0;
+  sessionsTouched += updateType("plenary");
+  sessionsTouched += updateType("group");
+  
+  vrtxAdmin.log({msg: "Sessions touched: " + sessionsTouched});
+
+  if(sessionsTouched) {
+    var postData = JSON.stringify({
+      "resourcetype": "course-schedule",
+      "properties": {"activities": retrievedScheduleData}
+    }, null, 2);
+
+    // Save updated fields
+    vrtxAdmin.serverFacade.postJSONA(this.location.href, postData, {
+      success: function (results, status, resp) {
+        ajaxSaveSuccess(startTime, d, results, status, resp);
+      },
+      error: function (xhr, textStatus) {
+        ajaxSaveError(d, xhr, textStatus);
+      }
+    });
+  } else {
+    d.close();
+  }
 }
 
 /*

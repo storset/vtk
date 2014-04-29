@@ -2626,7 +2626,7 @@ function ajaxSave() {
   if(!isServerLastModifiedOlderThanClientLastModified(d)) return false;
   
   if(vrtxEditor.editorForm.hasClass("vrtx-course-schedule")) {
-    saveCourseSchedule();
+    saveCourseSchedule(startTime, d);
     return false;
   }
   
@@ -2645,25 +2645,33 @@ function ajaxSave() {
   $.when(futureFormAjax).done(function() {
     _$("#editor").ajaxSubmit({
       success: function(results, status, xhr) { 
-        vrtxAdm.clientLastModified = $($.parseHTML(results)).find("#resource-last-modified").text().split(",");
-        var endTime = new Date() - startTime;
-        var waitMinMs = 800;
-        if (endTime >= waitMinMs) { // Wait minimum 0.8s
-          d.close();
-          vrtxAdm.asyncEditorSavedDeferred.resolve();
-        } else {
-          setTimeout(function () {
-            d.close();
-            vrtxAdm.asyncEditorSavedDeferred.resolve();
-          }, Math.round(waitMinMs - endTime));
-        }
+        ajaxSaveSuccess(startTime, d, results, status, xhr);
       },
       error: function (xhr, textStatus, errMsg) {
-        d.close();
-        vrtxAdm.asyncEditorSavedDeferred.rejectWith(this, [xhr, textStatus]);
+        ajaxSaveError(d, xhr, textStatus);
       }
     });
   });
+}
+
+function ajaxSaveSuccess(startTime, d, results, status, xhr) {
+  vrtxAdmin.clientLastModified = $($.parseHTML(results)).find("#resource-last-modified").text().split(",");
+  var endTime = new Date() - startTime;
+  var waitMinMs = 800;
+  if (endTime >= waitMinMs) { // Wait minimum 0.8s
+    d.close();
+    vrtxAdmin.asyncEditorSavedDeferred.resolve();
+  } else {
+    var waitMinTimer = setTimeout(function () {
+      d.close();
+      vrtxAdmin.asyncEditorSavedDeferred.resolve();
+    }, Math.round(waitMinMs - endTime));
+  }
+}
+
+function ajaxSaveError(d, xhr, textStatus) {
+  d.close();
+  vrtxAdmin.asyncEditorSavedDeferred.rejectWith(this, [xhr, textStatus]);
 }
 
 function updateClientLastModifiedAlreadyRetrieved() {
@@ -3704,6 +3712,17 @@ VrtxAdmin.prototype.serverFacade = {
    */
   postJSON: function (url, params, callbacks) {
     this.post(url, params, callbacks, "json", "text/plain;charset=utf-8");
+  },
+  /**
+   * POST JSON
+   *
+   * @this {serverFacade}
+   * @param {string} url The URL
+   * @param {string} params The data
+   * @param {object} callbacks The callback functions
+   */
+  postJSONA: function (url, params, callbacks) {
+    this.post(url, params, callbacks, "json", "application/json;charset=utf-8");
   },
   /**
    * GET Ajax <data type>

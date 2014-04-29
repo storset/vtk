@@ -303,6 +303,10 @@
   padding-left: 50px;
 }
 
+.ui-accordion > div > .header > .header-status {
+  color: #777;
+}
+
 /* ^ Accordion */
 
 /* Study enhancements */

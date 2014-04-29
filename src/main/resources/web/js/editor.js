@@ -16715,18 +16715,18 @@ function courseSchedule() {
                generateCourseScheduleHTMLForType(retrievedScheduleData, "group", sessionsLookup, i18n);
       
     // Add HTML to DOM
-    $(".properties").prepend("<div class='vrtx-grouped'>" + html + "</div>");
+    $(".properties").prepend("<div class='vrtx-grouped'>" + html + "</div>"); 
        
-    var subgroupedC = function (id, e, ui, accordion) {
-      if(ui.newHeader[0]) {
-        var id2 = ui.newHeader[0].id;
-        console.log(sessionsLookup);
-        var session = sessionsLookup[id][id2];
+    // Accordions
+    var accordionOnActivateTier3 = function (id, e, ui, accordion) {
+      if(ui.newHeader[0]) { // Enhance multiple fields in session
+        var sessionId = ui.newHeader[0].id;
+        var session = sessionsLookup[id][sessionId];
         if(session && !session.isEnhanced) { // If not already enhanced
           var multiples = session.multiples;
           for(var i = multiplesLen = multiples.length; i--;) {
             var m = multiples[i];
-            enhanceMultipleInputFields(m.name + "-" + id2, m.movable, m.browsable, 50, m.json);
+            enhanceMultipleInputFields(m.name + "-" + sessionId, m.movable, m.browsable, 50, m.json);
           }
           session.isEnhanced = true;
         }
@@ -16742,10 +16742,9 @@ function courseSchedule() {
       }
     };  
     
-    // Accordions
-    var subgroupedB = function (id, isTopGrouped, e, ui, accordion) { // Enhance multiple fields in session
+    var accordionOnActivateTier2 = function (id, isTopGrouped, e, ui, accordion) {
       if(isTopGrouped) {
-        subgroupedC(id, e, ui, accordion);
+        accordionOnActivateTier3(id, e, ui, accordion);
       } else {
         if(ui.newHeader[0]) {
           var contentWrp = $(ui.newHeader[0]).parent().find(".accordion-content");
@@ -16753,7 +16752,7 @@ function courseSchedule() {
             elem: contentWrp.find(".vrtx-grouped"),
             headerSelector: "h5",
             onActivate: function (e, ui, accordion) {
-              subgroupedC(id, e, ui, accordion);
+              accordionOnActivateTier3(id, e, ui, accordion);
             },
             animationSpeed: 200
           };
@@ -16764,11 +16763,11 @@ function courseSchedule() {
       }
     };
     
-    var subgroupedA = function (isTopGrouped, e, ui, accordion) { // Lookup and add sessions HTML to DOM
+    var accordionOnActivateTier1 = function (isTopGrouped, e, ui, accordion) {
       if(ui.newHeader[0]) {
         var id = ui.newHeader[0].id;
         var contentWrp = $("#" + id).parent().find(".accordion-content");
-        if(isTopGrouped) {
+        if(isTopGrouped) { // Lookup and add sessions HTML to DOM
           if(!contentWrp.children().length) { // If not already added
             contentWrp.html("<div class='vrtx-grouped'>" + sessionsLookup["plenary"].html + "</div>");
           }
@@ -16777,14 +16776,14 @@ function courseSchedule() {
           elem: contentWrp.find(".vrtx-grouped"),
           headerSelector: "h4",
           onActivate: function (e, ui, accordion) {
-            if(!isTopGrouped && ui.newHeader[0]) {
+            if(!isTopGrouped && ui.newHeader[0]) { // Lookup and add sessions HTML to DOM
               id = ui.newHeader[0].id;
               var contentWrp = $("#" + id).parent().find(".accordion-content");
               if(!contentWrp.children().length) { // If not already added
                 contentWrp.html("<div class='vrtx-grouped'>" + sessionsLookup[id].html + "</div>");
               }
             }
-            subgroupedB(isTopGrouped ? "plenary" : id, isTopGrouped, e, ui, accordion);
+            accordionOnActivateTier2(isTopGrouped ? "plenary" : id, isTopGrouped, e, ui, accordion);
           },
           animationSpeed: 200
         };
@@ -16800,7 +16799,7 @@ function courseSchedule() {
       onActivate: function (e, ui, accordion) {
         if(ui.newHeader[0]) {
           var ident = $(ui.newHeader[0]).closest(".accordion-wrapper");
-          subgroupedA(ident.hasClass("plenary"), e, ui, accordion);
+          accordionOnActivateTier1(ident.hasClass("plenary"), e, ui, accordion);
         }
       },
       animationSpeed: 200
@@ -16824,8 +16823,8 @@ function generateCourseScheduleHTMLForType(json, type, sessionsLookup, i18n) {
       jsonType = json[type],
       descs = jsonType["vrtx-editable-description"],
       data = jsonType["data"],
-      html = "",
       dtShortLast = "",
+      html = "",
       htmlMiddle = "",
       sessionsHtml = "",
       isTopGrouped = type === "plenary";

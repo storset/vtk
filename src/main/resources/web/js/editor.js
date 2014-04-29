@@ -16881,6 +16881,7 @@ function generateCourseScheduleHTMLForSession(id, dtShort, session, sessionsLook
   for(var name in descs) {
     var desc = descs[name],
         val = session[name],
+        placeholder = null,
         propsVal = "",
         browsable = false,
         size = 40;
@@ -16911,12 +16912,21 @@ function generateCourseScheduleHTMLForSession(id, dtShort, session, sessionsLook
             movable: desc.multiple.movable,
             browsable: browsable
           });
+        } else if(desc.type === "string") {
+          var origName = name.split("vrtx-")[1];
+          if(origName) {
+            var origTitle = session[name.split("vrtx-")[1]];
+            if(origTitle != "") {
+              placeholder = origTitle;
+            }
+          }
         }
         sessionContentHtml += vrtxEditor.htmlFacade.getStringField({ title: i18n[name],
                                                                      name: (desc.autocomplete ? "vrtx-autocomplete-" + desc.autocomplete + " " : "") + name + "-" + sessionId,
                                                                      id: name + "-" + sessionId,
                                                                      val: val,
-                                                                     size: size
+                                                                     size: size,
+                                                                     placeholder: placeholder
                                                                    }, name);
         break;
       case "checkbox":
@@ -17697,7 +17707,8 @@ VrtxEditor.prototype.htmlFacade = {
         inputFieldName: inputFieldName,
         elemId: elem.id || inputFieldName,
         elemVal: elem.val,
-        elemSize: elem.size || 40
+        elemSize: elem.size || 40,
+        elemPlaceholder: elem.placeholder
       });
     }
   },

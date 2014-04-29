@@ -2,7 +2,7 @@
 
 <div class="{{ classes }}">
   <label for="{{ elemId  }}">{{ elemTitle }}</label>
-  <input class="vrtx-textfield inputfield" size="{{ elemSize }}" type="text" name="{{ inputFieldName }}" value="{{ elemVal }}" id="{{ elemId }}" />
+  <input class="vrtx-textfield inputfield" size="{{ elemSize }}" type="text" name="{{ inputFieldName }}" value="{{ elemVal }}"{{#elemPlaceholder}} placeholder="{{ elemPlaceholder }}"{{/elemPlaceholder}} id="{{ elemId }}" />
 </div>
 
 ### {{! HTML }}

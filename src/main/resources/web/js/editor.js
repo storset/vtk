@@ -16729,13 +16729,14 @@ function courseSchedule() {
             enhanceMultipleInputFields(m.name + "-" + sessionId, m.movable, m.browsable, 50, m.json);
           }
           session.isEnhanced = true;
+          
         }
       } else { // Update custom session title on close
         var session = $(ui.oldHeader).closest("div");
         var titleElm = session.find("> .header > .header-title");
-        var newTitle = session.find("input[name='vrtx-title']").val();
-        if(newTitle != "") {
-          titleElm.html(newTitle);
+        var newTitle = session.find("> .accordion-content > div:first-child input[type='text']")
+        if(newTitle.length && newTitle.val() != "") {
+          titleElm.html(newTitle.val());
         } else {
           titleElm.html(titleElm.attr("data-orig-title"));
         }
@@ -16799,7 +16800,7 @@ function courseSchedule() {
       onActivate: function (e, ui, accordion) {
         if(ui.newHeader[0]) {
           var ident = $(ui.newHeader[0]).closest(".accordion-wrapper");
-          accordionOnActivateTier1(ident.hasClass("plenary"), e, ui, accordion);
+          accordionOnActivateTier1(ident.hasClass("skip-tier"), e, ui, accordion);
         }
       },
       animationSpeed: 200
@@ -16862,7 +16863,7 @@ function generateCourseScheduleHTMLForType(json, type, skipTier, sessionsLookup,
     }
   } else {
     sessionsLookup[id].html = sessionsHtml;
-    html += vrtxEditor.htmlFacade.getAccordionInteraction("3", id, type, dt.teachingmethodname, "");
+    html += vrtxEditor.htmlFacade.getAccordionInteraction("3", id, "skip-tier", dt.teachingmethodname, "");
   }
    
   return html;

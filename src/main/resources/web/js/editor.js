@@ -644,7 +644,7 @@ VrtxEditor.prototype.classifyEditorInstance = function classifyEditorInstance(op
     5. Validation and change detection
 \*-------------------------------------------------------------------*/
 
-function storeInitPropValues(contents) {
+function storeInitPropValues(contents, filterIn) {
   if (!contents.length) return;
 
   var vrtxEdit = vrtxEditor;
@@ -654,7 +654,14 @@ function storeInitPropValues(contents) {
   var selects = contents.find("select");
   var checkboxes = contents.find("input[type=checkbox]:checked");
   var radioButtons = contents.find("input[type=radio]:checked");
-
+  
+  if(typeof filterIn !== "undefined") {
+    inputFields = inputFields.filter(filterIn);
+    selects = selects.filter(filterIn);
+    checkboxes = checkboxes.filter(filterIn);
+    radioButtons = radioButtons.filter(filterIn);
+  }
+  
   var len1 = vrtxEdit.editorInitInputFields.length;
   for (var i = 0, len = inputFields.length; i < len; i++) {
     vrtxEdit.editorInitInputFields[len1+i] = inputFields[i].value;
@@ -16733,7 +16740,11 @@ function courseSchedule() {
             enhanceMultipleInputFields(m.name + "-" + sessionId, m.movable, m.browsable, 50, m.json);
           }
           session.isEnhanced = true;
-          $(ui.newHeader).closest(".session").addClass("session-touched");
+          
+          var newHeader = $(ui.newHeader);
+          var contentWrp = newHeader.parent().find(".accordion-content");
+          //storeInitPropValues(contentWrp, ".vrtx-multipleinputfield-field");
+          newHeader.closest(".session").addClass("session-touched");
         }
       } else { // Update custom session title on close
         var session = $(ui.oldHeader).closest("div");
@@ -16775,6 +16786,7 @@ function courseSchedule() {
         if(isTier1) { // Lookup and add sessions HTML to DOM
           if(!contentWrp.children().length) { // If not already added
             contentWrp.html("<div class='vrtx-grouped'>" + sessionsLookup["plenary"].html + "</div>");
+            storeInitPropValues(contentWrp);
           }
         }
         var optsH4 = {
@@ -16786,6 +16798,7 @@ function courseSchedule() {
               var contentWrp = $("#" + id).parent().find(".accordion-content");
               if(!contentWrp.children().length) { // If not already added
                 contentWrp.html("<div class='vrtx-grouped'>" + sessionsLookup[id].html + "</div>");
+                storeInitPropValues(contentWrp);
               }
             }
             accordionOnActivateTier2(isTier1 ? "plenary" : id, isTier1, e, ui, accordion);

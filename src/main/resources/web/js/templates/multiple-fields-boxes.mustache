@@ -109,7 +109,7 @@
 
   {{#isDropdown}}
     <div class="vrtx-dropdown">
-      <select id="{{ idstr }}select-{{ i }}"> </select>
+      <select class="vrtx-multipleinputfield-field" id="{{ idstr }}select-{{ i }}"> </select>
       
       {{! POPULATE DROPDOWN WITH PROP-VALUEMAP JS-ARRAY }}
       <script type="text/javascript"><!--
@@ -134,12 +134,12 @@
       {{./}}
         <div class="vrtx-multipleinputfield-json-wrapper">
           <label for="{{ idstr }}{{name}}-{{ i }}">{{ title }}</label>
-          <input class="vrtx-textfield {{ type }}" value="{{ val }}" type="text" size="{{ size }}" id="{{ idstr }}{{name}}-{{ i }}" />
+          <input class="vrtx-textfield vrtx-multipleinputfield-field {{ type }}" value="{{ val }}" type="text" size="{{ size }}" id="{{ idstr }}{{name}}-{{ i }}" />
         </div>
       {{./}}
     {{/json}}
     {{^json}}
-      <input class="vrtx-textfield {{ idstr }}{{ i }}" value="{{ value }}" type="text" size="{{ size }}" id="{{ idstr }}{{ i }}" />
+      <input class="vrtx-textfield vrtx-multipleinputfield-field {{ idstr }}{{ i }}" value="{{ value }}" type="text" size="{{ size }}" id="{{ idstr }}{{ i }}" />
     {{/json}}
   {{/isDropdown}}
   

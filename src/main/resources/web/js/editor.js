@@ -16991,6 +16991,7 @@ function saveCourseSchedule() {
           var desc = descs[p];
           var val = "";
           
+          // Reverse-engineer
           if(desc.type === "checkbox") {
             if(valElm[0].checked) {
               val = "cancelled"; // TODO: Not very general

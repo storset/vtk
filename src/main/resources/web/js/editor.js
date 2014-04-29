@@ -16885,6 +16885,7 @@ function generateCourseScheduleHTMLForSession(id, dtShort, session, sessionsLook
   // Generate session HTML
   for(var name in descs) {
     var desc = descs[name],
+        descProps = jQuery.extend(true, [], desc.props),
         val = session[name],
         placeholder = null,
         propsVal = "",
@@ -16892,8 +16893,8 @@ function generateCourseScheduleHTMLForSession(id, dtShort, session, sessionsLook
         size = 40;
     switch(desc.type) {
       case "json":
-        for(var i = 0, descPropsLen = desc.props.length; i < descPropsLen; i++) {
-          desc.props[i].title = i18n[name + "-" + desc.props[i].name];
+        for(var i = 0, descPropsLen = descProps.length; i < descPropsLen; i++) {
+          descProps[i].title = i18n[name + "-" + descProps[i].name];
           if(desc.multiple && desc.props[i].type === "resource_ref") {
             browsable = true;
           }
@@ -16901,7 +16902,7 @@ function generateCourseScheduleHTMLForSession(id, dtShort, session, sessionsLook
         if(val) {
           for(var j = 0, propsLen = val.length; j < propsLen; j++) {
             for(i = 0; i < descPropsLen; i++) {
-              propsVal += val[j][desc.props[i].name] + "###";
+              propsVal += val[j][descProps[i].name] + "###";
             }
             if(j < (propsLen - 1)) propsVal += ",";
           }
@@ -16913,7 +16914,7 @@ function generateCourseScheduleHTMLForSession(id, dtShort, session, sessionsLook
         if(desc.multiple) {
           multiples.push({
             name: name,
-            json: desc.props ? desc.props : null, 
+            json: descProps ? descProps : null, 
             movable: desc.multiple.movable,
             browsable: browsable
           });

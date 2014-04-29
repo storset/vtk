@@ -130,14 +130,13 @@ $(window).load(function () {
           ((typeof MULTIPLE_INPUT_FIELD_INITIALIZED === "object") ? MULTIPLE_INPUT_FIELD_INITIALIZED : nullDeferred),
           ((typeof JSON_ELEMENTS_INITIALIZED === "object") ? JSON_ELEMENTS_INITIALIZED : nullDeferred),
           ((typeof DATE_PICKER_INITIALIZED === "object") ? DATE_PICKER_INITIALIZED : nullDeferred),
-          ((typeof IMAGE_EDITOR_INITIALIZED === "object") ? IMAGE_EDITOR_INITIALIZED : nullDeferred),
-          ((typeof JSON_COMPLEX_EDITOR_INITIALIZED === "object") ? JSON_COMPLEX_EDITOR_INITIALIZED : nullDeferred)).done(function () {
+          ((typeof IMAGE_EDITOR_INITIALIZED === "object") ? IMAGE_EDITOR_INITIALIZED : nullDeferred)).done(function () {
     vrtxAdm.log({ msg: "Editor initialized." });
     storeInitPropValues(vrtxAdm.cachedContent);
   });
 
   // CTRL+S save inside editors
-  if (typeof CKEDITOR !== "undefined" && vrtxEditor.editorForm.length) { // XXX: Don't add event if not regular editor
+  if (typeof CKEDITOR !== "undefined" && vrtxEditor.editorForm.length) { // Don't add event if not regular editor
     vrtxEditor.richtextEditorFacade.setupCTRLS();
   }
 });
@@ -16703,7 +16702,11 @@ function courseSchedule() {
           "vrtx-staff": (isEn ? "Staff:" : "Forelesere:"),
           "vrtx-staff-external": (isEn ? "External staff:" : "Eksterne forelesere:"),
           "vrtx-resources": (isEn ? "Resources:" : "Ressurser:"),
-          "vrtx-status": (isEn ? "Cancel" : "Avlys")
+          "vrtx-status": (isEn ? "Cancel" : "Avlys"),
+          "vrtx-staff-external-name": (isEn ? "Name" : "Navn"),
+          "vrtx-staff-external-url": (isEn ? "Link" : "Lenke"),
+          "vrtx-resources-title": (isEn ? "Title" : "Tittel"),
+          "vrtx-resources-url": (isEn ? "Link" : "Lenke")
         };
 
     var sessionsLookup = {};
@@ -16729,7 +16732,6 @@ function courseSchedule() {
             enhanceMultipleInputFields(m.name + "-" + sessionId, m.movable, m.browsable, 50, m.json);
           }
           session.isEnhanced = true;
-          
         }
       } else { // Update custom session title on close
         var session = $(ui.oldHeader).closest("div");
@@ -16888,9 +16890,10 @@ function generateCourseScheduleHTMLForSession(id, dtShort, session, sessionsLook
     switch(desc.type) {
       case "json":
         for(var i = 0, descPropsLen = desc.props.length; i < descPropsLen; i++) {
+          console.log(name + "-" + desc.props[i].name);
+          desc.props[i].title = i18n[name + "-" + desc.props[i].name];
           if(desc.multiple && desc.props[i].type === "resource_ref") {
             browsable = true;
-            break;
           }
         }
         if(val) {
@@ -16908,7 +16911,7 @@ function generateCourseScheduleHTMLForSession(id, dtShort, session, sessionsLook
         if(desc.multiple) {
           multiples.push({
             name: name,
-            json: desc.type === "json" ? desc.props : null, 
+            json: desc.props ? desc.props : null, 
             movable: desc.multiple.movable,
             browsable: browsable
           });
@@ -17133,6 +17136,11 @@ VrtxEditor.prototype.showHideSelect = function showHideSelect(select, init) {
     XXX: refactor / combine and optimize
 \*-------------------------------------------------------------------*/
 
+/*
+ * Multiple comma-seperated inputfields (supports JSON inputfields)
+ *
+ */
+
 function getMultipleFieldsBoxesTemplates() {
   if (!vrtxEditor.multipleFieldsBoxesDeferred) {
     vrtxEditor.multipleFieldsBoxesDeferred = $.Deferred();
@@ -17144,7 +17152,6 @@ function getMultipleFieldsBoxesTemplates() {
   }
 }
 
-/* Multiple comma seperated input textfields */
 function initMultipleInputFields() {
   getMultipleFieldsBoxesTemplates();
   vrtxAdmin.cachedAppContent.on("click keyup", ".vrtx-multipleinputfield button.remove", function (e) {

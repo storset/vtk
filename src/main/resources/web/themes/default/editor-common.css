@@ -91,6 +91,7 @@ h2 {
   margin-bottom: 10px;
 }
 
+.vrtx-multipleinputfield-json-wrapper,
 .vrtx-multipleinputfield .vrtx-dropdown {
   display: inline-block;
 }

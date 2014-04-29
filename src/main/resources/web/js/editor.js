@@ -16742,8 +16742,8 @@ function courseSchedule() {
       }
     };  
     
-    var accordionOnActivateTier2 = function (id, isTopGrouped, e, ui, accordion) {
-      if(isTopGrouped) {
+    var accordionOnActivateTier2 = function (id, isTier1, e, ui, accordion) {
+      if(isTier1) {
         accordionOnActivateTier3(id, e, ui, accordion);
       } else {
         if(ui.newHeader[0]) {
@@ -16763,11 +16763,11 @@ function courseSchedule() {
       }
     };
     
-    var accordionOnActivateTier1 = function (isTopGrouped, e, ui, accordion) {
+    var accordionOnActivateTier1 = function (isTier1, e, ui, accordion) {
       if(ui.newHeader[0]) {
         var id = ui.newHeader[0].id;
         var contentWrp = $("#" + id).parent().find(".accordion-content");
-        if(isTopGrouped) { // Lookup and add sessions HTML to DOM
+        if(isTier1) { // Lookup and add sessions HTML to DOM
           if(!contentWrp.children().length) { // If not already added
             contentWrp.html("<div class='vrtx-grouped'>" + sessionsLookup["plenary"].html + "</div>");
           }
@@ -16776,14 +16776,14 @@ function courseSchedule() {
           elem: contentWrp.find(".vrtx-grouped"),
           headerSelector: "h4",
           onActivate: function (e, ui, accordion) {
-            if(!isTopGrouped && ui.newHeader[0]) { // Lookup and add sessions HTML to DOM
+            if(!isTier1 && ui.newHeader[0]) { // Lookup and add sessions HTML to DOM
               id = ui.newHeader[0].id;
               var contentWrp = $("#" + id).parent().find(".accordion-content");
               if(!contentWrp.children().length) { // If not already added
                 contentWrp.html("<div class='vrtx-grouped'>" + sessionsLookup[id].html + "</div>");
               }
             }
-            accordionOnActivateTier2(isTopGrouped ? "plenary" : id, isTopGrouped, e, ui, accordion);
+            accordionOnActivateTier2(isTier1 ? "plenary" : id, isTier1, e, ui, accordion);
           },
           animationSpeed: 200
         };
@@ -16827,41 +16827,41 @@ function generateCourseScheduleHTMLForType(json, type, sessionsLookup, i18n) {
       html = "",
       htmlMiddle = "",
       sessionsHtml = "",
-      isTopGrouped = type === "plenary";
+      isTier1 = type === "plenary";
 
   for(var i = 0, len = data.length; i < len; i++) {
     var dt = data[i],
         dtShort = dt.teachingmethod.toLowerCase(),
-        id = isTopGrouped ? "plenary" : dtShort + "-" + dt.id,
+        id = isTier1 ? "plenary" : dtShort + "-" + dt.id,
         sessions = dt.sessions;
 
-    if(!isTopGrouped) {
+    if(!isTier1) {
       sessionsHtml = "";
     }
 
     // Store sessions HTML and multiple descriptions in lookup object
-    if(isTopGrouped && i == 0 || !isTopGrouped) {
+    if(isTier1 && i == 0 || !isTier1) {
       sessionsLookup[id] = {};
     }
     
     for(var j = 0, sessionsLen = sessions.length; j < sessionsLen; j++) {
-      sessionsHtml += generateCourseScheduleHTMLForSessionFunc(id, dtShort, sessions[j], sessionsLookup, descs, i18n, isTopGrouped, generateCourseScheduleDateFunc);
+      sessionsHtml += generateCourseScheduleHTMLForSessionFunc(id, dtShort, sessions[j], sessionsLookup, descs, i18n, isTier1, generateCourseScheduleDateFunc);
     }
 
-    if(!isTopGrouped) {
+    if(!isTier1) {
       sessionsLookup[id].html = sessionsHtml;
       htmlMiddle += vrtxEditor.htmlFacade.getAccordionInteraction("4", id, type, sessions[0].title, "");
     }
-    if(!isTopGrouped && i > 0 && dtShort != dtShortLast) {
+    if(!isTier1 && i > 0 && dtShort != dtShortLast) {
       html += vrtxEditor.htmlFacade.getAccordionInteraction("3", dtShort, "", dt.teachingmethodname, "<div class='vrtx-grouped'>" + htmlMiddle + "</div>");
       htmlMiddle = "";
     }
     dtShortLast = dtShort;
   }
-  if(!isTopGrouped && len > 0) {
+  if(!isTier1 && len > 0) {
     html += vrtxEditor.htmlFacade.getAccordionInteraction("3", dtShort, "", dt.teachingmethodname, "<div class='vrtx-grouped'>" + htmlMiddle + "</div>");
   }
-  if(isTopGrouped) {
+  if(isTier1) {
     sessionsLookup[id].html = sessionsHtml;
     html += vrtxEditor.htmlFacade.getAccordionInteraction("3", id, type, dt.teachingmethodname, "");
   }
@@ -16869,7 +16869,7 @@ function generateCourseScheduleHTMLForType(json, type, sessionsLookup, i18n) {
   return html;
 }
 
-function generateCourseScheduleHTMLForSession(id, dtShort, session, sessionsLookup, descs, i18n, isTopGrouped, generateCourseScheduleDateFunc) {
+function generateCourseScheduleHTMLForSession(id, dtShort, session, sessionsLookup, descs, i18n, isTier1, generateCourseScheduleDateFunc) {
   var sessionId = dtShort + "-" + session.id.replace(/\//g, "-"),
       sessionTitle = generateCourseScheduleDateFunc(session.dtstart, session.dtend, i18n) + " " +
                      "<span class='header-title' data-orig-title='" + (session.title || session.id) + "'>" + (session["vrtx-title"] || session.title || session.id) + "</span>" +
@@ -16937,7 +16937,7 @@ function generateCourseScheduleHTMLForSession(id, dtShort, session, sessionsLook
      multiples: multiples
    };
    
-   return vrtxEditor.htmlFacade.getAccordionInteraction(!isTopGrouped ? "5" : "4", sessionId, "", sessionTitle, sessionContentHtml);
+   return vrtxEditor.htmlFacade.getAccordionInteraction(!isTier1 ? "5" : "4", sessionId, "", sessionTitle, sessionContentHtml);
 }
 
 function generateCourseScheduleDate(s, e, i18n) {

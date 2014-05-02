@@ -997,6 +997,8 @@ VrtxEditor.prototype.initEnhancements = function initEnhancements() {
 
   vrtxEdit.setShowHideSelectNewEditor();
   
+  // Documenttype
+  
   if(vrtxEdit.editorForm.hasClass("vrtx-course-schedule")) {
     courseSchedule();
   } else if (vrtxEdit.editorForm.hasClass("vrtx-hvordan-soke")) {
@@ -1023,6 +1025,7 @@ VrtxEditor.prototype.initEnhancements = function initEnhancements() {
 };
 
 function courseSchedule() {
+  
   retrievedScheduleData = {
          "courseid":"EXPHIL03",
          "terminnr":1,
@@ -16661,8 +16664,9 @@ function courseSchedule() {
          ]
       }
     };
-    
+  
   var retrievedScheduleDeferred = $.Deferred();
+  
   retrievedScheduleDeferred.resolve();
    
   /*
@@ -16743,7 +16747,6 @@ function courseSchedule() {
           
           var newHeader = $(ui.newHeader);
           var contentWrp = newHeader.parent().find(".accordion-content");
-          //storeInitPropValues(contentWrp, ".vrtx-multipleinputfield-field");
           newHeader.closest(".session").addClass("session-touched");
         }
       } else { // Update custom session title on close
@@ -16786,7 +16789,6 @@ function courseSchedule() {
         if(isTier1) { // Lookup and add sessions HTML to DOM
           if(!contentWrp.children().length) { // If not already added
             contentWrp.html("<div class='vrtx-grouped'>" + sessionsLookup["plenary"].html + "</div>");
-            storeInitPropValues(contentWrp);
           }
         }
         var optsH4 = {
@@ -16798,7 +16800,6 @@ function courseSchedule() {
               var contentWrp = $("#" + id).parent().find(".accordion-content");
               if(!contentWrp.children().length) { // If not already added
                 contentWrp.html("<div class='vrtx-grouped'>" + sessionsLookup[id].html + "</div>");
-                storeInitPropValues(contentWrp);
               }
             }
             accordionOnActivateTier2(isTier1 ? "plenary" : id, isTier1, e, ui, accordion);
@@ -17003,6 +17004,22 @@ function saveCourseSchedule(startTime, d) {
       var props = content.find("> div");
       for(var j = 0, len2 = props.length; j < len2; j++) {
         var propsElm = $(props[j]);
+        
+        // Find and ref. session
+        var session = {};
+        for(k = 0, len4 = data.length; k < len4; k++) {
+          if(data[k].teachingmethod === tm && data[k].id === actId) {
+            var sessions = data[k].sessions;
+            for(var l = 0, len5 = sessions.length; l < len5; l++) {
+              if(sessions[l].id === sessId) {
+                session = sessions[l];
+                break; // I'm happy up here
+              }
+            }
+            break; // I'm happy here also
+          }
+        }
+            
         for(var p in descs) {
           var valElm = propsElm.find("input[name='" + p + "']");
           if(!valElm.length) continue;
@@ -17035,21 +17052,8 @@ function saveCourseSchedule(startTime, d) {
               val = arrProps;
             }
           }
-          
           if(val && val.length) {
-            // TODO: slow to iterate here each time
-            for(k = 0, len4 = data.length; k < len4; k++) {
-              if(data[k].teachingmethod === tm && data[k].id === actId) {
-                var sessions = data[k].sessions;
-                for(var l = 0, len5 = sessions.length; l < len5; l++) {
-                  if(sessions[l].id === sessId) {
-                    sessions[l][p] = val; // Update
-                    break; // I'm happy up here
-                  }
-                }
-                break; // I'm happy here also
-              }
-            }
+            session[p] = val; // Update
           }
         }
       }

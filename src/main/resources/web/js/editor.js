@@ -17023,7 +17023,6 @@ function saveCourseSchedule(startTime, d) {
           }
         }
       }
-      console.log(session);
     }
     return sessionsTouched;
   };
@@ -17065,15 +17064,20 @@ function saveCourseScheduleExtractSessionFromDOM(desc, elm) {
     if(desc.multiple && val.length) { // To array (multiple)
       val = val.split(",");
     }
-    if(desc.type === "json") { // Object props into array (JSON multiple)
+    if(desc.type === "json" && val.length) { // Object props into array (JSON multiple)
       var arrProps = [];
-      for(var i = 0, descPropsLen = desc.props.length; i < descPropsLen; i++) { // Definition
-        if(!val[i]) continue;
-                
+      for(var i = 0, arrLen = val.length; i < arrLen; i++) {
+        var newProp = null;
         var prop = val[i].split("###");
-        if(prop[1] != "") {
-          var newProp = {};
-          newProp[desc.props[i].name] = prop[1];
+        for(var j = 0, descPropsLen = desc.props.length; j < descPropsLen; j++) { // Definition
+          if(prop[j] !== "") {
+            if(!newProp) {
+              newProp = {};
+            }
+            newProp[desc.props[j].name] = prop[j];
+          }
+        }
+        if(newProp) {
           arrProps.push(newProp);
         }
       }

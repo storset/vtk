@@ -17006,8 +17006,8 @@ function saveCourseSchedule(startTime, d) {
       var content = $(sessions[i]);
       if(!content.length) continue;
       
-      var domSession = content.find("> div");
       var session = null;
+      var domSession = content.find("> div");
       for(var j = 0, domSessionLen = domSession.length; j < domSessionLen; j++) {
         var domSessionElm = $(domSession[j]);
         for(var name in descs) {

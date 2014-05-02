@@ -17019,11 +17019,11 @@ function saveCourseSchedule(startTime, d) {
               val = "cancelled"; // TODO: Not very general
             }
           } else {
-            val = valElm.val();
-            if(desc.multiple && val.length) { // Arrayify multiple
+            val = valElm.val(); // To string (string)
+            if(desc.multiple && val.length) { // To array (multiple)
               val = val.split(",");
             }
-            if(desc.type === "json") { // Extract values from JSON multiple
+            if(desc.type === "json") { // Object props into array (JSON multiple)
               var arrProps = [];
               for(var k = 0, descPropsLen = desc.props.length; k < descPropsLen; k++) { // Definition
                 if(!val[k]) continue;
@@ -17056,14 +17056,13 @@ function saveCourseSchedule(startTime, d) {
   
   vrtxAdmin.log({msg: "Sessions touched: " + sessionsTouched});
 
-  if(sessionsTouched) {
+  if(sessionsTouched) { // Save
     var postData = JSON.stringify({
       "resourcetype": "course-schedule",
       "properties": {"activities": retrievedScheduleData}
     }, null, 2);
     //var csrfPT = "&csrf-prevention-token=" + vrtxEditor.editorForm.find("input[name='csrf-prevention-token']").val();
 
-    // Save updated fields
     vrtxAdmin.serverFacade.postJSONA(this.location.href, postData, {
       success: function (results, status, resp) {
         ajaxSaveSuccess(startTime, d, results, status, resp);
@@ -17079,14 +17078,14 @@ function saveCourseSchedule(startTime, d) {
 
 function saveFindSession(content, data, dataLen) {
   var id = content.attr("aria-labelledby").split("-");
-  var tm = id[0].toUpperCase();
-  var actId = id[1] + "-" + id[2];
-  var sessId = id[1] + "-" + id[2] + "/" + id[3] + "/" + id[4];
+  var teachingmethod = id[0].toUpperCase();
+  var activityId = id[1] + "-" + id[2];
+  var sessionId = id[1] + "-" + id[2] + "/" + id[3] + "/" + id[4];
   for(var i = 0; i < dataLen; i++) {
-    if(data[i].teachingmethod === tm && data[i].id === actId) {
+    if(data[i].teachingmethod === teachingmethod && data[i].id === activityId) {
       var sessions = data[i].sessions;
       for(var j = 0, len = sessions.length; j < len; j++) {
-        if(sessions[j].id === sessId) {
+        if(sessions[j].id === sessionId) {
           return sessions[j];
         }
       }

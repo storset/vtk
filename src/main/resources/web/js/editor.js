@@ -16970,15 +16970,19 @@ function generateCourseScheduleHTMLForSession(id, dtShort, session, sessionsLook
    return vrtxEditor.htmlFacade.getAccordionInteraction(!skipTier ? "5" : "4", sessionId, "session", sessionTitle, sessionContentHtml);
 }
 
-function generateCourseScheduleDate(s, e, i18n) {
-  /* IE8: http://www.digital-portfolio.net/blog/view/ie8-and-iso-date-format */
+function generateCourseScheduleDate(s, e, i18n) { /* IE8: http://www.digital-portfolio.net/blog/view/ie8-and-iso-date-format */
   var sd = s.split("T")[0].split("-");
   var st = s.split("T")[1].split(".")[0].split(":");
+  var ed = e.split("T")[0].split("-");
   var et = e.split("T")[1].split(".")[0].split(":");
   
+  // Not same day
+  if(sd[0] != ed[0] || sd[1] != ed[1] || sd[2] != ed[2]) {
+    return sd[2] + ". " + i18n[sd[1]] + " " + sd[0] + " kl " + st[0] + ":" + st[1] + "&ndash;" +
+           ed[2] + ". " + i18n[ed[1]] + " " + ed[0] + " kl " + et[0] + ":" + et[1];
+  }
   return sd[2] + ". " + i18n[sd[1]] + " " + sd[0] + " - kl " +
-         st[0] + ":" + st[1] + "&ndash;" +
-         et[0] + ":" + et[1];
+         st[0] + ":" + st[1] + "&ndash;" + et[0] + ":" + et[1];
 }
 
 function saveCourseSchedule(startTime, d) {

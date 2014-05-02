@@ -16983,7 +16983,7 @@ function generateCourseScheduleDate(s, e, i18n) {
 
 function saveCourseSchedule(startTime, d) {
   var updateType = function(type) {
-    var sessions = $("." + type + " .session-touched");
+    var sessions = $("." + type + " .session-touched .accordion-content");
     var sessionsTouched = sessions.length;
     
     var jsonType = retrievedScheduleData[type];
@@ -16993,7 +16993,7 @@ function saveCourseSchedule(startTime, d) {
     var data = jsonType.data;
   
     for(var i = 0; i < sessionsTouched; i++) {
-      var content = $(sessions[i]).find(".accordion-content");
+      var content = $(sessions[i]);
       if(!content.length) continue;
 
       var id = content.attr("aria-labelledby").split("-");
@@ -17071,6 +17071,7 @@ function saveCourseSchedule(startTime, d) {
       "resourcetype": "course-schedule",
       "properties": {"activities": retrievedScheduleData}
     }, null, 2);
+    //var csrfPT = "&csrf-prevention-token=" + vrtxEditor.editorForm.find("input[name='csrf-prevention-token']").val();
 
     // Save updated fields
     vrtxAdmin.serverFacade.postJSONA(this.location.href, postData, {

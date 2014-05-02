@@ -3703,7 +3703,7 @@ VrtxAdmin.prototype.serverFacade = {
     this.post(url, params, callbacks, "html", "application/x-www-form-urlencoded;charset=UTF-8");
   },
   /**
-   * POST JSON
+   * POST JSON (text/plain)
    *
    * @this {serverFacade}
    * @param {string} url The URL
@@ -3714,7 +3714,7 @@ VrtxAdmin.prototype.serverFacade = {
     this.post(url, params, callbacks, "json", "text/plain;charset=utf-8");
   },
   /**
-   * POST JSON
+   * POST JSON (application/json)
    *
    * @this {serverFacade}
    * @param {string} url The URL

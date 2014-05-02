@@ -16987,7 +16987,7 @@ function generateCourseScheduleDate(s, e, i18n) { /* IE8: http://www.digital-por
 
 function saveCourseSchedule(startTime, d) {
   var updateType = function(type) {
-    var sessions = $("." + type + " .session-touched .accordion-content");
+    var sessions = vrtxEditor.editorForm.find("." + type + " .session-touched .accordion-content");
     var sessionsTouched = sessions.length;
     
     if(!sessionsTouched) return 0;
@@ -17007,22 +17007,23 @@ function saveCourseSchedule(startTime, d) {
       if(!content.length) continue;
       
       var session = null;
-      var domSession = content.find("> div");
-      for(var j = 0, domSessionLen = domSession.length; j < domSessionLen; j++) {
-        var domSessionElm = $(domSession[j]);
+      var domSessionElms = content.find("> div");
+      for(var j = 0, domSessionElmsLen = domSessionElms.length; j < domSessionElmsLen; j++) {
+        var domSessionElm = $(domSessionElms[j]);
         for(var name in descs) {
           var valElm = domSessionElm.find("input[name='" + name + "']");
           if(!valElm.length) continue;
 
           var val = saveCourseScheduleExtractSessionFromDOMFunc(descs[name], valElm);
           if(val && val.length) { // Update
-            if(!session) {
+            if(!session) { // Only find session in data if something is not empty
               session = saveCourseScheduleFindSessionInDataFunc(content, data, dataLen);
             }
             session[name] = val;
           }
         }
       }
+      console.log(session);
     }
     return sessionsTouched;
   };
@@ -17066,13 +17067,13 @@ function saveCourseScheduleExtractSessionFromDOM(desc, valElm) {
     }
     if(desc.type === "json") { // Object props into array (JSON multiple)
       var arrProps = [];
-      for(var k = 0, descPropsLen = desc.props.length; k < descPropsLen; k++) { // Definition
-        if(!val[k]) continue;
+      for(var i = 0, descPropsLen = desc.props.length; i < descPropsLen; i++) { // Definition
+        if(!val[i]) continue;
                 
-        var prop = val[k].split("###");
+        var prop = val[i].split("###");
         if(prop[1] != "") {
           var newProp = {};
-          newProp[desc.props[k].name] = prop[1];
+          newProp[desc.props[i].name] = prop[1];
           arrProps.push(newProp);
         }
       }

@@ -16991,35 +16991,34 @@ function saveCourseSchedule(startTime, d) {
     
     var descs = jsonType["vrtx-editable-description"];
     var data = jsonType.data;
+    var dataLen = data.length;
   
     for(var i = 0; i < sessionsTouched; i++) {
       var content = $(sessions[i]);
       if(!content.length) continue;
 
+      // Find and ref. session
       var id = content.attr("aria-labelledby").split("-");
       var tm = id[0].toUpperCase();
       var actId = id[1] + "-" + id[2];
       var sessId = id[1] + "-" + id[2] + "/" + id[3] + "/" + id[4];
+      var session = {};
+      for(k = 0, len4 = dataLen; k < len4; k++) {
+        if(data[k].teachingmethod === tm && data[k].id === actId) {
+          var sessions = data[k].sessions;
+          for(var l = 0, len5 = sessions.length; l < len5; l++) {
+            if(sessions[l].id === sessId) {
+              session = sessions[l];
+              break; // I'm happy up here
+            }
+          }
+          break; // I'm happy here also
+        }
+      }
       
       var props = content.find("> div");
       for(var j = 0, len2 = props.length; j < len2; j++) {
         var propsElm = $(props[j]);
-        
-        // Find and ref. session
-        var session = {};
-        for(k = 0, len4 = data.length; k < len4; k++) {
-          if(data[k].teachingmethod === tm && data[k].id === actId) {
-            var sessions = data[k].sessions;
-            for(var l = 0, len5 = sessions.length; l < len5; l++) {
-              if(sessions[l].id === sessId) {
-                session = sessions[l];
-                break; // I'm happy up here
-              }
-            }
-            break; // I'm happy here also
-          }
-        }
-            
         for(var p in descs) {
           var valElm = propsElm.find("input[name='" + p + "']");
           if(!valElm.length) continue;

@@ -17006,20 +17006,20 @@ function saveCourseSchedule(startTime, d) {
       var content = $(sessions[i]);
       if(!content.length) continue;
       
-      var session = null;
+      var session = saveCourseScheduleFindSessionInDataFunc(content, data, dataLen);
       var domSessionElms = content.find("> div");
       for(var j = 0, domSessionElmsLen = domSessionElms.length; j < domSessionElmsLen; j++) {
         var domSessionElm = $(domSessionElms[j]);
+        
         for(var name in descs) {
-          var valElm = domSessionElm.find("input[name='" + name + "']");
-          if(!valElm.length) continue;
+          var domSessionPropElm = domSessionElm.find("input[name='" + name + "']");
+          if(!domSessionPropElm.length) continue;
 
-          var val = saveCourseScheduleExtractSessionFromDOMFunc(descs[name], valElm);
+          var val = saveCourseScheduleExtractSessionFromDOMFunc(descs[name], domSessionPropElm);
           if(val && val.length) { // Update
-            if(!session) { // Only find session in data if something is not empty
-              session = saveCourseScheduleFindSessionInDataFunc(content, data, dataLen);
-            }
             session[name] = val;
+          } else { // Delete if empty
+            delete session[name];
           }
         }
       }
@@ -17054,14 +17054,14 @@ function saveCourseSchedule(startTime, d) {
   }
 }
 
-function saveCourseScheduleExtractSessionFromDOM(desc, valElm) {
+function saveCourseScheduleExtractSessionFromDOM(desc, elm) {
   var val = "";
   if(desc.type === "checkbox") {
-    if(valElm[0].checked) {
+    if(elm[0].checked) {
       val = "cancelled"; // TODO: Not very general
     }
   } else {
-    val = valElm.val(); // To string (string)
+    val = elm.val(); // To string (string)
     if(desc.multiple && val.length) { // To array (multiple)
       val = val.split(",");
     }

@@ -16985,23 +16985,6 @@ function generateCourseScheduleDate(s, e, i18n) { /* IE8: http://www.digital-por
          st[0] + ":" + st[1] + "&ndash;" + et[0] + ":" + et[1];
 }
 
-function saveFindSession(content, data, dataLen) {
-  var id = content.attr("aria-labelledby").split("-");
-  var tm = id[0].toUpperCase();
-  var actId = id[1] + "-" + id[2];
-  var sessId = id[1] + "-" + id[2] + "/" + id[3] + "/" + id[4];
-  for(var i = 0; i < dataLen; i++) {
-    if(data[i].teachingmethod === tm && data[i].id === actId) {
-      var sessions = data[i].sessions;
-      for(var j = 0, len = sessions.length; j < len; j++) {
-        if(sessions[j].id === sessId) {
-          return sessions[j];
-        }
-      }
-    }
-  }
-}
-
 function saveCourseSchedule(startTime, d) {
   var updateType = function(type) {
     var sessions = $("." + type + " .session-touched .accordion-content");
@@ -17018,13 +17001,13 @@ function saveCourseSchedule(startTime, d) {
     for(var i = 0; i < sessionsTouched; i++) {
       var content = $(sessions[i]);
       if(!content.length) continue;
-
-      var props = content.find("> div");
+      
+      var domSession = content.find("> div");
       var session = null;
-      for(var j = 0, len = props.length; j < len; j++) {
-        var propsElm = $(props[j]);
+      for(var j = 0, domSessionLen = domSession.length; j < domSessionLen; j++) {
+        var domSessionElm = $(domSession[j]);
         for(var p in descs) {
-          var valElm = propsElm.find("input[name='" + p + "']");
+          var valElm = domSessionElm.find("input[name='" + p + "']");
           if(!valElm.length) continue;
           
           var desc = descs[p];
@@ -17042,7 +17025,7 @@ function saveCourseSchedule(startTime, d) {
             }
             if(desc.type === "json") { // Extract values from JSON multiple
               var arrProps = [];
-              for(var k = 0, len2 = desc.props.length; k < len2; k++) { // Definition
+              for(var k = 0, descPropsLen = desc.props.length; k < descPropsLen; k++) { // Definition
                 if(!val[k]) continue;
                 
                 var prop = val[k].split("###");
@@ -17055,6 +17038,7 @@ function saveCourseSchedule(startTime, d) {
               val = arrProps;
             }
           }
+          
           if(val && val.length) {
             if(!session) {
               session = saveFindSessionFunc(content, data, dataLen);
@@ -17090,6 +17074,23 @@ function saveCourseSchedule(startTime, d) {
     });
   } else {
     d.close();
+  }
+}
+
+function saveFindSession(content, data, dataLen) {
+  var id = content.attr("aria-labelledby").split("-");
+  var tm = id[0].toUpperCase();
+  var actId = id[1] + "-" + id[2];
+  var sessId = id[1] + "-" + id[2] + "/" + id[3] + "/" + id[4];
+  for(var i = 0; i < dataLen; i++) {
+    if(data[i].teachingmethod === tm && data[i].id === actId) {
+      var sessions = data[i].sessions;
+      for(var j = 0, len = sessions.length; j < len; j++) {
+        if(sessions[j].id === sessId) {
+          return sessions[j];
+        }
+      }
+    }
   }
 }
 

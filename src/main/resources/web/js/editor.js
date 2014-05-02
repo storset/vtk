@@ -16725,9 +16725,9 @@ function courseSchedule() {
       
     // Generate HTML
     var html = "<div class='accordion-title'>" + i18n.titles.plenary + "</div>" +
-               generateCourseScheduleHTMLForType(retrievedScheduleData, "plenary", true, sessionsLookup, i18n) +
+               generateCourseScheduleForType(retrievedScheduleData, "plenary", true, sessionsLookup, i18n) +
                "<div class='accordion-title'>" + i18n.titles.group + "</div>" +
-               generateCourseScheduleHTMLForType(retrievedScheduleData, "group", false, sessionsLookup, i18n);
+               generateCourseScheduleForType(retrievedScheduleData, "group", false, sessionsLookup, i18n);
       
     // Add HTML to DOM
     $(".properties").prepend("<div class='vrtx-grouped'>" + html + "</div>"); 
@@ -16837,7 +16837,7 @@ function courseSchedule() {
   });
 }
 
-function generateCourseScheduleHTMLForType(json, type, skipTier, sessionsLookup, i18n) {
+function generateCourseScheduleForType(json, type, skipTier, sessionsLookup, i18n) {
   var generateCourseScheduleDateFunc = generateCourseScheduleDate,
       generateCourseScheduleSessionFunc = generateCourseScheduleSession,
       generateCourseScheduleContentFromSessionDataFunc = generateCourseScheduleContentFromSessionData;

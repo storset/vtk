@@ -16949,26 +16949,18 @@ function saveCourseSchedule(startTime, d) {
     return sessionsTouched;
   };
   
-  var sessionsTouched = 0;
-  sessionsTouched += updateType("plenary");
-  sessionsTouched += updateType("group");
+  var sessionsTouched = updateType("plenary") + updateType("group");
   
   vrtxAdmin.log({msg: "Sessions touched: " + sessionsTouched});
 
   if(sessionsTouched) { // Save
-    var postData = JSON.stringify({
-      "resourcetype": "course-schedule",
-      "properties": {"activities": retrievedScheduleData}
-    }, null, 2);
-    //var csrfPT = "&csrf-prevention-token=" + vrtxEditor.editorForm.find("input[name='csrf-prevention-token']").val();
-
-    vrtxAdmin.serverFacade.postJSONA(this.location.href, postData, {
-      success: function (results, status, resp) {
-        ajaxSaveSuccess(startTime, d, results, status, resp);
-      },
-      error: function (xhr, textStatus) {
-        ajaxSaveError(d, xhr, textStatus);
-      }
+    vrtxAdmin.serverFacade.postJSONA(this.location.href,
+      JSON.stringify({
+        "resourcetype": "course-schedule",
+        "properties": { "activities": retrievedScheduleData }
+      }, null, 2), {
+      success: function (results, status, resp) { ajaxSaveSuccess(startTime, d, results, status, resp); },
+      error: function (xhr, textStatus)         { ajaxSaveError(d, xhr, textStatus);                    }
     });
   } else {
     d.close();

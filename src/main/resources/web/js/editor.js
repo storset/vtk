@@ -16923,12 +16923,7 @@ function saveCourseSchedule(startTime, d) {
   
     // Sessions that has been opened
     for(var i = 0; i < sessionsTouched; i++) {
-      var content = $(sess
-      
-      
-      
-      
-      ions[i]);
+      var content = $(sessions[i]);
       if(!content.length) continue;
       
       var session = saveCourseScheduleFindSessionInDataFunc(content, data, dataLen);

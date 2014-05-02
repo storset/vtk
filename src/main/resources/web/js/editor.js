@@ -679,6 +679,9 @@ function unsavedChangesInEditor() {
   
   if(vrtxEdit.editorForm.hasClass("vrtx-course-schedule")) {
     // Own strategy for non-linear editor
+    
+    
+    
     return false;
   }
   
@@ -16920,7 +16923,12 @@ function saveCourseSchedule(startTime, d) {
   
     // Sessions that has been opened
     for(var i = 0; i < sessionsTouched; i++) {
-      var content = $(sessions[i]);
+      var content = $(sess
+      
+      
+      
+      
+      ions[i]);
       if(!content.length) continue;
       
       var session = saveCourseScheduleFindSessionInDataFunc(content, data, dataLen);
@@ -16933,9 +16941,9 @@ function saveCourseSchedule(startTime, d) {
           if(!domSessionPropElm.length) continue;
 
           var val = saveCourseScheduleExtractSessionFromDOMFunc(descs[name], domSessionPropElm);
-          if(val && val.length) { // Update
+          if(val && val.length) { // Update if not empty
             session[name] = val;
-          } else { // Delete if empty
+          } else { // Delete otherwise
             delete session[name];
           }
         }

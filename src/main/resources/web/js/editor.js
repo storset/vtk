@@ -16990,14 +16990,17 @@ function saveCourseSchedule(startTime, d) {
     var sessions = $("." + type + " .session-touched .accordion-content");
     var sessionsTouched = sessions.length;
     
+    if(!sessionsTouched) return 0;
+    
     var jsonType = retrievedScheduleData[type];
-    if(!jsonType) return;
+    if(!jsonType) return 0;
     
     var descs = jsonType["vrtx-editable-description"];
     var data = jsonType.data;
     var dataLen = data.length;
     var saveFindSessionFunc = saveFindSession;
   
+    // Session
     for(var i = 0; i < sessionsTouched; i++) {
       var content = $(sessions[i]);
       if(!content.length) continue;
@@ -17047,6 +17050,7 @@ function saveCourseSchedule(startTime, d) {
           }
         }
       }
+      console.log(session);
     }
     return sessionsTouched;
   };
@@ -17414,7 +17418,7 @@ function saveMultipleInputFields() {
   var multipleFields = $(".vrtx-multipleinputfields");
   for (var i = 0, len = multipleFields.length; i < len; i++) {
     var multiple = $(multipleFields[i]);
-    var multipleInput = multiple.find("input").filter(":hidden");
+    var multipleInput = multiple.find("> input");
     if (!multipleInput.length) continue;
     var multipleInputFields = multiple.find(".vrtx-multipleinputfield");
     if (!multipleInputFields.length) {

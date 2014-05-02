@@ -16998,9 +16998,10 @@ function saveCourseSchedule(startTime, d) {
     var descs = jsonType["vrtx-editable-description"];
     var data = jsonType.data;
     var dataLen = data.length;
-    var saveFindSessionFunc = saveFindSession;
+    var saveCourseScheduleFindSessionInDataFunc = saveCourseScheduleFindSessionInData;
+    var saveCourseScheduleExtractSessionFromDOMFunc = saveCourseScheduleExtractSessionFromDOM;
   
-    // Session
+    // Sessions that has been opened
     for(var i = 0; i < sessionsTouched; i++) {
       var content = $(sessions[i]);
       if(!content.length) continue;
@@ -17009,51 +17010,23 @@ function saveCourseSchedule(startTime, d) {
       var session = null;
       for(var j = 0, domSessionLen = domSession.length; j < domSessionLen; j++) {
         var domSessionElm = $(domSession[j]);
-        for(var p in descs) {
-          var valElm = domSessionElm.find("input[name='" + p + "']");
+        for(var name in descs) {
+          var valElm = domSessionElm.find("input[name='" + name + "']");
           if(!valElm.length) continue;
-          
-          var desc = descs[p];
-          var val = "";
-          
-          // Reverse-engineer
-          if(desc.type === "checkbox") {
-            if(valElm[0].checked) {
-              val = "cancelled"; // TODO: Not very general
-            }
-          } else {
-            val = valElm.val(); // To string (string)
-            if(desc.multiple && val.length) { // To array (multiple)
-              val = val.split(",");
-            }
-            if(desc.type === "json") { // Object props into array (JSON multiple)
-              var arrProps = [];
-              for(var k = 0, descPropsLen = desc.props.length; k < descPropsLen; k++) { // Definition
-                if(!val[k]) continue;
-                
-                var prop = val[k].split("###");
-                if(prop[1] != "") {
-                  var newProp = {};
-                  newProp[desc.props[k].name] = prop[1];
-                  arrProps.push(newProp);
-                }
-              }
-              val = arrProps;
-            }
-          }
-          
-          if(val && val.length) {
+
+          var val = saveCourseScheduleExtractSessionFromDOMFunc(descs[name], valElm);
+          if(val && val.length) { // Update
             if(!session) {
-              session = saveFindSessionFunc(content, data, dataLen);
+              session = saveCourseScheduleFindSessionInDataFunc(content, data, dataLen);
             }
-            session[p] = val; // Update
+            session[name] = val;
           }
         }
       }
-      console.log(session);
     }
     return sessionsTouched;
   };
+  
   var sessionsTouched = 0;
   sessionsTouched += updateType("plenary");
   sessionsTouched += updateType("group");
@@ -17080,7 +17053,36 @@ function saveCourseSchedule(startTime, d) {
   }
 }
 
-function saveFindSession(content, data, dataLen) {
+function saveCourseScheduleExtractSessionFromDOM(desc, valElm) {
+  var val = "";
+  if(desc.type === "checkbox") {
+    if(valElm[0].checked) {
+      val = "cancelled"; // TODO: Not very general
+    }
+  } else {
+    val = valElm.val(); // To string (string)
+    if(desc.multiple && val.length) { // To array (multiple)
+      val = val.split(",");
+    }
+    if(desc.type === "json") { // Object props into array (JSON multiple)
+      var arrProps = [];
+      for(var k = 0, descPropsLen = desc.props.length; k < descPropsLen; k++) { // Definition
+        if(!val[k]) continue;
+                
+        var prop = val[k].split("###");
+        if(prop[1] != "") {
+          var newProp = {};
+          newProp[desc.props[k].name] = prop[1];
+          arrProps.push(newProp);
+        }
+      }
+      val = arrProps;
+    }
+  }
+  return val;
+}
+
+function saveCourseScheduleFindSessionInData(content, data, dataLen) {
   var id = content.attr("aria-labelledby").split("-");
   var teachingmethod = id[0].toUpperCase();
   var activityId = id[1] + "-" + id[2];

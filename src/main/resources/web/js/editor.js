@@ -644,8 +644,8 @@ VrtxEditor.prototype.classifyEditorInstance = function classifyEditorInstance(op
     5. Validation and change detection
 \*-------------------------------------------------------------------*/
 
-function storeInitPropValues(contents, filterIn) {
-  if (!contents.length) return;
+function storeInitPropValues(contents) {
+  if (!contents.length || vrtxEditor.editorForm.hasClass("vrtx-course-schedule")) return;
 
   var vrtxEdit = vrtxEditor;
 
@@ -655,28 +655,17 @@ function storeInitPropValues(contents, filterIn) {
   var checkboxes = contents.find("input[type=checkbox]:checked");
   var radioButtons = contents.find("input[type=radio]:checked");
   
-  if(typeof filterIn !== "undefined") {
-    inputFields = inputFields.filter(filterIn);
-    selects = selects.filter(filterIn);
-    checkboxes = checkboxes.filter(filterIn);
-    radioButtons = radioButtons.filter(filterIn);
-  }
-  
-  var len1 = vrtxEdit.editorInitInputFields.length;
   for (var i = 0, len = inputFields.length; i < len; i++) {
-    vrtxEdit.editorInitInputFields[len1+i] = inputFields[i].value;
+    vrtxEdit.editorInitInputFields[i] = inputFields[i].value;
   }
-  var len2 = vrtxEdit.editorInitSelects.length;
   for (i = 0, len = selects.length; i < len; i++) {
-    vrtxEdit.editorInitSelects[len2+i] = selects[i].value;
+    vrtxEdit.editorInitSelects[i] = selects[i].value;
   }
-  var len3 = vrtxEdit.editorInitCheckboxes.length;
   for (i = 0, len = checkboxes.length; i < len; i++) {
-    vrtxEdit.editorInitCheckboxes[len3+i] = checkboxes[i].name;
+    vrtxEdit.editorInitCheckboxes[i] = checkboxes[i].name;
   }
-  var len4 = vrtxEdit.editorInitRadios.length;
   for (i = 0, len = radioButtons.length; i < len; i++) {
-    vrtxEdit.editorInitRadios[len4+i] = radioButtons[i].name + " " + radioButtons[i].value;
+    vrtxEdit.editorInitRadios[i] = radioButtons[i].name + " " + radioButtons[i].value;
   }
 }
 
@@ -687,6 +676,12 @@ function unsavedChangesInEditor() {
   }
   
   var vrtxEdit = vrtxEditor;
+  
+  if(vrtxEdit.editorForm.hasClass("vrtx-course-schedule")) {
+    // Own strategy for non-linear editor
+    return false;
+  }
+  
   var contents = vrtxAdmin.cachedContent;
 
   var currentStateOfInputFields = contents.find("input").not("[type=submit]").not("[type=button]")
@@ -701,7 +696,7 @@ function unsavedChangesInEditor() {
 
   // Check if count has changed
   if (textLen != vrtxEdit.editorInitInputFields.length || selectsLen != vrtxEdit.editorInitSelects.length || checkboxLen != vrtxEdit.editorInitCheckboxes.length || radioLen != vrtxEdit.editorInitRadios.length) return true;
-
+  
   // Check if values have changed
   for (var i = 0; i < textLen; i++) if (currentStateOfInputFields[i].value !== vrtxEdit.editorInitInputFields[i]) return true;
   for (i = 0; i < selectsLen; i++) if (currentStateOfSelects[i].value !== vrtxEdit.editorInitSelects[i]) return true;

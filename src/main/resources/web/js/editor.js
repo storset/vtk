@@ -16961,7 +16961,7 @@ function saveCourseSchedule(startTime, d) {
       }, null, 2), {
       success: function (results, status, resp) { ajaxSaveSuccess(startTime, d, results, status, resp); },
       error: function (xhr, textStatus)         { ajaxSaveError(d, xhr, textStatus);                    }
-    });
+    }, vrtxEditor.editorForm.find("input[name='csrf-prevention-token']").val());
   } else {
     d.close();
   }

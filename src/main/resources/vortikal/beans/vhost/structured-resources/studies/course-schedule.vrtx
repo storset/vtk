@@ -61,6 +61,7 @@ resourcetype course-schedule {
     table-place : (en : "Place", no : "Sted", nn : "Stad"),
     table-staff : (en : "Lecturer", no : "Foreleser", nn : "Foreleser"),
     header-plenary : (en : "Plenary sessions", no : "Fellesundervisning", nn : "Fellesundervisning"), 
+    header-group : (en : "Group sessions", no : "Gruppeundervisning", nn : "Gruppeundervisning"),
     dSun : (en : "Sunday",    no : "Søndag",  nn : "Søndag"),
     dMon : (en : "Monday",    no : "Mandag",  nn : "Mandag"),
     dTue : (en : "Tuesday",   no : "Tirsdag", nn : "Tirsdag"),

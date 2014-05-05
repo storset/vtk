@@ -17025,8 +17025,7 @@ function saveCourseScheduleSession(domSessionElms, id, sessionId) {
       delete rawPtr[name];
     }
   }
-  console.log(rawPtr);
-  console.log(rawOrig);
+
   sessionLookup.hasChanges = saveCourseScheduleSessionDetectChange(rawPtr, rawOrig);
 }
 
@@ -17042,9 +17041,16 @@ function saveCourseScheduleSessionDetectChange(o1, o2) {
         if(saveCourseScheduleSessionDetectChange(o1[i], o2[i])) return true;
       }
     } else {
-      for(prop in o1) {
-        if(saveCourseScheduleSessionDetectChange(o1[prop], o2[prop])) return true;
+      var propCount2 = 0;
+      for(prop2 in o2) {
+        propCount2++;
       }
+      var propCount1 = 0;
+      for(prop1 in o1) {
+        if(saveCourseScheduleSessionDetectChange(o1[prop1], o2[prop1])) return true;
+        propCount1++;
+      }
+      if(propCount1 !== propCount2) return true;
     }
   } else if(typeof o1 === "string" && typeof o2 === "string") {
     if(o1 !== o2) return true;

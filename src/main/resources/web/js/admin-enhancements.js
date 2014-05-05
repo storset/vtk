@@ -2648,6 +2648,7 @@ function ajaxSave() {
         ajaxSaveSuccess(startTime, d, results, status, xhr);
       },
       error: function (xhr, textStatus, errMsg) {
+        vrtxEditor.needToConfirm = true;
         ajaxSaveError(d, xhr, textStatus);
       }
     });

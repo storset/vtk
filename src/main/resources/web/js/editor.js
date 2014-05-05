@@ -16736,7 +16736,7 @@ function courseSchedule() {
         var session = sessionsLookup[id][sessionId];
         
         var sessionElm = $(ui.newHeader).closest("div");
-        var content = sessionElm.find("> .accordion-content > div");
+        var content = sessionElm.find("> .accordion-content");
         
         lastId = id;
         lastSessionId = sessionId;
@@ -16753,7 +16753,7 @@ function courseSchedule() {
       } else { // Update session and accordion title on close
         var sessionId = ui.oldHeader[0].id;
         var sessionElm = $(ui.oldHeader).closest("div");
-        var content = sessionElm.find("> .accordion-content > div");
+        var content = sessionElm.find("> .accordion-content");
         
         lastId = "";
         lastSessionId = "";
@@ -16762,7 +16762,7 @@ function courseSchedule() {
         saveCourseScheduleSession(content, id, sessionId);
         
         var titleElm = sessionElm.find("> .header > .header-title");
-        var newTitle = content.filter(":first-child").find("input[type='text']")
+        var newTitle = content.filter("> div:first-child").find("input[type='text']")
         if(newTitle.length && newTitle.val() != "") {
           titleElm.html(newTitle.val());
         } else {
@@ -16962,7 +16962,10 @@ function saveCourseSchedule(startTime, d) {
       ajaxSaveSuccess(startTime, d, results, status, resp); 
       courseScheduleSaved();
     },
-    error: function (xhr, textStatus)         { ajaxSaveError(d, xhr, textStatus);                    }
+    error: function (xhr, textStatus) {
+      vrtxEditor.needToConfirm = true;  
+      ajaxSaveError(d, xhr, textStatus);
+    }
   }, vrtxEditor.editorForm.find("input[name='csrf-prevention-token']").val());
 }
 
@@ -17005,7 +17008,7 @@ function unsavedChangesInCourseSchedule() {
  *
  */
 function saveCourseScheduleSession(domSessionElms, id, sessionId) {
-  saveMultipleInputFields();
+  saveMultipleInputFields(domSessionElms);
 
   var sessionLookup = sessionsLookup[id][sessionId];
   var rawOrig = sessionLookup.rawOrig;
@@ -17475,8 +17478,10 @@ function swapContentTmp(moveBtn, move) {
 }
 
 /* DEHANCE PART */
-function saveMultipleInputFields() {
-  var multipleFields = $(".vrtx-multipleinputfields");
+function saveMultipleInputFields(content) {
+  var multipleFields = (typeof content !== "undefined")
+                       ? content.find(".vrtx-multipleinputfields")
+                       : $(".vrtx-multipleinputfields");
   for (var i = 0, len = multipleFields.length; i < len; i++) {
     var multiple = $(multipleFields[i]);
     var multipleInput = multiple.find("> input");

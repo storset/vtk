@@ -104,7 +104,9 @@
         var ok = validTextLengthsInEditor(true);
         if(!ok) return false;
         
-        saveMultipleInputFields();
+        if(!vrtxEditor.editorForm.hasClass("vrtx-course-schedule")) {
+          saveMultipleInputFields();
+        }
         vrtxEditor.needToConfirm = false;
         return true;
       }

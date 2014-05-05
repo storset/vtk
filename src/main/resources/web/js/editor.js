@@ -16733,8 +16733,6 @@ function courseSchedule() {
     var accordionOnActivateTier3 = function (id, e, ui, accordion) {
       if(ui.newHeader[0]) { // Enhance multiple fields in session on open
         var sessionId = ui.newHeader[0].id;
-        var session = sessionsLookup[id][sessionId];
-        
         var sessionElm = $(ui.newHeader).closest("div");
         var content = sessionElm.find("> .accordion-content");
         
@@ -16742,6 +16740,7 @@ function courseSchedule() {
         lastSessionId = sessionId;
         lastElm = content;
         
+        var session = sessionsLookup[id][sessionId];
         if(session && !session.isEnhanced) { // If not already enhanced
           var multiples = session.multiples;
           for(var i = multiplesLen = multiples.length; i--;) {
@@ -17020,13 +17019,14 @@ function saveCourseScheduleSession(domSessionElms, id, sessionId) {
     if(!domSessionPropElm.length) continue; // This should not happen
 
     var val = saveCourseScheduleExtractSessionFieldFromDOMFunc(descs[name], domSessionPropElm);
-    if(val && val.length) {
+    if(val && val.length && saveCourseScheduleSessionDetectChange(val, rawOrig[name.split("vrtx-")[1]])) {
       rawPtr[name] = val;
     } else {
       delete rawPtr[name];
     }
   }
-
+  console.log(rawPtr);
+  console.log(rawOrig);
   sessionLookup.hasChanges = saveCourseScheduleSessionDetectChange(rawPtr, rawOrig);
 }
 

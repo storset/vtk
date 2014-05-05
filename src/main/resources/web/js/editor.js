@@ -16723,9 +16723,9 @@ function courseSchedule() {
       
     // Generate HTML
     var html = "<div class='accordion-title'>" + i18n.titles.plenary + "</div>" +
-               generateCourseScheduleForType(retrievedScheduleData, "plenary", true, sessionsLookup, i18n) +
+               generateCourseScheduleActivitiesForType(retrievedScheduleData, "plenary", true, sessionsLookup, i18n) +
                "<div class='accordion-title'>" + i18n.titles.group + "</div>" +
-               generateCourseScheduleForType(retrievedScheduleData, "group", false, sessionsLookup, i18n);
+               generateCourseScheduleActivitiesForType(retrievedScheduleData, "group", false, sessionsLookup, i18n);
       
     // Add HTML to DOM
     $(".properties").prepend("<div class='vrtx-grouped'>" + html + "</div>"); 
@@ -16835,7 +16835,11 @@ function courseSchedule() {
   });
 }
 
-function generateCourseScheduleForType(json, type, skipTier, sessionsLookup, i18n) {
+/*
+ * Generate Course Schedule activities for type
+ *
+ */
+function generateCourseScheduleActivitiesForType(json, type, skipTier, sessionsLookup, i18n) {
   var generateCourseScheduleDateFunc = generateCourseScheduleDate,
       generateCourseScheduleSessionFunc = generateCourseScheduleSession,
       generateCourseScheduleContentFromSessionDataFunc = generateCourseScheduleContentFromSessionData;
@@ -16888,6 +16892,10 @@ function generateCourseScheduleForType(json, type, skipTier, sessionsLookup, i18
   return html;
 }
 
+/*
+ * Generate Course Schedule session
+ *
+ */
 function generateCourseScheduleSession(id, dtShort, session, sessionsLookup, descs, i18n, skipTier, generateCourseScheduleDateFunc, generateCourseScheduleContentFromSessionDataFunc) {
   var sessionId = dtShort + "-" + session.id.replace(/\//g, "-"),
       sessionTitle = generateCourseScheduleDateFunc(session.dtstart, session.dtend, i18n) + " " +
@@ -16905,6 +16913,10 @@ function generateCourseScheduleSession(id, dtShort, session, sessionsLookup, des
    return vrtxEditor.htmlFacade.getAccordionInteraction(!skipTier ? "5" : "4", sessionId, "session", sessionTitle, sessionContent.html);
 }
 
+/*
+ * Save Course Schedule
+ *
+ */
 function saveCourseSchedule(startTime, d) {
   var updateType = function(type) {
     var sessions = vrtxEditor.editorForm.find("." + type + " .session-touched .accordion-content");
@@ -16965,6 +16977,10 @@ function saveCourseSchedule(startTime, d) {
   }
 }
 
+/*
+ *  Generate Course Schedule date (+0100 timezone)
+ *
+ */
 function generateCourseScheduleDate(s, e, i18n) { /* IE8: http://www.digital-portfolio.net/blog/view/ie8-and-iso-date-format */
   var sd = s.split("T")[0].split("-");
   var st = s.split("T")[1].split(".")[0].split(":");
@@ -16980,37 +16996,50 @@ function generateCourseScheduleDate(s, e, i18n) { /* IE8: http://www.digital-por
          st[0] + ":" + st[1] + "&ndash;" + et[0] + ":" + et[1];
 }
 
+/*
+ * Save Course Schedule - Find session in data
+ *
+ */
 function saveCourseScheduleFindSessionInData(content, data, dataLen) {
   var id = content.attr("aria-labelledby").split("-");
   var teachingmethod = id[0].toUpperCase();
   var activityId = id[1] + "-" + id[2];
   var sessionId = id[1] + "-" + id[2] + "/" + id[3] + "/" + id[4];
-  for(var i = 0; i < dataLen; i++) {
-    if(data[i].teachingmethod === teachingmethod && data[i].id === activityId) {
-      var sessions = data[i].sessions;
-      for(var j = 0, len = sessions.length; j < len; j++) {
-        if(sessions[j].id === sessionId) {
-          return sessions[j];
-        }
+  for(var i = dataLen; i--;) {
+    var dt = data[i];
+    if(dt.teachingmethod === teachingmethod && dt.id === activityId) {
+      var sessions = dt.sessions;
+      for(var j = sessions.length; j--;) {
+        if(sessions[j].id === sessionId)  return sessions[j];
       }
     }
   }
 }
 
-/* General methods for putting and getting data to/from DOM. 
-   TODO: missing some general variable names */
-
+/* 
+ * General methods for putting and getting data to/from DOM. 
+ * TODO: missing some general variable names
+ */
 function generateCourseScheduleContentFromSessionData(id, data, descs, i18n) {
   var html = "";
-  multiples = [];
+  var multiples = [];
   for(var name in descs) {
     var desc = descs[name],
         descProps = jQuery.extend(true, [], desc.props),
         val = data[name],
-        placeholder = null,
         propsVal = "",
-        browsable = false,
+        browsable = false;
         size = 40;
+        
+    if(!val || !val.length) {
+      var origName = name.split("vrtx-")[1];
+      if(origName) {
+        var origVal = data[name.split("vrtx-")[1]];
+        if(origVal != "") {
+          val = origVal;
+        }
+      }
+    }
     switch(desc.type) {
       case "json":
         for(var i = 0, descPropsLen = descProps.length; i < descPropsLen; i++) {
@@ -17038,28 +17067,19 @@ function generateCourseScheduleContentFromSessionData(id, data, descs, i18n) {
             movable: desc.multiple.movable,
             browsable: browsable
           });
-        } else if(desc.type === "string") {
-          var origName = name.split("vrtx-")[1];
-          if(origName) {
-            var origTitle = data[name.split("vrtx-")[1]];
-            if(origTitle != "") {
-              placeholder = origTitle;
-            }
-          }
         }
         html += vrtxEditor.htmlFacade.getStringField({ title: i18n[name],
                                                        name: (desc.autocomplete ? "vrtx-autocomplete-" + desc.autocomplete + " " : "") + name + "-" + id,
                                                        id: name + "-" + id,
                                                        val: val,
-                                                       size: size,
-                                                       placeholder: placeholder
+                                                       size: size
                                                      }, name);
         break;
       case "checkbox":
         html += vrtxEditor.htmlFacade.getCheckboxField({ title: i18n[name],
                                                          name: name + "-" + id,
                                                          id: name + "-" + id,
-                                                         checked: val
+                                                         checked: (val === "active" ? null : val)
                                                        }, name);
         break;
       default:
@@ -17126,11 +17146,7 @@ function setShowHideBooleanOldEditor(radioIds, properties, conditionHide, condit
   vrtxEditor.initEventHandler(radioIds, {
     wrapper: "#editor",
     callback: function (props, conditionHide, conditionHideEqual, init) {
-      if ($(conditionHide).val() != conditionHideEqual) {
-        toggleShowHideBoolean(props, true, init);
-      } else {
-        toggleShowHideBoolean(props, false, init);
-      }
+      toggleShowHideBoolean(props, $(conditionHide).val() != conditionHideEqual, init);
     },
     callbackParams: [properties, conditionHide, conditionHideEqual]
   });

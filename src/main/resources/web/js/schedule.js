@@ -3,6 +3,7 @@
  *
  */
 
+var scheduleDeferred = $.Deferred();
 $(document).ready(function() {
   var retrievedScheduleDeferred = $.Deferred();
   var retrievedScheduleData = null;
@@ -15,11 +16,13 @@ $(document).ready(function() {
   $.when(retrievedScheduleDeferred).done(function() {
     if(retrievedScheduleData == null) {
       $("#activities").html("Ingen data");
+      scheduleDeferred.resolve();
       return;
     }
     var htmlPlenary = generateHTMLForType(retrievedScheduleData, "plenary");
     var htmlGroup = generateHTMLForType(retrievedScheduleData, "group");
     $("#activities").html(htmlPlenary.tocHtml + htmlGroup.tocHtml + htmlPlenary.tablesHtml + htmlGroup.tablesHtml);
+    scheduleDeferred.resolve();
   });
 });
 

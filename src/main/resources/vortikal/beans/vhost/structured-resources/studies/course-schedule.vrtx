@@ -13,18 +13,48 @@ resourcetype course-schedule {
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml">
       <head>
-        <title>Timeplandok</title>
+        <title>[localized 'title']</title>
+        <script type="text/javascript" src="/vrtx/__vrtx/static-resources/jquery/include-jquery.js"></script>
+        <script type="text/javascript" src="/vrtx/__vrtx/static-resources/js/schedule.js"></script>
+        <script type="text/javascript"><!--
+          var scheduleI18n = {
+            "table-for": "[localized 'table-for']",
+            "table-date": "[localized 'table-date']",
+            "table-day": "[localized 'table-day']",
+            "table-time": "[localized 'table-time']",
+            "table-title": "[localized 'table-title']",
+            "table-place": "[localized 'table-place']",
+            "table-staff": "[localized 'table-staff']",
+            "header-plenary": "[localized 'header-plenary']",
+            "header-group": "[localized 'header-group']"
+          };
+        // -->
+        </script>
+        
+        
       </head>
       <body id="vrtx-course-schedule">
-        <h1>Timeplandok</h1>
-
+        <h1>[localized 'title']</h1>
+        <div id="activities">
+        
+        </div>
       </body>
     </html>
     ##
   }
   
   localization {
-    header : (en : "Edit course schedule", no : "Rediger emnetimeplan", nn : "Rediger emnetimeplan")
+    header : (en : "Edit course schedule", no : "Rediger emnetimeplan", nn : "Rediger emnetimeplan"),
+    title : (en : "Time and place for", no : "Tid og sted for", nn : "Tid og stad for"),
+    table-for : (en : "Lectures", no : "Forelesninger", nn : "Forelesninger"),
+    table-date : (en : "Date", no : "Dato", nn : "Dato"),
+    table-day : (en : "Day", no : "Dag", nn : "Dag"),
+    table-time : (en : "Time", no : "Tid", nn : "Tid"),
+    table-title : (en : "Activity", no : "Aktivitet", nn : "Aktivitet"),
+    table-place : (en : "Place", no : "Sted", nn : "Stad"),
+    table-staff : (en : "Lecturer", no : "Foreleser", nn : "Foreleser"),
+    header-plenary : (en : "Plenary sessions", no : "Fellesundervisning", nn : "Fellesundervisning"), 
+    header-group : (en : "Group sessions", no : "Gruppeundervisning", nn : "Gruppeundervisning")
   }
 
 }

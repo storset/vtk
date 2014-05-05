@@ -1027,19 +1027,15 @@ var retrievedScheduleData = null;
 function courseSchedule() {
   
   var retrievedScheduleDeferred = $.Deferred();
-
   vrtxAdmin.serverFacade.getJSON("/vrtx/__vrtx/static-resources/js/tp-test.json", {
     success: function(data, xhr, textStatus) {
-      try {
-        retrievedScheduleData = data;
-      } catch(e) {
-        console.log(e.stack);
-      }
+      retrievedScheduleData = data;
       retrievedScheduleDeferred.resolve();
     },
     error: function(xhr, textStatus) {
-      if(textStatus === "parsererror") { // Running vortikal
+      if(textStatus === "parsererror") { // Running Vortikal
         retrievedScheduleDeferred.resolve();
+        vrtxAdmin.displayErrorMsg(textStatus);
       }
     }
   });

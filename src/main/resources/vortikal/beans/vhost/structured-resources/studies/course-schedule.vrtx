@@ -27,13 +27,13 @@ resourcetype course-schedule {
             "table-staff": "[localized 'table-staff']",
             "header-plenary": "[localized 'header-plenary']",
             "header-group": "[localized 'header-group']",
-            "d0": "[localized 'd0']",
-            "d1": "[localized 'd1']",
-            "d2": "[localized 'd2']",
-            "d3": "[localized 'd3']",
-            "d4": "[localized 'd4']",
-            "d5": "[localized 'd5']",
-            "d6": "[localized 'd6']"
+            "d0": "[localized 'dSun']",
+            "d1": "[localized 'dMon']",
+            "d2": "[localized 'dTue']",
+            "d3": "[localized 'dWed']",
+            "d4": "[localized 'dThu']",
+            "d5": "[localized 'dFri']",
+            "d6": "[localized 'dSat']"
           };
         // -->
         </script>
@@ -61,13 +61,13 @@ resourcetype course-schedule {
     table-place : (en : "Place", no : "Sted", nn : "Stad"),
     table-staff : (en : "Lecturer", no : "Foreleser", nn : "Foreleser"),
     header-plenary : (en : "Plenary sessions", no : "Fellesundervisning", nn : "Fellesundervisning"), 
-    d0 : (en : "Sunday", no : "Søndag", nn : "Søndag"),
-    d1 : (en : "Monday", no : "Mandag", nn : "Mandag"),
-    d2 : (en : "Tuesday", no : "Tirsdag", nn : "Tirsdag"),
-    d3 : (en : "Wednesday", no : "Onsdag", nn : "Onsdag"),
-    d4 : (en : "Thursday", no : "Torsdag", nn : "Torsdag"),
-    d5 : (en : "Friday", no : "Fredag", nn : "Fredag"),
-    d6 : (en : "Saturday", no : "Lørdag", nn : "Lørdag")
+    dSun : (en : "Sunday",    no : "Søndag",  nn : "Søndag"),
+    dMon : (en : "Monday",    no : "Mandag",  nn : "Mandag"),
+    dTue : (en : "Tuesday",   no : "Tirsdag", nn : "Tirsdag"),
+    dWed : (en : "Wednesday", no : "Onsdag",  nn : "Onsdag"),
+    dThu : (en : "Thursday",  no : "Torsdag", nn : "Torsdag"),
+    dFri : (en : "Friday",    no : "Fredag",  nn : "Fredag"),
+    dSat : (en : "Saturday",  no : "Lørdag",  nn : "Lørdag")
   }
-
+  
 }

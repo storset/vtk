@@ -16919,9 +16919,10 @@ function generateCourseScheduleSession(id, dtShort, session, descs, i18n, skipTi
    // Store session information
    sessionsLookup[id][sessionId] = {
      isEnhanced: false,
+     hasChanges: false,
      multiples: sessionContent.multiples,
      rawPtr: session,
-     rawOrig: jQuery.extend(true, {}, session)
+     rawOrig: jQuery.extend(true, {}, session) // Copy object
    };
    
    return vrtxEditor.htmlFacade.getAccordionInteraction(!skipTier ? "5" : "4", sessionId, "session", sessionTitle, sessionContent.html);
@@ -16942,13 +16943,13 @@ function saveCourseSchedule(startTime, d) {
     }, null, 2), {
     success: function (results, status, resp) {
       ajaxSaveSuccess(startTime, d, results, status, resp); 
-      changesInCourseScheduleSaved();
+      courseScheduleSaved();
     },
     error: function (xhr, textStatus)         { ajaxSaveError(d, xhr, textStatus);                    }
   }, vrtxEditor.editorForm.find("input[name='csrf-prevention-token']").val());
 }
 
-function changesInCourseScheduleSaved() {
+function courseScheduleSaved() {
   for(var type in sessionsLookup) {
     for(var session in sessionsLookup[type]) {
       var sessionObj = sessionsLookup[type][session];

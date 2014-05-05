@@ -16853,7 +16853,7 @@ function courseSchedule() {
  *
  */
 function generateCourseScheduleActivitiesForType(json, type, skipTier, i18n) {
-  var generateCourseScheduleDateFunc = generateCourseScheduleDate,
+  var generateCourseScheduleDateAndPostFixIdFunc = generateCourseScheduleDateAndPostFixId,
       generateCourseScheduleSessionFunc = generateCourseScheduleSession,
       generateCourseScheduleContentFromSessionDataFunc = generateCourseScheduleContentFromSessionData;
       jsonType = json[type],
@@ -16880,7 +16880,7 @@ function generateCourseScheduleActivitiesForType(json, type, skipTier, i18n) {
     
     for(var j = 0, sessionsLen = sessions.length; j < sessionsLen; j++) {
       sessionsHtml += generateCourseScheduleSessionFunc(id, dtShort, sessions[j], descs, i18n, skipTier,
-                                                        generateCourseScheduleDateFunc, generateCourseScheduleContentFromSessionDataFunc);
+                                                        generateCourseScheduleDateAndPostFixIdFunc, generateCourseScheduleContentFromSessionDataFunc);
     }
 
     if(!skipTier) {
@@ -16909,10 +16909,11 @@ function generateCourseScheduleActivitiesForType(json, type, skipTier, i18n) {
  * Generate Course Schedule session
  *
  */
-function generateCourseScheduleSession(id, dtShort, session, descs, i18n, skipTier, generateCourseScheduleDateFunc, generateCourseScheduleContentFromSessionDataFunc) {
-  var sessionId = dtShort + "-" + session.id.replace(/\//g, "-"),
+function generateCourseScheduleSession(id, dtShort, session, descs, i18n, skipTier, generateCourseScheduleDateAndPostFixIdFunc, generateCourseScheduleContentFromSessionDataFunc) {
+  var sessionDatePostFixId = generateCourseScheduleDateAndPostFixIdFunc(session.dtstart, session.dtend, i18n),
+      sessionId = dtShort + "-" + session.id.replace(/\//g, "-") + "-" + sessionDatePostFixId.postFixId,
       sessionCancelled = session.status && session.status === "cancelled",
-      sessionTitle = generateCourseScheduleDateFunc(session.dtstart, session.dtend, i18n) + " " +
+      sessionTitle = sessionDatePostFixId.date + " " +
                      "<span class='header-title'>" + (session["vrtx-title"] || session.title || session.id) + "</span>" +
                      (session.room ? " - " + (session.room[0].buildingid + " " + i18n.room + " " + session.room[0].roomid) : "") +
                      (sessionCancelled ? " <span class='header-status'>" + i18n[session.status] + "</span>" : ""),
@@ -16935,18 +16936,21 @@ function generateCourseScheduleSession(id, dtShort, session, descs, i18n, skipTi
  *  Generate Course Schedule date (+0100 timezone)
  *
  */
-function generateCourseScheduleDate(s, e, i18n) { /* IE8: http://www.digital-portfolio.net/blog/view/ie8-and-iso-date-format */
+function generateCourseScheduleDateAndPostFixId(s, e, i18n) { /* IE8: http://www.digital-portfolio.net/blog/view/ie8-and-iso-date-format */
   var sd = s.split("T")[0].split("-");
   var st = s.split("T")[1].split(".")[0].split(":");
   var ed = e.split("T")[0].split("-");
   var et = e.split("T")[1].split(".")[0].split(":");
 
   if(sd[0] != ed[0] || sd[1] != ed[1] || sd[2] != ed[2]) {
-    return sd[2] + ". " + i18n[sd[1]] + " " + sd[0] + " kl " + st[0] + ":" + st[1] + "&ndash;" +
-           ed[2] + ". " + i18n[ed[1]] + " " + ed[0] + " kl " + et[0] + ":" + et[1];
+    var strDate = sd[2] + ". " + i18n[sd[1]] + " " + sd[0] + " kl " + st[0] + ":" + st[1] + "&ndash;" +
+                  ed[2] + ". " + i18n[ed[1]] + " " + ed[0] + " kl " + et[0] + ":" + et[1];
+  } else {
+    var strDate = sd[2] + ". " + i18n[sd[1]] + " " + sd[0] + " - kl " +
+                  st[0] + ":" + st[1] + "&ndash;" + et[0] + ":" + et[1];
   }
-  return sd[2] + ". " + i18n[sd[1]] + " " + sd[0] + " - kl " +
-         st[0] + ":" + st[1] + "&ndash;" + et[0] + ":" + et[1];
+  
+  return { date: strDate, postFixId: (sd[2] + "-" + sd[1] + "-" + sd[0] + "-" + st[0] + "-" + st[1] + "-" + et[0] + "-" + et[1]) };
 }
 
 /*
@@ -17012,7 +17016,7 @@ function unsavedChangesInCourseSchedule() {
  *
  */
 function saveCourseScheduleSession(domSessionElms, id, sessionId) {
-  saveMultipleInputFields(domSessionElms);
+  saveMultipleInputFields(domSessionElms, "$$$");
 
   var sessionLookup = sessionsLookup[id][sessionId];
   var rawOrig = sessionLookup.rawOrig;
@@ -17102,13 +17106,13 @@ function generateCourseScheduleContentFromSessionData(id, data, descs, i18n) {
             for(i = 0; i < descPropsLen; i++) {
               propsVal += val[j][descProps[i].name] + "###";
             }
-            if(j < (propsLen - 1)) propsVal += ",";
+            if(j < (propsLen - 1)) propsVal += "$$$";
           }
         }
         size = 20;
       case "string":
         val = (propsVal != "") ? propsVal : val;
-        val = (desc.multiple && typeof val === "array") ? val.join(", ") : val;
+        val = (desc.multiple && typeof val === "array") ? val.join(",") : val;
         if(desc.multiple) {
           multiples.push({
             name: name,
@@ -17151,7 +17155,7 @@ function saveCourseScheduleExtractSessionFieldFromDOM(desc, elm) {
   } else {
     val = elm.val(); // To string (string)
     if(desc.multiple && val.length) { // To array (multiple)
-      val = val.split(",");
+      val = val.split("$$$");
     }
     if(desc.type === "json" && val.length) { // Object props into array (JSON multiple)
       var arrProps = [];
@@ -17359,7 +17363,8 @@ function enhanceMultipleInputFields(name, isMovable, isBrowsable, limit, json) {
   $($.parseHTML(vrtxEditor.htmlFacade.getMultipleInputFieldsAddButton(name, size, isBrowsable, isMovable, isDropdown, JSON.stringify(json, null, 2)), document, true)).insertAfter(inputField);
 
   var inputFieldVal = inputField.hide().val();
-  var formFields = inputFieldVal.split(",");
+  var formFields = json && json.length ? inputFieldVal.split("$$$")
+                                       : inputFieldVal.split(",");
 
   vrtxEditor.multipleFieldsBoxes[name] = { counter: 1, limit: limit };
 
@@ -17489,10 +17494,11 @@ function swapContentTmp(moveBtn, move) {
 }
 
 /* DEHANCE PART */
-function saveMultipleInputFields(content) {
+function saveMultipleInputFields(content, arrSeperator) {
   var multipleFields = (typeof content !== "undefined")
                        ? content.find(".vrtx-multipleinputfields")
                        : $(".vrtx-multipleinputfields");
+  var arrSep = (typeof arrSeperator === "string") ? arrSeperator : ",";
   for (var i = 0, len = multipleFields.length; i < len; i++) {
     var multiple = $(multipleFields[i]);
     var multipleInput = multiple.find("> input");
@@ -17518,7 +17524,7 @@ function saveMultipleInputFields(content) {
         }
       }
       if (j < (len2 - 1)) {
-        result += ",";
+        result += arrSep;
       }
     }
     multipleInput.val(result);
